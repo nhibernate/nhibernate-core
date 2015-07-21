@@ -29,7 +29,9 @@ namespace NHibernate.Linq.Visitors
 					return VisitNhStar((NhStarExpression)expression);
 			}
 
-			return base.VisitExpression(expression);
+			// Keep this variable for easy examination during debug.
+			var expr = base.VisitExpression(expression);
+			return expr;
 		}
 
 		protected virtual Expression VisitNhStar(NhStarExpression expression)

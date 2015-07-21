@@ -114,5 +114,65 @@ namespace NHibernate.Test.Linq
             Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(2));
             Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(1));
         }
-    }
+
+		[Test]
+		public void GroupByQueryIsCacheable()
+		{
+			Sfi.Statistics.Clear();
+			Sfi.QueryCache.Clear();
+
+			var c = db
+				.Customers
+				.GroupBy(x => x.Address.Country)
+				.Select(x=>x.Key)
+				.Cacheable()
+				.ToList();
+
+			c = db
+				.Customers
+				.GroupBy(x => x.Address.Country)
+				.Select(x => x.Key)
+				.ToList();
+
+			c = db
+				.Customers
+				.GroupBy(x => x.Address.Country)
+				.Select(x => x.Key)
+				.Cacheable()
+				.ToList();
+
+			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(2));
+			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(1));
+			Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(1));
+		}
+
+		[Test]
+		public void GroupByQueryIsCacheable2()
+		{
+			Sfi.Statistics.Clear();
+			Sfi.QueryCache.Clear();
+
+			var c = db
+				.Customers.Cacheable()
+				.GroupBy(x => x.Address.Country)
+				.Select(x => x.Key)
+				.ToList();
+
+			c = db
+				.Customers
+				.GroupBy(x => x.Address.Country)
+				.Select(x => x.Key)
+				.ToList();
+
+			c = db
+				.Customers.Cacheable()
+				.GroupBy(x => x.Address.Country)
+				.Select(x => x.Key)
+				.ToList();
+
+			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(2));
+			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(1));
+			Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(1));
+		}
+	}
 }

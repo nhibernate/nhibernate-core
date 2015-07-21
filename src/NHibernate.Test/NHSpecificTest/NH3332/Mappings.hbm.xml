@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH3332">
+	<class name="StateDescription" table="StateDescription" optimistic-lock="none">
+		<composite-id>
+			<key-many-to-one name="Culture" access="field.camelcase-underscore">
+				<column name="CultureCode" />
+				<column name="LanguageCode" />
+			</key-many-to-one>
+			<key-many-to-one name="State" column="Id" access="field.camelcase-underscore" />
+		</composite-id>
+		<version name="RowVersionId" access="field.camelcase-underscore" generated="always" unsaved-value="null" type="BinaryBlob">
+			<column name="RowVersionId" not-null="false" sql-type="timestamp"/>
+		</version>
+		<property name="Description" column="Description" access="field.camelcase-underscore"/>
+	</class>
+
+	<class name="State" table="State" optimistic-lock="none">
+		<id name="Id" column="Id" access="field.camelcase-underscore">
+			<generator class="identity"/>
+		</id>
+		<version name="RowVersionId" access="field.camelcase-underscore" generated="always" unsaved-value="null" type="BinaryBlob">
+			<column name="RowVersionId" not-null="false" sql-type="timestamp"/>
+		</version>
+		<property name="Name" column="Name" access="field.camelcase-underscore"/>
+		<set name="MasterEntities" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="StateId"/>
+			</key>
+			<one-to-many class="MasterEntity"/>
+		</set>
+		<set name="StateDescriptions" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="Id"/>
+			</key>
+			<one-to-many class="StateDescription"/>
+		</set>
+	</class>
+	<class name="MasterEntity" table="MasterEntity" optimistic-lock="none">
+		<id name="Id" column="Id" access="field.camelcase-underscore">
+			<generator class="identity"/>
+		</id>
+		<version name="RowVersionId" access="field.camelcase-underscore" generated="always" unsaved-value="null" type="BinaryBlob">
+			<column name="RowVersionId" not-null="false" sql-type="timestamp"/>
+		</version>
+		<property name="LastModifiedTimeStamp" column="LastModifiedTimeStamp" access="field.camelcase-underscore"/>
+		<property name="Name" column="Name" access="field.camelcase-underscore"/>
+		<many-to-one name="DataType" access="field.camelcase-underscore" fetch="select" cascade="all">
+			<column name="DataTypeId"/>
+		</many-to-one>
+		<many-to-one name="State" access="field.camelcase-underscore" fetch="select" cascade="all">
+			<column name="StateId"/>
+		</many-to-one>
+	</class>
+	<class name="DataTypeDescription" table="DataTypeDescription" optimistic-lock="none">
+		<composite-id>
+			<key-many-to-one name="Culture" access="field.camelcase-underscore">
+				<column name="CultureCode" />
+				<column name="LanguageCode" />
+			</key-many-to-one>
+			<key-many-to-one name="DataType" column="Id" access="field.camelcase-underscore" />
+		</composite-id>
+		<version name="RowVersionId" access="field.camelcase-underscore" generated="always" unsaved-value="null" type="BinaryBlob">
+			<column name="RowVersionId" not-null="false" sql-type="timestamp"/>
+		</version>
+		<property name="Description" column="Description" access="field.camelcase-underscore"/>
+	</class>
+	<class name="DataType" table="DataType" optimistic-lock="none">
+		<id name="Id" column="Id" access="field.camelcase-underscore">
+			<generator class="identity"/>
+		</id>
+		<version name="RowVersionId" access="field.camelcase-underscore" generated="always" unsaved-value="null" type="BinaryBlob">
+			<column name="RowVersionId" not-null="false" sql-type="timestamp"/>
+		</version>
+		<property name="Name" column="Name" access="field.camelcase-underscore"/>
+		<set name="DataTypeDescriptions" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="Id"/>
+			</key>
+			<one-to-many class="DataTypeDescription"/>
+		</set>
+		<set name="MasterEntities" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="DataTypeId"/>
+			</key>
+			<one-to-many class="MasterEntity"/>
+		</set>
+	</class>
+	<class name="Culture" table="Culture" optimistic-lock="none">
+		<composite-id>
+			<key-property name="CountryCode" column="CountryCode" access="field.camelcase-underscore" />
+			<key-property name="LanguageCode" column="LanguageCode" access="field.camelcase-underscore" />
+		</composite-id>
+		<version name="RowVersionId" access="field.camelcase-underscore" generated="always" unsaved-value="null" type="BinaryBlob">
+			<column name="RowVersionId" not-null="false" sql-type="timestamp"/>
+		</version>
+		<set name="DataTypeDescriptions" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="CultureCode"/>
+				<column name="LanguageCode"/>
+			</key>
+			<one-to-many class="DataTypeDescription"/>
+		</set>
+		<set name="StateDescriptions" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="CultureCode"/>
+				<column name="LanguageCode"/>
+			</key>
+			<one-to-many class="StateDescription"/>
+		</set>
+	</class>
+
+</hibernate-mapping>

@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH508
 {
@@ -7,14 +7,14 @@ namespace NHibernate.Test.NHSpecificTest.NH508
 	{
 		private int userId;
 		private string login;
-		private IList friendList;
-		private IList friendOfList;
+		private IList<User> friendList;
+		private IList<User> friendOfList;
 
 		public User()
 		{
 			login = string.Empty;
-			friendList = new ArrayList();
-			friendOfList = new ArrayList();
+			friendList = new List<User>();
+			friendOfList = new List<User>();
 		}
 
 		public User(string login) : this()
@@ -34,13 +34,13 @@ namespace NHibernate.Test.NHSpecificTest.NH508
 			set { login = value; }
 		}
 
-		public virtual IList FriendList
+		public virtual IList<User> FriendList
 		{
 			get { return friendList; }
 			set { friendList = value; }
 		}
 
-		public virtual IList FriendOfList
+		public virtual IList<User> FriendOfList
 		{
 			get { return friendOfList; }
 			set { friendOfList = value; }

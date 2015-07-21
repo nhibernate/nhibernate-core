@@ -12,7 +12,7 @@ namespace NHibernate.Loader
 	/// </summary>
 	/// <remarks>
 	/// Generates an SQL select string containing all properties of those classes.
-	/// Tablse are joined using an ANSI-style left outer join.
+	/// Tables are joined using an ANSI-style left outer join.
 	/// </remarks>
 	public abstract class OuterJoinLoader : BasicLoader
 	{
@@ -108,7 +108,7 @@ namespace NHibernate.Loader
 			collectionSuffixes = walker.CollectionSuffixes;
 			owners = walker.Owners;
 			collectionOwners = walker.CollectionOwners;
-			sql = walker.SqlString.Compact();
+			sql = walker.SqlString;
 			aliases = walker.Aliases;
 		}
 	}

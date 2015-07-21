@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using NHibernate.Criterion;
 using NHibernate.Transform;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2331
 {
@@ -24,54 +23,54 @@ namespace NHibernate.Test.NHSpecificTest.NH2331
 			base.OnSetUp();
 
 			var person0 = new Person
-			              	{
-			              		Name = "Schorsch",
-			              	};
+							{
+								Name = "Schorsch",
+							};
 
 			var person1 = new Person
-			              	{
-			              		Name = "Sepp",
-			              	};
+							{
+								Name = "Sepp",
+							};
 
 			var person2 = new Person
-			              	{
-			              		Name = "Detlef",
-			              	};
+							{
+								Name = "Detlef",
+							};
 
 			var forum0 = new Forum
-			             	{
-			             		Name = "Oof",
-			             		Dollars = 1887.00,
-			             	};
+							{
+								Name = "Oof",
+								Dollars = 1887.00,
+							};
 
 			var forum1 = new Forum
-			             	{
-			             		Name = "Rab",
-			             		Dollars = 33.00,
-			             	};
+							{
+								Name = "Rab",
+								Dollars = 33.00,
+							};
 
 			var forum2 = new Forum
-			             	{
-			             		Name = "Main",
-			             		Dollars = 42.42,
-			             	};
+							{
+								Name = "Main",
+								Dollars = 42.42,
+							};
 
 			var group0 = new MemberGroup
-			             	{
-			             		Name = "Gruppe Bla",
-			             		Members = new List<Person>(),
-			             		Forums = new List<Forum>(),
-			             	};
+							{
+								Name = "Gruppe Bla",
+								Members = new List<Person>(),
+								Forums = new List<Forum>(),
+							};
 			group0.Members.Add(person0);
 			group0.Forums.Add(forum0);
 			group0.Forums.Add(forum1);
 
 			var group1 = new MemberGroup
-			             	{
-			             		Name = "Gruppe Blub",
-			             		Members = new List<Person>(),
-			             		Forums = new List<Forum>(),
-			             	};
+							{
+								Name = "Gruppe Blub",
+								Members = new List<Person>(),
+								Forums = new List<Forum>(),
+							};
 			group1.Members.Add(person1);
 			group1.Members.Add(person2);
 			group1.Forums.Add(forum2);
@@ -106,46 +105,46 @@ namespace NHibernate.Test.NHSpecificTest.NH2331
 		{
 			using (ISession session = OpenSession())
 			{
-			    DetachedCriteria memberGroupCriteria
-			        = DetachedCriteria
-			            .For<MemberGroup>()
-			            .CreateAlias("Members", "m")
-			            .CreateAlias("Forums", "f")
-			            .Add(Restrictions.EqProperty("m.Id", "p.Id"))
-			            .SetProjection(Projections.Property("f.Id"))
-			        ;
+				DetachedCriteria memberGroupCriteria
+					= DetachedCriteria
+						.For<MemberGroup>()
+						.CreateAlias("Members", "m")
+						.CreateAlias("Forums", "f")
+						.Add(Restrictions.EqProperty("m.Id", "p.Id"))
+						.SetProjection(Projections.Property("f.Id"))
+					;
 
-			    var ids = new List<Guid>();
-			    ids.Add(person0Id);
-			    ids.Add(person1Id);
+				var ids = new List<Guid>();
+				ids.Add(person0Id);
+				ids.Add(person1Id);
 
-			    DetachedCriteria forumCriteria
-			        = DetachedCriteria
-			            .For<Forum>("fff")
-			            .Add(Restrictions.NotEqProperty("Id", "p.Id"))
-			            .Add(Subqueries.PropertyIn("Id", memberGroupCriteria))
-			            .SetProjection
-			            (
-			                Projections.Sum("Dollars")
-			            )
-			        ;
+				DetachedCriteria forumCriteria
+					= DetachedCriteria
+						.For<Forum>("fff")
+						.Add(Restrictions.NotEqProperty("Id", "p.Id"))
+						.Add(Subqueries.PropertyIn("Id", memberGroupCriteria))
+						.SetProjection
+						(
+							Projections.Sum("Dollars")
+						)
+					;
 
-			    DetachedCriteria personCriteria
-			        = DetachedCriteria
-			            .For<Person>("p")
-			            .Add(Restrictions.InG("Id", ids))
-			            .SetProjection
-			            (
-			                Projections
-			                    .ProjectionList()
-			                    .Add(Projections.Property("Name"), "Name")
-			                    .Add(Projections.SubQuery(forumCriteria), "Sum")
-			            )
-			            .SetResultTransformer(Transformers.AliasToBean(typeof (Bar)))
-			        ;
+				DetachedCriteria personCriteria
+					= DetachedCriteria
+						.For<Person>("p")
+						.Add(Restrictions.InG("Id", ids))
+						.SetProjection
+						(
+							Projections
+								.ProjectionList()
+								.Add(Projections.Property("Name"), "Name")
+								.Add(Projections.SubQuery(forumCriteria), "Sum")
+						)
+						.SetResultTransformer(Transformers.AliasToBean(typeof (Bar)))
+					;
 
-			    ICriteria criteria = personCriteria.GetExecutableCriteria(session);
-                criteria.Executing(c => c.List()).NotThrows();
+				ICriteria criteria = personCriteria.GetExecutableCriteria(session);
+				Assert.That(() => criteria.List(), Throws.Nothing);
 			}
 		}
 	}

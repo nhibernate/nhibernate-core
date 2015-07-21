@@ -48,13 +48,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1391
 			using (var tran = session.BeginTransaction())
 			{
 				var personWithAnimals = session.Get<PersonWithAllTypes>(1);
-				Assert.That(personWithAnimals.AnimalsNonGeneric, Has.Count.EqualTo(4));
 				Assert.That(personWithAnimals.AnimalsGeneric, Has.Count.EqualTo(4));
-				Assert.That(personWithAnimals.CatsNonGeneric, Has.Count.EqualTo(1));
 				Assert.That(personWithAnimals.CatsGeneric,Has.Count.EqualTo(1));
-				Assert.That(personWithAnimals.DogsNonGeneric, Has.Count.EqualTo(2));
 				Assert.That(personWithAnimals.DogsGeneric,Has.Count.EqualTo(2));
-				Assert.That(personWithAnimals.SivasKangalsNonGeneric, Has.Count.EqualTo(1));
 				Assert.That(personWithAnimals.SivasKangalsGeneric, Has.Count.EqualTo(1));
 			}
 		}

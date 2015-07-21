@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Reflection;
 using System.Text;
 using NHibernate.AdoNet.Util;
 using NHibernate.Exceptions;
@@ -16,7 +15,7 @@ namespace NHibernate.AdoNet
 	public class OracleDataClientBatchingBatcher : AbstractBatcher
 	{
 		private int _batchSize;
-		private int _countOfCommands = 0;
+		private int _countOfCommands;
 		private int _totalExpectedRowsAffected;
 		private IDbCommand _currentBatch;
 		private IDictionary<string, List<object>> _parameterValueListHashTable;
@@ -69,9 +68,9 @@ namespace NHibernate.AdoNet
 				firstOnBatch = false;
 			}
 
-			List<object> parameterValueList;
 			foreach (IDataParameter currentParameter in CurrentCommand.Parameters)
 			{
+				List<object> parameterValueList;
 				if (firstOnBatch)
 				{
 					parameterValueList = new List<object>();
@@ -125,7 +124,7 @@ namespace NHibernate.AdoNet
 				// setting the ArrayBindCount on the OracleCommand
 				// this value is not a part of the ADO.NET API.
 				// It's and ODP implementation, so it is being set by reflection
-				SetObjectParam(_currentBatch, "ArrayBindCount", arraySize);
+				SetArrayBindCount(arraySize);
 				int rowsAffected;
 				try
 				{
@@ -149,11 +148,12 @@ namespace NHibernate.AdoNet
 			get { return _countOfCommands; }
 		}
 
-		private void SetObjectParam(Object obj, string paramName, object paramValue)
+		private void SetArrayBindCount(int arraySize)
 		{
-			System.Type objType = obj.GetType();
-			PropertyInfo propInfo = objType.GetProperty(paramName);
-			propInfo.SetValue(obj, paramValue, null);
+			//TODO: cache the property info.
+			var objType = _currentBatch.GetType();
+			var propInfo = objType.GetProperty("ArrayBindCount");
+			propInfo.SetValue(_currentBatch, arraySize, null);
 		}
 
 		public override int BatchSize

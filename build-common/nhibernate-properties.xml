@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <project xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd">
 	<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSql2008Dialect"  overwrite="false"/>
+	<property name="nhibernate.command_timeout" value="444"  overwrite="false"/>
 	<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.SqlClientDriver" overwrite="false"/>
 	<property name="nhibernate.connection.connection_string" value="Server=.\SQLExpress;initial catalog=nhibernate;Integrated Security=SSPI" overwrite="false"/>
 </project>

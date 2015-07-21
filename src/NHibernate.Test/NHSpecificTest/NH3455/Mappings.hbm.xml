@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH3455">
+
+	<class name="Person">
+		<id name="Id" generator="guid.comb" />
+		<property name="Name" />
+    <property name="Age" />
+    <property name="Weight" />
+    <component name="Address">
+      <property name="Street" />
+      <property name="City" />
+      <property name="Zip" />
+      <property name="State" />
+    </component>
+	</class>
+
+</hibernate-mapping>

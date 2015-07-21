@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Type;
@@ -56,7 +55,7 @@ namespace NHibernate.Cache
 			if (enabledFilters.Count == 0)
 				return null;
 
-			var result = new HashedSet<FilterKey>();
+			var result = new HashSet<FilterKey>();
 			foreach (FilterImpl filter in enabledFilters.Values)
 			{
 				FilterKey key = new FilterKey(filter.Name, filter.Parameters, filter.FilterDefinition.ParameterTypes, entityMode);

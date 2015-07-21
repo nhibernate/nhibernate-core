@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
@@ -44,7 +45,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Cascade(Cascade cascadeStyle)
 		{
-			_manyToOne.cascade = (cascadeStyle.Exclude(ByCode.Cascade.DeleteOrphans)).ToCascadeString();
+			_manyToOne.cascade = cascadeStyle.ToCascadeString();
 		}
 
 		public void NotNullable(bool notnull)
@@ -54,17 +55,17 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Unique(bool unique)
 		{
-			Column(x => x.Unique(unique));
+			_manyToOne.unique = unique;
 		}
 
 		public void UniqueKey(string uniquekeyName)
 		{
-			Column(x => x.UniqueKey(uniquekeyName));
+			_manyToOne.uniquekey = uniquekeyName;
 		}
 
 		public void Index(string indexName)
 		{
-			Column(x => x.Index(indexName));
+			_manyToOne.index = indexName;
 		}
 
 		public void Fetch(FetchKind fetchMode)
@@ -82,7 +83,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 			ResetColumnPlainValues();
 			_manyToOne.Items = null;
-			string[] formulaLines = formula.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+			string[] formulaLines = formula.Split(StringHelper.LineSeparators, StringSplitOptions.None);
 			if (formulaLines.Length > 1)
 			{
 				_manyToOne.Items = new[] { new HbmFormula { Text = formulaLines } };

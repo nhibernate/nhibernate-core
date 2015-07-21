@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH1818"
+                   default-lazy="false">
+  <class name="DomainClass" table="t_nh1818" schema-action="none">
+    <id name="Id">
+      <generator class="assigned" />
+    </id>
+    <property name="AlwaysTrue"  formula="(another_field &lt; (CURRENT_TIMESTAMP + '00:01'::time) )"  />
+  </class>
+	<database-object>
+		<create>
+			CREATE TABLE t_nh1818
+			(
+				id integer,
+				another_field timestamp without time zone NOT NULL DEFAULT now(),
+				CONSTRAINT nh1818_pk PRIMARY KEY (id)
+			);
+		</create>
+		<drop>
+			DROP TABLE t_nh1818;
+		</drop>
+	</database-object>
+</hibernate-mapping>

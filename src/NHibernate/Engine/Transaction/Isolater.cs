@@ -18,7 +18,7 @@ namespace NHibernate.Engine.Transaction
   ///  </listheader>
   ///  <item>
 	///      <term><see cref="DoIsolatedWork"/> </term>
-	///      <description>makes sure the work to be done is performed in a seperate, distinct transaction</description>
+	///      <description>makes sure the work to be done is performed in a separate, distinct transaction</description>
   ///  </item>
 	///  <item>
 	///      <term><see cref="DoNonTransactedWork"/> </term>
@@ -32,7 +32,7 @@ namespace NHibernate.Engine.Transaction
 
 		/// <summary> 
 		/// Ensures that all processing actually performed by the given work will
-		/// occur on a seperate transaction. 
+		/// occur on a separate transaction. 
 		/// </summary>
 		/// <param name="work">The work to be performed. </param>
 		/// <param name="session">The session from which this request is originating. </param>

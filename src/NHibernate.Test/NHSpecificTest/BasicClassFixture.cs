@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Iesi.Collections.Generic;
 using NHibernate.Criterion;
 using NHibernate.DomainModel.NHSpecific;
 using NHibernate.Linq;
@@ -514,7 +513,7 @@ namespace NHibernate.Test.NHSpecificTest
 			bc[index] = (BasicClass) s[index].Load(typeof(BasicClass), id);
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
-			bc[index].StringMap = new Hashtable();
+			bc[index].StringMap = new Dictionary<string, string>();
 			bc[index].StringMap.Add("keyZero", "new list zero");
 			bc[index].StringMap.Add("keyOne", "new list one");
 			s[index].Update(bc[index]);
@@ -583,7 +582,7 @@ namespace NHibernate.Test.NHSpecificTest
 			bc[index] = (BasicClass) s[index].Load(typeof(BasicClass), id);
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
-			bc[index].StringSet = new HashedSet<string> { "zero", "one" };
+			bc[index].StringSet = new HashSet<string> { "zero", "one" };
 			s[index].Update(bc[index]);
 
 			t[index].Commit();
@@ -666,7 +665,7 @@ namespace NHibernate.Test.NHSpecificTest
 			bc[index] = (BasicClass) s[index].Load(typeof(BasicClass), id);
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
-			bc[index].StringBag = new ArrayList();
+			bc[index].StringBag = new List<string>();
 			bc[index].StringBag.Add("new bag zero");
 			bc[index].StringBag.Add("new bag one");
 			s[index].Update(bc[index]);
@@ -784,7 +783,7 @@ namespace NHibernate.Test.NHSpecificTest
 			bc[index] = (BasicClass) s[index].Load(typeof(BasicClass), id);
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
-			bc[index].StringList = new ArrayList();
+			bc[index].StringList = new List<string>();
 			bc[index].StringList.Add("new list zero");
 			bc[index].StringList.Add("new list one");
 			s[index].Update(bc[index]);
@@ -865,7 +864,7 @@ namespace NHibernate.Test.NHSpecificTest
 				bcsList = bcs.ToList<BasicClass>();
 				Assert.That(bcsList.All(f => f.StringMap != null), Is.True);
 				Assert.That(bcsList.All(f => f.StringMap.Count == 3), Is.True);
-				Assert.That(bcsList.All(f => ((f.StringMap.Contains("keyZero")) && ((string)f.StringMap["keyZero"] == "string zero"))), Is.True);
+				Assert.That(bcsList.All(f => ((f.StringMap.ContainsKey("keyZero")) && ((string)f.StringMap["keyZero"] == "string zero"))), Is.True);
 				
 				// IDictionary<,>[]
 				bcs = session.Query<BasicClass>()
@@ -879,13 +878,13 @@ namespace NHibernate.Test.NHSpecificTest
 				
 				// IDictionary.Contains
 				bcs = session.Query<BasicClass>()
-					.Where(bc => bc.StringMap.Contains("keyZero"));
+					.Where(bc => bc.StringMap.ContainsKey("keyZero"));
 				
 				Assert.That(bcs.Count(), Is.EqualTo(1));
 				bcsList = bcs.ToList<BasicClass>();
 				Assert.That(bcsList.All(f => f.StringMap != null), Is.True);
 				Assert.That(bcsList.All(f => f.StringMap.Count == 3), Is.True);
-				Assert.That(bcsList.All(f => ((f.StringMap.Contains("keyZero")) && ((string)f.StringMap["keyZero"] == "string zero"))), Is.True);
+				Assert.That(bcsList.All(f => ((f.StringMap.ContainsKey("keyZero")) && ((string)f.StringMap["keyZero"] == "string zero"))), Is.True);
 				
 				// IDictionary<,>.ContainsKey
 				bcs = session.Query<BasicClass>()
@@ -1033,14 +1032,14 @@ namespace NHibernate.Test.NHSpecificTest
 			basicClass.StringArray = new string[] {"3 string", "2 string", "1 string"};
 			basicClass.Int32Array = new int[] {5, 4, 3, 2, 1};
 
-			IList stringBag = new ArrayList(3);
+			IList<string> stringBag = new List<string>(3);
 			stringBag.Add("string 0");
 			stringBag.Add("string 1");
 			stringBag.Add("string 2");
 
 			basicClass.StringBag = stringBag;
 
-			IList stringList = new ArrayList(5);
+			IList<string> stringList = new List<string>(5);
 			stringList.Add("new string zero");
 			stringList.Add("new string one");
 			stringList.Add("new string two");
@@ -1049,7 +1048,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 			basicClass.StringList = stringList;
 
-			IDictionary stringMap = new Hashtable();
+			IDictionary<string, string> stringMap = new Dictionary<string, string>();
 			stringMap.Add("keyOne", "string one");
 			stringMap.Add("keyZero", "string zero");
 			stringMap.Add("keyTwo", "string two");

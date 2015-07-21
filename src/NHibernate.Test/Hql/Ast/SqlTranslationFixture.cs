@@ -20,16 +20,12 @@ namespace NHibernate.Test.Hql.Ast
 			Assert.DoesNotThrow(() => GetSql(query));
 
 			const string queryWithoutParen = "from SimpleClass s where (case when s.IntValue > 0 then cast(s.IntValue as long) * :pAValue else 1 end) > 0";
-			Assert.DoesNotThrow(() => GetSqlWithClassicParser(queryWithoutParen));
 			Assert.DoesNotThrow(() => GetSql(queryWithoutParen));
 		}
 
 		[Test]
 		public void Union()
 		{
-			const string query = "from SimpleClass s where s.id in ((select s1.id from SimpleClass s1) union (select s2.id from SimpleClass s2))";
-			Assert.DoesNotThrow(() => GetSqlWithClassicParser(query));
-
 			const string queryForAntlr = "from SimpleClass s where s.id in (select s1.id from SimpleClass s1 union select s2.id from SimpleClass s2)";
 			Assert.DoesNotThrow(() => GetSql(queryForAntlr));
 		}

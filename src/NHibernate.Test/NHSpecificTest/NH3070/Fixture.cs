@@ -26,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3070
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 
-		[Test, Ignore("Not fixed yet.")]
+		[Test]
 		public void ProxyForEntityWithLazyPropertiesAndFormulaShouldEqualItself()
 		{
 			try

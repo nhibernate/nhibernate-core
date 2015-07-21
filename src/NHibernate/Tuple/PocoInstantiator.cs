@@ -14,21 +14,21 @@ namespace NHibernate.Tuple
 	public class PocoInstantiator : IInstantiator, IDeserializationCallback
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(PocoInstantiator));
-		
+
 		private readonly System.Type mappedClass;
-		
+
 		[NonSerialized]
-		private readonly IInstantiationOptimizer optimizer;
+		private IInstantiationOptimizer optimizer;
 
 		private readonly IProxyFactory proxyFactory;
 
 		private readonly bool generateFieldInterceptionProxy;
 
 		private readonly bool embeddedIdentifier;
-		
+
 		[NonSerialized]
 		private ConstructorInfo constructor;
-		
+
 		private readonly System.Type proxyInterface;
 
 		public PocoInstantiator()
@@ -134,5 +134,10 @@ namespace NHibernate.Tuple
 		}
 
 		#endregion
+
+		public void SetOptimizer(IInstantiationOptimizer optimizer)
+		{
+			this.optimizer = optimizer;
+		}
 	}
 }

@@ -15,10 +15,12 @@ namespace NHibernate.Dialect
 		protected override void RegisterCastTypes() {
 			base.RegisterCastTypes();
 			// MySql 5 also supports DECIMAL as a cast type target
-			// http://dev.mysql.com/doc/refman/5.5/en/cast-functions.html
-			RegisterCastType(DbType.Decimal, "DECIMAL");
-			RegisterCastType(DbType.Double, "DECIMAL");
-			RegisterCastType(DbType.Single, "DECIMAL");
+			// http://dev.mysql.com/doc/refman/5.0/en/cast-functions.html
+			RegisterCastType(DbType.Decimal, "DECIMAL(19,5)");
+			RegisterCastType(DbType.Decimal, 19, "DECIMAL($p, $s)");
+			RegisterCastType(DbType.Double, "DECIMAL(19,5)");
+			RegisterCastType(DbType.Single, "DECIMAL(19,5)");
+			RegisterCastType(DbType.Guid, "BINARY(16)");
 		}
 
 		//Reference 5.x

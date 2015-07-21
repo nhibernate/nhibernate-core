@@ -1,7 +1,6 @@
 using System;
 using System.Data;
 using System.Data.Odbc;
-using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Driver
@@ -14,10 +13,6 @@ namespace NHibernate.Driver
 	/// </remarks>
 	public class OdbcDriver : DriverBase
 	{
-		public OdbcDriver()
-		{
-		}
-
 		public override IDbConnection CreateConnection()
 		{
 			return new OdbcConnection();
@@ -43,7 +38,7 @@ namespace NHibernate.Driver
 			get { return String.Empty; }
 		}
 
-		protected static void SetVariableLengthParameterSize(IDbDataParameter dbParam, SqlType sqlType)
+		private static void SetVariableLengthParameterSize(IDbDataParameter dbParam, SqlType sqlType)
 		{
 			// Override the defaults using data from SqlType.
 			if (sqlType.LengthDefined)
@@ -58,22 +53,10 @@ namespace NHibernate.Driver
 			}
 		}
 
-		public static void SetParameterSizes(IDataParameterCollection parameters, SqlType[] parameterTypes)
+		protected override void InitializeParameter(IDbDataParameter dbParam, string name, SqlType sqlType)
 		{
-			for (int i = 0; i < parameters.Count; i++)
-			{
-				SetVariableLengthParameterSize((IDbDataParameter)parameters[i], parameterTypes[i]);
-			}
+			base.InitializeParameter(dbParam, name, sqlType);
+			SetVariableLengthParameterSize(dbParam, sqlType);
 		}
-
-		public override IDbCommand GenerateCommand(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
-		{
-			IDbCommand command = base.GenerateCommand(type, sqlString, parameterTypes);
-
-			SetParameterSizes(command.Parameters, parameterTypes);
-
-			return command;
-		}
-
 	}
 }

@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH309
 {
@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.NH309
 	{
 		private int _id;
 		private string _name;
-		private IList _nodes;
+		private IList<Node> _nodes;
 
 		public int Id
 		{
@@ -24,13 +24,13 @@ namespace NHibernate.Test.NHSpecificTest.NH309
 			set { this._name = value; }
 		}
 
-		public IList Nodes
+		public IList<Node> Nodes
 		{
 			get
 			{
 				if (this._nodes == null)
 				{
-					this._nodes = new ArrayList();
+					this._nodes = new List<Node>();
 				}
 				return this._nodes;
 			}

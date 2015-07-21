@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Cfg
 {
@@ -12,7 +11,7 @@ namespace NHibernate.Cfg
 	public class MappingsQueue
 	{
 		private readonly Queue availableEntries = new Queue();
-		private readonly ISet<string> processedClassNames = new HashedSet<string>();
+		private readonly ISet<string> processedClassNames = new HashSet<string>();
 
 		private readonly List<MappingsQueueEntry> unavailableEntries = new List<MappingsQueueEntry>();
 
@@ -55,7 +54,7 @@ namespace NHibernate.Cfg
 
 		private void AddProcessedClassNames(ICollection<string> classNames)
 		{
-			processedClassNames.AddAll(classNames);
+			processedClassNames.UnionWith(classNames);
 			if (classNames.Count > 0)
 			{
 				ProcessUnavailableEntries();

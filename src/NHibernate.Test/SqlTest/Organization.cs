@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.SqlTest
 {
@@ -13,7 +12,7 @@ namespace NHibernate.Test.SqlTest
 		public Organization(String name)
 		{
 			this.name = name;
-			employments = new HashedSet<Employment>();
+			employments = new HashSet<Employment>();
 		}
 
 		public Organization()

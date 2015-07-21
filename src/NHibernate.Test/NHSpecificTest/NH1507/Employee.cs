@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1507
 {
@@ -7,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1507
 	public class Employee
 	{
 		private int _id;
-		private IList nativeOrders;
+		private IList<Order> nativeOrders;
 
 		public virtual string LastName { get; set; }
 
@@ -43,13 +44,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1507
 
 		public virtual string PhotoPath { get; set; }
 
-		protected virtual IList orders
+		protected virtual IList<Order> orders
 		{
 			get
 			{
 				if (nativeOrders == null)
 				{
-					nativeOrders = new ArrayList();
+					nativeOrders = new List<Order>();
 				}
 
 				return nativeOrders;

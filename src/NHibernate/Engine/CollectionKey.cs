@@ -68,7 +68,7 @@ namespace NHibernate.Engine
 
 		public override string ToString()
 		{
-			return "CollectionKey" + MessageHelper.InfoString(factory.GetCollectionPersister(role), key, factory);
+			return "CollectionKey" + MessageHelper.CollectionInfoString(factory.GetCollectionPersister(role), key, factory);
 		}
 	}
 }

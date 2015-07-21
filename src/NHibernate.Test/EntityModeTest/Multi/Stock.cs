@@ -1,11 +1,10 @@
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.EntityModeTest.Multi
 {
 	public class Stock
 	{
-		private ISet<Valuation> valuations = new HashedSet<Valuation>();
+		private ISet<Valuation> valuations = new HashSet<Valuation>();
 
 		public virtual long Id { get; set; }
 

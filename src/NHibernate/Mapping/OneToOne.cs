@@ -92,13 +92,13 @@ namespace NHibernate.Mapping
 				{
 					return
 						new SpecialOneToOneType(ReferencedEntityName, foreignKeyType, referencedPropertyName, IsLazy, UnwrapProxy,
-						                        entityName, propertyName);
+												entityName, propertyName);
 				}
 				else
 				{
 					return
 						TypeFactory.OneToOne(ReferencedEntityName, foreignKeyType, referencedPropertyName, IsLazy, UnwrapProxy, Embedded,
-						                     entityName, propertyName);
+											 entityName, propertyName);
 				}
 			}
 		}

@@ -4,14 +4,12 @@ using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Driver;
-using NHibernate.Hql.Classic;
+using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Linq.Functions;
 using NHibernate.Type;
 using NUnit.Framework;
-using NHibernate.Cfg.Loquacious;
 using System.Data;
 using NHibernate.Exceptions;
-using SharpTestsEx;
 
 namespace NHibernate.Test.CfgTest.Loquacious
 {
@@ -32,7 +30,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 													c.QueryCache<StandardQueryCache>();
 												});
 			configure.CollectionTypeFactory<DefaultCollectionTypeFactory>();
-			configure.HqlQueryTranslator<ClassicQueryTranslatorFactory>();
+			configure.HqlQueryTranslator<ASTQueryTranslatorFactory>();
 			configure.LinqToHqlGeneratorsRegistry<DefaultLinqToHqlGeneratorsRegistry>();
 			configure.Proxy(p =>
 												{
@@ -40,29 +38,29 @@ namespace NHibernate.Test.CfgTest.Loquacious
 													p.ProxyFactoryFactory<DefaultProxyFactoryFactory>();
 												});
 			configure.Mappings(m=>
-			                   	{
-			                   		m.DefaultCatalog = "MyCatalog";
-			                   		m.DefaultSchema = "MySche";
-			                   	});
+								{
+									m.DefaultCatalog = "MyCatalog";
+									m.DefaultSchema = "MySche";
+								});
 			configure.DataBaseIntegration(db =>
-			                              	{
-			                              		db.Dialect<MsSql2000Dialect>();
-			                              		db.KeywordsAutoImport = Hbm2DDLKeyWords.AutoQuote;
-			                              		db.Batcher<SqlClientBatchingBatcherFactory>();
-			                              		db.BatchSize = 15;
-			                              		db.ConnectionProvider<DebugConnectionProvider>();
-			                              		db.Driver<SqlClientDriver>();
-			                              		db.ConnectionReleaseMode = ConnectionReleaseMode.AfterTransaction;
-			                              		db.IsolationLevel = IsolationLevel.ReadCommitted;
-			                              		db.ConnectionString = "The connection string";
-			                              		db.AutoCommentSql = true;
-			                              		db.ExceptionConverter<SQLStateConverter>();
-			                              		db.PrepareCommands = true;
-			                              		db.Timeout = 10;
-			                              		db.MaximumDepthOfOuterJoinFetching = 11;
-			                              		db.HqlToSqlSubstitutions = "true 1, false 0, yes 'Y', no 'N'";
-			                              		db.SchemaAction = SchemaAutoAction.Validate;
-			                              	});
+											{
+												db.Dialect<MsSql2000Dialect>();
+												db.KeywordsAutoImport = Hbm2DDLKeyWords.AutoQuote;
+												db.Batcher<SqlClientBatchingBatcherFactory>();
+												db.BatchSize = 15;
+												db.ConnectionProvider<DebugConnectionProvider>();
+												db.Driver<SqlClientDriver>();
+												db.ConnectionReleaseMode = ConnectionReleaseMode.AfterTransaction;
+												db.IsolationLevel = IsolationLevel.ReadCommitted;
+												db.ConnectionString = "The connection string";
+												db.AutoCommentSql = true;
+												db.ExceptionConverter<SQLStateConverter>();
+												db.PrepareCommands = true;
+												db.Timeout = 10;
+												db.MaximumDepthOfOuterJoinFetching = 11;
+												db.HqlToSqlSubstitutions = "true 1, false 0, yes 'Y', no 'N'";
+												db.SchemaAction = SchemaAutoAction.Validate;
+											});
 
 			Assert.That(configure.Properties[Environment.SessionFactoryName], Is.EqualTo("SomeName"));
 			Assert.That(configure.Properties[Environment.CacheProvider],
@@ -78,7 +76,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			Assert.That(configure.Properties[Environment.ProxyFactoryFactoryClass],
 						Is.EqualTo(typeof(DefaultProxyFactoryFactory).AssemblyQualifiedName));
 			Assert.That(configure.Properties[Environment.QueryTranslator],
-						Is.EqualTo(typeof(ClassicQueryTranslatorFactory).AssemblyQualifiedName));
+						Is.EqualTo(typeof(ASTQueryTranslatorFactory).AssemblyQualifiedName));
 			Assert.That(configure.Properties[Environment.DefaultCatalog], Is.EqualTo("MyCatalog"));
 			Assert.That(configure.Properties[Environment.DefaultSchema], Is.EqualTo("MySche"));
 			Assert.That(configure.Properties[Environment.Dialect],
@@ -103,7 +101,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			Assert.That(configure.Properties[Environment.MaxFetchDepth], Is.EqualTo("11"));
 			Assert.That(configure.Properties[Environment.QuerySubstitutions], Is.EqualTo("true 1, false 0, yes 'Y', no 'N'"));
 			Assert.That(configure.Properties[Environment.Hbm2ddlAuto], Is.EqualTo("validate"));
-			configure.Properties[Environment.LinqToHqlGeneratorsRegistry].Should().Be(typeof(DefaultLinqToHqlGeneratorsRegistry).AssemblyQualifiedName);
+			Assert.That(configure.Properties[Environment.LinqToHqlGeneratorsRegistry], Is.EqualTo(typeof(DefaultLinqToHqlGeneratorsRegistry).AssemblyQualifiedName));
 		}
 	}
 }

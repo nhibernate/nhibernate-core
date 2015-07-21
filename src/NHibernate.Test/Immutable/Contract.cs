@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.Immutable
 {
@@ -25,7 +24,7 @@ namespace NHibernate.Test.Immutable
 		
 		public Contract(Plan plan, string customerName, string type)
 		{
-			plans = new HashedSet<Plan>();
+			plans = new HashSet<Plan>();
 			if (plan != null)
 			{
 				plans.Add(plan);
@@ -34,9 +33,9 @@ namespace NHibernate.Test.Immutable
 			this.customerName = customerName;
 			this.type = type;
 			variations = new List<ContractVariation>();
-			subcontracts = new HashedSet<Contract>();
-			parties = new HashedSet<Party>();
-			infos = new HashedSet<Info>();
+			subcontracts = new HashSet<Contract>();
+			parties = new HashSet<Party>();
+			infos = new HashSet<Info>();
 		}
 		
 		public virtual long Id

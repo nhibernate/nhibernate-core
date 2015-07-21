@@ -1,5 +1,5 @@
 using System;
-using Iesi.Collections.Generic;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Util;
 
@@ -26,7 +26,7 @@ namespace NHibernate.Mapping
 			this.sqlDropString = sqlDropString;
 		}
 
-		public SimpleAuxiliaryDatabaseObject(String sqlCreateString, String sqlDropString, HashedSet<string> dialectScopes)
+		public SimpleAuxiliaryDatabaseObject(String sqlCreateString, String sqlDropString, HashSet<string> dialectScopes)
 			: base(dialectScopes)
 		{
 			this.sqlCreateString = sqlCreateString;

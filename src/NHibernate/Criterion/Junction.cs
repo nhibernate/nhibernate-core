@@ -66,7 +66,7 @@ namespace NHibernate.Criterion
 			foreach (ICriterion criterion in this.criteria)
 			{
 				TypedValue[] subvalues = criterion.GetTypedValues(criteria, criteriaQuery);
-				ArrayHelper.AddAll(typedValues, subvalues);
+				typedValues.AddRange(subvalues);
 			}
 
 			return typedValues.ToArray();

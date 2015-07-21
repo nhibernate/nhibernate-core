@@ -1,5 +1,6 @@
 using System;
 using NHibernate.Bytecode;
+using NHibernate.Intercept;
 using NHibernate.Properties;
 
 namespace NHibernate.Tuple.Component
@@ -22,9 +23,20 @@ namespace NHibernate.Tuple.Component
 		[OnDeserialized]
 		internal void OnDeserialized(StreamingContext context)
 		{
-			this.optimizer = Cfg.Environment.BytecodeProvider.GetReflectionOptimizer(componentClass, getters, setters);
+			SetReflectionOptimizer();
+
+			if (optimizer != null)
+			{
+				// Fix for NH-3119:
+				// Also set the InstantiationOptimizer on the deserialized PocoInstantiator.
+				((PocoInstantiator)instantiator).SetOptimizer(optimizer.InstantiationOptimizer);
+			}
+
+			ClearOptimizerWhenUsingCustomAccessors();
 		}
-		public PocoComponentTuplizer(Mapping.Component component) : base(component)
+
+		public PocoComponentTuplizer(Mapping.Component component)
+			: base(component)
 		{
 			componentClass = component.ComponentClass;
 
@@ -40,14 +52,12 @@ namespace NHibernate.Tuple.Component
 				parentGetter = parentProperty.GetGetter(componentClass);
 			}
 
-			if (hasCustomAccessors || !Cfg.Environment.UseReflectionOptimizer)
-			{
-				optimizer = null;
-			}
-			else
-			{
-				optimizer = Cfg.Environment.BytecodeProvider.GetReflectionOptimizer(componentClass, getters, setters);
-			}
+			SetReflectionOptimizer();
+
+			// Fix for NH-3119
+			instantiator = BuildInstantiator(component);
+
+			ClearOptimizerWhenUsingCustomAccessors();
 		}
 
 		public override System.Type MappedClass
@@ -58,7 +68,7 @@ namespace NHibernate.Tuple.Component
 		public override object[] GetPropertyValues(object component)
 		{
 			// NH Different behavior : for NH-1101
-			if (Equals(BackrefPropertyAccessor.Unknown, component) || component == null)
+			if (Equals(BackrefPropertyAccessor.Unknown, component) || Equals(LazyPropertyInitializer.UnfetchedProperty, component) || component == null)
 			{
 				return new object[propertySpan];
 			}
@@ -126,6 +136,22 @@ namespace NHibernate.Tuple.Component
 		protected internal override ISetter BuildSetter(Mapping.Component component, Mapping.Property prop)
 		{
 			return prop.GetSetter(component.ComponentClass);
+		}
+
+		protected void SetReflectionOptimizer()
+		{
+			if (Cfg.Environment.UseReflectionOptimizer)
+			{
+				optimizer = Cfg.Environment.BytecodeProvider.GetReflectionOptimizer(componentClass, getters, setters);
+			}
+		}
+
+		protected void ClearOptimizerWhenUsingCustomAccessors()
+		{
+			if (hasCustomAccessors)
+			{
+				optimizer = null;
+			}
 		}
 	}
 }

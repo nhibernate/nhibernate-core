@@ -61,7 +61,7 @@ namespace NHibernate.Impl
 			{
 				throw new ArgumentException(name, "Undefined filter parameter [" + name + "]");
 			}
-			if (value != null && !type.ReturnedClass.IsAssignableFrom(value.GetType()))
+			if (value != null && !type.ReturnedClass.IsInstanceOfType(value))
 			{
 				throw new ArgumentException(name, "Incorrect type for parameter [" + name + "]");
 			}

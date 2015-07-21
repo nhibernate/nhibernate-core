@@ -3,6 +3,7 @@ using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Dialect.Function;
 using NHibernate.Engine.Query;
+using NHibernate.Hql;
 using NHibernate.Util;
 using NUnit.Framework;
 
@@ -19,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1849
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-	    private bool _OrignalDialectIsMsSql2005Dialect;
+		private bool _OrignalDialectIsMsSql2005Dialect;
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
@@ -30,26 +31,26 @@ namespace NHibernate.Test.NHSpecificTest.NH1849
 		{
 			base.Configure(configuration);
 
-            // Ugly hack.
-		    _OrignalDialectIsMsSql2005Dialect = Regex.IsMatch(configuration.GetProperty("dialect"), "MsSql200(5|8)Dialect");
+			// Ugly hack.
+			_OrignalDialectIsMsSql2005Dialect = Regex.IsMatch(configuration.GetProperty("dialect"), "MsSql200(5|8)Dialect");
 
 			configuration.SetProperty("dialect", "NHibernate.Test.NHSpecificTest.NH1849.CustomDialect, NHibernate.Test");
 		}
 
 		/// <summary>
-      /// We don't actually execute the query, since it will throw an ado exception due to the absence of a full text index,
-      /// however the query should compile
-      /// </summary>
+	  /// We don't actually execute the query, since it will throw an ado exception due to the absence of a full text index,
+	  /// however the query should compile
+	  /// </summary>
 		[Test]
 		public void ExecutesCustomSqlFunctionContains()
 		{
-         string hql = @"from Customer c where contains(c.Name, :smth)";
+		 string hql = @"from Customer c where contains(c.Name, :smth)";
 
-         HQLQueryPlan plan = new HQLStringQueryPlan(hql, false, new CollectionHelper.EmptyMapClass<string, IFilter>(), sessions);
+		 HQLQueryPlan plan = new QueryExpressionPlan(new StringQueryExpression(hql), false, new CollectionHelper.EmptyMapClass<string, IFilter>(), sessions);
 
-         Assert.AreEqual(1, plan.ParameterMetadata.NamedParameterNames.Count);
-         Assert.AreEqual(1, plan.QuerySpaces.Count);
-         Assert.AreEqual(1, plan.SqlStrings.Length);
-      }
+		 Assert.AreEqual(1, plan.ParameterMetadata.NamedParameterNames.Count);
+		 Assert.AreEqual(1, plan.QuerySpaces.Count);
+		 Assert.AreEqual(1, plan.SqlStrings.Length);
+	  }
 	}
 }

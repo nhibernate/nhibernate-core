@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public class ComponentAsIdCustomizer<TComponent> : PropertyContainerCustomizer<TComponent>, IComponentAsIdMapper<TComponent> where TComponent : class
+	public class ComponentAsIdCustomizer<TComponent> : PropertyContainerCustomizer<TComponent>, IComponentAsIdMapper<TComponent>
 	{
 		public ComponentAsIdCustomizer(IModelExplicitDeclarationsHolder explicitDeclarationsHolder, ICustomizersHolder customizersHolder, PropertyPath propertyPath)
 			: base(explicitDeclarationsHolder, customizersHolder, propertyPath)
@@ -17,6 +17,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			}
 			explicitDeclarationsHolder.AddAsComponent(typeof (TComponent));
 			explicitDeclarationsHolder.AddAsPoid(propertyPath.LocalMember);
+		}
+
+		public void UnsavedValue(UnsavedValueType unsavedValueType)
+		{
+			CustomizersHolder.AddCustomizer(PropertyPath, (IComponentAsIdAttributesMapper m) => m.UnsavedValue(unsavedValueType));
 		}
 
 		public void Class<TConcrete>() where TConcrete : TComponent

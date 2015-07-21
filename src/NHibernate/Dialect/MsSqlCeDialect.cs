@@ -31,7 +31,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Date, "DATETIME");
 			RegisterColumnType(DbType.DateTime, "DATETIME");
 			RegisterColumnType(DbType.Decimal, "NUMERIC(19,5)");
-			RegisterColumnType(DbType.Decimal, 19, "NUMERIC(19, $l)");
+			RegisterColumnType(DbType.Decimal, 19, "NUMERIC($p, $s)");
 			RegisterColumnType(DbType.Double, "FLOAT");
 			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
 			RegisterColumnType(DbType.Int16, "SMALLINT");
@@ -46,6 +46,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Time, "DATETIME");
 
 			RegisterFunction("substring", new EmulatedLengthSubstringFunction());
+			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as nvarchar)")); 
 
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.DateTime, "dateadd(dd, 0, datediff(dd, 0, ?1))"));
 			RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(second, ?1)"));
@@ -66,6 +67,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("trim", new AnsiTrimEmulationFunction());
 
 			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "+", ")"));
+
+			RegisterFunction("round", new StandardSQLFunction("round"));
 
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SqlServerCeDriver";
 			DefaultProperties[Environment.PrepareSql] = "false";
@@ -128,12 +131,7 @@ namespace NHibernate.Dialect
 
 		public override SqlString GetLimitString(SqlString querySqlString, SqlString offset, SqlString limit)
 		{
-			var top = new SqlStringBuilder()
-				.Add(" top (")
-				.Add(limit)
-				.Add(")")
-				.ToSqlString();
-
+			var top = new SqlString(" top (", limit, ")");
 			return querySqlString.Insert(GetAfterSelectInsertPoint(querySqlString), top);
 		}
 
@@ -194,6 +192,15 @@ namespace NHibernate.Dialect
 				return 6;
 			}
 			throw new NotSupportedException("The query should start with 'SELECT' or 'SELECT DISTINCT'");
+		}
+
+		public override long TimestampResolutionInTicks
+		{
+			get
+			{
+				// MS SQL resolution is actually 3.33 ms, rounded here to 10 ms
+				return TimeSpan.TicksPerMillisecond*10L;
+			}
 		}
 	}
 }

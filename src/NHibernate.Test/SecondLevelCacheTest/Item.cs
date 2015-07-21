@@ -1,12 +1,12 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.SecondLevelCacheTests
 {
 	public class Item
 	{
 		private int id;
-		private IList children = new ArrayList();
+		private IList<Item> children = new List<Item>();
 		private Item parent;
 		private string name;
 
@@ -28,7 +28,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			set { id = value; }
 		}
 
-		public virtual IList Children
+		public virtual IList<Item> Children
 		{
 			get { return children; }
 			set { children = value; }

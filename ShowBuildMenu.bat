@@ -1,7 +1,7 @@
 @echo off
 pushd %~dp0
 
-set NANT="%~dp0Tools\nant\bin\NAnt.exe" -t:net-3.5
+set NANT="%~dp0Tools\nant\bin\NAnt.exe" -t:net-4.0
 set BUILDTOOL="%~dp0Tools\BuildTool\bin\Release\BuildTool.exe"
 set AVAILABLE_CONFIGURATIONS=%~dp0available-test-configurations
 set CURRENT_CONFIGURATION=%~dp0current-test-configuration
@@ -52,12 +52,16 @@ echo D. Add a test configuration for SQLite (x86).
 echo E. Add a test configuration for SQLite (x64). [not recommended]
 echo F. Add a test configuration for PostgreSQL.
 echo G. Add a test configuration for Oracle.
+echo H. Add a test configuration for SQL Server Compact (x86).
+echo I. Add a test configuration for SQL Server Compact (x64).
 echo.
 echo X.  Exit to main menu.
 echo.
 
-%BUILDTOOL% prompt ABCDEFGX
-if errorlevel 7 goto main-menu
+%BUILDTOOL% prompt ABCDEFGHIX
+if errorlevel 9 goto main-menu
+if errorlevel 8 goto test-setup-sqlservercex64
+if errorlevel 7 goto test-setup-sqlservercex86
 if errorlevel 6 goto test-setup-oracle
 if errorlevel 5 goto test-setup-postgresql
 if errorlevel 4 goto test-setup-sqlitex64
@@ -71,6 +75,20 @@ set CONFIG_NAME=MSSQL
 set PLATFORM=AnyCPU
 set LIB_FILES=
 set LIB_FILES2=
+goto test-setup-generic
+
+:test-setup-sqlservercex86
+set CONFIG_NAME=SqlServerCe32
+set PLATFORM=AnyCPU
+set LIB_FILES=lib\teamcity\SqlServerCe\*.dll
+set LIB_FILES2=lib\teamcity\SqlServerCe\X86\*.dll
+goto test-setup-generic
+
+:test-setup-sqlservercex64
+set CONFIG_NAME=SqlServerCe64
+set PLATFORM=AnyCPU
+set LIB_FILES=lib\teamcity\sqlServerCe\*.dll
+set LIB_FILES2=lib\teamcity\sqlServerCe\AMD64\*.dll
 goto test-setup-generic
 
 :test-setup-firebirdx86
@@ -169,9 +187,10 @@ echo.
 goto main-menu
 
 :build-release-package
-%NANT% -D:project.config=release clean package
+%NANT% -D:project.config=release clean package nugetpushbat
 echo.
-echo Assuming the build succeeded, your results will be in the build folder.
+echo Assuming the build succeeded, your results will be in the build folder,
+echo including NuGet packages and tools to push them.
 echo.
 goto main-menu
 
@@ -256,14 +275,22 @@ echo D. NHibernate Trunk - SQLite (32-bit)
 echo E. NHibernate Trunk - SQLite (64-bit)
 echo F. NHibernate Trunk - PostgreSQL
 echo G. NHibernate Trunk - Oracle (32-bit)
-echo H. NHibernate Trunk - SQL Server ODBC (32-bit)
+echo H. NHibernate Trunk - Oracle Managed (32-bit)
+echo I. NHibernate Trunk - Oracle Managed (64-bit)
+echo J. NHibernate Trunk - SQL Server Compact (32-bit)
+echo K. NHibernate Trunk - SQL Server Compact (64-bit)
+echo L. NHibernate Trunk - SQL Server ODBC (32-bit)
 echo.
 echo X.  Exit to main menu.
 echo.
 
-%BUILDTOOL% prompt ABCDEFGHX
-if errorlevel 8 goto main-menu
-if errorlevel 7 goto teamcity-sqlServerOdbc
+%BUILDTOOL% prompt ABCDEFGHIJKLX
+if errorlevel 12 goto main-menu
+if errorlevel 11 goto teamcity-sqlServerOdbc
+if errorlevel 10 goto teamcity-sqlServerCe64
+if errorlevel 9 goto teamcity-sqlServerCe32
+if errorlevel 8 goto teamcity-oraclemanaged-64
+if errorlevel 7 goto teamcity-oraclemanaged-32
 if errorlevel 6 goto teamcity-oracle32
 if errorlevel 5 goto teamcity-postgresql
 if errorlevel 4 goto teamcity-sqlite64
@@ -314,9 +341,33 @@ move "%CURRENT_CONFIGURATION%" "%CURRENT_CONFIGURATION%-backup" 2> nul
 move "%CURRENT_CONFIGURATION%-backup" "%CURRENT_CONFIGURATION%" 2> nul
 goto main-menu
 
+:teamcity-oraclemanaged-32
+move "%CURRENT_CONFIGURATION%" "%CURRENT_CONFIGURATION%-backup" 2> nul
+%NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=oracle-managed32
+move "%CURRENT_CONFIGURATION%-backup" "%CURRENT_CONFIGURATION%" 2> nul
+goto main-menu
+
+:teamcity-oraclemanaged-64
+move "%CURRENT_CONFIGURATION%" "%CURRENT_CONFIGURATION%-backup" 2> nul
+%NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=oracle-managed64
+move "%CURRENT_CONFIGURATION%-backup" "%CURRENT_CONFIGURATION%" 2> nul
+goto main-menu
+
 :teamcity-sqlServerOdbc
 move "%CURRENT_CONFIGURATION%" "%CURRENT_CONFIGURATION%-backup" 2> nul
 %NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=sqlServerOdbc
+move "%CURRENT_CONFIGURATION%-backup" "%CURRENT_CONFIGURATION%" 2> nul
+goto main-menu
+
+:teamcity-sqlServerCe32
+move "%CURRENT_CONFIGURATION%" "%CURRENT_CONFIGURATION%-backup" 2> nul
+%NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=sqlServerCe32
+move "%CURRENT_CONFIGURATION%-backup" "%CURRENT_CONFIGURATION%" 2> nul
+goto main-menu
+
+:teamcity-sqlServerCe64
+move "%CURRENT_CONFIGURATION%" "%CURRENT_CONFIGURATION%-backup" 2> nul
+%NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=sqlServerCe64
 move "%CURRENT_CONFIGURATION%-backup" "%CURRENT_CONFIGURATION%" 2> nul
 goto main-menu
 

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
-using ArrayList=System.Collections.ArrayList;
-
+﻿
 namespace NHibernate.Test.NHSpecificTest.NH1533
 {
 	public class Person
@@ -11,12 +6,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1533
 		private int id;
 		private int iq;
 		private string name;
-		private IList pets;
 		private int shoeSize;
 
 		public Person()
 		{
-			pets = new ArrayList();
 		}
 
 		public Person(string name, int iq, int shoeSize)
@@ -24,7 +17,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1533
 			this.name = name;
 			this.iq = iq;
 			this.shoeSize = shoeSize;
-			pets = new ArrayList();
 		}
 
 		public virtual int Id

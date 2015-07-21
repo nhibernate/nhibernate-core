@@ -137,7 +137,7 @@ namespace NHibernate.Driver
 			return cmd;
 		}
 
-		private void SetCommandTimeout(IDbCommand cmd)
+		protected virtual void SetCommandTimeout(IDbCommand cmd)
 		{
 			if (commandTimeout >= 0)
 			{
@@ -285,7 +285,7 @@ namespace NHibernate.Driver
 		/// <summary>
 		/// Override to make any adjustments to the IDbCommand object.  (e.g., Oracle custom OUT parameter)
 		/// Parameters have been bound by this point, so their order can be adjusted too.
-		/// This is analagous to the RegisterResultSetOutParameter() function in Hibernate.
+		/// This is analogous to the RegisterResultSetOutParameter() function in Hibernate.
 		/// </summary>
 		protected virtual void OnBeforePrepare(IDbCommand command)
 		{

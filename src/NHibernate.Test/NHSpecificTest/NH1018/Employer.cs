@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1018
 {
@@ -7,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1018
 	{
 		private int id;
 		private string name;
-		private IList employees = new ArrayList();
+		private IList<Employee> employees = new List<Employee>();
 
 		public Employer()
 		{
@@ -30,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1018
 			set { name = value; }
 		}
 
-		public IList Employees
+		public IList<Employee> Employees
 		{
 			get { return employees; }
 			set { employees = value; }

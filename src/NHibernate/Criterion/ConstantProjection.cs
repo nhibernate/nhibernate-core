@@ -43,11 +43,10 @@ namespace NHibernate.Criterion
 
 		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
-			return new SqlStringBuilder()
-				.Add(criteriaQuery.NewQueryParameter(typedValue).Single())
-				.Add(" as ")
-				.Add(GetColumnAliases(position)[0])
-				.ToSqlString();
+			return new SqlString(
+				criteriaQuery.NewQueryParameter(typedValue).Single(),
+				" as ",
+				GetColumnAliases(position, criteria, criteriaQuery)[0]);
 		}
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)

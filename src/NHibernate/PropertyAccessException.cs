@@ -28,7 +28,7 @@ namespace NHibernate
 		/// <param name="persistentType">The <see cref="System.Type"/> that NHibernate was trying find the Property or Field in.</param>
 		/// <param name="propertyName">The mapped property name that was trying to be accessed.</param>
 		public PropertyAccessException(Exception innerException, string message, bool wasSetter, System.Type persistentType,
-		                               string propertyName)
+									   string propertyName)
 			: base(message, innerException)
 		{
 			this.persistentType = persistentType;
@@ -63,8 +63,8 @@ namespace NHibernate
 			get
 			{
 				return base.Message + (wasSetter ? " setter of " : " getter of ") +
-				       (persistentType == null ? "UnknownType" : persistentType.FullName) +
-				       (string.IsNullOrEmpty(propertyName) ? string.Empty: "." + propertyName);
+					   (persistentType == null ? "UnknownType" : persistentType.FullName) +
+					   (string.IsNullOrEmpty(propertyName) ? string.Empty: "." + propertyName);
 			}
 		}
 
@@ -99,10 +99,10 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		[SecurityPermission(SecurityAction.LinkDemand,
-			Flags=SecurityPermissionFlag.SerializationFormatter)]
 #if NET_4_0
 		[SecurityCritical]
+#else
+		[SecurityPermission(SecurityAction.LinkDemand, Flags=SecurityPermissionFlag.SerializationFormatter)]
 #endif
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{

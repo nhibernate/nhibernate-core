@@ -7,7 +7,7 @@ namespace NHibernate.Mapping.ByCode
 		void Index(Action<IListIndexMapper> listIndexMapping);
 	}
 
-	public interface IListPropertiesMapper<TEntity, TElement> : ICollectionPropertiesMapper<TEntity, TElement> where TEntity : class
+	public interface IListPropertiesMapper<TEntity, TElement> : ICollectionPropertiesMapper<TEntity, TElement>
 	{
 		void Index(Action<IListIndexMapper> listIndexMapping);
 	}

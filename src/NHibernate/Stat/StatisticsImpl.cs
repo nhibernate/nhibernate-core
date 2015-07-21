@@ -336,7 +336,7 @@ namespace NHibernate.Stat
 
 				queryExecutionCount = 0;
 				queryCacheHitCount = 0;
-				queryExecutionMaxTime = TimeSpan.MinValue;
+				queryExecutionMaxTime = TimeSpan.Zero;
 				queryExecutionMaxTimeQueryString = null;
 				queryCacheMissCount = 0;
 				queryCachePutCount = 0;
@@ -451,7 +451,7 @@ namespace NHibernate.Stat
 			log.Info("query cache puts: " + queryCachePutCount);
 			log.Info("query cache hits: " + queryCacheHitCount);
 			log.Info("query cache misses: " + queryCacheMissCount);
-			log.Info("max query time: " + queryExecutionMaxTime.Milliseconds + "ms");
+			log.Info("max query time: " + queryExecutionMaxTime.TotalMilliseconds.ToString("0") + " ms");
 		}
 
 		public TimeSpan OperationThreshold

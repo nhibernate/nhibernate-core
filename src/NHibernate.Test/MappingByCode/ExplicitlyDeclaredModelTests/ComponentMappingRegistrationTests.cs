@@ -1,6 +1,5 @@
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 {
@@ -17,7 +16,7 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 			var inspector = new ExplicitlyDeclaredModel();
 			inspector.AddAsComponent(typeof(MyComponent));
 
-			inspector.IsComponent(typeof(MyComponent)).Should().Be.True();
+			Assert.That(inspector.IsComponent(typeof(MyComponent)), Is.True);
 		}
 
 		[Test]
@@ -26,7 +25,7 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 			var inspector = new ExplicitlyDeclaredModel();
 			inspector.AddAsRootEntity(typeof(MyComponent));
 
-			inspector.Executing(x => x.AddAsComponent(typeof(MyComponent))).Throws<MappingException>();
+			Assert.That(() => inspector.AddAsComponent(typeof(MyComponent)), Throws.TypeOf<MappingException>());
 		}
 
 		[Test]
@@ -35,7 +34,7 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 			var inspector = new ExplicitlyDeclaredModel();
 			inspector.AddAsComponent(typeof(MyComponent));
 
-			inspector.Executing(x => x.AddAsRootEntity(typeof(MyComponent))).Throws<MappingException>();
+			Assert.That(() => inspector.AddAsRootEntity(typeof(MyComponent)), Throws.TypeOf<MappingException>());
 		}
 
 		[Test]
@@ -44,11 +43,11 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 			var inspector = new ExplicitlyDeclaredModel();
 			inspector.AddAsComponent(typeof (MyComponent));
 
-			Executing.This(() =>
-			               {
-			               	inspector.AddAsTablePerClassEntity(typeof (MyComponent));
-			               	inspector.IsTablePerClass(typeof (MyComponent));
-			               }).Should().Throw<MappingException>();
+			Assert.That(() =>
+			{
+				inspector.AddAsTablePerClassEntity(typeof (MyComponent));
+				inspector.IsTablePerClass(typeof (MyComponent));
+			}, Throws.TypeOf<MappingException>());
 		}
 
 		[Test]
@@ -57,11 +56,11 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 			var inspector = new ExplicitlyDeclaredModel();
 			inspector.AddAsComponent(typeof (MyComponent));
 
-			Executing.This(() =>
-			               {
-			               	inspector.AddAsTablePerClassHierarchyEntity(typeof (MyComponent));
-			               	inspector.IsTablePerClassHierarchy(typeof (MyComponent));
-			               }).Should().Throw<MappingException>();
+			Assert.That(() =>
+			{
+				inspector.AddAsTablePerClassHierarchyEntity(typeof (MyComponent));
+				inspector.IsTablePerClassHierarchy(typeof (MyComponent));
+			}, Throws.TypeOf<MappingException>());
 		}
 
 		[Test]
@@ -70,11 +69,11 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 			var inspector = new ExplicitlyDeclaredModel();
 			inspector.AddAsComponent(typeof (MyComponent));
 
-			Executing.This(() =>
-			               {
-			               	inspector.AddAsTablePerConcreteClassEntity(typeof (MyComponent));
-			               	inspector.IsTablePerConcreteClass(typeof (MyComponent));
-			               }).Should().Throw<MappingException>();
+			Assert.That(() =>
+			{
+				inspector.AddAsTablePerConcreteClassEntity(typeof (MyComponent));
+				inspector.IsTablePerConcreteClass(typeof (MyComponent));
+			}, Throws.TypeOf<MappingException>());
 		}
 	}
 }

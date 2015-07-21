@@ -1,39 +1,14 @@
-# Ignore file for Visual Studio 2008/2010
+# Top-level .gitignore.
+# Rules that apply mainly for for Visual Studio projects should go in src/.gitignore
+# to avoid applying to e.g. the Tools and lib directories.
 
-*.obj
-*.exe
-*.pdb
-*.user
-*.aps
-*.pch
-*.vspscc
-*_i.c
-*_p.c
-*.ncb
-*.suo
-*.tlb
-*.tlh
+build
 *.bak
-*.cache
-*.ilk
-*.log
-*.lib
-*.sbr
-*.scc
-*.tokens
-[Bb]in
-[Db]ebug*/
-obj/
-[Rr]elease*/
-*resharper*
-_ReSharper*/
-[Tt]est[Rr]esult*
-[Bb]uild[Ll]og.*
-*.[Pp]ublish.xml
-NHibernate.dll
-build/
-AssemblyInfo.cs
-hibernate.cfg.xml
+NHibernate.VisualState.xml
 available-test-configurations
 current-test-configuration
-NHibernate.VisualState.xml
+
+# This will be copied from the build directory to the lib directory in order
+# to satisfy later build steps. But it should not be committed.
+NHibernate.dll
+TestResult.xml

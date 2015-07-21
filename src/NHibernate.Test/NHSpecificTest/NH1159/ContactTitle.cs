@@ -16,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 		private bool isChanged;
 
 		private Int64 id;
-		private IList contactList;
+		private IList<Contact> contactList;
 		private string descr;
 		#endregion
 
@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 		public ContactTitle()
 		{
 			id = 0;
-			contactList = new ArrayList();
+			contactList = new List<Contact>();
 			descr = String.Empty;
 		}
 		#endregion // End of Default ( Empty ) Class Constuctor
@@ -60,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 
 		}
 
-		public virtual IList ContactList
+		public virtual IList<Contact> ContactList
 		{
 			get
 			{

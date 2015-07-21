@@ -332,7 +332,7 @@ namespace NHibernate.Persister.Entity
 							var sqlType = col.GetSqlTypeCode(mapping);
 							buf.Append(dialect.GetSelectClauseNullString(sqlType)).Append(" as ");
 						}
-						buf.Append(col.Name);
+						buf.Append(col.GetQuotedName(dialect));
 						buf.Append(StringHelper.CommaSpace);
 					}
 					buf.Append(clazz.SubclassId).Append(" as clazz_");

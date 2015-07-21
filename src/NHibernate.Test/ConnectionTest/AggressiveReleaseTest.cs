@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using NHibernate.Cfg;
 using NHibernate.Util;
@@ -218,7 +219,7 @@ namespace NHibernate.Test.ConnectionTest
 			ISession s = GetSessionUnderTest();
 			s.BeginTransaction();
 
-			IList entities = new ArrayList();
+			IList<Silly> entities = new List<Silly>();
 			for (int i = 0; i < 10; i++)
 			{
 				Other other = new Other("other-" + i);

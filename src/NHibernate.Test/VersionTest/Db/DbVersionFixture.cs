@@ -89,7 +89,10 @@ namespace NHibernate.Test.VersionTest.Db
 			t.Commit();
 			s.Close();
 
-			Assert.That(NHibernateUtil.Timestamp.IsEqual(guyTimestamp, guy.Timestamp), "owner version was incremented");
+			const string ownerVersionWasIncremented = "owner version was incremented ({0:o} => {1:o})";
+			Assert.That(NHibernateUtil.Timestamp.IsEqual(guyTimestamp, guy.Timestamp),
+			            string.Format(ownerVersionWasIncremented, guyTimestamp, guy.Timestamp));
+			Console.WriteLine(string.Format(ownerVersionWasIncremented, guyTimestamp, guy.Timestamp));
 
 			s = OpenSession();
 			t = s.BeginTransaction();
@@ -98,7 +101,8 @@ namespace NHibernate.Test.VersionTest.Db
 			t.Commit();
 			s.Close();
 
-			Assert.That(NHibernateUtil.Timestamp.IsEqual(guyTimestamp, guy.Timestamp), "owner version was incremented");
+			Assert.That(NHibernateUtil.Timestamp.IsEqual(guyTimestamp, guy.Timestamp),
+			            string.Format(ownerVersionWasIncremented, guyTimestamp, guy.Timestamp));
 
 			s = OpenSession();
 			t = s.BeginTransaction();

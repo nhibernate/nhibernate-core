@@ -22,9 +22,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2976
 				employer.AddEmployee1(employee1);
 				employer.AddEmployee1(employee2);
 
-				employer.AddEmployee2(employee1);
-				employer.AddEmployee2(employee2);
-
 				_employeeId1 = employee1.Id;
 				_employeeId2 = employee2.Id;
 				
@@ -63,23 +60,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2976
 				employer.Employees1.Remove(_employeeId2); // The item will be removed as normal
 
 				Assert.That(employer.Employees1.Values.Count, Is.EqualTo(0));
-			}
-		}
-
-		[Test]
-		public void ShouldRemoveItemFromUninitializedDictionary()
-		{
-			using (ISession session = OpenSession())
-			using (session.BeginTransaction())
-			{
-				var employer = session.Get<Employer>(_employerId);
-
-				Assert.IsFalse(NHibernateUtil.IsInitialized(employer.Employees2)); // Just make sure the dictionary really is not initialized
-
-				employer.Employees2.Remove(_employeeId1);
-				employer.Employees2.Remove(_employeeId2); // The item will be removed as normal
-
-				Assert.That(employer.Employees2.Values.Count, Is.EqualTo(0));
 			}
 		}
 	}

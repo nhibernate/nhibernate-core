@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH2049" default-lazy="false">
+
+    <class name="Customer" abstract="true">
+        <id name="Id">
+            <generator class="assigned" />
+        </id>
+        <property name="Deleted" type="Boolean" not-null="true" />
+        <filter name="DeletedCustomer" condition="Deleted = :deleted" />
+    </class>
+
+    <joined-subclass name="IndividualCustomer" extends="Customer">
+        <key column="IndividualCustomerID" />
+        <many-to-one name="Person" class="Person" column="PersonID" not-null="true" unique="true" />
+    </joined-subclass>
+
+    <class name="Person">
+        <id name="Id">
+            <generator class="assigned" />
+        </id>
+        <property name="Name" />
+        <one-to-one name="IndividualCustomer" class="IndividualCustomer" property-ref="Person" />
+    </class>
+
+    <filter-def name="DeletedCustomer">
+        <filter-param name="deleted" type="Boolean"/>
+    </filter-def>
+
+</hibernate-mapping>

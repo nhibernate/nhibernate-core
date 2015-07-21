@@ -5,13 +5,15 @@ using System.Reflection;
 using NHibernate.Linq;
 using NHibernate.Transform;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.TransformTests
 {
 	public class ImplementationOfEqualityTests
 	{
-		private readonly IEnumerable<System.Type> transformerTypes = typeof(IResultTransformer).Assembly.GetTypes().Where(t => typeof(IResultTransformer).IsAssignableFrom(t) && t.IsClass).ToList();
+		private readonly IEnumerable<System.Type> transformerTypes =
+			typeof (IResultTransformer).Assembly.GetTypes()
+									   .Where(t => typeof (IResultTransformer).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract)
+									   .ToList();
 
 		[Test]
 		public void AllEmbeddedTransformersOverridesEqualsAndGetHashCode()
@@ -19,8 +21,8 @@ namespace NHibernate.Test.TransformTests
 			foreach (var transformerType in transformerTypes)
 			{
 				var declaredMethods = transformerType.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
-				declaredMethods.Select(x => x.Name).Should("The type "+transformerType+" does not implement Equals").Contain("Equals");
-				declaredMethods.Select(x => x.Name).Should("The type " + transformerType + " does not implement GetHashCode").Contain("GetHashCode");
+				Assert.That(declaredMethods.Select(x => x.Name), Contains.Item("Equals"), "The type " + transformerType + " does not implement Equals");
+				Assert.That(declaredMethods.Select(x => x.Name), Contains.Item("GetHashCode"), "The type " + transformerType + " does not implement GetHashCode");
 			}
 		}
 
@@ -42,8 +44,8 @@ namespace NHibernate.Test.TransformTests
 					continue;
 				}
 				var transformer2= (IResultTransformer)Activator.CreateInstance(transformerType);
-				transformer1.Should().Be.EqualTo(transformer2);
-				transformer1.GetHashCode().Should().Be.EqualTo(transformer2.GetHashCode());
+				Assert.That(transformer1, Is.EqualTo(transformer2));
+				Assert.That(transformer1.GetHashCode(), Is.EqualTo(transformer2.GetHashCode()));
 			}
 		}
 
@@ -52,12 +54,12 @@ namespace NHibernate.Test.TransformTests
 		{
 			var transformer1 = new AliasToBeanResultTransformer(typeof(object));
 			var transformer2 = new AliasToBeanResultTransformer(typeof(object));
-			transformer1.Should().Be.EqualTo(transformer2);
-			transformer1.GetHashCode().Should().Be.EqualTo(transformer2.GetHashCode());
+			Assert.That(transformer1, Is.EqualTo(transformer2));
+			Assert.That(transformer1.GetHashCode(), Is.EqualTo(transformer2.GetHashCode()));
 
 			var transformer3 = new AliasToBeanResultTransformer(typeof(int));
-			transformer1.Should().Not.Be.EqualTo(transformer3);
-			transformer1.GetHashCode().Should().Not.Be.EqualTo(transformer3.GetHashCode());
+			Assert.That(transformer1, Is.Not.EqualTo(transformer3));
+			Assert.That(transformer1.GetHashCode(), Is.Not.EqualTo(transformer3.GetHashCode()));
 		}
 
 		[Test]
@@ -66,30 +68,28 @@ namespace NHibernate.Test.TransformTests
 			var emptyCtor = new System.Type[0];
 			var transformer1 = new AliasToBeanConstructorResultTransformer(typeof(object).GetConstructor(emptyCtor));
 			var transformer2 = new AliasToBeanConstructorResultTransformer(typeof(object).GetConstructor(emptyCtor));
-			transformer1.Should().Be.EqualTo(transformer2);
-			transformer1.GetHashCode().Should().Be.EqualTo(transformer2.GetHashCode());
+			Assert.That(transformer1, Is.EqualTo(transformer2));
+			Assert.That(transformer1.GetHashCode(), Is.EqualTo(transformer2.GetHashCode()));
 
 			var transformer3 = new AliasToBeanConstructorResultTransformer(typeof(ImplementationOfEqualityTests).GetConstructor(emptyCtor));
-			transformer1.Should().Not.Be.EqualTo(transformer3);
-			transformer1.GetHashCode().Should().Not.Be.EqualTo(transformer3.GetHashCode());
+			Assert.That(transformer1, Is.Not.EqualTo(transformer3));
+			Assert.That(transformer1.GetHashCode(), Is.Not.EqualTo(transformer3.GetHashCode()));
 		}
 
-		public delegate void DoNothingDelegate();
-		public delegate void DoNothingDelegate1();
 		[Test]
 		public void LinqResultTransformer_ShouldHaveEqualityBasedOnCtorParameter()
 		{
-			DoNothingDelegate d1 = () => { };
-			DoNothingDelegate d2 = () => { };
+			Func<object[], object> d1 = x => new object();
+			Func<IEnumerable<object>, IEnumerable<object>> d2 = x => x;
 			var transformer1 = new ResultTransformer(d1, d2);
 			var transformer2 = new ResultTransformer(d1, d2);
-			transformer1.Should().Be.EqualTo(transformer2);
-			transformer1.GetHashCode().Should().Be.EqualTo(transformer2.GetHashCode());
+			Assert.That(transformer1, Is.EqualTo(transformer2));
+			Assert.That(transformer1.GetHashCode(), Is.EqualTo(transformer2.GetHashCode()));
 
-			DoNothingDelegate1 d3 = () => { };
+			Func<IEnumerable<object>, IEnumerable<int>> d3 = x => new [] { 1, 2, 3 };
 			var transformer3 = new ResultTransformer(d1, d3);
-			transformer1.Should().Not.Be.EqualTo(transformer3);
-			transformer1.GetHashCode().Should().Not.Be.EqualTo(transformer3.GetHashCode());
+			Assert.That(transformer1, Is.Not.EqualTo(transformer3));
+			Assert.That(transformer1.GetHashCode(), Is.Not.EqualTo(transformer3.GetHashCode()));
 		}
 	}
 }

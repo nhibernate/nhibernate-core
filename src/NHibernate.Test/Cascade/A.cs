@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.Cascade
 {
@@ -13,7 +12,7 @@ namespace NHibernate.Test.Cascade
 		
 		public A()
 		{
-			hs = new HashedSet<H>();
+			hs = new HashSet<H>();
 		}
 	
 		public A(string data) : this()

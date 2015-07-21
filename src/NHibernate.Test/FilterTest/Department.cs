@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.FilterTest
 {
@@ -8,7 +7,7 @@ namespace NHibernate.Test.FilterTest
 	{
 		private long id;
 		private string name;
-		private ISet<Salesperson> salespersons = new HashedSet<Salesperson>();
+		private ISet<Salesperson> salespersons = new HashSet<Salesperson>();
 
 		public virtual long Id
 		{

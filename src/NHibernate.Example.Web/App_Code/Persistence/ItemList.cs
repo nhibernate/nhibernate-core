@@ -13,7 +13,7 @@ namespace NHibernate.Example.Web.Persistence
 		
 		public void UpdateItem(Item item)
 		{
-			ExampleApplication.GetCurrentSession().SaveOrUpdateCopy(item);
+			ExampleApplication.GetCurrentSession().Merge(item);
 		}
 		
 		public void DeleteItem(Item item)

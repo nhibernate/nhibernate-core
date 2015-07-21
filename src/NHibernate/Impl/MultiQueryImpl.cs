@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Iesi.Collections.Generic;
 using NHibernate.Cache;
 using NHibernate.Driver;
 using NHibernate.Engine;
@@ -538,6 +537,11 @@ namespace NHibernate.Impl
 							Loader.Loader.Advance(reader, selection);
 						}
 
+						if (parameter.HasAutoDiscoverScalarTypes)
+						{
+							translator.Loader.AutoDiscoverTypes(reader);
+						}
+
 						LockMode[] lockModeArray = translator.Loader.GetLockModes(parameter.LockModes);
 						EntityKey optionalObjectKey = Loader.Loader.GetOptionalObjectKey(parameter, session);
 
@@ -632,9 +636,9 @@ namespace NHibernate.Impl
 			int queryIndex = 0;
 			foreach (AbstractQueryImpl query in queries)
 			{
+				query.VerifyParameters();
 				QueryParameters queryParameters = query.GetQueryParameters();
 				queryParameters.ValidateParameters();
-				query.VerifyParameters();
 				foreach (var translator in query.GetTranslators(session, queryParameters))
 				{
 					translators.Add(translator);
@@ -679,12 +683,12 @@ namespace NHibernate.Impl
 
 			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters, session.EntityMode);
 
-			ISet<string> querySpaces = new HashedSet<string>();
+			ISet<string> querySpaces = new HashSet<string>();
 			List<IType[]> resultTypesList = new List<IType[]>(Translators.Count);
 			for (int i = 0; i < Translators.Count; i++)
 			{
 				ITranslator queryTranslator = Translators[i];
-				querySpaces.AddAll(queryTranslator.QuerySpaces);
+				querySpaces.UnionWith(queryTranslator.QuerySpaces);
 				resultTypesList.Add(queryTranslator.ReturnTypes);
 			}
 			int[] firstRows = new int[Parameters.Count];
@@ -698,7 +702,7 @@ namespace NHibernate.Impl
 
 			MultipleQueriesCacheAssembler assembler = new MultipleQueriesCacheAssembler(resultTypesList);
 
-			QueryKey key = new QueryKey(session.Factory, SqlString, combinedParameters, filterKeys)
+			QueryKey key = new QueryKey(session.Factory, SqlString, combinedParameters, filterKeys, null)
 				.SetFirstRows(firstRows)
 				.SetMaxRows(maxRows);
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using NHibernate.Driver;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3142
@@ -8,6 +9,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3142
 	[TestFixture]
 	public class ChildrenTest : BugTestCase
 	{
+		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
+		{
+			return !(factory.ConnectionProvider.Driver is OracleManagedDataClientDriver);
+		}
+
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();

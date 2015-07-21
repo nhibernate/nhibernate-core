@@ -1,12 +1,11 @@
-﻿using Iesi.Collections.Generic;
-
+﻿
 namespace NHibernate.Test.NHSpecificTest.NH2693 {
    using System;
    using System.Collections.Generic;
 
    public class FirstLevel {
       public FirstLevel() {
-         SecondLevels = new HashedSet<SecondLevelComponent>();
+         SecondLevels = new HashSet<SecondLevelComponent>();
       }
 
       public virtual Guid Id { get; set; }
@@ -26,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2693 {
 
    public class SpecificThirdLevel : ThirdLevel {
       public SpecificThirdLevel() {
-				FourthLevels = new HashedSet<FourthLevel>();
+				FourthLevels = new HashSet<FourthLevel>();
       }
 
       public virtual ICollection<FourthLevel> FourthLevels { get; set; }

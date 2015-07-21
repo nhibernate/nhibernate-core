@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH2042">
+  <class name="Person">
+    <id name="Id" generator="guid.comb" />
+    <discriminator column="discriminator" type="string" />
+    <property name="Name" />
+    <subclass name="Owner">
+      <join table="Owner" fetch="select">
+        <key column="OwnerId" />
+        <property name="SomeProperty" />
+        <property name="Test">
+          <formula>1</formula>
+        </property>
+      </join>
+    </subclass>
+  </class>
+</hibernate-mapping>

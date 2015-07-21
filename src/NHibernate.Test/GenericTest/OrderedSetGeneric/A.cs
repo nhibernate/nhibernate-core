@@ -5,7 +5,7 @@ namespace NHibernate.Test.GenericTest.OrderedSetGeneric
 {
 	public class A
 	{
-		private ISet<B> _items = new OrderedSet<B>();
+		private ISet<B> _items = new LinkedHashSet<B>();
 
 		public int Id { get; set; }
 

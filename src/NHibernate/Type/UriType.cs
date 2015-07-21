@@ -28,7 +28,7 @@ namespace NHibernate.Type
 
 		public object StringToObject(string xml)
 		{
-			return new Uri(xml);
+			return new Uri(xml, UriKind.RelativeOrAbsolute);
 		}
 
 		public override void Set(IDbCommand cmd, object value, int index)

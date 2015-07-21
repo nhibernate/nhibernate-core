@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.NH3590"
+				   assembly="NHibernate.Test">
+
+    <class name="Entity">
+        <id name="Id" type="guid">
+            <generator class="guid.comb" />
+        </id>
+        <set name="Dates">
+            <key column="entity_id" />
+            <element column="DateValue" type="DateTime"/>
+        </set>
+    </class>
+</hibernate-mapping>

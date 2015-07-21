@@ -16,7 +16,7 @@
       <column name="StringSqlType" sql-type="nvarchar(max)" />
     </property>
     <!-- this generates an nvarchar(255) otherwise reading and writing seem to be ok -->
-    <property name="Blob" column="Blob" type="StringClob" />
+    <property name="Blob" column="BlobValue" type="StringClob" />
     <!-- this generates an nvarchar(max) but it operate a truncation on reading and writing (same as StringHugeLength) -->
     <property name="BlobLength" column="BlobLength" type="StringClob" length="15000" />
     <!-- this mapping works! for generation, writing and reading -->

@@ -25,7 +25,7 @@ namespace NHibernate
 		}
 
 		public abstract bool ShouldOverwriteCurrentVersion(object entity, object currentVersion, object newVersion,
-		                                                   IVersionType versionType);
+														   IVersionType versionType);
 
 		#region Nested type: ExceptionReplicationMode
 
@@ -37,7 +37,7 @@ namespace NHibernate
 			/// Throw an exception when a row already exists
 			/// </summary>
 			public override bool ShouldOverwriteCurrentVersion(object entity, object currentVersion, object newVersion,
-			                                                   IVersionType versionType)
+															   IVersionType versionType)
 			{
 				throw new AssertionFailure("should not be called");
 			}
@@ -55,7 +55,7 @@ namespace NHibernate
 			/// Ignore replicated entities when a row already exists
 			/// </summary>
 			public override bool ShouldOverwriteCurrentVersion(object entity, object currentVersion, object newVersion,
-			                                                   IVersionType versionType)
+															   IVersionType versionType)
 			{
 				return false;
 			}
@@ -73,7 +73,7 @@ namespace NHibernate
 			/// When a row already exists, choose the latest version
 			/// </summary>
 			public override bool ShouldOverwriteCurrentVersion(object entity, object currentVersion, object newVersion,
-			                                                   IVersionType versionType)
+															   IVersionType versionType)
 			{
 				if (versionType == null)
 				{
@@ -97,7 +97,7 @@ namespace NHibernate
 			/// Overwrite existing rows when a row already exists
 			/// </summary>
 			public override bool ShouldOverwriteCurrentVersion(object entity, object currentVersion, object newVersion,
-			                                                   IVersionType versionType)
+															   IVersionType versionType)
 			{
 				return true;
 			}

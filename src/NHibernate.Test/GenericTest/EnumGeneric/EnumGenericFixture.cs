@@ -4,7 +4,6 @@ using NHibernate.Impl;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.GenericTest.EnumGeneric
 {
@@ -36,7 +35,7 @@ namespace NHibernate.Test.GenericTest.EnumGeneric
 				int index = -1;
 				for (int i = 0; i < persister.PropertyNames.Length; i++)
 				{
-					if (persister.PropertyNames[i].Equals("NullableValue"))
+					if (persister.PropertyNames[i] == "NullableValue")
 					{
 						index = i;
 						break;
@@ -45,7 +44,7 @@ namespace NHibernate.Test.GenericTest.EnumGeneric
 
 				if (index == -1) Assert.Fail("Property NullableValue not found.");
 
-				persister.PropertyTypes[index].Should().Be.AssignableTo<PersistentEnumType>();
+				Assert.That(persister.PropertyTypes[index], Is.AssignableTo<PersistentEnumType>());
 			}
 		}
 

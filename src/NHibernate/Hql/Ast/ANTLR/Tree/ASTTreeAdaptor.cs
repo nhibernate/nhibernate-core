@@ -36,68 +36,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return new CommonToken(fromToken);
 		}
 
-		public override object GetParent(object t)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public override void SetParent(object t, object parent)
-		{
-			((ITree)t).Parent = (ITree)parent;
-		}
-
-		public override int GetChildIndex(object t)
-		{
-			return ((ITree)t).ChildIndex;
-		}
-
-		public override void SetChildIndex(object t, int index)
-		{
-			((ITree)t).ChildIndex = index;
-		}
-
-		public override int GetNodeType(object t)
-		{
-			return ((ITree) t).Type;
-		}
-
-		public override void ReplaceChildren(object parent, int startChildIndex, int stopChildIndex, object t)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public override void SetTokenBoundaries(object t, IToken startToken, IToken stopToken)
-		{
-			if (t != null)
-			{
-				int tokenIndex = 0;
-				int num2 = 0;
-				if (startToken != null)
-				{
-					tokenIndex = startToken.TokenIndex;
-				}
-				if (stopToken != null)
-				{
-					num2 = stopToken.TokenIndex;
-				}
-				((ITree)t).TokenStartIndex = tokenIndex;
-				((ITree)t).TokenStopIndex = num2;
-			}
-		}
-
 		public override object ErrorNode(ITokenStream input, IToken start, IToken stop, RecognitionException e)
 		{
 			return new ASTErrorNode(input, start, stop, e);
-		}
-
-		public override int GetTokenStartIndex(object t)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public override int GetTokenStopIndex(object t)
-		{
-			throw new System.NotImplementedException();
 		}
 	}
 }

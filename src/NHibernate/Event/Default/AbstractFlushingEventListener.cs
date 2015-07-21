@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 using NHibernate.Action;
@@ -80,7 +81,7 @@ namespace NHibernate.Event.Default
 					.Append(" removals to ").Append(persistenceContext.CollectionEntries.Count).Append(" collections");
 
 				log.Debug(sb.ToString());
-				new Printer(session.Factory).ToString(persistenceContext.EntitiesByKey.Values.GetEnumerator(), session.EntityMode);
+				new Printer(session.Factory).ToString(persistenceContext.EntitiesByKey.Values.ToArray().GetEnumerator(), session.EntityMode);
 			}
 		}
 
@@ -224,6 +225,7 @@ namespace NHibernate.Event.Default
 		/// <item> <description>Deletes, in the order they were performed</description> </item>
 		/// </list>
 		/// </summary>
+		/// <param name="session">The session being flushed</param>
 		protected virtual void PerformExecutions(IEventSource session)
 		{
 			if (log.IsDebugEnabled)
@@ -234,6 +236,11 @@ namespace NHibernate.Event.Default
 			try
 			{
 				session.ConnectionManager.FlushBeginning();
+				// IMPL NOTE : here we alter the flushing flag of the persistence context to allow
+				//		during-flush callbacks more leniency in regards to initializing proxies and
+				//		lazy collections during their processing.
+				// For more information, see HHH-2763 / NH-1882
+				session.PersistenceContext.Flushing = true;
 				// we need to lock the collection caches before
 				// executing entity inserts/updates in order to
 				// account for bidi associations
@@ -250,6 +257,7 @@ namespace NHibernate.Event.Default
 			}
 			finally
 			{
+				session.PersistenceContext.Flushing = false;
 				session.ConnectionManager.FlushEnding();
 			}
 		}

@@ -5,12 +5,12 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using NHibernate.Cfg;
 using NHibernate.Cfg.Loquacious;
+using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Linq
 {
@@ -31,7 +31,7 @@ namespace NHibernate.Test.Linq
 		public MyLinqToHqlGeneratorsRegistry():base()
 		{
 			RegisterGenerator(ReflectionHelper.GetMethodDefinition(() => MyLinqExtensions.IsLike(null, null)),
-			                  new IsLikeGenerator());
+							  new IsLikeGenerator());
 		}
 	}
 
@@ -46,7 +46,7 @@ namespace NHibernate.Test.Linq
 			ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
 			return treeBuilder.Like(visitor.Visit(arguments[0]).AsExpression(),
-			                        visitor.Visit(arguments[1]).AsExpression());
+									visitor.Visit(arguments[1]).AsExpression());
 		}
 	}
 
@@ -61,8 +61,8 @@ namespace NHibernate.Test.Linq
 		public void CanUseMyCustomExtension()
 		{
 			var contacts = (from c in db.Customers where c.ContactName.IsLike("%Thomas%") select c).ToList();
-			contacts.Count.Should().Be.GreaterThan(0);
-			contacts.Select(customer => customer.ContactName).All(c => c.Satisfy(customer => customer.Contains("Thomas")));
+			Assert.That(contacts.Count, Is.GreaterThan(0));
+			Assert.That(contacts.All(c => c.ContactName.Contains("Thomas")), Is.True);
 		}
 	}
 }

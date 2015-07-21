@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.DomainModel
 {
@@ -11,7 +9,7 @@ namespace NHibernate.DomainModel
 	public class Holder : INamed
 	{
 		private string _id;
-		private IList _ones;
+		private IList<One> _ones;
 		private Foo[] _fooArray;
 		private ISet<Foo> _foos; // <set> mapping
 		private string _name;
@@ -32,7 +30,7 @@ namespace NHibernate.DomainModel
 			set { _id = value; }
 		}
 
-		public IList Ones
+		public IList<One> Ones
 		{
 			get { return _ones; }
 			set { _ones = value; }

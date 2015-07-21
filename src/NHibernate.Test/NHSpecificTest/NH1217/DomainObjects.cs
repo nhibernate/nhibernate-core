@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1217
 {
@@ -110,7 +109,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1217
 		{
 			get
 			{
-				if (_fromEdges == null) _fromEdges = new HashedSet<IEdge>();
+				if (_fromEdges == null) _fromEdges = new HashSet<IEdge>();
 				return _fromEdges;
 			}
 			set { _fromEdges = value; }
@@ -121,7 +120,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1217
 		{
 			get
 			{
-				if (_toEdges == null) _toEdges = new HashedSet<IEdge>();
+				if (_toEdges == null) _toEdges = new HashSet<IEdge>();
 				return _toEdges;
 			}
 			set { _toEdges = value; }

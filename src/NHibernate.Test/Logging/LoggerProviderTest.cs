@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Logging
 {
@@ -8,14 +7,14 @@ namespace NHibernate.Test.Logging
 		[Test]
 		public void LoggerProviderCanCreateLoggers()
 		{
-			LoggerProvider.LoggerFor("pizza").Should().Not.Be.Null();
-			LoggerProvider.LoggerFor(typeof (LoggerProviderTest)).Should().Not.Be.Null();
+			Assert.That(LoggerProvider.LoggerFor("pizza"), Is.Not.Null);
+			Assert.That(LoggerProvider.LoggerFor(typeof (LoggerProviderTest)), Is.Not.Null);
 		}
 
 		[Test]
 		public void WhenNotConfiguredAndLog4NetExistsThenUseLog4NetFactory()
 		{
-			LoggerProvider.LoggerFor("pizza").Should().Be.InstanceOf<Log4NetLogger>();
+			Assert.That(LoggerProvider.LoggerFor("pizza"), Is.InstanceOf<Log4NetLogger>());
 		}
 	}
 }

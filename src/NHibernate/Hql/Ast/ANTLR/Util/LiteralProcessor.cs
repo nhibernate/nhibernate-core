@@ -162,28 +162,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 
 		private static string DetermineDecimalRepresentation(string text, int type)
 		{
-			string literalValue = text;
-			if (type == HqlSqlWalker.NUM_FLOAT)
-			{
-				if (literalValue.EndsWith("f") || literalValue.EndsWith("F"))
-				{
-					literalValue = literalValue.Substring(0, literalValue.Length - 1);
-				}
-			}
-			else if (type == HqlSqlWalker.NUM_DOUBLE)
-			{
-				if (literalValue.EndsWith("d") || literalValue.EndsWith("D"))
-				{
-					literalValue = literalValue.Substring(0, literalValue.Length - 1);
-				}
-			}
-            else if (type == HqlSqlWalker.NUM_DECIMAL)
-            {
-                if (literalValue.EndsWith("m") || literalValue.EndsWith("M"))
-                {
-                    literalValue = literalValue.Substring(0, literalValue.Length - 1);
-                }
-            }
+			var literalValue = GetLiteralValue(text, type);
 
 			Decimal number;
 			try
@@ -198,11 +177,38 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			return _formatters[DECIMAL_LITERAL_FORMAT].Format(number);
 		}
 
-		private string DetermineIntegerRepresentation(string text, int type)
+		private static string GetLiteralValue(string text, int type)
+		{
+			string literalValue = text;
+			if (type == HqlSqlWalker.NUM_FLOAT)
+			{
+				if (literalValue.EndsWith("f", StringComparison.OrdinalIgnoreCase))
+				{
+					return literalValue.Substring(0, literalValue.Length - 1);
+				}
+			}
+			else if (type == HqlSqlWalker.NUM_DOUBLE)
+			{
+				if (literalValue.EndsWith("d", StringComparison.OrdinalIgnoreCase))
+				{
+					return literalValue.Substring(0, literalValue.Length - 1);
+				}
+			}
+			else if (type == HqlSqlWalker.NUM_DECIMAL)
+			{
+				if (literalValue.EndsWith("m", StringComparison.OrdinalIgnoreCase))
+				{
+					return literalValue.Substring(0, literalValue.Length - 1);
+				}
+			}
+			return literalValue;
+		}
+
+		private static string DetermineIntegerRepresentation(string text, int type)
 		{
 			// prevent the fisrt-exception as possible
 			var literalValue = text;
-			bool hasLongSpec = literalValue.EndsWith("l") || literalValue.EndsWith("L");
+			bool hasLongSpec = literalValue.EndsWith("l", StringComparison.OrdinalIgnoreCase);
 			if (hasLongSpec)
 			{
 				literalValue = literalValue.Substring(0, literalValue.Length - 1);
@@ -218,12 +224,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 					catch (FormatException)
 					{
 						log.Info("could not format incoming text [" + text
-						         + "] as a NUM_INT; assuming numeric overflow and attempting as NUM_LONG");
+								 + "] as a NUM_INT; assuming numeric overflow and attempting as NUM_LONG");
 					}
 					catch (OverflowException)
 					{
 						log.Info("could not format incoming text [" + text
-						         + "] as a NUM_INT; assuming numeric overflow and attempting as NUM_LONG");
+								 + "] as a NUM_INT; assuming numeric overflow and attempting as NUM_LONG");
 					}
 				}
 
@@ -252,7 +258,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			}
 		}
 
-		private void SetSQLValue(DotNode node, string text, string value)
+		private static void SetSQLValue(DotNode node, string text, string value)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -301,10 +307,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			{
 				node.Type = HqlSqlWalker.NUM_DOUBLE;
 			}
-            else if (value is decimal)
-            {
-                node.Type = HqlSqlWalker.NUM_DECIMAL;
-            }
+			else if (value is decimal)
+			{
+				node.Type = HqlSqlWalker.NUM_DECIMAL;
+			}
 			else if (value is float)
 			{
 				node.Type = HqlSqlWalker.NUM_FLOAT;

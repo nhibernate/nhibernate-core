@@ -19,7 +19,7 @@ namespace NHibernate.Hql.Ast.ANTLR
         /// </summary>
         public HqlToken(ICharStream input, int type, int channel, int start, int stop) : base(input, type, channel, start, stop)
         {
-           charPositionInLine = input.CharPositionInLine - (stop - start + 1);
+           CharPositionInLine = input.CharPositionInLine - (stop - start + 1);
         }
 
         /// <summary>
@@ -47,18 +47,18 @@ namespace NHibernate.Hql.Ast.ANTLR
         /// <summary>
         /// Gets or Sets the type of the token, remembering the previous type on Sets.
         /// </summary>
-        public override int Type
-        {
-            get
-            {
-                return base.Type;
-            }
-            set
-            {
-                _previousTokenType = Type;
-                base.Type = value;
-            }
-        }
+        //public override int Type
+        //{
+        //    get
+        //    {
+        //        return base.Type;
+        //    }
+        //    set
+        //    {
+        //        _previousTokenType = Type;
+        //        base.Type = value;
+        //    }
+        //}
 
         /// <summary>
         /// Returns the previous token type.

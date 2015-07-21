@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Iesi.Collections.Generic;
 using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
@@ -37,7 +36,7 @@ namespace NHibernate.SqlCommand
 		}
 
 		public override void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType,
-		                             SqlString on)
+									 SqlString on)
 		{
 			//arbitrary on clause ignored!!
 			AddJoin(tableName, alias, fkColumns, pkColumns, joinType);
@@ -70,7 +69,7 @@ namespace NHibernate.SqlCommand
 			{
 				char character = buf[i];
 				bool isInsertPoint = Operators.Contains(character) ||
-				                     (character == ' ' && buf.Length > i + 3 && "is ".Equals(buf.ToString(i + 1, 3)));
+									 (character == ' ' && buf.Length > i + 3 && "is ".Equals(buf.ToString(i + 1, 3)));
 				if (isInsertPoint)
 				{
 					buf.Insert(i, "(+)");

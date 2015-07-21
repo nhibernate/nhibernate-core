@@ -48,13 +48,8 @@ namespace NHibernate.Dialect.Function
 				return new SqlString(last);
 			}
 			object secondLast = args[lastIndex - 1];
-			SqlStringBuilder nvl = new SqlStringBuilder(5)
-				.Add("nvl(")
-				.AddObject(secondLast)
-				.Add(", ")
-				.AddObject(last)
-				.Add(")");
-			args[lastIndex - 1] = nvl.ToSqlString();
+			SqlString nvl = new SqlString("nvl(", secondLast, ", ", last, ")");
+			args[lastIndex - 1] = nvl;
 			return Render(args, factory);
 		}
 

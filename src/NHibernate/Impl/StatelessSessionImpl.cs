@@ -108,36 +108,6 @@ namespace NHibernate.Impl
 			Dispose(true);
 		}
 
-		public override void List(string query, QueryParameters queryParameters, IList results)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				CheckAndUpdateSessionStatus();
-				queryParameters.ValidateParameters();
-				var plan = GetHQLQueryPlan(query, false);
-				bool success = false;
-				try
-				{
-					plan.PerformList(queryParameters, this, results);
-					success = true;
-				}
-				catch (HibernateException)
-				{
-					// Do not call Convert on HibernateExceptions
-					throw;
-				}
-				catch (Exception e)
-				{
-					throw Convert(e, "Could not execute query");
-				}
-				finally
-				{
-					AfterOperation(success);
-				}
-				temporaryPersistenceContext.Clear();
-			}
-		}
-
 		public override void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -209,15 +179,15 @@ namespace NHibernate.Impl
 				temporaryPersistenceContext.Clear();
 			}
 		}
-
-		public override IEnumerable Enumerable(string query, QueryParameters parameters)
+		
+		public override IEnumerable Enumerable(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
-			throw new NotSupportedException();
+			throw new NotImplementedException();
 		}
 
-		public override IEnumerable<T> Enumerable<T>(string query, QueryParameters queryParameters)
+		public override IEnumerable<T> Enumerable<T>(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
-			throw new NotSupportedException();
+			throw new NotImplementedException();
 		}
 
 		public override IList ListFilter(object collection, string filter, QueryParameters parameters)
@@ -308,16 +278,6 @@ namespace NHibernate.Impl
 			get { return new CollectionHelper.EmptyMapClass<string, IFilter>(); }
 		}
 
-		public override IQueryTranslator[] GetQueries(string query, bool scalar)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				// take the union of the query spaces (ie the queried tables)
-				var plan = Factory.QueryPlanCache.GetHQLQueryPlan(query, scalar, EnabledFilters);
-				return plan.Translators;
-			}
-		}
-
 		public override IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -356,6 +316,12 @@ namespace NHibernate.Impl
 		public override object GetEntityUsingInterceptor(EntityKey key)
 		{
 			CheckAndUpdateSessionStatus();
+			// while a pending Query we should use existing temporary entities so a join fetch does not create multiple instances
+			// of the same parent item (NH-3015, NH-3705).
+			object obj;
+			if (temporaryPersistenceContext.EntitiesByKey.TryGetValue(key, out obj))
+				return obj;
+
 			return null;
 		}
 
@@ -956,13 +922,13 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override int ExecuteUpdate(string query, QueryParameters queryParameters)
+		public override int ExecuteUpdate(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
-				var plan = GetHQLQueryPlan(query, false);
+				var plan = GetHQLQueryPlan(queryExpression, false);
 				bool success = false;
 				int result;
 				try
@@ -982,13 +948,13 @@ namespace NHibernate.Impl
 		public override FutureCriteriaBatch FutureCriteriaBatch
 		{
 			get { throw new System.NotSupportedException("future queries are not supported for stateless session"); }
-			internal set { throw new System.NotSupportedException("future queries are not supported for stateless session"); }
+			protected internal set { throw new System.NotSupportedException("future queries are not supported for stateless session"); }
 		}
 
 		public override FutureQueryBatch FutureQueryBatch
 		{
 			get { throw new System.NotSupportedException("future queries are not supported for stateless session"); }
-			internal set { throw new System.NotSupportedException("future queries are not supported for stateless session"); }
+			protected internal set { throw new System.NotSupportedException("future queries are not supported for stateless session"); }
 		}
 
 		public override IEntityPersister GetEntityPersister(string entityName, object obj)

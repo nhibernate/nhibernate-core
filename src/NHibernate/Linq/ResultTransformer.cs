@@ -9,10 +9,10 @@ namespace NHibernate.Linq
 	[Serializable]
 	public class ResultTransformer : IResultTransformer, IEquatable<ResultTransformer>
 	{
-		private readonly Delegate _itemTransformation;
-		private readonly Delegate _listTransformation;
+		private readonly Func<object[], object> _itemTransformation;
+		private readonly Func<IEnumerable<object>, object> _listTransformation;
 
-		public ResultTransformer(Delegate itemTransformation, Delegate listTransformation)
+		public ResultTransformer(Func<object[], object> itemTransformation, Func<IEnumerable<object>, object> listTransformation)
 		{
 			_itemTransformation = itemTransformation;
 			_listTransformation = listTransformation;
@@ -22,7 +22,7 @@ namespace NHibernate.Linq
 
 		public object TransformTuple(object[] tuple, string[] aliases)
 		{
-			return _itemTransformation == null ? tuple : _itemTransformation.DynamicInvoke(new object[] {tuple});
+			return _itemTransformation == null ? tuple : _itemTransformation(tuple);
 		}
 
 		public IList TransformList(IList collection)
@@ -33,7 +33,7 @@ namespace NHibernate.Linq
 			}
 
 			var toTransform = GetToTransform(collection);
-			var transformResult = _listTransformation.DynamicInvoke(toTransform);
+			var transformResult = _listTransformation(toTransform);
 
 			var resultList = transformResult as IList;
 			return resultList ?? new List<object> { transformResult };

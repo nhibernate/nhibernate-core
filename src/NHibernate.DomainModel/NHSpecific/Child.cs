@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.DomainModel.NHSpecific
 {
@@ -10,10 +11,10 @@ namespace NHibernate.DomainModel.NHSpecific
 	{
 		private int _id;
 		private string _fullName;
-		private IDictionary _parents;
+		private IDictionary<string, Parent> _parents;
 		private SexType _sex;
 
-		private IList _siblings;
+		private IList<Child> _siblings;
 
 		private Child[] _friends;
 
@@ -37,11 +38,11 @@ namespace NHibernate.DomainModel.NHSpecific
 			set { _fullName = value; }
 		}
 
-		public IList Siblings
+		public IList<Child> Siblings
 		{
 			get
 			{
-				if (_siblings == null) _siblings = new ArrayList();
+				if (_siblings == null) _siblings = new List<Child>();
 				return _siblings;
 			}
 			set { _siblings = value; }
@@ -60,11 +61,11 @@ namespace NHibernate.DomainModel.NHSpecific
 			set { Siblings.Insert(1, value); }
 		}
 
-		public IDictionary Parents
+		public IDictionary<string, Parent> Parents
 		{
 			get
 			{
-				if (_parents == null) _parents = new Hashtable();
+				if (_parents == null) _parents = new Dictionary<string, Parent>();
 				return _parents;
 			}
 			set { _parents = value; }
@@ -75,7 +76,7 @@ namespace NHibernate.DomainModel.NHSpecific
 			get { return (Parent) Parents["mom"]; }
 			set
 			{
-				if (Parents.Contains("mom") == false)
+				if (Parents.ContainsKey("mom") == false)
 				{
 					Parents.Add("mom", value);
 				}
@@ -91,7 +92,7 @@ namespace NHibernate.DomainModel.NHSpecific
 			get { return (Parent) Parents["dad"]; }
 			set
 			{
-				if (Parents.Contains("dad") == false)
+				if (Parents.ContainsKey("dad") == false)
 				{
 					Parents.Add("dad", value);
 				}

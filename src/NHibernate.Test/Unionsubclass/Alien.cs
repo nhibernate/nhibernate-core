@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.Unionsubclass
 {
@@ -6,7 +6,7 @@ namespace NHibernate.Test.Unionsubclass
 	{
 		private string species;
 		private Hive hive;
-		private IList hivemates = new ArrayList();
+		private IList<Alien> hivemates = new List<Alien>();
 
 		public override string Species
 		{
@@ -20,7 +20,7 @@ namespace NHibernate.Test.Unionsubclass
 			set { hive = value; }
 		}
 
-		public virtual IList Hivemates
+		public virtual IList<Alien> Hivemates
 		{
 			get { return hivemates; }
 			set { hivemates = value; }

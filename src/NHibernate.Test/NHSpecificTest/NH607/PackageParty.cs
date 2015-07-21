@@ -1,18 +1,18 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH607
 {
 	public class PackageParty : PersistentObject
 	{
-		private IList ppps;
+		private IList<PPP> ppps;
 
 		public PackageParty()
 		{
-			ppps = new ArrayList();
+			ppps = new List<PPP>();
 		}
 
-		public virtual IList ParticipatingPackages
+		public virtual IList<PPP> ParticipatingPackages
 		{
 			get { return ppps; }
 			set { ppps = value; }

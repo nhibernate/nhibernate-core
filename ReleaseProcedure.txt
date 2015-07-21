@@ -15,16 +15,25 @@ These are the tasks typically needed to create an official NHibernate release.
   * Perform the release build including running all tests (GaRelease.bat or
     ShowBuildMenu.bat).
 	
-  * If no error or other issue requiring further changes occured, tag the
+	NOTE: If you prefer to keep your source code in a path like e.g.:
+	  C:\Users\Something\Long\Projects\nhibernate-core
+	you may want to issue a command like:
+	  subst P: C:\Users\Something\Long\Projects
+	And then change to P:\nhibernate-core before building. This will avoid
+	displaying a long user-specific path in public symbol files.
+	
+  * If no error or other issue requiring further changes occurred, tag the
     current git HEAD with a tag according to version number. Don't forget to
 	push the tag to github.
 	
   * Upload binary and source zip files to SourceForge. Update the "latest
     release".
 
-  * Update download link on NHForge.
+  * Update download link on nhibernate.info.
   
-  * Push nuget packages including the symbol packages.
+  * Push nuget packages including the symbol packages. The nuget packages
+    should already be available in the build directory, together with a batch
+    file to push them.
   
   * In Jira, mark the version as released.
   

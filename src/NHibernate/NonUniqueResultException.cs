@@ -20,7 +20,7 @@ namespace NHibernate
 			: base("query did not return a unique result: " + resultCount.ToString())
 		{
 			LoggerProvider.LoggerFor(typeof(NonUniqueResultException)).Error("query did not return a unique result: " +
-			                                                             resultCount.ToString());
+																		 resultCount.ToString());
 		}
 
 		/// <summary>

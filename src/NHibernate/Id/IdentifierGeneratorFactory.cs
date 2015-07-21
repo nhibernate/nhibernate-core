@@ -82,7 +82,7 @@ namespace NHibernate.Id
 	///		</item>
 	/// </list>
 	/// </remarks>
-	public sealed class IdentifierGeneratorFactory
+	public static class IdentifierGeneratorFactory
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (IdentifierGeneratorFactory));
 
@@ -180,11 +180,6 @@ namespace NHibernate.Id
 			idgenerators.Add("enhanced-table", typeof(Enhanced.TableGenerator));
 		}
 
-		private IdentifierGeneratorFactory()
-		{
-			//cannot be instantiated
-		}
-
 		/// <summary>
 		/// Creates an <see cref="IIdentifierGenerator"/> from the named strategy.
 		/// </summary>
@@ -203,7 +198,7 @@ namespace NHibernate.Id
 		/// Thrown if there are any exceptions while creating the <see cref="IIdentifierGenerator"/>.
 		/// </exception>
 		public static IIdentifierGenerator Create(string strategy, IType type, IDictionary<string, string> parms,
-		                                          Dialect.Dialect dialect)
+												  Dialect.Dialect dialect)
 		{
 			try
 			{

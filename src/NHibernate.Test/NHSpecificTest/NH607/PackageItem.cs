@@ -1,16 +1,16 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH607
 {
 	public class PackageItem : PersistentObject
 	{
-		private IList ppps;
+		private IList<PPP> ppps;
 		private Package package;
 
 		public PackageItem()
 		{
-			this.ppps = new ArrayList();
+			this.ppps = new List<PPP>();
 		}
 
 		public virtual Package Package
@@ -19,7 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.NH607
 			set { package = value; }
 		}
 
-		public virtual IList PackagePartyParticipants
+		public virtual IList<PPP> PackagePartyParticipants
 		{
 			get { return ppps; }
 			set { ppps = value; }

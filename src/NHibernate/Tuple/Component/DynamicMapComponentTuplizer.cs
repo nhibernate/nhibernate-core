@@ -9,7 +9,12 @@ namespace NHibernate.Tuple.Component
 	[Serializable]
 	public class DynamicMapComponentTuplizer : AbstractComponentTuplizer
 	{
-		public DynamicMapComponentTuplizer(Mapping.Component component) : base(component) { }
+		public DynamicMapComponentTuplizer(Mapping.Component component)
+			: base(component)
+		{
+			// Fix for NH-3119
+			instantiator = BuildInstantiator(component);
+		}
 
 		public override System.Type MappedClass
 		{

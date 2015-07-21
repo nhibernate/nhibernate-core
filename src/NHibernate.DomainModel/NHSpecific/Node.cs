@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.DomainModel.NHSpecific
 {
@@ -20,8 +19,8 @@ namespace NHibernate.DomainModel.NHSpecific
 
 		public Node(string id)
 		{
-			_destinationNodes = new HashedSet<Node>();
-			_previousNodes = new HashedSet<Node>();
+			_destinationNodes = new HashSet<Node>();
+			_previousNodes = new HashSet<Node>();
 			_id = id;
 		}
 

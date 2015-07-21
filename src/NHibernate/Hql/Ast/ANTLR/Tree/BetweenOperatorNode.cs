@@ -5,7 +5,7 @@ using NHibernate.Type;
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	/// <summary>
-	/// Contract for nodes representing logcial BETWEEN (ternary) operators.
+	/// Contract for nodes representing logical BETWEEN (ternary) operators.
 	/// </summary>
 	[CLSCompliant(false)]
 	public class BetweenOperatorNode : SqlNode, IOperatorNode
@@ -63,18 +63,24 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		private static void Check(IASTNode check, IASTNode first, IASTNode second)
 		{
-			if (typeof(IExpectedTypeAwareNode).IsAssignableFrom(check.GetType()))
+			var expectedTypeAwareNode = check as IExpectedTypeAwareNode;
+			if (expectedTypeAwareNode != null)
 			{
 				IType expectedType = null;
-				if (typeof(SqlNode).IsAssignableFrom(first.GetType()))
+				var firstNode = first as SqlNode;
+				if (firstNode != null)
 				{
-					expectedType = ((SqlNode)first).DataType;
+					expectedType = firstNode.DataType;
 				}
-				if (expectedType == null && typeof(SqlNode).IsAssignableFrom(second.GetType()))
+				if (expectedType == null)
 				{
-					expectedType = ((SqlNode)second).DataType;
+					var secondNode = second as SqlNode;
+					if (secondNode != null)
+					{
+						expectedType = secondNode.DataType;
+					}
 				}
-				((IExpectedTypeAwareNode)check).ExpectedType = expectedType;
+				expectedTypeAwareNode.ExpectedType = expectedType;
 			}
 		}
 	}

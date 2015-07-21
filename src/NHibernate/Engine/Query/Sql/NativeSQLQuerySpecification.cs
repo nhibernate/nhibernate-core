@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 using NHibernate.Util;
 
 namespace NHibernate.Engine.Query.Sql
@@ -19,17 +18,9 @@ namespace NHibernate.Engine.Query.Sql
 			this.queryString = queryString;
 			this.sqlQueryReturns = sqlQueryReturns;
 
-			if (querySpaces == null)
-			{
-				this.querySpaces = new HashedSet<string>();
-			}
-			else
-			{
-				ISet<string> tmp = new HashedSet<string>();
-				tmp.AddAll(querySpaces);
-				// Can't use ImmutableSet here because it doesn't implement GetHashCode properly.
-				this.querySpaces = tmp;
-			}
+			this.querySpaces = new HashSet<string>();
+			if (querySpaces != null)
+				this.querySpaces.UnionWith(querySpaces);
 
 			// pre-determine and cache the hashcode
 			int hCode = queryString.GetHashCode();

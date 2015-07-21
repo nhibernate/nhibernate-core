@@ -14,6 +14,7 @@ namespace NHibernate.Type
 	public class ManyToOneType : EntityType
 	{
 		private readonly bool ignoreNotFound;
+		private readonly bool isLogicalOneToOne;
 
 		public ManyToOneType(string className)
 			: this(className, false)
@@ -24,12 +25,14 @@ namespace NHibernate.Type
 			: base(className, null, !lazy, true, false)
 		{
 			ignoreNotFound = false;
+			isLogicalOneToOne = false;
 		}
 
-		public ManyToOneType(string entityName, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool isEmbeddedInXML, bool ignoreNotFound)
+		public ManyToOneType(string entityName, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool isEmbeddedInXML, bool ignoreNotFound, bool isLogicalOneToOne)
 			: base(entityName, uniqueKeyPropertyName, !lazy, isEmbeddedInXML, unwrapProxy)
 		{
 			this.ignoreNotFound = ignoreNotFound;
+			this.isLogicalOneToOne = isLogicalOneToOne;
 		}
 
 		public override int GetColumnSpan(IMapping mapping)
@@ -46,18 +49,23 @@ namespace NHibernate.Type
 		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			GetIdentifierOrUniqueKeyType(session.Factory)
-				.NullSafeSet(st, GetIdentifier(value, session), index, settable, session);
+				.NullSafeSet(st, GetReferenceValue(value, session), index, settable, session);
 		}
 
 		public override void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			GetIdentifierOrUniqueKeyType(session.Factory)
-				.NullSafeSet(cmd, GetIdentifier(value, session), index, session);
+				.NullSafeSet(cmd, GetReferenceValue(value, session), index, session);
 		}
 
 		public override bool IsOneToOne
 		{
 			get { return false; }
+		}
+
+		public override bool IsLogicalOneToOne()
+		{
+			return isLogicalOneToOne;
 		}
 
 		public override ForeignKeyDirection ForeignKeyDirection

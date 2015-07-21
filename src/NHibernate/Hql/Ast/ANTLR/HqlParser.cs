@@ -7,7 +7,6 @@ using RecognitionException = Antlr.Runtime.RecognitionException;
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
-	[CLSCompliant(false)]
 	public partial class HqlParser
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(HqlParser));
@@ -86,6 +85,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		/** True if this is a filter query (allow no FROM clause). **/
 		private bool filter;
+		// Depth of curreny query (root query has depth = 1)
+		private int queryDepth = 0;
 		private IParseErrorHandler _parseErrorHandler = new ErrorCounter();
 
 		public IParseErrorHandler ParseErrorHandler

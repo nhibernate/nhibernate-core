@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Metadata;
 using NHibernate.Persister.Entity;
@@ -14,8 +13,8 @@ namespace NHibernate.Action
 	public class BulkOperationCleanupAction: IExecutable
 	{
 		private readonly ISessionImplementor session;
-		private readonly HashedSet<string> affectedEntityNames= new HashedSet<string>();
-		private readonly HashedSet<string> affectedCollectionRoles = new HashedSet<string>();
+		private readonly HashSet<string> affectedEntityNames = new HashSet<string>();
+		private readonly HashSet<string> affectedCollectionRoles = new HashSet<string>();
 		private readonly List<string> spaces;
 
 		public BulkOperationCleanupAction(ISessionImplementor session, IQueryable[] affectedQueryables)
@@ -31,7 +30,7 @@ namespace NHibernate.Action
 				ISet<string> roles = session.Factory.GetCollectionRolesByEntityParticipant(affectedQueryables[i].EntityName);
 				if (roles != null)
 				{
-					affectedCollectionRoles.AddAll(roles);
+					affectedCollectionRoles.UnionWith(roles);
 				}
 				for (int y = 0; y < affectedQueryables[i].QuerySpaces.Length; y++)
 				{
@@ -49,7 +48,7 @@ namespace NHibernate.Action
 			//from H3.2 TODO: cache the autodetected information and pass it in instead.
 			this.session = session;
 
-			ISet<string> tmpSpaces = new HashedSet<string>(querySpaces);
+			ISet<string> tmpSpaces = new HashSet<string>(querySpaces);
 			ISessionFactoryImplementor factory = session.Factory;
 			IDictionary<string, IClassMetadata> acmd = factory.GetAllClassMetadata();
 			foreach (KeyValuePair<string, IClassMetadata> entry in acmd)
@@ -67,7 +66,7 @@ namespace NHibernate.Action
 					ISet<string> roles = session.Factory.GetCollectionRolesByEntityParticipant(persister.EntityName);
 					if (roles != null)
 					{
-						affectedCollectionRoles.AddAll(roles);
+						affectedCollectionRoles.UnionWith(roles);
 					}
 					for (int y = 0; y < entitySpaces.Length; y++)
 					{

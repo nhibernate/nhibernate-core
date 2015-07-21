@@ -109,7 +109,7 @@ namespace NHibernate.Proxy
 		{
 			ConstructorInfo constructor =
 				type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null,
-				                    System.Type.EmptyTypes, null);
+									System.Type.EmptyTypes, null);
 
 			return constructor != null && !constructor.IsPrivate;
 		}

@@ -7,11 +7,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3138
 	[TestFixture]
 	public class FixtureByCode : TestCaseMappingByCode
 	{
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			return dialect is Dialect.MsSql2005Dialect;
-		}
-
 		protected override Cfg.MappingSchema.HbmMapping GetMappings()
 		{
 			var mapper = new ModelMapper();

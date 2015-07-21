@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH534
 {
@@ -36,7 +35,7 @@ namespace NHibernate.Test.NHSpecificTest.NH534
 		{
 			if (children == null)
 			{
-				children = new HashedSet<Child>();
+				children = new HashSet<Child>();
 			}
 			children.Add(child);
 		}

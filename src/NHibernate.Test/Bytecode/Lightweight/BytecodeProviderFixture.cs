@@ -2,7 +2,6 @@ using System;
 using NHibernate.Bytecode;
 using NHibernate.Bytecode.Lightweight;
 using NUnit.Framework;
-using SharpTestsEx;
 using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.Bytecode.Lightweight
@@ -15,7 +14,7 @@ namespace NHibernate.Test.Bytecode.Lightweight
 		{
 			var bcp = new BytecodeProviderImpl();
 			IProxyFactoryFactory p = bcp.ProxyFactoryFactory;
-			p.Should().Be.InstanceOf<DefaultProxyFactoryFactory>();
+			Assert.That(p, Is.InstanceOf<DefaultProxyFactoryFactory>());
 		}
 
 		[Test]

@@ -109,7 +109,7 @@ namespace NHibernate.Type
 
 		public override bool[] ToColumnNullness(object value, IMapping mapping)
 		{
-			throw new NotSupportedException();
+			return baseType.ToColumnNullness(value, mapping);
 		}
 
 		public string ToXMLString(object value, ISessionFactoryImplementor factory)
@@ -117,9 +117,9 @@ namespace NHibernate.Type
 			return (string)value; //value is the entity name
 		}
 
-	    internal object GetMetaValue(string className)
-	    {
-	        return keys[className];
-	    }
+		internal object GetMetaValue(string className)
+		{
+			return keys[className];
+		}
 	}
 }

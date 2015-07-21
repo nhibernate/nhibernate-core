@@ -2,7 +2,6 @@ using System;
 using System.Reflection;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.MixAutomapping
 {
@@ -49,7 +48,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 				{
 					map.Id(x => x.Id, idmap => { });
 				});
-			inspector.IsPersistentId(typeof(Product).GetProperty("Id", RootClassPropertiesBindingFlags)).Should().Be.True();
+			Assert.That(inspector.IsPersistentId(typeof(Product).GetProperty("Id", RootClassPropertiesBindingFlags)), Is.True);
 		}
 
 		[Test]
@@ -60,7 +59,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 
 			mapper.Class<BaseEntity>(map => map.Property(x => x.LastChange));
 
-			inspector.IsPersistentProperty(typeof(Product).GetProperty("LastChange", RootClassPropertiesBindingFlags)).Should().Be.True();
+			Assert.That(inspector.IsPersistentProperty(typeof(Product).GetProperty("LastChange", RootClassPropertiesBindingFlags)), Is.True);
 		}
 
 		[Test]
@@ -71,7 +70,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 
 			mapper.Class<IProduct>(map => map.Property(x => x.Description));
 
-			inspector.IsPersistentProperty(typeof(Product).GetProperty("Description", RootClassPropertiesBindingFlags)).Should().Be.True();
+			Assert.That(inspector.IsPersistentProperty(typeof(Product).GetProperty("Description", RootClassPropertiesBindingFlags)), Is.True);
 		}
 
 		[Test]
@@ -82,7 +81,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 
 			mapper.Class<BaseProduct>(map => map.Property(x => x.Description));
 
-			inspector.IsPersistentProperty(typeof(Product).GetProperty("Description", RootClassPropertiesBindingFlags)).Should().Be.True();
+			Assert.That(inspector.IsPersistentProperty(typeof(Product).GetProperty("Description", RootClassPropertiesBindingFlags)), Is.True);
 		}
 
 		[Test]
@@ -93,7 +92,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 
 			mapper.Class<Product>(map => map.Property(x => x.Description));
 
-			inspector.IsPersistentProperty(typeof(Product).GetProperty("Description", RootClassPropertiesBindingFlags)).Should().Be.True();
+			Assert.That(inspector.IsPersistentProperty(typeof(Product).GetProperty("Description", RootClassPropertiesBindingFlags)), Is.True);
 		}
 	}
 }

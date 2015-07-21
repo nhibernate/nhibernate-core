@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using Iesi.Collections.Generic;
+using System.Collections.Generic;
 using NHibernate.Dialect;
 using NHibernate.DomainModel;
 using NUnit.Framework;
@@ -68,15 +68,9 @@ namespace NHibernate.Test.Legacy
 			SubMulti sm = new SubMulti();
 			SubMulti sm1 = new SubMulti();
 			SubMulti sm2 = new SubMulti();
-			IList list = new ArrayList();
-			IList anotherList = new ArrayList();
-			sm.Children = list;
-			sm.MoreChildren = anotherList;
+			sm.Children = new List<SubMulti> {sm1, sm2};
+			sm.MoreChildren = new List<SubMulti> {sm1, sm2};
 			sm.ExtraProp = "foo";
-			list.Add(sm1);
-			list.Add(sm2);
-			anotherList.Add(sm1);
-			anotherList.Add(sm2);
 			sm1.Parent = sm;
 			sm2.Parent = sm;
 			object id = s.Save(sm);
@@ -91,14 +85,14 @@ namespace NHibernate.Test.Legacy
 			// TODO: I don't understand why h2.0.3/h2.1 issues a select statement here
 
 			Assert.AreEqual(2,
-			                s.CreateQuery(
-			                	"select s from SubMulti as sm join sm.Children as s where s.Amount>-1 and s.Name is null").List().
-			                	Count);
+							s.CreateQuery(
+								"select s from SubMulti as sm join sm.Children as s where s.Amount>-1 and s.Name is null").List().
+								Count);
 			Assert.AreEqual(2, s.CreateQuery("select elements(sm.Children) from SubMulti as sm").List().Count);
 			Assert.AreEqual(1,
-			                s.CreateQuery(
-			                	"select distinct sm from SubMulti as sm join sm.Children as s where s.Amount>-1 and s.Name is null")
-			                	.List().Count);
+							s.CreateQuery(
+								"select distinct sm from SubMulti as sm join sm.Children as s where s.Amount>-1 and s.Name is null")
+								.List().Count);
 			sm = (SubMulti) s.Load(typeof(SubMulti), id);
 			Assert.AreEqual(2, sm.Children.Count);
 
@@ -176,14 +170,7 @@ namespace NHibernate.Test.Legacy
 			s.CreateQuery("from s in class Lower where s.YetAnother.Name='name' and s.YetAnother.Foo is null").List();
 			s.CreateQuery("from s in class Top where s.Count=1").List();
 			s.CreateQuery("select s.Count from s in class Top, ls in class Lower where ls.Another=s").List();
-            if (IsClassicParser)
-            {
-                s.CreateQuery("select ls.Bag.elements, ls.Set.elements from ls in class Lower").List();
-            }
-            else
-            {
-                s.CreateQuery("select elements(ls.Bag), elements(ls.Set) from ls in class Lower").List();
-            }
+			s.CreateQuery("select elements(ls.Bag), elements(ls.Set) from ls in class Lower").List();
 			s.CreateQuery("from s in class Lower").Enumerable();
 			s.CreateQuery("from s in class Top").Enumerable();
 			s.Delete(tc);
@@ -326,26 +313,17 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(0, s.CreateQuery("from ls in class Lower").List().Count);
 			Assert.AreEqual(1, s.CreateQuery("from sm in class SubMulti").List().Count);
 
-            if (IsClassicParser)
-            {
-                s.CreateQuery("from ls in class Lower, s in ls.Bag.elements where s.id is not null").List();
-                s.CreateQuery("from ls in class Lower, s in ls.Set.elements where s.id is not null").List();
-                s.CreateQuery("from sm in class SubMulti where exists sm.Children.elements").List();
-            }
-            else
-            {
-                s.CreateQuery("from ls in class Lower, s in elements(ls.Bag) where s.id is not null").List();
-                s.CreateQuery("from ls in class Lower, s in elements(ls.Set) where s.id is not null").List();
-                s.CreateQuery("from sm in class SubMulti where exists elements(sm.Children)").List();
-            }
+			s.CreateQuery("from ls in class Lower, s in elements(ls.Bag) where s.id is not null").List();
+			s.CreateQuery("from ls in class Lower, s in elements(ls.Set) where s.id is not null").List();
+			s.CreateQuery("from sm in class SubMulti where exists elements(sm.Children)").List();
 
 			t.Commit();
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-            if (TestDialect.SupportsSelectForUpdateOnOuterJoin)
-                multi = (Multi)s.Load(typeof(Top), mid, LockMode.Upgrade);
+			if (TestDialect.SupportsSelectForUpdateOnOuterJoin)
+				multi = (Multi)s.Load(typeof(Top), mid, LockMode.Upgrade);
 			simp = (Top) s.Load(typeof(Top), sid);
 			s.Lock(simp, LockMode.UpgradeNoWait);
 			t.Commit();
@@ -444,24 +422,16 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(0, s.CreateQuery("from s in class Lower").List().Count);
 			Assert.AreEqual(1, s.CreateQuery("from sm in class SubMulti").List().Count);
 
-            if (IsClassicParser)
-            {
-                s.CreateQuery("from ls in class Lower, s in ls.Bag.elements where s.id is not null").List();
-                s.CreateQuery("from sm in class SubMulti where exists sm.Children.elements").List();
-            }
-            else
-            {
-                s.CreateQuery("from ls in class Lower, s in elements(ls.Bag) where s.id is not null").List();
-                s.CreateQuery("from sm in class SubMulti where exists elements(sm.Children)").List();
-            }
-
+			s.CreateQuery("from ls in class Lower, s in elements(ls.Bag) where s.id is not null").List();
+			s.CreateQuery("from sm in class SubMulti where exists elements(sm.Children)").List();
+			
 			t.Commit();
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-            if (TestDialect.SupportsSelectForUpdateOnOuterJoin)
-			    multi = (Multi) s.Load(typeof(Top), multiId, LockMode.Upgrade);
+			if (TestDialect.SupportsSelectForUpdateOnOuterJoin)
+				multi = (Multi) s.Load(typeof(Top), multiId, LockMode.Upgrade);
 			simp = (Top) s.Load(typeof(Top), simpId);
 			s.Lock(simp, LockMode.UpgradeNoWait);
 			t.Commit();
@@ -512,7 +482,7 @@ namespace NHibernate.Test.Legacy
 			ls.Another = ls;
 			ls.YetAnother = ls;
 			ls.Name = "Less Simple";
-			ls.Set = new HashedSet<Top> { multi, simp };
+			ls.Set = new HashSet<Top> { multi, simp };
 
 			object id;
 			if (Dialect is MsSql2000Dialect)
@@ -642,9 +612,8 @@ namespace NHibernate.Test.Legacy
 			Po po = new Po();
 			multi1.Po = po;
 			multi2.Po = po;
-			po.Set = new HashedSet<Multi> {multi1, multi2};
-			po.List = new ArrayList();
-			po.List.Add(new SubMulti());
+			po.Set = new HashSet<Multi> {multi1, multi2};
+			po.List = new List<SubMulti> {new SubMulti()};
 			object id = s.Save(po);
 			Assert.IsNotNull(id);
 			t.Commit();
@@ -685,7 +654,7 @@ namespace NHibernate.Test.Legacy
 		{
 			ISession s = OpenSession();
 			Lower ls = new Lower();
-			IList list = new ArrayList();
+			IList<Top> list = new List<Top>();
 			ls.Bag = list;
 			Top simple = new Top();
 			object id = s.Save(ls);

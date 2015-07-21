@@ -318,7 +318,7 @@ namespace NHibernate.SqlCommand.Parser
 				{
 					if (text.Equals(column.Name, StringComparison.InvariantCultureIgnoreCase) ||
 						text.Equals(column.Alias, StringComparison.InvariantCultureIgnoreCase) ||
-						text.Equals(Sql.Substring(column.SqlIndex, column.SqlLength).ToString(), StringComparison.InvariantCultureIgnoreCase))
+						text.Equals(Sql.ToString(column.SqlIndex, column.SqlLength), StringComparison.InvariantCultureIgnoreCase))
 					{
 						result = column;
 						return true;

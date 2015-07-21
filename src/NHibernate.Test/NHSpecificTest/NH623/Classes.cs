@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH623
 {
@@ -67,9 +67,9 @@ namespace NHibernate.Test.NHSpecificTest.NH623
 
 	public class Document
 	{
-		private IList paragraphs;
-		private IList images;
-		private IList pages;
+		private IList<Paragraph> paragraphs;
+		private IList<Image> images;
+		private IList<Page> pages;
 		private int docId;
 		private string name;
 		private Review review;
@@ -82,24 +82,24 @@ namespace NHibernate.Test.NHSpecificTest.NH623
 		{
 			this.docId = docId;
 			this.name = name;
-			paragraphs = new ArrayList();
-			images = new ArrayList();
-			pages = new ArrayList();
+			paragraphs = new List<Paragraph>();
+			images = new List<Image>();
+			pages = new List<Page>();
 		}
 
-		public virtual IList Paragraphs
+		public virtual IList<Paragraph> Paragraphs
 		{
 			get { return paragraphs; }
 			set { paragraphs = value; }
 		}
 
-		public virtual IList Images
+		public virtual IList<Image> Images
 		{
 			get { return images; }
 			set { images = value; }
 		}
 
-		public virtual IList Pages
+		public virtual IList<Page> Pages
 		{
 			get { return pages; }
 			set { pages = value; }
@@ -128,7 +128,7 @@ namespace NHibernate.Test.NHSpecificTest.NH623
 	{
 		private int pageId;
 		private Document document;
-		private IList pages;
+		private IList<Page> pages;
 		private bool isActive;
 
 		public Page()
@@ -139,7 +139,7 @@ namespace NHibernate.Test.NHSpecificTest.NH623
 		{
 			this.pageId = pageId;
 			this.document = document;
-			pages = new ArrayList();
+			pages = new List<Page>();
 		}
 
 		public virtual int PageId
@@ -154,7 +154,7 @@ namespace NHibernate.Test.NHSpecificTest.NH623
 			set { document = value; }
 		}
 
-		public virtual IList Pages
+		public virtual IList<Page> Pages
 		{
 			get { return pages; }
 			set { pages = value; }

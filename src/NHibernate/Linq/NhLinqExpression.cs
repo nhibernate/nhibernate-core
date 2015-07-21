@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Engine;
@@ -24,18 +25,23 @@ namespace NHibernate.Linq
 
 		public ExpressionToHqlTranslationResults ExpressionToHqlTranslationResults { get; private set; }
 
-		private readonly Expression _expression;
-		private readonly IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
+		internal Expression _expression;
+		internal IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
 
 		public NhLinqExpression(Expression expression, ISessionFactoryImplementor sessionFactory)
 		{
 			_expression = NhPartialEvaluatingExpressionTreeVisitor.EvaluateIndependentSubtrees(expression);
 
+			// We want logging to be as close as possible to the original expression sent from the
+			// application. But if we log before partial evaluation, the log won't include e.g.
+			// subquery expressions if those are defined by the application in a variable referenced
+			// from the main query.
+			LinqLogging.LogExpression("Expression (partially evaluated)", _expression);
+
 			_constantToParameterMap = ExpressionParameterVisitor.Visit(_expression, sessionFactory);
 
 			ParameterValuesByName = _constantToParameterMap.Values.ToDictionary(p => p.Name,
-																				p =>
-																				new Tuple<object, IType> { First = p.Value, Second = p.Type });
+																				p => System.Tuple.Create(p.Value, p.Type));
 
 			Key = ExpressionKeyVisitor.Visit(_expression, _constantToParameterMap);
 
@@ -51,7 +57,7 @@ namespace NHibernate.Linq
 			}
 		}
 
-		public IASTNode Translate(ISessionFactoryImplementor sessionFactory)
+		public IASTNode Translate(ISessionFactoryImplementor sessionFactory, bool filter)
 		{
 			var requiredHqlParameters = new List<NamedParameterDescriptor>();
 			var querySourceNamer = new QuerySourceNamer();
@@ -63,6 +69,12 @@ namespace NHibernate.Linq
 			ParameterDescriptors = requiredHqlParameters.AsReadOnly();
 			
 			return ExpressionToHqlTranslationResults.Statement.AstNode;
+		}
+
+		internal void CopyExpressionTranslation(NhLinqExpression other)
+		{
+			ExpressionToHqlTranslationResults = other.ExpressionToHqlTranslationResults;
+			ParameterDescriptors = other.ParameterDescriptors;
 		}
 	}
 }

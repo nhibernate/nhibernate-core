@@ -55,21 +55,4 @@ namespace NHibernate.Test.NHSpecificTest.NH1812
          * I believe the problem is when mixing aggregate methods with isnull()
          */
 	}
-
-	[TestFixture]
-	public class ItWorksWithClassicParser : AstBugBase
-	{
-
-		protected override void Configure(Cfg.Configuration configuration)
-		{
-			configuration.AddProperties(new Dictionary<string, string>
-			                            	{
-			                            		{
-			                            			Cfg.Environment.QueryTranslator,
-			                            			typeof (NHibernate.Hql.Classic.ClassicQueryTranslatorFactory).FullName
-			                            			}
-			                            	}
-				);
-		}
-	}
 }

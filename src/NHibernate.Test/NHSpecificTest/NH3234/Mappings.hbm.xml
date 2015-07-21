@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH3234">
+
+  <class name="GridLevel" table="GridLevel" lazy="false">
+    <id name="Id" generator="guid" />
+  </class>
+
+  <class name="GridWidget" lazy="false">
+    <id name="Id" generator="guid" />
+    <bag name="Levels" schema="rm" table="GridLevel" lazy="false" cascade="all-delete-orphan">
+      <key column="WidgetId" not-null="true" />
+      <one-to-many class="GridLevel" />
+    </bag>
+  </class>
+
+</hibernate-mapping>

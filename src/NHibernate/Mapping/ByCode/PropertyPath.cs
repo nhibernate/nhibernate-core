@@ -3,6 +3,9 @@ using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode
 {
+	/// <summary>
+	/// Immutable value class. By-value equality.
+	/// </summary>
 	public class PropertyPath
 	{
 		private readonly int hashCode;
@@ -63,7 +66,7 @@ namespace NHibernate.Mapping.ByCode
 			{
 				return true;
 			}
-			return hashCode == other.GetHashCode();
+			return Equals(previousPath, other.previousPath) && localMember.Equals(other.localMember);
 		}
 
 		public override int GetHashCode()

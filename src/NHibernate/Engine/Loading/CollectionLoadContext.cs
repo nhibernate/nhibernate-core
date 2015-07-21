@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-using Iesi.Collections.Generic;
 
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
@@ -25,7 +24,7 @@ namespace NHibernate.Engine.Loading
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(CollectionLoadContext));
 		private readonly LoadContexts loadContexts;
 		private readonly IDataReader resultSet;
-		private readonly ISet<CollectionKey> localLoadingCollectionKeys = new HashedSet<CollectionKey>();
+		private readonly ISet<CollectionKey> localLoadingCollectionKeys = new HashSet<CollectionKey>();
 
 		/// <summary> 
 		/// Creates a collection load context for the given result set. 
@@ -175,7 +174,7 @@ namespace NHibernate.Engine.Loading
 					if (lce.Collection.Owner == null)
 					{
 						session.PersistenceContext.AddUnownedCollection(new CollectionKey(persister, lce.Key, session.EntityMode),
-						                                                lce.Collection);
+																		lce.Collection);
 					}
 					if (log.IsDebugEnabled)
 					{
@@ -187,7 +186,7 @@ namespace NHibernate.Engine.Loading
 					toRemove.Add(collectionKey);
 				}
 			}
-			localLoadingCollectionKeys.RemoveAll(toRemove);
+			localLoadingCollectionKeys.ExceptWith(toRemove);
 
 			EndLoadingCollections(persister, matches);
 			if ((localLoadingCollectionKeys.Count == 0))
@@ -273,7 +272,7 @@ namespace NHibernate.Engine.Loading
 
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("collection fully initialized: " + MessageHelper.InfoString(persister, lce.Key, session.Factory));
+				log.Debug("collection fully initialized: " + MessageHelper.CollectionInfoString(persister, lce.Collection, lce.Key, session));
 			}
 
 			if (statsEnabled)
@@ -293,7 +292,7 @@ namespace NHibernate.Engine.Loading
 
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("Caching collection: " + MessageHelper.InfoString(persister, lce.Key, factory));
+				log.Debug("Caching collection: " + MessageHelper.CollectionInfoString(persister, lce.Collection, lce.Key, session));
 			}
 
 			if (!(session.EnabledFilters.Count == 0) && persister.IsAffectedByEnabledFilters(session))
@@ -325,7 +324,7 @@ namespace NHibernate.Engine.Loading
 			CollectionCacheEntry entry = new CollectionCacheEntry(lce.Collection, persister);
 			CacheKey cacheKey = session.GenerateCacheKey(lce.Key, persister.KeyType, persister.Role);
 			bool put = persister.Cache.Put(cacheKey, persister.CacheEntryStructure.Structure(entry), 
-			                    session.Timestamp, version, versionComparator,
+								session.Timestamp, version, versionComparator,
 													factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh);
 
 			if (put && factory.Statistics.IsStatisticsEnabled)

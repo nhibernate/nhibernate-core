@@ -21,31 +21,31 @@ namespace NHibernate.DomainModel
 		private Int32 _count;
 		private String _name;
 		private Foo _foo;
-		private IList _stringList;
-		private IList _fees;
-		private IList _customs;
-		private IList _topComponents;
-		private IDictionary _fooToGlarch;
-		private IDictionary _fooComponentToFoo;
-		private IDictionary _glarchToFoo;
-		private IDictionary _stringDateMap;
-		private IDictionary _topGlarchez;
-		private IDictionary _cachedMap;
-		private IDictionary _stringGlarchMap;
-		private IDictionary _anyToAny;
-		private IList _manyToAny;
+		private IList<string> _stringList;
+		private IList<Fee> _fees;
+		private IList<string[]> _customs;
+		private IList<FooComponent> _topComponents;
+		private IDictionary<Foo, GlarchProxy> _fooToGlarch;
+		private IDictionary<FooComponent, Foo> _fooComponentToFoo;
+		private IDictionary<Foo, GlarchProxy> _glarchToFoo;
+		private IDictionary<string, DateTime?> _stringDateMap;
+		private IDictionary<char, GlarchProxy> _topGlarchez;
+		private IDictionary<Baz, CompositeElement> _cachedMap;
+		private IDictionary<string, Glarch> _stringGlarchMap;
+		private IDictionary<object, object> _anyToAny;
+		private IList<object> _manyToAny;
 		private ISet<FooProxy> _fooSet;
 		private ISet<string> _stringSet;
 		private ISet<Bar> _topFoos;
 		private ISet<BarProxy> _cascadingBars;
 		private ISet<CompositeElement> _cached;
 		private ISet<Sortable> _sortablez;
-		private IList _bag;
-		private IList _fooBag;
-		private IList _idFooBag;
-		private IList _byteBag;
-		private IList _bazez;
-		private IList _parts;
+		private IList<string> _bag;
+		private IList<Foo> _fooBag;
+		private IList<Foo> _idFooBag;
+		private IList<byte[]> _byteBag;
+		private IList<Baz> _bazez;
+		private IList<Part> _parts;
 
 		#endregion
 
@@ -110,7 +110,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for stringList
 		/// </summary>
-		public IList StringList
+		public IList<string> StringList
 		{
 			get { return this._stringList; }
 			set { this._stringList = value; }
@@ -119,7 +119,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for fees
 		/// </summary>
-		public IList Fees
+		public IList<Fee> Fees
 		{
 			get { return _fees; }
 			set { _fees = value; }
@@ -128,7 +128,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for customs
 		/// </summary>
-		public IList Customs
+		public IList<string[]> Customs
 		{
 			get { return this._customs; }
 			set { this._customs = value; }
@@ -137,7 +137,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for topComponents
 		/// </summary>
-		public IList TopComponents
+		public IList<FooComponent> TopComponents
 		{
 			get { return this._topComponents; }
 			set { this._topComponents = value; }
@@ -146,7 +146,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for fooToGlarch
 		/// </summary>
-		public IDictionary FooToGlarch
+		public IDictionary<Foo, GlarchProxy> FooToGlarch
 		{
 			get { return this._fooToGlarch; }
 			set { this._fooToGlarch = value; }
@@ -155,7 +155,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for fooComponentToFoo
 		/// </summary>
-		public IDictionary FooComponentToFoo
+		public IDictionary<FooComponent, Foo> FooComponentToFoo
 		{
 			get { return this._fooComponentToFoo; }
 			set { this._fooComponentToFoo = value; }
@@ -164,7 +164,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for glarchToFoo
 		/// </summary>
-		public IDictionary GlarchToFoo
+		public IDictionary<Foo, GlarchProxy> GlarchToFoo
 		{
 			get { return this._glarchToFoo; }
 			set { this._glarchToFoo = value; }
@@ -173,7 +173,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for stringDateMap
 		/// </summary>
-		public IDictionary StringDateMap
+		public IDictionary<string, DateTime?> StringDateMap
 		{
 			get { return this._stringDateMap; }
 			set { this._stringDateMap = value; }
@@ -182,7 +182,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for topGlarchez
 		/// </summary>
-		public IDictionary TopGlarchez
+		public IDictionary<char, GlarchProxy> TopGlarchez
 		{
 			get { return this._topGlarchez; }
 			set { this._topGlarchez = value; }
@@ -191,7 +191,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for cachedMap
 		/// </summary>
-		public IDictionary CachedMap
+		public IDictionary<Baz,CompositeElement> CachedMap
 		{
 			get { return this._cachedMap; }
 			set { this._cachedMap = value; }
@@ -200,7 +200,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for stringGlarchMap
 		/// </summary>
-		public IDictionary StringGlarchMap
+		public IDictionary<string, Glarch> StringGlarchMap
 		{
 			get { return this._stringGlarchMap; }
 			set { this._stringGlarchMap = value; }
@@ -209,7 +209,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for anyToAny
 		/// </summary>
-		public IDictionary AnyToAny
+		public IDictionary<object, object> AnyToAny
 		{
 			get { return this._anyToAny; }
 			set { this._anyToAny = value; }
@@ -218,7 +218,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for manyToAny
 		/// </summary>
-		public IList ManyToAny
+		public IList<object> ManyToAny
 		{
 			get { return this._manyToAny; }
 			set { this._manyToAny = value; }
@@ -328,7 +328,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for bag
 		/// </summary>
-		public IList Bag
+		public IList<string> Bag
 		{
 			get { return this._bag; }
 			set { this._bag = value; }
@@ -337,7 +337,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for fooBag
 		/// </summary>
-		public IList FooBag
+		public IList<Foo> FooBag
 		{
 			get { return this._fooBag; }
 			set { this._fooBag = value; }
@@ -346,7 +346,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for bazez
 		/// </summary>
-		public IList Bazez
+		public IList<Baz> Bazez
 		{
 			get { return this._bazez; }
 			set { this._bazez = value; }
@@ -355,7 +355,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for idFooBag
 		/// </summary>
-		public IList IdFooBag
+		public IList<Foo> IdFooBag
 		{
 			get { return this._idFooBag; }
 			set { this._idFooBag = value; }
@@ -364,7 +364,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for byteBag
 		/// </summary>
-		public IList ByteBag
+		public IList<byte[]> ByteBag
 		{
 			get { return this._byteBag; }
 			set { this._byteBag = value; }
@@ -373,7 +373,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for parts
 		/// </summary>
-		public IList Parts
+		public IList<Part> Parts
 		{
 			get { return this._parts; }
 			set { this._parts = value; }
@@ -385,25 +385,25 @@ namespace NHibernate.DomainModel
 		{
 			DateTime today = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
 
-			StringSet = new HashedSet<string> {"foo", "bar", "baz"};
+			StringSet = new HashSet<string> {"foo", "bar", "baz"};
 
-			StringDateMap = new SortedList();
+			StringDateMap = new SortedList<string, DateTime?>();
 			StringDateMap.Add("now", DateTime.Now);
 			StringDateMap.Add("never", null); // value is persisted since NH-2199
 			// according to SQL Server the big bag happened in 1753 ;)
 			StringDateMap.Add("big bang", new DateTime(1753, 01, 01));
 			//StringDateMap.Add( "millenium", new DateTime( 2000, 01, 01 ) );
 			StringArray = StringSet.ToArray();
-			StringList = new ArrayList(StringArray);
+			StringList = new List<string>(StringArray);
 			IntArray = new int[] {1, 3, 3, 7};
 			FooArray = new Foo[0];
 			
-			Customs = new ArrayList();
+			Customs = new List<string[]>();
 			Customs.Add(new String[] {"foo", "bar"});
 			Customs.Add(new String[] {"A", "B"});
 			Customs.Add(new String[] {"1", "2"});
 
-			FooSet = new HashedSet<FooProxy>();
+			FooSet = new HashSet<FooProxy>();
 			Components = new FooComponent[]
 				{
 					new FooComponent("foo", 42, null, null),
@@ -419,18 +419,18 @@ namespace NHibernate.DomainModel
 
 			Count = 667;
 			Name = "Bazza";
-			TopComponents = new ArrayList();
+			TopComponents = new List<FooComponent>();
 			TopComponents.Add(new FooComponent("foo", 11, new DateTime[] {today, new DateTime(2123, 1, 1)}, null));
 			TopComponents.Add(
 				new FooComponent("bar", 22, new DateTime[] {new DateTime(2007, 2, 3), new DateTime(1945, 6, 1)}, null));
 			TopComponents.Add(null);
-			Bag = new ArrayList();
+			Bag = new List<string>();
 			Bag.Add("duplicate");
 			Bag.Add("duplicate");
 			Bag.Add("duplicate");
 			Bag.Add("unique");
 
-			Cached = new OrderedSet<CompositeElement>();
+			Cached = new LinkedHashSet<CompositeElement>();
 
 			CompositeElement ce = new CompositeElement();
 			ce.Foo = "foo";
@@ -440,7 +440,7 @@ namespace NHibernate.DomainModel
 			ce2.Bar = "barxxx";
 			Cached.Add(ce);
 			Cached.Add(ce2);
-			CachedMap = new SortedList();
+			CachedMap = new SortedList<Baz, CompositeElement>();
 			CachedMap.Add(this, ce);
 		}
 

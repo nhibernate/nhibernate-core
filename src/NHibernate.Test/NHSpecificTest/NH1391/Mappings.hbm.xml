@@ -25,10 +25,6 @@
 		
 		<discriminator column="PersonType" type="int"/>
 		<property name="Name"/>
-		<bag name="AnimalsNonGeneric" lazy="true" inverse="true" cascade="save-update">
-			<key column="OwnerId" />
-			<one-to-many class="Animal"/>
-		</bag>
 		<bag name="AnimalsGeneric" lazy="true" inverse="true" cascade="save-update">
 			<key column="OwnerId" />
 			<one-to-many class="Animal"/>
@@ -41,17 +37,9 @@
 				<key column="OwnerId" />
 				<one-to-many class="Cat"/>
 			</bag>
-			<bag name="CatsNonGeneric" lazy="true" inverse="true" cascade="save-update">
-				<key column="OwnerId" />
-				<one-to-many class="Cat"/>
-			</bag>
 		</subclass>
 		<subclass name="PersonWithDogs" discriminator-value="3">
 			<bag name="DogsGeneric" lazy="true" inverse="true" cascade="save-update">
-				<key column="OwnerId" />
-				<one-to-many class="Dog"/>
-			</bag>
-			<bag name="DogsNonGeneric" lazy="true" inverse="true">
 				<key column="OwnerId" />
 				<one-to-many class="Dog"/>
 			</bag>
@@ -61,17 +49,10 @@
 				<key column="OwnerId" />
 				<one-to-many class="SivasKangal"/>
 			</bag>
-			<bag name="SivasKangalsNonGeneric" lazy="true" inverse="true">
-				<key column="OwnerId" />
-				<one-to-many class="SivasKangal"/>
-			</bag>
+
 		</subclass>
 		<subclass name="PersonWithAllTypes" discriminator-value="5">
 			<bag name="DogsGeneric" lazy="true" inverse="true">
-				<key column="OwnerId" />
-				<one-to-many class="Dog"/>
-			</bag>
-			<bag name="DogsNonGeneric" lazy="true" inverse="true">
 				<key column="OwnerId" />
 				<one-to-many class="Dog"/>
 			</bag>
@@ -79,15 +60,7 @@
 				<key column="OwnerId" />
 				<one-to-many class="Cat"/>
 			</bag>
-			<bag name="CatsNonGeneric" lazy="true" inverse="true">
-				<key column="OwnerId" />
-				<one-to-many class="Cat"/>
-			</bag>
 			<bag name="SivasKangalsGeneric" lazy="true" inverse="true">
-				<key column="OwnerId" />
-				<one-to-many class="SivasKangal"/>
-			</bag>
-			<bag name="SivasKangalsNonGeneric" lazy="true" inverse="true">
 				<key column="OwnerId" />
 				<one-to-many class="SivasKangal"/>
 			</bag>

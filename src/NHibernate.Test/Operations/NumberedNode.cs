@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.Operations
 {
 	public class NumberedNode
 	{
-		private readonly ISet<NumberedNode> children = new HashedSet<NumberedNode>();
+		private readonly ISet<NumberedNode> children = new HashSet<NumberedNode>();
 
 		protected NumberedNode() {}
 

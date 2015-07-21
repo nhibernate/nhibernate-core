@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH523
 		}
 
 		[Test]
-		public void SaveOrUpdateCopyLazy()
+		public void MergeLazy()
 		{
 			ClassA a = new ClassA();
 			a.B = new ClassB();
@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH523
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				s.SaveOrUpdateCopy(a);
+				s.Merge(a);
 				t.Commit();
 			}
 

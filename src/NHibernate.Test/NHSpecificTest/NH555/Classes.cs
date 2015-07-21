@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH555
 {
@@ -91,7 +91,7 @@ namespace NHibernate.Test.NHSpecificTest.NH555
 		private int _id;
 		private DateTime _orderDate;
 		private Customer _owningCustomer;
-		private IList _orderLines = new ArrayList();
+		private IList<OrderLine> _orderLines = new List<OrderLine>();
 		private decimal _discount = 0M;
 		private OrderStatus _status = OrderStatus.Pending;
 
@@ -111,7 +111,7 @@ namespace NHibernate.Test.NHSpecificTest.NH555
 			set { _owningCustomer = value; }
 		}
 
-		public IList OrderLines
+		public IList<OrderLine> OrderLines
 		{
 			get { return _orderLines; }
 		}

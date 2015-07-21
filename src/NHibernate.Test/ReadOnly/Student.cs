@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.ReadOnly
 {
@@ -9,7 +8,7 @@ namespace NHibernate.Test.ReadOnly
 		private long studentNumber;
 		private string name;
 		private Course preferredCourse;
-		private ISet<Enrolment> enrolments = new HashedSet<Enrolment>();
+		private ISet<Enrolment> enrolments = new HashSet<Enrolment>();
 		
 		public virtual long StudentNumber
 		{

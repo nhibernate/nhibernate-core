@@ -85,8 +85,8 @@ namespace NHibernate.SqlCommand
 			}
 
 			return isNoWaitEnabled
-			       	? dialect.GetForUpdateNowaitString(aliases.ToString())
-			       	: dialect.GetForUpdateString(aliases.ToString());
+					? dialect.GetForUpdateNowaitString(aliases.ToString())
+					: dialect.GetForUpdateString(aliases.ToString());
 		}
 	}
 }

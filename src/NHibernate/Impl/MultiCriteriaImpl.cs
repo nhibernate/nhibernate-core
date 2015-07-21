@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Iesi.Collections.Generic;
 using NHibernate.Cache;
 using NHibernate.Criterion;
 using NHibernate.Driver;
@@ -96,13 +95,13 @@ namespace NHibernate.Impl
 
 			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters, session.EntityMode);
 
-			ISet<string> querySpaces = new HashedSet<string>();
+			ISet<string> querySpaces = new HashSet<string>();
 			List<IType[]> resultTypesList = new List<IType[]>();
 			int[] maxRows = new int[loaders.Count];
 			int[] firstRows = new int[loaders.Count];
 			for (int i = 0; i < loaders.Count; i++)
 			{
-				querySpaces.AddAll(loaders[i].QuerySpaces);
+				querySpaces.UnionWith(loaders[i].QuerySpaces);
 				resultTypesList.Add(loaders[i].ResultTypes);
 				firstRows[i] = parameters[i].RowSelection.FirstRow;
 				maxRows[i] = parameters[i].RowSelection.MaxRows;
@@ -110,7 +109,7 @@ namespace NHibernate.Impl
 
 			MultipleQueriesCacheAssembler assembler = new MultipleQueriesCacheAssembler(resultTypesList);
 			QueryParameters combinedParameters = CreateCombinedQueryParameters();
-			QueryKey key = new QueryKey(session.Factory, SqlString, combinedParameters, filterKeys)
+			QueryKey key = new QueryKey(session.Factory, SqlString, combinedParameters, filterKeys, null)
 				.SetFirstRows(firstRows)
 				.SetMaxRows(maxRows);
 
@@ -121,12 +120,31 @@ namespace NHibernate.Impl
 												  queryCache,
 												  key);
 
+			if (factory.Statistics.IsStatisticsEnabled)
+			{
+				if (result == null)
+				{
+					factory.StatisticsImplementor.QueryCacheMiss(key.ToString(), queryCache.RegionName);
+				}
+				else
+				{
+					factory.StatisticsImplementor.QueryCacheHit(key.ToString(), queryCache.RegionName);
+				}
+			}
+
 			if (result == null)
 			{
 				log.Debug("Cache miss for multi criteria query");
 				IList list = DoList();
-				queryCache.Put(key, new ICacheAssembler[] { assembler }, new object[] { list }, combinedParameters.NaturalKeyLookup, session);
 				result = list;
+				if ((session.CacheMode & CacheMode.Put) == CacheMode.Put)
+				{
+					bool put = queryCache.Put(key, new ICacheAssembler[] { assembler }, new object[] { list }, combinedParameters.NaturalKeyLookup, session);
+					if (put && factory.Statistics.IsStatisticsEnabled)
+					{
+						factory.StatisticsImplementor.QueryCachePut(key.ToString(), queryCache.RegionName);
+					}
+				}
 			}
 
 			return GetResultList(result);
@@ -248,7 +266,7 @@ namespace NHibernate.Impl
 					for (int i = 0; i < loaders.Count; i++)
 					{
 						CriteriaLoader loader = loaders[i];
-						loader.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, false);
+						loader.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, session.DefaultReadOnly);
 
 						if (createSubselects[i])
 						{
@@ -280,7 +298,7 @@ namespace NHibernate.Impl
 				string[] implementors = factory.GetImplementors(criteria.EntityOrClassName);
 				int size = implementors.Length;
 
-				ISet<string> spaces = new HashedSet<string>();
+				ISet<string> spaces = new HashSet<string>();
 
 				for (int i = 0; i < size; i++)
 				{
@@ -293,7 +311,7 @@ namespace NHibernate.Impl
 						);
 					loaders.Add(loader);
 					loaderCriteriaMap.Add(criteriaIndex);
-					spaces.AddAll(loader.QuerySpaces);
+					spaces.UnionWith(loader.QuerySpaces);
 				}
 				criteriaIndex += 1;
 			}

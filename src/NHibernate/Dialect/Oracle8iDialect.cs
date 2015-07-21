@@ -107,7 +107,6 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.UInt64, "NUMBER(20,0)");
 
 			RegisterColumnType(DbType.Currency, "NUMBER(20,2)");
-			RegisterColumnType(DbType.Currency, "NUMBER($p,$s)");
 			RegisterColumnType(DbType.Single, "FLOAT(24)");
 			RegisterColumnType(DbType.Double, "DOUBLE PRECISION");
 			RegisterColumnType(DbType.Double, 19, "NUMBER($p,$s)");
@@ -206,17 +205,16 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("locate", new LocateFunction());
 			RegisterFunction("substring", new StandardSQLFunction("substr", NHibernateUtil.String));
-			RegisterFunction("locate", new SQLFunctionTemplate(NHibernateUtil.Int32, "instr(?2,?1)"));
 			RegisterFunction("bit_length", new SQLFunctionTemplate(NHibernateUtil.Int32, "vsize(?1)*8"));
 			RegisterFunction("coalesce", new NvlFunction());
 
 			// Multi-param numeric dialect functions...
-			RegisterFunction("atan2", new StandardSQLFunction("atan2", NHibernateUtil.Single));
+			RegisterFunction("atan2", new StandardSQLFunction("atan2", NHibernateUtil.Double));
 			RegisterFunction("log", new StandardSQLFunction("log", NHibernateUtil.Int32));
 			RegisterFunction("mod", new StandardSQLFunction("mod", NHibernateUtil.Int32));
 			RegisterFunction("nvl", new StandardSQLFunction("nvl"));
 			RegisterFunction("nvl2", new StandardSQLFunction("nvl2"));
-			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Single));
+			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Double));
 
 			// Multi-param date dialect functions...
 			RegisterFunction("add_months", new StandardSQLFunction("add_months", NHibernateUtil.Date));
@@ -224,6 +222,13 @@ namespace NHibernate.Dialect
 			RegisterFunction("next_day", new StandardSQLFunction("next_day", NHibernateUtil.Date));
 
 			RegisterFunction("str", new StandardSQLFunction("to_char", NHibernateUtil.String));
+
+			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
+
+			RegisterFunction("band", new BitwiseFunctionOperation("bitand"));
+			RegisterFunction("bor", new SQLFunctionTemplate(null, "?1 + ?2 - BITAND(?1, ?2)"));
+			RegisterFunction("bxor", new SQLFunctionTemplate(null, "?1 + ?2 - BITAND(?1, ?2) * 2"));
+			RegisterFunction("bnot", new SQLFunctionTemplate(null, "(-1 - ?1)"));
 		}
 
 		protected internal virtual void RegisterDefaultProperties()
@@ -242,7 +247,7 @@ namespace NHibernate.Dialect
 		/// <summary> 
 		/// Support for the oracle proprietary join syntax... 
 		/// </summary>
-		/// <returns> The orqacle join fragment </returns>
+		/// <returns> The oracle join fragment </returns>
 		public override JoinFragment CreateOuterJoinFragment()
 		{
 			return new OracleJoinFragment();
@@ -302,7 +307,7 @@ namespace NHibernate.Dialect
 			return pagingSelect.ToSqlString();
 		}
 
-		private string ExtractColumnOrAliasNames(SqlString select)
+		private static string ExtractColumnOrAliasNames(SqlString select)
 		{
 			List<SqlString> columnsOrAliases;
 			Dictionary<SqlString, SqlString> aliasToColumn;
@@ -447,6 +452,16 @@ namespace NHibernate.Dialect
 		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
 			return new OracleDataBaseSchema(connection);
+		}
+
+		public override long TimestampResolutionInTicks
+		{
+			get
+			{
+				// Timestamps are DateTime, which in this dialect maps to Oracle DATE,
+				// which doesn't support fractional seconds.
+				return TimeSpan.TicksPerSecond;
+			}
 		}
 
 		#region Overridden informational metadata

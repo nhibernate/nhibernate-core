@@ -1,5 +1,4 @@
 ﻿using System;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.Cascade.Circle
 {

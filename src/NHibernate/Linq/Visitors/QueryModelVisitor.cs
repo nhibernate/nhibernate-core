@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Clauses;
@@ -20,10 +22,6 @@ namespace NHibernate.Linq.Visitors
 	{
 		public static ExpressionToHqlTranslationResults GenerateHqlQuery(QueryModel queryModel, VisitorParameters parameters, bool root)
 		{
-			SubQueryFromClauseFlattener.ReWrite(queryModel);
-
-			LeftJoinRewriter.ReWrite(queryModel);
-
 			NestedSelectRewriter.ReWrite(queryModel, parameters.SessionFactory);
 
 			// Remove unnecessary body operators
@@ -44,17 +42,35 @@ namespace NHibernate.Linq.Visitors
 			// Rewrite non-aggregating group-joins
 			NonAggregatingGroupJoinRewriter.ReWrite(queryModel);
 
+			SubQueryFromClauseFlattener.ReWrite(queryModel);
+
+			// Rewrite left-joins
+			LeftJoinRewriter.ReWrite(queryModel);
+
 			// Rewrite paging
 			PagingRewriter.ReWrite(queryModel);
 
 			// Flatten pointless subqueries
 			QueryReferenceExpressionFlattener.ReWrite(queryModel);
 
+			// Flatten array index access to query references
+			ArrayIndexExpressionFlattener.ReWrite(queryModel);
+
 			// Add joins for references
-			AddJoinsReWriter.ReWrite(queryModel, parameters.SessionFactory);
+			AddJoinsReWriter.ReWrite(queryModel, parameters);
 
 			// Move OrderBy clauses to end
 			MoveOrderByToEndRewriter.ReWrite(queryModel);
+
+			// Give a rewriter provided by the session factory a chance to
+			// rewrite the query.
+			var rewriterFactory = parameters.SessionFactory.Settings.QueryModelRewriterFactory;
+			if (rewriterFactory != null)
+			{
+				var customVisitor = rewriterFactory.CreateVisitor(parameters);
+				if (customVisitor != null)
+					customVisitor.VisitQueryModel(queryModel);
+			}
 
 			// rewrite any operators that should be applied on the outer query
 			// by flattening out the sub-queries that they are located in
@@ -63,7 +79,10 @@ namespace NHibernate.Linq.Visitors
 			// Identify and name query sources
 			QuerySourceIdentifier.Visit(parameters.QuerySourceNamer, queryModel);
 
-			var visitor = new QueryModelVisitor(parameters, root, queryModel) { RewrittenOperatorResult = result };
+			var visitor = new QueryModelVisitor(parameters, root, queryModel)
+			{
+				RewrittenOperatorResult = result,
+			};
 			visitor.Visit();
 
 			return visitor._hqlTree.GetTranslation();
@@ -104,6 +123,7 @@ namespace NHibernate.Linq.Visitors
 			ResultOperatorMap.Add<FetchOneRequest, ProcessFetchOne>();
 			ResultOperatorMap.Add<FetchManyRequest, ProcessFetchMany>();
 			ResultOperatorMap.Add<CacheableResultOperator, ProcessCacheable>();
+			ResultOperatorMap.Add<TimeoutResultOperator, ProcessTimeout>();
 			ResultOperatorMap.Add<OfTypeResultOperator, ProcessOfType>();
 			ResultOperatorMap.Add<CastResultOperator, ProcessCast>();
 		}
@@ -234,6 +254,9 @@ namespace NHibernate.Linq.Visitors
 
 		public override void VisitWhereClause(WhereClause whereClause, QueryModel queryModel, int index)
 		{
+			var visitor = new SimplifyConditionalVisitor();
+			whereClause.Predicate = visitor.VisitExpression(whereClause.Predicate);
+
 			// Visit the predicate to build the query
 			var expression = HqlGeneratorExpressionTreeVisitor.Visit(whereClause.Predicate, VisitorParameters).AsBooleanExpression();
 			if (whereClause is NhHavingClause)

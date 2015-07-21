@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Data;
+using NHibernate.Collection.Generic;
 using NHibernate.Engine;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
@@ -94,8 +95,8 @@ namespace NHibernate.Collection
 		/// Clears out any Queued Additions.
 		/// </summary>
 		/// <remarks>
-		/// After a Flush() the database is in synch with the in-memory
-		/// contents of the Collection.  Since everything is in synch remove
+		/// After a Flush() the database is in sync with the in-memory
+		/// contents of the Collection.  Since everything is in sync remove
 		/// any Queued Additions.
 		/// </remarks>
 		void PostAction();
@@ -176,9 +177,7 @@ namespace NHibernate.Collection
 		/// Reads the row from the <see cref="IDataReader"/>.
 		/// </summary>
 		/// <remarks>
-		/// This method should be prepared to handle duplicate elements caused by fetching multiple collections,
-		/// or <see cref="NHibernate.Hql.Classic.QueryTranslator.FetchedCollections.IsUnsafe" /> should be updated
-		/// to return <see langword="true" /> for the collection type.
+		/// This method should be prepared to handle duplicate elements caused by fetching multiple collections.
 		/// </remarks>
 		/// <param name="reader">The IDataReader that contains the value of the Identifier</param>
 		/// <param name="role">The persister for this Collection.</param>
@@ -243,7 +242,7 @@ namespace NHibernate.Collection
 		/// <param name="persister">The <see cref="ICollectionPersister"/> for this Collection.</param>
 		/// <returns>
 		/// <see langword="false" /> by default since most collections can determine which rows need to be
-		/// individually updated/inserted/deleted.  Currently only <see cref="PersistentBag"/>'s for <c>many-to-many</c>
+		/// individually updated/inserted/deleted.  Currently only <see cref="PersistentGenericBag{T}"/>'s for <c>many-to-many</c>
 		/// need to be recreated.
 		/// </returns>
 		bool NeedsRecreate(ICollectionPersister persister);

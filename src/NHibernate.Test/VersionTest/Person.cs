@@ -1,13 +1,13 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.VersionTest
 {
 	public class Person
 	{
 		private string name;
-		private IList things;
-		private IList tasks;
+		private IList<Thing> things;
+		private IList<Task> tasks;
 		private int version;
 
 		protected Person()
@@ -17,8 +17,8 @@ namespace NHibernate.Test.VersionTest
 		public Person(string name)
 		{
 			this.name = name;
-			this.things = new ArrayList();
-			this.tasks = new ArrayList();
+			this.things = new List<Thing>();
+			this.tasks = new List<Task>();
 		}
 
 		public virtual string Name
@@ -27,13 +27,13 @@ namespace NHibernate.Test.VersionTest
 			set { name = value; }
 		}
 
-		public virtual IList Things
+		public virtual IList<Thing> Things
 		{
 			get { return things; }
 			set { things = value; }
 		}
 
-		public virtual IList Tasks
+		public virtual IList<Task> Tasks
 		{
 			get { return tasks; }
 			set { tasks = value; }

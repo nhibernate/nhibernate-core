@@ -127,7 +127,7 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary> 
-		/// Retrieve the command used to retrieve the current timestammp from the database. 
+		/// Retrieve the command used to retrieve the current timestamp from the database. 
 		/// </summary>
 		public override string CurrentTimestampSelectString
 		{
@@ -258,7 +258,7 @@ namespace NHibernate.Dialect
 
 		/// <summary>
 		/// Whether this dialect have an Identity clause added to the data type or a
-		/// completely seperate identity data type
+		/// completely separate identity data type
 		/// </summary>
 		public override bool HasDataTypeInIdentityColumn
 		{

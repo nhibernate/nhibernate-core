@@ -5,7 +5,6 @@ using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.MappersTests
 {
@@ -26,7 +25,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		{
 			var hbm = new HbmIdbag();
 			new IdBagMapper(typeof(Animal), typeof(Animal), hbm);
-			hbm.collectionid.Should().Not.Be.Null();
+			Assert.That(hbm.collectionid, Is.Not.Null);
 		}
 
 		[Test]
@@ -39,7 +38,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			mapper.Id(x => firstInstance = x);
 			mapper.Id(x => secondInstance = x);
 
-			firstInstance.Should().Be.SameInstanceAs(secondInstance);
+			Assert.That(firstInstance, Is.SameAs(secondInstance));
 		}
 
 		[Test]
@@ -49,7 +48,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapper = new IdBagMapper(typeof(Animal), typeof(Animal), hbm);
 			mapper.Id(x => x.Column("catchMe"));
 
-			hbm.collectionid.Columns.Single().name.Should().Be("catchMe");
+			Assert.That(hbm.collectionid.Columns.Single().name, Is.EqualTo("catchMe"));
 		}
 
 		[Test]
@@ -58,9 +57,9 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbm = new HbmIdbag();
 			var mapper = new IdBagMapper(typeof(Animal), typeof(Animal), hbm);
 			mapper.Inverse(true);
-			hbm.Inverse.Should().Be.True();
+			Assert.That(hbm.Inverse, Is.True);
 			mapper.Inverse(false);
-			hbm.Inverse.Should().Be.False();
+			Assert.That(hbm.Inverse, Is.False);
 		}
 
 		[Test]
@@ -69,9 +68,9 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbm = new HbmIdbag();
 			var mapper = new IdBagMapper(typeof(Animal), typeof(Animal), hbm);
 			mapper.Mutable(true);
-			hbm.Mutable.Should().Be.True();
+			Assert.That(hbm.Mutable, Is.True);
 			mapper.Mutable(false);
-			hbm.Mutable.Should().Be.False();
+			Assert.That(hbm.Mutable, Is.False);
 		}
 
 		[Test]
@@ -80,7 +79,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbm = new HbmIdbag();
 			var mapper = new IdBagMapper(typeof(Animal), typeof(Animal), hbm);
 			mapper.Where("c > 10");
-			hbm.Where.Should().Be.EqualTo("c > 10");
+			Assert.That(hbm.Where, Is.EqualTo("c > 10"));
 		}
 
 		[Test]
@@ -89,7 +88,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbm = new HbmIdbag();
 			var mapper = new IdBagMapper(typeof(Animal), typeof(Animal), hbm);
 			mapper.BatchSize(10);
-			hbm.BatchSize.Should().Be.EqualTo(10);
+			Assert.That(hbm.BatchSize, Is.EqualTo(10));
 		}
 
 		[Test]
@@ -98,11 +97,11 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbm = new HbmIdbag();
 			var mapper = new IdBagMapper(typeof(Animal), typeof(Animal), hbm);
 			mapper.Lazy(CollectionLazy.Extra);
-			hbm.Lazy.Should().Be.EqualTo(HbmCollectionLazy.Extra);
+			Assert.That(hbm.Lazy, Is.EqualTo(HbmCollectionLazy.Extra));
 			mapper.Lazy(CollectionLazy.NoLazy);
-			hbm.Lazy.Should().Be.EqualTo(HbmCollectionLazy.False);
+			Assert.That(hbm.Lazy, Is.EqualTo(HbmCollectionLazy.False));
 			mapper.Lazy(CollectionLazy.Lazy);
-			hbm.Lazy.Should().Be.EqualTo(HbmCollectionLazy.True);
+			Assert.That(hbm.Lazy, Is.EqualTo(HbmCollectionLazy.True));
 		}
 
 		[Test]
@@ -112,8 +111,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapper = new IdBagMapper(typeof(Animal), typeof(Animal), hbm);
 			bool kmCalled = false;
 			mapper.Key(km => kmCalled = true);
-			hbm.Key.Should().Not.Be.Null();
-			kmCalled.Should().Be.True();
+			Assert.That(hbm.Key, Is.Not.Null);
+			Assert.That(kmCalled, Is.True);
 		}
 
 		[Test]
@@ -121,8 +120,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		{
 			var hbm = new HbmIdbag();
 			var mapper = new IdBagMapper(typeof(Animal), typeof(Animal), hbm);
-			Executing.This(() => mapper.Type(null)).Should().Throw<ArgumentNullException>();
-			Executing.This(() => mapper.Type(typeof(object))).Should().Throw<ArgumentOutOfRangeException>();
+			Assert.That(() => mapper.Type(null), Throws.TypeOf<ArgumentNullException>());
+			Assert.That(() => mapper.Type(typeof(object)), Throws.TypeOf<ArgumentOutOfRangeException>());
 		}
 
 		[Test]
@@ -131,7 +130,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbm = new HbmIdbag();
 			var mapper = new IdBagMapper(typeof(Animal), typeof(Animal), hbm);
 			mapper.Type<FakeUserCollectionType>();
-			hbm.CollectionType.Should().Contain("FakeUserCollectionType");
+			Assert.That(hbm.CollectionType, Is.StringContaining("FakeUserCollectionType"));
 		}
 
 		[Test]
@@ -140,7 +139,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbm = new HbmIdbag();
 			var mapper = new IdBagMapper(typeof(Animal), typeof(Animal), hbm);
 			mapper.Type(typeof(FakeUserCollectionType));
-			hbm.CollectionType.Should().Contain("FakeUserCollectionType");
+			Assert.That(hbm.CollectionType, Is.StringContaining("FakeUserCollectionType"));
 		}
 
 		[Test]
@@ -150,7 +149,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapper = new IdBagMapper(typeof(Animal), typeof(Animal), hbm);
 			mapper.Access(Accessor.Field);
 
-			hbm.Access.Should().Not.Be.Null();
+			Assert.That(hbm.Access, Is.Not.Null);
 		}
 
 		[Test]
@@ -160,7 +159,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapper = new IdBagMapper(typeof(Animal), typeof(Animal), hbm);
 			mapper.Cache(x => x.Region("pizza"));
 
-			hbm.cache.Should().Not.Be.Null();
+			Assert.That(hbm.cache, Is.Not.Null);
 		}
 
 		[Test]
@@ -172,9 +171,9 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			mapper.Cache(ch => ch.Usage(CacheUsage.NonstrictReadWrite));
 
 			var hbmCache = hbm.cache;
-			hbmCache.Should().Not.Be.Null();
-			hbmCache.region.Should().Be("pizza");
-			hbmCache.usage.Should().Be(HbmCacheUsage.NonstrictReadWrite);
+			Assert.That(hbmCache, Is.Not.Null);
+			Assert.That(hbmCache.region, Is.EqualTo("pizza"));
+			Assert.That(hbmCache.usage, Is.EqualTo(HbmCacheUsage.NonstrictReadWrite));
 		}
 
 		[Test]
@@ -183,8 +182,9 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbm = new HbmIdbag { name = "Children" };
 			var mapper = new IdBagMapper(typeof(Animal), typeof(Animal), hbm);
 			mapper.Filter("filter1", f => f.Condition("condition1"));
-			hbm.filter.Length.Should().Be(1);
-			hbm.filter[0].Satisfy(f => f.name == "filter1" && f.condition == "condition1");
+			Assert.That(hbm.filter.Length, Is.EqualTo(1));
+			Assert.That(hbm.filter[0].condition, Is.EqualTo("condition1"));
+			Assert.That(hbm.filter[0].name, Is.EqualTo("filter1"));
 		}
 
 		[Test]
@@ -194,9 +194,9 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapper = new IdBagMapper(typeof(Animal), typeof(Animal), hbm);
 			mapper.Filter("filter1", f => f.Condition("condition1"));
 			mapper.Filter("filter2", f => f.Condition("condition2"));
-			hbm.filter.Length.Should().Be(2);
-			hbm.filter.Satisfy(filters => filters.Any(f => f.name == "filter1" && f.condition == "condition1"));
-			hbm.filter.Satisfy(filters => filters.Any(f => f.name == "filter2" && f.condition == "condition2"));
+			Assert.That(hbm.filter.Length, Is.EqualTo(2));
+			Assert.True(hbm.filter.Any(f => f.name == "filter1" && f.condition == "condition1"));
+			Assert.True(hbm.filter.Any(f => f.name == "filter2" && f.condition == "condition2"));
 		}
 
 		[Test]
@@ -207,9 +207,9 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			mapper.Filter("filter1", f => f.Condition("condition1"));
 			mapper.Filter("filter2", f => f.Condition("condition2"));
 			mapper.Filter("filter1", f => f.Condition("anothercondition1"));
-			hbm.filter.Length.Should().Be(2);
-			hbm.filter.Satisfy(filters => filters.Any(f => f.name == "filter1" && f.condition == "anothercondition1"));
-			hbm.filter.Satisfy(filters => filters.Any(f => f.name == "filter2" && f.condition == "condition2"));
+			Assert.That(hbm.filter.Length, Is.EqualTo(2));
+			Assert.That(hbm.filter.Any(f => f.name == "filter1" && f.condition == "anothercondition1"), Is.True);
+			Assert.That(hbm.filter.Any(f => f.name == "filter2" && f.condition == "condition2"), Is.True);
 		}
 
 		[Test]
@@ -218,8 +218,10 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbm = new HbmIdbag { name = "Children" };
 			var mapper = new IdBagMapper(typeof(Animal), typeof(Animal), hbm);
 			mapper.Filter("filter1", null);
-			hbm.filter.Length.Should().Be(1);
-			hbm.filter[0].Satisfy(f => f.name == "filter1" && f.condition == null);
+			Assert.That(hbm.filter.Length, Is.EqualTo(1));
+			var filter = hbm.filter[0];
+			Assert.That(filter.condition, Is.EqualTo(null));
+			Assert.That(filter.name, Is.EqualTo("filter1"));
 		}
 
 		[Test]
@@ -228,14 +230,14 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbm = new HbmIdbag();
 			var mapper = new IdBagMapper(typeof(Animal), typeof(Animal), hbm);
 			mapper.Fetch(CollectionFetchMode.Subselect);
-			hbm.fetch.Should().Be(HbmCollectionFetchMode.Subselect);
-			hbm.fetchSpecified.Should().Be.True();
+			Assert.That(hbm.fetch, Is.EqualTo(HbmCollectionFetchMode.Subselect));
+			Assert.That(hbm.fetchSpecified, Is.True);
 			mapper.Fetch(CollectionFetchMode.Join);
-			hbm.fetch.Should().Be(HbmCollectionFetchMode.Join);
-			hbm.fetchSpecified.Should().Be.True();
+			Assert.That(hbm.fetch, Is.EqualTo(HbmCollectionFetchMode.Join));
+			Assert.That(hbm.fetchSpecified, Is.True);
 			mapper.Fetch(CollectionFetchMode.Select);
-			hbm.fetch.Should().Be(HbmCollectionFetchMode.Select);
-			hbm.fetchSpecified.Should().Be.False();
+			Assert.That(hbm.fetch, Is.EqualTo(HbmCollectionFetchMode.Select));
+			Assert.That(hbm.fetchSpecified, Is.False);
 		}
 	}
 }

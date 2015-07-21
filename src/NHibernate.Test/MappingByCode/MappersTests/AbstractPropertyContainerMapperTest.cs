@@ -6,7 +6,6 @@ using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.MappersTests
 {
@@ -41,13 +40,13 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		[Test]
 		public void CantCreateWithoutHbmMapping()
 		{
-			Executing.This(() => new HackPropertyContainerMapper(typeof(EntitySimple), null)).Should().Throw<ArgumentNullException>();
+			Assert.That(() => new HackPropertyContainerMapper(typeof(EntitySimple), null), Throws.TypeOf<ArgumentNullException>());
 		}
 
 		[Test]
 		public void CantCreateWithoutContainerType()
 		{
-			Executing.This(() => new HackPropertyContainerMapper(null, new HbmMapping())).Should().Throw<ArgumentNullException>();
+			Assert.That(() => new HackPropertyContainerMapper(null, new HbmMapping()), Throws.TypeOf<ArgumentNullException>());
 		}
 
 		[Test]
@@ -57,8 +56,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var map = new StubPropertyContainerMapper<EntitySimple>(properties);
 			map.Property(typeof (EntitySimple).GetProperty("Name"), x => { });
 		
-			properties.Should().Have.Count.EqualTo(1);
-			properties.First().Should().Be.OfType<HbmProperty>().And.ValueOf.Name.Should().Be.EqualTo("Name");
+			Assert.That(properties, Has.Count.EqualTo(1));
+			Assert.That(properties.First(), Is.TypeOf<HbmProperty>().And.Property("Name").EqualTo("Name"));
 		}
 
 		[Test]
@@ -69,14 +68,14 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var called = false;
 			map.Property(typeof(EntitySimple).GetProperty("Name"), x => called = true );
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
 		public void CantAddPropertyOfNotInheritedType()
 		{
 			var map = new StubPropertyContainerMapper<OtherSimple>(new List<object>());
-			Executing.This(() => map.Property(typeof(EntitySimple).GetProperty("Name"), x => { })).Should().Throw<ArgumentOutOfRangeException>();
+			Assert.That(() => map.Property(typeof(EntitySimple).GetProperty("Name"), x => { }), Throws.TypeOf<ArgumentOutOfRangeException>());
 		}
 
 		[Test]
@@ -86,8 +85,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var map = new StubPropertyContainerMapper<InheritedEntitySimple>(properties);
 			map.Property(typeof(InheritedEntitySimple).GetProperty("Name"), x => { });
 
-			properties.Should().Have.Count.EqualTo(1);
-			properties.First().Should().Be.OfType<HbmProperty>().And.ValueOf.Name.Should().Be.EqualTo("Name");
+			Assert.That(properties, Has.Count.EqualTo(1));
+			Assert.That(properties.First(), Is.TypeOf<HbmProperty>().And.Property("Name").EqualTo("Name"));
 		}
 
 		[Test]
@@ -98,7 +97,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var called = false;
 			map.Any(typeof(MyClass).GetProperty("Reference"), typeof(int), x => called = true);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -110,11 +109,11 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var keyRelationCalled = false;
 			var elementRelationCalled = false;
 			map.Map(typeof (MyClassWithDictionary).GetProperty("Dictionary"), cp => collectionPropsCalled = true,
-			        km => keyRelationCalled = true, er => elementRelationCalled = true);
+					km => keyRelationCalled = true, er => elementRelationCalled = true);
 
-			collectionPropsCalled.Should().Be.True();
-			keyRelationCalled.Should().Be.True();
-			elementRelationCalled.Should().Be.True();
+			Assert.That(collectionPropsCalled, Is.True);
+			Assert.That(keyRelationCalled, Is.True);
+			Assert.That(elementRelationCalled, Is.True);
 		}
 
 		[Test]
@@ -123,7 +122,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var properties = new List<object>();
 			var map = new StubPropertyContainerMapper<MyClassWithDynamic>(properties);
 			map.Component(For<MyClassWithDynamic>.Property(x => x.DynCompo), (IDynamicComponentMapper cp) => { });
-			properties.Single().Should().Be.OfType<HbmDynamicComponent>().And.ValueOf.Name.Should().Be.EqualTo("DynCompo");
+			Assert.That(properties.Single(), Is.TypeOf<HbmDynamicComponent>().And.Property("Name").EqualTo("DynCompo"));
 		}
 
 		[Test]
@@ -133,7 +132,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var map = new StubPropertyContainerMapper<MyClassWithDynamic>(properties);
 			var called = false;
 			map.Component(For<MyClassWithDynamic>.Property(x=> x.DynCompo), (IDynamicComponentMapper cp) => called = true);
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		private class HackPropertyContainerMapper : AbstractPropertyContainerMapper

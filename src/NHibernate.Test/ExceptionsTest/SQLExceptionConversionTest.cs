@@ -39,6 +39,11 @@ namespace NHibernate.Test.ExceptionsTest
 				configuration.SetProperty(Cfg.Environment.SqlExceptionConverter,
 																	typeof(PostgresExceptionConverterExample).AssemblyQualifiedName);
 			}
+
+			if (Dialect is FirebirdDialect)
+			{
+				configuration.SetProperty(Cfg.Environment.SqlExceptionConverter, typeof(FbExceptionConverterExample).AssemblyQualifiedName);
+			}
 		}
 
 		[Test]

@@ -43,7 +43,6 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Date, "date");
 			RegisterColumnType(DbType.DateTime, "timestamp");
 			RegisterColumnType(DbType.Decimal, "decimal(19,5)");
-			RegisterColumnType(DbType.Decimal, 19, "decimal(18, $l)");
 			RegisterColumnType(DbType.Decimal, 19, "decimal($p, $s)");
 			RegisterColumnType(DbType.Double, "float8");
 			RegisterColumnType(DbType.Int16, "int2");
@@ -65,6 +64,24 @@ namespace NHibernate.Dialect
 			RegisterFunction("replace", new StandardSQLFunction("replace", NHibernateUtil.String));
 			RegisterFunction("left", new SQLFunctionTemplate(NHibernateUtil.String, "substr(?1,1,?2)"));
 			RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "((?1) % (?2))"));
+
+			RegisterFunction("sign", new StandardSQLFunction("sign", NHibernateUtil.Int32));
+			RegisterFunction("round", new SQLFunctionTemplate(NHibernateUtil.Double, "round(cast(?1 as numeric), ?2)"));
+
+			// Trigonometric functions.
+			RegisterFunction("acos", new StandardSQLFunction("acos", NHibernateUtil.Double));
+			RegisterFunction("asin", new StandardSQLFunction("asin", NHibernateUtil.Double));
+			RegisterFunction("atan", new StandardSQLFunction("atan", NHibernateUtil.Double));
+			RegisterFunction("cos", new StandardSQLFunction("cos", NHibernateUtil.Double));
+			RegisterFunction("cot", new StandardSQLFunction("cot", NHibernateUtil.Double));
+			RegisterFunction("sin", new StandardSQLFunction("sin", NHibernateUtil.Double));
+			RegisterFunction("tan", new StandardSQLFunction("tan", NHibernateUtil.Double));
+			RegisterFunction("atan2", new StandardSQLFunction("atan2", NHibernateUtil.Double));
+
+			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Double));
+
+			// Register the date function, since when used in LINQ select clauses, NH must know the data type.
+			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "cast(?1 as date)"));
 		}
 
 		public override string AddColumnString

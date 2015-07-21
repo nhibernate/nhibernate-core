@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Dialect;
 using NHibernate.DomainModel;
 using NUnit.Framework;
@@ -148,9 +149,7 @@ namespace NHibernate.Test.Legacy
 			c.Name = "NAME";
 			Assignable assn = new Assignable();
 			assn.Id = "i.d.";
-			IList l = new ArrayList();
-			l.Add(c);
-			assn.Categories = l;
+			assn.Categories = new List<Category> {c};
 			c.Assignable = assn;
 			s.Save(assn);
 			s.Flush();
@@ -176,9 +175,7 @@ namespace NHibernate.Test.Legacy
 			c.Name = "NAME";
 			Assignable assn = new Assignable();
 			assn.Id = "i.d.";
-			IList l = new ArrayList();
-			l.Add(c);
-			assn.Categories = l;
+			assn.Categories = new List<Category> {c};
 			c.Assignable = assn;
 			s.Save(assn);
 			s.Flush();
@@ -187,9 +184,7 @@ namespace NHibernate.Test.Legacy
 			c.Name = "NAME2";
 			assn = new Assignable();
 			assn.Id = "i.d.2";
-			l = new ArrayList();
-			l.Add(c);
-			assn.Categories = l;
+			assn.Categories = new List<Category> { c };
 			c.Assignable = assn;
 			s.Save(assn);
 			s.Flush();
@@ -227,9 +222,7 @@ namespace NHibernate.Test.Legacy
 			c.Name = "Good";
 			Assignable assn = new Assignable();
 			assn.Id = "i.d.";
-			IList l = new ArrayList();
-			l.Add(c);
-			assn.Categories = l;
+			assn.Categories = new List<Category> { c };
 			c.Assignable = assn;
 			s.Save(assn);
 			s.Flush();
@@ -237,9 +230,7 @@ namespace NHibernate.Test.Legacy
 			c.Name = "Best";
 			assn = new Assignable();
 			assn.Id = "i.d.2";
-			l = new ArrayList();
-			l.Add(c);
-			assn.Categories = l;
+			assn.Categories = new List<Category> {c};
 			c.Assignable = assn;
 			s.Save(assn);
 			s.Flush();
@@ -247,9 +238,7 @@ namespace NHibernate.Test.Legacy
 			c.Name = "Better";
 			assn = new Assignable();
 			assn.Id = "i.d.7";
-			l = new ArrayList();
-			l.Add(c);
-			assn.Categories = l;
+			assn.Categories = new List<Category> {c};
 			c.Assignable = assn;
 			s.Save(assn);
 			s.Flush();
@@ -635,9 +624,7 @@ namespace NHibernate.Test.Legacy
 			c.Name = "NAME";
 			Assignable assn = new Assignable();
 			assn.Id = "i.d.";
-			IList l = new ArrayList();
-			l.Add(c);
-			assn.Categories = l;
+			assn.Categories = new List<Category> {c};
 			c.Assignable = assn;
 			s.Save(assn);
 			s.Flush();

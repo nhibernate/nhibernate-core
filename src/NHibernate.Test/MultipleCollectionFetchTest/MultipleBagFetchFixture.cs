@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-
+using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace NHibernate.Test.MultipleCollectionFetchTest
@@ -13,14 +13,14 @@ namespace NHibernate.Test.MultipleCollectionFetchTest
 			get { return new string[] {"MultipleCollectionFetchTest.PersonBag.hbm.xml"}; }
 		}
 
-		protected override void AddToCollection(ICollection collection, Person person)
+		protected override void AddToCollection(ICollection<Person> collection, Person person)
 		{
-			((ArrayList) collection).Add(person);
+			((List<Person>) collection).Add(person);
 		}
 
-		protected override ICollection CreateCollection()
+		protected override ICollection<Person> CreateCollection()
 		{
-			return new ArrayList();
+			return new List<Person>();
 		}
 
 		protected override void RunLinearJoinFetchTest(Person parent)

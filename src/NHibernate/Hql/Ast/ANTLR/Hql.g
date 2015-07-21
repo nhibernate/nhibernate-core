@@ -2,7 +2,7 @@ grammar Hql;
 
 options
 {
-	language=CSharp2;
+	language=CSharp3;
 	output=AST;
 	ASTLabelType=IASTNode;
 }
@@ -126,8 +126,12 @@ tokens
 using NHibernate.Hql.Ast.ANTLR.Tree;
 }
 
-statement
-	: ( updateStatement | deleteStatement | selectStatement | insertStatement ) EOF!
+public statement
+	:
+	(
+		{ !filter }? ( updateStatement | deleteStatement | insertStatement ) // DML statements are not allowed for collection-filtering queries
+		| selectStatement
+	) EOF!
 	;
 
 updateStatement
@@ -199,6 +203,12 @@ insertablePropertySpec
 //##     [selectClause] fromClause [whereClause] [groupByClause] [havingClause] [orderByClause] [skipClause] [takeClause];
 
 queryRule
+	@init {
+		++queryDepth;
+	}
+	@after {
+		--queryDepth;
+	}
 	: selectFrom
 		(whereClause)?
 		(groupByClause)?
@@ -211,7 +221,7 @@ queryRule
 selectFrom
 	:  (s=selectClause)? (f=fromClause)? 
 		{
-			if ($f.tree == null && !filter) 
+			if ($f.tree == null && !(filter && queryDepth == 1)) 
 				throw new RecognitionException("FROM expected (non-filter queries must contain a FROM clause)");
 		}
 		-> {$f.tree == null && filter}? ^(SELECT_FROM FROM["{filter-implied FROM}"] selectClause?)
@@ -393,7 +403,6 @@ negatedExpression
 	: NOT x=negatedExpression
 		-> ^({NegateNode($x.tree)})
 	| equalityExpression
-		-> ^(equalityExpression)
 	;
 
 //## OP: EQ | LT | GT | LE | GE | NE | SQL_NE | LIKE;
@@ -509,9 +518,9 @@ multiplyExpression
 unaryExpression
 	: m=MINUS mu=unaryExpression -> ^(UNARY_MINUS[$m] $mu)
 	| p=PLUS pu=unaryExpression -> ^(UNARY_PLUS[$p] $pu)
-	| c=caseExpression -> ^($c)
-	| q=quantifiedExpression -> ^($q) 
-	| a=atom -> ^($a)
+	| caseExpression
+	| quantifiedExpression
+	| atom
 	;
 	
 caseExpression
@@ -566,7 +575,7 @@ primaryExpression
 expressionOrVector!
 	: e=expression ( v=vectorExpr )? 
 	-> {v != null}? ^(VECTOR_EXPR["{vector}"] $e $v)
-	-> ^($e)
+	-> $e
 	;
 
 vectorExpr

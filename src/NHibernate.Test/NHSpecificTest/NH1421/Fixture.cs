@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using NUnit.Framework;
-using SharpTestsEx;
 using System.Collections.ObjectModel;
 
 namespace NHibernate.Test.NHSpecificTest.NH1421
@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1421
 			using (var s = OpenSession())
 			{
 				var query = s.CreateQuery("from AnEntity a where a.id in (:myList)");
-				query.Executing(x => x.SetParameterList("myList", new long[0])).Throws().And.Exception.Should().Not.Be.InstanceOf<NullReferenceException>();
+				Assert.That(() => query.SetParameterList("myList", new long[0]), Throws.Exception.Not.InstanceOf<NullReferenceException>());
 			}
 		}
 
@@ -24,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1421
 			using (var s = OpenSession())
 			{
 				var query = s.CreateQuery("from AnEntity a where a.id in (:myList)");
-				query.Executing(x => x.SetParameterList("myList", new Collection<long>())).Throws().And.Exception.Should().Not.Be.InstanceOf<NullReferenceException>();
+				Assert.That(() => query.SetParameterList("myList", new Collection<long>()), Throws.Exception.Not.InstanceOf<NullReferenceException>());
 			}
 		}
 
@@ -34,7 +34,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1421
 			using (var s = OpenSession())
 			{
 				var query = s.CreateQuery("from AnEntity a where a.id in (:myList)");
-				query.Executing(x => x.SetParameterList("myList", new ArrayList())).Throws().And.Exception.Should().Be.InstanceOf<ArgumentException>();
+
+				var ex = Assert.Throws<QueryException>(() => query.SetParameterList("myList", new List<object>()));
+				Assert.That(ex.Message, Is.EqualTo("An empty parameter-list generates wrong SQL; parameter name 'myList'"));
 			}
 		}
 
@@ -44,7 +46,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1421
 			using (var s = OpenSession())
 			{
 				var query = s.CreateQuery("from AnEntity a where a.id in (:myList)");
-				query.Executing(x => x.SetParameterList("myList", null)).Throws().And.Exception.Should().Be.InstanceOf<ArgumentNullException>();
+				Assert.That(() => query.SetParameterList("myList", null), Throws.Exception.InstanceOf<ArgumentNullException>());
 			}
 		}
 
@@ -54,9 +56,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1421
 			using (var s = OpenSession())
 			{
 				var query = s.CreateQuery("from AnEntity a where a.id in (:myList)");
-				query.Executing(x => x.SetParameterList("myList", new long[0]).List()).Throws().And.Exception.Should().Not.Be.InstanceOf<NullReferenceException>();
+				Assert.That(() => query.SetParameterList("myList", new long[0]).List(), Throws.Exception.Not.InstanceOf<NullReferenceException>());
 			}
 		}
-
 	}
 }

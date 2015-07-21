@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -8,7 +7,6 @@ using NHibernate.Engine;
 using NHibernate.Param;
 using NHibernate.Type;
 using Remotion.Linq.Parsing;
-using Remotion.Linq.Utilities;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -44,6 +42,16 @@ namespace NHibernate.Linq.Visitors
 
 		protected override Expression VisitMethodCallExpression(MethodCallExpression expression)
 		{
+			if (expression.Method.Name == "MappedAs" && expression.Method.DeclaringType == typeof(LinqExtensionMethods))
+			{
+				var parameter = (ConstantExpression) VisitExpression(expression.Arguments[0]);
+				var type = (ConstantExpression) expression.Arguments[1];
+
+				_parameters[parameter].Type = (IType) type.Value;
+
+				return parameter;
+			}
+
 			var method = expression.Method.IsGenericMethod
 							 ? expression.Method.GetGenericMethodDefinition()
 							 : expression.Method;

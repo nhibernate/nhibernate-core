@@ -33,12 +33,12 @@ namespace NHibernate.Tuple.Component
 				{
 					foundCustomAccessor = true;
 				}
-				i++;				
+				i++;
 			}
 			if (log.IsDebugEnabled)
 			{
 				log.DebugFormat("{0} accessors found for component: {1}", foundCustomAccessor ? "Custom" : "No custom",
-				                component.ComponentClassName);
+								component.ComponentClassName);
 			}
 			hasCustomAccessors = foundCustomAccessor;
 
@@ -53,7 +53,8 @@ namespace NHibernate.Tuple.Component
 				propTypes[j] = getters[j].ReturnType;
 			}
 
-			instantiator = BuildInstantiator(component);
+			// Fix for NH-3119
+			//instantiator = BuildInstantiator(component);
 		}
 
 		#region IComponentTuplizer Members
@@ -68,7 +69,7 @@ namespace NHibernate.Tuple.Component
 			throw new NotSupportedException();
 		}
 
-		public virtual bool HasParentProperty 
+		public virtual bool HasParentProperty
 		{
 			get { return false; }
 		}

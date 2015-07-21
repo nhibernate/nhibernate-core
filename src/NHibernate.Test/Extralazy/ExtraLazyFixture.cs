@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Extralazy
@@ -134,10 +135,10 @@ namespace NHibernate.Test.Extralazy
 				turin = (User) g.Users["turin"];
 				Assert.That(gavin, Is.Not.Null);
 				Assert.That(turin, Is.Not.Null);
-				Assert.That(g.Users["emmanuel"], Is.Null);
+				Assert.That(g.Users.ContainsKey("emmanuel"), Is.False);
 				Assert.IsFalse(NHibernateUtil.IsInitialized(g.Users));
 				Assert.That(gavin.Session["foo"], Is.Not.Null);
-				Assert.That(turin.Session["foo"], Is.Null);
+				Assert.That(turin.Session.ContainsKey("foo"), Is.False);
 				Assert.IsFalse(NHibernateUtil.IsInitialized(gavin.Session));
 				Assert.IsFalse(NHibernateUtil.IsInitialized(turin.Session));
 				s.Delete(gavin);
@@ -189,7 +190,7 @@ namespace NHibernate.Test.Extralazy
 				//Assert.IsTrue( g.Users.IsEmpty() );
 				//Assert.IsFalse( NHibernateUtil.IsInitialized( g.getUsers() ) );
 				gavin = s.Get<User>("gavin");
-				Assert.IsFalse(gavin.Session.Contains("foo"));
+				Assert.IsFalse(gavin.Session.ContainsKey("foo"));
 				Assert.IsFalse(NHibernateUtil.IsInitialized(gavin.Session));
 				s.Delete(gavin);
 				s.Delete(turin);
@@ -204,7 +205,7 @@ namespace NHibernate.Test.Extralazy
 			User gavin = null;
 			User turin = null;
 			Group g = null;
-			IDictionary smap = null;
+			IDictionary<string, SessionAttribute> smap = null;
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())

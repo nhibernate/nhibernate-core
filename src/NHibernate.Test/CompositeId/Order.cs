@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.CompositeId
 {
@@ -46,7 +46,7 @@ namespace NHibernate.Test.CompositeId
 		private ID id = new ID();
 		private DateTime orderDate;
 		private Customer customer;
-		private IList lineItems = new ArrayList();
+		private IList<LineItem> lineItems = new List<LineItem>();
 		private decimal total;
 
 		public Order() {}
@@ -76,7 +76,7 @@ namespace NHibernate.Test.CompositeId
 			set { customer = value; }
 		}
 
-		public virtual IList LineItems
+		public virtual IList<LineItem> LineItems
 		{
 			get { return lineItems; }
 			set { lineItems = value; }

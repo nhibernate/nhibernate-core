@@ -49,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 			var first = new UnfetchedLazyProperty();
 			var second = new UnfetchedLazyProperty();
 
-			Assert.True(Equals(first, second));
+			Assert.That(Equals(first, second), Is.True);
 		}
 
 		[Test]
@@ -58,7 +58,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 			var first = new UnfetchedLazyProperty();
 			var second = new UnknownBackrefProperty();
 
-			Assert.False(Equals(first, second));
+			Assert.That(Equals(first, second), Is.False);
 		}
 
 		[Test]

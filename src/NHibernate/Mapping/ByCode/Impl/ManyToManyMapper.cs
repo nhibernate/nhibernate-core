@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
@@ -44,8 +45,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			      	unique = manyToMany.unique,
 			      	uniqueSpecified = manyToMany.unique,
 			      };
-			string defaultColumnName = elementType.Name;
-			columnMapper(new ColumnMapper(hbm, defaultColumnName));
+			columnMapper(new ColumnMapper(hbm, Collection.DefaultElementColumnName));
 			if (ColumnTagIsRequired(hbm))
 			{
 				manyToMany.Items = new[] {hbm};
@@ -53,7 +53,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			}
 			else
 			{
-				manyToMany.column = defaultColumnName == null || !defaultColumnName.Equals(hbm.name) ? hbm.name : null;
+				manyToMany.column = Collection.DefaultElementColumnName.Equals(hbm.name) ? null : hbm.name;
 				manyToMany.unique = hbm.unique;
 			}
 		}
@@ -129,7 +129,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 			ResetColumnPlainValues();
 			manyToMany.Items = null;
-			string[] formulaLines = formula.Split(new[] {Environment.NewLine}, StringSplitOptions.None);
+			string[] formulaLines = formula.Split(StringHelper.LineSeparators, StringSplitOptions.None);
 			if (formulaLines.Length > 1)
 			{
 				manyToMany.Items = new[] {new HbmFormula {Text = formulaLines}};
@@ -164,6 +164,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void ForeignKey(string foreignKeyName)
 		{
 			manyToMany.foreignkey = foreignKeyName;
+		}
+
+		public void Where(string sqlWhereClause)
+		{
+			manyToMany.where = sqlWhereClause;
 		}
 
 		#endregion

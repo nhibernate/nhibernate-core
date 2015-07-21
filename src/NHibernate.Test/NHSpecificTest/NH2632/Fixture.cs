@@ -4,7 +4,6 @@ using NHibernate.Cfg.Loquacious;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2632
 {
@@ -33,11 +32,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2632
 				}, c => c.OneToMany());
 			});
 			mapper.Class<Order>(cm =>
-			                    {
+								{
 														cm.Id(x => x.Id, m => { });
 														cm.Property(x => x.Date);
 														cm.ManyToOne(x => x.Customer, map => map.Column("CUSTOMERID"));
-			                    });
+								});
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 
@@ -94,10 +93,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2632
 				using (var session = OpenSession())
 				{
 					Customer customer = null;
-					Executing.This(()=> customer = session.Get<Customer>(scenario.CustomerId)).Should().NotThrow();
+					Assert.That(() => customer = session.Get<Customer>(scenario.CustomerId), Throws.Nothing);
 					// An entity defined with lazy=false can't have lazy properties (as reported by the WARNING; see EntityMetamodel class)
-					NHibernateUtil.IsInitialized(customer.Address).Should().Be.True();
-					customer.Address.Should().Be("Bah?!??");
+					Assert.That(NHibernateUtil.IsInitialized(customer.Address), Is.True);
+					Assert.That(customer.Address, Is.EqualTo("Bah?!??"));
 				}
 			}
 		}

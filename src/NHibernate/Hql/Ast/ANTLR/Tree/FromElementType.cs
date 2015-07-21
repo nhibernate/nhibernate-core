@@ -36,10 +36,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			_persister = persister;
 			_entityType = entityType;
 
-			if (persister != null)
-			{
-				fromElement.Text = ((IQueryable)persister).TableName + " " + TableAlias;
-			}
+			var queryable = persister as IQueryable;
+			if (queryable != null)
+				fromElement.Text = queryable.TableName + " " + fromElement.TableAlias;
 		}
 
 		protected FromElementType(FromElement fromElement)
@@ -111,22 +110,19 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			get
 			{
-				if ( _joinSequence != null ) 
+				if (_joinSequence != null)
 				{
 					return _joinSequence;
 				}
 
 				// Class names in the FROM clause result in a JoinSequence (the old FromParser does this).
-				if ( _persister is IJoinable ) 
+				var joinable = _persister as IJoinable;
+				if (joinable != null)
 				{
-					IJoinable joinable = ( IJoinable ) _persister;
-					return _fromElement.SessionFactoryHelper.CreateJoinSequence().SetRoot(joinable, TableAlias );
-				}
-				else 
-				{
-					return null;	// TODO: Should this really return null?  If not, figure out something better to do here.
+					return _fromElement.SessionFactoryHelper.CreateJoinSequence().SetRoot(joinable, TableAlias);
 				}
 				
+				return null; // TODO: Should this really return null?  If not, figure out something better to do here.
 			}
 			set { _joinSequence = value; }
 		}
@@ -144,11 +140,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			// Render the identifier select fragment using the table alias.
 			if (_fromElement.FromClause.IsSubQuery)
 			{
-				// TODO: Replace this with a more elegant solution.
-				string[] idColumnNames = (_persister != null) ?
-						((IQueryable)_persister).IdentifierColumnNames : new String[0];
+				var queryable = Queryable;
+				if (queryable == null)
+					return string.Empty;
 
-				StringBuilder buf = new StringBuilder();
+				// TODO: Replace this with a more elegant solution.
+				string[] idColumnNames = queryable.IdentifierColumnNames;
+
+				var buf = new StringBuilder();
 				for (int i = 0; i < idColumnNames.Length; i++)
 				{
 					buf.Append(_fromElement.TableAlias).Append('.').Append(idColumnNames[i]);
@@ -158,11 +157,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			else
 			{
-				if (_persister == null)
-				{
+				var queryable = Queryable;
+				if (queryable == null)
 					throw new QueryException("not an entity");
-				}
-				string fragment = ((IQueryable)_persister).IdentifierSelectFragment(TableAlias, GetSuffix(size, k));
+				
+				string fragment = queryable.IdentifierSelectFragment(TableAlias, GetSuffix(size, k));
 				return TrimLeadingCommaAndSpaces(fragment);
 			}
 		}
@@ -202,53 +201,37 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			CheckInitialized();
 
-			if (_persister == null)
-			{
+			var queryable = Queryable;
+			if (queryable == null)
 				return "";
-			}
-			else
-			{
-				string fragment = ((IQueryable)_persister).PropertySelectFragment(
-						TableAlias,
-						GetSuffix(size, k),
-						allProperties
-					);
-				return TrimLeadingCommaAndSpaces(fragment);
-			}
+
+			string fragment = queryable.PropertySelectFragment(TableAlias, GetSuffix(size, k), allProperties);
+
+			return TrimLeadingCommaAndSpaces(fragment);
 		}
 
 		public string RenderCollectionSelectFragment(int size, int k)
 		{
 			if (_queryableCollection == null)
-			{
 				return "";
-			}
-			else
-			{
-				if (_collectionSuffix == null)
-				{
-					_collectionSuffix = GenerateSuffix(size, k);
-				}
-				string fragment = _queryableCollection.SelectFragment(CollectionTableAlias, _collectionSuffix);
-				return TrimLeadingCommaAndSpaces(fragment);
-			}
+
+			if (_collectionSuffix == null)
+				_collectionSuffix = GenerateSuffix(size, k);
+
+			string fragment = _queryableCollection.SelectFragment(CollectionTableAlias, _collectionSuffix);
+			return TrimLeadingCommaAndSpaces(fragment);
 		}
 
 		public string RenderValueCollectionSelectFragment(int size, int k)
 		{
 			if (_queryableCollection == null)
-			{
 				return "";
-			}
-			else
-			{
-				if (_collectionSuffix == null)
-				{
-					_collectionSuffix = GenerateSuffix(size, k);
-				}
-				string fragment = _queryableCollection.SelectFragment(TableAlias, _collectionSuffix);
-				return TrimLeadingCommaAndSpaces(fragment);
-			}
+
+			if (_collectionSuffix == null)
+				_collectionSuffix = GenerateSuffix(size, k);
+
+			string fragment = _queryableCollection.SelectFragment(TableAlias, _collectionSuffix);
+			return TrimLeadingCommaAndSpaces(fragment);
 		}
 
 		public bool IsEntity
@@ -258,23 +241,15 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public bool IsCollectionOfValuesOrComponents
 		{
-			get 
+			get
 			{
-				if (_persister == null)
-				{
-					if (_queryableCollection == null)
-					{
-						return false;
-					}
-					else
-					{
-						return !_queryableCollection.ElementType.IsEntityType;
-					}
-				}
-				else
-				{
+				if (_persister != null)
 					return false;
-				}
+
+				if (_queryableCollection == null)
+					return false;
+				
+				return !_queryableCollection.ElementType.IsEntityType;
 			}
 		}
 
@@ -361,7 +336,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// </summary>
 		public IQueryable Queryable
 		{
-			get { return (_persister is IQueryable) ? (IQueryable) _persister : null; }
+			get { return _persister as IQueryable; }
 		}
 
 		public virtual IQueryableCollection QueryableCollection
@@ -379,7 +354,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					// For many-to-many joins, use the tablename from the queryable collection for the default text.
 					_fromElement.Text = _queryableCollection.TableName + " " + TableAlias;
 				}
-				
 			}
 		}
 
@@ -481,7 +455,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				FromClause top = _fromElement.Walker.GetFinalFromClause();
 				return _fromElement.FromClause != _fromElement.Walker.CurrentFromClause &&
-				       _fromElement.FromClause == top;
+					   _fromElement.FromClause == top;
 			}
 		}
 
@@ -491,7 +465,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				// should be safe to only ever expect EntityPersister references here
 				return _fromElement.Queryable != null &&
-				       _fromElement.Queryable.IsMultiTable;
+					   _fromElement.Queryable.IsMultiTable;
 			}
 		}
 
@@ -516,6 +490,5 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			fragment = fragment.Trim();
 			return fragment.Trim();
 		}
-
 	}
 }

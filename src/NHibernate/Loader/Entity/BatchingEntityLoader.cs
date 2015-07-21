@@ -68,8 +68,8 @@ namespace NHibernate.Loader.Entity
 		}
 
 		public static IUniqueEntityLoader CreateBatchingEntityLoader(IOuterJoinLoadable persister, int maxBatchSize,
-		                                                             LockMode lockMode, ISessionFactoryImplementor factory,
-		                                                             IDictionary<string, IFilter> enabledFilters)
+																	 LockMode lockMode, ISessionFactoryImplementor factory,
+																	 IDictionary<string, IFilter> enabledFilters)
 		{
 			if (maxBatchSize > 1)
 			{

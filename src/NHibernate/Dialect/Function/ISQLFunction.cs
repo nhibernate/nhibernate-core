@@ -38,7 +38,7 @@ namespace NHibernate.Dialect.Function
 		/// </summary>
 		/// <param name="args">List of arguments</param>
 		/// <param name="factory"></param>
-		/// <returns>SQL fragment for the fuction.</returns>
+		/// <returns>SQL fragment for the function.</returns>
 		SqlString Render(IList args, ISessionFactoryImplementor factory);
 	}
 }

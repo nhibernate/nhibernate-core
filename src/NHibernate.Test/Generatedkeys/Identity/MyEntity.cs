@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.Generatedkeys.Identity
 {
@@ -9,8 +8,8 @@ namespace NHibernate.Test.Generatedkeys.Identity
 		private long id;
 		private String name;
 		private MySibling sibling;
-		private ISet<MyChild> nonInverseChildren = new HashedSet<MyChild>();
-		private ISet<MyChild> inverseChildren = new HashedSet<MyChild>();
+		private ISet<MyChild> nonInverseChildren = new HashSet<MyChild>();
+		private ISet<MyChild> inverseChildren = new HashSet<MyChild>();
 
 		public MyEntity()
 		{

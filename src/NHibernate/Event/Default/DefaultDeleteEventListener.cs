@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 using NHibernate.Action;
 using NHibernate.Classic;
 using NHibernate.Engine;
@@ -145,7 +144,7 @@ namespace NHibernate.Event.Default
 			// NH different impl : NH-1895
 			if(transientEntities == null)
 			{
-				transientEntities = new HashedSet<object>();
+				transientEntities = new HashSet<object>();
 			}
 			if (!transientEntities.Add(entity))
 			{

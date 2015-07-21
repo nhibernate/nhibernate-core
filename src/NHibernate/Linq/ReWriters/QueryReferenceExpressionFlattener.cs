@@ -12,10 +12,11 @@ namespace NHibernate.Linq.ReWriters
 	{
 		private readonly QueryModel _model;
 
-		private static readonly System.Type[] FlattenableResultOperators = new[]
-																				{
-																					typeof(CacheableResultOperator),
-																				};
+		internal static readonly System.Type[] FlattenableResultOperators =
+		{
+			typeof (CacheableResultOperator),
+			typeof (TimeoutResultOperator),
+		};
 
 		private QueryReferenceExpressionFlattener(QueryModel model)
 		{
@@ -32,7 +33,7 @@ namespace NHibernate.Linq.ReWriters
 		{
 			var subQueryModel = subQuery.QueryModel;
 			var hasBodyClauses = subQueryModel.BodyClauses.Count > 0;
-			if(hasBodyClauses)
+			if (hasBodyClauses)
 			{
 				return base.VisitSubQueryExpression(subQuery);
 			}

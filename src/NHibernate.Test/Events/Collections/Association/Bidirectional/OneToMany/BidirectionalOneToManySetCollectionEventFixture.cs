@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Events.Collections.Association.Bidirectional.OneToMany
@@ -24,7 +23,7 @@ namespace NHibernate.Test.Events.Collections.Association.Bidirectional.OneToMany
 
 		public override ICollection<IChild> CreateCollection()
 		{
-			return new HashedSet<IChild>();
+			return new HashSet<IChild>();
 		}
 	}
 }

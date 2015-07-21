@@ -94,38 +94,75 @@ namespace NHibernate.Tool.hbm2ddl
 		/// <summary>
 		/// Run the schema creation script
 		/// </summary>
-		/// <param name="script"><see langword="true" /> if the ddl should be outputted in the Console.</param>
-		/// <param name="export"><see langword="true" /> if the ddl should be executed against the Database.</param>
+		/// <param name="useStdOut"><see langword="true" /> if the ddl should be outputted in the Console.</param>
+		/// <param name="execute"><see langword="true" /> if the ddl should be executed against the Database.</param>
 		/// <remarks>
 		/// This is a convenience method that calls <see cref="Execute(bool, bool, bool)"/> and sets
 		/// the justDrop parameter to false.
 		/// </remarks>
-		public void Create(bool script, bool export)
+		public void Create(bool useStdOut, bool execute)
 		{
-			Execute(script, export, false);
+			Execute(useStdOut, execute, false);
 		}
 
-		public void Create(Action<string> scriptAction, bool export)
+		/// <summary>
+		/// Run the schema creation script
+		/// </summary>
+		/// <param name="scriptAction"> an action that will be called for each line of the generated ddl.</param>
+		/// <param name="execute"><see langword="true" /> if the ddl should be executed against the Database.</param>
+		/// <remarks>
+		/// This is a convenience method that calls <see cref="Execute(bool, bool, bool)"/> and sets
+		/// the justDrop parameter to false.
+		/// </remarks>
+		public void Create(Action<string> scriptAction, bool execute)
 		{
-			Execute(scriptAction, export, false);
+			Execute(scriptAction, execute, false);
+		}
+
+		/// <summary>
+		/// Run the schema creation script
+		/// </summary>
+		/// <param name="exportOutput"> if non-null, the ddl will be written to this TextWriter.</param>
+		/// <param name="execute"><see langword="true" /> if the ddl should be executed against the Database.</param>
+		/// <remarks>
+		/// This is a convenience method that calls <see cref="Execute(bool, bool, bool)"/> and sets
+		/// the justDrop parameter to false.
+		/// </remarks>
+		public void Create(TextWriter exportOutput, bool execute)
+		{
+			Execute(null, execute, false, exportOutput);
 		}
 
 		/// <summary>
 		/// Run the drop schema script
 		/// </summary>
-		/// <param name="script"><see langword="true" /> if the ddl should be outputted in the Console.</param>
-		/// <param name="export"><see langword="true" /> if the ddl should be executed against the Database.</param>
+		/// <param name="useStdOut"><see langword="true" /> if the ddl should be outputted in the Console.</param>
+		/// <param name="execute"><see langword="true" /> if the ddl should be executed against the Database.</param>
 		/// <remarks>
 		/// This is a convenience method that calls <see cref="Execute(bool, bool, bool)"/> and sets
 		/// the justDrop parameter to true.
 		/// </remarks>
-		public void Drop(bool script, bool export)
+		public void Drop(bool useStdOut, bool execute)
 		{
-			Execute(script, export, true);
+			Execute(useStdOut, execute, true);
 		}
 
-		private void Execute(Action<string> scriptAction, bool export, bool throwOnError, TextWriter exportOutput,
-		                     IDbCommand statement, string sql)
+		/// <summary>
+		/// Run the drop schema script
+		/// </summary>
+		/// <param name="exportOutput"> if non-null, the ddl will be written to this TextWriter.</param>
+		/// <param name="execute"><see langword="true" /> if the ddl should be executed against the Database.</param>
+		/// <remarks>
+		/// This is a convenience method that calls <see cref="Execute(Action&lt;string&gt;, bool, bool, TextWriter)"/> and sets
+		/// the justDrop parameter to true.
+		/// </remarks>
+		public void Drop(TextWriter exportOutput, bool execute)
+		{
+			Execute(null, execute, true, exportOutput);
+		}
+
+		private void Execute(Action<string> scriptAction, bool execute, bool throwOnError, TextWriter exportOutput,
+							 IDbCommand statement, string sql)
 		{
 			Initialize();
 			try
@@ -145,9 +182,9 @@ namespace NHibernate.Tool.hbm2ddl
 				{
 					exportOutput.WriteLine(formatted);
 				}
-				if (export)
+				if (execute)
 				{
-                    ExecuteSql(statement, sql);
+					ExecuteSql(statement, sql);
 				}
 			}
 			catch (Exception e)
@@ -161,34 +198,34 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 		}
 
-        private void ExecuteSql(IDbCommand cmd, string sql)
-        {
-            if (dialect.SupportsSqlBatches)
-            {
-                var objFactory = Environment.BytecodeProvider.ObjectsFactory;
-                ScriptSplitter splitter = (ScriptSplitter)objFactory.CreateInstance(typeof(ScriptSplitter), sql);
+		private void ExecuteSql(IDbCommand cmd, string sql)
+		{
+			if (dialect.SupportsSqlBatches)
+			{
+				var objFactory = Environment.BytecodeProvider.ObjectsFactory;
+				ScriptSplitter splitter = (ScriptSplitter)objFactory.CreateInstance(typeof(ScriptSplitter), sql);
 
-                foreach (string stmt in splitter)
-                {
-                    log.DebugFormat("SQL Batch: {0}", stmt);
-                    cmd.CommandText = stmt;
-                    cmd.CommandType = CommandType.Text;
-                    cmd.ExecuteNonQuery();
-                }
-            }
-            else
-            {
-                cmd.CommandText = sql;
-                cmd.CommandType = CommandType.Text;
-                cmd.ExecuteNonQuery();
-            }
-        }
+				foreach (string stmt in splitter)
+				{
+					log.DebugFormat("SQL Batch: {0}", stmt);
+					cmd.CommandText = stmt;
+					cmd.CommandType = CommandType.Text;
+					cmd.ExecuteNonQuery();
+				}
+			}
+			else
+			{
+				cmd.CommandText = sql;
+				cmd.CommandType = CommandType.Text;
+				cmd.ExecuteNonQuery();
+			}
+		}
 
 		/// <summary>
 		/// Executes the Export of the Schema in the given connection
 		/// </summary>
-		/// <param name="script"><see langword="true" /> if the ddl should be outputted in the Console.</param>
-		/// <param name="export"><see langword="true" /> if the ddl should be executed against the Database.</param>
+		/// <param name="useStdOut"><see langword="true" /> if the ddl should be outputted in the Console.</param>
+		/// <param name="execute"><see langword="true" /> if the ddl should be executed against the Database.</param>
 		/// <param name="justDrop"><see langword="true" /> if only the ddl to drop the Database objects should be executed.</param>
 		/// <param name="connection">
 		/// The connection to use when executing the commands when export is <see langword="true" />.
@@ -200,30 +237,30 @@ namespace NHibernate.Tool.hbm2ddl
 		/// This overload is provided mainly to enable use of in memory databases. 
 		/// It does NOT close the given connection!
 		/// </remarks>
-		public void Execute(bool script, bool export, bool justDrop, IDbConnection connection,
-		                    TextWriter exportOutput)
+		public void Execute(bool useStdOut, bool execute, bool justDrop, IDbConnection connection,
+							TextWriter exportOutput)
 		{
-			if (script)
+			if (useStdOut)
 			{
-				Execute(Console.WriteLine, export, justDrop, connection, exportOutput);
+				Execute(Console.WriteLine, execute, justDrop, connection, exportOutput);
 			}
 			else
 			{
-				Execute(null, export, justDrop, connection, exportOutput);
+				Execute(null, execute, justDrop, connection, exportOutput);
 			}
 		}
 
-		public void Execute(Action<string> scriptAction, bool export, bool justDrop, IDbConnection connection,
-		                    TextWriter exportOutput)
+		public void Execute(Action<string> scriptAction, bool execute, bool justDrop, IDbConnection connection,
+							TextWriter exportOutput)
 		{
 			Initialize();
 			IDbCommand statement = null;
 
-			if (export && connection == null)
+			if (execute && connection == null)
 			{
 				throw new ArgumentNullException("connection", "When export is set to true, you need to pass a non null connection");
 			}
-			if (export)
+			if (execute)
 			{
 				statement = connection.CreateCommand();
 			}
@@ -232,14 +269,14 @@ namespace NHibernate.Tool.hbm2ddl
 			{
 				for (int i = 0; i < dropSQL.Length; i++)
 				{
-					Execute(scriptAction, export, false, exportOutput, statement, dropSQL[i]);
+					Execute(scriptAction, execute, false, exportOutput, statement, dropSQL[i]);
 				}
 
 				if (!justDrop)
 				{
 					for (int j = 0; j < createSQL.Length; j++)
 					{
-						Execute(scriptAction, export, true, exportOutput, statement, createSQL[j]);
+						Execute(scriptAction, execute, true, exportOutput, statement, createSQL[j]);
 					}
 				}
 			}
@@ -273,59 +310,66 @@ namespace NHibernate.Tool.hbm2ddl
 		/// <summary>
 		/// Executes the Export of the Schema.
 		/// </summary>
-		/// <param name="script"><see langword="true" /> if the ddl should be outputted in the Console.</param>
-		/// <param name="export"><see langword="true" /> if the ddl should be executed against the Database.</param>
+		/// <param name="useStdOut"><see langword="true" /> if the ddl should be outputted in the Console.</param>
+		/// <param name="execute"><see langword="true" /> if the ddl should be executed against the Database.</param>
 		/// <param name="justDrop"><see langword="true" /> if only the ddl to drop the Database objects should be executed.</param>
 		/// <remarks>
 		/// This method allows for both the drop and create ddl script to be executed.
 		/// </remarks>
-		public void Execute(bool script, bool export, bool justDrop)
+		public void Execute(bool useStdOut, bool execute, bool justDrop)
 		{
-			if (script)
+			if (useStdOut)
 			{
-				Execute(Console.WriteLine, export, justDrop);
+				Execute(Console.WriteLine, execute, justDrop);
 			}
 			else
 			{
-				Execute(null, export, justDrop);
+				Execute(null, execute, justDrop);
 			}
 		}
 
-		public void Execute(Action<string> scriptAction, bool export, bool justDrop)
+
+		public void Execute(Action<string> scriptAction, bool execute, bool justDrop)
+		{
+			Execute(scriptAction, execute, justDrop, null);
+		}
+
+
+		public void Execute(Action<string> scriptAction, bool execute, bool justDrop, TextWriter exportOutput)
 		{
 			Initialize();
 			IDbConnection connection = null;
-			StreamWriter fileOutput = null;
+			TextWriter fileOutput = exportOutput;
 			IConnectionProvider connectionProvider = null;
-
-			var props = new Dictionary<string, string>();
-			foreach (var de in dialect.DefaultProperties)
-			{
-				props[de.Key] = de.Value;
-			}
-
-			if (configProperties != null)
-			{
-				foreach (var de in configProperties)
-				{
-					props[de.Key] = de.Value;
-				}
-			}
 
 			try
 			{
-				if (outputFile != null)
+				if (fileOutput == null && outputFile != null)
 				{
 					fileOutput = new StreamWriter(outputFile);
 				}
 
-				if (export)
+				if (execute)
 				{
+					var props = new Dictionary<string, string>();
+					foreach (var de in dialect.DefaultProperties)
+					{
+						props[de.Key] = de.Value;
+					}
+
+					if (configProperties != null)
+					{
+						foreach (var de in configProperties)
+						{
+							props[de.Key] = de.Value;
+						}
+					}
+
 					connectionProvider = ConnectionProviderFactory.NewConnectionProvider(props);
 					connection = connectionProvider.GetConnection();
 				}
 
-				Execute(scriptAction, export, justDrop, connection, fileOutput);
+				Execute(scriptAction, execute, justDrop, connection, fileOutput);
 			}
 			catch (HibernateException)
 			{

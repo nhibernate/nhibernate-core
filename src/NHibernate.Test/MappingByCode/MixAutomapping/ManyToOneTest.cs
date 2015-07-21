@@ -1,6 +1,5 @@
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.MixAutomapping
 {
@@ -25,7 +24,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			autoinspector.IsEntity((t, declared) => typeof(AEntity).Equals(t) || typeof(BEntity).Equals(t));
 
 			var inspector = (IModelInspector)autoinspector;
-			inspector.IsManyToOne(typeof(AEntity).GetProperty("B")).Should().Be.True();
+			Assert.That(inspector.IsManyToOne(typeof(AEntity).GetProperty("B")), Is.True);
 		}
 
 		[Test]
@@ -35,7 +34,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			autoinspector.IsEntity((t, declared) => typeof(AEntity).Equals(t) || typeof(BEntity).Equals(t));
 
 			var inspector = (IModelInspector)autoinspector;
-			inspector.IsManyToOne(typeof(AEntity).GetProperty("Name")).Should().Be.False();
+			Assert.That(inspector.IsManyToOne(typeof(AEntity).GetProperty("Name")), Is.False);
 		}
 
 		[Test]
@@ -46,7 +45,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			autoinspector.IsComponent((t, declared) => typeof(BEntity).Equals(t));
 
 			var inspector = (IModelInspector)autoinspector;
-			inspector.IsManyToOne(typeof(AEntity).GetProperty("B")).Should().Be.False();
+			Assert.That(inspector.IsManyToOne(typeof(AEntity).GetProperty("B")), Is.False);
 		}
 
 		[Test]
@@ -57,7 +56,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			mapper.Class<AEntity>(map => map.OneToOne(a => a.B, x => { }));
 			mapper.Class<BEntity>(x=> { });
 			var inspector = (IModelInspector)autoinspector;
-			inspector.IsManyToOne(typeof(AEntity).GetProperty("B")).Should().Be.False();
+			Assert.That(inspector.IsManyToOne(typeof(AEntity).GetProperty("B")), Is.False);
 		}
 	}
 }

@@ -42,15 +42,7 @@ namespace NHibernate.Criterion
 			SqlString val = projection.ToSqlString(criteria, loc, criteriaQuery,enabledFilters);
 			val = SqlStringHelper.RemoveAsAliasesFromSql(val);
 
-			return new SqlStringBuilder()
-				.Add("cast( ")
-				.Add(val)
-				.Add(" as ")
-				.Add(sqlType)
-				.Add(")")
-				.Add(" as ")
-				.Add(GetColumnAliases(position)[0])
-				.ToSqlString();
+			return new SqlString("cast( ", val, " as ", sqlType, ") as ", GetColumnAliases(position, criteria, criteriaQuery)[0]);
 		}
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)

@@ -58,19 +58,27 @@ namespace NHibernate.Mapping
 			if (!IsOneToMany)
 			{
 				PrimaryKey pk = new PrimaryKey();
-				foreach (Column col in Key.ColumnIterator)
+				foreach (ISelectable selectable in Key.ColumnIterator)
 				{
-					pk.AddColumn(col);
+					if (!selectable.IsFormula)
+					{
+						Column col = (Column)selectable;
+						pk.AddColumn(col);
+					}
 				}
 
 				bool nullable = false;
-				foreach (Column col in Element.ColumnIterator)
+				foreach (ISelectable selectable in Element.ColumnIterator)
 				{
-					if (col.IsNullable)
+					if (!selectable.IsFormula)
 					{
-						nullable = true;
+						Column col = (Column) selectable;
+						if (col.IsNullable)
+						{
+							nullable = true;
+						}
+						pk.AddColumn(col);
 					}
-					pk.AddColumn(col);
 				}
 
 				// some databases (Postgres) will tolerate nullable

@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH2439">
+	<class name="Organisation" abstract ="false" table="tblTrnOrganisation">
+		<id name="OrganisationId">
+			<generator class="guid"></generator>
+		</id>
+		
+		
+	</class>
+
+
+	<class name="TrainingComponent" abstract="true" table="tblTrnNrt">
+		<id name ="Id" column="NrtId">
+			<generator class="guid"></generator>
+		</id>
+		<!--discriminator column="NrtObjectTypeId" type="int" /-->
+
+		<property name="Code" column="NationalCode" length="12"></property>
+		<property name="Title" column="NationalTitle" length="200"></property>
+	</class>
+
+
+	<class name="RtoScope" table="tblTrnRtoScope" dynamic-insert="true" dynamic-update="true" >
+		<id name="Id" column="RtoScopeId">
+			<generator class="guid"></generator>
+		</id>
+
+		<many-to-one column="OrganisationId" class="Organisation" name="Rto" not-null="true"/>
+		<many-to-one column="NrtId" class="TrainingComponent" name="Nrt" not-null="true" fetch="join"/>
+
+		<property name="StartDate" column="ScopeStartDate" not-null="true"/>
+		<property name="EndDate" column="ScopeEndDate"/>
+
+		<property name="IsRefused" column="IsRefused" not-null="true"/>
+	</class>
+	
+	<class name="OrganisationSearchResult" table="uvwOrganisationSearch">
+		<id name="Id">
+			<generator class="guid"></generator>
+		</id>
+
+		<many-to-one name="Organisation" column="OrganisationId" lazy="no-proxy" />
+	</class>
+</hibernate-mapping>
+

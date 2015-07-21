@@ -50,11 +50,11 @@ namespace NHibernate.Cfg
 					Assembly thisAssembly = Assembly.GetExecutingAssembly();
 					var attrs =
 						(AssemblyInformationalVersionAttribute[])
-						thisAssembly.GetCustomAttributes(typeof (AssemblyInformationalVersionAttribute), false);
+						thisAssembly.GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), false);
 
 					if (attrs != null && attrs.Length > 0)
 					{
-						cachedVersion = string.Format("{0} ({1})", thisAssembly.GetName().Version, attrs[0].InformationalVersion);
+						cachedVersion = string.Format("{0} (assembly {1})", attrs[0].InformationalVersion, thisAssembly.GetName().Version);
 					}
 					else
 					{
@@ -90,12 +90,15 @@ namespace NHibernate.Cfg
 		/// <summary>The EntityMode in which set the Session opened from the SessionFactory.</summary>
 		public const string DefaultEntityMode = "default_entity_mode";
 
+		/// Implementation of NH-3619 - Make default value of FlushMode configurable
+		public const string DefaultFlushMode = "default_flush_mode";
+
 		/// <summary>
 		/// When using an enhanced id generator and pooled optimizers (<see cref="NHibernate.Id.Enhanced.IOptimizer"/>),
 		/// prefer interpreting the database value as the lower (lo) boundary. The default is to interpret it as the high boundary.
 		/// </summary>
 		public const string PreferPooledValuesLo = "id.optimizer.pooled.prefer_lo";
-		
+
 		public const string ShowSql = "show_sql";
 		public const string MaxFetchDepth = "max_fetch_depth";
 		public const string CurrentSessionContextClass = "current_session_context_class";
@@ -141,6 +144,9 @@ namespace NHibernate.Cfg
 		// The classname of the HQL query parser factory
 		public const string QueryTranslator = "query.factory_class";
 
+		// The class name of the LINQ query provider class, implementing from <see cref="INhQueryProvider"/>
+		public const string QueryLinqProvider = "query.linq_provider_class";
+
 		public const string QueryImports = "query.imports";
 		public const string Hbm2ddlAuto = "hbm2ddl.auto";
 		public const string Hbm2ddlKeyWords = "hbm2ddl.keywords";
@@ -165,25 +171,38 @@ namespace NHibernate.Cfg
 		public const string DefaultBatchFetchSize = "default_batch_fetch_size";
 
 		public const string CollectionTypeFactoryClass = "collectiontype.factory_class";
-		
+
 		public const string LinqToHqlGeneratorsRegistry = "linqtohql.generatorsregistry";
 
 		/// <summary> Enable ordering of insert statements for the purpose of more effecient batching.</summary>
 		public const string OrderInserts = "order_inserts";
+
+		/// <summary> Enable ordering of update statements for the purpose of more effecient batching.</summary>
+		public const string OrderUpdates = "order_updates";
+
+		public const string QueryModelRewriterFactory = "query.query_model_rewriter_factory";
+		
+		/// <summary>
+		/// If this setting is set to false, exceptions in IInterceptor.BeforeTransactionCompletion bubble to the caller of ITransaction.Commit and abort the commit.
+		/// If this setting is set to true, exceptions in IInterceptor.BeforeTransactionCompletion are ignored and the commit is performed.
+		/// The default setting is false.
+		/// </summary>
+		[Obsolete("This setting is likely to be removed in a future version of NHibernate. The workaround is to catch all exceptions in the IInterceptor implementation.")]
+		public const string InterceptorsBeforeTransactionCompletionIgnoreExceptions = "interceptors.beforetransactioncompletion_ignore_exceptions";
 
 		private static readonly Dictionary<string, string> GlobalProperties;
 
 		private static IBytecodeProvider BytecodeProviderInstance;
 		private static bool EnableReflectionOptimizer;
 
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (Environment));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(Environment));
 
 		/// <summary>
 		/// Issue warnings to user when any obsolete property names are used.
 		/// </summary>
 		/// <param name="props"></param>
 		/// <returns></returns>
-		public static void VerifyProperties(IDictionary<string, string> props) {}
+		public static void VerifyProperties(IDictionary<string, string> props) { }
 
 		static Environment()
 		{

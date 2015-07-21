@@ -25,7 +25,7 @@ namespace NHibernate.SqlCommand
 		}
 
 		private void AddJoin(string tableName, string alias, string concreteAlias, string[] fkColumns, string[] pkColumns,
-		                     JoinType joinType, SqlString on)
+							 JoinType joinType, SqlString on)
 		{
 			if (!useThetaStyleInnerJoins || joinType != JoinType.InnerJoin)
 			{
@@ -42,7 +42,7 @@ namespace NHibernate.SqlCommand
 		}
 
 		public override void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType,
-		                             SqlString on)
+									 SqlString on)
 		{
 			AddJoin(tableName, alias, alias, fkColumns, pkColumns, joinType, on);
 		}

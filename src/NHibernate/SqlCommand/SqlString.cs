@@ -303,12 +303,6 @@ namespace NHibernate.SqlCommand
 			get { return _length; }
 		}
 
-		[Obsolete("Use SqlString.Count and SqlString.GetEnumerator properties")]
-		public ICollection Parts
-		{
-			get { return this; }
-		}
-
 		#endregion
 
 		#region Operators
@@ -364,6 +358,7 @@ namespace NHibernate.SqlCommand
 		/// Combines all SqlParts that are strings and next to each other into
 		/// one SqlPart.
 		/// </remarks>
+		[Obsolete]
 		public SqlString Compact()
 		{
 			// FIXME: As of january 2012, the SqlString is always in compact form. Once this is settled, perhaps we should remove SqlString.Compact()?
@@ -611,6 +606,19 @@ namespace NHibernate.SqlCommand
 		{
 			return value != null
 				&& value.Length <= _length
+				&& IndexOf(value, 0, value.Length, StringComparison.InvariantCultureIgnoreCase) >= 0;
+		}
+
+		/// <summary>
+		/// Determines whether the sqlString matches the specified System.String,
+		/// using case-insensitive comparison
+		/// </summary>
+		/// <param name="value">The System.String to match</param>
+		/// <returns>true if the SqlString matches the value.</returns>
+		public bool EqualsCaseInsensitive(string value)
+		{
+			return value != null
+				&& value.Length == _length
 				&& IndexOf(value, 0, value.Length, StringComparison.InvariantCultureIgnoreCase) >= 0;
 		}
 
@@ -936,6 +944,11 @@ namespace NHibernate.SqlCommand
 		public override string ToString()
 		{
 			return ToString(0, _length);
+		}
+
+		public string ToString(int startIndex)
+		{
+			return ToString(startIndex, _length - startIndex);
 		}
 
 		public string ToString(int startIndex, int length)

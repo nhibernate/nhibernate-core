@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.Events.Collections.Association.Bidirectional.ManyToMany
 {
@@ -11,7 +10,7 @@ namespace NHibernate.Test.Events.Collections.Association.Bidirectional.ManyToMan
 
 		public override IChild CreateChild(string name)
 		{
-			return new ChildWithBidirectionalManyToMany(name, new HashedSet<ParentWithBidirectionalManyToMany>());
+			return new ChildWithBidirectionalManyToMany(name, new HashSet<ParentWithBidirectionalManyToMany>());
 		}
 
 		public override void NewChildren(ICollection<IChild> children)

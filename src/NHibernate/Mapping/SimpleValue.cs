@@ -73,7 +73,7 @@ namespace NHibernate.Mapping
 
 		#region IKeyValue Members
 
-		public void CreateForeignKeyOfEntity(string entityName)
+		public virtual void CreateForeignKeyOfEntity(string entityName)
 		{
 			if (!HasFormula && ! "none".Equals(ForeignKeyName, StringComparison.InvariantCultureIgnoreCase))
 			{
@@ -90,9 +90,7 @@ namespace NHibernate.Mapping
 
 		public bool IsIdentityColumn(Dialect.Dialect dialect)
 		{
-			return
-				IdentifierGeneratorFactory.GetIdentifierGeneratorClass(identifierGeneratorStrategy, dialect).Equals(
-					typeof (IdentityGenerator));
+			return IdentifierGeneratorFactory.GetIdentifierGeneratorClass(identifierGeneratorStrategy, dialect) == typeof (IdentityGenerator);
 		}
 
 		public string NullValue
@@ -116,7 +114,7 @@ namespace NHibernate.Mapping
 			get { return typeParameters; }
 			set
 			{
-				if (!CollectionHelper.DictionaryEquals((IDictionary)typeParameters, (IDictionary)value))
+				if (!CollectionHelper.DictionaryEquals(typeParameters, value))
 				{
 					typeParameters = value;
 					type = null; // invalidate type
@@ -139,9 +137,9 @@ namespace NHibernate.Mapping
 		}
 
 		public IIdentifierGenerator CreateIdentifierGenerator(Dialect.Dialect dialect, string defaultCatalog,
-		                                                      string defaultSchema, RootClass rootClass)
+															  string defaultSchema, RootClass rootClass)
 		{
-			Dictionary<string, string> @params = new Dictionary<string, string>();
+			var @params = new Dictionary<string, string>();
 
 			//if the hibernate-mapping did not specify a schema/catalog, use the defaults
 			//specified by properties - but note that if the schema/catalog were specified

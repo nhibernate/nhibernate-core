@@ -69,6 +69,6 @@ namespace NHibernate.Persister.Entity
 		/// Retrieve property values from one row of a result set
 		/// </summary>
 		object[] Hydrate(IDataReader rs, object id, object obj, ILoadable rootLoadable, string[][] suffixedPropertyColumns,
-		                 bool allProperties, ISessionImplementor session);
+						 bool allProperties, ISessionImplementor session);
 	}
 }

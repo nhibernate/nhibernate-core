@@ -95,7 +95,7 @@ namespace NHibernate.Test.Classic
 		}
 
 		[Test]
-		public void SaveOrUpdateCopy()
+		public void Merge()
 		{
 			Video v = new Video("Shinobi", 10, 10);
 			using (ISession s = OpenSession())
@@ -108,7 +108,7 @@ namespace NHibernate.Test.Classic
 			{
 				using (ISession s = OpenSession())
 				{
-					s.SaveOrUpdateCopy(v);
+					s.Merge(v);
 					s.Flush();
 				}
 				Assert.Fail("Updated an invalid entity");
@@ -123,7 +123,7 @@ namespace NHibernate.Test.Classic
 			{
 				using (ISession s = OpenSession())
 				{
-					s.SaveOrUpdateCopy(v1);
+					s.Merge(v1);
 					s.Flush();
 				}
 				Assert.Fail("saved an invalid entity");

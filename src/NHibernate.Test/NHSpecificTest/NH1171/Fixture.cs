@@ -1,11 +1,18 @@
 using NHibernate.Cfg;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1171
 {
 	[TestFixture]
-	public class Fixture: BugTestCase
+	public class Fixture : BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			// Firebird has issues with comments containing apostrophes
+			return !(dialect is FirebirdDialect);
+		}
+
 		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{
 			configuration.SetProperty(Environment.FormatSql, "false");
@@ -25,7 +32,7 @@ ORDER BY Name
 ";
 			using (ISession s = OpenSession())
 			{
-				var q =s.CreateSQLQuery(sql);
+				var q = s.CreateSQLQuery(sql);
 				q.SetString("name", "Evgeny Potashnik");
 				q.List();
 			}

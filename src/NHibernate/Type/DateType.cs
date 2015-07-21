@@ -53,17 +53,10 @@ namespace NHibernate.Type
 
 		public override void Set(IDbCommand st, object value, int index)
 		{
-			var parm = st.Parameters[index] as IDataParameter;
+			var parm =  (IDataParameter) st.Parameters[index];
 			var dateTime = (DateTime)value;
-			if (dateTime < customBaseDate)
-			{
-				parm.Value = DBNull.Value;
-			}
-			else
-			{
-				parm.DbType = DbType.Date;
-				parm.Value = dateTime.Date;
-			}
+			if (dateTime < customBaseDate) parm.Value = DBNull.Value;
+			else parm.Value = dateTime.Date;
 		}
 
 		public override bool IsEqual(object x, object y)
@@ -127,7 +120,7 @@ namespace NHibernate.Type
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
-			return '\'' + ((DateTime)value).ToShortDateString() + '\'';
+			return "\'" + ((DateTime)value).ToShortDateString() + "\'";
 		}
 
 		public void SetParameterValues(IDictionary<string, string> parameters)

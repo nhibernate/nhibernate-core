@@ -16,9 +16,14 @@ namespace NHibernate.Persister.Entity
 		string Name { get; }
 
 		/// <summary>
-		/// The columns to join on.
+		/// The columns that identify the item.
 		/// </summary>
 		string[] KeyColumnNames { get; }
+
+		/// <summary>
+		/// The columns to join on.
+		/// </summary>
+		string[] JoinColumnNames { get; }
 
 		/// <summary>
 		/// Is this instance actually a ICollectionPersister?
@@ -34,7 +39,7 @@ namespace NHibernate.Persister.Entity
 		/// All columns to select, when loading.
 		/// </summary>
 		string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string currentEntitySuffix,
-		                      string currentCollectionSuffix, bool includeCollectionColumns);
+							  string currentCollectionSuffix, bool includeCollectionColumns);
 
 		/// <summary>
 		/// Get the where clause part of any joins (optional operation)

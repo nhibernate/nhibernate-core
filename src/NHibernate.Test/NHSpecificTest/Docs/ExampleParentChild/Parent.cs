@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.Docs.ExampleParentChild
 {
@@ -29,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.Docs.ExampleParentChild
 		{
 			if (Children == null)
 			{
-				Children = new HashedSet<Child>();
+				Children = new HashSet<Child>();
 			}
 			Children.Add(c);
 			c.Parent = this;

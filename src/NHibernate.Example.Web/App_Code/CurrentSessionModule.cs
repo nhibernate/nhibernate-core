@@ -18,12 +18,12 @@ namespace NHibernate.Example.Web
 
 		private void Application_BeginRequest(object sender, EventArgs e)
 		{
-			ManagedWebSessionContext.Bind(HttpContext.Current, ExampleApplication.SessionFactory.OpenSession());
+			CurrentSessionContext.Bind(ExampleApplication.SessionFactory.OpenSession());
 		}
 
 		private void Application_EndRequest(object sender, EventArgs e)
 		{
-			ISession session = ManagedWebSessionContext.Unbind(HttpContext.Current, ExampleApplication.SessionFactory);
+			ISession session = CurrentSessionContext.Unbind(ExampleApplication.SessionFactory);
 
 			if (session.Transaction.IsActive)
 			{

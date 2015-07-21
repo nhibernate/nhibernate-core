@@ -1,6 +1,7 @@
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode
 {
@@ -12,9 +13,11 @@ namespace NHibernate.Mapping.ByCode
 		void ComponentAsId(MemberInfo idProperty, Action<IComponentAsIdMapper> idMapper);
 		void ComposedId(Action<IComposedIdMapper> idPropertiesMapping);
 
+		void Abstract(bool isAbstract);
 		void Discriminator(Action<IDiscriminatorMapper> discriminatorMapping);
 		void DiscriminatorValue(object value);
 		void Table(string tableName);
+		void Check(string check);
 		void Catalog(string catalogName);
 		void Schema(string schemaName);
 		void Mutable(bool isMutable);
@@ -24,6 +27,8 @@ namespace NHibernate.Mapping.ByCode
 		void Filter(string filterName, Action<IFilterMapper> filterMapping);
 		void Where(string whereClause);
 		void SchemaAction(SchemaAction action);
+		void Polymorphism(PolymorphismType type);
+		void OptimisticLock(OptimisticLockMode mode);
 	}
 
 	public interface IClassMapper : IClassAttributesMapper, IPropertyContainerMapper
@@ -42,13 +47,14 @@ namespace NHibernate.Mapping.ByCode
 		void Id<TProperty>(Expression<Func<TEntity, TProperty>> idProperty, Action<IIdMapper> idMapper);
 		void Id(string notVisiblePropertyOrFieldName, Action<IIdMapper> idMapper);
 
-		void ComponentAsId<TComponent>(Expression<Func<TEntity, TComponent>> idProperty) where TComponent : class;
-		void ComponentAsId<TComponent>(Expression<Func<TEntity, TComponent>> idProperty, Action<IComponentAsIdMapper<TComponent>> idMapper) where TComponent : class;
-		void ComponentAsId<TComponent>(string notVisiblePropertyOrFieldName) where TComponent : class;
-		void ComponentAsId<TComponent>(string notVisiblePropertyOrFieldName, Action<IComponentAsIdMapper<TComponent>> idMapper) where TComponent : class;
+		void ComponentAsId<TComponent>(Expression<Func<TEntity, TComponent>> idProperty);
+		void ComponentAsId<TComponent>(Expression<Func<TEntity, TComponent>> idProperty, Action<IComponentAsIdMapper<TComponent>> idMapper);
+		void ComponentAsId<TComponent>(string notVisiblePropertyOrFieldName);
+		void ComponentAsId<TComponent>(string notVisiblePropertyOrFieldName, Action<IComponentAsIdMapper<TComponent>> idMapper);
 
 		void ComposedId(Action<IComposedIdMapper<TEntity>> idPropertiesMapping);
 
+		void Abstract(bool isAbstract);
 		void Discriminator(Action<IDiscriminatorMapper> discriminatorMapping);
 		void DiscriminatorValue(object value);
 		void Table(string tableName);
@@ -63,6 +69,8 @@ namespace NHibernate.Mapping.ByCode
 		void Filter(string filterName, Action<IFilterMapper> filterMapping);
 		void Where(string whereClause);
 		void SchemaAction(SchemaAction action);
+		void Polymorphism(PolymorphismType type);
+		void OptimisticLock(OptimisticLockMode mode);
 	}
 
 	public interface IClassMapper<TEntity> : IClassAttributesMapper<TEntity>, IPropertyContainerMapper<TEntity> where TEntity : class

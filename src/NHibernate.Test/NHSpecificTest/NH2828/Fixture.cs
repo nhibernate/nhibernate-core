@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2828
 {
@@ -20,8 +19,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2828
 					using (ITransaction tx = session.BeginTransaction())
 					{
 						var company = session.Get<Company>(companyId);
-						company.Addresses.Count().Should().Be.EqualTo(1);
-						company.RemoveAddress(company.Addresses.First()).Should().Be.EqualTo(true);
+						Assert.That(company.Addresses.Count(), Is.EqualTo(1));
+						Assert.That(company.RemoveAddress(company.Addresses.First()), Is.EqualTo(true));
 
 						//now this company will be saved and deleting the address.
 						//BUT it should not try to load the BanckAccound collection!
@@ -30,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2828
 					}
 				}
 				var wholeMessage = sl.GetWholeLog();
-				wholeMessage.Should().Not.Contain("BankAccount");
+				Assert.That(wholeMessage, Is.Not.StringContaining("BankAccount"));
 			}
 
 			Cleanup(companyId);

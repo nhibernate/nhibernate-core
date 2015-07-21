@@ -1,5 +1,5 @@
 using System.Collections;
-using Iesi.Collections.Generic;
+using System.Collections.Generic;
 using NHibernate.Cfg;
 using NUnit.Framework;
 
@@ -40,7 +40,7 @@ namespace NHibernate.Test.DynamicEntity.Tuplizer
 			address.City = "lawerence, kansas";
 			address.PostalCode = "toto";
 			customer.Address = address;
-			customer.Family = new HashedSet<Person>();
+			customer.Family = new HashSet<Person>();
 			Person son = ProxyHelper.NewPersonProxy();
 			son.Name = "son";
 			customer.Family.Add(son);

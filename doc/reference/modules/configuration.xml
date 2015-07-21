@@ -691,13 +691,18 @@ ISession session = sessions.OpenSession(conn);
                             <entry></entry>
                         </row>
                         <row>
-                            <entry>Oracle 9</entry> 
+                            <entry>Oracle 9i</entry> 
                             <entry><literal>NHibernate.Dialect.Oracle9iDialect</literal></entry>
                             <entry></entry>
                         </row>
                         <row>
-                            <entry>Oracle 10g</entry> 
+                            <entry>Oracle 10g, Oracle 11g</entry> 
                             <entry><literal>NHibernate.Dialect.Oracle10gDialect</literal></entry>
+                            <entry></entry>
+                        </row>
+                        <row>
+                            <entry>Oracle 12c</entry> 
+                            <entry><literal>NHibernate.Dialect.Oracle12cDialect</literal></entry>
                             <entry></entry>
                         </row>
                         <row>
@@ -709,14 +714,7 @@ ISession session = sessions.OpenSession(conn);
                             <entry>Sybase Adaptive Server Anywhere 9</entry>
                             <entry><literal>NHibernate.Dialect.SybaseASA9Dialect</literal></entry>
                             <entry></entry>
-                        </row>
-                        <row>
-                            <entry>Sybase Adaptive Server Anywhere 10</entry>
-                            <entry><literal>NHibernate.Dialect.SybaseASA10Dialect</literal></entry>
-                            <entry>
-                                Deprecated. Use the Sybase SQL Anywhere 10 Dialect instead.
-                            </entry>
-                        </row>
+                        </row>                        
                         <row>
                             <entry>Sybase SQL Anywhere 10</entry>
                             <entry><literal>NHibernate.Dialect.SybaseSQLAnywhere10Dialect</literal></entry>

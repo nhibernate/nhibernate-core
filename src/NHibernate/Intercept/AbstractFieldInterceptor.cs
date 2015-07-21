@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Proxy;
 
@@ -27,7 +26,7 @@ namespace NHibernate.Intercept
 		{
 			this.session = session;
 			this.uninitializedFields = uninitializedFields;
-			this.unwrapProxyFieldNames = unwrapProxyFieldNames ?? new HashedSet<string>();
+			this.unwrapProxyFieldNames = unwrapProxyFieldNames ?? new HashSet<string>();
 			this.entityName = entityName;
 			this.mappedClass = mappedClass;
 		}

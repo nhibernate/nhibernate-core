@@ -107,8 +107,8 @@
 		</id>
 		<discriminator column="zooType" type="character"/>
 		<property name="name" type="string"/>
-        <property name="classification"/>
-        <map name="mammals">
+		<property name="classification"/>
+		<map name="mammals">
 			<key column="mammalZoo_id"/>
 			<index type="string" column="name"/>
 			<one-to-many class="Mammal"/>

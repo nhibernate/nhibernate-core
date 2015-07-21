@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH3641">
+
+    <class name="Entity" table="Entity" lazy="true">
+        <id name="Id" access="property" column="Id" type="Int32" unsaved-value="0">
+            <generator class="assigned" />
+        </id>
+
+        <property name="Flag" type="Boolean">
+            <column name="Flag" not-null="true" />
+        </property>
+
+        <many-to-one name="ChildConcrete" access="property"  class="Entity" column="ChildConcreteId" lazy="proxy" />
+        <many-to-one name="ChildInterface" access="property" class="Entity" column="ChildInterfaceId" lazy="proxy" />
+    </class>
+
+</hibernate-mapping>

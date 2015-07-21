@@ -2,6 +2,7 @@ using System;
 using NHibernate.Criterion;
 using NHibernate.Dialect;
 using NHibernate.Driver;
+using NHibernate.Exceptions;
 using NUnit.Framework;
 
 namespace NHibernate.Test.ProjectionFixtures
@@ -64,47 +65,47 @@ namespace NHibernate.Test.ProjectionFixtures
         }
 
 
-        [Test]
-        public void ErrorFromDBWillGiveTheActualSQLExecuted()
-        {
-            if (!(Dialect is MsSql2000Dialect))
-                Assert.Ignore("Test checks for exact sql and expects an error to occur in a case which is not erroneous on all databases.");
+	    [Test]
+	    public void ErrorFromDBWillGiveTheActualSQLExecuted()
+	    {
+		    if (!(Dialect is MsSql2000Dialect))
+			    Assert.Ignore(
+				    "Test checks for exact sql and expects an error to occur in a case which is not erroneous on all databases.");
 
-        	string pName = ((ISqlParameterFormatter) sessions.ConnectionProvider.Driver).GetParameterName(0);
-        	string expectedMessagePart0 =
-        		string.Format(
-        			@"could not execute query
-[ SELECT this_.Id as y0_, count(this_.Area) as y1_ FROM TreeNode this_ WHERE this_.Id = {0} ]",
-        			pName);
-					string expectedMessagePart1 = string.Format(@"[SQL: SELECT this_.Id as y0_, count(this_.Area) as y1_ FROM TreeNode this_ WHERE this_.Id = {0}]",pName);
-					
-            DetachedCriteria projection = DetachedCriteria.For<TreeNode>("child")
-                .Add(Restrictions.Eq("child.Key.Id", 2))
-                .SetProjection(
-                Projections.ProjectionList()
-                    .Add(Projections.Property("child.Key.Id"))
-                    .Add(Projections.Count("child.Key.Area"))
-                );
-        	try
-        	{
-            using (var s = sessions.OpenSession())
-            using (var tx = s.BeginTransaction())
-            {
-                var criteria = projection.GetExecutableCriteria(s);
-                criteria.List();
-                
-                tx.Commit();
-            }
-        		Assert.Fail();
-        	}
-					catch (Exception e)
-        	{
-						if (!e.Message.Contains(expectedMessagePart0) || !e.Message.Contains(expectedMessagePart1))
-        			throw;
-        	}
-        }
+		    string pName = ((ISqlParameterFormatter) sessions.ConnectionProvider.Driver).GetParameterName(0);
+		    string expectedMessagePart0 =
+			    string.Format("could not execute query" + Environment.NewLine +
+			                  "[ SELECT this_.Id as y0_, count(this_.Area) as y1_ FROM TreeNode this_ WHERE this_.Id = {0} ]",
+			                  pName);
+		    string expectedMessagePart1 =
+			    string.Format(
+				    @"[SQL: SELECT this_.Id as y0_, count(this_.Area) as y1_ FROM TreeNode this_ WHERE this_.Id = {0}]", pName);
 
-        [Test]
+		    DetachedCriteria projection = DetachedCriteria.For<TreeNode>("child")
+		                                                  .Add(Restrictions.Eq("child.Key.Id", 2))
+		                                                  .SetProjection(
+			                                                  Projections.ProjectionList()
+			                                                             .Add(Projections.Property("child.Key.Id"))
+			                                                             .Add(Projections.Count("child.Key.Area"))
+			    );
+
+
+		    var e = Assert.Throws<GenericADOException>(() =>
+		    {
+			    using (var s = sessions.OpenSession())
+			    using (var tx = s.BeginTransaction())
+			    {
+				    var criteria = projection.GetExecutableCriteria(s);
+				    criteria.List();
+
+				    tx.Commit();
+			    }
+		    });
+
+		    Assert.That(e.Message, Is.StringContaining(expectedMessagePart0).Or.StringContaining(expectedMessagePart1));
+	    }
+
+	    [Test]
         public void AggregatingHirearchyWithCount()
         {
             var root = new Key {Id = 1, Area = 2};

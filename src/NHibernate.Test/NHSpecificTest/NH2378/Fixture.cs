@@ -9,8 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2378
 	{
 		protected override void OnSetUp()
 		{
-			base.OnSetUp();
-			using (var session = this.OpenSession())
+			using (var session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
 				var entity = new TestEntity();
@@ -31,40 +30,37 @@ namespace NHibernate.Test.NHSpecificTest.NH2378
 
 		protected override void OnTearDown()
 		{
-			base.OnTearDown();
-			using (ISession session = this.OpenSession())
+			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
 			{
-				string hql = "from System.Object";
-				session.Delete(hql);
-				session.Flush();
+				session.Delete("from System.Object");
+				tx.Commit();
 			}
 		}
-	
 
 		[Test]
 		public void ShortEntityCanBeQueryCorrectlyUsingLinqProvider()
 		{
-			using (ISession session = this.OpenSession())
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
 			{
-				IQueryable<TestEntity> query = session.Query<TestEntity>();
-				IQueryable<TestEntityDto> list = query.Select(o => new TestEntityDto
-				                                                    	{
-				                                                    		EntityId = o.Id,
-				                                                    		EntityName = o.Name,
-				                                                    		PersonId =
-				                                                    			(o.TestPerson != null)
-				                                                    				? o.TestPerson.Id
-				                                                    				: (short) 0,
-				                                                    		PersonName =
-				                                                    			(o.TestPerson != null)
-				                                                    				? o.TestPerson.Name
-				                                                    				: string.Empty
-				                                                    	});
+				var m = session.Query<TestEntity>()
+					.Select(o => new TestEntityDto
+					{
+						EntityId = o.Id,
+						EntityName = o.Name,
+						PersonId = (o.TestPerson != null)
+							? o.TestPerson.Id
+							: (short) 0,
+						PersonName = (o.TestPerson != null)
+							? o.TestPerson.Name
+							: string.Empty
+					})
+					.Where(o => o.PersonId == 2)
+					.ToList();
 
-				IQueryable<TestEntityDto> m = list.Where(o => o.PersonId == 2);
 
-            	
-				Assert.AreEqual(1, m.Count());
+				Assert.That(m.Count, Is.EqualTo(1));
 			}
 		}
 	}

@@ -7,7 +7,6 @@ using NHibernate.Mapping;
 using NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest;
 using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Tools.hbm2ddl.SchemaExportTests
 {
@@ -29,7 +28,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaExportTests
 
 			var script = new StringBuilder();
 			new SchemaExport(configuration).Execute(s=> script.AppendLine(s), false, false);
-			script.ToString().Should().Contain("[Order]").And.Contain("[Select]").And.Contain("[From]").And.Contain("[And]");
+			Assert.That(script.ToString(), Is.StringContaining("[Order]").And.Contains("[Select]").And.Contains("[From]").And.Contains("[And]"));
 		}
 
 		[Test]
@@ -52,11 +51,11 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaExportTests
 			// With SchemaUpdate the auto-quote method should be called and the conf. should hold quoted stuff
 			var cm = configuration.GetClassMapping(typeof(Order));
 			var culs = cm.Table.ColumnIterator.ToList();
-			cm.Table.Satisfy(t=> t.IsQuoted);
-			culs.First(c => "From".Equals(c.Name)).Satisfy(c=> c.IsQuoted);
-			culs.First(c => "And".Equals(c.Name)).Satisfy(c => c.IsQuoted);
-			culs.First(c => "Select".Equals(c.Name)).Satisfy(c => c.IsQuoted);
-			culs.First(c => "Column".Equals(c.Name)).Satisfy(c => c.IsQuoted);
+			Assert.That(cm.Table.IsQuoted, Is.True);
+			Assert.That(culs.First(c => "From" == c.Name).IsQuoted, Is.True);
+			Assert.That(culs.First(c => "And" == c.Name).IsQuoted, Is.True);
+			Assert.That(culs.First(c => "Select" == c.Name).IsQuoted, Is.True);
+			Assert.That(culs.First(c => "Column" == c.Name).IsQuoted, Is.True);
 		}
 	}
 }

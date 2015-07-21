@@ -29,18 +29,24 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					{
 						// WHEN Child(0) THEN Child(1)
 						IASTNode thenClause = whenOrElseClause.GetChild(1);
-						if (thenClause is ISelectExpression && !(thenClause is ParameterNode))
+						if (thenClause is ISelectExpression)
 						{
-							return (thenClause as ISelectExpression).DataType;
+							if (!(thenClause is ParameterNode))
+							{
+								return (thenClause as ISelectExpression).DataType;
+							}
 						}
 					}
 					else if (whenOrElseClause.Type == HqlParser.ELSE)
 					{
 						// ELSE Child(0)
 						IASTNode elseClause = whenOrElseClause.GetChild(0);
-                        if (elseClause is ISelectExpression && !(elseClause is ParameterNode))
+						if (elseClause is ISelectExpression)
 						{
-							return (elseClause as ISelectExpression).DataType;
+							if (!(elseClause is ParameterNode))
+							{
+								return (elseClause as ISelectExpression).DataType;
+							}
 						}
 					}
 					else

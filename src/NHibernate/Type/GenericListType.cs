@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	/// to the database using list semantics.
 	/// </summary>
 	[Serializable]
-	public class GenericListType<T> : ListType
+	public class GenericListType<T> : CollectionType
 	{
 		/// <summary>
 		/// Initializes a new instance of a <see cref="GenericListType{T}"/> class for
@@ -56,6 +56,16 @@ namespace NHibernate.Type
 			return new PersistentGenericList<T>(session, (IList<T>) collection);
 		}
 
+		protected override void Add(object collection, object element)
+		{
+			((IList<T>) collection).Add((T) element);
+		}
+
+		protected override void Clear(object collection)
+		{
+			((IList<T>) collection).Clear();
+		}
+
 		//TODO: Add() & Clear() methods - need to see if these should be refactored back into
 		// their own version of Copy or a DoCopy.  The Copy() method used to be spread out amongst
 		// the various collections, but since they all had common code Add() and Clear() were made
@@ -66,6 +76,15 @@ namespace NHibernate.Type
 		public override object Instantiate(int anticipatedSize)
 		{
 			return anticipatedSize <= 0 ? new List<T>() : new List<T>(anticipatedSize + 1);
+		}
+
+		public override object IndexOf(object collection, object element)
+		{
+			var list = (IList<T>)collection;
+			int i = list.IndexOf((T) element);
+			if (i < 0)
+				return null;
+			return i;
 		}
 	}
 }

@@ -64,11 +64,6 @@ namespace NHibernate.Criterion
 			get { return aliases; }
 		}
 
-		public string[] GetColumnAliases(int loc)
-		{
-			return columnAliases;
-		}
-
 		public bool IsGrouped
 		{
 			get { return grouped; }
@@ -95,7 +90,22 @@ namespace NHibernate.Criterion
 			return null; //unsupported
 		}
 
+		public string[] GetColumnAliases(int loc)
+		{
+			return columnAliases;
+		}
+
 		public string[] GetColumnAliases(String alias, int loc)
+		{
+			return null; //unsupported
+		}
+
+		public string[] GetColumnAliases(int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			return columnAliases;
+		}
+
+		public string[] GetColumnAliases(string alias, int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			return null; //unsupported
 		}

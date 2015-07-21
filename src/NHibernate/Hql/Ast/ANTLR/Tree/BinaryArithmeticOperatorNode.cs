@@ -32,7 +32,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			IType lhType = (lhs is SqlNode) ? ((SqlNode)lhs).DataType : null;
 			IType rhType = (rhs is SqlNode) ? ((SqlNode)rhs).DataType : null;
 
-			if (typeof(IExpectedTypeAwareNode).IsAssignableFrom(lhs.GetType()) && rhType != null)
+			if (lhs is IExpectedTypeAwareNode && rhType != null)
 			{
 				IType expectedType;
 
@@ -52,7 +52,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				}
 				((IExpectedTypeAwareNode)lhs).ExpectedType = expectedType;
 			}
-			else if (typeof(ParameterNode).IsAssignableFrom(rhs.GetType()) && lhType != null)
+			else if (rhs is ParameterNode && lhType != null)
 			{
 				IType expectedType = null;
 

@@ -90,9 +90,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 		{
 			for (int i = 0; i < parent.ChildCount; i++)
 			{
-				if (parent.GetChild(i).Type == type)
+				var child = parent.GetChild(i);
+				if (child.Type == type)
 				{
-					return parent.GetChild(i);
+					return child;
 				}
 			}
 			return null;

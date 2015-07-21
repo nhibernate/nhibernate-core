@@ -104,7 +104,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				par.Value = ((Char) (Int32) (value)).ToString();
+				par.Value = GetValue(value).ToString();
 			}
 		}
 

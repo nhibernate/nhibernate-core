@@ -5,7 +5,6 @@ using System.Runtime.Serialization;
 using System.Security;
 using System.Security.Permissions;
 using System.Text;
-using Iesi.Collections.Generic;
 using NHibernate.Collection;
 using NHibernate.Engine.Loading;
 using NHibernate.Impl;
@@ -121,14 +120,14 @@ namespace NHibernate.Engine
 			collectionsByKey = new Dictionary<CollectionKey, IPersistentCollection>(InitCollectionSize);
 			arrayHolders = IdentityMap.Instantiate(InitCollectionSize);
 			parentsByChild = IdentityMap.Instantiate(InitCollectionSize);
-			nullifiableEntityKeys = new HashedSet<EntityKey>();
+			nullifiableEntityKeys = new HashSet<EntityKey>();
 			InitTransientState();
 		}
 
 		private void InitTransientState()
 		{
 			loadContexts = null;
-			nullAssociations = new HashedSet<AssociationKey>();
+			nullAssociations = new HashSet<AssociationKey>();
 			nonlazyCollections = new List<IPersistentCollection>(InitCollectionSize);
 		}
 
@@ -709,7 +708,7 @@ namespace NHibernate.Engine
 		/// <returns> An appropriately narrowed instance. </returns>
 		public object NarrowProxy(INHibernateProxy proxy, IEntityPersister persister, EntityKey key, object obj)
 		{
-			bool alreadyNarrow = persister.GetConcreteProxyClass(session.EntityMode).IsAssignableFrom(proxy.GetType());
+			bool alreadyNarrow = persister.GetConcreteProxyClass(session.EntityMode).IsInstanceOfType(proxy);
 
 			if (!alreadyNarrow)
 			{
@@ -1416,7 +1415,7 @@ namespace NHibernate.Engine
 			((IDeserializationCallback)collectionEntries).OnDeserialization(sender);
 			collectionsByKey.OnDeserialization(sender);
 
-			// If nullifiableEntityKeys is once used in the current method, HashedSets will need
+			// If nullifiableEntityKeys is once used in the current method, HashSets will need
 			// an OnDeserialization() method.
 			//nullifiableEntityKeys.OnDeserialization(sender);
 
@@ -1489,16 +1488,17 @@ namespace NHibernate.Engine
 			arrayHolders = (IdentityMap)info.GetValue("context.arrayHolders", typeof(IdentityMap));
 			collectionEntries = (IdentityMap)info.GetValue("context.collectionEntries", typeof(IdentityMap));
 			collectionsByKey = (Dictionary<CollectionKey, IPersistentCollection>)info.GetValue("context.collectionsByKey", typeof(Dictionary<CollectionKey, IPersistentCollection>));
-			nullifiableEntityKeys = (HashedSet<EntityKey>)info.GetValue("context.nullifiableEntityKeys", typeof(HashedSet<EntityKey>));
+			nullifiableEntityKeys = (HashSet<EntityKey>)info.GetValue("context.nullifiableEntityKeys", typeof(HashSet<EntityKey>));
 			unownedCollections = (Dictionary<CollectionKey, IPersistentCollection>)info.GetValue("context.unownedCollections", typeof(Dictionary<CollectionKey, IPersistentCollection>));
 			hasNonReadOnlyEntities = info.GetBoolean("context.hasNonReadOnlyEntities");
 			defaultReadOnly = info.GetBoolean("context.defaultReadOnly");
 			InitTransientState();
 		}
 
-		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
 #if NET_4_0
 		[SecurityCritical]
+#else
+		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
 #endif
 		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
 		{
@@ -1512,7 +1512,7 @@ namespace NHibernate.Engine
 			info.AddValue("context.arrayHolders", arrayHolders, typeof(IdentityMap));
 			info.AddValue("context.collectionEntries", collectionEntries, typeof(IdentityMap));
 			info.AddValue("context.collectionsByKey", collectionsByKey, typeof(Dictionary<CollectionKey, IPersistentCollection>));
-			info.AddValue("context.nullifiableEntityKeys", nullifiableEntityKeys, typeof(HashedSet<EntityKey>));
+			info.AddValue("context.nullifiableEntityKeys", nullifiableEntityKeys, typeof(HashSet<EntityKey>));
 			info.AddValue("context.unownedCollections", unownedCollections, typeof(Dictionary<CollectionKey, IPersistentCollection>));
 			info.AddValue("context.hasNonReadOnlyEntities", hasNonReadOnlyEntities);
 			info.AddValue("context.defaultReadOnly", defaultReadOnly);

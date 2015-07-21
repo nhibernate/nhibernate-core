@@ -8,10 +8,18 @@ namespace NHibernate.Cfg
 {
 	public class NamedXmlDocument
 	{
+		private static readonly XmlSerializer mappingDocumentSerializer = new XmlSerializer(typeof (HbmMapping));
 		private readonly string name;
 		private readonly HbmMapping document;
 
-		public NamedXmlDocument(string name, XmlDocument document, XmlSerializer mappingDocumentSerializer)
+		static NamedXmlDocument() { }
+
+		public NamedXmlDocument(string name, XmlDocument document)
+			: this(name, document, mappingDocumentSerializer)
+		{
+		}
+
+		public NamedXmlDocument(string name, XmlDocument document, XmlSerializer serializer)
 		{
 			if (document == null)
 			{
@@ -24,7 +32,7 @@ namespace NHibernate.Cfg
 			}
 			using (var reader = new StringReader(document.DocumentElement.OuterXml))
 			{
-				this.document = (HbmMapping)mappingDocumentSerializer.Deserialize(reader);
+				this.document = (HbmMapping)serializer.Deserialize(reader);
 			}
 		}
 

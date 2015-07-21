@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1857
 {
@@ -18,7 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1857
 
 		public string Name { get; set; }
 
-		private ISet<Employee> _employees = new HashedSet<Employee>();
+		private ISet<Employee> _employees = new HashSet<Employee>();
 
 		public ReadOnlyCollection<Employee> Employees
 		{

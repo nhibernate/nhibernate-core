@@ -77,7 +77,7 @@ namespace NHibernate
 		string[] NamedParameters { get; }
 		
 		/// <summary>
-	 	/// Will entities (and proxies) returned by the query be loaded in read-only mode?
+		/// Will entities (and proxies) returned by the query be loaded in read-only mode?
 		/// </summary>
 		/// <remarks>
 		/// <para>
@@ -93,7 +93,7 @@ namespace NHibernate
 		/// <returns>
 		/// <c>true</c> if entities and proxies loaded by the query will be put in read-only mode, otherwise <c>false</c>.
 		/// </returns>
-	 	/// <seealso cref="IQuery.SetReadOnly(bool)" />
+		/// <seealso cref="IQuery.SetReadOnly(bool)" />
 		bool IsReadOnly { get; }
 
 		/// <summary>
@@ -165,13 +165,13 @@ namespace NHibernate
 		/// <summary>
 		/// Set the maximum number of rows to retrieve.
 		/// </summary>
-		/// <param name="maxResults">The maximum number of rows to retreive.</param>
+		/// <param name="maxResults">The maximum number of rows to retrieve.</param>
 		IQuery SetMaxResults(int maxResults);
 
 		/// <summary>
 		/// Sets the first row to retrieve.
 		/// </summary>
-		/// <param name="firstResult">The first row to retreive.</param>
+		/// <param name="firstResult">The first row to retrieve.</param>
 		IQuery SetFirstResult(int firstResult);
 
 		/// <summary>
@@ -221,7 +221,7 @@ namespace NHibernate
 		IQuery SetFetchSize(int fetchSize);
 
 		/// <summary>
-		/// Set the lockmode for the objects idententified by the
+		/// Set the lockmode for the objects identified by the
 		/// given alias that appears in the <c>FROM</c> clause.
 		/// </summary>
 		/// <param name="alias">alias a query alias, or <c>this</c> for a collection filter</param>

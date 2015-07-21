@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Hql
 {
 	/// <summary>
-	/// This test run each HQL function separatelly so is easy to know wich function need
+	/// This test run each HQL function separately so is easy to know which function need
 	/// an override in the specific dialect implementation.
 	/// </summary>
 	[TestFixture]
@@ -18,7 +18,7 @@ namespace NHibernate.Test.Hql
 			notSupportedStandardFunction =
 				new Hashtable
 					{
-						{"locate", new[] {typeof (FirebirdDialect), typeof (PostgreSQLDialect), typeof (SQLiteDialect)}},
+						{"locate", new[] {typeof (SQLiteDialect)}},
 						{"bit_length", new[] {typeof (SQLiteDialect)}},
 						{"extract", new[] {typeof (SQLiteDialect)}},
 						{"nullif", new[] {typeof (Oracle8iDialect)}}
@@ -83,12 +83,12 @@ namespace NHibernate.Test.Hql
 				Assert.AreEqual(2, result);
 
 				// Count in where
-                if (TestDialect.SupportsHavingWithoutGroupBy)
-                {
-                    result = s.CreateQuery("select count(a.id) from Animal a having count(a.id)>1").UniqueResult();
-                    Assert.AreEqual(typeof (long), result.GetType());
-                    Assert.AreEqual(2, result);
-                }
+				if (TestDialect.SupportsHavingWithoutGroupBy)
+				{
+					result = s.CreateQuery("select count(a.id) from Animal a having count(a.id)>1").UniqueResult();
+					Assert.AreEqual(typeof (long), result.GetType());
+					Assert.AreEqual(2, result);
+				}
 			}
 		}
 
@@ -111,12 +111,12 @@ namespace NHibernate.Test.Hql
 				Assert.AreEqual(15D, result);
 
 				// In where
-                if (TestDialect.SupportsHavingWithoutGroupBy)
-                {
-                    result = s.CreateQuery("select avg(a.BodyWeight) from Animal a having avg(a.BodyWeight)>0").UniqueResult();
-                    Assert.AreEqual(typeof(double), result.GetType());
-                    Assert.AreEqual(15D, result);
-                }
+				if (TestDialect.SupportsHavingWithoutGroupBy)
+				{
+					result = s.CreateQuery("select avg(a.BodyWeight) from Animal a having avg(a.BodyWeight)>0").UniqueResult();
+					Assert.AreEqual(typeof(double), result.GetType());
+					Assert.AreEqual(15D, result);
+				}
 			}
 		}
 
@@ -137,12 +137,12 @@ namespace NHibernate.Test.Hql
 				Assert.AreEqual(typeof(float), result.GetType()); //use column type
 				Assert.AreEqual(20F, result);
 
-                if (TestDialect.SupportsHavingWithoutGroupBy)
-                {
-                    result = s.CreateQuery("select max(a.BodyWeight) from Animal a having max(a.BodyWeight)>0").UniqueResult();
-                    Assert.AreEqual(typeof(float), result.GetType()); //use column type
-                    Assert.AreEqual(20F, result);
-                }
+				if (TestDialect.SupportsHavingWithoutGroupBy)
+				{
+					result = s.CreateQuery("select max(a.BodyWeight) from Animal a having max(a.BodyWeight)>0").UniqueResult();
+					Assert.AreEqual(typeof(float), result.GetType()); //use column type
+					Assert.AreEqual(20F, result);
+				}
 			}
 		}
 
@@ -163,12 +163,12 @@ namespace NHibernate.Test.Hql
 				Assert.AreEqual(typeof(float), result.GetType()); //use column type
 				Assert.AreEqual(10F, result);
 
-                if (TestDialect.SupportsHavingWithoutGroupBy)
-                {
-                    result = s.CreateQuery("select min(a.BodyWeight) from Animal a having min(a.BodyWeight)>0").UniqueResult();
-                    Assert.AreEqual(typeof(float), result.GetType()); //use column type
-                    Assert.AreEqual(10F, result);
-                }
+				if (TestDialect.SupportsHavingWithoutGroupBy)
+				{
+					result = s.CreateQuery("select min(a.BodyWeight) from Animal a having min(a.BodyWeight)>0").UniqueResult();
+					Assert.AreEqual(typeof(float), result.GetType()); //use column type
+					Assert.AreEqual(10F, result);
+				}
 			}
 		}
 
@@ -189,12 +189,12 @@ namespace NHibernate.Test.Hql
 				Assert.AreEqual(typeof(double), result.GetType());
 				Assert.AreEqual(30D, result);
 
-                if (TestDialect.SupportsHavingWithoutGroupBy)
-                {
-                    result = s.CreateQuery("select sum(a.BodyWeight) from Animal a having sum(a.BodyWeight)>0").UniqueResult();
-                    Assert.AreEqual(typeof(double), result.GetType());
-                    Assert.AreEqual(30D, result);
-                }
+				if (TestDialect.SupportsHavingWithoutGroupBy)
+				{
+					result = s.CreateQuery("select sum(a.BodyWeight) from Animal a having sum(a.BodyWeight)>0").UniqueResult();
+					Assert.AreEqual(typeof(double), result.GetType());
+					Assert.AreEqual(30D, result);
+				}
 			}
 		}
 
@@ -253,19 +253,16 @@ namespace NHibernate.Test.Hql
 
 				// In the where clause.
 				hql = "from Animal a where substring(a.Description, 4) = 'def'";
-				var result = (Animal)s.CreateQuery(hql).UniqueResult();
+				var result = (Animal) s.CreateQuery(hql).UniqueResult();
 				Assert.AreEqual("abcdef", result.Description);
 
 				// With parameters and nested function calls.
-				if (!(Dialect is FirebirdDialect))  // Firebird only supports integer literals for start (and length).
-				{
-					hql = "from Animal a where substring(concat(a.Description, ?), :start) = 'deffoo'";
-					result = (Animal) s.CreateQuery(hql)
-					                  	.SetParameter(0, "foo")
-					                  	.SetParameter("start", 4)
-					                  	.UniqueResult();
-					Assert.AreEqual("abcdef", result.Description);
-				}
+				hql = "from Animal a where substring(concat(a.Description, ?), :start) = 'deffoo'";
+				result = (Animal) s.CreateQuery(hql)
+				                   .SetParameter(0, "foo")
+				                   .SetParameter("start", 4)
+				                   .UniqueResult();
+				Assert.AreEqual("abcdef", result.Description);
 			}
 		}
 
@@ -294,12 +291,6 @@ namespace NHibernate.Test.Hql
 					.UniqueResult();
 				Assert.AreEqual("abcdef", result.Description);
 
-
-				if (Dialect is FirebirdDialect)
-				{
-					// Firebird only supports integer literals for start (and length).
-					return;
-				}
 
 				// Following tests verify that parameters can be used.
 

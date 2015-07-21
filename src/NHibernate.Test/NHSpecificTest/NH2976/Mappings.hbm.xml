@@ -9,11 +9,6 @@
 			<index column="Id" type="System.Guid" />
 			<one-to-many class="Employee" />
 		</map>
-		<map name="Employees2" table="Employees" inverse="true" cascade="all-delete-orphan" lazy="true">
-			<key column="Employer" />
-			<index column="Id" type="System.Guid" />
-			<one-to-many class="Employee" />
-		</map>
 	</class>
 
 	<class name="Employee" table="Employees">

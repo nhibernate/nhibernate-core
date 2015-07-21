@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH364
 {
@@ -7,11 +7,11 @@ namespace NHibernate.Test.NHSpecificTest.NH364
 	{
 		private int id;
 		private string name;
-		private IList categories;
+		private IList<Category> categories;
 
 		public Link()
 		{
-			categories = new ArrayList();
+			categories = new List<Category>();
 		}
 
 		public int Id
@@ -26,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH364
 			set { name = value; }
 		}
 
-		public IList Categories
+		public IList<Category> Categories
 		{
 			get { return categories; }
 			set { categories = value; }

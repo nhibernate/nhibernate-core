@@ -127,7 +127,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3050
 					{
 						while (!allLinqQueriesSucceeded)
 						{
-							var hqlExpressionQueryPlan = (HQLExpressionQueryPlan) cache[queryPlanCacheKey];
+							var hqlExpressionQueryPlan = (QueryExpressionPlan) cache[queryPlanCacheKey];
 							if (hqlExpressionQueryPlan != null)
 							{
 								if (hqlExpressionQueryPlan.QueryExpression.GetType().FullName.Contains("NHibernate.Impl.ExpandedQueryExpression"))

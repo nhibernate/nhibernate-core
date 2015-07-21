@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.DomainModel.NHSpecific
 {
@@ -10,7 +10,7 @@ namespace NHibernate.DomainModel.NHSpecific
 	{
 		private int _id;
 		private string _string;
-		private IList _bag;
+		private IList<string> _bag;
 
 		public int Id
 		{
@@ -24,7 +24,7 @@ namespace NHibernate.DomainModel.NHSpecific
 			set { _string = value; }
 		}
 
-		public IList Bag
+		public IList<string> Bag
 		{
 			get { return _bag; }
 			set { _bag = value; }

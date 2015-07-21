@@ -1,5 +1,5 @@
 using System.Collections;
-
+using NHibernate.Driver;
 using NHibernate.Impl;
 
 using NUnit.Framework;
@@ -20,11 +20,9 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 
 		protected void IgnoreThisTestIfMultipleQueriesArentSupportedByDriver()
 		{
-			if (((SessionFactoryImpl)sessions)
-				.ConnectionProvider.Driver.SupportsMultipleQueries == false)
-			{
-				Assert.Ignore("Not applicable for dialects that do not support multiple queries");
-			}
+			var driver = sessions.ConnectionProvider.Driver;
+			if (driver.SupportsMultipleQueries == false)
+				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
 		}
 	}
 }

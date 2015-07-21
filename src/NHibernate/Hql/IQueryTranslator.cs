@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Event;
@@ -9,7 +8,7 @@ using NHibernate.Type;
 namespace NHibernate.Hql
 {
 	/// <summary>
-	/// Defines the constract of an HQL->SQL translator.
+	/// Defines the contract of an HQL->SQL translator.
 	/// </summary>
 	public interface IQueryTranslator
 	{
@@ -44,7 +43,7 @@ namespace NHibernate.Hql
 		//IScrollableResults scroll(QueryParameters queryParameters, ISessionImplementor session);
 
 		/// <summary>
-		/// Perform a bulk update/delete operation given the underlying query defintion.
+		/// Perform a bulk update/delete operation given the underlying query definition.
 		/// </summary>
 		/// <param name="queryParameters">The query bind parameters.</param>
 		/// <param name="session">The session owning this query.</param>
@@ -53,7 +52,7 @@ namespace NHibernate.Hql
 		int ExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session);
 
 		/// <summary>
-		/// The set of query spaces (table names) that the query referrs to.
+		/// The set of query spaces (table names) that the query refers to.
 		/// </summary>
 		ISet<string> QuerySpaces { get; }
 

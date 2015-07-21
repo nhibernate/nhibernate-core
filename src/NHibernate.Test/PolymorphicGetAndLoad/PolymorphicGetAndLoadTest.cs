@@ -3,7 +3,6 @@ using System.Collections;
 using NHibernate.Engine;
 using NHibernate.Proxy;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.PolymorphicGetAndLoad
 {
@@ -85,23 +84,23 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 		public void WhenSaveDeleteBaseClassCastedToInterfaceThenNotThrows()
 		{
 			INamed a = new A { Name = "Patrick" };
-			Executing.This(() =>
-											{
-												using (var s = OpenSession())
-												{
-													s.Save(a);
-													s.Flush();
-												}
-											}).Should().NotThrow();
+			Assert.That(() =>
+			{
+				using (var s = OpenSession())
+				{
+					s.Save(a);
+					s.Flush();
+				}
+			}, Throws.Nothing);
 
-			Executing.This(() =>
-											{
-												using (var s = OpenSession())
-												{
-													s.Delete(a);
-													s.Flush();
-												}
-											}).Should().NotThrow();
+			Assert.That(() =>
+			{
+				using (var s = OpenSession())
+				{
+					s.Delete(a);
+					s.Flush();
+				}
+			}, Throws.Nothing);
 
 		}
 
@@ -112,7 +111,7 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 			{
 				using (var s = OpenSession())
 				{
-					s.Executing(session => session.Load<INamed>(scenario.A.Id)).NotThrows();
+					Assert.That(() => s.Load<INamed>(scenario.A.Id), Throws.Nothing);
 				}
 			}
 		}
@@ -124,7 +123,7 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 			{
 				using (var s = OpenSession())
 				{
-					s.Executing(session => session.Get<INamed>(scenario.A.Id)).NotThrows();
+					Assert.That(() => s.Get<INamed>(scenario.A.Id), Throws.Nothing);
 				}
 			}
 		}
@@ -136,7 +135,7 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 			{
 				using (var s = OpenSession())
 				{
-					Executing.This(()=> s.Load<INamed>(scenario.B.Id) ).Should().NotThrow();
+					Assert.That(() => s.Load<INamed>(scenario.B.Id), Throws.Nothing);
 				}
 			}
 		}
@@ -149,16 +148,16 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 				using (var s = OpenSession())
 				{
 					INamed loadedEntity = null;
-					Executing.This(() => loadedEntity = s.Load<INamed>(scenario.B.Id)).Should().NotThrow();
-					NHibernateProxyHelper.GetClassWithoutInitializingProxy(loadedEntity).Should().Be(typeof(A));
+					Assert.That(() => loadedEntity = s.Load<INamed>(scenario.B.Id), Throws.Nothing);
+					Assert.That(NHibernateProxyHelper.GetClassWithoutInitializingProxy(loadedEntity), Is.EqualTo(typeof(A)));
 
 					var narrowedProxy = s.Load<B>(scenario.B.Id);
 
-					NHibernateProxyHelper.GetClassWithoutInitializingProxy(narrowedProxy).Should().Be(typeof(B));
+					Assert.That(NHibernateProxyHelper.GetClassWithoutInitializingProxy(narrowedProxy), Is.EqualTo(typeof(B)));
 
 					var firstLoadedImpl = ((INHibernateProxy)loadedEntity).HibernateLazyInitializer.GetImplementation((ISessionImplementor)s);
 					var secondLoadedImpl = ((INHibernateProxy)narrowedProxy).HibernateLazyInitializer.GetImplementation((ISessionImplementor)s);
-					firstLoadedImpl.Should().Be.SameInstanceAs(secondLoadedImpl);
+					Assert.That(firstLoadedImpl, Is.SameAs(secondLoadedImpl));
 				}
 			}
 		}
@@ -171,16 +170,16 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 				using (var s = OpenSession())
 				{
 					INamed loadedEntity = null;
-					Executing.This(() => loadedEntity = s.Load<INamed>(scenario.B.Id)).Should().NotThrow();
-					NHibernateProxyHelper.GetClassWithoutInitializingProxy(loadedEntity).Should().Be(typeof(A));
+					Assert.That(() => loadedEntity = s.Load<INamed>(scenario.B.Id), Throws.Nothing);
+					Assert.That(NHibernateProxyHelper.GetClassWithoutInitializingProxy(loadedEntity), Is.EqualTo(typeof(A)));
 
 					var narrowedProxy = s.Load<IOccuped>(scenario.B.Id);
 
-					NHibernateProxyHelper.GetClassWithoutInitializingProxy(narrowedProxy).Should().Be(typeof(B));
+					Assert.That(NHibernateProxyHelper.GetClassWithoutInitializingProxy(narrowedProxy), Is.EqualTo(typeof(B)));
 
 					var firstLoadedImpl = ((INHibernateProxy)loadedEntity).HibernateLazyInitializer.GetImplementation((ISessionImplementor)s);
 					var secondLoadedImpl = ((INHibernateProxy)narrowedProxy).HibernateLazyInitializer.GetImplementation((ISessionImplementor)s);
-					firstLoadedImpl.Should().Be.SameInstanceAs(secondLoadedImpl);
+					Assert.That(firstLoadedImpl, Is.SameAs(secondLoadedImpl));
 				}
 			}
 		}
@@ -193,8 +192,8 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 				using (var s = OpenSession())
 				{
 					INamed loadedEntity = null;
-					Executing.This(() => loadedEntity = s.Get<INamed>(scenario.B.Id)).Should().NotThrow();
-					loadedEntity.Should().Be.OfType<B>();
+					Assert.That(() => loadedEntity = s.Get<INamed>(scenario.B.Id), Throws.Nothing);
+					Assert.That(loadedEntity, Is.TypeOf<B>());
 				}
 			}
 		}
@@ -204,13 +203,11 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 		{
 			using (var s = OpenSession())
 			{
-				Executing.This(() => s.Load<IMultiGraphNamed>(1))
-					.Should().Throw<HibernateException>()
-					.And.ValueOf.Message.Should()
-					.Contain("Ambiguous")
-					.And.Contain("GraphA")
-					.And.Contain("GraphB")
-					.And.Contain("IMultiGraphNamed");
+				Assert.That(() => s.Load<IMultiGraphNamed>(1), Throws.TypeOf<HibernateException>()
+																	 .And.Message.ContainsSubstring("Ambiguous")
+																	 .And.Message.ContainsSubstring("GraphA")
+																	 .And.Message.ContainsSubstring("GraphB")
+																	 .And.Message.ContainsSubstring("IMultiGraphNamed"));
 			}
 		}
 
@@ -219,13 +216,12 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 		{
 			using (var s = OpenSession())
 			{
-				Executing.This(() => s.Get<IMultiGraphNamed>(1))
-					.Should().Throw<HibernateException>()
-					.And.ValueOf.Message.Should()
-					.Contain("Ambiguous")
-					.And.Contain("GraphA")
-					.And.Contain("GraphB")
-					.And.Contain("IMultiGraphNamed");
+				Assert.That(() => s.Get<IMultiGraphNamed>(1),
+							Throws.TypeOf<HibernateException>()
+								  .And.Message.StringContaining("Ambiguous")
+								  .And.Message.StringContaining("GraphA")
+								  .And.Message.StringContaining("GraphB")
+								  .And.Message.StringContaining("IMultiGraphNamed"));
 			}
 		}
 
@@ -238,7 +234,7 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 				{
 					var id = scenario.A.Id;
 					s.Get<A>(id);
-					s.Executing(session => session.Get<INamed>(id)).NotThrows();
+					Assert.That(() => s.Get<INamed>(id), Throws.Nothing);
 				}
 			}
 		}
@@ -252,7 +248,7 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 				{
 					var id = scenario.B.Id;
 					s.Get<B>(id);
-					s.Executing(session => session.Get<INamed>(id)).NotThrows();
+					Assert.That(() => s.Get<INamed>(id), Throws.Nothing);
 				}
 			}
 		}

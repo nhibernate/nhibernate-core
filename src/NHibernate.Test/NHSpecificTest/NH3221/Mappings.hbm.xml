@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH3221"
+                   >
+  <class name="Person" table="Persons" > 
+    <id name="Id" column="id" type="guid" >
+      <generator class="guid.comb"  />
+    </id>
+    <natural-id mutable="true"   > 
+      <property name="Name" length="25" type="string" column="name" lazy="false"   />
+    </natural-id>
+
+    <property name="NickName" length="25" type="string" column="nickname" access="property" lazy="false" />
+
+    <set name="Todos" access="nosetter.camelcase" lazy="extra" cascade="all-delete-orphan" table="Todos" >
+      <key foreign-key="Person_Todo" column="personId" />
+      <composite-element class="Todo">
+        <property column="name" name="Name" type="string"/>
+        <many-to-one name="Person" formula="personId" class ="Person" access="property" update="false" insert="false"  />
+      </composite-element>
+    </set>
+    <bag name="MyStuff" access="nosetter.camelcase" lazy="false" cascade="all-delete-orphan" table="Stuff" >
+      <key foreign-key="Person_Stuff" column="personId" />
+      <composite-element class="Stuff">
+        <property column="name" name="Name" type="string"/>
+        <many-to-one name="Person" formula="personId" class ="Person" access="property" update="false" insert="false"  />
+      </composite-element>
+    </bag>
+  </class>
+
+</hibernate-mapping>

@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using Iesi.Collections.Generic;
 using NHibernate.Connection;
 
 namespace NHibernate.Test
@@ -13,21 +12,21 @@ namespace NHibernate.Test
 	/// </summary>
 	public class DebugConnectionProvider : DriverConnectionProvider
 	{
-		private ISet<IDbConnection> connections = new HashedSet<IDbConnection>();
+		private ISet<IDbConnection> connections = new HashSet<IDbConnection>();
 
 		public override IDbConnection GetConnection()
 		{
-		    try
-		    {
-		        IDbConnection connection = base.GetConnection();
-                connections.Add(connection);
-                return connection;
-            }
-		    catch (Exception e)
-		    {
-		        throw new HibernateException("Could not open connection to: " + ConnectionString, e);
-		    }
-		    
+			try
+			{
+				IDbConnection connection = base.GetConnection();
+				connections.Add(connection);
+				return connection;
+			}
+			catch (Exception e)
+			{
+				throw new HibernateException("Could not open connection to: " + ConnectionString, e);
+			}
+
 		}
 
 		public override void CloseConnection(IDbConnection conn)

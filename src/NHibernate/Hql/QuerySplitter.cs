@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using NHibernate.Engine;
-using NHibernate.Hql.Classic;
 using NHibernate.Hql.Util;
 using NHibernate.Util;
 
@@ -94,7 +93,7 @@ namespace NHibernate.Hql
 					// NHb: This block is not an exactly port from H3.2 but a port from previous implementation of QueryTranslator
 					if (((last != null && beforeClassTokens.Contains(last)) &&
 						 (next == null || !notAfterClassTokens.Contains(next))) ||
-						PathExpressionParser.EntityClass.Equals(last))
+						ParserHelper.EntityClass.Equals(last))
 					{
 						System.Type clazz = helper.GetImportedClass(token);
 						if (clazz != null)
@@ -124,7 +123,7 @@ namespace NHibernate.Hql
 
 		private static bool IsPossiblyClassName(string last, string next)
 		{
-			return PathExpressionParser.EntityClass.Equals(last) ||
+			return ParserHelper.EntityClass.Equals(last) ||
 				   (beforeClassTokens.Contains(last) && !notAfterClassTokens.Contains(next));
 		}
 	}

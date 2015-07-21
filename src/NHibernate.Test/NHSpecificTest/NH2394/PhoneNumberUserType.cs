@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2394
 
 		public IType[] PropertyTypes
 		{
-			get { return new[] { NHibernateUtil.Int32, NHibernateUtil.String }; }
+            get { return new IType[] { NHibernateUtil.Int32, NHibernateUtil.String }; }
 		}
 
 		public object GetPropertyValue(object component, int property)

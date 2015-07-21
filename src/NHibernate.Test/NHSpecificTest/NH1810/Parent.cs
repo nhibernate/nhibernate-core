@@ -1,4 +1,3 @@
-using Iesi.Collections.Generic;
 using log4net;
 
 namespace NHibernate.Test.NHSpecificTest.NH1810

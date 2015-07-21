@@ -34,5 +34,14 @@ namespace NHibernate.Test.NHSpecificTest.NH392
 				}
 			}
 		}
+
+        protected override void OnTearDown()
+		{
+			using (ISession s = sessions.OpenSession())
+			{
+				s.Delete("from UnsavedValueMinusOne");
+				s.Flush();
+			}
+        }
 	}
 }

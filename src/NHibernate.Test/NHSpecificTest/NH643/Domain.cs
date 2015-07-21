@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH643
 {
@@ -7,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.NH643
 	public class Parent
 	{
 		private int _id;
-		private IList _children = new ArrayList();
+		private IList<Child> _children = new List<Child>();
 
 		public virtual int ID
 		{
@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.NH643
 			set { this._id = value; }
 		}
 
-		public virtual IList Children
+		public virtual IList<Child> Children
 		{
 			get { return this._children; }
 			set { this._children = value; }

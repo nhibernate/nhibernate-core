@@ -235,6 +235,11 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				AddManyToOneSecondPass(model);
 			}
+			
+			if (manyToOneMapping.unique)
+			{
+				model.IsLogicalOneToOne = true;
+			}
 
 			BindForeignKey(manyToOneMapping.foreignkey, model);
 		}

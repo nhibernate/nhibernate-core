@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1857
@@ -9,8 +10,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1857
 	{
 		protected override void OnSetUp()
 		{
-			base.OnSetUp();
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
 			{
 				var e1 = new Employee(1, "Employee1", new DateTime(1995, 1, 1));
 				var e2 = new Employee(2, "Employee2", new DateTime(2007, 8, 1));
@@ -26,35 +27,42 @@ namespace NHibernate.Test.NHSpecificTest.NH1857
 				session.SaveOrUpdate(e2);
 				session.SaveOrUpdate(e3);
 
-				session.Flush();
+				transaction.Commit();
 			}
 		}
 
 		protected override void OnTearDown()
 		{
-			base.OnTearDown();
-			using (ISession session = OpenSession())
-			using (ITransaction t = session.BeginTransaction())
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
 			{
 				session.CreateQuery("delete from Employee").ExecuteUpdate();
 				session.CreateQuery("delete from Department").ExecuteUpdate();
-				t.Commit();
+				transaction.Commit();
 			}
 		}
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return TestDialect.GetTestDialect(dialect).SupportsFullJoin;
+			if (dialect is MySQLDialect)
+				return false;
+			if (dialect is InformixDialect)
+				return false;
+			if (dialect is SQLiteDialect)
+				return false;
+
+			return true;
 		}
 
 		[Test]
 		public void TestFullJoin()
 		{
-			using (ISession s = OpenSession())
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
 			{
-				IQuery q = s.CreateQuery("from Employee as e full join e.Department");
+				var q = session.CreateQuery("from Employee as e full join e.Department");
 
-				IList result = q.List();
+				var result = q.List();
 
 				Assert.AreEqual(3, result.Count);
 			}

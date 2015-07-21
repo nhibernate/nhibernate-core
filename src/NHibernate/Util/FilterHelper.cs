@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 using NHibernate.Dialect.Function;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
@@ -51,21 +52,52 @@ namespace NHibernate.Util
 
 		public void Render(StringBuilder buffer, string alias, IDictionary<string, IFilter> enabledFilters)
 		{
-			if (filterNames != null && filterNames.Length > 0)
+			Render(buffer, alias, new Dictionary<string, string>(), enabledFilters);
+		}
+
+		public void Render(StringBuilder buffer, string defaultAlias, IDictionary<string, string> propMap, IDictionary<string, IFilter> enabledFilters)
+		{
+			if (filterNames != null)
 			{
-				for (int i = 0, max = filterNames.Length; i < max; i++)
+				int max = filterNames.Length;
+				if (max > 0)
 				{
-					if (enabledFilters.ContainsKey(filterNames[i]))
+					for (int i = 0; i < max; i++)
 					{
-						string condition = filterConditions[i];
-						if (StringHelper.IsNotEmpty(condition))
+						if (enabledFilters.ContainsKey(filterNames[i]))
 						{
-							buffer.Append(" and ");
-							buffer.Append(StringHelper.Replace(condition, FilterImpl.MARKER, alias));
+							string condition = filterConditions[i];
+							if (StringHelper.IsNotEmpty(condition))
+							{
+								buffer.Append(" and ");
+								AddFilterString(buffer, defaultAlias, propMap, condition);
+							}
 						}
 					}
 				}
 			}
+		}
+
+		private static void AddFilterString(StringBuilder buffer, string defaultAlias, IDictionary<string, string> propMap, string condition)
+		{
+			int i = condition.IndexOf(FilterImpl.MARKER);
+			int upTo = 0;
+			while (i > -1 && upTo < condition.Length)
+			{
+				buffer.Append(condition.Substring(upTo, i - upTo));
+				int startOfProperty = i + FilterImpl.MARKER.Length + 1;
+
+				upTo = condition.IndexOf(" ", startOfProperty);
+				upTo = upTo >= 0 ? upTo : condition.Length;
+				string property = condition.Substring(startOfProperty, upTo - startOfProperty);
+
+				string fullColumn = propMap.ContainsKey(property) ? propMap[property] : string.Format(string.Format("{0}.{1}", defaultAlias, property));
+
+				buffer.Append(fullColumn);
+
+				i = condition.IndexOf(FilterImpl.MARKER, upTo);
+			}
+			buffer.Append(condition.Substring(upTo));
 		}
 
 		/// <summary>

@@ -485,6 +485,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				propertyName = EntityPersister.IdentifierPropertyName;
 			}
+			else if (IsCollectionOfValuesOrComponents)
+			{
+				propertyName = CollectionPropertyNames.Elements;
+			}
 			else
 			{
 				propertyName = NHibernate.Persister.Entity.EntityPersister.EntityID;

@@ -18,7 +18,7 @@ namespace NHibernate
 	/// transaction. (Long transactions might span several database transactions.)
 	/// </para>
 	/// <para>
-	/// The main function of the <c>ISession</c> is to offer create, find and delete operations
+	/// The main function of the <c>ISession</c> is to offer create, find, update, and delete operations
 	/// for instances of mapped entity classes. Instances may exist in one of two states:
 	/// <list type="bullet">
 	/// <item>transient: not associated with any <c>ISession</c></item>
@@ -80,9 +80,9 @@ namespace NHibernate
 		/// Force the <c>ISession</c> to flush.
 		/// </summary>
 		/// <remarks>
-		/// Must be called at the end of a unit of work, before commiting the transaction and closing
+		/// Must be called at the end of a unit of work, before committing the transaction and closing
 		/// the session (<c>Transaction.Commit()</c> calls this method). <i>Flushing</i> is the process
-		/// of synchronising the underlying persistent store with persistable state held in memory.
+		/// of synchronizing the underlying persistent store with persistable state held in memory.
 		/// </remarks>
 		void Flush();
 
@@ -576,33 +576,6 @@ namespace NHibernate
 		void Persist(string entityName, object obj);
 
 		/// <summary>
-		/// Copy the state of the given object onto the persistent object with the same
-		/// identifier. If there is no persistent instance currently associated with
-		/// the session, it will be loaded. Return the persistent instance. If the
-		/// given instance is unsaved or does not exist in the database, save it and
-		/// return it as a newly persistent instance. Otherwise, the given instance
-		/// does not become associated with the session.
-		/// </summary>
-		/// <param name="obj">a transient instance with state to be copied</param>
-		/// <returns>an updated persistent instance</returns>
-		[Obsolete("Use Merge(object) instead")]
-		object SaveOrUpdateCopy(object obj);
-
-		/// <summary>
-		/// Copy the state of the given object onto the persistent object with the
-		/// given identifier. If there is no persistent instance currently associated
-		/// with the session, it will be loaded. Return the persistent instance. If
-		/// there is no database row with the given identifier, save the given instance
-		/// and return it as a newly persistent instance. Otherwise, the given instance
-		/// does not become associated with the session.
-		/// </summary>
-		/// <param name="obj">a persistent or transient instance with state to be copied</param>
-		/// <param name="id">the identifier of the instance to copy to</param>
-		/// <returns>an updated persistent instance</returns>
-		[Obsolete("No direct replacement. Use Merge instead.")]
-		object SaveOrUpdateCopy(object obj, object id);
-
-		/// <summary>
 		/// Remove a persistent instance from the datastore.
 		/// </summary>
 		/// <remarks>
@@ -941,7 +914,7 @@ namespace NHibernate
 		/// Gets the session implementation.
 		/// </summary>
 		/// <remarks>
-		/// This method is provided in order to get the <b>NHibernate</b> implementation of the session from wrapper implementions.
+		/// This method is provided in order to get the <b>NHibernate</b> implementation of the session from wrapper implementations.
 		/// Implementors of the <seealso cref="ISession"/> interface should return the NHibernate implementation of this method.
 		/// </remarks>
 		/// <returns>

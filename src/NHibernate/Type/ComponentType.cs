@@ -23,9 +23,9 @@ namespace NHibernate.Type
 		private readonly FetchMode?[] joinedFetch;
 		private readonly bool isKey;
 		protected internal EntityModeToTuplizerMapping tuplizerMapping;
-	    private bool overridesGetHashCode;
+		private bool overridesGetHashCode;
 
-	    public override SqlType[] SqlTypes(IMapping mapping)
+		public override SqlType[] SqlTypes(IMapping mapping)
 		{
 			//Not called at runtime so doesn't matter if its slow :)
 			SqlType[] sqlTypes = new SqlType[GetColumnSpan(mapping)];
@@ -73,11 +73,11 @@ namespace NHibernate.Type
 			}
 
 			tuplizerMapping = metamodel.TuplizerMapping;
-		    var tuplizer = tuplizerMapping.GetTuplizerOrNull(EntityMode.Poco);
-            if(tuplizer !=null)
-            {
-                overridesGetHashCode = ReflectHelper.OverridesGetHashCode(tuplizer.MappedClass);
-            }
+			var tuplizer = tuplizerMapping.GetTuplizerOrNull(EntityMode.Poco);
+			if(tuplizer !=null)
+			{
+				overridesGetHashCode = ReflectHelper.OverridesGetHashCode(tuplizer.MappedClass);
+			}
 		}
 
 		/// <summary></summary>
@@ -106,8 +106,8 @@ namespace NHibernate.Type
 
 		public override int GetHashCode(object x, EntityMode entityMode, ISessionFactoryImplementor factory)
 		{
-            if (overridesGetHashCode)
-                return x.GetHashCode();
+			if (overridesGetHashCode)
+				return x.GetHashCode();
 			return GetHashCode(x, entityMode);
 		}
 
@@ -179,7 +179,7 @@ namespace NHibernate.Type
 				if (len <= 1)
 				{
 					bool dirty = (len == 0 || checkable[loc]) &&
-					             propertyTypes[i].IsDirty(xvalues[i], yvalues[i], session);
+								 propertyTypes[i].IsDirty(xvalues[i], yvalues[i], session);
 					if (dirty)
 					{
 						return true;
@@ -368,7 +368,7 @@ namespace NHibernate.Type
 		}
 
 		public override object Replace(object original, object target, ISessionImplementor session, object owner,
-		                               IDictionary copiedAlready)
+									   IDictionary copiedAlready)
 		{
 			if (original == null)
 				return null;

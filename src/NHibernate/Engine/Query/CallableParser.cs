@@ -1,6 +1,5 @@
 using System;
 using System.Text.RegularExpressions;
-using NHibernate.Hql.Classic;
 using NHibernate.Util;
 using NHibernate.SqlCommand;
 
@@ -17,7 +16,6 @@ namespace NHibernate.Engine.Query
 		}
 
 		private static readonly Regex functionNameFinder = new Regex(@"\{[\S\s]*call[\s]+([\w\.]+)[^\w]");
-		private static readonly int NewLineLength = Environment.NewLine.Length;
 
 		public static Detail Parse(string sqlString)
 		{

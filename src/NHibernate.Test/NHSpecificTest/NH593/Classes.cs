@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH593
 {
@@ -9,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.NH593
 	{
 		private ISet<Post> _posts;
 		private ISet<User> _users;
-		private IDictionary _attributes;
+		private IDictionary<string, string> _attributes;
 
 		private int blog_id;
 
@@ -27,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH593
 			set { blog_name = value; }
 		}
 
-		public virtual IDictionary Attributes
+		public virtual IDictionary<string, string> Attributes
 		{
 			get { return _attributes; }
 			set { _attributes = value; }
@@ -47,9 +45,9 @@ namespace NHibernate.Test.NHSpecificTest.NH593
 
 		public Blog()
 		{
-			_attributes = new Hashtable();
-			_posts = new HashedSet<Post>();
-			_users = new HashedSet<User>();
+			_attributes = new Dictionary<string, string>();
+			_posts = new HashSet<Post>();
+			_users = new HashSet<User>();
 		}
 
 		public Blog(string name)
@@ -104,9 +102,9 @@ namespace NHibernate.Test.NHSpecificTest.NH593
 	public class Post
 	{
 		private int post_id;
-		private IList _comments;
+		private IList<Comment> _comments;
 
-		public virtual IList Comments
+		public virtual IList<Comment> Comments
 		{
 			get { return _comments; }
 			set { _comments = value; }
@@ -136,7 +134,7 @@ namespace NHibernate.Test.NHSpecificTest.NH593
 
 		public Post()
 		{
-			_comments = new ArrayList();
+			_comments = new List<Comment>();
 		}
 
 		public Post(string title)
@@ -172,7 +170,7 @@ namespace NHibernate.Test.NHSpecificTest.NH593
 
 		public User()
 		{
-			_blogs = new HashedSet<Blog>();
+			_blogs = new HashSet<Blog>();
 		}
 
 		public User(string name)

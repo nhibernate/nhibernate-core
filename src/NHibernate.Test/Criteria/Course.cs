@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.Criteria
 {
@@ -8,7 +7,7 @@ namespace NHibernate.Test.Criteria
 	{
 		private string courseCode;
 		private string description;
-		private ISet<CourseMeeting> courseMeetings = new HashedSet<CourseMeeting>();
+		private ISet<CourseMeeting> courseMeetings = new HashSet<CourseMeeting>();
 		
 		public virtual string CourseCode
 		{

@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH958
 {
@@ -7,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.NH958
     {
         private int _id;
         private string _name = null;
-        private IList _hobbies = new ArrayList();
+        private IList<Hobby> _hobbies = new List<Hobby>();
 
         public Person()
         {
@@ -30,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.NH958
             set { _name = value; }
         }
 
-        public virtual IList Hobbies
+        public virtual IList<Hobby> Hobbies
         {
             get { return _hobbies; }
             set { _hobbies = value; }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 {
@@ -21,8 +20,8 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 		public Plan(string description)
 		{
 			this.description = description;
-			this.contracts = new HashedSet<Contract>();
-			this.infos = new HashedSet<Info>();
+			this.contracts = new HashSet<Contract>();
+			this.infos = new HashSet<Info>();
 		}
 		
 		public virtual long Id

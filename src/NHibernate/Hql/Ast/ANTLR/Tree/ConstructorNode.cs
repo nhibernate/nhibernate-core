@@ -14,6 +14,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private ConstructorInfo _constructor;
 		private bool _isMap;
 		private bool _isList;
+		private int _scalarColumnIndex = -1;
 
 		public ConstructorNode(IToken token) : base(token)
 		{
@@ -40,6 +41,22 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			// Collect the select expressions, skip the first child because it is the class name.
 			return GetChild(1);
+		}
+
+		public int ScalarColumnIndex
+		{
+			get { return _scalarColumnIndex; }
+		}
+
+		public void SetScalarColumn(int i)
+		{
+			ISelectExpression[] selectExpressions = CollectSelectExpressions();
+			// Invoke setScalarColumnText on each constructor argument.
+			for (int j = 0; j < selectExpressions.Length; j++)
+			{
+				ISelectExpression selectExpression = selectExpressions[j];
+				selectExpression.SetScalarColumn(j);
+			}
 		}
 
 		public void SetScalarColumnText(int i)
@@ -109,7 +126,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			else 
 			{
-                _constructor = ResolveConstructor(path);
+				_constructor = ResolveConstructor(path);
 			}
 		}
 

@@ -1,0 +1,41 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.UnionsubclassPolymorphicFormula">
+
+  <!--
+  Testing the inheritance of the abstract property "Name"
+  -->
+
+  <!-- PARTY -->
+
+  <class xmlns="urn:nhibernate-mapping-2.2" name="Party" table="`party`" abstract="true">
+    <id access="backfield" name="Id">
+      <column name="Id" />
+      <generator class="hilo" />
+    </id>
+
+    <!-- PERSON -->
+
+    <union-subclass name="Person" table="`person`" extends="Party">
+      <property name="Name" access="readonly" formula="first_name || ' ' || last_name" update="false" insert="false" />
+      <property name="FirstName">
+        <column name="first_name" />
+      </property>
+      <property name="LastName">
+        <column name="last_name" />
+      </property>
+    </union-subclass>
+
+    <!-- COMPANY-->
+
+    <union-subclass name="Company" table="`company`" extends="Party">
+      <property name="Name" access="readonly" update="false" insert="false">
+        <column name="company_name" />
+      </property>
+      <property name="CompanyName">
+        <column name="company_name" />
+      </property>
+    </union-subclass>
+  </class>
+
+</hibernate-mapping>

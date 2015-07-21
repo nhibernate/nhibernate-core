@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
-using Iesi.Collections.Generic;
 
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
@@ -554,7 +553,12 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			if (_resultAst == null)
 			{
-				var nodes = new HqlSqlWalkerTreeNodeStream(_inputAst);
+				if (_collectionRole != null)
+				{
+					HqlFilterPreprocessor.AddImpliedFromToQuery(_inputAst, _collectionRole, _sfi);
+				}
+
+				var nodes = new BufferedTreeNodeStream(_inputAst);
 
 				var hqlSqlWalker = new HqlSqlWalker(_qti, _sfi, nodes, _tokenReplacements, _collectionRole);
 				hqlSqlWalker.TreeAdaptor = new HqlSqlWalkerTreeAdaptor(hqlSqlWalker);

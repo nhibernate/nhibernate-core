@@ -140,10 +140,8 @@ namespace NHibernate.Linq.Visitors
              * N && N == N
              */
 
-            CheckType<bool>();
-            pvs.CheckType<bool>();
-            PossibleValueSet result = new PossibleValueSet(typeof(bool));
-
+            var result = new PossibleValueSet(DetermineBoolType(pvs));
+            
             if (Contains(true) && pvs.Contains(true) && !result.Contains(true)) result.DistinctValues.Add(true);
             if (Contains(true) && pvs.Contains(false) && !result.Contains(false)) result.DistinctValues.Add(false);
             if (Contains(true) && pvs.Contains(null)) result.ContainsNull = true;
@@ -171,10 +169,7 @@ namespace NHibernate.Linq.Visitors
              * N || N == N
              */
 
-            CheckType<bool>();
-            pvs.CheckType<bool>();
-
-            PossibleValueSet result = new PossibleValueSet(typeof(bool));
+            var result = new PossibleValueSet(DetermineBoolType(pvs));
 
             if (Contains(true) && pvs.Contains(true) && !result.Contains(true)) result.DistinctValues.Add(true);
             if (Contains(true) && pvs.Contains(false) && !result.Contains(true)) result.DistinctValues.Add(true);
@@ -244,9 +239,9 @@ namespace NHibernate.Linq.Visitors
 
         public PossibleValueSet Not()
         {
-            CheckType<bool>();
+            DetermineBoolType();
 
-            PossibleValueSet result = new PossibleValueSet(typeof(bool));
+            var result = new PossibleValueSet(ExpressionType);
             result.ContainsNull = ContainsNull;
             result.DistinctValues.AddRange(DistinctValues.Cast<bool>().Select(v => !v).Cast<object>());
             return result;
@@ -319,10 +314,36 @@ namespace NHibernate.Linq.Visitors
 
         #endregion
 
-        private void CheckType<T>()
+
+        /// <summary>
+        /// Verify that ExpressionType of both this and the other set is bool or nullable bool,
+        /// and return the negotiated type (nullable bool if either side is nullable).
+        /// </summary>
+        private System.Type DetermineBoolType(PossibleValueSet otherSet)
         {
-            if (ExpressionType != typeof(T))
-                throw new AssertionFailure("Cannot perform desired possible value set operation on expression of type: " + ExpressionType);
+            DetermineBoolType();
+            otherSet.DetermineBoolType();
+
+            var nullableBoolType = typeof(bool?);
+            if (ExpressionType == nullableBoolType || otherSet.ExpressionType == nullableBoolType)
+                return nullableBoolType;
+
+            return typeof(bool);
+        }
+
+
+        /// <summary>
+        /// Verify that ExpressionType is bool or nullable bool.
+        /// </summary>
+        private void DetermineBoolType()
+        {
+            var boolType = typeof(bool);
+            var nullableBoolType = typeof(bool?);
+
+            if (ExpressionType != boolType && ExpressionType != nullableBoolType)
+                throw new AssertionFailure(
+                    "Cannot perform desired possible value set operation on expressions of type: " +
+                    ExpressionType);
         }
 
         public static PossibleValueSet CreateNull(System.Type expressionType)

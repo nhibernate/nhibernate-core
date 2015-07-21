@@ -90,7 +90,8 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.UInt32, "UNSIGNED INTEGER");
 			RegisterColumnType(DbType.Single, "REAL");
 			RegisterColumnType(DbType.Double, "DOUBLE");
-			RegisterColumnType(DbType.Decimal, "NUMERIC(19,$l)"); // Precision ranges from 0-127
+			RegisterColumnType(DbType.Decimal, "NUMERIC(19,5)"); // Precision ranges from 0-127
+			RegisterColumnType(DbType.Decimal, 19, "NUMERIC($p, $s)"); // Precision ranges from 0-127
 		}
 
 		protected virtual void RegisterDateTimeTypeMappings()
@@ -646,7 +647,7 @@ namespace NHibernate.Dialect
 
 		/// <summary>
 		/// SQL Anywhere's implementation of KEYSET-DRIVEN cursors does not
-		/// permit absolute postioning. With jConnect as the driver, this support
+		/// permit absolute positioning. With jConnect as the driver, this support
 		/// will succeed because jConnect FETCHes the entire result set to the client
 		/// first; it will fail with the iAnywhere JDBC driver. Because the server
 		/// may decide to use a KEYSET cursor even if the cursor is declared as

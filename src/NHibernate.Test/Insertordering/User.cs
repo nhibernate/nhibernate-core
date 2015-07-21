@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.Insertordering
 {
@@ -8,7 +7,7 @@ namespace NHibernate.Test.Insertordering
 		private ISet<Membership> memberships;
 		public User()
 		{
-			memberships = new HashedSet<Membership>();
+			memberships = new HashSet<Membership>();
 		}
 		public virtual int Id { get; protected set; }
 		public virtual string UserName { get; set; }

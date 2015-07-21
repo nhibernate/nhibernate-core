@@ -1,11 +1,11 @@
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH739
 {
 	public class Cat
 	{
 		private int id;
-		private IList children = new ArrayList();
+		private IList<Cat> children = new List<Cat>();
 		private Cat mother;
 
 		public int Id
@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH739
 			set { mother = value; }
 		}
 
-		public IList Children
+		public IList<Cat> Children
 		{
 			get { return children; }
 			set { children = value; }

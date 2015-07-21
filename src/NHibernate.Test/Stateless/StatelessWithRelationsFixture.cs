@@ -1,8 +1,6 @@
 using System.Collections;
-using Iesi.Collections.Generic;
 using NUnit.Framework;
 using System.Collections.Generic;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Stateless
 {
@@ -36,7 +34,7 @@ namespace NHibernate.Test.Stateless
 				{
 					Father = rf,
 					Mother = rm,
-					Childs = new HashedSet<Reptile> { rc1, rc2 }
+					Childs = new HashSet<Reptile> { rc1, rc2 }
 				};
 				s.Save("ReptilesFamily", rfamily);
 				tx.Commit();
@@ -54,7 +52,7 @@ namespace NHibernate.Test.Stateless
 				{
 					Father = hf,
 					Mother = hm,
-					Childs = new HashedSet<Human> { hc1 }
+					Childs = new HashSet<Human> { hc1 }
 				};
 				s.Save("HumanFamily", hfamily);
 				tx.Commit();
@@ -67,14 +65,14 @@ namespace NHibernate.Test.Stateless
 				Assert.That(hf.Count, Is.EqualTo(1));
 				Assert.That(hf[0].Father.Name, Is.EqualTo(humanFather));
 				Assert.That(hf[0].Mother.Name, Is.EqualTo(humanMother));
-				NHibernateUtil.IsInitialized(hf[0].Childs).Should("No lazy collection should be initialized").Be.True();
+				Assert.That(NHibernateUtil.IsInitialized(hf[0].Childs), Is.True, "No lazy collection should be initialized");
 				//Assert.That(hf[0].Childs, Is.Null, "Collections should be ignored by stateless session.");
 
 				IList<Family<Reptile>> rf = s.CreateQuery("from ReptilesFamily").List<Family<Reptile>>();
 				Assert.That(rf.Count, Is.EqualTo(1));
 				Assert.That(rf[0].Father.Description, Is.EqualTo(crocodileFather));
 				Assert.That(rf[0].Mother.Description, Is.EqualTo(crocodileMother));
-				NHibernateUtil.IsInitialized(hf[0].Childs).Should("No lazy collection should be initialized").Be.True();
+				Assert.That(NHibernateUtil.IsInitialized(hf[0].Childs), Is.True, "No lazy collection should be initialized");
 				//Assert.That(rf[0].Childs, Is.Null, "Collections should be ignored by stateless session.");
 
 				tx.Commit();

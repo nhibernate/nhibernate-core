@@ -3,7 +3,6 @@ using NHibernate.Cfg;
 using NHibernate.Cfg.Loquacious;
 using NHibernate.Tuple.Entity;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.GhostProperty
 {
@@ -128,13 +127,13 @@ namespace NHibernate.Test.GhostProperty
 				{
 					order = s.Get<Order>(1);
 					var logMessage = ls.GetWholeLog();
-					logMessage.Should().Not.Contain("FROM Payment");
+					Assert.That(logMessage, Is.Not.StringContaining("FROM Payment"));
 				}
-				order.Satisfy(o => !NHibernateUtil.IsPropertyInitialized(o, "Payment"));
+				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "Payment"), Is.False);
 
 				// trigger on-access lazy load 
 				var x = order.Payment;
-				order.Satisfy(o => NHibernateUtil.IsPropertyInitialized(o, "Payment"));
+				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "Payment"), Is.True);
 			}
 		}
 
@@ -148,19 +147,19 @@ namespace NHibernate.Test.GhostProperty
 				{
 					order = s.Get<Order>(1);
 					var logMessage = ls.GetWholeLog();
-					logMessage.Should().Not.Contain("ALazyProperty");
-					logMessage.Should().Contain("NoLazyProperty");
+					Assert.That(logMessage, Is.Not.StringContaining("ALazyProperty"));
+					Assert.That(logMessage, Is.StringContaining("NoLazyProperty"));
 				}
-				order.Satisfy(o => NHibernateUtil.IsPropertyInitialized(o, "NoLazyProperty"));
-				order.Satisfy(o => !NHibernateUtil.IsPropertyInitialized(o, "ALazyProperty"));
+				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "NoLazyProperty"), Is.True);
+				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "ALazyProperty"), Is.False);
 
 				using (var ls = new SqlLogSpy())
 				{
 					var x = order.ALazyProperty;
 					var logMessage = ls.GetWholeLog();
-					logMessage.Should().Contain("ALazyProperty");
+					Assert.That(logMessage, Is.StringContaining("ALazyProperty"));
 				}
-				order.Satisfy(o => NHibernateUtil.IsPropertyInitialized(o, "ALazyProperty"));
+				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "ALazyProperty"), Is.True);
 			}
 		} 
 	}

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.DomainModel;
 using NHibernate.DomainModel.NHSpecific;
 using NUnit.Framework;
@@ -21,8 +22,7 @@ namespace NHibernate.Test.NHSpecificTest
 			using (ISession s = OpenSession())
 			{
 				Optimistic op = new Optimistic();
-				op.Bag = new ArrayList();
-				op.Bag.Add("xyz");
+				op.Bag = new List<string> {"xyz"};
 
 				s.Save(op);
 			}

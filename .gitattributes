@@ -1,6 +1,35 @@
-* -text
-*.csproj merge=union
-*.vbproj merge=union
-*.fsproj merge=union
-*.dbproj merge=union
-*.sln merge=union
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text=auto
+
+# Explicitly declare text files you want to always be normalized and converted
+# to native line endings on checkout.
+*.cs      text diff=csharp
+*.xaml    text
+*.txt     text
+*.tt      text
+*.ps1     text
+*.cmd     text
+*.msbuild text
+*.md      text
+
+*.sln text eol=crlf merge=union
+*.csproj text merge=union
+*.vbproj text merge=union
+*.fsproj text merge=union
+*.dbproj text merge=union
+
+
+# Binary files
+*.png binary
+*.jpg binary
+*.dll binary
+*.exe binary
+
+
+
+
+
+
+
+
+

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Iesi.Collections.Generic;
 
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -24,10 +23,14 @@ namespace NHibernate.Loader.Criteria
 		private readonly CriteriaQueryTranslator translator;
 		private readonly ISet<string> querySpaces;
 		private readonly IType[] resultTypes;
+		private readonly bool[] includeInResultRow;
+
 		//the user visible aliases, which are unknown to the superclass,
 		//these are not the actual "physical" SQL aliases
 		private readonly string[] userAliases;
 		private readonly IList<string> userAliasList = new List<string>();
+		private readonly IList<IType> resultTypeList = new List<IType>();
+		private readonly IList<bool> includeInResultRowList = new List<bool>();
 
 		private static readonly IInternalLogger logger = LoggerProvider.LoggerFor(typeof(CriteriaJoinWalker));
 
@@ -42,8 +45,6 @@ namespace NHibernate.Loader.Criteria
 
 			if (translator.HasProjection)
 			{
-				resultTypes = translator.ProjectedTypes;
-
 				InitProjection(
 					translator.GetSelect(enabledFilters),
 					translator.GetWhereCondition(enabledFilters),
@@ -52,16 +53,26 @@ namespace NHibernate.Loader.Criteria
 					translator.GetHavingCondition(enabledFilters),
 					enabledFilters, 
 					LockMode.None);
+
+				resultTypes = translator.ProjectedTypes;
+				userAliases = translator.ProjectedAliases;
+				includeInResultRow = new bool[resultTypes.Length];
+				ArrayHelper.Fill(IncludeInResultRow, true);
 			}
 			else
 			{
-				resultTypes = new IType[] {TypeFactory.ManyToOne(persister.EntityName)};
-
 				InitAll(translator.GetWhereCondition(enabledFilters), translator.GetOrderBy(), LockMode.None);
-			}
 
-			userAliasList.Add(criteria.Alias); //root entity comes *last*
-			userAliases = userAliasList.ToArray();
+				resultTypes = new IType[] { TypeFactory.ManyToOne(persister.EntityName) };
+
+				// root entity comes last
+				userAliasList.Add(criteria.Alias); //root entity comes *last*
+				resultTypeList.Add(translator.ResultType(criteria));
+				includeInResultRowList.Add(true);
+				userAliases = userAliasList.ToArray();
+				resultTypes = resultTypeList.ToArray();
+				includeInResultRow = includeInResultRowList.ToArray();
+			}
 		}
 
 		protected override void WalkEntityTree(IOuterJoinLoadable persister, string alias, string path, int currentDepth)
@@ -90,6 +101,11 @@ namespace NHibernate.Loader.Criteria
 		public string[] UserAliases
 		{
 			get { return userAliases; }
+		}
+
+		public bool[] IncludeInResultRow
+		{
+			get { return includeInResultRow; }
 		}
 
 		/// <summary>
@@ -153,29 +169,56 @@ namespace NHibernate.Loader.Criteria
 			return fetchMode == FetchMode.Default;
 		}
 
+
 		protected override string GenerateTableAlias(int n, string path, IJoinable joinable)
 		{
-			bool shouldCreateUserAlias = joinable.ConsumesEntityAlias(); 
-			if(shouldCreateUserAlias == false  && joinable.IsCollection)
+			// TODO: deal with side-effects (changes to includeInSelectList, userAliasList, resultTypeList)!!!
+
+			// for collection-of-entity, we are called twice for given "path"
+			// once for the collection Joinable, once for the entity Joinable.
+			// the second call will/must "consume" the alias + perform side effects according to consumesEntityAlias()
+			// for collection-of-other, however, there is only one call 
+			// it must "consume" the alias + perform side effects, despite what consumeEntityAlias() return says
+			// 
+			// note: the logic for adding to the userAliasList is still strictly based on consumesEntityAlias return value
+
+			bool shouldCreateUserAlias = joinable.ConsumesEntityAlias();
+			if (!shouldCreateUserAlias && joinable.IsCollection)
 			{
-				var elementType = ((ICollectionPersister)joinable).ElementType;
+				// is it a collection-of-other (component or value) ?
+				var elementType = ((ICollectionPersister) joinable).ElementType;
 				if (elementType != null)
-					shouldCreateUserAlias = elementType.IsComponentType;
+					shouldCreateUserAlias = elementType.IsComponentType || !elementType.IsEntityType;
 			}
+
+			string sqlAlias = null;
+
 			if (shouldCreateUserAlias)
 			{
 				ICriteria subcriteria = translator.GetCriteria(path);
-				string sqlAlias = subcriteria == null ? null : translator.GetSQLAlias(subcriteria);
-				if (sqlAlias != null)
-				{
-					userAliasList.Add(subcriteria.Alias); //alias may be null
-					return sqlAlias; //EARLY EXIT
-				}
+				sqlAlias = subcriteria == null ? null : translator.GetSQLAlias(subcriteria);
 
-				userAliasList.Add(null);
+				if (joinable.ConsumesEntityAlias() && !translator.HasProjection)
+				{
+					includeInResultRowList.Add(subcriteria != null && subcriteria.Alias != null);
+
+					if (sqlAlias != null)
+					{
+						if (subcriteria.Alias != null)
+						{
+							userAliasList.Add(subcriteria.Alias); //alias may be null
+							resultTypeList.Add(translator.ResultType(subcriteria));
+						}
+					}
+				}
 			}
-			return base.GenerateTableAlias(n + translator.SQLAliasCount, path, joinable);
+
+			if (sqlAlias == null)
+				sqlAlias = base.GenerateTableAlias(n + translator.SQLAliasCount, path, joinable);
+
+			return sqlAlias;
 		}
+
 
 		protected override string GenerateRootAlias(string tableName)
 		{

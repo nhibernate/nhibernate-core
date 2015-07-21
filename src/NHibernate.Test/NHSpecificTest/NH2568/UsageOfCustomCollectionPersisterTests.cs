@@ -7,7 +7,6 @@ using NHibernate.Engine;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Persister.Collection;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2568
 {
@@ -28,10 +27,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2568
 			var mapper = new ModelMapper();
 			mapper.Class<MyRelated>(rm=> rm.Id(x=> x.Id));
 			mapper.Class<MyEntity>(rm =>
-			                       {
-			                       	rm.Id(x => x.Id);
-															rm.Bag(x => x.Relateds, am => am.Persister<MyCollectionPersister>(), rel=> rel.OneToMany());
-			                       });
+			{
+				rm.Id(x => x.Id);
+				rm.Bag(x => x.Relateds, am => am.Persister<MyCollectionPersister>(), rel => rel.OneToMany());
+			});
 			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
 			return mappings;
 		}
@@ -41,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2568
 		{
 			Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
 			cfg.AddMapping(GetMappings());
-			cfg.Executing(c=>c.BuildSessionFactory()).NotThrows();
+			Assert.That(() => cfg.BuildSessionFactory(), Throws.Nothing);
 		}
 	}
 

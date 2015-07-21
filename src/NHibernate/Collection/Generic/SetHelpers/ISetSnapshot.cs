@@ -5,6 +5,6 @@ namespace NHibernate.Collection.Generic.SetHelpers
 {
 	internal interface ISetSnapshot<T> : ICollection<T>, ICollection
 	{
-		T this[T element] { get; }
+		bool TryGetValue(T element, out T value);
 	}
 }

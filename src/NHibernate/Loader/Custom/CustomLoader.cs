@@ -3,7 +3,6 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Hql;
 using NHibernate.Param;
@@ -25,7 +24,7 @@ namespace NHibernate.Loader.Custom
 		// Currently *not* cachable if autodiscover types is in effect (e.g. "select * ...")
 
 		private readonly SqlString sql;
-		private readonly ISet<string> querySpaces = new HashedSet<string>();
+		private readonly ISet<string> querySpaces = new HashSet<string>();
 		private List<IParameterSpecification> parametersSpecifications;
 
 		private readonly IQueryable[] entityPersisters;
@@ -39,13 +38,15 @@ namespace NHibernate.Loader.Custom
 		private readonly LockMode[] lockModes;
 		private readonly ResultRowProcessor rowProcessor;
 
+		private readonly bool[] includeInResultRow;
+
 		private IType[] resultTypes;
 		private string[] transformerAliases;
 
 		public CustomLoader(ICustomQuery customQuery, ISessionFactoryImplementor factory) : base(factory)
 		{
 			sql = customQuery.SQL;
-			querySpaces.AddAll(customQuery.QuerySpaces);
+			querySpaces.UnionWith(customQuery.QuerySpaces);
 			parametersSpecifications = customQuery.CollectedParametersSpecifications.ToList();
 
 			List<IQueryable> entitypersisters = new List<IQueryable>();
@@ -62,6 +63,8 @@ namespace NHibernate.Loader.Custom
 			List<IType> resulttypes = new List<IType>();
 			List<string> specifiedAliases = new List<string>();
 
+			List<bool> includeInResultRowList = new List<bool>();
+
 			int returnableCounter = 0;
 			bool hasScalars = false;
 
@@ -73,6 +76,7 @@ namespace NHibernate.Loader.Custom
 					resulttypes.Add(scalarRtn.Type);
 					specifiedAliases.Add(scalarRtn.ColumnAlias);
 					resultColumnProcessors.Add(new ScalarResultColumnProcessor(scalarRtn.ColumnAlias, scalarRtn.Type));
+					includeInResultRowList.Add(true);
 					hasScalars = true;
 				}
 				else if (rtn is RootReturn)
@@ -87,7 +91,8 @@ namespace NHibernate.Loader.Custom
 					resulttypes.Add(persister.Type);
 					specifiedAliases.Add(rootRtn.Alias);
 					entityaliases.Add(rootRtn.EntityAliases);
-					querySpaces.AddAll(persister.QuerySpaces);
+					querySpaces.UnionWith(persister.QuerySpaces);
+					includeInResultRowList.Add(true);
 				}
 				else if (rtn is CollectionReturn)
 				{
@@ -110,8 +115,9 @@ namespace NHibernate.Loader.Custom
 						entitypersisters.Add(elementPersister);
 						entityowners.Add(-1);
 						entityaliases.Add(collRtn.ElementEntityAliases);
-						querySpaces.AddAll(elementPersister.QuerySpaces);
+						querySpaces.UnionWith(elementPersister.QuerySpaces);
 					}
+					includeInResultRowList.Add(true);
 				}
 				else if (rtn is EntityFetchReturn)
 				{
@@ -128,7 +134,8 @@ namespace NHibernate.Loader.Custom
 					nonScalarReturnList.Add(rtn);
 					specifiedAliases.Add(fetchRtn.Alias);
 					entityaliases.Add(fetchRtn.EntityAliases);
-					querySpaces.AddAll(persister.QuerySpaces);
+					querySpaces.UnionWith(persister.QuerySpaces);
+					includeInResultRowList.Add(false);
 				}
 				else if (rtn is CollectionFetchReturn)
 				{
@@ -152,8 +159,9 @@ namespace NHibernate.Loader.Custom
 						entitypersisters.Add(elementPersister);
 						entityowners.Add(ownerIndex);
 						entityaliases.Add(fetchRtn.ElementEntityAliases);
-						querySpaces.AddAll(elementPersister.QuerySpaces);
+						querySpaces.UnionWith(elementPersister.QuerySpaces);
 					}
+					includeInResultRowList.Add(false);
 				}
 				else
 				{
@@ -171,6 +179,7 @@ namespace NHibernate.Loader.Custom
 			resultTypes = resulttypes.ToArray();
 			transformerAliases = specifiedAliases.ToArray();
 			rowProcessor = new ResultRowProcessor(hasScalars, resultColumnProcessors.ToArray());
+			includeInResultRow = includeInResultRowList.ToArray();
 		}
 
 		public ISet<string> QuerySpaces
@@ -284,6 +293,17 @@ namespace NHibernate.Loader.Custom
 			return rowProcessor.BuildResultRow(row, rs, resultTransformer != null, session);
 		}
 
+
+		protected override IResultTransformer ResolveResultTransformer(IResultTransformer resultTransformer)
+		{
+			return HolderInstantiator.ResolveResultTransformer(null, resultTransformer);
+		}
+
+		protected override bool[] IncludeInResultRow
+		{
+			get { return includeInResultRow; }
+		}
+
 		public override IList GetResultList(IList results, IResultTransformer resultTransformer)
 		{
 			// meant to handle dynamic instantiation queries...(Copy from QueryLoader)
@@ -306,7 +326,7 @@ namespace NHibernate.Loader.Custom
 			}
 		}
 
-		protected override void AutoDiscoverTypes(IDataReader rs)
+		protected internal override void AutoDiscoverTypes(IDataReader rs)
 		{
 			MetaData metadata = new MetaData(rs);
 			List<string> aliases = new List<string>();

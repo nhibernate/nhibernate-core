@@ -14,12 +14,11 @@ namespace NHibernate.Proxy
 		{
 			try
 			{
-				var initializer = new DefaultLazyInitializer(EntityName, PersistentClass, id, GetIdentifierMethod, SetIdentifierMethod,
-				                                             ComponentIdType, session);
+				var initializer = new DefaultLazyInitializer(EntityName, PersistentClass, id, GetIdentifierMethod, SetIdentifierMethod, ComponentIdType, session, OverridesEquals);
 
 				object proxyInstance = IsClassProxy
-				                       	? factory.CreateProxy(PersistentClass, initializer, Interfaces)
-				                       	: factory.CreateProxy(Interfaces[0], initializer, Interfaces);
+										? factory.CreateProxy(PersistentClass, initializer, Interfaces)
+										: factory.CreateProxy(Interfaces[0], initializer, Interfaces);
 
 				return (INHibernateProxy) proxyInstance;
 			}
@@ -32,7 +31,7 @@ namespace NHibernate.Proxy
 
 		public override object GetFieldInterceptionProxy(object instanceToWrap)
 		{
-			var interceptor = new DefaultDynamicLazyFieldInterceptor(instanceToWrap);
+			var interceptor = new DefaultDynamicLazyFieldInterceptor();
 			return factory.CreateProxy(PersistentClass, interceptor, new[] { typeof(IFieldInterceptorAccessor) });
 		}
 	}

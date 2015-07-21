@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 using NHibernate.Collection;
 using NHibernate.Collection.Generic;
 using NHibernate.Engine;
@@ -58,7 +57,7 @@ namespace NHibernate.Type
 				var stronglyTypedCollection = collection as ICollection<T>;
 				if (stronglyTypedCollection == null)
 					throw new HibernateException(Role + " must be an implementation of ISet<T> or ICollection<T>");
-				set = new HashedSet<T>(stronglyTypedCollection);
+				set = new HashSet<T>(stronglyTypedCollection);
 			}
 			return new PersistentGenericSet<T>(session, set);
 		}
@@ -75,7 +74,7 @@ namespace NHibernate.Type
 
 		public override object Instantiate(int anticipatedSize)
 		{
-			return new HashedSet<T>();
+			return new HashSet<T>();
 		}
 	}
 }

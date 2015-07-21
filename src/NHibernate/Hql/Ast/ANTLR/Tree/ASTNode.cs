@@ -17,7 +17,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private readonly IToken _token;
 		private List<IASTNode> _children;
 
-		public ASTNode()
+	    public ASTNode()
 			: this((IToken)null) {}
 
 		public ASTNode(IToken token)
@@ -260,24 +260,27 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 				return null;
 			}
-			set
-			{
-				if (_parent != null)
-				{
-					if (_parent.ChildCount > (ChildIndex + 1))
-					{
-						_parent.SetChild(ChildIndex + 1, value);
-					}
-					else
-					{
-						AddSibling(value);
-					}
-				}
-				else
-				{
-					throw new InvalidOperationException("Trying set NextSibling without a parent.");
-				}
-			}
+            // Setter commented out 2014-07-26. I don't like it since it drops the current next sibling from
+            // the tree, and the name of the property doesn't give a clear indication if it overwrites or not.
+            // Better to use InsertChild() on the parent.
+			//set
+			//{
+			//    if (_parent != null)
+			//    {
+			//        if (_parent.ChildCount > (ChildIndex + 1))
+			//        {
+			//            _parent.SetChild(ChildIndex + 1, value);
+			//        }
+			//        else
+			//        {
+			//            AddSibling(value);
+			//        }
+			//    }
+			//    else
+			//    {
+			//        throw new InvalidOperationException("Trying set NextSibling without a parent.");
+			//    }
+			//}
 		}
 
 		public IASTNode GetChild(int index)
@@ -393,7 +396,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	        throw new NotImplementedException();
 	    }
 
-	    public IList GetAncestors()
+	    public IList<ITree> GetAncestors()
 	    {
 	        throw new NotImplementedException();
 	    }
@@ -425,7 +428,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			object node = _children[i];
 			RemoveChild(i);
-
 			return node;
 		}
 
@@ -469,7 +471,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return (ITree) DupNode();
 		}
 
-		int ITree.ChildIndex { get; set; }
+		int ITree.ChildIndex
+		{
+			get { return _childIndex; }
+			set { _childIndex = value; }
+		}
 
 		ITree ITree.Parent
 		{
@@ -513,6 +519,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			return GetEnumerator();
 		}
+
 		#endregion
 
 		// //////////////////////////////////////////////////////////

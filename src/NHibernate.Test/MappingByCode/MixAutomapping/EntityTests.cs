@@ -1,6 +1,5 @@
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.MixAutomapping
 {
@@ -32,7 +31,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			mapper.Class<AComponent>(map => { });
 
 			var inspector = (IModelInspector)autoinspector;
-			inspector.IsEntity(typeof(AComponent)).Should().Be.True();
+			Assert.That(inspector.IsEntity(typeof(AComponent)), Is.True);
 		}
 
 		[Test]
@@ -40,7 +39,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		{
 			var autoinspector = new SimpleModelInspector();
 			var inspector = (IModelInspector)autoinspector;
-			inspector.IsEntity(typeof(AEntity)).Should().Be.True();
+			Assert.That(inspector.IsEntity(typeof(AEntity)), Is.True);
 		}
 
 		[Test]
@@ -48,7 +47,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		{
 			var autoinspector = new SimpleModelInspector();
 			var inspector = (IModelInspector)autoinspector;
-			inspector.IsEntity(typeof(AComponent)).Should().Be.False();
+			Assert.That(inspector.IsEntity(typeof(AComponent)), Is.False);
 		}
 
 		[Test]
@@ -56,7 +55,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		{
 			var autoinspector = new SimpleModelInspector();
 			var inspector = (IModelInspector)autoinspector;
-			inspector.IsEntity(typeof(Entity)).Should().Be.True();
+			Assert.That(inspector.IsEntity(typeof(Entity)), Is.True);
 		}
 
 		[Test]
@@ -64,7 +63,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		{
 			var autoinspector = new SimpleModelInspector();
 			var inspector = (IModelInspector)autoinspector;
-			inspector.IsEntity(typeof(Something)).Should().Be.False();
+			Assert.That(inspector.IsEntity(typeof(Something)), Is.False);
 		}
 
 		[Test]
@@ -72,7 +71,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		{
 			var autoinspector = new SimpleModelInspector();
 			var inspector = (IModelInspector)autoinspector;
-			inspector.IsEntity(typeof(string)).Should().Be.False();
+			Assert.That(inspector.IsEntity(typeof(string)), Is.False);
 		}
 	}
 }

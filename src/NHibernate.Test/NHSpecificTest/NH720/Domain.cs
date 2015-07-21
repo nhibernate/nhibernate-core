@@ -197,7 +197,7 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 	{
 		private int id;
 		private string foo;
-		private IList bees;
+		private IList<B> bees;
 
 		protected A()
 		{
@@ -207,7 +207,7 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 		{
 			this.id = id;
 			this.foo = foo;
-			bees = new ArrayList();
+			bees = new List<B>();
 		}
 
 		public virtual int Id
@@ -222,7 +222,7 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 			set { foo = value; }
 		}
 
-		public virtual IList Bees
+		public virtual IList<B> Bees
 		{
 			get { return bees; }
 		}

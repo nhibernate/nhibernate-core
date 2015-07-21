@@ -1,9 +1,8 @@
 using System;
-using Iesi.Collections.Generic;
+using System.Collections.Generic;
 using NHibernate.Proxy;
 using NUnit.Framework;
 using NHibernate.Intercept;
-using SharpTestsEx;
 
 namespace NHibernate.Test.DynamicProxyTests
 {
@@ -18,7 +17,7 @@ namespace NHibernate.Test.DynamicProxyTests
 		[Test]
 		public void LazyFieldInterceptorMarkedAsSerializable()
 		{
-			typeof(DefaultDynamicLazyFieldInterceptor).Should().Have.Attribute<SerializableAttribute>();
+			Assert.That(typeof(DefaultDynamicLazyFieldInterceptor), Has.Attribute<SerializableAttribute>());
 		}
 
 		[Test]
@@ -26,12 +25,11 @@ namespace NHibernate.Test.DynamicProxyTests
 		{
 			var pf = new DefaultProxyFactory();
 			var propertyInfo = typeof(MyClass).GetProperty("Id");
-			pf.PostInstantiate("MyClass", typeof(MyClass), new HashedSet<System.Type>(), propertyInfo.GetGetMethod(), propertyInfo.GetSetMethod(), null);
+			pf.PostInstantiate("MyClass", typeof(MyClass), new HashSet<System.Type>(), propertyInfo.GetGetMethod(), propertyInfo.GetSetMethod(), null);
 			var fieldInterceptionProxy = (IFieldInterceptorAccessor)pf.GetFieldInterceptionProxy(new MyClass());
 			fieldInterceptionProxy.FieldInterceptor = new DefaultFieldInterceptor(null, null, null, "MyClass", typeof(MyClass));
 
-			fieldInterceptionProxy.Should().Be.BinarySerializable();
+			Assert.That(fieldInterceptionProxy, Is.BinarySerializable);
 		}
-
 	}
 }

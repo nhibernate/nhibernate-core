@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.Hql.Ast
 {
@@ -7,9 +8,19 @@ namespace NHibernate.Test.Hql.Ast
 		private long id;
 		private string name;
 		private Classification classification;
-		private IDictionary animals;
-		private IDictionary mammals;
+		private IDictionary<string, Animal> animals;
+		private IDictionary<string, Mammal> mammals;
 		private Address address;
+
+		public Zoo()
+		{
+		}
+
+		public Zoo(string name, Address address)
+		{
+			this.name = name;
+			this.address = address;
+		}
 
 		public virtual long Id
 		{
@@ -29,13 +40,13 @@ namespace NHibernate.Test.Hql.Ast
 			set { classification = value; }
 		}
 
-		public virtual IDictionary Animals
+		public virtual IDictionary<string, Animal> Animals
 		{
 			get { return animals; }
 			set { animals = value; }
 		}
 
-		public virtual IDictionary Mammals
+		public virtual IDictionary<string, Mammal> Mammals
 		{
 			get { return mammals; }
 			set { mammals = value; }
@@ -45,6 +56,43 @@ namespace NHibernate.Test.Hql.Ast
 		{
 			get { return address; }
 			set { address = value; }
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (!(obj is Zoo))
+				return false;
+
+			var zoo = ((Zoo)obj);
+
+			if (Name == null ^ zoo.Name == null)
+			{
+				return false;
+			}
+
+			if (Name != null && zoo.Name != null && !zoo.Name.Equals(Name))
+			{
+				return false;
+			}
+
+			if (Address == null ^ zoo.Address == null)
+			{
+				return false;
+			}
+
+			if (Address != null && zoo.Address != null && !zoo.Address.Equals(Address))
+			{
+				return false;
+			}
+
+			return true;
+		}
+
+		public override int GetHashCode()
+		{
+			int result = (Name != null ? Name.GetHashCode() : 0);
+			result = 31 * result + (Address != null ? Address.GetHashCode() : 0);
+			return result;
 		}
 	}
 

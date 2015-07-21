@@ -36,31 +36,38 @@ namespace NHibernate.Transaction
 			logger.DebugFormat("enlisted into DTC transaction: {0}",
 							   transactionContext.AmbientTransation.IsolationLevel);
 			session.AfterTransactionBegin(null);
-			transactionContext.AmbientTransation.TransactionCompleted +=
-				delegate(object sender, TransactionEventArgs e)
+
+			TransactionCompletedEventHandler handler = null;
+
+			handler = delegate(object sender, TransactionEventArgs e)
+				{
+					using (new SessionIdLoggingContext(session.SessionId))
 					{
-						using (new SessionIdLoggingContext(session.SessionId))
+						((DistributedTransactionContext) session.TransactionContext).IsInActiveTransaction = false;
+
+						bool wasSuccessful = false;
+						try
 						{
-							((DistributedTransactionContext)session.TransactionContext).IsInActiveTransaction = false;
-							
-							bool wasSuccessful = false;
-							try
-							{
-								wasSuccessful = e.Transaction.TransactionInformation.Status
-												== TransactionStatus.Committed;
-							}
-							catch (ObjectDisposedException ode)
-							{
-								logger.Warn("Completed transaction was disposed, assuming transaction rollback", ode);
-							}
-							session.AfterTransactionCompletion(wasSuccessful, null);
-							if (transactionContext.ShouldCloseSessionOnDistributedTransactionCompleted)
-							{
-								session.CloseSessionFromDistributedTransaction();
-							}
-							session.TransactionContext = null;
+							wasSuccessful = e.Transaction.TransactionInformation.Status
+											== TransactionStatus.Committed;
 						}
-					};
+						catch (ObjectDisposedException ode)
+						{
+							logger.Warn("Completed transaction was disposed, assuming transaction rollback", ode);
+						}
+						session.AfterTransactionCompletion(wasSuccessful, null);
+						if (transactionContext.ShouldCloseSessionOnDistributedTransactionCompleted)
+						{
+							session.CloseSessionFromDistributedTransaction();
+						}
+						session.TransactionContext = null;
+					}
+
+					e.Transaction.TransactionCompleted -= handler;
+				};
+
+			transactionContext.AmbientTransation.TransactionCompleted += handler;
+
 			transactionContext.AmbientTransation.EnlistVolatile(transactionContext,
 																EnlistmentOptions.EnlistDuringPrepareRequired);
 		}
@@ -146,8 +153,9 @@ namespace NHibernate.Transaction
 			{
 				using (new SessionIdLoggingContext(sessionImplementor.SessionId))
 				{
-					sessionImplementor.AfterTransactionCompletion(false, null);
 					logger.Debug("rolled back DTC transaction");
+					// Currently AfterTransactionCompletion is called by the handler for the TransactionCompleted event.
+					//sessionImplementor.AfterTransactionCompletion(false, null);
 					enlistment.Done();
 					IsInActiveTransaction = false;
 				}

@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 using log4net;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
@@ -507,7 +506,7 @@ namespace NHibernate.Test.FilterTest
 				this.outer = outer;
 			}
 
-			public IList entitiesToCleanUp = new ArrayList();
+			public IList<object> entitiesToCleanUp = new List<object>();
 
 			public void Prepare()
 			{

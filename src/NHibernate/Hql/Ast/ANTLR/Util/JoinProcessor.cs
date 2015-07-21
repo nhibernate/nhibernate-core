@@ -6,7 +6,6 @@ using System.Text;
 
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR.Tree;
-using NHibernate.Hql.Classic;
 using NHibernate.Impl;
 using NHibernate.Param;
 using NHibernate.SqlCommand;

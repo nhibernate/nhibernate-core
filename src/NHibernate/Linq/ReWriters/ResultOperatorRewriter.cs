@@ -66,6 +66,7 @@ namespace NHibernate.Linq.ReWriters
 					typeof(FetchRequestBase),
 					typeof(OfTypeResultOperator),
 					typeof(CacheableResultOperator),
+					typeof(TimeoutResultOperator),
 					typeof(CastResultOperator), // see ProcessCast class
 				};
 
@@ -102,7 +103,7 @@ namespace NHibernate.Linq.ReWriters
 				resultOperators.ForEach(f => expression.QueryModel.ResultOperators.Remove(f));
 				evaluationType = expression.QueryModel.SelectClause.GetOutputDataInfo();
 
-				if (expression.QueryModel.ResultOperators.Count == 0)
+				if (expression.QueryModel.ResultOperators.Count == 0 && expression.QueryModel.BodyClauses.Count == 0)
 				{
 					return expression.QueryModel.MainFromClause.FromExpression;
 				}

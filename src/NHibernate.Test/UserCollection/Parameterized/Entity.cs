@@ -1,11 +1,12 @@
 using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.UserCollection.Parameterized
 {
 	public class Entity
 	{
 		private string name;
-		private IList values = new ArrayList();
+		private IList<string> values = new List<string>();
 
 		public Entity() {}
 
@@ -19,7 +20,7 @@ namespace NHibernate.Test.UserCollection.Parameterized
 			get { return name; }
 		}
 
-		public virtual IList Values
+		public virtual IList<string> Values
 		{
 			get { return values; }
 			set { values = value; }

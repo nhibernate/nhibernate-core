@@ -4,22 +4,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode
 {
 	public static class TypeExtensions
 	{
-		private const BindingFlags PropertiesOfClassHierarchy =
-			BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
+		private const BindingFlags PropertiesOfClassHierarchy =	BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
 		private const BindingFlags PropertiesOrFieldOfClass = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly;
 
 		public static IEnumerable<System.Type> GetBaseTypes(this System.Type type)
 		{
-			foreach (System.Type @interface in type.GetInterfaces())
-			{
+			foreach (var @interface in type.GetInterfaces())
 				yield return @interface;
-			}
-			System.Type analizing = type;
+			
+			var analizing = type;
 			while (analizing != null && analizing != typeof (object))
 			{
 				analizing = analizing.BaseType;
@@ -29,14 +28,14 @@ namespace NHibernate.Mapping.ByCode
 
 		public static IEnumerable<System.Type> GetHierarchyFromBase(this System.Type type)
 		{
-			var typeHierarchy = new List<System.Type>();
-			System.Type analyzingType = type;
+			var typeHierarchy = new Stack<System.Type>();
+			var analyzingType = type;
 			while (analyzingType != null && analyzingType != typeof (object))
 			{
-				typeHierarchy.Add(analyzingType);
+				typeHierarchy.Push(analyzingType);
 				analyzingType = analyzingType.BaseType;
 			}
-			return typeHierarchy.AsEnumerable().Reverse();
+			return typeHierarchy;
 		}
 
 		public static System.Type GetPropertyOrFieldType(this MemberInfo propertyOrField)
@@ -50,20 +49,26 @@ namespace NHibernate.Mapping.ByCode
 			{
 				return ((FieldInfo) propertyOrField).FieldType;
 			}
+			
 			throw new ArgumentOutOfRangeException("propertyOrField",
-			                                      "Expected PropertyInfo or FieldInfo; found :" + propertyOrField.MemberType);
+												  "Expected PropertyInfo or FieldInfo; found :" + propertyOrField.MemberType);
 		}
 
 		public static MemberInfo DecodeMemberAccessExpression<TEntity>(Expression<Func<TEntity, object>> expression)
 		{
+			return DecodeMemberAccessExpression<TEntity, object>(expression);
+		}
+
+		public static MemberInfo DecodeMemberAccessExpression<TEntity, TProperty>(Expression<Func<TEntity, TProperty>> expression)
+		{
 			if (expression.Body.NodeType != ExpressionType.MemberAccess)
 			{
-				if ((expression.Body.NodeType == ExpressionType.Convert) && (expression.Body.Type == typeof (object)))
+				if ((expression.Body.NodeType == ExpressionType.Convert) && (expression.Body.Type == typeof (TProperty)))
 				{
 					return ((MemberExpression) ((UnaryExpression) expression.Body).Operand).Member;
 				}
 				throw new Exception(string.Format("Invalid expression type: Expected ExpressionType.MemberAccess, Found {0}",
-				                                  expression.Body.NodeType));
+					expression.Body.NodeType));
 			}
 			return ((MemberExpression) expression.Body).Member;
 		}
@@ -76,48 +81,7 @@ namespace NHibernate.Mapping.ByCode
 		/// <returns>The <see cref="MemberInfo"/> os the ReflectedType. </returns>
 		public static MemberInfo DecodeMemberAccessExpressionOf<TEntity>(Expression<Func<TEntity, object>> expression)
 		{
-			MemberInfo memberOfDeclaringType;
-			if (expression.Body.NodeType != ExpressionType.MemberAccess)
-			{
-				if ((expression.Body.NodeType == ExpressionType.Convert) && (expression.Body.Type == typeof (object)))
-				{
-					memberOfDeclaringType = ((MemberExpression) ((UnaryExpression) expression.Body).Operand).Member;
-				}
-				else
-				{
-					throw new Exception(string.Format("Invalid expression type: Expected ExpressionType.MemberAccess, Found {0}",
-					                                  expression.Body.NodeType));
-				}
-			}
-			else
-			{
-				memberOfDeclaringType = ((MemberExpression) expression.Body).Member;
-			}
-			PropertyInfo memberOfReflectType;
-			if (typeof (TEntity).IsInterface)
-			{
-				// Type.GetProperty(string name,Type returnType) does not work properly with interfaces
-				return memberOfDeclaringType;
-			}
-			else
-			{
-				memberOfReflectType = typeof (TEntity).GetProperty(memberOfDeclaringType.Name, memberOfDeclaringType.GetPropertyOrFieldType());
-			}
-			return memberOfReflectType;
-		}
-
-		public static MemberInfo DecodeMemberAccessExpression<TEntity, TProperty>(Expression<Func<TEntity, TProperty>> expression)
-		{
-			if (expression.Body.NodeType != ExpressionType.MemberAccess)
-			{
-				if ((expression.Body.NodeType == ExpressionType.Convert) && (expression.Body.Type == typeof (object)))
-				{
-					return ((MemberExpression) ((UnaryExpression) expression.Body).Operand).Member;
-				}
-				throw new Exception(string.Format("Invalid expression type: Expected ExpressionType.MemberAccess, Found {0}",
-				                                  expression.Body.NodeType));
-			}
-			return ((MemberExpression) expression.Body).Member;
+			return DecodeMemberAccessExpressionOf<TEntity, object>(expression);
 		}
 
 		/// <summary>
@@ -129,34 +93,23 @@ namespace NHibernate.Mapping.ByCode
 		/// <returns>The <see cref="MemberInfo"/> os the ReflectedType. </returns>
 		public static MemberInfo DecodeMemberAccessExpressionOf<TEntity, TProperty>(Expression<Func<TEntity, TProperty>> expression)
 		{
-			MemberInfo memberOfDeclaringType;
-			if (expression.Body.NodeType != ExpressionType.MemberAccess)
-			{
-				if ((expression.Body.NodeType == ExpressionType.Convert) && (expression.Body.Type == typeof (object)))
-				{
-					memberOfDeclaringType = ((MemberExpression) ((UnaryExpression) expression.Body).Operand).Member;
-				}
-				else
-				{
-					throw new Exception(string.Format("Invalid expression type: Expected ExpressionType.MemberAccess, Found {0}",
-					                                  expression.Body.NodeType));
-				}
-			}
-			else
-			{
-				memberOfDeclaringType = ((MemberExpression) expression.Body).Member;
-			}
-			PropertyInfo memberOfReflectType;
+			var memberOfDeclaringType = DecodeMemberAccessExpression(expression);
 			if (typeof (TEntity).IsInterface)
 			{
 				// Type.GetProperty(string name,Type returnType) does not work properly with interfaces
 				return memberOfDeclaringType;
 			}
-			else
+
+			var propertyInfo = memberOfDeclaringType as PropertyInfo;
+			if (propertyInfo != null)
 			{
-				memberOfReflectType = typeof (TEntity).GetProperty(memberOfDeclaringType.Name, memberOfDeclaringType.GetPropertyOrFieldType());
+				return typeof (TEntity).GetProperty(propertyInfo.Name, PropertiesOfClassHierarchy, null, propertyInfo.PropertyType, new System.Type[0], null);
 			}
-			return memberOfReflectType;
+			if (memberOfDeclaringType is FieldInfo)
+			{
+				return typeof (TEntity).GetField(memberOfDeclaringType.Name, PropertiesOfClassHierarchy);
+			}
+			throw new NotSupportedException();
 		}
 
 		public static MemberInfo GetMemberFromDeclaringType(this MemberInfo source)
@@ -170,6 +123,7 @@ namespace NHibernate.Mapping.ByCode
 			{
 				return source;
 			}
+
 			if (source is PropertyInfo)
 			{
 				return source.DeclaringType.GetProperty(source.Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
@@ -178,6 +132,7 @@ namespace NHibernate.Mapping.ByCode
 			{
 				return source.DeclaringType.GetField(source.Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 			}
+
 			return null;
 		}
 
@@ -187,16 +142,19 @@ namespace NHibernate.Mapping.ByCode
 			{
 				throw new ArgumentNullException("source");
 			}
+
 			if (source is PropertyInfo)
 			{
 				var reflectedType = source.ReflectedType;
 				var memberType = source.GetPropertyOrFieldType();
 				return reflectedType.GetPropertiesOfHierarchy().Cast<PropertyInfo>().Where(x => source.Name.Equals(x.Name) && memberType.Equals(x.PropertyType)).Cast<MemberInfo>();
 			}
+
 			if (source is FieldInfo)
 			{
 				return new[] { source.GetMemberFromDeclaringType() };
 			}
+
 			return Enumerable.Empty<MemberInfo>();
 		}
 
@@ -252,6 +210,25 @@ namespace NHibernate.Mapping.ByCode
 
 			return null;
 		}
+
+
+		public static System.Type DetermineRequiredCollectionElementType(this MemberInfo collectionProperty)
+		{
+			System.Type propertyType = collectionProperty.GetPropertyOrFieldType();
+			System.Type collectionElementType = propertyType.DetermineCollectionElementType();
+
+			if (collectionElementType == null)
+			{
+				var message = string.Format(
+					"Unable to determine collection element type for the property/field '{0}' of {1}. The collection must be generic.",
+					collectionProperty.Name,
+					collectionProperty.DeclaringType != null ? collectionProperty.DeclaringType.FullName : "<global>");
+				throw new MappingException(message);
+			}
+
+			return collectionElementType;
+		}
+
 
 		public static System.Type DetermineCollectionElementOrDictionaryValueType(this System.Type genericCollection)
 		{
@@ -332,8 +309,7 @@ namespace NHibernate.Mapping.ByCode
 			return GetFirstPropertyOfType(propertyContainerType, propertyType, bindingFlags, x => true);
 		}
 
-		public static MemberInfo GetFirstPropertyOfType(this System.Type propertyContainerType, System.Type propertyType, BindingFlags bindingFlags,
-		                                                Func<PropertyInfo, bool> acceptPropertyClauses)
+		public static MemberInfo GetFirstPropertyOfType(this System.Type propertyContainerType, System.Type propertyType, BindingFlags bindingFlags, Func<PropertyInfo, bool> acceptPropertyClauses)
 		{
 			if (acceptPropertyClauses == null)
 			{
@@ -377,16 +353,7 @@ namespace NHibernate.Mapping.ByCode
 
 		public static bool IsEnumOrNullableEnum(this System.Type type)
 		{
-			if (type == null)
-			{
-				return false;
-			}
-			if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof (Nullable<>))
-			{
-				System.Type typeOfNullable = type.GetGenericArguments()[0];
-				return typeOfNullable.IsEnum;
-			}
-			return type.IsEnum;
+			return type != null && type.UnwrapIfNullable().IsEnum;
 		}
 
 		public static bool IsFlagEnumOrNullableFlagEnum(this System.Type type)
@@ -395,11 +362,7 @@ namespace NHibernate.Mapping.ByCode
 			{
 				return false;
 			}
-			System.Type typeofEnum = type;
-			if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof (Nullable<>))
-			{
-				typeofEnum = type.GetGenericArguments()[0];
-			}
+			var typeofEnum = type.UnwrapIfNullable();
 			return typeofEnum.IsEnum && typeofEnum.GetCustomAttributes(typeof (FlagsAttribute), false).Length > 0;
 		}
 
@@ -421,18 +384,22 @@ namespace NHibernate.Mapping.ByCode
 			{
 				throw new ArgumentNullException("source");
 			}
+
 			if (abstractType == null)
 			{
 				throw new ArgumentNullException("abstractType");
 			}
+
 			if (source.IsInterface)
 			{
 				return null;
 			}
+
 			if (source.Equals(abstractType))
 			{
 				return source;
 			}
+
 			return source.GetHierarchyFromBase().FirstOrDefault(t => !t.Equals(abstractType) && abstractType.IsAssignableFrom(t));
 		}
 
@@ -546,7 +513,7 @@ namespace NHibernate.Mapping.ByCode
 			}
 		}
 
-		private static IEnumerable<MemberInfo> GetPropertiesOfHierarchy(this System.Type type)
+		internal static IEnumerable<MemberInfo> GetPropertiesOfHierarchy(this System.Type type)
 		{
 			if(type.IsInterface)
 			{

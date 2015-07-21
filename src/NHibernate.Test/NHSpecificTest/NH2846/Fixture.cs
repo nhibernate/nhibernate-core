@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using NHibernate.Driver;
 using NHibernate.Linq;
 using NUnit.Framework;
 
@@ -7,6 +8,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2846
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
+		{
+			return !(factory.ConnectionProvider.Driver is OracleManagedDataClientDriver);
+		}
+
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();

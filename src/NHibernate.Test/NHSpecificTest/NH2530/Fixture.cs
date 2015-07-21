@@ -1,10 +1,8 @@
 using System.Collections.Generic;
 using System.Text;
-using Iesi.Collections.Generic;
 using NHibernate.Dialect;
 using NHibernate.Mapping;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2530
 {
@@ -26,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2530
 			{
 				script.AppendLine(string.Format("INSERT INTO [NextHighVaues] (Entity, NextHigh) VALUES ('{0}',1);", entity.Name));
 			}
-			var dialects = new HashedSet<string>
+			var dialects = new HashSet<string>
 							   {
 								   typeof (MsSql2000Dialect).FullName,
 								   typeof (MsSql2005Dialect).FullName,
@@ -48,7 +46,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2530
 			using (var tx = session.BeginTransaction())
 			{
 				var customer = new Customer { Name = "Mengano" };
-				session.Executing(s => s.Persist(customer)).Throws().And.ValueOf.Message.Should().Contain("Entity = 'Customer'");
+				Assert.That(() => session.Persist(customer), Throws.Exception.Message.ContainsSubstring("Entity = 'Customer'"));
 			}
 		}
 	}

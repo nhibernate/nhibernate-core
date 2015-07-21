@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.Hql.Ast
 {
@@ -8,8 +7,8 @@ namespace NHibernate.Test.Hql.Ast
 	{
 		private long id;
 		private string name;
-		private ISet<SimpleAssociatedEntity> associatedEntities = new HashedSet<SimpleAssociatedEntity>();
-		private ISet<SimpleEntityWithAssociation> manyToManyAssociatedEntities = new HashedSet<SimpleEntityWithAssociation>();
+		private ISet<SimpleAssociatedEntity> associatedEntities = new HashSet<SimpleAssociatedEntity>();
+		private ISet<SimpleEntityWithAssociation> manyToManyAssociatedEntities = new HashSet<SimpleEntityWithAssociation>();
 
 		public virtual long Id
 		{

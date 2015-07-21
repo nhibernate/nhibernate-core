@@ -14,7 +14,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public class MethodNode : AbstractSelectExpression, ISelectExpression 
+	public class MethodNode : AbstractSelectExpression 
 	{
 		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(MethodNode));
 
@@ -86,45 +86,41 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			get { return true; }
 		}
+
 		public void ResolveCollectionProperty(IASTNode expr)
 		{
-			String propertyName = CollectionProperties.GetNormalizedPropertyName( _methodName );
+			var propertyName = CollectionProperties.GetNormalizedPropertyName( _methodName );
 
-			if ( expr is FromReferenceNode ) 
-			{
-				FromReferenceNode collectionNode = ( FromReferenceNode ) expr;
-				// If this is 'elements' then create a new FROM element.
-				if ( CollectionPropertyNames.Elements == propertyName ) 
-				{
-					HandleElements( collectionNode, propertyName );
-				}
-				else {
-					// Not elements(x)
-					_fromElement = collectionNode.FromElement;
-					DataType = _fromElement.GetPropertyType( propertyName, propertyName );
-					_selectColumns = _fromElement.ToColumns( _fromElement.TableAlias, propertyName, _inSelect );
-				}
-				if ( collectionNode is DotNode ) 
-				{
-					PrepareAnyImplicitJoins( ( DotNode ) collectionNode );
-				}
-				if ( !_inSelect ) 
-				{
-					_fromElement.Text = "";
-					_fromElement.UseWhereFragment = false;
-				}
+			var collectionNode = expr as FromReferenceNode;
+			if (collectionNode == null)
+				throw new SemanticException(string.Format("Unexpected expression {0} found for collection function {1}", expr, propertyName));
 
-				PrepareSelectColumns( _selectColumns );
-				Text = _selectColumns[0];
-				Type = HqlSqlWalker.SQL_TOKEN;
-			}
-			else 
+			// If this is 'elements' then create a new FROM element.
+			if (CollectionPropertyNames.Elements == propertyName)
 			{
-				throw new SemanticException( 
-						"Unexpected expression " + expr + 
-						" found for collection function " + propertyName 
-					);
+				HandleElements(collectionNode, propertyName);
 			}
+			else
+			{
+				// Not elements(x)
+				_fromElement = collectionNode.FromElement;
+				DataType = _fromElement.GetPropertyType(propertyName, propertyName);
+				_selectColumns = _fromElement.ToColumns(_fromElement.TableAlias, propertyName, _inSelect);
+			}
+			var dotNode = collectionNode as DotNode;
+			if (dotNode != null)
+			{
+				PrepareAnyImplicitJoins(dotNode);
+			}
+			if (!_inSelect)
+			{
+				_fromElement.Text = "";
+				_fromElement.UseWhereFragment = false;
+			}
+
+			PrepareSelectColumns(_selectColumns);
+			Text = _selectColumns[0];
+			Type = HqlSqlWalker.SQL_TOKEN;
 		}
 
 		public String GetDisplayText()
@@ -138,7 +134,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		protected virtual void PrepareSelectColumns(string[] columns)
 		{
-			return;
 		}
 
 		private void CollectionProperty(IASTNode path, IASTNode name) 
@@ -148,7 +143,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				throw new SemanticException( "Collection function " + name.Text + " has no path!" );
 			}
 
-			SqlNode expr = ( SqlNode ) path;
+			var expr = ( SqlNode ) path;
 			IType type = expr.DataType;
 
 			if ( Log.IsDebugEnabled ) 
@@ -159,11 +154,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			ResolveCollectionProperty( expr );
 		}
 
-		private static void PrepareAnyImplicitJoins(DotNode dotNode) 
+		private static void PrepareAnyImplicitJoins(DotNode dotNode)
 		{
-			if ( dotNode.GetLhs() is DotNode )
+			var lhs = dotNode.GetLhs() as DotNode;
+			if ( lhs != null )
 			{
-				DotNode lhs = ( DotNode ) dotNode.GetLhs();
 				FromElement lhsOrigin = lhs.FromElement;
 				if ( lhsOrigin != null && "" == lhsOrigin.Text )
 				{
@@ -199,20 +194,19 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			if (_function != null)
 			{
-			    IASTNode child = null;
+				IASTNode child = null;
 
-                if (exprList != null)
-                {
-                    child = _methodName == "iif" ? exprList.GetChild(1) : exprList.GetChild(0);
-                }
+				if (exprList != null)
+				{
+					child = _methodName == "iif" ? exprList.GetChild(1) : exprList.GetChild(0);
+				}
 
-                DataType = SessionFactoryHelper.FindFunctionReturnType(_methodName, child);
+				DataType = SessionFactoryHelper.FindFunctionReturnType(_methodName, child);
 			}
 			//TODO:
 			/*else {
 				methodName = (String) getWalker().getTokenReplacements().get( methodName );
 			}*/
 		}
-
 	}
 }

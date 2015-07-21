@@ -7,7 +7,7 @@ using NHibernate.Util;
 namespace NHibernate.Event
 {
 	/// <summary> 
-	/// A convience holder for all defined session event listeners.
+	/// A convenience holder for all defined session event listeners.
 	/// </summary>
 	[Serializable]
 	public class EventListeners
@@ -132,10 +132,6 @@ namespace NHibernate.Event
 
 		private ISaveOrUpdateEventListener[] updateEventListeners = new ISaveOrUpdateEventListener[]
 		                                                            	{new DefaultUpdateEventListener()};
-
-		private IMergeEventListener[] saveOrUpdateCopyEventListeners = new IMergeEventListener[]
-		                                                               	{new DefaultSaveOrUpdateCopyEventListener()};
-		                              //saveOrUpdateCopy() is deprecated!
 
 		public ILoadEventListener[] LoadEventListeners
 		{
@@ -467,18 +463,6 @@ namespace NHibernate.Event
 			}
 		}
 
-		public IMergeEventListener[] SaveOrUpdateCopyEventListeners
-		{
-			get { return saveOrUpdateCopyEventListeners; }
-			set
-			{
-				if (value != null)
-				{
-					saveOrUpdateCopyEventListeners = value;
-				}
-			}
-		}
-
 		public IPreCollectionRecreateEventListener[] PreCollectionRecreateEventListeners
 		{
 			get { return preCollectionRecreateEventListeners; }
@@ -571,7 +555,6 @@ namespace NHibernate.Event
 		{
 			InitializeListeners(cfg, loadEventListeners);
 			InitializeListeners(cfg, saveOrUpdateEventListeners);
-			InitializeListeners(cfg, saveOrUpdateCopyEventListeners);
 			InitializeListeners(cfg, mergeEventListeners);
 			InitializeListeners(cfg, persistEventListeners);
 			InitializeListeners(cfg, persistOnFlushEventListeners);

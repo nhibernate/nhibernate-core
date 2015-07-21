@@ -22,7 +22,7 @@ namespace NHibernate.Loader.Entity
 		private IParameterSpecification[] parametersSpecifications;
 
 		protected AbstractEntityLoader(IOuterJoinLoadable persister, IType uniqueKeyType, ISessionFactoryImplementor factory,
-		                            IDictionary<string, IFilter> enabledFilters) : base(factory, enabledFilters)
+									IDictionary<string, IFilter> enabledFilters) : base(factory, enabledFilters)
 		{
 			UniqueKeyType = uniqueKeyType;
 			entityName = persister.EntityName;
@@ -61,13 +61,13 @@ namespace NHibernate.Loader.Entity
 				{
 					throw new HibernateException(
 						string.Format("More than one row with the given identifier was found: {0}, for class: {1}", id,
-						              persister.EntityName));
+									  persister.EntityName));
 				}
 			}
 		}
 
 		protected override object GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, IDataReader rs,
-		                                               ISessionImplementor session)
+													   ISessionImplementor session)
 		{
 			return row[row.Length - 1];
 		}

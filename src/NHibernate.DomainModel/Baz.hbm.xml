@@ -199,10 +199,10 @@
 			<element column="element" type="String" not-null="true" length="32"/>
 		</set>
 
-		<map name="StringDateMap" lazy="true" sort="ReverseComparator">
+		<map name="StringDateMap" lazy="true" sort="ReverseComparator" collection-type="sorted-list">
 			<key column="id_"/>
 			<index column="map_key" type="String" length="32"/>
-			<element column="map_value" type="DateTime"/>
+			<element column="map_value" type="DateTime" />
 		</map>
 
 		<array name="FooArray" element-class="FooProxy" where="i&lt;8">
@@ -295,7 +295,7 @@
 			</composite-element>
 		</set>
 
-		<map name="CachedMap" sort="natural" table="cached_map">
+		<map name="CachedMap" sort="natural" table="cached_map" collection-type="sorted-list">
 			<!--<cache usage="read-write"/>-->
 			<key column="baz"/>
 			<index-many-to-many column="another_baz" class="Baz"/>

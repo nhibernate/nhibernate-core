@@ -1,4 +1,3 @@
-using Iesi.Collections.Generic;
 using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Mapping;
@@ -14,7 +13,7 @@ namespace NHibernate.Tool.hbm2ddl
 			var factory = (ISessionFactoryImplementor) sessionFactory;
 			var dialect = factory.Dialect;
 			var connectionHelper = new SuppliedConnectionProviderConnectionHelper(factory.ConnectionProvider);
-			factory.Dialect.Keywords.AddAll(GetReservedWords(dialect, connectionHelper));
+			factory.Dialect.Keywords.UnionWith(GetReservedWords(dialect, connectionHelper));
 		}
 
 		public static void QuoteTableAndColumns(Configuration configuration)
@@ -39,7 +38,7 @@ namespace NHibernate.Tool.hbm2ddl
 
 		private static ISet<string> GetReservedWords(Dialect.Dialect dialect, IConnectionHelper connectionHelper)
 		{
-			ISet<string> reservedDb = new HashedSet<string>();
+			ISet<string> reservedDb = new HashSet<string>();
 			connectionHelper.Prepare();
 			try
 			{

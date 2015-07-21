@@ -29,8 +29,6 @@ namespace NHibernate.Util
 	[Serializable]
 	public sealed class IdentityMap : IDictionary, IDeserializationCallback
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(IdentityMap));
-
 		// key = IdentityKey of the passed in Key
 		// value = object passed in
 		private IDictionary map;
@@ -266,7 +264,7 @@ namespace NHibernate.Util
 		public static IDictionary Invert(IDictionary map)
 		{
 			IDictionary result = Instantiate(map.Count);
-			foreach (DictionaryEntry me in result)
+			foreach (DictionaryEntry me in map)
 			{
 				result[me.Value] = me.Key;
 			}

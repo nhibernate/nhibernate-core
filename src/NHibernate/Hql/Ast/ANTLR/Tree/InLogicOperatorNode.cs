@@ -38,15 +38,17 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			// for expected parameter type injection, we expect that the lhs represents
 			// some form of property ref and that the children of the in-list represent
 			// one-or-more params.
-			if (typeof(SqlNode).IsAssignableFrom(lhs.GetType()))
+			var lhsNode = lhs as SqlNode;
+			if (lhsNode != null)
 			{
-				IType lhsType = ((SqlNode)lhs).DataType;
+				IType lhsType = lhsNode.DataType;
 				IASTNode inListChild = inList.GetChild(0);
 				while (inListChild != null)
 				{
-					if (typeof(IExpectedTypeAwareNode).IsAssignableFrom(inListChild.GetType()))
+					var expectedTypeAwareNode = inListChild as IExpectedTypeAwareNode;
+					if (expectedTypeAwareNode != null)
 					{
-						((IExpectedTypeAwareNode)inListChild).ExpectedType = lhsType;
+						expectedTypeAwareNode.ExpectedType = lhsType;
 					}
 					inListChild = inListChild.NextSibling;
 				}

@@ -1,6 +1,5 @@
 using NHibernate.Proxy.DynamicProxy;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.DynamicProxyTests.ProxiedMembers
 {

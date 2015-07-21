@@ -5,7 +5,6 @@ using NHibernate.Cfg.MappingSchema;
 using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2505
 {
@@ -60,13 +59,15 @@ namespace NHibernate.Test.NHSpecificTest.NH2505
 				{
 					using (var sqls = new SqlLogSpy())
 					{
-						session.Query<MyClass>().Where(x => x.Alive == false).Should().Have.Count.EqualTo(1);
-						caseClause.Matches(sqls.GetWholeLog()).Count.Should().Be(0);
+						var list = session.Query<MyClass>().Where(x => x.Alive == false).ToList();
+						Assert.That(list, Has.Count.EqualTo(1));
+						Assert.That(caseClause.Matches(sqls.GetWholeLog()).Count, Is.EqualTo(0));
 					}
 					using (var sqls = new SqlLogSpy())
 					{
-						session.Query<MyClass>().Where(x => true == x.Alive).Should().Have.Count.EqualTo(1);
-						caseClause.Matches(sqls.GetWholeLog()).Count.Should().Be(0);
+						var list = session.Query<MyClass>().Where(x => true == x.Alive).ToList();
+						Assert.That(list, Has.Count.EqualTo(1));
+						Assert.That(caseClause.Matches(sqls.GetWholeLog()).Count, Is.EqualTo(0));
 					}
 				}
 			}
@@ -81,13 +82,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2505
 				{
 					using (var sqls = new SqlLogSpy())
 					{
-						session.Query<MyClass>().Where(x => x.Alive != false).Should().Have.Count.EqualTo(1);
-						caseClause.Matches(sqls.GetWholeLog()).Count.Should().Be(0);
+						Assert.That(session.Query<MyClass>().Where(x => x.Alive != false).ToList(), Has.Count.EqualTo(1));
+						Assert.That(caseClause.Matches(sqls.GetWholeLog()).Count, Is.EqualTo(0));
 					}
 					using (var sqls = new SqlLogSpy())
 					{
-						session.Query<MyClass>().Where(x => true != x.Alive).Should().Have.Count.EqualTo(1);
-						caseClause.Matches(sqls.GetWholeLog()).Count.Should().Be(0);
+						Assert.That(session.Query<MyClass>().Where(x => true != x.Alive).ToList(), Has.Count.EqualTo(1));
+						Assert.That(caseClause.Matches(sqls.GetWholeLog()).Count, Is.EqualTo(0));
 					}
 				}
 			}
@@ -103,7 +104,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2505
 					using (var sqls = new SqlLogSpy())
 					{
 						session.Query<MyClass>().Where(x => (5 > x.Something) == (x.Something < 10)).ToList();
-						caseClause.Matches(sqls.GetWholeLog()).Count.Should().Be(2);
+						Assert.That(caseClause.Matches(sqls.GetWholeLog()).Count, Is.EqualTo(2));
 					}
 				}
 			}
@@ -118,13 +119,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2505
 				{
 					using (var sqls = new SqlLogSpy())
 					{
-						session.Query<MyClass>().Where(x => x.MayBeAlive == false).Should().Have.Count.EqualTo(1);
-						caseClause.Matches(sqls.GetWholeLog()).Count.Should().Be(1);
+						Assert.That(session.Query<MyClass>().Where(x => x.MayBeAlive == false).ToList(), Has.Count.EqualTo(1));
+						Assert.That(caseClause.Matches(sqls.GetWholeLog()).Count, Is.EqualTo(1));
 					}
 					using (var sqls = new SqlLogSpy())
 					{
-						session.Query<MyClass>().Where(x => true == x.MayBeAlive).Should().Have.Count.EqualTo(1);
-						caseClause.Matches(sqls.GetWholeLog()).Count.Should().Be(1);
+						Assert.That(session.Query<MyClass>().Where(x => true == x.MayBeAlive).ToList(), Has.Count.EqualTo(1));
+						Assert.That(caseClause.Matches(sqls.GetWholeLog()).Count, Is.EqualTo(1));
 					}
 				}
 			}
@@ -140,12 +141,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2505
 					using (var sqls = new SqlLogSpy())
 					{
 						session.Query<MyClass>().Where(x => x.MayBeAlive.Value == false).ToList();
-						caseClause.Matches(sqls.GetWholeLog()).Count.Should().Be(1);
+						Assert.That(caseClause.Matches(sqls.GetWholeLog()).Count, Is.EqualTo(1));
 					}
 					using (var sqls = new SqlLogSpy())
 					{
 						session.Query<MyClass>().Where(x => true == x.MayBeAlive.Value).ToList();
-						caseClause.Matches(sqls.GetWholeLog()).Count.Should().Be(1);
+						Assert.That(caseClause.Matches(sqls.GetWholeLog()).Count, Is.EqualTo(1));
 					}
 				}
 			}
@@ -160,13 +161,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2505
 				{
 					using (var sqls = new SqlLogSpy())
 					{
-						session.Query<MyClass>().Where(x => x.MayBeAlive != false).Should().Have.Count.EqualTo(1);
-						caseClause.Matches(sqls.GetWholeLog()).Count.Should().Be(1);
+						Assert.That(session.Query<MyClass>().Where(x => x.MayBeAlive != false).ToList(), Has.Count.EqualTo(1));
+						Assert.That(caseClause.Matches(sqls.GetWholeLog()).Count, Is.EqualTo(1));
 					}
 					using (var sqls = new SqlLogSpy())
 					{
-						session.Query<MyClass>().Where(x => true != x.MayBeAlive).Should().Have.Count.EqualTo(1);
-						caseClause.Matches(sqls.GetWholeLog()).Count.Should().Be(1);
+						Assert.That(session.Query<MyClass>().Where(x => true != x.MayBeAlive).ToList(), Has.Count.EqualTo(1));
+						Assert.That(caseClause.Matches(sqls.GetWholeLog()).Count, Is.EqualTo(1));
 					}
 				}
 			}

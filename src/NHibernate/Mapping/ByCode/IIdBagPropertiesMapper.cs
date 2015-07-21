@@ -6,7 +6,7 @@ namespace NHibernate.Mapping.ByCode
 		void Id(Action<ICollectionIdMapper> idMapping);
 	}
 
-	public interface IIdBagPropertiesMapper<TEntity, TElement> : ICollectionPropertiesMapper<TEntity, TElement> where TEntity : class
+	public interface IIdBagPropertiesMapper<TEntity, TElement> : ICollectionPropertiesMapper<TEntity, TElement>
 	{
 		void Id(Action<ICollectionIdMapper> idMapping);		
 	}

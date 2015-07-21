@@ -1,4 +1,5 @@
 using System.Linq;
+using NHibernate.Driver;
 using NHibernate.Linq;
 using NUnit.Framework;
 
@@ -7,6 +8,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2852
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
+		{
+			return !(factory.ConnectionProvider.Driver is OracleManagedDataClientDriver);
+		}
+
 		protected override void OnSetUp()
 		{
 			using (var session = OpenSession())
@@ -51,8 +57,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2852
 
 				session.Close();
 
-				Assert.True(NHibernateUtil.IsInitialized(results[0].Address));
-				Assert.True(NHibernateUtil.IsInitialized(results[0].Address.City));
+				Assert.That(NHibernateUtil.IsInitialized(results[0].Address), Is.True);
+				Assert.That(NHibernateUtil.IsInitialized(results[0].Address.City), Is.True);
 			}
 		}
 
@@ -70,8 +76,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2852
 
 				session.Close();
 
-				Assert.True(NHibernateUtil.IsInitialized(results[0].Parent));
-				Assert.True(NHibernateUtil.IsInitialized(results[0].Parent.Parent));
+				Assert.That(NHibernateUtil.IsInitialized(results[0].Parent), Is.True);
+				Assert.That(NHibernateUtil.IsInitialized(results[0].Parent.Parent), Is.True);
 			}
 		}
 	}

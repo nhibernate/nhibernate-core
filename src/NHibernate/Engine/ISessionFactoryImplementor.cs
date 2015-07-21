@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Data;
-using Iesi.Collections.Generic;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Connection;
@@ -181,7 +180,7 @@ namespace NHibernate.Engine
 		/// Get the entity-name for a given mapped class.
 		/// </summary>
 		/// <param name="implementor">the mapped class</param>
-		/// <returns>the enntity name where available or null</returns>
+		/// <returns>the entity name where available or null</returns>
 		string TryGetGuessEntityName(System.Type implementor);
 		#endregion
 	}

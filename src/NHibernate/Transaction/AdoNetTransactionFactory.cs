@@ -65,34 +65,34 @@ namespace NHibernate.Transaction
 			}
 			catch (Exception t)
 			{
-                using (new SessionIdLoggingContext(session.SessionId))
-                {
-                    try
-                    {
-                        if (trans != null && connection.State != ConnectionState.Closed)
-                        {
-                            trans.Rollback();
-                        }
-                    }
-                    catch (Exception ignore)
-                    {
-                        isolaterLog.Debug("unable to release connection on exception [" + ignore + "]");
-                    }
+				using (new SessionIdLoggingContext(session.SessionId))
+				{
+					try
+					{
+						if (trans != null && connection.State != ConnectionState.Closed)
+						{
+							trans.Rollback();
+						}
+					}
+					catch (Exception ignore)
+					{
+						isolaterLog.Debug("unable to release connection on exception [" + ignore + "]");
+					}
 
-                    if (t is HibernateException)
-                    {
-                        throw;
-                    }
-                    else if (t is DbException)
-                    {
-                        throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, t,
-                                                         "error performing isolated work");
-                    }
-                    else
-                    {
-                        throw new HibernateException("error performing isolated work", t);
-                    }
-                }
+					if (t is HibernateException)
+					{
+						throw;
+					}
+					else if (t is DbException)
+					{
+						throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, t,
+														 "error performing isolated work");
+					}
+					else
+					{
+						throw new HibernateException("error performing isolated work", t);
+					}
+				}
 			}
 			finally
 			{

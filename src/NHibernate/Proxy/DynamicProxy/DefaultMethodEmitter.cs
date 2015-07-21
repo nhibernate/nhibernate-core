@@ -7,7 +7,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -19,13 +18,23 @@ namespace NHibernate.Proxy.DynamicProxy
 		private static readonly MethodInfo getInterceptor;
 
 		private static readonly MethodInfo getGenericMethodFromHandle = typeof (MethodBase).GetMethod("GetMethodFromHandle",
-		                                                                                              BindingFlags.Public | BindingFlags.Static, null,
-		                                                                                              new[] {typeof (RuntimeMethodHandle), typeof (RuntimeTypeHandle)}, null);
+																									  BindingFlags.Public | BindingFlags.Static, null,
+																									  new[] {typeof (RuntimeMethodHandle), typeof (RuntimeTypeHandle)}, null);
 
 		private static readonly MethodInfo getMethodFromHandle = typeof (MethodBase).GetMethod("GetMethodFromHandle", new[] {typeof (RuntimeMethodHandle)});
 		private static readonly MethodInfo getTypeFromHandle = typeof(System.Type).GetMethod("GetTypeFromHandle");
 		private static readonly MethodInfo handlerMethod = typeof (IInterceptor).GetMethod("Intercept");
-		private static readonly ConstructorInfo infoConstructor;
+
+		private static readonly ConstructorInfo infoConstructor = typeof (InvocationInfo).GetConstructor(new[]
+			{
+				typeof (object),
+				typeof (MethodInfo),
+				typeof (MethodInfo),
+				typeof (StackTrace),
+				typeof (System.Type[]),
+				typeof (object[])
+			});
+
 		private static readonly PropertyInfo interceptorProperty = typeof (IProxy).GetProperty("Interceptor");
 
 		private static readonly ConstructorInfo notImplementedConstructor = typeof(NotImplementedException).GetConstructor(new System.Type[0]);
@@ -35,13 +44,6 @@ namespace NHibernate.Proxy.DynamicProxy
 		static DefaultMethodEmitter()
 		{
 			getInterceptor = interceptorProperty.GetGetMethod();
-			var constructorTypes = new[]
-			                       {
-			                       	typeof (object), typeof (MethodInfo),
-			                       	typeof (StackTrace), typeof (System.Type[]), typeof (object[])
-			                       };
-
-			infoConstructor = typeof (InvocationInfo).GetConstructor(constructorTypes);
 		}
 
 		public DefaultMethodEmitter() : this(new DefaultArgumentHandler()) {}
@@ -51,11 +53,11 @@ namespace NHibernate.Proxy.DynamicProxy
 			_argumentHandler = argumentHandler;
 		}
 
-		#region IMethodBodyEmitter Members
-
-		public void EmitMethodBody(MethodBuilder generatedMethod, MethodInfo method, FieldInfo field)
+		public void EmitMethodBody(MethodBuilder proxyMethod, MethodBuilder callbackMethod, MethodInfo method, FieldInfo field)
 		{
-			var IL = generatedMethod.GetILGenerator();
+			EmitBaseMethodCall(callbackMethod.GetILGenerator(), method);
+
+			var IL = proxyMethod.GetILGenerator();
 
 			ParameterInfo[] parameters = method.GetParameters();
 			IL.DeclareLocal(typeof (object[]));
@@ -73,19 +75,14 @@ namespace NHibernate.Proxy.DynamicProxy
 			IL.Emit(OpCodes.Ldnull);
 			IL.Emit(OpCodes.Bne_Un, skipBaseCall);
 
-			IL.Emit(OpCodes.Ldarg_0);
-
-			for (int i = 0; i < method.GetParameters().Length; i++)
-				IL.Emit(OpCodes.Ldarg_S, (sbyte)(i + 1));
-
-			IL.Emit(OpCodes.Call, method);
-			IL.Emit(OpCodes.Ret);
+			EmitBaseMethodCall(IL, method);
 
 			IL.MarkLabel(skipBaseCall);
 
 			// Push arguments for InvocationInfo constructor.
 			IL.Emit(OpCodes.Ldarg_0);  // 'this' pointer
-			PushTargetMethodInfo(IL, generatedMethod, method);
+			PushTargetMethodInfo(IL, proxyMethod, method);
+			PushTargetMethodInfo(IL, callbackMethod, callbackMethod);
 			PushStackTrace(IL);
 			PushGenericArguments(method, IL);
 			_argumentHandler.PushArguments(parameters, IL, false);
@@ -107,7 +104,16 @@ namespace NHibernate.Proxy.DynamicProxy
 			IL.Emit(OpCodes.Ret);
 		}
 
-		#endregion
+		private static void EmitBaseMethodCall(ILGenerator IL, MethodInfo method)
+		{
+			IL.Emit(OpCodes.Ldarg_0);
+
+			for (int i = 0; i < method.GetParameters().Length; i++)
+				IL.Emit(OpCodes.Ldarg_S, (sbyte) (i + 1));
+
+			IL.Emit(OpCodes.Call, method);
+			IL.Emit(OpCodes.Ret);
+		}
 
 		private static void SaveRefArguments(ILGenerator IL, ParameterInfo[] parameters)
 		{

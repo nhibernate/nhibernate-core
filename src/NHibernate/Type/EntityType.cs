@@ -35,7 +35,7 @@ namespace NHibernate.Type
 		/// <param name="isEmbeddedInXML">Should values of this mapping be embedded in XML modes? </param>
 		/// <param name="unwrapProxy">
 		/// Is unwrapping of proxies allowed for this association; unwrapping
-		/// says to return the "implementation target" of lazy prooxies; typically only possible
+		/// says to return the "implementation target" of lazy proxies; typically only possible
 		/// with lazy="no-proxy".
 		/// </param>
 		protected internal EntityType(string entityName, string uniqueKeyPropertyName, bool eager, bool isEmbeddedInXML, bool unwrapProxy)
@@ -66,8 +66,8 @@ namespace NHibernate.Type
 			
 			if (x.IsProxy())
 			{
-                INHibernateProxy proxy = x as INHibernateProxy; 
-                xid = proxy.HibernateLazyInitializer.Identifier;
+				INHibernateProxy proxy = x as INHibernateProxy; 
+				xid = proxy.HibernateLazyInitializer.Identifier;
 			}
 			else
 			{
@@ -76,10 +76,10 @@ namespace NHibernate.Type
 
 			object yid;
 			
-            if (y.IsProxy())
+			if (y.IsProxy())
 			{
-                INHibernateProxy proxy = y as INHibernateProxy; 
-                yid = proxy.HibernateLazyInitializer.Identifier;
+				INHibernateProxy proxy = y as INHibernateProxy; 
+				yid = proxy.HibernateLazyInitializer.Identifier;
 			}
 			else
 			{
@@ -143,10 +143,10 @@ namespace NHibernate.Type
 		{
 			if (obj.IsProxy())
 			{
-                INHibernateProxy proxy = obj as INHibernateProxy; 
-                ILazyInitializer li = proxy.HibernateLazyInitializer;
-                
-                return li.Identifier;
+				INHibernateProxy proxy = obj as INHibernateProxy; 
+				ILazyInitializer li = proxy.HibernateLazyInitializer;
+				
+				return li.Identifier;
 			}
 			else
 			{
@@ -161,13 +161,23 @@ namespace NHibernate.Type
 				return value;
 			}
 
-			if (IsReferenceToPrimaryKey)
+			return ForeignKeys.GetEntityIdentifierIfNotUnsaved(GetAssociatedEntityName(), value, session); //tolerates nulls
+		}
+
+		protected internal object GetReferenceValue(object value, ISessionImplementor session)
+		{
+			if (IsNotEmbedded(session))
 			{
-				return ForeignKeys.GetEntityIdentifierIfNotUnsaved(GetAssociatedEntityName(), value, session); //tolerates nulls
+				return value;
 			}
-			else if (value == null)
+
+			if (value == null)
 			{
 				return null;
+			}
+			else if (IsReferenceToPrimaryKey)
+			{
+				return ForeignKeys.GetEntityIdentifierIfNotUnsaved(GetAssociatedEntityName(), value, session); //tolerates nulls
 			}
 			else
 			{
@@ -180,7 +190,7 @@ namespace NHibernate.Type
 				IType type = entityPersister.GetPropertyType(uniqueKeyPropertyName);
 				if (type.IsEntityType)
 				{
-					propertyValue = ((EntityType)type).GetIdentifier(propertyValue, session);
+					propertyValue = ((EntityType)type).GetReferenceValue(propertyValue, session);
 				}
 
 				return propertyValue;
@@ -253,6 +263,11 @@ namespace NHibernate.Type
 
 		public abstract bool IsOneToOne { get; }
 
+		public virtual bool IsLogicalOneToOne()
+		{
+			return IsOneToOne;
+		}
+
 		public override object Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache)
 		{
 			if (original == null)
@@ -279,7 +294,7 @@ namespace NHibernate.Type
 				}
 				else
 				{
-					object id = GetIdentifier(original, session);
+					object id = GetReferenceValue(original, session);
 					if (id == null)
 					{
 						throw new AssertionFailure("non-transient entity has a null id");
@@ -495,8 +510,8 @@ namespace NHibernate.Type
 			
 			if (x.IsProxy())
 			{
-                INHibernateProxy proxy = x as INHibernateProxy; 
-                id = proxy.HibernateLazyInitializer.Identifier;
+				INHibernateProxy proxy = x as INHibernateProxy; 
+				id = proxy.HibernateLazyInitializer.Identifier;
 			}
 			else
 			{
@@ -539,7 +554,7 @@ namespace NHibernate.Type
 		/// Load an instance by a unique key that is not the primary key. 
 		/// </summary>
 		/// <param name="entityName">The name of the entity to load </param>
-		/// <param name="uniqueKeyPropertyName">The name of the property defining the uniqie key. </param>
+		/// <param name="uniqueKeyPropertyName">The name of the property defining the unique key. </param>
 		/// <param name="key">The unique key property value. </param>
 		/// <param name="session">The originating session. </param>
 		/// <returns> The loaded entity </returns>
@@ -553,7 +568,7 @@ namespace NHibernate.Type
 
 			EntityUniqueKey euk =
 				new EntityUniqueKey(entityName, uniqueKeyPropertyName, key, GetIdentifierOrUniqueKeyType(factory),
-				                    session.EntityMode, session.Factory);
+									session.EntityMode, session.Factory);
 
 			IPersistenceContext persistenceContext = session.PersistenceContext;
 			try

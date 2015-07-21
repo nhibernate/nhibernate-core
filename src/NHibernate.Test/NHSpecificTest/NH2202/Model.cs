@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH2202
 {
@@ -15,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2202
 		{
 			get
 			{
-				return _addresses ?? (_addresses = new HashedSet<EmployeeAddress>());
+				return _addresses ?? (_addresses = new HashSet<EmployeeAddress>());
 			}
 			set 
 			{

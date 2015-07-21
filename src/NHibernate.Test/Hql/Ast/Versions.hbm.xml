@@ -10,6 +10,7 @@
 		</id>
         <version name="version" column="vers"/>
 		<property name="name"/>
+        <property name="Data" access="property"/>
 	</class>
 
 	<class name="TimestampVersioned">
@@ -18,6 +19,7 @@
 		</id>
         <timestamp name="version" column="vers"/> 
 		<property name="name"/>
+        <property name="Data" access="property"/>
 	</class>
 
 </hibernate-mapping>

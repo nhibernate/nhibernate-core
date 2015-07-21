@@ -1,13 +1,494 @@
-Build vNext
+Build 4.0.3.GA
 =============================
 
-** Known BREAKING CHANGES from NH3.3.2.GA to vNext
+
+** Bug
+    * [NH-2504] - Can't use Cacheable with Group By
+    * [NH-3457] - TemplatedViolatedConstraintNameExtracter.ExtractUsingTemplate calls Substring with wrong arguments
+    * [NH-3468] - InvalidCastException when deleting entities containing uninitialized lazy components
+    * [NH-3573] - Query cache statistics not updated when using MultiCriteria
+    * [NH-3731] - Unable to serialize session after modifying the index of entities in a list
+
+
+Build 4.0.2.GA
+=============================
+
+** Bug
+    * [NH-2779] - Session.Get() can throw InvalidCastException when log-level is set to DEBUG
+    * [NH-2782] - Linq: selecting into a new array doesn't work
+    * [NH-2831] - NH cannot load mapping assembly from GAC 
+    * [NH-3049] - Mapping by code to Field not working
+    * [NH-3222] - NHibernate Futures passes empty tuples to ResultSetTransformer
+    * [NH-3650] - ComponentAsId<T> used more than once, cache first mapping and produces  subsequently a sql select wrong
+    * [NH-3709] - Fix Reference to One Shot Delete and Inverse Collections
+    * [NH-3710] - Use of SetLockMode with DetachedCriteria causes null reference exception
+
+** Task
+    * [NH-3697] - Ignore Firebird in NHSpecificTest.NH1981
+    * [NH-3698] - NHSpecificTest.NH1989 fails for some drivers
+
+
+Build 4.0.1.GA
+=============================
+
+** Bug
+    * [NH-3102] - Wrong mapping produced by Map
+    * [NH-3214] - PropertyContainerCustomizer.Bag() throws NullReferenceException when mapping a property of type IList
+    * [NH-3575] - DefaultReadOnly not working for Future() queries
+    * [NH-3656] - Firebird doesn't accept Currency as parameter type
+    * [NH-3667] - MappingByCode produce wrong table field name 'idx' in Dictionary<,> mappings
+    * [NH-3679] - SchemaExport.Create(false, false) does not write to file specified via SchemaExport.SetOutputFile
+    * [NH-3691] - All dialect checks in NHSpecificTest.NH1487.Fixture are broken
+    * [NH-3692] - TypedManyToOneTest is broken for Firebird
+    * [NH-3694] - Criteria or QueryOver with join to components collection does not return data. It worked in NH 3.3.
+    * [NH-3695] - NHSpecificTest.NH1845 fails for some Dialects
+    * [NH-3696] - Connection pooling + Multi threraded tests
+    * [NH-3701] - NHSpecificTest.NH2302 Fails under Firebird
+
+** Improvement
+    * [NH-3604] - Map ByCode fails when property is protected (not public)
+    * [NH-3687] - Change Id mapping of TimesheetEntry from native to assigned
+    * [NH-3688] - Modify NHSpecificTest.NH1391 so that it doesn't depend on preknown id values
+    * [NH-3690] - Add LEFT function to Firebird
+
+** Patch
+    * [NH-3383] - Fix for multiple objects of CascadeStyle in Memory that should be singleton
+    * [NH-3577] - Fix in SessionFactory.Statistics.LogSummary() method to show 0 milisecond as MaxQueryTime when no query was executed, instead of  -922337203685477
+
+** Task
+    * [NH-3085] - Document enhanced id generators
+    * [NH-3660] - Ignore Firebird in DtcFailuresFixture
+    * [NH-3689] - Ignore Firebird in NHSpecificTest.NH1171
+
+
+Build 4.0.0.GA
+=============================
+
+** Known BREAKING CHANGES from NH3.3.3.GA to 4.0.0.GA
+
+    NHibernate now targets .Net 4.0. Many uses of set types from Iesi.Collections have
+    now been changed to use corresponding types from the BCL. The API for these types
+    are slightly different.
+
+    Support for persistent non-generic collections removed. Use the generic counterparts instead.
 
     ##### Possible Breaking Changes #####
         * IDeleteEventListener, IEventSource: Use generic ISet<> instead of non-generic in method signatures.
         * SqlString.Parts removed. Use SqlString.Count and SqlString.GetEnumerator().
         * IPersistentCollection.GetSnapshot() now returns object instead of ICollection. The snapshot should be opaque to outside code.
-	* Removed IsDiscriminatorFormula, DiscriminatorFormula and GenerateSelectString from UnionSubclassEntityPersister class.
+        * Removed IsDiscriminatorFormula, DiscriminatorFormula and GenerateSelectString from UnionSubclassEntityPersister class.
+        * Removed ManagedWebSessionContext. Any configuration files which use the "managed_web" session context should now use "web"
+        * SybaseASADialect removed: Use SybaseSQLAnywhere10Dialect instead.
+        * ASA10ClientDriver, ASAClientDriver and SQLiteDriver removed: Use SybaseSQLAnywhereDriver, SybaseAsaClientDriver, SQLite20Driver instead.
+        * Removed Classic HQL Parser.
+        * Removed IQueryTranslatorFactory2. It's methods were pulled up to IQueryTranslatorFactory. Method CreateQueryTranslators accepting string as first argument marked as Obsolete. 
+        * IQueryExpression.Translate now has second boolean argument 'filter'
+        * Added several methods which accepts IQueryExpression to ISessionImplementor, which is duplicating methods which accepts string.
+        * Miss-spelled AdoNetWithDistrubtedTransactionFactory removed: Use AdoNetWithDistributedTransactionFactory instead
+        * HqlDistinctHolder removed: Use HqlExpressionSubTreeHolder instead
+        * DisableLogFormattedSql method removed: the default is disabled
+        * ISession.SaveOrUpdateCopy removed: Use Merge instead
+        * Oracle and MySQL: The atan2 and power functions now return double (instead of single) for consistency with other dialects.
+        * Removed FirebirdDriver. It was the same as FirebirdClientDriver since 3.2, and the latter have been the default since then.
+        * Removed bunch of unused methods on *Helper classes
+        * Static fields on NHibernateUtil are declared as their exact class
+
+    From NH4.0.0.Alpha1 to 4.0.0.Alpha2:
+    Fixed mapping by code behaviour when map child subclasses (see NH-3135 and NH-3269)
+    
+    The constructor of AbstractComponentTuplizer now behaves like AbstractEntityTuplizer in the way
+    that it doesn't create the instantiator any more. Custom component tuplizers that derive
+    directly from AbstractComponentTuplizer need to add this line of code in their constructor:
+      instantiator = BuildInstantiator(component);
+
+    From NH4.0.0.Alpha2 to 4.0.0.CR1:
+    The interface IEnhancedProjection was removed and its methods moved to IProjection.
+    Two other overloads of the GetColumnAliases() methods was removed from IProjection.
+
+        * [NH-2290] Invalid hql parenthesis expansion in generated sql
+            Unary minus before parentheses in HQL lost the parentheses when translated
+            to SQL and therefore the wrong value was returned. This use of unary minus is now
+            implemented in the mathematically correct way.
+
+
+** Bug
+    * [NH-3638] - Mapping-by-code is occasionally picking the wrong column name
+    * [NH-3654] - Internal access of PersistentGenericBag removed
+
+** Improvement
+    * [NH-3415] - Add Overload to IGeneratorMapper.Params That Receives a Dictionary
+    * [NH-3657] - Map By Code - One to One Missing Class Action
+
+** Patch
+    * [NH-3529] - Add linqtohql.generatorsregistry to nhibernate-configuration.xsd
+
+
+Build 4.0.0.CR1
+=============================
+
+** Bug
+    * [NH-3455] - QueryOver + selecting a component + OrderBy = wrong OrderBy in SQL
+    * [NH-3581] - nhibernate.everything.sln doesn't compile
+    * [NH-3587] - Parameters within a select clause
+    * [NH-3620] - ORA-01483 when inserting two blobs and a date using the OracleManagedDataClientDriver
+    * [NH-3624] - broken insert statement with select
+    * [NH-3629] - Translation of string.IndexOf() in Linq is broken for firebird
+    * [NH-3641] - Missing Outer Join
+    * [NH-3642] - PostgreSQL: Support LINQ DateTime.Date in select clause
+    * [NH-3649] - Missing support for round() in SQLite and SQL Server CE dialects (affected criteria queries)
+
+** Improvement
+    * [NH-3623] - Add FirebirdExceptionConverterExample
+    * [NH-3626] - avoid double parens around a select statement
+    * [NH-3627] - change some id mappings from native to assigned in linq tests
+    * [NH-3628] - add keyword "date" and function "date" to FirebirdDialect
+    * [NH-3647] - Support Math.Round() in QueryOver projections
+
+** Task
+    * [NH-3251] - Update to antlr 3.5.0.2
+    * [NH-3644] - Merge IEnhancedProjection into IProjection
+
+Build 4.0.0.Alpha2
+=============================
+
+** Known BREAKING CHANGES from NH4.0.0.Alpha1 to 4.0.0.Alpha2
+
+    Fixed mapping by code behaviour when map child subclasses (see NH-3135 and NH-3269)
+    
+    The constructor of AbstractComponentTuplizer now behaves like AbstractEntityTuplizer in the way
+    that it doesn't create the instantiator any more. Custom component tuplizers that derive
+    directly from AbstractComponentTuplizer need to add this line of code in their constructor:
+      instantiator = BuildInstantiator(component);
+
+
+** Bug
+    * [NH-2380] - Cannot perform distinct when selecting an anonymous type
+    * [NH-2486] - Distinct() extension method problem with Object Initialisers
+    * [NH-2655] - DbType.Double should be float(53) instead of DOUBLE PRECISION in the SQL-Severer2000 Dialect
+    * [NH-2692] - Using Any() on a collection of components results in invalid SQL: Column of parent ID is used instead of key column
+    * [NH-2861] - <filter> doesn't work in conjunction with <join>
+    * [NH-2865] - "Expression type 'NhSumExpression' is not supported by this SelectClauseVisitor."
+    * [NH-2961] - "Index was outside the bounds of the array" error when executing cached query for single result with distinct results transformer
+    * [NH-3135] - Collection of Components in BaseClass cannot be mapped to a different table
+    * [NH-3269] - UniqueKey on property of base class will affect all inherited class
+    * [NH-3392] - Add ability to expand subcollections with composites ids with WCF Data Services
+    * [NH-3417] - Nested projection of subcollection throws
+    * [NH-3423] - MemberInitExpression causing problem in HqlGeneratorExpressionTreeVisitor (WCF DS)
+    * [NH-3571] - Linq does not support dynamic components inside components
+    * [NH-3579] - Session leak in the Query Plan Cache
+    * [NH-3586] - Firebird Decimals
+    * [NH-3588] - Creating and dropping of Temporary Tables in an isolated transaction is broken
+    * [NH-3590] - Detached entity with set of primitives throws
+    * [NH-3591] - IncrementGenerator unnecessarily creates a new connection to the db
+
+** Improvement
+    * [NH-1082] - Exceptions thrown in IInterceptor.BeforeTransactionCompletion should cause the transaction to be rolled back
+    * [NH-3041] - Expression-based PropertyRef missing in OneToOne mapping
+    * [NH-3072] - OneToManyPersister improvements
+    * [NH-3141] - Don't fetch id from proxy target
+    * [NH-3437] - Turn SqlMethods.Like into an extension method
+
+
+** Patch
+    * [NH-3558] - Table check and enhanced id generators in Mapping By Code
+    * [NH-3559] - UnionSubclassEntityPersister does not quote column names
+
+** Task
+    * [NH-3363] - Refactor Loader/Result Transformer interaction to match Hibernate
+
+Build 4.0.0.Alpha1
+=============================
+
+** Known BREAKING CHANGES from NH3.3.3.GA to 4.0.0.Alpha1
+
+    NHibernate now targets .Net 4.0. Many uses of set types from Iesi.Collections have
+    now been changed to use corresponding types from the BCL. The API for these types
+    are slightly different.
+
+    Support for persistent non-generic collections removed. Use the generic counterparts instead.
+
+    ##### Possible Breaking Changes #####
+        * IDeleteEventListener, IEventSource: Use generic ISet<> instead of non-generic in method signatures.
+        * SqlString.Parts removed. Use SqlString.Count and SqlString.GetEnumerator().
+        * IPersistentCollection.GetSnapshot() now returns object instead of ICollection. The snapshot should be opaque to outside code.
+        * Removed IsDiscriminatorFormula, DiscriminatorFormula and GenerateSelectString from UnionSubclassEntityPersister class.
+        * Removed ManagedWebSessionContext. Any configuration files which use the "managed_web" session context should now use "web"
+        * SybaseASADialect removed: Use SybaseSQLAnywhere10Dialect instead.
+        * ASA10ClientDriver, ASAClientDriver and SQLiteDriver removed: Use SybaseSQLAnywhereDriver, SybaseAsaClientDriver, SQLite20Driver instead.
+        * Removed Classic HQL Parser.
+        * Removed IQueryTranslatorFactory2. It's methods were pulled up to IQueryTranslatorFactory. Method CreateQueryTranslators accepting string as first argument marked as Obsolete. 
+        * IQueryExpression.Translate now has second boolean argument 'filter'
+        * Added several methods which accepts IQueryExpression to ISessionImplementor, which is duplicating methods which accepts string.
+        * Miss-spelled AdoNetWithDistrubtedTransactionFactory removed: Use AdoNetWithDistributedTransactionFactory instead
+        * HqlDistinctHolder removed: Use HqlExpressionSubTreeHolder instead
+        * DisableLogFormattedSql method removed: the default is disabled
+        * ISession.SaveOrUpdateCopy removed: Use Merge instead
+        * Oracle and MySQL: The atan2 and power functions now return double (instead of single) for consistency with other dialects.
+        * Removed FirebirdDriver. It was the same as FirebirdClientDriver since 3.2, and the latter have been the default since then.
+        * Removed bunch of unused methods on *Helper classes
+        * Static fields on NHibernateUtil are declared as their exact class
+
+** Sub-task
+    * [NH-3038] - Add Support for SQL Server 2012 Query Paging
+    * [NH-3098] - Pull code/history from nhibernate-core repository to new iesi.collections repository
+    * [NH-3099] - Remove Iesi.Collection-related code from nhibernate-core repository
+    * [NH-3163] - Remove internal use of non-generic ISet
+    * [NH-3165] - Remove support for non-generic ISet in mapped classes
+
+
+** Bug
+    * [NH-2008] - Mapping <set> with HashSet<T> generates unecessary update on collection owner
+    * [NH-2033] - Composite-Id relationships (key-many-to-one) do not appear to be used in CreateCriteria
+    * [NH-2762] - Failed to use IGrouping<TKey, TElement>.Contains() from Lookup to make SQL IN statement
+    * [NH-2772] - Lazy-collection not loaded when a property is Lazy-loaded
+    * [NH-2819] - DefaultDynamicLazyFieldInterceptor does not handle generic methods correctly
+    * [NH-2852] - Linq ThenFetch fails on deep where clause.
+    * [NH-2897] - MultiQuery/ToFuture broken with Contains (in)
+    * [NH-2915] - In Linq, Where clause is ignored if followed by Fetch and then by OrderBy
+    * [NH-2923] - Extra lazy indexed collection throws InvalidCastException fetching Count
+    * [NH-2955] - AbstractQueryImpl accepts IEnumerables in SetParameterList but breaks if they're not ICollections
+    * [NH-2977] - MsSqlServer dialects reject custom SQL Server queries with limits 
+    * [NH-2985] - Wrong equals operator when you use <list> mapping when child has property with lazy="true"
+    * [NH-3056] - Fetch clause suppresses where clause if positioned before Select clause
+    * [NH-3058] - Methods on entities with lazy properties do not trigger load of lazy properties
+    * [NH-3070] - Proxy for an entity with a lazy property and a formula property is not .Equal to itself
+    * [NH-3132] - Property with access="field.camelcase" not working when another property is lazy
+    * [NH-3139] - Optional Entity association using lazy property returns proxy instead of null 
+    * [NH-3160] - Null reference Exception when creating schema for dialect that doesn't support unique
+    * [NH-3183] - Linq ToFuture/ToFutureValue does not fall-back if dialect does not support multi-queries
+    * [NH-3186] - Simple query with Fetch and SingleOrDefault throws exception (regression from 3.3.0)
+    * [NH-3202] - Offset parameter is off by one for dialects with OffsetStartsAtOne set (SybaseSQLAnywhere10+)
+    * [NH-3235] - Query plan cache cannot be set to size zero
+    * [NH-3236] - Build menu incorrectly launches NUnit
+    * [NH-3244] - Proxying fails for methods with generic class as generic parameter constraints or generic parameter attributes
+    * [NH-3256] - GroupBySelectClauseRewriter fails or is suboptimal on .Net 4.0
+    * [NH-3260] - Unable to proxy generic methods with constraints referencing type parameters from containing class
+    * [NH-3274] - Take() support broken with Informix
+    * [NH-3281] - Linq providers are not being passed Limit and/or Offset as value only as parameters
+    * [NH-3340] - NHibernate assembly loses the AllowPartiallyTrustedCallers attribute after ILMerge
+    * [NH-3381] - atan2 should be defined to return double on Oracle and MySql
+    * [NH-3420] - Race Condition in result set wrapper because of the ColumnNameCache
+
+** Improvement
+    * [NH-2005] - hql concat function not registered in MsSqlCeDialect
+    * [NH-2808] - Missing overloads for Session.Save/Update/SaveOrUpdate
+    * [NH-3037] - ActionQueue Insertion sort performance degrades exponentially (HHH-2957 Port)
+    * [NH-3054] - Mapping By-Code support for non-generic User Collection Types
+    * [NH-3133] - Support for importing classes in mapping.
+    * [NH-3175] - Joins should support additional restrictions (HQL-with)
+    * [NH-3238] - Add Sql2008ClientDriver support in DatabaseSetup for testing
+    * [NH-3272] - Move TypeHelperExtensionMethods to a more internal namespace
+    * [NH-3319] - Typo in a folder name in NHibernate.Test project
+    * [NH-3343] - Remove NHibernate custom Tuple classes
+    * [NH-3382] - Improve materialization performance (for simple Linq query, may reduce 50%+ time)
+    * [NH-3398] - Support PostgreSQL trigonometric functions
+    * [NH-3399] - Static fields on NHibernateUtil should be declared as their exact class
+    * [NH-3459] - DefaultIfEmpty not supported when used with a GroupBy
+    * [NH-3553] - Support the 'power' function on MS SQL Server
+
+** New Feature
+    * [NH-3164] - Support building NHibernate on .Net 4
+    * [NH-3166] - Support for Microsoft Sql Server 2012 
+    * [NH-3193] - MsSqlCeDialect should correct override string manipulation functions
+    * [NH-3195] - MsSqlCeDialect should support TOP limit
+    * [NH-3284] - New Ingres9+ Dialect
+    * [NH-3349] - Add support for managed ODP.NET
+
+** Patch
+    * [NH-2778] - Batcher for MySql
+    * [NH-3540] - Null pointer exception for empty BaseDirectory (Path.combine)
+
+** Task
+    * [NH-2997] - Where() clause with many-to-many relation is missing (solution in description)
+    * [NH-3097] - Move Iesi.Collections project to own repository
+    * [NH-3185] - Update included Iesi.Collections.dll and add its pdb file
+    * [NH-3314] - Remove ManagedWebSessionContext
+    * [NH-3322] - Remove one of the Firebird drivers
+    * [NH-3339] - Remove SecurityPermission attributes with LinkDemand for .NET 4.0 assemblies
+    * [NH-3344] - Remove the classical HQL parser
+    * [NH-3345] - Remove support for persistent non-generic collections
+    * [NH-3346] - Remove members obsolete in NH3 from NH4
+    * [NH-3347] - Remove obsolete dialects for NH4
+
+
+Build 3.4.0.GA
+=============================
+** Known BREAKING CHANGES from NH3.3.0.GA to NH3.4.0.GA
+
+    ##### Possible Breaking Changes #####
+        * [NH-2290] Invalid hql parenthesis expansion in generated sql
+            Unary minus before parentheses in HQL lost the parentheses when translated
+            to SQL and therefore the wrong value was returned. This use of unary minus is now
+            implemented in the mathematically correct way.
+
+
+** Sub-task
+    * [NH-3432] - Merge fix for bug NH-3058 into 3.Next
+
+** Bug
+    * [NH-2819] - DefaultDynamicLazyFieldInterceptor does not handle generic methods correctly
+    * [NH-2977] - MsSqlServer dialects reject custom SQL Server queries with limits 
+    * [NH-3058] - Methods on entities with lazy properties do not trigger load of lazy properties
+    * [NH-3132] - Property with access="field.camelcase" not working when another property is lazy
+    * [NH-3244] - Proxying fails for methods with generic class as generic parameter constraints or generic parameter attributes
+    * [NH-3638] - Mapping-by-code is occasionally picking the wrong column name
+
+** Patch
+    * [NH-3529] - Add linqtohql.generatorsregistry to nhibernate-configuration.xsd
+
+** Task
+    * [NH-3412] - Need to reconcile changes to MsSql2005DialectQueryPager for NH-2977 between 3.3.3 and vNext
+
+
+Build 3.4.0.CR1
+=============================
+
+** Sub-task
+    * [NH-3434] - Need to be sure NH-3428 is resolved in 3.Next.  
+
+** Bug
+    * [NH-1882] - Collection was not processed by flush when iterate through collection in PostUpdateEvent
+    * [NH-2128] - Interceptor fires AfterTransactionCompletion too many times with distributed transactions and user-supplied connections
+    * [NH-2290] - Invalid hql parenthesis expansion in generated sql
+    * [NH-2921] - IsSpecialName of getter/setter method of proxy property returns false
+    * [NH-2923] - Extra lazy indexed collection throws InvalidCastException fetching Count
+    * [NH-2943] - Mapping XmlDocument (.NET) to XmlType (Oracle). Class XmlDocType not working.
+    * [NH-2963] - Validation on a collection property (mapped with Loquacious config) raise an exception [Invalid expression type: Expected ExpressionType.MemberAccess, Found Convert]
+    * [NH-3103] - ManyToAny ByCode does not use field customizer 
+    * [NH-3140] - Bag ManyToMany column is ignored if it's the same as the child entity name and is replaced with "elt" in the sql.
+    * [NH-3190] - QuerySyntaxException is thrown when where contains subselect that matches bool value
+    * [NH-3234] - Merge is failing with "Unable to resolve property"
+    * [NH-3237] - Max and Min aggregate expressions do not work for custom UserType due to unnecessary HQL Cast
+    * [NH-3277] - LINQ Projection of Int64 using ToString method causes "cast as char" instead of "cast as nvarchar" in MsSqlCe dialect
+    * [NH-3280] - Mapping OneToOne doesn't work for inherited members
+    * [NH-3315] - Distinct paging problem with alias SQL Server 2005
+    * [NH-3316] - Mapping parent property on component in a set adds bogus property element
+    * [NH-3405] - Cannot Use XDocument When Setting Wrap Resultsets
+    * [NH-3496] - NHibernate SqlServer2012Dialect drop sequence bug
+    * [NH-3505] - Stateless sessions fail to save relationships pointing to proxies when versioning is enabled
+    * [NH-3572] - AfterTransactionCompletion called twice if a distributed transaction is rolled back
+    * [NH-3592] - Failed to execute multi criteria with Ms Sql Ce 4.0
+    * [NH-3611] - NHibernateUtil.GuessType(typeof(string)) returns ClassMetaType
+    * [NH-3614] - Cannot create project an enumerable of non-mapped objects (List<string>)
+    * [NH-3615] - Incorrect assumption that namespace always exists
+    * [NH-3618] - ManyToOne does not allow to set "unique"="true", "unique-key" and "index" for multi-column properties
+    * [NH-3641] - Missing Outer Join
+
+** Improvement
+    * [NH-2005] - hql concat function not registered in MsSqlCeDialect
+    * [NH-2958] - Delay creation of instance of XmlSerializer (loading xml assembly) until its needed.
+    * [NH-3465] - Add support of IIF function for Oracle
+    * [NH-3466] - Register MySQL functions
+    * [NH-3467] - Add support of 2-arg LOCATE function
+    * [NH-3608] - AbstractSessionImpl abstract method visibility
+
+** New Feature
+    * [NH-2405] - MySQL5InnoDBDialect
+    * [NH-3192] - MsSqlCeDialect should override date manipulation functions
+    * [NH-3193] - MsSqlCeDialect should correct override string manipulation functions
+    * [NH-3194] - MsSqlCe40Dialect should support variable limits
+    * [NH-3195] - MsSqlCeDialect should support TOP limit
+    * [NH-3196] - MsSqlCeDialect should support guid.native id generator
+
+** Patch
+    * [NH-2996] - MySQL 5.5 + .NET Connector 6.2+ and GUIDs: Need to use CHAR(36)
+    * [NH-3209] - DateTimeOffset properties have not been considered; only the properties of DateTime have been considered
+
+** Task
+    * [NH-3251] - Update to antlr 3.5.0.2
+
+Build 3.3.4.GA
+=============================
+
+** Bug
+    * [NH-3638] - Mapping-by-code is occasionally picking the wrong column name
+
+Build 3.3.3.SP1
+=============================
+
+Fixes for regressions introduced in the 3.3.3 cycle.
+
+** Bug
+    * [NH-3429] - Exception when debug logging is enabled when using a linq expression that requires a proxy class.
+    * [NH-3436] - Linq-Query with IList<X>.Contains fails with NotSupportedException(The constant for 'System.Collections.Generic.List`1[System.Guid]' is not supported) at HqlTreeBuilder.Constant
+
+Build 3.3.3.GA
+=============================
+
+BEWARE: In versions prior to 3.3.3.CR1, the handling of the LINQ Take() method
+        was flawed - no matter where in the query Take() was placed it was
+        always applied as if it had been placed at the end. 3.3.3 fixes this,
+        so that Take() now correctly follows the .Net semantics. That is, in
+        3.3.3, the following queries might now give different results:
+
+            session.Query<Foo>.OrderBy(...).Take(5).Where(...);
+            session.Query<Foo>.Where(...).OrderBy(...).Take(5);
+
+        Starting with 3.3.3, the first query will generate a subquery to correctly
+        apply the row limit before the where-clause.
+
+** Bug
+    * [NH-2408] - SQL Server pessimistic locking syntax incorrect for union-subclass
+    * [NH-3109] - Rounding float values in aggregate functions with group by statements (MySQL).
+    * [NH-3324] - HQL: ArgumentNullException when using LEFT OUTER JOIN and SetMaxResults
+    * [NH-3408] - System.IndexOutOfRangeException when using Contains on a List<byte[]>
+    * [NH-3413] - Clearing a list used by Contains causes subsequent queries to fail
+
+Build 3.3.3.CR1
+=============================
+
+** Fix
+    * [NH-3148] - ComponentAsId properties do not maintain the Column specified using property mapper when component is from base class
+
+** Sub-task
+    * [NH-3052] - Projection of one-to-many generates invalid SQL
+    * [NH-3385] - Add ability to expand many subcollections with WCF Data Services
+
+** Bug
+    * [NH-2042] - Table per subclass, using a discriminator mappings with formula in child class error
+    * [NH-2539] - Contains/StartsWith fails when invoked via WCF Data Service.
+    * [NH-2566] - NotSupportedException when using Skip/Take/First/Single/Any on GroupBy
+    * [NH-2588] - NotSupportedException when using Skip/Take with Where clause
+    * [NH-2860] - Lazy property throwing casting exception
+    * [NH-2979] - MsSqlCe dialect doesn't give the correct SQL type for Decimal with Scale defined
+    * [NH-3039] - IndexOutOfRangeException thrown when web server is processing multiple sessionfactory creation requests
+    * [NH-3057] - Collection subquery constraint on joined-subclass inherited properties causes invalid sql (base classes are not joined in).
+    * [NH-3105] - ComponentAsId does not find property that belongs to a parent class
+    * [NH-3108] - OrderBy with Select throws exception
+    * [NH-3129] - Linq Provider doesn't recognize CompareTo method
+    * [NH-3241] - Linq: Mixing Fetch/FetchMany with Any() throws: ArgumentException: Expression of type 'System.Collections.IList' cannot be used for parameter of type 'System.Collections.Generic.IEnumerable`1[System.Object]'
+    * [NH-3261] - Linq Query throws when there is a conditional operator
+    * [NH-3305] - SybaseSQLAnywhere10Dialect defaults a numeric datatype to (19,255) precision, which is not compatible with the DB
+    * [NH-3318] - Composite-id does not allow superclass properties
+    * [NH-3320] - Exception in LINQ projection with OrderBy/Take - block using WCF Data Services projection's
+    * [NH-3326] - Exception in LINQ with pagination - block using WCF Data Services
+    * [NH-3330] - Exception in LINQ for nullable strings in Oracle - blocks using WCF Data Services
+    * [NH-3332] - The NH linq driver generates sql code that doesn't match the semantics of the original linq query
+    * [NH-3337] - Exception in LINQ for complex nullable conditionals - blocks using WCF Data Services
+    * [NH-3357] - System.NotSupportedException : Don't currently support idents of type DateTimeOffset
+    * [NH-3366] - LINQ query with various Compare() and CompareTo() fails (WCF Data Services)
+    * [NH-3369] - ToFuture/ToFutureValue should fall-back on dialects without MultiQuery support
+    * [NH-3378] - MySQLDialect incorrect handle DbType.Currency as MONEY
+    * [NH-3379] - Oracle8iDialect and FirebirdDialect incorrect handle DbType.Currency type
+
+** Improvement
+    * [NH-2297] - Configuration.BuildSessionFactory throws a NullReferenceException when loading an invalid ICompositeUserType
+    * [NH-3301] - Support SqlMethods.Like() in LINQ queries.
+    * [NH-3360] - Allow setting timeout on a LINQ query
+    * [NH-3367] - Support string.Equals()
+    * [NH-3368] - Add support for Equals method of sbyte, DateTimeOffset and unsigned numerics
+    * [NH-3371] - NHibernate should log LINQ expression trees to ease debugging
+
+** New Feature
+    * [NH-2986] - Add ability to include collections into projections
+    * [NH-3092] - Nhibernate Linq provider does not support Math functions like Math.Cos, Math.Sin, etc
+    * [NH-3180] - Could not select first element of the group
+    * [NH-3184] - Add ability to use ToFutureValue with aggregating queries
+    * [NH-3283] - New driver: Devart.Data.MySql
+    * [NH-3333] - Add ability to expand subcollections with WCF Data Services
+
+** Patch
+    * [NH-3255] - The IDbCommand that performs the cleanup of data in AbstractStatementExecutor.DropTemporaryTableIfNecessary does not have a connection.
 
 Build 3.3.2.GA
 =============================

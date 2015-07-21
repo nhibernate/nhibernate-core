@@ -1,3 +1,4 @@
+using System.Linq;
 using NHibernate.Criterion;
 using NHibernate.Impl;
 using NUnit.Framework;
@@ -27,6 +28,20 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 			{
 				s.Delete("from Person");
 				tx.Commit();
+			}
+		}
+
+		[Test]
+		public void DefaultReadOnlyTest()
+		{
+			//NH-3575
+			using (var s = sessions.OpenSession())
+			{
+				s.DefaultReadOnly = true;
+
+				var persons = s.QueryOver<Person>().Future<Person>();
+
+				Assert.IsTrue(persons.All(p => s.IsReadOnly(p)));
 			}
 		}
 

@@ -617,7 +617,7 @@ namespace NHibernate.Test.ReadOnly
 			s.Transaction.Commit();
 			s.Close();
 	
-			AssertUpdateCount(0); // NH-specific: Hibernate issues a seperate UPDATE for the version number
+			AssertUpdateCount(0); // NH-specific: Hibernate issues a separate UPDATE for the version number
 			AssertInsertCount(1);
 			ClearCounts();
 	
@@ -667,7 +667,7 @@ namespace NHibernate.Test.ReadOnly
 			s.Transaction.Commit();
 			s.Close();
 	
-			AssertUpdateCount(0); // NH-specific: Hibernate issues a seperate UPDATE for the version number
+			AssertUpdateCount(0); // NH-specific: Hibernate issues a separate UPDATE for the version number
 			AssertInsertCount(1);
 			ClearCounts();
 	
