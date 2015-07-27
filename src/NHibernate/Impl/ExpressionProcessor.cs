@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-
+using System.Runtime.CompilerServices;
 using NHibernate.Criterion;
 using NHibernate.Util;
 using Expression = System.Linq.Expressions.Expression;
@@ -290,6 +290,18 @@ namespace NHibernate.Impl
 			return ProjectionInfo.ForProperty(FindMemberExpression(expression));
 		}
 
+		private static bool IsCompilerGeneratedMemberExpressionOfCompilerGeneratedClass(Expression expression)
+		{
+			var memberExpression = expression as MemberExpression;
+			if (memberExpression != null && memberExpression.Member.DeclaringType != null)
+			{
+				return Attribute.GetCustomAttribute(memberExpression.Member.DeclaringType, typeof(CompilerGeneratedAttribute)) != null 
+					&& memberExpression.Member.Name.StartsWith("<"); // Is there another way to check for a compiler generated member?
+			}
+
+			return false;
+		}
+
 		/// <summary>
 		/// Retrieves the name of the property from a member expression
 		/// </summary>
@@ -309,6 +321,11 @@ namespace NHibernate.Impl
 						// it's a Nullable<T>, so ignore any .Value
 						if (memberExpression.Member.Name == "Value")
 							return FindMemberExpression(memberExpression.Expression);
+					}
+
+					if (IsCompilerGeneratedMemberExpressionOfCompilerGeneratedClass(memberExpression.Expression))
+					{
+						return memberExpression.Member.Name;
 					}
 
 					return FindMemberExpression(memberExpression.Expression) + "." + memberExpression.Member.Name;
