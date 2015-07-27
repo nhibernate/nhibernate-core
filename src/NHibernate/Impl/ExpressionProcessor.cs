@@ -322,10 +322,10 @@ namespace NHibernate.Impl
 							return FindMemberExpression(memberExpression.Expression);
 					}
 
-                    if (IsMemberExpressionOfCompilerGeneratedClass(memberExpression.Expression))
-                    {
-                        return memberExpression.Member.Name;
-                    }
+					if (IsMemberExpressionOfCompilerGeneratedClass(memberExpression.Expression))
+					{
+						return memberExpression.Member.Name;
+					}
 
 					return FindMemberExpression(memberExpression.Expression) + "." + memberExpression.Member.Name;
 				}
