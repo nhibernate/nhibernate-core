@@ -14,14 +14,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
         protected A aAliasField = null;
 
         protected override IList Mappings
-		{
-			get
-			{
-				return new [] { "ParentChild.hbm.xml", "ABC.hbm.xml" };
-			}
-		}
+        {
+            get
+            {
+                return new[] { "ParentChild.hbm.xml", "ABC.hbm.xml" };
+            }
+        }
 
-        
+
         [Test]
         public void TestAliasInQueryOver()
         {

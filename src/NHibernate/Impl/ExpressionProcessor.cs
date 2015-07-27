@@ -321,7 +321,7 @@ namespace NHibernate.Impl
 						// it's a Nullable<T>, so ignore any .Value
 						if (memberExpression.Member.Name == "Value")
 							return FindMemberExpression(memberExpression.Expression);
-					}
+                    }
 
                     if (IsMemberExpressionOfCompilerGeneratedClass(memberExpression.Expression))
                     {
