@@ -290,17 +290,16 @@ namespace NHibernate.Impl
 			return ProjectionInfo.ForProperty(FindMemberExpression(expression));
 		}
 
+		private static bool IsMemberExpressionOfCompilerGeneratedClass(Expression expression)
+		{
+			var memberExpression = expression as MemberExpression;
+			if (memberExpression != null && memberExpression.Member.DeclaringType != null)
+			{
+				return Attribute.GetCustomAttribute(memberExpression.Member.DeclaringType, typeof(CompilerGeneratedAttribute)) != null;
+			}
 
-        private static bool IsMemberExpressionOfCompilerGeneratedClass(Expression expression)
-        {
-            var memberExpression = expression as MemberExpression;
-            if (memberExpression != null && memberExpression.Member.DeclaringType != null)
-            {
-                return Attribute.GetCustomAttribute(memberExpression.Member.DeclaringType, typeof(CompilerGeneratedAttribute)) != null;
-            }
-
-            return false;
-        }
+			return false;
+		}
 
 		/// <summary>
 		/// Retrieves the name of the property from a member expression
@@ -321,7 +320,7 @@ namespace NHibernate.Impl
 						// it's a Nullable<T>, so ignore any .Value
 						if (memberExpression.Member.Name == "Value")
 							return FindMemberExpression(memberExpression.Expression);
-                    }
+					}
 
                     if (IsMemberExpressionOfCompilerGeneratedClass(memberExpression.Expression))
                     {
