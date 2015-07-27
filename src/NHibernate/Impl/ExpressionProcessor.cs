@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-
+using System.Runtime.CompilerServices;
 using NHibernate.Criterion;
 using NHibernate.Util;
 using Expression = System.Linq.Expressions.Expression;
@@ -290,6 +290,18 @@ namespace NHibernate.Impl
 			return ProjectionInfo.ForProperty(FindMemberExpression(expression));
 		}
 
+
+        private static bool IsMemberExpressionOfCompilerGeneratedClass(Expression expression)
+        {
+            var memberExpression = expression as MemberExpression;
+            if (memberExpression != null && memberExpression.Member.DeclaringType != null)
+            {
+                return Attribute.GetCustomAttribute(memberExpression.Member.DeclaringType, typeof(CompilerGeneratedAttribute)) != null;
+            }
+
+            return false;
+        }
+
 		/// <summary>
 		/// Retrieves the name of the property from a member expression
 		/// </summary>
@@ -310,6 +322,11 @@ namespace NHibernate.Impl
 						if (memberExpression.Member.Name == "Value")
 							return FindMemberExpression(memberExpression.Expression);
 					}
+
+                    if (IsMemberExpressionOfCompilerGeneratedClass(memberExpression.Expression))
+                    {
+                        return memberExpression.Member.Name;
+                    }
 
 					return FindMemberExpression(memberExpression.Expression) + "." + memberExpression.Member.Name;
 				}
