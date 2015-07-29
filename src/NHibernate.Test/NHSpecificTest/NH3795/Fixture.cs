@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 		{
 			using (var s = sessions.OpenSession())
 			{
-				A rowalias = null;
+			A rowalias = null;
 				s.QueryOver(() => aAliasField)
 					.SelectList(list => list
 						.Select(() => aAliasField.Id).WithAlias(() => rowalias.Id))
@@ -53,12 +53,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 		{
 			using (var s = sessions.OpenSession())
 			{
-			    Child rowalias = null;
-			    s.QueryOver<Parent>()
-			    	.JoinAlias(p => p.Child, () => childAliasField)
-			    	.SelectList(list => list
-			    		.Select(() => childAliasField.Id).WithAlias(() => rowalias.Id))
-			    	.List();
+				Child rowalias = null;
+				s.QueryOver<Parent>()
+					.JoinAlias(p => p.Child, () => childAliasField)
+					.SelectList(list => list
+						.Select(() => childAliasField.Id).WithAlias(() => rowalias.Id))
+					.List();
 			}
 		}
 		

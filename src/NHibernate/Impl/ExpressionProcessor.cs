@@ -296,7 +296,7 @@ namespace NHibernate.Impl
 			if (memberExpression != null && memberExpression.Member.DeclaringType != null)
 			{
 				return Attribute.GetCustomAttribute(memberExpression.Member.DeclaringType, typeof(CompilerGeneratedAttribute)) != null 
-                    && memberExpression.Member.Name.StartsWith("<"); // Is there another way to check for a compiler generated member?
+					&& memberExpression.Member.Name.StartsWith("<"); // Is there another way to check for a compiler generated member?
 			}
 
 			return false;
