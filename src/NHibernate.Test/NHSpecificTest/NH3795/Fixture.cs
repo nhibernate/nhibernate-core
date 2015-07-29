@@ -12,18 +12,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 	{
 		protected Child childAliasField = null;
 		protected A aAliasField = null;
-		
+
 		protected override IList Mappings
 		{
-			get
-			{
-				return new[] { "ParentChild.hbm.xml", "ABC.hbm.xml" };
-			}
+			get { return new[] {"ParentChild.hbm.xml", "ABC.hbm.xml"}; }
 		}
-		
-		
+
 		[Test]
-		public void TestAliasInQueryOver()
+		public void TestFieldAliasInQueryOver()
 		{
 			using (var s = sessions.OpenSession())
 			{
@@ -34,9 +30,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 					.List();
 			}
 		}
-		
+
 		[Test]
-		public void TestAliasInQueryOverWithConversion()
+		public void TestFieldAliasInQueryOverWithConversion()
 		{
 			using (var s = sessions.OpenSession())
 			{
@@ -47,9 +43,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 					.List();
 			}
 		}
-		
+
 		[Test]
-		public void TestAliasInJoinAlias()
+		public void TestFieldAliasInJoinAlias()
 		{
 			using (var s = sessions.OpenSession())
 			{
@@ -61,9 +57,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 					.List();
 			}
 		}
-		
+
 		[Test]
-		public void TestAliasInJoinQueryOver()
+		public void TestFieldAliasInJoinQueryOver()
 		{
 			using (var s = sessions.OpenSession())
 			{
@@ -73,6 +69,68 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 					.SelectList(list => list
 						.Select(() => childAliasField.Id).WithAlias(() => rowalias.Id))
 				.List();
+			}
+		}
+
+		[Test]
+		public void TestAliasInQueryOver()
+		{
+			Child childAlias = null;
+			A aAlias = null;
+			using (var s = sessions.OpenSession())
+			{
+				A rowalias = null;
+				s.QueryOver(() => aAlias)
+					.SelectList(list => list
+						.Select(() => aAlias.Id).WithAlias(() => rowalias.Id))
+					.List();
+			}
+		}
+
+		[Test]
+		public void TestAliasInQueryOverWithConversion()
+		{
+			Child childAlias = null;
+			A aAlias = null;
+			using (var s = sessions.OpenSession())
+			{
+				B rowalias = null;
+				s.QueryOver(() => aAlias)
+					.SelectList(list => list
+						.Select(() => ((B) aAlias).Count).WithAlias(() => rowalias.Count))
+					.List();
+			}
+		}
+
+		[Test]
+		public void TestAliasInJoinAlias()
+		{
+			Child childAlias = null;
+			A aAlias = null;
+			using (var s = sessions.OpenSession())
+			{
+				Child rowalias = null;
+				s.QueryOver<Parent>()
+					.JoinAlias(p => p.Child, () => childAlias)
+					.SelectList(list => list
+						.Select(() => childAlias.Id).WithAlias(() => rowalias.Id))
+					.List();
+			}
+		}
+
+		[Test]
+		public void TestAliasInJoinQueryOver()
+		{
+			Child childAlias = null;
+			A aAlias = null;
+			using (var s = sessions.OpenSession())
+			{
+				Child rowalias = null;
+				s.QueryOver<Parent>()
+					.JoinQueryOver(p => p.Child, () => childAlias)
+					.SelectList(list => list
+						.Select(() => childAlias.Id).WithAlias(() => rowalias.Id))
+					.List();
 			}
 		}
 	}

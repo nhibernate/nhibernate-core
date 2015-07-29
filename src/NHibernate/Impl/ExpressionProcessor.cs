@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using NHibernate.Criterion;
 using NHibernate.Util;
 using Expression = System.Linq.Expressions.Expression;
@@ -290,13 +291,16 @@ namespace NHibernate.Impl
 			return ProjectionInfo.ForProperty(FindMemberExpression(expression));
 		}
 
+		//http://stackoverflow.com/a/2509524/259946
+		private static readonly Regex GeneratedMemberNameRegex = new Regex(@"^(CS\$)?<\w*>[1-9a-s]__[a-zA-Z]+[0-9]*$", RegexOptions.Compiled | RegexOptions.Singleline);
+
 		private static bool IsCompilerGeneratedMemberExpressionOfCompilerGeneratedClass(Expression expression)
 		{
 			var memberExpression = expression as MemberExpression;
 			if (memberExpression != null && memberExpression.Member.DeclaringType != null)
 			{
 				return Attribute.GetCustomAttribute(memberExpression.Member.DeclaringType, typeof(CompilerGeneratedAttribute)) != null 
-					&& memberExpression.Member.Name.StartsWith("<"); // Is there another way to check for a compiler generated member?
+					&& GeneratedMemberNameRegex.IsMatch(memberExpression.Member.Name);
 			}
 
 			return false;
