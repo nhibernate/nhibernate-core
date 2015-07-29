@@ -290,12 +290,13 @@ namespace NHibernate.Impl
 			return ProjectionInfo.ForProperty(FindMemberExpression(expression));
 		}
 
-		private static bool IsMemberExpressionOfCompilerGeneratedClass(Expression expression)
+		private static bool IsCompilerGeneratedMemberExpressionOfCompilerGeneratedClass(Expression expression)
 		{
 			var memberExpression = expression as MemberExpression;
 			if (memberExpression != null && memberExpression.Member.DeclaringType != null)
 			{
-				return Attribute.GetCustomAttribute(memberExpression.Member.DeclaringType, typeof(CompilerGeneratedAttribute)) != null;
+				return Attribute.GetCustomAttribute(memberExpression.Member.DeclaringType, typeof(CompilerGeneratedAttribute)) != null 
+                    && memberExpression.Member.Name.StartsWith("<"); // Is there another way to check for a compiler generated member?
 			}
 
 			return false;
@@ -322,7 +323,7 @@ namespace NHibernate.Impl
 							return FindMemberExpression(memberExpression.Expression);
 					}
 
-					if (IsMemberExpressionOfCompilerGeneratedClass(memberExpression.Expression))
+					if (IsCompilerGeneratedMemberExpressionOfCompilerGeneratedClass(memberExpression.Expression))
 					{
 						return memberExpression.Member.Name;
 					}
