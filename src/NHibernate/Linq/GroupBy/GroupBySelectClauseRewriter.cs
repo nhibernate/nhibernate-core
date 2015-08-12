@@ -22,11 +22,13 @@ namespace NHibernate.Linq.GroupBy
 
 		private readonly GroupResultOperator _groupBy;
 		private readonly QueryModel _model;
+		private readonly Expression _nominatedKeySelector;
 
 		private GroupBySelectClauseRewriter(GroupResultOperator groupBy, QueryModel model)
 		{
 			_groupBy = groupBy;
 			_model = model;
+			_nominatedKeySelector = GroupKeyNominator.Visit(groupBy);
 		}
 
 		protected override Expression VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
@@ -53,7 +55,8 @@ namespace NHibernate.Linq.GroupBy
 
 			if (expression.IsGroupingKeyOf(_groupBy))
 			{
-				return _groupBy.KeySelector;
+				// If we have referenced the Key, then return the nominated key expression
+				return _nominatedKeySelector;
 			}
 
 			var elementSelector = _groupBy.ElementSelector;
