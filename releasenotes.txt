@@ -1,6 +1,12 @@
-Build 4.0.3.GA
+Build 4.0.4.GA
 =============================
 
+** Bug
+    * [NH-3795] - C# compiler "Roslyn" regression
+
+
+Build 4.0.3.GA
+=============================
 
 ** Bug
     * [NH-2504] - Can't use Cacheable with Group By
