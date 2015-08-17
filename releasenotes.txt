@@ -1,3 +1,9 @@
+Build 3.4.1.GA
+=============================
+
+** Bug
+    * [NH-3795] - C# compiler "Roslyn" regression
+
 Build 3.4.0.GA
 =============================
 ** Known BREAKING CHANGES from NH3.3.0.GA to NH3.4.0.GA
