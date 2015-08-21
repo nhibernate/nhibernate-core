@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH3818"
+	default-lazy="false"
+  default-access="property">
+
+  <class name="MyLovelyCat" table="MyLovelyCat">
+    <id column="GUID" name="GUID"></id>
+    <property column="Name" name="Name" not-null="true"/>
+    <property column="Color" name="Color" not-null="true"/>
+    <property column="Birthdate" name="Birthdate" not-null="true"/>
+    <property column="Price" name="Price" not-null="true"/>
+  </class>
+
+</hibernate-mapping>
