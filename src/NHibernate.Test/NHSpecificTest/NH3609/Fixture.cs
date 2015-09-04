@@ -79,7 +79,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3609
 			}
 		}
 
-		[Test, Ignore("Not fixed yet")]
+		[Test]
 		public void GroupByClauseHasParameterSet()
 		{
 			using (var session = OpenSession())
