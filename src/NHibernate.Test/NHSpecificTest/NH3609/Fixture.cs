@@ -36,6 +36,28 @@ namespace NHibernate.Test.NHSpecificTest.NH3609
 		}
 
 		[Test]
+		public void AvgWithConditionalDoesNotThrow()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				MappingEntity mappingEntity = null;
+				Assert.DoesNotThrow(
+					() =>
+						session.QueryOver<Entity>().SelectList(
+							builder =>
+								builder.Select(
+									Projections.Avg(
+										Projections.Conditional(
+											Restrictions.Eq(Projections.Property<Entity>(x => x.Name), "FOO"),
+											Projections.Constant("", NHibernateUtil.String),
+											Projections.Constant(null, NHibernateUtil.String))).WithAlias(() => mappingEntity.Count))
+						).TransformUsing(Transformers.AliasToBean<MappingEntity>()).List<MappingEntity>()
+					);
+			}
+		}
+
+		[Test]
 		public void CountWithConditionalDoesNotThrow()
 		{
 			using (var session = OpenSession())
