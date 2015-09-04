@@ -9,6 +9,7 @@
 		Count,
 		Distinct,
 		New,
-	    Star
+	    Star,
+		Nominator
 	}
 }

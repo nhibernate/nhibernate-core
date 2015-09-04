@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Expressions;
+using NHibernate.Util;
 using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
@@ -35,7 +37,7 @@ namespace NHibernate.Linq.Visitors
 			_functionRegistry = parameters.SessionFactory.Settings.LinqToHqlGeneratorsRegistry;
 		}
 
-		internal void Visit(Expression expression)
+		internal Expression Visit(Expression expression)
 		{
 			HqlCandidates = new HashSet<Expression>();
 			ContainsUntranslatedMethodCalls = false;
@@ -43,49 +45,48 @@ namespace NHibernate.Linq.Visitors
 			_stateStack = new Stack<bool>();
 			_stateStack.Push(false);
 
-			VisitExpression(expression);
+			return VisitExpression(expression);
 		}
 
 		public override Expression VisitExpression(Expression expression)
 		{
+			if (expression == null)
+				return null;
+
+			if (expression.NodeType == (ExpressionType)NhExpressionType.Nominator)
+			{
+				// Add the nominated clause and strip the nominator wrapper from the select expression
+				var innerExpression = ((NhNominatedExpression)expression).Expression;
+				HqlCandidates.Add(innerExpression);
+				return innerExpression;
+			}
+
+			var projectConstantsInHql = _stateStack.Peek() || IsRegisteredFunction(expression);
+
+			// Set some flags, unless we already have proper values for them:
+			//    projectConstantsInHql if they are inside a method call executed server side.
+			//    ContainsUntranslatedMethodCalls if a method call must be executed locally.
+			var isMethodCall = expression.NodeType == ExpressionType.Call;
+			if (isMethodCall && (!projectConstantsInHql || !ContainsUntranslatedMethodCalls))
+			{
+				var isRegisteredFunction = IsRegisteredFunction(expression);
+				projectConstantsInHql = projectConstantsInHql || isRegisteredFunction;
+				ContainsUntranslatedMethodCalls = ContainsUntranslatedMethodCalls || !isRegisteredFunction;
+			}
+
+			_stateStack.Push(projectConstantsInHql);
+			bool saveCanBeCandidate = _canBeCandidate;
+			_canBeCandidate = true;
+
 			try
 			{
-				var projectConstantsInHql = _stateStack.Peek() ||
-											expression != null && IsRegisteredFunction(expression);
-
-				// Set some flags, unless we already have proper values for them:
-				//    projectConstantsInHql if they are inside a method call executed server side.
-				//    ContainsUntranslatedMethodCalls if a method call must be executed locally.
-				var isMethodCall = expression != null && expression.NodeType == ExpressionType.Call;
-				if (isMethodCall && (!projectConstantsInHql || !ContainsUntranslatedMethodCalls))
-				{
-					var isRegisteredFunction = IsRegisteredFunction(expression);
-					projectConstantsInHql = projectConstantsInHql || isRegisteredFunction;
-					ContainsUntranslatedMethodCalls = ContainsUntranslatedMethodCalls || !isRegisteredFunction;
-				}
-
-				// Attempt to project conditionals to the DB to prevent inner joins, or more projection work on result than is needed
-				if (expression != null && expression.NodeType == ExpressionType.Conditional)
-				{
-					projectConstantsInHql = true;
-				}
-
-				_stateStack.Push(projectConstantsInHql);
-
-				if (expression == null)
-					return null;
-
-				bool saveCanBeCandidate = _canBeCandidate;
-
-				_canBeCandidate = true;
-
 				if (CanBeEvaluatedInHqlStatementShortcut(expression))
 				{
 					HqlCandidates.Add(expression);
 					return expression;
 				}
 
-				base.VisitExpression(expression);
+				expression = base.VisitExpression(expression);
 
 				if (_canBeCandidate)
 				{
@@ -98,12 +99,11 @@ namespace NHibernate.Linq.Visitors
 						_canBeCandidate = false;
 					}
 				}
-
-				_canBeCandidate = _canBeCandidate & saveCanBeCandidate;
 			}
 			finally
 			{
 				_stateStack.Pop();
+				_canBeCandidate = _canBeCandidate && saveCanBeCandidate;
 			}
 
 			return expression;

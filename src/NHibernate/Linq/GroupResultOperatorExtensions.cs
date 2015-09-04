@@ -12,11 +12,19 @@ namespace NHibernate.Linq
 	{
 		public static IEnumerable<Expression> ExtractKeyExpressions(this GroupResultOperator groupResult)
 		{
-			if (groupResult.KeySelector is NewExpression)
-				return (groupResult.KeySelector as NewExpression).Arguments;
-			if (groupResult.KeySelector is NewArrayExpression)
-				return (groupResult.KeySelector as NewArrayExpression).Expressions;
-			return new [] { groupResult.KeySelector };
+			return groupResult.KeySelector.ExtractKeyExpressions();
+		}
+
+		private static IEnumerable<Expression> ExtractKeyExpressions(this Expression expr)
+		{
+			// Recursively extract key expressions from nested initializers 
+			// --> new object[] { ((object)new object[] { x.A, x.B }), x.C }
+			// --> x.A, x.B, x.C
+			if (expr is NewExpression)
+				return (expr as NewExpression).Arguments.SelectMany(ExtractKeyExpressions);
+			if (expr is NewArrayExpression)
+				return (expr as NewArrayExpression).Expressions.SelectMany(ExtractKeyExpressions);
+			return new[] { expr };
 		}
 	}
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using NHibernate.Linq.Expressions;
 using NHibernate.Linq.ReWriters;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
@@ -19,6 +20,7 @@ namespace NHibernate.Linq.Visitors
 		private readonly IJoiner _joiner;
 
 		private bool _requiresJoinForNonIdentifier;
+		private bool _preventJoinsInConditionalTest;
 		private bool _hasIdentifier;
 		private int _memberExpressionDepth;
 
@@ -61,7 +63,7 @@ namespace NHibernate.Linq.Visitors
 		protected override Expression VisitConditionalExpression(ConditionalExpression expression)
 		{
 			var oldRequiresJoinForNonIdentifier = _requiresJoinForNonIdentifier;
-			_requiresJoinForNonIdentifier = false;
+			_requiresJoinForNonIdentifier = !_preventJoinsInConditionalTest && _requiresJoinForNonIdentifier;
 			var newTest = VisitExpression(expression.Test);
 			_requiresJoinForNonIdentifier = oldRequiresJoinForNonIdentifier;
 			var newFalse = VisitExpression(expression.IfFalse);
@@ -71,8 +73,21 @@ namespace NHibernate.Linq.Visitors
 			return expression;
 		}
 
+		protected override Expression VisitExtensionExpression(ExtensionExpression expression)
+		{
+			// Nominated expressions need to prevent joins on non-Identifier member expressions 
+			// (for the test expression of conditional expressions only)
+			// Otherwise an extra join is created and the GroupBy and Select clauses will not match
+			var old = _preventJoinsInConditionalTest;
+			_preventJoinsInConditionalTest = (NhExpressionType)expression.NodeType == NhExpressionType.Nominator;
+			var expr = base.VisitExtensionExpression(expression);
+			_preventJoinsInConditionalTest = old;
+			return expr;
+		}
+
 		public void Transform(SelectClause selectClause)
 		{
+			// The select clause typically requires joins for non-Identifier member access
 			_requiresJoinForNonIdentifier = true;
 			selectClause.TransformExpressions(VisitExpression);
 			_requiresJoinForNonIdentifier = false;
