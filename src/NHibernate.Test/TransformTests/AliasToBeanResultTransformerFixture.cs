@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Transform;
@@ -54,6 +53,16 @@ namespace NHibernate.Test.TransformTests
 
 			public object Id { get { return id; } }
 			public string Name { get { return name; } }
+		}
+
+		public class BaseSimpleDTO
+		{
+			public object Id { get; set; }
+		}
+
+		public class PublicInheritedPropertiesSimpleDTO : BaseSimpleDTO
+		{
+			public string Name { get; set; }
 		}
 
 		#region Overrides of TestCase
@@ -128,6 +137,29 @@ namespace NHibernate.Test.TransformTests
 					IList<PrivateFieldsSimpleDTO> l = s.CreateSQLQuery("select * from Simple")
 						.SetResultTransformer(transformer)
 						.List<PrivateFieldsSimpleDTO>();
+					Assert.That(l.Count, Is.EqualTo(2));
+					Assert.That(l, Has.All.Not.Null);
+				}
+			}
+			finally
+			{
+				Cleanup();
+			}
+		}
+
+		[Test]
+		public void ToInheritedPublicProperties_WithoutProjections()
+		{
+			try
+			{
+				Setup();
+
+				using (ISession s = OpenSession())
+				{
+					var transformer = Transformers.AliasToBean<PublicInheritedPropertiesSimpleDTO>();
+					IList<PublicInheritedPropertiesSimpleDTO> l = s.CreateSQLQuery("select * from Simple")
+						.SetResultTransformer(transformer)
+						.List<PublicInheritedPropertiesSimpleDTO>();
 					Assert.That(l.Count, Is.EqualTo(2));
 					Assert.That(l, Has.All.Not.Null);
 				}
