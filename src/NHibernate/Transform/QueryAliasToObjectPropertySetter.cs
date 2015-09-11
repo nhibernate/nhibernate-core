@@ -9,7 +9,7 @@ namespace NHibernate.Transform
 	public class QueryAliasToObjectPropertySetter
 	{
 		private readonly IEnumerable<FieldInfo> _fields;
-        private readonly IEnumerable<PropertyInfo> _properties;
+		private readonly IEnumerable<PropertyInfo> _properties;
 
 		private QueryAliasToObjectPropertySetter(FieldInfo[] fields, PropertyInfo[] properties)
 		{
