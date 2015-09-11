@@ -55,14 +55,26 @@ namespace NHibernate.Test.TransformTests
 			public string Name { get { return name; } }
 		}
 
-		public class BaseSimpleDTO
+		public class BasePublicPropsSimpleDTO
 		{
 			public object Id { get; set; }
 		}
 
-		public class PublicInheritedPropertiesSimpleDTO : BaseSimpleDTO
+		public class PublicInheritedPropertiesSimpleDTO : BasePublicPropsSimpleDTO
 		{
 			public string Name { get; set; }
+		}
+
+		public class BasePrivateFieldSimpleDTO
+		{
+			private object id;
+			public object Id { get { return id; } }
+		}
+
+		public class PrivateInheritedFieldsSimpleDTO : BasePrivateFieldSimpleDTO
+		{
+			private string name;
+			public string Name { get { return name; } }
 		}
 
 		#region Overrides of TestCase
@@ -160,6 +172,29 @@ namespace NHibernate.Test.TransformTests
 					IList<PublicInheritedPropertiesSimpleDTO> l = s.CreateSQLQuery("select * from Simple")
 						.SetResultTransformer(transformer)
 						.List<PublicInheritedPropertiesSimpleDTO>();
+					Assert.That(l.Count, Is.EqualTo(2));
+					Assert.That(l, Has.All.Not.Null);
+				}
+			}
+			finally
+			{
+				Cleanup();
+			}
+		}
+
+		[Test]
+		public void ToInheritedPrivateFields_WithoutProjections()
+		{
+			try
+			{
+				Setup();
+
+				using (ISession s = OpenSession())
+				{
+					var transformer = Transformers.AliasToBean<PrivateInheritedFieldsSimpleDTO>();
+					IList<PrivateInheritedFieldsSimpleDTO> l = s.CreateSQLQuery("select * from Simple")
+						.SetResultTransformer(transformer)
+						.List<PrivateInheritedFieldsSimpleDTO>();
 					Assert.That(l.Count, Is.EqualTo(2));
 					Assert.That(l, Has.All.Not.Null);
 				}
