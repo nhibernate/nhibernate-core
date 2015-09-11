@@ -22,7 +22,6 @@ namespace NHibernate.Transform
 			var bindingFlags = BindingFlags.Instance |
 				BindingFlags.Public |
 				BindingFlags.NonPublic |
-				BindingFlags.DeclaredOnly |
 				BindingFlags.IgnoreCase;
 			var fields = objType.GetFields(bindingFlags);
 			var properties = objType.GetProperties(bindingFlags);
