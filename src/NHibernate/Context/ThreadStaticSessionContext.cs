@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using NHibernate.Engine;
 
 namespace NHibernate.Context
 {
