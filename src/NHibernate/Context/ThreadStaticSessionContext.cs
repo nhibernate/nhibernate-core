@@ -12,7 +12,7 @@ namespace NHibernate.Context
 	{
 		[ThreadStatic]
 		private static IDictionary _map;
-        	private readonly ISessionFactoryImplementor _factory;
+        private readonly ISessionFactoryImplementor _factory;
 
 		public ThreadStaticSessionContext(Engine.ISessionFactoryImplementor factory)
 		{
@@ -25,21 +25,21 @@ namespace NHibernate.Context
 			get 
 			{ 
 				if (_map == null)
-                		{
-                    			return null;
-                		}
-                		else
-                		{
-                    			return _map[_factory] as ISession;
-                		}
+                {
+                    return null;
+                }
+                else
+                {
+                    return _map[_factory] as ISession;
+                }
 			}
 			set 
 			{ 
 				if (_map == null)
-                		{
-                			 _map = new Hashtable();
-                		}
-                		_map[_factory] = value;
+                {
+                	_map = new Hashtable();
+                }
+                _map[_factory] = value;
 			}
 		}
 	}
