@@ -1352,6 +1352,7 @@
     <Compile Include="UnionsubclassPolymorphicFormula\Party.cs" />
     <Compile Include="UnionsubclassPolymorphicFormula\Person.cs" />
     <Compile Include="UnionsubclassPolymorphicFormula\UnionSubclassFixture.cs" />
+    <Compile Include="UtilityTest\NullableDictionaryFixture.cs" />
     <Compile Include="UtilityTest\IdentitySetFixture.cs" />
     <Compile Include="UtilityTest\EnumerableExtensionsTests\AnyExtensionTests.cs" />
     <Compile Include="UtilityTest\EnumerableExtensionsTests\FirstExtensionTests.cs" />
