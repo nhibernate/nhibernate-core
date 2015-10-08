@@ -1462,6 +1462,15 @@ namespace NHibernate.Impl
 				{
 					flushEventListener[i].OnFlush(new FlushEvent(this));
 				}
+				
+				// Flush children when parent is flushed.
+				if (childSessionsByEntityMode != null)
+				{
+					foreach (var childSession in childSessionsByEntityMode)
+					{
+						childSession.Value.Flush();
+					}
+				}
 			}
 		}
 
