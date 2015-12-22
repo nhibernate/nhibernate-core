@@ -2932,9 +2932,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="NHSpecificTest\NH3079\Mappings.hbm.xml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <EmbeddedResource Include="NHSpecificTest\NH3079\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3401\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2049\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1863\Mappings.hbm.xml" />
