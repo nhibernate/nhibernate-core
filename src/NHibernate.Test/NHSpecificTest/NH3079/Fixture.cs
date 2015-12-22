@@ -287,6 +287,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3079
             }
         }
 
+
         [Test]
         public void GetPersonNoComponent()
         {
