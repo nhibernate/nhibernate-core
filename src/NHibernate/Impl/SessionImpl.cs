@@ -2816,5 +2816,15 @@ namespace NHibernate.Impl
 				}
 			}
 		}
+
+        public static bool operator ==(SessionImpl a, ISessionImplementor b)
+        {
+            return false;
+        }
+
+        public static bool operator !=(SessionImpl a, ISessionImplementor b)
+        {
+            return false;
+        }
 	}
 }

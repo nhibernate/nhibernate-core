@@ -53,7 +53,8 @@ namespace NHibernate.Impl
 
 		public override IList List()
 		{
-			VerifyParameters();
+    		//FIX TO NH3079
+            VerifyParameters(componentsParametersWillBeFlattened: false);
 			IDictionary<string, TypedValue> namedParams = NamedParams;
 			Before();
 			try
@@ -132,7 +133,8 @@ namespace NHibernate.Impl
 
 		public override IList<T> List<T>()
 		{
-			VerifyParameters();
+    		//FIX TO NH3079
+            VerifyParameters(componentsParametersWillBeFlattened: false);
 			var namedParams = NamedParams;
 			Before();
 			try

@@ -323,6 +323,104 @@ namespace NHibernate.Loader.Custom
 			transformerAliases = aliases.ToArray();
 		}
 
+        public override ISqlCommand CreateSqlCommand(QueryParameters queryParameters, ISessionImplementor session)
+        {
+            // FIX TO NH3079:
+            if (queryParameters.NamedParameters.Count == 0 && queryParameters.PositionalParameterTypes.Length > 0)
+            {
+                IType[] flattenedPositionalParameterTypes = 
+                    this.FlattenComponentParameterTypes(
+                        queryParameters.PositionalParameterTypes,
+                        session);
+                object[] flattenedPositionalParameterValues = 
+                    this.FlattenComponentParameterValues(
+                        queryParameters.PositionalParameterTypes,
+                        queryParameters.PositionalParameterValues,
+                        session);
+                queryParameters.PositionalParameterTypes = flattenedPositionalParameterTypes;
+                queryParameters.PositionalParameterValues = flattenedPositionalParameterValues;
+            }
+            return base.CreateSqlCommand(queryParameters, session);
+        }
+
+        // FIX TO NH3079:
+        protected internal virtual IType[] FlattenComponentParameterTypes(IType[] positionalParameterTypes, ISessionImplementor session)
+        {
+            List<IType> typesResult = new List<IType>();
+            for (int i = 0; i < positionalParameterTypes.Length; i++)
+            {
+                IType typeItem = positionalParameterTypes[i];
+
+                int loopCount = 0;
+                while (typeItem.IsEntityType)
+                {
+                    EntityType entityTypeItem = (EntityType)typeItem;
+                    typeItem = entityTypeItem.GetIdentifierType(session);
+
+                    if (loopCount++ > 200)
+                    {
+                        throw new HibernateException("unexpected situation here 'loopCount': " + loopCount);
+                    }
+                }
+
+                if (typeItem.IsComponentType)
+                {
+                    IAbstractComponentType componentTypeItem = (IAbstractComponentType)typeItem;
+                    IType[] subcalues = 
+                        this.FlattenComponentParameterTypes(
+                            componentTypeItem.Subtypes, 
+                            session);
+                    typesResult.AddRange(subcalues);
+                }
+                else
+                {
+                    typesResult.Add(typeItem);
+                }
+            }
+
+            return typesResult.ToArray();
+        }
+
+        // FIX TO NH3079:
+        protected internal virtual object[] FlattenComponentParameterValues(IType[] positionalParameterTypes, object[] positionalParameterValues, ISessionImplementor session)
+        {
+            List<Object> valuesResult = new List<Object>();
+            for (int i = 0; i < positionalParameterTypes.Length; i++)
+			{
+                IType typeItem = positionalParameterTypes[i];
+			    object valueItem = positionalParameterValues[i];
+
+                int loopCount = 0;
+                while (typeItem.IsEntityType)
+                {
+                    EntityType entityTypeItem = (EntityType)typeItem;
+                    typeItem = entityTypeItem.GetIdentifierType(session);
+                    valueItem = entityTypeItem.GetIdentifier(valueItem, session);
+                    if (loopCount++ > 200)
+                    {
+                        throw new HibernateException("unexpected situation here 'loopCount': " + loopCount);
+                    }
+                }
+
+                if (typeItem.IsComponentType)
+                {
+                    IAbstractComponentType componentTypeItem = (IAbstractComponentType)typeItem;
+                    object[] subValues = 
+                        this.FlattenComponentParameterValues(
+                            componentTypeItem.Subtypes,
+                            componentTypeItem.GetPropertyValues(valueItem, session), 
+                            session);
+                    valuesResult.AddRange(subValues);
+                }
+                else
+                {
+                    valuesResult.Add(valueItem);
+                }
+			}
+
+            return valuesResult.ToArray();
+        }
+
 		protected override void ResetEffectiveExpectedType(IEnumerable<IParameterSpecification> parameterSpecs, QueryParameters queryParameters)
 		{
 			parameterSpecs.ResetEffectiveExpectedType(queryParameters);

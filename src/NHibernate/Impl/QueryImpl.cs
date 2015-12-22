@@ -26,7 +26,8 @@ namespace NHibernate.Impl
 
 		public override IEnumerable Enumerable()
 		{
-			VerifyParameters();
+    		//FIX TO NH3079
+            VerifyParameters(componentsParametersWillBeFlattened: false);
 			IDictionary<string, TypedValue> namedParams = NamedParams;
 			Before();
 			try
@@ -41,7 +42,8 @@ namespace NHibernate.Impl
 
 		public override IEnumerable<T> Enumerable<T>()
 		{
-			VerifyParameters();
+    		//FIX TO NH3079
+            VerifyParameters(componentsParametersWillBeFlattened: false);
 			IDictionary<string, TypedValue> namedParams = NamedParams;
 			Before();
 			try
@@ -56,7 +58,8 @@ namespace NHibernate.Impl
 
 		public override IList List()
 		{
-			VerifyParameters();
+    		//FIX TO NH3079
+            VerifyParameters(componentsParametersWillBeFlattened: false);
 			IDictionary<string, TypedValue> namedParams = NamedParams;
 			Before();
 			try
@@ -71,7 +74,8 @@ namespace NHibernate.Impl
 
 		public override void List(IList results)
 		{
-			VerifyParameters();
+    		//FIX TO NH3079
+            VerifyParameters(componentsParametersWillBeFlattened: false);
 			IDictionary<string, TypedValue> namedParams = NamedParams;
 			Before();
 			try
@@ -86,7 +90,8 @@ namespace NHibernate.Impl
 
 		public override IList<T> List<T>()
 		{
-			VerifyParameters();
+    		//FIX TO NH3079
+            VerifyParameters(componentsParametersWillBeFlattened: false);
 			IDictionary<string, TypedValue> namedParams = NamedParams;
 			Before();
 			try
@@ -112,7 +117,8 @@ namespace NHibernate.Impl
 
 		public override int ExecuteUpdate()
 		{
-			VerifyParameters();
+    		//FIX TO NH3079
+			VerifyParameters(componentsParametersWillBeFlattened: false);
 			IDictionary<string, TypedValue> namedParams = NamedParams;
 			Before();
 			try
