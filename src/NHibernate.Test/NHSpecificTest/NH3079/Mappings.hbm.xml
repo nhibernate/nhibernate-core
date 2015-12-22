@@ -101,6 +101,7 @@
     FROM T_EMPLOYMENT empsOfPerson
     WHERE C_ET_P_ID_A=?
       AND C_ET_P_ID_B=?
+    order by C_ET_NAME
     ]]>
   </sql-query>
   <sql-query name="employmentsOfEmployer">
@@ -110,6 +111,7 @@
     FROM T_EMPLOYMENT empsOfEmployer
     WHERE C_ET_E_ID_A=?
       AND C_ET_E_ID_B=?
+    order by C_ET_NAME
     ]]>
   </sql-query>
   
@@ -123,6 +125,7 @@
       AND C_ET_P_ID_B=?
       AND C_ET_E_ID_A=?
       AND C_ET_E_ID_B=?
+    order by C_ET_NAME
     ]]>
   </sql-query>
 

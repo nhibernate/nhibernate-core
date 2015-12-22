@@ -110,19 +110,19 @@ namespace NHibernate.Test.NHSpecificTest.NH3079
                 string[] employmentNameArray = new string[]
                 {
                     //P1 + E1
-                    "Employment_" + employmentIdAraay[0] + "_" + 
+                    "EMPLOYMENT_" + employmentIdAraay[0] + "_" + 
                         personList[0].CpId.IdA + "_" + personList[0].CpId.IdA + "_" + 
                         employerList[0].CpId.IdA + "_" + employerList[0].CpId.IdB,
                     //P1 + E2
-                    "Employment_" + employmentIdAraay[1] + "_" + 
+                    "EMPLOYMENT_" + employmentIdAraay[1] + "_" + 
                         personList[0].CpId.IdA + "_" + personList[0].CpId.IdA + "_" + 
                         employerList[1].CpId.IdA + "_" + employerList[1].CpId.IdB,
                     //P2 + E2
-                    "Employment_" + employmentIdAraay[2] + "_" + 
+                    "EMPLOYMENT_" + employmentIdAraay[2] + "_" + 
                         personList[1].CpId.IdA + "_" + personList[1].CpId.IdA + "_" + 
                         employerList[1].CpId.IdA + "_" + employerList[1].CpId.IdB,
                     //P2 + E3
-                    "Employment_" + employmentIdAraay[2] + "_" + 
+                    "EMPLOYMENT_" + employmentIdAraay[2] + "_" + 
                         personList[1].CpId.IdA + "_" + personList[1].CpId.IdA + "_" + 
                         employerList[2].CpId.IdA + "_" + employerList[2].CpId.IdB
                 };
@@ -181,9 +181,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3079
             using (ISession session = this.OpenSession())
             {
                 Person person1_2 = session.Get<Person>(new PersonCpId() { IdA = 1, IdB = 2 });
-                foreach (Employment employmentItem in person1_2.EmploymentList)
+                Assert.AreEqual("PERSON_1_2", person1_2.Name);
+                String[] expetedArray = new String[] { "EMPLOYMENT_13_1_1_7_8", "EMPLOYMENT_14_1_1_9_10" };
+                for (int i = 0; i < person1_2.EmploymentList.Count; i++)
                 {
-                    //Assert
+                    Assert.AreEqual(expetedArray[i], new List<Employment>(person1_2.EmploymentList)[i].Name);
                 }
             }
         }
@@ -197,18 +199,24 @@ namespace NHibernate.Test.NHSpecificTest.NH3079
             using (ISession session = this.OpenSession())
             {
                 Employer employer7_8 = session.Get<Employer>(new EmployerCpId() { IdA = 7, IdB = 8 });
-                foreach (Employment employmentItem in employer7_8.EmploymentList)
+
+                Assert.AreEqual("EMPLOYER_7_8", employer7_8.Name);
+                String[] expetedArray = new String[] { "EMPLOYMENT_13_1_1_7_8", "EMPLOYMENT_13_1_1_7_8" };
+                for (int i = 0; i < employer7_8.EmploymentList.Count; i++)
                 {
-                    //Assert
+                    Assert.AreEqual(expetedArray[i], new List<Employment>(employer7_8.EmploymentList)[i].Name);
                 }
             }
 
             using (ISession session = this.OpenSession())
             {
                 Employer employer7_8 = session.Get<Employer>(new EmployerCpId() { IdA = 7, IdB = 8 });
-                foreach (Employment employmentItem in employer7_8.EmploymentList)
+
+                Assert.AreEqual("EMPLOYER_7_8", employer7_8.Name);
+                String[] expetedArray = new String[] { "EMPLOYMENT_13_1_1_7_8", "EMPLOYMENT_13_1_1_7_8" };
+                for (int i = 0; i < employer7_8.EmploymentList.Count; i++)
                 {
-                    //Assert
+                    Assert.AreEqual(expetedArray[i], new List<Employment>(employer7_8.EmploymentList)[i].Name);
                 }
             }
         }
@@ -234,6 +242,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3079
                                     CpId = new EmployerCpId() { IdA = 7, IdB = 8 }
                                 }
                         });
+                Assert.AreEqual("EMPLOYMENT_13_1_1_7_8", employment_13_1_2_7_8.Name);
             }
         }
 
@@ -251,6 +260,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3079
                         .SetParameter<PersonCpId>(0, new PersonCpId() { IdA = 1, IdB = 2 })
                         .SetParameter<PersonCpId>(1, new PersonCpId() { IdA = 3, IdB = 4 })
                         .List<Person>();
+                String[] expetedArray = new String[] { "PERSON_1_2", "PERSON_3_4" };
+                for (int i = 0; i < personList.Count; i++)
+                {
+                    Assert.AreEqual(expetedArray[i], personList[i].Name);
+                }
             }
         }
 
@@ -265,6 +279,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3079
                         .SetParameter<PersonCpId>("id1", new PersonCpId() { IdA = 1, IdB = 2 })
                         .SetParameter<PersonCpId>("id2", new PersonCpId() { IdA = 3, IdB = 4 })
                         .List<Person>();
+                String[] expetedArray = new String[] { "PERSON_1_2", "PERSON_3_4" };
+                for (int i = 0; i < personList.Count; i++)
+                {
+                    Assert.AreEqual(expetedArray[i], personList[i].Name);
+                }
             }
         }
 
@@ -274,6 +293,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3079
             using (ISession session = this.OpenSession())
             {
                 PersonNoComponent person17_18 = session.Get<PersonNoComponent>(new PersonNoComponent() { IdA = 17, IdB = 18 });
+                Assert.AreEqual("PERSON_NO_COMPONENT_17_18", person17_18.Name);
             }
         }
     }
