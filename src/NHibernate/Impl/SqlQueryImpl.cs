@@ -117,7 +117,8 @@ namespace NHibernate.Impl
 
 		public override IList List()
 		{
-			VerifyParameters();
+			//FIX TO NH3079
+			VerifyParameters(componentsParametersWillBeFlattened: true);
 			IDictionary<string, TypedValue> namedParams = NamedParams;
 			NativeSQLQuerySpecification spec = GenerateQuerySpecification(namedParams);
 			QueryParameters qp = GetQueryParameters(namedParams);
@@ -135,7 +136,8 @@ namespace NHibernate.Impl
 
 		public override void List(IList results)
 		{
-			VerifyParameters();
+			//FIX TO NH3079
+			VerifyParameters(componentsParametersWillBeFlattened: true);
 			IDictionary<string, TypedValue> namedParams = NamedParams;
 			NativeSQLQuerySpecification spec = GenerateQuerySpecification(namedParams);
 			QueryParameters qp = GetQueryParameters(namedParams);
@@ -153,7 +155,8 @@ namespace NHibernate.Impl
 
 		public override IList<T> List<T>()
 		{
-			VerifyParameters();
+			//FIX TO NH3079
+			VerifyParameters(componentsParametersWillBeFlattened: true);
 			IDictionary<string, TypedValue> namedParams = NamedParams;
 			NativeSQLQuerySpecification spec = GenerateQuerySpecification(namedParams);
 			QueryParameters qp = GetQueryParameters(namedParams);
@@ -275,7 +278,14 @@ namespace NHibernate.Impl
 
 		protected internal override void VerifyParameters()
 		{
-			base.VerifyParameters();
+			//FIX TO NH3079
+			VerifyParameters(componentsParametersWillBeFlattened: true);
+		}
+
+		protected internal override void VerifyParameters(bool componentsParametersWillBeFlattened)
+		{
+			//FIX TO NH3079
+			base.VerifyParameters(reserveFirstParameter: false, componentsParametersWillBeFlattened: true);
 			bool noReturns = queryReturns == null || queryReturns.Count == 0;
 			if (noReturns)
 			{
