@@ -22,7 +22,8 @@ namespace NHibernate.Test.MappingByCode
 			private readonly HashSet<MemberInfo> dictionaries = new HashSet<MemberInfo>();
 			private readonly HashSet<MemberInfo> idBags = new HashSet<MemberInfo>();
 			private readonly HashSet<MemberInfo> lists = new HashSet<MemberInfo>();
-			private readonly HashSet<MemberInfo> manyToManyRelations = new HashSet<MemberInfo>();
+			private readonly HashSet<MemberInfo> keyManyToManyRelations = new HashSet<MemberInfo>();
+			private readonly HashSet<MemberInfo> itemManyToManyRelations = new HashSet<MemberInfo>();
 			private readonly HashSet<MemberInfo> manyToAnyRelations = new HashSet<MemberInfo>();
 			private readonly HashSet<MemberInfo> manyToOneRelations = new HashSet<MemberInfo>();
 			private readonly HashSet<MemberInfo> naturalIds = new HashSet<MemberInfo>();
@@ -108,12 +109,21 @@ namespace NHibernate.Test.MappingByCode
 				}
 			}
 
-			public IEnumerable<MemberInfo> ManyToManyRelations
+			public IEnumerable<MemberInfo> KeyManyToManyRelations
 			{
 				get
 				{
-					PropertiesGettersUsed.Add("ManyToManyRelations");
-					return manyToManyRelations;
+					PropertiesGettersUsed.Add("KeyManyToManyRelations");
+					return keyManyToManyRelations;
+				}
+			}
+
+			public IEnumerable<MemberInfo> ItemManyToManyRelations
+			{
+				get
+				{
+					PropertiesGettersUsed.Add("ItemManyToManyRelations");
+					return itemManyToManyRelations;
 				}
 			}
 
@@ -292,7 +302,8 @@ namespace NHibernate.Test.MappingByCode
 			public void AddAsTablePerConcreteClassEntity(System.Type type) { }
 			public void AddAsOneToOneRelation(MemberInfo member) { }
 			public void AddAsManyToOneRelation(MemberInfo member) { }
-			public void AddAsManyToManyRelation(MemberInfo member) { }
+			public void AddAsManyToManyKeyRelation(MemberInfo member) { }
+			public void AddAsManyToManyItemRelation(MemberInfo member) {}
 			public void AddAsOneToManyRelation(MemberInfo member) { }
 			public void AddAsManyToAnyRelation(MemberInfo member) {}
 
@@ -493,10 +504,10 @@ namespace NHibernate.Test.MappingByCode
 		{
 			var destination = new ExplicitDeclarationsHolder();
 			var source = new ExplicitDeclarationsHolder();
-			source.AddAsManyToManyRelation(property);
+			source.AddAsManyToManyItemRelation(property);
 
 			destination.Merge(source);
-			Assert.That(destination.ManyToManyRelations, Has.Count.EqualTo(1));
+			Assert.That(destination.ItemManyToManyRelations, Has.Count.EqualTo(1));
 		}
 
 		[Test]

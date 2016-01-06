@@ -13,7 +13,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			{
 				throw new ArgumentNullException("explicitDeclarationsHolder");
 			}
-			explicitDeclarationsHolder.AddAsManyToManyRelation(propertyPath.LocalMember);
+			explicitDeclarationsHolder.AddAsManyToManyKeyRelation(propertyPath.LocalMember);
 			this.propertyPath = propertyPath;
 			this.customizersHolder = customizersHolder;
 		}
