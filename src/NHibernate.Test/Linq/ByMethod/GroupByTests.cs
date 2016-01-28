@@ -715,6 +715,20 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
 		}
 
+		[Test(Description = "NH-3844")]
+		public void GroupByComputedValueFromNestedArraySelect()
+		{
+			var orderGroups = db.OrderLines.Select(o => new object[] { o }).GroupBy(x => new object[] { ((OrderLine)x[0]).Order.Customer == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToList();
+			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
+		}
+
+		[Test(Description = "NH-3844")]
+		public void GroupByComputedValueFromNestedObjectSelect()
+		{
+			var orderGroups = db.OrderLines.Select(o => new { OrderLine = (object)o }).GroupBy(x => new object[] { ((OrderLine)x.OrderLine).Order.Customer == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToList();
+			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
+		}
+
 		private static void CheckGrouping<TKey, TElement>(IEnumerable<IGrouping<TKey, TElement>> groupedItems, Func<TElement, TKey> groupBy)
 		{
 			var used = new HashSet<object>();
