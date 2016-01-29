@@ -1,5 +1,6 @@
 ﻿using System.Xml;
 using NHibernate.Cfg;
+using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Engine;
 using NUnit.Framework;
@@ -17,6 +18,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3518
 				session.Delete("from ClassWithXmlMember");
 				t.Commit();
 			}
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect is MsSql2005Dialect;
 		}
 
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)
