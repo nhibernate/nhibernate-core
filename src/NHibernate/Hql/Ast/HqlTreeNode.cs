@@ -885,7 +885,7 @@ namespace NHibernate.Hql.Ast
 
 	public class HqlIn : HqlBooleanExpression
 	{
-		public HqlIn(IASTFactory factory, HqlExpression itemExpression, HqlTreeNode source)
+		public HqlIn(IASTFactory factory, HqlExpression itemExpression, params HqlTreeNode[] source)
 			: base(HqlSqlWalker.IN, "in", factory, itemExpression)
 		{
 			AddChild(new HqlInList(factory, source));
@@ -894,7 +894,7 @@ namespace NHibernate.Hql.Ast
 
 	public class HqlInList : HqlTreeNode
 	{
-		public HqlInList(IASTFactory factory, HqlTreeNode source)
+		public HqlInList(IASTFactory factory, params HqlTreeNode[] source)
 			: base(HqlSqlWalker.IN_LIST, "inlist", factory, source)
 		{
 		}

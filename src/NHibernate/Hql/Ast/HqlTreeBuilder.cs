@@ -416,7 +416,7 @@ namespace NHibernate.Hql.Ast
 			return new HqlFalse(_factory);
 		}
 
-		public HqlIn In(HqlExpression itemExpression, HqlTreeNode source)
+		public HqlIn In(HqlExpression itemExpression, params HqlTreeNode[] source)
 		{
 			return new HqlIn(_factory, itemExpression, source);
 		}
