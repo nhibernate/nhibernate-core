@@ -48,19 +48,24 @@ namespace NHibernate.Test.NHSpecificTest.NH3845
 				{
 					Text = "Second Entity Text"
 				};
+
+				var anotherEntity = new AnotherEntity()
+				{
+					Text = "Another Entity Text"
+				};
 				session.Save(mainEntity);
 				session.Save(secondMainEntity);
+				session.Save(anotherEntity);
 				entityA.MainEntity = mainEntity;
 				entityB.MainEntity = mainEntity;
 				entityC.MainEntity = secondMainEntity;
+				entityC.AnotherEntity = anotherEntity;
 				separateEntity.MainEntity = secondMainEntity;
 				session.Save(entityA);
 				session.Save(entityB);
 				session.Save(entityC);
 				session.Save(separateEntity);
 
-				//mainEntity.Properties.Add(entityA);
-				//mainEntity.Properties.Add(entityB);
 				session.Flush();
 				transaction.Commit();
 			}
@@ -152,6 +157,22 @@ namespace NHibernate.Test.NHSpecificTest.NH3845
 			{
 				var entityQuery = session.Query<IMainEntity>();
 				var result = entityQuery.Where(m => m.SeparateEntities.OfType<SeparateEntity>().Any()).ToList();
+				Assert.AreEqual(1, result.Count);
+			}
+		}
+
+		[Test]
+		public void SourceTypeOfNonPolymorphicEntityPropertyIsCorrect()
+		{
+			using (ISession session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var entityQuery = session.Query<IMainEntity>();
+				var result =
+					entityQuery.Where(
+						m =>
+							m.Properties.OfType<IPropertyEntityC>().Select(c => c.AnotherEntity).Any(ae => ae.Text == "Another Entity Text"))
+								.ToList();
 				Assert.AreEqual(1, result.Count);
 			}
 		}

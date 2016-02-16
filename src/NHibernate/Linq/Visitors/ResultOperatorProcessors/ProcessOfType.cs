@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using NHibernate.Hql.Ast;
 using NHibernate.Persister.Entity;
 using Remotion.Linq.Clauses.ResultOperators;
@@ -18,7 +16,6 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 			QueryModelVisitor queryModelVisitor,
 			IntermediateHqlTree tree)
 		{
-			Expression source = queryModelVisitor.Model.SelectClause.GetOutputDataInfo().ItemExpression;
 			var fromItemEnumerableType = queryModelVisitor.Model.MainFromClause.FromExpression.Type;
 			var fromItemType = typeof(object);
 			var asEnumerable =
@@ -74,15 +71,38 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 				return;
 			}
 
-			var classesToUse =
+			var typesToUse =
 				fromItemTypePersisters.Select(p => p.GetMappedClass(EntityMode.Poco))
-									.Where(t => fromItemType.IsAssignableFrom(t) && resultOperator.SearchedItemType.IsAssignableFrom(t))
-									.Select(t => t.FullName)
-									.ToList();
+									.Where(t => fromItemType.IsAssignableFrom(t) && resultOperator.SearchedItemType.IsAssignableFrom(t)).ToList();
+			var classesToUse = typesToUse.Select(t => t.FullName).ToList();
+
+			// It appears that ReLinq's QuerySourceLocator.FindQuerySource(QueryModel, Type) method may find the source
+			// only sometimes when specifying fromItemType and only sometimes when specifying the return type of the
+			// select clause.  There may be other scenarios not yet considered here.  For now, try both, in order,
+			// plus the actual output types.  Give up if we can't find the correct query source.
+			var querySourceLocatorCandidateTypeList = new List<System.Type>()
+			{
+				fromItemType,
+				queryModelVisitor.Model.SelectClause.GetOutputDataInfo().ResultItemType
+			};
+			querySourceLocatorCandidateTypeList.AddRange(typesToUse);
+			var querySource =
+				querySourceLocatorCandidateTypeList.Select(t => QuerySourceLocator.FindQuerySource(queryModelVisitor.Model, t))
+													.FirstOrDefault(qs => qs != null);
+
+			if (querySource == null)
+			{
+				throw new QueryException(
+					String.Format(
+						"Unable to find QuerySource for any of these types: {0}",
+						String.Join(", ", querySourceLocatorCandidateTypeList.Select(t => t.FullName))));
+			}
+
+			var querySourceName = queryModelVisitor.VisitorParameters.QuerySourceNamer.GetName(querySource);
 
 			var dotNode =
 				tree.TreeBuilder.Dot(
-					HqlGeneratorExpressionTreeVisitor.Visit(source, queryModelVisitor.VisitorParameters).AsExpression(),
+					tree.TreeBuilder.Ident(querySourceName),
 					tree.TreeBuilder.Class());
 
 			// For now, use the name of the persisted class as a literal identifier.  The string value containing

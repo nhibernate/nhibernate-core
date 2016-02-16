@@ -33,6 +33,7 @@
     <union-subclass name="PropertyEntityC">
       <property name="Description" />
       <property name="AnotherNumber" />
+      <many-to-one name="AnotherEntity" column="AnotherEntityId" class="AnotherEntity" cascade="all" />
     </union-subclass>
   </class>
   <class name="SeparateEntity">
@@ -41,5 +42,15 @@
     </id>
     <many-to-one name="MainEntity" class="MainEntity" cascade="all" column="MainEntityId" />
     <property name="SeparateEntityValue" />
+  </class>
+  <class name="AnotherEntity">
+    <id name="AnotherEntityId" type="Int32">
+      <generator class="native" />
+    </id>
+    <property name="Text" />
+    <set name="ChildEntities" cascade="all" inverse="true" lazy="true">
+      <key column="AnotherEntityId" />
+      <one-to-many class="PropertyEntityC"/>
+    </set>
   </class>
 </hibernate-mapping>

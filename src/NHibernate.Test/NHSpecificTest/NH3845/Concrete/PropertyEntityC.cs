@@ -6,5 +6,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3845.Concrete
 	{
 		public virtual string Description { get; set; }
 		public virtual int AnotherNumber { get; set; }
+		public virtual IAnotherEntity AnotherEntity { get; set; }
 	}
 }

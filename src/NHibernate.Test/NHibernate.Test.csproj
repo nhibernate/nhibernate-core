@@ -720,6 +720,7 @@
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Fixture.cs" />
     <Compile Include="Linq\ByMethod\DistinctTests.cs" />
     <Compile Include="Component\Basic\ComponentWithUniqueConstraintTests.cs" />
+    <Compile Include="NHSpecificTest\NH3845\Concrete\AnotherEntity.cs" />
     <Compile Include="NHSpecificTest\NH3845\Concrete\MainEntity.cs" />
     <Compile Include="NHSpecificTest\NH3845\Concrete\PropertyEntityA.cs" />
     <Compile Include="NHSpecificTest\NH3845\Concrete\PropertyEntityB.cs" />
@@ -893,6 +894,7 @@
     <Compile Include="NHSpecificTest\NH3795\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3818\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3818\MyLovelyCat.cs" />
+    <Compile Include="NHSpecificTest\NH3845\Interfaces\IAnotherEntity.cs" />
     <Compile Include="NHSpecificTest\NH646\Domain.cs" />
     <Compile Include="NHSpecificTest\NH646\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3234\Fixture.cs" />
