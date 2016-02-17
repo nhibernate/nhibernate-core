@@ -406,7 +406,12 @@ namespace NHibernate.Dialect
 		{
 			if (NeedsLockHint(lockMode))
 			{
-				return tableName + " with (updlock, rowlock)";
+                if (lockMode == LockMode.Nolock)
+                {
+                    return tableName + " with (nolock)";
+                }
+
+                return tableName + " with (updlock, rowlock)";
 			}
 
 			return tableName;

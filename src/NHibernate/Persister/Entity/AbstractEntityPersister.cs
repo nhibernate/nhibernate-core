@@ -1752,6 +1752,7 @@ namespace NHibernate.Persister.Entity
 			lockers[LockMode.Upgrade] = GenerateLocker(LockMode.Upgrade);
 			lockers[LockMode.UpgradeNoWait] = GenerateLocker(LockMode.UpgradeNoWait);
 			lockers[LockMode.Force] = GenerateLocker(LockMode.Force);
+			lockers[LockMode.Nolock] = GenerateLocker(LockMode.Nolock);
 		}
 
 		protected internal virtual ILockingStrategy GenerateLocker(LockMode lockMode)
