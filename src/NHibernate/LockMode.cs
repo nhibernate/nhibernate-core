@@ -77,7 +77,7 @@ namespace NHibernate
         /// Nolock Hint 
         /// </summary>
         /// <remarks>
-        /// If an object is requested with this lock mode, a <c>Read</c> lock
+        /// If an object is requested with this lock mode, a <c>Nolock</c> lock
         /// might be obtained if necessary.
         /// </remarks>
         public static LockMode Nolock = new LockMode(6, "Nolock");
