@@ -54,7 +54,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3820
             using (var transaction = session.BeginTransaction())
             {
                 session.Delete("from System.Object");
-
                 session.Flush();
                 transaction.Commit();
             }
@@ -135,9 +134,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3820
         [Test]
         public void QueryOverWithHints_Criteria()
         {
-            MembershipOrder orderAlias = null;
-            MembershipOrderLine orderLineAlias = null;
-
             using (var session = OpenSession())
             using (session.BeginTransaction())
             {
@@ -151,6 +147,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3820
                                               .List();
 
                 Assert.That(peopleCount.Count, Is.EqualTo(2));
+                Assert.That(peopleCount, Is.Ordered.By("Id"));
             }
         }
 
