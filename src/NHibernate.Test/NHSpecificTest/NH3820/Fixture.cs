@@ -1,6 +1,8 @@
 ﻿#region using
 
+using System.Collections;
 using System.Collections.Generic;
+using NHibernate.Criterion;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NUnit.Framework;
@@ -10,8 +12,18 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3820
 {
     [TestFixture]
-    public class Fixture : BugTestCase
+    public class Fixture : TestCase
     {
+        protected override string MappingsAssembly
+        {
+            get { return "NHibernate.Test"; }
+        }
+
+        protected override IList Mappings
+        {
+            get { return new[] { "NHSpecificTest.NH3820.MembershipUser.hbm.xml" }; }
+        }
+
         protected override void OnSetUp()
         {
             using (var session = OpenSession())
@@ -117,6 +129,28 @@ namespace NHibernate.Test.NHSpecificTest.NH3820
                                     .RowCount();
 
                 Assert.That(peopleCount, Is.EqualTo(2));
+            }
+        }
+
+        [Test]
+        public void QueryOverWithHints_Criteria()
+        {
+            MembershipOrder orderAlias = null;
+            MembershipOrderLine orderLineAlias = null;
+
+            using (var session = OpenSession())
+            using (session.BeginTransaction())
+            {
+                IList peopleCount = session.CreateCriteria<MembershipOrder>()
+                                              .CreateAlias("User", "u", JoinType.LeftOuterHashJoin)
+                                              .CreateAlias("OrderLines", "ol", JoinType.LeftOuterMergeJoin)
+                                              .SetLockMode("ol", LockMode.Nolock)
+                                              .SetLockMode(LockMode.UpgradeNoWait)
+                                              .SetLockMode("u", LockMode.Force)
+                                              .AddOrder(Order.Asc("u.Id"))
+                                              .List();
+
+                Assert.That(peopleCount.Count, Is.EqualTo(2));
             }
         }
 

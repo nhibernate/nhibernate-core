@@ -3164,7 +3164,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="NHSpecificTest\NH3820\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3820\MembershipUser.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3518\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3609\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3818\Mappings.hbm.xml" />
