@@ -14,7 +14,7 @@
 		<many-to-one name="father" column="father_id"/>
 		<property name="serialNumber"/>
 
-		<property name="howHappyIsHe" formula="(case when (exists(select a.Id from Animal a where not(a.Id = Id))) then 'very' else 'not too much' end)"
+		<property name="howHappyIsHe" formula="(case when (exists(select a.id from Animal a where not(a.id = id))) then 'very' else 'not too much' end)"
 				update="false" insert="false"  />
 		
 		

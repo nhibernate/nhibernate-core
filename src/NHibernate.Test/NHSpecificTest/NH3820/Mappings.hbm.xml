@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   namespace="NHibernate.Test.NHSpecificTest.NH3820"
+                   assembly="NHibernate.Test"
+                   schema="dbo">
+
+  <class name="MembershipUser">
+    <id name="Id">
+      <generator class="increment" />
+    </id>
+    <set name="Orders" inverse="true" cascade="all,delete-orphan">
+      <key column="MembershipUserId" on-delete="cascade" not-null="true" />
+      <one-to-many class="MembershipOrder" />
+    </set>
+    <property name="Age" />
+    <property name="Name" />
+    <property name="Email" />
+  </class>
+
+  <class name="MembershipOrder">
+    <id name="Id">
+      <generator class="increment" />
+    </id>
+    <many-to-one name="User" column="MembershipUserId"
+                 class="MembershipUser"
+                 not-null="true" />
+
+    <set name="OrderLines" inverse="true" cascade="all,delete-orphan">
+      <key column="MembershipOrderId" on-delete="cascade" not-null="true" />
+      <one-to-many class="MembershipOrderLine" />
+    </set>
+  </class>
+
+  <class name="MembershipOrderLine">
+    <id name="Id">
+      <generator class="increment" />
+    </id>
+    <many-to-one name="Order" column="MembershipOrderId"
+                 class="MembershipOrder"
+                 not-null="true" />
+
+    <property name="ProductCode" />
+  </class>
+  
+</hibernate-mapping>

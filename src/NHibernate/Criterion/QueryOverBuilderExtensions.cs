@@ -80,7 +80,12 @@ namespace NHibernate.Criterion
 			return builder.None;
 		}
 
-		public static IQueryOver<TRoot, TSubType> Read<TRoot, TSubType>(this Lambda.IQueryOverLockBuilder<TRoot, TSubType> builder)
+        public static IQueryOver<TRoot, TSubType> Nolock<TRoot, TSubType>(this Lambda.IQueryOverLockBuilder<TRoot, TSubType> builder)
+        {
+            return builder.Nolock;
+        }
+
+        public static IQueryOver<TRoot, TSubType> Read<TRoot, TSubType>(this Lambda.IQueryOverLockBuilder<TRoot, TSubType> builder)
 		{
 			return builder.Read;
 		}

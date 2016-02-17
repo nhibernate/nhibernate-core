@@ -356,7 +356,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				case HbmLockMode.Write:
 					return LockMode.Write;
 
-				default:
+                case HbmLockMode.Nolock:
+                    return LockMode.Nolock;
+
+                default:
 					throw new MappingException("unknown lockMode " + lockMode);
 			}
 		}

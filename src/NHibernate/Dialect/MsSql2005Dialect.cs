@@ -97,7 +97,12 @@ namespace NHibernate.Dialect
 					return tableName + " with (updlock, rowlock, nowait)";
 				}
 
-				return tableName + " with (updlock, rowlock)";
+                if (lockMode == LockMode.Nolock)
+                {
+                    return tableName + " with (nolock)";
+                }
+
+                return tableName + " with (updlock, rowlock)";
 			}
 
 			return tableName;

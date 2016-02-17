@@ -33,7 +33,34 @@ namespace NHibernate.SqlCommand
 				case JoinType.FullJoin:
 					joinString = " full outer join ";
 					break;
-				default:
+                case JoinType.FullHashJoin:
+                    joinString = " full hash join ";
+                    break;
+                case JoinType.FullLoopJoin:
+                    joinString = " full loop join ";
+                    break;
+                case JoinType.FullMergeJoin:
+                    joinString = " full merge join ";
+                    break;
+                case JoinType.LeftOuterHashJoin:
+                    joinString = " left outer hash join ";
+                    break;
+                case JoinType.LeftOuterLoopJoin:
+                    joinString = " left outer loop join ";
+                    break;
+                case JoinType.LeftOuterMergeJoin:
+                    joinString = " left outer merge join ";
+                    break;
+                case JoinType.RightOuterHashJoin:
+                    joinString = " right outer hash join ";
+                    break;
+                case JoinType.RightOuterLoopJoin:
+                    joinString = " right outer loop join ";
+                    break;
+                case JoinType.RightOuterMergeJoin:
+                    joinString = " right outer merge join ";
+                    break;
+                default:
 					throw new AssertionFailure("undefined join type");
 			}
 

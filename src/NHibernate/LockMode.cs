@@ -65,22 +65,31 @@ namespace NHibernate
 		/// </remarks>
 		public static LockMode None = new LockMode(0, "None");
 
-		/// <summary>
-		/// A shared lock. 
-		/// </summary>
-		/// <remarks>
-		/// Objects are loaded in <c>Read</c> mode by default
-		/// </remarks>
-		public static LockMode Read = new LockMode(5, "Read");
+        /// <summary>
+        /// A shared lock. 
+        /// </summary>
+        /// <remarks>
+        /// Objects are loaded in <c>Read</c> mode by default
+        /// </remarks>
+        public static LockMode Read = new LockMode(5, "Read");
 
-		/// <summary>
-		/// An upgrade lock. 
-		/// </summary>
-		/// <remarks>
-		/// Objects loaded in this lock mode are materialized using an
-		/// SQL <c>SELECT ... FOR UPDATE</c>
-		/// </remarks>
-		public static LockMode Upgrade = new LockMode(10, "Upgrade");
+        /// <summary>
+        /// Nolock Hint 
+        /// </summary>
+        /// <remarks>
+        /// If an object is requested with this lock mode, a <c>Read</c> lock
+        /// might be obtained if necessary.
+        /// </remarks>
+        public static LockMode Nolock = new LockMode(6, "Nolock");
+
+        /// <summary>
+        /// An upgrade lock. 
+        /// </summary>
+        /// <remarks>
+        /// Objects loaded in this lock mode are materialized using an
+        /// SQL <c>SELECT ... FOR UPDATE</c>
+        /// </remarks>
+        public static LockMode Upgrade = new LockMode(10, "Upgrade");
 
 		/// <summary>
 		/// Attempt to obtain an upgrade lock, using an Oracle-style
