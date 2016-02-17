@@ -65,7 +65,16 @@ namespace NHibernate.Criterion.Lambda
 			}
 		}
 
-		public TReturn Read
+        public TReturn Nolock
+        {
+            get
+            {
+                SetLockMode(LockMode.Nolock);
+                return this.root;
+            }
+        }
+
+        public TReturn Read
 		{
 			get
 			{

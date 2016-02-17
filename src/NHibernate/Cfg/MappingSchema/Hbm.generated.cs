@@ -4158,6 +4158,11 @@ namespace NHibernate.Cfg.MappingSchema {
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("write")]
         Write,
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("nolock")]
+        Nolock,
+
     }
     
     /// <remarks/>
