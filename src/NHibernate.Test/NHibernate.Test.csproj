@@ -887,9 +887,17 @@
     <Compile Include="NHSpecificTest\NH3818\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3818\MyLovelyCat.cs" />
     <Compile Include="NHSpecificTest\NH3820\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3820\MembershipUserAddress.cs" />
     <Compile Include="NHSpecificTest\NH3820\MembershipOrder.cs" />
+    <Compile Include="NHSpecificTest\NH3820\MembershipUserBasket.cs" />
+    <Compile Include="NHSpecificTest\NH3820\MembershipUserBasketProduct.cs" />
+    <Compile Include="NHSpecificTest\NH3820\MembershipUserPhone.cs" />
+    <Compile Include="NHSpecificTest\NH3820\MembershipUserSegment.cs" />
     <Compile Include="NHSpecificTest\NH3820\MembershipUser.cs" />
     <Compile Include="NHSpecificTest\NH3820\MembershipOrderLine.cs" />
+    <Compile Include="NHSpecificTest\NH3820\MembershipUserEmailHistory.cs" />
+    <Compile Include="NHSpecificTest\NH3820\Product.cs" />
+    <Compile Include="NHSpecificTest\NH3820\ProductVariant.cs" />
     <Compile Include="NHSpecificTest\NH646\Domain.cs" />
     <Compile Include="NHSpecificTest\NH646\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3234\Fixture.cs" />
@@ -3164,7 +3172,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="NHSpecificTest\NH3820\MembershipUser.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3820\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3518\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3609\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3818\Mappings.hbm.xml" />

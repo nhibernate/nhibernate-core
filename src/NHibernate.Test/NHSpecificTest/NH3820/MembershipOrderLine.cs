@@ -2,19 +2,29 @@
 {
     public class MembershipOrderLine
     {
-        public MembershipOrderLine(MembershipOrder order, string productCode) :this()
+        public MembershipOrderLine(Product product, int quantity)
+            : this()
         {
-            Order = order;
-            ProductCode = productCode;
+            this.Product = product;
+            this.Quantity = quantity;
         }
 
         public MembershipOrderLine()
         {
         }
-        public virtual int Id { get; set; }
 
-        public virtual MembershipOrder Order { get; set; }
+        public virtual int Id { get; protected set; }
 
-        public virtual string ProductCode { get; set; }
+        public virtual MembershipOrder Order { get; protected set; }
+
+        public virtual Product Product { get; protected set; }
+
+        public virtual int Quantity { get; protected set; }
+
+        public virtual MembershipOrderLine SetOrder(MembershipOrder order)
+        {
+            this.Order = order;
+            return this;
+        }
     }
 }

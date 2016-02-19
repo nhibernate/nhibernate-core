@@ -1,0 +1,177 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   namespace="NHibernate.Test.NHSpecificTest.NH3820"
+                   assembly="NHibernate.Test"
+                   schema="dbo">
+
+
+  <class name="MembershipUser">
+    <id name="Id">
+      <generator class="increment" />
+    </id>
+    <set name="Orders" inverse="true" cascade="all,delete-orphan"  lazy="true">
+      <key column="MembershipUserId" on-delete="cascade" not-null="true" />
+      <one-to-many class="MembershipOrder" />
+    </set>
+
+    <set name="Addresses" inverse="true" cascade="all,delete-orphan"  lazy="true">
+      <key column="MembershipUserId" on-delete="cascade" not-null="true" />
+      <one-to-many class="MembershipUserAddress" />
+    </set>
+
+    <set name="EmailHistories" inverse="true" cascade="all,delete-orphan"  lazy="true">
+      <key column="MembershipUserId" on-delete="cascade" not-null="true" />
+      <one-to-many class="MembershipUserEmailHistory" />
+    </set>
+
+    <set name="Phones" inverse="true" cascade="all,delete-orphan"  lazy="true">
+      <key column="MembershipUserId" on-delete="cascade" not-null="true" />
+      <one-to-many class="MembershipUserPhone" />
+    </set>
+
+    <set name="Segments" inverse="true" cascade="all,delete-orphan"  lazy="true">
+      <key column="MembershipUserId" on-delete="cascade" not-null="true" />
+      <one-to-many class="MembershipUserSegment" />
+    </set>
+
+    <set name="Baskets" inverse="true" cascade="all,delete-orphan" lazy="true">
+      <key column="MembershipUserId" on-delete="cascade" not-null="true" />
+      <one-to-many class="MembershipUserBasket" />
+    </set>
+
+    <property name="Age" />
+    <property name="Name" />
+    <property name="Email" />
+  </class>
+
+
+  <class name="MembershipOrder">
+    <id name="Id">
+      <generator class="increment" />
+    </id>
+    <many-to-one name="User" column="MembershipUserId" class="MembershipUser" not-null="true" lazy="proxy" />
+    <one-to-one name="Basket" class="MembershipUserBasket" cascade="all,delete-orphan" lazy="proxy" />
+    <set name="OrderLines" inverse="true" cascade="all,delete-orphan">
+      <key column="MembershipOrderId" on-delete="cascade" not-null="true" />
+      <one-to-many class="MembershipOrderLine" />
+    </set>
+
+  </class>
+
+
+  <class name="MembershipUserBasket">
+    <id name="Id">
+      <generator class="increment" />
+    </id>
+    <property name="BasketGuid" />
+    <property name="CreateDateTime" />
+    <one-to-one name="Order" class="MembershipOrder" cascade="all,delete-orphan" lazy="proxy" />
+    <many-to-one name="User" column="MembershipUserId" class="MembershipUser" not-null="true"  lazy="proxy" />
+    
+    <set name="BasketProducts" inverse="true" cascade="all,delete-orphan" lazy="true">
+      <key column="MembershipUserBasketId" on-delete="cascade" not-null="true" />
+      <one-to-many class="MembershipUserBasketProduct" />
+    </set>
+    
+  </class>
+
+
+  <class name="MembershipOrderLine">
+    <id name="Id">
+      <generator class="increment" />
+    </id>
+    <many-to-one name="Order" column="MembershipOrderId" lazy="proxy"
+                 class="MembershipOrder"
+                 not-null="true" />
+
+    <many-to-one name="Product" class="Product" column="ProductId" not-null="true" lazy="proxy"/>
+
+    <property name="Quantity" />
+  </class>
+
+
+  <class name="Product">
+    <id name="Id">
+      <generator class="increment" />
+    </id>
+
+    <set name="Variants" inverse="true" cascade="all,delete-orphan" lazy="true">
+      <key column="ProductId" on-delete="cascade" not-null="true" />
+      <one-to-many class="ProductVariant" />
+    </set>
+
+    <property name="Name" />
+    <property name="Code" />
+  </class>
+
+  <class name="ProductVariant">
+    <id name="Id">
+      <generator class="increment" />
+    </id>
+
+    <many-to-one name="Product" column="ProductId"
+             class="Product" lazy="proxy"
+             not-null="true" />
+
+    <property name="Name" />
+    <property name="Code" />
+  </class>
+
+  <class name="MembershipUserAddress">
+    <id name="Id">
+      <generator class="increment" />
+    </id>
+    <property name="AddressName" />
+
+    <many-to-one name="User" column="MembershipUserId" lazy="proxy"
+                 class="MembershipUser"
+                 not-null="true" />
+
+  </class>
+
+
+  <class name="MembershipUserBasketProduct">
+    <id name="Id">
+      <generator class="increment" />
+    </id>
+    <many-to-one name="Basket" column="MembershipUserBasketId"
+                 class="MembershipUserBasket"
+                 not-null="true" />
+    <many-to-one name="Product" class="Product" column="ProductId" not-null="true" lazy="proxy" />
+    <property name="CreateDateTime" />
+  </class>
+
+  <class name="MembershipUserEmailHistory">
+    <id name="Id">
+      <generator class="increment" />
+    </id>
+    <property name="CreateDateTime" />
+    <property name="OldEmail" />
+    <many-to-one name="User" column="MembershipUserId"
+                 class="MembershipUser" lazy="proxy"
+                 not-null="true" />
+  </class>
+
+  <class name="MembershipUserPhone">
+    <id name="Id">
+      <generator class="increment" />
+    </id>
+    <property name="PhoneNumber" />
+    <many-to-one name="User" column="MembershipUserId"
+                 class="MembershipUser" lazy="proxy"
+                 not-null="true" />
+  </class>
+
+  <class name="MembershipUserSegment">
+    <id name="Id">
+      <generator class="increment" />
+    </id>
+    <property name="CreateDateTime" />
+    <property name="SegmentName" />
+    <many-to-one name="User" column="MembershipUserId"
+                 class="MembershipUser" lazy="proxy"
+                 not-null="true" />
+  </class>
+
+</hibernate-mapping>

@@ -1,22 +1,27 @@
-﻿#region using
-
-using System.Collections.Generic;
-
-#endregion
-
-namespace NHibernate.Test.NHSpecificTest.NH3820
+﻿namespace NHibernate.Test.NHSpecificTest.NH3820
 {
+    #region using
+
+    using System.Collections.Generic;
+
+    #endregion
+
     public class MembershipOrder
     {
-        public MembershipOrder(MembershipUser user) : this()
+        public MembershipOrder(MembershipUser user, MembershipUserBasket basket)
+            : this()
         {
-            User = user;
+            this.User = user;
+            this.Basket = basket;
+            this.Basket.SetOrder(this);
         }
 
         public MembershipOrder()
         {
-            OrderLines = new List<MembershipOrderLine>();
+            this.OrderLines = new List<MembershipOrderLine>();
         }
+
+        public virtual MembershipUserBasket Basket { get; protected set; }
 
         public virtual int Id { get; protected set; }
 
@@ -24,9 +29,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3820
 
         public virtual MembershipUser User { get; protected set; }
 
-        public virtual void AddOrderLine(MembershipOrderLine line)
+        public virtual MembershipOrder AddOrderLine(MembershipOrderLine line)
         {
-            OrderLines.Add(line);
+            line.SetOrder(this);
+            this.OrderLines.Add(line);
+            return this;
         }
     }
 }
