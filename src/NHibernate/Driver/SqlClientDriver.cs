@@ -15,6 +15,8 @@ namespace NHibernate.Driver
 		public const int MaxSizeForAnsiClob = 2147483647; // int.MaxValue
 		public const int MaxSizeForClob = 1073741823; // int.MaxValue / 2
 		public const int MaxSizeForBlob = 2147483647; // int.MaxValue
+		//http://stackoverflow.com/a/7264795/259946
+		public const int MaxSizeForXml = 2147483647; // int.MaxValue
 		public const int MaxSizeForLengthLimitedAnsiString = 8000;
 		public const int MaxSizeForLengthLimitedString = 4000;
 		public const int MaxSizeForLengthLimitedBinary = 8000;
@@ -140,6 +142,9 @@ namespace NHibernate.Driver
 					break;
 				case DbType.DateTimeOffset:
 					dbParam.Size = MaxDateTimeOffset;
+					break;
+				case DbType.Xml:
+					dbParam.Size = MaxSizeForXml;
 					break;
 			}
 		}

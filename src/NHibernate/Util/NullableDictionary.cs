@@ -37,6 +37,7 @@ namespace NHibernate.Util
 			if (key == null)
 			{
 				_nullValue = value;
+				_gotNullValue = true;
 			}
 			else
 			{

@@ -135,6 +135,8 @@ namespace NHibernate.Linq.Visitors
 							return VisitNhDistinct((NhDistinctExpression) expression);
 						case NhExpressionType.Star:
 							return VisitNhStar((NhStarExpression) expression);
+						case NhExpressionType.Nominator:
+							return VisitExpression(((NhNominatedExpression) expression).Expression);
 							//case NhExpressionType.New:
 							//    return VisitNhNew((NhNewExpression)expression);
 					}

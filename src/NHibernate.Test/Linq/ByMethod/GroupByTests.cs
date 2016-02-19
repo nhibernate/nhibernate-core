@@ -810,6 +810,19 @@ namespace NHibernate.Test.Linq.ByMethod
 		}
 
 
+		[Test(Description = "NH-3743")]
+		public void FetchBeforeGroupBy()
+		{
+			var result = db.Orders
+				.Fetch(x => x.Customer)
+				.GroupBy(x => x.Customer.CompanyName)
+				.OrderBy(x => x.Key)
+				.Select(x => new { P0 = x.Key, P1 = x.Count() })
+				.ToArray();
+
+			Assert.True(result.Any());
+		}
+
 		private class GroupInfo
 		{
 			public object Key { get; set; }

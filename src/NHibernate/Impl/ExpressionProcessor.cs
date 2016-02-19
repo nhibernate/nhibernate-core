@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-
+using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using NHibernate.Criterion;
 using NHibernate.Util;
 using Expression = System.Linq.Expressions.Expression;
@@ -290,6 +291,21 @@ namespace NHibernate.Impl
 			return ProjectionInfo.ForProperty(FindMemberExpression(expression));
 		}
 
+		//http://stackoverflow.com/a/2509524/259946
+		private static readonly Regex GeneratedMemberNameRegex = new Regex(@"^(CS\$)?<\w*>[1-9a-s]__[a-zA-Z]+[0-9]*$", RegexOptions.Compiled | RegexOptions.Singleline);
+
+		private static bool IsCompilerGeneratedMemberExpressionOfCompilerGeneratedClass(Expression expression)
+		{
+			var memberExpression = expression as MemberExpression;
+			if (memberExpression != null && memberExpression.Member.DeclaringType != null)
+			{
+				return Attribute.GetCustomAttribute(memberExpression.Member.DeclaringType, typeof(CompilerGeneratedAttribute)) != null 
+					&& GeneratedMemberNameRegex.IsMatch(memberExpression.Member.Name);
+			}
+
+			return false;
+		}
+
 		/// <summary>
 		/// Retrieves the name of the property from a member expression
 		/// </summary>
@@ -312,6 +328,11 @@ namespace NHibernate.Impl
 							// it's a Nullable<T>, so ignore any .Value
 							if (memberExpression.Member.Name == "Value")
 								return FindMemberExpression(parentExpression);
+						}
+
+						if (IsCompilerGeneratedMemberExpressionOfCompilerGeneratedClass(parentExpression))
+						{
+							return memberExpression.Member.Name;
 						}
 
 						return FindMemberExpression(parentExpression) + "." + memberExpression.Member.Name;
