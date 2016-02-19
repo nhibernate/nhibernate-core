@@ -176,5 +176,51 @@ namespace NHibernate.Test.NHSpecificTest.NH3845
 				Assert.AreEqual(1, result.Count);
 			}
 		}
+
+		[Test]
+		public void EnsureParameterValuesAreNotCached()
+		{
+			using (ISession session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var firstEntityQuery = session.Query<IMainEntity>();
+				var name = "Name B";
+				var firstResult =
+					firstEntityQuery.Where(m => m.Properties.OfType<IPropertyEntityB>().Any(p => p.Name == name)).ToList();
+				Assert.AreEqual(1, firstResult.Count);
+				Assert.AreEqual("Main Entity Text", firstResult.First().Text);
+				var secondEntityQuery = session.Query<IMainEntity>();
+				name = "Name C";
+				var secondResult =
+					secondEntityQuery.Where(m => m.Properties.OfType<IPropertyEntityC>().Any(p => p.Name == name)).ToList();
+				Assert.AreEqual(1, secondResult.Count);
+				Assert.AreEqual("Second Entity Text", secondResult.First().Text);
+			}
+		}
+
+		[Test]
+		public void EnsureParameterValuesInSeparateSessionsAreNotCached()
+		{
+			var name = "Name B";
+			using (ISession session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var firstEntityQuery = session.Query<IMainEntity>();
+				var firstResult =
+					firstEntityQuery.Where(m => m.Properties.OfType<IPropertyEntityB>().Any(p => p.Name == name)).ToList();
+				Assert.AreEqual(1, firstResult.Count);
+				Assert.AreEqual("Main Entity Text", firstResult.First().Text);
+			}
+			name = "Name C";
+			using (ISession session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var secondEntityQuery = session.Query<IMainEntity>();
+				var secondResult =
+					secondEntityQuery.Where(m => m.Properties.OfType<IPropertyEntityC>().Any(p => p.Name == name)).ToList();
+				Assert.AreEqual(1, secondResult.Count);
+				Assert.AreEqual("Second Entity Text", secondResult.First().Text);
+			}
+		}
 	}
 }
