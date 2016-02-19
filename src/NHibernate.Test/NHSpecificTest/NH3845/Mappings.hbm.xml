@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH3845.Concrete">
+  <class name="MainEntity">
+    <id name="MainEntityId" type="Int32">
+      <generator class="native" />
+    </id>
+    <property name="Text" />
+    <set name="Properties" cascade="all" inverse="true" lazy="true">
+      <key column="MainEntityId" />
+      <one-to-many class="PropertyEntityBase" />
+    </set>
+    <set name="SeparateEntities" cascade="all" inverse="true" lazy="true">
+      <key column="MainEntityId" />
+      <one-to-many class="SeparateEntity" />
+    </set>
+  </class>
+  <class name="PropertyEntityBase" abstract="true">
+    <id name="PropertyEntityBaseId" type="Int32">
+      <generator class="enhanced-sequence" />
+    </id>
+    <property name="Name" />
+    <property name="SharedValue" />
+    <many-to-one name="MainEntity" class="MainEntity" cascade="all" column="MainEntityId" />
+    <union-subclass name="PropertyEntityA">
+      <property name="SerialNumber" />
+    </union-subclass>
+    <union-subclass name="PropertyEntityB">
+      <property name="Description" />
+      <property name="AnotherString" />
+    </union-subclass>
+    <union-subclass name="PropertyEntityC">
+      <property name="Description" />
+      <property name="AnotherNumber" />
+      <many-to-one name="AnotherEntity" column="AnotherEntityId" class="AnotherEntity" cascade="all" />
+    </union-subclass>
+  </class>
+  <class name="SeparateEntity">
+    <id name="SeparateEntityId" type="Int32">
+      <generator class="native" />
+    </id>
+    <many-to-one name="MainEntity" class="MainEntity" cascade="all" column="MainEntityId" />
+    <property name="SeparateEntityValue" />
+  </class>
+  <class name="AnotherEntity">
+    <id name="AnotherEntityId" type="Int32">
+      <generator class="native" />
+    </id>
+    <property name="Text" />
+    <set name="ChildEntities" cascade="all" inverse="true" lazy="true">
+      <key column="AnotherEntityId" />
+      <one-to-many class="PropertyEntityC"/>
+    </set>
+  </class>
+</hibernate-mapping>
