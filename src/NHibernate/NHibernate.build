@@ -45,16 +45,7 @@
 	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />
 
 	<target name="merge" depends="generate-assemblyinfo common.compile-dll">
-		<uptodate property="NHibernate.dll.uptodate">
-			<sourcefiles>
-				<include name="${bin.dir}/unmerged/NHibernate.dll"/>
-			</sourcefiles>
-			<targetfiles>
-				<include name="${bin.dir}/NHibernate.dll" />
-			</targetfiles>
-		</uptodate>
-		
-		<if test="${not NHibernate.dll.uptodate}">
+		<if test="${not directory::exists(bin.dir + '/merged')}">
 			<mkdir dir="${bin.dir}/merged" />
       
       <!-- Merge everything that should be internal -->
@@ -91,6 +82,7 @@
       <!-- Put merged files in appropriate places -->
       <copy file="${bin.dir}/merged/NHibernate.dll" tofile="${bin.dir}/NHibernate.dll" />
       <copy file="${bin.dir}/merged/NHibernate.pdb" tofile="${bin.dir}/NHibernate.pdb" />
+      <delete dir="${bin.dir}/merged" />
 		</if> 
 	</target>
 	
