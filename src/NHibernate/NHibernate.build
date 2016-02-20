@@ -89,10 +89,9 @@
       <delete file="${bin.dir}/Remotion.Linq.dll" />
       
       <!-- Put merged files in appropriate places -->
-      <move file="${bin.dir}/merged/NHibernate.dll" tofile="${bin.dir}/NHibernate.dll" />
-			<move file="${bin.dir}/merged/NHibernate.pdb" tofile="${bin.dir}/NHibernate.pdb" />
-			<delete dir="${bin.dir}/merged" />
-		</if>
+      <copy file="${bin.dir}/merged/NHibernate.dll" tofile="${bin.dir}/NHibernate.dll" />
+      <copy file="${bin.dir}/merged/NHibernate.pdb" tofile="${bin.dir}/NHibernate.pdb" />
+		</if> 
 	</target>
 	
 	<target name="build" description="Build NHibernate" depends="merge">
