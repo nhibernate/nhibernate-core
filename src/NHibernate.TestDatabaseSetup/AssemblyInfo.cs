@@ -1,0 +1,11 @@
+﻿using System;
+using System.Reflection;
+
+[assembly: CLSCompliantAttribute(true)]
+[assembly: AssemblyTitleAttribute("NHibernate.TestDatabaseSetup")]
+[assembly: AssemblyDescriptionAttribute("Test Database Setup for NHibernate.")]
+[assembly: AssemblyCompanyAttribute("NHibernate.org")]
+[assembly: AssemblyProductAttribute("NHibernate.TestDatabaseSetup")]
+[assembly: AssemblyCopyrightAttribute("Licensed under LGPL.")]
+[assembly: AssemblyDelaySignAttribute(false)]
+
