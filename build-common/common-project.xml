@@ -53,80 +53,67 @@
   <target name="common.compile-dll" depends="common.compile-all" />
   <target name="common.compile-exe" depends="common.compile-all" />
 
-  <target name="common.compile-all" if="${not file::exists(bin.dir + '/msbuild.lock')}">
-    <property name="msbuild.cmd.sln" value="${root.dir}/src/NHibernate.sln" />
-    <property name="msbuild.cmd.out" value="/p:OutputPath=${bin.dir}" />
-    <property name="msbuild.cmd.debug" value="/p:DebugType=pdbonly" if="${build.debug == 'pdbonly'}" />
-    <property name="msbuild.cmd.debug" value="/p:DebugType=full" if="${build.debug != 'pdbonly'}" />
-    <property name="msbuild.cmd.optimize" value="/p:Optimize=${build.release}" />
-    <property name="msbuild.cmd.sign" value="/p:SignAssembly=${sign} /p:AssemblyOriginatorKeyFile=${key.file}" />
-    <property name="msbuild.cmd.doc" value="/p:GenerateDocumentation=true" />
+  <target name="common.compile-all">
+    <if test="${file::exists(bin.dir + '/msbuild.lock')}">
+      <echo>msbuild.lock found : already compiled</echo>
+    </if>
+    <if test="${not file::exists(bin.dir + '/msbuild.lock')}">
+      <echo>msbuild.lock not found : start compiling</echo>
 
-    <exec
-     program="${framework::get-framework-directory(framework::get-target-framework())}\msbuild.exe"
-     verbose="true">
-      <arg value="${msbuild.cmd.sln}" />
-      <arg value="${msbuild.cmd.out}" />
-      <arg value="${msbuild.cmd.debug}" />
-      <arg value="${msbuild.cmd.optimize}" />
-      <arg value="${msbuild.cmd.sign}" />
-      <arg value="${msbuild.cmd.doc}" />
-      <arg value="/p:NoWarn=1591" />
-      <arg value="/t:Rebuild" if="${build.release}"/>
-      <arg value="/v:n" />
-      <arg value="/m" />
-    </exec>
+      <property name="msbuild.cmd.sln" value="${root.dir}/src/NHibernate.sln" />
+      <property name="msbuild.cmd.out" value="/p:OutputPath=${bin.dir}" />
+      <property name="msbuild.cmd.debug" value="/p:DebugType=pdbonly" if="${build.debug == 'pdbonly'}" />
+      <property name="msbuild.cmd.debug" value="/p:DebugType=full" if="${build.debug != 'pdbonly'}" />
+      <property name="msbuild.cmd.optimize" value="/p:Optimize=${build.release}" />
+      <property name="msbuild.cmd.sign" value="/p:SignAssembly=${sign} /p:AssemblyOriginatorKeyFile=${key.file}" />
+      <property name="msbuild.cmd.doc" value="/p:GenerateDocumentation=true" />
 
-    <copy todir="${bin.dir}/unmerged/">
-      <fileset basedir="${bin.dir}">
-        <include name="NHibernate.*" />
-        <exclude name="NHibernate.*.*" />
-      </fileset>
-    </copy>
+      <exec
+       program="${framework::get-framework-directory(framework::get-target-framework())}\msbuild.exe"
+       verbose="true">
+        <arg value="${msbuild.cmd.sln}" />
+        <arg value="${msbuild.cmd.out}" />
+        <arg value="${msbuild.cmd.debug}" />
+        <arg value="${msbuild.cmd.optimize}" />
+        <arg value="${msbuild.cmd.sign}" />
+        <arg value="${msbuild.cmd.doc}" />
+        <arg value="/p:NoWarn=1591" />
+        <arg value="/t:Rebuild" if="${build.release}"/>
+        <arg value="/v:n" />
+        <arg value="/m" />
+      </exec>
+
+      <copy todir="${bin.dir}/unmerged/">
+        <fileset basedir="${bin.dir}">
+          <include name="NHibernate.*" />
+          <exclude name="NHibernate.*.*" />
+        </fileset>
+      </copy>
     
-    <touch file="${bin.dir}/msbuild.lock" />
+      <touch file="${bin.dir}/msbuild.lock" />
+    </if>
   </target>
   
 	<target name="common.set-assembly-attribute-values">
-		<property overwrite="false" name="assembly.is-cls-compliant" value="true" />
-		<property overwrite="false" name="assembly.allow-partially-trusted-callers" value="false" />
-		<property overwrite="false" name="assembly.description" value="" />
-		<property overwrite="false" name="assembly.product" value="${project::get-name()}" />
-		<property overwrite="false" name="assembly.company" value="${project.company}" />
-		<property overwrite="false" name="assembly.title" value="${project::get-name()}" />
 		<property overwrite="false" name="assembly.version" value="${project.default-assembly-version}" />
 		<property overwrite="false" name="assembly.version.informational" value="${project.version}" />
 		<property overwrite="false" name="assembly.version.file" value="${project.version.numeric}" />
-		<property overwrite="false" name="assembly.copyright" value="Licensed under LGPL." />
-		<property overwrite="false" name="assembly.sign" value="${sign}" />
 	</target>
 
 	<target name="common.generate-assemblyinfo"
 		depends="common.init common.set-assembly-attribute-values"
-		description="Generate AssemblyInfo.cs using assembly.* properties."
+		description="Generate SharedAssemblyInfo.cs using assembly.* properties."
 	>
-		<asminfo output="AssemblyInfo.cs" language="CSharp">
+		<asminfo output="${root.dir}/src/SharedAssemblyInfo.cs" language="CSharp">
 			<imports>
 				<import namespace="System" />
 				<import namespace="System.Reflection" />
 				<import namespace="System.Runtime.CompilerServices" />
-				<import namespace="System.Security" if="${assembly.allow-partially-trusted-callers}" />
 			</imports>
 			<attributes>
-				<attribute type="CLSCompliantAttribute" value="${assembly.is-cls-compliant}" />
-				<attribute type="AssemblyTitleAttribute" value="${assembly.title}" />
-				<attribute type="AssemblyDescriptionAttribute" value="${assembly.description}" />
-				<attribute type="AssemblyCompanyAttribute" value="${assembly.company}" />
-				<attribute type="AssemblyProductAttribute" value="${assembly.product}" />
-				<attribute type="AssemblyCopyrightAttribute" value="${assembly.copyright}" />
 				<attribute type="AssemblyVersionAttribute" value="${assembly.version}" />
 				<attribute type="AssemblyInformationalVersionAttribute" value="${assembly.version.informational}" />
 				<attribute type="AssemblyFileVersionAttribute" value="${assembly.version.file}" />
-				<attribute type="AssemblyDelaySignAttribute" value="false" />
-				
-				<!-- For some reason, NAnt doesn't detect that APTCA has a public no-argument constructor -->
-				<attribute asis="true" type="AllowPartiallyTrustedCallersAttribute" if="${assembly.allow-partially-trusted-callers}" />
-				<attribute asis="true" type="SecurityRulesAttribute" value="SecurityRuleSet.Level1" if="${assembly.allow-partially-trusted-callers}" />
 			</attributes>
 		</asminfo>
 	</target>

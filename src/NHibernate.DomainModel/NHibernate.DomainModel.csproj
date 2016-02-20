@@ -68,6 +68,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="A.cs" />
     <Compile Include="Abstract.cs" />
     <Compile Include="AbstractProxy.cs" />
@@ -260,7 +263,9 @@
     <EmbeddedResource Include="XY.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="NHibernate.DomainModel.build" />
+    <None Include="NHibernate.DomainModel.build">
+      <SubType>Designer</SubType>
+    </None>
     <EmbeddedResource Include="Northwind\Mappings\Animal.hbm.xml" />
     <EmbeddedResource Include="Northwind\Mappings\AnotherEntity.hbm.xml" />
     <EmbeddedResource Include="Northwind\Mappings\Customer.hbm.xml" />

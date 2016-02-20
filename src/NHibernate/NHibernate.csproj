@@ -88,6 +88,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="ADOException.cs" />
     <Compile Include="AdoNet\MySqlClientBatchingBatcher.cs" />
     <Compile Include="AdoNet\MySqlClientBatchingBatcherFactory.cs" />
@@ -1832,7 +1835,9 @@
     <None Include="Hql\Ast\ANTLR\Hql.g" />
     <None Include="Hql\Ast\ANTLR\HqlSqlWalker.g" />
     <None Include="Hql\Ast\ANTLR\SqlGenerator.g" />
-    <None Include="NHibernate.build" />
+    <None Include="NHibernate.build">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="NHibernate.nuspec.template" />
     <None Include="Type\IType.cs.xmldoc" />
   </ItemGroup>
