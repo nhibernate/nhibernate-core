@@ -4,12 +4,11 @@
 
     using System;
     using System.Collections;
-
-    using NHibernate.Criterion;
-    using NHibernate.Dialect;
-    using NHibernate.SqlCommand;
-
+    using System.Data;
+    using Criterion;
+    using Dialect;
     using NUnit.Framework;
+    using SqlCommand;
 
     #endregion
 
@@ -18,18 +17,12 @@
     {
         protected override string MappingsAssembly
         {
-            get
-            {
-                return "NHibernate.Test";
-            }
+            get { return "NHibernate.Test"; }
         }
 
         protected override IList Mappings
         {
-            get
-            {
-                return new[] { "NHSpecificTest.NH3820.Mappings.hbm.xml" };
-            }
+            get { return new[] { "NHSpecificTest.NH3820.Mappings.hbm.xml" }; }
         }
 
         protected override bool AppliesTo(Dialect dialect)
@@ -39,7 +32,7 @@
 
         protected override void OnSetUp()
         {
-            using (var session = this.OpenSession())
+            using (var session = OpenSession())
             using (var transaction = session.BeginTransaction())
             {
                 var product = new Product("T001", "T-Shirt");
@@ -77,7 +70,7 @@
 
         protected override void OnTearDown()
         {
-            using (var session = this.OpenSession())
+            using (var session = OpenSession())
             using (var transaction = session.BeginTransaction())
             {
                 session.Delete("from System.Object");
@@ -86,72 +79,31 @@
             }
         }
 
-        /// <summary>
-        /// The query over with hints_ complexed joins.
-        /// 12 join
-        /// </summary>
         [Test]
-        public void QueryOverWithHintsComplexedJoins()
+        public void JoinWithHints_OnCriteria_MixedJoinTypesAndLockModes_IsolationLevelReadCommitted()
         {
-            MembershipOrder orderAlias = null;
-            MembershipOrderLine orderLineAlias = null;
-            MembershipUserBasket basketAlias = null;
-            MembershipUserAddress addressAlias = null;
-            MembershipUserPhone phoneAlias = null;
-            MembershipUserSegment segmentAlias = null;
-            Product productAlias = null;
-            ProductVariant productVariantAlias = null;
-            MembershipUserBasketProduct basketProductAlias = null;
-            MembershipUserEmailHistory emailHistoryAlias = null;
-
-            using (var session = this.OpenSession())
-            using (session.BeginTransaction())
-            {
-                var people =
-                    session.QueryOver<MembershipUser>()
-                           .JoinAlias(x => x.Addresses, () => addressAlias, JoinType.RightOuterLoopJoin)
-                           .JoinAlias(x => x.EmailHistories, () => emailHistoryAlias, JoinType.InnerMergeJoin)
-                           .JoinAlias(x => x.Phones, () => phoneAlias, JoinType.FullHashJoin)
-                           .JoinAlias(x => x.Segments, () => segmentAlias, JoinType.FullLoopJoin)
-                           .JoinAlias(x => x.Orders, () => orderAlias, JoinType.LeftOuterMergeJoin)
-                           .JoinAlias(() => orderAlias.OrderLines, () => orderLineAlias, JoinType.FullMergeJoin)
-                           .JoinAlias(() => orderAlias.Basket, () => basketAlias, JoinType.InnerLoopJoin)
-                           .Left.JoinAlias(() => basketAlias.BasketProducts, () => basketProductAlias)
-                           .JoinAlias(() => basketProductAlias.Product, () => productAlias, JoinType.InnerHashJoin)
-                           .JoinAlias(() => productAlias.Variants, () => productVariantAlias, JoinType.RightOuterHashJoin)
-                           .Lock().Nolock
-                           .Lock(() => orderAlias).Nolock
-                           .Lock(() => orderLineAlias).UpgradeNoWait
-                           .Lock(() => addressAlias).Nolock
-                           .Lock(() => emailHistoryAlias).Nolock
-                           .Lock(() => phoneAlias).Read
-                           .Lock(() => segmentAlias).Force
-                           .Lock(() => orderLineAlias).Upgrade
-                           .Lock(() => basketAlias).Write
-                           .Where(x => x.Age == 25).And(x => x.Email == "test@test.com")
-                           .OrderBy(p => p.Age)
-                           .Desc
-                           .List();
-
-                Assert.That(people.Count, Is.EqualTo(4));
-                Assert.That(people, Is.Ordered.By("Age").Descending);
-            }
-        }
-
-        [Test]
-        public void QueryOverWithHints_Criteria()
-        {
-            using (var session = this.OpenSession())
-            using (session.BeginTransaction())
+            using (var session = OpenSession())
+            using (session.BeginTransaction(IsolationLevel.ReadCommitted))
             {
                 var peopleCount =
-                    session.CreateCriteria<MembershipOrder>()
-                           .CreateAlias("User", "u", JoinType.LeftOuterHashJoin)
-                           .CreateAlias("OrderLines", "ol", JoinType.LeftOuterMergeJoin)
-                           .SetLockMode("ol", LockMode.Nolock)
+                    session.CreateCriteria<MembershipUser>()
+                           .CreateAlias("Phones", "ph", JoinType.InnerLoopJoin)
+                           .CreateAlias("Segments", "se", JoinType.LeftOuterMergeJoin)
+                           .CreateAlias("Addresses", "ad", JoinType.RightOuterHashJoin)
+                           .CreateAlias("EmailHistories", "eh", JoinType.FullLoopJoin)
+                           .CreateAlias("Orders", "o", JoinType.LeftOuterLoopJoin)
+                           .CreateAlias("o.OrderLines", "ol", JoinType.FullHashJoin)
+                           .CreateAlias("o.Basket", "ba", JoinType.LeftOuterJoin)
                            .SetLockMode(LockMode.UpgradeNoWait)
-                           .SetLockMode("u", LockMode.Force)
-                           .AddOrder(Order.Asc("u.Id"))
+                           .SetLockMode("o", LockMode.Force)
+                           .SetLockMode("ph", LockMode.Nolock)
+                           .SetLockMode("se", LockMode.Upgrade)
+                           .SetLockMode("ad", LockMode.Write)
+                           .SetLockMode("eh", LockMode.Force)
+                           .SetLockMode("ol", LockMode.Nolock)
+                           .SetLockMode("ol", LockMode.Nolock)
+                           .SetLockMode("ba", LockMode.Nolock)
+                           .AddOrder(Order.Asc("o.Id"))
                            .List();
 
                 Assert.That(peopleCount.Count, Is.EqualTo(2));
@@ -160,7 +112,39 @@
         }
 
         [Test]
-        public void QueryOverWithHints_ForgottenLock()
+        public void JoinWithHints_OnCriteria_MixedJoinTypesAndLockModes_UnderWhereCondition()
+        {
+            using (var session = OpenSession())
+            using (session.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                var peopleCount =
+                    session.CreateCriteria<MembershipUser>()
+                           .CreateAlias("Phones", "ph", JoinType.InnerLoopJoin)
+                           .CreateAlias("Segments", "se", JoinType.LeftOuterMergeJoin)
+                           .CreateAlias("Addresses", "ad", JoinType.RightOuterHashJoin)
+                           .CreateAlias("EmailHistories", "eh", JoinType.FullLoopJoin)
+                           .CreateAlias("Orders", "o", JoinType.LeftOuterLoopJoin)
+                           .CreateAlias("o.OrderLines", "ol", JoinType.FullHashJoin)
+                           .CreateAlias("o.Basket", "ba", JoinType.LeftOuterJoin).Add(Restrictions.Eq("ph.PhoneNumber", "55544433322"))
+                           .SetLockMode(LockMode.UpgradeNoWait)
+                           .SetLockMode("o", LockMode.Force)
+                           .SetLockMode("ph", LockMode.Nolock)
+                           .SetLockMode("se", LockMode.Upgrade)
+                           .SetLockMode("ad", LockMode.Write)
+                           .SetLockMode("eh", LockMode.Force)
+                           .SetLockMode("ol", LockMode.Nolock)
+                           .SetLockMode("ol", LockMode.Nolock)
+                           .SetLockMode("ba", LockMode.Nolock)
+                           .AddOrder(Order.Asc("o.Id"))
+                           .List();
+
+                Assert.That(peopleCount.Count, Is.EqualTo(2));
+                Assert.That(peopleCount, Is.Ordered.By("Id"));
+            }
+        }
+
+        [Test]
+        public void JoinWithHints_OnQueryOver_MixedJoinTypesAndLockModes_ForgottenRootLock()
         {
             MembershipOrder orderAlias = null;
             MembershipOrderLine orderLineAlias = null;
@@ -173,8 +157,8 @@
             MembershipUserBasketProduct basketProductAlias = null;
             MembershipUserEmailHistory emailHistoryAlias = null;
 
-            using (var session = this.OpenSession())
-            using (session.BeginTransaction())
+            using (var session = OpenSession())
+            using (session.BeginTransaction(IsolationLevel.Serializable))
             {
                 var people =
                     session.QueryOver<MembershipUser>()
@@ -209,7 +193,7 @@
         }
 
         [Test]
-        public void QueryOverWithHints_RowCount()
+        public void JoinWithHints_OnQueryOver_MixedJoinTypesAndLockModes_RowCount()
         {
             MembershipOrder orderAlias = null;
             MembershipOrderLine orderLineAlias = null;
@@ -222,7 +206,7 @@
             MembershipUserBasketProduct basketProductAlias = null;
             MembershipUserEmailHistory emailHistoryAlias = null;
 
-            using (var session = this.OpenSession())
+            using (var session = OpenSession())
             using (session.BeginTransaction())
             {
                 var peopleCount =
@@ -235,24 +219,123 @@
                            .JoinAlias(() => orderAlias.OrderLines, () => orderLineAlias, JoinType.FullMergeJoin)
                            .JoinAlias(() => orderAlias.Basket, () => basketAlias, JoinType.InnerLoopJoin)
                            .Left.JoinAlias(() => basketAlias.BasketProducts, () => basketProductAlias)
-                           .JoinAlias(() => basketProductAlias.Product, () => productAlias, JoinType.InnerHashJoin)
+                           .InnerHash.JoinAlias(() => basketProductAlias.Product, () => productAlias)
                            .JoinAlias(() => productAlias.Variants, () => productVariantAlias, JoinType.RightOuterHashJoin)
-                           .Lock()
-                           .Nolock.Lock()
-                           .UpgradeNoWait.Lock(() => orderAlias)
-                           .Nolock.Lock(() => orderLineAlias)
-                           .UpgradeNoWait.Lock(() => addressAlias)
-                           .Nolock.Lock(() => emailHistoryAlias)
-                           .Nolock.Lock(() => phoneAlias)
-                           .Read.Lock(() => segmentAlias)
-                           .Force.Lock(() => orderLineAlias)
-                           .Upgrade.Lock(() => basketAlias)
-                           .Write.Where(x => x.Age == 25)
-                           .And(x => x.Email == "test@test.com")
-                           .OrderBy(p => p.Age)
-                           .Desc.RowCount();
+                           .Lock().Nolock
+                           .Lock().UpgradeNoWait
+                           .Lock(() => orderAlias).Nolock
+                           .Lock(() => orderLineAlias).UpgradeNoWait
+                           .Lock(() => addressAlias).Nolock
+                           .Lock(() => emailHistoryAlias).Nolock
+                           .Lock(() => phoneAlias).Read
+                           .Lock(() => segmentAlias).Force
+                           .Lock(() => orderLineAlias).Upgrade
+                           .Lock(() => basketAlias).Write
+                           .Where(x => x.Age == 25).And(x => x.Email == "test@test.com")
+                           .OrderBy(p => p.Age).Desc
+                           .RowCount();
 
                 Assert.That(peopleCount, Is.EqualTo(4));
+            }
+        }
+
+        /// <summary>
+        ///     The query over with hints_ complexed joins.
+        ///     12 join
+        /// </summary>
+        [Test]
+        public void JoinWithHints_OnQueryOver_MixedJoinTypesAndLockModes()
+        {
+            MembershipOrder orderAlias = null;
+            MembershipOrderLine orderLineAlias = null;
+            MembershipUserBasket basketAlias = null;
+            MembershipUserAddress addressAlias = null;
+            MembershipUserPhone phoneAlias = null;
+            MembershipUserSegment segmentAlias = null;
+            Product productAlias = null;
+            ProductVariant productVariantAlias = null;
+            MembershipUserBasketProduct basketProductAlias = null;
+            MembershipUserEmailHistory emailHistoryAlias = null;
+
+            using (var session = OpenSession())
+            using (session.BeginTransaction())
+            {
+                var people =
+                    session.QueryOver<MembershipUser>()
+                           .JoinAlias(x => x.Addresses, () => addressAlias, JoinType.RightOuterLoopJoin)
+                           .JoinAlias(x => x.EmailHistories, () => emailHistoryAlias, JoinType.InnerMergeJoin)
+                           .JoinAlias(x => x.Phones, () => phoneAlias, JoinType.FullHashJoin)
+                           .JoinAlias(x => x.Segments, () => segmentAlias, JoinType.FullLoopJoin)
+                           .JoinAlias(x => x.Orders, () => orderAlias, JoinType.LeftOuterMergeJoin)
+                           .JoinAlias(() => orderAlias.OrderLines, () => orderLineAlias, JoinType.FullMergeJoin)
+                           .JoinAlias(() => orderAlias.Basket, () => basketAlias, JoinType.InnerLoopJoin)
+                           .Left.JoinAlias(() => basketAlias.BasketProducts, () => basketProductAlias)
+                           .JoinAlias(() => basketProductAlias.Product, () => productAlias, JoinType.InnerHashJoin)
+                           .JoinAlias(() => productAlias.Variants, () => productVariantAlias, JoinType.RightOuterHashJoin)
+                           .Lock().Nolock
+                           .Lock(() => orderAlias).Nolock
+                           .Lock(() => orderLineAlias).UpgradeNoWait
+                           .Lock(() => addressAlias).Nolock
+                           .Lock(() => emailHistoryAlias).Nolock
+                           .Lock(() => phoneAlias).Read
+                           .Lock(() => segmentAlias).Force
+                           .Lock(() => orderLineAlias).Upgrade
+                           .Lock(() => basketAlias).Write
+                           .Where(x => x.Age == 25).And(x => x.Email == "test@test.com")
+                           .OrderBy(p => p.Age)
+                           .Desc
+                           .List();
+
+                Assert.That(people.Count, Is.EqualTo(4));
+                Assert.That(people, Is.Ordered.By("Age").Descending);
+            }
+        }
+
+        [Test]
+        public void JoinWithHints_OnQueryOver_MixedJoinTypesAndLockModes_UnderWhereAndOperation()
+        {
+            MembershipOrder orderAlias = null;
+            MembershipOrderLine orderLineAlias = null;
+            MembershipUserBasket basketAlias = null;
+            MembershipUserAddress addressAlias = null;
+            MembershipUserPhone phoneAlias = null;
+            MembershipUserSegment segmentAlias = null;
+            Product productAlias = null;
+            ProductVariant productVariantAlias = null;
+            MembershipUserBasketProduct basketProductAlias = null;
+            MembershipUserEmailHistory emailHistoryAlias = null;
+
+            using (var session = OpenSession())
+            using (session.BeginTransaction())
+            {
+                var people =
+                    session.QueryOver<MembershipUser>()
+                           .RightLoop.JoinAlias(x => x.Addresses, () => addressAlias)
+                           .InnerMerge.JoinAlias(x => x.EmailHistories, () => emailHistoryAlias)
+                           .FullHash.JoinAlias(x => x.Phones, () => phoneAlias)
+                           .FullLoop.JoinAlias(x => x.Segments, () => segmentAlias)
+                           .LeftMerge.JoinAlias(x => x.Orders, () => orderAlias)
+                           .FullMerge.JoinAlias(() => orderAlias.OrderLines, () => orderLineAlias)
+                           .InnerLoop.JoinAlias(() => orderAlias.Basket, () => basketAlias)
+                           .Left.JoinAlias(() => basketAlias.BasketProducts, () => basketProductAlias)
+                           .InnerHash.JoinAlias(() => basketProductAlias.Product, () => productAlias)
+                           .RightHash.JoinAlias(() => productAlias.Variants, () => productVariantAlias)
+                           .Lock().Nolock
+                           .Lock(() => orderAlias).Nolock
+                           .Lock(() => orderLineAlias).UpgradeNoWait
+                           .Lock(() => addressAlias).Nolock
+                           .Lock(() => emailHistoryAlias).Nolock
+                           .Lock(() => phoneAlias).Read
+                           .Lock(() => segmentAlias).Force
+                           .Lock(() => orderLineAlias).Upgrade
+                           .Lock(() => basketAlias).Write
+                           .Where(x => x.Age == 25).And(x => x.Email == "test@test.com")
+                           .OrderBy(p => p.Age)
+                           .Desc
+                           .List();
+
+                Assert.That(people.Count, Is.EqualTo(4));
+                Assert.That(people, Is.Ordered.By("Age").Descending);
             }
         }
     }

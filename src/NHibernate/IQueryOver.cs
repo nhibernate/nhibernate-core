@@ -646,6 +646,18 @@ namespace NHibernate
 		IQueryOverJoinBuilder<TRoot,TSubType> Left	{ get; }
 		IQueryOverJoinBuilder<TRoot,TSubType> Right	{ get; }
 		IQueryOverJoinBuilder<TRoot,TSubType> Full	{ get; }
+		IQueryOverJoinBuilder<TRoot,TSubType> InnerMerge { get; }
+		IQueryOverJoinBuilder<TRoot,TSubType> InnerHash { get; }
+		IQueryOverJoinBuilder<TRoot,TSubType> InnerLoop { get; }
+		IQueryOverJoinBuilder<TRoot,TSubType> LeftMerge { get; }
+		IQueryOverJoinBuilder<TRoot,TSubType> LeftHash { get; }
+		IQueryOverJoinBuilder<TRoot,TSubType> LeftLoop { get; }
+		IQueryOverJoinBuilder<TRoot,TSubType> RightMerge { get; }
+		IQueryOverJoinBuilder<TRoot,TSubType> RightHash { get; }
+		IQueryOverJoinBuilder<TRoot,TSubType> RightLoop { get; }
+		IQueryOverJoinBuilder<TRoot,TSubType> FullMerge { get; }
+		IQueryOverJoinBuilder<TRoot,TSubType> FullHash { get; }
+		IQueryOverJoinBuilder<TRoot,TSubType> FullLoop { get; }
 
 	}
 

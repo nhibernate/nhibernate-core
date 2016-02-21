@@ -961,6 +961,42 @@ namespace NHibernate.Criterion
 		IQueryOverJoinBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.Full
 		{ get { return new IQueryOverJoinBuilder<TRoot,TSubType>(this, JoinType.FullJoin); } }
 
+		IQueryOverJoinBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.InnerMerge
+		{ get { return new IQueryOverJoinBuilder<TRoot,TSubType>(this, JoinType.InnerMergeJoin); } }
+
+		IQueryOverJoinBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.InnerHash
+		{ get { return new IQueryOverJoinBuilder<TRoot,TSubType>(this, JoinType.InnerHashJoin); } }
+
+		IQueryOverJoinBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.InnerLoop
+		{ get { return new IQueryOverJoinBuilder<TRoot,TSubType>(this, JoinType.InnerLoopJoin); } }
+
+		IQueryOverJoinBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.LeftMerge
+		{ get { return new IQueryOverJoinBuilder<TRoot,TSubType>(this, JoinType.LeftOuterMergeJoin); } }
+
+		IQueryOverJoinBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.LeftHash
+		{ get { return new IQueryOverJoinBuilder<TRoot,TSubType>(this, JoinType.LeftOuterHashJoin); } }
+
+		IQueryOverJoinBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.LeftLoop
+		{ get { return new IQueryOverJoinBuilder<TRoot,TSubType>(this, JoinType.LeftOuterLoopJoin); } }
+
+		IQueryOverJoinBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.RightMerge
+		{ get { return new IQueryOverJoinBuilder<TRoot,TSubType>(this, JoinType.RightOuterMergeJoin); } }
+
+		IQueryOverJoinBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.RightHash
+		{ get { return new IQueryOverJoinBuilder<TRoot,TSubType>(this, JoinType.RightOuterHashJoin); } }
+
+		IQueryOverJoinBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.RightLoop
+		{ get { return new IQueryOverJoinBuilder<TRoot,TSubType>(this, JoinType.RightOuterLoopJoin); } }
+
+		IQueryOverJoinBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.FullMerge
+		{ get { return new IQueryOverJoinBuilder<TRoot,TSubType>(this, JoinType.FullMergeJoin); } }
+
+		IQueryOverJoinBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.FullHash
+		{ get { return new IQueryOverJoinBuilder<TRoot,TSubType>(this, JoinType.FullHashJoin); } }
+
+		IQueryOverJoinBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.FullLoop
+		{ get { return new IQueryOverJoinBuilder<TRoot,TSubType>(this, JoinType.FullLoopJoin); } }
+
 	}
 
 }
