@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Reflection;
 
 [assembly: CLSCompliantAttribute(true)]

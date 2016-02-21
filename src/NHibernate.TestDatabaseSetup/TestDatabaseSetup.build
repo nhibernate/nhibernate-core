@@ -5,7 +5,6 @@
 	<include buildfile="${root.dir}/build-common/common-project.xml" />
 	<target name="init" depends="common.init">
 		<property name="clover.instrument" value="false" />
-    <property name="sign" value="false" />
     <copy file="${root.dir}/lib/teamcity/firebird/FirebirdSql.Data.FirebirdClient.dll" todir="${bin.dir}" />
 		<copy file="${root.dir}/lib/teamcity/postgresql/Npgsql.dll" todir="${bin.dir}" />
 		<copy file="${root.dir}/lib/teamcity/sqlServerCe/System.Data.SqlServerCe.dll" todir="${bin.dir}" />

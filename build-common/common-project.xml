@@ -60,27 +60,18 @@
     <if test="${not file::exists(bin.dir + '/msbuild.lock')}">
       <echo>msbuild.lock not found : start compiling</echo>
 
-      <property name="msbuild.cmd.sln" value="${root.dir}/src/NHibernate.sln" />
-      <property name="msbuild.cmd.out" value="/p:OutputPath=${bin.dir}" />
-      <property name="msbuild.cmd.debug" value="/p:DebugType=pdbonly" if="${build.debug == 'pdbonly'}" />
-      <property name="msbuild.cmd.debug" value="/p:DebugType=full" if="${build.debug != 'pdbonly'}" />
-      <property name="msbuild.cmd.optimize" value="/p:Optimize=${build.release}" />
-      <property name="msbuild.cmd.sign" value="/p:SignAssembly=${sign} /p:AssemblyOriginatorKeyFile=${key.file}" />
-      <property name="msbuild.cmd.doc" value="/p:GenerateDocumentation=true" />
-
-      <exec
+      <property name="cmd.sln" value="${root.dir}/src/NHibernate.sln" />
+      <property name="cmd.out" value="/p:OutputPath=${bin.dir}" />
+      <property name="cmd.debug" value="/p:DebugType=pdbonly" if="${build.debug == 'pdbonly'}" />
+      <property name="cmd.debug" value="/p:DebugType=full" if="${build.debug != 'pdbonly'}" />
+      <property name="cmd.optimize" value="/p:Optimize=${build.release}" />
+      <property name="cmd.sign" value="/p:SignAssembly=${sign} /p:AssemblyOriginatorKeyFile=${key.file}" />
+      <property name="cmd.doc" value="/p:GenerateDocumentation=true" />
+	  <property name="msbuild.cmd" value="${cmd.sln} ${cmd.out} ${cmd.debug} ${cmd.optimize} ${cmd.sign} ${cmd.doc} /t:Rebuild /v:n /m" />
+	  
+	  <exec
        program="${framework::get-framework-directory(framework::get-target-framework())}\msbuild.exe"
-       verbose="true">
-        <arg value="${msbuild.cmd.sln}" />
-        <arg value="${msbuild.cmd.out}" />
-        <arg value="${msbuild.cmd.debug}" />
-        <arg value="${msbuild.cmd.optimize}" />
-        <arg value="${msbuild.cmd.sign}" />
-        <arg value="${msbuild.cmd.doc}" />
-        <!--<arg value="/p:NoWarn=1591" />-->
-        <arg value="/t:Rebuild" if="${build.release}"/>
-        <arg value="/v:n" />
-        <arg value="/m" />
+       verbose="true" commandline="${msbuild.cmd}">
       </exec>
 
       <copy todir="${bin.dir}/unmerged/">
@@ -122,6 +113,7 @@
 		description="Run NUnit tests">
 		<call target="common.find-nunit" unless="${property::exists('nunit.found')}" />
 		<property name="common.run-tests.failonerror" value="${not property::exists(project::get-name() + '.IgnoreFail')}"/>
+		
 		<exec program="${nunit-console}" failonerror="${common.run-tests.failonerror}">
 			<arg line="${bin.dir}/${project::get-name()}.dll /xml:${testresults.dir}/${project::get-name()}.dll-results.xml /framework:${framework::get-target-framework()}" />
 		</exec>

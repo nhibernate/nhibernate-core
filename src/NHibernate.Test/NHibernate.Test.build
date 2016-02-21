@@ -8,7 +8,6 @@
 	
 	<target name="init" depends="common.init">
 		<property name="clover.instrument" value="false" />
-    <property name="sign" value="false" />
 		<assemblyfileset id="project.references" basedir="${bin.dir}">
 			<include name="mscorlib.dll" />
 			<include name="System.dll" />

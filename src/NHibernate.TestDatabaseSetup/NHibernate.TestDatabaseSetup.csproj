@@ -93,16 +93,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NHibernate.Test\NHibernate.Test.csproj">
-      <Project>{7AEE5B37-C552-4E59-9B6F-88755BCB5070}</Project>
-      <Name>NHibernate.Test</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NHibernate\NHibernate.csproj">
-      <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
-      <Name>NHibernate</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
       <Visible>False</Visible>
       <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
@@ -118,6 +108,16 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NHibernate.Test\NHibernate.Test.csproj">
+      <Project>{7AEE5B37-C552-4E59-9B6F-88755BCB5070}</Project>
+      <Name>NHibernate.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NHibernate\NHibernate.csproj">
+      <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
+      <Name>NHibernate</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
