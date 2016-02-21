@@ -103,6 +103,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Ado\AlmostSimple.cs" />
     <Compile Include="Ado\BatcherFixture.cs" />
     <Compile Include="Ado\VerySimple.cs" />
@@ -2652,7 +2655,9 @@
     <EmbeddedResource Include="Immutable\EntityWithMutableCollection\NonInverse\ContractVariationUnidir.hbm.xml" />
     <EmbeddedResource Include="Immutable\EntityWithMutableCollection\NonInverse\ContractVariationVersioned.hbm.xml" />
     <EmbeddedResource Include="Immutable\EntityWithMutableCollection\NonInverse\ContractVariationVersionedOneToManyJoin.hbm.xml" />
-    <None Include="NHibernate.Test.build" />
+    <None Include="NHibernate.Test.build">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="NHibernate.Test.nunit" />
     <None Include="DbScripts\MsSql2008DialectLinqReadonlyCreateScript.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -2679,16 +2684,6 @@
     <EmbeddedResource Include="ReadOnly\TextHolder.hbm.xml" />
     <EmbeddedResource Include="ReadOnly\VersionedNode.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2554\Mappings.hbm.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\NHibernate.DomainModel\NHibernate.DomainModel.csproj">
-      <Project>{5C649B55-1B3F-4C38-9998-1B043E94A244}</Project>
-      <Name>NHibernate.DomainModel</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NHibernate\NHibernate.csproj">
-      <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
-      <Name>NHibernate</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH386\Mappings.hbm.xml" />
@@ -3752,6 +3747,16 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NHibernate.DomainModel\NHibernate.DomainModel.csproj">
+      <Project>{5C649B55-1B3F-4C38-9998-1B043E94A244}</Project>
+      <Name>NHibernate.DomainModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NHibernate\NHibernate.csproj">
+      <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
+      <Name>NHibernate</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -3766,6 +3771,6 @@
     <PostBuildEvent>copy "$(ProjectDir)App.config" "$(TargetPath).config"
 if exist hibernate.cfg.xml (del hibernate.cfg.xml)
 if exist "$(ProjectDir)hibernate.cfg.xml" (copy "$(ProjectDir)hibernate.cfg.xml" "hibernate.cfg.xml")
-copy /y "..\..\..\NHibernate.DomainModel\ABC.hbm.xml" "ABC.hbm.xml"</PostBuildEvent>
+if exist "$(SolutionDir)NHibernate.DomainModel\ABC.hbm.xm" (copy /y " $(SolutionDir)NHibernate.DomainModel\ABC.hbm.xml" "ABC.hbm.xml")</PostBuildEvent>
   </PropertyGroup>
 </Project>

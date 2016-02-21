@@ -5,8 +5,6 @@
 	<include buildfile="${root.dir}/build-common/common-project.xml" />
 
 	<target name="init" depends="common.init">
-		<property name="assembly.description" value="Tool to Generate Hbm classes for use by NHibernate" />
-		<property name="assembly.is-cls-compliant" value="false" />
 		<property name="clover.instrument" value="false" />
 
 		<assemblyfileset id="project.references" basedir="${bin.dir}">
