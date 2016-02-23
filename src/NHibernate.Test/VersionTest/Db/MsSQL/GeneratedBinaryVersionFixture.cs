@@ -107,7 +107,11 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 			{
 				// as expected
 			}
-			finally
+            catch (StaleStateException)
+            {
+                // as expected
+            }
+            finally
 			{
 				using (ISession session = OpenSession())
 				{
