@@ -94,7 +94,7 @@ namespace NHibernate.Loader.Criteria
 
 		public IList List(ISessionImplementor session)
 		{
-			return List(session, translator.GetQueryParameters(), querySpaces);
+            return List(session, translator.GetQueryParameters(), querySpaces);
 		}
 
 		protected override IResultTransformer ResolveResultTransformer(IResultTransformer resultTransformer)

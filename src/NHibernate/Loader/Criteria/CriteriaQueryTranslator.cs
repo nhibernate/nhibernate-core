@@ -139,6 +139,7 @@ namespace NHibernate.Loader.Criteria
 			selection.FetchSize = rootCriteria.FetchSize;
 
 			var lockModes = new Dictionary<string, LockMode>();
+		    var canAddCollectionsToCache = true;
 			foreach (KeyValuePair<string, LockMode> me in rootCriteria.LockModes)
 			{
 				ICriteria subcriteria = GetAliasedCriteria(me.Key);
@@ -152,6 +153,9 @@ namespace NHibernate.Loader.Criteria
 				{
 					lockModes[GetSQLAlias(subcriteria)] = lm;
 				}
+
+                if (subcriteria.HasRestrictions && subcriteria.JoinType == JoinType.LeftOuterJoin)
+                    canAddCollectionsToCache = false;
 			}
 			
 			IDictionary<string, TypedValue> queryNamedParameters = CollectedParameters.ToDictionary(np => np.Name, np => new TypedValue(np.Type, np.Value));
@@ -167,7 +171,8 @@ namespace NHibernate.Loader.Criteria
 					rootCriteria.CacheRegion,
 					rootCriteria.Comment,
 					rootCriteria.LookupByNaturalKey,
-					rootCriteria.ResultTransformer)
+					rootCriteria.ResultTransformer,
+                    canAddCollectionsToCache)
 				{
 					CacheMode = rootCriteria.CacheMode
 				};

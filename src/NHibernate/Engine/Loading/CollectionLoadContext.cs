@@ -145,7 +145,8 @@ namespace NHibernate.Engine.Loading
 		/// complete. 
 		/// </summary>
 		/// <param name="persister">The persister for which to complete loading. </param>
-		public void EndLoadingCollections(ICollectionPersister persister)
+        /// <param name="canAddCollectionsToCache">Indicates if collcetion can be put in cache</param>
+        public void EndLoadingCollections(ICollectionPersister persister, bool canAddCollectionsToCache)
 		{
 			if (!loadContexts.HasLoadingCollectionEntries && (localLoadingCollectionKeys.Count == 0))
 			{
@@ -190,7 +191,7 @@ namespace NHibernate.Engine.Loading
 			}
 			localLoadingCollectionKeys.ExceptWith(toRemove);
 
-			EndLoadingCollections(persister, matches);
+            EndLoadingCollections(persister, matches, canAddCollectionsToCache);
 			if ((localLoadingCollectionKeys.Count == 0))
 			{
 				// todo : hack!!!
@@ -203,7 +204,7 @@ namespace NHibernate.Engine.Loading
 			}
 		}
 
-		private void EndLoadingCollections(ICollectionPersister persister, IList<LoadingCollectionEntry> matchedCollectionEntries)
+        private void EndLoadingCollections(ICollectionPersister persister, IList<LoadingCollectionEntry> matchedCollectionEntries, bool canAddCollectionsToCache)
 		{
 			if (matchedCollectionEntries == null || matchedCollectionEntries.Count == 0)
 			{
@@ -224,7 +225,7 @@ namespace NHibernate.Engine.Loading
 			for (int i = 0; i < count; i++)
 			{
 				EndLoadingCollection(matchedCollectionEntries[i], persister,
-				                     data => cacheBatcher.AddToBatch(persister, data));
+				                     data => cacheBatcher.AddToBatch(persister, data), canAddCollectionsToCache);
 			}
 			cacheBatcher.ExecuteBatch();
 
@@ -235,7 +236,7 @@ namespace NHibernate.Engine.Loading
 		}
 
 		private void EndLoadingCollection(LoadingCollectionEntry lce, ICollectionPersister persister,
-		                                  Action<CachePutData> cacheBatchingHandler)
+		                                  Action<CachePutData> cacheBatchingHandler, bool canAddCollectionsToCache)
 		{
 			if (log.IsDebugEnabled())
 			{
@@ -269,7 +270,7 @@ namespace NHibernate.Engine.Loading
 				ce.PostInitialize(lce.Collection, persistenceContext);
 			}
 
-			bool addToCache = hasNoQueuedOperations && persister.HasCache && 
+			bool addToCache = canAddCollectionsToCache && hasNoQueuedOperations && persister.HasCache && 
 				session.CacheMode.HasFlag(CacheMode.Put) && !ce.IsDoremove; // and this is not a forced initialization during flush
 
 			if (addToCache)

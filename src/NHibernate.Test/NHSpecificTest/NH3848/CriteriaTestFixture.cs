@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
         protected override IList<Customer> GetCustomersWithOrdersEagerLoaded(ISession session)
         {
             return session.CreateCriteria<Customer>()
-                          .SetFetchMode("Orders", FetchMode.Eager)
+                          .Fetch(SelectMode.Fetch, "Orders")
                           .SetResultTransformer(new DistinctRootEntityResultTransformer())
                           .List<Customer>();
         }
