@@ -37,6 +37,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private IStatement _sqlAst;
 		private IDictionary<string, string> _tokenReplacements;
 		private HqlSqlGenerator _generator;
+		private IList<IASTNode> collectionFetches;
 
 		/// <summary>
 		/// Creates a new AST-based query translator.
@@ -106,6 +107,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 			{
 				queryParametersToUse = queryParameters;
 			}
+
+			if (session.CacheMode.HasFlag(CacheMode.Put) && CanAddFetchedCollectionToCache)
+				queryParametersToUse.CanAddCollectionsToCache = false;
 
 			IList results = _queryLoader.List(session, queryParametersToUse);
 
@@ -283,9 +287,29 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			get
 			{
-				ErrorIfDML();
-				IList<IASTNode> collectionFetches = ((QueryNode)_sqlAst).FromClause.GetCollectionFetches();
-				return collectionFetches != null && collectionFetches.Count > 0;
+				return CollectionFetches.Count > 0;
+			}
+		}
+
+		public bool CanAddFetchedCollectionToCache
+		{
+			get
+			{
+				foreach (var collectionFetch in CollectionFetches)
+				{
+					var fromElement = (collectionFetch as FromElement);
+					var hasCache = fromElement != null &&
+								   fromElement.QueryableCollection != null &&
+								   fromElement.QueryableCollection.HasCache;
+
+					if (!hasCache)
+						continue;
+
+					if (ContainsRestrictionOnTable(fromElement.TableAlias))
+						return true;
+				}
+
+				return false;
 			}
 		}
 
@@ -428,6 +452,50 @@ namespace NHibernate.Hql.Ast.ANTLR
 			if (_sqlAst.NeedsExecutor)
 			{
 				throw new QueryExecutionRequestException("Not supported for DML operations", _queryIdentifier);
+			}
+		}
+
+		private bool ContainsRestrictionOnTable(string tableAlias)
+		{
+			var whereClause = ((QueryNode)_sqlAst).WhereClause;
+			if (whereClause == null)
+				return false;
+
+			var tableAliasWithDot = tableAlias + ".";
+			var stack = new Stack<IASTNode>();
+			for (var i = 0; i < whereClause.ChildCount; i++)
+			{
+				stack.Push(whereClause.GetChild(i));
+				while (stack.Count != 0)
+				{
+					var child = stack.Pop();
+					if (child.ChildCount > 0)
+					{
+						//We're iterating from count to 0 because it is more common to put restricting column as a left operand.
+						//e.g WHERE fetchedCollectionAlias.Column = 1. Now we put on stack first '1' and then 'fetchedCollectionAlias.Column'
+						//so 'fetchedCollectionAlias.Column' will be on top.
+						for (var j = child.ChildCount - 1; j >= 0; j--)
+							stack.Push(child.GetChild(j));
+					}
+					else if (child.Text.StartsWith(tableAliasWithDot, StringComparison.Ordinal))
+						return true;
+				}
+			}
+
+			return false;
+		}
+
+		private IList<IASTNode> CollectionFetches
+		{
+			get
+			{
+				if (collectionFetches == null)
+				{
+					ErrorIfDML();
+					collectionFetches = ((QueryNode)_sqlAst).FromClause.GetCollectionFetches() ?? new List<IASTNode>();
+				}
+
+				return collectionFetches;
 			}
 		}
 	}

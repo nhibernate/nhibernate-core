@@ -273,7 +273,7 @@ namespace NHibernate.Impl
 					for (int i = 0; i < loaders.Count; i++)
 					{
 						CriteriaLoader loader = loaders[i];
-						loader.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, session.DefaultReadOnly);
+                        loader.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, session.DefaultReadOnly, parameters[i].CanAddCollectionsToCache);
 
 						if (createSubselects[i])
 						{
