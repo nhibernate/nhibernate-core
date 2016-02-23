@@ -887,6 +887,7 @@
     <Compile Include="NHSpecificTest\NH3818\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3818\MyLovelyCat.cs" />
     <Compile Include="NHSpecificTest\NH3820\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3820\QueryOverFixture.cs" />
     <Compile Include="NHSpecificTest\NH3820\MembershipUserAddress.cs" />
     <Compile Include="NHSpecificTest\NH3820\MembershipOrder.cs" />
     <Compile Include="NHSpecificTest\NH3820\MembershipUserBasket.cs" />

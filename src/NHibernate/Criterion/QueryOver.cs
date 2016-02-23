@@ -732,7 +732,56 @@ namespace NHibernate.Criterion
 			get { return new QueryOverJoinBuilder<TRoot,TSubType>(this, JoinType.FullJoin); }
 		}
 
-		private QueryOver<TRoot,TSubType> AddAlias(string path, string alias, JoinType joinType)
+        public QueryOverJoinBuilder<TRoot, TSubType> InnerMerge
+        {
+            get { return new QueryOverJoinBuilder<TRoot, TSubType>(this, JoinType.InnerMergeJoin); }
+        }
+        public QueryOverJoinBuilder<TRoot, TSubType> InnerHash
+        {
+            get { return new QueryOverJoinBuilder<TRoot, TSubType>(this, JoinType.InnerHashJoin); }
+        }
+        public QueryOverJoinBuilder<TRoot, TSubType> InnerLoop
+        {
+            get { return new QueryOverJoinBuilder<TRoot, TSubType>(this, JoinType.InnerLoopJoin); }
+        }
+        public QueryOverJoinBuilder<TRoot, TSubType> LeftMerge
+        {
+            get { return new QueryOverJoinBuilder<TRoot, TSubType>(this, JoinType.LeftOuterMergeJoin); }
+        }
+        public QueryOverJoinBuilder<TRoot, TSubType> LeftHash
+        {
+            get { return new QueryOverJoinBuilder<TRoot, TSubType>(this, JoinType.LeftOuterHashJoin); }
+        }
+        public QueryOverJoinBuilder<TRoot, TSubType> LeftLoop
+        {
+            get { return new QueryOverJoinBuilder<TRoot, TSubType>(this, JoinType.LeftOuterLoopJoin); }
+        }
+        public QueryOverJoinBuilder<TRoot, TSubType> RightMerge
+        {
+            get { return new QueryOverJoinBuilder<TRoot, TSubType>(this, JoinType.RightOuterMergeJoin); }
+        }
+        public QueryOverJoinBuilder<TRoot, TSubType> RightHash
+        {
+            get { return new QueryOverJoinBuilder<TRoot, TSubType>(this, JoinType.RightOuterHashJoin); }
+        }
+        public QueryOverJoinBuilder<TRoot, TSubType> RightLoop
+        {
+            get { return new QueryOverJoinBuilder<TRoot, TSubType>(this, JoinType.RightOuterLoopJoin); }
+        }
+        public QueryOverJoinBuilder<TRoot, TSubType> FullMerge
+        {
+            get { return new QueryOverJoinBuilder<TRoot, TSubType>(this, JoinType.FullMergeJoin); }
+        }
+        public QueryOverJoinBuilder<TRoot, TSubType> FullHash
+        {
+            get { return new QueryOverJoinBuilder<TRoot, TSubType>(this, JoinType.FullHashJoin); }
+        }
+        public QueryOverJoinBuilder<TRoot, TSubType> FullLoop
+        {
+            get { return new QueryOverJoinBuilder<TRoot, TSubType>(this, JoinType.FullLoopJoin); }
+        }
+
+        private QueryOver<TRoot,TSubType> AddAlias(string path, string alias, JoinType joinType)
 		{
 			criteria.CreateAlias(path, alias, joinType);
 			return this;
