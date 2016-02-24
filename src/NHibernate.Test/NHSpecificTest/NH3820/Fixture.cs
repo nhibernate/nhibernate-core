@@ -5,6 +5,7 @@
     using System;
     using System.Collections;
     using System.Data;
+    using System.Linq;
     using Criterion;
     using Dialect;
     using NUnit.Framework;
@@ -337,6 +338,87 @@
                 Assert.That(people.Count, Is.EqualTo(4));
                 Assert.That(people, Is.Ordered.By("Age").Descending);
             }
+        }
+
+        [Test]
+        public void JoinWithHints_OnCriteria_WithMixedLockModes_IsolationLevelReadCommitted()
+        {
+            using (var session = OpenSession())
+            using (session.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+
+                var items = session.CreateCriteria(typeof(MembershipUser))
+                    .CreateAlias("Addresses", "addressAlias", JoinType.RightOuterLoopJoin)
+                    .CreateAlias("EmailHistories", "emailHistoryAlias", JoinType.FullLoopJoin)
+                    .CreateAlias("Phones", "phoneAlias", JoinType.InnerLoopJoin)
+                    .CreateAlias("Segments", "segmentAlias", JoinType.LeftOuterMergeJoin)
+                    .CreateAlias("Orders", "orderAlias", JoinType.LeftOuterLoopJoin)
+                    .CreateAlias("orderAlias.OrderLines", "orderLineAlias", JoinType.FullHashJoin)
+                    .CreateAlias("orderAlias.Basket", "basketAlias", JoinType.LeftOuterJoin)
+                    .CreateAlias("basketAlias.BasketProducts", "basketProductAlias", JoinType.LeftOuterJoin)
+                    .CreateAlias("basketProductAlias.Product", "productAlias", JoinType.LeftOuterJoin)
+                    .CreateAlias("productAlias.Variants", "productVariantAlias", JoinType.LeftOuterJoin)
+                    .SetLockMode(LockMode.Nolock)
+                    .SetLockMode("orderAlias", LockMode.Force)
+                    .SetLockMode("phoneAlias", LockMode.Nolock)
+                    .SetLockMode("segmentAlias", LockMode.Upgrade)
+                    .SetLockMode("addressAlias", LockMode.Write)
+                    .SetLockMode("emailHistoryAlias", LockMode.Force)
+                    .SetLockMode("orderLineAlias", LockMode.Nolock)
+                    .SetLockMode("basketAlias", LockMode.Nolock)
+                    .List();
+
+                Assert.That(items.Count, Is.EqualTo(4));
+            }
+
+        }
+
+
+        [Test]
+        public void JoinWithHints_OnQueryOver_WithMixedLockModes_IsolationLevelReadCommitted()
+        {
+            using (var session = OpenSession())
+            using (session.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+
+                MembershipOrder orderAlias = null;
+                MembershipOrderLine orderLineAlias = null;
+                MembershipUserBasket basketAlias = null;
+                MembershipUserAddress addressAlias = null;
+                MembershipUserPhone phoneAlias = null;
+                MembershipUserSegment segmentAlias = null;
+                Product productAlias = null;
+                ProductVariant productVariantAlias = null;
+                MembershipUserBasketProduct basketProductAlias = null;
+                MembershipUserEmailHistory emailHistoryAlias = null;
+
+                var items = session.QueryOver<MembershipUser>()
+                        .JoinAlias(x => x.Addresses, () => addressAlias, JoinType.RightOuterLoopJoin)
+                        .JoinAlias(x => x.EmailHistories, () => emailHistoryAlias, JoinType.FullLoopJoin)
+                        .JoinAlias(x => x.Phones, () => phoneAlias, JoinType.InnerLoopJoin)
+                        .JoinAlias(x => x.Segments, () => segmentAlias, JoinType.LeftOuterMergeJoin)
+                        .JoinAlias(x => x.Orders, () => orderAlias, JoinType.LeftOuterLoopJoin)
+                        .JoinAlias(() => orderAlias.OrderLines, () => orderLineAlias, JoinType.FullHashJoin)
+                        .JoinAlias(() => orderAlias.Basket, () => basketAlias, JoinType.LeftOuterJoin)
+                        .JoinAlias(() => basketAlias.BasketProducts, () => basketProductAlias, JoinType.LeftOuterJoin)
+                        .JoinAlias(() => basketProductAlias.Product, () => productAlias, JoinType.LeftOuterJoin)
+                        .JoinAlias(() => productAlias.Variants, () => productVariantAlias, JoinType.LeftOuterJoin)
+                        .Lock().Nolock
+                        .Lock(() => orderAlias).Force
+                        .Lock(() => phoneAlias).Read
+                        .Lock(() => phoneAlias).Nolock
+                        .Lock(() => orderLineAlias).UpgradeNoWait
+                        .Lock(() => addressAlias).Write
+                        .Lock(() => emailHistoryAlias).Nolock
+                        .Lock(() => segmentAlias).Upgrade
+                        .Lock(() => orderLineAlias).Nolock
+                        .Lock(() => emailHistoryAlias).Force
+                        .Lock(() => basketAlias).Nolock
+                        .List();
+
+                Assert.That(items.Count(), Is.EqualTo(4));
+            }
+
         }
     }
 }

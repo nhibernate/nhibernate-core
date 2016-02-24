@@ -13,7 +13,7 @@
     public class QueryOverFixture : LambdaFixtureBase
     {
         [Test]
-        public void SimpleCriterion_NoAlias_WithRootNolock()
+        public void SubCriteria_NoAlias_WithRootNolock()
         {
             ICriteria expected =
                 CreateTestCriteria(typeof (MembershipUser)).SetLockMode(LockMode.Nolock)
