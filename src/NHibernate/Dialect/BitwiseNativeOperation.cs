@@ -10,7 +10,6 @@ namespace NHibernate.Dialect
 	/// <summary>
 	/// Treats bitwise operations as native operations.
 	/// </summary>
-	/// </remarks>
 	[Serializable]
 	public class BitwiseNativeOperation : ISQLFunction
 	{

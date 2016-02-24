@@ -239,11 +239,11 @@ namespace NHibernate.Id.Enhanced
 
 		#endregion
 
-
 		/// <summary>
 		///  Determine the table name to use for the generator values. Called during configuration.
 		/// </summary>
 		/// <param name="parms">The parameters supplied in the generator config (plus some standard useful extras).</param>
+		/// <param name="dialect">The dialect</param>
 		protected string DetermineGeneratorTableName(IDictionary<string, string> parms, Dialect.Dialect dialect)
 		{
 			string name = PropertiesHelper.GetString(TableParam, parms, DefaultTable);
@@ -277,6 +277,7 @@ namespace NHibernate.Id.Enhanced
 		/// Called during configuration.
 		/// </summary>
 		/// <param name="parms">The parameters supplied in the generator config (plus some standard useful extras).</param>
+		/// <param name="dialect">The <see cref="Dialect.Dialect"/></param>
 		protected string DetermineSegmentColumnName(IDictionary<string, string> parms, Dialect.Dialect dialect)
 		{
 			// NHibernate doesn't seem to have anything resembling this ObjectNameNormalizer. Ignore that for now.
