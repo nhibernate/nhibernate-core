@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.NH642
 	//<priority id="3">Major</priority>    
 	//<created>Fri, 9 Jun 2006 07:34:32 -0400 (EDT)</created>
 	//<component>Core</component>
-	//<link>http://jira.nhibernate.org</link>
+	//<link>http://nhibernate.jira.com</link>
 	public class MissingSetter
 	{
 		public virtual int ReadOnly

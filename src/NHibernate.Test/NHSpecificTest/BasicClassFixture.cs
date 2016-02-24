@@ -19,7 +19,7 @@ namespace NHibernate.Test.NHSpecificTest
 		}
 
 		/// <summary>
-		/// This is a test for <a href="http://jira.nhibernate.org/browse/NH-134">NH-134</a>.
+		/// This is a test for <a href="http://nhibernate.jira.com/browse/NH-134">NH-134</a>.
 		/// </summary>
 		/// <remarks>
 		/// It checks to make sure that NHibernate can use the correct accessor to get the
