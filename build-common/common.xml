@@ -7,14 +7,6 @@
 		in CVS.
 	-->
 	<property name="sign" value="true" overwrite="false" />
-	<property name="key.file" value="${root.dir}/src/NHibernate.snk" />
-
-	<!-- Generating AssemblyInfo files for Visual Studio -->
-	<property name="visual-studio" value="false" overwrite="false" />
-
-	<if test="${visual-studio}">
-		<property name="key.file" value="../../${key.file}" />
-	</if>
 
 	<!--
 		if Visual Studio Help Integration Kit has been installed

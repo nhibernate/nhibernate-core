@@ -25,12 +25,8 @@
 
 		Other predefined targets are:
 
-			- common.compile-tests
-				compile NUnit tests and copy App.config file to the output directory,
-				if it exists.
-
-			- common.compile-dll
-				compile a DLL, generating the documentation file (.xml)
+			- common.compile-all
+				compile a solution, generating the documentation file (.xml)
 
 			- common.generate-assemblyinfo
 				generate an AssemblyInfo.cs file from assembly.* NAnt properties.
@@ -48,209 +44,53 @@
 
 	<include buildfile="common.xml" />
 
-	<target name="common.compile-tests"
-		description="Compile NUnit tests and copy App.config file to the output directory, if it exists.">
+	<target name="common.compile-all" depends="common.generate-assemblyinfo">
+		<!--property name="msbuild.cmd" value="${cmd.sln} ${cmd.out} ${cmd.platform} ${cmd.debug} ${cmd.optimize} ${cmd.doc} /t:Rebuild /v:q /m" /-->
 
-		<csc 
-			target="library"
-			define="${current.build.defines}"
-			debug="${build.debug}"
-			keyfile="${key.file}"
-			nostdlib="true"
-			noconfig="true"
-			output="${bin.dir}/${project::get-name()}.dll"
-			if="${sign}"
-		>
-			<sources refid="project.sources" />
-			<references refid="project.references" />
-			<resources refid="project.resources" />
-		</csc>
-
-		<csc 
-			target="library"
-			define="${current.build.defines}"
-			debug="${build.debug}"
-			nostdlib="true"
-			noconfig="true"
-			output="${bin.dir}/${project::get-name()}.dll"
-			unless="${sign}"
-		>
-			<sources refid="project.sources" />
-			<references refid="project.references" />
-			<resources refid="project.resources" />
-		</csc>
-
-
-		<copy 
-			file="App.config"
-			tofile="${bin.dir}/${project::get-name()}.dll.config"
-			if="${file::exists('App.config')}"
-		/>
-
+		<exec program="${framework::get-framework-directory(framework::get-target-framework())}\msbuild.exe" verbose="true">
+				<arg value="${root.dir}/src/NHibernate.sln" />
+				<arg value="/p:OutputPath=&quot;${path::get-full-path(bin.dir)}&quot;" />
+				<arg value="/p:Platform=&quot;Any CPU&quot;" />
+				<arg value="/p:Configuration=&quot;Debug&quot;" if="${build.debug == 'true'}" />
+				<arg value="/p:Configuration=&quot;Release&quot;" if="${build.release == 'true'}" />
+				<arg value="/t:Rebuild" />
+				<arg value="/v:q" />
+				<arg value="/m" />
+		</exec> 
 	</target>
-
-	<target name="common.compile-tests-vb" description="Compile NUnit tests and copy App.config file to the output directory, if it exists.">
-
-		<vbc 
-			target="library"
-			define="${current.build.defines}"
-			debug="${build.debug}"
-			keyfile="${key.file}"
-			output="${bin.dir}/${project::get-name()}.dll"
-			rootnamespace="${project::get-name()}"
-			if="${sign}"
-		>
-			<sources refid="project.sources" />
-			<references refid="project.references" />
-			<resources refid="project.resources" />
-			<imports refid="project.imports" />
-			<arg line="/sdkpath:&quot;${referenceassemblies.dir}&quot;"/>
-		</vbc>
-
-		<vbc 
-			target="library"
-			define="${current.build.defines}"
-			debug="${build.debug}"
-			output="${bin.dir}/${project::get-name()}.dll"
-			rootnamespace="${project::get-name()}"
-			unless="${sign}"
-		>
-			<sources refid="project.sources" />
-			<references refid="project.references" />
-			<resources refid="project.resources" />
-			<imports refid="project.imports" />
-			<arg line="/sdkpath:&quot;${referenceassemblies.dir}&quot;"/>
-		</vbc>
-		
-		<copy 
-			file="App.config"
-			tofile="${bin.dir}/${project::get-name()}.dll.config"
-			if="${file::exists('App.config')}"
-		/>
-
-	</target>
-
-	<target name="common.compile-dll" description="Compile sources into a DLL">
-
-		<property name="project.output" value="${bin.dir}/${project::get-name()}.dll" unless="${property::exists('project.output')}"/>
-		
-		<csc
-			target="library" 
-			define="${current.build.defines}" 
-			debug="${build.debug}" 
-			keyfile="${key.file}"
-			nostdlib="true"
-			noconfig="true"
-			output="${project.output}" 
-			doc="${bin.dir}/${project::get-name()}.xml"
-			if="${sign}"
-      optimize="${build.release}"
-		>
-			<nowarn>
-				<warning number="1591" /> <!-- No XML comment for publicly visible member -->
-			</nowarn>
-			<sources refid="project.sources" />
-			<references refid="project.references" />
-			<resources refid="project.resources" />
-		</csc>
-
-		<csc
-			target="library" 
-			define="${current.build.defines}" 
-			debug="${build.debug}" 
-			nostdlib="true"
-			noconfig="true"
-			output="${project.output}" 
-			doc="${bin.dir}/${project::get-name()}.xml"
-			unless="${sign}"
-      optimize="${build.release}"
-		>
-			<nowarn>
-				<warning number="1591" /> <!-- No XML comment for publicly visible member -->
-			</nowarn>
-			<sources refid="project.sources" />
-			<references refid="project.references" />
-			<resources refid="project.resources" />
-		</csc>
-
-	</target>
-
-	<target name="common.compile-exe" description="Compile sources into a console executable">
-
-		<csc
-			target="exe"
-			keyfile="${key.file}"
-			define="${current.build.defines}" 
-			debug="${build.debug}"
-			output="${bin.dir}/${project::get-name()}.exe" 
-			if="${sign}"
-			optimize="${build.release}"
-		>
-			<nowarn>
-				<warning number="1591" /> <!-- No XML comment for publicly visible member -->
-			</nowarn>
-			<sources refid="project.sources" />
-			<references refid="project.references" />
-			<resources refid="project.resources" />
-		</csc>
-
-		<csc
-			target="exe"
-			define="${current.build.defines}" 
-			debug="${build.debug}"
-			output="${bin.dir}/${project::get-name()}.exe" 
-			unless="${sign}"
-			optimize="${build.release}"
-		>
-			<nowarn>
-				<warning number="1591" /> <!-- No XML comment for publicly visible member -->
-			</nowarn>
-			<sources refid="project.sources" />
-			<references refid="project.references" />
-			<resources refid="project.resources" />
-		</csc>
-	</target>
-
+  
 	<target name="common.set-assembly-attribute-values">
-		<property overwrite="false" name="assembly.is-cls-compliant" value="true" />
-		<property overwrite="false" name="assembly.allow-partially-trusted-callers" value="false" />
-		<property overwrite="false" name="assembly.description" value="" />
-		<property overwrite="false" name="assembly.product" value="${project::get-name()}" />
-		<property overwrite="false" name="assembly.company" value="${project.company}" />
-		<property overwrite="false" name="assembly.title" value="${project::get-name()}" />
 		<property overwrite="false" name="assembly.version" value="${project.default-assembly-version}" />
 		<property overwrite="false" name="assembly.version.informational" value="${project.version}" />
 		<property overwrite="false" name="assembly.version.file" value="${project.version.numeric}" />
-		<property overwrite="false" name="assembly.copyright" value="Licensed under LGPL." />
-		<property overwrite="false" name="assembly.sign" value="${sign}" />
 	</target>
 
 	<target name="common.generate-assemblyinfo"
 		depends="common.init common.set-assembly-attribute-values"
-		description="Generate AssemblyInfo.cs using assembly.* properties."
+		description="Generate SharedAssemblyInfo.* using assembly.* properties."
 	>
-		<asminfo output="AssemblyInfo.cs" language="CSharp">
+		<asminfo output="${root.dir}/src/SharedAssemblyInfo.cs" language="CSharp">
 			<imports>
 				<import namespace="System" />
 				<import namespace="System.Reflection" />
 				<import namespace="System.Runtime.CompilerServices" />
-				<import namespace="System.Security" if="${assembly.allow-partially-trusted-callers}" />
 			</imports>
 			<attributes>
-				<attribute type="CLSCompliantAttribute" value="${assembly.is-cls-compliant}" />
-				<attribute type="AssemblyTitleAttribute" value="${assembly.title}" />
-				<attribute type="AssemblyDescriptionAttribute" value="${assembly.description}" />
-				<attribute type="AssemblyCompanyAttribute" value="${assembly.company}" />
-				<attribute type="AssemblyProductAttribute" value="${assembly.product}" />
-				<attribute type="AssemblyCopyrightAttribute" value="${assembly.copyright}" />
 				<attribute type="AssemblyVersionAttribute" value="${assembly.version}" />
 				<attribute type="AssemblyInformationalVersionAttribute" value="${assembly.version.informational}" />
 				<attribute type="AssemblyFileVersionAttribute" value="${assembly.version.file}" />
-				<attribute type="AssemblyDelaySignAttribute" value="false" />
-				
-				<!-- For some reason, NAnt doesn't detect that APTCA has a public no-argument constructor -->
-				<attribute asis="true" type="AllowPartiallyTrustedCallersAttribute" if="${assembly.allow-partially-trusted-callers}" />
-				<attribute asis="true" type="SecurityRulesAttribute" value="SecurityRuleSet.Level1" if="${assembly.allow-partially-trusted-callers}" />
+			</attributes>
+		</asminfo>
+		<asminfo output="${root.dir}/src/SharedAssemblyInfo.vb" language="VB">
+			<imports>
+				<import namespace="System" />
+				<import namespace="System.Reflection" />
+				<import namespace="System.Runtime.CompilerServices" />
+			</imports>
+			<attributes>
+				<attribute type="AssemblyVersionAttribute" value="${assembly.version}" />
+				<attribute type="AssemblyInformationalVersionAttribute" value="${assembly.version.informational}" />
+				<attribute type="AssemblyFileVersionAttribute" value="${assembly.version.file}" />
 			</attributes>
 		</asminfo>
 	</target>
@@ -260,7 +100,7 @@
 		<call target="common.find-nunit" unless="${property::exists('nunit.found')}" />
 		<property name="common.run-tests.failonerror" value="${not property::exists(project::get-name() + '.IgnoreFail')}"/>
 		<exec program="${nunit-console}" failonerror="${common.run-tests.failonerror}">
-			<arg line="${bin.dir}/${project::get-name()}.dll /xml:${testresults.dir}/${project::get-name()}.dll-results.xml /framework:${framework::get-target-framework()}" />
+			<arg line="${bin.dir}/${test.file}.dll /xml:${testresults.dir}/${test.file}.dll-results.xml /framework:${framework::get-target-framework()}" />
 		</exec>
 
 		<!--<nunit2>
@@ -271,8 +111,8 @@
 				outputdir="${bin.dir}"
 			/>
 			<test
-				assemblyname="${bin.dir}/${project::get-name()}.dll"
-				appconfig="${bin.dir}/${project::get-name()}.dll.config" />
+				assemblyname="${bin.dir}/${test.file}.dll"
+				appconfig="${bin.dir}/${test.file}.dll.config" />
 		</nunit2>-->
 
 	</target>
@@ -281,7 +121,7 @@
 		depends="common.put-connection-settings-into-app-config common.run-tests common.remove-connection-settings-from-app-config" />
 
 	<target name="common.put-connection-settings-into-app-config">
-		<property name="app.config" value="${bin.dir}/${project::get-name()}.dll.config" />
+		<property name="app.config" value="${bin.dir}/${test.file}.dll.config" />
 		<call target="common.put-connection-settings-into-defined-app-config" />
 	</target>
 
@@ -326,7 +166,7 @@
 	</target>
 
 	<target name="common.remove-connection-settings-from-app-config">
-		<property name="app.config" value="${bin.dir}/${project::get-name()}.dll.config" />
+		<property name="app.config" value="${bin.dir}/${test.file}.dll.config" />
 
 		<xmlpoke
 			file="${app.config}"
