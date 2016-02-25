@@ -1637,6 +1637,7 @@
 			<xs:enumeration value="upgrade" />
 			<xs:enumeration value="upgrade-nowait" />
 			<xs:enumeration value="write" />
+			<xs:enumeration value="nolock" />
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="notFoundMode">
