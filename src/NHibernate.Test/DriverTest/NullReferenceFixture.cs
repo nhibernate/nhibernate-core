@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.DriverTest
 {
 	/// <summary>
-	/// http://jira.nhibernate.org/browse/NH-177
+	/// http://nhibernate.jira.com/browse/NH-177
 	/// </summary>
 	[TestFixture]
 	public class NullReferenceFixture : TestCase

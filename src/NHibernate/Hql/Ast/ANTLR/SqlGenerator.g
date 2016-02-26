@@ -1,7 +1,7 @@
 /**
  * SQL Generator Tree Parser, providing SQL rendering of SQL ASTs produced by the previous phase, HqlSqlWalker.  All
  * syntax decoration such as extra spaces, lack of spaces, extra parens, etc. should be added by this class.
- * <br>
+ * <br/>
  * This grammar processes the HQL/SQL AST and produces an SQL string.  The intent is to move dialect-specific
  * code into a sub-class that will override some of the methods, just like the other two grammars in this system.
  * @author Joshua Davis (joshua@hibernate.org)

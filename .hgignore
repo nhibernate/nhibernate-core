@@ -34,4 +34,3 @@ _ReSharper*/
 *.[Pp]ublish.xml
 glob:NHibernate.dll
 glob:nhibernate\build\
-glob:AssemblyInfo.cs

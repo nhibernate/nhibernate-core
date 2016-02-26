@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
 {
-	// http://jira.nhibernate.org/browse/NH-1473
+	// http://nhibernate.jira.com/browse/NH-1473
 	[TestFixture]
 	public class EntityTypeFixture : TypeFixtureBase
 	{
