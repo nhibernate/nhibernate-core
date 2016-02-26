@@ -387,11 +387,10 @@ namespace NHibernate.Linq.Visitors
 		{
 			if (expression.Value != null)
 			{
-				System.Type t = expression.Value.GetType();
-
-				if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof (NhQueryable<>))
+				IEntityNameProvider entityName = expression.Value as IEntityNameProvider;
+				if (entityName != null)
 				{
-					return _hqlTreeBuilder.Ident(t.GetGenericArguments()[0].FullName);
+					return _hqlTreeBuilder.Ident(entityName.EntityName);
 				}
 			}
 
