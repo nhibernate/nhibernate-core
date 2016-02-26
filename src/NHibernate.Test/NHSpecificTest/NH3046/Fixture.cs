@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3046
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		[Test]
+		[Test, Explicit]
 		public void MemoryLeak()
 		{
 
