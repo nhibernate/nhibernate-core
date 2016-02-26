@@ -125,35 +125,38 @@ namespace NHibernate.Action
 		{
 			get
 			{
-				return new AfterTransactionCompletionProcessDelegate((success) =>
-				{
-					// NH Different behavior: to support unlocking collections from the cache.(r3260)
-					if (Persister.HasCache)
-					{
-						CacheKey ck = Session.GenerateCacheKey(Key, Persister.KeyType, Persister.Role);
+                // Only make sense to add the delegate if there is a cache.
+                if (Persister.HasCache)
+                {
+                    // NH Different behavior: to support unlocking collections from the cache.(r3260)
+                    return new AfterTransactionCompletionProcessDelegate((success) =>
+                    {
+                        CacheKey ck = Session.GenerateCacheKey(Key, Persister.KeyType, Persister.Role);
 
-						if (success)
-						{
-							// we can't disassemble a collection if it was uninitialized 
-							// or detached from the session
-							if (Collection.WasInitialized && Session.PersistenceContext.ContainsCollection(Collection))
-							{
-								CollectionCacheEntry entry = new CollectionCacheEntry(Collection, Persister);
-								bool put = Persister.Cache.AfterUpdate(ck, entry, null, Lock);
-		
-								if (put && Session.Factory.Statistics.IsStatisticsEnabled)
-								{
-									Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
-								}
-							}
-						}
-						else
-						{
-							Persister.Cache.Release(ck, Lock);
-						}
-					}
-				});
-			}
+                        if (success)
+                        {
+                            // we can't disassemble a collection if it was uninitialized 
+                            // or detached from the session
+                            if (Collection.WasInitialized && Session.PersistenceContext.ContainsCollection(Collection))
+                            {
+                                CollectionCacheEntry entry = new CollectionCacheEntry(Collection, Persister);
+                                bool put = Persister.Cache.AfterUpdate(ck, entry, null, Lock);
+
+                                if (put && Session.Factory.Statistics.IsStatisticsEnabled)
+                                {
+                                    Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Persister.Cache.Release(ck, Lock);
+                        }
+                    });
+                }
+                else
+                    return null;
+            }
 		}
 	}
 }
