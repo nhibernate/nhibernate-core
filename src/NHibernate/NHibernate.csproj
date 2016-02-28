@@ -182,6 +182,8 @@
     <Compile Include="Driver\OracleClientDriver.cs" />
     <Compile Include="Driver\OracleDataClientDriver.cs" />
     <Compile Include="Driver\OracleManagedDataClientDriver.cs" />
+    <Compile Include="Driver\OracleManagedDataClientDriverWithMultipleQueriesSupport.cs" />
+    <Compile Include="Driver\OracleManagedResultSetsCommandWithMultipleQueriesSupport.cs" />
     <Compile Include="Driver\Sql2008ClientDriver.cs" />
     <Compile Include="Driver\SqlClientDriver.cs" />
     <Compile Include="Driver\BasicResultSetsCommand.cs" />
