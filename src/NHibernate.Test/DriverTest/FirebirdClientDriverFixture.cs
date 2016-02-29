@@ -120,6 +120,30 @@ namespace NHibernate.Test.DriverTest
 			Assert.That(cmd.CommandText, Is.EqualTo(expected));
 		}
 
+		[Test]
+		public void AdjustCommand_InsertWithParamsInSelect_ParameterIsNotCasted_WhenColumnNameContainsSelect()
+		{
+			MakeDriver();
+			var cmd = BuildInsertWithParamsInSelectCommandWithSelectInColumnName(SqlTypeFactory.Int32);
+
+			_driver.AdjustCommand(cmd);
+
+			var expected = "insert into table1 (col1_select_aaa) values(@p0) from table2";
+			Assert.That(cmd.CommandText, Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void AdjustCommand_InsertWithParamsInSelect_ParameterIsNotCasted_WhenColumnNameContainsWhere()
+		{
+			MakeDriver();
+			var cmd = BuildInsertWithParamsInSelectCommandWithWhereInColumnName(SqlTypeFactory.Int32);
+
+			_driver.AdjustCommand(cmd);
+
+			var expected = "insert into table1 (col1_where_aaa) values(@p0) from table2";
+			Assert.That(cmd.CommandText, Is.EqualTo(expected));
+		}
+
 		private void MakeDriver()
 		{
 			var cfg = TestConfigurationHelper.GetDefaultConfiguration();
@@ -170,7 +194,7 @@ namespace NHibernate.Test.DriverTest
 					.Add(" end) from table")
 					.ToSqlString();
 
-			return _driver.GenerateCommand(CommandType.Text, sqlString, new SqlType[] { paramType, paramType, paramType });
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType, paramType, paramType });
 		}
 
 		private IDbCommand BuildSelectConcatCommand(SqlType paramType)
@@ -183,7 +207,7 @@ namespace NHibernate.Test.DriverTest
 					.Add("from table")
 					.ToSqlString();
 
-			return _driver.GenerateCommand(CommandType.Text, sqlString, new SqlType[] { paramType });
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
 		}
 
 		private IDbCommand BuildSelectAddCommand(SqlType paramType)
@@ -194,7 +218,7 @@ namespace NHibernate.Test.DriverTest
 					.Add(" from table")
 					.ToSqlString();
 
-			return _driver.GenerateCommand(CommandType.Text, sqlString, new SqlType[] { paramType });
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
 		}
 
 		private IDbCommand BuildInsertWithParamsInSelectCommand(SqlType paramType)
@@ -206,8 +230,31 @@ namespace NHibernate.Test.DriverTest
 				.Add(" from table2")
 				.ToSqlString();
 
-			return _driver.GenerateCommand(CommandType.Text, sqlString, new SqlType[] { paramType });
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
 		}
 
+		private IDbCommand BuildInsertWithParamsInSelectCommandWithSelectInColumnName(SqlType paramType)
+		{
+			var sqlString = new SqlStringBuilder()
+				.Add("insert into table1 (col1_select_aaa) ")
+				.Add("values(")
+				.AddParameter()
+				.Add(") from table2")
+				.ToSqlString();
+
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
+		}
+
+        private IDbCommand BuildInsertWithParamsInSelectCommandWithWhereInColumnName(SqlType paramType)
+		{
+			var sqlString = new SqlStringBuilder()
+				.Add("insert into table1 (col1_where_aaa) ")
+				.Add("values(")
+				.AddParameter()
+				.Add(") from table2")
+				.ToSqlString();
+
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
+		}
 	}
 }
