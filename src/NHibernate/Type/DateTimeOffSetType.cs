@@ -13,6 +13,8 @@ namespace NHibernate.Type
 	[Serializable]
 	public class DateTimeOffsetType : PrimitiveType, IIdentifierType, ILiteralType, IVersionType
 	{
+		static readonly DateTimeOffset BaseDateValue = DateTimeOffset.MinValue;
+
 		/// <summary></summary>
 		public DateTimeOffsetType()
 			: base(SqlTypeFactory.DateTimeOffSet)
@@ -36,7 +38,7 @@ namespace NHibernate.Type
 
 		public override object DefaultValue
 		{
-			get { throw new NotImplementedException(); }
+			get { return BaseDateValue; }
 		}
 
 		public IComparer Comparator
@@ -56,7 +58,6 @@ namespace NHibernate.Type
 			try
 			{
 				var dbValue = (DateTimeOffset) rs[index];
-				;
 				return new DateTimeOffset(dbValue.Ticks, dbValue.Offset);
 			}
 			catch (Exception ex)
