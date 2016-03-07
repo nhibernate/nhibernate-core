@@ -136,7 +136,7 @@ namespace NHibernate.Test.DriverTest
 		public void AdjustCommand_InsertWithParamsInSelect_ParameterIsNotCasted_WhenColumnNameContainsWhere()
 		{
 			MakeDriver();
-			var cmd = BuildInsertWithParamsInSelectCommandWithSelectInColumnName(SqlTypeFactory.Int32);
+			var cmd = BuildInsertWithParamsInSelectCommandWithWhereInColumnName(SqlTypeFactory.Int32);
 
 			_driver.AdjustCommand(cmd);
 
@@ -237,6 +237,18 @@ namespace NHibernate.Test.DriverTest
 		{
 			var sqlString = new SqlStringBuilder()
 				.Add("insert into table1 (col1_select_aaa) ")
+				.Add("values(")
+				.AddParameter()
+				.Add(") from table2")
+				.ToSqlString();
+
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
+		}
+
+        private IDbCommand BuildInsertWithParamsInSelectCommandWithWhereInColumnName(SqlType paramType)
+		{
+			var sqlString = new SqlStringBuilder()
+				.Add("insert into table1 (col1_where_aaa) ")
 				.Add("values(")
 				.AddParameter()
 				.Add(") from table2")
