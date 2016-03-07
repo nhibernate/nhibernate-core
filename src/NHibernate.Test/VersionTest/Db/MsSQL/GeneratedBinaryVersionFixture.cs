@@ -103,7 +103,7 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 				}
 				Assert.Fail("Expected exception was not thrown");
 			}
-			catch (StaleObjectStateException)
+			catch (StaleStateException)
 			{
 				// as expected
 			}
