@@ -55,7 +55,7 @@ namespace NHibernate.Test.NHSpecificTest
 					}
 
 					top.Name = "new name";
-					Assert.Throws<StaleStateException>(() => session.Flush());
+                    Assert.Throws(Is.InstanceOf<StaleStateException>(), () => session.Flush());
 				}
 			}
 			finally
@@ -89,7 +89,8 @@ namespace NHibernate.Test.NHSpecificTest
 					}
 
 					optimistic.String = "new string";
-					Assert.Throws<StaleStateException>(() => session.Flush());
+
+                    Assert.Throws(Is.InstanceOf<StaleStateException>(), () => session.Flush());
 				}
 			}
 			finally
