@@ -23,7 +23,7 @@ namespace NHibernate.Loader.Entity
 
 			SqlStringBuilder whereCondition = WhereString(Alias, uniqueKey, batchSize)
 				//include the discriminator and class-level where, but not filters
-				.Add(persister.FilterFragment(Alias, new CollectionHelper.EmptyMapClass<string, IFilter>()));
+				.Add(persister.FilterFragment(Alias, new CollectionHelper.EmptyMapClass<string, IFilter>(), false));
 
 			InitAll(whereCondition.ToSqlString(), SqlString.Empty, lockMode);
 		}

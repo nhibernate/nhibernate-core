@@ -68,7 +68,7 @@ namespace NHibernate.Persister.Entity
 		private static readonly object NullDiscriminator = new object();
 		private static readonly object NotNullDiscriminator = new object();
 
-		public SingleTableEntityPersister(PersistentClass persistentClass, ICacheConcurrencyStrategy cache,
+        public SingleTableEntityPersister(PersistentClass persistentClass, ICacheConcurrencyStrategy cache,
 																			ISessionFactoryImplementor factory, IMapping mapping)
 			: base(persistentClass, cache, factory)
 		{
@@ -496,8 +496,8 @@ namespace NHibernate.Persister.Entity
 		{
 			return subclassTableSequentialSelect[table] && !isClassOrSuperclassTable[table];
 		}
-
-		public override string FromTableFragment(string name)
+        
+        public override string FromTableFragment(string name)
 		{
 			return TableName + ' ' + name;
 		}
@@ -510,8 +510,8 @@ namespace NHibernate.Persister.Entity
 
 			return result;
 		}
-
-		public override string OneToManyFilterFragment(string alias)
+        
+        public override string OneToManyFilterFragment(string alias)
 		{
 			return forceDiscriminator ? DiscriminatorFilterFragment(alias) : string.Empty;
 		}

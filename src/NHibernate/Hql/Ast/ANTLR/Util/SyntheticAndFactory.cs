@@ -147,7 +147,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 
 		public virtual void AddDiscriminatorWhereFragment(IRestrictableStatement statement, IQueryable persister, IDictionary<string, IFilter> enabledFilters, string alias)
 		{
-			string whereFragment = persister.FilterFragment(alias, enabledFilters).Trim();
+			string whereFragment = persister.FilterFragment(alias, enabledFilters, false).Trim();
 			if (string.Empty.Equals(whereFragment))
 			{
 				return;

@@ -58,7 +58,7 @@ namespace NHibernate.Loader.Collection
 			CollectionSuffixes = BasicLoader.GenerateSuffixes(joins + 1, collectionJoins);
 
 			SqlStringBuilder whereString = WhereString(alias, oneToManyPersister.KeyColumnNames, subquery, batchSize);
-			string filter = oneToManyPersister.FilterFragment(alias, EnabledFilters);
+			string filter = oneToManyPersister.FilterFragment(alias, EnabledFilters, false);
 			whereString.Insert(0, StringHelper.MoveAndToBeginning(filter));
 
 			JoinFragment ojf = MergeOuterJoins(associations);

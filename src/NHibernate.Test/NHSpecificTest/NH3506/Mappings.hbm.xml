@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH3506">
+  
+  <class name="Entity">
+	<id name="Id" generator="guid.comb" />
+    <discriminator column="ObjectType"/>
+      
+	<property name="Name" />
+    <property name="Deleted" />
+
+    <subclass name="Person" discriminator-value="Person">
+      <many-to-one name="Employer" column="EmployerId" />
+    </subclass>
+
+    <subclass name="Employer" discriminator-value="Employer">
+    </subclass>
+
+    <filter name="deletedFilter" />      
+  </class>
+
+  <filter-def name="deletedFilter" condition="Deleted is null"></filter-def>
+  
+</hibernate-mapping>
