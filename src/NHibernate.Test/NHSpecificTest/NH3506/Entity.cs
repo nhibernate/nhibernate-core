@@ -17,6 +17,5 @@ namespace NHibernate.Test.NHSpecificTest.NH3506
 
     class Employer : Entity
     {
-
     }
 }

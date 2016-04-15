@@ -96,7 +96,7 @@ namespace NHibernate.Loader.Criteria
 		/// </summary>
 		protected override SqlString WhereFragment
 		{
-			get { return base.WhereFragment.Append(((IQueryable) Persister).FilterFragment(Alias, EnabledFilters)); }
+			get { return base.WhereFragment.Append(((IQueryable) Persister).FilterFragment(Alias, EnabledFilters, false)); }
 		}
 
 		public ISet<string> QuerySpaces

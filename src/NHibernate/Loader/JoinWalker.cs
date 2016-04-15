@@ -647,11 +647,13 @@ namespace NHibernate.Loader
 				else
 				{
 					oj.AddJoins(outerjoin);
+
 					// NH Different behavior : NH1179 and NH1293
 					// Apply filters in Many-To-One association
 					if (enabledFiltersForManyToOne.Count > 0)
 					{
-						string manyToOneFilterFragment = oj.Joinable.FilterFragment(oj.RHSAlias, enabledFiltersForManyToOne);
+                        // never include descriminator here
+						string manyToOneFilterFragment = oj.Joinable.FilterFragment(oj.RHSAlias, enabledFiltersForManyToOne, true);
 						bool joinClauseDoesNotContainsFilterAlready =
 							outerjoin.ToFromFragmentString.IndexOfCaseInsensitive(manyToOneFilterFragment) == -1;
 						if (joinClauseDoesNotContainsFilterAlready)

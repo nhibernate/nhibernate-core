@@ -17,7 +17,7 @@ namespace NHibernate.Loader.Entity
 			cascadeAction = action;
 			SqlStringBuilder whereCondition = WhereString(Alias, persister.IdentifierColumnNames, 1)
 				//include the discriminator and class-level where, but not filters
-				.Add(persister.FilterFragment(Alias, new CollectionHelper.EmptyMapClass<string, IFilter>()));
+				.Add(persister.FilterFragment(Alias, new CollectionHelper.EmptyMapClass<string, IFilter>(), false));
 
 			InitAll(whereCondition.ToSqlString(), SqlString.Empty, LockMode.Read);
 		}

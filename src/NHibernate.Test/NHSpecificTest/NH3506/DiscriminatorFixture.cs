@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3506
 {
 	[TestFixture]
-	public class DescriminatorFixture : BugTestCase
+	public class DiscriminatorFixture : BugTestCase
 	{
 		protected override void OnSetUp()
 		{
@@ -41,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3506
 		}
 
 		[Test]
-		public void DescriminatorFilterIsInFromFragment()
+		public void JoinedDiscriminatorIsNotInWhere()
 		{
 			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
@@ -54,6 +54,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3506
 
 				Assert.AreEqual(2, result.List().Count);
 			}
-		}
-	}
+        }
+    }
 }
