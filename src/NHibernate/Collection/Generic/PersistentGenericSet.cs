@@ -390,7 +390,7 @@ namespace NHibernate.Collection.Generic
 		public bool IsSubsetOf(IEnumerable<T> other)
 		{
 			Read();
-			return WrappedSet.IsProperSupersetOf(other);
+			return WrappedSet.IsSubsetOf(other);
 		}
 
 		public bool IsSupersetOf(IEnumerable<T> other)
