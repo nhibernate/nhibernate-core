@@ -146,7 +146,7 @@ unionedQuery!
 	;
 
 orderClause
-	: ^(ORDER { HandleClauseStart( ORDER ); } (orderExprs | query (ASCENDING | DESCENDING)? ))
+	: ^(ORDER { HandleClauseStart( ORDER ); } (orderExprs))
 	;
 
 orderExprs
@@ -156,6 +156,7 @@ orderExprs
 orderExpr
 	: { IsOrderExpressionResultVariableRef( (IASTNode) input.LT(1) ) }? resultVariableRef
 	| expr
+	| query
 	;
 
 resultVariableRef!

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// $ANTLR 3.5.0.2 HqlSqlWalker.g 2015-05-03 23:15:28
+// $ANTLR 3.5.0.2 HqlSqlWalker.g 2016-04-29 17:08:21
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 219
@@ -2122,7 +2122,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_orderClause();
 	partial void LeaveRule_orderClause();
 	// $ANTLR start "orderClause"
-	// HqlSqlWalker.g:148:1: orderClause : ^( ORDER ( orderExprs | query ( ASCENDING | DESCENDING )? ) ) ;
+	// HqlSqlWalker.g:148:1: orderClause : ^( ORDER ( orderExprs ) ) ;
 	[GrammarRule("orderClause")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> orderClause()
 	{
@@ -2138,19 +2138,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _last = default(IASTNode);
 
 		IASTNode ORDER27 = default(IASTNode);
-		IASTNode set30 = default(IASTNode);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> orderExprs28 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> query29 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 		IASTNode ORDER27_tree = default(IASTNode);
-		IASTNode set30_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "orderClause");
 		DebugLocation(148, 1);
 		try
 		{
-			// HqlSqlWalker.g:149:2: ( ^( ORDER ( orderExprs | query ( ASCENDING | DESCENDING )? ) ) )
+			// HqlSqlWalker.g:149:2: ( ^( ORDER ( orderExprs ) ) )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:149:4: ^( ORDER ( orderExprs | query ( ASCENDING | DESCENDING )? ) )
+			// HqlSqlWalker.g:149:4: ^( ORDER ( orderExprs ) )
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
@@ -2176,111 +2173,21 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 			Match(input, TokenTypes.Down, null); 
 			DebugLocation(149, 44);
-			// HqlSqlWalker.g:149:44: ( orderExprs | query ( ASCENDING | DESCENDING )? )
-			int alt17=2;
-			try { DebugEnterSubRule(17);
-			try { DebugEnterDecision(17, false);
-			int LA17_1 = input.LA(1);
-
-			if ((LA17_1==AGGREGATE||LA17_1==BAND||(LA17_1>=BNOT && LA17_1<=BOR)||(LA17_1>=BXOR && LA17_1<=CASE2)||LA17_1==COLON||LA17_1==COUNT||(LA17_1>=DIV && LA17_1<=DOT)||LA17_1==FALSE||LA17_1==IDENT||LA17_1==INDEX_OP||LA17_1==JAVA_CONSTANT||LA17_1==METHOD_CALL||LA17_1==MINUS||(LA17_1>=NULL && LA17_1<=NUM_LONG)||(LA17_1>=PARAM && LA17_1<=PLUS)||LA17_1==QUOTED_String||LA17_1==STAR||(LA17_1>=TRUE && LA17_1<=UNARY_MINUS)||LA17_1==VECTOR_EXPR||LA17_1==WEIRD_IDENT))
+			// HqlSqlWalker.g:149:44: ( orderExprs )
+			DebugEnterAlt(1);
+			// HqlSqlWalker.g:149:45: orderExprs
 			{
-				alt17 = 1;
-			}
-			else if ((LA17_1==QUERY||LA17_1==UNION))
-			{
-				alt17 = 2;
-			}
-			else
-			{
-				NoViableAltException nvae = new NoViableAltException("", 17, 0, input, 1);
-				DebugRecognitionException(nvae);
-				throw nvae;
-			}
-			} finally { DebugExitDecision(17); }
-			switch (alt17)
-			{
-			case 1:
-				DebugEnterAlt(1);
-				// HqlSqlWalker.g:149:45: orderExprs
-				{
-				DebugLocation(149, 45);
+			DebugLocation(149, 45);
 
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._orderExprs_in_orderClause699);
-				orderExprs28=orderExprs();
-				PopFollow();
+			_last = (IASTNode)input.LT(1);
+			PushFollow(Follow._orderExprs_in_orderClause699);
+			orderExprs28=orderExprs();
+			PopFollow();
 
-				adaptor.AddChild(root_1, orderExprs28.Tree);
+			adaptor.AddChild(root_1, orderExprs28.Tree);
 
-
-				}
-				break;
-			case 2:
-				DebugEnterAlt(2);
-				// HqlSqlWalker.g:149:58: query ( ASCENDING | DESCENDING )?
-				{
-				DebugLocation(149, 58);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._query_in_orderClause703);
-				query29=query();
-				PopFollow();
-
-				adaptor.AddChild(root_1, query29.Tree);
-
-				DebugLocation(149, 64);
-				// HqlSqlWalker.g:149:64: ( ASCENDING | DESCENDING )?
-				int alt16=2;
-				try { DebugEnterSubRule(16);
-				try { DebugEnterDecision(16, false);
-				int LA16_1 = input.LA(1);
-
-				if ((LA16_1==ASCENDING||LA16_1==DESCENDING))
-				{
-					alt16 = 1;
-				}
-				} finally { DebugExitDecision(16); }
-				switch (alt16)
-				{
-				case 1:
-					DebugEnterAlt(1);
-					// HqlSqlWalker.g:
-					{
-					DebugLocation(149, 64);
-
-					_last = (IASTNode)input.LT(1);
-					set30=(IASTNode)input.LT(1);
-					if (input.LA(1)==ASCENDING||input.LA(1)==DESCENDING)
-					{
-						input.Consume();
-						set30_tree = (IASTNode)adaptor.DupNode(set30);
-
-
-						adaptor.AddChild(root_1, set30_tree);
-
-						state.errorRecovery=false;
-					}
-					else
-					{
-						MismatchedSetException mse = new MismatchedSetException(null,input);
-						DebugRecognitionException(mse);
-						throw mse;
-					}
-
-
-
-					}
-					break;
-
-				}
-				} finally { DebugExitSubRule(16); }
-
-
-				}
-				break;
 
 			}
-			} finally { DebugExitSubRule(17); }
 
 
 			Match(input, TokenTypes.Up, null); 
@@ -2330,11 +2237,11 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		IASTNode set32 = default(IASTNode);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> orderExpr31 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> orderExprs33 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode set30 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> orderExpr29 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> orderExprs31 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-		IASTNode set32_tree = default(IASTNode);
+		IASTNode set30_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "orderExprs");
 		DebugLocation(152, 1);
 		try
@@ -2348,25 +2255,25 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			DebugLocation(153, 4);
 
 			_last = (IASTNode)input.LT(1);
-			PushFollow(Follow._orderExpr_in_orderExprs726);
-			orderExpr31=orderExpr();
+			PushFollow(Follow._orderExpr_in_orderExprs712);
+			orderExpr29=orderExpr();
 			PopFollow();
 
-			adaptor.AddChild(root_0, orderExpr31.Tree);
+			adaptor.AddChild(root_0, orderExpr29.Tree);
 
 			DebugLocation(153, 14);
 			// HqlSqlWalker.g:153:14: ( ASCENDING | DESCENDING )?
-			int alt18=2;
-			try { DebugEnterSubRule(18);
-			try { DebugEnterDecision(18, false);
-			int LA18_1 = input.LA(1);
+			int alt16=2;
+			try { DebugEnterSubRule(16);
+			try { DebugEnterDecision(16, false);
+			int LA16_1 = input.LA(1);
 
-			if ((LA18_1==ASCENDING||LA18_1==DESCENDING))
+			if ((LA16_1==ASCENDING||LA16_1==DESCENDING))
 			{
-				alt18 = 1;
+				alt16 = 1;
 			}
-			} finally { DebugExitDecision(18); }
-			switch (alt18)
+			} finally { DebugExitDecision(16); }
+			switch (alt16)
 			{
 			case 1:
 				DebugEnterAlt(1);
@@ -2375,14 +2282,14 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				DebugLocation(153, 14);
 
 				_last = (IASTNode)input.LT(1);
-				set32=(IASTNode)input.LT(1);
+				set30=(IASTNode)input.LT(1);
 				if (input.LA(1)==ASCENDING||input.LA(1)==DESCENDING)
 				{
 					input.Consume();
-					set32_tree = (IASTNode)adaptor.DupNode(set32);
+					set30_tree = (IASTNode)adaptor.DupNode(set30);
 
 
-					adaptor.AddChild(root_0, set32_tree);
+					adaptor.AddChild(root_0, set30_tree);
 
 					state.errorRecovery=false;
 				}
@@ -2399,21 +2306,21 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				break;
 
 			}
-			} finally { DebugExitSubRule(18); }
+			} finally { DebugExitSubRule(16); }
 
 			DebugLocation(153, 42);
 			// HqlSqlWalker.g:153:42: ( orderExprs )?
-			int alt19=2;
-			try { DebugEnterSubRule(19);
-			try { DebugEnterDecision(19, false);
-			int LA19_1 = input.LA(1);
+			int alt17=2;
+			try { DebugEnterSubRule(17);
+			try { DebugEnterDecision(17, false);
+			int LA17_1 = input.LA(1);
 
-			if ((LA19_1==AGGREGATE||LA19_1==BAND||(LA19_1>=BNOT && LA19_1<=BOR)||(LA19_1>=BXOR && LA19_1<=CASE2)||LA19_1==COLON||LA19_1==COUNT||(LA19_1>=DIV && LA19_1<=DOT)||LA19_1==FALSE||LA19_1==IDENT||LA19_1==INDEX_OP||LA19_1==JAVA_CONSTANT||LA19_1==METHOD_CALL||LA19_1==MINUS||(LA19_1>=NULL && LA19_1<=NUM_LONG)||(LA19_1>=PARAM && LA19_1<=PLUS)||LA19_1==QUOTED_String||LA19_1==STAR||(LA19_1>=TRUE && LA19_1<=UNARY_MINUS)||LA19_1==VECTOR_EXPR||LA19_1==WEIRD_IDENT))
+			if ((LA17_1==AGGREGATE||LA17_1==BAND||(LA17_1>=BNOT && LA17_1<=BOR)||(LA17_1>=BXOR && LA17_1<=CASE2)||LA17_1==COLON||LA17_1==COUNT||(LA17_1>=DIV && LA17_1<=DOT)||LA17_1==FALSE||LA17_1==IDENT||LA17_1==INDEX_OP||LA17_1==JAVA_CONSTANT||LA17_1==METHOD_CALL||LA17_1==MINUS||(LA17_1>=NULL && LA17_1<=NUM_LONG)||(LA17_1>=PARAM && LA17_1<=PLUS)||(LA17_1>=QUERY && LA17_1<=QUOTED_String)||LA17_1==STAR||(LA17_1>=TRUE && LA17_1<=UNARY_MINUS)||LA17_1==UNION||LA17_1==VECTOR_EXPR||LA17_1==WEIRD_IDENT))
 			{
-				alt19 = 1;
+				alt17 = 1;
 			}
-			} finally { DebugExitDecision(19); }
-			switch (alt19)
+			} finally { DebugExitDecision(17); }
+			switch (alt17)
 			{
 			case 1:
 				DebugEnterAlt(1);
@@ -2422,18 +2329,18 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				DebugLocation(153, 43);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._orderExprs_in_orderExprs740);
-				orderExprs33=orderExprs();
+				PushFollow(Follow._orderExprs_in_orderExprs726);
+				orderExprs31=orderExprs();
 				PopFollow();
 
-				adaptor.AddChild(root_0, orderExprs33.Tree);
+				adaptor.AddChild(root_0, orderExprs31.Tree);
 
 
 				}
 				break;
 
 			}
-			} finally { DebugExitSubRule(19); }
+			} finally { DebugExitSubRule(17); }
 
 
 			}
@@ -2462,7 +2369,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_orderExpr();
 	partial void LeaveRule_orderExpr();
 	// $ANTLR start "orderExpr"
-	// HqlSqlWalker.g:156:1: orderExpr : ({...}? resultVariableRef | expr );
+	// HqlSqlWalker.g:156:1: orderExpr : ({...}? resultVariableRef | expr | query );
 	[GrammarRule("orderExpr")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> orderExpr()
 	{
@@ -2477,49 +2384,89 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		AstTreeRuleReturnScope<IASTNode, IASTNode> resultVariableRef34 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> expr35 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> resultVariableRef32 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr33 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> query34 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "orderExpr");
 		DebugLocation(156, 1);
 		try
 		{
-			// HqlSqlWalker.g:157:2: ({...}? resultVariableRef | expr )
-			int alt20=2;
-			try { DebugEnterDecision(20, false);
-			int LA20_1 = input.LA(1);
-
-			if ((LA20_1==IDENT||LA20_1==WEIRD_IDENT))
+			// HqlSqlWalker.g:157:2: ({...}? resultVariableRef | expr | query )
+			int alt18=3;
+			try { DebugEnterDecision(18, false);
+			switch (input.LA(1))
 			{
-				int LA20_2 = input.LA(2);
+			case IDENT:
+			case WEIRD_IDENT:
+				{
+				int LA18_2 = input.LA(2);
 
 				if ((( IsOrderExpressionResultVariableRef( (IASTNode) input.LT(1) ) )))
 				{
-					alt20 = 1;
+					alt18 = 1;
 				}
 				else if ((true))
 				{
-					alt20 = 2;
+					alt18 = 2;
 				}
 				else
 				{
-					NoViableAltException nvae = new NoViableAltException("", 20, 1, input, 2);
+					NoViableAltException nvae = new NoViableAltException("", 18, 1, input, 2);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
+				}
+				break;
+			case AGGREGATE:
+			case BAND:
+			case BNOT:
+			case BOR:
+			case BXOR:
+			case CASE:
+			case CASE2:
+			case COLON:
+			case COUNT:
+			case DIV:
+			case DOT:
+			case FALSE:
+			case INDEX_OP:
+			case JAVA_CONSTANT:
+			case METHOD_CALL:
+			case MINUS:
+			case NULL:
+			case NUM_DECIMAL:
+			case NUM_DOUBLE:
+			case NUM_FLOAT:
+			case NUM_INT:
+			case NUM_LONG:
+			case PARAM:
+			case PLUS:
+			case QUOTED_String:
+			case STAR:
+			case TRUE:
+			case UNARY_MINUS:
+			case VECTOR_EXPR:
+				{
+				alt18 = 2;
+				}
+				break;
+			case QUERY:
+			case UNION:
+				{
+				alt18 = 3;
+				}
+				break;
+			default:
+				{
+					NoViableAltException nvae = new NoViableAltException("", 18, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
 			}
-			else if ((LA20_1==AGGREGATE||LA20_1==BAND||(LA20_1>=BNOT && LA20_1<=BOR)||(LA20_1>=BXOR && LA20_1<=CASE2)||LA20_1==COLON||LA20_1==COUNT||(LA20_1>=DIV && LA20_1<=DOT)||LA20_1==FALSE||LA20_1==INDEX_OP||LA20_1==JAVA_CONSTANT||LA20_1==METHOD_CALL||LA20_1==MINUS||(LA20_1>=NULL && LA20_1<=NUM_LONG)||(LA20_1>=PARAM && LA20_1<=PLUS)||LA20_1==QUOTED_String||LA20_1==STAR||(LA20_1>=TRUE && LA20_1<=UNARY_MINUS)||LA20_1==VECTOR_EXPR))
-			{
-				alt20 = 2;
-			}
-			else
-			{
-				NoViableAltException nvae = new NoViableAltException("", 20, 0, input, 1);
-				DebugRecognitionException(nvae);
-				throw nvae;
-			}
-			} finally { DebugExitDecision(20); }
-			switch (alt20)
+
+			} finally { DebugExitDecision(18); }
+			switch (alt18)
 			{
 			case 1:
 				DebugEnterAlt(1);
@@ -2535,11 +2482,11 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				DebugLocation(157, 70);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._resultVariableRef_in_orderExpr755);
-				resultVariableRef34=resultVariableRef();
+				PushFollow(Follow._resultVariableRef_in_orderExpr741);
+				resultVariableRef32=resultVariableRef();
 				PopFollow();
 
-				adaptor.AddChild(root_0, resultVariableRef34.Tree);
+				adaptor.AddChild(root_0, resultVariableRef32.Tree);
 
 
 				}
@@ -2553,11 +2500,29 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				DebugLocation(158, 4);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._expr_in_orderExpr760);
-				expr35=expr();
+				PushFollow(Follow._expr_in_orderExpr746);
+				expr33=expr();
 				PopFollow();
 
-				adaptor.AddChild(root_0, expr35.Tree);
+				adaptor.AddChild(root_0, expr33.Tree);
+
+
+				}
+				break;
+			case 3:
+				DebugEnterAlt(3);
+				// HqlSqlWalker.g:159:4: query
+				{
+				root_0 = (IASTNode)adaptor.Nil();
+
+				DebugLocation(159, 4);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._query_in_orderExpr751);
+				query34=query();
+				PopFollow();
+
+				adaptor.AddChild(root_0, query34.Tree);
 
 
 				}
@@ -2578,7 +2543,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("orderExpr", 15);
 			LeaveRule_orderExpr();
 		}
-		DebugLocation(159, 1);
+		DebugLocation(160, 1);
 		} finally { DebugExitRule(GrammarFileName, "orderExpr"); }
 		return retval;
 
@@ -2588,7 +2553,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_resultVariableRef();
 	partial void LeaveRule_resultVariableRef();
 	// $ANTLR start "resultVariableRef"
-	// HqlSqlWalker.g:161:1: resultVariableRef : i= identifier -> ^( RESULT_VARIABLE_REF[$i.tree.Text] ) ;
+	// HqlSqlWalker.g:162:1: resultVariableRef : i= identifier -> ^( RESULT_VARIABLE_REF[$i.tree.Text] ) ;
 	[GrammarRule("resultVariableRef")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> resultVariableRef()
 	{
@@ -2607,16 +2572,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 		RewriteRuleSubtreeStream stream_identifier=new RewriteRuleSubtreeStream(adaptor,"rule identifier");
 		try { DebugEnterRule(GrammarFileName, "resultVariableRef");
-		DebugLocation(161, 1);
+		DebugLocation(162, 1);
 		try
 		{
-			// HqlSqlWalker.g:165:2: (i= identifier -> ^( RESULT_VARIABLE_REF[$i.tree.Text] ) )
+			// HqlSqlWalker.g:166:2: (i= identifier -> ^( RESULT_VARIABLE_REF[$i.tree.Text] ) )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:165:4: i= identifier
+			// HqlSqlWalker.g:166:4: i= identifier
 			{
-			DebugLocation(165, 5);
+			DebugLocation(166, 5);
 			_last = (IASTNode)input.LT(1);
-			PushFollow(Follow._identifier_in_resultVariableRef780);
+			PushFollow(Follow._identifier_in_resultVariableRef771);
 			i=identifier();
 			PopFollow();
 
@@ -2635,13 +2600,13 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 			root_0 = (IASTNode)adaptor.Nil();
-			// 166:2: -> ^( RESULT_VARIABLE_REF[$i.tree.Text] )
+			// 167:2: -> ^( RESULT_VARIABLE_REF[$i.tree.Text] )
 			{
-				DebugLocation(166, 5);
-				// HqlSqlWalker.g:166:5: ^( RESULT_VARIABLE_REF[$i.tree.Text] )
+				DebugLocation(167, 5);
+				// HqlSqlWalker.g:167:5: ^( RESULT_VARIABLE_REF[$i.tree.Text] )
 				{
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(166, 7);
+				DebugLocation(167, 7);
 				root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(RESULT_VARIABLE_REF, (i!=null?((IASTNode)i.Tree):default(IASTNode)).Text), root_1);
 
 				adaptor.AddChild(root_0, root_1);
@@ -2671,7 +2636,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("resultVariableRef", 16);
 			LeaveRule_resultVariableRef();
 		}
-		DebugLocation(167, 1);
+		DebugLocation(168, 1);
 		} finally { DebugExitRule(GrammarFileName, "resultVariableRef"); }
 		return retval;
 
@@ -2681,7 +2646,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_skipClause();
 	partial void LeaveRule_skipClause();
 	// $ANTLR start "skipClause"
-	// HqlSqlWalker.g:169:1: skipClause : ^( SKIP ( NUM_INT | parameter ) ) ;
+	// HqlSqlWalker.g:170:1: skipClause : ^( SKIP ( NUM_INT | parameter ) ) ;
 	[GrammarRule("skipClause")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> skipClause()
 	{
@@ -2696,99 +2661,99 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		IASTNode SKIP36 = default(IASTNode);
-		IASTNode NUM_INT37 = default(IASTNode);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> parameter38 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode SKIP35 = default(IASTNode);
+		IASTNode NUM_INT36 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> parameter37 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-		IASTNode SKIP36_tree = default(IASTNode);
-		IASTNode NUM_INT37_tree = default(IASTNode);
+		IASTNode SKIP35_tree = default(IASTNode);
+		IASTNode NUM_INT36_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "skipClause");
-		DebugLocation(169, 1);
+		DebugLocation(170, 1);
 		try
 		{
-			// HqlSqlWalker.g:170:2: ( ^( SKIP ( NUM_INT | parameter ) ) )
+			// HqlSqlWalker.g:171:2: ( ^( SKIP ( NUM_INT | parameter ) ) )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:170:4: ^( SKIP ( NUM_INT | parameter ) )
+			// HqlSqlWalker.g:171:4: ^( SKIP ( NUM_INT | parameter ) )
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(170, 4);
+			DebugLocation(171, 4);
 
 			_last = (IASTNode)input.LT(1);
 			{
 			IASTNode _save_last_1 = _last;
 			IASTNode _first_1 = default(IASTNode);
 			IASTNode root_1 = (IASTNode)adaptor.Nil();
-			DebugLocation(170, 6);
+			DebugLocation(171, 6);
 
 			_last = (IASTNode)input.LT(1);
-			SKIP36=(IASTNode)Match(input,SKIP,Follow._SKIP_in_skipClause802); 
-			SKIP36_tree = (IASTNode)adaptor.DupNode(SKIP36);
+			SKIP35=(IASTNode)Match(input,SKIP,Follow._SKIP_in_skipClause793); 
+			SKIP35_tree = (IASTNode)adaptor.DupNode(SKIP35);
 
 
-			root_1 = (IASTNode)adaptor.BecomeRoot(SKIP36_tree, root_1);
+			root_1 = (IASTNode)adaptor.BecomeRoot(SKIP35_tree, root_1);
 
 
 			Match(input, TokenTypes.Down, null); 
-			DebugLocation(170, 11);
-			// HqlSqlWalker.g:170:11: ( NUM_INT | parameter )
-			int alt21=2;
-			try { DebugEnterSubRule(21);
-			try { DebugEnterDecision(21, false);
-			int LA21_1 = input.LA(1);
+			DebugLocation(171, 11);
+			// HqlSqlWalker.g:171:11: ( NUM_INT | parameter )
+			int alt19=2;
+			try { DebugEnterSubRule(19);
+			try { DebugEnterDecision(19, false);
+			int LA19_1 = input.LA(1);
 
-			if ((LA21_1==NUM_INT))
+			if ((LA19_1==NUM_INT))
 			{
-				alt21 = 1;
+				alt19 = 1;
 			}
-			else if ((LA21_1==COLON||LA21_1==PARAM))
+			else if ((LA19_1==COLON||LA19_1==PARAM))
 			{
-				alt21 = 2;
+				alt19 = 2;
 			}
 			else
 			{
-				NoViableAltException nvae = new NoViableAltException("", 21, 0, input, 1);
+				NoViableAltException nvae = new NoViableAltException("", 19, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-			} finally { DebugExitDecision(21); }
-			switch (alt21)
+			} finally { DebugExitDecision(19); }
+			switch (alt19)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// HqlSqlWalker.g:170:12: NUM_INT
+				// HqlSqlWalker.g:171:12: NUM_INT
 				{
-				DebugLocation(170, 12);
+				DebugLocation(171, 12);
 
 				_last = (IASTNode)input.LT(1);
-				NUM_INT37=(IASTNode)Match(input,NUM_INT,Follow._NUM_INT_in_skipClause805); 
-				NUM_INT37_tree = (IASTNode)adaptor.DupNode(NUM_INT37);
+				NUM_INT36=(IASTNode)Match(input,NUM_INT,Follow._NUM_INT_in_skipClause796); 
+				NUM_INT36_tree = (IASTNode)adaptor.DupNode(NUM_INT36);
 
 
-				adaptor.AddChild(root_1, NUM_INT37_tree);
+				adaptor.AddChild(root_1, NUM_INT36_tree);
 
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// HqlSqlWalker.g:170:22: parameter
+				// HqlSqlWalker.g:171:22: parameter
 				{
-				DebugLocation(170, 22);
+				DebugLocation(171, 22);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._parameter_in_skipClause809);
-				parameter38=parameter();
+				PushFollow(Follow._parameter_in_skipClause800);
+				parameter37=parameter();
 				PopFollow();
 
-				adaptor.AddChild(root_1, parameter38.Tree);
+				adaptor.AddChild(root_1, parameter37.Tree);
 
 
 				}
 				break;
 
 			}
-			} finally { DebugExitSubRule(21); }
+			} finally { DebugExitSubRule(19); }
 
 
 			Match(input, TokenTypes.Up, null); 
@@ -2813,7 +2778,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("skipClause", 17);
 			LeaveRule_skipClause();
 		}
-		DebugLocation(171, 1);
+		DebugLocation(172, 1);
 		} finally { DebugExitRule(GrammarFileName, "skipClause"); }
 		return retval;
 
@@ -2823,7 +2788,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_takeClause();
 	partial void LeaveRule_takeClause();
 	// $ANTLR start "takeClause"
-	// HqlSqlWalker.g:173:1: takeClause : ^( TAKE ( NUM_INT | parameter ) ) ;
+	// HqlSqlWalker.g:174:1: takeClause : ^( TAKE ( NUM_INT | parameter ) ) ;
 	[GrammarRule("takeClause")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> takeClause()
 	{
@@ -2838,99 +2803,99 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		IASTNode TAKE39 = default(IASTNode);
-		IASTNode NUM_INT40 = default(IASTNode);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> parameter41 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode TAKE38 = default(IASTNode);
+		IASTNode NUM_INT39 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> parameter40 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-		IASTNode TAKE39_tree = default(IASTNode);
-		IASTNode NUM_INT40_tree = default(IASTNode);
+		IASTNode TAKE38_tree = default(IASTNode);
+		IASTNode NUM_INT39_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "takeClause");
-		DebugLocation(173, 1);
+		DebugLocation(174, 1);
 		try
 		{
-			// HqlSqlWalker.g:174:2: ( ^( TAKE ( NUM_INT | parameter ) ) )
+			// HqlSqlWalker.g:175:2: ( ^( TAKE ( NUM_INT | parameter ) ) )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:174:4: ^( TAKE ( NUM_INT | parameter ) )
+			// HqlSqlWalker.g:175:4: ^( TAKE ( NUM_INT | parameter ) )
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(174, 4);
+			DebugLocation(175, 4);
 
 			_last = (IASTNode)input.LT(1);
 			{
 			IASTNode _save_last_1 = _last;
 			IASTNode _first_1 = default(IASTNode);
 			IASTNode root_1 = (IASTNode)adaptor.Nil();
-			DebugLocation(174, 6);
+			DebugLocation(175, 6);
 
 			_last = (IASTNode)input.LT(1);
-			TAKE39=(IASTNode)Match(input,TAKE,Follow._TAKE_in_takeClause823); 
-			TAKE39_tree = (IASTNode)adaptor.DupNode(TAKE39);
+			TAKE38=(IASTNode)Match(input,TAKE,Follow._TAKE_in_takeClause814); 
+			TAKE38_tree = (IASTNode)adaptor.DupNode(TAKE38);
 
 
-			root_1 = (IASTNode)adaptor.BecomeRoot(TAKE39_tree, root_1);
+			root_1 = (IASTNode)adaptor.BecomeRoot(TAKE38_tree, root_1);
 
 
 			Match(input, TokenTypes.Down, null); 
-			DebugLocation(174, 11);
-			// HqlSqlWalker.g:174:11: ( NUM_INT | parameter )
-			int alt22=2;
-			try { DebugEnterSubRule(22);
-			try { DebugEnterDecision(22, false);
-			int LA22_1 = input.LA(1);
+			DebugLocation(175, 11);
+			// HqlSqlWalker.g:175:11: ( NUM_INT | parameter )
+			int alt20=2;
+			try { DebugEnterSubRule(20);
+			try { DebugEnterDecision(20, false);
+			int LA20_1 = input.LA(1);
 
-			if ((LA22_1==NUM_INT))
+			if ((LA20_1==NUM_INT))
 			{
-				alt22 = 1;
+				alt20 = 1;
 			}
-			else if ((LA22_1==COLON||LA22_1==PARAM))
+			else if ((LA20_1==COLON||LA20_1==PARAM))
 			{
-				alt22 = 2;
+				alt20 = 2;
 			}
 			else
 			{
-				NoViableAltException nvae = new NoViableAltException("", 22, 0, input, 1);
+				NoViableAltException nvae = new NoViableAltException("", 20, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-			} finally { DebugExitDecision(22); }
-			switch (alt22)
+			} finally { DebugExitDecision(20); }
+			switch (alt20)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// HqlSqlWalker.g:174:12: NUM_INT
+				// HqlSqlWalker.g:175:12: NUM_INT
 				{
-				DebugLocation(174, 12);
+				DebugLocation(175, 12);
 
 				_last = (IASTNode)input.LT(1);
-				NUM_INT40=(IASTNode)Match(input,NUM_INT,Follow._NUM_INT_in_takeClause826); 
-				NUM_INT40_tree = (IASTNode)adaptor.DupNode(NUM_INT40);
+				NUM_INT39=(IASTNode)Match(input,NUM_INT,Follow._NUM_INT_in_takeClause817); 
+				NUM_INT39_tree = (IASTNode)adaptor.DupNode(NUM_INT39);
 
 
-				adaptor.AddChild(root_1, NUM_INT40_tree);
+				adaptor.AddChild(root_1, NUM_INT39_tree);
 
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// HqlSqlWalker.g:174:22: parameter
+				// HqlSqlWalker.g:175:22: parameter
 				{
-				DebugLocation(174, 22);
+				DebugLocation(175, 22);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._parameter_in_takeClause830);
-				parameter41=parameter();
+				PushFollow(Follow._parameter_in_takeClause821);
+				parameter40=parameter();
 				PopFollow();
 
-				adaptor.AddChild(root_1, parameter41.Tree);
+				adaptor.AddChild(root_1, parameter40.Tree);
 
 
 				}
 				break;
 
 			}
-			} finally { DebugExitSubRule(22); }
+			} finally { DebugExitSubRule(20); }
 
 
 			Match(input, TokenTypes.Up, null); 
@@ -2955,7 +2920,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("takeClause", 18);
 			LeaveRule_takeClause();
 		}
-		DebugLocation(175, 1);
+		DebugLocation(176, 1);
 		} finally { DebugExitRule(GrammarFileName, "takeClause"); }
 		return retval;
 
@@ -2965,7 +2930,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_groupClause();
 	partial void LeaveRule_groupClause();
 	// $ANTLR start "groupClause"
-	// HqlSqlWalker.g:177:1: groupClause : ^( GROUP ( expr )+ ) ;
+	// HqlSqlWalker.g:178:1: groupClause : ^( GROUP ( expr )+ ) ;
 	[GrammarRule("groupClause")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> groupClause()
 	{
@@ -2980,91 +2945,91 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		IASTNode GROUP42 = default(IASTNode);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> expr43 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode GROUP41 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr42 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-		IASTNode GROUP42_tree = default(IASTNode);
+		IASTNode GROUP41_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "groupClause");
-		DebugLocation(177, 1);
+		DebugLocation(178, 1);
 		try
 		{
-			// HqlSqlWalker.g:178:2: ( ^( GROUP ( expr )+ ) )
+			// HqlSqlWalker.g:179:2: ( ^( GROUP ( expr )+ ) )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:178:4: ^( GROUP ( expr )+ )
+			// HqlSqlWalker.g:179:4: ^( GROUP ( expr )+ )
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(178, 4);
+			DebugLocation(179, 4);
 
 			_last = (IASTNode)input.LT(1);
 			{
 			IASTNode _save_last_1 = _last;
 			IASTNode _first_1 = default(IASTNode);
 			IASTNode root_1 = (IASTNode)adaptor.Nil();
-			DebugLocation(178, 6);
+			DebugLocation(179, 6);
 
 			_last = (IASTNode)input.LT(1);
-			GROUP42=(IASTNode)Match(input,GROUP,Follow._GROUP_in_groupClause844); 
-			GROUP42_tree = (IASTNode)adaptor.DupNode(GROUP42);
+			GROUP41=(IASTNode)Match(input,GROUP,Follow._GROUP_in_groupClause835); 
+			GROUP41_tree = (IASTNode)adaptor.DupNode(GROUP41);
 
 
-			root_1 = (IASTNode)adaptor.BecomeRoot(GROUP42_tree, root_1);
+			root_1 = (IASTNode)adaptor.BecomeRoot(GROUP41_tree, root_1);
 
 
-			DebugLocation(178, 12);
+			DebugLocation(179, 12);
 			 HandleClauseStart( GROUP ); 
 
 			Match(input, TokenTypes.Down, null); 
-			DebugLocation(178, 44);
-			// HqlSqlWalker.g:178:44: ( expr )+
-			int cnt23=0;
-			try { DebugEnterSubRule(23);
+			DebugLocation(179, 44);
+			// HqlSqlWalker.g:179:44: ( expr )+
+			int cnt21=0;
+			try { DebugEnterSubRule(21);
 			while (true)
 			{
-				int alt23=2;
-				try { DebugEnterDecision(23, false);
-				int LA23_1 = input.LA(1);
+				int alt21=2;
+				try { DebugEnterDecision(21, false);
+				int LA21_1 = input.LA(1);
 
-				if ((LA23_1==AGGREGATE||LA23_1==BAND||(LA23_1>=BNOT && LA23_1<=BOR)||(LA23_1>=BXOR && LA23_1<=CASE2)||LA23_1==COLON||LA23_1==COUNT||(LA23_1>=DIV && LA23_1<=DOT)||LA23_1==FALSE||LA23_1==IDENT||LA23_1==INDEX_OP||LA23_1==JAVA_CONSTANT||LA23_1==METHOD_CALL||LA23_1==MINUS||(LA23_1>=NULL && LA23_1<=NUM_LONG)||(LA23_1>=PARAM && LA23_1<=PLUS)||LA23_1==QUOTED_String||LA23_1==STAR||(LA23_1>=TRUE && LA23_1<=UNARY_MINUS)||LA23_1==VECTOR_EXPR||LA23_1==WEIRD_IDENT))
+				if ((LA21_1==AGGREGATE||LA21_1==BAND||(LA21_1>=BNOT && LA21_1<=BOR)||(LA21_1>=BXOR && LA21_1<=CASE2)||LA21_1==COLON||LA21_1==COUNT||(LA21_1>=DIV && LA21_1<=DOT)||LA21_1==FALSE||LA21_1==IDENT||LA21_1==INDEX_OP||LA21_1==JAVA_CONSTANT||LA21_1==METHOD_CALL||LA21_1==MINUS||(LA21_1>=NULL && LA21_1<=NUM_LONG)||(LA21_1>=PARAM && LA21_1<=PLUS)||LA21_1==QUOTED_String||LA21_1==STAR||(LA21_1>=TRUE && LA21_1<=UNARY_MINUS)||LA21_1==VECTOR_EXPR||LA21_1==WEIRD_IDENT))
 				{
-					alt23 = 1;
+					alt21 = 1;
 				}
 
 
-				} finally { DebugExitDecision(23); }
-				switch (alt23)
+				} finally { DebugExitDecision(21); }
+				switch (alt21)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// HqlSqlWalker.g:178:45: expr
+					// HqlSqlWalker.g:179:45: expr
 					{
-					DebugLocation(178, 45);
+					DebugLocation(179, 45);
 
 					_last = (IASTNode)input.LT(1);
-					PushFollow(Follow._expr_in_groupClause849);
-					expr43=expr();
+					PushFollow(Follow._expr_in_groupClause840);
+					expr42=expr();
 					PopFollow();
 
-					adaptor.AddChild(root_1, expr43.Tree);
+					adaptor.AddChild(root_1, expr42.Tree);
 
 
 					}
 					break;
 
 				default:
-					if (cnt23 >= 1)
-						goto loop23;
+					if (cnt21 >= 1)
+						goto loop21;
 
-					EarlyExitException eee23 = new EarlyExitException( 23, input );
-					DebugRecognitionException(eee23);
-					throw eee23;
+					EarlyExitException eee21 = new EarlyExitException( 21, input );
+					DebugRecognitionException(eee21);
+					throw eee21;
 				}
-				cnt23++;
+				cnt21++;
 			}
-			loop23:
+			loop21:
 				;
 
-			} finally { DebugExitSubRule(23); }
+			} finally { DebugExitSubRule(21); }
 
 
 			Match(input, TokenTypes.Up, null); 
@@ -3089,7 +3054,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("groupClause", 19);
 			LeaveRule_groupClause();
 		}
-		DebugLocation(179, 1);
+		DebugLocation(180, 1);
 		} finally { DebugExitRule(GrammarFileName, "groupClause"); }
 		return retval;
 
@@ -3099,7 +3064,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_havingClause();
 	partial void LeaveRule_havingClause();
 	// $ANTLR start "havingClause"
-	// HqlSqlWalker.g:181:1: havingClause : ^( HAVING logicalExpr ) ;
+	// HqlSqlWalker.g:182:1: havingClause : ^( HAVING logicalExpr ) ;
 	[GrammarRule("havingClause")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> havingClause()
 	{
@@ -3114,46 +3079,46 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		IASTNode HAVING44 = default(IASTNode);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> logicalExpr45 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode HAVING43 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> logicalExpr44 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-		IASTNode HAVING44_tree = default(IASTNode);
+		IASTNode HAVING43_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "havingClause");
-		DebugLocation(181, 1);
+		DebugLocation(182, 1);
 		try
 		{
-			// HqlSqlWalker.g:182:2: ( ^( HAVING logicalExpr ) )
+			// HqlSqlWalker.g:183:2: ( ^( HAVING logicalExpr ) )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:182:4: ^( HAVING logicalExpr )
+			// HqlSqlWalker.g:183:4: ^( HAVING logicalExpr )
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(182, 4);
+			DebugLocation(183, 4);
 
 			_last = (IASTNode)input.LT(1);
 			{
 			IASTNode _save_last_1 = _last;
 			IASTNode _first_1 = default(IASTNode);
 			IASTNode root_1 = (IASTNode)adaptor.Nil();
-			DebugLocation(182, 6);
+			DebugLocation(183, 6);
 
 			_last = (IASTNode)input.LT(1);
-			HAVING44=(IASTNode)Match(input,HAVING,Follow._HAVING_in_havingClause865); 
-			HAVING44_tree = (IASTNode)adaptor.DupNode(HAVING44);
+			HAVING43=(IASTNode)Match(input,HAVING,Follow._HAVING_in_havingClause856); 
+			HAVING43_tree = (IASTNode)adaptor.DupNode(HAVING43);
 
 
-			root_1 = (IASTNode)adaptor.BecomeRoot(HAVING44_tree, root_1);
+			root_1 = (IASTNode)adaptor.BecomeRoot(HAVING43_tree, root_1);
 
 
 			Match(input, TokenTypes.Down, null); 
-			DebugLocation(182, 13);
+			DebugLocation(183, 13);
 
 			_last = (IASTNode)input.LT(1);
-			PushFollow(Follow._logicalExpr_in_havingClause867);
-			logicalExpr45=logicalExpr();
+			PushFollow(Follow._logicalExpr_in_havingClause858);
+			logicalExpr44=logicalExpr();
 			PopFollow();
 
-			adaptor.AddChild(root_1, logicalExpr45.Tree);
+			adaptor.AddChild(root_1, logicalExpr44.Tree);
 
 
 			Match(input, TokenTypes.Up, null); 
@@ -3178,7 +3143,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("havingClause", 20);
 			LeaveRule_havingClause();
 		}
-		DebugLocation(183, 1);
+		DebugLocation(184, 1);
 		} finally { DebugExitRule(GrammarFileName, "havingClause"); }
 		return retval;
 
@@ -3188,7 +3153,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_selectClause();
 	partial void LeaveRule_selectClause();
 	// $ANTLR start "selectClause"
-	// HqlSqlWalker.g:185:1: selectClause : ^( SELECT (d= DISTINCT )? x= selectExprList ) -> ^( SELECT_CLAUSE[\"{select clause}\"] ( $d)? $x) ;
+	// HqlSqlWalker.g:186:1: selectClause : ^( SELECT (d= DISTINCT )? x= selectExprList ) -> ^( SELECT_CLAUSE[\"{select clause}\"] ( $d)? $x) ;
 	[GrammarRule("selectClause")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> selectClause()
 	{
@@ -3204,63 +3169,63 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _last = default(IASTNode);
 
 		IASTNode d = default(IASTNode);
-		IASTNode SELECT46 = default(IASTNode);
+		IASTNode SELECT45 = default(IASTNode);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> x = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 		IASTNode d_tree = default(IASTNode);
-		IASTNode SELECT46_tree = default(IASTNode);
+		IASTNode SELECT45_tree = default(IASTNode);
 		RewriteRuleNodeStream stream_SELECT=new RewriteRuleNodeStream(adaptor,"token SELECT");
 		RewriteRuleNodeStream stream_DISTINCT=new RewriteRuleNodeStream(adaptor,"token DISTINCT");
 		RewriteRuleSubtreeStream stream_selectExprList=new RewriteRuleSubtreeStream(adaptor,"rule selectExprList");
 		try { DebugEnterRule(GrammarFileName, "selectClause");
-		DebugLocation(185, 1);
+		DebugLocation(186, 1);
 		try
 		{
-			// HqlSqlWalker.g:186:2: ( ^( SELECT (d= DISTINCT )? x= selectExprList ) -> ^( SELECT_CLAUSE[\"{select clause}\"] ( $d)? $x) )
+			// HqlSqlWalker.g:187:2: ( ^( SELECT (d= DISTINCT )? x= selectExprList ) -> ^( SELECT_CLAUSE[\"{select clause}\"] ( $d)? $x) )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:186:4: ^( SELECT (d= DISTINCT )? x= selectExprList )
+			// HqlSqlWalker.g:187:4: ^( SELECT (d= DISTINCT )? x= selectExprList )
 			{
-			DebugLocation(186, 4);
+			DebugLocation(187, 4);
 
 			_last = (IASTNode)input.LT(1);
 			{
 			IASTNode _save_last_1 = _last;
 			IASTNode _first_1 = default(IASTNode);
 			IASTNode root_1 = (IASTNode)adaptor.Nil();
-			DebugLocation(186, 6);
+			DebugLocation(187, 6);
 
 			_last = (IASTNode)input.LT(1);
-			SELECT46=(IASTNode)Match(input,SELECT,Follow._SELECT_in_selectClause881); 
+			SELECT45=(IASTNode)Match(input,SELECT,Follow._SELECT_in_selectClause872); 
 			 
-			stream_SELECT.Add(SELECT46);
+			stream_SELECT.Add(SELECT45);
 
 
-			DebugLocation(186, 13);
+			DebugLocation(187, 13);
 			 HandleClauseStart( SELECT ); BeforeSelectClause(); 
 
 			Match(input, TokenTypes.Down, null); 
-			DebugLocation(186, 68);
-			// HqlSqlWalker.g:186:68: (d= DISTINCT )?
-			int alt24=2;
-			try { DebugEnterSubRule(24);
-			try { DebugEnterDecision(24, false);
-			int LA24_1 = input.LA(1);
+			DebugLocation(187, 68);
+			// HqlSqlWalker.g:187:68: (d= DISTINCT )?
+			int alt22=2;
+			try { DebugEnterSubRule(22);
+			try { DebugEnterDecision(22, false);
+			int LA22_1 = input.LA(1);
 
-			if ((LA24_1==DISTINCT))
+			if ((LA22_1==DISTINCT))
 			{
-				alt24 = 1;
+				alt22 = 1;
 			}
-			} finally { DebugExitDecision(24); }
-			switch (alt24)
+			} finally { DebugExitDecision(22); }
+			switch (alt22)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// HqlSqlWalker.g:186:69: d= DISTINCT
+				// HqlSqlWalker.g:187:69: d= DISTINCT
 				{
-				DebugLocation(186, 70);
+				DebugLocation(187, 70);
 
 				_last = (IASTNode)input.LT(1);
-				d=(IASTNode)Match(input,DISTINCT,Follow._DISTINCT_in_selectClause888); 
+				d=(IASTNode)Match(input,DISTINCT,Follow._DISTINCT_in_selectClause879); 
 				 
 				stream_DISTINCT.Add(d);
 
@@ -3269,11 +3234,11 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				break;
 
 			}
-			} finally { DebugExitSubRule(24); }
+			} finally { DebugExitSubRule(22); }
 
-			DebugLocation(186, 83);
+			DebugLocation(187, 83);
 			_last = (IASTNode)input.LT(1);
-			PushFollow(Follow._selectExprList_in_selectClause894);
+			PushFollow(Follow._selectExprList_in_selectClause885);
 			x=selectExprList();
 			PopFollow();
 
@@ -3300,25 +3265,25 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 			root_0 = (IASTNode)adaptor.Nil();
-			// 187:2: -> ^( SELECT_CLAUSE[\"{select clause}\"] ( $d)? $x)
+			// 188:2: -> ^( SELECT_CLAUSE[\"{select clause}\"] ( $d)? $x)
 			{
-				DebugLocation(187, 5);
-				// HqlSqlWalker.g:187:5: ^( SELECT_CLAUSE[\"{select clause}\"] ( $d)? $x)
+				DebugLocation(188, 5);
+				// HqlSqlWalker.g:188:5: ^( SELECT_CLAUSE[\"{select clause}\"] ( $d)? $x)
 				{
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(187, 7);
+				DebugLocation(188, 7);
 				root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(SELECT_CLAUSE, "{select clause}"), root_1);
 
-				DebugLocation(187, 41);
-				// HqlSqlWalker.g:187:41: ( $d)?
+				DebugLocation(188, 41);
+				// HqlSqlWalker.g:188:41: ( $d)?
 				if (stream_d.HasNext)
 				{
-					DebugLocation(187, 41);
+					DebugLocation(188, 41);
 					adaptor.AddChild(root_1, stream_d.NextNode());
 
 				}
 				stream_d.Reset();
-				DebugLocation(187, 45);
+				DebugLocation(188, 45);
 				adaptor.AddChild(root_1, stream_x.NextTree());
 
 				adaptor.AddChild(root_0, root_1);
@@ -3345,7 +3310,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("selectClause", 21);
 			LeaveRule_selectClause();
 		}
-		DebugLocation(188, 1);
+		DebugLocation(189, 1);
 		} finally { DebugExitRule(GrammarFileName, "selectClause"); }
 		return retval;
 
@@ -3355,7 +3320,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_selectExprList();
 	partial void LeaveRule_selectExprList();
 	// $ANTLR start "selectExprList"
-	// HqlSqlWalker.g:190:1: selectExprList : ( selectExpr | aliasedSelectExpr )+ ;
+	// HqlSqlWalker.g:191:1: selectExprList : ( selectExpr | aliasedSelectExpr )+ ;
 	[GrammarRule("selectExprList")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> selectExprList()
 	{
@@ -3370,95 +3335,95 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		AstTreeRuleReturnScope<IASTNode, IASTNode> selectExpr47 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> aliasedSelectExpr48 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> selectExpr46 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> aliasedSelectExpr47 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 
 				bool oldInSelect = _inSelect;
 				_inSelect = true;
 			
 		try { DebugEnterRule(GrammarFileName, "selectExprList");
-		DebugLocation(190, 1);
+		DebugLocation(191, 1);
 		try
 		{
-			// HqlSqlWalker.g:194:2: ( ( selectExpr | aliasedSelectExpr )+ )
+			// HqlSqlWalker.g:195:2: ( ( selectExpr | aliasedSelectExpr )+ )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:194:4: ( selectExpr | aliasedSelectExpr )+
+			// HqlSqlWalker.g:195:4: ( selectExpr | aliasedSelectExpr )+
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(194, 4);
-			// HqlSqlWalker.g:194:4: ( selectExpr | aliasedSelectExpr )+
-			int cnt25=0;
-			try { DebugEnterSubRule(25);
+			DebugLocation(195, 4);
+			// HqlSqlWalker.g:195:4: ( selectExpr | aliasedSelectExpr )+
+			int cnt23=0;
+			try { DebugEnterSubRule(23);
 			while (true)
 			{
-				int alt25=3;
-				try { DebugEnterDecision(25, false);
-				int LA25_1 = input.LA(1);
+				int alt23=3;
+				try { DebugEnterDecision(23, false);
+				int LA23_1 = input.LA(1);
 
-				if ((LA25_1==AGGREGATE||LA25_1==ALL||LA25_1==BAND||(LA25_1>=BNOT && LA25_1<=BOR)||(LA25_1>=BXOR && LA25_1<=CASE2)||LA25_1==COLON||(LA25_1>=CONSTRUCTOR && LA25_1<=COUNT)||(LA25_1>=DIV && LA25_1<=ELEMENTS)||LA25_1==IDENT||LA25_1==INDICES||LA25_1==METHOD_CALL||LA25_1==MINUS||(LA25_1>=NUM_DECIMAL && LA25_1<=OBJECT)||(LA25_1>=PARAM && LA25_1<=PLUS)||(LA25_1>=QUERY && LA25_1<=QUOTED_String)||LA25_1==STAR||LA25_1==UNARY_MINUS||LA25_1==UNION||LA25_1==WEIRD_IDENT))
+				if ((LA23_1==AGGREGATE||LA23_1==ALL||LA23_1==BAND||(LA23_1>=BNOT && LA23_1<=BOR)||(LA23_1>=BXOR && LA23_1<=CASE2)||LA23_1==COLON||(LA23_1>=CONSTRUCTOR && LA23_1<=COUNT)||(LA23_1>=DIV && LA23_1<=ELEMENTS)||LA23_1==IDENT||LA23_1==INDICES||LA23_1==METHOD_CALL||LA23_1==MINUS||(LA23_1>=NUM_DECIMAL && LA23_1<=OBJECT)||(LA23_1>=PARAM && LA23_1<=PLUS)||(LA23_1>=QUERY && LA23_1<=QUOTED_String)||LA23_1==STAR||LA23_1==UNARY_MINUS||LA23_1==UNION||LA23_1==WEIRD_IDENT))
 				{
-					alt25 = 1;
+					alt23 = 1;
 				}
-				else if ((LA25_1==AS))
+				else if ((LA23_1==AS))
 				{
-					alt25 = 2;
+					alt23 = 2;
 				}
 
 
-				} finally { DebugExitDecision(25); }
-				switch (alt25)
+				} finally { DebugExitDecision(23); }
+				switch (alt23)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// HqlSqlWalker.g:194:6: selectExpr
+					// HqlSqlWalker.g:195:6: selectExpr
 					{
-					DebugLocation(194, 6);
+					DebugLocation(195, 6);
 
 					_last = (IASTNode)input.LT(1);
-					PushFollow(Follow._selectExpr_in_selectExprList929);
-					selectExpr47=selectExpr();
+					PushFollow(Follow._selectExpr_in_selectExprList920);
+					selectExpr46=selectExpr();
 					PopFollow();
 
-					adaptor.AddChild(root_0, selectExpr47.Tree);
+					adaptor.AddChild(root_0, selectExpr46.Tree);
 
 
 					}
 					break;
 				case 2:
 					DebugEnterAlt(2);
-					// HqlSqlWalker.g:194:19: aliasedSelectExpr
+					// HqlSqlWalker.g:195:19: aliasedSelectExpr
 					{
-					DebugLocation(194, 19);
+					DebugLocation(195, 19);
 
 					_last = (IASTNode)input.LT(1);
-					PushFollow(Follow._aliasedSelectExpr_in_selectExprList933);
-					aliasedSelectExpr48=aliasedSelectExpr();
+					PushFollow(Follow._aliasedSelectExpr_in_selectExprList924);
+					aliasedSelectExpr47=aliasedSelectExpr();
 					PopFollow();
 
-					adaptor.AddChild(root_0, aliasedSelectExpr48.Tree);
+					adaptor.AddChild(root_0, aliasedSelectExpr47.Tree);
 
 
 					}
 					break;
 
 				default:
-					if (cnt25 >= 1)
-						goto loop25;
+					if (cnt23 >= 1)
+						goto loop23;
 
-					EarlyExitException eee25 = new EarlyExitException( 25, input );
-					DebugRecognitionException(eee25);
-					throw eee25;
+					EarlyExitException eee23 = new EarlyExitException( 23, input );
+					DebugRecognitionException(eee23);
+					throw eee23;
 				}
-				cnt25++;
+				cnt23++;
 			}
-			loop25:
+			loop23:
 				;
 
-			} finally { DebugExitSubRule(25); }
+			} finally { DebugExitSubRule(23); }
 
-			DebugLocation(194, 40);
+			DebugLocation(195, 40);
 
 					_inSelect = oldInSelect;
 				
@@ -3479,7 +3444,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("selectExprList", 22);
 			LeaveRule_selectExprList();
 		}
-		DebugLocation(197, 1);
+		DebugLocation(198, 1);
 		} finally { DebugExitRule(GrammarFileName, "selectExprList"); }
 		return retval;
 
@@ -3489,7 +3454,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_aliasedSelectExpr();
 	partial void LeaveRule_aliasedSelectExpr();
 	// $ANTLR start "aliasedSelectExpr"
-	// HqlSqlWalker.g:199:1: aliasedSelectExpr : ^( AS se= selectExpr i= identifier ) ;
+	// HqlSqlWalker.g:200:1: aliasedSelectExpr : ^( AS se= selectExpr i= identifier ) ;
 	[GrammarRule("aliasedSelectExpr")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> aliasedSelectExpr()
 	{
@@ -3504,52 +3469,52 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		IASTNode AS49 = default(IASTNode);
+		IASTNode AS48 = default(IASTNode);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> se = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> i = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-		IASTNode AS49_tree = default(IASTNode);
+		IASTNode AS48_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "aliasedSelectExpr");
-		DebugLocation(199, 1);
+		DebugLocation(200, 1);
 		try
 		{
-			// HqlSqlWalker.g:204:2: ( ^( AS se= selectExpr i= identifier ) )
+			// HqlSqlWalker.g:205:2: ( ^( AS se= selectExpr i= identifier ) )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:204:4: ^( AS se= selectExpr i= identifier )
+			// HqlSqlWalker.g:205:4: ^( AS se= selectExpr i= identifier )
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(204, 4);
+			DebugLocation(205, 4);
 
 			_last = (IASTNode)input.LT(1);
 			{
 			IASTNode _save_last_1 = _last;
 			IASTNode _first_1 = default(IASTNode);
 			IASTNode root_1 = (IASTNode)adaptor.Nil();
-			DebugLocation(204, 6);
+			DebugLocation(205, 6);
 
 			_last = (IASTNode)input.LT(1);
-			AS49=(IASTNode)Match(input,AS,Follow._AS_in_aliasedSelectExpr957); 
-			AS49_tree = (IASTNode)adaptor.DupNode(AS49);
+			AS48=(IASTNode)Match(input,AS,Follow._AS_in_aliasedSelectExpr948); 
+			AS48_tree = (IASTNode)adaptor.DupNode(AS48);
 
 
-			root_1 = (IASTNode)adaptor.BecomeRoot(AS49_tree, root_1);
+			root_1 = (IASTNode)adaptor.BecomeRoot(AS48_tree, root_1);
 
 
 			Match(input, TokenTypes.Down, null); 
-			DebugLocation(204, 11);
+			DebugLocation(205, 11);
 
 			_last = (IASTNode)input.LT(1);
-			PushFollow(Follow._selectExpr_in_aliasedSelectExpr961);
+			PushFollow(Follow._selectExpr_in_aliasedSelectExpr952);
 			se=selectExpr();
 			PopFollow();
 
 			adaptor.AddChild(root_1, se.Tree);
 
-			DebugLocation(204, 24);
+			DebugLocation(205, 24);
 
 			_last = (IASTNode)input.LT(1);
-			PushFollow(Follow._identifier_in_aliasedSelectExpr965);
+			PushFollow(Follow._identifier_in_aliasedSelectExpr956);
 			i=identifier();
 			PopFollow();
 
@@ -3582,7 +3547,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("aliasedSelectExpr", 23);
 			LeaveRule_aliasedSelectExpr();
 		}
-		DebugLocation(205, 1);
+		DebugLocation(206, 1);
 		} finally { DebugExitRule(GrammarFileName, "aliasedSelectExpr"); }
 		return retval;
 
@@ -3592,7 +3557,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_selectExpr();
 	partial void LeaveRule_selectExpr();
 	// $ANTLR start "selectExpr"
-	// HqlSqlWalker.g:207:1: selectExpr : (p= propertyRef | ^( ALL ar2= aliasRef ) | ^( OBJECT ar3= aliasRef ) |con= constructor | functionCall | parameter | count | collectionFunction | literal | arithmeticExpr | query );
+	// HqlSqlWalker.g:208:1: selectExpr : (p= propertyRef | ^( ALL ar2= aliasRef ) | ^( OBJECT ar3= aliasRef ) |con= constructor | functionCall | parameter | count | collectionFunction | literal | arithmeticExpr | query );
 	[GrammarRule("selectExpr")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> selectExpr()
 	{
@@ -3607,74 +3572,74 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		IASTNode ALL50 = default(IASTNode);
-		IASTNode OBJECT51 = default(IASTNode);
+		IASTNode ALL49 = default(IASTNode);
+		IASTNode OBJECT50 = default(IASTNode);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> p = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> ar2 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> ar3 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> con = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> functionCall52 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> parameter53 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> count54 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunction55 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> literal56 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> arithmeticExpr57 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> query58 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> functionCall51 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> parameter52 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> count53 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunction54 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> literal55 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> arithmeticExpr56 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> query57 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-		IASTNode ALL50_tree = default(IASTNode);
-		IASTNode OBJECT51_tree = default(IASTNode);
+		IASTNode ALL49_tree = default(IASTNode);
+		IASTNode OBJECT50_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "selectExpr");
-		DebugLocation(207, 1);
+		DebugLocation(208, 1);
 		try
 		{
-			// HqlSqlWalker.g:208:2: (p= propertyRef | ^( ALL ar2= aliasRef ) | ^( OBJECT ar3= aliasRef ) |con= constructor | functionCall | parameter | count | collectionFunction | literal | arithmeticExpr | query )
-			int alt26=11;
-			try { DebugEnterDecision(26, false);
+			// HqlSqlWalker.g:209:2: (p= propertyRef | ^( ALL ar2= aliasRef ) | ^( OBJECT ar3= aliasRef ) |con= constructor | functionCall | parameter | count | collectionFunction | literal | arithmeticExpr | query )
+			int alt24=11;
+			try { DebugEnterDecision(24, false);
 			switch (input.LA(1))
 			{
 			case DOT:
 			case IDENT:
 			case WEIRD_IDENT:
 				{
-				alt26 = 1;
+				alt24 = 1;
 				}
 				break;
 			case ALL:
 				{
-				alt26 = 2;
+				alt24 = 2;
 				}
 				break;
 			case OBJECT:
 				{
-				alt26 = 3;
+				alt24 = 3;
 				}
 				break;
 			case CONSTRUCTOR:
 				{
-				alt26 = 4;
+				alt24 = 4;
 				}
 				break;
 			case AGGREGATE:
 			case METHOD_CALL:
 				{
-				alt26 = 5;
+				alt24 = 5;
 				}
 				break;
 			case COLON:
 			case PARAM:
 				{
-				alt26 = 6;
+				alt24 = 6;
 				}
 				break;
 			case COUNT:
 				{
-				alt26 = 7;
+				alt24 = 7;
 				}
 				break;
 			case ELEMENTS:
 			case INDICES:
 				{
-				alt26 = 8;
+				alt24 = 8;
 				}
 				break;
 			case NUM_DECIMAL:
@@ -3684,7 +3649,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			case NUM_LONG:
 			case QUOTED_String:
 				{
-				alt26 = 9;
+				alt24 = 9;
 				}
 				break;
 			case BAND:
@@ -3699,93 +3664,49 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			case STAR:
 			case UNARY_MINUS:
 				{
-				alt26 = 10;
+				alt24 = 10;
 				}
 				break;
 			case QUERY:
 			case UNION:
 				{
-				alt26 = 11;
+				alt24 = 11;
 				}
 				break;
 			default:
 				{
-					NoViableAltException nvae = new NoViableAltException("", 26, 0, input, 1);
+					NoViableAltException nvae = new NoViableAltException("", 24, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
 			}
 
-			} finally { DebugExitDecision(26); }
-			switch (alt26)
+			} finally { DebugExitDecision(24); }
+			switch (alt24)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// HqlSqlWalker.g:208:4: p= propertyRef
+				// HqlSqlWalker.g:209:4: p= propertyRef
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(208, 5);
+				DebugLocation(209, 5);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._propertyRef_in_selectExpr980);
+				PushFollow(Follow._propertyRef_in_selectExpr971);
 				p=propertyRef();
 				PopFollow();
 
 				adaptor.AddChild(root_0, p.Tree);
 
-				DebugLocation(208, 22);
+				DebugLocation(209, 22);
 				 ResolveSelectExpression((p!=null?((IASTNode)p.Tree):default(IASTNode))); 
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// HqlSqlWalker.g:209:4: ^( ALL ar2= aliasRef )
-				{
-				root_0 = (IASTNode)adaptor.Nil();
-
-				DebugLocation(209, 4);
-
-				_last = (IASTNode)input.LT(1);
-				{
-				IASTNode _save_last_1 = _last;
-				IASTNode _first_1 = default(IASTNode);
-				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(209, 6);
-
-				_last = (IASTNode)input.LT(1);
-				ALL50=(IASTNode)Match(input,ALL,Follow._ALL_in_selectExpr992); 
-				ALL50_tree = (IASTNode)adaptor.DupNode(ALL50);
-
-
-				root_1 = (IASTNode)adaptor.BecomeRoot(ALL50_tree, root_1);
-
-
-				Match(input, TokenTypes.Down, null); 
-				DebugLocation(209, 13);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._aliasRef_in_selectExpr996);
-				ar2=aliasRef();
-				PopFollow();
-
-				adaptor.AddChild(root_1, ar2.Tree);
-
-
-				Match(input, TokenTypes.Up, null); 
-				adaptor.AddChild(root_0, root_1);
-				_last = _save_last_1;
-				}
-
-				DebugLocation(209, 27);
-				 ResolveSelectExpression((ar2!=null?((IASTNode)ar2.Tree):default(IASTNode))); retval.Tree =  (ar2!=null?((IASTNode)ar2.Tree):default(IASTNode)); 
-
-				}
-				break;
-			case 3:
-				DebugEnterAlt(3);
-				// HqlSqlWalker.g:210:4: ^( OBJECT ar3= aliasRef )
+				// HqlSqlWalker.g:210:4: ^( ALL ar2= aliasRef )
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
@@ -3799,18 +3720,62 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				DebugLocation(210, 6);
 
 				_last = (IASTNode)input.LT(1);
-				OBJECT51=(IASTNode)Match(input,OBJECT,Follow._OBJECT_in_selectExpr1008); 
-				OBJECT51_tree = (IASTNode)adaptor.DupNode(OBJECT51);
+				ALL49=(IASTNode)Match(input,ALL,Follow._ALL_in_selectExpr983); 
+				ALL49_tree = (IASTNode)adaptor.DupNode(ALL49);
 
 
-				root_1 = (IASTNode)adaptor.BecomeRoot(OBJECT51_tree, root_1);
+				root_1 = (IASTNode)adaptor.BecomeRoot(ALL49_tree, root_1);
 
 
 				Match(input, TokenTypes.Down, null); 
-				DebugLocation(210, 16);
+				DebugLocation(210, 13);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._aliasRef_in_selectExpr1012);
+				PushFollow(Follow._aliasRef_in_selectExpr987);
+				ar2=aliasRef();
+				PopFollow();
+
+				adaptor.AddChild(root_1, ar2.Tree);
+
+
+				Match(input, TokenTypes.Up, null); 
+				adaptor.AddChild(root_0, root_1);
+				_last = _save_last_1;
+				}
+
+				DebugLocation(210, 27);
+				 ResolveSelectExpression((ar2!=null?((IASTNode)ar2.Tree):default(IASTNode))); retval.Tree =  (ar2!=null?((IASTNode)ar2.Tree):default(IASTNode)); 
+
+				}
+				break;
+			case 3:
+				DebugEnterAlt(3);
+				// HqlSqlWalker.g:211:4: ^( OBJECT ar3= aliasRef )
+				{
+				root_0 = (IASTNode)adaptor.Nil();
+
+				DebugLocation(211, 4);
+
+				_last = (IASTNode)input.LT(1);
+				{
+				IASTNode _save_last_1 = _last;
+				IASTNode _first_1 = default(IASTNode);
+				IASTNode root_1 = (IASTNode)adaptor.Nil();
+				DebugLocation(211, 6);
+
+				_last = (IASTNode)input.LT(1);
+				OBJECT50=(IASTNode)Match(input,OBJECT,Follow._OBJECT_in_selectExpr999); 
+				OBJECT50_tree = (IASTNode)adaptor.DupNode(OBJECT50);
+
+
+				root_1 = (IASTNode)adaptor.BecomeRoot(OBJECT50_tree, root_1);
+
+
+				Match(input, TokenTypes.Down, null); 
+				DebugLocation(211, 16);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._aliasRef_in_selectExpr1003);
 				ar3=aliasRef();
 				PopFollow();
 
@@ -3822,153 +3787,153 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				_last = _save_last_1;
 				}
 
-				DebugLocation(210, 28);
+				DebugLocation(211, 28);
 				 ResolveSelectExpression((ar3!=null?((IASTNode)ar3.Tree):default(IASTNode))); retval.Tree =  (ar3!=null?((IASTNode)ar3.Tree):default(IASTNode)); 
 
 				}
 				break;
 			case 4:
 				DebugEnterAlt(4);
-				// HqlSqlWalker.g:211:4: con= constructor
+				// HqlSqlWalker.g:212:4: con= constructor
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(211, 7);
+				DebugLocation(212, 7);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._constructor_in_selectExpr1023);
+				PushFollow(Follow._constructor_in_selectExpr1014);
 				con=constructor();
 				PopFollow();
 
 				adaptor.AddChild(root_0, con.Tree);
 
-				DebugLocation(211, 24);
+				DebugLocation(212, 24);
 				 ProcessConstructor((con!=null?((IASTNode)con.Tree):default(IASTNode))); 
 
 				}
 				break;
 			case 5:
 				DebugEnterAlt(5);
-				// HqlSqlWalker.g:212:4: functionCall
-				{
-				root_0 = (IASTNode)adaptor.Nil();
-
-				DebugLocation(212, 4);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._functionCall_in_selectExpr1034);
-				functionCall52=functionCall();
-				PopFollow();
-
-				adaptor.AddChild(root_0, functionCall52.Tree);
-
-
-				}
-				break;
-			case 6:
-				DebugEnterAlt(6);
-				// HqlSqlWalker.g:213:4: parameter
+				// HqlSqlWalker.g:213:4: functionCall
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(213, 4);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._parameter_in_selectExpr1039);
-				parameter53=parameter();
+				PushFollow(Follow._functionCall_in_selectExpr1025);
+				functionCall51=functionCall();
 				PopFollow();
 
-				adaptor.AddChild(root_0, parameter53.Tree);
+				adaptor.AddChild(root_0, functionCall51.Tree);
 
 
 				}
 				break;
-			case 7:
-				DebugEnterAlt(7);
-				// HqlSqlWalker.g:214:4: count
+			case 6:
+				DebugEnterAlt(6);
+				// HqlSqlWalker.g:214:4: parameter
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(214, 4);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._count_in_selectExpr1044);
-				count54=count();
+				PushFollow(Follow._parameter_in_selectExpr1030);
+				parameter52=parameter();
 				PopFollow();
 
-				adaptor.AddChild(root_0, count54.Tree);
+				adaptor.AddChild(root_0, parameter52.Tree);
 
 
 				}
 				break;
-			case 8:
-				DebugEnterAlt(8);
-				// HqlSqlWalker.g:215:4: collectionFunction
+			case 7:
+				DebugEnterAlt(7);
+				// HqlSqlWalker.g:215:4: count
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(215, 4);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._collectionFunction_in_selectExpr1049);
-				collectionFunction55=collectionFunction();
+				PushFollow(Follow._count_in_selectExpr1035);
+				count53=count();
 				PopFollow();
 
-				adaptor.AddChild(root_0, collectionFunction55.Tree);
+				adaptor.AddChild(root_0, count53.Tree);
 
 
 				}
 				break;
-			case 9:
-				DebugEnterAlt(9);
-				// HqlSqlWalker.g:216:4: literal
+			case 8:
+				DebugEnterAlt(8);
+				// HqlSqlWalker.g:216:4: collectionFunction
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(216, 4);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._literal_in_selectExpr1057);
-				literal56=literal();
+				PushFollow(Follow._collectionFunction_in_selectExpr1040);
+				collectionFunction54=collectionFunction();
 				PopFollow();
 
-				adaptor.AddChild(root_0, literal56.Tree);
+				adaptor.AddChild(root_0, collectionFunction54.Tree);
 
 
 				}
 				break;
-			case 10:
-				DebugEnterAlt(10);
-				// HqlSqlWalker.g:217:4: arithmeticExpr
+			case 9:
+				DebugEnterAlt(9);
+				// HqlSqlWalker.g:217:4: literal
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(217, 4);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._arithmeticExpr_in_selectExpr1062);
-				arithmeticExpr57=arithmeticExpr();
+				PushFollow(Follow._literal_in_selectExpr1048);
+				literal55=literal();
 				PopFollow();
 
-				adaptor.AddChild(root_0, arithmeticExpr57.Tree);
+				adaptor.AddChild(root_0, literal55.Tree);
 
 
 				}
 				break;
-			case 11:
-				DebugEnterAlt(11);
-				// HqlSqlWalker.g:218:4: query
+			case 10:
+				DebugEnterAlt(10);
+				// HqlSqlWalker.g:218:4: arithmeticExpr
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(218, 4);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._query_in_selectExpr1067);
-				query58=query();
+				PushFollow(Follow._arithmeticExpr_in_selectExpr1053);
+				arithmeticExpr56=arithmeticExpr();
 				PopFollow();
 
-				adaptor.AddChild(root_0, query58.Tree);
+				adaptor.AddChild(root_0, arithmeticExpr56.Tree);
+
+
+				}
+				break;
+			case 11:
+				DebugEnterAlt(11);
+				// HqlSqlWalker.g:219:4: query
+				{
+				root_0 = (IASTNode)adaptor.Nil();
+
+				DebugLocation(219, 4);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._query_in_selectExpr1058);
+				query57=query();
+				PopFollow();
+
+				adaptor.AddChild(root_0, query57.Tree);
 
 
 				}
@@ -3989,7 +3954,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("selectExpr", 24);
 			LeaveRule_selectExpr();
 		}
-		DebugLocation(219, 1);
+		DebugLocation(220, 1);
 		} finally { DebugExitRule(GrammarFileName, "selectExpr"); }
 		return retval;
 
@@ -3999,7 +3964,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_count();
 	partial void LeaveRule_count();
 	// $ANTLR start "count"
-	// HqlSqlWalker.g:221:1: count : ^( COUNT ( DISTINCT | ALL )? ( aggregateExpr | ROW_STAR ) ) ;
+	// HqlSqlWalker.g:222:1: count : ^( COUNT ( DISTINCT | ALL )? ( aggregateExpr | ROW_STAR ) ) ;
 	[GrammarRule("count")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> count()
 	{
@@ -4014,71 +3979,71 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		IASTNode COUNT59 = default(IASTNode);
-		IASTNode set60 = default(IASTNode);
-		IASTNode ROW_STAR62 = default(IASTNode);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> aggregateExpr61 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode COUNT58 = default(IASTNode);
+		IASTNode set59 = default(IASTNode);
+		IASTNode ROW_STAR61 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> aggregateExpr60 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-		IASTNode COUNT59_tree = default(IASTNode);
-		IASTNode set60_tree = default(IASTNode);
-		IASTNode ROW_STAR62_tree = default(IASTNode);
+		IASTNode COUNT58_tree = default(IASTNode);
+		IASTNode set59_tree = default(IASTNode);
+		IASTNode ROW_STAR61_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "count");
-		DebugLocation(221, 1);
+		DebugLocation(222, 1);
 		try
 		{
-			// HqlSqlWalker.g:222:2: ( ^( COUNT ( DISTINCT | ALL )? ( aggregateExpr | ROW_STAR ) ) )
+			// HqlSqlWalker.g:223:2: ( ^( COUNT ( DISTINCT | ALL )? ( aggregateExpr | ROW_STAR ) ) )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:222:4: ^( COUNT ( DISTINCT | ALL )? ( aggregateExpr | ROW_STAR ) )
+			// HqlSqlWalker.g:223:4: ^( COUNT ( DISTINCT | ALL )? ( aggregateExpr | ROW_STAR ) )
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(222, 4);
+			DebugLocation(223, 4);
 
 			_last = (IASTNode)input.LT(1);
 			{
 			IASTNode _save_last_1 = _last;
 			IASTNode _first_1 = default(IASTNode);
 			IASTNode root_1 = (IASTNode)adaptor.Nil();
-			DebugLocation(222, 6);
+			DebugLocation(223, 6);
 
 			_last = (IASTNode)input.LT(1);
-			COUNT59=(IASTNode)Match(input,COUNT,Follow._COUNT_in_count1079); 
-			COUNT59_tree = (IASTNode)adaptor.DupNode(COUNT59);
+			COUNT58=(IASTNode)Match(input,COUNT,Follow._COUNT_in_count1070); 
+			COUNT58_tree = (IASTNode)adaptor.DupNode(COUNT58);
 
 
-			root_1 = (IASTNode)adaptor.BecomeRoot(COUNT59_tree, root_1);
+			root_1 = (IASTNode)adaptor.BecomeRoot(COUNT58_tree, root_1);
 
 
 			Match(input, TokenTypes.Down, null); 
-			DebugLocation(222, 12);
-			// HqlSqlWalker.g:222:12: ( DISTINCT | ALL )?
-			int alt27=2;
-			try { DebugEnterSubRule(27);
-			try { DebugEnterDecision(27, false);
-			int LA27_1 = input.LA(1);
+			DebugLocation(223, 12);
+			// HqlSqlWalker.g:223:12: ( DISTINCT | ALL )?
+			int alt25=2;
+			try { DebugEnterSubRule(25);
+			try { DebugEnterDecision(25, false);
+			int LA25_1 = input.LA(1);
 
-			if ((LA27_1==ALL||LA27_1==DISTINCT))
+			if ((LA25_1==ALL||LA25_1==DISTINCT))
 			{
-				alt27 = 1;
+				alt25 = 1;
 			}
-			} finally { DebugExitDecision(27); }
-			switch (alt27)
+			} finally { DebugExitDecision(25); }
+			switch (alt25)
 			{
 			case 1:
 				DebugEnterAlt(1);
 				// HqlSqlWalker.g:
 				{
-				DebugLocation(222, 12);
+				DebugLocation(223, 12);
 
 				_last = (IASTNode)input.LT(1);
-				set60=(IASTNode)input.LT(1);
+				set59=(IASTNode)input.LT(1);
 				if (input.LA(1)==ALL||input.LA(1)==DISTINCT)
 				{
 					input.Consume();
-					set60_tree = (IASTNode)adaptor.DupNode(set60);
+					set59_tree = (IASTNode)adaptor.DupNode(set59);
 
 
-					adaptor.AddChild(root_1, set60_tree);
+					adaptor.AddChild(root_1, set59_tree);
 
 					state.errorRecovery=false;
 				}
@@ -4095,67 +4060,67 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				break;
 
 			}
-			} finally { DebugExitSubRule(27); }
+			} finally { DebugExitSubRule(25); }
 
-			DebugLocation(222, 32);
-			// HqlSqlWalker.g:222:32: ( aggregateExpr | ROW_STAR )
-			int alt28=2;
-			try { DebugEnterSubRule(28);
-			try { DebugEnterDecision(28, false);
-			int LA28_1 = input.LA(1);
+			DebugLocation(223, 32);
+			// HqlSqlWalker.g:223:32: ( aggregateExpr | ROW_STAR )
+			int alt26=2;
+			try { DebugEnterSubRule(26);
+			try { DebugEnterDecision(26, false);
+			int LA26_1 = input.LA(1);
 
-			if ((LA28_1==AGGREGATE||LA28_1==BAND||(LA28_1>=BNOT && LA28_1<=BOR)||(LA28_1>=BXOR && LA28_1<=CASE2)||LA28_1==COLON||LA28_1==COUNT||(LA28_1>=DIV && LA28_1<=ELEMENTS)||LA28_1==FALSE||LA28_1==IDENT||(LA28_1>=INDEX_OP && LA28_1<=INDICES)||LA28_1==JAVA_CONSTANT||LA28_1==METHOD_CALL||LA28_1==MINUS||(LA28_1>=NULL && LA28_1<=NUM_LONG)||(LA28_1>=PARAM && LA28_1<=PLUS)||LA28_1==QUOTED_String||LA28_1==STAR||(LA28_1>=TRUE && LA28_1<=UNARY_MINUS)||LA28_1==VECTOR_EXPR||LA28_1==WEIRD_IDENT))
+			if ((LA26_1==AGGREGATE||LA26_1==BAND||(LA26_1>=BNOT && LA26_1<=BOR)||(LA26_1>=BXOR && LA26_1<=CASE2)||LA26_1==COLON||LA26_1==COUNT||(LA26_1>=DIV && LA26_1<=ELEMENTS)||LA26_1==FALSE||LA26_1==IDENT||(LA26_1>=INDEX_OP && LA26_1<=INDICES)||LA26_1==JAVA_CONSTANT||LA26_1==METHOD_CALL||LA26_1==MINUS||(LA26_1>=NULL && LA26_1<=NUM_LONG)||(LA26_1>=PARAM && LA26_1<=PLUS)||LA26_1==QUOTED_String||LA26_1==STAR||(LA26_1>=TRUE && LA26_1<=UNARY_MINUS)||LA26_1==VECTOR_EXPR||LA26_1==WEIRD_IDENT))
 			{
-				alt28 = 1;
+				alt26 = 1;
 			}
-			else if ((LA28_1==ROW_STAR))
+			else if ((LA26_1==ROW_STAR))
 			{
-				alt28 = 2;
+				alt26 = 2;
 			}
 			else
 			{
-				NoViableAltException nvae = new NoViableAltException("", 28, 0, input, 1);
+				NoViableAltException nvae = new NoViableAltException("", 26, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-			} finally { DebugExitDecision(28); }
-			switch (alt28)
+			} finally { DebugExitDecision(26); }
+			switch (alt26)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// HqlSqlWalker.g:222:34: aggregateExpr
+				// HqlSqlWalker.g:223:34: aggregateExpr
 				{
-				DebugLocation(222, 34);
+				DebugLocation(223, 34);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._aggregateExpr_in_count1094);
-				aggregateExpr61=aggregateExpr();
+				PushFollow(Follow._aggregateExpr_in_count1085);
+				aggregateExpr60=aggregateExpr();
 				PopFollow();
 
-				adaptor.AddChild(root_1, aggregateExpr61.Tree);
+				adaptor.AddChild(root_1, aggregateExpr60.Tree);
 
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// HqlSqlWalker.g:222:50: ROW_STAR
+				// HqlSqlWalker.g:223:50: ROW_STAR
 				{
-				DebugLocation(222, 50);
+				DebugLocation(223, 50);
 
 				_last = (IASTNode)input.LT(1);
-				ROW_STAR62=(IASTNode)Match(input,ROW_STAR,Follow._ROW_STAR_in_count1098); 
-				ROW_STAR62_tree = (IASTNode)adaptor.DupNode(ROW_STAR62);
+				ROW_STAR61=(IASTNode)Match(input,ROW_STAR,Follow._ROW_STAR_in_count1089); 
+				ROW_STAR61_tree = (IASTNode)adaptor.DupNode(ROW_STAR61);
 
 
-				adaptor.AddChild(root_1, ROW_STAR62_tree);
+				adaptor.AddChild(root_1, ROW_STAR61_tree);
 
 
 				}
 				break;
 
 			}
-			} finally { DebugExitSubRule(28); }
+			} finally { DebugExitSubRule(26); }
 
 
 			Match(input, TokenTypes.Up, null); 
@@ -4180,7 +4145,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("count", 25);
 			LeaveRule_count();
 		}
-		DebugLocation(223, 1);
+		DebugLocation(224, 1);
 		} finally { DebugExitRule(GrammarFileName, "count"); }
 		return retval;
 
@@ -4190,7 +4155,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_constructor();
 	partial void LeaveRule_constructor();
 	// $ANTLR start "constructor"
-	// HqlSqlWalker.g:225:1: constructor : ^( CONSTRUCTOR path ( selectExpr | aliasedSelectExpr )* ) ;
+	// HqlSqlWalker.g:226:1: constructor : ^( CONSTRUCTOR path ( selectExpr | aliasedSelectExpr )* ) ;
 	[GrammarRule("constructor")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> constructor()
 	{
@@ -4205,113 +4170,113 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		IASTNode CONSTRUCTOR63 = default(IASTNode);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> path64 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> selectExpr65 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> aliasedSelectExpr66 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode CONSTRUCTOR62 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> path63 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> selectExpr64 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> aliasedSelectExpr65 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-		IASTNode CONSTRUCTOR63_tree = default(IASTNode);
+		IASTNode CONSTRUCTOR62_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "constructor");
-		DebugLocation(225, 1);
+		DebugLocation(226, 1);
 		try
 		{
-			// HqlSqlWalker.g:226:2: ( ^( CONSTRUCTOR path ( selectExpr | aliasedSelectExpr )* ) )
+			// HqlSqlWalker.g:227:2: ( ^( CONSTRUCTOR path ( selectExpr | aliasedSelectExpr )* ) )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:226:4: ^( CONSTRUCTOR path ( selectExpr | aliasedSelectExpr )* )
+			// HqlSqlWalker.g:227:4: ^( CONSTRUCTOR path ( selectExpr | aliasedSelectExpr )* )
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(226, 4);
+			DebugLocation(227, 4);
 
 			_last = (IASTNode)input.LT(1);
 			{
 			IASTNode _save_last_1 = _last;
 			IASTNode _first_1 = default(IASTNode);
 			IASTNode root_1 = (IASTNode)adaptor.Nil();
-			DebugLocation(226, 6);
+			DebugLocation(227, 6);
 
 			_last = (IASTNode)input.LT(1);
-			CONSTRUCTOR63=(IASTNode)Match(input,CONSTRUCTOR,Follow._CONSTRUCTOR_in_constructor1114); 
-			CONSTRUCTOR63_tree = (IASTNode)adaptor.DupNode(CONSTRUCTOR63);
+			CONSTRUCTOR62=(IASTNode)Match(input,CONSTRUCTOR,Follow._CONSTRUCTOR_in_constructor1105); 
+			CONSTRUCTOR62_tree = (IASTNode)adaptor.DupNode(CONSTRUCTOR62);
 
 
-			root_1 = (IASTNode)adaptor.BecomeRoot(CONSTRUCTOR63_tree, root_1);
+			root_1 = (IASTNode)adaptor.BecomeRoot(CONSTRUCTOR62_tree, root_1);
 
 
 			Match(input, TokenTypes.Down, null); 
-			DebugLocation(226, 18);
+			DebugLocation(227, 18);
 
 			_last = (IASTNode)input.LT(1);
-			PushFollow(Follow._path_in_constructor1116);
-			path64=path();
+			PushFollow(Follow._path_in_constructor1107);
+			path63=path();
 			PopFollow();
 
-			adaptor.AddChild(root_1, path64.Tree);
+			adaptor.AddChild(root_1, path63.Tree);
 
-			DebugLocation(226, 23);
-			// HqlSqlWalker.g:226:23: ( selectExpr | aliasedSelectExpr )*
-			try { DebugEnterSubRule(29);
+			DebugLocation(227, 23);
+			// HqlSqlWalker.g:227:23: ( selectExpr | aliasedSelectExpr )*
+			try { DebugEnterSubRule(27);
 			while (true)
 			{
-				int alt29=3;
-				try { DebugEnterDecision(29, false);
-				int LA29_1 = input.LA(1);
+				int alt27=3;
+				try { DebugEnterDecision(27, false);
+				int LA27_1 = input.LA(1);
 
-				if ((LA29_1==AGGREGATE||LA29_1==ALL||LA29_1==BAND||(LA29_1>=BNOT && LA29_1<=BOR)||(LA29_1>=BXOR && LA29_1<=CASE2)||LA29_1==COLON||(LA29_1>=CONSTRUCTOR && LA29_1<=COUNT)||(LA29_1>=DIV && LA29_1<=ELEMENTS)||LA29_1==IDENT||LA29_1==INDICES||LA29_1==METHOD_CALL||LA29_1==MINUS||(LA29_1>=NUM_DECIMAL && LA29_1<=OBJECT)||(LA29_1>=PARAM && LA29_1<=PLUS)||(LA29_1>=QUERY && LA29_1<=QUOTED_String)||LA29_1==STAR||LA29_1==UNARY_MINUS||LA29_1==UNION||LA29_1==WEIRD_IDENT))
+				if ((LA27_1==AGGREGATE||LA27_1==ALL||LA27_1==BAND||(LA27_1>=BNOT && LA27_1<=BOR)||(LA27_1>=BXOR && LA27_1<=CASE2)||LA27_1==COLON||(LA27_1>=CONSTRUCTOR && LA27_1<=COUNT)||(LA27_1>=DIV && LA27_1<=ELEMENTS)||LA27_1==IDENT||LA27_1==INDICES||LA27_1==METHOD_CALL||LA27_1==MINUS||(LA27_1>=NUM_DECIMAL && LA27_1<=OBJECT)||(LA27_1>=PARAM && LA27_1<=PLUS)||(LA27_1>=QUERY && LA27_1<=QUOTED_String)||LA27_1==STAR||LA27_1==UNARY_MINUS||LA27_1==UNION||LA27_1==WEIRD_IDENT))
 				{
-					alt29 = 1;
+					alt27 = 1;
 				}
-				else if ((LA29_1==AS))
+				else if ((LA27_1==AS))
 				{
-					alt29 = 2;
+					alt27 = 2;
 				}
 
 
-				} finally { DebugExitDecision(29); }
-				switch ( alt29 )
+				} finally { DebugExitDecision(27); }
+				switch ( alt27 )
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// HqlSqlWalker.g:226:25: selectExpr
+					// HqlSqlWalker.g:227:25: selectExpr
 					{
-					DebugLocation(226, 25);
+					DebugLocation(227, 25);
 
 					_last = (IASTNode)input.LT(1);
-					PushFollow(Follow._selectExpr_in_constructor1120);
-					selectExpr65=selectExpr();
+					PushFollow(Follow._selectExpr_in_constructor1111);
+					selectExpr64=selectExpr();
 					PopFollow();
 
-					adaptor.AddChild(root_1, selectExpr65.Tree);
+					adaptor.AddChild(root_1, selectExpr64.Tree);
 
 
 					}
 					break;
 				case 2:
 					DebugEnterAlt(2);
-					// HqlSqlWalker.g:226:38: aliasedSelectExpr
+					// HqlSqlWalker.g:227:38: aliasedSelectExpr
 					{
-					DebugLocation(226, 38);
+					DebugLocation(227, 38);
 
 					_last = (IASTNode)input.LT(1);
-					PushFollow(Follow._aliasedSelectExpr_in_constructor1124);
-					aliasedSelectExpr66=aliasedSelectExpr();
+					PushFollow(Follow._aliasedSelectExpr_in_constructor1115);
+					aliasedSelectExpr65=aliasedSelectExpr();
 					PopFollow();
 
-					adaptor.AddChild(root_1, aliasedSelectExpr66.Tree);
+					adaptor.AddChild(root_1, aliasedSelectExpr65.Tree);
 
 
 					}
 					break;
 
 				default:
-					goto loop29;
+					goto loop27;
 				}
 			}
 
-			loop29:
+			loop27:
 				;
 
-			} finally { DebugExitSubRule(29); }
+			} finally { DebugExitSubRule(27); }
 
 
 			Match(input, TokenTypes.Up, null); 
@@ -4336,7 +4301,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("constructor", 26);
 			LeaveRule_constructor();
 		}
-		DebugLocation(227, 1);
+		DebugLocation(228, 1);
 		} finally { DebugExitRule(GrammarFileName, "constructor"); }
 		return retval;
 
@@ -4346,7 +4311,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_aggregateExpr();
 	partial void LeaveRule_aggregateExpr();
 	// $ANTLR start "aggregateExpr"
-	// HqlSqlWalker.g:229:1: aggregateExpr : ( expr | collectionFunction );
+	// HqlSqlWalker.g:230:1: aggregateExpr : ( expr | collectionFunction );
 	[GrammarRule("aggregateExpr")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> aggregateExpr()
 	{
@@ -4361,67 +4326,67 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		AstTreeRuleReturnScope<IASTNode, IASTNode> expr67 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunction68 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr66 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunction67 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "aggregateExpr");
-		DebugLocation(229, 1);
+		DebugLocation(230, 1);
 		try
 		{
-			// HqlSqlWalker.g:230:2: ( expr | collectionFunction )
-			int alt30=2;
-			try { DebugEnterDecision(30, false);
-			int LA30_1 = input.LA(1);
+			// HqlSqlWalker.g:231:2: ( expr | collectionFunction )
+			int alt28=2;
+			try { DebugEnterDecision(28, false);
+			int LA28_1 = input.LA(1);
 
-			if ((LA30_1==AGGREGATE||LA30_1==BAND||(LA30_1>=BNOT && LA30_1<=BOR)||(LA30_1>=BXOR && LA30_1<=CASE2)||LA30_1==COLON||LA30_1==COUNT||(LA30_1>=DIV && LA30_1<=DOT)||LA30_1==FALSE||LA30_1==IDENT||LA30_1==INDEX_OP||LA30_1==JAVA_CONSTANT||LA30_1==METHOD_CALL||LA30_1==MINUS||(LA30_1>=NULL && LA30_1<=NUM_LONG)||(LA30_1>=PARAM && LA30_1<=PLUS)||LA30_1==QUOTED_String||LA30_1==STAR||(LA30_1>=TRUE && LA30_1<=UNARY_MINUS)||LA30_1==VECTOR_EXPR||LA30_1==WEIRD_IDENT))
+			if ((LA28_1==AGGREGATE||LA28_1==BAND||(LA28_1>=BNOT && LA28_1<=BOR)||(LA28_1>=BXOR && LA28_1<=CASE2)||LA28_1==COLON||LA28_1==COUNT||(LA28_1>=DIV && LA28_1<=DOT)||LA28_1==FALSE||LA28_1==IDENT||LA28_1==INDEX_OP||LA28_1==JAVA_CONSTANT||LA28_1==METHOD_CALL||LA28_1==MINUS||(LA28_1>=NULL && LA28_1<=NUM_LONG)||(LA28_1>=PARAM && LA28_1<=PLUS)||LA28_1==QUOTED_String||LA28_1==STAR||(LA28_1>=TRUE && LA28_1<=UNARY_MINUS)||LA28_1==VECTOR_EXPR||LA28_1==WEIRD_IDENT))
 			{
-				alt30 = 1;
+				alt28 = 1;
 			}
-			else if ((LA30_1==ELEMENTS||LA30_1==INDICES))
+			else if ((LA28_1==ELEMENTS||LA28_1==INDICES))
 			{
-				alt30 = 2;
+				alt28 = 2;
 			}
 			else
 			{
-				NoViableAltException nvae = new NoViableAltException("", 30, 0, input, 1);
+				NoViableAltException nvae = new NoViableAltException("", 28, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-			} finally { DebugExitDecision(30); }
-			switch (alt30)
+			} finally { DebugExitDecision(28); }
+			switch (alt28)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// HqlSqlWalker.g:230:4: expr
-				{
-				root_0 = (IASTNode)adaptor.Nil();
-
-				DebugLocation(230, 4);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._expr_in_aggregateExpr1140);
-				expr67=expr();
-				PopFollow();
-
-				adaptor.AddChild(root_0, expr67.Tree);
-
-
-				}
-				break;
-			case 2:
-				DebugEnterAlt(2);
-				// HqlSqlWalker.g:231:4: collectionFunction
+				// HqlSqlWalker.g:231:4: expr
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(231, 4);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._collectionFunction_in_aggregateExpr1146);
-				collectionFunction68=collectionFunction();
+				PushFollow(Follow._expr_in_aggregateExpr1131);
+				expr66=expr();
 				PopFollow();
 
-				adaptor.AddChild(root_0, collectionFunction68.Tree);
+				adaptor.AddChild(root_0, expr66.Tree);
+
+
+				}
+				break;
+			case 2:
+				DebugEnterAlt(2);
+				// HqlSqlWalker.g:232:4: collectionFunction
+				{
+				root_0 = (IASTNode)adaptor.Nil();
+
+				DebugLocation(232, 4);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._collectionFunction_in_aggregateExpr1137);
+				collectionFunction67=collectionFunction();
+				PopFollow();
+
+				adaptor.AddChild(root_0, collectionFunction67.Tree);
 
 
 				}
@@ -4442,7 +4407,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("aggregateExpr", 27);
 			LeaveRule_aggregateExpr();
 		}
-		DebugLocation(232, 1);
+		DebugLocation(233, 1);
 		} finally { DebugExitRule(GrammarFileName, "aggregateExpr"); }
 		return retval;
 
@@ -4452,7 +4417,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_fromClause();
 	partial void LeaveRule_fromClause();
 	// $ANTLR start "fromClause"
-	// HqlSqlWalker.g:235:1: fromClause : ^(f= FROM fromElementList ) ;
+	// HqlSqlWalker.g:236:1: fromClause : ^(f= FROM fromElementList ) ;
 	[GrammarRule("fromClause")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> fromClause()
 	{
@@ -4468,48 +4433,48 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _last = default(IASTNode);
 
 		IASTNode f = default(IASTNode);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> fromElementList69 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> fromElementList68 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 		IASTNode f_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "fromClause");
-		DebugLocation(235, 1);
+		DebugLocation(236, 1);
 		try
 		{
-			// HqlSqlWalker.g:236:2: ( ^(f= FROM fromElementList ) )
+			// HqlSqlWalker.g:237:2: ( ^(f= FROM fromElementList ) )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:236:4: ^(f= FROM fromElementList )
+			// HqlSqlWalker.g:237:4: ^(f= FROM fromElementList )
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(236, 4);
+			DebugLocation(237, 4);
 
 			_last = (IASTNode)input.LT(1);
 			{
 			IASTNode _save_last_1 = _last;
 			IASTNode _first_1 = default(IASTNode);
 			IASTNode root_1 = (IASTNode)adaptor.Nil();
-			DebugLocation(236, 7);
+			DebugLocation(237, 7);
 
 			_last = (IASTNode)input.LT(1);
-			f=(IASTNode)Match(input,FROM,Follow._FROM_in_fromClause1162); 
+			f=(IASTNode)Match(input,FROM,Follow._FROM_in_fromClause1153); 
 			f_tree = (IASTNode)adaptor.DupNode(f);
 
 
 			root_1 = (IASTNode)adaptor.BecomeRoot(f_tree, root_1);
 
 
-			DebugLocation(236, 13);
+			DebugLocation(237, 13);
 			 PushFromClause(f_tree); HandleClauseStart( FROM ); 
 
 			Match(input, TokenTypes.Down, null); 
-			DebugLocation(236, 69);
+			DebugLocation(237, 69);
 
 			_last = (IASTNode)input.LT(1);
-			PushFollow(Follow._fromElementList_in_fromClause1166);
-			fromElementList69=fromElementList();
+			PushFollow(Follow._fromElementList_in_fromClause1157);
+			fromElementList68=fromElementList();
 			PopFollow();
 
-			adaptor.AddChild(root_1, fromElementList69.Tree);
+			adaptor.AddChild(root_1, fromElementList68.Tree);
 
 
 			Match(input, TokenTypes.Up, null); 
@@ -4534,7 +4499,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("fromClause", 28);
 			LeaveRule_fromClause();
 		}
-		DebugLocation(237, 1);
+		DebugLocation(238, 1);
 		} finally { DebugExitRule(GrammarFileName, "fromClause"); }
 		return retval;
 
@@ -4544,7 +4509,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_fromElementList();
 	partial void LeaveRule_fromElementList();
 	// $ANTLR start "fromElementList"
-	// HqlSqlWalker.g:239:1: fromElementList : ( fromElement )+ ;
+	// HqlSqlWalker.g:240:1: fromElementList : ( fromElement )+ ;
 	[GrammarRule("fromElementList")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> fromElementList()
 	{
@@ -4559,74 +4524,74 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		AstTreeRuleReturnScope<IASTNode, IASTNode> fromElement70 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> fromElement69 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 
 				bool oldInFrom = _inFrom;
 				_inFrom = true;
 				
 		try { DebugEnterRule(GrammarFileName, "fromElementList");
-		DebugLocation(239, 1);
+		DebugLocation(240, 1);
 		try
 		{
-			// HqlSqlWalker.g:243:2: ( ( fromElement )+ )
+			// HqlSqlWalker.g:244:2: ( ( fromElement )+ )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:243:4: ( fromElement )+
+			// HqlSqlWalker.g:244:4: ( fromElement )+
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(243, 4);
-			// HqlSqlWalker.g:243:4: ( fromElement )+
-			int cnt31=0;
-			try { DebugEnterSubRule(31);
+			DebugLocation(244, 4);
+			// HqlSqlWalker.g:244:4: ( fromElement )+
+			int cnt29=0;
+			try { DebugEnterSubRule(29);
 			while (true)
 			{
-				int alt31=2;
-				try { DebugEnterDecision(31, false);
-				int LA31_1 = input.LA(1);
+				int alt29=2;
+				try { DebugEnterDecision(29, false);
+				int LA29_1 = input.LA(1);
 
-				if ((LA31_1==FILTER_ENTITY||LA31_1==JOIN||LA31_1==RANGE))
+				if ((LA29_1==FILTER_ENTITY||LA29_1==JOIN||LA29_1==RANGE))
 				{
-					alt31 = 1;
+					alt29 = 1;
 				}
 
 
-				} finally { DebugExitDecision(31); }
-				switch (alt31)
+				} finally { DebugExitDecision(29); }
+				switch (alt29)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// HqlSqlWalker.g:243:5: fromElement
+					// HqlSqlWalker.g:244:5: fromElement
 					{
-					DebugLocation(243, 5);
+					DebugLocation(244, 5);
 
 					_last = (IASTNode)input.LT(1);
-					PushFollow(Follow._fromElement_in_fromElementList1184);
-					fromElement70=fromElement();
+					PushFollow(Follow._fromElement_in_fromElementList1175);
+					fromElement69=fromElement();
 					PopFollow();
 
-					adaptor.AddChild(root_0, fromElement70.Tree);
+					adaptor.AddChild(root_0, fromElement69.Tree);
 
 
 					}
 					break;
 
 				default:
-					if (cnt31 >= 1)
-						goto loop31;
+					if (cnt29 >= 1)
+						goto loop29;
 
-					EarlyExitException eee31 = new EarlyExitException( 31, input );
-					DebugRecognitionException(eee31);
-					throw eee31;
+					EarlyExitException eee29 = new EarlyExitException( 29, input );
+					DebugRecognitionException(eee29);
+					throw eee29;
 				}
-				cnt31++;
+				cnt29++;
 			}
-			loop31:
+			loop29:
 				;
 
-			} finally { DebugExitSubRule(31); }
+			} finally { DebugExitSubRule(29); }
 
-			DebugLocation(243, 19);
+			DebugLocation(244, 19);
 
 					_inFrom = oldInFrom;
 					
@@ -4647,7 +4612,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("fromElementList", 29);
 			LeaveRule_fromElementList();
 		}
-		DebugLocation(246, 1);
+		DebugLocation(247, 1);
 		} finally { DebugExitRule(GrammarFileName, "fromElementList"); }
 		return retval;
 
@@ -4657,7 +4622,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_fromElement();
 	partial void LeaveRule_fromElement();
 	// $ANTLR start "fromElement"
-	// HqlSqlWalker.g:248:1: fromElement : ( ^( RANGE p= path (a= ALIAS )? (pf= FETCH )? ) -> {fromElement != null}? ^() ->|je= joinElement ->|fe= FILTER_ENTITY a3= ALIAS -> ^() );
+	// HqlSqlWalker.g:249:1: fromElement : ( ^( RANGE p= path (a= ALIAS )? (pf= FETCH )? ) -> {fromElement != null}? ^() ->|je= joinElement ->|fe= FILTER_ENTITY a3= ALIAS -> ^() );
 	[GrammarRule("fromElement")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> fromElement()
 	{
@@ -4676,7 +4641,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode pf = default(IASTNode);
 		IASTNode fe = default(IASTNode);
 		IASTNode a3 = default(IASTNode);
-		IASTNode RANGE71 = default(IASTNode);
+		IASTNode RANGE70 = default(IASTNode);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> p = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> je = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
@@ -4684,7 +4649,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode pf_tree = default(IASTNode);
 		IASTNode fe_tree = default(IASTNode);
 		IASTNode a3_tree = default(IASTNode);
-		IASTNode RANGE71_tree = default(IASTNode);
+		IASTNode RANGE70_tree = default(IASTNode);
 		RewriteRuleNodeStream stream_RANGE=new RewriteRuleNodeStream(adaptor,"token RANGE");
 		RewriteRuleNodeStream stream_ALIAS=new RewriteRuleNodeStream(adaptor,"token ALIAS");
 		RewriteRuleNodeStream stream_FETCH=new RewriteRuleNodeStream(adaptor,"token FETCH");
@@ -4695,89 +4660,89 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		   IASTNode fromElement = null;
 
 		try { DebugEnterRule(GrammarFileName, "fromElement");
-		DebugLocation(248, 1);
+		DebugLocation(249, 1);
 		try
 		{
-			// HqlSqlWalker.g:253:2: ( ^( RANGE p= path (a= ALIAS )? (pf= FETCH )? ) -> {fromElement != null}? ^() ->|je= joinElement ->|fe= FILTER_ENTITY a3= ALIAS -> ^() )
-			int alt34=3;
-			try { DebugEnterDecision(34, false);
+			// HqlSqlWalker.g:254:2: ( ^( RANGE p= path (a= ALIAS )? (pf= FETCH )? ) -> {fromElement != null}? ^() ->|je= joinElement ->|fe= FILTER_ENTITY a3= ALIAS -> ^() )
+			int alt32=3;
+			try { DebugEnterDecision(32, false);
 			switch (input.LA(1))
 			{
 			case RANGE:
 				{
-				alt34 = 1;
+				alt32 = 1;
 				}
 				break;
 			case JOIN:
 				{
-				alt34 = 2;
+				alt32 = 2;
 				}
 				break;
 			case FILTER_ENTITY:
 				{
-				alt34 = 3;
+				alt32 = 3;
 				}
 				break;
 			default:
 				{
-					NoViableAltException nvae = new NoViableAltException("", 34, 0, input, 1);
+					NoViableAltException nvae = new NoViableAltException("", 32, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
 			}
 
-			} finally { DebugExitDecision(34); }
-			switch (alt34)
+			} finally { DebugExitDecision(32); }
+			switch (alt32)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// HqlSqlWalker.g:253:4: ^( RANGE p= path (a= ALIAS )? (pf= FETCH )? )
+				// HqlSqlWalker.g:254:4: ^( RANGE p= path (a= ALIAS )? (pf= FETCH )? )
 				{
-				DebugLocation(253, 4);
+				DebugLocation(254, 4);
 
 				_last = (IASTNode)input.LT(1);
 				{
 				IASTNode _save_last_1 = _last;
 				IASTNode _first_1 = default(IASTNode);
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(253, 6);
+				DebugLocation(254, 6);
 
 				_last = (IASTNode)input.LT(1);
-				RANGE71=(IASTNode)Match(input,RANGE,Follow._RANGE_in_fromElement1209); 
+				RANGE70=(IASTNode)Match(input,RANGE,Follow._RANGE_in_fromElement1200); 
 				 
-				stream_RANGE.Add(RANGE71);
+				stream_RANGE.Add(RANGE70);
 
 
 				Match(input, TokenTypes.Down, null); 
-				DebugLocation(253, 13);
+				DebugLocation(254, 13);
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._path_in_fromElement1213);
+				PushFollow(Follow._path_in_fromElement1204);
 				p=path();
 				PopFollow();
 
 				stream_path.Add(p.Tree);
-				DebugLocation(253, 19);
-				// HqlSqlWalker.g:253:19: (a= ALIAS )?
-				int alt32=2;
-				try { DebugEnterSubRule(32);
-				try { DebugEnterDecision(32, false);
-				int LA32_1 = input.LA(1);
+				DebugLocation(254, 19);
+				// HqlSqlWalker.g:254:19: (a= ALIAS )?
+				int alt30=2;
+				try { DebugEnterSubRule(30);
+				try { DebugEnterDecision(30, false);
+				int LA30_1 = input.LA(1);
 
-				if ((LA32_1==ALIAS))
+				if ((LA30_1==ALIAS))
 				{
-					alt32 = 1;
+					alt30 = 1;
 				}
-				} finally { DebugExitDecision(32); }
-				switch (alt32)
+				} finally { DebugExitDecision(30); }
+				switch (alt30)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// HqlSqlWalker.g:253:20: a= ALIAS
+					// HqlSqlWalker.g:254:20: a= ALIAS
 					{
-					DebugLocation(253, 21);
+					DebugLocation(254, 21);
 
 					_last = (IASTNode)input.LT(1);
-					a=(IASTNode)Match(input,ALIAS,Follow._ALIAS_in_fromElement1218); 
+					a=(IASTNode)Match(input,ALIAS,Follow._ALIAS_in_fromElement1209); 
 					 
 					stream_ALIAS.Add(a);
 
@@ -4786,30 +4751,30 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 					break;
 
 				}
-				} finally { DebugExitSubRule(32); }
+				} finally { DebugExitSubRule(30); }
 
-				DebugLocation(253, 30);
-				// HqlSqlWalker.g:253:30: (pf= FETCH )?
-				int alt33=2;
-				try { DebugEnterSubRule(33);
-				try { DebugEnterDecision(33, false);
-				int LA33_1 = input.LA(1);
+				DebugLocation(254, 30);
+				// HqlSqlWalker.g:254:30: (pf= FETCH )?
+				int alt31=2;
+				try { DebugEnterSubRule(31);
+				try { DebugEnterDecision(31, false);
+				int LA31_1 = input.LA(1);
 
-				if ((LA33_1==FETCH))
+				if ((LA31_1==FETCH))
 				{
-					alt33 = 1;
+					alt31 = 1;
 				}
-				} finally { DebugExitDecision(33); }
-				switch (alt33)
+				} finally { DebugExitDecision(31); }
+				switch (alt31)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// HqlSqlWalker.g:253:31: pf= FETCH
+					// HqlSqlWalker.g:254:31: pf= FETCH
 					{
-					DebugLocation(253, 33);
+					DebugLocation(254, 33);
 
 					_last = (IASTNode)input.LT(1);
-					pf=(IASTNode)Match(input,FETCH,Follow._FETCH_in_fromElement1225); 
+					pf=(IASTNode)Match(input,FETCH,Follow._FETCH_in_fromElement1216); 
 					 
 					stream_FETCH.Add(pf);
 
@@ -4818,7 +4783,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 					break;
 
 				}
-				} finally { DebugExitSubRule(33); }
+				} finally { DebugExitSubRule(31); }
 
 
 				Match(input, TokenTypes.Up, null); 
@@ -4826,7 +4791,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				_last = _save_last_1;
 				}
 
-				DebugLocation(253, 44);
+				DebugLocation(254, 44);
 				 fromElement = CreateFromElement((p!=null?((HqlSqlWalker.path_return)p).p:default(String)), (p!=null?((IASTNode)p.Tree):default(IASTNode)), a, pf); 
 
 
@@ -4842,23 +4807,23 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 				root_0 = (IASTNode)adaptor.Nil();
-				// 254:3: -> {fromElement != null}? ^()
+				// 255:3: -> {fromElement != null}? ^()
 				if (fromElement != null)
 				{
-					DebugLocation(254, 29);
-					// HqlSqlWalker.g:254:29: ^()
+					DebugLocation(255, 29);
+					// HqlSqlWalker.g:255:29: ^()
 					{
 					IASTNode root_1 = (IASTNode)adaptor.Nil();
-					DebugLocation(254, 31);
+					DebugLocation(255, 31);
 					root_1 = (IASTNode)adaptor.BecomeRoot(fromElement, root_1);
 
 					adaptor.AddChild(root_0, root_1);
 					}
 
 				}
-				else // 255:3: ->
+				else // 256:3: ->
 				{
-					DebugLocation(256, 2);
+					DebugLocation(257, 2);
 					root_0 = null;
 				}
 
@@ -4869,11 +4834,11 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// HqlSqlWalker.g:256:4: je= joinElement
+				// HqlSqlWalker.g:257:4: je= joinElement
 				{
-				DebugLocation(256, 6);
+				DebugLocation(257, 6);
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._joinElement_in_fromElement1252);
+				PushFollow(Follow._joinElement_in_fromElement1243);
 				je=joinElement();
 				PopFollow();
 
@@ -4892,9 +4857,9 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 				root_0 = (IASTNode)adaptor.Nil();
-				// 257:3: ->
+				// 258:3: ->
 				{
-					DebugLocation(259, 2);
+					DebugLocation(260, 2);
 					root_0 = null;
 				}
 
@@ -4905,19 +4870,19 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// HqlSqlWalker.g:259:4: fe= FILTER_ENTITY a3= ALIAS
+				// HqlSqlWalker.g:260:4: fe= FILTER_ENTITY a3= ALIAS
 				{
-				DebugLocation(259, 6);
+				DebugLocation(260, 6);
 
 				_last = (IASTNode)input.LT(1);
-				fe=(IASTNode)Match(input,FILTER_ENTITY,Follow._FILTER_ENTITY_in_fromElement1267); 
+				fe=(IASTNode)Match(input,FILTER_ENTITY,Follow._FILTER_ENTITY_in_fromElement1258); 
 				 
 				stream_FILTER_ENTITY.Add(fe);
 
-				DebugLocation(259, 23);
+				DebugLocation(260, 23);
 
 				_last = (IASTNode)input.LT(1);
-				a3=(IASTNode)Match(input,ALIAS,Follow._ALIAS_in_fromElement1271); 
+				a3=(IASTNode)Match(input,ALIAS,Follow._ALIAS_in_fromElement1262); 
 				 
 				stream_ALIAS.Add(a3);
 
@@ -4935,13 +4900,13 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 				root_0 = (IASTNode)adaptor.Nil();
-				// 260:3: -> ^()
+				// 261:3: -> ^()
 				{
-					DebugLocation(260, 6);
-					// HqlSqlWalker.g:260:6: ^()
+					DebugLocation(261, 6);
+					// HqlSqlWalker.g:261:6: ^()
 					{
 					IASTNode root_1 = (IASTNode)adaptor.Nil();
-					DebugLocation(260, 8);
+					DebugLocation(261, 8);
 					root_1 = (IASTNode)adaptor.BecomeRoot(CreateFromFilterElement(fe,a3), root_1);
 
 					adaptor.AddChild(root_0, root_1);
@@ -4970,7 +4935,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("fromElement", 30);
 			LeaveRule_fromElement();
 		}
-		DebugLocation(261, 1);
+		DebugLocation(262, 1);
 		} finally { DebugExitRule(GrammarFileName, "fromElement"); }
 		return retval;
 
@@ -4980,7 +4945,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_joinElement();
 	partial void LeaveRule_joinElement();
 	// $ANTLR start "joinElement"
-	// HqlSqlWalker.g:263:1: joinElement : ^( JOIN (j= joinType )? (f= FETCH )? pRef= propertyRef (a= ALIAS )? (pf= FETCH )? ( ^( (with= WITH ) ( . )* ) )? ) ;
+	// HqlSqlWalker.g:264:1: joinElement : ^( JOIN (j= joinType )? (f= FETCH )? pRef= propertyRef (a= ALIAS )? (pf= FETCH )? ( ^( (with= WITH ) ( . )* ) )? ) ;
 	[GrammarRule("joinElement")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> joinElement()
 	{
@@ -4999,8 +4964,8 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode a = default(IASTNode);
 		IASTNode pf = default(IASTNode);
 		IASTNode with = default(IASTNode);
-		IASTNode JOIN72 = default(IASTNode);
-		IASTNode wildcard73 = default(IASTNode);
+		IASTNode JOIN71 = default(IASTNode);
+		IASTNode wildcard72 = default(IASTNode);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> j = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> pRef = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
@@ -5008,44 +4973,123 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode a_tree = default(IASTNode);
 		IASTNode pf_tree = default(IASTNode);
 		IASTNode with_tree = default(IASTNode);
-		IASTNode JOIN72_tree = default(IASTNode);
-		IASTNode wildcard73_tree = default(IASTNode);
+		IASTNode JOIN71_tree = default(IASTNode);
+		IASTNode wildcard72_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "joinElement");
-		DebugLocation(263, 1);
+		DebugLocation(264, 1);
 		try
 		{
-			// HqlSqlWalker.g:267:2: ( ^( JOIN (j= joinType )? (f= FETCH )? pRef= propertyRef (a= ALIAS )? (pf= FETCH )? ( ^( (with= WITH ) ( . )* ) )? ) )
+			// HqlSqlWalker.g:268:2: ( ^( JOIN (j= joinType )? (f= FETCH )? pRef= propertyRef (a= ALIAS )? (pf= FETCH )? ( ^( (with= WITH ) ( . )* ) )? ) )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:267:4: ^( JOIN (j= joinType )? (f= FETCH )? pRef= propertyRef (a= ALIAS )? (pf= FETCH )? ( ^( (with= WITH ) ( . )* ) )? )
+			// HqlSqlWalker.g:268:4: ^( JOIN (j= joinType )? (f= FETCH )? pRef= propertyRef (a= ALIAS )? (pf= FETCH )? ( ^( (with= WITH ) ( . )* ) )? )
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(267, 4);
+			DebugLocation(268, 4);
 
 			_last = (IASTNode)input.LT(1);
 			{
 			IASTNode _save_last_1 = _last;
 			IASTNode _first_1 = default(IASTNode);
 			IASTNode root_1 = (IASTNode)adaptor.Nil();
-			DebugLocation(267, 6);
+			DebugLocation(268, 6);
 
 			_last = (IASTNode)input.LT(1);
-			JOIN72=(IASTNode)Match(input,JOIN,Follow._JOIN_in_joinElement1300); 
-			JOIN72_tree = (IASTNode)adaptor.DupNode(JOIN72);
+			JOIN71=(IASTNode)Match(input,JOIN,Follow._JOIN_in_joinElement1291); 
+			JOIN71_tree = (IASTNode)adaptor.DupNode(JOIN71);
 
 
-			root_1 = (IASTNode)adaptor.BecomeRoot(JOIN72_tree, root_1);
+			root_1 = (IASTNode)adaptor.BecomeRoot(JOIN71_tree, root_1);
 
 
 			Match(input, TokenTypes.Down, null); 
-			DebugLocation(267, 11);
-			// HqlSqlWalker.g:267:11: (j= joinType )?
+			DebugLocation(268, 11);
+			// HqlSqlWalker.g:268:11: (j= joinType )?
+			int alt33=2;
+			try { DebugEnterSubRule(33);
+			try { DebugEnterDecision(33, false);
+			int LA33_1 = input.LA(1);
+
+			if ((LA33_1==FULL||LA33_1==INNER||LA33_1==LEFT||LA33_1==RIGHT))
+			{
+				alt33 = 1;
+			}
+			} finally { DebugExitDecision(33); }
+			switch (alt33)
+			{
+			case 1:
+				DebugEnterAlt(1);
+				// HqlSqlWalker.g:268:12: j= joinType
+				{
+				DebugLocation(268, 13);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._joinType_in_joinElement1296);
+				j=joinType();
+				PopFollow();
+
+				adaptor.AddChild(root_1, j.Tree);
+
+				DebugLocation(268, 23);
+				 SetImpliedJoinType((j!=null?((HqlSqlWalker.joinType_return)j).j:default(int))); 
+
+				}
+				break;
+
+			}
+			} finally { DebugExitSubRule(33); }
+
+			DebugLocation(268, 56);
+			// HqlSqlWalker.g:268:56: (f= FETCH )?
+			int alt34=2;
+			try { DebugEnterSubRule(34);
+			try { DebugEnterDecision(34, false);
+			int LA34_1 = input.LA(1);
+
+			if ((LA34_1==FETCH))
+			{
+				alt34 = 1;
+			}
+			} finally { DebugExitDecision(34); }
+			switch (alt34)
+			{
+			case 1:
+				DebugEnterAlt(1);
+				// HqlSqlWalker.g:268:57: f= FETCH
+				{
+				DebugLocation(268, 58);
+
+				_last = (IASTNode)input.LT(1);
+				f=(IASTNode)Match(input,FETCH,Follow._FETCH_in_joinElement1306); 
+				f_tree = (IASTNode)adaptor.DupNode(f);
+
+
+				adaptor.AddChild(root_1, f_tree);
+
+
+				}
+				break;
+
+			}
+			} finally { DebugExitSubRule(34); }
+
+			DebugLocation(268, 71);
+
+			_last = (IASTNode)input.LT(1);
+			PushFollow(Follow._propertyRef_in_joinElement1312);
+			pRef=propertyRef();
+			PopFollow();
+
+			adaptor.AddChild(root_1, pRef.Tree);
+
+			DebugLocation(268, 84);
+			// HqlSqlWalker.g:268:84: (a= ALIAS )?
 			int alt35=2;
 			try { DebugEnterSubRule(35);
 			try { DebugEnterDecision(35, false);
 			int LA35_1 = input.LA(1);
 
-			if ((LA35_1==FULL||LA35_1==INNER||LA35_1==LEFT||LA35_1==RIGHT))
+			if ((LA35_1==ALIAS))
 			{
 				alt35 = 1;
 			}
@@ -5054,19 +5098,17 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// HqlSqlWalker.g:267:12: j= joinType
+				// HqlSqlWalker.g:268:85: a= ALIAS
 				{
-				DebugLocation(267, 13);
+				DebugLocation(268, 86);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._joinType_in_joinElement1305);
-				j=joinType();
-				PopFollow();
+				a=(IASTNode)Match(input,ALIAS,Follow._ALIAS_in_joinElement1317); 
+				a_tree = (IASTNode)adaptor.DupNode(a);
 
-				adaptor.AddChild(root_1, j.Tree);
 
-				DebugLocation(267, 23);
-				 SetImpliedJoinType((j!=null?((HqlSqlWalker.joinType_return)j).j:default(int))); 
+				adaptor.AddChild(root_1, a_tree);
+
 
 				}
 				break;
@@ -5074,8 +5116,8 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			}
 			} finally { DebugExitSubRule(35); }
 
-			DebugLocation(267, 56);
-			// HqlSqlWalker.g:267:56: (f= FETCH )?
+			DebugLocation(268, 95);
+			// HqlSqlWalker.g:268:95: (pf= FETCH )?
 			int alt36=2;
 			try { DebugEnterSubRule(36);
 			try { DebugEnterDecision(36, false);
@@ -5090,89 +5132,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// HqlSqlWalker.g:267:57: f= FETCH
+				// HqlSqlWalker.g:268:96: pf= FETCH
 				{
-				DebugLocation(267, 58);
+				DebugLocation(268, 98);
 
 				_last = (IASTNode)input.LT(1);
-				f=(IASTNode)Match(input,FETCH,Follow._FETCH_in_joinElement1315); 
-				f_tree = (IASTNode)adaptor.DupNode(f);
-
-
-				adaptor.AddChild(root_1, f_tree);
-
-
-				}
-				break;
-
-			}
-			} finally { DebugExitSubRule(36); }
-
-			DebugLocation(267, 71);
-
-			_last = (IASTNode)input.LT(1);
-			PushFollow(Follow._propertyRef_in_joinElement1321);
-			pRef=propertyRef();
-			PopFollow();
-
-			adaptor.AddChild(root_1, pRef.Tree);
-
-			DebugLocation(267, 84);
-			// HqlSqlWalker.g:267:84: (a= ALIAS )?
-			int alt37=2;
-			try { DebugEnterSubRule(37);
-			try { DebugEnterDecision(37, false);
-			int LA37_1 = input.LA(1);
-
-			if ((LA37_1==ALIAS))
-			{
-				alt37 = 1;
-			}
-			} finally { DebugExitDecision(37); }
-			switch (alt37)
-			{
-			case 1:
-				DebugEnterAlt(1);
-				// HqlSqlWalker.g:267:85: a= ALIAS
-				{
-				DebugLocation(267, 86);
-
-				_last = (IASTNode)input.LT(1);
-				a=(IASTNode)Match(input,ALIAS,Follow._ALIAS_in_joinElement1326); 
-				a_tree = (IASTNode)adaptor.DupNode(a);
-
-
-				adaptor.AddChild(root_1, a_tree);
-
-
-				}
-				break;
-
-			}
-			} finally { DebugExitSubRule(37); }
-
-			DebugLocation(267, 95);
-			// HqlSqlWalker.g:267:95: (pf= FETCH )?
-			int alt38=2;
-			try { DebugEnterSubRule(38);
-			try { DebugEnterDecision(38, false);
-			int LA38_1 = input.LA(1);
-
-			if ((LA38_1==FETCH))
-			{
-				alt38 = 1;
-			}
-			} finally { DebugExitDecision(38); }
-			switch (alt38)
-			{
-			case 1:
-				DebugEnterAlt(1);
-				// HqlSqlWalker.g:267:96: pf= FETCH
-				{
-				DebugLocation(267, 98);
-
-				_last = (IASTNode)input.LT(1);
-				pf=(IASTNode)Match(input,FETCH,Follow._FETCH_in_joinElement1333); 
+				pf=(IASTNode)Match(input,FETCH,Follow._FETCH_in_joinElement1324); 
 				pf_tree = (IASTNode)adaptor.DupNode(pf);
 
 
@@ -5183,42 +5148,42 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				break;
 
 			}
-			} finally { DebugExitSubRule(38); }
+			} finally { DebugExitSubRule(36); }
 
-			DebugLocation(267, 107);
-			// HqlSqlWalker.g:267:107: ( ^( (with= WITH ) ( . )* ) )?
-			int alt40=2;
-			try { DebugEnterSubRule(40);
-			try { DebugEnterDecision(40, false);
-			int LA40_1 = input.LA(1);
+			DebugLocation(268, 107);
+			// HqlSqlWalker.g:268:107: ( ^( (with= WITH ) ( . )* ) )?
+			int alt38=2;
+			try { DebugEnterSubRule(38);
+			try { DebugEnterDecision(38, false);
+			int LA38_1 = input.LA(1);
 
-			if ((LA40_1==WITH))
+			if ((LA38_1==WITH))
 			{
-				alt40 = 1;
+				alt38 = 1;
 			}
-			} finally { DebugExitDecision(40); }
-			switch (alt40)
+			} finally { DebugExitDecision(38); }
+			switch (alt38)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// HqlSqlWalker.g:267:108: ^( (with= WITH ) ( . )* )
+				// HqlSqlWalker.g:268:108: ^( (with= WITH ) ( . )* )
 				{
-				DebugLocation(267, 108);
+				DebugLocation(268, 108);
 
 				_last = (IASTNode)input.LT(1);
 				{
 				IASTNode _save_last_2 = _last;
 				IASTNode _first_2 = default(IASTNode);
 				IASTNode root_2 = (IASTNode)adaptor.Nil();
-				DebugLocation(267, 110);
-				// HqlSqlWalker.g:267:110: (with= WITH )
+				DebugLocation(268, 110);
+				// HqlSqlWalker.g:268:110: (with= WITH )
 				DebugEnterAlt(1);
-				// HqlSqlWalker.g:267:111: with= WITH
+				// HqlSqlWalker.g:268:111: with= WITH
 				{
-				DebugLocation(267, 115);
+				DebugLocation(268, 115);
 
 				_last = (IASTNode)input.LT(1);
-				with=(IASTNode)Match(input,WITH,Follow._WITH_in_joinElement1342); 
+				with=(IASTNode)Match(input,WITH,Follow._WITH_in_joinElement1333); 
 				with_tree = (IASTNode)adaptor.DupNode(with);
 
 
@@ -5230,54 +5195,54 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 				if (input.LA(1) == TokenTypes.Down) {
 					Match(input, TokenTypes.Down, null); 
-					DebugLocation(267, 122);
-					// HqlSqlWalker.g:267:122: ( . )*
-					try { DebugEnterSubRule(39);
+					DebugLocation(268, 122);
+					// HqlSqlWalker.g:268:122: ( . )*
+					try { DebugEnterSubRule(37);
 					while (true)
 					{
-						int alt39=2;
-						try { DebugEnterDecision(39, false);
-						int LA39_1 = input.LA(1);
+						int alt37=2;
+						try { DebugEnterDecision(37, false);
+						int LA37_1 = input.LA(1);
 
-						if (((LA39_1>=AGGREGATE && LA39_1<=THETA_JOINS)))
+						if (((LA37_1>=AGGREGATE && LA37_1<=THETA_JOINS)))
 						{
-							alt39 = 1;
+							alt37 = 1;
 						}
-						else if ((LA39_1==UP))
+						else if ((LA37_1==UP))
 						{
-							alt39 = 2;
+							alt37 = 2;
 						}
 
 
-						} finally { DebugExitDecision(39); }
-						switch ( alt39 )
+						} finally { DebugExitDecision(37); }
+						switch ( alt37 )
 						{
 						case 1:
 							DebugEnterAlt(1);
-							// HqlSqlWalker.g:267:122: .
+							// HqlSqlWalker.g:268:122: .
 							{
-							DebugLocation(267, 122);
+							DebugLocation(268, 122);
 
 							_last = (IASTNode)input.LT(1);
-							wildcard73=(IASTNode)input.LT(1);
+							wildcard72=(IASTNode)input.LT(1);
 
 							MatchAny(input); 
-							wildcard73_tree = (IASTNode)adaptor.DupTree(wildcard73);
-							adaptor.AddChild(root_2, wildcard73_tree);
+							wildcard72_tree = (IASTNode)adaptor.DupTree(wildcard72);
+							adaptor.AddChild(root_2, wildcard72_tree);
 
 
 							}
 							break;
 
 						default:
-							goto loop39;
+							goto loop37;
 						}
 					}
 
-					loop39:
+					loop37:
 						;
 
-					} finally { DebugExitSubRule(39); }
+					} finally { DebugExitSubRule(37); }
 
 
 					Match(input, TokenTypes.Up, null); 
@@ -5291,7 +5256,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				break;
 
 			}
-			} finally { DebugExitSubRule(40); }
+			} finally { DebugExitSubRule(38); }
 
 
 			Match(input, TokenTypes.Up, null); 
@@ -5299,7 +5264,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			_last = _save_last_1;
 			}
 
-			DebugLocation(268, 2);
+			DebugLocation(269, 2);
 
 					CreateFromJoinElement((pRef!=null?((IASTNode)pRef.Tree):default(IASTNode)),a,(j!=null?((HqlSqlWalker.joinType_return)j).j:default(int)),f, pf, with);
 					SetImpliedJoinType(INNER);	// Reset the implied join type.
@@ -5321,7 +5286,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("joinElement", 31);
 			LeaveRule_joinElement();
 		}
-		DebugLocation(272, 1);
+		DebugLocation(273, 1);
 		} finally { DebugExitRule(GrammarFileName, "joinElement"); }
 		return retval;
 
@@ -5338,7 +5303,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_joinType();
 	partial void LeaveRule_joinType();
 	// $ANTLR start "joinType"
-	// HqlSqlWalker.g:276:1: joinType returns [int j] : ( ( (left= LEFT |right= RIGHT ) (outer= OUTER )? ) | FULL | INNER );
+	// HqlSqlWalker.g:277:1: joinType returns [int j] : ( ( (left= LEFT |right= RIGHT ) (outer= OUTER )? ) | FULL | INNER );
 	[GrammarRule("joinType")]
 	private HqlSqlWalker.joinType_return joinType()
 	{
@@ -5356,96 +5321,96 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode left = default(IASTNode);
 		IASTNode right = default(IASTNode);
 		IASTNode outer = default(IASTNode);
-		IASTNode FULL74 = default(IASTNode);
-		IASTNode INNER75 = default(IASTNode);
+		IASTNode FULL73 = default(IASTNode);
+		IASTNode INNER74 = default(IASTNode);
 
 		IASTNode left_tree = default(IASTNode);
 		IASTNode right_tree = default(IASTNode);
 		IASTNode outer_tree = default(IASTNode);
-		IASTNode FULL74_tree = default(IASTNode);
-		IASTNode INNER75_tree = default(IASTNode);
+		IASTNode FULL73_tree = default(IASTNode);
+		IASTNode INNER74_tree = default(IASTNode);
 
 		   retval.j = INNER;
 
 		try { DebugEnterRule(GrammarFileName, "joinType");
-		DebugLocation(276, 1);
+		DebugLocation(277, 1);
 		try
 		{
-			// HqlSqlWalker.g:280:2: ( ( (left= LEFT |right= RIGHT ) (outer= OUTER )? ) | FULL | INNER )
-			int alt43=3;
-			try { DebugEnterDecision(43, false);
+			// HqlSqlWalker.g:281:2: ( ( (left= LEFT |right= RIGHT ) (outer= OUTER )? ) | FULL | INNER )
+			int alt41=3;
+			try { DebugEnterDecision(41, false);
 			switch (input.LA(1))
 			{
 			case LEFT:
 			case RIGHT:
 				{
-				alt43 = 1;
+				alt41 = 1;
 				}
 				break;
 			case FULL:
 				{
-				alt43 = 2;
+				alt41 = 2;
 				}
 				break;
 			case INNER:
 				{
-				alt43 = 3;
+				alt41 = 3;
 				}
 				break;
 			default:
-				{
-					NoViableAltException nvae = new NoViableAltException("", 43, 0, input, 1);
-					DebugRecognitionException(nvae);
-					throw nvae;
-				}
-			}
-
-			} finally { DebugExitDecision(43); }
-			switch (alt43)
-			{
-			case 1:
-				DebugEnterAlt(1);
-				// HqlSqlWalker.g:280:4: ( (left= LEFT |right= RIGHT ) (outer= OUTER )? )
-				{
-				root_0 = (IASTNode)adaptor.Nil();
-
-				DebugLocation(280, 4);
-				// HqlSqlWalker.g:280:4: ( (left= LEFT |right= RIGHT ) (outer= OUTER )? )
-				DebugEnterAlt(1);
-				// HqlSqlWalker.g:280:6: (left= LEFT |right= RIGHT ) (outer= OUTER )?
-				{
-				DebugLocation(280, 6);
-				// HqlSqlWalker.g:280:6: (left= LEFT |right= RIGHT )
-				int alt41=2;
-				try { DebugEnterSubRule(41);
-				try { DebugEnterDecision(41, false);
-				int LA41_1 = input.LA(1);
-
-				if ((LA41_1==LEFT))
-				{
-					alt41 = 1;
-				}
-				else if ((LA41_1==RIGHT))
-				{
-					alt41 = 2;
-				}
-				else
 				{
 					NoViableAltException nvae = new NoViableAltException("", 41, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
-				} finally { DebugExitDecision(41); }
-				switch (alt41)
+			}
+
+			} finally { DebugExitDecision(41); }
+			switch (alt41)
+			{
+			case 1:
+				DebugEnterAlt(1);
+				// HqlSqlWalker.g:281:4: ( (left= LEFT |right= RIGHT ) (outer= OUTER )? )
+				{
+				root_0 = (IASTNode)adaptor.Nil();
+
+				DebugLocation(281, 4);
+				// HqlSqlWalker.g:281:4: ( (left= LEFT |right= RIGHT ) (outer= OUTER )? )
+				DebugEnterAlt(1);
+				// HqlSqlWalker.g:281:6: (left= LEFT |right= RIGHT ) (outer= OUTER )?
+				{
+				DebugLocation(281, 6);
+				// HqlSqlWalker.g:281:6: (left= LEFT |right= RIGHT )
+				int alt39=2;
+				try { DebugEnterSubRule(39);
+				try { DebugEnterDecision(39, false);
+				int LA39_1 = input.LA(1);
+
+				if ((LA39_1==LEFT))
+				{
+					alt39 = 1;
+				}
+				else if ((LA39_1==RIGHT))
+				{
+					alt39 = 2;
+				}
+				else
+				{
+					NoViableAltException nvae = new NoViableAltException("", 39, 0, input, 1);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
+				} finally { DebugExitDecision(39); }
+				switch (alt39)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// HqlSqlWalker.g:280:7: left= LEFT
+					// HqlSqlWalker.g:281:7: left= LEFT
 					{
-					DebugLocation(280, 11);
+					DebugLocation(281, 11);
 
 					_last = (IASTNode)input.LT(1);
-					left=(IASTNode)Match(input,LEFT,Follow._LEFT_in_joinType1383); 
+					left=(IASTNode)Match(input,LEFT,Follow._LEFT_in_joinType1374); 
 					left_tree = (IASTNode)adaptor.DupNode(left);
 
 
@@ -5456,12 +5421,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 					break;
 				case 2:
 					DebugEnterAlt(2);
-					// HqlSqlWalker.g:280:19: right= RIGHT
+					// HqlSqlWalker.g:281:19: right= RIGHT
 					{
-					DebugLocation(280, 24);
+					DebugLocation(281, 24);
 
 					_last = (IASTNode)input.LT(1);
-					right=(IASTNode)Match(input,RIGHT,Follow._RIGHT_in_joinType1389); 
+					right=(IASTNode)Match(input,RIGHT,Follow._RIGHT_in_joinType1380); 
 					right_tree = (IASTNode)adaptor.DupNode(right);
 
 
@@ -5472,30 +5437,30 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 					break;
 
 				}
-				} finally { DebugExitSubRule(41); }
+				} finally { DebugExitSubRule(39); }
 
-				DebugLocation(280, 32);
-				// HqlSqlWalker.g:280:32: (outer= OUTER )?
-				int alt42=2;
-				try { DebugEnterSubRule(42);
-				try { DebugEnterDecision(42, false);
-				int LA42_1 = input.LA(1);
+				DebugLocation(281, 32);
+				// HqlSqlWalker.g:281:32: (outer= OUTER )?
+				int alt40=2;
+				try { DebugEnterSubRule(40);
+				try { DebugEnterDecision(40, false);
+				int LA40_1 = input.LA(1);
 
-				if ((LA42_1==OUTER))
+				if ((LA40_1==OUTER))
 				{
-					alt42 = 1;
+					alt40 = 1;
 				}
-				} finally { DebugExitDecision(42); }
-				switch (alt42)
+				} finally { DebugExitDecision(40); }
+				switch (alt40)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// HqlSqlWalker.g:280:33: outer= OUTER
+					// HqlSqlWalker.g:281:33: outer= OUTER
 					{
-					DebugLocation(280, 38);
+					DebugLocation(281, 38);
 
 					_last = (IASTNode)input.LT(1);
-					outer=(IASTNode)Match(input,OUTER,Follow._OUTER_in_joinType1395); 
+					outer=(IASTNode)Match(input,OUTER,Follow._OUTER_in_joinType1386); 
 					outer_tree = (IASTNode)adaptor.DupNode(outer);
 
 
@@ -5506,9 +5471,9 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 					break;
 
 				}
-				} finally { DebugExitSubRule(42); }
+				} finally { DebugExitSubRule(40); }
 
-				DebugLocation(281, 2);
+				DebugLocation(282, 2);
 
 						if (left != null)       retval.j = LEFT_OUTER;
 						else if (right != null) retval.j = RIGHT_OUTER;
@@ -5522,20 +5487,20 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// HqlSqlWalker.g:286:4: FULL
+				// HqlSqlWalker.g:287:4: FULL
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(286, 4);
+				DebugLocation(287, 4);
 
 				_last = (IASTNode)input.LT(1);
-				FULL74=(IASTNode)Match(input,FULL,Follow._FULL_in_joinType1409); 
-				FULL74_tree = (IASTNode)adaptor.DupNode(FULL74);
+				FULL73=(IASTNode)Match(input,FULL,Follow._FULL_in_joinType1400); 
+				FULL73_tree = (IASTNode)adaptor.DupNode(FULL73);
 
 
-				adaptor.AddChild(root_0, FULL74_tree);
+				adaptor.AddChild(root_0, FULL73_tree);
 
-				DebugLocation(286, 9);
+				DebugLocation(287, 9);
 
 						retval.j = FULL;
 					
@@ -5544,20 +5509,20 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// HqlSqlWalker.g:289:4: INNER
+				// HqlSqlWalker.g:290:4: INNER
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(289, 4);
+				DebugLocation(290, 4);
 
 				_last = (IASTNode)input.LT(1);
-				INNER75=(IASTNode)Match(input,INNER,Follow._INNER_in_joinType1416); 
-				INNER75_tree = (IASTNode)adaptor.DupNode(INNER75);
+				INNER74=(IASTNode)Match(input,INNER,Follow._INNER_in_joinType1407); 
+				INNER74_tree = (IASTNode)adaptor.DupNode(INNER74);
 
 
-				adaptor.AddChild(root_0, INNER75_tree);
+				adaptor.AddChild(root_0, INNER74_tree);
 
-				DebugLocation(289, 10);
+				DebugLocation(290, 10);
 
 						retval.j = INNER;
 					
@@ -5580,7 +5545,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("joinType", 32);
 			LeaveRule_joinType();
 		}
-		DebugLocation(292, 1);
+		DebugLocation(293, 1);
 		} finally { DebugExitRule(GrammarFileName, "joinType"); }
 		return retval;
 
@@ -5597,7 +5562,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_path();
 	partial void LeaveRule_path();
 	// $ANTLR start "path"
-	// HqlSqlWalker.g:296:1: path returns [String p] : (a= identifier | ^( DOT x= path y= identifier ) );
+	// HqlSqlWalker.g:297:1: path returns [String p] : (a= identifier | ^( DOT x= path y= identifier ) );
 	[GrammarRule("path")]
 	private HqlSqlWalker.path_return path()
 	{
@@ -5612,95 +5577,95 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		IASTNode DOT76 = default(IASTNode);
+		IASTNode DOT75 = default(IASTNode);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> a = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> x = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> y = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-		IASTNode DOT76_tree = default(IASTNode);
+		IASTNode DOT75_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "path");
-		DebugLocation(296, 1);
+		DebugLocation(297, 1);
 		try
 		{
-			// HqlSqlWalker.g:297:2: (a= identifier | ^( DOT x= path y= identifier ) )
-			int alt44=2;
-			try { DebugEnterDecision(44, false);
-			int LA44_1 = input.LA(1);
+			// HqlSqlWalker.g:298:2: (a= identifier | ^( DOT x= path y= identifier ) )
+			int alt42=2;
+			try { DebugEnterDecision(42, false);
+			int LA42_1 = input.LA(1);
 
-			if ((LA44_1==IDENT||LA44_1==WEIRD_IDENT))
+			if ((LA42_1==IDENT||LA42_1==WEIRD_IDENT))
 			{
-				alt44 = 1;
+				alt42 = 1;
 			}
-			else if ((LA44_1==DOT))
+			else if ((LA42_1==DOT))
 			{
-				alt44 = 2;
+				alt42 = 2;
 			}
 			else
 			{
-				NoViableAltException nvae = new NoViableAltException("", 44, 0, input, 1);
+				NoViableAltException nvae = new NoViableAltException("", 42, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-			} finally { DebugExitDecision(44); }
-			switch (alt44)
+			} finally { DebugExitDecision(42); }
+			switch (alt42)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// HqlSqlWalker.g:297:4: a= identifier
+				// HqlSqlWalker.g:298:4: a= identifier
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(297, 5);
+				DebugLocation(298, 5);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._identifier_in_path1438);
+				PushFollow(Follow._identifier_in_path1429);
 				a=identifier();
 				PopFollow();
 
 				adaptor.AddChild(root_0, a.Tree);
 
-				DebugLocation(297, 17);
+				DebugLocation(298, 17);
 				 retval.p = (a!=null?((IASTNode)a.Start):default(IASTNode)).ToString();
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// HqlSqlWalker.g:298:4: ^( DOT x= path y= identifier )
+				// HqlSqlWalker.g:299:4: ^( DOT x= path y= identifier )
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(298, 4);
+				DebugLocation(299, 4);
 
 				_last = (IASTNode)input.LT(1);
 				{
 				IASTNode _save_last_1 = _last;
 				IASTNode _first_1 = default(IASTNode);
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(298, 6);
+				DebugLocation(299, 6);
 
 				_last = (IASTNode)input.LT(1);
-				DOT76=(IASTNode)Match(input,DOT,Follow._DOT_in_path1446); 
-				DOT76_tree = (IASTNode)adaptor.DupNode(DOT76);
+				DOT75=(IASTNode)Match(input,DOT,Follow._DOT_in_path1437); 
+				DOT75_tree = (IASTNode)adaptor.DupNode(DOT75);
 
 
-				root_1 = (IASTNode)adaptor.BecomeRoot(DOT76_tree, root_1);
+				root_1 = (IASTNode)adaptor.BecomeRoot(DOT75_tree, root_1);
 
 
 				Match(input, TokenTypes.Down, null); 
-				DebugLocation(298, 11);
+				DebugLocation(299, 11);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._path_in_path1450);
+				PushFollow(Follow._path_in_path1441);
 				x=path();
 				PopFollow();
 
 				adaptor.AddChild(root_1, x.Tree);
 
-				DebugLocation(298, 18);
+				DebugLocation(299, 18);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._identifier_in_path1454);
+				PushFollow(Follow._identifier_in_path1445);
 				y=identifier();
 				PopFollow();
 
@@ -5712,7 +5677,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				_last = _save_last_1;
 				}
 
-				DebugLocation(298, 31);
+				DebugLocation(299, 31);
 
 							StringBuilder buf = new StringBuilder();
 							buf.Append((x!=null?((HqlSqlWalker.path_return)x).p:default(String))).Append('.').Append((y!=null?((IASTNode)y.Start):default(IASTNode)).ToString());
@@ -5737,7 +5702,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("path", 33);
 			LeaveRule_path();
 		}
-		DebugLocation(303, 1);
+		DebugLocation(304, 1);
 		} finally { DebugExitRule(GrammarFileName, "path"); }
 		return retval;
 
@@ -5747,7 +5712,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_pathAsIdent();
 	partial void LeaveRule_pathAsIdent();
 	// $ANTLR start "pathAsIdent"
-	// HqlSqlWalker.g:306:1: pathAsIdent : path -> ^( IDENT[$path.p] ) ;
+	// HqlSqlWalker.g:307:1: pathAsIdent : path -> ^( IDENT[$path.p] ) ;
 	[GrammarRule("pathAsIdent")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> pathAsIdent()
 	{
@@ -5762,24 +5727,24 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		AstTreeRuleReturnScope<IASTNode, IASTNode> path77 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> path76 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 		RewriteRuleSubtreeStream stream_path=new RewriteRuleSubtreeStream(adaptor,"rule path");
 		try { DebugEnterRule(GrammarFileName, "pathAsIdent");
-		DebugLocation(306, 4);
+		DebugLocation(307, 4);
 		try
 		{
-			// HqlSqlWalker.g:307:5: ( path -> ^( IDENT[$path.p] ) )
+			// HqlSqlWalker.g:308:5: ( path -> ^( IDENT[$path.p] ) )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:307:7: path
+			// HqlSqlWalker.g:308:7: path
 			{
-			DebugLocation(307, 7);
+			DebugLocation(308, 7);
 			_last = (IASTNode)input.LT(1);
-			PushFollow(Follow._path_in_pathAsIdent1473);
-			path77=path();
+			PushFollow(Follow._path_in_pathAsIdent1464);
+			path76=path();
 			PopFollow();
 
-			stream_path.Add(path77.Tree);
+			stream_path.Add(path76.Tree);
 
 
 			{
@@ -5794,14 +5759,14 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 			root_0 = (IASTNode)adaptor.Nil();
-			// 308:5: -> ^( IDENT[$path.p] )
+			// 309:5: -> ^( IDENT[$path.p] )
 			{
-				DebugLocation(308, 8);
-				// HqlSqlWalker.g:308:8: ^( IDENT[$path.p] )
+				DebugLocation(309, 8);
+				// HqlSqlWalker.g:309:8: ^( IDENT[$path.p] )
 				{
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(308, 10);
-				root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(IDENT, (path77!=null?((HqlSqlWalker.path_return)path77).p:default(String))), root_1);
+				DebugLocation(309, 10);
+				root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(IDENT, (path76!=null?((HqlSqlWalker.path_return)path76).p:default(String))), root_1);
 
 				adaptor.AddChild(root_0, root_1);
 				}
@@ -5827,7 +5792,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("pathAsIdent", 34);
 			LeaveRule_pathAsIdent();
 		}
-		DebugLocation(309, 4);
+		DebugLocation(310, 4);
 		} finally { DebugExitRule(GrammarFileName, "pathAsIdent"); }
 		return retval;
 
@@ -5837,7 +5802,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_withClause();
 	partial void LeaveRule_withClause();
 	// $ANTLR start "withClause"
-	// HqlSqlWalker.g:311:1: withClause : ^(w= WITH b= logicalExpr ) -> ^( $w $b) ;
+	// HqlSqlWalker.g:312:1: withClause : ^(w= WITH b= logicalExpr ) -> ^( $w $b) ;
 	[GrammarRule("withClause")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> withClause()
 	{
@@ -5859,35 +5824,35 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		RewriteRuleNodeStream stream_WITH=new RewriteRuleNodeStream(adaptor,"token WITH");
 		RewriteRuleSubtreeStream stream_logicalExpr=new RewriteRuleSubtreeStream(adaptor,"rule logicalExpr");
 		try { DebugEnterRule(GrammarFileName, "withClause");
-		DebugLocation(311, 1);
+		DebugLocation(312, 1);
 		try
 		{
-			// HqlSqlWalker.g:318:2: ( ^(w= WITH b= logicalExpr ) -> ^( $w $b) )
+			// HqlSqlWalker.g:319:2: ( ^(w= WITH b= logicalExpr ) -> ^( $w $b) )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:318:4: ^(w= WITH b= logicalExpr )
+			// HqlSqlWalker.g:319:4: ^(w= WITH b= logicalExpr )
 			{
-			DebugLocation(318, 4);
+			DebugLocation(319, 4);
 
 			_last = (IASTNode)input.LT(1);
 			{
 			IASTNode _save_last_1 = _last;
 			IASTNode _first_1 = default(IASTNode);
 			IASTNode root_1 = (IASTNode)adaptor.Nil();
-			DebugLocation(318, 7);
+			DebugLocation(319, 7);
 
 			_last = (IASTNode)input.LT(1);
-			w=(IASTNode)Match(input,WITH,Follow._WITH_in_withClause1514); 
+			w=(IASTNode)Match(input,WITH,Follow._WITH_in_withClause1505); 
 			 
 			stream_WITH.Add(w);
 
 
-			DebugLocation(318, 13);
+			DebugLocation(319, 13);
 			 HandleClauseStart( WITH ); 
 
 			Match(input, TokenTypes.Down, null); 
-			DebugLocation(318, 45);
+			DebugLocation(319, 45);
 			_last = (IASTNode)input.LT(1);
-			PushFollow(Follow._logicalExpr_in_withClause1520);
+			PushFollow(Follow._logicalExpr_in_withClause1511);
 			b=logicalExpr();
 			PopFollow();
 
@@ -5914,16 +5879,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 			root_0 = (IASTNode)adaptor.Nil();
-			// 319:2: -> ^( $w $b)
+			// 320:2: -> ^( $w $b)
 			{
-				DebugLocation(319, 5);
-				// HqlSqlWalker.g:319:5: ^( $w $b)
+				DebugLocation(320, 5);
+				// HqlSqlWalker.g:320:5: ^( $w $b)
 				{
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(319, 8);
+				DebugLocation(320, 8);
 				root_1 = (IASTNode)adaptor.BecomeRoot(stream_w.NextNode(), root_1);
 
-				DebugLocation(319, 11);
+				DebugLocation(320, 11);
 				adaptor.AddChild(root_1, stream_b.NextTree());
 
 				adaptor.AddChild(root_0, root_1);
@@ -5950,7 +5915,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("withClause", 35);
 			LeaveRule_withClause();
 		}
-		DebugLocation(320, 1);
+		DebugLocation(321, 1);
 		} finally { DebugExitRule(GrammarFileName, "withClause"); }
 		return retval;
 
@@ -5960,7 +5925,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_whereClause();
 	partial void LeaveRule_whereClause();
 	// $ANTLR start "whereClause"
-	// HqlSqlWalker.g:322:1: whereClause : ^(w= WHERE b= logicalExpr ) -> ^( $w $b) ;
+	// HqlSqlWalker.g:323:1: whereClause : ^(w= WHERE b= logicalExpr ) -> ^( $w $b) ;
 	[GrammarRule("whereClause")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> whereClause()
 	{
@@ -5982,35 +5947,35 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		RewriteRuleNodeStream stream_WHERE=new RewriteRuleNodeStream(adaptor,"token WHERE");
 		RewriteRuleSubtreeStream stream_logicalExpr=new RewriteRuleSubtreeStream(adaptor,"rule logicalExpr");
 		try { DebugEnterRule(GrammarFileName, "whereClause");
-		DebugLocation(322, 1);
+		DebugLocation(323, 1);
 		try
 		{
-			// HqlSqlWalker.g:323:2: ( ^(w= WHERE b= logicalExpr ) -> ^( $w $b) )
+			// HqlSqlWalker.g:324:2: ( ^(w= WHERE b= logicalExpr ) -> ^( $w $b) )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:323:4: ^(w= WHERE b= logicalExpr )
+			// HqlSqlWalker.g:324:4: ^(w= WHERE b= logicalExpr )
 			{
-			DebugLocation(323, 4);
+			DebugLocation(324, 4);
 
 			_last = (IASTNode)input.LT(1);
 			{
 			IASTNode _save_last_1 = _last;
 			IASTNode _first_1 = default(IASTNode);
 			IASTNode root_1 = (IASTNode)adaptor.Nil();
-			DebugLocation(323, 7);
+			DebugLocation(324, 7);
 
 			_last = (IASTNode)input.LT(1);
-			w=(IASTNode)Match(input,WHERE,Follow._WHERE_in_whereClause1548); 
+			w=(IASTNode)Match(input,WHERE,Follow._WHERE_in_whereClause1539); 
 			 
 			stream_WHERE.Add(w);
 
 
-			DebugLocation(323, 14);
+			DebugLocation(324, 14);
 			 HandleClauseStart( WHERE ); 
 
 			Match(input, TokenTypes.Down, null); 
-			DebugLocation(323, 47);
+			DebugLocation(324, 47);
 			_last = (IASTNode)input.LT(1);
-			PushFollow(Follow._logicalExpr_in_whereClause1554);
+			PushFollow(Follow._logicalExpr_in_whereClause1545);
 			b=logicalExpr();
 			PopFollow();
 
@@ -6037,16 +6002,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 			root_0 = (IASTNode)adaptor.Nil();
-			// 324:2: -> ^( $w $b)
+			// 325:2: -> ^( $w $b)
 			{
-				DebugLocation(324, 5);
-				// HqlSqlWalker.g:324:5: ^( $w $b)
+				DebugLocation(325, 5);
+				// HqlSqlWalker.g:325:5: ^( $w $b)
 				{
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(324, 8);
+				DebugLocation(325, 8);
 				root_1 = (IASTNode)adaptor.BecomeRoot(stream_w.NextNode(), root_1);
 
-				DebugLocation(324, 11);
+				DebugLocation(325, 11);
 				adaptor.AddChild(root_1, stream_b.NextTree());
 
 				adaptor.AddChild(root_0, root_1);
@@ -6073,7 +6038,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("whereClause", 36);
 			LeaveRule_whereClause();
 		}
-		DebugLocation(325, 1);
+		DebugLocation(326, 1);
 		} finally { DebugExitRule(GrammarFileName, "whereClause"); }
 		return retval;
 
@@ -6083,7 +6048,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_logicalExpr();
 	partial void LeaveRule_logicalExpr();
 	// $ANTLR start "logicalExpr"
-	// HqlSqlWalker.g:327:1: logicalExpr : ( ^( AND logicalExpr logicalExpr ) | ^( OR logicalExpr logicalExpr ) | ^( NOT logicalExpr ) | comparisonExpr | functionCall | logicalPath );
+	// HqlSqlWalker.g:328:1: logicalExpr : ( ^( AND logicalExpr logicalExpr ) | ^( OR logicalExpr logicalExpr ) | ^( NOT logicalExpr ) | comparisonExpr | functionCall | logicalPath );
 	[GrammarRule("logicalExpr")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> logicalExpr()
 	{
@@ -6098,43 +6063,43 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		IASTNode AND78 = default(IASTNode);
-		IASTNode OR81 = default(IASTNode);
-		IASTNode NOT84 = default(IASTNode);
+		IASTNode AND77 = default(IASTNode);
+		IASTNode OR80 = default(IASTNode);
+		IASTNode NOT83 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> logicalExpr78 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> logicalExpr79 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> logicalExpr80 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> logicalExpr81 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> logicalExpr82 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> logicalExpr83 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> logicalExpr85 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> comparisonExpr86 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> functionCall87 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> logicalPath88 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> logicalExpr84 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> comparisonExpr85 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> functionCall86 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> logicalPath87 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-		IASTNode AND78_tree = default(IASTNode);
-		IASTNode OR81_tree = default(IASTNode);
-		IASTNode NOT84_tree = default(IASTNode);
+		IASTNode AND77_tree = default(IASTNode);
+		IASTNode OR80_tree = default(IASTNode);
+		IASTNode NOT83_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "logicalExpr");
-		DebugLocation(327, 1);
+		DebugLocation(328, 1);
 		try
 		{
-			// HqlSqlWalker.g:328:2: ( ^( AND logicalExpr logicalExpr ) | ^( OR logicalExpr logicalExpr ) | ^( NOT logicalExpr ) | comparisonExpr | functionCall | logicalPath )
-			int alt45=6;
-			try { DebugEnterDecision(45, false);
+			// HqlSqlWalker.g:329:2: ( ^( AND logicalExpr logicalExpr ) | ^( OR logicalExpr logicalExpr ) | ^( NOT logicalExpr ) | comparisonExpr | functionCall | logicalPath )
+			int alt43=6;
+			try { DebugEnterDecision(43, false);
 			switch (input.LA(1))
 			{
 			case AND:
 				{
-				alt45 = 1;
+				alt43 = 1;
 				}
 				break;
 			case OR:
 				{
-				alt45 = 2;
+				alt43 = 2;
 				}
 				break;
 			case NOT:
 				{
-				alt45 = 3;
+				alt43 = 3;
 				}
 				break;
 			case BETWEEN:
@@ -6153,13 +6118,13 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			case NOT_IN:
 			case NOT_LIKE:
 				{
-				alt45 = 4;
+				alt43 = 4;
 				}
 				break;
 			case AGGREGATE:
 			case METHOD_CALL:
 				{
-				alt45 = 5;
+				alt43 = 5;
 				}
 				break;
 			case DOT:
@@ -6167,74 +6132,23 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			case INDEX_OP:
 			case WEIRD_IDENT:
 				{
-				alt45 = 6;
+				alt43 = 6;
 				}
 				break;
 			default:
 				{
-					NoViableAltException nvae = new NoViableAltException("", 45, 0, input, 1);
+					NoViableAltException nvae = new NoViableAltException("", 43, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
 			}
 
-			} finally { DebugExitDecision(45); }
-			switch (alt45)
+			} finally { DebugExitDecision(43); }
+			switch (alt43)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// HqlSqlWalker.g:328:4: ^( AND logicalExpr logicalExpr )
-				{
-				root_0 = (IASTNode)adaptor.Nil();
-
-				DebugLocation(328, 4);
-
-				_last = (IASTNode)input.LT(1);
-				{
-				IASTNode _save_last_1 = _last;
-				IASTNode _first_1 = default(IASTNode);
-				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(328, 6);
-
-				_last = (IASTNode)input.LT(1);
-				AND78=(IASTNode)Match(input,AND,Follow._AND_in_logicalExpr1580); 
-				AND78_tree = (IASTNode)adaptor.DupNode(AND78);
-
-
-				root_1 = (IASTNode)adaptor.BecomeRoot(AND78_tree, root_1);
-
-
-				Match(input, TokenTypes.Down, null); 
-				DebugLocation(328, 10);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._logicalExpr_in_logicalExpr1582);
-				logicalExpr79=logicalExpr();
-				PopFollow();
-
-				adaptor.AddChild(root_1, logicalExpr79.Tree);
-
-				DebugLocation(328, 22);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._logicalExpr_in_logicalExpr1584);
-				logicalExpr80=logicalExpr();
-				PopFollow();
-
-				adaptor.AddChild(root_1, logicalExpr80.Tree);
-
-
-				Match(input, TokenTypes.Up, null); 
-				adaptor.AddChild(root_0, root_1);
-				_last = _save_last_1;
-				}
-
-
-				}
-				break;
-			case 2:
-				DebugEnterAlt(2);
-				// HqlSqlWalker.g:329:4: ^( OR logicalExpr logicalExpr )
+				// HqlSqlWalker.g:329:4: ^( AND logicalExpr logicalExpr )
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
@@ -6248,31 +6162,31 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				DebugLocation(329, 6);
 
 				_last = (IASTNode)input.LT(1);
-				OR81=(IASTNode)Match(input,OR,Follow._OR_in_logicalExpr1591); 
-				OR81_tree = (IASTNode)adaptor.DupNode(OR81);
+				AND77=(IASTNode)Match(input,AND,Follow._AND_in_logicalExpr1571); 
+				AND77_tree = (IASTNode)adaptor.DupNode(AND77);
 
 
-				root_1 = (IASTNode)adaptor.BecomeRoot(OR81_tree, root_1);
+				root_1 = (IASTNode)adaptor.BecomeRoot(AND77_tree, root_1);
 
 
 				Match(input, TokenTypes.Down, null); 
-				DebugLocation(329, 9);
+				DebugLocation(329, 10);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._logicalExpr_in_logicalExpr1593);
-				logicalExpr82=logicalExpr();
+				PushFollow(Follow._logicalExpr_in_logicalExpr1573);
+				logicalExpr78=logicalExpr();
 				PopFollow();
 
-				adaptor.AddChild(root_1, logicalExpr82.Tree);
+				adaptor.AddChild(root_1, logicalExpr78.Tree);
 
-				DebugLocation(329, 21);
+				DebugLocation(329, 22);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._logicalExpr_in_logicalExpr1595);
-				logicalExpr83=logicalExpr();
+				PushFollow(Follow._logicalExpr_in_logicalExpr1575);
+				logicalExpr79=logicalExpr();
 				PopFollow();
 
-				adaptor.AddChild(root_1, logicalExpr83.Tree);
+				adaptor.AddChild(root_1, logicalExpr79.Tree);
 
 
 				Match(input, TokenTypes.Up, null); 
@@ -6283,9 +6197,9 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 				}
 				break;
-			case 3:
-				DebugEnterAlt(3);
-				// HqlSqlWalker.g:330:4: ^( NOT logicalExpr )
+			case 2:
+				DebugEnterAlt(2);
+				// HqlSqlWalker.g:330:4: ^( OR logicalExpr logicalExpr )
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
@@ -6299,22 +6213,73 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				DebugLocation(330, 6);
 
 				_last = (IASTNode)input.LT(1);
-				NOT84=(IASTNode)Match(input,NOT,Follow._NOT_in_logicalExpr1602); 
-				NOT84_tree = (IASTNode)adaptor.DupNode(NOT84);
+				OR80=(IASTNode)Match(input,OR,Follow._OR_in_logicalExpr1582); 
+				OR80_tree = (IASTNode)adaptor.DupNode(OR80);
 
 
-				root_1 = (IASTNode)adaptor.BecomeRoot(NOT84_tree, root_1);
+				root_1 = (IASTNode)adaptor.BecomeRoot(OR80_tree, root_1);
 
 
 				Match(input, TokenTypes.Down, null); 
-				DebugLocation(330, 10);
+				DebugLocation(330, 9);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._logicalExpr_in_logicalExpr1604);
-				logicalExpr85=logicalExpr();
+				PushFollow(Follow._logicalExpr_in_logicalExpr1584);
+				logicalExpr81=logicalExpr();
 				PopFollow();
 
-				adaptor.AddChild(root_1, logicalExpr85.Tree);
+				adaptor.AddChild(root_1, logicalExpr81.Tree);
+
+				DebugLocation(330, 21);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._logicalExpr_in_logicalExpr1586);
+				logicalExpr82=logicalExpr();
+				PopFollow();
+
+				adaptor.AddChild(root_1, logicalExpr82.Tree);
+
+
+				Match(input, TokenTypes.Up, null); 
+				adaptor.AddChild(root_0, root_1);
+				_last = _save_last_1;
+				}
+
+
+				}
+				break;
+			case 3:
+				DebugEnterAlt(3);
+				// HqlSqlWalker.g:331:4: ^( NOT logicalExpr )
+				{
+				root_0 = (IASTNode)adaptor.Nil();
+
+				DebugLocation(331, 4);
+
+				_last = (IASTNode)input.LT(1);
+				{
+				IASTNode _save_last_1 = _last;
+				IASTNode _first_1 = default(IASTNode);
+				IASTNode root_1 = (IASTNode)adaptor.Nil();
+				DebugLocation(331, 6);
+
+				_last = (IASTNode)input.LT(1);
+				NOT83=(IASTNode)Match(input,NOT,Follow._NOT_in_logicalExpr1593); 
+				NOT83_tree = (IASTNode)adaptor.DupNode(NOT83);
+
+
+				root_1 = (IASTNode)adaptor.BecomeRoot(NOT83_tree, root_1);
+
+
+				Match(input, TokenTypes.Down, null); 
+				DebugLocation(331, 10);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._logicalExpr_in_logicalExpr1595);
+				logicalExpr84=logicalExpr();
+				PopFollow();
+
+				adaptor.AddChild(root_1, logicalExpr84.Tree);
 
 
 				Match(input, TokenTypes.Up, null); 
@@ -6327,54 +6292,54 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				break;
 			case 4:
 				DebugEnterAlt(4);
-				// HqlSqlWalker.g:331:4: comparisonExpr
-				{
-				root_0 = (IASTNode)adaptor.Nil();
-
-				DebugLocation(331, 4);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._comparisonExpr_in_logicalExpr1610);
-				comparisonExpr86=comparisonExpr();
-				PopFollow();
-
-				adaptor.AddChild(root_0, comparisonExpr86.Tree);
-
-
-				}
-				break;
-			case 5:
-				DebugEnterAlt(5);
-				// HqlSqlWalker.g:332:4: functionCall
+				// HqlSqlWalker.g:332:4: comparisonExpr
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(332, 4);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._functionCall_in_logicalExpr1615);
-				functionCall87=functionCall();
+				PushFollow(Follow._comparisonExpr_in_logicalExpr1601);
+				comparisonExpr85=comparisonExpr();
 				PopFollow();
 
-				adaptor.AddChild(root_0, functionCall87.Tree);
+				adaptor.AddChild(root_0, comparisonExpr85.Tree);
 
 
 				}
 				break;
-			case 6:
-				DebugEnterAlt(6);
-				// HqlSqlWalker.g:333:4: logicalPath
+			case 5:
+				DebugEnterAlt(5);
+				// HqlSqlWalker.g:333:4: functionCall
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(333, 4);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._logicalPath_in_logicalExpr1620);
-				logicalPath88=logicalPath();
+				PushFollow(Follow._functionCall_in_logicalExpr1606);
+				functionCall86=functionCall();
 				PopFollow();
 
-				adaptor.AddChild(root_0, logicalPath88.Tree);
+				adaptor.AddChild(root_0, functionCall86.Tree);
+
+
+				}
+				break;
+			case 6:
+				DebugEnterAlt(6);
+				// HqlSqlWalker.g:334:4: logicalPath
+				{
+				root_0 = (IASTNode)adaptor.Nil();
+
+				DebugLocation(334, 4);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._logicalPath_in_logicalExpr1611);
+				logicalPath87=logicalPath();
+				PopFollow();
+
+				adaptor.AddChild(root_0, logicalPath87.Tree);
 
 
 				}
@@ -6395,7 +6360,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("logicalExpr", 37);
 			LeaveRule_logicalExpr();
 		}
-		DebugLocation(334, 1);
+		DebugLocation(335, 1);
 		} finally { DebugExitRule(GrammarFileName, "logicalExpr"); }
 		return retval;
 
@@ -6405,7 +6370,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_logicalPath();
 	partial void LeaveRule_logicalPath();
 	// $ANTLR start "logicalPath"
-	// HqlSqlWalker.g:336:1: logicalPath : p= addrExpr[ true ] -> ^( EQ $p TRUE ) ;
+	// HqlSqlWalker.g:337:1: logicalPath : p= addrExpr[ true ] -> ^( EQ $p TRUE ) ;
 	[GrammarRule("logicalPath")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> logicalPath()
 	{
@@ -6424,21 +6389,21 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 		RewriteRuleSubtreeStream stream_addrExpr=new RewriteRuleSubtreeStream(adaptor,"rule addrExpr");
 		try { DebugEnterRule(GrammarFileName, "logicalPath");
-		DebugLocation(336, 1);
+		DebugLocation(337, 1);
 		try
 		{
-			// HqlSqlWalker.g:340:2: (p= addrExpr[ true ] -> ^( EQ $p TRUE ) )
+			// HqlSqlWalker.g:341:2: (p= addrExpr[ true ] -> ^( EQ $p TRUE ) )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:340:4: p= addrExpr[ true ]
+			// HqlSqlWalker.g:341:4: p= addrExpr[ true ]
 			{
-			DebugLocation(340, 5);
+			DebugLocation(341, 5);
 			_last = (IASTNode)input.LT(1);
-			PushFollow(Follow._addrExpr_in_logicalPath1639);
+			PushFollow(Follow._addrExpr_in_logicalPath1630);
 			p=addrExpr(true);
 			PopFollow();
 
 			stream_addrExpr.Add(p.Tree);
-			DebugLocation(340, 24);
+			DebugLocation(341, 24);
 			Resolve((p!=null?((IASTNode)p.Tree):default(IASTNode)));
 
 
@@ -6455,18 +6420,18 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 			root_0 = (IASTNode)adaptor.Nil();
-			// 340:45: -> ^( EQ $p TRUE )
+			// 341:45: -> ^( EQ $p TRUE )
 			{
-				DebugLocation(340, 48);
-				// HqlSqlWalker.g:340:48: ^( EQ $p TRUE )
+				DebugLocation(341, 48);
+				// HqlSqlWalker.g:341:48: ^( EQ $p TRUE )
 				{
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(340, 50);
+				DebugLocation(341, 50);
 				root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(EQ, "EQ"), root_1);
 
-				DebugLocation(340, 54);
+				DebugLocation(341, 54);
 				adaptor.AddChild(root_1, stream_p.NextTree());
-				DebugLocation(340, 56);
+				DebugLocation(341, 56);
 				adaptor.AddChild(root_1, (IASTNode)adaptor.Create(TRUE, "TRUE"));
 
 				adaptor.AddChild(root_0, root_1);
@@ -6496,7 +6461,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("logicalPath", 38);
 			LeaveRule_logicalPath();
 		}
-		DebugLocation(341, 1);
+		DebugLocation(342, 1);
 		} finally { DebugExitRule(GrammarFileName, "logicalPath"); }
 		return retval;
 
@@ -6506,7 +6471,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_comparisonExpr();
 	partial void LeaveRule_comparisonExpr();
 	// $ANTLR start "comparisonExpr"
-	// HqlSqlWalker.g:344:1: comparisonExpr : ( ^( EQ exprOrSubquery exprOrSubquery ) | ^( NE exprOrSubquery exprOrSubquery ) | ^( LT exprOrSubquery exprOrSubquery ) | ^( GT exprOrSubquery exprOrSubquery ) | ^( LE exprOrSubquery exprOrSubquery ) | ^( GE exprOrSubquery exprOrSubquery ) | ^( LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( NOT_LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( NOT_BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( IN exprOrSubquery inRhs ) | ^( NOT_IN exprOrSubquery inRhs ) | ^( IS_NULL exprOrSubquery ) | ^( IS_NOT_NULL exprOrSubquery ) | ^( EXISTS ( expr | collectionFunctionOrSubselect ) ) ) ;
+	// HqlSqlWalker.g:345:1: comparisonExpr : ( ^( EQ exprOrSubquery exprOrSubquery ) | ^( NE exprOrSubquery exprOrSubquery ) | ^( LT exprOrSubquery exprOrSubquery ) | ^( GT exprOrSubquery exprOrSubquery ) | ^( LE exprOrSubquery exprOrSubquery ) | ^( GE exprOrSubquery exprOrSubquery ) | ^( LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( NOT_LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( NOT_BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( IN exprOrSubquery inRhs ) | ^( NOT_IN exprOrSubquery inRhs ) | ^( IS_NULL exprOrSubquery ) | ^( IS_NOT_NULL exprOrSubquery ) | ^( EXISTS ( expr | collectionFunctionOrSubselect ) ) ) ;
 	[GrammarRule("comparisonExpr")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> comparisonExpr()
 	{
@@ -6521,215 +6486,215 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		IASTNode EQ89 = default(IASTNode);
-		IASTNode NE92 = default(IASTNode);
-		IASTNode LT95 = default(IASTNode);
-		IASTNode GT98 = default(IASTNode);
-		IASTNode LE101 = default(IASTNode);
-		IASTNode GE104 = default(IASTNode);
-		IASTNode LIKE107 = default(IASTNode);
-		IASTNode ESCAPE110 = default(IASTNode);
-		IASTNode NOT_LIKE112 = default(IASTNode);
-		IASTNode ESCAPE115 = default(IASTNode);
-		IASTNode BETWEEN117 = default(IASTNode);
-		IASTNode NOT_BETWEEN121 = default(IASTNode);
-		IASTNode IN125 = default(IASTNode);
-		IASTNode NOT_IN128 = default(IASTNode);
-		IASTNode IS_NULL131 = default(IASTNode);
-		IASTNode IS_NOT_NULL133 = default(IASTNode);
-		IASTNode EXISTS135 = default(IASTNode);
+		IASTNode EQ88 = default(IASTNode);
+		IASTNode NE91 = default(IASTNode);
+		IASTNode LT94 = default(IASTNode);
+		IASTNode GT97 = default(IASTNode);
+		IASTNode LE100 = default(IASTNode);
+		IASTNode GE103 = default(IASTNode);
+		IASTNode LIKE106 = default(IASTNode);
+		IASTNode ESCAPE109 = default(IASTNode);
+		IASTNode NOT_LIKE111 = default(IASTNode);
+		IASTNode ESCAPE114 = default(IASTNode);
+		IASTNode BETWEEN116 = default(IASTNode);
+		IASTNode NOT_BETWEEN120 = default(IASTNode);
+		IASTNode IN124 = default(IASTNode);
+		IASTNode NOT_IN127 = default(IASTNode);
+		IASTNode IS_NULL130 = default(IASTNode);
+		IASTNode IS_NOT_NULL132 = default(IASTNode);
+		IASTNode EXISTS134 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery89 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery90 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery91 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery92 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery93 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery94 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery95 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery96 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery97 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery98 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery99 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery100 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery101 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery102 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery103 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery104 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery105 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery106 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery108 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> expr109 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> expr111 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery113 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> expr114 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> expr116 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery107 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr108 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr110 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery112 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr113 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr115 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery117 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery118 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery119 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery120 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery121 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery122 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery123 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery124 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery126 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> inRhs127 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery129 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> inRhs130 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery132 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery134 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> expr136 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunctionOrSubselect137 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery125 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> inRhs126 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery128 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> inRhs129 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery131 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery133 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr135 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunctionOrSubselect136 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-		IASTNode EQ89_tree = default(IASTNode);
-		IASTNode NE92_tree = default(IASTNode);
-		IASTNode LT95_tree = default(IASTNode);
-		IASTNode GT98_tree = default(IASTNode);
-		IASTNode LE101_tree = default(IASTNode);
-		IASTNode GE104_tree = default(IASTNode);
-		IASTNode LIKE107_tree = default(IASTNode);
-		IASTNode ESCAPE110_tree = default(IASTNode);
-		IASTNode NOT_LIKE112_tree = default(IASTNode);
-		IASTNode ESCAPE115_tree = default(IASTNode);
-		IASTNode BETWEEN117_tree = default(IASTNode);
-		IASTNode NOT_BETWEEN121_tree = default(IASTNode);
-		IASTNode IN125_tree = default(IASTNode);
-		IASTNode NOT_IN128_tree = default(IASTNode);
-		IASTNode IS_NULL131_tree = default(IASTNode);
-		IASTNode IS_NOT_NULL133_tree = default(IASTNode);
-		IASTNode EXISTS135_tree = default(IASTNode);
+		IASTNode EQ88_tree = default(IASTNode);
+		IASTNode NE91_tree = default(IASTNode);
+		IASTNode LT94_tree = default(IASTNode);
+		IASTNode GT97_tree = default(IASTNode);
+		IASTNode LE100_tree = default(IASTNode);
+		IASTNode GE103_tree = default(IASTNode);
+		IASTNode LIKE106_tree = default(IASTNode);
+		IASTNode ESCAPE109_tree = default(IASTNode);
+		IASTNode NOT_LIKE111_tree = default(IASTNode);
+		IASTNode ESCAPE114_tree = default(IASTNode);
+		IASTNode BETWEEN116_tree = default(IASTNode);
+		IASTNode NOT_BETWEEN120_tree = default(IASTNode);
+		IASTNode IN124_tree = default(IASTNode);
+		IASTNode NOT_IN127_tree = default(IASTNode);
+		IASTNode IS_NULL130_tree = default(IASTNode);
+		IASTNode IS_NOT_NULL132_tree = default(IASTNode);
+		IASTNode EXISTS134_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "comparisonExpr");
-		DebugLocation(344, 1);
+		DebugLocation(345, 1);
 		try
 		{
-			// HqlSqlWalker.g:348:2: ( ( ^( EQ exprOrSubquery exprOrSubquery ) | ^( NE exprOrSubquery exprOrSubquery ) | ^( LT exprOrSubquery exprOrSubquery ) | ^( GT exprOrSubquery exprOrSubquery ) | ^( LE exprOrSubquery exprOrSubquery ) | ^( GE exprOrSubquery exprOrSubquery ) | ^( LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( NOT_LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( NOT_BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( IN exprOrSubquery inRhs ) | ^( NOT_IN exprOrSubquery inRhs ) | ^( IS_NULL exprOrSubquery ) | ^( IS_NOT_NULL exprOrSubquery ) | ^( EXISTS ( expr | collectionFunctionOrSubselect ) ) ) )
+			// HqlSqlWalker.g:349:2: ( ( ^( EQ exprOrSubquery exprOrSubquery ) | ^( NE exprOrSubquery exprOrSubquery ) | ^( LT exprOrSubquery exprOrSubquery ) | ^( GT exprOrSubquery exprOrSubquery ) | ^( LE exprOrSubquery exprOrSubquery ) | ^( GE exprOrSubquery exprOrSubquery ) | ^( LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( NOT_LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( NOT_BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( IN exprOrSubquery inRhs ) | ^( NOT_IN exprOrSubquery inRhs ) | ^( IS_NULL exprOrSubquery ) | ^( IS_NOT_NULL exprOrSubquery ) | ^( EXISTS ( expr | collectionFunctionOrSubselect ) ) ) )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:349:2: ( ^( EQ exprOrSubquery exprOrSubquery ) | ^( NE exprOrSubquery exprOrSubquery ) | ^( LT exprOrSubquery exprOrSubquery ) | ^( GT exprOrSubquery exprOrSubquery ) | ^( LE exprOrSubquery exprOrSubquery ) | ^( GE exprOrSubquery exprOrSubquery ) | ^( LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( NOT_LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( NOT_BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( IN exprOrSubquery inRhs ) | ^( NOT_IN exprOrSubquery inRhs ) | ^( IS_NULL exprOrSubquery ) | ^( IS_NOT_NULL exprOrSubquery ) | ^( EXISTS ( expr | collectionFunctionOrSubselect ) ) )
+			// HqlSqlWalker.g:350:2: ( ^( EQ exprOrSubquery exprOrSubquery ) | ^( NE exprOrSubquery exprOrSubquery ) | ^( LT exprOrSubquery exprOrSubquery ) | ^( GT exprOrSubquery exprOrSubquery ) | ^( LE exprOrSubquery exprOrSubquery ) | ^( GE exprOrSubquery exprOrSubquery ) | ^( LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( NOT_LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( NOT_BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( IN exprOrSubquery inRhs ) | ^( NOT_IN exprOrSubquery inRhs ) | ^( IS_NULL exprOrSubquery ) | ^( IS_NOT_NULL exprOrSubquery ) | ^( EXISTS ( expr | collectionFunctionOrSubselect ) ) )
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(349, 2);
-			// HqlSqlWalker.g:349:2: ( ^( EQ exprOrSubquery exprOrSubquery ) | ^( NE exprOrSubquery exprOrSubquery ) | ^( LT exprOrSubquery exprOrSubquery ) | ^( GT exprOrSubquery exprOrSubquery ) | ^( LE exprOrSubquery exprOrSubquery ) | ^( GE exprOrSubquery exprOrSubquery ) | ^( LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( NOT_LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( NOT_BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( IN exprOrSubquery inRhs ) | ^( NOT_IN exprOrSubquery inRhs ) | ^( IS_NULL exprOrSubquery ) | ^( IS_NOT_NULL exprOrSubquery ) | ^( EXISTS ( expr | collectionFunctionOrSubselect ) ) )
-			int alt49=15;
-			try { DebugEnterSubRule(49);
-			try { DebugEnterDecision(49, false);
+			DebugLocation(350, 2);
+			// HqlSqlWalker.g:350:2: ( ^( EQ exprOrSubquery exprOrSubquery ) | ^( NE exprOrSubquery exprOrSubquery ) | ^( LT exprOrSubquery exprOrSubquery ) | ^( GT exprOrSubquery exprOrSubquery ) | ^( LE exprOrSubquery exprOrSubquery ) | ^( GE exprOrSubquery exprOrSubquery ) | ^( LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( NOT_LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( NOT_BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( IN exprOrSubquery inRhs ) | ^( NOT_IN exprOrSubquery inRhs ) | ^( IS_NULL exprOrSubquery ) | ^( IS_NOT_NULL exprOrSubquery ) | ^( EXISTS ( expr | collectionFunctionOrSubselect ) ) )
+			int alt47=15;
+			try { DebugEnterSubRule(47);
+			try { DebugEnterDecision(47, false);
 			switch (input.LA(1))
 			{
 			case EQ:
 				{
-				alt49 = 1;
+				alt47 = 1;
 				}
 				break;
 			case NE:
 				{
-				alt49 = 2;
+				alt47 = 2;
 				}
 				break;
 			case LT:
 				{
-				alt49 = 3;
+				alt47 = 3;
 				}
 				break;
 			case GT:
 				{
-				alt49 = 4;
+				alt47 = 4;
 				}
 				break;
 			case LE:
 				{
-				alt49 = 5;
+				alt47 = 5;
 				}
 				break;
 			case GE:
 				{
-				alt49 = 6;
+				alt47 = 6;
 				}
 				break;
 			case LIKE:
 				{
-				alt49 = 7;
+				alt47 = 7;
 				}
 				break;
 			case NOT_LIKE:
 				{
-				alt49 = 8;
+				alt47 = 8;
 				}
 				break;
 			case BETWEEN:
 				{
-				alt49 = 9;
+				alt47 = 9;
 				}
 				break;
 			case NOT_BETWEEN:
 				{
-				alt49 = 10;
+				alt47 = 10;
 				}
 				break;
 			case IN:
 				{
-				alt49 = 11;
+				alt47 = 11;
 				}
 				break;
 			case NOT_IN:
 				{
-				alt49 = 12;
+				alt47 = 12;
 				}
 				break;
 			case IS_NULL:
 				{
-				alt49 = 13;
+				alt47 = 13;
 				}
 				break;
 			case IS_NOT_NULL:
 				{
-				alt49 = 14;
+				alt47 = 14;
 				}
 				break;
 			case EXISTS:
 				{
-				alt49 = 15;
+				alt47 = 15;
 				}
 				break;
 			default:
 				{
-					NoViableAltException nvae = new NoViableAltException("", 49, 0, input, 1);
+					NoViableAltException nvae = new NoViableAltException("", 47, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
 			}
 
-			} finally { DebugExitDecision(49); }
-			switch (alt49)
+			} finally { DebugExitDecision(47); }
+			switch (alt47)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// HqlSqlWalker.g:349:4: ^( EQ exprOrSubquery exprOrSubquery )
+				// HqlSqlWalker.g:350:4: ^( EQ exprOrSubquery exprOrSubquery )
 				{
-				DebugLocation(349, 4);
+				DebugLocation(350, 4);
 
 				_last = (IASTNode)input.LT(1);
 				{
 				IASTNode _save_last_1 = _last;
 				IASTNode _first_1 = default(IASTNode);
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(349, 6);
+				DebugLocation(350, 6);
 
 				_last = (IASTNode)input.LT(1);
-				EQ89=(IASTNode)Match(input,EQ,Follow._EQ_in_comparisonExpr1677); 
-				EQ89_tree = (IASTNode)adaptor.DupNode(EQ89);
+				EQ88=(IASTNode)Match(input,EQ,Follow._EQ_in_comparisonExpr1668); 
+				EQ88_tree = (IASTNode)adaptor.DupNode(EQ88);
 
 
-				root_1 = (IASTNode)adaptor.BecomeRoot(EQ89_tree, root_1);
+				root_1 = (IASTNode)adaptor.BecomeRoot(EQ88_tree, root_1);
 
 
 				Match(input, TokenTypes.Down, null); 
-				DebugLocation(349, 9);
+				DebugLocation(350, 9);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1679);
+				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1670);
+				exprOrSubquery89=exprOrSubquery();
+				PopFollow();
+
+				adaptor.AddChild(root_1, exprOrSubquery89.Tree);
+
+				DebugLocation(350, 24);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1672);
 				exprOrSubquery90=exprOrSubquery();
 				PopFollow();
 
 				adaptor.AddChild(root_1, exprOrSubquery90.Tree);
-
-				DebugLocation(349, 24);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1681);
-				exprOrSubquery91=exprOrSubquery();
-				PopFollow();
-
-				adaptor.AddChild(root_1, exprOrSubquery91.Tree);
 
 
 				Match(input, TokenTypes.Up, null); 
@@ -6742,43 +6707,43 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// HqlSqlWalker.g:350:4: ^( NE exprOrSubquery exprOrSubquery )
+				// HqlSqlWalker.g:351:4: ^( NE exprOrSubquery exprOrSubquery )
 				{
-				DebugLocation(350, 4);
+				DebugLocation(351, 4);
 
 				_last = (IASTNode)input.LT(1);
 				{
 				IASTNode _save_last_1 = _last;
 				IASTNode _first_1 = default(IASTNode);
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(350, 6);
+				DebugLocation(351, 6);
 
 				_last = (IASTNode)input.LT(1);
-				NE92=(IASTNode)Match(input,NE,Follow._NE_in_comparisonExpr1688); 
-				NE92_tree = (IASTNode)adaptor.DupNode(NE92);
+				NE91=(IASTNode)Match(input,NE,Follow._NE_in_comparisonExpr1679); 
+				NE91_tree = (IASTNode)adaptor.DupNode(NE91);
 
 
-				root_1 = (IASTNode)adaptor.BecomeRoot(NE92_tree, root_1);
+				root_1 = (IASTNode)adaptor.BecomeRoot(NE91_tree, root_1);
 
 
 				Match(input, TokenTypes.Down, null); 
-				DebugLocation(350, 9);
+				DebugLocation(351, 9);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1690);
+				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1681);
+				exprOrSubquery92=exprOrSubquery();
+				PopFollow();
+
+				adaptor.AddChild(root_1, exprOrSubquery92.Tree);
+
+				DebugLocation(351, 24);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1683);
 				exprOrSubquery93=exprOrSubquery();
 				PopFollow();
 
 				adaptor.AddChild(root_1, exprOrSubquery93.Tree);
-
-				DebugLocation(350, 24);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1692);
-				exprOrSubquery94=exprOrSubquery();
-				PopFollow();
-
-				adaptor.AddChild(root_1, exprOrSubquery94.Tree);
 
 
 				Match(input, TokenTypes.Up, null); 
@@ -6791,43 +6756,43 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// HqlSqlWalker.g:351:4: ^( LT exprOrSubquery exprOrSubquery )
+				// HqlSqlWalker.g:352:4: ^( LT exprOrSubquery exprOrSubquery )
 				{
-				DebugLocation(351, 4);
+				DebugLocation(352, 4);
 
 				_last = (IASTNode)input.LT(1);
 				{
 				IASTNode _save_last_1 = _last;
 				IASTNode _first_1 = default(IASTNode);
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(351, 6);
+				DebugLocation(352, 6);
 
 				_last = (IASTNode)input.LT(1);
-				LT95=(IASTNode)Match(input,LT,Follow._LT_in_comparisonExpr1699); 
-				LT95_tree = (IASTNode)adaptor.DupNode(LT95);
+				LT94=(IASTNode)Match(input,LT,Follow._LT_in_comparisonExpr1690); 
+				LT94_tree = (IASTNode)adaptor.DupNode(LT94);
 
 
-				root_1 = (IASTNode)adaptor.BecomeRoot(LT95_tree, root_1);
+				root_1 = (IASTNode)adaptor.BecomeRoot(LT94_tree, root_1);
 
 
 				Match(input, TokenTypes.Down, null); 
-				DebugLocation(351, 9);
+				DebugLocation(352, 9);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1701);
+				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1692);
+				exprOrSubquery95=exprOrSubquery();
+				PopFollow();
+
+				adaptor.AddChild(root_1, exprOrSubquery95.Tree);
+
+				DebugLocation(352, 24);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1694);
 				exprOrSubquery96=exprOrSubquery();
 				PopFollow();
 
 				adaptor.AddChild(root_1, exprOrSubquery96.Tree);
-
-				DebugLocation(351, 24);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1703);
-				exprOrSubquery97=exprOrSubquery();
-				PopFollow();
-
-				adaptor.AddChild(root_1, exprOrSubquery97.Tree);
 
 
 				Match(input, TokenTypes.Up, null); 
@@ -6840,43 +6805,43 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				break;
 			case 4:
 				DebugEnterAlt(4);
-				// HqlSqlWalker.g:352:4: ^( GT exprOrSubquery exprOrSubquery )
+				// HqlSqlWalker.g:353:4: ^( GT exprOrSubquery exprOrSubquery )
 				{
-				DebugLocation(352, 4);
+				DebugLocation(353, 4);
 
 				_last = (IASTNode)input.LT(1);
 				{
 				IASTNode _save_last_1 = _last;
 				IASTNode _first_1 = default(IASTNode);
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(352, 6);
+				DebugLocation(353, 6);
 
 				_last = (IASTNode)input.LT(1);
-				GT98=(IASTNode)Match(input,GT,Follow._GT_in_comparisonExpr1710); 
-				GT98_tree = (IASTNode)adaptor.DupNode(GT98);
+				GT97=(IASTNode)Match(input,GT,Follow._GT_in_comparisonExpr1701); 
+				GT97_tree = (IASTNode)adaptor.DupNode(GT97);
 
 
-				root_1 = (IASTNode)adaptor.BecomeRoot(GT98_tree, root_1);
+				root_1 = (IASTNode)adaptor.BecomeRoot(GT97_tree, root_1);
 
 
 				Match(input, TokenTypes.Down, null); 
-				DebugLocation(352, 9);
+				DebugLocation(353, 9);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1712);
+				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1703);
+				exprOrSubquery98=exprOrSubquery();
+				PopFollow();
+
+				adaptor.AddChild(root_1, exprOrSubquery98.Tree);
+
+				DebugLocation(353, 24);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1705);
 				exprOrSubquery99=exprOrSubquery();
 				PopFollow();
 
 				adaptor.AddChild(root_1, exprOrSubquery99.Tree);
-
-				DebugLocation(352, 24);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1714);
-				exprOrSubquery100=exprOrSubquery();
-				PopFollow();
-
-				adaptor.AddChild(root_1, exprOrSubquery100.Tree);
 
 
 				Match(input, TokenTypes.Up, null); 
@@ -6889,43 +6854,43 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				break;
 			case 5:
 				DebugEnterAlt(5);
-				// HqlSqlWalker.g:353:4: ^( LE exprOrSubquery exprOrSubquery )
+				// HqlSqlWalker.g:354:4: ^( LE exprOrSubquery exprOrSubquery )
 				{
-				DebugLocation(353, 4);
+				DebugLocation(354, 4);
 
 				_last = (IASTNode)input.LT(1);
 				{
 				IASTNode _save_last_1 = _last;
 				IASTNode _first_1 = default(IASTNode);
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(353, 6);
+				DebugLocation(354, 6);
 
 				_last = (IASTNode)input.LT(1);
-				LE101=(IASTNode)Match(input,LE,Follow._LE_in_comparisonExpr1721); 
-				LE101_tree = (IASTNode)adaptor.DupNode(LE101);
+				LE100=(IASTNode)Match(input,LE,Follow._LE_in_comparisonExpr1712); 
+				LE100_tree = (IASTNode)adaptor.DupNode(LE100);
 
 
-				root_1 = (IASTNode)adaptor.BecomeRoot(LE101_tree, root_1);
+				root_1 = (IASTNode)adaptor.BecomeRoot(LE100_tree, root_1);
 
 
 				Match(input, TokenTypes.Down, null); 
-				DebugLocation(353, 9);
+				DebugLocation(354, 9);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1723);
+				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1714);
+				exprOrSubquery101=exprOrSubquery();
+				PopFollow();
+
+				adaptor.AddChild(root_1, exprOrSubquery101.Tree);
+
+				DebugLocation(354, 24);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1716);
 				exprOrSubquery102=exprOrSubquery();
 				PopFollow();
 
 				adaptor.AddChild(root_1, exprOrSubquery102.Tree);
-
-				DebugLocation(353, 24);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1725);
-				exprOrSubquery103=exprOrSubquery();
-				PopFollow();
-
-				adaptor.AddChild(root_1, exprOrSubquery103.Tree);
 
 
 				Match(input, TokenTypes.Up, null); 
@@ -6938,43 +6903,43 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				break;
 			case 6:
 				DebugEnterAlt(6);
-				// HqlSqlWalker.g:354:4: ^( GE exprOrSubquery exprOrSubquery )
+				// HqlSqlWalker.g:355:4: ^( GE exprOrSubquery exprOrSubquery )
 				{
-				DebugLocation(354, 4);
+				DebugLocation(355, 4);
 
 				_last = (IASTNode)input.LT(1);
 				{
 				IASTNode _save_last_1 = _last;
 				IASTNode _first_1 = default(IASTNode);
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(354, 6);
+				DebugLocation(355, 6);
 
 				_last = (IASTNode)input.LT(1);
-				GE104=(IASTNode)Match(input,GE,Follow._GE_in_comparisonExpr1732); 
-				GE104_tree = (IASTNode)adaptor.DupNode(GE104);
+				GE103=(IASTNode)Match(input,GE,Follow._GE_in_comparisonExpr1723); 
+				GE103_tree = (IASTNode)adaptor.DupNode(GE103);
 
 
-				root_1 = (IASTNode)adaptor.BecomeRoot(GE104_tree, root_1);
+				root_1 = (IASTNode)adaptor.BecomeRoot(GE103_tree, root_1);
 
 
 				Match(input, TokenTypes.Down, null); 
-				DebugLocation(354, 9);
+				DebugLocation(355, 9);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1734);
+				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1725);
+				exprOrSubquery104=exprOrSubquery();
+				PopFollow();
+
+				adaptor.AddChild(root_1, exprOrSubquery104.Tree);
+
+				DebugLocation(355, 24);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1727);
 				exprOrSubquery105=exprOrSubquery();
 				PopFollow();
 
 				adaptor.AddChild(root_1, exprOrSubquery105.Tree);
-
-				DebugLocation(354, 24);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1736);
-				exprOrSubquery106=exprOrSubquery();
-				PopFollow();
-
-				adaptor.AddChild(root_1, exprOrSubquery106.Tree);
 
 
 				Match(input, TokenTypes.Up, null); 
@@ -6987,94 +6952,586 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				break;
 			case 7:
 				DebugEnterAlt(7);
-				// HqlSqlWalker.g:355:4: ^( LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? )
+				// HqlSqlWalker.g:356:4: ^( LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? )
 				{
-				DebugLocation(355, 4);
+				DebugLocation(356, 4);
 
 				_last = (IASTNode)input.LT(1);
 				{
 				IASTNode _save_last_1 = _last;
 				IASTNode _first_1 = default(IASTNode);
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(355, 6);
+				DebugLocation(356, 6);
 
 				_last = (IASTNode)input.LT(1);
-				LIKE107=(IASTNode)Match(input,LIKE,Follow._LIKE_in_comparisonExpr1743); 
-				LIKE107_tree = (IASTNode)adaptor.DupNode(LIKE107);
+				LIKE106=(IASTNode)Match(input,LIKE,Follow._LIKE_in_comparisonExpr1734); 
+				LIKE106_tree = (IASTNode)adaptor.DupNode(LIKE106);
 
 
-				root_1 = (IASTNode)adaptor.BecomeRoot(LIKE107_tree, root_1);
+				root_1 = (IASTNode)adaptor.BecomeRoot(LIKE106_tree, root_1);
 
 
 				Match(input, TokenTypes.Down, null); 
-				DebugLocation(355, 11);
+				DebugLocation(356, 11);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1745);
-				exprOrSubquery108=exprOrSubquery();
+				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1736);
+				exprOrSubquery107=exprOrSubquery();
 				PopFollow();
 
-				adaptor.AddChild(root_1, exprOrSubquery108.Tree);
+				adaptor.AddChild(root_1, exprOrSubquery107.Tree);
 
-				DebugLocation(355, 26);
+				DebugLocation(356, 26);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._expr_in_comparisonExpr1747);
-				expr109=expr();
+				PushFollow(Follow._expr_in_comparisonExpr1738);
+				expr108=expr();
 				PopFollow();
 
-				adaptor.AddChild(root_1, expr109.Tree);
+				adaptor.AddChild(root_1, expr108.Tree);
 
-				DebugLocation(355, 31);
-				// HqlSqlWalker.g:355:31: ( ^( ESCAPE expr ) )?
-				int alt46=2;
-				try { DebugEnterSubRule(46);
-				try { DebugEnterDecision(46, false);
-				int LA46_1 = input.LA(1);
+				DebugLocation(356, 31);
+				// HqlSqlWalker.g:356:31: ( ^( ESCAPE expr ) )?
+				int alt44=2;
+				try { DebugEnterSubRule(44);
+				try { DebugEnterDecision(44, false);
+				int LA44_1 = input.LA(1);
 
-				if ((LA46_1==ESCAPE))
+				if ((LA44_1==ESCAPE))
 				{
-					alt46 = 1;
+					alt44 = 1;
 				}
-				} finally { DebugExitDecision(46); }
-				switch (alt46)
+				} finally { DebugExitDecision(44); }
+				switch (alt44)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// HqlSqlWalker.g:355:33: ^( ESCAPE expr )
+					// HqlSqlWalker.g:356:33: ^( ESCAPE expr )
 					{
-					DebugLocation(355, 33);
+					DebugLocation(356, 33);
 
 					_last = (IASTNode)input.LT(1);
 					{
 					IASTNode _save_last_2 = _last;
 					IASTNode _first_2 = default(IASTNode);
 					IASTNode root_2 = (IASTNode)adaptor.Nil();
-					DebugLocation(355, 35);
+					DebugLocation(356, 35);
 
 					_last = (IASTNode)input.LT(1);
-					ESCAPE110=(IASTNode)Match(input,ESCAPE,Follow._ESCAPE_in_comparisonExpr1752); 
-					ESCAPE110_tree = (IASTNode)adaptor.DupNode(ESCAPE110);
+					ESCAPE109=(IASTNode)Match(input,ESCAPE,Follow._ESCAPE_in_comparisonExpr1743); 
+					ESCAPE109_tree = (IASTNode)adaptor.DupNode(ESCAPE109);
 
 
-					root_2 = (IASTNode)adaptor.BecomeRoot(ESCAPE110_tree, root_2);
+					root_2 = (IASTNode)adaptor.BecomeRoot(ESCAPE109_tree, root_2);
 
 
 					Match(input, TokenTypes.Down, null); 
-					DebugLocation(355, 42);
+					DebugLocation(356, 42);
 
 					_last = (IASTNode)input.LT(1);
-					PushFollow(Follow._expr_in_comparisonExpr1754);
-					expr111=expr();
+					PushFollow(Follow._expr_in_comparisonExpr1745);
+					expr110=expr();
 					PopFollow();
 
-					adaptor.AddChild(root_2, expr111.Tree);
+					adaptor.AddChild(root_2, expr110.Tree);
 
 
 					Match(input, TokenTypes.Up, null); 
 					adaptor.AddChild(root_1, root_2);
 					_last = _save_last_2;
 					}
+
+
+					}
+					break;
+
+				}
+				} finally { DebugExitSubRule(44); }
+
+
+				Match(input, TokenTypes.Up, null); 
+				adaptor.AddChild(root_0, root_1);
+				_last = _save_last_1;
+				}
+
+
+				}
+				break;
+			case 8:
+				DebugEnterAlt(8);
+				// HqlSqlWalker.g:357:4: ^( NOT_LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? )
+				{
+				DebugLocation(357, 4);
+
+				_last = (IASTNode)input.LT(1);
+				{
+				IASTNode _save_last_1 = _last;
+				IASTNode _first_1 = default(IASTNode);
+				IASTNode root_1 = (IASTNode)adaptor.Nil();
+				DebugLocation(357, 6);
+
+				_last = (IASTNode)input.LT(1);
+				NOT_LIKE111=(IASTNode)Match(input,NOT_LIKE,Follow._NOT_LIKE_in_comparisonExpr1757); 
+				NOT_LIKE111_tree = (IASTNode)adaptor.DupNode(NOT_LIKE111);
+
+
+				root_1 = (IASTNode)adaptor.BecomeRoot(NOT_LIKE111_tree, root_1);
+
+
+				Match(input, TokenTypes.Down, null); 
+				DebugLocation(357, 15);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1759);
+				exprOrSubquery112=exprOrSubquery();
+				PopFollow();
+
+				adaptor.AddChild(root_1, exprOrSubquery112.Tree);
+
+				DebugLocation(357, 30);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._expr_in_comparisonExpr1761);
+				expr113=expr();
+				PopFollow();
+
+				adaptor.AddChild(root_1, expr113.Tree);
+
+				DebugLocation(357, 35);
+				// HqlSqlWalker.g:357:35: ( ^( ESCAPE expr ) )?
+				int alt45=2;
+				try { DebugEnterSubRule(45);
+				try { DebugEnterDecision(45, false);
+				int LA45_1 = input.LA(1);
+
+				if ((LA45_1==ESCAPE))
+				{
+					alt45 = 1;
+				}
+				} finally { DebugExitDecision(45); }
+				switch (alt45)
+				{
+				case 1:
+					DebugEnterAlt(1);
+					// HqlSqlWalker.g:357:37: ^( ESCAPE expr )
+					{
+					DebugLocation(357, 37);
+
+					_last = (IASTNode)input.LT(1);
+					{
+					IASTNode _save_last_2 = _last;
+					IASTNode _first_2 = default(IASTNode);
+					IASTNode root_2 = (IASTNode)adaptor.Nil();
+					DebugLocation(357, 39);
+
+					_last = (IASTNode)input.LT(1);
+					ESCAPE114=(IASTNode)Match(input,ESCAPE,Follow._ESCAPE_in_comparisonExpr1766); 
+					ESCAPE114_tree = (IASTNode)adaptor.DupNode(ESCAPE114);
+
+
+					root_2 = (IASTNode)adaptor.BecomeRoot(ESCAPE114_tree, root_2);
+
+
+					Match(input, TokenTypes.Down, null); 
+					DebugLocation(357, 46);
+
+					_last = (IASTNode)input.LT(1);
+					PushFollow(Follow._expr_in_comparisonExpr1768);
+					expr115=expr();
+					PopFollow();
+
+					adaptor.AddChild(root_2, expr115.Tree);
+
+
+					Match(input, TokenTypes.Up, null); 
+					adaptor.AddChild(root_1, root_2);
+					_last = _save_last_2;
+					}
+
+
+					}
+					break;
+
+				}
+				} finally { DebugExitSubRule(45); }
+
+
+				Match(input, TokenTypes.Up, null); 
+				adaptor.AddChild(root_0, root_1);
+				_last = _save_last_1;
+				}
+
+
+				}
+				break;
+			case 9:
+				DebugEnterAlt(9);
+				// HqlSqlWalker.g:358:4: ^( BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery )
+				{
+				DebugLocation(358, 4);
+
+				_last = (IASTNode)input.LT(1);
+				{
+				IASTNode _save_last_1 = _last;
+				IASTNode _first_1 = default(IASTNode);
+				IASTNode root_1 = (IASTNode)adaptor.Nil();
+				DebugLocation(358, 6);
+
+				_last = (IASTNode)input.LT(1);
+				BETWEEN116=(IASTNode)Match(input,BETWEEN,Follow._BETWEEN_in_comparisonExpr1780); 
+				BETWEEN116_tree = (IASTNode)adaptor.DupNode(BETWEEN116);
+
+
+				root_1 = (IASTNode)adaptor.BecomeRoot(BETWEEN116_tree, root_1);
+
+
+				Match(input, TokenTypes.Down, null); 
+				DebugLocation(358, 14);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1782);
+				exprOrSubquery117=exprOrSubquery();
+				PopFollow();
+
+				adaptor.AddChild(root_1, exprOrSubquery117.Tree);
+
+				DebugLocation(358, 29);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1784);
+				exprOrSubquery118=exprOrSubquery();
+				PopFollow();
+
+				adaptor.AddChild(root_1, exprOrSubquery118.Tree);
+
+				DebugLocation(358, 44);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1786);
+				exprOrSubquery119=exprOrSubquery();
+				PopFollow();
+
+				adaptor.AddChild(root_1, exprOrSubquery119.Tree);
+
+
+				Match(input, TokenTypes.Up, null); 
+				adaptor.AddChild(root_0, root_1);
+				_last = _save_last_1;
+				}
+
+
+				}
+				break;
+			case 10:
+				DebugEnterAlt(10);
+				// HqlSqlWalker.g:359:4: ^( NOT_BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery )
+				{
+				DebugLocation(359, 4);
+
+				_last = (IASTNode)input.LT(1);
+				{
+				IASTNode _save_last_1 = _last;
+				IASTNode _first_1 = default(IASTNode);
+				IASTNode root_1 = (IASTNode)adaptor.Nil();
+				DebugLocation(359, 6);
+
+				_last = (IASTNode)input.LT(1);
+				NOT_BETWEEN120=(IASTNode)Match(input,NOT_BETWEEN,Follow._NOT_BETWEEN_in_comparisonExpr1793); 
+				NOT_BETWEEN120_tree = (IASTNode)adaptor.DupNode(NOT_BETWEEN120);
+
+
+				root_1 = (IASTNode)adaptor.BecomeRoot(NOT_BETWEEN120_tree, root_1);
+
+
+				Match(input, TokenTypes.Down, null); 
+				DebugLocation(359, 18);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1795);
+				exprOrSubquery121=exprOrSubquery();
+				PopFollow();
+
+				adaptor.AddChild(root_1, exprOrSubquery121.Tree);
+
+				DebugLocation(359, 33);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1797);
+				exprOrSubquery122=exprOrSubquery();
+				PopFollow();
+
+				adaptor.AddChild(root_1, exprOrSubquery122.Tree);
+
+				DebugLocation(359, 48);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1799);
+				exprOrSubquery123=exprOrSubquery();
+				PopFollow();
+
+				adaptor.AddChild(root_1, exprOrSubquery123.Tree);
+
+
+				Match(input, TokenTypes.Up, null); 
+				adaptor.AddChild(root_0, root_1);
+				_last = _save_last_1;
+				}
+
+
+				}
+				break;
+			case 11:
+				DebugEnterAlt(11);
+				// HqlSqlWalker.g:360:4: ^( IN exprOrSubquery inRhs )
+				{
+				DebugLocation(360, 4);
+
+				_last = (IASTNode)input.LT(1);
+				{
+				IASTNode _save_last_1 = _last;
+				IASTNode _first_1 = default(IASTNode);
+				IASTNode root_1 = (IASTNode)adaptor.Nil();
+				DebugLocation(360, 6);
+
+				_last = (IASTNode)input.LT(1);
+				IN124=(IASTNode)Match(input,IN,Follow._IN_in_comparisonExpr1806); 
+				IN124_tree = (IASTNode)adaptor.DupNode(IN124);
+
+
+				root_1 = (IASTNode)adaptor.BecomeRoot(IN124_tree, root_1);
+
+
+				Match(input, TokenTypes.Down, null); 
+				DebugLocation(360, 9);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1808);
+				exprOrSubquery125=exprOrSubquery();
+				PopFollow();
+
+				adaptor.AddChild(root_1, exprOrSubquery125.Tree);
+
+				DebugLocation(360, 24);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._inRhs_in_comparisonExpr1810);
+				inRhs126=inRhs();
+				PopFollow();
+
+				adaptor.AddChild(root_1, inRhs126.Tree);
+
+
+				Match(input, TokenTypes.Up, null); 
+				adaptor.AddChild(root_0, root_1);
+				_last = _save_last_1;
+				}
+
+
+				}
+				break;
+			case 12:
+				DebugEnterAlt(12);
+				// HqlSqlWalker.g:361:4: ^( NOT_IN exprOrSubquery inRhs )
+				{
+				DebugLocation(361, 4);
+
+				_last = (IASTNode)input.LT(1);
+				{
+				IASTNode _save_last_1 = _last;
+				IASTNode _first_1 = default(IASTNode);
+				IASTNode root_1 = (IASTNode)adaptor.Nil();
+				DebugLocation(361, 6);
+
+				_last = (IASTNode)input.LT(1);
+				NOT_IN127=(IASTNode)Match(input,NOT_IN,Follow._NOT_IN_in_comparisonExpr1818); 
+				NOT_IN127_tree = (IASTNode)adaptor.DupNode(NOT_IN127);
+
+
+				root_1 = (IASTNode)adaptor.BecomeRoot(NOT_IN127_tree, root_1);
+
+
+				Match(input, TokenTypes.Down, null); 
+				DebugLocation(361, 13);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1820);
+				exprOrSubquery128=exprOrSubquery();
+				PopFollow();
+
+				adaptor.AddChild(root_1, exprOrSubquery128.Tree);
+
+				DebugLocation(361, 28);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._inRhs_in_comparisonExpr1822);
+				inRhs129=inRhs();
+				PopFollow();
+
+				adaptor.AddChild(root_1, inRhs129.Tree);
+
+
+				Match(input, TokenTypes.Up, null); 
+				adaptor.AddChild(root_0, root_1);
+				_last = _save_last_1;
+				}
+
+
+				}
+				break;
+			case 13:
+				DebugEnterAlt(13);
+				// HqlSqlWalker.g:362:4: ^( IS_NULL exprOrSubquery )
+				{
+				DebugLocation(362, 4);
+
+				_last = (IASTNode)input.LT(1);
+				{
+				IASTNode _save_last_1 = _last;
+				IASTNode _first_1 = default(IASTNode);
+				IASTNode root_1 = (IASTNode)adaptor.Nil();
+				DebugLocation(362, 6);
+
+				_last = (IASTNode)input.LT(1);
+				IS_NULL130=(IASTNode)Match(input,IS_NULL,Follow._IS_NULL_in_comparisonExpr1830); 
+				IS_NULL130_tree = (IASTNode)adaptor.DupNode(IS_NULL130);
+
+
+				root_1 = (IASTNode)adaptor.BecomeRoot(IS_NULL130_tree, root_1);
+
+
+				Match(input, TokenTypes.Down, null); 
+				DebugLocation(362, 14);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1832);
+				exprOrSubquery131=exprOrSubquery();
+				PopFollow();
+
+				adaptor.AddChild(root_1, exprOrSubquery131.Tree);
+
+
+				Match(input, TokenTypes.Up, null); 
+				adaptor.AddChild(root_0, root_1);
+				_last = _save_last_1;
+				}
+
+
+				}
+				break;
+			case 14:
+				DebugEnterAlt(14);
+				// HqlSqlWalker.g:363:4: ^( IS_NOT_NULL exprOrSubquery )
+				{
+				DebugLocation(363, 4);
+
+				_last = (IASTNode)input.LT(1);
+				{
+				IASTNode _save_last_1 = _last;
+				IASTNode _first_1 = default(IASTNode);
+				IASTNode root_1 = (IASTNode)adaptor.Nil();
+				DebugLocation(363, 6);
+
+				_last = (IASTNode)input.LT(1);
+				IS_NOT_NULL132=(IASTNode)Match(input,IS_NOT_NULL,Follow._IS_NOT_NULL_in_comparisonExpr1839); 
+				IS_NOT_NULL132_tree = (IASTNode)adaptor.DupNode(IS_NOT_NULL132);
+
+
+				root_1 = (IASTNode)adaptor.BecomeRoot(IS_NOT_NULL132_tree, root_1);
+
+
+				Match(input, TokenTypes.Down, null); 
+				DebugLocation(363, 18);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1841);
+				exprOrSubquery133=exprOrSubquery();
+				PopFollow();
+
+				adaptor.AddChild(root_1, exprOrSubquery133.Tree);
+
+
+				Match(input, TokenTypes.Up, null); 
+				adaptor.AddChild(root_0, root_1);
+				_last = _save_last_1;
+				}
+
+
+				}
+				break;
+			case 15:
+				DebugEnterAlt(15);
+				// HqlSqlWalker.g:366:4: ^( EXISTS ( expr | collectionFunctionOrSubselect ) )
+				{
+				DebugLocation(366, 4);
+
+				_last = (IASTNode)input.LT(1);
+				{
+				IASTNode _save_last_1 = _last;
+				IASTNode _first_1 = default(IASTNode);
+				IASTNode root_1 = (IASTNode)adaptor.Nil();
+				DebugLocation(366, 6);
+
+				_last = (IASTNode)input.LT(1);
+				EXISTS134=(IASTNode)Match(input,EXISTS,Follow._EXISTS_in_comparisonExpr1850); 
+				EXISTS134_tree = (IASTNode)adaptor.DupNode(EXISTS134);
+
+
+				root_1 = (IASTNode)adaptor.BecomeRoot(EXISTS134_tree, root_1);
+
+
+				Match(input, TokenTypes.Down, null); 
+				DebugLocation(366, 13);
+				// HqlSqlWalker.g:366:13: ( expr | collectionFunctionOrSubselect )
+				int alt46=2;
+				try { DebugEnterSubRule(46);
+				try { DebugEnterDecision(46, false);
+				int LA46_1 = input.LA(1);
+
+				if ((LA46_1==AGGREGATE||LA46_1==BAND||(LA46_1>=BNOT && LA46_1<=BOR)||(LA46_1>=BXOR && LA46_1<=CASE2)||LA46_1==COLON||LA46_1==COUNT||(LA46_1>=DIV && LA46_1<=DOT)||LA46_1==FALSE||LA46_1==IDENT||LA46_1==INDEX_OP||LA46_1==JAVA_CONSTANT||LA46_1==METHOD_CALL||LA46_1==MINUS||(LA46_1>=NULL && LA46_1<=NUM_LONG)||(LA46_1>=PARAM && LA46_1<=PLUS)||LA46_1==QUOTED_String||LA46_1==STAR||(LA46_1>=TRUE && LA46_1<=UNARY_MINUS)||LA46_1==VECTOR_EXPR||LA46_1==WEIRD_IDENT))
+				{
+					alt46 = 1;
+				}
+				else if ((LA46_1==ELEMENTS||LA46_1==INDICES||LA46_1==QUERY||LA46_1==UNION))
+				{
+					alt46 = 2;
+				}
+				else
+				{
+					NoViableAltException nvae = new NoViableAltException("", 46, 0, input, 1);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
+				} finally { DebugExitDecision(46); }
+				switch (alt46)
+				{
+				case 1:
+					DebugEnterAlt(1);
+					// HqlSqlWalker.g:366:15: expr
+					{
+					DebugLocation(366, 15);
+
+					_last = (IASTNode)input.LT(1);
+					PushFollow(Follow._expr_in_comparisonExpr1854);
+					expr135=expr();
+					PopFollow();
+
+					adaptor.AddChild(root_1, expr135.Tree);
+
+
+					}
+					break;
+				case 2:
+					DebugEnterAlt(2);
+					// HqlSqlWalker.g:366:22: collectionFunctionOrSubselect
+					{
+					DebugLocation(366, 22);
+
+					_last = (IASTNode)input.LT(1);
+					PushFollow(Follow._collectionFunctionOrSubselect_in_comparisonExpr1858);
+					collectionFunctionOrSubselect136=collectionFunctionOrSubselect();
+					PopFollow();
+
+					adaptor.AddChild(root_1, collectionFunctionOrSubselect136.Tree);
 
 
 					}
@@ -7092,501 +7549,9 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 				}
 				break;
-			case 8:
-				DebugEnterAlt(8);
-				// HqlSqlWalker.g:356:4: ^( NOT_LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? )
-				{
-				DebugLocation(356, 4);
-
-				_last = (IASTNode)input.LT(1);
-				{
-				IASTNode _save_last_1 = _last;
-				IASTNode _first_1 = default(IASTNode);
-				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(356, 6);
-
-				_last = (IASTNode)input.LT(1);
-				NOT_LIKE112=(IASTNode)Match(input,NOT_LIKE,Follow._NOT_LIKE_in_comparisonExpr1766); 
-				NOT_LIKE112_tree = (IASTNode)adaptor.DupNode(NOT_LIKE112);
-
-
-				root_1 = (IASTNode)adaptor.BecomeRoot(NOT_LIKE112_tree, root_1);
-
-
-				Match(input, TokenTypes.Down, null); 
-				DebugLocation(356, 15);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1768);
-				exprOrSubquery113=exprOrSubquery();
-				PopFollow();
-
-				adaptor.AddChild(root_1, exprOrSubquery113.Tree);
-
-				DebugLocation(356, 30);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._expr_in_comparisonExpr1770);
-				expr114=expr();
-				PopFollow();
-
-				adaptor.AddChild(root_1, expr114.Tree);
-
-				DebugLocation(356, 35);
-				// HqlSqlWalker.g:356:35: ( ^( ESCAPE expr ) )?
-				int alt47=2;
-				try { DebugEnterSubRule(47);
-				try { DebugEnterDecision(47, false);
-				int LA47_1 = input.LA(1);
-
-				if ((LA47_1==ESCAPE))
-				{
-					alt47 = 1;
-				}
-				} finally { DebugExitDecision(47); }
-				switch (alt47)
-				{
-				case 1:
-					DebugEnterAlt(1);
-					// HqlSqlWalker.g:356:37: ^( ESCAPE expr )
-					{
-					DebugLocation(356, 37);
-
-					_last = (IASTNode)input.LT(1);
-					{
-					IASTNode _save_last_2 = _last;
-					IASTNode _first_2 = default(IASTNode);
-					IASTNode root_2 = (IASTNode)adaptor.Nil();
-					DebugLocation(356, 39);
-
-					_last = (IASTNode)input.LT(1);
-					ESCAPE115=(IASTNode)Match(input,ESCAPE,Follow._ESCAPE_in_comparisonExpr1775); 
-					ESCAPE115_tree = (IASTNode)adaptor.DupNode(ESCAPE115);
-
-
-					root_2 = (IASTNode)adaptor.BecomeRoot(ESCAPE115_tree, root_2);
-
-
-					Match(input, TokenTypes.Down, null); 
-					DebugLocation(356, 46);
-
-					_last = (IASTNode)input.LT(1);
-					PushFollow(Follow._expr_in_comparisonExpr1777);
-					expr116=expr();
-					PopFollow();
-
-					adaptor.AddChild(root_2, expr116.Tree);
-
-
-					Match(input, TokenTypes.Up, null); 
-					adaptor.AddChild(root_1, root_2);
-					_last = _save_last_2;
-					}
-
-
-					}
-					break;
-
-				}
-				} finally { DebugExitSubRule(47); }
-
-
-				Match(input, TokenTypes.Up, null); 
-				adaptor.AddChild(root_0, root_1);
-				_last = _save_last_1;
-				}
-
-
-				}
-				break;
-			case 9:
-				DebugEnterAlt(9);
-				// HqlSqlWalker.g:357:4: ^( BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery )
-				{
-				DebugLocation(357, 4);
-
-				_last = (IASTNode)input.LT(1);
-				{
-				IASTNode _save_last_1 = _last;
-				IASTNode _first_1 = default(IASTNode);
-				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(357, 6);
-
-				_last = (IASTNode)input.LT(1);
-				BETWEEN117=(IASTNode)Match(input,BETWEEN,Follow._BETWEEN_in_comparisonExpr1789); 
-				BETWEEN117_tree = (IASTNode)adaptor.DupNode(BETWEEN117);
-
-
-				root_1 = (IASTNode)adaptor.BecomeRoot(BETWEEN117_tree, root_1);
-
-
-				Match(input, TokenTypes.Down, null); 
-				DebugLocation(357, 14);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1791);
-				exprOrSubquery118=exprOrSubquery();
-				PopFollow();
-
-				adaptor.AddChild(root_1, exprOrSubquery118.Tree);
-
-				DebugLocation(357, 29);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1793);
-				exprOrSubquery119=exprOrSubquery();
-				PopFollow();
-
-				adaptor.AddChild(root_1, exprOrSubquery119.Tree);
-
-				DebugLocation(357, 44);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1795);
-				exprOrSubquery120=exprOrSubquery();
-				PopFollow();
-
-				adaptor.AddChild(root_1, exprOrSubquery120.Tree);
-
-
-				Match(input, TokenTypes.Up, null); 
-				adaptor.AddChild(root_0, root_1);
-				_last = _save_last_1;
-				}
-
-
-				}
-				break;
-			case 10:
-				DebugEnterAlt(10);
-				// HqlSqlWalker.g:358:4: ^( NOT_BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery )
-				{
-				DebugLocation(358, 4);
-
-				_last = (IASTNode)input.LT(1);
-				{
-				IASTNode _save_last_1 = _last;
-				IASTNode _first_1 = default(IASTNode);
-				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(358, 6);
-
-				_last = (IASTNode)input.LT(1);
-				NOT_BETWEEN121=(IASTNode)Match(input,NOT_BETWEEN,Follow._NOT_BETWEEN_in_comparisonExpr1802); 
-				NOT_BETWEEN121_tree = (IASTNode)adaptor.DupNode(NOT_BETWEEN121);
-
-
-				root_1 = (IASTNode)adaptor.BecomeRoot(NOT_BETWEEN121_tree, root_1);
-
-
-				Match(input, TokenTypes.Down, null); 
-				DebugLocation(358, 18);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1804);
-				exprOrSubquery122=exprOrSubquery();
-				PopFollow();
-
-				adaptor.AddChild(root_1, exprOrSubquery122.Tree);
-
-				DebugLocation(358, 33);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1806);
-				exprOrSubquery123=exprOrSubquery();
-				PopFollow();
-
-				adaptor.AddChild(root_1, exprOrSubquery123.Tree);
-
-				DebugLocation(358, 48);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1808);
-				exprOrSubquery124=exprOrSubquery();
-				PopFollow();
-
-				adaptor.AddChild(root_1, exprOrSubquery124.Tree);
-
-
-				Match(input, TokenTypes.Up, null); 
-				adaptor.AddChild(root_0, root_1);
-				_last = _save_last_1;
-				}
-
-
-				}
-				break;
-			case 11:
-				DebugEnterAlt(11);
-				// HqlSqlWalker.g:359:4: ^( IN exprOrSubquery inRhs )
-				{
-				DebugLocation(359, 4);
-
-				_last = (IASTNode)input.LT(1);
-				{
-				IASTNode _save_last_1 = _last;
-				IASTNode _first_1 = default(IASTNode);
-				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(359, 6);
-
-				_last = (IASTNode)input.LT(1);
-				IN125=(IASTNode)Match(input,IN,Follow._IN_in_comparisonExpr1815); 
-				IN125_tree = (IASTNode)adaptor.DupNode(IN125);
-
-
-				root_1 = (IASTNode)adaptor.BecomeRoot(IN125_tree, root_1);
-
-
-				Match(input, TokenTypes.Down, null); 
-				DebugLocation(359, 9);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1817);
-				exprOrSubquery126=exprOrSubquery();
-				PopFollow();
-
-				adaptor.AddChild(root_1, exprOrSubquery126.Tree);
-
-				DebugLocation(359, 24);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._inRhs_in_comparisonExpr1819);
-				inRhs127=inRhs();
-				PopFollow();
-
-				adaptor.AddChild(root_1, inRhs127.Tree);
-
-
-				Match(input, TokenTypes.Up, null); 
-				adaptor.AddChild(root_0, root_1);
-				_last = _save_last_1;
-				}
-
-
-				}
-				break;
-			case 12:
-				DebugEnterAlt(12);
-				// HqlSqlWalker.g:360:4: ^( NOT_IN exprOrSubquery inRhs )
-				{
-				DebugLocation(360, 4);
-
-				_last = (IASTNode)input.LT(1);
-				{
-				IASTNode _save_last_1 = _last;
-				IASTNode _first_1 = default(IASTNode);
-				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(360, 6);
-
-				_last = (IASTNode)input.LT(1);
-				NOT_IN128=(IASTNode)Match(input,NOT_IN,Follow._NOT_IN_in_comparisonExpr1827); 
-				NOT_IN128_tree = (IASTNode)adaptor.DupNode(NOT_IN128);
-
-
-				root_1 = (IASTNode)adaptor.BecomeRoot(NOT_IN128_tree, root_1);
-
-
-				Match(input, TokenTypes.Down, null); 
-				DebugLocation(360, 13);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1829);
-				exprOrSubquery129=exprOrSubquery();
-				PopFollow();
-
-				adaptor.AddChild(root_1, exprOrSubquery129.Tree);
-
-				DebugLocation(360, 28);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._inRhs_in_comparisonExpr1831);
-				inRhs130=inRhs();
-				PopFollow();
-
-				adaptor.AddChild(root_1, inRhs130.Tree);
-
-
-				Match(input, TokenTypes.Up, null); 
-				adaptor.AddChild(root_0, root_1);
-				_last = _save_last_1;
-				}
-
-
-				}
-				break;
-			case 13:
-				DebugEnterAlt(13);
-				// HqlSqlWalker.g:361:4: ^( IS_NULL exprOrSubquery )
-				{
-				DebugLocation(361, 4);
-
-				_last = (IASTNode)input.LT(1);
-				{
-				IASTNode _save_last_1 = _last;
-				IASTNode _first_1 = default(IASTNode);
-				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(361, 6);
-
-				_last = (IASTNode)input.LT(1);
-				IS_NULL131=(IASTNode)Match(input,IS_NULL,Follow._IS_NULL_in_comparisonExpr1839); 
-				IS_NULL131_tree = (IASTNode)adaptor.DupNode(IS_NULL131);
-
-
-				root_1 = (IASTNode)adaptor.BecomeRoot(IS_NULL131_tree, root_1);
-
-
-				Match(input, TokenTypes.Down, null); 
-				DebugLocation(361, 14);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1841);
-				exprOrSubquery132=exprOrSubquery();
-				PopFollow();
-
-				adaptor.AddChild(root_1, exprOrSubquery132.Tree);
-
-
-				Match(input, TokenTypes.Up, null); 
-				adaptor.AddChild(root_0, root_1);
-				_last = _save_last_1;
-				}
-
-
-				}
-				break;
-			case 14:
-				DebugEnterAlt(14);
-				// HqlSqlWalker.g:362:4: ^( IS_NOT_NULL exprOrSubquery )
-				{
-				DebugLocation(362, 4);
-
-				_last = (IASTNode)input.LT(1);
-				{
-				IASTNode _save_last_1 = _last;
-				IASTNode _first_1 = default(IASTNode);
-				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(362, 6);
-
-				_last = (IASTNode)input.LT(1);
-				IS_NOT_NULL133=(IASTNode)Match(input,IS_NOT_NULL,Follow._IS_NOT_NULL_in_comparisonExpr1848); 
-				IS_NOT_NULL133_tree = (IASTNode)adaptor.DupNode(IS_NOT_NULL133);
-
-
-				root_1 = (IASTNode)adaptor.BecomeRoot(IS_NOT_NULL133_tree, root_1);
-
-
-				Match(input, TokenTypes.Down, null); 
-				DebugLocation(362, 18);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_comparisonExpr1850);
-				exprOrSubquery134=exprOrSubquery();
-				PopFollow();
-
-				adaptor.AddChild(root_1, exprOrSubquery134.Tree);
-
-
-				Match(input, TokenTypes.Up, null); 
-				adaptor.AddChild(root_0, root_1);
-				_last = _save_last_1;
-				}
-
-
-				}
-				break;
-			case 15:
-				DebugEnterAlt(15);
-				// HqlSqlWalker.g:365:4: ^( EXISTS ( expr | collectionFunctionOrSubselect ) )
-				{
-				DebugLocation(365, 4);
-
-				_last = (IASTNode)input.LT(1);
-				{
-				IASTNode _save_last_1 = _last;
-				IASTNode _first_1 = default(IASTNode);
-				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(365, 6);
-
-				_last = (IASTNode)input.LT(1);
-				EXISTS135=(IASTNode)Match(input,EXISTS,Follow._EXISTS_in_comparisonExpr1859); 
-				EXISTS135_tree = (IASTNode)adaptor.DupNode(EXISTS135);
-
-
-				root_1 = (IASTNode)adaptor.BecomeRoot(EXISTS135_tree, root_1);
-
-
-				Match(input, TokenTypes.Down, null); 
-				DebugLocation(365, 13);
-				// HqlSqlWalker.g:365:13: ( expr | collectionFunctionOrSubselect )
-				int alt48=2;
-				try { DebugEnterSubRule(48);
-				try { DebugEnterDecision(48, false);
-				int LA48_1 = input.LA(1);
-
-				if ((LA48_1==AGGREGATE||LA48_1==BAND||(LA48_1>=BNOT && LA48_1<=BOR)||(LA48_1>=BXOR && LA48_1<=CASE2)||LA48_1==COLON||LA48_1==COUNT||(LA48_1>=DIV && LA48_1<=DOT)||LA48_1==FALSE||LA48_1==IDENT||LA48_1==INDEX_OP||LA48_1==JAVA_CONSTANT||LA48_1==METHOD_CALL||LA48_1==MINUS||(LA48_1>=NULL && LA48_1<=NUM_LONG)||(LA48_1>=PARAM && LA48_1<=PLUS)||LA48_1==QUOTED_String||LA48_1==STAR||(LA48_1>=TRUE && LA48_1<=UNARY_MINUS)||LA48_1==VECTOR_EXPR||LA48_1==WEIRD_IDENT))
-				{
-					alt48 = 1;
-				}
-				else if ((LA48_1==ELEMENTS||LA48_1==INDICES||LA48_1==QUERY||LA48_1==UNION))
-				{
-					alt48 = 2;
-				}
-				else
-				{
-					NoViableAltException nvae = new NoViableAltException("", 48, 0, input, 1);
-					DebugRecognitionException(nvae);
-					throw nvae;
-				}
-				} finally { DebugExitDecision(48); }
-				switch (alt48)
-				{
-				case 1:
-					DebugEnterAlt(1);
-					// HqlSqlWalker.g:365:15: expr
-					{
-					DebugLocation(365, 15);
-
-					_last = (IASTNode)input.LT(1);
-					PushFollow(Follow._expr_in_comparisonExpr1863);
-					expr136=expr();
-					PopFollow();
-
-					adaptor.AddChild(root_1, expr136.Tree);
-
-
-					}
-					break;
-				case 2:
-					DebugEnterAlt(2);
-					// HqlSqlWalker.g:365:22: collectionFunctionOrSubselect
-					{
-					DebugLocation(365, 22);
-
-					_last = (IASTNode)input.LT(1);
-					PushFollow(Follow._collectionFunctionOrSubselect_in_comparisonExpr1867);
-					collectionFunctionOrSubselect137=collectionFunctionOrSubselect();
-					PopFollow();
-
-					adaptor.AddChild(root_1, collectionFunctionOrSubselect137.Tree);
-
-
-					}
-					break;
-
-				}
-				} finally { DebugExitSubRule(48); }
-
-
-				Match(input, TokenTypes.Up, null); 
-				adaptor.AddChild(root_0, root_1);
-				_last = _save_last_1;
-				}
-
-
-				}
-				break;
 
 			}
-			} finally { DebugExitSubRule(49); }
+			} finally { DebugExitSubRule(47); }
 
 
 			}
@@ -7608,7 +7573,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("comparisonExpr", 39);
 			LeaveRule_comparisonExpr();
 		}
-		DebugLocation(367, 1);
+		DebugLocation(368, 1);
 		} finally { DebugExitRule(GrammarFileName, "comparisonExpr"); }
 		return retval;
 
@@ -7618,7 +7583,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_inRhs();
 	partial void LeaveRule_inRhs();
 	// $ANTLR start "inRhs"
-	// HqlSqlWalker.g:369:1: inRhs : ^( IN_LIST ( collectionFunctionOrSubselect | ( expr )* ) ) ;
+	// HqlSqlWalker.g:370:1: inRhs : ^( IN_LIST ( collectionFunctionOrSubselect | ( expr )* ) ) ;
 	[GrammarRule("inRhs")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> inRhs()
 	{
@@ -7633,135 +7598,135 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		IASTNode IN_LIST138 = default(IASTNode);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunctionOrSubselect139 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> expr140 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode IN_LIST137 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunctionOrSubselect138 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr139 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-		IASTNode IN_LIST138_tree = default(IASTNode);
+		IASTNode IN_LIST137_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "inRhs");
-		DebugLocation(369, 1);
+		DebugLocation(370, 1);
 		try
 		{
-			// HqlSqlWalker.g:370:2: ( ^( IN_LIST ( collectionFunctionOrSubselect | ( expr )* ) ) )
+			// HqlSqlWalker.g:371:2: ( ^( IN_LIST ( collectionFunctionOrSubselect | ( expr )* ) ) )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:370:4: ^( IN_LIST ( collectionFunctionOrSubselect | ( expr )* ) )
+			// HqlSqlWalker.g:371:4: ^( IN_LIST ( collectionFunctionOrSubselect | ( expr )* ) )
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(370, 4);
+			DebugLocation(371, 4);
 
 			_last = (IASTNode)input.LT(1);
 			{
 			IASTNode _save_last_1 = _last;
 			IASTNode _first_1 = default(IASTNode);
 			IASTNode root_1 = (IASTNode)adaptor.Nil();
-			DebugLocation(370, 6);
+			DebugLocation(371, 6);
 
 			_last = (IASTNode)input.LT(1);
-			IN_LIST138=(IASTNode)Match(input,IN_LIST,Follow._IN_LIST_in_inRhs1886); 
-			IN_LIST138_tree = (IASTNode)adaptor.DupNode(IN_LIST138);
+			IN_LIST137=(IASTNode)Match(input,IN_LIST,Follow._IN_LIST_in_inRhs1877); 
+			IN_LIST137_tree = (IASTNode)adaptor.DupNode(IN_LIST137);
 
 
-			root_1 = (IASTNode)adaptor.BecomeRoot(IN_LIST138_tree, root_1);
+			root_1 = (IASTNode)adaptor.BecomeRoot(IN_LIST137_tree, root_1);
 
 
 			if (input.LA(1) == TokenTypes.Down) {
 				Match(input, TokenTypes.Down, null); 
-				DebugLocation(370, 14);
-				// HqlSqlWalker.g:370:14: ( collectionFunctionOrSubselect | ( expr )* )
-				int alt51=2;
-				try { DebugEnterSubRule(51);
-				try { DebugEnterDecision(51, false);
-				int LA51_1 = input.LA(1);
+				DebugLocation(371, 14);
+				// HqlSqlWalker.g:371:14: ( collectionFunctionOrSubselect | ( expr )* )
+				int alt49=2;
+				try { DebugEnterSubRule(49);
+				try { DebugEnterDecision(49, false);
+				int LA49_1 = input.LA(1);
 
-				if ((LA51_1==ELEMENTS||LA51_1==INDICES||LA51_1==QUERY||LA51_1==UNION))
+				if ((LA49_1==ELEMENTS||LA49_1==INDICES||LA49_1==QUERY||LA49_1==UNION))
 				{
-					alt51 = 1;
+					alt49 = 1;
 				}
-				else if (((LA51_1>=UP && LA51_1<=AGGREGATE)||LA51_1==BAND||(LA51_1>=BNOT && LA51_1<=BOR)||(LA51_1>=BXOR && LA51_1<=CASE2)||LA51_1==COLON||LA51_1==COUNT||(LA51_1>=DIV && LA51_1<=DOT)||LA51_1==FALSE||LA51_1==IDENT||LA51_1==INDEX_OP||LA51_1==JAVA_CONSTANT||LA51_1==METHOD_CALL||LA51_1==MINUS||(LA51_1>=NULL && LA51_1<=NUM_LONG)||(LA51_1>=PARAM && LA51_1<=PLUS)||LA51_1==QUOTED_String||LA51_1==STAR||(LA51_1>=TRUE && LA51_1<=UNARY_MINUS)||LA51_1==VECTOR_EXPR||LA51_1==WEIRD_IDENT))
+				else if (((LA49_1>=UP && LA49_1<=AGGREGATE)||LA49_1==BAND||(LA49_1>=BNOT && LA49_1<=BOR)||(LA49_1>=BXOR && LA49_1<=CASE2)||LA49_1==COLON||LA49_1==COUNT||(LA49_1>=DIV && LA49_1<=DOT)||LA49_1==FALSE||LA49_1==IDENT||LA49_1==INDEX_OP||LA49_1==JAVA_CONSTANT||LA49_1==METHOD_CALL||LA49_1==MINUS||(LA49_1>=NULL && LA49_1<=NUM_LONG)||(LA49_1>=PARAM && LA49_1<=PLUS)||LA49_1==QUOTED_String||LA49_1==STAR||(LA49_1>=TRUE && LA49_1<=UNARY_MINUS)||LA49_1==VECTOR_EXPR||LA49_1==WEIRD_IDENT))
 				{
-					alt51 = 2;
+					alt49 = 2;
 				}
 				else
 				{
-					NoViableAltException nvae = new NoViableAltException("", 51, 0, input, 1);
+					NoViableAltException nvae = new NoViableAltException("", 49, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
-				} finally { DebugExitDecision(51); }
-				switch (alt51)
+				} finally { DebugExitDecision(49); }
+				switch (alt49)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// HqlSqlWalker.g:370:16: collectionFunctionOrSubselect
+					// HqlSqlWalker.g:371:16: collectionFunctionOrSubselect
 					{
-					DebugLocation(370, 16);
+					DebugLocation(371, 16);
 
 					_last = (IASTNode)input.LT(1);
-					PushFollow(Follow._collectionFunctionOrSubselect_in_inRhs1890);
-					collectionFunctionOrSubselect139=collectionFunctionOrSubselect();
+					PushFollow(Follow._collectionFunctionOrSubselect_in_inRhs1881);
+					collectionFunctionOrSubselect138=collectionFunctionOrSubselect();
 					PopFollow();
 
-					adaptor.AddChild(root_1, collectionFunctionOrSubselect139.Tree);
+					adaptor.AddChild(root_1, collectionFunctionOrSubselect138.Tree);
 
 
 					}
 					break;
 				case 2:
 					DebugEnterAlt(2);
-					// HqlSqlWalker.g:370:48: ( expr )*
+					// HqlSqlWalker.g:371:48: ( expr )*
 					{
-					DebugLocation(370, 48);
-					// HqlSqlWalker.g:370:48: ( expr )*
-					try { DebugEnterSubRule(50);
+					DebugLocation(371, 48);
+					// HqlSqlWalker.g:371:48: ( expr )*
+					try { DebugEnterSubRule(48);
 					while (true)
 					{
-						int alt50=2;
-						try { DebugEnterDecision(50, false);
-						int LA50_1 = input.LA(1);
+						int alt48=2;
+						try { DebugEnterDecision(48, false);
+						int LA48_1 = input.LA(1);
 
-						if ((LA50_1==AGGREGATE||LA50_1==BAND||(LA50_1>=BNOT && LA50_1<=BOR)||(LA50_1>=BXOR && LA50_1<=CASE2)||LA50_1==COLON||LA50_1==COUNT||(LA50_1>=DIV && LA50_1<=DOT)||LA50_1==FALSE||LA50_1==IDENT||LA50_1==INDEX_OP||LA50_1==JAVA_CONSTANT||LA50_1==METHOD_CALL||LA50_1==MINUS||(LA50_1>=NULL && LA50_1<=NUM_LONG)||(LA50_1>=PARAM && LA50_1<=PLUS)||LA50_1==QUOTED_String||LA50_1==STAR||(LA50_1>=TRUE && LA50_1<=UNARY_MINUS)||LA50_1==VECTOR_EXPR||LA50_1==WEIRD_IDENT))
+						if ((LA48_1==AGGREGATE||LA48_1==BAND||(LA48_1>=BNOT && LA48_1<=BOR)||(LA48_1>=BXOR && LA48_1<=CASE2)||LA48_1==COLON||LA48_1==COUNT||(LA48_1>=DIV && LA48_1<=DOT)||LA48_1==FALSE||LA48_1==IDENT||LA48_1==INDEX_OP||LA48_1==JAVA_CONSTANT||LA48_1==METHOD_CALL||LA48_1==MINUS||(LA48_1>=NULL && LA48_1<=NUM_LONG)||(LA48_1>=PARAM && LA48_1<=PLUS)||LA48_1==QUOTED_String||LA48_1==STAR||(LA48_1>=TRUE && LA48_1<=UNARY_MINUS)||LA48_1==VECTOR_EXPR||LA48_1==WEIRD_IDENT))
 						{
-							alt50 = 1;
+							alt48 = 1;
 						}
 
 
-						} finally { DebugExitDecision(50); }
-						switch ( alt50 )
+						} finally { DebugExitDecision(48); }
+						switch ( alt48 )
 						{
 						case 1:
 							DebugEnterAlt(1);
-							// HqlSqlWalker.g:370:48: expr
+							// HqlSqlWalker.g:371:48: expr
 							{
-							DebugLocation(370, 48);
+							DebugLocation(371, 48);
 
 							_last = (IASTNode)input.LT(1);
-							PushFollow(Follow._expr_in_inRhs1894);
-							expr140=expr();
+							PushFollow(Follow._expr_in_inRhs1885);
+							expr139=expr();
 							PopFollow();
 
-							adaptor.AddChild(root_1, expr140.Tree);
+							adaptor.AddChild(root_1, expr139.Tree);
 
 
 							}
 							break;
 
 						default:
-							goto loop50;
+							goto loop48;
 						}
 					}
 
-					loop50:
+					loop48:
 						;
 
-					} finally { DebugExitSubRule(50); }
+					} finally { DebugExitSubRule(48); }
 
 
 					}
 					break;
 
 				}
-				} finally { DebugExitSubRule(51); }
+				} finally { DebugExitSubRule(49); }
 
 
 				Match(input, TokenTypes.Up, null); 
@@ -7787,7 +7752,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("inRhs", 40);
 			LeaveRule_inRhs();
 		}
-		DebugLocation(371, 1);
+		DebugLocation(372, 1);
 		} finally { DebugExitRule(GrammarFileName, "inRhs"); }
 		return retval;
 
@@ -7797,7 +7762,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_exprOrSubquery();
 	partial void LeaveRule_exprOrSubquery();
 	// $ANTLR start "exprOrSubquery"
-	// HqlSqlWalker.g:373:1: exprOrSubquery : ( expr | query | ^( ANY collectionFunctionOrSubselect ) | ^( ALL collectionFunctionOrSubselect ) | ^( SOME collectionFunctionOrSubselect ) );
+	// HqlSqlWalker.g:374:1: exprOrSubquery : ( expr | query | ^( ANY collectionFunctionOrSubselect ) | ^( ALL collectionFunctionOrSubselect ) | ^( SOME collectionFunctionOrSubselect ) );
 	[GrammarRule("exprOrSubquery")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery()
 	{
@@ -7812,25 +7777,25 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		IASTNode ANY143 = default(IASTNode);
-		IASTNode ALL145 = default(IASTNode);
-		IASTNode SOME147 = default(IASTNode);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> expr141 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> query142 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunctionOrSubselect144 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunctionOrSubselect146 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunctionOrSubselect148 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode ANY142 = default(IASTNode);
+		IASTNode ALL144 = default(IASTNode);
+		IASTNode SOME146 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr140 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> query141 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunctionOrSubselect143 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunctionOrSubselect145 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunctionOrSubselect147 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-		IASTNode ANY143_tree = default(IASTNode);
-		IASTNode ALL145_tree = default(IASTNode);
-		IASTNode SOME147_tree = default(IASTNode);
+		IASTNode ANY142_tree = default(IASTNode);
+		IASTNode ALL144_tree = default(IASTNode);
+		IASTNode SOME146_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "exprOrSubquery");
-		DebugLocation(373, 1);
+		DebugLocation(374, 1);
 		try
 		{
-			// HqlSqlWalker.g:374:2: ( expr | query | ^( ANY collectionFunctionOrSubselect ) | ^( ALL collectionFunctionOrSubselect ) | ^( SOME collectionFunctionOrSubselect ) )
-			int alt52=5;
-			try { DebugEnterDecision(52, false);
+			// HqlSqlWalker.g:375:2: ( expr | query | ^( ANY collectionFunctionOrSubselect ) | ^( ALL collectionFunctionOrSubselect ) | ^( SOME collectionFunctionOrSubselect ) )
+			int alt50=5;
+			try { DebugEnterDecision(50, false);
 			switch (input.LA(1))
 			{
 			case AGGREGATE:
@@ -7865,122 +7830,80 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			case VECTOR_EXPR:
 			case WEIRD_IDENT:
 				{
-				alt52 = 1;
+				alt50 = 1;
 				}
 				break;
 			case QUERY:
 			case UNION:
 				{
-				alt52 = 2;
+				alt50 = 2;
 				}
 				break;
 			case ANY:
 				{
-				alt52 = 3;
+				alt50 = 3;
 				}
 				break;
 			case ALL:
 				{
-				alt52 = 4;
+				alt50 = 4;
 				}
 				break;
 			case SOME:
 				{
-				alt52 = 5;
+				alt50 = 5;
 				}
 				break;
 			default:
 				{
-					NoViableAltException nvae = new NoViableAltException("", 52, 0, input, 1);
+					NoViableAltException nvae = new NoViableAltException("", 50, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
 			}
 
-			} finally { DebugExitDecision(52); }
-			switch (alt52)
+			} finally { DebugExitDecision(50); }
+			switch (alt50)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// HqlSqlWalker.g:374:4: expr
-				{
-				root_0 = (IASTNode)adaptor.Nil();
-
-				DebugLocation(374, 4);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._expr_in_exprOrSubquery1910);
-				expr141=expr();
-				PopFollow();
-
-				adaptor.AddChild(root_0, expr141.Tree);
-
-
-				}
-				break;
-			case 2:
-				DebugEnterAlt(2);
-				// HqlSqlWalker.g:375:4: query
+				// HqlSqlWalker.g:375:4: expr
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(375, 4);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._query_in_exprOrSubquery1915);
-				query142=query();
+				PushFollow(Follow._expr_in_exprOrSubquery1901);
+				expr140=expr();
 				PopFollow();
 
-				adaptor.AddChild(root_0, query142.Tree);
+				adaptor.AddChild(root_0, expr140.Tree);
 
 
 				}
 				break;
-			case 3:
-				DebugEnterAlt(3);
-				// HqlSqlWalker.g:376:4: ^( ANY collectionFunctionOrSubselect )
+			case 2:
+				DebugEnterAlt(2);
+				// HqlSqlWalker.g:376:4: query
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(376, 4);
 
 				_last = (IASTNode)input.LT(1);
-				{
-				IASTNode _save_last_1 = _last;
-				IASTNode _first_1 = default(IASTNode);
-				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(376, 6);
-
-				_last = (IASTNode)input.LT(1);
-				ANY143=(IASTNode)Match(input,ANY,Follow._ANY_in_exprOrSubquery1921); 
-				ANY143_tree = (IASTNode)adaptor.DupNode(ANY143);
-
-
-				root_1 = (IASTNode)adaptor.BecomeRoot(ANY143_tree, root_1);
-
-
-				Match(input, TokenTypes.Down, null); 
-				DebugLocation(376, 10);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._collectionFunctionOrSubselect_in_exprOrSubquery1923);
-				collectionFunctionOrSubselect144=collectionFunctionOrSubselect();
+				PushFollow(Follow._query_in_exprOrSubquery1906);
+				query141=query();
 				PopFollow();
 
-				adaptor.AddChild(root_1, collectionFunctionOrSubselect144.Tree);
-
-
-				Match(input, TokenTypes.Up, null); 
-				adaptor.AddChild(root_0, root_1);
-				_last = _save_last_1;
-				}
+				adaptor.AddChild(root_0, query141.Tree);
 
 
 				}
 				break;
-			case 4:
-				DebugEnterAlt(4);
-				// HqlSqlWalker.g:377:4: ^( ALL collectionFunctionOrSubselect )
+			case 3:
+				DebugEnterAlt(3);
+				// HqlSqlWalker.g:377:4: ^( ANY collectionFunctionOrSubselect )
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
@@ -7994,22 +7917,22 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				DebugLocation(377, 6);
 
 				_last = (IASTNode)input.LT(1);
-				ALL145=(IASTNode)Match(input,ALL,Follow._ALL_in_exprOrSubquery1930); 
-				ALL145_tree = (IASTNode)adaptor.DupNode(ALL145);
+				ANY142=(IASTNode)Match(input,ANY,Follow._ANY_in_exprOrSubquery1912); 
+				ANY142_tree = (IASTNode)adaptor.DupNode(ANY142);
 
 
-				root_1 = (IASTNode)adaptor.BecomeRoot(ALL145_tree, root_1);
+				root_1 = (IASTNode)adaptor.BecomeRoot(ANY142_tree, root_1);
 
 
 				Match(input, TokenTypes.Down, null); 
 				DebugLocation(377, 10);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._collectionFunctionOrSubselect_in_exprOrSubquery1932);
-				collectionFunctionOrSubselect146=collectionFunctionOrSubselect();
+				PushFollow(Follow._collectionFunctionOrSubselect_in_exprOrSubquery1914);
+				collectionFunctionOrSubselect143=collectionFunctionOrSubselect();
 				PopFollow();
 
-				adaptor.AddChild(root_1, collectionFunctionOrSubselect146.Tree);
+				adaptor.AddChild(root_1, collectionFunctionOrSubselect143.Tree);
 
 
 				Match(input, TokenTypes.Up, null); 
@@ -8020,9 +7943,9 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 				}
 				break;
-			case 5:
-				DebugEnterAlt(5);
-				// HqlSqlWalker.g:378:4: ^( SOME collectionFunctionOrSubselect )
+			case 4:
+				DebugEnterAlt(4);
+				// HqlSqlWalker.g:378:4: ^( ALL collectionFunctionOrSubselect )
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
@@ -8036,22 +7959,64 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				DebugLocation(378, 6);
 
 				_last = (IASTNode)input.LT(1);
-				SOME147=(IASTNode)Match(input,SOME,Follow._SOME_in_exprOrSubquery1939); 
-				SOME147_tree = (IASTNode)adaptor.DupNode(SOME147);
+				ALL144=(IASTNode)Match(input,ALL,Follow._ALL_in_exprOrSubquery1921); 
+				ALL144_tree = (IASTNode)adaptor.DupNode(ALL144);
 
 
-				root_1 = (IASTNode)adaptor.BecomeRoot(SOME147_tree, root_1);
+				root_1 = (IASTNode)adaptor.BecomeRoot(ALL144_tree, root_1);
 
 
 				Match(input, TokenTypes.Down, null); 
-				DebugLocation(378, 11);
+				DebugLocation(378, 10);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._collectionFunctionOrSubselect_in_exprOrSubquery1941);
-				collectionFunctionOrSubselect148=collectionFunctionOrSubselect();
+				PushFollow(Follow._collectionFunctionOrSubselect_in_exprOrSubquery1923);
+				collectionFunctionOrSubselect145=collectionFunctionOrSubselect();
 				PopFollow();
 
-				adaptor.AddChild(root_1, collectionFunctionOrSubselect148.Tree);
+				adaptor.AddChild(root_1, collectionFunctionOrSubselect145.Tree);
+
+
+				Match(input, TokenTypes.Up, null); 
+				adaptor.AddChild(root_0, root_1);
+				_last = _save_last_1;
+				}
+
+
+				}
+				break;
+			case 5:
+				DebugEnterAlt(5);
+				// HqlSqlWalker.g:379:4: ^( SOME collectionFunctionOrSubselect )
+				{
+				root_0 = (IASTNode)adaptor.Nil();
+
+				DebugLocation(379, 4);
+
+				_last = (IASTNode)input.LT(1);
+				{
+				IASTNode _save_last_1 = _last;
+				IASTNode _first_1 = default(IASTNode);
+				IASTNode root_1 = (IASTNode)adaptor.Nil();
+				DebugLocation(379, 6);
+
+				_last = (IASTNode)input.LT(1);
+				SOME146=(IASTNode)Match(input,SOME,Follow._SOME_in_exprOrSubquery1930); 
+				SOME146_tree = (IASTNode)adaptor.DupNode(SOME146);
+
+
+				root_1 = (IASTNode)adaptor.BecomeRoot(SOME146_tree, root_1);
+
+
+				Match(input, TokenTypes.Down, null); 
+				DebugLocation(379, 11);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._collectionFunctionOrSubselect_in_exprOrSubquery1932);
+				collectionFunctionOrSubselect147=collectionFunctionOrSubselect();
+				PopFollow();
+
+				adaptor.AddChild(root_1, collectionFunctionOrSubselect147.Tree);
 
 
 				Match(input, TokenTypes.Up, null); 
@@ -8078,7 +8043,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("exprOrSubquery", 41);
 			LeaveRule_exprOrSubquery();
 		}
-		DebugLocation(379, 1);
+		DebugLocation(380, 1);
 		} finally { DebugExitRule(GrammarFileName, "exprOrSubquery"); }
 		return retval;
 
@@ -8088,7 +8053,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_collectionFunctionOrSubselect();
 	partial void LeaveRule_collectionFunctionOrSubselect();
 	// $ANTLR start "collectionFunctionOrSubselect"
-	// HqlSqlWalker.g:381:1: collectionFunctionOrSubselect : ( collectionFunction | query );
+	// HqlSqlWalker.g:382:1: collectionFunctionOrSubselect : ( collectionFunction | query );
 	[GrammarRule("collectionFunctionOrSubselect")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunctionOrSubselect()
 	{
@@ -8103,67 +8068,67 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunction149 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> query150 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunction148 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> query149 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "collectionFunctionOrSubselect");
-		DebugLocation(381, 1);
+		DebugLocation(382, 1);
 		try
 		{
-			// HqlSqlWalker.g:382:2: ( collectionFunction | query )
-			int alt53=2;
-			try { DebugEnterDecision(53, false);
-			int LA53_1 = input.LA(1);
+			// HqlSqlWalker.g:383:2: ( collectionFunction | query )
+			int alt51=2;
+			try { DebugEnterDecision(51, false);
+			int LA51_1 = input.LA(1);
 
-			if ((LA53_1==ELEMENTS||LA53_1==INDICES))
+			if ((LA51_1==ELEMENTS||LA51_1==INDICES))
 			{
-				alt53 = 1;
+				alt51 = 1;
 			}
-			else if ((LA53_1==QUERY||LA53_1==UNION))
+			else if ((LA51_1==QUERY||LA51_1==UNION))
 			{
-				alt53 = 2;
+				alt51 = 2;
 			}
 			else
 			{
-				NoViableAltException nvae = new NoViableAltException("", 53, 0, input, 1);
+				NoViableAltException nvae = new NoViableAltException("", 51, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-			} finally { DebugExitDecision(53); }
-			switch (alt53)
+			} finally { DebugExitDecision(51); }
+			switch (alt51)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// HqlSqlWalker.g:382:4: collectionFunction
-				{
-				root_0 = (IASTNode)adaptor.Nil();
-
-				DebugLocation(382, 4);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._collectionFunction_in_collectionFunctionOrSubselect1954);
-				collectionFunction149=collectionFunction();
-				PopFollow();
-
-				adaptor.AddChild(root_0, collectionFunction149.Tree);
-
-
-				}
-				break;
-			case 2:
-				DebugEnterAlt(2);
-				// HqlSqlWalker.g:383:4: query
+				// HqlSqlWalker.g:383:4: collectionFunction
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(383, 4);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._query_in_collectionFunctionOrSubselect1959);
-				query150=query();
+				PushFollow(Follow._collectionFunction_in_collectionFunctionOrSubselect1945);
+				collectionFunction148=collectionFunction();
 				PopFollow();
 
-				adaptor.AddChild(root_0, query150.Tree);
+				adaptor.AddChild(root_0, collectionFunction148.Tree);
+
+
+				}
+				break;
+			case 2:
+				DebugEnterAlt(2);
+				// HqlSqlWalker.g:384:4: query
+				{
+				root_0 = (IASTNode)adaptor.Nil();
+
+				DebugLocation(384, 4);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._query_in_collectionFunctionOrSubselect1950);
+				query149=query();
+				PopFollow();
+
+				adaptor.AddChild(root_0, query149.Tree);
 
 
 				}
@@ -8184,7 +8149,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("collectionFunctionOrSubselect", 42);
 			LeaveRule_collectionFunctionOrSubselect();
 		}
-		DebugLocation(384, 1);
+		DebugLocation(385, 1);
 		} finally { DebugExitRule(GrammarFileName, "collectionFunctionOrSubselect"); }
 		return retval;
 
@@ -8194,7 +8159,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_expr();
 	partial void LeaveRule_expr();
 	// $ANTLR start "expr"
-	// HqlSqlWalker.g:386:1: expr : (ae= addrExpr[ true ] | ^( VECTOR_EXPR ( expr )* ) | constant | arithmeticExpr | functionCall | parameter | count );
+	// HqlSqlWalker.g:387:1: expr : (ae= addrExpr[ true ] | ^( VECTOR_EXPR ( expr )* ) | constant | arithmeticExpr | functionCall | parameter | count );
 	[GrammarRule("expr")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> expr()
 	{
@@ -8209,23 +8174,23 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		IASTNode VECTOR_EXPR151 = default(IASTNode);
+		IASTNode VECTOR_EXPR150 = default(IASTNode);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> ae = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> expr152 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> constant153 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> arithmeticExpr154 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> functionCall155 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> parameter156 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> count157 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr151 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> constant152 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> arithmeticExpr153 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> functionCall154 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> parameter155 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> count156 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-		IASTNode VECTOR_EXPR151_tree = default(IASTNode);
+		IASTNode VECTOR_EXPR150_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "expr");
-		DebugLocation(386, 1);
+		DebugLocation(387, 1);
 		try
 		{
-			// HqlSqlWalker.g:387:2: (ae= addrExpr[ true ] | ^( VECTOR_EXPR ( expr )* ) | constant | arithmeticExpr | functionCall | parameter | count )
-			int alt55=7;
-			try { DebugEnterDecision(55, false);
+			// HqlSqlWalker.g:388:2: (ae= addrExpr[ true ] | ^( VECTOR_EXPR ( expr )* ) | constant | arithmeticExpr | functionCall | parameter | count )
+			int alt53=7;
+			try { DebugEnterDecision(53, false);
 			switch (input.LA(1))
 			{
 			case DOT:
@@ -8233,12 +8198,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			case INDEX_OP:
 			case WEIRD_IDENT:
 				{
-				alt55 = 1;
+				alt53 = 1;
 				}
 				break;
 			case VECTOR_EXPR:
 				{
-				alt55 = 2;
+				alt53 = 2;
 				}
 				break;
 			case FALSE:
@@ -8252,7 +8217,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			case QUOTED_String:
 			case TRUE:
 				{
-				alt55 = 3;
+				alt53 = 3;
 				}
 				break;
 			case BAND:
@@ -8267,126 +8232,126 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			case STAR:
 			case UNARY_MINUS:
 				{
-				alt55 = 4;
+				alt53 = 4;
 				}
 				break;
 			case AGGREGATE:
 			case METHOD_CALL:
 				{
-				alt55 = 5;
+				alt53 = 5;
 				}
 				break;
 			case COLON:
 			case PARAM:
 				{
-				alt55 = 6;
+				alt53 = 6;
 				}
 				break;
 			case COUNT:
 				{
-				alt55 = 7;
+				alt53 = 7;
 				}
 				break;
 			default:
 				{
-					NoViableAltException nvae = new NoViableAltException("", 55, 0, input, 1);
+					NoViableAltException nvae = new NoViableAltException("", 53, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
 			}
 
-			} finally { DebugExitDecision(55); }
-			switch (alt55)
+			} finally { DebugExitDecision(53); }
+			switch (alt53)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// HqlSqlWalker.g:387:4: ae= addrExpr[ true ]
+				// HqlSqlWalker.g:388:4: ae= addrExpr[ true ]
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(387, 6);
+				DebugLocation(388, 6);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._addrExpr_in_expr1973);
+				PushFollow(Follow._addrExpr_in_expr1964);
 				ae=addrExpr(true);
 				PopFollow();
 
 				adaptor.AddChild(root_0, ae.Tree);
 
-				DebugLocation(387, 25);
+				DebugLocation(388, 25);
 				 Resolve((ae!=null?((IASTNode)ae.Tree):default(IASTNode))); 
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// HqlSqlWalker.g:388:4: ^( VECTOR_EXPR ( expr )* )
+				// HqlSqlWalker.g:389:4: ^( VECTOR_EXPR ( expr )* )
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(388, 4);
+				DebugLocation(389, 4);
 
 				_last = (IASTNode)input.LT(1);
 				{
 				IASTNode _save_last_1 = _last;
 				IASTNode _first_1 = default(IASTNode);
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(388, 7);
+				DebugLocation(389, 7);
 
 				_last = (IASTNode)input.LT(1);
-				VECTOR_EXPR151=(IASTNode)Match(input,VECTOR_EXPR,Follow._VECTOR_EXPR_in_expr1985); 
-				VECTOR_EXPR151_tree = (IASTNode)adaptor.DupNode(VECTOR_EXPR151);
+				VECTOR_EXPR150=(IASTNode)Match(input,VECTOR_EXPR,Follow._VECTOR_EXPR_in_expr1976); 
+				VECTOR_EXPR150_tree = (IASTNode)adaptor.DupNode(VECTOR_EXPR150);
 
 
-				root_1 = (IASTNode)adaptor.BecomeRoot(VECTOR_EXPR151_tree, root_1);
+				root_1 = (IASTNode)adaptor.BecomeRoot(VECTOR_EXPR150_tree, root_1);
 
 
 				if (input.LA(1) == TokenTypes.Down) {
 					Match(input, TokenTypes.Down, null); 
-					DebugLocation(388, 19);
-					// HqlSqlWalker.g:388:19: ( expr )*
-					try { DebugEnterSubRule(54);
+					DebugLocation(389, 19);
+					// HqlSqlWalker.g:389:19: ( expr )*
+					try { DebugEnterSubRule(52);
 					while (true)
 					{
-						int alt54=2;
-						try { DebugEnterDecision(54, false);
-						int LA54_1 = input.LA(1);
+						int alt52=2;
+						try { DebugEnterDecision(52, false);
+						int LA52_1 = input.LA(1);
 
-						if ((LA54_1==AGGREGATE||LA54_1==BAND||(LA54_1>=BNOT && LA54_1<=BOR)||(LA54_1>=BXOR && LA54_1<=CASE2)||LA54_1==COLON||LA54_1==COUNT||(LA54_1>=DIV && LA54_1<=DOT)||LA54_1==FALSE||LA54_1==IDENT||LA54_1==INDEX_OP||LA54_1==JAVA_CONSTANT||LA54_1==METHOD_CALL||LA54_1==MINUS||(LA54_1>=NULL && LA54_1<=NUM_LONG)||(LA54_1>=PARAM && LA54_1<=PLUS)||LA54_1==QUOTED_String||LA54_1==STAR||(LA54_1>=TRUE && LA54_1<=UNARY_MINUS)||LA54_1==VECTOR_EXPR||LA54_1==WEIRD_IDENT))
+						if ((LA52_1==AGGREGATE||LA52_1==BAND||(LA52_1>=BNOT && LA52_1<=BOR)||(LA52_1>=BXOR && LA52_1<=CASE2)||LA52_1==COLON||LA52_1==COUNT||(LA52_1>=DIV && LA52_1<=DOT)||LA52_1==FALSE||LA52_1==IDENT||LA52_1==INDEX_OP||LA52_1==JAVA_CONSTANT||LA52_1==METHOD_CALL||LA52_1==MINUS||(LA52_1>=NULL && LA52_1<=NUM_LONG)||(LA52_1>=PARAM && LA52_1<=PLUS)||LA52_1==QUOTED_String||LA52_1==STAR||(LA52_1>=TRUE && LA52_1<=UNARY_MINUS)||LA52_1==VECTOR_EXPR||LA52_1==WEIRD_IDENT))
 						{
-							alt54 = 1;
+							alt52 = 1;
 						}
 
 
-						} finally { DebugExitDecision(54); }
-						switch ( alt54 )
+						} finally { DebugExitDecision(52); }
+						switch ( alt52 )
 						{
 						case 1:
 							DebugEnterAlt(1);
-							// HqlSqlWalker.g:388:20: expr
+							// HqlSqlWalker.g:389:20: expr
 							{
-							DebugLocation(388, 20);
+							DebugLocation(389, 20);
 
 							_last = (IASTNode)input.LT(1);
-							PushFollow(Follow._expr_in_expr1988);
-							expr152=expr();
+							PushFollow(Follow._expr_in_expr1979);
+							expr151=expr();
 							PopFollow();
 
-							adaptor.AddChild(root_1, expr152.Tree);
+							adaptor.AddChild(root_1, expr151.Tree);
 
 
 							}
 							break;
 
 						default:
-							goto loop54;
+							goto loop52;
 						}
 					}
 
-					loop54:
+					loop52:
 						;
 
-					} finally { DebugExitSubRule(54); }
+					} finally { DebugExitSubRule(52); }
 
 
 					Match(input, TokenTypes.Up, null); 
@@ -8400,90 +8365,90 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// HqlSqlWalker.g:389:4: constant
-				{
-				root_0 = (IASTNode)adaptor.Nil();
-
-				DebugLocation(389, 4);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._constant_in_expr1997);
-				constant153=constant();
-				PopFollow();
-
-				adaptor.AddChild(root_0, constant153.Tree);
-
-
-				}
-				break;
-			case 4:
-				DebugEnterAlt(4);
-				// HqlSqlWalker.g:390:4: arithmeticExpr
+				// HqlSqlWalker.g:390:4: constant
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(390, 4);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._arithmeticExpr_in_expr2002);
-				arithmeticExpr154=arithmeticExpr();
+				PushFollow(Follow._constant_in_expr1988);
+				constant152=constant();
 				PopFollow();
 
-				adaptor.AddChild(root_0, arithmeticExpr154.Tree);
+				adaptor.AddChild(root_0, constant152.Tree);
 
 
 				}
 				break;
-			case 5:
-				DebugEnterAlt(5);
-				// HqlSqlWalker.g:391:4: functionCall
+			case 4:
+				DebugEnterAlt(4);
+				// HqlSqlWalker.g:391:4: arithmeticExpr
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(391, 4);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._functionCall_in_expr2007);
-				functionCall155=functionCall();
+				PushFollow(Follow._arithmeticExpr_in_expr1993);
+				arithmeticExpr153=arithmeticExpr();
 				PopFollow();
 
-				adaptor.AddChild(root_0, functionCall155.Tree);
+				adaptor.AddChild(root_0, arithmeticExpr153.Tree);
 
 
 				}
 				break;
-			case 6:
-				DebugEnterAlt(6);
-				// HqlSqlWalker.g:392:4: parameter
+			case 5:
+				DebugEnterAlt(5);
+				// HqlSqlWalker.g:392:4: functionCall
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(392, 4);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._parameter_in_expr2019);
-				parameter156=parameter();
+				PushFollow(Follow._functionCall_in_expr1998);
+				functionCall154=functionCall();
 				PopFollow();
 
-				adaptor.AddChild(root_0, parameter156.Tree);
+				adaptor.AddChild(root_0, functionCall154.Tree);
 
 
 				}
 				break;
-			case 7:
-				DebugEnterAlt(7);
-				// HqlSqlWalker.g:393:4: count
+			case 6:
+				DebugEnterAlt(6);
+				// HqlSqlWalker.g:393:4: parameter
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(393, 4);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._count_in_expr2024);
-				count157=count();
+				PushFollow(Follow._parameter_in_expr2010);
+				parameter155=parameter();
 				PopFollow();
 
-				adaptor.AddChild(root_0, count157.Tree);
+				adaptor.AddChild(root_0, parameter155.Tree);
+
+
+				}
+				break;
+			case 7:
+				DebugEnterAlt(7);
+				// HqlSqlWalker.g:394:4: count
+				{
+				root_0 = (IASTNode)adaptor.Nil();
+
+				DebugLocation(394, 4);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._count_in_expr2015);
+				count156=count();
+				PopFollow();
+
+				adaptor.AddChild(root_0, count156.Tree);
 
 
 				}
@@ -8504,7 +8469,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("expr", 43);
 			LeaveRule_expr();
 		}
-		DebugLocation(394, 1);
+		DebugLocation(395, 1);
 		} finally { DebugExitRule(GrammarFileName, "expr"); }
 		return retval;
 
@@ -8514,7 +8479,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_arithmeticExpr();
 	partial void LeaveRule_arithmeticExpr();
 	// $ANTLR start "arithmeticExpr"
-	// HqlSqlWalker.g:396:1: arithmeticExpr : ( ^( PLUS exprOrSubquery exprOrSubquery ) | ^( MINUS exprOrSubquery exprOrSubquery ) | ^( DIV exprOrSubquery exprOrSubquery ) | ^( STAR exprOrSubquery exprOrSubquery ) | ^( BNOT exprOrSubquery ) | ^( BAND exprOrSubquery exprOrSubquery ) | ^( BOR exprOrSubquery exprOrSubquery ) | ^( BXOR exprOrSubquery exprOrSubquery ) | ^( UNARY_MINUS exprOrSubquery ) |c= caseExpr );
+	// HqlSqlWalker.g:397:1: arithmeticExpr : ( ^( PLUS exprOrSubquery exprOrSubquery ) | ^( MINUS exprOrSubquery exprOrSubquery ) | ^( DIV exprOrSubquery exprOrSubquery ) | ^( STAR exprOrSubquery exprOrSubquery ) | ^( BNOT exprOrSubquery ) | ^( BAND exprOrSubquery exprOrSubquery ) | ^( BOR exprOrSubquery exprOrSubquery ) | ^( BXOR exprOrSubquery exprOrSubquery ) | ^( UNARY_MINUS exprOrSubquery ) |c= caseExpr );
 	[GrammarRule("arithmeticExpr")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> arithmeticExpr()
 	{
@@ -8529,167 +8494,116 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		IASTNode PLUS158 = default(IASTNode);
-		IASTNode MINUS161 = default(IASTNode);
-		IASTNode DIV164 = default(IASTNode);
-		IASTNode STAR167 = default(IASTNode);
-		IASTNode BNOT170 = default(IASTNode);
-		IASTNode BAND172 = default(IASTNode);
-		IASTNode BOR175 = default(IASTNode);
-		IASTNode BXOR178 = default(IASTNode);
-		IASTNode UNARY_MINUS181 = default(IASTNode);
+		IASTNode PLUS157 = default(IASTNode);
+		IASTNode MINUS160 = default(IASTNode);
+		IASTNode DIV163 = default(IASTNode);
+		IASTNode STAR166 = default(IASTNode);
+		IASTNode BNOT169 = default(IASTNode);
+		IASTNode BAND171 = default(IASTNode);
+		IASTNode BOR174 = default(IASTNode);
+		IASTNode BXOR177 = default(IASTNode);
+		IASTNode UNARY_MINUS180 = default(IASTNode);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> c = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery158 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery159 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery160 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery161 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery162 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery163 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery164 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery165 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery166 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery167 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery168 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery169 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery171 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery170 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery172 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery173 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery174 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery175 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery176 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery177 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery178 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery179 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery180 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery182 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery181 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-		IASTNode PLUS158_tree = default(IASTNode);
-		IASTNode MINUS161_tree = default(IASTNode);
-		IASTNode DIV164_tree = default(IASTNode);
-		IASTNode STAR167_tree = default(IASTNode);
-		IASTNode BNOT170_tree = default(IASTNode);
-		IASTNode BAND172_tree = default(IASTNode);
-		IASTNode BOR175_tree = default(IASTNode);
-		IASTNode BXOR178_tree = default(IASTNode);
-		IASTNode UNARY_MINUS181_tree = default(IASTNode);
+		IASTNode PLUS157_tree = default(IASTNode);
+		IASTNode MINUS160_tree = default(IASTNode);
+		IASTNode DIV163_tree = default(IASTNode);
+		IASTNode STAR166_tree = default(IASTNode);
+		IASTNode BNOT169_tree = default(IASTNode);
+		IASTNode BAND171_tree = default(IASTNode);
+		IASTNode BOR174_tree = default(IASTNode);
+		IASTNode BXOR177_tree = default(IASTNode);
+		IASTNode UNARY_MINUS180_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "arithmeticExpr");
-		DebugLocation(396, 1);
+		DebugLocation(397, 1);
 		try
 		{
-			// HqlSqlWalker.g:403:2: ( ^( PLUS exprOrSubquery exprOrSubquery ) | ^( MINUS exprOrSubquery exprOrSubquery ) | ^( DIV exprOrSubquery exprOrSubquery ) | ^( STAR exprOrSubquery exprOrSubquery ) | ^( BNOT exprOrSubquery ) | ^( BAND exprOrSubquery exprOrSubquery ) | ^( BOR exprOrSubquery exprOrSubquery ) | ^( BXOR exprOrSubquery exprOrSubquery ) | ^( UNARY_MINUS exprOrSubquery ) |c= caseExpr )
-			int alt56=10;
-			try { DebugEnterDecision(56, false);
+			// HqlSqlWalker.g:404:2: ( ^( PLUS exprOrSubquery exprOrSubquery ) | ^( MINUS exprOrSubquery exprOrSubquery ) | ^( DIV exprOrSubquery exprOrSubquery ) | ^( STAR exprOrSubquery exprOrSubquery ) | ^( BNOT exprOrSubquery ) | ^( BAND exprOrSubquery exprOrSubquery ) | ^( BOR exprOrSubquery exprOrSubquery ) | ^( BXOR exprOrSubquery exprOrSubquery ) | ^( UNARY_MINUS exprOrSubquery ) |c= caseExpr )
+			int alt54=10;
+			try { DebugEnterDecision(54, false);
 			switch (input.LA(1))
 			{
 			case PLUS:
 				{
-				alt56 = 1;
+				alt54 = 1;
 				}
 				break;
 			case MINUS:
 				{
-				alt56 = 2;
+				alt54 = 2;
 				}
 				break;
 			case DIV:
 				{
-				alt56 = 3;
+				alt54 = 3;
 				}
 				break;
 			case STAR:
 				{
-				alt56 = 4;
+				alt54 = 4;
 				}
 				break;
 			case BNOT:
 				{
-				alt56 = 5;
+				alt54 = 5;
 				}
 				break;
 			case BAND:
 				{
-				alt56 = 6;
+				alt54 = 6;
 				}
 				break;
 			case BOR:
 				{
-				alt56 = 7;
+				alt54 = 7;
 				}
 				break;
 			case BXOR:
 				{
-				alt56 = 8;
+				alt54 = 8;
 				}
 				break;
 			case UNARY_MINUS:
 				{
-				alt56 = 9;
+				alt54 = 9;
 				}
 				break;
 			case CASE:
 			case CASE2:
 				{
-				alt56 = 10;
+				alt54 = 10;
 				}
 				break;
 			default:
 				{
-					NoViableAltException nvae = new NoViableAltException("", 56, 0, input, 1);
+					NoViableAltException nvae = new NoViableAltException("", 54, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
 			}
 
-			} finally { DebugExitDecision(56); }
-			switch (alt56)
+			} finally { DebugExitDecision(54); }
+			switch (alt54)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// HqlSqlWalker.g:403:4: ^( PLUS exprOrSubquery exprOrSubquery )
-				{
-				root_0 = (IASTNode)adaptor.Nil();
-
-				DebugLocation(403, 4);
-
-				_last = (IASTNode)input.LT(1);
-				{
-				IASTNode _save_last_1 = _last;
-				IASTNode _first_1 = default(IASTNode);
-				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(403, 6);
-
-				_last = (IASTNode)input.LT(1);
-				PLUS158=(IASTNode)Match(input,PLUS,Follow._PLUS_in_arithmeticExpr2052); 
-				PLUS158_tree = (IASTNode)adaptor.DupNode(PLUS158);
-
-
-				root_1 = (IASTNode)adaptor.BecomeRoot(PLUS158_tree, root_1);
-
-
-				Match(input, TokenTypes.Down, null); 
-				DebugLocation(403, 11);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2054);
-				exprOrSubquery159=exprOrSubquery();
-				PopFollow();
-
-				adaptor.AddChild(root_1, exprOrSubquery159.Tree);
-
-				DebugLocation(403, 26);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2056);
-				exprOrSubquery160=exprOrSubquery();
-				PopFollow();
-
-				adaptor.AddChild(root_1, exprOrSubquery160.Tree);
-
-
-				Match(input, TokenTypes.Up, null); 
-				adaptor.AddChild(root_0, root_1);
-				_last = _save_last_1;
-				}
-
-
-				}
-				break;
-			case 2:
-				DebugEnterAlt(2);
-				// HqlSqlWalker.g:404:4: ^( MINUS exprOrSubquery exprOrSubquery )
+				// HqlSqlWalker.g:404:4: ^( PLUS exprOrSubquery exprOrSubquery )
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
@@ -8703,31 +8617,31 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				DebugLocation(404, 6);
 
 				_last = (IASTNode)input.LT(1);
-				MINUS161=(IASTNode)Match(input,MINUS,Follow._MINUS_in_arithmeticExpr2063); 
-				MINUS161_tree = (IASTNode)adaptor.DupNode(MINUS161);
+				PLUS157=(IASTNode)Match(input,PLUS,Follow._PLUS_in_arithmeticExpr2043); 
+				PLUS157_tree = (IASTNode)adaptor.DupNode(PLUS157);
 
 
-				root_1 = (IASTNode)adaptor.BecomeRoot(MINUS161_tree, root_1);
+				root_1 = (IASTNode)adaptor.BecomeRoot(PLUS157_tree, root_1);
 
 
 				Match(input, TokenTypes.Down, null); 
-				DebugLocation(404, 12);
+				DebugLocation(404, 11);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2065);
-				exprOrSubquery162=exprOrSubquery();
+				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2045);
+				exprOrSubquery158=exprOrSubquery();
 				PopFollow();
 
-				adaptor.AddChild(root_1, exprOrSubquery162.Tree);
+				adaptor.AddChild(root_1, exprOrSubquery158.Tree);
 
-				DebugLocation(404, 27);
+				DebugLocation(404, 26);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2067);
-				exprOrSubquery163=exprOrSubquery();
+				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2047);
+				exprOrSubquery159=exprOrSubquery();
 				PopFollow();
 
-				adaptor.AddChild(root_1, exprOrSubquery163.Tree);
+				adaptor.AddChild(root_1, exprOrSubquery159.Tree);
 
 
 				Match(input, TokenTypes.Up, null); 
@@ -8738,9 +8652,9 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 				}
 				break;
-			case 3:
-				DebugEnterAlt(3);
-				// HqlSqlWalker.g:405:4: ^( DIV exprOrSubquery exprOrSubquery )
+			case 2:
+				DebugEnterAlt(2);
+				// HqlSqlWalker.g:405:4: ^( MINUS exprOrSubquery exprOrSubquery )
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
@@ -8754,31 +8668,31 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				DebugLocation(405, 6);
 
 				_last = (IASTNode)input.LT(1);
-				DIV164=(IASTNode)Match(input,DIV,Follow._DIV_in_arithmeticExpr2074); 
-				DIV164_tree = (IASTNode)adaptor.DupNode(DIV164);
+				MINUS160=(IASTNode)Match(input,MINUS,Follow._MINUS_in_arithmeticExpr2054); 
+				MINUS160_tree = (IASTNode)adaptor.DupNode(MINUS160);
 
 
-				root_1 = (IASTNode)adaptor.BecomeRoot(DIV164_tree, root_1);
+				root_1 = (IASTNode)adaptor.BecomeRoot(MINUS160_tree, root_1);
 
 
 				Match(input, TokenTypes.Down, null); 
-				DebugLocation(405, 10);
+				DebugLocation(405, 12);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2076);
-				exprOrSubquery165=exprOrSubquery();
+				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2056);
+				exprOrSubquery161=exprOrSubquery();
 				PopFollow();
 
-				adaptor.AddChild(root_1, exprOrSubquery165.Tree);
+				adaptor.AddChild(root_1, exprOrSubquery161.Tree);
 
-				DebugLocation(405, 25);
+				DebugLocation(405, 27);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2078);
-				exprOrSubquery166=exprOrSubquery();
+				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2058);
+				exprOrSubquery162=exprOrSubquery();
 				PopFollow();
 
-				adaptor.AddChild(root_1, exprOrSubquery166.Tree);
+				adaptor.AddChild(root_1, exprOrSubquery162.Tree);
 
 
 				Match(input, TokenTypes.Up, null); 
@@ -8789,9 +8703,9 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 				}
 				break;
-			case 4:
-				DebugEnterAlt(4);
-				// HqlSqlWalker.g:406:4: ^( STAR exprOrSubquery exprOrSubquery )
+			case 3:
+				DebugEnterAlt(3);
+				// HqlSqlWalker.g:406:4: ^( DIV exprOrSubquery exprOrSubquery )
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
@@ -8805,31 +8719,31 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				DebugLocation(406, 6);
 
 				_last = (IASTNode)input.LT(1);
-				STAR167=(IASTNode)Match(input,STAR,Follow._STAR_in_arithmeticExpr2085); 
-				STAR167_tree = (IASTNode)adaptor.DupNode(STAR167);
+				DIV163=(IASTNode)Match(input,DIV,Follow._DIV_in_arithmeticExpr2065); 
+				DIV163_tree = (IASTNode)adaptor.DupNode(DIV163);
 
 
-				root_1 = (IASTNode)adaptor.BecomeRoot(STAR167_tree, root_1);
+				root_1 = (IASTNode)adaptor.BecomeRoot(DIV163_tree, root_1);
 
 
 				Match(input, TokenTypes.Down, null); 
-				DebugLocation(406, 11);
+				DebugLocation(406, 10);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2087);
-				exprOrSubquery168=exprOrSubquery();
+				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2067);
+				exprOrSubquery164=exprOrSubquery();
 				PopFollow();
 
-				adaptor.AddChild(root_1, exprOrSubquery168.Tree);
+				adaptor.AddChild(root_1, exprOrSubquery164.Tree);
 
-				DebugLocation(406, 26);
+				DebugLocation(406, 25);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2089);
-				exprOrSubquery169=exprOrSubquery();
+				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2069);
+				exprOrSubquery165=exprOrSubquery();
 				PopFollow();
 
-				adaptor.AddChild(root_1, exprOrSubquery169.Tree);
+				adaptor.AddChild(root_1, exprOrSubquery165.Tree);
 
 
 				Match(input, TokenTypes.Up, null); 
@@ -8840,9 +8754,9 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 				}
 				break;
-			case 5:
-				DebugEnterAlt(5);
-				// HqlSqlWalker.g:407:4: ^( BNOT exprOrSubquery )
+			case 4:
+				DebugEnterAlt(4);
+				// HqlSqlWalker.g:407:4: ^( STAR exprOrSubquery exprOrSubquery )
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
@@ -8856,22 +8770,31 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				DebugLocation(407, 6);
 
 				_last = (IASTNode)input.LT(1);
-				BNOT170=(IASTNode)Match(input,BNOT,Follow._BNOT_in_arithmeticExpr2096); 
-				BNOT170_tree = (IASTNode)adaptor.DupNode(BNOT170);
+				STAR166=(IASTNode)Match(input,STAR,Follow._STAR_in_arithmeticExpr2076); 
+				STAR166_tree = (IASTNode)adaptor.DupNode(STAR166);
 
 
-				root_1 = (IASTNode)adaptor.BecomeRoot(BNOT170_tree, root_1);
+				root_1 = (IASTNode)adaptor.BecomeRoot(STAR166_tree, root_1);
 
 
 				Match(input, TokenTypes.Down, null); 
 				DebugLocation(407, 11);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2098);
-				exprOrSubquery171=exprOrSubquery();
+				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2078);
+				exprOrSubquery167=exprOrSubquery();
 				PopFollow();
 
-				adaptor.AddChild(root_1, exprOrSubquery171.Tree);
+				adaptor.AddChild(root_1, exprOrSubquery167.Tree);
+
+				DebugLocation(407, 26);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2080);
+				exprOrSubquery168=exprOrSubquery();
+				PopFollow();
+
+				adaptor.AddChild(root_1, exprOrSubquery168.Tree);
 
 
 				Match(input, TokenTypes.Up, null); 
@@ -8882,9 +8805,9 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 				}
 				break;
-			case 6:
-				DebugEnterAlt(6);
-				// HqlSqlWalker.g:408:4: ^( BAND exprOrSubquery exprOrSubquery )
+			case 5:
+				DebugEnterAlt(5);
+				// HqlSqlWalker.g:408:4: ^( BNOT exprOrSubquery )
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
@@ -8898,31 +8821,22 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				DebugLocation(408, 6);
 
 				_last = (IASTNode)input.LT(1);
-				BAND172=(IASTNode)Match(input,BAND,Follow._BAND_in_arithmeticExpr2105); 
-				BAND172_tree = (IASTNode)adaptor.DupNode(BAND172);
+				BNOT169=(IASTNode)Match(input,BNOT,Follow._BNOT_in_arithmeticExpr2087); 
+				BNOT169_tree = (IASTNode)adaptor.DupNode(BNOT169);
 
 
-				root_1 = (IASTNode)adaptor.BecomeRoot(BAND172_tree, root_1);
+				root_1 = (IASTNode)adaptor.BecomeRoot(BNOT169_tree, root_1);
 
 
 				Match(input, TokenTypes.Down, null); 
 				DebugLocation(408, 11);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2107);
-				exprOrSubquery173=exprOrSubquery();
+				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2089);
+				exprOrSubquery170=exprOrSubquery();
 				PopFollow();
 
-				adaptor.AddChild(root_1, exprOrSubquery173.Tree);
-
-				DebugLocation(408, 26);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2109);
-				exprOrSubquery174=exprOrSubquery();
-				PopFollow();
-
-				adaptor.AddChild(root_1, exprOrSubquery174.Tree);
+				adaptor.AddChild(root_1, exprOrSubquery170.Tree);
 
 
 				Match(input, TokenTypes.Up, null); 
@@ -8933,9 +8847,9 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 				}
 				break;
-			case 7:
-				DebugEnterAlt(7);
-				// HqlSqlWalker.g:409:4: ^( BOR exprOrSubquery exprOrSubquery )
+			case 6:
+				DebugEnterAlt(6);
+				// HqlSqlWalker.g:409:4: ^( BAND exprOrSubquery exprOrSubquery )
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
@@ -8949,31 +8863,31 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				DebugLocation(409, 6);
 
 				_last = (IASTNode)input.LT(1);
-				BOR175=(IASTNode)Match(input,BOR,Follow._BOR_in_arithmeticExpr2116); 
-				BOR175_tree = (IASTNode)adaptor.DupNode(BOR175);
+				BAND171=(IASTNode)Match(input,BAND,Follow._BAND_in_arithmeticExpr2096); 
+				BAND171_tree = (IASTNode)adaptor.DupNode(BAND171);
 
 
-				root_1 = (IASTNode)adaptor.BecomeRoot(BOR175_tree, root_1);
+				root_1 = (IASTNode)adaptor.BecomeRoot(BAND171_tree, root_1);
 
 
 				Match(input, TokenTypes.Down, null); 
-				DebugLocation(409, 10);
+				DebugLocation(409, 11);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2118);
-				exprOrSubquery176=exprOrSubquery();
+				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2098);
+				exprOrSubquery172=exprOrSubquery();
 				PopFollow();
 
-				adaptor.AddChild(root_1, exprOrSubquery176.Tree);
+				adaptor.AddChild(root_1, exprOrSubquery172.Tree);
 
-				DebugLocation(409, 25);
+				DebugLocation(409, 26);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2120);
-				exprOrSubquery177=exprOrSubquery();
+				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2100);
+				exprOrSubquery173=exprOrSubquery();
 				PopFollow();
 
-				adaptor.AddChild(root_1, exprOrSubquery177.Tree);
+				adaptor.AddChild(root_1, exprOrSubquery173.Tree);
 
 
 				Match(input, TokenTypes.Up, null); 
@@ -8984,9 +8898,9 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 				}
 				break;
-			case 8:
-				DebugEnterAlt(8);
-				// HqlSqlWalker.g:410:4: ^( BXOR exprOrSubquery exprOrSubquery )
+			case 7:
+				DebugEnterAlt(7);
+				// HqlSqlWalker.g:410:4: ^( BOR exprOrSubquery exprOrSubquery )
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
@@ -9000,31 +8914,82 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				DebugLocation(410, 6);
 
 				_last = (IASTNode)input.LT(1);
-				BXOR178=(IASTNode)Match(input,BXOR,Follow._BXOR_in_arithmeticExpr2127); 
-				BXOR178_tree = (IASTNode)adaptor.DupNode(BXOR178);
+				BOR174=(IASTNode)Match(input,BOR,Follow._BOR_in_arithmeticExpr2107); 
+				BOR174_tree = (IASTNode)adaptor.DupNode(BOR174);
 
 
-				root_1 = (IASTNode)adaptor.BecomeRoot(BXOR178_tree, root_1);
+				root_1 = (IASTNode)adaptor.BecomeRoot(BOR174_tree, root_1);
 
 
 				Match(input, TokenTypes.Down, null); 
-				DebugLocation(410, 11);
+				DebugLocation(410, 10);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2129);
+				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2109);
+				exprOrSubquery175=exprOrSubquery();
+				PopFollow();
+
+				adaptor.AddChild(root_1, exprOrSubquery175.Tree);
+
+				DebugLocation(410, 25);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2111);
+				exprOrSubquery176=exprOrSubquery();
+				PopFollow();
+
+				adaptor.AddChild(root_1, exprOrSubquery176.Tree);
+
+
+				Match(input, TokenTypes.Up, null); 
+				adaptor.AddChild(root_0, root_1);
+				_last = _save_last_1;
+				}
+
+
+				}
+				break;
+			case 8:
+				DebugEnterAlt(8);
+				// HqlSqlWalker.g:411:4: ^( BXOR exprOrSubquery exprOrSubquery )
+				{
+				root_0 = (IASTNode)adaptor.Nil();
+
+				DebugLocation(411, 4);
+
+				_last = (IASTNode)input.LT(1);
+				{
+				IASTNode _save_last_1 = _last;
+				IASTNode _first_1 = default(IASTNode);
+				IASTNode root_1 = (IASTNode)adaptor.Nil();
+				DebugLocation(411, 6);
+
+				_last = (IASTNode)input.LT(1);
+				BXOR177=(IASTNode)Match(input,BXOR,Follow._BXOR_in_arithmeticExpr2118); 
+				BXOR177_tree = (IASTNode)adaptor.DupNode(BXOR177);
+
+
+				root_1 = (IASTNode)adaptor.BecomeRoot(BXOR177_tree, root_1);
+
+
+				Match(input, TokenTypes.Down, null); 
+				DebugLocation(411, 11);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2120);
+				exprOrSubquery178=exprOrSubquery();
+				PopFollow();
+
+				adaptor.AddChild(root_1, exprOrSubquery178.Tree);
+
+				DebugLocation(411, 26);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2122);
 				exprOrSubquery179=exprOrSubquery();
 				PopFollow();
 
 				adaptor.AddChild(root_1, exprOrSubquery179.Tree);
-
-				DebugLocation(410, 26);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2131);
-				exprOrSubquery180=exprOrSubquery();
-				PopFollow();
-
-				adaptor.AddChild(root_1, exprOrSubquery180.Tree);
 
 
 				Match(input, TokenTypes.Up, null); 
@@ -9037,36 +9002,36 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				break;
 			case 9:
 				DebugEnterAlt(9);
-				// HqlSqlWalker.g:412:4: ^( UNARY_MINUS exprOrSubquery )
+				// HqlSqlWalker.g:413:4: ^( UNARY_MINUS exprOrSubquery )
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(412, 4);
+				DebugLocation(413, 4);
 
 				_last = (IASTNode)input.LT(1);
 				{
 				IASTNode _save_last_1 = _last;
 				IASTNode _first_1 = default(IASTNode);
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(412, 6);
+				DebugLocation(413, 6);
 
 				_last = (IASTNode)input.LT(1);
-				UNARY_MINUS181=(IASTNode)Match(input,UNARY_MINUS,Follow._UNARY_MINUS_in_arithmeticExpr2139); 
-				UNARY_MINUS181_tree = (IASTNode)adaptor.DupNode(UNARY_MINUS181);
+				UNARY_MINUS180=(IASTNode)Match(input,UNARY_MINUS,Follow._UNARY_MINUS_in_arithmeticExpr2130); 
+				UNARY_MINUS180_tree = (IASTNode)adaptor.DupNode(UNARY_MINUS180);
 
 
-				root_1 = (IASTNode)adaptor.BecomeRoot(UNARY_MINUS181_tree, root_1);
+				root_1 = (IASTNode)adaptor.BecomeRoot(UNARY_MINUS180_tree, root_1);
 
 
 				Match(input, TokenTypes.Down, null); 
-				DebugLocation(412, 18);
+				DebugLocation(413, 18);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2141);
-				exprOrSubquery182=exprOrSubquery();
+				PushFollow(Follow._exprOrSubquery_in_arithmeticExpr2132);
+				exprOrSubquery181=exprOrSubquery();
 				PopFollow();
 
-				adaptor.AddChild(root_1, exprOrSubquery182.Tree);
+				adaptor.AddChild(root_1, exprOrSubquery181.Tree);
 
 
 				Match(input, TokenTypes.Up, null); 
@@ -9079,14 +9044,14 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				break;
 			case 10:
 				DebugEnterAlt(10);
-				// HqlSqlWalker.g:413:4: c= caseExpr
+				// HqlSqlWalker.g:414:4: c= caseExpr
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(413, 5);
+				DebugLocation(414, 5);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._caseExpr_in_arithmeticExpr2149);
+				PushFollow(Follow._caseExpr_in_arithmeticExpr2140);
 				c=caseExpr();
 				PopFollow();
 
@@ -9117,7 +9082,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("arithmeticExpr", 44);
 			LeaveRule_arithmeticExpr();
 		}
-		DebugLocation(414, 1);
+		DebugLocation(415, 1);
 		} finally { DebugExitRule(GrammarFileName, "arithmeticExpr"); }
 		return retval;
 
@@ -9127,7 +9092,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_caseExpr();
 	partial void LeaveRule_caseExpr();
 	// $ANTLR start "caseExpr"
-	// HqlSqlWalker.g:416:1: caseExpr : ( ^( CASE ( ^( WHEN logicalExpr expr ) )+ ( ^( ELSE expr ) )? ) | ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? ) );
+	// HqlSqlWalker.g:417:1: caseExpr : ( ^( CASE ( ^( WHEN logicalExpr expr ) )+ ( ^( ELSE expr ) )? ) | ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? ) );
 	[GrammarRule("caseExpr")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> caseExpr()
 	{
@@ -9142,81 +9107,270 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		IASTNode CASE183 = default(IASTNode);
-		IASTNode WHEN184 = default(IASTNode);
-		IASTNode ELSE187 = default(IASTNode);
-		IASTNode CASE2189 = default(IASTNode);
-		IASTNode WHEN191 = default(IASTNode);
-		IASTNode ELSE194 = default(IASTNode);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> logicalExpr185 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> expr186 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> expr188 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> expr190 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode CASE182 = default(IASTNode);
+		IASTNode WHEN183 = default(IASTNode);
+		IASTNode ELSE186 = default(IASTNode);
+		IASTNode CASE2188 = default(IASTNode);
+		IASTNode WHEN190 = default(IASTNode);
+		IASTNode ELSE193 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> logicalExpr184 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr185 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr187 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr189 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr191 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 		AstTreeRuleReturnScope<IASTNode, IASTNode> expr192 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> expr193 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> expr195 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr194 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-		IASTNode CASE183_tree = default(IASTNode);
-		IASTNode WHEN184_tree = default(IASTNode);
-		IASTNode ELSE187_tree = default(IASTNode);
-		IASTNode CASE2189_tree = default(IASTNode);
-		IASTNode WHEN191_tree = default(IASTNode);
-		IASTNode ELSE194_tree = default(IASTNode);
+		IASTNode CASE182_tree = default(IASTNode);
+		IASTNode WHEN183_tree = default(IASTNode);
+		IASTNode ELSE186_tree = default(IASTNode);
+		IASTNode CASE2188_tree = default(IASTNode);
+		IASTNode WHEN190_tree = default(IASTNode);
+		IASTNode ELSE193_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "caseExpr");
-		DebugLocation(416, 1);
+		DebugLocation(417, 1);
 		try
 		{
-			// HqlSqlWalker.g:417:2: ( ^( CASE ( ^( WHEN logicalExpr expr ) )+ ( ^( ELSE expr ) )? ) | ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? ) )
-			int alt61=2;
-			try { DebugEnterDecision(61, false);
-			int LA61_1 = input.LA(1);
+			// HqlSqlWalker.g:418:2: ( ^( CASE ( ^( WHEN logicalExpr expr ) )+ ( ^( ELSE expr ) )? ) | ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? ) )
+			int alt59=2;
+			try { DebugEnterDecision(59, false);
+			int LA59_1 = input.LA(1);
 
-			if ((LA61_1==CASE))
+			if ((LA59_1==CASE))
 			{
-				alt61 = 1;
+				alt59 = 1;
 			}
-			else if ((LA61_1==CASE2))
+			else if ((LA59_1==CASE2))
 			{
-				alt61 = 2;
+				alt59 = 2;
 			}
 			else
 			{
-				NoViableAltException nvae = new NoViableAltException("", 61, 0, input, 1);
+				NoViableAltException nvae = new NoViableAltException("", 59, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-			} finally { DebugExitDecision(61); }
-			switch (alt61)
+			} finally { DebugExitDecision(59); }
+			switch (alt59)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// HqlSqlWalker.g:417:4: ^( CASE ( ^( WHEN logicalExpr expr ) )+ ( ^( ELSE expr ) )? )
+				// HqlSqlWalker.g:418:4: ^( CASE ( ^( WHEN logicalExpr expr ) )+ ( ^( ELSE expr ) )? )
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(417, 4);
+				DebugLocation(418, 4);
 
 				_last = (IASTNode)input.LT(1);
 				{
 				IASTNode _save_last_1 = _last;
 				IASTNode _first_1 = default(IASTNode);
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(417, 6);
+				DebugLocation(418, 6);
 
 				_last = (IASTNode)input.LT(1);
-				CASE183=(IASTNode)Match(input,CASE,Follow._CASE_in_caseExpr2161); 
-				CASE183_tree = (IASTNode)adaptor.DupNode(CASE183);
+				CASE182=(IASTNode)Match(input,CASE,Follow._CASE_in_caseExpr2152); 
+				CASE182_tree = (IASTNode)adaptor.DupNode(CASE182);
 
 
-				root_1 = (IASTNode)adaptor.BecomeRoot(CASE183_tree, root_1);
+				root_1 = (IASTNode)adaptor.BecomeRoot(CASE182_tree, root_1);
 
 
-				DebugLocation(417, 11);
+				DebugLocation(418, 11);
 				 _inCase = true; 
 
 				Match(input, TokenTypes.Down, null); 
-				DebugLocation(417, 31);
-				// HqlSqlWalker.g:417:31: ( ^( WHEN logicalExpr expr ) )+
+				DebugLocation(418, 31);
+				// HqlSqlWalker.g:418:31: ( ^( WHEN logicalExpr expr ) )+
+				int cnt55=0;
+				try { DebugEnterSubRule(55);
+				while (true)
+				{
+					int alt55=2;
+					try { DebugEnterDecision(55, false);
+					int LA55_1 = input.LA(1);
+
+					if ((LA55_1==WHEN))
+					{
+						alt55 = 1;
+					}
+
+
+					} finally { DebugExitDecision(55); }
+					switch (alt55)
+					{
+					case 1:
+						DebugEnterAlt(1);
+						// HqlSqlWalker.g:418:32: ^( WHEN logicalExpr expr )
+						{
+						DebugLocation(418, 32);
+
+						_last = (IASTNode)input.LT(1);
+						{
+						IASTNode _save_last_2 = _last;
+						IASTNode _first_2 = default(IASTNode);
+						IASTNode root_2 = (IASTNode)adaptor.Nil();
+						DebugLocation(418, 34);
+
+						_last = (IASTNode)input.LT(1);
+						WHEN183=(IASTNode)Match(input,WHEN,Follow._WHEN_in_caseExpr2158); 
+						WHEN183_tree = (IASTNode)adaptor.DupNode(WHEN183);
+
+
+						root_2 = (IASTNode)adaptor.BecomeRoot(WHEN183_tree, root_2);
+
+
+						Match(input, TokenTypes.Down, null); 
+						DebugLocation(418, 39);
+
+						_last = (IASTNode)input.LT(1);
+						PushFollow(Follow._logicalExpr_in_caseExpr2160);
+						logicalExpr184=logicalExpr();
+						PopFollow();
+
+						adaptor.AddChild(root_2, logicalExpr184.Tree);
+
+						DebugLocation(418, 51);
+
+						_last = (IASTNode)input.LT(1);
+						PushFollow(Follow._expr_in_caseExpr2162);
+						expr185=expr();
+						PopFollow();
+
+						adaptor.AddChild(root_2, expr185.Tree);
+
+
+						Match(input, TokenTypes.Up, null); 
+						adaptor.AddChild(root_1, root_2);
+						_last = _save_last_2;
+						}
+
+
+						}
+						break;
+
+					default:
+						if (cnt55 >= 1)
+							goto loop55;
+
+						EarlyExitException eee55 = new EarlyExitException( 55, input );
+						DebugRecognitionException(eee55);
+						throw eee55;
+					}
+					cnt55++;
+				}
+				loop55:
+					;
+
+				} finally { DebugExitSubRule(55); }
+
+				DebugLocation(418, 59);
+				// HqlSqlWalker.g:418:59: ( ^( ELSE expr ) )?
+				int alt56=2;
+				try { DebugEnterSubRule(56);
+				try { DebugEnterDecision(56, false);
+				int LA56_1 = input.LA(1);
+
+				if ((LA56_1==ELSE))
+				{
+					alt56 = 1;
+				}
+				} finally { DebugExitDecision(56); }
+				switch (alt56)
+				{
+				case 1:
+					DebugEnterAlt(1);
+					// HqlSqlWalker.g:418:60: ^( ELSE expr )
+					{
+					DebugLocation(418, 60);
+
+					_last = (IASTNode)input.LT(1);
+					{
+					IASTNode _save_last_2 = _last;
+					IASTNode _first_2 = default(IASTNode);
+					IASTNode root_2 = (IASTNode)adaptor.Nil();
+					DebugLocation(418, 62);
+
+					_last = (IASTNode)input.LT(1);
+					ELSE186=(IASTNode)Match(input,ELSE,Follow._ELSE_in_caseExpr2169); 
+					ELSE186_tree = (IASTNode)adaptor.DupNode(ELSE186);
+
+
+					root_2 = (IASTNode)adaptor.BecomeRoot(ELSE186_tree, root_2);
+
+
+					Match(input, TokenTypes.Down, null); 
+					DebugLocation(418, 67);
+
+					_last = (IASTNode)input.LT(1);
+					PushFollow(Follow._expr_in_caseExpr2171);
+					expr187=expr();
+					PopFollow();
+
+					adaptor.AddChild(root_2, expr187.Tree);
+
+
+					Match(input, TokenTypes.Up, null); 
+					adaptor.AddChild(root_1, root_2);
+					_last = _save_last_2;
+					}
+
+
+					}
+					break;
+
+				}
+				} finally { DebugExitSubRule(56); }
+
+
+				Match(input, TokenTypes.Up, null); 
+				adaptor.AddChild(root_0, root_1);
+				_last = _save_last_1;
+				}
+
+				DebugLocation(418, 76);
+				 _inCase = false; 
+
+				}
+				break;
+			case 2:
+				DebugEnterAlt(2);
+				// HqlSqlWalker.g:419:4: ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? )
+				{
+				root_0 = (IASTNode)adaptor.Nil();
+
+				DebugLocation(419, 4);
+
+				_last = (IASTNode)input.LT(1);
+				{
+				IASTNode _save_last_1 = _last;
+				IASTNode _first_1 = default(IASTNode);
+				IASTNode root_1 = (IASTNode)adaptor.Nil();
+				DebugLocation(419, 6);
+
+				_last = (IASTNode)input.LT(1);
+				CASE2188=(IASTNode)Match(input,CASE2,Follow._CASE2_in_caseExpr2183); 
+				CASE2188_tree = (IASTNode)adaptor.DupNode(CASE2188);
+
+
+				root_1 = (IASTNode)adaptor.BecomeRoot(CASE2188_tree, root_1);
+
+
+				DebugLocation(419, 12);
+				 _inCase = true; 
+
+				Match(input, TokenTypes.Down, null); 
+				DebugLocation(419, 32);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._expr_in_caseExpr2187);
+				expr189=expr();
+				PopFollow();
+
+				adaptor.AddChild(root_1, expr189.Tree);
+
+				DebugLocation(419, 37);
+				// HqlSqlWalker.g:419:37: ( ^( WHEN expr expr ) )+
 				int cnt57=0;
 				try { DebugEnterSubRule(57);
 				while (true)
@@ -9236,43 +9390,43 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 					{
 					case 1:
 						DebugEnterAlt(1);
-						// HqlSqlWalker.g:417:32: ^( WHEN logicalExpr expr )
+						// HqlSqlWalker.g:419:38: ^( WHEN expr expr )
 						{
-						DebugLocation(417, 32);
+						DebugLocation(419, 38);
 
 						_last = (IASTNode)input.LT(1);
 						{
 						IASTNode _save_last_2 = _last;
 						IASTNode _first_2 = default(IASTNode);
 						IASTNode root_2 = (IASTNode)adaptor.Nil();
-						DebugLocation(417, 34);
+						DebugLocation(419, 40);
 
 						_last = (IASTNode)input.LT(1);
-						WHEN184=(IASTNode)Match(input,WHEN,Follow._WHEN_in_caseExpr2167); 
-						WHEN184_tree = (IASTNode)adaptor.DupNode(WHEN184);
+						WHEN190=(IASTNode)Match(input,WHEN,Follow._WHEN_in_caseExpr2191); 
+						WHEN190_tree = (IASTNode)adaptor.DupNode(WHEN190);
 
 
-						root_2 = (IASTNode)adaptor.BecomeRoot(WHEN184_tree, root_2);
+						root_2 = (IASTNode)adaptor.BecomeRoot(WHEN190_tree, root_2);
 
 
 						Match(input, TokenTypes.Down, null); 
-						DebugLocation(417, 39);
+						DebugLocation(419, 45);
 
 						_last = (IASTNode)input.LT(1);
-						PushFollow(Follow._logicalExpr_in_caseExpr2169);
-						logicalExpr185=logicalExpr();
+						PushFollow(Follow._expr_in_caseExpr2193);
+						expr191=expr();
 						PopFollow();
 
-						adaptor.AddChild(root_2, logicalExpr185.Tree);
+						adaptor.AddChild(root_2, expr191.Tree);
 
-						DebugLocation(417, 51);
+						DebugLocation(419, 50);
 
 						_last = (IASTNode)input.LT(1);
-						PushFollow(Follow._expr_in_caseExpr2171);
-						expr186=expr();
+						PushFollow(Follow._expr_in_caseExpr2195);
+						expr192=expr();
 						PopFollow();
 
-						adaptor.AddChild(root_2, expr186.Tree);
+						adaptor.AddChild(root_2, expr192.Tree);
 
 
 						Match(input, TokenTypes.Up, null); 
@@ -9299,8 +9453,8 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 				} finally { DebugExitSubRule(57); }
 
-				DebugLocation(417, 59);
-				// HqlSqlWalker.g:417:59: ( ^( ELSE expr ) )?
+				DebugLocation(419, 58);
+				// HqlSqlWalker.g:419:58: ( ^( ELSE expr ) )?
 				int alt58=2;
 				try { DebugEnterSubRule(58);
 				try { DebugEnterDecision(58, false);
@@ -9315,34 +9469,34 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// HqlSqlWalker.g:417:60: ^( ELSE expr )
+					// HqlSqlWalker.g:419:59: ^( ELSE expr )
 					{
-					DebugLocation(417, 60);
+					DebugLocation(419, 59);
 
 					_last = (IASTNode)input.LT(1);
 					{
 					IASTNode _save_last_2 = _last;
 					IASTNode _first_2 = default(IASTNode);
 					IASTNode root_2 = (IASTNode)adaptor.Nil();
-					DebugLocation(417, 62);
+					DebugLocation(419, 61);
 
 					_last = (IASTNode)input.LT(1);
-					ELSE187=(IASTNode)Match(input,ELSE,Follow._ELSE_in_caseExpr2178); 
-					ELSE187_tree = (IASTNode)adaptor.DupNode(ELSE187);
+					ELSE193=(IASTNode)Match(input,ELSE,Follow._ELSE_in_caseExpr2202); 
+					ELSE193_tree = (IASTNode)adaptor.DupNode(ELSE193);
 
 
-					root_2 = (IASTNode)adaptor.BecomeRoot(ELSE187_tree, root_2);
+					root_2 = (IASTNode)adaptor.BecomeRoot(ELSE193_tree, root_2);
 
 
 					Match(input, TokenTypes.Down, null); 
-					DebugLocation(417, 67);
+					DebugLocation(419, 66);
 
 					_last = (IASTNode)input.LT(1);
-					PushFollow(Follow._expr_in_caseExpr2180);
-					expr188=expr();
+					PushFollow(Follow._expr_in_caseExpr2204);
+					expr194=expr();
 					PopFollow();
 
-					adaptor.AddChild(root_2, expr188.Tree);
+					adaptor.AddChild(root_2, expr194.Tree);
 
 
 					Match(input, TokenTypes.Up, null); 
@@ -9363,196 +9517,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				_last = _save_last_1;
 				}
 
-				DebugLocation(417, 76);
-				 _inCase = false; 
-
-				}
-				break;
-			case 2:
-				DebugEnterAlt(2);
-				// HqlSqlWalker.g:418:4: ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? )
-				{
-				root_0 = (IASTNode)adaptor.Nil();
-
-				DebugLocation(418, 4);
-
-				_last = (IASTNode)input.LT(1);
-				{
-				IASTNode _save_last_1 = _last;
-				IASTNode _first_1 = default(IASTNode);
-				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(418, 6);
-
-				_last = (IASTNode)input.LT(1);
-				CASE2189=(IASTNode)Match(input,CASE2,Follow._CASE2_in_caseExpr2192); 
-				CASE2189_tree = (IASTNode)adaptor.DupNode(CASE2189);
-
-
-				root_1 = (IASTNode)adaptor.BecomeRoot(CASE2189_tree, root_1);
-
-
-				DebugLocation(418, 12);
-				 _inCase = true; 
-
-				Match(input, TokenTypes.Down, null); 
-				DebugLocation(418, 32);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._expr_in_caseExpr2196);
-				expr190=expr();
-				PopFollow();
-
-				adaptor.AddChild(root_1, expr190.Tree);
-
-				DebugLocation(418, 37);
-				// HqlSqlWalker.g:418:37: ( ^( WHEN expr expr ) )+
-				int cnt59=0;
-				try { DebugEnterSubRule(59);
-				while (true)
-				{
-					int alt59=2;
-					try { DebugEnterDecision(59, false);
-					int LA59_1 = input.LA(1);
-
-					if ((LA59_1==WHEN))
-					{
-						alt59 = 1;
-					}
-
-
-					} finally { DebugExitDecision(59); }
-					switch (alt59)
-					{
-					case 1:
-						DebugEnterAlt(1);
-						// HqlSqlWalker.g:418:38: ^( WHEN expr expr )
-						{
-						DebugLocation(418, 38);
-
-						_last = (IASTNode)input.LT(1);
-						{
-						IASTNode _save_last_2 = _last;
-						IASTNode _first_2 = default(IASTNode);
-						IASTNode root_2 = (IASTNode)adaptor.Nil();
-						DebugLocation(418, 40);
-
-						_last = (IASTNode)input.LT(1);
-						WHEN191=(IASTNode)Match(input,WHEN,Follow._WHEN_in_caseExpr2200); 
-						WHEN191_tree = (IASTNode)adaptor.DupNode(WHEN191);
-
-
-						root_2 = (IASTNode)adaptor.BecomeRoot(WHEN191_tree, root_2);
-
-
-						Match(input, TokenTypes.Down, null); 
-						DebugLocation(418, 45);
-
-						_last = (IASTNode)input.LT(1);
-						PushFollow(Follow._expr_in_caseExpr2202);
-						expr192=expr();
-						PopFollow();
-
-						adaptor.AddChild(root_2, expr192.Tree);
-
-						DebugLocation(418, 50);
-
-						_last = (IASTNode)input.LT(1);
-						PushFollow(Follow._expr_in_caseExpr2204);
-						expr193=expr();
-						PopFollow();
-
-						adaptor.AddChild(root_2, expr193.Tree);
-
-
-						Match(input, TokenTypes.Up, null); 
-						adaptor.AddChild(root_1, root_2);
-						_last = _save_last_2;
-						}
-
-
-						}
-						break;
-
-					default:
-						if (cnt59 >= 1)
-							goto loop59;
-
-						EarlyExitException eee59 = new EarlyExitException( 59, input );
-						DebugRecognitionException(eee59);
-						throw eee59;
-					}
-					cnt59++;
-				}
-				loop59:
-					;
-
-				} finally { DebugExitSubRule(59); }
-
-				DebugLocation(418, 58);
-				// HqlSqlWalker.g:418:58: ( ^( ELSE expr ) )?
-				int alt60=2;
-				try { DebugEnterSubRule(60);
-				try { DebugEnterDecision(60, false);
-				int LA60_1 = input.LA(1);
-
-				if ((LA60_1==ELSE))
-				{
-					alt60 = 1;
-				}
-				} finally { DebugExitDecision(60); }
-				switch (alt60)
-				{
-				case 1:
-					DebugEnterAlt(1);
-					// HqlSqlWalker.g:418:59: ^( ELSE expr )
-					{
-					DebugLocation(418, 59);
-
-					_last = (IASTNode)input.LT(1);
-					{
-					IASTNode _save_last_2 = _last;
-					IASTNode _first_2 = default(IASTNode);
-					IASTNode root_2 = (IASTNode)adaptor.Nil();
-					DebugLocation(418, 61);
-
-					_last = (IASTNode)input.LT(1);
-					ELSE194=(IASTNode)Match(input,ELSE,Follow._ELSE_in_caseExpr2211); 
-					ELSE194_tree = (IASTNode)adaptor.DupNode(ELSE194);
-
-
-					root_2 = (IASTNode)adaptor.BecomeRoot(ELSE194_tree, root_2);
-
-
-					Match(input, TokenTypes.Down, null); 
-					DebugLocation(418, 66);
-
-					_last = (IASTNode)input.LT(1);
-					PushFollow(Follow._expr_in_caseExpr2213);
-					expr195=expr();
-					PopFollow();
-
-					adaptor.AddChild(root_2, expr195.Tree);
-
-
-					Match(input, TokenTypes.Up, null); 
-					adaptor.AddChild(root_1, root_2);
-					_last = _save_last_2;
-					}
-
-
-					}
-					break;
-
-				}
-				} finally { DebugExitSubRule(60); }
-
-
-				Match(input, TokenTypes.Up, null); 
-				adaptor.AddChild(root_0, root_1);
-				_last = _save_last_1;
-				}
-
-				DebugLocation(418, 75);
+				DebugLocation(419, 75);
 				 _inCase = false; 
 
 				}
@@ -9573,7 +9538,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("caseExpr", 45);
 			LeaveRule_caseExpr();
 		}
-		DebugLocation(419, 1);
+		DebugLocation(420, 1);
 		} finally { DebugExitRule(GrammarFileName, "caseExpr"); }
 		return retval;
 
@@ -9583,7 +9548,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_collectionFunction();
 	partial void LeaveRule_collectionFunction();
 	// $ANTLR start "collectionFunction"
-	// HqlSqlWalker.g:423:1: collectionFunction : ( ^(e= ELEMENTS p1= propertyRef ) | ^(i= INDICES p2= propertyRef ) );
+	// HqlSqlWalker.g:424:1: collectionFunction : ( ^(e= ELEMENTS p1= propertyRef ) | ^(i= INDICES p2= propertyRef ) );
 	[GrammarRule("collectionFunction")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunction()
 	{
@@ -9606,68 +9571,68 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode e_tree = default(IASTNode);
 		IASTNode i_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "collectionFunction");
-		DebugLocation(423, 1);
+		DebugLocation(424, 1);
 		try
 		{
-			// HqlSqlWalker.g:424:2: ( ^(e= ELEMENTS p1= propertyRef ) | ^(i= INDICES p2= propertyRef ) )
-			int alt62=2;
-			try { DebugEnterDecision(62, false);
-			int LA62_1 = input.LA(1);
+			// HqlSqlWalker.g:425:2: ( ^(e= ELEMENTS p1= propertyRef ) | ^(i= INDICES p2= propertyRef ) )
+			int alt60=2;
+			try { DebugEnterDecision(60, false);
+			int LA60_1 = input.LA(1);
 
-			if ((LA62_1==ELEMENTS))
+			if ((LA60_1==ELEMENTS))
 			{
-				alt62 = 1;
+				alt60 = 1;
 			}
-			else if ((LA62_1==INDICES))
+			else if ((LA60_1==INDICES))
 			{
-				alt62 = 2;
+				alt60 = 2;
 			}
 			else
 			{
-				NoViableAltException nvae = new NoViableAltException("", 62, 0, input, 1);
+				NoViableAltException nvae = new NoViableAltException("", 60, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-			} finally { DebugExitDecision(62); }
-			switch (alt62)
+			} finally { DebugExitDecision(60); }
+			switch (alt60)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// HqlSqlWalker.g:424:4: ^(e= ELEMENTS p1= propertyRef )
+				// HqlSqlWalker.g:425:4: ^(e= ELEMENTS p1= propertyRef )
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(424, 4);
+				DebugLocation(425, 4);
 
 				_last = (IASTNode)input.LT(1);
 				{
 				IASTNode _save_last_1 = _last;
 				IASTNode _first_1 = default(IASTNode);
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(424, 7);
+				DebugLocation(425, 7);
 
 				_last = (IASTNode)input.LT(1);
-				e=(IASTNode)Match(input,ELEMENTS,Follow._ELEMENTS_in_collectionFunction2235); 
+				e=(IASTNode)Match(input,ELEMENTS,Follow._ELEMENTS_in_collectionFunction2226); 
 				e_tree = (IASTNode)adaptor.DupNode(e);
 
 
 				root_1 = (IASTNode)adaptor.BecomeRoot(e_tree, root_1);
 
 
-				DebugLocation(424, 17);
+				DebugLocation(425, 17);
 				_inFunctionCall=true;
 
 				Match(input, TokenTypes.Down, null); 
-				DebugLocation(424, 43);
+				DebugLocation(425, 43);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._propertyRef_in_collectionFunction2241);
+				PushFollow(Follow._propertyRef_in_collectionFunction2232);
 				p1=propertyRef();
 				PopFollow();
 
 				adaptor.AddChild(root_1, p1.Tree);
 
-				DebugLocation(424, 56);
+				DebugLocation(425, 56);
 				 Resolve((p1!=null?((IASTNode)p1.Tree):default(IASTNode))); 
 
 				Match(input, TokenTypes.Up, null); 
@@ -9675,50 +9640,50 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				_last = _save_last_1;
 				}
 
-				DebugLocation(425, 3);
+				DebugLocation(426, 3);
 				 ProcessFunction(e_tree,_inSelect); 
-				DebugLocation(425, 43);
+				DebugLocation(426, 43);
 				_inFunctionCall=false;
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// HqlSqlWalker.g:426:4: ^(i= INDICES p2= propertyRef )
+				// HqlSqlWalker.g:427:4: ^(i= INDICES p2= propertyRef )
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(426, 4);
+				DebugLocation(427, 4);
 
 				_last = (IASTNode)input.LT(1);
 				{
 				IASTNode _save_last_1 = _last;
 				IASTNode _first_1 = default(IASTNode);
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(426, 7);
+				DebugLocation(427, 7);
 
 				_last = (IASTNode)input.LT(1);
-				i=(IASTNode)Match(input,INDICES,Follow._INDICES_in_collectionFunction2260); 
+				i=(IASTNode)Match(input,INDICES,Follow._INDICES_in_collectionFunction2251); 
 				i_tree = (IASTNode)adaptor.DupNode(i);
 
 
 				root_1 = (IASTNode)adaptor.BecomeRoot(i_tree, root_1);
 
 
-				DebugLocation(426, 16);
+				DebugLocation(427, 16);
 				_inFunctionCall=true;
 
 				Match(input, TokenTypes.Down, null); 
-				DebugLocation(426, 42);
+				DebugLocation(427, 42);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._propertyRef_in_collectionFunction2266);
+				PushFollow(Follow._propertyRef_in_collectionFunction2257);
 				p2=propertyRef();
 				PopFollow();
 
 				adaptor.AddChild(root_1, p2.Tree);
 
-				DebugLocation(426, 55);
+				DebugLocation(427, 55);
 				 Resolve((p2!=null?((IASTNode)p2.Tree):default(IASTNode))); 
 
 				Match(input, TokenTypes.Up, null); 
@@ -9726,9 +9691,9 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				_last = _save_last_1;
 				}
 
-				DebugLocation(427, 3);
+				DebugLocation(428, 3);
 				 ProcessFunction(i_tree,_inSelect); 
-				DebugLocation(427, 43);
+				DebugLocation(428, 43);
 				_inFunctionCall=false;
 
 				}
@@ -9749,7 +9714,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("collectionFunction", 46);
 			LeaveRule_collectionFunction();
 		}
-		DebugLocation(428, 1);
+		DebugLocation(429, 1);
 		} finally { DebugExitRule(GrammarFileName, "collectionFunction"); }
 		return retval;
 
@@ -9759,7 +9724,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_functionCall();
 	partial void LeaveRule_functionCall();
 	// $ANTLR start "functionCall"
-	// HqlSqlWalker.g:430:1: functionCall : ( ^(m= METHOD_CALL pathAsIdent ( ^( EXPR_LIST ( expr | query | comparisonExpr )* ) )? ) | ^( AGGREGATE aggregateExpr ) );
+	// HqlSqlWalker.g:431:1: functionCall : ( ^(m= METHOD_CALL pathAsIdent ( ^( EXPR_LIST ( expr | query | comparisonExpr )* ) )? ) | ^( AGGREGATE aggregateExpr ) );
 	[GrammarRule("functionCall")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> functionCall()
 	{
@@ -9775,123 +9740,123 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _last = default(IASTNode);
 
 		IASTNode m = default(IASTNode);
-		IASTNode EXPR_LIST197 = default(IASTNode);
-		IASTNode AGGREGATE201 = default(IASTNode);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> pathAsIdent196 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> expr198 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> query199 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> comparisonExpr200 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> aggregateExpr202 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode EXPR_LIST196 = default(IASTNode);
+		IASTNode AGGREGATE200 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> pathAsIdent195 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr197 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> query198 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> comparisonExpr199 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> aggregateExpr201 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 		IASTNode m_tree = default(IASTNode);
-		IASTNode EXPR_LIST197_tree = default(IASTNode);
-		IASTNode AGGREGATE201_tree = default(IASTNode);
+		IASTNode EXPR_LIST196_tree = default(IASTNode);
+		IASTNode AGGREGATE200_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "functionCall");
-		DebugLocation(430, 1);
+		DebugLocation(431, 1);
 		try
 		{
-			// HqlSqlWalker.g:431:2: ( ^(m= METHOD_CALL pathAsIdent ( ^( EXPR_LIST ( expr | query | comparisonExpr )* ) )? ) | ^( AGGREGATE aggregateExpr ) )
-			int alt65=2;
-			try { DebugEnterDecision(65, false);
-			int LA65_1 = input.LA(1);
+			// HqlSqlWalker.g:432:2: ( ^(m= METHOD_CALL pathAsIdent ( ^( EXPR_LIST ( expr | query | comparisonExpr )* ) )? ) | ^( AGGREGATE aggregateExpr ) )
+			int alt63=2;
+			try { DebugEnterDecision(63, false);
+			int LA63_1 = input.LA(1);
 
-			if ((LA65_1==METHOD_CALL))
+			if ((LA63_1==METHOD_CALL))
 			{
-				alt65 = 1;
+				alt63 = 1;
 			}
-			else if ((LA65_1==AGGREGATE))
+			else if ((LA63_1==AGGREGATE))
 			{
-				alt65 = 2;
+				alt63 = 2;
 			}
 			else
 			{
-				NoViableAltException nvae = new NoViableAltException("", 65, 0, input, 1);
+				NoViableAltException nvae = new NoViableAltException("", 63, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-			} finally { DebugExitDecision(65); }
-			switch (alt65)
+			} finally { DebugExitDecision(63); }
+			switch (alt63)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// HqlSqlWalker.g:431:4: ^(m= METHOD_CALL pathAsIdent ( ^( EXPR_LIST ( expr | query | comparisonExpr )* ) )? )
+				// HqlSqlWalker.g:432:4: ^(m= METHOD_CALL pathAsIdent ( ^( EXPR_LIST ( expr | query | comparisonExpr )* ) )? )
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(431, 4);
+				DebugLocation(432, 4);
 
 				_last = (IASTNode)input.LT(1);
 				{
 				IASTNode _save_last_1 = _last;
 				IASTNode _first_1 = default(IASTNode);
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(431, 7);
+				DebugLocation(432, 7);
 
 				_last = (IASTNode)input.LT(1);
-				m=(IASTNode)Match(input,METHOD_CALL,Follow._METHOD_CALL_in_functionCall2291); 
+				m=(IASTNode)Match(input,METHOD_CALL,Follow._METHOD_CALL_in_functionCall2282); 
 				m_tree = (IASTNode)adaptor.DupNode(m);
 
 
 				root_1 = (IASTNode)adaptor.BecomeRoot(m_tree, root_1);
 
 
-				DebugLocation(431, 21);
+				DebugLocation(432, 21);
 				_inFunctionCall=true;
 
 				Match(input, TokenTypes.Down, null); 
-				DebugLocation(431, 45);
+				DebugLocation(432, 45);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._pathAsIdent_in_functionCall2296);
-				pathAsIdent196=pathAsIdent();
+				PushFollow(Follow._pathAsIdent_in_functionCall2287);
+				pathAsIdent195=pathAsIdent();
 				PopFollow();
 
-				adaptor.AddChild(root_1, pathAsIdent196.Tree);
+				adaptor.AddChild(root_1, pathAsIdent195.Tree);
 
-				DebugLocation(431, 57);
-				// HqlSqlWalker.g:431:57: ( ^( EXPR_LIST ( expr | query | comparisonExpr )* ) )?
-				int alt64=2;
-				try { DebugEnterSubRule(64);
-				try { DebugEnterDecision(64, false);
-				int LA64_1 = input.LA(1);
+				DebugLocation(432, 57);
+				// HqlSqlWalker.g:432:57: ( ^( EXPR_LIST ( expr | query | comparisonExpr )* ) )?
+				int alt62=2;
+				try { DebugEnterSubRule(62);
+				try { DebugEnterDecision(62, false);
+				int LA62_1 = input.LA(1);
 
-				if ((LA64_1==EXPR_LIST))
+				if ((LA62_1==EXPR_LIST))
 				{
-					alt64 = 1;
+					alt62 = 1;
 				}
-				} finally { DebugExitDecision(64); }
-				switch (alt64)
+				} finally { DebugExitDecision(62); }
+				switch (alt62)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// HqlSqlWalker.g:431:59: ^( EXPR_LIST ( expr | query | comparisonExpr )* )
+					// HqlSqlWalker.g:432:59: ^( EXPR_LIST ( expr | query | comparisonExpr )* )
 					{
-					DebugLocation(431, 59);
+					DebugLocation(432, 59);
 
 					_last = (IASTNode)input.LT(1);
 					{
 					IASTNode _save_last_2 = _last;
 					IASTNode _first_2 = default(IASTNode);
 					IASTNode root_2 = (IASTNode)adaptor.Nil();
-					DebugLocation(431, 61);
+					DebugLocation(432, 61);
 
 					_last = (IASTNode)input.LT(1);
-					EXPR_LIST197=(IASTNode)Match(input,EXPR_LIST,Follow._EXPR_LIST_in_functionCall2301); 
-					EXPR_LIST197_tree = (IASTNode)adaptor.DupNode(EXPR_LIST197);
+					EXPR_LIST196=(IASTNode)Match(input,EXPR_LIST,Follow._EXPR_LIST_in_functionCall2292); 
+					EXPR_LIST196_tree = (IASTNode)adaptor.DupNode(EXPR_LIST196);
 
 
-					root_2 = (IASTNode)adaptor.BecomeRoot(EXPR_LIST197_tree, root_2);
+					root_2 = (IASTNode)adaptor.BecomeRoot(EXPR_LIST196_tree, root_2);
 
 
 					if (input.LA(1) == TokenTypes.Down) {
 						Match(input, TokenTypes.Down, null); 
-						DebugLocation(431, 71);
-						// HqlSqlWalker.g:431:71: ( expr | query | comparisonExpr )*
-						try { DebugEnterSubRule(63);
+						DebugLocation(432, 71);
+						// HqlSqlWalker.g:432:71: ( expr | query | comparisonExpr )*
+						try { DebugEnterSubRule(61);
 						while (true)
 						{
-							int alt63=4;
-							try { DebugEnterDecision(63, false);
+							int alt61=4;
+							try { DebugEnterDecision(61, false);
 							switch (input.LA(1))
 							{
 							case AGGREGATE:
@@ -9926,13 +9891,13 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 							case VECTOR_EXPR:
 							case WEIRD_IDENT:
 								{
-								alt63 = 1;
+								alt61 = 1;
 								}
 								break;
 							case QUERY:
 							case UNION:
 								{
-								alt63 = 2;
+								alt61 = 2;
 								}
 								break;
 							case BETWEEN:
@@ -9951,72 +9916,72 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 							case NOT_IN:
 							case NOT_LIKE:
 								{
-								alt63 = 3;
+								alt61 = 3;
 								}
 								break;
 							}
 
-							} finally { DebugExitDecision(63); }
-							switch ( alt63 )
+							} finally { DebugExitDecision(61); }
+							switch ( alt61 )
 							{
 							case 1:
 								DebugEnterAlt(1);
-								// HqlSqlWalker.g:431:72: expr
+								// HqlSqlWalker.g:432:72: expr
 								{
-								DebugLocation(431, 72);
+								DebugLocation(432, 72);
 
 								_last = (IASTNode)input.LT(1);
-								PushFollow(Follow._expr_in_functionCall2304);
-								expr198=expr();
+								PushFollow(Follow._expr_in_functionCall2295);
+								expr197=expr();
 								PopFollow();
 
-								adaptor.AddChild(root_2, expr198.Tree);
+								adaptor.AddChild(root_2, expr197.Tree);
 
 
 								}
 								break;
 							case 2:
 								DebugEnterAlt(2);
-								// HqlSqlWalker.g:431:79: query
+								// HqlSqlWalker.g:432:79: query
 								{
-								DebugLocation(431, 79);
+								DebugLocation(432, 79);
 
 								_last = (IASTNode)input.LT(1);
-								PushFollow(Follow._query_in_functionCall2308);
-								query199=query();
+								PushFollow(Follow._query_in_functionCall2299);
+								query198=query();
 								PopFollow();
 
-								adaptor.AddChild(root_2, query199.Tree);
+								adaptor.AddChild(root_2, query198.Tree);
 
 
 								}
 								break;
 							case 3:
 								DebugEnterAlt(3);
-								// HqlSqlWalker.g:431:87: comparisonExpr
+								// HqlSqlWalker.g:432:87: comparisonExpr
 								{
-								DebugLocation(431, 87);
+								DebugLocation(432, 87);
 
 								_last = (IASTNode)input.LT(1);
-								PushFollow(Follow._comparisonExpr_in_functionCall2312);
-								comparisonExpr200=comparisonExpr();
+								PushFollow(Follow._comparisonExpr_in_functionCall2303);
+								comparisonExpr199=comparisonExpr();
 								PopFollow();
 
-								adaptor.AddChild(root_2, comparisonExpr200.Tree);
+								adaptor.AddChild(root_2, comparisonExpr199.Tree);
 
 
 								}
 								break;
 
 							default:
-								goto loop63;
+								goto loop61;
 							}
 						}
 
-						loop63:
+						loop61:
 							;
 
-						} finally { DebugExitSubRule(63); }
+						} finally { DebugExitSubRule(61); }
 
 
 						Match(input, TokenTypes.Up, null); 
@@ -10030,7 +9995,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 					break;
 
 				}
-				} finally { DebugExitSubRule(64); }
+				} finally { DebugExitSubRule(62); }
 
 
 				Match(input, TokenTypes.Up, null); 
@@ -10038,43 +10003,43 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				_last = _save_last_1;
 				}
 
-				DebugLocation(432, 3);
+				DebugLocation(433, 3);
 				 ProcessFunction(m_tree,_inSelect); _inFunctionCall=false; 
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// HqlSqlWalker.g:433:4: ^( AGGREGATE aggregateExpr )
+				// HqlSqlWalker.g:434:4: ^( AGGREGATE aggregateExpr )
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(433, 4);
+				DebugLocation(434, 4);
 
 				_last = (IASTNode)input.LT(1);
 				{
 				IASTNode _save_last_1 = _last;
 				IASTNode _first_1 = default(IASTNode);
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(433, 6);
+				DebugLocation(434, 6);
 
 				_last = (IASTNode)input.LT(1);
-				AGGREGATE201=(IASTNode)Match(input,AGGREGATE,Follow._AGGREGATE_in_functionCall2331); 
-				AGGREGATE201_tree = (IASTNode)adaptor.DupNode(AGGREGATE201);
+				AGGREGATE200=(IASTNode)Match(input,AGGREGATE,Follow._AGGREGATE_in_functionCall2322); 
+				AGGREGATE200_tree = (IASTNode)adaptor.DupNode(AGGREGATE200);
 
 
-				root_1 = (IASTNode)adaptor.BecomeRoot(AGGREGATE201_tree, root_1);
+				root_1 = (IASTNode)adaptor.BecomeRoot(AGGREGATE200_tree, root_1);
 
 
 				Match(input, TokenTypes.Down, null); 
-				DebugLocation(433, 16);
+				DebugLocation(434, 16);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._aggregateExpr_in_functionCall2333);
-				aggregateExpr202=aggregateExpr();
+				PushFollow(Follow._aggregateExpr_in_functionCall2324);
+				aggregateExpr201=aggregateExpr();
 				PopFollow();
 
-				adaptor.AddChild(root_1, aggregateExpr202.Tree);
+				adaptor.AddChild(root_1, aggregateExpr201.Tree);
 
 
 				Match(input, TokenTypes.Up, null); 
@@ -10101,7 +10066,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("functionCall", 47);
 			LeaveRule_functionCall();
 		}
-		DebugLocation(434, 1);
+		DebugLocation(435, 1);
 		} finally { DebugExitRule(GrammarFileName, "functionCall"); }
 		return retval;
 
@@ -10111,7 +10076,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_constant();
 	partial void LeaveRule_constant();
 	// $ANTLR start "constant"
-	// HqlSqlWalker.g:436:1: constant : ( literal | NULL |t= TRUE |f= FALSE | JAVA_CONSTANT );
+	// HqlSqlWalker.g:437:1: constant : ( literal | NULL |t= TRUE |f= FALSE | JAVA_CONSTANT );
 	[GrammarRule("constant")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> constant()
 	{
@@ -10128,21 +10093,21 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 		IASTNode t = default(IASTNode);
 		IASTNode f = default(IASTNode);
-		IASTNode NULL204 = default(IASTNode);
-		IASTNode JAVA_CONSTANT205 = default(IASTNode);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> literal203 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode NULL203 = default(IASTNode);
+		IASTNode JAVA_CONSTANT204 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> literal202 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 		IASTNode t_tree = default(IASTNode);
 		IASTNode f_tree = default(IASTNode);
-		IASTNode NULL204_tree = default(IASTNode);
-		IASTNode JAVA_CONSTANT205_tree = default(IASTNode);
+		IASTNode NULL203_tree = default(IASTNode);
+		IASTNode JAVA_CONSTANT204_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "constant");
-		DebugLocation(436, 1);
+		DebugLocation(437, 1);
 		try
 		{
-			// HqlSqlWalker.g:437:2: ( literal | NULL |t= TRUE |f= FALSE | JAVA_CONSTANT )
-			int alt66=5;
-			try { DebugEnterDecision(66, false);
+			// HqlSqlWalker.g:438:2: ( literal | NULL |t= TRUE |f= FALSE | JAVA_CONSTANT )
+			int alt64=5;
+			try { DebugEnterDecision(64, false);
 			switch (input.LA(1))
 			{
 			case NUM_DECIMAL:
@@ -10152,130 +10117,130 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			case NUM_LONG:
 			case QUOTED_String:
 				{
-				alt66 = 1;
+				alt64 = 1;
 				}
 				break;
 			case NULL:
 				{
-				alt66 = 2;
+				alt64 = 2;
 				}
 				break;
 			case TRUE:
 				{
-				alt66 = 3;
+				alt64 = 3;
 				}
 				break;
 			case FALSE:
 				{
-				alt66 = 4;
+				alt64 = 4;
 				}
 				break;
 			case JAVA_CONSTANT:
 				{
-				alt66 = 5;
+				alt64 = 5;
 				}
 				break;
 			default:
 				{
-					NoViableAltException nvae = new NoViableAltException("", 66, 0, input, 1);
+					NoViableAltException nvae = new NoViableAltException("", 64, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
 			}
 
-			} finally { DebugExitDecision(66); }
-			switch (alt66)
+			} finally { DebugExitDecision(64); }
+			switch (alt64)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// HqlSqlWalker.g:437:4: literal
-				{
-				root_0 = (IASTNode)adaptor.Nil();
-
-				DebugLocation(437, 4);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._literal_in_constant2346);
-				literal203=literal();
-				PopFollow();
-
-				adaptor.AddChild(root_0, literal203.Tree);
-
-
-				}
-				break;
-			case 2:
-				DebugEnterAlt(2);
-				// HqlSqlWalker.g:438:4: NULL
+				// HqlSqlWalker.g:438:4: literal
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(438, 4);
 
 				_last = (IASTNode)input.LT(1);
-				NULL204=(IASTNode)Match(input,NULL,Follow._NULL_in_constant2351); 
-				NULL204_tree = (IASTNode)adaptor.DupNode(NULL204);
+				PushFollow(Follow._literal_in_constant2337);
+				literal202=literal();
+				PopFollow();
+
+				adaptor.AddChild(root_0, literal202.Tree);
 
 
-				adaptor.AddChild(root_0, NULL204_tree);
+				}
+				break;
+			case 2:
+				DebugEnterAlt(2);
+				// HqlSqlWalker.g:439:4: NULL
+				{
+				root_0 = (IASTNode)adaptor.Nil();
+
+				DebugLocation(439, 4);
+
+				_last = (IASTNode)input.LT(1);
+				NULL203=(IASTNode)Match(input,NULL,Follow._NULL_in_constant2342); 
+				NULL203_tree = (IASTNode)adaptor.DupNode(NULL203);
+
+
+				adaptor.AddChild(root_0, NULL203_tree);
 
 
 				}
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// HqlSqlWalker.g:439:4: t= TRUE
-				{
-				root_0 = (IASTNode)adaptor.Nil();
-
-				DebugLocation(439, 5);
-
-				_last = (IASTNode)input.LT(1);
-				t=(IASTNode)Match(input,TRUE,Follow._TRUE_in_constant2358); 
-				t_tree = (IASTNode)adaptor.DupNode(t);
-
-
-				adaptor.AddChild(root_0, t_tree);
-
-				DebugLocation(439, 11);
-				 ProcessBool(t); 
-
-				}
-				break;
-			case 4:
-				DebugEnterAlt(4);
-				// HqlSqlWalker.g:440:4: f= FALSE
+				// HqlSqlWalker.g:440:4: t= TRUE
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(440, 5);
 
 				_last = (IASTNode)input.LT(1);
-				f=(IASTNode)Match(input,FALSE,Follow._FALSE_in_constant2368); 
+				t=(IASTNode)Match(input,TRUE,Follow._TRUE_in_constant2349); 
+				t_tree = (IASTNode)adaptor.DupNode(t);
+
+
+				adaptor.AddChild(root_0, t_tree);
+
+				DebugLocation(440, 11);
+				 ProcessBool(t); 
+
+				}
+				break;
+			case 4:
+				DebugEnterAlt(4);
+				// HqlSqlWalker.g:441:4: f= FALSE
+				{
+				root_0 = (IASTNode)adaptor.Nil();
+
+				DebugLocation(441, 5);
+
+				_last = (IASTNode)input.LT(1);
+				f=(IASTNode)Match(input,FALSE,Follow._FALSE_in_constant2359); 
 				f_tree = (IASTNode)adaptor.DupNode(f);
 
 
 				adaptor.AddChild(root_0, f_tree);
 
-				DebugLocation(440, 12);
+				DebugLocation(441, 12);
 				 ProcessBool(f); 
 
 				}
 				break;
 			case 5:
 				DebugEnterAlt(5);
-				// HqlSqlWalker.g:441:4: JAVA_CONSTANT
+				// HqlSqlWalker.g:442:4: JAVA_CONSTANT
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(441, 4);
+				DebugLocation(442, 4);
 
 				_last = (IASTNode)input.LT(1);
-				JAVA_CONSTANT205=(IASTNode)Match(input,JAVA_CONSTANT,Follow._JAVA_CONSTANT_in_constant2375); 
-				JAVA_CONSTANT205_tree = (IASTNode)adaptor.DupNode(JAVA_CONSTANT205);
+				JAVA_CONSTANT204=(IASTNode)Match(input,JAVA_CONSTANT,Follow._JAVA_CONSTANT_in_constant2366); 
+				JAVA_CONSTANT204_tree = (IASTNode)adaptor.DupNode(JAVA_CONSTANT204);
 
 
-				adaptor.AddChild(root_0, JAVA_CONSTANT205_tree);
+				adaptor.AddChild(root_0, JAVA_CONSTANT204_tree);
 
 
 				}
@@ -10296,7 +10261,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("constant", 48);
 			LeaveRule_constant();
 		}
-		DebugLocation(442, 1);
+		DebugLocation(443, 1);
 		} finally { DebugExitRule(GrammarFileName, "constant"); }
 		return retval;
 
@@ -10306,7 +10271,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_literal();
 	partial void LeaveRule_literal();
 	// $ANTLR start "literal"
-	// HqlSqlWalker.g:444:1: literal : ( numericLiteral | stringLiteral );
+	// HqlSqlWalker.g:445:1: literal : ( numericLiteral | stringLiteral );
 	[GrammarRule("literal")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> literal()
 	{
@@ -10321,67 +10286,67 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		AstTreeRuleReturnScope<IASTNode, IASTNode> numericLiteral206 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> stringLiteral207 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> numericLiteral205 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> stringLiteral206 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "literal");
-		DebugLocation(444, 1);
+		DebugLocation(445, 1);
 		try
 		{
-			// HqlSqlWalker.g:445:2: ( numericLiteral | stringLiteral )
-			int alt67=2;
-			try { DebugEnterDecision(67, false);
-			int LA67_1 = input.LA(1);
+			// HqlSqlWalker.g:446:2: ( numericLiteral | stringLiteral )
+			int alt65=2;
+			try { DebugEnterDecision(65, false);
+			int LA65_1 = input.LA(1);
 
-			if (((LA67_1>=NUM_DECIMAL && LA67_1<=NUM_LONG)))
+			if (((LA65_1>=NUM_DECIMAL && LA65_1<=NUM_LONG)))
 			{
-				alt67 = 1;
+				alt65 = 1;
 			}
-			else if ((LA67_1==QUOTED_String))
+			else if ((LA65_1==QUOTED_String))
 			{
-				alt67 = 2;
+				alt65 = 2;
 			}
 			else
 			{
-				NoViableAltException nvae = new NoViableAltException("", 67, 0, input, 1);
+				NoViableAltException nvae = new NoViableAltException("", 65, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-			} finally { DebugExitDecision(67); }
-			switch (alt67)
+			} finally { DebugExitDecision(65); }
+			switch (alt65)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// HqlSqlWalker.g:445:4: numericLiteral
-				{
-				root_0 = (IASTNode)adaptor.Nil();
-
-				DebugLocation(445, 4);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._numericLiteral_in_literal2386);
-				numericLiteral206=numericLiteral();
-				PopFollow();
-
-				adaptor.AddChild(root_0, numericLiteral206.Tree);
-
-
-				}
-				break;
-			case 2:
-				DebugEnterAlt(2);
-				// HqlSqlWalker.g:446:4: stringLiteral
+				// HqlSqlWalker.g:446:4: numericLiteral
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(446, 4);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._stringLiteral_in_literal2391);
-				stringLiteral207=stringLiteral();
+				PushFollow(Follow._numericLiteral_in_literal2377);
+				numericLiteral205=numericLiteral();
 				PopFollow();
 
-				adaptor.AddChild(root_0, stringLiteral207.Tree);
+				adaptor.AddChild(root_0, numericLiteral205.Tree);
+
+
+				}
+				break;
+			case 2:
+				DebugEnterAlt(2);
+				// HqlSqlWalker.g:447:4: stringLiteral
+				{
+				root_0 = (IASTNode)adaptor.Nil();
+
+				DebugLocation(447, 4);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._stringLiteral_in_literal2382);
+				stringLiteral206=stringLiteral();
+				PopFollow();
+
+				adaptor.AddChild(root_0, stringLiteral206.Tree);
 
 
 				}
@@ -10402,7 +10367,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("literal", 49);
 			LeaveRule_literal();
 		}
-		DebugLocation(447, 1);
+		DebugLocation(448, 1);
 		} finally { DebugExitRule(GrammarFileName, "literal"); }
 		return retval;
 
@@ -10412,7 +10377,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_numericLiteral();
 	partial void LeaveRule_numericLiteral();
 	// $ANTLR start "numericLiteral"
-	// HqlSqlWalker.g:449:1: numericLiteral : ( NUM_INT | NUM_LONG | NUM_FLOAT | NUM_DOUBLE | NUM_DECIMAL );
+	// HqlSqlWalker.g:450:1: numericLiteral : ( NUM_INT | NUM_LONG | NUM_FLOAT | NUM_DOUBLE | NUM_DECIMAL );
 	[GrammarRule("numericLiteral")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> numericLiteral()
 	{
@@ -10427,30 +10392,30 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		IASTNode set208 = default(IASTNode);
+		IASTNode set207 = default(IASTNode);
 
-		IASTNode set208_tree = default(IASTNode);
+		IASTNode set207_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "numericLiteral");
-		DebugLocation(449, 1);
+		DebugLocation(450, 1);
 		try
 		{
-			// HqlSqlWalker.g:454:2: ( NUM_INT | NUM_LONG | NUM_FLOAT | NUM_DOUBLE | NUM_DECIMAL )
+			// HqlSqlWalker.g:455:2: ( NUM_INT | NUM_LONG | NUM_FLOAT | NUM_DOUBLE | NUM_DECIMAL )
 			DebugEnterAlt(1);
 			// HqlSqlWalker.g:
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(454, 2);
+			DebugLocation(455, 2);
 
 			_last = (IASTNode)input.LT(1);
-			set208=(IASTNode)input.LT(1);
+			set207=(IASTNode)input.LT(1);
 			if ((input.LA(1)>=NUM_DECIMAL && input.LA(1)<=NUM_LONG))
 			{
 				input.Consume();
-				set208_tree = (IASTNode)adaptor.DupNode(set208);
+				set207_tree = (IASTNode)adaptor.DupNode(set207);
 
 
-				adaptor.AddChild(root_0, set208_tree);
+				adaptor.AddChild(root_0, set207_tree);
 
 				state.errorRecovery=false;
 			}
@@ -10484,7 +10449,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("numericLiteral", 50);
 			LeaveRule_numericLiteral();
 		}
-		DebugLocation(459, 1);
+		DebugLocation(460, 1);
 		} finally { DebugExitRule(GrammarFileName, "numericLiteral"); }
 		return retval;
 
@@ -10494,7 +10459,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_stringLiteral();
 	partial void LeaveRule_stringLiteral();
 	// $ANTLR start "stringLiteral"
-	// HqlSqlWalker.g:461:1: stringLiteral : QUOTED_String ;
+	// HqlSqlWalker.g:462:1: stringLiteral : QUOTED_String ;
 	[GrammarRule("stringLiteral")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> stringLiteral()
 	{
@@ -10509,27 +10474,27 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		IASTNode QUOTED_String209 = default(IASTNode);
+		IASTNode QUOTED_String208 = default(IASTNode);
 
-		IASTNode QUOTED_String209_tree = default(IASTNode);
+		IASTNode QUOTED_String208_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "stringLiteral");
-		DebugLocation(461, 1);
+		DebugLocation(462, 1);
 		try
 		{
-			// HqlSqlWalker.g:462:2: ( QUOTED_String )
+			// HqlSqlWalker.g:463:2: ( QUOTED_String )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:462:4: QUOTED_String
+			// HqlSqlWalker.g:463:4: QUOTED_String
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(462, 4);
+			DebugLocation(463, 4);
 
 			_last = (IASTNode)input.LT(1);
-			QUOTED_String209=(IASTNode)Match(input,QUOTED_String,Follow._QUOTED_String_in_stringLiteral2438); 
-			QUOTED_String209_tree = (IASTNode)adaptor.DupNode(QUOTED_String209);
+			QUOTED_String208=(IASTNode)Match(input,QUOTED_String,Follow._QUOTED_String_in_stringLiteral2429); 
+			QUOTED_String208_tree = (IASTNode)adaptor.DupNode(QUOTED_String208);
 
 
-			adaptor.AddChild(root_0, QUOTED_String209_tree);
+			adaptor.AddChild(root_0, QUOTED_String208_tree);
 
 
 			}
@@ -10548,7 +10513,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("stringLiteral", 51);
 			LeaveRule_stringLiteral();
 		}
-		DebugLocation(463, 1);
+		DebugLocation(464, 1);
 		} finally { DebugExitRule(GrammarFileName, "stringLiteral"); }
 		return retval;
 
@@ -10558,7 +10523,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_identifier();
 	partial void LeaveRule_identifier();
 	// $ANTLR start "identifier"
-	// HqlSqlWalker.g:465:1: identifier : ( IDENT | WEIRD_IDENT ) ;
+	// HqlSqlWalker.g:466:1: identifier : ( IDENT | WEIRD_IDENT ) ;
 	[GrammarRule("identifier")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> identifier()
 	{
@@ -10573,30 +10538,30 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		IASTNode set210 = default(IASTNode);
+		IASTNode set209 = default(IASTNode);
 
-		IASTNode set210_tree = default(IASTNode);
+		IASTNode set209_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "identifier");
-		DebugLocation(465, 1);
+		DebugLocation(466, 1);
 		try
 		{
-			// HqlSqlWalker.g:466:2: ( ( IDENT | WEIRD_IDENT ) )
+			// HqlSqlWalker.g:467:2: ( ( IDENT | WEIRD_IDENT ) )
 			DebugEnterAlt(1);
 			// HqlSqlWalker.g:
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(466, 2);
+			DebugLocation(467, 2);
 
 			_last = (IASTNode)input.LT(1);
-			set210=(IASTNode)input.LT(1);
+			set209=(IASTNode)input.LT(1);
 			if (input.LA(1)==IDENT||input.LA(1)==WEIRD_IDENT)
 			{
 				input.Consume();
-				set210_tree = (IASTNode)adaptor.DupNode(set210);
+				set209_tree = (IASTNode)adaptor.DupNode(set209);
 
 
-				adaptor.AddChild(root_0, set210_tree);
+				adaptor.AddChild(root_0, set209_tree);
 
 				state.errorRecovery=false;
 			}
@@ -10627,7 +10592,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("identifier", 52);
 			LeaveRule_identifier();
 		}
-		DebugLocation(467, 1);
+		DebugLocation(468, 1);
 		} finally { DebugExitRule(GrammarFileName, "identifier"); }
 		return retval;
 
@@ -10637,7 +10602,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_addrExpr();
 	partial void LeaveRule_addrExpr();
 	// $ANTLR start "addrExpr"
-	// HqlSqlWalker.g:469:1: addrExpr[ bool root ] : ( addrExprDot[root] | addrExprIndex[root] | addrExprIdent[root] );
+	// HqlSqlWalker.g:470:1: addrExpr[ bool root ] : ( addrExprDot[root] | addrExprIndex[root] | addrExprIdent[root] );
 	[GrammarRule("addrExpr")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> addrExpr(bool root)
 	{
@@ -10652,96 +10617,96 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		AstTreeRuleReturnScope<IASTNode, IASTNode> addrExprDot211 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> addrExprIndex212 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> addrExprIdent213 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> addrExprDot210 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> addrExprIndex211 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> addrExprIdent212 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "addrExpr");
-		DebugLocation(469, 2);
+		DebugLocation(470, 2);
 		try
 		{
-			// HqlSqlWalker.g:470:2: ( addrExprDot[root] | addrExprIndex[root] | addrExprIdent[root] )
-			int alt68=3;
-			try { DebugEnterDecision(68, false);
+			// HqlSqlWalker.g:471:2: ( addrExprDot[root] | addrExprIndex[root] | addrExprIdent[root] )
+			int alt66=3;
+			try { DebugEnterDecision(66, false);
 			switch (input.LA(1))
 			{
 			case DOT:
 				{
-				alt68 = 1;
+				alt66 = 1;
 				}
 				break;
 			case INDEX_OP:
 				{
-				alt68 = 2;
+				alt66 = 2;
 				}
 				break;
 			case IDENT:
 			case WEIRD_IDENT:
 				{
-				alt68 = 3;
+				alt66 = 3;
 				}
 				break;
 			default:
 				{
-					NoViableAltException nvae = new NoViableAltException("", 68, 0, input, 1);
+					NoViableAltException nvae = new NoViableAltException("", 66, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
 			}
 
-			} finally { DebugExitDecision(68); }
-			switch (alt68)
+			} finally { DebugExitDecision(66); }
+			switch (alt66)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// HqlSqlWalker.g:470:4: addrExprDot[root]
-				{
-				root_0 = (IASTNode)adaptor.Nil();
-
-				DebugLocation(470, 4);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._addrExprDot_in_addrExpr2468);
-				addrExprDot211=addrExprDot(root);
-				PopFollow();
-
-				adaptor.AddChild(root_0, addrExprDot211.Tree);
-
-
-				}
-				break;
-			case 2:
-				DebugEnterAlt(2);
-				// HqlSqlWalker.g:471:4: addrExprIndex[root]
+				// HqlSqlWalker.g:471:4: addrExprDot[root]
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(471, 4);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._addrExprIndex_in_addrExpr2475);
-				addrExprIndex212=addrExprIndex(root);
+				PushFollow(Follow._addrExprDot_in_addrExpr2459);
+				addrExprDot210=addrExprDot(root);
 				PopFollow();
 
-				adaptor.AddChild(root_0, addrExprIndex212.Tree);
+				adaptor.AddChild(root_0, addrExprDot210.Tree);
 
 
 				}
 				break;
-			case 3:
-				DebugEnterAlt(3);
-				// HqlSqlWalker.g:472:4: addrExprIdent[root]
+			case 2:
+				DebugEnterAlt(2);
+				// HqlSqlWalker.g:472:4: addrExprIndex[root]
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(472, 4);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._addrExprIdent_in_addrExpr2482);
-				addrExprIdent213=addrExprIdent(root);
+				PushFollow(Follow._addrExprIndex_in_addrExpr2466);
+				addrExprIndex211=addrExprIndex(root);
 				PopFollow();
 
-				adaptor.AddChild(root_0, addrExprIdent213.Tree);
+				adaptor.AddChild(root_0, addrExprIndex211.Tree);
+
+
+				}
+				break;
+			case 3:
+				DebugEnterAlt(3);
+				// HqlSqlWalker.g:473:4: addrExprIdent[root]
+				{
+				root_0 = (IASTNode)adaptor.Nil();
+
+				DebugLocation(473, 4);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._addrExprIdent_in_addrExpr2473);
+				addrExprIdent212=addrExprIdent(root);
+				PopFollow();
+
+				adaptor.AddChild(root_0, addrExprIdent212.Tree);
 
 
 				}
@@ -10762,7 +10727,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("addrExpr", 53);
 			LeaveRule_addrExpr();
 		}
-		DebugLocation(473, 2);
+		DebugLocation(474, 2);
 		} finally { DebugExitRule(GrammarFileName, "addrExpr"); }
 		return retval;
 
@@ -10772,7 +10737,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_addrExprDot();
 	partial void LeaveRule_addrExprDot();
 	// $ANTLR start "addrExprDot"
-	// HqlSqlWalker.g:475:1: addrExprDot[ bool root ] : ^(d= DOT lhs= addrExprLhs rhs= propertyName ) -> ^( $d $lhs $rhs) ;
+	// HqlSqlWalker.g:476:1: addrExprDot[ bool root ] : ^(d= DOT lhs= addrExprLhs rhs= propertyName ) -> ^( $d $lhs $rhs) ;
 	[GrammarRule("addrExprDot")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> addrExprDot(bool root)
 	{
@@ -10796,39 +10761,39 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		RewriteRuleSubtreeStream stream_addrExprLhs=new RewriteRuleSubtreeStream(adaptor,"rule addrExprLhs");
 		RewriteRuleSubtreeStream stream_propertyName=new RewriteRuleSubtreeStream(adaptor,"rule propertyName");
 		try { DebugEnterRule(GrammarFileName, "addrExprDot");
-		DebugLocation(475, 1);
+		DebugLocation(476, 1);
 		try
 		{
-			// HqlSqlWalker.g:480:2: ( ^(d= DOT lhs= addrExprLhs rhs= propertyName ) -> ^( $d $lhs $rhs) )
+			// HqlSqlWalker.g:481:2: ( ^(d= DOT lhs= addrExprLhs rhs= propertyName ) -> ^( $d $lhs $rhs) )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:480:4: ^(d= DOT lhs= addrExprLhs rhs= propertyName )
+			// HqlSqlWalker.g:481:4: ^(d= DOT lhs= addrExprLhs rhs= propertyName )
 			{
-			DebugLocation(480, 4);
+			DebugLocation(481, 4);
 
 			_last = (IASTNode)input.LT(1);
 			{
 			IASTNode _save_last_1 = _last;
 			IASTNode _first_1 = default(IASTNode);
 			IASTNode root_1 = (IASTNode)adaptor.Nil();
-			DebugLocation(480, 7);
+			DebugLocation(481, 7);
 
 			_last = (IASTNode)input.LT(1);
-			d=(IASTNode)Match(input,DOT,Follow._DOT_in_addrExprDot2506); 
+			d=(IASTNode)Match(input,DOT,Follow._DOT_in_addrExprDot2497); 
 			 
 			stream_DOT.Add(d);
 
 
 			Match(input, TokenTypes.Down, null); 
-			DebugLocation(480, 15);
+			DebugLocation(481, 15);
 			_last = (IASTNode)input.LT(1);
-			PushFollow(Follow._addrExprLhs_in_addrExprDot2510);
+			PushFollow(Follow._addrExprLhs_in_addrExprDot2501);
 			lhs=addrExprLhs();
 			PopFollow();
 
 			stream_addrExprLhs.Add(lhs.Tree);
-			DebugLocation(480, 31);
+			DebugLocation(481, 31);
 			_last = (IASTNode)input.LT(1);
-			PushFollow(Follow._propertyName_in_addrExprDot2514);
+			PushFollow(Follow._propertyName_in_addrExprDot2505);
 			rhs=propertyName();
 			PopFollow();
 
@@ -10856,18 +10821,18 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 			root_0 = (IASTNode)adaptor.Nil();
-			// 481:3: -> ^( $d $lhs $rhs)
+			// 482:3: -> ^( $d $lhs $rhs)
 			{
-				DebugLocation(481, 6);
-				// HqlSqlWalker.g:481:6: ^( $d $lhs $rhs)
+				DebugLocation(482, 6);
+				// HqlSqlWalker.g:482:6: ^( $d $lhs $rhs)
 				{
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(481, 9);
+				DebugLocation(482, 9);
 				root_1 = (IASTNode)adaptor.BecomeRoot(stream_d.NextNode(), root_1);
 
-				DebugLocation(481, 12);
+				DebugLocation(482, 12);
 				adaptor.AddChild(root_1, stream_lhs.NextTree());
-				DebugLocation(481, 17);
+				DebugLocation(482, 17);
 				adaptor.AddChild(root_1, stream_rhs.NextTree());
 
 				adaptor.AddChild(root_0, root_1);
@@ -10897,7 +10862,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("addrExprDot", 54);
 			LeaveRule_addrExprDot();
 		}
-		DebugLocation(482, 1);
+		DebugLocation(483, 1);
 		} finally { DebugExitRule(GrammarFileName, "addrExprDot"); }
 		return retval;
 
@@ -10907,7 +10872,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_addrExprIndex();
 	partial void LeaveRule_addrExprIndex();
 	// $ANTLR start "addrExprIndex"
-	// HqlSqlWalker.g:484:1: addrExprIndex[ bool root ] : ^(i= INDEX_OP lhs2= addrExprLhs rhs2= expr ) -> ^( $i $lhs2 $rhs2) ;
+	// HqlSqlWalker.g:485:1: addrExprIndex[ bool root ] : ^(i= INDEX_OP lhs2= addrExprLhs rhs2= expr ) -> ^( $i $lhs2 $rhs2) ;
 	[GrammarRule("addrExprIndex")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> addrExprIndex(bool root)
 	{
@@ -10931,39 +10896,39 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		RewriteRuleSubtreeStream stream_addrExprLhs=new RewriteRuleSubtreeStream(adaptor,"rule addrExprLhs");
 		RewriteRuleSubtreeStream stream_expr=new RewriteRuleSubtreeStream(adaptor,"rule expr");
 		try { DebugEnterRule(GrammarFileName, "addrExprIndex");
-		DebugLocation(484, 1);
+		DebugLocation(485, 1);
 		try
 		{
-			// HqlSqlWalker.g:490:2: ( ^(i= INDEX_OP lhs2= addrExprLhs rhs2= expr ) -> ^( $i $lhs2 $rhs2) )
+			// HqlSqlWalker.g:491:2: ( ^(i= INDEX_OP lhs2= addrExprLhs rhs2= expr ) -> ^( $i $lhs2 $rhs2) )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:490:4: ^(i= INDEX_OP lhs2= addrExprLhs rhs2= expr )
+			// HqlSqlWalker.g:491:4: ^(i= INDEX_OP lhs2= addrExprLhs rhs2= expr )
 			{
-			DebugLocation(490, 4);
+			DebugLocation(491, 4);
 
 			_last = (IASTNode)input.LT(1);
 			{
 			IASTNode _save_last_1 = _last;
 			IASTNode _first_1 = default(IASTNode);
 			IASTNode root_1 = (IASTNode)adaptor.Nil();
-			DebugLocation(490, 7);
+			DebugLocation(491, 7);
 
 			_last = (IASTNode)input.LT(1);
-			i=(IASTNode)Match(input,INDEX_OP,Follow._INDEX_OP_in_addrExprIndex2553); 
+			i=(IASTNode)Match(input,INDEX_OP,Follow._INDEX_OP_in_addrExprIndex2544); 
 			 
 			stream_INDEX_OP.Add(i);
 
 
 			Match(input, TokenTypes.Down, null); 
-			DebugLocation(490, 21);
+			DebugLocation(491, 21);
 			_last = (IASTNode)input.LT(1);
-			PushFollow(Follow._addrExprLhs_in_addrExprIndex2557);
+			PushFollow(Follow._addrExprLhs_in_addrExprIndex2548);
 			lhs2=addrExprLhs();
 			PopFollow();
 
 			stream_addrExprLhs.Add(lhs2.Tree);
-			DebugLocation(490, 38);
+			DebugLocation(491, 38);
 			_last = (IASTNode)input.LT(1);
-			PushFollow(Follow._expr_in_addrExprIndex2561);
+			PushFollow(Follow._expr_in_addrExprIndex2552);
 			rhs2=expr();
 			PopFollow();
 
@@ -10991,18 +10956,18 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 			root_0 = (IASTNode)adaptor.Nil();
-			// 491:3: -> ^( $i $lhs2 $rhs2)
+			// 492:3: -> ^( $i $lhs2 $rhs2)
 			{
-				DebugLocation(491, 6);
-				// HqlSqlWalker.g:491:6: ^( $i $lhs2 $rhs2)
+				DebugLocation(492, 6);
+				// HqlSqlWalker.g:492:6: ^( $i $lhs2 $rhs2)
 				{
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(491, 9);
+				DebugLocation(492, 9);
 				root_1 = (IASTNode)adaptor.BecomeRoot(stream_i.NextNode(), root_1);
 
-				DebugLocation(491, 12);
+				DebugLocation(492, 12);
 				adaptor.AddChild(root_1, stream_lhs2.NextTree());
-				DebugLocation(491, 18);
+				DebugLocation(492, 18);
 				adaptor.AddChild(root_1, stream_rhs2.NextTree());
 
 				adaptor.AddChild(root_0, root_1);
@@ -11032,7 +10997,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("addrExprIndex", 55);
 			LeaveRule_addrExprIndex();
 		}
-		DebugLocation(492, 1);
+		DebugLocation(493, 1);
 		} finally { DebugExitRule(GrammarFileName, "addrExprIndex"); }
 		return retval;
 
@@ -11042,7 +11007,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_addrExprIdent();
 	partial void LeaveRule_addrExprIdent();
 	// $ANTLR start "addrExprIdent"
-	// HqlSqlWalker.g:494:1: addrExprIdent[ bool root ] : p= identifier -> {IsNonQualifiedPropertyRef($p.tree)}? ^() -> ^() ;
+	// HqlSqlWalker.g:495:1: addrExprIdent[ bool root ] : p= identifier -> {IsNonQualifiedPropertyRef($p.tree)}? ^() -> ^() ;
 	[GrammarRule("addrExprIdent")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> addrExprIdent(bool root)
 	{
@@ -11061,16 +11026,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 		RewriteRuleSubtreeStream stream_identifier=new RewriteRuleSubtreeStream(adaptor,"rule identifier");
 		try { DebugEnterRule(GrammarFileName, "addrExprIdent");
-		DebugLocation(494, 1);
+		DebugLocation(495, 1);
 		try
 		{
-			// HqlSqlWalker.g:495:2: (p= identifier -> {IsNonQualifiedPropertyRef($p.tree)}? ^() -> ^() )
+			// HqlSqlWalker.g:496:2: (p= identifier -> {IsNonQualifiedPropertyRef($p.tree)}? ^() -> ^() )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:495:4: p= identifier
+			// HqlSqlWalker.g:496:4: p= identifier
 			{
-			DebugLocation(495, 5);
+			DebugLocation(496, 5);
 			_last = (IASTNode)input.LT(1);
-			PushFollow(Follow._identifier_in_addrExprIdent2593);
+			PushFollow(Follow._identifier_in_addrExprIdent2584);
 			p=identifier();
 			PopFollow();
 
@@ -11089,27 +11054,27 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 			root_0 = (IASTNode)adaptor.Nil();
-			// 496:2: -> {IsNonQualifiedPropertyRef($p.tree)}? ^()
+			// 497:2: -> {IsNonQualifiedPropertyRef($p.tree)}? ^()
 			if (IsNonQualifiedPropertyRef((p!=null?((IASTNode)p.Tree):default(IASTNode))))
 			{
-				DebugLocation(496, 43);
-				// HqlSqlWalker.g:496:43: ^()
+				DebugLocation(497, 43);
+				// HqlSqlWalker.g:497:43: ^()
 				{
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(496, 45);
+				DebugLocation(497, 45);
 				root_1 = (IASTNode)adaptor.BecomeRoot(LookupNonQualifiedProperty((p!=null?((IASTNode)p.Tree):default(IASTNode))), root_1);
 
 				adaptor.AddChild(root_0, root_1);
 				}
 
 			}
-			else // 497:2: -> ^()
+			else // 498:2: -> ^()
 			{
-				DebugLocation(497, 5);
-				// HqlSqlWalker.g:497:5: ^()
+				DebugLocation(498, 5);
+				// HqlSqlWalker.g:498:5: ^()
 				{
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(497, 7);
+				DebugLocation(498, 7);
 				root_1 = (IASTNode)adaptor.BecomeRoot(Resolve((p!=null?((IASTNode)p.Tree):default(IASTNode))), root_1);
 
 				adaptor.AddChild(root_0, root_1);
@@ -11136,7 +11101,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("addrExprIdent", 56);
 			LeaveRule_addrExprIdent();
 		}
-		DebugLocation(498, 1);
+		DebugLocation(499, 1);
 		} finally { DebugExitRule(GrammarFileName, "addrExprIdent"); }
 		return retval;
 
@@ -11146,7 +11111,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_addrExprLhs();
 	partial void LeaveRule_addrExprLhs();
 	// $ANTLR start "addrExprLhs"
-	// HqlSqlWalker.g:500:1: addrExprLhs : addrExpr[ false ] ;
+	// HqlSqlWalker.g:501:1: addrExprLhs : addrExpr[ false ] ;
 	[GrammarRule("addrExprLhs")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> addrExprLhs()
 	{
@@ -11161,26 +11126,26 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		AstTreeRuleReturnScope<IASTNode, IASTNode> addrExpr214 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> addrExpr213 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "addrExprLhs");
-		DebugLocation(500, 1);
+		DebugLocation(501, 1);
 		try
 		{
-			// HqlSqlWalker.g:501:2: ( addrExpr[ false ] )
+			// HqlSqlWalker.g:502:2: ( addrExpr[ false ] )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:501:4: addrExpr[ false ]
+			// HqlSqlWalker.g:502:4: addrExpr[ false ]
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(501, 4);
+			DebugLocation(502, 4);
 
 			_last = (IASTNode)input.LT(1);
-			PushFollow(Follow._addrExpr_in_addrExprLhs2621);
-			addrExpr214=addrExpr(false);
+			PushFollow(Follow._addrExpr_in_addrExprLhs2612);
+			addrExpr213=addrExpr(false);
 			PopFollow();
 
-			adaptor.AddChild(root_0, addrExpr214.Tree);
+			adaptor.AddChild(root_0, addrExpr213.Tree);
 
 
 			}
@@ -11199,7 +11164,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("addrExprLhs", 57);
 			LeaveRule_addrExprLhs();
 		}
-		DebugLocation(502, 1);
+		DebugLocation(503, 1);
 		} finally { DebugExitRule(GrammarFileName, "addrExprLhs"); }
 		return retval;
 
@@ -11209,7 +11174,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_propertyName();
 	partial void LeaveRule_propertyName();
 	// $ANTLR start "propertyName"
-	// HqlSqlWalker.g:504:1: propertyName : ( identifier | CLASS | ELEMENTS | INDICES );
+	// HqlSqlWalker.g:505:1: propertyName : ( identifier | CLASS | ELEMENTS | INDICES );
 	[GrammarRule("propertyName")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> propertyName()
 	{
@@ -11224,123 +11189,123 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		IASTNode CLASS216 = default(IASTNode);
-		IASTNode ELEMENTS217 = default(IASTNode);
-		IASTNode INDICES218 = default(IASTNode);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> identifier215 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode CLASS215 = default(IASTNode);
+		IASTNode ELEMENTS216 = default(IASTNode);
+		IASTNode INDICES217 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> identifier214 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-		IASTNode CLASS216_tree = default(IASTNode);
-		IASTNode ELEMENTS217_tree = default(IASTNode);
-		IASTNode INDICES218_tree = default(IASTNode);
+		IASTNode CLASS215_tree = default(IASTNode);
+		IASTNode ELEMENTS216_tree = default(IASTNode);
+		IASTNode INDICES217_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "propertyName");
-		DebugLocation(504, 1);
+		DebugLocation(505, 1);
 		try
 		{
-			// HqlSqlWalker.g:505:2: ( identifier | CLASS | ELEMENTS | INDICES )
-			int alt69=4;
-			try { DebugEnterDecision(69, false);
+			// HqlSqlWalker.g:506:2: ( identifier | CLASS | ELEMENTS | INDICES )
+			int alt67=4;
+			try { DebugEnterDecision(67, false);
 			switch (input.LA(1))
 			{
 			case IDENT:
 			case WEIRD_IDENT:
 				{
-				alt69 = 1;
+				alt67 = 1;
 				}
 				break;
 			case CLASS:
 				{
-				alt69 = 2;
+				alt67 = 2;
 				}
 				break;
 			case ELEMENTS:
 				{
-				alt69 = 3;
+				alt67 = 3;
 				}
 				break;
 			case INDICES:
 				{
-				alt69 = 4;
+				alt67 = 4;
 				}
 				break;
 			default:
 				{
-					NoViableAltException nvae = new NoViableAltException("", 69, 0, input, 1);
+					NoViableAltException nvae = new NoViableAltException("", 67, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
 			}
 
-			} finally { DebugExitDecision(69); }
-			switch (alt69)
+			} finally { DebugExitDecision(67); }
+			switch (alt67)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// HqlSqlWalker.g:505:4: identifier
-				{
-				root_0 = (IASTNode)adaptor.Nil();
-
-				DebugLocation(505, 4);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._identifier_in_propertyName2634);
-				identifier215=identifier();
-				PopFollow();
-
-				adaptor.AddChild(root_0, identifier215.Tree);
-
-
-				}
-				break;
-			case 2:
-				DebugEnterAlt(2);
-				// HqlSqlWalker.g:506:4: CLASS
+				// HqlSqlWalker.g:506:4: identifier
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(506, 4);
 
 				_last = (IASTNode)input.LT(1);
-				CLASS216=(IASTNode)Match(input,CLASS,Follow._CLASS_in_propertyName2639); 
-				CLASS216_tree = (IASTNode)adaptor.DupNode(CLASS216);
+				PushFollow(Follow._identifier_in_propertyName2625);
+				identifier214=identifier();
+				PopFollow();
 
-
-				adaptor.AddChild(root_0, CLASS216_tree);
+				adaptor.AddChild(root_0, identifier214.Tree);
 
 
 				}
 				break;
-			case 3:
-				DebugEnterAlt(3);
-				// HqlSqlWalker.g:507:4: ELEMENTS
+			case 2:
+				DebugEnterAlt(2);
+				// HqlSqlWalker.g:507:4: CLASS
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(507, 4);
 
 				_last = (IASTNode)input.LT(1);
-				ELEMENTS217=(IASTNode)Match(input,ELEMENTS,Follow._ELEMENTS_in_propertyName2644); 
-				ELEMENTS217_tree = (IASTNode)adaptor.DupNode(ELEMENTS217);
+				CLASS215=(IASTNode)Match(input,CLASS,Follow._CLASS_in_propertyName2630); 
+				CLASS215_tree = (IASTNode)adaptor.DupNode(CLASS215);
 
 
-				adaptor.AddChild(root_0, ELEMENTS217_tree);
+				adaptor.AddChild(root_0, CLASS215_tree);
 
 
 				}
 				break;
-			case 4:
-				DebugEnterAlt(4);
-				// HqlSqlWalker.g:508:4: INDICES
+			case 3:
+				DebugEnterAlt(3);
+				// HqlSqlWalker.g:508:4: ELEMENTS
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(508, 4);
 
 				_last = (IASTNode)input.LT(1);
-				INDICES218=(IASTNode)Match(input,INDICES,Follow._INDICES_in_propertyName2649); 
-				INDICES218_tree = (IASTNode)adaptor.DupNode(INDICES218);
+				ELEMENTS216=(IASTNode)Match(input,ELEMENTS,Follow._ELEMENTS_in_propertyName2635); 
+				ELEMENTS216_tree = (IASTNode)adaptor.DupNode(ELEMENTS216);
 
 
-				adaptor.AddChild(root_0, INDICES218_tree);
+				adaptor.AddChild(root_0, ELEMENTS216_tree);
+
+
+				}
+				break;
+			case 4:
+				DebugEnterAlt(4);
+				// HqlSqlWalker.g:509:4: INDICES
+				{
+				root_0 = (IASTNode)adaptor.Nil();
+
+				DebugLocation(509, 4);
+
+				_last = (IASTNode)input.LT(1);
+				INDICES217=(IASTNode)Match(input,INDICES,Follow._INDICES_in_propertyName2640); 
+				INDICES217_tree = (IASTNode)adaptor.DupNode(INDICES217);
+
+
+				adaptor.AddChild(root_0, INDICES217_tree);
 
 
 				}
@@ -11361,7 +11326,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("propertyName", 58);
 			LeaveRule_propertyName();
 		}
-		DebugLocation(509, 1);
+		DebugLocation(510, 1);
 		} finally { DebugExitRule(GrammarFileName, "propertyName"); }
 		return retval;
 
@@ -11371,7 +11336,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_propertyRef();
 	partial void LeaveRule_propertyRef();
 	// $ANTLR start "propertyRef"
-	// HqlSqlWalker.g:511:1: propertyRef : ( propertyRefPath | propertyRefIdent );
+	// HqlSqlWalker.g:512:1: propertyRef : ( propertyRefPath | propertyRefIdent );
 	[GrammarRule("propertyRef")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> propertyRef()
 	{
@@ -11386,67 +11351,67 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		AstTreeRuleReturnScope<IASTNode, IASTNode> propertyRefPath219 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-		AstTreeRuleReturnScope<IASTNode, IASTNode> propertyRefIdent220 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> propertyRefPath218 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> propertyRefIdent219 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "propertyRef");
-		DebugLocation(511, 1);
+		DebugLocation(512, 1);
 		try
 		{
-			// HqlSqlWalker.g:512:2: ( propertyRefPath | propertyRefIdent )
-			int alt70=2;
-			try { DebugEnterDecision(70, false);
-			int LA70_1 = input.LA(1);
+			// HqlSqlWalker.g:513:2: ( propertyRefPath | propertyRefIdent )
+			int alt68=2;
+			try { DebugEnterDecision(68, false);
+			int LA68_1 = input.LA(1);
 
-			if ((LA70_1==DOT))
+			if ((LA68_1==DOT))
 			{
-				alt70 = 1;
+				alt68 = 1;
 			}
-			else if ((LA70_1==IDENT||LA70_1==WEIRD_IDENT))
+			else if ((LA68_1==IDENT||LA68_1==WEIRD_IDENT))
 			{
-				alt70 = 2;
+				alt68 = 2;
 			}
 			else
 			{
-				NoViableAltException nvae = new NoViableAltException("", 70, 0, input, 1);
+				NoViableAltException nvae = new NoViableAltException("", 68, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-			} finally { DebugExitDecision(70); }
-			switch (alt70)
+			} finally { DebugExitDecision(68); }
+			switch (alt68)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// HqlSqlWalker.g:512:4: propertyRefPath
-				{
-				root_0 = (IASTNode)adaptor.Nil();
-
-				DebugLocation(512, 4);
-
-				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._propertyRefPath_in_propertyRef2661);
-				propertyRefPath219=propertyRefPath();
-				PopFollow();
-
-				adaptor.AddChild(root_0, propertyRefPath219.Tree);
-
-
-				}
-				break;
-			case 2:
-				DebugEnterAlt(2);
-				// HqlSqlWalker.g:513:4: propertyRefIdent
+				// HqlSqlWalker.g:513:4: propertyRefPath
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(513, 4);
 
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._propertyRefIdent_in_propertyRef2666);
-				propertyRefIdent220=propertyRefIdent();
+				PushFollow(Follow._propertyRefPath_in_propertyRef2652);
+				propertyRefPath218=propertyRefPath();
 				PopFollow();
 
-				adaptor.AddChild(root_0, propertyRefIdent220.Tree);
+				adaptor.AddChild(root_0, propertyRefPath218.Tree);
+
+
+				}
+				break;
+			case 2:
+				DebugEnterAlt(2);
+				// HqlSqlWalker.g:514:4: propertyRefIdent
+				{
+				root_0 = (IASTNode)adaptor.Nil();
+
+				DebugLocation(514, 4);
+
+				_last = (IASTNode)input.LT(1);
+				PushFollow(Follow._propertyRefIdent_in_propertyRef2657);
+				propertyRefIdent219=propertyRefIdent();
+				PopFollow();
+
+				adaptor.AddChild(root_0, propertyRefIdent219.Tree);
 
 
 				}
@@ -11467,7 +11432,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("propertyRef", 59);
 			LeaveRule_propertyRef();
 		}
-		DebugLocation(514, 1);
+		DebugLocation(515, 1);
 		} finally { DebugExitRule(GrammarFileName, "propertyRef"); }
 		return retval;
 
@@ -11477,7 +11442,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_propertyRefPath();
 	partial void LeaveRule_propertyRefPath();
 	// $ANTLR start "propertyRefPath"
-	// HqlSqlWalker.g:516:1: propertyRefPath : ^(d= DOT lhs= propertyRefLhs rhs= propertyName ) -> ^( $d $lhs $rhs) ;
+	// HqlSqlWalker.g:517:1: propertyRefPath : ^(d= DOT lhs= propertyRefLhs rhs= propertyName ) -> ^( $d $lhs $rhs) ;
 	[GrammarRule("propertyRefPath")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> propertyRefPath()
 	{
@@ -11501,39 +11466,39 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		RewriteRuleSubtreeStream stream_propertyRefLhs=new RewriteRuleSubtreeStream(adaptor,"rule propertyRefLhs");
 		RewriteRuleSubtreeStream stream_propertyName=new RewriteRuleSubtreeStream(adaptor,"rule propertyName");
 		try { DebugEnterRule(GrammarFileName, "propertyRefPath");
-		DebugLocation(516, 1);
+		DebugLocation(517, 1);
 		try
 		{
-			// HqlSqlWalker.g:521:2: ( ^(d= DOT lhs= propertyRefLhs rhs= propertyName ) -> ^( $d $lhs $rhs) )
+			// HqlSqlWalker.g:522:2: ( ^(d= DOT lhs= propertyRefLhs rhs= propertyName ) -> ^( $d $lhs $rhs) )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:521:4: ^(d= DOT lhs= propertyRefLhs rhs= propertyName )
+			// HqlSqlWalker.g:522:4: ^(d= DOT lhs= propertyRefLhs rhs= propertyName )
 			{
-			DebugLocation(521, 4);
+			DebugLocation(522, 4);
 
 			_last = (IASTNode)input.LT(1);
 			{
 			IASTNode _save_last_1 = _last;
 			IASTNode _first_1 = default(IASTNode);
 			IASTNode root_1 = (IASTNode)adaptor.Nil();
-			DebugLocation(521, 7);
+			DebugLocation(522, 7);
 
 			_last = (IASTNode)input.LT(1);
-			d=(IASTNode)Match(input,DOT,Follow._DOT_in_propertyRefPath2686); 
+			d=(IASTNode)Match(input,DOT,Follow._DOT_in_propertyRefPath2677); 
 			 
 			stream_DOT.Add(d);
 
 
 			Match(input, TokenTypes.Down, null); 
-			DebugLocation(521, 15);
+			DebugLocation(522, 15);
 			_last = (IASTNode)input.LT(1);
-			PushFollow(Follow._propertyRefLhs_in_propertyRefPath2690);
+			PushFollow(Follow._propertyRefLhs_in_propertyRefPath2681);
 			lhs=propertyRefLhs();
 			PopFollow();
 
 			stream_propertyRefLhs.Add(lhs.Tree);
-			DebugLocation(521, 34);
+			DebugLocation(522, 34);
 			_last = (IASTNode)input.LT(1);
-			PushFollow(Follow._propertyName_in_propertyRefPath2694);
+			PushFollow(Follow._propertyName_in_propertyRefPath2685);
 			rhs=propertyName();
 			PopFollow();
 
@@ -11561,18 +11526,18 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 			root_0 = (IASTNode)adaptor.Nil();
-			// 522:3: -> ^( $d $lhs $rhs)
+			// 523:3: -> ^( $d $lhs $rhs)
 			{
-				DebugLocation(522, 6);
-				// HqlSqlWalker.g:522:6: ^( $d $lhs $rhs)
+				DebugLocation(523, 6);
+				// HqlSqlWalker.g:523:6: ^( $d $lhs $rhs)
 				{
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(522, 9);
+				DebugLocation(523, 9);
 				root_1 = (IASTNode)adaptor.BecomeRoot(stream_d.NextNode(), root_1);
 
-				DebugLocation(522, 12);
+				DebugLocation(523, 12);
 				adaptor.AddChild(root_1, stream_lhs.NextTree());
-				DebugLocation(522, 17);
+				DebugLocation(523, 17);
 				adaptor.AddChild(root_1, stream_rhs.NextTree());
 
 				adaptor.AddChild(root_0, root_1);
@@ -11603,7 +11568,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("propertyRefPath", 60);
 			LeaveRule_propertyRefPath();
 		}
-		DebugLocation(523, 1);
+		DebugLocation(524, 1);
 		} finally { DebugExitRule(GrammarFileName, "propertyRefPath"); }
 		return retval;
 
@@ -11613,7 +11578,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_propertyRefIdent();
 	partial void LeaveRule_propertyRefIdent();
 	// $ANTLR start "propertyRefIdent"
-	// HqlSqlWalker.g:525:1: propertyRefIdent : p= identifier ;
+	// HqlSqlWalker.g:526:1: propertyRefIdent : p= identifier ;
 	[GrammarRule("propertyRefIdent")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> propertyRefIdent()
 	{
@@ -11631,19 +11596,19 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		AstTreeRuleReturnScope<IASTNode, IASTNode> p = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "propertyRefIdent");
-		DebugLocation(525, 1);
+		DebugLocation(526, 1);
 		try
 		{
-			// HqlSqlWalker.g:539:2: (p= identifier )
+			// HqlSqlWalker.g:540:2: (p= identifier )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:539:4: p= identifier
+			// HqlSqlWalker.g:540:4: p= identifier
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(539, 5);
+			DebugLocation(540, 5);
 
 			_last = (IASTNode)input.LT(1);
-			PushFollow(Follow._identifier_in_propertyRefIdent2731);
+			PushFollow(Follow._identifier_in_propertyRefIdent2722);
 			p=identifier();
 			PopFollow();
 
@@ -11679,7 +11644,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("propertyRefIdent", 61);
 			LeaveRule_propertyRefIdent();
 		}
-		DebugLocation(540, 1);
+		DebugLocation(541, 1);
 		} finally { DebugExitRule(GrammarFileName, "propertyRefIdent"); }
 		return retval;
 
@@ -11689,7 +11654,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_propertyRefLhs();
 	partial void LeaveRule_propertyRefLhs();
 	// $ANTLR start "propertyRefLhs"
-	// HqlSqlWalker.g:542:1: propertyRefLhs : propertyRef ;
+	// HqlSqlWalker.g:543:1: propertyRefLhs : propertyRef ;
 	[GrammarRule("propertyRefLhs")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> propertyRefLhs()
 	{
@@ -11704,26 +11669,26 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		AstTreeRuleReturnScope<IASTNode, IASTNode> propertyRef221 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> propertyRef220 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "propertyRefLhs");
-		DebugLocation(542, 1);
+		DebugLocation(543, 1);
 		try
 		{
-			// HqlSqlWalker.g:543:2: ( propertyRef )
+			// HqlSqlWalker.g:544:2: ( propertyRef )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:543:4: propertyRef
+			// HqlSqlWalker.g:544:4: propertyRef
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(543, 4);
+			DebugLocation(544, 4);
 
 			_last = (IASTNode)input.LT(1);
-			PushFollow(Follow._propertyRef_in_propertyRefLhs2743);
-			propertyRef221=propertyRef();
+			PushFollow(Follow._propertyRef_in_propertyRefLhs2734);
+			propertyRef220=propertyRef();
 			PopFollow();
 
-			adaptor.AddChild(root_0, propertyRef221.Tree);
+			adaptor.AddChild(root_0, propertyRef220.Tree);
 
 
 			}
@@ -11742,7 +11707,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("propertyRefLhs", 62);
 			LeaveRule_propertyRefLhs();
 		}
-		DebugLocation(544, 1);
+		DebugLocation(545, 1);
 		} finally { DebugExitRule(GrammarFileName, "propertyRefLhs"); }
 		return retval;
 
@@ -11752,7 +11717,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_aliasRef();
 	partial void LeaveRule_aliasRef();
 	// $ANTLR start "aliasRef"
-	// HqlSqlWalker.g:546:1: aliasRef : i= identifier ;
+	// HqlSqlWalker.g:547:1: aliasRef : i= identifier ;
 	[GrammarRule("aliasRef")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> aliasRef()
 	{
@@ -11770,19 +11735,19 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		AstTreeRuleReturnScope<IASTNode, IASTNode> i = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "aliasRef");
-		DebugLocation(546, 1);
+		DebugLocation(547, 1);
 		try
 		{
-			// HqlSqlWalker.g:551:2: (i= identifier )
+			// HqlSqlWalker.g:552:2: (i= identifier )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:551:4: i= identifier
+			// HqlSqlWalker.g:552:4: i= identifier
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(551, 5);
+			DebugLocation(552, 5);
 
 			_last = (IASTNode)input.LT(1);
-			PushFollow(Follow._identifier_in_aliasRef2764);
+			PushFollow(Follow._identifier_in_aliasRef2755);
 			i=identifier();
 			PopFollow();
 
@@ -11808,7 +11773,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("aliasRef", 63);
 			LeaveRule_aliasRef();
 		}
-		DebugLocation(553, 1);
+		DebugLocation(554, 1);
 		} finally { DebugExitRule(GrammarFileName, "aliasRef"); }
 		return retval;
 
@@ -11818,7 +11783,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_parameter();
 	partial void LeaveRule_parameter();
 	// $ANTLR start "parameter"
-	// HqlSqlWalker.g:555:1: parameter : ( ^(c= COLON a= identifier ) -> ^() | ^(p= PARAM (n= NUM_INT )? ) -> {n != null}? ^() -> ^() );
+	// HqlSqlWalker.g:556:1: parameter : ( ^(c= COLON a= identifier ) -> ^() | ^(p= PARAM (n= NUM_INT )? ) -> {n != null}? ^() -> ^() );
 	[GrammarRule("parameter")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> parameter()
 	{
@@ -11846,54 +11811,54 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		RewriteRuleNodeStream stream_NUM_INT=new RewriteRuleNodeStream(adaptor,"token NUM_INT");
 		RewriteRuleSubtreeStream stream_identifier=new RewriteRuleSubtreeStream(adaptor,"rule identifier");
 		try { DebugEnterRule(GrammarFileName, "parameter");
-		DebugLocation(555, 1);
+		DebugLocation(556, 1);
 		try
 		{
-			// HqlSqlWalker.g:556:2: ( ^(c= COLON a= identifier ) -> ^() | ^(p= PARAM (n= NUM_INT )? ) -> {n != null}? ^() -> ^() )
-			int alt72=2;
-			try { DebugEnterDecision(72, false);
-			int LA72_1 = input.LA(1);
+			// HqlSqlWalker.g:557:2: ( ^(c= COLON a= identifier ) -> ^() | ^(p= PARAM (n= NUM_INT )? ) -> {n != null}? ^() -> ^() )
+			int alt70=2;
+			try { DebugEnterDecision(70, false);
+			int LA70_1 = input.LA(1);
 
-			if ((LA72_1==COLON))
+			if ((LA70_1==COLON))
 			{
-				alt72 = 1;
+				alt70 = 1;
 			}
-			else if ((LA72_1==PARAM))
+			else if ((LA70_1==PARAM))
 			{
-				alt72 = 2;
+				alt70 = 2;
 			}
 			else
 			{
-				NoViableAltException nvae = new NoViableAltException("", 72, 0, input, 1);
+				NoViableAltException nvae = new NoViableAltException("", 70, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-			} finally { DebugExitDecision(72); }
-			switch (alt72)
+			} finally { DebugExitDecision(70); }
+			switch (alt70)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// HqlSqlWalker.g:556:4: ^(c= COLON a= identifier )
+				// HqlSqlWalker.g:557:4: ^(c= COLON a= identifier )
 				{
-				DebugLocation(556, 4);
+				DebugLocation(557, 4);
 
 				_last = (IASTNode)input.LT(1);
 				{
 				IASTNode _save_last_1 = _last;
 				IASTNode _first_1 = default(IASTNode);
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(556, 7);
+				DebugLocation(557, 7);
 
 				_last = (IASTNode)input.LT(1);
-				c=(IASTNode)Match(input,COLON,Follow._COLON_in_parameter2782); 
+				c=(IASTNode)Match(input,COLON,Follow._COLON_in_parameter2773); 
 				 
 				stream_COLON.Add(c);
 
 
 				Match(input, TokenTypes.Down, null); 
-				DebugLocation(556, 15);
+				DebugLocation(557, 15);
 				_last = (IASTNode)input.LT(1);
-				PushFollow(Follow._identifier_in_parameter2786);
+				PushFollow(Follow._identifier_in_parameter2777);
 				a=identifier();
 				PopFollow();
 
@@ -11918,13 +11883,13 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 				root_0 = (IASTNode)adaptor.Nil();
-				// 558:3: -> ^()
+				// 559:3: -> ^()
 				{
-					DebugLocation(558, 6);
-					// HqlSqlWalker.g:558:6: ^()
+					DebugLocation(559, 6);
+					// HqlSqlWalker.g:559:6: ^()
 					{
 					IASTNode root_1 = (IASTNode)adaptor.Nil();
-					DebugLocation(558, 8);
+					DebugLocation(559, 8);
 					root_1 = (IASTNode)adaptor.BecomeRoot(GenerateNamedParameter( c, (a!=null?((IASTNode)a.Tree):default(IASTNode)) ), root_1);
 
 					adaptor.AddChild(root_0, root_1);
@@ -11939,47 +11904,47 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// HqlSqlWalker.g:559:4: ^(p= PARAM (n= NUM_INT )? )
+				// HqlSqlWalker.g:560:4: ^(p= PARAM (n= NUM_INT )? )
 				{
-				DebugLocation(559, 4);
+				DebugLocation(560, 4);
 
 				_last = (IASTNode)input.LT(1);
 				{
 				IASTNode _save_last_1 = _last;
 				IASTNode _first_1 = default(IASTNode);
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(559, 7);
+				DebugLocation(560, 7);
 
 				_last = (IASTNode)input.LT(1);
-				p=(IASTNode)Match(input,PARAM,Follow._PARAM_in_parameter2807); 
+				p=(IASTNode)Match(input,PARAM,Follow._PARAM_in_parameter2798); 
 				 
 				stream_PARAM.Add(p);
 
 
 				if (input.LA(1) == TokenTypes.Down) {
 					Match(input, TokenTypes.Down, null); 
-					DebugLocation(559, 14);
-					// HqlSqlWalker.g:559:14: (n= NUM_INT )?
-					int alt71=2;
-					try { DebugEnterSubRule(71);
-					try { DebugEnterDecision(71, false);
-					int LA71_1 = input.LA(1);
+					DebugLocation(560, 14);
+					// HqlSqlWalker.g:560:14: (n= NUM_INT )?
+					int alt69=2;
+					try { DebugEnterSubRule(69);
+					try { DebugEnterDecision(69, false);
+					int LA69_1 = input.LA(1);
 
-					if ((LA71_1==NUM_INT))
+					if ((LA69_1==NUM_INT))
 					{
-						alt71 = 1;
+						alt69 = 1;
 					}
-					} finally { DebugExitDecision(71); }
-					switch (alt71)
+					} finally { DebugExitDecision(69); }
+					switch (alt69)
 					{
 					case 1:
 						DebugEnterAlt(1);
-						// HqlSqlWalker.g:559:15: n= NUM_INT
+						// HqlSqlWalker.g:560:15: n= NUM_INT
 						{
-						DebugLocation(559, 16);
+						DebugLocation(560, 16);
 
 						_last = (IASTNode)input.LT(1);
-						n=(IASTNode)Match(input,NUM_INT,Follow._NUM_INT_in_parameter2812); 
+						n=(IASTNode)Match(input,NUM_INT,Follow._NUM_INT_in_parameter2803); 
 						 
 						stream_NUM_INT.Add(n);
 
@@ -11988,7 +11953,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 						break;
 
 					}
-					} finally { DebugExitSubRule(71); }
+					} finally { DebugExitSubRule(69); }
 
 
 					Match(input, TokenTypes.Up, null); 
@@ -12011,27 +11976,27 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 				root_0 = (IASTNode)adaptor.Nil();
-				// 560:3: -> {n != null}? ^()
+				// 561:3: -> {n != null}? ^()
 				if (n != null)
 				{
-					DebugLocation(560, 19);
-					// HqlSqlWalker.g:560:19: ^()
+					DebugLocation(561, 19);
+					// HqlSqlWalker.g:561:19: ^()
 					{
 					IASTNode root_1 = (IASTNode)adaptor.Nil();
-					DebugLocation(560, 21);
+					DebugLocation(561, 21);
 					root_1 = (IASTNode)adaptor.BecomeRoot(GenerateNamedParameter( p, n ), root_1);
 
 					adaptor.AddChild(root_0, root_1);
 					}
 
 				}
-				else // 561:3: -> ^()
+				else // 562:3: -> ^()
 				{
-					DebugLocation(561, 6);
-					// HqlSqlWalker.g:561:6: ^()
+					DebugLocation(562, 6);
+					// HqlSqlWalker.g:562:6: ^()
 					{
 					IASTNode root_1 = (IASTNode)adaptor.Nil();
-					DebugLocation(561, 8);
+					DebugLocation(562, 8);
 					root_1 = (IASTNode)adaptor.BecomeRoot(GeneratePositionalParameter( p ), root_1);
 
 					adaptor.AddChild(root_0, root_1);
@@ -12060,7 +12025,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("parameter", 64);
 			LeaveRule_parameter();
 		}
-		DebugLocation(562, 1);
+		DebugLocation(563, 1);
 		} finally { DebugExitRule(GrammarFileName, "parameter"); }
 		return retval;
 
@@ -12070,7 +12035,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_numericInteger();
 	partial void LeaveRule_numericInteger();
 	// $ANTLR start "numericInteger"
-	// HqlSqlWalker.g:564:1: numericInteger : NUM_INT ;
+	// HqlSqlWalker.g:565:1: numericInteger : NUM_INT ;
 	[GrammarRule("numericInteger")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> numericInteger()
 	{
@@ -12085,27 +12050,27 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		IASTNode _first_0 = default(IASTNode);
 		IASTNode _last = default(IASTNode);
 
-		IASTNode NUM_INT222 = default(IASTNode);
+		IASTNode NUM_INT221 = default(IASTNode);
 
-		IASTNode NUM_INT222_tree = default(IASTNode);
+		IASTNode NUM_INT221_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "numericInteger");
-		DebugLocation(564, 1);
+		DebugLocation(565, 1);
 		try
 		{
-			// HqlSqlWalker.g:565:2: ( NUM_INT )
+			// HqlSqlWalker.g:566:2: ( NUM_INT )
 			DebugEnterAlt(1);
-			// HqlSqlWalker.g:565:4: NUM_INT
+			// HqlSqlWalker.g:566:4: NUM_INT
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(565, 4);
+			DebugLocation(566, 4);
 
 			_last = (IASTNode)input.LT(1);
-			NUM_INT222=(IASTNode)Match(input,NUM_INT,Follow._NUM_INT_in_numericInteger2845); 
-			NUM_INT222_tree = (IASTNode)adaptor.DupNode(NUM_INT222);
+			NUM_INT221=(IASTNode)Match(input,NUM_INT,Follow._NUM_INT_in_numericInteger2836); 
+			NUM_INT221_tree = (IASTNode)adaptor.DupNode(NUM_INT221);
 
 
-			adaptor.AddChild(root_0, NUM_INT222_tree);
+			adaptor.AddChild(root_0, NUM_INT221_tree);
 
 
 			}
@@ -12124,7 +12089,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			LeaveRule("numericInteger", 65);
 			LeaveRule_numericInteger();
 		}
-		DebugLocation(566, 1);
+		DebugLocation(567, 1);
 		} finally { DebugExitRule(GrammarFileName, "numericInteger"); }
 		return retval;
 
@@ -12180,252 +12145,252 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		public static readonly BitSet _takeClause_in_unionedQuery637 = new BitSet(new ulong[]{0x8UL});
 		public static readonly BitSet _ORDER_in_orderClause694 = new BitSet(new ulong[]{0x4UL});
 		public static readonly BitSet _orderExprs_in_orderClause699 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _query_in_orderClause703 = new BitSet(new ulong[]{0x40000408UL});
-		public static readonly BitSet _orderExpr_in_orderExprs726 = new BitSet(new ulong[]{0x8801003508ED412UL,0x461004C01F814010UL,0x1UL});
-		public static readonly BitSet _orderExprs_in_orderExprs740 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _resultVariableRef_in_orderExpr755 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _expr_in_orderExpr760 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _identifier_in_resultVariableRef780 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _SKIP_in_skipClause802 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _NUM_INT_in_skipClause805 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _parameter_in_skipClause809 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _TAKE_in_takeClause823 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _NUM_INT_in_takeClause826 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _parameter_in_takeClause830 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _GROUP_in_groupClause844 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _expr_in_groupClause849 = new BitSet(new ulong[]{0x8801003108ED018UL,0x461004C01F814010UL,0x1UL});
-		public static readonly BitSet _HAVING_in_havingClause865 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _logicalExpr_in_havingClause867 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _SELECT_in_selectClause881 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _DISTINCT_in_selectClause888 = new BitSet(new ulong[]{0x10800007188ED250UL,0x141006C03F014000UL,0x1UL});
-		public static readonly BitSet _selectExprList_in_selectClause894 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _selectExpr_in_selectExprList929 = new BitSet(new ulong[]{0x10800007188ED252UL,0x141006C03F014000UL,0x1UL});
-		public static readonly BitSet _aliasedSelectExpr_in_selectExprList933 = new BitSet(new ulong[]{0x10800007188ED252UL,0x141006C03F014000UL,0x1UL});
-		public static readonly BitSet _AS_in_aliasedSelectExpr957 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _selectExpr_in_aliasedSelectExpr961 = new BitSet(new ulong[]{0x80000000000000UL,0x0UL,0x1UL});
-		public static readonly BitSet _identifier_in_aliasedSelectExpr965 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _propertyRef_in_selectExpr980 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _ALL_in_selectExpr992 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _aliasRef_in_selectExpr996 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _OBJECT_in_selectExpr1008 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _aliasRef_in_selectExpr1012 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _constructor_in_selectExpr1023 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _functionCall_in_selectExpr1034 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _parameter_in_selectExpr1039 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _count_in_selectExpr1044 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _collectionFunction_in_selectExpr1049 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _literal_in_selectExpr1057 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _arithmeticExpr_in_selectExpr1062 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _query_in_selectExpr1067 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _COUNT_in_count1079 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _aggregateExpr_in_count1094 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _ROW_STAR_in_count1098 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _CONSTRUCTOR_in_constructor1114 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _path_in_constructor1116 = new BitSet(new ulong[]{0x10800007188ED258UL,0x141006C03F014000UL,0x1UL});
-		public static readonly BitSet _selectExpr_in_constructor1120 = new BitSet(new ulong[]{0x10800007188ED258UL,0x141006C03F014000UL,0x1UL});
-		public static readonly BitSet _aliasedSelectExpr_in_constructor1124 = new BitSet(new ulong[]{0x10800007188ED258UL,0x141006C03F014000UL,0x1UL});
-		public static readonly BitSet _expr_in_aggregateExpr1140 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _collectionFunction_in_aggregateExpr1146 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _FROM_in_fromClause1162 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _fromElementList_in_fromClause1166 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _fromElement_in_fromElementList1184 = new BitSet(new ulong[]{0x400000000002UL,0x80000000020UL});
-		public static readonly BitSet _RANGE_in_fromElement1209 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _path_in_fromElement1213 = new BitSet(new ulong[]{0x200000000028UL});
-		public static readonly BitSet _ALIAS_in_fromElement1218 = new BitSet(new ulong[]{0x200000000008UL});
-		public static readonly BitSet _FETCH_in_fromElement1225 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _joinElement_in_fromElement1252 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _FILTER_ENTITY_in_fromElement1267 = new BitSet(new ulong[]{0x20UL});
-		public static readonly BitSet _ALIAS_in_fromElement1271 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _JOIN_in_joinElement1300 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _joinType_in_joinElement1305 = new BitSet(new ulong[]{0x80200200000000UL,0x0UL,0x1UL});
-		public static readonly BitSet _FETCH_in_joinElement1315 = new BitSet(new ulong[]{0x80000200000000UL,0x0UL,0x1UL});
-		public static readonly BitSet _propertyRef_in_joinElement1321 = new BitSet(new ulong[]{0x200000000028UL,0x0UL,0x8UL});
-		public static readonly BitSet _ALIAS_in_joinElement1326 = new BitSet(new ulong[]{0x200000000008UL,0x0UL,0x8UL});
-		public static readonly BitSet _FETCH_in_joinElement1333 = new BitSet(new ulong[]{0x8UL,0x0UL,0x8UL});
-		public static readonly BitSet _WITH_in_joinElement1342 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _LEFT_in_joinType1383 = new BitSet(new ulong[]{0x2UL,0x2000000000UL});
-		public static readonly BitSet _RIGHT_in_joinType1389 = new BitSet(new ulong[]{0x2UL,0x2000000000UL});
-		public static readonly BitSet _OUTER_in_joinType1395 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _FULL_in_joinType1409 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _INNER_in_joinType1416 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _identifier_in_path1438 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _DOT_in_path1446 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _path_in_path1450 = new BitSet(new ulong[]{0x80000000000000UL,0x0UL,0x1UL});
-		public static readonly BitSet _identifier_in_path1454 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _path_in_pathAsIdent1473 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _WITH_in_withClause1514 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _logicalExpr_in_withClause1520 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _WHERE_in_whereClause1548 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _logicalExpr_in_whereClause1554 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _AND_in_logicalExpr1580 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _logicalExpr_in_logicalExpr1582 = new BitSet(new ulong[]{0xC94024200002090UL,0x4007A4A4CUL,0x1UL});
-		public static readonly BitSet _logicalExpr_in_logicalExpr1584 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _OR_in_logicalExpr1591 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _logicalExpr_in_logicalExpr1593 = new BitSet(new ulong[]{0xC94024200002090UL,0x4007A4A4CUL,0x1UL});
+		public static readonly BitSet _orderExpr_in_orderExprs712 = new BitSet(new ulong[]{0x8801003508ED412UL,0x561006C01F814010UL,0x1UL});
+		public static readonly BitSet _orderExprs_in_orderExprs726 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _resultVariableRef_in_orderExpr741 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _expr_in_orderExpr746 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _query_in_orderExpr751 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _identifier_in_resultVariableRef771 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _SKIP_in_skipClause793 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _NUM_INT_in_skipClause796 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _parameter_in_skipClause800 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _TAKE_in_takeClause814 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _NUM_INT_in_takeClause817 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _parameter_in_takeClause821 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _GROUP_in_groupClause835 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _expr_in_groupClause840 = new BitSet(new ulong[]{0x8801003108ED018UL,0x461004C01F814010UL,0x1UL});
+		public static readonly BitSet _HAVING_in_havingClause856 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _logicalExpr_in_havingClause858 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _SELECT_in_selectClause872 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _DISTINCT_in_selectClause879 = new BitSet(new ulong[]{0x10800007188ED250UL,0x141006C03F014000UL,0x1UL});
+		public static readonly BitSet _selectExprList_in_selectClause885 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _selectExpr_in_selectExprList920 = new BitSet(new ulong[]{0x10800007188ED252UL,0x141006C03F014000UL,0x1UL});
+		public static readonly BitSet _aliasedSelectExpr_in_selectExprList924 = new BitSet(new ulong[]{0x10800007188ED252UL,0x141006C03F014000UL,0x1UL});
+		public static readonly BitSet _AS_in_aliasedSelectExpr948 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _selectExpr_in_aliasedSelectExpr952 = new BitSet(new ulong[]{0x80000000000000UL,0x0UL,0x1UL});
+		public static readonly BitSet _identifier_in_aliasedSelectExpr956 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _propertyRef_in_selectExpr971 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _ALL_in_selectExpr983 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _aliasRef_in_selectExpr987 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _OBJECT_in_selectExpr999 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _aliasRef_in_selectExpr1003 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _constructor_in_selectExpr1014 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _functionCall_in_selectExpr1025 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _parameter_in_selectExpr1030 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _count_in_selectExpr1035 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _collectionFunction_in_selectExpr1040 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _literal_in_selectExpr1048 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _arithmeticExpr_in_selectExpr1053 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _query_in_selectExpr1058 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _COUNT_in_count1070 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _aggregateExpr_in_count1085 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _ROW_STAR_in_count1089 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _CONSTRUCTOR_in_constructor1105 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _path_in_constructor1107 = new BitSet(new ulong[]{0x10800007188ED258UL,0x141006C03F014000UL,0x1UL});
+		public static readonly BitSet _selectExpr_in_constructor1111 = new BitSet(new ulong[]{0x10800007188ED258UL,0x141006C03F014000UL,0x1UL});
+		public static readonly BitSet _aliasedSelectExpr_in_constructor1115 = new BitSet(new ulong[]{0x10800007188ED258UL,0x141006C03F014000UL,0x1UL});
+		public static readonly BitSet _expr_in_aggregateExpr1131 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _collectionFunction_in_aggregateExpr1137 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _FROM_in_fromClause1153 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _fromElementList_in_fromClause1157 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _fromElement_in_fromElementList1175 = new BitSet(new ulong[]{0x400000000002UL,0x80000000020UL});
+		public static readonly BitSet _RANGE_in_fromElement1200 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _path_in_fromElement1204 = new BitSet(new ulong[]{0x200000000028UL});
+		public static readonly BitSet _ALIAS_in_fromElement1209 = new BitSet(new ulong[]{0x200000000008UL});
+		public static readonly BitSet _FETCH_in_fromElement1216 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _joinElement_in_fromElement1243 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _FILTER_ENTITY_in_fromElement1258 = new BitSet(new ulong[]{0x20UL});
+		public static readonly BitSet _ALIAS_in_fromElement1262 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _JOIN_in_joinElement1291 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _joinType_in_joinElement1296 = new BitSet(new ulong[]{0x80200200000000UL,0x0UL,0x1UL});
+		public static readonly BitSet _FETCH_in_joinElement1306 = new BitSet(new ulong[]{0x80000200000000UL,0x0UL,0x1UL});
+		public static readonly BitSet _propertyRef_in_joinElement1312 = new BitSet(new ulong[]{0x200000000028UL,0x0UL,0x8UL});
+		public static readonly BitSet _ALIAS_in_joinElement1317 = new BitSet(new ulong[]{0x200000000008UL,0x0UL,0x8UL});
+		public static readonly BitSet _FETCH_in_joinElement1324 = new BitSet(new ulong[]{0x8UL,0x0UL,0x8UL});
+		public static readonly BitSet _WITH_in_joinElement1333 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _LEFT_in_joinType1374 = new BitSet(new ulong[]{0x2UL,0x2000000000UL});
+		public static readonly BitSet _RIGHT_in_joinType1380 = new BitSet(new ulong[]{0x2UL,0x2000000000UL});
+		public static readonly BitSet _OUTER_in_joinType1386 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _FULL_in_joinType1400 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _INNER_in_joinType1407 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _identifier_in_path1429 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _DOT_in_path1437 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _path_in_path1441 = new BitSet(new ulong[]{0x80000000000000UL,0x0UL,0x1UL});
+		public static readonly BitSet _identifier_in_path1445 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _path_in_pathAsIdent1464 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _WITH_in_withClause1505 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _logicalExpr_in_withClause1511 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _WHERE_in_whereClause1539 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _logicalExpr_in_whereClause1545 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _AND_in_logicalExpr1571 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _logicalExpr_in_logicalExpr1573 = new BitSet(new ulong[]{0xC94024200002090UL,0x4007A4A4CUL,0x1UL});
+		public static readonly BitSet _logicalExpr_in_logicalExpr1575 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _OR_in_logicalExpr1582 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _logicalExpr_in_logicalExpr1584 = new BitSet(new ulong[]{0xC94024200002090UL,0x4007A4A4CUL,0x1UL});
+		public static readonly BitSet _logicalExpr_in_logicalExpr1586 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _NOT_in_logicalExpr1593 = new BitSet(new ulong[]{0x4UL});
 		public static readonly BitSet _logicalExpr_in_logicalExpr1595 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _NOT_in_logicalExpr1602 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _logicalExpr_in_logicalExpr1604 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _comparisonExpr_in_logicalExpr1610 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _functionCall_in_logicalExpr1615 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _logicalPath_in_logicalExpr1620 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _addrExpr_in_logicalPath1639 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _EQ_in_comparisonExpr1677 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1679 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
-		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1681 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _NE_in_comparisonExpr1688 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1690 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
-		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1692 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _LT_in_comparisonExpr1699 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1701 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
-		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1703 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _GT_in_comparisonExpr1710 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1712 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
-		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1714 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _LE_in_comparisonExpr1721 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1723 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
-		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1725 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _GE_in_comparisonExpr1732 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1734 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
-		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1736 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _LIKE_in_comparisonExpr1743 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1745 = new BitSet(new ulong[]{0x8801003108ED010UL,0x461004C01F814010UL,0x1UL});
-		public static readonly BitSet _expr_in_comparisonExpr1747 = new BitSet(new ulong[]{0x8000000008UL});
-		public static readonly BitSet _ESCAPE_in_comparisonExpr1752 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _expr_in_comparisonExpr1754 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _NOT_LIKE_in_comparisonExpr1766 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1768 = new BitSet(new ulong[]{0x8801003108ED010UL,0x461004C01F814010UL,0x1UL});
-		public static readonly BitSet _expr_in_comparisonExpr1770 = new BitSet(new ulong[]{0x8000000008UL});
-		public static readonly BitSet _ESCAPE_in_comparisonExpr1775 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _expr_in_comparisonExpr1777 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _BETWEEN_in_comparisonExpr1789 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1791 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
-		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1793 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
-		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1795 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _NOT_BETWEEN_in_comparisonExpr1802 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1804 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
-		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1806 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
-		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1808 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _IN_in_comparisonExpr1815 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1817 = new BitSet(new ulong[]{0x0UL,0x1UL});
-		public static readonly BitSet _inRhs_in_comparisonExpr1819 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _NOT_IN_in_comparisonExpr1827 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1829 = new BitSet(new ulong[]{0x0UL,0x1UL});
-		public static readonly BitSet _inRhs_in_comparisonExpr1831 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _IS_NULL_in_comparisonExpr1839 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _comparisonExpr_in_logicalExpr1601 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _functionCall_in_logicalExpr1606 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _logicalPath_in_logicalExpr1611 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _addrExpr_in_logicalPath1630 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _EQ_in_comparisonExpr1668 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1670 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
+		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1672 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _NE_in_comparisonExpr1679 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1681 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
+		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1683 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _LT_in_comparisonExpr1690 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1692 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
+		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1694 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _GT_in_comparisonExpr1701 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1703 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
+		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1705 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _LE_in_comparisonExpr1712 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1714 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
+		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1716 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _GE_in_comparisonExpr1723 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1725 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
+		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1727 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _LIKE_in_comparisonExpr1734 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1736 = new BitSet(new ulong[]{0x8801003108ED010UL,0x461004C01F814010UL,0x1UL});
+		public static readonly BitSet _expr_in_comparisonExpr1738 = new BitSet(new ulong[]{0x8000000008UL});
+		public static readonly BitSet _ESCAPE_in_comparisonExpr1743 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _expr_in_comparisonExpr1745 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _NOT_LIKE_in_comparisonExpr1757 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1759 = new BitSet(new ulong[]{0x8801003108ED010UL,0x461004C01F814010UL,0x1UL});
+		public static readonly BitSet _expr_in_comparisonExpr1761 = new BitSet(new ulong[]{0x8000000008UL});
+		public static readonly BitSet _ESCAPE_in_comparisonExpr1766 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _expr_in_comparisonExpr1768 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _BETWEEN_in_comparisonExpr1780 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1782 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
+		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1784 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
+		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1786 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _NOT_BETWEEN_in_comparisonExpr1793 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1795 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
+		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1797 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
+		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1799 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _IN_in_comparisonExpr1806 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1808 = new BitSet(new ulong[]{0x0UL,0x1UL});
+		public static readonly BitSet _inRhs_in_comparisonExpr1810 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _NOT_IN_in_comparisonExpr1818 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1820 = new BitSet(new ulong[]{0x0UL,0x1UL});
+		public static readonly BitSet _inRhs_in_comparisonExpr1822 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _IS_NULL_in_comparisonExpr1830 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1832 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _IS_NOT_NULL_in_comparisonExpr1839 = new BitSet(new ulong[]{0x4UL});
 		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1841 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _IS_NOT_NULL_in_comparisonExpr1848 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _exprOrSubquery_in_comparisonExpr1850 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _EXISTS_in_comparisonExpr1859 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _expr_in_comparisonExpr1863 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _collectionFunctionOrSubselect_in_comparisonExpr1867 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _IN_LIST_in_inRhs1886 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _collectionFunctionOrSubselect_in_inRhs1890 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _expr_in_inRhs1894 = new BitSet(new ulong[]{0x8801003108ED018UL,0x461004C01F814010UL,0x1UL});
-		public static readonly BitSet _expr_in_exprOrSubquery1910 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _query_in_exprOrSubquery1915 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _ANY_in_exprOrSubquery1921 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _EXISTS_in_comparisonExpr1850 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _expr_in_comparisonExpr1854 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _collectionFunctionOrSubselect_in_comparisonExpr1858 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _IN_LIST_in_inRhs1877 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _collectionFunctionOrSubselect_in_inRhs1881 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _expr_in_inRhs1885 = new BitSet(new ulong[]{0x8801003108ED018UL,0x461004C01F814010UL,0x1UL});
+		public static readonly BitSet _expr_in_exprOrSubquery1901 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _query_in_exprOrSubquery1906 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _ANY_in_exprOrSubquery1912 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _collectionFunctionOrSubselect_in_exprOrSubquery1914 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _ALL_in_exprOrSubquery1921 = new BitSet(new ulong[]{0x4UL});
 		public static readonly BitSet _collectionFunctionOrSubselect_in_exprOrSubquery1923 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _ALL_in_exprOrSubquery1930 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _SOME_in_exprOrSubquery1930 = new BitSet(new ulong[]{0x4UL});
 		public static readonly BitSet _collectionFunctionOrSubselect_in_exprOrSubquery1932 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _SOME_in_exprOrSubquery1939 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _collectionFunctionOrSubselect_in_exprOrSubquery1941 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _collectionFunction_in_collectionFunctionOrSubselect1954 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _query_in_collectionFunctionOrSubselect1959 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _addrExpr_in_expr1973 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _VECTOR_EXPR_in_expr1985 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _expr_in_expr1988 = new BitSet(new ulong[]{0x8801003108ED018UL,0x461004C01F814010UL,0x1UL});
-		public static readonly BitSet _constant_in_expr1997 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _arithmeticExpr_in_expr2002 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _functionCall_in_expr2007 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _parameter_in_expr2019 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _count_in_expr2024 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _PLUS_in_arithmeticExpr2052 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2054 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
-		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2056 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _MINUS_in_arithmeticExpr2063 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2065 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
-		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2067 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _DIV_in_arithmeticExpr2074 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2076 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
-		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2078 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _STAR_in_arithmeticExpr2085 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2087 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
+		public static readonly BitSet _collectionFunction_in_collectionFunctionOrSubselect1945 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _query_in_collectionFunctionOrSubselect1950 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _addrExpr_in_expr1964 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _VECTOR_EXPR_in_expr1976 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _expr_in_expr1979 = new BitSet(new ulong[]{0x8801003108ED018UL,0x461004C01F814010UL,0x1UL});
+		public static readonly BitSet _constant_in_expr1988 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _arithmeticExpr_in_expr1993 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _functionCall_in_expr1998 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _parameter_in_expr2010 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _count_in_expr2015 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _PLUS_in_arithmeticExpr2043 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2045 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
+		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2047 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _MINUS_in_arithmeticExpr2054 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2056 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
+		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2058 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _DIV_in_arithmeticExpr2065 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2067 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
+		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2069 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _STAR_in_arithmeticExpr2076 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2078 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
+		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2080 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _BNOT_in_arithmeticExpr2087 = new BitSet(new ulong[]{0x4UL});
 		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2089 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _BNOT_in_arithmeticExpr2096 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2098 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _BAND_in_arithmeticExpr2105 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2107 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
-		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2109 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _BOR_in_arithmeticExpr2116 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2118 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
-		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2120 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _BXOR_in_arithmeticExpr2127 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2129 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
-		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2131 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _UNARY_MINUS_in_arithmeticExpr2139 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2141 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _caseExpr_in_arithmeticExpr2149 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _CASE_in_caseExpr2161 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _WHEN_in_caseExpr2167 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _logicalExpr_in_caseExpr2169 = new BitSet(new ulong[]{0x8801003108ED010UL,0x461004C01F814010UL,0x1UL});
+		public static readonly BitSet _BAND_in_arithmeticExpr2096 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2098 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
+		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2100 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _BOR_in_arithmeticExpr2107 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2109 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
+		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2111 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _BXOR_in_arithmeticExpr2118 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2120 = new BitSet(new ulong[]{0x8801003108ED150UL,0x561406C01F814010UL,0x1UL});
+		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2122 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _UNARY_MINUS_in_arithmeticExpr2130 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _exprOrSubquery_in_arithmeticExpr2132 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _caseExpr_in_arithmeticExpr2140 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _CASE_in_caseExpr2152 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _WHEN_in_caseExpr2158 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _logicalExpr_in_caseExpr2160 = new BitSet(new ulong[]{0x8801003108ED010UL,0x461004C01F814010UL,0x1UL});
+		public static readonly BitSet _expr_in_caseExpr2162 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _ELSE_in_caseExpr2169 = new BitSet(new ulong[]{0x4UL});
 		public static readonly BitSet _expr_in_caseExpr2171 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _ELSE_in_caseExpr2178 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _expr_in_caseExpr2180 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _CASE2_in_caseExpr2192 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _expr_in_caseExpr2196 = new BitSet(new ulong[]{0x0UL,0x0UL,0x2UL});
-		public static readonly BitSet _WHEN_in_caseExpr2200 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _expr_in_caseExpr2202 = new BitSet(new ulong[]{0x8801003108ED010UL,0x461004C01F814010UL,0x1UL});
+		public static readonly BitSet _CASE2_in_caseExpr2183 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _expr_in_caseExpr2187 = new BitSet(new ulong[]{0x0UL,0x0UL,0x2UL});
+		public static readonly BitSet _WHEN_in_caseExpr2191 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _expr_in_caseExpr2193 = new BitSet(new ulong[]{0x8801003108ED010UL,0x461004C01F814010UL,0x1UL});
+		public static readonly BitSet _expr_in_caseExpr2195 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _ELSE_in_caseExpr2202 = new BitSet(new ulong[]{0x4UL});
 		public static readonly BitSet _expr_in_caseExpr2204 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _ELSE_in_caseExpr2211 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _expr_in_caseExpr2213 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _ELEMENTS_in_collectionFunction2235 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _propertyRef_in_collectionFunction2241 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _INDICES_in_collectionFunction2260 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _propertyRef_in_collectionFunction2266 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _METHOD_CALL_in_functionCall2291 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _pathAsIdent_in_functionCall2296 = new BitSet(new ulong[]{0x80000000008UL});
-		public static readonly BitSet _EXPR_LIST_in_functionCall2301 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _expr_in_functionCall2304 = new BitSet(new ulong[]{0xC941243108EF018UL,0x561006C01FF34A5CUL,0x1UL});
-		public static readonly BitSet _query_in_functionCall2308 = new BitSet(new ulong[]{0xC941243108EF018UL,0x561006C01FF34A5CUL,0x1UL});
-		public static readonly BitSet _comparisonExpr_in_functionCall2312 = new BitSet(new ulong[]{0xC941243108EF018UL,0x561006C01FF34A5CUL,0x1UL});
-		public static readonly BitSet _AGGREGATE_in_functionCall2331 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _aggregateExpr_in_functionCall2333 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _literal_in_constant2346 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _NULL_in_constant2351 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _TRUE_in_constant2358 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _FALSE_in_constant2368 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _JAVA_CONSTANT_in_constant2375 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _numericLiteral_in_literal2386 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _stringLiteral_in_literal2391 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _QUOTED_String_in_stringLiteral2438 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _addrExprDot_in_addrExpr2468 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _addrExprIndex_in_addrExpr2475 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _addrExprIdent_in_addrExpr2482 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _DOT_in_addrExprDot2506 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _addrExprLhs_in_addrExprDot2510 = new BitSet(new ulong[]{0x1080000400100000UL,0x0UL,0x1UL});
-		public static readonly BitSet _propertyName_in_addrExprDot2514 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _INDEX_OP_in_addrExprIndex2553 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _addrExprLhs_in_addrExprIndex2557 = new BitSet(new ulong[]{0x8801003108ED010UL,0x461004C01F814010UL,0x1UL});
-		public static readonly BitSet _expr_in_addrExprIndex2561 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _identifier_in_addrExprIdent2593 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _addrExpr_in_addrExprLhs2621 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _identifier_in_propertyName2634 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _CLASS_in_propertyName2639 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _ELEMENTS_in_propertyName2644 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _INDICES_in_propertyName2649 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _propertyRefPath_in_propertyRef2661 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _propertyRefIdent_in_propertyRef2666 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _DOT_in_propertyRefPath2686 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _propertyRefLhs_in_propertyRefPath2690 = new BitSet(new ulong[]{0x1080000400100000UL,0x0UL,0x1UL});
-		public static readonly BitSet _propertyName_in_propertyRefPath2694 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _identifier_in_propertyRefIdent2731 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _propertyRef_in_propertyRefLhs2743 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _identifier_in_aliasRef2764 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _COLON_in_parameter2782 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _identifier_in_parameter2786 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _PARAM_in_parameter2807 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _NUM_INT_in_parameter2812 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _NUM_INT_in_numericInteger2845 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _ELEMENTS_in_collectionFunction2226 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _propertyRef_in_collectionFunction2232 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _INDICES_in_collectionFunction2251 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _propertyRef_in_collectionFunction2257 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _METHOD_CALL_in_functionCall2282 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _pathAsIdent_in_functionCall2287 = new BitSet(new ulong[]{0x80000000008UL});
+		public static readonly BitSet _EXPR_LIST_in_functionCall2292 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _expr_in_functionCall2295 = new BitSet(new ulong[]{0xC941243108EF018UL,0x561006C01FF34A5CUL,0x1UL});
+		public static readonly BitSet _query_in_functionCall2299 = new BitSet(new ulong[]{0xC941243108EF018UL,0x561006C01FF34A5CUL,0x1UL});
+		public static readonly BitSet _comparisonExpr_in_functionCall2303 = new BitSet(new ulong[]{0xC941243108EF018UL,0x561006C01FF34A5CUL,0x1UL});
+		public static readonly BitSet _AGGREGATE_in_functionCall2322 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _aggregateExpr_in_functionCall2324 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _literal_in_constant2337 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _NULL_in_constant2342 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _TRUE_in_constant2349 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _FALSE_in_constant2359 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _JAVA_CONSTANT_in_constant2366 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _numericLiteral_in_literal2377 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _stringLiteral_in_literal2382 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _QUOTED_String_in_stringLiteral2429 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _addrExprDot_in_addrExpr2459 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _addrExprIndex_in_addrExpr2466 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _addrExprIdent_in_addrExpr2473 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _DOT_in_addrExprDot2497 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _addrExprLhs_in_addrExprDot2501 = new BitSet(new ulong[]{0x1080000400100000UL,0x0UL,0x1UL});
+		public static readonly BitSet _propertyName_in_addrExprDot2505 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _INDEX_OP_in_addrExprIndex2544 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _addrExprLhs_in_addrExprIndex2548 = new BitSet(new ulong[]{0x8801003108ED010UL,0x461004C01F814010UL,0x1UL});
+		public static readonly BitSet _expr_in_addrExprIndex2552 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _identifier_in_addrExprIdent2584 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _addrExpr_in_addrExprLhs2612 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _identifier_in_propertyName2625 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _CLASS_in_propertyName2630 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _ELEMENTS_in_propertyName2635 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _INDICES_in_propertyName2640 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _propertyRefPath_in_propertyRef2652 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _propertyRefIdent_in_propertyRef2657 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _DOT_in_propertyRefPath2677 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _propertyRefLhs_in_propertyRefPath2681 = new BitSet(new ulong[]{0x1080000400100000UL,0x0UL,0x1UL});
+		public static readonly BitSet _propertyName_in_propertyRefPath2685 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _identifier_in_propertyRefIdent2722 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _propertyRef_in_propertyRefLhs2734 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _identifier_in_aliasRef2755 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _COLON_in_parameter2773 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _identifier_in_parameter2777 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _PARAM_in_parameter2798 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _NUM_INT_in_parameter2803 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _NUM_INT_in_numericInteger2836 = new BitSet(new ulong[]{0x2UL});
 	}
 	#endregion Follow sets
 }
