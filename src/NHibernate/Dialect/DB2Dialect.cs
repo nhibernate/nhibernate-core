@@ -1,8 +1,12 @@
+using System;
 using System.Data;
+using System.Data.Common;
 using System.Text;
-using NHibernate.Cfg;
 using NHibernate.Dialect.Function;
 using NHibernate.SqlCommand;
+using NHibernate.Type;
+using NHibernate.Util;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
 {
@@ -27,6 +31,8 @@ namespace NHibernate.Dialect
 		/// <summary></summary>
 		public DB2Dialect()
 		{
+            TypeFactory.RegisterType(typeof(Boolean), NHibernateUtil.IntBoolean, new[] { "boolean", "bool" });
+
 			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR(254)");
 			RegisterColumnType(DbType.AnsiStringFixedLength, 254, "CHAR($l)");
 			RegisterColumnType(DbType.AnsiString, "VARCHAR(254)");
@@ -128,6 +134,12 @@ namespace NHibernate.Dialect
 			RegisterFunction("substring", new SQLFunctionTemplate(NHibernateUtil.String, "substring(?1, ?2, ?3)"));
 
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.DB2Driver";
+			DefaultProperties[Environment.QuerySubstitutions] = "true 1, false 0, yes 1, no 0";
+		}
+
+		public override Schema.IDataBaseSchema GetDataBaseSchema(DbConnection connection)
+		{
+			return new Schema.DB2MetaData(connection);
 		}
 
 		/// <summary></summary>
@@ -269,6 +281,58 @@ namespace NHibernate.Dialect
 		public override string ForUpdateString
 		{
 			get { return " for read only with rs"; }
+		}
+         
+        public override string Qualify(string catalog, string schema, string table)
+		{
+			StringBuilder qualifiedName = new StringBuilder();
+			bool quoted = false;
+			
+			if (!string.IsNullOrEmpty(catalog))
+			{
+				if (catalog.StartsWith(OpenQuote.ToString()))
+				{
+					catalog = catalog.Substring(1, catalog.Length - 1);
+					quoted = true;
+				} 
+				if (catalog.EndsWith(CloseQuote.ToString()))
+				{
+					catalog = catalog.Substring(0, catalog.Length - 1);
+					quoted = true;
+				}
+				qualifiedName.Append(catalog).Append(StringHelper.Underscore);
+			}
+			if (!string.IsNullOrEmpty(schema))
+			{
+				if (schema.StartsWith(OpenQuote.ToString()))
+				{
+					schema = schema.Substring(1, schema.Length - 1);
+					quoted = true;
+				}
+				if (schema.EndsWith(CloseQuote.ToString()))
+				{
+					schema = schema.Substring(0, schema.Length - 1);
+					quoted = true;
+				} 
+				qualifiedName.Append(schema).Append(StringHelper.Underscore);
+			}
+
+			if (table.StartsWith(OpenQuote.ToString()))
+			{
+				table = table.Substring(1, table.Length - 1);
+				quoted = true;
+			}
+			if (table.EndsWith(CloseQuote.ToString()))
+			{
+				table = table.Substring(0, table.Length - 1);
+				quoted = true;
+			}
+
+			string name = qualifiedName.Append(table).ToString();
+			if (quoted)
+				return OpenQuote + name + CloseQuote;
+			return name;
+
 		}
 	}
 }

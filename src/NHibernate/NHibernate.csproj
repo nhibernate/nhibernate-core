@@ -89,9 +89,9 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\SharedAssemblyInfo.cs">
-      <Link>SharedAssemblyInfo.cs</Link>
-    </Compile>
+	<Compile Include="..\SharedAssemblyInfo.cs">
+		<Link>SharedAssemblyInfo.cs</Link>
+	</Compile>
     <Compile Include="ADOException.cs" />
     <Compile Include="AdoNet\MySqlClientBatchingBatcher.cs" />
     <Compile Include="AdoNet\MySqlClientBatchingBatcherFactory.cs" />
@@ -164,6 +164,7 @@
     <Compile Include="Dialect\BitwiseNativeOperation.cs" />
     <Compile Include="Dialect\Oracle12cDialect.cs" />
     <Compile Include="Dialect\PostgreSQLDialect.cs" />
+    <Compile Include="Dialect\Schema\DB2MetaData.cs" />
     <Compile Include="Dialect\Schema\PostgreSQLMetadata.cs" />
     <Compile Include="Dialect\Schema\SchemaHelper.cs" />
     <Compile Include="Dialect\SQLiteDialect.cs" />
@@ -703,6 +704,7 @@
     <Compile Include="Type\Int16Type.cs" />
     <Compile Include="Type\Int32Type.cs" />
     <Compile Include="Type\Int64Type.cs" />
+    <Compile Include="Type\IntBooleanType.cs" />
     <Compile Include="Type\IType.cs" />
     <Compile Include="Type\IVersionType.cs" />
     <Compile Include="Type\ManyToOneType.cs" />

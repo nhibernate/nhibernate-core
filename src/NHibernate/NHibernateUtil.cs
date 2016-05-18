@@ -248,6 +248,11 @@ namespace NHibernate
 		public static readonly YesNoType YesNo = new YesNoType();
 
 		/// <summary>
+		/// NHibernate IntBoolean type
+		/// </summary>
+		public static readonly IntBooleanType IntBoolean = new IntBooleanType();
+
+		/// <summary>
 		/// NHibernate class type
 		/// </summary>
 		public static readonly TypeType Class = new TypeType();

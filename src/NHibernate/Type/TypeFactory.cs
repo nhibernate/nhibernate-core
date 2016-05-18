@@ -75,7 +75,7 @@ namespace NHibernate.Type
 
 		private delegate NullableType NullableTypeCreatorDelegate(SqlType sqlType);
 
-		private static void RegisterType(System.Type systemType, IType nhibernateType, IEnumerable<string> aliases)
+		public static void RegisterType(System.Type systemType, IType nhibernateType, IEnumerable<string> aliases)
 		{
 			var typeAliases = new List<string>(aliases);
 			typeAliases.AddRange(GetClrTypeAliases(systemType));
@@ -242,6 +242,7 @@ namespace NHibernate.Type
 			RegisterType(NHibernateUtil.Time, new[] { "time" });
 			RegisterType(NHibernateUtil.TrueFalse, new[] { "true_false" });
 			RegisterType(NHibernateUtil.YesNo, new[] { "yes_no" });
+            RegisterType(NHibernateUtil.IntBoolean, new[] {"int_bool"});
 			RegisterType(NHibernateUtil.Ticks, new[] { "ticks" });
 			RegisterType(NHibernateUtil.TimeAsTimeSpan, EmptyAliases);
 			RegisterType(NHibernateUtil.LocalDateTime, new[] { "localdatetime" });
