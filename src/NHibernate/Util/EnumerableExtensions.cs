@@ -6,6 +6,16 @@ namespace NHibernate.Util
 {
 	public static class EnumerableExtensions
 	{
+		public static HashSet<T> ToHashSet<T>(this IEnumerable<T> collection)
+		{
+			if (collection == null)
+			{
+				throw new ArgumentNullException(nameof(collection));
+			}
+
+			return new HashSet<T>(collection);
+		}
+
 		public static bool Any(this IEnumerable source)
 		{
 			if (source == null)

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using System.Security;
@@ -867,7 +868,7 @@ namespace NHibernate.Impl
 		/// <param name="persister"></param>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		public object Instantiate(IEntityPersister persister, object id)
+		public override object Instantiate(IEntityPersister persister, object id)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -1112,6 +1113,16 @@ namespace NHibernate.Impl
 				CheckAndUpdateSessionStatus();
 				return persistenceContext;
 			}
+		}
+
+		private CriteriaLoader[] CreateCriteriaLoaders(CriteriaImpl criteria, string[] implementors)
+		{
+			CriteriaLoader[] loaders =
+				implementors.Select(
+					implementor => new CriteriaLoader(GetOuterJoinLoadable(implementor), Factory, criteria, implementor, enabledFilters))
+										.ToArray();
+
+			return loaders;
 		}
 
 		/// <summary>
@@ -1871,23 +1882,10 @@ namespace NHibernate.Impl
 
 				string[] implementors = Factory.GetImplementors(criteria.EntityOrClassName);
 				int size = implementors.Length;
-
-				CriteriaLoader[] loaders = new CriteriaLoader[size];
-				ISet<string> spaces = new HashSet<string>();
-
-				for (int i = 0; i < size; i++)
-				{
-					loaders[i] = new CriteriaLoader(
-						GetOuterJoinLoadable(implementors[i]),
-						Factory,
-						criteria,
-						implementors[i],
-						enabledFilters
-						);
-
-					spaces.UnionWith(loaders[i].QuerySpaces);
-				}
-
+        
+				CriteriaLoader[] loaders = CreateCriteriaLoaders(criteria, implementors);
+				ISet<string> spaces = loaders.SelectMany(x => x.QuerySpaces).ToHashSet();
+        
 				AutoFlushIfRequired(spaces);
 
 				dontFlushFromFind++;
@@ -2648,5 +2646,5 @@ namespace NHibernate.Impl
 				}
 			}
 		}
-	}
+  }
 }

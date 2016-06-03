@@ -204,6 +204,12 @@ namespace NHibernate.Engine
 		object Instantiate(string entityName, object id);
 
 		/// <summary>
+		/// Instantiate the entity class, initializing with the given identifier
+		/// </summary>
+		object Instantiate(IEntityPersister persister, object id);
+
+
+		/// <summary>
 		/// Execute an SQL Query
 		/// </summary>
 		IList List(NativeSQLQuerySpecification spec, QueryParameters queryParameters);

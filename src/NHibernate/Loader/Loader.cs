@@ -984,7 +984,7 @@ namespace NHibernate.Loader
 		{
 			object obj;
 
-			string instanceClass = GetInstanceClass(dr, i, persister, key.Identifier, session);
+			ILoadable instanceClass = GetRowPersister(dr, i, persister, key.Identifier, session);
 
 			if (optionalObjectKey != null && key.Equals(optionalObjectKey))
 			{
@@ -993,7 +993,7 @@ namespace NHibernate.Loader
 			}
 			else
 			{
-				obj = session.Instantiate(instanceClass, key.Identifier);
+				obj = session.Instantiate(instanceClass.EntityName, key.Identifier);
 			}
 
 			// need to hydrate it
@@ -1021,15 +1021,12 @@ namespace NHibernate.Loader
 		/// an array of "hydrated" values (do not resolve associations yet),
 		/// and pass the hydrated state to the session.
 		/// </summary>
-		private void LoadFromResultSet(IDataReader rs, int i, object obj, string instanceClass, EntityKey key,
+		private void LoadFromResultSet(IDataReader rs, int i, object obj, ILoadable persister, EntityKey key,
 									   string rowIdAlias, LockMode lockMode, ILoadable rootPersister,
 									   ISessionImplementor session)
 		{
 			object id = key.Identifier;
-
-			// Get the persister for the _subclass_
-			ILoadable persister = (ILoadable)Factory.GetEntityPersister(instanceClass);
-
+      
 			if (Log.IsDebugEnabled)
 			{
 				Log.Debug("Initializing object from DataReader: " + MessageHelper.InfoString(persister, id));
@@ -1078,7 +1075,7 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Determine the concrete class of an instance for the <c>IDataReader</c>
 		/// </summary>
-		private string GetInstanceClass(IDataReader rs, int i, ILoadable persister, object id, ISessionImplementor session)
+		private ILoadable GetRowPersister(IDataReader rs, int i, ILoadable persister, object id, ISessionImplementor session)
 		{
 			if (persister.HasSubclasses)
 			{
@@ -1095,9 +1092,10 @@ namespace NHibernate.Loader
 												  persister.EntityName);
 				}
 
-				return result;
+				return (ILoadable)Factory.GetEntityPersister(result);
 			}
-			return persister.EntityName;
+
+			return persister;
 		}
 
 		/// <summary>

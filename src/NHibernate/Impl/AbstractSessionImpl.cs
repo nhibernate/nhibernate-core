@@ -169,6 +169,7 @@ namespace NHibernate.Impl
 		public abstract void AfterTransactionCompletion(bool successful, ITransaction tx);
 		public abstract object GetContextEntityIdentifier(object obj);
 		public abstract object Instantiate(string clazz, object id);
+		public abstract object Instantiate(IEntityPersister persister, object id);
 
 		public virtual IList List(NativeSQLQuerySpecification spec, QueryParameters queryParameters)
 		{
