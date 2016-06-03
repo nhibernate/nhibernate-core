@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
 using NHibernate.Engine.Query.Sql;
@@ -29,19 +31,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private ResultSetMappingDefinition Create(string name, object[] items)
 		{
-			ResultSetMappingDefinition definition = new ResultSetMappingDefinition(name);
+			var itemsNullSafe = items ?? new object[0];
+			var returns = itemsNullSafe.Select(CreateQueryReturn)
+																 .Where(x => x != null)
+																 .ToArray();
 
-			int count = 0;
-			foreach (object item in items ?? new object[0])
-			{
-				count += 1;
-				INativeSQLQueryReturn queryReturn = CreateQueryReturn(item, count);
-
-				if (queryReturn != null)
-					definition.AddQueryReturn(queryReturn);
-			}
-
-			return definition;
+			return new ResultSetMappingDefinition(name, returns);
 		}
 
 		private INativeSQLQueryReturn CreateQueryReturn(object item, int count)

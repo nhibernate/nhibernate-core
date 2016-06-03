@@ -43,7 +43,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 							new ResultSetMappingBinder(Mappings).Create(querySchema);
 
 						namedQuery = new NamedSQLQueryDefinition(queryText,
-							definition.GetQueryReturns(), synchronizedTables, cacheable, region, timeout,
+							definition.QueryReturns, synchronizedTables, cacheable, region, timeout,
 							fetchSize, flushMode, cacheMode, readOnly, comment, parameterTypes, callable);
 					}
 					else

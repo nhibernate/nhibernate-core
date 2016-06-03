@@ -22,7 +22,7 @@ namespace NHibernate.Loader.Custom.Sql
 		private readonly SqlString sql;
 		private readonly List<IParameterSpecification> parametersSpecifications;
 
-		public SQLCustomQuery(INativeSQLQueryReturn[] queryReturns, string sqlQuery, ICollection<string> additionalQuerySpaces,
+		public SQLCustomQuery(IList<INativeSQLQueryReturn> queryReturns, string sqlQuery, ICollection<string> additionalQuerySpaces,
 		                      ISessionFactoryImplementor factory)
 		{
 			log.Debug("starting processing of sql query [" + sqlQuery + "]");

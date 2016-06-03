@@ -1180,7 +1180,7 @@ namespace NHibernate.Impl
 						{
 							throw new MappingException("Unable to find resultset-ref definition: " + qd.ResultSetRef);
 						}
-						spec = new NativeSQLQuerySpecification(qd.QueryString, definition.GetQueryReturns(), qd.QuerySpaces);
+						spec = new NativeSQLQuerySpecification(qd.QueryString, definition.QueryReturns, qd.QuerySpaces);
 					}
 					else
 					{

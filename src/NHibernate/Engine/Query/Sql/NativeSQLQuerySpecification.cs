@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+
 using NHibernate.Util;
 
 namespace NHibernate.Engine.Query.Sql
@@ -6,47 +8,46 @@ namespace NHibernate.Engine.Query.Sql
 	public class NativeSQLQuerySpecification
 	{
 		private readonly string queryString;
-		private readonly INativeSQLQueryReturn[] sqlQueryReturns;
-		private readonly ISet<string> querySpaces;
+		private readonly ReadOnlyCollection<INativeSQLQueryReturn> sqlQueryReturns;
+		private readonly ReadOnlyCollection<string> querySpaces;
 		private readonly int hashCode;
 
-		public NativeSQLQuerySpecification(
-			string queryString,
-			INativeSQLQueryReturn[] sqlQueryReturns,
-			ICollection<string> querySpaces)
-		{
-			this.queryString = queryString;
-			this.sqlQueryReturns = sqlQueryReturns;
+	    public NativeSQLQuerySpecification(
+	        string queryString,
+	        IList<INativeSQLQueryReturn> sqlQueryReturns,
+	        IList<string> querySpaces)
+	    {
+	        this.queryString = queryString;
+	        this.sqlQueryReturns = new ReadOnlyCollection<INativeSQLQueryReturn>(sqlQueryReturns);
+	        this.querySpaces = new ReadOnlyCollection<string>(querySpaces ?? new string[0]);
 
-			this.querySpaces = new HashSet<string>();
-			if (querySpaces != null)
-				this.querySpaces.UnionWith(querySpaces);
+	        // pre-determine and cache the hashcode
+	        int hCode = queryString.GetHashCode();
 
-			// pre-determine and cache the hashcode
-			int hCode = queryString.GetHashCode();
-			unchecked
-			{
-				hCode = 29 * hCode + CollectionHelper.GetHashCode(this.querySpaces);
-				if (this.sqlQueryReturns != null)
-				{
-					hCode = 29 * hCode + CollectionHelper.GetHashCode(this.sqlQueryReturns);
-				}
-			}
+	        unchecked
+	        {
+	            hCode = 29*hCode + CollectionHelper.GetHashCode(this.querySpaces);
 
-			hashCode = hCode;
-		}
+                if (this.sqlQueryReturns.Count > 0)
+	            {
+	                hCode = 29*hCode + CollectionHelper.GetHashCode(this.sqlQueryReturns);
+	            }
+	        }
 
-		public string QueryString
+	        hashCode = hCode;
+	    }
+
+	    public string QueryString
 		{
 			get { return queryString; }
 		}
 
-		public INativeSQLQueryReturn[] SqlQueryReturns
+		public ReadOnlyCollection<INativeSQLQueryReturn> SqlQueryReturns
 		{
 			get { return sqlQueryReturns; }
 		}
 
-		public ISet<string> QuerySpaces
+		public ReadOnlyCollection<string> QuerySpaces
 		{
 			get { return querySpaces; }
 		}

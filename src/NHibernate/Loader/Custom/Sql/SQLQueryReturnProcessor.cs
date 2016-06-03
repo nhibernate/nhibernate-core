@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 using NHibernate.Engine;
 using NHibernate.Engine.Query.Sql;
@@ -13,7 +14,7 @@ namespace NHibernate.Loader.Custom.Sql
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (SQLQueryReturnProcessor));
 
-		private readonly INativeSQLQueryReturn[] queryReturns;
+		private readonly ReadOnlyCollection<INativeSQLQueryReturn> queryReturns;
 
 		private readonly Dictionary<string, INativeSQLQueryReturn> alias2Return =
 			new Dictionary<string, INativeSQLQueryReturn>();
@@ -44,9 +45,9 @@ namespace NHibernate.Loader.Custom.Sql
 			get { return factory; }
 		}
 
-		public SQLQueryReturnProcessor(INativeSQLQueryReturn[] queryReturns, ISessionFactoryImplementor factory)
+		public SQLQueryReturnProcessor(IList<INativeSQLQueryReturn> queryReturns, ISessionFactoryImplementor factory)
 		{
-			this.queryReturns = queryReturns;
+			this.queryReturns = new ReadOnlyCollection<INativeSQLQueryReturn>(queryReturns);
 			this.factory = factory;
 		}
 
@@ -116,7 +117,7 @@ namespace NHibernate.Loader.Custom.Sql
 		{
 			// first, break down the returns into maps keyed by alias
 			// so that role returns can be more easily resolved to their owners
-			for (int i = 0; i < queryReturns.Length; i++)
+			for (int i = 0; i < queryReturns.Count; i++)
 			{
 				var rtn = queryReturns[i] as NativeSQLQueryNonScalarReturn;
 				if (rtn != null)
@@ -131,7 +132,7 @@ namespace NHibernate.Loader.Custom.Sql
 			}
 
 			// Now, process the returns
-			for (int i = 0; i < queryReturns.Length; i++)
+			for (int i = 0; i < queryReturns.Count; i++)
 			{
 				ProcessReturn(queryReturns[i]);
 			}
@@ -288,7 +289,7 @@ namespace NHibernate.Loader.Custom.Sql
 		{
 			IList customReturns = new List<object>();
 			IDictionary<string, object> customReturnsByAlias = new Dictionary<string, object>();
-			for (int i = 0; i < queryReturns.Length; i++)
+			for (int i = 0; i < queryReturns.Count; i++)
 			{
 				if (queryReturns[i] is NativeSQLQueryScalarReturn)
 				{

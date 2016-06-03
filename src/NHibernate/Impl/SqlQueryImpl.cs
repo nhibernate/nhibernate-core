@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Engine.Query.Sql;
@@ -24,10 +26,10 @@ namespace NHibernate.Impl
 	/// </example>
 	public class SqlQueryImpl : AbstractQueryImpl, ISQLQuery
 	{
-		private readonly IList<INativeSQLQueryReturn> queryReturns;
-		private readonly ICollection<string> querySpaces;
+		private readonly ReadOnlyCollection<string> querySpaces;
 		private readonly bool callable;
-		private bool autoDiscoverTypes;
+        private ReadOnlyCollection<INativeSQLQueryReturn> queryReturns;
+        private bool autoDiscoverTypes;
 
 		/// <summary> Constructs a SQLQueryImpl given a sql query defined in the mappings. </summary>
 		/// <param name="queryDef">The representation of the defined sql-query. </param>
@@ -43,47 +45,21 @@ namespace NHibernate.Impl
 				{
 					throw new MappingException("Unable to find resultset-ref definition: " + queryDef.ResultSetRef);
 				}
-				queryReturns = new List<INativeSQLQueryReturn>(definition.GetQueryReturns());
+				queryReturns = definition.QueryReturns;
 			}
 			else
 			{
-				queryReturns = new List<INativeSQLQueryReturn>(queryDef.QueryReturns);
+				queryReturns = queryDef.QueryReturns;
 			}
 
 			querySpaces = queryDef.QuerySpaces;
 			callable = queryDef.IsCallable;
 		}
 
-		internal SqlQueryImpl(string sql, IList<INativeSQLQueryReturn> queryReturns, ICollection<string> querySpaces, FlushMode flushMode, bool callable, ISessionImplementor session, ParameterMetadata parameterMetadata)
-			: base(sql, flushMode, session, parameterMetadata)
-		{
-			this.queryReturns = queryReturns;
-			this.querySpaces = querySpaces;
-			this.callable = callable;
-		}
-
-		internal SqlQueryImpl(string sql, string[] returnAliases, System.Type[] returnClasses, LockMode[] lockModes, ISessionImplementor session, ICollection<string> querySpaces, FlushMode flushMode, ParameterMetadata parameterMetadata)
-			: base(sql, flushMode, session, parameterMetadata)
-		{
-			queryReturns = new List<INativeSQLQueryReturn>(returnAliases.Length);
-			for (int i = 0; i < returnAliases.Length; i++)
-			{
-				NativeSQLQueryRootReturn ret =
-					new NativeSQLQueryRootReturn(returnAliases[i], returnClasses[i].FullName,
-												 lockModes == null ? LockMode.None : lockModes[i]);
-				queryReturns.Add(ret);
-			}
-			this.querySpaces = querySpaces;
-			callable = false;
-		}
-
-		internal SqlQueryImpl(string sql, string[] returnAliases, System.Type[] returnClasses, ISessionImplementor session, ParameterMetadata parameterMetadata)
-			: this(sql, returnAliases, returnClasses, null, session, null, FlushMode.Unspecified, parameterMetadata) { }
-
 		internal SqlQueryImpl(string sql, ISessionImplementor session, ParameterMetadata parameterMetadata)
 			: base(sql, FlushMode.Unspecified, session, parameterMetadata)
 		{
-			queryReturns = new List<INativeSQLQueryReturn>();
+			queryReturns = ReadOnlyCollectionHelper.EmptyQueryReturns;
 			querySpaces = null;
 			callable = false;
 		}
@@ -97,14 +73,12 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private INativeSQLQueryReturn[] GetQueryReturns()
-		{
-			INativeSQLQueryReturn[] result = new INativeSQLQueryReturn[queryReturns.Count];
-			queryReturns.CopyTo(result, 0);
-			return result;
-		}
+	    private ReadOnlyCollection<INativeSQLQueryReturn> GetQueryReturns()
+	    {
+	        return queryReturns;
+	    }
 
-		public override string[] ReturnAliases
+	    public override string[] ReturnAliases
 		{
 			get { throw new NotSupportedException("SQL queries do not currently support returning aliases"); }
 		}
@@ -197,7 +171,9 @@ namespace NHibernate.Impl
 		public ISQLQuery AddScalar(string columnAlias, IType type)
 		{
 			autoDiscoverTypes = true;
-			queryReturns.Add(new NativeSQLQueryScalarReturn(columnAlias, type));
+
+      queryReturns = queryReturns.ImmutableAdd(new NativeSQLQueryScalarReturn(columnAlias, type));
+
 			return this;
 		}
 
@@ -229,20 +205,29 @@ namespace NHibernate.Impl
 		public ISQLQuery AddJoin(string alias, string path, LockMode lockMode)
 		{
 			int loc = path.IndexOf('.');
-			if (loc < 0)
+
+      if (loc < 0)
 			{
 				throw new QueryException("not a property path: " + path);
 			}
+
 			string ownerAlias = path.Substring(0, loc);
 			string role = path.Substring(loc + 1);
-			queryReturns.Add(
-				new NativeSQLQueryJoinReturn(alias, ownerAlias, role, new CollectionHelper.EmptyMapClass<string, string[]>(), lockMode));
+
+		  queryReturns = queryReturns.ImmutableAdd(
+		    new NativeSQLQueryJoinReturn(
+		      alias,
+		      ownerAlias,
+		      role,
+		      new CollectionHelper.EmptyMapClass<string, string[]>(),
+		      lockMode));
+        
 			return this;
 		}
 
 		public ISQLQuery AddEntity(string alias, string entityName, LockMode lockMode)
 		{
-			queryReturns.Add(new NativeSQLQueryRootReturn(alias, entityName, lockMode));
+		  queryReturns = queryReturns.ImmutableAdd(new NativeSQLQueryRootReturn(alias, entityName, lockMode));
 			return this;
 		}
 
@@ -254,17 +239,15 @@ namespace NHibernate.Impl
 		public ISQLQuery SetResultSetMapping(string name)
 		{
 			ResultSetMappingDefinition mapping = Session.Factory.GetResultSetMapping(name);
+
 			if (mapping == null)
 			{
 				throw new MappingException("Unknown SqlResultSetMapping [" + name + "]");
 			}
-			INativeSQLQueryReturn[] returns = mapping.GetQueryReturns();
-			int length = returns.Length;
-			for (int index = 0; index < length; index++)
-			{
-				queryReturns.Add(returns[index]);
-			}
-			return this;
+
+      queryReturns = queryReturns.ImmutableAddRange(mapping.QueryReturns);
+
+      return this;
 		}
 
 		protected internal override void VerifyParameters()

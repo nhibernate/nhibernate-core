@@ -1,7 +1,7 @@
-using System.Collections.Generic;
-
-using NHibernate.Engine.Query.Sql;
 using System;
+using System.Collections.ObjectModel;
+using NHibernate.Engine.Query.Sql;
+
 
 namespace NHibernate.Engine
 {
@@ -9,11 +9,17 @@ namespace NHibernate.Engine
 	public class ResultSetMappingDefinition
 	{
 		private readonly string name;
-		private readonly List<INativeSQLQueryReturn> queryReturns = new List<INativeSQLQueryReturn>();
+		private readonly ReadOnlyCollection<INativeSQLQueryReturn> queryReturns;
 
-		public ResultSetMappingDefinition(string name)
+		public ResultSetMappingDefinition(string name, INativeSQLQueryReturn[] queryReturns)
 		{
+			if (queryReturns == null)
+			{
+				throw new ArgumentNullException(nameof(queryReturns));
+			}
+
 			this.name = name;
+			this.queryReturns = new ReadOnlyCollection<INativeSQLQueryReturn>(queryReturns);
 		}
 
 		public string Name
@@ -21,17 +27,9 @@ namespace NHibernate.Engine
 			get { return name; }
 		}
 
-		public void AddQueryReturn(INativeSQLQueryReturn queryReturn)
+		public ReadOnlyCollection<INativeSQLQueryReturn> QueryReturns
 		{
-			if (queryReturn != null)
-			{
-				queryReturns.Add(queryReturn);
-			}
-		}
-
-		public INativeSQLQueryReturn[] GetQueryReturns()
-		{
-			return queryReturns.ToArray();
+			get { return queryReturns; }
 		}
 	}
 }
