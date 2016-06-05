@@ -22,6 +22,8 @@ namespace NHibernate.Tuple
 		private readonly bool versionable;
 		private readonly CascadeStyle cascadeStyle;
 		private readonly FetchMode? fetchMode;
+		private readonly ValueInclusion insertValueInclusion;
+		private readonly ValueInclusion updateValueInclusion;
 
 		/// <summary>
 		/// Constructs StandardProperty instances.
@@ -41,6 +43,8 @@ namespace NHibernate.Tuple
 		/// <param name="versionable">Is this property a versionable value?</param>
 		/// <param name="cascadeStyle">The cascade style for this property's value.</param>
 		/// <param name="fetchMode">Any fetch mode defined for this property </param>
+		/// <param name="insertValueInclusion">Determines how value is "included" on insert</param>
+		/// <param name="updateValueInclusion">Determines how value is "included" on update</param>
 		public StandardProperty(
 			String name,
 			String node,
@@ -54,7 +58,9 @@ namespace NHibernate.Tuple
 			bool checkable,
 			bool versionable,
 			CascadeStyle cascadeStyle,
-			FetchMode? fetchMode)
+			FetchMode? fetchMode,
+			ValueInclusion insertValueInclusion,
+			ValueInclusion updateValueInclusion)
 			: base(name, node, type)
 		{
 			this.lazy = lazy;
@@ -67,6 +73,8 @@ namespace NHibernate.Tuple
 			this.versionable = versionable;
 			this.cascadeStyle = cascadeStyle;
 			this.fetchMode = fetchMode;
+			this.insertValueInclusion = insertValueInclusion;
+			this.updateValueInclusion = updateValueInclusion;
 		}
 
 		public bool IsLazy
@@ -123,5 +131,15 @@ namespace NHibernate.Tuple
 		{
 			get { return fetchMode; }
 		}
-	}
+
+		public ValueInclusion InsertValueInclusion
+		{
+			get { return insertValueInclusion; }
+		}
+
+		public ValueInclusion UpdateValueInclusion
+		{
+			get { return updateValueInclusion; }
+		}
+  }
 }

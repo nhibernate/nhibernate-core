@@ -49,7 +49,7 @@ namespace NHibernate.Tuple
 		/// version mapping Property.
 		/// </summary>
 		/// <param name="property">The version mapping Property.</param>
-		/// <param name="lazyAvailable">Is property lazy loading currently available.</param>
+		/// <param name="lazyAvailable">Is property lazy loading currently available for parent class.</param>
 		/// <returns>The appropriate VersionProperty definition.</returns>
 		public static VersionProperty BuildVersionProperty(Mapping.Property property, bool lazyAvailable)
 		{
@@ -62,7 +62,7 @@ namespace NHibernate.Tuple
 				GetConstructor(property.PersistentClass)
 				);
 
-			bool lazy = lazyAvailable && property.IsLazy;
+			bool lazy = IsLazyProperty(property, lazyAvailable);
 
 			return new VersionProperty(
 				property.Name,
@@ -77,8 +77,14 @@ namespace NHibernate.Tuple
 				property.IsUpdateable && !lazy,
 				property.IsOptimisticLocked,
 				property.CascadeStyle,
-				unsavedValue
-				);
+				unsavedValue,
+				DetermineInsertValueGenerationType(property),
+				DetermineUpdateValueGenerationType(property));
+		}
+
+		private static bool IsLazyProperty(Mapping.Property property, bool lazyAvailable)
+		{
+			return lazyAvailable && property.IsLazy && (!property.IsEntityRelation || property.UnwrapProxy);
 		}
 
 		/// <summary>
@@ -101,22 +107,103 @@ namespace NHibernate.Tuple
 
 			bool alwaysDirtyCheck = type.IsAssociationType &&
 			                        ((IAssociationType) type).IsAlwaysDirtyChecked;
-
+      
 			return new StandardProperty(
 				property.Name,
 				property.NodeName,
 				type,
-				lazyAvailable && property.IsLazy,
+				IsLazyProperty(property, lazyAvailable),
 				property.IsInsertable,
 				property.IsUpdateable,
-				property.Generation == PropertyGeneration.Insert || property.Generation == PropertyGeneration.Always,
-				property.Generation == PropertyGeneration.Always,
+				IsInsertGenerated(property),
+				IsUpdateGenerated(property),
 				property.IsOptional,
 				alwaysDirtyCheck || property.IsUpdateable,
 				property.IsOptimisticLocked,
 				property.CascadeStyle,
-				property.Value.FetchMode
-				);
+				property.Value.FetchMode,
+				DetermineInsertValueGenerationType(property),
+				DetermineUpdateValueGenerationType(property));
+		}
+
+		private static bool IsUpdateGenerated(Mapping.Property property)
+		{
+			return property.Generation == PropertyGeneration.Always;
+		}
+
+		private static bool IsInsertGenerated(Mapping.Property property)
+		{
+			return property.Generation == PropertyGeneration.Insert || property.Generation == PropertyGeneration.Always;
+		}
+
+		private static ValueInclusion DetermineInsertValueGenerationType(Mapping.Property mappingProperty)
+		{
+			if (IsInsertGenerated(mappingProperty))
+			{
+				return ValueInclusion.Full;
+			}
+			else if (mappingProperty.Value is Mapping.Component)
+			{
+				if (HasPartialInsertComponentGeneration((Mapping.Component) mappingProperty.Value))
+				{
+					return ValueInclusion.Partial;
+				}
+			}
+			return ValueInclusion.None;
+		}
+
+		private static bool HasPartialInsertComponentGeneration(Mapping.Component component)
+		{
+			foreach (Mapping.Property prop in component.PropertyIterator)
+			{
+				if (prop.Generation == PropertyGeneration.Always || prop.Generation == PropertyGeneration.Insert)
+				{
+					return true;
+				}
+				else if (prop.Value is Mapping.Component)
+				{
+					if (HasPartialInsertComponentGeneration((Mapping.Component) prop.Value))
+					{
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
+		private static ValueInclusion DetermineUpdateValueGenerationType(Mapping.Property mappingProperty)
+		{
+			if (IsUpdateGenerated(mappingProperty))
+			{
+				return ValueInclusion.Full;
+			}
+			else if (mappingProperty.Value is Mapping.Component)
+			{
+				if (HasPartialUpdateComponentGeneration((Mapping.Component) mappingProperty.Value))
+				{
+					return ValueInclusion.Partial;
+				}
+			}
+			return ValueInclusion.None;
+		}
+
+		private static bool HasPartialUpdateComponentGeneration(Mapping.Component component)
+		{
+			foreach (Mapping.Property prop in component.PropertyIterator)
+			{
+				if (prop.Generation == PropertyGeneration.Always)
+				{
+					return true;
+				}
+				else if (prop.Value is Mapping.Component)
+				{
+					if (HasPartialUpdateComponentGeneration((Mapping.Component) prop.Value))
+					{
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 
 		private static ConstructorInfo GetConstructor(PersistentClass persistentClass)

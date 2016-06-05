@@ -35,6 +35,8 @@ namespace NHibernate.Tuple
 		/// <param name="unsavedValue">The value which, if found as the value of
 		/// this (i.e., the version) property, represents new (i.e., un-saved)
 		/// instances of the owning entity.</param>
+		/// <param name="insertValueInclusion">Determines how value is "included" on insert</param>
+		/// <param name="updateValueInclusion">Determines how value is "included" on update</param>
 		public VersionProperty(
 			string name,
 			string node,
@@ -48,10 +50,12 @@ namespace NHibernate.Tuple
 			bool checkable,
 			bool versionable,
 			CascadeStyle cascadeStyle,
-			VersionValue unsavedValue)
+			VersionValue unsavedValue,
+			ValueInclusion insertValueInclusion,
+			ValueInclusion updateValueInclusion)
 			: base(
 				name, node, type, lazy, insertable, updateable, insertGenerated, updateGenerated, nullable, checkable, versionable,
-				cascadeStyle, null)
+				cascadeStyle, null, insertValueInclusion, updateValueInclusion)
 		{
 			this.unsavedValue = unsavedValue;
 		}

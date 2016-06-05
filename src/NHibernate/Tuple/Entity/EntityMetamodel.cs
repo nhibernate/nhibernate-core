@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 using NHibernate.Engine;
@@ -7,7 +8,7 @@ using NHibernate.Intercept;
 using NHibernate.Mapping;
 using NHibernate.Type;
 using NHibernate.Util;
-using Array = NHibernate.Mapping.Array;
+
 
 namespace NHibernate.Tuple.Entity
 {
@@ -36,18 +37,18 @@ namespace NHibernate.Tuple.Entity
 
 		private readonly StandardProperty[] properties;
 
-		private readonly string[] propertyNames;
-		private readonly IType[] propertyTypes;
-		private readonly bool[] propertyLaziness;
-		private readonly bool[] propertyUpdateability;
-		private readonly bool[] nonlazyPropertyUpdateability;
-		private readonly bool[] propertyCheckability;
-		private readonly bool[] propertyInsertability;
-		private readonly ValueInclusion[] insertInclusions;
-		private readonly ValueInclusion[] updateInclusions;
-		private readonly bool[] propertyNullability;
-		private readonly bool[] propertyVersionability;
-		private readonly CascadeStyle[] cascadeStyles;
+		private readonly Lazy<string[]> propertyNames;
+		private readonly Lazy<IType[]> propertyTypes;
+		private readonly Lazy<bool[]> propertyLaziness;
+		private readonly Lazy<bool[]> propertyUpdateability;
+		private readonly Lazy<bool[]> nonlazyPropertyUpdateability;
+		private readonly Lazy<bool[]> propertyCheckability;
+		private readonly Lazy<bool[]> propertyInsertability;
+		private readonly Lazy<ValueInclusion[]> insertInclusions;
+		private readonly Lazy<ValueInclusion[]> updateInclusions;
+		private readonly Lazy<bool[]> propertyNullability;
+		private readonly Lazy<bool[]> propertyVersionability;
+		private readonly Lazy<CascadeStyle[]> cascadeStyles;
 
 		private readonly IDictionary<string, int?> propertyIndexes = new Dictionary<string, int?>();
 		private readonly bool hasCollections;
@@ -83,6 +84,18 @@ namespace NHibernate.Tuple.Entity
 		{
 			this.sessionFactory = sessionFactory;
 
+			propertyNames = new Lazy<string[]>(() => properties.Select(x => x.Name).ToArray());
+			propertyTypes = new Lazy<IType[]>(() => properties.Select(x => x.Type).ToArray());
+			cascadeStyles = new Lazy<CascadeStyle[]>(() => properties.Select(x => x.CascadeStyle).ToArray());
+			propertyNullability = new Lazy<bool[]>(() => properties.Select(x => x.IsNullable).ToArray());
+			propertyUpdateability = new Lazy<bool[]>(() => properties.Select(x => x.IsUpdateable).ToArray());
+			propertyInsertability = new Lazy<bool[]>(() => properties.Select(x => x.IsInsertable).ToArray());
+			propertyVersionability = new Lazy<bool[]>(() => properties.Select(x => x.IsVersionable).ToArray());
+			propertyCheckability = new Lazy<bool[]>(() => properties.Select(IsCheckableProperty).ToArray());
+			insertInclusions = new Lazy<ValueInclusion[]>(() => properties.Select(x => x.InsertValueInclusion).ToArray());
+			updateInclusions = new Lazy<ValueInclusion[]>(() => properties.Select(x => x.UpdateValueInclusion).ToArray());
+			propertyLaziness = new Lazy<bool[]>(() => properties.Select(x => x.IsLazy).ToArray());
+			nonlazyPropertyUpdateability = new Lazy<bool[]>(() => properties.Select(x => x.IsUpdateable && !x.IsLazy).ToArray());
 
 			name = persistentClass.EntityName;
 			rootName = persistentClass.RootClazz.EntityName;
@@ -91,82 +104,54 @@ namespace NHibernate.Tuple.Entity
 			rootType = persistentClass.RootClazz.MappedClass;
 			rootTypeAssemblyQualifiedName = rootType == null ? null : rootType.AssemblyQualifiedName;
 
-			identifierProperty = PropertyFactory.BuildIdentifierProperty(persistentClass,
-			                                                             sessionFactory.GetIdentifierGenerator(rootName));
+			identifierProperty = PropertyFactory.BuildIdentifierProperty(persistentClass, sessionFactory.GetIdentifierGenerator(rootName));
 
 			versioned = persistentClass.IsVersioned;
-
-			bool lazyAvailable = persistentClass.HasPocoRepresentation
-			                     && FieldInterceptionHelper.IsInstrumented(persistentClass.MappedClass);
-			bool hasLazy = false;
 
 			propertySpan = persistentClass.PropertyClosureSpan;
 			properties = new StandardProperty[propertySpan];
 			List<int> naturalIdNumbers = new List<int>();
 
-			propertyNames = new string[propertySpan];
-			propertyTypes = new IType[propertySpan];
-			propertyUpdateability = new bool[propertySpan];
-			propertyInsertability = new bool[propertySpan];
-			insertInclusions = new ValueInclusion[propertySpan];
-			updateInclusions = new ValueInclusion[propertySpan];
-			nonlazyPropertyUpdateability = new bool[propertySpan];
-			propertyCheckability = new bool[propertySpan];
-			propertyNullability = new bool[propertySpan];
-			propertyVersionability = new bool[propertySpan];
-			propertyLaziness = new bool[propertySpan];
-			cascadeStyles = new CascadeStyle[propertySpan];
-
 			int i = 0;
 			int tempVersionProperty = NoVersionIndex;
-			bool foundCascade = false;
-			bool foundCollection = false;
-			bool foundMutable = false;
-			bool foundInsertGeneratedValue = false;
-			bool foundUpdateGeneratedValue = false;
-			bool foundNonIdentifierPropertyNamedId = false;
 			HasPocoRepresentation = persistentClass.HasPocoRepresentation;
-			
+
 			// NH: WARNING if we have to disable lazy/unproxy properties we have to do it in the whole process.
 			lazy = persistentClass.IsLazy && (!persistentClass.HasPocoRepresentation || !ReflectHelper.IsFinalClass(persistentClass.ProxyInterface));
-			lazyAvailable &= lazy; // <== Disable lazy properties if the class is marked with lazy=false
+			bool lazyAvailable = persistentClass.HasPocoRepresentation && FieldInterceptionHelper.IsInstrumented(persistentClass.MappedClass) && lazy;
+				// <== Disable lazy properties if the class is marked with lazy=false
 
 			bool hadLazyProperties = false;
 			bool hadNoProxyRelations = false;
 			foreach (Mapping.Property prop in persistentClass.PropertyClosureIterator)
 			{
-				if (prop.IsLazy)
+				hadLazyProperties |= prop.IsLazy;
+				hadNoProxyRelations |= prop.UnwrapProxy;
+
+				if (prop == persistentClass.Version)
 				{
-					hadLazyProperties = true;
+					tempVersionProperty = i;
+					properties[i] = PropertyFactory.BuildVersionProperty(prop, lazyAvailable);
 				}
-				if(prop.UnwrapProxy)
+				else
 				{
-					hadNoProxyRelations = true;
+					properties[i] = PropertyFactory.BuildStandardProperty(prop, lazyAvailable);
 				}
 
-				// NH: A lazy property is a simple property marked with lazy=true
-				bool islazyProperty = prop.IsLazy && lazyAvailable && (!prop.IsEntityRelation || prop.UnwrapProxy);
 				// NH: A Relation (in this case many-to-one or one-to-one) marked as "no-proxy"
 				var isUnwrapProxy = prop.UnwrapProxy && lazyAvailable;
 
-				if (islazyProperty || isUnwrapProxy)
+				if (properties[i].IsLazy || isUnwrapProxy)
 				{
 					// NH: verify property proxiability
 					var getter = prop.GetGetter(persistentClass.MappedClass);
 					if (getter.Method == null || getter.Method.IsDefined(typeof(CompilerGeneratedAttribute), false) == false)
 					{
-						log.ErrorFormat("Lazy or no-proxy property {0}.{1} is not an auto property, which may result in uninitialized property access", persistentClass.EntityName, prop.Name);
+						log.ErrorFormat(
+							"Lazy or no-proxy property {0}.{1} is not an auto property, which may result in uninitialized property access",
+							persistentClass.EntityName,
+							prop.Name);
 					}
-				}
-
-				if (prop == persistentClass.Version)
-				{
-					tempVersionProperty = i;
-					properties[i] = PropertyFactory.BuildVersionProperty(prop, islazyProperty);
-				}
-				else
-				{
-					properties[i] = PropertyFactory.BuildStandardProperty(prop, islazyProperty);
 				}
 
 				if (prop.IsNaturalIdentifier)
@@ -174,67 +159,7 @@ namespace NHibernate.Tuple.Entity
 					naturalIdNumbers.Add(i);
 				}
 
-				if ("id".Equals(prop.Name))
-				{
-					foundNonIdentifierPropertyNamedId = true;
-				}
-
-				if (islazyProperty)
-				{
-					hasLazy = true;
-				}
-				if (isUnwrapProxy)
-				{
-					hasUnwrapProxyForProperties = true;
-				}
-
-				propertyLaziness[i] = islazyProperty;
-
-				propertyNames[i] = properties[i].Name;
-				propertyTypes[i] = properties[i].Type;
-				propertyNullability[i] = properties[i].IsNullable;
-				propertyUpdateability[i] = properties[i].IsUpdateable;
-				propertyInsertability[i] = properties[i].IsInsertable;
-				insertInclusions[i] = DetermineInsertValueGenerationType(prop, properties[i]);
-				updateInclusions[i] = DetermineUpdateValueGenerationType(prop, properties[i]);
-				propertyVersionability[i] = properties[i].IsVersionable;
-				nonlazyPropertyUpdateability[i] = properties[i].IsUpdateable && !islazyProperty;
-				propertyCheckability[i] = propertyUpdateability[i]
-				                          ||
-				                          (propertyTypes[i].IsAssociationType
-				                           && ((IAssociationType) propertyTypes[i]).IsAlwaysDirtyChecked);
-
-				cascadeStyles[i] = properties[i].CascadeStyle;
-
-				if (properties[i].IsLazy)
-				{
-					hasLazy = true;
-				}
-
-				if (properties[i].CascadeStyle != CascadeStyle.None)
-				{
-					foundCascade = true;
-				}
-
-				if (IndicatesCollection(properties[i].Type))
-				{
-					foundCollection = true;
-				}
-
-				if (propertyTypes[i].IsMutable && propertyCheckability[i])
-				{
-					foundMutable = true;
-				}
-
-				if (insertInclusions[i] != ValueInclusion.None)
-				{
-					foundInsertGeneratedValue = true;
-				}
-
-				if (updateInclusions[i] != ValueInclusion.None)
-				{
-					foundUpdateGeneratedValue = true;
-				}
+				hasUnwrapProxyForProperties |= isUnwrapProxy;
 
 				MapPropertyToIndex(prop, i);
 				i++;
@@ -245,24 +170,27 @@ namespace NHibernate.Tuple.Entity
 			else
 				naturalIdPropertyNumbers = naturalIdNumbers.ToArray();
 
-			hasCascades = foundCascade;
-			hasInsertGeneratedValues = foundInsertGeneratedValue;
-			hasUpdateGeneratedValues = foundUpdateGeneratedValue;
-			hasNonIdentifierPropertyNamedId = foundNonIdentifierPropertyNamedId;
+			hasCascades = properties.Any(x => x.CascadeStyle != CascadeStyle.None);
+			hasInsertGeneratedValues = properties.Any(x => x.InsertValueInclusion != ValueInclusion.None);
+			hasUpdateGeneratedValues = properties.Any(x => x.UpdateValueInclusion != ValueInclusion.None);
+
+			// todo: "id".Equals(x.Name) => makes sense to compare it in StringComparison.OrdinalIgnoreCase mode
+			hasNonIdentifierPropertyNamedId = properties.Any(x => "id".Equals(x.Name));
 
 			versionPropertyIndex = tempVersionProperty;
-			hasLazyProperties = hasLazy;
+			hasLazyProperties = properties.Any(x => x.IsLazy);
 
-			if(hadLazyProperties && !hasLazy)
+			if (hadLazyProperties && !hasLazyProperties)
 			{
 				log.WarnFormat("Disabled lazy property fetching for {0} because it does not support lazy at the entity level", name);
 			}
-			if (hasLazy)
+
+			if (hasLazyProperties)
 			{
 				log.Info("lazy property fetching available for: " + name);
 			}
 
-			if(hadNoProxyRelations && !hasUnwrapProxyForProperties)
+			if (hadNoProxyRelations && !hasUnwrapProxyForProperties)
 			{
 				log.WarnFormat("Disabled ghost property fetching for {0} because it does not support lazy at the entity level", name);
 			}
@@ -282,12 +210,12 @@ namespace NHibernate.Tuple.Entity
 			{
 				isAbstract = persistentClass.IsAbstract.Value;
 				if (!isAbstract && persistentClass.HasPocoRepresentation
-				    && ReflectHelper.IsAbstractClass(persistentClass.MappedClass))
+						&& ReflectHelper.IsAbstractClass(persistentClass.MappedClass))
 				{
-					log.Warn("entity [" + type.FullName
-					         + "] is abstract-class/interface explicitly mapped as non-abstract; be sure to supply entity-names");
+					log.Warn("entity [" + type.FullName + "] is abstract-class/interface explicitly mapped as non-abstract; be sure to supply entity-names");
 				}
 			}
+
 			selectBeforeUpdate = persistentClass.SelectBeforeUpdate;
 			dynamicUpdate = persistentClass.DynamicUpdate;
 			dynamicInsert = persistentClass.DynamicInsert;
@@ -298,95 +226,26 @@ namespace NHibernate.Tuple.Entity
 			superclass = inherited ? persistentClass.Superclass.EntityName : null;
 			superclassType = inherited ? persistentClass.Superclass.MappedClass : null;
 			hasSubclasses = persistentClass.HasSubclasses;
-
 			optimisticLockMode = persistentClass.OptimisticLockMode;
+
 			if (optimisticLockMode > Versioning.OptimisticLock.Version && !dynamicUpdate)
 			{
 				throw new MappingException("optimistic-lock setting requires dynamic-update=\"true\": " + type.FullName);
 			}
 
-			hasCollections = foundCollection;
-			hasMutableProperties = foundMutable;
-
-			foreach (Subclass obj in persistentClass.SubclassIterator)
-			{
-				subclassEntityNames.Add(obj.EntityName);
-			}
-			subclassEntityNames.Add(name);
+			hasCollections = properties.Any(x => IndicatesCollection(x.Type));
+			hasMutableProperties = properties.Any(x => x.Type.IsMutable && IsCheckableProperty(x));
+			subclassEntityNames = new HashSet<string>(persistentClass.SubclassIterator.Select(x => x.EntityName).Union(new[] {name}));
 
 			tuplizerMapping = new EntityEntityModeToTuplizerMapping(persistentClass, this);
 		}
 
 		public bool HasPocoRepresentation { get; private set; }
 
-		private ValueInclusion DetermineInsertValueGenerationType(Mapping.Property mappingProperty, StandardProperty runtimeProperty)
-		{
-			if (runtimeProperty.IsInsertGenerated)
-			{
-				return ValueInclusion.Full;
-			}
-			else if (mappingProperty.Value is Mapping.Component)
-			{
-				if (HasPartialInsertComponentGeneration((Mapping.Component)mappingProperty.Value))
-				{
-					return ValueInclusion.Partial;
-				}
-			}
-			return ValueInclusion.None;
-		}
 
-		private bool HasPartialInsertComponentGeneration(Mapping.Component component)
+		private static bool IsCheckableProperty(StandardProperty x)
 		{
-			foreach (Mapping.Property prop in component.PropertyIterator)
-			{
-				if (prop.Generation == PropertyGeneration.Always || prop.Generation == PropertyGeneration.Insert)
-				{
-					return true;
-				}
-				else if (prop.Value is Mapping.Component)
-				{
-					if (HasPartialInsertComponentGeneration((Mapping.Component)prop.Value))
-					{
-						return true;
-					}
-				}
-			}
-			return false;
-		}
-
-		private ValueInclusion DetermineUpdateValueGenerationType(Mapping.Property mappingProperty, StandardProperty runtimeProperty)
-		{
-			if (runtimeProperty.IsUpdateGenerated)
-			{
-				return ValueInclusion.Full;
-			}
-			else if (mappingProperty.Value is Mapping.Component)
-			{
-				if (HasPartialUpdateComponentGeneration((Mapping.Component)mappingProperty.Value))
-				{
-					return ValueInclusion.Partial;
-				}
-			}
-			return ValueInclusion.None;
-		}
-
-		private bool HasPartialUpdateComponentGeneration(Mapping.Component component)
-		{
-			foreach (Mapping.Property prop in component.PropertyIterator)
-			{
-				if (prop.Generation == PropertyGeneration.Always)
-				{
-					return true;
-				}
-				else if (prop.Value is Mapping.Component)
-				{
-					if (HasPartialUpdateComponentGeneration((Mapping.Component)prop.Value))
-					{
-						return true;
-					}
-				}
-			}
-			return false;
+			return x.IsUpdateable || (x.Type.IsAssociationType && ((IAssociationType) x.Type).IsAlwaysDirtyChecked);
 		}
 
 		private void MapPropertyToIndex(Mapping.Property prop, int i)
@@ -613,64 +472,65 @@ namespace NHibernate.Tuple.Entity
 		}
 
 		#region temporary
+
 		public string[] PropertyNames
 		{
-			get { return propertyNames; }
+			get { return propertyNames.Value; }
 		}
 
 		public IType[] PropertyTypes
 		{
-			get { return propertyTypes; }
+			get { return propertyTypes.Value; }
 		}
 
 		public bool[] PropertyLaziness
 		{
-			get { return propertyLaziness; }
+			get { return propertyLaziness.Value; }
 		}
 
 		public bool[] PropertyUpdateability
 		{
-			get { return propertyUpdateability; }
+			get { return propertyUpdateability.Value; }
 		}
 
 		public bool[] PropertyCheckability
 		{
-			get { return propertyCheckability; }
+			get { return propertyCheckability.Value; }
 		}
 
 		public bool[] NonlazyPropertyUpdateability
 		{
-			get { return nonlazyPropertyUpdateability; }
+			get { return nonlazyPropertyUpdateability.Value; }
 		}
 
 		public bool[] PropertyInsertability
 		{
-			get { return propertyInsertability; }
+			get { return propertyInsertability.Value; }
 		}
 
 		public bool[] PropertyNullability
 		{
-			get { return propertyNullability; }
+			get { return propertyNullability.Value; }
 		}
 
 		public bool[] PropertyVersionability
 		{
-			get { return propertyVersionability; }
+			get { return propertyVersionability.Value; }
 		}
 
 		public CascadeStyle[] CascadeStyles
 		{
-			get { return cascadeStyles; }
+			get { return cascadeStyles.Value; }
 		}
 
 		public ValueInclusion[] PropertyInsertGenerationInclusions
 		{
-			get { return insertInclusions; }
+			get { return insertInclusions.Value; }
 		}
 
 		public ValueInclusion[] PropertyUpdateGenerationInclusions
 		{
-			get { return updateInclusions; }
+			get { return updateInclusions.Value; }
 		}
 
 		public bool HasInsertGeneratedValues
@@ -686,23 +546,25 @@ namespace NHibernate.Tuple.Entity
 		#endregion
 
 		#region Tuplizer
+
 		private readonly EntityEntityModeToTuplizerMapping tuplizerMapping;
 		private bool hasUnwrapProxyForProperties;
 
 		public IEntityTuplizer GetTuplizer(EntityMode entityMode)
 		{
-			return (IEntityTuplizer)tuplizerMapping.GetTuplizer(entityMode);
+			return (IEntityTuplizer) tuplizerMapping.GetTuplizer(entityMode);
 		}
 
 		public IEntityTuplizer GetTuplizerOrNull(EntityMode entityMode)
 		{
-			return (IEntityTuplizer)tuplizerMapping.GetTuplizerOrNull(entityMode);
+			return (IEntityTuplizer) tuplizerMapping.GetTuplizerOrNull(entityMode);
 		}
 
 		public EntityMode? GuessEntityMode(object obj)
 		{
 			return tuplizerMapping.GuessEntityMode(obj);
 		}
+
 		#endregion
 
 		public bool HasNaturalIdentifier
