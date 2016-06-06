@@ -37,7 +37,7 @@
 
 	<target name="setup-teamcity-sqlServerOdbc">
 		<property name="nhibernate.connection.driver_class"				value="NHibernate.Driver.OdbcDriver" />
-		<property name="nhibernate.connection.connection_string"	value="Driver={SQL Native Client};Server=.\SQLExpress;Database=nhibernateOdbc;Trusted_Connection=yes" />
+		<property name="nhibernate.connection.connection_string"	value="Driver={SQL Server Native Client 11.0};Server=.\SQLExpress;Database=nhibernateOdbc;Trusted_Connection=yes" />
 		<property name="NHibernate.Test.IgnoreFail" value="true" />
 		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/sqlServerOdbc/NHibernate.Test.last-results.xml" />
 	</target>
