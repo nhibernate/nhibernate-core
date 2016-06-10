@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using NHibernate.Dialect;
 using NHibernate.Linq;
 using NHibernate.Test.ExceptionsTest;
 using NHibernate.Test.MappingByCode;
@@ -16,6 +17,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3844
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is FirebirdDialect);
+		}
+
 		protected override void OnSetUp()
 		{
 			var job1 = new Job { Name = "Not a Job", BillingType = BillingType.None };
