@@ -439,15 +439,15 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary> Close the stateless session and release the ADO.NET connection.</summary>
-		public void Close()
+		public override IDbConnection Close()
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				ManagedClose();
+				return ManagedClose();
 			}
 		}
 
-		public void ManagedClose()
+		public IDbConnection ManagedClose()
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -455,8 +455,9 @@ namespace NHibernate.Impl
 				{
 					throw new SessionException("Session was already closed!");
 				}
-				ConnectionManager.Close();
+				var dbConection = ConnectionManager.Close();
 				SetClosed();
+			    return dbConection;
 			}
 		}
 

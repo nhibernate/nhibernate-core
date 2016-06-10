@@ -298,7 +298,9 @@ namespace NHibernate.Impl
 			get { return closed; }
 		}
 
-		protected internal virtual void CheckAndUpdateSessionStatus()
+	    public abstract IDbConnection Close();
+
+	    protected internal virtual void CheckAndUpdateSessionStatus()
 		{
 			ErrorIfClosed();
 			EnlistInAmbientTransactionIfNeeded();
