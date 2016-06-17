@@ -11,5 +11,7 @@ namespace NHibernate.Dialect.Schema
 		int NumericalPrecision { get; }
 
 		string Nullable { get; }
+
+        int NumericalScale { get; }
 	}
 }
