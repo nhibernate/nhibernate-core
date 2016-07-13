@@ -30,30 +30,31 @@ namespace NHibernate.Test.TypesTest
 			}
 		}
 
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			// this test only works where the driver has set an explicit length on the IDbDataParameter
-			return dialect is MsSql2008Dialect;
-		}
 
 		[Test]
 		public void NhThrowsOnTooLong()
 		{
+			if (!(Dialect is MsSql2008Dialect))
+				Assert.Ignore(
+					"This test only works (and is only relevant) " +
+					"where the driver has set an explicit length " +
+					"on the IDbDataParameter.");
+
 			int maxStringLength = 4000;
-			PropertyValueException ex = Assert.Throws<PropertyValueException>(() =>
+			PropertyValueException ex = Assert.Throws<PropertyValueException>(
+				() =>
 				{
 					using (ISession s = OpenSession())
 					{
-						StringClass b = new StringClass();
-						b.LongStringValue = new string('x', maxStringLength + 1);
+						StringClass b = new StringClass {LongStringValue = new string('x', maxStringLength + 1)};
 						s.Save(b);
 						s.Flush();
 					}
 				});
 
-			Assert.That(ex.Message, Iz.EqualTo("Error dehydrating property value for NHibernate.Test.TypesTest.StringClass.LongStringValue"));
-			Assert.That(ex.InnerException, Iz.TypeOf<HibernateException>());
-			Assert.That(ex.InnerException.Message, Iz.EqualTo("The length of the string value exceeds the length configured in the mapping/parameter."));
+			Assert.That(ex.Message, Is.EqualTo("Error dehydrating property value for NHibernate.Test.TypesTest.StringClass.LongStringValue"));
+			Assert.That(ex.InnerException, Is.TypeOf<HibernateException>());
+			Assert.That(ex.InnerException.Message, Is.EqualTo("The length of the string value exceeds the length configured in the mapping/parameter."));
 		}
 
 		[Test]
@@ -65,8 +66,7 @@ namespace NHibernate.Test.TypesTest
 			{
 				using (ISession s = OpenSession())
 				{
-					StringClass b = new StringClass();
-					b.StringValue = "0123456789a";
+					StringClass b = new StringClass {StringValue = "0123456789a"};
 					s.Save(b);
 					s.Flush();
 				}
@@ -82,7 +82,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void CriteriaLikeParameterCanExceedColumnSize()
 		{
-			if (!(sessions.ConnectionProvider.Driver is SqlClientDriver))
+			if (sessions.ConnectionProvider.Driver is OdbcDriver)
 				Assert.Ignore("This test fails against the ODBC driver.  The driver would need to be override to allow longer parameter sizes than the column.");
 
 			using (ISession s = OpenSession())
@@ -103,7 +103,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void HqlLikeParameterCanExceedColumnSize()
 		{
-			if (!(sessions.ConnectionProvider.Driver is SqlClientDriver))
+			if (sessions.ConnectionProvider.Driver is OdbcDriver)
 				Assert.Ignore("This test fails against the ODBC driver.  The driver would need to be override to allow longer parameter sizes than the column.");
 
 			using (ISession s = OpenSession())
@@ -118,6 +118,55 @@ namespace NHibernate.Test.TypesTest
 						.List();
 
 				Assert.That(aaItems.Count, Is.EqualTo(2));
+			}
+		}
+
+
+		[Test]
+		public void CriteriaEqualityParameterCanExceedColumnSize()
+		{
+			if (sessions.ConnectionProvider.Driver is OdbcDriver)
+				Assert.Ignore("This test fails against the ODBC driver.  The driver would need to be override to allow longer parameter sizes than the column.");
+
+			// We should be able to query a column with a value longer than
+			// the specified column size, to avoid tedious exceptions.
+
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				s.Save(new StringClass { Id = 1, StringValue = "AAAAAAAAAB" });
+				s.Save(new StringClass { Id = 2, StringValue = "BAAAAAAAAA" });
+
+				var aaItems =
+					s.CreateCriteria<StringClass>()
+					 .Add(Restrictions.Eq("StringValue", "AAAAAAAAABx"))
+					 .List();
+
+				Assert.That(aaItems.Count, Is.EqualTo(0));
+			}
+		}
+
+		[Test]
+		public void HqlEqualityParameterCanExceedColumnSize()
+		{
+			if (sessions.ConnectionProvider.Driver is OdbcDriver)
+				Assert.Ignore("This test fails against the ODBC driver.  The driver would need to be override to allow longer parameter sizes than the column.");
+
+			// We should be able to query a column with a value longer than
+			// the specified column size, to avoid tedious exceptions.
+
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				s.Save(new StringClass { Id = 1, StringValue = "AAAAAAAAAB" });
+				s.Save(new StringClass { Id = 2, StringValue = "BAAAAAAAAA" });
+
+				var aaItems =
+					s.CreateQuery("from StringClass s where s.StringValue = :likeValue")
+					 .SetParameter("likeValue", "AAAAAAAAABx")
+					 .List();
+
+				Assert.That(aaItems.Count, Is.EqualTo(0));
 			}
 		}
 	}
