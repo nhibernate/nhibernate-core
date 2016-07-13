@@ -1,8 +1,11 @@
+using System;
+using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Criterion;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Exceptions;
+using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
@@ -38,16 +41,22 @@ namespace NHibernate.Test.TypesTest
 
 
 		[Test]
-		public void NhThrowsOnTooLong()
+		[Description("Values longer than the maximum possible string length " +
+		             "should raise an exception if they would otherwise be truncated.")]
+		public void ShouldPreventInsertionOfVeryLongStringThatWouldBeTruncated()
 		{
-			if (!(Dialect is MsSql2008Dialect))
-				Assert.Ignore(
-					"This test only works (and is only relevant) " +
-					"where the driver has set an explicit length " +
-					"on the IDbDataParameter.");
+			// This test case is for when the current driver will use a parameter size
+			// that is significantly larger than the mapped column size (e.g. SqlClientDriver currently).
+
+			// Note: This test could possible be written as
+			//   "database must raise an error OR it must store and return the full value"
+			// to avoid this dialect specific exception.
+			if (Dialect is SQLiteDialect)
+				Assert.Ignore("SQLite does not enforce specified string lengths.");
 
 			int maxStringLength = GetLongStringMappedLength();
-			PropertyValueException ex = Assert.Throws<PropertyValueException>(
+
+			var ex = Assert.Catch<Exception>(
 				() =>
 				{
 					using (ISession s = OpenSession())
@@ -58,13 +67,13 @@ namespace NHibernate.Test.TypesTest
 					}
 				});
 
-			Assert.That(ex.Message, Is.EqualTo("Error dehydrating property value for NHibernate.Test.TypesTest.StringClass.LongStringValue"));
-			Assert.That(ex.InnerException, Is.TypeOf<HibernateException>());
-			Assert.That(ex.InnerException.Message, Is.EqualTo("The length of the string value exceeds the length configured in the mapping/parameter."));
+			AssertFailedInsertExceptionDetailsAndEmptyTable(ex);
 		}
 
 		[Test]
-		public void DbThrowsOnTooLong()
+		[Description("Values longer than the mapped string length " +
+		             "should raise an exception if they would otherwise be truncated.")]
+		public void ShouldPreventInsertionOfTooLongStringThatWouldBeTruncated()
 		{
 			// Note: This test could possible be written as
 			//   "database must raise an error OR it must store and return the full value"
@@ -72,7 +81,7 @@ namespace NHibernate.Test.TypesTest
 			if (Dialect is SQLiteDialect)
 				Assert.Ignore("SQLite does not enforce specified string lengths.");
 
-			Assert.Throws<GenericADOException>(
+			var ex = Assert.Catch<Exception>(
 				() =>
 				{
 					using (ISession s = OpenSession())
@@ -82,8 +91,44 @@ namespace NHibernate.Test.TypesTest
 						s.Flush();
 					}
 				},
-				"Database did not throw an error when trying to put too large a value into a column.");
+				"An exception was expected when trying to put too large a value into a column.");
+
+			AssertFailedInsertExceptionDetailsAndEmptyTable(ex);
 		}
+
+		private void AssertFailedInsertExceptionDetailsAndEmptyTable(Exception ex)
+		{
+			// We can get different sort of exceptions.
+			if (ex is PropertyValueException)
+			{
+				// Some drivers/dialects set explicit parameter sizes, in which case we expect NH to
+				// raise a PropertyValueException (to avoid ADO.NET from silently truncating).
+
+				Assert.That(
+					ex.Message,
+					Is.StringStarting("Error dehydrating property value for NHibernate.Test.TypesTest.StringClass."));
+
+				Assert.That(ex.InnerException, Is.TypeOf<HibernateException>());
+
+				Assert.That(
+					ex.InnerException.Message,
+					Is.EqualTo("The length of the string value exceeds the length configured in the mapping/parameter."));
+			}
+			else
+			{
+				// In other cases, we expect the database itself to raise an error. This case
+				// will also happen if the driver does set an explicit parameter size, but that
+				// size is larger than the mapped column size.
+				Assert.That(ex, Is.TypeOf<GenericADOException>());
+			}
+
+			// In any case, nothing should have been inserted.
+			using (ISession s = OpenSession())
+			{
+				Assert.That(s.Query<StringClass>().ToList(), Is.Empty);
+			}
+		}
+
 
 		[Test]
 		public void CriteriaLikeParameterCanExceedColumnSize()
