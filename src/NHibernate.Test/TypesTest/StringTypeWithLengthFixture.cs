@@ -1,33 +1,39 @@
-using System;
-using System.Collections;
+using NHibernate.Cfg.MappingSchema;
 using NHibernate.Criterion;
 using NHibernate.Dialect;
 using NHibernate.Driver;
+using NHibernate.Exceptions;
+using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
 {
 	/// <summary>
-	/// Summary description for StringTypeWithLengthFixture.
+	/// Various tests regarding handling of size of query parameters.
 	/// </summary>
 	[TestFixture]
-	public class StringTypeWithLengthFixture : TypeFixtureBase
+	public class StringTypeWithLengthFixture : TestCaseMappingByCode
 	{
-		protected override string TypeName
+		private int GetLongStringMappedLength()
 		{
-			get { return "String"; }
+			if (Dialect is Oracle8iDialect)
+				return 2000;
+			else
+				return 4000;
 		}
 
-
-		protected override IList Mappings
+		protected override HbmMapping GetMappings()
 		{
-			get
+			var mapper = new ModelMapper();
+			mapper.Class<StringClass>(ca =>
 			{
-				return new string[]
-					{
-						String.Format("TypesTest.{0}ClassWithLength.hbm.xml", TypeName)
-					};
-			}
+				ca.Lazy(false);
+				ca.Id(x => x.Id, map => map.Generator(Generators.Assigned));
+				ca.Property(x => x.StringValue, map => map.Length(10));
+				ca.Property(x => x.LongStringValue, map => map.Length(GetLongStringMappedLength()));
+			});
+
+			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 
 
@@ -40,7 +46,7 @@ namespace NHibernate.Test.TypesTest
 					"where the driver has set an explicit length " +
 					"on the IDbDataParameter.");
 
-			int maxStringLength = 4000;
+			int maxStringLength = GetLongStringMappedLength();
 			PropertyValueException ex = Assert.Throws<PropertyValueException>(
 				() =>
 				{
@@ -60,23 +66,17 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void DbThrowsOnTooLong()
 		{
-			bool dbThrewError = false;
-
-			try
-			{
-				using (ISession s = OpenSession())
+			Assert.Throws<GenericADOException>(
+				() =>
 				{
-					StringClass b = new StringClass {StringValue = "0123456789a"};
-					s.Save(b);
-					s.Flush();
-				}
-			}
-			catch
-			{
-				dbThrewError = true;
-			}
-
-			Assert.That(dbThrewError, "Database did not throw an error when trying to put too large a value into a column");
+					using (ISession s = OpenSession())
+					{
+						StringClass b = new StringClass {StringValue = "0123456789a"};
+						s.Save(b);
+						s.Flush();
+					}
+				},
+				"Database did not throw an error when trying to put too large a value into a column.");
 		}
 
 		[Test]
@@ -86,15 +86,15 @@ namespace NHibernate.Test.TypesTest
 				Assert.Ignore("This test fails against the ODBC driver.  The driver would need to be override to allow longer parameter sizes than the column.");
 
 			using (ISession s = OpenSession())
-			using (ITransaction t = s.BeginTransaction())
+			using (s.BeginTransaction())
 			{
-				s.Save(new StringClass() { Id = 1, StringValue = "AAAAAAAAAB" });
-				s.Save(new StringClass() { Id = 2, StringValue = "BAAAAAAAAA" });
+				s.Save(new StringClass { Id = 1, StringValue = "AAAAAAAAAB" });
+				s.Save(new StringClass { Id = 2, StringValue = "BAAAAAAAAA" });
 
 				var aaItems =
 					s.CreateCriteria<StringClass>()
-						.Add(Restrictions.Like("StringValue", "%AAAAAAAAA%"))
-						.List();
+					 .Add(Restrictions.Like("StringValue", "%AAAAAAAAA%"))
+					 .List();
 
 				Assert.That(aaItems.Count, Is.EqualTo(2));
 			}
@@ -107,15 +107,15 @@ namespace NHibernate.Test.TypesTest
 				Assert.Ignore("This test fails against the ODBC driver.  The driver would need to be override to allow longer parameter sizes than the column.");
 
 			using (ISession s = OpenSession())
-			using (ITransaction t = s.BeginTransaction())
+			using (s.BeginTransaction())
 			{
-				s.Save(new StringClass() { Id = 1, StringValue = "AAAAAAAAAB" });
-				s.Save(new StringClass() { Id = 2, StringValue = "BAAAAAAAAA" });
+				s.Save(new StringClass { Id = 1, StringValue = "AAAAAAAAAB" });
+				s.Save(new StringClass { Id = 2, StringValue = "BAAAAAAAAA" });
 
 				var aaItems =
 					s.CreateQuery("from StringClass s where s.StringValue like :likeValue")
-						.SetParameter("likeValue", "%AAAAAAAAA%")
-						.List();
+					 .SetParameter("likeValue", "%AAAAAAAAA%")
+					 .List();
 
 				Assert.That(aaItems.Count, Is.EqualTo(2));
 			}
