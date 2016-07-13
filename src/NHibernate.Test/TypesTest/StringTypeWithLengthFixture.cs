@@ -66,6 +66,12 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void DbThrowsOnTooLong()
 		{
+			// Note: This test could possible be written as
+			//   "database must raise an error OR it must store and return the full value"
+			// to avoid this dialect specific exception.
+			if (Dialect is SQLiteDialect)
+				Assert.Ignore("SQLite does not enforce specified string lengths.");
+
 			Assert.Throws<GenericADOException>(
 				() =>
 				{
