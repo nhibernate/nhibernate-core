@@ -742,6 +742,8 @@
     <Compile Include="NHSpecificTest\NH3912\ReusableBatcherFixture.cs" />
     <Compile Include="NHSpecificTest\NH3918\Model.cs" />
     <Compile Include="NHSpecificTest\NH3918\FixtureByCode.cs" />
+    <Compile Include="NHSpecificTest\NH3889\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3889\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3414\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3414\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH2218\Fixture.cs" />
