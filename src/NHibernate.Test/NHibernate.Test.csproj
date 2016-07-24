@@ -480,6 +480,7 @@
     <Compile Include="IdTest\AssignedClass.cs" />
     <Compile Include="IdTest\AssignedFixture.cs" />
     <Compile Include="IdTest\TableGeneratorFixture.cs" />
+    <Compile Include="IgnoreForDialectsAttribute.cs" />
     <Compile Include="Immutable\Contract.cs" />
     <Compile Include="Immutable\ContractVariation.cs" />
     <Compile Include="Immutable\EntityWithMutableCollection\AbstractEntityWithManyToManyTest.cs" />
@@ -1327,6 +1328,7 @@
     <Compile Include="ReadOnly\StudentDto.cs" />
     <Compile Include="ReadOnly\TextHolder.cs" />
     <Compile Include="ReadOnly\VersionedNode.cs" />
+    <Compile Include="RunForDialectsAttribute.cs" />
     <Compile Include="SqlCommandTest\SqlTokenizerFixture.cs" />
     <Compile Include="RecordingInterceptor.cs" />
     <Compile Include="Stateless\Contact.cs" />
@@ -3754,7 +3756,6 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -23,7 +23,7 @@ namespace NHibernate.Test
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(TestCase));
 
-		protected Dialect.Dialect Dialect
+		public Dialect.Dialect Dialect
 		{
 			get { return NHibernate.Dialect.Dialect.GetDialect(cfg.Properties); }
 		}
