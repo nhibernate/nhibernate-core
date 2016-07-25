@@ -23,6 +23,38 @@ namespace NHibernate.Test.Linq
 			Assert.That(query[0].FirstName, Is.EqualTo("Margaret"));
 		}
 
+		[Test]
+		public void LikeFunctionWithEscapeCharacter()
+		{
+			using (var tx = session.BeginTransaction())
+			{
+				var employeeName = "Mar%aret";
+				var escapeChar = '\\';
+				var employeeNameEscaped = employeeName.Replace("%", escapeChar + "%");
+
+				//This entity will be flushed to the db, but rolled back when the test completes
+
+				session.Save(new Employee { FirstName = employeeName, LastName = "LastName" });
+				session.Flush();
+
+
+				var query = (from e in db.Employees
+							 where NHibernate.Linq.SqlMethods.Like(e.FirstName, employeeNameEscaped, escapeChar)
+							 select e).ToList();
+
+				Assert.That(query.Count, Is.EqualTo(1));
+				Assert.That(query[0].FirstName, Is.EqualTo(employeeName));
+
+				Assert.Throws<ArgumentException>(() =>
+				{
+					(from e in db.Employees
+					 where NHibernate.Linq.SqlMethods.Like(e.FirstName, employeeNameEscaped, e.FirstName.First())
+					 select e).ToList();
+				});
+				tx.Rollback();
+			}
+		}
+
 		private static class SqlMethods
 		{
 			public static bool Like(string expression, string pattern)
@@ -48,8 +80,8 @@ namespace NHibernate.Test.Linq
 		public void SubstringFunction2()
 		{
 			var query = (from e in db.Employees
-				where e.FirstName.Substring(0, 2) == "An"
-				select e).ToList();
+						 where e.FirstName.Substring(0, 2) == "An"
+						 select e).ToList();
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -58,8 +90,8 @@ namespace NHibernate.Test.Linq
 		public void SubstringFunction1()
 		{
 			var query = (from e in db.Employees
-				where e.FirstName.Substring(3) == "rew"
-				select e).ToList();
+						 where e.FirstName.Substring(3) == "rew"
+						 select e).ToList();
 
 			Assert.That(query.Count, Is.EqualTo(1));
 			Assert.That(query[0].FirstName, Is.EqualTo("Andrew"));
@@ -83,12 +115,12 @@ namespace NHibernate.Test.Linq
 			var query = from e in db.Employees
 						where e.FirstName.StartsWith("An")
 						select new
-								{
-									Before = e.FirstName,
-									AfterMethod = e.FirstName.Replace("An", "Zan"),
-									AfterExtension = ExtensionMethods.Replace(e.FirstName, "An", "Zan"),
-									AfterExtension2 = e.FirstName.ReplaceExtension("An", "Zan")
-								};
+						{
+							Before = e.FirstName,
+							AfterMethod = e.FirstName.Replace("An", "Zan"),
+							AfterExtension = ExtensionMethods.Replace(e.FirstName, "An", "Zan"),
+							AfterExtension2 = e.FirstName.ReplaceExtension("An", "Zan")
+						};
 
 			var s = ObjectDumper.Write(query);
 		}
@@ -124,7 +156,7 @@ namespace NHibernate.Test.Linq
 		{
 			if (!TestDialect.SupportsLocate)
 				Assert.Ignore("Locate function not supported.");
-				
+
 			var query = from e in db.Employees
 						where e.FirstName.Contains("a")
 						select e.FirstName.IndexOf('A', 3);
@@ -139,7 +171,7 @@ namespace NHibernate.Test.Linq
 				Assert.Ignore("Locate function not supported.");
 
 			var query = from e in db.Employees
-						where e.FirstName.IndexOf("A") == e.BirthDate.Value.Month 
+						where e.FirstName.IndexOf("A") == e.BirthDate.Value.Month
 						select e.FirstName;
 
 			ObjectDumper.Write(query);
@@ -176,9 +208,9 @@ namespace NHibernate.Test.Linq
 		{
 			using (session.BeginTransaction())
 			{
-				AnotherEntity ae1 = new AnotherEntity {Input = " hi "};
-				AnotherEntity ae2 = new AnotherEntity {Input = "hi"};
-				AnotherEntity ae3 = new AnotherEntity {Input = "heh"};
+				AnotherEntity ae1 = new AnotherEntity { Input = " hi " };
+				AnotherEntity ae2 = new AnotherEntity { Input = "hi" };
+				AnotherEntity ae3 = new AnotherEntity { Input = "heh" };
 				session.Save(ae1);
 				session.Save(ae2);
 				session.Save(ae3);
@@ -201,9 +233,9 @@ namespace NHibernate.Test.Linq
 		{
 			using (session.BeginTransaction())
 			{
-				session.Save(new AnotherEntity {Input = " hi "});
-				session.Save(new AnotherEntity {Input = "hi"});
-				session.Save(new AnotherEntity {Input = "heh"});
+				session.Save(new AnotherEntity { Input = " hi " });
+				session.Save(new AnotherEntity { Input = "hi" });
+				session.Save(new AnotherEntity { Input = "heh" });
 				session.Flush();
 
 				Assert.AreEqual(TestDialect.IgnoresTrailingWhitespace ? 2 : 1, session.Query<AnotherEntity>().Where(e => e.Input.TrimStart() == "hi ").Count());
@@ -256,7 +288,7 @@ namespace NHibernate.Test.Linq
 			var query = from item in db.Role
 						where item.IsActive.Equals(true)
 						select item;
-			
+
 			ObjectDumper.Write(query);
 		}
 
@@ -266,7 +298,7 @@ namespace NHibernate.Test.Linq
 			var query = from item in db.Role
 						where item.IsActive.Equals(1 == 1)
 						select item;
-			
+
 			ObjectDumper.Write(query);
 		}
 
@@ -286,8 +318,8 @@ namespace NHibernate.Test.Linq
 		public void WhereLongEqual()
 		{
 			var query = from item in db.PatientRecords
-						 where item.Id.Equals(-1)
-						 select item;
+						where item.Id.Equals(-1)
+						select item;
 
 			ObjectDumper.Write(query);
 		}
@@ -301,7 +333,7 @@ namespace NHibernate.Test.Linq
 
 			ObjectDumper.Write(query);
 		}
-		
+
 		[Test]
 		public void WhereGuidEqual()
 		{
@@ -310,7 +342,7 @@ namespace NHibernate.Test.Linq
 						select item;
 
 			ObjectDumper.Write(query);
-		}		
+		}
 
 		[Test]
 		public void WhereDoubleEqual()
@@ -320,8 +352,8 @@ namespace NHibernate.Test.Linq
 						select item;
 
 			ObjectDumper.Write(query);
-		}	
-	
+		}
+
 		[Test]
 		public void WhereFloatEqual()
 		{
@@ -330,7 +362,7 @@ namespace NHibernate.Test.Linq
 						select item;
 
 			ObjectDumper.Write(query);
-		}	
+		}
 
 		[Test]
 		public void WhereCharEqual()
