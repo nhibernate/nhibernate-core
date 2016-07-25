@@ -18,9 +18,22 @@ namespace NHibernate.Linq.Functions
 		public HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments,
 		                            HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
-			return treeBuilder.Like(
-				visitor.Visit(arguments[0]).AsExpression(),
-				visitor.Visit(arguments[1]).AsExpression());
+			if (arguments.Count == 2)
+			{
+				return treeBuilder.Like(
+					visitor.Visit(arguments[0]).AsExpression(),
+					visitor.Visit(arguments[1]).AsExpression());
+			}
+			if (arguments[2].NodeType == ExpressionType.Constant)
+			{
+				var escapeCharExpression = (ConstantExpression)arguments[2];
+				return treeBuilder.Like(
+					visitor.Visit(arguments[0]).AsExpression(),
+					visitor.Visit(arguments[1]).AsExpression(),
+					treeBuilder.Constant(escapeCharExpression.Value));
+			}
+			throw new ArgumentException("The escape character must be specified as literal value or a string variable");
+
 		}
 
 		public bool SupportsMethod(MethodInfo method)
@@ -34,7 +47,7 @@ namespace NHibernate.Linq.Functions
 			// to avoid referencing Linq2Sql or Linq2NHibernate, if they so wish.
 
 			return method != null && method.Name == "Like" &&
-			       method.GetParameters().Length == 2 &&
+			       (method.GetParameters().Length == 2 || method.GetParameters().Length == 3) &&
 			       method.DeclaringType != null &&
 			       method.DeclaringType.FullName.EndsWith("SqlMethods");
 		}
