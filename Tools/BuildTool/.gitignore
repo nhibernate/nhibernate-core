@@ -1,0 +1,6 @@
+# Ignore file for Visual Studio 2015
+
+.vs/
+bin/Debug/
+obj/
+*.vshost.*
