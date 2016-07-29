@@ -731,6 +731,7 @@
     <Compile Include="NHSpecificTest\NH2931\Models.cs" />
     <Compile Include="NHSpecificTest\NH3046\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3046\Model.cs" />
+    <Compile Include="NHSpecificTest\NH3500\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3518\ClassWithXmlMember.cs" />
     <Compile Include="NHSpecificTest\NH3518\XmlColumnTest.cs" />
     <Compile Include="NHSpecificTest\NH3609\MappingEntity.cs" />
@@ -3754,7 +3755,6 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
