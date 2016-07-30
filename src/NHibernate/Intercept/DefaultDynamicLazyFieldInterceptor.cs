@@ -51,16 +51,16 @@ namespace NHibernate.Intercept
 				}
 			}
 
-            object returnValue;
-            try
-            {
-                returnValue = info.InvokeMethodOnTarget();
-            }
-            catch (TargetInvocationException ex)
-            {
-                throw ReflectHelper.UnwrapTargetInvocationException(ex);
-            }
-            return returnValue;
+			object returnValue;
+			try
+			{
+				returnValue = info.InvokeMethodOnTarget();
+			}
+			catch (TargetInvocationException ex)
+			{
+				throw ReflectHelper.UnwrapTargetInvocationException(ex);
+			}
+			return returnValue;
 		}
 	}
 }
