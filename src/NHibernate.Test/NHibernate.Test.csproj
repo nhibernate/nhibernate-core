@@ -258,7 +258,7 @@
     <Compile Include="DynamicProxyTests\InterfaceProxySerializationTests\MyProxyImpl.cs" />
     <Compile Include="DynamicProxyTests\InterfaceProxySerializationTests\ProxyFixture.cs" />
     <Compile Include="DynamicProxyTests\InterfaceWithEqualsGethashcodeTests.cs" />
-    <Compile Include="DynamicProxyTests\LazyFieldInterceptorSerializable.cs" />
+    <Compile Include="DynamicProxyTests\LazyFieldInterceptorTests.cs" />
     <Compile Include="DynamicProxyTests\PassThroughInterceptor.cs" />
     <Compile Include="DynamicProxyTests\PeVerifier.cs" />
     <Compile Include="DynamicProxyTests\ProxiedMembers\Fixture.cs" />
@@ -731,7 +731,6 @@
     <Compile Include="NHSpecificTest\NH2931\Models.cs" />
     <Compile Include="NHSpecificTest\NH3046\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3046\Model.cs" />
-    <Compile Include="NHSpecificTest\NH3500\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3518\ClassWithXmlMember.cs" />
     <Compile Include="NHSpecificTest\NH3518\XmlColumnTest.cs" />
     <Compile Include="NHSpecificTest\NH3609\MappingEntity.cs" />
