@@ -56,7 +56,7 @@
 	
 	<!-- This version number should be changed if, but only if, there are incompatible
 	     changes compared to the previous version. -->
-	<property name="project.default-assembly-version" value="4.0.0.4000" overwrite="false" />
+	<property name="project.default-assembly-version" value="4.1.0.1001" overwrite="false" />
 
 	<!-- Compute short project version (major.minor) using a regex -->
 	<regex input="${project.version}" pattern="^(?'shortversion'\d+\.\d+)" />
