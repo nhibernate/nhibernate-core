@@ -27,7 +27,7 @@ namespace NHibernate.Linq
 		public static bool Like(this string matchExpression, string sqlLikePattern, char escapeCharacter)
 		{
 			throw new NotSupportedException(
-				"The NHibernate.Linq.SqlMethods.Like(string, string) method can only be used in Linq2NHibernate expressions.");
+				"The NHibernate.Linq.SqlMethods.Like(string, string, char) method can only be used in Linq2NHibernate expressions.");
 		}
 	}
 }
