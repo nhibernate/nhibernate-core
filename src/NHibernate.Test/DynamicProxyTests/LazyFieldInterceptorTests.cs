@@ -6,12 +6,18 @@ using NHibernate.Intercept;
 
 namespace NHibernate.Test.DynamicProxyTests
 {
-	public class LazyFieldInterceptorSerializable
+	public class LazyFieldInterceptorTests
 	{
 		[Serializable]
 		public class MyClass
 		{
 			public virtual int Id { get; set; }
+
+			public virtual void ThrowError()
+			{
+				// Use some specific exception type to avoid using the base class.
+				throw new FormatException("test");
+			}
 		}
 
 		[Test]
@@ -30,6 +36,17 @@ namespace NHibernate.Test.DynamicProxyTests
 			fieldInterceptionProxy.FieldInterceptor = new DefaultFieldInterceptor(null, null, null, "MyClass", typeof(MyClass));
 
 			Assert.That(fieldInterceptionProxy, Is.BinarySerializable);
+		}
+
+
+		[Test]
+		public void DefaultDynamicLazyFieldInterceptorUnWrapsTIEExceptions()
+		{
+			var pf = new DefaultProxyFactory();
+			var propertyInfo = typeof(MyClass).GetProperty("Id");
+			pf.PostInstantiate("MyClass", typeof(MyClass), new HashSet<System.Type>(), propertyInfo.GetGetMethod(), propertyInfo.GetSetMethod(), null);
+			var myClassProxied = (MyClass)pf.GetFieldInterceptionProxy(new MyClass());
+			Assert.Throws<FormatException>(() => myClassProxied.ThrowError(), "test");
 		}
 	}
 }

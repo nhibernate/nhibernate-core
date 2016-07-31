@@ -258,7 +258,7 @@
     <Compile Include="DynamicProxyTests\InterfaceProxySerializationTests\MyProxyImpl.cs" />
     <Compile Include="DynamicProxyTests\InterfaceProxySerializationTests\ProxyFixture.cs" />
     <Compile Include="DynamicProxyTests\InterfaceWithEqualsGethashcodeTests.cs" />
-    <Compile Include="DynamicProxyTests\LazyFieldInterceptorSerializable.cs" />
+    <Compile Include="DynamicProxyTests\LazyFieldInterceptorTests.cs" />
     <Compile Include="DynamicProxyTests\PassThroughInterceptor.cs" />
     <Compile Include="DynamicProxyTests\PeVerifier.cs" />
     <Compile Include="DynamicProxyTests\ProxiedMembers\Fixture.cs" />
@@ -3754,7 +3754,6 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
