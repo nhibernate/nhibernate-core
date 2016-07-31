@@ -133,92 +133,160 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void CriteriaLikeParameterCanExceedColumnSize()
 		{
-			if (sessions.ConnectionProvider.Driver is OdbcDriver)
-				Assert.Ignore("This test fails against the ODBC driver.  The driver would need to be override to allow longer parameter sizes than the column.");
+			Exception exception = CatchException<Exception>(
+				() =>
+				{
+					using (ISession s = OpenSession())
+					using (s.BeginTransaction())
+					{
+						s.Save(new StringClass {Id = 1, StringValue = "AAAAAAAAAB"});
+						s.Save(new StringClass {Id = 2, StringValue = "BAAAAAAAAA"});
 
-			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
-			{
-				s.Save(new StringClass { Id = 1, StringValue = "AAAAAAAAAB" });
-				s.Save(new StringClass { Id = 2, StringValue = "BAAAAAAAAA" });
+						var aaItems =
+							s.CreateCriteria<StringClass>()
+							 .Add(Restrictions.Like("StringValue", "%AAAAAAAAA%"))
+							 .List();
 
-				var aaItems =
-					s.CreateCriteria<StringClass>()
-					 .Add(Restrictions.Like("StringValue", "%AAAAAAAAA%"))
-					 .List();
+						Assert.That(aaItems.Count, Is.EqualTo(2));
+					}
+				});
 
-				Assert.That(aaItems.Count, Is.EqualTo(2));
-			}
+
+			// This test fails against the ODBC driver. The driver would need to be override to allow longer parameter sizes than the column.
+			AssertExpectedFailureOrNoException(
+				exception,
+				(sessions.ConnectionProvider.Driver is OdbcDriver));
 		}
 
 		[Test]
 		public void HqlLikeParameterCanExceedColumnSize()
 		{
-			if (sessions.ConnectionProvider.Driver is OdbcDriver)
-				Assert.Ignore("This test fails against the ODBC driver.  The driver would need to be override to allow longer parameter sizes than the column.");
+			Exception exception = CatchException<Exception>(
+				() =>
+				{
+					using (ISession s = OpenSession())
+					using (s.BeginTransaction())
+					{
+						s.Save(new StringClass {Id = 1, StringValue = "AAAAAAAAAB"});
+						s.Save(new StringClass {Id = 2, StringValue = "BAAAAAAAAA"});
 
-			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
-			{
-				s.Save(new StringClass { Id = 1, StringValue = "AAAAAAAAAB" });
-				s.Save(new StringClass { Id = 2, StringValue = "BAAAAAAAAA" });
+						var aaItems =
+							s.CreateQuery("from StringClass s where s.StringValue like :likeValue")
+							 .SetParameter("likeValue", "%AAAAAAAAA%")
+							 .List();
 
-				var aaItems =
-					s.CreateQuery("from StringClass s where s.StringValue like :likeValue")
-					 .SetParameter("likeValue", "%AAAAAAAAA%")
-					 .List();
+						Assert.That(aaItems.Count, Is.EqualTo(2));
+					}
+				});
 
-				Assert.That(aaItems.Count, Is.EqualTo(2));
-			}
+
+			// This test fails against the ODBC driver. The driver would need to be override to allow longer parameter sizes than the column.
+			AssertExpectedFailureOrNoException(
+				exception,
+				(sessions.ConnectionProvider.Driver is OdbcDriver));
 		}
 
 
 		[Test]
 		public void CriteriaEqualityParameterCanExceedColumnSize()
 		{
-			if (sessions.ConnectionProvider.Driver is OdbcDriver)
-				Assert.Ignore("This test fails against the ODBC driver.  The driver would need to be override to allow longer parameter sizes than the column.");
-
 			// We should be able to query a column with a value longer than
 			// the specified column size, to avoid tedious exceptions.
 
-			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
-			{
-				s.Save(new StringClass { Id = 1, StringValue = "AAAAAAAAAB" });
-				s.Save(new StringClass { Id = 2, StringValue = "BAAAAAAAAA" });
+			Exception exception = CatchException<Exception>(
+				() =>
+				{
+					using (ISession s = OpenSession())
+					using (s.BeginTransaction())
+					{
+						s.Save(new StringClass {Id = 1, StringValue = "AAAAAAAAAB"});
+						s.Save(new StringClass {Id = 2, StringValue = "BAAAAAAAAA"});
 
-				var aaItems =
-					s.CreateCriteria<StringClass>()
-					 .Add(Restrictions.Eq("StringValue", "AAAAAAAAABx"))
-					 .List();
+						var aaItems =
+							s.CreateCriteria<StringClass>()
+							 .Add(Restrictions.Eq("StringValue", "AAAAAAAAABx"))
+							 .List();
 
-				Assert.That(aaItems.Count, Is.EqualTo(0));
-			}
+						Assert.That(aaItems.Count, Is.EqualTo(0));
+					}
+				});
+
+			// Doesn't work on Firebird due to Firebird not figuring out parameter types on its own.
+			// This test fails against the ODBC driver. The driver would need to be override to allow longer parameter sizes than the column.
+			AssertExpectedFailureOrNoException(
+				exception,
+				(Dialect is FirebirdDialect) || (sessions.ConnectionProvider.Driver is OdbcDriver));
 		}
+
 
 		[Test]
 		public void HqlEqualityParameterCanExceedColumnSize()
 		{
-			if (sessions.ConnectionProvider.Driver is OdbcDriver)
-				Assert.Ignore("This test fails against the ODBC driver.  The driver would need to be override to allow longer parameter sizes than the column.");
-
 			// We should be able to query a column with a value longer than
 			// the specified column size, to avoid tedious exceptions.
 
-			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			Exception exception = CatchException<Exception>(
+				() =>
+				{
+					using (ISession s = OpenSession())
+					using (s.BeginTransaction())
+					{
+						s.Save(new StringClass {Id = 1, StringValue = "AAAAAAAAAB"});
+						s.Save(new StringClass {Id = 2, StringValue = "BAAAAAAAAA"});
+
+						var aaItems =
+							s.CreateQuery("from StringClass s where s.StringValue = :likeValue")
+							 .SetParameter("likeValue", "AAAAAAAAABx")
+							 .List();
+
+						Assert.That(aaItems.Count, Is.EqualTo(0));
+					}
+				});
+
+			// Doesn't work on Firebird due to Firebird not figuring out parameter types on its own.
+			// This test fails against the ODBC driver. The driver would need to be override to allow longer parameter sizes than the column.
+			AssertExpectedFailureOrNoException(
+				exception,
+				(Dialect is FirebirdDialect) || (sessions.ConnectionProvider.Driver is OdbcDriver));
+		}
+
+
+		/// <summary>
+		/// Some test cases doesn't work during some scenarios for well-known reasons. If the test
+		/// fails under these circumstances, mark it as IGNORED. If it _stops_ failing, mark it
+		/// as a FAILURE so that it can be investigated.
+		/// </summary>
+		private void AssertExpectedFailureOrNoException(Exception exception, bool requireExceptionAndIgnoreTest)
+		{
+			if (requireExceptionAndIgnoreTest)
 			{
-				s.Save(new StringClass { Id = 1, StringValue = "AAAAAAAAAB" });
-				s.Save(new StringClass { Id = 2, StringValue = "BAAAAAAAAA" });
+				Assert.NotNull(
+					exception,
+					"Test was expected to have a well-known, but ignored, failure for the current configuration. If " +
+					"that expected failure no longer occurs, it may now be possible to remove this exception.");
 
-				var aaItems =
-					s.CreateQuery("from StringClass s where s.StringValue = :likeValue")
-					 .SetParameter("likeValue", "AAAAAAAAABx")
-					 .List();
-
-				Assert.That(aaItems.Count, Is.EqualTo(0));
+				Assert.Ignore("This test is known to fail for the current configuration.");
 			}
+
+			// If the above didn't ignore the exception, it's for real - rethrow to trigger test failure.
+			if (exception != null)
+				throw new Exception("Wrapped exception.", exception);
+		}
+
+
+		private TException CatchException<TException>(System.Action action)
+			where TException : Exception
+		{
+			try
+			{
+				action();
+			}
+			catch (TException exception)
+			{
+				return exception;
+			}
+
+			return null;
 		}
 	}
 }
