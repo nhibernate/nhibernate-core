@@ -96,6 +96,7 @@ namespace NHibernate.Test.TypesTest
 			AssertFailedInsertExceptionDetailsAndEmptyTable(ex);
 		}
 
+
 		private void AssertFailedInsertExceptionDetailsAndEmptyTable(Exception ex)
 		{
 			// We can get different sort of exceptions.
@@ -113,6 +114,10 @@ namespace NHibernate.Test.TypesTest
 				Assert.That(
 					ex.InnerException.Message,
 					Is.EqualTo("The length of the string value exceeds the length configured in the mapping/parameter."));
+			}
+			else if (Dialect is MsSqlCeDialect && ex is InvalidOperationException)
+			{
+				Assert.That(ex.Message, Is.StringContaining("max=4000, len=4001"));
 			}
 			else
 			{
