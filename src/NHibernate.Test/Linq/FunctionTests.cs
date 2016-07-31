@@ -29,7 +29,7 @@ namespace NHibernate.Test.Linq
 			using (var tx = session.BeginTransaction())
 			{
 				var employeeName = "Mar%aret";
-				var escapeChar = '\\';
+				var escapeChar = '#';
 				var employeeNameEscaped = employeeName.Replace("%", escapeChar + "%");
 
 				//This entity will be flushed to the db, but rolled back when the test completes
