@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using System.Threading;
+﻿using System.Linq;
 using NHibernate.Dialect;
+using NHibernate.Driver;
+using NHibernate.Engine;
 using NHibernate.Linq;
-using NHibernate.Test.ExceptionsTest;
-using NHibernate.Test.MappingByCode;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3844
@@ -19,7 +12,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3844
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return !(dialect is FirebirdDialect);
+			return !(dialect is FirebirdDialect) && !(dialect is MsSqlCeDialect);
+		}
+
+		protected override bool AppliesTo(ISessionFactoryImplementor factory)
+		{
+			// SQL Server seems unable to match complex group by and select list arguments when running over ODBC.";
+			return !(factory.ConnectionProvider.Driver is OdbcDriver);
 		}
 
 		protected override void OnSetUp()
