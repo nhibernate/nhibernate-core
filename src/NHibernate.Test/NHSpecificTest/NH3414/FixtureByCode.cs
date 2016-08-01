@@ -1,7 +1,6 @@
 ﻿using System.Linq;
-using System.Linq.Expressions;
-using Antlr.Runtime.Misc;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Dialect;
 using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
@@ -10,6 +9,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3414
 {
 	public class ByCodeFixture : TestCaseMappingByCode
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			// SQL Server CE does not appear to support subqueries in the ORDER BY clause.
+			return !(dialect is MsSqlCeDialect);
+		}
+
 		protected override HbmMapping GetMappings()
 		{
 			var mapper = new ModelMapper();
