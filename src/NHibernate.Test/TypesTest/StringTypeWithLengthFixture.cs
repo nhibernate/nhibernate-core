@@ -19,10 +19,21 @@ namespace NHibernate.Test.TypesTest
 	{
 		private int GetLongStringMappedLength()
 		{
+			// This is a bit ugly...
+			//
+			// Return a value that should be the largest possible length of a string column
+			// in the corresponding database. Note that the actual column type selected by the dialect
+			// depends on this value, so it must be the largest possible value for the type
+			// that the dialect will pick. Doesn't matter if the dialect can pick another
+			// type for an even larger size.
+
 			if (Dialect is Oracle8iDialect)
 				return 2000;
-			else
-				return 4000;
+
+			if (Dialect is MySQLDialect)
+				return 65535;
+
+			return 4000;
 		}
 
 		protected override HbmMapping GetMappings()
