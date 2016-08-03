@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Odbc;
 using NHibernate.SqlTypes;
+using NHibernate.Util;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Driver
 {
@@ -13,6 +16,23 @@ namespace NHibernate.Driver
 	/// </remarks>
 	public class OdbcDriver : DriverBase
 	{
+		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(OdbcDriver));
+
+		private byte? _dbDateTimeScale;
+
+
+		public override void Configure(IDictionary<string, string> settings)
+		{
+			base.Configure(settings);
+
+			// Explicit scale for DbType.DateTime. Seems required for at least MS SQL Server 2008+.
+			_dbDateTimeScale = PropertiesHelper.GetByte(Environment.OdbcDateTimeScale, settings, null);
+			if (_dbDateTimeScale != null && Log.IsInfoEnabled)
+			{
+				Log.Info(string.Format("Will use scale {0} for DbType.DateTime parameters.", _dbDateTimeScale));
+			}
+		}
+
 		public override IDbConnection CreateConnection()
 		{
 			return new OdbcConnection();
@@ -38,8 +58,11 @@ namespace NHibernate.Driver
 			get { return String.Empty; }
 		}
 
-		private static void SetVariableLengthParameterSize(IDbDataParameter dbParam, SqlType sqlType)
+		private void SetVariableLengthParameterSize(IDbDataParameter dbParam, SqlType sqlType)
 		{
+			if (Equals(sqlType, SqlTypeFactory.DateTime) && _dbDateTimeScale != null)
+				dbParam.Scale = _dbDateTimeScale.Value;
+
 			// Override the defaults using data from SqlType.
 			if (sqlType.LengthDefined)
 			{
