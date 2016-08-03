@@ -38,7 +38,16 @@
 	<target name="setup-teamcity-sqlServerOdbc">
 		<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.OdbcDriver" />
 		<property name="nhibernate.odbc.explicit_datetime_scale" value="3" />
-		<property name="nhibernate.connection.connection_string" value="Driver={SQL Server Native Client 11.0};Server=.\SQLExpress;Database=nhibernateOdbc;Trusted_Connection=yes" />
+	<!-- We need to use a dialect that avoids mapping DbType.Time to TIME on MSSQL. On modern SQL Server
+		this becomes TIME(7). Later, such values cannot be read back over ODBC. The
+		error we get is "System.ArgumentException : Unknown SQL type - SS_TIME_EX.". I don't know for certain
+		why this occurs, but MS docs do say that for a client "compiled using a version of SQL Server Native
+		Client prior to SQL Server 2008", TIME(7) cannot be converted back to the client. Assuming that .Net's
+		OdbcDriver would be considered a "client compiled with a previous version", it would make sense. Anyway,
+		using the MsSql2005Dialect avoids these test failures. -->
+		<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSql2005Dialect" />
+	<!-- The OdbcDriver inherits SupportsMultipleOpenReaders=true from DriverBase, which requires Mars_Connection=yes for SQL Server. -->
+		<property name="nhibernate.connection.connection_string" value="Driver={SQL Server Native Client 11.0};Server=.\SQLExpress;Database=nhibernateOdbc;Trusted_Connection=yes;Mars_Connection=yes;" />
 		<property name="NHibernate.Test.IgnoreFail" value="true" />
 		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/sqlServerOdbc/NHibernate.Test.last-results.xml" />
 	</target>
