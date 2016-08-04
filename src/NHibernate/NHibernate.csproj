@@ -70,23 +70,24 @@
     <AssemblyOriginatorKeyFile>..\NHibernate.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Iesi.Collections, Version=4.0.0.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Iesi.Collections.4.0.1.4000\lib\net40\Iesi.Collections.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Remotion.Linq, Version=1.13.183.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Remotion.Linq.1.13.183.0\lib\net35\Remotion.Linq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Xml" />
-    <Reference Include="Antlr3.Runtime, Version=3.1.0.39271, Culture=neutral, PublicKeyToken=3a9cab8f8d22bfb7">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\Antlr3.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="Iesi.Collections">
-      <HintPath>..\..\lib\net\4.0\Iesi.Collections.dll</HintPath>
-    </Reference>
-    <Reference Include="Remotion.Linq, Version=1.13.100.2, Culture=neutral, PublicKeyToken=cab60358ab4081ea">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\Remotion.Linq.dll</HintPath>
-    </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
@@ -1803,6 +1804,7 @@
     <None Include="Hql\Ast\ANTLR\SqlGenerator.g" />
     <None Include="NHibernate.build" />
     <None Include="NHibernate.nuspec.template" />
+    <None Include="packages.config" />
     <None Include="Type\IType.cs.xmldoc" />
   </ItemGroup>
   <ItemGroup>
