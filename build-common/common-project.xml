@@ -164,6 +164,16 @@
 				<namespace prefix="hbm" uri="urn:nhibernate-configuration-2.2" />
 			</namespaces>
 		</xmlpoke>
+		
+		<!-- Make sure the property exists - it's only set for some scenarios. -->
+		<property name="nhibernate.odbc.explicit_datetime_scale" value="" unless="${property::exists('nhibernate.odbc.explicit_datetime_scale')}"/>
+		<xmlpoke file="${app.config}"
+			xpath="//*/hbm:property[@name='odbc.explicit_datetime_scale']"
+			value="${nhibernate.odbc.explicit_datetime_scale}">
+			<namespaces>
+				<namespace prefix="hbm" uri="urn:nhibernate-configuration-2.2" />
+			</namespaces>
+		</xmlpoke>
 	</target>
 
 	<target name="common.remove-connection-settings-from-app-config">
