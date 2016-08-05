@@ -143,7 +143,7 @@ namespace NHibernate.Test.Criteria
 
 			DetachedCriteria criteria = DetachedCriteria.For<Course>("c");
 			criteria.SetProjection(Projections.Count("id"));
-			criteria.Add(Expression.Or(Subqueries.Le(5, subcriteria), Subqueries.IsNull(subcriteria)));
+			criteria.Add(Expression.Or(Subqueries.Le(5D, subcriteria), Subqueries.IsNull(subcriteria)));
 
 			object o = criteria.GetExecutableCriteria(session).UniqueResult();
 			Assert.AreEqual(1, o);

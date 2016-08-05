@@ -619,8 +619,8 @@ namespace NHibernate.Test.Hql.Ast
 
 			count =
 				s.CreateQuery("update Animal set bodyWeight = bodyWeight + :w1 + :w2")
-				.SetDouble("w1", 1)
-				.SetDouble("w2", 2)
+				.SetSingle("w1", 1)
+				.SetSingle("w2", 2)
 				.ExecuteUpdate();
 			Assert.That(count, Is.EqualTo(6), "incorrect count on 'complex' update assignment");
 
@@ -649,7 +649,7 @@ namespace NHibernate.Test.Hql.Ast
 					s.CreateQuery("update Animal set description = :newDesc, bodyWeight = :w1 where description = :desc")
 						.SetString("desc", data.Polliwog.Description)
 						.SetString("newDesc", "Tadpole")
-						.SetDouble("w1", 3)
+						.SetSingle("w1", 3)
 						.ExecuteUpdate();
 				
 				Assert.That(count, Is.EqualTo(1));
