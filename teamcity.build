@@ -12,7 +12,17 @@
 
 	<property name="build.number" value="${CCNetLabel}" if="${property::exists('CCNetLabel')}" />
 
-	<target name="clean-configure-test" depends="cleanall init copy-teamcity-configuration binaries test verify-test-results binaries-zip" />
+	<target name="clean-configure-test" depends="cleanall init copy-nunitaddin copy-teamcity-configuration binaries test verify-test-results binaries-zip" />
+
+	<target name="copy-nunitaddin" depends="init">
+		<if test="${property::exists('teamcity.dotnet.nunitaddin')}">
+			<copy todir="${tools.dir}/NUnit/addins">
+				<fileset>
+					<include name="${teamcity.dotnet.nunitaddin}-2.6.1.*" />
+				</fileset>
+			</copy>
+		</if>
+	</target>
 
 	<target name="copy-teamcity-configuration">
 		<copy file="build-common/teamcity-hibernate.cfg.xml" tofile="${bin.dir}/hibernate.cfg.xml" />
@@ -71,8 +81,8 @@
 	</target>
 
 	<target name="setup-teamcity-firebird32">
-		<property name="nhibernate.connection.driver_class"				value="NHibernate.Driver.FirebirdClientDriver" />
-		<property name="nhibernate.dialect"												value="NHibernate.Dialect.FirebirdDialect" />
+		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.FirebirdClientDriver" />
+		<property name="nhibernate.dialect"							value="NHibernate.Dialect.FirebirdDialect" />
 		<property name="nhibernate.connection.connection_string"	value="Database=NHibernate.fdb;ServerType=1;UserID=SYSDBA" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/firebird/x86">
@@ -87,8 +97,8 @@
 	<target name="setup-teamcity-firebird64">
 		<property name="nunit-console" value="${tools.dir}/NUnit/nunit-console.exe" />
 		<property name="nunit.found" value="true" />
-		<property name="nhibernate.connection.driver_class"				value="NHibernate.Driver.FirebirdClientDriver" />
-		<property name="nhibernate.dialect"												value="NHibernate.Dialect.FirebirdDialect" />
+		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.FirebirdClientDriver" />
+		<property name="nhibernate.dialect"							value="NHibernate.Dialect.FirebirdDialect" />
 		<property name="nhibernate.connection.connection_string"	value="Database=NHibernate.fdb;ServerType=1;UserID=SYSDBA" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/firebird/x64">
