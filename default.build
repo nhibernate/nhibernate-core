@@ -46,7 +46,7 @@
 	<target name="test" depends="init build" description="Runs all NHibernate tests for the current framework" unless="${skip.tests}">
 		<property name="testfiles.all" value="NHibernate.TestDatabaseSetup NHibernate.Test NHibernate.Test.VisualBasic" />
 		<foreach item="String" in="${testfiles.all}" delim=" " property="test.file">
-			<call target="common.run-database-tests" failonerror="false"/>
+			<call target="common.run-database-tests"/>
 		</foreach>
 	</target>
 	

@@ -99,7 +99,7 @@
 	<target name="common.run-tests"
 		description="Run NUnit tests">
 		<call target="common.find-nunit" unless="${property::exists('nunit.found')}" />
-		<property name="common.run-tests.failonerror" value="${not property::exists(project::get-name() + '.IgnoreFail')}"/>
+		<property name="common.run-tests.failonerror" value="${not property::exists(test.file + '.IgnoreFail')}"/>
 		<exec program="${nunit-console}" failonerror="${common.run-tests.failonerror}">
 			<arg line="${bin.dir}/${test.file}.dll /xml:${testresults.dir}/${test.file}.dll-results.xml /framework:${framework::get-target-framework()}" />
 		</exec>
