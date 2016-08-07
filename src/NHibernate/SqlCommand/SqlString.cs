@@ -382,7 +382,7 @@ namespace NHibernate.SqlCommand
 		{
 			return value != null
 				&& value.Length <= _length
-				&& IndexOf(value, _length - value.Length, value.Length, StringComparison.InvariantCulture) >= 0;
+				&& IndexOf(value, _length - value.Length, value.Length, StringComparison.Ordinal) >= 0;
 		}
 
 		public bool EndsWithCaseInsensitive(string value)
@@ -416,7 +416,7 @@ namespace NHibernate.SqlCommand
 		/// if not found.</returns>
 		public int IndexOfCaseInsensitive(string text)
 		{
-			return IndexOf(text, 0, _length, StringComparison.InvariantCultureIgnoreCase);
+			return IndexOf(text, 0, _length, StringComparison.OrdinalIgnoreCase);
 		}
 
 		/// <summary>
@@ -488,7 +488,7 @@ namespace NHibernate.SqlCommand
 		/// if not found.</returns>
 		public int LastIndexOfCaseInsensitive(string text)
 		{
-			return LastIndexOf(text, 0, _length, StringComparison.InvariantCultureIgnoreCase);
+			return LastIndexOf(text, 0, _length, StringComparison.OrdinalIgnoreCase);
 		}
 
 		/// <summary>
@@ -583,7 +583,7 @@ namespace NHibernate.SqlCommand
 			var startIndex = 0;
 			while (startIndex < _length)
 			{
-				var splitterIndex = IndexOf(splitter, startIndex, _length - startIndex, StringComparison.InvariantCultureIgnoreCase);
+				var splitterIndex = IndexOf(splitter, startIndex, _length - startIndex, StringComparison.OrdinalIgnoreCase);
 				if (splitterIndex < 0) break;
 
 				yield return new SqlString(this, _sqlStartIndex + startIndex, splitterIndex - startIndex);
@@ -606,7 +606,7 @@ namespace NHibernate.SqlCommand
 		{
 			return value != null
 				&& value.Length <= _length
-				&& IndexOf(value, 0, value.Length, StringComparison.InvariantCultureIgnoreCase) >= 0;
+				&& IndexOf(value, 0, value.Length, StringComparison.OrdinalIgnoreCase) >= 0;
 		}
 
 		/// <summary>
@@ -619,7 +619,7 @@ namespace NHibernate.SqlCommand
 		{
 			return value != null
 				&& value.Length == _length
-				&& IndexOf(value, 0, value.Length, StringComparison.InvariantCultureIgnoreCase) >= 0;
+				&& IndexOf(value, 0, value.Length, StringComparison.OrdinalIgnoreCase) >= 0;
 		}
 
 		/// <summary>

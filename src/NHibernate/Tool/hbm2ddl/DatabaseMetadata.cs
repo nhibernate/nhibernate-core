@@ -80,7 +80,7 @@ namespace NHibernate.Tool.hbm2ddl
 				foreach (DataRow tableRow in rows)
 				{
 					string tableName = Convert.ToString(tableRow[meta.ColumnNameForTableName]);
-					if (name.Equals(tableName, StringComparison.InvariantCultureIgnoreCase))
+					if (name.Equals(tableName, StringComparison.OrdinalIgnoreCase))
 					{
 						table = meta.GetTableMetadata(tableRow, extras);
 						tables[identifier] = table;

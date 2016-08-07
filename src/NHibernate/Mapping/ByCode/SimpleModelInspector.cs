@@ -353,10 +353,10 @@ namespace NHibernate.Mapping.ByCode
 		protected bool MatchPoIdPattern(MemberInfo subject)
 		{
 			var name = subject.Name;
-			return name.Equals("id", StringComparison.InvariantCultureIgnoreCase)
-						 || name.Equals("poid", StringComparison.InvariantCultureIgnoreCase)
-						 || name.Equals("oid", StringComparison.InvariantCultureIgnoreCase)
-						 || (name.StartsWith(subject.DeclaringType.Name) && name.Equals(subject.DeclaringType.Name + "id", StringComparison.InvariantCultureIgnoreCase));
+			return name.Equals("id", StringComparison.OrdinalIgnoreCase)
+						 || name.Equals("poid", StringComparison.OrdinalIgnoreCase)
+						 || name.Equals("oid", StringComparison.OrdinalIgnoreCase)
+						 || (name.StartsWith(subject.DeclaringType.Name) && name.Equals(subject.DeclaringType.Name + "id", StringComparison.OrdinalIgnoreCase));
 		}
 
 		protected bool MatchComponentPattern(System.Type subject)

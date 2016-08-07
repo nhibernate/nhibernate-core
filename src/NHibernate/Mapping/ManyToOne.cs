@@ -73,7 +73,7 @@ namespace NHibernate.Mapping
 				if (property == null)
 					throw new MappingException("Could not find property " + ReferencedPropertyName + " on " + ReferencedEntityName);
 
-				if (!HasFormula && !"none".Equals(ForeignKeyName, StringComparison.InvariantCultureIgnoreCase))
+				if (!HasFormula && !"none".Equals(ForeignKeyName, StringComparison.OrdinalIgnoreCase))
 				{
 
 					IEnumerable<Column> ce = new SafetyEnumerable<Column>(property.ColumnIterator);

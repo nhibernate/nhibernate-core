@@ -634,32 +634,32 @@ namespace NHibernate.Util
 
 		public static bool EqualsCaseInsensitive(string a, string b)
 		{
-			return StringComparer.InvariantCultureIgnoreCase.Compare(a, b) == 0;
+			return StringComparer.OrdinalIgnoreCase.Compare(a, b) == 0;
 		}
 
 		public static int IndexOfCaseInsensitive(string source, string value)
 		{
-			return source.IndexOf(value, StringComparison.InvariantCultureIgnoreCase);
+			return source.IndexOf(value, StringComparison.OrdinalIgnoreCase);
 		}
 
 		public static int IndexOfCaseInsensitive(string source, string value, int startIndex)
 		{
-			return source.IndexOf(value, startIndex, StringComparison.InvariantCultureIgnoreCase);
+			return source.IndexOf(value, startIndex, StringComparison.OrdinalIgnoreCase);
 		}
 
 		public static int IndexOfCaseInsensitive(string source, string value, int startIndex, int count)
 		{
-			return source.IndexOf(value, startIndex, count, StringComparison.InvariantCultureIgnoreCase);
+			return source.IndexOf(value, startIndex, count, StringComparison.OrdinalIgnoreCase);
 		}
 
 		public static int LastIndexOfCaseInsensitive(string source, string value)
 		{
-			return source.LastIndexOf(value, StringComparison.InvariantCultureIgnoreCase);
+			return source.LastIndexOf(value, StringComparison.OrdinalIgnoreCase);
 		}
 
 		public static bool StartsWithCaseInsensitive(string source, string prefix)
 		{
-			return source.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase);
+			return source.StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
 		}
 
 		/// <summary>
