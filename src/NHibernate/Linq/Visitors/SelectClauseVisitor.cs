@@ -61,7 +61,7 @@ namespace NHibernate.Linq.Visitors
 			}
 
 			// Handle any boolean results in the output nodes
-			_hqlTreeNodes = _hqlTreeNodes.ConvertAll(node => node.ToArithmeticExpression());
+			_hqlTreeNodes = _hqlTreeNodes.Select(node => node.ToArithmeticExpression()).ToList();
 
 			if (distinct != null)
 			{

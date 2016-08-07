@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace NHibernate.Criterion
 {
 	using System;
@@ -62,7 +64,7 @@ namespace NHibernate.Criterion
 		private static SqlString[] GetColumnNamesUsingPropertyName(ICriteriaQuery criteriaQuery, ICriteria criteria, string propertyName)
 		{
 			string[] columnNames = criteriaQuery.GetColumnsUsingProjection(criteria, propertyName);
-			return Array.ConvertAll<string, SqlString>(columnNames, delegate(string input) { return new SqlString(input); });
+			return columnNames.Select(input => new SqlString(input)).ToArray();
 		}
 
 		private static SqlString[] GetColumnNamesUsingPropertyName(
@@ -89,10 +91,7 @@ namespace NHibernate.Criterion
 											+ " use ICriteria.CreateCriteria instead",
 											criteriaQuery.GetEntityName(criteria), propertyName));
 			}
-			return Array.ConvertAll<string, SqlString>(columnNames, delegate(string col)
-			{
-				return new SqlString(col);
-			});
+			return columnNames.Select(col => new SqlString(col)).ToArray();
 		}
 
 		public static TypedValue[] GetTypedValues(ICriteriaQuery criteriaQuery, ICriteria criteria,
