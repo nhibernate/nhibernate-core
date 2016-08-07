@@ -1,8 +1,7 @@
-using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace NHibernate.Util
+namespace NHibernate.Test
 {
 	public class SerializationHelper
 	{

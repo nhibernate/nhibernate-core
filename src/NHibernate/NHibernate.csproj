@@ -1779,7 +1779,6 @@
     <Compile Include="Util\LinkedHashMap.cs" />
     <Compile Include="Util\LRUMap.cs" />
     <Compile Include="Util\SafetyEnumerable.cs" />
-    <Compile Include="Util\SerializationHelper.cs" />
     <Compile Include="Util\SimpleMRUCache.cs" />
     <Compile Include="Util\SingletonEnumerable.cs" />
     <Compile Include="Util\SoftLimitMRUCache.cs" />
