@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Data;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -15,7 +16,7 @@ namespace NHibernate.SqlTypes
 		// key = typeof(sqlType).Name : ie - BinarySqlType(l), BooleanSqlType, DecimalSqlType(p,s)
 		// value = SqlType
 		private static readonly IDictionary<string, SqlType> SqlTypes = 
-			new ThreadSafeDictionary<string, SqlType>(new Dictionary<string, SqlType>(128));
+			new ConcurrentDictionary<string, SqlType>(4 * System.Environment.ProcessorCount, 128);
 
 		public static readonly SqlType Guid = new SqlType(DbType.Guid);
 		public static readonly SqlType Boolean = new SqlType(DbType.Boolean);

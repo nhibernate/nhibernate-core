@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
@@ -61,13 +62,13 @@ namespace NHibernate.Type
 		 */
 
 		private static readonly IDictionary<string, IType> typeByTypeOfName =
-			new ThreadSafeDictionary<string, IType>(new Dictionary<string, IType>());
+			new ConcurrentDictionary<string, IType>();
 
 		private static readonly IDictionary<string, GetNullableTypeWithLength> getTypeDelegatesWithLength =
-			new ThreadSafeDictionary<string, GetNullableTypeWithLength>(new Dictionary<string, GetNullableTypeWithLength>());
+			new ConcurrentDictionary<string, GetNullableTypeWithLength>();
 
 		private static readonly IDictionary<string, GetNullableTypeWithPrecision> getTypeDelegatesWithPrecision =
-			new ThreadSafeDictionary<string, GetNullableTypeWithPrecision>(new Dictionary<string, GetNullableTypeWithPrecision>());
+			new ConcurrentDictionary<string, GetNullableTypeWithPrecision>();
 
 		private delegate NullableType GetNullableTypeWithLength(int length); // Func<int, NullableType>
 

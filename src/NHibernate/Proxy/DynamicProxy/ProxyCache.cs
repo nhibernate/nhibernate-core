@@ -6,6 +6,7 @@
 
 #endregion
 
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using NHibernate.Util;
 
@@ -13,7 +14,7 @@ namespace NHibernate.Proxy.DynamicProxy
 {
 	public class ProxyCache : IProxyCache
 	{
-		private static readonly IDictionary<ProxyCacheEntry, System.Type> cache = new ThreadSafeDictionary<ProxyCacheEntry, System.Type>(new Dictionary<ProxyCacheEntry, System.Type>());
+		private static readonly IDictionary<ProxyCacheEntry, System.Type> cache = new ConcurrentDictionary<ProxyCacheEntry, System.Type>();
 
 		#region IProxyCache Members
 
