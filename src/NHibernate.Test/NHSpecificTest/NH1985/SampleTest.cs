@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1985
 
 			if (0 == ExecuteStatement("INSERT INTO DomainClass (Id, Label) VALUES (1, 'TEST record');"))
 			{
-				throw new ApplicationException("Insertion of test record failed.");
+				Assert.Fail("Insertion of test record failed.");
 			}
 		}
 
