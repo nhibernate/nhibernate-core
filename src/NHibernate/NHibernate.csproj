@@ -688,6 +688,7 @@
     <Compile Include="Type\ByteType.cs" />
     <Compile Include="Type\CharBooleanType.cs" />
     <Compile Include="Type\CharType.cs" />
+    <Compile Include="Type\CoalesceType.cs" />
     <Compile Include="Type\ComponentType.cs" />
     <Compile Include="Type\CompositeCustomType.cs" />
     <Compile Include="Type\CultureInfoType.cs" />
