@@ -44,7 +44,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			var parameters = new Dictionary<string, string>();
 			if(typeMapping.param != null)
 			{
-				System.Array.ForEach(typeMapping.param, p => parameters[p.name] = p.Text.LinesToString());
+				typeMapping.param.ForEach(p => parameters[p.name] = p.Text.LinesToString());
 			}
 
 			BindThroughTypeDefOrType(originalTypeName, parameters);

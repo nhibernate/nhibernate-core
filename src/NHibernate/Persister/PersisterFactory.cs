@@ -7,6 +7,7 @@ using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
+using NHibernate.Util;
 
 namespace NHibernate.Persister
 {
@@ -149,10 +150,10 @@ namespace NHibernate.Persister
 				var messageBuilder = new StringBuilder();
 				messageBuilder.AppendLine("Could not find a public constructor for " + persisterClass.Name +";");
 				messageBuilder.AppendLine("- The ctor may have " + CollectionPersisterConstructorArgs.Length + " parameters of types (in order):");
-				System.Array.ForEach(CollectionPersisterConstructorArgs, t=> messageBuilder.AppendLine(t.FullName));
+				CollectionPersisterConstructorArgs.ForEach(t => messageBuilder.AppendLine(t.FullName));
 				messageBuilder.AppendLine();
 				messageBuilder.AppendLine("- The ctor may have " + CollectionPersisterConstructor2Args.Length + " parameters of types (in order):");
-				System.Array.ForEach(CollectionPersisterConstructor2Args, t => messageBuilder.AppendLine(t.FullName));
+				CollectionPersisterConstructor2Args.ForEach(t => messageBuilder.AppendLine(t.FullName));
 				throw new MappingException(messageBuilder.ToString());
 			}
 			try

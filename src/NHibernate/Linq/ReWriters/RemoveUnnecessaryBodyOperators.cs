@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using NHibernate.Util;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.ResultOperators;
@@ -31,12 +32,12 @@ namespace NHibernate.Linq.ReWriters
 			}
 			if (resultOperator is CastResultOperator)
 			{
-				Array.ForEach(queryModel.ResultOperators.OfType<CastResultOperator>().ToArray(), castOperator=> queryModel.ResultOperators.Remove(castOperator));
+				queryModel.ResultOperators.OfType<CastResultOperator>().ToArray().ForEach(castOperator => queryModel.ResultOperators.Remove(castOperator));
 			}
 			if (resultOperator is AnyResultOperator)
 			{
-				Array.ForEach(queryModel.ResultOperators.OfType<FetchOneRequest>().ToArray(), op => queryModel.ResultOperators.Remove(op));
-				Array.ForEach(queryModel.ResultOperators.OfType<FetchManyRequest>().ToArray(), op => queryModel.ResultOperators.Remove(op));
+				queryModel.ResultOperators.OfType<FetchOneRequest>().ToArray().ForEach(op => queryModel.ResultOperators.Remove(op));
+				queryModel.ResultOperators.OfType<FetchManyRequest>().ToArray().ForEach(op => queryModel.ResultOperators.Remove(op));
 			}
 			base.VisitResultOperator(resultOperator, queryModel, index);
 		}

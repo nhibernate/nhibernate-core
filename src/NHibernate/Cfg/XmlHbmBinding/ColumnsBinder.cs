@@ -76,7 +76,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (indexAttribute != null && table != null)
 			{
 				var tokens = indexAttribute.Split(',');
-				System.Array.ForEach(tokens, t => table.GetOrCreateIndex(t.Trim()).AddColumn(column));
+				tokens.ForEach(t => table.GetOrCreateIndex(t.Trim()).AddColumn(column));
 			}
 		}
 
@@ -85,7 +85,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (uniqueKeyAttribute != null && table != null)
 			{
 				var tokens = uniqueKeyAttribute.Split(',');
-				System.Array.ForEach(tokens, t => table.GetOrCreateUniqueKey(t.Trim()).AddColumn(column));
+				tokens.ForEach(t => table.GetOrCreateUniqueKey(t.Trim()).AddColumn(column));
 			}
 		}
 	}

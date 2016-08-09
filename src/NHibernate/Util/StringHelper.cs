@@ -387,7 +387,10 @@ namespace NHibernate.Util
 				return text[0];
 			}
 			var sb = new StringBuilder(200);
-			Array.ForEach(text, t => sb.AppendLine(t));
+			foreach (var t in text)
+			{
+				sb.AppendLine(t);
+			}
 			return sb.ToString();
 		}
 

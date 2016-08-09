@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Serialization;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode
 {
@@ -50,7 +51,7 @@ namespace NHibernate.Mapping.ByCode
 			}
 			else
 			{
-				System.Array.ForEach(Directory.GetFiles(mappingsFolderPath), File.Delete);
+				Directory.GetFiles(mappingsFolderPath).ForEach(File.Delete);
 			}
 			return mappingsFolderPath;
 		}
