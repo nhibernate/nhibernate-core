@@ -1,5 +1,5 @@
 using System.Collections;
-
+using System.Collections.Generic;
 using NHibernate.Collection;
 using NHibernate.Event;
 using NHibernate.Persister.Collection;
@@ -76,7 +76,7 @@ namespace NHibernate.Engine
 		private readonly IEventSource eventSource;
 		private readonly CascadingAction action;
 
-		private readonly Stack componentPathStack = new Stack();
+		private readonly Stack<string> componentPathStack = new Stack<string>();
 
 		public Cascade(CascadingAction action, CascadePoint point, IEventSource eventSource)
 		{
