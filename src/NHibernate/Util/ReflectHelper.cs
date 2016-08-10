@@ -199,38 +199,38 @@ namespace NHibernate.Util
 		}
 
 		/// <summary>
-				/// Load a System.Type given its name.
-				/// </summary>
-				/// <param name="classFullName">The class FullName or AssemblyQualifiedName</param>
-				/// <returns>The System.Type or null</returns>
-				/// <remarks>
-				/// If the <paramref name="classFullName"/> don't represent an <see cref="System.Type.AssemblyQualifiedName"/>
-				/// the method try to find the System.Type scanning all Assemblies of the <see cref="AppDomain.CurrentDomain"/>.
-				/// </remarks>
-				public static System.Type ClassForFullNameOrNull(string classFullName)
+		/// Load a System.Type given its name.
+		/// </summary>
+		/// <param name="classFullName">The class FullName or AssemblyQualifiedName</param>
+		/// <returns>The System.Type or null</returns>
+		/// <remarks>
+		/// If the <paramref name="classFullName"/> don't represent an <see cref="System.Type.AssemblyQualifiedName"/>
+		/// the method try to find the System.Type scanning all Assemblies of the <see cref="AppDomain.CurrentDomain"/>.
+		/// </remarks>
+		public static System.Type ClassForFullNameOrNull(string classFullName)
+		{
+			System.Type result = null;
+			AssemblyQualifiedTypeName parsedName = TypeNameParser.Parse(classFullName);
+			if (!string.IsNullOrEmpty(parsedName.Assembly))
+			{
+				result = TypeFromAssembly(parsedName, false);
+			}
+			else
+			{
+				if (!string.IsNullOrEmpty(classFullName))
 				{
-					System.Type result = null;
-					AssemblyQualifiedTypeName parsedName = TypeNameParser.Parse(classFullName);
-					if (!string.IsNullOrEmpty(parsedName.Assembly))
+					Assembly[] ass = AppDomain.CurrentDomain.GetAssemblies();
+					foreach (Assembly a in ass)
 					{
-						result = TypeFromAssembly(parsedName, false);
+						result = a.GetType(classFullName, false, false);
+						if (result != null)
+							break; //<<<<<================
 					}
-					else
-					{
-						if (!string.IsNullOrEmpty(classFullName))
-						{
-							Assembly[] ass = AppDomain.CurrentDomain.GetAssemblies();
-							foreach (Assembly a in ass)
-							{
-								result = a.GetType(classFullName, false, false);
-								if (result != null)
-									break; //<<<<<================
-							}
-						}
-					}
-
-					return result;
 				}
+			}
+
+			return result;
+		}
 
 		public static System.Type TypeFromAssembly(string type, string assembly, bool throwIfError)
 		{
