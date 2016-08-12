@@ -297,7 +297,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					throw new MappingException("cannot specify both update=\"true\" and generated=\"" + generation
 					                           + "\" for property: " + propertyMapping.Name);
 				}
-				else
+                //Fix for NH-3898
+                else if (generation == PropertyGeneration.Always)
 				{
 					property.IsUpdateable = false;
 				}
