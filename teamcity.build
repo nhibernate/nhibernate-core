@@ -62,6 +62,10 @@
 		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/sqlServerOdbc/NHibernate.Test.last-results.xml" />
 	</target>
 
+	<target name="setup-teamcity-sqlServer2012">
+		<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSql2012Dialect" />
+	</target>
+
 	<target name="setup-teamcity-sqlServerCe32">
 		<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.SqlServerCeDriver" />
 		<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSqlCe40Dialect" />
