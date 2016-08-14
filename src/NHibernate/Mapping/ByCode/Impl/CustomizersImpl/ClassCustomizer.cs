@@ -92,7 +92,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		{
 			foreach (var member in members)
 			{
-				var propertyPath = new PropertyPath(PropertyPath, member);
+				var propertyPath = new PropertyPath(PropertyPath, member, typeof(TEntity));
 				idMapper(new ComponentAsIdCustomizer<TComponent>(ExplicitDeclarationsHolder, CustomizersHolder, propertyPath));
 			}
 		}

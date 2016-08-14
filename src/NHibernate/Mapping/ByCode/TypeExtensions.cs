@@ -118,8 +118,25 @@ namespace NHibernate.Mapping.ByCode
 			{
 				throw new ArgumentNullException("source");
 			}
+			//if (source.DeclaringType != source.ReflectedType)
+			//{
+			//	throw new InvalidOperationException(string.Format("DeclaringType {0} not the same as ReflectedType {1}", source.DeclaringType, source.ReflectedType));
+			//}
+#if FEATURE_REFLECTEDTYPE
+			return GetMemberFromDeclaringType(source, source.ReflectedType);
+#else
+			return GetMemberFromDeclaringType(source, source.DeclaringType);
+#endif
+		}
 
-			if (source.DeclaringType.Equals(source.ReflectedType))
+		public static MemberInfo GetMemberFromDeclaringType(this MemberInfo source, System.Type componentType)
+		{
+			if (source == null)
+			{
+				throw new ArgumentNullException("source");
+			}
+
+			if (source.DeclaringType.Equals(componentType))
 			{
 				return source;
 			}
@@ -142,17 +159,34 @@ namespace NHibernate.Mapping.ByCode
 			{
 				throw new ArgumentNullException("source");
 			}
+			//if (source.DeclaringType != source.ReflectedType)
+			//{
+			//	throw new InvalidOperationException(string.Format("DeclaringType {0} not the same as ReflectedType {1}", source.DeclaringType, source.ReflectedType));
+			//}
+#if FEATURE_REFLECTEDTYPE
+			return GetMemberFromDeclaringClasses(source, source.ReflectedType);
+#else
+			return GetMemberFromDeclaringClasses(source, source.DeclaringType);
+#endif
+		}
+
+		public static IEnumerable<MemberInfo> GetMemberFromDeclaringClasses(this MemberInfo source, System.Type componentType)
+		{
+			if (source == null)
+			{
+				throw new ArgumentNullException("source");
+			}
 
 			if (source is PropertyInfo)
 			{
-				var reflectedType = source.ReflectedType;
+				var reflectedType = componentType;
 				var memberType = source.GetPropertyOrFieldType();
 				return reflectedType.GetPropertiesOfHierarchy().Cast<PropertyInfo>().Where(x => source.Name.Equals(x.Name) && memberType.Equals(x.PropertyType)).Cast<MemberInfo>();
 			}
 
 			if (source is FieldInfo)
 			{
-				return new[] { source.GetMemberFromDeclaringType() };
+				return new[] { source.GetMemberFromDeclaringType(componentType) };
 			}
 
 			return Enumerable.Empty<MemberInfo>();
@@ -164,16 +198,41 @@ namespace NHibernate.Mapping.ByCode
 			{
 				throw new ArgumentNullException("source");
 			}
+			//if (source.DeclaringType != source.ReflectedType)
+			//{
+			//	throw new InvalidOperationException(string.Format("DeclaringType {0} not the same as ReflectedType {1}", source.DeclaringType, source.ReflectedType));
+			//}
+#if FEATURE_REFLECTEDTYPE
+			return GetPropertyFromInterfaces(source, source.ReflectedType);
+#else
+			return GetPropertyFromInterfaces(source, source.DeclaringType);
+#endif
+		}
+
+		public static IEnumerable<MemberInfo> GetPropertyFromInterfaces(this MemberInfo source, System.Type componentType)
+		{
+			if (source == null)
+			{
+				throw new ArgumentNullException("source");
+			}
+			if (!source.DeclaringType.IsAssignableFrom(componentType))
+			{
+				throw new ArgumentException("source Member not implemented on passed in type", "componentType");
+			}
+			//if (componentType != source.ReflectedType)
+			//{
+			//	throw new InvalidOperationException(string.Format("componentType {0} not the same as ReflectedType {1}", componentType, source.ReflectedType));
+			//}
 			var propertyInfo = source as PropertyInfo;
 			if (propertyInfo == null)
 			{
 				yield break;
 			}
-			if (source.ReflectedType.IsInterface)
+			if (componentType.GetTypeInfo().IsInterface)
 			{
 				yield break;
 			}
-			System.Type[] interfaces = source.ReflectedType.GetInterfaces();
+			System.Type[] interfaces = componentType.GetInterfaces();
 			if (interfaces.Length == 0)
 			{
 				yield break;
@@ -181,7 +240,7 @@ namespace NHibernate.Mapping.ByCode
 			MethodInfo propertyGetter = propertyInfo.GetGetMethod();
 			foreach (System.Type @interface in interfaces)
 			{
-				InterfaceMapping memberMap = source.ReflectedType.GetInterfaceMap(@interface);
+				InterfaceMapping memberMap = componentType.GetTypeInfo().GetRuntimeInterfaceMap(@interface);
 				PropertyInfo[] interfaceProperties = @interface.GetProperties();
 				for (int i = 0; i < memberMap.TargetMethods.Length; i++)
 				{

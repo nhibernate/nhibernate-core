@@ -451,7 +451,7 @@ namespace NHibernate.Mapping.ByCode
 			System.Type propertyContainer = definition.On;
 			string splitGroupId = definition.GroupId;
 			MemberInfo member = definition.Member;
-			var memberKey = member.GetMemberFromDeclaringType();
+			var memberKey = member.GetMemberFromDeclaringType(propertyContainer);
 			string splitGroup;
 			if (!memberSplitGroup.TryGetValue(memberKey, out splitGroup))
 			{

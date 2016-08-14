@@ -10,11 +10,11 @@ namespace NHibernate.Mapping.ByCode
 		public static System.Type GetContainerEntity(this PropertyPath propertyPath, IModelInspector domainInspector)
 		{
 			PropertyPath analizing = propertyPath;
-			while (analizing.PreviousPath != null && !domainInspector.IsEntity(analizing.LocalMember.ReflectedType))
+			while (analizing.PreviousPath != null && !domainInspector.IsEntity(analizing.ComponentType))
 			{
 				analizing = analizing.PreviousPath;
 			}
-			return analizing.LocalMember.ReflectedType;
+			return analizing.ComponentType;
 		}
 
 		public static string ToColumnName(this PropertyPath propertyPath, string pathSeparator)
@@ -42,13 +42,15 @@ namespace NHibernate.Mapping.ByCode
 			}
 			PropertyPath analizing = source;
 			var returnLocalMembers = new List<MemberInfo>(10);
+			var returnComponentTypes = new List<System.Type>(10);
 			do
 			{
 				returnLocalMembers.Add(analizing.LocalMember);
+				returnComponentTypes.Add(analizing.ComponentType);
 				PropertyPath progressivePath = null;
 				for (int i = returnLocalMembers.Count - 1; i >= 0; i--)
 				{
-					progressivePath = new PropertyPath(progressivePath, returnLocalMembers[i]);
+					progressivePath = new PropertyPath(progressivePath, returnLocalMembers[i], returnComponentTypes[i]);
 				}
 				yield return progressivePath;
 				analizing = analizing.PreviousPath;

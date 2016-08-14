@@ -43,7 +43,7 @@
     <OutputPath>bin\Debug-2.0\</OutputPath>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\Debug-2.0\</IntermediateOutputPath>
-    <DefineConstants>NET_4_0,FEATURE_SERIALIZATION</DefineConstants>
+    <DefineConstants>NET_4_0,FEATURE_SERIALIZATION,FEATURE_LEGACY_REFLECTION_API,FEATURE_REFLECTEDTYPE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
@@ -58,7 +58,7 @@
     <OutputPath>bin\Release-2.0\</OutputPath>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\Release-2.0\</IntermediateOutputPath>
-    <DefineConstants>TRACE;NET_4_0,FEATURE_SERIALIZATION</DefineConstants>
+    <DefineConstants>TRACE;NET_4_0,FEATURE_SERIALIZATION,FEATURE_LEGACY_REFLECTION_API,FEATURE_REFLECTEDTYPE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>

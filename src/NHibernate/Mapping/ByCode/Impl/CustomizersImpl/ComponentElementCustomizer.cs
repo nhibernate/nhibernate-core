@@ -71,9 +71,9 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		public void Property<TProperty>(Expression<Func<TComponent, TProperty>> property, Action<IPropertyMapper> mapping)
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
-			_customizersHolder.AddCustomizer(new PropertyPath(_propertyPath, member), mapping);
+			_customizersHolder.AddCustomizer(new PropertyPath(_propertyPath, member, typeof(TComponent)), mapping);
 			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
-			_customizersHolder.AddCustomizer(new PropertyPath(_propertyPath, memberOf), mapping);
+			_customizersHolder.AddCustomizer(new PropertyPath(_propertyPath, memberOf, typeof(TComponent)), mapping);
 			_explicitDeclarationsHolder.AddAsProperty(member);
 			_explicitDeclarationsHolder.AddAsProperty(memberOf);
 		}
@@ -87,17 +87,17 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			where TNestedComponent : class
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
-			mapping(new ComponentElementCustomizer<TNestedComponent>(_explicitDeclarationsHolder, new PropertyPath(_propertyPath, member), _customizersHolder));
+			mapping(new ComponentElementCustomizer<TNestedComponent>(_explicitDeclarationsHolder, new PropertyPath(_propertyPath, member, typeof(TComponent)), _customizersHolder));
 			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
-			mapping(new ComponentElementCustomizer<TNestedComponent>(_explicitDeclarationsHolder, new PropertyPath(_propertyPath, memberOf), _customizersHolder));
+			mapping(new ComponentElementCustomizer<TNestedComponent>(_explicitDeclarationsHolder, new PropertyPath(_propertyPath, memberOf, typeof(TComponent)), _customizersHolder));
 		}
 
 		public void ManyToOne<TProperty>(Expression<Func<TComponent, TProperty>> property, Action<IManyToOneMapper> mapping) where TProperty : class
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
-			_customizersHolder.AddCustomizer(new PropertyPath(_propertyPath, member), mapping);
+			_customizersHolder.AddCustomizer(new PropertyPath(_propertyPath, member, typeof(TComponent)), mapping);
 			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
-			_customizersHolder.AddCustomizer(new PropertyPath(_propertyPath, memberOf), mapping);
+			_customizersHolder.AddCustomizer(new PropertyPath(_propertyPath, memberOf, typeof(TComponent)), mapping);
 			_explicitDeclarationsHolder.AddAsManyToOneRelation(member);
 			_explicitDeclarationsHolder.AddAsManyToOneRelation(memberOf);
 		}

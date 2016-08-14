@@ -61,9 +61,9 @@ namespace NHibernate.Mapping.ByCode
 		{
 			System.Type componentType = member.LocalMember.GetPropertyOrFieldType();
 			IEnumerable<MemberInfo> persistentProperties =
-				MembersProvider.GetComponentMembers(componentType).Where(p => ModelInspector.IsPersistentProperty(p));
+				MembersProvider.GetComponentMembers(componentType).Where(p => ModelInspector.IsPersistentProperty(p, componentType));
 
-			MemberInfo parentReferenceProperty = GetComponentParentReferenceProperty(persistentProperties, member.LocalMember.ReflectedType);
+			MemberInfo parentReferenceProperty = GetComponentParentReferenceProperty(persistentProperties, member.ComponentType, componentType);
 			if (parentReferenceProperty != null && MatchPropertyToField(parentReferenceProperty))
 			{
 				componentMapper.Parent(parentReferenceProperty, cp=> cp.Access(Accessor.Field));
@@ -74,9 +74,9 @@ namespace NHibernate.Mapping.ByCode
 		{
 			System.Type componentType = member.LocalMember.GetPropertyOrFieldType();
 			IEnumerable<MemberInfo> persistentProperties =
-				MembersProvider.GetComponentMembers(componentType).Where(p => ModelInspector.IsPersistentProperty(p));
+				MembersProvider.GetComponentMembers(componentType).Where(p => ModelInspector.IsPersistentProperty(p, componentType));
 
-			MemberInfo parentReferenceProperty = GetComponentParentReferenceProperty(persistentProperties, member.LocalMember.ReflectedType);
+			MemberInfo parentReferenceProperty = GetComponentParentReferenceProperty(persistentProperties, member.ComponentType, componentType);
 			if (parentReferenceProperty != null && MatchNoSetterProperty(parentReferenceProperty))
 			{
 				componentMapper.Parent(parentReferenceProperty, cp => cp.Access(Accessor.NoSetter));
@@ -107,12 +107,12 @@ namespace NHibernate.Mapping.ByCode
 
 		private bool CanReadCantWriteInsideType(PropertyInfo property)
 		{
-			return !property.CanWrite && property.CanRead && property.DeclaringType == property.ReflectedType;
+			return !property.CanWrite && property.CanRead && property.DeclaringType == property.DeclaringType;
 		}
 
 		private bool CanReadCantWriteInBaseType(PropertyInfo property)
 		{
-			if (property.DeclaringType == property.ReflectedType)
+			if (property.DeclaringType == property.DeclaringType)
 			{
 				return false;
 			}
@@ -155,7 +155,7 @@ namespace NHibernate.Mapping.ByCode
 
 		protected virtual void NoSetterPoidToField(IModelInspector modelInspector, System.Type type, IClassAttributesMapper classCustomizer)
 		{
-			MemberInfo poidPropertyOrField = MembersProvider.GetEntityMembersForPoid(type).FirstOrDefault(modelInspector.IsPersistentId);
+			MemberInfo poidPropertyOrField = MembersProvider.GetEntityMembersForPoid(type).FirstOrDefault(mi => modelInspector.IsPersistentId(mi, type));
 			if(MatchNoSetterProperty(poidPropertyOrField))
 			{
 				classCustomizer.Id(idm=> idm.Access(Accessor.NoSetter));
@@ -180,7 +180,7 @@ namespace NHibernate.Mapping.ByCode
 
 		protected virtual void NoPoidGuid(IModelInspector modelInspector, System.Type type, IClassAttributesMapper classCustomizer)
 		{
-			MemberInfo poidPropertyOrField = MembersProvider.GetEntityMembersForPoid(type).FirstOrDefault(mi => modelInspector.IsPersistentId(mi));
+			MemberInfo poidPropertyOrField = MembersProvider.GetEntityMembersForPoid(type).FirstOrDefault(mi => modelInspector.IsPersistentId(mi, type));
 			if (!ReferenceEquals(null, poidPropertyOrField))
 			{
 				return;

@@ -46,7 +46,7 @@ namespace NHibernate.Mapping.ByCode
 			return IsMappedForTablePerConcreteClassEntities(type);
 		}
 
-		public virtual bool IsOneToOne(MemberInfo member)
+		public virtual bool IsOneToOne(MemberInfo member, System.Type _)
 		{
 			return OneToOneRelations.Contains(member);
 		}
@@ -56,12 +56,17 @@ namespace NHibernate.Mapping.ByCode
 			return ManyToOneRelations.Contains(member);
 		}
 
-		public virtual bool IsManyToManyItem(MemberInfo member)
+		public virtual bool IsManyToOne(MemberInfo member, System.Type _)
+		{
+			return ManyToOneRelations.Contains(member);
+		}
+
+		public virtual bool IsManyToManyItem(MemberInfo member, System.Type _)
 		{
 			return ItemManyToManyRelations.Contains(member);
 		}
 
-		public virtual bool IsManyToManyKey(MemberInfo member)
+		public virtual bool IsManyToManyKey(MemberInfo member, System.Type _)
 		{
 			return KeyManyToManyRelations.Contains(member);
 		}
@@ -71,17 +76,27 @@ namespace NHibernate.Mapping.ByCode
 			return OneToManyRelations.Contains(member);
 		}
 
-		public bool IsManyToAny(MemberInfo member)
+		public virtual bool IsOneToMany(MemberInfo member, System.Type _)
+		{
+			return OneToManyRelations.Contains(member);
+		}
+
+		public bool IsManyToAny(MemberInfo member, System.Type _)
 		{
 			return ManyToAnyRelations.Contains(member);
 		}
 
-		public virtual bool IsAny(MemberInfo member)
+		public virtual bool IsAny(MemberInfo member, System.Type _)
 		{
 			return Any.Contains(member);
 		}
 
 		public virtual bool IsPersistentId(MemberInfo member)
+		{
+			return Poids.Contains(member);
+		}
+
+		public virtual bool IsPersistentId(MemberInfo member, System.Type _)
 		{
 			return Poids.Contains(member);
 		}
@@ -96,7 +111,17 @@ namespace NHibernate.Mapping.ByCode
 			return VersionProperties.Contains(member);
 		}
 
+		public virtual bool IsVersion(MemberInfo member, System.Type _)
+		{
+			return VersionProperties.Contains(member);
+		}
+
 		public virtual bool IsMemberOfNaturalId(MemberInfo member)
+		{
+			return NaturalIds.Contains(member);
+		}
+
+		public virtual bool IsMemberOfNaturalId(MemberInfo member, System.Type _)
 		{
 			return NaturalIds.Contains(member);
 		}
@@ -106,7 +131,17 @@ namespace NHibernate.Mapping.ByCode
 			return PersistentMembers.Contains(member);
 		}
 
+		public virtual bool IsPersistentProperty(MemberInfo member, System.Type _)
+		{
+			return PersistentMembers.Contains(member);
+		}
+
 		public virtual bool IsSet(MemberInfo role)
+		{
+			return Sets.Contains(role);
+		}
+
+		public virtual bool IsSet(MemberInfo role, System.Type _)
 		{
 			return Sets.Contains(role);
 		}
@@ -116,12 +151,17 @@ namespace NHibernate.Mapping.ByCode
 			return Bags.Contains(role);
 		}
 
-		public virtual bool IsIdBag(MemberInfo role)
+		public virtual bool IsBag(MemberInfo role, System.Type _)
+		{
+			return Bags.Contains(role);
+		}
+
+		public virtual bool IsIdBag(MemberInfo role, System.Type _)
 		{
 			return IdBags.Contains(role);
 		}
 
-		public virtual bool IsList(MemberInfo role)
+		public virtual bool IsList(MemberInfo role, System.Type _)
 		{
 			return Lists.Contains(role);
 		}
@@ -131,17 +171,27 @@ namespace NHibernate.Mapping.ByCode
 			return Arrays.Contains(role);
 		}
 
+		public virtual bool IsArray(MemberInfo role, System.Type _)
+		{
+			return Arrays.Contains(role);
+		}
+
 		public virtual bool IsDictionary(MemberInfo role)
 		{
 			return Dictionaries.Contains(role);
 		}
 
-		public virtual bool IsProperty(MemberInfo member)
+		public virtual bool IsDictionary(MemberInfo role, System.Type _)
+		{
+			return Dictionaries.Contains(role);
+		}
+
+		public virtual bool IsProperty(MemberInfo member, System.Type _)
 		{
 			return Properties.Contains(member);
 		}
 
-		public virtual bool IsDynamicComponent(MemberInfo member)
+		public virtual bool IsDynamicComponent(MemberInfo member, System.Type _)
 		{
 			return DynamicComponents.Contains(member);
 		}
