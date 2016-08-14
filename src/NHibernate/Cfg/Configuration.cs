@@ -358,25 +358,20 @@ namespace NHibernate.Cfg
 		public Configuration AddXmlFile(string xmlFile)
 		{
 			log.Info("Mapping file: " + xmlFile);
-			XmlTextReader textReader = null;
-			try
+			using (TextReader streamReader = File.OpenText(xmlFile))
+			using (XmlReader textReader = XmlReader.Create(streamReader))
 			{
-				textReader = new XmlTextReader(xmlFile);
-				AddXmlReader(textReader, xmlFile);
-			}
-			catch (MappingException)
-			{
-				throw;
-			}
-			catch (Exception e)
-			{
-				LogAndThrow(new MappingException("Could not configure datastore from file " + xmlFile, e));
-			}
-			finally
-			{
-				if (textReader != null)
+				try
 				{
-					textReader.Close();
+					AddXmlReader(textReader, xmlFile);
+				}
+				catch (MappingException)
+				{
+					throw;
+				}
+				catch (Exception e)
+				{
+					LogAndThrow(new MappingException("Could not configure datastore from file " + xmlFile, e));
 				}
 			}
 			return this;
@@ -400,28 +395,23 @@ namespace NHibernate.Cfg
 			{
 				log.Debug("Mapping XML:\n" + xml);
 			}
-			XmlTextReader reader = null;
-			try
+			using (TextReader textReader = new StringReader(xml))
+			using (XmlReader reader = XmlReader.Create(textReader))
 			{
-				reader = new XmlTextReader(xml, XmlNodeType.Document, null);
-				// make a StringReader for the string passed in - the StringReader
-				// inherits from TextReader.  We can use the XmlTextReader.ctor that
-				// takes the TextReader to build from a string...
-				AddXmlReader(reader, name);
-			}
-			catch (MappingException)
-			{
-				throw;
-			}
-			catch (Exception e)
-			{
-				LogAndThrow(new MappingException("Could not configure datastore from XML string " + name, e));
-			}
-			finally
-			{
-				if (reader != null)
+				try
 				{
-					reader.Close();
+					// make a StringReader for the string passed in - the StringReader
+					// inherits from TextReader.  We can use the XmlTextReader.ctor that
+					// takes the TextReader to build from a string...
+					AddXmlReader(reader, name);
+				}
+				catch (MappingException)
+				{
+					throw;
+				}
+				catch (Exception e)
+				{
+					LogAndThrow(new MappingException("Could not configure datastore from XML string " + name, e));
 				}
 			}
 			return this;
@@ -634,27 +624,21 @@ namespace NHibernate.Cfg
 		/// </remarks>
 		public Configuration AddInputStream(Stream xmlInputStream, string name)
 		{
-			XmlTextReader textReader = null;
-			try
+			using (XmlReader textReader = XmlReader.Create(xmlInputStream))
 			{
-				textReader = new XmlTextReader(xmlInputStream);
-				AddXmlReader(textReader, name);
-				return this;
-			}
-			catch (MappingException)
-			{
-				throw;
-			}
-			catch (Exception e)
-			{
-				LogAndThrow(new MappingException("Could not configure datastore from input stream " + name, e));
-				return this; // To please the compiler
-			}
-			finally
-			{
-				if (textReader != null)
+				try
 				{
-					textReader.Close();
+					AddXmlReader(textReader, name);
+					return this;
+				}
+				catch (MappingException)
+				{
+					throw;
+				}
+				catch (Exception e)
+				{
+					LogAndThrow(new MappingException("Could not configure datastore from input stream " + name, e));
+					return this; // To please the compiler
 				}
 			}
 		}
@@ -1462,18 +1446,10 @@ namespace NHibernate.Cfg
 				properties = Environment.Properties;
 			}
 
-			XmlTextReader reader = null;
-			try
+			using (TextReader streamReader = File.OpenText(fileName))
+			using (XmlReader reader = XmlReader.Create(streamReader))
 			{
-				reader = new XmlTextReader(fileName);
 				return Configure(reader);
-			}
-			finally
-			{
-				if (reader != null)
-				{
-					reader.Close();
-				}
 			}
 		}
 
@@ -1507,7 +1483,7 @@ namespace NHibernate.Cfg
 												 + " in Assembly " + assembly.FullName);
 				}
 
-				return Configure(new XmlTextReader(stream));
+				return Configure(XmlReader.Create(stream));
 			}
 		}
 
