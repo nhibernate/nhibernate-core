@@ -101,7 +101,7 @@ namespace NHibernate.Type
 
 		public IComparer Comparator
 		{
-			get { return Comparer.DefaultInvariant; }
+			get { return System.Collections.Generic.Comparer<DateTime>.Default; }
 		}
 
 		#endregion

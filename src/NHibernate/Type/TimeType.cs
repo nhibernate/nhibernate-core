@@ -131,7 +131,7 @@ namespace NHibernate.Type
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
-			return "'" + ((DateTime)value).ToShortTimeString() + "'";
+			return "'" + ((DateTime)value).ToString("t") + "'";
 		}
 	}
 }

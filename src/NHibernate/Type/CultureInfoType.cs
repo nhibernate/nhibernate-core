@@ -80,7 +80,14 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override object FromStringValue(string xml)
 		{
-			return CultureInfo.CreateSpecificCulture(xml);
+			return CreateSpecificCulture(xml);
+		}
+
+		private static CultureInfo CreateSpecificCulture(string name)
+		{
+			var culture = new CultureInfo(name);
+
+			return !culture.IsNeutralCulture ? culture : CultureInfo.InvariantCulture;
 		}
 
 		/// <summary></summary>
