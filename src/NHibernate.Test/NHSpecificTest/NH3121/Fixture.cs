@@ -53,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3121
 		[Test]
 		public void ShouldThrowWhenImageTooLarge()
 		{
-			Assembly assembly = Assembly.Load(MappingsAssembly);
+			Assembly assembly = Assembly.Load(new AssemblyName(MappingsAssembly));
 			var stream = assembly.GetManifestResourceStream("NHibernate.Test.NHSpecificTest.NH2484.food-photo.jpg");
 			var image = Bitmap.FromStream(stream);
 
@@ -72,7 +72,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3121
 		[Test]
 		public void ShouldThrowWhenImageAsISerializableTooLarge()
 		{
-			Assembly assembly = Assembly.Load(MappingsAssembly);
+			Assembly assembly = Assembly.Load(new AssemblyName(MappingsAssembly));
 			var stream = assembly.GetManifestResourceStream("NHibernate.Test.NHSpecificTest.NH2484.food-photo.jpg");
 			var image = Bitmap.FromStream(stream);
 

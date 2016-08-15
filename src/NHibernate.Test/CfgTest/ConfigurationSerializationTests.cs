@@ -22,7 +22,7 @@ namespace NHibernate.Test.CfgTest
 		[Test]
 		public void Basic_CRUD_should_work()
 		{
-			Assembly assembly = Assembly.Load("NHibernate.DomainModel");
+			Assembly assembly = Assembly.Load(new AssemblyName("NHibernate.DomainModel"));
 			var cfg = new Configuration();
 			if (TestConfigurationHelper.hibernateConfigFile != null)
 			{

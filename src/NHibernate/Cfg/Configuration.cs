@@ -750,7 +750,7 @@ namespace NHibernate.Cfg
 			Assembly assembly = null;
 			try
 			{
-				assembly = Assembly.Load(assemblyName);
+				assembly = Assembly.Load(new AssemblyName(assemblyName));
 			}
 			catch (Exception e)
 			{
@@ -1574,7 +1574,7 @@ namespace NHibernate.Cfg
 				if (!string.IsNullOrEmpty(mc.Resource) && !string.IsNullOrEmpty(mc.Assembly))
 				{
 					log.Debug(factoryConfiguration.Name + "<-" + mc.Resource + " in " + mc.Assembly);
-					AddResource(mc.Resource, Assembly.Load(mc.Assembly));
+					AddResource(mc.Resource, Assembly.Load(new AssemblyName(mc.Assembly)));
 				}
 				else if (!string.IsNullOrEmpty(mc.Assembly))
 				{

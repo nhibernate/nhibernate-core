@@ -114,7 +114,7 @@ namespace NHibernate.Test.Linq
 
 			configuration.SetProperty(Environment.ConnectionProvider, typeof (DriverConnectionProvider).AssemblyQualifiedName);
 
-			Assembly assembly = Assembly.Load(MappingsAssembly);
+			Assembly assembly = Assembly.Load(new AssemblyName(MappingsAssembly));
 
 			foreach (string file in Mappings.Select(mf => MappingsAssembly + "." + mf))
 			{

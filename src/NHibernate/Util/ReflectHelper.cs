@@ -274,7 +274,7 @@ namespace NHibernate.Util
 					return null;
 				}
 
-				Assembly assembly = Assembly.Load(name.Assembly);
+				Assembly assembly = Assembly.Load(new AssemblyName(name.Assembly));
 
 				if (assembly == null)
 				{
@@ -311,7 +311,7 @@ namespace NHibernate.Util
 			bool result = true;
 			try
 			{
-				Assembly.Load(assemblyName);
+				Assembly.Load(new AssemblyName(assemblyName));
 			}
 			catch (Exception)
 			{

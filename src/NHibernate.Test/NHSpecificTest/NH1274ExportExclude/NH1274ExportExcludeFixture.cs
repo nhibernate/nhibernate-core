@@ -98,7 +98,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1274ExportExclude
 			if (TestConfigurationHelper.hibernateConfigFile != null)
 				cfg.Configure(TestConfigurationHelper.hibernateConfigFile);
 
-			Assembly assembly = Assembly.Load(MappingsAssembly);
+			Assembly assembly = Assembly.Load(new AssemblyName(MappingsAssembly));
 
 			foreach (string file in Mappings)
 			{

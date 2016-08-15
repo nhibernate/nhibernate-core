@@ -32,7 +32,7 @@ namespace NHibernate.AdoNet
 
 		static SqlClientSqlCommandSet()
 		{
-			var sysData = Assembly.Load("System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
+			var sysData = Assembly.Load(new AssemblyName("System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
 			sqlCmdSetType = sysData.GetType("System.Data.SqlClient.SqlCommandSet");
 			Debug.Assert(sqlCmdSetType != null, "Could not find SqlCommandSet!");
 
