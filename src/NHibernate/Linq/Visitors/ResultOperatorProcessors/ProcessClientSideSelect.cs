@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Reflection;
 using NHibernate.Linq.GroupBy;
 using NHibernate.Util;
 

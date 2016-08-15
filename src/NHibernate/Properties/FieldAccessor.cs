@@ -114,7 +114,7 @@ namespace NHibernate.Properties
 			if (field == null)
 			{
 				// recursively call this method for the base Type
-				field = GetField(type.BaseType, fieldName, originalType);
+				field = GetField(type.GetTypeInfo().BaseType, fieldName, originalType);
 			}
 
 			return field;

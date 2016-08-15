@@ -43,7 +43,7 @@ namespace NHibernate.Linq
 			if (lambda == null)
 				return default(TDelegate);
 
-			var body = lambda.ReturnType.IsValueType
+			var body = lambda.ReturnType.GetTypeInfo().IsValueType
 						   ? Expression.Convert(lambda.Body, typeof (object))
 						   : lambda.Body;
 			

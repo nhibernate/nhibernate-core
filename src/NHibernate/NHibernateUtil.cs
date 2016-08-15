@@ -63,7 +63,7 @@ namespace NHibernate
 			if (clrTypeToNHibernateType.TryGetValue(type, out value))
 				return value;
 			
-			if (type.IsEnum)
+			if (type.GetTypeInfo().IsEnum)
 				return (IType) Activator.CreateInstance(typeof (EnumType<>).MakeGenericType(type));
 			
 			if (typeof(IUserType).IsAssignableFrom(type) ||

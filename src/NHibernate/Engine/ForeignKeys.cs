@@ -1,4 +1,5 @@
 
+using System.Reflection;
 using NHibernate.Id;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -243,7 +244,7 @@ namespace NHibernate.Engine
 
 					/***********************************************/
 					// NH-479 (very dirty patch)
-					if (entity.GetType().IsPrimitive)
+					if (entity.GetType().GetTypeInfo().IsPrimitive)
 						return entity;
 					/**********************************************/
 

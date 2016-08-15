@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Expressions;
@@ -447,8 +448,8 @@ possible solutions:
 				case ExpressionType.Convert:
 				case ExpressionType.ConvertChecked:
 				case ExpressionType.TypeAs:
-					if ((expression.Operand.Type.IsPrimitive || expression.Operand.Type == typeof(Decimal)) &&
-						(expression.Type.IsPrimitive || expression.Type == typeof(Decimal)))
+					if ((expression.Operand.Type.GetTypeInfo().IsPrimitive || expression.Operand.Type == typeof(Decimal)) &&
+						(expression.Type.GetTypeInfo().IsPrimitive || expression.Type == typeof(Decimal)))
 					{
 						return _hqlTreeBuilder.Cast(VisitExpression(expression.Operand).AsExpression(), expression.Type);
 					}

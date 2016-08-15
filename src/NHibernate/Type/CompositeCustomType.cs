@@ -49,7 +49,7 @@ namespace NHibernate.Type
 				throw new MappingException(name + " must implement NHibernate.UserTypes.ICompositeUserType", ice);
 			}
 			TypeFactory.InjectParameters(userType, parameters);
-			if (!userType.ReturnedClass.IsSerializable)
+			if (!userType.ReturnedClass.GetTypeInfo().IsSerializable)
 			{
 				LoggerProvider.LoggerFor(typeof(CustomType)).WarnFormat("the custom composite class '{0}' handled by '{1}' is not Serializable: ", userType.ReturnedClass, userTypeClass);
 			}

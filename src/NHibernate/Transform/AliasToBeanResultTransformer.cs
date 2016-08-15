@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq;
 using System.Reflection;
 using NHibernate.Properties;
 
@@ -45,7 +46,7 @@ namespace NHibernate.Transform
 
 			// if resultClass is a ValueType (struct), GetConstructor will return null... 
 			// in that case, we'll use Activator.CreateInstance instead of the ConstructorInfo to create instances
-			if (constructor == null && resultClass.IsClass)
+			if (constructor == null && resultClass.GetTypeInfo().IsClass)
 			{
 				throw new ArgumentException("The target class of a AliasToBeanResultTransformer need a parameter-less constructor",
 				                            "resultClass");
@@ -90,7 +91,7 @@ namespace NHibernate.Transform
 				}
 				
 				// if resultClass is not a class but a value type, we need to use Activator.CreateInstance
-				result = resultClass.IsClass
+				result = resultClass.GetTypeInfo().IsClass
 				         	? constructor.Invoke(null)
 				         	: Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(resultClass, true);
 

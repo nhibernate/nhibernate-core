@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace NHibernate.Util
 {
@@ -8,17 +9,17 @@ namespace NHibernate.Util
 	{
 		public static bool IsEnumerableOfT(this System.Type type)
 		{
-			return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>);
+			return type.GetTypeInfo().IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>);
 		}
 
 		public static bool IsNullable(this System.Type type)
 		{
-			return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
+			return type.GetTypeInfo().IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
 		}
 
 		public static bool IsNullableOrReference(this System.Type type)
 		{
-			return !type.IsValueType || type.IsNullable();
+			return !type.GetTypeInfo().IsValueType || type.IsNullable();
 		}
 
 		public static System.Type NullableOf(this System.Type type)
@@ -28,7 +29,7 @@ namespace NHibernate.Util
 
 		public static bool IsPrimitive(this System.Type type)
 		{
-			return (type.IsValueType || type.IsNullable() || type == typeof(string));
+			return (type.GetTypeInfo().IsValueType || type.IsNullable() || type == typeof(string));
 		}
 
 		public static bool IsNonPrimitive(this System.Type type)

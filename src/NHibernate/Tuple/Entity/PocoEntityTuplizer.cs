@@ -140,7 +140,7 @@ namespace NHibernate.Tuple.Entity
 
 			if (_proxyInterface != null && !_mappedClass.Equals(_proxyInterface))
 			{
-				if (!_proxyInterface.IsInterface)
+				if (!_proxyInterface.GetTypeInfo().IsInterface)
 				{
 					throw new MappingException("proxy must be either an interface, or the class itself: " + EntityName);
 				}
@@ -148,7 +148,7 @@ namespace NHibernate.Tuple.Entity
 				proxyInterfaces.Add(_proxyInterface);
 			}
 
-			if (_mappedClass.IsInterface)
+			if (_mappedClass.GetTypeInfo().IsInterface)
 			{
 				needAccesorCheck = false; // NH (the mapped class is an interface all properties can be overridden)
 				proxyInterfaces.Add(_mappedClass);
@@ -160,7 +160,7 @@ namespace NHibernate.Tuple.Entity
 				System.Type subclassClass = subclass.MappedClass;
 				if (subclassProxy != null && !subclassClass.Equals(subclassProxy))
 				{
-					if (!subclassProxy.IsInterface)
+					if (!subclassProxy.GetTypeInfo().IsInterface)
 					{
 						throw new MappingException("proxy must be either an interface, or the class itself: " + subclass.EntityName);
 					}

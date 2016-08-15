@@ -60,17 +60,17 @@ namespace NHibernate.Proxy.DynamicProxy
 					var typeArgBuilder = typeArgBuilders[index];
 					var typeArg = typeArgs[index];
 
-					typeArgBuilder.SetGenericParameterAttributes(typeArg.GenericParameterAttributes);
+					typeArgBuilder.SetGenericParameterAttributes(typeArg.GetTypeInfo().GenericParameterAttributes);
 
 					// Copy generic parameter constraints (class and interfaces).
-					var typeConstraints = typeArg.GetGenericParameterConstraints()
+					var typeConstraints = typeArg.GetTypeInfo().GetGenericParameterConstraints()
 						.Select(x => ResolveTypeConstraint(method, x))
 						.ToArray();
 
-					var baseTypeConstraint = typeConstraints.SingleOrDefault(x => x.IsClass);
+					var baseTypeConstraint = typeConstraints.SingleOrDefault(x => x.GetTypeInfo().IsClass);
 					typeArgBuilder.SetBaseTypeConstraint(baseTypeConstraint);
 
-					var interfaceTypeConstraints = typeConstraints.Where(x => !x.IsClass).ToArray();
+					var interfaceTypeConstraints = typeConstraints.Where(x => !x.GetTypeInfo().IsClass).ToArray();
 					typeArgBuilder.SetInterfaceConstraints(interfaceTypeConstraints);
 				}
 			}
@@ -79,10 +79,10 @@ namespace NHibernate.Proxy.DynamicProxy
 
 		private static System.Type ResolveTypeConstraint(MethodInfo method, System.Type typeConstraint)
 		{
-			if (typeConstraint != null && typeConstraint.IsGenericType)
+			if (typeConstraint != null && typeConstraint.GetTypeInfo().IsGenericType)
 			{
 				var declaringType = method.DeclaringType;
-				if (declaringType != null && declaringType.IsGenericType)
+				if (declaringType != null && declaringType.GetTypeInfo().IsGenericType)
 				{
 					return BuildTypeConstraint(typeConstraint, declaringType);
 				}

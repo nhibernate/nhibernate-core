@@ -214,7 +214,7 @@ namespace NHibernate.Mapping.ByCode
 
 		private bool MatchRootEntity(System.Type type)
 		{
-			return type.IsClass && typeof(object).Equals(type.BaseType) && ((IModelInspector)this).IsEntity(type);
+			return type.GetTypeInfo().IsClass && typeof(object).Equals(type.GetTypeInfo().BaseType) && ((IModelInspector)this).IsEntity(type);
 		}
 
 		private bool MatchTablePerClass(System.Type type)
@@ -261,7 +261,7 @@ namespace NHibernate.Mapping.ByCode
 			{
 				return true;
 			}
-			if (memberType.IsGenericType)
+			if (memberType.GetTypeInfo().IsGenericType)
 			{
 				return memberType.GetGenericInterfaceTypeDefinitions().Contains(typeof(IDictionary<,>));
 			}
@@ -299,7 +299,7 @@ namespace NHibernate.Mapping.ByCode
 		{
 			var memberType = subject.GetPropertyOrFieldType();
 
-			if (memberType.IsGenericType)
+			if (memberType.GetTypeInfo().IsGenericType)
 			{
 				return memberType.GetGenericInterfaceTypeDefinitions().Contains(typeof(ISet<>));
 			}
@@ -369,7 +369,7 @@ namespace NHibernate.Mapping.ByCode
 				return false;
 			}
 			var modelInspector = (IModelInspector) this;
-			return !subject.IsEnum && (subject.Namespace == null || !subject.Namespace.StartsWith("System")) /* hack */
+			return !subject.GetTypeInfo().IsEnum && (subject.Namespace == null || !subject.Namespace.StartsWith("System")) /* hack */
 							&& !modelInspector.IsEntity(subject)
 							&& !subject.GetProperties(flattenHierarchyMembers).Cast<MemberInfo>().Concat(
 			       		subject.GetFields(flattenHierarchyMembers)).Any(m => modelInspector.IsPersistentId(m));
@@ -384,7 +384,7 @@ namespace NHibernate.Mapping.ByCode
 				return false;
 			}
 			var modelInspector = (IModelInspector) this;
-			return subject.IsClass &&
+			return subject.GetTypeInfo().IsClass &&
 			       subject.GetProperties(flattenHierarchyMembers).Cast<MemberInfo>().Concat(subject.GetFields(flattenHierarchyMembers)).Any(m => modelInspector.IsPersistentId(m));
 		}
 

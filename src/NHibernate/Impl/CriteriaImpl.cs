@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using NHibernate.Criterion;
 using NHibernate.Engine;
@@ -280,7 +281,7 @@ namespace NHibernate.Impl
 		public T UniqueResult<T>()
 		{
 			object result = UniqueResult();
-			if (result == null && typeof (T).IsValueType)
+			if (result == null && typeof (T).GetTypeInfo().IsValueType)
 			{
 				return default(T);
 			}
@@ -808,7 +809,7 @@ namespace NHibernate.Impl
 			public T UniqueResult<T>()
 			{
 				object result = UniqueResult();
-				if (result == null && typeof (T).IsValueType)
+				if (result == null && typeof (T).GetTypeInfo().IsValueType)
 				{
 					throw new InvalidCastException(
 						"UniqueResult<T>() cannot cast null result to value type. Call UniqueResult<T?>() instead");

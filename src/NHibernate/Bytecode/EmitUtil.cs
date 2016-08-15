@@ -62,7 +62,7 @@ namespace NHibernate.Bytecode
 
 		public static void EmitBoxIfNeeded(ILGenerator il, System.Type type)
 		{
-			if (type.IsValueType)
+			if (type.GetTypeInfo().IsValueType)
 			{
 				il.Emit(OpCodes.Box, type);
 			}
@@ -103,7 +103,7 @@ namespace NHibernate.Bytecode
 		public static void PreparePropertyForSet(ILGenerator il, System.Type propertyType)
 		{
 			// If this is a value type, we need to unbox it
-			if (propertyType.IsValueType)
+			if (propertyType.GetTypeInfo().IsValueType)
 			{
 				// if (object[i] == null), create a new instance 
 				Label notNullLabel = il.DefineLabel();

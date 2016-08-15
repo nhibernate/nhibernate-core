@@ -1,3 +1,4 @@
+using System.Reflection;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Type;
 
@@ -15,7 +16,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			}
 			else
 			{
-				typeName = type.FullName + ", " + type.Assembly.GetName().Name;
+				typeName = type.FullName + ", " + type.GetTypeInfo().Assembly.GetName().Name;
 			}
 			return typeName;
 		}
@@ -30,8 +31,8 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				return type.AssemblyQualifiedName;
 			}
-			string typeAssembly = type.Assembly.GetName().Name;
-			string typeAssemblyFullName = type.Assembly.FullName;
+			string typeAssembly = type.GetTypeInfo().Assembly.GetName().Name;
+			string typeAssemblyFullName = type.GetTypeInfo().Assembly.FullName;
 			string typeNameSpace = type.Namespace;
 			string assembly = null;
 			if (typeAssembly != mapDoc.assembly && typeAssemblyFullName != mapDoc.assembly)
@@ -61,7 +62,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		private static string GetTypeNameForMapping(System.Type type)
 		{
-			if (type.IsGenericType || type.IsNested)
+			if (type.GetTypeInfo().IsGenericType || type.IsNested)
 			{
 				return type.FullName;
 			}

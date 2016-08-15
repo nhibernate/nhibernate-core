@@ -37,7 +37,7 @@ namespace NHibernate.Linq.Functions
 				return visitor.Visit(arguments[0]).AsExpression();
 
 			var returnType = method.ReturnType;
-			var instance = returnType.IsValueType ? Activator.CreateInstance(returnType) : null;
+			var instance = returnType.GetTypeInfo().IsValueType ? Activator.CreateInstance(returnType) : null;
 			return treeBuilder.Constant(instance);
 		}
 	}

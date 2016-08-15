@@ -160,6 +160,7 @@
     <Compile Include="Compat\NonSerializedAttribute.cs" />
     <Compile Include="Compat\RuntimeReflectionExtensions.cs" />
     <Compile Include="Compat\SerializableAttribute.cs" />
+    <Compile Include="Compat\TypeReflectionExtensions.cs" />
     <Compile Include="Connection\ConnectionProvider.cs" />
     <Compile Include="Connection\ConnectionProviderFactory.cs" />
     <Compile Include="Connection\DriverConnectionProvider.cs" />

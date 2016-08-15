@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Persister.Entity;
 using NHibernate.Util;
@@ -17,8 +18,8 @@ namespace NHibernate.Mapping.ByCode.Impl
 			classMapping = new HbmUnionSubclass();
 			var toAdd = new[] {classMapping};
 			classMapping.name = subClass.GetShortClassName(mapDoc);
-			classMapping.extends = subClass.BaseType.GetShortClassName(mapDoc);
-			if (subClass.IsAbstract)
+			classMapping.extends = subClass.GetTypeInfo().BaseType.GetShortClassName(mapDoc);
+			if (subClass.GetTypeInfo().IsAbstract)
 			{
 				classMapping.@abstract = true;
 				classMapping.abstractSpecified = true;

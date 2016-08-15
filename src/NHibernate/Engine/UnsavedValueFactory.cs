@@ -90,7 +90,7 @@ namespace NHibernate.Engine
 				if (constructor != null)
 				{
 					object defaultValue = versionGetter.Get(Instantiate(constructor));
-					if (defaultValue != null && defaultValue.GetType().IsValueType)
+					if (defaultValue != null && defaultValue.GetType().GetTypeInfo().IsValueType)
 						return new VersionValue(defaultValue);
 					else
 					{

@@ -132,7 +132,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				return null;
 			}
-			MemberInfo member = type.GetField(fieldName, FieldBindingFlag) ?? GetField(type.BaseType, fieldName);
+			MemberInfo member = type.GetField(fieldName, FieldBindingFlag) ?? GetField(type.GetTypeInfo().BaseType, fieldName);
 			return member;
 		}
 	}

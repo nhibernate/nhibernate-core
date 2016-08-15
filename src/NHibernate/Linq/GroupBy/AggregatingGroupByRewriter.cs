@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using NHibernate.Linq.Clauses;
 using NHibernate.Linq.ReWriters;
 using NHibernate.Linq.Visitors;
@@ -117,7 +118,7 @@ namespace NHibernate.Linq.GroupBy
 			{
 				// Re-write the KeySelector as an object array of the non-constant keys
 				// This should be safe because we've already re-written the select clause using the original keys
-				groupBy.KeySelector = Expression.NewArrayInit(typeof (object), keys.Select(x => x.Type.IsValueType ? Expression.Convert(x, typeof(object)) : x));
+				groupBy.KeySelector = Expression.NewArrayInit(typeof (object), keys.Select(x => x.Type.GetTypeInfo().IsValueType ? Expression.Convert(x, typeof(object)) : x));
 			}
 		}
 	}

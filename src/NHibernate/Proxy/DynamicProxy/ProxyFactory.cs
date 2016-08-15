@@ -115,7 +115,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			// Use the proxy dummy as the base type 
 			// since we're not inheriting from any class type
 			System.Type parentType = baseType;
-			if (baseType.IsInterface)
+			if (baseType.GetTypeInfo().IsInterface)
 			{
 				parentType = typeof (ProxyDummy);
 				interfaces.Add(baseType);

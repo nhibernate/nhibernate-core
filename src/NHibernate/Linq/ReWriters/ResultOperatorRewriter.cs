@@ -5,6 +5,7 @@ namespace NHibernate.Linq.ReWriters
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Linq.Expressions;
+	using System.Reflection;
 
 	using NHibernate.Linq.Visitors;
 
@@ -46,7 +47,7 @@ namespace NHibernate.Linq.ReWriters
 			if (fromClause.FromExpression.NodeType == ExpressionType.Constant)
 			{
 				System.Type expressionType = queryModel.MainFromClause.FromExpression.Type;
-				if (expressionType.IsGenericType && expressionType.GetGenericTypeDefinition() == typeof(NhQueryable<>))
+				if (expressionType.GetTypeInfo().IsGenericType && expressionType.GetGenericTypeDefinition() == typeof(NhQueryable<>))
 				{
 					queryModel.MainFromClause.ItemType = expressionType.GetGenericArguments()[0];
 				}

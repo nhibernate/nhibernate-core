@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Text;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -297,7 +298,7 @@ namespace NHibernate.Impl
 				object ownerKey;
 				// TODO: Is it redundant to attempt to use the collectionKey,
 				// or is always using the owner id sufficient?
-				if (ownerIdentifierType.ReturnedClass.IsInstanceOfType(collectionKey))
+				if (collectionKey.GetType().GetTypeInfo().IsAssignableFrom(ownerIdentifierType.ReturnedClass))
 				{
 					ownerKey = collectionKey;
 				}

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Reflection;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;

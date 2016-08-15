@@ -1,3 +1,4 @@
+using System.Reflection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -69,7 +70,7 @@ namespace NHibernate.Loader
 		private static bool IsBag(ICollectionPersister collectionPersister)
 		{
 			var type = collectionPersister.CollectionType.GetType();
-			return type.IsGenericType && type.GetGenericTypeDefinition() == typeof (GenericBagType<>);
+			return type.GetTypeInfo().IsGenericType && type.GetGenericTypeDefinition() == typeof (GenericBagType<>);
 		}
 
 		/// <summary>

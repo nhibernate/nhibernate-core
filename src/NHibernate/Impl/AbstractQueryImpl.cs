@@ -10,6 +10,7 @@ using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Linq;
+using System.Reflection;
 
 namespace NHibernate.Impl
 {
@@ -940,7 +941,7 @@ namespace NHibernate.Impl
 		public T UniqueResult<T>()
 		{
 			object result = UniqueResult();
-			if (result == null && typeof(T).IsValueType)
+			if (result == null && typeof(T).GetTypeInfo().IsValueType)
 			{
 				return default(T);
 			}

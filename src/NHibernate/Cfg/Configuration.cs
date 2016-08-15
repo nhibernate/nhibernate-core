@@ -709,7 +709,7 @@ namespace NHibernate.Cfg
 		/// </remarks>
 		public Configuration AddClass(System.Type persistentClass)
 		{
-			return AddResource(persistentClass.FullName + ".hbm.xml", persistentClass.Assembly);
+			return AddResource(persistentClass.FullName + ".hbm.xml", persistentClass.GetTypeInfo().Assembly);
 		}
 
 		/// <summary>

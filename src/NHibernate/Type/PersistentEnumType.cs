@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Reflection;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -286,7 +287,7 @@ namespace NHibernate.Type
 		public EnumType() : base(typeof (T))
 		{
 			System.Type type = GetType();
-			typeName = type.FullName + ", " + type.Assembly.GetName().Name;
+			typeName = type.FullName + ", " + type.GetTypeInfo().Assembly.GetName().Name;
 		}
 
 		public override string Name

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -200,7 +201,7 @@ namespace NHibernate.Criterion
 				return "null";
 			}
 			var type = value.GetType();
-			if (type.IsPrimitive || CallToStringTypes.Any(t => t.IsAssignableFrom(type)))
+			if (type.GetTypeInfo().IsPrimitive || CallToStringTypes.Any(t => t.GetTypeInfo().IsAssignableFrom(type)))
 			{
 				return value.ToString();
 			}

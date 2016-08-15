@@ -1,9 +1,9 @@
-using System.Linq;
-
 namespace NHibernate.Criterion
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Linq;
+	using System.Reflection;
 	using Engine;
 	using SqlCommand;
 	using Type;

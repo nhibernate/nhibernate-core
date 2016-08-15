@@ -108,7 +108,7 @@ namespace NHibernate.Type
 									systemType.FullName,
 														systemType.AssemblyQualifiedName,
 								};
-			if (systemType.IsValueType)
+			if (systemType.GetTypeInfo().IsValueType)
 			{
 				// Also register Nullable<systemType> for ValueTypes
 				var nullableType = typeof(Nullable<>).MakeGenericType(systemType);
@@ -541,12 +541,12 @@ namespace NHibernate.Type
 			}
 
 			var unwrapped = typeClass.UnwrapIfNullable();
-			if (unwrapped.IsEnum)
+			if (unwrapped.GetTypeInfo().IsEnum)
 			{
 				return (IType) Activator.CreateInstance(typeof (EnumType<>).MakeGenericType(unwrapped));
 			}
 
-			if (!typeClass.IsSerializable)
+			if (!typeClass.GetTypeInfo().IsSerializable)
 				return null;
 
 #if FEATURE_SERIALIZATION

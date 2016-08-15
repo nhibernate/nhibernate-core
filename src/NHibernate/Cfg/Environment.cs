@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using System.Reflection;
 
 using NHibernate.Bytecode;
@@ -49,8 +50,7 @@ namespace NHibernate.Cfg
 				{
 					Assembly thisAssembly = Assembly.GetExecutingAssembly();
 					var attrs =
-						(AssemblyInformationalVersionAttribute[])
-						thisAssembly.GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), false);
+						thisAssembly.GetCustomAttributes<AssemblyInformationalVersionAttribute>().ToArray();
 
 					if (attrs != null && attrs.Length > 0)
 					{

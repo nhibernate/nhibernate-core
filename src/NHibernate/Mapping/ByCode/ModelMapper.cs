@@ -556,10 +556,10 @@ namespace NHibernate.Mapping.ByCode
 			string defaultAssemblyName = null;
 			string defaultNamespace = null;
 			System.Type firstType = typeToMap.FirstOrDefault();
-			if (firstType != null && typeToMap.All(t => t.Assembly.Equals(firstType.Assembly)))
+			if (firstType != null && typeToMap.All(t => t.GetTypeInfo().Assembly.Equals(firstType.GetTypeInfo().Assembly)))
 			{
 				//NH-2831: always use the full name of the assembly because it may come from GAC
-				defaultAssemblyName = firstType.Assembly.GetName().FullName;
+				defaultAssemblyName = firstType.GetTypeInfo().Assembly.GetName().FullName;
 			}
 			if (firstType != null && typeToMap.All(t => t.Namespace == firstType.Namespace))
 			{
@@ -590,13 +590,13 @@ namespace NHibernate.Mapping.ByCode
 			//NH-2831: always use the full name of the assembly because it may come from GAC
 			foreach (var type in RootClasses(typeToMap))
 			{
-				var mapping = NewHbmMapping(type.Assembly.GetName().FullName, type.Namespace);
+				var mapping = NewHbmMapping(type.GetTypeInfo().Assembly.GetName().FullName, type.Namespace);
 				MapRootClass(type, mapping);
 				yield return mapping;
 			}
 			foreach (var type in Subclasses(typeToMap))
 			{
-				var mapping = NewHbmMapping(type.Assembly.GetName().FullName, type.Namespace);
+				var mapping = NewHbmMapping(type.GetTypeInfo().Assembly.GetName().FullName, type.Namespace);
 				AddSubclassMapping(mapping, type);
 				yield return mapping;
 			}
@@ -643,7 +643,7 @@ namespace NHibernate.Mapping.ByCode
 			var classMapper = new UnionSubclassMapper(type, mapping);
 
 			IEnumerable<MemberInfo> candidateProperties = null;
-			if (!modelInspector.IsEntity(type.BaseType))
+			if (!modelInspector.IsEntity(type.GetTypeInfo().BaseType))
 			{
 				System.Type baseType = GetEntityBaseType(type);
 				if (baseType != null)
@@ -652,7 +652,7 @@ namespace NHibernate.Mapping.ByCode
 					candidateProperties = membersProvider.GetSubEntityMembers(type, baseType);
 				}
 			}
-			candidateProperties = candidateProperties ?? membersProvider.GetSubEntityMembers(type, type.BaseType);
+			candidateProperties = candidateProperties ?? membersProvider.GetSubEntityMembers(type, type.GetTypeInfo().BaseType);
 			IEnumerable<MemberInfo> propertiesToMap =
 				candidateProperties.Where(p => modelInspector.IsPersistentProperty(p) && !modelInspector.IsPersistentId(p));
 
@@ -667,7 +667,7 @@ namespace NHibernate.Mapping.ByCode
 		{
 			var classMapper = new SubclassMapper(type, mapping);
 			IEnumerable<MemberInfo> candidateProperties = null;
-			if (!modelInspector.IsEntity(type.BaseType))
+			if (!modelInspector.IsEntity(type.GetTypeInfo().BaseType))
 			{
 				System.Type baseType = GetEntityBaseType(type);
 				if (baseType != null)
@@ -676,7 +676,7 @@ namespace NHibernate.Mapping.ByCode
 					candidateProperties = membersProvider.GetSubEntityMembers(type, baseType);
 				}
 			}
-			candidateProperties = candidateProperties ?? membersProvider.GetSubEntityMembers(type, type.BaseType);
+			candidateProperties = candidateProperties ?? membersProvider.GetSubEntityMembers(type, type.GetTypeInfo().BaseType);
 
 			InvokeBeforeMapSubclass(type, classMapper);
 			customizerHolder.InvokeCustomizers(type, classMapper);
@@ -709,7 +709,7 @@ namespace NHibernate.Mapping.ByCode
 		{
 			var classMapper = new JoinedSubclassMapper(type, mapping);
 			IEnumerable<MemberInfo> candidateProperties = null;
-			if (!modelInspector.IsEntity(type.BaseType))
+			if (!modelInspector.IsEntity(type.GetTypeInfo().BaseType))
 			{
 				System.Type baseType = GetEntityBaseType(type);
 				if (baseType != null)
@@ -719,7 +719,7 @@ namespace NHibernate.Mapping.ByCode
 					candidateProperties = membersProvider.GetSubEntityMembers(type, baseType);
 				}
 			}
-			candidateProperties = candidateProperties ?? membersProvider.GetSubEntityMembers(type, type.BaseType);
+			candidateProperties = candidateProperties ?? membersProvider.GetSubEntityMembers(type, type.GetTypeInfo().BaseType);
 			IEnumerable<MemberInfo> propertiesToMap =
 				candidateProperties.Where(p => modelInspector.IsPersistentProperty(p) && !modelInspector.IsPersistentId(p));
 
@@ -735,7 +735,7 @@ namespace NHibernate.Mapping.ByCode
 			System.Type analyzingType = type;
 			while (analyzingType != null && analyzingType != typeof (object))
 			{
-				analyzingType = analyzingType.BaseType;
+				analyzingType = analyzingType.GetTypeInfo().BaseType;
 				if (modelInspector.IsEntity(analyzingType))
 				{
 					return analyzingType;
@@ -1793,7 +1793,7 @@ namespace NHibernate.Mapping.ByCode
 			{
 				throw new ArgumentNullException("types");
 			}
-			foreach (var type in types.Where(x=> typeof(IConformistHoldersProvider).IsAssignableFrom(x) && !x.IsGenericTypeDefinition))
+			foreach (var type in types.Where(x=> typeof(IConformistHoldersProvider).IsAssignableFrom(x) && !x.GetTypeInfo().IsGenericTypeDefinition))
 			{
 				AddMapping(type);
 			}

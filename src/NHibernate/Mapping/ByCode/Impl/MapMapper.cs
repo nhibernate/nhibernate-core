@@ -48,7 +48,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			}
 			keyMapper = new KeyMapper(ownerType, mapping.Key);
 
-			if (KeyType.IsValueType || KeyType == typeof (string))
+			if (KeyType.GetTypeInfo().IsValueType || KeyType == typeof (string))
 			{
 				mapping.Item = new HbmMapKey {type = KeyType.GetNhTypeName()};
 			}

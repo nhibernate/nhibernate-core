@@ -10,6 +10,7 @@ using NHibernate.Proxy;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 using System.Collections.Generic;
+using System.Reflection;
 using NHibernate.Impl;
 
 namespace NHibernate.Type
@@ -502,7 +503,7 @@ namespace NHibernate.Type
 				IEntityPersister ownerPersister = GetPersister(session).OwnerEntityPersister;
 				// TODO: Fix this so it will work for non-POJO entity mode
 				System.Type ownerMappedClass = ownerPersister.GetMappedClass(session.EntityMode);
-				if (ownerMappedClass.IsAssignableFrom(keyType.ReturnedClass) && keyType.ReturnedClass.IsInstanceOfType(key))
+				if (ownerMappedClass.GetTypeInfo().IsAssignableFrom(keyType.ReturnedClass) && keyType.ReturnedClass.IsInstanceOfType(key))
 				{
 					// the key is the owning entity itself, so get the ID from the key
 					ownerId = ownerPersister.GetIdentifier(key, session.EntityMode);

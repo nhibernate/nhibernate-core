@@ -63,7 +63,7 @@ namespace NHibernate.Proxy.DynamicProxy
 					IL.Emit(ldindInstruction);
 				}
 
-				if (parameterType.IsValueType || param.ParameterType.IsByRef || parameterType.IsGenericParameter)
+				if (parameterType.GetTypeInfo().IsValueType || param.ParameterType.IsByRef || parameterType.IsGenericParameter)
 				{
 					IL.Emit(OpCodes.Box, parameterType);
 				}

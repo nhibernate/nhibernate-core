@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Reflection;
 using System.Text;
 using NHibernate.Cache;
 using NHibernate.Cache.Access;

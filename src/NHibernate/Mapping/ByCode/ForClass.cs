@@ -23,7 +23,7 @@ namespace NHibernate.Mapping.ByCode
 			{
 				return null;
 			}
-			FieldInfo member = type.GetField(fieldName, DefaultFlags) ?? GetField(type.BaseType, fieldName);
+			FieldInfo member = type.GetField(fieldName, DefaultFlags) ?? GetField(type.GetTypeInfo().BaseType, fieldName);
 			return member;
 		}
 	}
