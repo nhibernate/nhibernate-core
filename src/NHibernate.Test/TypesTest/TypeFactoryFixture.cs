@@ -93,11 +93,13 @@ namespace NHibernate.Test.TypesTest
 						TypeFactory.GetBinaryType(rnd.Next(1, 50));
 						totalCall++;
 					},
+#if FEATURE_SERIALIZATION
 				delegate(object o)
 					{
 						TypeFactory.GetSerializableType(rnd.Next(1, 50));
 						totalCall++;
 					},
+#endif
 				delegate(object o)
 					{
 						TypeFactory.GetTypeType(rnd.Next(1, 20));

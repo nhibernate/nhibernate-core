@@ -195,7 +195,11 @@ namespace NHibernate.Impl
 
 			string typename = clazz.AssemblyQualifiedName;
 			IType type = TypeFactory.HeuristicType(typename);
+#if FEATURE_SERIALIZATION
 			bool serializable = (type != null && type is SerializableType);
+#else
+			bool serializable = false;
+#endif
 			if (type == null || serializable)
 			{
 				try

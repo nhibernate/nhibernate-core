@@ -57,11 +57,13 @@ namespace NHibernate.Type
 			this.metaType = metaType;
 		}
 
+#if FEATURE_SERIALIZATION
 		/// <summary></summary>
 		internal AnyType()
 			: this(NHibernateUtil.String, NHibernateUtil.Serializable)
 		{
 		}
+#endif
 
 		public override object DeepCopy(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
 		{

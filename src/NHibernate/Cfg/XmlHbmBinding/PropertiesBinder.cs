@@ -149,10 +149,14 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				}
 				else if ((anyMapping = entityPropertyMapping as HbmAny) != null)
 				{
+#if FEATURE_SERIALIZATION
 					var value = new Any(table);
 					BindAny(anyMapping, value, true);
 					property = CreateProperty(entityPropertyMapping, className, value, inheritedMetas);
 					BindAnyProperty(anyMapping, property);
+#else
+					throw new NotImplementedException(string.Format("HbmAny not valid in .NET Core for property {0}", anyMapping.Name));
+#endif
 				}
 				else if ((nestedCompositeElementMapping = entityPropertyMapping as HbmNestedCompositeElement) != null)
 				{
