@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.Dialect;
 using NHibernate.DomainModel;
 using NHibernate.Engine;
@@ -10,6 +9,10 @@ using NHibernate.Criterion;
 using NHibernate.Mapping;
 using NUnit.Framework;
 using Single=NHibernate.DomainModel.Single;
+
+#if FEATURE_SERIALIZATION
+using System.Runtime.Serialization.Formatters.Binary;
+#endif
 
 namespace NHibernate.Test.Legacy
 {
@@ -636,6 +639,7 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
+#if FEATURE_SERIALIZATION
 		[Test]
 		public void Serialization()
 		{
@@ -724,6 +728,7 @@ namespace NHibernate.Test.Legacy
 			}
 			Assert.IsTrue(false, "serialization should have failed");
 		}
+#endif
 
 		[Test]
 		public void UpdateLazyCollections()

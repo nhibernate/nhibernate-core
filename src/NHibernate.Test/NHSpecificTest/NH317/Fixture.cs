@@ -1,3 +1,4 @@
+#if FEATURE_SERIALIZATION
 using System;
 using System.Collections;
 using System.IO;
@@ -62,3 +63,4 @@ namespace NHibernate.Test.NHSpecificTest.NH317
 		}
 	}
 }
+#endif

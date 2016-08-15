@@ -1,11 +1,14 @@
 ﻿using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
+
+#if FEATURE_SERIALIZATION
+using System.Runtime.Serialization.Formatters.Binary;
+#endif
 
 namespace NHibernate.Test.NHSpecificTest.NH3119
 {
@@ -79,6 +82,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3119
 			}
 		}
 
+#if FEATURE_SERIALIZATION
 		[Test]
 		public void PocoComponentTuplizerOfDeserializedConfiguration_Instantiate_UsesReflectonOptimizer()
 		{
@@ -101,5 +105,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3119
 				StringAssert.Contains("NHibernate.Bytecode.Lightweight.ReflectionOptimizer.CreateInstance", stackTrace);
 			}
 		}
+#endif
 	}
 }

@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿#if FEATURE_SERIALIZATION
+
+using System.IO;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.Cfg;
@@ -87,3 +89,5 @@ namespace NHibernate.Test.CfgTest
 		}
 	}
 }
+
+#endif

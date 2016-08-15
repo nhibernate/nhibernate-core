@@ -1,3 +1,5 @@
+#if FEATURE_SERIALIZATION
+
 using System.Collections.Generic;
 using NHibernate.Cache;
 
@@ -28,3 +30,5 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 		#endregion
 	}
 }
+
+#endif

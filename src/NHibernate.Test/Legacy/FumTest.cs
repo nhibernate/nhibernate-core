@@ -2,17 +2,23 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.DomainModel;
 using NHibernate.Criterion;
 using NHibernate.Type;
 using NUnit.Framework;
+
+#if FEATURE_SERIALIZATION
+using System.Runtime.Serialization.Formatters.Binary;
+#endif
 
 namespace NHibernate.Test.Legacy
 {
 	/// <summary>
 	/// FumTest handles testing Composite Ids.
 	/// </summary>
+#if !FEATURE_SERIALIZATION
+	[Ignore("Mapping Document has Any type")]
+#endif
 	[TestFixture]
 	public class FumTest : TestCase
 	{
@@ -706,6 +712,7 @@ namespace NHibernate.Test.Legacy
 
 		private ISession SpoofSerialization(ISession session)
 		{
+#if FEATURE_SERIALIZATION
 			BinaryFormatter formatter = new BinaryFormatter();
 			MemoryStream stream = new MemoryStream();
 			formatter.Serialize(stream, session);
@@ -713,6 +720,9 @@ namespace NHibernate.Test.Legacy
 			stream.Position = 0;
 
 			return (ISession) formatter.Deserialize(stream);
+#else
+			return session;
+#endif
 		}
 	}
 }

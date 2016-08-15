@@ -2,6 +2,9 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH719
 {
+#if !FEATURE_SERIALIZATION
+	[Ignore("Mapping Document has Any type")]
+#endif
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{

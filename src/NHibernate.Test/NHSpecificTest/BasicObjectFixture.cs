@@ -1,3 +1,5 @@
+#if FEATURE_SERIALIZATION
+
 using System;
 using System.Collections;
 using NHibernate.DomainModel.NHSpecific;
@@ -69,3 +71,5 @@ namespace NHibernate.Test.NHSpecificTest
 		}
 	}
 }
+
+#endif

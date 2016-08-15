@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.Util;
 using NUnit.Framework;
+
+#if FEATURE_SERIALIZATION
+using System.Runtime.Serialization.Formatters.Binary;
+#endif
 
 namespace NHibernate.Test.UtilityTest
 {
@@ -230,6 +233,7 @@ namespace NHibernate.Test.UtilityTest
 			}
 		}
 
+#if FEATURE_SERIALIZATION
 		[Test]
 		public void Serialization()
 		{
@@ -255,7 +259,7 @@ namespace NHibernate.Test.UtilityTest
 
 			Assert.AreEqual(6, index);
 		}
-
+#endif
 
 		[Test, Explicit]
 		public void ShowDiff()

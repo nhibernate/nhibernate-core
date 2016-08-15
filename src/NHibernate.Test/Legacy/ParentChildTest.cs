@@ -10,6 +10,9 @@ namespace NHibernate.Test.Legacy
 	/// <summary>
 	/// Summary description for ParentChildTest.
 	/// </summary>
+#if !FEATURE_SERIALIZATION
+	[Ignore("Mapping Document has Any type")]
+#endif
 	[TestFixture]
 	public class ParentChildTest : TestCase
 	{

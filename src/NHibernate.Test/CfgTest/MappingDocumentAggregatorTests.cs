@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Runtime.Serialization.Formatters.Binary;
 
 using NHibernate.Cfg.MappingSchema;
 
 using NUnit.Framework;
+
+#if FEATURE_SERIALIZATION
+using System.Runtime.Serialization.Formatters.Binary;
+#endif
 
 namespace NHibernate.Test.CfgTest
 {
@@ -25,6 +28,7 @@ namespace NHibernate.Test.CfgTest
 			Assert.IsTrue(results.Count > 0); // 54
 		}
 
+#if FEATURE_SERIALIZATION
 		[Test]
 		public void CanSerializeAndDeserializeDomainModelAssembly()
 		{
@@ -104,5 +108,6 @@ namespace NHibernate.Test.CfgTest
 				Console.WriteLine();
 			}
 		}
+#endif
 	}
 }

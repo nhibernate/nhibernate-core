@@ -6,8 +6,6 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using Iesi.Collections.Generic;
 using NHibernate.Connection;
@@ -19,8 +17,16 @@ using NHibernate.Type;
 using NHibernate.Util;
 using NUnit.Framework;
 
+#if FEATURE_SERIALIZATION
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+#endif
+
 namespace NHibernate.Test.Legacy
 {
+#if !FEATURE_SERIALIZATION
+	[Ignore("Mapping Document has Any type")]
+#endif
 	[TestFixture]
 	public class FooBarTest : TestCase
 	{
@@ -2821,6 +2827,7 @@ namespace NHibernate.Test.Legacy
 			txn.Commit();
 			s.Disconnect();
 
+#if FEATURE_SERIALIZATION
 			// serialize and then deserialize the session.
 			Stream stream = new MemoryStream();
 			IFormatter formatter = new BinaryFormatter();
@@ -2831,6 +2838,7 @@ namespace NHibernate.Test.Legacy
 			stream.Position = 0;
 			s = (ISession) formatter.Deserialize(stream);
 			stream.Close();
+#endif
 
 			s.Reconnect();
 			txn = s.BeginTransaction();
@@ -2869,6 +2877,7 @@ namespace NHibernate.Test.Legacy
 			txn.Commit();
 			s.Disconnect();
 
+#if FEATURE_SERIALIZATION
 			// serialize and then deserialize the session.
 			stream = new MemoryStream();
 			formatter.Serialize(stream, s);
@@ -2878,6 +2887,7 @@ namespace NHibernate.Test.Legacy
 			stream.Position = 0;
 			s = (ISession) formatter.Deserialize(stream);
 			stream.Close();
+#endif
 
 			Qux nonexistentQux = (Qux) s.Load(typeof(Qux), (long) 666); //nonexistent
 			Assert.IsNotNull(nonexistentQux, "even though it doesn't exists should still get a proxy - no db hit.");
@@ -4675,6 +4685,7 @@ namespace NHibernate.Test.Legacy
 			s.Flush();
 			s.Disconnect();
 
+#if FEATURE_SERIALIZATION
 			// serialize the session.
 			Stream stream = new MemoryStream();
 			IFormatter formatter = new BinaryFormatter();
@@ -4687,6 +4698,7 @@ namespace NHibernate.Test.Legacy
 			stream.Position = 0;
 			s = (ISession) formatter.Deserialize(stream);
 			stream.Close();
+#endif
 
 			s.Close();
 		}
@@ -5432,7 +5444,7 @@ namespace NHibernate.Test.Legacy
 			}
 		}
 
-		#region NHibernate specific tests
+#region NHibernate specific tests
 
 		[Test]
 		public void Formula()
@@ -5539,6 +5551,6 @@ namespace NHibernate.Test.Legacy
 			}
 		}
 
-		#endregion
+#endregion
 	}
 }

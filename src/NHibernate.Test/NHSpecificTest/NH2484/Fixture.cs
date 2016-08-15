@@ -1,3 +1,5 @@
+#if FEATURE_SERIALIZATION
+
 using System;
 using System.Drawing;
 using System.Reflection;
@@ -80,3 +82,5 @@ namespace NHibernate.Test.NHSpecificTest.NH2484
 		}
 	}
 }
+
+#endif
