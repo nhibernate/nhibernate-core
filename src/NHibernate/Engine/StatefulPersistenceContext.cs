@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Security;
-using System.Security.Permissions;
 using System.Text;
 using NHibernate.Collection;
 using NHibernate.Engine.Loading;

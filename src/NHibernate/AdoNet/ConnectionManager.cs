@@ -3,7 +3,6 @@ using System.Data;
 using System.Data.Common;
 using System.Runtime.Serialization;
 using System.Security;
-using System.Security.Permissions;
 
 using NHibernate.Engine;
 
