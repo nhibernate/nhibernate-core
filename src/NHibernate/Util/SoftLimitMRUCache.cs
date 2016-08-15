@@ -80,7 +80,6 @@ namespace NHibernate.Util
 
 		public object this[object key]
 		{
-			[MethodImpl(MethodImplOptions.Synchronized)]
 			get
 			{
 				lock (SyncRoot)
@@ -95,7 +94,6 @@ namespace NHibernate.Util
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void Put(object key, object value)
 		{
 			lock (SyncRoot)
@@ -107,7 +105,6 @@ namespace NHibernate.Util
 
 		public int Count
 		{
-			[MethodImpl(MethodImplOptions.Synchronized)]
 			get
 			{
 				lock (SyncRoot)
@@ -119,7 +116,6 @@ namespace NHibernate.Util
 
 		public int SoftCount
 		{
-			[MethodImpl(MethodImplOptions.Synchronized)]
 			get
 			{
 				lock (SyncRoot)
@@ -129,7 +125,6 @@ namespace NHibernate.Util
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void Clear()
 		{
 			lock (SyncRoot)

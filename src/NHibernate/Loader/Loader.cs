@@ -1292,20 +1292,22 @@ namespace NHibernate.Loader
 			throw new AssertionFailure("Auto discover types not supported in this loader");
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		private DbDataReader WrapResultSet(DbDataReader rs)
 		{
-			// synchronized to avoid multi-thread access issues; defined as method synch to avoid
-			// potential deadlock issues due to nature of code.
-			try
+			lock (this)
 			{
-				Log.Debug("Wrapping result set [" + rs + "]");
-				return new ResultSetWrapper(rs, RetreiveColumnNameToIndexCache(rs));
-			}
-			catch (Exception e)
-			{
-				Log.Info("Error wrapping result set", e);
-				return rs;
+				// synchronized to avoid multi-thread access issues; defined as method synch to avoid
+				// potential deadlock issues due to nature of code.
+				try
+				{
+					Log.Debug("Wrapping result set [" + rs + "]");
+					return new ResultSetWrapper(rs, RetreiveColumnNameToIndexCache(rs));
+				}
+				catch (Exception e)
+				{
+					Log.Info("Error wrapping result set", e);
+					return rs;
+				}
 			}
 		}
 

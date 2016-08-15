@@ -85,14 +85,16 @@ namespace NHibernate.Id
 		/// <param name="session"></param>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public object Generate(ISessionImplementor session, object obj)
 		{
-			if (_sql != null)
+			lock (this)
 			{
-				GetNext(session);
+				if (_sql != null)
+				{
+					GetNext(session);
+				}
+				return IdentifierGeneratorFactory.CreateNumber(_next++, _returnClass);
 			}
-			return IdentifierGeneratorFactory.CreateNumber(_next++, _returnClass);
 		}
 
 		private void GetNext(ISessionImplementor session)

@@ -33,6 +33,7 @@ namespace NHibernate.Type
 			PrecisionScale
 		}
 		
+		private static readonly object StaticSyncRoot = new object();
 		private static readonly string[] EmptyAliases= new string[0];
 		private static readonly char[] PrecisionScaleSplit = new[] { '(', ')', ',' };
 		private static readonly char[] LengthSplit = new[] { '(', ')' };
@@ -562,18 +563,20 @@ namespace NHibernate.Type
 		}
 
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static NullableType GetAnsiStringType(int length)
 		{
-			string key = GetKeyForLengthBased(NHibernateUtil.AnsiString.Name, length);
-
-			IType returnType;
-			if (!typeByTypeOfName.TryGetValue(key, out returnType))
+			lock (StaticSyncRoot)
 			{
-				returnType = new AnsiStringType(SqlTypeFactory.GetAnsiString(length));
-				AddToTypeOfNameWithLength(key, returnType);
+				string key = GetKeyForLengthBased(NHibernateUtil.AnsiString.Name, length);
+
+				IType returnType;
+				if (!typeByTypeOfName.TryGetValue(key, out returnType))
+				{
+					returnType = new AnsiStringType(SqlTypeFactory.GetAnsiString(length));
+					AddToTypeOfNameWithLength(key, returnType);
+				}
+				return (NullableType)returnType;
 			}
-			return (NullableType)returnType;
 		}
 
 		/// <summary>
@@ -586,52 +589,59 @@ namespace NHibernate.Type
 		/// been added to the basicNameMap with the keys <c>Byte[](length)</c> and
 		/// <c>NHibernate.Type.BinaryType(length)</c>.
 		/// </remarks>
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static NullableType GetBinaryType(int length)
 		{
-			//HACK: don't understand why SerializableType calls this with length=0
-			if (length == 0)
+			lock (StaticSyncRoot)
 			{
-				return NHibernateUtil.Binary;
-			}
+				//HACK: don't understand why SerializableType calls this with length=0
+				if (length == 0)
+				{
+					return NHibernateUtil.Binary;
+				}
 
-			string key = GetKeyForLengthBased(NHibernateUtil.Binary.Name, length);
-			IType returnType;
-			if (!typeByTypeOfName.TryGetValue(key, out returnType))
-			{
-				returnType = new BinaryType(SqlTypeFactory.GetBinary(length));
-				AddToTypeOfNameWithLength(key, returnType);
-			}
+				string key = GetKeyForLengthBased(NHibernateUtil.Binary.Name, length);
+				IType returnType;
+				if (!typeByTypeOfName.TryGetValue(key, out returnType))
+				{
+					returnType = new BinaryType(SqlTypeFactory.GetBinary(length));
+					AddToTypeOfNameWithLength(key, returnType);
+				}
 
-			return (NullableType)returnType;
+				return (NullableType)returnType;
+			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		private static NullableType GetType(NullableType defaultUnqualifiedType, int length, GetNullableTypeWithLength ctorDelegate)
 		{
-			string key = GetKeyForLengthBased(defaultUnqualifiedType.Name, length);
-			IType returnType;
-			if (!typeByTypeOfName.TryGetValue(key, out returnType))
+			lock (StaticSyncRoot)
 			{
-				returnType = ctorDelegate(length);
-				AddToTypeOfNameWithLength(key, returnType);
-			}
+				string key = GetKeyForLengthBased(defaultUnqualifiedType.Name, length);
+				IType returnType;
+				if (!typeByTypeOfName.TryGetValue(key, out returnType))
+				{
+					returnType = ctorDelegate(length);
+					AddToTypeOfNameWithLength(key, returnType);
+				}
 
-			return (NullableType)returnType;
+				return (NullableType)returnType;
+			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		private static NullableType GetType(NullableType defaultUnqualifiedType, byte precision, byte scale, NullableTypeCreatorDelegate ctor)
 		{
-			string key = GetKeyForPrecisionScaleBased(defaultUnqualifiedType.Name, precision, scale);
-			IType returnType;
-			if (!typeByTypeOfName.TryGetValue(key, out returnType))
+			lock (StaticSyncRoot)
 			{
-				returnType = ctor(SqlTypeFactory.GetSqlType(defaultUnqualifiedType.SqlType.DbType, precision, scale));
-				AddToTypeOfNameWithPrecision(key, returnType);
-			}
+				string key = GetKeyForPrecisionScaleBased(defaultUnqualifiedType.Name, precision, scale);
+				IType returnType;
+				if (!typeByTypeOfName.TryGetValue(key, out returnType))
+				{
+					returnType = ctor(SqlTypeFactory.GetSqlType(defaultUnqualifiedType.SqlType.DbType, precision, scale));
+					AddToTypeOfNameWithPrecision(key, returnType);
+				}
 
-			return (NullableType)returnType;
+				return (NullableType)returnType;
+				
+			}
 		}
 
 #if FEATURE_SERIALIZATION
@@ -654,80 +664,91 @@ namespace NHibernate.Type
 		/// with the default length, those keys will also be added.
 		/// </para>
 		/// </remarks>
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static NullableType GetSerializableType(System.Type serializableType)
 		{
-			string key = serializableType.AssemblyQualifiedName;
-
-			IType returnType;
-			if (!typeByTypeOfName.TryGetValue(key, out returnType))
+			lock (StaticSyncRoot)
 			{
-				returnType = new SerializableType(serializableType);
-				AddToTypeOfName(key, returnType);
-			}
+				string key = serializableType.AssemblyQualifiedName;
 
-			return (NullableType)returnType;
+				IType returnType;
+				if (!typeByTypeOfName.TryGetValue(key, out returnType))
+				{
+					returnType = new SerializableType(serializableType);
+					AddToTypeOfName(key, returnType);
+				}
+
+				return (NullableType)returnType;
+				
+			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static NullableType GetSerializableType(System.Type serializableType, int length)
 		{
-			string key = GetKeyForLengthBased(serializableType.AssemblyQualifiedName, length);
-
-			IType returnType;
-			if (!typeByTypeOfName.TryGetValue(key, out returnType))
+			lock (StaticSyncRoot)
 			{
-				returnType = new SerializableType(serializableType, SqlTypeFactory.GetBinary(length));
-				AddToTypeOfNameWithLength(key, returnType);
-			}
+				string key = GetKeyForLengthBased(serializableType.AssemblyQualifiedName, length);
 
-			return (NullableType)returnType;
+				IType returnType;
+				if (!typeByTypeOfName.TryGetValue(key, out returnType))
+				{
+					returnType = new SerializableType(serializableType, SqlTypeFactory.GetBinary(length));
+					AddToTypeOfNameWithLength(key, returnType);
+				}
+
+				return (NullableType)returnType;
+			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static NullableType GetSerializableType(int length)
 		{
-			string key = GetKeyForLengthBased(NHibernateUtil.Serializable.Name, length);
-
-			IType returnType;
-			if (!typeByTypeOfName.TryGetValue(key, out returnType))
+			lock (StaticSyncRoot)
 			{
-				returnType = new SerializableType(typeof(object), SqlTypeFactory.GetBinary(length));
-				AddToTypeOfNameWithLength(key, returnType);
-			}
+				string key = GetKeyForLengthBased(NHibernateUtil.Serializable.Name, length);
 
-			return (NullableType)returnType;
+				IType returnType;
+				if (!typeByTypeOfName.TryGetValue(key, out returnType))
+				{
+					returnType = new SerializableType(typeof(object), SqlTypeFactory.GetBinary(length));
+					AddToTypeOfNameWithLength(key, returnType);
+				}
+
+				return (NullableType)returnType;
+			}
 		}
 #endif
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static NullableType GetStringType(int length)
 		{
-			string key = GetKeyForLengthBased(NHibernateUtil.String.Name, length);
-
-			IType returnType;
-			if (!typeByTypeOfName.TryGetValue(key, out returnType))
+			lock (StaticSyncRoot)
 			{
-				returnType = new StringType(SqlTypeFactory.GetString(length));
-				AddToTypeOfNameWithLength(key, returnType);
-			}
+				string key = GetKeyForLengthBased(NHibernateUtil.String.Name, length);
 
-			return (NullableType)returnType;
+				IType returnType;
+				if (!typeByTypeOfName.TryGetValue(key, out returnType))
+				{
+					returnType = new StringType(SqlTypeFactory.GetString(length));
+					AddToTypeOfNameWithLength(key, returnType);
+				}
+
+				return (NullableType)returnType;
+			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static NullableType GetTypeType(int length)
 		{
-			string key = GetKeyForLengthBased(typeof(TypeType).FullName, length);
-
-			IType returnType;
-			if (!typeByTypeOfName.TryGetValue(key, out returnType))
+			lock (StaticSyncRoot)
 			{
-				returnType = new TypeType(SqlTypeFactory.GetString(length));
-				AddToTypeOfNameWithLength(key, returnType);
-			}
+				string key = GetKeyForLengthBased(typeof(TypeType).FullName, length);
 
-			return (NullableType)returnType;
+				IType returnType;
+				if (!typeByTypeOfName.TryGetValue(key, out returnType))
+				{
+					returnType = new TypeType(SqlTypeFactory.GetString(length));
+					AddToTypeOfNameWithLength(key, returnType);
+				}
+
+				return (NullableType)returnType;
+			}
 		}
 
 		// Association Types
