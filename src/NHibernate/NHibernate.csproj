@@ -41,7 +41,7 @@
     <OutputPath>bin\Debug-2.0\</OutputPath>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\Debug-2.0\</IntermediateOutputPath>
-    <DefineConstants>NET_4_0,FEATURE_SERIALIZATION</DefineConstants>
+    <DefineConstants>NET_4_0,FEATURE_SERIALIZATION,FEATURE_LEGACY_REFLECTION_API</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug-2.0\NHibernate.XML</DocumentationFile>
@@ -56,7 +56,7 @@
     <OutputPath>bin\Release-2.0\</OutputPath>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\Release-2.0\</IntermediateOutputPath>
-    <DefineConstants>TRACE;NET_4_0,FEATURE_SERIALIZATION</DefineConstants>
+    <DefineConstants>TRACE;NET_4_0,FEATURE_SERIALIZATION,FEATURE_LEGACY_REFLECTION_API</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoWarn>1591;3001;3002;3003;3004;3005</NoWarn>
@@ -73,7 +73,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug-nofeatures|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Debug-2.0\</OutputPath>
-    <DefineConstants>NET_4_0</DefineConstants>
+    <DefineConstants>NET_4_0,FEATURE_LEGACY_REFLECTION_API</DefineConstants>
     <DocumentationFile>bin\Debug-2.0\NHibernate.XML</DocumentationFile>
     <NoWarn>1591;3001;3002;3003;3004;3005</NoWarn>
     <DebugType>full</DebugType>
@@ -152,6 +152,14 @@
     <Compile Include="Collection\IPersistentCollection.cs" />
     <Compile Include="Collection\Generic\SetHelpers\ISetSnapshot.cs" />
     <Compile Include="Collection\Generic\SetHelpers\SetSnapShot.cs" />
+    <Compile Include="Compat\CustomAttributeExtensions.cs" />
+    <Compile Include="Compat\DesignerCategoryAttribute.cs" />
+    <Compile Include="Compat\ICloneable.cs" />
+    <Compile Include="Compat\IntrospectionExtensions.cs" />
+    <Compile Include="Compat\InvalidExpressionException.cs" />
+    <Compile Include="Compat\NonSerializedAttribute.cs" />
+    <Compile Include="Compat\RuntimeReflectionExtensions.cs" />
+    <Compile Include="Compat\SerializableAttribute.cs" />
     <Compile Include="Connection\ConnectionProvider.cs" />
     <Compile Include="Connection\ConnectionProviderFactory.cs" />
     <Compile Include="Connection\DriverConnectionProvider.cs" />

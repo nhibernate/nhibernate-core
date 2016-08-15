@@ -69,7 +69,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug-nofeatures|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Debug-2.0\</OutputPath>
-    <DefineConstants>NET_4_0</DefineConstants>
+    <DefineConstants>NET_4_0,FEATURE_LEGACY_REFLECTION_API</DefineConstants>
     <NoWarn>3001;3002;3003;3004;3005</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
