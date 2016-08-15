@@ -1,5 +1,5 @@
 using System;
-using System.Runtime.Serialization;
+using System.Globalization;
 using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode.Impl
@@ -29,7 +29,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			}
 		}
 
-		#region Implementation of IColumnMapper
+#region Implementation of IColumnMapper
 
 		public void Name(string name)
 		{
@@ -95,8 +95,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Default(object defaultValue)
 		{
-			var formatterConverter = new FormatterConverter();
-			mapping.@default = defaultValue == null ? "null" : formatterConverter.ToString(defaultValue);
+			mapping.@default = defaultValue == null ? "null" : Convert.ToString(defaultValue, CultureInfo.InvariantCulture);
 		}
 
 		#endregion
