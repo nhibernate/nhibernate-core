@@ -1,5 +1,8 @@
 using System;
+
+#if FEATURE_SERIALIZATION
 using System.Runtime.Serialization;
+#endif
 
 namespace NHibernate
 {
@@ -10,9 +13,11 @@ namespace NHibernate
 		{
 		}
 
+#if FEATURE_SERIALIZATION
 		protected StaleStateException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
 		}
+#endif
 	}
 }

@@ -1,5 +1,8 @@
 using System;
+
+#if FEATURE_SERIALIZATION
 using System.Runtime.Serialization;
+#endif
 
 namespace NHibernate.Classic
 {
@@ -50,6 +53,7 @@ namespace NHibernate.Classic
 		{
 		}
 
+#if FEATURE_SERIALIZATION
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ValidationFailure"/> class
 		/// with serialized data.
@@ -64,5 +68,6 @@ namespace NHibernate.Classic
 		protected ValidationFailure(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
+#endif
 	}
 }

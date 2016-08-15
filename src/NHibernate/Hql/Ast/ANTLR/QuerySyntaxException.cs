@@ -1,6 +1,9 @@
 ﻿using System;
-using System.Runtime.Serialization;
 using Antlr.Runtime;
+
+#if FEATURE_SERIALIZATION
+using System.Runtime.Serialization;
+#endif
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
@@ -14,7 +17,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 		public QuerySyntaxException(string message) : base(message) {}
 		public QuerySyntaxException(string message, Exception inner) : base(message, inner) {}
 
+#if FEATURE_SERIALIZATION
 		protected QuerySyntaxException(SerializationInfo info, StreamingContext context) : base(info, context) {}
+#endif
 
 		public static QuerySyntaxException Convert(RecognitionException e)
 		{

@@ -1,5 +1,8 @@
 using System;
+
+#if FEATURE_SERIALIZATION
 using System.Runtime.Serialization;
+#endif
 
 namespace NHibernate.Bytecode
 {
@@ -13,8 +16,11 @@ namespace NHibernate.Bytecode
 			this.typeName = typeName;
 		}
 
+#if FEATURE_SERIALIZATION
 		protected UnableToLoadProxyFactoryFactoryException(SerializationInfo info,
 		                      StreamingContext context) : base(info, context) {}
+#endif
+
 		public override string Message
 		{
 			get

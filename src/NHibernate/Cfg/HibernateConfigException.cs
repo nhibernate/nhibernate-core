@@ -1,5 +1,8 @@
 using System;
+
+#if FEATURE_SERIALIZATION
 using System.Runtime.Serialization;
+#endif
 
 namespace NHibernate.Cfg
 {
@@ -57,6 +60,7 @@ namespace NHibernate.Cfg
 		{
 		}
 
+#if FEATURE_SERIALIZATION
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HibernateConfigException"/> class
 		/// with serialized data.
@@ -72,5 +76,6 @@ namespace NHibernate.Cfg
 			: base(info, context)
 		{
 		}
+#endif
 	}
 }

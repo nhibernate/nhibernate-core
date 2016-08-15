@@ -1,6 +1,9 @@
 using System;
+
+#if FEATURE_SERIALIZATION
 using System.Runtime.Serialization;
 using System.Security;
+#endif
 
 namespace NHibernate.AdoNet
 {
@@ -17,6 +20,7 @@ namespace NHibernate.AdoNet
 			this.actualRowCount = actualRowCount;
 		}
 
+#if FEATURE_SERIALIZATION
 		protected TooManyRowsAffectedException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
@@ -31,6 +35,7 @@ namespace NHibernate.AdoNet
 			info.AddValue("expectedRowCount", expectedRowCount);
 			info.AddValue("actualRowCount", actualRowCount);
 		}
+#endif
 
 		public int ExpectedRowCount
 		{

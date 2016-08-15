@@ -1,5 +1,8 @@
 using System;
+
+#if FEATURE_SERIALIZATION
 using System.Runtime.Serialization;
+#endif
 
 
 namespace NHibernate
@@ -63,6 +66,7 @@ namespace NHibernate
 			LoggerProvider.LoggerFor(typeof(LazyInitializationException)).Error(message, this);
 		}
 
+#if FEATURE_SERIALIZATION
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LazyInitializationException"/> class
 		/// with serialized data.
@@ -77,5 +81,6 @@ namespace NHibernate
 		protected LazyInitializationException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
+#endif
 	}
 }

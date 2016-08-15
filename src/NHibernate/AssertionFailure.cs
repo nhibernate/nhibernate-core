@@ -1,5 +1,8 @@
 using System;
+
+#if FEATURE_SERIALIZATION
 using System.Runtime.Serialization;
+#endif
 
 
 namespace NHibernate
@@ -43,6 +46,7 @@ namespace NHibernate
 			LoggerProvider.LoggerFor(typeof(AssertionFailure)).Error(DefaultMessage, innerException);
 		}
 
+#if FEATURE_SERIALIZATION
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssertionFailure"/> class.
 		/// </summary>
@@ -56,5 +60,6 @@ namespace NHibernate
 		protected AssertionFailure(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
+#endif
 	}
 }

@@ -41,7 +41,7 @@
     <OutputPath>bin\Debug-2.0\</OutputPath>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\Debug-2.0\</IntermediateOutputPath>
-    <DefineConstants>NET_4_0</DefineConstants>
+    <DefineConstants>NET_4_0,FEATURE_SERIALIZATION</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug-2.0\NHibernate.XML</DocumentationFile>
@@ -56,7 +56,7 @@
     <OutputPath>bin\Release-2.0\</OutputPath>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\Release-2.0\</IntermediateOutputPath>
-    <DefineConstants>TRACE;NET_4_0</DefineConstants>
+    <DefineConstants>TRACE;NET_4_0,FEATURE_SERIALIZATION</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoWarn>1591;3001;3002;3003;3004;3005</NoWarn>

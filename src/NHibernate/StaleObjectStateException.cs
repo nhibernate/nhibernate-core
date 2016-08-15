@@ -1,7 +1,10 @@
 using System;
+using NHibernate.Impl;
+
+#if FEATURE_SERIALIZATION
 using System.Runtime.Serialization;
 using System.Security;
-using NHibernate.Impl;
+#endif
 
 namespace NHibernate
 {
@@ -56,6 +59,7 @@ namespace NHibernate
 			}
 		}
 
+#if FEATURE_SERIALIZATION
 		#region ISerializable Members
 
 		/// <summary>
@@ -95,5 +99,6 @@ namespace NHibernate
 		}
 
 		#endregion
+#endif
 	}
 }

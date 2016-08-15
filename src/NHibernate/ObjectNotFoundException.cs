@@ -1,5 +1,8 @@
 using System;
+
+#if FEATURE_SERIALIZATION
 using System.Runtime.Serialization;
+#endif
 
 namespace NHibernate
 {
@@ -25,6 +28,7 @@ namespace NHibernate
 
 		public ObjectNotFoundException(object identifier, string entityName) : base(identifier, entityName) {}
 
+#if FEATURE_SERIALIZATION
 		#region ISerializable Members
 
 		/// <summary>
@@ -43,5 +47,6 @@ namespace NHibernate
 		}
 
 		#endregion
+#endif
 	}
 }
