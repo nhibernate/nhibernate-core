@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Security;
 using System.Text;
 using System.Xml;
 using System.Xml.Schema;
@@ -29,7 +28,11 @@ using NHibernate.Tool.hbm2ddl;
 using NHibernate.Type;
 using NHibernate.Util;
 using Array = System.Array;
+
+#if FEATURE_SERIALIZATION
 using System.Runtime.Serialization;
+using System.Security;
+#endif
 
 namespace NHibernate.Cfg
 {
@@ -49,7 +52,10 @@ namespace NHibernate.Cfg
 	/// </para>
 	/// </remarks>
 	[Serializable]
-	public class Configuration : ISerializable
+	public class Configuration
+#if FEATURE_SERIALIZATION
+		: ISerializable
+#endif
 	{
 		/// <summary>Default name for hibernate configuration file.</summary>
 		public const string DefaultHibernateCfgFileName = "hibernate.cfg.xml";
@@ -80,6 +86,7 @@ namespace NHibernate.Cfg
 
 		protected internal SettingsFactory settingsFactory;
 
+#if FEATURE_SERIALIZATION
 		#region ISerializable Members
 		public Configuration(SerializationInfo info, StreamingContext context)
 		{
@@ -156,6 +163,7 @@ namespace NHibernate.Cfg
 			info.AddValue("filtersSecondPasses", filtersSecondPasses);
 		}
 		#endregion
+#endif
 
 		/// <summary>
 		/// Clear the internal state of the <see cref="Configuration"/> object.

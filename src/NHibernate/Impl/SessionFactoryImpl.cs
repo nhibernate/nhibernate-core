@@ -3,8 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
-using System.Runtime.Serialization;
-using System.Security;
 using System.Text;
 using NHibernate.Cache;
 using NHibernate.Cfg;
@@ -32,6 +30,11 @@ using NHibernate.Util;
 using Environment = NHibernate.Cfg.Environment;
 using HibernateDialect = NHibernate.Dialect.Dialect;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
+
+#if FEATURE_SERIALIZATION
+using System.Runtime.Serialization;
+using System.Security;
+#endif
 
 namespace NHibernate.Impl
 {
@@ -72,7 +75,11 @@ namespace NHibernate.Impl
 	/// <seealso cref="NHibernate.Persister.Entity.IEntityPersister"/>
 	/// <seealso cref="NHibernate.Persister.Collection.ICollectionPersister"/>
 	[Serializable]
-	public sealed class SessionFactoryImpl : ISessionFactoryImplementor, IObjectReference
+	public sealed class SessionFactoryImpl 
+		: ISessionFactoryImplementor
+#if FEATURE_SERIALIZATION
+		, IObjectReference
+#endif
 	{
 		#region Default entity not found delegate
 
@@ -421,6 +428,7 @@ namespace NHibernate.Impl
 			get { return eventListeners; }
 		}
 
+#if FEATURE_SERIALIZATION
 		#region IObjectReference Members
 
 		[SecurityCritical]
@@ -457,6 +465,7 @@ namespace NHibernate.Impl
 		}
 
 		#endregion
+#endif
 
 		#region ISessionFactoryImplementor Members
 

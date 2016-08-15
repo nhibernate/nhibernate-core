@@ -11,7 +11,10 @@ using NHibernate.Properties;
 using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
+
+#if FEATURE_SERIALIZATION
 using System.Runtime.Serialization;
+#endif
 
 namespace NHibernate.Tuple.Entity
 {
@@ -30,6 +33,7 @@ namespace NHibernate.Tuple.Entity
 		private IReflectionOptimizer optimizer;
 		private readonly IProxyValidator proxyValidator;
 
+#if FEATURE_SERIALIZATION
 		[OnDeserialized]
 		internal void OnDeserialized(StreamingContext context)
 		{
@@ -43,6 +47,8 @@ namespace NHibernate.Tuple.Entity
 
 			ClearOptimizerWhenUsingCustomAccessors();
 		}
+#endif
+
 		protected void SetReflectionOptimizer()
 		{
 			if (Cfg.Environment.UseReflectionOptimizer)

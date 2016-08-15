@@ -1,15 +1,21 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using System.Security;
 using NHibernate.Util;
+
+#if FEATURE_SERIALIZATION
+using System.Runtime.Serialization;
+#endif
 
 namespace NHibernate.Engine
 {
 	/// <summary> A contract for defining the aspects of cascading various persistence actions. </summary>
 	/// <seealso cref="CascadingAction"/>
 	[Serializable]
-	public abstract class CascadeStyle : ISerializable
+	public abstract class CascadeStyle
+#if FEATURE_SERIALIZATION
+		: ISerializable
+#endif
 	{
 		/// <summary> package-protected constructor</summary>
 		internal CascadeStyle() {}
@@ -93,6 +99,7 @@ namespace NHibernate.Engine
 				return style;
 		}
 
+#if FEATURE_SERIALIZATION
 		[SecurityCritical]
 		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
 		{
@@ -100,7 +107,9 @@ namespace NHibernate.Engine
 			info.SetType(typeof(CascadeStyleSingletonReference));
 			info.AddValue("cascadestyle", alias, typeof(string));
 		}
+#endif
 
+#if FEATURE_SERIALIZATION
 		[Serializable]
 		private sealed class CascadeStyleSingletonReference : IObjectReference, ISerializable
 		{
@@ -124,6 +133,7 @@ namespace NHibernate.Engine
 				return GetCascadeStyle(_cascadeStyle);
 			}
 		}
+#endif
 
 		#endregion
 
@@ -253,7 +263,11 @@ namespace NHibernate.Engine
 		}
 
 		[Serializable]
-		public sealed class MultipleCascadeStyle : CascadeStyle, ISerializable
+		public sealed class MultipleCascadeStyle 
+			: CascadeStyle
+#if FEATURE_SERIALIZATION
+			, ISerializable
+#endif
 		{
 			private readonly CascadeStyle[] styles;
 			public MultipleCascadeStyle(CascadeStyle[] styles)
@@ -261,6 +275,7 @@ namespace NHibernate.Engine
 				this.styles = styles;
 			}
 
+#if FEATURE_SERIALIZATION
 			private MultipleCascadeStyle(SerializationInfo info, StreamingContext context)
 			{
 				styles = (CascadeStyle[])info.GetValue("styles", typeof(CascadeStyle[]));
@@ -271,6 +286,7 @@ namespace NHibernate.Engine
 			{
 				info.AddValue("styles", styles);
 			}
+#endif
 
 			public override bool DoCascade(CascadingAction action)
 			{
