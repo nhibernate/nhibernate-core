@@ -669,30 +669,25 @@ namespace NHibernate.Cfg
 		{
 			string debugName = path;
 			log.Info("Mapping resource: " + debugName);
-			Stream rsrc = assembly.GetManifestResourceStream(path);
-			if (rsrc == null)
+			using (Stream rsrc = assembly.GetManifestResourceStream(path))
 			{
-				LogAndThrow(new MappingException("Resource not found: " + debugName));
-			}
-
-			try
-			{
-				return AddInputStream(rsrc, debugName);
-			}
-			catch (MappingException)
-			{
-				throw;
-			}
-			catch (Exception e)
-			{
-				LogAndThrow(new MappingException("Could not configure datastore from resource " + debugName, e));
-				return this; // To please the compiler
-			}
-			finally
-			{
-				if (rsrc != null)
+				if (rsrc == null)
 				{
-					rsrc.Close();
+					LogAndThrow(new MappingException("Resource not found: " + debugName));
+				}
+
+				try
+				{
+					return AddInputStream(rsrc, debugName);
+				}
+				catch (MappingException)
+				{
+					throw;
+				}
+				catch (Exception e)
+				{
+					LogAndThrow(new MappingException("Could not configure datastore from resource " + debugName, e));
+					return this; // To please the compiler
 				}
 			}
 		}
@@ -1503,10 +1498,8 @@ namespace NHibernate.Cfg
 				throw new HibernateException("Could not configure NHibernate.", new ArgumentNullException("resourceName"));
 			}
 
-			Stream stream = null;
-			try
+			using (Stream stream = assembly.GetManifestResourceStream(resourceName))
 			{
-				stream = assembly.GetManifestResourceStream(resourceName);
 				if (stream == null)
 				{
 					// resource does not exist - throw appropriate exception 
@@ -1515,13 +1508,6 @@ namespace NHibernate.Cfg
 				}
 
 				return Configure(new XmlTextReader(stream));
-			}
-			finally
-			{
-				if (stream != null)
-				{
-					stream.Close();
-				}
 			}
 		}
 

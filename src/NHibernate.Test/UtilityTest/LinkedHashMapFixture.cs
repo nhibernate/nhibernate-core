@@ -240,13 +240,15 @@ namespace NHibernate.Test.UtilityTest
 			IDictionary<string, Player> lhm = new LinkedHashMap<string, Player>();
 			Fill(lhm);
 
-			MemoryStream stream = new MemoryStream();
-			BinaryFormatter f = new BinaryFormatter();
-			f.Serialize(stream, lhm);
-			stream.Position = 0;
+			LinkedHashMap<string, Player> dlhm;
+			using (MemoryStream stream = new MemoryStream())
+			{
+				BinaryFormatter f = new BinaryFormatter();
+				f.Serialize(stream, lhm);
+				stream.Position = 0;
 
-			LinkedHashMap<string, Player> dlhm = (LinkedHashMap<string, Player>)f.Deserialize(stream);
-			stream.Close();
+				dlhm = (LinkedHashMap<string, Player>) f.Deserialize(stream);
+			}
 
 			Assert.AreEqual(6, dlhm.Count);
 			int index = 0;

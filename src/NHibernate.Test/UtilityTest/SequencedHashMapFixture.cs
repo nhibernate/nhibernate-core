@@ -426,13 +426,15 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void Serialize()
 		{
-			MemoryStream stream = new MemoryStream();
-			BinaryFormatter f = new BinaryFormatter();
-			f.Serialize(stream, _shm);
-			stream.Position = 0;
+			SequencedHashMap shm;
+			using (MemoryStream stream = new MemoryStream())
+			{
+				BinaryFormatter f = new BinaryFormatter();
+				f.Serialize(stream, _shm);
+				stream.Position = 0;
 
-			SequencedHashMap shm = (SequencedHashMap) f.Deserialize(stream);
-			stream.Close();
+				shm = (SequencedHashMap) f.Deserialize(stream);
+			}
 
 			Assert.AreEqual(3, shm.Count);
 			int index = 0;

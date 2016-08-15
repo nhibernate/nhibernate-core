@@ -662,14 +662,15 @@ namespace NHibernate.Test.Legacy
 			}
 			s.Flush();
 			s.Disconnect();
-			MemoryStream stream = new MemoryStream();
 			BinaryFormatter f = new BinaryFormatter();
-			f.Serialize(stream, s);
-			stream.Position = 0;
-			Console.WriteLine(stream.Length);
+			using (MemoryStream stream = new MemoryStream())
+			{
+				f.Serialize(stream, s);
+				stream.Position = 0;
+				Console.WriteLine(stream.Length);
 
-			s = (ISession) f.Deserialize(stream);
-			stream.Close();
+				s = (ISession) f.Deserialize(stream);
+			}
 
 			s.Reconnect();
 			Master m2 = (Master) s.Load(typeof(Master), mid);
@@ -696,12 +697,13 @@ namespace NHibernate.Test.Legacy
 			object mid2 = s.Save(new Master());
 			s.Flush();
 			s.Disconnect();
-			stream = new MemoryStream();
-			f.Serialize(stream, s);
-			stream.Position = 0;
+			using (MemoryStream stream = new MemoryStream())
+			{
+				f.Serialize(stream, s);
+				stream.Position = 0;
 
-			s = (ISession) f.Deserialize(stream);
-			stream.Close();
+				s = (ISession) f.Deserialize(stream);
+			}
 
 			s.Reconnect();
 			s.Delete(s.Load(typeof(Master), mid));
@@ -711,20 +713,18 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			string db = s.Connection.Database; //force session to grab a connection
-			try
+			using (MemoryStream stream = new MemoryStream())
 			{
-				stream = new MemoryStream();
-				f.Serialize(stream, s);
-			}
-			catch (Exception e)
-			{
-				Assert.IsTrue(e is InvalidOperationException, "illegal state");
+				try
+				{
+					f.Serialize(stream, s);
+				}
+				catch (Exception e)
+				{
+					Assert.IsTrue(e is InvalidOperationException, "illegal state");
 				s.Close();
-				return;
-			}
-			finally
-			{
-				stream.Close();
+					return;
+				}
 			}
 			Assert.IsTrue(false, "serialization should have failed");
 		}

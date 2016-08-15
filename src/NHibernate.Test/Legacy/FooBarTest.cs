@@ -2829,15 +2829,16 @@ namespace NHibernate.Test.Legacy
 
 #if FEATURE_SERIALIZATION
 			// serialize and then deserialize the session.
-			Stream stream = new MemoryStream();
 			IFormatter formatter = new BinaryFormatter();
-			formatter.Serialize(stream, s);
+			using (Stream stream = new MemoryStream())
+			{
+				formatter.Serialize(stream, s);
 
-			s.Close();
+				s.Close();
 
-			stream.Position = 0;
-			s = (ISession) formatter.Deserialize(stream);
-			stream.Close();
+				stream.Position = 0;
+				s = (ISession) formatter.Deserialize(stream);
+			}
 #endif
 
 			s.Reconnect();
@@ -2879,14 +2880,15 @@ namespace NHibernate.Test.Legacy
 
 #if FEATURE_SERIALIZATION
 			// serialize and then deserialize the session.
-			stream = new MemoryStream();
-			formatter.Serialize(stream, s);
+			using (MemoryStream stream = new MemoryStream())
+			{
+				formatter.Serialize(stream, s);
 
-			s.Close();
+				s.Close();
 
-			stream.Position = 0;
-			s = (ISession) formatter.Deserialize(stream);
-			stream.Close();
+				stream.Position = 0;
+				s = (ISession) formatter.Deserialize(stream);
+			}
 #endif
 
 			Qux nonexistentQux = (Qux) s.Load(typeof(Qux), (long) 666); //nonexistent
@@ -4687,17 +4689,18 @@ namespace NHibernate.Test.Legacy
 
 #if FEATURE_SERIALIZATION
 			// serialize the session.
-			Stream stream = new MemoryStream();
-			IFormatter formatter = new BinaryFormatter();
-			formatter.Serialize(stream, s);
+			using (Stream stream = new MemoryStream())
+			{
+				IFormatter formatter = new BinaryFormatter();
+				formatter.Serialize(stream, s);
 
-			// close the original session
-			s.Close();
+				// close the original session
+				s.Close();
 
-			// deserialize the session
-			stream.Position = 0;
-			s = (ISession) formatter.Deserialize(stream);
-			stream.Close();
+				// deserialize the session
+				stream.Position = 0;
+				s = (ISession) formatter.Deserialize(stream);
+			}
 #endif
 
 			s.Close();
