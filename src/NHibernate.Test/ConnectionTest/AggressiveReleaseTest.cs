@@ -43,6 +43,7 @@ namespace NHibernate.Test.ConnectionTest
 
 		// Some additional tests specifically for the aggressive-Release functionality...
 
+#if FEATURE_SERIALIZATION
 		[Test]
 		public void SerializationOnAfterStatementAggressiveRelease()
 		{
@@ -103,6 +104,7 @@ namespace NHibernate.Test.ConnectionTest
 			Release(s);
 			Done();
 		}
+#endif
 
 		[Test]
 		public void QueryIteration()

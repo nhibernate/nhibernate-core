@@ -1,3 +1,5 @@
+#if FEATURE_SERIALIZATION
+
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
@@ -29,3 +31,5 @@ namespace NHibernate.Test
 		}
 	}
 }
+
+#endif

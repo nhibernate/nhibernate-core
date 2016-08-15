@@ -452,6 +452,7 @@ namespace NHibernate.Test.Criteria
 			s.Close();
 		}
 
+#if FEATURE_SERIALIZATION
 		[Test]
 		public void DetachedCriteriaTest()
 		{
@@ -489,6 +490,7 @@ namespace NHibernate.Test.Criteria
 			t.Commit();
 			session.Close();
 		}
+#endif
 
 		[Test]
 		public void SubqueryPaginationOnlyWithFirst()
