@@ -394,7 +394,13 @@ namespace NHibernate.Cfg
 		private static ITransactionFactory CreateTransactionFactory(IDictionary<string, string> properties)
 		{
 			string className = PropertiesHelper.GetString(
-				Environment.TransactionStrategy, properties, typeof(AdoNetWithDistributedTransactionFactory).FullName);
+				Environment.TransactionStrategy, properties
+#if FEATURE_SYSTEM_TRANSACTIONS
+				, typeof(AdoNetWithDistributedTransactionFactory).FullName
+#else
+				, typeof(AdoNetTransactionFactory).FullName // No distributed transactions for .NET Core
+#endif
+				);
 			log.Info("Transaction factory: " + className);
 
 			try

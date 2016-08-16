@@ -1,3 +1,5 @@
+#if FEATURE_SYSTEM_TRANSACTIONS
+
 using System;
 using System.Collections;
 using System.Transactions;
@@ -182,3 +184,5 @@ namespace NHibernate.Transaction
 		}
 	}
 }
+
+#endif

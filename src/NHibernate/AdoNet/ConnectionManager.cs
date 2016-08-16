@@ -75,7 +75,11 @@ namespace NHibernate.AdoNet
 			{
 				if (transaction != null && transaction.IsActive)
 					return true;
+#if FEATURE_SYSTEM_TRANSACTIONS
 				return Factory.TransactionFactory.IsInDistributedActiveTransaction(session);
+#else
+				return false;
+#endif
 			}
 		}
 
