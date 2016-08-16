@@ -69,7 +69,12 @@ namespace NHibernate.Cfg.ConfigurationSchema
 
 		private XmlReaderSettings GetSettings()
 		{
-			XmlReaderSettings xmlrs = (new XmlSchemas()).CreateConfigReaderSettings();
+			XmlReaderSettings xmlrs =
+#if FEATURE_XML_SCHEMAS
+				(new XmlSchemas()).CreateConfigReaderSettings();
+#else
+				new XmlReaderSettings();
+#endif
 			return xmlrs;
 		}
 

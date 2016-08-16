@@ -1242,8 +1242,10 @@ namespace NHibernate.Cfg
 			Environment.VerifyProperties(properties);
 			Settings settings = BuildSettings();
 
+#if FEATURE_XML_SCHEMAS
 			// Ok, don't need schemas anymore, so free them
 			Schemas = null;
+#endif
 
 			return new SessionFactoryImpl(this, mapping, settings, GetInitializedEventListeners());
 		}
@@ -1769,8 +1771,16 @@ namespace NHibernate.Cfg
 		/// <returns>NamedXmlDocument containing the validated XmlDocument built from the XmlReader.</returns>
 		public NamedXmlDocument LoadMappingDocument(XmlReader hbmReader, string name)
 		{
-			XmlReaderSettings settings = Schemas.CreateMappingReaderSettings();
+			XmlReaderSettings settings = 
+#if FEATURE_XML_SCHEMAS
+				Schemas.CreateMappingReaderSettings();
+#else
+				new XmlReaderSettings();
+#endif
+
+#if FEATURE_XML_VALIDATIONEVENTHANDLER
 			settings.ValidationEventHandler += ValidationHandler;
+#endif
 
 			using (XmlReader reader = XmlReader.Create(hbmReader, settings))
 			{
@@ -1841,12 +1851,14 @@ namespace NHibernate.Cfg
 			}
 		}
 
+#if FEATURE_XML_VALIDATIONEVENTHANDLER
 		private void ValidationHandler(object o, ValidationEventArgs args)
 		{
 			string message = string.Format("{0}({1},{2}): XML validation error: {3}", currentDocumentName,
 										   args.Exception.LineNumber, args.Exception.LinePosition, args.Exception.Message);
 			LogAndThrow(new MappingException(message, args.Exception));
 		}
+#endif
 
 		protected virtual string GetDefaultConfigurationFilePath()
 		{
@@ -1862,6 +1874,7 @@ namespace NHibernate.Cfg
 
 		#endregion
 
+#if FEATURE_XML_SCHEMAS
 		private XmlSchemas schemas;
 
 		private XmlSchemas Schemas
@@ -1869,6 +1882,7 @@ namespace NHibernate.Cfg
 			get { return schemas = schemas ?? new XmlSchemas(); }
 			set { schemas = value; }
 		}
+#endif
 
 		/// <summary>
 		/// Set or clear listener for a given <see cref="ListenerType"/>.
