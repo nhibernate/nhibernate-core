@@ -1,3 +1,5 @@
+#if FEATURE_ODBC_OLEDB
+
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -84,3 +86,5 @@ namespace NHibernate.Driver
 		}
 	}
 }
+
+#endif
