@@ -1239,14 +1239,18 @@ namespace NHibernate.Impl
 			{
 				case null:
 					return null;
+#if FEATURE_REMOTING
 				case "call":
 					return new CallSessionContext(this);
+#endif
 				case "thread_static":
 					return new ThreadStaticSessionContext(this);
 				case "web":
 					return new WebSessionContext(this);
+#if FEATURE_REMOTING
 				case "wcf_operation":
 					return new WcfOperationSessionContext(this);
+#endif
 			}
 
 			try
