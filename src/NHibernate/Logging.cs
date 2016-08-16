@@ -1,10 +1,13 @@
 using System;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Util;
+
+#if FEATURE_SYSTEM_CONFIGURATION
+using System.Configuration;
+#endif
 
 namespace NHibernate
 {
@@ -79,9 +82,11 @@ namespace NHibernate
 
 		private static string GetNhibernateLoggerClass()
 		{
-			var nhibernateLogger = ConfigurationManager.AppSettings.Keys.Cast<string>().FirstOrDefault(k => NhibernateLoggerConfKey.Equals(k.ToLowerInvariant()));
 			string nhibernateLoggerClass = null;
+#if FEATURE_SYSTEM_CONFIGURATION
+			var nhibernateLogger = ConfigurationManager.AppSettings.Keys.Cast<string>().FirstOrDefault(k => NhibernateLoggerConfKey.Equals(k.ToLowerInvariant()));
 			if (string.IsNullOrEmpty(nhibernateLogger))
+#endif
 			{
 				// look for log4net.dll
 				string baseDir = AppDomain.CurrentDomain.BaseDirectory;
@@ -94,10 +99,12 @@ namespace NHibernate
 					nhibernateLoggerClass = typeof (Log4NetLoggerFactory).AssemblyQualifiedName;
 				}
 			}
+#if FEATURE_SYSTEM_CONFIGURATION
 			else
 			{
 				nhibernateLoggerClass = ConfigurationManager.AppSettings[nhibernateLogger];
 			}
+#endif
 			return nhibernateLoggerClass;
 		}
 

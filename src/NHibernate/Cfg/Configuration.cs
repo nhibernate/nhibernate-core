@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -28,6 +27,10 @@ using NHibernate.Tool.hbm2ddl;
 using NHibernate.Type;
 using NHibernate.Util;
 using Array = System.Array;
+
+#if FEATURE_SYSTEM_CONFIGURATION
+using System.Configuration;
+#endif
 
 #if FEATURE_SERIALIZATION
 using System.Runtime.Serialization;
@@ -1414,12 +1417,14 @@ namespace NHibernate.Cfg
 		/// </remarks>
 		public Configuration Configure()
 		{
+#if FEATURE_SYSTEM_CONFIGURATION
 			var hc = ConfigurationManager.GetSection(CfgXmlHelper.CfgSectionName) as IHibernateConfiguration;
 			if (hc != null && hc.SessionFactory != null)
 			{
 				return DoConfigure(hc.SessionFactory);
 			}
 			else
+#endif
 			{
 				return Configure(GetDefaultConfigurationFilePath());
 			}
