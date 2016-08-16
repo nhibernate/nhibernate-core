@@ -1,3 +1,5 @@
+#if FEATURE_CODEDOM
+
 using System;
 using System.CodeDom.Compiler;
 using System.Reflection;
@@ -262,3 +264,5 @@ namespace NHibernate.Bytecode.CodeDom
 		#endregion
 	}
 }
+
+#endif
