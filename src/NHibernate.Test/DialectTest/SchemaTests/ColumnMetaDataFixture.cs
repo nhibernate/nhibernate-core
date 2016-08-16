@@ -12,7 +12,7 @@ namespace NHibernate.Test.DialectTest.SchemaTests
 		private class TestableColumnMetaData : AbstractColumnMetaData
 		{
 			public TestableColumnMetaData(DataRow rs, object columnSizeValue, object numericalPrecisionValue)
-				: base(rs)
+				: base()
 			{
 				SetColumnSize(columnSizeValue);
 				SetNumericalPrecision(numericalPrecisionValue);

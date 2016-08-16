@@ -114,7 +114,7 @@ namespace NHibernate.Dialect.Schema
 
 	public class SybaseAnywhereColumnMetaData : AbstractColumnMetaData
 	{
-		public SybaseAnywhereColumnMetaData(DataRow rs) : base(rs)
+		public SybaseAnywhereColumnMetaData(DataRow rs) : base()
 		{
 			Name = Convert.ToString(rs["COLUMN_NAME"]);
 			

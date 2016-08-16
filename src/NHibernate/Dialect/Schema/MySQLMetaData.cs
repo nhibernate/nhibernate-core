@@ -70,7 +70,7 @@ namespace NHibernate.Dialect.Schema
 	public class MySQLColumnMetadata : AbstractColumnMetaData
 	{
 		public MySQLColumnMetadata(DataRow rs)
-			: base(rs)
+			: base()
 		{
 			Name = Convert.ToString(rs["COLUMN_NAME"]);
 			

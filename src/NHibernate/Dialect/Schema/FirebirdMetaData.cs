@@ -66,7 +66,7 @@ namespace NHibernate.Dialect.Schema
 	public class FirebirdColumnMetadata : AbstractColumnMetaData
 	{
 		public FirebirdColumnMetadata(DataRow rs)
-			: base(rs)
+			: base()
 		{
 			Name = Convert.ToString(rs["COLUMN_NAME"]);
 

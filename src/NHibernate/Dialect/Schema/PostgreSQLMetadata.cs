@@ -129,7 +129,7 @@ namespace NHibernate.Dialect.Schema
 	public class PostgreSQLColumnMetadata : AbstractColumnMetaData
 	{
 		public PostgreSQLColumnMetadata(DataRow rs)
-			: base(rs)
+			: base()
 		{
 			Name = Convert.ToString(rs["COLUMN_NAME"]);
 

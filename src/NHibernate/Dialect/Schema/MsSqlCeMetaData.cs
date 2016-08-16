@@ -60,7 +60,7 @@ namespace NHibernate.Dialect.Schema
 
 	public class MsSqlCeColumnMetadata : AbstractColumnMetaData
 	{
-		public MsSqlCeColumnMetadata(DataRow rs) : base(rs)
+		public MsSqlCeColumnMetadata(DataRow rs) : base()
 		{
 			Name = Convert.ToString(rs["COLUMN_NAME"]);
 

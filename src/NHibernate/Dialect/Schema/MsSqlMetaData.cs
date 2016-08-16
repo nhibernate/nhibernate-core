@@ -61,7 +61,7 @@ namespace NHibernate.Dialect.Schema
 
 	public class MsSqlColumnMetadata : AbstractColumnMetaData
 	{
-		public MsSqlColumnMetadata(DataRow rs) : base(rs)
+		public MsSqlColumnMetadata(DataRow rs) : base()
 		{
 			Name = Convert.ToString(rs["COLUMN_NAME"]);
 

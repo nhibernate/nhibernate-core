@@ -100,7 +100,7 @@ namespace NHibernate.Dialect.Schema
 	public class OracleColumnMetadata : AbstractColumnMetaData
 	{
 		public OracleColumnMetadata(DataRow rs)
-			: base(rs)
+			: base()
 		{
 			Name = Convert.ToString(rs["COLUMN_NAME"]);
 

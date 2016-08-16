@@ -11,7 +11,7 @@ namespace NHibernate.Dialect.Schema
 		private int numericalPrecision;
 		private string isNullable;
 
-		public AbstractColumnMetaData(DataRow rs)
+		protected AbstractColumnMetaData()
 		{
 		}
 

@@ -66,7 +66,7 @@ namespace NHibernate.Dialect.Schema
 
 	public class SQLiteColumnMetaData : AbstractColumnMetaData
 	{
-		public SQLiteColumnMetaData(DataRow rs) : base(rs)
+		public SQLiteColumnMetaData(DataRow rs) : base()
 		{
 			Name = Convert.ToString(rs["COLUMN_NAME"]);
 
