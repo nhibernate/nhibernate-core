@@ -97,7 +97,7 @@ namespace NHibernate.Driver
 		/// <summary></summary>
 		public override bool IsClosed
 		{
-			get { return _reader.IsClosed; }
+			get { return _reader == null || _reader.IsClosed; }
 		}
 
 		/// <summary></summary>
@@ -108,11 +108,13 @@ namespace NHibernate.Driver
 			return _reader.NextResult();
 		}
 
+#if FEATURE_DATA_CLOSE || NET_4_0
 		/// <summary></summary>
 		public override void Close()
 		{
 			_reader.Close();
 		}
+#endif
 
 		/// <summary></summary>
 		public override bool Read()
@@ -127,11 +129,13 @@ namespace NHibernate.Driver
 			get { return _reader.Depth; }
 		}
 
+#if FEATURE_DATA_GETSCHEMATABLE || NET_4_0
 		/// <summary></summary>
 		public override DataTable GetSchemaTable()
 		{
 			return _reader.GetSchemaTable();
 		}
+#endif
 
 		/// <summary>
 		/// A flag to indicate if <c>Disose()</c> has been called.
@@ -163,7 +167,6 @@ namespace NHibernate.Driver
 			if (disposing && _reader != null)
 			{
 				_reader.Dispose();
-				_reader = null;
 			}
 
 			disposed = true;

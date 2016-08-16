@@ -102,8 +102,7 @@ namespace NHibernate.Id.Enhanced
 					DbDataReader rs = null;
 					try
 					{
-						rs = _session.Batcher.ExecuteReader(st);
-						try
+						using (rs = _session.Batcher.ExecuteReader(st))
 						{
 							rs.Read();
 							long result = Convert.ToInt64(rs.GetValue(0));
@@ -112,17 +111,6 @@ namespace NHibernate.Id.Enhanced
 								Log.Debug("Sequence value obtained: " + result);
 							}
 							return result;
-						}
-						finally
-						{
-							try
-							{
-								rs.Close();
-							}
-							catch
-							{
-								// intentionally empty
-							}
 						}
 					}
 					finally

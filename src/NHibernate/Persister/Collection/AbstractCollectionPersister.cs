@@ -1587,14 +1587,9 @@ namespace NHibernate.Persister.Collection
 				{
 					KeyType.NullSafeSet(st, key, 0, session);
 					indexOrElementType.NullSafeSet(st, indexOrElement, keyColumnNames.Length, session);
-					rs = session.Batcher.ExecuteReader(st);
-					try
+					using (rs = session.Batcher.ExecuteReader(st))
 					{
 						return rs.Read();
-					}
-					finally
-					{
-						rs.Close();
 					}
 				}
 				catch (TransientObjectException)
@@ -1627,8 +1622,7 @@ namespace NHibernate.Persister.Collection
 				{
 					KeyType.NullSafeSet(st, key, 0, session);
 					IndexType.NullSafeSet(st, IncrementIndexByBase(index), keyColumnNames.Length, session);
-					rs = session.Batcher.ExecuteReader(st);
-					try
+					using (rs = session.Batcher.ExecuteReader(st))
 					{
 						if (rs.Read())
 						{
@@ -1638,10 +1632,6 @@ namespace NHibernate.Persister.Collection
 						{
 							return NotFoundObject;
 						}
-					}
-					finally
-					{
-						rs.Close();
 					}
 				}
 				finally

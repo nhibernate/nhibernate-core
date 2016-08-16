@@ -27,15 +27,19 @@ namespace NHibernate.AdoNet
 			get { return rs; }
 		}
 
+#if FEATURE_DATA_CLOSE || NET_4_0
 		public override void Close()
 		{
 			rs.Close();
 		}
+#endif
 
+#if FEATURE_DATA_GETSCHEMATABLE || NET_4_0
 		public override DataTable GetSchemaTable()
 		{
 			return rs.GetSchemaTable();
 		}
+#endif
 
 		public override bool NextResult()
 		{
@@ -76,9 +80,9 @@ namespace NHibernate.AdoNet
 
 			if (disposing && rs != null)
 			{
-					rs.Dispose();
+				rs.Dispose();
 				rs = null;
-				}
+			}
 
 			disposed = true;
 		}

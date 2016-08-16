@@ -64,18 +64,18 @@ namespace NHibernate.Test.TypeParameters
 			statement.Connection = connection;
 			t.Enlist(statement);
 			statement.Parameters[0].Value = id;
-			var reader = statement.ExecuteReader();
-
-			Assert.IsTrue(reader.Read(), "A row should have been returned");
-			Assert.IsTrue(reader.GetValue(reader.GetOrdinal("VALUE_ONE")) == DBNull.Value,
-			              "Default value should have been mapped to null");
-			Assert.IsTrue(reader.GetValue(reader.GetOrdinal("VALUE_TWO")) == DBNull.Value,
-			              "Default value should have been mapped to null");
-			Assert.AreEqual(Convert.ToInt32(reader.GetValue(reader.GetOrdinal("VALUE_THREE"))), 5,
-			                "Non-Default value should not be changed");
-			Assert.IsTrue(reader.GetValue(reader.GetOrdinal("VALUE_FOUR")) == DBNull.Value,
-			              "Default value should have been mapped to null");
-			reader.Close();
+			using (DbDataReader reader = statement.ExecuteReader())
+			{ 
+					Assert.IsTrue(reader.Read(), "A row should have been returned");
+				Assert.IsTrue(reader.GetValue(reader.GetOrdinal("VALUE_ONE")) == DBNull.Value,
+							  "Default value should have been mapped to null");
+				Assert.IsTrue(reader.GetValue(reader.GetOrdinal("VALUE_TWO")) == DBNull.Value,
+							  "Default value should have been mapped to null");
+				Assert.AreEqual(Convert.ToInt32(reader.GetValue(reader.GetOrdinal("VALUE_THREE"))), 5,
+								"Non-Default value should not be changed");
+				Assert.IsTrue(reader.GetValue(reader.GetOrdinal("VALUE_FOUR")) == DBNull.Value,
+							  "Default value should have been mapped to null");
+			}
 
 			t.Commit();
 			s.Close();

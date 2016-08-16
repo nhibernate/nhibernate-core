@@ -223,43 +223,43 @@ namespace NHibernate.Id
 				//select + uspdate even for no transaction
 				//or read committed isolation level (needed for .net?)
 
-				var qps = conn.CreateCommand();
-				DbDataReader rs = null;
-				qps.CommandText = query;
-				qps.CommandType = CommandType.Text;
-				qps.Transaction = transaction;
-				PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand("Reading high value:", qps, FormatStyle.Basic);
-				try
+				using (DbCommand qps = conn.CreateCommand())
 				{
-					rs = qps.ExecuteReader();
-					if (!rs.Read())
+					qps.CommandText = query;
+					qps.CommandType = CommandType.Text;
+					qps.Transaction = transaction;
+					PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand("Reading high value:", qps, FormatStyle.Basic);
+					using (DbDataReader rs = qps.ExecuteReader())
 					{
-						string err;
-						if (string.IsNullOrEmpty(whereClause))
+						try
 						{
-							err = "could not read a hi value - you need to populate the table: " + tableName;
+							;
+							if (!rs.Read())
+							{
+								string err;
+								if (string.IsNullOrEmpty(whereClause))
+								{
+									err = "could not read a hi value - you need to populate the table: " + tableName;
+								}
+								else
+								{
+									err =
+										string.Format(
+											"could not read a hi value from table '{0}' using the where clause ({1})- you need to populate the table.",
+											tableName,
+											whereClause);
+								}
+								log.Error(err);
+								throw new IdentifierGenerationException(err);
+							}
+							result = Convert.ToInt64(columnType.Get(rs, 0));
 						}
-						else
+						catch (Exception e)
 						{
-							err = string.Format("could not read a hi value from table '{0}' using the where clause ({1})- you need to populate the table.", tableName, whereClause);
+							log.Error("could not read a hi value", e);
+							throw;
 						}
-						log.Error(err);
-						throw new IdentifierGenerationException(err);
 					}
-					result = Convert.ToInt64(columnType.Get(rs, 0));
-				}
-				catch (Exception e)
-				{
-					log.Error("could not read a hi value", e);
-					throw;
-				}
-				finally
-				{
-					if (rs != null)
-					{
-						rs.Close();
-					}
-					qps.Dispose();
 				}
 
 				var ups = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, updateSql, parameterTypes);

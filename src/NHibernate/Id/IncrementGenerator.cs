@@ -107,8 +107,7 @@ namespace NHibernate.Id
 				DbDataReader reader = null;
 				try
 				{
-					reader = session.Batcher.ExecuteReader(cmd);
-					try
+					using (reader = session.Batcher.ExecuteReader(cmd))
 					{
 						if (reader.Read())
 						{
@@ -120,10 +119,6 @@ namespace NHibernate.Id
 						}
 						_sql = null;
 						Logger.Debug("first free id: " + _next);
-					}
-					finally
-					{
-						reader.Close();
 					}
 				}
 				finally

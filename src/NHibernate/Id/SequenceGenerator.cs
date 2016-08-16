@@ -117,8 +117,7 @@ namespace NHibernate.Id
 				DbDataReader reader = null;
 				try
 				{
-					reader = session.Batcher.ExecuteReader(cmd);
-					try
+					using (reader = session.Batcher.ExecuteReader(cmd))
 					{
 						reader.Read();
 						object result = IdentifierGeneratorFactory.Get(reader, identifierType, session);
@@ -127,10 +126,6 @@ namespace NHibernate.Id
 							log.Debug("Sequence identifier generated: " + result);
 						}
 						return result;
-					}
-					finally
-					{
-						reader.Close();
 					}
 				}
 				finally
