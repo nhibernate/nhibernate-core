@@ -1258,8 +1258,10 @@ namespace NHibernate.Impl
 #endif
 				case "thread_static":
 					return new ThreadStaticSessionContext(this);
+#if FEATURE_WEB_SESSION_CONTEXT
 				case "web":
 					return new WebSessionContext(this);
+#endif
 #if FEATURE_REMOTING
 				case "wcf_operation":
 					return new WcfOperationSessionContext(this);
