@@ -1,3 +1,5 @@
+#if FEATURE_DATA_GETSCHEMATABLE
+
 using System;
 using System.Data;
 using System.Data.Common;
@@ -100,3 +102,5 @@ namespace NHibernate.Dialect.Schema
 		}
 	}
 }
+
+#endif

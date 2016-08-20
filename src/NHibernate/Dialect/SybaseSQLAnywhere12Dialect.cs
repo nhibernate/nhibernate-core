@@ -122,9 +122,11 @@ namespace NHibernate.Dialect
 			return "DROP SEQUENCE " + sequenceName;
 		}
 
+#if FEATURE_DATA_GETSCHEMATABLE
 		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
 			return new SybaseAnywhereDataBaseMetaData(connection);
 		}
+#endif
 	}
 }

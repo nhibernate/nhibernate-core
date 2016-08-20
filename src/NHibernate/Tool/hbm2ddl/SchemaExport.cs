@@ -1,3 +1,5 @@
+#if FEATURE_DATA_GETSCHEMATABLE
+
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -298,7 +300,7 @@ namespace NHibernate.Tool.hbm2ddl
 				{
 					try
 					{
-						exportOutput.Close();
+						exportOutput.Dispose();
 					}
 					catch (Exception ioe)
 					{
@@ -347,7 +349,7 @@ namespace NHibernate.Tool.hbm2ddl
 			{
 				if (fileOutput == null && outputFile != null)
 				{
-					fileOutput = new StreamWriter(outputFile);
+					fileOutput = new StreamWriter(File.OpenWrite(outputFile));
 				}
 
 				if (execute)
@@ -393,3 +395,5 @@ namespace NHibernate.Tool.hbm2ddl
 		}
 	}
 }
+
+#endif

@@ -1,3 +1,5 @@
+#if FEATURE_DATA_GETSCHEMATABLE
+
 using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Mapping;
@@ -76,3 +78,5 @@ namespace NHibernate.Tool.hbm2ddl
 		}
 	}
 }
+
+#endif

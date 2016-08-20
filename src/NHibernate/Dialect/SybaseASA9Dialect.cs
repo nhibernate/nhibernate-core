@@ -116,10 +116,12 @@ namespace NHibernate.Dialect
 			return queryString.Insert(intSelectInsertPoint, limitFragment.ToSqlString());
 		}
 
+#if FEATURE_DATA_GETSCHEMATABLE
 		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
 			return new SybaseAnywhereDataBaseMetaData(connection);
 		}
+#endif
 
 		public override string AddColumnString
 		{

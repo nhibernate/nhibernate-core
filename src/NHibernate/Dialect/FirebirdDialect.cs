@@ -188,10 +188,12 @@ namespace NHibernate.Dialect
 			}
 		}
 
+#if FEATURE_DATA_GETSCHEMATABLE
 		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
 			return new FirebirdDataBaseSchema(connection);
 		}
+#endif
 
 		public override string QuerySequencesString
 		{

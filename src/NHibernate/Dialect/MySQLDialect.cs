@@ -234,10 +234,12 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+#if FEATURE_DATA_GETSCHEMATABLE
 		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
 			return new MySQLDataBaseSchema(connection);
 		}
+#endif
 
 		public override bool SupportsSubSelects
 		{

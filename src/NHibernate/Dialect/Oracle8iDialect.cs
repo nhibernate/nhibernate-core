@@ -449,10 +449,12 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+#if FEATURE_DATA_GETSCHEMATABLE
 		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
 			return new OracleDataBaseSchema(connection);
 		}
+#endif
 
 		public override long TimestampResolutionInTicks
 		{

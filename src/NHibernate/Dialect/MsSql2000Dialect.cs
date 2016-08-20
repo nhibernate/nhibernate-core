@@ -483,10 +483,12 @@ namespace NHibernate.Dialect
 			}
 		}
 
+#if FEATURE_DATA_GETSCHEMATABLE
 		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
 			return new MsSqlDataBaseSchema(connection);
 		}
+#endif
 
 		public override bool SupportsUnionAll
 		{

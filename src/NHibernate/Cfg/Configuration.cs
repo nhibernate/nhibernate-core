@@ -23,7 +23,6 @@ using NHibernate.Id;
 using NHibernate.Impl;
 using NHibernate.Mapping;
 using NHibernate.Proxy;
-using NHibernate.Tool.hbm2ddl;
 using NHibernate.Type;
 using NHibernate.Util;
 using Array = System.Array;
@@ -35,6 +34,10 @@ using System.Configuration;
 #if FEATURE_SERIALIZATION
 using System.Runtime.Serialization;
 using System.Security;
+#endif
+
+#if FEATURE_DATA_GETSCHEMATABLE
+using NHibernate.Tool.hbm2ddl;
 #endif
 
 namespace NHibernate.Cfg
@@ -2307,6 +2310,7 @@ namespace NHibernate.Cfg
 			return list.ToArray();
 		}
 
+#if FEATURE_DATA_GETSCHEMATABLE
 		///<summary>
 		/// Generate DDL for altering tables
 		///</summary>
@@ -2431,6 +2435,7 @@ namespace NHibernate.Cfg
 				}
 			}
 		}
+#endif
 
 		private IEnumerable<IPersistentIdentifierGenerator> IterateGenerators(Dialect.Dialect dialect)
 		{
