@@ -71,7 +71,7 @@ namespace NHibernate.Mapping
 			get { return className; }
 			set
 			{
-				className = value == null ? null : string.Intern(value);
+				className = StringHelper.InternedIfPossible(value);
 				mappedClass = null;
 			}
 		}
@@ -260,7 +260,7 @@ namespace NHibernate.Mapping
 		public virtual string EntityName
 		{
 			get { return entityName; }
-			set { entityName = value == null ? null : String.Intern(value); }
+			set { entityName = StringHelper.InternedIfPossible(value); }
 		}
 
 		/// <summary>
@@ -520,7 +520,7 @@ namespace NHibernate.Mapping
 		public string LoaderName
 		{
 			get { return loaderName; }
-			set { loaderName = value == null ? null : string.Intern(value); }
+			set { loaderName = StringHelper.InternedIfPossible(value); }
 		}
 
 		public virtual ISet<string> SynchronizedTables

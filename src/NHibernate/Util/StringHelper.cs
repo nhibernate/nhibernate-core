@@ -675,11 +675,13 @@ namespace NHibernate.Util
 				return null;
 			}
 
+#if FEATURE_STRING_INTERN
 			string interned = string.IsInterned(str);
 			if (interned != null)
 			{
 				return interned;
 			}
+#endif
 
 			return str;
 		}
