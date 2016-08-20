@@ -122,6 +122,11 @@ namespace NHibernate.Mapping
 		/// </summary>
 		public string GetAlias(Dialect.Dialect dialect)
 		{
+			return GetAlias(dialect.MaxAliasLength);
+		}
+
+		private string GetAlias(int maxAliasLength)
+		{
 			string alias = _name;
 			string suffix = UniqueInteger.ToString() + StringHelper.Underscore;
 
@@ -142,28 +147,30 @@ namespace NHibernate.Mapping
 			// reason, the checks for "_quoted" and "rowid" looks redundant. If you remove
 			// those checks, then the double checks for total length can be reduced to one.
 			//    But I will leave it like this for now to make it look similar. /Oskar 2016-08-20
-			bool useRawName = _name.Length + suffix.Length <= dialect.MaxAliasLength &&
+			bool useRawName = _name.Length + suffix.Length <= maxAliasLength &&
 			                  !_quoted &&
 			                  !StringHelper.EqualsCaseInsensitive(_name, "rowid");
 			if (!useRawName)
 			{
-				if (suffix.Length >= dialect.MaxAliasLength)
+				if (suffix.Length >= maxAliasLength)
 				{
 					throw new MappingException(
 						string.Format(
 							"Unique suffix {0} length must be less than maximum {1} characters.",
 							suffix,
-							dialect.MaxAliasLength));
+							maxAliasLength));
 				}
-				if (alias.Length + suffix.Length > dialect.MaxAliasLength)
-					alias = alias.Substring(0, dialect.MaxAliasLength - suffix.Length);
+				if (alias.Length + suffix.Length > maxAliasLength)
+					alias = alias.Substring(0, maxAliasLength - suffix.Length);
 			}
 			return alias + suffix;
 		}
 
 		public string GetAlias(Dialect.Dialect dialect, Table table)
 		{
-			return GetAlias(dialect) + table.UniqueInteger + StringHelper.Underscore;
+			string suffix = table.UniqueInteger.ToString() + StringHelper.Underscore;
+			int maxAliasLength = dialect.MaxAliasLength - suffix.Length;
+			return GetAlias(maxAliasLength) + suffix;
 		}
 
 
