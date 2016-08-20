@@ -115,16 +115,16 @@ namespace NHibernate.Mapping
 			return IsQuoted ? d.QuoteForColumnName(_name) : _name;
 		}
 
-		/**
-		 * For any column name, generate an alias that is unique
-		 * to that column name, and also 10 characters or less
-		 * in length.
-		 */
 
+		/// <summary>
+		/// For any column name, generate an alias that is unique to that
+		/// column name, and also take Dialect.MaxAliasLength into account.
+		/// </summary>
 		public string GetAlias(Dialect.Dialect dialect)
 		{
 			string alias = _name;
-			string suffix = UniqueInteger.ToString() + '_';
+			string suffix = UniqueInteger.ToString() + StringHelper.Underscore;
+
 			int lastLetter = StringHelper.LastIndexOfLetter(_name);
 			if (lastLetter == -1)
 			{
@@ -134,22 +134,31 @@ namespace NHibernate.Mapping
 			{
 				alias = _name.Substring(0, lastLetter + 1);
 			}
-			if (alias.Length > dialect.MaxAliasLength)
-			{
-				alias = alias.Substring(0, dialect.MaxAliasLength - suffix.Length);
-			}
-			bool useRawName = _name.Equals(alias) &&
-							  !_quoted &&
-							  !StringHelper.EqualsCaseInsensitive(_name, "rowid");
 
-			if (useRawName)
+			// Updated logic ported from Hibernate's fix for HHH-8073.
+			//  https://github.com/hibernate/hibernate-orm/commit/79073a98f0e4ed225fe4608b67594196f86d48d7
+			// To my mind it is weird - since the suffix is now always used, it
+			// seems "useRawName" is a misleading choice of variable name. For the same
+			// reason, the checks for "_quoted" and "rowid" looks redundant. If you remove
+			// those checks, then the double checks for total length can be reduced to one.
+			//    But I will leave it like this for now to make it look similar. /Oskar 2016-08-20
+			bool useRawName = _name.Length + suffix.Length <= dialect.MaxAliasLength &&
+			                  !_quoted &&
+			                  !StringHelper.EqualsCaseInsensitive(_name, "rowid");
+			if (!useRawName)
 			{
-				return alias;
+				if (suffix.Length >= dialect.MaxAliasLength)
+				{
+					throw new MappingException(
+						string.Format(
+							"Unique suffix {0} length must be less than maximum {1} characters.",
+							suffix,
+							dialect.MaxAliasLength));
+				}
+				if (alias.Length + suffix.Length > dialect.MaxAliasLength)
+					alias = alias.Substring(0, dialect.MaxAliasLength - suffix.Length);
 			}
-			else
-			{
-				return alias + suffix;
-			}
+			return alias + suffix;
 		}
 
 		public string GetAlias(Dialect.Dialect dialect, Table table)
