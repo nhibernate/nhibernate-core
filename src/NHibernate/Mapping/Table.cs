@@ -581,11 +581,11 @@ namespace NHibernate.Mapping
 			if (old == null)
 			{
 				columns[column.CanonicalName] = column;
-				column.uniqueInteger = columns.Count;
+				column.UniqueInteger = columns.Count;
 			}
 			else
 			{
-				column.uniqueInteger = old.uniqueInteger;
+				column.UniqueInteger = old.UniqueInteger;
 			}
 		}
 

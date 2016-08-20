@@ -17,21 +17,21 @@ namespace NHibernate.Mapping
 		public const int DefaultPrecision = 19;
 		public const int DefaultScale = 2;
 
-		private int? length;
-		private int? precision;
-		private int? scale;
+		private int? _length;
+		private int? _precision;
+		private int? _scale;
 		private IValue _value;
-		private int typeIndex = 0;
-		private string name;
-		private bool nullable = true;
-		private bool unique = false;
-		private string sqlType;
-		private SqlType sqlTypeCode;
-		private bool quoted = false;
-		internal int uniqueInteger;
-		private string checkConstraint;
-		private string comment;
-		private string defaultValue;
+		private int _typeIndex;
+		private string _name;
+		private bool _nullable = true;
+		private bool _unique;
+		private string _sqlType;
+		private SqlType _sqlTypeCode;
+		private bool _quoted;
+		internal int UniqueInteger;
+		private string _checkConstraint;
+		private string _comment;
+		private string _defaultValue;
 
 		/// <summary>
 		/// Initializes a new instance of <see cref="Column"/>.
@@ -55,8 +55,8 @@ namespace NHibernate.Mapping
 		/// <value>The length of the datatype in the database.</value>
 		public int Length
 		{
-			get { return length.GetValueOrDefault(DefaultLength); }
-			set { length = value; }
+			get { return _length.GetValueOrDefault(DefaultLength); }
+			set { _length = value; }
 		}
 
 		/// <summary>
@@ -79,24 +79,24 @@ namespace NHibernate.Mapping
 		/// </remarks>
 		public string Name
 		{
-			get { return name; }
+			get { return _name; }
 			set
 			{
 				if (value[0] == '`')
 				{
-					quoted = true;
-					name = value.Substring(1, value.Length - 2);
+					_quoted = true;
+					_name = value.Substring(1, value.Length - 2);
 				}
 				else
 				{
-					name = value;
+					_name = value;
 				}
 			}
 		}
 
 		public string CanonicalName
 		{
-			get { return quoted ? name : name.ToLowerInvariant(); }
+			get { return _quoted ? _name : _name.ToLowerInvariant(); }
 		}
 
 		/// <summary>
@@ -112,7 +112,7 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public string GetQuotedName(Dialect.Dialect d)
 		{
-			return IsQuoted ? d.QuoteForColumnName(name) : name;
+			return IsQuoted ? d.QuoteForColumnName(_name) : _name;
 		}
 
 		/**
@@ -123,24 +123,24 @@ namespace NHibernate.Mapping
 
 		public string GetAlias(Dialect.Dialect dialect)
 		{
-			string alias = name;
-			string _unique = uniqueInteger.ToString() + '_';
-			int lastLetter = StringHelper.LastIndexOfLetter(name);
+			string alias = _name;
+			string suffix = UniqueInteger.ToString() + '_';
+			int lastLetter = StringHelper.LastIndexOfLetter(_name);
 			if (lastLetter == -1)
 			{
 				alias = "column";
 			}
-			else if (lastLetter < name.Length - 1)
+			else if (lastLetter < _name.Length - 1)
 			{
-				alias = name.Substring(0, lastLetter + 1);
+				alias = _name.Substring(0, lastLetter + 1);
 			}
 			if (alias.Length > dialect.MaxAliasLength)
 			{
-				alias = alias.Substring(0, dialect.MaxAliasLength - _unique.Length);
+				alias = alias.Substring(0, dialect.MaxAliasLength - suffix.Length);
 			}
-			bool useRawName = name.Equals(alias) &&
-							  !quoted &&
-							  !StringHelper.EqualsCaseInsensitive(name, "rowid");
+			bool useRawName = _name.Equals(alias) &&
+							  !_quoted &&
+							  !StringHelper.EqualsCaseInsensitive(_name, "rowid");
 
 			if (useRawName)
 			{
@@ -148,7 +148,7 @@ namespace NHibernate.Mapping
 			}
 			else
 			{
-				return alias + _unique;
+				return alias + suffix;
 			}
 		}
 
@@ -164,8 +164,8 @@ namespace NHibernate.Mapping
 		/// <value><see langword="true" /> if the column can have a null value in it.</value>
 		public bool IsNullable
 		{
-			get { return nullable; }
-			set { nullable = value; }
+			get { return _nullable; }
+			set { _nullable = value; }
 		}
 
 		/// <summary>
@@ -176,8 +176,8 @@ namespace NHibernate.Mapping
 		/// </value>
 		public int TypeIndex
 		{
-			get { return typeIndex; }
-			set { typeIndex = value; }
+			get { return _typeIndex; }
+			set { _typeIndex = value; }
 		}
 
 		/// <summary>
@@ -186,8 +186,8 @@ namespace NHibernate.Mapping
 		/// <value><see langword="true" /> if the column contains unique values.</value>
 		public bool IsUnique
 		{
-			get { return unique; }
-			set { unique = value; }
+			get { return _unique; }
+			set { _unique = value; }
 		}
 
 		/// <summary>
@@ -205,7 +205,7 @@ namespace NHibernate.Mapping
 		/// </remarks>
 		public string GetSqlType(Dialect.Dialect dialect, IMapping mapping)
 		{
-			return sqlType ?? GetDialectTypeName(dialect, mapping);
+			return _sqlType ?? GetDialectTypeName(dialect, mapping);
 		}
 
 		private string GetDialectTypeName(Dialect.Dialect dialect, IMapping mapping)
@@ -250,10 +250,10 @@ namespace NHibernate.Mapping
 			if (null == column)
 				return false;
 
-			if (this == column)
+			if (ReferenceEquals(this, column))
 				return true;
 
-			return IsQuoted ? name.Equals(column.name) : name.ToLowerInvariant().Equals(column.name.ToLowerInvariant());
+			return IsQuoted ? _name.Equals(column._name) : _name.ToLowerInvariant().Equals(column._name.ToLowerInvariant());
 		}
 
 		/// <summary>
@@ -261,7 +261,7 @@ namespace NHibernate.Mapping
 		/// </summary>
 		public override int GetHashCode()
 		{
-			return IsQuoted ? name.GetHashCode() : name.ToLowerInvariant().GetHashCode();
+			return IsQuoted ? _name.GetHashCode() : _name.ToLowerInvariant().GetHashCode();
 		}
 
 		#endregion
@@ -277,8 +277,8 @@ namespace NHibernate.Mapping
 		/// </remarks>
 		public string SqlType
 		{
-			get { return sqlType; }
-			set { sqlType = value; }
+			get { return _sqlType; }
+			set { _sqlType = value; }
 		}
 
 		/// <summary>
@@ -287,8 +287,8 @@ namespace NHibernate.Mapping
 		/// <value><see langword="true" /> if the column is quoted.</value>
 		public bool IsQuoted
 		{
-			get { return quoted; }
-			set { quoted = value; }
+			get { return _quoted; }
+			set { _quoted = value; }
 		}
 
 		/// <summary>
@@ -296,8 +296,8 @@ namespace NHibernate.Mapping
 		/// </summary>
 		public bool Unique
 		{
-			get { return unique; }
-			set { unique = value; }
+			get { return _unique; }
+			set { _unique = value; }
 		}
 
 		/// <summary>
@@ -305,8 +305,8 @@ namespace NHibernate.Mapping
 		/// </summary>
 		public string CheckConstraint
 		{
-			get { return checkConstraint; }
-			set { checkConstraint = value; }
+			get { return _checkConstraint; }
+			set { _checkConstraint = value; }
 		}
 
 		/// <summary>
@@ -314,7 +314,7 @@ namespace NHibernate.Mapping
 		/// </summary>
 		public bool HasCheckConstraint
 		{
-			get { return !string.IsNullOrEmpty(checkConstraint); }
+			get { return !string.IsNullOrEmpty(_checkConstraint); }
 		}
 
 		public string Text
@@ -334,14 +334,14 @@ namespace NHibernate.Mapping
 
 		public int Precision
 		{
-			get { return precision.GetValueOrDefault(DefaultPrecision); }
-			set { precision = value; }
+			get { return _precision.GetValueOrDefault(DefaultPrecision); }
+			set { _precision = value; }
 		}
 
 		public int Scale
 		{
-			get { return scale.GetValueOrDefault(DefaultScale); }
-			set { scale = value; }
+			get { return _scale.GetValueOrDefault(DefaultScale); }
+			set { _scale = value; }
 		}
 
 		public IValue Value
@@ -361,20 +361,20 @@ namespace NHibernate.Mapping
 		/// </remarks>
 		public SqlType SqlTypeCode
 		{
-			get { return sqlTypeCode; }
-			set { sqlTypeCode = value; }
+			get { return _sqlTypeCode; }
+			set { _sqlTypeCode = value; }
 		}
 
 		public string Comment
 		{
-			get { return comment; }
-			set { comment = value; }
+			get { return _comment; }
+			set { _comment = value; }
 		}
 
 		public string DefaultValue
 		{
-			get { return defaultValue; }
-			set { defaultValue = value; }
+			get { return _defaultValue; }
+			set { _defaultValue = value; }
 		}
 
 		public string GetTemplate(Dialect.Dialect dialect, SQLFunctionRegistry functionRegistry)
@@ -384,7 +384,7 @@ namespace NHibernate.Mapping
 
 		public override string ToString()
 		{
-			return string.Format("{0}({1})", GetType().FullName, name);
+			return string.Format("{0}({1})", GetType().FullName, _name);
 		}
 
 		public SqlType GetSqlTypeCode(IMapping mapping)
@@ -393,7 +393,7 @@ namespace NHibernate.Mapping
 			try
 			{
 				SqlType sqltc = type.SqlTypes(mapping)[TypeIndex];
-				if (SqlTypeCode != null && SqlTypeCode != sqltc)
+				if (SqlTypeCode != null && !ReferenceEquals(SqlTypeCode, sqltc))
 				{
 					throw new MappingException(string.Format("SQLType code's does not match. mapped as {0} but is {1}", sqltc, SqlTypeCode));
 				}
@@ -402,14 +402,14 @@ namespace NHibernate.Mapping
 			catch (Exception e)
 			{
 				throw new MappingException(string.Format("Could not determine type for column {0} of type {1}: {2}", 
-					name, type.GetType().FullName, e.GetType().FullName), e);
+					_name, type.GetType().FullName, e.GetType().FullName), e);
 			}
 		}
 
 		/// <summary>returns quoted name as it would be in the mapping file. </summary>
 		public string GetQuotedName()
 		{
-			return quoted ? '`' + name + '`' : name;
+			return _quoted ? '`' + _name + '`' : _name;
 		}
 
 		public bool IsCaracteristicsDefined()
@@ -419,12 +419,12 @@ namespace NHibernate.Mapping
 
 		public bool IsPrecisionDefined()
 		{
-			return precision.HasValue || scale.HasValue;
+			return _precision.HasValue || _scale.HasValue;
 		}
 
 		public bool IsLengthDefined()
 		{
-			return length.HasValue;
+			return _length.HasValue;
 		}
 
 		#region ICloneable Members
@@ -432,23 +432,23 @@ namespace NHibernate.Mapping
 		public object Clone()
 		{
 			Column copy = new Column();
-			if (length.HasValue)
+			if (_length.HasValue)
 				copy.Length = Length;
-			if (precision.HasValue)
+			if (_precision.HasValue)
 				copy.Precision = Precision;
-			if (scale.HasValue)
+			if (_scale.HasValue)
 				copy.Scale = Scale;
 			copy.Value = _value;
-			copy.TypeIndex = typeIndex;
+			copy.TypeIndex = _typeIndex;
 			copy.Name = GetQuotedName();
-			copy.IsNullable = nullable;
-			copy.Unique = unique;
-			copy.SqlType = sqlType;
-			copy.SqlTypeCode = sqlTypeCode;
-			copy.uniqueInteger = uniqueInteger; //usually useless
-			copy.CheckConstraint = checkConstraint;
-			copy.Comment = comment;
-			copy.DefaultValue = defaultValue;
+			copy.IsNullable = _nullable;
+			copy.Unique = _unique;
+			copy.SqlType = _sqlType;
+			copy.SqlTypeCode = _sqlTypeCode;
+			copy.UniqueInteger = UniqueInteger; //usually useless
+			copy.CheckConstraint = _checkConstraint;
+			copy.Comment = _comment;
+			copy.DefaultValue = _defaultValue;
 			return copy;
 		}
 
