@@ -155,6 +155,7 @@
     <Compile Include="Collection\IPersistentCollection.cs" />
     <Compile Include="Collection\Generic\SetHelpers\ISetSnapshot.cs" />
     <Compile Include="Collection\Generic\SetHelpers\SetSnapShot.cs" />
+    <Compile Include="Compat\AppContext.cs" />
     <Compile Include="Compat\CustomAttributeExtensions.cs" />
     <Compile Include="Compat\AppContext.cs" />
     <Compile Include="Compat\DesignerCategoryAttribute.cs" />

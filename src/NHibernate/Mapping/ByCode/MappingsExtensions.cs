@@ -40,8 +40,13 @@ namespace NHibernate.Mapping.ByCode
 
 		private static string ArrangeMappingsFolderPath()
 		{
+#if FEATURE_APPDOMAIN
 			string baseDir = AppDomain.CurrentDomain.BaseDirectory;
 			string relativeSearchPath = AppDomain.CurrentDomain.RelativeSearchPath;
+#else
+			string baseDir = AppContext.BaseDirectory;
+			string relativeSearchPath = null;
+#endif
 			string binPath = relativeSearchPath != null ? Path.Combine(baseDir, relativeSearchPath): baseDir;
 			string mappingsFolderPath = Path.Combine(binPath, "Mappings");
 

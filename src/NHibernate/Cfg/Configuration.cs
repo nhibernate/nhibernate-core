@@ -1862,10 +1862,15 @@ namespace NHibernate.Cfg
 
 		protected virtual string GetDefaultConfigurationFilePath()
 		{
+#if FEATURE_APPDOMAIN
 			string baseDir = AppDomain.CurrentDomain.BaseDirectory;
 
 			// Note RelativeSearchPath can be null even if the doc say something else; don't remove the check
 			var searchPath = AppDomain.CurrentDomain.RelativeSearchPath ?? string.Empty;
+#else
+			string baseDir = AppContext.BaseDirectory;
+			var searchPath = string.Empty;
+#endif
 
 			string relativeSearchPath = searchPath.Split(';').First();
 			string binPath = Path.Combine(baseDir, relativeSearchPath);

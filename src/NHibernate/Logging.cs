@@ -89,12 +89,21 @@ namespace NHibernate
 #endif
 			{
 				// look for log4net.dll
+#if FEATURE_APPDOMAIN
 				string baseDir = AppDomain.CurrentDomain.BaseDirectory;
 				string relativeSearchPath = AppDomain.CurrentDomain.RelativeSearchPath;
+#else
+				string baseDir = AppContext.BaseDirectory;
+				string relativeSearchPath = null;
+#endif
 				string binPath = relativeSearchPath == null ? baseDir : Path.Combine(baseDir, relativeSearchPath);
 				string log4NetDllPath = binPath == null ? "log4net.dll" : Path.Combine(binPath, "log4net.dll");
 
-				if (File.Exists(log4NetDllPath) || AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name == "log4net"))
+				if (File.Exists(log4NetDllPath) 
+#if FEATURE_APPDOMAIN
+					|| AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name == "log4net")
+#endif
+					)
 				{
 					nhibernateLoggerClass = typeof (Log4NetLoggerFactory).AssemblyQualifiedName;
 				}
