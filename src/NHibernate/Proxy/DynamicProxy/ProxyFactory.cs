@@ -97,13 +97,12 @@ namespace NHibernate.Proxy.DynamicProxy
 
 		private System.Type CreateUncachedProxyType(System.Type baseType, System.Type[] baseInterfaces)
 		{
-			AppDomain currentDomain = AppDomain.CurrentDomain;
 			string typeName = string.Format("{0}Proxy", baseType.Name);
 			string assemblyName = string.Format("{0}Assembly", typeName);
 			string moduleName = string.Format("{0}Module", typeName);
 
 			var name = new AssemblyName(assemblyName);
-			AssemblyBuilder assemblyBuilder = ProxyAssemblyBuilder.DefineDynamicAssembly(currentDomain, name);
+			AssemblyBuilder assemblyBuilder = ProxyAssemblyBuilder.DefineDynamicAssembly(name);
 			ModuleBuilder moduleBuilder = ProxyAssemblyBuilder.DefineDynamicModule(assemblyBuilder, moduleName);
 
 			TypeAttributes typeAttributes = TypeAttributes.AutoClass | TypeAttributes.Class |

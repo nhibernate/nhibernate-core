@@ -121,10 +121,10 @@ namespace NHibernate.Test.DynamicProxyTests
 				this.assemblyName = assemblyName;
 			}
 
-			public AssemblyBuilder DefineDynamicAssembly(AppDomain appDomain, AssemblyName name)
+			public AssemblyBuilder DefineDynamicAssembly(AssemblyName name)
 			{
 				AssemblyBuilderAccess access = AssemblyBuilderAccess.RunAndSave;
-				return appDomain.DefineDynamicAssembly(new AssemblyName(assemblyName), access, TestContext.CurrentContext.TestDirectory);
+				return AppDomain.CurrentDomain.DefineDynamicAssembly(new AssemblyName(assemblyName), access, TestContext.CurrentContext.TestDirectory);
 			}
 
 			public ModuleBuilder DefineDynamicModule(AssemblyBuilder assemblyBuilder, string moduleName)
