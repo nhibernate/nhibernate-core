@@ -1,3 +1,5 @@
+#if FEATURE_ADONET_SQLCOMMANDSET
+
 using System;
 using System.Data.SqlClient;
 using System.Diagnostics;
@@ -135,3 +137,5 @@ namespace NHibernate.AdoNet
 		}
 	}
 }
+
+#endif
