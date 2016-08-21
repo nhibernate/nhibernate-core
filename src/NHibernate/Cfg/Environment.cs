@@ -51,7 +51,7 @@ namespace NHibernate.Cfg
 			{
 				if (cachedVersion == null)
 				{
-					Assembly thisAssembly = Assembly.GetExecutingAssembly();
+					Assembly thisAssembly = typeof(Environment).GetTypeInfo().Assembly;
 					var attrs =
 						thisAssembly.GetCustomAttributes<AssemblyInformationalVersionAttribute>().ToArray();
 

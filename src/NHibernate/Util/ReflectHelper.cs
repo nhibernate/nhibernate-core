@@ -9,6 +9,10 @@ using NHibernate.Properties;
 using NHibernate.Type;
 using NHibernate.Engine;
 
+#if NETSTANDARD
+using Microsoft.Extensions.DependencyModel;
+#endif
+
 namespace NHibernate.Util
 {
 	/// <summary>
@@ -219,7 +223,11 @@ namespace NHibernate.Util
 			{
 				if (!string.IsNullOrEmpty(classFullName))
 				{
+#if NETSTANDARD
+					Assembly[] ass = DependencyContext.Default.RuntimeLibraries.SelectMany(l => l.Assemblies).Select(x => Assembly.Load(x.Name)).ToArray();
+#else
 					Assembly[] ass = AppDomain.CurrentDomain.GetAssemblies();
+#endif
 					foreach (Assembly a in ass)
 					{
 						result = a.GetType(classFullName, false, false);

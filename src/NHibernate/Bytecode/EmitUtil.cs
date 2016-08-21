@@ -201,8 +201,11 @@ namespace NHibernate.Bytecode
 		public static void EmitCreateDelegateInstance(ILGenerator il, System.Type delegateType, MethodInfo methodInfo)
 		{
 			MethodInfo createDelegate = typeof(Delegate).GetMethod(
-				"CreateDelegate", BindingFlags.Static | BindingFlags.Public | BindingFlags.ExactBinding, null,
-				new System.Type[] {typeof(System.Type), typeof(MethodInfo)}, null);
+				"CreateDelegate", BindingFlags.Static | BindingFlags.Public
+#if !NETSTANDARD
+				| BindingFlags.ExactBinding
+#endif
+				, null, new System.Type[] {typeof(System.Type), typeof(MethodInfo)}, null);
 
 			EmitLoadType(il, delegateType);
 			EmitLoadMethodInfo(il, methodInfo);
