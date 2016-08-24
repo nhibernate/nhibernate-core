@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using NHibernate.AdoNet.Util;
 using NHibernate.Dialect;
 using NHibernate.Engine;
+using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
@@ -86,6 +87,9 @@ namespace NHibernate.Id
 			whereClause = PropertiesHelper.GetString(Where, parms, "");
 			string schemaName = PropertiesHelper.GetString(PersistentIdGeneratorParmsNames.Schema, parms, null);
 			string catalogName = PropertiesHelper.GetString(PersistentIdGeneratorParmsNames.Catalog, parms, null);
+
+      columnName = new Column(columnName).GetQuotedName(dialect);
+		  tableName = new Table(tableName).GetQuotedName(dialect);
 
 			if (tableName.IndexOf('.') < 0)
 			{
