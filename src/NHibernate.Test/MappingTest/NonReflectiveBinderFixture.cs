@@ -16,7 +16,7 @@ namespace NHibernate.Test.MappingTest
 
 		private Configuration cfg;
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void SetUp()
 		{
 			cfg = new Configuration()
@@ -24,7 +24,7 @@ namespace NHibernate.Test.MappingTest
 			cfg.BuildMappings();
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void TearDown()
 		{
 			cfg = null;
