@@ -1,0 +1,224 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2F02D2C6-38DA-48F5-A941-DC2A22CFC430}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NHibernate.Test.Linq</RootNamespace>
+    <AssemblyName>NHibernate.Test.Linq</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <StartAction>Program</StartAction>
+    <StartProgram>$(MSBuildProjectDirectory)\..\..\Tools\nunit\nunit-x86.exe</StartProgram>
+    <StartArguments>NHibernate.Test.dll</StartArguments>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug-2.0\</OutputPath>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>obj\Debug-2.0\</IntermediateOutputPath>
+    <DefineConstants>NET,NET_2_0</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <NoWarn>3001%3b3002%3b3003%3b3004%3b3005</NoWarn>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release-2.0\</OutputPath>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>obj\Release-2.0\</IntermediateOutputPath>
+    <DefineConstants>TRACE;NET,NET_2_0</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <NoWarn>3001%3b3002%3b3003%3b3004%3b3005</NoWarn>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.1.0.39271, Culture=neutral, PublicKeyToken=3a9cab8f8d22bfb7, processorArchitecture=MSIL" Condition=" '$(Configuration)' == 'Debug' ">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Iesi.Collections">
+      <HintPath>..\..\lib\net\4.0\Iesi.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Remotion.Linq, Version=1.13.171.1, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL" Condition=" '$(Configuration)' == 'Debug' ">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\Remotion.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.OracleClient" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Linq.Dynamic, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\net\System.Linq.Dynamic.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Linq\AggregateTests.cs" />
+    <Compile Include="Linq\ByMethod\AnyTests.cs" />
+    <Compile Include="Linq\BinaryBooleanExpressionTests.cs" />
+    <Compile Include="Linq\BinaryExpressionOrdererTests.cs" />
+    <Compile Include="Linq\BooleanMethodExtensionExample.cs" />
+    <Compile Include="Linq\ByMethod\AssertOrderedBy.cs" />
+    <Compile Include="Linq\ByMethod\AverageTests.cs" />
+    <Compile Include="Linq\ByMethod\CastTests.cs" />
+    <Compile Include="Linq\ByMethod\GroupByHavingTests.cs" />
+    <Compile Include="Linq\ByMethod\GroupByTests.cs" />
+    <Compile Include="Linq\ByMethod\GetValueOrDefaultTests.cs" />
+    <Compile Include="Linq\CasingTest.cs" />
+    <Compile Include="Linq\CharComparisonTests.cs" />
+    <Compile Include="Linq\CustomQueryModelRewriterTests.cs" />
+    <Compile Include="Linq\DateTimeTests.cs" />
+    <Compile Include="Linq\ExpressionSessionLeakTest.cs" />
+    <Compile Include="Linq\LoggingTests.cs" />
+    <Compile Include="Linq\QueryTimeoutTests.cs" />
+    <Compile Include="Linq\JoinTests.cs" />
+    <Compile Include="Linq\CustomExtensionsExample.cs" />
+    <Compile Include="Linq\MathTests.cs" />
+    <Compile Include="Linq\DynamicQueryTests.cs" />
+    <Compile Include="Linq\EagerLoadTests.cs" />
+    <Compile Include="Linq\EnumTests.cs" />
+    <Compile Include="Linq\ExtensionMethods.cs" />
+    <Compile Include="Linq\FunctionTests.cs" />
+    <Compile Include="Linq\LinqQuerySamples.cs" />
+    <Compile Include="Linq\LinqReadonlyTestsContext.cs" />
+    <Compile Include="Linq\LinqTestCase.cs" />
+    <Compile Include="Linq\LinqToHqlGeneratorsRegistryFactoryTest.cs" />
+    <Compile Include="Linq\MethodCallTests.cs" />
+    <Compile Include="Linq\MiscellaneousTextFixture.cs" />
+    <Compile Include="Linq\NestedSelectsTests.cs" />
+    <Compile Include="Linq\NorthwindDbCreator.cs" />
+    <Compile Include="Linq\NullComparisonTests.cs" />
+    <Compile Include="Linq\ObjectDumper.cs" />
+    <Compile Include="Linq\ByMethod\OrderByTests.cs" />
+    <Compile Include="Linq\OperatorTests.cs" />
+    <Compile Include="Linq\PagingTests.cs" />
+    <Compile Include="Linq\ParameterisedQueries.cs" />
+    <Compile Include="Linq\PatientTests.cs" />
+    <Compile Include="Linq\ProjectionsTests.cs" />
+    <Compile Include="Linq\PropertyMethodMappingTests.cs" />
+    <Compile Include="Linq\QueryCacheableTests.cs" />
+    <Compile Include="Linq\QueryReuseTests.cs" />
+    <Compile Include="Linq\ReadonlyTestCase.cs" />
+    <Compile Include="Linq\StatelessSessionQueringTest.cs" />
+    <Compile Include="Linq\ByMethod\SumTests.cs" />
+    <Compile Include="Linq\ByMethod\DistinctTests.cs" />
+    <Compile Include="Linq\ByMethod\CountTests.cs" />
+    <Compile Include="Linq\RegresstionTests.cs" />
+    <Compile Include="Linq\SelectionTests.cs" />
+    <Compile Include="Linq\WhereSubqueryTests.cs" />
+    <Compile Include="Linq\WhereTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="NHibernate.Test.Linq.nunit" />
+    <None Include="DbScripts\MsSql2008DialectLinqReadonlyCreateScript.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="DbScripts\MsSql2008DialectLinqReadonlyDropScript.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NHibernate.DomainModel\NHibernate.DomainModel.csproj">
+      <Project>{5C649B55-1B3F-4C38-9998-1B043E94A244}</Project>
+      <Name>NHibernate.DomainModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NHibernate.Test\NHibernate.Test.csproj">
+      <Project>{7aee5b37-c552-4e59-9b6f-88755bcb5070}</Project>
+      <Name>NHibernate.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NHibernate\NHibernate.csproj">
+      <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
+      <Name>NHibernate</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DbScripts\MsSql2012DialectLinqReadonlyCreateScript.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="DbScripts\MsSql2012DialectLinqReadonlyDropScript.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="DbScripts\PostgreSQL82DialectLinqReadonlyCreateScript.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="DbScripts\PostgreSQL82DialectLinqReadonlyDropScript.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

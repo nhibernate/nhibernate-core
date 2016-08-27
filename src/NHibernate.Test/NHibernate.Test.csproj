@@ -529,54 +529,6 @@
     <Compile Include="LazyOneToOne\Person.cs" />
     <Compile Include="LazyProperty\Book.cs" />
     <Compile Include="LazyProperty\LazyPropertyFixture.cs" />
-    <Compile Include="Linq\AggregateTests.cs" />
-    <Compile Include="Linq\ByMethod\AnyTests.cs" />
-    <Compile Include="Linq\BinaryBooleanExpressionTests.cs" />
-    <Compile Include="Linq\BinaryExpressionOrdererTests.cs" />
-    <Compile Include="Linq\BooleanMethodExtensionExample.cs" />
-    <Compile Include="Linq\ByMethod\AssertOrderedBy.cs" />
-    <Compile Include="Linq\ByMethod\AverageTests.cs" />
-    <Compile Include="Linq\ByMethod\CastTests.cs" />
-    <Compile Include="Linq\ByMethod\GroupByHavingTests.cs" />
-    <Compile Include="Linq\ByMethod\GroupByTests.cs" />
-    <Compile Include="Linq\ByMethod\GetValueOrDefaultTests.cs" />
-    <Compile Include="Linq\CasingTest.cs" />
-    <Compile Include="Linq\CharComparisonTests.cs" />
-    <Compile Include="Linq\CustomQueryModelRewriterTests.cs" />
-    <Compile Include="Linq\DateTimeTests.cs" />
-    <Compile Include="Linq\ExpressionSessionLeakTest.cs" />
-    <Compile Include="Linq\LoggingTests.cs" />
-    <Compile Include="Linq\QueryTimeoutTests.cs" />
-    <Compile Include="Linq\JoinTests.cs" />
-    <Compile Include="Linq\CustomExtensionsExample.cs" />
-    <Compile Include="Linq\MathTests.cs" />
-    <Compile Include="Linq\DynamicQueryTests.cs" />
-    <Compile Include="Linq\EagerLoadTests.cs" />
-    <Compile Include="Linq\EnumTests.cs" />
-    <Compile Include="Linq\ExtensionMethods.cs" />
-    <Compile Include="Linq\FunctionTests.cs" />
-    <Compile Include="Linq\LinqQuerySamples.cs" />
-    <Compile Include="Linq\LinqReadonlyTestsContext.cs" />
-    <Compile Include="Linq\LinqTestCase.cs" />
-    <Compile Include="Linq\LinqToHqlGeneratorsRegistryFactoryTest.cs" />
-    <Compile Include="Linq\MethodCallTests.cs" />
-    <Compile Include="Linq\MiscellaneousTextFixture.cs" />
-    <Compile Include="Linq\NestedSelectsTests.cs" />
-    <Compile Include="Linq\NorthwindDbCreator.cs" />
-    <Compile Include="Linq\NullComparisonTests.cs" />
-    <Compile Include="Linq\ObjectDumper.cs" />
-    <Compile Include="Linq\ByMethod\OrderByTests.cs" />
-    <Compile Include="Linq\OperatorTests.cs" />
-    <Compile Include="Linq\PagingTests.cs" />
-    <Compile Include="Linq\ParameterisedQueries.cs" />
-    <Compile Include="Linq\PatientTests.cs" />
-    <Compile Include="Linq\ProjectionsTests.cs" />
-    <Compile Include="Linq\PropertyMethodMappingTests.cs" />
-    <Compile Include="Linq\QueryCacheableTests.cs" />
-    <Compile Include="Linq\QueryReuseTests.cs" />
-    <Compile Include="Linq\ReadonlyTestCase.cs" />
-    <Compile Include="Linq\StatelessSessionQueringTest.cs" />
-    <Compile Include="Linq\ByMethod\SumTests.cs" />
     <Compile Include="Logging\Log4NetLoggerTest.cs" />
     <Compile Include="Logging\LoggerProviderTest.cs" />
     <Compile Include="MappingByCode\ConventionModelMapperTests\ComponetsAccessorTests.cs" />
@@ -724,7 +676,6 @@
     <Compile Include="NHSpecificTest\AccessAndCorrectPropertyName\Model.cs" />
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Domain.cs" />
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Fixture.cs" />
-    <Compile Include="Linq\ByMethod\DistinctTests.cs" />
     <Compile Include="Component\Basic\ComponentWithUniqueConstraintTests.cs" />
     <Compile Include="NHSpecificTest\EntityWithUserTypeCanHaveLinqGenerators\BarExample.cs" />
     <Compile Include="NHSpecificTest\EntityWithUserTypeCanHaveLinqGenerators\EntityWithUserTypeProperty.cs" />
@@ -1234,7 +1185,6 @@
     <Compile Include="NHSpecificTest\NH2705\SubItemBase.cs" />
     <Compile Include="NHSpecificTest\NH2705\SubItemDetails.cs" />
     <Compile Include="NHSpecificTest\NH2705\Test.cs" />
-    <Compile Include="Linq\ByMethod\CountTests.cs" />
     <Compile Include="NHSpecificTest\NH2721\A.cs" />
     <Compile Include="NHSpecificTest\NH2721\B.cs" />
     <Compile Include="NHSpecificTest\NH2721\Fixture.cs" />
@@ -1405,10 +1355,6 @@
     <Compile Include="UtilityTest\ReflectHelperGetProperty.cs" />
     <Compile Include="UtilityTest\ReflectionHelperIsMethodOfTests.cs" />
     <Compile Include="UtilityTest\ReflectionHelperTest.cs" />
-    <Compile Include="Linq\RegresstionTests.cs" />
-    <Compile Include="Linq\SelectionTests.cs" />
-    <Compile Include="Linq\WhereSubqueryTests.cs" />
-    <Compile Include="Linq\WhereTests.cs" />
     <Compile Include="ListIndex\SimpleOneToMany.cs" />
     <Compile Include="ListIndex\SimpleOneToManyTest.cs" />
     <Compile Include="MappingTest\NonReflectiveBinderFixture.cs" />
@@ -2689,12 +2635,6 @@
     <EmbeddedResource Include="Immutable\EntityWithMutableCollection\NonInverse\ContractVariationVersioned.hbm.xml" />
     <EmbeddedResource Include="Immutable\EntityWithMutableCollection\NonInverse\ContractVariationVersionedOneToManyJoin.hbm.xml" />
     <None Include="NHibernate.Test.nunit" />
-    <None Include="DbScripts\MsSql2008DialectLinqReadonlyCreateScript.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="DbScripts\MsSql2008DialectLinqReadonlyDropScript.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <EmbeddedResource Include="NHSpecificTest\NH2224\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2279\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2111\Mappings.hbm.xml" />
@@ -3423,18 +3363,6 @@
     <EmbeddedResource Include="DriverTest\EntityForMs2008.hbm.xml" />
     <Content Include="..\NHibernate.DomainModel\ABC.hbm.xml">
       <Link>ABC.hbm.xml</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="DbScripts\MsSql2012DialectLinqReadonlyCreateScript.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="DbScripts\MsSql2012DialectLinqReadonlyDropScript.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="DbScripts\PostgreSQL82DialectLinqReadonlyCreateScript.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="DbScripts\PostgreSQL82DialectLinqReadonlyDropScript.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="DynamicEntity\package.html" />
