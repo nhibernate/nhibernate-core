@@ -103,7 +103,7 @@ namespace NHibernate.Test.Linq
 		private string GetScripFileName(Configuration configuration,string postFix)
 		{
 			var dialect = Dialect.Dialect.GetDialect(configuration.Properties);
-			return Path.Combine("DbScripts", dialect.GetType().Name + postFix + ".sql");
+			return Path.Combine(TestContext.CurrentContext.TestDirectory, "DbScripts", dialect.GetType().Name + postFix + ".sql");
 		}
 
 		private Configuration Configure()
