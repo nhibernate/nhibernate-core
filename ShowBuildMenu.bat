@@ -5,7 +5,7 @@ set NANT="%~dp0Tools\nant\bin\NAnt.exe" -t:net-4.0
 set BUILDTOOL="%~dp0Tools\BuildTool\bin\Release\BuildTool.exe"
 set AVAILABLE_CONFIGURATIONS=%~dp0available-test-configurations
 set CURRENT_CONFIGURATION=%~dp0current-test-configuration
-set NUNIT="%~dp0Tools\nunit\nunit-x86.exe"
+set NUNIT="%~dp0Tools\NUnit.ConsoleRunner.3.6.0\tools\nunit3-console.exe"
 
 :main-menu
 echo ========================= NHIBERNATE BUILD MENU ==========================
@@ -161,7 +161,7 @@ echo Configuration activated.
 goto main-menu
 
 :test-run
-start "" %NUNIT% NHibernate.nunit
+start "nunit3-console" cmd /K %NUNIT% --x86 --agents=1 --process=separate NHibernate.nunit
 goto main-menu
 
 rem :build-test
