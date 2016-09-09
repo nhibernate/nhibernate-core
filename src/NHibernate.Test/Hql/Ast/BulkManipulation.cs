@@ -544,7 +544,7 @@ namespace NHibernate.Test.Hql.Ast
 			var e =
 				Assert.Throws<QueryException>(
 					() => s.CreateQuery("update Human set mother.name.initial = :initial").SetString("initial", "F").ExecuteUpdate());
-			Assert.That(e.Message, Is.StringStarting("Implied join paths are not assignable in update"));
+			Assert.That(e.Message, Does.StartWith("Implied join paths are not assignable in update"));
 
 			s.CreateQuery("delete Human where mother is not null").ExecuteUpdate();
 			s.CreateQuery("delete Human").ExecuteUpdate();
@@ -725,7 +725,7 @@ namespace NHibernate.Test.Hql.Ast
 			using (ISession s = OpenSession())
 			{
 				var e = Assert.Throws<QueryException>(() => s.CreateQuery("update Vehicle set owner = null where owner = 'Steve'").ExecuteUpdate());
-				Assert.That(e.Message, Is.StringStarting("Left side of assigment should be a case sensitive property or a field"));
+				Assert.That(e.Message, Does.StartWith("Left side of assigment should be a case sensitive property or a field"));
 			}
 		}
 

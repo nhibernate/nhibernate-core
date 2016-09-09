@@ -55,7 +55,7 @@ namespace NHibernate.Test.CfgTest
 		{
 			var properties = new Dictionary<string, string> { { Environment.PropertyBytecodeProvider, typeof(InvalidNoCtorByteCodeProvider).AssemblyQualifiedName } };
 			Assert.That(() => Environment.BuildBytecodeProvider(properties), Throws.TypeOf<HibernateByteCodeException>()
-																				   .And.InnerException.Message.ContainsSubstring("constructor was not found"));
+																				   .And.InnerException.Message.Contains("constructor was not found"));
 		}
 	}
 }

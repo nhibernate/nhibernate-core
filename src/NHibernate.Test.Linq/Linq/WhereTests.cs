@@ -753,7 +753,7 @@ namespace NHibernate.Test.Linq
 				// This should generate SQL with some nested case expressions - it should not be
 				// simplified.
 				string wholeLog = ls.GetWholeLog();
-				Assert.That(wholeLog, Is.StringContaining("when lower(product0_.ProductName)="));
+				Assert.That(wholeLog, Does.Contain("when lower(product0_.ProductName)="));
 			}
 		}
 
@@ -769,7 +769,7 @@ namespace NHibernate.Test.Linq
 				Assert.That(result, Has.Count.EqualTo(expectedCount));
 
 				string wholeLog = ls.GetWholeLog();
-				Assert.That(wholeLog, expectCase ? Is.StringContaining("case") : Is.Not.StringContaining("case"));
+				Assert.That(wholeLog, expectCase ? Does.Contain("case") : Does.Not.Contain("case"));
 			}
 		}
 

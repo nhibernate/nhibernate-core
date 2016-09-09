@@ -35,7 +35,7 @@ namespace NHibernate.Test.TypesTest
 				var docEntity = s.Get<XDocClass>(1);
 				var document = docEntity.Document;
 				Assert.That(document, Is.Not.Null);
-				Assert.That(document.Document.Root.ToString(SaveOptions.DisableFormatting), Is.StringContaining("<MyNode>my Text</MyNode>"));
+				Assert.That(document.Document.Root.ToString(SaveOptions.DisableFormatting), Does.Contain("<MyNode>my Text</MyNode>"));
 			  var xmlElement = new XElement("Pizza", new XAttribute("temp", "calda"));
 		document.Document.Root.Add(xmlElement);
 				s.Save(docEntity);
@@ -45,7 +45,7 @@ namespace NHibernate.Test.TypesTest
 			{
 				var docEntity = s.Get<XDocClass>(1);
 		var document = docEntity.Document;
-		Assert.That(document.Document.Root.ToString(SaveOptions.DisableFormatting), Is.StringContaining("Pizza temp=\"calda\""));
+		Assert.That(document.Document.Root.ToString(SaveOptions.DisableFormatting), Does.Contain("Pizza temp=\"calda\""));
 				s.Delete(docEntity);
 				s.Flush();
 			}

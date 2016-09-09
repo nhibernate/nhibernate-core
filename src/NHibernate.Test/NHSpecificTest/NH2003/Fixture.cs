@@ -24,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2003
 			new SchemaExport(cfg).Execute(s => script.AppendLine(s), false, false);
 
 			string wholeScript = script.ToString();
-			Assert.That(wholeScript, Is.StringContaining("not null").IgnoreCase);
+			Assert.That(wholeScript, Does.Contain("not null").IgnoreCase);
 		}
 	}
 }

@@ -63,7 +63,7 @@ namespace NHibernate.Test.Linq.ByMethod
 								  select g.Key).ToList();
 
 				Assert.That(orders.Count, Is.EqualTo(481));
-				Assert.That(Regex.Replace(spy.GetWholeLog(), @"\s+", " "), Is.StringContaining("group by order0_.OrderDate"));
+				Assert.That(Regex.Replace(spy.GetWholeLog(), @"\s+", " "), Does.Contain("group by order0_.OrderDate"));
 			}
 		}
 
