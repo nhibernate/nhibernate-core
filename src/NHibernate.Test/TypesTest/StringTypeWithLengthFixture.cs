@@ -118,7 +118,7 @@ namespace NHibernate.Test.TypesTest
 
 				Assert.That(
 					ex.Message,
-					Is.StringStarting("Error dehydrating property value for NHibernate.Test.TypesTest.StringClass."));
+					Does.StartWith("Error dehydrating property value for NHibernate.Test.TypesTest.StringClass."));
 
 				Assert.That(ex.InnerException, Is.TypeOf<HibernateException>());
 
@@ -128,7 +128,7 @@ namespace NHibernate.Test.TypesTest
 			}
 			else if (Dialect is MsSqlCeDialect && ex is InvalidOperationException)
 			{
-				Assert.That(ex.Message, Is.StringContaining("max=4000, len=4001"));
+				Assert.That(ex.Message, Does.Contain("max=4000, len=4001"));
 			}
 			else
 			{

@@ -77,7 +77,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			var exception =
 				Assert.Throws<ArgumentOutOfRangeException>(
 					() => configure.EntityCache<EntityToCache>(ce => ce.Collection(e => e.Relation.Elements, cc => { })));
-			Assert.That(exception.Message, Is.StringContaining("Collection not owned by"));
+			Assert.That(exception.Message, Does.Contain("Collection not owned by"));
 		}
 	}
 }

@@ -164,7 +164,7 @@ namespace NHibernate.Test.MappingTest
 
 			Property property = cm.GetProperty("SortedEmployee");
 			var col = (Mapping.Collection)property.Value;
-			Assert.That(col.ComparerClassName, Is.StringStarting("NHibernate.Test.MappingTest.NonExistingComparator"));
+			Assert.That(col.ComparerClassName, Does.StartWith("NHibernate.Test.MappingTest.NonExistingComparator"));
 		}
 
 		[Test]

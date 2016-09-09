@@ -86,7 +86,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1093
 			using (var ls = new LogSpy(LogManager.GetLogger("NHibernate"), Level.Warn))
 			{
 				base.BuildSessionFactory();
-				Assert.That(ls.GetWholeLog(), Is.StringContaining("Fake cache used"));
+				Assert.That(ls.GetWholeLog(), Does.Contain("Fake cache used"));
 			}
 		}
 	}

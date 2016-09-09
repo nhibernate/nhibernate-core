@@ -29,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2828
 					}
 				}
 				var wholeMessage = sl.GetWholeLog();
-				Assert.That(wholeMessage, Is.Not.StringContaining("BankAccount"));
+				Assert.That(wholeMessage, Does.Not.Contain("BankAccount"));
 			}
 
 			Cleanup(companyId);
