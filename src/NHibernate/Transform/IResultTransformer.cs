@@ -1,10 +1,9 @@
-using System;
 using System.Collections;
 
 namespace NHibernate.Transform
 {
 	/// <summary>
-	/// Implementors define a strategy for transforming criteria query
+	/// Implementers define a strategy for transforming criteria query
 	/// results into the actual application-visible query result list.
 	/// </summary>
 	/// <seealso cref="NHibernate.ICriteria.SetResultTransformer(IResultTransformer)" />
@@ -25,4 +24,16 @@ namespace NHibernate.Transform
 		/// <returns></returns>
 		IList TransformList(IList collection);
 	}
+
+    /// <summary>
+    /// Implementers define a strategy for transforming a <typeparamref name="T"/>
+    /// specific <see cref="Result"/> for transforming criteria query results into
+    /// the application specific query result list.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public interface IResultTransformer<out T> : IResultTransformer
+        where T : new()
+    {
+        T Result { get; }
+    }
 }
