@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH3911"
+	default-lazy="true">
+
+  <class name="Base" lazy="true" discriminator-value="0">
+    <id name="Id">
+      <generator class="identity"/>
+    </id>
+
+    <discriminator type="Int32" column="D" not-null="true"/>
+
+    <many-to-one name="Ref" class="Base" not-null="false" access="nosetter.camelcase-underscore" cascade="all" lazy="proxy" />
+
+    <subclass name="Derived1" discriminator-value="1" lazy="true"/>
+    <subclass name="Derived2" discriminator-value="2" lazy="true"/>
+
+  </class>
+ 
+</hibernate-mapping>
+ 
