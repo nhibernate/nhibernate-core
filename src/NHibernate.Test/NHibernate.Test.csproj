@@ -896,6 +896,10 @@
     <Compile Include="NHSpecificTest\NH3844\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3818\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3818\MyLovelyCat.cs" />
+    <Compile Include="NHSpecificTest\NH3911\Base.cs" />
+    <Compile Include="NHSpecificTest\NH3911\Derived1.cs" />
+    <Compile Include="NHSpecificTest\NH3911\Derived2.cs" />
+    <Compile Include="NHSpecificTest\NH3911\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH646\Domain.cs" />
     <Compile Include="NHSpecificTest\NH646\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3234\Fixture.cs" />
@@ -3169,6 +3173,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH3911\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2218\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3046\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3518\Mappings.hbm.xml" />
