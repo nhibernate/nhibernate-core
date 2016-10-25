@@ -9,11 +9,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2214
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			return dialect is MsSql2005Dialect || dialect is MsSql2008Dialect;
-		}
-
 		protected override void OnSetUp()
 		{
 			using (ISession session = OpenSession())
