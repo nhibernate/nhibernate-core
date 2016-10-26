@@ -6,6 +6,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3874
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect.SupportsIdentityColumns;
+		}
+
 		object _id;
 
 		protected override void OnSetUp()
