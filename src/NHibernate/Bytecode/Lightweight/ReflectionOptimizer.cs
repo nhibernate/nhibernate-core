@@ -41,7 +41,7 @@ namespace NHibernate.Bytecode.Lightweight
 			//this.setters = setters;
 
 			GetPropertyValuesInvoker getInvoker = GenerateGetPropertyValuesMethod(getters);
-			SetPropertyValuesInvoker setInvoker = GenerateSetPropertyValuesMethod(getters, setters);
+			SetPropertyValuesInvoker setInvoker = GenerateSetPropertyValuesMethod(setters);
 
 			accessOptimizer = new AccessOptimizer(getInvoker, setInvoker, getters, setters);
 
@@ -186,7 +186,7 @@ namespace NHibernate.Bytecode.Lightweight
 		/// Generates a dynamic method on the given type.
 		/// </summary>
 		/// <returns></returns>
-		private SetPropertyValuesInvoker GenerateSetPropertyValuesMethod(IGetter[] getters, ISetter[] setters)
+		private SetPropertyValuesInvoker GenerateSetPropertyValuesMethod(ISetter[] setters)
 		{
 			var methodArguments = new[] {typeof (object), typeof (object[]), typeof (SetterCallback)};
 			DynamicMethod method = CreateDynamicMethod(null, methodArguments);
@@ -203,7 +203,6 @@ namespace NHibernate.Bytecode.Lightweight
 			{
 				// get the member accessor
 				ISetter setter = setters[i];
-				System.Type valueType = getters[i].ReturnType;
 
 				var optimizableSetter = setter as IOptimizableSetter;
 
@@ -217,7 +216,7 @@ namespace NHibernate.Bytecode.Lightweight
 					il.Emit(OpCodes.Ldc_I4, i);
 					il.Emit(OpCodes.Ldelem_Ref);
 
-					EmitUtil.PreparePropertyForSet(il, valueType);
+					EmitUtil.PreparePropertyForSet(il, optimizableSetter.Type);
 
 					// using the setter's emitted IL
 					optimizableSetter.Emit(il);
