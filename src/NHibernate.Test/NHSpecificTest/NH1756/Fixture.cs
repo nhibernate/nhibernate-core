@@ -61,7 +61,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1756
 							Console.WriteLine("Read back from table (id, version, previousversion_column):");
 							while (reader.Read())
 							{
-								Console.WriteLine("{0}    {1:O}    {2:O}", reader.GetValue(0), reader.GetValue(1), reader.GetValue(2));
+								Console.WriteLine(
+									"{0}    {1:O} ({2})    {3:O} ({4})",
+									reader.GetValue(0),
+									reader.GetValue(1),
+									reader.GetDateTime(1).Ticks,
+									reader.GetValue(2),
+									reader.GetDateTime(2).Ticks);
 							}
 						}
 					}

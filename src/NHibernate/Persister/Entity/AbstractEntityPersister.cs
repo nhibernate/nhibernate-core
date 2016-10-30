@@ -2838,7 +2838,7 @@ namespace NHibernate.Persister.Entity
 						session.Batcher.AbortBatch(e);
 					}
 
-					throw new StaleObjectStateException(EntityName, id);
+					throw new StaleObjectStateException(EntityName, id,e);
 				}
 				catch (Exception e)
 				{
