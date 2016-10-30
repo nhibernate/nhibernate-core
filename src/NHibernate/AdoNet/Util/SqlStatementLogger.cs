@@ -103,8 +103,8 @@ namespace NHibernate.AdoNet.Util
 	    private static string GetParameterLogableType(IDataParameter dataParameter)
 	    {
             var p = dataParameter as IDbDataParameter;
-            if (p != null)
-                return p.DbType + " (" + p.Size + ")";
+		    if (p != null)
+			    return p.DbType + " (" + p.Size + ":" + p.Scale + ":" + p.Precision + ")";
 	        return p.DbType.ToString();
 
 	    }

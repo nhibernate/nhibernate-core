@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using NHibernate.Dialect;
 using NUnit.Framework;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.NHSpecificTest.NH1756
 {
@@ -12,6 +13,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1756
 		{
 			return dialect is MsSql2000Dialect;
 		}
+
+
+		protected override void Configure(Cfg.Configuration configuration)
+		{
+			base.Configure(configuration);
+			configuration.SetProperty(Environment.ShowSql, "true");
+		}
+
 
 		[Test]
 		public void SaveTransient_Then_Update_Ok()
@@ -54,23 +63,35 @@ namespace NHibernate.Test.NHSpecificTest.NH1756
 
 					using (var cmd = session.Connection.CreateCommand())
 					{
-						cmd.CommandText = "select id, version_column, previousversion_column from book";
 						transaction.Enlist(cmd);
+						cmd.CommandText = "select id, version_column, previousversion_column, (case when version_column = ? then 1 else 0 end) as versionIsEqual from book";
+						var param = cmd.CreateParameter();
+						param.Value = book.Version;
+						param.Scale = 3;
+						cmd.Parameters.Add(param);
+
 						using (var reader = cmd.ExecuteReader())
 						{
-							Console.WriteLine("Read back from table (id, version, previousversion_column):");
+							Console.WriteLine("Read back from table (id, version, previousversion_column, versionIsEqual):");
 							while (reader.Read())
 							{
 								Console.WriteLine(
-									"{0}    {1:O} ({2})    {3:O} ({4})",
+									"{0}    {1:O} ({2})    {3:O} ({4})    {5}",
 									reader.GetValue(0),
 									reader.GetValue(1),
 									reader.GetDateTime(1).Ticks,
 									reader.GetValue(2),
-									reader.GetDateTime(2).Ticks);
+									reader.GetDateTime(2).Ticks,
+									reader.GetValue(3));
 							}
 						}
 					}
+
+
+					var readBooks = session.CreateQuery("from Book b where b.Version = :v")
+										   .SetParameter("v", book.Version, NHibernateUtil.Timestamp)
+										   .List<Book>();
+					Console.WriteLine("NH read books: {0}", readBooks.Count);
 
 					book.Name = "modified test book";
 					transaction.Commit();
