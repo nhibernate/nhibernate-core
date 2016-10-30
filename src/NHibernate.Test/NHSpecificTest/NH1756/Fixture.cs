@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NHibernate.Dialect;
 using NUnit.Framework;
@@ -37,14 +38,30 @@ namespace NHibernate.Test.NHSpecificTest.NH1756
 
 		[Test]
 		[Description("Work with AutoFlush on commit")]
-		public void SaveTransient_Then_Update()
+		public void SaveTransient_Then_Update([Range(1, 200)] int attempt)
 		{
 			using (ISession session = OpenSession())
 			{
 				using (ITransaction transaction = session.BeginTransaction())
 				{
-					var book = new Book { Name = "test book", Pages = new List<Page>(), };
+					var book = new Book {Name = "test book", Pages = new List<Page>(),};
 					session.Save(book);
+					Console.WriteLine("Book #{0} saved with version {1}.", book.Id, book.Version.ToString("O"));
+
+					using (var cmd = session.Connection.CreateCommand())
+					{
+						cmd.CommandText = "select id, version_column from book";
+						transaction.Enlist(cmd);
+						using (var reader = cmd.ExecuteReader())
+						{
+							Console.WriteLine("Read back from table:");
+							while (reader.Read())
+							{
+								Console.WriteLine("{0}    {1:O}", reader.GetValue(0), reader.GetValue(1));
+							}
+						}
+					}
+
 					book.Name = "modified test book";
 					transaction.Commit();
 				}
