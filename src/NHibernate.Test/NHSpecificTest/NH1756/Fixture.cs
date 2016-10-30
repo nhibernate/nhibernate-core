@@ -65,8 +65,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1756
 						using (var cmd = session.Connection.CreateCommand())
 						{
 							transaction.Enlist(cmd);
-							cmd.CommandText = "select id, version_column, previousversion_column, (case when version_column = ? then 1 else 0 end) as versionIsEqual, ? as sentVersion from book";
+							cmd.CommandText = "select id, version_column, previousversion_column, (case when version_column = ? then 1 else 0 end) as versionIsEqual, ? as sentVersion, cast (version_column as datetime2) as vcdt2, cast (? as datetime2) as svdt2 from book";
 							var param = cmd.CreateParameter();
+							param.Value = book.Version;
+							param.Scale = 3;
+							cmd.Parameters.Add(param);
+							param = cmd.CreateParameter();
 							param.Value = book.Version;
 							param.Scale = 3;
 							cmd.Parameters.Add(param);
@@ -77,11 +81,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1756
 
 							using (var reader = cmd.ExecuteReader())
 							{
-								Console.WriteLine("Read back from table (id, version, previousversion_column, versionIsEqual, sentVersion):");
+								Console.WriteLine("Read back from table (id, version, previousversion_column, versionIsEqual, sentVersion, version as datetime2, sentVersion as datetime2):");
 								while (reader.Read())
 								{
 									Console.WriteLine(
-										"{0}    {1:O} ({2})    {3:O} ({4})    {5}    {6:O} ({7})",
+										"{0}    {1:O} ({2})    {3:O} ({4})    {5}    {6:O} ({7})    {8:O} ({9})    {10:O} ({11})",
 										reader.GetValue(0),
 										reader.GetValue(1),
 										reader.GetDateTime(1).Ticks,
@@ -89,7 +93,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1756
 										reader.GetDateTime(2).Ticks,
 										reader.GetValue(3),
 										reader.GetValue(4),
-										reader.GetDateTime(4).Ticks);
+										reader.GetDateTime(4).Ticks,
+										reader.GetValue(5),
+										reader.GetDateTime(5).Ticks,
+										reader.GetValue(6),
+										reader.GetDateTime(6).Ticks);
 								}
 							}
 						}
