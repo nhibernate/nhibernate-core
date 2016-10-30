@@ -120,6 +120,8 @@ namespace NHibernate.AdoNet.Util
 				{
 					return string.Concat("'", TruncateWithEllipsis(parameter.Value.ToString(), maxLogableStringLength), "'");
 				}
+				if (parameter.DbType == DbType.DateTime)
+					return ((DateTime) parameter.Value).ToString("O");
 				var buffer = parameter.Value as byte[];
 				if (buffer != null)
 				{
