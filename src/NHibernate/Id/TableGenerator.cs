@@ -88,8 +88,8 @@ namespace NHibernate.Id
 			string schemaName = PropertiesHelper.GetString(PersistentIdGeneratorParmsNames.Schema, parms, null);
 			string catalogName = PropertiesHelper.GetString(PersistentIdGeneratorParmsNames.Catalog, parms, null);
 
-      columnName = new Column(columnName).GetQuotedName(dialect);
-		  tableName = new Table(tableName).GetQuotedName(dialect);
+			columnName = new Column(columnName).GetQuotedName(dialect);
+			tableName = new Table(tableName).GetQuotedName(dialect);
 
 			if (tableName.IndexOf('.') < 0)
 			{
