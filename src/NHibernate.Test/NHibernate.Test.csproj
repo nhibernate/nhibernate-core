@@ -901,6 +901,8 @@
     <Compile Include="NHSpecificTest\NH3874\IntWrapperType.cs" />
     <Compile Include="NHSpecificTest\NH3874\One.cs" />
     <Compile Include="NHSpecificTest\NH3874\Two.cs" />
+    <Compile Include="NHSpecificTest\NH3909\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3909\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH646\Domain.cs" />
     <Compile Include="NHSpecificTest\NH646\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3234\Fixture.cs" />
