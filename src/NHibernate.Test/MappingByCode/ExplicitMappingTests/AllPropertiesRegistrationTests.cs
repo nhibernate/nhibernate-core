@@ -5,7 +5,6 @@ using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 {
@@ -123,35 +122,35 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			inspector.IsRootEntity((type, declared) => type == typeof(Inherited));
 			var mapper = new ModelMapper(inspector);
 			mapper.Class<MyClass>(mc =>
-			                      {
-			                      	mc.Id(x => x.Id);
-			                      	mc.Property(x => x.Simple, map => map.Access(Accessor.Field));
-			                      	mc.Property(x => x.ComplexType, map => map.Access(Accessor.Field));
-			                      	mc.Bag(x => x.Bag, y => y.Access(Accessor.Field));
-			                      	mc.IdBag(x => x.IdBag, y => y.Access(Accessor.Field));
-			                      	mc.List(x => x.List, y => y.Access(Accessor.Field));
-			                      	mc.Set(x => x.Set, y => y.Access(Accessor.Field));
-			                      	mc.Map(x => x.Map, y => y.Access(Accessor.Field));
+								  {
+									mc.Id(x => x.Id);
+									mc.Property(x => x.Simple, map => map.Access(Accessor.Field));
+									mc.Property(x => x.ComplexType, map => map.Access(Accessor.Field));
+									mc.Bag(x => x.Bag, y => y.Access(Accessor.Field));
+									mc.IdBag(x => x.IdBag, y => y.Access(Accessor.Field));
+									mc.List(x => x.List, y => y.Access(Accessor.Field));
+									mc.Set(x => x.Set, y => y.Access(Accessor.Field));
+									mc.Map(x => x.Map, y => y.Access(Accessor.Field));
 															mc.OneToOne(x => x.OneToOne, y => y.Access(Accessor.Field));
 															mc.ManyToOne(x => x.ManyToOne, y => y.Access(Accessor.Field));
 															mc.Any(x => x.Any, typeof(int), y => y.Access(Accessor.Field));
 															mc.Component(x => x.DynamicCompo, new { A = 2 }, y => y.Access(Accessor.Field));
 															mc.Component(x => x.Compo, y =>
-			                      	                           {
-			                      	                           	y.Access(Accessor.Field);
-			                      	                           	y.Property(c => c.Something);
-			                      	                           });
-			                      });
+															   {
+																y.Access(Accessor.Field);
+																y.Property(c => c.Something);
+															   });
+								  });
 			mapper.Class<Inherited>(mc =>{});
 
 			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
 			var hbmClass = mappings.RootClasses[0];
-			mappings.JoinedSubclasses.Should().Be.Empty();
-			hbmClass.Properties.Select(p => p.Name).Should().Have.SameValuesAs("Simple", "ComplexType", "Bag", "IdBag", "List", "Set", "Map", "Compo", "OneToOne", "ManyToOne", "Any", "DynamicCompo");
-			hbmClass.Properties.Select(p => p.Access).All(x => x.Satisfy(access => access.Contains("field.")));
+			Assert.That(mappings.JoinedSubclasses, Is.Empty);
+			Assert.That(hbmClass.Properties.Select(p => p.Name), Is.EquivalentTo(new [] {"Simple", "ComplexType", "Bag", "IdBag", "List", "Set", "Map", "Compo", "OneToOne", "ManyToOne", "Any", "DynamicCompo"}));
+			Assert.That(hbmClass.Properties.Select(p => p.Access).All(x => x.StartsWith("field.")), Is.True);
 		}
 
-	    [Test]
+		[Test]
 		public void WhenMapPropertiesInTheBaseJumpedClassUsingMemberNameThenMapInInherited()
 		{
 			// ignoring MyClass and using Inherited, as root-class, I will try to map all properties using the base class.
@@ -161,117 +160,109 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			inspector.IsRootEntity((type, declared) => type == typeof(Inherited));
 			var mapper = new ModelMapper(inspector);
 			mapper.Class<MyClass>(mc =>
-			                      {
-			                      	mc.Id(x => x.Id);
-			                      	mc.Property("Simple", map => map.Access(Accessor.Field));
-			                      	mc.Property("ComplexType", map => map.Access(Accessor.Field));
-			                      	mc.Bag<string>("Bag", y => y.Access(Accessor.Field));
-			                      	mc.IdBag<MyCompo>("IdBag", y => y.Access(Accessor.Field));
-			                      	mc.List<string>("List", y => y.Access(Accessor.Field));
-			                      	mc.Set<string>("Set", y => y.Access(Accessor.Field));
-			                      	mc.Map<int, string>("Map", y => y.Access(Accessor.Field));
-			                      	mc.OneToOne<Related>("OneToOne", y => y.Access(Accessor.Field));
-			                      	mc.ManyToOne<Related>("ManyToOne", y => y.Access(Accessor.Field));
-			                      	mc.Any<object>("Any", typeof (int), y => y.Access(Accessor.Field));
-			                      	mc.Component("DynamicCompo", new {A = 2}, y => y.Access(Accessor.Field));
-			                      	mc.Component<MyCompo>("Compo", y =>
-			                      	                               {
-			                      	                               	y.Access(Accessor.Field);
-			                      	                               	y.Property(c => c.Something);
-			                      	                               });
-			                      });
+								  {
+									mc.Id(x => x.Id);
+									mc.Property("Simple", map => map.Access(Accessor.Field));
+									mc.Property("ComplexType", map => map.Access(Accessor.Field));
+									mc.Bag<string>("Bag", y => y.Access(Accessor.Field));
+									mc.IdBag<MyCompo>("IdBag", y => y.Access(Accessor.Field));
+									mc.List<string>("List", y => y.Access(Accessor.Field));
+									mc.Set<string>("Set", y => y.Access(Accessor.Field));
+									mc.Map<int, string>("Map", y => y.Access(Accessor.Field));
+									mc.OneToOne<Related>("OneToOne", y => y.Access(Accessor.Field));
+									mc.ManyToOne<Related>("ManyToOne", y => y.Access(Accessor.Field));
+									mc.Any<object>("Any", typeof (int), y => y.Access(Accessor.Field));
+									mc.Component("DynamicCompo", new {A = 2}, y => y.Access(Accessor.Field));
+									mc.Component<MyCompo>("Compo", y =>
+																   {
+																	y.Access(Accessor.Field);
+																	y.Property(c => c.Something);
+																   });
+								  });
 			mapper.Class<Inherited>(mc => { });
 
 			HbmMapping mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
 			HbmClass hbmClass = mappings.RootClasses[0];
-			mappings.JoinedSubclasses.Should().Be.Empty();
-			hbmClass.Properties.Select(p => p.Name).Should().Have.SameValuesAs("Simple", "ComplexType", "Bag", "IdBag", "List", "Set", "Map", "Compo", "OneToOne", "ManyToOne", "Any",
-			                                                                   "DynamicCompo");
-			hbmClass.Properties.Select(p => p.Access).All(x => x.Satisfy(access => access.Contains("field.")));
+			Assert.That(mappings.JoinedSubclasses, Is.Empty);
+			Assert.That(hbmClass.Properties.Select(p => p.Name), Is.EquivalentTo(new [] {"Simple", "ComplexType", "Bag", "IdBag", "List", "Set", "Map", "Compo", "OneToOne", "ManyToOne", "Any", "DynamicCompo"}));
+			Assert.That(hbmClass.Properties.Select(p => p.Access).All(a => a.StartsWith("field.")), Is.True);
 		}
 
 		[Test]
 		public void WhenMapBagWithWrongElementTypeThenThrows()
 		{
 			var mapper = new ModelMapper();
-			Executing.This(() =>
-										 mapper.Class<MyClass>(mc =>
-										 {
-											 mc.Id(x => x.Id);
-											 mc.Bag<int>("Bag", y => y.Access(Accessor.Field));
-										 })).Should().Throw<MappingException>();
+			Assert.That(() => mapper.Class<MyClass>(mc =>
+			{
+				mc.Id(x => x.Id);
+				mc.Bag<int>("Bag", y => y.Access(Accessor.Field));
+			}), Throws.TypeOf<MappingException>());
 		}
 
 		[Test]
 		public void WhenMapIdBagWithWrongElementTypeThenThrows()
 		{
 			var mapper = new ModelMapper();
-			Executing.This(() =>
-										 mapper.Class<MyClass>(mc =>
-										 {
-											 mc.Id(x => x.Id);
-											 mc.IdBag<int>("IdBag", y => y.Access(Accessor.Field));
-										 })).Should().Throw<MappingException>();
+			Assert.That(() => mapper.Class<MyClass>(mc =>
+			{
+				mc.Id(x => x.Id);
+				mc.IdBag<int>("IdBag", y => y.Access(Accessor.Field));
+			}), Throws.TypeOf<MappingException>());
 		}
 
 		[Test]
 		public void WhenMapSetWithWrongElementTypeThenThrows()
 		{
 			var mapper = new ModelMapper();
-			Executing.This(() =>
-										 mapper.Class<MyClass>(mc =>
-										 {
-											 mc.Id(x => x.Id);
-											 mc.Set<int>("Set", y => y.Access(Accessor.Field));
-										 })).Should().Throw<MappingException>();
+			Assert.That(() => mapper.Class<MyClass>(mc =>
+			{
+				mc.Id(x => x.Id);
+				mc.Set<int>("Set", y => y.Access(Accessor.Field));
+			}), Throws.TypeOf<MappingException>());
 		}
 
 		[Test]
 		public void WhenMapListWithWrongElementTypeThenThrows()
 		{
 			var mapper = new ModelMapper();
-			Executing.This(() =>
-										 mapper.Class<MyClass>(mc =>
-										 {
-											 mc.Id(x => x.Id);
-											 mc.Set<int>("Set", y => y.Access(Accessor.Field));
-										 })).Should().Throw<MappingException>();
+			Assert.That(() => mapper.Class<MyClass>(mc =>
+			{
+				mc.Id(x => x.Id);
+				mc.Set<int>("Set", y => y.Access(Accessor.Field));
+			}), Throws.TypeOf<MappingException>());
 		}
 
 		[Test]
 		public void WhenMapDictionaryWithWrongKeyTypeThenThrows()
 		{
 			var mapper = new ModelMapper();
-			Executing.This(() =>
-										 mapper.Class<MyClass>(mc =>
-										 {
-											 mc.Id(x => x.Id);
-											 mc.Map<string, string>("Map", y => y.Access(Accessor.Field));
-										 })).Should().Throw<MappingException>();
+			Assert.That(() => mapper.Class<MyClass>(mc =>
+			{
+				mc.Id(x => x.Id);
+				mc.Map<string, string>("Map", y => y.Access(Accessor.Field));
+			}), Throws.TypeOf<MappingException>());
 		}
 
 		[Test]
 		public void WhenMapDictionaryWithWrongValueTypeThenThrows()
 		{
 			var mapper = new ModelMapper();
-			Executing.This(() =>
-										 mapper.Class<MyClass>(mc =>
-										 {
-											 mc.Id(x => x.Id);
-											 mc.Map<int, int>("Map", y => y.Access(Accessor.Field));
-										 })).Should().Throw<MappingException>();
+			Assert.That(() => mapper.Class<MyClass>(mc =>
+			{
+				mc.Id(x => x.Id);
+				mc.Map<int, int>("Map", y => y.Access(Accessor.Field));
+			}), Throws.TypeOf<MappingException>());
 		}
 
 		[Test]
 		public void WhenMapComponentWithWrongElementTypeThenThrows()
 		{
 			var mapper = new ModelMapper();
-			Executing.This(() =>
-										 mapper.Class<MyClass>(mc =>
-										 {
-											 mc.Id(x => x.Id);
-											 mc.Component<object>("Compo", y => y.Access(Accessor.Field));
-										 })).Should().Throw<MappingException>();
+			Assert.That(() => mapper.Class<MyClass>(mc =>
+			{
+				mc.Id(x => x.Id);
+				mc.Component<object>("Compo", y => y.Access(Accessor.Field));
+			}), Throws.TypeOf<MappingException>());
 		}
 
 
@@ -279,36 +270,33 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 		public void WhenMapOneToOneWithWrongTypeThenThrows()
 		{
 			var mapper = new ModelMapper();
-			Executing.This(() =>
-										 mapper.Class<MyClass>(mc =>
-										 {
-											 mc.Id(x => x.Id);
-											 mc.OneToOne<object>("OneToOne", y => y.Access(Accessor.Field));
-										 })).Should().Throw<MappingException>();
+			Assert.That(() => mapper.Class<MyClass>(mc =>
+			{
+				mc.Id(x => x.Id);
+				mc.OneToOne<object>("OneToOne", y => y.Access(Accessor.Field));
+			}), Throws.TypeOf<MappingException>());
 		}
 
 		[Test]
 		public void WhenMapManyToOneWithWrongTypeThenThrows()
 		{
 			var mapper = new ModelMapper();
-			Executing.This(() =>
-										 mapper.Class<MyClass>(mc =>
-										 {
-											 mc.Id(x => x.Id);
-											 mc.ManyToOne<object>("ManyToOne", y => y.Access(Accessor.Field));
-										 })).Should().Throw<MappingException>();
+			Assert.That(() => mapper.Class<MyClass>(mc =>
+			{
+				mc.Id(x => x.Id);
+				mc.ManyToOne<object>("ManyToOne", y => y.Access(Accessor.Field));
+			}), Throws.TypeOf<MappingException>());
 		}
 
 		[Test]
 		public void WhenMapAnyWithWrongTypeThenThrows()
 		{
 			var mapper = new ModelMapper();
-			Executing.This(() =>
-										 mapper.Class<MyClass>(mc =>
-										 {
-											 mc.Id(x => x.Id);
-											 mc.Any<Related>("Any", typeof(int),y => y.Access(Accessor.Field));
-										 })).Should().Throw<MappingException>();
+			Assert.That(() => mapper.Class<MyClass>(mc =>
+			{
+				mc.Id(x => x.Id);
+				mc.Any<Related>("Any", typeof(int),y => y.Access(Accessor.Field));
+			}), Throws.TypeOf<MappingException>());
 		}
 	}
 }

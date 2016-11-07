@@ -7,14 +7,6 @@
 		in CVS.
 	-->
 	<property name="sign" value="true" overwrite="false" />
-	<property name="key.file" value="${root.dir}/src/NHibernate.snk" />
-
-	<!-- Generating AssemblyInfo files for Visual Studio -->
-	<property name="visual-studio" value="false" overwrite="false" />
-
-	<if test="${visual-studio}">
-		<property name="key.file" value="../../${key.file}" />
-	</if>
 
 	<!--
 		if Visual Studio Help Integration Kit has been installed
@@ -60,11 +52,11 @@
 		effectively SP0).
 	-->
 
-	<property name="project.version" value="4.0.4.GA" overwrite="false" />
+	<property name="project.version" value="4.1.0.Alpha1" overwrite="false" />
 	
 	<!-- This version number should be changed if, but only if, there are incompatible
 	     changes compared to the previous version. -->
-	<property name="project.default-assembly-version" value="4.0.0.4000" overwrite="false" />
+	<property name="project.default-assembly-version" value="4.1.0.1001" overwrite="false" />
 
 	<!-- Compute short project version (major.minor) using a regex -->
 	<regex input="${project.version}" pattern="^(?'shortversion'\d+\.\d+)" />

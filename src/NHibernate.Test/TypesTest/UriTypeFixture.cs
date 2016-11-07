@@ -1,7 +1,6 @@
 using System;
 using NHibernate.Type;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.TypesTest
 {
@@ -26,8 +25,8 @@ namespace NHibernate.Test.TypesTest
 			using (var s = OpenSession())
 			{
 				var entity = s.Get<UriClass>(1);
-				entity.Url.Should().Not.Be.Null();
-				entity.Url.OriginalString.Should().Be("http://www.fabiomaulo.blogspot.com/");
+				Assert.That(entity.Url, Is.Not.Null);
+				Assert.That(entity.Url.OriginalString, Is.EqualTo("http://www.fabiomaulo.blogspot.com/"));
 				entity.Url = new Uri("http://fabiomaulo.blogspot.com/2010/10/nhibernate-30-cookbook.html");
 				s.Save(entity);
 				s.Flush();
@@ -35,7 +34,37 @@ namespace NHibernate.Test.TypesTest
 			using (var s = OpenSession())
 			{
 				var entity = s.Get<UriClass>(1);
-				entity.Url.OriginalString.Should().Be("http://fabiomaulo.blogspot.com/2010/10/nhibernate-30-cookbook.html");
+				Assert.That(entity.Url.OriginalString, Is.EqualTo("http://fabiomaulo.blogspot.com/2010/10/nhibernate-30-cookbook.html"));
+				s.Delete(entity);
+				s.Flush();
+			}
+		}
+
+
+		[Test(Description = "NH-2887")]
+		public void ReadWriteRelativeUri()
+		{
+			using (var s = OpenSession())
+			{
+				var entity = new UriClass { Id = 1 };
+				entity.Url = new Uri("/", UriKind.Relative);
+				s.Save(entity);
+				s.Flush();
+			}
+
+			using (var s = OpenSession())
+			{
+				var entity = s.Get<UriClass>(1);
+				Assert.That(entity.Url, Is.Not.Null);
+				Assert.That(entity.Url.OriginalString, Is.EqualTo("/"));
+				entity.Url = new Uri("/2010/10/nhibernate-30-cookbook.html", UriKind.Relative);
+				s.Save(entity);
+				s.Flush();
+			}
+			using (var s = OpenSession())
+			{
+				var entity = s.Get<UriClass>(1);
+				Assert.That(entity.Url.OriginalString, Is.EqualTo("/2010/10/nhibernate-30-cookbook.html"));
 				s.Delete(entity);
 				s.Flush();
 			}
@@ -55,7 +84,7 @@ namespace NHibernate.Test.TypesTest
 			using (ISession s = OpenSession())
 			{
 				var entity = s.Get<UriClass>(1);
-				entity.Url.Should().Be.Null();
+				Assert.That(entity.Url, Is.Null);
 				s.Delete(entity);
 				s.Flush();
 			}
@@ -66,7 +95,7 @@ namespace NHibernate.Test.TypesTest
 		{
 			// integration test to be 100% sure
 			var propertyType = sessions.GetEntityPersister(typeof(UriClass).FullName).GetPropertyType("AutoUri");
-			propertyType.Should().Be.InstanceOf<UriType>();
+			Assert.That(propertyType, Is.InstanceOf<UriType>());
 		}
 
 	}

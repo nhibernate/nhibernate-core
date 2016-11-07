@@ -1,6 +1,5 @@
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.MixAutomapping
 {
@@ -26,8 +25,8 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var autoinspector = new SimpleModelInspector();
 			var inspector = (IModelInspector)autoinspector;
 
-			inspector.IsRootEntity(typeof(Person)).Should().Be.True();
-			inspector.IsRootEntity(typeof(Product)).Should().Be.False();
+			Assert.That(inspector.IsRootEntity(typeof(Person)), Is.True);
+			Assert.That(inspector.IsRootEntity(typeof(Product)), Is.False);
 		}
 
 		[Test]
@@ -38,8 +37,8 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 
 			var inspector = (IModelInspector)autoinspector;
 
-			inspector.IsRootEntity(typeof(Person)).Should().Be.False();
-			inspector.IsRootEntity(typeof(Product)).Should().Be.True();
+			Assert.That(inspector.IsRootEntity(typeof(Person)), Is.False);
+			Assert.That(inspector.IsRootEntity(typeof(Product)), Is.True);
 		}
 	}
 }

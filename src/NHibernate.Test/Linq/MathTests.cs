@@ -33,7 +33,7 @@ namespace NHibernate.Test.Linq
 			var signs = (from o in db.OrderLines
 						 select Math.Sign(o.UnitPrice)).ToList();
 
-			Assert.True(signs.All(x => x == 1));
+			Assert.That(signs.All(x => x == 1), Is.True);
 		}
 
 		[Test]
@@ -43,7 +43,7 @@ namespace NHibernate.Test.Linq
 			var signs = (from o in db.OrderLines
 						 select Math.Sign(0m - o.UnitPrice)).ToList();
 
-			Assert.True(signs.All(x => x == -1));
+			Assert.That(signs.All(x => x == -1), Is.True);
 		}
 
 		[Test]

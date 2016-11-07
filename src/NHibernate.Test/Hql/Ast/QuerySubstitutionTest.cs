@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using NHibernate.Cfg;
 using NUnit.Framework;
 using NHibernate.Cfg.Loquacious;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Hql.Ast
 {
@@ -19,7 +18,7 @@ namespace NHibernate.Test.Hql.Ast
 		{
 			const string query = "from SimpleClass s where s.IntValue > pizza";
 			var sql = GetSql(query, new Dictionary<string, string>{{"pizza","1"}});
-			sql.Should().Not.Contain("pizza");
+			Assert.That(sql, Is.Not.StringContaining("pizza"));
 		}
 
 		[Test]
@@ -32,7 +31,7 @@ namespace NHibernate.Test.Hql.Ast
 				{
 					s.CreateQuery(query).List();
 					string sql = sqlLogSpy.Appender.GetEvents()[0].RenderedMessage;
-					sql.Should().Not.Contain("pizza");
+					Assert.That(sql, Is.Not.StringContaining("pizza"));
 				}
 			}
 		}
@@ -42,7 +41,7 @@ namespace NHibernate.Test.Hql.Ast
 		{
 			const string query = "from SimpleClass s where s.Description > calda";
 			var sql = GetSql(query, new Dictionary<string, string> { { "calda", "'bobrock'" } });
-			sql.Should().Not.Contain("pizza").And.Contain("'bobrock'");
+			Assert.That(sql, Is.Not.StringContaining("pizza").And.Contains("'bobrock'"));
 		}
 
 		[Test]
@@ -55,7 +54,7 @@ namespace NHibernate.Test.Hql.Ast
 				{
 					s.CreateQuery(query).List();
 					string sql = sqlLogSpy.Appender.GetEvents()[0].RenderedMessage;
-					sql.Should().Not.Contain("pizza").And.Contain("'bobrock'");
+					Assert.That(sql, Is.Not.StringContaining("pizza").And.Contains("'bobrock'"));
 				}
 			}
 		}

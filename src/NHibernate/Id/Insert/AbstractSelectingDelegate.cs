@@ -88,7 +88,7 @@ namespace NHibernate.Id.Insert
 
 		/// <summary> Extract the generated key value from the given result set. </summary>
 		/// <param name="session">The session </param>
-		/// <param name="rs">The result set containing the generated primay key values. </param>
+		/// <param name="rs">The result set containing the generated primary key values. </param>
 		/// <param name="entity">The entity being saved. </param>
 		/// <returns> The generated identifier </returns>
 		protected internal abstract object GetResult(ISessionImplementor session, IDataReader rs, object entity);

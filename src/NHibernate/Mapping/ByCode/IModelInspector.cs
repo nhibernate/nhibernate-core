@@ -16,7 +16,8 @@ namespace NHibernate.Mapping.ByCode
 
 		bool IsOneToOne(MemberInfo member);
 		bool IsManyToOne(MemberInfo member);
-		bool IsManyToMany(MemberInfo member);
+		bool IsManyToManyItem(MemberInfo member);
+		bool IsManyToManyKey(MemberInfo member);
 		bool IsOneToMany(MemberInfo member);
 		bool IsManyToAny(MemberInfo member);
 

@@ -1,7 +1,6 @@
 using System.Linq;
 using NHibernate.Hql.Ast.ANTLR;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2293
 {
@@ -20,7 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2293
 		{
 			using (ISession session = OpenSession())
 			{
-				session.Executing(s => s.CreateQuery("from").List()).Throws<QuerySyntaxException>();
+				Assert.That(() => session.CreateQuery("from").List(), Throws.TypeOf<QuerySyntaxException>());
 			}
 		}
 	}

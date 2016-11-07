@@ -71,6 +71,9 @@
     <Import Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SharedAssemblyInfo.vb">
+      <Link>SharedAssemblyInfo.vb</Link>
+    </Compile>
     <Compile Include="Issues\NH2966\Client.vb" />
     <Compile Include="Issues\NH2966\Fixture.vb" />
     <Compile Include="Issues\NH3302\Entity.vb" />
@@ -120,9 +123,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <CustomToolNamespace>My</CustomToolNamespace>
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
-    </None>
-    <None Include="NHibernate.Test.VisualBasic.build">
-      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>

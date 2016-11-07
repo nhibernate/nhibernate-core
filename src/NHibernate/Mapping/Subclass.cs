@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Util;
 
@@ -157,7 +158,14 @@ namespace NHibernate.Mapping
 
 		public override IDictionary<string, string> FilterMap
 		{
-			get { return Superclass.FilterMap; }
+			get {
+                var superclassFilters = Superclass.FilterMap;
+                var subclassFilters = base.FilterMap;
+
+                return superclassFilters.Union(
+                        subclassFilters
+                ).ToDictionary(k => k.Key, v => v.Value);
+            }
 		}
 
 		public override IDictionary<EntityMode, string> TuplizerMap

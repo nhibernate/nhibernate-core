@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NHibernate.Cfg.MappingSchema;
@@ -9,6 +10,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 	public class IdMapper : IIdMapper
 	{
 		private readonly IAccessorPropertyMapper accessorMapper;
+		private readonly MemberInfo member;
 		private readonly HbmId hbmId;
 
 		public IdMapper(HbmId hbmId)
@@ -16,6 +18,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public IdMapper(MemberInfo member, HbmId hbmId)
 		{
+			this.member = member;
 			this.hbmId = hbmId;
 			if (member != null)
 			{
@@ -68,14 +71,68 @@ namespace NHibernate.Mapping.ByCode.Impl
 			hbmId.unsavedvalue = value != null ? value.ToString() : "null";
 		}
 
+		public void Column(Action<IColumnMapper> columnMapper)
+		{
+			if (hbmId.Columns.Count() > 1)
+				throw new MappingException("Multi-columns property can't be mapped through singlr-column API.");
+
+			HbmColumn hbm = hbmId.Columns.SingleOrDefault() ?? new HbmColumn
+			{
+				name = hbmId.column1,
+				length = hbmId.length
+			};
+
+			string defaultColumnName = member != null ? member.Name : null;
+			columnMapper(new ColumnMapper(hbm, member != null ? defaultColumnName : "unnamedcolumn"));
+			if (hbm.sqltype != null ||
+				hbm.@default != null ||
+				hbm.check != null ||
+				hbm.precision != null ||
+				hbm.scale != null ||
+				hbm.notnullSpecified ||
+				hbm.uniqueSpecified ||
+				hbm.uniquekey != null ||
+				hbm.index != null)
+			{
+				hbmId.column = new[] {hbm};
+				ResetIdPlainValues();
+			}
+			else
+			{
+				hbmId.column1 = defaultColumnName == null || defaultColumnName != hbm.name ? hbm.name : null;
+				hbmId.length = hbm.length;
+			}
+		}
+
+		public void Columns(params Action<IColumnMapper>[] columnMapper)
+		{
+			ResetIdPlainValues();
+			int i = 1;
+			var columns = new List<HbmColumn>(columnMapper.Length);
+			foreach (var action in columnMapper)
+			{
+				var hbm = new HbmColumn();
+				string defaultColumnName = (member != null ? member.Name : "unnamedcolumn") + i++;
+				action(new ColumnMapper(hbm, defaultColumnName));
+				columns.Add(hbm);
+			}
+			hbmId.column = columns.ToArray();
+		}
+
 		public void Column(string name)
 		{
-			hbmId.column1 = name;
+			Column(x => x.Name(name));
 		}
 
 		public void Length(int length)
 		{
-			hbmId.length = length.ToString();
+			Column(x => x.Length(length));
+		}
+
+		private void ResetIdPlainValues()
+		{
+			hbmId.column1 = null;
+			hbmId.length = null;
 		}
 
 		private void ApplyGenerator(IGeneratorDef generator)

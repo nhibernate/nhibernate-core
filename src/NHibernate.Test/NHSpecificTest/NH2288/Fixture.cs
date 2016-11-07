@@ -3,7 +3,6 @@ using System.Text;
 using NHibernate.Cfg;
 using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2288
 {
@@ -22,8 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2288
 			var sb = new StringBuilder(500);
 			su.Execute(x => sb.AppendLine(x), false, false);
 			string script = sb.ToString();
-			script.Should().Contain(
-				"if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'dbo.[Aclasses_Id_FK]') AND parent_object_id = OBJECT_ID('dbo.Aclass'))");
+			Assert.That(script, Is.StringContaining("if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'dbo.[Aclasses_Id_FK]') AND parent_object_id = OBJECT_ID('dbo.Aclass'))"));
 		}
 
 		[Test]

@@ -28,7 +28,7 @@ namespace NHibernate.Proxy
 		System.Type PersistentClass { get; }
 
 		/// <summary>
-		/// Is the proxy uninitialzed?
+		/// Is the proxy uninitialized?
 		/// </summary>
 		bool IsUninitialized { get; }
 

@@ -66,8 +66,17 @@ namespace NHibernate.Persister.Collection
 		{
 			var update = new SqlUpdateBuilder(Factory.Dialect, Factory)
 				.SetTableName(qualifiedTableName)
-				.AddColumns(KeyColumnNames, "null")
-				.SetIdentityColumn(KeyColumnNames, KeyType);
+				.AddColumns(JoinColumnNames, "null");
+
+			if (CollectionType.UseLHSPrimaryKey)
+			{
+				update.SetIdentityColumn(KeyColumnNames, KeyType);
+			}
+			else
+			{
+				var ownerPersister = (IOuterJoinLoadable)OwnerEntityPersister;
+				update.SetJoin(ownerPersister.TableName, KeyColumnNames, KeyType, JoinColumnNames, ownerPersister.GetPropertyColumnNames(CollectionType.LHSPropertyName));
+			}
 
 			if (HasIndex)
 				update.AddColumns(IndexColumnNames, "null");
@@ -148,6 +157,11 @@ namespace NHibernate.Persister.Collection
 		public override bool ConsumesCollectionAlias()
 		{
 			return true;
+		}
+
+		public override string GenerateTableAliasForKeyColumns(string alias)
+		{
+			return CollectionType.UseLHSPrimaryKey ? alias : alias + "owner_";
 		}
 
 		protected override int DoUpdateRows(object id, IPersistentCollection collection, ISessionImplementor session)
@@ -320,7 +334,7 @@ namespace NHibernate.Persister.Collection
 			for (int i = 0; i < columnNames.Length; i++)
 			{
 				var column = columnNames[i];
-				var tableAlias = ojl.GenerateTableAliasForColumn(alias, column);
+				var tableAlias = CollectionType.UseLHSPrimaryKey ? ojl.GenerateTableAliasForColumn(alias, column) : GenerateTableAliasForKeyColumns(alias);
 				selectFragment.AddColumn(tableAlias, column, columnAliases[i]);
 			}
 			return selectFragment;
@@ -336,7 +350,26 @@ namespace NHibernate.Persister.Collection
 
 		public override SqlString FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses)
 		{
-			return ((IJoinable)ElementPersister).FromJoinFragment(alias, innerJoin, includeSubclasses);
+			var elementJoinFragment = ((IJoinable)ElementPersister).FromJoinFragment(alias, innerJoin, includeSubclasses);
+
+			if (CollectionType.UseLHSPrimaryKey)
+			{
+				return elementJoinFragment;
+			}
+
+			JoinFragment join = Factory.Dialect.CreateOuterJoinFragment();
+
+			var lhsKeyColumnNames = new string[JoinColumnNames.Length];
+			int k = 0;
+			foreach (string columnName in JoinColumnNames)
+			{
+				lhsKeyColumnNames[k] = alias + StringHelper.Dot + columnName;
+				k++;
+			}
+
+			var ownerPersister = (IOuterJoinLoadable)OwnerEntityPersister;
+			join.AddJoin(ownerPersister.TableName, GenerateTableAliasForKeyColumns(alias), lhsKeyColumnNames, ownerPersister.GetPropertyColumnNames(CollectionType.LHSPropertyName), innerJoin ? JoinType.InnerJoin : JoinType.LeftOuterJoin);
+			return join.ToFromFragmentString + elementJoinFragment;
 		}
 
 		public override SqlString WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses)

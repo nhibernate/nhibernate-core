@@ -19,6 +19,7 @@ namespace NHibernate.Persister.Entity
 	{
 		// the class hierarchy structure
 		private readonly int joinSpan;
+		private IType[] identifierTypes;
 		private readonly string[] qualifiedTableNames;
 		private readonly bool[] isInverseTable;
 		private readonly bool[] isNullableTable;
@@ -37,6 +38,10 @@ namespace NHibernate.Persister.Entity
 
 		// properties of this class, including inherited properties
 		private readonly int[] propertyTableNumbers;
+
+		// if the id is a property of the base table eg join to property-ref
+		// if the id is not a property the value will be null
+		private readonly Dictionary<int, int> tableIdPropertyNumbers;
 
 		// the closure of all columns used by the entire hierarchy including
 		// subclasses and superclasses of this class
@@ -68,6 +73,9 @@ namespace NHibernate.Persister.Entity
 		private static readonly object NullDiscriminator = new object();
 		private static readonly object NotNullDiscriminator = new object();
 
+		//provided so we can join to keys other than the primary key
+		private readonly Dictionary<int, string[]> joinToKeyColumns;
+
 		public SingleTableEntityPersister(PersistentClass persistentClass, ICacheConcurrencyStrategy cache,
 																			ISessionFactoryImplementor factory, IMapping mapping)
 			: base(persistentClass, cache, factory)
@@ -75,13 +83,14 @@ namespace NHibernate.Persister.Entity
 			#region CLASS + TABLE
 
 			joinSpan = persistentClass.JoinClosureSpan + 1;
+			identifierTypes = new IType[joinSpan];
 			qualifiedTableNames = new string[joinSpan];
 			isInverseTable = new bool[joinSpan];
 			isNullableTable = new bool[joinSpan];
 			keyColumnNames = new string[joinSpan][];
 			Table table = persistentClass.RootTable;
-			qualifiedTableNames[0] =
-				table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName);
+			identifierTypes[0] = IdentifierType;
+			qualifiedTableNames[0] =table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName);
 			isInverseTable[0] = false;
 			isNullableTable[0] = false;
 			keyColumnNames[0] = IdentifierColumnNames;
@@ -117,6 +126,7 @@ namespace NHibernate.Persister.Entity
 			int j = 1;
 			foreach (Join join in persistentClass.JoinClosureIterator)
 			{
+				identifierTypes[j] = join.Key.Type;
 				qualifiedTableNames[j] = join.Table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName);
 				isInverseTable[j] = join.IsInverse;
 				isNullableTable[j] = join.IsOptional;
@@ -158,6 +168,11 @@ namespace NHibernate.Persister.Entity
 			bool hasDeferred = false;
 			List<string> subclassTables = new List<string>();
 			List<string[]> joinKeyColumns = new List<string[]>();
+			//provided so we can join to keys other than the primary key
+			joinToKeyColumns = new Dictionary<int, string[]>();
+			//Columns that also function as Id's
+			List<Column> idColumns = new List<Column>();
+			tableIdPropertyNumbers = new Dictionary<int, int>();
 			List<bool> isConcretes = new List<bool>();
 			List<bool> isDeferreds = new List<bool>();
 			List<bool> isInverses = new List<bool>();
@@ -183,6 +198,33 @@ namespace NHibernate.Persister.Entity
 
 				var keyCols = join.Key.ColumnIterator.OfType<Column>().Select(col => col.GetQuotedName(factory.Dialect)).ToArray();
 				joinKeyColumns.Add(keyCols);
+
+				//are we joining to other than the primary key?
+				if (join.RefIdProperty != null)
+				{
+					var curTableIndex = joinKeyColumns.Count - 1;
+					//there should only ever be one key
+					var toKeyCols = new List<string>(join.RefIdProperty.ColumnSpan);
+					foreach (Column col in join.RefIdProperty.ColumnIterator)
+					{
+						toKeyCols.Add(col.GetQuotedName(factory.Dialect));
+						
+						//find out what property index this is
+						int i = 0;
+						foreach (var prop in persistentClass.PropertyClosureIterator)
+						{
+							if (prop == @join.RefIdProperty)
+							{
+								tableIdPropertyNumbers.Add(curTableIndex, i);
+								break;
+							}
+							i++;
+						}
+
+						idColumns.Add(col);
+					}
+					joinToKeyColumns.Add(curTableIndex, toKeyCols.ToArray());
+				}
 			}
 
 			subclassTableSequentialSelect = isDeferreds.ToArray();
@@ -422,6 +464,11 @@ namespace NHibernate.Persister.Entity
 			get { return constraintOrderedTableNames; }
 		}
 
+		public override IType GetIdentifierType(int j)
+		{
+			return identifierTypes[j];
+		}
+
 		public override string[][] ContraintOrderedTableKeyColumnClosure
 		{
 			get { return constraintOrderedKeyColumnNames; }
@@ -487,6 +534,55 @@ namespace NHibernate.Persister.Entity
 			return cascadeDeleteEnabled[j];
 		}
 
+		protected override object GetJoinTableId(int table, object obj, EntityMode entityMode)
+		{
+			//0 is the base table there is no join
+			if (table == 0)
+				return null;
+
+			//check index first for speed
+			var refIdColumn = GetRefIdColumnOfTable(table);
+			if (refIdColumn == null)
+				return null;
+
+			object[] fields = GetPropertyValues(obj, entityMode);
+			return GetJoinTableId(table, refIdColumn, fields);
+		}
+
+		//gets the identifier for a join table if other than pk
+		protected override object GetJoinTableId(int table, object[] fields)
+		{
+			//0 is the base table there is no join
+			if (table == 0)
+				return null;
+
+			return GetJoinTableId(table, GetRefIdColumnOfTable(table), fields);
+		}
+
+		private static object GetJoinTableId(int table, int? index, object[] fields)
+		{
+			if (index == null)
+				return null;
+
+			return fields[index.Value];
+		}
+
+		//if the table's id is a reference column, returns the index of that property
+		//returns null if not found
+		protected override int? GetRefIdColumnOfTable(int table)
+		{
+			int value;
+			if (tableIdPropertyNumbers.TryGetValue(table, out value))
+				return value;
+
+			return null;
+		}
+
+		protected override bool IsIdOfTable(int property, int table)
+		{
+			return GetRefIdColumnOfTable(table) == property;
+		}
+
 		protected override bool IsPropertyOfTable(int property, int table)
 		{
 			return propertyTableNumbers[property] == table;
@@ -499,7 +595,7 @@ namespace NHibernate.Persister.Entity
 
 		public override string FromTableFragment(string name)
 		{
-			return TableName + ' ' + name;
+			return TableName + " " + name;
 		}
 
 		public override string FilterFragment(string alias)
@@ -669,6 +765,16 @@ possible solutions:
 
 			//render the SQL
 			return RenderSelect(tableNumbers.ToArray(), columnNumbers.ToArray(), formulaNumbers.ToArray());
+		}
+
+		//provide columns to join to if the key is other than the primary key
+		protected override string[] GetJoinIdKeyColumns(int j)
+		{
+			string[] key;
+			if (joinToKeyColumns.TryGetValue(j, out key))
+				return key;
+
+			return base.GetJoinIdKeyColumns(j);
 		}
 
 		protected override string[] GetSubclassTableKeyColumns(int j)

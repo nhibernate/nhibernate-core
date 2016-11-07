@@ -3,7 +3,6 @@ using log4net;
 using log4net.Repository.Hierarchy;
 using NHibernate.Type;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.TypesTest
 {
@@ -83,28 +82,28 @@ namespace NHibernate.Test.TypesTest
 			// If one thread break the test you can see the result in the console.
 			((Logger) log.Logger).Level = log4net.Core.Level.Debug;
 			MultiThreadRunner<object>.ExecuteAction[] actions = new MultiThreadRunner<object>.ExecuteAction[]
-        	{
-        		delegate(object o)
-        			{
-        				TypeFactory.GetStringType(rnd.Next(1, 50));
-        				totalCall++;
-        			},
-        		delegate(object o)
-        			{
-        				TypeFactory.GetBinaryType(rnd.Next(1, 50));
-        				totalCall++;
-        			},
-        		delegate(object o)
-        			{
-        				TypeFactory.GetSerializableType(rnd.Next(1, 50));
-        				totalCall++;
-        			},
-        		delegate(object o)
-        			{
-        				TypeFactory.GetTypeType(rnd.Next(1, 20));
-        				totalCall++;
-        			},
-        	};
+			{
+				delegate(object o)
+					{
+						TypeFactory.GetStringType(rnd.Next(1, 50));
+						totalCall++;
+					},
+				delegate(object o)
+					{
+						TypeFactory.GetBinaryType(rnd.Next(1, 50));
+						totalCall++;
+					},
+				delegate(object o)
+					{
+						TypeFactory.GetSerializableType(rnd.Next(1, 50));
+						totalCall++;
+					},
+				delegate(object o)
+					{
+						TypeFactory.GetTypeType(rnd.Next(1, 20));
+						totalCall++;
+					},
+			};
 			MultiThreadRunner<object> mtr = new MultiThreadRunner<object>(100, actions);
 			mtr.EndTimeout = 2000;
 			mtr.TimeoutBetweenThreadStart = 2;
@@ -149,14 +148,14 @@ namespace NHibernate.Test.TypesTest
 		public void WhenUseEnumThenReturnGenericEnumType()
 		{
 			var iType = TypeFactory.HeuristicType(typeof (MyEnum).AssemblyQualifiedName);
-			iType.Should().Be.OfType<EnumType<MyEnum>>();
+			Assert.That(iType, Is.TypeOf<EnumType<MyEnum>>());
 		}
 
 		[Test]
 		public void WhenUseNullableEnumThenReturnGenericEnumType()
 		{
 			var iType = TypeFactory.HeuristicType(typeof(MyEnum?).AssemblyQualifiedName);
-			iType.Should().Be.OfType<EnumType<MyEnum>>();
+			Assert.That(iType, Is.TypeOf<EnumType<MyEnum>>());
 		}
 	}
 }

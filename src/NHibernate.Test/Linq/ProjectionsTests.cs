@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Linq
 {
@@ -205,7 +204,7 @@ namespace NHibernate.Test.Linq
 
 			var firstUser = query.First();
 			Assert.IsNotNull(firstUser);
-			firstUser.Category.Should().Be("something");
+			Assert.That(firstUser.Category, Is.EqualTo("something"));
 		}
 
 		[Test]

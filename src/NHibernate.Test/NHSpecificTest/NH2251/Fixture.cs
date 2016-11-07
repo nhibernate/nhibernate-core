@@ -1,6 +1,5 @@
 using System.Linq;
 using NUnit.Framework;
-using SharpTestsEx;
 using NHibernate.Criterion;
 
 namespace NHibernate.Test.NHSpecificTest.NH2251
@@ -19,12 +18,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2251
 
 				int rowcount;
 				Foo[] items;
-				Executing.This(() =>
-												{
-													rowcount = rowcountQuery.Value;
-													items = resultsQuery.ToArray();
-												}
-					).Should().NotThrow();
+				Assert.That(() =>
+				{
+					rowcount = rowcountQuery.Value;
+					items = resultsQuery.ToArray();
+				}, Throws.Nothing);
 			}
 		}
 
@@ -40,12 +38,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2251
 
 				int rowcount;
 				Foo[] items;
-				Executing.This(() =>
+				Assert.That(() =>
 				{
 					rowcount = rowcountQuery.Value;
 					items = resultsQuery.ToArray();
-				}
-					).Should().NotThrow();
+				}, Throws.Nothing);
 			}
 		}
 

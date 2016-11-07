@@ -6,7 +6,7 @@ For the least friction, please follow the steps in the order presented, being ca
 
 ## Check for Existing Issues Visit 
 
-[http://jira.nhforge.org][1] and search for your issue. If you see it, voting for it is a good way to increase the visibility of the issue. 
+[https://nhibernate.jira.com][1] and search for your issue. If you see it, voting for it is a good way to increase the visibility of the issue. 
 ## Create a JIRA Issue
 
 JIRA is used to generate the release notes and serves as a central point of reference for all changes that have occurred to NHibernate. 
@@ -96,7 +96,7 @@ The NHibernate team monitors JIRA and GitHub regularly, so your request will be 
 
 The NHibernate community values your contributions. Thank you for the time you have invested.
 
- [1]: http://jira.nhforge.org/
+ [1]: https://nhibernate.jira.com/
  [2]: https://nhibernate.jira.com/browse/NH-2866
  [3]: http://www.editorconfig.org/
  [4]: http://groups.google.com/group/nhibernate-development

@@ -2,7 +2,6 @@ using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode.Impl;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.MappersTests
 {
@@ -33,7 +32,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var component = new HbmCompositeId();
 			new ComponentAsIdMapper(typeof(PersonId), For<Person>.Property(x=> x.Id), component, mapdoc);
 
-			component.@class.Should().Contain("PersonId");
+			Assert.That(component.@class, Is.StringContaining("PersonId"));
 		}
 
 		[Test]
@@ -45,9 +44,9 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 
 			mapper.Property(For<PersonId>.Property(ts => ts.Email), x => { });
 
-			compositeId.Items.Should().Have.Count.EqualTo(1);
-			compositeId.Items.First().Should().Be.OfType<HbmKeyProperty>();
-			compositeId.Items.OfType<HbmKeyProperty>().First().Name.Should().Be.EqualTo("Email");
+			Assert.That(compositeId.Items, Has.Length.EqualTo(1));
+			Assert.That(compositeId.Items.First(), Is.TypeOf<HbmKeyProperty>());
+			Assert.That(compositeId.Items.OfType<HbmKeyProperty>().First().Name, Is.EqualTo("Email"));
 		}
 
 		[Test]
@@ -60,7 +59,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 
 			mapper.Property(For<PersonId>.Property(ts => ts.Email), x => called = true);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -72,9 +71,9 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 
 			mapper.ManyToOne(For<PersonId>.Property(ts => ts.User), x => { });
 
-			compositeId.Items.Should().Have.Count.EqualTo(1);
-			compositeId.Items.First().Should().Be.OfType<HbmKeyManyToOne>();
-			compositeId.Items.OfType<HbmKeyManyToOne>().First().Name.Should().Be.EqualTo("User");
+			Assert.That(compositeId.Items, Has.Length.EqualTo(1));
+			Assert.That(compositeId.Items.First(), Is.TypeOf<HbmKeyManyToOne>());
+			Assert.That(compositeId.Items.OfType<HbmKeyManyToOne>().First().Name, Is.EqualTo("User"));
 		}
 
 		[Test]
@@ -87,7 +86,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 
 			mapper.ManyToOne(For<PersonId>.Property(ts => ts.User), x => called = true);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 	}
 }

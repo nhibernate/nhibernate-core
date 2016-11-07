@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				assembly="NHibernate.Test"
+				namespace="NHibernate.Test.Cascade.OneToOneCascadeDelete.Pk.Bidirectional">
+
+	<class name="Employee">
+		<id name="Id" type="long" column="Id" >
+			<generator class="increment" />
+		</id>
+		<one-to-one name="Info"
+					class="EmployeeInfo"
+					constrained="false"
+					cascade="all,delete-orphan" />
+		<property name="Name" />
+	</class>
+
+	<class name="EmployeeInfo" >
+		<id name="Id" type="long" column="Id" >
+			<generator class="foreign" >
+				<param name="property" >EmployeeDetails</param>
+			</generator>
+		</id>
+		<one-to-one name="EmployeeDetails"
+					class="Employee"
+					constrained="true" />
+	</class>
+
+</hibernate-mapping>

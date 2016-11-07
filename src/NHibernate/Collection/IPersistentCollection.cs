@@ -95,8 +95,8 @@ namespace NHibernate.Collection
 		/// Clears out any Queued Additions.
 		/// </summary>
 		/// <remarks>
-		/// After a Flush() the database is in synch with the in-memory
-		/// contents of the Collection.  Since everything is in synch remove
+		/// After a Flush() the database is in sync with the in-memory
+		/// contents of the Collection.  Since everything is in sync remove
 		/// any Queued Additions.
 		/// </remarks>
 		void PostAction();

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using NHibernate.Linq.Functions;
 using NUnit.Framework;
-using SharpTestsEx;
 using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.Linq
@@ -14,8 +13,8 @@ namespace NHibernate.Test.Linq
 		public void WhenNotDefinedThenReturnDefaultRegistry()
 		{
 			var registry = LinqToHqlGeneratorsRegistryFactory.CreateGeneratorsRegistry(new Dictionary<string, string>());
-			registry.Should().Not.Be.Null();
-			registry.Should().Be.OfType<DefaultLinqToHqlGeneratorsRegistry>();
+			Assert.That(registry, Is.Not.Null);
+			Assert.That(registry, Is.TypeOf<DefaultLinqToHqlGeneratorsRegistry>());
 		}
 
 		[Test]
@@ -23,8 +22,8 @@ namespace NHibernate.Test.Linq
 		{
 			var properties = new Dictionary<string, string> { { Environment.LinqToHqlGeneratorsRegistry, typeof(MyLinqToHqlGeneratorsRegistry).AssemblyQualifiedName } };
 			var registry = LinqToHqlGeneratorsRegistryFactory.CreateGeneratorsRegistry(properties);
-			registry.Should().Not.Be.Null();
-			registry.Should().Be.OfType<MyLinqToHqlGeneratorsRegistry>();
+			Assert.That(registry, Is.Not.Null);
+			Assert.That(registry, Is.TypeOf<MyLinqToHqlGeneratorsRegistry>());
 		}
 
 		private class MyLinqToHqlGeneratorsRegistry : ILinqToHqlGeneratorsRegistry

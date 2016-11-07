@@ -224,6 +224,11 @@ namespace NHibernate.Dialect
 			RegisterFunction("str", new StandardSQLFunction("to_char", NHibernateUtil.String));
 
 			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
+
+			RegisterFunction("band", new BitwiseFunctionOperation("bitand"));
+			RegisterFunction("bor", new SQLFunctionTemplate(null, "?1 + ?2 - BITAND(?1, ?2)"));
+			RegisterFunction("bxor", new SQLFunctionTemplate(null, "?1 + ?2 - BITAND(?1, ?2) * 2"));
+			RegisterFunction("bnot", new SQLFunctionTemplate(null, "(-1 - ?1)"));
 		}
 
 		protected internal virtual void RegisterDefaultProperties()
@@ -242,7 +247,7 @@ namespace NHibernate.Dialect
 		/// <summary> 
 		/// Support for the oracle proprietary join syntax... 
 		/// </summary>
-		/// <returns> The orqacle join fragment </returns>
+		/// <returns> The oracle join fragment </returns>
 		public override JoinFragment CreateOuterJoinFragment()
 		{
 			return new OracleJoinFragment();
@@ -302,7 +307,7 @@ namespace NHibernate.Dialect
 			return pagingSelect.ToSqlString();
 		}
 
-		private string ExtractColumnOrAliasNames(SqlString select)
+		private static string ExtractColumnOrAliasNames(SqlString select)
 		{
 			List<SqlString> columnsOrAliases;
 			Dictionary<SqlString, SqlString> aliasToColumn;

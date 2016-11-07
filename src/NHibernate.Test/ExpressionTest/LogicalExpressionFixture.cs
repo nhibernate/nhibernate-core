@@ -11,7 +11,7 @@ namespace NHibernate.Test.ExpressionTest
 	/// Test the LogicalExpression class.
 	/// </summary>
 	/// <remarks>
-	/// There are no need for the subclasses AndExpresssion and OrExpression to have their own 
+	/// There are no need for the subclasses AndExpression and OrExpression to have their own 
 	/// TestFixtures because all they do is override one property.
 	/// </remarks>
 	[TestFixture]

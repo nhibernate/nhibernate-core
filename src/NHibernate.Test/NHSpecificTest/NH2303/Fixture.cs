@@ -1,6 +1,5 @@
 using NHibernate.Cfg;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2303
 {
@@ -10,10 +9,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2303
 		public void IndependentSubclassElementCanExtendSubclass()
 		{
 			Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
-			cfg.Executing(c => c.AddResource("NHibernate.Test.NHSpecificTest.NH2303.Mappings.hbm.xml", GetType().Assembly)).
-				NotThrows();
+			Assert.That(() => cfg.AddResource("NHibernate.Test.NHSpecificTest.NH2303.Mappings.hbm.xml", GetType().Assembly), Throws.Nothing);
 			cfg.BuildSessionFactory();
-			cfg.Executing(c => c.BuildSessionFactory()).NotThrows();
+			Assert.That(() => cfg.BuildSessionFactory(), Throws.Nothing);
 		}
 	}
 }

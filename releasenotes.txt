@@ -1,3 +1,11 @@
+Tentative for 4.1:
+
+  Possible breaking change: Proxies for classes that used lazy fields (not collections)
+  would have any exceptions from the entity wrapped in TargetInvocationException. This
+  wrapping exception have now been removed. Where relevant, you should instead catch
+  the original exception type you throw.
+
+
 Build 4.0.4.GA
 =============================
 

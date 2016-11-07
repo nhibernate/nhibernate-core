@@ -3,7 +3,6 @@ using NHibernate.Cfg.MappingSchema;
 using NUnit.Framework;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRegistrationTests
 {
@@ -64,11 +63,11 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRe
 		private void ModelIsWellFormed(HbmMapping hbmMapping)
 		{
 			var hbmClass = hbmMapping.SubClasses.Single();
-			hbmClass.Should().Not.Be.Null();
-			hbmClass.extends.Should().Contain("MyClass");
+			Assert.That(hbmClass, Is.Not.Null);
+			Assert.That(hbmClass.extends, Is.StringContaining("MyClass"));
 			var hbmProperty = hbmClass.Properties.OfType<HbmProperty>().Single();
-			hbmProperty.name.Should().Be("SomethingElse");
-			hbmProperty.length.Should().Be("15");
+			Assert.That(hbmProperty.name, Is.EqualTo("SomethingElse"));
+			Assert.That(hbmProperty.length, Is.EqualTo("15"));
 		}
 	}
 }

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.MixAutomapping
 {
@@ -48,7 +47,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var pi = Mapping.ByCode.TypeExtensions.DecodeMemberAccessExpression<MyClass>(x => x.Something);
 
 			var inspector = GetConfiguredInspector();
-			inspector.IsOneToMany(pi).Should().Be.False();
+			Assert.That(inspector.IsOneToMany(pi), Is.False);
 		}
 
 		[Test]
@@ -57,7 +56,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var pi = Mapping.ByCode.TypeExtensions.DecodeMemberAccessExpression<MyClass>(x => x.Components);
 
 			var inspector = GetConfiguredInspector();
-			inspector.IsOneToMany(pi).Should().Be.False();
+			Assert.That(inspector.IsOneToMany(pi), Is.False);
 		}
 
 		[Test]
@@ -66,7 +65,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var pi = Mapping.ByCode.TypeExtensions.DecodeMemberAccessExpression<MyClass>(x => x.Children);
 
 			var inspector = GetConfiguredInspector();
-			inspector.IsOneToMany(pi).Should().Be.True();
+			Assert.That(inspector.IsOneToMany(pi), Is.True);
 		}
 
 		[Test]
@@ -75,7 +74,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var pi = Mapping.ByCode.TypeExtensions.DecodeMemberAccessExpression<MyClass>(x => x.Elements);
 
 			var inspector = GetConfiguredInspector();
-			inspector.IsOneToMany(pi).Should().Be.False();
+			Assert.That(inspector.IsOneToMany(pi), Is.False);
 		}
 
 		[Test]
@@ -84,7 +83,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var pi = Mapping.ByCode.TypeExtensions.DecodeMemberAccessExpression<MyClass>(x => x.Relateds);
 
 			var inspector = GetConfiguredInspector();
-			inspector.IsOneToMany(pi).Should().Be.True();
+			Assert.That(inspector.IsOneToMany(pi), Is.True);
 		}
 
 		[Test]
@@ -93,7 +92,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var pi = Mapping.ByCode.TypeExtensions.DecodeMemberAccessExpression<MyClass>(x => x.DicChildren);
 
 			var inspector = GetConfiguredInspector();
-			inspector.IsOneToMany(pi).Should().Be.True();
+			Assert.That(inspector.IsOneToMany(pi), Is.True);
 		}
 
 		[Test]
@@ -102,7 +101,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var pi = Mapping.ByCode.TypeExtensions.DecodeMemberAccessExpression<MyClass>(x => x.DicRelateds);
 
 			var inspector = GetConfiguredInspector();
-			inspector.IsOneToMany(pi).Should().Be.True();
+			Assert.That(inspector.IsOneToMany(pi), Is.True);
 		}
 
 		[Test]
@@ -117,7 +116,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 
 			var pi = Mapping.ByCode.TypeExtensions.DecodeMemberAccessExpression<MyClass>(x => x.Relateds);
 
-			inspector.IsOneToMany(pi).Should().Be.False();
+			Assert.That(inspector.IsOneToMany(pi), Is.False);
 		}
 
 		[Test]
@@ -132,7 +131,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 
 			var pi = Mapping.ByCode.TypeExtensions.DecodeMemberAccessExpression<MyClass>(x => x.DicRelateds);
 
-			inspector.IsOneToMany(pi).Should().Be.False();
+			Assert.That(inspector.IsOneToMany(pi), Is.False);
 		}
 	}
 }

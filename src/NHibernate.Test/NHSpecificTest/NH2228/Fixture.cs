@@ -2,7 +2,6 @@ using System;
 using NHibernate.Cfg;
 using NUnit.Framework;
 using NHibernate.Cfg.Loquacious;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2228
 {
@@ -52,22 +51,22 @@ namespace NHibernate.Test.NHSpecificTest.NH2228
 		{
 			using (var scenario = new ParentWithTwoChildrenScenario(Sfi))
 			{
-                using (var client1 = OpenSession())
-                {
-                    var parentFromClient1 = client1.Get<Parent>(scenario.ParentId);
-                    NHibernateUtil.Initialize(parentFromClient1.Children);
-                    var firstChildId = parentFromClient1.Children[0].Id;
+				using (var client1 = OpenSession())
+				{
+					var parentFromClient1 = client1.Get<Parent>(scenario.ParentId);
+					NHibernateUtil.Initialize(parentFromClient1.Children);
+					var firstChildId = parentFromClient1.Children[0].Id;
 
-                    DeleteChildUsingAnotherSession(firstChildId);
+					DeleteChildUsingAnotherSession(firstChildId);
 
-                    using (var tx1 = client1.BeginTransaction())
-                    {
-                        parentFromClient1.Children[0].Description = "Modified info";
-					var expectedException = tx1.Executing(x => x.Commit()).Throws<StaleObjectStateException>().Exception;
-                        expectedException.EntityName.Should().Be(typeof (Child).FullName);
-                        expectedException.Identifier.Should().Be(firstChildId);
-                    }
-                }
+					using (var tx1 = client1.BeginTransaction())
+					{
+						parentFromClient1.Children[0].Description = "Modified info";
+						var expectedException = Assert.Throws<StaleObjectStateException>(() => tx1.Commit());
+						Assert.That(expectedException.EntityName, Is.EqualTo(typeof (Child).FullName));
+						Assert.That(expectedException.Identifier, Is.EqualTo(firstChildId));
+					}
+				}
 			}
 		}
 

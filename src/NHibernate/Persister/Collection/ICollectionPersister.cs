@@ -89,7 +89,7 @@ namespace NHibernate.Persister.Collection
 		bool IsLazy { get; }
 
 		/// <summary>
-		/// Is this collection "inverse", so state changes are not propogated to the database.
+		/// Is this collection "inverse", so state changes are not propagated to the database.
 		/// </summary>
 		bool IsInverse { get; }
 

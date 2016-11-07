@@ -4,10 +4,12 @@ using System.IO;
 using System.Xml;
 using NHibernate.Cfg;
 using NHibernate.DomainModel;
+using NHibernate.Engine;
+using NHibernate.Linq;
 using NHibernate.Tool.hbm2ddl;
 using NHibernate.Util;
 using NUnit.Framework;
-using Environment=NHibernate.Cfg.Environment;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.CfgTest
 {
@@ -38,7 +40,7 @@ namespace NHibernate.Test.CfgTest
 		}
 
 		/// <summary>
-		/// Recieved sample code that Configuration could not be configured manually.  It can be configured
+		/// Received sample code that Configuration could not be configured manually.  It can be configured
 		/// manually just need to set all of the properties before adding classes
 		/// </summary>
 		[Test, Explicit]
@@ -417,5 +419,52 @@ namespace NHibernate.Test.CfgTest
 			cfg.Configure(xtr);
 			// No exception expected
 		}
+
+		public class SampleQueryProvider : DefaultQueryProvider
+		{
+			public SampleQueryProvider(ISessionImplementor session) : base(session)
+			{
+
+			}
+		}
+
+		[Test]
+		public void NH2890Standard()
+		{
+			var cfg = new Configuration();
+			cfg.Configure("TestEnbeddedConfig.cfg.xml")
+				.LinqQueryProvider<SampleQueryProvider>()
+				.SetDefaultAssembly("NHibernate.DomainModel")
+				.SetDefaultNamespace("NHibernate.DomainModel");
+
+			using (var sessionFactory = cfg.BuildSessionFactory())
+			{
+				using (var session = sessionFactory.OpenSession())
+				{
+					var query = session.Query<NHibernate.DomainModel.A>();
+					Assert.IsInstanceOf(typeof(SampleQueryProvider), query.Provider);
+				}
+			}
+		}
+
+		[Test]
+		public void NH2890Xml()
+		{
+			var cfg = new Configuration();
+			cfg.Configure("TestEnbeddedConfig.cfg.xml")
+				.SetDefaultAssembly("NHibernate.DomainModel")
+				.SetDefaultNamespace("NHibernate.DomainModel");
+
+			using (var sessionFactory = cfg.BuildSessionFactory())
+			{
+				using (var session = sessionFactory.OpenSession())
+				{
+					var query = session.Query<NHibernate.DomainModel.A>();
+					Assert.IsInstanceOf(typeof(SampleQueryProvider), query.Provider);
+				}
+			}
+
+		}
+
 	}
 }

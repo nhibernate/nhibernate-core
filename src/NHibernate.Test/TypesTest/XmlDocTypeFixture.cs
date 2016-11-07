@@ -3,7 +3,6 @@ using System.Xml;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.TypesTest
 {
@@ -14,10 +13,10 @@ namespace NHibernate.Test.TypesTest
 			get { return "XmlDoc"; }
 		}
 
-        protected override bool AppliesTo(Dialect.Dialect dialect)
-        {
-            return TestDialect.SupportsSqlType(new SqlType(DbType.Xml));
-        }
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsSqlType(new SqlType(DbType.Xml));
+		}
 
 		[Test]
 		public void ReadWrite()
@@ -35,8 +34,8 @@ namespace NHibernate.Test.TypesTest
 			{
 				var docEntity = s.Get<XmlDocClass>(1);
 				var document = docEntity.Document;
-				document.Should().Not.Be.Null();
-				document.OuterXml.Should().Contain("<MyNode>my Text</MyNode>");
+				Assert.That(document, Is.Not.Null);
+				Assert.That(document.OuterXml, Is.StringContaining("<MyNode>my Text</MyNode>"));
 				var xmlElement = document.CreateElement("Pizza");
 				xmlElement.SetAttribute("temp", "calda");
 				document.FirstChild.AppendChild(xmlElement);
@@ -46,7 +45,7 @@ namespace NHibernate.Test.TypesTest
 			using (var s = OpenSession())
 			{
 				var docEntity = s.Get<XmlDocClass>(1);
-				docEntity.Document.OuterXml.Should().Contain("Pizza temp=\"calda\"");
+				Assert.That(docEntity.Document.OuterXml, Is.StringContaining("Pizza temp=\"calda\""));
 				s.Delete(docEntity);
 				s.Flush();
 			}
@@ -66,7 +65,7 @@ namespace NHibernate.Test.TypesTest
 			using (ISession s = OpenSession())
 			{
 				var docEntity = s.Get<XmlDocClass>(1);
-				docEntity.Document.Should().Be.Null();
+				Assert.That(docEntity.Document, Is.Null);
 				s.Delete(docEntity);
 				s.Flush();
 			}
@@ -77,7 +76,7 @@ namespace NHibernate.Test.TypesTest
 		{
 			// integration test to be 100% sure
 			var propertyType = sessions.GetEntityPersister(typeof (XmlDocClass).FullName).GetPropertyType("AutoDocument");
-			propertyType.Should().Be.InstanceOf<XmlDocType>();
+			Assert.That(propertyType, Is.InstanceOf<XmlDocType>());
 		}
 	}
 }

@@ -9,7 +9,7 @@ namespace NHibernate.Cache
 	/// Not valid across multiple application domains. Identifiers are not necessarily
 	/// strictly increasing, but usually are.
 	///	</remarks>
-	public sealed class Timestamper
+	public static class Timestamper
 	{
 		private static object lockObject = new object();
 
@@ -46,10 +46,6 @@ namespace NHibernate.Cache
 				}
 				return time + counter;
 			}
-		}
-
-		private Timestamper()
-		{
 		}
 	}
 }

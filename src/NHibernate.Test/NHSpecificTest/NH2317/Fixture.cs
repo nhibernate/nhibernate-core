@@ -1,7 +1,6 @@
 using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2317
 {
@@ -35,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2317
 
 				var expected = session.CreateQuery("select a.id from Artist a take 3").List<int>();
 				var actual = session.Query<Artist>().Take(3).Select(a => a.Id).ToArray();
-				actual.Should().Have.SameValuesAs(expected);
+				Assert.That(actual, Is.EquivalentTo(expected));
 			}
 		}
 

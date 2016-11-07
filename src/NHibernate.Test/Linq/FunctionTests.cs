@@ -23,6 +23,38 @@ namespace NHibernate.Test.Linq
 			Assert.That(query[0].FirstName, Is.EqualTo("Margaret"));
 		}
 
+		[Test]
+		public void LikeFunctionWithEscapeCharacter()
+		{
+			using (var tx = session.BeginTransaction())
+			{
+				var employeeName = "Mar%aret";
+				var escapeChar = '#';
+				var employeeNameEscaped = employeeName.Replace("%", escapeChar + "%");
+
+				//This entity will be flushed to the db, but rolled back when the test completes
+
+				session.Save(new Employee { FirstName = employeeName, LastName = "LastName" });
+				session.Flush();
+
+
+				var query = (from e in db.Employees
+				             where NHibernate.Linq.SqlMethods.Like(e.FirstName, employeeNameEscaped, escapeChar)
+				             select e).ToList();
+
+				Assert.That(query.Count, Is.EqualTo(1));
+				Assert.That(query[0].FirstName, Is.EqualTo(employeeName));
+
+				Assert.Throws<ArgumentException>(() =>
+				{
+					(from e in db.Employees
+					 where NHibernate.Linq.SqlMethods.Like(e.FirstName, employeeNameEscaped, e.FirstName.First())
+					 select e).ToList();
+				});
+				tx.Rollback();
+			}
+		}
+
 		private static class SqlMethods
 		{
 			public static bool Like(string expression, string pattern)

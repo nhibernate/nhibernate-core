@@ -3,7 +3,6 @@ using NHibernate.Driver;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.DriverTest
 {
@@ -70,7 +69,7 @@ namespace NHibernate.Test.DriverTest
 			_driver.AdjustCommand(cmd);
 
 			var expectedCommandTxt = "select (case when col = @p0 then cast(@p1 as VARCHAR(255)) else cast(@p2 as VARCHAR(255)) end) from table";
-			cmd.CommandText.Should().Be(expectedCommandTxt);
+			Assert.That(cmd.CommandText, Is.EqualTo(expectedCommandTxt));
 		}
 
 		[Test]
@@ -82,7 +81,7 @@ namespace NHibernate.Test.DriverTest
 			_driver.AdjustCommand(cmd);
 
 			var expectedCommandTxt = "select (case when col = @p0 then cast(@p1 as INTEGER) else cast(@p2 as INTEGER) end) from table";
-			cmd.CommandText.Should().Be(expectedCommandTxt);
+			Assert.That(cmd.CommandText, Is.EqualTo(expectedCommandTxt));
 		}
 
 		[Test]
@@ -94,7 +93,7 @@ namespace NHibernate.Test.DriverTest
 			_driver.AdjustCommand(cmd);
 
 			var expected = "select col || cast(@p0 as VARCHAR(255)) || col from table";
-			cmd.CommandText.Should().Be(expected);
+			Assert.That(cmd.CommandText, Is.EqualTo(expected));
 		}
 
 		[Test]
@@ -106,7 +105,7 @@ namespace NHibernate.Test.DriverTest
 			_driver.AdjustCommand(cmd);
 
 			var expected = "select col + cast(@p0 as VARCHAR(255)) from table";
-			cmd.CommandText.Should().Be(expected);
+			Assert.That(cmd.CommandText, Is.EqualTo(expected));
 		}
 
 		[Test]
@@ -118,7 +117,31 @@ namespace NHibernate.Test.DriverTest
 			_driver.AdjustCommand(cmd);
 
 			var expected = "insert into table1 (col1, col2) select col1, cast(@p0 as INTEGER) from table2";
-			cmd.CommandText.Should().Be(expected);
+			Assert.That(cmd.CommandText, Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void AdjustCommand_InsertWithParamsInSelect_ParameterIsNotCasted_WhenColumnNameContainsSelect()
+		{
+			MakeDriver();
+			var cmd = BuildInsertWithParamsInSelectCommandWithSelectInColumnName(SqlTypeFactory.Int32);
+
+			_driver.AdjustCommand(cmd);
+
+			var expected = "insert into table1 (col1_select_aaa) values(@p0) from table2";
+			Assert.That(cmd.CommandText, Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void AdjustCommand_InsertWithParamsInSelect_ParameterIsNotCasted_WhenColumnNameContainsWhere()
+		{
+			MakeDriver();
+			var cmd = BuildInsertWithParamsInSelectCommandWithWhereInColumnName(SqlTypeFactory.Int32);
+
+			_driver.AdjustCommand(cmd);
+
+			var expected = "insert into table1 (col1_where_aaa) values(@p0) from table2";
+			Assert.That(cmd.CommandText, Is.EqualTo(expected));
 		}
 
 		private void MakeDriver()
@@ -142,7 +165,7 @@ namespace NHibernate.Test.DriverTest
 		private void VerifyCountOfEstablishedConnectionsIs(int expectedCount)
 		{
 			var physicalConnections = GetEstablishedConnections();
-			physicalConnections.Should().Be(expectedCount);
+			Assert.That(physicalConnections, Is.EqualTo(expectedCount));
 		}
 
 		private int GetEstablishedConnections()
@@ -171,7 +194,7 @@ namespace NHibernate.Test.DriverTest
 					.Add(" end) from table")
 					.ToSqlString();
 
-			return _driver.GenerateCommand(CommandType.Text, sqlString, new SqlType[] { paramType, paramType, paramType });
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType, paramType, paramType });
 		}
 
 		private IDbCommand BuildSelectConcatCommand(SqlType paramType)
@@ -184,7 +207,7 @@ namespace NHibernate.Test.DriverTest
 					.Add("from table")
 					.ToSqlString();
 
-			return _driver.GenerateCommand(CommandType.Text, sqlString, new SqlType[] { paramType });
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
 		}
 
 		private IDbCommand BuildSelectAddCommand(SqlType paramType)
@@ -195,7 +218,7 @@ namespace NHibernate.Test.DriverTest
 					.Add(" from table")
 					.ToSqlString();
 
-			return _driver.GenerateCommand(CommandType.Text, sqlString, new SqlType[] { paramType });
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
 		}
 
 		private IDbCommand BuildInsertWithParamsInSelectCommand(SqlType paramType)
@@ -207,8 +230,31 @@ namespace NHibernate.Test.DriverTest
 				.Add(" from table2")
 				.ToSqlString();
 
-			return _driver.GenerateCommand(CommandType.Text, sqlString, new SqlType[] { paramType });
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
 		}
 
+		private IDbCommand BuildInsertWithParamsInSelectCommandWithSelectInColumnName(SqlType paramType)
+		{
+			var sqlString = new SqlStringBuilder()
+				.Add("insert into table1 (col1_select_aaa) ")
+				.Add("values(")
+				.AddParameter()
+				.Add(") from table2")
+				.ToSqlString();
+
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
+		}
+
+        private IDbCommand BuildInsertWithParamsInSelectCommandWithWhereInColumnName(SqlType paramType)
+		{
+			var sqlString = new SqlStringBuilder()
+				.Add("insert into table1 (col1_where_aaa) ")
+				.Add("values(")
+				.AddParameter()
+				.Add(") from table2")
+				.ToSqlString();
+
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
+		}
 	}
 }

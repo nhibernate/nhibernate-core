@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 {
@@ -40,7 +39,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			});
 
 			IEnumerable<string> tablePerClassSplits = inspector.GetPropertiesSplits(typeof(MyClass));
-			tablePerClassSplits.Should().Have.SameValuesAs("MyClassSplit1", "MyClassSplit2");
+			Assert.That(tablePerClassSplits, Is.EquivalentTo(new [] {"MyClassSplit1", "MyClassSplit2"}));
 		}
 
 		[Test]
@@ -64,13 +63,13 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 															map.Property(x => x.Something0);
 														});
 
-			inspector.IsTablePerClassSplit(typeof(MyClass), "MyClassSplit1", For<MyClass>.Property(x => x.Something0)).Should().Be.False();
-			inspector.IsTablePerClassSplit(typeof(MyClass), "MyClassSplit2", For<MyClass>.Property(x => x.Something0)).Should().Be.False();
+			Assert.That(inspector.IsTablePerClassSplit(typeof(MyClass), "MyClassSplit1", For<MyClass>.Property(x => x.Something0)), Is.False);
+			Assert.That(inspector.IsTablePerClassSplit(typeof(MyClass), "MyClassSplit2", For<MyClass>.Property(x => x.Something0)), Is.False);
 
-			inspector.IsTablePerClassSplit(typeof(MyClass), "MyClassSplit1", For<MyClass>.Property(x => x.SomethingA1)).Should().Be.True();
-			inspector.IsTablePerClassSplit(typeof(MyClass), "MyClassSplit1", For<MyClass>.Property(x => x.SomethingA2)).Should().Be.True();
-			inspector.IsTablePerClassSplit(typeof(MyClass), "MyClassSplit2", For<MyClass>.Property(x => x.SomethingB1)).Should().Be.True();
-			inspector.IsTablePerClassSplit(typeof(MyClass), "MyClassSplit2", For<MyClass>.Property(x => x.SomethingB2)).Should().Be.True();
+			Assert.That(inspector.IsTablePerClassSplit(typeof(MyClass), "MyClassSplit1", For<MyClass>.Property(x => x.SomethingA1)), Is.True);
+			Assert.That(inspector.IsTablePerClassSplit(typeof(MyClass), "MyClassSplit1", For<MyClass>.Property(x => x.SomethingA2)), Is.True);
+			Assert.That(inspector.IsTablePerClassSplit(typeof(MyClass), "MyClassSplit2", For<MyClass>.Property(x => x.SomethingB1)), Is.True);
+			Assert.That(inspector.IsTablePerClassSplit(typeof(MyClass), "MyClassSplit2", For<MyClass>.Property(x => x.SomethingB2)), Is.True);
 		}
 
 		[Test]
@@ -96,12 +95,12 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var hbmDoc = mapper.CompileMappingFor(new[] { typeof(MyClass) });
 
 			var hbmClass = hbmDoc.RootClasses[0];
-			hbmClass.Joins.Select(j => j.table).Should().Have.SameValuesAs("MyClassSplit1", "MyClassSplit2");
-			hbmClass.Properties.Single().Name.Should().Be("Something0");
+			Assert.That(hbmClass.Joins.Select(j => j.table), Is.EquivalentTo(new [] {"MyClassSplit1", "MyClassSplit2"}));
+			Assert.That(hbmClass.Properties.Single().Name, Is.EqualTo("Something0"));
 			var hbmSplit1 = hbmClass.Joins.Single(j => "MyClassSplit1" == j.table);
-			hbmSplit1.Properties.Select(p => p.Name).Should().Have.SameValuesAs("SomethingA1", "SomethingA2");
+			Assert.That(hbmSplit1.Properties.Select(p => p.Name), Is.EquivalentTo(new [] {"SomethingA1", "SomethingA2"}));
 			var hbmSplit2 = hbmClass.Joins.Single(j => "MyClassSplit2" == j.table);
-			hbmSplit2.Properties.Select(p => p.Name).Should().Have.SameValuesAs("SomethingB1", "SomethingB2");
+			Assert.That(hbmSplit2.Properties.Select(p => p.Name), Is.EquivalentTo(new [] {"SomethingB1", "SomethingB2"}));
 		}
 	}
 }

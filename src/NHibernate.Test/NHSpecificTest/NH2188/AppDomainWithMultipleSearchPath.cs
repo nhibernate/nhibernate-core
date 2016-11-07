@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using NHibernate.Cfg;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2188
 {
@@ -26,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2188
 				AppDomain.CurrentDomain.AppendPrivatePath("bin");
 				AppDomain.CurrentDomain.AppendPrivatePath("DbScripts");
 				var configuration = new MyNhConfiguration();
-				configuration.DefaultConfigurationFilePath().Should().Be(expected);
+				Assert.That(configuration.DefaultConfigurationFilePath(), Is.EqualTo(expected));
 			}
 			finally
 			{

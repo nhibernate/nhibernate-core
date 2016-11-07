@@ -1,7 +1,7 @@
 using System.Linq;
+using NHibernate.DomainModel;
 using NHibernate.Linq;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2203
 {
@@ -33,7 +33,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2203
 										.Where(a => a.Name.StartsWith("F"))
 										.ToArray();
 
-				actual.Select(a => a.Name).Should().Have.SameSequenceAs("Fez", "Foo");
+				var expected = new[] {"Fez", "Foo"};
+				Assert.That(actual.Select(a => a.Name), Is.EquivalentTo(expected));
 			}
 		}
 

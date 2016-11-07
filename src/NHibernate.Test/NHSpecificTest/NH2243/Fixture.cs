@@ -4,7 +4,6 @@ using System.Text;
 using NHibernate.Cfg;
 using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2243
 {
@@ -21,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2243
 					cfg.AddInputStream(stream);
 				new SchemaExport(cfg).Execute(s => script.AppendLine(s), false, false);
 
-				script.ToString().Should().Contain("MyNameForFK");
+				Assert.That(script.ToString(), Is.StringContaining("MyNameForFK"));
 			}
 	}
 }

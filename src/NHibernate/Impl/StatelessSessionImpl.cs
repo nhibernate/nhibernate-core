@@ -316,6 +316,12 @@ namespace NHibernate.Impl
 		public override object GetEntityUsingInterceptor(EntityKey key)
 		{
 			CheckAndUpdateSessionStatus();
+			// while a pending Query we should use existing temporary entities so a join fetch does not create multiple instances
+			// of the same parent item (NH-3015, NH-3705).
+			object obj;
+			if (temporaryPersistenceContext.EntitiesByKey.TryGetValue(key, out obj))
+				return obj;
+
 			return null;
 		}
 

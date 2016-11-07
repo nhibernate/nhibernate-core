@@ -1,7 +1,6 @@
 using NHibernate.Criterion;
 using NHibernate.Transform;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2746
 {
@@ -25,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2746
 
 				session.EnableFilter("nameFilter").SetParameter("name", "Another child");
 
-				crit.Executing(c=> c.List<T1>()).NotThrows();
+				Assert.That(() => crit.List<T1>(), Throws.Nothing);
 			}
 		}
 	}

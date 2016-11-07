@@ -3,7 +3,6 @@ using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode.Impl;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.MappersTests
 {
@@ -26,7 +25,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmMapping = new HbmMapping();
 			var hbmAny = new HbmAny();
 			new AnyMapper(null, typeof(int), hbmAny, hbmMapping);
-			hbmAny.idtype.Should().Be("Int32");
+			Assert.That(hbmAny.idtype, Is.EqualTo("Int32"));
 		}
 
 		[Test]
@@ -35,8 +34,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmMapping = new HbmMapping();
 			var hbmAny = new HbmAny();
 			new AnyMapper(null, typeof(int), hbmAny, hbmMapping);
-			hbmAny.Columns.Should().Have.Count.EqualTo(2);
-			hbmAny.Columns.Select(c => c.name).All(n => n.Satisfy(name => !string.IsNullOrEmpty(name)));
+			Assert.That(hbmAny.Columns.Count(), Is.EqualTo(2));
+			Assert.That(hbmAny.Columns.All(c => !string.IsNullOrEmpty(c.name)), Is.True);
 		}
 
 		[Test]
@@ -46,7 +45,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmAny = new HbmAny();
 			var mapper = new AnyMapper(null, typeof(int), hbmAny, hbmMapping);
 			mapper.IdType(NHibernateUtil.Int64);
-			hbmAny.idtype.Should().Be("Int64");
+			Assert.That(hbmAny.idtype, Is.EqualTo("Int64"));
 		}
 
 		[Test]
@@ -56,7 +55,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmAny = new HbmAny();
 			var mapper = new AnyMapper(null, typeof(int), hbmAny, hbmMapping);
 			mapper.IdType<long>();
-			hbmAny.idtype.Should().Be("Int64");
+			Assert.That(hbmAny.idtype, Is.EqualTo("Int64"));
 		}
 
 		[Test]
@@ -66,7 +65,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmAny = new HbmAny();
 			var mapper = new AnyMapper(null, typeof(int), hbmAny, hbmMapping);
 			mapper.IdType(typeof(long));
-			hbmAny.idtype.Should().Be("Int64");
+			Assert.That(hbmAny.idtype, Is.EqualTo("Int64"));
 		}
 
 		[Test]
@@ -76,7 +75,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmAny = new HbmAny();
 			var mapper = new AnyMapper(null, typeof(int), hbmAny, hbmMapping);
 			mapper.MetaType(NHibernateUtil.Character);
-			hbmAny.MetaType.Should().Be("Char");
+			Assert.That(hbmAny.MetaType, Is.EqualTo("Char"));
 		}
 
 		[Test]
@@ -86,7 +85,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmAny = new HbmAny();
 			var mapper = new AnyMapper(null, typeof(int), hbmAny, hbmMapping);
 			mapper.MetaType<char>();
-			hbmAny.MetaType.Should().Be("Char");
+			Assert.That(hbmAny.MetaType, Is.EqualTo("Char"));
 		}
 
 		[Test]
@@ -96,7 +95,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmAny = new HbmAny();
 			var mapper = new AnyMapper(null, typeof(int), hbmAny, hbmMapping);
 			mapper.MetaType(typeof(char));
-			hbmAny.MetaType.Should().Be("Char");
+			Assert.That(hbmAny.MetaType, Is.EqualTo("Char"));
 		}
 
 		[Test]
@@ -106,7 +105,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmAny = new HbmAny();
 			var mapper = new AnyMapper(null, typeof(int), hbmAny, hbmMapping);
 			mapper.Cascade(Mapping.ByCode.Cascade.All);
-			hbmAny.cascade.Should().Be("all");
+			Assert.That(hbmAny.cascade, Is.EqualTo("all"));
 		}
 
 		[Test]
@@ -116,7 +115,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmAny = new HbmAny();
 			var mapper = new AnyMapper(null, typeof(int), hbmAny, hbmMapping);
 			mapper.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans);
-			hbmAny.cascade.Should().Be("all");
+			Assert.That(hbmAny.cascade, Is.EqualTo("all"));
 		}
 
 		[Test]
@@ -126,7 +125,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmAny = new HbmAny();
 			var mapper = new AnyMapper(null, typeof(int), hbmAny, hbmMapping);
 			mapper.Index("pizza");
-			hbmAny.index.Should().Be("pizza");
+			Assert.That(hbmAny.index, Is.EqualTo("pizza"));
 		}
 
 		[Test]
@@ -136,7 +135,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmAny = new HbmAny();
 			var mapper = new AnyMapper(null, typeof(int), hbmAny, hbmMapping);
 			mapper.Lazy(true);
-			hbmAny.lazy.Should().Be(true);
+			Assert.That(hbmAny.lazy, Is.EqualTo(true));
 		}
 
 		[Test]
@@ -149,8 +148,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var columnsBefore = hbmAny.Columns.ToArray();
 			mapper.Columns(idcm => idcm.Length(10), metacm => { });
 			var columnsAfter = hbmAny.Columns.ToArray();
-			columnsBefore[idColumnIndex].Should().Be.SameInstanceAs(columnsAfter[idColumnIndex]);
-			columnsBefore[idColumnIndex].length.Should().Be("10");
+			Assert.That(columnsBefore[idColumnIndex], Is.SameAs(columnsAfter[idColumnIndex]));
+			Assert.That(columnsBefore[idColumnIndex].length, Is.EqualTo("10"));
 		}
 
 		[Test]
@@ -164,8 +163,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var columnsBefore = hbmAny.Columns.ToArray();
 			mapper.Columns(idcm => { }, metacm => metacm.Length(500));
 			var columnsAfter = hbmAny.Columns.ToArray();
-			columnsBefore[metaValueColumnIndex].Should().Be.SameInstanceAs(columnsAfter[metaValueColumnIndex]);
-			columnsBefore[metaValueColumnIndex].length.Should().Be("500");
+			Assert.That(columnsBefore[metaValueColumnIndex], Is.SameAs(columnsAfter[metaValueColumnIndex]));
+			Assert.That(columnsBefore[metaValueColumnIndex].length, Is.EqualTo("500"));
 		}
 
 		[Test]
@@ -175,8 +174,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmAny = new HbmAny();
 			var mapper = new AnyMapper(null, typeof(int), hbmAny, hbmMapping);
 			mapper.MetaValue('A', typeof(MyReferenceClass));
-			Executing.This(() => mapper.MetaType(NHibernateUtil.Int32)).Should().Throw<ArgumentException>();
-			Executing.This(mapper.MetaType<int>).Should().Throw<ArgumentException>();
+			Assert.That(() => mapper.MetaType(NHibernateUtil.Int32), Throws.TypeOf<ArgumentException>());
+			Assert.That(() => mapper.MetaType<int>(), Throws.TypeOf<ArgumentException>());
 		}
 
 		[Test]
@@ -185,8 +184,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmMapping = new HbmMapping();
 			var hbmAny = new HbmAny();
 			var mapper = new AnyMapper(null, typeof(int), hbmAny, hbmMapping);
-			Executing.This(() => mapper.MetaValue(null, typeof(MyReferenceClass))).Should().Throw<ArgumentNullException>();
-			Executing.This(() => mapper.MetaValue('A', null)).Should().Throw<ArgumentNullException>();
+			Assert.That(() => mapper.MetaValue(null, typeof(MyReferenceClass)), Throws.TypeOf<ArgumentNullException>());
+			Assert.That(() => mapper.MetaValue('A', null), Throws.TypeOf<ArgumentNullException>());
 		}
 
 		[Test]
@@ -196,7 +195,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmAny = new HbmAny();
 			var mapper = new AnyMapper(null, typeof(int), hbmAny, hbmMapping);
 			mapper.MetaValue('A', typeof(MyReferenceClass));
-			hbmAny.MetaType.Should().Be("Char");
+			Assert.That(hbmAny.MetaType, Is.EqualTo("Char"));
 		}
 
 		[Test]
@@ -205,7 +204,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmMapping = new HbmMapping();
 			var hbmAny = new HbmAny();
 			var mapper = new AnyMapper(null, typeof(int), hbmAny, hbmMapping);
-			Executing.This(() => mapper.MetaValue(typeof(MyReferenceClass), typeof(MyReferenceClass))).Should().Throw<ArgumentOutOfRangeException>();
+			Assert.That(() => mapper.MetaValue(typeof(MyReferenceClass), typeof(MyReferenceClass)), Throws.TypeOf<ArgumentOutOfRangeException>());
 		}
 
 		[Test]
@@ -215,7 +214,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmAny = new HbmAny();
 			var mapper = new AnyMapper(null, typeof(int), hbmAny, hbmMapping);
 			mapper.MetaValue('A', typeof(MyReferenceClass));
-			Executing.This(() => mapper.MetaValue(5, typeof(MyClass))).Should().Throw<ArgumentException>();
+			Assert.That(() => mapper.MetaValue(5, typeof(MyClass)), Throws.TypeOf<ArgumentException>());
 		}
 
 		[Test]
@@ -226,7 +225,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapper = new AnyMapper(null, typeof(int), hbmAny, hbmMapping);
 			mapper.MetaValue('A', typeof(MyReferenceClass));
 			mapper.MetaValue('A', typeof(MyReferenceClass));
-			hbmAny.metavalue.Should().Have.Count.EqualTo(1);
+			Assert.That(hbmAny.metavalue, Has.Length.EqualTo(1));
 		}
 
 		[Test]
@@ -236,7 +235,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmAny = new HbmAny();
 			var mapper = new AnyMapper(null, typeof(int), hbmAny, hbmMapping);
 			mapper.MetaValue('A', typeof(MyReferenceClass));
-			Executing.This(() => mapper.MetaValue('A', typeof(MyClass))).Should().Throw<ArgumentException>();
+			Assert.That(() => mapper.MetaValue('A', typeof(MyClass)), Throws.TypeOf<ArgumentException>());
 		}
 
 		[Test]
@@ -247,10 +246,10 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapper = new AnyMapper(null, typeof(int), hbmAny, hbmMapping);
 			mapper.MetaValue('A', typeof(MyReferenceClass));
 			mapper.MetaValue('B', typeof(MyClass));
-			hbmAny.metavalue.Should().Have.Count.EqualTo(2);
-			hbmAny.metavalue.Select(mv => mv.value).Should().Have.SameValuesAs("A", "B");
-			hbmAny.metavalue.Select(mv => mv.@class).Satisfy(c => c.Any(clazz => clazz.Contains("MyReferenceClass")));
-			hbmAny.metavalue.Select(mv => mv.@class).Satisfy(c => c.Any(clazz => clazz.Contains("MyClass")));
+			Assert.That(hbmAny.metavalue, Has.Length.EqualTo(2));
+			Assert.That(hbmAny.metavalue.Select(mv => mv.value), Is.EquivalentTo(new [] {"A", "B"}));
+			Assert.That(hbmAny.metavalue.Any(mv => mv.@class.Contains("MyReferenceClass")), Is.True);
+			Assert.That(hbmAny.metavalue.Any(mv => mv.@class.Contains("MyClass")), Is.True);
 		}
 
 		[Test]
@@ -260,8 +259,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmMapping = new HbmMapping();
 			var hbmAny = new HbmAny();
 			new AnyMapper(member, typeof(int), hbmAny, hbmMapping);
-			hbmAny.Columns.ElementAt(0).name.Should().Contain("MyReferenceClass");
-			hbmAny.Columns.ElementAt(1).name.Should().Contain("MyReferenceClass");
+			Assert.That(hbmAny.Columns.ElementAt(0).name, Is.StringContaining("MyReferenceClass"));
+			Assert.That(hbmAny.Columns.ElementAt(1).name, Is.StringContaining("MyReferenceClass"));
 		}
 
 		[Test]
@@ -271,10 +270,10 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmAny = new HbmAny();
 			var mapper = new AnyMapper(null, typeof(int), hbmAny, hbmMapping);
 			mapper.MetaValue('A', typeof(MyReferenceClass));
-			Executing.This(() => mapper.IdType(NHibernateUtil.Int32)).Should().NotThrow();
-			Executing.This(mapper.IdType<int>).Should().NotThrow();
-			Executing.This(mapper.IdType<string>).Should().Throw<ArgumentException>();
-			Executing.This(() => mapper.IdType(NHibernateUtil.String)).Should().Throw<ArgumentException>();
+			Assert.That(() => mapper.IdType(NHibernateUtil.Int32), Throws.Nothing);
+			Assert.That(() => mapper.IdType<int>(), Throws.Nothing);
+			Assert.That(() => mapper.IdType<string>(), Throws.TypeOf<ArgumentException>());
+			Assert.That(() => mapper.IdType(NHibernateUtil.String), Throws.TypeOf<ArgumentException>());
 		}
 
 		[Test]
@@ -285,7 +284,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapper = new AnyMapper(null, typeof(int), hbmAny, hbmMapping);
 
 			mapper.Update(false);
-			hbmAny.update.Should().Be.False();
+			Assert.That(hbmAny.update, Is.False);
 		}
 
 		[Test]
@@ -296,7 +295,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapper = new AnyMapper(null, typeof(int), hbmAny, hbmMapping);
 
 			mapper.Insert(false);
-			hbmAny.insert.Should().Be.False();
+			Assert.That(hbmAny.insert, Is.False);
 		}
 	}
 }

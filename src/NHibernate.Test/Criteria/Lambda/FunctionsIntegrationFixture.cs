@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using NHibernate.Criterion;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Criteria.Lambda
 {
@@ -52,8 +51,8 @@ namespace NHibernate.Test.Criteria.Lambda
 					.Where(p => p.BirthDate.YearPart() == 2008)
 					.List();
 
-				persons.Count.Should().Be(1);
-				persons[0].Name.Should().Be("p2");
+				Assert.That(persons.Count, Is.EqualTo(1));
+				Assert.That(persons[0].Name, Is.EqualTo("p2"));
 			}
 		}
 
@@ -68,9 +67,9 @@ namespace NHibernate.Test.Criteria.Lambda
 					.OrderBy(p => p.Name).Asc
 					.List();
 
-				persons.Count.Should().Be(2);
-				persons[0].Name.Should().Be("p1");
-				persons[1].Name.Should().Be("p2");
+				Assert.That(persons.Count, Is.EqualTo(2));
+				Assert.That(persons[0].Name, Is.EqualTo("p1"));
+				Assert.That(persons[1].Name, Is.EqualTo("p2"));
 			}
 		}
 
@@ -85,8 +84,8 @@ namespace NHibernate.Test.Criteria.Lambda
 					.Select(p => p.BirthDate.YearPart())
 					.SingleOrDefault<object>();
 
-				yearOfBirth.GetType().Should().Be(typeof (int));
-				yearOfBirth.Should().Be(2008);
+				Assert.That(yearOfBirth.GetType(), Is.EqualTo(typeof (int)));
+				Assert.That(yearOfBirth, Is.EqualTo(2008));
 			}
 		}
 
@@ -100,8 +99,8 @@ namespace NHibernate.Test.Criteria.Lambda
 					.SelectList(list => list.SelectAvg(p => p.BirthDate.YearPart()))
 					.SingleOrDefault<object>();
 
-				avgYear.GetType().Should().Be(typeof (double));
-				string.Format("{0:0}", avgYear).Should().Be("2008");
+				Assert.That(avgYear.GetType(), Is.EqualTo(typeof (double)));
+				Assert.That(string.Format("{0:0}", avgYear), Is.EqualTo("2008"));
 			}
 		}
 
@@ -116,8 +115,8 @@ namespace NHibernate.Test.Criteria.Lambda
 					.Select(p => Math.Round(p.Age.Sqrt(), 2))
 					.SingleOrDefault<object>();
 
-				sqrtOfAge.Should().Be.InstanceOf<double>();
-				string.Format("{0:0.00}", sqrtOfAge).Should().Be((9.49).ToString());
+				Assert.That(sqrtOfAge, Is.InstanceOf<double>());
+				Assert.That(string.Format("{0:0.00}", sqrtOfAge), Is.EqualTo((9.49).ToString()));
 			}
 		}
 
@@ -129,11 +128,11 @@ namespace NHibernate.Test.Criteria.Lambda
 			using (s.BeginTransaction())
 			{
 				var roundedValue = s.QueryOver<Person>()
-				                    .Where(p => p.Name == "p1")
-				                    .Select(p => Math.Round(p.Age.Sqrt()))
-				                    .SingleOrDefault<object>();
+									.Where(p => p.Name == "p1")
+									.Select(p => Math.Round(p.Age.Sqrt()))
+									.SingleOrDefault<object>();
 
-				roundedValue.Should().Be.InstanceOf<double>();
+				Assert.That(roundedValue, Is.InstanceOf<double>());
 				Assert.That(roundedValue, Is.EqualTo(9));
 			}
 		}
@@ -145,11 +144,11 @@ namespace NHibernate.Test.Criteria.Lambda
 			using (s.BeginTransaction())
 			{
 				var roundedValue = s.QueryOver<Person>()
-				                    .Where(p => p.Name == "p1")
-				                    .Select(p => Math.Round((decimal) p.Age.Sqrt()))
-				                    .SingleOrDefault<object>();
+									.Where(p => p.Name == "p1")
+									.Select(p => Math.Round((decimal) p.Age.Sqrt()))
+									.SingleOrDefault<object>();
 
-				roundedValue.Should().Be.InstanceOf<double>();
+				Assert.That(roundedValue, Is.InstanceOf<double>());
 				Assert.That(roundedValue, Is.EqualTo(9));
 			}
 		}
@@ -165,7 +164,7 @@ namespace NHibernate.Test.Criteria.Lambda
 									.Select(p => Math.Round(p.Age.Sqrt() , 3))
 									.SingleOrDefault<object>();
 
-				roundedValue.Should().Be.InstanceOf<double>();
+				Assert.That(roundedValue, Is.InstanceOf<double>());
 				Assert.That(roundedValue, Is.EqualTo(9.487).Within(0.000001));
 			}
 		}
@@ -177,11 +176,11 @@ namespace NHibernate.Test.Criteria.Lambda
 			using (s.BeginTransaction())
 			{
 				var roundedValue = s.QueryOver<Person>()
-				                    .Where(p => p.Name == "p1")
-				                    .Select(p => Math.Round((decimal) p.Age.Sqrt(), 3))
-				                    .SingleOrDefault<object>();
+									.Where(p => p.Name == "p1")
+									.Select(p => Math.Round((decimal) p.Age.Sqrt(), 3))
+									.SingleOrDefault<object>();
 
-				roundedValue.Should().Be.InstanceOf<double>();
+				Assert.That(roundedValue, Is.InstanceOf<double>());
 				Assert.That(roundedValue, Is.EqualTo(9.487).Within(0.000001));
 			}
 		}
@@ -197,8 +196,8 @@ namespace NHibernate.Test.Criteria.Lambda
 					.Select(p => p.Name.Lower(), p => p.Name.Upper())
 					.SingleOrDefault<object[]>();
 
-				names[0].Should().Be("pp3");
-				names[1].Should().Be("PP3");
+				Assert.That(names[0], Is.EqualTo("pp3"));
+				Assert.That(names[1], Is.EqualTo("PP3"));
 			}
 		}
 
@@ -213,7 +212,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					.Select(p => Projections.Concat(p.Name, ", ", p.Name))
 					.SingleOrDefault<string>();
 
-				name.Should().Be("p1, p1");
+				Assert.That(name, Is.EqualTo("p1, p1"));
 			}
 		}
 
@@ -227,8 +226,8 @@ namespace NHibernate.Test.Criteria.Lambda
 					.Where(p => p.BirthDate.MonthPart() == p.BirthDate.DayPart())
 					.List();
 
-				persons.Count.Should().Be(1);
-				persons[0].Name.Should().Be("p2");
+				Assert.That(persons.Count, Is.EqualTo(1));
+				Assert.That(persons[0].Name, Is.EqualTo("p2"));
 			}
 		}
 
@@ -242,10 +241,10 @@ namespace NHibernate.Test.Criteria.Lambda
 					.OrderBy(p => p.BirthDate.YearPart()).Desc
 					.List();
 
-				persons.Count.Should().Be(3);
-				persons[0].Name.Should().Be("p1");
-				persons[1].Name.Should().Be("p2");
-				persons[2].Name.Should().Be("pP3");
+				Assert.That(persons.Count, Is.EqualTo(3));
+				Assert.That(persons[0].Name, Is.EqualTo("p1"));
+				Assert.That(persons[1].Name, Is.EqualTo("p2"));
+				Assert.That(persons[2].Name, Is.EqualTo("pP3"));
 			}
 		}
 
@@ -259,8 +258,8 @@ namespace NHibernate.Test.Criteria.Lambda
 					.Where(p => p.BirthDate.Year == 2008)
 					.List();
 
-				persons.Count.Should().Be(1);
-				persons[0].Name.Should().Be("p2");
+				Assert.That(persons.Count, Is.EqualTo(1));
+				Assert.That(persons[0].Name, Is.EqualTo("p2"));
 			}
 		}
 
@@ -275,9 +274,9 @@ namespace NHibernate.Test.Criteria.Lambda
 					.OrderBy(p => p.Name).Asc
 					.List();
 
-				persons.Count.Should().Be(2);
-				persons[0].Name.Should().Be("p1");
-				persons[1].Name.Should().Be("p2");
+				Assert.That(persons.Count, Is.EqualTo(2));
+				Assert.That(persons[0].Name, Is.EqualTo("p1"));
+				Assert.That(persons[1].Name, Is.EqualTo("p2"));
 			}
 		}
 
@@ -292,8 +291,8 @@ namespace NHibernate.Test.Criteria.Lambda
 					.Select(p => p.BirthDate.Year)
 					.SingleOrDefault<object>();
 
-				yearOfBirth.GetType().Should().Be(typeof(int));
-				yearOfBirth.Should().Be(2008);
+				Assert.That(yearOfBirth.GetType(), Is.EqualTo(typeof(int)));
+				Assert.That(yearOfBirth, Is.EqualTo(2008));
 			}
 		}
 
@@ -307,8 +306,8 @@ namespace NHibernate.Test.Criteria.Lambda
 					.SelectList(list => list.SelectAvg(p => p.BirthDate.Year))
 					.SingleOrDefault<object>();
 
-				avgYear.GetType().Should().Be(typeof(double));
-				string.Format("{0:0}", avgYear).Should().Be("2008");
+				Assert.That(avgYear.GetType(), Is.EqualTo(typeof(double)));
+				Assert.That(string.Format("{0:0}", avgYear), Is.EqualTo("2008"));
 			}
 		}
 
@@ -322,10 +321,10 @@ namespace NHibernate.Test.Criteria.Lambda
 					.OrderBy(p => p.BirthDate.Year).Desc
 					.List();
 
-				persons.Count.Should().Be(3);
-				persons[0].Name.Should().Be("p1");
-				persons[1].Name.Should().Be("p2");
-				persons[2].Name.Should().Be("pP3");
+				Assert.That(persons.Count, Is.EqualTo(3));
+				Assert.That(persons[0].Name, Is.EqualTo("p1"));
+				Assert.That(persons[1].Name, Is.EqualTo("p2"));
+				Assert.That(persons[2].Name, Is.EqualTo("pP3"));
 			}
 		}
 
@@ -339,8 +338,8 @@ namespace NHibernate.Test.Criteria.Lambda
 					.Where(p => p.BirthDate.Month == p.BirthDate.Day)
 					.List();
 
-				persons.Count.Should().Be(1);
-				persons[0].Name.Should().Be("p2");
+				Assert.That(persons.Count, Is.EqualTo(1));
+				Assert.That(persons[0].Name, Is.EqualTo("p2"));
 			}
 		}
 	}

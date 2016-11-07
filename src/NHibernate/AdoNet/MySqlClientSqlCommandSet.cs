@@ -2,20 +2,20 @@ using System;
 using System.Data;
 using System.Diagnostics;
 using System.Reflection;
+using NHibernate.Util;
 
 namespace NHibernate.AdoNet
 {
-	using Action = System.Action;
-
 	public class MySqlClientSqlCommandSet : IDisposable
 	{
 		private static readonly System.Type adapterType;
+		private static readonly Action<object> doInitialise;
+		private static readonly Action<object, int> batchSizeSetter;
+		private static readonly Action<object, IDbCommand> doAppend;
+		private static readonly Func<object, int> doExecuteNonQuery;
+		private static readonly Action<object> doDispose;
+
 		private readonly object instance;
-		private readonly Action doInitialise;
-		private readonly Action<int> batchSizeSetter;
-		private readonly Func<IDbCommand, int> doAppend;
-		private readonly Func<int> doExecuteNonQuery;
-		private readonly Action doDispose;
 		private int countOfCommands;
 
 		static MySqlClientSqlCommandSet()
@@ -23,35 +23,30 @@ namespace NHibernate.AdoNet
 			var sysData = Assembly.Load("MySql.Data");
 			adapterType = sysData.GetType("MySql.Data.MySqlClient.MySqlDataAdapter");
 			Debug.Assert(adapterType != null, "Could not find MySqlDataAdapter!");
+
+			doInitialise = DelegateHelper.BuildAction(adapterType, "InitializeBatching");
+			batchSizeSetter = DelegateHelper.BuildPropertySetter<int>(adapterType, "UpdateBatchSize");
+			doAppend = DelegateHelper.BuildAction<IDbCommand>(adapterType, "AddToBatch");
+			doExecuteNonQuery = DelegateHelper.BuildFunc<int>(adapterType, "ExecuteBatch");
+			doDispose = DelegateHelper.BuildAction(adapterType, "Dispose");
 		}
 
 		public MySqlClientSqlCommandSet(int batchSize)
 		{
 			instance = Activator.CreateInstance(adapterType, true);
-			doInitialise = (Action) Delegate.CreateDelegate(typeof (Action), instance, "InitializeBatching");
-			batchSizeSetter = (Action<int>) Delegate.CreateDelegate(typeof (Action<int>), instance, "set_UpdateBatchSize");
-			doAppend = (Func<IDbCommand, int>) Delegate.CreateDelegate(typeof (Func<IDbCommand, int>), instance, "AddToBatch");
-			doExecuteNonQuery = (Func<int>) Delegate.CreateDelegate(typeof (Func<int>), instance, "ExecuteBatch");
-			doDispose = (Action)Delegate.CreateDelegate(typeof(Action), instance, "Dispose");
-
-			Initialise(batchSize);
-		}
-
-		private void Initialise(int batchSize)
-		{
-			doInitialise();
-			batchSizeSetter(batchSize);
+			doInitialise(instance);
+			batchSizeSetter(instance, batchSize);
 		}
 
 		public void Append(IDbCommand command)
 		{
-			doAppend(command);
+			doAppend(instance, command);
 			countOfCommands++;
 		}
 
 		public void Dispose()
 		{
-			doDispose();
+			doDispose(instance);
 		}
 
 		public int ExecuteNonQuery()
@@ -63,7 +58,7 @@ namespace NHibernate.AdoNet
 					return 0;
 				}
 
-				return doExecuteNonQuery();
+				return doExecuteNonQuery(instance);
 			}
 			catch (Exception exception)
 			{
@@ -73,10 +68,7 @@ namespace NHibernate.AdoNet
 
 		public int CountOfCommands
 		{
-			get
-			{
-				return countOfCommands;
-			}
+			get { return countOfCommands; }
 		}
 	}
 }

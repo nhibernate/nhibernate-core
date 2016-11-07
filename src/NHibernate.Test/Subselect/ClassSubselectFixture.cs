@@ -1,6 +1,5 @@
 using System.Collections;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Subselect
 {
@@ -33,28 +32,28 @@ namespace NHibernate.Test.Subselect
 			s.Save(x23y4);
 			s.Flush();
 			var beings = s.CreateQuery("from Being").List<Being>();
-			beings.Should().Have.Count.GreaterThan(0);
+			Assert.That(beings, Has.Count.GreaterThan(0));
 			foreach (var being in beings)
 			{
-				being.Location.Should().Not.Be.NullOrEmpty();
-				being.Identity.Should().Not.Be.NullOrEmpty();
-				being.Species.Should().Not.Be.NullOrEmpty();
+				Assert.That(being.Location, Is.Not.Null.And.Not.Empty);
+				Assert.That(being.Identity, Is.Not.Null.And.Not.Empty);
+				Assert.That(being.Species, Is.Not.Null.And.Not.Empty);
 			}
 			s.Clear();
 			Sfi.Evict(typeof (Being));
 			Being gav = s.Get<Being>(gavin.Id);
-			gav.Location.Should().Not.Be.NullOrEmpty();
-			gav.Identity.Should().Not.Be.NullOrEmpty();
-			gav.Species.Should().Not.Be.NullOrEmpty();
+			Assert.That(gav.Location, Is.Not.Null.And.Not.Empty);
+			Assert.That(gav.Identity, Is.Not.Null.And.Not.Empty);
+			Assert.That(gav.Species, Is.Not.Null.And.Not.Empty);
 			s.Clear();
 			//test the <synchronized> tag:
 			gavin = s.Get<Human>(gavin.Id);
 			gavin.Address = "Atlanta, GA";
 			gav = s.CreateQuery("from Being b where b.Location like '%GA%'").UniqueResult<Being>();
-			gav.Location.Should().Be(gavin.Address);
+			Assert.That(gav.Location, Is.EqualTo(gavin.Address));
 			s.Delete(gavin);
 			s.Delete(x23y4);
-			s.CreateQuery("from Being").List<Being>().Should().Be.Empty();
+			Assert.That(s.CreateQuery("from Being").List<Being>(), Is.Empty);
 			t.Commit();
 			s.Close();
 		}

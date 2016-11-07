@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2488
 {
@@ -21,10 +20,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2488
 					using (ITransaction t = s.BeginTransaction())
 					{
 						var entity = new Derived1
-						             {
-						             	ShortContent = "Short",
-						             	LongContent = "LongLongLongLongLong",
-						             };
+									 {
+										ShortContent = "Short",
+										LongContent = "LongLongLongLongLong",
+									 };
 						s.Save(entity);
 						t.Commit();
 					}
@@ -55,10 +54,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2488
 					using (ITransaction t = s.BeginTransaction())
 					{
 						var entity = new Derived2
-						             {
-						             	ShortContent = "Short",
-						             	LongContent = "LongLongLongLongLong",
-						             };
+									 {
+										ShortContent = "Short",
+										LongContent = "LongLongLongLongLong",
+									 };
 						s.Save(entity);
 						t.Commit();
 					}
@@ -127,13 +126,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2488
 						using (var ls = new SqlLogSpy())
 						{
 							items = s.CreateQuery("from Base2").List<Base2>();
-							ls.GetWholeLog().Should().Not.Contain("LongContent");
+							Assert.That(ls.GetWholeLog(), Is.Not.StringContaining("LongContent"));
 						}
 						var item = (Derived2) items[0];
-						NHibernateUtil.IsPropertyInitialized(item, "LongContent").Should().Be.False();
+						Assert.That(NHibernateUtil.IsPropertyInitialized(item, "LongContent"), Is.False);
 						string lc = item.LongContent;
-						lc.Should().Not.Be.NullOrEmpty();
-						NHibernateUtil.IsPropertyInitialized(item, "LongContent").Should().Be.True();
+						Assert.That(lc, Is.Not.Null.And.Not.Empty);
+						Assert.That(NHibernateUtil.IsPropertyInitialized(item, "LongContent"), Is.True);
 					}
 				}
 			}
@@ -152,13 +151,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2488
 						using(var ls = new SqlLogSpy())
 						{
 							items = s.CreateQuery("from Base1").List<Base1>();
-							ls.GetWholeLog().Should().Not.Contain("LongContent");
+							Assert.That(ls.GetWholeLog(), Is.Not.StringContaining("LongContent"));
 						}
 						var item = (Derived1) items[0];
-						NHibernateUtil.IsPropertyInitialized(item, "LongContent").Should().Be.False();
+						Assert.That(NHibernateUtil.IsPropertyInitialized(item, "LongContent"), Is.False);
 						string lc = item.LongContent;
-						lc.Should().Not.Be.NullOrEmpty();
-						NHibernateUtil.IsPropertyInitialized(item, "LongContent").Should().Be.True();
+						Assert.That(lc, Is.Not.Null.And.Not.Empty);
+						Assert.That(NHibernateUtil.IsPropertyInitialized(item, "LongContent"), Is.True);
 					}
 				}
 			}
@@ -177,13 +176,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2488
 						using (var ls = new SqlLogSpy())
 						{
 							items = s.CreateQuery("from Base3").List<Base3>();
-							ls.GetWholeLog().Should().Not.Contain("LongContent");
+							Assert.That(ls.GetWholeLog(), Is.Not.StringContaining("LongContent"));
 						}
 						var item = (Derived3)items[0];
-						NHibernateUtil.IsPropertyInitialized(item, "LongContent").Should().Be.False();
+						Assert.That(NHibernateUtil.IsPropertyInitialized(item, "LongContent"), Is.False);
 						string lc = item.LongContent;
-						lc.Should().Not.Be.NullOrEmpty();
-						NHibernateUtil.IsPropertyInitialized(item, "LongContent").Should().Be.True();
+						Assert.That(lc, Is.Not.Null.And.Not.Empty);
+						Assert.That(NHibernateUtil.IsPropertyInitialized(item, "LongContent"), Is.True);
 					}
 				}
 			}

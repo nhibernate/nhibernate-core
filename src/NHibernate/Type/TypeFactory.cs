@@ -520,14 +520,7 @@ namespace NHibernate.Type
 			var unwrapped = typeClass.UnwrapIfNullable();
 			if (unwrapped.IsEnum)
 			{
-				try
-				{
-					return (IType) Activator.CreateInstance(typeof (EnumType<>).MakeGenericType(unwrapped));
-				}
-				catch (Exception e)
-				{
-					throw new MappingException(string.Format("Can't instantiate enum {0}; The enum can't be empty", typeClass.FullName), e);
-				}
+				return (IType) Activator.CreateInstance(typeof (EnumType<>).MakeGenericType(unwrapped));
 			}
 
 			if (!typeClass.IsSerializable)
@@ -744,9 +737,9 @@ namespace NHibernate.Type
 		/// A many-to-one association type for the given class and cascade style.
 		/// </summary>
 		public static EntityType ManyToOne(string persistentClass, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy,
-			bool isEmbeddedInXML, bool ignoreNotFound)
+			bool isEmbeddedInXML, bool ignoreNotFound, bool isLogicalOneToOne)
 		{
-			return new ManyToOneType(persistentClass, uniqueKeyPropertyName, lazy, unwrapProxy, isEmbeddedInXML, ignoreNotFound);
+			return new ManyToOneType(persistentClass, uniqueKeyPropertyName, lazy, unwrapProxy, isEmbeddedInXML, ignoreNotFound, isLogicalOneToOne);
 		}
 
 		public static CollectionType Array(string role, string propertyRef, bool embedded, System.Type elementClass)

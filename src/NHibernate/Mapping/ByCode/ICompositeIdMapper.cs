@@ -12,6 +12,8 @@ namespace NHibernate.Mapping.ByCode
 		/// Useful when the property is an interface and you need the mapping to a concrete class mapped as component.
 		/// </remarks>
 		void Class(System.Type componentType);
+
+		void UnsavedValue(UnsavedValueType unsavedValueType);
 	}
 
 	public interface IComponentAsIdMapper : IComponentAsIdAttributesMapper, IMinimalPlainPropertyContainerMapper { }
@@ -21,6 +23,8 @@ namespace NHibernate.Mapping.ByCode
 	public interface IComponentAsIdAttributesMapper<TComponent> : IAccessorPropertyMapper
 	{
 		void Class<TConcrete>() where TConcrete : TComponent;
+
+		void UnsavedValue(UnsavedValueType unsavedValueType);
 	}
 
 	public interface IComponentAsIdMapper<TComponent> : IComponentAsIdAttributesMapper<TComponent>, IMinimalPlainPropertyContainerMapper<TComponent>

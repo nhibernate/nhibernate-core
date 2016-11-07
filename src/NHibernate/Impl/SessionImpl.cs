@@ -131,7 +131,7 @@ namespace NHibernate.Impl
 		/// <remarks>
 		/// The fields are marked with [NonSerializable] as just a point of reference.  This method
 		/// has complete control and what is serialized and those attributes are ignored.  However,
-		/// this method should be in synch with the attributes for easy readability.
+		/// this method should be in sync with the attributes for easy readability.
 		/// </remarks>
 #if NET_4_0
 		[SecurityCritical]
@@ -205,6 +205,7 @@ namespace NHibernate.Impl
 		/// <param name="autoCloseSessionEnabled">Should we auto close after completion of transaction</param>
 		/// <param name="ignoreExceptionBeforeTransactionCompletion">Should we ignore exceptions in IInterceptor.BeforeTransactionCompletion</param>
 		/// <param name="connectionReleaseMode">The mode by which we should release JDBC connections.</param>
+		/// <param name="defaultFlushMode">The default flush mode for this session</param>
 		internal SessionImpl(
 			IDbConnection connection,
 			SessionFactoryImpl factory,
@@ -215,7 +216,8 @@ namespace NHibernate.Impl
 			bool flushBeforeCompletionEnabled,
 			bool autoCloseSessionEnabled,
 			bool ignoreExceptionBeforeTransactionCompletion,
-			ConnectionReleaseMode connectionReleaseMode)
+			ConnectionReleaseMode connectionReleaseMode,
+			FlushMode defaultFlushMode)
 			: base(factory)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -235,6 +237,7 @@ namespace NHibernate.Impl
 				this.connectionReleaseMode = connectionReleaseMode;
 				this.ignoreExceptionBeforeTransactionCompletion = ignoreExceptionBeforeTransactionCompletion;
 				connectionManager = new ConnectionManager(this, connection, connectionReleaseMode, interceptor);
+				this.flushMode = defaultFlushMode;
 
 				if (factory.Statistics.IsStatisticsEnabled)
 				{
@@ -1122,7 +1125,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				if (!TransactionInProgress)
+				if (!ConnectionManager.IsInActiveTransaction)
 				{
 					// do not auto-flush while outside a transaction
 					return false;
@@ -1432,7 +1435,7 @@ namespace NHibernate.Impl
 		/// This can be called from commit() or at the start of a List() method.
 		/// <para>
 		/// Perform all the necessary SQL statements in a sensible order, to allow
-		/// users to repect foreign key constraints:
+		/// users to respect foreign key constraints:
 		/// <list type="">
 		///		<item>Inserts, in the order they were performed</item>
 		///		<item>Updates</item>
@@ -1465,10 +1468,7 @@ namespace NHibernate.Impl
 
 		public override bool TransactionInProgress
 		{
-			get
-			{
-				return !IsClosed && Transaction.IsActive;
-			}
+			get { return ConnectionManager.IsInActiveTransaction; }
 		}
 
 		public bool IsDirty()

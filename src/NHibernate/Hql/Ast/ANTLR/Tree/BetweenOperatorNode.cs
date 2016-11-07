@@ -5,7 +5,7 @@ using NHibernate.Type;
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	/// <summary>
-	/// Contract for nodes representing logcial BETWEEN (ternary) operators.
+	/// Contract for nodes representing logical BETWEEN (ternary) operators.
 	/// </summary>
 	[CLSCompliant(false)]
 	public class BetweenOperatorNode : SqlNode, IOperatorNode

@@ -1,7 +1,6 @@
 using System;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.MixAutomapping
 {
@@ -62,7 +61,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			});
 			mapper.Subclass<FormActivity>(map => map.DiscriminatorValue(1));
 
-			mapper.Executing(m=> m.CompileMappingFor(new[] { typeof(Activity), typeof(FormActivity) })).NotThrows();
+			Assert.That(() => mapper.CompileMappingFor(new[] { typeof(Activity), typeof(FormActivity) }), Throws.Nothing);
 		}
 	}
 }

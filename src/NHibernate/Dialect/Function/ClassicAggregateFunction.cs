@@ -31,7 +31,7 @@ namespace NHibernate.Dialect.Function
 		/// </summary>
 		/// <param name="name">SQL function name.</param>
 		/// <param name="acceptAsterisk">True if accept asterisk like argument</param>
-		/// <param name="typeValue">Return type for the fuction.</param>
+		/// <param name="typeValue">Return type for the function.</param>
 		public ClassicAggregateFunction(string name, bool acceptAsterisk, IType typeValue)
 			: this(name, acceptAsterisk)
 		{

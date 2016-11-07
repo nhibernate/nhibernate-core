@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2489
 {
@@ -58,22 +57,22 @@ namespace NHibernate.Test.NHSpecificTest.NH2489
 					{
 						var entity = new Base();
 						entity.NamedChildren = new Dictionary<string, Child>
-						                       {
-						                       	{"Child1", new Child()},
-						                       	{"NullChild", null},
-						                       };
+											   {
+												{"Child1", new Child()},
+												{"NullChild", null},
+											   };
 
-                        var child1 = new AnotherChild { Name = "AnotherChild1" };
-                        var child2 = new AnotherChild { Name = "AnotherChild2" };
+						var child1 = new AnotherChild { Name = "AnotherChild1" };
+						var child2 = new AnotherChild { Name = "AnotherChild2" };
 
-					    s.Save(child1);
-					    s.Save(child2);
+						s.Save(child1);
+						s.Save(child2);
 
-                        entity.OneToManyNamedChildren = new Dictionary<string, AnotherChild> 
-                                               {
-                                                {"AnotherChild1" , child1}, 
-                                                {"AnotherChild2" , child2} 
-                                               };
+						entity.OneToManyNamedChildren = new Dictionary<string, AnotherChild> 
+											   {
+												{"AnotherChild1" , child1}, 
+												{"AnotherChild2" , child2} 
+											   };
 
 						s.Save(entity);
 						t.Commit();
@@ -109,9 +108,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2489
 						// accessing an invalid index should throw an exception
 						var entity = s.CreateQuery("from Base").UniqueResult<Base>();
 						// null collection members don't seem to work, at least for lazy="extra" collections
-						entity.Children.Count.Should().Be.EqualTo(2);
-						NHibernateUtil.IsInitialized(entity.Children).Should().Be.False();
-						Executing.This(() => { Child ignored = entity.Children[2]; }).Should().Throw<ArgumentOutOfRangeException>();
+						Assert.That(entity.Children.Count, Is.EqualTo(2));
+						Assert.That(NHibernateUtil.IsInitialized(entity.Children), Is.False);
+						Assert.That(() => { Child ignored = entity.Children[2]; }, Throws.TypeOf<ArgumentOutOfRangeException>());
 					}
 				}
 			}
@@ -130,14 +129,14 @@ namespace NHibernate.Test.NHSpecificTest.NH2489
 						// accessing an invalid index should throw an exception
 						var entity = s.CreateQuery("from Base").UniqueResult<Base>();
 						// null collection members don't seem to work, at least for lazy="extra" collections
-						entity.Children.Count.Should().Not.Be.EqualTo(0);
+						Assert.That(entity.Children.Count, Is.Not.EqualTo(0));
 						//entity.Children.Count.Should().Be.EqualTo(2);
-						NHibernateUtil.IsInitialized(entity.Children).Should().Be.False();
+						Assert.That(NHibernateUtil.IsInitialized(entity.Children), Is.False);
 						var sigil = new Child();
 						Child child = sigil;
-						Executing.This(() => { child = entity.Children[0]; }).Should().NotThrow();
-						child.Should().Not.Be.EqualTo(sigil);
-						child.Should().Be.Null();
+						Assert.That(() => { child = entity.Children[0]; }, Throws.Nothing);
+						Assert.That(child, Is.Not.EqualTo(sigil));
+						Assert.That(child, Is.Null);
 					}
 				}
 			}
@@ -155,12 +154,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2489
 						// accessing an invalid key should fail or throw an exception, depending on method
 						var entity = s.CreateQuery("from Base").UniqueResult<Base>();
 						// null collection members don't seem to work, at least for lazy="extra" collections
-						entity.NamedChildren.Count.Should().Be.EqualTo(2);
-                        entity.OneToManyNamedChildren.Count.Should().Be.EqualTo(2);
-						NHibernateUtil.IsInitialized(entity.NamedChildren).Should().Be.False();
-						Executing.This(() => { Child ignored = entity.NamedChildren["InvalidKey"]; }).Should().Throw<KeyNotFoundException>();
-                        Executing.This(() => { AnotherChild ignored = entity.OneToManyNamedChildren["InvalidKey"]; }).Should().Throw<KeyNotFoundException>();
-                        NHibernateUtil.IsInitialized(entity.NamedChildren).Should().Be.False();
+						Assert.That(entity.NamedChildren.Count, Is.EqualTo(2));
+						Assert.That(entity.OneToManyNamedChildren.Count, Is.EqualTo(2));
+						Assert.That(NHibernateUtil.IsInitialized(entity.NamedChildren), Is.False);
+						Assert.That(() => { Child ignored = entity.NamedChildren["InvalidKey"]; }, Throws.TypeOf<KeyNotFoundException>());
+						Assert.That(() => { AnotherChild ignored = entity.OneToManyNamedChildren["InvalidKey"]; }, Throws.TypeOf<KeyNotFoundException>());
+						Assert.That(NHibernateUtil.IsInitialized(entity.NamedChildren), Is.False);
 					}
 				}
 			}
@@ -178,15 +177,15 @@ namespace NHibernate.Test.NHSpecificTest.NH2489
 						// accessing an invalid key should fail or throw an exception, depending on method
 						var entity = s.CreateQuery("from Base").UniqueResult<Base>();
 						// null collection members don't seem to work, at least for lazy="extra" collections
-						entity.NamedChildren.Count.Should().Be.EqualTo(2);
-						NHibernateUtil.IsInitialized(entity.NamedChildren).Should().Be.False();
+						Assert.That(entity.NamedChildren.Count, Is.EqualTo(2));
+						Assert.That(NHibernateUtil.IsInitialized(entity.NamedChildren), Is.False);
 						Child child;
-						entity.NamedChildren.TryGetValue("InvalidKey", out child).Should().Be.False();
-						child.Should().Be.Null();
-                        AnotherChild anotherChild;
-                        entity.OneToManyNamedChildren.TryGetValue("InvalidKey", out anotherChild).Should().Be.False();
-                        child.Should().Be.Null();
-                        NHibernateUtil.IsInitialized(entity.NamedChildren).Should().Be.False();
+						Assert.That(entity.NamedChildren.TryGetValue("InvalidKey", out child), Is.False);
+						Assert.That(child, Is.Null);
+						AnotherChild anotherChild;
+						Assert.That(entity.OneToManyNamedChildren.TryGetValue("InvalidKey", out anotherChild), Is.False);
+						Assert.That(child, Is.Null);
+						Assert.That(NHibernateUtil.IsInitialized(entity.NamedChildren), Is.False);
 					}
 				}
 			}
@@ -203,15 +202,15 @@ namespace NHibernate.Test.NHSpecificTest.NH2489
 					{
 						var entity = s.CreateQuery("from Base").UniqueResult<Base>();
 						// null collection members don't seem to work, at least for lazy="extra" collections
-						entity.NamedChildren.Count.Should().Not.Be.EqualTo(0);
+						Assert.That(entity.NamedChildren.Count, Is.Not.EqualTo(0));
 						//entity.NamedChildren.Count.Should().Be.EqualTo(2);
-						NHibernateUtil.IsInitialized(entity.NamedChildren).Should().Be.False();
+						Assert.That(NHibernateUtil.IsInitialized(entity.NamedChildren), Is.False);
 						// null valued child shouldn't cause errors
 						var sigil = new Child();
 						Child child = sigil;
 						Assert.DoesNotThrow(() => { child = entity.NamedChildren["NullChild"]; });
-						child.Should().Not.Be.EqualTo(sigil);
-						child.Should().Be.Null();
+						Assert.That(child, Is.Not.EqualTo(sigil));
+						Assert.That(child, Is.Null);
 					}
 				}
 			}
@@ -228,14 +227,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2489
 					{
 						var entity = s.CreateQuery("from Base").UniqueResult<Base>();
 						// null collection members don't seem to work, at least for lazy="extra" collections
-						entity.NamedChildren.Count.Should().Not.Be.EqualTo(0);
+						Assert.That(entity.NamedChildren.Count, Is.Not.EqualTo(0));
 						//entity.NamedChildren.Count.Should().Be.EqualTo(2);
 						// null valued child shouldn't cause errors
-						NHibernateUtil.IsInitialized(entity.NamedChildren).Should().Be.False();
+						Assert.That(NHibernateUtil.IsInitialized(entity.NamedChildren), Is.False);
 						Child child;
-						entity.NamedChildren.TryGetValue("NullChild", out child)
-							.Should().Be.True();
-						child.Should().Be.Null();
+						Assert.That(entity.NamedChildren.TryGetValue("NullChild", out child), Is.True);
+						Assert.That(child, Is.Null);
 					}
 				}
 			}

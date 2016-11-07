@@ -29,7 +29,7 @@ These are the tasks typically needed to create an official NHibernate release.
   * Upload binary and source zip files to SourceForge. Update the "latest
     release".
 
-  * Update download link on NHForge.
+  * Update download link on nhibernate.info.
   
   * Push nuget packages including the symbol packages. The nuget packages
     should already be available in the build directory, together with a batch

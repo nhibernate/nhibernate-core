@@ -3,7 +3,6 @@ using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.MappersTests
 {
@@ -28,9 +27,9 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 
 			var hbmClass = mapdoc.SubClasses[0];
 			var hbmJoin = hbmClass.Joins.Single();
-			hbmJoin.table.Should().Be("MyTable");
-			hbmJoin.key.Should().Not.Be.Null();
-			hbmJoin.key.column1.Should().Not.Be.Null();
+			Assert.That(hbmJoin.table, Is.EqualTo("MyTable"));
+			Assert.That(hbmJoin.key, Is.Not.Null);
+			Assert.That(hbmJoin.key.column1, Is.Not.Null);
 		}
 
 		[Test]
@@ -41,11 +40,11 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var called = false;
 			mapper.Join("MyTable", x =>
 			{
-				x.Should().Not.Be.Null();
+				Assert.That(x, Is.Not.Null);
 				called = true;
 			});
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -58,8 +57,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			mapper.Join("T2", x => { });
 
 			var hbmClass = mapdoc.SubClasses[0];
-			hbmClass.Joins.Should().Have.Count.EqualTo(2);
-			hbmClass.Joins.Select(x => x.table).Should().Have.UniqueValues();
+			Assert.That(hbmClass.Joins.Count(), Is.EqualTo(2));
+			Assert.That(hbmClass.Joins.Select(x => x.table), Is.Unique);
 		}
 
 		[Test]
@@ -73,9 +72,9 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			mapper.Join("T1", x => firstCallInstance = x);
 			mapper.Join("T1", x => secondCallInstance = x);
 
-			firstCallInstance.Should().Be.SameInstanceAs(secondCallInstance);
+			Assert.That(firstCallInstance, Is.SameAs(secondCallInstance));
 			var hbmClass = mapdoc.SubClasses[0];
-			hbmClass.Joins.Should().Have.Count.EqualTo(1);
+			Assert.That(hbmClass.Joins.Count(), Is.EqualTo(1));
 		}
 	}
 }

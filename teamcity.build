@@ -12,7 +12,17 @@
 
 	<property name="build.number" value="${CCNetLabel}" if="${property::exists('CCNetLabel')}" />
 
-	<target name="clean-configure-test" depends="cleanall init copy-teamcity-configuration binaries test verify-test-results binaries-zip" />
+	<target name="clean-configure-test" depends="cleanall init copy-nunitaddin copy-teamcity-configuration binaries test verify-test-results binaries-zip" />
+
+	<target name="copy-nunitaddin" depends="init">
+		<if test="${property::exists('teamcity.dotnet.nunitaddin')}">
+			<copy todir="${tools.dir}/NUnit/addins">
+				<fileset>
+					<include name="${teamcity.dotnet.nunitaddin}-2.6.1.*" />
+				</fileset>
+			</copy>
+		</if>
+	</target>
 
 	<target name="copy-teamcity-configuration">
 		<copy file="build-common/teamcity-hibernate.cfg.xml" tofile="${bin.dir}/hibernate.cfg.xml" />
@@ -36,10 +46,24 @@
 	</target>
 
 	<target name="setup-teamcity-sqlServerOdbc">
-		<property name="nhibernate.connection.driver_class"				value="NHibernate.Driver.OdbcDriver" />
-		<property name="nhibernate.connection.connection_string"	value="Driver={SQL Native Client};Server=.\SQLExpress;Database=nhibernateOdbc;Trusted_Connection=yes" />
+		<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.OdbcDriver" />
+		<property name="nhibernate.odbc.explicit_datetime_scale" value="3" />
+	<!-- We need to use a dialect that avoids mapping DbType.Time to TIME on MSSQL. On modern SQL Server
+		this becomes TIME(7). Later, such values cannot be read back over ODBC. The
+		error we get is "System.ArgumentException : Unknown SQL type - SS_TIME_EX.". I don't know for certain
+		why this occurs, but MS docs do say that for a client "compiled using a version of SQL Server Native
+		Client prior to SQL Server 2008", TIME(7) cannot be converted back to the client. Assuming that .Net's
+		OdbcDriver would be considered a "client compiled with a previous version", it would make sense. Anyway,
+		using the MsSql2005Dialect avoids these test failures. -->
+		<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSql2005Dialect" />
+	<!-- The OdbcDriver inherits SupportsMultipleOpenReaders=true from DriverBase, which requires Mars_Connection=yes for SQL Server. -->
+		<property name="nhibernate.connection.connection_string" value="Driver={SQL Server Native Client 11.0};Server=.\SQLExpress;Database=nhibernateOdbc;Trusted_Connection=yes;Mars_Connection=yes;" />
 		<property name="NHibernate.Test.IgnoreFail" value="true" />
 		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/sqlServerOdbc/NHibernate.Test.last-results.xml" />
+	</target>
+
+	<target name="setup-teamcity-sqlServer2012">
+		<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSql2012Dialect" />
 	</target>
 
 	<target name="setup-teamcity-sqlServerCe32">
@@ -71,8 +95,8 @@
 	</target>
 
 	<target name="setup-teamcity-firebird32">
-		<property name="nhibernate.connection.driver_class"				value="NHibernate.Driver.FirebirdClientDriver" />
-		<property name="nhibernate.dialect"												value="NHibernate.Dialect.FirebirdDialect" />
+		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.FirebirdClientDriver" />
+		<property name="nhibernate.dialect"							value="NHibernate.Dialect.FirebirdDialect" />
 		<property name="nhibernate.connection.connection_string"	value="Database=NHibernate.fdb;ServerType=1;UserID=SYSDBA" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/firebird/x86">
@@ -87,8 +111,8 @@
 	<target name="setup-teamcity-firebird64">
 		<property name="nunit-console" value="${tools.dir}/NUnit/nunit-console.exe" />
 		<property name="nunit.found" value="true" />
-		<property name="nhibernate.connection.driver_class"				value="NHibernate.Driver.FirebirdClientDriver" />
-		<property name="nhibernate.dialect"												value="NHibernate.Dialect.FirebirdDialect" />
+		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.FirebirdClientDriver" />
+		<property name="nhibernate.dialect"							value="NHibernate.Dialect.FirebirdDialect" />
 		<property name="nhibernate.connection.connection_string"	value="Database=NHibernate.fdb;ServerType=1;UserID=SYSDBA" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/firebird/x64">
@@ -101,8 +125,8 @@
 	</target>
 
 	<target name="setup-teamcity-sqlite32">
-		<property name="nhibernate.connection.driver_class"				value="NHibernate.Driver.SQLite20Driver" />
-		<property name="nhibernate.dialect"												value="NHibernate.Dialect.SQLiteDialect" />
+		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.SQLite20Driver" />
+		<property name="nhibernate.dialect"							value="NHibernate.Dialect.SQLiteDialect" />
 		<property name="nhibernate.connection.connection_string"	value="Data Source=NHibernate.db" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/sqlite/x86">
@@ -112,8 +136,8 @@
 	</target>
 
 	<target name="setup-teamcity-sqlite64">
-		<property name="nhibernate.connection.driver_class"				value="NHibernate.Driver.SQLite20Driver" />
-		<property name="nhibernate.dialect"												value="NHibernate.Dialect.SQLiteDialect" />
+		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.SQLite20Driver" />
+		<property name="nhibernate.dialect"							value="NHibernate.Dialect.SQLiteDialect" />
 		<property name="nhibernate.connection.connection_string"	value="Data Source=NHibernate.db" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/sqlite/x64">
@@ -123,8 +147,8 @@
 	</target>
 
 	<target name="setup-teamcity-postgresql">
-		<property name="nhibernate.connection.driver_class"				value="NHibernate.Driver.NpgsqlDriver" />
-		<property name="nhibernate.dialect"												value="NHibernate.Dialect.PostgreSQL82Dialect" />
+		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.NpgsqlDriver" />
+		<property name="nhibernate.dialect"							value="NHibernate.Dialect.PostgreSQL82Dialect" />
 		<property name="nhibernate.connection.connection_string"	value="Host=localhost;Port=5432;Database=nhibernate;Username=nhibernate;Password=nhibernate" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/postgresql">
@@ -133,12 +157,33 @@
 		</copy>
 	</target>
 
-	<target name="setup-teamcity-oracle32">
-		<property name="nhibernate.connection.driver_class"				value="NHibernate.Driver.OracleClientDriver" />
-		<property name="nhibernate.dialect"												value="NHibernate.Dialect.Oracle10gDialect" />
+	<target name="setup-teamcity-oracle">
+		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.OracleClientDriver" />
+		<property name="nhibernate.dialect"							value="NHibernate.Dialect.Oracle10gDialect" />
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Data Source=XE" />
+		<property name="NHibernate.Test.IgnoreFail" value="true" />
+		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/oracle/NHibernate.Test.last-results.xml" />
+	</target>
+
+	<target name="setup-teamcity-oracle32">
+		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.OracleDataClientDriver" />
+		<property name="nhibernate.dialect"							value="NHibernate.Dialect.Oracle10gDialect" />
+		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/oracle/x86">
+				<include name="*.dll"/>
+			</fileset>
+		</copy>
+		<property name="NHibernate.Test.IgnoreFail" value="true" />
+		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/oracle/NHibernate.Test.last-results.xml" />
+	</target>
+
+	<target name="setup-teamcity-oracle64">
+		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.OracleDataClientDriver" />
+		<property name="nhibernate.dialect"							value="NHibernate.Dialect.Oracle10gDialect" />
+		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))" />
+		<copy todir="${bin.dir}">
+			<fileset basedir="${root.dir}/lib/teamcity/oracle/x64">
 				<include name="*.dll"/>
 			</fileset>
 		</copy>
@@ -151,17 +196,17 @@
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.Oracle10gDialect" />
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))" />
 		<copy todir="${bin.dir}">
-			<fileset basedir="${root.dir}/lib/teamcity/oracle/managed/common">
+			<fileset basedir="${root.dir}/lib/teamcity/oracle-managed/common">
 				<include name="*.dll"/>
 			</fileset>
 		</copy>
 		<copy todir="${bin.dir}">
-			<fileset basedir="${root.dir}/lib/teamcity/oracle/managed/x86">
+			<fileset basedir="${root.dir}/lib/teamcity/oracle-managed/x86">
 				<include name="*.dll"/>
 			</fileset>
 		</copy>
 		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/oracle/NHibernate.Test.last-results.xml" />
+		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/oracle-managed/NHibernate.Test.last-results.xml" />
 	</target>
 
 	<target name="setup-teamcity-oracle-managed64">
@@ -169,17 +214,17 @@
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.Oracle10gDialect" />
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))" />
 		<copy todir="${bin.dir}">
-			<fileset basedir="${root.dir}/lib/teamcity/oracle/managed/common">
+			<fileset basedir="${root.dir}/lib/teamcity/oracle-managed/common">
 				<include name="*.dll"/>
 			</fileset>
 		</copy>
 		<copy todir="${bin.dir}">
-			<fileset basedir="${root.dir}/lib/teamcity/oracle/managed/x64">
+			<fileset basedir="${root.dir}/lib/teamcity/oracle-managed/x64">
 				<include name="*.dll"/>
 			</fileset>
 		</copy>
 		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/oracle/NHibernate.Test.last-results.xml" />
+		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/oracle-managed/NHibernate.Test.last-results.xml" />
 	</target>
 
 	<target name="setup-teamcity-mysql">

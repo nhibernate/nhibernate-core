@@ -29,6 +29,15 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		}
 
 		#region Implementation of IClassAttributesMapper<TEntity>
+		public void Abstract(bool isAbstract)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Abstract(isAbstract));
+		}
+
+		public void OptimisticLock(OptimisticLockMode mode)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.OptimisticLock(mode));
+		}
 
 		public void Id<TProperty>(Expression<Func<TEntity, TProperty>> idProperty)
 		{
@@ -57,29 +66,29 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			CustomizersHolder.AddCustomizer(typeof(TEntity), m => m.Id(member, idMapper));
 		}
 
-		public void ComponentAsId<TComponent>(Expression<Func<TEntity, TComponent>> idProperty) where TComponent : class
+		public void ComponentAsId<TComponent>(Expression<Func<TEntity, TComponent>> idProperty)
 		{
 			ComponentAsId(idProperty, x => { });
 		}
 
-		public void ComponentAsId<TComponent>(Expression<Func<TEntity, TComponent>> idProperty, Action<IComponentAsIdMapper<TComponent>> idMapper) where TComponent : class
+		public void ComponentAsId<TComponent>(Expression<Func<TEntity, TComponent>> idProperty, Action<IComponentAsIdMapper<TComponent>> idMapper)
 		{
 			var memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(idProperty);
 			RegisterComponentAsIdMapping(idMapper, memberOf);
 		}
 
-		public void ComponentAsId<TComponent>(string notVisiblePropertyOrFieldName) where TComponent : class
+		public void ComponentAsId<TComponent>(string notVisiblePropertyOrFieldName)
 		{
 			ComponentAsId<TComponent>(notVisiblePropertyOrFieldName, x => { });
 		}
 
-		public void ComponentAsId<TComponent>(string notVisiblePropertyOrFieldName, Action<IComponentAsIdMapper<TComponent>> idMapper) where TComponent : class
+		public void ComponentAsId<TComponent>(string notVisiblePropertyOrFieldName, Action<IComponentAsIdMapper<TComponent>> idMapper)
 		{
 			var member = typeof(TEntity).GetPropertyOrFieldMatchingName(notVisiblePropertyOrFieldName);
 			RegisterComponentAsIdMapping(idMapper, member);
 		}
 
-		private void RegisterComponentAsIdMapping<TComponent>(Action<IComponentAsIdMapper<TComponent>> idMapper, params MemberInfo[] members) where TComponent : class
+		private void RegisterComponentAsIdMapping<TComponent>(Action<IComponentAsIdMapper<TComponent>> idMapper, params MemberInfo[] members)
 		{
 			foreach (var member in members)
 			{
@@ -121,6 +130,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		public void Schema(string schemaName)
 		{
 			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Schema(schemaName));
+		}
+
+		public void Polymorphism(PolymorphismType type)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Polymorphism(type));
 		}
 
 		#endregion

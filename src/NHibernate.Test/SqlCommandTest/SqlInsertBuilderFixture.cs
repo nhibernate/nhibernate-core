@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.SqlCommandTest
 {
 	/// <summary>
-	/// Tests all of the functionallity of the SqlInsertBulder
+	/// Tests all of the functionality of the SqlInsertBulder
 	/// </summary>
 	[TestFixture]
 	public class SqlInsertBuilderFixture

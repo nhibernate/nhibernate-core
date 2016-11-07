@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2580
 {
@@ -15,8 +14,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2580
 		{
 			using (var s = OpenSession())
 			{
-				var exeption = s.Executing(x=> x.Get<MyClass>(1)).Throws<HibernateException>().Exception;
-				exeption.Message.ToLowerInvariant().Should().Contain("possible cause");
+				var exeption = Assert.Throws<HibernateException>(() => s.Get<MyClass>(1));
+				Assert.That(exeption.Message.ToLowerInvariant(), Is.StringContaining("possible cause"));
 			}
 		}
 	}

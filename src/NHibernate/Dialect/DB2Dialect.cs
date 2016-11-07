@@ -208,8 +208,22 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+		/// <summary></summary>
+		public override bool SupportsVariableLimit
+		{
+			get { return false; }
+		}
+
 		public override SqlString GetLimitString(SqlString querySqlString, SqlString offset, SqlString limit)
 		{
+			if (offset == null)
+			{
+				return new SqlString(querySqlString,
+									 " fetch first ",
+									 limit,
+									 " rows only");
+			}
+
 			/*
 			 * "select * from (select row_number() over(orderby_clause) as rownum, "
 			 * querySqlString_without select
@@ -224,18 +238,12 @@ namespace NHibernate.Dialect
 				.Add(querySqlString.Substring(7))
 				.Add(") as tempresult where rownum ");
 
-			if (offset != null && limit != null)
+			if (limit != null)
 			{
 				pagingBuilder
 					.Add("between ")
 					.Add(offset)
 					.Add("+1 and ")
-					.Add(limit);
-			}
-			else if (limit != null)
-			{
-				pagingBuilder
-					.Add("<= ")
 					.Add(limit);
 			}
 			else

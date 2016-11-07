@@ -2232,7 +2232,7 @@ namespace NHibernate.Test.Legacy
 
 
 		[Test]
-		//[Ignore("TimeZone Portions commented out - http://jira.nhibernate.org:8080/browse/NH-88")]
+		//[Ignore("TimeZone Portions commented out - http://nhibernate.jira.com/browse/NH-88")]
 		public void AssociationId()
 		{
 			string id;

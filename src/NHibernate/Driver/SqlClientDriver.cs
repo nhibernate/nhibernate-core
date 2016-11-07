@@ -15,6 +15,8 @@ namespace NHibernate.Driver
 		public const int MaxSizeForAnsiClob = 2147483647; // int.MaxValue
 		public const int MaxSizeForClob = 1073741823; // int.MaxValue / 2
 		public const int MaxSizeForBlob = 2147483647; // int.MaxValue
+		//http://stackoverflow.com/a/7264795/259946
+		public const int MaxSizeForXml = 2147483647; // int.MaxValue
 		public const int MaxSizeForLengthLimitedAnsiString = 8000;
 		public const int MaxSizeForLengthLimitedString = 4000;
 		public const int MaxSizeForLengthLimitedBinary = 8000;
@@ -122,7 +124,7 @@ namespace NHibernate.Driver
 			{
 				case DbType.AnsiString:
 				case DbType.AnsiStringFixedLength:
-					dbParam.Size = MaxSizeForLengthLimitedAnsiString;
+                    dbParam.Size = IsAnsiText(dbParam, sqlType) ? MaxSizeForAnsiClob : MaxSizeForLengthLimitedAnsiString;
 					break;
 				case DbType.Binary:
 					dbParam.Size = IsBlob(dbParam, sqlType) ? MaxSizeForBlob : MaxSizeForLengthLimitedBinary;
@@ -141,8 +143,22 @@ namespace NHibernate.Driver
 				case DbType.DateTimeOffset:
 					dbParam.Size = MaxDateTimeOffset;
 					break;
+				case DbType.Xml:
+					dbParam.Size = MaxSizeForXml;
+					break;
 			}
 		}
+
+        /// <summary>
+        /// Interprets if a parameter is a Clob (for the purposes of setting its default size)
+        /// </summary>
+        /// <param name="dbParam">The parameter</param>
+        /// <param name="sqlType">The <see cref="SqlType" /> of the parameter</param>
+        /// <returns>True, if the parameter should be interpreted as a Clob, otherwise False</returns>
+        protected static bool IsAnsiText(IDbDataParameter dbParam, SqlType sqlType)
+        {
+            return ((DbType.AnsiString == dbParam.DbType || DbType.AnsiStringFixedLength == dbParam.DbType) && sqlType.LengthDefined && (sqlType.Length > MaxSizeForLengthLimitedAnsiString));
+        }
 
 		/// <summary>
 		/// Interprets if a parameter is a Clob (for the purposes of setting its default size)

@@ -2,7 +2,6 @@
 using System.Reflection;
 using NHibernate.Cfg;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2761
 {
@@ -17,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2761
 			var fkNamesForMappings1 = mappings1.IterateTables.SelectMany(t => t.ForeignKeyIterator).Select(fk => fk.Name).ToArray();
 			var fkNamesForMappings2 = mappings2.IterateTables.SelectMany(t => t.ForeignKeyIterator).Select(fk => fk.Name).ToArray();
 
-			fkNamesForMappings1.Should().Have.SameValuesAs(fkNamesForMappings2);
+			Assert.That(fkNamesForMappings1, Is.EquivalentTo(fkNamesForMappings2));
 		}
 
 		private Mappings GetMappings()

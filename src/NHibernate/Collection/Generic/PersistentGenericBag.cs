@@ -37,12 +37,13 @@ namespace NHibernate.Collection.Generic
 		 * expensive than .NET original implementation.
 		 */
 
-		/// For a one-to-many, a <bag> is not really a bag;
-		/// it is *really* a set, since it can't contain the
-		/// same element twice. It could be considered a bug
-		/// in the mapping dtd that <bag> allows <one-to-many>.
-		/// Anyway, here we implement <set> semantics for a
-		/// <one-to-many> <bag>!
+		/* For a one-to-many, a <bag> is not really a bag;
+		 * it is *really* a set, since it can't contain the
+		 * same element twice. It could be considered a bug
+		 * in the mapping dtd that <bag> allows <one-to-many>.
+		 * Anyway, here we implement <set> semantics for a
+		 * <one-to-many> <bag>!
+		 */
 		private IList<T> _gbag;
 
 		public PersistentGenericBag()

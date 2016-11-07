@@ -69,7 +69,7 @@ namespace NHibernate.Tuple
 		object Instantiate();
 
 		/// <summary> 
-		/// Is the given object considered an instance of the the entity (acconting
+		/// Is the given object considered an instance of the the entity (accounting
 		/// for entity-mode) managed by this tuplizer. 
 		/// </summary>
 		/// <param name="obj">The object to be checked. </param>

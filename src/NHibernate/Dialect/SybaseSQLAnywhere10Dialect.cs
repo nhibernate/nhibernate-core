@@ -647,7 +647,7 @@ namespace NHibernate.Dialect
 
 		/// <summary>
 		/// SQL Anywhere's implementation of KEYSET-DRIVEN cursors does not
-		/// permit absolute postioning. With jConnect as the driver, this support
+		/// permit absolute positioning. With jConnect as the driver, this support
 		/// will succeed because jConnect FETCHes the entire result set to the client
 		/// first; it will fail with the iAnywhere JDBC driver. Because the server
 		/// may decide to use a KEYSET cursor even if the cursor is declared as

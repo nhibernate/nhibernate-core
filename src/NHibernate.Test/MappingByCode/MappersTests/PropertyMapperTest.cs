@@ -10,7 +10,6 @@ using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.UserTypes;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.MappersTests
 {
@@ -48,7 +47,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var myAccessorMapper = new MyAccessorMapper();
 			var mapper = new PropertyMapper(member, mapping, myAccessorMapper);
 			mapper.Access(Accessor.Field);
-			myAccessorMapper.AccessorCalled.Should().Be.True();
+			Assert.That(myAccessorMapper.AccessorCalled, Is.True);
 		}
 
 		[Test]
@@ -58,9 +57,9 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapping = new HbmProperty();
 			var mapper = new PropertyMapper(member, mapping);
 
-			Executing.This(() => mapper.Access(typeof(object))).Should().Throw<ArgumentOutOfRangeException>();
-			Executing.This(() => mapper.Access(typeof(FieldAccessor))).Should().NotThrow();
-			mapping.Access.Should().Be.EqualTo(typeof(FieldAccessor).AssemblyQualifiedName);
+			Assert.That(() => mapper.Access(typeof(object)), Throws.TypeOf<ArgumentOutOfRangeException>());
+			Assert.That(() => mapper.Access(typeof(FieldAccessor)), Throws.Nothing);
+			Assert.That(mapping.Access, Is.EqualTo(typeof(FieldAccessor).AssemblyQualifiedName));
 		}
 
 		[Test]
@@ -71,7 +70,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapper = new PropertyMapper(member, mapping);
 			mapper.Type(NHibernateUtil.String);
 
-			mapping.Type.name.Should().Be.EqualTo("String");
+			Assert.That(mapping.Type.name, Is.EqualTo("String"));
 		}
 
 		[Test]
@@ -82,8 +81,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapper = new PropertyMapper(member, mapping);
 			mapper.Type<MyType>();
 
-			mapping.Type.name.Should().Contain("MyType");
-			mapping.type.Should().Be.Null();
+			Assert.That(mapping.Type.name, Is.StringContaining("MyType"));
+			Assert.That(mapping.type, Is.Null);
 		}
 
 		[Test]
@@ -94,8 +93,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapper = new PropertyMapper(member, mapping);
 			mapper.Type<MyCompoType>();
 
-			mapping.Type.name.Should().Contain("MyCompoType");
-			mapping.type.Should().Be.Null();
+			Assert.That(mapping.Type.name, Is.StringContaining("MyCompoType"));
+			Assert.That(mapping.type, Is.Null);
 		}
 
 		[Test]
@@ -106,11 +105,11 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapper = new PropertyMapper(member, mapping);
 			mapper.Type<MyType>(new { Param1 = "a", Param2 = 12 });
 
-			mapping.type1.Should().Be.Null();
-			mapping.Type.name.Should().Contain("MyType");
-			mapping.Type.param.Should().Have.Count.EqualTo(2);
-			mapping.Type.param.Select(p => p.name).Should().Have.SameValuesAs("Param1", "Param2");
-			mapping.Type.param.Select(p => p.GetText()).Should().Have.SameValuesAs("a", "12");
+			Assert.That(mapping.type1, Is.Null);
+			Assert.That(mapping.Type.name, Is.StringContaining("MyType"));
+			Assert.That(mapping.Type.param, Has.Length.EqualTo(2));
+			Assert.That(mapping.Type.param.Select(p => p.name), Is.EquivalentTo(new [] {"Param1", "Param2"}));
+			Assert.That(mapping.Type.param.Select(p => p.GetText()), Is.EquivalentTo(new [] {"a", "12"}));
 		}
 
 		[Test]
@@ -121,8 +120,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapper = new PropertyMapper(member, mapping);
 			mapper.Type<MyType>(null);
 
-			mapping.Type.name.Should().Contain("MyType");
-			mapping.type.Should().Be.Null();
+			Assert.That(mapping.Type.name, Is.StringContaining("MyType"));
+			Assert.That(mapping.type, Is.Null);
 		}
 
 		[Test]
@@ -133,8 +132,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapper = new PropertyMapper(member, mapping);
 			mapper.Type<EnumStringType<MyEnum>>();
 
-			mapping.Type.name.Should().Contain(typeof(EnumStringType<MyEnum>).FullName);
-			mapping.type.Should().Be.Null();
+			Assert.That(mapping.Type.name, Is.StringContaining(typeof(EnumStringType<MyEnum>).FullName));
+			Assert.That(mapping.type, Is.Null);
 		}
 
 		[Test]
@@ -143,8 +142,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var member = typeof(MyClass).GetProperty("ReadOnly");
 			var mapping = new HbmProperty();
 			var mapper = new PropertyMapper(member, mapping);
-			Executing.This(() => mapper.Type(typeof(object), null)).Should().Throw<ArgumentOutOfRangeException>();
-			Executing.This(() => mapper.Type(null, null)).Should().Throw<ArgumentNullException>();
+			Assert.That(() => mapper.Type(typeof(object), null), Throws.TypeOf<ArgumentOutOfRangeException>());
+			Assert.That(() => mapper.Type(null, null), Throws.TypeOf<ArgumentNullException>());
 		}
 
 		[Test]
@@ -155,8 +154,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapper = new PropertyMapper(member, mapping);
 			mapper.Column(cm => cm.Name("pepe"));
 
-			mapping.Columns.Should().Have.Count.EqualTo(1);
-			mapping.Columns.Single().name.Should().Be("pepe");
+			Assert.That(mapping.Columns.Count(), Is.EqualTo(1));
+			Assert.That(mapping.Columns.Single().name, Is.EqualTo("pepe"));
 		}
 
 		[Test]
@@ -166,9 +165,9 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapping = new HbmProperty();
 			var mapper = new PropertyMapper(member, mapping);
 			mapper.Column(cm => { cm.Name("Autoproperty"); cm.Length(50); });
-			mapping.column.Should().Be.Null();
-			mapping.length.Should().Be("50");
-			mapping.Columns.Should().Be.Empty();
+			Assert.That(mapping.column, Is.Null);
+			Assert.That(mapping.length, Is.EqualTo("50"));
+			Assert.That(mapping.Columns, Is.Empty);
 		}
 
 		[Test]
@@ -182,10 +181,10 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 				cm.Length(50);
 				cm.NotNullable(true);
 			});
-			mapping.Items.Should().Be.Null();
-			mapping.length.Should().Be("50");
-			mapping.notnull.Should().Be(true);
-			mapping.notnullSpecified.Should().Be(true);
+			Assert.That(mapping.Items, Is.Null);
+			Assert.That(mapping.length, Is.EqualTo("50"));
+			Assert.That(mapping.notnull, Is.EqualTo(true));
+			Assert.That(mapping.notnullSpecified, Is.EqualTo(true));
 		}
 
 		[Test]
@@ -199,8 +198,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 				cm.SqlType("VARCHAR(50)");
 				cm.NotNullable(true);
 			});
-			mapping.Items.Should().Not.Be.Null();
-			mapping.Columns.Should().Have.Count.EqualTo(1);
+			Assert.That(mapping.Items, Is.Not.Null);
+			Assert.That(mapping.Columns.Count(), Is.EqualTo(1));
 		}
 
 		[Test]
@@ -212,10 +211,10 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			mapper.Column(cm => cm.Length(50));
 			mapper.Column(cm => cm.NotNullable(true));
 
-			mapping.Items.Should().Be.Null();
-			mapping.length.Should().Be("50");
-			mapping.notnull.Should().Be(true);
-			mapping.notnullSpecified.Should().Be(true);
+			Assert.That(mapping.Items, Is.Null);
+			Assert.That(mapping.length, Is.EqualTo("50"));
+			Assert.That(mapping.notnull, Is.EqualTo(true));
+			Assert.That(mapping.notnullSpecified, Is.EqualTo(true));
 		}
 
 		[Test]
@@ -234,7 +233,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 						cm.Name("column2");
 						cm.SqlType("VARCHAR(10)");
 					});
-			mapping.Columns.Should().Have.Count.EqualTo(2);
+			Assert.That(mapping.Columns.Count(), Is.EqualTo(2));
 		}
 
 		[Test]
@@ -244,8 +243,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapping = new HbmProperty();
 			var mapper = new PropertyMapper(member, mapping);
 			mapper.Columns(cm => cm.Length(50), cm => cm.SqlType("VARCHAR(10)"));
-			mapping.Columns.Should().Have.Count.EqualTo(2);
-			mapping.Columns.All(cm => cm.name.Satisfy(n => !string.IsNullOrEmpty(n)));
+			Assert.That(mapping.Columns.Count(), Is.EqualTo(2));
+			Assert.True(mapping.Columns.All(cm => !string.IsNullOrEmpty(cm.name)));
 		}
 
 		[Test]
@@ -255,7 +254,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapping = new HbmProperty();
 			var mapper = new PropertyMapper(member, mapping);
 			mapper.Columns(cm => cm.Length(50), cm => cm.SqlType("VARCHAR(10)"));
-			Executing.This(() => mapper.Column(cm => cm.Length(50))).Should().Throw<MappingException>();
+			Assert.That(() => mapper.Column(cm => cm.Length(50)), Throws.TypeOf<MappingException>());
 		}
 
 		[Test]
@@ -273,15 +272,15 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			mapper.UniqueKey("AA");
 			mapper.Index("II");
 
-			mapping.Items.Should().Be.Null();
-			mapping.column.Should().Be("pizza");
-			mapping.length.Should().Be("50");
-			mapping.precision.Should().Be("10");
-			mapping.scale.Should().Be("2");
-			mapping.notnull.Should().Be(true);
-			mapping.unique.Should().Be(true);
-			mapping.uniquekey.Should().Be("AA");
-			mapping.index.Should().Be("II");
+			Assert.That(mapping.Items, Is.Null);
+			Assert.That(mapping.column, Is.EqualTo("pizza"));
+			Assert.That(mapping.length, Is.EqualTo("50"));
+			Assert.That(mapping.precision, Is.EqualTo("10"));
+			Assert.That(mapping.scale, Is.EqualTo("2"));
+			Assert.That(mapping.notnull, Is.EqualTo(true));
+			Assert.That(mapping.unique, Is.EqualTo(true));
+			Assert.That(mapping.uniquekey, Is.EqualTo("AA"));
+			Assert.That(mapping.index, Is.EqualTo("II"));
 		}
 
 		[Test]
@@ -292,8 +291,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapper = new PropertyMapper(member, mapping);
 
 			mapper.Update(false);
-			mapping.update.Should().Be.False();
-			mapping.updateSpecified.Should().Be.True();
+			Assert.That(mapping.update, Is.False);
+			Assert.That(mapping.updateSpecified, Is.True);
 		}
 
 		[Test]
@@ -304,8 +303,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapper = new PropertyMapper(member, mapping);
 
 			mapper.Insert(false);
-			mapping.insert.Should().Be.False();
-			mapping.insertSpecified.Should().Be.True();
+			Assert.That(mapping.insert, Is.False);
+			Assert.That(mapping.insertSpecified, Is.True);
 		}
 
 		[Test]
@@ -316,8 +315,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapper = new PropertyMapper(member, mapping);
 
 			mapper.Lazy(true);
-			mapping.lazy.Should().Be.True();
-			mapping.IsLazyProperty.Should().Be.True();
+			Assert.That(mapping.lazy, Is.True);
+			Assert.That(mapping.IsLazyProperty, Is.True);
 		}
 	}
 

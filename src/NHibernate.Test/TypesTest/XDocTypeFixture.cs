@@ -3,7 +3,6 @@ using System.Xml.Linq;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.TypesTest
 {
@@ -15,10 +14,10 @@ namespace NHibernate.Test.TypesTest
 			get { return "XDoc"; }
 		}
 
-        protected override bool AppliesTo(Dialect.Dialect dialect)
-        {
-            return TestDialect.SupportsSqlType(new SqlType(DbType.Xml));
-        }
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsSqlType(new SqlType(DbType.Xml));
+		}
 
 		[Test]
 		public void ReadWrite()
@@ -26,7 +25,7 @@ namespace NHibernate.Test.TypesTest
 			using (var s = OpenSession())
 			{
 				var docEntity = new XDocClass {Id = 1 };
-        docEntity.Document = XDocument.Parse("<MyNode>my Text</MyNode>");
+		docEntity.Document = XDocument.Parse("<MyNode>my Text</MyNode>");
 				s.Save(docEntity);
 				s.Flush();
 			}
@@ -35,18 +34,18 @@ namespace NHibernate.Test.TypesTest
 			{
 				var docEntity = s.Get<XDocClass>(1);
 				var document = docEntity.Document;
-				document.Should().Not.Be.Null();
-				document.Document.Root.ToString(SaveOptions.DisableFormatting).Should().Contain("<MyNode>my Text</MyNode>");
+				Assert.That(document, Is.Not.Null);
+				Assert.That(document.Document.Root.ToString(SaveOptions.DisableFormatting), Is.StringContaining("<MyNode>my Text</MyNode>"));
 			  var xmlElement = new XElement("Pizza", new XAttribute("temp", "calda"));
-        document.Document.Root.Add(xmlElement);
+		document.Document.Root.Add(xmlElement);
 				s.Save(docEntity);
 				s.Flush();
 			}
 			using (var s = OpenSession())
 			{
 				var docEntity = s.Get<XDocClass>(1);
-        var document = docEntity.Document;
-        document.Document.Root.ToString(SaveOptions.DisableFormatting).Should().Contain("Pizza temp=\"calda\"");
+		var document = docEntity.Document;
+		Assert.That(document.Document.Root.ToString(SaveOptions.DisableFormatting), Is.StringContaining("Pizza temp=\"calda\""));
 				s.Delete(docEntity);
 				s.Flush();
 			}
@@ -66,7 +65,7 @@ namespace NHibernate.Test.TypesTest
 			using (ISession s = OpenSession())
 			{
 				var docEntity = s.Get<XDocClass>(1);
-				docEntity.Document.Should().Be.Null();
+				Assert.That(docEntity.Document, Is.Null);
 				s.Delete(docEntity);
 				s.Flush();
 			}
@@ -77,7 +76,7 @@ namespace NHibernate.Test.TypesTest
 		{
 			// integration test to be 100% sure
 			var propertyType = sessions.GetEntityPersister(typeof (XDocClass).FullName).GetPropertyType("AutoDocument");
-			propertyType.Should().Be.InstanceOf<XDocType>();
+			Assert.That(propertyType, Is.InstanceOf<XDocType>());
 		}
 	}
 }

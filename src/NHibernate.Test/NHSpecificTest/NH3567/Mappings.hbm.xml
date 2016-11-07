@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH3567" >
+
+  <class name="Site" >
+    <id name="Id" type="Int32">
+      <generator class="assigned" />
+    </id>
+    <property name="Name" length="2000" />
+  </class>
+
+  <class name="Post" >
+    <id name="Id" type="Int32">
+      <generator class="assigned" />
+    </id>
+    <property name="Content" length="2000" />
+    <many-to-one name="Site" column="PostId" not-null="true"/>
+  </class>
+
+  <class name="Comment" table="Cmt">
+    <id name="Id" type="Int32">
+      <generator class="assigned" />
+    </id>
+    <property name="Content" length="2000" />
+
+    <many-to-one name="Post" column="PostId" not-null="true"/>
+  </class>
+</hibernate-mapping>

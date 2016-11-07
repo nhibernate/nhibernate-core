@@ -2,7 +2,6 @@ using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 {
@@ -31,33 +30,32 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			});
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
 			var hbmClass = hbmMapping.RootClasses[0];
-			hbmClass.Should().Not.Be.Null();
+			Assert.That(hbmClass, Is.Not.Null);
 			var hbmId = hbmClass.Id;
-			hbmId.Should().Not.Be.Null();
-			hbmId.name.Should().Be("id");
-			hbmId.access.Should().Be("field");
+			Assert.That(hbmId, Is.Not.Null);
+			Assert.That(hbmId.name, Is.EqualTo("id"));
+			Assert.That(hbmId.access, Is.EqualTo("field"));
 			var hbmGenerator = hbmId.generator;
-			hbmGenerator.Should().Not.Be.Null();
-			hbmGenerator.@class.Should().Be("hilo");
-			hbmGenerator.param[0].name.Should().Be("max_low");
-			hbmGenerator.param[0].GetText().Should().Be("100");
+			Assert.That(hbmGenerator, Is.Not.Null);
+			Assert.That(hbmGenerator.@class, Is.EqualTo("hilo"));
+			Assert.That(hbmGenerator.param[0].name, Is.EqualTo("max_low"));
+			Assert.That(hbmGenerator.param[0].GetText(), Is.EqualTo("100"));
 			var hbmVersion = hbmClass.Version;
-			hbmVersion.name.Should().Be("version");
+			Assert.That(hbmVersion.name, Is.EqualTo("version"));
 			var hbmProperty = hbmClass.Properties.OfType<HbmProperty>().Single();
-			hbmProperty.name.Should().Be("something");
-			hbmProperty.access.Should().Be("field");
-			hbmProperty.length.Should().Be("150");
+			Assert.That(hbmProperty.name, Is.EqualTo("something"));
+			Assert.That(hbmProperty.access, Is.EqualTo("field"));
+			Assert.That(hbmProperty.length, Is.EqualTo("150"));
 		}
 
 		[Test]
 		public void WhenPrivateMemberDoesNotExistsThenThrow()
 		{
 			var mapper = new ModelMapper();
-			Executing.This(() =>
-			mapper.Class<MyClass>(ca =>
+			Assert.That(() => mapper.Class<MyClass>(ca =>
 			{
 				ca.Property("pizza", map => map.Length(150));
-			})).Should().Throw<MappingException>();
+			}), Throws.TypeOf<MappingException>());
 		}
 	}
 }

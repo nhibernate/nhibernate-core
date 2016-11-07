@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH0000">
+
+	<class name="Entity" entity-name="Entity1">
+		<id name="Id" generator="guid.comb" />
+		<property name="Name" />
+	</class>
+	<class name="Entity" entity-name="Entity2">
+		<id name="Id" generator="guid.comb" />
+		<property name="Name" />
+	</class>
+
+</hibernate-mapping>

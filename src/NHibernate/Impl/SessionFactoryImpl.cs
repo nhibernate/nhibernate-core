@@ -497,7 +497,7 @@ namespace NHibernate.Impl
 			return
 				new SessionImpl(connection, this, true, settings.CacheProvider.NextTimestamp(), interceptor,
 								settings.DefaultEntityMode, flushBeforeCompletionEnabled, autoCloseSessionEnabled,
-								isInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled, connectionReleaseMode);
+								isInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled, connectionReleaseMode, settings.DefaultFlushMode);
 		}
 
 		public IEntityPersister GetEntityPersister(string entityName)
@@ -1180,8 +1180,8 @@ namespace NHibernate.Impl
 					NativeSQLQuerySpecification spec;
 					if (qd.ResultSetRef != null)
 					{
-						ResultSetMappingDefinition definition = sqlResultSetMappings[qd.ResultSetRef];
-						if (definition == null)
+						ResultSetMappingDefinition definition;
+						if (!sqlResultSetMappings.TryGetValue(qd.ResultSetRef, out definition))
 						{
 							throw new MappingException("Unable to find resultset-ref definition: " + qd.ResultSetRef);
 						}
@@ -1215,7 +1215,8 @@ namespace NHibernate.Impl
 			SessionImpl session = new SessionImpl(connection, this, autoClose, timestamp, sessionLocalInterceptor ?? interceptor,
 												  settings.DefaultEntityMode, settings.IsFlushBeforeCompletionEnabled,
 												  settings.IsAutoCloseSessionEnabled, isInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled,
-												  settings.ConnectionReleaseMode);
+												  settings.ConnectionReleaseMode, settings.DefaultFlushMode);
+
 			if (sessionLocalInterceptor != null)
 			{
 				// NH specific feature
