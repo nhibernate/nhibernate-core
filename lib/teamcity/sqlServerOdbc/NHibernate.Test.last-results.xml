@@ -9856,12 +9856,20 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not load an entity:
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="Namespace" name="NH1756" executed="True" result="Success" success="True" asserts="0">
+                  <test-suite type="Namespace" name="NH1756" executed="True" result="Failure" success="False" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
+                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Failure" success="False" asserts="0">
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH1756.Fixture.SaveTransient_Then_Update" description="Work with AutoFlush on commit" executed="True" result="Success" success="True" asserts="0" />
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH1756.Fixture.SaveTransient_Then_Update_Bug" executed="True" result="Success" success="True" asserts="0" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH1756.Fixture.SaveTransient_Then_Update" description="Work with AutoFlush on commit" executed="True" result="Error" success="False" asserts="0">
+                            <failure>
+                              <message><![CDATA[NHibernate.StaleObjectStateException : Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect): [NHibernate.Test.NHSpecificTest.NH1756.Book#1]]]></message>
+                            </failure>
+                          </test-case>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH1756.Fixture.SaveTransient_Then_Update_Bug" executed="True" result="Error" success="False" asserts="0">
+                            <failure>
+                              <message><![CDATA[NHibernate.StaleObjectStateException : Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect): [NHibernate.Test.NHSpecificTest.NH1756.Book#2]]]></message>
+                            </failure>
+                          </test-case>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1756.Fixture.SaveTransient_Then_Update_Ok" executed="True" result="Success" success="True" asserts="0" />
                         </results>
                       </test-suite>
@@ -13818,11 +13826,15 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="Namespace" name="NH392" executed="True" result="Success" success="True" asserts="0">
+                  <test-suite type="Namespace" name="NH392" executed="True" result="Failure" success="False" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
+                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Failure" success="False" asserts="0">
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH392.Fixture.UnsavedMinusOneNoNullReferenceException" executed="True" result="Success" success="True" asserts="1" />
+                            <test-case name="NHibernate.Test.NHSpecificTest.NH392.Fixture.UnsavedMinusOneNoNullReferenceException" executed="True" result="Error" success="False" asserts="1">
+                            <failure>
+                              <message><![CDATA[TearDown : NHibernate.StaleObjectStateException : Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect): [NHibernate.Test.NHSpecificTest.NH392.UnsavedValueMinusOne#1]]]></message>
+                            </failure>
+                          </test-case>
                         </results>
                       </test-suite>
                     </results>
@@ -16794,14 +16806,24 @@ TearDown : Test didn't clean up after itself. session closed: True database clea
                   </test-suite>
                 </results>
               </test-suite>
-              <test-suite type="Namespace" name="VersionTest" executed="True" result="Success" success="True" asserts="0">
+              <test-suite type="Namespace" name="VersionTest" executed="True" result="Failure" success="False" asserts="0">
                 <results>
-                  <test-suite type="Namespace" name="Db" executed="True" result="Success" success="True" asserts="0">
+                  <test-suite type="Namespace" name="Db" executed="True" result="Failure" success="False" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="DbVersionFixture" executed="True" result="Success" success="True" asserts="0">
+                      <test-suite type="TestFixture" name="DbVersionFixture" executed="True" result="Failure" success="False" asserts="0">
                         <results>
-                          <test-case name="NHibernate.Test.VersionTest.Db.DbVersionFixture.CollectionNoVersion" executed="True" result="Success" success="True" asserts="2" />
-                          <test-case name="NHibernate.Test.VersionTest.Db.DbVersionFixture.CollectionVersion" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.VersionTest.Db.DbVersionFixture.CollectionNoVersion" executed="True" result="Failure" success="False" asserts="2">
+                            <failure>
+                              <message><![CDATA[NHibernate.StaleObjectStateException : Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect): [NHibernate.Test.VersionTest.Db.User#1]
+TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
+                            </failure>
+                          </test-case>
+                          <test-case name="NHibernate.Test.VersionTest.Db.DbVersionFixture.CollectionVersion" executed="True" result="Failure" success="False" asserts="0">
+                            <failure>
+                              <message><![CDATA[NHibernate.StaleObjectStateException : Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect): [NHibernate.Test.VersionTest.Db.User#1]
+TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
+                            </failure>
+                          </test-case>
                         </results>
                       </test-suite>
                       <test-suite type="Namespace" name="MsSQL" executed="True" result="Success" success="True" asserts="0">
