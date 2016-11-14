@@ -107,7 +107,7 @@ namespace NHibernate.AdoNet.Util
 		{
 			var p = dataParameter as IDbDataParameter;
 			if (p != null)
-				return p.DbType + " (" + p.Size + ")";
+				return p.DbType + " (" + p.Size + ":" + p.Scale + ":" + p.Precision + ")";
 			return dataParameter.DbType.ToString();
 		}
 
