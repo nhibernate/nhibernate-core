@@ -267,6 +267,12 @@ namespace NHibernate.Driver
 			var clone = cmd.CreateParameter();
 			clone.DbType = originalParameter.DbType;
 			clone.ParameterName = originalParameter.ParameterName;
+			if (originalParameter.Size != 0)
+				clone.Size = originalParameter.Size;
+			if (originalParameter.Scale != 0)
+				clone.Scale = originalParameter.Scale;
+			if (originalParameter.Precision != 0)
+				clone.Precision = originalParameter.Precision;
 			clone.Value = originalParameter.Value;
 			return clone;
 		}
