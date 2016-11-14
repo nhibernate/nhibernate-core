@@ -115,19 +115,29 @@ namespace NHibernate.AdoNet.Util
 		public string GetParameterLoggableValue(IDataParameter parameter)
 		{
 			const int maxLoggableStringLength = 1000;
+
 			if (parameter.Value == null || DBNull.Value.Equals(parameter.Value))
 			{
 				return "NULL";
 			}
+
 			if (IsStringType(parameter.DbType))
 			{
 				return string.Concat("'", TruncateWithEllipsis(parameter.Value.ToString(), maxLoggableStringLength), "'");
 			}
+
+			if (parameter.Value is DateTime)
+				return ((DateTime) parameter.Value).ToString("O");
+
+			if (parameter.Value is DateTimeOffset)
+				return ((DateTimeOffset) parameter.Value).ToString("O");
+
 			var buffer = parameter.Value as byte[];
 			if (buffer != null)
 			{
 				return GetBufferAsHexString(buffer);
 			}
+
 			return parameter.Value.ToString();
 
 		}
