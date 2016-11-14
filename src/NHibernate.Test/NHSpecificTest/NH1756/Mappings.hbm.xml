@@ -11,7 +11,10 @@
 
 		<discriminator column="subclass" />
 
-		<version	name="Version"	column="version_column" type="Timestamp" generated="always" />
+		<version	name="Version"	type="Timestamp"  generated="always" >
+			<column name="version_column" sql-type="datetime2(3)" />
+		</version>
+    <property	name="PreviousVersion"	column="previousversion_column" type="Timestamp"            />
 		<property name="Name"			column="name_column"																				/>
 
 		<bag name="Pages">
@@ -59,10 +62,13 @@ BEGIN
 	INSERT INTO book (
 		[subclass],
 		[version_column],
+    [previousversion_column],
 		[name_column])
 	SELECT
 		[subclass],
 		GetDate(),
+		--SYSDATETIME(),
+    [previousversion_column],
 		[name_column]
 	FROM inserted
 

@@ -103,8 +103,8 @@ namespace NHibernate.AdoNet.Util
 	    private static string GetParameterLogableType(IDataParameter dataParameter)
 	    {
             var p = dataParameter as IDbDataParameter;
-            if (p != null)
-                return p.DbType + " (" + p.Size + ")";
+		    if (p != null)
+			    return p.DbType + " (" + p.Size + ":" + p.Scale + ":" + p.Precision + ")";
 	        return p.DbType.ToString();
 
 	    }
@@ -120,6 +120,8 @@ namespace NHibernate.AdoNet.Util
 				{
 					return string.Concat("'", TruncateWithEllipsis(parameter.Value.ToString(), maxLogableStringLength), "'");
 				}
+				if (parameter.DbType == DbType.DateTime)
+					return ((DateTime) parameter.Value).ToString("O") + "(" + ((DateTime) parameter.Value).Ticks + ")";
 				var buffer = parameter.Value as byte[];
 				if (buffer != null)
 				{
