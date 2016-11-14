@@ -239,7 +239,7 @@ namespace NHibernate.Persister.Collection
 				foreach (Column col in collection.Key.ColumnIterator)
 				{
 					keyColumnNames[k] = col.GetQuotedName(dialect);
-					keyColumnAliases[k] = col.GetAlias(dialect);
+					keyColumnAliases[k] = col.GetAlias(dialect, table);
 					k++;
 				}
 				joinColumnNames = keyColumnNames;
@@ -306,7 +306,7 @@ namespace NHibernate.Persister.Collection
 			int j = 0;
 			foreach (ISelectable selectable in element.ColumnIterator)
 			{
-				elementColumnAliases[j] = selectable.GetAlias(dialect);
+				elementColumnAliases[j] = selectable.GetAlias(dialect, table);
 				if (selectable.IsFormula)
 				{
 					Formula form = (Formula) selectable;
