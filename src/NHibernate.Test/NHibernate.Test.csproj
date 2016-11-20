@@ -725,7 +725,7 @@
     <Compile Include="Component\Basic\ComponentWithUniqueConstraintTests.cs" />
     <Compile Include="NHSpecificTest\EntityWithUserTypeCanHaveLinqGenerators\BarExample.cs" />
     <Compile Include="NHSpecificTest\EntityWithUserTypeCanHaveLinqGenerators\EntityWithUserTypeProperty.cs" />
-    <Compile Include="NHSpecificTest\EntityWithUserTypeCanHaveLinqGenerators\EntityWithUserTypePropertyIsEquivelentGenerator.cs" />
+    <Compile Include="NHSpecificTest\EntityWithUserTypeCanHaveLinqGenerators\EntityWithUserTypePropertyIsEquivalentGenerator.cs" />
     <Compile Include="NHSpecificTest\EntityWithUserTypeCanHaveLinqGenerators\EntityWithUserTypePropertyGeneratorsRegistry.cs" />
     <Compile Include="NHSpecificTest\EntityWithUserTypeCanHaveLinqGenerators\ExampleUserType.cs" />
     <Compile Include="NHSpecificTest\EntityWithUserTypeCanHaveLinqGenerators\Fixture.cs" />

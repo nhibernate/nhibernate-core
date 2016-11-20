@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Linq;
 using NHibernate.Cfg;
-using NHibernate.Dialect;
 using NHibernate.Linq;
-using NHibernate.Mapping.ByCode;
-using NHibernate.Test.NHSpecificTest.FileStreamSql2008;
 using NUnit.Framework;
 
 
@@ -25,16 +21,10 @@ namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override bool AppliesTo(Dialect.Dialect dialect)
+		protected override void Configure(Configuration configuration)
 		{
-			return true;
-		}
-
-		protected override void Configure(Configuration cfg)
-		{
-
-			base.Configure(cfg);
-			cfg.LinqToHqlGeneratorsRegistry<EntityWithUserTypePropertyGeneratorsRegistry>();
+			base.Configure(configuration);
+			configuration.LinqToHqlGeneratorsRegistry<EntityWithUserTypePropertyGeneratorsRegistry>();
 		}
 
 		protected override void OnSetUp()
@@ -111,8 +101,9 @@ namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 				Assert.AreEqual(2, entities.Count);
 			}
 		}
+
 		[Test]
-		public void CanQueryWithHQL()
+		public void CanQueryWithHql()
 		{
 			using (var session = OpenSession())
 			using (session.BeginTransaction())

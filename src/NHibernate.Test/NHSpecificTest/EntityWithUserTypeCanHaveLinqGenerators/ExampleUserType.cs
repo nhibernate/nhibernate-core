@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Text;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 
@@ -54,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 			return value;
 		}
 
-		public SqlType[] SqlTypes { get { return new[] { SqlTypeFactory.GetString(255) }; } }
+		public SqlType[] SqlTypes { get { return new SqlType[] { SqlTypeFactory.GetString(255) }; } }
 
 		public System.Type ReturnedType { get { return typeof(IExample); } }
 		public bool IsMutable { get { return true; } }

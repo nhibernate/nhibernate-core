@@ -9,19 +9,22 @@ using NHibernate.Linq.Visitors;
 
 namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 {
-	public class EntityWithUserTypePropertyIsEquivelentGenerator : BaseHqlGeneratorForMethod
+	public class EntityWithUserTypePropertyIsEquivalentGenerator : BaseHqlGeneratorForMethod
 	{
-		public EntityWithUserTypePropertyIsEquivelentGenerator() : base()
+		public EntityWithUserTypePropertyIsEquivalentGenerator()
 		{
-			SupportedMethods = new[] { ReflectionHelper.GetMethodDefinition((IExample e) => e.IsEquivalentTo(null)) };
+			SupportedMethods = new[] {ReflectionHelper.GetMethodDefinition((IExample e) => e.IsEquivalentTo(null))};
 		}
-		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
+
+		public override HqlTreeNode BuildHql(
+			MethodInfo method,
+			Expression targetObject,
+			ReadOnlyCollection<Expression> arguments,
+			HqlTreeBuilder treeBuilder,
+			IHqlExpressionVisitor visitor)
 		{
 			var left = treeBuilder.Cast(visitor.Visit(targetObject).AsExpression(), typeof(string));
-			var right = treeBuilder.Cast(visitor.Visit(arguments.Cast<Expression>().First()).AsExpression(),
-										 typeof(string));
-
-
+			var right = treeBuilder.Cast(visitor.Visit(arguments.First()).AsExpression(), typeof(string));
 
 			var leftSubstring = treeBuilder.MethodCall("substring", left, treeBuilder.Constant(4));
 			var rightSubstring = treeBuilder.MethodCall("substring", right, treeBuilder.Constant(4));
