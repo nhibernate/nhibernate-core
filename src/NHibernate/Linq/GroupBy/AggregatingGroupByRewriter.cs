@@ -40,9 +40,8 @@ namespace NHibernate.Linq.GroupBy
 				typeof (AnyResultOperator),
 				typeof (AllResultOperator),
 				typeof (TimeoutResultOperator),
-				typeof (LockResultOperator),
-				typeof (CacheableResultOperator)
-			};
+				typeof (CacheableResultOperator),
+				typeof (LockResultOperator),			};
 
 		public static void ReWrite(QueryModel queryModel)
 		{
@@ -61,8 +60,8 @@ namespace NHibernate.Linq.GroupBy
 					{
 						FlattenSubQuery(queryModel, subQueryExpression.QueryModel, groupBy);
 						RemoveCostantGroupByKeys(queryModel, groupBy);
-			}
-		}
+					}
+				}
 			}
 		}
 
@@ -113,7 +112,7 @@ namespace NHibernate.Linq.GroupBy
 			{
 				// Remove the Group By clause completely if all the keys are constant (redundant)
 				queryModel.ResultOperators.Remove(groupBy);
-	}
+			}
 			else
 			{
 				// Re-write the KeySelector as an object array of the non-constant keys
