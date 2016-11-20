@@ -8,8 +8,7 @@ using NHibernate.Intercept;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Type;
-using NHibernate.Util;
-using System.Text;
+
 
 namespace NHibernate.Event.Default
 {
@@ -88,7 +87,6 @@ namespace NHibernate.Event.Default
 			}
 
 			copyCache.Clear();
-			copyCache = null;
 		}
 		
 		public virtual void OnMerge(MergeEvent @event, IDictionary copiedAlready)
