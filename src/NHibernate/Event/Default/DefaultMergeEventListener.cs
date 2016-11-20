@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Classic;
 using NHibernate.Engine;
 using NHibernate.Intercept;
@@ -8,6 +9,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Text;
 
 namespace NHibernate.Event.Default
 {
@@ -39,24 +41,33 @@ namespace NHibernate.Event.Default
 			EventCache copyCache = new EventCache();
 			
 			OnMerge(@event, copyCache);
-			
-			// TODO: iteratively get transient entities and retry merge until one of the following conditions:
+
+			// transientCopyCache may contain parent and child entities in random order.
+			// Child entities occurring ahead of their respective transient parents may fail 
+			// to get merged in one iteration.
+			// Retries are necessary as more and more children may be able to merge on subsequent iterations.
+			// Iteratively get transient entities and retry merge until one of the following conditions is true:
 			//   1) transientCopyCache.size() == 0
-			//   2) transientCopyCache.size() is not decreasing and copyCache.size() is not increasing
+			//   2) transientCopyCache.size() is not decreasing
 			
 			// TODO: find out if retrying can add entities to copyCache (don't think it can...)
 			// For now, just retry once; throw TransientObjectException if there are still any transient entities
 			
 			IDictionary transientCopyCache = this.GetTransientCopyCache(@event, copyCache);
 			
-			if (transientCopyCache.Count > 0)
+			while (transientCopyCache.Count > 0)
 			{
+				var initialTransientCount = transientCopyCache.Count;
+
 				RetryMergeTransientEntities(@event, transientCopyCache, copyCache);
 				
 				// find any entities that are still transient after retry
 				transientCopyCache = this.GetTransientCopyCache(@event, copyCache);
-				
-				if (transientCopyCache.Count > 0)
+
+				// if a retry did nothing, the remaining transient entities 
+				// cannot be merged due to references to other transient entities 
+				// that are not part of the merge
+				if (transientCopyCache.Count == initialTransientCount)
 				{
 					ISet<string> transientEntityNames = new HashSet<string>();
 					
@@ -71,8 +82,8 @@ namespace NHibernate.Event.Default
 							transientEntityName,
 							transientEntity.ToString());
 					}
-					
-					throw new TransientObjectException("one or more objects is an unsaved transient instance - save transient instance(s) before merging: " + transientEntityNames);
+
+					throw new TransientObjectException("one or more objects is an unsaved transient instance - save transient instance(s) before merging: " + String.Join(",",  transientEntityNames.ToArray()));
 				}
 			}
 
