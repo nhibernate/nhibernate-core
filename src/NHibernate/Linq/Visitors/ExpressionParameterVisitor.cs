@@ -26,9 +26,14 @@ namespace NHibernate.Linq.Visitors
 				ReflectionHelper.GetMethodDefinition(() => Enumerable.Take<object>(null, 0)),
 			};
 
+		private readonly List<CustomType> _allMappedCustomTypes;
+
 		public ExpressionParameterVisitor(ISessionFactoryImplementor sessionFactory)
 		{
 			_sessionFactory = sessionFactory;
+			_allMappedCustomTypes = _sessionFactory.GetAllClassMetadata().Values
+												.SelectMany(c => c.PropertyTypes)
+												.OfType<CustomType>().ToList();
 		}
 
 		public static IDictionary<ConstantExpression, NamedParameter> Visit(Expression expression, ISessionFactoryImplementor sessionFactory)
@@ -87,6 +92,16 @@ namespace NHibernate.Linq.Visitors
 				// Figure out a type so that HQL doesn't break on the null. (Related to NH-2430)
 				if (expression.Value == null)
 					type = NHibernateUtil.GuessType(expression.Type);
+
+				if (type == null)
+				{
+					var customType =
+						_allMappedCustomTypes.FirstOrDefault(ct => ct.UserType.ReturnedType.IsAssignableFrom(expression.Type));
+					if (customType != null)
+					{
+						type = customType;
+					}
+				}
 
 				// There is more information available in the Linq expression than to HQL directly.
 				// In some cases it might be advantageous to use the extra info.  Assuming this
