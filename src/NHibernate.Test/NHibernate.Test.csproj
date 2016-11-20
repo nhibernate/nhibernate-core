@@ -748,6 +748,8 @@
     <Compile Include="NHSpecificTest\NH3609\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2167\Entity.cs" />
     <Compile Include="NHSpecificTest\NH2167\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3817\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3817\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2839\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3564\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3583\Entity.cs" />
@@ -3197,6 +3199,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="NHSpecificTest\NH3609\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3818\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3817\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3666\Mappings.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
