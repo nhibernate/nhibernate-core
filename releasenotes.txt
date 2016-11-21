@@ -67,6 +67,7 @@ Build 4.1.0.CR1
     * [NH-3904] - Passing a user type instance as a constant parameter in a linq expression fails.
     * [NH-3909] - Regression on join following refactoring of NH-3801
     * [NH-3917] - SQLite Dialect does not specify any keywords except 'int'
+	* [NH-3912] - Batch operations with the same IBatcher instance fail on expect rows count after single failed operation (Oracle)
 
 ** New Feature
     * [NH-1262] - Cascade of "all-delete-orphan" not supported for one-to-one
