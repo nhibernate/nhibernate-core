@@ -733,6 +733,8 @@
     <Compile Include="NHSpecificTest\EntityWithUserTypeCanHaveLinqGenerators\IExample.cs" />
     <Compile Include="NHSpecificTest\NH2204\Model.cs" />
     <Compile Include="NHSpecificTest\NH2204\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3912\BatcherLovingEntity.cs" />
+    <Compile Include="NHSpecificTest\NH3912\ReusableBatcherFixture.cs" />
     <Compile Include="NHSpecificTest\NH3414\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3414\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH2218\Fixture.cs" />
