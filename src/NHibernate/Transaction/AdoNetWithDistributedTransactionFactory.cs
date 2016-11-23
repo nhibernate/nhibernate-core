@@ -43,7 +43,7 @@ namespace NHibernate.Transaction
 				{
 					using (new SessionIdLoggingContext(session.SessionId))
 					{
-						transactionContext.IsInActiveTransaction = false;
+						((DistributedTransactionContext)session.TransactionContext).IsInActiveTransaction = false;
 
 						bool wasSuccessful = false;
 						try
