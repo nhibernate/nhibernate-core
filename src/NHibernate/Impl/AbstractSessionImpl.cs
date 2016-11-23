@@ -330,6 +330,7 @@ namespace NHibernate.Impl
 			{
 				if (TransactionContext != null)
 					TransactionContext.Dispose();
+				TransactionContext = null;
 			}
 			catch (Exception)
 			{
