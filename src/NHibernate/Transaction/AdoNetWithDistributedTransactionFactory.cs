@@ -56,7 +56,7 @@ namespace NHibernate.Transaction
 							logger.Warn("Completed transaction was disposed, assuming transaction rollback", ode);
 						}
 						session.AfterTransactionCompletion(wasSuccessful, null);
-						if (transactionContext.ShouldCloseSessionOnDistributedTransactionCompleted)
+						if (session.TransactionContext.ShouldCloseSessionOnDistributedTransactionCompleted)
 						{
 							session.CloseSessionFromDistributedTransaction();
 						}
