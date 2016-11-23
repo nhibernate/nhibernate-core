@@ -43,7 +43,7 @@ namespace NHibernate.Transaction
 				{
 					using (new SessionIdLoggingContext(session.SessionId))
 					{
-						((DistributedTransactionContext) session.TransactionContext).IsInActiveTransaction = false;
+						transactionContext.IsInActiveTransaction = false;
 
 						bool wasSuccessful = false;
 						try
@@ -56,7 +56,7 @@ namespace NHibernate.Transaction
 							logger.Warn("Completed transaction was disposed, assuming transaction rollback", ode);
 						}
 						session.AfterTransactionCompletion(wasSuccessful, null);
-						if (session.TransactionContext.ShouldCloseSessionOnDistributedTransactionCompleted)
+						if (transactionContext.ShouldCloseSessionOnDistributedTransactionCompleted)
 						{
 							session.CloseSessionFromDistributedTransaction();
 						}
