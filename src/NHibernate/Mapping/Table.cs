@@ -25,7 +25,7 @@ namespace NHibernate.Mapping
 	[Serializable]
 	public class Table : IRelationalModel
 	{
-        [ThreadStatic]
+		[ThreadStatic]
 		private static int tableCounter;
 
 		private readonly List<string> checkConstraints = new List<string>();
