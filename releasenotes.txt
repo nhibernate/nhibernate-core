@@ -113,6 +113,7 @@ Build 4.1.0.CR1
     * [NH-3856] - Improve performance of SqlClientSqlCommandSet
     * [NH-3857] - Improve performance of MySqlClientSqlCommandSet
     * [NH-3920] - Improve logging of SQL parameter types and values
+	* [NH-3811] - Consistent Unique Integer values per table
 
 
 Build 4.0.4.GA
