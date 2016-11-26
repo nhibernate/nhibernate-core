@@ -131,10 +131,35 @@ namespace NHibernate.Test.Linq
 			if (!TestDialect.SupportsLocate)
 				Assert.Ignore("Locate function not supported.");
 
-			var query = from e in db.Employees
-						where e.FirstName.IndexOf('A') == 1
-						select e.FirstName;
+			var raw = (from e in db.Employees select e.FirstName).ToList();
+			var expected = raw.Select(x => x.ToLower()).Where(x => x.IndexOf('a') == 0).ToList();
 
+			var query = from e in db.Employees
+						let lowerName = e.FirstName.ToLower()
+						where lowerName.IndexOf('a') == 0
+						select lowerName;
+			var result = query.ToList();
+
+			Assert.That(result, Is.EqualTo(expected), "Expected {0} but was {1}", string.Join("|", expected), string.Join("|", result));
+			ObjectDumper.Write(query);
+		}
+
+		[Test]
+		public void CharIndexOffsetNegativeFunction()
+		{
+			if (!TestDialect.SupportsLocate)
+				Assert.Ignore("Locate function not supported.");
+
+			var raw = (from e in db.Employees select e.FirstName).ToList();
+			var expected = raw.Select(x => x.ToLower()).Where(x => x.IndexOf('a', 2) == -1).ToList();
+
+			var query = from e in db.Employees
+						let lowerName = e.FirstName.ToLower()
+						where lowerName.IndexOf('a', 2) == -1
+						select lowerName;
+			var result = query.ToList();
+
+			Assert.That(result, Is.EqualTo(expected), "Expected {0} but was {1}", string.Join("|", expected), string.Join("|", result));
 			ObjectDumper.Write(query);
 		}
 
@@ -144,10 +169,16 @@ namespace NHibernate.Test.Linq
 			if (!TestDialect.SupportsLocate)
 				Assert.Ignore("Locate function not supported.");
 
-			var query = from e in db.Employees
-						where e.FirstName.IndexOf("An") == 1
-						select e.FirstName;
+			var raw = (from e in db.Employees select e.FirstName).ToList();
+			var expected = raw.Select(x => x.ToLower()).Where(x => x.IndexOf("an") == 0).ToList();
 
+			var query = from e in db.Employees
+						let lowerName = e.FirstName.ToLower()
+						where lowerName.IndexOf("an") == 0
+						select lowerName;
+			var result = query.ToList();
+
+			Assert.That(result, Is.EqualTo(expected), "Expected {0} but was {1}", string.Join("|", expected), string.Join("|", result));
 			ObjectDumper.Write(query);
 		}
 
@@ -156,11 +187,17 @@ namespace NHibernate.Test.Linq
 		{
 			if (!TestDialect.SupportsLocate)
 				Assert.Ignore("Locate function not supported.");
-				
-			var query = from e in db.Employees
-						where e.FirstName.Contains("a")
-						select e.FirstName.IndexOf('A', 3);
 
+			var raw = (from e in db.Employees select e.FirstName).ToList();
+			var expected = raw.Select(x => x.ToLower()).Where(x => x.Contains("a")).Select(x => x.IndexOf("a", 1)).ToList();
+
+			var query = from e in db.Employees
+						let lowerName = e.FirstName.ToLower()
+						where lowerName.Contains("a")
+						select lowerName.IndexOf("a", 1);
+			var result = query.ToList();
+
+			Assert.That(result, Is.EqualTo(expected), "Expected {0} but was {1}", string.Join("|", expected), string.Join("|", result));
 			ObjectDumper.Write(query);
 		}
 
