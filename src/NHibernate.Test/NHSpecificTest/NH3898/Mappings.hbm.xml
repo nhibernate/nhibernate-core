@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH3898" default-access="field.camelcase"
+                   default-lazy="true" default-cascade="none">
+
+  <class name="Employee" table="T_EMPLOYEE" mutable="true">
+    <id name="Id" column="C_E_ID">
+      <generator class="native" />
+    </id>
+    <property name="Name" column="C_E_NAME"/>
+    <property name="PromotionCount" insert="false" generated="insert">
+      <column name="C_E_PROMOTION_COUNT" default="0"/>
+    </property>
+  </class>
+</hibernate-mapping>
