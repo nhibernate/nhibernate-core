@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -15,7 +15,7 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -47,6 +47,7 @@
     <NoWarn>1591%3b3001%3b3002%3b3003%3b3004%3b3005</NoWarn>
     <WarningsAsErrors>1717;1574</WarningsAsErrors>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -60,6 +61,7 @@
     <NoWarn>1591;3001;3002;3003;3004;3005</NoWarn>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>bin\Release-2.0\NHibernate.XML</DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -1814,6 +1816,11 @@
   </Target>
   -->
   <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release' ">
-    <Exec Command="$(SolutionDir)..\Tools\ilrepack\ilrepack.exe /verbose /t:library /targetplatform:v4 /keyfile:$(AssemblyOriginatorKeyFile) /internalize:internalize.exclude /attr:$(IntermediateOutputPath)\NHibernate.dll /out:$(OutputPath)\NHibernate.dll $(IntermediateOutputPath)\NHibernate.dll $(OutputPath)\Remotion.Linq.dll $(OutputPath)\Antlr3.Runtime.dll" />
+    <GetReferenceAssemblyPaths BypassFrameworkInstallChecks="False" TargetFrameworkMoniker="$(TargetFrameworkMoniker)">
+      <Output TaskParameter="FullFrameworkReferenceAssemblyPaths" PropertyName="_ReferenceAssembliesPath" />
+      <!-- Note: _ReferenceAssembliesPath will contain a trailing backslash which /targetplatform
+           can't handle. Circumvented by adding a trailing period below. -->
+    </GetReferenceAssemblyPaths>
+    <Exec Command="$(SolutionDir)..\Tools\ilrepack\ilrepack.exe /verbose /t:library /targetplatform:v4,&quot;$(_ReferenceAssembliesPath).&quot; /keyfile:$(AssemblyOriginatorKeyFile) /internalize:internalize.exclude /attr:$(IntermediateOutputPath)\NHibernate.dll /out:$(OutputPath)\NHibernate.dll $(IntermediateOutputPath)\NHibernate.dll $(OutputPath)\Remotion.Linq.dll $(OutputPath)\Antlr3.Runtime.dll" />
   </Target>
 </Project>
