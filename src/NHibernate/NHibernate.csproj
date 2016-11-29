@@ -1816,7 +1816,7 @@
   </Target>
   -->
   <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release' ">
-    <GetReferenceAssemblyPaths BypassFrameworkInstallChecks="False" TargetFrameworkMoniker=".NETFramework,Version=v4.6.2">
+    <GetReferenceAssemblyPaths BypassFrameworkInstallChecks="False" TargetFrameworkMoniker="$(TargetFrameworkMoniker)">
       <Output TaskParameter="FullFrameworkReferenceAssemblyPaths" PropertyName="_ReferenceAssembliesPath" />
       <!-- Note: _ReferenceAssembliesPath will contain a trailing backslash which /targetplatform
            can't handle. Circumvented by adding a trailing period below. -->
