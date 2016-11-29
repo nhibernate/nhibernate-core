@@ -1816,6 +1816,11 @@
   </Target>
   -->
   <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release' ">
-    <Exec Command="$(SolutionDir)..\Tools\ilrepack\ilrepack.exe /verbose /t:library /targetplatform:v4 /keyfile:$(AssemblyOriginatorKeyFile) /internalize:internalize.exclude /attr:$(IntermediateOutputPath)\NHibernate.dll /out:$(OutputPath)\NHibernate.dll $(IntermediateOutputPath)\NHibernate.dll $(OutputPath)\Remotion.Linq.dll $(OutputPath)\Antlr3.Runtime.dll" />
+    <GetReferenceAssemblyPaths BypassFrameworkInstallChecks="False" TargetFrameworkMoniker=".NETFramework,Version=v4.6.2">
+      <Output TaskParameter="FullFrameworkReferenceAssemblyPaths" PropertyName="_ReferenceAssembliesPath" />
+      <!-- Note: _ReferenceAssembliesPath will contain a trailing backslash which /targetplatform
+           can't handle. Circumvented by adding a trailing period below. -->
+    </GetReferenceAssemblyPaths>
+    <Exec Command="$(SolutionDir)..\Tools\ilrepack\ilrepack.exe /verbose /t:library /targetplatform:v4,&quot;$(_ReferenceAssembliesPath).&quot; /keyfile:$(AssemblyOriginatorKeyFile) /internalize:internalize.exclude /attr:$(IntermediateOutputPath)\NHibernate.dll /out:$(OutputPath)\NHibernate.dll $(IntermediateOutputPath)\NHibernate.dll $(OutputPath)\Remotion.Linq.dll $(OutputPath)\Antlr3.Runtime.dll" />
   </Target>
 </Project>
