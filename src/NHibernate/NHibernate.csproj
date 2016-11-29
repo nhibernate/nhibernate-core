@@ -1814,6 +1814,6 @@
   </Target>
   -->
   <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release' ">
-    <Exec Command="$(SolutionDir)..\Tools\ilrepack\ilrepack.exe /verbose /t:library /targetplatform:v4 /keyfile:$(AssemblyOriginatorKeyFile) /internalize:internalize.exclude /attr:$(IntermediateOutputPath)\NHibernate.dll /out:$(OutputPath)\NHibernate.dll $(IntermediateOutputPath)\NHibernate.dll $(OutputPath)\Remotion.Linq.dll $(OutputPath)\Antlr3.Runtime.dll" />
+    <Exec Command="$(SolutionDir)..\Tools\ilrepack\ilrepack.exe /verbose /t:library /targetplatform:v4 /keyfile:$(AssemblyOriginatorKeyFile) /internalize:internalize.exclude /out:$(OutputPath)\NHibernate.dll $(IntermediateOutputPath)\NHibernate.dll $(OutputPath)\Remotion.Linq.dll $(OutputPath)\Antlr3.Runtime.dll" />
   </Target>
 </Project>
