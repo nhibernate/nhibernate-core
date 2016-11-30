@@ -32,9 +32,15 @@ namespace NHibernate.Transaction
 			if (transaction == null)
 				return;
 
+			session.TransactionContext = new DistributedTransactionContext();
+
 			transaction.EnlistVolatile(
-				new TransactionNotification(session, transaction),
+				new PrepareTransactionNotification(session, transaction),
 				EnlistmentOptions.EnlistDuringPrepareRequired);
+
+			transaction.EnlistVolatile(
+				new TransactionCompletionNotification(session),
+				EnlistmentOptions.None);
 
 			logger.DebugFormat("enlisted into DTC transaction: {0}", transaction.IsolationLevel.ToString());
 			session.AfterTransactionBegin(null);
@@ -65,16 +71,15 @@ namespace NHibernate.Transaction
 			}
 		}
 
-		class TransactionNotification : IEnlistmentNotification, IDisposable
+		class PrepareTransactionNotification : IEnlistmentNotification
 		{
 			System.Transactions.Transaction _transaction;
 
 			ISessionImplementor _session;
 
-			public TransactionNotification(ISessionImplementor session, System.Transactions.Transaction transaction)
+			public PrepareTransactionNotification(ISessionImplementor session, System.Transactions.Transaction transaction)
 			{
 				_session = session;
-				_session.TransactionContext = new DistributedTransactionContext();
 				_transaction = transaction.Clone();
 			}
 
@@ -82,6 +87,7 @@ namespace NHibernate.Transaction
 			{
 				using (new SessionIdLoggingContext(_session.SessionId))
 				{
+
 					try
 					{
 						using (var tx = new TransactionScope(_transaction))
@@ -106,21 +112,18 @@ namespace NHibernate.Transaction
 					}
 					catch (Exception exception)
 					{
-						using (this)
+						preparingEnlistment.ForceRollback(exception);
+					}
+					finally
+					{
+						_session = null;
+						try
 						{
-							try
-							{
-								logger.Error("DTC transaction prepare phase failed", exception);
-								OnTransactionCompleted(false);
-							}
-							catch (Exception e)
-							{
-								logger.Warn("Issue preparing DTC transaction", e);
-							}
-							finally
-							{
-								preparingEnlistment.ForceRollback(exception);
-							}
+							if (_transaction != null) _transaction.Dispose();
+						}
+						finally
+						{
+							_transaction = null;
 						}
 					}
 				}
@@ -128,8 +131,37 @@ namespace NHibernate.Transaction
 
 			void IEnlistmentNotification.Commit(Enlistment enlistment)
 			{
+				enlistment.Done();
+			}
+
+			void IEnlistmentNotification.Rollback(Enlistment enlistment)
+			{
+				enlistment.Done();
+			}
+
+			void IEnlistmentNotification.InDoubt(Enlistment enlistment)
+			{
+				enlistment.Done();
+			}
+		}
+
+		class TransactionCompletionNotification : IEnlistmentNotification
+		{
+			ISessionImplementor _session;
+
+			public TransactionCompletionNotification(ISessionImplementor session)
+			{
+				_session = session;
+			}
+
+			void IEnlistmentNotification.Prepare(PreparingEnlistment preparingEnlistment)
+			{
+				preparingEnlistment.Prepared();
+			}
+
+			void IEnlistmentNotification.Commit(Enlistment enlistment)
+			{
 				using (new SessionIdLoggingContext(_session.SessionId))
-				using (this)
 				{
 					try
 					{
@@ -142,6 +174,7 @@ namespace NHibernate.Transaction
 					}
 					finally
 					{
+						_session = null;
 						enlistment.Done();
 					}
 				}
@@ -150,7 +183,6 @@ namespace NHibernate.Transaction
 			void IEnlistmentNotification.Rollback(Enlistment enlistment)
 			{
 				using (new SessionIdLoggingContext(_session.SessionId))
-				using (this)
 				{
 					try
 					{
@@ -163,6 +195,7 @@ namespace NHibernate.Transaction
 					}
 					finally
 					{
+						_session = null;
 						enlistment.Done();
 					}
 				}
@@ -171,7 +204,6 @@ namespace NHibernate.Transaction
 			void IEnlistmentNotification.InDoubt(Enlistment enlistment)
 			{
 				using (new SessionIdLoggingContext(_session.SessionId))
-				using (this)
 				{
 					try
 					{
@@ -184,19 +216,10 @@ namespace NHibernate.Transaction
 					}
 					finally
 					{
+						_session = null;
 						enlistment.Done();
 					}
 				}
-			}
-
-			public void Dispose()
-			{
-				if (_transaction != null)
-					_transaction.Dispose();
-				_transaction = null;
-				if (_session != null)
-					_session.TransactionContext = null;
-				_session = null;
 			}
 
 			void OnTransactionCompleted(bool successful)
