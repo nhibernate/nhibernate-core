@@ -1653,7 +1653,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				log.Debug(string.Format("[session-id={0}] running ISession.Dispose()", SessionId));
-				if (TransactionContext != null)
+				if (Factory.TransactionFactory.IsInDistributedActiveTransaction(this))
 				{
 					TransactionContext.ShouldCloseSessionOnDistributedTransactionCompleted = true;
 					return;

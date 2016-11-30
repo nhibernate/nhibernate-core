@@ -862,7 +862,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				log.Debug("running IStatelessSession.Dispose()");
-				if (TransactionContext != null)
+				if (Factory.TransactionFactory.IsInDistributedActiveTransaction(this))
 				{
 					TransactionContext.ShouldCloseSessionOnDistributedTransactionCompleted = true;
 					return;

@@ -90,7 +90,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2420
 			// fires *after* the transaction is committed and so it doesn't affect the success
 			// of the transaction.
 
-			Assert.That(s.IsConnected, Is.False);
+			Assert.That(() => s.IsConnected, Is.False.After(500, 100));
 			Assert.That(((ISessionImplementor)s).ConnectionManager.IsConnected, Is.False);
 			Assert.That(((ISessionImplementor)s).IsClosed, Is.True);
 		}

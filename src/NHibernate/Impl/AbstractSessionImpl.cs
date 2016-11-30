@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Runtime.CompilerServices;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
@@ -33,12 +34,13 @@ namespace NHibernate.Impl
 
 		public ITransactionContext TransactionContext
 		{
-			get; set;
+			[MethodImpl(MethodImplOptions.Synchronized)]
+			get;
+			[MethodImpl(MethodImplOptions.Synchronized)]
+			set;
 		}
 
 		private bool isAlreadyDisposed;
-
-		private static readonly IInternalLogger logger = LoggerProvider.LoggerFor(typeof(AbstractSessionImpl));
 
 		public Guid SessionId
 		{
@@ -330,6 +332,7 @@ namespace NHibernate.Impl
 			{
 				if (TransactionContext != null)
 					TransactionContext.Dispose();
+				TransactionContext = null;
 			}
 			catch (Exception)
 			{
