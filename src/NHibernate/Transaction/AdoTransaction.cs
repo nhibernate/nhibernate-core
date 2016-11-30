@@ -55,6 +55,7 @@ namespace NHibernate.Transaction
 					if (command.Transaction != null)
 					{
 						log.Warn("set a nonnull IDbCommand.Transaction to null because the Session had no Transaction");
+						throw new NotSupportedException("ORACLE!!!1111");
 					}
 				}
 
