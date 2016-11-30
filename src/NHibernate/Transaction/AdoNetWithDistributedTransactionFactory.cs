@@ -32,7 +32,10 @@ namespace NHibernate.Transaction
 			if (transaction == null)
 				return;
 
-			session.TransactionContext = new DistributedTransactionContext(session, transaction);
+			transaction.EnlistVolatile(
+				new TransactionNotification(session, transaction),
+				EnlistmentOptions.EnlistDuringPrepareRequired);
+
 			logger.DebugFormat("enlisted into DTC transaction: {0}", transaction.IsolationLevel.ToString());
 			session.AfterTransactionBegin(null);
 		}
@@ -53,19 +56,26 @@ namespace NHibernate.Transaction
 			}
 		}
 
-		public class DistributedTransactionContext : ITransactionContext, IEnlistmentNotification
+		class DistributedTransactionContext : ITransactionContext
+		{
+			public bool ShouldCloseSessionOnDistributedTransactionCompleted { get; set; }
+
+			public void Dispose()
+			{
+			}
+		}
+
+		class TransactionNotification : IEnlistmentNotification, IDisposable
 		{
 			System.Transactions.Transaction _transaction;
 
 			ISessionImplementor _session;
 
-			public bool ShouldCloseSessionOnDistributedTransactionCompleted { get; set; }
-
-			public DistributedTransactionContext(ISessionImplementor session, System.Transactions.Transaction transaction)
+			public TransactionNotification(ISessionImplementor session, System.Transactions.Transaction transaction)
 			{
 				_session = session;
+				_session.TransactionContext = new DistributedTransactionContext();
 				_transaction = transaction.Clone();
-				_transaction.EnlistVolatile(this, EnlistmentOptions.EnlistDuringPrepareRequired);
 			}
 
 			void IEnlistmentNotification.Prepare(PreparingEnlistment preparingEnlistment)
@@ -191,9 +201,10 @@ namespace NHibernate.Transaction
 
 			void OnTransactionCompleted(bool successful)
 			{
+				var transactionContext = _session.TransactionContext;
 				_session.TransactionContext = null;
 				_session.AfterTransactionCompletion(successful, null);
-				if (ShouldCloseSessionOnDistributedTransactionCompleted)
+				if (transactionContext.ShouldCloseSessionOnDistributedTransactionCompleted)
 					_session.CloseSessionFromDistributedTransaction();
 			}
 		}

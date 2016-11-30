@@ -2238,7 +2238,7 @@ namespace NHibernate.Dialect
 
 		protected void RegisterKeyword(string word)
 		{
-			Keywords.Add(word);
+			_sqlKeywords.Add(word);
 		}
 
 		protected void RegisterFunction(string name, ISQLFunction function)
