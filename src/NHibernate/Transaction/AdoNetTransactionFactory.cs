@@ -43,7 +43,8 @@ namespace NHibernate.Transaction
 					connection = session.Connection;
 				else
 					connection = session.Factory.ConnectionProvider.GetConnection();
-
+				
+				if (System.Transactions.Transaction.Current != null) throw new InvalidOperationException("ARGH!");
 				if (transacted)
 				{
 					trans = connection.BeginTransaction();
