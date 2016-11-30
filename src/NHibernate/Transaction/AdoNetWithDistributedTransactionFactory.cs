@@ -32,11 +32,13 @@ namespace NHibernate.Transaction
 			if (transaction == null)
 				return;
 
-			session.TransactionContext = new DistributedTransactionContext();
+			var notification = new PrepareTransactionNotification(session, transaction);
 
 			transaction.EnlistVolatile(
-				new PrepareTransactionNotification(session, transaction),
+				notification,
 				EnlistmentOptions.EnlistDuringPrepareRequired);
+
+			session.TransactionContext = notification;
 
 			transaction.EnlistVolatile(
 				new TransactionCompletionNotification(session),
@@ -62,16 +64,7 @@ namespace NHibernate.Transaction
 			}
 		}
 
-		class DistributedTransactionContext : ITransactionContext
-		{
-			public bool ShouldCloseSessionOnDistributedTransactionCompleted { get; set; }
-
-			public void Dispose()
-			{
-			}
-		}
-
-		class PrepareTransactionNotification : IEnlistmentNotification
+		class PrepareTransactionNotification : IEnlistmentNotification, ITransactionContext
 		{
 			System.Transactions.Transaction _transaction;
 
@@ -83,11 +76,12 @@ namespace NHibernate.Transaction
 				_transaction = transaction.Clone();
 			}
 
+			public bool ShouldCloseSessionOnDistributedTransactionCompleted { get; set; }
+
 			void IEnlistmentNotification.Prepare(PreparingEnlistment preparingEnlistment)
 			{
 				using (new SessionIdLoggingContext(_session.SessionId))
 				{
-
 					try
 					{
 						using (var tx = new TransactionScope(_transaction))
@@ -142,6 +136,16 @@ namespace NHibernate.Transaction
 			void IEnlistmentNotification.InDoubt(Enlistment enlistment)
 			{
 				enlistment.Done();
+			}
+
+			public void Dispose()
+			{
+				if (!ReferenceEquals(_transaction, null))
+					_transaction.Dispose();
+				_transaction = null;
+				if (!ReferenceEquals(_session, null))
+					_session.TransactionContext = null;
+				_session = null;
 			}
 		}
 
