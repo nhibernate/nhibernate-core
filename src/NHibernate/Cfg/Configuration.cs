@@ -2319,7 +2319,7 @@ namespace NHibernate.Cfg
 		/// Generate DDL for altering tables
 		///</summary>
 		/// <seealso cref="NHibernate.Tool.hbm2ddl.SchemaUpdate"/>
-		public string[] GenerateSchemaUpdateScript(Dialect.Dialect dialect, DatabaseMetadata databaseMetadata)
+		public string[] GenerateSchemaUpdateScript(Dialect.Dialect dialect, IDatabaseMetadata databaseMetadata)
 		{
 			SecondPassCompile();
 
@@ -2399,7 +2399,7 @@ namespace NHibernate.Cfg
 			return script.ToArray();
 		}
 
-		public void ValidateSchema(Dialect.Dialect dialect, DatabaseMetadata databaseMetadata)
+		public void ValidateSchema(Dialect.Dialect dialect, IDatabaseMetadata databaseMetadata)
 		{
 			SecondPassCompile();
 

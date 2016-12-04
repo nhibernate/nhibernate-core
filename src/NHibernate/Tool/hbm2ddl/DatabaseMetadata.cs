@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -11,7 +10,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Tool.hbm2ddl
 {
-	public class DatabaseMetadata
+	public class DatabaseMetadata : IDatabaseMetadata
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (DatabaseMetadata));
 
