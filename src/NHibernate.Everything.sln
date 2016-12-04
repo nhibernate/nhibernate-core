@@ -67,7 +67,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Test", "NHiberna
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "NHibernate.Example.Web", "NHibernate.Example.Web\", "{C5D6EE68-1760-4F97-AD31-42343593D8C1}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.6.1"
 		ProjectReferences = "{5909BFE7-93CF-4E5F-BE22-6293368AF01D}|NHibernate.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/NHibernate.Example.Web"
 		Debug.AspNetCompiler.PhysicalPath = "NHibernate.Example.Web\"
