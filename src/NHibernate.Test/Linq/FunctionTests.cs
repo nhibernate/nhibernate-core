@@ -266,16 +266,16 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		public void TrimTrailingWhitespace()
+		public void TrimInitialWhitespace()
 		{
 			using (session.BeginTransaction())
 			{
-				session.Save(new AnotherEntity {Input = " hi "});
+				session.Save(new AnotherEntity {Input = " hi"});
 				session.Save(new AnotherEntity {Input = "hi"});
 				session.Save(new AnotherEntity {Input = "heh"});
 				session.Flush();
 
-				Assert.AreEqual(TestDialect.IgnoresTrailingWhitespace ? 2 : 1, session.Query<AnotherEntity>().Where(e => e.Input.TrimStart() == "hi ").Count());
+				Assert.That(session.Query<AnotherEntity>().Count(e => e.Input.TrimStart() == "hi"), Is.EqualTo(2));
 
 				// Let it rollback to get rid of temporary changes.
 			}
