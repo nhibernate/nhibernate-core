@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Collections.Generic;
-using NHibernate.Dialect;
 using NHibernate.DomainModel;
 using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Linq;
@@ -68,9 +66,13 @@ namespace NHibernate.Test.Linq
 		{
 			// Verify that any method named Like, in a class named SqlMethods, will be translated.
 
+			// ReSharper disable RedundantNameQualifier
+			// NOTE: Deliberately use full namespace for our SqlMethods class below, to reduce
+			// risk of accidentally referencing NHibernate.Linq.SqlMethods.
 			var query = (from e in db.Employees
 						 where NHibernate.Test.Linq.FunctionTests.SqlMethods.Like(e.FirstName, "Ma%et")
 						 select e).ToList();
+			// ReSharper restore RedundantNameQualifier
 
 			Assert.That(query.Count, Is.EqualTo(1));
 			Assert.That(query[0].FirstName, Is.EqualTo("Margaret"));
@@ -237,7 +239,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void Coalesce()
 		{
-			Assert.AreEqual(2, session.Query<AnotherEntity>().Where(e => (e.Input ?? "hello") == "hello").Count());
+			Assert.AreEqual(2, session.Query<AnotherEntity>().Count(e => (e.Input ?? "hello") == "hello"));
 		}
 
 		[Test]
@@ -253,13 +255,13 @@ namespace NHibernate.Test.Linq
 				session.Save(ae3);
 				session.Flush();
 
-				Assert.AreEqual(2, session.Query<AnotherEntity>().Where(e => e.Input.Trim() == "hi").Count());
-				Assert.AreEqual(1, session.Query<AnotherEntity>().Where(e => e.Input.TrimEnd() == " hi").Count());
+				Assert.AreEqual(2, session.Query<AnotherEntity>().Count(e => e.Input.Trim() == "hi"));
+				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.TrimEnd() == " hi"));
 
 				// Emulated trim does not support multiple trim characters, but for many databases it should work fine anyways.
-				Assert.AreEqual(1, session.Query<AnotherEntity>().Where(e => e.Input.Trim('h') == "e").Count());
-				Assert.AreEqual(1, session.Query<AnotherEntity>().Where(e => e.Input.TrimStart('h') == "eh").Count());
-				Assert.AreEqual(1, session.Query<AnotherEntity>().Where(e => e.Input.TrimEnd('h') == "he").Count());
+				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.Trim('h') == "e"));
+				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.TrimStart('h') == "eh"));
+				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.TrimEnd('h') == "he"));
 
 				// Let it rollback to get rid of temporary changes.
 			}
