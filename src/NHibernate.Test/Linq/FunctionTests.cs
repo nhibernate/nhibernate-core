@@ -265,7 +265,7 @@ namespace NHibernate.Test.Linq
 			}
 		}
 
-		[Test, Ignore]
+		[Test]
 		public void TrimTrailingWhitespace()
 		{
 			using (session.BeginTransaction())
