@@ -1,8 +1,7 @@
 using System;
+using System.Collections.Concurrent;
 using System.Data;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using NHibernate.Util;
 
 namespace NHibernate.SqlTypes
 {
@@ -14,8 +13,8 @@ namespace NHibernate.SqlTypes
 	{
 		// key = typeof(sqlType).Name : ie - BinarySqlType(l), BooleanSqlType, DecimalSqlType(p,s)
 		// value = SqlType
-		private static readonly IDictionary<string, SqlType> SqlTypes = 
-			new ThreadSafeDictionary<string, SqlType>(new Dictionary<string, SqlType>(128));
+		private static readonly ConcurrentDictionary<string, SqlType> SqlTypes = 
+			new ConcurrentDictionary<string, SqlType>(4 * System.Environment.ProcessorCount, 128);
 
 		public static readonly SqlType Guid = new SqlType(DbType.Guid);
 		public static readonly SqlType Boolean = new SqlType(DbType.Boolean);
@@ -44,30 +43,14 @@ namespace NHibernate.SqlTypes
 		private static T GetTypeWithLen<T>(int length, TypeWithLenCreateDelegate createDelegate) where T : SqlType
 		{
 			string key = GetKeyForLengthBased(typeof (T).Name, length);
-			SqlType result;
-			if (!SqlTypes.TryGetValue(key, out result))
-			{
-				lock(SqlTypes)
-				{
-					if (!SqlTypes.TryGetValue(key, out result))
-					{
-						result = createDelegate(length);
-						SqlTypes.Add(key, result);
-					}
-				}
-			}
+			SqlType result = SqlTypes.GetOrAdd(key, k => createDelegate(length));
 			return (T) result;
 		}
 
 		private static SqlType GetTypeWithPrecision(DbType dbType, byte precision, byte scale)
 		{
 			string key = GetKeyForPrecisionScaleBased(dbType.ToString(), precision, scale);
-			SqlType result;
-			if (!SqlTypes.TryGetValue(key, out result))
-			{
-				result = new SqlType(dbType, precision, scale);
-				SqlTypes.Add(key, result);
-			}
+			SqlType result = SqlTypes.GetOrAdd(key, k => new SqlType(dbType, precision, scale));
 			return result;
 		}
 
