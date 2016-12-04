@@ -423,9 +423,7 @@ namespace NHibernate.Impl
 
 		#region IObjectReference Members
 
-#if NET_4_0
 		[SecurityCritical]
-#endif
 		public object GetRealObject(StreamingContext context)
 		{
 			// the SessionFactory that was serialized only has values in the properties
