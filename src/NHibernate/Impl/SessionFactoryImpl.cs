@@ -248,7 +248,10 @@ namespace NHibernate.Impl
 					if (cache != null)
 					{
 						caches.Add(cacheRegion, cache);
-						((IDictionary<string, ICache>)allCacheRegions).Add(cache.RegionName, cache.Cache);
+						if (!allCacheRegions.TryAdd(cache.RegionName, cache.Cache))
+						{
+							throw new HibernateException("An item with the same key has already been added to allCacheRegions.");
+						}
 					}
 				}
 				IEntityPersister cp = PersisterFactory.CreateClassPersister(model, cache, this, mapping);
@@ -968,7 +971,8 @@ namespace NHibernate.Impl
 
 		public IDictionary<string, ICache> GetAllSecondLevelCacheRegions()
 		{
-			return allCacheRegions.ToDictionary(kv => kv.Key, kv => kv.Value);
+			// ToArray creates a moment in time snapshot
+			return allCacheRegions.ToArray().ToDictionary(kv => kv.Key, kv => kv.Value);
 		}
 
 		public ICache GetSecondLevelCacheRegion(string regionName)

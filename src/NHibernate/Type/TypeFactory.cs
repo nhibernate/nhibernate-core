@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,7 +7,6 @@ using System.Xml;
 using System.Xml.Linq;
 using NHibernate.Bytecode;
 using NHibernate.Classic;
-using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 using NHibernate.Util;
@@ -61,13 +59,13 @@ namespace NHibernate.Type
 		 * "System.String(l)" -> instance of StringType with specified l
 		 */
 
-		private static readonly IDictionary<string, IType> typeByTypeOfName =
+		private static readonly ConcurrentDictionary<string, IType> typeByTypeOfName =
 			new ConcurrentDictionary<string, IType>();
 
-		private static readonly IDictionary<string, GetNullableTypeWithLength> getTypeDelegatesWithLength =
+		private static readonly ConcurrentDictionary<string, GetNullableTypeWithLength> getTypeDelegatesWithLength =
 			new ConcurrentDictionary<string, GetNullableTypeWithLength>();
 
-		private static readonly IDictionary<string, GetNullableTypeWithPrecision> getTypeDelegatesWithPrecision =
+		private static readonly ConcurrentDictionary<string, GetNullableTypeWithPrecision> getTypeDelegatesWithPrecision =
 			new ConcurrentDictionary<string, GetNullableTypeWithPrecision>();
 
 		private delegate NullableType GetNullableTypeWithLength(int length); // Func<int, NullableType>
@@ -134,7 +132,10 @@ namespace NHibernate.Type
 			foreach (var alias in typeAliases)
 			{
 				typeByTypeOfName[alias] = nhibernateType;
-				getTypeDelegatesWithLength.Add(alias, ctorLength);
+				if (!getTypeDelegatesWithLength.TryAdd(alias, ctorLength))
+				{
+					throw new HibernateException("An item with the same key has already been added to getTypeDelegatesWithLength.");
+				}
 			}
 		}
 
@@ -144,7 +145,10 @@ namespace NHibernate.Type
 			foreach (var alias in typeAliases)
 			{
 				typeByTypeOfName[alias] = nhibernateType;
-				getTypeDelegatesWithPrecision.Add(alias, ctorPrecision);
+				if (!getTypeDelegatesWithPrecision.TryAdd(alias, ctorPrecision))
+				{
+					throw new HibernateException("An item with the same key has already been added to getTypeDelegatesWithPrecision.");
+				}
 			}
 		}
 
@@ -403,18 +407,30 @@ namespace NHibernate.Type
 
 		private static void AddToTypeOfName(string key, IType type)
 		{
-			typeByTypeOfName.Add(key, type);
-			typeByTypeOfName.Add(type.Name, type);
+			if (!typeByTypeOfName.TryAdd(key, type))
+			{
+				throw new HibernateException("An item with the same key has already been added to typeByTypeOfName.");
+			}
+			if (!typeByTypeOfName.TryAdd(type.Name, type))
+			{
+				throw new HibernateException("An item with the same key has already been added to typeByTypeOfName.");
+			}
 		}
 
 		private static void AddToTypeOfNameWithLength(string key, IType type)
 		{
-			typeByTypeOfName.Add(key, type);
+			if (!typeByTypeOfName.TryAdd(key, type))
+			{
+				throw new HibernateException("An item with the same key has already been added to typeByTypeOfName.");
+			}
 		}
 
 		private static void AddToTypeOfNameWithPrecision(string key, IType type)
 		{
-			typeByTypeOfName.Add(key, type);
+			if (!typeByTypeOfName.TryAdd(key, type))
+			{
+				throw new HibernateException("An item with the same key has already been added to typeByTypeOfName.");
+			}
 		}
 
 		private static string GetKeyForLengthBased(string name, int length)
