@@ -48,7 +48,7 @@ namespace NHibernate.Test.Linq
 			}
 		}
 
-		[SetUp]
+		[OneTimeSetUp]
 		public void CreateNorthwindDb()
 		{
 			Configuration configuration = Configure();
@@ -85,7 +85,7 @@ namespace NHibernate.Test.Linq
 			}
 		}
 
-		[TearDown]
+		[OneTimeTearDown]
 		public void DestroyNorthwindDb()
 		{
 			Configuration configuration = Configure();
