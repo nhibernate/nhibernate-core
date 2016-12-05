@@ -44,104 +44,6 @@ namespace NHibernate.Util
 		}
 
 
-#if !NET_4_0   // Only in Iesi's ISet<>.
-		public bool AddAll(ICollection<object> c)
-		{
-			bool changed = false;
-
-			foreach (object o in c)
-				changed |= Add(o);
-
-			return changed;
-		}
-
-		public bool ContainsAll(ICollection<object> c)
-		{
-			foreach (object o in c)
-			{
-				if (!map.Contains(o))
-					return false;
-			}
-			return true;
-		}
-
-		public bool RemoveAll(ICollection<object> c)
-		{
-			bool changed = false;
-			foreach (object o in c)
-			{
-				changed |= Contains(o);
-				Remove(o);
-			}
-			return changed;
-		}
-
-		public bool RetainAll(ICollection<object> c)
-		{
-			//doable if needed
-			throw new NotSupportedException();
-		}
-
-		protected void NonGenericCopyTo(Array array, int index)
-		{
-			map.CopyTo(array, index);
-		}
-
-		public bool IsEmpty
-		{
-			get { return map.Count == 0; }
-		}
-
-		public bool IsSynchronized
-		{
-			get { return false; }
-		}
-
-		public object SyncRoot
-		{
-			get { return this; }
-		}
-
-		#region Implementation of ICloneable
-
-		public object Clone()
-		{
-			return new IdentitySet(this);
-		}
-
-		#endregion
-
-		#region Implementation of ISet<object>
-
-		public ISet<object> Union(ISet<object> a)
-		{
-			return new IdentitySet(this.Concat(a));
-		}
-
-		public ISet<object> Intersect(ISet<object> a)
-		{
-			// Be careful to use the Contains() implementation of the IdentitySet,
-			// not the one from the other set.
-			var elems = a.Where(e => Contains(a));
-			return new IdentitySet(elems);
-		}
-
-		public ISet<object> Minus(ISet<object> a)
-		{
-			var set = new IdentitySet(this);
-			set.RemoveAll(a);
-			return set;
-		}
-
-		public ISet<object> ExclusiveOr(ISet<object> a)
-		{
-			return Union(a).Minus(Intersect(a));
-		}
-
-		#endregion
-
-#endif
-
 		public void Clear()
 		{
 			map.Clear();
@@ -184,7 +86,6 @@ namespace NHibernate.Util
 			get { return false; }
 		}
 
-#if NET_4_0
 
 		#region Implementation of ISet<object>
 
@@ -253,8 +154,6 @@ namespace NHibernate.Util
 		}
 
 		#endregion
-
-#endif
 
 	}
 }

@@ -282,11 +282,7 @@ namespace NHibernate.AdoNet
 			interceptor = (IInterceptor)info.GetValue("interceptor", typeof(IInterceptor));
 		}
 
-#if NET_4_0
 		[SecurityCritical]
-#else
-		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-#endif
 		public void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			info.AddValue("ownConnection", ownConnection);
