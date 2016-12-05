@@ -14,7 +14,7 @@ namespace NHibernate.Test.DynamicProxyTests
 
 		public PeVerifier(string assemblyFileName)
 		{
-			var assemblyLocation = Path.Combine(Environment.CurrentDirectory, assemblyFileName);
+			var assemblyLocation = Path.Combine(TestContext.CurrentContext.TestDirectory, assemblyFileName);
 
 			if (!File.Exists(assemblyLocation))
 				throw new ArgumentException(string.Format("Could not locate assembly {0}", assemblyLocation), "assemblyLocation");
