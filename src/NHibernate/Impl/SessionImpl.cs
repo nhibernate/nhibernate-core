@@ -370,7 +370,10 @@ namespace NHibernate.Impl
 						{
 							foreach (KeyValuePair<EntityMode, ISession> pair in childSessionsByEntityMode)
 							{
-								pair.Value.Close();
+								if (pair.Value.IsOpen)
+								{
+									pair.Value.Close();
+								}
 							}
 						}
 					}
