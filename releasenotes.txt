@@ -7,12 +7,12 @@ Build 4.1.0.CR1
     wrapping exception have now been removed. Where relevant, you should instead catch
     the original exception type you throw.
 
-	For LINQ queries, the startAt parameter and the return value for string.IndexOf() are
-	now correctly translated from .Net's 0-based indexing to SQL's 1-based indexing. LINQ
-	queries that are written to expect SQL semantics for IndexOf() will likely need to be
-	asjusted (NH-3846, NH-3901).
-	Example: A LINQ query should now use 'x=>x.Name.IndexOf("a") == -1' to pick objects where
-	the name doesn't contain the letter "a".
+    For LINQ queries, the startAt parameter and the return value for string.IndexOf() are
+    now correctly translated from .Net's 0-based indexing to SQL's 1-based indexing. LINQ
+    queries that are written to expect SQL semantics for IndexOf() will likely need to be
+    adjusted (NH-3846, NH-3901).
+    Example: A LINQ query should now use 'x=>x.Name.IndexOf("a") == -1' to pick objects where
+    the name doesn't contain the letter "a".
 
 ** Bug
     * [NH-2038] - No substring length check in RemoveAsAliasesFromSql
@@ -445,6 +445,13 @@ Build 4.0.0.Alpha1
     * [NH-3347] - Remove obsolete dialects for NH4
 
 
+Build 3.4.1.GA
+=============================
+
+** Bug
+    * [NH-3795] - C# compiler "Roslyn" regression
+
+
 Build 3.4.0.GA
 =============================
 ** Known BREAKING CHANGES from NH3.3.0.GA to NH3.4.0.GA
@@ -530,6 +537,14 @@ Build 3.4.0.CR1
 
 ** Task
     * [NH-3251] - Update to antlr 3.5.0.2
+
+
+Build 3.3.5.GA
+=============================
+
+** Bug
+    * [NH-3795] - C# compiler "Roslyn" regression
+
 
 Build 3.3.4.GA
 =============================
