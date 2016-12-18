@@ -1,7 +1,7 @@
-Build 4.1.0.CR1
+Build 4.1.0.GA
 =============================
 
-    ##### Possible Breaking Changes #####
+    ##### Possible Breaking Changes Since 4.0 #####
     Proxies for classes that used lazy fields (not collections)
     would have any exceptions from the entity wrapped in TargetInvocationException. This
     wrapping exception have now been removed. Where relevant, you should instead catch
@@ -13,6 +13,13 @@ Build 4.1.0.CR1
     adjusted (NH-3846, NH-3901).
     Example: A LINQ query should now use 'x=>x.Name.IndexOf("a") == -1' to pick objects where
     the name doesn't contain the letter "a".
+
+** Bug
+    * [NH-3885] - ThreadSafeDictionary is not threadsafe
+
+
+Build 4.1.0.CR1
+=============================
 
 ** Bug
     * [NH-2038] - No substring length check in RemoveAsAliasesFromSql
@@ -47,7 +54,7 @@ Build 4.1.0.CR1
     * [NH-3666] - Setting native sql query cachable causes ArgumentNullException in CacheableResultTransformer.
     * [NH-3681] - NHibernate.HibernateException: Query Source could not be identified, when using join group and Sum()
     * [NH-3706] - NHibernate.Transform.Transformers should be static class
-    * [NH-3727] -  Criteria which use SubqueryProjection. Cannot be executed more than once. Second try throws exception.
+    * [NH-3727] - Criteria which use SubqueryProjection. Cannot be executed more than once. Second try throws exception.
     * [NH-3741] - Many to Many mapping against interfaces fails (reverts to using ElementRelationMapper instead of ManyToManyRelationMapper)
     * [NH-3743] - Fetch with GroupBy throws NullReferenceException
     * [NH-3747] - Very weak support for predicates in Linq Aggregate functions 
