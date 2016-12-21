@@ -306,7 +306,12 @@ namespace NHibernate.Engine
 		/// </returns>
 		bool IsClosed { get; }
 
-		void Flush();
+        /// <summary>
+        /// Close the session and release all resources.
+        /// </summary>
+        IDbConnection Close();
+
+        void Flush();
 
 		/// <summary> 
 		/// Does this <tt>Session</tt> have an active Hibernate transaction

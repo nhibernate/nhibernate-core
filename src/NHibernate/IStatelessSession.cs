@@ -60,7 +60,7 @@ namespace NHibernate
 		ISessionImplementor GetSessionImplementation();
 
 		/// <summary>Close the stateless session and release the ADO.NET connection.</summary>
-		void Close();
+		IDbConnection Close();
 
 		/// <summary>Insert an entity.</summary>
 		/// <param name="entity">A new transient instance</param>

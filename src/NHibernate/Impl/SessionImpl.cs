@@ -78,7 +78,7 @@ namespace NHibernate.Impl
 		private readonly ISession rootSession;
 
 		[NonSerialized]
-		private IDictionary<EntityMode, ISession> childSessionsByEntityMode;
+        private IDictionary<EntityMode, ISessionImplementor> childSessionsByEntityMode;
 
 		[NonSerialized]
 		private readonly bool flushBeforeCompletionEnabled;
@@ -347,7 +347,7 @@ namespace NHibernate.Impl
 		/// Close() is not aware of distributed transactions
 		/// </remarks>
 		/// </summary>
-		public IDbConnection Close()
+		public override IDbConnection Close()
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -368,9 +368,12 @@ namespace NHibernate.Impl
 					{
 						if (childSessionsByEntityMode != null)
 						{
-							foreach (KeyValuePair<EntityMode, ISession> pair in childSessionsByEntityMode)
+							foreach (KeyValuePair<EntityMode, ISessionImplementor> pair in childSessionsByEntityMode)
 							{
-								pair.Value.Close();
+							    if (!pair.Value.IsClosed)
+							    {
+								    pair.Value.Close();
+							    }
 							}
 						}
 					}
@@ -2239,10 +2242,10 @@ namespace NHibernate.Impl
 
 				CheckAndUpdateSessionStatus();
 
-				ISession rtn = null;
+                ISessionImplementor rtn = null;
 				if (childSessionsByEntityMode == null)
 				{
-					childSessionsByEntityMode = new Dictionary<EntityMode, ISession>();
+                    childSessionsByEntityMode = new Dictionary<EntityMode, ISessionImplementor>();
 				}
 				else
 				{
@@ -2256,7 +2259,7 @@ namespace NHibernate.Impl
 					childSessionsByEntityMode.Add(entityMode, rtn);
 				}
 
-				return rtn;
+				return (ISession)rtn;
 			}
 		}
 
