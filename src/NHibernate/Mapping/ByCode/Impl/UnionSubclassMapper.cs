@@ -17,6 +17,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 			var toAdd = new[] {classMapping};
 			classMapping.name = subClass.GetShortClassName(mapDoc);
 			classMapping.extends = subClass.BaseType.GetShortClassName(mapDoc);
+			if (subClass.IsAbstract)
+			{
+				classMapping.@abstract = true;
+				classMapping.abstractSpecified = true;
+			}
 			mapDoc.Items = mapDoc.Items == null ? toAdd : mapDoc.Items.Concat(toAdd).ToArray();
 		}
 
