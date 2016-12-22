@@ -16,24 +16,25 @@ namespace NHibernate.Test.DriverTest
 		public void ConnectionPooling_OpenThenCloseThenOpenAnotherOne_OnlyOneConnectionIsPooled()
 		{
 			MakeDriver();
-			var connection1 = MakeConnection();
-			var connection2 = MakeConnection();
+			using (var connection1 = MakeConnection())
+			using (var connection2 = MakeConnection())
+			{
+				connection1.Open();
+				VerifyCountOfEstablishedConnectionsIs(1);
 
-			//open first connection
-			connection1.Open();
-			VerifyCountOfEstablishedConnectionsIs(1);
+				//return it to the pool
+				connection1.Close();
+				VerifyCountOfEstablishedConnectionsIs(1);
 
-			//return it to the pool
-			connection1.Close();
-			VerifyCountOfEstablishedConnectionsIs(1);
+				//open the second connection
+				connection2.Open();
+				VerifyCountOfEstablishedConnectionsIs(1);
 
-			//open the second connection
-			connection2.Open();
-			VerifyCountOfEstablishedConnectionsIs(1);
+				//return it to the pool
+				connection2.Close();
 
-			//return it to the pool
-			connection2.Close();
-			VerifyCountOfEstablishedConnectionsIs(1);
+				VerifyCountOfEstablishedConnectionsIs(1);
+			}
 		}
 
 		[Test]

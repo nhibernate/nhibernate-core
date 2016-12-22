@@ -4978,20 +4978,27 @@ namespace NHibernate.Test.Legacy
 		public void UserProvidedConnection()
 		{
 			IConnectionProvider prov = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties);
-			ISession s = sessions.OpenSession(prov.GetConnection());
-			ITransaction tx = s.BeginTransaction();
-			s.CreateQuery("from foo in class NHibernate.DomainModel.Fo").List();
-			tx.Commit();
+			var conn = prov.GetConnection();
+			try
+			{
+				ISession s = sessions.OpenSession(conn);
+				ITransaction tx = s.BeginTransaction();
+				s.CreateQuery("from foo in class NHibernate.DomainModel.Fo").List();
+				tx.Commit();
 
-			IDbConnection c = s.Disconnect();
-			Assert.IsNotNull(c);
+				IDbConnection c = s.Disconnect();
+				Assert.IsNotNull(c);
 
-			s.Reconnect(c);
-			tx = s.BeginTransaction();
-			s.CreateQuery("from foo in class NHibernate.DomainModel.Fo").List();
-			tx.Commit();
-			Assert.AreSame(c, s.Close());
-			c.Close();
+				s.Reconnect(c);
+				tx = s.BeginTransaction();
+				s.CreateQuery("from foo in class NHibernate.DomainModel.Fo").List();
+				tx.Commit();
+				Assert.AreSame(c, s.Close());
+			}
+			finally
+			{
+				prov.CloseConnection(conn);
+			}
 		}
 
 		[Test]

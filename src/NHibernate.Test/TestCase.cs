@@ -275,7 +275,7 @@ namespace NHibernate.Test
 
 			using (IConnectionProvider prov = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties))
 			{
-				IDbConnection conn = prov.GetConnection();
+				var conn = prov.GetConnection();
 
 				try
 				{

@@ -39,21 +39,26 @@ namespace NHibernate.Test.NHSpecificTest
 			// manually read from the db
 			IConnectionProvider provider = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties);
 			IDbConnection conn = provider.GetConnection();
-			IDbCommand cmd = conn.CreateCommand();
-			cmd.Connection = conn;
-			cmd.CommandText = "select * from usertype";
-
-			IDataReader reader = cmd.ExecuteReader();
-
-			while (reader.Read())
+			try
 			{
-				Assert.AreEqual(5, reader[0]);
-				Assert.AreEqual(4, reader[1]);
-				Assert.AreEqual(DBNull.Value, reader[2]);
-				break;
-			}
+				IDbCommand cmd = conn.CreateCommand();
+				cmd.Connection = conn;
+				cmd.CommandText = "select * from usertype";
 
-			conn.Close();
+				IDataReader reader = cmd.ExecuteReader();
+
+				while (reader.Read())
+				{
+					Assert.AreEqual(5, reader[0]);
+					Assert.AreEqual(4, reader[1]);
+					Assert.AreEqual(DBNull.Value, reader[2]);
+					break;
+				}
+			}
+			finally
+			{
+				provider.CloseConnection(conn);
+			}
 
 			using (ISession s = OpenSession())
 			{

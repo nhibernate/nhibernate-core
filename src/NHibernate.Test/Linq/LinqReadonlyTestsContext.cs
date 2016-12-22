@@ -71,7 +71,8 @@ namespace NHibernate.Test.Linq
 			var file = new FileInfo(scripFileName);
 			string script = file.OpenText().ReadToEnd().Replace("GO", "");
 			var connectionProvider = ConnectionProviderFactory.NewConnectionProvider(configuration.GetDerivedProperties());
-			using (var conn = connectionProvider.GetConnection())
+			var conn = connectionProvider.GetConnection();
+			try
 			{
 				if (conn.State == ConnectionState.Closed)
 				{
@@ -82,6 +83,10 @@ namespace NHibernate.Test.Linq
 					command.CommandText = script;
 					command.ExecuteNonQuery();
 				}
+			}
+			finally
+			{
+				connectionProvider.CloseConnection(conn);
 			}
 		}
 

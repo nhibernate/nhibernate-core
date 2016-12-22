@@ -96,7 +96,8 @@ namespace NHibernate.Test.TransactionTest
 			var interceptor = new RecordingInterceptor();
 			ISession s;
 
-			using (IDbConnection ownConnection = sessions.ConnectionProvider.GetConnection())
+			var ownConnection = sessions.ConnectionProvider.GetConnection();
+			try
 			{
 				using (s = sessions.OpenSession(ownConnection, interceptor))
 				using (s.BeginTransaction())
@@ -107,6 +108,10 @@ namespace NHibernate.Test.TransactionTest
 					if (usePrematureClose)
 						s.Close();
 				}
+			}
+			finally
+			{
+				sessions.ConnectionProvider.CloseConnection(ownConnection);
 			}
 
 			Assert.That(s.IsOpen, Is.False);

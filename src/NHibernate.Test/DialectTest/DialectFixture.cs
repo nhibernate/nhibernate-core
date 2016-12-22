@@ -159,10 +159,13 @@ namespace NHibernate.Test.DialectTest
 			sessions.ConnectionProvider.Configure(conf.Properties);
 			IDriver driver = sessions.ConnectionProvider.Driver;
 
-			using (IDbConnection connection = sessions.ConnectionProvider.GetConnection())
+			var connection = sessions.ConnectionProvider.GetConnection();
+			try
 			{
-				IDbCommand statement = driver.GenerateCommand(CommandType.Text, new SqlString(dialect.CurrentTimestampSelectString),
-															  new SqlType[0]);
+				IDbCommand statement = driver.GenerateCommand(
+					CommandType.Text,
+					new SqlString(dialect.CurrentTimestampSelectString),
+					new SqlType[0]);
 				statement.Connection = connection;
 				using (IDataReader reader = statement.ExecuteReader())
 				{
@@ -170,7 +173,10 @@ namespace NHibernate.Test.DialectTest
 					Assert.That(reader[0], Is.InstanceOf<DateTime>());
 				}
 			}
+			finally
+			{
+				sessions.ConnectionProvider.CloseConnection(connection);
+			}
 		}
-
 	}
 }

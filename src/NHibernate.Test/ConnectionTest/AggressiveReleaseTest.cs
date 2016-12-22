@@ -192,7 +192,7 @@ namespace NHibernate.Test.ConnectionTest
 			session.Flush();
 
 			Release(session);
-			originalConnection.Close();
+			sessions.ConnectionProvider.CloseConnection(originalConnection);
 			Done();
 		}
 

@@ -161,13 +161,12 @@ namespace NHibernate.Test.SystemTransactions
 
 			using (var tx = new TransactionScope())
 			{
-				IDbConnection ownConnection1 = sessions.ConnectionProvider.GetConnection();
-
+				var ownConnection = sessions.ConnectionProvider.GetConnection();
 				try
 				{
 					try
 					{
-						s1 = sessions.OpenSession(ownConnection1, interceptor);
+						s1 = sessions.OpenSession(ownConnection, interceptor);
 
 						s1.CreateCriteria<object>().List();
 					}
@@ -182,7 +181,7 @@ namespace NHibernate.Test.SystemTransactions
 				}
 				finally
 				{
-					sessions.ConnectionProvider.CloseConnection(ownConnection1);
+					sessions.ConnectionProvider.CloseConnection(ownConnection);
 				}
 			}
 
@@ -191,6 +190,5 @@ namespace NHibernate.Test.SystemTransactions
 
 			Assert.That(interceptor.afterTransactionCompletionCalled, Is.EqualTo(1));
 		}
-
 	}
 }
