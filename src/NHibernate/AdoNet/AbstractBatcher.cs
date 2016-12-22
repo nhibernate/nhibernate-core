@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Threading;
 
@@ -375,7 +376,7 @@ namespace NHibernate.AdoNet
 			LogDuration(duration);
 		}
 
-		private Stopwatch GetReaderStopwatch(DbDataReader reader)
+		private Stopwatch GetReaderStopwatch(IDataReader reader)
 		{
 			var nhReader = reader as NHybridDataReader;
 			var actualReader = nhReader == null ? reader : nhReader.Target;
