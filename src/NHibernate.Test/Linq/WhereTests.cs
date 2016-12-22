@@ -759,7 +759,7 @@ namespace NHibernate.Test.Linq
 
 
 		[Test(Description = "NH-3366")]
-		[TestCaseSource(typeof(WhereTests), "CanUseCompareInQueryDataSource")]
+		[TestCaseSource(typeof(WhereTests), nameof(CanUseCompareInQueryDataSource))]
 		public void CanUseCompareInQuery(Expression<Func<Product, bool>> expression, int expectedCount, bool expectCase)
 		{
 			using (var ls = new SqlLogSpy())
@@ -774,7 +774,7 @@ namespace NHibernate.Test.Linq
 		}
 
 
-		private List<object[]> CanUseCompareInQueryDataSource()
+		private static List<object[]> CanUseCompareInQueryDataSource()
 		{
 			return new List<object[]>
 				{

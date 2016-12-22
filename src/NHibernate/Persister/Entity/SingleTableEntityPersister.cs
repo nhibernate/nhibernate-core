@@ -217,7 +217,7 @@ namespace NHibernate.Persister.Entity
 							{
 								tableIdPropertyNumbers.Add(curTableIndex, i);
 								break;
-							}
+			}
 							i++;
 						}
 
@@ -469,7 +469,7 @@ namespace NHibernate.Persister.Entity
 			return identifierTypes[j];
 		}
 
-		public override string[][] ContraintOrderedTableKeyColumnClosure
+		public override string[][] ConstraintOrderedTableKeyColumnClosure
 		{
 			get { return constraintOrderedKeyColumnNames; }
 		}

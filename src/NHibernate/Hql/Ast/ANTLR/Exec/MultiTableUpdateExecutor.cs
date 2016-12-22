@@ -40,7 +40,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			log.Debug("Generated ID-INSERT-SELECT SQL (multi-table update) : " + idInsertSelect);
 
 			string[] tableNames = persister.ConstraintOrderedTableNameClosure;
-			string[][] columnNames = persister.ContraintOrderedTableKeyColumnClosure;
+			string[][] columnNames = persister.ConstraintOrderedTableKeyColumnClosure;
 
 			string idSubselect = GenerateIdSubselect(persister);
 			IList<AssignmentSpecification> assignmentSpecifications = Walker.AssignmentSpecifications;

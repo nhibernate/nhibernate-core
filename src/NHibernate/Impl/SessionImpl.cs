@@ -133,11 +133,7 @@ namespace NHibernate.Impl
 		/// has complete control and what is serialized and those attributes are ignored.  However,
 		/// this method should be in sync with the attributes for easy readability.
 		/// </remarks>
-#if NET_4_0
 		[SecurityCritical]
-#else
-		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-#endif
 		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			log.Debug("writting session to serializer");

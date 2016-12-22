@@ -93,9 +93,7 @@ namespace NHibernate.Engine
 				return style;
 		}
 
-#if NET_4_0
 		[SecurityCritical]
-#endif
 		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			string alias = AliasByStyle[this];
@@ -108,9 +106,7 @@ namespace NHibernate.Engine
 		{
 			private readonly string _cascadeStyle;
 
-#if NET_4_0
 			[SecurityCritical]
-#endif
 			void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
 			{
 				throw new NotImplementedException("This class should not be serialized directly.");
@@ -270,9 +266,7 @@ namespace NHibernate.Engine
 				styles = (CascadeStyle[])info.GetValue("styles", typeof(CascadeStyle[]));
 			}
 
-#if NET_4_0
 			[SecurityCritical]
-#endif
 			void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
 			{
 				info.AddValue("styles", styles);

@@ -39,7 +39,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			log.Debug("Generated ID-INSERT-SELECT SQL (multi-table delete) : " + idInsertSelect);
 
 			string[] tableNames = persister.ConstraintOrderedTableNameClosure;
-			string[][] columnNames = persister.ContraintOrderedTableKeyColumnClosure;
+			string[][] columnNames = persister.ConstraintOrderedTableKeyColumnClosure;
 			string idSubselect = GenerateIdSubselect(persister);
 
 			deletes = new SqlString[tableNames.Length];
