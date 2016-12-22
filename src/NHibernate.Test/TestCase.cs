@@ -207,14 +207,15 @@ namespace NHibernate.Test
 
 		private bool CheckConnectionsWereClosed()
 		{
-			if (connectionProvider == null || !connectionProvider.HasOpenConnections)
-			{
+			if (connectionProvider == null)
 				return true;
-			}
 
-			log.Error("Test case didn't close all open connections, closing");
+			var hasOpenConnections = connectionProvider.HasOpenConnections;
+			if (hasOpenConnections)
+				log.Error("Test case didn't close all open connections, closing");
+
 			connectionProvider.CloseAllConnections();
-			return false;
+			return !hasOpenConnections;
 		}
 
 		private void Configure()
