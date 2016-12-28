@@ -69,18 +69,23 @@ namespace NHibernate.Util
 							string condition = filterConditions[i];
 							if (StringHelper.IsNotEmpty(condition))
 							{
-								buffer.Append(" and ");
-								AddFilterString(buffer, defaultAlias, propMap, condition);
-							}
+                                string filterString = AddFilterString(defaultAlias, propMap, condition);
+							    if (!string.IsNullOrWhiteSpace(filterString))
+							    {
+                                    buffer.Append(" and ");
+							        buffer.Append(filterString);
+							    }
+                            }
 						}
 					}
 				}
 			}
 		}
 
-		private static void AddFilterString(StringBuilder buffer, string defaultAlias, IDictionary<string, string> propMap, string condition)
+		private static string AddFilterString(string defaultAlias, IDictionary<string, string> propMap, string condition)
 		{
-			int i = condition.IndexOf(FilterImpl.MARKER);
+            StringBuilder buffer = new StringBuilder();
+            int i = condition.IndexOf(FilterImpl.MARKER);
 			int upTo = 0;
 			while (i > -1 && upTo < condition.Length)
 			{
@@ -98,6 +103,8 @@ namespace NHibernate.Util
 				i = condition.IndexOf(FilterImpl.MARKER, upTo);
 			}
 			buffer.Append(condition.Substring(upTo));
+
+		    return buffer.ToString();
 		}
 
 		/// <summary>
