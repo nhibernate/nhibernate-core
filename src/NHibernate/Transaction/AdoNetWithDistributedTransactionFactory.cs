@@ -40,10 +40,6 @@ namespace NHibernate.Transaction
 
 			session.TransactionContext = notification;
 
-			transaction.EnlistVolatile(
-				new TransactionCompletionNotification(session),
-				EnlistmentOptions.None);
-
 			logger.DebugFormat("enlisted into DTC transaction: {0}", transaction.IsolationLevel.ToString());
 			session.AfterTransactionBegin(null);
 		}
@@ -108,63 +104,12 @@ namespace NHibernate.Transaction
 					{
 						preparingEnlistment.ForceRollback(exception);
 					}
-					finally
-					{
-						_session = null;
-						try
-						{
-							if (_transaction != null) _transaction.Dispose();
-						}
-						finally
-						{
-							_transaction = null;
-						}
-					}
 				}
 			}
 
 			void IEnlistmentNotification.Commit(Enlistment enlistment)
 			{
-				enlistment.Done();
-			}
-
-			void IEnlistmentNotification.Rollback(Enlistment enlistment)
-			{
-				enlistment.Done();
-			}
-
-			void IEnlistmentNotification.InDoubt(Enlistment enlistment)
-			{
-				enlistment.Done();
-			}
-
-			public void Dispose()
-			{
-				if (!ReferenceEquals(_transaction, null))
-					_transaction.Dispose();
-				_transaction = null;
-				if (!ReferenceEquals(_session, null))
-					_session.TransactionContext = null;
-				_session = null;
-			}
-		}
-
-		class TransactionCompletionNotification : IEnlistmentNotification
-		{
-			ISessionImplementor _session;
-
-			public TransactionCompletionNotification(ISessionImplementor session)
-			{
-				_session = session;
-			}
-
-			void IEnlistmentNotification.Prepare(PreparingEnlistment preparingEnlistment)
-			{
-				preparingEnlistment.Prepared();
-			}
-
-			void IEnlistmentNotification.Commit(Enlistment enlistment)
-			{
+				using (this)
 				using (new SessionIdLoggingContext(_session.SessionId))
 				{
 					try
@@ -178,7 +123,6 @@ namespace NHibernate.Transaction
 					}
 					finally
 					{
-						_session = null;
 						enlistment.Done();
 					}
 				}
@@ -186,6 +130,7 @@ namespace NHibernate.Transaction
 
 			void IEnlistmentNotification.Rollback(Enlistment enlistment)
 			{
+				using (this)
 				using (new SessionIdLoggingContext(_session.SessionId))
 				{
 					try
@@ -199,7 +144,6 @@ namespace NHibernate.Transaction
 					}
 					finally
 					{
-						_session = null;
 						enlistment.Done();
 					}
 				}
@@ -207,6 +151,7 @@ namespace NHibernate.Transaction
 
 			void IEnlistmentNotification.InDoubt(Enlistment enlistment)
 			{
+				using (this)
 				using (new SessionIdLoggingContext(_session.SessionId))
 				{
 					try
@@ -220,10 +165,19 @@ namespace NHibernate.Transaction
 					}
 					finally
 					{
-						_session = null;
 						enlistment.Done();
 					}
 				}
+			}
+
+			public void Dispose()
+			{
+				if (!ReferenceEquals(_transaction, null))
+					_transaction.Dispose();
+				_transaction = null;
+				if (!ReferenceEquals(_session, null))
+					_session.TransactionContext = null;
+				_session = null;
 			}
 
 			void OnTransactionCompleted(bool successful)
