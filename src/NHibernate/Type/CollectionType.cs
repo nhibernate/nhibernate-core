@@ -9,6 +9,7 @@ using NHibernate.Proxy;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Impl;
 
 namespace NHibernate.Type
@@ -359,36 +360,54 @@ namespace NHibernate.Type
 			return result;
 		}
 
-		public virtual object ReplaceElements(object original, object target, object owner, IDictionary copyCache,
-											  ISessionImplementor session)
+		public virtual object ReplaceElements(object original, object target, object owner, IDictionary copyCache, ISessionImplementor session)
 		{
-			// TODO: does not work for EntityMode.DOM4J yet!
-			object result = target;
-			Clear(result);
+			var elemType = GetElementType(session.Factory);
+			var targetPc = target as IPersistentCollection;
+			var originalPc = original as IPersistentCollection;
+			var iterOriginal = (IEnumerable)original;
+			var clearTargetsDirtyFlag = ShouldTargetsDirtyFlagBeCleared(targetPc, originalPc, iterOriginal);
 
 			// copy elements into newly empty target collection
-			IType elemType = GetElementType(session.Factory);
-			IEnumerable iter = (IEnumerable)original;
-			foreach (object obj in iter)
+			Clear(target);
+			foreach (var obj in iterOriginal)
 			{
-				Add(result, elemType.Replace(obj, null, session, owner, copyCache));
+				Add(target, elemType.Replace(obj, null, session, owner, copyCache));
 			}
 
-			// if the original is a PersistentCollection, and that original
-			// was not flagged as dirty, then reset the target's dirty flag
-			// here after the copy operation.
-			// One thing to be careful of here is a "bare" original collection
-			// in which case we should never ever ever reset the dirty flag
-			// on the target because we simply do not know...
-			IPersistentCollection originalPc = original as IPersistentCollection;
-			IPersistentCollection resultPc = result as IPersistentCollection;
-			if(originalPc != null && resultPc!=null)
+			if(clearTargetsDirtyFlag)
+			{
+				targetPc.ClearDirty();
+			}
+
+			return target;
+		}
+
+		internal bool ShouldTargetsDirtyFlagBeCleared(IPersistentCollection targetPc, IPersistentCollection originalPc, IEnumerable original)
+		{
+			if (targetPc == null)
+				return false;
+
+			if (originalPc == null)
+			{
+				if (!targetPc.IsDirty && AreCollectionElementsEqual(original, (IEnumerable)targetPc))
+				{
+					return true;
+				}
+			}
+			else
 			{
 				if (!originalPc.IsDirty)
-					resultPc.ClearDirty();
+				{
+					return true;
+				}
 			}
+			return false;
+		}
 
-			return result;
+		protected virtual bool AreCollectionElementsEqual(IEnumerable original, IEnumerable target)
+		{ 
+			return original.Cast<object>().SequenceEqual(target.Cast<object>());
 		}
 
 		public IType GetElementType(ISessionFactoryImplementor factory)

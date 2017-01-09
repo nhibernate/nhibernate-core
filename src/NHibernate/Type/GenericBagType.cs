@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Collection;
 using NHibernate.Collection.Generic;
 using NHibernate.Engine;
@@ -69,6 +71,15 @@ namespace NHibernate.Type
 		public override object Instantiate(int anticipatedSize)
 		{
 			return anticipatedSize <= 0 ? new List<T>() : new List<T>(anticipatedSize + 1);
+		}
+
+		protected override bool AreCollectionElementsEqual(IEnumerable original, IEnumerable target)
+		{
+			var first = (IEnumerable<T>)original;
+			var second = (IEnumerable<T>) target;
+
+			return first.Count() == second.Count() && 
+				first.All(element => first.Count(x => x.Equals(element)) == second.Count(x => x.Equals(element)));
 		}
 	}
 }
