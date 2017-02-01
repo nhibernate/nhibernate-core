@@ -1,3 +1,18 @@
+Build 4.1.1.GA
+=============================
+
+    ##### Notes #####
+    The [NH-3904] has been reverted in favor of [NH-2401]: users now required to explicitly specify
+    custom user type via MappedAs method if they want to use IUserType/ICompositeUserType type 
+    parameters in Linq queries, or implement generators the way they take the types into account.
+
+** Sub-task
+    * [NH-3940] - Revert NH-3904
+
+** Bug
+    * [NH-3929] - ExpressionParameterVisitor selects wrong CustomType for ConstantExpression (Linq)
+    * [NH-3941] - MappedAs() does not work
+
 Build 4.1.0.GA
 =============================
 
