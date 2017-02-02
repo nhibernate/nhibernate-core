@@ -4,7 +4,6 @@ using NHibernate.Cfg;
 using NHibernate.Linq;
 using NUnit.Framework;
 
-
 namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 {
 
@@ -71,7 +70,6 @@ namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 			}
 		}
 
-
 		[Test]
 		public void EqualityWorksForUserType()
 		{
@@ -80,14 +78,14 @@ namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 			{
 				var newItem = new BarExample { Value = "Larry" };
 				var entities = session.Query<EntityWithUserTypeProperty>()
-					.Where(x=>x.Example == newItem)
+					.Where(x => x.Example == newItem)
 					.ToList();
 
 				Assert.AreEqual(1, entities.Count);
 			}
 		}
 
-		[Test]
+		[Test, Ignore("Not implemented yet")]
 		public void LinqMethodWorksForUserType()
 		{
 			using (var session = OpenSession())
@@ -99,6 +97,50 @@ namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 					.ToList();
 
 				Assert.AreEqual(2, entities.Count);
+			}
+		}
+
+		[Test]
+		public void EqualityWorksForExplicitUserType()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var newItem = new BarExample { Value = "Larry" };
+				var entities = session.Query<EntityWithUserTypeProperty>()
+					.Where(x => x.Example == newItem.MappedAs(NHibernateUtil.Custom(typeof(ExampleUserType))))
+					.ToList();
+
+				Assert.AreEqual(1, entities.Count);
+			}
+		}
+
+		[Test]
+		public void LinqMethodWorksForExplicitUserType()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var newItem = new BarExample { Value = "Larry" };
+				var entities = session.Query<EntityWithUserTypeProperty>()
+					.Where(x => x.Example.IsEquivalentTo(newItem.MappedAs(NHibernateUtil.Custom(typeof(ExampleUserType)))))
+					.ToList();
+
+				Assert.AreEqual(2, entities.Count);
+			}
+		}
+
+		[Test]
+		public void LinqMethodWorksForStandardStringProperty()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var entities = session.Query<EntityWithUserTypeProperty>()
+					.Where(x => x.Name == "Bob")
+					.ToList();
+
+				Assert.AreEqual(1, entities.Count);
 			}
 		}
 

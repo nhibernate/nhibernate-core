@@ -26,21 +26,21 @@ namespace NHibernate.Linq.Visitors
 				ReflectionHelper.GetMethodDefinition(() => Enumerable.Take<object>(null, 0)),
 			};
 
-		private readonly List<CustomType> _allMappedCustomTypes;
-
 		public ExpressionParameterVisitor(ISessionFactoryImplementor sessionFactory)
 		{
 			_sessionFactory = sessionFactory;
-			_allMappedCustomTypes = _sessionFactory.GetAllClassMetadata().Values
-												.SelectMany(c => c.PropertyTypes)
-												.OfType<CustomType>().ToList();
 		}
 
 		public static IDictionary<ConstantExpression, NamedParameter> Visit(Expression expression, ISessionFactoryImplementor sessionFactory)
 		{
+			return Visit(ref expression, sessionFactory);
+		}
+
+		internal static IDictionary<ConstantExpression, NamedParameter> Visit(ref Expression expression, ISessionFactoryImplementor sessionFactory)
+		{
 			var visitor = new ExpressionParameterVisitor(sessionFactory);
-			
-			visitor.VisitExpression(expression);
+
+			expression = visitor.VisitExpression(expression);
 
 			return visitor._parameters;
 		}
@@ -49,10 +49,10 @@ namespace NHibernate.Linq.Visitors
 		{
 			if (expression.Method.Name == "MappedAs" && expression.Method.DeclaringType == typeof(LinqExtensionMethods))
 			{
-				var parameter = (ConstantExpression) VisitExpression(expression.Arguments[0]);
-				var type = (ConstantExpression) expression.Arguments[1];
+				var parameter = (ConstantExpression)VisitExpression(expression.Arguments[0]);
+				var type = (ConstantExpression)expression.Arguments[1];
 
-				_parameters[parameter].Type = (IType) type.Value;
+				_parameters[parameter].Type = (IType)type.Value;
 
 				return parameter;
 			}
@@ -93,16 +93,6 @@ namespace NHibernate.Linq.Visitors
 				// Figure out a type so that HQL doesn't break on the null. (Related to NH-2430)
 				if (expression.Value == null)
 					type = NHibernateUtil.GuessType(expression.Type);
-
-				if (type == null)
-				{
-					var customType =
-						_allMappedCustomTypes.FirstOrDefault(ct => ct.UserType.ReturnedType.IsAssignableFrom(expression.Type));
-					if (customType != null)
-					{
-						type = customType;
-					}
-				}
 
 				// Constant characters should be sent as strings
 				if (expression.Type == typeof(char))
