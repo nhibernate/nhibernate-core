@@ -26,8 +26,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1813
 			{
 				s.Save(new EntityWithUnique { Id = 2, Description = "algo" });
 				var exception = Assert.Throws<GenericADOException>(t.Commit);
-				Assert.That(exception.Message, Is.StringContaining("INSERT"), "should contain SQL");
-				Assert.That(exception.Message, Is.StringContaining("#2"), "should contain id");
+				Assert.That(exception.Message, Does.Contain("INSERT"), "should contain SQL");
+				Assert.That(exception.Message, Does.Contain("#2"), "should contain id");
 			}
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
@@ -53,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1813
 				var e = s.Get<EntityWithUnique>(2);
 				e.Description = "algo";
 				var exception = Assert.Throws<GenericADOException>(t.Commit);
-				Assert.That(exception.Message, Is.StringContaining("UPDATE"), "should contain SQL");
+				Assert.That(exception.Message, Does.Contain("UPDATE"), "should contain SQL");
 			}
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())

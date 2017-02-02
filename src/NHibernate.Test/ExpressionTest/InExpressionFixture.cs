@@ -60,8 +60,8 @@ namespace NHibernate.Test.ExpressionTest
 
 				// Allow some dialectal differences in function name and parameter style.
 				Assert.That(sql.ToString(),
-					Is.StringStarting("substring(sql_alias.Name").Or.StringStarting("substr(sql_alias.Name"));
-				Assert.That(sql.ToString(), Is.StringEnding(") in (?, ?)"));
+					Does.StartWith("substring(sql_alias.Name").Or.StartsWith("substr(sql_alias.Name"));
+				Assert.That(sql.ToString(), Does.EndWith(") in (?, ?)"));
 
 				// Ensure no parameters are duplicated.
 				var parameters = criteriaQuery.CollectedParameters.ToList();

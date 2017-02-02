@@ -31,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2420
 			string connectionString;
 			if (cfg.Properties.TryGetValue(Environment.ConnectionString, out connectionString))
 			{
-				Assert.IsNotNullOrEmpty(connectionString);
+				Assert.That(connectionString, Is.Not.Null.Or.Empty);
 				return connectionString;
 			}
 			string connectionStringName;
@@ -40,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2420
 				var connectionStringSettings = ConfigurationManager.ConnectionStrings[connectionStringName];
 				Assert.IsNotNull(connectionStringSettings);
 				connectionString = connectionStringSettings.ConnectionString;
-				Assert.IsNotNullOrEmpty(connectionString);
+				Assert.That(connectionString, Is.Not.Null.Or.Empty);
 				return connectionString;
 			}
 			else

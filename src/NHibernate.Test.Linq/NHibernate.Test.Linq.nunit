@@ -1,0 +1,9 @@
+<NUnitProject>
+	<Settings activeconfig="Debug" />
+		<Config name="Debug" appbase="bin\Debug-2.0" configfile="NHibernate.Test.Linq.dll.config" binpathtype="Auto">
+			<assembly path="NHibernate.Test.Linq.dll" />
+		</Config>
+		<Config name="Release" appbase="bin\Release" configfile="NHibernate.Test.Linq.dll.config" binpathtype="Auto">
+			<assembly path="NHibernate.Test.Linq.dll" />
+		</Config>
+</NUnitProject>
