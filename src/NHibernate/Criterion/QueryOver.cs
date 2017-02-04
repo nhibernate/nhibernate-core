@@ -808,7 +808,7 @@ namespace NHibernate.Criterion
 		IQueryOver<TRoot, TSubType> IQueryOver<TRoot, TSubType>.AndNot(ICriterion expression)
 		{ return AndNot(expression); }
 
-        IQueryOverRestrictionBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.AndRestrictionOn(Expression<Func<TSubType, object>> expression)
+		IQueryOverRestrictionBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.AndRestrictionOn(Expression<Func<TSubType, object>> expression)
 		{ return new IQueryOverRestrictionBuilder<TRoot,TSubType>(this, ExpressionProcessor.FindMemberProjection(expression.Body)); }
 
 		IQueryOverRestrictionBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.AndRestrictionOn(Expression<Func<object>> expression)
