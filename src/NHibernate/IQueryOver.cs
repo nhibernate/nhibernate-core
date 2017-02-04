@@ -215,12 +215,12 @@ namespace NHibernate
 		/// </summary>
 		IQueryOver<TRoot, TSubType> AndNot(ICriterion expression);
 
-        /// <summary>
-        /// Add restriction to a property
-        /// </summary>
-        /// <param name="expression">Lambda expression containing path to property</param>
-        /// <returns>criteria instance</returns>
-        IQueryOverRestrictionBuilder<TRoot,TSubType> AndRestrictionOn(Expression<Func<TSubType, object>> expression);
+		/// <summary>
+		/// Add restriction to a property
+		/// </summary>
+		/// <param name="expression">Lambda expression containing path to property</param>
+		/// <returns>criteria instance</returns>
+		IQueryOverRestrictionBuilder<TRoot,TSubType> AndRestrictionOn(Expression<Func<TSubType, object>> expression);
 
 		/// <summary>
 		/// Add restriction to a property
@@ -267,12 +267,12 @@ namespace NHibernate
 		/// </summary>
 		IQueryOver<TRoot, TSubType> WhereNot(ICriterion expression);
 
-        /// <summary>
-        /// Identical semantics to AndRestrictionOn() to allow more readable queries
-        /// </summary>
-        /// <param name="expression">Lambda expression</param>
-        /// <returns>criteria instance</returns>
-        IQueryOverRestrictionBuilder<TRoot,TSubType> WhereRestrictionOn(Expression<Func<TSubType, object>> expression);
+		/// <summary>
+		/// Identical semantics to AndRestrictionOn() to allow more readable queries
+		/// </summary>
+		/// <param name="expression">Lambda expression</param>
+		/// <returns>criteria instance</returns>
+		IQueryOverRestrictionBuilder<TRoot,TSubType> WhereRestrictionOn(Expression<Func<TSubType, object>> expression);
 
 		/// <summary>
 		/// Identical semantics to AndRestrictionOn() to allow more readable queries
