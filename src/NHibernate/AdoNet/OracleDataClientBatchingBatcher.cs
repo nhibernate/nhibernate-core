@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
 using System.Text;
 using NHibernate.AdoNet.Util;
@@ -17,7 +16,7 @@ namespace NHibernate.AdoNet
 		private int _batchSize;
 		private int _countOfCommands;
 		private int _totalExpectedRowsAffected;
-		private IDbCommand _currentBatch;
+		private DbCommand _currentBatch;
 		private IDictionary<string, List<object>> _parameterValueListHashTable;
 		private IDictionary<string, bool> _parameterIsAllNullsHashTable;
 		private StringBuilder _currentBatchCommandsLog;
@@ -68,7 +67,7 @@ namespace NHibernate.AdoNet
 				firstOnBatch = false;
 			}
 
-			foreach (IDataParameter currentParameter in CurrentCommand.Parameters)
+			foreach (DbParameter currentParameter in CurrentCommand.Parameters)
 			{
 				List<object> parameterValueList;
 				if (firstOnBatch)
@@ -97,7 +96,7 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		protected override void DoExecuteBatch(IDbCommand ps)
+		protected override void DoExecuteBatch(DbCommand ps)
 		{
 			if (_currentBatch != null)
 			{
@@ -114,7 +113,7 @@ namespace NHibernate.AdoNet
 					_currentBatchCommandsLog = new StringBuilder().AppendLine("Batch commands:");
 				}
 
-				foreach (IDataParameter currentParameter in _currentBatch.Parameters)
+				foreach (DbParameter currentParameter in _currentBatch.Parameters)
 				{
 					List<object> parameterValueArray = _parameterValueListHashTable[currentParameter.ParameterName];
 					currentParameter.Value = parameterValueArray.ToArray();

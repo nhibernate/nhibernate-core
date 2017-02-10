@@ -1,3 +1,4 @@
+using System.Data.Common;
 using System.Collections;
 using NHibernate.Cache;
 using NHibernate.Cfg;
@@ -6,7 +7,6 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.SecondLevelCacheTests
 {
-	using System.Data;
 	using Criterion;
 
 	[TestFixture]
@@ -156,7 +156,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 					.List();
 				Assert.AreEqual(3, list.Count);
 
-				using (IDbCommand cmd = session.Connection.CreateCommand())
+				using (var cmd = session.Connection.CreateCommand())
 				{
 					cmd.CommandText = "DELETE FROM AnotherItem";
 					cmd.ExecuteNonQuery();
@@ -185,7 +185,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 					.List();
 				Assert.AreEqual(3, list.Count);
 
-				using (IDbCommand cmd = session.Connection.CreateCommand())
+				using (var cmd = session.Connection.CreateCommand())
 				{
 					cmd.CommandText = "DELETE FROM Item";
 					cmd.ExecuteNonQuery();
@@ -213,7 +213,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 					.List();
 				Assert.AreEqual(3, list.Count);
 
-				using (IDbCommand cmd = session.Connection.CreateCommand())
+				using (var cmd = session.Connection.CreateCommand())
 				{
 					cmd.CommandText = "DELETE FROM Item";
 					cmd.ExecuteNonQuery();
@@ -240,7 +240,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 					.List();
 				Assert.AreEqual(3, list.Count);
 
-				using (IDbCommand cmd = session.Connection.CreateCommand())
+				using (var cmd = session.Connection.CreateCommand())
 				{
 					cmd.CommandText = "DELETE FROM AnotherItem";
 					cmd.ExecuteNonQuery();

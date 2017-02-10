@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using System.Xml;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
@@ -112,21 +112,21 @@ namespace NHibernate.Type
 
 		/// <summary>
 		/// Retrieves an instance of the mapped class, or the identifier of an entity 
-		/// or collection from a <see cref="IDataReader"/>.
+		/// or collection from a <see cref="DbDataReader"/>.
 		/// </summary>
-		/// <param name="rs">The <see cref="IDataReader"/> that contains the values.</param>
+		/// <param name="rs">The <see cref="DbDataReader"/> that contains the values.</param>
 		/// <param name="names">
-		/// The names of the columns in the <see cref="IDataReader"/> that contain the 
+		/// The names of the columns in the <see cref="DbDataReader"/> that contain the 
 		/// value to populate the IType with.
 		/// </param>
 		/// <param name="session">the session</param>
 		/// <param name="owner">The parent Entity</param>
 		/// <returns>An identifier or actual object mapped by this IType.</returns>
 		/// <remarks>
-		/// This method uses the <c>IType.NullSafeGet(IDataReader, string[], ISessionImplementor, object)</c> method
+		/// This method uses the <c>IType.NullSafeGet(DbDataReader, string[], ISessionImplementor, object)</c> method
 		/// to Hydrate this <see cref="AbstractType"/>.
 		/// </remarks>
-		public virtual object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public virtual object Hydrate(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			return NullSafeGet(rs, names, session, owner);
 		}
@@ -284,24 +284,24 @@ namespace NHibernate.Type
 		public abstract string Name { get; }
 
 		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(IDataReader, string[], ISessionImplementor, object)"]/*'
+		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, string[], ISessionImplementor, object)"]/*'
 		/// /> 
-		public abstract object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner);
+		public abstract object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner);
 
 		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(IDataReader, string, ISessionImplementor, object)"]/*'
+		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, string, ISessionImplementor, object)"]/*'
 		/// /> 
-		public abstract object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, Object owner);
+		public abstract object NullSafeGet(DbDataReader rs, string name, ISessionImplementor session, Object owner);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet(settable)"]/*'
 		/// /> 
-		public abstract void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session);
+		public abstract void NullSafeSet(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet"]/*'
 		/// /> 
-		public abstract void NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session);
+		public abstract void NullSafeSet(DbCommand st, object value, int index, ISessionImplementor session);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="P:IType.ReturnedClass"]/*'

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
 using NHibernate.Collection;
@@ -152,27 +152,27 @@ namespace NHibernate.Persister.Collection
 		bool HasCache { get; }
 
 		/// <summary>
-		/// Read the key from a row of the <see cref="IDataReader" />
+		/// Read the key from a row of the <see cref="DbDataReader" />
 		/// </summary>
-		object ReadKey(IDataReader rs, string[] keyAliases, ISessionImplementor session);
+		object ReadKey(DbDataReader rs, string[] keyAliases, ISessionImplementor session);
 
 		/// <summary>
-		/// Read the element from a row of the <see cref="IDataReader" />
+		/// Read the element from a row of the <see cref="DbDataReader" />
 		/// </summary>
 		//TODO: the ReadElement should really be a parameterized TElement
-		object ReadElement(IDataReader rs, object owner, string[] columnAliases, ISessionImplementor session);
+		object ReadElement(DbDataReader rs, object owner, string[] columnAliases, ISessionImplementor session);
 
 		/// <summary>
-		/// Read the index from a row of the <see cref="IDataReader" />
+		/// Read the index from a row of the <see cref="DbDataReader" />
 		/// </summary>
 		//TODO: the ReadIndex should really be a parameterized TIndex
-		object ReadIndex(IDataReader rs, string[] columnAliases, ISessionImplementor session);
+		object ReadIndex(DbDataReader rs, string[] columnAliases, ISessionImplementor session);
 
 		/// <summary>
-		/// Read the identifier from a row of the <see cref="IDataReader" />
+		/// Read the identifier from a row of the <see cref="DbDataReader" />
 		/// </summary>
 		//TODO: the ReadIdentifier should really be a parameterized TIdentifier
-		object ReadIdentifier(IDataReader rs, string columnAlias, ISessionImplementor session);
+		object ReadIdentifier(DbDataReader rs, string columnAlias, ISessionImplementor session);
 
 		string GetManyToManyFilterFragment(string alias, IDictionary<string, IFilter> enabledFilters);
 

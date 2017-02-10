@@ -75,7 +75,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			try
 			{
 				// First, save off the pertinent ids, saving the number of pertinent ids for return
-				IDbCommand ps = null;
+				DbCommand ps = null;
 				int resultCount;
 				try
 				{

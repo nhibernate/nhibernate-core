@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Driver;
 
 namespace NHibernate.Connection
 {
 	/// <summary>
-	/// A strategy for obtaining ADO.NET <see cref="IDbConnection"/>.
+	/// A strategy for obtaining ADO.NET <see cref="DbConnection"/>.
 	/// </summary>
 	/// <remarks>
 	/// The <c>IConnectionProvider</c> interface is not intended to be exposed to the application.
-	/// Instead it is used internally by NHibernate to obtain <see cref="IDbConnection"/>. 
+	/// Instead it is used internally by NHibernate to obtain <see cref="DbConnection"/>. 
 	/// Implementors should provide a public default constructor.
 	/// </remarks>
 	public interface IConnectionProvider : IDisposable
@@ -22,10 +22,10 @@ namespace NHibernate.Connection
 		void Configure(IDictionary<string, string> settings);
 
 		/// <summary>
-		/// Dispose of a used <see cref="IDbConnection"/>
+		/// Dispose of a used <see cref="DbConnection"/>
 		/// </summary>
-		/// <param name="conn">The <see cref="IDbConnection"/> to clean up.</param>
-		void CloseConnection(IDbConnection conn);
+		/// <param name="conn">The <see cref="DbConnection"/> to clean up.</param>
+		void CloseConnection(DbConnection conn);
 
 		/// <summary>
 		/// Gets the <see cref="IDriver"/> this ConnectionProvider should use to 
@@ -37,9 +37,9 @@ namespace NHibernate.Connection
 		IDriver Driver { get; }
 
 		/// <summary>
-		/// Get an open <see cref="IDbConnection"/>.
+		/// Get an open <see cref="DbConnection"/>.
 		/// </summary>
-		/// <returns>An open <see cref="IDbConnection"/>.</returns>
-		IDbConnection GetConnection();
+		/// <returns>An open <see cref="DbConnection"/>.</returns>
+		DbConnection GetConnection();
 	}
 }

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Data;
+using System.Data.Common;
 using System.Data.Odbc;
 using System.Data.SqlClient;
 using System.Configuration;
@@ -64,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2420
 					new DummyEnlistment(),
 					EnlistmentOptions.None);
 
-				IDbConnection connection;
+				DbConnection connection;
 				if (sessions.ConnectionProvider.Driver.GetType() == typeof(OdbcDriver))
 					connection = new OdbcConnection(connectionString);
 				else

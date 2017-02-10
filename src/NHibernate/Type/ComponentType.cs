@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Reflection;
 using System.Xml;
 using NHibernate.Engine;
@@ -200,7 +200,7 @@ namespace NHibernate.Type
 			return false;
 		}
 
-		public override object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			return ResolveIdentifier(Hydrate(rs, names, session, owner), session, owner);
 		}
@@ -212,7 +212,7 @@ namespace NHibernate.Type
 		/// <param name="value"></param>
 		/// <param name="begin"></param>
 		/// <param name="session"></param>
-		public override void NullSafeSet(IDbCommand st, object value, int begin, ISessionImplementor session)
+		public override void NullSafeSet(DbCommand st, object value, int begin, ISessionImplementor session)
 		{
 			object[] subvalues = NullSafeGetValues(value, session.EntityMode);
 
@@ -223,7 +223,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override void NullSafeSet(IDbCommand st, object value, int begin, bool[] settable, ISessionImplementor session)
+		public override void NullSafeSet(DbCommand st, object value, int begin, bool[] settable, ISessionImplementor session)
 		{
 			object[] subvalues = NullSafeGetValues(value, session.EntityMode);
 
@@ -266,7 +266,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
+		public override object NullSafeGet(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
 			return NullSafeGet(rs, new string[] {name}, session, owner);
 		}
@@ -478,7 +478,7 @@ namespace NHibernate.Type
 			get { return false; }
 		}
 
-		public override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override object Hydrate(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			int begin = 0;
 			bool notNull = false;

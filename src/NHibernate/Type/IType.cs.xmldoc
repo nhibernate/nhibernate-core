@@ -106,14 +106,14 @@
 		<returns>true if the field is dirty</returns>
 	</member>
 	
-	<member name="M:IType.NullSafeGet(IDataReader, String[], ISessionImplementor, Object)">
+	<member name="M:IType.NullSafeGet(DbDataReader, String[], ISessionImplementor, Object)">
 		<summary>
 		When implemented by a class, gets an instance of the object mapped by 
-		this IType from the <see cref="IDataReader"/>.
+		this IType from the <see cref="DbDataReader"/>.
 		</summary>
-		<param name="rs">The <see cref="IDataReader"/> that contains the values</param>
+		<param name="rs">The <see cref="DbDataReader"/> that contains the values</param>
 		<param name="names">
-		The names of the columns in the <see cref="IDataReader"/> that contain the 
+		The names of the columns in the <see cref="DbDataReader"/> that contain the 
 		value to populate the IType with.
 		</param>
 		<param name="session"></param>
@@ -124,13 +124,13 @@
 		</remarks>
 	</member>
 	
-	<member name="M:IType.NullSafeGet(IDataReader, String, ISessionImplementor, Object)">
+	<member name="M:IType.NullSafeGet(DbDataReader, String, ISessionImplementor, Object)">
 		<summary>
 		When implemented by a class, gets an instance of the object 
-		mapped by this IType from the <see cref="IDataReader"/>.
+		mapped by this IType from the <see cref="DbDataReader"/>.
 		</summary>
-		<param name="rs">The <see cref="IDataReader"/> that contains the values</param>
-		<param name="name">The name of the column in the <see cref="IDataReader"/> that contains the 
+		<param name="rs">The <see cref="DbDataReader"/> that contains the values</param>
+		<param name="name">The name of the column in the <see cref="DbDataReader"/> that contains the 
 		value to populate the IType with.</param>
 		<param name="session"></param>
 		<param name="owner"></param>
@@ -144,11 +144,11 @@
 	<member name="M:IType.NullSafeSet(settable)">
 		<summary>
 		When implemented by a class, puts the value/values from the mapped 
-		class into the <see cref="IDbCommand"/>.
+		class into the <see cref="DbCommand"/>.
 		</summary>
-		<param name="st">The <see cref="IDbCommand"/> to put the values into.</param>
+		<param name="st">The <see cref="DbCommand"/> to put the values into.</param>
 		<param name="value">The object that contains the values.</param>
-		<param name="index">The index of the <see cref="IDbDataParameter"/> to start writing the values to.</param>
+		<param name="index">The index of the <see cref="DbParameter"/> to start writing the values to.</param>
 		<param name="session"></param>
 		<param name="settable">Indicates which columns are to be set.</param>
 		<remarks>
@@ -160,14 +160,14 @@
 	<member name="M:IType.NullSafeSet">
 		<summary>
 			When implemented by a class, puts the value/values from the mapped
-			class into the <see cref="IDbCommand"/>.
+			class into the <see cref="DbCommand"/>.
 		</summary>
 		<param name="st">
-			The <see cref="IDbCommand"/> to put the values into.
+			The <see cref="DbCommand"/> to put the values into.
 		</param>
 		<param name="value">The object that contains the values.</param>
 		<param name="index">
-			The index of the <see cref="IDbDataParameter"/> to start writing the values to.
+			The index of the <see cref="DbParameter"/> to start writing the values to.
 		</param>
 		<param name="session"></param>
 		<remarks>
@@ -272,11 +272,11 @@
 	<member name="M:IType.Hydrate">
 		<summary>
 		When implemented by a class, retrieves an instance of the mapped class, 
-		or the identifier of an entity or collection from a <see cref="IDataReader"/>.
+		or the identifier of an entity or collection from a <see cref="DbDataReader"/>.
 		</summary>
-		<param name="rs">The <see cref="IDataReader"/> that contains the values.</param>
+		<param name="rs">The <see cref="DbDataReader"/> that contains the values.</param>
 		<param name="names">
-		The names of the columns in the <see cref="IDataReader"/> that contain the 
+		The names of the columns in the <see cref="DbDataReader"/> that contain the 
 		value to populate the IType with.
 		</param>
 		<param name="session">the session</param>

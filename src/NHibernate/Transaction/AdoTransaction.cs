@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -8,14 +9,14 @@ using NHibernate.Impl;
 namespace NHibernate.Transaction
 {
 	/// <summary>
-	/// Wraps an ADO.NET <see cref="IDbTransaction"/> to implement
+	/// Wraps an ADO.NET <see cref="DbTransaction"/> to implement
 	/// the <see cref="ITransaction" /> interface.
 	/// </summary>
 	public class AdoTransaction : ITransaction
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(AdoTransaction));
 		private ISessionImplementor session;
-		private IDbTransaction trans;
+		private DbTransaction trans;
 		private bool begun;
 		private bool committed;
 		private bool rolledBack;
@@ -33,20 +34,20 @@ namespace NHibernate.Transaction
 		}
 
 		/// <summary>
-		/// Enlist the <see cref="IDbCommand"/> in the current <see cref="ITransaction"/>.
+		/// Enlist the <see cref="DbCommand"/> in the current <see cref="ITransaction"/>.
 		/// </summary>
-		/// <param name="command">The <see cref="IDbCommand"/> to enlist in this Transaction.</param>
+		/// <param name="command">The <see cref="DbCommand"/> to enlist in this Transaction.</param>
 		/// <remarks>
 		/// <para>
-		/// This takes care of making sure the <see cref="IDbCommand"/>'s Transaction property 
-		/// contains the correct <see cref="IDbTransaction"/> or <see langword="null" /> if there is no
+		/// This takes care of making sure the <see cref="DbCommand"/>'s Transaction property 
+		/// contains the correct <see cref="DbTransaction"/> or <see langword="null" /> if there is no
 		/// Transaction for the ISession - ie <c>BeginTransaction()</c> not called.
 		/// </para>
 		/// <para>
 		/// This method may be called even when the transaction is disposed.
 		/// </para>
 		/// </remarks>
-		public void Enlist(IDbCommand command)
+		public void Enlist(DbCommand command)
 		{
 			if (trans == null)
 			{
@@ -54,7 +55,7 @@ namespace NHibernate.Transaction
 				{
 					if (command.Transaction != null)
 					{
-						log.Warn("set a nonnull IDbCommand.Transaction to null because the Session had no Transaction");
+						log.Warn("set a nonnull DbCommand.Transaction to null because the Session had no Transaction");
 					}
 				}
 
@@ -69,7 +70,7 @@ namespace NHibernate.Transaction
 					// don't need to be confused by that - just a normal part of initialization...
 					if (command.Transaction != null && command.Transaction != trans)
 					{
-						log.Warn("The IDbCommand had a different Transaction than the Session.  This can occur when " +
+						log.Warn("The DbCommand had a different Transaction than the Session.  This can occur when " +
 								 "Disconnecting and Reconnecting Sessions because the PreparedCommand Cache is Session specific.");
 					}
 				}
@@ -98,12 +99,12 @@ namespace NHibernate.Transaction
 		}
 
 		/// <summary>
-		/// Begins the <see cref="IDbTransaction"/> on the <see cref="IDbConnection"/>
+		/// Begins the <see cref="DbTransaction"/> on the <see cref="DbConnection"/>
 		/// used by the <see cref="ISession"/>.
 		/// </summary>
 		/// <exception cref="TransactionException">
 		/// Thrown if there is any problems encountered while trying to create
-		/// the <see cref="IDbTransaction"/>.
+		/// the <see cref="DbTransaction"/>.
 		/// </exception>
 		public void Begin(IsolationLevel isolationLevel)
 		{
@@ -169,11 +170,11 @@ namespace NHibernate.Transaction
 
 		/// <summary>
 		/// Commits the <see cref="ITransaction"/> by flushing the <see cref="ISession"/>
-		/// and committing the <see cref="IDbTransaction"/>.
+		/// and committing the <see cref="DbTransaction"/>.
 		/// </summary>
 		/// <exception cref="TransactionException">
 		/// Thrown if there is any exception while trying to call <c>Commit()</c> on 
-		/// the underlying <see cref="IDbTransaction"/>.
+		/// the underlying <see cref="DbTransaction"/>.
 		/// </exception>
 		public void Commit()
 		{
@@ -196,7 +197,7 @@ namespace NHibernate.Transaction
 				try
 				{
 					trans.Commit();
-					log.Debug("IDbTransaction Committed");
+					log.Debug("DbTransaction Committed");
 
 					committed = true;
 					AfterTransactionCompletion(true);
@@ -226,11 +227,11 @@ namespace NHibernate.Transaction
 
 		/// <summary>
 		/// Rolls back the <see cref="ITransaction"/> by calling the method <c>Rollback</c> 
-		/// on the underlying <see cref="IDbTransaction"/>.
+		/// on the underlying <see cref="DbTransaction"/>.
 		/// </summary>
 		/// <exception cref="TransactionException">
 		/// Thrown if there is any exception while trying to call <c>Rollback()</c> on 
-		/// the underlying <see cref="IDbTransaction"/>.
+		/// the underlying <see cref="DbTransaction"/>.
 		/// </exception>
 		public void Rollback()
 		{
@@ -247,7 +248,7 @@ namespace NHibernate.Transaction
 					try
 					{
 						trans.Rollback();
-						log.Debug("IDbTransaction RolledBack");
+						log.Debug("DbTransaction RolledBack");
 						rolledBack = true;
 						Dispose();
 					}
@@ -275,7 +276,7 @@ namespace NHibernate.Transaction
 		/// Gets a <see cref="Boolean"/> indicating if the transaction was rolled back.
 		/// </summary>
 		/// <value>
-		/// <see langword="true" /> if the <see cref="IDbTransaction"/> had <c>Rollback</c> called
+		/// <see langword="true" /> if the <see cref="DbTransaction"/> had <c>Rollback</c> called
 		/// without any exceptions.
 		/// </value>
 		public bool WasRolledBack
@@ -287,7 +288,7 @@ namespace NHibernate.Transaction
 		/// Gets a <see cref="Boolean"/> indicating if the transaction was committed.
 		/// </summary>
 		/// <value>
-		/// <see langword="true" /> if the <see cref="IDbTransaction"/> had <c>Commit</c> called
+		/// <see langword="true" /> if the <see cref="DbTransaction"/> had <c>Commit</c> called
 		/// without any exceptions.
 		/// </value>
 		public bool WasCommitted
@@ -367,7 +368,7 @@ namespace NHibernate.Transaction
 					{
 						trans.Dispose();
 						trans = null;
-						log.Debug("IDbTransaction disposed.");
+						log.Debug("DbTransaction disposed.");
 					}
 
 					if (IsActive && session != null)
