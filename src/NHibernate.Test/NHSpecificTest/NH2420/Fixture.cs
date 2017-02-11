@@ -31,16 +31,16 @@ namespace NHibernate.Test.NHSpecificTest.NH2420
 			string connectionString;
 			if (cfg.Properties.TryGetValue(Environment.ConnectionString, out connectionString))
 			{
-				Assert.IsNotNullOrEmpty(connectionString);
+				Assert.That(connectionString, Is.Not.Null.Or.Empty);
 				return connectionString;
 			}
 			string connectionStringName;
 			if (cfg.Properties.TryGetValue(Environment.ConnectionStringName, out connectionStringName))
 			{
 				var connectionStringSettings = ConfigurationManager.ConnectionStrings[connectionStringName];
-				Assert.IsNotNull(connectionStringSettings);
+				Assert.That(connectionStringSettings, Is.Not.Null);
 				connectionString = connectionStringSettings.ConnectionString;
-				Assert.IsNotNullOrEmpty(connectionString);
+				Assert.That(connectionString, Is.Not.Null.Or.Empty);
 				return connectionString;
 			}
 			else
