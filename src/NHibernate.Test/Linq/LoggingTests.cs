@@ -23,7 +23,7 @@ namespace NHibernate.Test.Linq
 
 				const string expected =
 					"Expression (partially evaluated): value(NHibernate.Linq.NhQueryable`1[NHibernate.DomainModel.Northwind.Entities.Product]).Where(p => value(NHibernate.Linq.NhQueryable`1[NHibernate.DomainModel.Northwind.Entities.Product]).Where(p => (p.ProductId > 5)).Contains(p)).Skip(5).Take(10)";
-				Assert.That(logtext, Is.StringContaining(expected));
+				Assert.That(logtext, Does.Contain(expected));
 			}
 		}
 
@@ -50,7 +50,7 @@ namespace NHibernate.Test.Linq
 				string expectedLog =
 					"Expression (partially evaluated): value(NHibernate.Linq.NhQueryable`1[NHibernate.DomainModel.Northwind.Entities.Product])" +
 					".Where(product => (product == Product#" + productId + ")).Count()";
-				Assert.That(actualLog, Is.StringContaining(expectedLog));
+				Assert.That(actualLog, Does.Contain(expectedLog));
 
 				// And verify that the proxy in the expression wasn't initialized.
 				Assert.That(NHibernateUtil.IsInitialized(productProxy), Is.False,

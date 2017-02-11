@@ -31,8 +31,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1182
 					t.Commit();
 				}
 				string wholeLog = ls.GetWholeLog();
-				Assert.That(wholeLog, Is.Not.StringContaining("UPDATE ObjectA"));
-				Assert.That(wholeLog, Is.StringContaining("UPDATE ObjectB"),"should create orphans");
+				Assert.That(wholeLog, Does.Not.Contain("UPDATE ObjectA"));
+				Assert.That(wholeLog, Does.Contain("UPDATE ObjectB"),"should create orphans");
 			}
 
 			using (ISession s = OpenSession())

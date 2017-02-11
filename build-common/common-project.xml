@@ -57,6 +57,9 @@
 			<arg value="restore" />
 			<arg value="NHibernate.sln" />
 		</exec>
+		<exec basedir="${tools.dir}" workingdir="${root.dir}/Tools" program="NuGet.exe">
+			<arg value="install" />
+		</exec>
 	</target>
 
 	<target name="common.compile-all" depends="common.generate-assemblyinfo common.nuget-restore">
@@ -115,21 +118,13 @@
 		description="Run NUnit tests">
 		<call target="common.find-nunit" unless="${property::exists('nunit.found')}" />
 		<property name="common.run-tests.failonerror" value="${not property::exists(test.file + '.IgnoreFail')}"/>
+		<property name="common.run-tests.x86" value="--x86" unless="${property::exists('nunit-x64')}" />
+		<property name="common.run-tests.x86" value="" if="${property::exists('nunit-x64')}" />
+		<property name="common.run-tests.teamcity" value="--teamcity" if="${property::exists('config.teamcity')}" />
+		<property name="common.run-tests.teamcity" value="" unless="${property::exists('common.run-tests.teamcity')}" />
 		<exec program="${nunit-console}" failonerror="${common.run-tests.failonerror}">
-			<arg line="${bin.dir}/${test.file}.dll /xml:${testresults.dir}/${test.file}.dll-results.xml /framework:${framework::get-target-framework()}" />
+			<arg line="${bin.dir}/${test.file}.dll --result=${testresults.dir}/${test.file}.dll-results.xml;format=nunit2 --framework=${framework::get-target-framework()} ${common.run-tests.teamcity} ${common.run-tests.x86}" />
 		</exec>
-
-		<!--<nunit2>
-			<formatter 
-				type="Xml" 
-				usefile="true" 
-				extension=".xml" 
-				outputdir="${bin.dir}"
-			/>
-			<test
-				assemblyname="${bin.dir}/${test.file}.dll"
-				appconfig="${bin.dir}/${test.file}.dll.config" />
-		</nunit2>-->
 
 	</target>
 

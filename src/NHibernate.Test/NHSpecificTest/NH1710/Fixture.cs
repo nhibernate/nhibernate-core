@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1710
 		protected ISessionFactoryImplementor factory;
 		private string expectedExportString;
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void Config()
 		{
 			cfg = new Configuration();
@@ -37,7 +37,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1710
 		{
 			var script = new StringBuilder();
 			new SchemaExport(cfg).Create(sl => script.AppendLine(sl), true);
-			Assert.That(script.ToString(), Is.StringContaining(expectedExportString));
+			Assert.That(script.ToString(), Does.Contain(expectedExportString));
 			new SchemaExport(cfg).Drop(false, true);
 		}
 

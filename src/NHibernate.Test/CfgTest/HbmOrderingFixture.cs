@@ -132,7 +132,7 @@ namespace NHibernate.Test.CfgTest
 
 		#region NUnit.Framework.TestFixture Members
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void TestFixtureSetUp()
 		{
 			dir_ = TestContext.CurrentContext.TestDirectory;
@@ -176,7 +176,7 @@ namespace NHibernate.Test.CfgTest
 		{
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public virtual void TestFixtureTearDown()
 		{
 		}

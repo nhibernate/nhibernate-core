@@ -12,17 +12,7 @@
 
 	<property name="build.number" value="${CCNetLabel}" if="${property::exists('CCNetLabel')}" />
 
-	<target name="clean-configure-test" depends="cleanall init copy-nunitaddin copy-teamcity-configuration binaries test verify-test-results binaries-zip" />
-
-	<target name="copy-nunitaddin" depends="init">
-		<if test="${property::exists('teamcity.dotnet.nunitaddin')}">
-			<copy todir="${tools.dir}/NUnit/addins">
-				<fileset>
-					<include name="${teamcity.dotnet.nunitaddin}-2.6.1.*" />
-				</fileset>
-			</copy>
-		</if>
-	</target>
+	<target name="clean-configure-test" depends="cleanall init copy-teamcity-configuration binaries test verify-test-results binaries-zip" />
 
 	<target name="copy-teamcity-configuration">
 		<copy file="build-common/teamcity-hibernate.cfg.xml" tofile="${bin.dir}/hibernate.cfg.xml" />
@@ -81,6 +71,7 @@
 	</target>
 
 	<target name="setup-teamcity-sqlServerCe64">
+		<property name="nunit-x64" value="true" />
 		<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.SqlServerCeDriver" />
 		<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSqlCe40Dialect" />
 		<property name="nhibernate.connection.connection_string" value="Data Source=NHibernate.sdf" />
@@ -109,8 +100,7 @@
 	</target>
 
 	<target name="setup-teamcity-firebird64">
-		<property name="nunit-console" value="${tools.dir}/NUnit/nunit-console.exe" />
-		<property name="nunit.found" value="true" />
+		<property name="nunit-x64" value="true" />
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.FirebirdClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.FirebirdDialect" />
 		<property name="nhibernate.connection.connection_string"	value="Database=NHibernate.fdb;ServerType=1;UserID=SYSDBA" />
@@ -136,6 +126,7 @@
 	</target>
 
 	<target name="setup-teamcity-sqlite64">
+		<property name="nunit-x64" value="true" />
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.SQLite20Driver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.SQLiteDialect" />
 		<property name="nhibernate.connection.connection_string"	value="Data Source=NHibernate.db" />
@@ -179,6 +170,7 @@
 	</target>
 
 	<target name="setup-teamcity-oracle64">
+		<property name="nunit-x64" value="true" />
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.OracleDataClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.Oracle10gDialect" />
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))" />
@@ -210,6 +202,7 @@
 	</target>
 
 	<target name="setup-teamcity-oracle-managed64">
+		<property name="nunit-x64" value="true" />
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.OracleManagedDataClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.Oracle10gDialect" />
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))" />
