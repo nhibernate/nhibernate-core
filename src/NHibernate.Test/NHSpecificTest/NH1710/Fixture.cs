@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1710
 		protected ISessionFactoryImplementor factory;
 		private string expectedExportString;
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void Config()
 		{
 			cfg = new Configuration();
