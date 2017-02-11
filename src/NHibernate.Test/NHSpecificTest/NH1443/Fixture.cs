@@ -17,11 +17,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1443
 
 
 			if (Dialect.Dialect.GetDialect(cfg.Properties).SupportsIfExistsBeforeTableName)
-				Assert.That(script, Does.Contain("drop table if exists nhibernate.dbo.Aclass"));
+				Assert.That(script, Does.Match("drop table if exists nhibernate.dbo.Aclass"));
 			else
-				Assert.That(script, Does.Contain("drop table nhibernate.dbo.Aclass"));
+				Assert.That(script, Does.Match("drop table nhibernate.dbo.Aclass"));
 
-			Assert.That(script, Does.Contain("create table nhibernate.dbo.Aclass"));
+			Assert.That(script, Does.Match("create table nhibernate.dbo.Aclass"));
 			
 		}
 
