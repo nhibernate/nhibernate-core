@@ -57,6 +57,9 @@
 			<arg value="restore" />
 			<arg value="NHibernate.sln" />
 		</exec>
+		<exec basedir="${tools.dir}" workingdir="${root.dir}/Tools" program="NuGet.exe">
+			<arg value="install" />
+		</exec>
 	</target>
 
 	<target name="common.compile-all" depends="common.generate-assemblyinfo common.nuget-restore">
