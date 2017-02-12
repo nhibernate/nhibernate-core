@@ -1,5 +1,5 @@
 using System;
-using System.Data;
+using System.Data.Common;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1483
@@ -81,7 +81,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1483
 				else
 				{
 					//delete directly from the db
-					using (IDbCommand cmd = session.Connection.CreateCommand())
+					using (var cmd = session.Connection.CreateCommand())
 					{
 						cmd.CommandText = "DELETE FROM BaseClass";
 						cmd.ExecuteNonQuery();

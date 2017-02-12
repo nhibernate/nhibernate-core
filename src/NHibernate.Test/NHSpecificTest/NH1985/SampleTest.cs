@@ -1,5 +1,5 @@
 using System;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Connection;
 using NUnit.Framework;
 
@@ -45,11 +45,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1985
 
 			using (IConnectionProvider prov = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties))
 			{
-				IDbConnection conn = prov.GetConnection();
+				var conn = prov.GetConnection();
 
 				try
 				{
-					using (IDbCommand comm = conn.CreateCommand())
+					using (var comm = conn.CreateCommand())
 					{
 						comm.CommandText = "SELECT Id FROM DomainClass WHERE Id=1 AND Label='TEST record'";
 						object result = comm.ExecuteScalar();
@@ -83,11 +83,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1985
 
 			using (IConnectionProvider prov = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties))
 			{
-				IDbConnection conn = prov.GetConnection();
+				var conn = prov.GetConnection();
 
 				try
 				{
-					using (IDbCommand comm = conn.CreateCommand())
+					using (var comm = conn.CreateCommand())
 					{
 						comm.CommandText = "SELECT Id FROM DomainClass WHERE Id=1 AND Label='TEST record'";
 						object result = comm.ExecuteScalar();

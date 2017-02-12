@@ -127,7 +127,7 @@ namespace NHibernate.Test.GhostProperty
 				{
 					order = s.Get<Order>(1);
 					var logMessage = ls.GetWholeLog();
-					Assert.That(logMessage, Is.Not.StringContaining("FROM Payment"));
+					Assert.That(logMessage, Does.Not.Contain("FROM Payment"));
 				}
 				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "Payment"), Is.False);
 
@@ -147,8 +147,8 @@ namespace NHibernate.Test.GhostProperty
 				{
 					order = s.Get<Order>(1);
 					var logMessage = ls.GetWholeLog();
-					Assert.That(logMessage, Is.Not.StringContaining("ALazyProperty"));
-					Assert.That(logMessage, Is.StringContaining("NoLazyProperty"));
+					Assert.That(logMessage, Does.Not.Contain("ALazyProperty"));
+					Assert.That(logMessage, Does.Contain("NoLazyProperty"));
 				}
 				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "NoLazyProperty"), Is.True);
 				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "ALazyProperty"), Is.False);
@@ -157,7 +157,7 @@ namespace NHibernate.Test.GhostProperty
 				{
 					var x = order.ALazyProperty;
 					var logMessage = ls.GetWholeLog();
-					Assert.That(logMessage, Is.StringContaining("ALazyProperty"));
+					Assert.That(logMessage, Does.Contain("ALazyProperty"));
 				}
 				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "ALazyProperty"), Is.True);
 			}

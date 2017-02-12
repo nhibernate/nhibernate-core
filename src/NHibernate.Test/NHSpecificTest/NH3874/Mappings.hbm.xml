@@ -8,7 +8,7 @@
     <id name="Id" column="Zzzz" type="IntWrapperType">
       <generator class="identity"/>
     </id>
-
+    <property name="Name" />
     <bag name="Twos" cascade="all-delete-orphan" inverse="true" lazy="true">
       <key column="WeirdId"/>
       <one-to-many class="Two"/>

@@ -51,6 +51,7 @@ namespace NHibernate.Linq.Visitors
 				return _joiner.AddJoin(result, key);
 			}
 
+			_hasIdentifier = false;
 			return result;
 		}
 

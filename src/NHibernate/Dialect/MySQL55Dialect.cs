@@ -1,3 +1,4 @@
+
 using System.Data;
 
 namespace NHibernate.Dialect

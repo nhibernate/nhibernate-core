@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using System.Text;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
@@ -73,11 +73,11 @@ namespace NHibernate.Type
 		/// <summary> Convert the object into the internal byte[] representation</summary>
 		protected internal abstract byte[] ToInternalFormat(object bytes);
 
-		public override void Set(IDbCommand cmd, object value, int index)
+		public override void Set(DbCommand cmd, object value, int index)
 		{
 			byte[] internalValue = ToInternalFormat(value);
 
-			var parameter = (IDbDataParameter)cmd.Parameters[index];
+			var parameter = cmd.Parameters[index];
 
 			// set the parameter value before the size check, since ODBC changes the size automatically
 			parameter.Value = internalValue;
@@ -87,7 +87,7 @@ namespace NHibernate.Type
 				throw new HibernateException("The length of the byte[] value exceeds the length configured in the mapping/parameter.");
 		}
 
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index)
 		{
 			int length = (int)rs.GetBytes(index, 0, null, 0, 0);
 			byte[] buffer = new byte[length];
@@ -99,7 +99,7 @@ namespace NHibernate.Type
 			return ToExternalFormat(buffer);
 		}
 
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name)
 		{
 			return Get(rs, rs.GetOrdinal(name));
 		}

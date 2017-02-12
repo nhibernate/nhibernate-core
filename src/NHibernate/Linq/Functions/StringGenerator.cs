@@ -196,17 +196,23 @@ namespace NHibernate.Linq.Functions
 		}
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
+			HqlMethodCall locate;
 			if (arguments.Count == 1)
 			{
-				return treeBuilder.MethodCall("locate",
-						visitor.Visit(arguments[0]).AsExpression(),
-						visitor.Visit(targetObject).AsExpression());//,
-						//treeBuilder.Constant(0));
-			}
-			return treeBuilder.MethodCall("locate",
+				locate = treeBuilder.MethodCall("locate",
 					visitor.Visit(arguments[0]).AsExpression(),
-					visitor.Visit(targetObject).AsExpression(),
-					visitor.Visit(arguments[1]).AsExpression());
+					visitor.Visit(targetObject).AsExpression()); //,
+				//treeBuilder.Constant(0));
+			}
+			else
+			{
+				var start = treeBuilder.Add(visitor.Visit(arguments[1]).AsExpression(), treeBuilder.Constant(1));
+				locate = treeBuilder.MethodCall("locate",
+							visitor.Visit(arguments[0]).AsExpression(),
+							visitor.Visit(targetObject).AsExpression(),
+							start);
+			}
+			return treeBuilder.Subtract(locate,treeBuilder.Constant(1));
 		}
 	}
 

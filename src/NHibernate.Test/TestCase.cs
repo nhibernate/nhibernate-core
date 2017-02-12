@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Data.Common;
 using System.Reflection;
 using log4net;
 using log4net.Config;
@@ -69,7 +70,7 @@ namespace NHibernate.Test
 		/// <summary>
 		/// Creates the tables used in this TestCase
 		/// </summary>
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void TestFixtureSetUp()
 		{
 			try
@@ -112,7 +113,7 @@ namespace NHibernate.Test
 		/// will occur if the TestCase does not have the same hbm.xml files
 		/// included as a previous one.
 		/// </remarks>
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void TestFixtureTearDown()
 		{
 			// If TestFixtureSetup fails due to an IgnoreException, it will still run the teardown.
@@ -275,12 +276,12 @@ namespace NHibernate.Test
 
 			using (IConnectionProvider prov = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties))
 			{
-				IDbConnection conn = prov.GetConnection();
+				var conn = prov.GetConnection();
 
 				try
 				{
-					using (IDbTransaction tran = conn.BeginTransaction())
-					using (IDbCommand comm = conn.CreateCommand())
+					using (var tran = conn.BeginTransaction())
+					using (var comm = conn.CreateCommand())
 					{
 						comm.CommandText = sql;
 						comm.Transaction = tran;
@@ -299,7 +300,7 @@ namespace NHibernate.Test
 
 		public int ExecuteStatement(ISession session, ITransaction transaction, string sql)
 		{
-			using (IDbCommand cmd = session.Connection.CreateCommand())
+			using (var cmd = session.Connection.CreateCommand())
 			{
 				cmd.CommandText = sql;
 				if (transaction != null)

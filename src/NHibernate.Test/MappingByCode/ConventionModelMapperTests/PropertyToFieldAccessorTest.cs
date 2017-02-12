@@ -88,7 +88,7 @@ namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 
 			var hbmClass = hbmMapping.RootClasses[0];
 			var hbmProperty = hbmClass.Properties.Single(x => x.Name == "ReadOnlyWithSameBackField");
-			Assert.That(hbmProperty.Access, Is.Not.StringContaining("field"));
+			Assert.That(hbmProperty.Access, Does.Not.Contain("field"));
 		}
 
 		[Test]
@@ -101,7 +101,7 @@ namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 
 			var hbmClass = hbmMapping.RootClasses[0];
 			var hbmProperty = hbmClass.Properties.Single(x => x.Name == "PropertyWithoutField");
-			Assert.That(hbmProperty.Access, Is.Not.StringContaining("field"));
+			Assert.That(hbmProperty.Access, Does.Not.Contain("field"));
 		}
 
 		[Test]
@@ -112,7 +112,7 @@ namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 
 			var hbmClass = hbmMapping.RootClasses[0];
 			var hbmProperty = hbmClass.Properties.Single(x => x.Name == "WithDifferentBackField");
-			Assert.That(hbmProperty.Access, Is.StringContaining("field"));
+			Assert.That(hbmProperty.Access, Does.Contain("field"));
 		}
 
 		[Test]
@@ -123,7 +123,7 @@ namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 
 			var hbmClass = hbmMapping.RootClasses[0];
 			var hbmProperty = hbmClass.Properties.Single(x => x.Name == "SetOnlyProperty");
-			Assert.That(hbmProperty.Access, Is.Not.StringContaining("field"));
+			Assert.That(hbmProperty.Access, Is.Null.Or.Not.Contain("field"));
 		}
 	}
 }

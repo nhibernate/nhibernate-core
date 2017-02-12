@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Transaction;
 using NUnit.Framework;
 
@@ -66,7 +67,7 @@ namespace NHibernate.Test.NHSpecificTest
 		[Test]
 		public void DisconnectShouldNotCloseUserSuppliedConnection()
 		{
-			IDbConnection conn = sessions.ConnectionProvider.GetConnection();
+			var conn = sessions.ConnectionProvider.GetConnection();
 			try
 			{
 				using (ISession s = OpenSession())

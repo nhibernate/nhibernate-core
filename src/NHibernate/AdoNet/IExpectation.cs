@@ -1,11 +1,10 @@
-using System;
-using System.Data;
+using System.Data.Common;
 
 namespace NHibernate.AdoNet
 {
 	public interface IExpectation
 	{
-		void VerifyOutcomeNonBatched(int rowCount, IDbCommand statement);
+		void VerifyOutcomeNonBatched(int rowCount, DbCommand statement);
 		bool CanBeBatched { get; }
 
 		/// <summary>

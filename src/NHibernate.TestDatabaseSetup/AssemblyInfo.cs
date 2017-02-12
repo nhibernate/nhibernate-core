@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.Reflection;
+using NUnit.Framework;
 
 [assembly: CLSCompliantAttribute(true)]
 [assembly: AssemblyTitleAttribute("NHibernate.TestDatabaseSetup")]
@@ -10,3 +11,4 @@ using System.Reflection;
 [assembly: AssemblyCopyrightAttribute("Licensed under LGPL.")]
 [assembly: AssemblyDelaySignAttribute(false)]
 
+[assembly: LevelOfParallelism(0)]

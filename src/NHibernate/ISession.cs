@@ -1,6 +1,6 @@
 using System;
-using System.Collections;
 using System.Data;
+using System.Data.Common;
 using System.Linq.Expressions;
 using NHibernate.Engine;
 using NHibernate.Stat;
@@ -114,7 +114,7 @@ namespace NHibernate
 		/// Applications are responsible for calling commit/rollback upon the connection before
 		/// closing the <c>ISession</c>.
 		/// </remarks>
-		IDbConnection Connection { get; }
+		DbConnection Connection { get; }
 
 		/// <summary>
 		/// Disconnect the <c>ISession</c> from the current ADO.NET connection.
@@ -125,7 +125,7 @@ namespace NHibernate
 		/// long transactions.
 		/// </remarks>
 		/// <returns>The connection provided by the application or <see langword="null" /></returns>
-		IDbConnection Disconnect();
+		DbConnection Disconnect();
 
 		/// <summary>
 		/// Obtain a new ADO.NET connection.
@@ -140,7 +140,7 @@ namespace NHibernate
 		/// </summary>
 		/// <remarks>This is used by applications which require long transactions</remarks>
 		/// <param name="connection">An ADO.NET connection</param>
-		void Reconnect(IDbConnection connection);
+		void Reconnect(DbConnection connection);
 
 		/// <summary>
 		/// End the <c>ISession</c> by disconnecting from the ADO.NET connection and cleaning up.
@@ -150,7 +150,7 @@ namespace NHibernate
 		/// at least <c>Disconnect()</c> it.
 		/// </remarks>
 		/// <returns>The connection provided by the application or <see langword="null" /></returns>
-		IDbConnection Close();
+		DbConnection Close();
 
 		/// <summary>
 		/// Cancel execution of the current query.

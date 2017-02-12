@@ -271,7 +271,7 @@
     </move>
   </target>
   
-  <target name="nugetpushbat" depends="init binaries nuget.set-properties nuspec nuget"
+  <target name="nugetpushbat" depends="init binaries common.download-nuget nuget.set-properties nuspec nuget"
           description="Creates files for the release on nuget gallery.">
 
     <copy file="${tools.dir}/NuGet.exe" todir="${nuget.nupackages.dir}"/>
@@ -289,7 +289,7 @@
     </foreach>
   </target>
   
-  <target name="nugetpush" depends="init binaries nuget.set-properties nuspec nuget"
+  <target name="nugetpush" depends="init binaries common.download-nuget nuget.set-properties nuspec nuget"
           description="Push packages on nuget gallery.">
     <!-- In order to use this task you have to be sure you have executed 'nuget SetApiKey' -->
     <foreach item="File" property="filename">
