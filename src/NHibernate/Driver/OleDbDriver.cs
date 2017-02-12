@@ -1,5 +1,5 @@
 using System;
-using System.Data;
+using System.Data.Common;
 using System.Data.OleDb;
 
 namespace NHibernate.Driver
@@ -22,12 +22,12 @@ namespace NHibernate.Driver
 			(con as OleDbConnection).InfoMessage += (OleDbInfoMessageEventHandler)handler;
 		}
 
-		public override IDbConnection CreateConnection()
+		public override DbConnection CreateConnection()
 		{
 			return new OleDbConnection();
 		}
 
-		public override IDbCommand CreateCommand()
+		public override DbCommand CreateCommand()
 		{
 			return new OleDbCommand();
 		}

@@ -60,7 +60,7 @@
 			</key-many-to-one>
 		</composite-id>
 		<!--
-			http://jira.nhibernate.org:8080/browse/NH-88
+			http://nhibernate.jira.com/browse/NH-88
 			TODO: in h2.0.3 this is mapped to a TimeZone - what to use in .net???
 			<property name="Property" />
 		-->

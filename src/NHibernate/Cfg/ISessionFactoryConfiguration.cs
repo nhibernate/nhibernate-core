@@ -11,7 +11,7 @@ namespace NHibernate.Cfg
 		string Name { get; }
 
 		/// <summary>
-		/// Session factory propeties bag.
+		/// Session factory properties bag.
 		/// </summary>
 		IDictionary<string, string> Properties { get; }
 

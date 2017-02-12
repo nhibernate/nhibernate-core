@@ -20,6 +20,14 @@ namespace NHibernate.Util
 			return GetBoolean(property, properties, false);
 		}
 
+		public static byte? GetByte(string property, IDictionary<string, string> properties, byte? defaultValue)
+		{
+			string toParse;
+			properties.TryGetValue(property, out toParse);
+			byte result;
+			return byte.TryParse(toParse, out result) ? result : defaultValue;
+		}
+
 		public static int GetInt32(string property, IDictionary<string, string> properties, int defaultValue)
 		{
 			string toParse;

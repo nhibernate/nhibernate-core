@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using NUnit.Framework;
 using NHibernate.Util;
-using SharpTestsEx;
 
 namespace NHibernate.Test.UtilityTest.EnumerableExtensionsTests
 {
@@ -12,13 +11,13 @@ namespace NHibernate.Test.UtilityTest.EnumerableExtensionsTests
 		[Test]
 		public void WhenEmptyListThenReturnFalse()
 		{
-			(new object[0]).Any().Should().Be.False();
+			Assert.That((new object[0]).Any(), Is.False);
 		}
 
 		[Test]
 		public void WhenNoEmptyListThenReturnTrue()
 		{
-			(new object[1]).Any().Should().Be.True();
+			Assert.That((new object[1]).Any(), Is.True);
 		}
 
 		private class MyDisposableList: IEnumerable
@@ -70,7 +69,7 @@ namespace NHibernate.Test.UtilityTest.EnumerableExtensionsTests
 		{
 			var disposeCalled = false;
 			(new MyDisposableList(()=> disposeCalled = true)).Any();
-			disposeCalled.Should().Be.True();
+			Assert.That(disposeCalled, Is.True);
 		}
 	}
 }

@@ -3,7 +3,6 @@ using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2147
 {
@@ -21,10 +20,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2147
 			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH2147.Mappings.hbm.xml", GetType().Assembly);
 			var sf = (ISessionFactoryImplementor)cfg.BuildSessionFactory();
 			var persister = sf.GetEntityPersister("MyClassWithoutBatchSize");
-			persister.IsBatchLoadable.Should().Be.False();
+			Assert.That(persister.IsBatchLoadable, Is.False);
 
 			// hack
-			fieldInfo.GetValue(persister).Should().Be(1);
+			Assert.That(fieldInfo.GetValue(persister), Is.EqualTo(1));
 		}
 
 		[Test]
@@ -37,10 +36,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2147
 			var sf = (ISessionFactoryImplementor)cfg.BuildSessionFactory();
 			var persister = sf.GetEntityPersister("MyClassWithoutBatchSize");
 
-			persister.IsBatchLoadable.Should().Be.True();
+			Assert.That(persister.IsBatchLoadable, Is.True);
 
 			// hack
-			fieldInfo.GetValue(persister).Should().Be(20);
+			Assert.That(fieldInfo.GetValue(persister), Is.EqualTo(20));
 		}
 
 		[Test]
@@ -53,10 +52,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2147
 			var sf = (ISessionFactoryImplementor)cfg.BuildSessionFactory();
 			var persister = sf.GetEntityPersister("MyClassWithBatchSize");
 
-			persister.IsBatchLoadable.Should().Be.True();
+			Assert.That(persister.IsBatchLoadable, Is.True);
 
 			// hack
-			fieldInfo.GetValue(persister).Should().Be(10);
+			Assert.That(fieldInfo.GetValue(persister), Is.EqualTo(10));
 		}
 	}
 }

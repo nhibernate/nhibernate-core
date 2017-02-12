@@ -59,9 +59,9 @@ assembly='NHibernate.Test'>
 			var scriptB = new StringBuilder();
 			new SchemaExport(cfg).Create(sl => scriptB.Append(sl), true);
 			var script = scriptB.ToString();
-			Assert.That(script, Is.StringContaining("unique (A, C)"));
-			Assert.That(script, Is.StringContaining("unique (B, C)"));
-			Assert.That(script, Is.Not.StringContaining("unique (C)"));
+			Assert.That(script, Does.Contain("unique (A, C)"));
+			Assert.That(script, Does.Contain("unique (B, C)"));
+			Assert.That(script, Does.Not.Contain("unique (C)"));
 
 			new SchemaExport(cfg).Drop(false, true);
 		}
@@ -93,8 +93,8 @@ assembly='NHibernate.Test'>
 			var scriptB = new StringBuilder();
 			new SchemaExport(cfg).Create(sl => scriptB.Append(sl), true);
 			var script = scriptB.ToString();
-			Assert.That(script, Is.StringContaining("create index AC on Entity (A, C)"));
-			Assert.That(script, Is.StringContaining("create index BC on Entity (B, C)"));
+			Assert.That(script, Does.Contain("create index AC on Entity (A, C)"));
+			Assert.That(script, Does.Contain("create index BC on Entity (B, C)"));
 
 			new SchemaExport(cfg).Drop(false, true);
 		}
@@ -132,8 +132,8 @@ assembly='NHibernate.Test'>
 			var scriptB = new StringBuilder();
 			new SchemaExport(cfg).Create(sl => scriptB.Append(sl), true);
 			var script = scriptB.ToString();
-			Assert.That(script, Is.StringContaining("create index AC on Entity (A, C)"));
-			Assert.That(script, Is.StringContaining("create index BC on Entity (B, C)"));
+			Assert.That(script, Does.Contain("create index AC on Entity (A, C)"));
+			Assert.That(script, Does.Contain("create index BC on Entity (B, C)"));
 
 			new SchemaExport(cfg).Drop(false, true);
 		}
@@ -165,8 +165,8 @@ assembly='NHibernate.Test'>
 			var scriptB = new StringBuilder();
 			new SchemaExport(cfg).Create(sl => scriptB.Append(sl), true);
 			var script = scriptB.ToString();
-			Assert.That(script, Is.StringContaining("create index IdxId1 on Entity (Id)"));
-			Assert.That(script, Is.StringContaining("create index IdxId2 on Entity (Id)"));
+			Assert.That(script, Does.Contain("create index IdxId1 on Entity (Id)"));
+			Assert.That(script, Does.Contain("create index IdxId2 on Entity (Id)"));
 
 			new SchemaExport(cfg).Drop(false, true);
 		}

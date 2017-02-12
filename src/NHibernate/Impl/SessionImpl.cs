@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using System.Security;
@@ -131,13 +132,9 @@ namespace NHibernate.Impl
 		/// <remarks>
 		/// The fields are marked with [NonSerializable] as just a point of reference.  This method
 		/// has complete control and what is serialized and those attributes are ignored.  However,
-		/// this method should be in synch with the attributes for easy readability.
+		/// this method should be in sync with the attributes for easy readability.
 		/// </remarks>
-#if NET_4_0
 		[SecurityCritical]
-#else
-		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-#endif
 		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			log.Debug("writting session to serializer");
@@ -205,8 +202,9 @@ namespace NHibernate.Impl
 		/// <param name="autoCloseSessionEnabled">Should we auto close after completion of transaction</param>
 		/// <param name="ignoreExceptionBeforeTransactionCompletion">Should we ignore exceptions in IInterceptor.BeforeTransactionCompletion</param>
 		/// <param name="connectionReleaseMode">The mode by which we should release JDBC connections.</param>
+		/// <param name="defaultFlushMode">The default flush mode for this session</param>
 		internal SessionImpl(
-			IDbConnection connection,
+			DbConnection connection,
 			SessionFactoryImpl factory,
 			bool autoclose,
 			long timestamp,
@@ -215,7 +213,8 @@ namespace NHibernate.Impl
 			bool flushBeforeCompletionEnabled,
 			bool autoCloseSessionEnabled,
 			bool ignoreExceptionBeforeTransactionCompletion,
-			ConnectionReleaseMode connectionReleaseMode)
+			ConnectionReleaseMode connectionReleaseMode,
+			FlushMode defaultFlushMode)
 			: base(factory)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -235,6 +234,7 @@ namespace NHibernate.Impl
 				this.connectionReleaseMode = connectionReleaseMode;
 				this.ignoreExceptionBeforeTransactionCompletion = ignoreExceptionBeforeTransactionCompletion;
 				connectionManager = new ConnectionManager(this, connection, connectionReleaseMode, interceptor);
+				this.flushMode = defaultFlushMode;
 
 				if (factory.Statistics.IsStatisticsEnabled)
 				{
@@ -348,7 +348,7 @@ namespace NHibernate.Impl
 		/// Close() is not aware of distributed transactions
 		/// </remarks>
 		/// </summary>
-		public IDbConnection Close()
+		public DbConnection Close()
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -371,7 +371,10 @@ namespace NHibernate.Impl
 						{
 							foreach (KeyValuePair<EntityMode, ISession> pair in childSessionsByEntityMode)
 							{
-								pair.Value.Close();
+								if (pair.Value.IsOpen)
+								{
+									pair.Value.Close();
+								}
 							}
 						}
 					}
@@ -1122,7 +1125,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				if (!TransactionInProgress)
+				if (!ConnectionManager.IsInActiveTransaction)
 				{
 					// do not auto-flush while outside a transaction
 					return false;
@@ -1432,7 +1435,7 @@ namespace NHibernate.Impl
 		/// This can be called from commit() or at the start of a List() method.
 		/// <para>
 		/// Perform all the necessary SQL statements in a sensible order, to allow
-		/// users to repect foreign key constraints:
+		/// users to respect foreign key constraints:
 		/// <list type="">
 		///		<item>Inserts, in the order they were performed</item>
 		///		<item>Updates</item>
@@ -1465,10 +1468,7 @@ namespace NHibernate.Impl
 
 		public override bool TransactionInProgress
 		{
-			get
-			{
-				return !IsClosed && Transaction.IsActive;
-			}
+			get { return ConnectionManager.IsInActiveTransaction; }
 		}
 
 		public bool IsDirty()
@@ -1581,7 +1581,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override IDbConnection Connection
+		public override DbConnection Connection
 		{
 			get { return connectionManager.GetConnection(); }
 		}
@@ -1593,7 +1593,7 @@ namespace NHibernate.Impl
 		/// <see langword="true" /> if the ISession is connected.
 		/// </value>
 		/// <remarks>
-		/// An ISession is considered connected if there is an <see cref="IDbConnection"/> (regardless
+		/// An ISession is considered connected if there is an <see cref="DbConnection"/> (regardless
 		/// of its state) or if it the field <c>connect</c> is true.  Meaning that it will connect
 		/// at the next operation that requires a connection.
 		/// </remarks>
@@ -1603,7 +1603,7 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary></summary>
-		public IDbConnection Disconnect()
+		public DbConnection Disconnect()
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -1623,7 +1623,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public void Reconnect(IDbConnection conn)
+		public void Reconnect(DbConnection conn)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{

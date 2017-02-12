@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using System.Threading;
 using System.Transactions;
 using NUnit.Framework;
@@ -161,7 +161,7 @@ namespace NHibernate.Test.SystemTransactions
 
 			using (var tx = new TransactionScope())
 			{
-				IDbConnection ownConnection1 = sessions.ConnectionProvider.GetConnection();
+				var ownConnection1 = sessions.ConnectionProvider.GetConnection();
 
 				try
 				{

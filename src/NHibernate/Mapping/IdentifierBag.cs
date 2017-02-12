@@ -4,7 +4,7 @@ using NHibernate.Type;
 namespace NHibernate.Mapping
 {
 	/// <summary>
-	/// An <c>PersistentIdentifierBag</c> has a primary key consistenting of just
+	/// An <c>PersistentIdentifierBag</c> has a primary key consisting of just
 	/// the identifier column.
 	/// </summary>
 	[Serializable]

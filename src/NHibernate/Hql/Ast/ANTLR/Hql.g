@@ -127,7 +127,11 @@ using NHibernate.Hql.Ast.ANTLR.Tree;
 }
 
 public statement
-	: ( updateStatement | deleteStatement | selectStatement | insertStatement ) EOF!
+	:
+	(
+		{ !filter }? ( updateStatement | deleteStatement | insertStatement ) // DML statements are not allowed for collection-filtering queries
+		| selectStatement
+	) EOF!
 	;
 
 updateStatement
@@ -199,6 +203,12 @@ insertablePropertySpec
 //##     [selectClause] fromClause [whereClause] [groupByClause] [havingClause] [orderByClause] [skipClause] [takeClause];
 
 queryRule
+	@init {
+		++queryDepth;
+	}
+	@after {
+		--queryDepth;
+	}
 	: selectFrom
 		(whereClause)?
 		(groupByClause)?
@@ -211,7 +221,7 @@ queryRule
 selectFrom
 	:  (s=selectClause)? (f=fromClause)? 
 		{
-			if ($f.tree == null && !filter) 
+			if ($f.tree == null && !(filter && queryDepth == 1)) 
 				throw new RecognitionException("FROM expected (non-filter queries must contain a FROM clause)");
 		}
 		-> {$f.tree == null && filter}? ^(SELECT_FROM FROM["{filter-implied FROM}"] selectClause?)

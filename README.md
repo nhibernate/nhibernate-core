@@ -4,12 +4,12 @@ Welcome to NHibernate
 NHibernate is a mature, open source object-relational mapper for the .NET framework. It is actively developed,
 fully featured and used in thousands of successful projects.
 
-The NHibernate community website - <http://www.nhforge.org> - has a range of resources to help you get started,
-including [wikis][A1], [blogs][A2] and [reference documentation][A3].
+The NHibernate community website - <http://nhibernate.info> - has a range of resources to help you get started,
+including [howtos][A1], [blogs][A2] and [reference documentation][A3].
 
-[A1]: http://nhforge.org/wikis
-[A2]: http://nhforge.org/blogs/nhibernate
-[A3]: http://nhforge.org/doc/nh/en/index.html
+[A1]: http://nhibernate.info/doc/
+[A2]: http://nhibernate.info/blog/
+[A3]: http://nhibernate.info/doc/nh/en/index.html
 
 Latest Version
 --------------
@@ -41,7 +41,7 @@ test-case that demonstrates the issue is usually required. Instructions on provi
 can be found [here][C2].
 
 [C1]: http://nhibernate.jira.com
-[C2]: http://nhforge.org/blogs/nhibernate/archive/2008/10/04/the-best-way-to-solve-nhibernate-bugs-submit-good-unit-test.aspx
+[C2]: http://nhibernate.info/blog/2008/10/03/the-best-way-to-solve-nhibernate-bugs-submit-good-unit-test.html
 
 Licenses
 --------

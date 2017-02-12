@@ -4,7 +4,6 @@ using NHibernate.Cfg;
 using NHibernate.Cfg.Loquacious;
 using NHibernate.Dialect;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.CfgTest
 {
@@ -45,15 +44,15 @@ namespace NHibernate.Test.CfgTest
 			var listOfCalls = new List<BindMappingEventArgs>();
 			var configuration = new Configuration();
 			configuration.DataBaseIntegration(x => x.Dialect<MsSql2008Dialect>());
-			configuration.BeforeBindMapping += (sender, args) => { sender.Should().Be.SameInstanceAs(configuration); listOfCalls.Add(args); };
+			configuration.BeforeBindMapping += (sender, args) => { Assert.That(sender, Is.SameAs(configuration)); listOfCalls.Add(args); };
 
 			configuration.AddXmlString(ProductLineMapping);
 			configuration.AddXmlString(ModelMapping);
 
-			listOfCalls.Count.Should().Be(2);
-			listOfCalls.Select(x => x.FileName).All(x => x.Satisfy(filename => filename != null));
-			listOfCalls.Select(x => x.Mapping).All(x => x.Satisfy(mappingDoc => mappingDoc != null));
-			listOfCalls.Select(x => x.Dialect).All(x => x.Satisfy(dialect => dialect.GetType() == typeof(MsSql2008Dialect)));
+			Assert.That(listOfCalls.Count, Is.EqualTo(2));
+			Assert.That(listOfCalls.Select(x => x.FileName).All(x => x != null), Is.True);
+			Assert.That(listOfCalls.Select(x => x.Mapping).All(x => x != null), Is.True);
+			Assert.That(listOfCalls.Select(x => x.Dialect).All(x => x.GetType() == typeof (MsSql2008Dialect)), Is.True);
 		}
 
 		[Test]
@@ -62,15 +61,15 @@ namespace NHibernate.Test.CfgTest
 			var listOfCalls = new List<BindMappingEventArgs>();
 			var configuration = new Configuration();
 			configuration.DataBaseIntegration(x => x.Dialect<MsSql2008Dialect>());
-			configuration.AfterBindMapping += (sender, args) => { sender.Should().Be.SameInstanceAs(configuration); listOfCalls.Add(args); };
+			configuration.AfterBindMapping += (sender, args) => { Assert.That(sender, Is.SameAs(configuration)); listOfCalls.Add(args); };
 
 			configuration.AddXmlString(ProductLineMapping);
 			configuration.AddXmlString(ModelMapping);
 
-			listOfCalls.Count.Should().Be(2);
-			listOfCalls.Select(x => x.FileName).All(x => x.Satisfy(filename => filename != null));
-			listOfCalls.Select(x => x.Mapping).All(x => x.Satisfy(mappingDoc => mappingDoc != null));
-			listOfCalls.Select(x => x.Dialect).All(x => x.Satisfy(dialect => dialect.GetType() == typeof(MsSql2008Dialect)));
+			Assert.That(listOfCalls.Count, Is.EqualTo(2));
+			Assert.That(listOfCalls.Select(x => x.FileName).All(x => x != null), Is.True);
+			Assert.That(listOfCalls.Select(x => x.Mapping).All(x => x != null), Is.True);
+			Assert.That(listOfCalls.Select(x => x.Dialect).All(x => x.GetType() == typeof(MsSql2008Dialect)), Is.True);
 		}
 	}
 }

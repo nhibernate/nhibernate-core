@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Reflection;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
@@ -31,9 +32,9 @@ namespace NHibernate.Driver
 			base.Configure(settings);
 			prepareSql = PropertiesHelper.GetBoolean(Environment.PrepareSql, settings, false);
 
-			using (IDbCommand cmd = CreateCommand())
+			using (var cmd = CreateCommand())
 			{
-				IDbDataParameter dbParam = cmd.CreateParameter();
+				var dbParam = cmd.CreateParameter();
 				dbParamSqlDbTypeProperty = dbParam.GetType().GetProperty("SqlDbType");
 			}
 		}
@@ -72,8 +73,8 @@ namespace NHibernate.Driver
 		}
 
 		/// <summary>
-		/// The SqlClient driver does NOT support more than 1 open IDataReader
-		/// with only 1 IDbConnection.
+		/// The SqlClient driver does NOT support more than 1 open DbDataReader
+		/// with only 1 DbConnection.
 		/// </summary>
 		/// <value><see langword="false" /> - it is not supported.</value>
 		/// <remarks>
@@ -86,7 +87,7 @@ namespace NHibernate.Driver
 			get { return false; }
 		}
 
-		protected override void SetCommandTimeout(IDbCommand cmd)
+		protected override void SetCommandTimeout(DbCommand cmd)
 		{
 		}
 
@@ -95,7 +96,7 @@ namespace NHibernate.Driver
 			return new BasicResultSetsCommand(session);
 		}
 
-		protected override void InitializeParameter(IDbDataParameter dbParam, string name, SqlType sqlType)
+		protected override void InitializeParameter(DbParameter dbParam, string name, SqlType sqlType)
 		{
 			base.InitializeParameter(dbParam, name, AdjustSqlType(sqlType));
 
@@ -123,7 +124,7 @@ namespace NHibernate.Driver
 			}
 		}
 
-		private void AdjustDbParamTypeForLargeObjects(IDbDataParameter dbParam, SqlType sqlType)
+		private void AdjustDbParamTypeForLargeObjects(DbParameter dbParam, SqlType sqlType)
 		{
 			if (sqlType is BinaryBlobSqlType)
 			{

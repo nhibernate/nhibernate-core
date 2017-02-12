@@ -7,10 +7,14 @@ namespace NHibernate.Test.Linq.ByMethod
 	public class SumTests : LinqTestCase
 	{
 		[Test]
-		[ExpectedException]
 		public void EmptySumDecimal()
 		{
-			db.OrderLines.Where(ol => false).Sum(ol => ol.Discount);
+			Assert.That(
+				() =>
+				{
+					db.OrderLines.Where(ol => false).Sum(ol => ol.Discount);
+				},
+				Throws.InstanceOf<HibernateException>());
 		}
 
 		[Test]

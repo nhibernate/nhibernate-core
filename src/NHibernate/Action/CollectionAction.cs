@@ -114,16 +114,19 @@ namespace NHibernate.Action
 
 		public virtual AfterTransactionCompletionProcessDelegate AfterTransactionCompletionProcess
 		{
+
 			get
 			{
-				return new AfterTransactionCompletionProcessDelegate((success) =>
+				// Only make sense to add the delegate if there is a cache.
+				if (persister.HasCache)
 				{
-					if (persister.HasCache)
+					return new AfterTransactionCompletionProcessDelegate((success) =>
 					{
-						CacheKey ck = Session.GenerateCacheKey(key, persister.KeyType, persister.Role);
+						CacheKey ck = new CacheKey(key, persister.KeyType, persister.Role, Session.EntityMode, Session.Factory);
 						persister.Cache.Release(ck, softLock);
-					}
-				});
+					});
+				}
+				return null; 
 			}
 		}
 		

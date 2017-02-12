@@ -1,48 +1,49 @@
 using System;
+using System.Collections;
 using System.Data;
-
+using System.Data.Common;
 
 namespace NHibernate.Driver
 {
 	/// <summary>
-	/// An implementation of <see cref="IDataReader"/> that will work with either an 
-	/// <see cref="IDataReader"/> returned by Execute or with an <see cref="IDataReader"/>
+	/// An implementation of <see cref="DbDataReader"/> that will work with either an 
+	/// <see cref="DbDataReader"/> returned by Execute or with an <see cref="DbDataReader"/>
 	/// whose contents have been read into a <see cref="NDataReader"/>.
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// This allows NHibernate to use the underlying <see cref="IDataReader"/> for as long as
+	/// This allows NHibernate to use the underlying <see cref="DbDataReader"/> for as long as
 	/// possible without the need to read everything into the <see cref="NDataReader"/>.
 	/// </para>
 	/// <para>
-	/// The consumer of the <see cref="IDataReader"/> returned from <see cref="Engine.IBatcher"/> does
+	/// The consumer of the <see cref="DbDataReader"/> returned from <see cref="Engine.IBatcher"/> does
 	/// not need to know the underlying reader and can use it the same even if it switches from an
-	/// <see cref="IDataReader"/> to <see cref="NDataReader"/> in the middle of its use.
+	/// <see cref="DbDataReader"/> to <see cref="NDataReader"/> in the middle of its use.
 	/// </para>
 	/// </remarks>
-	public class NHybridDataReader : IDataReader
+	public class NHybridDataReader : DbDataReader
 	{
-		private IInternalLogger log = LoggerProvider.LoggerFor(typeof(NHybridDataReader));
+		private readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(NHybridDataReader));
 
-		private IDataReader _reader;
-		private bool _isMidstream = false;
+		private DbDataReader _reader;
+		private bool _isMidstream;
 
-		public IDataReader Target { get { return _reader; } }
+		public DbDataReader Target { get { return _reader; } }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NHybridDataReader"/> class.
 		/// </summary>
-		/// <param name="reader">The underlying IDataReader to use.</param>
-		public NHybridDataReader(IDataReader reader) : this(reader, false)
+		/// <param name="reader">The underlying DbDataReader to use.</param>
+		public NHybridDataReader(DbDataReader reader) : this(reader, false)
 		{
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the NHybridDataReader class.
 		/// </summary>
-		/// <param name="reader">The underlying IDataReader to use.</param>
-		/// <param name="inMemory"><see langword="true" /> if the contents of the IDataReader should be read into memory right away.</param>
-		public NHybridDataReader(IDataReader reader, bool inMemory)
+		/// <param name="reader">The underlying DbDataReader to use.</param>
+		/// <param name="inMemory"><see langword="true" /> if the contents of the DbDataReader should be read into memory right away.</param>
+		public NHybridDataReader(DbDataReader reader, bool inMemory)
 		{
 			if (inMemory)
 			{
@@ -55,7 +56,7 @@ namespace NHibernate.Driver
 		}
 
 		/// <summary>
-		/// Reads all of the contents into memory because another <see cref="IDataReader"/>
+		/// Reads all of the contents into memory because another <see cref="DbDataReader"/>
 		/// needs to be opened.
 		/// </summary>
 		/// <remarks>
@@ -67,7 +68,7 @@ namespace NHibernate.Driver
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("Moving IDataReader into an NDataReader.  It was converted in midstream " + _isMidstream.ToString());
+					log.Debug("Moving DbDataReader into an NDataReader.  It was converted in midstream " + _isMidstream.ToString());
 				}
 				_reader = new NDataReader(_reader, _isMidstream);
 			}
@@ -76,28 +77,31 @@ namespace NHibernate.Driver
 		/// <summary>
 		/// Gets if the object is in the middle of reading a Result.
 		/// </summary>
-		/// <value><see langword="true" /> if NextResult and Read have been called on the <see cref="IDataReader"/>.</value>
+		/// <value><see langword="true" /> if NextResult and Read have been called on the <see cref="DbDataReader"/>.</value>
 		public bool IsMidstream
 		{
 			get { return _isMidstream; }
 		}
 
-		#region IDataReader Members
-
 		/// <summary></summary>
-		public int RecordsAffected
+		public override int RecordsAffected
 		{
 			get { return _reader.RecordsAffected; }
 		}
 
+		public override bool HasRows
+		{
+			get { return _reader.HasRows; }
+		}
+
 		/// <summary></summary>
-		public bool IsClosed
+		public override bool IsClosed
 		{
 			get { return _reader.IsClosed; }
 		}
 
 		/// <summary></summary>
-		public bool NextResult()
+		public override bool NextResult()
 		{
 			// we are not in middle of a result
 			_isMidstream = false;
@@ -105,38 +109,34 @@ namespace NHibernate.Driver
 		}
 
 		/// <summary></summary>
-		public void Close()
+		public override void Close()
 		{
 			_reader.Close();
 		}
 
 		/// <summary></summary>
-		public bool Read()
+		public override bool Read()
 		{
 			_isMidstream = _reader.Read();
 			return _isMidstream;
 		}
 
 		/// <summary></summary>
-		public int Depth
+		public override int Depth
 		{
 			get { return _reader.Depth; }
 		}
 
 		/// <summary></summary>
-		public DataTable GetSchemaTable()
+		public override DataTable GetSchemaTable()
 		{
 			return _reader.GetSchemaTable();
 		}
 
-		#endregion
-
-		#region IDisposable Members
-
 		/// <summary>
 		/// A flag to indicate if <c>Disose()</c> has been called.
 		/// </summary>
-		private bool _isAlreadyDisposed;
+		private bool disposed;
 
 		/// <summary>
 		/// Finalizer that ensures the object is correctly disposed of.
@@ -150,65 +150,43 @@ namespace NHibernate.Driver
 		/// Takes care of freeing the managed and unmanaged resources that 
 		/// this class is responsible for.
 		/// </summary>
-		public void Dispose()
-		{
-			log.Debug("running NHybridDataReader.Dispose()");
-			Dispose(true);
-		}
-
-		/// <summary>
-		/// Takes care of freeing the managed and unmanaged resources that 
-		/// this class is responsible for.
-		/// </summary>
-		/// <param name="isDisposing">Indicates if this NHybridDataReader is being Disposed of or Finalized.</param>
+		/// <param name="disposing">Indicates if this NHybridDataReader is being Disposed of or Finalized.</param>
 		/// <remarks>
 		/// If this NHybridDataReader is being Finalized (<c>isDisposing==false</c>) then make sure not
 		/// to call any methods that could potentially bring this NHybridDataReader back to life.
 		/// </remarks>
-		protected virtual void Dispose(bool isDisposing)
+		protected override void Dispose(bool disposing)
 		{
-			if (_isAlreadyDisposed)
-			{
-				// don't dispose of multiple times.
+			if (disposed)
 				return;
-			}
 
-			// free managed resources that are being managed by the NHybridDataReader if we
-			// know this call came through Dispose()
-			if (isDisposing)
+			if (disposing && _reader != null)
 			{
 				_reader.Dispose();
+				_reader = null;
 			}
 
-			// free unmanaged resources here
-
-			_isAlreadyDisposed = true;
-			// nothing for Finalizer to do - so tell the GC to ignore it
-			GC.SuppressFinalize(this);
+			disposed = true;
 		}
-
-		#endregion
-
-		#region IDataRecord Members
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public int GetInt32(int i)
+		public override int GetInt32(int i)
 		{
 			return _reader.GetInt32(i);
 		}
 
 		/// <summary></summary>
-		public object this[string name]
+		public override object this[string name]
 		{
 			get { return _reader[name]; }
 		}
 
 		/// <summary></summary>
-		object IDataRecord.this[int i]
+		public override object this[int i]
 		{
 			get { return _reader[i]; }
 		}
@@ -218,7 +196,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public object GetValue(int i)
+		public override object GetValue(int i)
 		{
 			return _reader.GetValue(i);
 		}
@@ -228,7 +206,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public bool IsDBNull(int i)
+		public override bool IsDBNull(int i)
 		{
 			return _reader.IsDBNull(i);
 		}
@@ -242,7 +220,7 @@ namespace NHibernate.Driver
 		/// <param name="bufferoffset"></param>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
+		public override long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
 		{
 			return _reader.GetBytes(i, fieldOffset, buffer, bufferoffset, length);
 		}
@@ -252,9 +230,14 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public byte GetByte(int i)
+		public override byte GetByte(int i)
 		{
 			return _reader.GetByte(i);
+		}
+
+		public override IEnumerator GetEnumerator()
+		{
+			return _reader.GetEnumerator();
 		}
 
 		/// <summary>
@@ -262,7 +245,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public System.Type GetFieldType(int i)
+		public override System.Type GetFieldType(int i)
 		{
 			return _reader.GetFieldType(i);
 		}
@@ -272,7 +255,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public decimal GetDecimal(int i)
+		public override decimal GetDecimal(int i)
 		{
 			return _reader.GetDecimal(i);
 		}
@@ -282,7 +265,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="values"></param>
 		/// <returns></returns>
-		public int GetValues(object[] values)
+		public override int GetValues(object[] values)
 		{
 			return _reader.GetValues(values);
 		}
@@ -292,13 +275,13 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public string GetName(int i)
+		public override string GetName(int i)
 		{
 			return _reader.GetName(i);
 		}
 
 		/// <summary></summary>
-		public int FieldCount
+		public override int FieldCount
 		{
 			get { return _reader.FieldCount; }
 		}
@@ -308,7 +291,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public long GetInt64(int i)
+		public override long GetInt64(int i)
 		{
 			return _reader.GetInt64(i);
 		}
@@ -318,7 +301,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public double GetDouble(int i)
+		public override double GetDouble(int i)
 		{
 			return _reader.GetDouble(i);
 		}
@@ -328,7 +311,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public bool GetBoolean(int i)
+		public override bool GetBoolean(int i)
 		{
 			return _reader.GetBoolean(i);
 		}
@@ -338,7 +321,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public Guid GetGuid(int i)
+		public override Guid GetGuid(int i)
 		{
 			return _reader.GetGuid(i);
 		}
@@ -348,7 +331,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public DateTime GetDateTime(int i)
+		public override DateTime GetDateTime(int i)
 		{
 			return _reader.GetDateTime(i);
 		}
@@ -358,7 +341,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public int GetOrdinal(string name)
+		public override int GetOrdinal(string name)
 		{
 			return _reader.GetOrdinal(name);
 		}
@@ -368,7 +351,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public string GetDataTypeName(int i)
+		public override string GetDataTypeName(int i)
 		{
 			return _reader.GetDataTypeName(i);
 		}
@@ -378,19 +361,14 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public float GetFloat(int i)
+		public override float GetFloat(int i)
 		{
 			return _reader.GetFloat(i);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="i"></param>
-		/// <returns></returns>
-		public IDataReader GetData(int i)
+		protected override DbDataReader GetDbDataReader(int ordinal)
 		{
-			return _reader.GetData(i);
+			return _reader.GetData(ordinal);
 		}
 
 		/// <summary>
@@ -402,7 +380,7 @@ namespace NHibernate.Driver
 		/// <param name="bufferoffset"></param>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
+		public override long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
 		{
 			return _reader.GetChars(i, fieldoffset, buffer, bufferoffset, length);
 		}
@@ -412,7 +390,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public string GetString(int i)
+		public override string GetString(int i)
 		{
 			return _reader.GetString(i);
 		}
@@ -422,7 +400,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public char GetChar(int i)
+		public override char GetChar(int i)
 		{
 			return _reader.GetChar(i);
 		}
@@ -432,11 +410,9 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public short GetInt16(int i)
+		public override short GetInt16(int i)
 		{
 			return _reader.GetInt16(i);
 		}
-
-		#endregion
 	}
 }

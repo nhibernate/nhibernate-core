@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using NHibernate.Proxy.DynamicProxy;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.DynamicProxyTests.ProxiedMembers
 {
@@ -23,7 +22,7 @@ namespace NHibernate.Test.DynamicProxyTests.ProxiedMembers
 			var dictionary = new Dictionary<string, string>();
 			var myParam = dictionary;
 			c.Method(ref myParam);
-			myParam.Should().Not.Be.SameInstanceAs(dictionary);
+			Assert.That(myParam, Is.Not.SameAs(dictionary));
 		}
 	}
 }

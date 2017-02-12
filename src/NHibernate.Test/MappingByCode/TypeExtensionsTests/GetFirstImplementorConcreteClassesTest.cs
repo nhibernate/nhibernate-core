@@ -1,6 +1,5 @@
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 {
@@ -26,28 +25,28 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 		[Test]
 		public void WhenImplIsAtSameLevelThenReturnImplementor()
 		{
-			typeof(MyClass1).GetFirstImplementorOf(typeof(MyClass1)).Should().Be(typeof(MyClass1));
-			typeof(MyClass2).GetFirstImplementorOf(typeof(MyClass2)).Should().Be(typeof(MyClass2));
-			typeof(MyClass3).GetFirstImplementorOf(typeof(MyClass3)).Should().Be(typeof(MyClass3));
-			typeof(MyClass4).GetFirstImplementorOf(typeof(MyClass4)).Should().Be(typeof(MyClass4));
+			Assert.That(typeof(MyClass1).GetFirstImplementorOf(typeof(MyClass1)), Is.EqualTo(typeof(MyClass1)));
+			Assert.That(typeof(MyClass2).GetFirstImplementorOf(typeof(MyClass2)), Is.EqualTo(typeof(MyClass2)));
+			Assert.That(typeof(MyClass3).GetFirstImplementorOf(typeof(MyClass3)), Is.EqualTo(typeof(MyClass3)));
+			Assert.That(typeof(MyClass4).GetFirstImplementorOf(typeof(MyClass4)), Is.EqualTo(typeof(MyClass4)));
 		}
 
 		[Test]
 		public void WhenImplIsAtDifferentLevelThenReturnImplementor()
 		{
-			typeof(MyClass2).GetFirstImplementorOf(typeof(MyClass1)).Should().Be(typeof(MyClass2));
-			typeof(MyClass3).GetFirstImplementorOf(typeof(MyClass1)).Should().Be(typeof(MyClass2));
-			typeof(MyClass3).GetFirstImplementorOf(typeof(MyClass2)).Should().Be(typeof(MyClass3));
-			typeof(MyClass4).GetFirstImplementorOf(typeof(MyClass1)).Should().Be(typeof(MyClass2));
-			typeof(MyClass4).GetFirstImplementorOf(typeof(MyClass2)).Should().Be(typeof(MyClass3));
-			typeof(MyClass4).GetFirstImplementorOf(typeof(MyClass3)).Should().Be(typeof(MyClass4));
+			Assert.That(typeof(MyClass2).GetFirstImplementorOf(typeof(MyClass1)), Is.EqualTo(typeof(MyClass2)));
+			Assert.That(typeof(MyClass3).GetFirstImplementorOf(typeof(MyClass1)), Is.EqualTo(typeof(MyClass2)));
+			Assert.That(typeof(MyClass3).GetFirstImplementorOf(typeof(MyClass2)), Is.EqualTo(typeof(MyClass3)));
+			Assert.That(typeof(MyClass4).GetFirstImplementorOf(typeof(MyClass1)), Is.EqualTo(typeof(MyClass2)));
+			Assert.That(typeof(MyClass4).GetFirstImplementorOf(typeof(MyClass2)), Is.EqualTo(typeof(MyClass3)));
+			Assert.That(typeof(MyClass4).GetFirstImplementorOf(typeof(MyClass3)), Is.EqualTo(typeof(MyClass4)));
 		}
 
 		[Test]
 		public void WhenImplIsAtUpLevelThenReturnNull()
 		{
-			typeof(MyClass2).GetFirstImplementorOf(typeof(MyClass3)).Should().Be.Null();
-			typeof(MyClass3).GetFirstImplementorOf(typeof(MyClass4)).Should().Be.Null();
+			Assert.That(typeof(MyClass2).GetFirstImplementorOf(typeof(MyClass3)), Is.Null);
+			Assert.That(typeof(MyClass3).GetFirstImplementorOf(typeof(MyClass4)), Is.Null);
 		}
 	}
 }

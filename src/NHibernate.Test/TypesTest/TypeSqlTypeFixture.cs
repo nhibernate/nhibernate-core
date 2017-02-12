@@ -25,7 +25,7 @@ namespace NHibernate.Test.TypesTest
 		protected Configuration cfg;
 		protected ISessionFactoryImplementor factory;
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void Config()
 		{
 			cfg = new Configuration();

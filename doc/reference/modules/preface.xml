@@ -67,7 +67,7 @@
     </listitem>
     <listitem>
 			<para>
-				The Community Area on the <ulink url="http://www.nhforge.org/">NHibernate website</ulink> is a good source for
+				The Community Area on the <ulink url="http://nhibernate.info/">NHibernate website</ulink> is a good source for
 				design patterns and various integration solutions (ASP.NET, Windows	Forms).
 			</para>
 		</listitem>
@@ -76,7 +76,7 @@
 	 <para>
 		 If you have questions, use the
 		 <ulink url="http://groups.google.com/group/nhusers">NHibernate user forum</ulink>.
-		 We also provide a <ulink url="http://jira.nhforge.org/">JIRA issue trackings system</ulink>
+		 We also provide a <ulink url="https://nhibernate.jira.com/">JIRA issue trackings system</ulink>
 		 for bug reports and feature requests.
 		 If you are interested in the development of NHibernate, join the developer mailing list.
 		 If you are interested in translating this documentation into your language, contact us

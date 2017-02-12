@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 using NUnit.Framework;
-using SharpTestsEx;
 
 using NHibernate.Criterion;
 
@@ -106,22 +105,19 @@ namespace NHibernate.Test.Criteria.Lambda
 							.WhereRestrictionOn(p => p.Name).IsNotNull
 							.List();
 
-				children.Should().Have.Count.EqualTo(1);
+				Assert.That(children, Has.Count.EqualTo(1));
 			}
 
 			using (ISession s = OpenSession())
 			{
 				Child childAlias = null;
 				Person parentAlias = null;
-				var parentNames =
-					s.QueryOver<Child>(() => childAlias)
-						.Left.JoinAlias(c => c.Parent, () => parentAlias, p => p.Name == childAlias.Nickname)
-						.Select(c => parentAlias.Name)
-						.List<string>();
+				var parentNames = s.QueryOver(() => childAlias)
+								   .Left.JoinAlias(c => c.Parent, () => parentAlias, p => p.Name == childAlias.Nickname)
+								   .Select(c => parentAlias.Name)
+								   .List<string>();
 
-				parentNames
-					.Where(n => !string.IsNullOrEmpty(n))
-					.Should().Have.Count.EqualTo(1);
+				Assert.That(parentNames.Count(n => !string.IsNullOrEmpty(n)), Is.EqualTo(1));
 			}
 
 			using (ISession s = OpenSession())
@@ -134,7 +130,7 @@ namespace NHibernate.Test.Criteria.Lambda
 						.WhereRestrictionOn(c => c.Nickname).IsNotNull
 						.List();
 
-				people.Should().Have.Count.EqualTo(1);
+				Assert.That(people, Has.Count.EqualTo(1));
 			}
 
 			using (ISession s = OpenSession())
@@ -147,9 +143,7 @@ namespace NHibernate.Test.Criteria.Lambda
 						.Select(p => childAlias.Nickname)
 						.List<string>();
 
-				childNames
-					.Where(n => !string.IsNullOrEmpty(n))
-					.Should().Have.Count.EqualTo(1);
+				Assert.That(childNames.Count(n => !string.IsNullOrEmpty(n)), Is.EqualTo(1));
 			}
 		}
 
@@ -331,15 +325,15 @@ namespace NHibernate.Test.Criteria.Lambda
 			using (ISession s = OpenSession())
 			using (s.BeginTransaction())
 			{
-			    var persons =
-			        s.QueryOver<Person>()
-			            .OrderBy(p => p.BirthDate.Year).Desc
-			            .List();
+				var persons =
+					s.QueryOver<Person>()
+						.OrderBy(p => p.BirthDate.Year).Desc
+						.List();
 
-			    persons.Count.Should().Be(3);
-			    persons[0].Name.Should().Be("p1");
-			    persons[1].Name.Should().Be("p2");
-			    persons[2].Name.Should().Be("p3");
+				Assert.That(persons.Count, Is.EqualTo(3));
+				Assert.That(persons[0].Name, Is.EqualTo("p1"));
+				Assert.That(persons[1].Name, Is.EqualTo("p2"));
+				Assert.That(persons[2].Name, Is.EqualTo("p3"));
 			}
 		}
 

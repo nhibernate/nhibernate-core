@@ -1,6 +1,5 @@
 using System;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2565
 {
@@ -52,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2565
 					var task = s.Load<Task>(scenario.TaskId);
 					task.Description = "Could be something nice";
 					s.Persist(task);
-					s.Executing(session => session.Persist(task)).NotThrows();
+					Assert.That(() => s.Persist(task), Throws.Nothing);
 					tx.Commit();
 				}
 			}
@@ -68,7 +67,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2565
 				{
 					var task = s.Get<Task>(scenario.TaskId);
 					task.Description = "Could be something nice";
-					s.Executing(session => session.Persist(task)).NotThrows();
+					Assert.That(() => s.Persist(task), Throws.Nothing);
 					tx.Commit();
 				}
 			}

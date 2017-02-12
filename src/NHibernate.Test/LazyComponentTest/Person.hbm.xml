@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.LazyComponentTest">
+
+  <class name="Person">
+    <id name="Name"/>
+    <component name="Address" lazy="true">
+      <property name="Country" />
+      <property name="City" />
+    </component>
+  </class>
+
+</hibernate-mapping>

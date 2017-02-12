@@ -29,7 +29,7 @@ namespace NHibernate.Mapping.ByCode
 		void ForeignKey(string foreignKeyName);
 	}
 
-	public interface IKeyMapper<TEntity> : IColumnsMapper where TEntity : class
+	public interface IKeyMapper<TEntity> : IColumnsMapper
 	{
 		void OnDelete(OnDeleteAction deleteAction);
 		void PropertyRef<TProperty>(Expression<Func<TEntity, TProperty>> propertyGetter);

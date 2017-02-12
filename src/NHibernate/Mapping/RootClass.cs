@@ -10,7 +10,7 @@ namespace NHibernate.Mapping
 	/// <summary>
 	/// Declaration of a System.Type mapped with the <c>&lt;class&gt;</c> element that
 	/// is the root class of a table-per-subclass, or table-per-concrete-class 
-	/// inheritance heirarchy.
+	/// inheritance hierarchy.
 	/// </summary>
 	[Serializable]
 	public class RootClass : PersistentClass, ITableOwner

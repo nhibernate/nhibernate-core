@@ -26,6 +26,8 @@ tokens
 	METHOD_NAME;    // An IDENT that is a method name.
 	NAMED_PARAM;    // A named parameter (:foo).
 	BOGUS;          // Used for error state detection, etc.
+	RESULT_VARIABLE_REF;   // An IDENT that refers to result variable
+	                       // (i.e, an alias for a select expression) 
 }
 
 @namespace { NHibernate.Hql.Ast.ANTLR }
@@ -43,6 +45,9 @@ public statement
 	;
 
 selectStatement
+	@init {
+		PrepareFilterParameter();
+	}
 	: query
 	;
 
@@ -141,11 +146,25 @@ unionedQuery!
 	;
 
 orderClause
-	: ^(ORDER { HandleClauseStart( ORDER ); } (orderExprs | query (ASCENDING | DESCENDING)? ))
+	: ^(ORDER { HandleClauseStart( ORDER ); } (orderExprs))
 	;
 
 orderExprs
-	: expr ( ASCENDING | DESCENDING )? (orderExprs)?
+	: orderExpr ( ASCENDING | DESCENDING )? (orderExprs)?
+	;
+
+orderExpr
+	: { IsOrderExpressionResultVariableRef( (IASTNode) input.LT(1) ) }? resultVariableRef
+	| expr
+	| query
+	;
+
+resultVariableRef!
+	@after {
+		HandleResultVariableRef( $resultVariableRef.tree );
+	}
+	: i=identifier
+	-> ^(RESULT_VARIABLE_REF [$i.tree.Text]) 
 	;
 
 skipClause
@@ -215,11 +234,6 @@ aggregateExpr
 
 // Establishes the list of aliases being used by this query.
 fromClause 
-@init{
-		// NOTE: This references the INPUT AST! (see http://www.antlr.org/doc/trees.html#Action Translation)
-		// the ouput AST (#fromClause) has not been built yet.
-		PrepareFromClauseInputTree((IASTNode) input.LT(1), input);
-	}
 	: ^(f=FROM { PushFromClause($f.tree); HandleClauseStart( FROM ); } fromElementList )
 	;
 
@@ -353,8 +367,7 @@ comparisonExpr
 	)
 	;
 
-inRhs @init {	int UP = 99999;		// TODO - added this to get compile working.  It's bogus & should be removed
-	}
+inRhs
 	: ^(IN_LIST ( collectionFunctionOrSubselect | expr* ) )
 	;
 

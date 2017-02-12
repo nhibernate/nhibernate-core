@@ -43,24 +43,36 @@ namespace NHibernate.Dialect.Function
 			object start = threeArgs ? args[2] : null;
 
 			SqlStringBuilder buf = new SqlStringBuilder();
-			buf.Add("charindex(")
+			if (threeArgs)
+			{
+				buf.Add("(case ");
+				RenderPositionInSubstring(buf, pattern, orgString, start);
+				buf.Add(" when 0 then 0 else (");
+				RenderPositionInSubstring(buf, pattern, orgString, start);
+				buf.Add("+(")
+				   .AddObject(start)
+				   .Add("-1)) end)");
+			}
+			else
+			{
+				buf.Add("charindex(")
 				.AddObject(pattern)
-				.Add(", ");
-			if (threeArgs)
-			{
-				buf.Add("right(");
+				.Add(", ")
+				.AddObject(orgString)
+				.Add(")");
 			}
-			buf.AddObject(orgString);
-			if (threeArgs)
-			{
-				buf.Add(", char_length(")
-					.AddObject(orgString)
-					.Add(")-(")
-					.AddObject(start)
-					.Add("-1))");
-			}
-			buf.Add(")");
 			return buf.ToSqlString();
+		}
+
+		private static void RenderPositionInSubstring(SqlStringBuilder buf, object pattern, object orgString, object start)
+		{
+			buf.Add("charindex(")
+			   .AddObject(pattern)
+			   .Add(", right(")
+			   .AddObject(orgString)
+			   .Add(", char_length(")
+			   .AddObject(start)
+			   .Add(")))");
 		}
 
 		#endregion

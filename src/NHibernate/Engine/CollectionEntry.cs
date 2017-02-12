@@ -127,7 +127,7 @@ namespace NHibernate.Engine
 
 		/// <summary> For collections just loaded from the database</summary>
 		public CollectionEntry(IPersistentCollection collection, ICollectionPersister loadedPersister, object loadedKey,
-		                       bool ignore)
+							   bool ignore)
 		{
 			this.ignore = ignore;
 			this.loadedKey = loadedKey;
@@ -256,9 +256,9 @@ namespace NHibernate.Engine
 			// if the collection is initialized and it was previously persistent
 			// initialize the dirty flag
 			bool forceDirty = collection.WasInitialized && !collection.IsDirty && LoadedPersister != null
-			                  && LoadedPersister.IsMutable
-			                  && (collection.IsDirectlyAccessible || LoadedPersister.ElementType.IsMutable)
-			                  && !collection.EqualsSnapshot(LoadedPersister);
+							  && LoadedPersister.IsMutable
+							  && (collection.IsDirectlyAccessible || LoadedPersister.ElementType.IsMutable)
+							  && !collection.EqualsSnapshot(LoadedPersister);
 
 			if (forceDirty)
 			{
@@ -281,7 +281,7 @@ namespace NHibernate.Engine
 
 			if (log.IsDebugEnabled && collection.IsDirty && loadedPersister != null)
 			{
-				log.Debug("Collection dirty: " + MessageHelper.InfoString(loadedPersister, loadedKey));
+				log.Debug("Collection dirty: " + MessageHelper.CollectionInfoString(loadedPersister, loadedKey));
 			}
 
 			// reset all of these values so any previous flush status 

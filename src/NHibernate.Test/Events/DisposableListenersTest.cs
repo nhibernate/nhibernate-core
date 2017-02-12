@@ -2,7 +2,6 @@ using System;
 using NHibernate.Cfg;
 using NHibernate.Event;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Events
 {
@@ -29,7 +28,7 @@ namespace NHibernate.Test.Events
 			cfg.AppendListeners(ListenerType.PostUpdate, new[]{myDisposableListener});
 			var sf = cfg.BuildSessionFactory();
 			sf.Close();
-			myDisposableListener.DisposeCalled.Should().Be.True();
+			Assert.That(myDisposableListener.DisposeCalled, Is.True);
 		}
 	}
 }

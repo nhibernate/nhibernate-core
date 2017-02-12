@@ -1,6 +1,5 @@
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 {
@@ -23,8 +22,8 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 			inspector.AddAsPropertySplit(new SplitDefinition(typeof(MyClass), "group", For<MyClass>.Property(x => x.Something)));
 			inspector.AddAsPropertySplit(new SplitDefinition(typeof(Inherited), "group1", For<Inherited>.Property(x => x.SomethingElse)));
 
-			inspector.GetSplitGroupsFor(typeof(MyClass)).Should().Have.SameValuesAs("group");
-			inspector.GetSplitGroupsFor(typeof(Inherited)).Should().Have.SameValuesAs("group1");
+			Assert.That(inspector.GetSplitGroupsFor(typeof(MyClass)), Is.EquivalentTo(new [] {"group"}));
+			Assert.That(inspector.GetSplitGroupsFor(typeof(Inherited)), Is.EquivalentTo(new [] {"group1"}));
 		}
 
 		[Test]
@@ -37,11 +36,11 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 			inspector.AddAsPropertySplit(new SplitDefinition(typeof(MyClass), "group", memberFromDeclaringType));
 			inspector.AddAsPropertySplit(new SplitDefinition(typeof(Inherited), "group1", memberFromReferencedType));
 
-			inspector.GetSplitGroupsFor(typeof(MyClass)).Should().Have.SameValuesAs("group");
-			inspector.GetSplitGroupsFor(typeof(Inherited)).Should().Be.Empty();
+			Assert.That(inspector.GetSplitGroupsFor(typeof(MyClass)), Is.EquivalentTo(new [] {"group"}));
+			Assert.That(inspector.GetSplitGroupsFor(typeof(Inherited)), Is.Empty);
 
-			inspector.GetSplitGroupFor(memberFromDeclaringType).Should().Be("group");
-			inspector.GetSplitGroupFor(memberFromReferencedType).Should().Be("group");
+			Assert.That(inspector.GetSplitGroupFor(memberFromDeclaringType), Is.EqualTo("group"));
+			Assert.That(inspector.GetSplitGroupFor(memberFromReferencedType), Is.EqualTo("group"));
 		}
 	}
 }

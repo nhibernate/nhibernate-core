@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 
@@ -30,15 +31,15 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Gets the <see cref="System.Type"/> in the <see cref="IDataReader"/> for the Property.
+		/// Gets the <see cref="System.Type"/> in the <see cref="DbDataReader"/> for the Property.
 		/// </summary>
-		/// <param name="rs">The <see cref="IDataReader"/> that contains the value.</param>
+		/// <param name="rs">The <see cref="DbDataReader"/> that contains the value.</param>
 		/// <param name="index">The index of the field to get the value from.</param>
 		/// <returns>The <see cref="System.Type"/> from the database.</returns>
 		/// <exception cref="TypeLoadException">
 		/// Thrown when the value in the database can not be loaded as a <see cref="System.Type"/>
 		/// </exception>
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index)
 		{
 			string str = (string)NHibernateUtil.String.Get(rs, index);
 			if (string.IsNullOrEmpty(str))
@@ -59,36 +60,36 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Gets the <see cref="System.Type"/> in the <see cref="IDataReader"/> for the Property.
+		/// Gets the <see cref="System.Type"/> in the <see cref="DbDataReader"/> for the Property.
 		/// </summary>
-		/// <param name="rs">The <see cref="IDataReader"/> that contains the value.</param>
+		/// <param name="rs">The <see cref="DbDataReader"/> that contains the value.</param>
 		/// <param name="name">The name of the field to get the value from.</param>
 		/// <returns>The <see cref="System.Type"/> from the database.</returns>
 		/// <remarks>
-		/// This just calls gets the index of the name in the IDataReader
-		/// and calls the overloaded version <see cref="Get(IDataReader, Int32)"/>
-		/// (IDataReader, Int32). 
+		/// This just calls gets the index of the name in the DbDataReader
+		/// and calls the overloaded version <see cref="Get(DbDataReader, Int32)"/>
+		/// (DbDataReader, Int32). 
 		/// </remarks>
 		/// <exception cref="TypeLoadException">
 		/// Thrown when the value in the database can not be loaded as a <see cref="System.Type"/>
 		/// </exception>
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name)
 		{
 			return Get(rs, rs.GetOrdinal(name));
 		}
 
 		/// <summary>
 		/// Puts the Assembly Qualified Name of the <see cref="System.Type"/> 
-		/// Property into to the <see cref="IDbCommand"/>.
+		/// Property into to the <see cref="DbCommand"/>.
 		/// </summary>
-		/// <param name="cmd">The <see cref="IDbCommand"/> to put the value into.</param>
+		/// <param name="cmd">The <see cref="DbCommand"/> to put the value into.</param>
 		/// <param name="value">The <see cref="System.Type"/> that contains the value.</param>
-		/// <param name="index">The index of the <see cref="IDbDataParameter"/> to start writing the value to.</param>
+		/// <param name="index">The index of the <see cref="DbParameter"/> to start writing the value to.</param>
 		/// <remarks>
-		/// This uses the <see cref="NullableType.Set(IDbCommand, Object,Int32)"/> method of the 
+		/// This uses the <see cref="NullableType.Set(DbCommand, Object,Int32)"/> method of the 
 		/// <see cref="NHibernateUtil.String"/> object to do the work.
 		/// </remarks>
-		public override void Set(IDbCommand cmd, object value, int index)
+		public override void Set(DbCommand cmd, object value, int index)
 		{
 			NHibernateUtil.String.Set(cmd, ((System.Type)value).AssemblyQualifiedName, index);
 		}

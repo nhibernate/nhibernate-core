@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Linq;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -25,12 +25,12 @@ namespace NHibernate.Param
 
 		#region IParameterSpecification Members
 
-		public void Bind(IDbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		public void Bind(DbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
 			Bind(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session);
 		}
 
-		public void Bind(IDbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		public void Bind(DbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
 			// The QuerySkipParameterSpecification is unique so we can use multiSqlQueryParametersList
 			var effectiveParameterLocations = multiSqlQueryParametersList.GetEffectiveParameterLocations(limitParametersNameForThisQuery).ToArray();

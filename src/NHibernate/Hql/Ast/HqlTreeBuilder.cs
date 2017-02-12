@@ -356,6 +356,11 @@ namespace NHibernate.Hql.Ast
 			return new HqlLike(_factory, lhs, rhs);
 		}
 
+		public HqlLike Like(HqlExpression lhs, HqlExpression rhs, HqlConstant escapeCharacter)
+		{
+			return new HqlLike(_factory, lhs, rhs, escapeCharacter);
+		}
+
 		public HqlConcat Concat(params HqlExpression[] args)
 		{
 			return new HqlConcat(_factory, args);

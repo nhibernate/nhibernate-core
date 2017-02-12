@@ -86,7 +86,7 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// PostgreSQL 8.1 and above defined the fuction <c>lastval()</c> that returns the
+		/// PostgreSQL 8.1 and above defined the function <c>lastval()</c> that returns the
 		/// value of the last sequence that <c>nextval()</c> was used on in the current session.
 		/// Call <c>lastval()</c> if <c>nextval()</c> has not yet been called in the current
 		/// session throw an exception.

@@ -281,7 +281,7 @@ namespace NHibernate.Test.Linq
 				//q2.ToList();
 
 				///////////
-				/// Batching Select
+				///// Batching Select
 				///////////
 				var dbOrders3 = s.CreateQuery("select o.OrderId from Order o").List<int>();
 

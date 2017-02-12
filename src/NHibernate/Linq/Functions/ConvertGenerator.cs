@@ -10,7 +10,42 @@ using System.Collections.ObjectModel;
 
 namespace NHibernate.Linq.Functions
 {
-	public class ConvertToInt32Generator : BaseHqlGeneratorForMethod
+	public abstract class ConvertToGenerator<T> : BaseHqlGeneratorForMethod
+	{
+		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
+		{
+			return treeBuilder.Cast(visitor.Visit(arguments[0]).AsExpression(), typeof(T));
+		}
+	}
+
+	//NH-3720
+	public class ConvertToDateTimeGenerator : ConvertToGenerator<DateTime>
+	{
+		public ConvertToDateTimeGenerator()
+		{
+			SupportedMethods = new[]
+								   {
+									   ReflectionHelper.GetMethodDefinition<string>(s => DateTime.Parse(s)),
+									   ReflectionHelper.GetMethodDefinition<string>(o => Convert.ToDateTime(o))
+								   };
+		}
+	}
+
+	//NH-3720
+	public class ConvertToBooleanGenerator : ConvertToGenerator<Boolean>
+	{
+		public ConvertToBooleanGenerator()
+		{
+			SupportedMethods = new[]
+								   {
+									   ReflectionHelper.GetMethodDefinition<string>(s => Boolean.Parse(s)),
+									   ReflectionHelper.GetMethodDefinition<string>(o => Convert.ToBoolean(o))
+								   };
+		}
+	}
+
+
+	public class ConvertToInt32Generator : ConvertToGenerator<int>
 	{
 		public ConvertToInt32Generator()
 		{
@@ -34,14 +69,9 @@ namespace NHibernate.Linq.Functions
 									   ReflectionHelper.GetMethodDefinition<ushort>(o => Convert.ToInt32(o))
 								   };
 		}
-
-		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
-		{
-			return treeBuilder.Cast(visitor.Visit(arguments[0]).AsExpression(), typeof (int));
-		}
 	}
 
-	public class ConvertToDecimalGenerator : BaseHqlGeneratorForMethod
+	public class ConvertToDecimalGenerator : ConvertToGenerator<decimal>
 	{
 		public ConvertToDecimalGenerator()
 		{
@@ -64,14 +94,9 @@ namespace NHibernate.Linq.Functions
 									   ReflectionHelper.GetMethodDefinition<ushort>(o => Convert.ToDecimal(o))
 								   };
 		}
-
-		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
-		{
-			return treeBuilder.Cast(visitor.Visit(arguments[0]).AsExpression(), typeof(decimal));
-		}
 	}
 
-	public class ConvertToDoubleGenerator : BaseHqlGeneratorForMethod
+	public class ConvertToDoubleGenerator : ConvertToGenerator<double>
 	{
 		public ConvertToDoubleGenerator()
 		{
@@ -93,11 +118,6 @@ namespace NHibernate.Linq.Functions
 									   ReflectionHelper.GetMethodDefinition<ulong>(o => Convert.ToDouble(o)),
 									   ReflectionHelper.GetMethodDefinition<ushort>(o => Convert.ToDouble(o))
 								   };
-		}
-
-		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
-		{
-			return treeBuilder.Cast(visitor.Visit(arguments[0]).AsExpression(), typeof(double));
 		}
 	}
 }

@@ -1,5 +1,6 @@
 
 using NHibernate.Action;
+using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
@@ -57,8 +58,7 @@ namespace NHibernate.Event.Default
 		{
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("collection dereferenced while transient " + 
-					MessageHelper.InfoString(role, ownerIdentifier, source.Factory));
+				log.Debug("collection dereferenced while transient " + MessageHelper.CollectionInfoString(role, ownerIdentifier, source.Factory));
 			}
 			source.ActionQueue.AddAction(new CollectionRemoveAction(owner, role, collectionKey, false, source));
 		}

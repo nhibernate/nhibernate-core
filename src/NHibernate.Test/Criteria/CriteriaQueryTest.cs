@@ -143,7 +143,7 @@ namespace NHibernate.Test.Criteria
 
 			DetachedCriteria criteria = DetachedCriteria.For<Course>("c");
 			criteria.SetProjection(Projections.Count("id"));
-			criteria.Add(Expression.Or(Subqueries.Le(5, subcriteria), Subqueries.IsNull(subcriteria)));
+			criteria.Add(Expression.Or(Subqueries.Le(5D, subcriteria), Subqueries.IsNull(subcriteria)));
 
 			object o = criteria.GetExecutableCriteria(session).UniqueResult();
 			Assert.AreEqual(1, o);
@@ -2981,6 +2981,28 @@ namespace NHibernate.Test.Criteria
 				session.Delete(c2);
 				session.Delete(c3);
 				t.Commit();
+			}
+		}
+
+		[Test]
+		public void CanSetLockModeOnDetachedCriteria()
+		{
+			//NH-3710
+			var dc = DetachedCriteria
+				.For(typeof(Student))
+				.SetLockMode(LockMode.Upgrade);
+
+			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
+			{
+				session.Save(new Student { Name = "Ricardo Peres", StudentNumber = 666, CityState = new CityState("Coimbra", "Portugal") });
+				session.Flush();
+
+				var ec = dc.GetExecutableCriteria(session);
+				var countExec = CriteriaTransformer.TransformToRowCount(ec);
+				var countRes = countExec.UniqueResult();
+
+				Assert.AreEqual(countRes, 1);
 			}
 		}
 	}

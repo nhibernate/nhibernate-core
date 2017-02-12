@@ -1,7 +1,6 @@
 using System;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 {
@@ -43,36 +42,36 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 		[Test]
 		public void WhenInvalidThenThrows()
 		{
-			Executing.This(()=>((System.Type) null).GetFirstImplementorOf(typeof(IInterfaceNoImpl))).Should().Throw<ArgumentNullException>();
-			Executing.This(() => typeof(IInterfaceNoImpl).GetFirstImplementorOf(null)).Should().Throw<ArgumentNullException>();
+			Assert.That(() => ((System.Type) null).GetFirstImplementorOf(typeof(IInterfaceNoImpl)), Throws.TypeOf<ArgumentNullException>());
+			Assert.That(() => typeof(IInterfaceNoImpl).GetFirstImplementorOf(null), Throws.TypeOf<ArgumentNullException>());
 		}
 
 		[Test]
 		public void WhenIsInterfaceThenNoImplementor()
 		{
-			typeof(IInterfaceNoImpl).GetFirstImplementorOf(typeof(IInterfaceNoImpl)).Should().Be.Null();
+			Assert.That(typeof(IInterfaceNoImpl).GetFirstImplementorOf(typeof(IInterfaceNoImpl)), Is.Null);
 		}
 
 		[Test]
 		public void WhenImplAsNoInterfaceThenNoImplementor()
 		{
-			typeof(MyClassNoInterface).GetFirstImplementorOf(typeof(IInterfaceNoImpl)).Should().Be.Null();
+			Assert.That(typeof(MyClassNoInterface).GetFirstImplementorOf(typeof(IInterfaceNoImpl)), Is.Null);
 		}
 
 		[Test]
 		public void WhenImplIsAtSameLevelThenReturnImplementor()
 		{
-			typeof(MyClass1).GetFirstImplementorOf(typeof(IInterface1)).Should().Be(typeof(MyClass1));
-			typeof(MyClass2).GetFirstImplementorOf(typeof(IInterface2)).Should().Be(typeof(MyClass2));
-			typeof(MyClass3).GetFirstImplementorOf(typeof(IInterface3)).Should().Be(typeof(MyClass3));
+			Assert.That(typeof(MyClass1).GetFirstImplementorOf(typeof(IInterface1)), Is.EqualTo(typeof(MyClass1)));
+			Assert.That(typeof(MyClass2).GetFirstImplementorOf(typeof(IInterface2)), Is.EqualTo(typeof(MyClass2)));
+			Assert.That(typeof(MyClass3).GetFirstImplementorOf(typeof(IInterface3)), Is.EqualTo(typeof(MyClass3)));
 		}
 
 		[Test]
 		public void WhenImplIsAtDifferentLevelThenReturnImplementor()
 		{
-			typeof(MyClass2).GetFirstImplementorOf(typeof(IInterface1)).Should().Be(typeof(MyClass1));
-			typeof(MyClass3).GetFirstImplementorOf(typeof(IInterface2)).Should().Be(typeof(MyClass2));
-			typeof(MyClass3).GetFirstImplementorOf(typeof(IInterface1)).Should().Be(typeof(MyClass1));
+			Assert.That(typeof(MyClass2).GetFirstImplementorOf(typeof(IInterface1)), Is.EqualTo(typeof(MyClass1)));
+			Assert.That(typeof(MyClass3).GetFirstImplementorOf(typeof(IInterface2)), Is.EqualTo(typeof(MyClass2)));
+			Assert.That(typeof(MyClass3).GetFirstImplementorOf(typeof(IInterface1)), Is.EqualTo(typeof(MyClass1)));
 		}
 	}
 }

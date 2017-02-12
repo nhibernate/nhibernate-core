@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -34,12 +34,12 @@ namespace NHibernate.Type
 		{
 		}
 
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index)
 		{
 			return Convert.ToDateTime(rs[index]);
 		}
 
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name)
 		{
 			return Get(rs, rs.GetOrdinal(name));
 		}
@@ -50,17 +50,17 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Sets the value of this Type in the IDbCommand.
+		/// Sets the value of this Type in the DbCommand.
 		/// </summary>
-		/// <param name="st">The IDbCommand to add the Type's value to.</param>
+		/// <param name="st">The DbCommand to add the Type's value to.</param>
 		/// <param name="value">The value of the Type.</param>
-		/// <param name="index">The index of the IDataParameter in the IDbCommand.</param>
+		/// <param name="index">The index of the DbParameter in the DbCommand.</param>
 		/// <remarks>
-		/// No null values will be written to the IDbCommand for this Type. 
+		/// No null values will be written to the DbCommand for this Type. 
 		/// </remarks>
-		public override void Set(IDbCommand st, object value, int index)
+		public override void Set(DbCommand st, object value, int index)
 		{
-			((IDataParameter)st.Parameters[index]).Value = (value is DateTime) ? value:DateTime.Now;
+			st.Parameters[index].Value = (value is DateTime) ? value:DateTime.Now;
 		}
 
 		public override string Name
@@ -70,7 +70,7 @@ namespace NHibernate.Type
 
 		public override string ToString(object val)
 		{
-			return ((DateTime) val).ToShortTimeString();
+			return ((DateTime) val).ToString("O");
 		}
 
 		public override object FromStringValue(string xml)

@@ -1,6 +1,5 @@
 using System;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2324
 {
@@ -17,9 +16,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2324
 				using (ITransaction t = s.BeginTransaction())
 				{
 					var e = new Entity
-					           	{
-					           		Data = new CompositeData {DataA = new DateTime(2010, 1, 1), DataB = new DateTime(2010, 2, 2)}
-					           	};
+								{
+									Data = new CompositeData {DataA = new DateTime(2010, 1, 1), DataB = new DateTime(2010, 2, 2)}
+								};
 					s.Save(e);
 					t.Commit();
 				}
@@ -50,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2324
 					 .SetDateTime("dataA", new DateTime(2010, 3, 3))
 					 .SetDateTime("dataB", new DateTime(2010, 4, 4));
 
-					query.Executing(q => q.ExecuteUpdate()).NotThrows();
+					Assert.That(() => query.ExecuteUpdate(), Throws.Nothing);
 
 					t.Commit();
 				}

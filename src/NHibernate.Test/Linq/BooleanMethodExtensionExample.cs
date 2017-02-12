@@ -12,7 +12,6 @@ using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
 using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Linq
 {
@@ -32,8 +31,8 @@ namespace NHibernate.Test.Linq
 		}
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject,
-		                                     ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder,
-		                                     IHqlExpressionVisitor visitor)
+											 ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder,
+											 IHqlExpressionVisitor visitor)
 		{
 			IEnumerable<HqlExpression> args = arguments.Select(a => visitor.Visit(a))
 				.Cast<HqlExpression>();
@@ -50,7 +49,7 @@ namespace NHibernate.Test.Linq
 			public MyLinqToHqlGeneratorsRegistry()
 			{
 				RegisterGenerator(ReflectionHelper.GetMethodDefinition(() => BooleanLinqExtensions.FreeText(null, null)),
-				                  new FreetextGenerator());
+								  new FreetextGenerator());
 			}
 		}
 
@@ -63,8 +62,8 @@ namespace NHibernate.Test.Linq
 		public void CanUseMyCustomExtension()
 		{
 			List<Customer> contacts = (from c in db.Customers where c.ContactName.FreeText("Thomas") select c).ToList();
-			contacts.Count.Should().Be.GreaterThan(0);
-			contacts.Select(customer => customer.ContactName).All(c => c.Satisfy(customer => customer.Contains("Thomas")));
+			Assert.That(contacts.Count, Is.GreaterThan(0));
+			Assert.That(contacts.Select(c => c.ContactName).All(c => c.Contains("Thomas")), Is.True);
 		}
 	}
 }

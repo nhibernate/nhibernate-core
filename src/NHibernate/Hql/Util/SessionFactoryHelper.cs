@@ -156,9 +156,9 @@ namespace NHibernate.Hql.Util
 
 
 		/// <summary>
-		/// Retreive a PropertyMapping describing the given collection role.
+		/// Retrieve a PropertyMapping describing the given collection role.
 		/// </summary>
-		/// <param name="role">The collection role for whcih to retrieve the property mapping.</param>
+		/// <param name="role">The collection role for which to retrieve the property mapping.</param>
 		/// <returns>The property mapping.</returns>
 		public IPropertyMapping GetCollectionPropertyMapping(String role)
 		{

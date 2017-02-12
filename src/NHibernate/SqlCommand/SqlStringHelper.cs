@@ -44,7 +44,9 @@ namespace NHibernate.SqlCommand
 
 		public static SqlString RemoveAsAliasesFromSql(SqlString sql)
 		{
-			return sql.Substring(0, sql.LastIndexOfCaseInsensitive(" as "));
+			int index = sql.LastIndexOfCaseInsensitive(" as ");
+			if (index < 0) return sql;
+			return sql.Substring(0, index);
 		}
 
 

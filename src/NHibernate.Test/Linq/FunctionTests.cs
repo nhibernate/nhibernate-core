@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Collections.Generic;
-using NHibernate.Dialect;
 using NHibernate.DomainModel;
 using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Linq;
@@ -23,6 +21,38 @@ namespace NHibernate.Test.Linq
 			Assert.That(query[0].FirstName, Is.EqualTo("Margaret"));
 		}
 
+		[Test]
+		public void LikeFunctionWithEscapeCharacter()
+		{
+			using (var tx = session.BeginTransaction())
+			{
+				var employeeName = "Mar%aret";
+				var escapeChar = '#';
+				var employeeNameEscaped = employeeName.Replace("%", escapeChar + "%");
+
+				//This entity will be flushed to the db, but rolled back when the test completes
+
+				session.Save(new Employee { FirstName = employeeName, LastName = "LastName" });
+				session.Flush();
+
+
+				var query = (from e in db.Employees
+				             where NHibernate.Linq.SqlMethods.Like(e.FirstName, employeeNameEscaped, escapeChar)
+				             select e).ToList();
+
+				Assert.That(query.Count, Is.EqualTo(1));
+				Assert.That(query[0].FirstName, Is.EqualTo(employeeName));
+
+				Assert.Throws<ArgumentException>(() =>
+				{
+					(from e in db.Employees
+					 where NHibernate.Linq.SqlMethods.Like(e.FirstName, employeeNameEscaped, e.FirstName.First())
+					 select e).ToList();
+				});
+				tx.Rollback();
+			}
+		}
+
 		private static class SqlMethods
 		{
 			public static bool Like(string expression, string pattern)
@@ -36,9 +66,13 @@ namespace NHibernate.Test.Linq
 		{
 			// Verify that any method named Like, in a class named SqlMethods, will be translated.
 
+			// ReSharper disable RedundantNameQualifier
+			// NOTE: Deliberately use full namespace for our SqlMethods class below, to reduce
+			// risk of accidentally referencing NHibernate.Linq.SqlMethods.
 			var query = (from e in db.Employees
 						 where NHibernate.Test.Linq.FunctionTests.SqlMethods.Like(e.FirstName, "Ma%et")
 						 select e).ToList();
+			// ReSharper restore RedundantNameQualifier
 
 			Assert.That(query.Count, Is.EqualTo(1));
 			Assert.That(query[0].FirstName, Is.EqualTo("Margaret"));
@@ -99,10 +133,35 @@ namespace NHibernate.Test.Linq
 			if (!TestDialect.SupportsLocate)
 				Assert.Ignore("Locate function not supported.");
 
-			var query = from e in db.Employees
-						where e.FirstName.IndexOf('A') == 1
-						select e.FirstName;
+			var raw = (from e in db.Employees select e.FirstName).ToList();
+			var expected = raw.Select(x => x.ToLower()).Where(x => x.IndexOf('a') == 0).ToList();
 
+			var query = from e in db.Employees
+						let lowerName = e.FirstName.ToLower()
+						where lowerName.IndexOf('a') == 0
+						select lowerName;
+			var result = query.ToList();
+
+			Assert.That(result, Is.EqualTo(expected), "Expected {0} but was {1}", string.Join("|", expected), string.Join("|", result));
+			ObjectDumper.Write(query);
+		}
+
+		[Test]
+		public void CharIndexOffsetNegativeFunction()
+		{
+			if (!TestDialect.SupportsLocate)
+				Assert.Ignore("Locate function not supported.");
+
+			var raw = (from e in db.Employees select e.FirstName).ToList();
+			var expected = raw.Select(x => x.ToLower()).Where(x => x.IndexOf('a', 2) == -1).ToList();
+
+			var query = from e in db.Employees
+						let lowerName = e.FirstName.ToLower()
+						where lowerName.IndexOf('a', 2) == -1
+						select lowerName;
+			var result = query.ToList();
+
+			Assert.That(result, Is.EqualTo(expected), "Expected {0} but was {1}", string.Join("|", expected), string.Join("|", result));
 			ObjectDumper.Write(query);
 		}
 
@@ -112,10 +171,16 @@ namespace NHibernate.Test.Linq
 			if (!TestDialect.SupportsLocate)
 				Assert.Ignore("Locate function not supported.");
 
-			var query = from e in db.Employees
-						where e.FirstName.IndexOf("An") == 1
-						select e.FirstName;
+			var raw = (from e in db.Employees select e.FirstName).ToList();
+			var expected = raw.Select(x => x.ToLower()).Where(x => x.IndexOf("an") == 0).ToList();
 
+			var query = from e in db.Employees
+						let lowerName = e.FirstName.ToLower()
+						where lowerName.IndexOf("an") == 0
+						select lowerName;
+			var result = query.ToList();
+
+			Assert.That(result, Is.EqualTo(expected), "Expected {0} but was {1}", string.Join("|", expected), string.Join("|", result));
 			ObjectDumper.Write(query);
 		}
 
@@ -124,11 +189,17 @@ namespace NHibernate.Test.Linq
 		{
 			if (!TestDialect.SupportsLocate)
 				Assert.Ignore("Locate function not supported.");
-				
-			var query = from e in db.Employees
-						where e.FirstName.Contains("a")
-						select e.FirstName.IndexOf('A', 3);
 
+			var raw = (from e in db.Employees select e.FirstName).ToList();
+			var expected = raw.Select(x => x.ToLower()).Where(x => x.Contains("a")).Select(x => x.IndexOf("a", 1)).ToList();
+
+			var query = from e in db.Employees
+						let lowerName = e.FirstName.ToLower()
+						where lowerName.Contains("a")
+						select lowerName.IndexOf("a", 1);
+			var result = query.ToList();
+
+			Assert.That(result, Is.EqualTo(expected), "Expected {0} but was {1}", string.Join("|", expected), string.Join("|", result));
 			ObjectDumper.Write(query);
 		}
 
@@ -168,7 +239,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void Coalesce()
 		{
-			Assert.AreEqual(2, session.Query<AnotherEntity>().Where(e => (e.Input ?? "hello") == "hello").Count());
+			Assert.AreEqual(2, session.Query<AnotherEntity>().Count(e => (e.Input ?? "hello") == "hello"));
 		}
 
 		[Test]
@@ -184,29 +255,29 @@ namespace NHibernate.Test.Linq
 				session.Save(ae3);
 				session.Flush();
 
-				Assert.AreEqual(2, session.Query<AnotherEntity>().Where(e => e.Input.Trim() == "hi").Count());
-				Assert.AreEqual(1, session.Query<AnotherEntity>().Where(e => e.Input.TrimEnd() == " hi").Count());
+				Assert.AreEqual(2, session.Query<AnotherEntity>().Count(e => e.Input.Trim() == "hi"));
+				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.TrimEnd() == " hi"));
 
 				// Emulated trim does not support multiple trim characters, but for many databases it should work fine anyways.
-				Assert.AreEqual(1, session.Query<AnotherEntity>().Where(e => e.Input.Trim('h') == "e").Count());
-				Assert.AreEqual(1, session.Query<AnotherEntity>().Where(e => e.Input.TrimStart('h') == "eh").Count());
-				Assert.AreEqual(1, session.Query<AnotherEntity>().Where(e => e.Input.TrimEnd('h') == "he").Count());
+				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.Trim('h') == "e"));
+				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.TrimStart('h') == "eh"));
+				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.TrimEnd('h') == "he"));
 
 				// Let it rollback to get rid of temporary changes.
 			}
 		}
 
-		[Test, Ignore]
-		public void TrimTrailingWhitespace()
+		[Test]
+		public void TrimInitialWhitespace()
 		{
 			using (session.BeginTransaction())
 			{
-				session.Save(new AnotherEntity {Input = " hi "});
+				session.Save(new AnotherEntity {Input = " hi"});
 				session.Save(new AnotherEntity {Input = "hi"});
 				session.Save(new AnotherEntity {Input = "heh"});
 				session.Flush();
 
-				Assert.AreEqual(TestDialect.IgnoresTrailingWhitespace ? 2 : 1, session.Query<AnotherEntity>().Where(e => e.Input.TrimStart() == "hi ").Count());
+				Assert.That(session.Query<AnotherEntity>().Count(e => e.Input.TrimStart() == "hi"), Is.EqualTo(2));
 
 				// Let it rollback to get rid of temporary changes.
 			}

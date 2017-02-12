@@ -124,7 +124,7 @@ namespace NHibernate.Criterion
 		/// <summary></summary>
 		public override string ToString()
 		{
-			return (_lhsProjection ?? (object)_lhsPropertyName) + Op + _rhsPropertyName;
+			return (_lhsProjection ?? (object)_lhsPropertyName) + Op + (_rhsProjection ?? (object)_rhsPropertyName);
 		}
 
 		public override IProjection[] GetProjections()

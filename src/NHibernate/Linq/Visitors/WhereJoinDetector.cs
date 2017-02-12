@@ -31,7 +31,7 @@ namespace NHibernate.Linq.Visitors
 	/// For example:
 	/// a.B.C == 1 could never produce true if B didn't match any rows, so it's safe to inner join.
 	/// a.B.C == null could produce true even if B didn't match any rows, so we can't inner join.
-	/// a.B.C == 1 && a.D.E == 1 can be inner joined.
+	/// a.B.C == 1 &amp;&amp; a.D.E == 1 can be inner joined.
 	/// a.B.C == 1 || a.D.E == 1 must be outer joined.
 	/// 
 	/// By default we outer join via the code in VisitExpression.  The use of inner joins is only
@@ -362,7 +362,7 @@ namespace NHibernate.Linq.Visitors
 			/// Stores the possible values of an expression that would result if the given member expression
 			/// string was emptily outer joined.  For example a.B.C would result in "null" if we try to
 			/// outer join to B and there are no rows.  Even if an expression tree does contain a particular
-			/// member experssion, it may not appear in this list.  In that case, the emptily outer joined
+			/// member expression, it may not appear in this list.  In that case, the emptily outer joined
 			/// value set for that member expression will be whatever's in Values instead.
 			/// </summary>
 			public Dictionary<string, PossibleValueSet> MemberExpressionValuesIfEmptyOuterJoined { get; private set; }

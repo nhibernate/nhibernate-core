@@ -2,15 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
-using NHibernate.Cfg.Loquacious;
-using NHibernate.Connection;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Insertordering
 {
@@ -37,11 +35,11 @@ namespace NHibernate.Test.Insertordering
 		protected override void Configure(Configuration configuration)
 		{
 			configuration.DataBaseIntegration(x =>
-			                                  {
+											  {
 																					x.BatchSize = batchSize;
 																					x.OrderInserts = true;
 																					x.Batcher<StatsBatcherFactory>();
-			                                  });
+											  });
 		}
 
 		[Test]
@@ -63,7 +61,7 @@ namespace NHibernate.Test.Insertordering
 			}
 
 			int expectedBatchesPerEntity = (instancesPerEach / batchSize) + ((instancesPerEach % batchSize) == 0 ?  0 : 1);
-			StatsBatcher.BatchSizes.Count.Should().Be(expectedBatchesPerEntity * typesOfEntities);
+			Assert.That(StatsBatcher.BatchSizes.Count, Is.EqualTo(expectedBatchesPerEntity * typesOfEntities));
 
 			using (ISession s = OpenSession())
 			{
@@ -100,9 +98,9 @@ namespace NHibernate.Test.Insertordering
 				batchSQL = null;
 			}
 
-			public override IDbCommand PrepareBatchCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
+			public override DbCommand PrepareBatchCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
 			{
-				IDbCommand result = base.PrepareBatchCommand(type, sql, parameterTypes);
+				var result = base.PrepareBatchCommand(type, sql, parameterTypes);
 				string sqlstring = sql.ToString();
 				if (batchSQL == null || !sqlstring.Equals(batchSQL))
 				{
@@ -122,7 +120,7 @@ namespace NHibernate.Test.Insertordering
 				base.AddToBatch(expectation);
 			}
 
-			protected override void DoExecuteBatch(IDbCommand ps)
+			protected override void DoExecuteBatch(DbCommand ps)
 			{
 				Console.WriteLine("executing batch [" + batchSQL + "]");
 				Console.WriteLine("--------------------------------------------------------");

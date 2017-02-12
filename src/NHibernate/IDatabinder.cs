@@ -66,10 +66,10 @@ namespace NHibernate
 		XmlDocument ToXmlDocument();
 
 		/// <summary>
-		/// Controls whether bound objects (and their associated objects) that are lazily instanciated
-		/// are explicityl initialized or left as they are
+		/// Controls whether bound objects (and their associated objects) that are lazily instantiated
+		/// are explicitly initialized or left as they are
 		/// </summary>
-		/// <value>True to explicitly initilize lazy objects, false to leave them in the state they are in</value>
+		/// <value>True to explicitly initialize lazy objects, false to leave them in the state they are in</value>
 		bool InitializeLazy { get; set; }
 	}
 }

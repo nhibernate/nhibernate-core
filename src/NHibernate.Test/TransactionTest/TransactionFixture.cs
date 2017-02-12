@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using NUnit.Framework;
 
 namespace NHibernate.Test.TransactionTest
@@ -61,7 +61,7 @@ namespace NHibernate.Test.TransactionTest
 			{
 				ITransaction t = s.BeginTransaction();
 
-				using (IDbCommand cmd = s.Connection.CreateCommand())
+				using (var cmd = s.Connection.CreateCommand())
 				{
 					t.Dispose();
 					t.Enlist(cmd);

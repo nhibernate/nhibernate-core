@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -58,8 +59,8 @@ namespace NHibernate.Driver
 			get { return prepareSql; }
 		}
 
-		public abstract IDbConnection CreateConnection();
-		public abstract IDbCommand CreateCommand();
+		public abstract DbConnection CreateConnection();
+		public abstract DbCommand CreateCommand();
 
 		/// <summary>
 		/// Does this Driver require the use of a Named Prefix in the SQL statement.  
@@ -78,9 +79,9 @@ namespace NHibernate.Driver
 		/// <remarks>
 		/// This is really only useful when the UseNamedPrefixInSql == true.  When this is true the
 		/// code will look like:
-		/// <code>IDbParameter param = cmd.Parameters["@paramName"]</code>
+		/// <code>DbParameter param = cmd.Parameters["@paramName"]</code>
 		/// if this is false the code will be 
-		/// <code>IDbParameter param = cmd.Parameters["paramName"]</code>.
+		/// <code>DbParameter param = cmd.Parameters["paramName"]</code>.
 		/// </remarks>
 		public abstract bool UseNamedPrefixInParameter { get; }
 
@@ -93,25 +94,25 @@ namespace NHibernate.Driver
 		public abstract string NamedPrefix { get; }
 
 		/// <summary>
-		/// Change the parameterName into the correct format IDbCommand.CommandText
+		/// Change the parameterName into the correct format DbCommand.CommandText
 		/// for the ConnectionProvider
 		/// </summary>
 		/// <param name="parameterName">The unformatted name of the parameter</param>
-		/// <returns>A parameter formatted for an IDbCommand.CommandText</returns>
+		/// <returns>A parameter formatted for an DbCommand.CommandText</returns>
 		public string FormatNameForSql(string parameterName)
 		{
 			return UseNamedPrefixInSql ? (NamedPrefix + parameterName) : StringHelper.SqlParameter;
 		}
 
 		/// <summary>
-		/// Changes the parameterName into the correct format for an IDbParameter
+		/// Changes the parameterName into the correct format for an DbParameter
 		/// for the Driver.
 		/// </summary>
 		/// <remarks>
 		/// For SqlServerConnectionProvider it will change <c>id</c> to <c>@id</c>
 		/// </remarks>
 		/// <param name="parameterName">The unformatted name of the parameter</param>
-		/// <returns>A parameter formatted for an IDbParameter.</returns>
+		/// <returns>A parameter formatted for an DbParameter.</returns>
 		public string FormatNameForParameter(string parameterName)
 		{
 			return UseNamedPrefixInParameter ? (NamedPrefix + parameterName) : parameterName;
@@ -123,16 +124,16 @@ namespace NHibernate.Driver
 		}
 
 		/// <summary>
-		/// Does this Driver support IDbCommand.Prepare().
+		/// Does this Driver support DbCommand.Prepare().
 		/// </summary>
 		/// <remarks>
 		/// <para>
 		/// A value of <see langword="false" /> indicates that an exception would be thrown or the 
 		/// company that produces the Driver we are wrapping does not recommend using
-		/// IDbCommand.Prepare().
+		/// DbCommand.Prepare().
 		/// </para>
 		/// <para>
-		/// A value of <see langword="true" /> indicates that calling IDbCommand.Prepare() will function
+		/// A value of <see langword="true" /> indicates that calling DbCommand.Prepare() will function
 		/// fine on this Driver.
 		/// </para>
 		/// </remarks>
@@ -141,9 +142,9 @@ namespace NHibernate.Driver
 			get { return true; }
 		}
 
-		public virtual IDbCommand GenerateCommand(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
+		public virtual DbCommand GenerateCommand(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
 		{
-			IDbCommand cmd = CreateCommand();
+			var cmd = CreateCommand();
 			cmd.CommandType = type;
 
 			SetCommandTimeout(cmd);
@@ -153,7 +154,7 @@ namespace NHibernate.Driver
 			return cmd;
 		}
 
-		protected virtual void SetCommandTimeout(IDbCommand cmd)
+		protected virtual void SetCommandTimeout(DbCommand cmd)
 		{
 			if (commandTimeout >= 0)
 			{
@@ -181,7 +182,7 @@ namespace NHibernate.Driver
 			return FormatNameForSql(ToParameterName(index));
 		}
 
-		private void SetCommandText(IDbCommand cmd, SqlString sqlString)
+		private void SetCommandText(DbCommand cmd, SqlString sqlString)
 		{
 			SqlStringFormatter formatter = GetSqlStringFormatter();
 			formatter.Format(sqlString);
@@ -193,17 +194,17 @@ namespace NHibernate.Driver
 			return new SqlStringFormatter(this, ";");
 		}
 
-		private void SetCommandParameters(IDbCommand cmd, SqlType[] sqlTypes)
+		private void SetCommandParameters(DbCommand cmd, SqlType[] sqlTypes)
 		{
 			for (int i = 0; i < sqlTypes.Length; i++)
 			{
 				string paramName = ToParameterName(i);
-				IDbDataParameter dbParam = GenerateParameter(cmd, paramName, sqlTypes[i]);
+				var dbParam = GenerateParameter(cmd, paramName, sqlTypes[i]);
 				cmd.Parameters.Add(dbParam);
 			}
 		}
 
-		protected virtual void InitializeParameter(IDbDataParameter dbParam, string name, SqlType sqlType)
+		protected virtual void InitializeParameter(DbParameter dbParam, string name, SqlType sqlType)
 		{
 			if (sqlType == null)
 			{
@@ -215,22 +216,21 @@ namespace NHibernate.Driver
 		}
 
 		/// <summary>
-		/// Generates an IDbDataParameter for the IDbCommand.  It does not add the IDbDataParameter to the IDbCommand's
+		/// Generates an DbParameter for the DbCommand.  It does not add the DbParameter to the DbCommand's
 		/// Parameter collection.
 		/// </summary>
-		/// <param name="command">The IDbCommand to use to create the IDbDataParameter.</param>
-		/// <param name="name">The name to set for IDbDataParameter.Name</param>
-		/// <param name="sqlType">The SqlType to set for IDbDataParameter.</param>
-		/// <returns>An IDbDataParameter ready to be added to an IDbCommand.</returns>
-		public IDbDataParameter GenerateParameter(IDbCommand command, string name, SqlType sqlType)
+		/// <param name="command">The DbCommand to use to create the DbParameter.</param>
+		/// <param name="name">The name to set for DbParameter.Name</param>
+		/// <param name="sqlType">The SqlType to set for DbParameter.</param>
+		/// <returns>An DbParameter ready to be added to an DbCommand.</returns>
+		public DbParameter GenerateParameter(DbCommand command, string name, SqlType sqlType)
 		{
-			IDbDataParameter dbParam = command.CreateParameter();
+			var dbParam = command.CreateParameter();
 			InitializeParameter(dbParam, name, sqlType);
-
 			return dbParam;
 		}
 
-		public void RemoveUnusedCommandParameters(IDbCommand cmd, SqlString sqlString)
+		public void RemoveUnusedCommandParameters(DbCommand cmd, SqlString sqlString)
 		{
 			if (!UseNamedPrefixInSql)
 				return; // Applicable only to named parameters
@@ -240,25 +240,25 @@ namespace NHibernate.Driver
 			var assignedParameterNames = new HashSet<string>(formatter.AssignedParameterNames);
 
 			cmd.Parameters
-				.Cast<IDbDataParameter>()
+				.Cast<DbParameter>()
 				.Select(p => p.ParameterName)
 				.Where(p => !assignedParameterNames.Contains(UseNamedPrefixInParameter ? p : FormatNameForSql(p)))
 				.ToList()
 				.ForEach(unusedParameterName => cmd.Parameters.RemoveAt(unusedParameterName));
 		}
 
-		public virtual void ExpandQueryParameters(IDbCommand cmd, SqlString sqlString)
+		public virtual void ExpandQueryParameters(DbCommand cmd, SqlString sqlString)
 		{
 			if (UseNamedPrefixInSql)
 				return;  // named parameters are ok
 
-			var expandedParameters = new List<IDbDataParameter>();
+			var expandedParameters = new List<DbParameter>();
 			foreach (object part in sqlString)
 			{
 				var parameter = part as Parameter;
 				if (parameter != null)
 				{
-					var originalParameter = (IDbDataParameter)cmd.Parameters[parameter.ParameterPosition.Value];
+					var originalParameter = cmd.Parameters[parameter.ParameterPosition.Value];
 					expandedParameters.Add(CloneParameter(cmd, originalParameter));
 				}
 			}
@@ -278,7 +278,7 @@ namespace NHibernate.Driver
 			get { return false; }
 		}
 
-		protected virtual IDbDataParameter CloneParameter(IDbCommand cmd, IDbDataParameter originalParameter)
+		protected virtual DbParameter CloneParameter(DbCommand cmd, DbParameter originalParameter)
 		{
 			var clone = cmd.CreateParameter();
 			clone.DbType = originalParameter.DbType;
@@ -287,7 +287,7 @@ namespace NHibernate.Driver
 			return clone;
 		}
 
-		public void PrepareCommand(IDbCommand command)
+		public void PrepareCommand(DbCommand command)
 		{
 			AdjustCommand(command);
 			OnBeforePrepare(command);
@@ -299,16 +299,16 @@ namespace NHibernate.Driver
 		}
 
 		/// <summary>
-		/// Override to make any adjustments to the IDbCommand object.  (e.g., Oracle custom OUT parameter)
+		/// Override to make any adjustments to the DbCommand object.  (e.g., Oracle custom OUT parameter)
 		/// Parameters have been bound by this point, so their order can be adjusted too.
-		/// This is analagous to the RegisterResultSetOutParameter() function in Hibernate.
+		/// This is analogous to the RegisterResultSetOutParameter() function in Hibernate.
 		/// </summary>
-		protected virtual void OnBeforePrepare(IDbCommand command)
+		protected virtual void OnBeforePrepare(DbCommand command)
 		{
 		}
 
 		/// <summary>
-		/// Override to make any adjustments to each IDbCommand object before it added to the batcher.
+		/// Override to make any adjustments to each DbCommand object before it added to the batcher.
 		/// </summary>
 		/// <param name="command">The command.</param>
 		/// <remarks>
@@ -316,13 +316,13 @@ namespace NHibernate.Driver
 		/// is executed before add each single command to the batcher and before <see cref="OnBeforePrepare"/> .
 		/// If you have to adjust parameters values/type (when the command is full filled) this is a good place where do it.
 		/// </remarks>
-		public virtual void AdjustCommand(IDbCommand command)
+		public virtual void AdjustCommand(DbCommand command)
 		{
 		}
 
-		public IDbDataParameter GenerateOutputParameter(IDbCommand command)
+		public DbParameter GenerateOutputParameter(DbCommand command)
 		{
-			IDbDataParameter param = GenerateParameter(command, "ReturnValue", SqlTypeFactory.Int32);
+			var param = GenerateParameter(command, "ReturnValue", SqlTypeFactory.Int32);
 			param.Direction = ParameterDirection.Output;
 			return param;
 		}

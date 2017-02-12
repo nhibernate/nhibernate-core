@@ -2,7 +2,6 @@ using System;
 using System.Reflection;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 {
@@ -55,34 +54,34 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 		[Test]
 		public void WhenNullMemberThenThrows()
 		{
-			Executing.This(() => ((MemberInfo)null).GetMemberFromReflectedType(typeof(MyClass))).Should().Throw<ArgumentNullException>();
+			Assert.That(() => ((MemberInfo)null).GetMemberFromReflectedType(typeof(MyClass)), Throws.TypeOf<ArgumentNullException>());
 		}
 
 		[Test]
 		public void WhenNullTypeThenThrows()
 		{
-			Executing.This(() => typeof(MyClassWithExplicitImpl).GetProperty("SomethingElse").GetMemberFromReflectedType(null)).Should().Throw<ArgumentNullException>();
+			Assert.That(() => typeof(MyClassWithExplicitImpl).GetProperty("SomethingElse").GetMemberFromReflectedType(null), Throws.TypeOf<ArgumentNullException>());
 		}
 
 		[Test]
 		public void WhenNotExistentThenOriginal()
 		{
 			var propertyInfo = typeof(MyClassWithExplicitImpl).GetProperty("SomethingElse");
-			propertyInfo.GetMemberFromReflectedType(typeof(object)).Should().Be(propertyInfo);
+			Assert.That(propertyInfo.GetMemberFromReflectedType(typeof(object)), Is.EqualTo(propertyInfo));
 		}
 
 		[Test]
 		public void WhenNotAccessibleFieldThenOriginal()
 		{
 			var memberInfo = typeof(MyClass).GetField("pField", PrivateMembersFlags);
-			memberInfo.GetMemberFromReflectedType(typeof(Inherited)).Should().Be(memberInfo);
+			Assert.That(memberInfo.GetMemberFromReflectedType(typeof(Inherited)), Is.EqualTo(memberInfo));
 		}
 
 		[Test]
 		public void WhenNotAccessiblePropertyThenOriginal()
 		{
 			var memberInfo = typeof(MyClass).GetProperty("PrivateProperty", PrivateMembersFlags);
-			memberInfo.GetMemberFromReflectedType(typeof(Inherited)).Should().Be(memberInfo);
+			Assert.That(memberInfo.GetMemberFromReflectedType(typeof(Inherited)), Is.EqualTo(memberInfo));
 		}
 
 		[Test]
@@ -90,8 +89,8 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 		{
 			var memberInfo = typeof(MyClass).GetProperty("ProtectedProperty", PrivateMembersFlags);
 			var result = memberInfo.GetMemberFromReflectedType(typeof(Inherited));
-			result.ReflectedType.Should().Be(typeof(Inherited));
-			result.DeclaringType.Should().Be(typeof(MyClass));
+			Assert.That(result.ReflectedType, Is.EqualTo(typeof(Inherited)));
+			Assert.That(result.DeclaringType, Is.EqualTo(typeof(MyClass)));
 		}
 
 		[Test]
@@ -99,8 +98,8 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 		{
 			var memberInfo = typeof(Inherited).GetField("pField", PrivateMembersFlags);
 			var result = memberInfo.GetMemberFromReflectedType(typeof(MyClass));
-			result.ReflectedType.Should().Be(typeof(Inherited));
-			result.DeclaringType.Should().Be(typeof(Inherited));
+			Assert.That(result.ReflectedType, Is.EqualTo(typeof(Inherited)));
+			Assert.That(result.DeclaringType, Is.EqualTo(typeof(Inherited)));
 		}
 
 		[Test]
@@ -108,8 +107,8 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 		{
 			var memberInfo = typeof(MyClass).GetProperty("AnotherProperty");
 			var result = memberInfo.GetMemberFromReflectedType(typeof(Inherited));
-			result.ReflectedType.Should().Be(typeof(Inherited));
-			result.DeclaringType.Should().Be(typeof(MyClass));
+			Assert.That(result.ReflectedType, Is.EqualTo(typeof(Inherited)));
+			Assert.That(result.DeclaringType, Is.EqualTo(typeof(MyClass)));
 		}
 
 		[Test]
@@ -117,8 +116,8 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 		{
 			var memberInfo = typeof(IInterface).GetProperty("SomethingElse");
 			var result = memberInfo.GetMemberFromReflectedType(typeof(MyClassWithExplicitImpl));
-			result.DeclaringType.Should().Be(typeof(MyClassWithExplicitImpl));
-			result.ReflectedType.Should().Be(typeof(MyClassWithExplicitImpl));
+			Assert.That(result.DeclaringType, Is.EqualTo(typeof(MyClassWithExplicitImpl)));
+			Assert.That(result.ReflectedType, Is.EqualTo(typeof(MyClassWithExplicitImpl)));
 		}
 
 		[Test]
@@ -126,8 +125,8 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 		{
 			var memberInfo = typeof(IInterface).GetProperty("Something");
 			var result = memberInfo.GetMemberFromReflectedType(typeof(MyClassWithExplicitImpl));
-			result.DeclaringType.Should().Be(typeof(MyClassWithExplicitImpl));
-			result.ReflectedType.Should().Be(typeof(MyClassWithExplicitImpl));
+			Assert.That(result.DeclaringType, Is.EqualTo(typeof(MyClassWithExplicitImpl)));
+			Assert.That(result.ReflectedType, Is.EqualTo(typeof(MyClassWithExplicitImpl)));
 		}
 	}
 }

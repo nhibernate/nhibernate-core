@@ -26,7 +26,7 @@ namespace NHibernate.Mapping.ByCode
 
 	public interface IPropertyContainerMapper : ICollectionPropertiesContainerMapper, IPlainPropertyContainerMapper {}
 
-	public interface ICollectionPropertiesContainerMapper<TEntity> where TEntity : class
+	public interface ICollectionPropertiesContainerMapper<TEntity>
 	{
 		void Set<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
 		                   Action<ISetPropertiesMapper<TEntity, TElement>> collectionMapping,
@@ -92,5 +92,6 @@ namespace NHibernate.Mapping.ByCode
 											 Action<IIdBagPropertiesMapper<TEntity, TElement>> collectionMapping);
 	}
 
-	public interface IPropertyContainerMapper<TEntity> : ICollectionPropertiesContainerMapper<TEntity>, IPlainPropertyContainerMapper<TEntity> where TEntity : class {}
+	public interface IPropertyContainerMapper<TEntity> : ICollectionPropertiesContainerMapper<TEntity>, IPlainPropertyContainerMapper<TEntity>
+	{}
 }

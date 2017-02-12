@@ -1,6 +1,5 @@
 using NHibernate.Util;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.UtilityTest
 {
@@ -40,43 +39,43 @@ namespace NHibernate.Test.UtilityTest
 		public void WhenNullSourceThenNotFound()
 		{
 			System.Type source= null;
-			source.HasProperty("whatever").Should().Be.False();
+			Assert.That(source.HasProperty("whatever"), Is.False);
 		}
 
 		[Test]
 		public void WhenNullNameThenNotFound()
 		{
-			typeof(Person).HasProperty(null).Should().Be.False();
+			Assert.That(typeof(Person).HasProperty(null), Is.False);
 		}
 
 		[Test]
 		public void WhenPropertyIsInClassThenFound()
 		{
-			typeof(Person).HasProperty("Normal").Should().Be.True();
+			Assert.That(typeof(Person).HasProperty("Normal"), Is.True);
 		}
 
 		[Test]
 		public void WhenPropertyIsInBaseClassThenFound()
 		{
-			typeof(Person).HasProperty("Id").Should().Be.True();
+			Assert.That(typeof(Person).HasProperty("Id"), Is.True);
 		}
 
 		[Test]
 		public void WhenPropertyIsExplicitImplementationOfInterfaceThenFound()
 		{
-			typeof(Person).HasProperty("Something").Should().Be.True();
+			Assert.That(typeof(Person).HasProperty("Something"), Is.True);
 		}
 
 		[Test]
 		public void WhenFieldThenNotFound()
 		{
-			typeof(Person).HasProperty("_firstName").Should().Be.False();
+			Assert.That(typeof(Person).HasProperty("_firstName"), Is.False);
 		}
 
 		[Test]
 		public void WhenPropertyNameWithDifferentCaseThenNotFound()
 		{
-			typeof(Person).HasProperty("FirstName").Should().Be.False();
+			Assert.That(typeof(Person).HasProperty("FirstName"), Is.False);
 		}
 	}
 }

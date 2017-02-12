@@ -3,7 +3,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Linq;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.UtilityTest
 {
@@ -20,55 +19,55 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void WhenGetMethodForNullThenThrows()
 		{
-			Executing.This(() => ReflectionHelper.GetMethodDefinition((Expression<System.Action>) null)).Should().Throw<ArgumentNullException>();
+			Assert.That(() => ReflectionHelper.GetMethodDefinition((Expression<System.Action>) null), Throws.TypeOf<ArgumentNullException>());
 		}
 
 		[Test]
 		public void WhenGenericGetMethodForNullThenThrows()
 		{
-			Executing.This(() => ReflectionHelper.GetMethodDefinition<object>((Expression<System.Action<object>>)null)).Should().Throw<ArgumentNullException>();
+			Assert.That(() => ReflectionHelper.GetMethodDefinition<object>((Expression<System.Action<object>>)null), Throws.TypeOf<ArgumentNullException>());
 		}
 
 		[Test]
 		public void WhenGetPropertyForNullThenThrows()
 		{
-			Executing.This(() => ReflectionHelper.GetProperty<object, object>(null)).Should().Throw<ArgumentNullException>();
+			Assert.That(() => ReflectionHelper.GetProperty<object, object>(null), Throws.TypeOf<ArgumentNullException>());
 		}
 
 		[Test]
 		public void WhenGenericMethodOfClassThenReturnGenericDefinition()
 		{
-			ReflectionHelper.GetMethodDefinition<MyClass>(mc => mc.GenericMethod<int>()).Should().Be(typeof (MyClass).GetMethod("GenericMethod").GetGenericMethodDefinition());
+			Assert.That(ReflectionHelper.GetMethodDefinition<MyClass>(mc => mc.GenericMethod<int>()), Is.EqualTo(typeof (MyClass).GetMethod("GenericMethod").GetGenericMethodDefinition()));
 		}
 
 		[Test]
 		public void WhenNoGenericMethodOfClassThenReturnDefinition()
 		{
-			ReflectionHelper.GetMethodDefinition<MyClass>(mc => mc.NoGenericMethod()).Should().Be(typeof(MyClass).GetMethod("NoGenericMethod"));
+			Assert.That(ReflectionHelper.GetMethodDefinition<MyClass>(mc => mc.NoGenericMethod()), Is.EqualTo(typeof(MyClass).GetMethod("NoGenericMethod")));
 		}
 
 		[Test]
 		public void WhenStaticGenericMethodThenReturnGenericDefinition()
 		{
-			ReflectionHelper.GetMethodDefinition(() => Enumerable.All<int>(null, null)).Should().Be(typeof(Enumerable).GetMethod("All").GetGenericMethodDefinition());
+			Assert.That(ReflectionHelper.GetMethodDefinition(() => Enumerable.All<int>(null, null)), Is.EqualTo(typeof(Enumerable).GetMethod("All").GetGenericMethodDefinition()));
 		}
 
 		[Test]
 		public void WhenStaticNoGenericMethodThenReturnDefinition()
 		{
-			ReflectionHelper.GetMethodDefinition(() => string.Join(null, null)).Should().Be(typeof(string).GetMethod("Join", new []{typeof(string), typeof(string[])}));
+			Assert.That(ReflectionHelper.GetMethodDefinition(() => string.Join(null, null)), Is.EqualTo(typeof(string).GetMethod("Join", new []{typeof(string), typeof(string[])})));
 		}
 
 		[Test]
 		public void WhenGetPropertyThenReturnPropertyInfo()
 		{
-			ReflectionHelper.GetProperty<MyClass, string>(mc => mc.BaseProperty).Should().Be(typeof(MyClass).GetProperty("BaseProperty"));
+			Assert.That(ReflectionHelper.GetProperty<MyClass, string>(mc => mc.BaseProperty), Is.EqualTo(typeof(MyClass).GetProperty("BaseProperty")));
 		}
 
 		[Test]
 		public void WhenGetPropertyForBoolThenReturnPropertyInfo()
 		{
-			ReflectionHelper.GetProperty<MyClass, bool>(mc => mc.BaseBool).Should().Be(typeof(MyClass).GetProperty("BaseBool"));
+			Assert.That(ReflectionHelper.GetProperty<MyClass, bool>(mc => mc.BaseBool), Is.EqualTo(typeof(MyClass).GetProperty("BaseBool")));
 		}
 	}
 }

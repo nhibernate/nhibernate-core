@@ -13,7 +13,7 @@ namespace NHibernate.Criterion
 	[Serializable]
 	public class SubqueryProjection : SimpleProjection
 	{
-		private SelectSubqueryExpression _subQuery;
+		private readonly SelectSubqueryExpression _subQuery;
 
 		protected internal SubqueryProjection(SelectSubqueryExpression subquery)
 		{
@@ -37,14 +37,13 @@ namespace NHibernate.Criterion
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			_subQuery.InitializeInnerQueryAndParameters(criteriaQuery);
 			return _subQuery.GetTypes();
 		}
 
 		public override SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
-			SqlString sqlStringSubquery = _subQuery.ToSqlString(criteria, criteriaQuery, enabledFilters);
-			return sqlStringSubquery.Append(new SqlString(new object[] { " as y", loc.ToString(), "_" } ));
+			return _subQuery.ToSqlString(criteria, criteriaQuery, enabledFilters)
+				.Append(new SqlString(" as y", loc.ToString(), "_"));
 		}
 
 		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)

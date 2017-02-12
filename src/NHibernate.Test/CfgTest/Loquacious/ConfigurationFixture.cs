@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using NHibernate.AdoNet;
 using NHibernate.Bytecode;
 using NHibernate.Cache;
@@ -9,6 +10,7 @@ using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Exceptions;
 using NHibernate.Hql.Ast.ANTLR;
+using NHibernate.Linq;
 using NHibernate.Type;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
@@ -139,5 +141,26 @@ namespace NHibernate.Test.CfgTest.Loquacious
 
 			Assert.That(cfg.Properties[Environment.ConnectionStringName], Is.EqualTo("MyName"));
 		}
+
+		[Test]
+		public void NH2890Loquacious()
+		{
+			var cfg = new Configuration();
+			cfg.Configure(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestEnbeddedConfig.cfg.xml"))
+				.SetDefaultAssembly("NHibernate.DomainModel")
+				.SetDefaultNamespace("NHibernate.DomainModel")
+				.SessionFactory()
+				.ParsingLinqThrough<NHibernate.Test.CfgTest.ConfigurationFixture.SampleQueryProvider>();
+
+			using (var sessionFactory = cfg.BuildSessionFactory())
+			{
+				using (var session = sessionFactory.OpenSession())
+				{
+					var query = session.Query<NHibernate.DomainModel.A>();
+					Assert.IsInstanceOf(typeof(NHibernate.Test.CfgTest.ConfigurationFixture.SampleQueryProvider), query.Provider);
+				}
+			}
+		}
+
 	}
 }

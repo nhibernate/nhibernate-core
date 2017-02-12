@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace NHibernate.Util
 {
 	/// <summary>
-	/// Wrap a non-generic IEnumerator to provide the generic IEnumerator&lt>T&gt;
+	/// Wrap a non-generic IEnumerator to provide the generic <see cref="IEnumerator{T}" />
 	/// interface.
 	/// </summary>
 	/// <typeparam name="T">The type of the enumerated elements.</typeparam>

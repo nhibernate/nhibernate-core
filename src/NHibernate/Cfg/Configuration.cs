@@ -121,9 +121,7 @@ namespace NHibernate.Cfg
 			return (T)info.GetValue(name, typeof(T));
 		}
 
-#if NET_4_0
 		[SecurityCritical]
-#endif
 		public void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			ConfigureProxyFactoryFactory();
@@ -1228,7 +1226,7 @@ namespace NHibernate.Cfg
 		{
 			#region Way for the user to specify their own ProxyFactory
 
-			//http://jira.nhibernate.org/browse/NH-975
+			//http://nhibernate.jira.com/browse/NH-975
 
 			var ipff = Environment.BytecodeProvider as IInjectableProxyFactoryFactory;
 			string pffClassName;

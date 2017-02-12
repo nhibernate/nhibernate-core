@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using NHibernate.SqlCommand;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.SqlCommandTest
 {
@@ -439,7 +438,7 @@ namespace NHibernate.Test.SqlCommandTest
 			Assert.IsNull(parameters2[0].ParameterPosition);
 
 			// more simple version of the test
-			Parameter.Placeholder.Should().Not.Be.SameInstanceAs(Parameter.Placeholder);
+			Assert.That(Parameter.Placeholder, Is.Not.SameAs(Parameter.Placeholder));
 		}
 
 

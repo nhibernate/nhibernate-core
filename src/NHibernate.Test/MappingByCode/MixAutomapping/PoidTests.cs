@@ -1,6 +1,5 @@
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.MixAutomapping
 {
@@ -30,7 +29,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			mapper.Class<MyClass>(map => map.Id(x => x.EntityIdentificator));
 
 			var inspector = (IModelInspector)autoinspector;
-			inspector.IsPersistentId(typeof(MyClass).GetProperty("EntityIdentificator")).Should().Be.True();
+			Assert.That(inspector.IsPersistentId(typeof(MyClass).GetProperty("EntityIdentificator")), Is.True);
 		}
 
 		[Test]
@@ -39,12 +38,12 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var autoinspector = new SimpleModelInspector();
 
 			var inspector = (IModelInspector)autoinspector;
-			inspector.IsPersistentId(typeof(TestEntity).GetProperty("Id")).Should().Be.True();
-			inspector.IsPersistentId(typeof(TestEntity).GetProperty("id")).Should().Be.True();
-			inspector.IsPersistentId(typeof(TestEntity).GetProperty("PoId")).Should().Be.True();
-			inspector.IsPersistentId(typeof(TestEntity).GetProperty("POID")).Should().Be.True();
-			inspector.IsPersistentId(typeof(TestEntity).GetProperty("OId")).Should().Be.True();
-			inspector.IsPersistentId(typeof(TestEntity).GetProperty("TestEntityId")).Should().Be.True();
+			Assert.That(inspector.IsPersistentId(typeof(TestEntity).GetProperty("Id")), Is.True);
+			Assert.That(inspector.IsPersistentId(typeof(TestEntity).GetProperty("id")), Is.True);
+			Assert.That(inspector.IsPersistentId(typeof(TestEntity).GetProperty("PoId")), Is.True);
+			Assert.That(inspector.IsPersistentId(typeof(TestEntity).GetProperty("POID")), Is.True);
+			Assert.That(inspector.IsPersistentId(typeof(TestEntity).GetProperty("OId")), Is.True);
+			Assert.That(inspector.IsPersistentId(typeof(TestEntity).GetProperty("TestEntityId")), Is.True);
 		}
 
 		[Test]
@@ -53,8 +52,8 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var autoinspector = new SimpleModelInspector();
 
 			var inspector = (IModelInspector)autoinspector;
-			inspector.IsPersistentId(typeof(TestEntity).GetProperty("testEntityId")).Should().Be.False();
-			inspector.IsPersistentId(typeof(TestEntity).GetProperty("Something")).Should().Be.False();
+			Assert.That(inspector.IsPersistentId(typeof(TestEntity).GetProperty("testEntityId")), Is.False);
+			Assert.That(inspector.IsPersistentId(typeof(TestEntity).GetProperty("Something")), Is.False);
 		}
 	}
 }
