@@ -618,17 +618,7 @@ namespace NHibernate.Persister.Entity
 
 		public bool IsBatchable
 		{
-			get
-			{
-                return true;
-                
-                /*
-				 return
-					OptimisticLockMode == Versioning.OptimisticLock.None
-					|| (!IsVersioned && OptimisticLockMode == Versioning.OptimisticLock.Version);
-                */
-				//|| Factory.Settings.IsJdbcBatchVersionedData();
-			}
+			get { return true; }
 		}
 
 		public virtual string[] QuerySpaces
