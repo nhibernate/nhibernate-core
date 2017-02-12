@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+  <Import Project="..\packages\Antlr3.3.5.1\build\Antlr3.props" Condition="Exists('..\packages\Antlr3.3.5.1\build\Antlr3.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -71,7 +72,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+      <HintPath>..\packages\Antlr3.Runtime.3.5.1\lib\net40-client\Antlr3.Runtime.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Iesi.Collections, Version=4.0.0.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
@@ -944,10 +945,6 @@
     <Compile Include="Hql\Ast\ANTLR\Exec\IStatementExecutor.cs" />
     <Compile Include="Hql\Ast\ANTLR\Exec\MultiTableDeleteExecutor.cs" />
     <Compile Include="Hql\Ast\ANTLR\Exec\MultiTableUpdateExecutor.cs" />
-    <Compile Include="Hql\Ast\ANTLR\Generated\HqlLexer.cs" />
-    <Compile Include="Hql\Ast\ANTLR\Generated\HqlParser.cs" />
-    <Compile Include="Hql\Ast\ANTLR\Generated\HqlSqlWalker.cs" />
-    <Compile Include="Hql\Ast\ANTLR\Generated\SqlGenerator.cs" />
     <Compile Include="Hql\Ast\ANTLR\HqlLexer.cs" />
     <Compile Include="Hql\Ast\ANTLR\HqlParser.cs" />
     <Compile Include="Hql\Ast\ANTLR\HqlSqlWalker.cs" />
@@ -1799,9 +1796,9 @@
     <None Include="..\NHibernate.snk">
       <Link>NHibernate.snk</Link>
     </None>
-    <None Include="Hql\Ast\ANTLR\Hql.g" />
-    <None Include="Hql\Ast\ANTLR\HqlSqlWalker.g" />
-    <None Include="Hql\Ast\ANTLR\SqlGenerator.g" />
+    <Antlr3 Include="Hql\Ast\ANTLR\Hql.g" />
+    <Antlr3 Include="Hql\Ast\ANTLR\HqlSqlWalker.g" />
+    <Antlr3 Include="Hql\Ast\ANTLR\SqlGenerator.g" />
     <None Include="NHibernate.build" />
     <None Include="NHibernate.nuspec.template" />
     <None Include="packages.config" />
@@ -1824,4 +1821,12 @@
     </GetReferenceAssemblyPaths>
     <Exec Command="$(SolutionDir)..\Tools\ilrepack\ilrepack.exe /verbose /t:library /targetplatform:v4,&quot;$(_ReferenceAssembliesPath).&quot; /keyfile:$(AssemblyOriginatorKeyFile) /internalize:internalize.exclude /out:$(OutputPath)\NHibernate.dll $(IntermediateOutputPath)\NHibernate.dll $(OutputPath)\Remotion.Linq.dll $(OutputPath)\Antlr3.Runtime.dll" />
   </Target>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Antlr3.3.5.1\build\Antlr3.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Antlr3.3.5.1\build\Antlr3.props'))" />
+    <Error Condition="!Exists('..\packages\Antlr3.3.5.1\build\Antlr3.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Antlr3.3.5.1\build\Antlr3.targets'))" />
+  </Target>
+  <Import Project="..\packages\Antlr3.3.5.1\build\Antlr3.targets" Condition="Exists('..\packages\Antlr3.3.5.1\build\Antlr3.targets')" />
 </Project>
