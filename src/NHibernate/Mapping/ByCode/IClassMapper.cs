@@ -47,10 +47,10 @@ namespace NHibernate.Mapping.ByCode
 		void Id<TProperty>(Expression<Func<TEntity, TProperty>> idProperty, Action<IIdMapper> idMapper);
 		void Id(string notVisiblePropertyOrFieldName, Action<IIdMapper> idMapper);
 
-		void ComponentAsId<TComponent>(Expression<Func<TEntity, TComponent>> idProperty) where TComponent : class;
-		void ComponentAsId<TComponent>(Expression<Func<TEntity, TComponent>> idProperty, Action<IComponentAsIdMapper<TComponent>> idMapper) where TComponent : class;
-		void ComponentAsId<TComponent>(string notVisiblePropertyOrFieldName) where TComponent : class;
-		void ComponentAsId<TComponent>(string notVisiblePropertyOrFieldName, Action<IComponentAsIdMapper<TComponent>> idMapper) where TComponent : class;
+		void ComponentAsId<TComponent>(Expression<Func<TEntity, TComponent>> idProperty);
+		void ComponentAsId<TComponent>(Expression<Func<TEntity, TComponent>> idProperty, Action<IComponentAsIdMapper<TComponent>> idMapper);
+		void ComponentAsId<TComponent>(string notVisiblePropertyOrFieldName);
+		void ComponentAsId<TComponent>(string notVisiblePropertyOrFieldName, Action<IComponentAsIdMapper<TComponent>> idMapper);
 
 		void ComposedId(Action<IComposedIdMapper<TEntity>> idPropertiesMapping);
 

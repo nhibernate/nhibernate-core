@@ -110,7 +110,7 @@ namespace NHibernate.Test.TypesTest
 
 		/// <summary>
 		/// Test the setting of values in Parameters and the reading of the 
-		/// values out of the IDataReader.
+		/// values out of the DbDataReader.
 		/// </summary>
 		[Test]
 		public void ReadWrite()

@@ -7,6 +7,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
+	[CLSCompliant(false)]
 	public class ComponentJoin : FromElement
 	{
 		private readonly string columns;

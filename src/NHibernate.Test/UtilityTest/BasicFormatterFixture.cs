@@ -13,11 +13,11 @@ namespace NHibernate.Test.UtilityTest
 			IFormatter formatter = new BasicFormatter();
 			string sql = @"INSERT INTO Table (Name, id) VALUES (@p0, @p1); @p0 = 'a'(b', @p1 = 1";
 			Assert.DoesNotThrow(() => formattedSql = formatter.Format(sql));
-			Assert.That(formattedSql, Is.StringContaining("'a'(b'"));
+			Assert.That(formattedSql, Does.Contain("'a'(b'"));
 
 			sql = @"UPDATE Table SET Column = @p0;@p0 = '(')'";
 			Assert.DoesNotThrow(() => formattedSql = formatter.Format(sql));
-			Assert.That(formattedSql, Is.StringContaining("'(')'"));
+			Assert.That(formattedSql, Does.Contain("'(')'"));
 		}
 	}
 }

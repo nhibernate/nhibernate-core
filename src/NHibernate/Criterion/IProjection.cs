@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using NHibernate.SqlCommand;
 using NHibernate.Engine;
 using NHibernate.Loader.Criteria;
@@ -75,7 +76,7 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// Get the SQL column aliases used by this projection for the columns it writes for inclusion into the
 		/// <code>SELECT</code> clause <see cref="IProjection.ToSqlString" />.  NHibernate always uses column aliases 
-		/// to extract data from the <see cref="System.Data.IDataReader" />, so it is important that these be implemented 
+		/// to extract data from the <see cref="DbDataReader" />, so it is important that these be implemented 
 		/// correctly in order for NHibernate to be able to extract these values correctly.
 		/// </summary>
 		/// <param name="position">Just as in <see cref="IProjection.ToSqlString" />, represents the number of columns rendered prior to this projection.</param>

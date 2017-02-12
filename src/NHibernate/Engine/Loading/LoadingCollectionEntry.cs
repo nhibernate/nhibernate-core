@@ -1,5 +1,5 @@
 using System;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Collection;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
@@ -11,12 +11,12 @@ namespace NHibernate.Engine.Loading
 	/// </summary>
 	public class LoadingCollectionEntry
 	{
-		private readonly IDataReader resultSet;
+		private readonly DbDataReader resultSet;
 		private readonly ICollectionPersister persister;
 		private readonly object key;
 		private readonly IPersistentCollection collection;
 
-		public LoadingCollectionEntry(IDataReader resultSet, ICollectionPersister persister, object key, IPersistentCollection collection)
+		public LoadingCollectionEntry(DbDataReader resultSet, ICollectionPersister persister, object key, IPersistentCollection collection)
 		{
 			this.resultSet = resultSet;
 			this.persister = persister;
@@ -24,7 +24,7 @@ namespace NHibernate.Engine.Loading
 			this.collection = collection;
 		}
 
-		public IDataReader ResultSet
+		public DbDataReader ResultSet
 		{
 			get { return resultSet; }
 		}

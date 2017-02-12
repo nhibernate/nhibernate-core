@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+  <Import Project="..\packages\Antlr3.3.5.1\build\Antlr3.props" Condition="Exists('..\packages\Antlr3.3.5.1\build\Antlr3.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -15,7 +16,7 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -47,6 +48,7 @@
     <NoWarn>1591%3b3001%3b3002%3b3003%3b3004%3b3005</NoWarn>
     <WarningsAsErrors>1717;1574</WarningsAsErrors>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -57,37 +59,43 @@
     <DefineConstants>TRACE;NET_2_0;NET_4_0</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <NoWarn>3001%3b3002%3b3003%3b3004%3b3005</NoWarn>
+    <NoWarn>1591;3001;3002;3003;3004;3005</NoWarn>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\Release-2.0\NHibernate.XML</DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>..\NHibernate.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Antlr3.Runtime.3.5.1\lib\net40-client\Antlr3.Runtime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Iesi.Collections, Version=4.0.0.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Iesi.Collections.4.0.1.4000\lib\net40\Iesi.Collections.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Remotion.Linq, Version=1.13.183.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Remotion.Linq.1.13.183.0\lib\net35\Remotion.Linq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
+    <Reference Include="System.Core" />
     <Reference Include="System.Data" />
-    <Reference Include="System.ServiceModel">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
-    </Reference>
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Xml" />
-    <Reference Include="Antlr3.Runtime, Version=3.1.0.39271, Culture=neutral, PublicKeyToken=3a9cab8f8d22bfb7">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\Antlr3.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="Iesi.Collections">
-      <HintPath>..\..\lib\net\4.0\Iesi.Collections.dll</HintPath>
-    </Reference>
-    <Reference Include="Remotion.Linq, Version=1.13.100.2, Culture=neutral, PublicKeyToken=cab60358ab4081ea">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\Remotion.Linq.dll</HintPath>
-    </Reference>
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="ADOException.cs" />
     <Compile Include="AdoNet\MySqlClientBatchingBatcher.cs" />
     <Compile Include="AdoNet\MySqlClientBatchingBatcherFactory.cs" />
@@ -137,6 +145,7 @@
     <Compile Include="Connection\DriverConnectionProvider.cs" />
     <Compile Include="Connection\IConnectionProvider.cs" />
     <Compile Include="Connection\UserSuppliedConnectionProvider.cs" />
+    <Compile Include="Util\DelegateHelper.cs" />
     <Compile Include="Dialect\BitwiseFunctionOperation.cs" />
     <Compile Include="Dialect\DB2Dialect.cs" />
     <Compile Include="Dialect\Dialect.cs" />
@@ -230,6 +239,7 @@
     <Compile Include="FetchMode.cs" />
     <Compile Include="FlushMode.cs" />
     <Compile Include="HibernateException.cs" />
+    <Compile Include="Hql\Ast\ANTLR\HqlFilterPreprocessor.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\ResultVariableRefNode.cs" />
     <Compile Include="Hql\StringQueryExpression.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\ComponentJoin.cs" />
@@ -289,6 +299,7 @@
     <Compile Include="Linq\Clauses\NhJoinClause.cs" />
     <Compile Include="Linq\Clauses\NhWithClause.cs" />
     <Compile Include="Linq\ExpressionExtensions.cs" />
+    <Compile Include="Linq\Expressions\NhNominatedExpression.cs" />
     <Compile Include="Linq\ExpressionTransformers\RemoveCharToIntConversion.cs" />
     <Compile Include="Linq\ExpressionTransformers\RemoveRedundantCast.cs" />
     <Compile Include="Linq\Functions\ConvertGenerator.cs" />
@@ -296,12 +307,15 @@
     <Compile Include="Linq\Functions\MathGenerator.cs" />
     <Compile Include="Linq\Functions\DictionaryGenerator.cs" />
     <Compile Include="Linq\Functions\EqualsGenerator.cs" />
+    <Compile Include="Linq\GroupBy\GroupKeyNominator.cs" />
     <Compile Include="Linq\GroupBy\KeySelectorVisitor.cs" />
     <Compile Include="Linq\GroupBy\PagingRewriter.cs" />
+    <Compile Include="Linq\GroupResultOperatorExtensions.cs" />
     <Compile Include="Linq\NestedSelects\NestedSelectDetector.cs" />
     <Compile Include="Linq\NestedSelects\Tuple.cs" />
     <Compile Include="Linq\NestedSelects\SelectClauseRewriter.cs" />
     <Compile Include="Linq\NestedSelects\ExpressionHolder.cs" />
+    <Compile Include="Linq\ReWriters\ArrayIndexExpressionFlattener.cs" />
     <Compile Include="Linq\Visitors\IQueryModelRewriterFactory.cs" />
     <Compile Include="Linq\QueryProviderFactory.cs" />
     <Compile Include="Linq\Visitors\LeftJoinRewriter.cs" />
@@ -320,12 +334,11 @@
     <Compile Include="Linq\Visitors\PossibleValueSet.cs" />
     <Compile Include="Linq\Visitors\QueryExpressionSourceIdentifer.cs" />
     <Compile Include="Linq\Visitors\QuerySourceIdentifier.cs" />
-    <Compile Include="Linq\Visitors\ResultOperatorAndOrderByJoinDetector.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessAsReadOnly.cs" />
+    <Compile Include="Linq\Visitors\MemberExpressionJoinDetector.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessTimeout.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessAggregateFromSeed.cs" />
     <Compile Include="Linq\NestedSelects\NestedSelectRewriter.cs" />
-    <Compile Include="Linq\Visitors\SelectJoinDetector.cs" />
     <Compile Include="Linq\Visitors\SelectClauseNominator.cs" />
     <Compile Include="Linq\Visitors\SimplifyConditionalVisitor.cs" />
     <Compile Include="Linq\Visitors\SubQueryFromClauseFlattener.cs" />
@@ -866,9 +879,7 @@
     <Compile Include="Cfg\XmlHbmBinding\FiltersBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\IdGeneratorBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\MappingLogExtensions.cs" />
-    <Compile Include="Cfg\XmlHbmBinding\PropertiesBinder.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Cfg\XmlHbmBinding\PropertiesBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\TypeBinder.cs" />
     <Compile Include="Cfg\XmlHbmBinding\ValuePropertyBinder.cs" />
     <Compile Include="Context\ReflectiveHttpContext.cs" />
@@ -935,10 +946,6 @@
     <Compile Include="Hql\Ast\ANTLR\Exec\IStatementExecutor.cs" />
     <Compile Include="Hql\Ast\ANTLR\Exec\MultiTableDeleteExecutor.cs" />
     <Compile Include="Hql\Ast\ANTLR\Exec\MultiTableUpdateExecutor.cs" />
-    <Compile Include="Hql\Ast\ANTLR\Generated\HqlLexer.cs" />
-    <Compile Include="Hql\Ast\ANTLR\Generated\HqlParser.cs" />
-    <Compile Include="Hql\Ast\ANTLR\Generated\HqlSqlWalker.cs" />
-    <Compile Include="Hql\Ast\ANTLR\Generated\SqlGenerator.cs" />
     <Compile Include="Hql\Ast\ANTLR\HqlLexer.cs" />
     <Compile Include="Hql\Ast\ANTLR\HqlParser.cs" />
     <Compile Include="Hql\Ast\ANTLR\HqlSqlWalker.cs" />
@@ -965,9 +972,7 @@
     <Compile Include="Impl\SessionIdLoggingContext.cs" />
     <Compile Include="Linq\EagerFetchingExtensionMethods.cs" />
     <Compile Include="Linq\Functions\ILinqToHqlGeneratorsRegistry.cs" />
-    <Compile Include="Linq\Functions\IRuntimeMethodHqlGenerator.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Linq\Functions\IRuntimeMethodHqlGenerator.cs" />
     <Compile Include="Linq\Functions\LinqToHqlGeneratorsRegistryExtensions.cs" />
     <Compile Include="Linq\Functions\LinqToHqlGeneratorsRegistryFactory.cs" />
     <Compile Include="Linq\Functions\StandardLinqExtensionMethodGenerator.cs" />
@@ -1096,7 +1101,6 @@
     <Compile Include="Hql\Ast\ANTLR\Tree\FromReferenceNode.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\HqlSqlWalkerNode.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\HqlSqlWalkerTreeAdapter.cs" />
-    <Compile Include="Hql\Ast\ANTLR\Tree\HqlSqlWalkerTreeNodeStream.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\IASTFactory.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\IASTNode.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\IBinaryOperatorNode.cs" />
@@ -1218,9 +1222,7 @@
     <Compile Include="Cfg\NamedXmlDocument.cs" />
     <Compile Include="Cfg\MappingsQueueEntry.cs" />
     <Compile Include="Cfg\MappingSchema\EndsWithHbmXmlFilter.cs" />
-    <Compile Include="Cfg\MappingSchema\Hbm.generated.cs">
-      <SubType>code</SubType>
-    </Compile>
+    <Compile Include="Cfg\MappingSchema\Hbm.generated.cs" />
     <Compile Include="Cfg\MappingSchema\HbmBase.cs" />
     <Compile Include="Cfg\MappingSchema\HbmClass.cs" />
     <Compile Include="Cfg\MappingSchema\HbmDatabaseObject.cs" />
@@ -1257,15 +1259,9 @@
     <Compile Include="Classic\ValidationFailure.cs" />
     <Compile Include="Collection\AbstractPersistentCollection.cs" />
     <Compile Include="Collection\Generic\PersistentGenericSet.cs" />
-    <Compile Include="Collection\Generic\PersistentGenericBag.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Collection\Generic\PersistentGenericList.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Collection\Generic\PersistentGenericMap.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Collection\Generic\PersistentGenericBag.cs" />
+    <Compile Include="Collection\Generic\PersistentGenericList.cs" />
+    <Compile Include="Collection\Generic\PersistentGenericMap.cs" />
     <Compile Include="Collection\Generic\PersistentGenericIdentifierBag.cs" />
     <Compile Include="Collection\PersistentArrayHolder.cs" />
     <Compile Include="ConnectionReleaseMode.cs" />
@@ -1480,28 +1476,14 @@
     <Compile Include="Id\Enhanced\SequenceStructure.cs" />
     <Compile Include="Id\Enhanced\SequenceStyleGenerator.cs" />
     <Compile Include="Id\Enhanced\TableStructure.cs" />
-    <Compile Include="Id\Insert\AbstractReturningDelegate.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Id\Insert\AbstractSelectingDelegate.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Id\Insert\IBinder.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Id\Insert\IdentifierGeneratingInsert.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Id\Insert\IInsertGeneratedIdentifierDelegate.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Id\Insert\InsertSelectIdentityInsert.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Id\Insert\AbstractReturningDelegate.cs" />
+    <Compile Include="Id\Insert\AbstractSelectingDelegate.cs" />
+    <Compile Include="Id\Insert\IBinder.cs" />
+    <Compile Include="Id\Insert\IdentifierGeneratingInsert.cs" />
+    <Compile Include="Id\Insert\IInsertGeneratedIdentifierDelegate.cs" />
+    <Compile Include="Id\Insert\InsertSelectIdentityInsert.cs" />
     <Compile Include="Id\IPostInsertIdentifierGenerator.cs" />
-    <Compile Include="Id\IPostInsertIdentityPersister.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Id\IPostInsertIdentityPersister.cs" />
     <Compile Include="Impl\AbstractDetachedQuery.cs" />
     <Compile Include="Impl\AbstractSessionImpl.cs" />
     <Compile Include="Impl\DetachedNamedQuery.cs" />
@@ -1589,9 +1571,7 @@
     <Compile Include="Engine\NamedSQLQueryDefinition.cs" />
     <Compile Include="Engine\Query\Sql\NativeSQLQuerySpecification.cs" />
     <Compile Include="Engine\Query\ParameterParser.cs" />
-    <Compile Include="Engine\ResultSetMappingDefinition.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Engine\ResultSetMappingDefinition.cs" />
     <Compile Include="Criterion\AbstractEmptinessExpression.cs" />
     <Compile Include="Criterion\AggregateProjection.cs" />
     <Compile Include="Criterion\AliasedProjection.cs" />
@@ -1607,17 +1587,13 @@
     <Compile Include="Criterion\RowCountProjection.cs" />
     <Compile Include="Criterion\SimpleProjection.cs" />
     <Compile Include="Criterion\SQLProjection.cs" />
-    <Compile Include="Hql\Util\SessionFactoryHelper.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Hql\Util\SessionFactoryHelper.cs" />
     <Compile Include="AdoNet\ConnectionManager.cs" />
     <Compile Include="Impl\MultiQueryImpl.cs" />
     <Compile Include="AdoNet\SqlClientSqlCommandSet.cs" />
     <Compile Include="Impl\CollectionFilterImpl.cs" />
     <Compile Include="IMultiQuery.cs" />
-    <Compile Include="InvalidProxyTypeException.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="InvalidProxyTypeException.cs" />
     <Compile Include="ISQLQuery.cs" />
     <Compile Include="Loader\AbstractEntityJoinWalker.cs" />
     <Compile Include="Loader\BasicLoader.cs" />
@@ -1783,15 +1759,9 @@
     <Compile Include="Type\GenericSortedSetType.cs" />
     <Compile Include="Type\GenericSetType.cs" />
     <Compile Include="Type\ForeignKeyDirection.cs" />
-    <Compile Include="Type\GenericBagType.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Type\GenericListType.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Type\GenericMapType.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Type\GenericBagType.cs" />
+    <Compile Include="Type\GenericListType.cs" />
+    <Compile Include="Type\GenericMapType.cs" />
     <Compile Include="Type\SpecialOneToOneType.cs" />
     <Compile Include="UserTypes\ICompositeUserType.cs" />
     <Compile Include="UserTypes\IEnhancedUserType.cs" />
@@ -1812,12 +1782,9 @@
     <Compile Include="Util\SimpleMRUCache.cs" />
     <Compile Include="Util\SingletonEnumerable.cs" />
     <Compile Include="Util\SoftLimitMRUCache.cs" />
-    <Compile Include="Util\ThreadSafeDictionary.cs" />
     <Compile Include="Util\TypeNameParser.cs" />
     <Compile Include="Util\UnmodifiableDictionary.cs" />
-    <Compile Include="Util\WeakHashtable.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Util\WeakHashtable.cs" />
     <Compile Include="Properties\XmlAccessor.cs" />
     <EmbeddedResource Include="nhibernate-configuration.xsd">
       <SubType>
@@ -1827,43 +1794,40 @@
       <SubType>
       </SubType>
     </EmbeddedResource>
-    <None Include="Hql\Ast\ANTLR\Hql.g" />
-    <None Include="Hql\Ast\ANTLR\HqlSqlWalker.g" />
-    <None Include="Hql\Ast\ANTLR\SqlGenerator.g" />
+    <None Include="..\NHibernate.snk">
+      <Link>NHibernate.snk</Link>
+    </None>
+    <Antlr3 Include="Hql\Ast\ANTLR\Hql.g" />
+    <Antlr3 Include="Hql\Ast\ANTLR\HqlSqlWalker.g" />
+    <Antlr3 Include="Hql\Ast\ANTLR\SqlGenerator.g" />
     <None Include="NHibernate.build" />
     <None Include="NHibernate.nuspec.template" />
+    <None Include="packages.config" />
     <None Include="Type\IType.cs.xmldoc" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="NamespaceSummary.xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
-  </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
-      <Visible>False</Visible>
-      <ProductName>Windows Installer 3.1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
-  <Target Name="AfterBuild">
-  </Target>
   -->
+  <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release' ">
+    <GetReferenceAssemblyPaths BypassFrameworkInstallChecks="False" TargetFrameworkMoniker="$(TargetFrameworkMoniker)">
+      <Output TaskParameter="FullFrameworkReferenceAssemblyPaths" PropertyName="_ReferenceAssembliesPath" />
+      <!-- Note: _ReferenceAssembliesPath will contain a trailing backslash which /targetplatform
+           can't handle. Circumvented by adding a trailing period below. -->
+    </GetReferenceAssemblyPaths>
+    <Exec Command="$(SolutionDir)..\Tools\ilrepack\ilrepack.exe /verbose /t:library /targetplatform:v4,&quot;$(_ReferenceAssembliesPath).&quot; /keyfile:$(AssemblyOriginatorKeyFile) /internalize:internalize.exclude /out:$(OutputPath)\NHibernate.dll $(IntermediateOutputPath)\NHibernate.dll $(OutputPath)\Remotion.Linq.dll $(OutputPath)\Antlr3.Runtime.dll" />
+  </Target>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Antlr3.3.5.1\build\Antlr3.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Antlr3.3.5.1\build\Antlr3.props'))" />
+    <Error Condition="!Exists('..\packages\Antlr3.3.5.1\build\Antlr3.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Antlr3.3.5.1\build\Antlr3.targets'))" />
+  </Target>
+  <Import Project="..\packages\Antlr3.3.5.1\build\Antlr3.targets" Condition="Exists('..\packages\Antlr3.3.5.1\build\Antlr3.targets')" />
 </Project>

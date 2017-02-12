@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Clauses;
@@ -51,8 +53,11 @@ namespace NHibernate.Linq.Visitors
 			// Flatten pointless subqueries
 			QueryReferenceExpressionFlattener.ReWrite(queryModel);
 
+			// Flatten array index access to query references
+			ArrayIndexExpressionFlattener.ReWrite(queryModel);
+
 			// Add joins for references
-			AddJoinsReWriter.ReWrite(queryModel, parameters.SessionFactory);
+			AddJoinsReWriter.ReWrite(queryModel, parameters);
 
 			// Move OrderBy clauses to end
 			MoveOrderByToEndRewriter.ReWrite(queryModel);
@@ -74,7 +79,10 @@ namespace NHibernate.Linq.Visitors
 			// Identify and name query sources
 			QuerySourceIdentifier.Visit(parameters.QuerySourceNamer, queryModel);
 
-			var visitor = new QueryModelVisitor(parameters, root, queryModel) { RewrittenOperatorResult = result };
+			var visitor = new QueryModelVisitor(parameters, root, queryModel)
+			{
+				RewrittenOperatorResult = result,
+			};
 			visitor.Visit();
 
 			return visitor._hqlTree.GetTranslation();

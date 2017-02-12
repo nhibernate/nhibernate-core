@@ -40,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3121
 
 			var ex = Assert.Throws<PropertyValueException>(() => PersistReport(report));
 
-			Assert.That(ex.Message, Is.StringContaining("Report.UnsizedArray"));
+			Assert.That(ex.Message, Does.Contain("Report.UnsizedArray"));
 			Assert.That(ex.InnerException, Is.TypeOf<HibernateException>());
 			Assert.That(ex.InnerException.Message,
 						Is.EqualTo("The length of the byte[] value exceeds the length configured in the mapping/parameter."));
@@ -58,7 +58,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3121
 
 			var ex = Assert.Throws<PropertyValueException>(() => PersistReport(report));
 
-			Assert.That(ex.Message, Is.StringContaining("Report.Image"));
+			Assert.That(ex.Message, Does.Contain("Report.Image"));
 			Assert.That(ex.InnerException, Is.TypeOf<HibernateException>());
 			Assert.That(ex.InnerException.Message,
 						Is.EqualTo("The length of the byte[] value exceeds the length configured in the mapping/parameter."));
@@ -76,7 +76,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3121
 
 			var ex = Assert.Throws<PropertyValueException>(() => PersistReport(report));
 
-			Assert.That(ex.Message, Is.StringContaining("Report.SerializableImage"));
+			Assert.That(ex.Message, Does.Contain("Report.SerializableImage"));
 			Assert.That(ex.InnerException, Is.TypeOf<HibernateException>());
 			Assert.That(ex.InnerException.Message,
 						Is.EqualTo("The length of the byte[] value exceeds the length configured in the mapping/parameter."));

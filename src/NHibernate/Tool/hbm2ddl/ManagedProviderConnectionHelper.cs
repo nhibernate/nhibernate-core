@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
 using NHibernate.Connection;
 
@@ -23,7 +22,7 @@ namespace NHibernate.Tool.hbm2ddl
 		public void Prepare()
 		{
 			connectionProvider = ConnectionProviderFactory.NewConnectionProvider(cfgProperties);
-			connection = (DbConnection) connectionProvider.GetConnection();
+			connection = connectionProvider.GetConnection();
 		}
 
 		public DbConnection Connection

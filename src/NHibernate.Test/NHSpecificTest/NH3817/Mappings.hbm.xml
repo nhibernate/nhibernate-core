@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH3817">
+
+  <class name="Itinerary" table="Itineraries">
+    <id name="ItineraryId" type="Int32">
+      <generator class="identity" />
+    </id>
+
+    <property name="ItineraryNumber" type="string" length="64" not-null="true"/>
+
+    <set name="ItineraryGuests" inverse="true" optimistic-lock="false" generic="true" cascade="all-delete-orphan">
+      <key>
+        <column name="ItineraryId" />
+      </key>
+      <one-to-many class="ItineraryGuest" />
+    </set>
+
+    <set name="Reservations" inverse="true" optimistic-lock="false" generic="true" cascade="all-delete-orphan">
+      <key>
+        <column name="ItineraryId" />
+      </key>
+      <one-to-many class="Reservation" />
+    </set>
+  </class>
+
+  <class name="ItineraryGuest" table="ItineraryGuests">
+    <id name="ItineraryGuestId" type="Int32">
+      <generator class="identity" />
+    </id>
+
+    <property name="LastName" type="string" length="64" not-null="true"/>
+
+    <property name="FirstName" type="string" length="64" not-null="false"/>
+
+    <many-to-one name="Itinerary" class="Itinerary" cascade="none" column="ItineraryId" not-null="true"/>
+
+    <set name="ReservationGuests" inverse="true" optimistic-lock="false" generic="true" cascade="all-delete-orphan">
+      <key>
+        <column name="ItineraryGuestId" />
+      </key>
+      <one-to-many class="ReservationGuest" />
+    </set>
+  </class>
+
+  <class name="Reservation" table="Reservations">
+    <id name="ReservationId" type="Int32">
+      <generator class="identity" />
+    </id>
+
+    <property name="ReservationNumber" type="String" length="64" not-null="true"/>
+
+    <many-to-one name="Itinerary" class="Itinerary" cascade="none" column="ItineraryId" not-null="true"/>
+
+    <set name="ReservationGuests" inverse="true" optimistic-lock="false" generic="true" cascade="all-delete-orphan">
+      <key>
+        <column name="ReservationId" />
+      </key>
+      <one-to-many class="ReservationGuest" />
+    </set>
+
+    <set name="ReservationDays" inverse="true" optimistic-lock="false" generic="true" cascade="all-delete-orphan">
+      <key>
+        <column name="ReservationId" />
+      </key>
+      <one-to-many class="ReservationDay" />
+    </set>
+
+    <set name="ReservationDayPrices" inverse="true" optimistic-lock="false" generic="true" cascade="all-delete-orphan">
+      <key>
+        <column name="ReservationId" />
+      </key>
+      <one-to-many class="ReservationDayPrice" />
+    </set>
+  </class>
+
+  <class name="ReservationGuest" table="ReservationGuests">
+    <id name="ReservationGuestId" type="Int32">
+      <generator class="identity" />
+    </id>
+
+    <many-to-one name="ItineraryGuest" class="ItineraryGuest" cascade="none" column="ItineraryGuestId" not-null="true" unique-key="KEY1"/>
+
+    <many-to-one name="Reservation" class="Reservation" cascade="none" column="ReservationId" not-null="true" unique-key="KEY1"/>
+
+    <set name="ReservationDayShares" inverse="true" optimistic-lock="false" generic="true" cascade="all-delete-orphan">
+      <key>
+        <column name="ReservationGuestId" />
+      </key>
+      <one-to-many class="ReservationDayShare" />
+    </set>
+  </class>
+
+  <class name="ReservationDay" table="ReservationDays">
+    <id name="ReservationDayId" type="Int32">
+      <generator class="identity" />
+    </id>
+
+    <property name="BusinessDate" type="DateTime" unique-key="KEY1"/>
+
+    <property name="QuotedRate" type="Decimal" not-null="true"/>
+
+    <many-to-one name="Reservation" class="Reservation" cascade="none" column="ReservationId" not-null="true" unique-key="KEY1"/>
+
+    <set name="ReservationDayPrices" inverse="true" optimistic-lock="false" generic="true" cascade="all-delete-orphan">
+      <key>
+        <column name="ReservationDayId" />
+      </key>
+      <one-to-many class="ReservationDayPrice" />
+    </set>
+
+    <set name="ReservationDayShares" inverse="true" optimistic-lock="false" generic="true" cascade="all-delete-orphan">
+      <key>
+        <column name="ReservationDayId" />
+      </key>
+      <one-to-many class="ReservationDayShare" />
+    </set>
+  </class>
+
+  <class name="ReservationDayPrice" table="ReservationDayPrices">
+    <id name="ReservationDayPriceId" type="Int32">
+      <generator class="identity" />
+    </id>
+
+    <property name="Price" type="Decimal" not-null="true"/>
+
+    <many-to-one name="Reservation" class="Reservation" cascade="none" column="ReservationId" not-null="true"/>
+
+    <many-to-one name="ReservationDay" class="ReservationDay" cascade="none" column="ReservationDayId" not-null="true"/>
+  </class>
+
+  <class name="ReservationDayShare" table="ReservationDayShares">
+    <id name="ReservationDayShareId" type="Int32">
+      <generator class="identity" />
+    </id>
+
+    <property name="ShareValue" type="Decimal" not-null="false"/>
+
+    <many-to-one name="ReservationGuest" class="ReservationGuest" cascade="none" column="ReservationGuestId" not-null="true"/>
+
+    <many-to-one name="ReservationDay" class="ReservationDay" cascade="none" column="ReservationDayId" not-null="true"/>
+  </class>
+
+</hibernate-mapping>

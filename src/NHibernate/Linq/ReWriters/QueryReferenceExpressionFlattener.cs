@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.EagerFetching;
 using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.ReWriters
@@ -17,6 +18,8 @@ namespace NHibernate.Linq.ReWriters
 			typeof (CacheableResultOperator),
 			typeof (TimeoutResultOperator),
 			typeof (AsReadOnlyResultOperator),
+			typeof (FetchOneRequest),
+			typeof (FetchManyRequest)
 		};
 
 		private QueryReferenceExpressionFlattener(QueryModel model)

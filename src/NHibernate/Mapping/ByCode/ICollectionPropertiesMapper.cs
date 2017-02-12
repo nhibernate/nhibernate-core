@@ -31,7 +31,7 @@ namespace NHibernate.Mapping.ByCode
 		void Persister(System.Type persister);
 	}
 
-	public interface ICollectionPropertiesMapper<TEntity, TElement> : IEntityPropertyMapper, ICollectionSqlsMapper where TEntity : class
+	public interface ICollectionPropertiesMapper<TEntity, TElement> : IEntityPropertyMapper, ICollectionSqlsMapper
 	{
 		void Inverse(bool value);
 		void Mutable(bool value);

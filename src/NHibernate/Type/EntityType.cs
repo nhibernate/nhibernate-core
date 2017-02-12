@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using System.Text;
 using System.Xml;
 using NHibernate.Engine;
@@ -104,7 +104,7 @@ namespace NHibernate.Type
 			return ReferenceEquals(x, y);
 		}
 
-		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
+		public override object NullSafeGet(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
 			return NullSafeGet(rs, new string[] {name}, session, owner);
 		}
@@ -311,21 +311,21 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Converts the id contained in the <see cref="IDataReader"/> to an object.
+		/// Converts the id contained in the <see cref="DbDataReader"/> to an object.
 		/// </summary>
-		/// <param name="rs">The <see cref="IDataReader"/> that contains the query results.</param>
+		/// <param name="rs">The <see cref="DbDataReader"/> that contains the query results.</param>
 		/// <param name="names">A string array of column names that contain the id.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> this is occurring in.</param>
 		/// <param name="owner">The object that this Entity will be a part of.</param>
 		/// <returns>
 		/// An instance of the object or <see langword="null" /> if the identifer was null.
 		/// </returns>
-		public override sealed object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override sealed object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			return ResolveIdentifier(Hydrate(rs, names, session, owner), session, owner);
 		}
 
-		public abstract override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner);
+		public abstract override object Hydrate(DbDataReader rs, string[] names, ISessionImplementor session, object owner);
 
 		public bool IsUniqueKeyReference
 		{

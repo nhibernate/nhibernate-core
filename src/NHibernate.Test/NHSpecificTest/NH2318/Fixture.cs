@@ -56,7 +56,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2318
                             "trim",
                             NHibernateUtil.String,
                             Projections.Constant("f"),
-                            Projections.SqlProjection("from as literal", null, null), // Silly hack to get "from" as a second argument.
+                            Projections.SqlProjection("from", null, null), // Silly hack to get "from" as a second argument.
                             Projections.Property("Name")),
                         "irst"));
                 IList<A> items = criteria.List<A>();

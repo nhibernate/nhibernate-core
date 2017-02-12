@@ -19,7 +19,8 @@ namespace NHibernate.Mapping.ByCode
 
 			System.Array.ForEach(source.OneToOneRelations.ToArray(), destination.AddAsOneToOneRelation);
 			System.Array.ForEach(source.ManyToOneRelations.ToArray(), destination.AddAsManyToOneRelation);
-			System.Array.ForEach(source.ManyToManyRelations.ToArray(), destination.AddAsManyToManyRelation);
+			System.Array.ForEach(source.KeyManyToManyRelations.ToArray(), destination.AddAsManyToManyKeyRelation);
+			System.Array.ForEach(source.ItemManyToManyRelations.ToArray(), destination.AddAsManyToManyItemRelation);
 			System.Array.ForEach(source.ManyToAnyRelations.ToArray(), destination.AddAsManyToAnyRelation);
 			System.Array.ForEach(source.OneToManyRelations.ToArray(), destination.AddAsOneToManyRelation);
 			System.Array.ForEach(source.Any.ToArray(), destination.AddAsAny);

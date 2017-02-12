@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using NHibernate.Linq.Clauses;
 using NHibernate.Linq.ReWriters;
 using NHibernate.Linq.Visitors;
@@ -59,6 +60,7 @@ namespace NHibernate.Linq.GroupBy
 					if (groupBy != null)
 					{
 						FlattenSubQuery(queryModel, subQueryExpression.QueryModel, groupBy);
+						RemoveCostantGroupByKeys(queryModel, groupBy);
 					}
 				}
 			}
@@ -92,7 +94,7 @@ namespace NHibernate.Linq.GroupBy
 				queryModel.BodyClauses.Add(bodyClause);
 
 			// Replace the outer select clause...
-			queryModel.SelectClause.TransformExpressions(s => 
+			queryModel.SelectClause.TransformExpressions(s =>
 				GroupBySelectClauseRewriter.ReWrite(s, groupBy, subQueryModel));
 
 			// Point all query source references to the outer from clause
@@ -101,6 +103,23 @@ namespace NHibernate.Linq.GroupBy
 
 			// Replace the outer query source
 			queryModel.MainFromClause = subQueryModel.MainFromClause;
+		}
+
+		private static void RemoveCostantGroupByKeys(QueryModel queryModel, GroupResultOperator groupBy)
+		{
+			var keys = groupBy.ExtractKeyExpressions().Where(x => !(x is ConstantExpression)).ToList();
+
+			if (!keys.Any())
+			{
+				// Remove the Group By clause completely if all the keys are constant (redundant)
+				queryModel.ResultOperators.Remove(groupBy);
+			}
+			else
+			{
+				// Re-write the KeySelector as an object array of the non-constant keys
+				// This should be safe because we've already re-written the select clause using the original keys
+				groupBy.KeySelector = Expression.NewArrayInit(typeof (object), keys.Select(x => x.Type.IsValueType ? Expression.Convert(x, typeof(object)) : x));
+			}
 		}
 	}
 }

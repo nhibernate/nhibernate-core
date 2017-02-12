@@ -41,7 +41,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// <summary>
 		/// The type of dereference that happened (DEREF_xxx).
 		/// </summary>
+#pragma warning disable 414
 		private int _dereferenceType = DerefUnknown;
+#pragma warning restore 414
 
 		/// <summary>
 		/// The identifier that is the name of the property.
@@ -407,7 +409,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			else 
 			{
-				joinIsNeeded = generateJoin || ( Walker.IsInSelect || Walker.IsInFrom );
+				joinIsNeeded = generateJoin || ( (Walker.IsInSelect && !Walker.IsInCase ) || Walker.IsInFrom );
 			}
 
 			if ( joinIsNeeded ) 

@@ -1,5 +1,5 @@
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 
@@ -195,7 +195,7 @@ namespace NHibernate
 		/// The use of singleton-interceptor may cause problems in multi-thread scenario. 
 		/// </remarks>
 		/// <seealso cref="ISessionFactory.OpenSession(IInterceptor)"/>
-		/// <seealso cref="ISessionFactory.OpenSession(IDbConnection,IInterceptor)"/>
+		/// <seealso cref="ISessionFactory.OpenSession(DbConnection,IInterceptor)"/>
 		void SetSession(ISession session);
 
 		#endregion

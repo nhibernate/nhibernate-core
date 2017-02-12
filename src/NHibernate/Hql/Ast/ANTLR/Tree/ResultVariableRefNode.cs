@@ -16,6 +16,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// "value" used in the order by clause is a reference to the result_variable, "value", defined in the select clause.
 	/// </example>
 	/// Author: Gail Badner
+	[CLSCompliant(false)]
 	public class ResultVariableRefNode : HqlSqlWalkerNode
 	{
 		private ISelectExpression _selectExpression;

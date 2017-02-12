@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
@@ -164,22 +164,22 @@ namespace NHibernate.Type
 			get { return userType.IsMutable; }
 		}
 
-		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
+		public override object NullSafeGet(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
 			return userType.NullSafeGet(rs, new string[] {name}, session, owner);
 		}
 
-		public override object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			return userType.NullSafeGet(rs, names, session, owner);
 		}
 
-		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override void NullSafeSet(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			userType.NullSafeSet(st, value, index, settable, session);
 		}
 
-		public override void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session)
+		public override void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			bool[] settable = Enumerable.Repeat(true, GetColumnSpan(session.Factory)).ToArray();
 			userType.NullSafeSet(cmd, value, index, settable, session);

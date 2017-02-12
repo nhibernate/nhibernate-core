@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using System.Linq.Expressions;
 using NHibernate.Engine;
 
@@ -32,7 +33,7 @@ namespace NHibernate
 		/// close the connection returned by this call. Otherwise, the
 		/// application should not close the connection.
 		/// </remarks>
-		IDbConnection Connection { get; }
+		DbConnection Connection { get; }
 		
 		/// <summary>Get the current NHibernate transaction.</summary>
 		ITransaction Transaction { get; }

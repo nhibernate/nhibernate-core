@@ -22,16 +22,23 @@ namespace NHibernate.Linq.GroupBy
 
 		private readonly GroupResultOperator _groupBy;
 		private readonly QueryModel _model;
+		private readonly Expression _nominatedKeySelector;
 
 		private GroupBySelectClauseRewriter(GroupResultOperator groupBy, QueryModel model)
 		{
 			_groupBy = groupBy;
 			_model = model;
+			_nominatedKeySelector = GroupKeyNominator.Visit(groupBy);
 		}
 
 		protected override Expression VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
 		{
-			if (expression.ReferencedQuerySource == _groupBy)
+			if (!IsMemberOfModel(expression))
+			{
+				return base.VisitQuerySourceReferenceExpression(expression);
+			}
+
+			if (expression.IsGroupingElementOf(_groupBy))
 			{
 				return _groupBy.ElementSelector;
 			}
@@ -48,7 +55,8 @@ namespace NHibernate.Linq.GroupBy
 
 			if (expression.IsGroupingKeyOf(_groupBy))
 			{
-				return _groupBy.KeySelector;
+				// If we have referenced the Key, then return the nominated key expression
+				return _nominatedKeySelector;
 			}
 
 			var elementSelector = _groupBy.ElementSelector;
@@ -59,7 +67,8 @@ namespace NHibernate.Linq.GroupBy
 				return base.VisitMemberExpression(expression);
 			}
 
-			if (elementSelector is NewExpression && elementSelector.Type == expression.Expression.Type)
+			if ((elementSelector is NewExpression || elementSelector.NodeType == ExpressionType.Convert)
+				&& elementSelector.Type == expression.Expression.Type)
 			{
 				//TODO: probably we should check this with a visitor
 				return Expression.MakeMemberAccess(elementSelector, expression.Member);
@@ -78,7 +87,12 @@ namespace NHibernate.Linq.GroupBy
 				return false;
 			}
 
-			var fromClause = querySourceRef.ReferencedQuerySource as FromClauseBase;
+			return IsMemberOfModel(querySourceRef);
+		}
+		
+		private bool IsMemberOfModel(QuerySourceReferenceExpression expression)
+		{
+			var fromClause = expression.ReferencedQuerySource as FromClauseBase;
 
 			if (fromClause == null)
 			{

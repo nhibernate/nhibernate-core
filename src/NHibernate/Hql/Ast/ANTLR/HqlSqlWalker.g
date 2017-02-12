@@ -45,6 +45,9 @@ public statement
 	;
 
 selectStatement
+	@init {
+		PrepareFilterParameter();
+	}
 	: query
 	;
 
@@ -143,7 +146,7 @@ unionedQuery!
 	;
 
 orderClause
-	: ^(ORDER { HandleClauseStart( ORDER ); } (orderExprs | query (ASCENDING | DESCENDING)? ))
+	: ^(ORDER { HandleClauseStart( ORDER ); } (orderExprs))
 	;
 
 orderExprs
@@ -153,6 +156,7 @@ orderExprs
 orderExpr
 	: { IsOrderExpressionResultVariableRef( (IASTNode) input.LT(1) ) }? resultVariableRef
 	| expr
+	| query
 	;
 
 resultVariableRef!
@@ -230,11 +234,6 @@ aggregateExpr
 
 // Establishes the list of aliases being used by this query.
 fromClause 
-@init{
-		// NOTE: This references the INPUT AST! (see http://www.antlr.org/doc/trees.html#Action Translation)
-		// the ouput AST (#fromClause) has not been built yet.
-		PrepareFromClauseInputTree((IASTNode) input.LT(1), input);
-	}
 	: ^(f=FROM { PushFromClause($f.tree); HandleClauseStart( FROM ); } fromElementList )
 	;
 
@@ -368,8 +367,7 @@ comparisonExpr
 	)
 	;
 
-inRhs @init {	int UP = 99999;		// TODO - added this to get compile working.  It's bogus & should be removed
-	}
+inRhs
 	: ^(IN_LIST ( collectionFunctionOrSubselect | expr* ) )
 	;
 

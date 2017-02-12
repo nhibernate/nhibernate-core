@@ -1,5 +1,5 @@
 using System;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlTypes;
@@ -46,13 +46,13 @@ namespace NHibernate.Type
 			return GetIdentifierOrUniqueKeyType(mapping).SqlTypes(mapping);
 		}
 
-		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override void NullSafeSet(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			GetIdentifierOrUniqueKeyType(session.Factory)
 				.NullSafeSet(st, GetReferenceValue(value, session), index, settable, session);
 		}
 
-		public override void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session)
+		public override void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			GetIdentifierOrUniqueKeyType(session.Factory)
 				.NullSafeSet(cmd, GetReferenceValue(value, session), index, session);
@@ -74,16 +74,16 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Hydrates the Identifier from <see cref="IDataReader"/>.
+		/// Hydrates the Identifier from <see cref="DbDataReader"/>.
 		/// </summary>
-		/// <param name="rs">The <see cref="IDataReader"/> that contains the query results.</param>
+		/// <param name="rs">The <see cref="DbDataReader"/> that contains the query results.</param>
 		/// <param name="names">A string array of column names to read from.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> this is occurring in.</param>
 		/// <param name="owner">The object that this Entity will be a part of.</param>
 		/// <returns>
 		/// An instantiated object that used as the identifier of the type.
 		/// </returns>
-		public override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override object Hydrate(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			// return the (fully resolved) identifier value, but do not resolve
 			// to the actual referenced entity instance

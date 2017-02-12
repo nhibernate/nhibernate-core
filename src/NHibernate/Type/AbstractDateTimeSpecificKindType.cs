@@ -1,5 +1,5 @@
 using System;
-using System.Data;
+using System.Data.Common;
 
 namespace NHibernate.Type
 {
@@ -43,13 +43,13 @@ namespace NHibernate.Type
 			return base.IsEqual(x, y) && ((DateTime) x).Kind == ((DateTime) y).Kind;
 		}
 
-		public override void Set(IDbCommand st, object value, int index)
+		public override void Set(DbCommand st, object value, int index)
 		{
 			var dateValue = (DateTime) value;
-			((IDataParameter) st.Parameters[index]).Value = CreateDateTime(dateValue);
+			st.Parameters[index].Value = CreateDateTime(dateValue);
 		}
 
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index)
 		{
 			try
 			{

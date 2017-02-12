@@ -22,7 +22,7 @@ namespace NHibernate.Tool.hbm2ddl
 
 		public void Prepare()
 		{
-			connection = (DbConnection)provider.GetConnection();
+			connection = provider.GetConnection();
 		}
 
 		public DbConnection Connection

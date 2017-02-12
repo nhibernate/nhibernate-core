@@ -68,7 +68,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.ClassMapperTests
 			Assert.That(hbmClass.Id, Is.Null);
 			var hbmCompositeId = hbmClass.CompositeId;
 			Assert.That(hbmCompositeId.Items, Has.Length.EqualTo(2));
-			Assert.That(hbmCompositeId.access, Is.StringContaining("field"));
+			Assert.That(hbmCompositeId.access, Does.Contain("field"));
 		}
 
 		[Test]

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Impl;
+using NHibernate.Type;
 using Remotion.Linq;
 using Remotion.Linq.Parsing.ExpressionTreeVisitors;
 
@@ -15,9 +16,19 @@ namespace NHibernate.Linq
 			return new NhQueryable<T>(session.GetSessionImplementation());
 		}
 
+		public static IQueryable<T> Query<T>(this ISession session, string entityName)
+		{
+			return new NhQueryable<T>(session.GetSessionImplementation(), entityName);
+		}
+
 		public static IQueryable<T> Query<T>(this IStatelessSession session)
 		{
 			return new NhQueryable<T>(session.GetSessionImplementation());
+		}
+
+		public static IQueryable<T> Query<T>(this IStatelessSession session, string entityName)
+		{
+			return new NhQueryable<T>(session.GetSessionImplementation(), entityName);
 		}
 
 		public static IQueryable<T> Cacheable<T>(this IQueryable<T> query)
@@ -90,6 +101,11 @@ namespace NHibernate.Linq
 			}
 
 			return (IFutureValue<T>)future;
+		}
+
+		public static T MappedAs<T>(this T parameter, IType type)
+		{
+			throw new InvalidOperationException("The method should be used inside Linq to indicate a type of a parameter");
 		}
 
 		public static IFutureValue<TResult> ToFutureValue<T, TResult>(this IQueryable<T> query, Expression<Func<IQueryable<T>, TResult>> selector)

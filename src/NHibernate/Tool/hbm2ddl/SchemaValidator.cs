@@ -99,7 +99,7 @@ namespace NHibernate.Tool.hbm2ddl
 				{
 					log.Info("fetching database metadata");
 					connectionHelper.Prepare();
-					DbConnection connection = connectionHelper.Connection;
+					var connection = connectionHelper.Connection;
 					meta = new DatabaseMetadata(connection, dialect, false);
 				}
 				catch (Exception sqle)
