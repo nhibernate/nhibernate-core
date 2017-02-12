@@ -5,15 +5,9 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3771
 {
-
 	[TestFixture]
-    public class Fixture : BugTestCase
+	public class Fixture : BugTestCase
 	{
-        public override string BugNumber
-        {
-            get { return "NH3771"; }
-        }
-
 		protected override void Configure(Configuration configuration)
 		{
 			configuration.SetProperty(Environment.FormatSql, "false");
@@ -32,54 +26,54 @@ namespace NHibernate.Test.NHSpecificTest.NH3771
 		{
 			sessions.Statistics.Clear();
 
-            using (var sqlLog = new SqlLogSpy())
-            using (ISession s = sessions.OpenSession())
-            using (ITransaction tx = s.BeginTransaction())
-            {
-                Singer vs1 = new Singer();
-                vs1.Id = 1;
-                vs1.Name = "Fabrizio De Andre";
-                s.Save(vs1);
+			using (var sqlLog = new SqlLogSpy())
+			using (ISession s = sessions.OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				Singer vs1 = new Singer();
+				vs1.Id = 1;
+				vs1.Name = "Fabrizio De Andre";
+				s.Save(vs1);
 
-                Singer vs2 = new Singer();
-                vs2.Id = 2;
-                vs2.Name = "Vinicio Capossela";
-                s.Save(vs2);
+				Singer vs2 = new Singer();
+				vs2.Id = 2;
+				vs2.Name = "Vinicio Capossela";
+				s.Save(vs2);
 
-                s.Flush();
+				s.Flush();
 
-                vs1.Name = "De Andre, Fabrizio";
-                vs2.Name = "Capossela, Vinicio";
+				vs1.Name = "De Andre, Fabrizio";
+				vs2.Name = "Capossela, Vinicio";
 
-                s.Flush();
+				s.Flush();
 
-                string log = sqlLog.GetWholeLog();
+				string log = sqlLog.GetWholeLog();
 
-                string[] separator = { System.Environment.NewLine };
-                string[] lines = log.Split(separator, System.StringSplitOptions.RemoveEmptyEntries);
+				string[] separator = { System.Environment.NewLine };
+				string[] lines = log.Split(separator, System.StringSplitOptions.RemoveEmptyEntries);
 
-                int batchs = 0;
-                int sqls = 0;
-                int batchCommands = 0;
-                foreach (string line in lines)
-                {
-                    if (line.StartsWith("NHibernate.SQL") && !line.StartsWith("NHibernate.SQL Batch commands:"))
-                        sqls++;
+				int batchs = 0;
+				int sqls = 0;
+				int batchCommands = 0;
+				foreach (string line in lines)
+				{
+					if (line.StartsWith("NHibernate.SQL") && !line.StartsWith("NHibernate.SQL Batch commands:"))
+						sqls++;
 
-                    if (line.StartsWith("NHibernate.SQL Batch commands:"))
-                        batchs++;
+					if (line.StartsWith("NHibernate.SQL Batch commands:"))
+						batchs++;
 
-                    if (line.StartsWith("command"))
-                        batchCommands++;
-                }
+					if (line.StartsWith("command"))
+						batchCommands++;
+				}
 
-                Assert.AreEqual(2, batchs);
-                Assert.AreEqual(0, sqls);
-                Assert.AreEqual(4, batchCommands);
-                Assert.AreEqual(2, sessions.Statistics.PrepareStatementCount);
+				Assert.AreEqual(2, batchs);
+				Assert.AreEqual(0, sqls);
+				Assert.AreEqual(4, batchCommands);
+				Assert.AreEqual(2, sessions.Statistics.PrepareStatementCount);
 
-                s.Transaction.Rollback();
-            }
+				s.Transaction.Rollback();
+			}
 		}
 	}
 }
