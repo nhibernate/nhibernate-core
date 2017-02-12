@@ -1,4 +1,5 @@
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using NHibernate.AdoNet;
 using NHibernate.Dialect;
@@ -26,21 +27,21 @@ namespace NHibernate.Driver
 		public const byte MaxDateTimeOffset = 10;
 
 		/// <summary>
-		/// Creates an uninitialized <see cref="IDbConnection" /> object for
+		/// Creates an uninitialized <see cref="DbConnection" /> object for
 		/// the SqlClientDriver.
 		/// </summary>
 		/// <value>An unitialized <see cref="System.Data.SqlClient.SqlConnection"/> object.</value>
-		public override IDbConnection CreateConnection()
+		public override DbConnection CreateConnection()
 		{
 			return new SqlConnection();
 		}
 
 		/// <summary>
-		/// Creates an uninitialized <see cref="IDbCommand" /> object for
+		/// Creates an uninitialized <see cref="DbCommand" /> object for
 		/// the SqlClientDriver.
 		/// </summary>
 		/// <value>An unitialized <see cref="System.Data.SqlClient.SqlCommand"/> object.</value>
-		public override IDbCommand CreateCommand()
+		public override DbCommand CreateCommand()
 		{
 			return new System.Data.SqlClient.SqlCommand();
 		}
@@ -79,12 +80,12 @@ namespace NHibernate.Driver
 		}
 
 		/// <summary>
-		/// The SqlClient driver does NOT support more than 1 open IDataReader
-		/// with only 1 IDbConnection.
+		/// The SqlClient driver does NOT support more than 1 open DbDataReader
+		/// with only 1 DbConnection.
 		/// </summary>
 		/// <value><see langword="false" /> - it is not supported.</value>
 		/// <remarks>
-		/// MS SQL Server 2000 (and 7) throws an exception when multiple IDataReaders are
+		/// MS SQL Server 2000 (and 7) throws an exception when multiple DbDataReaders are
 		/// attempted to be opened.  When SQL Server 2005 comes out a new driver will be
 		/// created for it because SQL Server 2005 is supposed to support it.
 		/// </remarks>
@@ -93,14 +94,14 @@ namespace NHibernate.Driver
 			get { return false; }
 		}
 
-		protected override void InitializeParameter(IDbDataParameter dbParam, string name, SqlType sqlType)
+		protected override void InitializeParameter(DbParameter dbParam, string name, SqlType sqlType)
 		{
 			base.InitializeParameter(dbParam, name, sqlType);
 			SetVariableLengthParameterSize(dbParam, sqlType);
 		}
 
 		// Used from SqlServerCeDriver as well
-		public static void SetVariableLengthParameterSize(IDbDataParameter dbParam, SqlType sqlType)
+		public static void SetVariableLengthParameterSize(DbParameter dbParam, SqlType sqlType)
 		{
 			SetDefaultParameterSize(dbParam, sqlType);
 
@@ -113,12 +114,12 @@ namespace NHibernate.Driver
 
 			if (sqlType.PrecisionDefined)
 			{
-				dbParam.Precision = sqlType.Precision;
-				dbParam.Scale = sqlType.Scale;
+				((IDbDataParameter) dbParam).Precision = sqlType.Precision;
+				((IDbDataParameter) dbParam).Scale = sqlType.Scale;
 			}
 		}
 
-		protected static void SetDefaultParameterSize(IDbDataParameter dbParam, SqlType sqlType)
+		protected static void SetDefaultParameterSize(DbParameter dbParam, SqlType sqlType)
 		{
 			switch (dbParam.DbType)
 			{
@@ -130,8 +131,8 @@ namespace NHibernate.Driver
 					dbParam.Size = IsBlob(dbParam, sqlType) ? MaxSizeForBlob : MaxSizeForLengthLimitedBinary;
 					break;
 				case DbType.Decimal:
-					dbParam.Precision = MaxPrecision;
-					dbParam.Scale = MaxScale;
+					((IDbDataParameter) dbParam).Precision = MaxPrecision;
+					((IDbDataParameter) dbParam).Scale = MaxScale;
 					break;
 				case DbType.String:
 				case DbType.StringFixedLength:
@@ -155,7 +156,7 @@ namespace NHibernate.Driver
         /// <param name="dbParam">The parameter</param>
         /// <param name="sqlType">The <see cref="SqlType" /> of the parameter</param>
         /// <returns>True, if the parameter should be interpreted as a Clob, otherwise False</returns>
-        protected static bool IsAnsiText(IDbDataParameter dbParam, SqlType sqlType)
+        protected static bool IsAnsiText(DbParameter dbParam, SqlType sqlType)
         {
             return ((DbType.AnsiString == dbParam.DbType || DbType.AnsiStringFixedLength == dbParam.DbType) && sqlType.LengthDefined && (sqlType.Length > MaxSizeForLengthLimitedAnsiString));
         }
@@ -166,7 +167,7 @@ namespace NHibernate.Driver
 		/// <param name="dbParam">The parameter</param>
 		/// <param name="sqlType">The <see cref="SqlType" /> of the parameter</param>
 		/// <returns>True, if the parameter should be interpreted as a Clob, otherwise False</returns>
-		protected static bool IsText(IDbDataParameter dbParam, SqlType sqlType)
+		protected static bool IsText(DbParameter dbParam, SqlType sqlType)
 		{
 			return (sqlType is StringClobSqlType) || ((DbType.String == dbParam.DbType || DbType.StringFixedLength == dbParam.DbType) && sqlType.LengthDefined && (sqlType.Length > MaxSizeForLengthLimitedString));
 		}
@@ -177,7 +178,7 @@ namespace NHibernate.Driver
 		/// <param name="dbParam">The parameter</param>
 		/// <param name="sqlType">The <see cref="SqlType" /> of the parameter</param>
 		/// <returns>True, if the parameter should be interpreted as a Blob, otherwise False</returns>
-		protected static bool IsBlob(IDbDataParameter dbParam, SqlType sqlType)
+		protected static bool IsBlob(DbParameter dbParam, SqlType sqlType)
 		{
 			return (sqlType is BinaryBlobSqlType) || ((DbType.Binary == dbParam.DbType) && sqlType.LengthDefined && (sqlType.Length > MaxSizeForLengthLimitedBinary));
 		}

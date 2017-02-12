@@ -3,6 +3,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using NHibernate.Util;
 
 namespace NHibernate
 {
@@ -243,8 +244,8 @@ namespace NHibernate
 			var method = LogManagerType.GetMethod("GetLogger", new[] { typeof(TParameter) });
 			ParameterExpression resultValue;
 			ParameterExpression keyParam = Expression.Parameter(typeof(TParameter), "key");
-			MethodCallExpression methodCall = Expression.Call(null, method, new Expression[] { resultValue = keyParam });
-			return Expression.Lambda<Func<TParameter, object>>(methodCall, new[] { resultValue }).Compile();
+			MethodCallExpression methodCall = Expression.Call(null, method, resultValue = keyParam);
+			return Expression.Lambda<Func<TParameter, object>>(methodCall, resultValue).Compile();
 		}
 	}
 
@@ -280,66 +281,29 @@ namespace NHibernate
 
 		static Log4NetLogger()
 		{
-			IsErrorEnabledDelegate = GetPropertyGetter("IsErrorEnabled");
-			IsFatalEnabledDelegate = GetPropertyGetter("IsFatalEnabled");
-			IsDebugEnabledDelegate = GetPropertyGetter("IsDebugEnabled");
-			IsInfoEnabledDelegate = GetPropertyGetter("IsInfoEnabled");
-			IsWarnEnabledDelegate = GetPropertyGetter("IsWarnEnabled");
-			ErrorDelegate = GetMethodCallForMessage("Error");
-			ErrorExceptionDelegate = GetMethodCallForMessageException("Error");
-			ErrorFormatDelegate = GetMethodCallForMessageFormat("ErrorFormat");
+			IsErrorEnabledDelegate = DelegateHelper.BuildPropertyGetter<bool>(ILogType, "IsErrorEnabled");
+			IsFatalEnabledDelegate = DelegateHelper.BuildPropertyGetter<bool>(ILogType, "IsFatalEnabled");
+			IsDebugEnabledDelegate = DelegateHelper.BuildPropertyGetter<bool>(ILogType, "IsDebugEnabled");
+			IsInfoEnabledDelegate = DelegateHelper.BuildPropertyGetter<bool>(ILogType, "IsInfoEnabled");
+			IsWarnEnabledDelegate = DelegateHelper.BuildPropertyGetter<bool>(ILogType, "IsWarnEnabled");
+			ErrorDelegate = DelegateHelper.BuildAction<object>(ILogType, "Error");
+			ErrorExceptionDelegate = DelegateHelper.BuildAction<object, Exception>(ILogType, "Error");
+			ErrorFormatDelegate = DelegateHelper.BuildAction<string, object[]>(ILogType, "ErrorFormat");
 
-			FatalDelegate = GetMethodCallForMessage("Fatal");
-			FatalExceptionDelegate = GetMethodCallForMessageException("Fatal");
+			FatalDelegate = DelegateHelper.BuildAction<object>(ILogType, "Fatal");
+			FatalExceptionDelegate = DelegateHelper.BuildAction<object, Exception>(ILogType, "Fatal");
 
-			DebugDelegate = GetMethodCallForMessage("Debug");
-			DebugExceptionDelegate = GetMethodCallForMessageException("Debug");
-			DebugFormatDelegate = GetMethodCallForMessageFormat("DebugFormat");
+			DebugDelegate = DelegateHelper.BuildAction<object>(ILogType, "Debug");
+			DebugExceptionDelegate = DelegateHelper.BuildAction<object, Exception>(ILogType, "Debug");
+			DebugFormatDelegate = DelegateHelper.BuildAction<string, object[]>(ILogType, "DebugFormat");
 
-			InfoDelegate = GetMethodCallForMessage("Info");
-			InfoExceptionDelegate = GetMethodCallForMessageException("Info");
-			InfoFormatDelegate = GetMethodCallForMessageFormat("InfoFormat");
+			InfoDelegate = DelegateHelper.BuildAction<object>(ILogType, "Info");
+			InfoExceptionDelegate = DelegateHelper.BuildAction<object, Exception>(ILogType, "Info");
+			InfoFormatDelegate = DelegateHelper.BuildAction<string, object[]>(ILogType, "InfoFormat");
 
-			WarnDelegate = GetMethodCallForMessage("Warn");
-			WarnExceptionDelegate = GetMethodCallForMessageException("Warn");
-			WarnFormatDelegate = GetMethodCallForMessageFormat("WarnFormat");
-		}
-
-		private static Func<object, bool> GetPropertyGetter(string propertyName)
-		{
-			ParameterExpression funcParam = Expression.Parameter(typeof(object), "l");
-			Expression convertedParam = Expression.Convert(funcParam, ILogType);
-			Expression property = Expression.Property(convertedParam, propertyName);
-			return (Func<object, bool>)Expression.Lambda(property, funcParam).Compile();
-		}
-
-		private static Action<object, object> GetMethodCallForMessage(string methodName)
-		{
-			ParameterExpression loggerParam = Expression.Parameter(typeof(object), "l");
-			ParameterExpression messageParam = Expression.Parameter(typeof(object), "o");
-			Expression convertedParam = Expression.Convert(loggerParam, ILogType);
-			MethodCallExpression methodCall = Expression.Call(convertedParam, ILogType.GetMethod(methodName, new[] { typeof(object) }), messageParam);
-			return (Action<object, object>)Expression.Lambda(methodCall, new[] { loggerParam, messageParam }).Compile();
-		}
-
-		private static Action<object, object, Exception> GetMethodCallForMessageException(string methodName)
-		{
-			ParameterExpression loggerParam = Expression.Parameter(typeof(object), "l");
-			ParameterExpression messageParam = Expression.Parameter(typeof(object), "o");
-			ParameterExpression exceptionParam = Expression.Parameter(typeof(Exception), "e");
-			Expression convertedParam = Expression.Convert(loggerParam, ILogType);
-			MethodCallExpression methodCall = Expression.Call(convertedParam, ILogType.GetMethod(methodName, new[] { typeof(object), typeof(Exception) }), messageParam, exceptionParam);
-			return (Action<object, object, Exception>)Expression.Lambda(methodCall, new[] { loggerParam, messageParam, exceptionParam }).Compile();
-		}
-
-		private static Action<object, string, object[]> GetMethodCallForMessageFormat(string methodName)
-		{
-			ParameterExpression loggerParam = Expression.Parameter(typeof(object), "l");
-			ParameterExpression formatParam = Expression.Parameter(typeof(string), "f");
-			ParameterExpression parametersParam = Expression.Parameter(typeof(object[]), "p");
-			Expression convertedParam = Expression.Convert(loggerParam, ILogType);
-			MethodCallExpression methodCall = Expression.Call(convertedParam, ILogType.GetMethod(methodName, new[] { typeof(string), typeof(object[]) }), formatParam, parametersParam);
-			return (Action<object, string, object[]>)Expression.Lambda(methodCall, new[] { loggerParam, formatParam, parametersParam }).Compile();
+			WarnDelegate = DelegateHelper.BuildAction<object>(ILogType, "Warn");
+			WarnExceptionDelegate = DelegateHelper.BuildAction<object, Exception>(ILogType, "Warn");
+			WarnFormatDelegate = DelegateHelper.BuildAction<string, object[]>(ILogType, "WarnFormat");
 		}
 
 		public Log4NetLogger(object logger)

@@ -1,4 +1,5 @@
 ﻿using NHibernate.Criterion;
+using NHibernate.Dialect;
 using NHibernate.Transform;
 using NUnit.Framework;
 
@@ -82,6 +83,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3609
 		[Test]
 		public void GroupByClauseHasParameterSet()
 		{
+			if (Dialect is FirebirdDialect)
+				Assert.Ignore("Firebird does not support complex group by expressions");
+
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{

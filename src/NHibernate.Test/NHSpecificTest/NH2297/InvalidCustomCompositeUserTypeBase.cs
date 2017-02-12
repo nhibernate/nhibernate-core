@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.UserTypes;
@@ -72,13 +72,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2297
 			return (x == y) || (x != null && y != null && (x.Equals(y)));
 		}
 
-		public object NullSafeGet(System.Data.IDataReader rs, String[] names, NHibernate.Engine.ISessionImplementor session,
+		public object NullSafeGet(DbDataReader rs, String[] names, NHibernate.Engine.ISessionImplementor session,
 		                          Object owner)
 		{
 			return NHibernateUtil.String.NullSafeGet(rs, names[0], session, owner);
 		}
 
-		public void NullSafeSet(System.Data.IDbCommand st, Object value, int index,
+		public void NullSafeSet(DbCommand st, Object value, int index,
 								 bool[] settable, NHibernate.Engine.ISessionImplementor session)
 		{
 			throw new NotImplementedException();

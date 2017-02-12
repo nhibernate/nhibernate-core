@@ -544,7 +544,7 @@ namespace NHibernate.Test.Hql.Ast
 			var e =
 				Assert.Throws<QueryException>(
 					() => s.CreateQuery("update Human set mother.name.initial = :initial").SetString("initial", "F").ExecuteUpdate());
-			Assert.That(e.Message, Is.StringStarting("Implied join paths are not assignable in update"));
+			Assert.That(e.Message, Does.StartWith("Implied join paths are not assignable in update"));
 
 			s.CreateQuery("delete Human where mother is not null").ExecuteUpdate();
 			s.CreateQuery("delete Human").ExecuteUpdate();
@@ -619,8 +619,8 @@ namespace NHibernate.Test.Hql.Ast
 
 			count =
 				s.CreateQuery("update Animal set bodyWeight = bodyWeight + :w1 + :w2")
-				.SetDouble("w1", 1)
-				.SetDouble("w2", 2)
+				.SetSingle("w1", 1)
+				.SetSingle("w2", 2)
 				.ExecuteUpdate();
 			Assert.That(count, Is.EqualTo(6), "incorrect count on 'complex' update assignment");
 
@@ -649,7 +649,7 @@ namespace NHibernate.Test.Hql.Ast
 					s.CreateQuery("update Animal set description = :newDesc, bodyWeight = :w1 where description = :desc")
 						.SetString("desc", data.Polliwog.Description)
 						.SetString("newDesc", "Tadpole")
-						.SetDouble("w1", 3)
+						.SetSingle("w1", 3)
 						.ExecuteUpdate();
 				
 				Assert.That(count, Is.EqualTo(1));
@@ -725,7 +725,7 @@ namespace NHibernate.Test.Hql.Ast
 			using (ISession s = OpenSession())
 			{
 				var e = Assert.Throws<QueryException>(() => s.CreateQuery("update Vehicle set owner = null where owner = 'Steve'").ExecuteUpdate());
-				Assert.That(e.Message, Is.StringStarting("Left side of assigment should be a case sensitive property or a field"));
+				Assert.That(e.Message, Does.StartWith("Left side of assigment should be a case sensitive property or a field"));
 			}
 		}
 

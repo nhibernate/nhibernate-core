@@ -25,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH480
 		private CultureInfo currentCulture = null;
 		private CultureInfo currentUICulture = null;
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void TestFixtureSetUp()
 		{
 			currentCulture = Thread.CurrentThread.CurrentCulture;
@@ -36,7 +36,7 @@ namespace NHibernate.Test.NHSpecificTest.NH480
 			Thread.CurrentThread.CurrentUICulture = turkish;
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void TestFixtureTearDown()
 		{
 			Thread.CurrentThread.CurrentCulture = currentCulture;

@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using NHibernate.DomainModel.NHSpecific;
 using NUnit.Framework;
 
@@ -23,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest
 		{
 			using (ISession s1 = OpenSession())
 			{
-				IDbCommand cmd = s1.Connection.CreateCommand();
+				var cmd = s1.Connection.CreateCommand();
 				cmd.CommandText =
 					"insert into GetSetHelper(ID) values(1)";
 				cmd.ExecuteNonQuery();

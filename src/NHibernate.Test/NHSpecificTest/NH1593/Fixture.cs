@@ -17,7 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1593
 			var su = new SchemaUpdate(cfg);
 			var sb = new StringBuilder(500);
 			su.Execute(x => sb.AppendLine(x), false);
-			Assert.That(sb.ToString(), Is.StringContaining("create index test_index_name on TestIndex (Name)"));
+			Assert.That(sb.ToString(), Does.Contain("create index test_index_name on TestIndex (Name)"));
 		}
 	}
 }

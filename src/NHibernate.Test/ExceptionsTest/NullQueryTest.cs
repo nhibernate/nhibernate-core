@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Exceptions;
 using NUnit.Framework;
 
@@ -24,10 +25,10 @@ namespace NHibernate.Test.ExceptionsTest
 		public void BadGrammar()
 		{
 			ISession session = OpenSession();
-			IDbConnection connection = session.Connection;
+			var connection = session.Connection;
 			try
 			{
-				IDbCommand ps = connection.CreateCommand();
+				var ps = connection.CreateCommand();
 				ps.CommandType = CommandType.Text;
 				ps.CommandText = "whatever";
 				ps.ExecuteNonQuery();

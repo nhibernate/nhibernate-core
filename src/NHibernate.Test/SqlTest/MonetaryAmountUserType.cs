@@ -1,5 +1,5 @@
 using System;
-using System.Data;
+using System.Data.Common;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 
@@ -35,7 +35,7 @@ namespace NHibernate.Test.SqlTest
 			return object.Equals(x, y);
 		}
 
-		public object NullSafeGet(IDataReader resultSet,
+		public object NullSafeGet(DbDataReader resultSet,
 		                          string[] names,
 		                          object owner)
 		{
@@ -50,20 +50,20 @@ namespace NHibernate.Test.SqlTest
 			return new MonetaryAmount(value, cur);
 		}
 
-		public void NullSafeSet(IDbCommand statement,
+		public void NullSafeSet(DbCommand statement,
 		                        object value,
 		                        int index)
 		{
 			if (value == null)
 			{
-				((IDbDataParameter) statement.Parameters[index]).Value = DBNull.Value;
-				((IDbDataParameter) statement.Parameters[index + 1]).Value = DBNull.Value;
+				statement.Parameters[index].Value = DBNull.Value;
+				statement.Parameters[index + 1].Value = DBNull.Value;
 			}
 			else
 			{
 				MonetaryAmount currency = (MonetaryAmount) value;
-				((IDbDataParameter) statement.Parameters[index]).Value = currency.Value;
-				((IDbDataParameter) statement.Parameters[index + 1]).Value = currency.Currency;
+				statement.Parameters[index].Value = currency.Value;
+				statement.Parameters[index + 1].Value = currency.Currency;
 			}
 		}
 

@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -24,7 +25,7 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index)
 		{
 			return Convert.ToDouble(rs[index]);
 		}
@@ -35,7 +36,7 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name)
 		{
 			return Convert.ToDouble(rs[name]);
 		}
@@ -52,10 +53,9 @@ namespace NHibernate.Type
 		/// <param name="st"></param>
 		/// <param name="value"></param>
 		/// <param name="index"></param>
-		public override void Set(IDbCommand st, object value, int index)
+		public override void Set(DbCommand st, object value, int index)
 		{
-			IDataParameter parm = st.Parameters[index] as IDataParameter;
-			parm.Value = value;
+			st.Parameters[index].Value = value;
 		}
 
 		/// <summary></summary>

@@ -244,7 +244,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 
 			mapper.Class(typeof(Relation));
 
-			Assert.That(mapping.Class, Is.StringContaining("Relation").And.Not.Contains("IRelation"));
+			Assert.That(mapping.Class, Does.Contain("Relation").And.Not.Contains("IRelation"));
 		}
 
 		[Test]

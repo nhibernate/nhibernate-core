@@ -28,9 +28,9 @@ namespace NHibernate.Test.Bytecode.Lightweight
 			}
 			catch (HibernateByteCodeException e)
 			{
-				Assert.That(e.Message, Is.StringStarting("Unable to load type"));
-				Assert.That(e.Message, Is.StringContaining("Possible causes"));
-				Assert.That(e.Message, Is.StringContaining("Confirm that your deployment folder contains"));
+				Assert.That(e.Message, Does.StartWith("Unable to load type"));
+				Assert.That(e.Message, Does.Contain("Possible causes"));
+				Assert.That(e.Message, Does.Contain("Confirm that your deployment folder contains"));
 			}
 		}
 
@@ -62,7 +62,7 @@ namespace NHibernate.Test.Bytecode.Lightweight
 			}
 			catch (HibernateByteCodeException e)
 			{
-				Assert.That(e.Message,Is.StringStarting("Failed to create an instance of"));
+				Assert.That(e.Message,Does.StartWith("Failed to create an instance of"));
 			}
 		}
 

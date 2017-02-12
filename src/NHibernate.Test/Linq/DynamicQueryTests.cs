@@ -34,7 +34,7 @@ namespace NHibernate.Test.Linq
 			using (var log = new SqlLogSpy())
 			{
 				users.ToList();
-				Assert.IsNullOrEmpty(log.GetWholeLog());
+				Assert.That(log.GetWholeLog(), Is.Null.Or.Empty);
 			}
 		}
 	}

@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using System.Xml;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -82,22 +82,22 @@ namespace NHibernate.Type
 		/// <returns> The instantiated collection. </returns>
 		public abstract IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister, object key);
 
-		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
+		public override object NullSafeGet(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
 			return NullSafeGet(rs, new string[] { name }, session, owner);
 		}
 
-		public override object NullSafeGet(IDataReader rs, string[] name, ISessionImplementor session, object owner)
+		public override object NullSafeGet(DbDataReader rs, string[] name, ISessionImplementor session, object owner)
 		{
 			return ResolveIdentifier(null, session, owner);
 		}
 
-		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override void NullSafeSet(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			// NOOP
 		}
 
-		public override void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session)
+		public override void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 		}
 
@@ -218,7 +218,7 @@ namespace NHibernate.Type
 			get { return ForeignKeyDirection.ForeignKeyToParent; }
 		}
 
-		public override object Hydrate(IDataReader rs, string[] name, ISessionImplementor session, object owner)
+		public override object Hydrate(DbDataReader rs, string[] name, ISessionImplementor session, object owner)
 		{
 			// can't just return null here, since that would
 			// cause an owning component to become null

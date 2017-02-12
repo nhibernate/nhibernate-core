@@ -61,7 +61,7 @@ namespace NHibernate.Linq.Visitors
 				return innerExpression;
 			}
 
-			var projectConstantsInHql = _stateStack.Peek() || IsRegisteredFunction(expression);
+			var projectConstantsInHql = _stateStack.Peek() || expression.NodeType == ExpressionType.Equal || IsRegisteredFunction(expression);
 
 			// Set some flags, unless we already have proper values for them:
 			//    projectConstantsInHql if they are inside a method call executed server side.
@@ -153,8 +153,17 @@ namespace NHibernate.Linq.Visitors
 			if (expression.NodeType == ExpressionType.Call)
 			{
 				// Depends if it's in the function registry
-				if (!IsRegisteredFunction(expression))
-					return false;
+				return IsRegisteredFunction(expression);
+			}
+
+			if (expression.NodeType == ExpressionType.Conditional)
+			{
+				// Theoretically, any conditional that returns a CAST-able primitive should be constructable in HQL.
+				// The type needs to be CAST-able because HQL wraps the CASE clause in a CAST and only supports
+				// certain types (as defined by the HqlIdent constructor that takes a System.Type as the second argument).
+				// However, this may still not cover all cases, so to limit the nomination of conditional expressions,
+				// we will only consider those which are already getting constants projected into them.
+				return projectConstantsInHql;
 			}
 
 			// Assume all is good

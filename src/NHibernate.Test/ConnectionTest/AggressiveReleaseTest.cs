@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Cfg;
 using NHibernate.Util;
 using NUnit.Framework;
@@ -176,7 +176,7 @@ namespace NHibernate.Test.ConnectionTest
 		{
 			Prepare();
 
-			IDbConnection originalConnection = sessions.ConnectionProvider.GetConnection();
+			DbConnection originalConnection = sessions.ConnectionProvider.GetConnection();
 			ISession session = sessions.OpenSession(originalConnection);
 
 			Silly silly = new Silly("silly");
@@ -203,7 +203,7 @@ namespace NHibernate.Test.ConnectionTest
 		//    Prepare();
 		//    ISession s = GetSessionUnderTest();
 
-		//    IDbConnection conn = s.Connection;
+		//    DbConnection conn = s.Connection;
 		//    Assert.IsTrue(((SessionImpl) s).ConnectionManager.HasBorrowedConnection);
 		//    conn.Close();
 		//    Assert.IsFalse(((SessionImpl) s).ConnectionManager.HasBorrowedConnection);

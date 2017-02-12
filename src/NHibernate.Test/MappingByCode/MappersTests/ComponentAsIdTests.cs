@@ -32,7 +32,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var component = new HbmCompositeId();
 			new ComponentAsIdMapper(typeof(PersonId), For<Person>.Property(x=> x.Id), component, mapdoc);
 
-			Assert.That(component.@class, Is.StringContaining("PersonId"));
+			Assert.That(component.@class, Does.Contain("PersonId"));
 		}
 
 		[Test]

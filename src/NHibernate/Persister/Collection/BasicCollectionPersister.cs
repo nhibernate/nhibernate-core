@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Data;
 using System.Data.Common;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
@@ -162,7 +161,7 @@ namespace NHibernate.Persister.Collection
 
 			try
 			{
-				IDbCommand st = null;
+				DbCommand st = null;
 				IExpectation expectation = Expectations.AppropriateExpectation(UpdateCheckStyle);
 				//bool callable = UpdateCallable;
 				bool useBatch = expectation.CanBeBatched;

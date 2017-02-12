@@ -29,30 +29,7 @@ echo.
 echo OraProvCfg /action:gac /providerpath:"%~dp0..\PublisherPolicy\4\Policy.4.121.Oracle.ManagedDataAccess.dll"        
 OraProvCfg /action:gac /providerpath:"%~dp0..\PublisherPolicy\4\Policy.4.121.Oracle.ManagedDataAccess.dll"
 
-) else (
-
-REM For local installs, unconfig odpm
-REM Unconfigure machine.config for ODP.NET, Managed Driver's configuration file section handler and client factory
-echo.
-echo OraProvCfg /action:unconfig /product:odpm /frameworkversion:v4.0.30319 /providerpath:"%~dp0..\common\Oracle.ManagedDataAccess.dll"
-OraProvCfg /action:unconfig /product:odpm /frameworkversion:v4.0.30319 /providerpath:"%~dp0..\common\Oracle.ManagedDataAccess.dll" 
-
-REM Remove the ODP.NET, Managed Driver assemblies from the GAC
-echo.
-echo OraProvCfg /action:ungac /providerpath:"Oracle.ManagedDataAccess, Version=4.121.2.0"   
-OraProvCfg /action:ungac /providerpath:"Oracle.ManagedDataAccess, Version=4.121.2.0"
-
-REM Remove the ODP.NET, Managed Policy assembly from the GAC
-echo.
-echo OraProvCfg /action:ungac /providerpath:"Policy.4.121.Oracle.ManagedDataAccess, Version=4.121.2.0"   
-OraProvCfg /action:ungac /providerpath:"Policy.4.121.Oracle.ManagedDataAccess, Version=4.121.2.0"
-
-REM Remove the ODP.NET, Managed DTC assembly from the GAC
-echo.
-echo OraProvCfg /action:ungac /providerpath:"Oracle.ManagedDataAccessDTC, Version=4.121.2.0"   
-OraProvCfg /action:ungac /providerpath:"Oracle.ManagedDataAccessDTC, Version=4.121.2.0"
-)
-      
+)      
 
 REM Add a registry entry for enabling event logs
 echo.

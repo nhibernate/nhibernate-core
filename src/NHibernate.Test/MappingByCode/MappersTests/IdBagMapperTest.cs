@@ -130,7 +130,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbm = new HbmIdbag();
 			var mapper = new IdBagMapper(typeof(Animal), typeof(Animal), hbm);
 			mapper.Type<FakeUserCollectionType>();
-			Assert.That(hbm.CollectionType, Is.StringContaining("FakeUserCollectionType"));
+			Assert.That(hbm.CollectionType, Does.Contain("FakeUserCollectionType"));
 		}
 
 		[Test]
@@ -139,7 +139,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbm = new HbmIdbag();
 			var mapper = new IdBagMapper(typeof(Animal), typeof(Animal), hbm);
 			mapper.Type(typeof(FakeUserCollectionType));
-			Assert.That(hbm.CollectionType, Is.StringContaining("FakeUserCollectionType"));
+			Assert.That(hbm.CollectionType, Does.Contain("FakeUserCollectionType"));
 		}
 
 		[Test]
