@@ -5,7 +5,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 {
 	/// <summary>
 	/// Provides a map of collection function names to the corresponding property names.
-	/// Authoer: josh
+	/// Author: josh
 	/// Ported by: Steve Strong
 	/// </summary>
 	internal static class CollectionProperties

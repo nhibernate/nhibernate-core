@@ -17,6 +17,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 			var toAdd = new[] {classMapping};
 			classMapping.name = subClass.GetShortClassName(mapDoc);
 			classMapping.extends = subClass.BaseType.GetShortClassName(mapDoc);
+			if (subClass.IsAbstract)
+			{
+				classMapping.@abstract = true;
+				classMapping.abstractSpecified = true;
+			}
 			mapDoc.Items = mapDoc.Items == null ? toAdd : mapDoc.Items.Concat(toAdd).ToArray();
 		}
 
@@ -145,6 +150,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 		#endregion
 
 		#region Implementation of IUnionSubclassAttributesMapper
+		public void Abstract(bool isAbstract)
+		{
+			classMapping.@abstract = isAbstract;
+			classMapping.abstractSpecified = true;
+		}
 
 		public void Table(string tableName)
 		{
@@ -170,7 +180,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			if (!Container.GetBaseTypes().Contains(baseType))
 			{
 				throw new ArgumentOutOfRangeException("baseType",
-				                                      string.Format("{0} is a valid super-class of {1}", baseType, Container));
+													  string.Format("{0} is a valid super-class of {1}", baseType, Container));
 			}
 			classMapping.extends = baseType.GetShortClassName(MapDoc);
 		}

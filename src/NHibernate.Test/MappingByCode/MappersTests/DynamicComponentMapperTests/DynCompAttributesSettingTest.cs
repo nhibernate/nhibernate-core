@@ -4,7 +4,6 @@ using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 {
@@ -28,7 +27,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			var mapper = new DynamicComponentMapper(component, For<Person>.Property(p => p.Info), mapdoc);
 
 			mapper.Access(Accessor.Field);
-			component.access.Should().Be("field.camelcase");
+			Assert.That(component.access, Is.EqualTo("field.camelcase"));
 		}
 
 		[Test]
@@ -39,7 +38,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			var mapper = new DynamicComponentMapper(component, For<Person>.Property(p => p.Info), mapdoc);
 
 			mapper.Update(false);
-			component.update.Should().Be.False();
+			Assert.That(component.update, Is.False);
 		}
 
 		[Test]
@@ -50,7 +49,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			var mapper = new DynamicComponentMapper(component, For<Person>.Property(p => p.Info), mapdoc);
 
 			mapper.Insert(false);
-			component.insert.Should().Be.False();
+			Assert.That(component.insert, Is.False);
 		}
 
 		[Test]
@@ -61,7 +60,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			var mapper = new DynamicComponentMapper(component, For<Person>.Property(p => p.Info), mapdoc);
 
 			mapper.OptimisticLock(false);
-			component.OptimisticLock.Should().Be.False();
+			Assert.That(component.OptimisticLock, Is.False);
 		}
 
 		[Test]
@@ -73,7 +72,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			var dynObject = new { Pizza = 5 };
 			mapper.Property(dynObject.GetType().GetProperty("Pizza"), x => { });
 
-			component.Properties.Single().Should().Be.OfType<HbmProperty>().And.ValueOf.Name.Should().Be.EqualTo("Pizza");
+			Assert.That(component.Properties.Single(), Is.TypeOf<HbmProperty>().And.Property("Name").EqualTo("Pizza"));
 		}
 
 	}

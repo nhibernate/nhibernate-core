@@ -537,6 +537,11 @@ namespace NHibernate.Impl
 							Loader.Loader.Advance(reader, selection);
 						}
 
+						if (parameter.HasAutoDiscoverScalarTypes)
+						{
+							translator.Loader.AutoDiscoverTypes(reader);
+						}
+
 						LockMode[] lockModeArray = translator.Loader.GetLockModes(parameter.LockModes);
 						EntityKey optionalObjectKey = Loader.Loader.GetOptionalObjectKey(parameter, session);
 
@@ -631,9 +636,9 @@ namespace NHibernate.Impl
 			int queryIndex = 0;
 			foreach (AbstractQueryImpl query in queries)
 			{
+				query.VerifyParameters();
 				QueryParameters queryParameters = query.GetQueryParameters();
 				queryParameters.ValidateParameters();
-				query.VerifyParameters();
 				foreach (var translator in query.GetTranslators(session, queryParameters))
 				{
 					translators.Add(translator);

@@ -31,7 +31,7 @@ namespace NHibernate.Id.Insert
 			try
 			{
 				// prepare and execute the insert
-				IDbCommand insert = session.Batcher.PrepareCommand(insertSQL.CommandType, insertSQL.Text, insertSQL.ParameterTypes);
+				var insert = session.Batcher.PrepareCommand(insertSQL.CommandType, insertSQL.Text, insertSQL.ParameterTypes);
 				try
 				{
 					binder.BindValues(insert);
@@ -53,11 +53,11 @@ namespace NHibernate.Id.Insert
 			try
 			{
 				//fetch the generated id in a separate query
-				IDbCommand idSelect = session.Batcher.PrepareCommand(CommandType.Text, selectSQL, ParametersTypes);
+				var idSelect = session.Batcher.PrepareCommand(CommandType.Text, selectSQL, ParametersTypes);
 				try
 				{
 					BindParameters(session, idSelect, binder.Entity);
-					IDataReader rs = session.Batcher.ExecuteReader(idSelect);
+					var rs = session.Batcher.ExecuteReader(idSelect);
 					try
 					{
 						return GetResult(session, rs, binder.Entity);
@@ -88,16 +88,16 @@ namespace NHibernate.Id.Insert
 
 		/// <summary> Extract the generated key value from the given result set. </summary>
 		/// <param name="session">The session </param>
-		/// <param name="rs">The result set containing the generated primay key values. </param>
+		/// <param name="rs">The result set containing the generated primary key values. </param>
 		/// <param name="entity">The entity being saved. </param>
 		/// <returns> The generated identifier </returns>
-		protected internal abstract object GetResult(ISessionImplementor session, IDataReader rs, object entity);
+		protected internal abstract object GetResult(ISessionImplementor session, DbDataReader rs, object entity);
 
 		/// <summary> Bind any required parameter values into the SQL command <see cref="SelectSQL"/>. </summary>
 		/// <param name="session">The session </param>
 		/// <param name="ps">The prepared <see cref="SelectSQL"/> command </param>
 		/// <param name="entity">The entity being saved. </param>
-		protected internal virtual void BindParameters(ISessionImplementor session, IDbCommand ps, object entity) { }
+		protected internal virtual void BindParameters(ISessionImplementor session, DbCommand ps, object entity) { }
 
 		#region NH Specific
 

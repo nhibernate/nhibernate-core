@@ -1,5 +1,5 @@
 using System;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlTypes;
@@ -14,6 +14,7 @@ namespace NHibernate.Type
 	public class ManyToOneType : EntityType
 	{
 		private readonly bool ignoreNotFound;
+		private readonly bool isLogicalOneToOne;
 
 		public ManyToOneType(string className)
 			: this(className, false)
@@ -24,12 +25,14 @@ namespace NHibernate.Type
 			: base(className, null, !lazy, true, false)
 		{
 			ignoreNotFound = false;
+			isLogicalOneToOne = false;
 		}
 
-		public ManyToOneType(string entityName, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool isEmbeddedInXML, bool ignoreNotFound)
+		public ManyToOneType(string entityName, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool isEmbeddedInXML, bool ignoreNotFound, bool isLogicalOneToOne)
 			: base(entityName, uniqueKeyPropertyName, !lazy, isEmbeddedInXML, unwrapProxy)
 		{
 			this.ignoreNotFound = ignoreNotFound;
+			this.isLogicalOneToOne = isLogicalOneToOne;
 		}
 
 		public override int GetColumnSpan(IMapping mapping)
@@ -43,21 +46,26 @@ namespace NHibernate.Type
 			return GetIdentifierOrUniqueKeyType(mapping).SqlTypes(mapping);
 		}
 
-		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override void NullSafeSet(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			GetIdentifierOrUniqueKeyType(session.Factory)
-				.NullSafeSet(st, GetIdentifier(value, session), index, settable, session);
+				.NullSafeSet(st, GetReferenceValue(value, session), index, settable, session);
 		}
 
-		public override void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session)
+		public override void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			GetIdentifierOrUniqueKeyType(session.Factory)
-				.NullSafeSet(cmd, GetIdentifier(value, session), index, session);
+				.NullSafeSet(cmd, GetReferenceValue(value, session), index, session);
 		}
 
 		public override bool IsOneToOne
 		{
 			get { return false; }
+		}
+
+		public override bool IsLogicalOneToOne()
+		{
+			return isLogicalOneToOne;
 		}
 
 		public override ForeignKeyDirection ForeignKeyDirection
@@ -66,16 +74,16 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Hydrates the Identifier from <see cref="IDataReader"/>.
+		/// Hydrates the Identifier from <see cref="DbDataReader"/>.
 		/// </summary>
-		/// <param name="rs">The <see cref="IDataReader"/> that contains the query results.</param>
+		/// <param name="rs">The <see cref="DbDataReader"/> that contains the query results.</param>
 		/// <param name="names">A string array of column names to read from.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> this is occurring in.</param>
 		/// <param name="owner">The object that this Entity will be a part of.</param>
 		/// <returns>
 		/// An instantiated object that used as the identifier of the type.
 		/// </returns>
-		public override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override object Hydrate(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			// return the (fully resolved) identifier value, but do not resolve
 			// to the actual referenced entity instance

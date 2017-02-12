@@ -34,7 +34,7 @@ namespace NHibernate.Engine
 			ICollectionPersister loadedPersister = entry.LoadedPersister;
 
 			if (log.IsDebugEnabled && loadedPersister != null)
-				log.Debug("Collection dereferenced: " + MessageHelper.InfoString(loadedPersister, entry.LoadedKey, session.Factory));
+				log.Debug("Collection dereferenced: " + MessageHelper.CollectionInfoString(loadedPersister, coll, entry.LoadedKey, session));
 
 			// do a check
 			bool hasOrphanDelete = loadedPersister != null && loadedPersister.HasOrphanDelete;
@@ -84,7 +84,7 @@ namespace NHibernate.Engine
 		{
 			CollectionEntry entry = session.PersistenceContext.GetCollectionEntry(coll);
 
-			log.Debug("Found collection with unloaded owner: " + MessageHelper.InfoString(entry.LoadedPersister, entry.LoadedKey, session.Factory));
+			log.Debug("Found collection with unloaded owner: " + MessageHelper.CollectionInfoString(entry.LoadedPersister, coll, entry.LoadedKey, session));
 
 			entry.CurrentPersister = entry.LoadedPersister;
 			entry.CurrentKey = entry.LoadedKey;
@@ -95,7 +95,7 @@ namespace NHibernate.Engine
 		/// <summary> 
 		/// Initialize the role of the collection. 
 		/// </summary>
-		/// <param name="collection">The collection to be updated by reachibility. </param>
+		/// <param name="collection">The collection to be updated by reachability. </param>
 		/// <param name="type">The type of the collection. </param>
 		/// <param name="entity">The owner of the collection. </param>
 		/// <param name="session">The session.</param>
@@ -127,9 +127,9 @@ namespace NHibernate.Engine
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("Collection found: " + 
-				          MessageHelper.InfoString(persister, ce.CurrentKey, factory) + ", was: " + 
-				          MessageHelper.InfoString(ce.LoadedPersister, ce.LoadedKey, factory) + 
-				          (collection.WasInitialized ? " (initialized)" : " (uninitialized)"));
+						  MessageHelper.CollectionInfoString(persister, collection, ce.CurrentKey, session) + ", was: " +
+						  MessageHelper.CollectionInfoString(ce.LoadedPersister, collection, ce.LoadedKey, session) + 
+						  (collection.WasInitialized ? " (initialized)" : " (uninitialized)"));
 			}
 
 			PrepareCollectionForUpdate(collection, ce, session.EntityMode, factory);

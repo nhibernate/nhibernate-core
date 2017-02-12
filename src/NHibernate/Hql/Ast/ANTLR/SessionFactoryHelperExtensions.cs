@@ -102,7 +102,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		/// <summary>
 		/// Does the given persister define a physical discriminator column
-		/// for the purpose of inheritence discrimination?
+		/// for the purpose of inheritance discrimination?
 		/// </summary>
 		/// <param name="persister">The persister to be checked.</param>
 		/// <returns>True if the persister does define an actual discriminator column.</returns>
@@ -299,7 +299,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		/// </summary>
 		/// <param name="implicitJoin">Should implicit joins (theta-style) or explicit joins (ANSI-style) be rendered</param>
 		/// <param name="associationType">The type representing the thing to be joined into.</param>
-		/// <param name="tableAlias">The table alias to use in qualifing the join conditions</param>
+		/// <param name="tableAlias">The table alias to use in qualifying the join conditions</param>
 		/// <param name="joinType">The type of join to render (inner, outer, etc)</param>
 		/// <param name="columns">The columns making up the condition of the join.</param>
 		/// <returns>The generated join sequence.</returns>
@@ -327,9 +327,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 		}
 
 		/// <summary>
-		/// Retreive a PropertyMapping describing the given collection role.
+		/// Retrieve a PropertyMapping describing the given collection role.
 		/// </summary>
-		/// <param name="role">The collection role for whcih to retrieve the property mapping.</param>
+		/// <param name="role">The collection role for which to retrieve the property mapping.</param>
 		/// <returns>The property mapping.</returns>
 		private IPropertyMapping GetCollectionPropertyMapping(string role)
 		{

@@ -6,7 +6,6 @@ using System.Linq;
 using System.Reflection;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 {
@@ -17,25 +16,25 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 		[Test]
 		public void CanDetermineDictionaryKeyType()
 		{
-			typeof (IDictionary<string, int>).DetermineDictionaryKeyType().Should().Be.EqualTo<string>();
+			Assert.That(typeof (IDictionary<string, int>).DetermineDictionaryKeyType(), Is.EqualTo(typeof(string)));
 		}
 
 		[Test]
 		public void WhenNoGenericDictionaryThenDetermineNullDictionaryKeyType()
 		{
-			typeof(IEnumerable<string>).DetermineDictionaryKeyType().Should().Be.Null();
+			Assert.That(typeof(IEnumerable<string>).DetermineDictionaryKeyType(), Is.Null);
 		}
 
 		[Test]
 		public void CanDetermineDictionaryValueType()
 		{
-			typeof(IDictionary<string, int>).DetermineDictionaryValueType().Should().Be.EqualTo<int>();
+			Assert.That(typeof(IDictionary<string, int>).DetermineDictionaryValueType(), Is.EqualTo(typeof(int)));
 		}
 
 		[Test]
 		public void WhenNoGenericDictionaryThenDetermineNullDictionaryValueType()
 		{
-			typeof(IEnumerable<string>).DetermineDictionaryValueType().Should().Be.Null();
+			Assert.That(typeof(IEnumerable<string>).DetermineDictionaryValueType(), Is.Null);
 		}
 
 		private class MyBaseClass
@@ -44,6 +43,7 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 			public bool BaseBool { get; set; }
 			private double SomethingPrivate { get; set; }
 		}
+		
 		private class MyClass : MyBaseClass
 		{
 			
@@ -52,43 +52,55 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 		[Test]
 		public void DecodeMemberAccessExpressionShouldReturnMemberOfDeclaringClass()
 		{
-			Mapping.ByCode.TypeExtensions.DecodeMemberAccessExpression<MyClass>(mc => mc.BaseProperty).Satisfy(
-				mi => mi.ReflectedType == typeof(MyBaseClass) && mi.DeclaringType == typeof(MyBaseClass));
-			Mapping.ByCode.TypeExtensions.DecodeMemberAccessExpression<MyClass>(mc => mc.BaseBool).Satisfy(
-				mi => mi.ReflectedType == typeof(MyBaseClass) && mi.DeclaringType == typeof(MyBaseClass));
+			var mi1 = TypeExtensions.DecodeMemberAccessExpression<MyClass>(mc => mc.BaseProperty);
+			Assert.That(mi1.DeclaringType, Is.EqualTo(typeof (MyBaseClass)));
+			Assert.That(mi1.ReflectedType, Is.EqualTo(typeof (MyBaseClass)));
+
+			var mi2 = TypeExtensions.DecodeMemberAccessExpression<MyClass>(mc => mc.BaseBool);
+			Assert.That(mi2.DeclaringType, Is.EqualTo(typeof(MyBaseClass)));
+			Assert.That(mi2.ReflectedType, Is.EqualTo(typeof(MyBaseClass)));
 		}
 
 		[Test]
 		public void GenericDecodeMemberAccessExpressionShouldReturnMemberOfDeclaringClass()
 		{
-			Mapping.ByCode.TypeExtensions.DecodeMemberAccessExpression<MyClass, string>(mc => mc.BaseProperty).Satisfy(
-				mi => mi.ReflectedType == typeof(MyBaseClass) && mi.DeclaringType == typeof(MyBaseClass));
-			Mapping.ByCode.TypeExtensions.DecodeMemberAccessExpression<MyClass, bool>(mc => mc.BaseBool).Satisfy(
-				mi => mi.ReflectedType == typeof(MyBaseClass) && mi.DeclaringType == typeof(MyBaseClass));
+			var mi1 = TypeExtensions.DecodeMemberAccessExpression<MyClass, string>(mc => mc.BaseProperty);
+			Assert.That(mi1.DeclaringType, Is.EqualTo(typeof(MyBaseClass)));
+			Assert.That(mi1.ReflectedType, Is.EqualTo(typeof(MyBaseClass)));
+
+			var mi2 = TypeExtensions.DecodeMemberAccessExpression<MyClass, bool>(mc => mc.BaseBool);
+			Assert.That(mi2.DeclaringType, Is.EqualTo(typeof(MyBaseClass)));
+			Assert.That(mi2.ReflectedType, Is.EqualTo(typeof(MyBaseClass)));
 		}
 
 		[Test]
 		public void DecodeMemberAccessExpressionOfShouldReturnMemberOfRequiredClass()
 		{
-			Mapping.ByCode.TypeExtensions.DecodeMemberAccessExpressionOf<MyClass>(mc => mc.BaseProperty).Satisfy(
-				mi => mi.ReflectedType == typeof (MyClass) && mi.DeclaringType == typeof (MyBaseClass));
-			Mapping.ByCode.TypeExtensions.DecodeMemberAccessExpressionOf<MyClass>(mc => mc.BaseBool).Satisfy(
-				mi => mi.ReflectedType == typeof(MyClass) && mi.DeclaringType == typeof(MyBaseClass));
+			var mi1 = TypeExtensions.DecodeMemberAccessExpressionOf<MyClass>(mc => mc.BaseProperty);
+			Assert.That(mi1.DeclaringType, Is.EqualTo(typeof (MyBaseClass)));
+			Assert.That(mi1.ReflectedType, Is.EqualTo(typeof (MyClass)));
+
+			var mi2 = TypeExtensions.DecodeMemberAccessExpressionOf<MyClass>(mc => mc.BaseBool);
+			Assert.That(mi2.DeclaringType, Is.EqualTo(typeof(MyBaseClass)));
+			Assert.That(mi2.ReflectedType, Is.EqualTo(typeof(MyClass)));
 		}
 
 		[Test]
 		public void GenericDecodeMemberAccessExpressionOfShouldReturnMemberOfRequiredClass()
 		{
-			Mapping.ByCode.TypeExtensions.DecodeMemberAccessExpressionOf<MyClass, string>(mc => mc.BaseProperty).Satisfy(
-				mi => mi.ReflectedType == typeof(MyClass) && mi.DeclaringType == typeof(MyBaseClass));
-			Mapping.ByCode.TypeExtensions.DecodeMemberAccessExpressionOf<MyClass, bool>(mc => mc.BaseBool).Satisfy(
-				mi => mi.ReflectedType == typeof(MyClass) && mi.DeclaringType == typeof(MyBaseClass));
+			var mi1 = TypeExtensions.DecodeMemberAccessExpressionOf<MyClass, string>(mc => mc.BaseProperty);
+			Assert.That(mi1.DeclaringType, Is.EqualTo(typeof(MyBaseClass)));
+			Assert.That(mi1.ReflectedType, Is.EqualTo(typeof(MyClass)));
+
+			var mi2 = TypeExtensions.DecodeMemberAccessExpressionOf<MyClass, bool>(mc => mc.BaseBool);
+			Assert.That(mi2.DeclaringType, Is.EqualTo(typeof(MyBaseClass)));
+			Assert.That(mi2.ReflectedType, Is.EqualTo(typeof(MyClass)));
 		}
 
 		[Test]
 		public void GetBaseTypesIncludesInterfaces()
 		{
-			typeof (Collection<>).GetBaseTypes().Should().Contain(typeof (IEnumerable));
+			Assert.That(typeof (Collection<>).GetBaseTypes(), Contains.Item(typeof (IEnumerable)));
 		}
 
 		private interface IEntity<T>
@@ -114,10 +126,13 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 		[Test]
 		public void DecodeMemberAccessExpressionOfWithGenericShouldReturnMemberOfRequiredClass()
 		{
-			Mapping.ByCode.TypeExtensions.DecodeMemberAccessExpressionOf<MyEntity>(mc => mc.Id).Satisfy(
-				mi => mi.ReflectedType == typeof(MyEntity) && mi.DeclaringType == typeof(BaseEntity));
-			Mapping.ByCode.TypeExtensions.DecodeMemberAccessExpressionOf<MyEntity>(mc => mc.BaseBool).Satisfy(
-				mi => mi.ReflectedType == typeof(MyEntity) && mi.DeclaringType == typeof(BaseEntity));
+			var mi1 = TypeExtensions.DecodeMemberAccessExpressionOf<MyEntity>(mc => mc.Id);
+			Assert.That(mi1.DeclaringType, Is.EqualTo(typeof (BaseEntity)));
+			Assert.That(mi1.ReflectedType, Is.EqualTo(typeof (MyEntity)));
+
+			var mi2 = TypeExtensions.DecodeMemberAccessExpressionOf<MyEntity>(mc => mc.BaseBool);
+			Assert.That(mi2.DeclaringType, Is.EqualTo(typeof(BaseEntity)));
+			Assert.That(mi2.ReflectedType, Is.EqualTo(typeof(MyEntity)));
 		}
 
 		[Test]
@@ -125,8 +140,8 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 		{
 			var mi = typeof(MyEntity).GetProperty("Id", typeof(int));
 			var declaringMi = mi.GetMemberFromDeclaringType();
-			declaringMi.DeclaringType.Should().Be<BaseEntity>();
-			declaringMi.ReflectedType.Should().Be<BaseEntity>();
+			Assert.That(declaringMi.DeclaringType, Is.EqualTo(typeof(BaseEntity)));
+			Assert.That(declaringMi.ReflectedType, Is.EqualTo(typeof(BaseEntity)));
 		}
 
 		[Test]
@@ -134,34 +149,32 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 		{
 			var mi = typeof(MyEntity).GetProperty("BaseBool", typeof(bool));
 			var declaringMi = mi.GetMemberFromDeclaringType();
-			declaringMi.DeclaringType.Should().Be<BaseEntity>();
-			declaringMi.ReflectedType.Should().Be<BaseEntity>();
+			Assert.That(declaringMi.DeclaringType, Is.EqualTo(typeof(BaseEntity)));
+			Assert.That(declaringMi.ReflectedType, Is.EqualTo(typeof(BaseEntity)));
 		}
 
 		[Test]
 		public void GetFirstPropertyOfTypeWithNulls()
 		{
 			System.Type myType = null;
-			myType.GetFirstPropertyOfType(typeof (int), BindingFlagsIncludePrivate).Should().Be.Null();
+			Assert.That(myType.GetFirstPropertyOfType(typeof (int), BindingFlagsIncludePrivate), Is.Null);
 			myType = typeof (Array);
-			myType.GetFirstPropertyOfType(null, BindingFlagsIncludePrivate).Should().Be.Null();
+			Assert.That(myType.GetFirstPropertyOfType(null, BindingFlagsIncludePrivate), Is.Null);
 		}
 
 		[Test]
 		public void GetFirstPropertyOfType_WhenPropertyExistThenFindProperty()
 		{
-			typeof (MyBaseClass).GetFirstPropertyOfType(typeof (string)).Should().Be(
-				typeof (MyBaseClass).GetProperty("BaseProperty"));
-			typeof (MyBaseClass).GetFirstPropertyOfType(typeof (bool)).Should().Be(typeof (MyBaseClass).GetProperty("BaseBool"));
-			typeof (MyBaseClass).GetFirstPropertyOfType(typeof (double), BindingFlagsIncludePrivate).Should().Be(
-				typeof (MyBaseClass).GetProperty("SomethingPrivate", BindingFlagsIncludePrivate));
+			Assert.That(typeof (MyBaseClass).GetFirstPropertyOfType(typeof (string)), Is.EqualTo(typeof (MyBaseClass).GetProperty("BaseProperty")));
+			Assert.That(typeof (MyBaseClass).GetFirstPropertyOfType(typeof (bool)), Is.EqualTo(typeof (MyBaseClass).GetProperty("BaseBool")));
+			Assert.That(typeof (MyBaseClass).GetFirstPropertyOfType(typeof (double), BindingFlagsIncludePrivate), Is.EqualTo(typeof (MyBaseClass).GetProperty("SomethingPrivate", BindingFlagsIncludePrivate)));
 		}
 
 		[Test]
 		public void GetFirstPropertyOfType_WhenPropertyNotExistThenNull()
 		{
-			typeof (MyBaseClass).GetFirstPropertyOfType(typeof (float)).Should().Be.Null();
-			// typeof (MyBaseClass).GetFirstPropertyOfType(typeof (double)).Should().Be.Null(); <= by default check private prop.
+			Assert.That(typeof (MyBaseClass).GetFirstPropertyOfType(typeof (float)), Is.Null);
+			//Assert.That(typeof (MyBaseClass).GetFirstPropertyOfType(typeof (double)), Is.Null); <= by default check private prop.
 		}
 
 		private interface IMyEntity : IEntity<Guid>
@@ -172,37 +185,37 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 		[Test]
 		public void WhenDecodeMemberAccessExpressionOfOnInheritedEntityInterfaceThenDecodeMember()
 		{
-			Mapping.ByCode.TypeExtensions.DecodeMemberAccessExpressionOf<IMyEntity>(m => m.Id).Should().Not.Be.Null();
-			Mapping.ByCode.TypeExtensions.DecodeMemberAccessExpressionOf<IMyEntity, Guid>(m => m.Id).Should().Not.Be.Null();
+			Assert.That(TypeExtensions.DecodeMemberAccessExpressionOf<IMyEntity>(m => m.Id), Is.Not.Null);
+			Assert.That(TypeExtensions.DecodeMemberAccessExpressionOf<IMyEntity, Guid>(m => m.Id), Is.Not.Null);
 		}
 
 		[Test]
 		public void TheSequenceOfGetHierarchyFromBaseShouldStartFromBaseClassUpToGivenClass()
 		{
 			// excluding System.Object
-			typeof(MyEntity).GetHierarchyFromBase().Should().Have.SameSequenceAs(typeof(AbstractEntity<int>), typeof(BaseEntity), typeof(MyEntity));
+			var expected = new[] {typeof (AbstractEntity<int>), typeof (BaseEntity), typeof (MyEntity)};
+			Assert.That(typeof (MyEntity).GetHierarchyFromBase(), Is.EquivalentTo(expected));
 		}
 
 		[Test]
 		public void GetFirstPropertyOfType_WhenDelegateIsNullThenThrow()
 		{
 			var myType = typeof(Array);
-			Executing.This(()=> myType.GetFirstPropertyOfType(typeof(int), BindingFlagsIncludePrivate, null)).Should().Throw<ArgumentNullException>();
+			Assert.That(() => myType.GetFirstPropertyOfType(typeof(int), BindingFlagsIncludePrivate, null), Throws.TypeOf<ArgumentNullException>());
 		}
 
 		[Test]
 		public void GetFirstPropertyOfType_WhenAsDelegateThenUseDelegateToFilterProperties()
 		{
-			typeof (MyBaseClass).GetFirstPropertyOfType(typeof (string), BindingFlags.Public | BindingFlags.Instance, x => false).Should().Be.Null();
-			typeof (MyBaseClass).GetFirstPropertyOfType(typeof (string), BindingFlags.Public | BindingFlags.Instance, x => true).Should().Be(
-				typeof (MyBaseClass).GetProperty("BaseProperty"));
+			Assert.That(typeof (MyBaseClass).GetFirstPropertyOfType(typeof (string), BindingFlags.Public | BindingFlags.Instance, x => false), Is.Null);
+			Assert.That(typeof (MyBaseClass).GetFirstPropertyOfType(typeof (string), BindingFlags.Public | BindingFlags.Instance, x => true), Is.EqualTo(typeof (MyBaseClass).GetProperty("BaseProperty")));
 		}
 
 		[Test]
 		public void HasPublicPropertyOf_WhenAsDelegateThenUseDelegateToFilterProperties()
 		{
-			typeof(MyBaseClass).HasPublicPropertyOf(typeof(string), x => false).Should().Be.False();
-			typeof(MyBaseClass).HasPublicPropertyOf(typeof(string), x => true).Should().Be.True();
+			Assert.That(typeof(MyBaseClass).HasPublicPropertyOf(typeof(string), x => false), Is.False);
+			Assert.That(typeof(MyBaseClass).HasPublicPropertyOf(typeof(string), x => true), Is.True);
 		}
 
 		private abstract class MyAbstract
@@ -224,10 +237,10 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 		{
 			var member = typeof(MyConcrete).GetProperty("Description", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 			var found = member.GetMemberFromDeclaringClasses().ToList();
-			found.Count.Should().Be(2);
+			Assert.That(found.Count, Is.EqualTo(2));
 			var concreteMember = For<MyConcrete>.Property(x => x.Description).GetMemberFromReflectedType(typeof(MyConcrete));
 			var abstractMember = For<MyAbstract>.Property(x => x.Description);
-			found.Should().Have.SameValuesAs(concreteMember, abstractMember);
+			Assert.That(found, Is.EquivalentTo(new [] {concreteMember, abstractMember}));
 		}
 
 		[Test]
@@ -235,10 +248,10 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 		{
 			var member = typeof(MyConcrete).GetField("aField", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 			var found = member.GetMemberFromDeclaringClasses().ToList();
-			found.Count.Should().Be(1);
+			Assert.That(found.Count, Is.EqualTo(1));
 			var foundMember = found.Single();
-			foundMember.DeclaringType.Should().Be(typeof(MyAbstract));
-			foundMember.ReflectedType.Should().Be(typeof(MyAbstract));
+			Assert.That(foundMember.DeclaringType, Is.EqualTo(typeof(MyAbstract)));
+			Assert.That(foundMember.ReflectedType, Is.EqualTo(typeof(MyAbstract)));
 		}
 
 		private class MyCustomCollection : List<MyEntity>
@@ -249,21 +262,21 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 		public void DetermineCollectionElementTypeShouldDetermineElementTypeWhenCollectionTypeIsGeneric()
 		{
 			var elementType = typeof(List<MyEntity>).DetermineCollectionElementType();
-			elementType.Should().Be(typeof(MyEntity));
+			Assert.That(elementType, Is.EqualTo(typeof(MyEntity)));
 		}
 
 		[Test(Description = "NH-3054")]
 		public void DetermineCollectionElementTypeShouldDetermineElementTypeWhenCollectionTypeIsNonGeneric()
 		{
 			var elementType = typeof(MyCustomCollection).DetermineCollectionElementType();
-			elementType.Should().Be(typeof(MyEntity));
+			Assert.That(elementType, Is.EqualTo(typeof(MyEntity)));
 		}
 
 		[Test]
 		public void DetermineCollectionElementTypeShouldNotDetermineElementTypeWhenTypeIsNotACollection()
 		{
 			var elementType = typeof(MyEntity).DetermineCollectionElementType();
-			elementType.Should().Be.Null();
+			Assert.That(elementType, Is.Null);
 		}
 	}
 }

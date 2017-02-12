@@ -22,7 +22,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1584
 		}
 
 		/// <summary>
-		/// Demostrate that the session is able to load the one-to-one composition between a joined subclass and its related entity. 
+		/// Demonstrate that the session is able to load the one-to-one composition between a joined subclass and its related entity. 
 		/// </summary>
 		[Test]
 		public void Load_One_To_One_Composition_For_Joined_Subclass_Succeeds()

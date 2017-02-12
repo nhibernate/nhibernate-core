@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1313
 {
-	// http://jira.nhibernate.org/browse/NH-1313
+	// http://nhibernate.jira.com/browse/NH-1313
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{

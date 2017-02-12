@@ -679,7 +679,7 @@ namespace NHibernate.Criterion
 		}
 
 		/// <summary>
-		/// Return the disjuction of two expressions
+		/// Return the disjunction of two expressions
 		/// </summary>
 		/// <param name="lhs">The Expression to use as the Left Hand Side.</param>
 		/// <param name="rhs">The Expression to use as the Right Hand Side.</param>

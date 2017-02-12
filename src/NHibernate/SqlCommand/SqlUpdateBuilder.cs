@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
@@ -20,7 +20,7 @@ namespace NHibernate.SqlCommand
 		// columns-> (ColumnName, Value) or (ColumnName, SqlType) for parametrized column
 		private readonly LinkedHashMap<string, object> columns = new LinkedHashMap<string, object>();
 
-		private List<SqlString> whereStrings = new List<SqlString>();
+	    private List<SqlString> whereStrings = new List<SqlString>();
 		private readonly List<SqlType> whereParameterTypes = new List<SqlType>();
 		private SqlString assignments;
 
@@ -128,6 +128,33 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
+		public SqlUpdateBuilder SetJoin(string joinTableName, string[] keyColumnNames, IType identityType, string[] lhsColumnNames, string[] rhsColumnNames)
+		{
+			var sqlBuilder = new SqlStringBuilder()
+				.Add("EXISTS (SELECT * FROM ")
+				.Add(joinTableName)
+				.Add(" WHERE ")
+				.Add(ToWhereString(joinTableName, keyColumnNames));
+
+			for (int columnIndex = 0; columnIndex < lhsColumnNames.Length; columnIndex++)
+			{
+				sqlBuilder.Add(" AND ")
+					.Add(tableName)
+					.Add(StringHelper.Dot.ToString())
+					.Add(lhsColumnNames[columnIndex])
+					.Add("=")
+					.Add(joinTableName)
+					.Add(StringHelper.Dot.ToString())
+					.Add(rhsColumnNames[columnIndex]);
+			}
+			sqlBuilder.Add(")");
+
+			whereStrings.Add(sqlBuilder.ToSqlString());
+			whereParameterTypes.AddRange(identityType.SqlTypes(Mapping));
+
+			return this;
+		}
+
 		public SqlUpdateBuilder SetWhere(string whereSql)
 		{
 			if (StringHelper.IsNotEmpty(whereSql))
@@ -232,6 +259,7 @@ namespace NHibernate.SqlCommand
 			{
 				initialCapacity += (columns.Count - 1) + (columns.Count * 3);
 			}
+
 			// 1 = "WHERE" 
 			initialCapacity++;
 
@@ -239,8 +267,7 @@ namespace NHibernate.SqlCommand
 			if (whereStrings.Count > 0)
 			{
 				initialCapacity += (whereStrings.Count - 1);
-				foreach (SqlString whereString in whereStrings)
-					initialCapacity += whereString.Count;
+				initialCapacity += whereStrings.Sum(x => x.Count);
 			}
 
 			if (!string.IsNullOrEmpty(comment))
@@ -281,6 +308,7 @@ namespace NHibernate.SqlCommand
 				}
 				sqlBuilder.Add(assignments);
 			}
+
 
 			sqlBuilder.Add(" WHERE ");
 			bool andNeeded = false;

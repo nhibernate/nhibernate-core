@@ -149,6 +149,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 		#endregion
 
 		#region Implementation of IJoinedSubclassAttributesMapper
+		public void Abstract(bool isAbstract)
+		{
+			classMapping.@abstract = isAbstract;
+			classMapping.abstractSpecified = true;
+		}
 
 		public void Table(string tableName)
 		{
@@ -189,6 +194,19 @@ namespace NHibernate.Mapping.ByCode.Impl
 			classMapping.schemaaction = action.ToSchemaActionString();
 		}
 
+		public void Filter(string filterName, Action<IFilterMapper> filterMapping)
+		{
+			if (filterMapping == null)
+			{
+				filterMapping = x => { };
+			}
+			var hbmFilter = new HbmFilter();
+			var filterMapper = new FilterMapper(filterName, hbmFilter);
+			filterMapping(filterMapper);
+			Dictionary<string, HbmFilter> filters = classMapping.filter != null ? classMapping.filter.ToDictionary(f => f.name, f => f) : new Dictionary<string, HbmFilter>(1);
+			filters[filterName] = hbmFilter;
+			classMapping.filter = filters.Values.ToArray();
+		}
 		#endregion
 	}
 }

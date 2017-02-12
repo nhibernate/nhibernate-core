@@ -1,7 +1,6 @@
 using System;
 using NHibernate.Driver;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.DriverTest
 {
@@ -60,13 +59,13 @@ namespace NHibernate.Test.DriverTest
 		[Test]
 		public void WhenCreatedWithGoodDbProviderThenNotThrows()
 		{
-			Executing.This(()=> new MyDriverWithWrongClassesAndGoodDbProviderFactory()).Should().NotThrow();
+			Assert.That(() => new MyDriverWithWrongClassesAndGoodDbProviderFactory(), Throws.Nothing);
 		}
 
 		[Test]
 		public void WhenCreatedWithNullAssemblyAndGoodDbProviderThenNotThrows()
 		{
-			Executing.This(() => new MyDriverWithWrongClassesAndGoodDbProviderFactory(null)).Should().NotThrow();
+			Assert.That(() => new MyDriverWithWrongClassesAndGoodDbProviderFactory(null), Throws.Nothing);
 		}
 
 		[Test]
@@ -75,7 +74,7 @@ namespace NHibernate.Test.DriverTest
 			var provider = new MyDriverWithWrongClassesAndGoodDbProviderFactory();
 			using (var connection = provider.CreateConnection())
 			{
-				connection.Should().Not.Be.Null();
+				Assert.That(connection, Is.Not.Null);
 			}
 		}
 
@@ -85,14 +84,14 @@ namespace NHibernate.Test.DriverTest
 			var provider = new MyDriverWithWrongClassesAndGoodDbProviderFactory();
 			using (var command = provider.CreateCommand())
 			{
-				command.Should().Not.Be.Null();
+				Assert.That(command, Is.Not.Null);
 			}
 		}
 
 		[Test]
 		public void WhenCreatedWithNoDbProviderThenNotThrows()
 		{
-			Executing.This(() => new MyDriverWithNoDbProviderFactory()).Should().NotThrow();
+			Assert.That(() => new MyDriverWithNoDbProviderFactory(), Throws.Nothing);
 		}
 
 		[Test]
@@ -101,7 +100,7 @@ namespace NHibernate.Test.DriverTest
 			var provider = new MyDriverWithNoDbProviderFactory();
 			using (var connection = provider.CreateConnection())
 			{
-				connection.Should().Not.Be.Null();
+				Assert.That(connection, Is.Not.Null);
 			}
 		}
 
@@ -111,7 +110,7 @@ namespace NHibernate.Test.DriverTest
 			var provider = new MyDriverWithNoDbProviderFactory();
 			using (var command = provider.CreateCommand())
 			{
-				command.Should().Not.Be.Null();
+				Assert.That(command, Is.Not.Null);
 			}
 		}
 	}

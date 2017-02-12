@@ -526,7 +526,7 @@ namespace NHibernate.Mapping.ByCode
 			customizeAction(customizer);
 		}
 
-		public void Component<TComponent>(Action<IComponentMapper<TComponent>> customizeAction) where TComponent : class
+		public void Component<TComponent>(Action<IComponentMapper<TComponent>> customizeAction)
 		{
 			var customizer = new ComponentCustomizer<TComponent>(explicitDeclarationsHolder, customizerHolder);
 			customizeAction(customizer);
@@ -548,25 +548,29 @@ namespace NHibernate.Mapping.ByCode
 			{
 				throw new ArgumentNullException("types");
 			}
-			var typeToMap = new HashSet<System.Type>(types);
+
+			var typeToMap = types.Distinct()
+								 .OrderBy(x => x, new TypeHierarchyComparer())
+								 .ToList();
 
 			string defaultAssemblyName = null;
 			string defaultNamespace = null;
 			System.Type firstType = typeToMap.FirstOrDefault();
 			if (firstType != null && typeToMap.All(t => t.Assembly.Equals(firstType.Assembly)))
 			{
-				defaultAssemblyName = firstType.Assembly.GetName().Name;
+				//NH-2831: always use the full name of the assembly because it may come from GAC
+				defaultAssemblyName = firstType.Assembly.GetName().FullName;
 			}
 			if (firstType != null && typeToMap.All(t => t.Namespace == firstType.Namespace))
 			{
 				defaultNamespace = firstType.Namespace;
 			}
 			var mapping = NewHbmMapping(defaultAssemblyName, defaultNamespace);
-			foreach (System.Type type in RootClasses(typeToMap))
+			foreach (var type in RootClasses(typeToMap))
 			{
 				MapRootClass(type, mapping);
 			}
-			foreach (System.Type type in Subclasses(typeToMap))
+			foreach (var type in Subclasses(typeToMap))
 			{
 				AddSubclassMapping(mapping, type);
 			}
@@ -579,17 +583,20 @@ namespace NHibernate.Mapping.ByCode
 			{
 				throw new ArgumentNullException("types");
 			}
-			var typeToMap = new HashSet<System.Type>(types);
+			var typeToMap = types.Distinct()
+								 .OrderBy(x => x, new TypeHierarchyComparer())
+								 .ToList();
 
-			foreach (System.Type type in RootClasses(typeToMap))
+			//NH-2831: always use the full name of the assembly because it may come from GAC
+			foreach (var type in RootClasses(typeToMap))
 			{
-				var mapping = NewHbmMapping(type.Assembly.GetName().Name, type.Namespace);
+				var mapping = NewHbmMapping(type.Assembly.GetName().FullName, type.Namespace);
 				MapRootClass(type, mapping);
 				yield return mapping;
 			}
-			foreach (System.Type type in Subclasses(typeToMap))
+			foreach (var type in Subclasses(typeToMap))
 			{
-				var mapping = NewHbmMapping(type.Assembly.GetName().Name, type.Namespace);
+				var mapping = NewHbmMapping(type.Assembly.GetName().FullName, type.Namespace);
 				AddSubclassMapping(mapping, type);
 				yield return mapping;
 			}
@@ -864,6 +871,10 @@ namespace NHibernate.Mapping.ByCode
 				{
 					MapComponent(member, memberPath, propertyType, propertiesContainer, propertiesContainerType);
 				}
+				else if (modelInspector.IsDynamicComponent(member))
+				{
+					MapDynamicComponent(member, memberPath, propertyType, propertiesContainer);
+				}
 				else
 				{
 					MapProperty(member, memberPath, propertiesContainer);
@@ -1026,7 +1037,7 @@ namespace NHibernate.Mapping.ByCode
 			}
 		}
 
-		private void MapDynamicComponent(MemberInfo member, PropertyPath memberPath, System.Type propertyType, IPropertyContainerMapper propertiesContainer)
+		private void MapDynamicComponent(MemberInfo member, PropertyPath memberPath, System.Type propertyType, IBasePlainPropertyContainerMapper propertiesContainer)
 		{
 			propertiesContainer.Component(member, (IDynamicComponentMapper componentMapper) =>
 			{
@@ -1280,19 +1291,12 @@ namespace NHibernate.Mapping.ByCode
 			{
 				return new OneToManyRelationMapper(propertyPath, ownerType, collectionElementType, modelInspector, customizerHolder, this);
 			}
-			//NH-3667 & NH-3102
-			//check if property is really a many-to-many: as detected by modelInspector.IsManyToMany and also the collection type is an entity
-			if (modelInspector.IsManyToMany(property) == true)
+			//NH-3667 & NH-3102 && NH-3741
+			// many to many split from key many to many so that XML mappings and Interfaces work with many to many.
+			// MapKeyManyToManyCustomizer now registers itself as KeyManyToMany, so will return false for IsManyToMany(property).
+			if (modelInspector.IsManyToManyItem(property))
 			{
-				if (property.GetPropertyOrFieldType().IsGenericCollection() == true)
-				{
-					var args = property.GetPropertyOrFieldType().GetGenericArguments();
-
-					if (modelInspector.IsEntity(args.Last()) == true)
-					{
-						return new ManyToManyRelationMapper(propertyPath, customizerHolder, this);
-					}
-				}
+				return new ManyToManyRelationMapper(propertyPath, customizerHolder, this);
 			}
 			if (modelInspector.IsComponent(collectionElementType))
 			{
@@ -1307,10 +1311,7 @@ namespace NHibernate.Mapping.ByCode
 
 		private IMapKeyRelationMapper DetermineMapKeyRelationType(MemberInfo member, PropertyPath propertyPath, System.Type dictionaryKeyType)
 		{
-			// Perhaps we have to change IModelInspector with IsDictionaryKeyManyToMany(member), IsDictionaryKeyComponent(member) and so on
-
-			//if (modelInspector.IsManyToMany(member) || modelInspector.IsOneToMany(member))
-			if (modelInspector.IsEntity(dictionaryKeyType))
+			if (modelInspector.IsManyToManyKey(member))
 			{
 				// OneToMany is not possible as map-key so we map it as many-to-many instead ignore the case
 				return new KeyManyToManyRelationMapper(propertyPath, customizerHolder, this);
@@ -1808,6 +1809,17 @@ namespace NHibernate.Mapping.ByCode
 		public IEnumerable<HbmMapping> CompileMappingForEachExplicitlyAddedEntity()
 		{
 			return CompileMappingForEach(customizerHolder.GetAllCustomizedEntities());
+		}
+
+		private class TypeHierarchyComparer : IComparer<System.Type>
+		{
+			public int Compare(System.Type x, System.Type y)
+			{
+				if (x == y) return 0;
+				if (x.IsAssignableFrom(y)) return -1;
+				if (y.IsAssignableFrom(x)) return 1;
+				return 0;
+			}
 		}
 	}
 }

@@ -16,7 +16,7 @@ namespace NHibernate.Test.MappingTest
 
 		private Configuration cfg;
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void SetUp()
 		{
 			cfg = new Configuration()
@@ -24,7 +24,7 @@ namespace NHibernate.Test.MappingTest
 			cfg.BuildMappings();
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void TearDown()
 		{
 			cfg = null;
@@ -164,7 +164,7 @@ namespace NHibernate.Test.MappingTest
 
 			Property property = cm.GetProperty("SortedEmployee");
 			var col = (Mapping.Collection)property.Value;
-			Assert.That(col.ComparerClassName, Is.StringStarting("NHibernate.Test.MappingTest.NonExistingComparator"));
+			Assert.That(col.ComparerClassName, Does.StartWith("NHibernate.Test.MappingTest.NonExistingComparator"));
 		}
 
 		[Test]

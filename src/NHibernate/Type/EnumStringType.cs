@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -135,17 +136,9 @@ namespace NHibernate.Type
 		/// <param name="cmd"></param>
 		/// <param name="value"></param>
 		/// <param name="index"></param>
-		public override void Set(IDbCommand cmd, object value, int index)
+		public override void Set(DbCommand cmd, object value, int index)
 		{
-			var par = (IDataParameter) cmd.Parameters[index];
-			if (value == null)
-			{
-				par.Value = DBNull.Value;
-			}
-			else
-			{
-				par.Value = GetValue(value);
-			}
+			cmd.Parameters[index].Value = value == null ? DBNull.Value : GetValue(value);
 		}
 
 		/// <summary>
@@ -154,7 +147,7 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index)
 		{
 			object code = rs[index];
 			if (code == DBNull.Value || code == null)
@@ -173,7 +166,7 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name)
 		{
 			return Get(rs, rs.GetOrdinal(name));
 		}

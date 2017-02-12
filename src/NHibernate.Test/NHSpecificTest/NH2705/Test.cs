@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
-using SharpTestsEx;
 
 // ReSharper disable InconsistentNaming
 
@@ -25,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2705
 		{
 			using (ISession s = OpenSession())
 			{
-				Executing.This(() => GetAndFetch<ItemWithComponentSubItem>("hello", s)).Should().NotThrow();
+				Assert.That(() => GetAndFetch<ItemWithComponentSubItem>("hello", s), Throws.Nothing);
 			}
 		}
 
@@ -36,8 +35,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2705
 			{
 				using (var log = new SqlLogSpy())
 				{
-					Executing.This(() => s.CreateQuery("from ItemWithComponentSubItem i left join fetch i.SubItem").List()
-						).Should().NotThrow();
+					Assert.That(() => s.CreateQuery("from ItemWithComponentSubItem i left join fetch i.SubItem").List(), Throws.Nothing);
 				}
 			}
 		}
@@ -49,8 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2705
 			{
 				using (var log = new SqlLogSpy())
 				{
-					Executing.This(() => s.CreateQuery("from ItemWithComponentSubItem i left join fetch i.SubItem.Details").List()
-						).Should().NotThrow();
+					Assert.That(() => s.CreateQuery("from ItemWithComponentSubItem i left join fetch i.SubItem.Details").List(), Throws.Nothing);
 				}
 			}
 		}
@@ -62,15 +59,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2705
 			{
 				using (var log = new SqlLogSpy())
 				{
-					Executing.This(() => s.Query<ItemBase>()
-					                     	.Fetch(p => p.SubItem).ToList()
-						).Should().NotThrow();
+					Assert.That(() => s.Query<ItemBase>()
+									   .Fetch(p => p.SubItem).ToList(), Throws.Nothing);
 
 
 					// fetching second level properties should work too
-					Executing.This(() => s.Query<ItemWithComponentSubItem>()
-					                     	.Fetch(p => p.SubItem).ThenFetch(p => p.Details).ToList()
-						).Should().NotThrow();
+					Assert.That(() => s.Query<ItemWithComponentSubItem>()
+									   .Fetch(p => p.SubItem).ThenFetch(p => p.Details).ToList(), Throws.Nothing);
 				}
 			}
 		}
@@ -82,7 +77,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2705
 			{
 				using (var log = new SqlLogSpy())
 				{
-					Executing.This(() => s.Query<ItemWithComponentSubItem>().Fetch(p => p.SubItem.Details).ToList()).Should().NotThrow();
+					Assert.That(() => s.Query<ItemWithComponentSubItem>().Fetch(p => p.SubItem.Details).ToList(), Throws.Nothing);
 				}
 			}
 		}

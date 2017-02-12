@@ -1043,14 +1043,15 @@ finally
         </itemizedlist>
 
         <para>
-            Mapping an association (many-to-one, or collection) with <literal>cascade="all"</literal>
+            Mapping an association (many-to-one, one-to-one or collection) with <literal>cascade="all"</literal>
             marks the association as a <emphasis>parent/child</emphasis> style relationship where
             save/update/deletion of the parent results in save/update/deletion of the child(ren).
             Futhermore, a mere reference to a child from a persistent parent will result in save / update
             of the child. The metaphor is incomplete, however. A child which becomes unreferenced by its
-            parent is <emphasis>not</emphasis> automatically deleted, except in the case of a
-            <literal>&lt;one-to-many&gt;</literal> association mapped with
-            <literal>cascade="all-delete-orphan"</literal>. The precise semantics of cascading operations
+            parent is <emphasis>not</emphasis> automatically deleted, except in the cases of 
+            <literal>&lt;one-to-many&gt;</literal> and <literal>&lt;one-to-one&gt;</literal> associations 
+            that have been mapped with <literal>cascade="all-delete-orphan"</literal> or 
+            <literal>cascade="delete-orphan"</literal>. The precise semantics of cascading operations
             are as follows:
         </para>
 
@@ -1081,8 +1082,8 @@ finally
                 <para>
                     If a transient child is dereferenced by a persistent parent, <emphasis>nothing
                     special happens</emphasis> (the application should explicitly delete the child if
-                    necessary) unless <literal>cascade="all-delete-orphan"</literal>, in which case the
-                    "orphaned" child is deleted.
+                    necessary) unless <literal>cascade="all-delete-orphan"</literal> or 
+                    <literal>cascade="delete-orphan"</literal>, in which case the "orphaned" child is deleted.
                 </para>
             </listitem>
         </itemizedlist>

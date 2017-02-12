@@ -1,5 +1,5 @@
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using System.Xml;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
@@ -76,24 +76,24 @@ namespace NHibernate.Type
 		bool IsModified(object oldHydratedState, object currentState, bool[] checkable, ISessionImplementor session);
 
 		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(IDataReader, String[], ISessionImplementor, Object)"]/*'
+		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, String[], ISessionImplementor, Object)"]/*'
 		/// /> 
-		object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner);
+		object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner);
 
 		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(IDataReader, String, ISessionImplementor, Object)"]/*'
+		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, String, ISessionImplementor, Object)"]/*'
 		/// /> 
-		object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner);
+		object NullSafeGet(DbDataReader rs, string name, ISessionImplementor session, object owner);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet(settable)"]/*'
 		/// /> 
-		void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session);
+		void NullSafeSet(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet"]/*'
 		/// /> 
-		void NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session);
+		void NullSafeSet(DbCommand st, object value, int index, ISessionImplementor session);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.ToString"]/*'
@@ -108,7 +108,7 @@ namespace NHibernate.Type
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.Hydrate"]/*'
 		/// /> 
-		object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner);
+		object Hydrate(DbDataReader rs, string[] names, ISessionImplementor session, object owner);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.ResolveIdentifier"]/*'

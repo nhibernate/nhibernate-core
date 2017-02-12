@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH1508
 {
@@ -66,7 +65,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1508
 			{
 				var sqlQuery = session.CreateSQLQuery("select * from Document");
 				var multiquery = session.CreateMultiQuery();
-				multiquery.Executing(x => x.Add(sqlQuery)).NotThrows();
+				Assert.That(() => multiquery.Add(sqlQuery), Throws.Nothing);
 			}
 		}
 
@@ -78,7 +77,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1508
 			{
 
 				var multiquery = session.CreateMultiQuery();
-				multiquery.Executing(x => x.AddNamedQuery("SampleSqlQuery")).NotThrows();
+				Assert.That(() => multiquery.AddNamedQuery("SampleSqlQuery"), Throws.Nothing);
 			}
 		}
 	}

@@ -24,6 +24,8 @@ namespace NHibernate.Id
 	/// </remarks>
 	public class GuidCombGenerator : IIdentifierGenerator
 	{
+		private static readonly long BaseDateTicks = new DateTime(1900, 1, 1).Ticks;
+
 		#region IIdentifierGenerator Members
 
 		/// <summary>
@@ -44,11 +46,10 @@ namespace NHibernate.Id
 		{
 			byte[] guidArray = Guid.NewGuid().ToByteArray();
 
-			DateTime baseDate = new DateTime(1900, 1, 1);
-			DateTime now = DateTime.Now;
+			DateTime now = DateTime.UtcNow;
 
 			// Get the days and milliseconds which will be used to build the byte string 
-			TimeSpan days = new TimeSpan(now.Ticks - baseDate.Ticks);
+			TimeSpan days = new TimeSpan(now.Ticks - BaseDateTicks);
 			TimeSpan msecs = now.TimeOfDay;
 
 			// Convert to a byte array 

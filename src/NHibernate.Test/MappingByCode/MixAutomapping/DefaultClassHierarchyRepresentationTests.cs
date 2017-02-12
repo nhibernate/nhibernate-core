@@ -1,6 +1,5 @@
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.MixAutomapping
 {
@@ -23,8 +22,8 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			mapper.Class<MyClass>(x => { });
 			var inspector = (IModelInspector)autoinspector;
 
-			inspector.IsTablePerClass(typeof(MyClass)).Should().Be.True();
-			inspector.IsTablePerClass(typeof(Inherited)).Should().Be.True();
+			Assert.That(inspector.IsTablePerClass(typeof(MyClass)), Is.True);
+			Assert.That(inspector.IsTablePerClass(typeof(Inherited)), Is.True);
 		}
 
 		[Test]
@@ -37,8 +36,8 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 
 			var inspector = (IModelInspector)autoinspector;
 
-			inspector.IsTablePerClass(typeof(MyClass)).Should().Be.False();
-			inspector.IsTablePerClass(typeof(Inherited)).Should().Be.False();
+			Assert.That(inspector.IsTablePerClass(typeof(MyClass)), Is.False);
+			Assert.That(inspector.IsTablePerClass(typeof(Inherited)), Is.False);
 		}
 
 		[Test]
@@ -51,8 +50,8 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 
 			var inspector = (IModelInspector)autoinspector;
 
-			inspector.IsTablePerClass(typeof(MyClass)).Should().Be.False();
-			inspector.IsTablePerClass(typeof(Inherited)).Should().Be.False();
+			Assert.That(inspector.IsTablePerClass(typeof(MyClass)), Is.False);
+			Assert.That(inspector.IsTablePerClass(typeof(Inherited)), Is.False);
 		}
 	}
 }

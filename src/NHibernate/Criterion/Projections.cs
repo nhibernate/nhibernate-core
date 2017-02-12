@@ -296,7 +296,7 @@ namespace NHibernate.Criterion
 		}
 
 		/// <summary>
-		/// Conditionally return the true or false part, dependention on the criterion
+		/// Conditionally return the true or false part, depending on the criterion
 		/// </summary>
 		/// <param name="criterion">The criterion.</param>
 		/// <param name="whenTrue">The when true.</param>

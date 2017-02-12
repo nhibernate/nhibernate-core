@@ -1,4 +1,5 @@
 using System.Data;
+using System.Data.Common;
 
 namespace NHibernate.Driver
 {
@@ -75,7 +76,7 @@ namespace NHibernate.Driver
 			get { return true; }
 		}
 
-		protected override void InitializeParameter(IDbDataParameter dbParam, string name, SqlTypes.SqlType sqlType)
+		protected override void InitializeParameter(DbParameter dbParam, string name, SqlTypes.SqlType sqlType)
 		{
 			base.InitializeParameter(dbParam, name, sqlType);
 

@@ -5,7 +5,7 @@ using Remotion.Linq.Parsing;
 namespace NHibernate.Linq.Visitors
 {
 	/// <summary>
-	/// Some conditional expressions can be redured to just their IfTrue or IfFalse part.
+	/// Some conditional expressions can be reduced to just their IfTrue or IfFalse part.
 	/// </summary>
 	internal class SimplifyConditionalVisitor :ExpressionTreeVisitor
 	{

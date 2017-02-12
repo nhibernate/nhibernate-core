@@ -1628,7 +1628,7 @@
         name="PropertyName"
         column="column_name"
         class="ClassName"
-        cascade="all|none|save-update|delete"
+        cascade="all|none|save-update|delete|delete-orphan|all-delete-orphan"
         fetch="join|select"
         update="true|false"
         insert="true|false"
@@ -1788,7 +1788,7 @@
                 <programlisting><![CDATA[<one-to-one
         name="PropertyName"
         class="ClassName"
-        cascade="all|none|save-update|delete"
+        cascade="all|none|save-update|delete|delete-orphan|all-delete-orphan"
         constrained="true|false"
         fetch="join|select"
         property-ref="PropertyNameFromAssociatedClass"
@@ -3167,8 +3167,8 @@
     ...
     <database-object>
         <definition class="MyTriggerDefinition"/>
-        <dialect-scope name="NHibernate.Dialect.Oracle9Dialect"/>
-        <dialect-scope name="NHibernate.Dialect.OracleDialect"/>
+        <dialect-scope name="NHibernate.Dialect.Oracle9iDialect"/>
+        <dialect-scope name="NHibernate.Dialect.Oracle8iDialect"/>
     </database-object>
 </hibernate-mapping>]]></programlisting>
     </sect1>

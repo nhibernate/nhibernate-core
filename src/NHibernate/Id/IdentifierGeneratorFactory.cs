@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -82,16 +82,16 @@ namespace NHibernate.Id
 	///		</item>
 	/// </list>
 	/// </remarks>
-	public sealed class IdentifierGeneratorFactory
+	public static class IdentifierGeneratorFactory
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (IdentifierGeneratorFactory));
 
 		/// <summary> Get the generated identifier when using identity columns</summary>
-		/// <param name="rs">The <see cref="IDataReader"/> to read the identifier value from.</param>
+		/// <param name="rs">The <see cref="DbDataReader"/> to read the identifier value from.</param>
 		/// <param name="type">The <see cref="IIdentifierType"/> the value should be converted to.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the value is retrieved in.</param>
 		/// <returns> The value for the identifier. </returns>
-		public static object GetGeneratedIdentity(IDataReader rs, IType type, ISessionImplementor session)
+		public static object GetGeneratedIdentity(DbDataReader rs, IType type, ISessionImplementor session)
 		{
 			if (!rs.Read())
 			{
@@ -107,20 +107,20 @@ namespace NHibernate.Id
 		}
 
 		/// <summary>
-		/// Gets the value of the identifier from the <see cref="IDataReader"/> and
+		/// Gets the value of the identifier from the <see cref="DbDataReader"/> and
 		/// ensures it is the correct <see cref="System.Type"/>.
 		/// </summary>
-		/// <param name="rs">The <see cref="IDataReader"/> to read the identifier value from.</param>
+		/// <param name="rs">The <see cref="DbDataReader"/> to read the identifier value from.</param>
 		/// <param name="type">The <see cref="IIdentifierType"/> the value should be converted to.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the value is retrieved in.</param>
 		/// <returns>
 		/// The value for the identifier.
 		/// </returns>
 		/// <exception cref="IdentifierGenerationException">
-		/// Thrown if there is any problem getting the value from the <see cref="IDataReader"/>
+		/// Thrown if there is any problem getting the value from the <see cref="DbDataReader"/>
 		/// or with converting it to the <see cref="System.Type"/>.
 		/// </exception>
-		public static object Get(IDataReader rs, IType type, ISessionImplementor session)
+		public static object Get(DbDataReader rs, IType type, ISessionImplementor session)
 		{
 			// here is an interesting one: 
 			// - MsSql's @@identity returns a Decimal
@@ -178,11 +178,6 @@ namespace NHibernate.Id
 			idgenerators.Add("trigger-identity", typeof (TriggerIdentityGenerator));
 			idgenerators.Add("enhanced-sequence", typeof(SequenceStyleGenerator));
 			idgenerators.Add("enhanced-table", typeof(Enhanced.TableGenerator));
-		}
-
-		private IdentifierGeneratorFactory()
-		{
-			//cannot be instantiated
 		}
 
 		/// <summary>

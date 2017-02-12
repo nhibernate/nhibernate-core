@@ -24,7 +24,7 @@ namespace NHibernate.Event
 
 		/// <summary> 
 		/// This is the entity state at the
-		/// time of deletion (useful for optomistic locking and such). 
+		/// time of deletion (useful for optimistic locking and such). 
 		/// </summary>
 		public object[] DeletedState { get; private set; }
 	}

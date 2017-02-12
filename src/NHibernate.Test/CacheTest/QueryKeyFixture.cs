@@ -114,7 +114,7 @@ namespace NHibernate.Test.CacheTest
 			var fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes, EntityMode.Poco);
 			ISet<FilterKey> fks = new HashSet<FilterKey> { fk };
 			var qk = new QueryKey(sessions, SqlAll, new QueryParameters(), fks, null);
-			Assert.That(qk.ToString(), Is.StringContaining(string.Format("filters: ['{0}']",fk)));
+			Assert.That(qk.ToString(), Does.Contain(string.Format("filters: ['{0}']",fk)));
 
 			filterName = "DescriptionEqualAndValueGT";
 			f = new FilterImpl(sessions.GetFilterDefinition(filterName));
@@ -122,7 +122,7 @@ namespace NHibernate.Test.CacheTest
 			fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes, EntityMode.Poco);
 			fks = new HashSet<FilterKey> { fk };
 			qk = new QueryKey(sessions, SqlAll, new QueryParameters(), fks, null);
-			Assert.That(qk.ToString(), Is.StringContaining(string.Format("filters: ['{0}']", fk)));
+			Assert.That(qk.ToString(), Does.Contain(string.Format("filters: ['{0}']", fk)));
 		}
 
 		[Test]
@@ -140,7 +140,7 @@ namespace NHibernate.Test.CacheTest
 
 			ISet<FilterKey> fks = new HashSet<FilterKey> { fk, fvk };
 			var qk = new QueryKey(sessions, SqlAll, new QueryParameters(), fks, null);
-			Assert.That(qk.ToString(), Is.StringContaining(string.Format("filters: ['{0}', '{1}']", fk, fvk)));
+			Assert.That(qk.ToString(), Does.Contain(string.Format("filters: ['{0}', '{1}']", fk, fvk)));
 		}
 	}
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 
 using NHibernate.Engine;
 using NHibernate.Exceptions;
@@ -24,7 +25,7 @@ namespace NHibernate.Dialect.Lock
 		/// Construct a locking strategy based on SQL UPDATE statements.
 		/// </summary>
 		/// <param name="lockable">The metadata for the entity to be locked. </param>
-		/// <param name="lockMode">Indictates the type of lock to be acquired. </param>
+		/// <param name="lockMode">Indicates the type of lock to be acquired. </param>
 		/// <remarks>
 		/// read-locks are not valid for this strategy.
 		/// </remarks>
@@ -74,7 +75,7 @@ namespace NHibernate.Dialect.Lock
 			ISessionFactoryImplementor factory = session.Factory;
 			try
 			{
-				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, lockable.IdAndVersionSqlTypes);
+				var st = session.Batcher.PrepareCommand(CommandType.Text, sql, lockable.IdAndVersionSqlTypes);
 				try
 				{
 					lockable.VersionType.NullSafeSet(st, version, 1, session);

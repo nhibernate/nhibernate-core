@@ -73,7 +73,7 @@ namespace NHibernate.Mapping
 
 		#region IKeyValue Members
 
-		public void CreateForeignKeyOfEntity(string entityName)
+		public virtual void CreateForeignKeyOfEntity(string entityName)
 		{
 			if (!HasFormula && ! "none".Equals(ForeignKeyName, StringComparison.InvariantCultureIgnoreCase))
 			{

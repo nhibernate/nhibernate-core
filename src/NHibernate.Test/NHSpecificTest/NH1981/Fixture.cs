@@ -5,6 +5,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1981
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			// Firebird doesn't support this feature
+			return !(dialect is Dialect.FirebirdDialect);
+		}
+
 		protected override void OnSetUp()
 		{
 			using (var s = OpenSession())
@@ -24,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1981
 			using (var tx = s.BeginTransaction())
 			{
 				s.Delete("from Article");
-				
+
 				tx.Commit();
 			}
 		}

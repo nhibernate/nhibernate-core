@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Connection;
@@ -147,7 +147,7 @@ namespace NHibernate.Engine
 		/// </param>
 		/// <param name="connectionReleaseMode">The release mode for managed jdbc connections.</param>
 		/// <returns>An appropriate session.</returns>
-		ISession OpenSession(IDbConnection connection, bool flushBeforeCompletionEnabled, bool autoCloseSessionEnabled,
+		ISession OpenSession(DbConnection connection, bool flushBeforeCompletionEnabled, bool autoCloseSessionEnabled,
 		                     ConnectionReleaseMode connectionReleaseMode);
 
 		/// <summary> 
@@ -180,7 +180,7 @@ namespace NHibernate.Engine
 		/// Get the entity-name for a given mapped class.
 		/// </summary>
 		/// <param name="implementor">the mapped class</param>
-		/// <returns>the enntity name where available or null</returns>
+		/// <returns>the entity name where available or null</returns>
 		string TryGetGuessEntityName(System.Type implementor);
 		#endregion
 	}

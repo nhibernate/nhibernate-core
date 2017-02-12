@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public class ComponentAsIdCustomizer<TComponent> : PropertyContainerCustomizer<TComponent>, IComponentAsIdMapper<TComponent> where TComponent : class
+	public class ComponentAsIdCustomizer<TComponent> : PropertyContainerCustomizer<TComponent>, IComponentAsIdMapper<TComponent>
 	{
 		public ComponentAsIdCustomizer(IModelExplicitDeclarationsHolder explicitDeclarationsHolder, ICustomizersHolder customizersHolder, PropertyPath propertyPath)
 			: base(explicitDeclarationsHolder, customizersHolder, propertyPath)

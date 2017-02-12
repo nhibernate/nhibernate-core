@@ -6,7 +6,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	/// <summary>
 	/// A semantic analysis node, that points back to the main analyzer.
-	/// Authoer: josh
+	/// Author: josh
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]

@@ -4,7 +4,6 @@ using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 {
@@ -32,8 +31,8 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var hbmMapping = mapper.CompileMappingFor(new[]{ typeof(Animal)});
 			var hbmClass = hbmMapping.RootClasses[0];
 			var hbmIdbag = hbmClass.Properties.OfType<HbmIdbag>().SingleOrDefault();
-			hbmIdbag.Should().Not.Be.Null();
-			hbmIdbag.ElementRelationship.Should().Be.InstanceOf<HbmManyToMany>();
+			Assert.That(hbmIdbag, Is.Not.Null);
+			Assert.That(hbmIdbag.ElementRelationship, Is.InstanceOf<HbmManyToMany>());
 		}
 
 		[Test]
@@ -45,7 +44,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 				map.Id(x => x.Id, idmap => { });
 				map.IdBag(x => x.Children, bag => { }, rel => rel.OneToMany());
 			});
-			mapper.Executing(x=> x.CompileMappingFor(new[] { typeof(Animal) })).Throws<NotSupportedException>();
+			Assert.That(() => mapper.CompileMappingFor(new[] { typeof(Animal) }), Throws.TypeOf<NotSupportedException>());
 		}
 	}
 }

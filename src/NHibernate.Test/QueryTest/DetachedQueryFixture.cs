@@ -361,10 +361,10 @@ namespace NHibernate.Test.QueryTest
 			{
 				IQuery q = dq.GetExecutableQuery(s);
 				IList<Foo> l = q.List<Foo>();
-				Assert.AreEqual(2, l.Count);
+				Assert.That(l.Count, Is.EqualTo(2));
 
-				Assert.True(l.Contains(new Foo("N2", "D2")));
-				Assert.True(l.Contains(new Foo("N3", "D3")));
+				Assert.That(l.Contains(new Foo("N2", "D2")), Is.True);
+				Assert.That(l.Contains(new Foo("N3", "D3")), Is.True);
 			}
 
 			// Pagination

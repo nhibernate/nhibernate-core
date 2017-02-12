@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 
@@ -28,7 +29,7 @@ namespace NHibernate.Type
 			get { return "Date"; }
 		}
 
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index)
 		{
 			try
 			{
@@ -41,7 +42,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name)
 		{
 			return Get(rs, rs.GetOrdinal(name));
 		}
@@ -51,19 +52,12 @@ namespace NHibernate.Type
 			get { return typeof(DateTime); }
 		}
 
-		public override void Set(IDbCommand st, object value, int index)
+		public override void Set(DbCommand st, object value, int index)
 		{
-			var parm = st.Parameters[index] as IDataParameter;
+			var parm = st.Parameters[index];
 			var dateTime = (DateTime)value;
-			if (dateTime < customBaseDate)
-			{
-				parm.Value = DBNull.Value;
-			}
-			else
-			{
-				parm.DbType = DbType.Date;
-				parm.Value = dateTime.Date;
-			}
+			if (dateTime < customBaseDate) parm.Value = DBNull.Value;
+			else parm.Value = dateTime.Date;
 		}
 
 		public override bool IsEqual(object x, object y)
@@ -127,7 +121,7 @@ namespace NHibernate.Type
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
-			return '\'' + ((DateTime)value).ToShortDateString() + '\'';
+			return "\'" + ((DateTime)value).ToShortDateString() + "\'";
 		}
 
 		public void SetParameterValues(IDictionary<string, string> parameters)

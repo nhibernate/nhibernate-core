@@ -9,7 +9,7 @@ namespace NHibernate.Type
 	/// </summary>
 	/// <remarks>
 	/// This is only needed by DataProviders (SqlClient) that need to specify a Size for the
-	/// IDbDataParameter.  Most DataProvider(Oralce) don't need to set the Size so a StringType
+	/// DbParameter.  Most DataProvider(Oralce) don't need to set the Size so a StringType
 	/// would work just fine.
 	/// </remarks>
 	[Serializable]

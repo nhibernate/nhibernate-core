@@ -1,4 +1,4 @@
-using System.Data;
+using System.Data.Common;
 
 using NUnit.Framework;
 
@@ -7,14 +7,16 @@ using NHibernate.Cfg;
 using NHibernate.Criterion;
 using NHibernate.Engine;
 
-using System.Collections.Generic;
-using System.Linq;
-
 namespace NHibernate.Test.NHSpecificTest.NH1989
 {
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override bool AppliesTo(ISessionFactoryImplementor factory)
+		{
+			return factory.ConnectionProvider.Driver.SupportsMultipleQueries;
+		}
+
 		protected override void OnSetUp()
 		{
 			cfg.Properties[Environment.CacheProvider] = typeof(HashtableCacheProvider).AssemblyQualifiedName;
@@ -34,7 +36,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 
 		private static void DeleteObjectsOutsideCache(ISession s)
 		{
-			using (IDbCommand cmd = s.Connection.CreateCommand())
+			using (var cmd = s.Connection.CreateCommand())
 			{
 				cmd.CommandText = "DELETE FROM UserTable";
 				cmd.ExecuteNonQuery();
@@ -47,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				User user = new User() { Name="test" };
+				User user = new User() { Name = "test" };
 				s.Save(user);
 				tx.Commit();
 			}
@@ -87,7 +89,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				User user = new User() { Name="test" };
+				User user = new User() { Name = "test" };
 				s.Save(user);
 				tx.Commit();
 			}
@@ -129,7 +131,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				User user = new User() { Name="test" };
+				User user = new User() { Name = "test" };
 				s.Save(user);
 				tx.Commit();
 			}
@@ -181,7 +183,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				User user = new User() { Name="test" };
+				User user = new User() { Name = "test" };
 				s.Save(user);
 				tx.Commit();
 			}
@@ -239,7 +241,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				User user = new User() { Name="test" };
+				User user = new User() { Name = "test" };
 				s.Save(user);
 				tx.Commit();
 			}

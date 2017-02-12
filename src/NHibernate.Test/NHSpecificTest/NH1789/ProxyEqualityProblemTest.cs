@@ -34,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1789
 		}
 
 		/// <summary>
-		/// This test fails: when compariing a proxy with a non-proxy, I want the proxy to use the Equals() method on DomainObject to check for equality.
+		/// This test fails: when comparing a proxy with a non-proxy, I want the proxy to use the Equals() method on DomainObject to check for equality.
 		/// It doesn't do it, so the equality fails.
 		/// </summary>
 		[Test]

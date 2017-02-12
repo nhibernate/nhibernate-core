@@ -6,6 +6,7 @@ namespace NHibernate.Mapping.ByCode
 		void Catalog(string catalogName);
 		void Schema(string schemaName);
 		void Extends(System.Type baseType);
+		void Abstract(bool isAbstract);
 	}
 
 	public interface IUnionSubclassMapper : IUnionSubclassAttributesMapper, IPropertyContainerMapper {}
@@ -15,6 +16,8 @@ namespace NHibernate.Mapping.ByCode
 		void Table(string tableName);
 		void Catalog(string catalogName);
 		void Schema(string schemaName);
+		void Extends(System.Type baseType);
+		void Abstract(bool isAbstract);
 	}
 
 	public interface IUnionSubclassMapper<TEntity> : IUnionSubclassAttributesMapper<TEntity>, IPropertyContainerMapper<TEntity> where TEntity : class {}

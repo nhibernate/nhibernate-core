@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1405
 {
@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1405
 			{
 				foreach (string sql in populate)
 				{
-					IDbCommand cmd = session.Connection.CreateCommand();
+					var cmd = session.Connection.CreateCommand();
 					cmd.CommandText = sql;
 					tx.Enlist(cmd);
 					cmd.ExecuteNonQuery();
@@ -47,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1405
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				IDbCommand cmd = session.Connection.CreateCommand();
+				var cmd = session.Connection.CreateCommand();
 				cmd.CommandText = "DELETE FROM PPDM_COLUMN";
 				tx.Enlist(cmd);
 				cmd.ExecuteNonQuery();

@@ -3,7 +3,6 @@ using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 {
@@ -32,21 +31,21 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 		{
 			var mapper = new ModelMapper();
 			mapper.Class<MyClass>(x =>
-			                      {
-			                      	x.Id(c => c.Id);
-			                      	x.Component(c => c.Compo);
-			                      	x.Bag(c => c.Compos, cm => { });
-			                      });
+								  {
+									x.Id(c => c.Id);
+									x.Component(c => c.Compo);
+									x.Bag(c => c.Compos, cm => { });
+								  });
 			mapper.Component<MyCompo>(x =>
-			                          {
-			                          	x.ManyToOne(c => c.AManyToOne);
-			                          	x.Component(c => c.NestedCompo);
-			                          });
+									  {
+										x.ManyToOne(c => c.AManyToOne);
+										x.Component(c => c.NestedCompo);
+									  });
 			mapper.Component<MyNestedCompo>(x =>
-			                                {
-			                                	x.Component(c => c.Owner);
-			                                	x.Property(c => c.Something);
-			                                });
+											{
+												x.Component(c => c.Owner);
+												x.Property(c => c.Something);
+											});
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 
@@ -81,9 +80,9 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var hbmMyCompo = hbmClass.Properties.OfType<HbmComponent>().Single();
 			var hbmMyNestedCompo = hbmMyCompo.Properties.OfType<HbmComponent>().Single();
 
-			hbmMyNestedCompo.Properties.Should().Have.Count.EqualTo(1);
-			hbmMyNestedCompo.Parent.Should().Not.Be.Null();
-			hbmMyNestedCompo.Parent.name.Should().Be("Owner");
+			Assert.That(hbmMyNestedCompo.Properties.Count(), Is.EqualTo(1));
+			Assert.That(hbmMyNestedCompo.Parent, Is.Not.Null);
+			Assert.That(hbmMyNestedCompo.Parent.name, Is.EqualTo("Owner"));
 		}
 
 		[Test]
@@ -97,9 +96,9 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var hbmMyCompo = (HbmCompositeElement)hbmBag.ElementRelationship;
 			var hbmMyNestedCompo = hbmMyCompo.Properties.OfType<HbmNestedCompositeElement>().Single();
 
-			hbmMyNestedCompo.Properties.Should().Have.Count.EqualTo(1);
-			hbmMyNestedCompo.Parent.Should().Not.Be.Null();
-			hbmMyNestedCompo.Parent.name.Should().Be("Owner");
+			Assert.That(hbmMyNestedCompo.Properties.Count(), Is.EqualTo(1));
+			Assert.That(hbmMyNestedCompo.Parent, Is.Not.Null);
+			Assert.That(hbmMyNestedCompo.Parent.name, Is.EqualTo("Owner"));
 		}
 
 		[Test]
@@ -109,8 +108,8 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 
 			var hbmClass = mapping.RootClasses[0];
 			var hbmMyCompo = hbmClass.Properties.OfType<HbmComponent>().Single();
-			hbmMyCompo.Properties.OfType<HbmManyToOne>().Should().Have.Count.EqualTo(1);
-			hbmMyCompo.Parent.Should().Be.Null();
+			Assert.That(hbmMyCompo.Properties.OfType<HbmManyToOne>().Count(), Is.EqualTo(1));
+			Assert.That(hbmMyCompo.Parent, Is.Null);
 		}
 
 		[Test]
@@ -122,8 +121,8 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var hbmBag = hbmClass.Properties.OfType<HbmBag>().Single();
 
 			var hbmMyCompo = (HbmCompositeElement)hbmBag.ElementRelationship;
-			hbmMyCompo.Properties.OfType<HbmManyToOne>().Should().Have.Count.EqualTo(1);
-			hbmMyCompo.Parent.Should().Be.Null();
+			Assert.That(hbmMyCompo.Properties.OfType<HbmManyToOne>().Count(), Is.EqualTo(1));
+			Assert.That(hbmMyCompo.Parent, Is.Null);
 		}
 
 		[Test]
@@ -133,9 +132,9 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 
 			var hbmClass = mapping.RootClasses[0];
 			var hbmMyCompo = hbmClass.Properties.OfType<HbmComponent>().Single();
-			hbmMyCompo.Properties.OfType<HbmManyToOne>().Should().Be.Empty();
-			hbmMyCompo.Parent.Should().Not.Be.Null();
-			hbmMyCompo.Parent.name.Should().Be("AManyToOne");
+			Assert.That(hbmMyCompo.Properties.OfType<HbmManyToOne>(), Is.Empty);
+			Assert.That(hbmMyCompo.Parent, Is.Not.Null);
+			Assert.That(hbmMyCompo.Parent.name, Is.EqualTo("AManyToOne"));
 		}
 
 		[Test]
@@ -147,9 +146,9 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var hbmBag = hbmClass.Properties.OfType<HbmBag>().Single();
 
 			var hbmMyCompo = (HbmCompositeElement)hbmBag.ElementRelationship;
-			hbmMyCompo.Properties.OfType<HbmManyToOne>().Should().Be.Empty();
-			hbmMyCompo.Parent.Should().Not.Be.Null();
-			hbmMyCompo.Parent.name.Should().Be("AManyToOne");
+			Assert.That(hbmMyCompo.Properties.OfType<HbmManyToOne>(), Is.Empty);
+			Assert.That(hbmMyCompo.Parent, Is.Not.Null);
+			Assert.That(hbmMyCompo.Parent.name, Is.EqualTo("AManyToOne"));
 		}
 	}
 }

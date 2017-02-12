@@ -127,7 +127,7 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary> 
-		/// Retrieve the command used to retrieve the current timestammp from the database. 
+		/// Retrieve the command used to retrieve the current timestamp from the database. 
 		/// </summary>
 		public override string CurrentTimestampSelectString
 		{

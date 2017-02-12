@@ -1,6 +1,5 @@
 using NHibernate.Mapping;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH1399
 {
@@ -39,8 +38,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1399
 			string t1Fk_ = table1_.UniqueColumnString(new object[] { table1ITestManyA_ }, "BluewireTechnologies.Core.Framework.DynamicTypes2.Albatross.ITestManyA");
 			string t2Fk_ = table1_.UniqueColumnString(new object[] { table1ITestManyB_ }, "BluewireTechnologies.Core.Framework.DynamicTypes2.Albatross.ITestManyB");
 
-			t1Fk_.Should().Be.EqualTo(t1Fk);
-			t2Fk_.Should().Be.EqualTo(t2Fk);
+			Assert.That(t1Fk_, Is.EqualTo(t1Fk));
+			Assert.That(t2Fk_, Is.EqualTo(t2Fk));
 		}
 	}
 }

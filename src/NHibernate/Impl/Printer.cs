@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 
 using NHibernate.Engine;
+using NHibernate.Intercept;
 using NHibernate.Metadata;
+using NHibernate.Properties;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -41,7 +43,15 @@ namespace NHibernate.Impl
 
 			for (int i = 0; i < types.Length; i++)
 			{
-				result[names[i]] = types[i].ToLoggableString(values[i], _factory);
+				var value = values[i];
+				if (Equals(LazyPropertyInitializer.UnfetchedProperty, value) || Equals(BackrefPropertyAccessor.Unknown, value))
+				{
+					result[names[i]] = value.ToString();
+				}
+				else
+				{
+					result[names[i]] = types[i].ToLoggableString(value, _factory);
+				}
 			}
 
 			return cm.EntityName + CollectionPrinter.ToString(result);

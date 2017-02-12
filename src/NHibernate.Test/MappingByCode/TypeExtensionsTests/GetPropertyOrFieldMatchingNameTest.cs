@@ -2,7 +2,6 @@ using System;
 using System.Reflection;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 {
 	public class GetPropertyOrFieldMatchingNameTest
@@ -52,127 +51,126 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 		[Test]
 		public void WhenNullTypeThenThrows()
 		{
-			Executing.This(() => ((System.Type)null).GetPropertyOrFieldMatchingName("A")).Should().Throw<ArgumentNullException>();
+			Assert.That(() => ((System.Type)null).GetPropertyOrFieldMatchingName("A"), Throws.TypeOf<ArgumentNullException>());
 		}
 
 		[Test]
 		public void WhenAskNullThenNull()
 		{
-			typeof(MyClass).GetPropertyOrFieldMatchingName(null).Should().Be.Null();
+			Assert.That(typeof(MyClass).GetPropertyOrFieldMatchingName(null), Is.Null);
 		}
 
 		[Test]
 		public void WhenAskNotExistentThenNull()
 		{
-			typeof(MyClass).GetPropertyOrFieldMatchingName("NotExistent").Should().Be.Null();
+			Assert.That(typeof(MyClass).GetPropertyOrFieldMatchingName("NotExistent"), Is.Null);
 		}
 
 		[Test]
 		public void WhenAskPrivateFieldThenFindIt()
 		{
 			var memberInfo = typeof(MyClass).GetPropertyOrFieldMatchingName("pField");
-			memberInfo.Should().Not.Be.Null();
-			memberInfo.Name.Should().Be("pField");
-			memberInfo.Should().Be.InstanceOf<FieldInfo>().And.ValueOf.DeclaringType.Should().Be(typeof(MyClass));
+			Assert.That(memberInfo, Is.Not.Null.And.InstanceOf<FieldInfo>());
+			Assert.That(memberInfo.Name, Is.EqualTo("pField"));
+			Assert.That(memberInfo.DeclaringType, Is.EqualTo(typeof (MyClass)));
 		}
 
 		[Test]
 		public void WhenAskPrivateFieldWithBlanksThenFindIt()
 		{
 			var memberInfo = typeof(MyClass).GetPropertyOrFieldMatchingName("   pField   ");
-			memberInfo.Should().Not.Be.Null();
-			memberInfo.Name.Should().Be("pField");
-			memberInfo.Should().Be.InstanceOf<FieldInfo>().And.ValueOf.DeclaringType.Should().Be(typeof(MyClass));
+			Assert.That(memberInfo, Is.Not.Null.And.InstanceOf<FieldInfo>());
+			Assert.That(memberInfo.Name, Is.EqualTo("pField"));
+			Assert.That(memberInfo.DeclaringType, Is.EqualTo(typeof(MyClass)));
 		}
 
 		[Test]
 		public void WhenAskPrivatePropertyThenFindIt()
 		{
 			var memberInfo = typeof(MyClass).GetPropertyOrFieldMatchingName("PrivateProperty");
-			memberInfo.Should().Not.Be.Null();
-			memberInfo.Name.Should().Be("PrivateProperty");
-			memberInfo.Should().Be.InstanceOf<PropertyInfo>().And.ValueOf.DeclaringType.Should().Be(typeof(MyClass));
+			Assert.That(memberInfo, Is.Not.Null.And.InstanceOf<PropertyInfo>());
+			Assert.That(memberInfo.Name, Is.EqualTo("PrivateProperty"));
+			Assert.That(memberInfo.DeclaringType, Is.EqualTo(typeof (MyClass)));
 		}
 
 		[Test]
 		public void WhenAskProtectedPropertyThenFindIt()
 		{
 			var memberInfo = typeof(MyClass).GetPropertyOrFieldMatchingName("ProtectedProperty");
-			memberInfo.Should().Not.Be.Null();
-			memberInfo.Name.Should().Be("ProtectedProperty");
-			memberInfo.Should().Be.InstanceOf<PropertyInfo>().And.ValueOf.DeclaringType.Should().Be(typeof(MyClass));
+			Assert.That(memberInfo, Is.Not.Null.And.InstanceOf<PropertyInfo>());
+			Assert.That(memberInfo.Name, Is.EqualTo("ProtectedProperty"));
+			Assert.That(memberInfo.DeclaringType, Is.EqualTo(typeof(MyClass)));
 		}
 
 		[Test]
 		public void WhenAskMethodThenNull()
 		{
-			typeof(MyClass).GetPropertyOrFieldMatchingName("Method").Should().Be.Null();
+			Assert.That(typeof(MyClass).GetPropertyOrFieldMatchingName("Method"), Is.Null);
 		}
 
 		[Test]
 		public void WhenAskPrivateFieldOnInheritedThenFindItOnInherited()
 		{
 			var memberInfo = typeof(Inherited).GetPropertyOrFieldMatchingName("pField");
-			memberInfo.Should().Not.Be.Null();
-			memberInfo.Name.Should().Be("pField");
-			memberInfo.DeclaringType.Should().Be(typeof(Inherited));
-			memberInfo.ReflectedType.Should().Be(typeof(Inherited));
-			memberInfo.Should().Be.InstanceOf<FieldInfo>();
+			Assert.That(memberInfo, Is.Not.Null.And.InstanceOf<FieldInfo>());
+			Assert.That(memberInfo.Name, Is.EqualTo("pField"));
+			Assert.That(memberInfo.DeclaringType, Is.EqualTo(typeof(Inherited)));
+			Assert.That(memberInfo.ReflectedType, Is.EqualTo(typeof(Inherited)));
 		}
 
 		[Test]
 		public void WhenAskPrivatePropertyOnInheritedThenFindItOnInherited()
 		{
 			var memberInfo = typeof(Inherited).GetPropertyOrFieldMatchingName("PrivateProperty");
-			memberInfo.Should().Not.Be.Null();
-			memberInfo.Name.Should().Be("PrivateProperty");
-			memberInfo.DeclaringType.Should().Be(typeof(Inherited));
-			memberInfo.ReflectedType.Should().Be(typeof(Inherited));
-			memberInfo.Should().Be.InstanceOf<PropertyInfo>();
+			Assert.That(memberInfo, Is.Not.Null);
+			Assert.That(memberInfo.Name, Is.EqualTo("PrivateProperty"));
+			Assert.That(memberInfo.DeclaringType, Is.EqualTo(typeof(Inherited)));
+			Assert.That(memberInfo.ReflectedType, Is.EqualTo(typeof(Inherited)));
+			Assert.That(memberInfo, Is.InstanceOf<PropertyInfo>());
 		}
 
 		[Test]
 		public void WhenAskPrivatePropertyOfBaseOnInheritedThenFindItOnBase()
 		{
 			var memberInfo = typeof(Inherited).GetPropertyOrFieldMatchingName("AnotherPrivateProperty");
-			memberInfo.Should().Not.Be.Null();
-			memberInfo.Name.Should().Be("AnotherPrivateProperty");
-			memberInfo.DeclaringType.Should().Be(typeof(MyClass));
-			memberInfo.ReflectedType.Should().Be(typeof(MyClass));
-			memberInfo.Should().Be.InstanceOf<PropertyInfo>();
+			Assert.That(memberInfo, Is.Not.Null);
+			Assert.That(memberInfo.Name, Is.EqualTo("AnotherPrivateProperty"));
+			Assert.That(memberInfo.DeclaringType, Is.EqualTo(typeof(MyClass)));
+			Assert.That(memberInfo.ReflectedType, Is.EqualTo(typeof(MyClass)));
+			Assert.That(memberInfo, Is.InstanceOf<PropertyInfo>());
 		}
 
 		[Test]
 		public void WhenAskPropertyOfInterfaceThenFindIt()
 		{
 			var memberInfo = typeof(IInterface).GetPropertyOrFieldMatchingName("Something");
-			memberInfo.Should().Not.Be.Null();
-			memberInfo.Name.Should().Be("Something");
-			memberInfo.DeclaringType.Should().Be(typeof(IInterface));
-			memberInfo.ReflectedType.Should().Be(typeof(IInterface));
-			memberInfo.Should().Be.InstanceOf<PropertyInfo>();
+			Assert.That(memberInfo, Is.Not.Null);
+			Assert.That(memberInfo.Name, Is.EqualTo("Something"));
+			Assert.That(memberInfo.DeclaringType, Is.EqualTo(typeof(IInterface)));
+			Assert.That(memberInfo.ReflectedType, Is.EqualTo(typeof(IInterface)));
+			Assert.That(memberInfo, Is.InstanceOf<PropertyInfo>());
 		}
 
 		[Test]
 		public void WhenAskPropertyOfExplicitInterfaceThenFindItOnInterface()
 		{
 			var memberInfo = typeof(MyClassWithExplicitImpl).GetPropertyOrFieldMatchingName("Something");
-			memberInfo.Should().Not.Be.Null();
-			memberInfo.Name.Should().Be("Something");
-			memberInfo.DeclaringType.Should().Be(typeof(IInterface));
-			memberInfo.ReflectedType.Should().Be(typeof(IInterface));
-			memberInfo.Should().Be.InstanceOf<PropertyInfo>();
+			Assert.That(memberInfo, Is.Not.Null);
+			Assert.That(memberInfo.Name, Is.EqualTo("Something"));
+			Assert.That(memberInfo.DeclaringType, Is.EqualTo(typeof(IInterface)));
+			Assert.That(memberInfo.ReflectedType, Is.EqualTo(typeof(IInterface)));
+			Assert.That(memberInfo, Is.InstanceOf<PropertyInfo>());
 		}
 
 		[Test]
 		public void WhenAskPropertyOfImplementedInterfaceThenFindItOnType()
 		{
 			var memberInfo = typeof(MyClassWithExplicitImpl).GetPropertyOrFieldMatchingName("SomethingElse");
-			memberInfo.Should().Not.Be.Null();
-			memberInfo.Name.Should().Be("SomethingElse");
-			memberInfo.DeclaringType.Should().Be(typeof(MyClassWithExplicitImpl));
-			memberInfo.ReflectedType.Should().Be(typeof(MyClassWithExplicitImpl));
-			memberInfo.Should().Be.InstanceOf<PropertyInfo>();
+			Assert.That(memberInfo, Is.Not.Null);
+			Assert.That(memberInfo.Name, Is.EqualTo("SomethingElse"));
+			Assert.That(memberInfo.DeclaringType, Is.EqualTo(typeof(MyClassWithExplicitImpl)));
+			Assert.That(memberInfo.ReflectedType, Is.EqualTo(typeof(MyClassWithExplicitImpl)));
+			Assert.That(memberInfo, Is.InstanceOf<PropertyInfo>());
 		}
 	}
 }

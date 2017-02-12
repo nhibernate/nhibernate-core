@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 
 using NHibernate.Cache;
@@ -12,18 +12,18 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Engine.Loading
 {
 	/// <summary> 
-	/// Represents state associated with the processing of a given <see cref="IDataReader"/>
+	/// Represents state associated with the processing of a given <see cref="DbDataReader"/>
 	/// in regards to loading collections.
 	/// </summary>
 	/// <remarks>
-	/// Another implementation option to consider is to not expose <see cref="IDataReader">ResultSets</see>
+	/// Another implementation option to consider is to not expose <see cref="DbDataReader">ResultSets</see>
 	/// directly (in the JDBC redesign) but to always "wrap" them and apply a [series of] context[s] to that wrapper.
 	/// </remarks>
 	public class CollectionLoadContext
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(CollectionLoadContext));
 		private readonly LoadContexts loadContexts;
-		private readonly IDataReader resultSet;
+		private readonly DbDataReader resultSet;
 		private readonly ISet<CollectionKey> localLoadingCollectionKeys = new HashSet<CollectionKey>();
 
 		/// <summary> 
@@ -31,7 +31,7 @@ namespace NHibernate.Engine.Loading
 		/// </summary>
 		/// <param name="loadContexts">Callback to other collection load contexts. </param>
 		/// <param name="resultSet">The result set this is "wrapping".</param>
-		public CollectionLoadContext(LoadContexts loadContexts, IDataReader resultSet)
+		public CollectionLoadContext(LoadContexts loadContexts, DbDataReader resultSet)
 		{
 			this.loadContexts = loadContexts;
 			this.resultSet = resultSet;
@@ -42,7 +42,7 @@ namespace NHibernate.Engine.Loading
 			get { return loadContexts; }
 		}
 
-		public IDataReader ResultSet
+		public DbDataReader ResultSet
 		{
 			get { return resultSet; }
 		}
@@ -174,7 +174,7 @@ namespace NHibernate.Engine.Loading
 					if (lce.Collection.Owner == null)
 					{
 						session.PersistenceContext.AddUnownedCollection(new CollectionKey(persister, lce.Key, session.EntityMode),
-						                                                lce.Collection);
+																		lce.Collection);
 					}
 					if (log.IsDebugEnabled)
 					{
@@ -272,7 +272,7 @@ namespace NHibernate.Engine.Loading
 
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("collection fully initialized: " + MessageHelper.InfoString(persister, lce.Key, session.Factory));
+				log.Debug("collection fully initialized: " + MessageHelper.CollectionInfoString(persister, lce.Collection, lce.Key, session));
 			}
 
 			if (statsEnabled)
@@ -292,7 +292,7 @@ namespace NHibernate.Engine.Loading
 
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("Caching collection: " + MessageHelper.InfoString(persister, lce.Key, factory));
+				log.Debug("Caching collection: " + MessageHelper.CollectionInfoString(persister, lce.Collection, lce.Key, session));
 			}
 
 			if (!(session.EnabledFilters.Count == 0) && persister.IsAffectedByEnabledFilters(session))
@@ -324,7 +324,7 @@ namespace NHibernate.Engine.Loading
 			CollectionCacheEntry entry = new CollectionCacheEntry(lce.Collection, persister);
 			CacheKey cacheKey = session.GenerateCacheKey(lce.Key, persister.KeyType, persister.Role);
 			bool put = persister.Cache.Put(cacheKey, persister.CacheEntryStructure.Structure(entry), 
-			                    session.Timestamp, version, versionComparator,
+								session.Timestamp, version, versionComparator,
 													factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh);
 
 			if (put && factory.Statistics.IsStatisticsEnabled)

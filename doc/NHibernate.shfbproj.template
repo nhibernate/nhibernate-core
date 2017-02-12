@@ -18,7 +18,7 @@
     <HtmlHelpName>NHibernateAPI</HtmlHelpName>
     <HelpFileFormat>HtmlHelp1x</HelpFileFormat>
     <CopyrightText>NHibernate</CopyrightText>
-    <CopyrightHref>www.nhforge.org</CopyrightHref>
+    <CopyrightHref>nhibernate.info</CopyrightHref>
     <FeedbackEMailAddress>http://groups.google.com/group/nhibernate-development</FeedbackEMailAddress>
     <FeedbackEMailLinkText>nhibernate team</FeedbackEMailLinkText>
     <HelpTitle>NHibernate API Reference</HelpTitle>

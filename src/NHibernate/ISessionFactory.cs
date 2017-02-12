@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Connection;
 using NHibernate.Engine;
 using NHibernate.Metadata;
@@ -36,7 +36,7 @@ namespace NHibernate
 		/// any statements you might have executed in the same transaction.
 		/// Consider implementing your own <see cref="IConnectionProvider" />.
 		/// </remarks>
-		ISession OpenSession(IDbConnection conn);
+		ISession OpenSession(DbConnection conn);
 
 		/// <summary>
 		/// Create database connection and open a <c>ISession</c> on it, specifying an interceptor
@@ -57,7 +57,7 @@ namespace NHibernate
 		/// any statements you might have executed in the same transaction.
 		/// Consider implementing your own <see cref="IConnectionProvider" />.
 		/// </remarks>
-		ISession OpenSession(IDbConnection conn, IInterceptor sessionLocalInterceptor);
+		ISession OpenSession(DbConnection conn, IInterceptor sessionLocalInterceptor);
 
 		/// <summary>
 		/// Create a database connection and open a <c>ISession</c> on it
@@ -171,7 +171,7 @@ namespace NHibernate
 		IStatelessSession OpenStatelessSession();
 
 		/// <summary> Get a new stateless session for the given ADO.NET connection.</summary>
-		IStatelessSession OpenStatelessSession(IDbConnection connection);
+		IStatelessSession OpenStatelessSession(DbConnection connection);
 
 		/// <summary>
 		/// Obtain the definition of a filter by name.

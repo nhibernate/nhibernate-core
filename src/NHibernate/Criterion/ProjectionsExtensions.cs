@@ -25,7 +25,7 @@ namespace NHibernate.Criterion
 		/// Project SQL function year()
 		/// Note: throws an exception outside of a QueryOver expression
 		/// </summary>
-		[Obsolete("Pleae use DateTime.Year property instead")]
+        [Obsolete("Please use DateTime.Year property instead")]
 		public static int YearPart(this DateTime dateTimeProperty)
 		{
 			throw new Exception("Not to be used directly - use inside QueryOver expression");

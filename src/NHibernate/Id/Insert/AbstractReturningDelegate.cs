@@ -1,4 +1,3 @@
-using System.Data;
 using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
@@ -8,9 +7,9 @@ namespace NHibernate.Id.Insert
 {
 	/// <summary> 
 	/// Abstract InsertGeneratedIdentifierDelegate implementation where the
-	/// underlying strategy causes the generated identitifer to be returned as an
+	/// underlying strategy causes the generated identifier to be returned as an
 	/// effect of performing the insert statement.  Thus, there is no need for an
-	/// additional sql statement to determine the generated identitifer. 
+	/// additional sql statement to determine the generated identifier. 
 	/// </summary>
 	public abstract class AbstractReturningDelegate : IInsertGeneratedIdentifierDelegate
 	{
@@ -35,7 +34,7 @@ namespace NHibernate.Id.Insert
 			try
 			{
 				// prepare and execute the insert
-				IDbCommand insert = Prepare(insertSQL, session);
+				var insert = Prepare(insertSQL, session);
 				try
 				{
 					binder.BindValues(insert);
@@ -55,13 +54,13 @@ namespace NHibernate.Id.Insert
 
 		#endregion
 
-		protected internal virtual void ReleaseStatement(IDbCommand insert, ISessionImplementor session)
+		protected internal virtual void ReleaseStatement(DbCommand insert, ISessionImplementor session)
 		{
 			session.Batcher.CloseCommand(insert, null);
 		}
 
-		protected internal abstract IDbCommand Prepare(SqlCommandInfo insertSQL, ISessionImplementor session);
+		protected internal abstract DbCommand Prepare(SqlCommandInfo insertSQL, ISessionImplementor session);
 
-		public abstract object ExecuteAndExtract(IDbCommand insert, ISessionImplementor session);
+		public abstract object ExecuteAndExtract(DbCommand insert, ISessionImplementor session);
 	}
 }

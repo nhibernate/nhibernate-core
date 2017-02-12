@@ -7,10 +7,9 @@ namespace NHibernate.Test.NHSpecificTest.NH335
 		private static Random random = new Random();
 
 		/// <summary>
-		/// Generate a random string of the given length
+		/// Generates a random lowercase alphabetic string
 		/// </summary>
-		/// <param name="length"></param>
-		/// <returns></returns>
+		/// <returns>A string containing random lowercase alphabetic characters</returns>
 		public static string GetRandomID()
 		{
 			int length = 32;

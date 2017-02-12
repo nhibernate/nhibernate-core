@@ -1,6 +1,5 @@
 ﻿using System;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH3590
 {
@@ -39,8 +38,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3590
 			{
 				using (s.BeginTransaction())
 				{
-					s.Get<Entity>(_entity.Id).Dates.Count
-						.Should().Be.EqualTo(1);
+					Assert.That(s.Get<Entity>(_entity.Id).Dates.Count, Is.EqualTo(1));
 				}
 			}
 		}
@@ -62,8 +60,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3590
 			{
 				using (s.BeginTransaction())
 				{
-					s.Get<Entity>(_entity.Id).Dates.Count
-						.Should().Be.EqualTo(1);
+					Assert.That(s.Get<Entity>(_entity.Id).Dates.Count, Is.EqualTo(1));
 				}
 			}
 		}
