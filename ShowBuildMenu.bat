@@ -22,9 +22,6 @@ echo E. Build NHibernate (Debug)
 echo F. Build NHibernate (Release)
 echo G. Build Release Package (Also runs tests and creates documentation)
 echo.
-echo --- GRAMMAR ---
-echo H. Grammar operations (related to Hql.g and HqlSqlWalker.g)
-echo.
 echo --- TeamCity (CI) build options
 echo I. TeamCity build menu
 echo.
@@ -32,10 +29,9 @@ echo --- Exit ---
 echo X. Make the beautiful build menu go away.
 echo.
 
-%BUILDTOOL% prompt ABCDEFGHIX
-if errorlevel 9 goto end
-if errorlevel 8 goto teamcity-menu
-if errorlevel 7 goto grammar-menu
+%BUILDTOOL% prompt ABCDEFGIX
+if errorlevel 8 goto end
+if errorlevel 7 goto teamcity-menu
 if errorlevel 6 goto build-release-package
 if errorlevel 5 goto build-release
 if errorlevel 4 goto build-debug
@@ -192,77 +188,6 @@ echo.
 echo Assuming the build succeeded, your results will be in the build folder,
 echo including NuGet packages and tools to push them.
 echo.
-goto main-menu
-
-:grammar-menu
-echo.
-echo --- GRAMMAR ---
-echo A. Regenerate all grammars.
-echo        Hql.g           to  HqlLexer.cs
-echo        Hql.g           to  HqlParser.cs
-echo        HqlSqlWalker.g  to  HqlSqlWalker.cs
-echo        SqlGenerator.g  to  SqlGenerator.cs
-echo B. Regenerate all grammars, with Hql.g in debug mode.
-echo C. Regenerate all grammars, with HqlSqlWalker.g in debug mode.
-echo D. Regenerate all grammars, with SqlGenerator.g in debug mode.
-echo E. Quick instructions on using debug mode.
-echo.
-echo X. Exit to main menu.
-echo.
-
-%BUILDTOOL% prompt ABCDEX
-if errorlevel 5 goto main-menu
-if errorlevel 4 goto antlr-debug
-if errorlevel 3 goto antlr-sqlgenerator-debug
-if errorlevel 2 goto antlr-hqlsqlwalker-debug
-if errorlevel 1 goto antlr-hql-debug
-if errorlevel 0 goto antlr-all
-
-:antlr-all
-echo *** Regenerating from Hql.g
-call src\NHibernate\Hql\Ast\ANTLR\AntlrHql.bat
-echo *** Regenerating from HqlSqlWalker.g
-call src\NHibernate\Hql\Ast\ANTLR\AntlrHqlSqlWalker.bat
-echo *** Regenerating from SqlGenerator.g
-call src\NHibernate\Hql\Ast\ANTLR\AntlrSqlGenerator.bat
-goto main-menu
-
-:antlr-hql-debug
-echo *** Regenerating from Hql.g (Debug Enabled)
-call src\NHibernate\Hql\Ast\ANTLR\AntlrHqlDebug.bat
-echo *** Regenerating from HqlSqlWalker.g
-call src\NHibernate\Hql\Ast\ANTLR\AntlrHqlSqlWalker.bat
-echo *** Regenerating from SqlGenerator.g
-call src\NHibernate\Hql\Ast\ANTLR\AntlrSqlGenerator.bat
-goto main-menu
-
-:antlr-hqlsqlwalker-debug
-echo *** Regenerating from Hql.g
-call src\NHibernate\Hql\Ast\ANTLR\AntlrHql.bat
-echo *** Regenerating from HqlSqlWalker.g (Debug Enabled)
-call src\NHibernate\Hql\Ast\ANTLR\AntlrHqlSqlWalkerDebug.bat
-echo *** Regenerating from SqlGenerator.g
-call src\NHibernate\Hql\Ast\ANTLR\AntlrSqlGenerator.bat
-goto main-menu
-
-:antlr-sqlgenerator-debug
-echo *** Regenerating from Hql.g
-call src\NHibernate\Hql\Ast\ANTLR\AntlrHql.bat
-echo *** Regenerating from HqlSqlWalker.g
-call src\NHibernate\Hql\Ast\ANTLR\AntlrHqlSqlWalker.bat
-echo *** Regenerating from SqlGenerator.g (Debug Enabled)
-call src\NHibernate\Hql\Ast\ANTLR\AntlrSqlGeneratorDebug.bat
-goto main-menu
-
-:antlr-debug
-echo To use the debug grammar:
-echo   1. Create a unit test that runs the hql parser on the input you're interested in.
-echo       The one you want to debug must be the first grammar parsed.
-echo   2. Run the unit test.  It will appear to stall.
-echo   3. Download and run AntlrWorks (java -jar AntlrWorks.jar).
-echo   4. Open the grammar you intend to debug in AntlrWorks.
-echo   5. Choose "Debug Remote" and accept the default port.
-echo   6. You should now be connected and able to step through your grammar.
 goto main-menu
 
 :teamcity-menu
