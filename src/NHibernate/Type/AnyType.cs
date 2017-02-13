@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using System.Reflection;
 using System.Xml;
 using NHibernate.Engine;
@@ -83,18 +83,18 @@ namespace NHibernate.Type
 			get { return false; }
 		}
 
-		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
+		public override object NullSafeGet(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
 			throw new NotSupportedException("object is a multicolumn type");
 		}
 
-		public override object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			return ResolveAny((string)metaType.NullSafeGet(rs, names[0], session, owner), 
 				identifierType.NullSafeGet(rs, names[1], session, owner), session);
 		}
 
-		public override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override object Hydrate(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			string entityName = (string)metaType.NullSafeGet(rs, names[0], session, owner);
 			object id = identifierType.NullSafeGet(rs, names[1], session, owner);
@@ -112,7 +112,7 @@ namespace NHibernate.Type
 			throw new NotSupportedException("any mappings may not form part of a property-ref");
 		}
 
-		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override void NullSafeSet(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			object id;
 			string entityName;
@@ -144,7 +144,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override void NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session)
+		public override void NullSafeSet(DbCommand st, object value, int index, ISessionImplementor session)
 		{
 			NullSafeSet(st, value, index, null, session);
 		}

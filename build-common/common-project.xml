@@ -44,10 +44,29 @@
 
 	<include buildfile="common.xml" />
 
-	<target name="common.compile-all" depends="common.generate-assemblyinfo">
-		<!--property name="msbuild.cmd" value="${cmd.sln} ${cmd.out} ${cmd.platform} ${cmd.debug} ${cmd.optimize} ${cmd.doc} /t:Rebuild /v:q /m" /-->
+	<target name="common.download-nuget" depends="common.init">
+		<get 
+			src="https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" 
+			dest="${tools.dir}/nuget.exe" 
+			usetimestamp="true"
+		/>
+	</target>
 
-		<exec program="${framework::get-framework-directory(framework::get-target-framework())}\msbuild.exe" verbose="true">
+	<target name="common.nuget-restore" depends="common.init common.download-nuget">
+		<exec basedir="${tools.dir}" workingdir="${root.dir}/src" program="NuGet.exe">
+			<arg value="restore" />
+			<arg value="NHibernate.sln" />
+		</exec>
+		<exec basedir="${tools.dir}" workingdir="${root.dir}/Tools" program="NuGet.exe">
+			<arg value="install" />
+		</exec>
+	</target>
+
+	<target name="common.compile-all" depends="common.generate-assemblyinfo common.nuget-restore">
+		<!--property name="msbuild.cmd" value="${cmd.sln} ${cmd.out} ${cmd.platform} ${cmd.debug} ${cmd.optimize} ${cmd.doc} /t:Rebuild /v:q /m" /-->		
+		<readregistry property="MSBuildToolsPath" key="SOFTWARE\Microsoft\MSBuild\ToolsVersions\14.0\MSBuildToolsPath" hive="LocalMachine" />
+
+		<exec program="${path::combine(MSBuildToolsPath, 'msbuild.exe')}" verbose="true">
 				<arg value="${root.dir}/src/NHibernate.sln" />
 				<arg value="/p:OutputPath=&quot;${path::get-full-path(bin.dir)}&quot;" />
 				<arg value="/p:Platform=&quot;Any CPU&quot;" />
@@ -98,22 +117,14 @@
 	<target name="common.run-tests"
 		description="Run NUnit tests">
 		<call target="common.find-nunit" unless="${property::exists('nunit.found')}" />
-		<property name="common.run-tests.failonerror" value="${not property::exists(project::get-name() + '.IgnoreFail')}"/>
+		<property name="common.run-tests.failonerror" value="${not property::exists(test.file + '.IgnoreFail')}"/>
+		<property name="common.run-tests.x86" value="--x86" unless="${property::exists('nunit-x64')}" />
+		<property name="common.run-tests.x86" value="" if="${property::exists('nunit-x64')}" />
+		<property name="common.run-tests.teamcity" value="--teamcity" if="${property::exists('config.teamcity')}" />
+		<property name="common.run-tests.teamcity" value="" unless="${property::exists('common.run-tests.teamcity')}" />
 		<exec program="${nunit-console}" failonerror="${common.run-tests.failonerror}">
-			<arg line="${bin.dir}/${test.file}.dll /xml:${testresults.dir}/${test.file}.dll-results.xml /framework:${framework::get-target-framework()}" />
+			<arg line="${bin.dir}/${test.file}.dll --result=${testresults.dir}/${test.file}.dll-results.xml;format=nunit2 --framework=${framework::get-target-framework()} ${common.run-tests.teamcity} ${common.run-tests.x86}" />
 		</exec>
-
-		<!--<nunit2>
-			<formatter 
-				type="Xml" 
-				usefile="true" 
-				extension=".xml" 
-				outputdir="${bin.dir}"
-			/>
-			<test
-				assemblyname="${bin.dir}/${test.file}.dll"
-				appconfig="${bin.dir}/${test.file}.dll.config" />
-		</nunit2>-->
 
 	</target>
 
@@ -159,6 +170,16 @@
 		<xmlpoke file="${app.config}"
 			xpath="//*/hbm:property[@name='connection.connection_string']"
 			value="${nhibernate.connection.connection_string}">
+			<namespaces>
+				<namespace prefix="hbm" uri="urn:nhibernate-configuration-2.2" />
+			</namespaces>
+		</xmlpoke>
+		
+		<!-- Make sure the property exists - it's only set for some scenarios. -->
+		<property name="nhibernate.odbc.explicit_datetime_scale" value="" unless="${property::exists('nhibernate.odbc.explicit_datetime_scale')}"/>
+		<xmlpoke file="${app.config}"
+			xpath="//*/hbm:property[@name='odbc.explicit_datetime_scale']"
+			value="${nhibernate.odbc.explicit_datetime_scale}">
 			<namespaces>
 				<namespace prefix="hbm" uri="urn:nhibernate-configuration-2.2" />
 			</namespaces>

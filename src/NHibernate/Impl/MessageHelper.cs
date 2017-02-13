@@ -297,7 +297,7 @@ namespace NHibernate.Impl
 				object ownerKey;
 				// TODO: Is it redundant to attempt to use the collectionKey,
 				// or is always using the owner id sufficient?
-				if (collectionKey.GetType().IsAssignableFrom(ownerIdentifierType.ReturnedClass))
+				if (ownerIdentifierType.ReturnedClass.IsInstanceOfType(collectionKey))
 				{
 					ownerKey = collectionKey;
 				}
@@ -369,7 +369,7 @@ namespace NHibernate.Impl
 			// the given ID.  Due to property-ref keys, the collection key
 			// may not be the owner key.
 			IType ownerIdentifierType = persister.OwnerEntityPersister.IdentifierType;
-			if (id.GetType().IsAssignableFrom(ownerIdentifierType.ReturnedClass))
+			if (ownerIdentifierType.ReturnedClass.IsInstanceOfType(id))
 			{
 				s.Append(ownerIdentifierType.ToLoggableString(id, factory));
 			}

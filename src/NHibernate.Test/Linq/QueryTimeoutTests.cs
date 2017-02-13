@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Data.Common;
+using System.Linq;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
 using NHibernate.Engine;
@@ -71,7 +72,7 @@ namespace NHibernate.Test.Linq
 
 		public class TimeoutCatchingNonBatchingBatcher : NonBatchingBatcher
 		{
-			// Is there an easier way to inspect the IDbCommand instead of
+			// Is there an easier way to inspect the DbCommand instead of
 			// creating a custom batcher?
 
 
@@ -82,7 +83,7 @@ namespace NHibernate.Test.Linq
 			{
 			}
 
-			public override System.Data.IDataReader ExecuteReader(System.Data.IDbCommand cmd)
+			public override DbDataReader ExecuteReader(DbCommand cmd)
 			{
 				LastCommandTimeout = cmd.CommandTimeout;
 				return base.ExecuteReader(cmd);

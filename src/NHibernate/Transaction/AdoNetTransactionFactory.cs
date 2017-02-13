@@ -32,8 +32,8 @@ namespace NHibernate.Transaction
 
 		public void ExecuteWorkInIsolation(ISessionImplementor session, IIsolatedWork work, bool transacted)
 		{
-			IDbConnection connection = null;
-			IDbTransaction trans = null;
+			DbConnection connection = null;
+			DbTransaction trans = null;
 			// bool wasAutoCommit = false;
 			try
 			{

@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Data;
+using System.Data.Common;
 using System.Collections.Generic;
+using System.Data;
 using System.Runtime.CompilerServices;
 using NHibernate.Engine;
 using NHibernate.Mapping;
@@ -431,7 +432,7 @@ namespace NHibernate.Id.Enhanced
 		}
 
 
-		public override object DoWorkInCurrentTransaction(ISessionImplementor session, System.Data.IDbConnection conn, System.Data.IDbTransaction transaction)
+		public override object DoWorkInCurrentTransaction(ISessionImplementor session, DbConnection conn, DbTransaction transaction)
 		{
 			long result;
 			int updatedRows;
@@ -442,13 +443,13 @@ namespace NHibernate.Id.Enhanced
 
 				try
 				{
-					IDbCommand selectCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, selectQuery, selectParameterTypes);
+					var selectCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, selectQuery, selectParameterTypes);
 					using (selectCmd)
 					{
 						selectCmd.Connection = conn;
 						selectCmd.Transaction = transaction;
 						string s = selectCmd.CommandText;
-						((IDataParameter)selectCmd.Parameters[0]).Value = SegmentValue;
+						selectCmd.Parameters[0].Value = SegmentValue;
 						PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand(selectCmd, FormatStyle.Basic);
 
 						selectedValue = selectCmd.ExecuteScalar();
@@ -458,14 +459,14 @@ namespace NHibernate.Id.Enhanced
 					{
 						result = InitialValue;
 
-						IDbCommand insertCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, insertQuery, insertParameterTypes);
+						var insertCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, insertQuery, insertParameterTypes);
 						using (insertCmd)
 						{
 							insertCmd.Connection = conn;
 							insertCmd.Transaction = transaction;
 
-							((IDataParameter)insertCmd.Parameters[0]).Value = SegmentValue;
-							((IDataParameter)insertCmd.Parameters[1]).Value = result;
+							insertCmd.Parameters[0].Value = SegmentValue;
+							insertCmd.Parameters[1].Value = result;
 
 							PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand(insertCmd, FormatStyle.Basic);
 							insertCmd.ExecuteNonQuery();
@@ -485,16 +486,16 @@ namespace NHibernate.Id.Enhanced
 
 				try
 				{
-					IDbCommand updateCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, updateQuery, updateParameterTypes);
+					var updateCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, updateQuery, updateParameterTypes);
 					using (updateCmd)
 					{
 						updateCmd.Connection = conn;
 						updateCmd.Transaction = transaction;
 
 						int increment = Optimizer.ApplyIncrementSizeToSourceValues ? IncrementSize : 1;
-						((IDataParameter)updateCmd.Parameters[0]).Value = result + increment;
-						((IDataParameter)updateCmd.Parameters[1]).Value = result;
-						((IDataParameter)updateCmd.Parameters[2]).Value = SegmentValue;
+						updateCmd.Parameters[0].Value = result + increment;
+						updateCmd.Parameters[1].Value = result;
+						updateCmd.Parameters[2].Value = SegmentValue;
 						PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand(updateCmd, FormatStyle.Basic);
 						updatedRows = updateCmd.ExecuteNonQuery();
 					}

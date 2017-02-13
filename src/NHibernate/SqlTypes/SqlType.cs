@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using System.Text;
 
 namespace NHibernate.SqlTypes
@@ -12,7 +13,7 @@ namespace NHibernate.SqlTypes
 	/// <remarks>
 	/// <p>
 	/// The <see cref="Driver.IDriver"/> uses the SqlType to get enough
-	/// information to create an <see cref="IDbDataParameter"/>.  
+	/// information to create an <see cref="DbParameter"/>.  
 	/// </p>
 	/// <p>
 	/// The <see cref="Dialect.Dialect"/> use the SqlType to convert the <see cref="DbType"/>

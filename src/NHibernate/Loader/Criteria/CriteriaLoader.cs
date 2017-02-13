@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Param;
@@ -30,6 +30,8 @@ namespace NHibernate.Loader.Criteria
 		private readonly string[] userAliases;
 		private readonly bool[] includeInResultRow;
 		private readonly int resultRowLength;
+		// caching NH-3486
+		private readonly string[] cachedProjectedColumnAliases;
 
 		public CriteriaLoader(IOuterJoinLoadable persister, ISessionFactoryImplementor factory, CriteriaImpl rootCriteria,
 							  string rootEntityName, IDictionary<string, IFilter> enabledFilters)
@@ -48,6 +50,11 @@ namespace NHibernate.Loader.Criteria
 			resultTypes = walker.ResultTypes;
 			includeInResultRow = walker.IncludeInResultRow;
 			resultRowLength = ArrayHelper.CountTrue(IncludeInResultRow);
+			// fill caching objects only if there is a projection
+			if (translator.HasProjection)
+			{
+				cachedProjectedColumnAliases = translator.ProjectedColumnAliases;
+			}
 
 			PostInstantiate();
 		}
@@ -74,7 +81,7 @@ namespace NHibernate.Loader.Criteria
 			get { return resultTypes; }
 		}
 
-		protected override  string[] ResultRowAliases
+		protected override string[] ResultRowAliases
 		{
 			get { return userAliases; }
 		}
@@ -99,7 +106,7 @@ namespace NHibernate.Loader.Criteria
 			return true;
 		}
 
-		protected override object GetResultColumnOrRow(object[] row, IResultTransformer customResultTransformer, IDataReader rs,
+		protected override object GetResultColumnOrRow(object[] row, IResultTransformer customResultTransformer, DbDataReader rs,
 													   ISessionImplementor session)
 		{
 			return ResolveResultTransformer(customResultTransformer)
@@ -107,28 +114,26 @@ namespace NHibernate.Loader.Criteria
 		}
 
 
-		protected override object[] GetResultRow(object[] row, IDataReader rs, ISessionImplementor session)
+		protected override object[] GetResultRow(object[] row, DbDataReader rs, ISessionImplementor session)
 		{
 			object[] result;
 
 			if (translator.HasProjection)
 			{
-				IType[] types = translator.ProjectedTypes;
-				result = new object[types.Length];
-				string[] columnAliases = translator.ProjectedColumnAliases;
-				
+				result = new object[ResultTypes.Length];
+
 				for (int i = 0, position = 0; i < result.Length; i++)
 				{
-					int numColumns = types[i].GetColumnSpan(session.Factory);
-					
-					if ( numColumns > 1 ) 
+					int numColumns = ResultTypes[i].GetColumnSpan(session.Factory);
+
+					if (numColumns > 1)
 					{
-						string[] typeColumnAliases = ArrayHelper.Slice(columnAliases, position, numColumns);
-						result[i] = types[i].NullSafeGet(rs, typeColumnAliases, session, null);
+						string[] typeColumnAliases = ArrayHelper.Slice(cachedProjectedColumnAliases, position, numColumns);
+						result[i] = ResultTypes[i].NullSafeGet(rs, typeColumnAliases, session, null);
 					}
 					else
 					{
-						result[i] = types[i].NullSafeGet(rs, columnAliases[position], session, null);
+						result[i] = ResultTypes[i].NullSafeGet(rs, cachedProjectedColumnAliases[position], session, null);
 					}
 					position += numColumns;
 				}

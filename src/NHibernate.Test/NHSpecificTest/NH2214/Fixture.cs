@@ -11,12 +11,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2214
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return dialect is MsSql2005Dialect || dialect is MsSql2008Dialect;
+			return dialect.GetType() == typeof(MsSql2005Dialect) || dialect.GetType() == typeof(MsSql2008Dialect);
 		}
 
 		protected override void OnSetUp()
 		{
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
 			{
 				session.Save(new DomainClass {Id = 1, Name = "Name"});
 				session.Save(new DomainClass {Id = 2, Name = "Name"});
@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2214
 
 		protected override void OnTearDown()
 		{
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
 			{
 				session.Delete("from DomainClass");
 				session.Flush();
@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2214
 		[Test]
 		public void PagedQueryWithDistinct()
 		{
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
 			{
 				const int page = 2;
 				const int rows = 2;
@@ -57,15 +57,15 @@ namespace NHibernate.Test.NHSpecificTest.NH2214
 				var query = criteria.GetExecutableCriteria(session);
 				var result = query.List();
 
-				Assert.AreEqual("Name2", result[0]);
-				Assert.AreEqual("Name3", result[1]);
+				Assert.That(result[0], Is.EqualTo("Name2"));
+				Assert.That(result[1], Is.EqualTo("Name3"));
 			}
 		}
 
 		[Test]
 		public void PagedQueryWithDistinctAndOrderingByNonProjectedColumn()
 		{
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
 			{
 				const int page = 2;
 				const int rows = 2;
@@ -86,7 +86,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2214
 		[Test]
 		public void PagedLinqQueryWithDistinct()
 		{
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
 			{
 				const int page = 2;
 				const int rows = 2;
@@ -97,8 +97,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2214
 
 				var result = query.ToList();
 
-				Assert.AreEqual("Name2", result[0]);
-				Assert.AreEqual("Name3", result[1]);
+				Assert.That(result[0], Is.EqualTo("Name2"));
+				Assert.That(result[1], Is.EqualTo("Name3"));
 			}
 		}
 	}

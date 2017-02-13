@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -32,12 +33,12 @@ namespace NHibernate.Type
 		{
 		}
 
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index)
 		{
 			return Convert.ToBoolean(rs[index]);
 		}
 
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name)
 		{
 			return Convert.ToBoolean(rs[name]);
 		}
@@ -52,9 +53,9 @@ namespace NHibernate.Type
 			get { return typeof(bool); }
 		}
 
-		public override void Set(IDbCommand cmd, object value, int index)
+		public override void Set(DbCommand cmd, object value, int index)
 		{
-			((IDataParameter) cmd.Parameters[index]).Value = (bool) value;
+			cmd.Parameters[index].Value = (bool) value;
 		}
 
 		public override string Name

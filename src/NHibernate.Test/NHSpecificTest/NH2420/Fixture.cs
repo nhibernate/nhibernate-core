@@ -1,12 +1,15 @@
 ﻿using System;
-using System.Data;
+using System.Data.Common;
 using System.Data.Odbc;
 using System.Data.SqlClient;
+using System.Configuration;
 using System.Transactions;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Engine;
 using NUnit.Framework;
+
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.NHSpecificTest.NH2420
 {
@@ -23,12 +26,35 @@ namespace NHibernate.Test.NHSpecificTest.NH2420
 			return (dialect is MsSql2005Dialect);
 		}
 
+		private string FetchConnectionStringFromConfiguration()
+		{
+			string connectionString;
+			if (cfg.Properties.TryGetValue(Environment.ConnectionString, out connectionString))
+			{
+				Assert.That(connectionString, Is.Not.Null.Or.Empty);
+				return connectionString;
+			}
+			string connectionStringName;
+			if (cfg.Properties.TryGetValue(Environment.ConnectionStringName, out connectionStringName))
+			{
+				var connectionStringSettings = ConfigurationManager.ConnectionStrings[connectionStringName];
+				Assert.That(connectionStringSettings, Is.Not.Null);
+				connectionString = connectionStringSettings.ConnectionString;
+				Assert.That(connectionString, Is.Not.Null.Or.Empty);
+				return connectionString;
+			}
+			else
+			{
+				Assert.Fail("Unable to find a connection string or connection string name");
+				return string.Empty;
+			}
+		}
+
 		[Test]
 		public void ShouldBeAbleToReleaseSuppliedConnectionAfterDistributedTransaction()
 		{
-			string connectionString = cfg.GetProperty("connection.connection_string");
+			string connectionString = FetchConnectionStringFromConfiguration();
 			ISession s;
-
 			using (var ts = new TransactionScope())
 			{
 				// Enlisting DummyEnlistment as a durable resource manager will start
@@ -38,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2420
 					new DummyEnlistment(),
 					EnlistmentOptions.None);
 
-				IDbConnection connection;
+				DbConnection connection;
 				if (sessions.ConnectionProvider.Driver.GetType() == typeof(OdbcDriver))
 					connection = new OdbcConnection(connectionString);
 				else

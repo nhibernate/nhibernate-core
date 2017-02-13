@@ -65,7 +65,7 @@ namespace NHibernate.Test.CfgTest
 
 			for (int i = 0; i < 5; i++)
 			{
-				FileInfo tempFile = new FileInfo(Guid.NewGuid() + ".hbm.binary");
+				FileInfo tempFile = new FileInfo(Path.Combine(TestContext.CurrentContext.TestDirectory, Guid.NewGuid() + ".hbm.binary"));
 
 				// Load the embedded xml mappings (and time it)
 				Stopwatch stopwatch1 = Stopwatch.StartNew();

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -43,8 +43,8 @@ namespace NHibernate.Param
 
 		public abstract string RenderDisplayInfo();
 		public abstract IEnumerable<string> GetIdsForBackTrack(IMapping sessionFactory);
-		public abstract void Bind(IDbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session);
-		public abstract void Bind(IDbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session);
+		public abstract void Bind(DbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session);
+		public abstract void Bind(DbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session);
 		public abstract void SetEffectiveType(QueryParameters queryParameters);
 		public abstract int GetSkipValue(QueryParameters queryParameters);
 

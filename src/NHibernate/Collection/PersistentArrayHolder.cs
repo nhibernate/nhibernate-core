@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 
 using NHibernate.DebugHelpers;
@@ -142,7 +142,7 @@ namespace NHibernate.Collection
 			get { return false; }
 		}
 
-		public override object ReadFrom(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
+		public override object ReadFrom(DbDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
 		{
 			object element = role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
 			int index = (int) role.ReadIndex(rs, descriptor.SuffixedIndexAliases, Session);

@@ -120,6 +120,7 @@
 								<xs:enumeration value="order_updates" />
 								<xs:enumeration value="query.query_model_rewriter_factory" />
 								<xs:enumeration value="linqtohql.generatorsregistry" />
+								<xs:enumeration value="odbc.explicit_datetime_scale" />
 							</xs:restriction>
 						</xs:simpleType>
 					</xs:attribute>

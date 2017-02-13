@@ -68,7 +68,7 @@ namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 			var hbmMyCompo = hbmClass.Properties.OfType<HbmComponent>().Single();
 			var hbmMyNestedCompo = hbmMyCompo.Properties.OfType<HbmComponent>().Single();
 
-			Assert.That(hbmMyNestedCompo.Parent.access, Is.StringContaining("camelcase"));
+			Assert.That(hbmMyNestedCompo.Parent.access, Does.Contain("camelcase"));
 		}
 
 		[Test]
@@ -82,7 +82,7 @@ namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 			var hbmMyCompo = (HbmCompositeElement)hbmBag.ElementRelationship;
 			var hbmMyNestedCompo = hbmMyCompo.Properties.OfType<HbmNestedCompositeElement>().Single();
 
-			Assert.That(hbmMyNestedCompo.Parent.access, Is.StringContaining("camelcase"));
+			Assert.That(hbmMyNestedCompo.Parent.access, Does.Contain("camelcase"));
 		}
 
 		[Test, Ignore("No fixed yet. When the parent is an entity it should be managed explicitly as explicitly is managed the relation (Parent instead many-to-one)")]
@@ -92,7 +92,7 @@ namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 
 			var hbmClass = mapping.RootClasses[0];
 			var hbmMyCompo = hbmClass.Properties.OfType<HbmComponent>().Single();
-			Assert.That(hbmMyCompo.Parent.access, Is.StringContaining("camelcase"));
+			Assert.That(hbmMyCompo.Parent.access, Does.Contain("camelcase"));
 		}
 
 		[Test, Ignore("No fixed yet. When the parent is an entity it should be managed explicitly as explicitly is managed the relation (Parent instead many-to-one)")]
@@ -104,7 +104,7 @@ namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 			var hbmBag = hbmClass.Properties.OfType<HbmBag>().Single();
 
 			var hbmMyCompo = (HbmCompositeElement)hbmBag.ElementRelationship;
-			Assert.That(hbmMyCompo.Parent.access, Is.StringContaining("camelcase"));
+			Assert.That(hbmMyCompo.Parent.access, Does.Contain("camelcase"));
 		}
 	}
 }

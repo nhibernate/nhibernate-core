@@ -18,18 +18,12 @@
 *.fsproj text merge=union
 *.dbproj text merge=union
 
+# Resharper DotSettings files are in Unix format
+*.DotSettings text eol=lf 
 
 # Binary files
 *.png binary
 *.jpg binary
 *.dll binary
 *.exe binary
-
-
-
-
-
-
-
-
 

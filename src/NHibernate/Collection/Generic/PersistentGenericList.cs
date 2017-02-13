@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
@@ -115,7 +115,7 @@ namespace NHibernate.Collection.Generic
 			return StringHelper.CollectionToString(WrappedList);
 		}
 
-		public override object ReadFrom(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
+		public override object ReadFrom(DbDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
 		{
 			var element = (T)role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
 			int index = (int)role.ReadIndex(rs, descriptor.SuffixedIndexAliases, Session);

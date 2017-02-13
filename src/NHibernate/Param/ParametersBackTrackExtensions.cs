@@ -36,7 +36,7 @@ namespace NHibernate.Param
 		{
 			// NOTE: if you have a NullReferenceException probably is because the IParameterSpecification does not have the ExpectedType; use ResetEffectiveExpectedType before call this method.
 			
-			// due to IType.NullSafeSet(System.Data.IDbCommand , object, int, ISessionImplementor) the SqlType[] is supposed to be in a certain sequence.
+			// due to IType.NullSafeSet(DbCommand , object, int, ISessionImplementor) the SqlType[] is supposed to be in a certain sequence.
 			// here we can check and evetually Assert (see AssertionFailure) the supposition because each individual Parameter has its BackTrackId.
 			// Currently we just take the first BackTrackId of each IParameterSpecification
 			IEnumerable<IType> typesSequence = from typeLocation in
