@@ -1820,6 +1820,7 @@
            can't handle. Circumvented by adding a trailing period below. -->
     </GetReferenceAssemblyPaths>
     <Exec Command="$(SolutionDir)..\Tools\ilrepack\ilrepack.exe /verbose /t:library /targetplatform:v4,&quot;$(_ReferenceAssembliesPath).&quot; /keyfile:$(AssemblyOriginatorKeyFile) /internalize:internalize.exclude /out:$(OutputPath)\NHibernate.dll $(IntermediateOutputPath)\NHibernate.dll $(OutputPath)\Remotion.Linq.dll $(OutputPath)\Antlr3.Runtime.dll" />
+    <Exec Command="$(SolutionDir)packages\ILRepack.2.0.10\tools\ilrepack.exe /verbose /t:library /targetplatform:v4 /keyfile:$(AssemblyOriginatorKeyFile) /internalize:internalize.exclude /out:$(OutputPath)\NHibernate.dll $(IntermediateOutputPath)\NHibernate.dll $(OutputPath)\Remotion.Linq.dll $(OutputPath)\Antlr3.Runtime.dll" />
   </Target>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
