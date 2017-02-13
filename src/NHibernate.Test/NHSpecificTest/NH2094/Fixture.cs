@@ -100,7 +100,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2094
 				string lazyField;
 				var lazyException = Assert.Throws<LazyInitializationException>(() => lazyField = person.LazyField);
 				Assert.That(lazyException.EntityName, Is.Not.Null);
-				Assert.That(lazyException.Message, Is.StringContaining("LazyField"));
+				Assert.That(lazyException.Message, Does.Contain("LazyField"));
 			}
 			finally
 			{

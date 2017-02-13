@@ -1,5 +1,5 @@
 using System;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Driver;
 using NUnit.Framework;
 
@@ -18,7 +18,7 @@ namespace NHibernate.Test.DriverTest
 		public void ConnectionClassName()
 		{
 			IDriver driver = new OracleClientDriver();
-			IDbConnection conn = driver.CreateConnection();
+			DbConnection conn = driver.CreateConnection();
 
 			Assert.AreEqual("System.Data.OracleClient.OracleConnection", conn.GetType().FullName);
 		}
@@ -30,7 +30,7 @@ namespace NHibernate.Test.DriverTest
 		public void CommandClassName()
 		{
 			OracleClientDriver driver = new OracleClientDriver();
-			IDbCommand cmd = driver.CreateCommand();
+			DbCommand cmd = driver.CreateCommand();
 
 			Assert.AreEqual("System.Data.OracleClient.OracleCommand", cmd.GetType().FullName);
 		}

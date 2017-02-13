@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using System.Xml;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -82,22 +82,22 @@ namespace NHibernate.Type
 		/// <returns> The instantiated collection. </returns>
 		public abstract IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister, object key);
 
-		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
+		public override object NullSafeGet(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
 			return NullSafeGet(rs, new string[] { name }, session, owner);
 		}
 
-		public override object NullSafeGet(IDataReader rs, string[] name, ISessionImplementor session, object owner)
+		public override object NullSafeGet(DbDataReader rs, string[] name, ISessionImplementor session, object owner)
 		{
 			return ResolveIdentifier(null, session, owner);
 		}
 
-		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override void NullSafeSet(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			// NOOP
 		}
 
-		public override void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session)
+		public override void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 		}
 
@@ -218,7 +218,7 @@ namespace NHibernate.Type
 			get { return ForeignKeyDirection.ForeignKeyToParent; }
 		}
 
-		public override object Hydrate(IDataReader rs, string[] name, ISessionImplementor session, object owner)
+		public override object Hydrate(DbDataReader rs, string[] name, ISessionImplementor session, object owner)
 		{
 			// can't just return null here, since that would
 			// cause an owning component to become null
@@ -467,8 +467,7 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Get the key value from the owning entity instance, usually the identifier, but might be some
-		/// other unique key, in the case of property-ref
+		/// Get the key value from the owning entity instance.
 		/// </summary>
 		public object GetKeyOfOwner(object owner, ISessionImplementor session)
 		{
@@ -477,36 +476,7 @@ namespace NHibernate.Type
 				return null; // This just handles a particular case of component
 			// projection, perhaps get rid of it and throw an exception
 
-			if (foreignKeyPropertyName == null)
-			{
-				return entityEntry.Id;
-			}
-			else
-			{
-				// TODO: at the point where we are resolving collection references, we don't
-				// know if the uk value has been resolved (depends if it was earlier or
-				// later in the mapping document) - now, we could try and use e.getStatus()
-				// to decide to semiResolve(), trouble is that initializeEntity() reuses
-				// the same array for resolved and hydrated values
-				object id;
-				if (entityEntry.LoadedState != null)
-				{
-					id = entityEntry.GetLoadedValue(foreignKeyPropertyName);
-				}
-				else
-				{
-					id = entityEntry.Persister.GetPropertyValue(owner, foreignKeyPropertyName, session.EntityMode);
-				}
-
-				// NOTE VERY HACKISH WORKAROUND!!
-				IType keyType = GetPersister(session).KeyType;
-				if (!keyType.ReturnedClass.IsInstanceOfType(id))
-				{
-					id = keyType.SemiResolve(entityEntry.GetLoadedValue(foreignKeyPropertyName), session, owner);
-				}
-
-				return id;
-			}
+			return entityEntry.Id;
 		}
 
 		/// <summary> 

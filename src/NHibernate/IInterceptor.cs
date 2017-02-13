@@ -1,5 +1,5 @@
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 
@@ -101,7 +101,7 @@ namespace NHibernate
 		/// Called after a flush that actually ends in execution of the SQL statements required to
 		/// synchronize in-memory state with the database.
 		/// </summary>
-		/// <param name="entities">The entitites</param>
+		/// <param name="entities">The entities</param>
 		void PostFlush(ICollection entities);
 
 		/// <summary>
@@ -195,7 +195,7 @@ namespace NHibernate
 		/// The use of singleton-interceptor may cause problems in multi-thread scenario. 
 		/// </remarks>
 		/// <seealso cref="ISessionFactory.OpenSession(IInterceptor)"/>
-		/// <seealso cref="ISessionFactory.OpenSession(IDbConnection,IInterceptor)"/>
+		/// <seealso cref="ISessionFactory.OpenSession(DbConnection,IInterceptor)"/>
 		void SetSession(ISession session);
 
 		#endregion

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.NH3844"
+				   assembly="NHibernate.Test">
+
+  <class name="Project">
+    <id name="Id" column="ProjectId">
+      <generator class="guid.comb"/>
+    </id>
+    <property name="Name" not-null="true"/>
+    <bag name="Components"  inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="ProjectId" not-null="true" />
+      </key>
+      <one-to-many class="Component" />
+    </bag>
+    <many-to-one name="Job" column="JobId" class="Job" not-null="true"/>
+  </class>
+
+  <class name="Component">
+    <id name="Id" column="ComponentId">
+      <generator class="guid.comb"/>
+    </id>
+    <property name="Name" not-null="true"/>
+    <many-to-one name="Project" column="ProjectId" class="Project" not-null="true"/>
+  </class>
+
+  <class name="TimeRecord">
+    <id name="Id" column="TimeRecordId">
+      <generator class="guid.comb"/>
+    </id>
+    <property name="TimeInHours" not-null="true"/>
+    <many-to-one name="Project" column="ProjectId" class="Project" />
+    <bag name="Components" inverse="false" lazy="true" fetch="select">
+      <key>
+        <column name="TimeRecordId" not-null="true" />
+      </key>
+      <many-to-many class="Component">
+        <column name="ComponentId" not-null="true" />
+      </many-to-many>
+    </bag>
+  </class>
+
+  <class name="Job">
+    <id name="Id" column="JobId">
+      <generator class="guid.comb"/>
+    </id>
+    <property name="Name" not-null="true"/>
+    <property name="BillingType" not-null="true" type="BillingType"/>
+  </class>
+
+</hibernate-mapping>

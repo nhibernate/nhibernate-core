@@ -1,5 +1,5 @@
 using System;
-using System.Data;
+using System.Data.Common;
 
 using NHibernate.SqlTypes;
 using NHibernate.Type;
@@ -17,7 +17,7 @@ namespace NHibernate.DomainModel.NHSpecific
 		{
 		}
 
-		public override object NullSafeGet(IDataReader rs, string name)
+		public override object NullSafeGet(DbDataReader rs, string name)
 		{
 			object value = base.NullSafeGet(rs, name);
 			if (value == null)
@@ -30,7 +30,7 @@ namespace NHibernate.DomainModel.NHSpecific
 			}
 		}
 
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name)
 		{
 			return Get(rs, rs.GetOrdinal(name));
 		}

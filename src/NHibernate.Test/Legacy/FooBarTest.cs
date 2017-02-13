@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -14,7 +15,6 @@ using NHibernate.Dialect;
 using NHibernate.DomainModel;
 using NHibernate.Criterion;
 using NHibernate.Proxy;
-using NHibernate.Test.NHSpecificTest.NH1914;
 using NHibernate.Type;
 using NHibernate.Util;
 using NUnit.Framework;
@@ -2165,7 +2165,7 @@ namespace NHibernate.Test.Legacy
 			s.Delete("from Foo foo");
 			s.Delete(baz);
 
-			IDbCommand deleteCmd = s.Connection.CreateCommand();
+			var deleteCmd = s.Connection.CreateCommand();
 			deleteCmd.CommandText = "delete from FooArray where id_='" + baz.Code + "' and i>=8";
 			deleteCmd.CommandType = CommandType.Text;
 			int rows = deleteCmd.ExecuteNonQuery();
@@ -2232,7 +2232,7 @@ namespace NHibernate.Test.Legacy
 
 
 		[Test]
-		//[Ignore("TimeZone Portions commented out - http://jira.nhibernate.org:8080/browse/NH-88")]
+		//[Ignore("TimeZone Portions commented out - http://nhibernate.jira.com/browse/NH-88")]
 		public void AssociationId()
 		{
 			string id;
@@ -2839,7 +2839,7 @@ namespace NHibernate.Test.Legacy
 			s.Delete(baz.TopGlarchez['G']);
 			s.Delete(baz.TopGlarchez['H']);
 
-			IDbCommand cmd = s.Connection.CreateCommand();
+			var cmd = s.Connection.CreateCommand();
 			s.Transaction.Enlist(cmd);
 			cmd.CommandText = "update " + Dialect.QuoteForTableName("glarchez") + " set baz_map_id=null where baz_map_index='a'";
 			int rows = cmd.ExecuteNonQuery();
@@ -3880,7 +3880,7 @@ namespace NHibernate.Test.Legacy
 
 		// Not ported - testScrollableIterator - ScrollableResults are not supported by NH,
 		// since they rely on the underlying ResultSet to support scrolling, and ADO.NET
-		// IDataReaders do not support it.
+		// DbDataReaders do not support it.
 
 		private bool DialectSupportsCountDistinct
 		{
@@ -4723,8 +4723,8 @@ namespace NHibernate.Test.Legacy
 			// refuses to delete immutable objects.
 			using (ISession s = OpenSession())
 			{
-				IDbConnection connection = s.Connection;
-				using (IDbCommand command = connection.CreateCommand())
+				var connection = s.Connection;
+				using (var command = connection.CreateCommand())
 				{
 					command.CommandText = "delete from immut";
 					command.ExecuteNonQuery();
@@ -4765,7 +4765,7 @@ namespace NHibernate.Test.Legacy
 			s.Save(foo);
 			s.Flush();
 
-			IDbCommand cmd = s.Connection.CreateCommand();
+			var cmd = s.Connection.CreateCommand();
 			cmd.CommandText = "update " + Dialect.QuoteForTableName("foos") + " set long_ = -3";
 			cmd.ExecuteNonQuery();
 
@@ -4792,7 +4792,7 @@ namespace NHibernate.Test.Legacy
 			s = OpenSession();
 			btw using close and open a new session more than Transient the entity will be detached.
 			*/
-			IDbCommand cmd = s.Connection.CreateCommand();
+			var cmd = s.Connection.CreateCommand();
 			cmd.CommandText = "update " + Dialect.QuoteForTableName("foos") + " set long_ = -3";
 			cmd.ExecuteNonQuery();
 			s.Refresh(foo);
@@ -4983,7 +4983,7 @@ namespace NHibernate.Test.Legacy
 			s.CreateQuery("from foo in class NHibernate.DomainModel.Fo").List();
 			tx.Commit();
 
-			IDbConnection c = s.Disconnect();
+			var c = s.Disconnect();
 			Assert.IsNotNull(c);
 
 			s.Reconnect(c);

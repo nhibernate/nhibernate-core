@@ -234,7 +234,7 @@ namespace NHibernate.Loader.Custom.Sql
 		}
 
 		/// <summary> 
-		/// Substitues ADO parameter placeholders (?) for all encountered
+		/// Substitutes ADO parameter placeholders (?) for all encountered
 		/// parameter specifications.  It also tracks the positions of these
 		/// parameter specifications within the query string.  This accounts for
 		/// ordinal-params, named-params, and ejb3-positional-params.

@@ -22,7 +22,7 @@ namespace NHibernate.Hql.Ast
 			AddChildren(children);
 		}
 
-		protected HqlTreeNode(int type, string text, IASTFactory factory, params HqlTreeNode[] children) : this(type, text, factory, (IEnumerable<HqlTreeNode>) children)
+		protected HqlTreeNode(int type, string text, IASTFactory factory, params HqlTreeNode[] children) : this(type, text, factory, (IEnumerable<HqlTreeNode>)children)
 		{
 		}
 
@@ -92,7 +92,7 @@ namespace NHibernate.Hql.Ast
 
 		internal void AddChild(HqlTreeNode child)
 		{
-			if (child is HqlExpressionSubTreeHolder) 
+			if (child is HqlExpressionSubTreeHolder)
 			{
 				AddChildren(child.Children);
 			}
@@ -116,7 +116,7 @@ namespace NHibernate.Hql.Ast
 		{
 			if (node is HqlDot)
 			{
-				return new HqlBooleanDot(node.Factory, (HqlDot) node);
+				return new HqlBooleanDot(node.Factory, (HqlDot)node);
 			}
 
 			// TODO - nice error handling if cast fails
@@ -220,8 +220,8 @@ namespace NHibernate.Hql.Ast
 					}
 					if (type == typeof(DateTimeOffset))
 					{
-					    SetText("datetimeoffset");
-					    break;
+						SetText("datetimeoffset");
+						break;
 					}
 					throw new NotSupportedException(string.Format("Don't currently support idents of type {0}", type.Name));
 			}
@@ -373,7 +373,7 @@ namespace NHibernate.Hql.Ast
 	public class HqlTake : HqlStatement
 	{
 		public HqlTake(IASTFactory factory, HqlExpression parameter)
-			: base(HqlSqlWalker.TAKE, "take", factory, parameter) {}
+			: base(HqlSqlWalker.TAKE, "take", factory, parameter) { }
 	}
 
 	public class HqlConstant : HqlExpression
@@ -690,7 +690,7 @@ namespace NHibernate.Hql.Ast
 			: base(HqlSqlWalker.AGGREGATE, "max", factory, expression)
 		{
 		}
-}
+	}
 
 	public class HqlMin : HqlExpression
 	{
@@ -816,6 +816,19 @@ namespace NHibernate.Hql.Ast
 	{
 		public HqlLike(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
 			: base(HqlSqlWalker.LIKE, "like", factory, lhs, rhs)
+		{
+		}
+
+		public HqlLike(IASTFactory factory, HqlExpression lhs, HqlExpression rhs, HqlConstant escapeCharacter)
+		: base(HqlSqlWalker.LIKE, "like", factory, lhs, rhs, new HqlEscape(factory, escapeCharacter))
+		{
+		}
+	}
+
+	public class HqlEscape : HqlStatement
+	{
+		public HqlEscape(IASTFactory factory, HqlConstant escapeCharacter)
+			: base(HqlSqlWalker.ESCAPE, "escape", factory, escapeCharacter)
 		{
 		}
 	}

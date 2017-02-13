@@ -1,10 +1,11 @@
 using System.Linq.Expressions;
+using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Parsing;
 using Remotion.Linq.Parsing.ExpressionTreeVisitors;
 
 namespace NHibernate.Linq.Visitors
 {
-	internal class NhPartialEvaluatingExpressionTreeVisitor : ExpressionTreeVisitor
+	internal class NhPartialEvaluatingExpressionTreeVisitor : ExpressionTreeVisitor, IPartialEvaluationExceptionExpressionVisitor
 	{
 		protected override Expression VisitConstantExpression(ConstantExpression expression)
 		{
@@ -21,6 +22,11 @@ namespace NHibernate.Linq.Visitors
 		{
 			var evaluatedExpression = PartialEvaluatingExpressionTreeVisitor.EvaluateIndependentSubtrees(expression);
 			return new NhPartialEvaluatingExpressionTreeVisitor().VisitExpression(evaluatedExpression);
+		}
+
+		public Expression VisitPartialEvaluationExceptionExpression(PartialEvaluationExceptionExpression expression)
+		{
+			return VisitExpression(expression.Reduce());
 		}
 	}
 }

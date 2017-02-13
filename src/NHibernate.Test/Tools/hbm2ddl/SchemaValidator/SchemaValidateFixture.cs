@@ -62,7 +62,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 			}
 			catch (HibernateException e)
 			{
-				Assert.That(e.Message, Is.StringStarting("Missing column: Name"));
+				Assert.That(e.Message, Does.StartWith("Missing column: Name"));
 			}
 		}
 

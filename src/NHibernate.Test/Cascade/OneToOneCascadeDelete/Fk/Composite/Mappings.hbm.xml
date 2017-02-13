@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				assembly="NHibernate.Test"
+				namespace="NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Composite">
+
+	<class name="Employee">
+		<id name="Id" type="long" column="Id" >
+			<generator class="increment" />
+		</id>
+		<many-to-one name="Info"
+					unique="true"
+					not-found="exception"
+					cascade="all,delete-orphan" >
+			<column name="COMP_ID" />
+			<column name="PERS_ID" />
+		</many-to-one>
+		<property name="Name" />
+	</class>
+
+	<class name="EmployeeInfo">
+		<composite-id class="EmployeeInfo+Identifier" name="Id" >
+			<key-property name="CompanyId" column="COMP_ID" />
+			<key-property name="PersonId" column="PERS_ID" />
+		</composite-id>
+	</class>
+
+</hibernate-mapping>

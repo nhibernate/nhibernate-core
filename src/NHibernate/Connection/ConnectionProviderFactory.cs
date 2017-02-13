@@ -7,18 +7,13 @@ using Environment=NHibernate.Cfg.Environment;
 namespace NHibernate.Connection
 {
 	/// <summary>
-	/// Instanciates a connection provider given configuration properties.
+	/// Instantiates a connection provider given configuration properties.
 	/// </summary>
-	public sealed class ConnectionProviderFactory
+	public static class ConnectionProviderFactory
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ConnectionProviderFactory));
 
 		// cannot be instantiated
-		private ConnectionProviderFactory()
-		{
-			throw new InvalidOperationException("ConnectionProviderFactory can not be instantiated.");
-		}
-
 		public static IConnectionProvider NewConnectionProvider(IDictionary<string, string> settings)
 		{
 			IConnectionProvider connections;

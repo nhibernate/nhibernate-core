@@ -43,7 +43,7 @@ namespace NHibernate.Context
 		}
 
 		/// <summary>
-		/// Get the dicitonary mapping session factory to its current session.
+		/// Get the dictionary mapping session factory to its current session.
 		/// </summary>
 		protected abstract IDictionary GetMap();
 

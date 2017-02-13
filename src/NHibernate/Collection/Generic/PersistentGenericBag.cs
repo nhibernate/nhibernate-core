@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
@@ -37,12 +37,13 @@ namespace NHibernate.Collection.Generic
 		 * expensive than .NET original implementation.
 		 */
 
-		/// For a one-to-many, a <bag> is not really a bag;
-		/// it is *really* a set, since it can't contain the
-		/// same element twice. It could be considered a bug
-		/// in the mapping dtd that <bag> allows <one-to-many>.
-		/// Anyway, here we implement <set> semantics for a
-		/// <one-to-many> <bag>!
+		/* For a one-to-many, a <bag> is not really a bag;
+		 * it is *really* a set, since it can't contain the
+		 * same element twice. It could be considered a bug
+		 * in the mapping dtd that <bag> allows <one-to-many>.
+		 * Anyway, here we implement <set> semantics for a
+		 * <one-to-many> <bag>!
+		 */
 		private IList<T> _gbag;
 
 		public PersistentGenericBag()
@@ -488,7 +489,7 @@ namespace NHibernate.Collection.Generic
 			return false;
 		}
 
-		public override object ReadFrom(IDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner)
+		public override object ReadFrom(DbDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner)
 		{
 			// note that if we load this collection from a cartesian product
 			// the multiplicity would be broken ... so use an idbag instead

@@ -7,7 +7,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	public abstract class AbstractSelectExpression : HqlSqlWalkerNode, ISelectExpression 
 	{
 		private string _alias;
-		
+		private int _scalarColumnIndex = -1;
+
 		protected AbstractSelectExpression(IToken token) : base(token)
 		{
 		}
@@ -17,7 +18,18 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			get { return _alias; }
 			set { _alias = value; }
 		}
-		
+
+		public void SetScalarColumn(int i)
+		{
+			_scalarColumnIndex = i;
+			SetScalarColumnText(i);
+		}
+
+		public int ScalarColumnIndex
+		{
+			get { return _scalarColumnIndex; }
+		}
+
 		public bool IsConstructor
 		{
 			get { return false; }

@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 
@@ -28,7 +29,7 @@ namespace NHibernate.Test
 			get { return new[] { new SqlType(DbType.DateTime) }; }
 		}
 
-		public object NullSafeGet(IDataReader dr, string[] names, object owner)
+		public object NullSafeGet(DbDataReader dr, string[] names, object owner)
 		{
 			var name = names[0];
 			int index = dr.GetOrdinal(name);
@@ -61,7 +62,7 @@ namespace NHibernate.Test
 			}		
 		}
 
-		public void NullSafeSet(IDbCommand cmd, object value, int index)
+		public void NullSafeSet(DbCommand cmd, object value, int index)
 		{
 			if (value == null)
 			{
@@ -72,8 +73,7 @@ namespace NHibernate.Test
 				DateTimeOffset dateTimeOffset = (DateTimeOffset)value;
 				DateTime paramVal = dateTimeOffset.ToOffset(Offset).DateTime;
 
-				IDataParameter parameter = (IDataParameter)cmd.Parameters[index];
-				parameter.Value = paramVal;
+				cmd.Parameters[index].Value = paramVal;
 			}
 		}
 

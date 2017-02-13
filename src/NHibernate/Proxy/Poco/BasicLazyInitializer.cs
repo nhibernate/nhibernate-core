@@ -22,14 +22,14 @@ namespace NHibernate.Proxy.Poco
 
 		protected internal BasicLazyInitializer(string entityName, System.Type persistentClass, object id, 
 			MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod, 
-			IAbstractComponentType componentIdType, ISessionImplementor session)
+			IAbstractComponentType componentIdType, ISessionImplementor session, bool overridesEquals)
 			: base(entityName, id, session)
 		{
 			this.persistentClass = persistentClass;
 			this.getIdentifierMethod = getIdentifierMethod;
 			this.setIdentifierMethod = setIdentifierMethod;
 			this.componentIdType = componentIdType;
-			overridesEquals = ReflectHelper.OverridesEquals(persistentClass);
+			this.overridesEquals = overridesEquals;
 		}
 
 		/// <summary>

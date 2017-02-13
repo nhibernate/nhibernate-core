@@ -1,5 +1,5 @@
 using System;
-using System.Data;
+using System.Data.Common;
 using System.Xml.Linq;
 using NHibernate.SqlTypes;
 
@@ -28,12 +28,12 @@ namespace NHibernate.Type
 			get { return typeof (XDocument); }
 		}
 
-		public override void Set(IDbCommand cmd, object value, int index)
+		public override void Set(DbCommand cmd, object value, int index)
 		{
-			((IDataParameter) cmd.Parameters[index]).Value = ((XDocument) value).ToString(SaveOptions.DisableFormatting);
+			cmd.Parameters[index].Value = ((XDocument) value).ToString(SaveOptions.DisableFormatting);
 		}
 
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index)
 		{
 			// according to documentation, GetValue should return a string, at list for MsSQL
 			// hopefully all DataProvider has the same behaviour
@@ -41,7 +41,7 @@ namespace NHibernate.Type
 			return FromStringValue(xmlString);
 		}
 
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name)
 		{
 			return Get(rs, rs.GetOrdinal(name));
 		}

@@ -176,5 +176,35 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			mapper.Length(10);
 			Assert.That(hbmId.length, Is.EqualTo("10"));
 		}
+
+		[Test]
+		public void CanSetPrecision()
+		{
+			//NH-2824
+			var hbmId = new HbmId();
+			var mapper = new IdMapper(null, hbmId);
+			mapper.Column(x => x.Precision(10));
+			Assert.That(hbmId.column[0].precision, Is.EqualTo("10"));
+		}
+
+		[Test]
+		public void CanSetScale()
+		{
+			//NH-2824
+			var hbmId = new HbmId();
+			var mapper = new IdMapper(null, hbmId);
+			mapper.Column(x => x.Scale(10));
+			Assert.That(hbmId.column[0].scale, Is.EqualTo("10"));
+		}
+
+		[Test]
+		public void CanSqlType()
+		{
+			//NH-3452
+			var hbmId = new HbmId();
+			var mapper = new IdMapper(null, hbmId);
+			mapper.Column(x => x.SqlType("CHAR(10)"));
+			Assert.That(hbmId.column[0].sqltype, Is.EqualTo("CHAR(10)"));
+		}
 	}
 }

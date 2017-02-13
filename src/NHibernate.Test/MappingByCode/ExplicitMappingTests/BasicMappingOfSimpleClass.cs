@@ -6,7 +6,7 @@ using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
-namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
+namespace NHibernate.Test.MappingByCode.ExplicitMappingTests
 {
 	public class BasicMappingOfSimpleClass
 	{
@@ -14,6 +14,25 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 		{
 			public int Id { get; set; }
 			public string Something { get; set; }
+		}
+
+		[Test]
+		public void AbstractClass()
+		{
+			//NH-3527
+			var mapper = new ModelMapper();
+			mapper.Class<MyClass>(ca =>
+			{
+				ca.Abstract(true);
+				ca.Id(x => x.Id, map =>
+				{
+					map.Column("MyClassId");
+					map.Generator(Generators.HighLow, gmap => gmap.Params(new { max_low = 100 }));
+				});
+				ca.Property(x => x.Something, map => map.Length(150));
+			});
+			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
+			Assert.AreEqual(hbmMapping.RootClasses[0].@abstract, true);
 		}
 
 		[Test]

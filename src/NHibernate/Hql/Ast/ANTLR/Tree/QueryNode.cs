@@ -13,6 +13,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		private OrderByClause _orderByClause;
 
+		private int _scalarColumn = -1;
+
 		public QueryNode(IToken token) : base(token)
 		{
 		}
@@ -80,6 +82,17 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			set;
 		}
 
+		public void SetScalarColumn(int i)
+		{
+			_scalarColumn = i;
+			SetScalarColumnText(i);
+		}
+
+		public int ScalarColumnIndex
+		{
+			get { return _scalarColumn; }
+		}
+
 		public OrderByClause GetOrderByClause() 
 		{
 			if (_orderByClause == null) 
@@ -94,7 +107,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 					// Find the WHERE; if there is no WHERE, find the FROM...
 					IASTNode prevSibling = ASTUtil.FindTypeInChildren(this, HqlSqlWalker.WHERE) ??
-					                       ASTUtil.FindTypeInChildren(this, HqlSqlWalker.FROM);
+										   ASTUtil.FindTypeInChildren(this, HqlSqlWalker.FROM);
 
 					// Now, inject the newly built ORDER BY into the tree
 					prevSibling.AddSibling(_orderByClause);

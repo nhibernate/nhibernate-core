@@ -102,7 +102,7 @@ namespace NHibernate.Test.ProjectionFixtures
 			    }
 		    });
 
-		    Assert.That(e.Message, Is.StringContaining(expectedMessagePart0).Or.StringContaining(expectedMessagePart1));
+		    Assert.That(e.Message, Does.Contain(expectedMessagePart0).Or.Contains(expectedMessagePart1));
 	    }
 
 	    [Test]

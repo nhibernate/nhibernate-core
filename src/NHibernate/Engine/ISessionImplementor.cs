@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
@@ -293,12 +293,12 @@ namespace NHibernate.Engine
 		/// <summary> The guessed entity name for an entity not in an association</summary>
 		string GuessEntityName(object entity);
 
-		IDbConnection Connection { get; }
+		DbConnection Connection { get; }
 
 		IQuery GetNamedQuery(string queryName);
 
 		/// <summary> Determine whether the session is closed.  Provided separately from
-		/// {@link #isOpen()} as this method does not attempt any JTA synch
+		/// {@link #isOpen()} as this method does not attempt any JTA sync
 		/// registration, where as {@link #isOpen()} does; which makes this one
 		/// nicer to use for most internal purposes. 
 		/// </summary>

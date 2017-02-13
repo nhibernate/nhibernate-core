@@ -33,7 +33,7 @@ namespace NHibernate.Dialect.Function
 		/// Initializes a new instance of the StandardSafeSQLFunction class.
 		/// </summary>
 		/// <param name="name">SQL function name.</param>
-		/// <param name="typeValue">Return type for the fuction.</param>
+		/// <param name="typeValue">Return type for the function.</param>
 		/// <param name="allowedArgsCount">Exact number of arguments expected.</param>
 		public StandardSafeSQLFunction(string name, IType typeValue, int allowedArgsCount)
 			: base(name, typeValue)

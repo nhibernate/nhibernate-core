@@ -25,7 +25,9 @@ namespace NHibernate.Mapping
 	[Serializable]
 	public class Table : IRelationalModel
 	{
+		[ThreadStatic]
 		private static int tableCounter;
+
 		private readonly List<string> checkConstraints = new List<string>();
 		private readonly LinkedHashMap<string, Column> columns = new LinkedHashMap<string, Column>();
 		private readonly Dictionary<ForeignKeyKey, ForeignKey> foreignKeys = new Dictionary<ForeignKeyKey, ForeignKey>();
@@ -585,11 +587,11 @@ namespace NHibernate.Mapping
 			if (old == null)
 			{
 				columns[column.CanonicalName] = column;
-				column.uniqueInteger = columns.Count;
+				column.UniqueInteger = columns.Count;
 			}
 			else
 			{
-				column.uniqueInteger = old.uniqueInteger;
+				column.UniqueInteger = old.UniqueInteger;
 			}
 		}
 
@@ -865,7 +867,7 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary> Return the column which is identified by column provided as argument. </summary>
-		/// <param name="column">column with atleast a name. </param>
+		/// <param name="column">column with at least a name. </param>
 		/// <returns> 
 		/// The underlying column or null if not inside this table.
 		/// Note: the instance *can* be different than the input parameter, but the name will be the same.

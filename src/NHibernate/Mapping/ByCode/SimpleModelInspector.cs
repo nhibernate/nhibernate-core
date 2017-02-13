@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-
 namespace NHibernate.Mapping.ByCode
 {
 	/// <summary>
@@ -68,9 +67,14 @@ namespace NHibernate.Mapping.ByCode
 				return ManyToOneRelations.Contains(member);
 			}
 
-			public bool IsManyToMany(MemberInfo member)
+			public bool IsManyToManyItem(MemberInfo member)
 			{
-				return ManyToManyRelations.Contains(member);
+				return ItemManyToManyRelations.Contains(member);
+			}
+
+			public bool IsManyToManyKey(MemberInfo member)
+			{
+				return KeyManyToManyRelations.Contains(member);
 			}
 
 			public bool IsOneToMany(MemberInfo member)
@@ -230,7 +234,7 @@ namespace NHibernate.Mapping.ByCode
 			}
 			bool areEntities = modelInspector.IsEntity(from) && modelInspector.IsEntity(to);
 			bool isFromComponentToEntity = modelInspector.IsComponent(from) && modelInspector.IsEntity(to);
-			return !declaredModel.IsManyToMany(memberInfo) && (areEntities || isFromComponentToEntity);
+			return !declaredModel.IsManyToManyItem(memberInfo) && (areEntities || isFromComponentToEntity);
 		}
 
 		private bool MatchManyToOne(MemberInfo memberInfo)
@@ -418,12 +422,17 @@ namespace NHibernate.Mapping.ByCode
 
 		IEnumerable<MemberInfo> IModelExplicitDeclarationsHolder.ManyToOneRelations
 		{
-			get { return declaredModel.ManyToManyRelations; }
+			get { return declaredModel.ManyToOneRelations; }
 		}
 
-		IEnumerable<MemberInfo> IModelExplicitDeclarationsHolder.ManyToManyRelations
+		IEnumerable<MemberInfo> IModelExplicitDeclarationsHolder.KeyManyToManyRelations
 		{
-			get { return declaredModel.ManyToManyRelations; }
+			get { return declaredModel.KeyManyToManyRelations; }
+		}
+
+		IEnumerable<MemberInfo> IModelExplicitDeclarationsHolder.ItemManyToManyRelations
+		{
+			get { return declaredModel.ItemManyToManyRelations; }
 		}
 
 		IEnumerable<MemberInfo> IModelExplicitDeclarationsHolder.OneToManyRelations
@@ -551,9 +560,14 @@ namespace NHibernate.Mapping.ByCode
 			declaredModel.AddAsManyToOneRelation(member);
 		}
 
-		void IModelExplicitDeclarationsHolder.AddAsManyToManyRelation(MemberInfo member)
+		void IModelExplicitDeclarationsHolder.AddAsManyToManyKeyRelation(MemberInfo member)
 		{
-			declaredModel.AddAsManyToManyRelation(member);
+			declaredModel.AddAsManyToManyKeyRelation(member);
+		}
+
+		void IModelExplicitDeclarationsHolder.AddAsManyToManyItemRelation(MemberInfo member)
+		{
+			declaredModel.AddAsManyToManyItemRelation(member);
 		}
 
 		void IModelExplicitDeclarationsHolder.AddAsOneToManyRelation(MemberInfo member)
@@ -704,9 +718,15 @@ namespace NHibernate.Mapping.ByCode
 			return isManyToOne(member, declaredResult);
 		}
 
-		bool IModelInspector.IsManyToMany(MemberInfo member)
+		bool IModelInspector.IsManyToManyItem(MemberInfo member)
 		{
-			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsManyToMany(m));
+			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsManyToManyItem(m));
+			return isManyToMany(member, declaredResult);
+		}
+
+		bool IModelInspector.IsManyToManyKey(MemberInfo member)
+		{
+			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsManyToManyKey(m));
 			return isManyToMany(member, declaredResult);
 		}
 

@@ -1,19 +1,13 @@
+using System.Collections;
+using NHibernate.Cfg;
+using NHibernate.Mapping.ByCode;
+using NHibernate.Type;
 using NUnit.Framework;
-
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH901
 {
-	[TestFixture]
-	public class Fixture : BugTestCase
+	public abstract class FixtureBase : TestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH901"; }
-		}
-
 		private new ISession OpenSession(IInterceptor interceptor)
 		{
 			lastOpenedSession = sessions.OpenSession(interceptor);
@@ -99,12 +93,56 @@ namespace NHibernate.Test.NHSpecificTest.NH901
 		}
 	}
 
+	[TestFixture]
+	public class Fixture : FixtureBase
+	{
+		protected override string MappingsAssembly
+		{
+			get { return "NHibernate.Test"; }
+		}
+
+		protected override IList Mappings
+		{
+			get { return new[] {"NHSpecificTest.NH901.Mappings.hbm.xml"}; }
+		}
+	}
+
+	[TestFixture]
+	public class FixtureByCode : FixtureBase
+	{
+		protected override IList Mappings
+		{
+			get { return new string[0]; }
+		}
+
+		protected override string MappingsAssembly
+		{
+			get { return null; }
+		}
+
+		protected override void AddMappings(Configuration configuration)
+		{
+			var mapper = new ModelMapper();
+			mapper.Class<Person>(rc =>
+			{
+				rc.Table("NH901_Person");
+				rc.Id(x => x.Name, m => m.Generator(Generators.Assigned));
+				rc.Component(x => x.Address, cm =>
+				{
+					cm.Property(x => x.City);
+					cm.Property(x => x.Street);
+				});
+			});
+			configuration.AddMapping(mapper.CompileMappingForAllExplicitlyAddedEntities());
+		}
+	}
+
 	public class InterceptorStub : EmptyInterceptor
 	{
 		public object entityToCheck;
 		public bool entityWasDeemedDirty = false;
 
-		public override bool OnFlushDirty(object entity, object id, object[] currentState, object[] previousState, string[] propertyNames, NHibernate.Type.IType[] types)
+		public override bool OnFlushDirty(object entity, object id, object[] currentState, object[] previousState, string[] propertyNames, IType[] types)
 		{
 			if (entity == entityToCheck) { entityWasDeemedDirty = true; }
 

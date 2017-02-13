@@ -37,6 +37,9 @@ namespace NHibernate.Mapping
 			prop.PersistentClass = PersistentClass;
 		}
 
+		//if we are joining to a non pk, this is the property of the class that serves as id
+		public Property RefIdProperty { get; set; }
+
 		public bool ContainsProperty(Property prop)
 		{
 			return properties.Contains(prop);

@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -96,7 +97,7 @@ namespace NHibernate.Id.Enhanced
 
 		#region Overrides of TransactionHelper
 
-		public override object DoWorkInCurrentTransaction(ISessionImplementor session, IDbConnection conn, IDbTransaction transaction)
+		public override object DoWorkInCurrentTransaction(ISessionImplementor session, DbConnection conn, DbTransaction transaction)
 		{
 			long result;
 			int updatedRows;
@@ -107,7 +108,7 @@ namespace NHibernate.Id.Enhanced
 				{
 					object selectedValue;
 
-					IDbCommand selectCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, _selectQuery, SqlTypeFactory.NoTypes);
+					var selectCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, _selectQuery, SqlTypeFactory.NoTypes);
 					using (selectCmd)
 					{
 						selectCmd.Connection = conn;
@@ -133,7 +134,7 @@ namespace NHibernate.Id.Enhanced
 
 				try
 				{
-					IDbCommand updateCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, _updateQuery, _updateParameterTypes);
+					var updateCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, _updateQuery, _updateParameterTypes);
 					using (updateCmd)
 					{
 						updateCmd.Connection = conn;
@@ -141,8 +142,8 @@ namespace NHibernate.Id.Enhanced
 						PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand(updateCmd, FormatStyle.Basic);
 
 						int increment = _applyIncrementSizeToSourceValues ? _incrementSize : 1;
-						((IDataParameter)updateCmd.Parameters[0]).Value = result + increment;
-						((IDataParameter)updateCmd.Parameters[1]).Value = result;
+						updateCmd.Parameters[0].Value = result + increment;
+						updateCmd.Parameters[1].Value = result;
 						updatedRows = updateCmd.ExecuteNonQuery();
 					}
 				}

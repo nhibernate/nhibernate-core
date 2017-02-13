@@ -43,6 +43,12 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private readonly AliasGenerator _aliasGenerator = new AliasGenerator();
 		private readonly ASTPrinter _printer = new ASTPrinter();
 
+		//
+		//Maps each top-level result variable to its SelectExpression;
+		//(excludes result variables defined in subqueries)
+		//
+		private readonly IDictionary<String, ISelectExpression> selectExpressionsByResultVariable = new Dictionary<string, ISelectExpression>();
+
 		private readonly ISet<string> _querySpaces = new HashSet<string>();
 
 		private readonly LiteralProcessor _literalProcessor;
@@ -113,10 +119,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 			get { return _querySpaces; }
 		}
 
-	    public IDictionary<string, object> NamedParameters
-	    {
-            get { return _namedParameters; }
-	    }
+		public IDictionary<string, object> NamedParameters
+		{
+			get { return _namedParameters; }
+		}
 
 		internal SessionFactoryHelperExtensions SessionFactoryHelper
 		{
@@ -568,9 +574,34 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 		}
 
-		static void SetAlias(IASTNode selectExpr, IASTNode ident)
+		private void SetAlias(IASTNode selectExpr, IASTNode ident)
 		{
-			((ISelectExpression)selectExpr).Alias = ident.Text;
+			((ISelectExpression) selectExpr).Alias = ident.Text;
+			// only put the alias (i.e., result variable) in selectExpressionsByResultVariable
+			// if is not defined in a subquery.
+			if (!IsSubQuery)
+				selectExpressionsByResultVariable[ident.Text] = (ISelectExpression) selectExpr;
+		}
+
+		protected bool IsOrderExpressionResultVariableRef(IASTNode orderExpressionNode)
+		{
+			// ORDER BY is not supported in a subquery
+			// TODO: should an exception be thrown if an ORDER BY is in a subquery?
+			if (!IsSubQuery &&
+				orderExpressionNode.Type == IDENT &&
+				selectExpressionsByResultVariable.ContainsKey(orderExpressionNode.Text))
+			{
+				return true;
+			}
+			return false;
+		}
+
+		protected void HandleResultVariableRef(IASTNode resultVariableRef)
+		{
+			if (IsSubQuery)
+				throw new SemanticException("References to result variables in subqueries are not supported.");
+			
+			((ResultVariableRefNode) resultVariableRef).SetSelectExpression(selectExpressionsByResultVariable[(resultVariableRef.Text)]);
 		}
 
 		static void ResolveSelectExpression(IASTNode node)
@@ -599,35 +630,12 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 		}
 
-		void PrepareFromClauseInputTree(IASTNode fromClauseInput, ITreeNodeStream input)
+		void PrepareFilterParameter()
 		{
 			if (IsFilter())
 			{
-				// Handle collection-fiter compilation.
-				// IMPORTANT NOTE: This is modifying the INPUT (HQL) tree, not the output tree!
-				IQueryableCollection persister = _sessionFactoryHelper.GetCollectionPersister(_collectionFilterRole);
-				IType collectionElementType = persister.ElementType;
-				if (!collectionElementType.IsEntityType)
-				{
-					throw new QueryException("collection of values in filter: this");
-				}
-
-				string collectionElementEntityName = persister.ElementPersister.EntityName;
-
-				IASTNode fromElement = (IASTNode)adaptor.Create(FILTER_ENTITY, collectionElementEntityName);
-				IASTNode alias = (IASTNode)adaptor.Create(ALIAS, "this");
-
-                ((HqlSqlWalkerTreeNodeStream)input).InsertChild(fromClauseInput, fromElement);
-                ((HqlSqlWalkerTreeNodeStream)input).InsertChild(fromClauseInput, alias);
-
-//				fromClauseInput.AddChild(fromElement);
-//				fromClauseInput.AddChild(alias);
-
-				// Show the modified AST.
-				if (log.IsDebugEnabled)
-				{
-					log.Debug("prepareFromClauseInputTree() : Filter - Added 'this' as a from element...");
-				}
+				// Handle collection-filter compilation.
+				// filter-implied FROM element is already converted by HqlFilterPreprocessor
 				
 				// Create a parameter specification for the collection filter...
 				IType collectionFilterKeyType = _sessionFactoryHelper.RequireQueryableCollection(_collectionFilterRole).KeyType;
@@ -704,12 +712,12 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		IASTNode CreateFromElement(string path, IASTNode pathNode, IASTNode alias, IASTNode propertyFetch)
 		{
-            FromElement fromElement = _currentFromClause.AddFromElement(path, alias);
-            fromElement.SetAllPropertyFetch(propertyFetch != null);
-            return fromElement;
+			FromElement fromElement = _currentFromClause.AddFromElement(path, alias);
+			fromElement.SetAllPropertyFetch(propertyFetch != null);
+			return fromElement;
 		}
 
-	    IASTNode CreateFromFilterElement(IASTNode filterEntity, IASTNode alias)
+		IASTNode CreateFromFilterElement(IASTNode filterEntity, IASTNode alias)
 		{
 			FromElement fromElement = _currentFromClause.AddFromElement(filterEntity.Text, alias);
 			FromClause fromClause = fromElement.FromClause;
@@ -729,7 +737,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			{
 				join.AddJoin((IAssociationType)persister.ElementType,
 						fromElement.TableAlias,
-					 	JoinType.InnerJoin,
+						JoinType.InnerJoin,
 						persister.GetElementColumnNames(fkTableAlias));
 			}
 

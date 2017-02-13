@@ -12,49 +12,32 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class BooleanLiteralNode : LiteralNode, IExpectedTypeAwareNode 
 	{
-		private IType _expectedType;
-
 		public BooleanLiteralNode(IToken token) : base(token)
 		{
 		}
 
 		public override IType DataType
 		{
-			get
-			{
-				return _expectedType ?? NHibernateUtil.Boolean;
-			}
-			set
-			{
-				base.DataType = value;
-			}
+			get { return ExpectedType ?? NHibernateUtil.Boolean; }
+			set { base.DataType = value; }
 		}
 
-		private BooleanType GetTypeInternal() 
+		private ILiteralType TypeAsLiteralType()
 		{
-			return ( BooleanType ) DataType;
+			return (ILiteralType) DataType;
 		}
 
 		private bool GetValue() {
-			return Type == HqlSqlWalker.TRUE ? true : false;
+			return Type == HqlSqlWalker.TRUE;
 		}
 
-		/**
-		 * Expected-types really only pertinent here for boolean literals...
-		 *
-		 * @param expectedType
-		 */
-		public IType ExpectedType
-		{
-			get { return _expectedType; }
-			set { _expectedType = value; }
-		}
+		public IType ExpectedType { get; set; }
 
 		public override SqlString RenderText(ISessionFactoryImplementor sessionFactory) 
 		{
 			try
 			{
-				return new SqlString(GetTypeInternal().ObjectToSQLString( GetValue(), sessionFactory.Dialect ));
+				return new SqlString(TypeAsLiteralType().ObjectToSQLString( GetValue(), sessionFactory.Dialect ));
 			}
 			catch( Exception t )
 			{

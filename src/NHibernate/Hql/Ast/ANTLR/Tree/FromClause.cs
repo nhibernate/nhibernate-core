@@ -23,7 +23,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// <summary>
 		/// Counts the from elements as they are added.
 		/// </summary>
+#pragma warning disable 649
 		private int _fromElementCounter;
+#pragma warning restore 649
 
 		private readonly NullableDictionary<string, FromElement> _fromElementByClassAlias = new NullableDictionary<string, FromElement>();
 		private readonly Dictionary<string, FromElement> _fromElementByTableAlias = new Dictionary<string, FromElement>();
@@ -169,7 +171,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		}
 
 		/// <summary>
-		/// Retreives the from-element represented by the given alias.
+		/// Retrieves the from-element represented by the given alias.
 		/// </summary>
 		/// <param name="aliasOrClassName">The alias by which to locate the from-element.</param>
 		/// <returns>The from-element assigned the given alias, or null if none.</returns>

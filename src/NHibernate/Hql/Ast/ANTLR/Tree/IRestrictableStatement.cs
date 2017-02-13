@@ -12,7 +12,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	public interface IRestrictableStatement : IStatement
 	{
 		/// <summary>
-		/// Retreives the from-clause in effect for this statement; could be null if the from-clause
+		/// Retrieves the from-clause in effect for this statement; could be null if the from-clause
 		/// has not yet been parsed/generated.
 		/// </summary>
 		FromClause FromClause { get; }
@@ -25,7 +25,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		bool HasWhereClause { get; }
 
 		/// <summary>
-		/// Retreives the where-clause defining the restriction(s) in effect for
+		/// Retrieves the where-clause defining the restriction(s) in effect for
 		/// this statement.
 		/// Note that this will generate a where-clause if one was not found, so caution
 		/// needs to taken prior to calling this that restrictions will actually exist

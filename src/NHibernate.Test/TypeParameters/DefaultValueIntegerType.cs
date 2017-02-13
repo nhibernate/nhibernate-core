@@ -1,5 +1,5 @@
 using System;
-using System.Data;
+using System.Data.Common;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.UserTypes;
@@ -44,11 +44,11 @@ namespace NHibernate.Test.TypeParameters
 			return value;
 		}
 
-		public void NullSafeSet(IDbCommand cmd, object value, int index)
+		public void NullSafeSet(DbCommand cmd, object value, int index)
 		{
 			if (value.Equals(defaultValue))
 			{
-				((IDbDataParameter) cmd.Parameters[index]).Value = DBNull.Value;
+				cmd.Parameters[index].Value = DBNull.Value;
 			}
 			else
 			{
@@ -61,7 +61,7 @@ namespace NHibernate.Test.TypeParameters
 			get { return typeof(Int32); }
 		}
 
-		public object NullSafeGet(IDataReader rs, string[] names, object owner)
+		public object NullSafeGet(DbDataReader rs, string[] names, object owner)
 		{
 			object value = _int32Type.NullSafeGet(rs, names);
 			if (value == null)

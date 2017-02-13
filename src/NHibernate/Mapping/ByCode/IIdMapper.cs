@@ -3,7 +3,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public interface IIdMapper : IAccessorPropertyMapper
+	public interface IIdMapper : IAccessorPropertyMapper, IColumnsMapper
 	{
 		void Generator(IGeneratorDef generator);
 		void Generator(IGeneratorDef generator, Action<IGeneratorMapper> generatorMapping);
@@ -15,7 +15,6 @@ namespace NHibernate.Mapping.ByCode
 		//void Column(Action<IColumnMapper> columnMapper);
 		//void Columns(params Action<IColumnMapper>[] columnMapper);
 		void UnsavedValue(object value);
-		void Column(string name);
 		void Length(int length);
 	}
 }

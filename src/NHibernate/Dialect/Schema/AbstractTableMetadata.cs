@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Data;
-
 using NHibernate.Util;
 
 namespace NHibernate.Dialect.Schema

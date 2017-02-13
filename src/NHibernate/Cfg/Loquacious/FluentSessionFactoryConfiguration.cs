@@ -1,5 +1,6 @@
 using NHibernate.Bytecode;
 using NHibernate.Hql;
+using NHibernate.Linq;
 
 namespace NHibernate.Cfg.Loquacious
 {
@@ -46,10 +47,23 @@ namespace NHibernate.Cfg.Loquacious
 			return this;
 		}
 
+		public IFluentSessionFactoryConfiguration DefaultFlushMode(FlushMode flushMode)
+		{
+			configuration.SetProperty(Environment.DefaultFlushMode, flushMode.ToString());
+			return this;
+		}
+
 		public IFluentSessionFactoryConfiguration ParsingHqlThrough<TQueryTranslator>()
 			where TQueryTranslator : IQueryTranslatorFactory
 		{
 			configuration.SetProperty(Environment.QueryTranslator, typeof (TQueryTranslator).AssemblyQualifiedName);
+			return this;
+		}
+
+		public IFluentSessionFactoryConfiguration ParsingLinqThrough<TQueryProvider>()
+			where TQueryProvider : INhQueryProvider
+		{
+			configuration.SetProperty(Environment.QueryLinqProvider, typeof(TQueryProvider).AssemblyQualifiedName);
 			return this;
 		}
 

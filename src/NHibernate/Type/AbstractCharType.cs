@@ -1,5 +1,5 @@
 using System;
-using System.Data;
+using System.Data.Common;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -18,7 +18,7 @@ namespace NHibernate.Type
 			get { throw new NotSupportedException("not a valid id type"); }
 		}
 
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index)
 		{
 			string dbValue = Convert.ToString(rs[index]);
 			// The check of the Length is a workaround see NH-2340
@@ -29,7 +29,7 @@ namespace NHibernate.Type
 			return '\0'; // This line should never be executed
 		}
 
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name)
 		{
 			return Get(rs, rs.GetOrdinal(name));
 		}
@@ -44,9 +44,9 @@ namespace NHibernate.Type
 			get { return typeof(char); }
 		}
 
-		public override void Set(IDbCommand cmd, object value, int index)
+		public override void Set(DbCommand cmd, object value, int index)
 		{
-			((IDataParameter)cmd.Parameters[index]).Value = Convert.ToChar(value);
+			cmd.Parameters[index].Value = Convert.ToChar(value);
 		}
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)

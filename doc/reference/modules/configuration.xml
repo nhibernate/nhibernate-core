@@ -203,7 +203,7 @@ ISession session = sessions.OpenSession(conn);
             <tbody>
             <row>
                 <entry>
-                    <literal>connection.provider_class</literal>
+                    <literal>connection.provider</literal>
                 </entry>
                 <entry>
                     The type of a custom <literal>IConnectionProvider</literal>.
@@ -346,7 +346,7 @@ ISession session = sessions.OpenSession(conn);
         <para>
             You may define your own plugin strategy for obtaining ADO.NET connections by implementing the
             interface <literal>NHibernate.Connection.IConnectionProvider</literal>. You may select
-            a custom implementation by setting <literal>connection.provider_class</literal>.
+            a custom implementation by setting <literal>connection.provider</literal>.
         </para>
 
     </sect1>
@@ -691,13 +691,18 @@ ISession session = sessions.OpenSession(conn);
                             <entry></entry>
                         </row>
                         <row>
-                            <entry>Oracle 9</entry> 
+                            <entry>Oracle 9i</entry> 
                             <entry><literal>NHibernate.Dialect.Oracle9iDialect</literal></entry>
                             <entry></entry>
                         </row>
                         <row>
-                            <entry>Oracle 10g</entry> 
+                            <entry>Oracle 10g, Oracle 11g</entry> 
                             <entry><literal>NHibernate.Dialect.Oracle10gDialect</literal></entry>
+                            <entry></entry>
+                        </row>
+                        <row>
+                            <entry>Oracle 12c</entry> 
+                            <entry><literal>NHibernate.Dialect.Oracle12cDialect</literal></entry>
                             <entry></entry>
                         </row>
                         <row>

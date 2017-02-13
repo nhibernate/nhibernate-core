@@ -1,5 +1,5 @@
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using NUnit.Framework;
 
 namespace NHibernate.Test.TransactionTest
@@ -96,7 +96,7 @@ namespace NHibernate.Test.TransactionTest
 			var interceptor = new RecordingInterceptor();
 			ISession s;
 
-			using (IDbConnection ownConnection = sessions.ConnectionProvider.GetConnection())
+			using (var ownConnection = sessions.ConnectionProvider.GetConnection())
 			{
 				using (s = sessions.OpenSession(ownConnection, interceptor))
 				using (s.BeginTransaction())

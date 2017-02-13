@@ -150,12 +150,6 @@
 							<Component Id="Nullables.xml_net11" Guid="{C233CE41-997D-4360-9E28-AF863CD5E72A}">
 								<File Id="Nullables.xml_net11" Name="Nullables.xml" KeyPath="yes" />
 							</Component>
-							<Component Id="NVelocity.dll_net11" Guid="{3FEED423-FC5D-4145-A9FA-B06F7231F56A}">
-								<File Id="NVelocity.dll_net11" Name="NVelocity.dll" KeyPath="yes" />
-							</Component>
-							<Component Id="NVelocity.license.txt_net11" Guid="{936B0ED5-CF25-47EF-962A-548FCEB84C33}">
-								<File Id="NVelocity.license.txt_net11" Name="NVelocity.license.txt" KeyPath="yes" />
-							</Component>
 							<Directory Id="nant_net11" Name="nant">
 								<Component Id="log4net.dll_nant_net11" Guid="{54396B46-EBB5-4BB4-AAF6-D19C76BD80C6}">
 									<File Id="log4net.dll_nant_net11" Name="log4net.dll" KeyPath="yes" />
@@ -303,12 +297,6 @@
 							</Component>
 							<Component Id="Nullables.xml_net20" Guid="{70A357BD-BB77-4AFA-B47A-E13D184BE6CC}">
 								<File Id="Nullables.xml_net20" Name="Nullables.xml" KeyPath="yes" />
-							</Component>
-							<Component Id="NVelocity.dll_net20" Guid="{E6270FB2-8A3C-4E34-91AC-F6C9904A07BD}">
-								<File Id="NVelocity.dll_net20" Name="NVelocity.dll" KeyPath="yes" />
-							</Component>
-							<Component Id="NVelocity.license.txt_net20" Guid="{FE869CC9-DB8D-4A8C-8E16-B7E04DB99D41}">
-								<File Id="NVelocity.license.txt_net20" Name="NVelocity.license.txt" KeyPath="yes" />
 							</Component>
 							<Directory Id="nant_net20" Name="nant">
 								<Component Id="log4net.dll_nant_net20" Guid="{6D9BD8B1-17ED-4DC4-9746-61906F3BF095}">
@@ -493,14 +481,10 @@
 							<ComponentRef Id="NHibernate.Tool.hbm2net.Console.exe_net20" />
 							<ComponentRef Id="NHibernate.Tool.hbm2net.dll_net20" />
 							<ComponentRef Id="NHibernate.Tool.hbm2net.xml_net20" />
-							<ComponentRef Id="NVelocity.dll_net20" />
-							<ComponentRef Id="NVelocity.license.txt_net20" />
 
 							<ComponentRef Id="NHibernate.Tool.hbm2net.Console.exe_net11" />
 							<ComponentRef Id="NHibernate.Tool.hbm2net.dll_net11" />
 							<ComponentRef Id="NHibernate.Tool.hbm2net.xml_net11" />
-							<ComponentRef Id="NVelocity.dll_net11" />
-							<ComponentRef Id="NVelocity.license.txt_net11" />
 						</Feature>
 
 						<Feature Id="NAntTasks" Title="NAnt Tasks" Level="1" AllowAdvertise="no">
