@@ -424,7 +424,7 @@ namespace NHibernate.Persister.Entity
 			get { return discriminatorValue; }
 		}
 
-		public virtual string[] SubclassClosure
+		public override string[] SubclassClosure
 		{
 			get { return subclassClosure; }
 		}
@@ -618,7 +618,7 @@ namespace NHibernate.Persister.Entity
 @"The class {0} can't be instatiated and does not have mapped subclasses; 
 possible solutions:
 - don't map the abstract class
-- map the its subclasses.";
+- map its subclasses.";
 
 			if (NeedsDiscriminator)
 			{

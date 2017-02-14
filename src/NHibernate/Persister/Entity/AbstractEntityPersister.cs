@@ -1013,6 +1013,7 @@ namespace NHibernate.Persister.Entity
 		public abstract string[] ConstraintOrderedTableNameClosure { get;}
 		public abstract string DiscriminatorSQLValue { get;}
 		public abstract object DiscriminatorValue { get;}
+		public abstract string[] SubclassClosure { get; }
 		public abstract string[] PropertySpaces { get;}
 
 		protected virtual void AddDiscriminatorToInsert(SqlInsertBuilder insert) { }

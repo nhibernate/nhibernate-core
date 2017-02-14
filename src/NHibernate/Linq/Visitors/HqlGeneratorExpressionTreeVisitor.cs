@@ -147,9 +147,54 @@ namespace NHibernate.Linq.Visitors
 
 		private HqlTreeNode VisitTypeBinaryExpression(TypeBinaryExpression expression)
 		{
+			return BuildOfType(expression.Expression, expression.TypeOperand);
+		}
+
+		internal HqlBooleanExpression BuildOfType(Expression expression, System.Type type)
+		{
+			var sessionFactory = _parameters.SessionFactory;
+			var meta = sessionFactory.GetClassMetadata(type) as Persister.Entity.AbstractEntityPersister;
+			if (meta != null && !meta.IsExplicitPolymorphism)
+			{
+				//Adapted the logic found in SingleTableEntityPersister.DiscriminatorFilterFragment
+				var nodes = meta
+					.SubclassClosure
+					.Select(typeName => (NHibernate.Persister.Entity.IQueryable) sessionFactory.GetEntityPersister(typeName))
+					.Where(persister => !persister.IsAbstract)
+					.Select(persister => _hqlTreeBuilder.Ident(persister.EntityName))
+					.ToList();
+
+				if (nodes.Count == 1)
+				{
+					return _hqlTreeBuilder.Equality(
+						_hqlTreeBuilder.Dot(Visit(expression).AsExpression(), _hqlTreeBuilder.Class()),
+						nodes[0]);
+				}
+
+				if (nodes.Count > 1)
+				{
+					return _hqlTreeBuilder.In(
+						_hqlTreeBuilder.Dot(
+							Visit(expression).AsExpression(),
+							_hqlTreeBuilder.Class()),
+						_hqlTreeBuilder.ExpressionSubTreeHolder(nodes));
+				}
+
+				if (nodes.Count == 0)
+				{
+					const string abstractClassWithNoSubclassExceptionMessageTemplate =
+@"The class {0} can't be instatiated and does not have mapped subclasses; 
+possible solutions:
+- don't map the abstract class
+- map its subclasses.";
+
+					throw new NotSupportedException(string.Format(abstractClassWithNoSubclassExceptionMessageTemplate, meta.EntityName));
+				}
+			}
+
 			return _hqlTreeBuilder.Equality(
-				_hqlTreeBuilder.Dot(Visit(expression.Expression).AsExpression(), _hqlTreeBuilder.Class()),
-				_hqlTreeBuilder.Ident(expression.TypeOperand.FullName));
+				_hqlTreeBuilder.Dot(Visit(expression).AsExpression(), _hqlTreeBuilder.Class()),
+				_hqlTreeBuilder.Ident(type.FullName));
 		}
 
 		protected HqlTreeNode VisitNhStar(NhStarExpression expression)

@@ -652,6 +652,24 @@ namespace NHibernate.Test.Linq
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
+		[Test(Description = "NH-3946")]
+		public void PolymorphicSearchOnObjectTypeWithIsKeyword()
+		{
+			var query = (from o in session.Query<Animal>()
+						 where o is Mammal
+						 select o).ToList();
+
+			Assert.That(query.Count, Is.EqualTo(3));
+		}
+
+		[Test(Description = "NH-3845")]
+		public void PolymorphicSearchOnObjectTypeWithOfType()
+		{
+			var query = session.Query<Animal>().OfType<Mammal>().ToList();
+
+			Assert.That(query.Count, Is.EqualTo(3));
+		}
+
 		[Test]
 		public void BitwiseQuery()
 		{
