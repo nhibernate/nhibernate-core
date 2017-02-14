@@ -147,6 +147,44 @@ namespace NHibernate.Linq.Visitors
 
 		private HqlTreeNode VisitTypeBinaryExpression(TypeBinaryExpression expression)
 		{
+			var meta = SessionFactory.GetClassMetadata(expression.TypeOperand) as Persister.Entity.AbstractEntityPersister;
+			if (meta != null && !meta.IsExplicitPolymorphism)
+			{
+				//Adapted the logic found in SingleTableEntityPersister.DiscriminatorFilterFragment
+				var Factory = SessionFactory as NHibernate.Engine.ISessionFactoryImplementor;
+				var nodes = new System.Collections.Generic.List<HqlIdent>();
+				foreach (var typeName in meta.SubclassClosure)
+				{
+					var persister = (NHibernate.Persister.Entity.IQueryable)Factory.GetEntityPersister(typeName);
+					if (persister.IsAbstract) continue;
+					nodes.Add(_hqlTreeBuilder.Ident(persister.EntityName));
+				}
+
+				if (nodes.Count == 1)
+				{
+					return _hqlTreeBuilder.Equality(
+						_hqlTreeBuilder.Dot(Visit(expression.Expression).AsExpression(), _hqlTreeBuilder.Class()),
+						nodes[0]);
+				}
+				else if (nodes.Count > 1)
+				{
+					return _hqlTreeBuilder.In(
+										_hqlTreeBuilder.Dot(
+											Visit(expression.Expression).AsExpression(),
+											_hqlTreeBuilder.Class()),
+										_hqlTreeBuilder.ExpressionSubTreeHolder(nodes.ToArray()));
+				}
+				else
+				{
+					const string abstractClassWithNoSubclassExceptionMessageTemplate =
+@"The class {0} can't be instatiated and does not have mapped subclasses; 
+possible solutions:
+- don't map the abstract class
+- map its subclasses.";
+
+					throw new NotSupportedException(string.Format(abstractClassWithNoSubclassExceptionMessageTemplate, meta.EntityName));
+				}
+			}
 			return _hqlTreeBuilder.Equality(
 				_hqlTreeBuilder.Dot(Visit(expression.Expression).AsExpression(), _hqlTreeBuilder.Class()),
 				_hqlTreeBuilder.Ident(expression.TypeOperand.FullName));
