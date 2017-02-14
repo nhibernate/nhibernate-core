@@ -757,6 +757,7 @@
     <Compile Include="NHSpecificTest\NH3609\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2167\Entity.cs" />
     <Compile Include="NHSpecificTest\NH2167\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3100\ByCodeFixture.cs" />
     <Compile Include="NHSpecificTest\NH3817\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3817\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2839\FixtureByCode.cs" />

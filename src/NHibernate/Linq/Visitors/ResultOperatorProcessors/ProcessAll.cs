@@ -9,7 +9,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
         {
             tree.AddWhereClause(tree.TreeBuilder.BooleanNot(
                                HqlGeneratorExpressionTreeVisitor.Visit(resultOperator.Predicate, queryModelVisitor.VisitorParameters).
-                                   AsBooleanExpression()));
+                                   ToBooleanExpression()));
 
             tree.SetRoot(tree.TreeBuilder.BooleanNot(tree.TreeBuilder.Exists((HqlQuery) tree.Root)));
         }

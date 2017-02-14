@@ -84,7 +84,7 @@ namespace NHibernate.Test.Linq
 
 			// Columns against columns
 			q = from x in session.Query<AnotherEntity>() where x.Input == x.Output select x;
-			Expect(q, BothSame);
+			Expect(q, BothSame, BothNull);
 		}
 
 		[Test]
@@ -134,15 +134,15 @@ namespace NHibernate.Test.Linq
 			q = from x in session.Query<AnotherEntity>() where nullVariable != x.Input select x;
 			ExpectInputIsNotNull(q);
 			q = from x in session.Query<AnotherEntity>() where notNullVariable != x.Input select x;
-			Expect(q, BothSame);
+			Expect(q, BothSame, BothNull, OutputSet);
 			q = from x in session.Query<AnotherEntity>() where x.Input != nullVariable select x;
 			ExpectInputIsNotNull(q);
 			q = from x in session.Query<AnotherEntity>() where x.Input != notNullVariable select x;
-			Expect(q, BothSame);
+			Expect(q, BothSame, OutputSet, BothNull);
 
 			// Columns against columns
 			q = from x in session.Query<AnotherEntity>() where x.Input != x.Output select x;
-			Expect(q, BothDifferent);
+			Expect(q, BothDifferent, InputSet, OutputSet);
 		}
 
 		[Test]

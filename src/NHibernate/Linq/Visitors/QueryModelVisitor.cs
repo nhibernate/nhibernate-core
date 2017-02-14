@@ -207,7 +207,7 @@ namespace NHibernate.Linq.Visitors
 
 			foreach (var withClause in joinClause.Restrictions)
 			{
-				var booleanExpression = HqlGeneratorExpressionTreeVisitor.Visit(withClause.Predicate, VisitorParameters).AsBooleanExpression();
+				var booleanExpression = HqlGeneratorExpressionTreeVisitor.Visit(withClause.Predicate, VisitorParameters).ToBooleanExpression();
 				hqlJoin.AddChild(_hqlTree.TreeBuilder.With(booleanExpression));
 			}
 
@@ -258,7 +258,7 @@ namespace NHibernate.Linq.Visitors
 			whereClause.Predicate = visitor.VisitExpression(whereClause.Predicate);
 
 			// Visit the predicate to build the query
-			var expression = HqlGeneratorExpressionTreeVisitor.Visit(whereClause.Predicate, VisitorParameters).AsBooleanExpression();
+			var expression = HqlGeneratorExpressionTreeVisitor.Visit(whereClause.Predicate, VisitorParameters).ToBooleanExpression();
 			if (whereClause is NhHavingClause)
 			{
 				_hqlTree.AddHavingClause(expression);
