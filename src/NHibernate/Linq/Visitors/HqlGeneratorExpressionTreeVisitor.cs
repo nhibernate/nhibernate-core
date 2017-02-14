@@ -147,34 +147,40 @@ namespace NHibernate.Linq.Visitors
 
 		private HqlTreeNode VisitTypeBinaryExpression(TypeBinaryExpression expression)
 		{
-			var meta = SessionFactory.GetClassMetadata(expression.TypeOperand) as Persister.Entity.AbstractEntityPersister;
+			return BuildOfType(expression.Expression, expression.TypeOperand);
+		}
+
+		internal HqlBooleanExpression BuildOfType(Expression expression, System.Type type)
+		{
+			var sessionFactory = _parameters.SessionFactory;
+			var meta = sessionFactory.GetClassMetadata(type) as Persister.Entity.AbstractEntityPersister;
 			if (meta != null && !meta.IsExplicitPolymorphism)
 			{
 				//Adapted the logic found in SingleTableEntityPersister.DiscriminatorFilterFragment
-				var Factory = SessionFactory as NHibernate.Engine.ISessionFactoryImplementor;
-				var nodes = new System.Collections.Generic.List<HqlIdent>();
-				foreach (var typeName in meta.SubclassClosure)
-				{
-					var persister = (NHibernate.Persister.Entity.IQueryable)Factory.GetEntityPersister(typeName);
-					if (persister.IsAbstract) continue;
-					nodes.Add(_hqlTreeBuilder.Ident(persister.EntityName));
-				}
+				var nodes = meta
+					.SubclassClosure
+					.Select(typeName => (NHibernate.Persister.Entity.IQueryable) sessionFactory.GetEntityPersister(typeName))
+					.Where(persister => !persister.IsAbstract)
+					.Select(persister => _hqlTreeBuilder.Ident(persister.EntityName))
+					.ToList();
 
 				if (nodes.Count == 1)
 				{
 					return _hqlTreeBuilder.Equality(
-						_hqlTreeBuilder.Dot(Visit(expression.Expression).AsExpression(), _hqlTreeBuilder.Class()),
+						_hqlTreeBuilder.Dot(Visit(expression).AsExpression(), _hqlTreeBuilder.Class()),
 						nodes[0]);
 				}
-				else if (nodes.Count > 1)
+
+				if (nodes.Count > 1)
 				{
 					return _hqlTreeBuilder.In(
-										_hqlTreeBuilder.Dot(
-											Visit(expression.Expression).AsExpression(),
-											_hqlTreeBuilder.Class()),
-										_hqlTreeBuilder.ExpressionSubTreeHolder(nodes.ToArray()));
+						_hqlTreeBuilder.Dot(
+							Visit(expression).AsExpression(),
+							_hqlTreeBuilder.Class()),
+						_hqlTreeBuilder.ExpressionSubTreeHolder(nodes));
 				}
-				else
+
+				if (nodes.Count == 0)
 				{
 					const string abstractClassWithNoSubclassExceptionMessageTemplate =
 @"The class {0} can't be instatiated and does not have mapped subclasses; 
@@ -185,9 +191,10 @@ possible solutions:
 					throw new NotSupportedException(string.Format(abstractClassWithNoSubclassExceptionMessageTemplate, meta.EntityName));
 				}
 			}
+
 			return _hqlTreeBuilder.Equality(
-				_hqlTreeBuilder.Dot(Visit(expression.Expression).AsExpression(), _hqlTreeBuilder.Class()),
-				_hqlTreeBuilder.Ident(expression.TypeOperand.FullName));
+				_hqlTreeBuilder.Dot(Visit(expression).AsExpression(), _hqlTreeBuilder.Class()),
+				_hqlTreeBuilder.Ident(type.FullName));
 		}
 
 		protected HqlTreeNode VisitNhStar(NhStarExpression expression)
