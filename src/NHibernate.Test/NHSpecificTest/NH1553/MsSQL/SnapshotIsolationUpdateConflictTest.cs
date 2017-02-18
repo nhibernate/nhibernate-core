@@ -70,11 +70,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 				SavePerson(p2);
 				Assert.Fail("Expecting stale object state exception");
 			}
-			catch (StaleObjectStateException sose)
+			catch (StaleStateException)
 			{
-				Assert.AreEqual(typeof (Person).FullName, sose.EntityName);
-				Assert.AreEqual(p2.Id, sose.Identifier);
-				// as expected.
+				// as expected
 			}
 		}
 
@@ -114,10 +112,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 								tr2.Commit();
 								Assert.Fail("StaleObjectStateException expected");
 							}
-							catch (StaleObjectStateException sose)
+							catch (StaleStateException)
 							{
-								Assert.AreEqual(typeof (Person).FullName, sose.EntityName);
-								Assert.AreEqual(p2.Id, sose.Identifier);
 								// as expected
 							}
 						}
