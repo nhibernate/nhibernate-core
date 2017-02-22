@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq.ByMethod
@@ -14,7 +15,10 @@ namespace NHibernate.Test.Linq.ByMethod
 				{
 					db.OrderLines.Where(ol => false).Sum(ol => ol.Discount);
 				},
-				Throws.InstanceOf<HibernateException>());
+				// Before NH-3850
+				Throws.InstanceOf<HibernateException>()
+				// After NH-3850
+				.Or.InstanceOf<InvalidOperationException>());
 		}
 
 		[Test]
