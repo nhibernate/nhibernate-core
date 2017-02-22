@@ -30,6 +30,14 @@ namespace NHibernate.Linq
 		private HqlTreeNode _root;
 		private HqlOrderBy _orderBy;
 
+		public bool IsRoot
+		{
+			get
+			{
+				return _isRoot;
+			}
+		}
+
 		public HqlTreeNode Root
 		{
 			get
@@ -53,11 +61,6 @@ namespace NHibernate.Linq
 
 		public ExpressionToHqlTranslationResults GetTranslation()
 		{
-			if (_isRoot)
-			{
-				DetectOuterExists();
-			}
-
 			return new ExpressionToHqlTranslationResults(Root,
 														 _itemTransformers,
 														 _listTransformers,
@@ -198,19 +201,6 @@ namespace NHibernate.Linq
 
 				_hqlHaving.ClearChildren();
 				_hqlHaving.AddChild(TreeBuilder.BooleanAnd(currentClause, where));
-			}
-		}
-
-		private void DetectOuterExists()
-		{
-			if (_root is HqlExists)
-			{
-				_takeCount = TreeBuilder.Constant(1);
-				_root = Root.Children.First();
-
-				Expression<Func<IEnumerable<object>, bool>> x = l => l.Any();
-
-				_listTransformers.Add(x);
 			}
 		}
 
