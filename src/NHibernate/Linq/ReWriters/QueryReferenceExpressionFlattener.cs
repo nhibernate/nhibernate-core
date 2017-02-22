@@ -18,7 +18,8 @@ namespace NHibernate.Linq.ReWriters
 			typeof (CacheableResultOperator),
 			typeof (TimeoutResultOperator),
 			typeof (FetchOneRequest),
-			typeof (FetchManyRequest)
+			typeof (FetchManyRequest),
+            typeof (OptionResultOperator)
 		};
 
 		private QueryReferenceExpressionFlattener(QueryModel model)

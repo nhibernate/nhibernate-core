@@ -216,6 +216,12 @@ namespace NHibernate
 		/// <param name="timeout"></param>
 		IQuery SetTimeout(int timeout);
 
+        /// <summary>
+        /// The query hint options specified for the query.
+        /// </summary>
+        /// <param name="option">The specified option</param>
+	    IQuery SetOption(string option);
+
 		/// <summary> Set a fetch size for the underlying ADO query.</summary>
 		/// <param name="fetchSize">the fetch size </param>
 		IQuery SetFetchSize(int fetchSize);

@@ -2,6 +2,7 @@
 using NHibernate.Cfg;
 using NHibernate.Dialect.Function;
 using NHibernate.Driver;
+using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
 {
@@ -38,5 +39,15 @@ namespace NHibernate.Dialect
 			base.RegisterDefaultProperties();
 			DefaultProperties[Environment.ConnectionDriver] = typeof(Sql2008ClientDriver).AssemblyQualifiedName;
 		}
-	}
+
+        public override bool SupportsOption
+        {
+            get { return false; }
+        }
+
+        public override SqlString GetOptionString(SqlString queryString, string option)
+        {
+            return queryString.Append($" OPTION({option})");
+        }
+    }
 }

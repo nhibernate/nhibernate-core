@@ -67,7 +67,16 @@ namespace NHibernate.Linq
 			return new NhQueryable<T>(query.Provider, callExpression);
 		}
 
-		public static IEnumerable<T> ToFuture<T>(this IQueryable<T> query)
+        public static IQueryable<T> WithOption<T>(this IQueryable<T> query, string option)
+        {
+            var method = ReflectionHelper.GetMethodDefinition(() => WithOption<object>(null, null)).MakeGenericMethod(typeof(T));
+
+            var callExpression = Expression.Call(method, query.Expression, Expression.Constant(option));
+
+            return new NhQueryable<T>(query.Provider, callExpression);
+        }
+
+        public static IEnumerable<T> ToFuture<T>(this IQueryable<T> query)
 		{
 			var nhQueryable = query as QueryableBase<T>;
 			if (nhQueryable == null)

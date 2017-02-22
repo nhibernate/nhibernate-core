@@ -177,6 +177,11 @@ namespace NHibernate.Loader
 			return sql;
 		}
 
+	    protected virtual SqlString ApplyOptions(SqlString sql, string option, Dialect.Dialect dialect)
+	    {
+	        return sql;
+	    }
+
 		/// <summary>
 		/// Does this query return objects that might be already cached by 
 		/// the session, whose lock mode may need upgrading.
@@ -204,6 +209,11 @@ namespace NHibernate.Loader
 		protected virtual SqlString PreprocessSQL(SqlString sql, QueryParameters parameters, Dialect.Dialect dialect)
 		{
 			sql = ApplyLocks(sql, parameters.LockModes, dialect);
+
+            RowSelection selection = parameters.RowSelection;
+		    if (selection != null && !String.IsNullOrEmpty(selection.Option))
+		        sql = ApplyOptions(sql, selection.Option, dialect);
+
 
 			return Factory.Settings.IsCommentsEnabled ? PrependComment(sql, parameters) : sql;
 		}
