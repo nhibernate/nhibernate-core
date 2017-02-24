@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -107,6 +109,25 @@ namespace NHibernate.Test.NHSpecificTest.NH3952
 			}
 			swCachedDef.Stop();
 
+			var swRefl2 = new Stopwatch();
+			swRefl2.Start();
+			for (var i = 0; i < 1000; i++)
+			{
+				var cast = GetMethod2(Enumerable.Cast<int>, (IEnumerable<int>)null);
+				Trace.TraceInformation(cast.ToString());
+			}
+			swRefl2.Stop();
+
+			var swRefl2Def = new Stopwatch();
+			swRefl2Def.Start();
+			for (var i = 0; i < 1000; i++)
+			{
+				var cast = GetMethodDefinition2(Enumerable.Cast<object>, (IEnumerable<object>)null)
+					.MakeGenericMethod(new[] { typeof(int) });
+				Trace.TraceInformation(cast.ToString());
+			}
+			swRefl2Def.Stop();
+
 			var swRefl = new Stopwatch();
 			swRefl.Start();
 			for (var i = 0; i < 1000; i++)
@@ -141,10 +162,24 @@ namespace NHibernate.Test.NHSpecificTest.NH3952
 			Assert.Pass(@"Blunt perf timings:
 Cached method: {0}
 Cached method definition + make gen: {1}
+Hazzik GetMethod: {5}
+Hazzik GetMethodDefinition + make gen: {6}
 ReflectionHelper.GetMethod: {2}
 ReflectionHelper.GetMethodDefinition + make gen: {3}
 EnumerableHelper.GetMethod(generic overload): {4}",
-				swCached.Elapsed, swCachedDef.Elapsed, swRefl.Elapsed, swReflDef.Elapsed, swEnHlp.Elapsed);
+				swCached.Elapsed, swCachedDef.Elapsed, swRefl.Elapsed, swReflDef.Elapsed, swEnHlp.Elapsed,
+				swRefl2.Elapsed, swRefl2Def.Elapsed);
+		}
+
+		public static MethodInfo GetMethod2<T, TResult>(Func<T, TResult> func, T arg1)
+		{
+			return func.Method;
+		}
+
+		public static MethodInfo GetMethodDefinition2<T, TResult>(Func<T, TResult> func, T arg1)
+		{
+			var method = GetMethod2(func, arg1);
+			return method.IsGenericMethod ? method.GetGenericMethodDefinition() : method;
 		}
 	}
 }
