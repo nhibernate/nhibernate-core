@@ -16,7 +16,18 @@ namespace NHibernate.Linq.NestedSelects
 {
 	static class NestedSelectRewriter
 	{
-		private static readonly MethodInfo CastMethod = EnumerableHelper.GetMethod("Cast", new[] { typeof (IEnumerable) }, new[] { typeof (object[]) });
+		private static readonly MethodInfo CastMethod = ReflectionHelper.GetMethod(
+			() => Enumerable.Cast<object[]>(null));
+		private static readonly MethodInfo GroupByMethod = ReflectionHelper.GetMethod(
+			() => Enumerable.GroupBy<object[], Tuple, Tuple>(null, null, (Func<object[], Tuple>)null));
+		private static readonly MethodInfo WhereMethod = ReflectionHelper.GetMethod(
+			() => Enumerable.Where<Tuple>(null, (Func<Tuple, bool>)null));
+		private static readonly MethodInfo SelectMethodDefinition = ReflectionHelper.GetMethodDefinition(
+			() => Enumerable.Select<Tuple, object>(null, (Func<Tuple, object>)null));
+		private static readonly MethodInfo ToArrayMethodDefinition = ReflectionHelper.GetMethodDefinition(
+			() => Enumerable.ToArray<object>(null));
+		private static readonly MethodInfo ToListMethodDefinition = ReflectionHelper.GetMethodDefinition(
+			() => Enumerable.ToList<object>(null));
 
 		public static void ReWrite(QueryModel queryModel, ISessionFactory sessionFactory)
 		{
@@ -51,15 +62,11 @@ namespace NHibernate.Linq.NestedSelects
 			var keySelector = CreateSelector(elementExpression, 0);
 
 			var elementSelector = CreateSelector(elementExpression, 1);
-
-			var groupBy = EnumerableHelper.GetMethod("GroupBy",
-													 new[] { typeof (IEnumerable<>), typeof (Func<,>), typeof (Func<,>) },
-													 new[] { typeof (object[]), typeof (Tuple), typeof (Tuple) });
-
+			
 			var input = Expression.Parameter(typeof (IEnumerable<object>), "input");
 
 			var lambda = Expression.Lambda(
-				Expression.Call(groupBy,
+				Expression.Call(GroupByMethod,
 								Expression.Call(CastMethod, input),
 								keySelector,
 								elementSelector),
@@ -154,24 +161,16 @@ namespace NHibernate.Linq.NestedSelects
 		private static Expression SubCollectionQuery(System.Type collectionType, System.Type elementType, Expression source, Expression predicate, Expression selector)
 		{
 			// source.Where(predicate).Select(selector).ToList();
-			var whereMethod = EnumerableHelper.GetMethod("Where",
-														  new[] { typeof (IEnumerable<>), typeof (Func<,>) },
-														  new[] { typeof (Tuple) });
 
-
-			var selectMethod = EnumerableHelper.GetMethod("Select",
-														   new[] { typeof (IEnumerable<>), typeof (Func<,>) },
-														   new[] { typeof (Tuple), elementType });
+			var selectMethod = SelectMethodDefinition.MakeGenericMethod(new[] { typeof(Tuple), elementType });
 
 			var select = Expression.Call(selectMethod,
-										 Expression.Call(whereMethod, source, predicate),
+										 Expression.Call(WhereMethod, source, predicate),
 										 selector);
 
 			if (collectionType.IsArray)
 			{
-				var toArrayMethod = EnumerableHelper.GetMethod("ToArray",
-															  new[] { typeof(IEnumerable<>) },
-															  new[] { elementType });
+				var toArrayMethod = ToArrayMethodDefinition.MakeGenericMethod(new[] { elementType });
 
 				var array = Expression.Call(toArrayMethod, @select);
 				return array;
@@ -181,9 +180,7 @@ namespace NHibernate.Linq.NestedSelects
 			if (constructor != null)
 				return Expression.New(constructor, (Expression) @select);
 
-			var toListMethod = EnumerableHelper.GetMethod("ToList",
-														  new[] { typeof (IEnumerable<>) },
-														  new[] { elementType });
+			var toListMethod = ToListMethodDefinition.MakeGenericMethod(new[] { elementType });
 
 			return Expression.Call(Expression.Call(toListMethod, @select),
 								   "AsReadonly",
