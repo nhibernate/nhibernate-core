@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
 using NHibernate.Linq;
 using NUnit.Framework;
 
@@ -76,6 +79,72 @@ namespace NHibernate.Test.NHSpecificTest.NH3952
 				Assert.Contains("Sailing", result[2].Hobbies);
 				Assert.AreEqual(0, result[0].Hobbies.Length + result[1].Hobbies.Length);
 			}
+		}
+
+		private static readonly MethodInfo CastMethodDefinition = ReflectionHelper.GetMethodDefinition(
+			() => Enumerable.Cast<object>(null));
+
+		private static readonly MethodInfo CastMethod = ReflectionHelper.GetMethod(
+			() => Enumerable.Cast<int>(null));
+
+		[Test, Explicit("Just a blunt perf comparison among some reflection patterns used in NH")]
+		public void ReflectionBluntPerfCompare()
+		{
+			var swCached = new Stopwatch();
+			swCached.Start();
+			for (var i = 0; i < 1000; i++)
+			{
+				Trace.TraceInformation(CastMethod.ToString());
+			}
+			swCached.Stop();
+
+			var swCachedDef = new Stopwatch();
+			swCachedDef.Start();
+			for (var i = 0; i < 1000; i++)
+			{
+				var cast = CastMethodDefinition.MakeGenericMethod(new[] { typeof(int) });
+				Trace.TraceInformation(cast.ToString());
+			}
+			swCachedDef.Stop();
+
+			var swRefl = new Stopwatch();
+			swRefl.Start();
+			for (var i = 0; i < 1000; i++)
+			{
+				var cast = ReflectionHelper.GetMethod(() => Enumerable.Cast<int>(null));
+				Trace.TraceInformation(cast.ToString());
+			}
+			swRefl.Stop();
+
+			var swReflDef = new Stopwatch();
+			swReflDef.Start();
+			for (var i = 0; i < 1000; i++)
+			{
+				var cast = ReflectionHelper.GetMethodDefinition(() => Enumerable.Cast<object>(null))
+					.MakeGenericMethod(new[] { typeof(int) });
+				Trace.TraceInformation(cast.ToString());
+			}
+			swReflDef.Stop();
+
+			var swEnHlp = new Stopwatch();
+			swEnHlp.Start();
+			for (var i = 0; i < 1000; i++)
+			{
+				// Testing the obsolete helper perf. Disable obsolete warning. Remove this swEnHlp part of the test if this helper is to be removed.
+#pragma warning disable 0618
+				var cast = EnumerableHelper.GetMethod("Cast", new[] { typeof(IEnumerable) }, new[] { typeof(int) });
+#pragma warning restore 0618
+				Trace.TraceInformation(cast.ToString());
+			}
+			swEnHlp.Stop();
+
+			Assert.Pass(@"Blunt perf timings:
+Cached method: {0}
+Cached method definition + make gen: {1}
+ReflectionHelper.GetMethod: {2}
+ReflectionHelper.GetMethodDefinition + make gen: {3}
+EnumerableHelper.GetMethod(generic overload): {4}",
+				swCached.Elapsed, swCachedDef.Elapsed, swRefl.Elapsed, swReflDef.Elapsed, swEnHlp.Elapsed);
 		}
 	}
 }
