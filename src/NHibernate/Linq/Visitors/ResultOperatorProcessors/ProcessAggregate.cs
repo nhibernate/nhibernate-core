@@ -2,16 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using Remotion.Linq.Clauses.ResultOperators;
 using Remotion.Linq.Clauses.StreamedData;
 using Remotion.Linq.Parsing.ExpressionTreeVisitors;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
-    public class ProcessAggregate : IResultOperatorProcessor<AggregateResultOperator>
-    {
-        public void Process(AggregateResultOperator resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
-        {
+	public class ProcessAggregate : IResultOperatorProcessor<AggregateResultOperator>
+	{
+		private static readonly MethodInfo CastMethodDefinition = ReflectionHelper.GetMethodDefinition(
+			() => Enumerable.Cast<object>(null));
+		private static readonly MethodInfo AggregateMethodDefinition = ReflectionHelper.GetMethodDefinition(
+			() => Enumerable.Aggregate<object>(null, null));
+
+		public void Process(AggregateResultOperator resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
+		{
 			var inputExpr = ((StreamedSequenceInfo)queryModelVisitor.PreviousEvaluationType).ItemExpression;
 			var inputType = inputExpr.Type;
 			var paramExpr = Expression.Parameter(inputType, "item");
@@ -22,11 +28,10 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 
 			var inputList = Expression.Parameter(typeof(IEnumerable<>).MakeGenericType(typeof(object)), "inputList");
 
-			var castToItem = EnumerableHelper.GetMethod("Cast", new[] { typeof(IEnumerable) }, new[] { inputType });
+			var castToItem = CastMethodDefinition.MakeGenericMethod(new[] { inputType });
 			var castToItemExpr = Expression.Call(castToItem, inputList);
 
-			var aggregate = ReflectionHelper.GetMethodDefinition(() => Enumerable.Aggregate<object>(null, null));
-			aggregate = aggregate.GetGenericMethodDefinition().MakeGenericMethod(inputType);
+			var aggregate = AggregateMethodDefinition.MakeGenericMethod(inputType);
 
 			MethodCallExpression call = Expression.Call(
 				aggregate,
@@ -36,5 +41,5 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 
 			tree.AddListTransformer(Expression.Lambda(call, inputList));
 		}
-    }
+	}
 }
