@@ -1300,7 +1300,7 @@ namespace NHibernate.Mapping.ByCode
 			}
 			if (modelInspector.IsComponent(collectionElementType))
 			{
-				return new ComponentRelationMapper(propertyPath, collectionElementType, membersProvider, modelInspector, customizerHolder, this);
+				return new ComponentRelationMapper(propertyPath, ownerType, collectionElementType, membersProvider, modelInspector, customizerHolder, this);
 			}
 			if (modelInspector.IsManyToAny(property))
 			{
@@ -1335,11 +1335,11 @@ namespace NHibernate.Mapping.ByCode
 			private readonly ModelMapper modelMapper;
 			private readonly System.Type ownerType;
 
-			public ComponentRelationMapper(PropertyPath propertyPath, System.Type componentType, ICandidatePersistentMembersProvider membersProvider,
+			public ComponentRelationMapper(PropertyPath propertyPath, System.Type ownerType, System.Type componentType, ICandidatePersistentMembersProvider membersProvider,
 			                               IModelInspector domainInspector, ICustomizersHolder customizersHolder, ModelMapper modelMapper)
 			{
 				this.propertyPath = propertyPath;
-				this.ownerType = propertyPath.LocalMember.DeclaringType;
+				this.ownerType = ownerType;
 				this.componentType = componentType;
 				this.membersProvider = membersProvider;
 				this.domainInspector = domainInspector;

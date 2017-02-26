@@ -6,40 +6,46 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 
-using System.Text;
-
 namespace NHibernate.Test.MappingByCode.MappersTests
 {
 	public class ComponentWithBagOfNestedComponentsTests : TestCase
 	{
-		public class Child
+		public class OwnedItem
 		{
 			public virtual string NameOnClient { get; set; }
 		}
-		class Parent
+		class Owner
 		{
-			private Lazy<IList<Child>> _children = new Lazy<IList<Child>>(() => new List<Child>());
+			private Lazy<IList<OwnedItem>> _ownedItems = new Lazy<IList<OwnedItem>>(() => new List<OwnedItem>());
 
 			public virtual long Id { get; set; }
 
-			public virtual IList<Child> Children
+			public virtual IList<OwnedItem> OwnedItems
 			{
-				get { return _children.Value; }
-				set { _children = new Lazy<IList<Child>>(() => value); }
+				get { return _ownedItems.Value; }
+				set { _ownedItems = new Lazy<IList<OwnedItem>>(() => value); }
 			}
+		}
+
+		class OwnerChildOne : Owner
+		{
+		}
+
+		class OwnerChildTwo: Owner
+		{
 		}
 
 		public class Intermediate
 		{
-			private Lazy<IList<Child>> _children = new Lazy<IList<Child>>(() => new List<Child>());
-			public virtual IList<Child> Children
+			private Lazy<IList<OwnedItem>> _children = new Lazy<IList<OwnedItem>>(() => new List<OwnedItem>());
+			public virtual IList<OwnedItem> Children
 			{
 				get { return _children.Value; }
-				set { _children = new Lazy<IList<Child>>(() => value); }
+				set { _children = new Lazy<IList<OwnedItem>>(() => value); }
 			}
 		}
 
-		public class ParentWithIntermediate
+		public class OwnerWithIntermediate
 		{
 			public virtual long Id { get; set; }
 			public virtual Intermediate Intermediate { get; set; }
@@ -49,22 +55,28 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		{
 			get
 			{
-				// I may have to create a mapping file here
-				// so I can create the data schema
+				// We can perform these tests without
+				// creating a data schema
 				return new string[0];
 			}
 		}
 
-
-		private static void MapChildTableRelationships<ParentType>(IBagPropertiesMapper<ParentType, Child> bagPropertyMapper)
+		[Test]
+		public void BagIsPropertyOfEntity()
 		{
-			bagPropertyMapper.Table("Child");
-			bagPropertyMapper.Key(k => k.Column("Parent_Id"));
-		}
-
-		private static void MapChildCollectionElementRelationship(ICollectionElementRelation<Child> r)
-		{
-			r.Component(
+			var mapper = new ModelMapper();
+			mapper.Class<Owner>(classMapper =>
+			{
+				classMapper.Id(p => p.Id);
+				classMapper.Bag<OwnedItem>
+					(
+						parent => parent.OwnedItems,
+						bagPropertyMapper =>
+						{
+							bagPropertyMapper.Table("Child");
+							bagPropertyMapper.Key(k => k.Column("Parent_Id"));
+						},
+						r => r.Component(
 							child =>
 							{
 								child.Property
@@ -76,12 +88,17 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 									}
 								);
 							}
-					   );
-		}
+					   )
+					);
+			});
+			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
 
+			HbmBag hbmBag = mappings
+								.Items.Cast<HbmClass>()
+								.Single()
+								.Properties.Cast<HbmBag>()
+								.Single();
 
-		private void VerifyBagMapping(HbmBag hbmBag)
-		{
 			Assert.That(hbmBag.Item, Is.InstanceOf<HbmCompositeElement>());
 			HbmCompositeElement childElement = (HbmCompositeElement)hbmBag.Item;
 			Assert.That(childElement.Properties.Count(), Is.EqualTo(1));
@@ -91,61 +108,39 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			Assert.That(propertyMapping.Columns.Single().name, Is.EqualTo("NameInDatabase"));
 		}
 
-		private HbmMapping GetMappingWithSimpleClass()
+		[Test]
+		public void BagIsPropertyOfComponent()
 		{
 			var mapper = new ModelMapper();
-			mapper.Class<Parent>(classMapper =>
-			{
-				classMapper.Id(p => p.Id);
-				classMapper.Bag<Child>
-					(
-						parent => parent.Children,
-						bagPropertyMapper => MapChildTableRelationships(bagPropertyMapper),
-						r => MapChildCollectionElementRelationship(r)
-					);
-			});
-			return mapper.CompileMappingForAllExplicitlyAddedEntities();
-		}
-
-		private HbmMapping GetMappingWithIntermediateClass()
-		{
-			var mapper = new ModelMapper();
-			mapper.Class<ParentWithIntermediate>(classMapper =>
+			mapper.Class<OwnerWithIntermediate>(classMapper =>
 			{
 				classMapper.Id(p => p.Id);
 				classMapper.Component(
 						p => p.Intermediate,
 						componentMapper =>
-						{
-							componentMapper.Bag<Child>
+							componentMapper.Bag<OwnedItem>
 							(
 								intermediate => intermediate.Children,
-								bagPropertyMapper => MapChildTableRelationships(bagPropertyMapper),
-								r => MapChildCollectionElementRelationship(r)
-							);
-						}
+								bagPropertyMapper =>
+								{
+									bagPropertyMapper.Table("Child");
+									bagPropertyMapper.Key(k => k.Column("Parent_Id"));
+								},
+								r => r.Component(child =>
+													child.Property
+													(
+														c => c.NameOnClient,
+														pm =>
+														{
+															pm.Column("NameInDatabase");
+														}
+													)
+												)
+							)
 					);
 			});
 
-			return mapper.CompileMappingForAllExplicitlyAddedEntities();
-		}
-
-		[Test]
-		public void BagIsPropertyOfEntity()
-		{
-			var mappings = GetMappingWithSimpleClass();
-			HbmBag hbmBag = mappings
-								.Items.Cast<HbmClass>()
-								.Single()
-								.Properties.Cast<HbmBag>()
-								.Single();
-			VerifyBagMapping(hbmBag);
-		}
-
-		[Test]
-		public void BagIsPropertyOfComponent()
-		{
-			var mappings = GetMappingWithIntermediateClass();
+			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
 
 			HbmBag hbmBag = mappings
 								.Items.Cast<HbmClass>()
@@ -154,8 +149,99 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 								.Single()
 								.Properties.Cast<HbmBag>()
 								.Single();
-			VerifyBagMapping(hbmBag);
+
+			Assert.That(hbmBag.Item, Is.InstanceOf<HbmCompositeElement>());
+			HbmCompositeElement childElement = (HbmCompositeElement)hbmBag.Item;
+			Assert.That(childElement.Properties.Count(), Is.EqualTo(1));
+			HbmProperty propertyMapping = childElement.Properties.Cast<HbmProperty>().Single();
+			Assert.That(propertyMapping.Name, Is.EqualTo("NameOnClient"));
+			Assert.That(propertyMapping.Columns.Count(), Is.EqualTo(1));
+			Assert.That(propertyMapping.Columns.Single().name, Is.EqualTo("NameInDatabase"));
 		}
+
+		[Test]
+		public void PropertyCustomizerDifferentiatesBetweenChildClasses()
+		{
+			var mapper = new ModelMapper();
+			mapper.Class<OwnerChildOne>(classMapper =>
+			{
+				classMapper.Id(p => p.Id);
+				classMapper.Bag<OwnedItem>
+					(
+						parent => parent.OwnedItems,
+						bagPropertyMapper =>
+						{
+							bagPropertyMapper.Table("ChildOne");
+							bagPropertyMapper.Key(k => k.Column("Parent_Id"));
+						},
+						r => r.Component(
+							child =>
+							{
+								child.Property
+								(
+									c => c.NameOnClient,
+									pm =>
+									{
+										pm.Column("OwnerChildOne_CustomColumnName");
+									}
+								);
+							}
+					   )
+					);
+			});
+			mapper.Class<OwnerChildTwo>(classMapper =>
+			{
+				classMapper.Id(p => p.Id);
+				classMapper.Bag<OwnedItem>
+					(
+						parent => parent.OwnedItems,
+						bagPropertyMapper =>
+						{
+							bagPropertyMapper.Table("ChildTwo");
+							bagPropertyMapper.Key(k => k.Column("Parent_Id"));
+						},
+						r => r.Component(
+							child =>
+							{
+								child.Property
+								(
+									c => c.NameOnClient,
+									pm =>
+									{
+										pm.Column("OwnerChildTwo_CustomColumnName");
+									}
+								);
+							}
+					   )
+					);
+			});
+
+			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
+
+
+			HbmBag bag1 = mappings
+								.Items.Cast<HbmClass>()
+								.Where(c => c.Name == typeof(OwnerChildOne).FullName)
+								.Single()
+								.Properties.Cast<HbmBag>()
+								.Single();
+
+			HbmCompositeElement childElement1 = (HbmCompositeElement)bag1.Item;
+			HbmProperty propertyMapping1 = childElement1.Properties.Cast<HbmProperty>().Single();
+			Assert.That(propertyMapping1.Columns.Single().name, Is.EqualTo("OwnerChildOne_CustomColumnName"));
+
+			HbmBag bag2 = mappings
+								.Items.Cast<HbmClass>()
+								.Where(c => c.Name == typeof(OwnerChildTwo).FullName)
+								.Single()
+								.Properties.Cast<HbmBag>()
+								.Single();
+
+			HbmCompositeElement childElement2 = (HbmCompositeElement)bag1.Item;
+			HbmProperty propertyMapping2 = childElement1.Properties.Cast<HbmProperty>().Single();
+			Assert.That(propertyMapping2.Columns.Single().name, Is.EqualTo("OwnerChildTwo_CustomColumnName"));
+		}
+
 
 	}
 }
