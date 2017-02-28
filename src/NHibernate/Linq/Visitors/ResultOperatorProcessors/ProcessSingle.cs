@@ -12,6 +12,8 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
                                   : ReflectionHelper.GetMethodDefinition(() => Queryable.Single<object>(null));
 
             AddClientSideEval(firstMethod, queryModelVisitor, tree);
+
+            tree.AddTakeClause(tree.TreeBuilder.Constant(2));
         }
     }
 }
