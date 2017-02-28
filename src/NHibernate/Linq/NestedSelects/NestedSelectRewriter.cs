@@ -15,12 +15,12 @@ namespace NHibernate.Linq.NestedSelects
 {
 	static class NestedSelectRewriter
 	{
+		private static readonly MethodInfo CastMethod =
+			ReflectionHelper.GetMethod(() => Enumerable.Cast<object[]>(null));
 		private static readonly MethodInfo GroupByMethod = ReflectionHelper.GetMethod(
 			() => Enumerable.GroupBy<object[], Tuple, Tuple>(null, null, (Func<object[], Tuple>)null));
 		private static readonly MethodInfo WhereMethod = ReflectionHelper.GetMethod(
 			() => Enumerable.Where<Tuple>(null, (Func<Tuple, bool>)null));
-		private static readonly MethodInfo SelectMethodDefinition = ReflectionHelper.GetMethodDefinition(
-			() => Enumerable.Select<Tuple, object>(null, (Func<Tuple, object>)null));
 
 		public static void ReWrite(QueryModel queryModel, ISessionFactory sessionFactory)
 		{
@@ -60,7 +60,7 @@ namespace NHibernate.Linq.NestedSelects
 
 			var lambda = Expression.Lambda(
 				Expression.Call(GroupByMethod,
-								Expression.Call(ReflectionCache.EnumerableMethods.CastOnObjectArray, input),
+								Expression.Call(CastMethod, input),
 								keySelector,
 								elementSelector),
 				input);
@@ -155,7 +155,7 @@ namespace NHibernate.Linq.NestedSelects
 		{
 			// source.Where(predicate).Select(selector).ToList();
 
-			var selectMethod = SelectMethodDefinition.MakeGenericMethod(new[] { typeof(Tuple), elementType });
+			var selectMethod = ReflectionCache.EnumerableMethods.SelectDefinition.MakeGenericMethod(new[] { typeof(Tuple), elementType });
 
 			var select = Expression.Call(selectMethod,
 										 Expression.Call(WhereMethod, source, predicate),

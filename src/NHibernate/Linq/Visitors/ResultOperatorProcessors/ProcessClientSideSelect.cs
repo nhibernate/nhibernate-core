@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq.Expressions;
 using NHibernate.Linq.GroupBy;
+using NHibernate.Util;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
