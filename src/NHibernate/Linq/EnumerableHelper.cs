@@ -94,7 +94,7 @@ namespace NHibernate.Linq
 		}
 	}
 	
-	[Obsolete("ReflectionHelper is better")]
+	[Obsolete("Please use ReflectionHelper instead")]
 	public static class EnumerableHelper
 	{
 		public static MethodInfo GetMethod(string name, System.Type[] parameterTypes)
