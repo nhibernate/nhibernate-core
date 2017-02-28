@@ -87,8 +87,8 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
 			var hbmClass = hbmMapping.RootClasses[0];
 			var hbmCompositId = hbmClass.CompositeId;
-			Assert.That(hbmCompositId.access, Is.StringContaining("field"));
-			Assert.That(hbmCompositId.@class, Is.StringContaining("MyComponent"));
+			Assert.That(hbmCompositId.access, Does.Contain("field"));
+			Assert.That(hbmCompositId.@class, Does.Contain("MyComponent"));
 		}
 
 		[Test]
@@ -147,8 +147,8 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
 			var hbmClass = hbmMapping.RootClasses[0];
 			var hbmCompositId = hbmClass.CompositeId;
-			Assert.That(hbmCompositId.access, Is.StringContaining("field"));
-			Assert.That(hbmCompositId.@class, Is.StringContaining("MyComponent"));
+			Assert.That(hbmCompositId.access, Does.Contain("field"));
+			Assert.That(hbmCompositId.@class, Does.Contain("MyComponent"));
 		}
 
 		[Test]
@@ -165,8 +165,8 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
 			var hbmClass = hbmMapping.RootClasses[0];
 			var hbmCompositId = hbmClass.CompositeId;
-			Assert.That(hbmCompositId.access, Is.StringContaining("nosetter"));
-			Assert.That(hbmCompositId.@class, Is.StringContaining("MyComponent"));
+			Assert.That(hbmCompositId.access, Does.Contain("nosetter"));
+			Assert.That(hbmCompositId.@class, Does.Contain("MyComponent"));
 		}
 	}
 }

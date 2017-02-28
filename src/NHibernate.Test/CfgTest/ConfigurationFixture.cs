@@ -27,7 +27,7 @@ namespace NHibernate.Test.CfgTest
 		public void ReadCfgXmlFromDefaultFile()
 		{
 			Configuration cfg = new Configuration();
-			cfg.Configure("TestEnbeddedConfig.cfg.xml");
+			cfg.Configure(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestEnbeddedConfig.cfg.xml"));
 
 			Assert.IsTrue(cfg.Properties.ContainsKey(Environment.ShowSql));
 			Assert.IsTrue(cfg.Properties.ContainsKey(Environment.UseQueryCache));
@@ -91,7 +91,7 @@ namespace NHibernate.Test.CfgTest
 		public void InvalidXmlInCfgFile()
 		{
 			XmlDocument cfgXml = new XmlDocument();
-			cfgXml.Load("TestEnbeddedConfig.cfg.xml");
+			cfgXml.Load(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestEnbeddedConfig.cfg.xml"));
 
 			// this should put us at the first <property> element
 			XmlElement propElement = cfgXml.DocumentElement.GetElementsByTagName("property")[0] as XmlElement;
@@ -99,8 +99,8 @@ namespace NHibernate.Test.CfgTest
 			// removing this will cause it not to validate
 			propElement.RemoveAttribute("name");
 
-			const string FileNameForInvalidCfg = "hibernate.invalid.cfg.xml";
-      cfgXml.Save(FileNameForInvalidCfg);
+			string FileNameForInvalidCfg = Path.Combine(TestContext.CurrentContext.TestDirectory, "hibernate.invalid.cfg.xml");
+			cfgXml.Save(FileNameForInvalidCfg);
 
 			Configuration cfg = new Configuration();
 			try
@@ -222,7 +222,7 @@ namespace NHibernate.Test.CfgTest
 		[Test]
 		public void InvalidXmlInHbmFile()
 		{
-			string filename = "invalid.hbm.xml";
+			string filename = Path.Combine(TestContext.CurrentContext.TestDirectory, "invalid.hbm.xml");
 			// it's missing the class name - won't validate
 			string hbm =
 				@"<?xml version='1.0' encoding='utf-8' ?> 
@@ -432,7 +432,7 @@ namespace NHibernate.Test.CfgTest
 		public void NH2890Standard()
 		{
 			var cfg = new Configuration();
-			cfg.Configure("TestEnbeddedConfig.cfg.xml")
+			cfg.Configure(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestEnbeddedConfig.cfg.xml"))
 				.LinqQueryProvider<SampleQueryProvider>()
 				.SetDefaultAssembly("NHibernate.DomainModel")
 				.SetDefaultNamespace("NHibernate.DomainModel");
@@ -451,7 +451,7 @@ namespace NHibernate.Test.CfgTest
 		public void NH2890Xml()
 		{
 			var cfg = new Configuration();
-			cfg.Configure("TestEnbeddedConfig.cfg.xml")
+			cfg.Configure(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestEnbeddedConfig.cfg.xml"))
 				.SetDefaultAssembly("NHibernate.DomainModel")
 				.SetDefaultNamespace("NHibernate.DomainModel");
 

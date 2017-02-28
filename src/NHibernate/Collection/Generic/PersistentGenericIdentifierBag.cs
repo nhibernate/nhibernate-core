@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using NHibernate.DebugHelpers;
@@ -212,7 +212,7 @@ namespace NHibernate.Collection.Generic
 			return old != null && elemType.IsDirty(old, entry, Session);
 		}
 
-		public override object ReadFrom(IDataReader reader, ICollectionPersister persister, ICollectionAliases descriptor, object owner)
+		public override object ReadFrom(DbDataReader reader, ICollectionPersister persister, ICollectionAliases descriptor, object owner)
 		{
 			object element = persister.ReadElement(reader, owner, descriptor.SuffixedElementAliases, Session);
 			object id = persister.ReadIdentifier(reader, descriptor.SuffixedIdentifierAlias, Session);

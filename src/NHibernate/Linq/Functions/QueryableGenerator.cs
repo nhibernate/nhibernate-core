@@ -75,7 +75,7 @@ namespace NHibernate.Linq.Functions
 								)
 							),
 						treeBuilder.Where(
-							treeBuilder.BooleanNot(visitor.Visit(arguments[1]).AsBooleanExpression())
+							treeBuilder.BooleanNot(visitor.Visit(arguments[1]).ToBooleanExpression())
 							)
 						)
 					)

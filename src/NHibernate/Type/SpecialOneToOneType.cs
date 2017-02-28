@@ -1,4 +1,5 @@
 using System;
+using System.Data.Common;
 
 namespace NHibernate.Type
 {
@@ -29,7 +30,7 @@ namespace NHibernate.Type
 			get { return false; }
 		}
 
-		public override object Hydrate(System.Data.IDataReader rs, string[] names, Engine.ISessionImplementor session, object owner)
+		public override object Hydrate(DbDataReader rs, string[] names, Engine.ISessionImplementor session, object owner)
 		{
 			return GetIdentifierOrUniqueKeyType(session.Factory).NullSafeGet(rs, names, session, owner);
 		}

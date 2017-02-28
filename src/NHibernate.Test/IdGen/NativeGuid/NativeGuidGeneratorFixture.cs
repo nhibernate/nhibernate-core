@@ -12,7 +12,7 @@ namespace NHibernate.Test.IdGen.NativeGuid
 		protected Configuration cfg;
 		protected ISessionFactoryImplementor sessions;
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void TestFixtureSetUp()
 		{
 			cfg = new Configuration();

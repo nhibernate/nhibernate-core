@@ -1,7 +1,7 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using System.Text;
-
 
 namespace NHibernate.AdoNet.Util
 {
@@ -33,11 +33,11 @@ namespace NHibernate.AdoNet.Util
 			get { return Logger.IsDebugEnabled; }
 		}
 
-		/// <summary> Log a IDbCommand. </summary>
+		/// <summary> Log a DbCommand. </summary>
 		/// <param name="message">Title</param>
 		/// <param name="command">The SQL statement. </param>
 		/// <param name="style">The requested formatting style. </param>
-		public virtual void LogCommand(string message, IDbCommand command, FormatStyle style)
+		public virtual void LogCommand(string message, DbCommand command, FormatStyle style)
 		{
 			if (!Logger.IsDebugEnabled && !LogToStdout || string.IsNullOrEmpty(command.CommandText))
 			{
@@ -62,15 +62,15 @@ namespace NHibernate.AdoNet.Util
 			}
 		}
 
-		/// <summary> Log a IDbCommand. </summary>
+		/// <summary> Log a DbCommand. </summary>
 		/// <param name="command">The SQL statement. </param>
 		/// <param name="style">The requested formatting style. </param>
-		public virtual void LogCommand(IDbCommand command, FormatStyle style)
+		public virtual void LogCommand(DbCommand command, FormatStyle style)
 		{
 			LogCommand(null, command, style);
 		}
 
-		public string GetCommandLineWithParameters(IDbCommand command)
+		public string GetCommandLineWithParameters(DbCommand command)
 		{
 			string outputText;
 
@@ -84,7 +84,6 @@ namespace NHibernate.AdoNet.Util
 				output.Append(command.CommandText.TrimEnd(' ', ';', '\n'));
 				output.Append(";");
 
-				IDataParameter p;
 				int count = command.Parameters.Count;
 				bool appendComma = false;
 				for (int i = 0; i < count; i++)
@@ -94,25 +93,25 @@ namespace NHibernate.AdoNet.Util
 						output.Append(", ");
 					}
 					appendComma = true;
-					p = (IDataParameter) command.Parameters[i];
-					output.Append(
-						string.Format("{0} = {1} [Type: {2}]", p.ParameterName, GetParameterLoggableValue(p), GetParameterLoggableType(p)));
+					var p = command.Parameters[i];
+					output.AppendFormat(
+						"{0} = {1} [Type: {2}]", p.ParameterName, GetParameterLoggableValue(p), GetParameterLoggableType(p));
 				}
 				outputText = output.ToString();
 			}
 			return outputText;
 		}
 
-		private static string GetParameterLoggableType(IDataParameter dataParameter)
+		private static string GetParameterLoggableType(DbParameter dataParameter)
 		{
+			//TODO: Fix me after 4.6.2 update. Size and Precision has been added to DbParameter
 			var p = dataParameter as IDbDataParameter;
 			if (p != null)
 				return p.DbType + " (" + p.Size + ":" + p.Scale + ":" + p.Precision + ")";
 			return dataParameter.DbType.ToString();
 		}
 
-
-		public string GetParameterLoggableValue(IDataParameter parameter)
+		public string GetParameterLoggableValue(DbParameter parameter)
 		{
 			const int maxLoggableStringLength = 1000;
 
@@ -144,7 +143,7 @@ namespace NHibernate.AdoNet.Util
 
 
 		[Obsolete("Use GetParameterLoggableValue(parameter) instead.")]
-		public string GetParameterLogableValue(IDataParameter parameter)
+		public string GetParameterLogableValue(DbParameter parameter)
 		{
 			return GetParameterLoggableValue(parameter);
 		}

@@ -16,7 +16,7 @@
     <xmlpoke file="${nuspec.destination.file}" xpath="/package/metadata/version" value="${project.version.nuget}" />
   </target>
 
-  <target name="nuget" depends="common.init nuget.set-properties nuspec">
+  <target name="nuget" depends="common.init common.download-nuget nuget.set-properties nuspec">
     <!-- Prepare working dir with file needed by NHibernate.nuspec -->
     <copy file="${bin.dir}/NHibernate.dll" todir="${nuget.workingdir}"/>
 	<copy file="${bin.dir}/NHibernate.pdb" todir="${nuget.workingdir}"/>

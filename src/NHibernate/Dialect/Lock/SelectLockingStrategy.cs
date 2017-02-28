@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
@@ -56,8 +57,8 @@ namespace NHibernate.Dialect.Lock
 			ISessionFactoryImplementor factory = session.Factory;
 			try
 			{
-				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, lockable.IdAndVersionSqlTypes);
-				IDataReader rs = null;
+				var st = session.Batcher.PrepareCommand(CommandType.Text, sql, lockable.IdAndVersionSqlTypes);
+				DbDataReader rs = null;
 				try
 				{
 					lockable.IdentifierType.NullSafeSet(st, id, 0, session);

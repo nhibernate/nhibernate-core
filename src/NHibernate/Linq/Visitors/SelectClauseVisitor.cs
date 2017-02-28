@@ -61,7 +61,7 @@ namespace NHibernate.Linq.Visitors
 			}
 
 			// Handle any boolean results in the output nodes
-			_hqlTreeNodes = BooleanToCaseConvertor.Convert(_hqlTreeNodes).ToList();
+			_hqlTreeNodes = _hqlTreeNodes.ConvertAll(node => node.ToArithmeticExpression());
 
 			if (distinct != null)
 			{
@@ -91,25 +91,19 @@ namespace NHibernate.Linq.Visitors
 		}
 	}
 
+	[Obsolete]
 	public static class BooleanToCaseConvertor
 	{
+		[Obsolete]
 		public static IEnumerable<HqlExpression> Convert(IEnumerable<HqlExpression> hqlTreeNodes)
 		{
-			return hqlTreeNodes.Select(node => ConvertBooleanToCase(node));
+			return hqlTreeNodes.Select(node => node.ToArithmeticExpression());
 		}
 
+		[Obsolete]
 		public static HqlExpression ConvertBooleanToCase(HqlExpression node)
 		{
-			if (node is HqlBooleanExpression)
-			{
-				var builder = new HqlTreeBuilder();
-
-				return builder.Case(
-					new[] {builder.When(node, builder.True())},
-					builder.False());
-			}
-
-			return node;
+			return node.ToArithmeticExpression();
 		}
 	}
 }

@@ -26,8 +26,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1069
 			var ex = Assert.Throws<LazyInitializationException>(() => n= le.Name);
 			Assert.That(ex.EntityName, Is.EqualTo(typeof (LazyE).FullName));
 			Assert.That(ex.EntityId, Is.EqualTo(1));
-			Assert.That(ex.Message, Is.StringContaining(typeof(LazyE).FullName));
-			Assert.That(ex.Message, Is.StringContaining("#1"));
+			Assert.That(ex.Message, Does.Contain(typeof(LazyE).FullName));
+			Assert.That(ex.Message, Does.Contain("#1"));
 			Console.WriteLine(ex.Message);
 
 			using (ISession s = OpenSession())
@@ -57,9 +57,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1069
 			var ex = Assert.Throws<LazyInitializationException>(() => le.LazyC.GetEnumerator());
 			Assert.That(ex.EntityName, Is.EqualTo(typeof(LazyE).FullName));
 			Assert.That(ex.EntityId, Is.EqualTo(1));
-			Assert.That(ex.Message, Is.StringContaining(typeof(LazyE).FullName));
-			Assert.That(ex.Message, Is.StringContaining("#1"));
-			Assert.That(ex.Message, Is.StringContaining(typeof(LazyE).FullName + ".LazyC"));
+			Assert.That(ex.Message, Does.Contain(typeof(LazyE).FullName));
+			Assert.That(ex.Message, Does.Contain("#1"));
+			Assert.That(ex.Message, Does.Contain(typeof(LazyE).FullName + ".LazyC"));
 
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())

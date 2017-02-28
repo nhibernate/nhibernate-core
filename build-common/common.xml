@@ -52,11 +52,11 @@
 		effectively SP0).
 	-->
 
-	<property name="project.version" value="4.1.0.CR1" overwrite="false" />
+	<property name="project.version" value="5.0.0.Alpha1" overwrite="false" />
 	
 	<!-- This version number should be changed if, but only if, there are incompatible
 	     changes compared to the previous version. -->
-	<property name="project.default-assembly-version" value="4.1.0.3001" overwrite="false" />
+	<property name="project.default-assembly-version" value="5.0.0.1001" overwrite="false" />
 
 	<!-- Compute short project version (major.minor) using a regex -->
 	<regex input="${project.version}" pattern="^(?'shortversion'\d+\.\d+)" />
@@ -196,7 +196,7 @@
 		<property name="link.sdkdoc.version" value="SDK_v1_1" />
 		<!-- merge should work with 4.0 when compiling for 4.0 -->
 		<property name="merge.targetplatform" value="v4" />
-		<property name="referenceassemblies.dir" value="${environment::get-folder-path('ProgramFiles')}\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0" />
+		<property name="referenceassemblies.dir" value="${environment::get-folder-path('ProgramFiles')}\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1" />
 	</target>
 	
 	<target name="set-net-3.5-framework-configuration">
@@ -261,7 +261,7 @@
 	</target>
 	
 	<target name="common.find-nunit">
-		<property name="nunit-console" value="${tools.dir}/NUnit/nunit-console-x86.exe" />
+		<property name="nunit-console" value="${tools.dir}/NUnit.ConsoleRunner.3.6.0/tools/nunit3-console.exe" />
 	</target>
 	<target name="common.find-ndoc">
 		<property name="ndoc-console" value="${tools.dir}/ndoc/NDocConsole.exe" />

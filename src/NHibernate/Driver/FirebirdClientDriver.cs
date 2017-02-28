@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Text.RegularExpressions;
 using NHibernate.Dialect;
@@ -51,7 +52,7 @@ namespace NHibernate.Driver
 			get { return "@"; }
 		}
 
-		protected override void InitializeParameter(IDbDataParameter dbParam, string name, SqlType sqlType)
+		protected override void InitializeParameter(DbParameter dbParam, string name, SqlType sqlType)
 		{
 			var convertedSqlType = sqlType;
 			if (convertedSqlType.DbType == DbType.Currency)
@@ -60,7 +61,7 @@ namespace NHibernate.Driver
 			base.InitializeParameter(dbParam, name, convertedSqlType);
 		}
 
-		public override IDbCommand GenerateCommand(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
+		public override DbCommand GenerateCommand(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
 		{
 			var command = base.GenerateCommand(type, sqlString, parameterTypes);
 
@@ -68,10 +69,10 @@ namespace NHibernate.Driver
 			if (!string.IsNullOrWhiteSpace(expWithParams))
 			{
 				var candidates = GetCastCandidates(expWithParams);
-				var castParams = from IDbDataParameter p in command.Parameters
+				var castParams = from DbParameter p in command.Parameters
 								 where candidates.Contains(p.ParameterName)
 								 select p;
-				foreach (IDbDataParameter param in castParams)
+				foreach (var param in castParams)
 				{
 					TypeCastParam(param, command);
 				}
@@ -95,7 +96,7 @@ namespace NHibernate.Driver
 			return new HashSet<string>(candidates);
 		}
 
-		private void TypeCastParam(IDbDataParameter param, IDbCommand command)
+		private void TypeCastParam(DbParameter param, DbCommand command)
 		{
 			var castType = GetFbTypeFromDbType(param.DbType);
 			command.CommandText = command.CommandText.ReplaceWholeWord(param.ParameterName, string.Format("cast({0} as {1})", param.ParameterName, castType));
