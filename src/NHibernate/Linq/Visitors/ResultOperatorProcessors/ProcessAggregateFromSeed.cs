@@ -1,8 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Reflection;
 using Remotion.Linq.Clauses.ResultOperators;
 using Remotion.Linq.Clauses.StreamedData;
 using Remotion.Linq.Parsing.ExpressionTreeVisitors;
@@ -11,13 +8,6 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
 	public class ProcessAggregateFromSeed : IResultOperatorProcessor<AggregateFromSeedResultOperator>
 	{
-		private static readonly MethodInfo CastMethodDefinition = ReflectionHelper.GetMethodDefinition(
-			() => Enumerable.Cast<object>(null));
-		private static readonly MethodInfo AggregateMethodDefinition = ReflectionHelper.GetMethodDefinition(
-			() => Enumerable.Aggregate<object, object>(null, null, null));
-		private static readonly MethodInfo AggregateWithResultOpMethodDefinition = ReflectionHelper.GetMethodDefinition(
-			() => Enumerable.Aggregate<object, object, object>(null, null, null, null));
-
 		public void Process(AggregateFromSeedResultOperator resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
 		{
 			var inputExpr = ((StreamedSequenceInfo)queryModelVisitor.PreviousEvaluationType).ItemExpression;
@@ -31,14 +21,15 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 			var accumulatorType = resultOperator.Func.Parameters[0].Type;
 			var inputList = Expression.Parameter(typeof(IEnumerable<>).MakeGenericType(typeof(object)), "inputList");
 
-			var castToItem = CastMethodDefinition.MakeGenericMethod(new[] { inputType });
+			var castToItem = ReflectionCache.EnumerableMethods.CastDefinition.MakeGenericMethod(new[] { inputType });
 			var castToItemExpr = Expression.Call(castToItem, inputList);
 
 			MethodCallExpression call;
 
 			if (resultOperator.OptionalResultSelector == null)
 			{
-				var aggregate = AggregateMethodDefinition.MakeGenericMethod(inputType, accumulatorType);
+				var aggregate = ReflectionCache.EnumerableMethods.AggregateWithSeedDefinition
+					.MakeGenericMethod(inputType, accumulatorType);
 
 				call = Expression.Call(
 					aggregate,
@@ -50,7 +41,8 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 			else
 			{
 				var selectorType = resultOperator.OptionalResultSelector.Type.GetGenericArguments()[2];
-				var aggregate = AggregateWithResultOpMethodDefinition.MakeGenericMethod(inputType, accumulatorType, selectorType);
+				var aggregate = ReflectionCache.EnumerableMethods.AggregateWithSeedAndResultSelectorDefinition
+					.MakeGenericMethod(inputType, accumulatorType, selectorType);
 
 				call = Expression.Call(
 					aggregate,

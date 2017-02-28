@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -16,18 +15,12 @@ namespace NHibernate.Linq.NestedSelects
 {
 	static class NestedSelectRewriter
 	{
-		private static readonly MethodInfo CastMethod = ReflectionHelper.GetMethod(
-			() => Enumerable.Cast<object[]>(null));
 		private static readonly MethodInfo GroupByMethod = ReflectionHelper.GetMethod(
 			() => Enumerable.GroupBy<object[], Tuple, Tuple>(null, null, (Func<object[], Tuple>)null));
 		private static readonly MethodInfo WhereMethod = ReflectionHelper.GetMethod(
 			() => Enumerable.Where<Tuple>(null, (Func<Tuple, bool>)null));
 		private static readonly MethodInfo SelectMethodDefinition = ReflectionHelper.GetMethodDefinition(
 			() => Enumerable.Select<Tuple, object>(null, (Func<Tuple, object>)null));
-		private static readonly MethodInfo ToArrayMethodDefinition = ReflectionHelper.GetMethodDefinition(
-			() => Enumerable.ToArray<object>(null));
-		private static readonly MethodInfo ToListMethodDefinition = ReflectionHelper.GetMethodDefinition(
-			() => Enumerable.ToList<object>(null));
 
 		public static void ReWrite(QueryModel queryModel, ISessionFactory sessionFactory)
 		{
@@ -67,7 +60,7 @@ namespace NHibernate.Linq.NestedSelects
 
 			var lambda = Expression.Lambda(
 				Expression.Call(GroupByMethod,
-								Expression.Call(CastMethod, input),
+								Expression.Call(ReflectionCache.EnumerableMethods.CastOnObjectArray, input),
 								keySelector,
 								elementSelector),
 				input);
@@ -170,7 +163,7 @@ namespace NHibernate.Linq.NestedSelects
 
 			if (collectionType.IsArray)
 			{
-				var toArrayMethod = ToArrayMethodDefinition.MakeGenericMethod(new[] { elementType });
+				var toArrayMethod = ReflectionCache.EnumerableMethods.ToArrayDefinition.MakeGenericMethod(new[] { elementType });
 
 				var array = Expression.Call(toArrayMethod, @select);
 				return array;
@@ -180,7 +173,7 @@ namespace NHibernate.Linq.NestedSelects
 			if (constructor != null)
 				return Expression.New(constructor, (Expression) @select);
 
-			var toListMethod = ToListMethodDefinition.MakeGenericMethod(new[] { elementType });
+			var toListMethod = ReflectionCache.EnumerableMethods.ToListDefinition.MakeGenericMethod(new[] { elementType });
 
 			return Expression.Call(Expression.Call(toListMethod, @select),
 								   "AsReadonly",
