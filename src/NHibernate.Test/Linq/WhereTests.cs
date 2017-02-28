@@ -795,6 +795,19 @@ namespace NHibernate.Test.Linq
 		}
 
 
+		[Test(Description = "NH-3665")]
+		public void SelectOnCollectionReturnsResult()
+		{
+			var result = db.Animals.Select(x => new
+			{
+				x.Children
+			}).FirstOrDefault();
+
+			Assert.That(result, Is.Not.Null);
+			Assert.That(result.Children, Is.Not.Empty);
+		}
+
+
 		private static List<object[]> CanUseCompareInQueryDataSource()
 		{
 			return new List<object[]>
