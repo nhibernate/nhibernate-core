@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -57,7 +56,7 @@ namespace NHibernate.Linq
 			if (method == null)
 				throw new ArgumentNullException("method");
 
-			return ((MethodCallExpression) method.Body).Method;
+			return ((MethodCallExpression)method.Body).Method;
 		}
 
 		/// <summary>
@@ -93,8 +92,8 @@ namespace NHibernate.Linq
 			return null;
 		}
 	}
-
-	// TODO rename / remove - reflection helper above is better
+	
+	[Obsolete("Please use ReflectionHelper instead")]
 	public static class EnumerableHelper
 	{
 		public static MethodInfo GetMethod(string name, System.Type[] parameterTypes)
