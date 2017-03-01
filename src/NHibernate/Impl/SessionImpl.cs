@@ -776,7 +776,6 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 
-				CheckAndUpdateSessionStatus();
 				CollectionFilterImpl filter =
 					new CollectionFilterImpl(queryString, collection, this,
 											 GetFilterQueryPlan(collection, queryString, null, false).ParameterMetadata);
