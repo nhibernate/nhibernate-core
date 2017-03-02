@@ -28,7 +28,9 @@ namespace NHibernate.Dialect
 
 		public override string GetDropSequenceString(string sequenceName)
 		{
-			return "drop sequence " + sequenceName;
+			string dropSequence = "IF EXISTS (select * from sys.sequences where name = N'{0}') DROP SEQUENCE {0}";
+
+			return string.Format(dropSequence, sequenceName);
 		}
 
 		public override string GetSequenceNextValString(string sequenceName)

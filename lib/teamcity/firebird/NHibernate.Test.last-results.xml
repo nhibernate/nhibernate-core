@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!--This file represents the results of running a test suite-->
-<test-results name="../../build/NHibernate-3.3.3.CR1-debug/bin/net-3.5/NHibernate.Test.dll" errors="104" failures="42" not-run="457" inconclusive="0" ignored="457" skipped="0" invalid="0">
+<test-results name="../../build/NHibernate-3.3.3.GA-debug/bin/net-3.5/NHibernate.Test.dll" errors="105" failures="38" not-run="457" inconclusive="0" ignored="457" skipped="0" invalid="0">
   <environment nunit-version="2.5.5.10112" clr-version="2.0.50727.3643" os-version="Microsoft Windows NT 5.2.3790 Service Pack 2" platform="Win32NT" />
   <culture-info current-culture="en-US" current-uiculture="en-US" />
-  <test-suite type="Assembly" name="../../build/NHibernate-3.3.3.CR1-debug/bin/net-3.5/NHibernate.Test.dll" executed="True" result="Failure" success="False" asserts="0">
+  <test-suite type="Assembly" name="../../build/NHibernate-3.3.3.GA-debug/bin/net-3.5/NHibernate.Test.dll" executed="True" result="Failure" success="False" asserts="0">
     <results>
       <test-suite type="Namespace" name="NHibernate" executed="True" result="Failure" success="False" asserts="0">
         <results>
@@ -1233,6 +1233,22 @@ Data type unknown]]></message>
                       </test-suite>
                     </results>
                   </test-suite>
+                  <test-suite type="TestFixture" name="LockHintAppenderFixture" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-case name="NHibernate.Test.DialectTest.LockHintAppenderFixture.AppendHintToJoinedTableAlias" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.DialectTest.LockHintAppenderFixture.AppendHintToSingleTableAlias" executed="True" result="Success" success="True" asserts="2" />
+                      <test-case name="NHibernate.Test.DialectTest.LockHintAppenderFixture.AppendHintToUnionTableAlias" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.DialectTest.LockHintAppenderFixture.ShouldHandleEscapingInSubselect" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.DialectTest.LockHintAppenderFixture.ShouldHandleEscapingWithSquareBracketsInSubselect" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.DialectTest.LockHintAppenderFixture.ShouldHandleEscapingWithWhitespacesInSubselect" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.DialectTest.LockHintAppenderFixture.ShouldHandleExplicitDbNameWithoutSchemaName" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.DialectTest.LockHintAppenderFixture.ShouldHandleExplicitSchemas" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.DialectTest.LockHintAppenderFixture.ShouldHandleExplicitSchemasAndDbNames" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.DialectTest.LockHintAppenderFixture.ShouldHandleExplicitSchemasAndDbNamesWithSpacesBetweenNameParts" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.DialectTest.LockHintAppenderFixture.ShouldHandleMultilineQuery" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.DialectTest.LockHintAppenderFixture.ShouldIgnoreCasing" executed="True" result="Success" success="True" asserts="1" />
+                    </results>
+                  </test-suite>
                   <test-suite type="TestFixture" name="MsSql2005DialectFixture" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-case name="NHibernate.Test.DialectTest.MsSql2005DialectFixture.GetIfExistsDropConstraintTest_For_Schema_other_than_dbo" executed="True" result="Success" success="True" asserts="1" />
@@ -1276,11 +1292,11 @@ Data type unknown]]></message>
                         <results>
                           <test-suite type="ParameterizedTest" name="SetColumnSizeAndNumericalPrecision" executed="True" result="Success" success="True" asserts="0">
                             <results>
-                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;13&quot;,&quot;7&quot;,13,7)" executed="True" result="Success" success="True" asserts="3" />
                               <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(null,null,0,0)" executed="True" result="Success" success="True" asserts="3" />
-                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;13&quot;,null,13,0)" executed="True" result="Success" success="True" asserts="3" />
-                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(null,&quot;7&quot;,0,7)" executed="True" result="Success" success="True" asserts="3" />
                               <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;5000000000&quot;,null,int.MaxValue,0)" executed="True" result="Success" success="True" asserts="3" />
+                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;13&quot;,&quot;7&quot;,13,7)" executed="True" result="Success" success="True" asserts="3" />
+                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(null,&quot;7&quot;,0,7)" executed="True" result="Success" success="True" asserts="3" />
+                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;13&quot;,null,13,0)" executed="True" result="Success" success="True" asserts="3" />
                             </results>
                           </test-suite>
                         </results>
@@ -4211,6 +4227,13 @@ Data type unknown]]></message>
                           <test-case name="NHibernate.Test.Linq.ByMethod.CountTests.LongCountProperty_ReturnsNumberOfNonNullEntriesForThatProperty" executed="True" result="Success" success="True" asserts="1" />
                         </results>
                       </test-suite>
+                      <test-suite type="TestFixture" name="GetValueOrDefaultTests" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.Linq.ByMethod.GetValueOrDefaultTests.CoalesceInWhere" executed="True" result="Success" success="True" asserts="1" />
+                          <test-case name="NHibernate.Test.Linq.ByMethod.GetValueOrDefaultTests.GetValueOrDefaultInWhere" executed="True" result="Success" success="True" asserts="1" />
+                          <test-case name="NHibernate.Test.Linq.ByMethod.GetValueOrDefaultTests.GetValueOrDefaultWithSingleArgumentInWhere" executed="True" result="Success" success="True" asserts="1" />
+                        </results>
+                      </test-suite>
                       <test-suite type="TestFixture" name="GroupByHavingTests" executed="True" result="Success" success="True" asserts="0">
                         <results>
                           <test-case name="NHibernate.Test.Linq.ByMethod.GroupByHavingTests.ComplexQuery" executed="True" result="Success" success="True" asserts="1" />
@@ -4326,9 +4349,9 @@ Data type unknown]]></message>
                       <test-case name="NHibernate.Test.Linq.DateTimeTests.CanQueryByDate" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select order0_.OrderId as OrderId1607_, order0_.CustomerId as CustomerId1607_, order0_.EmployeeId as EmployeeId1607_, order0_.OrderDate as OrderDate1607_, order0_.RequiredDate as Required5_1607_, order0_.ShippedDate as ShippedD6_1607_, order0_.ShipVia as ShipVia1607_, order0_.Freight as Freight1607_, order0_.ShipName as ShipName1607_, order0_.ShipAddress as ShipAdd10_1607_, order0_.ShipCity as ShipCity1607_, order0_.ShipRegion as ShipRegion1607_, order0_.ShipPostalCode as ShipPos13_1607_, order0_.ShipCountry as ShipCou14_1607_ from Orders order0_ where date(order0_.OrderDate)=@p0 ]
+[ select order0_.OrderId as OrderId1634_, order0_.CustomerId as CustomerId1634_, order0_.EmployeeId as EmployeeId1634_, order0_.OrderDate as OrderDate1634_, order0_.RequiredDate as Required5_1634_, order0_.ShippedDate as ShippedD6_1634_, order0_.ShipVia as ShipVia1634_, order0_.Freight as Freight1634_, order0_.ShipName as ShipName1634_, order0_.ShipAddress as ShipAdd10_1634_, order0_.ShipCity as ShipCity1634_, order0_.ShipRegion as ShipRegion1634_, order0_.ShipPostalCode as ShipPos13_1634_, order0_.ShipCountry as ShipCou14_1634_ from Orders order0_ where date(order0_.OrderDate)=@p0 ]
   Name:p1 - Value:2/26/1998 12:00:00 AM
-[SQL: select order0_.OrderId as OrderId1607_, order0_.CustomerId as CustomerId1607_, order0_.EmployeeId as EmployeeId1607_, order0_.OrderDate as OrderDate1607_, order0_.RequiredDate as Required5_1607_, order0_.ShippedDate as ShippedD6_1607_, order0_.ShipVia as ShipVia1607_, order0_.Freight as Freight1607_, order0_.ShipName as ShipName1607_, order0_.ShipAddress as ShipAdd10_1607_, order0_.ShipCity as ShipCity1607_, order0_.ShipRegion as ShipRegion1607_, order0_.ShipPostalCode as ShipPos13_1607_, order0_.ShipCountry as ShipCou14_1607_ from Orders order0_ where date(order0_.OrderDate)=@p0]
+[SQL: select order0_.OrderId as OrderId1634_, order0_.CustomerId as CustomerId1634_, order0_.EmployeeId as EmployeeId1634_, order0_.OrderDate as OrderDate1634_, order0_.RequiredDate as Required5_1634_, order0_.ShippedDate as ShippedD6_1634_, order0_.ShipVia as ShipVia1634_, order0_.Freight as Freight1634_, order0_.ShipName as ShipName1634_, order0_.ShipAddress as ShipAdd10_1634_, order0_.ShipCity as ShipCity1634_, order0_.ShipRegion as ShipRegion1634_, order0_.ShipPostalCode as ShipPos13_1634_, order0_.ShipCountry as ShipCou14_1634_ from Orders order0_ where date(order0_.OrderDate)=@p0]
   ----> FirebirdSql.Data.FirebirdClient.FbException : Dynamic SQL Error
 SQL error code = -104
 Token unknown - line 1, column 564
@@ -4415,6 +4438,8 @@ SQL error code = -804
 Data type unknown]]></message>
                         </failure>
                       </test-case>
+                      <test-case name="NHibernate.Test.Linq.FunctionTests.LikeFunction" executed="True" result="Success" success="True" asserts="2" />
+                      <test-case name="NHibernate.Test.Linq.FunctionTests.LikeFunctionUserDefined" executed="True" result="Success" success="True" asserts="2" />
                       <test-case name="NHibernate.Test.Linq.FunctionTests.ReplaceFunction" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.Linq.FunctionTests.SubstringFunction1" executed="False" result="Ignored">
                         <reason>
@@ -4997,6 +5022,22 @@ No message for error code 335544963 found.]]></message>
                       <test-case name="NHibernate.Test.Linq.LoggingTests.PageBetweenProjections" executed="True" result="Success" success="True" asserts="1" />
                     </results>
                   </test-suite>
+                  <test-suite type="TestFixture" name="MathTests" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-case name="NHibernate.Test.Linq.MathTests.AcosTest" executed="True" result="Success" success="True" asserts="11" />
+                      <test-case name="NHibernate.Test.Linq.MathTests.AsinTest" executed="True" result="Success" success="True" asserts="11" />
+                      <test-case name="NHibernate.Test.Linq.MathTests.Atan2Test" executed="True" result="Success" success="True" asserts="11" />
+                      <test-case name="NHibernate.Test.Linq.MathTests.AtanTest" executed="True" result="Success" success="True" asserts="11" />
+                      <test-case name="NHibernate.Test.Linq.MathTests.CoshTest" executed="True" result="Success" success="True" asserts="11" />
+                      <test-case name="NHibernate.Test.Linq.MathTests.CosTest" executed="True" result="Success" success="True" asserts="11" />
+                      <test-case name="NHibernate.Test.Linq.MathTests.SignAllNegativeTest" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.Linq.MathTests.SignAllPositiveTest" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.Linq.MathTests.SinhTest" executed="True" result="Success" success="True" asserts="11" />
+                      <test-case name="NHibernate.Test.Linq.MathTests.SinTest" executed="True" result="Success" success="True" asserts="11" />
+                      <test-case name="NHibernate.Test.Linq.MathTests.TanhTest" executed="True" result="Success" success="True" asserts="11" />
+                      <test-case name="NHibernate.Test.Linq.MathTests.TanTest" executed="True" result="Success" success="True" asserts="11" />
+                    </results>
+                  </test-suite>
                   <test-suite type="TestFixture" name="MethodCallTests" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-case name="NHibernate.Test.Linq.MethodCallTests.CanExecuteAny" executed="True" result="Success" success="True" asserts="1" />
@@ -5043,6 +5084,31 @@ No message for error code 335544963 found.]]></message>
                           <category name="WHERE" />
                         </categories>
                       </test-case>
+                    </results>
+                  </test-suite>
+                  <test-suite type="TestFixture" name="NestedSelectsTests" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-case name="NHibernate.Test.Linq.NestedSelectsTests.EmployeesIdAndWithSubordinatesId" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.Linq.NestedSelectsTests.OrdersIdAndDateWithOrderLinesIdAndDiscount" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.Linq.NestedSelectsTests.OrdersIdWithOrderLinesId" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.Linq.NestedSelectsTests.OrdersIdWithOrderLinesIdAndDiscount" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.Linq.NestedSelectsTests.OrdersIdWithOrderLinesIdShouldBeNotLazy" executed="True" result="Success" success="True" asserts="2" />
+                      <test-case name="NHibernate.Test.Linq.NestedSelectsTests.OrdersIdWithOrderLinesIdToArray" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.Linq.NestedSelectsTests.OrdersOrderLinesId" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.Linq.NestedSelectsTests.TimesheetAndUsers" description="NH-3333" executed="True" result="Success" success="True" asserts="2" />
+                      <test-case name="NHibernate.Test.Linq.NestedSelectsTests.TimesheetAndUsersAndEntries" description="NH-3333" executed="True" result="Success" success="True" asserts="2" />
+                      <test-case name="NHibernate.Test.Linq.NestedSelectsTests.TimesheetAndUsersAndEntriesTransparentProjection" description="NH-2986" executed="True" result="Success" success="True" asserts="2" />
+                      <test-case name="NHibernate.Test.Linq.NestedSelectsTests.TimesheetAndUsersTransparentProjection" description="NH-2986" executed="True" result="Success" success="True" asserts="2" />
+                      <test-case name="NHibernate.Test.Linq.NestedSelectsTests.TimesheetIdAndUserLastLoginDates" executed="True" result="Success" success="True" asserts="2" />
+                      <test-case name="NHibernate.Test.Linq.NestedSelectsTests.TimesheetIdAndUserLastLoginDatesAndEntriesIds" executed="True" result="Success" success="True" asserts="2" />
+                      <test-case name="NHibernate.Test.Linq.NestedSelectsTests.TimesheetIdAndUsers" description="NH-3333" executed="True" result="Success" success="True" asserts="2" />
+                      <test-case name="NHibernate.Test.Linq.NestedSelectsTests.TimesheetIdAndUsersAndEntries" description="NH-3333" executed="True" result="Success" success="True" asserts="2" />
+                      <test-case name="NHibernate.Test.Linq.NestedSelectsTests.TimesheetIdAndUsersAndEntriesTransparentProjection" description="NH-2986" executed="True" result="Success" success="True" asserts="2" />
+                      <test-case name="NHibernate.Test.Linq.NestedSelectsTests.TimesheetIdAndUsersTransparentProjection" description="NH-2986" executed="True" result="Success" success="True" asserts="2" />
+                      <test-case name="NHibernate.Test.Linq.NestedSelectsTests.TimesheetUsers" description="NH-3333" executed="True" result="Success" success="True" asserts="2" />
+                      <test-case name="NHibernate.Test.Linq.NestedSelectsTests.TimesheetUsersAndEntries" description="NH-3333" executed="True" result="Success" success="True" asserts="2" />
+                      <test-case name="NHibernate.Test.Linq.NestedSelectsTests.TimesheetUsersAndEntriesTransparentProjection" description="NH-2986" executed="True" result="Success" success="True" asserts="2" />
+                      <test-case name="NHibernate.Test.Linq.NestedSelectsTests.TimesheetUsersTransparentProjection" description="NH-2986" executed="True" result="Success" success="True" asserts="2" />
                     </results>
                   </test-suite>
                   <test-suite type="TestFixture" name="NullComparisonTests" executed="True" result="Success" success="True" asserts="0">
@@ -5144,23 +5210,11 @@ No message for error code 335544963 found.]]></message>
                       <test-case name="NHibernate.Test.Linq.ProjectionsTests.CanCallLocalMethodsInAnonymousTypeInSelect" executed="True" result="Success" success="True" asserts="4" />
                       <test-case name="NHibernate.Test.Linq.ProjectionsTests.CanCallLocalMethodsInSelect" executed="True" result="Success" success="True" asserts="4" />
                       <test-case name="NHibernate.Test.Linq.ProjectionsTests.CanPerformStringOperationsInSelect" executed="True" result="Success" success="True" asserts="4" />
-                      <test-case name="NHibernate.Test.Linq.ProjectionsTests.CanProjectCollections" executed="False" result="Ignored">
-                        <reason>
-                          <message><![CDATA[Broken, please fix. See NH-2707]]></message>
-                        </reason>
-                      </test-case>
-                      <test-case name="NHibernate.Test.Linq.ProjectionsTests.CanProjectCollectionsInsideAnonymousType" executed="False" result="Ignored">
-                        <reason>
-                          <message><![CDATA[Broken, please fix. See NH-2707]]></message>
-                        </reason>
-                      </test-case>
+                      <test-case name="NHibernate.Test.Linq.ProjectionsTests.CanProjectCollections" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.Linq.ProjectionsTests.CanProjectCollectionsInsideAnonymousType" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Linq.ProjectionsTests.CanProjectComplexDictionaryIndexer" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Linq.ProjectionsTests.CanProjectComplexParameterDictionaryIndexer" executed="True" result="Success" success="True" asserts="1" />
-                      <test-case name="NHibernate.Test.Linq.ProjectionsTests.CanProjectManyCollections" executed="True" result="Success" success="True" asserts="0">
-                        <reason>
-                          <message><![CDATA[]]></message>
-                        </reason>
-                      </test-case>
+                      <test-case name="NHibernate.Test.Linq.ProjectionsTests.CanProjectManyCollections" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Linq.ProjectionsTests.CanProjectParameterArrayContains" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Linq.ProjectionsTests.CanProjectParameterDictionaryContainsKey" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Linq.ProjectionsTests.CanProjectParameterDictionaryIndexer" executed="True" result="Success" success="True" asserts="1" />
@@ -5170,11 +5224,10 @@ No message for error code 335544963 found.]]></message>
                       <test-case name="NHibernate.Test.Linq.ProjectionsTests.ProjectAnonymousType" executed="True" result="Success" success="True" asserts="6" />
                       <test-case name="NHibernate.Test.Linq.ProjectionsTests.ProjectAnonymousTypeAndConcatenateFields" executed="True" result="Success" success="True" asserts="6" />
                       <test-case name="NHibernate.Test.Linq.ProjectionsTests.ProjectAnonymousTypeWithAddition" executed="True" result="Success" success="True" asserts="4" />
-                      <test-case name="NHibernate.Test.Linq.ProjectionsTests.ProjectAnonymousTypeWithCollection" executed="False" result="Ignored">
-                        <reason>
-                          <message><![CDATA[Not fixed yet, see NH-3333]]></message>
-                        </reason>
-                      </test-case>
+                      <test-case name="NHibernate.Test.Linq.ProjectionsTests.ProjectAnonymousTypeWithCollection" executed="True" result="Success" success="True" asserts="2" />
+                      <test-case name="NHibernate.Test.Linq.ProjectionsTests.ProjectAnonymousTypeWithCollection1" executed="True" result="Success" success="True" asserts="2" />
+                      <test-case name="NHibernate.Test.Linq.ProjectionsTests.ProjectAnonymousTypeWithCollection2" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.Linq.ProjectionsTests.ProjectAnonymousTypeWithCollection3" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Linq.ProjectionsTests.ProjectAnonymousTypeWithDivision" executed="True" result="Success" success="True" asserts="4" />
                       <test-case name="NHibernate.Test.Linq.ProjectionsTests.ProjectAnonymousTypeWithMultiply" executed="True" result="Success" success="True" asserts="4" />
                       <test-case name="NHibernate.Test.Linq.ProjectionsTests.ProjectAnonymousTypeWithSubstraction" executed="True" result="Success" success="True" asserts="4" />
@@ -5189,6 +5242,8 @@ No message for error code 335544963 found.]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Linq.ProjectionsTests.ProjectKnownType" executed="True" result="Success" success="True" asserts="6" />
+                      <test-case name="NHibernate.Test.Linq.ProjectionsTests.ProjectKnownTypeWithCollection" executed="True" result="Success" success="True" asserts="2" />
+                      <test-case name="NHibernate.Test.Linq.ProjectionsTests.ProjectKnownTypeWithCollection2" executed="True" result="Success" success="True" asserts="2" />
                       <test-case name="NHibernate.Test.Linq.ProjectionsTests.ProjectUserNames" executed="True" result="Success" success="True" asserts="2" />
                     </results>
                   </test-suite>
@@ -5248,6 +5303,7 @@ No message for error code 335544963 found.]]></message>
                       <test-case name="NHibernate.Test.Linq.SelectionTests.CanProjectWithCast" executed="True" result="Success" success="True" asserts="5" />
                       <test-case name="NHibernate.Test.Linq.SelectionTests.CanSelectAfterOrderByAndTake" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Linq.SelectionTests.CanSelectBinaryExpressions" executed="True" result="Success" success="True" asserts="3" />
+                      <test-case name="NHibernate.Test.Linq.SelectionTests.CanSelectCollection" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Linq.SelectionTests.CanSelectManyWithCast" executed="True" result="Success" success="True" asserts="5" />
                       <test-case name="NHibernate.Test.Linq.SelectionTests.CanSelectNestedAnonymousType" executed="True" result="Success" success="True" asserts="2" />
                       <test-case name="NHibernate.Test.Linq.SelectionTests.CanSelectNestedAnonymousTypeWithComponentReference" executed="True" result="Success" success="True" asserts="2" />
@@ -5377,9 +5433,9 @@ No message for error code 335544963 found.]]></message>
                       <test-case name="NHibernate.Test.Linq.WhereTests.BitwiseQuery" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select user0_.UserId as UserId2238_, user0_.Name as Name2238_, user0_.InvalidLoginAttempts as InvalidL3_2238_, user0_.RegisteredAt as Register4_2238_, user0_.LastLoginDate as LastLogi5_2238_, user0_.Enum1 as Enum6_2238_, user0_.Enum2 as Enum7_2238_, user0_.Features as Features2238_, user0_.RoleId as RoleId2238_, user0_.Property1 as Property10_2238_, user0_.Property2 as Property11_2238_, user0_.OtherProperty1 as OtherPr12_2238_ from Users user0_ where user0_.Features&@p0=@p1 ]
+[ select user0_.UserId as UserId2319_, user0_.Name as Name2319_, user0_.InvalidLoginAttempts as InvalidL3_2319_, user0_.RegisteredAt as Register4_2319_, user0_.LastLoginDate as LastLogi5_2319_, user0_.Enum1 as Enum6_2319_, user0_.Enum2 as Enum7_2319_, user0_.Features as Features2319_, user0_.RoleId as RoleId2319_, user0_.Property1 as Property10_2319_, user0_.Property2 as Property11_2319_, user0_.OtherProperty1 as OtherPr12_2319_ from Users user0_ where user0_.Features&@p0=@p1 ]
   Name:p1 - Value:4  Name:p2 - Value:4
-[SQL: select user0_.UserId as UserId2238_, user0_.Name as Name2238_, user0_.InvalidLoginAttempts as InvalidL3_2238_, user0_.RegisteredAt as Register4_2238_, user0_.LastLoginDate as LastLogi5_2238_, user0_.Enum1 as Enum6_2238_, user0_.Enum2 as Enum7_2238_, user0_.Features as Features2238_, user0_.RoleId as RoleId2238_, user0_.Property1 as Property10_2238_, user0_.Property2 as Property11_2238_, user0_.OtherProperty1 as OtherPr12_2238_ from Users user0_ where user0_.Features&@p0=@p1]
+[SQL: select user0_.UserId as UserId2319_, user0_.Name as Name2319_, user0_.InvalidLoginAttempts as InvalidL3_2319_, user0_.RegisteredAt as Register4_2319_, user0_.LastLoginDate as LastLogi5_2319_, user0_.Enum1 as Enum6_2319_, user0_.Enum2 as Enum7_2319_, user0_.Features as Features2319_, user0_.RoleId as RoleId2319_, user0_.Property1 as Property10_2319_, user0_.Property2 as Property11_2319_, user0_.OtherProperty1 as OtherPr12_2319_ from Users user0_ where user0_.Features&@p0=@p1]
   ----> FirebirdSql.Data.FirebirdClient.FbException : Dynamic SQL Error
 SQL error code = -104
 Token unknown - line 1, column 471
@@ -5393,9 +5449,9 @@ Token unknown - line 1, column 471
                       <test-case name="NHibernate.Test.Linq.WhereTests.BitwiseQuery2" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select user0_.UserId as UserId2238_, user0_.Name as Name2238_, user0_.InvalidLoginAttempts as InvalidL3_2238_, user0_.RegisteredAt as Register4_2238_, user0_.LastLoginDate as LastLogi5_2238_, user0_.Enum1 as Enum6_2238_, user0_.Enum2 as Enum7_2238_, user0_.Features as Features2238_, user0_.RoleId as RoleId2238_, user0_.Property1 as Property10_2238_, user0_.Property2 as Property11_2238_, user0_.OtherProperty1 as OtherPr12_2238_ from Users user0_ where user0_.Features&@p0=@p1 ]
+[ select user0_.UserId as UserId2319_, user0_.Name as Name2319_, user0_.InvalidLoginAttempts as InvalidL3_2319_, user0_.RegisteredAt as Register4_2319_, user0_.LastLoginDate as LastLogi5_2319_, user0_.Enum1 as Enum6_2319_, user0_.Enum2 as Enum7_2319_, user0_.Features as Features2319_, user0_.RoleId as RoleId2319_, user0_.Property1 as Property10_2319_, user0_.Property2 as Property11_2319_, user0_.OtherProperty1 as OtherPr12_2319_ from Users user0_ where user0_.Features&@p0=@p1 ]
   Name:p1 - Value:8  Name:p2 - Value:8
-[SQL: select user0_.UserId as UserId2238_, user0_.Name as Name2238_, user0_.InvalidLoginAttempts as InvalidL3_2238_, user0_.RegisteredAt as Register4_2238_, user0_.LastLoginDate as LastLogi5_2238_, user0_.Enum1 as Enum6_2238_, user0_.Enum2 as Enum7_2238_, user0_.Features as Features2238_, user0_.RoleId as RoleId2238_, user0_.Property1 as Property10_2238_, user0_.Property2 as Property11_2238_, user0_.OtherProperty1 as OtherPr12_2238_ from Users user0_ where user0_.Features&@p0=@p1]
+[SQL: select user0_.UserId as UserId2319_, user0_.Name as Name2319_, user0_.InvalidLoginAttempts as InvalidL3_2319_, user0_.RegisteredAt as Register4_2319_, user0_.LastLoginDate as LastLogi5_2319_, user0_.Enum1 as Enum6_2319_, user0_.Enum2 as Enum7_2319_, user0_.Features as Features2319_, user0_.RoleId as RoleId2319_, user0_.Property1 as Property10_2319_, user0_.Property2 as Property11_2319_, user0_.OtherProperty1 as OtherPr12_2319_ from Users user0_ where user0_.Features&@p0=@p1]
   ----> FirebirdSql.Data.FirebirdClient.FbException : Dynamic SQL Error
 SQL error code = -104
 Token unknown - line 1, column 471
@@ -5409,9 +5465,9 @@ Token unknown - line 1, column 471
                       <test-case name="NHibernate.Test.Linq.WhereTests.BitwiseQuery3" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select user0_.UserId as UserId2238_, user0_.Name as Name2238_, user0_.InvalidLoginAttempts as InvalidL3_2238_, user0_.RegisteredAt as Register4_2238_, user0_.LastLoginDate as LastLogi5_2238_, user0_.Enum1 as Enum6_2238_, user0_.Enum2 as Enum7_2238_, user0_.Features as Features2238_, user0_.RoleId as RoleId2238_, user0_.Property1 as Property10_2238_, user0_.Property2 as Property11_2238_, user0_.OtherProperty1 as OtherPr12_2238_ from Users user0_ where user0_.Features|@p0&@p1=@p2 ]
+[ select user0_.UserId as UserId2319_, user0_.Name as Name2319_, user0_.InvalidLoginAttempts as InvalidL3_2319_, user0_.RegisteredAt as Register4_2319_, user0_.LastLoginDate as LastLogi5_2319_, user0_.Enum1 as Enum6_2319_, user0_.Enum2 as Enum7_2319_, user0_.Features as Features2319_, user0_.RoleId as RoleId2319_, user0_.Property1 as Property10_2319_, user0_.Property2 as Property11_2319_, user0_.OtherProperty1 as OtherPr12_2319_ from Users user0_ where user0_.Features|@p0&@p1=@p2 ]
   Name:p1 - Value:2  Name:p2 - Value:2  Name:p3 - Value:2
-[SQL: select user0_.UserId as UserId2238_, user0_.Name as Name2238_, user0_.InvalidLoginAttempts as InvalidL3_2238_, user0_.RegisteredAt as Register4_2238_, user0_.LastLoginDate as LastLogi5_2238_, user0_.Enum1 as Enum6_2238_, user0_.Enum2 as Enum7_2238_, user0_.Features as Features2238_, user0_.RoleId as RoleId2238_, user0_.Property1 as Property10_2238_, user0_.Property2 as Property11_2238_, user0_.OtherProperty1 as OtherPr12_2238_ from Users user0_ where user0_.Features|@p0&@p1=@p2]
+[SQL: select user0_.UserId as UserId2319_, user0_.Name as Name2319_, user0_.InvalidLoginAttempts as InvalidL3_2319_, user0_.RegisteredAt as Register4_2319_, user0_.LastLoginDate as LastLogi5_2319_, user0_.Enum1 as Enum6_2319_, user0_.Enum2 as Enum7_2319_, user0_.Features as Features2319_, user0_.RoleId as RoleId2319_, user0_.Property1 as Property10_2319_, user0_.Property2 as Property11_2319_, user0_.OtherProperty1 as OtherPr12_2319_ from Users user0_ where user0_.Features|@p0&@p1=@p2]
   ----> FirebirdSql.Data.FirebirdClient.FbException : Dynamic SQL Error
 SQL error code = -104
 Token unknown - line 1, column 471
@@ -5502,6 +5558,7 @@ Token unknown - line 1, column 471
                       <test-case name="NHibernate.Test.Linq.WhereTests.UsersWithEmptyList_NH2400" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Linq.WhereTests.UsersWithEntityPropertiesThreeLevelsDeep" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Linq.WhereTests.UsersWithListContains" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.Linq.WhereTests.UsersWithListContains_MutatingListDoesNotBreakOtherSessions" description="NH-3413" executed="True" result="Success" success="True" asserts="2" />
                       <test-case name="NHibernate.Test.Linq.WhereTests.UsersWithListNotContains" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Linq.WhereTests.UsersWithNestedComponentProperties" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Linq.WhereTests.UsersWithNonNullLoginDate" executed="True" result="Success" success="True" asserts="1" />
@@ -5914,6 +5971,17 @@ Token unknown - line 1, column 471
                             <results>
                               <test-case name="NHibernate.Test.MappingByCode.IntegrationTests.NH2825.FixtureByCode.Fixture.VerifyManyEndOfManyToOneMappingUsingPropertyRef" executed="True" result="Success" success="True" asserts="2" />
                               <test-case name="NHibernate.Test.MappingByCode.IntegrationTests.NH2825.FixtureByCode.Fixture.VerifyOneEndOfManyToOneMappingUsingPropertyRef" executed="True" result="Success" success="True" asserts="2" />
+                            </results>
+                          </test-suite>
+                        </results>
+                      </test-suite>
+                      <test-suite type="Namespace" name="NH3105" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
+                            <results>
+                              <test-case name="NHibernate.Test.MappingByCode.IntegrationTests.NH3105.Fixture.CanMapComponentAsIdWhenComponentIsDeclaredInBaseClass" executed="True" result="Success" success="True" asserts="2" />
+                              <test-case name="NHibernate.Test.MappingByCode.IntegrationTests.NH3105.Fixture.CanMapComponentAsIdWhenComponentIsDeclaredInClass" executed="True" result="Success" success="True" asserts="2" />
+                              <test-case name="NHibernate.Test.MappingByCode.IntegrationTests.NH3105.Fixture.CanMapIdWhenIdIsDeclaredInBaseClass" executed="True" result="Success" success="True" asserts="2" />
                             </results>
                           </test-suite>
                         </results>
@@ -6675,6 +6743,7 @@ Token unknown - line 1, column 471
                   </test-suite>
                   <test-suite type="TestFixture" name="ForeignKeyFixture" executed="True" result="Success" success="True" asserts="0">
                     <results>
+                      <test-case name="NHibernate.Test.MappingTest.ForeignKeyFixture.ToStringDoesNotThrow" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.MappingTest.ForeignKeyFixture.UnmatchingColumns" executed="True" result="Success" success="True" asserts="1" />
                     </results>
                   </test-suite>
@@ -6809,8 +6878,8 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.NHSpecificTest.BasicClassFixture.TestListCRUD" executed="True" result="Error" success="False" asserts="11">
                         <failure>
                           <message><![CDATA[  TicksProperty
-  Expected: 2013-01-13 09:40:58.510
-  But was:  2013-01-13 09:40:58.135
+  Expected: 2013-03-17 16:42:01.656
+  But was:  2013-03-17 16:42:00.765
 
 TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -6818,8 +6887,8 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.NHSpecificTest.BasicClassFixture.TestMapCRUD" executed="True" result="Error" success="False" asserts="11">
                         <failure>
                           <message><![CDATA[  TicksProperty
-  Expected: 2013-01-13 09:40:58.854
-  But was:  2013-01-13 09:40:58.510
+  Expected: 2013-03-17 16:42:02.265
+  But was:  2013-03-17 16:42:01.656
 
 TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -6827,8 +6896,8 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.NHSpecificTest.BasicClassFixture.TestPrimitiveArrayCRUD" executed="True" result="Error" success="False" asserts="11">
                         <failure>
                           <message><![CDATA[  TicksProperty
-  Expected: 2013-01-13 09:40:59.198
-  But was:  2013-01-13 09:40:58.854
+  Expected: 2013-03-17 16:42:03.390
+  But was:  2013-03-17 16:42:02.265
 
 TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -7709,8 +7778,8 @@ Token unknown - line 5, column 14
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1192.Fixture.BitwiseAndWorksCorrectly" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select objecta0_.Id as Id2454_, objecta0_.Name as Name2454_, objecta0_.FontType as FontType2454_ from ObjectA objecta0_ where objecta0_.FontType&1>0 ]
-[SQL: select objecta0_.Id as Id2454_, objecta0_.Name as Name2454_, objecta0_.FontType as FontType2454_ from ObjectA objecta0_ where objecta0_.FontType&1>0]
+[ select objecta0_.Id as Id2536_, objecta0_.Name as Name2536_, objecta0_.FontType as FontType2536_ from ObjectA objecta0_ where objecta0_.FontType&1>0 ]
+[SQL: select objecta0_.Id as Id2536_, objecta0_.Name as Name2536_, objecta0_.FontType as FontType2536_ from ObjectA objecta0_ where objecta0_.FontType&1>0]
   ----> FirebirdSql.Data.FirebirdClient.FbException : Dynamic SQL Error
 SQL error code = -104
 Token unknown - line 1, column 145
@@ -7724,8 +7793,8 @@ Token unknown - line 1, column 145
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1192.Fixture.BitwiseOrWorksCorrectly" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select objecta0_.Id as Id2454_, objecta0_.Name as Name2454_, objecta0_.FontType as FontType2454_ from ObjectA objecta0_ where objecta0_.FontType|2=1|2 ]
-[SQL: select objecta0_.Id as Id2454_, objecta0_.Name as Name2454_, objecta0_.FontType as FontType2454_ from ObjectA objecta0_ where objecta0_.FontType|2=1|2]
+[ select objecta0_.Id as Id2536_, objecta0_.Name as Name2536_, objecta0_.FontType as FontType2536_ from ObjectA objecta0_ where objecta0_.FontType|2=1|2 ]
+[SQL: select objecta0_.Id as Id2536_, objecta0_.Name as Name2536_, objecta0_.FontType as FontType2536_ from ObjectA objecta0_ where objecta0_.FontType|2=1|2]
   ----> FirebirdSql.Data.FirebirdClient.FbException : Dynamic SQL Error
 SQL error code = -104
 Token unknown - line 1, column 145
@@ -7915,9 +7984,9 @@ Data type unknown]]></message>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1280.NH1280Fixture.NestedSubqueriesShouldStayInOrder" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ SELECT this_.Id as Id2496_0_, this_.Name as Name2496_0_, this_.IQ as IQ2496_0_, this_.ShoeSize as ShoeSize2496_0_ FROM Person this_ WHERE @p0 = (SELECT (this_0_.Name||@p1||this_0_.Name) as y0_ FROM Person this_0_ WHERE this_0_.ShoeSize = (SELECT this_0_0_.IQ as y0_ FROM Person this_0_0_ WHERE this_0_0_.IQ = @p2) GROUP BY this_0_.Name, this_0_.Name) ]
+[ SELECT this_.Id as Id2578_0_, this_.Name as Name2578_0_, this_.IQ as IQ2578_0_, this_.ShoeSize as ShoeSize2578_0_ FROM Person this_ WHERE @p0 = (SELECT (this_0_.Name||@p1||this_0_.Name) as y0_ FROM Person this_0_ WHERE this_0_.ShoeSize = (SELECT this_0_0_.IQ as y0_ FROM Person this_0_0_ WHERE this_0_0_.IQ = @p2) GROUP BY this_0_.Name, this_0_.Name) ]
   Name:cp0 - Value:   Name:cp1 - Value:40  Name:cp2 - Value:Fred Fred
-[SQL: SELECT this_.Id as Id2496_0_, this_.Name as Name2496_0_, this_.IQ as IQ2496_0_, this_.ShoeSize as ShoeSize2496_0_ FROM Person this_ WHERE @p0 = (SELECT (this_0_.Name||@p1||this_0_.Name) as y0_ FROM Person this_0_ WHERE this_0_.ShoeSize = (SELECT this_0_0_.IQ as y0_ FROM Person this_0_0_ WHERE this_0_0_.IQ = @p2) GROUP BY this_0_.Name, this_0_.Name)]
+[SQL: SELECT this_.Id as Id2578_0_, this_.Name as Name2578_0_, this_.IQ as IQ2578_0_, this_.ShoeSize as ShoeSize2578_0_ FROM Person this_ WHERE @p0 = (SELECT (this_0_.Name||@p1||this_0_.Name) as y0_ FROM Person this_0_ WHERE this_0_.ShoeSize = (SELECT this_0_0_.IQ as y0_ FROM Person this_0_0_ WHERE this_0_0_.IQ = @p2) GROUP BY this_0_.Name, this_0_.Name)]
   ----> FirebirdSql.Data.FirebirdClient.FbException : Dynamic SQL Error
 SQL error code = -804
 Data type unknown
@@ -8436,9 +8505,9 @@ Data type unknown]]></message>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1502.Fixture.OrderProjectionTest" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ SELECT this_.Id as Id2572_0_, this_.Name as Name2572_0_, this_.IQ as IQ2572_0_, this_.ShoeSize as ShoeSize2572_0_ FROM Person this_ ORDER BY (this_.IQ*@p0) asc ]
+[ SELECT this_.Id as Id2654_0_, this_.Name as Name2654_0_, this_.IQ as IQ2654_0_, this_.ShoeSize as ShoeSize2654_0_ FROM Person this_ ORDER BY (this_.IQ*@p0) asc ]
   Name:cp0 - Value:-1
-[SQL: SELECT this_.Id as Id2572_0_, this_.Name as Name2572_0_, this_.IQ as IQ2572_0_, this_.ShoeSize as ShoeSize2572_0_ FROM Person this_ ORDER BY (this_.IQ*@p0) asc]
+[SQL: SELECT this_.Id as Id2654_0_, this_.Name as Name2654_0_, this_.IQ as IQ2654_0_, this_.ShoeSize as ShoeSize2654_0_ FROM Person this_ ORDER BY (this_.IQ*@p0) asc]
   ----> FirebirdSql.Data.FirebirdClient.FbException : Dynamic SQL Error
 SQL error code = -804
 Data type unknown
@@ -9414,9 +9483,9 @@ Token unknown - line 1, column 131
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1831.Fixture.CorrectPrecedenceForBitwiseOperators" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select documentty0_.oid as oid2709_, documentty0_.systemAction as systemAc2_2709_ from documents_documenttype documentty0_ where documentty0_.systemAction&@p0=@p0 ]
+[ select documentty0_.oid as oid2791_, documentty0_.systemAction as systemAc2_2791_ from documents_documenttype documentty0_ where documentty0_.systemAction&@p0=@p0 ]
   Name:sysAct - Value:Denunciation
-[SQL: select documentty0_.oid as oid2709_, documentty0_.systemAction as systemAc2_2709_ from documents_documenttype documentty0_ where documentty0_.systemAction&@p0=@p0]
+[SQL: select documentty0_.oid as oid2791_, documentty0_.systemAction as systemAc2_2791_ from documents_documenttype documentty0_ where documentty0_.systemAction&@p0=@p0]
   ----> FirebirdSql.Data.FirebirdClient.FbException : Dynamic SQL Error
 SQL error code = -104
 Token unknown - line 1, column 155
@@ -10077,6 +10146,15 @@ Invalid expression in the select list (not contained in either an aggregate func
                       </test-suite>
                     </results>
                   </test-suite>
+                  <test-suite type="Namespace" name="NH2042" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2042.Fixture.TestPropertyOfOwnerShouldBeOne" executed="True" result="Success" success="True" asserts="1" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
                   <test-suite type="Namespace" name="NH2043" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
@@ -10696,6 +10774,20 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       </test-suite>
                     </results>
                   </test-suite>
+                  <test-suite type="Namespace" name="NH2297" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-suite type="ParameterizedTest" name="InvalidCustomCompositeUserTypeThrowsMeaningfulException" executed="True" result="Success" success="True" asserts="0">
+                            <results>
+                              <test-case name="NHibernate.Test.NHSpecificTest.NH2297.Fixture.InvalidCustomCompositeUserTypeThrowsMeaningfulException(&quot;.MappingsNames.hbm.xml&quot;)" executed="True" result="Success" success="True" asserts="0" />
+                              <test-case name="NHibernate.Test.NHSpecificTest.NH2297.Fixture.InvalidCustomCompositeUserTypeThrowsMeaningfulException(&quot;.MappingsTypes.hbm.xml&quot;)" executed="True" result="Success" success="True" asserts="0" />
+                            </results>
+                          </test-suite>
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
                   <test-suite type="Namespace" name="NH2302" executed="True" result="Failure" success="False" asserts="0">
                     <results>
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
@@ -10978,6 +11070,22 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2404.Fixture.ProjectionsShouldWorkWithLinqProviderAndFutures" executed="False" result="Ignored">
                             <reason>
                               <message><![CDATA[Not applicable for dialects that do not support multiple queries]]></message>
+                            </reason>
+                          </test-case>
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                  <test-suite type="Namespace" name="NH2408" executed="True" result="Inconclusive" success="False" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="Fixture" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.NHSpecificTest.NH2408.Fixture does not apply to NHibernate.Dialect.FirebirdDialect]]></message>
+                        </reason>
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2408.Fixture.ShouldGenerateCorrectSqlStatement" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[NHibernate.Test.NHSpecificTest.NH2408.Fixture does not apply to NHibernate.Dialect.FirebirdDialect]]></message>
                             </reason>
                           </test-case>
                         </results>
@@ -11456,8 +11564,8 @@ Foreign key references are present for the record]]></message>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2583.SelfJoinTestFixture.SelfJoinsWorkForNullCompares2" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH2583.MyBO#111][SQL: INSERT INTO MyBO (Name, LeftSonKey, RightSonKey, BO1Key, OtherBO1Key, BO2Key, K1, K2, K3, Id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
-  ----> FirebirdSql.Data.FirebirdClient.FbException : violation of PRIMARY or UNIQUE KEY constraint "INTEG_6898" on table "MYBO"
-  ----> FirebirdSql.Data.Common.IscException : violation of PRIMARY or UNIQUE KEY constraint "INTEG_6898" on table "MYBO"
+  ----> FirebirdSql.Data.FirebirdClient.FbException : violation of PRIMARY or UNIQUE KEY constraint "INTEG_6903" on table "MYBO"
+  ----> FirebirdSql.Data.Common.IscException : violation of PRIMARY or UNIQUE KEY constraint "INTEG_6903" on table "MYBO"
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute update query[SQL: delete from MyBO]
   ----> FirebirdSql.Data.FirebirdClient.FbException : violation of FOREIGN KEY constraint "FK8D29D043FED1656E" on table "MYBO"
 Foreign key references are present for the record
@@ -11468,8 +11576,8 @@ Foreign key references are present for the record]]></message>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2583.SelfJoinTestFixture.SelfJoinsWorkIfBothSidesJoin" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH2583.MyBO#111][SQL: INSERT INTO MyBO (Name, LeftSonKey, RightSonKey, BO1Key, OtherBO1Key, BO2Key, K1, K2, K3, Id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
-  ----> FirebirdSql.Data.FirebirdClient.FbException : violation of PRIMARY or UNIQUE KEY constraint "INTEG_6898" on table "MYBO"
-  ----> FirebirdSql.Data.Common.IscException : violation of PRIMARY or UNIQUE KEY constraint "INTEG_6898" on table "MYBO"
+  ----> FirebirdSql.Data.FirebirdClient.FbException : violation of PRIMARY or UNIQUE KEY constraint "INTEG_6903" on table "MYBO"
+  ----> FirebirdSql.Data.Common.IscException : violation of PRIMARY or UNIQUE KEY constraint "INTEG_6903" on table "MYBO"
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute update query[SQL: delete from MyBO]
   ----> FirebirdSql.Data.FirebirdClient.FbException : violation of FOREIGN KEY constraint "FK8D29D043FED1656E" on table "MYBO"
 Foreign key references are present for the record
@@ -11480,8 +11588,8 @@ Foreign key references are present for the record]]></message>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2583.SelfJoinTestFixture.SelfJoinsWorkIfNothingJoins" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH2583.MyBO#111][SQL: INSERT INTO MyBO (Name, LeftSonKey, RightSonKey, BO1Key, OtherBO1Key, BO2Key, K1, K2, K3, Id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
-  ----> FirebirdSql.Data.FirebirdClient.FbException : violation of PRIMARY or UNIQUE KEY constraint "INTEG_6898" on table "MYBO"
-  ----> FirebirdSql.Data.Common.IscException : violation of PRIMARY or UNIQUE KEY constraint "INTEG_6898" on table "MYBO"
+  ----> FirebirdSql.Data.FirebirdClient.FbException : violation of PRIMARY or UNIQUE KEY constraint "INTEG_6903" on table "MYBO"
+  ----> FirebirdSql.Data.Common.IscException : violation of PRIMARY or UNIQUE KEY constraint "INTEG_6903" on table "MYBO"
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute update query[SQL: delete from MyBO]
   ----> FirebirdSql.Data.FirebirdClient.FbException : violation of FOREIGN KEY constraint "FK8D29D043FED1656E" on table "MYBO"
 Foreign key references are present for the record
@@ -11492,8 +11600,8 @@ Foreign key references are present for the record]]></message>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2583.SelfJoinTestFixture.SelfJoinsWorkIfOneSideJoins" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH2583.MyBO#111][SQL: INSERT INTO MyBO (Name, LeftSonKey, RightSonKey, BO1Key, OtherBO1Key, BO2Key, K1, K2, K3, Id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
-  ----> FirebirdSql.Data.FirebirdClient.FbException : violation of PRIMARY or UNIQUE KEY constraint "INTEG_6898" on table "MYBO"
-  ----> FirebirdSql.Data.Common.IscException : violation of PRIMARY or UNIQUE KEY constraint "INTEG_6898" on table "MYBO"
+  ----> FirebirdSql.Data.FirebirdClient.FbException : violation of PRIMARY or UNIQUE KEY constraint "INTEG_6903" on table "MYBO"
+  ----> FirebirdSql.Data.Common.IscException : violation of PRIMARY or UNIQUE KEY constraint "INTEG_6903" on table "MYBO"
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute update query[SQL: delete from MyBO]
   ----> FirebirdSql.Data.FirebirdClient.FbException : violation of FOREIGN KEY constraint "FK8D29D043FED1656E" on table "MYBO"
 Foreign key references are present for the record
@@ -11540,9 +11648,9 @@ Foreign key references are present for the record]]></message>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2651.Fixture.TestConditionalProjectionWithConstantAndLikeExpression" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ SELECT this_.Id as Id3020_0_, this_.SampleData as SampleData3020_0_ FROM Model this_ WHERE this_.Id = @p0 and (case when this_.SampleData = @p1 then @p2 else @p3 end) like @p4 ]
+[ SELECT this_.Id as Id3109_0_, this_.SampleData as SampleData3109_0_ FROM Model this_ WHERE this_.Id = @p0 and (case when this_.SampleData = @p1 then @p2 else @p3 end) like @p4 ]
   Name:cp0 - Value:1  Name:cp1 - Value:1  Name:cp2 - Value:Foo  Name:cp3 - Value:Bar  Name:cp4 - Value:B%
-[SQL: SELECT this_.Id as Id3020_0_, this_.SampleData as SampleData3020_0_ FROM Model this_ WHERE this_.Id = @p0 and (case when this_.SampleData = @p1 then @p2 else @p3 end) like @p4]
+[SQL: SELECT this_.Id as Id3109_0_, this_.SampleData as SampleData3109_0_ FROM Model this_ WHERE this_.Id = @p0 and (case when this_.SampleData = @p1 then @p2 else @p3 end) like @p4]
   ----> FirebirdSql.Data.FirebirdClient.FbException : Dynamic SQL Error
 SQL error code = -804
 Data type unknown
@@ -11897,6 +12005,16 @@ Data type unknown]]></message>
                       </test-suite>
                     </results>
                   </test-suite>
+                  <test-suite type="Namespace" name="NH2860" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="SampleTest" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2860.SampleTest.Can_LazyPropertyCastingException" executed="True" result="Success" success="True" asserts="0" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2860.SampleTest.Can_LazyPropertyNotCastingException" executed="True" result="Success" success="True" asserts="1" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
                   <test-suite type="Namespace" name="NH2869" executed="True" result="Inconclusive" success="False" asserts="0">
                     <results>
                       <test-suite type="TestFixture" name="Fixture" executed="False" result="Ignored">
@@ -12184,13 +12302,23 @@ Data type unknown]]></message>
                       </test-suite>
                     </results>
                   </test-suite>
+                  <test-suite type="Namespace" name="NH3057" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3057.Fixture.CollectionQueryOnJoinedSubclassInheritedProperty" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3057.Fixture.CollectionQueryOnJoinedSubclassInheritedPropertyHql" executed="True" result="Success" success="True" asserts="2" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
                   <test-suite type="Namespace" name="NH3074" executed="True" result="Inconclusive" success="False" asserts="0">
                     <results>
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Inconclusive" success="False" asserts="0">
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH3074.Fixture.CanSetLockMode" executed="False" result="Ignored">
                             <reason>
-                              <message><![CDATA[Failing]]></message>
+                              <message><![CDATA[Fails on at least Oracle and PostgreSQL. See NH-3074 and NH-2408.]]></message>
                             </reason>
                           </test-case>
                         </results>
@@ -12343,6 +12471,16 @@ Data type unknown]]></message>
                       </test-suite>
                     </results>
                   </test-suite>
+                  <test-suite type="Namespace" name="NH3324" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="FixtureByCode" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3324.FixtureByCode.LeftOuterJoin" executed="True" result="Success" success="True" asserts="1" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3324.FixtureByCode.LeftOuterJoinSetMaxResults" executed="True" result="Success" success="True" asserts="1" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
                   <test-suite type="Namespace" name="NH3332" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-suite type="TestFixture" name="TestJoinsWithSameTable" executed="True" result="Success" success="True" asserts="0">
@@ -12359,6 +12497,33 @@ Data type unknown]]></message>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH335.Fixture.Delete" executed="True" result="Success" success="True" asserts="2" />
                           <test-case name="NHibernate.Test.NHSpecificTest.NH335.Fixture.SelectSubclass" executed="True" result="Success" success="True" asserts="12" />
                           <test-case name="NHibernate.Test.NHSpecificTest.NH335.Fixture.SelectSuperclass" executed="True" result="Success" success="True" asserts="11" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                  <test-suite type="Namespace" name="NH3374" executed="True" result="Inconclusive" success="False" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="ByCodeFixture" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[Not fixed yet.]]></message>
+                        </reason>
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3374.ByCodeFixture.TestNoTargetException" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Not fixed yet.]]></message>
+                            </reason>
+                          </test-case>
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                  <test-suite type="Namespace" name="NH3408" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3408.Fixture.ProjectAnonymousTypeWithArrayProperty" executed="True" result="Success" success="True" asserts="0" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3408.Fixture.ProjectAnonymousTypeWithArrayPropertyWhenByteArrayContains" executed="True" result="Success" success="True" asserts="0" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3408.Fixture.SelectBytePropertyWithArrayPropertyWhenByteArrayContains" executed="True" result="Success" success="True" asserts="0" />
                         </results>
                       </test-suite>
                     </results>
@@ -14669,42 +14834,21 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.TypesTest.CharClassFixture.ReadWrite" executed="True" result="Success" success="True" asserts="0" />
                     </results>
                   </test-suite>
-                  <test-suite type="TestFixture" name="CurrencyTypeFixture" executed="True" result="Error" success="False" asserts="0">
-                    <failure>
-                      <message><![CDATA[NHibernate.HibernateException : Dynamic SQL Error
-SQL error code = -104
-Token unknown - line 1, column 72
-$
-  ----> FirebirdSql.Data.FirebirdClient.FbException : Dynamic SQL Error
-SQL error code = -104
-Token unknown - line 1, column 72
-$
-  ----> FirebirdSql.Data.Common.IscException : Dynamic SQL Error
-SQL error code = -104
-Token unknown - line 1, column 72
-$]]></message>
-                    </failure>
+                  <test-suite type="TestFixture" name="CurrencyTypeFixture" executed="True" result="Failure" success="False" asserts="0">
                     <results>
-                      <test-case name="NHibernate.Test.TypesTest.CurrencyTypeFixture.Equals" executed="True" result="Failure" success="False" asserts="0">
+                      <test-case name="NHibernate.Test.TypesTest.CurrencyTypeFixture.Equals" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.TypesTest.CurrencyTypeFixture.ReadWrite" executed="True" result="Error" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[TestFixtureSetUp failed in CurrencyTypeFixture]]></message>
+                          <message><![CDATA[System.ArgumentException : Invalid data type
+TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itself. session closed: False database cleaned: True connection closed: True]]></message>
                         </failure>
                       </test-case>
-                      <test-case name="NHibernate.Test.TypesTest.CurrencyTypeFixture.ReadWrite" executed="True" result="Failure" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[TestFixtureSetUp failed in CurrencyTypeFixture]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.TypesTest.CurrencyTypeFixture.ShouldBeMoneyType" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[This test does not apply to NHibernate.Dialect.FirebirdDialect]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.TypesTest.CurrencyTypeFixture.ShouldBeMoneyType" executed="True" result="Failure" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[TestFixtureSetUp failed in CurrencyTypeFixture]]></message>
-                        </failure>
-                      </test-case>
-                      <test-case name="NHibernate.Test.TypesTest.CurrencyTypeFixture.UnsavedValue" executed="True" result="Failure" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[TestFixtureSetUp failed in CurrencyTypeFixture]]></message>
-                        </failure>
-                      </test-case>
+                      <test-case name="NHibernate.Test.TypesTest.CurrencyTypeFixture.UnsavedValue" executed="True" result="Success" success="True" asserts="2" />
                     </results>
                   </test-suite>
                   <test-suite type="TestFixture" name="DateTime2TypeFixture" executed="True" result="Success" success="True" asserts="0">

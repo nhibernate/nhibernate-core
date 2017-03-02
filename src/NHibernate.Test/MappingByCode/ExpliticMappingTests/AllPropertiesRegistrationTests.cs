@@ -113,7 +113,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			
 		}
 
-		[Test]
+		[Test, Ignore("Are you crazy man?")]
 		public void WhenMapPropertiesInTheInheritedThenMapInBase()
 		{
 			// without ignoring MyClass as root-class I will try to map all properties using the inherited class.
@@ -186,7 +186,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			hbmClass.Properties.Select(p => p.Access).All(x => x.Satisfy(access => access.Contains("field.")));
 		}
 
-		[Test]
+		[Test, Ignore("Are you crazy man?")]
 		public void WhenMapPropertiesInTheInheritedUsingMemberNameThenMapInBase()
 		{
 			// without ignoring MyClass as root-class I will try to map all properties using the inherited class.

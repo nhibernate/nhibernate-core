@@ -73,11 +73,14 @@ namespace NHibernate.Mapping.ByCode.Impl
 				return;
 			}
 
-			if (_member != null && propertyInTheOtherSide.DeclaringType != _member.GetPropertyOrFieldType())
+			var declaringType = propertyInTheOtherSide.DeclaringType;
+			if (_member != null && !declaringType.IsAssignableFrom(_member.GetPropertyOrFieldType()))
 			{
 				throw new ArgumentOutOfRangeException("propertyInTheOtherSide",
-				                                      string.Format("Expected a member of {0} found the member {1} of {2}", _member.GetPropertyOrFieldType(), propertyInTheOtherSide,
-				                                                    propertyInTheOtherSide.DeclaringType));
+													  string.Format("Expected a member of {0} found the member {1} of {2}",
+																	_member.GetPropertyOrFieldType(),
+																	propertyInTheOtherSide,
+																	declaringType));
 			}
 
 			_oneToOne.propertyref = propertyInTheOtherSide.Name;

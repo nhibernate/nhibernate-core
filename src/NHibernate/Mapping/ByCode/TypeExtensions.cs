@@ -51,7 +51,7 @@ namespace NHibernate.Mapping.ByCode
 				return ((FieldInfo) propertyOrField).FieldType;
 			}
 			throw new ArgumentOutOfRangeException("propertyOrField",
-			                                      "Expected PropertyInfo or FieldInfo; found :" + propertyOrField.MemberType);
+												  "Expected PropertyInfo or FieldInfo; found :" + propertyOrField.MemberType);
 		}
 
 		public static MemberInfo DecodeMemberAccessExpression<TEntity>(Expression<Func<TEntity, object>> expression)
@@ -63,7 +63,7 @@ namespace NHibernate.Mapping.ByCode
 					return ((MemberExpression) ((UnaryExpression) expression.Body).Operand).Member;
 				}
 				throw new Exception(string.Format("Invalid expression type: Expected ExpressionType.MemberAccess, Found {0}",
-				                                  expression.Body.NodeType));
+												  expression.Body.NodeType));
 			}
 			return ((MemberExpression) expression.Body).Member;
 		}
@@ -86,7 +86,7 @@ namespace NHibernate.Mapping.ByCode
 				else
 				{
 					throw new Exception(string.Format("Invalid expression type: Expected ExpressionType.MemberAccess, Found {0}",
-					                                  expression.Body.NodeType));
+													  expression.Body.NodeType));
 				}
 			}
 			else
@@ -110,12 +110,12 @@ namespace NHibernate.Mapping.ByCode
 		{
 			if (expression.Body.NodeType != ExpressionType.MemberAccess)
 			{
-				if ((expression.Body.NodeType == ExpressionType.Convert) && (expression.Body.Type == typeof (object)))
+				if ((expression.Body.NodeType == ExpressionType.Convert) && (expression.Body.Type == typeof(TProperty)))
 				{
 					return ((MemberExpression) ((UnaryExpression) expression.Body).Operand).Member;
 				}
 				throw new Exception(string.Format("Invalid expression type: Expected ExpressionType.MemberAccess, Found {0}",
-				                                  expression.Body.NodeType));
+												  expression.Body.NodeType));
 			}
 			return ((MemberExpression) expression.Body).Member;
 		}
@@ -132,14 +132,14 @@ namespace NHibernate.Mapping.ByCode
 			MemberInfo memberOfDeclaringType;
 			if (expression.Body.NodeType != ExpressionType.MemberAccess)
 			{
-				if ((expression.Body.NodeType == ExpressionType.Convert) && (expression.Body.Type == typeof (object)))
+				if ((expression.Body.NodeType == ExpressionType.Convert) && (expression.Body.Type == typeof(TProperty)))
 				{
 					memberOfDeclaringType = ((MemberExpression) ((UnaryExpression) expression.Body).Operand).Member;
 				}
 				else
 				{
 					throw new Exception(string.Format("Invalid expression type: Expected ExpressionType.MemberAccess, Found {0}",
-					                                  expression.Body.NodeType));
+													  expression.Body.NodeType));
 				}
 			}
 			else
@@ -333,7 +333,7 @@ namespace NHibernate.Mapping.ByCode
 		}
 
 		public static MemberInfo GetFirstPropertyOfType(this System.Type propertyContainerType, System.Type propertyType, BindingFlags bindingFlags,
-		                                                Func<PropertyInfo, bool> acceptPropertyClauses)
+														Func<PropertyInfo, bool> acceptPropertyClauses)
 		{
 			if (acceptPropertyClauses == null)
 			{

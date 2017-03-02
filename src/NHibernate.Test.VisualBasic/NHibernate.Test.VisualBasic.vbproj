@@ -71,6 +71,8 @@
     <Import Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Issues\NH2963\Entity.vb" />
+    <Compile Include="Issues\NH2963\Fixture.vb" />
     <Compile Include="Issues\NH0000\Entity.vb" />
     <Compile Include="Issues\NH0000\Fixture.vb" />
     <Compile Include="Issues\IssueTestCase.vb" />

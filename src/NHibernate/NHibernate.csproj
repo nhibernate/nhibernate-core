@@ -148,6 +148,9 @@
     <Compile Include="Dialect\MsSql2012Dialect.cs" />
     <Compile Include="Dialect\MsSql7Dialect.cs" />
     <Compile Include="Dialect\MsSqlAzure2008Dialect.cs" />
+    <Compile Include="Dialect\MySQL55Dialect.cs" />
+    <Compile Include="Dialect\MySQL55InnoDBDialect.cs" />
+    <Compile Include="Dialect\MySQL5InnoDBDialect.cs" />
     <Compile Include="Dialect\MySQLDialect.cs" />
     <Compile Include="Dialect\PostgreSQLDialect.cs" />
     <Compile Include="Dialect\Schema\PostgreSQLMetadata.cs" />
