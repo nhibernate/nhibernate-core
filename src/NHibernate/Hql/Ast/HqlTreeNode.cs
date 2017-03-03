@@ -322,6 +322,14 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
+	public class HqlNegate : HqlExpression
+	{
+		public HqlNegate(IASTFactory factory, HqlExpression expression)
+			: base(HqlSqlWalker.UNARY_MINUS, "-", factory, expression)
+		{
+		}
+	}
+
 	public class HqlBooleanOr : HqlBooleanExpression
 	{
 		public HqlBooleanOr(IASTFactory factory, HqlBooleanExpression lhs, HqlBooleanExpression rhs)

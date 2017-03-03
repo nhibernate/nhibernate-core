@@ -438,6 +438,10 @@ possible solutions:
 		{
 			switch (expression.NodeType)
 			{
+				case ExpressionType.Negate:
+					return _hqlTreeBuilder.Negate(VisitExpression(expression.Operand).AsExpression());
+				case ExpressionType.UnaryPlus:
+					return VisitExpression(expression.Operand).AsExpression();
 				case ExpressionType.Not:
 					return _hqlTreeBuilder.BooleanNot(VisitExpression(expression.Operand).ToBooleanExpression());
 				case ExpressionType.Convert:

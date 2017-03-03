@@ -124,6 +124,11 @@ namespace NHibernate.Hql.Ast
 			return new HqlDivide(_factory, lhs, rhs);
 		}
 
+		public HqlNegate Negate(HqlExpression expression)
+		{
+			return new HqlNegate(_factory, expression);
+		}
+
 		public HqlDot Dot(HqlExpression lhs, HqlExpression rhs)
 		{
 			return new HqlDot(_factory, lhs, rhs);
