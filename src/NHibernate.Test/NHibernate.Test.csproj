@@ -943,6 +943,7 @@
     <Compile Include="NHSpecificTest\NH3909\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3909\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3957\ResultTransformerEqualityFixture.cs" />
+    <Compile Include="NHSpecificTest\NH3956\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH646\Domain.cs" />
     <Compile Include="NHSpecificTest\NH646\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3234\Fixture.cs" />
