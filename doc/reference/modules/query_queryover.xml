@@ -27,7 +27,7 @@
     <para>
         Note: QueryOver is intended to remove the references to 'magic strings'
         from the ICriteria API while maintaining it's opaqueness.  It is <emphasis role="underline">not</emphasis> a LINQ provider;
-        NHibernate has a built-in Linq provider for this.
+        NHibernate has a built-in <link linkend="querylinq">Linq provider</link> for this.
     </para>
 
     <sect1 id="queryqueryover-querystructure">
