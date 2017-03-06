@@ -13,7 +13,7 @@
         <para>
             NHibernate adds the ability to pre-define filter criteria and attach those filters at both
             a class and a collection level. A filter criteria is the ability to define a restriction clause
-            very similiar to the existing "where" attribute available on the class and various collection
+            very similar to the existing "where" attribute available on the class and various collection
             elements. Except these filter conditions can be parameterized. The application can then make
             the decision at runtime whether given filters should be enabled and what their parameter
             values should be. Filters can be used like database views, but parameterized inside the
@@ -54,7 +54,7 @@
         <para>
             The methods on <literal>ISession</literal> are: <literal>EnableFilter(string filterName)</literal>,
             <literal>GetEnabledFilter(string filterName)</literal>, and <literal>DisableFilter(string filterName)</literal>.
-            By default, filters are <emphasis>not</emphasis> enabled for a given session; they must be explcitly
+            By default, filters are <emphasis>not</emphasis> enabled for a given session; they must be explicitly
             enabled through use of the <literal>ISession.EnableFilter()</literal> method, which returns an
             instance of the <literal>IFilter</literal> interface. Using the simple filter defined above, this
             would look like:

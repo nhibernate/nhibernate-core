@@ -88,7 +88,7 @@
             <para>
                 This element has several optional attributes. The <literal>schema</literal> attribute
                 specifies that tables referred to by this mapping belong to the named schema. If specified, 
-                tablenames will be qualified by the given schema name. If missing, tablenames will be 
+                table names will be qualified by the given schema name. If missing, table names will be 
                 unqualified. The <literal>default-cascade</literal> attribute specifies what cascade style
                 should be assumed for properties and collections which do not specify a 
                 <literal>cascade</literal> attribute. The <literal>auto-import</literal> attribute lets us
@@ -230,7 +230,7 @@
                     <callout arearefs="class3">
                         <para>
                             <literal>discriminator-value</literal> (optional - defaults to the class name): A value
-                            that distiguishes individual subclasses, used for polymorphic behaviour. Acceptable
+                            that distinguishes individual subclasses, used for polymorphic behaviour. Acceptable
                             values include <literal>null</literal> and <literal>not null</literal>.
                         </para>
                     </callout>
@@ -470,7 +470,7 @@
                             (unsaved), distinguishing it from transient instances that were saved or loaded
                             in a previous session.
                         </para>
-                    </callout>            
+                    </callout>
                    <callout arearefs="id5">
                         <para>
                             <literal>access</literal> (optional - defaults to <literal>property</literal>): The
@@ -570,8 +570,8 @@
                                 use this generator with a user-supplied connection.</emphasis>
                             </para>
                             <para>
-								You can use the "where" parameter to specify the row to use in a table. This is useful
-								if you want to use a single tabel for your identifiers, with different rows for each table.
+                                You can use the "where" parameter to specify the row to use in a table. This is useful
+                                if you want to use a single table for your identifiers, with different rows for each table.
                             </para>
                         </listitem>
                         </varlistentry>
@@ -700,7 +700,7 @@
                     The valid values for <literal>format</literal> are described in the MSDN documentation.
                     The default <literal>seperator</literal> is <literal>-</literal> and should rarely be
                     modified.  The <literal>format</literal> determines if the configured
-                    <literal>seperator</literal> can replace the default seperator used by
+                    <literal>seperator</literal> can replace the default separator used by
                     the <literal>format</literal>.
                 </para>
             </sect3>
@@ -776,7 +776,7 @@
                 <para>Starting with NHibernate release 3.3.0, there are 2 new generators which
                 represent a re-thinking of 2 different aspects of identifier
                 generation. The first aspect is database portability; the second is
-                optimization Optimization means that you do not have to query the
+                optimization. Optimization means that you do not have to query the
                 database for every request for a new identifier value. These two new
                 generators are intended to take the place of some of the named
                 generators described above, starting in 3.3.x. However, they are
@@ -1013,7 +1013,7 @@
                 You must instantiate an instance of the persistent class itself and populate its 
                 identifier properties before you can <literal>load()</literal> the persistent state
                 associated with a composite key. We will describe a much more
-                convenient approach where the composite identifier is implemented as a seperate class
+                convenient approach where the composite identifier is implemented as a separate class
                 in <xref linkend="components-compositeid"/>. The attributes described below apply only
                 to this alternative approach:
             </para>
@@ -1367,7 +1367,7 @@
                         <para>
                             <literal>lazy</literal> (optional - defaults to <literal>false</literal>):
                             Specifies that this property is lazy. A lazy property is not loaded when
-                            the object is initially loaded, unless the fetch mode has been overriden
+                            the object is initially loaded, unless the fetch mode has been overridden
                             in a specific query. Values for lazy properties are loaded when any lazy
                             property of the object is accessed.
                         </para>
@@ -1673,7 +1673,7 @@
                             specifies that the mapped columns should be included in SQL <literal>UPDATE</literal> 
                             and/or <literal>INSERT</literal> statements. Setting both to <literal>false</literal>
                             allows a pure "derived" association whose value is initialized from some other
-                            property that maps to the same colum(s) or by a trigger or other application.
+                            property that maps to the same column(s) or by a trigger or other application.
                         </para>
                     </callout>
                     <callout arearefs="manytoone8">
@@ -1699,7 +1699,7 @@
                         <para>
                             <literal>optimistic-lock</literal> (optional - defaults to <literal>true</literal>): 
                             Specifies that updates to this property do or do not require acquisition of the
-                            optimistic lock. In other words, dertermines if a version increment should occur when 
+                            optimistic lock. In other words, determines if a version increment should occur when 
                             this property is dirty.
                         </para>
                     </callout>
@@ -1889,8 +1889,8 @@
 </class>]]></programlisting>
 
             <para>
-                A newly saved instance of <literal>Person</literal> is then assigned the same primar
-                key value as the <literal>Employee</literal> instance refered with the <literal>Employee</literal>
+                A newly saved instance of <literal>Person</literal> is then assigned the same primary
+                key value as the <literal>Employee</literal> instance referred with the <literal>Employee</literal>
                 property of that <literal>Person</literal>.
             </para>
 
@@ -2027,7 +2027,7 @@
 
             <para>
                 The <literal>&lt;component&gt;</literal> element allows a <literal>&lt;parent&gt;</literal>
-                subelement that maps a property of the component class as a reference back to the
+                sub-element that maps a property of the component class as a reference back to the
                 containing entity.
             </para>
 
@@ -2178,19 +2178,19 @@
                         <para>
                             <literal>name</literal>: The fully qualified .NET class name of the
                             subclass, including its assembly name.
-                        </para>              
-                    </callout>                   
+                        </para>
+                    </callout>
                     <callout arearefs="subclass2">
                         <para>
                             <literal>discriminator-value</literal> (optional - defaults to the class name): A
-                            value that distiguishes individual subclasses.
-                        </para>               
+                            value that distinguishes individual subclasses.
+                        </para>
                     </callout>
                     <callout arearefs="subclass3">
                         <para>
                             <literal>proxy</literal> (optional): Specifies a class or interface to use for 
                             lazy initializing proxies.
-                        </para>               
+                        </para>
                     </callout>
                     <callout arearefs="subclass4">
                         <para>
@@ -2247,21 +2247,21 @@
                     <callout arearefs="joinedsubclass1">
                         <para>
                             <literal>name</literal>: The fully qualified class name of the subclass.
-                        </para>            
-                    </callout>                   
+                        </para>
+                    </callout>
                     <callout arearefs="joinedsubclass2">
                         <para>
-                            <literal>proxy</literal> (optional): Specifies a class or interface to use 
+                            <literal>proxy</literal> (optional): Specifies a class or interface to use
                             for lazy initializing proxies.
-                        </para>              
+                        </para>
                     </callout>
                     <callout arearefs="joinedsubclass3">
                         <para>
-                            <literal>lazy</literal> (optional): Setting <literal>lazy="true"</literal> is a shortcut 
-                            equalivalent to specifying the name of the class itself as the <literal>proxy</literal>
+                            <literal>lazy</literal> (optional): Setting <literal>lazy="true"</literal> is a shortcut
+                            equivalent to specifying the name of the class itself as the <literal>proxy</literal>
                             interface.
                         </para>
-                    </callout>    
+                    </callout>
                 </calloutlist>
             </programlistingco>
 
@@ -3042,9 +3042,9 @@
             <title>SQL quoted identifiers</title>
             <para>
                 You may force NHibernate to quote an identifier in the generated SQL by enclosing the table or
-                column name in backticks in the mapping document. NHibernate will use the correct quotation
+                column name in back-ticks in the mapping document. NHibernate will use the correct quotation
                 style for the SQL <literal>Dialect</literal> (usually double quotes, but brackets for SQL
-                Server and backticks for MySQL).
+                Server and back-ticks for MySQL).
             </para>
 
             <programlisting><![CDATA[<class name="LineItem" table="`Line Item`">
@@ -3059,8 +3059,8 @@
        <title>Modular mapping files</title>
        <para>
             It is possible to define <literal>subclass</literal> and <literal>joined-subclass</literal>
-            mappings in seperate mapping documents, directly beneath <literal>hibernate-mapping</literal>.
-            This allows you to extend a class hierachy just by adding a new mapping file. You must
+            mappings in separate mapping documents, directly beneath <literal>hibernate-mapping</literal>.
+            This allows you to extend a class hierarchy just by adding a new mapping file. You must
             specify an <literal>extends</literal> attribute in the subclass mapping, naming a previously
             mapped superclass. Use of this feature makes the ordering of the mapping documents important!
         </para>
@@ -3087,7 +3087,7 @@
             issues a select afterwards to retrieve the generated values.
         </para>
         <para>
-            Properties marked as generated must additionally be non-insertable and non-updateable.
+            Properties marked as generated must additionally be non-insertable and non-updatable.
             Only <xref linkend="mapping-declaration-version">versions</xref>,
             <xref linkend="mapping-declaration-timestamp">timestamps</xref>, and
             <xref linkend="mapping-declaration-property">simple properties</xref> can be marked as
