@@ -36,7 +36,8 @@ namespace NHibernate.Linq.Functions
 
 					ReflectionHelper.GetMethodDefinition<Guid>(x => x.Equals(x)),
 					ReflectionHelper.GetMethodDefinition<DateTime>(x => x.Equals(x)),
-					ReflectionHelper.GetMethodDefinition<DateTimeOffset>(x => x.Equals(x))
+					ReflectionHelper.GetMethodDefinition<DateTimeOffset>(x => x.Equals(x)),
+					ReflectionHelper.GetMethodDefinition<bool>(x => x.Equals(default(bool)))
 				};
 		}
 
@@ -46,30 +47,8 @@ namespace NHibernate.Linq.Functions
 			Expression rhs = arguments.Count == 1 ? arguments[0] : arguments[1];
 
 			return treeBuilder.Equality(
-				visitor.Visit(lhs).AsExpression(),
-				visitor.Visit(rhs).AsExpression());
+				visitor.Visit(lhs).ToArithmeticExpression(),
+				visitor.Visit(rhs).ToArithmeticExpression());
 		}
 	}
-
-	public class BoolEqualsGenerator : BaseHqlGeneratorForMethod
-	{
-		public BoolEqualsGenerator()
-		{
-			SupportedMethods = new[]
-								{
-									ReflectionHelper.GetMethodDefinition<bool>(x => x.Equals(default(bool)))
-								};
-		}
-
-		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
-		{
-			// HqlGeneratorExpressionTreeVisitor.VisitConstantExpression will always return an HqlEquality 
-			// instead of HqlParameter for argument that is of type bool.
-			// Use the HqlParameter that exists as first children to the HqlEquality as second argument into treeBuilder.Equality
-			return treeBuilder.Equality(
-				visitor.Visit(targetObject).AsExpression(),
-				visitor.Visit(arguments[0]).Children.First().AsExpression());
-		}
-	}
-
 }

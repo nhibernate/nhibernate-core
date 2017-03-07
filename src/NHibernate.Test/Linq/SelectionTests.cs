@@ -451,6 +451,35 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void CanSelectConditionalEntityWithCast()
+		{
+			var fatherInsteadOfChild = db.Mammals.Select(a => a.Father.SerialNumber == "5678" ? (object)a.Father : (object)a).ToList();
+			Assert.That(fatherInsteadOfChild, Has.Exactly(2).With.Property("SerialNumber").EqualTo("5678"));
+		}
+
+		[Test]
+		public void CanSelectConditionalEntityValue()
+		{
+			var fatherInsteadOfChild = db.Animals.Select(a => a.Father.SerialNumber == "5678" ? a.Father.SerialNumber : a.SerialNumber).ToList();
+			Assert.That(fatherInsteadOfChild, Has.Exactly(2).EqualTo("5678"));
+		}
+
+		[Test]
+		public void CanSelectConditionalEntityValueWithEntityComparison()
+		{
+			var father = db.Animals.Single(a => a.SerialNumber == "5678");
+			var fatherInsteadOfChild = db.Animals.Select(a => a.Father == father ? a.Father.SerialNumber : a.SerialNumber).ToList();
+			Assert.That(fatherInsteadOfChild, Has.Exactly(2).EqualTo("5678"));
+		}
+
+		[Test]
+		public void CanSelectConditionalEntityValueWithEntityComparisonRepeat()
+		{
+			// Check again in the same ISessionFactory to ensure caching doesn't cause failures
+			CanSelectConditionalEntityValueWithEntityComparison();
+		}
+
+		[Test]
 		public void CanSelectConditionalObject()
 		{
 			var fatherIsKnown = db.Animals.Select(a => new { a.SerialNumber, Superior = a.Father.SerialNumber, FatherIsKnown = a.Father.SerialNumber == "5678" ? (object)true : (object)false }).ToList();

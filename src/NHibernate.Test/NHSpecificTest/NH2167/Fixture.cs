@@ -1,5 +1,6 @@
 ﻿using NHibernate.Cfg.MappingSchema;
 using NHibernate.Criterion;
+using NHibernate.Dialect;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
@@ -7,6 +8,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2167
 {
 	public class Fixture : TestCaseMappingByCode
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is FirebirdDialect);
+		}
+
 		protected override HbmMapping GetMappings()
 		{
 			var mapper = new ModelMapper();

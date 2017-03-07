@@ -4,9 +4,9 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1355
 {
-	//http://jira.nhibernate.org/browse/NH-1355
-	//http://jira.nhibernate.org/browse/NH-1377
-	//http://jira.nhibernate.org/browse/NH-1379
+	//http://nhibernate.jira.com/browse/NH-1355
+	//http://nhibernate.jira.com/browse/NH-1377
+	//http://nhibernate.jira.com/browse/NH-1379
 	[TestFixture]
 	public class CustomVersionType
 	{

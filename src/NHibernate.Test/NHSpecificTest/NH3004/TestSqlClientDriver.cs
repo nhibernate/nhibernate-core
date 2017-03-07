@@ -1,4 +1,3 @@
-using System.Data;
 using System.Data.SqlClient;
 using NHibernate.AdoNet;
 using NHibernate.Dialect;

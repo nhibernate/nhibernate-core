@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Linq.Expressions;
+using NHibernate.Linq.ReWriters;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
 using Remotion.Linq.Parsing;
@@ -69,6 +70,19 @@ namespace NHibernate.Linq.GroupBy
 			// If the (sub)expression contains a QuerySourceReference, then the entire expression should be nominated
 			_requiresRootNomination = true;
 			return base.VisitSubQueryExpression(expression);
+		}
+
+		protected override Expression VisitBinaryExpression(BinaryExpression expression)
+		{
+			if (expression.NodeType != ExpressionType.ArrayIndex) 
+				return base.VisitBinaryExpression(expression);
+			
+			// If we encounter an array index then we need to attempt to flatten it before nomination
+			var flattenedExpression = new ArrayIndexExpressionFlattener().VisitExpression(expression);
+			if (flattenedExpression != expression)
+				return base.VisitExpression(flattenedExpression);
+
+			return base.VisitBinaryExpression(expression);
 		}
 	}
 }

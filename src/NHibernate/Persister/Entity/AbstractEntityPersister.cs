@@ -104,7 +104,7 @@ namespace NHibernate.Persister.Entity
 				get { return entity; }
 			}
 
-			public virtual void BindValues(IDbCommand ps)
+			public virtual void BindValues(DbCommand ps)
 			{
 				entityPersister.Dehydrate(null, fields, notNull, entityPersister.propertyColumnInsertable, 0, ps, session);
 			}
@@ -1008,11 +1008,12 @@ namespace NHibernate.Persister.Entity
 			get { return entityMetamodel.NaturalIdentifierProperties; }
 		}
 
-		public abstract string[][] ContraintOrderedTableKeyColumnClosure { get;}
+		public abstract string[][] ConstraintOrderedTableKeyColumnClosure { get;}
 		public abstract IType DiscriminatorType { get;}
 		public abstract string[] ConstraintOrderedTableNameClosure { get;}
 		public abstract string DiscriminatorSQLValue { get;}
 		public abstract object DiscriminatorValue { get;}
+		public abstract string[] SubclassClosure { get; }
 		public abstract string[] PropertySpaces { get;}
 
 		protected virtual void AddDiscriminatorToInsert(SqlInsertBuilder insert) { }
@@ -1280,8 +1281,8 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				object result = null;
-				IDbCommand ps = null;
-				IDataReader rs = null;
+				DbCommand ps = null;
+				DbDataReader rs = null;
 				try
 				{
 					SqlString lazySelect = SQLLazySelectString;
@@ -1456,8 +1457,8 @@ namespace NHibernate.Persister.Entity
 			using (new SessionIdLoggingContext(session.SessionId))
 			try
 			{
-				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, SQLSnapshotSelectString, IdentifierType.SqlTypes(factory));
-				IDataReader rs = null;
+				var st = session.Batcher.PrepareCommand(CommandType.Text, SQLSnapshotSelectString, IdentifierType.SqlTypes(factory));
+				DbDataReader rs = null;
 				try
 				{
 					IdentifierType.NullSafeSet(st, id, 0, session);
@@ -1657,7 +1658,7 @@ namespace NHibernate.Persister.Entity
 			SqlCommandInfo versionIncrementCommand = GenerateVersionIncrementUpdateString();
 			try
 			{
-				IDbCommand st = session.Batcher.PrepareCommand(versionIncrementCommand.CommandType, versionIncrementCommand.Text, versionIncrementCommand.ParameterTypes);
+				var st = session.Batcher.PrepareCommand(versionIncrementCommand.CommandType, versionIncrementCommand.Text, versionIncrementCommand.ParameterTypes);
 				try
 				{
 					VersionType.NullSafeSet(st, nextVersion, 0, session);
@@ -1711,8 +1712,8 @@ namespace NHibernate.Persister.Entity
 			using(new SessionIdLoggingContext(session.SessionId))
 			try
 			{
-				IDbCommand st = session.Batcher.PrepareQueryCommand(CommandType.Text, VersionSelectString, IdentifierType.SqlTypes(Factory));
-				IDataReader rs = null;
+				var st = session.Batcher.PrepareQueryCommand(CommandType.Text, VersionSelectString, IdentifierType.SqlTypes(Factory));
+				DbDataReader rs = null;
 				try
 				{
 					IdentifierType.NullSafeSet(st, id, 0, session);
@@ -2207,7 +2208,7 @@ namespace NHibernate.Persister.Entity
 			return CreateEntityLoader(lockMode, new CollectionHelper.EmptyMapClass<string, IFilter>());
 		}
 
-		protected bool Check(int rows, object id, int tableNumber, IExpectation expectation, IDbCommand statement)
+		protected bool Check(int rows, object id, int tableNumber, IExpectation expectation, DbCommand statement)
 		{
 			try
 			{
@@ -2428,14 +2429,14 @@ namespace NHibernate.Persister.Entity
 			return deleteBuilder.ToSqlCommandInfo();
 		}
 
-		protected int Dehydrate(object id, object[] fields, bool[] includeProperty, bool[][] includeColumns, int j, IDbCommand st, ISessionImplementor session)
+		protected int Dehydrate(object id, object[] fields, bool[] includeProperty, bool[][] includeColumns, int j, DbCommand st, ISessionImplementor session)
 		{
 			return Dehydrate(id, fields, null, includeProperty, includeColumns, j, st, session, 0);
 		}
 
 		/// <summary> Marshall the fields of a persistent instance to a prepared statement</summary>
 		protected int Dehydrate(object id, object[] fields, object rowId, bool[] includeProperty, bool[][] includeColumns, int table,
-			IDbCommand statement, ISessionImplementor session, int index)
+			DbCommand statement, ISessionImplementor session, int index)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -2482,7 +2483,7 @@ namespace NHibernate.Persister.Entity
 		/// Unmarshall the fields of a persistent instance from a result set,
 		/// without resolving associations or collections
 		/// </summary>
-		public object[] Hydrate(IDataReader rs, object id, object obj, ILoadable rootLoadable,
+		public object[] Hydrate(DbDataReader rs, object id, object obj, ILoadable rootLoadable,
 			string[][] suffixedPropertyColumns, bool allProperties, ISessionImplementor session)
 		{
 			if (log.IsDebugEnabled)
@@ -2493,8 +2494,8 @@ namespace NHibernate.Persister.Entity
 			AbstractEntityPersister rootPersister = (AbstractEntityPersister)rootLoadable;
 
 			bool hasDeferred = rootPersister.HasSequentialSelect;
-			IDbCommand sequentialSelect = null;
-			IDataReader sequentialResultSet = null;
+			DbCommand sequentialSelect = null;
+			DbDataReader sequentialResultSet = null;
 			bool sequentialSelectEmpty = false;
 			using (new SessionIdLoggingContext(session.SessionId)) 
 			try
@@ -2559,7 +2560,7 @@ namespace NHibernate.Persister.Entity
 						}
 						else
 						{
-							IDataReader propertyResultSet = propertyIsDeferred ? sequentialResultSet : rs;
+							var propertyResultSet = propertyIsDeferred ? sequentialResultSet : rs;
 							string[] cols = propertyIsDeferred ? propertyColumnAliases[i] : suffixedPropertyColumns[i];
 							values[i] = types[i].Hydrate(propertyResultSet, cols, session, obj);
 						}
@@ -2672,9 +2673,9 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				// Render the SQL query
-				IDbCommand insertCmd = useBatch
-																? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes)
-																: session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
+				var insertCmd = useBatch
+					? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes)
+					: session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
 
 				try
 				{
@@ -2784,9 +2785,9 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				int index = 0;
-				IDbCommand statement = useBatch
-																? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes)
-																: session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
+				var statement = useBatch
+					? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes)
+					: session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
 				try
 				{
 					//index += expectation.Prepare(statement, factory.ConnectionProvider.Driver);
@@ -2914,15 +2915,9 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				int index = 0;
-				IDbCommand statement;
-				if (useBatch)
-				{
-					statement = session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
-				}
-				else
-				{
-					statement = session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
-				}
+				var statement = useBatch 
+					? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes) 
+					: session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
 
 				try
 				{
@@ -4132,9 +4127,8 @@ namespace NHibernate.Persister.Entity
 			using (new SessionIdLoggingContext(session.SessionId)) 
 			try
 			{
-				IDbCommand cmd =
-					session.Batcher.PrepareQueryCommand(CommandType.Text, selectionSQL, IdentifierType.SqlTypes(Factory));
-				IDataReader rs = null;
+				var cmd = session.Batcher.PrepareQueryCommand(CommandType.Text, selectionSQL, IdentifierType.SqlTypes(Factory));
+				DbDataReader rs = null;
 				try
 				{
 					IdentifierType.NullSafeSet(cmd, id, 0, session);
@@ -4240,8 +4234,8 @@ namespace NHibernate.Persister.Entity
 			using (new SessionIdLoggingContext(session.SessionId)) 
 			try
 			{
-				IDbCommand ps = session.Batcher.PrepareCommand(CommandType.Text, sql, IdentifierType.SqlTypes(factory));
-				IDataReader rs = null;
+				var ps = session.Batcher.PrepareCommand(CommandType.Text, sql, IdentifierType.SqlTypes(factory));
+				DbDataReader rs = null;
 				try
 				{
 					IdentifierType.NullSafeSet(ps, id, 0, session);

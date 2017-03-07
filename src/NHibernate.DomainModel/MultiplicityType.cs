@@ -1,5 +1,5 @@
 using System;
-using System.Data;
+using System.Data.Common;
 using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -74,7 +74,7 @@ namespace NHibernate.DomainModel
 			}
 		}
 
-		public object NullSafeGet(IDataReader rs, String[] names, ISessionImplementor session, Object owner)
+		public object NullSafeGet(DbDataReader rs, String[] names, ISessionImplementor session, Object owner)
 		{
 			int c = (int) NHibernateUtil.Int32.NullSafeGet(rs, names[0], session, owner);
 			GlarchProxy g = (GlarchProxy) NHibernateUtil.Entity(typeof(Glarch)).NullSafeGet(rs, names[1], session, owner);
@@ -84,7 +84,7 @@ namespace NHibernate.DomainModel
 			return m;
 		}
 
-		public void NullSafeSet(IDbCommand st, Object value, int index, bool[] settable, ISessionImplementor session)
+		public void NullSafeSet(DbCommand st, Object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			Multiplicity o = (Multiplicity) value;
 			GlarchProxy g;

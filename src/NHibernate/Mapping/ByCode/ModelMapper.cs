@@ -1300,7 +1300,7 @@ namespace NHibernate.Mapping.ByCode
 			}
 			if (modelInspector.IsComponent(collectionElementType))
 			{
-				return new ComponentRelationMapper(property, ownerType, collectionElementType, membersProvider, modelInspector, customizerHolder, this);
+				return new ComponentRelationMapper(propertyPath, ownerType, collectionElementType, membersProvider, modelInspector, customizerHolder, this);
 			}
 			if (modelInspector.IsManyToAny(property))
 			{
@@ -1327,7 +1327,7 @@ namespace NHibernate.Mapping.ByCode
 
 		private class ComponentRelationMapper : ICollectionElementRelationMapper
 		{
-			private readonly MemberInfo collectionMember;
+			private readonly PropertyPath propertyPath;
 			private readonly System.Type componentType;
 			private readonly ICustomizersHolder customizersHolder;
 			private readonly IModelInspector domainInspector;
@@ -1335,10 +1335,10 @@ namespace NHibernate.Mapping.ByCode
 			private readonly ModelMapper modelMapper;
 			private readonly System.Type ownerType;
 
-			public ComponentRelationMapper(MemberInfo collectionMember, System.Type ownerType, System.Type componentType, ICandidatePersistentMembersProvider membersProvider,
+			public ComponentRelationMapper(PropertyPath propertyPath, System.Type ownerType, System.Type componentType, ICandidatePersistentMembersProvider membersProvider,
 			                               IModelInspector domainInspector, ICustomizersHolder customizersHolder, ModelMapper modelMapper)
 			{
-				this.collectionMember = collectionMember;
+				this.propertyPath = propertyPath;
 				this.ownerType = ownerType;
 				this.componentType = componentType;
 				this.membersProvider = membersProvider;
@@ -1362,7 +1362,6 @@ namespace NHibernate.Mapping.ByCode
 														 }
 														 customizersHolder.InvokeCustomizers(componentType, x);
 
-														 var propertyPath = new PropertyPath(null, collectionMember);
 														 MapProperties(componentType, propertyPath, x, persistentProperties.Where(pi => pi != parentReferenceProperty));
 													 });
 			}
@@ -1379,7 +1378,6 @@ namespace NHibernate.Mapping.ByCode
 
 			private void MapProperties(System.Type type, PropertyPath memberPath, IComponentElementMapper propertiesContainer, IEnumerable<MemberInfo> persistentProperties)
 			{
-				// TODO check PropertyPath behaviour when the component is in a collection
 				foreach (MemberInfo property in persistentProperties)
 				{
 					MemberInfo member = property;

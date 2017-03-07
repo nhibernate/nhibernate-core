@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Data;
+using System.Data.Common;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Linq;
@@ -43,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2839
 			return x.GetHashCode();
 		}
 
-		public object NullSafeGet(IDataReader rs, string[] names, object owner)
+		public object NullSafeGet(DbDataReader rs, string[] names, object owner)
 		{
 			var ordinal = rs.GetOrdinal(names[0]);
 			if (rs.IsDBNull(ordinal))
@@ -51,9 +51,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2839
 			return rs.GetInt32(ordinal) == 1;
 		}
 
-		public void NullSafeSet(IDbCommand cmd, object value, int index)
+		public void NullSafeSet(DbCommand cmd, object value, int index)
 		{
-			((IDbDataParameter) cmd.Parameters[index]).Value = ((bool) value) ? 1 : -1;
+			cmd.Parameters[index].Value = ((bool) value) ? 1 : -1;
 		}
 
 		public object DeepCopy(object value)

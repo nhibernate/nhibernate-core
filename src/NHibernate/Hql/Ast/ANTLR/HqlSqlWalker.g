@@ -123,11 +123,16 @@ query
 // The query / subquery rule. Pops the current 'from node' context 
 // (list of aliases).
 unionedQuery!
+	@init{
+		bool oldInSelect = _inSelect;
+		_inSelect = false;
+	}
 	@after {
 		// Antlr note: #x_in refers to the input AST, #x refers to the output AST
 		BeforeStatementCompletion( "select" );
 		ProcessQuery( $s.tree, $unionedQuery.tree );
 		AfterStatementCompletion( "select" );
+		_inSelect = oldInSelect;
 	}
 	: ^( QUERY { BeforeStatement( "select", SELECT ); }
 			// The first phase places the FROM first to make processing the SELECT simpler.
@@ -146,7 +151,7 @@ unionedQuery!
 	;
 
 orderClause
-	: ^(ORDER { HandleClauseStart( ORDER ); } (orderExprs | query (ASCENDING | DESCENDING)? ))
+	: ^(ORDER { HandleClauseStart( ORDER ); } (orderExprs))
 	;
 
 orderExprs
@@ -156,6 +161,7 @@ orderExprs
 orderExpr
 	: { IsOrderExpressionResultVariableRef( (IASTNode) input.LT(1) ) }? resultVariableRef
 	| expr
+	| query
 	;
 
 resultVariableRef!
@@ -188,11 +194,10 @@ selectClause!
 	;
 
 selectExprList @init{
-		bool oldInSelect = _inSelect;
 		_inSelect = true;
 	}
 	: ( selectExpr | aliasedSelectExpr )+ {
-		_inSelect = oldInSelect;
+		_inSelect = false;
 	}
 	;
 

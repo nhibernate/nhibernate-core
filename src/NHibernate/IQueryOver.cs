@@ -211,6 +211,11 @@ namespace NHibernate
 		IQueryOver<TRoot,TSubType> AndNot(Expression<Func<bool>> expression);
 
 		/// <summary>
+		/// Add negation of criterion expressed as ICriterion
+		/// </summary>
+		IQueryOver<TRoot, TSubType> AndNot(ICriterion expression);
+
+		/// <summary>
 		/// Add restriction to a property
 		/// </summary>
 		/// <param name="expression">Lambda expression containing path to property</param>
@@ -256,6 +261,11 @@ namespace NHibernate
 		/// <param name="expression">Lambda expression</param>
 		/// <returns>criteria instance</returns>
 		IQueryOver<TRoot,TSubType> WhereNot(Expression<Func<bool>> expression);
+
+		/// <summary>
+		/// Identical semantics to AndNot() to allow more readable queries
+		/// </summary>
+		IQueryOver<TRoot, TSubType> WhereNot(ICriterion expression);
 
 		/// <summary>
 		/// Identical semantics to AndRestrictionOn() to allow more readable queries

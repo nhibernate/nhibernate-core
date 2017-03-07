@@ -82,6 +82,8 @@ Since you now have a failing test case, it should be straight-forward to step in
 
 Once you've made changes to the NHibernate code base, you'll want to ensure that you haven't caused any previously passing tests to fail. The easiest way to check this is to select option D from the build menu, ensure the root tree node is selected, then press run to have all the tests run. 
 
+Please note that some tests assume a case insensitive accent sensitive database when performing string comparison. Some tests assume SQL user locales to be en-US. They will fail otherwise. With SQL Server, collation with supplementary characters (\_SC suffix on collation name) are no supported by legacy tests on "text" types.
+
 ## Submit a Pull Request
 
 Be sure to link to the JIRA issue in your GitHub pull request. Also, go back to your JIRA issue and link to the pull request. 

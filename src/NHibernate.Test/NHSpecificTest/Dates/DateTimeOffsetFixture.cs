@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Data;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Xml.Serialization;
 using NHibernate.Driver;
 using NHibernate.Type;
 using NUnit.Framework;
@@ -101,5 +104,32 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 			Assert.That(type.Seed(null), Is.TypeOf<DateTimeOffset>());
 		}
 
+		[Test(Description = "NH-3842")]
+		public void DefaultValueDoesNotThrowException()
+		{
+			var type = NHibernateUtil.DateTimeOffset;
+
+			Assert.That(() => type.DefaultValue, Throws.Nothing);
+		}
+
+		[Test(Description = "NH-3842")]
+		public void CanBinarySerialize()
+		{
+			var type = NHibernateUtil.DateTimeOffset;
+
+			var formatter = new BinaryFormatter();
+
+			Assert.That(() => formatter.Serialize(Stream.Null, type), Throws.Nothing);
+		}
+
+		[Test(Description = "NH-3842")]
+		public void CanXmlSerialize()
+		{
+			var type = NHibernateUtil.DateTimeOffset;
+
+			var formatter = new XmlSerializer(typeof(DateTimeOffsetType));
+
+			Assert.That(() => formatter.Serialize(Stream.Null, type), Throws.Nothing);
+		}
 	}
 }

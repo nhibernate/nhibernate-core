@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Text.RegularExpressions;
 using NHibernate.Dialect;
+using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 
@@ -14,7 +16,7 @@ namespace NHibernate.Driver
 	/// </summary>
 	public class FirebirdClientDriver : ReflectionBasedDriver
 	{
-		private const string SELECT_CLAUSE_EXP = "(?<=select|where).*";
+		private const string SELECT_CLAUSE_EXP = @"(?<=\bselect|\bwhere).*";
 		private const string CAST_PARAMS_EXP = @"(?<![=<>]\s?|first\s?|skip\s?|between\s|between\s@\bp\w+\b\sand\s)@\bp\w+\b(?!\s?[=<>])";
 		private readonly Regex _statementRegEx = new Regex(SELECT_CLAUSE_EXP, RegexOptions.IgnoreCase);
 		private readonly Regex _castCandidateRegEx = new Regex(CAST_PARAMS_EXP, RegexOptions.IgnoreCase);
@@ -50,7 +52,7 @@ namespace NHibernate.Driver
 			get { return "@"; }
 		}
 
-		protected override void InitializeParameter(IDbDataParameter dbParam, string name, SqlType sqlType)
+		protected override void InitializeParameter(DbParameter dbParam, string name, SqlType sqlType)
 		{
 			var convertedSqlType = sqlType;
 			if (convertedSqlType.DbType == DbType.Currency)
@@ -59,38 +61,42 @@ namespace NHibernate.Driver
 			base.InitializeParameter(dbParam, name, convertedSqlType);
 		}
 
-		public override void AdjustCommand(IDbCommand command)
+		public override DbCommand GenerateCommand(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
 		{
-			var expWithParams = GetStatementsWithCastCandidates(command.CommandText);
-			if (string.IsNullOrWhiteSpace(expWithParams))
-				return;
+			var command = base.GenerateCommand(type, sqlString, parameterTypes);
 
-			var candidates = GetCastCandidates(expWithParams);
-			var castParams = from IDbDataParameter p in command.Parameters
-							 where candidates.Contains(p.ParameterName)
-							 select p;
-			foreach (IDbDataParameter param in castParams)
+			var expWithParams = GetStatementsWithCastCandidates(command.CommandText);
+			if (!string.IsNullOrWhiteSpace(expWithParams))
 			{
-				TypeCastParam(param, command);
+				var candidates = GetCastCandidates(expWithParams);
+				var castParams = from DbParameter p in command.Parameters
+								 where candidates.Contains(p.ParameterName)
+								 select p;
+				foreach (var param in castParams)
+				{
+					TypeCastParam(param, command);
+				}
 			}
+
+			return command;
 		}
 
 		private string GetStatementsWithCastCandidates(string commandText)
 		{
-			var match = _statementRegEx.Match(commandText);
-			return match.Value;
+			return _statementRegEx.Match(commandText).Value;
 		}
 
-		private IEnumerable<string> GetCastCandidates(string statement)
+		private HashSet<string> GetCastCandidates(string statement)
 		{
-			var matches = _castCandidateRegEx.Matches(statement);
-			foreach (Match match in matches)
-			{
-				yield return match.Value;
-			}
+			var candidates =
+				_castCandidateRegEx
+					.Matches(statement)
+					.Cast<Match>()
+					.Select(match => match.Value);
+			return new HashSet<string>(candidates);
 		}
 
-		private void TypeCastParam(IDbDataParameter param, IDbCommand command)
+		private void TypeCastParam(DbParameter param, DbCommand command)
 		{
 			var castType = GetFbTypeFromDbType(param.DbType);
 			command.CommandText = command.CommandText.ReplaceWholeWord(param.ParameterName, string.Format("cast({0} as {1})", param.ParameterName, castType));

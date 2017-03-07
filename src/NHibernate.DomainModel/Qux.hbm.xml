@@ -17,7 +17,7 @@
 		
 		<property name="Deleted" />
 		<property name="Loaded" />
-		<property name="Stored" />
+		<property name="Stored" column="Stored_"/>
 		<property name="Created" />
 		<property name="ChildKey" type="Int64" />
 		<property name="Stuff" />

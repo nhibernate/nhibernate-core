@@ -151,7 +151,7 @@ public class AuditInterceptor : EmptyInterceptor {
             event and passes it to the configured event listeners for that type. Out-of-the-box,
             these listeners implement the same processing in which those methods always resulted.
             However, you are free to implement a customization of one of the listener interfaces
-            (i.e., the <literal>LoadEvent</literal> is processed by the registered implemenation
+            (i.e., the <literal>LoadEvent</literal> is processed by the registered implementation
             of the <literal>ILoadEventListener</literal> interface), in which case their
             implementation would be responsible for processing any <literal>Load()</literal> requests
             made of the <literal>ISession</literal>.

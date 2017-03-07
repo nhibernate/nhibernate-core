@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Criterion;
 using NHibernate.Type;
 using NUnit.Framework;
@@ -102,7 +103,7 @@ namespace NHibernate.Test.TypesTest
 			row["guid"] = value;
 			row["varchar"] = value.ToString();
 			data.Rows.Add(row);
-			IDataReader reader = data.CreateDataReader();
+			var reader = data.CreateDataReader();
 			reader.Read();
 
 			Assert.AreEqual(value, type.Get(reader, "guid"));

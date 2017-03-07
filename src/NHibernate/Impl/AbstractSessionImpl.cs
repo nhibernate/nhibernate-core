@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
@@ -258,7 +258,7 @@ namespace NHibernate.Impl
 		public abstract string FetchProfile { get; set; }
 		public abstract string BestGuessEntityName(object entity);
 		public abstract string GuessEntityName(object entity);
-		public abstract IDbConnection Connection { get; }
+		public abstract DbConnection Connection { get; }
 		public abstract int ExecuteNativeUpdate(NativeSQLQuerySpecification specification, QueryParameters queryParameters);
 		public abstract FutureCriteriaBatch FutureCriteriaBatch { get; protected internal set; }
 		public abstract FutureQueryBatch FutureQueryBatch { get; protected internal set; }
