@@ -221,12 +221,12 @@ namespace NHibernate
 		public static readonly TicksType Ticks = new TicksType();
 
 		/// <summary>
-		/// NHibernate Ticks type
+		/// NHibernate TimeAsTimeSpan type
 		/// </summary>
 		public static readonly TimeAsTimeSpanType TimeAsTimeSpan = new TimeAsTimeSpanType();
 
 		/// <summary>
-		/// NHibernate Ticks type
+		/// NHibernate TimeSpan type
 		/// </summary>
 		public static readonly TimeSpanType TimeSpan = new TimeSpanType();
 
@@ -278,13 +278,24 @@ namespace NHibernate
 		//		/// </summary>
 		//		public static readonly NullableType Clob = new ClobType();
 
-
+		/// <summary>
+		/// NHibernate AnsiChar type
+		/// </summary>
 		public static readonly AnsiCharType AnsiChar = new AnsiCharType();
 
+		/// <summary>
+		/// NHibernate XmlDoc type
+		/// </summary>
 		public static readonly XmlDocType XmlDoc = new XmlDocType();
 
+		/// <summary>
+		/// NHibernate XDoc type
+		/// </summary>
 		public static readonly XDocType XDoc = new XDocType();
 
+		/// <summary>
+		/// NHibernate Uri type
+		/// </summary>
 		public static readonly UriType Uri = new UriType();
 
 		/// <summary>

@@ -158,7 +158,7 @@ session.Close();]]></programlisting>
             </listitem>
             <listitem>
                 <para>
-                    No <link linkend="queryhql-joins-forms">joins</link> (either implicit or explicit)
+                    No <link linkend="queryhql-joins">joins</link> (either implicit or explicit)
 	                can be specified in a bulk HQL query.  Sub-queries may be used in the where-clause;
 	                the subqueries, themselves, may contain joins.
                 </para>

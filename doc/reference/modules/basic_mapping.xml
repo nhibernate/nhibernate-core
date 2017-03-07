@@ -2623,6 +2623,12 @@
                             <entry>Default when no <literal>type</literal> attribute specified.</entry>
                         </row>
                         <row>
+                            <entry><literal>Currency</literal></entry>
+                            <entry><literal>System.Decimal</literal></entry>
+                            <entry><literal>DbType.Currency</literal></entry>
+                            <entry><literal>type="Currency"</literal> must be specified.</entry>
+                        </row>
+                        <row>
                             <entry><literal>Date</literal></entry>
                             <entry><literal>System.DateTime</literal></entry>
                             <entry><literal>DbType.Date</literal></entry>
@@ -2641,24 +2647,30 @@
                             <entry><literal>type="DateTime2"</literal> must be specified.</entry>
                         </row>
                         <row>
+                            <entry><literal>DateTimeOffset</literal></entry>
+                            <entry><literal>System.DateTimeOffset</literal></entry>
+                            <entry><literal>DbType.DateTimeOffset</literal></entry>
+                            <entry>Default when no <literal>type</literal> attribute specified.</entry>
+                        </row>
+                        <row>
                             <entry><literal>DbTimestamp</literal></entry>
                             <entry><literal>System.DateTime</literal></entry>
                             <entry><literal>DbType.DateTime</literal> - as specific as database supports.</entry>
                             <entry><literal>type="DbTimestamp"</literal> must be specified.  When used as a <literal>version</literal> field, uses the database's current time rather than the client's current time.</entry>
                         </row>
-                      <row>
-                        <entry><literal>LocalDateTime</literal></entry>
-                        <entry><literal>System.DateTime</literal></entry>
-                        <entry><literal>DbType.DateTime</literal> - ignores the milliseconds</entry>
-                        <entry>Ensures the <literal>DateTimeKind</literal> is set to <literal>DateTimeKind.Local</literal></entry>
-                      </row>
-                      <row>
-                        <entry><literal>UtcDateTime</literal></entry>
-                        <entry><literal>System.DateTime</literal></entry>
-                        <entry><literal>DbType.DateTime</literal> - ignores the milliseconds</entry>
-                        <entry>Ensures the <literal>DateTimeKind</literal> is set to <literal>DateTimeKind.Utc</literal></entry>
-                      </row>
-                      <row>
+                        <row>
+                          <entry><literal>LocalDateTime</literal></entry>
+                          <entry><literal>System.DateTime</literal></entry>
+                          <entry><literal>DbType.DateTime</literal> - ignores the milliseconds</entry>
+                          <entry>Ensures the <literal>DateTimeKind</literal> is set to <literal>DateTimeKind.Local</literal></entry>
+                        </row>
+                        <row>
+                          <entry><literal>UtcDateTime</literal></entry>
+                          <entry><literal>System.DateTime</literal></entry>
+                          <entry><literal>DbType.DateTime</literal> - ignores the milliseconds</entry>
+                          <entry>Ensures the <literal>DateTimeKind</literal> is set to <literal>DateTimeKind.Utc</literal></entry>
+                        </row>
+                        <row>
                             <entry><literal>Decimal</literal></entry>
                             <entry><literal>System.Decimal</literal></entry>
                             <entry><literal>DbType.Decimal</literal></entry>
@@ -2699,8 +2711,14 @@
                             <entry>A <literal>System.Enum</literal></entry>
                             <entry>The <literal>DbType</literal> for the underlying value.</entry>
                             <entry>Do not specify <literal>type="PersistentEnum"</literal> in the mapping.  Instead 
-                            specify the Assembly Qualified Name of the Enum or let NHibernate use Reflection to "guess" the Type.  
+                            specify the Assembly Qualified Name of the Enum or let NHibernate use Reflection to "guess" the Type.
                             The UnderlyingType of the Enum is used to determine the correct <literal>DbType</literal>.</entry>
+                        </row>
+                        <row>
+                            <entry><literal>SByte</literal></entry>
+                            <entry><literal>System.SByte</literal></entry>
+                            <entry><literal>DbType.SByte</literal></entry>
+                            <entry>Default when no <literal>type</literal> attribute specified.</entry>
                         </row>
                         <row>
                             <entry><literal>Single</literal></entry>
@@ -2743,6 +2761,24 @@
                             <entry><literal>System.Boolean</literal></entry>
                             <entry><literal>DbType.AnsiStringFixedLength</literal> - 1 char either 'T' or 'F'</entry>
                             <entry><literal>type="TrueFalse"</literal> must be specified.</entry>
+                        </row>
+                        <row>
+                            <entry><literal>UInt16</literal></entry>
+                            <entry><literal>System.UInt16</literal></entry>
+                            <entry><literal>DbType.UInt16</literal></entry>
+                            <entry>Default when no <literal>type</literal> attribute specified.</entry>
+                        </row>
+                        <row>
+                            <entry><literal>UInt32</literal></entry>
+                            <entry><literal>System.UInt32</literal></entry>
+                            <entry><literal>DbType.UInt32</literal></entry>
+                            <entry>Default when no <literal>type</literal> attribute specified.</entry>
+                        </row>
+                        <row>
+                            <entry><literal>UInt64</literal></entry>
+                            <entry><literal>System.UInt64</literal></entry>
+                            <entry><literal>DbType.UInt64</literal></entry>
+                            <entry>Default when no <literal>type</literal> attribute specified.</entry>
                         </row>
                         <row>
                             <entry><literal>YesNo</literal></entry>
@@ -2796,6 +2832,12 @@
                             <entry><literal>DbType.String</literal></entry>
                             <entry>Default when no <literal>type</literal> attribute specified.</entry>
                         </row>
+                        <row>
+                            <entry><literal>Uri</literal></entry>
+                            <entry><literal>System.Uri</literal></entry>
+                            <entry><literal>DbType.String</literal></entry>
+                            <entry>Default when no <literal>type</literal> attribute specified.</entry>
+                        </row>
                     </tbody>
                 </tgroup>
             </table>	
@@ -2830,6 +2872,18 @@
                             <entry><literal>DbType.Binary</literal></entry>
                             <entry><literal>type="Serializable"</literal> should be specified.  This is the fallback type
                             if no NHibernate Type can be found for the Property.</entry>
+                        </row>
+                        <row>
+                            <entry><literal>XDoc</literal></entry>
+                            <entry><literal>System.Xml.Linq.XDocument</literal></entry>
+                            <entry><literal>DbType.Xml</literal></entry>
+                            <entry>Default when no <literal>type</literal> attribute specified.  Entire field is read into memory.</entry>
+                        </row>
+                        <row>
+                            <entry><literal>XmlDoc</literal></entry>
+                            <entry><literal>System.Xml.XmlDocument</literal></entry>
+                            <entry><literal>DbType.Xml</literal></entry>
+                            <entry>Default when no <literal>type</literal> attribute specified.  Entire field is read into memory.</entry>
                         </row>
                     </tbody>
                 </tgroup>
