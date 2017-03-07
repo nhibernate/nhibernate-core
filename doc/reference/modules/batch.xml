@@ -32,7 +32,7 @@ session.Close();]]></programlisting>
 
     <para id="disablebatching" revision="1">
         Note that NHibernate disables insert batching at the ADO level transparently if you
-        use an <literal>identiy</literal> identifier generator.
+        use an <literal>identity</literal> identifier generator.
     </para>
 
     <para>
@@ -160,7 +160,7 @@ session.Close();]]></programlisting>
                 <para>
                     No <link linkend="queryhql-joins">joins</link> (either implicit or explicit)
 	                can be specified in a bulk HQL query.  Sub-queries may be used in the where-clause;
-	                the subqueries, themselves, may contain joins.
+	                the sub-queries, themselves, may contain joins.
                 </para>
             </listitem>
             <listitem>
@@ -236,7 +236,7 @@ session.Close();]]></programlisting>
             number indicates the number of actual entities affected by the statement.  Going back to the
             example of joined-subclass, a delete against one of the subclasses may actually result
             in deletes against not just the table to which that subclass is mapped, but also the "root"
-            table and potentially joined-subclass tables further down the inheritence hierarchy.
+            table and potentially joined-subclass tables further down the inheritance hierarchy.
         </para>
 
         <para>
@@ -251,9 +251,9 @@ session.Close();]]></programlisting>
                     Only the INSERT INTO ... SELECT ... form is supported; not the INSERT INTO ... VALUES ... form.
                 </para>
                 <para>
-                    The properties_list is analogous to the <literal>column speficiation</literal>
+                    The properties_list is analogous to the <literal>column specification</literal>
                     in the SQL <literal>INSERT</literal> statement.  For entities involved in mapped
-                    inheritence, only properties directly defined on that given class-level can be
+                    inheritance, only properties directly defined on that given class-level can be
                     used in the properties_list.  Superclass properties are not allowed; and subclass
                     properties do not make sense.  In other words, <literal>INSERT</literal>
                     statements are inherently non-polymorphic.
