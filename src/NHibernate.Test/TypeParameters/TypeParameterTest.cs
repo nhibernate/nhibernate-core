@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Data.Common;
 
 using NHibernate.Driver;
 using NHibernate.SqlCommand;
@@ -55,15 +56,15 @@ namespace NHibernate.Test.TypeParameters
 
 			IDriver driver = sessions.ConnectionProvider.Driver;
 
-			IDbConnection connection = s.Connection;
-			IDbCommand statement = driver.GenerateCommand(
+			var connection = s.Connection;
+			var statement = driver.GenerateCommand(
 				CommandType.Text,
 				SqlString.Parse("SELECT * FROM STRANGE_TYPED_OBJECT WHERE ID=?"),
 				new SqlType[] {SqlTypeFactory.Int32});
 			statement.Connection = connection;
 			t.Enlist(statement);
-			((IDataParameter) statement.Parameters[0]).Value = id;
-			IDataReader reader = statement.ExecuteReader();
+			statement.Parameters[0].Value = id;
+			var reader = statement.ExecuteReader();
 
 			Assert.IsTrue(reader.Read(), "A row should have been returned");
 			Assert.IsTrue(reader.GetValue(reader.GetOrdinal("VALUE_ONE")) == DBNull.Value,

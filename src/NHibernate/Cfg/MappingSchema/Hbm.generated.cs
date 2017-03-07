@@ -4033,7 +4033,11 @@ namespace NHibernate.Cfg.MappingSchema {
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string node;
-        
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("filter")]
+        public HbmFilter[] filter;
+
         public HbmJoinedSubclass() {
             this.dynamicupdate = false;
             this.dynamicinsert = false;
@@ -4619,6 +4623,10 @@ namespace NHibernate.Cfg.MappingSchema {
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string node;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("filter")]
+        public HbmFilter[] filter;
         
         public HbmSubclass() {
             this.dynamicupdate = false;

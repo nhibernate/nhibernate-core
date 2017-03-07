@@ -9,6 +9,33 @@ namespace NHibernate.Test.Linq
 	public class EagerLoadTests : LinqTestCase
 	{
 		[Test]
+		public void CanSelectAndFetch()
+		{
+			//NH-3075
+			var result = db.Orders
+			  .Select(o => o.Customer)
+			  .Fetch(c => c.Orders)
+			  .ToList();
+
+			session.Close();
+
+			Assert.IsNotEmpty(result);
+			Assert.IsTrue(NHibernateUtil.IsInitialized(result[0].Orders));
+		}
+
+		[Test]
+		public void CanSelectAndFetchHql()
+		{
+			//NH-3075
+			var result = this.session.CreateQuery("select c from Order o left join o.Customer c left join fetch c.Orders").List<Customer>();
+
+			session.Close();
+
+			Assert.IsNotEmpty(result);
+			Assert.IsTrue(NHibernateUtil.IsInitialized(result[0].Orders));
+		}
+
+		[Test]
 		public void RelationshipsAreLazyLoadedByDefault()
 		{
 			var x = db.Customers.ToList();

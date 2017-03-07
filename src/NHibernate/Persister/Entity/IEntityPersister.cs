@@ -280,7 +280,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="currentState">The current state of the entity (the state to be checked). </param>
 		/// <param name="previousState">The previous state of the entity (the state to be checked against). </param>
 		/// <param name="entity">The entity for which we are checking state dirtiness. </param>
-		/// <param name="session">The session in which the check is ccurring. </param>
+		/// <param name="session">The session in which the check is occurring. </param>
 		/// <returns> <see langword="null" /> or the indices of the dirty properties </returns>
 		int[] FindDirty(object[] currentState, object[] previousState, object entity, ISessionImplementor session);
 
@@ -288,7 +288,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="old">The old state of the entity.</param>
 		/// <param name="current">The current state of the entity. </param>
 		/// <param name="entity">The entity for which we are checking state modification. </param>
-		/// <param name="session">The session in which the check is ccurring. </param>
+		/// <param name="session">The session in which the check is occurring. </param>
 		/// <returns>return <see langword="null" /> or the indicies of the modified properties</returns>
 		int[] FindModified(object[] old, object[] current, object entity, ISessionImplementor session);
 
@@ -321,7 +321,7 @@ namespace NHibernate.Persister.Entity
 		/// Retrieve the current state of the natural-id properties from the database. 
 		/// </summary>
 		/// <param name="id">
-		/// The identifier of the entity for which to retrieve the naturak-id values.
+		/// The identifier of the entity for which to retrieve the natural-id values.
 		/// </param>
 		/// <param name="session">
 		/// The session from which the request originated.

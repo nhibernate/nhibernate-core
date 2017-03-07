@@ -6,7 +6,7 @@ For the least friction, please follow the steps in the order presented, being ca
 
 ## Check for Existing Issues Visit 
 
-[http://jira.nhforge.org][1] and search for your issue. If you see it, voting for it is a good way to increase the visibility of the issue. 
+[https://nhibernate.jira.com][1] and search for your issue. If you see it, voting for it is a good way to increase the visibility of the issue. 
 ## Create a JIRA Issue
 
 JIRA is used to generate the release notes and serves as a central point of reference for all changes that have occurred to NHibernate. 
@@ -82,6 +82,8 @@ Since you now have a failing test case, it should be straight-forward to step in
 
 Once you've made changes to the NHibernate code base, you'll want to ensure that you haven't caused any previously passing tests to fail. The easiest way to check this is to select option D from the build menu, ensure the root tree node is selected, then press run to have all the tests run. 
 
+Please note that some tests assume a case insensitive accent sensitive database when performing string comparison. Some tests assume SQL user locales to be en-US. They will fail otherwise. With SQL Server, collation with supplementary characters (\_SC suffix on collation name) are no supported by legacy tests on "text" types.
+
 ## Submit a Pull Request
 
 Be sure to link to the JIRA issue in your GitHub pull request. Also, go back to your JIRA issue and link to the pull request. 
@@ -96,7 +98,7 @@ The NHibernate team monitors JIRA and GitHub regularly, so your request will be 
 
 The NHibernate community values your contributions. Thank you for the time you have invested.
 
- [1]: http://jira.nhforge.org/
+ [1]: https://nhibernate.jira.com/
  [2]: https://nhibernate.jira.com/browse/NH-2866
  [3]: http://www.editorconfig.org/
  [4]: http://groups.google.com/group/nhibernate-development

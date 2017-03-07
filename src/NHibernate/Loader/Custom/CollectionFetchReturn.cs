@@ -1,6 +1,6 @@
 namespace NHibernate.Loader.Custom
 {
-	/// <summary> Spefically a fetch return that refers to a collection association. </summary>
+	/// <summary> Specifically a fetch return that refers to a collection association. </summary>
 	public class CollectionFetchReturn : FetchReturn
 	{
 		private readonly ICollectionAliases collectionAliases;

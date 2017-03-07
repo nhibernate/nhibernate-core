@@ -26,6 +26,8 @@ tokens
 	METHOD_NAME;    // An IDENT that is a method name.
 	NAMED_PARAM;    // A named parameter (:foo).
 	BOGUS;          // Used for error state detection, etc.
+	RESULT_VARIABLE_REF;   // An IDENT that refers to result variable
+	                       // (i.e, an alias for a select expression) 
 }
 
 @namespace { NHibernate.Hql.Ast.ANTLR }
@@ -43,6 +45,9 @@ public statement
 	;
 
 selectStatement
+	@init {
+		PrepareFilterParameter();
+	}
 	: query
 	;
 
@@ -118,11 +123,16 @@ query
 // The query / subquery rule. Pops the current 'from node' context 
 // (list of aliases).
 unionedQuery!
+	@init{
+		bool oldInSelect = _inSelect;
+		_inSelect = false;
+	}
 	@after {
 		// Antlr note: #x_in refers to the input AST, #x refers to the output AST
 		BeforeStatementCompletion( "select" );
 		ProcessQuery( $s.tree, $unionedQuery.tree );
 		AfterStatementCompletion( "select" );
+		_inSelect = oldInSelect;
 	}
 	: ^( QUERY { BeforeStatement( "select", SELECT ); }
 			// The first phase places the FROM first to make processing the SELECT simpler.
@@ -141,11 +151,25 @@ unionedQuery!
 	;
 
 orderClause
-	: ^(ORDER { HandleClauseStart( ORDER ); } (orderExprs | query (ASCENDING | DESCENDING)? ))
+	: ^(ORDER { HandleClauseStart( ORDER ); } (orderExprs))
 	;
 
 orderExprs
-	: expr ( ASCENDING | DESCENDING )? (orderExprs)?
+	: orderExpr ( ASCENDING | DESCENDING )? (orderExprs)?
+	;
+
+orderExpr
+	: { IsOrderExpressionResultVariableRef( (IASTNode) input.LT(1) ) }? resultVariableRef
+	| expr
+	| query
+	;
+
+resultVariableRef!
+	@after {
+		HandleResultVariableRef( $resultVariableRef.tree );
+	}
+	: i=identifier
+	-> ^(RESULT_VARIABLE_REF [$i.tree.Text]) 
 	;
 
 skipClause
@@ -170,11 +194,10 @@ selectClause!
 	;
 
 selectExprList @init{
-		bool oldInSelect = _inSelect;
 		_inSelect = true;
 	}
 	: ( selectExpr | aliasedSelectExpr )+ {
-		_inSelect = oldInSelect;
+		_inSelect = false;
 	}
 	;
 
@@ -215,11 +238,6 @@ aggregateExpr
 
 // Establishes the list of aliases being used by this query.
 fromClause 
-@init{
-		// NOTE: This references the INPUT AST! (see http://www.antlr.org/doc/trees.html#Action Translation)
-		// the ouput AST (#fromClause) has not been built yet.
-		PrepareFromClauseInputTree((IASTNode) input.LT(1), input);
-	}
 	: ^(f=FROM { PushFromClause($f.tree); HandleClauseStart( FROM ); } fromElementList )
 	;
 
@@ -353,8 +371,7 @@ comparisonExpr
 	)
 	;
 
-inRhs @init {	int UP = 99999;		// TODO - added this to get compile working.  It's bogus & should be removed
-	}
+inRhs
 	: ^(IN_LIST ( collectionFunctionOrSubselect | expr* ) )
 	;
 

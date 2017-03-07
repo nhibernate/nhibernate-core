@@ -2,12 +2,8 @@ using System.Collections;
 
 namespace NHibernate.Transform
 {
-	public sealed class Transformers
+	public static class Transformers
 	{
-		private Transformers()
-		{
-		}
-
 		/// <summary>
 		/// Each row of results is a map (<see cref="IDictionary" />) from alias to values/entities
 		/// </summary>

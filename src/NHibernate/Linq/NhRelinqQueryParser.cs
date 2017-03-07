@@ -128,7 +128,7 @@ namespace NHibernate.Linq
 
 		public override Expression Resolve(ParameterExpression inputParameter, Expression expressionToBeResolved, ClauseGenerationContext clauseGenerationContext)
 		{
-			throw new NotImplementedException();
+			return Source.Resolve(inputParameter, expressionToBeResolved, clauseGenerationContext);
 		}
 
 		protected override ResultOperatorBase CreateResultOperator(ClauseGenerationContext clauseGenerationContext)

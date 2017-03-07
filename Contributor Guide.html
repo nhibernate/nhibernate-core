@@ -21,7 +21,7 @@ For the least friction, please follow the steps in the order presented, being ca
 
 <h2>Check for Existing Issues</h2>
 
-Visit <a href="http://jira.nhforge.org/">http://jira.nhforge.org</a> and search for your issue.  If you see it, voting for it is a good way to increase the visibility of the issue.
+Visit <a href="https://nhibernate.jira.com/">https://nhibernate.jira.com</a> and search for your issue.  If you see it, voting for it is a good way to increase the visibility of the issue.
 
 <h2>Create a JIRA Issue</h2>
 
@@ -132,8 +132,12 @@ When you commit, please include the issue number in your commit message.  This w
 Since you now have a failing test case, it should be straight-forward to step into NHibernate to attempt to ascertain what the problem is.  While this may seem daunting at first, feel free to give it a go.  It's just code afterall. :)
 
 <h3>Ensure All Tests Pass</h3>
-
-Once you've made changes to the NHibernate code base, you'll want to ensure that you haven't caused any previously passing tests to fail.  The easiest way to check this is to select option D from the build menu, ensure the root tree node is selected, then press run to have all the tests run.
+<p>
+    Once you've made changes to the NHibernate code base, you'll want to ensure that you haven't caused any previously passing tests to fail.  The easiest way to check this is to select option D from the build menu, ensure the root tree node is selected, then press run to have all the tests run.
+</p>
+<p>
+    Please note that some tests assume a case insensitive accent sensitive database when performing string comparison.  Some tests assume SQL user locales to be en-US.  They will fail otherwise.  With SQL Server, collation with supplementary characters (_SC suffix on collation name) are no supported by legacy tests on "text" types.
+</p>
 
 <h2>Submit a Pull Request</h2>
 

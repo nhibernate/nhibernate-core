@@ -1,8 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.UserTypes;
@@ -59,7 +56,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2392
 			return x.GetHashCode();
 		}
 
-		public object NullSafeGet(IDataReader dr, string[] names, ISessionImplementor session, object owner)
+		public object NullSafeGet(DbDataReader dr, string[] names, ISessionImplementor session, object owner)
 		{
 			if (dr.IsDBNull(dr.GetOrdinal(names[0])))
 				return null;
@@ -69,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2392
 				(string)NHibernateUtil.String.NullSafeGet(dr, names[1], session, owner));
 		}
 
-		public void NullSafeSet(IDbCommand cmd, object value, int index, bool[] settable, ISessionImplementor session)
+		public void NullSafeSet(DbCommand cmd, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			object countryCode = value == null ? null : (int?)((PhoneNumber)value).CountryCode;
 			object number = value == null ? null : ((PhoneNumber)value).Number;

@@ -46,7 +46,7 @@ namespace NHibernate.Tuple.Component
 			userSuppliedTuplizerImpls.TryGetValue(EntityMode.Poco, out tempObject2);
 			userSuppliedTuplizerImpls.Remove(EntityMode.Poco);
 			tuplizerImpl = tempObject2;
-			if (owner.HasPocoRepresentation && component.HasPocoRepresentation)
+			if (component.HasPocoRepresentation)
 			{
 				if (tuplizerImpl == null)
 				{

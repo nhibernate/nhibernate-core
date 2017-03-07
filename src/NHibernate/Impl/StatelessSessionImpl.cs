@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq.Expressions;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
@@ -32,7 +33,7 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private readonly StatefulPersistenceContext temporaryPersistenceContext;
 
-		internal StatelessSessionImpl(IDbConnection connection, SessionFactoryImpl factory)
+		internal StatelessSessionImpl(DbConnection connection, SessionFactoryImpl factory)
 			: base(factory)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -365,7 +366,7 @@ namespace NHibernate.Impl
 			return entity.GetType().FullName;
 		}
 
-		public override IDbConnection Connection
+		public override DbConnection Connection
 		{
 			get { return connectionManager.GetConnection(); }
 		}

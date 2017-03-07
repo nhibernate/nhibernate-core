@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Hql
 {
 	/// <summary>
-	/// This test run each HQL function separatelly so is easy to know wich function need
+	/// This test run each HQL function separately so is easy to know which function need
 	/// an override in the specific dialect implementation.
 	/// </summary>
 	[TestFixture]

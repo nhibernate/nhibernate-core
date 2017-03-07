@@ -1,4 +1,4 @@
-# Ignore file for Visual Studio 2008/2010
+# Ignore file for Visual Studio 2008/2010/2015
 
 *.obj
 *.exe
@@ -30,5 +30,7 @@ _ReSharper*/
 [Tt]est[Rr]esult*
 [Bb]uild[Ll]og.*
 *.[Pp]ublish.xml
-AssemblyInfo.cs
+SharedAssemblyInfo.*
 hibernate.cfg.xml
+.vs/
+packages/

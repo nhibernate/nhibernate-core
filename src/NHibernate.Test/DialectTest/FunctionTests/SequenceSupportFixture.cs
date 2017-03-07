@@ -16,7 +16,7 @@ namespace NHibernate.Test.DialectTest.FunctionTests
 		/// <summary>
 		/// Test case data source for DialectSupportingSequencesMustFullfillSequenceContract().
 		/// </summary>
-		private IEnumerable<System.Type> GetAllDialectTypes()
+		private static IEnumerable<System.Type> GetAllDialectTypes()
 		{
 			var dialectBaseType = typeof(NHibernate.Dialect.Dialect);
 
@@ -26,7 +26,7 @@ namespace NHibernate.Test.DialectTest.FunctionTests
 		}
 
 
-		[TestCaseSource("GetAllDialectTypes")]
+		[TestCaseSource(nameof(GetAllDialectTypes))]
 		public void DialectSupportingSequencesMustFullfillSequenceContract(System.Type dialectType)
 		{
 			var dialect = (NHibernate.Dialect.Dialect)Activator.CreateInstance(dialectType);

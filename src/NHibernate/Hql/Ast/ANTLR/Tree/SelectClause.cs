@@ -25,6 +25,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private readonly List<FromElement> _fromElementsForLoad = new List<FromElement>();
 		private ConstructorNode _constructorNode;
 		private string[] _aliases;
+		private int[] _columnNamesStartPositions;
 
 		public static bool VERSION2_SQL;
 
@@ -463,7 +464,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				for (int i = 0; i < se.Length; i++)
 				{
 					ISelectExpression expr = se[i];
-					expr.SetScalarColumnText(i);	// Create SQL_TOKEN nodes for the columns.
+					expr.SetScalarColumn(i);	// Create SQL_TOKEN nodes for the columns.
 				}
 			}
 		}
@@ -506,7 +507,18 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			// todo: we should really just collect these from the various SelectExpressions, rather than regenerating here
 			_columnNames = SessionFactoryHelper.GenerateColumnNames(_queryReturnTypes);
+			_columnNamesStartPositions = new int[_columnNames.Length];
+			int startPosition = 1;
+			for (int i = 0; i < _columnNames.Length; i++)
+			{
+				_columnNamesStartPositions[i] = startPosition;
+				startPosition += _columnNames[i].Length;
+			}
 		}
 
+		public int GetColumnNamesStartPosition(int i)
+		{
+			return _columnNamesStartPositions[i];
+		}
 	}
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 
@@ -32,7 +33,7 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index)
 		{
 			string code = Convert.ToString(rs[index]);
 			if (code == null)
@@ -51,7 +52,7 @@ namespace NHibernate.Type
 		/// <param name="rs"></param>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name)
 		{
 			return Get(rs, rs.GetOrdinal(name));
 		}
@@ -62,9 +63,9 @@ namespace NHibernate.Type
 		/// <param name="cmd"></param>
 		/// <param name="value"></param>
 		/// <param name="index"></param>
-		public override void Set(IDbCommand cmd, Object value, int index)
+		public override void Set(DbCommand cmd, Object value, int index)
 		{
-			((IDataParameter) cmd.Parameters[index]).Value = ToCharacter(value);
+			cmd.Parameters[index].Value = ToCharacter(value);
 		}
 
 		private string ToCharacter(object value)

@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using System.Text;
 using System.Xml;
 using NHibernate.Engine;
@@ -35,7 +35,7 @@ namespace NHibernate.Type
 		/// <param name="isEmbeddedInXML">Should values of this mapping be embedded in XML modes? </param>
 		/// <param name="unwrapProxy">
 		/// Is unwrapping of proxies allowed for this association; unwrapping
-		/// says to return the "implementation target" of lazy prooxies; typically only possible
+		/// says to return the "implementation target" of lazy proxies; typically only possible
 		/// with lazy="no-proxy".
 		/// </param>
 		protected internal EntityType(string entityName, string uniqueKeyPropertyName, bool eager, bool isEmbeddedInXML, bool unwrapProxy)
@@ -104,7 +104,7 @@ namespace NHibernate.Type
 			return ReferenceEquals(x, y);
 		}
 
-		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
+		public override object NullSafeGet(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
 			return NullSafeGet(rs, new string[] {name}, session, owner);
 		}
@@ -161,13 +161,23 @@ namespace NHibernate.Type
 				return value;
 			}
 
-			if (IsReferenceToPrimaryKey)
+			return ForeignKeys.GetEntityIdentifierIfNotUnsaved(GetAssociatedEntityName(), value, session); //tolerates nulls
+		}
+
+		protected internal object GetReferenceValue(object value, ISessionImplementor session)
+		{
+			if (IsNotEmbedded(session))
 			{
-				return ForeignKeys.GetEntityIdentifierIfNotUnsaved(GetAssociatedEntityName(), value, session); //tolerates nulls
+				return value;
 			}
-			else if (value == null)
+
+			if (value == null)
 			{
 				return null;
+			}
+			else if (IsReferenceToPrimaryKey)
+			{
+				return ForeignKeys.GetEntityIdentifierIfNotUnsaved(GetAssociatedEntityName(), value, session); //tolerates nulls
 			}
 			else
 			{
@@ -180,7 +190,7 @@ namespace NHibernate.Type
 				IType type = entityPersister.GetPropertyType(uniqueKeyPropertyName);
 				if (type.IsEntityType)
 				{
-					propertyValue = ((EntityType)type).GetIdentifier(propertyValue, session);
+					propertyValue = ((EntityType)type).GetReferenceValue(propertyValue, session);
 				}
 
 				return propertyValue;
@@ -253,6 +263,11 @@ namespace NHibernate.Type
 
 		public abstract bool IsOneToOne { get; }
 
+		public virtual bool IsLogicalOneToOne()
+		{
+			return IsOneToOne;
+		}
+
 		public override object Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache)
 		{
 			if (original == null)
@@ -279,7 +294,7 @@ namespace NHibernate.Type
 				}
 				else
 				{
-					object id = GetIdentifier(original, session);
+					object id = GetReferenceValue(original, session);
 					if (id == null)
 					{
 						throw new AssertionFailure("non-transient entity has a null id");
@@ -296,21 +311,21 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Converts the id contained in the <see cref="IDataReader"/> to an object.
+		/// Converts the id contained in the <see cref="DbDataReader"/> to an object.
 		/// </summary>
-		/// <param name="rs">The <see cref="IDataReader"/> that contains the query results.</param>
+		/// <param name="rs">The <see cref="DbDataReader"/> that contains the query results.</param>
 		/// <param name="names">A string array of column names that contain the id.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> this is occurring in.</param>
 		/// <param name="owner">The object that this Entity will be a part of.</param>
 		/// <returns>
 		/// An instance of the object or <see langword="null" /> if the identifer was null.
 		/// </returns>
-		public override sealed object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override sealed object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			return ResolveIdentifier(Hydrate(rs, names, session, owner), session, owner);
 		}
 
-		public abstract override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner);
+		public abstract override object Hydrate(DbDataReader rs, string[] names, ISessionImplementor session, object owner);
 
 		public bool IsUniqueKeyReference
 		{
@@ -539,7 +554,7 @@ namespace NHibernate.Type
 		/// Load an instance by a unique key that is not the primary key. 
 		/// </summary>
 		/// <param name="entityName">The name of the entity to load </param>
-		/// <param name="uniqueKeyPropertyName">The name of the property defining the uniqie key. </param>
+		/// <param name="uniqueKeyPropertyName">The name of the property defining the unique key. </param>
 		/// <param name="key">The unique key property value. </param>
 		/// <param name="session">The originating session. </param>
 		/// <returns> The loaded entity </returns>

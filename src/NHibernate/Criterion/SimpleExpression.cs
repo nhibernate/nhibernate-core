@@ -88,8 +88,9 @@ namespace NHibernate.Criterion
 					this,
 					value);
 
-			Parameter[] parameters = criteriaQuery.NewQueryParameter(GetParameterTypedValue(criteria, criteriaQuery)).ToArray();
-
+			TypedValue typedValue = GetParameterTypedValue(criteria, criteriaQuery);
+			Parameter[] parameters = criteriaQuery.NewQueryParameter(typedValue).ToArray();
+   
 			if (ignoreCase)
 			{
 				if (columnNames.Length != 1)
@@ -98,7 +99,7 @@ namespace NHibernate.Criterion
 						"case insensitive expression may only be applied to single-column properties: " +
 						propertyName);
 				}
-
+   
 				return new SqlString(
 					criteriaQuery.Factory.Dialect.LowercaseFunction,
 					StringHelper.OpenParen,
@@ -110,17 +111,31 @@ namespace NHibernate.Criterion
 			else
 			{
 				SqlStringBuilder sqlBuilder = new SqlStringBuilder(4 * columnNames.Length);
+				var columnNullness = typedValue.Type.ToColumnNullness(typedValue.Value, criteriaQuery.Factory);
 
+				if (columnNullness.Length != columnNames.Length)
+				{
+					throw new AssertionFailure("Column nullness length doesn't match number of columns.");
+				}
+   
 				for (int i = 0; i < columnNames.Length; i++)
 				{
 					if (i > 0)
 					{
 						sqlBuilder.Add(" and ");
 					}
-
-					sqlBuilder.Add(columnNames[i])
-						.Add(Op)
-						.Add(parameters[i]);
+   
+					if (columnNullness[i])
+					{
+						sqlBuilder.Add(columnNames[i])
+								  .Add(Op)
+								  .Add(parameters[i]);
+					}
+					else
+					{
+						sqlBuilder.Add(columnNames[i])
+								  .Add(" is null ");
+					}
 				}
 				return sqlBuilder.ToSqlString();
 			}

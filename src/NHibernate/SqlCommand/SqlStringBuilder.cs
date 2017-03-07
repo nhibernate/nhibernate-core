@@ -175,7 +175,7 @@ namespace NHibernate.SqlCommand
 		/// <param name="postfix">String to put at the end of the combined SqlString.</param>
 		/// <returns>This SqlStringBuilder</returns>
 		/// <remarks>
-		/// This calls the overloaded Add method with an array of SqlStrings and wrapStatment=false
+		/// This calls the overloaded Add method with an array of SqlStrings and wrapStatement=false
 		/// so it will not be wrapped with a "(" and ")"
 		/// </remarks>
 		public SqlStringBuilder Add(SqlString sqlString, string prefix, string op, string postfix)

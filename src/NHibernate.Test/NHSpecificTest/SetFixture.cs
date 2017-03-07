@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
 using NHibernate.Collection;
@@ -151,7 +151,7 @@ namespace NHibernate.Test.NHSpecificTest
 			// TODO:  Add CollectionPersisterStub.DeleteRows implementation
 		}
 
-		public void WriteElement(IDbCommand st, object elt, bool writeOrder, ISessionImplementor session)
+		public void WriteElement(DbCommand st, object elt, bool writeOrder, ISessionImplementor session)
 		{
 			// TODO:  Add CollectionPersisterStub.WriteElement implementation
 		}
@@ -183,7 +183,7 @@ namespace NHibernate.Test.NHSpecificTest
 			// TODO:  Add CollectionPersisterStub.Remove implementation
 		}
 
-		public object ReadElement(IDataReader rs, object owner, string[] aliases, ISessionImplementor session)
+		public object ReadElement(DbDataReader rs, object owner, string[] aliases, ISessionImplementor session)
 		{
 			// TODO:  Add CollectionPersisterStub.ReadElement implementation
 			return null;
@@ -212,7 +212,7 @@ namespace NHibernate.Test.NHSpecificTest
 			get { throw new NotImplementedException(); }
 		}
 
-		public object ReadIndex(IDataReader rs, string[] aliases, ISessionImplementor session)
+		public object ReadIndex(DbDataReader rs, string[] aliases, ISessionImplementor session)
 		{
 			// TODO:  Add CollectionPersisterStub.ReadIndex implementation
 			return null;
@@ -223,7 +223,7 @@ namespace NHibernate.Test.NHSpecificTest
 			// TODO:  Add CollectionPersisterStub.Initialize implementation
 		}
 
-		public object ReadKey(IDataReader rs, string[] aliases, ISessionImplementor session)
+		public object ReadKey(DbDataReader rs, string[] aliases, ISessionImplementor session)
 		{
 			// TODO:  Add CollectionPersisterStub.ReadKey implementation
 			return null;
@@ -275,7 +275,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		public object ReadIdentifier(IDataReader rs, string alias, ISessionImplementor session)
+		public object ReadIdentifier(DbDataReader rs, string alias, ISessionImplementor session)
 		{
 			// TODO:  Add CollectionPersisterStub.ReadIdentifier implementation
 			return null;

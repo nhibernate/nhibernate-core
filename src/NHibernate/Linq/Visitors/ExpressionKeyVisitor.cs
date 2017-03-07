@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -83,18 +84,42 @@ namespace NHibernate.Linq.Visitors
 			{
 				// Nulls generate different query plans.  X = variable generates a different query depending on if variable is null or not.
 				if (param.Value == null)
+				{
 					_string.Append("NULL");
-				if (param.Value is IEnumerable && !((IEnumerable)param.Value).Cast<object>().Any())
-					_string.Append("EmptyList");
+				}
 				else
-					_string.Append(param.Name);
+				{
+					var value = param.Value as IEnumerable;
+					if (value != null && !(value is string) && !value.Cast<object>().Any())
+					{
+						_string.Append("EmptyList");
+					}
+					else
+					{
+						_string.Append(param.Name);
+					}
+				}
 			}
 			else
 			{
 				if (expression.Value == null)
+				{
 					_string.Append("NULL");
+				}
 				else
-					_string.Append(expression.Value);
+				{
+					var value = expression.Value as IEnumerable;
+					if (value != null  && !(value is string) && !(value is IQueryable))
+					{
+						_string.Append("{");
+						_string.Append(String.Join(",", value.Cast<object>()));
+						_string.Append("}");
+					}
+					else
+					{
+						_string.Append(expression.Value);
+					}
+				}
 			}
 
 			return base.VisitConstantExpression(expression);
@@ -142,6 +167,7 @@ namespace NHibernate.Linq.Visitors
 				case "Single":
 				case "SingleOrDefault":
 				case "Select":
+				case "GroupBy":
 					insideSelectClause = true;
 					break;
 				default:

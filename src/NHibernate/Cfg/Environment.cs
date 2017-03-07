@@ -90,6 +90,9 @@ namespace NHibernate.Cfg
 		/// <summary>The EntityMode in which set the Session opened from the SessionFactory.</summary>
 		public const string DefaultEntityMode = "default_entity_mode";
 
+		/// Implementation of NH-3619 - Make default value of FlushMode configurable
+		public const string DefaultFlushMode = "default_flush_mode";
+
 		/// <summary>
 		/// When using an enhanced id generator and pooled optimizers (<see cref="NHibernate.Id.Enhanced.IOptimizer"/>),
 		/// prefer interpreting the database value as the lower (lo) boundary. The default is to interpret it as the high boundary.
@@ -141,6 +144,9 @@ namespace NHibernate.Cfg
 		// The classname of the HQL query parser factory
 		public const string QueryTranslator = "query.factory_class";
 
+		// The class name of the LINQ query provider class, implementing from <see cref="INhQueryProvider"/>
+		public const string QueryLinqProvider = "query.linq_provider_class";
+
 		public const string QueryImports = "query.imports";
 		public const string Hbm2ddlAuto = "hbm2ddl.auto";
 		public const string Hbm2ddlKeyWords = "hbm2ddl.keywords";
@@ -171,6 +177,16 @@ namespace NHibernate.Cfg
 		/// <summary> Enable ordering of insert statements for the purpose of more effecient batching.</summary>
 		public const string OrderInserts = "order_inserts";
 
+		/// <summary> Enable ordering of update statements for the purpose of more effecient batching.</summary>
+		public const string OrderUpdates = "order_updates";
+
+		public const string QueryModelRewriterFactory = "query.query_model_rewriter_factory";
+
+		/// <summary>
+		/// This may need to be set to 3 if you are using the OdbcDriver with MS SQL Server 2008+.
+		/// </summary>
+		public const string OdbcDateTimeScale = "odbc.explicit_datetime_scale";
+		
 		/// <summary>
 		/// If this setting is set to false, exceptions in IInterceptor.BeforeTransactionCompletion bubble to the caller of ITransaction.Commit and abort the commit.
 		/// If this setting is set to true, exceptions in IInterceptor.BeforeTransactionCompletion are ignored and the commit is performed.

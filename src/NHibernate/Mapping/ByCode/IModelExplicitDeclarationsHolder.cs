@@ -27,7 +27,8 @@ namespace NHibernate.Mapping.ByCode
 
 		IEnumerable<MemberInfo> OneToOneRelations { get; }
 		IEnumerable<MemberInfo> ManyToOneRelations { get; }
-		IEnumerable<MemberInfo> ManyToManyRelations { get; }
+		IEnumerable<MemberInfo> KeyManyToManyRelations { get; }
+		IEnumerable<MemberInfo> ItemManyToManyRelations { get; }
 		IEnumerable<MemberInfo> OneToManyRelations { get; }
 		IEnumerable<MemberInfo> ManyToAnyRelations { get; }
 
@@ -61,7 +62,8 @@ namespace NHibernate.Mapping.ByCode
 
 		void AddAsOneToOneRelation(MemberInfo member);
 		void AddAsManyToOneRelation(MemberInfo member);
-		void AddAsManyToManyRelation(MemberInfo member);
+		void AddAsManyToManyKeyRelation(MemberInfo member);
+		void AddAsManyToManyItemRelation(MemberInfo member);
 		void AddAsOneToManyRelation(MemberInfo member);
 		void AddAsManyToAnyRelation(MemberInfo member);
 

@@ -50,7 +50,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1792
 		}
 
 		/// <summary>
-		/// Verifies that a subquery created as a detachedcriteria with an order by 
+		/// Verifies that a subquery created as a detached criteria with an order by 
 		/// will produce valid sql when the main query does not contain an order by clause
 		/// </summary>
 		[Test]

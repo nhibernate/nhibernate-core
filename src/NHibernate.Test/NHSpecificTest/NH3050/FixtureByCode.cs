@@ -96,7 +96,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3050
 		}
 
 		/// <summary>
-		/// Uses reflection to create a new SoftLimitMRUCache with a specified size and sets session factory query plan chache to it.
+		/// Uses reflection to create a new SoftLimitMRUCache with a specified size and sets session factory query plan cache to it.
 		/// This is done like this as NHibernate does not currently provide any way to specify the query plan cache size through configuration.
 		/// </summary>
 		/// <param name="factory"></param>

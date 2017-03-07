@@ -17,7 +17,7 @@
       <dependency id="Iesi.Collections" version="[4,5)" />
     </dependencies>
 	<projectUrl>
-		http://www.nhforge.org
+		http://nhibernate.info
 	</projectUrl>
 	<iconUrl>https://raw.github.com/nhibernate/nhibernate-core/master/logo/NHibernate-NuGet.png</iconUrl>
 	<licenseUrl>https://raw.github.com/nhibernate/nhibernate-core/master/lgpl.txt</licenseUrl>

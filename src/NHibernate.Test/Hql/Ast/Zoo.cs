@@ -12,6 +12,16 @@ namespace NHibernate.Test.Hql.Ast
 		private IDictionary<string, Mammal> mammals;
 		private Address address;
 
+		public Zoo()
+		{
+		}
+
+		public Zoo(string name, Address address)
+		{
+			this.name = name;
+			this.address = address;
+		}
+
 		public virtual long Id
 		{
 			get { return id; }
@@ -46,6 +56,43 @@ namespace NHibernate.Test.Hql.Ast
 		{
 			get { return address; }
 			set { address = value; }
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (!(obj is Zoo))
+				return false;
+
+			var zoo = ((Zoo)obj);
+
+			if (Name == null ^ zoo.Name == null)
+			{
+				return false;
+			}
+
+			if (Name != null && zoo.Name != null && !zoo.Name.Equals(Name))
+			{
+				return false;
+			}
+
+			if (Address == null ^ zoo.Address == null)
+			{
+				return false;
+			}
+
+			if (Address != null && zoo.Address != null && !zoo.Address.Equals(Address))
+			{
+				return false;
+			}
+
+			return true;
+		}
+
+		public override int GetHashCode()
+		{
+			int result = (Name != null ? Name.GetHashCode() : 0);
+			result = 31 * result + (Address != null ? Address.GetHashCode() : 0);
+			return result;
 		}
 	}
 

@@ -1,5 +1,5 @@
 using System;
-using System.Data;
+using System.Data.Common;
 using System.Xml;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
@@ -30,12 +30,12 @@ namespace NHibernate.Type
 			get { return typeof (string); }
 		}
 
-		public override object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			return NullSafeGet(rs, names[0], session, owner);
 		}
 
-		public override object NullSafeGet(IDataReader rs,string name,ISessionImplementor session,object owner)
+		public override object NullSafeGet(DbDataReader rs,string name,ISessionImplementor session,object owner)
 		{
 			int index = rs.GetOrdinal(name);
 
@@ -50,16 +50,16 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override void NullSafeSet(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			if (settable[0]) NullSafeSet(st, value, index, session);
 		}
 
-		public override void NullSafeSet(IDbCommand st,object value,int index,ISessionImplementor session)
+		public override void NullSafeSet(DbCommand st,object value,int index,ISessionImplementor session)
 		{
 			if (value == null)
 			{
-				((IDataParameter)st.Parameters[index]).Value = DBNull.Value;
+				st.Parameters[index].Value = DBNull.Value;
 			}
 			else
 			{

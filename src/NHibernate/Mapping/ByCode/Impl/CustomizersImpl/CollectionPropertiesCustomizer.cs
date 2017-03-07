@@ -7,7 +7,6 @@ using NHibernate.UserTypes;
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
 	public class CollectionPropertiesCustomizer<TEntity, TElement> : ICollectionPropertiesMapper<TEntity, TElement>
-		where TEntity : class
 	{
 		private readonly IKeyMapper<TEntity> keyMapper;
 

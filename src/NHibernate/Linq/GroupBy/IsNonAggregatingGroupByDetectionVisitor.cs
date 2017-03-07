@@ -23,7 +23,7 @@ namespace NHibernate.Linq.GroupBy
 
 		protected override Expression VisitMemberExpression(MemberExpression expression)
 		{
-			return expression.Member.Name == "Key"
+			return expression.IsGroupingKey()
 					   ? expression
 					   : base.VisitMemberExpression(expression);
 		}

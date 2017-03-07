@@ -23,7 +23,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="values">entity properties </param>
 		/// <param name="persister">class persister </param>
-		/// <param name="isUpdate">wether it is intended to be updated or saved </param>
+		/// <param name="isUpdate">whether it is intended to be updated or saved </param>
 		public void CheckNullability(object[] values, IEntityPersister persister, bool isUpdate)
 		{
 			/*
@@ -143,7 +143,7 @@ namespace NHibernate.Engine
 
 		/// <summary> 
 		/// Return a well formed property path.
-		/// Basicaly, it will return parent.child 
+		/// Basically, it will return parent.child 
 		/// </summary>
 		/// <param name="parent">parent in path </param>
 		/// <param name="child">child in path </param>

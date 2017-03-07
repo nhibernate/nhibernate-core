@@ -1,5 +1,5 @@
 using System;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 
 namespace NHibernate.AdoNet
@@ -21,7 +21,7 @@ namespace NHibernate.AdoNet
 				}
 			}
 
-			public void VerifyOutcomeNonBatched(int rowCount, IDbCommand statement)
+			public void VerifyOutcomeNonBatched(int rowCount, DbCommand statement)
 			{
 				rowCount = DetermineRowCount(rowCount, statement);
 				if (expectedRowCount > rowCount)
@@ -47,7 +47,7 @@ namespace NHibernate.AdoNet
 				get { return expectedRowCount; }
 			}
 
-			protected virtual int DetermineRowCount(int reportedRowCount, IDbCommand statement)
+			protected virtual int DetermineRowCount(int reportedRowCount, DbCommand statement)
 			{
 				return reportedRowCount;
 			}
@@ -55,7 +55,7 @@ namespace NHibernate.AdoNet
 
 		public class NoneExpectation : IExpectation
 		{
-			public void VerifyOutcomeNonBatched(int rowCount, IDbCommand statement)
+			public void VerifyOutcomeNonBatched(int rowCount, DbCommand statement)
 			{
 				// explicitly perform no checking...
 			}

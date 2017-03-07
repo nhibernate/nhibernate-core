@@ -345,6 +345,11 @@ namespace NHibernate.Persister.Entity
 			get { return discriminatorValue; }
 		}
 
+		public override string[] SubclassClosure
+		{
+			get { return subclassClosure; }
+		}
+
 		public override string[] PropertySpaces
 		{
 			get
@@ -389,7 +394,7 @@ namespace NHibernate.Persister.Entity
 			get { return constraintOrderedTableNames; }
 		}
 
-		public override string[][] ContraintOrderedTableKeyColumnClosure
+		public override string[][] ConstraintOrderedTableKeyColumnClosure
 		{
 			get { return constraintOrderedKeyColumnNames; }
 		}
@@ -589,6 +594,55 @@ namespace NHibernate.Persister.Entity
 				return Declarer.SubClass;
 			}
 			return base.GetSubclassPropertyDeclarer(propertyPath);
+		}
+
+		protected override bool[] GetTableUpdateNeeded(int[] dirtyProperties, bool hasDirtyCollection)
+		{
+			bool[] tableUpdateNeeded = base.GetTableUpdateNeeded(dirtyProperties, hasDirtyCollection);
+
+			if (IsVersioned && IsVersionPropertyGenerated)
+			{
+				// NH-3512: if this is table-per-subclass inheritance and version property is generated,
+				// then it should be updated even if no other base class properties changed
+
+				tableUpdateNeeded[0] = true;
+			}
+
+			return tableUpdateNeeded;
+		}
+
+		protected override bool[] GetPropertiesToUpdate(int[] dirtyProperties, bool hasDirtyCollection)
+		{
+			bool[] propsToUpdate = base.GetPropertiesToUpdate(dirtyProperties, hasDirtyCollection);
+
+			if (IsVersioned && IsVersionPropertyGenerated)
+			{
+				// NH-3512
+				// find first updatable property in base class to include it in
+				bool found = false;
+
+				for (int i = 0; i < propsToUpdate.Length; ++i)
+				{
+					if (i == VersionProperty || !IsPropertyOfTable(i, 0))
+					{
+						continue;
+					}
+
+					if (PropertyUpdateability[i])
+					{
+						propsToUpdate[i] = true;
+						found = true;
+						break;
+					}
+				}
+
+				if (!found)
+				{
+					// TODO: we failed to find suitable property, so version won't be updated and optimistic concurrency check won't work
+				}
+			}
+
+			return propsToUpdate;
 		}
 	}
 }

@@ -76,97 +76,99 @@ namespace NHibernate.Test.CompositeId
 		[Test]
 		public void TestSimpleCRUD()
 		{
+			ClassWithCompositeId theClass;
+			ClassWithCompositeId theSecondClass;
+
 			// insert the new objects
-			ISession s = OpenSession();
-			ITransaction t = s.BeginTransaction();
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+			    theClass = new ClassWithCompositeId(id);
+			    theClass.OneProperty = 5;
 
-			ClassWithCompositeId theClass = new ClassWithCompositeId(id);
-			theClass.OneProperty = 5;
+			    theSecondClass = new ClassWithCompositeId(secondId);
+			    theSecondClass.OneProperty = 10;
 
-			ClassWithCompositeId theSecondClass = new ClassWithCompositeId(secondId);
-			theSecondClass.OneProperty = 10;
+			    s.Save(theClass);
+			    s.Save(theSecondClass);
 
-			s.Save(theClass);
-			s.Save(theSecondClass);
-
-			t.Commit();
-			s.Close();
+			    t.Commit();
+			}
 
 			// verify they were inserted and test the SELECT
+			ClassWithCompositeId theClass2;
+			ClassWithCompositeId theSecondClass2;
+			using (ISession s2 = OpenSession())
+			using (ITransaction t2 = s2.BeginTransaction())
+			{
+				theClass2 = (ClassWithCompositeId) s2.Load(typeof(ClassWithCompositeId), id);
+				Assert.AreEqual(id, theClass2.Id);
 
-			ISession s2 = OpenSession();
-			ITransaction t2 = s2.BeginTransaction();
+				IList results2 = s2.CreateCriteria(typeof(ClassWithCompositeId))
+				                   .Add(Expression.Eq("Id", secondId))
+				                   .List();
 
-			ClassWithCompositeId theClass2 = (ClassWithCompositeId) s2.Load(typeof(ClassWithCompositeId), id);
-			Assert.AreEqual(id, theClass2.Id);
+				Assert.AreEqual(1, results2.Count);
+				theSecondClass2 = (ClassWithCompositeId) results2[0];
 
-			IList results2 = s2.CreateCriteria(typeof(ClassWithCompositeId))
-				.Add(Expression.Eq("Id", secondId))
-				.List();
+				ClassWithCompositeId theClass2Copy = (ClassWithCompositeId) s2.Load(typeof(ClassWithCompositeId), id);
 
-			Assert.AreEqual(1, results2.Count);
-			ClassWithCompositeId theSecondClass2 = (ClassWithCompositeId) results2[0];
+				// verify the same results through Criteria & Load were achieved
+				Assert.AreSame(theClass2, theClass2Copy);
 
-			ClassWithCompositeId theClass2Copy = (ClassWithCompositeId) s2.Load(typeof(ClassWithCompositeId), id);
+				// compare them to the objects created in the first session
+				Assert.AreEqual(theClass.Id, theClass2.Id);
+				Assert.AreEqual(theClass.OneProperty, theClass2.OneProperty);
 
-			// verify the same results through Criteria & Load were achieved
-			Assert.AreSame(theClass2, theClass2Copy);
+				Assert.AreEqual(theSecondClass.Id, theSecondClass2.Id);
+				Assert.AreEqual(theSecondClass.OneProperty, theSecondClass2.OneProperty);
 
-			// compare them to the objects created in the first session
-			Assert.AreEqual(theClass.Id, theClass2.Id);
-			Assert.AreEqual(theClass.OneProperty, theClass2.OneProperty);
+				// test the update functionallity
+				theClass2.OneProperty = 6;
+				theSecondClass2.OneProperty = 11;
 
-			Assert.AreEqual(theSecondClass.Id, theSecondClass2.Id);
-			Assert.AreEqual(theSecondClass.OneProperty, theSecondClass2.OneProperty);
+				s2.Update(theClass2);
+				s2.Update(theSecondClass2);
 
-			// test the update functionallity
-			theClass2.OneProperty = 6;
-			theSecondClass2.OneProperty = 11;
-
-			s2.Update(theClass2);
-			s2.Update(theSecondClass2);
-
-			t2.Commit();
-			s2.Close();
+				t2.Commit();
+			}
 
 			// lets verify the update went through
-			ISession s3 = OpenSession();
-			ITransaction t3 = s3.BeginTransaction();
+			using (ISession s3 = OpenSession())
+			using (ITransaction t3 = s3.BeginTransaction())
+			{
+				ClassWithCompositeId theClass3 = (ClassWithCompositeId) s3.Load(typeof(ClassWithCompositeId), id);
+				ClassWithCompositeId theSecondClass3 = (ClassWithCompositeId) s3.Load(typeof(ClassWithCompositeId), secondId);
 
-			ClassWithCompositeId theClass3 = (ClassWithCompositeId) s3.Load(typeof(ClassWithCompositeId), id);
-			ClassWithCompositeId theSecondClass3 = (ClassWithCompositeId) s3.Load(typeof(ClassWithCompositeId), secondId);
+				// check the update properties
+				Assert.AreEqual(theClass3.OneProperty, theClass2.OneProperty);
+				Assert.AreEqual(theSecondClass3.OneProperty, theSecondClass2.OneProperty);
 
-			// check the update properties
-			Assert.AreEqual(theClass3.OneProperty, theClass2.OneProperty);
-			Assert.AreEqual(theSecondClass3.OneProperty, theSecondClass2.OneProperty);
+				// test the delete method
+				s3.Delete(theClass3);
+				s3.Delete(theSecondClass3);
 
-			// test the delete method
-			s3.Delete(theClass3);
-			s3.Delete(theSecondClass3);
-
-			t3.Commit();
-			s3.Close();
+				t3.Commit();
+			}
 
 			// lets verify the delete went through
-			ISession s4 = OpenSession();
-
-			try
+			using (ISession s4 = OpenSession())
 			{
-				ClassWithCompositeId theClass4 = (ClassWithCompositeId) s4.Load(typeof(ClassWithCompositeId), id);
+				try
+				{
+					ClassWithCompositeId theClass4 = (ClassWithCompositeId) s4.Load(typeof(ClassWithCompositeId), id);
+				}
+				catch (ObjectNotFoundException)
+				{
+					// I expect this to be thrown because the object no longer exists...
+				}
+
+				IList results = s4.CreateCriteria(typeof(ClassWithCompositeId))
+				                  .Add(Expression.Eq("Id", secondId))
+				                  .List();
+
+				Assert.AreEqual(0, results.Count);
 			}
-			catch (ObjectNotFoundException onfe)
-			{
-				// I expect this to be thrown because the object no longer exists...
-				Assert.IsNotNull(onfe); //getting ride of 'onfe' is never used compile warning
-			}
-
-			IList results = s4.CreateCriteria(typeof(ClassWithCompositeId))
-				.Add(Expression.Eq("Id", secondId))
-				.List();
-
-			Assert.AreEqual(0, results.Count);
-
-			s4.Close();
 		}
 
 		[Test]
@@ -178,53 +180,53 @@ namespace NHibernate.Test.CompositeId
 
 			// add the new instance to the session so I have something to get results 
 			// back for
-			ISession s = OpenSession();
-			s.Save(cId);
-			s.Flush();
-			s.Close();
+			using (ISession s = OpenSession())
+			{
+				s.Save(cId);
+				s.Flush();
+			}
 
-			s = OpenSession();
-			ICriteria c = s.CreateCriteria(typeof(ClassWithCompositeId));
-			c.Add(Expression.Eq("Id", id));
+			using (ISession s = OpenSession())
+			{
+				ICriteria c = s.CreateCriteria(typeof(ClassWithCompositeId));
+				c.Add(Expression.Eq("Id", id));
 
-			// right now just want to see if the Criteria is valid
-			IList results = c.List();
+				// right now just want to see if the Criteria is valid
+				IList results = c.List();
 
-			Assert.AreEqual(1, results.Count);
-
-			s.Close();
+				Assert.AreEqual(1, results.Count);
+			}
 		}
 
 		[Test]
 		public void Hql()
 		{
 			// insert the new objects
-			ISession s = OpenSession();
-			ITransaction t = s.BeginTransaction();
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				ClassWithCompositeId theClass = new ClassWithCompositeId(id);
+				theClass.OneProperty = 5;
 
-			ClassWithCompositeId theClass = new ClassWithCompositeId(id);
-			theClass.OneProperty = 5;
+				ClassWithCompositeId theSecondClass = new ClassWithCompositeId(secondId);
+				theSecondClass.OneProperty = 10;
 
-			ClassWithCompositeId theSecondClass = new ClassWithCompositeId(secondId);
-			theSecondClass.OneProperty = 10;
+				s.Save(theClass);
+				s.Save(theSecondClass);
 
-			s.Save(theClass);
-			s.Save(theSecondClass);
+				t.Commit();
+			}
 
-			t.Commit();
-			s.Close();
+			using (ISession s2 = OpenSession())
+			{
+				IQuery hql = s2.CreateQuery("from ClassWithCompositeId as cwid where cwid.Id.KeyString = :keyString");
 
-			ISession s2 = OpenSession();
+				hql.SetString("keyString", id.KeyString);
 
-			IQuery hql = s2.CreateQuery("from ClassWithCompositeId as cwid where cwid.Id.KeyString = :keyString");
+				IList results = hql.List();
 
-			hql.SetString("keyString", id.KeyString);
-
-			IList results = hql.List();
-
-			Assert.AreEqual(1, results.Count);
-
-			s2.Close();
+				Assert.AreEqual(1, results.Count);
+			}
 		}
 	}
 }

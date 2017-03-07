@@ -28,11 +28,18 @@ namespace NHibernate.Mapping
 		}
 
 		private bool isIgnoreNotFound = false;
+		private bool isLogicalOneToOne;
 
 		public bool IsIgnoreNotFound
 		{
 			get { return isIgnoreNotFound; }
 			set { isIgnoreNotFound = value; }
+		}
+
+		public bool IsLogicalOneToOne
+		{
+			get { return isLogicalOneToOne; }
+			set { isLogicalOneToOne = value; }
 		}
 
 		private IType type;
@@ -43,7 +50,7 @@ namespace NHibernate.Mapping
 				if (type == null)
 				{
 					type =
-						TypeFactory.ManyToOne(ReferencedEntityName, ReferencedPropertyName, IsLazy, UnwrapProxy, Embedded, IsIgnoreNotFound);
+						TypeFactory.ManyToOne(ReferencedEntityName, ReferencedPropertyName, IsLazy, UnwrapProxy, Embedded, IsIgnoreNotFound, isLogicalOneToOne);
 				}
 				return type;
 			}

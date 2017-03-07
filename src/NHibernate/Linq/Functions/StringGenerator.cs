@@ -18,9 +18,22 @@ namespace NHibernate.Linq.Functions
 		public HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments,
 		                            HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
-			return treeBuilder.Like(
-				visitor.Visit(arguments[0]).AsExpression(),
-				visitor.Visit(arguments[1]).AsExpression());
+			if (arguments.Count == 2)
+			{
+				return treeBuilder.Like(
+					visitor.Visit(arguments[0]).AsExpression(),
+					visitor.Visit(arguments[1]).AsExpression());
+			}
+			if (arguments[2].NodeType == ExpressionType.Constant)
+			{
+				var escapeCharExpression = (ConstantExpression)arguments[2];
+				return treeBuilder.Like(
+					visitor.Visit(arguments[0]).AsExpression(),
+					visitor.Visit(arguments[1]).AsExpression(),
+					treeBuilder.Constant(escapeCharExpression.Value));
+			}
+			throw new ArgumentException("The escape character must be specified as literal value or a string variable");
+
 		}
 
 		public bool SupportsMethod(MethodInfo method)
@@ -34,7 +47,7 @@ namespace NHibernate.Linq.Functions
 			// to avoid referencing Linq2Sql or Linq2NHibernate, if they so wish.
 
 			return method != null && method.Name == "Like" &&
-			       method.GetParameters().Length == 2 &&
+			       (method.GetParameters().Length == 2 || method.GetParameters().Length == 3) &&
 			       method.DeclaringType != null &&
 			       method.DeclaringType.FullName.EndsWith("SqlMethods");
 		}
@@ -183,17 +196,23 @@ namespace NHibernate.Linq.Functions
 		}
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
+			HqlMethodCall locate;
 			if (arguments.Count == 1)
 			{
-				return treeBuilder.MethodCall("locate",
-						visitor.Visit(arguments[0]).AsExpression(),
-						visitor.Visit(targetObject).AsExpression());//,
-						//treeBuilder.Constant(0));
-			}
-			return treeBuilder.MethodCall("locate",
+				locate = treeBuilder.MethodCall("locate",
 					visitor.Visit(arguments[0]).AsExpression(),
-					visitor.Visit(targetObject).AsExpression(),
-					visitor.Visit(arguments[1]).AsExpression());
+					visitor.Visit(targetObject).AsExpression()); //,
+				//treeBuilder.Constant(0));
+			}
+			else
+			{
+				var start = treeBuilder.Add(visitor.Visit(arguments[1]).AsExpression(), treeBuilder.Constant(1));
+				locate = treeBuilder.MethodCall("locate",
+							visitor.Visit(arguments[0]).AsExpression(),
+							visitor.Visit(targetObject).AsExpression(),
+							start);
+			}
+			return treeBuilder.Subtract(locate,treeBuilder.Constant(1));
 		}
 	}
 

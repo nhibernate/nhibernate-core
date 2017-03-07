@@ -6,7 +6,7 @@ using NHibernate.Type;
 namespace NHibernate
 {
 	/// <summary>
-	/// Combines sevaral queries into a single database call
+	/// Combines several queries into a single database call
 	/// </summary>
 	public interface IMultiQuery
 	{

@@ -203,7 +203,7 @@ ISession session = sessions.OpenSession(conn);
             <tbody>
             <row>
                 <entry>
-                    <literal>connection.provider_class</literal>
+                    <literal>connection.provider</literal>
                 </entry>
                 <entry>
                     The type of a custom <literal>IConnectionProvider</literal>.
@@ -344,9 +344,9 @@ ISession session = sessions.OpenSession(conn);
         </para>
 
         <para>
-            You may define your own plugin strategy for obtaining ADO.NET connections by implementing the
+            You may define your own plug-in strategy for obtaining ADO.NET connections by implementing the
             interface <literal>NHibernate.Connection.IConnectionProvider</literal>. You may select
-            a custom implementation by setting <literal>connection.provider_class</literal>.
+            a custom implementation by setting <literal>connection.provider</literal>.
         </para>
 
     </sect1>
@@ -386,7 +386,7 @@ ISession session = sessions.OpenSession(conn);
                             <literal>dialect</literal>
                         </entry>
                         <entry>
-                            The classname of a NHibernate <literal>Dialect</literal> - enables
+                            The class name of a NHibernate <literal>Dialect</literal> - enables
                             certain platform dependent features.
                             <para>
                                 <emphasis role="strong">eg.</emphasis> 
@@ -399,7 +399,7 @@ ISession session = sessions.OpenSession(conn);
                             <literal>default_schema</literal>
                         </entry>
                         <entry>
-                            Qualify unqualified tablenames with the given schema/tablespace
+                            Qualify unqualified table names with the given schema/table-space
                             in generated SQL.
                             <para>
                                 <emphasis role="strong">eg.</emphasis> 
@@ -458,7 +458,7 @@ ISession session = sessions.OpenSession(conn);
                             <literal>cache.provider_class</literal>
                         </entry>
                         <entry>
-                            The classname of a custom <literal>ICacheProvider</literal>.
+                            The class name of a custom <literal>ICacheProvider</literal>.
                             <para>
                                 <emphasis role="strong">eg.</emphasis> 
                                 <literal>classname.of.CacheProvider, assembly</literal>
@@ -495,7 +495,7 @@ ISession session = sessions.OpenSession(conn);
                             <literal>cache.query_cache_factory</literal>
                         </entry>
                         <entry>
-                            The classname of a custom <literal>IQueryCacheFactory</literal> interface,
+                            The class name of a custom <literal>IQueryCacheFactory</literal> interface,
                             defaults to the built-in <literal>StandardQueryCacheFactory</literal>.
                             <para>
                                 <emphasis role="strong">eg.</emphasis>
@@ -599,7 +599,7 @@ ISession session = sessions.OpenSession(conn);
                             <literal>transaction.factory_class</literal>
                         </entry>
                         <entry>
-                            The classname of a custom <literal>ITransactionFactory</literal> implementation,
+                            The class name of a custom <literal>ITransactionFactory</literal> implementation,
                             defaults to the built-in <literal>AdoNetWithDistributedTransactionFactory</literal>.
                             <para>
                                 <emphasis role="strong">eg.</emphasis> 
@@ -691,13 +691,18 @@ ISession session = sessions.OpenSession(conn);
                             <entry></entry>
                         </row>
                         <row>
-                            <entry>Oracle 9</entry> 
+                            <entry>Oracle 9i</entry> 
                             <entry><literal>NHibernate.Dialect.Oracle9iDialect</literal></entry>
                             <entry></entry>
                         </row>
                         <row>
-                            <entry>Oracle 10g</entry> 
+                            <entry>Oracle 10g, Oracle 11g</entry> 
                             <entry><literal>NHibernate.Dialect.Oracle10gDialect</literal></entry>
+                            <entry></entry>
+                        </row>
+                        <row>
+                            <entry>Oracle 12c</entry> 
+                            <entry><literal>NHibernate.Dialect.Oracle12cDialect</literal></entry>
                             <entry></entry>
                         </row>
                         <row>

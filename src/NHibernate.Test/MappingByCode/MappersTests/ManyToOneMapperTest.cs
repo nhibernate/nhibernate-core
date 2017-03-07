@@ -38,16 +38,6 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		}
 
 		[Test]
-		public void AutoCleanUnsupportedCascadeStyle()
-		{
-			var hbmMapping = new HbmMapping();
-			var hbm = new HbmManyToOne();
-			var mapper = new ManyToOneMapper(null, hbm, hbmMapping);
-			mapper.Cascade(Mapping.ByCode.Cascade.Persist | Mapping.ByCode.Cascade.DeleteOrphans | Mapping.ByCode.Cascade.Remove);
-			Assert.True(hbm.cascade.Split(',').Select(w => w.Trim()).All(w => !w.Contains("orphan")));
-		}
-
-		[Test]
 		public void CanSetAccessor()
 		{
 			var hbmMapping = new HbmMapping();
@@ -254,7 +244,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 
 			mapper.Class(typeof(Relation));
 
-			Assert.That(mapping.Class, Is.StringContaining("Relation").And.Not.Contains("IRelation"));
+			Assert.That(mapping.Class, Does.Contain("Relation").And.Not.Contains("IRelation"));
 		}
 
 		[Test]
