@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Visitors;
-using System.Collections.ObjectModel;
 
 namespace NHibernate.Linq.Functions
 {
@@ -14,6 +11,12 @@ namespace NHibernate.Linq.Functions
 	{
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
+			var mce = targetObject as MethodCallExpression;
+			if (mce != null)
+			{
+				return treeBuilder.Cast(visitor.Visit(mce.Arguments[0]).AsExpression(), typeof(T));
+			}
+
 			return treeBuilder.Cast(visitor.Visit(arguments[0]).AsExpression(), typeof(T));
 		}
 	}

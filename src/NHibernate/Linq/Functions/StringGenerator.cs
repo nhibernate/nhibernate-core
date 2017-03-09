@@ -300,6 +300,12 @@ namespace NHibernate.Linq.Functions
 
 		public HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
+			var mce = targetObject as MethodCallExpression;
+			if (mce != null)
+			{
+				return treeBuilder.MethodCall("str", visitor.Visit(mce.Arguments[0]).AsExpression());
+			}
+
 			return treeBuilder.MethodCall("str", visitor.Visit(targetObject).AsExpression());
 		}
 	}
