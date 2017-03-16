@@ -42,6 +42,7 @@
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\Debug-2.0\</IntermediateOutputPath>
     <DefineConstants>NET_4_0,FEATURE_SERIALIZATION,FEATURE_LEGACY_REFLECTION_API</DefineConstants>
+    <DefineConstants>NET_4_0,FEATURE_ADONET_SQLCOMMANDSET,FEATURE_APPDOMAIN,FEATURE_ASSEMBLYBUILDER_SAVE,FEATURE_BINDINGLIST,FEATURE_CODEDOM,FEATURE_DATA_CLOSE,FEATURE_DATA_GETSCHEMATABLE,FEATURE_DBPROVIDERFACTORIES,FEATURE_ODBC_OLEDB,FEATURE_REFLECTEDTYPE,FEATURE_REMOTING,FEATURE_SECURITY_PERMISSIONS,FEATURE_SERIALIZATION,FEATURE_STRING_INTERN,FEATURE_SYSTEM_CONFIGURATION,FEATURE_SYSTEM_SERVICEMODEL,FEATURE_SYSTEM_TRANSACTIONS,FEATURE_WEB_SESSION_CONTEXT,FEATURE_XML_SCHEMAS,FEATURE_XML_VALIDATIONEVENTHANDLER</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug-2.0\NHibernate.XML</DocumentationFile>
@@ -153,12 +154,11 @@
     <Compile Include="Collection\Generic\SetHelpers\ISetSnapshot.cs" />
     <Compile Include="Collection\Generic\SetHelpers\SetSnapShot.cs" />
     <Compile Include="Compat\CustomAttributeExtensions.cs" />
+    <Compile Include="Compat\AppContext.cs" />
     <Compile Include="Compat\DesignerCategoryAttribute.cs" />
     <Compile Include="Compat\ICloneable.cs" />
-    <Compile Include="Compat\IntrospectionExtensions.cs" />
     <Compile Include="Compat\InvalidExpressionException.cs" />
     <Compile Include="Compat\NonSerializedAttribute.cs" />
-    <Compile Include="Compat\RuntimeReflectionExtensions.cs" />
     <Compile Include="Compat\SerializableAttribute.cs" />
     <Compile Include="Compat\TypeReflectionExtensions.cs" />
     <Compile Include="Connection\ConnectionProvider.cs" />

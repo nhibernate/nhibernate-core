@@ -179,7 +179,7 @@ namespace NHibernate.Bytecode
 			methodBuilder.SetImplementationFlags(
 				MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
 
-			return delegateBuilder.CreateType();
+			return delegateBuilder.CreateTypeInfo().AsType();
 		}
 
 		public static void EmitLoadType(ILGenerator il, System.Type type)
