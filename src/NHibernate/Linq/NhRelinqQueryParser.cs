@@ -12,6 +12,7 @@ using Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation;
 using Remotion.Linq.Parsing.Structure;
 using Remotion.Linq.Parsing.Structure.IntermediateModel;
 using Remotion.Linq.Parsing.Structure.NodeTypeProviders;
+using Remotion.Linq.Parsing.Structure.ExpressionTreeProcessors;
 
 namespace NHibernate.Linq
 {
@@ -26,9 +27,11 @@ namespace NHibernate.Linq
 			transformerRegistry.Register(new RemoveRedundantCast());
 			transformerRegistry.Register(new SimplifyCompareTransformer());
 
-			var processor = ExpressionTreeParser.CreateDefaultProcessor(transformerRegistry);
-			// Add custom processors here:
-			// processor.InnerProcessors.Add (new MyExpressionTreeProcessor());
+			// If needing a compound processor for adding other processing, do not use
+			// ExpressionTreeParser.CreateDefaultProcessor(transformerRegistry), it would
+			// cause NH-3961 again by including a PartialEvaluatingExpressionTreeProcessor.
+			// Directly instanciate a CompoundExpressionTreeProcessor instead.
+			var processor = new TransformingExpressionTreeProcessor(transformerRegistry);
 
 			var nodeTypeProvider = new NHibernateNodeTypeProvider();
 
