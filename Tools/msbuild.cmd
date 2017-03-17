@@ -1,5 +1,5 @@
 @echo off
-set MSBuildSDKsPath=%ProgramFiles%\dotnet\sdk\1.0.1\Sdks
+set MSBuildSDKsPath="C:\Program Files\dotnet\sdk\1.0.1\Sdks"
 
 set pre=Microsoft.VisualStudio.Product.
 set ids=%pre%Community %pre%Professional %pre%Enterprise %pre%BuildTools
