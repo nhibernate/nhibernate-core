@@ -13,3 +13,4 @@ current-test-configuration
 NHibernate.dll
 TestResult.xml
 /src/packages
+*.lock.json

@@ -1,7 +1,7 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.26114.2
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Support", "Support", "{9BDB5C84-14EC-4384-B423-9E319675B3CA}"
 	ProjectSection(FolderStartupServices) = postProject
@@ -97,6 +97,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AssemblyInfo", "AssemblyInf
 		SharedAssemblyInfo.cs = SharedAssemblyInfo.cs
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NHibernate", "NHibernate", "{A894DB23-2F62-454A-8A98-E95856EE44D2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "backup", "NHibernate\backup\backup.csproj", "{916E69DF-190C-4D84-A249-93803E04387B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|.NET = Debug|.NET
@@ -105,6 +109,10 @@ Global
 		Release|.NET = Release|.NET
 		Release|Any CPU = Release|Any CPU
 		Release|Mixed Platforms = Release|Mixed Platforms
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Debug|.NET.ActiveCfg = Debug|Any CPU
@@ -166,6 +174,18 @@ Global
 		{7C2EF610-BCA0-4D1F-898A-DE9908E4970C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7C2EF610-BCA0-4D1F-898A-DE9908E4970C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{7C2EF610-BCA0-4D1F-898A-DE9908E4970C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{916E69DF-190C-4D84-A249-93803E04387B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{916E69DF-190C-4D84-A249-93803E04387B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{916E69DF-190C-4D84-A249-93803E04387B}.Debug|x64.ActiveCfg = Debug|x64
+		{916E69DF-190C-4D84-A249-93803E04387B}.Debug|x64.Build.0 = Debug|x64
+		{916E69DF-190C-4D84-A249-93803E04387B}.Debug|x86.ActiveCfg = Debug|x86
+		{916E69DF-190C-4D84-A249-93803E04387B}.Debug|x86.Build.0 = Debug|x86
+		{916E69DF-190C-4D84-A249-93803E04387B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{916E69DF-190C-4D84-A249-93803E04387B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{916E69DF-190C-4D84-A249-93803E04387B}.Release|x64.ActiveCfg = Release|x64
+		{916E69DF-190C-4D84-A249-93803E04387B}.Release|x64.Build.0 = Release|x64
+		{916E69DF-190C-4D84-A249-93803E04387B}.Release|x86.ActiveCfg = Release|x86
+		{916E69DF-190C-4D84-A249-93803E04387B}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -173,15 +193,12 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{094F74CD-2DD7-496F-BC48-A6D357BF33FD} = {28EA2C84-8295-49ED-BC67-803B7778513E}
 		{92509065-DAEA-4457-8300-C7B64CD0E9F4} = {28EA2C84-8295-49ED-BC67-803B7778513E}
-		{4CE16C2F-EFF6-48A4-99BC-8984DCC143FA} = {9BDB5C84-14EC-4384-B423-9E319675B3CA}
-		{1631B0BA-59AC-4F0D-B300-3F64CC7579C9} = {9BDB5C84-14EC-4384-B423-9E319675B3CA}
-		{936E50BD-4027-4864-ADE9-423C3FBF7FFB} = {9BDB5C84-14EC-4384-B423-9E319675B3CA}
 		{5909BFE7-93CF-4E5F-BE22-6293368AF01D} = {094F74CD-2DD7-496F-BC48-A6D357BF33FD}
 		{5C649B55-1B3F-4C38-9998-1B043E94A244} = {094F74CD-2DD7-496F-BC48-A6D357BF33FD}
 		{7AEE5B37-C552-4E59-9B6F-88755BCB5070} = {094F74CD-2DD7-496F-BC48-A6D357BF33FD}
 		{446E148D-A9D5-4D7D-A706-BEDD45B2BC7D} = {92509065-DAEA-4457-8300-C7B64CD0E9F4}
 		{7C2EF610-BCA0-4D1F-898A-DE9908E4970C} = {094F74CD-2DD7-496F-BC48-A6D357BF33FD}
-		{00C03FBC-6720-4917-A203-DEA12FF3C7BF} = {9BDB5C84-14EC-4384-B423-9E319675B3CA}
+		{916E69DF-190C-4D84-A249-93803E04387B} = {A894DB23-2F62-454A-8A98-E95856EE44D2}
 	EndGlobalSection
 	GlobalSection(TextTemplating) = postSolution
 		TextTemplating = 1
