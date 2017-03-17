@@ -356,15 +356,15 @@ namespace NHibernate.Engine
 					// associated with the action...)
 					int lastPos = nameList.LastIndexOf(thisEntityName);
 					object[] states = action.State;
-					for (int i = 0; i < states.Length; i++)
+					for (int j = lastPos + 1; j < nameList.Count; j++)
 					{
-						for (int j = 0; j < nameList.Count; j++)
+						List<EntityInsertAction> tmpList = positionToAction[j];
+						for (int k = 0; k < tmpList.Count; k++)
 						{
-							List<EntityInsertAction> tmpList = positionToAction[j];
-							for (int k = 0; k < tmpList.Count; k++)
+							EntityInsertAction checkAction = tmpList[k];
+							for (int i = 0; i < states.Length; i++)
 							{
-								EntityInsertAction checkAction = tmpList[k];
-								if (checkAction.Instance == states[i] && j > lastPos)
+								if (checkAction.Instance == states[i])
 								{
 									// 'checkAction' is inserting an entity upon which 'action' depends...
 									// note: this is an assumption and may not be correct in the case of one-to-one
