@@ -8,13 +8,13 @@
   <para>
     The Linq provider works as an extension of the <literal>ISession</literal>. It is defined in the
     <literal>NHibernate.Linq</literal> namespace, so this namespace has to be imported for using the
-    Linq provider. Of course, the LINQ namespace is still needed too.
+    Linq provider. Of course, the Linq namespace is still needed too.
   </para>
   <programlisting><![CDATA[using System.Linq;
 using NHibernate.Linq;]]></programlisting>
   <para>
     Note: NHibernate has another querying API which uses lambda, <link linkend="queryqueryover">QueryOver</link>.
-    It should not be confused with a LINQ provider.
+    It should not be confused with a Linq provider.
   </para>
 
   <sect1 id="querylinq-querystructure">
@@ -545,9 +545,10 @@ IList<Cat> cats =
     }
 }]]></programlisting>
       <para>
-        It is required that at least one of the parameters of the method call has its value originating
-        from an entity. Otherwise, the Linq provider will try to evaluate the method call with .Net
-        runtime.
+        The method call will always be translated to SQL if at least one of the parameters of the
+        method call has its value originating from an entity. Otherwise, the Linq provider will try to
+        evaluate the method call with .Net runtime instead. Since NHibernate 5.0, if this runtime
+        evaluation fails (throws an exception), then the method call will be translated to SQL too.
       </para>
     </sect2>
 
@@ -565,7 +566,7 @@ IList<Cat> cats =
       <para>&nbsp;</para>
       <para>
         As an example, here is how to add support for an <literal>AsNullable</literal> method which
-        would allow to call aggregates which lay yield <literal>null</literal> without to explicitly
+        would allow to call aggregates which may yield <literal>null</literal> without to explicitly
         cast to the nullable type of the aggregate.
       </para>
       <programlisting><![CDATA[public static class NullableExtensions
@@ -579,7 +580,7 @@ IList<Cat> cats =
     }
 }]]></programlisting>
       <para>
-        Adding support in Linq to NHibernate for this custom method requires a generator. For this 
+        Adding support in Linq to NHibernate for a custom method requires a generator. For this
         <literal>AsNullable</literal> method, we need a method generator, declaring statically its
         supported method.
       </para>
@@ -612,8 +613,8 @@ IList<Cat> cats =
       </para>
       <para>
         For adding <literal>AsNullableGenerator</literal> in Linq to NHibernate provider, a new
-        generators registry should be used. Derive from the default one and merge it. (Static
-        declaration of method support case.)
+        generators registry should be used. Derive from the default one and merge it. (Here we
+        have a static declaration of method support case.)
       </para>
       <programlisting><![CDATA[public class ExtendedLinqToHqlGeneratorsRegistry :
 DefaultLinqToHqlGeneratorsRegistry
