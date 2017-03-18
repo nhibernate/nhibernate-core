@@ -24,6 +24,7 @@ namespace NHibernate.Proxy.DynamicProxy
 		private static readonly MethodInfo getMethodFromHandle = typeof (MethodBase).GetMethod("GetMethodFromHandle", new[] {typeof (RuntimeMethodHandle)});
 		private static readonly MethodInfo getTypeFromHandle = typeof(System.Type).GetMethod("GetTypeFromHandle");
 		private static readonly MethodInfo handlerMethod = typeof (IInterceptor).GetMethod("Intercept");
+		private static readonly MethodInfo getArguments = typeof(InvocationInfo).GetMethod("get_Arguments");
 
 		private static readonly ConstructorInfo infoConstructor = typeof (InvocationInfo).GetConstructor(new[]
 			{
@@ -118,7 +119,6 @@ namespace NHibernate.Proxy.DynamicProxy
 		private static void SaveRefArguments(ILGenerator IL, ParameterInfo[] parameters)
 		{
 			// Save the arguments returned from the handler method
-			MethodInfo getArguments = typeof (InvocationInfo).GetMethod("get_Arguments");
 			IL.Emit(OpCodes.Ldloc_1);
 			IL.Emit(OpCodes.Call, getArguments);
 			IL.Emit(OpCodes.Stloc_0);
