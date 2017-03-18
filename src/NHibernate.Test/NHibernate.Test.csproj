@@ -100,8 +100,6 @@
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-  </ItemGroup>
-  <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
     <Reference Include="Remotion.Linq, Version=1.15.15.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
       <HintPath>..\packages\Remotion.Linq.1.15.15.0\lib\portable-net45+wp80+wpa81+win\Remotion.Linq.dll</HintPath>
     </Reference>
