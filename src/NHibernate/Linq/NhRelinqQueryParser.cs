@@ -53,18 +53,26 @@ namespace NHibernate.Linq
 		{
 			var methodInfoRegistry = new MethodInfoBasedNodeTypeRegistry();
 
-			methodInfoRegistry.Register(new[] { typeof(EagerFetchingExtensionMethods).GetMethod("Fetch") }, typeof(FetchOneExpressionNode));
-			methodInfoRegistry.Register(new[] { typeof(EagerFetchingExtensionMethods).GetMethod("FetchMany") }, typeof(FetchManyExpressionNode));
-			methodInfoRegistry.Register(new[] { typeof(EagerFetchingExtensionMethods).GetMethod("ThenFetch") }, typeof(ThenFetchOneExpressionNode));
-			methodInfoRegistry.Register(new[] { typeof(EagerFetchingExtensionMethods).GetMethod("ThenFetchMany") }, typeof(ThenFetchManyExpressionNode));
+			methodInfoRegistry.Register(
+				new[] { ReflectionHelper.GetMethodDefinition(() => EagerFetchingExtensionMethods.Fetch<object, object>(null, null)) },
+				typeof(FetchOneExpressionNode));
+			methodInfoRegistry.Register(
+				new[] { ReflectionHelper.GetMethodDefinition(() => EagerFetchingExtensionMethods.FetchMany<object, object>(null, null)) },
+				typeof(FetchManyExpressionNode));
+			methodInfoRegistry.Register(
+				new[] { ReflectionHelper.GetMethodDefinition(() => EagerFetchingExtensionMethods.ThenFetch<object, object, object>(null, null)) },
+				typeof(ThenFetchOneExpressionNode));
+			methodInfoRegistry.Register(
+				new[] { ReflectionHelper.GetMethodDefinition(() => EagerFetchingExtensionMethods.ThenFetchMany<object, object, object>(null, null)) },
+				typeof(ThenFetchManyExpressionNode));
 
 			methodInfoRegistry.Register(
 				new[]
-					{
-						typeof(LinqExtensionMethods).GetMethod("Cacheable"),
-						typeof(LinqExtensionMethods).GetMethod("CacheMode"),
-						typeof(LinqExtensionMethods).GetMethod("CacheRegion"),
-					}, typeof(CacheableExpressionNode));
+				{
+					ReflectionHelper.GetMethodDefinition(() => LinqExtensionMethods.Cacheable<object>(null)),
+					ReflectionHelper.GetMethodDefinition(() => LinqExtensionMethods.CacheMode<object>(null, CacheMode.Normal)),
+					ReflectionHelper.GetMethodDefinition(() => LinqExtensionMethods.CacheRegion<object>(null, null)),
+				}, typeof(CacheableExpressionNode));
 
 			methodInfoRegistry.Register(
 				new[]
