@@ -95,40 +95,9 @@ namespace NHibernate.Util
 		/// <param name="from"></param>
 		public static void AddAll(IList to, IList from)
 		{
-			System.Action addNull = null;
 			foreach (object obj in from)
 			{
-				// There is bug in .NET, before version 4, where adding null to a List<Nullable<T>> through the non-generic IList interface throws an exception.
-				// TODO: Everything but the to.Add(obj) should be conditionally compiled only for versions of .NET earlier than 4.
-				if (obj == null)
-				{
-					if (addNull == null)
-					{
-						var toType = to.GetType();
-						if (toType.IsGenericType &&
-							toType.GetGenericTypeDefinition() == typeof(List<>) &&
-							toType.GetGenericArguments()[0].IsNullable())
-						{
-							MethodInfo addMethod = toType.GetMethod("Add");
-							var addMethodCall =	System.Linq.Expressions.Expression.Call(System.Linq.Expressions.Expression.Constant(to),
-																		addMethod,
-																		System.Linq.Expressions.Expression.Constant(null, toType.GetGenericArguments()[0]));
-							System.Linq.Expressions.LambdaExpression addLambda =
-								System.Linq.Expressions.Expression.Lambda(addMethodCall);
-
-							addNull = (System.Action)addLambda.Compile();
-						}
-						else
-						{
-							addNull = () => to.Add(null);
-						}
-					}
-					addNull();
-				}
-				else
-				{
-					to.Add(obj);
-				}
+				to.Add(obj);
 			}
 		}
 
