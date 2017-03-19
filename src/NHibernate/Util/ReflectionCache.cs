@@ -16,6 +16,7 @@ namespace NHibernate.Util
 		//  - If the method is generic, suffix it with "On" followed by its generic parameter type names.
 		// Avoid caching here narrow cases, such as those using specific types and unlikely to be used by many classes.
 		// Cache them instead in classes using them.
+
 		internal static class EnumerableMethods
 		{
 			internal static readonly MethodInfo AggregateDefinition =
@@ -39,6 +40,20 @@ namespace NHibernate.Util
 
 			internal static readonly MethodInfo ToListDefinition =
 				ReflectionHelper.GetMethodDefinition(() => Enumerable.ToList<object>(null));
+		}
+
+		internal static class MethodBaseMethods
+		{
+			internal static readonly MethodInfo GetMethodFromHandle =
+				ReflectionHelper.GetMethod(() => MethodBase.GetMethodFromHandle(new RuntimeMethodHandle()));
+			internal static readonly MethodInfo GetMethodFromHandleWithDeclaringType =
+				ReflectionHelper.GetMethod(() => MethodBase.GetMethodFromHandle(new RuntimeMethodHandle(), new RuntimeTypeHandle()));
+		}
+
+		internal static class TypeMethods
+		{
+			internal static readonly MethodInfo GetTypeFromHandle =
+				ReflectionHelper.GetMethod(() => System.Type.GetTypeFromHandle(new RuntimeTypeHandle()));
 		}
 	}
 }

@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Security;
 using System.Security.Permissions;
+using NHibernate.Linq;
 using NHibernate.Properties;
 using NHibernate.Util;
 
@@ -118,8 +119,8 @@ namespace NHibernate.Bytecode.Lightweight
 			}
 		}
 
-		private static readonly MethodInfo GetterCallbackInvoke = typeof (GetterCallback).GetMethod(
-			"Invoke", new[] { typeof (object), typeof (int) });
+		private static readonly MethodInfo GetterCallbackInvoke = ReflectionHelper.GetMethod<GetterCallback>(
+			g => g.Invoke(null, 0));
 
 		/// <summary>
 		/// Generates a dynamic method on the given type.
@@ -184,8 +185,8 @@ namespace NHibernate.Bytecode.Lightweight
 			return (GetPropertyValuesInvoker) method.CreateDelegate(typeof (GetPropertyValuesInvoker));
 		}
 
-		private static readonly MethodInfo SetterCallbackInvoke = typeof(SetterCallback).GetMethod(
-			"Invoke", new[] { typeof(object), typeof(int), typeof(object) });
+		private static readonly MethodInfo SetterCallbackInvoke = ReflectionHelper.GetMethod<SetterCallback>(
+			g => g.Invoke(null, 0, null));
 
 		/// <summary>
 		/// Generates a dynamic method on the given type.

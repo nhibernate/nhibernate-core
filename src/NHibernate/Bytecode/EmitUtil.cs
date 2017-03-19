@@ -2,6 +2,8 @@ using System;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Collections.Generic;
+using NHibernate.Linq;
+using NHibernate.Util;
 
 namespace NHibernate.Bytecode
 {
@@ -185,22 +187,18 @@ namespace NHibernate.Bytecode
 		public static void EmitLoadType(ILGenerator il, System.Type type)
 		{
 			il.Emit(OpCodes.Ldtoken, type);
-			il.Emit(OpCodes.Call, typeof(System.Type).GetMethod("GetTypeFromHandle"));
+			il.Emit(OpCodes.Call, ReflectionCache.TypeMethods.GetTypeFromHandle);
 		}
-
-		private static readonly MethodInfo GetMethodFromHandle = typeof(MethodBase).GetMethod(
-			"GetMethodFromHandle", new System.Type[] { typeof(RuntimeMethodHandle) });
 
 		public static void EmitLoadMethodInfo(ILGenerator il, MethodInfo methodInfo)
 		{
 			il.Emit(OpCodes.Ldtoken, methodInfo);
-			il.Emit(OpCodes.Call, GetMethodFromHandle);
+			il.Emit(OpCodes.Call, ReflectionCache.MethodBaseMethods.GetMethodFromHandle);
 			il.Emit(OpCodes.Castclass, typeof(MethodInfo));
 		}
 
-		private static readonly MethodInfo CreateDelegate = typeof(Delegate).GetMethod(
-				"CreateDelegate", BindingFlags.Static | BindingFlags.Public | BindingFlags.ExactBinding, null,
-				new System.Type[] { typeof(System.Type), typeof(MethodInfo) }, null);
+		private static readonly MethodInfo CreateDelegate = ReflectionHelper.GetMethod(
+			() => Delegate.CreateDelegate(null, null));
 
 		public static void EmitCreateDelegateInstance(ILGenerator il, System.Type delegateType, MethodInfo methodInfo)
 		{
