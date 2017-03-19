@@ -1,7 +1,9 @@
 using System;
+
+#if FEATURE_SERIALIZATION
 using System.Runtime.Serialization;
 using System.Security;
-using System.Security.Permissions;
+#endif
 
 namespace NHibernate
 {
@@ -61,6 +63,7 @@ namespace NHibernate
 			get { return base.Message + (type == null ? "" : type.FullName); }
 		}
 
+#if FEATURE_SERIALIZATION
 		#region ISerializable Members
 
 		/// <summary>
@@ -98,5 +101,6 @@ namespace NHibernate
 		}
 
 		#endregion
+#endif
 	}
 }

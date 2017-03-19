@@ -1,23 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>
-    </ProductVersion>
-    <SchemaVersion>
-    </SchemaVersion>
-    <ProjectGuid>{7C2EF610-BCA0-4D1F-898A-DE9908E4970C}</ProjectGuid>
+    <ProjectGuid>{F43B3253-9011-4DAE-8777-BA0D8DA850A6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>NHibernate.Test.VisualBasic</RootNamespace>
     <AssemblyName>NHibernate.Test.VisualBasic</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>Windows</MyType>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
-    <StartAction>Program</StartAction>
-    <StartProgram>$(MSBuildProjectDirectory)\..\..\Tools\nunit\nunit-x86.exe</StartProgram>
-    <StartArguments>NHibernate.Test.VisualBasic.dll</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -27,7 +20,6 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DocumentationFile>NHibernate.Test.VisualBasic.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -37,7 +29,6 @@
     <OutputPath>bin\Release\</OutputPath>
     <DocumentationFile>NHibernate.Test.VisualBasic.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <OptionExplicit>On</OptionExplicit>
@@ -52,9 +43,8 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework, Version=3.6.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.3.6.0\lib\net45\nunit.framework.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="nunit.framework, Version=3.6.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.3.6.1\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -77,19 +67,18 @@
     <Compile Include="..\SharedAssemblyInfo.vb">
       <Link>SharedAssemblyInfo.vb</Link>
     </Compile>
-    <Compile Include="AssemblyInfo.vb" />
-    <Compile Include="Issues\NH2966\Client.vb" />
-    <Compile Include="Issues\NH2966\Fixture.vb" />
-    <Compile Include="Issues\NH3302\Entity.vb" />
-    <Compile Include="Issues\NH3302\Fixture.vb" />
-    <Compile Include="Issues\NH2963\Entity.vb" />
-    <Compile Include="Issues\NH2963\Fixture.vb" />
+    <Compile Include="Issues\IssueTestCase.vb" />
     <Compile Include="Issues\NH0000\Entity.vb" />
     <Compile Include="Issues\NH0000\Fixture.vb" />
-    <Compile Include="Issues\IssueTestCase.vb" />
-    <Compile Include="Issues\NH2545\Fixture.vb" />
     <Compile Include="Issues\NH2545\Entity.vb" />
+    <Compile Include="Issues\NH2545\Fixture.vb" />
+    <Compile Include="Issues\NH2963\Entity.vb" />
+    <Compile Include="Issues\NH2963\Fixture.vb" />
+    <Compile Include="Issues\NH2966\Client.vb" />
+    <Compile Include="Issues\NH2966\Fixture.vb" />
     <Compile Include="Issues\NH2966\Order.vb" />
+    <Compile Include="Issues\NH3302\Entity.vb" />
+    <Compile Include="Issues\NH3302\Fixture.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -115,10 +104,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\NHibernate.Test\App.config">
-      <Link>App.config</Link>
-      <SubType>Designer</SubType>
-    </None>
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
@@ -131,31 +116,20 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NHibernate.Test\NHibernate.Test.csproj">
-      <Project>{7AEE5B37-C552-4E59-9B6F-88755BCB5070}</Project>
-      <Name>NHibernate.Test</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NHibernate\NHibernate.csproj">
-      <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
-      <Name>NHibernate</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Issues\NH2545\Issues.NH2545.Mappings.hbm.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Issues\NH0000\Issues.NH0000.Mappings.hbm.xml" />
-  </ItemGroup>
-  <ItemGroup>
+    <EmbeddedResource Include="Issues\NH2545\Issues.NH2545.Mappings.hbm.xml" />
     <EmbeddedResource Include="Issues\NH2966\Issues.NH2966.Mappings.hbm.xml" />
     <EmbeddedResource Include="Issues\NH3302\Issues.NH3302.Mappings.hbm.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NHibernate.Test\NHibernate.Test.csproj">
+      <Project>{1b7e9512-5b0f-45be-82ad-5ebda404bde3}</Project>
+      <Name>NHibernate.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NHibernate\NHibernate.csproj">
+      <Project>{d39e4139-6011-4db2-837e-20c9be221b9c}</Project>
+      <Name>NHibernate</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

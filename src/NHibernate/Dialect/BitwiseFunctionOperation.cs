@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Dialect.Function;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -15,7 +16,7 @@ namespace NHibernate.Dialect
 	{
 		private readonly string _functionName;
 		private SqlStringBuilder _sqlBuffer;
-		private Queue _args;
+		private Queue<object> _args;
 
 		/// <summary>
 		/// Creates an instance of this class using the provided function name
@@ -62,7 +63,7 @@ namespace NHibernate.Dialect
 		private void Prepare(IList args)
 		{
 			_sqlBuffer = new SqlStringBuilder();
-			_args = new Queue();
+			_args = new Queue<object>();
 			foreach (var arg in args)
 			{
 				if (!IsParens(arg.ToString()))

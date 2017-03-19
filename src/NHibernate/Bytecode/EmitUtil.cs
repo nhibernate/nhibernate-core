@@ -62,7 +62,7 @@ namespace NHibernate.Bytecode
 
 		public static void EmitBoxIfNeeded(ILGenerator il, System.Type type)
 		{
-			if (type.IsValueType)
+			if (type.GetTypeInfo().IsValueType)
 			{
 				il.Emit(OpCodes.Box, type);
 			}
@@ -103,7 +103,7 @@ namespace NHibernate.Bytecode
 		public static void PreparePropertyForSet(ILGenerator il, System.Type propertyType)
 		{
 			// If this is a value type, we need to unbox it
-			if (propertyType.IsValueType)
+			if (propertyType.GetTypeInfo().IsValueType)
 			{
 				// if (object[i] == null), create a new instance 
 				Label notNullLabel = il.DefineLabel();
@@ -179,7 +179,7 @@ namespace NHibernate.Bytecode
 			methodBuilder.SetImplementationFlags(
 				MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
 
-			return delegateBuilder.CreateType();
+			return delegateBuilder.CreateTypeInfo().AsType();
 		}
 
 		public static void EmitLoadType(ILGenerator il, System.Type type)
@@ -201,8 +201,11 @@ namespace NHibernate.Bytecode
 		public static void EmitCreateDelegateInstance(ILGenerator il, System.Type delegateType, MethodInfo methodInfo)
 		{
 			MethodInfo createDelegate = typeof(Delegate).GetMethod(
-				"CreateDelegate", BindingFlags.Static | BindingFlags.Public | BindingFlags.ExactBinding, null,
-				new System.Type[] {typeof(System.Type), typeof(MethodInfo)}, null);
+				"CreateDelegate", BindingFlags.Static | BindingFlags.Public
+#if !NETSTANDARD
+				| BindingFlags.ExactBinding
+#endif
+				, null, new System.Type[] {typeof(System.Type), typeof(MethodInfo)}, null);
 
 			EmitLoadType(il, delegateType);
 			EmitLoadMethodInfo(il, methodInfo);

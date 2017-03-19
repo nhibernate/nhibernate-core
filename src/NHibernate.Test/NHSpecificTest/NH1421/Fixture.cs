@@ -28,6 +28,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1421
 			}
 		}
 
+#if !FEATURE_SERIALIZATION
+		[Ignore("Uses Serializable type")]
+#endif
 		[Test]
 		public void WhenParameterListIsEmptyCollectionUsingQueryThenTrowsArgumentException()
 		{

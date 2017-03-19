@@ -368,7 +368,11 @@ namespace NHibernate.DomainModel
 			_component.Glarch = new Glarch();
 			_dependent = new Fee();
 			_dependent.Fi = "belongs to foo # " + Key;
+#if !NETSTANDARD
 			_locale = Thread.CurrentThread.CurrentCulture;
+#else
+			_locale = CultureInfo.CurrentCulture;
+#endif
 			return LifecycleVeto.NoVeto;
 		}
 

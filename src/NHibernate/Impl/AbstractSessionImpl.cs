@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Reflection;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;

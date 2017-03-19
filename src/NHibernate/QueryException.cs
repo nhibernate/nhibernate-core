@@ -1,7 +1,9 @@
 using System;
+
+#if FEATURE_SERIALIZATION
 using System.Runtime.Serialization;
 using System.Security;
-using System.Security.Permissions;
+#endif
 
 namespace NHibernate
 {
@@ -9,7 +11,11 @@ namespace NHibernate
 	/// A problem occurred translating a Hibernate query to SQL due to invalid query syntax, etc.
 	/// </summary>
 	[Serializable]
-	public class QueryException : HibernateException, ISerializable
+	public class QueryException 
+		: HibernateException
+#if FEATURE_SERIALIZATION
+		, ISerializable
+#endif
 	{
 		private string queryString;
 
@@ -84,6 +90,7 @@ namespace NHibernate
 			}
 		}
 
+#if FEATURE_SERIALIZATION
 		#region ISerializable Members
 
 		/// <summary>
@@ -121,5 +128,6 @@ namespace NHibernate
 		}
 
 		#endregion
+#endif
 	}
 }

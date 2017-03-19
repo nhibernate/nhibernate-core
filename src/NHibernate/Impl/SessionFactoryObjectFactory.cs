@@ -20,6 +20,7 @@ namespace NHibernate.Impl
 	/// </remarks>
 	public static class SessionFactoryObjectFactory
 	{
+		private static readonly object StaticSyncRoot = new object();
 		private static readonly IInternalLogger log;
 
 		private static readonly IDictionary<string, ISessionFactory> Instances = new Dictionary<string, ISessionFactory>();
@@ -39,25 +40,27 @@ namespace NHibernate.Impl
 		/// <param name="name">The name of the ISessionFactory.</param>
 		/// <param name="instance">The ISessionFactory.</param>
 		/// <param name="properties">The configured properties for the ISessionFactory.</param>
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static void AddInstance(string uid, string name, ISessionFactory instance, IDictionary<string, string> properties)
 		{
-			if (log.IsDebugEnabled)
+			lock (StaticSyncRoot)
 			{
-				string nameMsg = ((!string.IsNullOrEmpty(name)) ? name : "unnamed");
+				if (log.IsDebugEnabled)
+				{
+					string nameMsg = ((!string.IsNullOrEmpty(name)) ? name : "unnamed");
 
-				log.Debug("registered: " + uid + "(" + nameMsg + ")");
-			}
+					log.Debug("registered: " + uid + "(" + nameMsg + ")");
+				}
 
-			Instances[uid] = instance;
-			if (!string.IsNullOrEmpty(name))
-			{
-				log.Info("Factory name:" + name);
-				NamedInstances[name] = instance;
-			}
-			else
-			{
-				log.Info("no name configured");
+				Instances[uid] = instance;
+				if (!string.IsNullOrEmpty(name))
+				{
+					log.Info("Factory name:" + name);
+					NamedInstances[name] = instance;
+				}
+				else
+				{
+					log.Info("no name configured");
+				}
 			}
 		}
 
@@ -67,15 +70,17 @@ namespace NHibernate.Impl
 		/// <param name="uid">The identifier of the ISessionFactory.</param>
 		/// <param name="name">The name of the ISessionFactory.</param>
 		/// <param name="properties">The configured properties for the ISessionFactory.</param>
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static void RemoveInstance(string uid, string name, IDictionary<string, string> properties)
 		{
-			if (!string.IsNullOrEmpty(name))
+			lock (StaticSyncRoot)
 			{
-				log.Info("unbinding factory: " + name);
-				NamedInstances.Remove(name);
+				if (!string.IsNullOrEmpty(name))
+				{
+					log.Info("unbinding factory: " + name);
+					NamedInstances.Remove(name);
+				}
+				Instances.Remove(uid);
 			}
-			Instances.Remove(uid);
 		}
 
 		/// <summary>
@@ -83,17 +88,19 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="name">The name of the ISessionFactory.</param>
 		/// <returns>An instantiated ISessionFactory.</returns>
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static ISessionFactory GetNamedInstance(string name)
 		{
-			log.Debug("lookup: name=" + name);
-			ISessionFactory factory;
-			bool found=NamedInstances.TryGetValue(name, out factory);
-			if (!found)
+			lock (StaticSyncRoot)
 			{
-				log.Warn("Not found: " + name);
+				log.Debug("lookup: name=" + name);
+				ISessionFactory factory;
+				bool found=NamedInstances.TryGetValue(name, out factory);
+				if (!found)
+				{
+					log.Warn("Not found: " + name);
+				}
+				return factory;
 			}
-			return factory;
 		}
 
 		/// <summary>
@@ -101,17 +108,19 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="uid">The identifier of the ISessionFactory.</param>
 		/// <returns>An instantiated ISessionFactory.</returns>
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static ISessionFactory GetInstance(string uid)
 		{
-			log.Debug("lookup: uid=" + uid);
-			ISessionFactory factory;
-			bool found = Instances.TryGetValue(uid, out factory);
-			if (!found)
+			lock (StaticSyncRoot)
 			{
-				log.Warn("Not found: " + uid);
+				log.Debug("lookup: uid=" + uid);
+				ISessionFactory factory;
+				bool found = Instances.TryGetValue(uid, out factory);
+				if (!found)
+				{
+					log.Warn("Not found: " + uid);
+				}
+				return factory;
 			}
-			return factory;
 		}
 	}
 }

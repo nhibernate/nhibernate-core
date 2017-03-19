@@ -1,5 +1,8 @@
 using System;
+
+#if FEATURE_SERIALIZATION
 using System.Runtime.Serialization;
+#endif
 
 namespace NHibernate.Type
 {
@@ -38,6 +41,7 @@ namespace NHibernate.Type
 		{
 		}
 
+#if FEATURE_SERIALIZATION
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SerializationException"/> class
 		/// with serialized data.
@@ -52,5 +56,6 @@ namespace NHibernate.Type
 		protected SerializationException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
+#endif
 	}
 }

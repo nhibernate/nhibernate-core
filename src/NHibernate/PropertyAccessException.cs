@@ -1,7 +1,9 @@
 using System;
+
+#if FEATURE_SERIALIZATION
 using System.Runtime.Serialization;
 using System.Security;
-using System.Security.Permissions;
+#endif
 
 namespace NHibernate
 {
@@ -9,7 +11,11 @@ namespace NHibernate
 	/// A problem occurred accessing a property of an instance of a persistent class by reflection
 	/// </summary>
 	[Serializable]
-	public class PropertyAccessException : HibernateException, ISerializable
+	public class PropertyAccessException 
+		: HibernateException
+#if FEATURE_SERIALIZATION
+		, ISerializable
+#endif
 	{
 		private readonly System.Type persistentType;
 		private readonly string propertyName;
@@ -68,6 +74,7 @@ namespace NHibernate
 			}
 		}
 
+#if FEATURE_SERIALIZATION
 		#region ISerializable Members
 
 		/// <summary>
@@ -109,5 +116,6 @@ namespace NHibernate
 		}
 
 		#endregion
+#endif
 	}
 }

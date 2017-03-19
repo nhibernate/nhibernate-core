@@ -1,5 +1,8 @@
 using System;
+
+#if FEATURE_SERIALIZATION
 using System.Runtime.Serialization;
+#endif
 
 namespace NHibernate.Exceptions
 {
@@ -11,8 +14,11 @@ namespace NHibernate.Exceptions
 	public class ConstraintViolationException : ADOException
 	{
 		private readonly string constraintName;
+
+#if FEATURE_SERIALIZATION
 		public ConstraintViolationException(SerializationInfo info, StreamingContext context)
 			: base(info, context) {}
+#endif
 
 		public ConstraintViolationException(string message, Exception innerException, string sql, string constraintName)
 			: base(message, innerException, sql)

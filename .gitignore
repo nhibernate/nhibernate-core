@@ -12,3 +12,5 @@ current-test-configuration
 # to satisfy later build steps. But it should not be committed.
 NHibernate.dll
 TestResult.xml
+/src/packages
+*.lock.json

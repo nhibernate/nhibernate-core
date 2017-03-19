@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using Antlr.Runtime;
 using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Type;

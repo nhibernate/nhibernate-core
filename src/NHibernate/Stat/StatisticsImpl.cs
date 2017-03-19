@@ -305,7 +305,6 @@ namespace NHibernate.Stat
 			get { return optimisticFailureCount; }
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void Clear()
 		{
 			lock (SyncRoot)
@@ -355,7 +354,6 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public EntityStatistics GetEntityStatistics(string entityName)
 		{
 			lock (SyncRoot)
@@ -370,7 +368,6 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public CollectionStatistics GetCollectionStatistics(string role)
 		{
 			lock (SyncRoot)
@@ -385,7 +382,6 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public SecondLevelCacheStatistics GetSecondLevelCacheStatistics(string regionName)
 		{
 			lock (SyncRoot)
@@ -406,7 +402,6 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public QueryStatistics GetQueryStatistics(string queryString)
 		{
 			lock (SyncRoot)
@@ -460,7 +455,6 @@ namespace NHibernate.Stat
 			{
 				return operationThreshold;
 			}
-			[MethodImpl(MethodImplOptions.Synchronized)]
 			set
 			{
 				lock (SyncRoot)
@@ -474,7 +468,6 @@ namespace NHibernate.Stat
 
 		#region IStatisticsImplementor Members
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void OpenSession()
 		{
 			lock (SyncRoot)
@@ -483,7 +476,6 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void CloseSession()
 		{
 			lock (SyncRoot)
@@ -492,7 +484,6 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void Flush()
 		{
 			lock (SyncRoot)
@@ -501,7 +492,6 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void Connect()
 		{
 			lock (SyncRoot)
@@ -510,7 +500,6 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void LoadEntity(string entityName, TimeSpan time)
 		{
 			lock (SyncRoot)
@@ -524,7 +513,6 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void FetchEntity(string entityName, TimeSpan time)
 		{
 			lock (SyncRoot)
@@ -538,7 +526,6 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void UpdateEntity(string entityName, TimeSpan time)
 		{
 			lock (SyncRoot)
@@ -552,7 +539,6 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void InsertEntity(string entityName, TimeSpan time)
 		{
 			lock (SyncRoot)
@@ -566,7 +552,6 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void DeleteEntity(string entityName, TimeSpan time)
 		{
 			lock (SyncRoot)
@@ -580,7 +565,6 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void LoadCollection(string role, TimeSpan time)
 		{
 			lock (SyncRoot)
@@ -594,7 +578,6 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void FetchCollection(string role, TimeSpan time)
 		{
 			lock (SyncRoot)
@@ -608,7 +591,6 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void UpdateCollection(string role, TimeSpan time)
 		{
 			lock (SyncRoot)
@@ -622,7 +604,6 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void RecreateCollection(string role, TimeSpan time)
 		{
 			lock (SyncRoot)
@@ -636,7 +617,6 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void RemoveCollection(string role, TimeSpan time)
 		{
 			lock (SyncRoot)
@@ -650,7 +630,6 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void SecondLevelCachePut(string regionName)
 		{
 			lock (SyncRoot)
@@ -664,7 +643,6 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void SecondLevelCacheHit(string regionName)
 		{
 			lock (SyncRoot)
@@ -678,7 +656,6 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void SecondLevelCacheMiss(string regionName)
 		{
 			lock (SyncRoot)
@@ -692,7 +669,6 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void QueryExecuted(string hql, int rows, TimeSpan time)
 		{
 			lock (SyncRoot)
@@ -715,7 +691,6 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void QueryCacheHit(string hql, string regionName)
 		{
 			lock (SyncRoot)
@@ -734,7 +709,6 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void QueryCacheMiss(string hql, string regionName)
 		{
 			lock (SyncRoot)
@@ -753,7 +727,6 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void QueryCachePut(string hql, string regionName)
 		{
 			lock (SyncRoot)

@@ -1,3 +1,5 @@
+#if FEATURE_SYSTEM_CONFIGURATION
+
 using System;
 using System.Configuration;
 using System.Xml;
@@ -20,3 +22,5 @@ namespace NHibernate.Cfg
 		#endregion
 	}
 }
+
+#endif

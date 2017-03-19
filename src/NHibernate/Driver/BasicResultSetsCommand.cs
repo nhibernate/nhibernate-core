@@ -246,15 +246,19 @@ namespace NHibernate.Driver
 			return reader.GetHashCode();
 		}
 
+#if FEATURE_DATA_CLOSE || NET_4_0
 		public override void Close()
 		{
 			batcher.CloseCommand(command, reader);
 		}
+#endif
 
+#if FEATURE_DATA_GETSCHEMATABLE || NET_4_0
 		public override DataTable GetSchemaTable()
 		{
 			return reader.GetSchemaTable();
 		}
+#endif
 
 		public override bool NextResult()
 		{

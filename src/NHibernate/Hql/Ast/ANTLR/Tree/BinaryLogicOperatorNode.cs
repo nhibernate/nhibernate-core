@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Antlr.Runtime;
 using NHibernate.Engine;
 using NHibernate.Param;

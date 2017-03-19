@@ -1,3 +1,5 @@
+#if FEATURE_SERIALIZATION
+
 using System.Collections;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -78,3 +80,5 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 		}
 	}
 }
+
+#endif

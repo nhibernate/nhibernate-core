@@ -1,11 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Configuration;
+using System.Linq;
 using System.Reflection;
 
 using NHibernate.Bytecode;
 using NHibernate.Cfg.ConfigurationSchema;
 using NHibernate.Util;
+
+#if FEATURE_SYSTEM_CONFIGURATION
+using System.Configuration;
+#endif
 
 namespace NHibernate.Cfg
 {
@@ -47,10 +51,9 @@ namespace NHibernate.Cfg
 			{
 				if (cachedVersion == null)
 				{
-					Assembly thisAssembly = Assembly.GetExecutingAssembly();
+					Assembly thisAssembly = typeof(Environment).GetTypeInfo().Assembly;
 					var attrs =
-						(AssemblyInformationalVersionAttribute[])
-						thisAssembly.GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), false);
+						thisAssembly.GetCustomAttributes<AssemblyInformationalVersionAttribute>().ToArray();
 
 					if (attrs != null && attrs.Length > 0)
 					{
@@ -233,6 +236,7 @@ namespace NHibernate.Cfg
 
 		private static void LoadGlobalPropertiesFromAppConfig()
 		{
+#if FEATURE_SYSTEM_CONFIGURATION
 			object config = ConfigurationManager.GetSection(CfgXmlHelper.CfgSectionName);
 
 			if (config == null)
@@ -260,6 +264,7 @@ namespace NHibernate.Cfg
 					GlobalProperties[kvp.Key] = kvp.Value;
 				}
 			}
+#endif
 		}
 
 		internal static void ResetSessionFactoryProperties()
@@ -343,8 +348,10 @@ namespace NHibernate.Cfg
 		{
 			switch (providerName)
 			{
+#if FEATURE_CODEDOM
 				case "codedom":
 					return new Bytecode.CodeDom.BytecodeProviderImpl();
+#endif
 				case "lcg":
 					return new Bytecode.Lightweight.BytecodeProviderImpl();
 				case "null":

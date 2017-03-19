@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
@@ -12,7 +13,7 @@ namespace NHibernate.Linq
 		public static bool IsGroupingKey(this MemberExpression expression)
 		{
 			return expression.Member.Name == "Key" && expression.Member.DeclaringType!=null &&
-					 expression.Member.DeclaringType.IsGenericType && expression.Member.DeclaringType.GetGenericTypeDefinition() == typeof(IGrouping<,>);
+					 expression.Member.DeclaringType.GetTypeInfo().IsGenericType && expression.Member.DeclaringType.GetGenericTypeDefinition() == typeof(IGrouping<,>);
 		}
 
 		public static bool IsGroupingKeyOf(this MemberExpression expression,GroupResultOperator groupBy)

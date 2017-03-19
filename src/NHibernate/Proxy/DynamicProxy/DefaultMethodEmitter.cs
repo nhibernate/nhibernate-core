@@ -8,6 +8,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -189,7 +190,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			}
 
 			System.Type declaringType = method.DeclaringType;
-			if (declaringType.IsGenericType)
+			if (declaringType.GetTypeInfo().IsGenericType)
 			{
 				IL.Emit(OpCodes.Ldtoken, declaringType);
 				IL.Emit(OpCodes.Call, getGenericMethodFromHandle);

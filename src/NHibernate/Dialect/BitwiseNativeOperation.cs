@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Dialect.Function;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -15,7 +17,7 @@ namespace NHibernate.Dialect
 	{
 		private readonly string _sqlOpToken;
 		private readonly bool _isNot;
-        private Queue _args;
+        private Queue<object> _args;
 		private SqlStringBuilder _sqlBuffer;
 
 		/// <summary>
@@ -76,7 +78,7 @@ namespace NHibernate.Dialect
 		private void Prepare(IList args)
 		{
 			_sqlBuffer = new SqlStringBuilder();
-			_args = new Queue(args);
+			_args = new Queue<object>(args.Cast<object>());
 		}
 
 		private void AddFirstArgument()

@@ -134,7 +134,7 @@ namespace NHibernate.SqlCommand.Parser
 					case SqlTokenType.Text:
 						if (blockLevel != 0) break;
 
-						if (token.Equals(",", StringComparison.InvariantCultureIgnoreCase))
+						if (token.Equals(",", StringComparison.OrdinalIgnoreCase))
 						{
 							if (columnAliasToken != null)
 							{
@@ -142,7 +142,7 @@ namespace NHibernate.SqlCommand.Parser
 							}
 						}
 
-						if (token.Equals("from", StringComparison.InvariantCultureIgnoreCase))
+						if (token.Equals("from", StringComparison.OrdinalIgnoreCase))
 						{
 							if (columnAliasToken != null)
 							{
@@ -151,7 +151,7 @@ namespace NHibernate.SqlCommand.Parser
 							yield break;
 						}
 
-						if (token.Equals("as", StringComparison.InvariantCultureIgnoreCase))
+						if (token.Equals("as", StringComparison.OrdinalIgnoreCase))
 						{
 							columnEndToken = prevToken;
 						}
@@ -240,8 +240,8 @@ namespace NHibernate.SqlCommand.Parser
 					case SqlTokenType.Text:
 						if (blockLevel != 0) break;
 
-						if (token.Equals("asc", StringComparison.InvariantCultureIgnoreCase)
-							|| token.Equals("desc", StringComparison.InvariantCultureIgnoreCase))
+						if (token.Equals("asc", StringComparison.OrdinalIgnoreCase)
+							|| token.Equals("desc", StringComparison.OrdinalIgnoreCase))
 						{
 							orderEndToken = prevToken;
 							directionToken = token;
@@ -272,7 +272,7 @@ namespace NHibernate.SqlCommand.Parser
 		private OrderDefinition ParseOrderDefinition(SqlToken beginToken, SqlToken endToken, SqlToken directionToken)
 		{
 			var isDescending = directionToken != null &&
-							   directionToken.Equals("desc", StringComparison.InvariantCultureIgnoreCase);
+							   directionToken.Equals("desc", StringComparison.OrdinalIgnoreCase);
 
 			var columnNameOrIndex = beginToken == endToken
 				? beginToken.Value
@@ -301,8 +301,8 @@ namespace NHibernate.SqlCommand.Parser
 
 				foreach (var column in _columns)
 				{
-					if (columnNameOrIndex.Equals(column.Name, StringComparison.InvariantCultureIgnoreCase)
-						|| columnNameOrIndex.Equals(column.Alias, StringComparison.InvariantCultureIgnoreCase))
+					if (columnNameOrIndex.Equals(column.Name, StringComparison.OrdinalIgnoreCase)
+						|| columnNameOrIndex.Equals(column.Alias, StringComparison.OrdinalIgnoreCase))
 					{
 						result = column;
 						return true;
@@ -316,9 +316,9 @@ namespace NHibernate.SqlCommand.Parser
 				var text = Sql.ToString(sqlIndex, sqlLength);
 				foreach (var column in _columns)
 				{
-					if (text.Equals(column.Name, StringComparison.InvariantCultureIgnoreCase) ||
-						text.Equals(column.Alias, StringComparison.InvariantCultureIgnoreCase) ||
-						text.Equals(Sql.ToString(column.SqlIndex, column.SqlLength), StringComparison.InvariantCultureIgnoreCase))
+					if (text.Equals(column.Name, StringComparison.OrdinalIgnoreCase) ||
+						text.Equals(column.Alias, StringComparison.OrdinalIgnoreCase) ||
+						text.Equals(Sql.ToString(column.SqlIndex, column.SqlLength), StringComparison.OrdinalIgnoreCase))
 					{
 						result = column;
 						return true;

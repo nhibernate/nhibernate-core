@@ -1,3 +1,5 @@
+#if FEATURE_SERIALIZATION
+
 using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -70,3 +72,5 @@ namespace NHibernate.Test.NHSpecificTest.NH2773 {
       }
    }
 }
+
+#endif

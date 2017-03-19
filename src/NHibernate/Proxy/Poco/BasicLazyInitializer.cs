@@ -1,10 +1,13 @@
 using System;
 using System.Collections;
 using System.Reflection;
-using System.Runtime.Serialization;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
+
+#if FEATURE_SERIALIZATION
+using System.Runtime.Serialization;
+#endif
 
 namespace NHibernate.Proxy.Poco
 {
@@ -32,6 +35,7 @@ namespace NHibernate.Proxy.Poco
 			this.overridesEquals = overridesEquals;
 		}
 
+#if FEATURE_SERIALIZATION
 		/// <summary>
 		/// Adds all of the information into the SerializationInfo that is needed to
 		/// reconstruct the proxy during deserialization or to replace the proxy
@@ -44,6 +48,7 @@ namespace NHibernate.Proxy.Poco
 		protected virtual void AddSerializationInfo(SerializationInfo info, StreamingContext context)
 		{
 		}
+#endif
 
 		public override System.Type PersistentClass
 		{
@@ -99,6 +104,7 @@ namespace NHibernate.Proxy.Poco
 					return InvokeImplementation;
 				}
 			}
+#if FEATURE_SERIALIZATION
 			else if (paramCount == 2)
 			{
 				// if the Proxy Engine delegates the call of GetObjectData to the Initializer
@@ -125,6 +131,7 @@ namespace NHibernate.Proxy.Poco
 					return null;
 				}
 			}
+#endif
 
 			//if it is a property of an embedded component, invoke on the "identifier"
 			if (componentIdType != null && componentIdType.IsMethodOf(method))

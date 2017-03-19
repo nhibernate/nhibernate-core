@@ -1,5 +1,8 @@
 using System;
+
+#if FEATURE_SERIALIZATION
 using System.Runtime.Serialization;
+#endif
 
 namespace NHibernate
 {
@@ -10,7 +13,7 @@ namespace NHibernate
 	/// Exceptions that occur in the database layer are left as native exceptions.
 	/// </remarks>
 	[Serializable]
-	public class HibernateException : ApplicationException
+	public class HibernateException : Exception
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HibernateException"/> class.
@@ -52,6 +55,7 @@ namespace NHibernate
 		{
 		}
 
+#if FEATURE_SERIALIZATION
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HibernateException"/> class 
 		/// with serialized data.
@@ -66,5 +70,6 @@ namespace NHibernate
 		protected HibernateException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
+#endif
 	}
 }

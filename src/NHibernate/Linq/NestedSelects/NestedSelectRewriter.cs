@@ -182,9 +182,9 @@ namespace NHibernate.Linq.NestedSelects
 
 		private static ConstructorInfo GetCollectionConstructor(System.Type collectionType, System.Type elementType)
 		{
-			if (collectionType.IsInterface)
+			if (collectionType.GetTypeInfo().IsInterface)
 			{
-				if (collectionType.IsGenericType && collectionType.GetGenericTypeDefinition() == typeof(ISet<>))
+				if (collectionType.GetTypeInfo().IsGenericType && collectionType.GetGenericTypeDefinition() == typeof(ISet<>))
 				{
 					return typeof(HashSet<>).MakeGenericType(elementType).GetConstructor(new[] { typeof(IEnumerable<>).MakeGenericType(elementType) });
 				}
@@ -210,7 +210,7 @@ namespace NHibernate.Linq.NestedSelects
 
 		private static Expression GetIdentifier(ISessionFactory sessionFactory, Expression expression)
 		{
-			if (expression.Type.IsPrimitive || expression.Type == typeof(string))
+			if (expression.Type.GetTypeInfo().IsPrimitive || expression.Type == typeof(string))
 				return expression;
 
 			var classMetadata = sessionFactory.GetClassMetadata(expression.Type);

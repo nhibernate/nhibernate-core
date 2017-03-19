@@ -1,7 +1,4 @@
 using System.Collections;
-using System.Transactions;
-using NHibernate;
-using NHibernate.AdoNet;
 using NHibernate.Engine;
 using NHibernate.Engine.Transaction;
 

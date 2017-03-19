@@ -340,7 +340,7 @@ namespace NHibernate.Util
 		/// </remarks>
 		public static IDictionary<string, T> CreateCaseInsensitiveHashtable<T>()
 		{
-			return new Dictionary<string, T>(StringComparer.InvariantCultureIgnoreCase);
+			return new Dictionary<string, T>(StringComparer.OrdinalIgnoreCase);
 		}
 
 		/// <summary>
@@ -353,7 +353,7 @@ namespace NHibernate.Util
 		/// </remarks>
 		public static IDictionary<string, T> CreateCaseInsensitiveHashtable<T>(IDictionary<string, T> dictionary)
 		{
-			return new Dictionary<string, T>(dictionary, StringComparer.InvariantCultureIgnoreCase);
+			return new Dictionary<string, T>(dictionary, StringComparer.OrdinalIgnoreCase);
 		}
 
 		// ~~~~~~~~~~~~~~~~~~~~~~ Generics ~~~~~~~~~~~~~~~~~~~~~~

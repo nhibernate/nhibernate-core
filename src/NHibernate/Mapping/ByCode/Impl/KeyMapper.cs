@@ -96,7 +96,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 				mapping.propertyref = null;
 				return;
 			}
-			if (!ownerEntityType.Equals(property.DeclaringType) && !ownerEntityType.Equals(property.ReflectedType))
+			if (!property.DeclaringType.IsAssignableFrom(ownerEntityType))
 			{
 				throw new ArgumentOutOfRangeException("property", "Can't reference a property of another entity.");
 			}

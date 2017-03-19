@@ -3,9 +3,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
-using System.Runtime.Serialization;
-using System.Security;
 using System.Text;
+using System.Reflection;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Connection;
@@ -25,13 +24,21 @@ using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Stat;
-using NHibernate.Tool.hbm2ddl;
 using NHibernate.Transaction;
 using NHibernate.Type;
 using NHibernate.Util;
 using Environment = NHibernate.Cfg.Environment;
 using HibernateDialect = NHibernate.Dialect.Dialect;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
+
+#if FEATURE_SERIALIZATION
+using System.Runtime.Serialization;
+using System.Security;
+#endif
+
+#if FEATURE_DATA_GETSCHEMATABLE
+using NHibernate.Tool.hbm2ddl;
+#endif
 
 namespace NHibernate.Impl
 {
@@ -72,7 +79,11 @@ namespace NHibernate.Impl
 	/// <seealso cref="NHibernate.Persister.Entity.IEntityPersister"/>
 	/// <seealso cref="NHibernate.Persister.Collection.ICollectionPersister"/>
 	[Serializable]
-	public sealed class SessionFactoryImpl : ISessionFactoryImplementor, IObjectReference
+	public sealed class SessionFactoryImpl 
+		: ISessionFactoryImplementor
+#if FEATURE_SERIALIZATION
+		, IObjectReference
+#endif
 	{
 		#region Default entity not found delegate
 
@@ -149,8 +160,12 @@ namespace NHibernate.Impl
 
 		[NonSerialized]
 		private readonly ConcurrentDictionary<string, IQueryCache> queryCaches;
+
+#if FEATURE_DATA_GETSCHEMATABLE
 		[NonSerialized]
 		private readonly SchemaExport schemaExport;
+#endif
+
 		[NonSerialized]
 		private readonly Settings settings;
 
@@ -193,6 +208,7 @@ namespace NHibernate.Impl
 				log.Debug("instantiating session factory with properties: " + CollectionPrinter.ToString(properties));
 			}
 
+#if FEATURE_DATA_GETSCHEMATABLE
 			try
 			{
 				if (settings.IsKeywordsImportEnabled)
@@ -208,6 +224,7 @@ namespace NHibernate.Impl
 			{
 				// Ignore if the Dialect does not provide DataBaseSchema 
 			}
+#endif
 
 			#region Caches
 			settings.CacheProvider.Start(properties);
@@ -349,6 +366,7 @@ namespace NHibernate.Impl
 
 			log.Debug("Instantiated session factory");
 
+#if FEATURE_DATA_GETSCHEMATABLE
 			#region Schema management
 			if (settings.IsAutoCreateSchema)
 			{
@@ -368,6 +386,7 @@ namespace NHibernate.Impl
 				schemaExport = new SchemaExport(cfg);
 			}
 			#endregion
+#endif
 
 			#region Obtaining TransactionManager
 			// not ported yet
@@ -421,6 +440,7 @@ namespace NHibernate.Impl
 			get { return eventListeners; }
 		}
 
+#if FEATURE_SERIALIZATION
 		#region IObjectReference Members
 
 		[SecurityCritical]
@@ -457,6 +477,7 @@ namespace NHibernate.Impl
 		}
 
 		#endregion
+#endif
 
 		#region ISessionFactoryImplementor Members
 
@@ -839,10 +860,12 @@ namespace NHibernate.Impl
 				SessionFactoryObjectFactory.RemoveInstance(uuid, name, properties);
 			}
 
+#if FEATURE_DATA_GETSCHEMATABLE
 			if (settings.IsAutoDropSchema)
 			{
 				schemaExport.Drop(false, true);
 			}
+#endif
 
 			eventListeners.DestroyListeners();
 		}
@@ -1229,14 +1252,20 @@ namespace NHibernate.Impl
 			{
 				case null:
 					return null;
+#if FEATURE_REMOTING
 				case "call":
 					return new CallSessionContext(this);
+#endif
 				case "thread_static":
 					return new ThreadStaticSessionContext(this);
+#if FEATURE_WEB_SESSION_CONTEXT
 				case "web":
 					return new WebSessionContext(this);
+#endif
+#if FEATURE_REMOTING
 				case "wcf_operation":
 					return new WcfOperationSessionContext(this);
+#endif
 			}
 
 			try

@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Reflection;
 using Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation;
 
 namespace NHibernate.Linq.ExpressionTransformers

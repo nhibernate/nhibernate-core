@@ -503,7 +503,7 @@ namespace NHibernate.Type
 				begin += length;
 			}
 
-			if (ReturnedClass.IsValueType)
+			if (ReturnedClass.GetTypeInfo().IsValueType)
 				return values;
 			else
 				return notNull ? values : null;

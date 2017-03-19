@@ -1,7 +1,10 @@
 using System;
 using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
 using System.Threading;
+
+#if FEATURE_SERIALIZATION
+using System.Runtime.Serialization;
+#endif
 
 namespace NHibernate.Util
 {
@@ -15,7 +18,10 @@ namespace NHibernate.Util
 	/// the cache.  Thus the size of this cache never grows beyond the stated size. 
 	/// </remarks>
 	[Serializable]
-	public class SimpleMRUCache : IDeserializationCallback
+	public class SimpleMRUCache
+#if FEATURE_SERIALIZATION
+		: IDeserializationCallback
+#endif
 	{
 		private const int DefaultStrongRefCount = 128;
 
@@ -46,6 +52,7 @@ namespace NHibernate.Util
 			}
 		}
 
+#if FEATURE_SERIALIZATION
 		#region IDeserializationCallback Members
 
 		void IDeserializationCallback.OnDeserialization(object sender)
@@ -54,10 +61,10 @@ namespace NHibernate.Util
 		}
 
 		#endregion
+#endif
 
 		public object this[object key]
 		{
-			[MethodImpl(MethodImplOptions.Synchronized)]
 			get
 			{
 				lock (SyncRoot)
@@ -67,7 +74,6 @@ namespace NHibernate.Util
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void Put(object key, object value)
 		{
 			lock (SyncRoot)
@@ -78,7 +84,6 @@ namespace NHibernate.Util
 
 		public int Count
 		{
-			[MethodImpl(MethodImplOptions.Synchronized)]
 			get
 			{
 				lock (SyncRoot)
@@ -88,7 +93,6 @@ namespace NHibernate.Util
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void Clear()
 		{
 			lock (SyncRoot)

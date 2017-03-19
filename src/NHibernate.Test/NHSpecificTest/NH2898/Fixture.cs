@@ -1,3 +1,5 @@
+#if FEATURE_SERIALIZATION
+
 using NHibernate.Cfg;
 using NHibernate.Criterion;
 using NHibernate.Engine;
@@ -118,3 +120,5 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 		}
 	}
 }
+
+#endif

@@ -187,7 +187,11 @@ namespace NHibernate.Driver
 
 		System.Type IEmbeddedBatcherFactoryProvider.BatcherFactoryClass
 		{
+#if FEATURE_ADONET_SQLCOMMANDSET
 			get { return typeof(SqlClientBatchingBatcherFactory); }
+#else
+			get { return typeof(NonBatchingBatcherFactory); }
+#endif
 		}
 
 		#endregion

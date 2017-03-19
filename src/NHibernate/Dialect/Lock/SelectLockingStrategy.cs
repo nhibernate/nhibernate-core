@@ -67,8 +67,7 @@ namespace NHibernate.Dialect.Lock
 						lockable.VersionType.NullSafeSet(st, version, lockable.IdentifierType.GetColumnSpan(factory), session);
 					}
 
-					rs = session.Batcher.ExecuteReader(st);
-					try
+					using (rs = session.Batcher.ExecuteReader(st))
 					{
 						if (!rs.Read())
 						{
@@ -78,10 +77,6 @@ namespace NHibernate.Dialect.Lock
 							}
 							throw new StaleObjectStateException(lockable.EntityName, id);
 						}
-					}
-					finally
-					{
-						rs.Close();
 					}
 				}
 				finally

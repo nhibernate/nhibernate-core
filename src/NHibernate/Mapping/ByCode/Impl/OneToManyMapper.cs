@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode.Impl

@@ -1,3 +1,5 @@
+#if FEATURE_DATA_GETSCHEMATABLE
+
 using System;
 using System.Data;
 using System.Data.Common;
@@ -60,7 +62,7 @@ namespace NHibernate.Dialect.Schema
 
 	public class MsSqlCeColumnMetadata : AbstractColumnMetaData
 	{
-		public MsSqlCeColumnMetadata(DataRow rs) : base(rs)
+		public MsSqlCeColumnMetadata(DataRow rs) : base()
 		{
 			Name = Convert.ToString(rs["COLUMN_NAME"]);
 
@@ -89,3 +91,5 @@ namespace NHibernate.Dialect.Schema
 		}
 	}
 }
+
+#endif

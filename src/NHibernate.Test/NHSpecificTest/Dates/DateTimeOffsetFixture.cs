@@ -2,11 +2,14 @@
 using System.Collections;
 using System.Data;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Xml.Serialization;
 using NHibernate.Driver;
 using NHibernate.Type;
 using NUnit.Framework;
+
+#if FEATURE_SERIALIZATION
+using System.Runtime.Serialization.Formatters.Binary;
+#endif
 
 namespace NHibernate.Test.NHSpecificTest.Dates
 {
@@ -112,6 +115,7 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 			Assert.That(() => type.DefaultValue, Throws.Nothing);
 		}
 
+#if FEATURE_SERIALIZATION
 		[Test(Description = "NH-3842")]
 		public void CanBinarySerialize()
 		{
@@ -121,6 +125,7 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 
 			Assert.That(() => formatter.Serialize(Stream.Null, type), Throws.Nothing);
 		}
+#endif
 
 		[Test(Description = "NH-3842")]
 		public void CanXmlSerialize()

@@ -214,7 +214,7 @@ namespace NHibernate.Mapping.ByCode
 
 		private bool MatchRootEntity(System.Type type)
 		{
-			return type.IsClass && typeof(object).Equals(type.BaseType) && ((IModelInspector)this).IsEntity(type);
+			return type.GetTypeInfo().IsClass && typeof(object).Equals(type.GetTypeInfo().BaseType) && ((IModelInspector)this).IsEntity(type);
 		}
 
 		private bool MatchTablePerClass(System.Type type)
@@ -225,7 +225,11 @@ namespace NHibernate.Mapping.ByCode
 		private bool MatchOneToMany(MemberInfo memberInfo)
 		{
 			var modelInspector = (IModelInspector) this;
+#if FEATURE_REFLECTEDTYPE
 			System.Type from = memberInfo.ReflectedType;
+#else
+			System.Type from = memberInfo.DeclaringType;
+#endif
 			System.Type to = memberInfo.GetPropertyOrFieldType().DetermineCollectionElementOrDictionaryValueType();
 			if(to == null)
 			{
@@ -240,12 +244,16 @@ namespace NHibernate.Mapping.ByCode
 		private bool MatchManyToOne(MemberInfo memberInfo)
 		{
 			var modelInspector = (IModelInspector)this;
+#if FEATURE_REFLECTEDTYPE
 			System.Type from = memberInfo.ReflectedType;
+#else
+			System.Type from = memberInfo.DeclaringType;
+#endif
 			System.Type to = memberInfo.GetPropertyOrFieldType();
 
 			bool areEntities = modelInspector.IsEntity(from) && modelInspector.IsEntity(to);
 			bool isFromComponentToEntity = modelInspector.IsComponent(from) && modelInspector.IsEntity(to);
-			return isFromComponentToEntity || (areEntities && !modelInspector.IsOneToOne(memberInfo));
+			return isFromComponentToEntity || (areEntities && !modelInspector.IsOneToOne(memberInfo, from));
 		}
 
 		protected bool MatchArrayMember(MemberInfo subject)
@@ -261,7 +269,7 @@ namespace NHibernate.Mapping.ByCode
 			{
 				return true;
 			}
-			if (memberType.IsGenericType)
+			if (memberType.GetTypeInfo().IsGenericType)
 			{
 				return memberType.GetGenericInterfaceTypeDefinitions().Contains(typeof(IDictionary<,>));
 			}
@@ -299,7 +307,7 @@ namespace NHibernate.Mapping.ByCode
 		{
 			var memberType = subject.GetPropertyOrFieldType();
 
-			if (memberType.IsGenericType)
+			if (memberType.GetTypeInfo().IsGenericType)
 			{
 				return memberType.GetGenericInterfaceTypeDefinitions().Contains(typeof(ISet<>));
 			}
@@ -330,21 +338,33 @@ namespace NHibernate.Mapping.ByCode
 
 		protected bool IsAutoproperty(PropertyInfo property)
 		{
-			return property.ReflectedType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance
-																					 | BindingFlags.DeclaredOnly).Any(pi => pi.Name == string.Concat("<", property.Name, ">k__BackingField"));
+#if FEATURE_REFLECTEDTYPE
+			var reflectedType = property.ReflectedType;
+#else
+			var reflectedType = property.DeclaringType;
+#endif
+			return reflectedType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+			                    .Any(pi => pi.Name == string.Concat("<", property.Name, ">k__BackingField"));
 		}
 
 		protected bool CanReadCantWriteInsideType(PropertyInfo property)
 		{
-			return !property.CanWrite && property.CanRead && property.DeclaringType == property.ReflectedType;
+			return !property.CanWrite && property.CanRead
+#if FEATURE_REFLECTEDTYPE
+				 && property.DeclaringType == property.ReflectedType;
+#else
+				;
+#endif
 		}
 
 		protected bool CanReadCantWriteInBaseType(PropertyInfo property)
 		{
+#if FEATURE_REFLECTEDTYPE
 			if (property.DeclaringType == property.ReflectedType)
 			{
 				return false;
 			}
+#endif
 			var rfprop = property.DeclaringType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance
 																					 | BindingFlags.DeclaredOnly).SingleOrDefault(pi => pi.Name == property.Name);
 			return rfprop != null && !rfprop.CanWrite && rfprop.CanRead;
@@ -353,10 +373,10 @@ namespace NHibernate.Mapping.ByCode
 		protected bool MatchPoIdPattern(MemberInfo subject)
 		{
 			var name = subject.Name;
-			return name.Equals("id", StringComparison.InvariantCultureIgnoreCase)
-						 || name.Equals("poid", StringComparison.InvariantCultureIgnoreCase)
-						 || name.Equals("oid", StringComparison.InvariantCultureIgnoreCase)
-						 || (name.StartsWith(subject.DeclaringType.Name) && name.Equals(subject.DeclaringType.Name + "id", StringComparison.InvariantCultureIgnoreCase));
+			return name.Equals("id", StringComparison.OrdinalIgnoreCase)
+						 || name.Equals("poid", StringComparison.OrdinalIgnoreCase)
+						 || name.Equals("oid", StringComparison.OrdinalIgnoreCase)
+						 || (name.StartsWith(subject.DeclaringType.Name) && name.Equals(subject.DeclaringType.Name + "id", StringComparison.OrdinalIgnoreCase));
 		}
 
 		protected bool MatchComponentPattern(System.Type subject)
@@ -369,10 +389,10 @@ namespace NHibernate.Mapping.ByCode
 				return false;
 			}
 			var modelInspector = (IModelInspector) this;
-			return !subject.IsEnum && (subject.Namespace == null || !subject.Namespace.StartsWith("System")) /* hack */
+			return !subject.GetTypeInfo().IsEnum && (subject.Namespace == null || !subject.Namespace.StartsWith("System")) /* hack */
 							&& !modelInspector.IsEntity(subject)
 							&& !subject.GetProperties(flattenHierarchyMembers).Cast<MemberInfo>().Concat(
-			       		subject.GetFields(flattenHierarchyMembers)).Any(m => modelInspector.IsPersistentId(m));
+			       		subject.GetFields(flattenHierarchyMembers)).Any(m => modelInspector.IsPersistentId(m, subject));
 		}
 
 		protected bool MatchEntity(System.Type subject)
@@ -384,8 +404,8 @@ namespace NHibernate.Mapping.ByCode
 				return false;
 			}
 			var modelInspector = (IModelInspector) this;
-			return subject.IsClass &&
-			       subject.GetProperties(flattenHierarchyMembers).Cast<MemberInfo>().Concat(subject.GetFields(flattenHierarchyMembers)).Any(m => modelInspector.IsPersistentId(m));
+			return subject.GetTypeInfo().IsClass &&
+			       subject.GetProperties(flattenHierarchyMembers).Cast<MemberInfo>().Concat(subject.GetFields(flattenHierarchyMembers)).Any(m => modelInspector.IsPersistentId(m, subject));
 		}
 
 		#region IModelExplicitDeclarationsHolder Members
@@ -706,9 +726,9 @@ namespace NHibernate.Mapping.ByCode
 			return isTablePerConcreteClass(type, declaredResult);
 		}
 
-		bool IModelInspector.IsOneToOne(MemberInfo member)
+		bool IModelInspector.IsOneToOne(MemberInfo member, System.Type componentType)
 		{
-			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsOneToOne(m));
+			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsOneToOne(m), componentType);
 			return isOneToOne(member, declaredResult);
 		}
 
@@ -718,15 +738,21 @@ namespace NHibernate.Mapping.ByCode
 			return isManyToOne(member, declaredResult);
 		}
 
-		bool IModelInspector.IsManyToManyItem(MemberInfo member)
+		bool IModelInspector.IsManyToOne(MemberInfo member, System.Type componentType)
 		{
-			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsManyToManyItem(m));
+			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsManyToOne(m), componentType);
+			return isManyToOne(member, declaredResult);
+		}
+
+		bool IModelInspector.IsManyToManyItem(MemberInfo member, System.Type componentType)
+		{
+			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsManyToManyItem(m), componentType);
 			return isManyToMany(member, declaredResult);
 		}
 
-		bool IModelInspector.IsManyToManyKey(MemberInfo member)
+		bool IModelInspector.IsManyToManyKey(MemberInfo member, System.Type componentType)
 		{
-			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsManyToManyKey(m));
+			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsManyToManyKey(m), componentType);
 			return isManyToMany(member, declaredResult);
 		}
 
@@ -736,21 +762,33 @@ namespace NHibernate.Mapping.ByCode
 			return isOneToMany(member, declaredResult);
 		}
 
-		bool IModelInspector.IsManyToAny(MemberInfo member)
+		bool IModelInspector.IsOneToMany(MemberInfo member, System.Type componentType)
 		{
-			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsManyToAny(m));
+			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsOneToMany(m), componentType);
+			return isOneToMany(member, declaredResult);
+		}
+
+		bool IModelInspector.IsManyToAny(MemberInfo member, System.Type componentType)
+		{
+			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsManyToAny(m), componentType);
 			return isManyToAny(member, declaredResult);
 		}
 
-		bool IModelInspector.IsAny(MemberInfo member)
+		bool IModelInspector.IsAny(MemberInfo member, System.Type componentType)
 		{
-			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsAny(m));
+			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsAny(m), componentType);
 			return isAny(member, declaredResult);
 		}
 
 		bool IModelInspector.IsPersistentId(MemberInfo member)
 		{
 			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsPersistentId(m));
+			return isPersistentId(member, declaredResult);
+		}
+
+		bool IModelInspector.IsPersistentId(MemberInfo member, System.Type componentType)
+		{
+			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsPersistentId(m), componentType);
 			return isPersistentId(member, declaredResult);
 		}
 
@@ -765,9 +803,21 @@ namespace NHibernate.Mapping.ByCode
 			return isVersion(member, declaredResult);
 		}
 
+		bool IModelInspector.IsVersion(MemberInfo member, System.Type componentType)
+		{
+			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsVersion(m), componentType);
+			return isVersion(member, declaredResult);
+		}
+
 		bool IModelInspector.IsMemberOfNaturalId(MemberInfo member)
 		{
 			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsMemberOfNaturalId(m));
+			return isMemberOfNaturalId(member, declaredResult);
+		}
+
+		bool IModelInspector.IsMemberOfNaturalId(MemberInfo member, System.Type componentType)
+		{
+			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsMemberOfNaturalId(m), componentType);
 			return isMemberOfNaturalId(member, declaredResult);
 		}
 
@@ -777,9 +827,21 @@ namespace NHibernate.Mapping.ByCode
 			return isPersistentProperty(member, declaredResult);
 		}
 
+		bool IModelInspector.IsPersistentProperty(MemberInfo member, System.Type componentType)
+		{
+			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsPersistentProperty(m), componentType);
+			return isPersistentProperty(member, declaredResult);
+		}
+
 		bool IModelInspector.IsSet(MemberInfo role)
 		{
 			bool declaredResult = DeclaredPolymorphicMatch(role, m => declaredModel.IsSet(m));
+			return isSet(role, declaredResult);
+		}
+
+		bool IModelInspector.IsSet(MemberInfo role, System.Type componentType)
+		{
+			bool declaredResult = DeclaredPolymorphicMatch(role, m => declaredModel.IsSet(m), componentType);
 			return isSet(role, declaredResult);
 		}
 
@@ -789,15 +851,21 @@ namespace NHibernate.Mapping.ByCode
 			return isBag(role, declaredResult);
 		}
 
-		bool IModelInspector.IsIdBag(MemberInfo role)
+		bool IModelInspector.IsBag(MemberInfo role, System.Type componentType)
 		{
-			bool declaredResult = DeclaredPolymorphicMatch(role, m => declaredModel.IsIdBag(m));
+			bool declaredResult = DeclaredPolymorphicMatch(role, m => declaredModel.IsBag(m), componentType);
+			return isBag(role, declaredResult);
+		}
+
+		bool IModelInspector.IsIdBag(MemberInfo role, System.Type componentType)
+		{
+			bool declaredResult = DeclaredPolymorphicMatch(role, m => declaredModel.IsIdBag(m), componentType);
 			return isIdBag(role, declaredResult);
 		}
 
-		bool IModelInspector.IsList(MemberInfo role)
+		bool IModelInspector.IsList(MemberInfo role, System.Type componentType)
 		{
-			bool declaredResult = DeclaredPolymorphicMatch(role, m => declaredModel.IsList(m));
+			bool declaredResult = DeclaredPolymorphicMatch(role, m => declaredModel.IsList(m), componentType);
 			return isList(role, declaredResult);
 		}
 
@@ -807,21 +875,33 @@ namespace NHibernate.Mapping.ByCode
 			return isArray(role, declaredResult);
 		}
 
+		bool IModelInspector.IsArray(MemberInfo role, System.Type componentType)
+		{
+			bool declaredResult = DeclaredPolymorphicMatch(role, m => declaredModel.IsArray(m), componentType);
+			return isArray(role, declaredResult);
+		}
+
 		bool IModelInspector.IsDictionary(MemberInfo role)
 		{
 			bool declaredResult = DeclaredPolymorphicMatch(role, m => declaredModel.IsDictionary(m));
 			return isDictionary(role, declaredResult);
 		}
 
-		bool IModelInspector.IsProperty(MemberInfo member)
+		bool IModelInspector.IsDictionary(MemberInfo role, System.Type componentType)
 		{
-			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsProperty(m));
+			bool declaredResult = DeclaredPolymorphicMatch(role, m => declaredModel.IsDictionary(m), componentType);
+			return isDictionary(role, declaredResult);
+		}
+
+		bool IModelInspector.IsProperty(MemberInfo member, System.Type componentType)
+		{
+			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsProperty(m), componentType);
 			return isProperty(member, declaredResult);
 		}
 
-		bool IModelInspector.IsDynamicComponent(MemberInfo member)
+		bool IModelInspector.IsDynamicComponent(MemberInfo member, System.Type componentType)
 		{
-			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsDynamicComponent(m));
+			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsDynamicComponent(m), componentType);
 			return isDynamicComponent(member, declaredResult);
 		}
 
@@ -847,6 +927,13 @@ namespace NHibernate.Mapping.ByCode
 			return declaredMatch(member)
 						 || member.GetMemberFromDeclaringClasses().Any(declaredMatch)
 						 || member.GetPropertyFromInterfaces().Any(declaredMatch);
+		}
+
+		protected virtual bool DeclaredPolymorphicMatch(MemberInfo member, Func<MemberInfo, bool> declaredMatch, System.Type componentType)
+		{
+			return declaredMatch(member)
+						 || member.GetMemberFromDeclaringClasses(componentType).Any(declaredMatch)
+						 || member.GetPropertyFromInterfaces(componentType).Any(declaredMatch);
 		}
 
 		public void IsRootEntity(Func<System.Type, bool, bool> match)

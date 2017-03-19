@@ -1,9 +1,13 @@
 using System;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using NHibernate.Util;
+
+#if FEATURE_SYSTEM_CONFIGURATION
+using System.Configuration;
+#endif
 
 namespace NHibernate
 {
@@ -63,40 +67,53 @@ namespace NHibernate
 			}
 			catch (MissingMethodException ex)
 			{
-				throw new ApplicationException("Public constructor was not found for " + loggerFactoryType, ex);
+				throw new Exception("Public constructor was not found for " + loggerFactoryType, ex);
 			}
 			catch (InvalidCastException ex)
 			{
-				throw new ApplicationException(loggerFactoryType + "Type does not implement " + typeof (ILoggerFactory), ex);
+				throw new Exception(loggerFactoryType + "Type does not implement " + typeof (ILoggerFactory), ex);
 			}
 			catch (Exception ex)
 			{
-				throw new ApplicationException("Unable to instantiate: " + loggerFactoryType, ex);
+				throw new Exception("Unable to instantiate: " + loggerFactoryType, ex);
 			}
 			return loggerFactory;
 		}
 
 		private static string GetNhibernateLoggerClass()
 		{
-			var nhibernateLogger = ConfigurationManager.AppSettings.Keys.Cast<string>().FirstOrDefault(k => NhibernateLoggerConfKey.Equals(k.ToLowerInvariant()));
 			string nhibernateLoggerClass = null;
+#if FEATURE_SYSTEM_CONFIGURATION
+			var nhibernateLogger = ConfigurationManager.AppSettings.Keys.Cast<string>().FirstOrDefault(k => NhibernateLoggerConfKey.Equals(k.ToLowerInvariant()));
 			if (string.IsNullOrEmpty(nhibernateLogger))
+#endif
 			{
 				// look for log4net.dll
+#if FEATURE_APPDOMAIN
 				string baseDir = AppDomain.CurrentDomain.BaseDirectory;
 				string relativeSearchPath = AppDomain.CurrentDomain.RelativeSearchPath;
+#else
+				string baseDir = AppContext.BaseDirectory;
+				string relativeSearchPath = null;
+#endif
 				string binPath = relativeSearchPath == null ? baseDir : Path.Combine(baseDir, relativeSearchPath);
 				string log4NetDllPath = binPath == null ? "log4net.dll" : Path.Combine(binPath, "log4net.dll");
 
-				if (File.Exists(log4NetDllPath) || AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name == "log4net"))
+				if (File.Exists(log4NetDllPath) 
+#if FEATURE_APPDOMAIN
+					|| AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name == "log4net")
+#endif
+					)
 				{
 					nhibernateLoggerClass = typeof (Log4NetLoggerFactory).AssemblyQualifiedName;
 				}
 			}
+#if FEATURE_SYSTEM_CONFIGURATION
 			else
 			{
 				nhibernateLoggerClass = ConfigurationManager.AppSettings[nhibernateLogger];
 			}
+#endif
 			return nhibernateLoggerClass;
 		}
 
@@ -241,7 +258,7 @@ namespace NHibernate
 
 		private static Func<TParameter, object> GetGetLoggerMethodCall<TParameter>()
 		{
-			var method = LogManagerType.GetMethod("GetLogger", new[] { typeof(TParameter) });
+			var method = LogManagerType.GetTypeInfo().GetMethod("GetLogger", new[] { typeof(TParameter) });
 			ParameterExpression resultValue;
 			ParameterExpression keyParam = Expression.Parameter(typeof(TParameter), "key");
 			MethodCallExpression methodCall = Expression.Call(null, method, resultValue = keyParam);

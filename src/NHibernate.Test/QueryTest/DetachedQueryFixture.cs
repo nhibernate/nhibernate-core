@@ -425,6 +425,7 @@ namespace NHibernate.Test.QueryTest
 			}
 		}
 
+#if FEATURE_SERIALIZATION
 		[Test]
 		public void Serializable()
 		{
@@ -439,6 +440,7 @@ namespace NHibernate.Test.QueryTest
 				dqs.GetExecutableQuery(s).List();
 			}
 		}
+#endif
 
 		[Test, Explicit]
 		public void PerformanceDiffSimplyQuery()

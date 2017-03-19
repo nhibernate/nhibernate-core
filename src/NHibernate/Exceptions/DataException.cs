@@ -1,5 +1,8 @@
 using System;
+
+#if FEATURE_SERIALIZATION
 using System.Runtime.Serialization;
+#endif
 
 namespace NHibernate.Exceptions
 {
@@ -11,7 +14,9 @@ namespace NHibernate.Exceptions
 	[Serializable]
 	public class DataException : ADOException
 	{
+#if FEATURE_SERIALIZATION
 		public DataException(SerializationInfo info, StreamingContext context) : base(info, context) {}
+#endif
 		public DataException(string message, Exception innerException, string sql) : base(message, innerException, sql) {}
 		public DataException(string message, Exception innerException) : base(message, innerException) {}
 	}

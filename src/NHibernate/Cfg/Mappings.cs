@@ -538,7 +538,7 @@ namespace NHibernate.Cfg
 			if (oldFinalName != null &&
 					!(finalColumn.IsQuoted
 							? oldFinalName.Equals(finalColumn.GetQuotedName())
-							: oldFinalName.Equals(finalColumn.GetQuotedName(), StringComparison.InvariantCultureIgnoreCase)))
+							: oldFinalName.Equals(finalColumn.GetQuotedName(), StringComparison.OrdinalIgnoreCase)))
 			{
 				//TODO possibly relax that
 				throw new MappingException("Same logical column name referenced by different physical ones: " + table.Name + "."

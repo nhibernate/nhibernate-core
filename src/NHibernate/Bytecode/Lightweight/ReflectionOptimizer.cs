@@ -1,9 +1,12 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Security;
-using System.Security.Permissions;
 using NHibernate.Properties;
 using NHibernate.Util;
+
+#if FEATURE_SECURITY_PERMISSIONS
+using System.Security.Permissions;
+#endif
 
 namespace NHibernate.Bytecode.Lightweight
 {
@@ -36,7 +39,7 @@ namespace NHibernate.Bytecode.Lightweight
 		{
 			// save off references
 			this.mappedType = mappedType;
-			typeOfThis = mappedType.IsValueType ? mappedType.MakeByRefType() : mappedType;
+			typeOfThis = mappedType.GetTypeInfo().IsValueType ? mappedType.MakeByRefType() : mappedType;
 			//this.getters = getters;
 			//this.setters = setters;
 
@@ -54,7 +57,7 @@ namespace NHibernate.Bytecode.Lightweight
 		/// </summary>
 		protected virtual CreateInstanceInvoker CreateCreateInstanceMethod(System.Type type)
 		{
-			if (type.IsInterface || type.IsAbstract)
+			if (type.GetTypeInfo().IsInterface || type.GetTypeInfo().IsAbstract)
 			{
 				return null;
 			}
@@ -63,7 +66,7 @@ namespace NHibernate.Bytecode.Lightweight
 
 			ILGenerator il = method.GetILGenerator();
 
-			if (type.IsValueType)
+			if (type.GetTypeInfo().IsValueType)
 			{
 				LocalBuilder tmpLocal = il.DeclareLocal(type);
 				il.Emit(OpCodes.Ldloca, tmpLocal);
@@ -99,16 +102,20 @@ namespace NHibernate.Bytecode.Lightweight
 
 		protected DynamicMethod CreateDynamicMethod(System.Type returnType, System.Type[] argumentTypes)
 		{
-			System.Type owner = mappedType.IsInterface ? typeof (object) : mappedType;
+			System.Type owner = mappedType.GetTypeInfo().IsInterface ? typeof (object) : mappedType;
+#if FEATURE_SECURITY_PERMISSIONS
 #pragma warning disable 618
 			bool canSkipChecks = SecurityManager.IsGranted(new ReflectionPermission(ReflectionPermissionFlag.MemberAccess));
 #pragma warning restore 618
+#else
+			bool canSkipChecks = false;
+#endif
 			return new DynamicMethod(string.Empty, returnType, argumentTypes, owner, canSkipChecks);
 		}
 
 		private static void EmitCastToReference(ILGenerator il, System.Type type)
 		{
-			if (type.IsValueType)
+			if (type.GetTypeInfo().IsValueType)
 			{
 				il.Emit(OpCodes.Unbox, type);
 			}

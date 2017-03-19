@@ -1,5 +1,8 @@
 using System;
+
+#if FEATURE_SERIALIZATION
 using System.Runtime.Serialization;
+#endif
 
 namespace NHibernate
 {
@@ -11,6 +14,8 @@ namespace NHibernate
 	{
 		public TypeMismatchException(string message) : base(message) { }
 		public TypeMismatchException(string message, Exception inner) : base(message, inner) { }
+#if FEATURE_SERIALIZATION
 		protected TypeMismatchException(SerializationInfo info,StreamingContext context): base(info, context) { }
+#endif
 	}
 }

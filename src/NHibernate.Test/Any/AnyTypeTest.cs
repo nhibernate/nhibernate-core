@@ -1,3 +1,5 @@
+#if FEATURE_SERIALIZATION
+
 using System.Collections;
 using NUnit.Framework;
 
@@ -51,3 +53,5 @@ namespace NHibernate.Test.Any
 		}
 	}
 }
+
+#endif

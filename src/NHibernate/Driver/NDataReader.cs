@@ -47,33 +47,32 @@ namespace NHibernate.Driver
 		{
 			var resultList = new List<NResult>(2);
 
-			try
+			using (reader)
 			{
-				// if we are in midstream of processing a DataReader then we are already
-				// positioned on the first row (index=0)
-				if (isMidstream)
+				try
 				{
-					currentRowIndex = 0;
+					// if we are in midstream of processing a DataReader then we are already
+					// positioned on the first row (index=0)
+					if (isMidstream)
+					{
+						currentRowIndex = 0;
+					}
+
+					// there will be atleast one result 
+					resultList.Add(new NResult(reader, isMidstream));
+
+					while (reader.NextResult())
+					{
+						// the second, third, nth result is not processed midstream
+						resultList.Add(new NResult(reader, false));
+					}
+
+					results = resultList.ToArray();
 				}
-
-				// there will be atleast one result 
-				resultList.Add(new NResult(reader, isMidstream));
-
-				while (reader.NextResult())
+				catch (Exception e)
 				{
-					// the second, third, nth result is not processed midstream
-					resultList.Add(new NResult(reader, false));
+					throw new ADOException("There was a problem converting an DbDataReader to NDataReader", e);
 				}
-
-				results = resultList.ToArray();
-			}
-			catch (Exception e)
-			{
-				throw new ADOException("There was a problem converting an DbDataReader to NDataReader", e);
-			}
-			finally
-			{
-				reader.Close();
 			}
 		}
 
@@ -108,7 +107,7 @@ namespace NHibernate.Driver
 
 		public override bool HasRows
 		{
-			get { return results.LongLength > 0; }
+			get { return results.Length > 0; }
 		}
 
 		/// <summary></summary>
@@ -135,10 +134,12 @@ namespace NHibernate.Driver
 		}
 
 		/// <summary></summary>
+#if FEATURE_DATA_CLOSE || NET_4_0
 		public override void Close()
 		{
 			isClosed = true;
 		}
+#endif
 
 		/// <summary></summary>
 		public override bool Read()
@@ -163,11 +164,17 @@ namespace NHibernate.Driver
 			get { return currentResultIndex; }
 		}
 
+#if FEATURE_DATA_GETSCHEMATABLE || NET_4_0
 		/// <summary></summary>
 		public override DataTable GetSchemaTable()
 		{
+#if FEATURE_DATA_GETSCHEMATABLE
 			return GetCurrentResult().GetSchemaTable();
+#else
+			throw new NotImplementedException();
+#endif
 		}
+#endif
 
 		protected override void Dispose(bool disposing)
 		{
@@ -247,7 +254,7 @@ namespace NHibernate.Driver
 				length = (int) remainingLength;
 			}
 
-			Array.Copy(cachedByteArray, fieldOffset, buffer, bufferOffset, length);
+			Array.Copy(cachedByteArray, (int)fieldOffset, buffer, bufferOffset, length);
 
 			return length;
 		}
@@ -422,7 +429,7 @@ namespace NHibernate.Driver
 				length = (int) remainingLength;
 			}
 
-			Array.Copy(cachedCharArray, fieldOffset, buffer, bufferOffset, length);
+			Array.Copy(cachedCharArray, (int)fieldOffset, buffer, bufferOffset, length);
 
 			return length;
 		}
@@ -466,7 +473,9 @@ namespace NHibernate.Driver
 			private readonly object[][] records;
 			private int colCount = 0;
 
+#if FEATURE_DATA_GETSCHEMATABLE
 			private readonly DataTable schemaTable;
+#endif
 
 			// key = field name
 			// index = field index
@@ -485,7 +494,9 @@ namespace NHibernate.Driver
 			/// </param>
 			internal NResult(DbDataReader reader, bool isMidstream)
 			{
+#if FEATURE_DATA_GETSCHEMATABLE
 				schemaTable = reader.GetSchemaTable();
+#endif
 
 				List<object[]> recordsList = new List<object[]>();
 				int rowIndex = 0;
@@ -561,11 +572,13 @@ namespace NHibernate.Driver
 				return fieldIndexToName[colIndex];
 			}
 
+#if FEATURE_DATA_GETSCHEMATABLE
 			/// <summary></summary>
 			public DataTable GetSchemaTable()
 			{
 				return schemaTable;
 			}
+#endif
 
 			/// <summary>
 			/// 

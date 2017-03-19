@@ -1,7 +1,5 @@
 using System;
 using System.Collections;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 
 using NHibernate.Util;
 using NUnit.Framework;

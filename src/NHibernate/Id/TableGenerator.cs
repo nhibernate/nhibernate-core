@@ -151,13 +151,15 @@ namespace NHibernate.Id
 		/// <param name="session">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name="obj">The entity for which the id is being generated.</param>
 		/// <returns>The new identifier as a <see cref="short"/>, <see cref="int"/>, or <see cref="long"/>.</returns>
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public virtual object Generate(ISessionImplementor session, object obj)
 		{
-			// This has to be done using a different connection to the containing
-			// transaction becase the new hi value must remain valid even if the
-			// containing transaction rolls back.
-			return DoWorkInNewTransaction(session);
+			lock (this)
+			{
+				// This has to be done using a different connection to the containing
+				// transaction becase the new hi value must remain valid even if the
+				// containing transaction rolls back.
+				return DoWorkInNewTransaction(session);
+			}
 		}
 
 		#endregion
@@ -221,43 +223,43 @@ namespace NHibernate.Id
 				//select + uspdate even for no transaction
 				//or read committed isolation level (needed for .net?)
 
-				var qps = conn.CreateCommand();
-				DbDataReader rs = null;
-				qps.CommandText = query;
-				qps.CommandType = CommandType.Text;
-				qps.Transaction = transaction;
-				PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand("Reading high value:", qps, FormatStyle.Basic);
-				try
+				using (DbCommand qps = conn.CreateCommand())
 				{
-					rs = qps.ExecuteReader();
-					if (!rs.Read())
+					qps.CommandText = query;
+					qps.CommandType = CommandType.Text;
+					qps.Transaction = transaction;
+					PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand("Reading high value:", qps, FormatStyle.Basic);
+					using (DbDataReader rs = qps.ExecuteReader())
 					{
-						string err;
-						if (string.IsNullOrEmpty(whereClause))
+						try
 						{
-							err = "could not read a hi value - you need to populate the table: " + tableName;
+							;
+							if (!rs.Read())
+							{
+								string err;
+								if (string.IsNullOrEmpty(whereClause))
+								{
+									err = "could not read a hi value - you need to populate the table: " + tableName;
+								}
+								else
+								{
+									err =
+										string.Format(
+											"could not read a hi value from table '{0}' using the where clause ({1})- you need to populate the table.",
+											tableName,
+											whereClause);
+								}
+								log.Error(err);
+								throw new IdentifierGenerationException(err);
+							}
+							result = Convert.ToInt64(columnType.Get(rs, 0));
 						}
-						else
+						catch (Exception e)
 						{
-							err = string.Format("could not read a hi value from table '{0}' using the where clause ({1})- you need to populate the table.", tableName, whereClause);
+							log.Error("could not read a hi value", e);
+							throw;
 						}
-						log.Error(err);
-						throw new IdentifierGenerationException(err);
 					}
-					result = Convert.ToInt64(columnType.Get(rs, 0));
-				}
-				catch (Exception e)
-				{
-					log.Error("could not read a hi value", e);
-					throw;
-				}
-				finally
-				{
-					if (rs != null)
-					{
-						rs.Close();
-					}
-					qps.Dispose();
 				}
 
 				var ups = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, updateSql, parameterTypes);

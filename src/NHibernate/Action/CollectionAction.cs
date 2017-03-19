@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.Serialization;
 using NHibernate.Cache;
 using NHibernate.Cache.Access;
 using NHibernate.Collection;
@@ -8,13 +7,21 @@ using NHibernate.Impl;
 using NHibernate.Persister.Collection;
 using NHibernate.Util;
 
+#if FEATURE_SERIALIZATION
+using System.Runtime.Serialization;
+#endif
+
 namespace NHibernate.Action
 {
 	/// <summary>
 	/// Any action relating to insert/update/delete of a collection
 	/// </summary>
 	[Serializable]
-	public abstract class CollectionAction : IExecutable, IComparable<CollectionAction>, IDeserializationCallback
+	public abstract class CollectionAction 
+		: IExecutable, IComparable<CollectionAction>
+#if FEATURE_SERIALIZATION
+		, IDeserializationCallback
+#endif
 	{
 		private readonly object key;
 		private object finalKey;
@@ -174,6 +181,7 @@ namespace NHibernate.Action
 			return StringHelper.Unqualify(GetType().FullName) + MessageHelper.InfoString(collectionRole, key);
 		}
 
+#if FEATURE_SERIALIZATION
 		#region IDeserializationCallback Members
 
 		void IDeserializationCallback.OnDeserialization(object sender)
@@ -182,5 +190,6 @@ namespace NHibernate.Action
 		}
 
 		#endregion
+#endif
 	}
 }

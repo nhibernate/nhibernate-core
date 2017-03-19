@@ -21,7 +21,7 @@ namespace NHibernate.Mapping.ByCode
 			var analizing = type;
 			while (analizing != null && analizing != typeof (object))
 			{
-				analizing = analizing.BaseType;
+				analizing = analizing.GetTypeInfo().BaseType;
 				yield return analizing;
 			}
 		}
@@ -33,7 +33,7 @@ namespace NHibernate.Mapping.ByCode
 			while (analyzingType != null && analyzingType != typeof (object))
 			{
 				typeHierarchy.Push(analyzingType);
-				analyzingType = analyzingType.BaseType;
+				analyzingType = analyzingType.GetTypeInfo().BaseType;
 			}
 			return typeHierarchy;
 		}
@@ -94,7 +94,7 @@ namespace NHibernate.Mapping.ByCode
 		public static MemberInfo DecodeMemberAccessExpressionOf<TEntity, TProperty>(Expression<Func<TEntity, TProperty>> expression)
 		{
 			var memberOfDeclaringType = DecodeMemberAccessExpression(expression);
-			if (typeof (TEntity).IsInterface)
+			if (typeof (TEntity).GetTypeInfo().IsInterface)
 			{
 				// Type.GetProperty(string name,Type returnType) does not work properly with interfaces
 				return memberOfDeclaringType;
@@ -103,7 +103,7 @@ namespace NHibernate.Mapping.ByCode
 			var propertyInfo = memberOfDeclaringType as PropertyInfo;
 			if (propertyInfo != null)
 			{
-				return typeof (TEntity).GetProperty(propertyInfo.Name, PropertiesOfClassHierarchy, null, propertyInfo.PropertyType, new System.Type[0], null);
+				return typeof(TEntity).GetProperty(propertyInfo.Name, PropertiesOfClassHierarchy, null, propertyInfo.PropertyType, new System.Type[0], null);
 			}
 			if (memberOfDeclaringType is FieldInfo)
 			{
@@ -118,8 +118,25 @@ namespace NHibernate.Mapping.ByCode
 			{
 				throw new ArgumentNullException("source");
 			}
+			//if (source.DeclaringType != source.ReflectedType)
+			//{
+			//	throw new InvalidOperationException(string.Format("DeclaringType {0} not the same as ReflectedType {1}", source.DeclaringType, source.ReflectedType));
+			//}
+#if FEATURE_REFLECTEDTYPE
+			return GetMemberFromDeclaringType(source, source.ReflectedType);
+#else
+			return GetMemberFromDeclaringType(source, source.DeclaringType);
+#endif
+		}
 
-			if (source.DeclaringType.Equals(source.ReflectedType))
+		public static MemberInfo GetMemberFromDeclaringType(this MemberInfo source, System.Type componentType)
+		{
+			if (source == null)
+			{
+				throw new ArgumentNullException("source");
+			}
+
+			if (source.DeclaringType.Equals(componentType))
 			{
 				return source;
 			}
@@ -142,17 +159,34 @@ namespace NHibernate.Mapping.ByCode
 			{
 				throw new ArgumentNullException("source");
 			}
+			//if (source.DeclaringType != source.ReflectedType)
+			//{
+			//	throw new InvalidOperationException(string.Format("DeclaringType {0} not the same as ReflectedType {1}", source.DeclaringType, source.ReflectedType));
+			//}
+#if FEATURE_REFLECTEDTYPE
+			return GetMemberFromDeclaringClasses(source, source.ReflectedType);
+#else
+			return GetMemberFromDeclaringClasses(source, source.DeclaringType);
+#endif
+		}
+
+		public static IEnumerable<MemberInfo> GetMemberFromDeclaringClasses(this MemberInfo source, System.Type componentType)
+		{
+			if (source == null)
+			{
+				throw new ArgumentNullException("source");
+			}
 
 			if (source is PropertyInfo)
 			{
-				var reflectedType = source.ReflectedType;
+				var reflectedType = componentType;
 				var memberType = source.GetPropertyOrFieldType();
 				return reflectedType.GetPropertiesOfHierarchy().Cast<PropertyInfo>().Where(x => source.Name.Equals(x.Name) && memberType.Equals(x.PropertyType)).Cast<MemberInfo>();
 			}
 
 			if (source is FieldInfo)
 			{
-				return new[] { source.GetMemberFromDeclaringType() };
+				return new[] { source.GetMemberFromDeclaringType(componentType) };
 			}
 
 			return Enumerable.Empty<MemberInfo>();
@@ -164,16 +198,41 @@ namespace NHibernate.Mapping.ByCode
 			{
 				throw new ArgumentNullException("source");
 			}
+			//if (source.DeclaringType != source.ReflectedType)
+			//{
+			//	throw new InvalidOperationException(string.Format("DeclaringType {0} not the same as ReflectedType {1}", source.DeclaringType, source.ReflectedType));
+			//}
+#if FEATURE_REFLECTEDTYPE
+			return GetPropertyFromInterfaces(source, source.ReflectedType);
+#else
+			return GetPropertyFromInterfaces(source, source.DeclaringType);
+#endif
+		}
+
+		public static IEnumerable<MemberInfo> GetPropertyFromInterfaces(this MemberInfo source, System.Type componentType)
+		{
+			if (source == null)
+			{
+				throw new ArgumentNullException("source");
+			}
+			if (!source.DeclaringType.IsAssignableFrom(componentType))
+			{
+				throw new ArgumentException("source Member not implemented on passed in type", "componentType");
+			}
+			//if (componentType != source.ReflectedType)
+			//{
+			//	throw new InvalidOperationException(string.Format("componentType {0} not the same as ReflectedType {1}", componentType, source.ReflectedType));
+			//}
 			var propertyInfo = source as PropertyInfo;
 			if (propertyInfo == null)
 			{
 				yield break;
 			}
-			if (source.ReflectedType.IsInterface)
+			if (componentType.GetTypeInfo().IsInterface)
 			{
 				yield break;
 			}
-			System.Type[] interfaces = source.ReflectedType.GetInterfaces();
+			System.Type[] interfaces = componentType.GetInterfaces();
 			if (interfaces.Length == 0)
 			{
 				yield break;
@@ -181,7 +240,7 @@ namespace NHibernate.Mapping.ByCode
 			MethodInfo propertyGetter = propertyInfo.GetGetMethod();
 			foreach (System.Type @interface in interfaces)
 			{
-				InterfaceMapping memberMap = source.ReflectedType.GetInterfaceMap(@interface);
+				InterfaceMapping memberMap = componentType.GetTypeInfo().GetRuntimeInterfaceMap(@interface);
 				PropertyInfo[] interfaceProperties = @interface.GetProperties();
 				for (int i = 0; i < memberMap.TargetMethods.Length; i++)
 				{
@@ -195,9 +254,9 @@ namespace NHibernate.Mapping.ByCode
 
 		public static System.Type DetermineCollectionElementType(this System.Type genericCollection)
 		{
-			List<System.Type> interfaces = genericCollection.GetInterfaces().Where(t => t.IsGenericType).ToList();
+			List<System.Type> interfaces = genericCollection.GetInterfaces().Where(t => t.GetTypeInfo().IsGenericType).ToList();
 
-			if (genericCollection.IsGenericType)
+			if (genericCollection.GetTypeInfo().IsGenericType)
 			{
 				interfaces.Add(genericCollection);
 			}
@@ -232,10 +291,10 @@ namespace NHibernate.Mapping.ByCode
 
 		public static System.Type DetermineCollectionElementOrDictionaryValueType(this System.Type genericCollection)
 		{
-			if (genericCollection.IsGenericType)
+			if (genericCollection.GetTypeInfo().IsGenericType)
 			{
-				List<System.Type> interfaces = genericCollection.GetInterfaces().Where(t => t.IsGenericType).ToList();
-				if (genericCollection.IsInterface)
+				List<System.Type> interfaces = genericCollection.GetInterfaces().Where(t => t.GetTypeInfo().IsGenericType).ToList();
+				if (genericCollection.GetTypeInfo().IsInterface)
 				{
 					interfaces.Add(genericCollection);
 				}
@@ -255,7 +314,7 @@ namespace NHibernate.Mapping.ByCode
 
 		public static System.Type DetermineDictionaryKeyType(this System.Type genericDictionary)
 		{
-			if (genericDictionary.IsGenericType)
+			if (genericDictionary.GetTypeInfo().IsGenericType)
 			{
 				System.Type dictionaryInterface = GetDictionaryInterface(genericDictionary);
 				if (dictionaryInterface != null)
@@ -268,8 +327,8 @@ namespace NHibernate.Mapping.ByCode
 
 		private static System.Type GetDictionaryInterface(System.Type genericDictionary)
 		{
-			List<System.Type> interfaces = genericDictionary.GetInterfaces().Where(t => t.IsGenericType).ToList();
-			if (genericDictionary.IsInterface)
+			List<System.Type> interfaces = genericDictionary.GetInterfaces().Where(t => t.GetTypeInfo().IsGenericType).ToList();
+			if (genericDictionary.GetTypeInfo().IsInterface)
 			{
 				interfaces.Add(genericDictionary);
 			}
@@ -278,7 +337,7 @@ namespace NHibernate.Mapping.ByCode
 
 		public static System.Type DetermineDictionaryValueType(this System.Type genericDictionary)
 		{
-			if (genericDictionary.IsGenericType)
+			if (genericDictionary.GetTypeInfo().IsGenericType)
 			{
 				System.Type dictionaryInterface = GetDictionaryInterface(genericDictionary);
 				if (dictionaryInterface != null)
@@ -291,7 +350,7 @@ namespace NHibernate.Mapping.ByCode
 
 		public static bool IsGenericCollection(this System.Type source)
 		{
-			return source.IsGenericType && typeof (IEnumerable).IsAssignableFrom(source);
+			return source.GetTypeInfo().IsGenericType && typeof (IEnumerable).IsAssignableFrom(source);
 		}
 
 		public static MemberInfo GetFirstPropertyOfType(this System.Type propertyContainerType, System.Type propertyType)
@@ -325,7 +384,7 @@ namespace NHibernate.Mapping.ByCode
 
 		public static IEnumerable<MemberInfo> GetInterfaceProperties(this System.Type type)
 		{
-			if (!type.IsInterface)
+			if (!type.GetTypeInfo().IsInterface)
 			{
 				yield break;
 			}
@@ -353,7 +412,7 @@ namespace NHibernate.Mapping.ByCode
 
 		public static bool IsEnumOrNullableEnum(this System.Type type)
 		{
-			return type != null && type.UnwrapIfNullable().IsEnum;
+			return type != null && type.UnwrapIfNullable().GetTypeInfo().IsEnum;
 		}
 
 		public static bool IsFlagEnumOrNullableFlagEnum(this System.Type type)
@@ -363,16 +422,16 @@ namespace NHibernate.Mapping.ByCode
 				return false;
 			}
 			var typeofEnum = type.UnwrapIfNullable();
-			return typeofEnum.IsEnum && typeofEnum.GetCustomAttributes(typeof (FlagsAttribute), false).Length > 0;
+			return typeofEnum.GetTypeInfo().IsEnum && typeofEnum.GetTypeInfo().GetCustomAttributes(typeof (FlagsAttribute), false).Any();
 		}
 
 		public static IEnumerable<System.Type> GetGenericInterfaceTypeDefinitions(this System.Type type)
 		{
-			if (type.IsGenericType && type.IsInterface)
+			if (type.GetTypeInfo().IsGenericType && type.GetTypeInfo().IsInterface)
 			{
 				yield return type.GetGenericTypeDefinition();
 			}
-			foreach (System.Type t in type.GetInterfaces().Where(t => t.IsGenericType))
+			foreach (System.Type t in type.GetInterfaces().Where(t => t.GetTypeInfo().IsGenericType))
 			{
 				yield return t.GetGenericTypeDefinition();
 			}
@@ -390,7 +449,7 @@ namespace NHibernate.Mapping.ByCode
 				throw new ArgumentNullException("abstractType");
 			}
 
-			if (source.IsInterface)
+			if (source.GetTypeInfo().IsInterface)
 			{
 				return null;
 			}
@@ -442,7 +501,7 @@ namespace NHibernate.Mapping.ByCode
 				{
 					return member;
 				}
-				if (property.DeclaringType.IsInterface)
+				if (property.DeclaringType.GetTypeInfo().IsInterface)
 				{
 					System.Type[] interfaces = reflectedType.GetInterfaces();
 					var @interface = property.DeclaringType;
@@ -451,7 +510,7 @@ namespace NHibernate.Mapping.ByCode
 						return member;
 					}
 					var reflectedCandidateProps = reflectedType.GetProperties(PropertiesOfClassHierarchy);
-					InterfaceMapping memberMap = reflectedType.GetInterfaceMap(@interface);
+					InterfaceMapping memberMap = reflectedType.GetTypeInfo().GetRuntimeInterfaceMap(@interface);
 					for (int i = 0; i < memberMap.TargetMethods.Length; i++)
 					{
 						if (memberMap.InterfaceMethods[i] == propertyGetter)
@@ -496,7 +555,7 @@ namespace NHibernate.Mapping.ByCode
 
 		private static IEnumerable<MemberInfo> GetPropertiesOfInterfacesImplemented(this System.Type source)
 		{
-			if (source.IsInterface)
+			if (source.GetTypeInfo().IsInterface)
 			{
 				foreach (var interfaceProperty in source.GetInterfaceProperties())
 				{
@@ -515,7 +574,7 @@ namespace NHibernate.Mapping.ByCode
 
 		internal static IEnumerable<MemberInfo> GetPropertiesOfHierarchy(this System.Type type)
 		{
-			if(type.IsInterface)
+			if(type.GetTypeInfo().IsInterface)
 			{
 				yield break;
 			}
@@ -526,13 +585,13 @@ namespace NHibernate.Mapping.ByCode
 				{
 					yield return propertyInfo;
 				}
-				analizing = analizing.BaseType;
+				analizing = analizing.GetTypeInfo().BaseType;
 			}
 		}
 
 		private static IEnumerable<MemberInfo> GetFieldsOfHierarchy(this System.Type type)
 		{
-			if (type.IsInterface)
+			if (type.GetTypeInfo().IsInterface)
 			{
 				yield break;
 			}
@@ -543,7 +602,7 @@ namespace NHibernate.Mapping.ByCode
 				{
 					yield return fieldInfo;
 				}
-				analizing = analizing.BaseType;
+				analizing = analizing.GetTypeInfo().BaseType;
 			}
 		}
 

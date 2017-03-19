@@ -325,7 +325,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			foreach (var entry in _fromElementByClassAlias)
 			{
 				string alias = entry.Key;
-				if (string.Equals(alias, specifiedAlias, StringComparison.InvariantCultureIgnoreCase))
+				if (string.Equals(alias, specifiedAlias, StringComparison.OrdinalIgnoreCase))
 				{
 					return entry.Value;
 				}

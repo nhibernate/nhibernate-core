@@ -1,3 +1,5 @@
+#if FEATURE_XML_SCHEMAS
+
 using System.IO;
 using System.Reflection;
 using System.Xml;
@@ -16,7 +18,9 @@ namespace NHibernate.Cfg
 		public XmlReaderSettings CreateConfigReaderSettings()
 		{
 			XmlReaderSettings result = CreateXmlReaderSettings(ConfigSchemaSet);
+#if FEATURE_XML_VALIDATIONEVENTHANDLER
 			result.ValidationEventHandler += ConfigSettingsValidationEventHandler;
+#endif
 			result.IgnoreComments = true;
 			return result;
 		}
@@ -45,9 +49,13 @@ namespace NHibernate.Cfg
 			return new XmlReaderSettings {ValidationType = ValidationType.Schema, Schemas = xmlSchemaSet};
 		}
 
+#if FEATURE_XML_VALIDATIONEVENTHANDLER
 		private static void ConfigSettingsValidationEventHandler(object sender, ValidationEventArgs e)
 		{
 			throw new HibernateConfigException("An exception occurred parsing configuration :" + e.Message, e.Exception);
 		}
+#endif
 	}
 }
+
+#endif

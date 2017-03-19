@@ -229,11 +229,13 @@ namespace NHibernate.Dialect
 		{
 			get { return "select uuid_generate_v4()"; }
 		}
-		
+
+#if FEATURE_DATA_GETSCHEMATABLE
 		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
 			return new PostgreSQLDataBaseMetadata(connection);
 		}
+#endif
 
 		public override long TimestampResolutionInTicks
 		{

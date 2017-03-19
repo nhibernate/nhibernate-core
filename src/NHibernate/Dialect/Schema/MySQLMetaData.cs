@@ -1,3 +1,5 @@
+#if FEATURE_DATA_GETSCHEMATABLE
+
 using System;
 using System.Data;
 using System.Data.Common;
@@ -70,7 +72,7 @@ namespace NHibernate.Dialect.Schema
 	public class MySQLColumnMetadata : AbstractColumnMetaData
 	{
 		public MySQLColumnMetadata(DataRow rs)
-			: base(rs)
+			: base()
 		{
 			Name = Convert.ToString(rs["COLUMN_NAME"]);
 			
@@ -100,3 +102,5 @@ namespace NHibernate.Dialect.Schema
 		}
 	}
 }
+
+#endif

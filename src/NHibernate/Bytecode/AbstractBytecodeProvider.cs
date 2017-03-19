@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using NHibernate.Properties;
 using NHibernate.Util;
 
@@ -75,7 +76,7 @@ namespace NHibernate.Bytecode
 				throw new UnableToLoadProxyFactoryFactoryException(typeName, he);
 			}
 
-			if (typeof(IProxyFactoryFactory).IsAssignableFrom(pffc) == false)
+			if (typeof(IProxyFactoryFactory).GetTypeInfo().IsAssignableFrom(pffc) == false)
 			{
 				var he = new HibernateByteCodeException(pffc.FullName + " does not implement " + typeof(IProxyFactoryFactory).FullName);
 				throw he;

@@ -129,7 +129,7 @@ namespace NHibernate.Linq
 					continue;
 				}
 
-				if (parameters[i].ParameterType.ContainsGenericParameters && types[i].ContainsGenericParameters &&
+				if (parameters[i].ParameterType.GetTypeInfo().ContainsGenericParameters && types[i].GetTypeInfo().ContainsGenericParameters &&
 					parameters[i].ParameterType.GetGenericArguments().Length == types[i].GetGenericArguments().Length)
 				{
 					continue;

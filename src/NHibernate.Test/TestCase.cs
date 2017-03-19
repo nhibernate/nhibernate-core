@@ -231,7 +231,7 @@ namespace NHibernate.Test
 
 		protected virtual void AddMappings(Configuration configuration)
 		{
-			Assembly assembly = Assembly.Load(MappingsAssembly);
+			Assembly assembly = Assembly.Load(new AssemblyName(MappingsAssembly));
 
 			foreach (string file in Mappings)
 			{

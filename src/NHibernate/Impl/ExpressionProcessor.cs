@@ -301,7 +301,7 @@ namespace NHibernate.Impl
 			var memberExpression = expression as MemberExpression;
 			if (memberExpression != null && memberExpression.Member.DeclaringType != null)
 			{
-				return Attribute.GetCustomAttribute(memberExpression.Member.DeclaringType, typeof(CompilerGeneratedAttribute)) != null 
+				return memberExpression.Member.DeclaringType.GetTypeInfo().GetCustomAttribute<CompilerGeneratedAttribute>() != null 
 					&& GeneratedMemberNameRegex.IsMatch(memberExpression.Member.Name);
 			}
 
@@ -508,10 +508,10 @@ namespace NHibernate.Impl
 
 			type = type.UnwrapIfNullable();
 
-			if (type.IsEnum)
+			if (type.GetTypeInfo().IsEnum)
 				return Enum.ToObject(type, value);
 
-			if (type.IsPrimitive)
+			if (type.GetTypeInfo().IsPrimitive)
 				return Convert.ChangeType(value, type);
 
 			throw new Exception(string.Format("Cannot convert '{0}' to {1}", value, type));

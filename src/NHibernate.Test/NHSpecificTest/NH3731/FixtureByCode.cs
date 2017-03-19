@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿#if FEATURE_SERIALIZATION
+
+using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.Cfg.MappingSchema;
@@ -143,3 +145,5 @@ namespace NHibernate.Test.NHSpecificTest.NH3731
 		}
 	}
 }
+
+#endif

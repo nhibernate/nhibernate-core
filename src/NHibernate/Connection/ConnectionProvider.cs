@@ -1,12 +1,15 @@
 using System;
 using System.Collections;
-using System.Configuration;
 using System.Data.Common;
 
 using NHibernate.Driver;
 using NHibernate.Util;
 using Environment=NHibernate.Cfg.Environment;
 using System.Collections.Generic;
+
+#if FEATURE_SYSTEM_CONFIGURATION
+using System.Configuration;
+#endif
 
 namespace NHibernate.Connection
 {
@@ -73,6 +76,7 @@ namespace NHibernate.Connection
 		/// </exception>
 		protected virtual string GetNamedConnectionString(IDictionary<string, string> settings)
 		{
+#if FEATURE_SYSTEM_CONFIGURATION
 			string connStringName;
 			if(!settings.TryGetValue(Environment.ConnectionStringName, out connStringName))
 				return null;
@@ -81,6 +85,9 @@ namespace NHibernate.Connection
 			if (connectionStringSettings == null)
 				throw new HibernateException(string.Format("Could not find named connection string {0}", connStringName));
 			return connectionStringSettings.ConnectionString;
+#else
+			return null;
+#endif
 		}
 
 		/// <summary>

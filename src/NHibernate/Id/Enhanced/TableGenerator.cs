@@ -403,10 +403,12 @@ namespace NHibernate.Id.Enhanced
 		}
 
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public virtual object Generate(ISessionImplementor session, object obj)
 		{
-			return Optimizer.Generate(new TableAccessCallback(session, this));
+			lock (this)
+			{
+				return Optimizer.Generate(new TableAccessCallback(session, this));
+			}
 		}
 
 

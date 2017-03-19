@@ -4,6 +4,9 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Extralazy
 {
+#if !FEATURE_SERIALIZATION
+	[Ignore("Mapping Document has Serializable type")]
+#endif
 	[TestFixture]
 	public class ExtraLazyFixture : TestCase
 	{

@@ -1,3 +1,5 @@
+#if FEATURE_CODEDOM
+
 using System;
 using System.CodeDom.Compiler;
 using System.Reflection;
@@ -19,7 +21,7 @@ namespace NHibernate.Bytecode.CodeDom
 
 		public override IReflectionOptimizer GetReflectionOptimizer(System.Type clazz, IGetter[] getters, ISetter[] setters)
 		{
-			if (clazz.IsValueType)
+			if (clazz.GetTypeInfo().IsValueType)
 			{
 				// Cannot create optimizer for value types - the setter method will not work.
 				log.Info("Disabling reflection optimizer for value type " + clazz.FullName);
@@ -220,7 +222,7 @@ namespace NHibernate.Bytecode.CodeDom
 					{
 						System.Type type = getters[i].ReturnType;
 
-						if (type.IsValueType)
+						if (type.GetTypeInfo().IsValueType)
 						{
 							sb.AppendFormat("  t.{0} = values[{2}] == null ? new {1}() : ({1})values[{2}];\n", setter.PropertyName,
 							                type.FullName.Replace('+', '.'), i);
@@ -262,3 +264,5 @@ namespace NHibernate.Bytecode.CodeDom
 		#endregion
 	}
 }
+
+#endif

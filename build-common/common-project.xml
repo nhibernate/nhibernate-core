@@ -64,9 +64,7 @@
 
 	<target name="common.compile-all" depends="common.generate-assemblyinfo common.nuget-restore">
 		<!--property name="msbuild.cmd" value="${cmd.sln} ${cmd.out} ${cmd.platform} ${cmd.debug} ${cmd.optimize} ${cmd.doc} /t:Rebuild /v:q /m" /-->		
-		<readregistry property="MSBuildToolsPath" key="SOFTWARE\Microsoft\MSBuild\ToolsVersions\14.0\MSBuildToolsPath" hive="LocalMachine" />
-
-		<exec program="${path::combine(MSBuildToolsPath, 'msbuild.exe')}" verbose="true">
+		<exec program="${path::combine(tools.dir, 'msbuild.cmd')}" verbose="true">
 				<arg value="${root.dir}/src/NHibernate.sln" />
 				<arg value="/p:OutputPath=&quot;${path::get-full-path(bin.dir)}&quot;" />
 				<arg value="/p:Platform=&quot;Any CPU&quot;" />

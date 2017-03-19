@@ -45,7 +45,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
             config.BeforeBindMapping += BeforeBindMapping;
 
             // Copied from AddMappings methods.
-			Assembly assembly = Assembly.Load(MappingsAssembly);
+			Assembly assembly = Assembly.Load(new AssemblyName(MappingsAssembly));
 			foreach (string file in Mappings)
 				config.AddResource(MappingsAssembly + "." + file, assembly);
 

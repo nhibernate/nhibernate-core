@@ -1,3 +1,5 @@
+#if FEATURE_ADONET_SQLCOMMANDSET
+
 using NHibernate.Engine;
 
 namespace NHibernate.AdoNet
@@ -10,3 +12,5 @@ namespace NHibernate.AdoNet
 		}
 	}
 }
+
+#endif

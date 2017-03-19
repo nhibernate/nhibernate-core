@@ -96,7 +96,7 @@ namespace NHibernate.Properties
 			else
 			{
 				// recursively call this method for the base Type
-				BasicGetter getter = GetGetterOrNull(type.BaseType, propertyName);
+				BasicGetter getter = GetGetterOrNull(type.GetTypeInfo().BaseType, propertyName);
 
 				// didn't find anything in the base class - check to see if there is 
 				// an explicit interface implementation.
@@ -132,7 +132,7 @@ namespace NHibernate.Properties
 
 			BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
-			if (type.IsValueType)
+			if (type.GetTypeInfo().IsValueType)
 			{
 				// the BindingFlags.IgnoreCase is important here because if type is a struct, the GetProperty method does
 				// not ignore case by default. If type is a class, it _does_ ignore case... we're better off explicitly
@@ -148,7 +148,7 @@ namespace NHibernate.Properties
 			}
 
 			// recursively call this method for the base Type
-			BasicSetter setter = GetSetterOrNull(type.BaseType, propertyName);
+			BasicSetter setter = GetSetterOrNull(type.GetTypeInfo().BaseType, propertyName);
 
 			// didn't find anything in the base class - check to see if there is 
 			// an explicit interface implementation.

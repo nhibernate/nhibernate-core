@@ -9,6 +9,10 @@ using NHibernate.Properties;
 using NHibernate.Type;
 using NHibernate.Engine;
 
+#if NETSTANDARD
+using Microsoft.Extensions.DependencyModel;
+#endif
+
 namespace NHibernate.Util
 {
 	/// <summary>
@@ -41,7 +45,7 @@ namespace NHibernate.Util
 		{
 			try
 			{
-				MethodInfo method = !clazz.IsInterface
+				MethodInfo method = !clazz.GetTypeInfo().IsInterface
 										? clazz.GetMethod(methodName, parametersTypes)
 										: GetMethodFromInterface(clazz, methodName, parametersTypes);
 				if (method == null)
@@ -199,38 +203,42 @@ namespace NHibernate.Util
 		}
 
 		/// <summary>
-				/// Load a System.Type given its name.
-				/// </summary>
-				/// <param name="classFullName">The class FullName or AssemblyQualifiedName</param>
-				/// <returns>The System.Type or null</returns>
-				/// <remarks>
-				/// If the <paramref name="classFullName"/> don't represent an <see cref="System.Type.AssemblyQualifiedName"/>
-				/// the method try to find the System.Type scanning all Assemblies of the <see cref="AppDomain.CurrentDomain"/>.
-				/// </remarks>
-				public static System.Type ClassForFullNameOrNull(string classFullName)
+		/// Load a System.Type given its name.
+		/// </summary>
+		/// <param name="classFullName">The class FullName or AssemblyQualifiedName</param>
+		/// <returns>The System.Type or null</returns>
+		/// <remarks>
+		/// If the <paramref name="classFullName"/> don't represent an <see cref="System.Type.AssemblyQualifiedName"/>
+		/// the method try to find the System.Type scanning all Assemblies of the <see cref="AppDomain.CurrentDomain"/>.
+		/// </remarks>
+		public static System.Type ClassForFullNameOrNull(string classFullName)
+		{
+			System.Type result = null;
+			AssemblyQualifiedTypeName parsedName = TypeNameParser.Parse(classFullName);
+			if (!string.IsNullOrEmpty(parsedName.Assembly))
+			{
+				result = TypeFromAssembly(parsedName, false);
+			}
+			else
+			{
+				if (!string.IsNullOrEmpty(classFullName))
 				{
-					System.Type result = null;
-					AssemblyQualifiedTypeName parsedName = TypeNameParser.Parse(classFullName);
-					if (!string.IsNullOrEmpty(parsedName.Assembly))
+#if NETSTANDARD
+					Assembly[] ass = DependencyContext.Default.RuntimeLibraries.SelectMany(l => l.Assemblies).Select(x => Assembly.Load(x.Name)).ToArray();
+#else
+					Assembly[] ass = AppDomain.CurrentDomain.GetAssemblies();
+#endif
+					foreach (Assembly a in ass)
 					{
-						result = TypeFromAssembly(parsedName, false);
+						result = a.GetType(classFullName, false, false);
+						if (result != null)
+							break; //<<<<<================
 					}
-					else
-					{
-						if (!string.IsNullOrEmpty(classFullName))
-						{
-							Assembly[] ass = AppDomain.CurrentDomain.GetAssemblies();
-							foreach (Assembly a in ass)
-							{
-								result = a.GetType(classFullName, false, false);
-								if (result != null)
-									break; //<<<<<================
-							}
-						}
-					}
-
-					return result;
 				}
+			}
+
+			return result;
+		}
 
 		public static System.Type TypeFromAssembly(string type, string assembly, bool throwIfError)
 		{
@@ -274,7 +282,7 @@ namespace NHibernate.Util
 					return null;
 				}
 
-				Assembly assembly = Assembly.Load(name.Assembly);
+				Assembly assembly = Assembly.Load(new AssemblyName(name.Assembly));
 
 				if (assembly == null)
 				{
@@ -311,7 +319,7 @@ namespace NHibernate.Util
 			bool result = true;
 			try
 			{
-				Assembly.Load(assemblyName);
+				Assembly.Load(new AssemblyName(assemblyName));
 			}
 			catch (Exception)
 			{
@@ -441,12 +449,12 @@ namespace NHibernate.Util
 		/// <returns><see langword="true" /> if the <see cref="System.Type"/> is an Abstract Class or an Interface.</returns>
 		public static bool IsAbstractClass(System.Type type)
 		{
-			return (type.IsAbstract || type.IsInterface);
+			return (type.GetTypeInfo().IsAbstract || type.GetTypeInfo().IsInterface);
 		}
 
 		public static bool IsFinalClass(System.Type type)
 		{
-			return type.IsSealed;
+			return type.GetTypeInfo().IsSealed;
 		}
 
 		/// <summary>
@@ -510,7 +518,7 @@ namespace NHibernate.Util
 			{            
 				typesToSearch.Add(type);
 			
-				if (type.IsInterface)
+				if (type.GetTypeInfo().IsInterface)
 				{
 					// Methods on parent interfaces are not actually inherited
 					// by child interfaces, so we have to use GetInterfaces to
@@ -654,10 +662,10 @@ namespace NHibernate.Util
 				{
 					return collectionType.GetElementType();
 				}
-				if (collectionType.IsGenericType)
+				if (collectionType.GetTypeInfo().IsGenericType)
 				{
-					List<System.Type> interfaces = collectionType.GetInterfaces().Where(t => t.IsGenericType).ToList();
-					if (collectionType.IsInterface)
+					List<System.Type> interfaces = collectionType.GetInterfaces().Where(t => t.GetTypeInfo().IsGenericType).ToList();
+					if (collectionType.GetTypeInfo().IsInterface)
 					{
 						interfaces.Add(collectionType);
 					}
@@ -697,7 +705,7 @@ namespace NHibernate.Util
 				{
 					return true;
 				}
-				return HasProperty(source.BaseType, propertyName) || source.GetInterfaces().Any(@interface => HasProperty(@interface, propertyName));
+				return HasProperty(source.GetTypeInfo().BaseType, propertyName) || source.GetInterfaces().Any(@interface => HasProperty(@interface, propertyName));
 			}
 
 					/// <summary>
@@ -721,27 +729,27 @@ namespace NHibernate.Util
 			{
 				return true;
 			}
-			if (methodDeclaringType.IsGenericType && !methodDeclaringType.IsGenericTypeDefinition && 
+			if (methodDeclaringType.GetTypeInfo().IsGenericType && !methodDeclaringType.GetTypeInfo().IsGenericTypeDefinition && 
 				realDeclaringType == methodDeclaringType.GetGenericTypeDefinition())
 			{
 				return true;
 			}
-			if (realDeclaringType.IsInterface)
+			if (realDeclaringType.GetTypeInfo().IsInterface)
 			{
 				var declaringTypeInterfaces = methodDeclaringType.GetInterfaces();
 				if(declaringTypeInterfaces.Contains(realDeclaringType))
 				{
-					var methodsMap = methodDeclaringType.GetInterfaceMap(realDeclaringType);
+					InterfaceMapping methodsMap = methodDeclaringType.GetTypeInfo().GetRuntimeInterfaceMap(realDeclaringType);
 					if(methodsMap.TargetMethods.Contains(source))
 					{
 						return true;
 					}
 				}
-				if (realDeclaringType.IsGenericTypeDefinition)
+				if (realDeclaringType.GetTypeInfo().IsGenericTypeDefinition)
 				{
 					bool implements = declaringTypeInterfaces
-						.Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == realDeclaringType)
-						.Select(implementedGenericInterface => methodDeclaringType.GetInterfaceMap(implementedGenericInterface))
+						.Where(t => t.GetTypeInfo().IsGenericType && t.GetGenericTypeDefinition() == realDeclaringType)
+						.Select(implementedGenericInterface => methodDeclaringType.GetTypeInfo().GetRuntimeInterfaceMap(implementedGenericInterface))
 						.Any(methodsMap => methodsMap.TargetMethods.Contains(source));
 					if (implements)
 					{

@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 
+#if FEATURE_SERIALIZATION
+using System.Runtime.Serialization;
+#endif
 
 namespace NHibernate.Util
 {
@@ -27,7 +29,11 @@ namespace NHibernate.Util
 	/// </para>
 	/// </remarks>
 	[Serializable]
-	public sealed class IdentityMap : IDictionary, IDeserializationCallback
+	public sealed class IdentityMap 
+		: IDictionary
+#if FEATURE_SERIALIZATION
+		, IDeserializationCallback
+#endif
 	{
 		// key = IdentityKey of the passed in Key
 		// value = object passed in
@@ -271,9 +277,11 @@ namespace NHibernate.Util
 			return result;
 		}
 
+#if FEATURE_SERIALIZATION
 		public void OnDeserialization(object sender)
 		{
 			((IDeserializationCallback)map).OnDeserialization(sender);
 		}
+#endif
 	}
 }

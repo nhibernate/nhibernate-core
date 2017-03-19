@@ -6,7 +6,7 @@ namespace NHibernate.Proxy.DynamicProxy
 {
 	public interface IProxyAssemblyBuilder
 	{
-		AssemblyBuilder DefineDynamicAssembly(AppDomain appDomain, AssemblyName name);
+		AssemblyBuilder DefineDynamicAssembly(AssemblyName name);
 		ModuleBuilder DefineDynamicModule(AssemblyBuilder assemblyBuilder, string moduleName);
 		void Save(AssemblyBuilder assemblyBuilder);
 	}

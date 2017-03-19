@@ -6,6 +6,8 @@
 
 #endregion
 
+#if FEATURE_SERIALIZATION
+
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -46,7 +48,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			_proxy = (IProxy) Activator.CreateInstance(proxyType, args);
 		}
 
-		#region IObjectReference Members
+#region IObjectReference Members
 
 		[SecurityCritical]
 		public object GetRealObject(StreamingContext context)
@@ -54,13 +56,15 @@ namespace NHibernate.Proxy.DynamicProxy
 			return _proxy;
 		}
 
-		#endregion
+#endregion
 
-		#region ISerializable Members
+#region ISerializable Members
 
 		[SecurityCritical]
 		public void GetObjectData(SerializationInfo info, StreamingContext context) {}
 
-		#endregion
+#endregion
 	}
 }
+
+#endif

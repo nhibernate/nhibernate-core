@@ -1,7 +1,9 @@
 using System;
+
+#if FEATURE_SERIALIZATION
 using System.Runtime.Serialization;
 using System.Security;
-using System.Security.Permissions;
+#endif
 
 namespace NHibernate
 {
@@ -10,7 +12,11 @@ namespace NHibernate
 	/// but the row's discriminator value specifies a different subclass from the one requested
 	/// </summary>
 	[Serializable]
-	public class WrongClassException : HibernateException, ISerializable
+	public class WrongClassException 
+		: HibernateException
+#if FEATURE_SERIALIZATION
+		, ISerializable
+#endif
 	{
 		private readonly object identifier;
 		private readonly string entityName;
@@ -56,6 +62,7 @@ namespace NHibernate
 			}
 		}
 
+#if FEATURE_SERIALIZATION
 		#region ISerializable Members
 
 		/// <summary>
@@ -95,5 +102,6 @@ namespace NHibernate
 		}
 
 		#endregion
+#endif
 	}
 }

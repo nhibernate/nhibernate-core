@@ -10,7 +10,9 @@ namespace NHibernate.Proxy
 		public static bool IsProxiable(this MethodInfo method)
 		{
 			return !method.IsFinal
+#if FEATURE_REMOTING
 				&& (method.DeclaringType != typeof(MarshalByRefObject))
+#endif
 				&& (method.DeclaringType != typeof(object) || !"finalize".Equals(method.Name.ToLowerInvariant()))
 				&&
 				(
@@ -23,7 +25,10 @@ namespace NHibernate.Proxy
 		public static bool ShouldBeProxiable(this MethodInfo method)
 		{
 			// to use only for real methods (no getter/setter)
-			return (method.DeclaringType != typeof (MarshalByRefObject)) &&
+			return 
+#if FEATURE_REMOTING
+				   (method.DeclaringType != typeof (MarshalByRefObject)) &&
+#endif
 			       (method.DeclaringType != typeof (object) || !"finalize".Equals(method.Name.ToLowerInvariant())) &&
 			       (!(method.DeclaringType == typeof (object) && "GetType".Equals(method.Name))) &&
 			       (!(method.DeclaringType == typeof (object) && "obj_address".Equals(method.Name))) && // Mono-specific method

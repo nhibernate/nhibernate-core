@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if FEATURE_DATA_GETSCHEMATABLE
+
+using System;
 using System.Data;
 using System.Data.Common;
 using System.Globalization;
@@ -129,7 +131,7 @@ namespace NHibernate.Dialect.Schema
 	public class PostgreSQLColumnMetadata : AbstractColumnMetaData
 	{
 		public PostgreSQLColumnMetadata(DataRow rs)
-			: base(rs)
+			: base()
 		{
 			Name = Convert.ToString(rs["COLUMN_NAME"]);
 
@@ -159,3 +161,5 @@ namespace NHibernate.Dialect.Schema
 		}
 	}
 }
+
+#endif

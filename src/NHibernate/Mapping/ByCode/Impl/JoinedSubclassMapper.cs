@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Persister.Entity;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
@@ -15,10 +17,10 @@ namespace NHibernate.Mapping.ByCode.Impl
 		{
 			var toAdd = new[] {classMapping};
 			classMapping.name = subClass.GetShortClassName(mapDoc);
-			classMapping.extends = subClass.BaseType.GetShortClassName(mapDoc);
+			classMapping.extends = subClass.GetTypeInfo().BaseType.GetShortClassName(mapDoc);
 			if (classMapping.key == null)
 			{
-				classMapping.key = new HbmKey {column1 = subClass.BaseType.Name.ToLowerInvariant() + "_key"};
+				classMapping.key = new HbmKey {column1 = subClass.GetTypeInfo().BaseType.Name.ToLowerInvariant() + "_key"};
 			}
 			keyMapper = new KeyMapper(subClass, classMapping.key);
 			mapDoc.Items = mapDoc.Items == null ? toAdd : mapDoc.Items.Concat(toAdd).ToArray();
@@ -92,8 +94,10 @@ namespace NHibernate.Mapping.ByCode.Impl
 				return;
 			}
 			var existingSyncs = new HashSet<string>(classMapping.synchronize != null ? classMapping.synchronize.Select(x => x.table) : Enumerable.Empty<string>());
-			System.Array.ForEach(table.Where(x => x != null).Select(tableName => tableName.Trim()).Where(cleanedName => !"".Equals(cleanedName)).ToArray(),
-													 x => existingSyncs.Add(x.Trim()));
+			table.Where(x => x != null)
+			     .Select(tableName => tableName.Trim())
+			     .Where(cleanedName => !"".Equals(cleanedName))
+			     .ForEach(x => existingSyncs.Add(x.Trim()));
 			classMapping.synchronize = existingSyncs.Select(x => new HbmSynchronize { table = x }).ToArray();
 		}
 

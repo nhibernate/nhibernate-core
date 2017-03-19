@@ -149,10 +149,14 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				}
 				else if ((anyMapping = entityPropertyMapping as HbmAny) != null)
 				{
+#if FEATURE_SERIALIZATION
 					var value = new Any(table);
 					BindAny(anyMapping, value, true);
 					property = CreateProperty(entityPropertyMapping, className, value, inheritedMetas);
 					BindAnyProperty(anyMapping, property);
+#else
+					throw new NotImplementedException(string.Format("HbmAny not valid in .NET Core for property {0}", anyMapping.Name));
+#endif
 				}
 				else if ((nestedCompositeElementMapping = entityPropertyMapping as HbmNestedCompositeElement) != null)
 				{
@@ -361,12 +365,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			HbmTuplizer[] tuplizers = componentMapping.tuplizer;
 			if (tuplizers != null)
 			{
-				Array.ForEach(tuplizers.Select(tuplizer => new
-				                                           	{
-				                                           		TuplizerClassName = FullQualifiedClassName(tuplizer.@class, mappings),
-				                                           		Mode = tuplizer.entitymode.ToEntityMode()
-				                                           	}).ToArray(),
-				              x => model.AddTuplizer(x.Mode, x.TuplizerClassName));
+				tuplizers.Select(
+					         tuplizer => new
+					         {
+						         TuplizerClassName = FullQualifiedClassName(tuplizer.@class, mappings),
+						         Mode = tuplizer.entitymode.ToEntityMode()
+					         })
+							 .ForEach(x => model.AddTuplizer(x.Mode, x.TuplizerClassName));
 			}
 		}
 

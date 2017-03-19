@@ -109,13 +109,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private void AddQueries(HbmMapping mappingSchema)
 		{
 			var binder = new NamedQueryBinder(Mappings);
-			System.Array.ForEach(mappingSchema.HqlQueries, binder.AddQuery);
+			mappingSchema.HqlQueries.ForEach(binder.AddQuery);
 		}
 
 		private void AddSqlQueries(HbmMapping mappingSchema)
 		{
 			var binder = new NamedSQLQueryBinder(Mappings);
-			System.Array.ForEach(mappingSchema.SqlQueries, binder.AddSqlQuery);
+			mappingSchema.SqlQueries.ForEach(binder.AddSqlQuery);
 		}
 
 		public void AddImports(HbmMapping mappingSchema)

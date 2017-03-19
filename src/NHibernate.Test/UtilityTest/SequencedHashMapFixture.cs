@@ -2,9 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.Util;
 using NUnit.Framework;
+
+#if FEATURE_SERIALIZATION
+using System.Runtime.Serialization.Formatters.Binary;
+#endif
 
 namespace NHibernate.Test.UtilityTest
 {
@@ -419,16 +422,19 @@ namespace NHibernate.Test.UtilityTest
 			}
 		}
 
+#if FEATURE_SERIALIZATION
 		[Test]
 		public void Serialize()
 		{
-			MemoryStream stream = new MemoryStream();
-			BinaryFormatter f = new BinaryFormatter();
-			f.Serialize(stream, _shm);
-			stream.Position = 0;
+			SequencedHashMap shm;
+			using (MemoryStream stream = new MemoryStream())
+			{
+				BinaryFormatter f = new BinaryFormatter();
+				f.Serialize(stream, _shm);
+				stream.Position = 0;
 
-			SequencedHashMap shm = (SequencedHashMap) f.Deserialize(stream);
-			stream.Close();
+				shm = (SequencedHashMap) f.Deserialize(stream);
+			}
 
 			Assert.AreEqual(3, shm.Count);
 			int index = 0;
@@ -441,5 +447,6 @@ namespace NHibernate.Test.UtilityTest
 
 			Assert.AreEqual(3, index);
 		}
+#endif
 	}
 }

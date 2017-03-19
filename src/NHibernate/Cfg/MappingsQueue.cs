@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +9,7 @@ namespace NHibernate.Cfg
 	/// </summary>
 	public class MappingsQueue
 	{
-		private readonly Queue availableEntries = new Queue();
+		private readonly Queue<MappingsQueueEntry> availableEntries = new Queue<MappingsQueueEntry>();
 		private readonly ISet<string> processedClassNames = new HashSet<string>();
 
 		private readonly List<MappingsQueueEntry> unavailableEntries = new List<MappingsQueueEntry>();

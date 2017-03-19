@@ -20,7 +20,7 @@ namespace NHibernate.AdoNet
 
 		static MySqlClientSqlCommandSet()
 		{
-			var sysData = Assembly.Load("MySql.Data");
+			var sysData = Assembly.Load(new AssemblyName("MySql.Data"));
 			adapterType = sysData.GetType("MySql.Data.MySqlClient.MySqlDataAdapter");
 			Debug.Assert(adapterType != null, "Could not find MySqlDataAdapter!");
 

@@ -6,7 +6,10 @@ namespace NHibernate.DomainModel.NHSpecific
 	/// <summary>
 	/// A nullable type that wraps an <see cref="Int32"/> value.
 	/// </summary>
-	[TypeConverter(typeof(NullableInt32Converter)), Serializable()]
+#if !NETSTANDARD
+	[TypeConverter(typeof(NullableInt32Converter))]
+#endif
+	[Serializable]
 	public struct NullableInt32 : IFormattable, IComparable
 	{
 		public static readonly NullableInt32 Default = new NullableInt32();

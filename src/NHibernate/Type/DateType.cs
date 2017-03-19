@@ -96,7 +96,7 @@ namespace NHibernate.Type
 
 		public override string ToString(object val)
 		{
-			return ((DateTime) val).ToShortDateString();
+			return ((DateTime) val).ToString("d");
 		}
 
 		public override object FromStringValue(string xml)
@@ -121,7 +121,7 @@ namespace NHibernate.Type
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
-			return "\'" + ((DateTime)value).ToShortDateString() + "\'";
+			return "\'" + ((DateTime)value).ToString("d") + "\'";
 		}
 
 		public void SetParameterValues(IDictionary<string, string> parameters)

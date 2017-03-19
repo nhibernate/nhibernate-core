@@ -9,6 +9,8 @@ using System.Security;
 [assembly: AssemblyProductAttribute("NHibernate")]
 [assembly: AssemblyCopyrightAttribute("Licensed under LGPL.")]
 [assembly: AssemblyDelaySignAttribute(false)]
+#if FEATURE_SECURITY_PERMISSIONS
 [assembly: AllowPartiallyTrustedCallersAttribute()]
 [assembly: SecurityRulesAttribute(SecurityRuleSet.Level1)]
+#endif
 

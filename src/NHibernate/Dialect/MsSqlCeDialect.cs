@@ -124,10 +124,12 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
+#if FEATURE_DATA_GETSCHEMATABLE
 		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
 			return new MsSqlCeDataBaseSchema(connection);
 		}
+#endif
 
 		public override SqlString GetLimitString(SqlString querySqlString, SqlString offset, SqlString limit)
 		{

@@ -1,7 +1,9 @@
 using System;
+
+#if FEATURE_SERIALIZATION
 using System.Runtime.Serialization;
 using System.Security;
-using System.Security.Permissions;
+#endif
 
 namespace NHibernate
 {
@@ -41,6 +43,7 @@ namespace NHibernate
 			this.sql = sql;
 		}
 
+#if FEATURE_SERIALIZATION
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ADOException"/> class.
 		/// </summary>
@@ -62,6 +65,7 @@ namespace NHibernate
 			base.GetObjectData(info, context);
 			info.AddValue("sql", sql);
 		}
+#endif
 
 		public string SqlString
 		{

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using NHibernate.Mapping;
 using NHibernate.Util;
 
@@ -85,7 +86,7 @@ namespace NHibernate.Tuple.Component
 			try
 			{
 				System.Type implClass = ReflectHelper.ClassForName(tuplizerImpl);
-				return (IComponentTuplizer)implClass.GetConstructor(componentTuplizerCTORSignature).Invoke(new object[] { component });
+				return (IComponentTuplizer)implClass.GetTypeInfo().GetConstructor(componentTuplizerCTORSignature).Invoke(new object[] { component });
 			}
 			catch (Exception t)
 			{

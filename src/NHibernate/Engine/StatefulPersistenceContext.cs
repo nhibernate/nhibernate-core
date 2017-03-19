@@ -1,9 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
-using System.Security;
-using System.Security.Permissions;
+using System.Reflection;
 using System.Text;
 using NHibernate.Collection;
 using NHibernate.Engine.Loading;
@@ -12,6 +10,11 @@ using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Util;
+
+#if FEATURE_SERIALIZATION
+using System.Runtime.Serialization;
+using System.Security;
+#endif
 
 namespace NHibernate.Engine
 {
@@ -27,7 +30,11 @@ namespace NHibernate.Engine
 	/// PersistentContext to drive their processing.
 	/// </remarks>
 	[Serializable]
-	public class StatefulPersistenceContext : IPersistenceContext, ISerializable, IDeserializationCallback
+	public class StatefulPersistenceContext 
+		: IPersistenceContext
+#if FEATURE_SERIALIZATION
+		, ISerializable, IDeserializationCallback
+#endif
 	{
 		private const int InitCollectionSize = 8;
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(StatefulPersistenceContext));
@@ -1387,6 +1394,7 @@ namespace NHibernate.Engine
 				.ToString();
 		}
 
+#if FEATURE_SERIALIZATION
 		#region IDeserializationCallback Members
 		internal void SetSession(ISessionImplementor session)
 		{
@@ -1514,5 +1522,6 @@ namespace NHibernate.Engine
 			info.AddValue("context.defaultReadOnly", defaultReadOnly);
 		}
 		#endregion
+#endif
 	}
 }

@@ -1,10 +1,13 @@
 using System;
 using System.IO;
-using System.Runtime.Serialization;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.Util;
 using NHibernate.Impl;
+
+#if FEATURE_SERIALIZATION
+using System.Runtime.Serialization;
+#endif
 
 namespace NHibernate.Action
 {
@@ -13,7 +16,11 @@ namespace NHibernate.Action
 	/// instance.
 	/// </summary>
 	[Serializable]
-	public abstract class EntityAction : IExecutable, IComparable<EntityAction>, IDeserializationCallback
+	public abstract class EntityAction 
+		: IExecutable, IComparable<EntityAction>
+#if FEATURE_SERIALIZATION
+		, IDeserializationCallback
+#endif
 	{
 		private readonly string entityName;
 		private readonly object id;
@@ -160,6 +167,7 @@ namespace NHibernate.Action
 
 		#endregion
 
+#if FEATURE_SERIALIZATION
 		#region IDeserializationCallback Members
 
 		void IDeserializationCallback.OnDeserialization(object sender)
@@ -175,6 +183,7 @@ namespace NHibernate.Action
 		}
 
 		#endregion
+#endif
 
 		public override string ToString()
 		{

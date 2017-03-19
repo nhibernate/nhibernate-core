@@ -1,13 +1,19 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using NHibernate.Util;
+
+#if FEATURE_SERIALIZATION
+using System.Runtime.Serialization;
+#endif
 
 namespace NHibernate.Tuple
 {
 	/// <summary> Centralizes handling of <see cref="EntityMode"/> to <see cref="ITuplizer"/> mappings. </summary>
 	[Serializable]
-	public abstract class EntityModeToTuplizerMapping : IDeserializationCallback
+	public abstract class EntityModeToTuplizerMapping
+#if FEATURE_SERIALIZATION
+		: IDeserializationCallback
+#endif
 	{
 
 		// NH-1660
@@ -86,14 +92,20 @@ namespace NHibernate.Tuple
 		{
 			if (!_isFullyDeserialized)
 			{
+#if FEATURE_SERIALIZATION
 				((IDeserializationCallback) this).OnDeserialization(this);
+#else
+				throw new InvalidOperationException("Should not get here without deserialization");
+#endif
 			}
 		}
 
+#if FEATURE_SERIALIZATION
 		void IDeserializationCallback.OnDeserialization(object sender)
 		{
 			((IDeserializationCallback) _tuplizers).OnDeserialization(sender);
 			_isFullyDeserialized = true;
 		}
+#endif
 	}
 }

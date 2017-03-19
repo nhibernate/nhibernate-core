@@ -63,7 +63,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		{
 			foreach (var member in members)
 			{
-				CustomizersHolder.AddCustomizer(new PropertyPath(PropertyPath, member), mapping);
+				CustomizersHolder.AddCustomizer(new PropertyPath(PropertyPath, member, typeof(TEntity)), mapping);
 				explicitDeclarationsHolder.AddAsProperty(member);
 			}
 		}
@@ -89,7 +89,8 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		{
 			foreach (var member in members)
 			{
-				mapping(new ComponentCustomizer<TComponent>(explicitDeclarationsHolder, CustomizersHolder, new PropertyPath(PropertyPath, member)));
+				var componentType = member.DeclaringType;//typeof(TEntity); //
+				mapping(new ComponentCustomizer<TComponent>(explicitDeclarationsHolder, CustomizersHolder, new PropertyPath(PropertyPath, member, componentType)));
 			}
 		}
 
@@ -109,7 +110,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		{
 			foreach (var member in members)
 			{
-				mapping(new DynamicComponentCustomizer<TComponent>(explicitDeclarationsHolder, CustomizersHolder, new PropertyPath(PropertyPath, member)));
+				mapping(new DynamicComponentCustomizer<TComponent>(explicitDeclarationsHolder, CustomizersHolder, new PropertyPath(PropertyPath, member, typeof(TEntity))));
 			}
 		}
 
@@ -132,7 +133,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		{
 			foreach (var member in members)
 			{
-				CustomizersHolder.AddCustomizer(new PropertyPath(PropertyPath, member), mapping);
+				CustomizersHolder.AddCustomizer(new PropertyPath(PropertyPath, member, typeof(TEntity)), mapping);
 				explicitDeclarationsHolder.AddAsManyToOneRelation(member);
 			}
 		}
@@ -168,7 +169,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		{
 			foreach (var member in members)
 			{
-				CustomizersHolder.AddCustomizer(new PropertyPath(PropertyPath, member), (IOneToOneMapper x) => mapping((IOneToOneMapper<TProperty>) x));
+				CustomizersHolder.AddCustomizer(new PropertyPath(PropertyPath, member, typeof(TEntity)), (IOneToOneMapper x) => mapping((IOneToOneMapper<TProperty>) x));
 				explicitDeclarationsHolder.AddAsOneToOneRelation(member);
 			}
 		}
@@ -192,8 +193,8 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		{
 			foreach (var member in members)
 			{
-				CustomizersHolder.AddCustomizer(new PropertyPath(PropertyPath, member), (IAnyMapper am) => am.IdType(idTypeOfMetaType));
-				CustomizersHolder.AddCustomizer(new PropertyPath(PropertyPath, member), mapping);
+				CustomizersHolder.AddCustomizer(new PropertyPath(PropertyPath, member, typeof(TEntity)), (IAnyMapper am) => am.IdType(idTypeOfMetaType));
+				CustomizersHolder.AddCustomizer(new PropertyPath(PropertyPath, member, typeof(TEntity)), mapping);
 
 				explicitDeclarationsHolder.AddAsAny(member);
 			}
@@ -222,8 +223,8 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		{
 			foreach (var member in members)
 			{
-				collectionMapping(new SetPropertiesCustomizer<TEntity, TElement>(explicitDeclarationsHolder, new PropertyPath(null, member), CustomizersHolder));
-				mapping(new CollectionElementRelationCustomizer<TElement>(explicitDeclarationsHolder, new PropertyPath(PropertyPath, member), CustomizersHolder));
+				collectionMapping(new SetPropertiesCustomizer<TEntity, TElement>(explicitDeclarationsHolder, new PropertyPath(null, member, typeof(TEntity)), CustomizersHolder));
+				mapping(new CollectionElementRelationCustomizer<TElement>(explicitDeclarationsHolder, new PropertyPath(PropertyPath, member, typeof(TEntity)), CustomizersHolder));
 			}
 		}
 
@@ -249,8 +250,8 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		{
 			foreach (var member in members)
 			{
-				collectionMapping(new BagPropertiesCustomizer<TEntity, TElement>(explicitDeclarationsHolder, new PropertyPath(null, member), CustomizersHolder));
-				mapping(new CollectionElementRelationCustomizer<TElement>(explicitDeclarationsHolder, new PropertyPath(PropertyPath, member), CustomizersHolder));
+				collectionMapping(new BagPropertiesCustomizer<TEntity, TElement>(explicitDeclarationsHolder, new PropertyPath(null, member, typeof(TEntity)), CustomizersHolder));
+				mapping(new CollectionElementRelationCustomizer<TElement>(explicitDeclarationsHolder, new PropertyPath(PropertyPath, member, typeof(TEntity)), CustomizersHolder));
 			}
 		}
 
@@ -276,8 +277,8 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		{
 			foreach (var member in members)
 			{
-				collectionMapping(new ListPropertiesCustomizer<TEntity, TElement>(explicitDeclarationsHolder, new PropertyPath(null, member), CustomizersHolder));
-				mapping(new CollectionElementRelationCustomizer<TElement>(explicitDeclarationsHolder, new PropertyPath(PropertyPath, member), CustomizersHolder));
+				collectionMapping(new ListPropertiesCustomizer<TEntity, TElement>(explicitDeclarationsHolder, new PropertyPath(null, member, typeof(TEntity)), CustomizersHolder));
+				mapping(new CollectionElementRelationCustomizer<TElement>(explicitDeclarationsHolder, new PropertyPath(PropertyPath, member, typeof(TEntity)), CustomizersHolder));
 			}
 		}
 
@@ -305,7 +306,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		{
 			foreach (var member in members)
 			{
-				var memberPath = new PropertyPath(PropertyPath, member);
+				var memberPath = new PropertyPath(PropertyPath, member, typeof(TEntity));
 				collectionMapping(new MapPropertiesCustomizer<TEntity, TKey, TElement>(explicitDeclarationsHolder, memberPath, CustomizersHolder));
 				keyMapping(new MapKeyRelationCustomizer<TKey>(explicitDeclarationsHolder, memberPath, CustomizersHolder));
 				mapping(new CollectionElementRelationCustomizer<TElement>(explicitDeclarationsHolder, memberPath, CustomizersHolder));
@@ -342,8 +343,8 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		{
 			foreach (var member in members)
 			{
-				collectionMapping(new IdBagPropertiesCustomizer<TEntity, TElement>(explicitDeclarationsHolder, new PropertyPath(null, member), CustomizersHolder));
-				mapping(new CollectionElementRelationCustomizer<TElement>(explicitDeclarationsHolder, new PropertyPath(PropertyPath, member), CustomizersHolder));
+				collectionMapping(new IdBagPropertiesCustomizer<TEntity, TElement>(explicitDeclarationsHolder, new PropertyPath(null, member, typeof(TEntity)), CustomizersHolder));
+				mapping(new CollectionElementRelationCustomizer<TElement>(explicitDeclarationsHolder, new PropertyPath(PropertyPath, member, typeof(TEntity)), CustomizersHolder));
 			}
 		}
 

@@ -1,3 +1,5 @@
+#if FEATURE_WEB_SESSION_CONTEXT
+
 using System;
 using System.Collections;
 using NHibernate.Engine;
@@ -26,3 +28,5 @@ namespace NHibernate.Context
 		}
 	}
 }
+
+#endif

@@ -1,3 +1,5 @@
+#if FEATURE_SERIALIZATION
+
 using System;
 using System.Collections;
 using NHibernate.Criterion;
@@ -422,3 +424,5 @@ namespace NHibernate.Test.Criteria
 		}
 	}
 }
+
+#endif

@@ -20,7 +20,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		public void Property<TProperty>(Expression<Func<TKey, TProperty>> property, Action<IPropertyMapper> mapping)
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
-			customizersHolder.AddCustomizer(new PropertyPath(propertyPath, member), mapping);
+			customizersHolder.AddCustomizer(new PropertyPath(propertyPath, member, typeof(TKey)), mapping);
 		}
 
 		public void Property<TProperty>(Expression<Func<TKey, TProperty>> property)
@@ -31,7 +31,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		public void ManyToOne<TProperty>(Expression<Func<TKey, TProperty>> property, Action<IManyToOneMapper> mapping) where TProperty : class
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
-			customizersHolder.AddCustomizer(new PropertyPath(propertyPath, member), mapping);
+			customizersHolder.AddCustomizer(new PropertyPath(propertyPath, member, typeof(TKey)), mapping);
 		}
 
 		#endregion

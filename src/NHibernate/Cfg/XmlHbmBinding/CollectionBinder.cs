@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using NHibernate.Mapping;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -230,7 +231,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (!isGeneric.HasValue && containingType != null)
 			{
 				collectionType = GetPropertyType(containingType, collectionMapping.Name, collectionMapping.Access);
-				isGeneric = collectionType.IsGenericType;
+				isGeneric = collectionType.GetTypeInfo().IsGenericType;
 			}
 
 			model.IsGeneric = isGeneric.GetValueOrDefault();

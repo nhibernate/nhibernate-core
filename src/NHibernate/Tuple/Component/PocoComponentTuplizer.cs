@@ -3,9 +3,12 @@ using NHibernate.Bytecode;
 using NHibernate.Intercept;
 using NHibernate.Properties;
 
+#if FEATURE_SERIALIZATION
+using System.Runtime.Serialization;
+#endif
+
 namespace NHibernate.Tuple.Component
 {
-	using System.Runtime.Serialization;
 
 	/// <summary> 
 	/// A <see cref="IComponentTuplizer"/> specific to the POCO entity mode. 
@@ -20,6 +23,7 @@ namespace NHibernate.Tuple.Component
 		private IReflectionOptimizer optimizer;
 
 
+#if FEATURE_SERIALIZATION
 		[OnDeserialized]
 		internal void OnDeserialized(StreamingContext context)
 		{
@@ -34,6 +38,7 @@ namespace NHibernate.Tuple.Component
 
 			ClearOptimizerWhenUsingCustomAccessors();
 		}
+#endif
 
 		public PocoComponentTuplizer(Mapping.Component component)
 			: base(component)

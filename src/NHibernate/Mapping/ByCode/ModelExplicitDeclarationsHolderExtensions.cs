@@ -1,4 +1,5 @@
 using System.Linq;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode
 {
@@ -11,34 +12,34 @@ namespace NHibernate.Mapping.ByCode
 				return;
 			}
 
-			System.Array.ForEach(source.RootEntities.ToArray(), destination.AddAsRootEntity);
-			System.Array.ForEach(source.Components.ToArray(), destination.AddAsComponent);
-			System.Array.ForEach(source.TablePerClassEntities.ToArray(), destination.AddAsTablePerClassEntity);
-			System.Array.ForEach(source.TablePerClassHierarchyEntities.ToArray(), destination.AddAsTablePerClassHierarchyEntity);
-			System.Array.ForEach(source.TablePerConcreteClassEntities.ToArray(), destination.AddAsTablePerConcreteClassEntity);
+			source.RootEntities.ForEach(destination.AddAsRootEntity);
+			source.Components.ForEach(destination.AddAsComponent);
+			source.TablePerClassEntities.ForEach(destination.AddAsTablePerClassEntity);
+			source.TablePerClassHierarchyEntities.ForEach(destination.AddAsTablePerClassHierarchyEntity);
+			source.TablePerConcreteClassEntities.ForEach(destination.AddAsTablePerConcreteClassEntity);
 
-			System.Array.ForEach(source.OneToOneRelations.ToArray(), destination.AddAsOneToOneRelation);
-			System.Array.ForEach(source.ManyToOneRelations.ToArray(), destination.AddAsManyToOneRelation);
-			System.Array.ForEach(source.KeyManyToManyRelations.ToArray(), destination.AddAsManyToManyKeyRelation);
-			System.Array.ForEach(source.ItemManyToManyRelations.ToArray(), destination.AddAsManyToManyItemRelation);
-			System.Array.ForEach(source.ManyToAnyRelations.ToArray(), destination.AddAsManyToAnyRelation);
-			System.Array.ForEach(source.OneToManyRelations.ToArray(), destination.AddAsOneToManyRelation);
-			System.Array.ForEach(source.Any.ToArray(), destination.AddAsAny);
+			source.OneToOneRelations.ForEach(destination.AddAsOneToOneRelation);
+			source.ManyToOneRelations.ForEach(destination.AddAsManyToOneRelation);
+			source.KeyManyToManyRelations.ForEach(destination.AddAsManyToManyKeyRelation);
+			source.ItemManyToManyRelations.ForEach(destination.AddAsManyToManyItemRelation);
+			source.ManyToAnyRelations.ForEach(destination.AddAsManyToAnyRelation);
+			source.OneToManyRelations.ForEach(destination.AddAsOneToManyRelation);
+			source.Any.ForEach(destination.AddAsAny);
 
-			System.Array.ForEach(source.Poids.ToArray(), destination.AddAsPoid);
-			System.Array.ForEach(source.ComposedIds.ToArray(), destination.AddAsPartOfComposedId);
-			System.Array.ForEach(source.VersionProperties.ToArray(), destination.AddAsVersionProperty);
-			System.Array.ForEach(source.NaturalIds.ToArray(), destination.AddAsNaturalId);
+			source.Poids.ForEach(destination.AddAsPoid);
+			source.ComposedIds.ForEach(destination.AddAsPartOfComposedId);
+			source.VersionProperties.ForEach(destination.AddAsVersionProperty);
+			source.NaturalIds.ForEach(destination.AddAsNaturalId);
 
-			System.Array.ForEach(source.Sets.ToArray(), destination.AddAsSet);
-			System.Array.ForEach(source.Bags.ToArray(), destination.AddAsBag);
-			System.Array.ForEach(source.IdBags.ToArray(), destination.AddAsIdBag);
-			System.Array.ForEach(source.Lists.ToArray(), destination.AddAsList);
-			System.Array.ForEach(source.Arrays.ToArray(), destination.AddAsArray);
-			System.Array.ForEach(source.Dictionaries.ToArray(), destination.AddAsMap);
-			System.Array.ForEach(source.Properties.ToArray(), destination.AddAsProperty);
-			System.Array.ForEach(source.PersistentMembers.ToArray(), destination.AddAsPersistentMember);
-			System.Array.ForEach(source.SplitDefinitions.ToArray(), destination.AddAsPropertySplit);
+			source.Sets.ForEach(destination.AddAsSet);
+			source.Bags.ForEach(destination.AddAsBag);
+			source.IdBags.ForEach(destination.AddAsIdBag);
+			source.Lists.ForEach(destination.AddAsList);
+			source.Arrays.ForEach(destination.AddAsArray);
+			source.Dictionaries.ForEach(destination.AddAsMap);
+			source.Properties.ForEach(destination.AddAsProperty);
+			source.PersistentMembers.ForEach(destination.AddAsPersistentMember);
+			source.SplitDefinitions.ForEach(destination.AddAsPropertySplit);
 			foreach (var dynamicComponent in source.DynamicComponents)
 			{
 				var template = source.GetDynamicComponentTemplate(dynamicComponent);

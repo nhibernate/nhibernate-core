@@ -1,3 +1,4 @@
+#if FEATURE_SERIALIZATION
 using System;
 using System.Collections;
 using System.IO;
@@ -44,13 +45,15 @@ namespace NHibernate.Test.NHSpecificTest.NH317
 
 			// Serialize
 			IFormatter formatter = new BinaryFormatter();
-			MemoryStream ms = new MemoryStream();
-			formatter.Serialize(ms, nodeProxy);
+			Node deserializedNodeProxy;
+			using (MemoryStream ms = new MemoryStream())
+			{
+				formatter.Serialize(ms, nodeProxy);
 
-			// Deserialize
-			ms.Seek(0, SeekOrigin.Begin);
-			Node deserializedNodeProxy = (Node) formatter.Deserialize(ms);
-			ms.Close();
+				// Deserialize
+				ms.Seek(0, SeekOrigin.Begin);
+				deserializedNodeProxy = (Node) formatter.Deserialize(ms);
+			}
 
 			// Deserialized proxy should implement the INHibernateProxy interface.
 			Assert.IsTrue(deserializedNodeProxy is INHibernateProxy);
@@ -62,3 +65,4 @@ namespace NHibernate.Test.NHSpecificTest.NH317
 		}
 	}
 }
+#endif

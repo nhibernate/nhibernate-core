@@ -1049,7 +1049,8 @@ namespace NHibernate.Test.ReadOnly
 				t.Commit();
 			}
 		}
-		
+
+#if FEATURE_SERIALIZATION
 		[Test]
 		public void DetachedCriteria()
 		{
@@ -1103,6 +1104,7 @@ namespace NHibernate.Test.ReadOnly
 				t.Commit();
 			}
 		}
+#endif
 		
 		[Test]
 		public void TwoAliasesCache()

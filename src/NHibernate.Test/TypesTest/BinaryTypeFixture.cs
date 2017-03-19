@@ -1,10 +1,13 @@
 using System;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using NHibernate.Dialect;
 using NHibernate.Type;
 using NUnit.Framework;
+
+#if FEATURE_SERIALIZATION
+using System.Runtime.Serialization.Formatters.Binary;
+#endif
 
 namespace NHibernate.Test.TypesTest
 {
@@ -152,10 +155,14 @@ namespace NHibernate.Test.TypesTest
 
 		private byte[] GetByteArray(int value)
 		{
+#if FEATURE_SERIALIZATION
 			BinaryFormatter bf = new BinaryFormatter();
 			MemoryStream stream = new MemoryStream();
 			bf.Serialize(stream, value);
 			return stream.ToArray();
+#else
+			return BitConverter.GetBytes(value);
+#endif
 		}
 	}
 }

@@ -426,10 +426,12 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+#if FEATURE_DATA_GETSCHEMATABLE
 		public virtual IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
 			throw new NotSupportedException();
 		}
+#endif
 
 		#endregion
 

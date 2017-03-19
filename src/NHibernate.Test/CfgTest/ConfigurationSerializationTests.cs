@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿#if FEATURE_SERIALIZATION
+
+using System.IO;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.Cfg;
@@ -20,7 +22,7 @@ namespace NHibernate.Test.CfgTest
 		[Test]
 		public void Basic_CRUD_should_work()
 		{
-			Assembly assembly = Assembly.Load("NHibernate.DomainModel");
+			Assembly assembly = Assembly.Load(new AssemblyName("NHibernate.DomainModel"));
 			var cfg = new Configuration();
 			if (TestConfigurationHelper.hibernateConfigFile != null)
 			{
@@ -87,3 +89,5 @@ namespace NHibernate.Test.CfgTest
 		}
 	}
 }
+
+#endif

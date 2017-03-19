@@ -15,14 +15,16 @@ namespace NHibernate.Id
 
 		protected short Count
 		{
-			[MethodImpl(MethodImplOptions.Synchronized)]
 			get
 			{
-				if (counter < 0)
+				lock (this)
 				{
-					counter = 0;
+					if (counter < 0)
+					{
+						counter = 0;
+					}
+					return counter++;
 				}
-				return counter++;
 			}
 		}
 

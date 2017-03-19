@@ -7,6 +7,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 	/// <summary>
 	/// Tests in this class only failed when the code was build with the Roslyn compiler which is included in Visual Studio 2015
 	/// </summary>
+#if !FEATURE_SERIALIZATION
+	[Ignore("Mapping Document has Any type")]
+#endif
 	[TestFixture]
 	public class Fixture : TestCase
 	{

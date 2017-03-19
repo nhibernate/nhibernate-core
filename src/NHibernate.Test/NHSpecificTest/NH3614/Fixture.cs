@@ -7,6 +7,9 @@ using NHibernate.Linq;
 
 namespace NHibernate.Test.NHSpecificTest.NH3614
 {
+#if !FEATURE_SERIALIZATION
+	[Ignore("Mapping Document has Serializable type")]
+#endif
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{

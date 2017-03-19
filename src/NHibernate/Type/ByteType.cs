@@ -78,7 +78,7 @@ namespace NHibernate.Type
 
 		public IComparer Comparator
 		{
-			get { return Comparer.DefaultInvariant; }
+			get { return System.Collections.Generic.Comparer<byte>.Default; }
 		}
 
 		public override object DefaultValue

@@ -11,7 +11,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+
+#if FEATURE_SERIALIZATION
 using System.Runtime.Serialization;
+#endif
 
 namespace NHibernate.Proxy.DynamicProxy
 {
@@ -20,6 +23,7 @@ namespace NHibernate.Proxy.DynamicProxy
 		private static readonly ConstructorInfo defaultBaseConstructor = typeof(object).GetConstructor(new System.Type[0]);
 		private static readonly MethodInfo getTypeFromHandle = typeof(System.Type).GetMethod("GetTypeFromHandle");
 
+#if FEATURE_SERIALIZATION
 		private static readonly MethodInfo getValue = typeof (SerializationInfo).GetMethod("GetValue", BindingFlags.Public | BindingFlags.Instance, null,
 																																											 new[] { typeof(string), typeof(System.Type) }, null);
 
@@ -27,6 +31,7 @@ namespace NHibernate.Proxy.DynamicProxy
 
 		private static readonly MethodInfo addValue = typeof (SerializationInfo).GetMethod("AddValue", BindingFlags.Public | BindingFlags.Instance, null,
 																						   new[] {typeof (string), typeof (object)}, null);
+#endif
 
 		public ProxyFactory()
 			: this(new DefaultyProxyMethodBuilder()) {}
@@ -92,13 +97,12 @@ namespace NHibernate.Proxy.DynamicProxy
 
 		private System.Type CreateUncachedProxyType(System.Type baseType, System.Type[] baseInterfaces)
 		{
-			AppDomain currentDomain = AppDomain.CurrentDomain;
 			string typeName = string.Format("{0}Proxy", baseType.Name);
 			string assemblyName = string.Format("{0}Assembly", typeName);
 			string moduleName = string.Format("{0}Module", typeName);
 
 			var name = new AssemblyName(assemblyName);
-			AssemblyBuilder assemblyBuilder = ProxyAssemblyBuilder.DefineDynamicAssembly(currentDomain, name);
+			AssemblyBuilder assemblyBuilder = ProxyAssemblyBuilder.DefineDynamicAssembly(name);
 			ModuleBuilder moduleBuilder = ProxyAssemblyBuilder.DefineDynamicModule(assemblyBuilder, moduleName);
 
 			TypeAttributes typeAttributes = TypeAttributes.AutoClass | TypeAttributes.Class |
@@ -110,7 +114,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			// Use the proxy dummy as the base type 
 			// since we're not inheriting from any class type
 			System.Type parentType = baseType;
-			if (baseType.IsInterface)
+			if (baseType.GetTypeInfo().IsInterface)
 			{
 				parentType = typeof (ProxyDummy);
 				interfaces.Add(baseType);
@@ -123,8 +127,10 @@ namespace NHibernate.Proxy.DynamicProxy
 				interfaces.Merge(GetInterfaces(interfaceType));
 			}
 
+#if FEATURE_SERIALIZATION
 			// Add the ISerializable interface so that it can be implemented
 			interfaces.Add(typeof (ISerializable));
+#endif
 
 			TypeBuilder typeBuilder = moduleBuilder.DefineType(typeName, typeAttributes, parentType, interfaces.ToArray());
 
@@ -138,14 +144,21 @@ namespace NHibernate.Proxy.DynamicProxy
 			
 			// Provide a custom implementation of ISerializable
 			// instead of redirecting it back to the interceptor
-			foreach (MethodInfo method in GetProxiableMethods(baseType, interfaces).Where(method => method.DeclaringType != typeof(ISerializable)))
+			foreach (MethodInfo method in GetProxiableMethods(baseType, interfaces)
+#if FEATURE_SERIALIZATION
+				.Where(method => method.DeclaringType != typeof(ISerializable))
+#endif
+				)
 			{
 				ProxyMethodBuilder.CreateProxiedMethod(interceptorField, method, typeBuilder);
 			}
 
+#if FEATURE_SERIALIZATION
 			// Make the proxy serializable
 			AddSerializationSupport(baseType, baseInterfaces, typeBuilder, interceptorField, defaultConstructor);
-			System.Type proxyType = typeBuilder.CreateType();
+#endif
+
+			System.Type proxyType = typeBuilder.CreateTypeInfo().AsType();
 
 			ProxyAssemblyBuilder.Save(assemblyBuilder);
 			return proxyType;
@@ -206,6 +219,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			return constructor;
 		}
 
+#if FEATURE_SERIALIZATION
 		private static void ImplementGetObjectData(System.Type baseType, System.Type[] baseInterfaces, TypeBuilder typeBuilder, FieldInfo interceptorField)
 		{
 			const MethodAttributes attributes = MethodAttributes.Public | MethodAttributes.HideBySig |
@@ -303,5 +317,6 @@ namespace NHibernate.Proxy.DynamicProxy
 			DefineSerializationConstructor(typeBuilder, interceptorField, defaultConstructor);
 			ImplementGetObjectData(baseType, baseInterfaces, typeBuilder, interceptorField);
 		}
+#endif
 	}
 }

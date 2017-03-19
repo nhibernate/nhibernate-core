@@ -105,7 +105,7 @@ namespace NHibernate.Util
 					if (addNull == null)
 					{
 						var toType = to.GetType();
-						if (toType.IsGenericType &&
+						if (toType.GetTypeInfo().IsGenericType &&
 							toType.GetGenericTypeDefinition() == typeof(List<>) &&
 							toType.GetGenericArguments()[0].IsNullable())
 						{

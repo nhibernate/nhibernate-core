@@ -1,10 +1,12 @@
 using System;
 using System.Collections;
-using System.Runtime.Serialization;
-using System.Security;
-using System.Security.Permissions;
 using System.Text;
 using System.Collections.Generic;
+
+#if FEATURE_SERIALIZATION
+using System.Runtime.Serialization;
+using System.Security;
+#endif
 
 namespace NHibernate
 {
@@ -34,6 +36,7 @@ namespace NHibernate
 			return result.ToString();
 		}
 
+#if FEATURE_SERIALIZATION
 		#region Serialization
 
 		public InvalidProxyTypeException(SerializationInfo info, StreamingContext context)
@@ -50,5 +53,6 @@ namespace NHibernate
 		}
 
 		#endregion
+#endif
 	}
 }

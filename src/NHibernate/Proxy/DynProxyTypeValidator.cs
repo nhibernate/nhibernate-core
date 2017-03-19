@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using NHibernate.Util;
 
@@ -19,7 +20,7 @@ namespace NHibernate.Proxy
 		public ICollection<string> ValidateType(System.Type type)
 		{
 			errors.Clear();
-			if (type.IsInterface)
+			if (type.GetTypeInfo().IsInterface)
 			{
 				// Any interface is valid as a proxy
 				return null;

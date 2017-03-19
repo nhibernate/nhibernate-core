@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if FEATURE_DATA_GETSCHEMATABLE
+
+using System;
 using System.Data;
 using System.Data.Common;
 
@@ -66,7 +68,7 @@ namespace NHibernate.Dialect.Schema
 
 	public class SQLiteColumnMetaData : AbstractColumnMetaData
 	{
-		public SQLiteColumnMetaData(DataRow rs) : base(rs)
+		public SQLiteColumnMetaData(DataRow rs) : base()
 		{
 			Name = Convert.ToString(rs["COLUMN_NAME"]);
 
@@ -94,3 +96,5 @@ namespace NHibernate.Dialect.Schema
 		}
 	}
 }
+
+#endif

@@ -2,9 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.Serialization;
 using System.Text;
 using NHibernate.DebugHelpers;
+
+#if FEATURE_SERIALIZATION
+using System.Runtime.Serialization;
+#endif
 
 namespace NHibernate.Util
 {
@@ -19,7 +22,11 @@ namespace NHibernate.Util
 	/// </remarks>
 	[DebuggerTypeProxy(typeof(CollectionProxy<>))]
 	[Serializable]
-	public class LinkedHashMap<TKey, TValue> : IDictionary<TKey, TValue>, IDeserializationCallback
+	public class LinkedHashMap<TKey, TValue> 
+		: IDictionary<TKey, TValue>
+#if FEATURE_SERIALIZATION
+		, IDeserializationCallback
+#endif
 	{
 		[Serializable]
 		protected class Entry
@@ -360,10 +367,12 @@ namespace NHibernate.Util
 			return result;
 		}
 
+#if FEATURE_SERIALIZATION
 		void IDeserializationCallback.OnDeserialization(object sender)
 		{
 			((IDeserializationCallback)entries).OnDeserialization(sender);
 		}
+#endif
 
 		#region System.Object Members
 

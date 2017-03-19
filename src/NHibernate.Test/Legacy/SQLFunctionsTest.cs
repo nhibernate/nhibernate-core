@@ -12,6 +12,9 @@ namespace NHibernate.Test.Legacy
 	/// <summary>
 	/// Summary description for SQLFunctionsTest.
 	/// </summary>
+#if !FEATURE_SERIALIZATION
+	[Ignore("Mapping Document has Serializable type")]
+#endif
 	[TestFixture]
 	public class SQLFunctionsTest : TestCase
 	{

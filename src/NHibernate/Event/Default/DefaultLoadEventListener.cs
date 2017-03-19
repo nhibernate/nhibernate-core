@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Reflection;
 using System.Text;
 using NHibernate.Cache;
 using NHibernate.Cache.Access;
@@ -9,6 +10,7 @@ using NHibernate.Impl;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Event.Default
 {
@@ -546,7 +548,7 @@ namespace NHibernate.Event.Default
 				var messageBuilder = new StringBuilder(512);
 				messageBuilder.AppendLine(string.Format("Ambiguous persister for {0} implemented by more than one hierarchy: ",
 				                                        entityName));
-				Array.ForEach(implementors, s=> messageBuilder.AppendLine(s));
+				implementors.ForEach(s => messageBuilder.AppendLine(s));
 
 				throw new HibernateException(messageBuilder.ToString());
 			}

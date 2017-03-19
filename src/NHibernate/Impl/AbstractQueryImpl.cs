@@ -10,6 +10,7 @@ using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Linq;
+using System.Reflection;
 
 namespace NHibernate.Impl
 {
@@ -195,7 +196,11 @@ namespace NHibernate.Impl
 
 			string typename = clazz.AssemblyQualifiedName;
 			IType type = TypeFactory.HeuristicType(typename);
+#if FEATURE_SERIALIZATION
 			bool serializable = (type != null && type is SerializableType);
+#else
+			bool serializable = false;
+#endif
 			if (type == null || serializable)
 			{
 				try
@@ -936,7 +941,7 @@ namespace NHibernate.Impl
 		public T UniqueResult<T>()
 		{
 			object result = UniqueResult();
-			if (result == null && typeof(T).IsValueType)
+			if (result == null && typeof(T).GetTypeInfo().IsValueType)
 			{
 				return default(T);
 			}

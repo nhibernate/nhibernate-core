@@ -1,5 +1,8 @@
 using System;
+
+#if FEATURE_SERIALIZATION
 using System.Runtime.Serialization;
+#endif
 
 namespace NHibernate
 {
@@ -18,6 +21,7 @@ namespace NHibernate
 		{
 		}
 
+#if FEATURE_SERIALIZATION
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TransientObjectException"/> class
 		/// with serialized data.
@@ -32,5 +36,6 @@ namespace NHibernate
 		protected TransientObjectException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
+#endif
 	}
 }

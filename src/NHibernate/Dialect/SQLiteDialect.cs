@@ -125,10 +125,12 @@ namespace NHibernate.Dialect
 			DefaultProperties[Cfg.Environment.QuerySubstitutions] = "true 1, false 0, yes 'Y', no 'N'";
 		}
 
+#if FEATURE_DATA_GETSCHEMATABLE
 		public override Schema.IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
 			return new Schema.SQLiteDataBaseMetaData(connection);
 		}
+#endif
 
 		public override string AddColumnString
 		{

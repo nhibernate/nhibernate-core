@@ -92,7 +92,7 @@ namespace NHibernate.Dialect.Function
 
 		bool IFunctionGrammar.IsSeparator(string token)
 		{
-			return "as".Equals(token, StringComparison.InvariantCultureIgnoreCase);
+			return "as".Equals(token, StringComparison.OrdinalIgnoreCase);
 		}
 
 		bool IFunctionGrammar.IsKnownArgument(string token)

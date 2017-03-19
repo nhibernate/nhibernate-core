@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Xml;
 using System.Xml.XPath;
 
@@ -59,13 +60,21 @@ namespace NHibernate.Cfg.ConfigurationSchema
 
 		internal static HibernateConfiguration FromAppConfig(XmlNode node)
 		{
-			XmlTextReader reader = new XmlTextReader(node.OuterXml, XmlNodeType.Document, null);
-			return new HibernateConfiguration(reader, true);
+			using (TextReader textReader = new StringReader(node.OuterXml))
+			using (XmlReader reader = XmlReader.Create(textReader))
+			{
+				return new HibernateConfiguration(reader, true);
+			}
 		}
 
 		private XmlReaderSettings GetSettings()
 		{
-			XmlReaderSettings xmlrs = (new XmlSchemas()).CreateConfigReaderSettings();
+			XmlReaderSettings xmlrs =
+#if FEATURE_XML_SCHEMAS
+				(new XmlSchemas()).CreateConfigReaderSettings();
+#else
+				new XmlReaderSettings();
+#endif
 			return xmlrs;
 		}
 

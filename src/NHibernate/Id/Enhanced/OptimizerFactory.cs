@@ -140,29 +140,31 @@ namespace NHibernate.Id.Enhanced
 				get { return false; }
 			}
 
-			[MethodImpl(MethodImplOptions.Synchronized)]
 			public override object Generate(IAccessCallback callback)
 			{
-				if (_lastSourceValue < 0)
+				lock (this)
 				{
-					_lastSourceValue = callback.GetNextValue();
-					while (_lastSourceValue <= 0)
+					if (_lastSourceValue < 0)
 					{
 						_lastSourceValue = callback.GetNextValue();
+						while (_lastSourceValue <= 0)
+						{
+							_lastSourceValue = callback.GetNextValue();
+						}
+
+						// upperLimit defines the upper end of the bucket values
+						_upperLimit = (_lastSourceValue * IncrementSize) + 1;
+
+						// initialize value to the low end of the bucket
+						_value = _upperLimit - IncrementSize;
 					}
-
-					// upperLimit defines the upper end of the bucket values
-					_upperLimit = (_lastSourceValue * IncrementSize) + 1;
-
-					// initialize value to the low end of the bucket
-					_value = _upperLimit - IncrementSize;
+					else if (_upperLimit <= _value)
+					{
+						_lastSourceValue = callback.GetNextValue();
+						_upperLimit = (_lastSourceValue * IncrementSize) + 1;
+					}
+					return Make(_value++);
 				}
-				else if (_upperLimit <= _value)
-				{
-					_lastSourceValue = callback.GetNextValue();
-					_upperLimit = (_lastSourceValue * IncrementSize) + 1;
-				}
-				return Make(_value++);
 			}
 		}
 
@@ -303,35 +305,37 @@ namespace NHibernate.Id.Enhanced
 				_initialValue = initialValue;
 			}
 
-			[MethodImpl(MethodImplOptions.Synchronized)]
 			public override object Generate(IAccessCallback callback)
 			{
-				if (_hiValue < 0)
+				lock (this)
 				{
-					_value = callback.GetNextValue();
-					if (_value < 1)
+					if (_hiValue < 0)
 					{
-						// unfortunately not really safe to normalize this
-						// to 1 as an initial value like we do the others
-						// because we would not be able to control this if
-						// we are using a sequence...
-						Log.Info("pooled optimizer source reported [" + _value + "] as the initial value; use of 1 or greater highly recommended");
-					}
+						_value = callback.GetNextValue();
+						if (_value < 1)
+						{
+							// unfortunately not really safe to normalize this
+							// to 1 as an initial value like we do the others
+							// because we would not be able to control this if
+							// we are using a sequence...
+							Log.Info("pooled optimizer source reported [" + _value + "] as the initial value; use of 1 or greater highly recommended");
+						}
 
-					if ((_initialValue == -1 && _value < IncrementSize) || _value == _initialValue)
-						_hiValue = callback.GetNextValue();
-					else
+						if ((_initialValue == -1 && _value < IncrementSize) || _value == _initialValue)
+							_hiValue = callback.GetNextValue();
+						else
+						{
+							_hiValue = _value;
+							_value = _hiValue - IncrementSize;
+						}
+					}
+					else if (_value >= _hiValue)
 					{
-						_hiValue = _value;
+						_hiValue = callback.GetNextValue();
 						_value = _hiValue - IncrementSize;
 					}
+					return Make(_value++);
 				}
-				else if (_value >= _hiValue)
-				{
-					_hiValue = callback.GetNextValue();
-					_value = _hiValue - IncrementSize;
-				}
-				return Make(_value++);
 			}
 		}
 
@@ -356,18 +360,20 @@ namespace NHibernate.Id.Enhanced
 				}
 			}
 
-			[MethodImpl(MethodImplOptions.Synchronized)]
 			public override object Generate(IAccessCallback callback)
 			{
-				if (_lastSourceValue < 0 || _value >= (_lastSourceValue + IncrementSize))
+				lock (this)
 				{
-					_lastSourceValue = callback.GetNextValue();
-					_value = _lastSourceValue;
-					// handle cases where initial-value is less than one (hsqldb for instance).
-					while (_value < 1)
-						_value++;
+					if (_lastSourceValue < 0 || _value >= (_lastSourceValue + IncrementSize))
+					{
+						_lastSourceValue = callback.GetNextValue();
+						_value = _lastSourceValue;
+						// handle cases where initial-value is less than one (hsqldb for instance).
+						while (_value < 1)
+							_value++;
+					}
+					return Make(_value++);
 				}
-				return Make(_value++);
 			}
 
 			public override long LastSourceValue

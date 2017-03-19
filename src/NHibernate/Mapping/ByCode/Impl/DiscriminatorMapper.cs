@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Type;
 using NHibernate.Util;

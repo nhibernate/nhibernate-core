@@ -1,17 +1,24 @@
 using System;
 using System.Reflection;
-using System.Runtime.Serialization;
 
 using NHibernate.Bytecode;
 using NHibernate.Mapping;
 using NHibernate.Proxy;
 using NHibernate.Util;
 
+#if FEATURE_SERIALIZATION
+using System.Runtime.Serialization;
+#endif
+
 namespace NHibernate.Tuple
 {
 	/// <summary> Defines a POCO-based instantiator for use from the tuplizers.</summary>
 	[Serializable]
-	public class PocoInstantiator : IInstantiator, IDeserializationCallback
+	public class PocoInstantiator 
+		: IInstantiator
+#if FEATURE_SERIALIZATION
+		, IDeserializationCallback
+#endif
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(PocoInstantiator));
 
@@ -101,7 +108,7 @@ namespace NHibernate.Tuple
 			{
 				return optimizer.CreateInstance();
 			}
-			if (mappedClass.IsValueType)
+			if (mappedClass.GetTypeInfo().IsValueType)
 			{
 				return Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(mappedClass, true);
 			}
@@ -126,6 +133,7 @@ namespace NHibernate.Tuple
 
 		#endregion
 
+#if FEATURE_SERIALIZATION
 		#region IDeserializationCallback Members
 
 		public void OnDeserialization(object sender)
@@ -134,6 +142,7 @@ namespace NHibernate.Tuple
 		}
 
 		#endregion
+#endif
 
 		public void SetOptimizer(IInstantiationOptimizer optimizer)
 		{

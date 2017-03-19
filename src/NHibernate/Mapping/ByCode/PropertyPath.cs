@@ -11,15 +11,43 @@ namespace NHibernate.Mapping.ByCode
 		private readonly int hashCode;
 		private readonly MemberInfo localMember;
 		private readonly PropertyPath previousPath;
+		private readonly System.Type componentType;
 
 		public PropertyPath(PropertyPath previousPath, MemberInfo localMember)
+#if FEATURE_REFLECTEDTYPE
+			: this(previousPath, localMember, localMember.ReflectedType)
+#else
+			: this(previousPath, localMember, localMember.DeclaringType)
+#endif
+		{
+			//if (localMember.DeclaringType != localMember.ReflectedType)
+			//{
+			//	throw new InvalidOperationException(string.Format("DeclaringType {0} not the same as ReflectedType {1}", localMember.DeclaringType, localMember.ReflectedType));
+			//}
+		}
+
+		public PropertyPath(PropertyPath previousPath, MemberInfo localMember, System.Type componentType)
 		{
 			if (localMember == null)
 			{
 				throw new ArgumentNullException("localMember");
 			}
+			if (componentType == null)
+			{
+				throw new ArgumentNullException("componentType");
+			}
+			if (!localMember.DeclaringType.IsAssignableFrom(componentType))
+			{
+				throw new ArgumentException("source Member not implemented on passed in type", "componentType");
+			}
+			//if (componentType != localMember.ReflectedType)
+			//{
+			//	throw new ArgumentException(string.Format("componentType {0} not the same as ReflectedType {1}", componentType, localMember.ReflectedType), "componentType");
+			//}
 			this.previousPath = previousPath;
 			this.localMember = localMember;
+			this.componentType = componentType;
+
 			hashCode = localMember.GetHashCode() ^ (previousPath != null ? previousPath.GetHashCode() : 41);
 		}
 
@@ -31,6 +59,11 @@ namespace NHibernate.Mapping.ByCode
 		public MemberInfo LocalMember
 		{
 			get { return localMember; }
+		}
+
+		public System.Type ComponentType
+		{
+			get { return componentType; }
 		}
 
 		public MemberInfo GetRootMember()

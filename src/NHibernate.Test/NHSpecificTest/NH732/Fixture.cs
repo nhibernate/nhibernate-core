@@ -70,12 +70,12 @@ namespace NHibernate.Test.NHSpecificTest.NH732
 		
 		public new bool Equals(object x, object y)
 		{
-			return StringComparer.InvariantCultureIgnoreCase.Equals((string)x, (string)y);
+			return StringComparer.OrdinalIgnoreCase.Equals((string)x, (string)y);
 		}
 
 		public int GetHashCode(object x)
 		{
-			return StringComparer.InvariantCultureIgnoreCase.GetHashCode((string)x);
+			return StringComparer.OrdinalIgnoreCase.GetHashCode((string)x);
 		}
 
 		public object NullSafeGet(DbDataReader rs, string[] names, object owner)

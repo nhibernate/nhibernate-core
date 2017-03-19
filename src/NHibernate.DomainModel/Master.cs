@@ -45,7 +45,9 @@ namespace NHibernate.DomainModel
 			get { return _details; }
 			set
 			{
+#if !NETSTANDARD
 				Trace.WriteLine("Details assigned");
+#endif
 				_details = value;
 			}
 		}

@@ -1,5 +1,8 @@
 using System;
+
+#if FEATURE_SERIALIZATION
 using System.Runtime.Serialization;
+#endif
 
 namespace NHibernate
 {
@@ -33,6 +36,7 @@ namespace NHibernate
 		{
 		}
 
+#if FEATURE_SERIALIZATION
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PropertyNotFoundException"/> class
 		/// with serialized data.
@@ -48,6 +52,7 @@ namespace NHibernate
 			: base(info, context)
 		{
 		}
+#endif
 	}
 
 }

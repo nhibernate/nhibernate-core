@@ -1,3 +1,5 @@
+#if FEATURE_REMOTING
+
 using System;
 using System.Collections;
 using System.Runtime.Remoting.Messaging;
@@ -37,3 +39,5 @@ namespace NHibernate.Context
 		}
 	}
 }
+
+#endif

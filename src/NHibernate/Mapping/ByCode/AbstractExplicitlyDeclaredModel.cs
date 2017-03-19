@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode
 {
@@ -228,7 +229,7 @@ namespace NHibernate.Mapping.ByCode
 		{
 			if(!rootEntityMustExists)
 			{
-				delayedRootEntityRegistrations.Enqueue(() => System.Array.ForEach(GetRootEntitiesOf(type).ToArray(), root=> tablePerClassEntities.Add(root)));
+				delayedRootEntityRegistrations.Enqueue(() => GetRootEntitiesOf(type).ForEach(root => tablePerClassEntities.Add(root)));
 				EnlistTypeRegistration(type, t => AddAsTablePerClassEntity(t, true));
 				return;
 			}
@@ -263,7 +264,7 @@ namespace NHibernate.Mapping.ByCode
 		{
 			if (!rootEntityMustExists)
 			{
-				delayedRootEntityRegistrations.Enqueue(() => System.Array.ForEach(GetRootEntitiesOf(type).ToArray(), root => tablePerClassHierarchyEntities.Add(root)));
+				delayedRootEntityRegistrations.Enqueue(() => GetRootEntitiesOf(type).ForEach(root => tablePerClassHierarchyEntities.Add(root)));
 				EnlistTypeRegistration(type, t => AddAsTablePerClassHierarchyEntity(t, true));
 				return;
 			}
@@ -299,7 +300,7 @@ namespace NHibernate.Mapping.ByCode
 		{
 			if (!rootEntityMustExists)
 			{
-				delayedRootEntityRegistrations.Enqueue(() => System.Array.ForEach(GetRootEntitiesOf(type).ToArray(), root => tablePerConcreteClassEntities.Add(root)));
+				delayedRootEntityRegistrations.Enqueue(() => GetRootEntitiesOf(type).ForEach(root => tablePerConcreteClassEntities.Add(root)));
 				EnlistTypeRegistration(type, t => AddAsTablePerConcreteClassEntity(t, true));
 				return;
 			}
@@ -450,7 +451,7 @@ namespace NHibernate.Mapping.ByCode
 			System.Type propertyContainer = definition.On;
 			string splitGroupId = definition.GroupId;
 			MemberInfo member = definition.Member;
-			var memberKey = member.GetMemberFromDeclaringType();
+			var memberKey = member.GetMemberFromDeclaringType(propertyContainer);
 			string splitGroup;
 			if (!memberSplitGroup.TryGetValue(memberKey, out splitGroup))
 			{

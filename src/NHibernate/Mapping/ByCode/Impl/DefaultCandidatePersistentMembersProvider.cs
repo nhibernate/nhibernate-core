@@ -29,7 +29,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			const BindingFlags flattenHierarchyBindingFlag =
 				BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
 
-			if (!entitySuperclass.Equals(entityClass.BaseType))
+			if (!entitySuperclass.Equals(entityClass.GetTypeInfo().BaseType))
 			{
 				IEnumerable<MemberInfo> propertiesOfSubclass = GetCandidatePersistentProperties(entityClass, flattenHierarchyBindingFlag);
 				IEnumerable<MemberInfo> propertiesOfBaseClass = GetCandidatePersistentProperties(entitySuperclass, flattenHierarchyBindingFlag);
@@ -63,13 +63,13 @@ namespace NHibernate.Mapping.ByCode.Impl
 				{
 					yield return fieldInfo;
 				}
-				analizing = analizing.BaseType;
+				analizing = analizing.GetTypeInfo().BaseType;
 			}
 		}
 
 		private IEnumerable<MemberInfo> GetCandidatePersistentProperties(System.Type type, BindingFlags propertiesBindingFlags)
 		{
-			return type.IsInterface ? type.GetInterfaceProperties() : type.GetProperties(propertiesBindingFlags);
+			return type.GetTypeInfo().IsInterface ? type.GetInterfaceProperties() : type.GetProperties(propertiesBindingFlags);
 		}
 
 		#region Nested type: PropertyNameEqualityComparer
