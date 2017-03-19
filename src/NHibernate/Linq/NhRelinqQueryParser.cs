@@ -13,30 +13,49 @@ using Remotion.Linq.Parsing.Structure;
 using Remotion.Linq.Parsing.Structure.IntermediateModel;
 using Remotion.Linq.Parsing.Structure.NodeTypeProviders;
 using Remotion.Linq.Parsing.Structure.ExpressionTreeProcessors;
+using NHibernate.Linq.Visitors;
 
 namespace NHibernate.Linq
 {
 	public static class NhRelinqQueryParser
 	{
 		private static readonly QueryParser QueryParser;
+		private static readonly IExpressionTreeProcessor PreProcessor;
 
 		static NhRelinqQueryParser()
 		{
+			var preTransformerRegistry = new ExpressionTransformerRegistry();
+			// NH-3247: must remove .Net compiler char to int conversion before
+			// parameterization occurs.
+			preTransformerRegistry.Register(new RemoveCharToIntConversion());
+			PreProcessor = new TransformingExpressionTreeProcessor(preTransformerRegistry);
+
 			var transformerRegistry = ExpressionTransformerRegistry.CreateDefault();
-			transformerRegistry.Register(new RemoveCharToIntConversion());
 			transformerRegistry.Register(new RemoveRedundantCast());
 			transformerRegistry.Register(new SimplifyCompareTransformer());
 
 			// If needing a compound processor for adding other processing, do not use
 			// ExpressionTreeParser.CreateDefaultProcessor(transformerRegistry), it would
 			// cause NH-3961 again by including a PartialEvaluatingExpressionTreeProcessor.
-			// Directly instanciate a CompoundExpressionTreeProcessor instead.
+			// Directly instantiate a CompoundExpressionTreeProcessor instead.
 			var processor = new TransformingExpressionTreeProcessor(transformerRegistry);
 
 			var nodeTypeProvider = new NHibernateNodeTypeProvider();
 
 			var expressionTreeParser = new ExpressionTreeParser(nodeTypeProvider, processor);
 			QueryParser = new QueryParser(expressionTreeParser);
+		}
+
+		/// <summary>
+		/// Applies the minimal transformations required before parameterization,
+		/// expression key computing and parsing.
+		/// </summary>
+		/// <param name="expression">The expression to transform.</param>
+		/// <returns>The transformed expression.</returns>
+		public static Expression PreTransform(Expression expression)
+		{
+			var partiallyEvaluatedExpression = NhPartialEvaluatingExpressionTreeVisitor.EvaluateIndependentSubtrees(expression);
+			return PreProcessor.Process(partiallyEvaluatedExpression);
 		}
 
 		public static QueryModel Parse(Expression expression)
