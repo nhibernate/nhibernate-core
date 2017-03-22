@@ -265,7 +265,7 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		public void CloseCommands()
+		public virtual void CloseCommands()
 		{
 			_releasing = true;
 			try
