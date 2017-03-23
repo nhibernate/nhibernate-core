@@ -276,7 +276,7 @@ namespace NHibernate.Impl
 				{
 					allCacheRegions[cache.RegionName] = cache.Cache;
 				}
-				ICollectionPersister persister = PersisterFactory.CreateCollectionPersister(cfg, model, cache, this);
+				ICollectionPersister persister = PersisterFactory.CreateCollectionPersister(model, cache, this);
 				collectionPersisters[model.Role] = persister;
 				IType indexType = persister.IndexType;
 				if (indexType != null && indexType.IsAssociationType && !indexType.IsAnyType)
