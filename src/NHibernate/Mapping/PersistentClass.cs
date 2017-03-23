@@ -27,7 +27,6 @@ namespace NHibernate.Mapping
 		private string entityName;
 		private string className;
 		private string proxyInterfaceName;
-		private string nodeName;
 		private string discriminatorValue;
 		private bool lazy;
 		private readonly List<Property> properties = new List<Property>();
@@ -539,12 +538,6 @@ namespace NHibernate.Mapping
 		protected virtual internal IEnumerable<ISelectable> DiscriminatorColumnIterator
 		{
 			get { return new CollectionHelper.EmptyEnumerableClass<ISelectable>(); }
-		}
-
-		public string NodeName
-		{
-			get { return nodeName; }
-			set { nodeName = value; }
 		}
 
 		public virtual bool HasSubselectLoadableCollections

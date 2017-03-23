@@ -20,7 +20,6 @@ namespace NHibernate.Mapping
 		private PersistentClass owner;
 		private bool dynamic;
 		private bool isKey;
-		private string nodeName;
 		private string roleName;
 		private Dictionary<EntityMode, string> tuplizerImpls;
 		private string componentClassName;
@@ -226,12 +225,6 @@ namespace NHibernate.Mapping
 		{
 			get { return isKey; }
 			set { isKey = value; }
-		}
-
-		public string NodeName
-		{
-			get { return nodeName; }
-			set { nodeName = value; }
 		}
 
 		public string RoleName

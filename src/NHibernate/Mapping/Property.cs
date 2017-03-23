@@ -23,7 +23,6 @@ namespace NHibernate.Mapping
 		private bool selectable = true;
 		private string propertyAccessorName;
 		private bool optional;
-		private string nodeName;
 		private IDictionary<string, MetaAttribute> metaAttributes;
 		private PersistentClass persistentClass;
 		private bool isOptimisticLocked;
@@ -274,12 +273,6 @@ namespace NHibernate.Mapping
 		{
 			get { return isNaturalIdentifier; }
 			set { isNaturalIdentifier = value; }
-		}
-
-		public string NodeName
-		{
-			get { return nodeName; }
-			set { nodeName = value; }
 		}
 
 		// both many-to-one and one-to-one are represented as a
