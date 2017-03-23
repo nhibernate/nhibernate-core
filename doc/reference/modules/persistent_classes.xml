@@ -345,33 +345,6 @@ using(ITransaction tx = s.BeginTransaction())
             to the NHibernate mapping, the database schema can easily be normalized and sound,
             allowing to add a proper domain model implementation on top later on.
         </para>
-        
-        <para>
-            Entity representation modes can also be set on a per <literal>ISession</literal>
-            basis:
-        </para>
-        
-        <programlisting><![CDATA[using (ISession dynamicSession = pocoSession.GetSession(EntityMode.Map))
-{
-    // Create a customer
-    var frank = new Dictionary<string, object>();
-    frank["name"] = "Frank";
-    dynamicSession.Save("Customer", frank);
-    ...
-}
-// Continue on pocoSession
-]]></programlisting>
-        
-        
-        <para>
-            Please note that the call to <literal>GetSession()</literal> using an
-            <literal>EntityMode</literal> is on the <literal>ISession</literal> API, not the
-            <literal>ISessionFactory</literal>. That way, the new <literal>ISession</literal>
-            shares the underlying ADO connection, transaction, and other context
-            information. This means you don't have to call <literal>Flush()</literal>
-            and <literal>Close()</literal> on the secondary <literal>ISession</literal>, and
-            also leave the transaction and connection handling to the primary unit of work.
-        </para>
     </sect1>
     
     <sect1 id="persistent-classes-tuplizers" revision="1">
