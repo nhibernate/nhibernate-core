@@ -71,7 +71,7 @@ namespace NHibernate.Type
 			if (value == null) 
 				return null;
 
-			return DeepCopy(value, session.EntityMode, session.Factory);
+			return DeepCopy(value, session.Factory);
 		}
 
 		/// <summary>
@@ -89,7 +89,7 @@ namespace NHibernate.Type
 			if (cached == null)
 				return null;
 
-			return DeepCopy(cached, session.EntityMode, session.Factory);
+			return DeepCopy(cached, session.Factory);
 		}
 
 		public virtual void BeforeAssemble(object cached, ISessionImplementor session)
@@ -107,7 +107,7 @@ namespace NHibernate.Type
 		/// <remarks>This method uses <c>IType.Equals(object, object)</c> to determine the value of IsDirty.</remarks>
 		public virtual bool IsDirty(object old, object current, ISessionImplementor session)
 		{
-			return !IsSame(old, current, session.EntityMode);
+			return !IsSame(old, current);
 		}
 
 		/// <summary>
@@ -185,7 +185,7 @@ namespace NHibernate.Type
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.DeepCopy"]/*'
 		/// /> 
-		public abstract object DeepCopy(object val, EntityMode entityMode, ISessionFactoryImplementor factory);
+		public abstract object DeepCopy(object val, ISessionFactoryImplementor factory);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.SqlTypes"]/*'
@@ -213,32 +213,32 @@ namespace NHibernate.Type
 			return include ? Replace(original, target, session, owner, copyCache) : target;
 		}
 
-		public virtual bool IsSame(object x, object y, EntityMode entityMode)
+		public virtual bool IsSame(object x, object y)
 		{
-			return IsEqual(x, y, entityMode);
+			return IsEqual(x, y);
 		}
 
-		public virtual bool IsEqual(object x, object y, EntityMode entityMode)
+		public virtual bool IsEqual(object x, object y)
 		{
 			return EqualsHelper.Equals(x, y);
 		}
 
-		public virtual bool IsEqual(object x, object y, EntityMode entityMode, ISessionFactoryImplementor factory)
+		public virtual bool IsEqual(object x, object y, ISessionFactoryImplementor factory)
 		{
-			return IsEqual(x, y, entityMode);
+			return IsEqual(x, y);
 		}
 
-		public virtual int GetHashCode(object x, EntityMode entityMode)
+		public virtual int GetHashCode(object x)
 		{
 			return x.GetHashCode();
 		}
 
-		public virtual int GetHashCode(object x, EntityMode entityMode, ISessionFactoryImplementor factory)
+		public virtual int GetHashCode(object x, ISessionFactoryImplementor factory)
 		{
-			return GetHashCode(x, entityMode);
+			return GetHashCode(x);
 		}
 
-		public virtual int Compare(object x, object y, EntityMode? entityMode)
+		public virtual int Compare(object x, object y)
 		{
 			IComparable xComp = x as IComparable;
 			IComparable yComp = y as IComparable;

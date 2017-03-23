@@ -263,21 +263,15 @@ namespace NHibernate.Mapping
 
 		public virtual string GetTuplizerImplClassName(EntityMode mode)
 		{
-			// todo : remove this once ComponentMetamodel is complete and merged
-			if (tuplizerImpls == null)
-			{
-				return null;
-			}
-			return tuplizerImpls[mode];
+			string result = null;
+			tuplizerImpls?.TryGetValue(mode, out result);
+			return result;
 		}
 
 		public virtual IDictionary<EntityMode, string> TuplizerMap
 		{
 			get
 			{
-				if (tuplizerImpls == null)
-					return null;
-
 				return tuplizerImpls;
 			}
 		}

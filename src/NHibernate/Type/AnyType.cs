@@ -63,7 +63,7 @@ namespace NHibernate.Type
 		{
 		}
 
-		public override object DeepCopy(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
+		public override object DeepCopy(object value, ISessionFactoryImplementor factory)
 		{
 			return value;
 		}
@@ -248,7 +248,7 @@ namespace NHibernate.Type
 			return i == 0 ? session.BestGuessEntityName(component) : Id(component, session);
 		}
 
-		public object[] GetPropertyValues(Object component, EntityMode entityMode)
+		public object[] GetPropertyValues(Object component)
 		{
 			throw new NotSupportedException();
 		}
@@ -275,7 +275,7 @@ namespace NHibernate.Type
 			get { return new IType[] {metaType, identifierType}; }
 		}
 
-		public void SetPropertyValues(object component, object[] values, EntityMode entityMode)
+		public void SetPropertyValues(object component, object[] values)
 		{
 			throw new NotSupportedException();
 		}
@@ -371,7 +371,7 @@ namespace NHibernate.Type
 			throw new NotSupportedException();
 		}
 
-		public override int Compare(object x, object y, EntityMode? entityMode)
+		public override int Compare(object x, object y)
 		{
 			return 0; //TODO: entities CAN be compared, by PK and entity name, fix this!
 		}
@@ -381,7 +381,7 @@ namespace NHibernate.Type
 			return false;
 		}
 
-		public override bool IsSame(object x, object y, EntityMode entityMode)
+		public override bool IsSame(object x, object y)
 		{
 			return x == y;
 		}

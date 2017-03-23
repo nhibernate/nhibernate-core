@@ -75,17 +75,12 @@ namespace NHibernate.Impl
 
 		public EntityKey GenerateEntityKey(object id, IEntityPersister persister)
 		{
-			return GenerateEntityKey(id, persister, EntityMode);
-		}
-
-		protected EntityKey GenerateEntityKey(object id, IEntityPersister persister, EntityMode entityMode)
-		{
-			return new EntityKey(id, persister, entityMode);
+			return new EntityKey(id, persister);
 		}
 
 		public CacheKey GenerateCacheKey(object id, IType type, string entityOrRoleName)
 		{
-			return new CacheKey(id, type, entityOrRoleName, EntityMode, Factory);
+			return new CacheKey(id, type, entityOrRoleName, Factory);
 		}
 
 		public ISessionFactoryImplementor Factory
@@ -93,7 +88,6 @@ namespace NHibernate.Impl
 			get { return factory; }
 			protected set { factory = value; }
 		}
-		public abstract EntityMode EntityMode { get; }
 
 		public abstract IBatcher Batcher { get; }
 		public abstract void CloseSessionFromDistributedTransaction();

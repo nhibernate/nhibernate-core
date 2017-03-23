@@ -73,9 +73,6 @@ namespace NHibernate
 	/// </remarks>
 	public interface ISession : IDisposable
 	{
-		/// <summary> The entity mode in effect for this session.</summary>
-		EntityMode ActiveEntityMode { get; } // NH different implementation: changed name to avoid conflicts
-
 		/// <summary>
 		/// Force the <c>ISession</c> to flush.
 		/// </summary>
@@ -932,14 +929,12 @@ namespace NHibernate
 		/// <summary> Get the statistics for this session.</summary>
 		ISessionStatistics Statistics { get; }
 
-		/// <summary>
-		/// Starts a new Session with the given entity mode in effect. This secondary
-		/// Session inherits the connection, transaction, and other context
-		///	information from the primary Session. It doesn't need to be flushed
-		/// or closed by the developer.
-		/// </summary>
-		/// <param name="entityMode">The entity mode to use for the new session.</param>
+		///  <summary>
+		///  Starts a new Session. This secondary Session inherits the connection, transaction,
+		///  and other context information from the primary Session. It doesn't need to be flushed
+		///  or closed by the developer.
+		///  </summary>
 		/// <returns>The new session</returns>
-		ISession GetSession(EntityMode entityMode);
+		ISession GetChildSession();
 	}
 }

@@ -31,7 +31,7 @@ namespace NHibernate.Criterion
 
 		private TypedValue FirstTypedValue()
 		{
-			return new TypedValue(GetTypes()[0], value, EntityMode.Poco);
+			return new TypedValue(GetTypes()[0], value);
 		}
 
 		protected override SqlString ToLeftSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)

@@ -851,7 +851,7 @@ namespace NHibernate.Loader
 				IType idType = persister.IdentifierType;
 				resultId = idType.NullSafeGet(rs, EntityAliases[i].SuffixedKeyAliases, session, null);
 
-				bool idIsResultId = id != null && resultId != null && idType.IsEqual(id, resultId, session.EntityMode, _factory);
+				bool idIsResultId = id != null && resultId != null && idType.IsEqual(id, resultId, _factory);
 
 				if (idIsResultId)
 				{
@@ -950,7 +950,7 @@ namespace NHibernate.Loader
 		private void InstanceAlreadyLoaded(DbDataReader rs, int i, IEntityPersister persister, EntityKey key, object obj,
 										   LockMode lockMode, ISessionImplementor session)
 		{
-			if (!persister.IsInstance(obj, session.EntityMode))
+			if (!persister.IsInstance(obj))
 			{
 				string errorMsg = string.Format("loading object was of wrong class [{0}]", obj.GetType().FullName);
 				throw new WrongClassException(errorMsg, key.Identifier, persister.EntityName);
@@ -1065,8 +1065,7 @@ namespace NHibernate.Loader
 					// the one used here, which it will be
 
 					EntityUniqueKey euk =
-						new EntityUniqueKey(rootPersister.EntityName, ukName, type.SemiResolve(values[index], session, obj), type,
-											session.EntityMode, session.Factory);
+						new EntityUniqueKey(rootPersister.EntityName, ukName, type.SemiResolve(values[index], session, obj), type, session.Factory);
 					session.PersistenceContext.AddEntity(euk, obj);
 				}
 			}
@@ -1566,7 +1565,7 @@ namespace NHibernate.Loader
 
 		private QueryKey GenerateQueryKey(ISessionImplementor session, QueryParameters queryParameters)
 		{
-			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters, session.EntityMode);
+			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters);
 			return new QueryKey(Factory, SqlString, queryParameters, filterKeys,
 								CreateCacheableResultTransformer(queryParameters));
 		}

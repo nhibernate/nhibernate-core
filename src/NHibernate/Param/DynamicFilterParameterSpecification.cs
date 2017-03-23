@@ -228,7 +228,7 @@ namespace NHibernate.Param
 				throw new InvalidOperationException();
 			}
 
-			public object DeepCopy(object val, EntityMode entityMode, ISessionFactoryImplementor factory)
+			public object DeepCopy(object val, ISessionFactoryImplementor factory)
 			{
 				throw new InvalidOperationException();
 			}
@@ -258,32 +258,32 @@ namespace NHibernate.Param
 				throw new InvalidOperationException();
 			}
 
-			public bool IsSame(object x, object y, EntityMode entityMode)
+			public bool IsSame(object x, object y)
 			{
 				return false;
 			}
 
-			public bool IsEqual(object x, object y, EntityMode entityMode)
+			public bool IsEqual(object x, object y)
 			{
 				return false;
 			}
 
-			public bool IsEqual(object x, object y, EntityMode entityMode, ISessionFactoryImplementor factory)
+			public bool IsEqual(object x, object y, ISessionFactoryImplementor factory)
 			{
 				return false;
 			}
 
-			public int GetHashCode(object x, EntityMode entityMode)
+			public int GetHashCode(object x)
 			{
 				return GetHashCode();
 			}
 
-			public int GetHashCode(object x, EntityMode entityMode, ISessionFactoryImplementor factory)
+			public int GetHashCode(object x, ISessionFactoryImplementor factory)
 			{
 				return GetHashCode();
 			}
 
-			public int Compare(object x, object y, EntityMode? entityMode)
+			public int Compare(object x, object y)
 			{
 				return 1;
 			}

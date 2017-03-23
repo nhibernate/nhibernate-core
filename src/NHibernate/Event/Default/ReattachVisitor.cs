@@ -78,7 +78,7 @@ namespace NHibernate.Event.Default
 			}
 			else
 			{
-				return role.OwnerEntityPersister.GetPropertyValue(owner, role.CollectionType.LHSPropertyName, Session.EntityMode);
+				return role.OwnerEntityPersister.GetPropertyValue(owner, role.CollectionType.LHSPropertyName);
 			}
 		}
 	}

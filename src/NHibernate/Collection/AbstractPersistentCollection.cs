@@ -717,7 +717,7 @@ namespace NHibernate.Collection
 				if (current != null && ForeignKeys.IsNotTransient(entityName, current, null, session))
 				{
 					object currentId = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, current, session);
-					currentIds.Add(new TypedValue(idType, currentId, session.EntityMode));
+					currentIds.Add(new TypedValue(idType, currentId));
 				}
 			}
 
@@ -725,7 +725,7 @@ namespace NHibernate.Collection
 			foreach (object old in oldElements)
 			{
 				object oldId = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, old, session);
-				if (!currentIds.Contains(new TypedValue(idType, oldId, session.EntityMode)))
+				if (!currentIds.Contains(new TypedValue(idType, oldId)))
 				{
 					res.Add(old);
 				}
@@ -749,7 +749,7 @@ namespace NHibernate.Collection
 						continue;
 					}
 					object idOfOld = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, current, session);
-					if (idType.IsEqual(idOfCurrent, idOfOld, session.EntityMode, session.Factory))
+					if (idType.IsEqual(idOfCurrent, idOfOld, session.Factory))
 					{
 						toRemove.Add(current);
 					}

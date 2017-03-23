@@ -77,7 +77,7 @@ namespace NHibernate.Type
 			get { return "ClassMetaType"; }
 		}
 
-		public override object DeepCopy(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
+		public override object DeepCopy(object value, ISessionFactoryImplementor factory)
 		{
 			return value;
 		}

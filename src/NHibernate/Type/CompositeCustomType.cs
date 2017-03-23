@@ -73,10 +73,10 @@ namespace NHibernate.Type
 
 		public virtual object[] GetPropertyValues(object component, ISessionImplementor session)
 		{
-			return GetPropertyValues(component, session.EntityMode);
+			return GetPropertyValues(component);
 		}
 
-		public virtual object[] GetPropertyValues(object component, EntityMode entityMode)
+		public virtual object[] GetPropertyValues(object component)
 		{
 			int len = Subtypes.Length;
 			object[] result = new object[len];
@@ -87,7 +87,7 @@ namespace NHibernate.Type
 			return result;
 		}
 
-		public virtual void SetPropertyValues(object component, object[] values, EntityMode entityMode)
+		public virtual void SetPropertyValues(object component, object[] values)
 		{
 			for (int i = 0; i < values.Length; i++)
 				userType.SetPropertyValue(component, i, values[i]);
@@ -128,7 +128,7 @@ namespace NHibernate.Type
 			return userType.Assemble(cached, session, owner);
 		}
 
-		public override object DeepCopy(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
+		public override object DeepCopy(object value, ISessionFactoryImplementor factory)
 		{
 			return userType.DeepCopy(value);
 		}
@@ -241,7 +241,7 @@ namespace NHibernate.Type
 			return xml;
 		}
 
-		public override bool IsEqual(object x, object y, EntityMode entityMode)
+		public override bool IsEqual(object x, object y)
 		{
 			return userType.Equals(x, y);
 		}
@@ -261,7 +261,7 @@ namespace NHibernate.Type
 			bool[] result = new bool[GetColumnSpan(mapping)];
 			if (value == null)
 				return result;
-			object[] values = GetPropertyValues(value, EntityMode.Poco);
+			object[] values = GetPropertyValues(value);
 			int loc = 0;
 			IType[] propertyTypes = Subtypes;
 			for (int i = 0; i < propertyTypes.Length; i++)

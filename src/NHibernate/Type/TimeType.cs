@@ -91,7 +91,7 @@ namespace NHibernate.Type
 						 && date1.Second == date2.Second;
 		}
 
-		public override int GetHashCode(object x, EntityMode entityMode)
+		public override int GetHashCode(object x)
 		{
 			DateTime date = (DateTime)x;
 			int hashCode = 1;

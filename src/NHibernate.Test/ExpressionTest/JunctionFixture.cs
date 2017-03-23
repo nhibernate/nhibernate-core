@@ -54,8 +54,8 @@ namespace NHibernate.Test.ExpressionTest
 			}
 
 			TypedValue[] expectedTV = new TypedValue[2];
-			expectedTV[0] = new TypedValue(NHibernateUtil.Int32, 5, EntityMode.Poco);
-			expectedTV[1] = new TypedValue(NHibernateUtil.Int32, 10, EntityMode.Poco);
+			expectedTV[0] = new TypedValue(NHibernateUtil.Int32, 5);
+			expectedTV[1] = new TypedValue(NHibernateUtil.Int32, 10);
 
 			Assert.AreEqual(2, typedValues.Length);
 

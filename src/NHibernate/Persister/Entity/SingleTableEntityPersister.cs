@@ -163,7 +163,7 @@ namespace NHibernate.Persister.Entity
 
 			spaces = qualifiedTableNames.Concat(persistentClass.SynchronizedTables).ToArray();
 
-			bool lazyAvailable = IsInstrumented(EntityMode.Poco);
+			bool lazyAvailable = IsInstrumented;
 
 			bool hasDeferred = false;
 			List<string> subclassTables = new List<string>();
@@ -534,7 +534,7 @@ namespace NHibernate.Persister.Entity
 			return cascadeDeleteEnabled[j];
 		}
 
-		protected override object GetJoinTableId(int table, object obj, EntityMode entityMode)
+		protected override object GetJoinTableId(int table, object obj)
 		{
 			//0 is the base table there is no join
 			if (table == 0)
@@ -545,7 +545,7 @@ namespace NHibernate.Persister.Entity
 			if (refIdColumn == null)
 				return null;
 
-			object[] fields = GetPropertyValues(obj, entityMode);
+			object[] fields = GetPropertyValues(obj);
 			return GetJoinTableId(table, refIdColumn, fields);
 		}
 

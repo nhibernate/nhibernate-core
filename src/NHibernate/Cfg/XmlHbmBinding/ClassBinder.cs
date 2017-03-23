@@ -131,13 +131,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private void BindXmlRepresentation(IEntityMapping classMapping, PersistentClass entity)
 		{
 			entity.NodeName = string.IsNullOrEmpty(classMapping.Node) ? StringHelper.Unqualify(entity.EntityName): classMapping.Node;
-
-			HbmTuplizer tuplizer = classMapping.Tuplizers.FirstOrDefault(tp => tp.entitymode == HbmTuplizerEntitymode.Xml);
-			if (tuplizer != null)
-			{
-				string tupClassName = FullQualifiedClassName(tuplizer.@class, mappings);
-				entity.AddTuplizer(EntityMode.Xml, tupClassName);
-			}
 		}
 
 		private void BindPocoRepresentation(IEntityMapping classMapping, PersistentClass entity)

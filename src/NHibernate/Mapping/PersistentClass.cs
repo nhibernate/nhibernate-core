@@ -1162,10 +1162,8 @@ namespace NHibernate.Mapping
 
 		public virtual string GetTuplizerImplClassName(EntityMode mode)
 		{
-			if (tuplizerImpls == null)
-				return null;
-			string result;
-			tuplizerImpls.TryGetValue(mode, out result);
+			string result = null;
+			tuplizerImpls?.TryGetValue(mode, out result);
 			return result;
 		}
 

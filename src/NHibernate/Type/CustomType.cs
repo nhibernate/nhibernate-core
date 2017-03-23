@@ -137,7 +137,7 @@ namespace NHibernate.Type
 			get { return name; }
 		}
 
-		public override object DeepCopy(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
+		public override object DeepCopy(object value, ISessionFactoryImplementor factory)
 		{
 			return userType.DeepCopy(value);
 		}
@@ -163,7 +163,7 @@ namespace NHibernate.Type
 			return userType.GetType().GetHashCode();
 		}
 
-		public override int GetHashCode(object x, EntityMode entityMode)
+		public override int GetHashCode(object x)
 		{
 			return userType.GetHashCode(x);
 		}
@@ -229,14 +229,9 @@ namespace NHibernate.Type
 			return ((IEnhancedUserType)userType).FromXMLString(xml);
 		}
 
-		public virtual bool IsEqual(object x, object y)
+		public override bool IsEqual(object x, object y)
 		{
 			return userType.Equals(x, y);
-		}
-
-		public override bool IsEqual(object x, object y, EntityMode entityMode)
-		{
-			return IsEqual(x, y);
 		}
 
 		public override void SetToXMLNode(XmlNode node, object value, ISessionFactoryImplementor factory)

@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using NHibernate.Type;
 using NHibernate.Util;
-using NHibernate.Engine;
 
 namespace NHibernate.Properties
 {
@@ -224,25 +222,16 @@ namespace NHibernate.Properties
 		public static IPropertyAccessor GetPropertyAccessor(Mapping.Property property, EntityMode? mode)
 		{
 			//TODO: this is temporary in that the end result will probably not take a Property reference per-se.
-			EntityMode modeToUse = mode.HasValue ? mode.Value : EntityMode.Poco;
+			EntityMode modeToUse = mode ?? EntityMode.Poco;
 			switch(modeToUse)
 			{
 				case EntityMode.Poco:
 					return GetPocoPropertyAccessor(property.PropertyAccessorName);
 				case EntityMode.Map:
 					return DynamicMapPropertyAccessor;
-				case EntityMode.Xml:
-					return GetXmlPropertyAccessor(property.GetAccessorPropertyName(modeToUse), property.Type, null);
 				default:
 					throw new MappingException("Unknown entity mode [" + mode + "]");
 			}
-		}
-
-		private static IPropertyAccessor GetXmlPropertyAccessor(string nodeName, IType type, ISessionFactoryImplementor factory)
-		{
-			//TODO: need some caching scheme? really comes down to decision 
-			//      regarding amount of state (if any) kept on PropertyAccessors
-			return new XmlAccessor(nodeName, type, factory);
 		}
 
 		private static IPropertyAccessor GetPocoPropertyAccessor(string accessorName)

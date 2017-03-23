@@ -60,14 +60,14 @@ namespace NHibernate.Type
 			get { return true; }
 		}
 
-		public override bool IsEqual(object x, object y, EntityMode entityMode)
+		public override bool IsEqual(object x, object y)
 		{
 			return x == y || 
 				(x is IPersistentCollection && ((IPersistentCollection)x).IsWrapper(y)) || 
 				(y is IPersistentCollection && ((IPersistentCollection)y).IsWrapper(x));
 		}
 
-		public override int GetHashCode(object x, EntityMode entityMode)
+		public override int GetHashCode(object x)
 		{
 			throw new InvalidOperationException("cannot perform lookups on collections");
 		}
@@ -127,7 +127,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object DeepCopy(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
+		public override object DeepCopy(object value, ISessionFactoryImplementor factory)
 		{
 			return value;
 		}
@@ -239,19 +239,13 @@ namespace NHibernate.Type
 		{
 			ICollectionPersister persister = GetPersister(session);
 			IPersistenceContext persistenceContext = session.PersistenceContext;
-			EntityMode entityMode = session.EntityMode;
-
-			if (entityMode == EntityMode.Xml && !isEmbeddedInXML)
-			{
-				return UnfetchedCollection;
-			}
 
 			// check if collection is currently being loaded
 			IPersistentCollection collection = persistenceContext.LoadContexts.LocateLoadingCollection(persister, key);
 			if (collection == null)
 			{
 				// check if it is already completely loaded, but unowned
-				collection = persistenceContext.UseUnownedCollection(new CollectionKey(persister, key, entityMode));
+				collection = persistenceContext.UseUnownedCollection(new CollectionKey(persister, key));
 				if (collection == null)
 				{
 					// create a new collection wrapper, to be initialized later
@@ -261,7 +255,7 @@ namespace NHibernate.Type
 					persistenceContext.AddUninitializedCollection(persister, collection, key);
 
 					// some collections are not lazy:
-					if (InitializeImmediately(entityMode))
+					if (InitializeImmediately())
 					{
 						session.InitializeCollection(collection, false);
 					}
@@ -270,7 +264,7 @@ namespace NHibernate.Type
 						persistenceContext.AddNonLazyCollection(collection);
 					}
 
-					if (HasHolder(entityMode))
+					if (HasHolder())
 					{
 						session.PersistenceContext.AddCollectionHolder(collection);
 					}
@@ -501,11 +495,11 @@ namespace NHibernate.Type
 				IType keyType = GetPersister(session).KeyType;
 				IEntityPersister ownerPersister = GetPersister(session).OwnerEntityPersister;
 				// TODO: Fix this so it will work for non-POJO entity mode
-				System.Type ownerMappedClass = ownerPersister.GetMappedClass(session.EntityMode);
+				System.Type ownerMappedClass = ownerPersister.MappedClass;
 				if (ownerMappedClass.IsAssignableFrom(keyType.ReturnedClass) && keyType.ReturnedClass.IsInstanceOfType(key))
 				{
 					// the key is the owning entity itself, so get the ID from the key
-					ownerId = ownerPersister.GetIdentifier(key, session.EntityMode);
+					ownerId = ownerPersister.GetIdentifier(key);
 				}
 				else
 				{
@@ -547,7 +541,7 @@ namespace NHibernate.Type
 			return ArrayHelper.EmptyBoolArray;
 		}
 
-		public override int Compare(object x, object y, EntityMode? entityMode)
+		public override int Compare(object x, object y)
 		{
 			return 0; // collections cannot be compared
 		}
@@ -598,12 +592,12 @@ namespace NHibernate.Type
 			return ((IEnumerable)collection);
 		}
 
-		public virtual bool HasHolder(EntityMode entityMode)
+		public virtual bool HasHolder()
 		{
 			return false;// entityMode == EntityMode.DOM4J;
 		}
 
-		protected internal virtual bool InitializeImmediately(EntityMode entityMode)
+		protected internal virtual bool InitializeImmediately()
 		{
 			return false;// entityMode == EntityMode.DOM4J;
 		}

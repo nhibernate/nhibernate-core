@@ -308,15 +308,6 @@
     <Compile Include="EngineTest\ParameterParserFixture.cs" />
     <Compile Include="EngineTest\TypedValueFixture.cs" />
     <Compile Include="EntityModeTest\Map\Basic\DynamicClassFixture.cs" />
-    <Compile Include="EntityModeTest\Multi\MultiRepresentationFixture.cs" />
-    <Compile Include="EntityModeTest\Multi\Stock.cs" />
-    <Compile Include="EntityModeTest\Multi\Valuation.cs" />
-    <Compile Include="EntityModeTest\Xml\Accessors\XmlAccessorFixture.cs" />
-    <Compile Include="EntityModeTest\Xml\Basic\XmlFixture.cs" />
-    <Compile Include="EntityModeTest\Xml\Many2One\Car.cs" />
-    <Compile Include="EntityModeTest\Xml\Many2One\CarPart.cs" />
-    <Compile Include="EntityModeTest\Xml\Many2One\CarType.cs" />
-    <Compile Include="EntityModeTest\Xml\Many2One\XmlManyToOneFixture.cs" />
     <Compile Include="Events\Collections\AbstractCollectionEventFixture.cs" />
     <Compile Include="Events\Collections\AbstractParentWithCollection.cs" />
     <Compile Include="Events\Collections\Association\AbstractAssociationCollectionEventFixture.cs" />
@@ -1877,7 +1868,6 @@
     <Compile Include="NHSpecificTest\Dates\FixtureBase.cs" />
     <Compile Include="NHSpecificTest\Dates\DateTime2Fixture.cs" />
     <Compile Include="NHSpecificTest\Dates\DateTimeAssert.cs" />
-    <Compile Include="NHSpecificTest\EntityModeToTuplizerPerf\Fixture.cs" />
     <Compile Include="NHSpecificTest\Evicting\Employee.cs" />
     <Compile Include="NHSpecificTest\Evicting\Fixture.cs" />
     <Compile Include="NHSpecificTest\FileStreamSql2008\VendorCatalog.cs" />
@@ -3768,12 +3758,6 @@
     <EmbeddedResource Include="NHSpecificTest\NH1495\Mappings.hbm.xml" />
     <EmbeddedResource Include="ProjectionFixtures\Mapping.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1033\Mappings.hbm.xml" />
-    <EmbeddedResource Include="EntityModeTest\Multi\Stock.hbm.xml" />
-    <EmbeddedResource Include="EntityModeTest\Multi\Valuation.hbm.xml" />
-    <EmbeddedResource Include="EntityModeTest\Xml\Many2One\Car.hbm.xml" />
-    <EmbeddedResource Include="EntityModeTest\Xml\Basic\AB.hbm.xml" />
-    <EmbeddedResource Include="EntityModeTest\Xml\Basic\Account.hbm.xml" />
-    <EmbeddedResource Include="EntityModeTest\Xml\Basic\Employer.hbm.xml" />
     <EmbeddedResource Include="SqlTest\Identity\MsSQL\MSSQLIdentityInsertWithStoredProcs.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1508\Mappings.hbm.xml" />
     <EmbeddedResource Include="GenericTest\OrderedSetGeneric\OrderedSetFixture.hbm.xml" />

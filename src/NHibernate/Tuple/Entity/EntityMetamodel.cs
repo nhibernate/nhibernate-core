@@ -314,7 +314,13 @@ namespace NHibernate.Tuple.Entity
 			}
 			subclassEntityNames.Add(name);
 
-			tuplizerMapping = new EntityEntityModeToTuplizerMapping(persistentClass, this);
+			EntityMode = persistentClass.HasPocoRepresentation ? EntityMode.Poco : EntityMode.Map;
+
+			var entityTuplizerFactory = new EntityTuplizerFactory();
+			var tuplizerClassName = persistentClass.GetTuplizerImplClassName(EntityMode);
+			Tuplizer = tuplizerClassName == null
+				? entityTuplizerFactory.BuildDefaultEntityTuplizer(EntityMode, this, persistentClass)
+				: entityTuplizerFactory.BuildEntityTuplizer(tuplizerClassName, this, persistentClass);
 		}
 
 		public bool HasPocoRepresentation { get; private set; }
@@ -685,25 +691,11 @@ namespace NHibernate.Tuple.Entity
 
 		#endregion
 
-		#region Tuplizer
-		private readonly EntityEntityModeToTuplizerMapping tuplizerMapping;
 		private bool hasUnwrapProxyForProperties;
 
-		public IEntityTuplizer GetTuplizer(EntityMode entityMode)
-		{
-			return (IEntityTuplizer)tuplizerMapping.GetTuplizer(entityMode);
-		}
+		public IEntityTuplizer Tuplizer { get; }
 
-		public IEntityTuplizer GetTuplizerOrNull(EntityMode entityMode)
-		{
-			return (IEntityTuplizer)tuplizerMapping.GetTuplizerOrNull(entityMode);
-		}
-
-		public EntityMode? GuessEntityMode(object obj)
-		{
-			return tuplizerMapping.GuessEntityMode(obj);
-		}
-		#endregion
+		public EntityMode EntityMode { get; }
 
 		public bool HasNaturalIdentifier
 		{

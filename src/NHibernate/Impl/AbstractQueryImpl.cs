@@ -242,7 +242,7 @@ namespace NHibernate.Impl
 			var type = typedList.Type;
 
 			var typedValues = (from object value in vals
-							   select new TypedValue(type, value, session.EntityMode))
+							   select new TypedValue(type, value))
 				.ToList();
 
 			if (typedValues.Count == 1)
@@ -301,7 +301,7 @@ namespace NHibernate.Impl
 			}
 			else
 			{
-				namedParameters[name] = new TypedValue(type, val, session.EntityMode);
+				namedParameters[name] = new TypedValue(type, val);
 				return this;
 			}
 		}
@@ -704,7 +704,7 @@ namespace NHibernate.Impl
 			{
 				throw new QueryException(string.Format("An empty parameter-list generates wrong SQL; parameter name '{0}'", name));
 			}
-			namedParameterLists[name] = new TypedValue(type, vals, session.EntityMode);
+			namedParameterLists[name] = new TypedValue(type, vals);
 			return this;
 		}
 

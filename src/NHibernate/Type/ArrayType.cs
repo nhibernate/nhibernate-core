@@ -101,7 +101,7 @@ namespace NHibernate.Type
 			throw new NotSupportedException();
 		}
 
-		public override bool HasHolder(EntityMode entityMode)
+		public override bool HasHolder()
 		{
 			return true;
 		}
@@ -119,7 +119,7 @@ namespace NHibernate.Type
 			return null;
 		}
 
-		protected internal override bool InitializeImmediately(EntityMode entityMode)
+		protected internal override bool InitializeImmediately()
 		{
 			return true;
 		}

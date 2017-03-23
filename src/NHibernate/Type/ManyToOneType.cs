@@ -191,7 +191,7 @@ namespace NHibernate.Type
 
 		public override bool IsDirty(object old, object current, ISessionImplementor session)
 		{
-			if (IsSame(old, current, session.EntityMode))
+			if (IsSame(old, current))
 			{
 				return false;
 			}
@@ -209,7 +209,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				if (IsSame(old, current, session.EntityMode))
+				if (IsSame(old, current))
 				{
 					return false;
 				}
