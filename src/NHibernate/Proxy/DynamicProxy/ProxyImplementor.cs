@@ -18,6 +18,9 @@ namespace NHibernate.Proxy.DynamicProxy
 		                                                  MethodAttributes.SpecialName | MethodAttributes.NewSlot |
 		                                                  MethodAttributes.Virtual;
 
+		private static readonly MethodInfo OriginalSetter = typeof(IProxy).GetMethod("set_Interceptor");
+		private static readonly MethodInfo OriginalGetter = typeof(IProxy).GetMethod("get_Interceptor");
+
 		private FieldBuilder field;
 
 		public FieldBuilder InterceptorField
@@ -54,11 +57,8 @@ namespace NHibernate.Proxy.DynamicProxy
 			IL.Emit(OpCodes.Stfld, field);
 			IL.Emit(OpCodes.Ret);
 
-			MethodInfo originalSetter = typeof (IProxy).GetMethod("set_Interceptor");
-			MethodInfo originalGetter = typeof (IProxy).GetMethod("get_Interceptor");
-
-			typeBuilder.DefineMethodOverride(setterMethod, originalSetter);
-			typeBuilder.DefineMethodOverride(getterMethod, originalGetter);
+			typeBuilder.DefineMethodOverride(setterMethod, OriginalSetter);
+			typeBuilder.DefineMethodOverride(getterMethod, OriginalGetter);
 		}
 	}
 }

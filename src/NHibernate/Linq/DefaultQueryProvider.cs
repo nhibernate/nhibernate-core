@@ -79,17 +79,13 @@ namespace NHibernate.Linq
 			return nhLinqExpression;
 		}
 
+		private static readonly MethodInfo Future = ReflectionHelper.GetMethodDefinition<IQuery>(q => q.Future<object>());
+		private static readonly MethodInfo FutureValue = ReflectionHelper.GetMethodDefinition<IQuery>(q => q.FutureValue<object>());
+
 		protected virtual object ExecuteFutureQuery(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery)
 		{
-			MethodInfo method;
-			if (nhLinqExpression.ReturnType == NhLinqExpressionReturnType.Sequence)
-			{
-				method = typeof (IQuery).GetMethod("Future").MakeGenericMethod(nhQuery.Type);
-			}
-			else
-			{
-				method = typeof (IQuery).GetMethod("FutureValue").MakeGenericMethod(nhQuery.Type);
-			}
+			var method = (nhLinqExpression.ReturnType == NhLinqExpressionReturnType.Sequence ? Future : FutureValue)
+				.MakeGenericMethod(nhQuery.Type);
 
 			object result = method.Invoke(query, new object[0]);
 

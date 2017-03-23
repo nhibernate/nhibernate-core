@@ -744,6 +744,7 @@
     <Compile Include="NHSpecificTest\NH3961\DateParametersComparedTo.cs" />
     <Compile Include="NHSpecificTest\NH3963\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3963\MappedAsFixture.cs" />
+    <Compile Include="NHSpecificTest\NH3964\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3950\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3950\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3952\Entity.cs" />

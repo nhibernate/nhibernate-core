@@ -18,12 +18,19 @@ namespace NHibernate.Linq.Visitors
 		private readonly Dictionary<ConstantExpression, NamedParameter> _parameters = new Dictionary<ConstantExpression, NamedParameter>();
 		private readonly ISessionFactoryImplementor _sessionFactory;
 
+		private static readonly MethodInfo QueryableSkipDefinition =
+			ReflectionHelper.GetMethodDefinition(() => Queryable.Skip<object>(null, 0));
+		private static readonly MethodInfo QueryableTakeDefinition =
+			ReflectionHelper.GetMethodDefinition(() => Queryable.Take<object>(null, 0));
+		private static readonly MethodInfo EnumerableSkipDefinition =
+			ReflectionHelper.GetMethodDefinition(() => Enumerable.Skip<object>(null, 0));
+		private static readonly MethodInfo EnumerableTakeDefinition =
+			ReflectionHelper.GetMethodDefinition(() => Enumerable.Take<object>(null, 0));
+
 		private readonly ICollection<MethodBase> _pagingMethods = new HashSet<MethodBase>
 			{
-				ReflectionHelper.GetMethodDefinition(() => Queryable.Skip<object>(null, 0)),
-				ReflectionHelper.GetMethodDefinition(() => Queryable.Take<object>(null, 0)),
-				ReflectionHelper.GetMethodDefinition(() => Enumerable.Skip<object>(null, 0)),
-				ReflectionHelper.GetMethodDefinition(() => Enumerable.Take<object>(null, 0)),
+				QueryableSkipDefinition, QueryableTakeDefinition,
+				EnumerableSkipDefinition, EnumerableTakeDefinition
 			};
 
 		public ExpressionParameterVisitor(ISessionFactoryImplementor sessionFactory)

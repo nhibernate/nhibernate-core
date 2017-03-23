@@ -565,6 +565,7 @@ namespace NHibernate.Util
 			return null;
 		}
 
+		[Obsolete("Please use Linq.ReflectionHelper instead")]
 		public static MethodInfo GetGenericMethodFrom<T>(string methodName, System.Type[] genericArgs, System.Type[] signature)
 		{
 			MethodInfo result = null;
