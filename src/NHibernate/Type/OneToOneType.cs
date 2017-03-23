@@ -29,8 +29,8 @@ namespace NHibernate.Type
 			return NoSqlTypes;
 		}
 
-		public OneToOneType(string referencedEntityName, ForeignKeyDirection foreignKeyType, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool isEmbeddedInXML, string entityName, string propertyName)
-			: base(referencedEntityName, uniqueKeyPropertyName, !lazy, isEmbeddedInXML, unwrapProxy)
+		public OneToOneType(string referencedEntityName, ForeignKeyDirection foreignKeyType, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, string entityName, string propertyName)
+			: base(referencedEntityName, uniqueKeyPropertyName, !lazy, unwrapProxy)
 		{
 			foreignKeyDirection = foreignKeyType;
 			this.propertyName = propertyName;

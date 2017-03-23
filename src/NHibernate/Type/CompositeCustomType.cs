@@ -3,8 +3,6 @@ using System.Collections;
 using System.Data.Common;
 using System.Linq;
 using System.Reflection;
-using System.Xml;
-
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
@@ -236,11 +234,6 @@ namespace NHibernate.Type
 			return userType.Replace(original, current, session, owner);
 		}
 
-		public override object FromXMLNode(XmlNode xml, IMapping factory)
-		{
-			return xml;
-		}
-
 		public override bool IsEqual(object x, object y)
 		{
 			return userType.Equals(x, y);
@@ -249,11 +242,6 @@ namespace NHibernate.Type
 		public virtual bool IsMethodOf(MethodBase method)
 		{
 			return false;
-		}
-
-		public override void SetToXMLNode(XmlNode node, object value, ISessionFactoryImplementor factory)
-		{
-			ReplaceNode(node, (XmlNode)value);
 		}
 
 		public override bool[] ToColumnNullness(object value, IMapping mapping)

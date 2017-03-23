@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Data.Common;
 using System.Reflection;
-using System.Xml;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -165,12 +164,6 @@ namespace NHibernate.Type
 				NHibernateUtil.Entity(NHibernateProxyHelper.GetClassWithoutInitializingProxy(value)).ToLoggableString(value, factory);
 		}
 
-		public override object FromXMLNode(XmlNode xml, IMapping factory)
-		{
-			// TODO NH: We can implement this method if the XML is the result of a serialization in XML
-			throw new NotSupportedException(); //TODO: is this right??
-		}
-
 		[Serializable]
 		public sealed class ObjectTypeCacheEntry
 		{
@@ -227,11 +220,6 @@ namespace NHibernate.Type
 		}
 
 		public bool IsEmbedded
-		{
-			get { return false; }
-		}
-
-		public virtual bool IsEmbeddedInXML
 		{
 			get { return false; }
 		}
@@ -394,11 +382,6 @@ namespace NHibernate.Type
 		private object ResolveAny(string entityName, object id, ISessionImplementor session)
 		{
 			return entityName == null || id == null ? null : session.InternalLoad(entityName, id, false, false);
-		}
-
-		public override void SetToXMLNode(XmlNode xml, object value, ISessionFactoryImplementor factory)
-		{
-			throw new NotSupportedException("any types cannot be stringified");
 		}
 
 		public override bool[] ToColumnNullness(object value, IMapping mapping)

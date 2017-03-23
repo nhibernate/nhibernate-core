@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Reflection;
-using System.Xml;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Tuple;
@@ -573,11 +572,6 @@ namespace NHibernate.Type
 			return 0;
 		}
 
-		public override object FromXMLNode(XmlNode xml, IMapping factory)
-		{
-			return xml;
-		}
-
 		public override bool IsEqual(object x, object y)
 		{
 			if (x == y)
@@ -649,11 +643,6 @@ namespace NHibernate.Type
 			return true;
 		}
 
-		public override void SetToXMLNode(XmlNode node, object value, ISessionFactoryImplementor factory)
-		{
-			ReplaceNode(node, (XmlNode)value);
-		}
-
 		public override bool[] ToColumnNullness(object value, IMapping mapping)
 		{
 			bool[] result = new bool[GetColumnSpan(mapping)];
@@ -670,11 +659,6 @@ namespace NHibernate.Type
 				loc += propertyNullness.Length;
 			}
 			return result;
-		}
-
-		public override bool IsXMLElement
-		{
-			get { return true; }
 		}
 
 		public EntityMode EntityMode { get; }

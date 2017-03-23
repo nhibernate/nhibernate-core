@@ -1,7 +1,5 @@
 using System;
 using System.Data.Common;
-using System.Xml;
-
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
@@ -341,26 +339,6 @@ namespace NHibernate.Type
 		public override bool[] ToColumnNullness(object value, IMapping mapping)
 		{
 			return value == null ? ArrayHelper.False : ArrayHelper.True;
-		}
-
-		public override object FromXMLNode(XmlNode xml, IMapping factory)
-		{
-			return FromXMLString(xml.InnerText, factory);
-		}
-
-		public override void SetToXMLNode(XmlNode xml, object value, ISessionFactoryImplementor factory)
-		{
-			xml.InnerText = ToXMLString(value, factory);
-		}
-
-		public string ToXMLString(object value, ISessionFactoryImplementor pc)
-		{
-			return ToString(value);
-		}
-
-		public object FromXMLString(string xml, IMapping factory)
-		{
-			return string.IsNullOrEmpty(xml) ? null : FromStringValue(xml);
 		}
 
 		public override bool IsEqual(object x, object y)

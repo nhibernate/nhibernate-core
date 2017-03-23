@@ -28,12 +28,11 @@ namespace NHibernate.Type
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		/// <param name="elementClass">The <see cref="System.Type"/> of the element contained in the array.</param>
-		/// <param name="isEmbeddedInXML"></param>
 		/// <remarks>
 		/// This creates a bag that is non-generic.
 		/// </remarks>
-		public ArrayType(string role, string propertyRef, System.Type elementClass, bool isEmbeddedInXML)
-			: base(role, propertyRef, isEmbeddedInXML)
+		public ArrayType(string role, string propertyRef, System.Type elementClass)
+			: base(role, propertyRef)
 		{
 			this.elementClass = elementClass;
 			arrayClass = Array.CreateInstance(elementClass, 0).GetType();

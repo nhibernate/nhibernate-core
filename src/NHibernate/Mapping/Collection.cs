@@ -45,7 +45,6 @@ namespace NHibernate.Mapping
 		private System.Type collectionPersisterClass;
 		private string referencedPropertyName;
 		private string typeName;
-		private bool embedded = true;
 
 		private string loaderName;
 
@@ -210,7 +209,7 @@ namespace NHibernate.Mapping
 				}
 				else
 				{
-					return TypeFactory.CustomCollection(typeName, typeParameters, role, referencedPropertyName, Embedded);
+					return TypeFactory.CustomCollection(typeName, typeParameters, role, referencedPropertyName);
 				}
 			}
 		}
@@ -549,12 +548,6 @@ namespace NHibernate.Mapping
 		{
 			get { return optimisticLocked; }
 			set { optimisticLocked = value; }
-		}
-
-		public bool Embedded
-		{
-			get { return embedded; }
-			set { embedded = value; }
 		}
 
 		public bool ExtraLazy

@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Data.Common;
-using System.Xml;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -33,8 +32,6 @@ namespace NHibernate.Type
 		///		path='//members[@type="IType"]/member[@name="P:IType.IsAssociationType"]/*'
 		/// /> 
 		bool IsAssociationType { get; }
-
-		bool IsXMLElement { get;}
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="P:IType.IsCollectionType"]/*'
@@ -187,18 +184,6 @@ namespace NHibernate.Type
 
 		/// <summary> Get the type of a semi-resolved value.</summary>
 		IType GetSemiResolvedType(ISessionFactoryImplementor factory);
-
-		/// <summary> A representation of the value to be embedded in an XML element. </summary>
-		/// <param name="node"></param>
-		/// <param name="value"> </param>
-		/// <param name="factory"> </param>
-		void SetToXMLNode(XmlNode node, object value, ISessionFactoryImplementor factory);
-
-		/// <summary> Parse the XML representation of an instance.</summary>
-		/// <param name="xml"> </param>
-		/// <param name="factory"> </param>
-		/// <returns> an instance of the type </returns>
-		object FromXMLNode(XmlNode xml, IMapping factory);
 
 		/// <summary> 
 		/// Given an instance of the type, return an array of boolean, indicating

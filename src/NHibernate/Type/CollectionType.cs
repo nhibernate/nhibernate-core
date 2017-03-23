@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Data.Common;
-using System.Xml;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -28,7 +27,6 @@ namespace NHibernate.Type
 
 		private readonly string role;
 		private readonly string foreignKeyPropertyName;
-		private readonly bool isEmbeddedInXML;
 
 		private static readonly SqlType[] NoSqlTypes = {};
 
@@ -42,11 +40,9 @@ namespace NHibernate.Type
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.
 		/// </param>
-		/// <param name="isEmbeddedInXML"></param>
-		protected CollectionType(string role, string foreignKeyPropertyName, bool isEmbeddedInXML)
+		protected CollectionType(string role, string foreignKeyPropertyName)
 		{
 			this.role = role;
-			this.isEmbeddedInXML = isEmbeddedInXML;
 			this.foreignKeyPropertyName = foreignKeyPropertyName;
 		}
 
@@ -444,11 +440,6 @@ namespace NHibernate.Type
 			get { return true; }
 		}
 
-		public bool IsEmbeddedInXML
-		{
-			get { return isEmbeddedInXML; }
-		}
-
 		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
 			return IsDirty(old, current, session);
@@ -523,17 +514,6 @@ namespace NHibernate.Type
 		public string GetOnCondition(string alias, ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 		{
 			return GetAssociatedJoinable(factory).FilterFragment(alias, enabledFilters);
-		}
-
-		public override object FromXMLNode(XmlNode xml, IMapping factory)
-		{
-			return xml;
-		}
-
-		public override void SetToXMLNode(XmlNode node, object value, ISessionFactoryImplementor factory)
-		{
-			if (isEmbeddedInXML)
-				ReplaceNode(node, (XmlNode)value);
 		}
 
 		public override bool[] ToColumnNullness(object value, IMapping mapping)

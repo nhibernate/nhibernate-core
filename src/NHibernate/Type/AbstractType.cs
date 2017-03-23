@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Data.Common;
-using System.Xml;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
@@ -20,11 +19,6 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <value>false - by default an <see cref="AbstractType"/> is not an <see cref="IAssociationType"/>.</value>
 		public virtual bool IsAssociationType
-		{
-			get { return false; }
-		}
-
-		public virtual bool IsXMLElement
 		{
 			get { return false; }
 		}
@@ -256,21 +250,9 @@ namespace NHibernate.Type
 			return this;
 		}
 
-		protected internal static void ReplaceNode(XmlNode container, XmlNode value)
-		{
-			if (container != value)
-			{
-				//not really necessary, I guess...
-				XmlNode parent = container.ParentNode;
-				parent.ReplaceChild(value, container);
-			}
-		}
-
 		public abstract object Replace(object original, object current, ISessionImplementor session, object owner,
 									   IDictionary copiedAlready);
 
-		public abstract void SetToXMLNode(XmlNode node, object value, ISessionFactoryImplementor factory);
-		public abstract object FromXMLNode(XmlNode xml, IMapping factory);
 		public abstract bool[] ToColumnNullness(object value, IMapping mapping);
 
 		/// <include file='IType.cs.xmldoc' 

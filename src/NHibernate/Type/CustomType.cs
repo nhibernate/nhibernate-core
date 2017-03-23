@@ -2,8 +2,6 @@ using System;
 using System.Collections;
 using System.Data.Common;
 using System.Reflection;
-using System.Xml;
-
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
@@ -125,10 +123,12 @@ namespace NHibernate.Type
 			{
 				return "null";
 			}
-			else
+			IEnhancedUserType eut = userType as IEnhancedUserType;
+			if (eut != null)
 			{
-				return ToXMLString(value, factory);
+				return eut.ToXMLString(value);
 			}
+			return value.ToString();
 		}
 
 		/// <summary></summary>
@@ -219,24 +219,9 @@ namespace NHibernate.Type
 			return userType.Disassemble(value);
 		}
 
-		public override object FromXMLNode(XmlNode xml, IMapping factory)
-		{
-			return FromXMLString(xml.Value, factory);
-		}
-
-		public virtual object FromXMLString(string xml, IMapping factory)
-		{
-			return ((IEnhancedUserType)userType).FromXMLString(xml);
-		}
-
 		public override bool IsEqual(object x, object y)
 		{
 			return userType.Equals(x, y);
-		}
-
-		public override void SetToXMLNode(XmlNode node, object value, ISessionFactoryImplementor factory)
-		{
-			node.Value= ToXMLString(value, factory);
 		}
 
 		public override bool[] ToColumnNullness(object value, IMapping mapping)
@@ -245,21 +230,6 @@ namespace NHibernate.Type
 			if (value != null)
 				ArrayHelper.Fill(result, true);
 			return result;
-		}
-
-		public virtual string ToXMLString(object value, ISessionFactoryImplementor factory)
-		{
-			if (value == null)
-				return null;
-			IEnhancedUserType eut = userType as IEnhancedUserType;
-			if (eut != null)
-			{
-				return eut.ToXMLString(value);
-			}
-			else
-			{
-				return value.ToString();
-			}
 		}
 	}
 }

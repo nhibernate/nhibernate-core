@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
-using System.Xml;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
@@ -135,11 +134,6 @@ namespace NHibernate.Param
 			}
 
 			public bool IsAssociationType
-			{
-				get { return false; }
-			}
-
-			public bool IsXMLElement
 			{
 				get { return false; }
 			}
@@ -289,16 +283,6 @@ namespace NHibernate.Param
 			}
 
 			public IType GetSemiResolvedType(ISessionFactoryImplementor factory)
-			{
-				throw new InvalidOperationException();
-			}
-
-			public void SetToXMLNode(XmlNode node, object value, ISessionFactoryImplementor factory)
-			{
-				throw new InvalidOperationException();
-			}
-
-			public object FromXMLNode(XmlNode xml, IMapping factory)
 			{
 				throw new InvalidOperationException();
 			}
