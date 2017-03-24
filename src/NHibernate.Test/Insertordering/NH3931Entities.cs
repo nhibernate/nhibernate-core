@@ -63,6 +63,26 @@ namespace NHibernate.Test.Insertordering
 		public virtual AddressO2O Address { get; set; }
 	}
 
+	public class AddressTrueO2O
+	{
+		public virtual Guid Id { get; set; }
+
+		public virtual PersonTrueO2O Person { get; set; }
+
+		public virtual void SetPerson(PersonTrueO2O person)
+		{
+			Person = person;
+			person.Address = this;
+		}
+	}
+
+	public class PersonTrueO2O
+	{
+		public virtual Guid Id { get; set; }
+
+		public virtual AddressTrueO2O Address { get; set; }
+	}
+
 	public class AddressJI
 	{
 		public virtual Guid Id { get; set; }

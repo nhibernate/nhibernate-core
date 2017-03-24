@@ -504,9 +504,22 @@
     <Compile Include="Immutable\Info.cs" />
     <Compile Include="Immutable\Party.cs" />
     <Compile Include="Immutable\Plan.cs" />
+    <Compile Include="Insertordering\FamilyModel\Fixture.cs" />
+    <Compile Include="Insertordering\FamilyModel\Person.cs" />
     <Compile Include="Insertordering\Group.cs" />
     <Compile Include="Insertordering\InsertOrderingFixture.cs" />
     <Compile Include="Insertordering\Membership.cs" />
+    <Compile Include="Insertordering\AnimalModel\Animal.cs" />
+    <Compile Include="Insertordering\AnimalModel\Cat.cs" />
+    <Compile Include="Insertordering\AnimalModel\Dog.cs" />
+    <Compile Include="Insertordering\AnimalModel\Fixture.cs" />
+    <Compile Include="Insertordering\AnimalModel\Person.cs" />
+    <Compile Include="Insertordering\AnimalModel\PersonWithAllTypes.cs" />
+    <Compile Include="Insertordering\AnimalModel\PersonWithAnimals.cs" />
+    <Compile Include="Insertordering\AnimalModel\PersonWithCats.cs" />
+    <Compile Include="Insertordering\AnimalModel\PersonWithDogs.cs" />
+    <Compile Include="Insertordering\AnimalModel\PersonWithSivasKangals.cs" />
+    <Compile Include="Insertordering\AnimalModel\SivasKangal.cs" />
     <Compile Include="Insertordering\User.cs" />
     <Compile Include="KnownBugAttribute.cs" />
     <Compile Include="Join\JoinedFilters.cs" />
@@ -3218,6 +3231,8 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Insertordering\FamilyModel\Mappings.hbm.xml" />
+    <EmbeddedResource Include="Insertordering\AnimalModel\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3247\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3386\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3961\Mappings.hbm.xml" />

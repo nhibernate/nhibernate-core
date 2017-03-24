@@ -6,6 +6,7 @@ using System.Data.Common;
 using System.Linq;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
+using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
@@ -18,6 +19,7 @@ namespace NHibernate.Test.Insertordering
 		const int batchSize = 10;
 		const int instancesPerEach = 12;
 		const int typesOfEntities = 3;
+
 		protected override IList Mappings
 		{
 			get { return new[] { "Insertordering.Mapping.hbm.xml" }; }
@@ -30,7 +32,14 @@ namespace NHibernate.Test.Insertordering
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
+			// Custom batcher enforces sql server.
 			return dialect.SupportsSqlBatches;
+		}
+
+		protected override bool AppliesTo(ISessionFactoryImplementor factory)
+		{
+			// Custom batcher does not support oledb driver.
+			return factory.ConnectionProvider.Driver is SqlClientDriver;
 		}
 
 		protected override void Configure(Configuration configuration)
@@ -86,6 +95,9 @@ namespace NHibernate.Test.Insertordering
 		}
 
 		// Following tests have been added for NH-3931
+		// Current batching ordering is not "best" possible but avoid excessive complexity. If it gets better, some asserts may
+		// fail due to resulting batches count being better than anticipated: analyze them and lower their expectations according
+		// to optimization done (both lower and upper bound, in order to detect if any change causes batching ordering to get worst).
 
 		#region Bidirectional many-to-many
 
@@ -166,7 +178,7 @@ namespace NHibernate.Test.Insertordering
 
 		#endregion
 
-		#region Bidirectional one-to-one
+		#region Bidirectional one-to-one (simulated with non pk fk)
 
 		// Adapted from https://github.com/hibernate/hibernate-orm/blob/f90845c30c2a6d5e14eeafd32a4c9d321d3a55ef/hibernate-core/src/test/java/org/hibernate/test/insertordering/InsertOrderingWithBidirectionalOneToOne.java
 
@@ -195,6 +207,37 @@ namespace NHibernate.Test.Insertordering
 			// 2 Person inserts, 2 Address inserts, 2 Person updates (because mapped through foreign key)
 			Assert.AreEqual(3, StatsBatcher.BatchSizes.Count, "Unexpected batches count");
 			Assert.AreEqual(6, StatsBatcher.BatchSizes.Sum(), "Unexpected batched queries count");
+		}
+
+		#endregion
+
+		#region Bidirectional actual one-to-one (pk being fk)
+
+		// Non-reg test case.
+		[Test]
+		public void WithBidiTrueOneToOne()
+		{
+			using (ISession session = OpenSession())
+			using (var trx = session.BeginTransaction())
+			{
+				var worker = new PersonTrueO2O();
+				var homestay = new PersonTrueO2O();
+
+				var home = new AddressTrueO2O();
+				var office = new AddressTrueO2O();
+
+				home.SetPerson(homestay);
+				office.SetPerson(worker);
+
+				session.Save(home);
+				session.Save(office);
+
+				Assert.DoesNotThrow(() => { trx.Commit(); });
+			}
+
+			// 2 Person inserts, 2 Address inserts
+			Assert.AreEqual(2, StatsBatcher.BatchSizes.Count, "Unexpected batches count");
+			Assert.AreEqual(4, StatsBatcher.BatchSizes.Sum(), "Unexpected batched queries count");
 		}
 
 		#endregion
@@ -251,8 +294,10 @@ namespace NHibernate.Test.Insertordering
 				Assert.DoesNotThrow(() => { trx.Commit(); });
 			}
 
-			// 2 Person inserts, 1 SpecialPerson insert (out of any batch currently), 2 Address inserts
-			Assert.AreEqual(2, StatsBatcher.BatchSizes.Count, "Unexpected batches count");
+			// 1 Person inserts, 1 SpecialPerson insert (may get collapsed with Person: 0 to 1 batches),
+			// 2 Address inserts (may get intervened between Person and SpecialPerson, case not currently
+			// optimized: 1 to 2 batches for adresses)
+			Assert.That(StatsBatcher.BatchSizes.Count, Is.InRange(2, 4), "Unexpected batches count");
 			Assert.AreEqual(4, StatsBatcher.BatchSizes.Sum(), "Unexpected batched queries count");
 		}
 
@@ -278,9 +323,11 @@ namespace NHibernate.Test.Insertordering
 				Assert.DoesNotThrow(() => { trx.Commit(); });
 			}
 
-			// 24 Person inserts (2 batches + 12 due to SpecialPerson inserts which fragment batches, minus maybe 1 depending on execution order),
-			// 12 SpecialPerson inserts (out of any batch currently), 24 Address inserts (3 batches)
-			Assert.That(StatsBatcher.BatchSizes.Count, Is.InRange(16, 17), "Unexpected batches count");
+			// 12 Person inserts (2 batches), 12 SpecialPerson inserts (SpecialPerson inserts fragment batches
+			// (additional inserts for joined table currently not taken into account by inserts sorting), but first
+			// may get collapsed with Person: 11 to 12 batches), 24 Address inserts (may get intervened between
+			// Person and SpecialPerson, case not currently optimized: 3 to 4 batches)
+			Assert.That(StatsBatcher.BatchSizes.Count, Is.InRange(16, 18), "Unexpected batches count");
 			Assert.AreEqual(48, StatsBatcher.BatchSizes.Sum(), "Unexpected batched queries count");
 		}
 
@@ -322,9 +369,9 @@ namespace NHibernate.Test.Insertordering
 
 			// 8 Person inserts (1 batch + 2 due to SpecialPerson inserts which fragment batches + 2 due to President inserts (frag too)
 			//   + 2 due to AnotherPerson inserts (frag too), minus maybe 1 depending on execution order),
-			// 4 SpecialPerson inserts (out of any batch currently), 2 President inserts (out of any batch currently),
-			// 2 AnotherPerson inserts (out of any batch currently), 2 Office inserts, 4 Address inserts
-			Assert.That(StatsBatcher.BatchSizes.Count, Is.InRange(8, 9), "Unexpected batches count");
+			// 4 SpecialPerson inserts (counted previously), 2 President inserts (counted previously),
+			// 2 AnotherPerson inserts (counted previously), 2 Office inserts, 4 Address inserts (which may get frag by PErson sub classes too: 1 to 4 batches)
+			Assert.That(StatsBatcher.BatchSizes.Count, Is.InRange(8, 12), "Unexpected batches count");
 			Assert.AreEqual(14, StatsBatcher.BatchSizes.Sum(), "Unexpected batched queries count");
 		}
 
@@ -354,7 +401,8 @@ namespace NHibernate.Test.Insertordering
 			}
 
 			// 1 Person insert, 1 SpecialPerson insert (into Person but with different columns), 2 Address inserts
-			Assert.AreEqual(3, StatsBatcher.BatchSizes.Count, "Unexpected batches count");
+			// (may get intervened between Person and SpecialPerson, case not currently optimized: 1 to 2 batches for adresses)
+			Assert.That(StatsBatcher.BatchSizes.Count, Is.InRange(3, 4), "Unexpected batches count");
 			Assert.AreEqual(4, StatsBatcher.BatchSizes.Sum(), "Unexpected batched queries count");
 		}
 
@@ -380,8 +428,9 @@ namespace NHibernate.Test.Insertordering
 				Assert.DoesNotThrow(() => { trx.Commit(); });
 			}
 
-			// 12 Person inserts (2 batches), 12 SpecialPerson inserts (into Person but with different columns, 2 batches), 24 Address inserts (3 batches)
-			Assert.AreEqual(7, StatsBatcher.BatchSizes.Count, "Unexpected batches count");
+			// 12 Person inserts (2 batches), 12 SpecialPerson inserts (into Person but with different columns, 2 batches),
+			// 24 Address inserts (may get intervened between Person and SpecialPerson, case not currently optimized: 3 to 4 batches)
+			Assert.That(StatsBatcher.BatchSizes.Count, Is.InRange(7, 8), "Unexpected batches count");
 			Assert.AreEqual(48, StatsBatcher.BatchSizes.Sum(), "Unexpected batched queries count");
 		}
 
@@ -411,7 +460,8 @@ namespace NHibernate.Test.Insertordering
 			}
 
 			// 1 Person insert, 1 SpecialPerson insert, 2 Address inserts
-			Assert.AreEqual(3, StatsBatcher.BatchSizes.Count, "Unexpected batches count");
+			// (may get intervened between Person and SpecialPerson, case not currently optimized: 1 to 2 batches for adresses)
+			Assert.That(StatsBatcher.BatchSizes.Count, Is.InRange(3, 4), "Unexpected batches count");
 			Assert.AreEqual(4, StatsBatcher.BatchSizes.Sum(), "Unexpected batched queries count");
 		}
 
@@ -437,8 +487,9 @@ namespace NHibernate.Test.Insertordering
 				Assert.DoesNotThrow(() => { trx.Commit(); });
 			}
 
-			// 12 Person inserts (2 batches), 12 SpecialPerson inserts (2 batches), 24 Address inserts (3 batches)
-			Assert.AreEqual(7, StatsBatcher.BatchSizes.Count, "Unexpected batches count");
+			// 12 Person inserts (2 batches), 12 SpecialPerson inserts (2 batches), 24 Address inserts
+			// (may get intervened between Person and SpecialPerson, case not currently optimized: 3 to 4 batches)
+			Assert.That(StatsBatcher.BatchSizes.Count, Is.InRange(7, 8), "Unexpected batches count");
 			Assert.AreEqual(48, StatsBatcher.BatchSizes.Sum(), "Unexpected batched queries count");
 		}
 
