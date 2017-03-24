@@ -677,7 +677,6 @@
 					<xs:element ref="idbag" />
 					<xs:element ref="array" />
 					<xs:element ref="primitive-array" />
-					<xs:element ref="filter" />
 				</xs:choice>
 				<xs:element ref="joined-subclass" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="loader" minOccurs="0" />
@@ -689,6 +688,7 @@
 					<xs:element ref="query" />
 					<xs:element ref="sql-query" />
 				</xs:choice>
+				<xs:element ref="filter" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="entity-name" type="xs:string">
 			</xs:attribute>
@@ -1355,7 +1355,6 @@
 					<xs:element ref="idbag" />
 					<xs:element ref="array" />
 					<xs:element ref="primitive-array" />
-					<xs:element ref="filter" />
 				</xs:choice>
 				<xs:element ref="join" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="subclass" minOccurs="0" maxOccurs="unbounded" />
@@ -1368,6 +1367,7 @@
 					<xs:element ref="query" />
 					<xs:element ref="sql-query" />
 				</xs:choice>
+				<xs:element ref="filter" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="entity-name" type="xs:string" />
 			<xs:attribute name="name" type="xs:string" />
