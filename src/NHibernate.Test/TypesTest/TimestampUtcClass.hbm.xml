@@ -7,7 +7,7 @@
 		<id name="Id" column="id">
 			<generator class="assigned" />
 		</id>
-		<version name="Revision" column="Revision" type="TimestampUtc" />
-		<property name="Value" type="TimestampUtc" />
+		<version name="Revision" column="`Revision`" type="TimestampUtc" />
+		<property name="Value" column="`Value`" type="TimestampUtc" />
 	</class>
 </hibernate-mapping>
