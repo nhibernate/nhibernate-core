@@ -73,6 +73,21 @@
     <many-to-one name="Address" column="AddressId" />
   </class>
 
+  <class name="AddressTrueO2O">
+    <id name="Id" type="guid">
+      <generator class="foreign">
+        <param name="property">Person</param>
+      </generator>
+    </id>
+
+    <one-to-one name="Person" cascade="save-update" constrained="true" />
+  </class>
+
+  <class name="PersonTrueO2O">
+    <id name="Id" generator="guid.comb" />
+    <one-to-one name="Address" />
+  </class>
+
   <class name="AddressJI">
     <id name="Id" generator="guid.comb" />
   </class>

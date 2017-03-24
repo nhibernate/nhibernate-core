@@ -18,6 +18,7 @@ namespace NHibernate.Test.Insertordering
 		const int batchSize = 10;
 		const int instancesPerEach = 12;
 		const int typesOfEntities = 3;
+
 		protected override IList Mappings
 		{
 			get { return new[] { "Insertordering.Mapping.hbm.xml" }; }
@@ -166,7 +167,7 @@ namespace NHibernate.Test.Insertordering
 
 		#endregion
 
-		#region Bidirectional one-to-one
+		#region Bidirectional one-to-one (simulated with non pk fk)
 
 		// Adapted from https://github.com/hibernate/hibernate-orm/blob/f90845c30c2a6d5e14eeafd32a4c9d321d3a55ef/hibernate-core/src/test/java/org/hibernate/test/insertordering/InsertOrderingWithBidirectionalOneToOne.java
 
@@ -195,6 +196,37 @@ namespace NHibernate.Test.Insertordering
 			// 2 Person inserts, 2 Address inserts, 2 Person updates (because mapped through foreign key)
 			Assert.AreEqual(3, StatsBatcher.BatchSizes.Count, "Unexpected batches count");
 			Assert.AreEqual(6, StatsBatcher.BatchSizes.Sum(), "Unexpected batched queries count");
+		}
+
+		#endregion
+
+		#region Bidirectional actual one-to-one (pk being fk)
+
+		// Non-reg test case.
+		[Test]
+		public void WithBidiTrueOneToOne()
+		{
+			using (ISession session = OpenSession())
+			using (var trx = session.BeginTransaction())
+			{
+				var worker = new PersonTrueO2O();
+				var homestay = new PersonTrueO2O();
+
+				var home = new AddressTrueO2O();
+				var office = new AddressTrueO2O();
+
+				home.SetPerson(homestay);
+				office.SetPerson(worker);
+
+				session.Save(home);
+				session.Save(office);
+
+				Assert.DoesNotThrow(() => { trx.Commit(); });
+			}
+
+			// 2 Person inserts, 2 Address inserts
+			Assert.AreEqual(2, StatsBatcher.BatchSizes.Count, "Unexpected batches count");
+			Assert.AreEqual(4, StatsBatcher.BatchSizes.Sum(), "Unexpected batched queries count");
 		}
 
 		#endregion
