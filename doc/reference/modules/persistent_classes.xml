@@ -256,18 +256,11 @@ namespace Eg
             (using <literal>Dictionaries</literal> of <literal>Dictionary</literal>s at runtime) . With this approach, you don't
             write persistent classes, only mapping files.
         </para>
-        
-        <para>
-            By default, NHibernate works in normal POCO mode. You may set a default entity
-            representation mode for a particular <literal>ISessionFactory</literal> using the
-            <literal>default_entity_mode</literal> configuration option (see
-            <xref linkend="configuration-optional-properties"/>.
-        </para>
-        
+
         <para>
             The following examples demonstrates the representation using <literal>Map</literal>s (Dictionary).
             First, in the mapping file, an <literal>entity-name</literal> has to be declared
-            instead of (or in addition to) a class name:
+            instead of a class name:
         </para>
         
         <programlisting><![CDATA[<hibernate-mapping>
@@ -305,16 +298,13 @@ namespace Eg
 </hibernate-mapping>]]></programlisting>
         
         <para>
-            
             Note that even though associations are declared using target class names,
             the target type of an associations may also be a dynamic entity instead
             of a POCO.
         </para>
         
         <para>
-            After setting the default entity mode to <literal>dynamic-map</literal>
-            for the <literal>ISessionFactory</literal>, we can at runtime work with
-            <literal>Dictionaries</literal> of <literal>Dictionaries</literal>:
+            At runtime we can work with <literal>Dictionaries</literal> of <literal>Dictionaries</literal>:
         </para>
         
         <programlisting><![CDATA[using(ISession s = OpenSession())
