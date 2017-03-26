@@ -48,9 +48,6 @@ namespace NHibernate.Impl
 		private readonly IInterceptor interceptor;
 
 		[NonSerialized]
-		private readonly EntityMode entityMode = EntityMode.Poco;
-
-		[NonSerialized]
 		private FutureCriteriaBatch futureCriteriaBatch;
 		[NonSerialized]
 		private FutureQueryBatch futureQueryBatch;
@@ -79,7 +76,7 @@ namespace NHibernate.Impl
 		private readonly ISession rootSession;
 
 		[NonSerialized]
-		private IDictionary<EntityMode, ISession> childSessionsByEntityMode;
+		ISession _childSession;
 
 		[NonSerialized]
 		private readonly bool flushBeforeCompletionEnabled;
@@ -197,7 +194,6 @@ namespace NHibernate.Impl
 		/// <param name="autoclose">NOT USED</param>
 		/// <param name="timestamp">The timestamp for this session</param>
 		/// <param name="interceptor">The interceptor to be applied to this session</param>
-		/// <param name="entityMode">The entity-mode for this session</param>
 		/// <param name="flushBeforeCompletionEnabled">Should we auto flush before completion of transaction</param>
 		/// <param name="autoCloseSessionEnabled">Should we auto close after completion of transaction</param>
 		/// <param name="ignoreExceptionBeforeTransactionCompletion">Should we ignore exceptions in IInterceptor.BeforeTransactionCompletion</param>
@@ -209,7 +205,6 @@ namespace NHibernate.Impl
 			bool autoclose,
 			long timestamp,
 			IInterceptor interceptor,
-			EntityMode entityMode,
 			bool flushBeforeCompletionEnabled,
 			bool autoCloseSessionEnabled,
 			bool ignoreExceptionBeforeTransactionCompletion,
@@ -224,7 +219,6 @@ namespace NHibernate.Impl
 
 				rootSession = null;
 				this.timestamp = timestamp;
-				this.entityMode = entityMode;
 				this.interceptor = interceptor;
 				listeners = factory.EventListeners;
 				actionQueue = new ActionQueue(this);
@@ -255,8 +249,7 @@ namespace NHibernate.Impl
 		/// Constructor used in building "child sessions".
 		/// </summary>
 		/// <param name="parent">The parent Session</param>
-		/// <param name="entityMode">The entity mode</param>
-		private SessionImpl(SessionImpl parent, EntityMode entityMode)
+		private SessionImpl(SessionImpl parent)
 			: base(parent.Factory, parent.SessionId)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -267,7 +260,6 @@ namespace NHibernate.Impl
 				interceptor = parent.interceptor;
 				listeners = parent.listeners;
 				actionQueue = new ActionQueue(this);
-				this.entityMode = entityMode;
 				persistenceContext = new StatefulPersistenceContext(this);
 				flushBeforeCompletionEnabled = false;
 				autoCloseSessionEnabled = false;
@@ -276,7 +268,7 @@ namespace NHibernate.Impl
 				if (Factory.Statistics.IsStatisticsEnabled)
 					Factory.StatisticsImplementor.OpenSession();
 
-				log.Debug("opened session [" + entityMode + "]");
+				log.Debug("Opened session");
 
 				CheckAndUpdateSessionStatus();
 			}
@@ -367,14 +359,11 @@ namespace NHibernate.Impl
 				{
 					try
 					{
-						if (childSessionsByEntityMode != null)
+						if (_childSession != null)
 						{
-							foreach (KeyValuePair<EntityMode, ISession> pair in childSessionsByEntityMode)
+							if (_childSession.IsOpen)
 							{
-								if (pair.Value.IsOpen)
-								{
-									pair.Value.Close();
-								}
+								_childSession.Close();
 							}
 						}
 					}
@@ -871,10 +860,10 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				ErrorIfClosed();
-				object result = interceptor.Instantiate(persister.EntityName, entityMode, id);
+				object result = interceptor.Instantiate(persister.EntityName, id);
 				if (result == null)
 				{
-					result = persister.Instantiate(id, entityMode);
+					result = persister.Instantiate(id);
 				}
 				return result;
 			}
@@ -2221,45 +2210,24 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public ISession GetSession(EntityMode entityMode)
+		public ISession GetChildSession()
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				// This is explicitly removed to allow support
-				// for child sessions that want to flush during
-				// the parent session lifecycle. See NH-1714,
-				// and the suggested audit examples.
-				//
-				//if (this.entityMode.Equals(entityMode))
-				//{
-				//    return this;
-				//}
-
 				if (rootSession != null)
 				{
-					return rootSession.GetSession(entityMode);
+					return rootSession.GetChildSession();
 				}
 
 				CheckAndUpdateSessionStatus();
 
-				ISession rtn = null;
-				if (childSessionsByEntityMode == null)
+				if (_childSession == null)
 				{
-					childSessionsByEntityMode = new Dictionary<EntityMode, ISession>();
-				}
-				else
-				{
-					childSessionsByEntityMode.TryGetValue(entityMode, out rtn);
+					log.Debug("Creating child session.");
+					_childSession = new SessionImpl(this);
 				}
 
-				if (rtn == null)
-				{
-					log.DebugFormat("Creating child session with {0}", entityMode);
-					rtn = new SessionImpl(this, entityMode);
-					childSessionsByEntityMode.Add(entityMode, rtn);
-				}
-
-				return rtn;
+				return _childSession;
 			}
 		}
 
@@ -2291,16 +2259,6 @@ namespace NHibernate.Impl
 				}
 				cacheMode = value;
 			}
-		}
-
-		public override EntityMode EntityMode
-		{
-			get { return entityMode; }
-		}
-
-		public EntityMode ActiveEntityMode
-		{
-			get { return entityMode; }
 		}
 
 		public override string FetchProfile
@@ -2628,8 +2586,7 @@ namespace NHibernate.Impl
 					// given entityName
 					try
 					{
-						return Factory.GetEntityPersister(entityName).GetSubclassEntityPersister(obj, Factory,
-																								 entityMode);
+						return Factory.GetEntityPersister(entityName).GetSubclassEntityPersister(obj, Factory);
 					}
 					catch (HibernateException)
 					{

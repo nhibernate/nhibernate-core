@@ -115,7 +115,7 @@ namespace NHibernate.Criterion
 			{
 				foreach (object value in values)
 				{
-					types.Add(new TypedValue(NHibernateUtil.GuessType((object)value), value, EntityMode.Poco));
+					types.Add(new TypedValue(NHibernateUtil.GuessType((object)value), value));
 				}
 			}
 			return types.ToArray();

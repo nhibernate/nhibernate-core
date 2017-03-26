@@ -11,7 +11,7 @@ namespace NHibernate.Type
 	public class SpecialOneToOneType : OneToOneType
 	{
 		public SpecialOneToOneType(string referencedEntityName, ForeignKeyDirection foreignKeyType, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, string entityName, string propertyName)
-			: base(referencedEntityName, foreignKeyType, uniqueKeyPropertyName, lazy, unwrapProxy, true, entityName, propertyName)
+			: base(referencedEntityName, foreignKeyType, uniqueKeyPropertyName, lazy, unwrapProxy, entityName, propertyName)
 		{
 		}
 

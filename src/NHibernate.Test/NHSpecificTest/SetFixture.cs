@@ -378,21 +378,6 @@ namespace NHibernate.Test.NHSpecificTest
 			get { throw new NotImplementedException(); }
 		}
 
-		public string NodeName
-		{
-			get { throw new NotImplementedException(); }
-		}
-
-		public string ElementNodeName
-		{
-			get { throw new NotImplementedException(); }
-		}
-
-		public string IndexNodeName
-		{
-			get { throw new NotImplementedException(); }
-		}
-
 		#endregion
 	}
 

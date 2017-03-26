@@ -130,12 +130,6 @@ namespace NHibernate.Persister.Collection
 		/// <summary> Can the elements of this collection change?</summary>
 		bool IsMutable { get;}
 
-		string NodeName { get;}
-
-		string ElementNodeName { get;}
-
-		string IndexNodeName { get;}
-
 		ISessionFactoryImplementor Factory { get; }
 		bool IsExtraLazy { get;}
 

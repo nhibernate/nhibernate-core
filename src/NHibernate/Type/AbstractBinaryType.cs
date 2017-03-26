@@ -21,8 +21,8 @@ namespace NHibernate.Type
 		{
 		}
 
-
 		#region IVersionType Members
+
 		//      Note : simply returns null for seed() and next() as the only known
 		//      application of binary types for versioning is for use with the
 		//      TIMESTAMP datatype supported by Sybase and SQL Server, which
@@ -56,16 +56,7 @@ namespace NHibernate.Type
 
 		#endregion
 
-		#region IComparer Members
-
-		public virtual int Compare(object x, object y)
-		{
-			return Compare(x, y, null);
-		}
-
-		#endregion
-
-		public abstract override string Name { get;}
+		public abstract override string Name { get; }
 
 		/// <summary> Convert the byte[] into the expected object type</summary>
 		protected internal abstract object ToExternalFormat(byte[] bytes);
@@ -89,7 +80,7 @@ namespace NHibernate.Type
 
 		public override object Get(DbDataReader rs, int index)
 		{
-			int length = (int)rs.GetBytes(index, 0, null, 0, 0);
+			int length = (int) rs.GetBytes(index, 0, null, 0, 0);
 			byte[] buffer = new byte[length];
 			if (length > 0)
 			{
@@ -104,7 +95,7 @@ namespace NHibernate.Type
 			return Get(rs, rs.GetOrdinal(name));
 		}
 
-		public override int GetHashCode(object x, EntityMode entityMode)
+		public override int GetHashCode(object x)
 		{
 			byte[] bytes = ToInternalFormat(x);
 			int hashCode = 1;
@@ -118,7 +109,7 @@ namespace NHibernate.Type
 			return hashCode;
 		}
 
-		public override int Compare(object x, object y, EntityMode? entityMode)
+		public override int Compare(object x, object y)
 		{
 			byte[] xbytes = ToInternalFormat(x);
 			byte[] ybytes = ToInternalFormat(y);
@@ -170,7 +161,7 @@ namespace NHibernate.Type
 			for (int i = 0; i < bytes.Length; i++)
 			{
 				string hexStr = xml.Substring(i * 2, ((i + 1) * 2) - (i * 2));
-				bytes[i] = (byte)(Convert.ToInt32(hexStr, 16) + Byte.MinValue);
+				bytes[i] = (byte) (Convert.ToInt32(hexStr, 16) + Byte.MinValue);
 			}
 			return ToExternalFormat(bytes);
 		}

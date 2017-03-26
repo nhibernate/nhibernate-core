@@ -112,8 +112,6 @@ namespace NHibernate.Cfg
 
 		public FlushMode DefaultFlushMode { get; internal set; }
 
-		public EntityMode DefaultEntityMode { get; internal set; }
-
 		public bool IsDataDefinitionImplicitCommit { get; internal set; }
 
 		public bool IsDataDefinitionInTransactionSupported { get; internal set; }

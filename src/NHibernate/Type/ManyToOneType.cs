@@ -22,14 +22,14 @@ namespace NHibernate.Type
 		}
 
 		public ManyToOneType(string className, bool lazy)
-			: base(className, null, !lazy, true, false)
+			: base(className, null, !lazy, false)
 		{
 			ignoreNotFound = false;
 			isLogicalOneToOne = false;
 		}
 
-		public ManyToOneType(string entityName, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool isEmbeddedInXML, bool ignoreNotFound, bool isLogicalOneToOne)
-			: base(entityName, uniqueKeyPropertyName, !lazy, isEmbeddedInXML, unwrapProxy)
+		public ManyToOneType(string entityName, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool ignoreNotFound, bool isLogicalOneToOne)
+			: base(entityName, uniqueKeyPropertyName, !lazy, unwrapProxy)
 		{
 			this.ignoreNotFound = ignoreNotFound;
 			this.isLogicalOneToOne = isLogicalOneToOne;
@@ -129,11 +129,6 @@ namespace NHibernate.Type
 
 		public override object Disassemble(object value, ISessionImplementor session, object owner)
 		{
-			if (IsNotEmbedded(session))
-			{
-				return GetIdentifierType(session).Disassemble(value, session, owner);
-			}
-
 			if (value == null)
 			{
 				return null;
@@ -157,11 +152,6 @@ namespace NHibernate.Type
 			//      change to unique key property of the associated object)
 
 			object id = AssembleId(oid, session);
-
-			if (IsNotEmbedded(session))
-			{
-				return id;
-			}
 
 			if (id == null)
 			{
@@ -191,7 +181,7 @@ namespace NHibernate.Type
 
 		public override bool IsDirty(object old, object current, ISessionImplementor session)
 		{
-			if (IsSame(old, current, session.EntityMode))
+			if (IsSame(old, current))
 			{
 				return false;
 			}
@@ -209,7 +199,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				if (IsSame(old, current, session.EntityMode))
+				if (IsSame(old, current))
 				{
 					return false;
 				}

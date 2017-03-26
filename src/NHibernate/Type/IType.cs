@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Data.Common;
-using System.Xml;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -33,8 +32,6 @@ namespace NHibernate.Type
 		///		path='//members[@type="IType"]/member[@name="P:IType.IsAssociationType"]/*'
 		/// /> 
 		bool IsAssociationType { get; }
-
-		bool IsXMLElement { get;}
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="P:IType.IsCollectionType"]/*'
@@ -103,7 +100,7 @@ namespace NHibernate.Type
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.DeepCopy"]/*'
 		/// /> 
-		object DeepCopy(object val, EntityMode entityMode, ISessionFactoryImplementor factory);
+		object DeepCopy(object val, ISessionFactoryImplementor factory);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.Hydrate"]/*'
@@ -149,9 +146,8 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="x"> </param>
 		/// <param name="y"> </param>
-		/// <param name="entityMode"> </param>
 		/// <returns> boolean </returns>
-		bool IsSame(object x, object y, EntityMode entityMode);
+		bool IsSame(object x, object y);
 
 		/// <summary> 
 		/// Compare two instances of the class mapped by this type for persistence
@@ -159,9 +155,8 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="x"> </param>
 		/// <param name="y"> </param>
-		/// <param name="entityMode"> </param>
 		/// <returns> boolean </returns>
-		bool IsEqual(object x, object y, EntityMode entityMode);
+		bool IsEqual(object x, object y);
 
 		/// <summary> 
 		/// Compare two instances of the class mapped by this type for persistence
@@ -169,42 +164,26 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="x"> </param>
 		/// <param name="y"> </param>
-		/// <param name="entityMode"> </param>
 		/// <param name="factory"></param>
 		/// <returns> boolean </returns>
-		bool IsEqual(object x, object y, EntityMode entityMode, ISessionFactoryImplementor factory);
+		bool IsEqual(object x, object y, ISessionFactoryImplementor factory);
 
 		/// <summary> Get a hashcode, consistent with persistence "equality"</summary>
 		/// <param name="x"> </param>
-		/// <param name="entityMode"> </param>
-		int GetHashCode(object x, EntityMode entityMode);
+		int GetHashCode(object x);
 
 		/// <summary> Get a hashcode, consistent with persistence "equality"</summary>
 		/// <param name="x"> </param>
-		/// <param name="entityMode"> </param>
 		/// <param name="factory"> </param>
-		int GetHashCode(object x, EntityMode entityMode, ISessionFactoryImplementor factory);
+		int GetHashCode(object x, ISessionFactoryImplementor factory);
 
 		/// <summary> compare two instances of the type</summary>
 		/// <param name="x"> </param>
 		/// <param name="y"> </param>
-		/// <param name="entityMode"> </param>
-		int Compare(object x, object y, EntityMode? entityMode);
+		int Compare(object x, object y);
 
 		/// <summary> Get the type of a semi-resolved value.</summary>
 		IType GetSemiResolvedType(ISessionFactoryImplementor factory);
-
-		/// <summary> A representation of the value to be embedded in an XML element. </summary>
-		/// <param name="node"></param>
-		/// <param name="value"> </param>
-		/// <param name="factory"> </param>
-		void SetToXMLNode(XmlNode node, object value, ISessionFactoryImplementor factory);
-
-		/// <summary> Parse the XML representation of an instance.</summary>
-		/// <param name="xml"> </param>
-		/// <param name="factory"> </param>
-		/// <returns> an instance of the type </returns>
-		object FromXMLNode(XmlNode xml, IMapping factory);
 
 		/// <summary> 
 		/// Given an instance of the type, return an array of boolean, indicating

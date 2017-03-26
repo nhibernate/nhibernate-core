@@ -86,9 +86,9 @@ namespace NHibernate.Type
 			return x.Equals(y) || binaryType.IsEqual(ToBytes(x), ToBytes(y));
 		}
 
-		public override int GetHashCode(Object x, EntityMode entityMode)
+		public override int GetHashCode(Object x)
 		{
-			return binaryType.GetHashCode(ToBytes(x), entityMode);
+			return binaryType.GetHashCode(ToBytes(x));
 		}
 
 		public override string ToString(object value)

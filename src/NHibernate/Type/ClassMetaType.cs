@@ -1,6 +1,5 @@
 using System;
 using System.Data.Common;
-using System.Xml;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -69,7 +68,7 @@ namespace NHibernate.Type
 
 		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
 		{
-			return ToXMLString(value, factory);
+			return (string)value;
 		}
 
 		public override string Name
@@ -77,7 +76,7 @@ namespace NHibernate.Type
 			get { return "ClassMetaType"; }
 		}
 
-		public override object DeepCopy(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
+		public override object DeepCopy(object value, ISessionFactoryImplementor factory)
 		{
 			return value;
 		}
@@ -92,34 +91,14 @@ namespace NHibernate.Type
 			return checkable[0] && IsDirty(old, current, session);
 		}
 
-		public override object FromXMLNode(XmlNode xml, IMapping factory)
-		{
-			return FromXMLString(xml.Value, factory);
-		}
-
-		public object FromXMLString(string xml, IMapping factory)
-		{
-			return xml; //xml is the entity name
-		}
-
 		public override object Replace(object original, object current, ISessionImplementor session, object owner, System.Collections.IDictionary copiedAlready)
 		{
 			return original;
 		}
 
-		public override void SetToXMLNode(XmlNode node, object value, ISessionFactoryImplementor factory)
-		{
-			node.Value = ToXMLString(value, factory);
-		}
-
 		public override bool[] ToColumnNullness(object value, IMapping mapping)
 		{
 			throw new NotSupportedException();
-		}
-
-		public string ToXMLString(object value, ISessionFactoryImplementor factory)
-		{
-			return (string)value; //value is the entity name
 		}
 	}
 }

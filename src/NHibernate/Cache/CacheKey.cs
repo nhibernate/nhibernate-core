@@ -16,7 +16,6 @@ namespace NHibernate.Cache
 		private readonly IType type;
 		private readonly string entityOrRoleName;
 		private readonly int hashCode;
-		private readonly EntityMode entityMode;
 
 		/// <summary> 
 		/// Construct a new key for a collection or entity instance.
@@ -26,15 +25,13 @@ namespace NHibernate.Cache
 		/// <param name="id">The identifier associated with the cached data </param>
 		/// <param name="type">The Hibernate type mapping </param>
 		/// <param name="entityOrRoleName">The entity or collection-role name. </param>
-		/// <param name="entityMode">The entity mode of the originating session </param>
 		/// <param name="factory">The session factory for which we are caching </param>
-		public CacheKey(object id, IType type, string entityOrRoleName, EntityMode entityMode, ISessionFactoryImplementor factory)
+		public CacheKey(object id, IType type, string entityOrRoleName, ISessionFactoryImplementor factory)
 		{
 			key = id;
 			this.type = type;
 			this.entityOrRoleName = entityOrRoleName;
-			this.entityMode = entityMode;
-			hashCode = type.GetHashCode(key, entityMode, factory);
+			hashCode = type.GetHashCode(key, factory);
 		}
 
 		//Mainly for SysCache and Memcache
@@ -48,7 +45,7 @@ namespace NHibernate.Cache
 		{
 			CacheKey that = obj as CacheKey;
 			if (that == null) return false;
-			return entityOrRoleName.Equals(that.entityOrRoleName) && type.IsEqual(key, that.key, entityMode);
+			return entityOrRoleName.Equals(that.entityOrRoleName) && type.IsEqual(key, that.key);
 		}
 
 		public override int GetHashCode()

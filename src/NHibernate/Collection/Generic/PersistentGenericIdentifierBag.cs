@@ -228,15 +228,13 @@ namespace NHibernate.Collection.Generic
 
 		public override object GetSnapshot(ICollectionPersister persister)
 		{
-			EntityMode entityMode = Session.EntityMode;
-
 			var map = new HashSet<SnapshotElement>();
 			int i = 0;
 			foreach (object value in _values)
 			{
 				object id;
 				_identifiers.TryGetValue(i++, out id);
-				var valueCopy = persister.ElementType.DeepCopy(value, entityMode, persister.Factory);
+				var valueCopy = persister.ElementType.DeepCopy(value, persister.Factory);
 				map.Add(new SnapshotElement { Id = id, Value = valueCopy });
 			}
 			return map;

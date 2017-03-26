@@ -29,12 +29,12 @@ namespace NHibernate.Type
 		/// <summary>
 		/// Optional Operation
 		/// </summary>
-		object[] GetPropertyValues(object component, EntityMode entityMode);
+		object[] GetPropertyValues(object component);
 
 		/// <summary>
 		/// Optional operation
 		/// </summary>
-		void SetPropertyValues(object component, object[] values, EntityMode entityMode);
+		void SetPropertyValues(object component, object[] values);
 
 		object GetPropertyValue(object component, int i, ISessionImplementor session);
 

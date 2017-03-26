@@ -19,9 +19,8 @@ namespace NHibernate.Impl
 		/// 
 		/// </summary>
 		/// <param name="entity">an actual entity object, not a proxy!</param>
-		/// <param name="entityMode"></param>
 		/// <returns></returns>
-		public string ToString(object entity, EntityMode entityMode)
+		public string ToString(object entity)
 		{
 			IClassMetadata cm = _factory.GetClassMetadata(entity.GetType());
 			if (cm == null)
@@ -34,12 +33,12 @@ namespace NHibernate.Impl
 			if (cm.HasIdentifierProperty)
 			{
 				result[cm.IdentifierPropertyName] =
-					cm.IdentifierType.ToLoggableString(cm.GetIdentifier(entity, entityMode), _factory);
+					cm.IdentifierType.ToLoggableString(cm.GetIdentifier(entity), _factory);
 			}
 
 			IType[] types = cm.PropertyTypes;
 			string[] names = cm.PropertyNames;
-			object[] values = cm.GetPropertyValues(entity, entityMode);
+			object[] values = cm.GetPropertyValues(entity);
 
 			for (int i = 0; i < types.Length; i++)
 			{
@@ -84,7 +83,7 @@ namespace NHibernate.Impl
 			return CollectionPrinter.ToString(result);
 		}
 
-		public void ToString(IEnumerator enumerator, EntityMode entityMode)
+		public void ToString(IEnumerator enumerator)
 		{
 			if (!log.IsDebugEnabled || !enumerator.MoveNext())
 			{
@@ -101,7 +100,7 @@ namespace NHibernate.Impl
 					log.Debug("more......");
 					break;
 				}
-				log.Debug(ToString(enumerator.Current, entityMode));
+				log.Debug(ToString(enumerator.Current));
 			} while (enumerator.MoveNext());
 		}
 

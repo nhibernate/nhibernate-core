@@ -34,14 +34,6 @@ namespace NHibernate.DomainModel
 			this.factory = factory;
 		}
 
-		private static void CheckEntityMode(EntityMode entityMode)
-		{
-			if (EntityMode.Poco != entityMode)
-			{
-				throw new ArgumentOutOfRangeException("entityMode", "Unhandled EntityMode : " + entityMode);
-			}
-		}
-
 		#region IEntityPersister Members
 
 		public ISessionFactoryImplementor Factory
@@ -377,21 +369,11 @@ namespace NHibernate.DomainModel
 			return null;
 		}
 
-		public EntityMode? GuessEntityMode(object obj)
-		{
-			if (!IsInstance(obj, EntityMode.Poco))
-			{
-				return null;
-			}
-			else
-			{
-				return EntityMode.Poco;
-			}
-		}
+		public EntityMode EntityMode => EntityMode.Poco;
 
-		public bool IsInstrumented(EntityMode entityMode)
+		public bool IsInstrumented
 		{
-			return false;
+			get { return false; }
 		}
 
 		public bool HasInsertGeneratedProperties
@@ -424,7 +406,7 @@ namespace NHibernate.DomainModel
 
 		public object[] GetPropertyValuesToInsert(object obj, IDictionary mergeMap, ISessionImplementor session)
 		{
-			return GetPropertyValues(obj, session.EntityMode);
+			return GetPropertyValues(obj);
 		}
 
 		public void ProcessInsertGeneratedProperties(object id, object entity, object[] state, ISessionImplementor session)
@@ -435,109 +417,91 @@ namespace NHibernate.DomainModel
 		{
 		}
 
-		public System.Type GetMappedClass(EntityMode entityMode)
+		public System.Type MappedClass
 		{
-			CheckEntityMode(entityMode);
-			return typeof(Custom);
+			get { return typeof(Custom); }
 		}
 
-		public bool ImplementsLifecycle(EntityMode entityMode)
+		public bool ImplementsLifecycle
 		{
-			CheckEntityMode(entityMode);
-			return false;
+			get { return false; }
 		}
 
-		public bool ImplementsValidatable(EntityMode entityMode)
+		public bool ImplementsValidatable
 		{
-			CheckEntityMode(entityMode);
-			return false;
+			get { return false; }
 		}
 
-		public System.Type GetConcreteProxyClass(EntityMode entityMode)
+		public System.Type ConcreteProxyClass
 		{
-			CheckEntityMode(entityMode);
-			return typeof (Custom);
+			get { return typeof(Custom); }
 		}
 
-		public void SetPropertyValues(object obj, object[] values, EntityMode entityMode)
+		public void SetPropertyValues(object obj, object[] values)
 		{
-			CheckEntityMode(entityMode);
-			SetPropertyValue(obj, 0, values[0], entityMode);
+			SetPropertyValue(obj, 0, values[0]);
 		}
 
-		public void SetPropertyValue(object obj, int i, object value, EntityMode entityMode)
+		public void SetPropertyValue(object obj, int i, object value)
 		{
-			CheckEntityMode(entityMode);
 			((Custom) obj).Name = (string) value;
 		}
 
-		public object[] GetPropertyValues(object obj, EntityMode entityMode)
+		public object[] GetPropertyValues(object obj)
 		{
-			CheckEntityMode(entityMode);
 			Custom c = (Custom) obj;
 			return new Object[] {c.Name};
 		}
 
-		public object GetPropertyValue(object obj, int i, EntityMode entityMode)
+		public object GetPropertyValue(object obj, int i)
 		{
-			CheckEntityMode(entityMode);
 			return ((Custom)obj).Name;
 		}
 
-		public object GetPropertyValue(object obj, string name, EntityMode entityMode)
+		public object GetPropertyValue(object obj, string name)
 		{
-			CheckEntityMode(entityMode);
 			return ((Custom)obj).Name;
 		}
 
-		public object GetIdentifier(object obj, EntityMode entityMode)
+		public object GetIdentifier(object obj)
 		{
-			CheckEntityMode(entityMode);
 			return ((Custom)obj).Id;
 		}
 
-		public void SetIdentifier(object obj, object id, EntityMode entityMode)
+		public void SetIdentifier(object obj, object id)
 		{
-			CheckEntityMode(entityMode);
 			((Custom) obj).Id = (string) id;
 		}
 
-		public object GetVersion(object obj, EntityMode entityMode)
+		public object GetVersion(object obj)
 		{
-			CheckEntityMode(entityMode);
 			return null;
 		}
 
-		public object Instantiate(object id, EntityMode entityMode)
+		public object Instantiate(object id)
 		{
-			CheckEntityMode(entityMode);
 			Custom c = new Custom();
 			c.Id = (string)id;
 			return c;
 		}
 
-		public bool IsInstance(object entity, EntityMode entityMode)
+		public bool IsInstance(object entity)
 		{
-			CheckEntityMode(entityMode);
 			return entity is Custom;
 		}
 
-		public bool HasUninitializedLazyProperties(object obj, EntityMode entityMode)
+		public bool HasUninitializedLazyProperties(object obj)
 		{
-			CheckEntityMode(entityMode);
 			return false;
 		}
 
-		public void ResetIdentifier(object entity, object currentId, object currentVersion, EntityMode entityMode)
+		public void ResetIdentifier(object entity, object currentId, object currentVersion)
 		{
-			CheckEntityMode(entityMode);
 			((Custom)entity).Id = (string)currentId;
 		}
 
-		public IEntityPersister GetSubclassEntityPersister(object instance, ISessionFactoryImplementor factory,
-		                                                   EntityMode entityMode)
+		public IEntityPersister GetSubclassEntityPersister(object instance, ISessionFactoryImplementor factory)
 		{
-			CheckEntityMode(entityMode);
 			return this;
 		}
 
@@ -552,6 +516,8 @@ namespace NHibernate.DomainModel
 		{
 			get { return null; }
 		}
+
+		public IEntityTuplizer EntityTuplizer => null;
 
 		#endregion
 	}

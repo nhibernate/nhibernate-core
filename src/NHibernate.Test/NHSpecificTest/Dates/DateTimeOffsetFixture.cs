@@ -84,7 +84,7 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 			var type = new DateTimeOffsetType();
 			var now = DateTimeOffset.Now;
 			var exactClone = new DateTimeOffset(now.Ticks, now.Offset);
-			Assert.That((now.GetHashCode() == exactClone.GetHashCode()), Is.EqualTo(now.GetHashCode() == type.GetHashCode(exactClone, EntityMode.Poco)));
+			Assert.That((now.GetHashCode() == exactClone.GetHashCode()), Is.EqualTo(now.GetHashCode() == type.GetHashCode(exactClone)));
 		}
 
 		[Test]

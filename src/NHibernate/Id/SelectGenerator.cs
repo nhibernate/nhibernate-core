@@ -105,8 +105,7 @@ namespace NHibernate.Id
 
 			protected internal override void BindParameters(ISessionImplementor session, DbCommand ps, object entity)
 			{
-				object uniqueKeyValue = ((IEntityPersister) persister).GetPropertyValue(entity, uniqueKeyPropertyName,
-				                                                                        session.EntityMode);
+				object uniqueKeyValue = ((IEntityPersister) persister).GetPropertyValue(entity, uniqueKeyPropertyName);
 				uniqueKeyType.NullSafeSet(ps, uniqueKeyValue, 0, session);
 			}
 

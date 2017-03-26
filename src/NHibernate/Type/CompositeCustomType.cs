@@ -3,8 +3,6 @@ using System.Collections;
 using System.Data.Common;
 using System.Linq;
 using System.Reflection;
-using System.Xml;
-
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
@@ -73,10 +71,10 @@ namespace NHibernate.Type
 
 		public virtual object[] GetPropertyValues(object component, ISessionImplementor session)
 		{
-			return GetPropertyValues(component, session.EntityMode);
+			return GetPropertyValues(component);
 		}
 
-		public virtual object[] GetPropertyValues(object component, EntityMode entityMode)
+		public virtual object[] GetPropertyValues(object component)
 		{
 			int len = Subtypes.Length;
 			object[] result = new object[len];
@@ -87,7 +85,7 @@ namespace NHibernate.Type
 			return result;
 		}
 
-		public virtual void SetPropertyValues(object component, object[] values, EntityMode entityMode)
+		public virtual void SetPropertyValues(object component, object[] values)
 		{
 			for (int i = 0; i < values.Length; i++)
 				userType.SetPropertyValue(component, i, values[i]);
@@ -128,7 +126,7 @@ namespace NHibernate.Type
 			return userType.Assemble(cached, session, owner);
 		}
 
-		public override object DeepCopy(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
+		public override object DeepCopy(object value, ISessionFactoryImplementor factory)
 		{
 			return userType.DeepCopy(value);
 		}
@@ -236,12 +234,7 @@ namespace NHibernate.Type
 			return userType.Replace(original, current, session, owner);
 		}
 
-		public override object FromXMLNode(XmlNode xml, IMapping factory)
-		{
-			return xml;
-		}
-
-		public override bool IsEqual(object x, object y, EntityMode entityMode)
+		public override bool IsEqual(object x, object y)
 		{
 			return userType.Equals(x, y);
 		}
@@ -251,17 +244,12 @@ namespace NHibernate.Type
 			return false;
 		}
 
-		public override void SetToXMLNode(XmlNode node, object value, ISessionFactoryImplementor factory)
-		{
-			ReplaceNode(node, (XmlNode)value);
-		}
-
 		public override bool[] ToColumnNullness(object value, IMapping mapping)
 		{
 			bool[] result = new bool[GetColumnSpan(mapping)];
 			if (value == null)
 				return result;
-			object[] values = GetPropertyValues(value, EntityMode.Poco);
+			object[] values = GetPropertyValues(value);
 			int loc = 0;
 			IType[] propertyTypes = Subtypes;
 			for (int i = 0; i < propertyTypes.Length; i++)

@@ -28,8 +28,6 @@ namespace NHibernate.Tuple
 		/// </summary>
 		/// <param name="name">The name of the property representing the identifier within
 		/// its owning entity.</param>
-		/// <param name="node">The node name to use for XML-based representation of this
-		/// property.</param>
 		/// <param name="type">The Hibernate Type for the identifier property.</param>
 		/// <param name="embedded">Is this an embedded identifier.</param>
 		/// <param name="unsavedValue">The value which, if found as the value on the identifier
@@ -37,12 +35,11 @@ namespace NHibernate.Tuple
 		/// <param name="identifierGenerator">The generator to use for id value generation.</param>
 		public IdentifierProperty(
 			String name,
-			String node,
 			IType type,
 			bool embedded,
 			IdentifierValue unsavedValue,
 			IIdentifierGenerator identifierGenerator)
-			: base(name, node, type)
+			: base(name, type)
 		{
 			isVirtual = false;
 			this.embedded = embedded;
@@ -62,7 +59,7 @@ namespace NHibernate.Tuple
 		/// <param name="identifierGenerator">The generator to use for id value generation.</param>
 		/// <param name="hasIdentifierMapper"></param>
 		public IdentifierProperty(IType type, bool embedded, bool hasIdentifierMapper, IdentifierValue unsavedValue, IIdentifierGenerator identifierGenerator)
-			: base(null, null, type)
+			: base(null, type)
 		{
 			isVirtual = true;
 			this.embedded = embedded;

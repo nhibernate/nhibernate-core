@@ -27,7 +27,7 @@ namespace NHibernate.Criterion
 			_typedValues = new TypedValue[values.Length];
 			for (int i = 0; i < _typedValues.Length; i++)
 			{
-				_typedValues[i] = new TypedValue(types[i], values[i], EntityMode.Poco);
+				_typedValues[i] = new TypedValue(types[i], values[i]);
 			}
 		}
 

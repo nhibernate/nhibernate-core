@@ -20,7 +20,6 @@ namespace NHibernate.Mapping
 		private PersistentClass owner;
 		private bool dynamic;
 		private bool isKey;
-		private string nodeName;
 		private string roleName;
 		private Dictionary<EntityMode, string> tuplizerImpls;
 		private string componentClassName;
@@ -228,12 +227,6 @@ namespace NHibernate.Mapping
 			set { isKey = value; }
 		}
 
-		public string NodeName
-		{
-			get { return nodeName; }
-			set { nodeName = value; }
-		}
-
 		public string RoleName
 		{
 			get { return roleName; }
@@ -263,21 +256,15 @@ namespace NHibernate.Mapping
 
 		public virtual string GetTuplizerImplClassName(EntityMode mode)
 		{
-			// todo : remove this once ComponentMetamodel is complete and merged
-			if (tuplizerImpls == null)
-			{
-				return null;
-			}
-			return tuplizerImpls[mode];
+			string result = null;
+			tuplizerImpls?.TryGetValue(mode, out result);
+			return result;
 		}
 
 		public virtual IDictionary<EntityMode, string> TuplizerMap
 		{
 			get
 			{
-				if (tuplizerImpls == null)
-					return null;
-
 				return tuplizerImpls;
 			}
 		}

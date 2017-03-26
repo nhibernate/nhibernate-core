@@ -23,7 +23,6 @@ namespace NHibernate.Mapping
 		private bool selectable = true;
 		private string propertyAccessorName;
 		private bool optional;
-		private string nodeName;
 		private IDictionary<string, MetaAttribute> metaAttributes;
 		private PersistentClass persistentClass;
 		private bool isOptimisticLocked;
@@ -187,11 +186,6 @@ namespace NHibernate.Mapping
 			get { return PropertyAccessorFactory.GetPropertyAccessor(PropertyAccessorName); }
 		}
 
-		public virtual string GetAccessorPropertyName(EntityMode mode)
-		{
-			return mode == EntityMode.Xml ? nodeName : Name;
-		}
-
 		public virtual bool IsBasicPropertyAccessor
 		{
 			// NH Different behavior : see IPropertyAccessor.CanAccessThroughReflectionOptimizer (ref. NH-1304)
@@ -279,12 +273,6 @@ namespace NHibernate.Mapping
 		{
 			get { return isNaturalIdentifier; }
 			set { isNaturalIdentifier = value; }
-		}
-
-		public string NodeName
-		{
-			get { return nodeName; }
-			set { nodeName = value; }
 		}
 
 		// both many-to-one and one-to-one are represented as a

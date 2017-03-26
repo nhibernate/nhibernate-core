@@ -20,19 +20,15 @@ namespace NHibernate.Test.EntityModeTest.Map.Basic
 			get { return new string[] {"EntityModeTest.Map.Basic.ProductLine.hbm.xml"}; }
 		}
 
-		protected override void Configure(Configuration configuration)
-		{
-			configuration.SetProperty(Environment.DefaultEntityMode, EntityModeHelper.ToString(EntityMode.Map));
-		}
-
 		public delegate IDictionary SingleCarQueryDelegate(ISession session);
 		public delegate IList AllModelQueryDelegate(ISession session);
 
 		[Test]
 		public void ShouldWorkWithHQL()
 		{
-			TestLazyDynamicClass(s => (IDictionary) s.CreateQuery("from ProductLine pl order by pl.Description").UniqueResult(),
-			                     s => s.CreateQuery("from Model m").List());
+			TestLazyDynamicClass(
+				s => (IDictionary) s.CreateQuery("from ProductLine pl order by pl.Description").UniqueResult(),
+				s => s.CreateQuery("from Model m").List());
 		}
 
 		[Test]
@@ -46,14 +42,6 @@ namespace NHibernate.Test.EntityModeTest.Map.Basic
 		public void TestLazyDynamicClass(SingleCarQueryDelegate singleCarQueryHandler, AllModelQueryDelegate allModelQueryHandler)
 		{
 			ITransaction t;
-			using (ISession s = OpenSession())
-			{
-				var si = (ISessionImplementor)s;
-				Assert.IsTrue(si.EntityMode == EntityMode.Map, "Incorrectly handled default_entity_mode");
-				ISession other = s.GetSession(EntityMode.Poco);
-				other.Close();
-				Assert.IsFalse(other.IsOpen);
-			}
 			IDictionary cars;
 			IList models;
 			using (ISession s = OpenSession())

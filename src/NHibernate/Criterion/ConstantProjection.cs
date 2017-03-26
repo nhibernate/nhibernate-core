@@ -23,7 +23,7 @@ namespace NHibernate.Criterion
 		public ConstantProjection(object value, IType type)
 		{
 			this.value = value;
-			typedValue = new TypedValue(type, this.value, EntityMode.Poco);
+			typedValue = new TypedValue(type, this.value);
 		}
 
 		public override bool IsAggregate

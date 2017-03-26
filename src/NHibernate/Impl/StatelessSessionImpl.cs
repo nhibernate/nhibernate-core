@@ -71,7 +71,7 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				IEntityPersister persister = Factory.GetEntityPersister(entityName);
-				object loaded = temporaryPersistenceContext.GetEntity(GenerateEntityKey(id, persister, EntityMode.Poco));
+				object loaded = temporaryPersistenceContext.GetEntity(GenerateEntityKey(id, persister));
 				if (loaded != null)
 				{
 					return loaded;
@@ -238,7 +238,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				return Factory.GetEntityPersister(clazz).Instantiate(id, EntityMode.Poco);
+				return Factory.GetEntityPersister(clazz).Instantiate(id);
 			}
 		}
 
@@ -413,11 +413,6 @@ namespace NHibernate.Impl
 			set { throw new NotSupportedException(); }
 		}
 
-		public override EntityMode EntityMode
-		{
-			get { return NHibernate.EntityMode.Poco; }
-		}
-
 		public override string FetchProfile
 		{
 			get { return null; }
@@ -484,7 +479,7 @@ namespace NHibernate.Impl
 				CheckAndUpdateSessionStatus();
 				IEntityPersister persister = GetEntityPersister(entityName, entity);
 				object id = persister.IdentifierGenerator.Generate(this, entity);
-				object[] state = persister.GetPropertyValues(entity, EntityMode.Poco);
+				object[] state = persister.GetPropertyValues(entity);
 				if (persister.IsVersioned)
 				{
 					object versionValue = state[persister.VersionProperty];
@@ -492,7 +487,7 @@ namespace NHibernate.Impl
 															 persister.IsUnsavedVersion(versionValue), this);
 					if (substitute)
 					{
-						persister.SetPropertyValues(entity, state, EntityMode.Poco);
+						persister.SetPropertyValues(entity, state);
 					}
 				}
 				if (id == IdentifierGeneratorFactory.PostInsertIndicator)
@@ -503,7 +498,7 @@ namespace NHibernate.Impl
 				{
 					persister.Insert(id, state, entity, this);
 				}
-				persister.SetIdentifier(entity, id, EntityMode.Poco);
+				persister.SetIdentifier(entity, id);
 				return id;
 			}
 		}
@@ -528,15 +523,15 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				IEntityPersister persister = GetEntityPersister(entityName, entity);
-				object id = persister.GetIdentifier(entity, EntityMode.Poco);
-				object[] state = persister.GetPropertyValues(entity, EntityMode.Poco);
+				object id = persister.GetIdentifier(entity);
+				object[] state = persister.GetPropertyValues(entity);
 				object oldVersion;
 				if (persister.IsVersioned)
 				{
-					oldVersion = persister.GetVersion(entity, EntityMode.Poco);
+					oldVersion = persister.GetVersion(entity);
 					object newVersion = Versioning.Increment(oldVersion, persister.VersionType, this);
 					Versioning.SetVersion(state, newVersion, persister);
-					persister.SetPropertyValues(entity, state, EntityMode.Poco);
+					persister.SetPropertyValues(entity, state);
 				}
 				else
 				{
@@ -566,8 +561,8 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				IEntityPersister persister = GetEntityPersister(entityName, entity);
-				object id = persister.GetIdentifier(entity, EntityMode.Poco);
-				object version = persister.GetVersion(entity, EntityMode.Poco);
+				object id = persister.GetIdentifier(entity);
+				object version = persister.GetVersion(entity);
 				persister.Delete(id, version, entity, this);
 			}
 		}
@@ -682,7 +677,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				IEntityPersister persister = GetEntityPersister(entityName, entity);
-				object id = persister.GetIdentifier(entity, EntityMode);
+				object id = persister.GetIdentifier(entity);
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("refreshing transient " + MessageHelper.InfoString(persister, id, Factory));
@@ -969,7 +964,7 @@ namespace NHibernate.Impl
 				}
 				else
 				{
-					return Factory.GetEntityPersister(entityName).GetSubclassEntityPersister(obj, Factory, EntityMode.Poco);
+					return Factory.GetEntityPersister(entityName).GetSubclassEntityPersister(obj, Factory);
 				}
 			}
 		}

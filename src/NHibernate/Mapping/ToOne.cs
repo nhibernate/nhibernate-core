@@ -14,7 +14,6 @@ namespace NHibernate.Mapping
 		private bool lazy = true;
 		internal string referencedPropertyName;
 		private string referencedEntityName;
-		private bool embedded;
 		private bool unwrapProxy;
 
 		/// <summary>
@@ -48,12 +47,6 @@ namespace NHibernate.Mapping
 		{
 			get { return lazy; }
 			set { lazy = value; }
-		}
-
-		public bool Embedded
-		{
-			get { return embedded; }
-			set { embedded = value; }
 		}
 
 		/// <summary>

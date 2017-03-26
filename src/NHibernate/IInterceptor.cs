@@ -144,14 +144,13 @@ namespace NHibernate
 		/// constructor of the class
 		/// </summary>
 		/// <param name="entityName">the name of the entity </param>
-		/// <param name="entityMode">The type of entity instance to be returned. </param>
 		/// <param name="id">the identifier of the new instance </param>
 		/// <returns>An instance of the class, or <see langword="null" /> to choose default behaviour</returns>
 		/// <remarks>
 		/// The identifier property of the returned instance
 		/// should be initialized with the given identifier.
 		/// </remarks>
-		object Instantiate(System.String entityName, EntityMode entityMode, object id);
+		object Instantiate(System.String entityName, object id);
 
 		/// <summary> Get the entity name for a persistent or transient instance</summary>
 		/// <param name="entity">an entity instance </param>

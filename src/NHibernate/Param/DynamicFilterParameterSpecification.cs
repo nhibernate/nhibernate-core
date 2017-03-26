@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
-using System.Xml;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
@@ -139,11 +138,6 @@ namespace NHibernate.Param
 				get { return false; }
 			}
 
-			public bool IsXMLElement
-			{
-				get { return false; }
-			}
-
 			public bool IsCollectionType
 			{
 				get { return false; }
@@ -228,7 +222,7 @@ namespace NHibernate.Param
 				throw new InvalidOperationException();
 			}
 
-			public object DeepCopy(object val, EntityMode entityMode, ISessionFactoryImplementor factory)
+			public object DeepCopy(object val, ISessionFactoryImplementor factory)
 			{
 				throw new InvalidOperationException();
 			}
@@ -258,47 +252,37 @@ namespace NHibernate.Param
 				throw new InvalidOperationException();
 			}
 
-			public bool IsSame(object x, object y, EntityMode entityMode)
+			public bool IsSame(object x, object y)
 			{
 				return false;
 			}
 
-			public bool IsEqual(object x, object y, EntityMode entityMode)
+			public bool IsEqual(object x, object y)
 			{
 				return false;
 			}
 
-			public bool IsEqual(object x, object y, EntityMode entityMode, ISessionFactoryImplementor factory)
+			public bool IsEqual(object x, object y, ISessionFactoryImplementor factory)
 			{
 				return false;
 			}
 
-			public int GetHashCode(object x, EntityMode entityMode)
+			public int GetHashCode(object x)
 			{
 				return GetHashCode();
 			}
 
-			public int GetHashCode(object x, EntityMode entityMode, ISessionFactoryImplementor factory)
+			public int GetHashCode(object x, ISessionFactoryImplementor factory)
 			{
 				return GetHashCode();
 			}
 
-			public int Compare(object x, object y, EntityMode? entityMode)
+			public int Compare(object x, object y)
 			{
 				return 1;
 			}
 
 			public IType GetSemiResolvedType(ISessionFactoryImplementor factory)
-			{
-				throw new InvalidOperationException();
-			}
-
-			public void SetToXMLNode(XmlNode node, object value, ISessionFactoryImplementor factory)
-			{
-				throw new InvalidOperationException();
-			}
-
-			public object FromXMLNode(XmlNode xml, IMapping factory)
 			{
 				throw new InvalidOperationException();
 			}

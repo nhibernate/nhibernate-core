@@ -53,12 +53,10 @@ namespace NHibernate.Collection.Generic
 
 		public override object GetSnapshot(ICollectionPersister persister)
 		{
-			EntityMode entityMode = Session.EntityMode;
-
 			var clonedList = new List<T>(WrappedList.Count);
 			foreach (T current in WrappedList)
 			{
-				var deepCopy = (T)persister.ElementType.DeepCopy(current, entityMode, persister.Factory);
+				var deepCopy = (T)persister.ElementType.DeepCopy(current, persister.Factory);
 				clonedList.Add(deepCopy);
 			}
 

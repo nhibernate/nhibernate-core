@@ -18,9 +18,9 @@ namespace NHibernate.Type
 			return DateTime.SpecifyKind(DateTime.Parse(xml), DateTimeKind);
 		}
 
-		public override int GetHashCode(object x, EntityMode entityMode)
+		public override int GetHashCode(object x)
 		{
-			int hashCode = base.GetHashCode(x, entityMode);
+			int hashCode = base.GetHashCode(x);
 			unchecked
 			{
 				hashCode = 31*hashCode + ((DateTime) x).Kind.GetHashCode();

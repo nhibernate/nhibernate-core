@@ -134,8 +134,8 @@ namespace NHibernate.Criterion
 					{
 						object subval = _values[j] == null
 											? null
-											: actype.GetPropertyValues(_values[j], EntityMode.Poco)[i];
-						list.Add(new TypedValue(types[i], subval, EntityMode.Poco));
+											: actype.GetPropertyValues(_values[j])[i];
+						list.Add(new TypedValue(types[i], subval));
 					}
 				}
 
@@ -143,7 +143,7 @@ namespace NHibernate.Criterion
 			}
 			else
 			{
-				return _values.Select(v => new TypedValue(type, v, EntityMode.Poco)).ToList();
+				return _values.Select(v => new TypedValue(type, v)).ToList();
 			}
 		}
 

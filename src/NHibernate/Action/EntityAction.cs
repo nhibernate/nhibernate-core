@@ -155,7 +155,7 @@ namespace NHibernate.Action
 				return roleComparison;
 			}
 			//then by id
-			return persister.IdentifierType.Compare(id, other.id, session.EntityMode);
+			return persister.IdentifierType.Compare(id, other.id);
 		}
 
 		#endregion

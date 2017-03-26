@@ -53,7 +53,7 @@ namespace NHibernate
 			return null;
 		}
 
-		public virtual object Instantiate(string clazz, EntityMode entityMode, object id)
+		public virtual object Instantiate(string clazz, object id)
 		{
 			return null;
 		}

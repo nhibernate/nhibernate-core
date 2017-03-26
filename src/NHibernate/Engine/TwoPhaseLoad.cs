@@ -94,7 +94,7 @@ namespace NHibernate.Engine
 				}
 			}
 
-			persister.SetPropertyValues(entity, hydratedState, session.EntityMode);
+			persister.SetPropertyValues(entity, hydratedState);
 			
 			ISessionFactoryImplementor factory = session.Factory;
 
