@@ -50,7 +50,13 @@ namespace NHibernate.Linq
 			}
 		}
 
-		public HqlTreeBuilder TreeBuilder { get; private set; }
+		/// <summary>
+		/// If execute result type does not match expected final result type (implying a post execute transformer
+		/// will yield expected result type), the intermediate execute type.
+		/// </summary>
+		public System.Type ExecuteResultTypeOverride { get; set; }
+
+		public HqlTreeBuilder TreeBuilder { get; }
 
 		public IntermediateHqlTree(bool root)
 		{
@@ -62,10 +68,11 @@ namespace NHibernate.Linq
 		public ExpressionToHqlTranslationResults GetTranslation()
 		{
 			return new ExpressionToHqlTranslationResults(Root,
-														 _itemTransformers,
-														 _listTransformers,
-														 _postExecuteTransformers,
-														 _additionalCriteria);
+				_itemTransformers,
+				_listTransformers,
+				_postExecuteTransformers,
+				_additionalCriteria,
+				ExecuteResultTypeOverride);
 		}
 
 		public void AddDistinctRootOperator()
