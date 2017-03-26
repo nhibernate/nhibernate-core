@@ -759,6 +759,8 @@
     <Compile Include="NHSpecificTest\NH3952\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3951\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3951\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3850\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH3850\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2204\Model.cs" />
     <Compile Include="NHSpecificTest\NH2204\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3912\BatcherLovingEntity.cs" />
@@ -3242,6 +3244,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH3950\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3952\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3951\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3850\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2204\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3874\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\EntityWithUserTypeCanHaveLinqGenerators\Mappings.hbm.xml" />
