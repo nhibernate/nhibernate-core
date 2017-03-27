@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Data;
-using System.Data.Common;
 using System.Reflection;
 using log4net;
 using log4net.Config;
@@ -13,6 +12,10 @@ using NHibernate.Tool.hbm2ddl;
 using NHibernate.Type;
 using NUnit.Framework;
 using NHibernate.Hql.Ast.ANTLR;
+using System.Collections.Concurrent;
+using NUnit.Framework.Interfaces;
+using System.Text;
+using static NUnit.Framework.TestContext;
 
 namespace NHibernate.Test
 {
@@ -45,7 +48,8 @@ namespace NHibernate.Test
 			}
 		}
 
-		protected ISession lastOpenedSession;
+		private ConcurrentBag<ISession> _openedSessions = new ConcurrentBag<ISession>();
+		private ISession _lastOpenedSession;
 		private DebugConnectionProvider connectionProvider;
 
 		/// <summary>
@@ -154,30 +158,78 @@ namespace NHibernate.Test
 		[TearDown]
 		public void TearDown()
 		{
-			OnTearDown();
+			var testResult = TestContext.CurrentContext.Result;
+			var fail = false;
+			string badCleanupMessage = null;
+			try
+			{
+				OnTearDown();
+				var wereClosed = CheckSessionsWereClosed();
+				var wasCleaned = CheckDatabaseWasCleaned();
+				var wereConnectionsClosed = CheckConnectionsWereClosed();
+				fail = !wereClosed || !wasCleaned || !wereConnectionsClosed;
 
-			bool wasClosed = CheckSessionWasClosed();
-			bool wasCleaned = CheckDatabaseWasCleaned();
-			bool wereConnectionsClosed = CheckConnectionsWereClosed();
-			bool fail = !wasClosed || !wasCleaned || !wereConnectionsClosed;
+				if (fail)
+				{
+					badCleanupMessage = "Test didn't clean up after itself. session closed: " + wereClosed + "; database cleaned: " + wasCleaned
+						+ "; connection closed: " + wereConnectionsClosed;
+					if (testResult != null && testResult.Outcome.Status == TestStatus.Failed)
+					{
+						// Avoid hiding a test failure (asserts are usually not hidden, but other exception would be).
+						badCleanupMessage = GetCombinedFailureMessage(testResult, badCleanupMessage, null);
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				if (testResult == null || testResult.Outcome.Status != TestStatus.Failed)
+					throw;
+
+				// Avoid hiding a test failure (asserts are usually not hidden, but other exceptions would be).
+				var exType = ex.GetType();
+				Assert.Fail(GetCombinedFailureMessage(testResult,
+					exType.Namespace + "." + exType.Name + " " + ex.Message,
+					ex.StackTrace));
+			}
 
 			if (fail)
 			{
-				Assert.Fail("Test didn't clean up after itself. session closed: " + wasClosed + " database cleaned: "+ wasCleaned
-					+ " connection closed: " + wereConnectionsClosed);
+				Assert.Fail(badCleanupMessage);
 			}
 		}
 
-		private bool CheckSessionWasClosed()
+		private string GetCombinedFailureMessage(ResultAdapter result, string tearDownFailure, string tearDownStackTrace)
 		{
-			if (lastOpenedSession != null && lastOpenedSession.IsOpen)
+			var message = new StringBuilder()
+				.Append("The test failed and then failed to cleanup. Test failure is: ")
+				.AppendLine(result.Message)
+				.Append("Tear-down failure is: ")
+				.AppendLine(tearDownFailure)
+				.AppendLine("Test failure stack trace is: ")
+				.AppendLine(result.StackTrace);
+
+			if (!string.IsNullOrEmpty(tearDownStackTrace))
+				message.AppendLine("Tear-down failure stack trace is:")
+					.Append(tearDownStackTrace);
+
+			return message.ToString();
+		}
+
+		// Factory is exposed to descendant, any session opened directly from it will not be handled by following check.
+		private bool CheckSessionsWereClosed()
+		{
+			var allClosed = true;
+			foreach (var session in _openedSessions)
 			{
-				log.Error("Test case didn't close a session, closing");
-				lastOpenedSession.Close();
-				return false;
+				if (session.IsOpen)
+				{
+					log.Error($"Test case didn't close session {session.GetSessionImplementation().SessionId}, closing");
+					allClosed = false;
+					session.Close();
+				}
 			}
 
-			return true;
+			return allClosed;
 		}
 
 		protected virtual bool CheckDatabaseWasCleaned()
@@ -263,7 +315,8 @@ namespace NHibernate.Test
 			}
 			sessions = null;
 			connectionProvider = null;
-			lastOpenedSession = null;
+			_lastOpenedSession = null;
+			_openedSessions = new ConcurrentBag<ISession>();
 			cfg = null;
 		}
 
@@ -316,14 +369,16 @@ namespace NHibernate.Test
 
 		protected virtual ISession OpenSession()
 		{
-			lastOpenedSession = sessions.OpenSession();
-			return lastOpenedSession;
+			_lastOpenedSession = sessions.OpenSession();
+			_openedSessions.Add(_lastOpenedSession);
+			return _lastOpenedSession;
 		}
 
 		protected virtual ISession OpenSession(IInterceptor sessionLocalInterceptor)
 		{
-			lastOpenedSession = sessions.OpenSession(sessionLocalInterceptor);
-			return lastOpenedSession;
+			_lastOpenedSession = sessions.OpenSession(sessionLocalInterceptor);
+			_openedSessions.Add(_lastOpenedSession);
+			return _lastOpenedSession;
 		}
 
 		protected virtual void ApplyCacheSettings(Configuration configuration)

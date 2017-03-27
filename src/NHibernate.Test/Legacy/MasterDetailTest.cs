@@ -661,6 +661,7 @@ namespace NHibernate.Test.Legacy
 			MemoryStream stream = new MemoryStream();
 			BinaryFormatter f = new BinaryFormatter();
 			f.Serialize(stream, s);
+			s.Close();
 			stream.Position = 0;
 			Console.WriteLine(stream.Length);
 
@@ -694,6 +695,7 @@ namespace NHibernate.Test.Legacy
 			s.Disconnect();
 			stream = new MemoryStream();
 			f.Serialize(stream, s);
+			s.Close();
 			stream.Position = 0;
 
 			s = (ISession) f.Deserialize(stream);

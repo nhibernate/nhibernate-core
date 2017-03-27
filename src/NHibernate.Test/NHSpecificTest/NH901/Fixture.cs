@@ -8,12 +8,6 @@ namespace NHibernate.Test.NHSpecificTest.NH901
 {
 	public abstract class FixtureBase : TestCase
 	{
-		private new ISession OpenSession(IInterceptor interceptor)
-		{
-			lastOpenedSession = sessions.OpenSession(interceptor);
-			return lastOpenedSession;
-		}
-
 		protected override void OnTearDown()
 		{
 			base.OnTearDown();
