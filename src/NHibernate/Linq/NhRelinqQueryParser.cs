@@ -4,16 +4,17 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Linq.ExpressionTransformers;
+using NHibernate.Linq.Visitors;
+using NHibernate.Util;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.StreamedData;
 using Remotion.Linq.EagerFetching.Parsing;
 using Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation;
 using Remotion.Linq.Parsing.Structure;
+using Remotion.Linq.Parsing.Structure.ExpressionTreeProcessors;
 using Remotion.Linq.Parsing.Structure.IntermediateModel;
 using Remotion.Linq.Parsing.Structure.NodeTypeProviders;
-using Remotion.Linq.Parsing.Structure.ExpressionTreeProcessors;
-using NHibernate.Linq.Visitors;
 
 namespace NHibernate.Linq
 {
@@ -73,38 +74,38 @@ namespace NHibernate.Linq
 			var methodInfoRegistry = new MethodInfoBasedNodeTypeRegistry();
 
 			methodInfoRegistry.Register(
-				new[] { ReflectionHelper.GetMethodDefinition(() => EagerFetchingExtensionMethods.Fetch<object, object>(null, null)) },
+				new[] { ReflectHelper.GetMethodDefinition(() => EagerFetchingExtensionMethods.Fetch<object, object>(null, null)) },
 				typeof(FetchOneExpressionNode));
 			methodInfoRegistry.Register(
-				new[] { ReflectionHelper.GetMethodDefinition(() => EagerFetchingExtensionMethods.FetchMany<object, object>(null, null)) },
+				new[] { ReflectHelper.GetMethodDefinition(() => EagerFetchingExtensionMethods.FetchMany<object, object>(null, null)) },
 				typeof(FetchManyExpressionNode));
 			methodInfoRegistry.Register(
-				new[] { ReflectionHelper.GetMethodDefinition(() => EagerFetchingExtensionMethods.ThenFetch<object, object, object>(null, null)) },
+				new[] { ReflectHelper.GetMethodDefinition(() => EagerFetchingExtensionMethods.ThenFetch<object, object, object>(null, null)) },
 				typeof(ThenFetchOneExpressionNode));
 			methodInfoRegistry.Register(
-				new[] { ReflectionHelper.GetMethodDefinition(() => EagerFetchingExtensionMethods.ThenFetchMany<object, object, object>(null, null)) },
+				new[] { ReflectHelper.GetMethodDefinition(() => EagerFetchingExtensionMethods.ThenFetchMany<object, object, object>(null, null)) },
 				typeof(ThenFetchManyExpressionNode));
 
 			methodInfoRegistry.Register(
 				new[]
 				{
-					ReflectionHelper.GetMethodDefinition(() => LinqExtensionMethods.Cacheable<object>(null)),
-					ReflectionHelper.GetMethodDefinition(() => LinqExtensionMethods.CacheMode<object>(null, CacheMode.Normal)),
-					ReflectionHelper.GetMethodDefinition(() => LinqExtensionMethods.CacheRegion<object>(null, null)),
+					ReflectHelper.GetMethodDefinition(() => LinqExtensionMethods.Cacheable<object>(null)),
+					ReflectHelper.GetMethodDefinition(() => LinqExtensionMethods.CacheMode<object>(null, CacheMode.Normal)),
+					ReflectHelper.GetMethodDefinition(() => LinqExtensionMethods.CacheRegion<object>(null, null)),
 				}, typeof(CacheableExpressionNode));
 
 			methodInfoRegistry.Register(
 				new[]
 					{
-						ReflectionHelper.GetMethodDefinition(() => Queryable.AsQueryable(null)),
-						ReflectionHelper.GetMethodDefinition(() => Queryable.AsQueryable<object>(null)),
+						ReflectHelper.GetMethodDefinition(() => Queryable.AsQueryable(null)),
+						ReflectHelper.GetMethodDefinition(() => Queryable.AsQueryable<object>(null)),
 					}, typeof(AsQueryableExpressionNode)
 				);
 
 			methodInfoRegistry.Register(
 				new[]
 					{
-						ReflectionHelper.GetMethodDefinition(() => LinqExtensionMethods.Timeout<object>(null, 0)),
+						ReflectHelper.GetMethodDefinition(() => LinqExtensionMethods.Timeout<object>(null, 0)),
 					}, typeof (TimeoutExpressionNode)
 				);
 

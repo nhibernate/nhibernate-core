@@ -39,23 +39,23 @@ namespace NHibernate.Type
 		private static readonly char[] LengthSplit = new[] { '(', ')' };
 		private static readonly TypeFactory Instance;
 
-		private static readonly MethodInfo BagDefinition = ReflectionHelper.GetMethodDefinition<ICollectionTypeFactory>(
+		private static readonly MethodInfo BagDefinition = ReflectHelper.GetMethodDefinition<ICollectionTypeFactory>(
 			f => f.Bag<object>(null, null));
-		private static readonly MethodInfo IdBagDefinition = ReflectionHelper.GetMethodDefinition<ICollectionTypeFactory>(
+		private static readonly MethodInfo IdBagDefinition = ReflectHelper.GetMethodDefinition<ICollectionTypeFactory>(
 			f => f.IdBag<object>(null, null));
-		private static readonly MethodInfo ListDefinition = ReflectionHelper.GetMethodDefinition<ICollectionTypeFactory>(
+		private static readonly MethodInfo ListDefinition = ReflectHelper.GetMethodDefinition<ICollectionTypeFactory>(
 			f => f.List<object>(null, null));
-		private static readonly MethodInfo MapDefinition = ReflectionHelper.GetMethodDefinition<ICollectionTypeFactory>(
+		private static readonly MethodInfo MapDefinition = ReflectHelper.GetMethodDefinition<ICollectionTypeFactory>(
 			f => f.Map<object, object>(null, null));
-		private static readonly MethodInfo SortedListDefinition = ReflectionHelper.GetMethodDefinition<ICollectionTypeFactory>(
+		private static readonly MethodInfo SortedListDefinition = ReflectHelper.GetMethodDefinition<ICollectionTypeFactory>(
 			f => f.SortedList<object, object>(null, null, null));
-		private static readonly MethodInfo SortedDictionaryDefinition = ReflectionHelper.GetMethodDefinition<ICollectionTypeFactory>(
+		private static readonly MethodInfo SortedDictionaryDefinition = ReflectHelper.GetMethodDefinition<ICollectionTypeFactory>(
 			f => f.SortedDictionary<object, object>(null, null, null));
-		private static readonly MethodInfo SetDefinition = ReflectionHelper.GetMethodDefinition<ICollectionTypeFactory>(
+		private static readonly MethodInfo SetDefinition = ReflectHelper.GetMethodDefinition<ICollectionTypeFactory>(
 			f => f.Set<object>(null, null));
-		private static readonly MethodInfo SortedSetDefinition = ReflectionHelper.GetMethodDefinition<ICollectionTypeFactory>(
+		private static readonly MethodInfo SortedSetDefinition = ReflectHelper.GetMethodDefinition<ICollectionTypeFactory>(
 			f => f.SortedSet<object>(null, null, null));
-		private static readonly MethodInfo OrderedSetDefinition = ReflectionHelper.GetMethodDefinition<ICollectionTypeFactory>(
+		private static readonly MethodInfo OrderedSetDefinition = ReflectHelper.GetMethodDefinition<ICollectionTypeFactory>(
 			f => f.OrderedSet<object>(null, null));
 
 		/*

@@ -19,7 +19,7 @@ namespace NHibernate.Proxy.DynamicProxy
 	{
 		private static readonly MethodInfo getInterceptor;
 
-		private static readonly MethodInfo handlerMethod = ReflectionHelper.GetMethod<IInterceptor>(
+		private static readonly MethodInfo handlerMethod = ReflectHelper.GetMethod<IInterceptor>(
 			i => i.Intercept(null));
 		private static readonly MethodInfo getArguments = typeof(InvocationInfo).GetMethod("get_Arguments");
 

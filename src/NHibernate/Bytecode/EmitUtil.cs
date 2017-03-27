@@ -197,7 +197,7 @@ namespace NHibernate.Bytecode
 			il.Emit(OpCodes.Castclass, typeof(MethodInfo));
 		}
 
-		private static readonly MethodInfo CreateDelegate = ReflectionHelper.GetMethod(
+		private static readonly MethodInfo CreateDelegate = ReflectHelper.GetMethod(
 			() => Delegate.CreateDelegate(null, null));
 
 		public static void EmitCreateDelegateInstance(ILGenerator il, System.Type delegateType, MethodInfo methodInfo)

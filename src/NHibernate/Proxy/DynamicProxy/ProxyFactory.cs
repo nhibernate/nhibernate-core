@@ -21,11 +21,11 @@ namespace NHibernate.Proxy.DynamicProxy
 	{
 		private static readonly ConstructorInfo defaultBaseConstructor = typeof(object).GetConstructor(new System.Type[0]);
 
-		private static readonly MethodInfo getValue = ReflectionHelper.GetMethod<SerializationInfo>(
+		private static readonly MethodInfo getValue = ReflectHelper.GetMethod<SerializationInfo>(
 			si => si.GetValue(null, null));
-		private static readonly MethodInfo setType = ReflectionHelper.GetMethod<SerializationInfo>(
+		private static readonly MethodInfo setType = ReflectHelper.GetMethod<SerializationInfo>(
 			si => si.SetType(null));
-		private static readonly MethodInfo addValue = ReflectionHelper.GetMethod<SerializationInfo>(
+		private static readonly MethodInfo addValue = ReflectHelper.GetMethod<SerializationInfo>(
 			si => si.AddValue(null, null));
 
 		public ProxyFactory()

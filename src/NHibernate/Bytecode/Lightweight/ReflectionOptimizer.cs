@@ -119,7 +119,7 @@ namespace NHibernate.Bytecode.Lightweight
 			}
 		}
 
-		private static readonly MethodInfo GetterCallbackInvoke = ReflectionHelper.GetMethod<GetterCallback>(
+		private static readonly MethodInfo GetterCallbackInvoke = ReflectHelper.GetMethod<GetterCallback>(
 			g => g.Invoke(null, 0));
 
 		/// <summary>
@@ -185,7 +185,7 @@ namespace NHibernate.Bytecode.Lightweight
 			return (GetPropertyValuesInvoker) method.CreateDelegate(typeof (GetPropertyValuesInvoker));
 		}
 
-		private static readonly MethodInfo SetterCallbackInvoke = ReflectionHelper.GetMethod<SetterCallback>(
+		private static readonly MethodInfo SetterCallbackInvoke = ReflectHelper.GetMethod<SetterCallback>(
 			g => g.Invoke(null, 0, null));
 
 		/// <summary>

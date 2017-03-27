@@ -3,9 +3,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Hql.Ast;
-using NHibernate.Linq;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 {
@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 	{
 		public EntityWithUserTypePropertyIsEquivalentGenerator()
 		{
-			SupportedMethods = new[] {ReflectionHelper.GetMethodDefinition((IExample e) => e.IsEquivalentTo(null))};
+			SupportedMethods = new[] {ReflectHelper.GetMethodDefinition((IExample e) => e.IsEquivalentTo(null))};
 		}
 
 		public override HqlTreeNode BuildHql(
