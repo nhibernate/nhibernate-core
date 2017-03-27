@@ -590,7 +590,7 @@ IList<Cat> cats =
     {
         SupportedMethods = new[]
         {
-             ReflectionHelper.GetMethodDefinition(() => NullableExtensions.AsNullable(0))
+             ReflectHelper.GetMethodDefinition(() => NullableExtensions.AsNullable(0))
         };
     }
 

@@ -20,40 +20,40 @@ namespace NHibernate.Util
 		internal static class EnumerableMethods
 		{
 			internal static readonly MethodInfo AggregateDefinition =
-				ReflectionHelper.GetMethodDefinition(() => Enumerable.Aggregate<object>(null, null));
+				ReflectHelper.GetMethodDefinition(() => Enumerable.Aggregate<object>(null, null));
 			internal static readonly MethodInfo AggregateWithSeedDefinition =
-				ReflectionHelper.GetMethodDefinition(() => Enumerable.Aggregate<object, object>(null, null, null));
+				ReflectHelper.GetMethodDefinition(() => Enumerable.Aggregate<object, object>(null, null, null));
 			internal static readonly MethodInfo AggregateWithSeedAndResultSelectorDefinition =
-				ReflectionHelper.GetMethodDefinition(() => Enumerable.Aggregate<object, object, object>(null, null, null, null));
+				ReflectHelper.GetMethodDefinition(() => Enumerable.Aggregate<object, object, object>(null, null, null, null));
 
 			internal static readonly MethodInfo CastDefinition =
-				ReflectionHelper.GetMethodDefinition(() => Enumerable.Cast<object>(null));
+				ReflectHelper.GetMethodDefinition(() => Enumerable.Cast<object>(null));
 
-			internal static readonly MethodInfo GroupByWithElementSelectorDefinition = ReflectionHelper.GetMethodDefinition(
-				() => Enumerable.GroupBy<object, object, object>(null, null, (Func<object, object>)null));
+			internal static readonly MethodInfo GroupByWithElementSelectorDefinition = ReflectHelper.GetMethodDefinition(
+				() => Enumerable.GroupBy<object, object, object>(null, null, default(Func<object, object>)));
 
 			internal static readonly MethodInfo SelectDefinition =
-				ReflectionHelper.GetMethodDefinition(() => Enumerable.Select<object, object>(null, (Func<object, object>)null));
+				ReflectHelper.GetMethodDefinition(() => Enumerable.Select(null, default(Func<object, object>)));
 
 			internal static readonly MethodInfo ToArrayDefinition =
-				ReflectionHelper.GetMethodDefinition(() => Enumerable.ToArray<object>(null));
+				ReflectHelper.GetMethodDefinition(() => Enumerable.ToArray<object>(null));
 
 			internal static readonly MethodInfo ToListDefinition =
-				ReflectionHelper.GetMethodDefinition(() => Enumerable.ToList<object>(null));
+				ReflectHelper.GetMethodDefinition(() => Enumerable.ToList<object>(null));
 		}
 
 		internal static class MethodBaseMethods
 		{
 			internal static readonly MethodInfo GetMethodFromHandle =
-				ReflectionHelper.GetMethod(() => MethodBase.GetMethodFromHandle(new RuntimeMethodHandle()));
+				ReflectHelper.GetMethod(() => MethodBase.GetMethodFromHandle(new RuntimeMethodHandle()));
 			internal static readonly MethodInfo GetMethodFromHandleWithDeclaringType =
-				ReflectionHelper.GetMethod(() => MethodBase.GetMethodFromHandle(new RuntimeMethodHandle(), new RuntimeTypeHandle()));
+				ReflectHelper.GetMethod(() => MethodBase.GetMethodFromHandle(new RuntimeMethodHandle(), new RuntimeTypeHandle()));
 		}
 
 		internal static class TypeMethods
 		{
 			internal static readonly MethodInfo GetTypeFromHandle =
-				ReflectionHelper.GetMethod(() => System.Type.GetTypeFromHandle(new RuntimeTypeHandle()));
+				ReflectHelper.GetMethod(() => System.Type.GetTypeFromHandle(new RuntimeTypeHandle()));
 		}
 	}
 }

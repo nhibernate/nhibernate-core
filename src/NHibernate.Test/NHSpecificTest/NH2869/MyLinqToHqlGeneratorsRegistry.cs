@@ -1,5 +1,5 @@
-using NHibernate.Linq;
 using NHibernate.Linq.Functions;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2869
 {
@@ -7,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2869
 	{
 		public MyLinqToHqlGeneratorsRegistry()
 		{
-			RegisterGenerator(ReflectionHelper.GetMethodDefinition(() => MyLinqExtensions.IsOneInDbZeroInLocal(null, null)), new IsTrueInDbFalseInLocalGenerator());
+			RegisterGenerator(ReflectHelper.GetMethodDefinition(() => MyLinqExtensions.IsOneInDbZeroInLocal(null, null)), new IsTrueInDbFalseInLocalGenerator());
 		}
 	}
 }

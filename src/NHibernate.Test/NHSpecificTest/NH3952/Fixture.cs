@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using NHibernate.Linq;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3952
@@ -83,10 +84,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3952
 			}
 		}
 
-		private static readonly MethodInfo CastMethodDefinition = ReflectionHelper.GetMethodDefinition(
+		private static readonly MethodInfo CastMethodDefinition = ReflectHelper.GetMethodDefinition(
 			() => Enumerable.Cast<object>(null));
 
-		private static readonly MethodInfo CastMethod = ReflectionHelper.GetMethod(
+		private static readonly MethodInfo CastMethod = ReflectHelper.GetMethod(
 			() => Enumerable.Cast<int>(null));
 
 		[Test, Explicit("Just a blunt perf comparison among some reflection patterns used in NH")]
@@ -132,7 +133,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3952
 			swRefl.Start();
 			for (var i = 0; i < 1000; i++)
 			{
-				var cast = ReflectionHelper.GetMethod(() => Enumerable.Cast<int>(null));
+				var cast = ReflectHelper.GetMethod(() => Enumerable.Cast<int>(null));
 				Trace.TraceInformation(cast.ToString());
 			}
 			swRefl.Stop();
@@ -141,7 +142,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3952
 			swReflDef.Start();
 			for (var i = 0; i < 1000; i++)
 			{
-				var cast = ReflectionHelper.GetMethodDefinition(() => Enumerable.Cast<object>(null))
+				var cast = ReflectHelper.GetMethodDefinition(() => Enumerable.Cast<object>(null))
 					.MakeGenericMethod(new[] { typeof(int) });
 				Trace.TraceInformation(cast.ToString());
 			}
@@ -164,8 +165,8 @@ Cached method: {0}
 Cached method definition + make gen: {1}
 Hazzik GetMethod: {5}
 Hazzik GetMethodDefinition + make gen: {6}
-ReflectionHelper.GetMethod: {2}
-ReflectionHelper.GetMethodDefinition + make gen: {3}
+ReflectHelper.GetMethod: {2}
+ReflectHelper.GetMethodDefinition + make gen: {3}
 EnumerableHelper.GetMethod(generic overload): {4}",
 				swCached.Elapsed, swCachedDef.Elapsed, swRefl.Elapsed, swReflDef.Elapsed, swEnHlp.Elapsed,
 				swRefl2.Elapsed, swRefl2Def.Elapsed);
