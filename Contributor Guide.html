@@ -124,16 +124,20 @@ Create a feature branch so it's easy to keep it separate from other improvements
 </p>
 
 <p>
-When you commit, please include the issue number in your commit message.  This will allow the JIRA issue tracker to link to automatically link your commits to the issue.  For example: NH-1234
+When you commit, please include the issue number in your commit message.  This will allow the JIRA issue tracker to automatically link your commits to the issue.  By example: <i>NH-1234 - test case for blah trouble</i>.  Make sure you do not put any non whitespace character adjacent to the issue number, as this would prevent JIRA to match it. (Avoid <i>NH-1234: test case for blah trouble</i>.)
 </p>
 
 <h2>Implementing the Bug Fix or Improvement</h2>
 
-Since you now have a failing test case, it should be straight-forward to step into NHibernate to attempt to ascertain what the problem is.  While this may seem daunting at first, feel free to give it a go.  It's just code afterall. :)
+Since you now have a failing test case, it should be straight-forward to step into NHibernate to attempt to ascertain what the problem is.  While this may seem daunting at first, feel free to give it a go.  It's just code after all. :)
 
 <h3>Ensure All Tests Pass</h3>
-
-Once you've made changes to the NHibernate code base, you'll want to ensure that you haven't caused any previously passing tests to fail.  The easiest way to check this is to select option D from the build menu, ensure the root tree node is selected, then press run to have all the tests run.
+<p>
+    Once you've made changes to the NHibernate code base, you'll want to ensure that you haven't caused any previously passing tests to fail.  The easiest way to check this is to select option D from the build menu, ensure the root tree node is selected, then press run to have all the tests run.
+</p>
+<p>
+    Please note that some tests assume a case insensitive accent sensitive database when performing string comparison.  Some tests assume SQL user locales to be en-US.  They will fail otherwise.  With SQL Server, collation with supplementary characters (_SC suffix on collation name) are no supported by legacy tests on "text" types.
+</p>
 
 <h2>Submit a Pull Request</h2>
 
@@ -142,7 +146,7 @@ Once you've made changes to the NHibernate code base, you'll want to ensure that
 </p>
 <p>We use tabs for code indentation, not spaces. As this is not the default in Visual Studio, you will need to reconfigure Visual Studio to indent with tabs whenever you work on the NHibernate codebase. To make this easier, NHibernate has an 
     <a href="http://www.editorconfig.org/">editorconfig</a> configuration file to switch Visual Studio automatically between
-tabs and spaces mode. It is recomended you install editorconfig from the Visual Studio Extension Manager.</p>
+tabs and spaces mode. It is recommended you install editorconfig from the Visual Studio Extension Manager.</p>
 
 <h2>Further Discussion</h2>
 

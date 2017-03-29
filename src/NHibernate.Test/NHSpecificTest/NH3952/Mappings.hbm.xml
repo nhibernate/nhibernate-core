@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH3952">
+
+	<class name="Entity">
+		<id name="Id" generator="guid.comb" />
+		<property name="Name" />
+		<property name="ParentId" />
+		<set name="Children">
+			<key column="ParentId"/>
+			<one-to-many class="Entity" />
+		</set>
+		<array name="Hobbies" table="Hobby">
+			<key column="EntityId" />
+			<index column="`Index`"/>
+			<element type="string" length="50">
+				<column name="Name" />
+			</element>
+		</array>
+	</class>
+
+</hibernate-mapping>

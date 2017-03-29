@@ -42,7 +42,7 @@ namespace NHibernate.Id
 			ISession session = (ISession) sessionImplementor;
 
 			var persister = sessionImplementor.Factory.GetEntityPersister(entityName);
-			object associatedObject = persister.GetPropertyValue(obj, propertyName, sessionImplementor.EntityMode);
+			object associatedObject = persister.GetPropertyValue(obj, propertyName);
 
 			if (associatedObject == null)
 			{

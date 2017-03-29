@@ -190,7 +190,7 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
                         <literal>lazy</literal> (optional - defaults to <literal>true</literal>)
                         may be used to disable lazy fetching and specify that the association
                         is always eagerly fetched. Using <literal>extra</literal> fetches only the
-						elements that are needed - see <xref linkend="performance-fetching"/> for more information.
+                        elements that are needed - see <xref linkend="performance-fetching"/> for more information.
                     </para>
                 </callout>
                 <callout arearefs="mappingcollection5">
@@ -262,7 +262,7 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
         </programlistingco>
 
         <para>
-            The mapping of an <literal>IList</literal> or array requires a seperate table column holding the array
+            The mapping of an <literal>IList</literal> or array requires a separate table column holding the array
             or list index (the <literal>i</literal> in <literal>foo[i]</literal>). If your relational model doesn't
             have an index column, e.g. if you're working with legacy data, use an unordered <literal>ISet</literal>
             instead. This seems to put people off who assume that <literal>IList</literal> should just be a more
@@ -685,7 +685,7 @@ int accessLevel = (int) permissions["accounts"];  // Error!]]></programlisting>
             </listitem>
             <listitem>
                 <para>
-                    In an application with a seperate business tier, the business logic must
+                    In an application with a separate business tier, the business logic must
                     "prepare" all collections that will be needed by the web tier before
                     returning. This means that the business tier should load all the data and
                     return all the data already initialized to the presentation/web tier that
@@ -917,7 +917,7 @@ session.Update(category);                 // The relationship will be saved]]></
 
         <para>
             The non-inverse side is used to save the in-memory representation to the database.
-            We would get an unneccessary INSERT/UPDATE and probably even a foreign key violation
+            We would get an unnecessary INSERT/UPDATE and probably even a foreign key violation
             if both would trigger changes! The same is of course also true for bidirectional
             one-to-many associations.
         </para>

@@ -112,7 +112,7 @@ namespace NHibernate.Type
 
 		#endregion
 
-		public override int GetHashCode(object x, EntityMode entityMode)
+		public override int GetHashCode(object x)
 		{
 			// Custom hash code implementation because DateTimeType is only accurate
 			// up to seconds.

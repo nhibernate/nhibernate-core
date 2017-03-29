@@ -268,10 +268,11 @@ namespace NHibernate.Cfg
 			log.Info("Default flush mode: " + defaultFlushMode);
 			settings.DefaultFlushMode = defaultFlushMode;
 
-			EntityMode defaultEntityMode =
-				EntityModeHelper.Parse(PropertiesHelper.GetString(Environment.DefaultEntityMode, properties, "poco"));
-			log.Info("Default entity-mode: " + defaultEntityMode);
-			settings.DefaultEntityMode = defaultEntityMode;
+#pragma warning disable CS0618 // Type or member is obsolete
+			var defaultEntityMode = PropertiesHelper.GetString(Environment.DefaultEntityMode, properties, null);
+			if (!string.IsNullOrEmpty(defaultEntityMode))
+				log.Warn("Default entity-mode setting is deprecated.");
+#pragma warning restore CS0618 // Type or member is obsolete
 
 			bool namedQueryChecking = PropertiesHelper.GetBoolean(Environment.QueryStartupChecking, properties, true);
 			log.Info("Named query checking : " + EnabledDisabled(namedQueryChecking));

@@ -276,7 +276,7 @@ namespace NHibernate.Impl
 				{
 					allCacheRegions[cache.RegionName] = cache.Cache;
 				}
-				ICollectionPersister persister = PersisterFactory.CreateCollectionPersister(cfg, model, cache, this);
+				ICollectionPersister persister = PersisterFactory.CreateCollectionPersister(model, cache, this);
 				collectionPersisters[model.Role] = persister;
 				IType indexType = persister.IndexType;
 				if (indexType != null && indexType.IsAssociationType && !indexType.IsAnyType)
@@ -497,8 +497,7 @@ namespace NHibernate.Impl
 #pragma warning restore 618
 
 			return
-				new SessionImpl(connection, this, true, settings.CacheProvider.NextTimestamp(), interceptor,
-								settings.DefaultEntityMode, flushBeforeCompletionEnabled, autoCloseSessionEnabled,
+				new SessionImpl(connection, this, true, settings.CacheProvider.NextTimestamp(), interceptor, flushBeforeCompletionEnabled, autoCloseSessionEnabled,
 								isInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled, connectionReleaseMode, settings.DefaultFlushMode);
 		}
 
@@ -652,7 +651,7 @@ namespace NHibernate.Impl
 						return knownMap;
 					}
 					// NH : take care with this because we are forcing the Poco EntityMode
-					clazz = checkPersister.GetMappedClass(EntityMode.Poco);
+					clazz = checkPersister.MappedClass;
 				}
 
 				if (clazz == null)
@@ -713,7 +712,7 @@ namespace NHibernate.Impl
 							bool assignableSuperclass;
 							if (q.IsInherited)
 							{
-								System.Type mappedSuperclass = GetEntityPersister(q.MappedSuperclass).GetMappedClass(EntityMode.Poco);
+								System.Type mappedSuperclass = GetEntityPersister(q.MappedSuperclass).MappedClass;
 								assignableSuperclass = clazz.IsAssignableFrom(mappedSuperclass);
 							}
 							else
@@ -735,7 +734,7 @@ namespace NHibernate.Impl
 
 		private static bool IsMatchingImplementor(string entityOrClassName, System.Type entityClass, IQueryable implementor)
 		{
-			var implementorClass = implementor.GetMappedClass(EntityMode.Poco);
+			var implementorClass = implementor.MappedClass;
 			if (implementorClass == null)
 			{
 				return false;
@@ -926,7 +925,7 @@ namespace NHibernate.Impl
 					.GenerateCacheKey(id, type, entityOrRoleName);
 			}
 
-			return new CacheKey(id, type, entityOrRoleName, EntityMode.Poco, this);
+			return new CacheKey(id, type, entityOrRoleName, this);
 		}
 
 		public void EvictCollection(string roleName)
@@ -1208,8 +1207,7 @@ namespace NHibernate.Impl
 			var isInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled = settings.IsInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled;
 #pragma warning restore 618
 
-			SessionImpl session = new SessionImpl(connection, this, autoClose, timestamp, sessionLocalInterceptor ?? interceptor,
-												  settings.DefaultEntityMode, settings.IsFlushBeforeCompletionEnabled,
+			SessionImpl session = new SessionImpl(connection, this, autoClose, timestamp, sessionLocalInterceptor ?? interceptor, settings.IsFlushBeforeCompletionEnabled,
 												  settings.IsAutoCloseSessionEnabled, isInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled,
 												  settings.ConnectionReleaseMode, settings.DefaultFlushMode);
 

@@ -47,11 +47,10 @@ namespace NHibernate.Collection.Generic
 
 		public override object GetSnapshot(ICollectionPersister persister)
 		{
-			EntityMode entityMode = Session.EntityMode;
 			Dictionary<TKey, TValue> clonedMap = new Dictionary<TKey, TValue>(WrappedMap.Count);
 			foreach (KeyValuePair<TKey, TValue> e in WrappedMap)
 			{
-				object copy = persister.ElementType.DeepCopy(e.Value, entityMode, persister.Factory);
+				object copy = persister.ElementType.DeepCopy(e.Value, persister.Factory);
 				clonedMap[e.Key] = (TValue)copy;
 			}
 			return clonedMap;

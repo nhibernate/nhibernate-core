@@ -12,28 +12,50 @@ using Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation;
 using Remotion.Linq.Parsing.Structure;
 using Remotion.Linq.Parsing.Structure.IntermediateModel;
 using Remotion.Linq.Parsing.Structure.NodeTypeProviders;
+using Remotion.Linq.Parsing.Structure.ExpressionTreeProcessors;
+using NHibernate.Linq.Visitors;
 
 namespace NHibernate.Linq
 {
 	public static class NhRelinqQueryParser
 	{
 		private static readonly QueryParser QueryParser;
+		private static readonly IExpressionTreeProcessor PreProcessor;
 
 		static NhRelinqQueryParser()
 		{
+			var preTransformerRegistry = new ExpressionTransformerRegistry();
+			// NH-3247: must remove .Net compiler char to int conversion before
+			// parameterization occurs.
+			preTransformerRegistry.Register(new RemoveCharToIntConversion());
+			PreProcessor = new TransformingExpressionTreeProcessor(preTransformerRegistry);
+
 			var transformerRegistry = ExpressionTransformerRegistry.CreateDefault();
-			transformerRegistry.Register(new RemoveCharToIntConversion());
 			transformerRegistry.Register(new RemoveRedundantCast());
 			transformerRegistry.Register(new SimplifyCompareTransformer());
 
-			var processor = ExpressionTreeParser.CreateDefaultProcessor(transformerRegistry);
-			// Add custom processors here:
-			// processor.InnerProcessors.Add (new MyExpressionTreeProcessor());
+			// If needing a compound processor for adding other processing, do not use
+			// ExpressionTreeParser.CreateDefaultProcessor(transformerRegistry), it would
+			// cause NH-3961 again by including a PartialEvaluatingExpressionTreeProcessor.
+			// Directly instantiate a CompoundExpressionTreeProcessor instead.
+			var processor = new TransformingExpressionTreeProcessor(transformerRegistry);
 
 			var nodeTypeProvider = new NHibernateNodeTypeProvider();
 
 			var expressionTreeParser = new ExpressionTreeParser(nodeTypeProvider, processor);
 			QueryParser = new QueryParser(expressionTreeParser);
+		}
+
+		/// <summary>
+		/// Applies the minimal transformations required before parameterization,
+		/// expression key computing and parsing.
+		/// </summary>
+		/// <param name="expression">The expression to transform.</param>
+		/// <returns>The transformed expression.</returns>
+		public static Expression PreTransform(Expression expression)
+		{
+			var partiallyEvaluatedExpression = NhPartialEvaluatingExpressionTreeVisitor.EvaluateIndependentSubtrees(expression);
+			return PreProcessor.Process(partiallyEvaluatedExpression);
 		}
 
 		public static QueryModel Parse(Expression expression)
@@ -50,18 +72,26 @@ namespace NHibernate.Linq
 		{
 			var methodInfoRegistry = new MethodInfoBasedNodeTypeRegistry();
 
-			methodInfoRegistry.Register(new[] { typeof(EagerFetchingExtensionMethods).GetMethod("Fetch") }, typeof(FetchOneExpressionNode));
-			methodInfoRegistry.Register(new[] { typeof(EagerFetchingExtensionMethods).GetMethod("FetchMany") }, typeof(FetchManyExpressionNode));
-			methodInfoRegistry.Register(new[] { typeof(EagerFetchingExtensionMethods).GetMethod("ThenFetch") }, typeof(ThenFetchOneExpressionNode));
-			methodInfoRegistry.Register(new[] { typeof(EagerFetchingExtensionMethods).GetMethod("ThenFetchMany") }, typeof(ThenFetchManyExpressionNode));
+			methodInfoRegistry.Register(
+				new[] { ReflectionHelper.GetMethodDefinition(() => EagerFetchingExtensionMethods.Fetch<object, object>(null, null)) },
+				typeof(FetchOneExpressionNode));
+			methodInfoRegistry.Register(
+				new[] { ReflectionHelper.GetMethodDefinition(() => EagerFetchingExtensionMethods.FetchMany<object, object>(null, null)) },
+				typeof(FetchManyExpressionNode));
+			methodInfoRegistry.Register(
+				new[] { ReflectionHelper.GetMethodDefinition(() => EagerFetchingExtensionMethods.ThenFetch<object, object, object>(null, null)) },
+				typeof(ThenFetchOneExpressionNode));
+			methodInfoRegistry.Register(
+				new[] { ReflectionHelper.GetMethodDefinition(() => EagerFetchingExtensionMethods.ThenFetchMany<object, object, object>(null, null)) },
+				typeof(ThenFetchManyExpressionNode));
 
 			methodInfoRegistry.Register(
 				new[]
-					{
-						typeof(LinqExtensionMethods).GetMethod("Cacheable"),
-						typeof(LinqExtensionMethods).GetMethod("CacheMode"),
-						typeof(LinqExtensionMethods).GetMethod("CacheRegion"),
-					}, typeof(CacheableExpressionNode));
+				{
+					ReflectionHelper.GetMethodDefinition(() => LinqExtensionMethods.Cacheable<object>(null)),
+					ReflectionHelper.GetMethodDefinition(() => LinqExtensionMethods.CacheMode<object>(null, CacheMode.Normal)),
+					ReflectionHelper.GetMethodDefinition(() => LinqExtensionMethods.CacheRegion<object>(null, null)),
+				}, typeof(CacheableExpressionNode));
 
 			methodInfoRegistry.Register(
 				new[]

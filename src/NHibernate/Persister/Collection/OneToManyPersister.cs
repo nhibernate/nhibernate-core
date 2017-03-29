@@ -5,7 +5,6 @@ using System.Data.Common;
 using System.Text;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
-using NHibernate.Cfg;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
@@ -24,8 +23,8 @@ namespace NHibernate.Persister.Collection
 		private readonly bool _keyIsNullable;
 		private readonly bool _keyIsUpdateable;
 
-		public OneToManyPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, Configuration cfg, ISessionFactoryImplementor factory)
-			: base(collection, cache, cfg, factory)
+		public OneToManyPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory)
+			: base(collection, cache, factory)
 		{
 			_cascadeDeleteEnabled = collection.Key.IsCascadeDeleteEnabled && factory.Dialect.SupportsCascadeDelete;
 			_keyIsNullable = collection.Key.IsNullable;

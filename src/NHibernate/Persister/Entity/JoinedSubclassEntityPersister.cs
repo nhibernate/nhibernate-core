@@ -345,6 +345,11 @@ namespace NHibernate.Persister.Entity
 			get { return discriminatorValue; }
 		}
 
+		public override string[] SubclassClosure
+		{
+			get { return subclassClosure; }
+		}
+
 		public override string[] PropertySpaces
 		{
 			get

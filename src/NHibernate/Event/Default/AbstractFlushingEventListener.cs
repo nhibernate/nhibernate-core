@@ -81,7 +81,7 @@ namespace NHibernate.Event.Default
 					.Append(" removals to ").Append(persistenceContext.CollectionEntries.Count).Append(" collections");
 
 				log.Debug(sb.ToString());
-				new Printer(session.Factory).ToString(persistenceContext.EntitiesByKey.Values.ToArray().GetEnumerator(), session.EntityMode);
+				new Printer(session.Factory).ToString(persistenceContext.EntitiesByKey.Values.ToArray().GetEnumerator());
 			}
 		}
 
@@ -296,7 +296,7 @@ namespace NHibernate.Event.Default
 				{
 					//otherwise recreate the mapping between the collection and its key
 					CollectionKey collectionKey =
-						new CollectionKey(collectionEntry.LoadedPersister, collectionEntry.LoadedKey, session.EntityMode);
+						new CollectionKey(collectionEntry.LoadedPersister, collectionEntry.LoadedKey);
 					persistenceContext.CollectionsByKey[collectionKey] = persistentCollection;
 				}
 			}

@@ -25,11 +25,13 @@ namespace NHibernate.Transform
 
 		public override bool Equals(object obj)
 		{
-			if (obj == null)
+			if (obj == null || obj.GetHashCode() != Hasher.GetHashCode())
 			{
 				return false;
 			}
-			return obj.GetHashCode() == Hasher.GetHashCode();
+			// NH-3957: do not rely on hashcode alone.
+			// Must be the exact same type
+			return obj.GetType() == typeof(ToListResultTransformer);
 		}
 
 		public override int GetHashCode()

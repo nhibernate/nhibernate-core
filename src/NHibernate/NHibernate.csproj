@@ -79,9 +79,8 @@
       <HintPath>..\packages\Iesi.Collections.4.0.1.4000\lib\net40\Iesi.Collections.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Remotion.Linq, Version=1.13.183.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
-      <HintPath>..\packages\Remotion.Linq.1.13.183.0\lib\net35\Remotion.Linq.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Remotion.Linq, Version=1.15.15.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Remotion.Linq.1.15.15.0\lib\portable-net45+wp80+wpa81+win\Remotion.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -734,12 +733,14 @@
     <Compile Include="Type\UInt32Type.cs" />
     <Compile Include="Type\UInt64Type.cs" />
     <Compile Include="Type\PrimitiveType.cs" />
+    <Compile Include="Type\TimestampUtcType.cs" />
     <Compile Include="Type\YesNoType.cs" />
     <Compile Include="UnresolvableObjectException.cs" />
     <Compile Include="Util\ADOExceptionReporter.cs" />
     <Compile Include="Util\ArrayHelper.cs" />
     <Compile Include="Util\CollectionPrinter.cs" />
     <Compile Include="Util\EnumerableExtensions.cs" />
+    <Compile Include="Util\ReflectionCache.cs" />
     <Compile Include="Util\EnumeratorAdapter.cs" />
     <Compile Include="Util\IdentityMap.cs" />
     <Compile Include="Util\JoinedEnumerable.cs" />
@@ -921,7 +922,6 @@
     <Compile Include="Driver\ReflectionDriveConnectionCommandProvider.cs" />
     <Compile Include="Engine\Query\CallableParser.cs" />
     <Compile Include="Engine\Query\QueryExpressionPlan.cs" />
-    <Compile Include="EntityModeEqualityComparer.cs" />
     <Compile Include="Event\AbstractPostDatabaseOperationEvent.cs" />
     <Compile Include="Event\AbstractPreDatabaseOperationEvent.cs" />
     <Compile Include="Event\IDatabaseEventArgs.cs" />
@@ -1713,16 +1713,15 @@
     <Compile Include="Transform\PassThroughResultTransformer.cs" />
     <Compile Include="Transform\Transformers.cs" />
     <Compile Include="Tuple\Component\AbstractComponentTuplizer.cs" />
-    <Compile Include="Tuple\Component\ComponentEntityModeToTuplizerMapping.cs" />
+    <Compile Include="Tuple\Component\ComponentTuplizerFactory.cs" />
     <Compile Include="Tuple\Component\ComponentMetamodel.cs" />
     <Compile Include="Tuple\Component\DynamicMapComponentTuplizer.cs" />
     <Compile Include="Tuple\Component\IComponentTuplizer.cs" />
     <Compile Include="Tuple\Component\PocoComponentTuplizer.cs" />
     <Compile Include="Tuple\DynamicMapInstantiator.cs" />
-    <Compile Include="Tuple\EntityModeToTuplizerMapping.cs" />
     <Compile Include="Tuple\Entity\AbstractEntityTuplizer.cs" />
     <Compile Include="Tuple\Entity\DynamicMapEntityTuplizer.cs" />
-    <Compile Include="Tuple\Entity\EntityEntityModeToTuplizerMapping.cs" />
+    <Compile Include="Tuple\Entity\EntityTuplizerFactory.cs" />
     <Compile Include="Tuple\Entity\EntityMetamodel.cs" />
     <Compile Include="Tuple\Entity\IEntityTuplizer.cs" />
     <Compile Include="Tuple\Entity\PocoEntityTuplizer.cs" />
@@ -1784,7 +1783,6 @@
     <Compile Include="Util\TypeNameParser.cs" />
     <Compile Include="Util\UnmodifiableDictionary.cs" />
     <Compile Include="Util\WeakHashtable.cs" />
-    <Compile Include="Properties\XmlAccessor.cs" />
     <EmbeddedResource Include="nhibernate-configuration.xsd">
       <SubType>
       </SubType>
@@ -1819,7 +1817,7 @@
       <!-- Note: _ReferenceAssembliesPath will contain a trailing backslash which /targetplatform
            can't handle. Circumvented by adding a trailing period below. -->
     </GetReferenceAssemblyPaths>
-    <Exec Command="$(SolutionDir)..\Tools\ilrepack\ilrepack.exe /verbose /t:library /targetplatform:v4,&quot;$(_ReferenceAssembliesPath).&quot; /keyfile:$(AssemblyOriginatorKeyFile) /internalize:internalize.exclude /out:$(OutputPath)\NHibernate.dll $(IntermediateOutputPath)\NHibernate.dll $(OutputPath)\Remotion.Linq.dll $(OutputPath)\Antlr3.Runtime.dll" />
+    <Exec Command="$(SolutionDir)..\Tools\ilrepack\ilrepack.exe /verbose /t:library /targetplatform:v4,&quot;$(_ReferenceAssembliesPath).&quot; /keyfile:$(AssemblyOriginatorKeyFile) /internalize /out:$(OutputPath)\NHibernate.dll $(IntermediateOutputPath)\NHibernate.dll $(OutputPath)\Antlr3.Runtime.dll" />
   </Target>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

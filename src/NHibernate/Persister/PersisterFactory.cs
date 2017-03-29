@@ -2,7 +2,6 @@ using System;
 using System.Reflection;
 using System.Text;
 using NHibernate.Cache;
-using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.Persister.Collection;
@@ -18,30 +17,19 @@ namespace NHibernate.Persister
 		//TODO: make ClassPersisters *not* depend on ISessionFactoryImplementor
 		// interface, if possible
 
-		private static readonly System.Type[] PersisterConstructorArgs = new System.Type[]
-			{
-				typeof(PersistentClass),
-				typeof(ICacheConcurrencyStrategy),
-				typeof(ISessionFactoryImplementor),
-				typeof(IMapping)
-			};
+		static readonly System.Type[] PersisterConstructorArgs = {
+			typeof(PersistentClass),
+			typeof(ICacheConcurrencyStrategy),
+			typeof(ISessionFactoryImplementor),
+			typeof(IMapping)
+		};
 
-		// TODO: is it really necessary to provide Configuration to CollectionPersisters ? Should it not be enough with associated class ?
-		// or why does ClassPersister's not get access to configuration ?
-		private static readonly System.Type[] CollectionPersisterConstructorArgs = new System.Type[]
-			{
-				typeof(Mapping.Collection),
-				typeof(ICacheConcurrencyStrategy),
-				typeof(ISessionFactoryImplementor)
-			};
-
-		private static readonly System.Type[] CollectionPersisterConstructor2Args = new System.Type[]
-			{
-				typeof(Mapping.Collection),
-				typeof(ICacheConcurrencyStrategy),
-				typeof(Configuration),
-				typeof(ISessionFactoryImplementor)
-			};
+		static readonly System.Type[] CollectionPersisterConstructorArgs =
+		{
+			typeof(Mapping.Collection),
+			typeof(ICacheConcurrencyStrategy),
+			typeof(ISessionFactoryImplementor)
+		};
 
 		/// <summary>
 		/// Creates a built in Entity Persister or a custom Persister.
@@ -69,7 +57,7 @@ namespace NHibernate.Persister
 			}
 		}
 
-		public static ICollectionPersister CreateCollectionPersister(Configuration cfg, Mapping.Collection model, ICacheConcurrencyStrategy cache,
+		public static ICollectionPersister CreateCollectionPersister(Mapping.Collection model, ICacheConcurrencyStrategy cache,
 																	 ISessionFactoryImplementor factory)
 		{
 			System.Type persisterClass = model.CollectionPersisterClass;
@@ -78,12 +66,12 @@ namespace NHibernate.Persister
 				// default behaviour
 				return
 					model.IsOneToMany
-						? (ICollectionPersister) new OneToManyPersister(model, cache, cfg, factory)
-						: (ICollectionPersister) new BasicCollectionPersister(model, cache, cfg, factory);
+						? (ICollectionPersister) new OneToManyPersister(model, cache, factory)
+						: (ICollectionPersister) new BasicCollectionPersister(model, cache, factory);
 			}
 			else
 			{
-				return Create(persisterClass, model, cache, factory, cfg);
+				return Create(persisterClass, model, cache, factory);
 			}
 		}
 
@@ -127,18 +115,12 @@ namespace NHibernate.Persister
 		}
 
 		public static ICollectionPersister Create(System.Type persisterClass, Mapping.Collection model,
-												  ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory, Configuration cfg)
+												  ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory)
 		{
 			ConstructorInfo pc;
-			var use4Parameters = false;
 			try
 			{
 				pc = persisterClass.GetConstructor(CollectionPersisterConstructorArgs);
-				if (pc == null)
-				{
-					use4Parameters = true;
-					pc = persisterClass.GetConstructor(CollectionPersisterConstructor2Args);
-				}
 			}
 			catch (Exception e)
 			{
@@ -147,21 +129,14 @@ namespace NHibernate.Persister
 			if(pc == null)
 			{
 				var messageBuilder = new StringBuilder();
-				messageBuilder.AppendLine("Could not find a public constructor for " + persisterClass.Name +";");
-				messageBuilder.AppendLine("- The ctor may have " + CollectionPersisterConstructorArgs.Length + " parameters of types (in order):");
+				messageBuilder.Append("Could not find a public constructor for ").Append(persisterClass.Name).AppendLine(";");
+				messageBuilder.Append("- The ctor may have ").Append(CollectionPersisterConstructorArgs.Length).AppendLine(" parameters of types (in order):");
 				System.Array.ForEach(CollectionPersisterConstructorArgs, t=> messageBuilder.AppendLine(t.FullName));
-				messageBuilder.AppendLine();
-				messageBuilder.AppendLine("- The ctor may have " + CollectionPersisterConstructor2Args.Length + " parameters of types (in order):");
-				System.Array.ForEach(CollectionPersisterConstructor2Args, t => messageBuilder.AppendLine(t.FullName));
 				throw new MappingException(messageBuilder.ToString());
 			}
 			try
 			{
-				if (!use4Parameters)
-				{
-					return (ICollectionPersister) pc.Invoke(new object[] {model, cache, factory});
-				}
-				return (ICollectionPersister)pc.Invoke(new object[] { model, cache, cfg, factory });
+				return (ICollectionPersister) pc.Invoke(new object[] {model, cache, factory});
 			}
 			catch (TargetInvocationException tie)
 			{

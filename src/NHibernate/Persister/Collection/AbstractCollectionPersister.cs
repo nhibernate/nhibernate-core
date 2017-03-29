@@ -8,7 +8,6 @@ using System.Text;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
-using NHibernate.Cfg;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
@@ -52,9 +51,6 @@ namespace NHibernate.Persister.Collection
 		private readonly bool hasOrder;
 		private readonly bool hasWhere;
 		private readonly int baseIndex;
-		private readonly string nodeName;
-		private readonly string elementNodeName;
-		private readonly string indexNodeName;
 
 		protected internal bool indexContainsFormula;
 		protected internal bool elementIsPureFormula;
@@ -165,8 +161,7 @@ namespace NHibernate.Persister.Collection
 
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (ICollectionPersister));
 
-		public AbstractCollectionPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, Configuration cfg,
-										   ISessionFactoryImplementor factory)
+		public AbstractCollectionPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory)
 		{
 			this.factory = factory;
 			this.cache = cache;
@@ -188,7 +183,6 @@ namespace NHibernate.Persister.Collection
 			entityName = collection.OwnerEntityName;
 			ownerPersister = factory.GetEntityPersister(entityName);
 			queryLoaderName = collection.LoaderName;
-			nodeName = collection.NodeName;
 			isMutable = collection.IsMutable;
 
 			Table table = collection.CollectionTable;
@@ -277,22 +271,16 @@ namespace NHibernate.Persister.Collection
 				CheckColumnDuplication(distinctColumns, element.ColumnIterator);
 			}
 
-			string elemNode = collection.ElementNodeName;
 			if (elementType.IsEntityType)
 			{
 				string _entityName = ((EntityType) elementType).GetAssociatedEntityName();
 				elementPersister = factory.GetEntityPersister(_entityName);
-				if (elemNode == null)
-				{
-					elemNode = cfg.GetClassMapping(_entityName).NodeName;
-				}
 				// NativeSQL: collect element column and auto-aliases
 			}
 			else
 			{
 				elementPersister = null;
 			}
-			elementNodeName = elemNode;
 
 			int elementSpan = element.ColumnSpan;
 			elementColumnAliases = new string[elementSpan];
@@ -377,7 +365,6 @@ namespace NHibernate.Persister.Collection
 				indexContainsFormula = hasFormula;
 				baseIndex = indexedCollection.IsList ? ((List) indexedCollection).BaseIndex : 0;
 
-				indexNodeName = indexedCollection.IndexNodeName;
 				CheckColumnDuplication(distinctColumns, indexedCollection.Index.ColumnIterator);
 			}
 			else
@@ -390,7 +377,6 @@ namespace NHibernate.Persister.Collection
 				indexColumnNames = null;
 				indexColumnAliases = null;
 				baseIndex = 0;
-				indexNodeName = null;
 			}
 
 			hasIdentifier = collection.IsIdentified;
@@ -1935,21 +1921,6 @@ namespace NHibernate.Persister.Collection
 		public bool IsVersioned
 		{
 			get { return isVersioned && OwnerEntityPersister.IsVersioned; }
-		}
-
-		public string NodeName
-		{
-			get { return nodeName; }
-		}
-
-		public string ElementNodeName
-		{
-			get { return elementNodeName; }
-		}
-
-		public string IndexNodeName
-		{
-			get { return indexNodeName; }
 		}
 
 		protected virtual ISQLExceptionConverter SQLExceptionConverter

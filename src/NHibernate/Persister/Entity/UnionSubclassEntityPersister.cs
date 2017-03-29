@@ -186,7 +186,7 @@ namespace NHibernate.Persister.Entity
 			get { return discriminatorValue; }
 		}
 
-		public string[] SubclassClosure
+		public override string[] SubclassClosure
 		{
 			get { return subclassClosure; }
 		}

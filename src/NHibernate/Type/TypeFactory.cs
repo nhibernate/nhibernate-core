@@ -3,14 +3,15 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Xml;
 using System.Xml.Linq;
 using NHibernate.Bytecode;
 using NHibernate.Classic;
+using NHibernate.Linq;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 using NHibernate.Util;
-using System.Runtime.CompilerServices;
 
 namespace NHibernate.Type
 {
@@ -37,7 +38,25 @@ namespace NHibernate.Type
 		private static readonly char[] PrecisionScaleSplit = new[] { '(', ')', ',' };
 		private static readonly char[] LengthSplit = new[] { '(', ')' };
 		private static readonly TypeFactory Instance;
-		private static readonly System.Type[] GenericCollectionSimpleSignature = new[] { typeof(string), typeof(string), typeof(bool) };
+
+		private static readonly MethodInfo BagDefinition = ReflectionHelper.GetMethodDefinition<ICollectionTypeFactory>(
+			f => f.Bag<object>(null, null));
+		private static readonly MethodInfo IdBagDefinition = ReflectionHelper.GetMethodDefinition<ICollectionTypeFactory>(
+			f => f.IdBag<object>(null, null));
+		private static readonly MethodInfo ListDefinition = ReflectionHelper.GetMethodDefinition<ICollectionTypeFactory>(
+			f => f.List<object>(null, null));
+		private static readonly MethodInfo MapDefinition = ReflectionHelper.GetMethodDefinition<ICollectionTypeFactory>(
+			f => f.Map<object, object>(null, null));
+		private static readonly MethodInfo SortedListDefinition = ReflectionHelper.GetMethodDefinition<ICollectionTypeFactory>(
+			f => f.SortedList<object, object>(null, null, null));
+		private static readonly MethodInfo SortedDictionaryDefinition = ReflectionHelper.GetMethodDefinition<ICollectionTypeFactory>(
+			f => f.SortedDictionary<object, object>(null, null, null));
+		private static readonly MethodInfo SetDefinition = ReflectionHelper.GetMethodDefinition<ICollectionTypeFactory>(
+			f => f.Set<object>(null, null));
+		private static readonly MethodInfo SortedSetDefinition = ReflectionHelper.GetMethodDefinition<ICollectionTypeFactory>(
+			f => f.SortedSet<object>(null, null, null));
+		private static readonly MethodInfo OrderedSetDefinition = ReflectionHelper.GetMethodDefinition<ICollectionTypeFactory>(
+			f => f.OrderedSet<object>(null, null));
 
 		/*
 		 * Maps the string representation of the type to the IType.  The string
@@ -243,6 +262,7 @@ namespace NHibernate.Type
 			
 			RegisterType(NHibernateUtil.Date, new[] { "date" });
 			RegisterType(NHibernateUtil.Timestamp, new[] { "timestamp" });
+			RegisterType(NHibernateUtil.TimestampUtc, new[] { "timestamputc" });
 			RegisterType(NHibernateUtil.DbTimestamp, new[] { "dbtimestamp" });
 			RegisterType(NHibernateUtil.Time, new[] { "time" });
 			RegisterType(NHibernateUtil.TrueFalse, new[] { "true_false" });
@@ -725,10 +745,10 @@ namespace NHibernate.Type
 		/// A one-to-one association type for the given class and cascade style.
 		/// </summary>
 		public static EntityType OneToOne(string persistentClass, ForeignKeyDirection foreignKeyType, string uniqueKeyPropertyName,
-			bool lazy, bool unwrapProxy, bool isEmbeddedInXML, string entityName, string propertyName)
+			bool lazy, bool unwrapProxy, string entityName, string propertyName)
 		{
 			return
-				new OneToOneType(persistentClass, foreignKeyType, uniqueKeyPropertyName, lazy, unwrapProxy, isEmbeddedInXML,
+				new OneToOneType(persistentClass, foreignKeyType, uniqueKeyPropertyName, lazy, unwrapProxy,
 												 entityName, propertyName);
 		}
 
@@ -753,100 +773,81 @@ namespace NHibernate.Type
 		/// <summary>
 		/// A many-to-one association type for the given class and cascade style.
 		/// </summary>
-		public static EntityType ManyToOne(string persistentClass, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy,
-			bool isEmbeddedInXML, bool ignoreNotFound, bool isLogicalOneToOne)
+		public static EntityType ManyToOne(string persistentClass, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool ignoreNotFound, bool isLogicalOneToOne)
 		{
-			return new ManyToOneType(persistentClass, uniqueKeyPropertyName, lazy, unwrapProxy, isEmbeddedInXML, ignoreNotFound, isLogicalOneToOne);
+			return new ManyToOneType(persistentClass, uniqueKeyPropertyName, lazy, unwrapProxy, ignoreNotFound, isLogicalOneToOne);
 		}
 
-		public static CollectionType Array(string role, string propertyRef, bool embedded, System.Type elementClass)
+		public static CollectionType Array(string role, string propertyRef, System.Type elementClass)
 		{
-			return Instance.CollectionTypeFactory.Array(role, propertyRef, embedded, elementClass);
+			return Instance.CollectionTypeFactory.Array(role, propertyRef, elementClass);
 		}
 
 
 		public static CollectionType GenericBag(string role, string propertyRef, System.Type elementClass)
 		{
-			MethodInfo mi = ReflectHelper.GetGenericMethodFrom<ICollectionTypeFactory>("Bag", new[] {elementClass},
-																						 GenericCollectionSimpleSignature);
+			MethodInfo mi = BagDefinition.MakeGenericMethod(new[] { elementClass });
 
-			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef, false });
+			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef });
 		}
 
 		public static CollectionType GenericIdBag(string role, string propertyRef, System.Type elementClass)
 		{
-			MethodInfo mi = ReflectHelper.GetGenericMethodFrom<ICollectionTypeFactory>("IdBag", new[] { elementClass },
-																																									 GenericCollectionSimpleSignature);
+			MethodInfo mi = IdBagDefinition.MakeGenericMethod(new[] { elementClass });
 
-			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef, false });
+			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef });
 		}
 
 		public static CollectionType GenericList(string role, string propertyRef, System.Type elementClass)
 		{
-			MethodInfo mi = ReflectHelper.GetGenericMethodFrom<ICollectionTypeFactory>("List", new[] { elementClass },
-																																									 GenericCollectionSimpleSignature);
+			MethodInfo mi = ListDefinition.MakeGenericMethod(new[] { elementClass });
 
-			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef, false });
+			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef });
 		}
 
-		public static CollectionType GenericMap(string role, string propertyRef, System.Type indexClass,
-																						System.Type elementClass)
+		public static CollectionType GenericMap(string role, string propertyRef, System.Type indexClass, System.Type elementClass)
 		{
-			MethodInfo mi = ReflectHelper.GetGenericMethodFrom<ICollectionTypeFactory>("Map", new[] {indexClass, elementClass },
-																																									 GenericCollectionSimpleSignature);
+			MethodInfo mi = MapDefinition.MakeGenericMethod(new[] { indexClass, elementClass });
 
-			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef, false });
+			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef });
 		}
 
-		public static CollectionType GenericSortedList(string role, string propertyRef, object comparer,
-																									 System.Type indexClass, System.Type elementClass)
+		public static CollectionType GenericSortedList(string role, string propertyRef, object comparer, System.Type indexClass, System.Type elementClass)
 		{
-			var signature = new[] { typeof(string), typeof(string), typeof(bool), typeof(IComparer<>).MakeGenericType(indexClass) };
-			MethodInfo mi = ReflectHelper.GetGenericMethodFrom<ICollectionTypeFactory>("SortedList", new[] { indexClass, elementClass },
-																																									 signature);
+			MethodInfo mi = SortedListDefinition.MakeGenericMethod(new[] { indexClass, elementClass });
 
-			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef, false, comparer });
+			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef, comparer });
 		}
 
-		public static CollectionType GenericSortedDictionary(string role, string propertyRef, object comparer,
-																												 System.Type indexClass, System.Type elementClass)
+		public static CollectionType GenericSortedDictionary(string role, string propertyRef, object comparer, System.Type indexClass, System.Type elementClass)
 		{
-			var signature = new[] { typeof(string), typeof(string), typeof(bool), typeof(IComparer<>).MakeGenericType(indexClass) };
-			MethodInfo mi = ReflectHelper.GetGenericMethodFrom<ICollectionTypeFactory>("SortedDictionary", new[] { indexClass, elementClass },
-																																						 signature);
+			MethodInfo mi = SortedDictionaryDefinition.MakeGenericMethod(new[] { indexClass, elementClass });
 
-			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef, false, comparer });
+			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef, comparer });
 		}
 
 		public static CollectionType GenericSet(string role, string propertyRef, System.Type elementClass)
 		{
-			MethodInfo mi = ReflectHelper.GetGenericMethodFrom<ICollectionTypeFactory>("Set", new[] { elementClass },
-																																									 GenericCollectionSimpleSignature);
+			MethodInfo mi = SetDefinition.MakeGenericMethod(new[] { elementClass });
 
-			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef, false });
+			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef });
 		}
 
-		public static CollectionType GenericSortedSet(string role, string propertyRef, object comparer,
-																									System.Type elementClass)
+		public static CollectionType GenericSortedSet(string role, string propertyRef, object comparer, System.Type elementClass)
 		{
-			var signature = new[] { typeof(string), typeof(string), typeof(bool), typeof(IComparer<>).MakeGenericType(elementClass) };
-			MethodInfo mi = ReflectHelper.GetGenericMethodFrom<ICollectionTypeFactory>("SortedSet", new[] { elementClass },
-																																									 signature);
+			MethodInfo mi = SortedSetDefinition.MakeGenericMethod(new[] { elementClass });
 
-			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef, false, comparer });
+			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef, comparer });
 		}
 
-		public static CollectionType GenericOrderedSet(string role, string propertyRef,
-																									System.Type elementClass)
+		public static CollectionType GenericOrderedSet(string role, string propertyRef, System.Type elementClass)
 		{
-			MethodInfo mi = ReflectHelper.GetGenericMethodFrom<ICollectionTypeFactory>("OrderedSet", new[] { elementClass },
-																																									 GenericCollectionSimpleSignature);
+			MethodInfo mi = OrderedSetDefinition.MakeGenericMethod(new[] { elementClass });
 
-			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef, false });
+			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef });
 		}
 
-		public static CollectionType CustomCollection(string typeName, IDictionary<string, string> typeParameters,
-			string role, string propertyRef, bool embedded)
+		public static CollectionType CustomCollection(string typeName, IDictionary<string, string> typeParameters, string role, string propertyRef)
 		{
 			System.Type typeClass;
 			try
@@ -857,7 +858,7 @@ namespace NHibernate.Type
 			{
 				throw new MappingException("user collection type class not found: " + typeName, cnfe);
 			}
-			CustomCollectionType result = new CustomCollectionType(typeClass, role, propertyRef, embedded);
+			CustomCollectionType result = new CustomCollectionType(typeClass, role, propertyRef);
 			if (typeParameters != null)
 			{
 				InjectParameters(result.UserType, typeParameters);
@@ -871,7 +872,7 @@ namespace NHibernate.Type
 			{
 				((IParameterizedType) type).SetParameterValues(parameters);
 			}
-			else if (parameters != null && !(parameters.Count == 0))
+			else if (parameters != null && parameters.Count != 0)
 			{
 				throw new MappingException("type is not parameterized: " + type.GetType().Name);
 			}

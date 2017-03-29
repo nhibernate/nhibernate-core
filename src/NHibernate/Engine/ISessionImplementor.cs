@@ -320,9 +320,6 @@ namespace NHibernate.Engine
 		/// </summary>
 		bool TransactionInProgress { get; }
 
-		/// <summary> Retrieve the entity mode in effect for this session. </summary>
-		EntityMode EntityMode { get; }
-
 		/// <summary> Execute a native SQL update or delete query</summary>
 		int ExecuteNativeUpdate(NativeSQLQuerySpecification specification, QueryParameters queryParameters);
 

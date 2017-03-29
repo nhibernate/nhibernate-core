@@ -40,13 +40,13 @@ namespace NHibernate.Test.CacheTest
 			const string filterName = "DescriptionLike";
 			var f = new FilterImpl(sessions.GetFilterDefinition(filterName));
 			f.SetParameter("pLike", "so%");
-			var fk =  new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes, EntityMode.Poco);
+			var fk =  new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes);
 			ISet<FilterKey> fks = new HashSet<FilterKey> { fk };
 			qk = new QueryKey(sessions, SqlAll, new QueryParameters(), fks, null);
 
 			var f1 = new FilterImpl(sessions.GetFilterDefinition(filterName));
 			f1.SetParameter("pLike", "%ing");
-			var fk1 = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes, EntityMode.Poco);
+			var fk1 = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes);
 			fks = new HashSet<FilterKey> { fk1 };
 			qk1 = new QueryKey(sessions, SqlAll, new QueryParameters(), fks, null);
 		}
@@ -57,13 +57,13 @@ namespace NHibernate.Test.CacheTest
 
 			var f = new FilterImpl(sessions.GetFilterDefinition(filterName));
 			f.SetParameter("pDesc", "something").SetParameter("pValue", 10);
-			var fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes, EntityMode.Poco);
+			var fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes);
 			ISet<FilterKey> fks = new HashSet<FilterKey> { fk };
 			qk = new QueryKey(sessions, SqlAll, new QueryParameters(), fks, null);
 
 			var f1 = new FilterImpl(sessions.GetFilterDefinition(filterName));
 			f1.SetParameter("pDesc", "something").SetParameter("pValue", 11);
-			var fk1 = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes, EntityMode.Poco);
+			var fk1 = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes);
 			fks = new HashSet<FilterKey> { fk1 };
 			qk1 = new QueryKey(sessions, SqlAll, new QueryParameters(), fks, null);
 		}
@@ -111,7 +111,7 @@ namespace NHibernate.Test.CacheTest
 			string filterName = "DescriptionLike";
 			var f = new FilterImpl(sessions.GetFilterDefinition(filterName));
 			f.SetParameter("pLike", "so%");
-			var fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes, EntityMode.Poco);
+			var fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes);
 			ISet<FilterKey> fks = new HashSet<FilterKey> { fk };
 			var qk = new QueryKey(sessions, SqlAll, new QueryParameters(), fks, null);
 			Assert.That(qk.ToString(), Does.Contain(string.Format("filters: ['{0}']",fk)));
@@ -119,7 +119,7 @@ namespace NHibernate.Test.CacheTest
 			filterName = "DescriptionEqualAndValueGT";
 			f = new FilterImpl(sessions.GetFilterDefinition(filterName));
 			f.SetParameter("pDesc", "something").SetParameter("pValue", 10);
-			fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes, EntityMode.Poco);
+			fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes);
 			fks = new HashSet<FilterKey> { fk };
 			qk = new QueryKey(sessions, SqlAll, new QueryParameters(), fks, null);
 			Assert.That(qk.ToString(), Does.Contain(string.Format("filters: ['{0}']", fk)));
@@ -131,12 +131,12 @@ namespace NHibernate.Test.CacheTest
 			string filterName = "DescriptionLike";
 			var f = new FilterImpl(sessions.GetFilterDefinition(filterName));
 			f.SetParameter("pLike", "so%");
-			var fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes, EntityMode.Poco);
+			var fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes);
 
 			filterName = "DescriptionEqualAndValueGT";
 			var fv = new FilterImpl(sessions.GetFilterDefinition(filterName));
 			fv.SetParameter("pDesc", "something").SetParameter("pValue", 10);
-			var fvk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes, EntityMode.Poco);
+			var fvk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes);
 
 			ISet<FilterKey> fks = new HashSet<FilterKey> { fk, fvk };
 			var qk = new QueryKey(sessions, SqlAll, new QueryParameters(), fks, null);

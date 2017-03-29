@@ -159,7 +159,7 @@ namespace NHibernate.Engine
 
 					//if ( end == -1 && count > batchSize*10 ) return keys; //try out ten batches, max
 
-					bool isEqual = collectionPersister.KeyType.IsEqual(id, ce.LoadedKey, context.Session.EntityMode, collectionPersister.Factory);
+					bool isEqual = collectionPersister.KeyType.IsEqual(id, ce.LoadedKey, collectionPersister.Factory);
 
 					if (isEqual)
 					{
@@ -212,7 +212,7 @@ namespace NHibernate.Engine
 						//the first id found after the given id
 						return ids;
 					}
-					if (persister.IdentifierType.IsEqual(id, key.Identifier, context.Session.EntityMode))
+					if (persister.IdentifierType.IsEqual(id, key.Identifier))
 					{
 						end = i;
 					}

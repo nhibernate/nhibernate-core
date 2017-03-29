@@ -18,7 +18,7 @@ namespace NHibernate.Test.Criteria
 		{
 			this.propertyName = propertyName;
 			this.numberToAdd = numberToAdd;
-			typedValue = new TypedValue(NHibernateUtil.Int32, this.numberToAdd, EntityMode.Poco);
+			typedValue = new TypedValue(NHibernateUtil.Int32, this.numberToAdd);
 		}
 
 		public override bool IsAggregate

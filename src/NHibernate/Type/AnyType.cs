@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Data.Common;
 using System.Reflection;
-using System.Xml;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -63,7 +62,7 @@ namespace NHibernate.Type
 		{
 		}
 
-		public override object DeepCopy(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
+		public override object DeepCopy(object value, ISessionFactoryImplementor factory)
 		{
 			return value;
 		}
@@ -165,12 +164,6 @@ namespace NHibernate.Type
 				NHibernateUtil.Entity(NHibernateProxyHelper.GetClassWithoutInitializingProxy(value)).ToLoggableString(value, factory);
 		}
 
-		public override object FromXMLNode(XmlNode xml, IMapping factory)
-		{
-			// TODO NH: We can implement this method if the XML is the result of a serialization in XML
-			throw new NotSupportedException(); //TODO: is this right??
-		}
-
 		[Serializable]
 		public sealed class ObjectTypeCacheEntry
 		{
@@ -231,11 +224,6 @@ namespace NHibernate.Type
 			get { return false; }
 		}
 
-		public virtual bool IsEmbeddedInXML
-		{
-			get { return false; }
-		}
-
 		private static readonly string[] PROPERTY_NAMES = new string[] { "class", "id" };
 
 		public string[] PropertyNames
@@ -248,7 +236,7 @@ namespace NHibernate.Type
 			return i == 0 ? session.BestGuessEntityName(component) : Id(component, session);
 		}
 
-		public object[] GetPropertyValues(Object component, EntityMode entityMode)
+		public object[] GetPropertyValues(Object component)
 		{
 			throw new NotSupportedException();
 		}
@@ -275,7 +263,7 @@ namespace NHibernate.Type
 			get { return new IType[] {metaType, identifierType}; }
 		}
 
-		public void SetPropertyValues(object component, object[] values, EntityMode entityMode)
+		public void SetPropertyValues(object component, object[] values)
 		{
 			throw new NotSupportedException();
 		}
@@ -371,7 +359,7 @@ namespace NHibernate.Type
 			throw new NotSupportedException();
 		}
 
-		public override int Compare(object x, object y, EntityMode? entityMode)
+		public override int Compare(object x, object y)
 		{
 			return 0; //TODO: entities CAN be compared, by PK and entity name, fix this!
 		}
@@ -381,7 +369,7 @@ namespace NHibernate.Type
 			return false;
 		}
 
-		public override bool IsSame(object x, object y, EntityMode entityMode)
+		public override bool IsSame(object x, object y)
 		{
 			return x == y;
 		}
@@ -394,11 +382,6 @@ namespace NHibernate.Type
 		private object ResolveAny(string entityName, object id, ISessionImplementor session)
 		{
 			return entityName == null || id == null ? null : session.InternalLoad(entityName, id, false, false);
-		}
-
-		public override void SetToXMLNode(XmlNode xml, object value, ISessionFactoryImplementor factory)
-		{
-			throw new NotSupportedException("any types cannot be stringified");
 		}
 
 		public override bool[] ToColumnNullness(object value, IMapping mapping)

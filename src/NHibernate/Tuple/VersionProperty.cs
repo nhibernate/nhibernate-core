@@ -20,8 +20,6 @@ namespace NHibernate.Tuple
 		/// </summary>
 		/// <param name="name">The name by which the property can be referenced within
 		/// its owner.</param>
-		/// <param name="node">The node name to use for XML-based representation of this
-		/// property.</param>
 		/// <param name="type">The Hibernate Type of this property.</param>
 		/// <param name="lazy">Should this property be handled lazily?</param>
 		/// <param name="insertable">Is this property an insertable value?</param>
@@ -37,7 +35,6 @@ namespace NHibernate.Tuple
 		/// instances of the owning entity.</param>
 		public VersionProperty(
 			string name,
-			string node,
 			IType type,
 			bool lazy,
 			bool insertable,
@@ -50,7 +47,7 @@ namespace NHibernate.Tuple
 			CascadeStyle cascadeStyle,
 			VersionValue unsavedValue)
 			: base(
-				name, node, type, lazy, insertable, updateable, insertGenerated, updateGenerated, nullable, checkable, versionable,
+				name, type, lazy, insertable, updateable, insertGenerated, updateGenerated, nullable, checkable, versionable,
 				cascadeStyle, null)
 		{
 			this.unsavedValue = unsavedValue;

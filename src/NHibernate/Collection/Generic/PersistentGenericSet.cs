@@ -79,10 +79,9 @@ namespace NHibernate.Collection.Generic
 
 		public override object GetSnapshot(ICollectionPersister persister)
 		{
-			var entityMode = Session.EntityMode;
 			var clonedSet = new SetSnapShot<T>(WrappedSet.Count);
 			var enumerable = from object current in WrappedSet
-							 select persister.ElementType.DeepCopy(current, entityMode, persister.Factory);
+							 select persister.ElementType.DeepCopy(current, persister.Factory);
 			foreach (var copied in enumerable)
 			{
 				clonedSet.Add((T)copied);

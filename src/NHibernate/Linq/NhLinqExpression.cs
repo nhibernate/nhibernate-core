@@ -30,11 +30,12 @@ namespace NHibernate.Linq
 
 		public NhLinqExpression(Expression expression, ISessionFactoryImplementor sessionFactory)
 		{
-			_expression = NhPartialEvaluatingExpressionTreeVisitor.EvaluateIndependentSubtrees(expression);
+			_expression = NhRelinqQueryParser.PreTransform(expression);
+
 			// We want logging to be as close as possible to the original expression sent from the
-			// application. But if we log before partial evaluation, the log won't include e.g.
-			// subquery expressions if those are defined by the application in a variable referenced
-			// from the main query.
+			// application. But if we log before partial evaluation done in PreTransform, the log won't
+			// include e.g. subquery expressions if those are defined by the application in a variable
+			// referenced from the main query.
 			LinqLogging.LogExpression("Expression (partially evaluated)", _expression);
 
 			_constantToParameterMap = ExpressionParameterVisitor.Visit(ref _expression, sessionFactory);

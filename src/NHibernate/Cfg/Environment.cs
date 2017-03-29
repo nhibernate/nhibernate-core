@@ -87,7 +87,7 @@ namespace NHibernate.Cfg
 		/// <summary> A default database catalog name to use for unqualified tablenames</summary>
 		public const string DefaultCatalog = "default_catalog";
 
-		/// <summary>The EntityMode in which set the Session opened from the SessionFactory.</summary>
+		[Obsolete("DefaultEntityMode is deprecated.")]
 		public const string DefaultEntityMode = "default_entity_mode";
 
 		/// Implementation of NH-3619 - Make default value of FlushMode configurable

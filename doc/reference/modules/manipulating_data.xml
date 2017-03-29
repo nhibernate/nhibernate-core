@@ -649,7 +649,7 @@ secondSession.SaveOrUpdate(mate);  // save the new instance (mate has a null id)
             <title>Reattaching detached objects</title>
 
             <para>
-                The <literal>Lock()</literal> method allows the application to reassociate
+                The <literal>Lock()</literal> method allows the application to re-associate
                 an unmodified object with a new session.
             </para>
 
@@ -761,7 +761,7 @@ sess.Lock(pk, LockMode.Upgrade);]]></programlisting>
         </para>
 
         <para>
-            Except when you explicity <literal>Flush()</literal>, there are absolutely no 
+            Except when you explicitly <literal>Flush()</literal>, there are absolutely no 
             guarantees about <emphasis>when</emphasis> the <literal>Session</literal> executes 
             the ADO.NET calls, only the <emphasis>order</emphasis> in which they are executed.
             However, NHibernate does guarantee that the <literal>ISession.Find(..)</literal> 
@@ -1046,7 +1046,7 @@ finally
             Mapping an association (many-to-one, one-to-one or collection) with <literal>cascade="all"</literal>
             marks the association as a <emphasis>parent/child</emphasis> style relationship where
             save/update/deletion of the parent results in save/update/deletion of the child(ren).
-            Futhermore, a mere reference to a child from a persistent parent will result in save / update
+            Furthermore, a mere reference to a child from a persistent parent will result in save / update
             of the child. The metaphor is incomplete, however. A child which becomes unreferenced by its
             parent is <emphasis>not</emphasis> automatically deleted, except in the cases of 
             <literal>&lt;one-to-many&gt;</literal> and <literal>&lt;one-to-one&gt;</literal> associations 

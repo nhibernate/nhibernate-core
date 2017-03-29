@@ -136,7 +136,7 @@ namespace NHibernate.Loader.Criteria
 				}
 			}
 			
-			IDictionary<string, TypedValue> queryNamedParameters = CollectedParameters.ToDictionary(np => np.Name, np => new TypedValue(np.Type, np.Value, EntityMode.Poco));
+			IDictionary<string, TypedValue> queryNamedParameters = CollectedParameters.ToDictionary(np => np.Name, np => new TypedValue(np.Type, np.Value));
 
 			return
 				new QueryParameters(
@@ -581,7 +581,7 @@ namespace NHibernate.Loader.Criteria
 		public TypedValue GetTypedIdentifierValue(ICriteria subcriteria, object value)
 		{
 			NHibernate_Persister_Entity.ILoadable loadable = (NHibernate_Persister_Entity.ILoadable)GetPropertyMapping(GetEntityName(subcriteria));
-			return new TypedValue(loadable.IdentifierType, value, EntityMode.Poco);
+			return new TypedValue(loadable.IdentifierType, value);
 		}
 
 		public string[] GetColumns(ICriteria subcriteria, string propertyName)
@@ -651,11 +651,11 @@ namespace NHibernate.Loader.Criteria
 				if (q != null && q.DiscriminatorValue != null)
 				{
 					// NH Different implementation : We are using strongly typed parameter for SQL query (see DiscriminatorValue comment)
-					return new TypedValue(q.DiscriminatorType, q.DiscriminatorValue, EntityMode.Poco);
+					return new TypedValue(q.DiscriminatorType, q.DiscriminatorValue);
 				}
 			}
 			// Otherwise, this is an ordinary value.
-			return new TypedValue(GetTypeUsingProjection(subcriteria, propertyName), value, EntityMode.Poco);
+			return new TypedValue(GetTypeUsingProjection(subcriteria, propertyName), value);
 		}
 
 		private Persister.Entity.IPropertyMapping GetPropertyMapping(string entityName)
@@ -764,13 +764,13 @@ namespace NHibernate.Loader.Criteria
 
 		public Parameter CreateSkipParameter(int value)
 		{
-			var typedValue = new TypedValue(NHibernateUtil.Int32, value, EntityMode.Poco);
+			var typedValue = new TypedValue(NHibernateUtil.Int32, value);
 			return NewQueryParameter("skip_", typedValue).Single();
 		}
 		
 		public Parameter CreateTakeParameter(int value)
 		{
-			var typedValue = new TypedValue(NHibernateUtil.Int32, value, EntityMode.Poco);
+			var typedValue = new TypedValue(NHibernateUtil.Int32, value);
 			return NewQueryParameter("take_",typedValue).Single();
 		}
 

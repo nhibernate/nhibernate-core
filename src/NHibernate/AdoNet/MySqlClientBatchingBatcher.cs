@@ -1,3 +1,4 @@
+using System;
 using System.Data.Common;
 using System.Text;
 using NHibernate.AdoNet.Util;
@@ -96,6 +97,22 @@ namespace NHibernate.AdoNet
 		private MySqlClientSqlCommandSet CreateConfiguredBatch()
 		{
 			return new MySqlClientSqlCommandSet(batchSize);
+		}
+
+		public override void CloseCommands()
+		{
+			base.CloseCommands();
+
+			try
+			{
+				currentBatch.Dispose();
+			}
+			catch (Exception e)
+			{
+				// Prevent exceptions when closing the batch from hiding any original exception
+				// (We do not know here if this batch closing occurs after a failure or not.)
+				Log.Warn("Exception closing batcher", e);
+			}
 		}
 	}
 }

@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq.Expressions;
 using NHibernate.Linq.GroupBy;
+using NHibernate.Util;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
@@ -14,8 +14,8 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 
 			var inputList = Expression.Parameter(typeof(IEnumerable<>).MakeGenericType(inputType), "inputList");
 
-			var selectMethod = EnumerableHelper.GetMethod("Select", new[] { typeof(IEnumerable<>), typeof(Func<,>) }, new[] { inputType, outputType });
-			var toListMethod = EnumerableHelper.GetMethod("ToList", new[] { typeof(IEnumerable<>) }, new[] { outputType });
+			var selectMethod = ReflectionCache.EnumerableMethods.SelectDefinition.MakeGenericMethod(new[] { inputType, outputType });
+			var toListMethod = ReflectionCache.EnumerableMethods.ToListDefinition.MakeGenericMethod(new[] { outputType });
 
 			var lambda = Expression.Lambda(
 				Expression.Call(toListMethod,

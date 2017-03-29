@@ -69,9 +69,7 @@ namespace NHibernate.Engine.Loading
 		/// </remarks>
 		public IPersistentCollection GetLoadingCollection(ICollectionPersister persister, object key)
 		{
-			EntityMode em = loadContexts.PersistenceContext.Session.EntityMode;
-
-			CollectionKey collectionKey = new CollectionKey(persister, key, em);
+			CollectionKey collectionKey = new CollectionKey(persister, key);
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("starting attempt to find loading collection [" + MessageHelper.InfoString(persister.Role, key) + "]");
@@ -97,7 +95,7 @@ namespace NHibernate.Engine.Loading
 				else
 				{
 					object owner = loadContexts.PersistenceContext.GetCollectionOwner(key, persister);
-					bool newlySavedEntity = owner != null && loadContexts.PersistenceContext.GetEntry(owner).Status != Status.Loading && em != EntityMode.Xml;
+					bool newlySavedEntity = owner != null && loadContexts.PersistenceContext.GetEntry(owner).Status != Status.Loading;
 					if (newlySavedEntity)
 					{
 						// important, to account for newly saved entities in query
@@ -173,7 +171,7 @@ namespace NHibernate.Engine.Loading
 					matches.Add(lce);
 					if (lce.Collection.Owner == null)
 					{
-						session.PersistenceContext.AddUnownedCollection(new CollectionKey(persister, lce.Key, session.EntityMode),
+						session.PersistenceContext.AddUnownedCollection(new CollectionKey(persister, lce.Key),
 																		lce.Collection);
 					}
 					if (log.IsDebugEnabled)
@@ -236,7 +234,6 @@ namespace NHibernate.Engine.Loading
 				log.Debug("ending loading collection [" + lce + "]");
 			}
 			ISessionImplementor session = LoadContext.PersistenceContext.Session;
-			EntityMode em = session.EntityMode;
 
 			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
 			var stopWath = new Stopwatch();
@@ -247,7 +244,7 @@ namespace NHibernate.Engine.Loading
 
 			bool hasNoQueuedAdds = lce.Collection.EndRead(persister); // warning: can cause a recursive calls! (proxy initialization)
 
-			if (persister.CollectionType.HasHolder(em))
+			if (persister.CollectionType.HasHolder())
 			{
 				LoadContext.PersistenceContext.AddCollectionHolder(lce.Collection);
 			}

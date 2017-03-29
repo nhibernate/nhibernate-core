@@ -21,14 +21,7 @@ namespace NHibernate.Test.UserCollection.Parameterized
 
 		public IPersistentCollection Wrap(ISessionImplementor session, object collection)
 		{
-			if (session.EntityMode == EntityMode.Xml)
-			{
-				throw new NotSupportedException("XML not supported");
-			}
-			else
-			{
-				return new PersistentDefaultableList(session, (IList<string>)collection);
-			}
+			return new PersistentDefaultableList(session, (IList<string>) collection);
 		}
 
 		public IEnumerable GetElements(object collection)

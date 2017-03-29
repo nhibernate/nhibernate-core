@@ -18,12 +18,19 @@ namespace NHibernate.Linq.Visitors
 		private readonly Dictionary<ConstantExpression, NamedParameter> _parameters = new Dictionary<ConstantExpression, NamedParameter>();
 		private readonly ISessionFactoryImplementor _sessionFactory;
 
+		private static readonly MethodInfo QueryableSkipDefinition =
+			ReflectionHelper.GetMethodDefinition(() => Queryable.Skip<object>(null, 0));
+		private static readonly MethodInfo QueryableTakeDefinition =
+			ReflectionHelper.GetMethodDefinition(() => Queryable.Take<object>(null, 0));
+		private static readonly MethodInfo EnumerableSkipDefinition =
+			ReflectionHelper.GetMethodDefinition(() => Enumerable.Skip<object>(null, 0));
+		private static readonly MethodInfo EnumerableTakeDefinition =
+			ReflectionHelper.GetMethodDefinition(() => Enumerable.Take<object>(null, 0));
+
 		private readonly ICollection<MethodBase> _pagingMethods = new HashSet<MethodBase>
 			{
-				ReflectionHelper.GetMethodDefinition(() => Queryable.Skip<object>(null, 0)),
-				ReflectionHelper.GetMethodDefinition(() => Queryable.Take<object>(null, 0)),
-				ReflectionHelper.GetMethodDefinition(() => Enumerable.Skip<object>(null, 0)),
-				ReflectionHelper.GetMethodDefinition(() => Enumerable.Take<object>(null, 0)),
+				QueryableSkipDefinition, QueryableTakeDefinition,
+				EnumerableSkipDefinition, EnumerableTakeDefinition
 			};
 
 		public ExpressionParameterVisitor(ISessionFactoryImplementor sessionFactory)
@@ -47,10 +54,19 @@ namespace NHibernate.Linq.Visitors
 
 		protected override Expression VisitMethodCallExpression(MethodCallExpression expression)
 		{
-			if (expression.Method.Name == "MappedAs" && expression.Method.DeclaringType == typeof(LinqExtensionMethods))
+			if (expression.Method.Name == nameof(LinqExtensionMethods.MappedAs) && expression.Method.DeclaringType == typeof(LinqExtensionMethods))
 			{
-				var parameter = (ConstantExpression)VisitExpression(expression.Arguments[0]);
-				var type = (ConstantExpression)expression.Arguments[1];
+				var rawParameter = VisitExpression(expression.Arguments[0]);
+				var parameter = rawParameter as ConstantExpression;
+				var type = expression.Arguments[1] as ConstantExpression;
+				if (parameter == null)
+					throw new HibernateException(
+						$"{nameof(LinqExtensionMethods.MappedAs)} must be called on an expression which can be evaluated as " +
+						$"{nameof(ConstantExpression)}. It was call on {rawParameter?.GetType().Name ?? "null"} instead.");
+				if (type == null)
+					throw new HibernateException(
+						$"{nameof(LinqExtensionMethods.MappedAs)} type must be supplied as {nameof(ConstantExpression)}. " +
+						$"It was {expression.Arguments[1]?.GetType().Name ?? "null"} instead.");
 
 				_parameters[parameter].Type = (IType)type.Value;
 

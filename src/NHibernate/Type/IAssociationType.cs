@@ -56,7 +56,5 @@ namespace NHibernate.Type
 		/// SQL on clause, in addition to the usual join condition.
 		/// </summary>
 		string GetOnCondition(string alias, ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters);
-
-		bool IsEmbeddedInXML { get;}
 	}
 }

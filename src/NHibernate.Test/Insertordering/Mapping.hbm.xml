@@ -30,4 +30,160 @@
     <many-to-one name="Group" class="Group" column="GRP_ID" cascade="all"/>
     <property name="ActivationDate" type="timestamp" column="JN_DT"/>
   </class>
+
+  <!-- NH3931 test entities -->
+  
+  <class name="AddressM2M">
+    <id name="Id" generator="guid.comb" />
+    <set name="Persons" table="PersonAddresses" cascade="save-update" inverse="true">
+      <key column="AddressId" />
+      <many-to-many class="PersonM2M" column="PersonId" />
+    </set>
+  </class>
+
+  <class name="PersonM2M">
+    <id name="Id" generator="guid.comb" />
+    <set name="Addresses" table="PersonAddresses">
+      <key column="PersonId" />
+      <many-to-many class="AddressM2M" column="AddressId" />
+    </set>
+  </class>
+
+  <class name="AddressM2O">
+    <id name="Id" generator="guid.comb" />
+    <set name="Persons" cascade="save-update" inverse="true">
+      <key column="Address" />
+      <one-to-many class="PersonM2O" />
+    </set>
+  </class>
+
+  <class name="PersonM2O">
+    <id name="Id" generator="guid.comb" />
+    <many-to-one name="Address" />
+  </class>
+
+  <class name="AddressO2O">
+    <id name="Id" generator="guid.comb" />
+    
+    <one-to-one name="Person" cascade="save-update" constrained="true" property-ref="Address" />
+  </class>
+
+  <class name="PersonO2O">
+    <id name="Id" generator="guid.comb" />
+    <many-to-one name="Address" column="AddressId" />
+  </class>
+
+  <class name="AddressTrueO2O">
+    <id name="Id" type="guid">
+      <generator class="foreign">
+        <param name="property">Person</param>
+      </generator>
+    </id>
+
+    <one-to-one name="Person" cascade="save-update" constrained="true" />
+  </class>
+
+  <class name="PersonTrueO2O">
+    <id name="Id" generator="guid.comb" />
+    <one-to-one name="Address" />
+  </class>
+
+  <class name="AddressJI">
+    <id name="Id" generator="guid.comb" />
+  </class>
+
+  <class name="PersonJI" discriminator-value="1">
+    <id name="Id" generator="guid.comb" />
+    <set name="Addresses" cascade="all-delete-orphan" batch-size="100">
+      <key column="PersonId" not-null="true" update="false" />
+      <one-to-many class="AddressJI" />
+    </set>
+
+    <joined-subclass name="SpecialPersonJI" table="SpecialPersonJI">
+      <key column="PersonId"/>
+      <property name="Special" length="50" />
+    </joined-subclass>
+  </class>
+
+  <class name="AddressJim">
+    <id name="Id" generator="guid.comb" />
+  </class>
+
+  <class name="OfficeJim">
+    <id name="Id" generator="guid.comb" />
+  </class>
+
+  <class name="PersonJim" discriminator-value="1">
+    <id name="Id" generator="guid.comb" />
+
+    <joined-subclass name="SpecialPersonJim" table="SpecialPersonJim">
+      <key column="PersonId"/>
+      <property name="Special" length="50" />
+      <set name="Addresses" cascade="all-delete-orphan" batch-size="100">
+        <key column="PersonId" not-null="true" update="false" />
+        <one-to-many class="AddressJim" />
+      </set>
+
+      <joined-subclass name="PresidentJim" table="PresidentJim">
+        <key column="PersonId"/>
+        <property name="Salary" />
+      </joined-subclass>
+    </joined-subclass>
+
+    <joined-subclass name="AnotherPersonJim" table="AnotherPersonJim">
+      <key column="PersonId"/>
+      <property name="Working" />
+      <many-to-one name="Office" />
+    </joined-subclass>
+  </class>
+
+  <class name="AddressSti">
+    <id name="Id" generator="guid.comb" />
+  </class>
+
+  <class name="PersonSti" discriminator-value="1">
+    <id name="Id" generator="guid.comb" />
+    <discriminator column="PersonType" type="int" />
+    <set name="Addresses" cascade="all-delete-orphan" batch-size="100">
+      <key column="PersonId" not-null="true" update="false" />
+      <one-to-many class="AddressSti" />
+    </set>
+
+    <subclass name="SpecialPersonSti" discriminator-value="2">
+      <property name="Special" length="50" />
+    </subclass>
+  </class>
+
+  <class name="AddressTpc">
+    <id name="Id" generator="guid.comb" />
+  </class>
+
+  <class name="PersonTpc" discriminator-value="1">
+    <id name="Id" generator="guid.comb" />
+    <set name="Addresses" cascade="all-delete-orphan" batch-size="100">
+      <key column="PersonId" not-null="true" update="false" />
+      <one-to-many class="AddressTpc" />
+    </set>
+
+    <union-subclass name="SpecialPersonTpc" table="SpecialPersonTpc">
+      <property name="Special" length="50" />
+    </union-subclass>
+  </class>
+
+  <class name="AddressUO2O">
+    <id name="Id" generator="guid.comb" />
+    <many-to-one name="Person" cascade="save-update" not-null="true" unique="true" />
+  </class>
+
+  <class name="PersonUO2O">
+    <id name="Id" generator="guid.comb" />
+  </class>
+
+  <class name="Task">
+    <id name="Id" generator="guid.comb" />
+    <set name="Categories" table="Categories">
+      <key column="TaskId" />
+      <element column="Category" type="NHibernate.Test.Insertordering.Category, NHibernate.Test" />
+    </set>
+  </class>
 </hibernate-mapping>
