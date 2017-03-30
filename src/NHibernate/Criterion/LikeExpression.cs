@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -59,9 +58,9 @@ namespace NHibernate.Criterion
 
 		#region ICriterion Members
 
-		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			SqlString[] columns = CriterionUtil.GetColumnNamesUsingProjection(projection, criteriaQuery, criteria, enabledFilters);
+			SqlString[] columns = CriterionUtil.GetColumnNamesUsingProjection(projection, criteriaQuery, criteria);
 			if (columns.Length != 1)
 				throw new HibernateException("Like may only be used with single-column properties / projections.");
 

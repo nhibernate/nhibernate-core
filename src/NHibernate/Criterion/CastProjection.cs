@@ -1,7 +1,6 @@
 namespace NHibernate.Criterion
 {
 	using System;
-	using System.Collections.Generic;
 	using Engine;
 	using SqlCommand;
 	using SqlTypes;
@@ -29,7 +28,7 @@ namespace NHibernate.Criterion
 			get { return false; }
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
 		{
 			ISessionFactoryImplementor factory = criteriaQuery.Factory;
 			SqlType[] sqlTypeCodes = type.SqlTypes(factory);
@@ -39,7 +38,7 @@ namespace NHibernate.Criterion
 			}
 			string sqlType = factory.Dialect.GetCastTypeName(sqlTypeCodes[0]);
 			int loc = position*GetHashCode();
-			SqlString val = projection.ToSqlString(criteria, loc, criteriaQuery,enabledFilters);
+			SqlString val = projection.ToSqlString(criteria, loc, criteriaQuery);
 			val = SqlStringHelper.RemoveAsAliasesFromSql(val);
 
 			return new SqlString("cast( ", val, " as ", sqlType, ") as ", GetColumnAliases(position, criteria, criteriaQuery)[0]);
@@ -63,9 +62,9 @@ namespace NHibernate.Criterion
 			}
 		}
 
-		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return projection.ToGroupSqlString(criteria, criteriaQuery, enabledFilters);
+			return projection.ToGroupSqlString(criteria, criteriaQuery);
 		}
 	}
 }

@@ -49,7 +49,7 @@ namespace NHibernate.Criterion
 			return null;
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			if (_projection == null)
 			{
@@ -65,7 +65,7 @@ namespace NHibernate.Criterion
 			//TODO: add default capacity
 			SqlStringBuilder result = new SqlStringBuilder();
 			SqlString[] columnNames =
-				CriterionUtil.GetColumnNames(_propertyName, _projection, criteriaQuery, criteria, enabledFilters);
+				CriterionUtil.GetColumnNames(_propertyName, _projection, criteriaQuery, criteria);
 			
 			// Generate SqlString of the form:
 			// columnName1 in (values) and columnName2 in (values) and ...

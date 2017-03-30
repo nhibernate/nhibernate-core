@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -41,7 +40,7 @@ namespace NHibernate.Criterion
 
 		protected abstract SqlString ToLeftSqlString(ICriteria criteria, ICriteriaQuery outerQuery);
 
-		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			ISessionFactoryImplementor factory = criteriaQuery.Factory;
 

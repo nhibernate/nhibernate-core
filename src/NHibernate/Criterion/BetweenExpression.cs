@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -46,7 +45,7 @@ namespace NHibernate.Criterion
 			_hi = hi;
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			//TODO: add a default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
@@ -55,7 +54,7 @@ namespace NHibernate.Criterion
 			var lowType = parametersTypes[0];
 			var highType = parametersTypes[1];
 			SqlString[] columnNames =
-				CriterionUtil.GetColumnNames(_propertyName, _projection, criteriaQuery, criteria, enabledFilters);
+				CriterionUtil.GetColumnNames(_propertyName, _projection, criteriaQuery, criteria);
 
 			if (columnNames.Length == 1)
 			{
