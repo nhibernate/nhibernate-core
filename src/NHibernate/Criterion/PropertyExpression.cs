@@ -68,13 +68,12 @@ namespace NHibernate.Criterion
 		/// </summary>
 		protected abstract string Op { get; }
 
-		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery,
-											  IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			SqlString[] columnNames =
-				CriterionUtil.GetColumnNames(_lhsPropertyName, _lhsProjection, criteriaQuery, criteria, enabledFilters);
+				CriterionUtil.GetColumnNames(_lhsPropertyName, _lhsProjection, criteriaQuery, criteria);
 			SqlString[] otherColumnNames =
-				CriterionUtil.GetColumnNames(_rhsPropertyName, _rhsProjection, criteriaQuery, criteria, enabledFilters);
+				CriterionUtil.GetColumnNames(_rhsPropertyName, _rhsProjection, criteriaQuery, criteria);
 
 			SqlStringBuilder sb = new SqlStringBuilder();
 			if (columnNames.Length > 1)

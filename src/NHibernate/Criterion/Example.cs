@@ -295,7 +295,7 @@ namespace NHibernate.Criterion
 			return list.ToArray();
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			SqlStringBuilder builder = new SqlStringBuilder();
 			builder.Add(StringHelper.OpenParen);
@@ -321,7 +321,6 @@ namespace NHibernate.Criterion
 							(IAbstractComponentType) propertyTypes[i],
 							criteria,
 							criteriaQuery,
-							enabledFilters,
 							builder
 							);
 					}
@@ -332,7 +331,6 @@ namespace NHibernate.Criterion
 							propertyValue,
 							criteria,
 							criteriaQuery,
-							enabledFilters,
 							builder
 							);
 					}
@@ -454,7 +452,6 @@ namespace NHibernate.Criterion
 			object propertyValue,
 			ICriteria criteria,
 			ICriteriaQuery cq,
-			IDictionary<string, IFilter> enabledFilters,
 			SqlStringBuilder builder)
 		{
 			if (builder.Count > 1)
@@ -465,7 +462,7 @@ namespace NHibernate.Criterion
 			ICriterion crit = propertyValue != null
 								? GetNotNullPropertyCriterion(propertyValue, propertyName)
 								: new NullExpression(propertyName);
-			builder.Add(crit.ToSqlString(criteria, cq, enabledFilters));
+			builder.Add(crit.ToSqlString(criteria, cq));
 		}
 
 		protected virtual ICriterion GetNotNullPropertyCriterion(object propertyValue, string propertyName)
@@ -484,7 +481,6 @@ namespace NHibernate.Criterion
 			IAbstractComponentType type,
 			ICriteria criteria,
 			ICriteriaQuery criteriaQuery,
-			IDictionary<string, IFilter> enabledFilters,
 			SqlStringBuilder builder)
 		{
 			if (component != null)
@@ -507,7 +503,6 @@ namespace NHibernate.Criterion
 								(IAbstractComponentType) subtype,
 								criteria,
 								criteriaQuery,
-								enabledFilters,
 								builder);
 						}
 						else
@@ -517,7 +512,6 @@ namespace NHibernate.Criterion
 								value,
 								criteria,
 								criteriaQuery,
-								enabledFilters,
 								builder
 								);
 						}

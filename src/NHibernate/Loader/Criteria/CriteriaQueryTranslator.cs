@@ -156,9 +156,7 @@ namespace NHibernate.Loader.Criteria
 		{
 			if (rootCriteria.Projection.IsGrouped)
 			{
-				return
-					rootCriteria.Projection.ToGroupSqlString(rootCriteria.ProjectionCriteria, this,
-															 new CollectionHelper.EmptyMapClass<string, IFilter>());
+				return rootCriteria.Projection.ToGroupSqlString(rootCriteria.ProjectionCriteria, this);
 			}
 			else
 			{
@@ -166,11 +164,10 @@ namespace NHibernate.Loader.Criteria
 			}
 		}
 
-		public SqlString GetSelect(IDictionary<string, IFilter> enabledFilters)
+		public SqlString GetSelect()
 		{
-			return rootCriteria.Projection.ToSqlString(rootCriteria.ProjectionCriteria, 0, this, enabledFilters);
+			return rootCriteria.Projection.ToSqlString(rootCriteria.ProjectionCriteria, 0, this);
 		}
-
 
 		internal IType ResultType(ICriteria criteria)
 		{
@@ -194,7 +191,7 @@ namespace NHibernate.Loader.Criteria
 			get { return rootCriteria.Projection.Aliases; }
 		}
 
-		public SqlString GetWhereCondition(IDictionary<string, IFilter> enabledFilters)
+		public SqlString GetWhereCondition()
 		{
 			SqlStringBuilder condition = new SqlStringBuilder(30);
 
@@ -208,7 +205,7 @@ namespace NHibernate.Loader.Criteria
 						condition.Add(" and ");
 					}
 					first = false;
-					SqlString sqlString = entry.Criterion.ToSqlString(entry.Criteria, this, enabledFilters);
+					SqlString sqlString = entry.Criterion.ToSqlString(entry.Criteria, this);
 					condition.Add(sqlString);
 				}
 			}
@@ -708,12 +705,12 @@ namespace NHibernate.Loader.Criteria
 			return propertyName;
 		}
 
-		public SqlString GetWithClause(string path, IDictionary<string, IFilter> enabledFilters)
+		public SqlString GetWithClause(string path)
 		{
 			ICriterion crit;
 			if (withClauseMap.TryGetValue(path, out crit))
 			{
-				return crit == null ? null : crit.ToSqlString(GetCriteria(path), this, enabledFilters);
+				return crit == null ? null : crit.ToSqlString(GetCriteria(path), this);
 			}
 			return null;
 		}
@@ -774,7 +771,7 @@ namespace NHibernate.Loader.Criteria
 			return NewQueryParameter("take_",typedValue).Single();
 		}
 
-		public SqlString GetHavingCondition(IDictionary<string, IFilter> enabledFilters)
+		public SqlString GetHavingCondition()
 		{
 			SqlStringBuilder condition = new SqlStringBuilder(30);
 			bool first = true;
@@ -787,7 +784,7 @@ namespace NHibernate.Loader.Criteria
 						condition.Add(" and ");
 					}
 					first = false;
-					SqlString sqlString = entry.Criterion.ToSqlString(entry.Criteria, this, enabledFilters);
+					SqlString sqlString = entry.Criterion.ToSqlString(entry.Criteria, this);
 					condition.Add(sqlString);
 				}
 			}
