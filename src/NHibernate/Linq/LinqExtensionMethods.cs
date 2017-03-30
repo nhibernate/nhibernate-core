@@ -58,6 +58,15 @@ namespace NHibernate.Linq
 			return new NhQueryable<T>(query.Provider, callExpression);
 		}
 
+		public static IQueryable<T> AsReadOnly<T>(this IQueryable<T> query)
+		{
+			var method = ReflectionHelper.GetMethodDefinition(() => AsReadOnly<object>(null)).MakeGenericMethod(typeof(T));
+
+			var callExpression = Expression.Call(method, query.Expression);
+
+			return new NhQueryable<T>(query.Provider, callExpression);
+		}
+
 		public static IQueryable<T> Timeout<T>(this IQueryable<T> query, int timeout)
 		{
 			var method = ReflectionHelper.GetMethodDefinition(() => Timeout<object>(null, 0)).MakeGenericMethod(typeof(T));
@@ -73,9 +82,9 @@ namespace NHibernate.Linq
 			if (nhQueryable == null)
 				throw new NotSupportedException("Query needs to be of type QueryableBase<T>");
 
-			var provider = (INhQueryProvider) nhQueryable.Provider;
+			var provider = (INhQueryProvider)nhQueryable.Provider;
 			var future = provider.ExecuteFuture(nhQueryable.Expression);
-			return (IEnumerable<T>) future;
+			return (IEnumerable<T>)future;
 		}
 
 		public static IFutureValue<T> ToFutureValue<T>(this IQueryable<T> query)
@@ -84,14 +93,14 @@ namespace NHibernate.Linq
 			if (nhQueryable == null)
 				throw new NotSupportedException("Query needs to be of type QueryableBase<T>");
 
-			var provider = (INhQueryProvider) nhQueryable.Provider;
+			var provider = (INhQueryProvider)nhQueryable.Provider;
 			var future = provider.ExecuteFuture(nhQueryable.Expression);
 			if (future is IEnumerable<T>)
 			{
-				return new FutureValue<T>(() => ((IEnumerable<T>) future));
+				return new FutureValue<T>(() => ((IEnumerable<T>)future));
 			}
 
-			return (IFutureValue<T>) future;
+			return (IFutureValue<T>)future;
 		}
 
 		public static T MappedAs<T>(this T parameter, IType type)
@@ -105,13 +114,13 @@ namespace NHibernate.Linq
 			if (nhQueryable == null)
 				throw new NotSupportedException("Query needs to be of type QueryableBase<T>");
 
-			var provider = (INhQueryProvider) query.Provider;
+			var provider = (INhQueryProvider)query.Provider;
 
 			var expression = ReplacingExpressionTreeVisitor.Replace(selector.Parameters.Single(),
 																	query.Expression,
 																	selector.Body);
 
-			return (IFutureValue<TResult>) provider.ExecuteFuture(expression);
+			return (IFutureValue<TResult>)provider.ExecuteFuture(expression);
 		}
 	}
 }

@@ -105,7 +105,14 @@ namespace NHibernate.Linq
 				new[]
 					{
 						ReflectionHelper.GetMethodDefinition(() => LinqExtensionMethods.Timeout<object>(null, 0)),
-					}, typeof (TimeoutExpressionNode)
+					}, typeof(TimeoutExpressionNode)
+				);
+
+			methodInfoRegistry.Register(
+				new[]
+					{
+						ReflectionHelper.GetMethodDefinition(() => LinqExtensionMethods.AsReadOnly<object>(null)),
+					}, typeof(AsReadOnlyExpressionNode)
 				);
 
 			var nodeTypeProvider = ExpressionTreeParser.CreateDefaultNodeTypeProvider();
@@ -130,7 +137,8 @@ namespace NHibernate.Linq
 
 	public class AsQueryableExpressionNode : MethodCallExpressionNodeBase
 	{
-		public AsQueryableExpressionNode(MethodCallExpressionParseInfo parseInfo) : base(parseInfo)
+		public AsQueryableExpressionNode(MethodCallExpressionParseInfo parseInfo)
+			: base(parseInfo)
 		{
 		}
 
@@ -150,7 +158,8 @@ namespace NHibernate.Linq
 		private readonly MethodCallExpressionParseInfo _parseInfo;
 		private readonly ConstantExpression _data;
 
-		public CacheableExpressionNode(MethodCallExpressionParseInfo parseInfo, ConstantExpression data) : base(parseInfo, null, null)
+		public CacheableExpressionNode(MethodCallExpressionParseInfo parseInfo, ConstantExpression data)
+			: base(parseInfo, null, null)
 		{
 			_parseInfo = parseInfo;
 			_data = data;
@@ -198,6 +207,55 @@ namespace NHibernate.Linq
 		}
 	}
 
+	internal class AsReadOnlyExpressionNode : ResultOperatorExpressionNodeBase
+	{
+		private readonly MethodCallExpressionParseInfo _parseInfo;
+
+		public AsReadOnlyExpressionNode(MethodCallExpressionParseInfo parseInfo)
+			: base(parseInfo, null, null)
+		{
+			_parseInfo = parseInfo;
+		}
+
+		public override Expression Resolve(ParameterExpression inputParameter, Expression expressionToBeResolved, ClauseGenerationContext clauseGenerationContext)
+		{
+			return Source.Resolve(inputParameter, expressionToBeResolved, clauseGenerationContext);
+		}
+
+		protected override ResultOperatorBase CreateResultOperator(ClauseGenerationContext clauseGenerationContext)
+		{
+			return new AsReadOnlyResultOperator(_parseInfo);
+		}
+	}
+
+	internal class AsReadOnlyResultOperator : ResultOperatorBase
+	{
+		public MethodCallExpressionParseInfo ParseInfo { get; private set; }
+
+		public AsReadOnlyResultOperator(MethodCallExpressionParseInfo parseInfo)
+		{
+			ParseInfo = parseInfo;
+		}
+
+		public override IStreamedData ExecuteInMemory(IStreamedData input)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override IStreamedDataInfo GetOutputDataInfo(IStreamedDataInfo inputInfo)
+		{
+			return inputInfo;
+		}
+
+		public override ResultOperatorBase Clone(CloneContext cloneContext)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void TransformExpressions(Func<Expression, Expression> transformation)
+		{
+		}
+	}
 
 	internal class TimeoutExpressionNode : ResultOperatorExpressionNodeBase
 	{

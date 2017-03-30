@@ -17,6 +17,7 @@ namespace NHibernate.Linq.ReWriters
 		{
 			typeof (CacheableResultOperator),
 			typeof (TimeoutResultOperator),
+			typeof (AsReadOnlyResultOperator),
 			typeof (FetchOneRequest),
 			typeof (FetchManyRequest)
 		};

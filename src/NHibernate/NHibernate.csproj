@@ -333,6 +333,7 @@
     <Compile Include="Linq\Visitors\PossibleValueSet.cs" />
     <Compile Include="Linq\Visitors\QueryExpressionSourceIdentifer.cs" />
     <Compile Include="Linq\Visitors\QuerySourceIdentifier.cs" />
+    <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessAsReadOnly.cs" />
     <Compile Include="Linq\Visitors\MemberExpressionJoinDetector.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessTimeout.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessAggregateFromSeed.cs" />
