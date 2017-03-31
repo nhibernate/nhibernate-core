@@ -20,18 +20,6 @@ namespace NHibernate.Impl
 			this.session = session;
 		}
 
-		public IList Results
-		{
-			get
-			{
-				if (results == null)
-				{
-					GetResults();
-				}
-				return results;
-			}
-		}
-
 		public void Add<TResult>(TQueryApproach query)
 		{
 			if (queries.Count == 0)
@@ -63,8 +51,12 @@ namespace NHibernate.Impl
 			return new DelayedEnumerator<TResult>(() => GetCurrentResult<TResult>(currentIndex));
 		}
 
-		private void GetResults()
+		private IList GetResults()
 		{
+			if (results != null)
+			{
+				return results;
+			}
 			var multiApproach = CreateMultiApproach(isCacheable, cacheRegion);
 			for (int i = 0; i < queries.Count; i++)
 			{
@@ -72,11 +64,12 @@ namespace NHibernate.Impl
 			}
 			results = GetResultsFrom(multiApproach);
 			ClearCurrentFutureBatch();
+			return results;
 		}
 
 		private IEnumerable<TResult> GetCurrentResult<TResult>(int currentIndex)
 		{
-			return ((IList)Results[currentIndex]).Cast<TResult>();
+			return ((IList) GetResults()[currentIndex]).Cast<TResult>();
 		}
 
 		protected abstract TMultiApproach CreateMultiApproach(bool isCacheable, string cacheRegion);
