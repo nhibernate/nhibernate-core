@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace NHibernate.Test.NHSpecificTest.NH3488.Domain
+namespace NHibernate.Test.LinqBulkManipulation.Domain
 {
 	public class Human: Mammal
 	{

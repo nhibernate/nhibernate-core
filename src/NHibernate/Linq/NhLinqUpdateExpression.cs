@@ -1,43 +1,34 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Engine;
-using NHibernate.Linq.Expressions;
-using NHibernate.Linq.Visitors;
-using Remotion.Linq;
-using Remotion.Linq.Clauses.Expressions;
+using NHibernate.Util;
 
 namespace NHibernate.Linq
 {
 	public class NhLinqUpdateExpression<T> : NhLinqExpression
 	{
+		protected override QueryMode QueryMode => _versioned ? QueryMode.UpdateVersioned : QueryMode.Update;
+
+		/// <summary>
+		/// Entity type to insert or update when the expression is a DML.
+		/// </summary>
+		protected override System.Type TargetType => typeof(T);
+
 		private readonly bool _versioned;
 
-		public NhLinqUpdateExpression(Expression expression, Assignments<T,T> assignments, ISessionFactoryImplementor sessionFactory, bool versioned)
+		public NhLinqUpdateExpression(Expression expression, Assignments<T, T> assignments, ISessionFactoryImplementor sessionFactory, bool versioned)
 			: base(RewriteForUpdate(expression, assignments), sessionFactory)
 		{
 			_versioned = versioned;
-			Key = Key + "UPDATE" + versioned;
+			Key = $"UPDATE {(versioned ? "VERSIONNED " : "")}{Key}";
 		}
 
-		protected override ExpressionToHqlTranslationResults GenerateHqlQuery(QueryModel queryModel, VisitorParameters visitorParameters)
-		{
-			visitorParameters.EntityType = typeof(T);
-			return QueryModelVisitor.GenerateHqlQuery(queryModel, visitorParameters, true, null, _versioned ? QueryMode.UpdateVersioned : QueryMode.Update);
-		}
-
-		internal static Expression RewriteForUpdate(Expression expression, Assignments<T,T> assignments)
+		private static Expression RewriteForUpdate(Expression expression, Assignments<T, T> assignments)
 		{
 			var lambda = assignments.ConvertToDictionaryExpression();
 
-			return
-				Expression.Call(
-					typeof(Queryable), "Select",
-					new System.Type[] { typeof(T), lambda.Body.Type },
-					expression, Expression.Quote(lambda));
+			return Expression.Call(
+				ReflectionCache.QueryableMethods.SelectDefinition.MakeGenericMethod(typeof(T), lambda.Body.Type),
+				expression, Expression.Quote(lambda));
 		}
 	}
-
-	
 }

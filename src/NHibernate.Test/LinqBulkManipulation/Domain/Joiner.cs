@@ -1,10 +1,10 @@
-namespace NHibernate.Test.NHSpecificTest.NH3488.Domain
+namespace NHibernate.Test.LinqBulkManipulation.Domain
 {
-	public class StateProvince
+	public class Joiner
 	{
 		private long id;
 		private string name;
-		private string isoCode;
+		private string joinedName;
 
 		public virtual long Id
 		{
@@ -18,10 +18,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3488.Domain
 			set { name = value; }
 		}
 
-		public virtual string IsoCode
+		public virtual string JoinedName
 		{
-			get { return isoCode; }
-			set { isoCode = value; }
+			get { return joinedName; }
+			set { joinedName = value; }
 		}
 	}
 }

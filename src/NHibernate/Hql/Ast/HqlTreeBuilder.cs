@@ -39,12 +39,12 @@ namespace NHibernate.Hql.Ast
 			return new HqlDelete(_factory, @from);
 		}
 
-		public HqlUpdate Update(HqlFrom @from,HqlSet set)
+		public HqlUpdate Update(HqlFrom @from, HqlSet set)
 		{
-			return new HqlUpdate(_factory, @from,set);
+			return new HqlUpdate(_factory, @from, set);
 		}
 
-		public HqlUpdate Update(HqlVersioned versioned,HqlFrom @from, HqlSet set)
+		public HqlUpdate Update(HqlVersioned versioned, HqlFrom @from, HqlSet set)
 		{
 			return new HqlUpdate(_factory, versioned, @from, set);
 		}
@@ -53,7 +53,6 @@ namespace NHibernate.Hql.Ast
 		{
 			return new HqlInsert(_factory, into, query);
 		}
-		
 
 		public HqlSelectFrom SelectFrom()
 		{

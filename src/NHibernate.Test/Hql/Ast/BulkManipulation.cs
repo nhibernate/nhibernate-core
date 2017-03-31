@@ -1,10 +1,7 @@
 using System;
 using System.Collections;
 using System.Threading;
-using NHibernate.Dialect;
 using NHibernate.Hql.Ast.ANTLR;
-using NHibernate.Id;
-using NHibernate.Persister.Entity;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Hql.Ast
@@ -12,11 +9,6 @@ namespace NHibernate.Test.Hql.Ast
 	[TestFixture]
 	public class BulkManipulation : BaseFixture
 	{
-		public ISession OpenNewSession()
-		{
-			return OpenSession();
-		}
-
 		#region Non-exists
 
 		[Test]
@@ -67,6 +59,11 @@ namespace NHibernate.Test.Hql.Ast
 		[Test]
 		public void SimpleInsertFromAggregate()
 		{
+			if (!Dialect.SupportsTemporaryTables)
+			{
+				Assert.Ignore("Cannot perform multi-table inserts using dialect not supporting temp tables.");
+			}
+
 			var data = new TestData(this);
 			data.Prepare();
 
@@ -90,6 +87,8 @@ namespace NHibernate.Test.Hql.Ast
 		[Test]
 		public void InsertWithManyToOne()
 		{
+			CheckSupportOfBulkInsertionWithGeneratedId<Animal>();
+
 			var data = new TestData(this);
 			data.Prepare();
 
@@ -112,6 +111,8 @@ namespace NHibernate.Test.Hql.Ast
 		[Test]
 		public void InsertWithManyToOneAsParameter()
 		{
+			CheckSupportOfBulkInsertionWithGeneratedId<Animal>();
+
 			var data = new TestData(this);
 			data.Prepare();
 
@@ -186,6 +187,8 @@ namespace NHibernate.Test.Hql.Ast
 		[Test]
 		public void InsertAcrossMappedJoinFails()
 		{
+			CheckSupportOfBulkInsertionWithGeneratedId<Joiner>();
+
 			var data = new TestData(this);
 			data.Prepare();
 
@@ -208,58 +211,55 @@ namespace NHibernate.Test.Hql.Ast
 			data.Cleanup();
 		}
 
+		[Test]
 		public void InsertWithGeneratedId()
 		{
-			// Make sure the env supports bulk inserts with generated ids...
-			IEntityPersister persister = Sfi.GetEntityPersister(typeof (PettingZoo).FullName);
-			IIdentifierGenerator generator = persister.IdentifierGenerator;
-			if (!HqlSqlWalker.SupportsIdGenWithBulkInsertion(generator))
-			{
-				return;
-			}
+			CheckSupportOfBulkInsertionWithGeneratedId<PettingZoo>();
 
 			// create a Zoo
 			var zoo = new Zoo {Name = "zoo"};
 
-			ISession s = OpenSession();
-			ITransaction t = s.BeginTransaction();
-			s.Save(zoo);
-			t.Commit();
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s.Save(zoo);
+				t.Commit();
+			}
 
-			s = OpenSession();
-			t = s.BeginTransaction();
-			int count = s.CreateQuery("insert into PettingZoo (name) select name from Zoo").ExecuteUpdate();
-			t.Commit();
-			s.Close();
-			Assert.That(count, Is.EqualTo(1), "unexpected insertion count");
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				// Avoid Firebird unstable cursor bug by filtering by id.
+				// https://firebirdsql.org/file/documentation/reference_manuals/fblangref25-en/html/fblangref25-dml-insert.html#fblangref25-dml-insert-select-unstable
+				var count = s
+					.CreateQuery("insert into PettingZoo (name) select z.name from Zoo z where z.id = :id")
+					.SetInt64("id", zoo.Id)
+					.ExecuteUpdate();
+				t.Commit();
+				Assert.That(count, Is.EqualTo(1), "unexpected insertion count");
+			}
 
-			s = OpenSession();
-			t = s.BeginTransaction();
-			var pz = (PettingZoo) s.CreateQuery("from PettingZoo").UniqueResult();
-			t.Commit();
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var pz = (PettingZoo) s.CreateQuery("from PettingZoo").UniqueResult();
+				t.Commit();
+				Assert.That(zoo.Name, Is.EqualTo(pz.Name));
+				Assert.That(zoo.Id != pz.Id);
+			}
 
-			Assert.That(zoo.Name, Is.EqualTo(pz.Name));
-			Assert.That(zoo.Id != pz.Id);
-
-			s = OpenSession();
-			t = s.BeginTransaction();
-			s.CreateQuery("delete Zoo").ExecuteUpdate();
-			t.Commit();
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s.CreateQuery("delete Zoo").ExecuteUpdate();
+				t.Commit();
+			}
 		}
 
 		[Test]
 		public void InsertWithGeneratedVersionAndId()
 		{
-			// Make sure the env supports bulk inserts with generated ids...
-			IEntityPersister persister = Sfi.GetEntityPersister(typeof (IntegerVersioned).FullName);
-			IIdentifierGenerator generator = persister.IdentifierGenerator;
-			if (!HqlSqlWalker.SupportsIdGenWithBulkInsertion(generator))
-			{
-				return;
-			}
+			CheckSupportOfBulkInsertionWithGeneratedId<IntegerVersioned>();
 
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
@@ -304,13 +304,7 @@ namespace NHibernate.Test.Hql.Ast
 		[Test]
 		public void InsertWithGeneratedTimestampVersion()
 		{
-			// Make sure the env supports bulk inserts with generated ids...
-			IEntityPersister persister = Sfi.GetEntityPersister(typeof (TimestampVersioned).FullName);
-			IIdentifierGenerator generator = persister.IdentifierGenerator;
-			if (!HqlSqlWalker.SupportsIdGenWithBulkInsertion(generator))
-			{
-				return;
-			}
+			CheckSupportOfBulkInsertionWithGeneratedId<TimestampVersioned>();
 
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
@@ -356,6 +350,8 @@ namespace NHibernate.Test.Hql.Ast
 		[Test]
 		public void InsertWithSelectListUsingJoins()
 		{
+			CheckSupportOfBulkInsertionWithGeneratedId<Animal>();
+
 			// this is just checking parsing and syntax...
 			ISession s = OpenSession();
 			s.BeginTransaction();
@@ -365,6 +361,17 @@ namespace NHibernate.Test.Hql.Ast
 			s.CreateQuery("delete from Animal").ExecuteUpdate();
 			s.Transaction.Commit();
 			s.Close();
+		}
+
+		private void CheckSupportOfBulkInsertionWithGeneratedId<T>()
+		{
+			// Make sure the env supports bulk inserts with generated ids...
+			var persister = Sfi.GetEntityPersister(typeof(T).FullName);
+			var generator = persister.IdentifierGenerator;
+			if (!HqlSqlWalker.SupportsIdGenWithBulkInsertion(generator))
+			{
+				Assert.Ignore($"Identifier generator {generator.GetType().Name} for entity {typeof(T).FullName} does not support bulk insertions.");
+			}
 		}
 
 		#endregion
@@ -384,6 +391,11 @@ namespace NHibernate.Test.Hql.Ast
 		[Test]
 		public void UpdateWithWhereExistsSubquery()
 		{
+			if (!Dialect.SupportsTemporaryTables)
+			{
+				Assert.Ignore("Cannot perform multi-table updates using dialect not supporting temp tables.");
+			}
+
 			// multi-table ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
@@ -526,6 +538,11 @@ namespace NHibernate.Test.Hql.Ast
 		[Test]
 		public void UpdateOnComponent()
 		{
+			if (!Dialect.SupportsTemporaryTables)
+			{
+				Assert.Ignore("Cannot perform multi-table updates using dialect not supporting temp tables.");
+			}
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
@@ -557,6 +574,11 @@ namespace NHibernate.Test.Hql.Ast
 		[Test]
 		public void UpdateOnManyToOne()
 		{
+			if (!Dialect.SupportsTemporaryTables)
+			{
+				Assert.Ignore("Cannot perform multi-table updates using dialect not supporting temp tables.");
+			}
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
@@ -642,6 +664,11 @@ namespace NHibernate.Test.Hql.Ast
 		[Test]
 		public void UpdateOnAnimal()
 		{
+			if (!Dialect.SupportsTemporaryTables)
+			{
+				Assert.Ignore("Cannot perform multi-table updates using dialect not supporting temp tables.");
+			}
+
 			var data = new TestData(this);
 			data.Prepare();
 
@@ -685,6 +712,11 @@ namespace NHibernate.Test.Hql.Ast
 		[Test]
 		public void UpdateMultiplePropertyOnAnimal()
 		{
+			if (!Dialect.SupportsTemporaryTables)
+			{
+				Assert.Ignore("Cannot perform multi-table updates using dialect not supporting temp tables.");
+			}
+
 			var data = new TestData(this);
 			data.Prepare();
 
@@ -716,6 +748,11 @@ namespace NHibernate.Test.Hql.Ast
 		[Test]
 		public void UpdateOnMammal()
 		{
+			if (!Dialect.SupportsTemporaryTables)
+			{
+				Assert.Ignore("Cannot perform multi-table updates using dialect not supporting temp tables.");
+			}
+
 			var data = new TestData(this);
 			data.Prepare();
 
@@ -743,6 +780,11 @@ namespace NHibernate.Test.Hql.Ast
 		[Test]
 		public void UpdateSetNullUnionSubclass()
 		{
+			if (!Dialect.SupportsTemporaryTables)
+			{
+				Assert.Ignore("Cannot perform multi-table updates using dialect not supporting temp tables.");
+			}
+
 			var data = new TestData(this);
 			data.Prepare();
 
@@ -802,6 +844,11 @@ namespace NHibernate.Test.Hql.Ast
 		[Test]
 		public void UpdateSetNullOnJoinedSubclass()
 		{
+			if (!Dialect.SupportsTemporaryTables)
+			{
+				Assert.Ignore("Cannot perform multi-table updates using dialect not supporting temp tables.");
+			}
+
 			var data = new TestData(this);
 			data.Prepare();
 
@@ -870,8 +917,11 @@ namespace NHibernate.Test.Hql.Ast
 		{
 			if (Dialect.HasSelfReferentialForeignKeyBug)
 			{
-				Assert.Ignore("self referential FK bug", "HQL delete testing");
-				return;
+				Assert.Ignore("self referential FK bug");
+			}
+			if (!Dialect.SupportsTemporaryTables)
+			{
+				Assert.Ignore("Cannot perform multi-table deletes using dialect not supporting temp tables.");
 			}
 
 			var data = new TestData(this);
@@ -929,6 +979,11 @@ namespace NHibernate.Test.Hql.Ast
 		[Test]
 		public void DeleteOnJoinedSubclass()
 		{
+			if (!Dialect.SupportsTemporaryTables)
+			{
+				Assert.Ignore("Cannot perform multi-table deletes using dialect not supporting temp tables.");
+			}
+
 			var data = new TestData(this);
 			data.Prepare();
 
@@ -953,6 +1008,11 @@ namespace NHibernate.Test.Hql.Ast
 		[Test]
 		public void DeleteOnMappedJoin()
 		{
+			if (!Dialect.SupportsTemporaryTables)
+			{
+				Assert.Ignore("Cannot perform multi-table deletes using dialect not supporting temp tables.");
+			}
+
 			var data = new TestData(this);
 			data.Prepare();
 
@@ -972,6 +1032,11 @@ namespace NHibernate.Test.Hql.Ast
 		[Test]
 		public void DeleteUnionSubclassAbstractRoot()
 		{
+			if (!Dialect.SupportsTemporaryTables)
+			{
+				Assert.Ignore("Cannot perform multi-table deletes using dialect not supporting temp tables.");
+			}
+
 			var data = new TestData(this);
 			data.Prepare();
 
@@ -994,6 +1059,11 @@ namespace NHibernate.Test.Hql.Ast
 		[Test]
 		public void DeleteUnionSubclassConcreteSubclass()
 		{
+			if (!Dialect.SupportsTemporaryTables)
+			{
+				Assert.Ignore("Cannot perform multi-table deletes using dialect not supporting temp tables.");
+			}
+
 			var data = new TestData(this);
 			data.Prepare();
 
@@ -1037,6 +1107,11 @@ namespace NHibernate.Test.Hql.Ast
 		[Test]
 		public void DeleteRestrictedOnManyToOne()
 		{
+			if (!Dialect.SupportsTemporaryTables)
+			{
+				Assert.Ignore("Cannot perform multi-table deletes using dialect not supporting temp tables.");
+			}
+
 			var data = new TestData(this);
 			data.Prepare();
 
@@ -1070,7 +1145,7 @@ namespace NHibernate.Test.Hql.Ast
 
 		private class TestData
 		{
-			private readonly BulkManipulation tc;
+			private readonly BulkManipulation _tc;
 			public Animal Polliwog;
 			public Animal Catepillar;
 			public Animal Frog;
@@ -1081,12 +1156,12 @@ namespace NHibernate.Test.Hql.Ast
 
 			public TestData(BulkManipulation tc)
 			{
-				this.tc = tc;
+				_tc = tc;
 			}
 
 			public void Prepare()
 			{
-				ISession s = tc.OpenNewSession();
+				ISession s = _tc.OpenSession();
 				ITransaction txn = s.BeginTransaction();
 
 				Polliwog = new Animal {BodyWeight = 12, Description = "Polliwog"};
@@ -1149,19 +1224,27 @@ namespace NHibernate.Test.Hql.Ast
 
 			public void Cleanup()
 			{
-				ISession s = tc.OpenNewSession();
-				ITransaction txn = s.BeginTransaction();
+				if (!_tc.Dialect.SupportsTemporaryTables)
+				{
+					// Give-up usual cleanup due to TPC: cannot perform multi-table deletes using dialect not supporting temp tables
+					_tc.DropSchema();
+					_tc.CreateSchema();
+					return;
+				}
+				using (var s = _tc.OpenSession())
+				using (var txn = s.BeginTransaction())
+				{
+					// workaround awesome HSQLDB "feature"
+					s.CreateQuery("delete from Animal where mother is not null or father is not null").ExecuteUpdate();
+					s.CreateQuery("delete from Animal").ExecuteUpdate();
+					s.CreateQuery("delete from Zoo").ExecuteUpdate();
+					s.CreateQuery("delete from Joiner").ExecuteUpdate();
+					s.CreateQuery("delete from Vehicle").ExecuteUpdate();
+					s.CreateQuery("delete from BooleanLiteralEntity").ExecuteUpdate();
 
-				// workaround awesome HSQLDB "feature"
-				s.CreateQuery("delete from Animal where mother is not null or father is not null").ExecuteUpdate();
-				s.CreateQuery("delete from Animal").ExecuteUpdate();
-				s.CreateQuery("delete from Zoo").ExecuteUpdate();
-				s.CreateQuery("delete from Joiner").ExecuteUpdate();
-				s.CreateQuery("delete from Vehicle").ExecuteUpdate();
-				s.CreateQuery("delete from BooleanLiteralEntity").ExecuteUpdate();
-
-				txn.Commit();
-				s.Close();
+					txn.Commit();
+					s.Close();
+				}
 			}
 		}
 	}

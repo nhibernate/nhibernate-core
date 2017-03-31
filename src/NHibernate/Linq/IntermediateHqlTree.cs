@@ -44,12 +44,17 @@ namespace NHibernate.Linq
 			get
 			{
 				//Strange side effects in a property getter...
-				ExecuteAddHavingClause(_hqlHaving);
-				ExecuteAddOrderBy(_orderBy);
-				ExecuteAddSkipClause(_skipCount);
-				ExecuteAddTakeClause(_takeCount);
+				AddPendingHqlClausesToRoot();
 				return _root;
 			}
+		}
+
+		private void AddPendingHqlClausesToRoot()
+		{
+			ExecuteAddHavingClause(_hqlHaving);
+			ExecuteAddOrderBy(_orderBy);
+			ExecuteAddSkipClause(_skipCount);
+			ExecuteAddTakeClause(_takeCount);
 		}
 
 		/// <summary>
@@ -60,21 +65,21 @@ namespace NHibernate.Linq
 
 		public HqlTreeBuilder TreeBuilder { get; }
 
-		public IntermediateHqlTree(bool root,QueryMode mode)
+		public IntermediateHqlTree(bool root, QueryMode mode)
 		{
 			_isRoot = root;
 			TreeBuilder = new HqlTreeBuilder();
-			if (mode==QueryMode.Delete)
+			if (mode == QueryMode.Delete)
 			{
 				_root = TreeBuilder.Delete(TreeBuilder.From());
 			}
-         else if (mode==QueryMode.Update)
+			else if (mode == QueryMode.Update)
 			{
 				_root = TreeBuilder.Update(TreeBuilder.From(), TreeBuilder.Set());
 			}
 			else if (mode == QueryMode.UpdateVersioned)
 			{
-				_root = TreeBuilder.Update(TreeBuilder.Versioned(),TreeBuilder.From(), TreeBuilder.Set());
+				_root = TreeBuilder.Update(TreeBuilder.Versioned(), TreeBuilder.From(), TreeBuilder.Set());
 			}
 			else if (mode == QueryMode.Insert)
 			{
@@ -89,7 +94,8 @@ namespace NHibernate.Linq
 
 		public ExpressionToHqlTranslationResults GetTranslation()
 		{
-			var translationRoot = _insertRoot ?? Root;
+			AddPendingHqlClausesToRoot();
+			var translationRoot = _insertRoot ?? _root;
 			return new ExpressionToHqlTranslationResults(translationRoot,
 				_itemTransformers,
 				_listTransformers,
@@ -125,7 +131,7 @@ namespace NHibernate.Linq
 			_root.NodesPreOrder.OfType<HqlSelectFrom>().First().AddChild(select);
 		}
 
-		public void AddInsertClause(HqlIdent target,HqlRange columnSpec)
+		public void AddInsertClause(HqlIdent target, HqlRange columnSpec)
 		{
 			var into = _insertRoot.NodesPreOrder.OfType<HqlInto>().Single();
 			into.AddChild(target);
@@ -234,7 +240,7 @@ namespace NHibernate.Linq
 			}
 			else
 			{
-				var currentClause = (HqlBooleanExpression) _hqlHaving.Children.Single();
+				var currentClause = (HqlBooleanExpression)_hqlHaving.Children.Single();
 
 				_hqlHaving.ClearChildren();
 				_hqlHaving.AddChild(TreeBuilder.BooleanAnd(currentClause, where));

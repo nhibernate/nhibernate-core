@@ -3,7 +3,11 @@ using System.Linq.Expressions;
 
 namespace NHibernate.Linq
 {
-	public class InsertSyntax<TInput>
+	/// <summary>
+	/// An insert object on which entities to insert can be specified.
+	/// </summary>
+	/// <typeparam name="TSource">The type of the entities selected as source of the insert.</typeparam>
+	public class InsertSyntax<TSource>
 	{
 		private readonly Expression _sourceExpression;
 		private readonly INhQueryProvider _provider;
@@ -17,31 +21,31 @@ namespace NHibernate.Linq
 		/// <summary>
 		/// Executes the insert, using the specified assignments.
 		/// </summary>
-		/// <typeparam name="TOutput">The type of the output.</typeparam>
+		/// <typeparam name="TTarget">The type of the entities to insert.</typeparam>
 		/// <param name="assignmentActions">The assignments.</param>
-		/// <returns></returns>
-		public int Into<TOutput>(Action<Assignments<TInput, TOutput>> assignmentActions)
+		/// <returns>The number of inserted entities.</returns>
+		public int Into<TTarget>(Action<Assignments<TSource, TTarget>> assignmentActions)
 		{
 			if (assignmentActions == null)
 				throw new ArgumentNullException(nameof(assignmentActions));
-			var assignments = new Assignments<TInput, TOutput>();
+			var assignments = new Assignments<TSource, TTarget>();
 			assignmentActions.Invoke(assignments);
 			return InsertInto(assignments);
 		}
 
 		/// <summary>
-		/// Executes the insert, inserting new entities as specified by the expression
+		/// Executes the insert, inserting new entities as specified by the expression.
 		/// </summary>
-		/// <typeparam name="TOutput">The type of the output.</typeparam>
-		/// <param name="expression">The expression.</param>
-		/// <returns></returns>
-		public int As<TOutput>(Expression<Func<TInput, TOutput>> expression)
+		/// <typeparam name="TTarget">The type of the entities to insert.</typeparam>
+		/// <param name="expression">The expression projecting a source entity to the entity to insert.</param>
+		/// <returns>The number of inserted entities.</returns>
+		public int As<TTarget>(Expression<Func<TSource, TTarget>> expression)
 		{
-			var assignments = Assignments<TInput, TOutput>.FromExpression(expression);
+			var assignments = Assignments<TSource, TTarget>.FromExpression(expression);
 			return InsertInto(assignments);
 		}
 
-		private int InsertInto<TOutput>(Assignments<TInput, TOutput> assignments)
+		internal int InsertInto<TTarget>(Assignments<TSource, TTarget> assignments)
 		{
 			return _provider.ExecuteInsert(_sourceExpression, assignments);
 		}
