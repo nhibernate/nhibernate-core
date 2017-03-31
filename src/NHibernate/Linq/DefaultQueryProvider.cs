@@ -4,19 +4,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Threading.Tasks;
 
 namespace NHibernate.Linq
 {
 	public partial interface INhQueryProvider : IQueryProvider
 	{
-		IEnumerable<TResult> ExecuteFuture<TResult>(Expression expression);
+		IFutureEnumerable<TResult> ExecuteFuture<TResult>(Expression expression);
 		IFutureValue<TResult> ExecuteFutureValue<TResult>(Expression expression);
 		void SetResultTransformerAndAdditionalCriteria(IQuery query, NhLinqExpression nhExpression, IDictionary<string, Tuple<object, IType>> parameters);
 		int ExecuteDml<T>(QueryMode queryMode, Expression expression);
+		Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken);
 	}
 
 	public partial class DefaultQueryProvider : INhQueryProvider
@@ -46,10 +49,9 @@ namespace NHibernate.Linq
 		public virtual object Execute(Expression expression)
 		{
 			IQuery query;
-			NhLinqExpression nhQuery;
-			NhLinqExpression nhLinqExpression = PrepareQuery(expression, out query, out nhQuery);
+			NhLinqExpression nhLinqExpression = PrepareQuery(expression, out query);
 
-			return ExecuteQuery(nhLinqExpression, query, nhQuery);
+			return ExecuteQuery(nhLinqExpression, query, nhLinqExpression);
 		}
 
 		public TResult Execute<TResult>(Expression expression)
@@ -69,44 +71,65 @@ namespace NHibernate.Linq
 			return new NhQueryable<T>(this, expression);
 		}
 
-		public virtual IEnumerable<TResult> ExecuteFuture<TResult>(Expression expression)
+		public virtual IFutureEnumerable<TResult> ExecuteFuture<TResult>(Expression expression)
 		{
-			PrepareQuery(expression, out var query, out var nhQuery);
+			var nhExpression = PrepareQuery(expression, out var query);
 
 			var result = query.Future<TResult>();
-			SetupFutureResult(nhQuery, (IDelayedValue)result);
+			SetupFutureResult(nhExpression, (IDelayedValue)result);
 
 			return result;
 		}
 
 		public virtual IFutureValue<TResult> ExecuteFutureValue<TResult>(Expression expression)
 		{
-			PrepareQuery(expression, out var query, out var nhQuery);
+			var nhExpression = PrepareQuery(expression, out var query);
 
 			var result = query.FutureValue<TResult>();
-			SetupFutureResult(nhQuery, (IDelayedValue)result);
+			SetupFutureResult(nhExpression, (IDelayedValue)result);
 
 			return result;
 		}
 
-		private static void SetupFutureResult(NhLinqExpression nhQuery, IDelayedValue result)
+		private static void SetupFutureResult(NhLinqExpression nhExpression, IDelayedValue result)
 		{
-			if (nhQuery.ExpressionToHqlTranslationResults.PostExecuteTransformer == null)
+			if (nhExpression.ExpressionToHqlTranslationResults.PostExecuteTransformer == null)
 				return;
 
-			result.ExecuteOnEval = nhQuery.ExpressionToHqlTranslationResults.PostExecuteTransformer;
+			result.ExecuteOnEval = nhExpression.ExpressionToHqlTranslationResults.PostExecuteTransformer;
 		}
 
-		protected virtual NhLinqExpression PrepareQuery(Expression expression, out IQuery query, out NhLinqExpression nhQuery)
+		public async Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
+		{
+			return (TResult)await ExecuteAsync(expression, cancellationToken).ConfigureAwait(false);
+		}
+
+		public virtual Task<object> ExecuteAsync(Expression expression, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
+			{
+				var nhLinqExpression = PrepareQuery(expression, out var query);
+				return ExecuteQueryAsync(nhLinqExpression, query, nhLinqExpression, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		protected virtual NhLinqExpression PrepareQuery(Expression expression, out IQuery query)
 		{
 			var nhLinqExpression = new NhLinqExpression(expression, Session.Factory);
 
 			query = Session.CreateQuery(nhLinqExpression);
 
-			nhQuery = (NhLinqExpression)((ExpressionQueryImpl)query).QueryExpression;
-
 			SetParameters(query, nhLinqExpression.ParameterValuesByName);
-			SetResultTransformerAndAdditionalCriteria(query, nhQuery, nhLinqExpression.ParameterValuesByName);
+			SetResultTransformerAndAdditionalCriteria(query, nhLinqExpression, nhLinqExpression.ParameterValuesByName);
+
 			return nhLinqExpression;
 		}
 

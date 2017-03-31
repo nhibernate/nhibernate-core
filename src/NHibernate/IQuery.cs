@@ -3,6 +3,7 @@ using System.Collections;
 using NHibernate.Transform;
 using NHibernate.Type;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace NHibernate
 {
@@ -623,7 +624,7 @@ namespace NHibernate
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
-		IEnumerable<T> Future<T>();
+		IFutureEnumerable<T> Future<T>();
 
 		/// <summary>
 		/// Get an IFutureValue instance, whose value can be retrieved through
