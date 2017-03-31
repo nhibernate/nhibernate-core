@@ -53,7 +53,7 @@ namespace NHibernate.Driver
 			}
 			log.Info(command.CommandText);
 			BindParameters(command);
-			return new BatcherDataReaderWrapper(batcher, command);
+			return new BatcherDataReaderWrapper(batcher, command).Initialize();
 		}
 
 		protected virtual void BindParameters(DbCommand command)
@@ -84,7 +84,7 @@ namespace NHibernate.Driver
 	{
 		private readonly IBatcher batcher;
 		private readonly DbCommand command;
-		private readonly DbDataReader reader;
+		private DbDataReader reader;
 
 		public BatcherDataReaderWrapper(IBatcher batcher, DbCommand command)
 		{
@@ -98,7 +98,12 @@ namespace NHibernate.Driver
 			}
 			this.batcher = batcher;
 			this.command = command;
+		}
+
+		public BatcherDataReaderWrapper Initialize()
+		{
 			reader = batcher.ExecuteReader(command);
+			return this;
 		}
 
 		public override string GetName(int i)

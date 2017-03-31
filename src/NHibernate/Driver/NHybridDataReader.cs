@@ -34,8 +34,9 @@ namespace NHibernate.Driver
 		/// Initializes a new instance of the <see cref="NHybridDataReader"/> class.
 		/// </summary>
 		/// <param name="reader">The underlying DbDataReader to use.</param>
-		public NHybridDataReader(DbDataReader reader) : this(reader, false)
+		public NHybridDataReader Initialize(DbDataReader reader)
 		{
+			return Initialize(reader, false);
 		}
 
 		/// <summary>
@@ -43,16 +44,17 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="reader">The underlying DbDataReader to use.</param>
 		/// <param name="inMemory"><see langword="true" /> if the contents of the DbDataReader should be read into memory right away.</param>
-		public NHybridDataReader(DbDataReader reader, bool inMemory)
+		public NHybridDataReader Initialize(DbDataReader reader, bool inMemory)
 		{
 			if (inMemory)
 			{
-				_reader = new NDataReader(reader, false);
+				_reader = new NDataReader().Initialize(reader, false);
 			}
 			else
 			{
 				_reader = reader;
 			}
+			return this;
 		}
 
 		/// <summary>
@@ -70,7 +72,7 @@ namespace NHibernate.Driver
 				{
 					log.Debug("Moving DbDataReader into an NDataReader.  It was converted in midstream " + _isMidstream.ToString());
 				}
-				_reader = new NDataReader(_reader, _isMidstream);
+				_reader = new NDataReader().Initialize(_reader, _isMidstream);
 			}
 		}
 
