@@ -123,7 +123,7 @@ namespace NHibernate.Linq
 			=> query.SetOptions(o => o.SetTimeout(timeout));
 
 		/// <summary>
-		/// Deletes all entities in the specified query. The delete operation is performed in the database.
+		/// Deletes all entities selected by the specified query. The delete operation is performed in the database without reading the entities out of it.
 		/// </summary>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">The query matching the entities to delete.</param>
@@ -135,7 +135,7 @@ namespace NHibernate.Linq
 		}
 
 		/// <summary>
-		/// Updates the entities in the query, using the specified assignments. The update operation is performed in the database.
+		/// Initiate an update for the entities selected by the query. The update operation will be performed in the database without reading the entities out of it.
 		/// </summary>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">The query matching the entities to update.</param>
@@ -147,15 +147,15 @@ namespace NHibernate.Linq
 		}
 
 		/// <summary>
-		/// Inserts new entities into the database, using other stored entities as a source. Uses INSERT INTO [...] SELECT FROM [...] in the database.
+		/// Initiate an insert using selected entities as a source. Will use <c>INSERT INTO [...] SELECT FROM [...]</c> in the database.
 		/// </summary>
-		/// <typeparam name="TInput">The type of the input.</typeparam>
+		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">The query matching entities source of the data to insert.</param>
 		/// <returns>An insert builder, allowing to specify target entity class and assignments to its properties.</returns>
-		public static InsertSyntax<TInput> Insert<TInput>(this IQueryable<TInput> source)
+		public static InsertSyntax<TSource> Insert<TSource>(this IQueryable<TSource> source)
 		{
 			var provider = GetNhProvider(source);
-			return new InsertSyntax<TInput>(source.Expression, provider);
+			return new InsertSyntax<TSource>(source.Expression, provider);
 		}
 
 		public static T MappedAs<T>(this T parameter, IType type)

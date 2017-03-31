@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Hql.Ast;
@@ -26,7 +25,7 @@ namespace NHibernate.Linq.Visitors
 		private readonly QueryMode _queryMode;
 
 		public static ExpressionToHqlTranslationResults GenerateHqlQuery(QueryModel queryModel, VisitorParameters parameters, bool root,
-            NhLinqExpressionReturnType? rootReturnType, QueryMode queryMode)
+			NhLinqExpressionReturnType? rootReturnType)
 		{
 			NestedSelectRewriter.ReWrite(queryModel, parameters.SessionFactory);
 
@@ -85,7 +84,7 @@ namespace NHibernate.Linq.Visitors
 			// Identify and name query sources
 			QuerySourceIdentifier.Visit(parameters.QuerySourceNamer, queryModel);
 
-			var visitor = new QueryModelVisitor(parameters, root, queryModel, rootReturnType, queryMode)
+			var visitor = new QueryModelVisitor(parameters, root, queryModel, rootReturnType)
 			{
 				RewrittenOperatorResult = result,
 			};
@@ -135,13 +134,13 @@ namespace NHibernate.Linq.Visitors
 		}
 
 		private QueryModelVisitor(VisitorParameters visitorParameters, bool root, QueryModel queryModel,
-			NhLinqExpressionReturnType? rootReturnType, QueryMode queryMode)
+			NhLinqExpressionReturnType? rootReturnType)
 		{
-			_queryMode = queryMode;
+			_queryMode = root ? visitorParameters.RootQueryMode : QueryMode.Select;
 			VisitorParameters = visitorParameters;
 			Model = queryModel;
 			_rootReturnType = root ? rootReturnType : null;
-			_hqlTree = new IntermediateHqlTree(root, queryMode);
+			_hqlTree = new IntermediateHqlTree(root, _queryMode);
 		}
 
 		private void Visit()
@@ -320,7 +319,6 @@ namespace NHibernate.Linq.Visitors
 					_hqlTree.TreeBuilder.Range(
 						HqlGeneratorExpressionVisitor.Visit(fromClause.FromExpression, VisitorParameters),
 						_hqlTree.TreeBuilder.Alias(querySourceName)));
-
 			}
 
 			base.VisitAdditionalFromClause(fromClause, queryModel, index);
@@ -382,15 +380,11 @@ namespace NHibernate.Linq.Visitors
 					return;
 				case QueryMode.Update:
 				case QueryMode.UpdateVersioned:
-					{
-						VisitUpdateClause(selectClause.Selector);
-						return;
-					}
+					VisitUpdateClause(selectClause.Selector);
+					return;
 				case QueryMode.Insert:
-					{
-						VisitInsertClause(selectClause.Selector);
-						return;
-					}
+					VisitInsertClause(selectClause.Selector);
+					return;
 			}
 
 			//This is a standard select query
@@ -411,33 +405,28 @@ namespace NHibernate.Linq.Visitors
 
 		private void VisitInsertClause(Expression expression)
 		{
-			var listInit = expression as ListInitExpression;
-			var insertedType = VisitorParameters.EntityType;
+			var listInit = expression as ListInitExpression
+				?? throw new QueryException("Malformed insert expression");
+			var insertedType = VisitorParameters.TargetEntityType;
 			var idents = new List<HqlIdent>();
 			var selectColumns = new List<HqlExpression>();
-
-			if (listInit == null)
-			{
-				throw new QueryException("Malformed insert expression");
-			}
 
 			//Extract the insert clause from the projected ListInit
 			foreach (var assignment in listInit.Initializers)
 			{
-				var member = assignment.Arguments[0] as ConstantExpression;
+				var member = (ConstantExpression)assignment.Arguments[0];
 				var value = assignment.Arguments[1];
-				
+
 				//The target property
 				idents.Add(_hqlTree.TreeBuilder.Ident((string)member.Value));
 
 				var valueHql = HqlGeneratorExpressionVisitor.Visit(value, VisitorParameters).AsExpression();
 				selectColumns.Add(valueHql);
-			};
+			}
 
 			//Add the insert clause ([INSERT INTO] insertedType (list of properties))
 			_hqlTree.AddInsertClause(_hqlTree.TreeBuilder.Ident(insertedType.FullName),
-											 _hqlTree.TreeBuilder.Range(idents.ToArray()));
-
+				_hqlTree.TreeBuilder.Range(idents.ToArray()));
 
 			//... and then the select clause
 			_hqlTree.AddSelectClause(_hqlTree.TreeBuilder.Select(selectColumns));
@@ -445,15 +434,16 @@ namespace NHibernate.Linq.Visitors
 
 		private void VisitUpdateClause(Expression expression)
 		{
-			var listInit = expression as ListInitExpression;
+			var listInit = expression as ListInitExpression
+				?? throw new QueryException("Malformed update expression");
 			foreach (var initializer in listInit.Initializers)
 			{
-				var member = initializer.Arguments[0] as ConstantExpression;
+				var member = (ConstantExpression)initializer.Arguments[0];
 				var setter = initializer.Arguments[1];
 				var setterHql = HqlGeneratorExpressionVisitor.Visit(setter, VisitorParameters).AsExpression();
 
 				_hqlTree.AddSet(_hqlTree.TreeBuilder.Equality(_hqlTree.TreeBuilder.Ident((string)member.Value),
-																			 setterHql));
+					setterHql));
 			}
 		}
 

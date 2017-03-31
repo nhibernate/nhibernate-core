@@ -1,39 +1,31 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Engine;
-using NHibernate.Linq.Expressions;
-using NHibernate.Linq.Visitors;
-using Remotion.Linq;
-using Remotion.Linq.Clauses.Expressions;
-using System.Reflection;
+using NHibernate.Util;
 
 namespace NHibernate.Linq
 {
-	public class NhLinqInsertExpression<TInput,TOutput> : NhLinqExpression
+	public class NhLinqInsertExpression<TSource, TTarget> : NhLinqExpression
 	{
-		public NhLinqInsertExpression(Expression expression, Assignments<TInput, TOutput> assignments, ISessionFactoryImplementor sessionFactory)
+		protected override QueryMode QueryMode => QueryMode.Insert;
+
+		/// <summary>
+		/// Entity type to insert or update when the expression is a DML.
+		/// </summary>
+		protected override System.Type TargetType => typeof(TTarget);
+
+		public NhLinqInsertExpression(Expression expression, Assignments<TSource, TTarget> assignments, ISessionFactoryImplementor sessionFactory)
 			: base(RewriteForInsert(expression, assignments), sessionFactory)
 		{
-			Key = Key + "INSERT";
+			Key = "INSERT " + Key;
 		}
 
-		internal static Expression RewriteForInsert(Expression expression, Assignments<TInput, TOutput> assignments)
+		private static Expression RewriteForInsert(Expression expression, Assignments<TSource, TTarget> assignments)
 		{
 			var lambda = assignments.ConvertToDictionaryExpression();
 
-			return
-				Expression.Call(
-					typeof(Queryable), "Select",
-					new System.Type[] { typeof(TInput), lambda.Body.Type },
-					expression, Expression.Quote(lambda));
-		}
-
-		protected override ExpressionToHqlTranslationResults GenerateHqlQuery(QueryModel queryModel, VisitorParameters visitorParameters)
-		{
-			visitorParameters.EntityType = typeof (TOutput);
-			return QueryModelVisitor.GenerateHqlQuery(queryModel, visitorParameters, true, null, QueryMode.Insert);
+			return Expression.Call(
+				ReflectionCache.QueryableMethods.SelectDefinition.MakeGenericMethod(typeof(TSource), lambda.Body.Type),
+				expression, Expression.Quote(lambda));
 		}
 	}
 }

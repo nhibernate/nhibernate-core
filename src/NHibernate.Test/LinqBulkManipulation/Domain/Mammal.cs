@@ -1,6 +1,6 @@
 using System;
 
-namespace NHibernate.Test.NHSpecificTest.NH3488.Domain
+namespace NHibernate.Test.LinqBulkManipulation.Domain
 {
 	public class Mammal: Animal
 	{

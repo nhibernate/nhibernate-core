@@ -196,9 +196,9 @@ namespace NHibernate.Linq
 			return query.ExecuteUpdate();
 		}
 
-		public int ExecuteInsert<TInput, TOutput>(Expression expression, Assignments<TInput, TOutput> assignments)
+		public int ExecuteInsert<TSource, TTarget>(Expression expression, Assignments<TSource, TTarget> assignments)
 		{
-			var nhLinqExpression = new NhLinqInsertExpression<TInput, TOutput>(expression, assignments, Session.Factory);
+			var nhLinqExpression = new NhLinqInsertExpression<TSource, TTarget>(expression, assignments, Session.Factory);
 
 			var query = Session.CreateQuery(nhLinqExpression);
 
