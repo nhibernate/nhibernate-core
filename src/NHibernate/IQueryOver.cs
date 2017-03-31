@@ -115,6 +115,36 @@ namespace NHibernate
 		/// </summary>
 		IFutureValue<U> FutureValue<U>();
 
+#if ASYNC
+		/// <summary>
+		/// Get a enumerable that when enumerated will execute
+		/// a batch of queries in a single database roundtrip
+		/// </summary>
+		IAsyncEnumerable<TRoot> FutureAsync();
+
+		/// <summary>
+		/// Get a enumerable that when enumerated will execute
+		/// a batch of queries in a single database roundtrip
+		/// </summary>
+		IAsyncEnumerable<U> FutureAsync<U>();
+
+		/// <summary>
+		/// Get an IFutureValue instance, whose value can be retrieved through
+		/// its Value property. The query is not executed until the Value property
+		/// is retrieved, which will execute other Future queries as well in a
+		/// single roundtrip
+		/// </summary>
+		IFutureValueAsync<TRoot> FutureValueAsync();
+
+		/// <summary>
+		/// Get an IFutureValue instance, whose value can be retrieved through
+		/// its Value property. The query is not executed until the Value property
+		/// is retrieved, which will execute other Future queries as well in a
+		/// single roundtrip
+		/// </summary>
+		IFutureValueAsync<U> FutureValueAsync<U>();
+#endif
+
 		/// <summary>
 		/// Creates an exact clone of the IQueryOver
 		/// </summary>

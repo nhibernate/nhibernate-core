@@ -239,7 +239,7 @@ namespace NHibernate.AdoNet
 
 			if (!_factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders)
 			{
-				reader = new NHybridDataReader(reader);
+				reader = new NHybridDataReader().Initialize(reader);
 			}
 
 			_readersToClose.Add(reader);

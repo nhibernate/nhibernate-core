@@ -102,10 +102,32 @@ namespace NHibernate.Criterion
 			return criteria.FutureValue<U>();
 		}
 
-		/// <summary>
-		/// Get an executable instance of <c>IQueryOver&lt;TRoot&gt;</c>,
-		/// to actually run the query.</summary>
-		public IQueryOver<TRoot,TRoot> GetExecutableQueryOver(ISession session)
+#if ASYNC
+		private IAsyncEnumerable<TRoot> FutureAsync()
+		{
+			return criteria.FutureAsync<TRoot>();
+		}
+
+		private IAsyncEnumerable<U> FutureAsync<U>()
+		{
+			return criteria.FutureAsync<U>();
+		}
+
+		private IFutureValueAsync<TRoot> FutureValueAsync()
+		{
+			return criteria.FutureValueAsync<TRoot>();
+		}
+
+		private IFutureValueAsync<U> FutureValueAsync<U>()
+		{
+			return criteria.FutureValueAsync<U>();
+		}
+#endif
+
+        /// <summary>
+        /// Get an executable instance of <c>IQueryOver&lt;TRoot&gt;</c>,
+        /// to actually run the query.</summary>
+        public IQueryOver<TRoot,TRoot> GetExecutableQueryOver(ISession session)
 		{
 			impl.Session = session.GetSessionImplementation();
 			return new QueryOver<TRoot,TRoot>(impl);
@@ -245,6 +267,20 @@ namespace NHibernate.Criterion
 
 		IFutureValue<U> IQueryOver<TRoot>.FutureValue<U>()
 		{ return FutureValue<U>(); }
+
+#if ASYNC
+		IAsyncEnumerable<TRoot> IQueryOver<TRoot>.FutureAsync()
+		{ return FutureAsync(); }
+
+		IAsyncEnumerable<U> IQueryOver<TRoot>.FutureAsync<U>()
+		{ return FutureAsync<U>(); }
+
+		IFutureValueAsync<TRoot> IQueryOver<TRoot>.FutureValueAsync()
+		{ return FutureValueAsync(); }
+
+		IFutureValueAsync<U> IQueryOver<TRoot>.FutureValueAsync<U>()
+		{ return FutureValueAsync<U>(); }
+#endif
 
 		IQueryOver<TRoot,TRoot> IQueryOver<TRoot>.Clone()
 		{ return Clone(); }

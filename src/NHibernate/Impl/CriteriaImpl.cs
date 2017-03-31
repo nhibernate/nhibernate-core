@@ -423,6 +423,30 @@ namespace NHibernate.Impl
 			return session.FutureCriteriaBatch.GetEnumerator<T>();
 		}
 
+#if ASYNC
+		public IFutureValueAsync<T> FutureValueAsync<T>()
+		{
+			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
+			{
+				return new FutureValueAsync<T>(async () => await ListAsync<T>());
+			}
+
+			session.FutureCriteriaBatch.Add<T>(this);
+			return session.FutureCriteriaBatch.GetFutureValueAsync<T>();
+		}
+
+		public IAsyncEnumerable<T> FutureAsync<T>()
+		{
+			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
+			{
+				return new DelayedAsyncEnumerator<T>(async () => await ListAsync<T>());
+			}
+
+			session.FutureCriteriaBatch.Add<T>(this);
+			return session.FutureCriteriaBatch.GetAsyncEnumerator<T>();
+		}
+#endif
+
 		public object UniqueResult()
 		{
 			return AbstractQueryImpl.UniqueElement(List());
@@ -794,6 +818,18 @@ namespace NHibernate.Impl
 			{
 				return root.Future<T>();
 			}
+
+#if ASYNC
+			public IFutureValueAsync<T> FutureValueAsync<T>()
+			{
+				return root.FutureValueAsync<T>();
+			}
+
+			public IAsyncEnumerable<T> FutureAsync<T>()
+			{
+				return root.FutureAsync<T>();
+			}
+#endif
 
 			public void List(IList results)
 			{
