@@ -26,10 +26,10 @@ namespace NHibernate.Impl
 	/// </example>
 	public class SqlQueryImpl : AbstractQueryImpl, ISQLQuery
 	{
-		private readonly ReadOnlyCollection<string> querySpaces;
+		private readonly IReadOnlyList<string> querySpaces;
 		private readonly bool callable;
-        private ReadOnlyCollection<INativeSQLQueryReturn> queryReturns;
-        private bool autoDiscoverTypes;
+	  private IReadOnlyList<INativeSQLQueryReturn> queryReturns;
+	  private bool autoDiscoverTypes;
 
 		/// <summary> Constructs a SQLQueryImpl given a sql query defined in the mappings. </summary>
 		/// <param name="queryDef">The representation of the defined sql-query. </param>
@@ -73,7 +73,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-	    private ReadOnlyCollection<INativeSQLQueryReturn> GetQueryReturns()
+	    private IReadOnlyList<INativeSQLQueryReturn> GetQueryReturns()
 	    {
 	        return queryReturns;
 	    }

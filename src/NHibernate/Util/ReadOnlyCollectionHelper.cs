@@ -12,23 +12,22 @@ namespace NHibernate.Util
     internal static readonly ReadOnlyCollection<INativeSQLQueryReturn> EmptyQueryReturns =
       new ReadOnlyCollection<INativeSQLQueryReturn>(new INativeSQLQueryReturn[0]);
 
-    public static ReadOnlyCollection<T> ImmutableAdd<T>(this ReadOnlyCollection<T> collection, T value)
+    public static IReadOnlyList<T> ImmutableAdd<T>(this IReadOnlyList<T> collection, T value)
     {
       if (collection == null)
       {
         throw new ArgumentNullException("collection");
       }
 
-      T[] tmp = new T[collection.Count + 1];
+			var result = new List<T>(collection.Count + 1);
 
-      collection.CopyTo(tmp, 0);
-
-      tmp[tmp.Length - 1] = value;
-
-      return new ReadOnlyCollection<T>(tmp);
+			result.AddRange(collection);
+			result.Add(value);
+			
+      return result.AsReadOnly();
     }
 
-    public static ReadOnlyCollection<T> ImmutableAddRange<T>(this ReadOnlyCollection<T> collection, IList<T> values)
+    public static IReadOnlyList<T> ImmutableAddRange<T>(this IReadOnlyList<T> collection, IList<T> values)
     {
       if (collection == null)
       {
@@ -39,13 +38,13 @@ namespace NHibernate.Util
       {
         throw new ArgumentNullException("values");
       }
+			
+			var result = new List<T>(collection.Count + values.Count);
 
-      T[] tmp = new T[collection.Count + values.Count];
-
-      collection.CopyTo(tmp, 0);
-      values.CopyTo(tmp, collection.Count);
-      
-      return new ReadOnlyCollection<T>(tmp);
+			result.AddRange(collection);
+			result.AddRange(values);
+			
+      return result.AsReadOnly();
     }
   }
 }

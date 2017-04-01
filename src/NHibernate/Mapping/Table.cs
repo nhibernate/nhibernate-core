@@ -1007,21 +1007,22 @@ namespace NHibernate.Mapping
 		[Serializable]
 		internal class ForeignKeyKey : IEqualityComparer<ForeignKeyKey>
 		{
-			internal List<Column> columns;
+			internal IReadOnlyList<Column> columns;
 			internal string referencedClassName;
-			internal List<Column> referencedColumns;
+			internal IReadOnlyList<Column> referencedColumns;
 
 			internal ForeignKeyKey(IEnumerable<Column> columns, string referencedClassName, IEnumerable<Column> referencedColumns)
 			{
 				this.referencedClassName = referencedClassName;
-				this.columns = new List<Column>(columns);
+				this.columns = new List<Column>(columns).AsReadOnly();
+
 				if (referencedColumns != null)
 				{
-					this.referencedColumns = new List<Column>(referencedColumns);
+					this.referencedColumns = new List<Column>(referencedColumns).AsReadOnly();
 				}
 				else
 				{
-					this.referencedColumns = new List<Column>();
+					this.referencedColumns = new List<Column>(0);
 				}
 			}
 

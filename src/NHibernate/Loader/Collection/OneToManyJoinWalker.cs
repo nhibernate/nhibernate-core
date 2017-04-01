@@ -21,7 +21,7 @@ namespace NHibernate.Loader.Collection
 		{
 			//disable a join back to this same association
 			bool isSameJoin = oneToManyPersister.TableName.Equals(foreignKeyTable)
-			                  && CollectionHelper.CollectionEquals<string>(foreignKeyColumns, oneToManyPersister.KeyColumnNames);
+			                  && CollectionHelper.CollectionEquals((ICollection<string>)foreignKeyColumns, oneToManyPersister.KeyColumnNames);
 			return isSameJoin || base.IsDuplicateAssociation(foreignKeyTable, foreignKeyColumns);
 		}
 

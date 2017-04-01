@@ -573,7 +573,7 @@ namespace NHibernate.Loader
 				if (that == null)
 					return false;
 
-				return that.table.Equals(table) && CollectionHelper.CollectionEquals<string>(columns, that.columns);
+			  return that.table.Equals(table) && CollectionHelper.CollectionEquals((ICollection<string>) columns, that.columns);
 			}
 
 			public override int GetHashCode()

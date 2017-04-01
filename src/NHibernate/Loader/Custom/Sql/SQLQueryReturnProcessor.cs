@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 using NHibernate.Engine;
 using NHibernate.Engine.Query.Sql;
@@ -14,7 +13,7 @@ namespace NHibernate.Loader.Custom.Sql
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (SQLQueryReturnProcessor));
 
-		private readonly ReadOnlyCollection<INativeSQLQueryReturn> queryReturns;
+		private readonly IReadOnlyList<INativeSQLQueryReturn> queryReturns;
 
 		private readonly Dictionary<string, INativeSQLQueryReturn> alias2Return =
 			new Dictionary<string, INativeSQLQueryReturn>();
@@ -45,9 +44,9 @@ namespace NHibernate.Loader.Custom.Sql
 			get { return factory; }
 		}
 
-		public SQLQueryReturnProcessor(IList<INativeSQLQueryReturn> queryReturns, ISessionFactoryImplementor factory)
+		public SQLQueryReturnProcessor(IEnumerable<INativeSQLQueryReturn> queryReturns, ISessionFactoryImplementor factory)
 		{
-			this.queryReturns = new ReadOnlyCollection<INativeSQLQueryReturn>(queryReturns);
+			this.queryReturns = new List<INativeSQLQueryReturn>(queryReturns).AsReadOnly();
 			this.factory = factory;
 		}
 

@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using Iesi.Collections;
 using System.Collections.Generic;
 
 namespace NHibernate.Util
@@ -131,105 +130,25 @@ namespace NHibernate.Util
 				return emptyEnumerator;
 			}
 		}
-
-		[Serializable]
-		private class EmptyListClass : IList
-		{
-			public int Add(object value)
-			{
-				throw new NotImplementedException();
-			}
-
-			public bool Contains(object value)
-			{
-				return false;
-			}
-
-			public void Clear()
-			{
-				throw new NotImplementedException();
-			}
-
-			public int IndexOf(object value)
-			{
-				return -1;
-			}
-
-			public void Insert(int index, object value)
-			{
-				throw new NotImplementedException();
-			}
-
-			public void Remove(object value)
-			{
-				throw new NotImplementedException();
-			}
-
-			public void RemoveAt(int index)
-			{
-				throw new NotImplementedException();
-			}
-
-			public object this[int index]
-			{
-				get { throw new IndexOutOfRangeException(); }
-				set { throw new IndexOutOfRangeException(); }
-			}
-
-			public bool IsReadOnly
-			{
-				get { return true; }
-			}
-
-			public bool IsFixedSize
-			{
-				get { return true; }
-			}
-
-			public void CopyTo(Array array, int index)
-			{
-			}
-
-			public int Count
-			{
-				get { return 0; }
-			}
-
-			public object SyncRoot
-			{
-				get { return this; }
-			}
-
-			public bool IsSynchronized
-			{
-				get { return false; }
-			}
-
-			public IEnumerator GetEnumerator()
-			{
-				return new EmptyEnumerator();
-			}
-		}
-
+		
 		public static readonly IEnumerable EmptyEnumerable = new EmptyEnumerableClass();
 		public static readonly IDictionary EmptyMap = new EmptyMapClass();
 		public static readonly ICollection EmptyCollection = EmptyMap;
-		public static readonly IList EmptyList = new EmptyListClass();
-
+		
 		/// <summary>
 		/// Determines if two collections have equals elements, with the same ordering.
 		/// </summary>
 		/// <param name="c1">The first collection.</param>
 		/// <param name="c2">The second collection.</param>
 		/// <returns><c>true</c> if collection are equals, <c>false</c> otherwise.</returns>
-		public static bool CollectionEquals(ICollection c1, ICollection c2)
+		public static bool CollectionEquals<T>(IReadOnlyCollection<T> c1, IReadOnlyCollection<T> c2)
 		{
 			if (c1 == c2)
 			{
 				return true;
 			}
 
-			if(c1==null || c2==null)
+			if (c1 == null || c2 == null)
 			{
 				return false;
 			}
@@ -239,22 +158,27 @@ namespace NHibernate.Util
 				return false;
 			}
 
-			IEnumerator e1 = c1.GetEnumerator();
-			IEnumerator e2 = c2.GetEnumerator();
-
-			while (e1.MoveNext())
-			{
-				e2.MoveNext();
-				if (!Equals(e1.Current, e2.Current))
-				{
-					return false;
-				}
-			}
-
-			return true;
+			return InternalCompareCollections(c1, c2);
 		}
 
-		public static bool DictionaryEquals(IDictionary a, IDictionary b)
+		private static bool InternalCompareCollections(IEnumerable c1, IEnumerable c2)
+	  {
+	    IEnumerator e1 = c1.GetEnumerator();
+	    IEnumerator e2 = c2.GetEnumerator();
+
+	    while (e1.MoveNext())
+	    {
+	      e2.MoveNext();
+	      if (!Equals(e1.Current, e2.Current))
+	      {
+	        return false;
+	      }
+	    }
+
+	    return true;
+	  }
+
+	  public static bool DictionaryEquals(IDictionary a, IDictionary b)
 		{
 			if (Equals(a, b))
 			{
@@ -650,19 +574,7 @@ namespace NHibernate.Util
 				return false;
 			}
 
-			IEnumerator e1 = c1.GetEnumerator();
-			IEnumerator e2 = c2.GetEnumerator();
-
-			while (e1.MoveNext())
-			{
-				e2.MoveNext();
-				if (!Equals(e1.Current, e2.Current))
-				{
-					return false;
-				}
-			}
-
-			return true;
+			return InternalCompareCollections(c1, c2);
 		}
 
 	}

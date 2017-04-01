@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 using NHibernate.Util;
 
@@ -8,18 +7,18 @@ namespace NHibernate.Engine.Query.Sql
 	public class NativeSQLQuerySpecification
 	{
 		private readonly string queryString;
-		private readonly ReadOnlyCollection<INativeSQLQueryReturn> sqlQueryReturns;
-		private readonly ReadOnlyCollection<string> querySpaces;
+		private readonly IReadOnlyList<INativeSQLQueryReturn> sqlQueryReturns;
+		private readonly IReadOnlyList<string> querySpaces;
 		private readonly int hashCode;
 
 	    public NativeSQLQuerySpecification(
 	        string queryString,
-	        IList<INativeSQLQueryReturn> sqlQueryReturns,
-	        IList<string> querySpaces)
+	        IEnumerable<INativeSQLQueryReturn> sqlQueryReturns,
+					IEnumerable<string> querySpaces)
 	    {
 	        this.queryString = queryString;
-	        this.sqlQueryReturns = new ReadOnlyCollection<INativeSQLQueryReturn>(sqlQueryReturns);
-	        this.querySpaces = new ReadOnlyCollection<string>(querySpaces ?? new string[0]);
+	        this.sqlQueryReturns = new List<INativeSQLQueryReturn>(sqlQueryReturns).AsReadOnly();
+	        this.querySpaces = new List<string>(querySpaces ?? new string[0]).AsReadOnly();
 
 	        // pre-determine and cache the hashcode
 	        int hCode = queryString.GetHashCode();
@@ -42,12 +41,12 @@ namespace NHibernate.Engine.Query.Sql
 			get { return queryString; }
 		}
 
-		public ReadOnlyCollection<INativeSQLQueryReturn> SqlQueryReturns
+		public IReadOnlyList<INativeSQLQueryReturn> SqlQueryReturns
 		{
 			get { return sqlQueryReturns; }
 		}
 
-		public ReadOnlyCollection<string> QuerySpaces
+		public IReadOnlyList<string> QuerySpaces
 		{
 			get { return querySpaces; }
 		}
@@ -67,7 +66,7 @@ namespace NHibernate.Engine.Query.Sql
 			return hashCode == that.hashCode &&
 				queryString.Equals(that.queryString) &&
 				CollectionHelper.CollectionEquals(querySpaces, that.querySpaces) &&
-				CollectionHelper.CollectionEquals<INativeSQLQueryReturn>(sqlQueryReturns, that.sqlQueryReturns);
+				CollectionHelper.CollectionEquals(sqlQueryReturns, that.sqlQueryReturns);
 		}
 
 		public override int GetHashCode()
