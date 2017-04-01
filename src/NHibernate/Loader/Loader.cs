@@ -983,7 +983,7 @@ namespace NHibernate.Loader
 		{
 			object obj;
 
-			ILoadable instanceClass = GetRowPersister(dr, i, persister, key.Identifier, session);
+			ILoadable concretePersister = GetConcretePersister(dr, i, persister, key.Identifier, session);
 
 			if (optionalObjectKey != null && key.Equals(optionalObjectKey))
 			{
@@ -992,7 +992,7 @@ namespace NHibernate.Loader
 			}
 			else
 			{
-				obj = session.Instantiate(instanceClass.EntityName, key.Identifier);
+				obj = session.Instantiate(concretePersister, key.Identifier);
 			}
 
 			// need to hydrate it
@@ -1001,7 +1001,7 @@ namespace NHibernate.Loader
 			// (but don't yet initialize the object itself)
 			// note that we acquired LockMode.READ even if it was not requested
 			LockMode acquiredLockMode = lockMode == LockMode.None ? LockMode.Read : lockMode;
-			LoadFromResultSet(dr, i, obj, instanceClass, key, rowIdAlias, acquiredLockMode, persister, session);
+			LoadFromResultSet(dr, i, obj, concretePersister, key, rowIdAlias, acquiredLockMode, persister, session);
 
 			// materialize associations (and initialize the object) later
 			hydratedObjects.Add(obj);
@@ -1073,7 +1073,7 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Determine the concrete class of an instance for the <c>DbDataReader</c>
 		/// </summary>
-		private ILoadable GetRowPersister(DbDataReader rs, int i, ILoadable persister, object id, ISessionImplementor session)
+		private ILoadable GetConcretePersister(DbDataReader rs, int i, ILoadable persister, object id, ISessionImplementor session)
 		{
 			if (persister.HasSubclasses)
 			{

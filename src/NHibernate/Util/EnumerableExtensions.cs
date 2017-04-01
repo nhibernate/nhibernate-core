@@ -6,7 +6,7 @@ namespace NHibernate.Util
 {
 	public static class EnumerableExtensions
 	{
-		public static HashSet<T> ToHashSet<T>(this IEnumerable<T> collection)
+		internal static HashSet<T> ToHashSet<T>(this IEnumerable<T> collection)
 		{
 			if (collection == null)
 			{
