@@ -90,6 +90,8 @@ Be sure to link to the JIRA issue in your GitHub pull request. Also, go back to 
 
 We use tabs for code indentation, not spaces. As this is not the default in Visual Studio, you will need to reconfigure Visual Studio to indent with tabs whenever you work on the NHibernate codebase. To make this easier, NHibernate has an [editorconfig][3] configuration file to switch Visual Studio automatically between tabs and spaces mode. It is recommended you install editorconfig from the Visual Studio Extension Manager.
 
+After submitting your pull request, come back later to check the outcome of automated builds. If some have failed, they will be listed in your pull request with a link to the corresponding TeamCity build. Find out in the build which tests are newly failing, and take appropriate action. Some of those builds have many known failing tests, which does not trigger a build failure. A *Comparison.txt* file in build Artifacts may help finding which failing tests are not known failing tests and must be addressed.
+
 ## Further Discussion
 
 The NHibernate team monitors JIRA and GitHub regularly, so your request will be noticed. If you want to discuss it further, you are welcome to post to the [nhibernate-development mailing list][4]. 
