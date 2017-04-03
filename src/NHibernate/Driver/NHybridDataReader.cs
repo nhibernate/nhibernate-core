@@ -2,6 +2,10 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Data.Common;
+#if ASYNC
+using System.Threading;
+using System.Threading.Tasks;
+#endif
 
 namespace NHibernate.Driver
 {
@@ -125,6 +129,25 @@ namespace NHibernate.Driver
 			_isMidstream = _reader.Read();
 			return _isMidstream;
 		}
+
+#if ASYNC
+		public override async Task<bool> ReadAsync(CancellationToken cancellationToken)
+		{
+			_isMidstream = await _reader.ReadAsync(cancellationToken);
+			return _isMidstream;
+		}
+
+		public override Task<bool> NextResultAsync(CancellationToken cancellationToken)
+		{
+			_isMidstream = false;
+			return _reader.NextResultAsync(cancellationToken);
+		}
+
+		public override Task<bool> IsDBNullAsync(int ordinal, CancellationToken cancellationToken)
+		{
+			return _reader.IsDBNullAsync(ordinal, cancellationToken);
+		}
+#endif
 
 		/// <summary></summary>
 		public override int Depth
