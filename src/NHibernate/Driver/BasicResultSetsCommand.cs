@@ -7,10 +7,8 @@ using System.Linq;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
-#if ASYNC
 using System.Threading;
 using System.Threading.Tasks;
-#endif
 
 namespace NHibernate.Driver
 {
@@ -277,7 +275,6 @@ namespace NHibernate.Driver
 			return reader.Read();
 		}
 
-#if ASYNC
 		public override Task<bool> ReadAsync(CancellationToken cancellationToken)
 		{
 			return reader.ReadAsync(cancellationToken);
@@ -292,7 +289,6 @@ namespace NHibernate.Driver
 		{
 			return reader.NextResultAsync(cancellationToken);
 		}
-#endif
 
 		public override int Depth
 		{

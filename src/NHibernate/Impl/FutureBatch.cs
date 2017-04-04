@@ -1,9 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-#if ASYNC
 using System.Threading.Tasks;
-#endif
 
 namespace NHibernate.Impl
 {
@@ -54,7 +52,6 @@ namespace NHibernate.Impl
 			return new DelayedEnumerator<TResult>(() => GetCurrentResult<TResult>(currentIndex));
 		}
 
-#if ASYNC
 		public IFutureValueAsync<TResult> GetFutureValueAsync<TResult>()
 		{
 			int currentIndex = index;
@@ -71,7 +68,6 @@ namespace NHibernate.Impl
 		{
 			return ((IList)(await GetResultsAsync())[currentIndex]).Cast<TResult>();
 		}
-#endif
 
 		private IList GetResults()
 		{

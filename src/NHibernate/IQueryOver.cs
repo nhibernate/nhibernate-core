@@ -115,7 +115,6 @@ namespace NHibernate
 		/// </summary>
 		IFutureValue<U> FutureValue<U>();
 
-#if ASYNC
 		/// <summary>
 		/// Get a enumerable that when enumerated will execute
 		/// a batch of queries in a single database roundtrip
@@ -143,7 +142,6 @@ namespace NHibernate
 		/// single roundtrip
 		/// </summary>
 		IFutureValueAsync<U> FutureValueAsync<U>();
-#endif
 
 		/// <summary>
 		/// Creates an exact clone of the IQueryOver

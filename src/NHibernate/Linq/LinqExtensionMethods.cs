@@ -8,16 +8,13 @@ using NHibernate.Type;
 using NHibernate.Util;
 using Remotion.Linq;
 using Remotion.Linq.Parsing.ExpressionTreeVisitors;
-#if ASYNC
 using System.Reflection;
 using System.Threading.Tasks;
-#endif
 
 namespace NHibernate.Linq
 {
 	public static class LinqExtensionMethods
 	{
-#if ASYNC
 		private static readonly Dictionary<string, MethodInfo> cachableQueryableMethods;
 
 		static LinqExtensionMethods()
@@ -1584,7 +1581,6 @@ namespace NHibernate.Linq
 			return (IFutureValueAsync<TResult>)provider.ExecuteFutureAsync(expression);
 		}
 
-#endif
 		public static IQueryable<T> Query<T>(this ISession session)
 		{
 			return new NhQueryable<T>(session.GetSessionImplementation());

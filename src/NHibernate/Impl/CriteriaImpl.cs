@@ -423,7 +423,6 @@ namespace NHibernate.Impl
 			return session.FutureCriteriaBatch.GetEnumerator<T>();
 		}
 
-#if ASYNC
 		public IFutureValueAsync<T> FutureValueAsync<T>()
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
@@ -445,7 +444,6 @@ namespace NHibernate.Impl
 			session.FutureCriteriaBatch.Add<T>(this);
 			return session.FutureCriteriaBatch.GetAsyncEnumerator<T>();
 		}
-#endif
 
 		public object UniqueResult()
 		{
@@ -819,7 +817,6 @@ namespace NHibernate.Impl
 				return root.Future<T>();
 			}
 
-#if ASYNC
 			public IFutureValueAsync<T> FutureValueAsync<T>()
 			{
 				return root.FutureValueAsync<T>();
@@ -829,7 +826,6 @@ namespace NHibernate.Impl
 			{
 				return root.FutureAsync<T>();
 			}
-#endif
 
 			public void List(IList results)
 			{

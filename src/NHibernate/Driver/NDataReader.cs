@@ -4,10 +4,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using NHibernate.Util;
-#if ASYNC
 using System.Threading;
 using System.Threading.Tasks;
-#endif
 
 namespace NHibernate.Driver
 {
@@ -165,7 +163,6 @@ namespace NHibernate.Driver
 			return true;
 		}
 
-#if ASYNC
 		public override Task<bool> ReadAsync(CancellationToken cancellationToken)
 		{
 			return Task.FromResult(Read());
@@ -180,7 +177,6 @@ namespace NHibernate.Driver
 		{
 			return Task.FromResult(IsDBNull(ordinal));
 		}
-#endif
 
 		/// <summary></summary>
 		public override int Depth

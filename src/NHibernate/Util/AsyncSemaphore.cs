@@ -1,4 +1,3 @@
-﻿#if ASYNC
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -46,4 +45,3 @@ namespace NHibernate.Util
 		}
 	}
 }
-#endif

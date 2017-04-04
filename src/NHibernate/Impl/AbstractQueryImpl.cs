@@ -904,7 +904,6 @@ namespace NHibernate.Impl
 			return session.FutureQueryBatch.GetFutureValue<T>();
 		}
 
-#if ASYNC
 		public IAsyncEnumerable<T> FutureAsync<T>()
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
@@ -926,7 +925,6 @@ namespace NHibernate.Impl
 			session.FutureQueryBatch.Add<T>(this);
 			return session.FutureQueryBatch.GetFutureValueAsync<T>();
 		}
-#endif
 
 		/// <summary> Override the current session cache mode, just for this query.
 		/// </summary>

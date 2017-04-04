@@ -315,7 +315,6 @@ namespace NHibernate
 		/// <returns></returns>
 		IFutureValue<T> FutureValue<T>();
 
-#if ASYNC
 		/// <summary>
 		/// Get a enumerable that when enumerated will execute
 		/// a batch of queries in a single database roundtrip
@@ -333,7 +332,6 @@ namespace NHibernate
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
 		IFutureValueAsync<T> FutureValueAsync<T>();
-#endif
 
 		/// <summary>
 		/// Set the read-only mode for entities (and proxies) loaded by this Criteria. This
