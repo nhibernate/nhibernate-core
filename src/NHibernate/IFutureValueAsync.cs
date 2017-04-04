@@ -1,4 +1,3 @@
-﻿#if ASYNC
 using System.Threading.Tasks;
 
 namespace NHibernate
@@ -8,4 +7,3 @@ namespace NHibernate
 		Task<T> GetValue();
 	}
 }
-#endif

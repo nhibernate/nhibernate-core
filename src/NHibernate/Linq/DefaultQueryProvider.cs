@@ -8,9 +8,7 @@ using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Type;
 using NHibernate.Util;
-#if ASYNC
 using System.Threading.Tasks;
-#endif
 
 namespace NHibernate.Linq
 {
@@ -18,10 +16,8 @@ namespace NHibernate.Linq
 	{
 		object ExecuteFuture(Expression expression);
 		void SetResultTransformerAndAdditionalCriteria(IQuery query, NhLinqExpression nhExpression, IDictionary<string, Tuple<object, IType>> parameters);
-#if ASYNC
 		Task<TResult> ExecuteAsync<TResult>(Expression expression);
 		object ExecuteFutureAsync(Expression expression);
-#endif
 	}
 
 	public class DefaultQueryProvider : INhQueryProvider
@@ -74,8 +70,6 @@ namespace NHibernate.Linq
 			return ExecuteFutureQuery(nhLinqExpression, query, nhQuery);
 		}
 
-#if ASYNC
-
 		public virtual object ExecuteFutureAsync(Expression expression)
 		{
 			IQuery query;
@@ -97,8 +91,6 @@ namespace NHibernate.Linq
 
 			return await ExecuteQueryAsync(nhLinqExpression, query, nhQuery);
 		}
-
-#endif
 
 		protected virtual NhLinqExpression PrepareQuery(Expression expression, out IQuery query, out NhLinqExpression nhQuery)
 		{

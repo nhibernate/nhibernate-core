@@ -1,4 +1,3 @@
-﻿#if ASYNC
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,4 +35,3 @@ namespace NHibernate.Impl
 		public Delegate ExecuteOnEval { get; set; }
 	}
 }
-#endif
