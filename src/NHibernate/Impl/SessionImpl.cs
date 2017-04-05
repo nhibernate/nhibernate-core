@@ -1872,7 +1872,7 @@ namespace NHibernate.Impl
 				int size = implementors.Length;
         
 				CriteriaLoader[] loaders = CreateCriteriaLoaders(criteria, implementors);
-				ISet<string> spaces = loaders.SelectMany(x => x.QuerySpaces).ToHashSet();
+				ISet<string> spaces = new HashSet<string>(loaders.SelectMany(x => x.QuerySpaces));
         
 				AutoFlushIfRequired(spaces);
 
