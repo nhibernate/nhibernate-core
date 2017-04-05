@@ -498,6 +498,41 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+		#region Overridden informational metadata
+
+		public override bool SupportsEmptyInList
+		{
+			get { return false; }
+		}
+
+		public override bool AreStringComparisonsCaseInsensitive
+		{
+			get { return true; }
+		}
+
+		public override bool SupportsResultSetPositionQueryMethodsOnForwardOnlyCursor
+		{
+			get { return false; }
+		}
+
+		public override bool SupportsLobValueChangePropogation
+		{
+			// note: at least my local SQL Server 2005 Express shows this not working...
+			get { return false; }
+		}
+
+		public override bool DoesReadCommittedCauseWritersToBlockReaders
+		{
+			get { return true; }
+		}
+
+		public override bool DoesRepeatableReadCauseReadersToBlockWriters
+		{
+			get { return true; }
+		}
+
+		#endregion
+
 		public override bool IsKnownToken(string currentToken, string nextToken)
 		{
 			return currentToken == "n" && nextToken == "'"; // unicode character

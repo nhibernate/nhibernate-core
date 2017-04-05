@@ -386,5 +386,30 @@ namespace NHibernate.Dialect
 				return TimeSpan.TicksPerSecond;
 			}
 		}
+
+		#region Overridden informational metadata
+
+		public override bool SupportsEmptyInList
+		{
+			get { return false; }
+		}
+
+		public override bool AreStringComparisonsCaseInsensitive
+		{
+			get { return true; }
+		}
+
+		public override bool SupportsLobValueChangePropogation
+		{
+			// note: at least my local MySQL 5.1 install shows this not working...
+			get { return false; }
+		}
+
+		public override bool SupportsSubqueryOnMutatingTable
+		{
+			get { return false; }
+		}
+
+		#endregion
 	}
 }

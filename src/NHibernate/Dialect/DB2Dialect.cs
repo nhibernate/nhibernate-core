@@ -270,5 +270,34 @@ namespace NHibernate.Dialect
 		{
 			get { return " for read only with rs"; }
 		}
+
+		#region Overridden informational metadata
+
+		public override bool SupportsEmptyInList
+		{
+			get { return false; }
+		}
+
+		public override bool SupportsResultSetPositionQueryMethodsOnForwardOnlyCursor
+		{
+			get { return false; }
+		}
+
+		public override bool SupportsLobValueChangePropogation
+		{
+			get { return false; }
+		}
+
+		public override bool SupportsExistsInSelect
+		{
+			get { return false; }
+		}
+
+		public override bool DoesReadCommittedCauseWritersToBlockReaders
+		{
+			get { return true; }
+		}
+
+		#endregion
 	}
 }

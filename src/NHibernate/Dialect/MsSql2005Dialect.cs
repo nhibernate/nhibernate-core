@@ -102,5 +102,27 @@ namespace NHibernate.Dialect
 
 			return tableName;
 		}
+
+		#region Overridden informational metadata
+
+		/// <summary>
+		/// We assume that applications using this dialect are using
+		/// SQL Server 2005 snapshot isolation modes.
+		/// </summary>
+		public override bool DoesReadCommittedCauseWritersToBlockReaders
+		{
+			get { return false; }
+		}
+
+		/// <summary>
+		/// We assume that applications using this dialect are using
+		/// SQL Server 2005 snapshot isolation modes.
+		/// </summary>
+		public override bool DoesRepeatableReadCauseReadersToBlockWriters
+		{
+			get { return false; }
+		}
+
+		#endregion
 	}
 }
