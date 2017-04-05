@@ -1,10 +1,8 @@
 using System;
 using System.Collections;
-using System.Data;
 using System.Data.Common;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
-using NHibernate.Cfg;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
@@ -24,8 +22,8 @@ namespace NHibernate.Persister.Collection
 	/// </summary>
 	public class BasicCollectionPersister : AbstractCollectionPersister
 	{
-		public BasicCollectionPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, Configuration cfg, ISessionFactoryImplementor factory) 
-			: base(collection, cache, cfg, factory) { }
+		public BasicCollectionPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory) 
+			: base(collection, cache, factory) { }
 
 		public override bool CascadeDeleteEnabled
 		{
@@ -162,7 +160,7 @@ namespace NHibernate.Persister.Collection
 
 			try
 			{
-				IDbCommand st = null;
+				DbCommand st = null;
 				IExpectation expectation = Expectations.AppropriateExpectation(UpdateCheckStyle);
 				//bool callable = UpdateCallable;
 				bool useBatch = expectation.CanBeBatched;
@@ -245,7 +243,7 @@ namespace NHibernate.Persister.Collection
 			catch (DbException sqle)
 			{
 				throw ADOExceptionHelper.Convert(SQLExceptionConverter, sqle,
-												 "could not update collection rows: " + MessageHelper.InfoString(this, id),
+												 "could not update collection rows: " + MessageHelper.CollectionInfoString(this, collection, id, session),
 												 SqlUpdateRowString.Text);
 			}
 		}

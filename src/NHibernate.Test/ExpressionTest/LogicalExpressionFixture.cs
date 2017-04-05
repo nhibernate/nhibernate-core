@@ -2,7 +2,6 @@ using System;
 using NHibernate.DomainModel;
 using NHibernate.Criterion;
 using NHibernate.SqlCommand;
-using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.ExpressionTest
@@ -11,7 +10,7 @@ namespace NHibernate.Test.ExpressionTest
 	/// Test the LogicalExpression class.
 	/// </summary>
 	/// <remarks>
-	/// There are no need for the subclasses AndExpresssion and OrExpression to have their own 
+	/// There are no need for the subclasses AndExpression and OrExpression to have their own 
 	/// TestFixtures because all they do is override one property.
 	/// </remarks>
 	[TestFixture]
@@ -26,7 +25,7 @@ namespace NHibernate.Test.ExpressionTest
 				Expression.Or(Expression.IsNull("Address"), Expression.Between("Count", 5, 10));
 
 			CreateObjects(typeof(Simple), session);
-			SqlString sqlString = orExpression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
+			SqlString sqlString = orExpression.ToSqlString(criteria, criteriaQuery);
 
 			string expectedSql = "(sql_alias.address is null or sql_alias.count_ between ? and ?)";
 

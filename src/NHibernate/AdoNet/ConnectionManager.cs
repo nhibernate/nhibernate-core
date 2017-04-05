@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Security.Permissions;
@@ -28,7 +29,7 @@ namespace NHibernate.AdoNet
 		}
 
 		[NonSerialized]
-		private IDbConnection connection;
+		private DbConnection connection;
 		// Whether we own the connection, i.e. connect and disconnect automatically.
 		private bool ownConnection;
 
@@ -49,7 +50,7 @@ namespace NHibernate.AdoNet
 
 		public ConnectionManager(
 			ISessionImplementor session,
-			IDbConnection suppliedConnection,
+			DbConnection suppliedConnection,
 			ConnectionReleaseMode connectionReleaseMode,
 			IInterceptor interceptor)
 		{
@@ -88,7 +89,7 @@ namespace NHibernate.AdoNet
 			ownConnection = true;
 		}
 
-		public void Reconnect(IDbConnection suppliedConnection)
+		public void Reconnect(DbConnection suppliedConnection)
 		{
 			if (IsConnected)
 			{
@@ -100,7 +101,7 @@ namespace NHibernate.AdoNet
 			ownConnection = false;
 		}
 
-		public IDbConnection Close()
+		public DbConnection Close()
 		{
 			if (batcher != null)
 			{
@@ -126,14 +127,14 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		private IDbConnection DisconnectSuppliedConnection()
+		private DbConnection DisconnectSuppliedConnection()
 		{
 			if (connection == null)
 			{
 				throw new HibernateException("Session already disconnected");
 			}
 
-			IDbConnection c = connection;
+			var c = connection;
 			connection = null;
 			return c;
 		}
@@ -154,7 +155,7 @@ namespace NHibernate.AdoNet
 			CloseConnection();
 		}
 
-		public IDbConnection Disconnect()
+		public DbConnection Disconnect()
 		{
 			if (IsInActiveTransaction)
 				throw new InvalidOperationException("Disconnect cannot be called while a transaction is in progress.");
@@ -177,7 +178,7 @@ namespace NHibernate.AdoNet
 			connection = null;
 		}
 
-		public IDbConnection GetConnection()
+		public DbConnection GetConnection()
 		{
 			if (connection == null)
 			{
@@ -282,11 +283,7 @@ namespace NHibernate.AdoNet
 			interceptor = (IInterceptor)info.GetValue("interceptor", typeof(IInterceptor));
 		}
 
-#if NET_4_0
 		[SecurityCritical]
-#else
-		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-#endif
 		public void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			info.AddValue("ownConnection", ownConnection);
@@ -407,7 +404,7 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		public IDbCommand CreateCommand()
+		public DbCommand CreateCommand()
 		{
 			var result = GetConnection().CreateCommand();
 			Transaction.Enlist(result);

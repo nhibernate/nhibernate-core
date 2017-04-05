@@ -4,7 +4,6 @@ using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
 using NUnit.Framework;
-using SharpTestsEx;
 using System.Collections.Generic;
 
 namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
@@ -31,7 +30,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 
 			mapper.Map(propertyInfo, x => { }, km => { }, rel => { });
 
-			component.Properties.Select(x => x.Name).Should().Have.SameSequenceAs("A");
+			Assert.That(component.Properties.Select(x => x.Name), Is.EquivalentTo(new[] { "A" }));
 		}
 
 		[Test]
@@ -45,7 +44,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			var called = false;
 			mapper.Map(propertyInfo, x => called = true, km => { }, rel => { });
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -58,7 +57,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 
 			mapper.Map(propertyInfo, x => x.Access(Accessor.Field), km => { }, rel => { });
 
-			component.Properties.OfType<HbmMap>().Single().Access.Should().Be.NullOrEmpty();
+			Assert.That(component.Properties.OfType<HbmMap>().Single().Access, Is.Null.Or.Empty);
 		}		
 	}
 }

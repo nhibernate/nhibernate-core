@@ -2,7 +2,6 @@ using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode.Impl;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.MappersTests.ClassMapperTests
 {
@@ -31,12 +30,12 @@ namespace NHibernate.Test.MappingByCode.MappersTests.ClassMapperTests
 				map.ManyToOne(For<Person>.Property(x => x.User), pm => { });
 			});
 			var hbmClass = mapdoc.RootClasses[0];
-			hbmClass.Id.Should().Be.Null();
+			Assert.That(hbmClass.Id, Is.Null);
 			var hbmCompositeId = hbmClass.CompositeId;
-			hbmCompositeId.Should().Not.Be.Null();
-			hbmCompositeId.@class.Should().Be.Null();
-			hbmCompositeId.Items.Should().Have.Count.EqualTo(2);
-			hbmCompositeId.Items.Select(x => x.GetType()).Should().Have.SameValuesAs(typeof(HbmKeyProperty), typeof(HbmKeyManyToOne));
+			Assert.That(hbmCompositeId, Is.Not.Null);
+			Assert.That(hbmCompositeId.@class, Is.Null);
+			Assert.That(hbmCompositeId.Items, Has.Length.EqualTo(2));
+			Assert.That(hbmCompositeId.Items.Select(x => x.GetType()), Is.EquivalentTo(new [] {typeof(HbmKeyProperty), typeof(HbmKeyManyToOne)}));
 		}
 
 		[Test]
@@ -49,9 +48,9 @@ namespace NHibernate.Test.MappingByCode.MappersTests.ClassMapperTests
 			mapper.ComposedId(map => map.ManyToOne(For<Person>.Property(x => x.User), pm => { }));
 
 			var hbmClass = mapdoc.RootClasses[0];
-			hbmClass.Id.Should().Be.Null();
+			Assert.That(hbmClass.Id, Is.Null);
 			var hbmCompositeId = hbmClass.CompositeId;
-			hbmCompositeId.Items.Should().Have.Count.EqualTo(2);
+			Assert.That(hbmCompositeId.Items, Has.Length.EqualTo(2));
 		}
 	}
 }

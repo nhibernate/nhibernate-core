@@ -14,10 +14,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1850
 			configuration.SetProperty(Environment.BatchSize, "1");
 		}
 
-        protected override bool AppliesTo(Dialect.Dialect dialect)
-        {
-            return dialect.SupportsSqlBatches;
-        }
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect.SupportsSqlBatches;
+		}
 
 		[Test]
 		public void CanGetQueryDurationForDelete()
@@ -29,9 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1850
 				session.CreateQuery("delete Customer").ExecuteUpdate();
 
 				var wholeLog = spy.GetWholeLog();
-				Assert.True(
-					wholeLog.Contains("ExecuteNonQuery took")
-					);
+				Assert.That(wholeLog.Contains("ExecuteNonQuery took"), Is.True);
 
 				tx.Rollback();
 			}
@@ -79,12 +77,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1850
 				session.CreateQuery("from Customer").List();
 
 				var wholeLog = spy.GetWholeLog();
-				Assert.True(
-					wholeLog.Contains("ExecuteReader took")
-					);
-				Assert.True(
-					wholeLog.Contains("DataReader was closed after")
-					);
+				Assert.That(wholeLog.Contains("ExecuteReader took"), Is.True);
+				Assert.That(wholeLog.Contains("DataReader was closed after"), Is.True);
 
 				tx.Rollback();
 			}

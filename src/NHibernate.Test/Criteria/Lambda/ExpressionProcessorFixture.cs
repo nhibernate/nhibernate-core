@@ -7,7 +7,6 @@ using System.Reflection;
 using NHibernate.Criterion;
 using NHibernate.Impl;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Criteria.Lambda
 {
@@ -335,7 +334,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			MethodInfo thisMethod = GetType().GetMethod("NonGenericMethod");
 
-			ExpressionProcessor.Signature(thisMethod).Should().Be("NHibernate.Test.Criteria.Lambda.ExpressionProcessorFixture:Void NonGenericMethod(System.String)");
+			Assert.That(ExpressionProcessor.Signature(thisMethod), Is.EqualTo("NHibernate.Test.Criteria.Lambda.ExpressionProcessorFixture:Void NonGenericMethod(System.String)"));
 		}
 
 		[Test]
@@ -343,7 +342,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			MethodInfo thisMethod = GetType().GetMethod("GenericMethod");
 
-			ExpressionProcessor.Signature(thisMethod).Should().Be("NHibernate.Test.Criteria.Lambda.ExpressionProcessorFixture:T GenericMethod[T](T)");
+			Assert.That(ExpressionProcessor.Signature(thisMethod), Is.EqualTo("NHibernate.Test.Criteria.Lambda.ExpressionProcessorFixture:T GenericMethod[T](T)"));
 		}
 
 		[Test]
@@ -352,7 +351,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			Expression<Func<string>> expression = () => this.GenericMethod("test");
 			MethodInfo genericMethodWithQualifiedType = (expression.Body as MethodCallExpression).Method;
 
-			ExpressionProcessor.Signature(genericMethodWithQualifiedType).Should().Be("NHibernate.Test.Criteria.Lambda.ExpressionProcessorFixture:T GenericMethod[T](T)");
+			Assert.That(ExpressionProcessor.Signature(genericMethodWithQualifiedType), Is.EqualTo("NHibernate.Test.Criteria.Lambda.ExpressionProcessorFixture:T GenericMethod[T](T)"));
 		}
 
 	}

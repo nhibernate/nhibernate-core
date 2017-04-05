@@ -62,6 +62,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			BindJoinedSubclasses(joinedSubclassMapping.JoinedSubclasses, subclass, inheritedMetas);
 
+            new FiltersBinder(subclass, Mappings).Bind(joinedSubclassMapping.filter);
+
 			model.AddSubclass(subclass);
 			mappings.AddClass(subclass);
 		}

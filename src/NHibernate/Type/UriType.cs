@@ -1,5 +1,5 @@
 using System;
-using System.Data;
+using System.Data.Common;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -28,20 +28,20 @@ namespace NHibernate.Type
 
 		public object StringToObject(string xml)
 		{
-			return new Uri(xml);
+			return new Uri(xml, UriKind.RelativeOrAbsolute);
 		}
 
-		public override void Set(IDbCommand cmd, object value, int index)
+		public override void Set(DbCommand cmd, object value, int index)
 		{
-			((IDataParameter)cmd.Parameters[index]).Value = ToString(value);
+			cmd.Parameters[index].Value = ToString(value);
 		}
 
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index)
 		{
 			return StringToObject(Convert.ToString(rs[index]));
 		}
 
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name)
 		{
 			return StringToObject(Convert.ToString(rs[name]));
 		}

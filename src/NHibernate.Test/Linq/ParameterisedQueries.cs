@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Type;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -52,6 +53,32 @@ namespace NHibernate.Test.Linq
 				Assert.AreEqual(1, nhNewYork.ParameterValuesByName.Count);
 				Assert.AreEqual("London", nhLondon.ParameterValuesByName.First().Value.Item1);
 				Assert.AreEqual("New York", nhNewYork.ParameterValuesByName.First().Value.Item1);
+			}
+		}
+
+		[Test]
+		public void CanSpecifyParameterTypeInfo()
+		{
+			using (var s = OpenSession())
+			{
+				var db = new Northwind(s);
+
+				Expression<Func<IEnumerable<Customer>>> london =
+					() => from c in db.Customers where c.Address.City == "London".MappedAs(NHibernateUtil.StringClob) select c;
+
+				Expression<Func<IEnumerable<Customer>>> newYork =
+					() => from c in db.Customers where c.Address.City == "New York".MappedAs(NHibernateUtil.AnsiString) select c;
+
+				var nhLondon = new NhLinqExpression(london.Body, sessions);
+				var nhNewYork = new NhLinqExpression(newYork.Body, sessions);
+
+				var londonParameter = nhLondon.ParameterValuesByName.Single().Value;
+				Assert.That(londonParameter.Item1, Is.EqualTo("London"));
+				Assert.That(londonParameter.Item2, Is.EqualTo(NHibernateUtil.StringClob));
+
+				var newYorkParameter = nhNewYork.ParameterValuesByName.Single().Value;
+				Assert.That(newYorkParameter.Item1, Is.EqualTo("New York"));
+				Assert.That(newYorkParameter.Item2, Is.EqualTo(NHibernateUtil.AnsiString));
 			}
 		}
 

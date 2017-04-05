@@ -29,6 +29,10 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		}
 
 		#region Implementation of IClassAttributesMapper<TEntity>
+		public void Abstract(bool isAbstract)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Abstract(isAbstract));
+		}
 
 		public void OptimisticLock(OptimisticLockMode mode)
 		{
@@ -62,28 +66,35 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			CustomizersHolder.AddCustomizer(typeof(TEntity), m => m.Id(member, idMapper));
 		}
 
-		public void ComponentAsId<TComponent>(Expression<Func<TEntity, TComponent>> idProperty) where TComponent : class
+		public void ComponentAsId<TComponent>(Expression<Func<TEntity, TComponent>> idProperty)
 		{
 			ComponentAsId(idProperty, x => { });
 		}
 
-		public void ComponentAsId<TComponent>(Expression<Func<TEntity, TComponent>> idProperty, Action<IComponentAsIdMapper<TComponent>> idMapper) where TComponent : class
+		public void ComponentAsId<TComponent>(Expression<Func<TEntity, TComponent>> idProperty, Action<IComponentAsIdMapper<TComponent>> idMapper)
 		{
-			var member = TypeExtensions.DecodeMemberAccessExpression(idProperty);
-			var propertyPath = new PropertyPath(null, member);
-			idMapper(new ComponentAsIdCustomizer<TComponent>(ExplicitDeclarationsHolder, CustomizersHolder, propertyPath));
+			var memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(idProperty);
+			RegisterComponentAsIdMapping(idMapper, memberOf);
 		}
 
-		public void ComponentAsId<TComponent>(string notVisiblePropertyOrFieldName) where TComponent : class
+		public void ComponentAsId<TComponent>(string notVisiblePropertyOrFieldName)
 		{
 			ComponentAsId<TComponent>(notVisiblePropertyOrFieldName, x => { });
 		}
 
-		public void ComponentAsId<TComponent>(string notVisiblePropertyOrFieldName, Action<IComponentAsIdMapper<TComponent>> idMapper) where TComponent : class
+		public void ComponentAsId<TComponent>(string notVisiblePropertyOrFieldName, Action<IComponentAsIdMapper<TComponent>> idMapper)
 		{
 			var member = typeof(TEntity).GetPropertyOrFieldMatchingName(notVisiblePropertyOrFieldName);
-			var propertyPath = new PropertyPath(null, member);
-			idMapper(new ComponentAsIdCustomizer<TComponent>(ExplicitDeclarationsHolder, CustomizersHolder, propertyPath));
+			RegisterComponentAsIdMapping(idMapper, member);
+		}
+
+		private void RegisterComponentAsIdMapping<TComponent>(Action<IComponentAsIdMapper<TComponent>> idMapper, params MemberInfo[] members)
+		{
+			foreach (var member in members)
+			{
+				var propertyPath = new PropertyPath(PropertyPath, member);
+				idMapper(new ComponentAsIdCustomizer<TComponent>(ExplicitDeclarationsHolder, CustomizersHolder, propertyPath));
+			}
 		}
 
 		public void ComposedId(Action<IComposedIdMapper<TEntity>> idPropertiesMapping)

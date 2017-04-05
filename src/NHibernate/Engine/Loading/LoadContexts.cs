@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 
 using NHibernate.Collection;
 using NHibernate.Impl;
@@ -11,13 +11,13 @@ using NHibernate.Util;
 namespace NHibernate.Engine.Loading
 {	
 	/// <summary> 
-	/// Maps <see cref="IDataReader"/> to specific contextual data
-	/// related to processing that <see cref="IDataReader"/>.
+	/// Maps <see cref="DbDataReader"/> to specific contextual data
+	/// related to processing that <see cref="DbDataReader"/>.
 	/// </summary>
 	/// <remarks>
 	/// Implementation note: internally an <see cref="IdentityMap"/> is used to maintain
 	/// the mappings; <see cref="IdentityMap"/> was chosen because I'd rather not be
-	/// dependent upon potentially bad <see cref="IDataReader"/> and <see cref="IDataReader"/>
+	/// dependent upon potentially bad <see cref="DbDataReader"/> and <see cref="DbDataReader"/>
 	/// implementations.
 	/// Considering the JDBC-redesign work, would further like this contextual info
 	/// not mapped separately, but available based on the result set being processed.
@@ -67,7 +67,7 @@ namespace NHibernate.Engine.Loading
 		/// This should be called when we are done with processing said result set,
 		/// ideally as the result set is being closed.
 		/// </remarks>
-		public virtual void Cleanup(IDataReader resultSet)
+		public virtual void Cleanup(DbDataReader resultSet)
 		{
 			if (collectionLoadContexts != null)
 			{
@@ -121,7 +121,7 @@ namespace NHibernate.Engine.Loading
 		/// </summary>
 		/// <param name="resultSet">The result set for which to retrieve the context. </param>
 		/// <returns> The processing context. </returns>
-		public CollectionLoadContext GetCollectionLoadContext(IDataReader resultSet)
+		public CollectionLoadContext GetCollectionLoadContext(DbDataReader resultSet)
 		{
 			CollectionLoadContext context = null;
 			if (collectionLoadContexts == null)
@@ -153,22 +153,17 @@ namespace NHibernate.Engine.Loading
 		/// <returns> The loading collection, or null if not found. </returns>
 		public IPersistentCollection LocateLoadingCollection(ICollectionPersister persister, object ownerKey)
 		{
-			LoadingCollectionEntry lce = LocateLoadingCollectionEntry(new CollectionKey(persister, ownerKey, Session.EntityMode));
+			LoadingCollectionEntry lce = LocateLoadingCollectionEntry(new CollectionKey(persister, ownerKey));
 			if (lce != null)
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("returning loading collection:" + MessageHelper.InfoString(persister, ownerKey, Session.Factory));
+					log.Debug("returning loading collection:" + MessageHelper.CollectionInfoString(persister, ownerKey, Session.Factory));
 				}
 				return lce.Collection;
 			}
 			else
 			{
-				// todo : should really move this log statement to CollectionType, where this is used from...
-				if (log.IsDebugEnabled)
-				{
-					log.Debug("creating collection wrapper:" + MessageHelper.InfoString(persister, ownerKey, Session.Factory));
-				}
 				return null;
 			}
 		}

@@ -530,7 +530,7 @@ namespace NHibernate.Engine
 																bool disableVersionIncrement, bool lazyPropertiesAreUnfetched)
 		{
 			EntityEntry e =
-				new EntityEntry(status, loadedState, rowId, id, version, lockMode, existsInDatabase, persister, session.EntityMode,
+				new EntityEntry(status, loadedState, rowId, id, version, lockMode, existsInDatabase, persister,
 								disableVersionIncrement, lazyPropertiesAreUnfetched);
 			entityEntries[entity] = e;
 
@@ -708,13 +708,13 @@ namespace NHibernate.Engine
 		/// <returns> An appropriately narrowed instance. </returns>
 		public object NarrowProxy(INHibernateProxy proxy, IEntityPersister persister, EntityKey key, object obj)
 		{
-			bool alreadyNarrow = persister.GetConcreteProxyClass(session.EntityMode).IsInstanceOfType(proxy);
+			bool alreadyNarrow = persister.ConcreteProxyClass.IsInstanceOfType(proxy);
 
 			if (!alreadyNarrow)
 			{
 				if (ProxyWarnLog.IsWarnEnabled)
 				{
-					ProxyWarnLog.Warn("Narrowing proxy to " + persister.GetConcreteProxyClass(session.EntityMode) + " - this operation breaks ==");
+					ProxyWarnLog.Warn("Narrowing proxy to " + persister.ConcreteProxyClass + " - this operation breaks ==");
 				}
 
 				if (obj != null)
@@ -862,7 +862,7 @@ namespace NHibernate.Engine
 		private void AddCollection(IPersistentCollection coll, CollectionEntry entry, object key)
 		{
 			collectionEntries[coll] = entry;
-			CollectionKey collectionKey = new CollectionKey(entry.LoadedPersister, key, session.EntityMode);
+			CollectionKey collectionKey = new CollectionKey(entry.LoadedPersister, key);
 			IPersistentCollection tempObject;
 			collectionsByKey.TryGetValue(collectionKey, out tempObject);
 			collectionsByKey[collectionKey] = coll;
@@ -1169,7 +1169,7 @@ namespace NHibernate.Engine
 
 		private bool IsFoundInParent(string property, object childEntity, IEntityPersister persister, ICollectionPersister collectionPersister, object potentialParent)
 		{
-			object collection = persister.GetPropertyValue(potentialParent, property, session.EntityMode);
+			object collection = persister.GetPropertyValue(potentialParent, property);
 			return collection != null && NHibernateUtil.IsInitialized(collection) && collectionPersister.CollectionType.Contains(collection, childEntity, session);
 		}
 
@@ -1241,7 +1241,7 @@ namespace NHibernate.Engine
 
 		private object GetIndexInParent(string property, object childEntity, IEntityPersister persister, ICollectionPersister collectionPersister, object potentialParent)
 		{
-			object collection = persister.GetPropertyValue(potentialParent, property, session.EntityMode);
+			object collection = persister.GetPropertyValue(potentialParent, property);
 			if (collection != null && NHibernateUtil.IsInitialized(collection))
 			{
 				return collectionPersister.CollectionType.IndexOf(collection, childEntity);
@@ -1495,11 +1495,7 @@ namespace NHibernate.Engine
 			InitTransientState();
 		}
 
-#if NET_4_0
 		[SecurityCritical]
-#else
-		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-#endif
 		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			log.Debug("serializing persistent-context");

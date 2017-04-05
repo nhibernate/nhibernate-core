@@ -68,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2700
 
                 var sql = GetSql(criteria);
 
-                Assert.That(sql, Is.StringMatching("dateadd\\(day,(.*?)Value1,(.*?)Date1\\)"));
+                Assert.That(sql, Does.Match(@"dateadd\(day,(.*?)Value1,(.*?)Date1\)"));
                 Console.WriteLine(sql.ToString());
             }      
 		}

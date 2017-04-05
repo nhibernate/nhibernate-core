@@ -5,9 +5,8 @@ using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
-namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
+namespace NHibernate.Test.MappingByCode.ExplicitMappingTests
 {
 	public class BasicMappingOfSimpleClass
 	{
@@ -15,6 +14,25 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 		{
 			public int Id { get; set; }
 			public string Something { get; set; }
+		}
+
+		[Test]
+		public void AbstractClass()
+		{
+			//NH-3527
+			var mapper = new ModelMapper();
+			mapper.Class<MyClass>(ca =>
+			{
+				ca.Abstract(true);
+				ca.Id(x => x.Id, map =>
+				{
+					map.Column("MyClassId");
+					map.Generator(Generators.HighLow, gmap => gmap.Params(new { max_low = 100 }));
+				});
+				ca.Property(x => x.Something, map => map.Length(150));
+			});
+			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
+			Assert.AreEqual(hbmMapping.RootClasses[0].@abstract, true);
 		}
 
 		[Test]
@@ -57,17 +75,17 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 		{
 			var mapper = new ModelMapper();
 			mapper.Class<MyClass>(ca => ca.Id(null, map =>
-			                                        {
-			                                        	map.Column("MyClassId");
-			                                        	map.Generator(Generators.HighLow, gmap => gmap.Params(new { max_low = 100 }));
-			                                        }));
+													{
+														map.Column("MyClassId");
+														map.Generator(Generators.HighLow, gmap => gmap.Params(new { max_low = 100 }));
+													}));
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
 			var hbmClass = hbmMapping.RootClasses[0];
-			hbmClass.Should().Not.Be.Null();
+			Assert.That(hbmClass, Is.Not.Null);
 			var hbmId = hbmClass.Id;
-			hbmId.Should().Not.Be.Null();
-			hbmId.column1.Should().Be("MyClassId");
-			hbmId.type1.Should().Be(NHibernateUtil.Int32.Name);
+			Assert.That(hbmId, Is.Not.Null);
+			Assert.That(hbmId.column1, Is.EqualTo("MyClassId"));
+			Assert.That(hbmId.type1, Is.EqualTo(NHibernateUtil.Int32.Name));
 		}
 
 		[Test]
@@ -80,11 +98,11 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			}));
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
 			var hbmClass = hbmMapping.RootClasses[0];
-			hbmClass.Should().Not.Be.Null();
+			Assert.That(hbmClass, Is.Not.Null);
 			var hbmId = hbmClass.Id;
-			hbmId.Should().Not.Be.Null();
-			hbmId.column1.Should().Be("MyClassId");
-			hbmId.type1.Should().Not.Be.Null();
+			Assert.That(hbmId, Is.Not.Null);
+			Assert.That(hbmId.column1, Is.EqualTo("MyClassId"));
+			Assert.That(hbmId.type1, Is.Not.Null);
 		}
 
 		[Test]
@@ -136,18 +154,18 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 		private void ModelIsWellFormed(HbmMapping hbmMapping)
 		{
 			var hbmClass = hbmMapping.RootClasses[0];
-			hbmClass.Should().Not.Be.Null();
+			Assert.That(hbmClass, Is.Not.Null);
 			var hbmId = hbmClass.Id;
-			hbmId.Should().Not.Be.Null();
-			hbmId.name.Should().Be("Id");
+			Assert.That(hbmId, Is.Not.Null);
+			Assert.That(hbmId.name, Is.EqualTo("Id"));
 			var hbmGenerator = hbmId.generator;
-			hbmGenerator.Should().Not.Be.Null();
-			hbmGenerator.@class.Should().Be("hilo");
-			hbmGenerator.param[0].name.Should().Be("max_low");
-			hbmGenerator.param[0].GetText().Should().Be("100");
+			Assert.That(hbmGenerator, Is.Not.Null);
+			Assert.That(hbmGenerator.@class, Is.EqualTo("hilo"));
+			Assert.That(hbmGenerator.param[0].name, Is.EqualTo("max_low"));
+			Assert.That(hbmGenerator.param[0].GetText(), Is.EqualTo("100"));
 			var hbmProperty = hbmClass.Properties.OfType<HbmProperty>().Single();
-			hbmProperty.name.Should().Be("Something");
-			hbmProperty.length.Should().Be("150");
+			Assert.That(hbmProperty.name, Is.EqualTo("Something"));
+			Assert.That(hbmProperty.length, Is.EqualTo("150"));
 		}
 	}
 }

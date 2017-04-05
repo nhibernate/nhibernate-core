@@ -17,19 +17,17 @@ namespace NHibernate.Engine
 		private readonly IType keyType;
 		[NonSerialized] private readonly ISessionFactoryImplementor factory;
 		private readonly int hashCode;
-		private readonly EntityMode entityMode;
 
-		public CollectionKey(ICollectionPersister persister, object key, EntityMode entityMode)
-			: this(persister.Role, key, persister.KeyType, entityMode, persister.Factory)
+		public CollectionKey(ICollectionPersister persister, object key)
+			: this(persister.Role, key, persister.KeyType, persister.Factory)
 		{
 		}
 
-		private CollectionKey(string role, object key, IType keyType, EntityMode entityMode, ISessionFactoryImplementor factory)
+		private CollectionKey(string role, object key, IType keyType, ISessionFactoryImplementor factory)
 		{
 			this.role = role;
 			this.key = key;
 			this.keyType = keyType;
-			this.entityMode = entityMode;
 			this.factory = factory;
 			hashCode = GenerateHashCode(); //cache the hashcode
 		}
@@ -37,7 +35,7 @@ namespace NHibernate.Engine
 		public override bool Equals(object obj)
 		{
 			CollectionKey that = (CollectionKey)obj;
-			return that.role.Equals(role) && keyType.IsEqual(that.key, key, entityMode, factory);
+			return that.role.Equals(role) && keyType.IsEqual(that.key, key, factory);
 		}
 
 		public override int GetHashCode()
@@ -51,7 +49,7 @@ namespace NHibernate.Engine
 			unchecked
 			{
 				result = 37 * result + role.GetHashCode();
-				result = 37 * result + keyType.GetHashCode(key, entityMode, factory);
+				result = 37 * result + keyType.GetHashCode(key, factory);
 			}
 			return result;
 		}
@@ -68,7 +66,7 @@ namespace NHibernate.Engine
 
 		public override string ToString()
 		{
-			return "CollectionKey" + MessageHelper.InfoString(factory.GetCollectionPersister(role), key, factory);
+			return "CollectionKey" + MessageHelper.CollectionInfoString(factory.GetCollectionPersister(role), key, factory);
 		}
 	}
 }

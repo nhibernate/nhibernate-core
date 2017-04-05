@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
@@ -25,6 +26,91 @@ namespace NHibernate.Util
 
 		private static readonly MethodInfo Exception_InternalPreserveStackTrace =
 			typeof(Exception).GetMethod("InternalPreserveStackTrace", BindingFlags.Instance | BindingFlags.NonPublic);
+
+		/// <summary>
+		/// Extract the <see cref="MethodInfo"/> from a given expression.
+		/// </summary>
+		/// <typeparam name="TSource">The declaring-type of the method.</typeparam>
+		/// <param name="method">The method.</param>
+		/// <returns>The <see cref="MethodInfo"/> of the no-generic method or the generic-definition for a generic-method.</returns>
+		/// <seealso cref="MethodInfo.GetGenericMethodDefinition"/>
+		public static MethodInfo GetMethodDefinition<TSource>(Expression<Action<TSource>> method)
+		{
+			MethodInfo methodInfo = GetMethod(method);
+			return methodInfo.IsGenericMethod ? methodInfo.GetGenericMethodDefinition() : methodInfo;
+		}
+
+		/// <summary>
+		/// Extract the <see cref="MethodInfo"/> from a given expression.
+		/// </summary>
+		/// <typeparam name="TSource">The declaring-type of the method.</typeparam>
+		/// <param name="method">The method.</param>
+		/// <returns>The <see cref="MethodInfo"/> of the method.</returns>
+		public static MethodInfo GetMethod<TSource>(Expression<Action<TSource>> method)
+		{
+			if (method == null)
+				throw new ArgumentNullException("method");
+
+			return ((MethodCallExpression)method.Body).Method;
+		}
+
+		/// <summary>
+		/// Extract the <see cref="MethodInfo"/> from a given expression.
+		/// </summary>
+		/// <param name="method">The method.</param>
+		/// <returns>The <see cref="MethodInfo"/> of the no-generic method or the generic-definition for a generic-method.</returns>
+		/// <seealso cref="MethodInfo.GetGenericMethodDefinition"/>
+		public static MethodInfo GetMethodDefinition(Expression<System.Action> method)
+		{
+			MethodInfo methodInfo = GetMethod(method);
+			return methodInfo.IsGenericMethod ? methodInfo.GetGenericMethodDefinition() : methodInfo;
+		}
+
+		/// <summary>
+		/// Extract the <see cref="MethodInfo"/> from a given expression.
+		/// </summary>
+		/// <param name="method">The method.</param>
+		/// <returns>The <see cref="MethodInfo"/> of the method.</returns>
+		public static MethodInfo GetMethod(Expression<System.Action> method)
+		{
+			if (method == null)
+				throw new ArgumentNullException("method");
+
+			return ((MethodCallExpression)method.Body).Method;
+		}
+
+		/// <summary>
+		/// Gets the field or property to be accessed.
+		/// </summary>
+		/// <typeparam name="TSource">The declaring-type of the property.</typeparam>
+		/// <typeparam name="TResult">The type of the property.</typeparam>
+		/// <param name="property">The expression representing the property getter.</param>
+		/// <returns>The <see cref="MemberInfo"/> of the property.</returns>
+		public static MemberInfo GetProperty<TSource, TResult>(Expression<Func<TSource, TResult>> property)
+		{
+			if (property == null)
+			{
+				throw new ArgumentNullException("property");
+			}
+			return ((MemberExpression)property.Body).Member;
+		}
+
+		internal static System.Type GetPropertyOrFieldType(this MemberInfo memberInfo)
+		{
+			var propertyInfo = memberInfo as PropertyInfo;
+			if (propertyInfo != null)
+			{
+				return propertyInfo.PropertyType;
+			}
+
+			var fieldInfo = memberInfo as FieldInfo;
+			if (fieldInfo != null)
+			{
+				return fieldInfo.FieldType;
+			}
+
+			return null;
+		}
 
 		/// <summary>
 		/// Determine if the specified <see cref="System.Type"/> overrides the
@@ -177,7 +263,7 @@ namespace NHibernate.Util
 		}
 
 		/// <summary>
-		/// Load a System.Type given is't name.
+		/// Load a System.Type given its name.
 		/// </summary>
 		/// <param name="classFullName">The class FullName or AssemblyQualifiedName</param>
 		/// <returns>The System.Type</returns>
@@ -199,7 +285,7 @@ namespace NHibernate.Util
 		}
 
 		/// <summary>
-				/// Load a System.Type given is't name.
+				/// Load a System.Type given its name.
 				/// </summary>
 				/// <param name="classFullName">The class FullName or AssemblyQualifiedName</param>
 				/// <returns>The System.Type or null</returns>
@@ -565,6 +651,7 @@ namespace NHibernate.Util
 			return null;
 		}
 
+		[Obsolete("Please use GetMethodDefinition then MethodInfo.MakeGenericMethod instead")]
 		public static MethodInfo GetGenericMethodFrom<T>(string methodName, System.Type[] genericArgs, System.Type[] signature)
 		{
 			MethodInfo result = null;

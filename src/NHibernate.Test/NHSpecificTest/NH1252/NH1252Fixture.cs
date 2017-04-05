@@ -3,7 +3,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1252
 {
 	/// <summary>
-	/// http://jira.nhibernate.org/browse/NH-1252
+	/// http://nhibernate.jira.com/browse/NH-1252
 	/// </summary>
 	[TestFixture]
 	public class NH1252Fixture : BugTestCase

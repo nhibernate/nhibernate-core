@@ -5,14 +5,12 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Cfg;
-using NHibernate.Cfg.Loquacious;
 using NHibernate.Hql.Ast;
-using NHibernate.Linq;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
 using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
-using SharpTestsEx;
+using NHibernate.Util;
 
 namespace NHibernate.Test.Linq
 {
@@ -28,12 +26,12 @@ namespace NHibernate.Test.Linq
 	{
 		public FreetextGenerator()
 		{
-			SupportedMethods = new[] {ReflectionHelper.GetMethodDefinition(() => BooleanLinqExtensions.FreeText(null, null))};
+			SupportedMethods = new[] {ReflectHelper.GetMethodDefinition(() => BooleanLinqExtensions.FreeText(null, null))};
 		}
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject,
-		                                     ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder,
-		                                     IHqlExpressionVisitor visitor)
+											 ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder,
+											 IHqlExpressionVisitor visitor)
 		{
 			IEnumerable<HqlExpression> args = arguments.Select(a => visitor.Visit(a))
 				.Cast<HqlExpression>();
@@ -49,8 +47,8 @@ namespace NHibernate.Test.Linq
 		{
 			public MyLinqToHqlGeneratorsRegistry()
 			{
-				RegisterGenerator(ReflectionHelper.GetMethodDefinition(() => BooleanLinqExtensions.FreeText(null, null)),
-				                  new FreetextGenerator());
+				RegisterGenerator(ReflectHelper.GetMethodDefinition(() => BooleanLinqExtensions.FreeText(null, null)),
+								  new FreetextGenerator());
 			}
 		}
 
@@ -63,8 +61,8 @@ namespace NHibernate.Test.Linq
 		public void CanUseMyCustomExtension()
 		{
 			List<Customer> contacts = (from c in db.Customers where c.ContactName.FreeText("Thomas") select c).ToList();
-			contacts.Count.Should().Be.GreaterThan(0);
-			contacts.Select(customer => customer.ContactName).All(c => c.Satisfy(customer => customer.Contains("Thomas")));
+			Assert.That(contacts.Count, Is.GreaterThan(0));
+			Assert.That(contacts.Select(c => c.ContactName).All(c => c.Contains("Thomas")), Is.True);
 		}
 	}
 }

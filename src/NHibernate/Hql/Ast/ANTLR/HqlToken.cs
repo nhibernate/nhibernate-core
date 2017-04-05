@@ -45,22 +45,6 @@ namespace NHibernate.Hql.Ast.ANTLR
         }
 
         /// <summary>
-        /// Gets or Sets the type of the token, remembering the previous type on Sets.
-        /// </summary>
-        //public override int Type
-        //{
-        //    get
-        //    {
-        //        return base.Type;
-        //    }
-        //    set
-        //    {
-        //        _previousTokenType = Type;
-        //        base.Type = value;
-        //    }
-        //}
-
-        /// <summary>
         /// Returns the previous token type.
         /// </summary>
         private int PreviousType

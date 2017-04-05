@@ -2,7 +2,6 @@ using System;
 using System.Data;
 using NHibernate.Dialect;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2207
 {
@@ -80,7 +79,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2207
 			using (var tx = session.BeginTransaction())
 			{
 				var savedObj = session.Get<DomainClass>(savedId);
-				savedObj.Date.Should().Be(expectedStoredValue);
+				Assert.That(savedObj.Date, Is.EqualTo(expectedStoredValue));
 				session.Delete(savedObj);
 				tx.Commit();
 			}

@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-
 using NHibernate.AdoNet;
 using NHibernate.AdoNet.Util;
 using NHibernate.Cache;
@@ -10,7 +9,9 @@ using NHibernate.Connection;
 using NHibernate.Dialect;
 using NHibernate.Exceptions;
 using NHibernate.Hql;
+using NHibernate.Linq;
 using NHibernate.Linq.Functions;
+using NHibernate.Linq.Visitors;
 using NHibernate.Transaction;
 using NHibernate.Util;
 
@@ -136,6 +137,8 @@ namespace NHibernate.Cfg
 
 			settings.QueryTranslatorFactory = CreateQueryTranslatorFactory(properties);
 
+			settings.LinqQueryProviderType = CreateLinqQueryProviderType(properties);
+
 			IDictionary<string, string> querySubstitutions = PropertiesHelper.ToDictionary(Environment.QuerySubstitutions,
 			                                                                               " ,=;:\n\t\r\f", properties);
 			if (log.IsInfoEnabled)
@@ -233,6 +236,10 @@ namespace NHibernate.Cfg
 			log.Info("Order SQL inserts for batching: " + EnabledDisabled(orderInserts));
 			settings.IsOrderInsertsEnabled = orderInserts;
 
+			bool orderUpdates = PropertiesHelper.GetBoolean(Environment.OrderUpdates, properties, false);
+			log.Info("Order SQL updates for batching: " + EnabledDisabled(orderUpdates));
+			settings.IsOrderUpdatesEnabled = orderUpdates;
+
 			bool wrapResultSets = PropertiesHelper.GetBoolean(Environment.WrapResultSets, properties, false);
 			log.Debug("Wrap result sets: " + EnabledDisabled(wrapResultSets));
 			settings.IsWrapResultSetsEnabled = wrapResultSets;
@@ -256,10 +263,16 @@ namespace NHibernate.Cfg
 				}
 			}
 
-			EntityMode defaultEntityMode =
-				EntityModeHelper.Parse(PropertiesHelper.GetString(Environment.DefaultEntityMode, properties, "poco"));
-			log.Info("Default entity-mode: " + defaultEntityMode);
-			settings.DefaultEntityMode = defaultEntityMode;
+			//NH-3619
+			FlushMode defaultFlushMode = (FlushMode) Enum.Parse(typeof(FlushMode), PropertiesHelper.GetString(Environment.DefaultFlushMode, properties, FlushMode.Auto.ToString()), false);
+			log.Info("Default flush mode: " + defaultFlushMode);
+			settings.DefaultFlushMode = defaultFlushMode;
+
+#pragma warning disable CS0618 // Type or member is obsolete
+			var defaultEntityMode = PropertiesHelper.GetString(Environment.DefaultEntityMode, properties, null);
+			if (!string.IsNullOrEmpty(defaultEntityMode))
+				log.Warn("Default entity-mode setting is deprecated.");
+#pragma warning restore CS0618 // Type or member is obsolete
 
 			bool namedQueryChecking = PropertiesHelper.GetBoolean(Environment.QueryStartupChecking, properties, true);
 			log.Info("Named query checking : " + EnabledDisabled(namedQueryChecking));
@@ -288,6 +301,8 @@ namespace NHibernate.Cfg
 			settings.IsMinimalPutsEnabled = useMinimalPuts;
 			// Not ported - JdbcBatchVersionedData
 
+			settings.QueryModelRewriterFactory = CreateQueryModelRewriterFactory(properties);
+			
 			// NHibernate-specific:
 			settings.IsolationLevel = isolation;
 
@@ -362,6 +377,21 @@ namespace NHibernate.Cfg
 			}
 		}
 
+		private static System.Type CreateLinqQueryProviderType(IDictionary<string, string> properties)
+		{
+			string className = PropertiesHelper.GetString(
+				Environment.QueryLinqProvider, properties, typeof(DefaultQueryProvider).FullName);
+			log.Info("Query provider: " + className);
+			try
+			{
+				return System.Type.GetType(className, true);
+			}
+			catch (Exception cnfe)
+			{
+				throw new HibernateException("could not find query provider class: " + className, cnfe);
+			}
+		}
+
 		private static ITransactionFactory CreateTransactionFactory(IDictionary<string, string> properties)
 		{
 			string className = PropertiesHelper.GetString(
@@ -377,6 +407,27 @@ namespace NHibernate.Cfg
 			catch (Exception cnfe)
 			{
 				throw new HibernateException("could not instantiate TransactionFactory: " + className, cnfe);
+			}
+		}
+
+		private static IQueryModelRewriterFactory CreateQueryModelRewriterFactory(IDictionary<string, string> properties)
+		{
+			string className = PropertiesHelper.GetString(Environment.QueryModelRewriterFactory, properties, null);
+
+			if (className == null)
+				return null;
+
+			log.Info("Query model rewriter factory factory: " + className);
+
+			try
+			{
+				return
+					(IQueryModelRewriterFactory)
+					Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(className));
+			}
+			catch (Exception cnfe)
+			{
+				throw new HibernateException("could not instantiate IQueryModelRewriterFactory: " + className, cnfe);
 			}
 		}
 	}

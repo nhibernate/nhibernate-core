@@ -3,7 +3,6 @@ using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRegistrationTests
 {
@@ -69,15 +68,15 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRe
 		private void ModelIsWellFormed(HbmMapping hbmMapping)
 		{
 			var hbmClass = hbmMapping.RootClasses.Single();
-			hbmClass.Properties.Should().Have.Count.EqualTo(1);
+			Assert.That(hbmClass.Properties.Count(), Is.EqualTo(1));
 			var hbmComponent = hbmClass.Properties.OfType<HbmComponent>().Single();
-			hbmComponent.name.Should().Be("Name");
-			hbmComponent.Properties.Should().Have.Count.EqualTo(2);
+			Assert.That(hbmComponent.name, Is.EqualTo("Name"));
+			Assert.That(hbmComponent.Properties.Count(), Is.EqualTo(2));
 			var hbmp1 = hbmComponent.Properties.OfType<HbmProperty>().Single(x => x.name == "First");
 			var hbmp2 = hbmComponent.Properties.OfType<HbmProperty>().Single(x => x.name == "Last");
-			hbmp1.length.Should().Be("20");
-			hbmp2.length.Should().Be("30");
-			hbmComponent.unique.Should().Be.EqualTo(true);
+			Assert.That(hbmp1.length, Is.EqualTo("20"));
+			Assert.That(hbmp2.length, Is.EqualTo("30"));
+			Assert.That(hbmComponent.unique, Is.EqualTo(true));
 		}
 	}
 }

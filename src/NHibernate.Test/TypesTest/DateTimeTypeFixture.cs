@@ -1,7 +1,6 @@
 using System;
 using NHibernate.Type;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.TypesTest
 {
@@ -20,7 +19,7 @@ namespace NHibernate.Test.TypesTest
 
 			Assert.IsTrue(next is DateTime, "Next should be DateTime");
 			Assert.IsTrue((DateTime) next > (DateTime) current,
-			              "next should be greater than current (could be equal depending on how quickly this occurs)");
+						  "next should be greater than current (could be equal depending on how quickly this occurs)");
 		}
 
 		[Test]
@@ -36,7 +35,7 @@ namespace NHibernate.Test.TypesTest
 			NullableType type = NHibernateUtil.DateTime;
 
 			object value1 = DateTime.Now;
-			object value2 = type.DeepCopy(value1, EntityMode.Poco, null);
+			object value2 = type.DeepCopy(value1, null);
 
 			Assert.AreEqual(value1, value2, "Copies should be the same.");
 
@@ -51,8 +50,8 @@ namespace NHibernate.Test.TypesTest
 			var type = (DateTimeType)NHibernateUtil.DateTime;
 			var localTime = DateTime.Now;
 			var unspecifiedKid = new DateTime(localTime.Year, localTime.Month, localTime.Day, localTime.Hour, localTime.Minute, localTime.Second, 0, DateTimeKind.Unspecified);
-			type.Satisfy(t => t.IsEqual(localTime, unspecifiedKid));
-			type.Satisfy(t => t.IsEqual(localTime, unspecifiedKid, EntityMode.Poco));
+			Assert.That(type.IsEqual(localTime, unspecifiedKid), Is.True);
+			Assert.That(type.IsEqual(localTime, unspecifiedKid), Is.True);
 		}
 	}
 }

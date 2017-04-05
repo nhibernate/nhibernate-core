@@ -2,7 +2,6 @@ using System;
 using NHibernate.DomainModel;
 using NHibernate.Criterion;
 using NHibernate.SqlCommand;
-using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.ExpressionTest
@@ -26,7 +25,7 @@ namespace NHibernate.Test.ExpressionTest
 			ICriterion expression = Expression.EqProperty("Address", "Name");
 
 			CreateObjects(typeof(Simple), session);
-			SqlString sqlString = expression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
+			SqlString sqlString = expression.ToSqlString(criteria, criteriaQuery);
 
 			string expectedSql = "sql_alias.address = sql_alias.Name";
 

@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
@@ -37,12 +37,13 @@ namespace NHibernate.Collection.Generic
 		 * expensive than .NET original implementation.
 		 */
 
-		/// For a one-to-many, a <bag> is not really a bag;
-		/// it is *really* a set, since it can't contain the
-		/// same element twice. It could be considered a bug
-		/// in the mapping dtd that <bag> allows <one-to-many>.
-		/// Anyway, here we implement <set> semantics for a
-		/// <one-to-many> <bag>!
+		/* For a one-to-many, a <bag> is not really a bag;
+		 * it is *really* a set, since it can't contain the
+		 * same element twice. It could be considered a bug
+		 * in the mapping dtd that <bag> allows <one-to-many>.
+		 * Anyway, here we implement <set> semantics for a
+		 * <one-to-many> <bag>!
+		 */
 		private IList<T> _gbag;
 
 		public PersistentGenericBag()
@@ -329,7 +330,6 @@ namespace NHibernate.Collection.Generic
 		public override bool EqualsSnapshot(ICollectionPersister persister)
 		{
 			var elementType = persister.ElementType;
-			var entityMode = Session.EntityMode;
 
 			var sn = (IList) GetSnapshot();
 			if (sn.Count != _gbag.Count)
@@ -339,7 +339,7 @@ namespace NHibernate.Collection.Generic
 
 			foreach (var elt in _gbag)
 			{
-				if (CountOccurrences(elt, _gbag, elementType, entityMode) != CountOccurrences(elt, sn, elementType, entityMode))
+				if (CountOccurrences(elt, _gbag, elementType) != CountOccurrences(elt, sn, elementType))
 				{
 					return false;
 				}
@@ -351,14 +351,13 @@ namespace NHibernate.Collection.Generic
 		public override IEnumerable GetDeletes(ICollectionPersister persister, bool indexIsFormula)
 		{
 			var elementType = persister.ElementType;
-			var entityMode = Session.EntityMode;
 			var deletes = new List<object>();
 			var sn = (IList) GetSnapshot();
 			var i = 0;
 			foreach (var old in sn)
 			{
 				var found = false;
-				if (_gbag.Count > i && elementType.IsSame(old, _gbag[i++], entityMode))
+				if (_gbag.Count > i && elementType.IsSame(old, _gbag[i++]))
 				{
 					//a shortcut if its location didn't change!
 					found = true;
@@ -367,7 +366,7 @@ namespace NHibernate.Collection.Generic
 				{
 					foreach (object newObject in _gbag)
 					{
-						if (elementType.IsSame(old, newObject, entityMode))
+						if (elementType.IsSame(old, newObject))
 						{
 							found = true;
 							break;
@@ -400,11 +399,10 @@ namespace NHibernate.Collection.Generic
 
 		public override object GetSnapshot(ICollectionPersister persister)
 		{
-			var entityMode = Session.EntityMode;
 			var clonedList = new List<object>(_gbag.Count);
 			foreach (object current in _gbag)
 			{
-				clonedList.Add(persister.ElementType.DeepCopy(current, entityMode, persister.Factory));
+				clonedList.Add(persister.ElementType.DeepCopy(current, persister.Factory));
 			}
 			return clonedList;
 		}
@@ -449,9 +447,8 @@ namespace NHibernate.Collection.Generic
 		public override bool NeedsInserting(object entry, int i, IType elemType)
 		{
 			var sn = (IList) GetSnapshot();
-			var entityMode = Session.EntityMode;
 
-			if (sn.Count > i && elemType.IsSame(sn[i], entry, entityMode))
+			if (sn.Count > i && elemType.IsSame(sn[i], entry))
 			{
 				// a shortcut if its location didn't change
 				return false;
@@ -459,7 +456,7 @@ namespace NHibernate.Collection.Generic
 			//search for it
 			foreach (var old in sn)
 			{
-				if (elemType.IsEqual(old, entry, entityMode))
+				if (elemType.IsEqual(old, entry))
 				{
 					return false;
 				}
@@ -488,7 +485,7 @@ namespace NHibernate.Collection.Generic
 			return false;
 		}
 
-		public override object ReadFrom(IDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner)
+		public override object ReadFrom(DbDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner)
 		{
 			// note that if we load this collection from a cartesian product
 			// the multiplicity would be broken ... so use an idbag instead
@@ -514,16 +511,15 @@ namespace NHibernate.Collection.Generic
 		/// <param name="element">The element to find in the list.</param>
 		/// <param name="list">The <see cref="IList"/> to search.</param>
 		/// <param name="elementType">The <see cref="IType"/> that can determine equality.</param>
-		/// <param name="entityMode">The entity mode.</param>
 		/// <returns>
 		/// The number of occurrences of the element in the list.
 		/// </returns>
-		private static int CountOccurrences(object element, IEnumerable list, IType elementType, EntityMode entityMode)
+		private static int CountOccurrences(object element, IEnumerable list, IType elementType)
 		{
 			var result = 0;
 			foreach (var obj in list)
 			{
-				if (elementType.IsSame(element, obj, entityMode))
+				if (elementType.IsSame(element, obj))
 				{
 					result++;
 				}

@@ -39,7 +39,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			model.EntityName = entityName;
 
 			BindPocoRepresentation(classMapping, model);
-			BindXmlRepresentation(classMapping, model);
 			BindMapRepresentation(classMapping, model);
 
 			BindPersistentClassCommonValues(classMapping, model, inheritedMetas);
@@ -128,18 +127,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 		}
 
-		private void BindXmlRepresentation(IEntityMapping classMapping, PersistentClass entity)
-		{
-			entity.NodeName = string.IsNullOrEmpty(classMapping.Node) ? StringHelper.Unqualify(entity.EntityName): classMapping.Node;
-
-			HbmTuplizer tuplizer = classMapping.Tuplizers.FirstOrDefault(tp => tp.entitymode == HbmTuplizerEntitymode.Xml);
-			if (tuplizer != null)
-			{
-				string tupClassName = FullQualifiedClassName(tuplizer.@class, mappings);
-				entity.AddTuplizer(EntityMode.Xml, tupClassName);
-			}
-		}
-
 		private void BindPocoRepresentation(IEntityMapping classMapping, PersistentClass entity)
 		{
 			string className = classMapping.Name == null
@@ -195,7 +182,33 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			log.InfoFormat("Mapping class join: {0} -> {1}", persistentClass.EntityName, join.Table.Name);
 
 			// KEY
-			SimpleValue key = new DependantValue(table, persistentClass.Identifier);
+			SimpleValue key;
+			if (!String.IsNullOrEmpty(joinMapping.key.propertyref))
+			{
+				string propertyRef = joinMapping.key.propertyref;
+				var propertyRefKey = new SimpleValue(persistentClass.Table)
+					{
+						IsAlternateUniqueKey = true
+					};
+				var property = persistentClass.GetProperty(propertyRef);
+				join.RefIdProperty = property;
+				//we only want one column
+				var column = (Column) property.ColumnIterator.First();
+				if (!column.Unique)
+					throw new MappingException(
+						string.Format(
+							"Property {0}, on class {1} must be marked as unique to be joined to with a property-ref.",
+							property.Name,
+							persistentClass.ClassName));
+				propertyRefKey.AddColumn(column);
+				propertyRefKey.TypeName = property.Type.Name;
+				key = new ReferenceDependantValue(table, propertyRefKey);
+			}
+			else
+			{
+				key = new DependantValue(table, persistentClass.Identifier);
+			}
+
 			key.ForeignKeyName = joinMapping.key.foreignkey;
 			join.Key = key;
 			key.IsCascadeDeleteEnabled = joinMapping.key.ondelete == HbmOndelete.Cascade;
@@ -301,11 +314,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					model.IsDynamic = true;
 				}
 			}
-
-			string nodeName = !string.IsNullOrEmpty(componentMapping.EmbeddedNode)
-								? componentMapping.EmbeddedNode
-								: !string.IsNullOrEmpty(componentMapping.Name) ? componentMapping.Name : model.Owner.NodeName;
-			model.NodeName = nodeName;
 
 			// Parent
 			if (componentMapping.Parent != null && !string.IsNullOrEmpty(componentMapping.Parent.name))

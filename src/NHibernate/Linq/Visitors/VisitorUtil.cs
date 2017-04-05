@@ -83,9 +83,11 @@ namespace NHibernate.Linq.Visitors
 
 		public static bool IsNullConstant(Expression expression)
 		{
-			return expression is ConstantExpression &&
-			       expression.Type.IsNullableOrReference() &&
-			       ((ConstantExpression)expression).Value == null;
+			var constantExpression = expression as ConstantExpression;
+			return
+				constantExpression != null &&
+				constantExpression.Type.IsNullableOrReference() &&
+				constantExpression.Value == null;
 		}
 
 

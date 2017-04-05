@@ -4,64 +4,60 @@ using System.Diagnostics;
 using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2662
 {
-    public class Fixture : BugTestCase
-    {
-        [Test]
-        public void WhenCastAliasInQueryOverThenDoNotThrow()
-        {
-            using (var session = OpenSession())
+	public class Fixture : BugTestCase
+	{
+		[Test]
+		public void WhenCastAliasInQueryOverThenDoNotThrow()
+		{
+			using (var session = OpenSession())
 			using (var tx = session.BeginTransaction())
-            {
-                var customer = new Customer
-                {
-                    Order = new PizzaOrder { OrderDate = DateTime.Now, PizzaName = "Margarita" }
-                };
+			{
+				var customer = new Customer
+				{
+					Order = new PizzaOrder { OrderDate = DateTime.Now, PizzaName = "Margarita" }
+				};
 
-                var customer2 = new Customer
-                {
-                    Order = new Order { OrderDate = DateTime.Now.AddDays(1) }
-                };
+				var customer2 = new Customer
+				{
+					Order = new Order { OrderDate = DateTime.Now.AddDays(1) }
+				};
 
-                session.Save(customer);
-                session.Save(customer2);
-                session.Flush();
+				session.Save(customer);
+				session.Save(customer2);
+				session.Flush();
 
-                Executing.This(
-                    () =>
-                    {
-                        var temp = session.Query<Customer>().Select(
-                            c => new {c.Id, c.Order.OrderDate, ((PizzaOrder)c.Order).PizzaName })
-                            .ToArray();
+				Assert.That(() =>
+				{
+					var temp = session.Query<Customer>().Select(
+						c => new {c.Id, c.Order.OrderDate, ((PizzaOrder)c.Order).PizzaName })
+									  .ToArray();
 
-                        foreach (var item in temp) { Trace.WriteLine(item.PizzaName);}
-                    })
-                    .Should().NotThrow();
+					foreach (var item in temp) { Trace.WriteLine(item.PizzaName);}
+				}, Throws.Nothing);
 
-                Executing.This(
-                    () =>
-                        {
-                            Order orderAlias = null;
+				Assert.That(() =>
+				{
+					Order orderAlias = null;
 
-                            var results = 
-                            session.QueryOver<Customer>()
-                                .Left.JoinAlias(o => o.Order, () => orderAlias)
-								.OrderBy(() => orderAlias.OrderDate).Asc
-                                .SelectList(list =>
-                                            list
-                                                .Select(o => o.Id)
-                                                .Select(() => orderAlias.OrderDate)
-                                                .Select(() => ((PizzaOrder) orderAlias).PizzaName))
-                                .List<object[]>();
+					var results = 
+						session.QueryOver<Customer>()
+							   .Left.JoinAlias(o => o.Order, () => orderAlias)
+							   .OrderBy(() => orderAlias.OrderDate).Asc
+							   .SelectList(list =>
+											   list
+											   .Select(o => o.Id)
+											   .Select(() => orderAlias.OrderDate)
+											   .Select(() => ((PizzaOrder) orderAlias).PizzaName))
+							   .List<object[]>();
 
-							Assert.That(results.Count, Is.EqualTo(2));
-							Assert.That(results[0][2], Is.EqualTo("Margarita"));
+					Assert.That(results.Count, Is.EqualTo(2));
+					Assert.That(results[0][2], Is.EqualTo("Margarita"));
 
-                        }).Should().NotThrow();
-            }
-        }
-    }
+				}, Throws.Nothing);
+			}
+		}
+	}
 }

@@ -8,6 +8,7 @@ using NHibernate.Connection;
 using NHibernate.Exceptions;
 using NHibernate.Hql;
 using NHibernate.Linq.Functions;
+using NHibernate.Linq.Visitors;
 using NHibernate.Transaction;
 
 namespace NHibernate.Cfg
@@ -99,6 +100,8 @@ namespace NHibernate.Cfg
 
 		public IQueryTranslatorFactory QueryTranslatorFactory { get; internal set; }
 
+		public System.Type LinqQueryProviderType { get; internal set; }
+
 		public ISQLExceptionConverter SqlExceptionConverter { get; internal set; }
 
 		public bool IsWrapResultSetsEnabled { get; internal set; }
@@ -107,7 +110,7 @@ namespace NHibernate.Cfg
 
 		public bool IsOrderInsertsEnabled { get; internal set; }
 
-		public EntityMode DefaultEntityMode { get; internal set; }
+		public FlushMode DefaultFlushMode { get; internal set; }
 
 		public bool IsDataDefinitionImplicitCommit { get; internal set; }
 
@@ -129,6 +132,8 @@ namespace NHibernate.Cfg
 		[Obsolete("This setting is likely to be removed in a future version of NHibernate. The workaround is to catch all exceptions in the IInterceptor implementation.")]
 		public bool IsInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled { get; internal set; }
 
+		public IQueryModelRewriterFactory QueryModelRewriterFactory { get; internal set; }
+		
 		#endregion
 	}
 }

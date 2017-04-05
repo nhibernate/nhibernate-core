@@ -60,14 +60,14 @@ namespace NHibernate.Linq.Visitors
 		public bool CanAddJoin(Expression expression)
 		{
 			var source = QuerySourceExtractor.GetQuerySource(expression);
-			
-			if (_queryModel.MainFromClause == source) 
+
+			if (_queryModel.MainFromClause == source)
 				return true;
-			
+
 			var bodyClause = source as IBodyClause;
-			if (bodyClause != null && _queryModel.BodyClauses.Contains(bodyClause)) 
+			if (bodyClause != null && _queryModel.BodyClauses.Contains(bodyClause))
 				return true;
-			
+
 			var resultOperatorBase = source as ResultOperatorBase;
 			return resultOperatorBase != null && _queryModel.ResultOperators.Contains(resultOperatorBase);
 		}

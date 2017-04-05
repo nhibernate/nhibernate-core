@@ -28,7 +28,7 @@ namespace NHibernate.Id
 		#region IIdentifierGenerator Members
 
 		/// <summary>
-		/// Generates an identifer from the value of a Property. 
+		/// Generates an identifier from the value of a Property. 
 		/// </summary>
 		/// <param name="sessionImplementor">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name="obj">The entity for which the id is being generated.</param>
@@ -42,7 +42,7 @@ namespace NHibernate.Id
 			ISession session = (ISession) sessionImplementor;
 
 			var persister = sessionImplementor.Factory.GetEntityPersister(entityName);
-			object associatedObject = persister.GetPropertyValue(obj, propertyName, sessionImplementor.EntityMode);
+			object associatedObject = persister.GetPropertyValue(obj, propertyName);
 
 			if (associatedObject == null)
 			{

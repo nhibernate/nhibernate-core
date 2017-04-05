@@ -16,8 +16,8 @@ namespace NHibernate.Test.EngineTest
 
 			ArrayList value2 = (ArrayList) value1.Clone();
 
-			TypedValue t1 = new TypedValue(NHibernateUtil.Int32, value1, EntityMode.Poco);
-			TypedValue t2 = new TypedValue(NHibernateUtil.Int32, value2, EntityMode.Poco);
+			TypedValue t1 = new TypedValue(NHibernateUtil.Int32, value1);
+			TypedValue t2 = new TypedValue(NHibernateUtil.Int32, value2);
 
 			Assert.IsTrue(t1.Equals(t2));
 		}
@@ -25,7 +25,7 @@ namespace NHibernate.Test.EngineTest
 		[Test]
 		public void ToStringWithNullValue()
 		{
-			Assert.AreEqual("null", new TypedValue(NHibernateUtil.Int32, null, EntityMode.Poco).ToString());
+			Assert.AreEqual("null", new TypedValue(NHibernateUtil.Int32, null).ToString());
 		}
 
 		[Test]
@@ -34,7 +34,7 @@ namespace NHibernate.Test.EngineTest
 			byte[] value = new byte[]{1,2,3};
 
 
-			var tv = new TypedValue(NHibernateUtil.BinaryBlob, value, EntityMode.Poco);
+			var tv = new TypedValue(NHibernateUtil.BinaryBlob, value);
 
 			Assert.That(tv.Comparer, Is.TypeOf<TypedValue.DefaultComparer>());
 		}

@@ -76,6 +76,8 @@ namespace NHibernate.Engine
 		private readonly IEventSource eventSource;
 		private readonly CascadingAction action;
 
+		private readonly Stack componentPathStack = new Stack();
+
 		public Cascade(CascadingAction action, CascadePoint point, IEventSource eventSource)
 		{
 			this.point = point;
@@ -94,7 +96,7 @@ namespace NHibernate.Engine
 
 		/// <summary> 
 		/// Cascade an action from the parent entity instance to all its children.  This
-		/// form is typicaly called from within cascade actions. 
+		/// form is typically called from within cascade actions. 
 		/// </summary>
 		/// <param name="persister">The parent's entity persister </param>
 		/// <param name="parent">The parent reference. </param>
@@ -110,11 +112,11 @@ namespace NHibernate.Engine
 
 				IType[] types = persister.PropertyTypes;
 				CascadeStyle[] cascadeStyles = persister.PropertyCascadeStyles;
-				EntityMode entityMode = eventSource.EntityMode;
-				bool hasUninitializedLazyProperties = persister.HasUninitializedLazyProperties(parent, entityMode);
+				bool hasUninitializedLazyProperties = persister.HasUninitializedLazyProperties(parent);
 				for (int i = 0; i < types.Length; i++)
 				{
 					CascadeStyle style = cascadeStyles[i];
+					string propertyName = persister.PropertyNames[i];
 					if (hasUninitializedLazyProperties && persister.PropertyLaziness[i] && !action.PerformOnLazyProperty)
 					{
 						//do nothing to avoid a lazy property initialization
@@ -123,11 +125,11 @@ namespace NHibernate.Engine
 
 					if (style.DoCascade(action))
 					{
-						CascadeProperty(parent, persister.GetPropertyValue(parent, i, entityMode), types[i], style, anything, false);
+						CascadeProperty(parent, persister.GetPropertyValue(parent, i), types[i], style, propertyName, anything, false);
 					}
 					else if (action.RequiresNoCascadeChecking)
 					{
-						action.NoCascade(eventSource, persister.GetPropertyValue(parent, i, entityMode), parent, persister, i);
+						action.NoCascade(eventSource, persister.GetPropertyValue(parent, i), parent, persister, i);
 					}
 				}
 
@@ -136,7 +138,7 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> Cascade an action to the child or children</summary>
-		private void CascadeProperty(object parent, object child, IType type, CascadeStyle style, object anything, bool isCascadeDeleteEnabled)
+		private void CascadeProperty(object parent, object child, IType type, CascadeStyle style, string propertyName, object anything, bool isCascadeDeleteEnabled)
 		{
 			if (child != null)
 			{
@@ -150,28 +152,78 @@ namespace NHibernate.Engine
 				}
 				else if (type.IsComponentType)
 				{
-					CascadeComponent(parent, child, (IAbstractComponentType)type, anything);
+					CascadeComponent(parent, child, (IAbstractComponentType)type, propertyName, anything);
+				}
+			}
+			else
+			{
+				// potentially we need to handle orphan deletes for one-to-ones here...
+				if (type.IsEntityType && ((EntityType)type).IsLogicalOneToOne())
+				{
+					// We have a physical or logical one-to-one and from previous checks we know we
+					// have a null value.  See if the attribute cascade settings and action-type require
+					// orphan checking
+					if (style.HasOrphanDelete && action.DeleteOrphans)
+					{
+						// value is orphaned if loaded state for this property shows not null
+						// because it is currently null.
+						EntityEntry entry = eventSource.PersistenceContext.GetEntry(parent);
+						if (entry != null && entry.Status != Status.Saving)
+						{
+							EntityType entityType = (EntityType)type;
+							object loadedValue;
+							if (!componentPathStack.Any())
+							{
+								// association defined on entity
+								loadedValue = entry.GetLoadedValue(propertyName);
+							}
+							else
+							{
+								// association defined on component
+								// todo : this is currently unsupported because of the fact that
+								// we do not know the loaded state of this value properly
+								// and doing so would be very difficult given how components and
+								// entities are loaded (and how 'loaded state' is put into the
+								// EntityEntry).  Solutions here are to either:
+								//	1) properly account for components as a 2-phase load construct
+								//  2) just assume the association was just now orphaned and
+								//     issue the orphan delete.  This would require a special
+								//     set of SQL statements though since we do not know the
+								//     orphaned value, something a delete with a subquery to
+								//     match the owner.
+								loadedValue = null;
+							}
+
+							if (loadedValue != null)
+							{
+								eventSource.Delete(entry.Persister.EntityName, loadedValue, false, null);
+							}
+						}
+					}
 				}
 			}
 		}
 
 		private bool CascadeAssociationNow(IAssociationType associationType)
 		{
-			return associationType.ForeignKeyDirection.CascadeNow(point) && (eventSource.EntityMode != EntityMode.Xml || associationType.IsEmbeddedInXML);
+			return associationType.ForeignKeyDirection.CascadeNow(point);
 		}
 
-		private void CascadeComponent(object parent, object child, IAbstractComponentType componentType, object anything)
+		private void CascadeComponent(object parent, object child, IAbstractComponentType componentType, string componentPropertyName, object anything)
 		{
+			componentPathStack.Push(componentPropertyName);
 			object[] children = componentType.GetPropertyValues(child, eventSource);
 			IType[] types = componentType.Subtypes;
 			for (int i = 0; i < types.Length; i++)
 			{
 				CascadeStyle componentPropertyStyle = componentType.GetCascadeStyle(i);
+				string subPropertyName = componentType.PropertyNames[i];
 				if (componentPropertyStyle.DoCascade(action))
 				{
-					CascadeProperty(parent, children[i], types[i], componentPropertyStyle, anything, false);
+					CascadeProperty(parent, children[i], types[i], componentPropertyStyle, subPropertyName, anything, false);
 				}
 			}
+			componentPathStack.Pop();
 		}
 
 		private void CascadeAssociation(object parent, object child, IType type, CascadeStyle style, object anything, bool isCascadeDeleteEnabled)
@@ -225,11 +277,7 @@ namespace NHibernate.Engine
 		/// <summary> Cascade to the collection elements</summary>
 		private void CascadeCollectionElements(object parent, object child, CollectionType collectionType, CascadeStyle style, IType elemType, object anything, bool isCascadeDeleteEnabled)
 		{
-			// we can't cascade to non-embedded elements
-			bool embeddedElements = eventSource.EntityMode != EntityMode.Xml
-			                        || ((EntityType) collectionType.GetElementType(eventSource.Factory)).IsEmbeddedInXML;
-
-			bool reallyDoCascade = style.ReallyDoCascade(action) && embeddedElements
+			bool reallyDoCascade = style.ReallyDoCascade(action)
 			                       && child != CollectionType.UnfetchedCollection;
 
 			if (reallyDoCascade)
@@ -237,7 +285,7 @@ namespace NHibernate.Engine
 				log.Info("cascade " + action + " for collection: " + collectionType.Role);
 
 				foreach (object o in action.GetCascadableChildrenIterator(eventSource, collectionType, child))
-					CascadeProperty(parent, o, elemType, style, anything, isCascadeDeleteEnabled);
+					CascadeProperty(parent, o, elemType, style, null, anything, isCascadeDeleteEnabled);
 
 				log.Info("done cascade " + action + " for collection: " + collectionType.Role);
 			}

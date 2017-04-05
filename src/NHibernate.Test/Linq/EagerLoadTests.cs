@@ -2,13 +2,39 @@
 using NHibernate.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Linq
 {
 	[TestFixture]
 	public class EagerLoadTests : LinqTestCase
 	{
+		[Test]
+		public void CanSelectAndFetch()
+		{
+			//NH-3075
+			var result = db.Orders
+			  .Select(o => o.Customer)
+			  .Fetch(c => c.Orders)
+			  .ToList();
+
+			session.Close();
+
+			Assert.IsNotEmpty(result);
+			Assert.IsTrue(NHibernateUtil.IsInitialized(result[0].Orders));
+		}
+
+		[Test]
+		public void CanSelectAndFetchHql()
+		{
+			//NH-3075
+			var result = this.session.CreateQuery("select c from Order o left join o.Customer c left join fetch c.Orders").List<Customer>();
+
+			session.Close();
+
+			Assert.IsNotEmpty(result);
+			Assert.IsTrue(NHibernateUtil.IsInitialized(result[0].Orders));
+		}
+
 		[Test]
 		public void RelationshipsAreLazyLoadedByDefault()
 		{
@@ -60,16 +86,15 @@ namespace NHibernate.Test.Linq
 		public void WhenFetchSuperclassCollectionThenNotThrows()
 		{
 			// NH-2277
-			session.Executing(s => s.Query<Lizard>().Fetch(x => x.Children).ToList()).NotThrows();
+			Assert.That(() => session.Query<Lizard>().Fetch(x => x.Children).ToList(), Throws.Nothing);
 			session.Close();
 		}
 
 		[Test]
 		public void FetchWithWhere()
 		{
-					// NH-2381 NH-2362
-			(from p
-				in session.Query<Product>().Fetch(a => a.Supplier)
+			// NH-2381 NH-2362
+			(from p in session.Query<Product>().Fetch(a => a.Supplier)
 			 where p.ProductId == 1
 			 select p).ToList();
 		}

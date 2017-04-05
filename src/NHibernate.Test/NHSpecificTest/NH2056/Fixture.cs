@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2056
 {
@@ -51,10 +50,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2056
 			using (var t = session.BeginTransaction())
 			{
 				var updated = (IDictionary) session.Get("Address", savedId);
-				updated["BaseF1"].Should().Be("base1");
-				updated["BaseF2"].Should().Be("base2");
-				updated["AddressF1"].Should().Be("foo");
-				updated["AddressF2"].Should().Be("bar");
+				Assert.That(updated["BaseF1"], Is.EqualTo("base1"));
+				Assert.That(updated["BaseF2"], Is.EqualTo("base2"));
+				Assert.That(updated["AddressF1"], Is.EqualTo("foo"));
+				Assert.That(updated["AddressF2"], Is.EqualTo("bar"));
 
 				t.Commit();
 			}

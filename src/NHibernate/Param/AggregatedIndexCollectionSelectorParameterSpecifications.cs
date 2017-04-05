@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Text;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -15,7 +15,7 @@ namespace NHibernate.Param
 			_paramSpecs = paramSpecs;
 		}
 
-		//public int Bind(IDbCommand statement, QueryParameters qp, ISessionImplementor session, int position)
+		//public int Bind(DbCommand statement, QueryParameters qp, ISessionImplementor session, int position)
 		//{
 		//  int bindCount = 0;
 
@@ -27,12 +27,12 @@ namespace NHibernate.Param
 		//}
 
 
-		public void Bind(IDbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		public void Bind(DbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void Bind(IDbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		public void Bind(DbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
 			throw new NotImplementedException();
 		}

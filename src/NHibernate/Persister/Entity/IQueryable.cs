@@ -59,7 +59,7 @@ namespace NHibernate.Persister.Entity
 		/// The second dimension should have the same length across all the elements in
 		/// the first dimension.  If not, that'd be a problem ;) 
 		/// </returns>
-		string[][] ContraintOrderedTableKeyColumnClosure { get;}
+		string[][] ConstraintOrderedTableKeyColumnClosure { get;}
 
 		/// <summary> 
 		/// Get the name of the temporary table to be used to (potentially) store id values

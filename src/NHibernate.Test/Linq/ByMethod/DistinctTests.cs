@@ -2,7 +2,6 @@
 using System.Linq;
 using NHibernate.Cfg;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Linq.ByMethod
 {
@@ -30,7 +29,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				.Distinct()
 				.ToArray();
 
-			result.Length.Should().Be.EqualTo(388);
+			Assert.That(result.Length, Is.EqualTo(388));
 		}
 
 		[Test]
@@ -46,7 +45,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				.Distinct()
 				.ToArray();
 
-			result.Length.Should().Be.EqualTo(774);
+			Assert.That(result.Length, Is.EqualTo(774));
 		}
 
 		[Test]
@@ -61,7 +60,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				.Distinct()
 				.ToArray();
 
-			result.Length.Should().Be.EqualTo(388);
+			Assert.That(result.Length, Is.EqualTo(388));
 		}
 
 		[Test]
@@ -77,7 +76,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				.Distinct()
 				.ToArray();
 
-			result.Length.Should().Be.EqualTo(774);
+			Assert.That(result.Length, Is.EqualTo(774));
 		}
 
 		[Test]
@@ -95,40 +94,55 @@ namespace NHibernate.Test.Linq.ByMethod
 				.Distinct()
 				.ToArray();
 
-			result.Length.Should().Be.EqualTo(824);
+			Assert.That(result.Length, Is.EqualTo(824));
 		}
 
 		[Test]
-		[ExpectedException(typeof(NotSupportedException), ExpectedMessage = "Cannot use distinct on result that depends on methods for which no SQL equivalent exist.")]
 		public void DistinctOnTypeProjectionWithCustomProjectionMethodsIsBlocked1()
 		{
 			// Sort of related to NH-2645.
 
-			OrderDto[] result = db.Orders
-				.Select(x => new OrderDto
-								 {
-									 ShippingDate = Transform(x.ShippingDate),
-									 OrderDate = Transform(x.OrderDate)
-								 })
-				.Distinct()
-				.ToArray();
+			Assert.That(
+				() =>
+				{
+					OrderDto[] result = db.Orders
+										  .Select(
+											  x => new OrderDto
+											  {
+												  ShippingDate = Transform(x.ShippingDate),
+												  OrderDate = Transform(x.OrderDate)
+											  })
+										  .Distinct()
+										  .ToArray();
+				},
+				Throws.TypeOf<NotSupportedException>()
+					  .And.Message.EqualTo(
+						  "Cannot use distinct on result that depends on methods for which no SQL equivalent exist."));
 		}
 
 
 		[Test]
-		[ExpectedException(typeof(NotSupportedException), ExpectedMessage = "Cannot use distinct on result that depends on methods for which no SQL equivalent exist.")]
 		public void DistinctOnTypeProjectionWithCustomProjectionMethodsIsBlocked2()
 		{
 			// Sort of related to NH-2645.
 
-			OrderDto[] result = db.Orders
-				.Select(x => new OrderDto
+			Assert.That(
+				() =>
 				{
-					ShippingDate = x.ShippingDate,
-					OrderDate = x.OrderDate.Value.AddMonths(5),  // As of 2012-01-25, AddMonths() is executed locally.
-				})
-				.Distinct()
-				.ToArray();
+					OrderDto[] result = db.Orders
+					                      .Select(
+						                      x => new OrderDto
+						                      {
+							                      ShippingDate = x.ShippingDate,
+												  // As of 2012-01-25, AddMonths() is executed locally.
+												  OrderDate = x.OrderDate.Value.AddMonths(5),
+						                      })
+					                      .Distinct()
+					                      .ToArray();
+				},
+				Throws.TypeOf<NotSupportedException>()
+				      .And.Message.EqualTo(
+					      "Cannot use distinct on result that depends on methods for which no SQL equivalent exist."));
 		}
 	}
 }

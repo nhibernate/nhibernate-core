@@ -19,14 +19,13 @@ namespace NHibernate.Test.NHSpecificTest.NH480
 	/// </list>
 	/// This test checks that field naming strategies handle this correctly.
 	/// </remarks>
-	/// </summary>
 	[TestFixture]
 	public class Fixture
 	{
 		private CultureInfo currentCulture = null;
 		private CultureInfo currentUICulture = null;
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void TestFixtureSetUp()
 		{
 			currentCulture = Thread.CurrentThread.CurrentCulture;
@@ -37,7 +36,7 @@ namespace NHibernate.Test.NHSpecificTest.NH480
 			Thread.CurrentThread.CurrentUICulture = turkish;
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void TestFixtureTearDown()
 		{
 			Thread.CurrentThread.CurrentCulture = currentCulture;

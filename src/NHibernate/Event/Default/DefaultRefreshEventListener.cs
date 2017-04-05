@@ -51,7 +51,7 @@ namespace NHibernate.Event.Default
 			if (e == null)
 			{
 				persister = source.GetEntityPersister(null, obj); //refresh() does not pass an entityName
-				id = persister.GetIdentifier(obj, source.EntityMode);
+				id = persister.GetIdentifier(obj);
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("refreshing transient " + MessageHelper.InfoString(persister, id, source.Factory));

@@ -36,14 +36,14 @@ namespace NHibernate.Type
 		public override object Replace(object original, object target, ISessionImplementor session, object owner,
 									   IDictionary copiedAlready)
 		{
-			if (IsEqual(original, target, session.EntityMode))
+			if (IsEqual(original, target))
 				return original;
-			return DeepCopy(original, session.EntityMode, session.Factory);
+			return DeepCopy(original, session.Factory);
 		}
 
 		public abstract object DeepCopyNotNull(object value);
 
-		public override object DeepCopy(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
+		public override object DeepCopy(object value, ISessionFactoryImplementor factory)
 		{
 			return (value == null) ? null : DeepCopyNotNull(value);
 		}

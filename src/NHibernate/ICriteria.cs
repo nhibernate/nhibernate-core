@@ -376,7 +376,7 @@ namespace NHibernate
 		ICriteria GetCriteriaByPath(string path);
 
 		/// <summary>
-		/// Alows to get a sub criteria by alias.
+		/// Allows to get a sub criteria by alias.
 		/// Will return null if the criteria does not exists
 		/// </summary>
 		/// <param name="alias">The alias.</param>

@@ -7,6 +7,7 @@ using System.Reflection;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Linq
 {
@@ -18,7 +19,7 @@ namespace NHibernate.Linq
 
 	public class DefaultQueryProvider : INhQueryProvider
 	{
-		private static readonly MethodInfo CreateQueryMethodDefinition = ReflectionHelper.GetMethodDefinition((DefaultQueryProvider p) => p.CreateQuery<object>(null));
+		private static readonly MethodInfo CreateQueryMethodDefinition = ReflectHelper.GetMethodDefinition((INhQueryProvider p) => p.CreateQuery<object>(null));
 
 		private readonly WeakReference _session;
 
@@ -66,7 +67,7 @@ namespace NHibernate.Linq
 			return ExecuteFutureQuery(nhLinqExpression, query, nhQuery);
 		}
 
-		protected NhLinqExpression PrepareQuery(Expression expression, out IQuery query, out NhLinqExpression nhQuery)
+		protected virtual NhLinqExpression PrepareQuery(Expression expression, out IQuery query, out NhLinqExpression nhQuery)
 		{
 			var nhLinqExpression = new NhLinqExpression(expression, Session.Factory);
 
@@ -79,17 +80,13 @@ namespace NHibernate.Linq
 			return nhLinqExpression;
 		}
 
+		private static readonly MethodInfo Future = ReflectHelper.GetMethodDefinition<IQuery>(q => q.Future<object>());
+		private static readonly MethodInfo FutureValue = ReflectHelper.GetMethodDefinition<IQuery>(q => q.FutureValue<object>());
+
 		protected virtual object ExecuteFutureQuery(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery)
 		{
-			MethodInfo method;
-			if (nhLinqExpression.ReturnType == NhLinqExpressionReturnType.Sequence)
-			{
-				method = typeof (IQuery).GetMethod("Future").MakeGenericMethod(nhQuery.Type);
-			}
-			else
-			{
-				method = typeof (IQuery).GetMethod("FutureValue").MakeGenericMethod(nhQuery.Type);
-			}
+			var method = (nhLinqExpression.ReturnType == NhLinqExpressionReturnType.Sequence ? Future : FutureValue)
+				.MakeGenericMethod(nhQuery.Type);
 
 			object result = method.Invoke(query, new object[0]);
 
@@ -161,7 +158,7 @@ namespace NHibernate.Linq
 			}
 		}
 
-		public void SetResultTransformerAndAdditionalCriteria(IQuery query, NhLinqExpression nhExpression, IDictionary<string, Tuple<object, IType>> parameters)
+		public virtual void SetResultTransformerAndAdditionalCriteria(IQuery query, NhLinqExpression nhExpression, IDictionary<string, Tuple<object, IType>> parameters)
 		{
 			query.SetResultTransformer(nhExpression.ExpressionToHqlTranslationResults.ResultTransformer);
 

@@ -15,7 +15,8 @@ namespace NHibernate.Mapping.ByCode
 		private readonly HashSet<MemberInfo> dictionaries = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> idBags = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> lists = new HashSet<MemberInfo>();
-		private readonly HashSet<MemberInfo> manyToManyRelations = new HashSet<MemberInfo>();
+		private readonly HashSet<MemberInfo> keyManyToManyRelations = new HashSet<MemberInfo>();
+		private readonly HashSet<MemberInfo> itemManyToManyRelations = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> manyToAnyRelations = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> manyToOneRelations = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> naturalIds = new HashSet<MemberInfo>();
@@ -81,9 +82,14 @@ namespace NHibernate.Mapping.ByCode
 			get { return manyToOneRelations; }
 		}
 
-		public IEnumerable<MemberInfo> ManyToManyRelations
+		public IEnumerable<MemberInfo> KeyManyToManyRelations
 		{
-			get { return manyToManyRelations; }
+			get { return keyManyToManyRelations; }
+		}
+
+		public IEnumerable<MemberInfo> ItemManyToManyRelations
+		{
+			get { return itemManyToManyRelations; }
 		}
 
 		public IEnumerable<MemberInfo> OneToManyRelations
@@ -332,10 +338,16 @@ namespace NHibernate.Mapping.ByCode
 			manyToOneRelations.Add(member);
 		}
 
-		public void AddAsManyToManyRelation(MemberInfo member)
+		public void AddAsManyToManyKeyRelation(MemberInfo member)
 		{
 			persistentMembers.Add(member);
-			manyToManyRelations.Add(member);
+			keyManyToManyRelations.Add(member);
+		}
+
+		public void AddAsManyToManyItemRelation(MemberInfo member)
+		{
+			persistentMembers.Add(member);
+			itemManyToManyRelations.Add(member);
 		}
 
 		public void AddAsOneToManyRelation(MemberInfo member)

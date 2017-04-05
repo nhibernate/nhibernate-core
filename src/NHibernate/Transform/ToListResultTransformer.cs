@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace NHibernate.Transform
 {
 	/// <summary> 
-	/// Tranforms each result row from a tuple into a <see cref="IList"/>, such that what
+	/// Transforms each result row from a tuple into a <see cref="IList"/>, such that what
 	/// you end up with is a <see cref="IList"/> of <see cref="IList"/>.
 	/// </summary>
 	[Serializable]
@@ -25,11 +25,13 @@ namespace NHibernate.Transform
 
 		public override bool Equals(object obj)
 		{
-			if (obj == null)
+			if (obj == null || obj.GetHashCode() != Hasher.GetHashCode())
 			{
 				return false;
 			}
-			return obj.GetHashCode() == Hasher.GetHashCode();
+			// NH-3957: do not rely on hashcode alone.
+			// Must be the exact same type
+			return obj.GetType() == typeof(ToListResultTransformer);
 		}
 
 		public override int GetHashCode()

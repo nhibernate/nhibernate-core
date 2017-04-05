@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using System.Collections.Generic;
+using System.Data;
 
 namespace NHibernate.Type
 {
@@ -36,7 +37,7 @@ namespace NHibernate.Type
 			get { return "DateTime"; }
 		}
 
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index)
 		{
 			try
 			{
@@ -49,7 +50,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name)
 		{
 			return Get(rs, rs.GetOrdinal(name));
 		}
@@ -59,10 +60,10 @@ namespace NHibernate.Type
 			get { return typeof(DateTime); }
 		}
 
-		public override void Set(IDbCommand st, object value, int index)
+		public override void Set(DbCommand st, object value, int index)
 		{
 			DateTime dateValue = (DateTime) value;
-			((IDataParameter)st.Parameters[index]).Value =
+			st.Parameters[index].Value =
 				new DateTime(dateValue.Year, dateValue.Month, dateValue.Day, dateValue.Hour, dateValue.Minute, dateValue.Second);
 		}
 
@@ -111,7 +112,7 @@ namespace NHibernate.Type
 
 		#endregion
 
-		public override int GetHashCode(object x, EntityMode entityMode)
+		public override int GetHashCode(object x)
 		{
 			// Custom hash code implementation because DateTimeType is only accurate
 			// up to seconds.

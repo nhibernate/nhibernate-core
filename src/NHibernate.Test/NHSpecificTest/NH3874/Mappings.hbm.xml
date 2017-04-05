@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH3874"
+	default-lazy="false">
+
+  <class name="One" lazy="true">
+    <id name="Id" column="Zzzz" type="IntWrapperType">
+      <generator class="identity"/>
+    </id>
+    <property name="Name" />
+    <bag name="Twos" cascade="all-delete-orphan" inverse="true" lazy="true">
+      <key column="WeirdId"/>
+      <one-to-many class="Two"/>
+    </bag>
+  </class>
+
+  <class name="Two" lazy="true">
+    <id name="Id" column="WeirdId" type="IntWrapperType">
+      <generator class="foreign">
+        <param name="property">One</param>
+      </generator>
+    </id>
+
+    <one-to-one name="One" class="One" constrained="true"/>
+  </class>
+
+</hibernate-mapping>

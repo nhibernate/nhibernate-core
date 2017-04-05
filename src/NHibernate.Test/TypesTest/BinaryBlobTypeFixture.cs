@@ -1,7 +1,6 @@
 using System;
 using System.Text;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.TypesTest
 {
@@ -67,7 +66,7 @@ namespace NHibernate.Test.TypesTest
 			using (var s = OpenSession())
 			{
 				var b = s.Get<BinaryBlobClass>(savedId);
-				b.BinaryBlob.Should().Not.Be.Null().And.Have.Count.EqualTo(0);
+				Assert.That(b.BinaryBlob, Is.Not.Null.And.Length.EqualTo(0));
 				s.Delete(b);
 				s.Flush();
 			}

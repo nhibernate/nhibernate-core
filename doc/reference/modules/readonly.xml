@@ -306,7 +306,7 @@
                 Using <literal>Query.SetReadOnly(true)</literal> or
                 <literal>Criteria.SetReadOnly(true)</literal> works well
                 when a single HQL query or criteria loads all the entities and 
-                intializes all the proxies and collections that the application
+                initializes all the proxies and collections that the application
                 needs to be read-only.
             </para>
 
@@ -511,7 +511,7 @@ s.Flush();
                 will not increment the version if any simple properties change.
             </para>
 
-	    <programlisting role="c#">
+            <programlisting role="c#">
 ISession session = factory.OpenSession();
 ITransaction tx = session.BeginTransaction();
 

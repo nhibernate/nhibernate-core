@@ -9,7 +9,7 @@ namespace NHibernate.Event.Default
 	{
 		public virtual void OnPostLoad(PostLoadEvent @event)
 		{
-			if (@event.Persister.ImplementsLifecycle(@event.Session.EntityMode))
+			if (@event.Persister.ImplementsLifecycle)
 			{
 				//log.debug( "calling onLoad()" );
 				((ILifecycle)@event.Entity).OnLoad(@event.Session, @event.Id);

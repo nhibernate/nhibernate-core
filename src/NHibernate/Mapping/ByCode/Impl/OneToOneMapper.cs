@@ -30,7 +30,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Cascade(Cascade cascadeStyle)
 		{
-			_oneToOne.cascade = (cascadeStyle.Exclude(ByCode.Cascade.DeleteOrphans)).ToCascadeString();
+			_oneToOne.cascade = cascadeStyle.ToCascadeString();
 		}
 
 		public void Class(System.Type clazz)

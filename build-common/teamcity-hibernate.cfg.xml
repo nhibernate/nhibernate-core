@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <hibernate-configuration xmlns="urn:nhibernate-configuration-2.2">
-		<bytecode-provider type="lcg"/>
-		<reflection-optimizer use="true"/>
 		<session-factory name="NHibernate.Test">
 			<property name="connection.provider">NHibernate.Connection.DriverConnectionProvider</property>
 			<property name="cache.provider_class">NHibernate.Cache.HashtableCacheProvider, NHibernate</property>
@@ -24,5 +22,7 @@
 			<property name="command_timeout">444</property>
 			<property name="query.substitutions">true 1, false 0, yes 'Y', no 'N'</property>
 			<property name="adonet.wrap_result_sets">false</property>
+
+			<property name="odbc.explicit_datetime_scale"></property>
 		</session-factory>
 	</hibernate-configuration>

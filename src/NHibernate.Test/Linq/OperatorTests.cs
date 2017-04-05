@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Linq;
@@ -16,5 +17,21 @@ namespace NHibernate.Test.Linq
         {
             Assert.AreEqual(2, session.Query<TimesheetEntry>().Where(a => a.NumberOfHours % 7 == 0).Count());
         }
-    }
+
+		[Test]
+		public void UnaryMinus()
+		{
+			Assert.AreEqual(1, session.Query<TimesheetEntry>().Count(a => -a.NumberOfHours == -7));
+		}
+
+		[Test]
+		public void UnaryPlus()
+		{
+			// Ensure expression tree contains UnaryPlus
+			var param = Expression.Parameter(typeof(TimesheetEntry), "e");
+			var expr = Expression.Equal(Expression.UnaryPlus(Expression.PropertyOrField(param, "NumberOfHours")), Expression.Constant(7));
+			var predicate = Expression.Lambda<Func<TimesheetEntry, bool>>(expr, param);
+			Assert.AreEqual(1, session.Query<TimesheetEntry>().Count(predicate));
+		}
+	}
 }

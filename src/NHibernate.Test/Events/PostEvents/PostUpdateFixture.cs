@@ -40,7 +40,7 @@ namespace NHibernate.Test.Events.PostEvents
 						tx.Commit();
 					}
 				}
-				Assert.That(ls.GetWholeLog(), Is.StringContaining(AssertOldStatePostListener.LogMessage));
+				Assert.That(ls.GetWholeLog(), Does.Contain(AssertOldStatePostListener.LogMessage));
 			}
 
 			DbCleanup();
@@ -69,7 +69,7 @@ namespace NHibernate.Test.Events.PostEvents
 						tx.Commit();
 					}
 				}
-				Assert.That(ls.GetWholeLog(), Is.StringContaining(AssertOldStatePostListener.LogMessage));
+				Assert.That(ls.GetWholeLog(), Does.Contain(AssertOldStatePostListener.LogMessage));
 			}
 
 			DbCleanup();
@@ -107,7 +107,7 @@ namespace NHibernate.Test.Events.PostEvents
 						tx.Commit();
 					}
 				}
-				Assert.That(ls.GetWholeLog(), Is.StringContaining(AssertOldStatePostListener.LogMessage));
+				Assert.That(ls.GetWholeLog(), Does.Contain(AssertOldStatePostListener.LogMessage));
 			}
 
 			DbCleanup();
@@ -147,7 +147,7 @@ namespace NHibernate.Test.Events.PostEvents
 						tx.Commit();
 					}
 				}
-				Assert.That(ls.GetWholeLog(), Is.StringContaining(AssertOldStatePostListener.LogMessage));
+				Assert.That(ls.GetWholeLog(), Does.Contain(AssertOldStatePostListener.LogMessage));
 			}
 
 			DbCleanup();
@@ -186,7 +186,7 @@ namespace NHibernate.Test.Events.PostEvents
 						tx.Commit();
 					}
 				}
-				Assert.That(ls.GetWholeLog(), Is.StringContaining(AssertOldStatePostListener.LogMessage));
+				Assert.That(ls.GetWholeLog(), Does.Contain(AssertOldStatePostListener.LogMessage));
 			}
 
 			DbCleanup();

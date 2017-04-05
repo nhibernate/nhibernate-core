@@ -3,7 +3,6 @@ using System.Linq;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 {
@@ -23,7 +22,7 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 			var properties = memberProvider.GetRootEntityMembers(typeof(Geo));
 			if(properties.Select(p => p.Name).Contains("Parent"))
 			{
-				typeof(Geo).GetFirstPropertyOfType(typeof(Geo)).Should().Not.Be.Null();
+				Assert.That(typeof(Geo).GetFirstPropertyOfType(typeof(Geo)), Is.Not.Null);
 			}
 		}
 	}

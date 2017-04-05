@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Id.Insert;
 using NHibernate.SqlCommand;
@@ -64,14 +65,14 @@ namespace NHibernate.Id
 				return insert;
 			}
 
-			protected internal override IDbCommand Prepare(SqlCommandInfo insertSQL, ISessionImplementor session)
+			protected internal override DbCommand Prepare(SqlCommandInfo insertSQL, ISessionImplementor session)
 			{
 				return session.Batcher.PrepareCommand(CommandType.Text, insertSQL.Text, insertSQL.ParameterTypes);
 			}
 
-			public override object ExecuteAndExtract(IDbCommand insert, ISessionImplementor session)
+			public override object ExecuteAndExtract(DbCommand insert, ISessionImplementor session)
 			{
-				IDataReader rs = session.Batcher.ExecuteReader(insert);
+				var rs = session.Batcher.ExecuteReader(insert);
 				try
 				{
 					return IdentifierGeneratorFactory.GetGeneratedIdentity(rs, persister.IdentifierType, session);
@@ -117,7 +118,7 @@ namespace NHibernate.Id
 				return insert;
 			}
 
-			protected internal override object GetResult(ISessionImplementor session, IDataReader rs, object obj)
+			protected internal override object GetResult(ISessionImplementor session, DbDataReader rs, object obj)
 			{
 				return IdentifierGeneratorFactory.GetGeneratedIdentity(rs, persister.IdentifierType, session);
 			}

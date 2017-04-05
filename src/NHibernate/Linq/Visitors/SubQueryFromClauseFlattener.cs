@@ -2,19 +2,19 @@ using System.Collections.Generic;
 using System.Linq;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
-using Remotion.Linq.Clauses.ExpressionTreeVisitors;
 using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Clauses.ExpressionTreeVisitors;
 using Remotion.Linq.EagerFetching;
 
 namespace NHibernate.Linq.Visitors
 {
 	public class SubQueryFromClauseFlattener : QueryModelVisitorBase
 	{
-		private static readonly System.Type[] FlattenableResultOperators = new[]
-			{
-				typeof (FetchOneRequest),
-				typeof (FetchManyRequest),
-			};
+		private static readonly System.Type[] FlattenableResultOperators =
+		{
+			typeof (FetchOneRequest),
+			typeof (FetchManyRequest)
+		};
 
 		public static void ReWrite(QueryModel queryModel)
 		{
@@ -80,7 +80,7 @@ namespace NHibernate.Linq.Visitors
 			queryModel.TransformExpressions(ex => ReferenceReplacingExpressionTreeVisitor.ReplaceClauseReferences(ex, innerBodyClauseMapping, false));
 		}
 
-		private static void InsertResultOperators(IEnumerable<ResultOperatorBase> resultOperators, QueryModel queryModel)
+		internal static void InsertResultOperators(IEnumerable<ResultOperatorBase> resultOperators, QueryModel queryModel)
 		{
 			var index = 0;
 			foreach (var bodyClause in resultOperators)

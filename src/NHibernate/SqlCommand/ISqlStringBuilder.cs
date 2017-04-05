@@ -6,7 +6,7 @@ namespace NHibernate.SqlCommand
 		/// <summary>
 		/// Builds a SqlString from the internal data.
 		/// </summary>
-		/// <returns>A valid SqlString that can be converted into an IDbCommand</returns>
+		/// <returns>A valid SqlString that can be converted into an DbCommand</returns>
 		SqlString ToSqlString();
 	}
 }
