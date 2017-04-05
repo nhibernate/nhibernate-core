@@ -376,9 +376,7 @@ namespace NHibernate.Impl
 							{
 								_childSession.Close();
 							}
-
-							//remove references to child sessions so that they can be garbage collected
-							childSessionsByEntityMode.Clear();
+							_childSession = null;
 						}
 					}
 					catch
