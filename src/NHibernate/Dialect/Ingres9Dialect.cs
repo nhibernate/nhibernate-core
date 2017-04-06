@@ -30,7 +30,12 @@ namespace NHibernate.Dialect
 		{
 			get { return true; }
 		}
-		
+
+		/// <summary>
+		/// Does this dialect support sequences?
+		/// </summary>
+		public override bool SupportsSequences => true;
+
 		/// <summary>
 		/// Attempts to add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>.
 		/// Expects any database-specific offset and limit adjustments to have already been performed (ex. UseMaxForLimit, OffsetStartsAtOne).
@@ -65,8 +70,28 @@ namespace NHibernate.Dialect
 			return pagingBuilder.ToSqlString();
 		}
 
+		public override string GetSequenceNextValString(string sequenceName)
+		{
+			return "select " + GetSelectSequenceNextValString(sequenceName) + " as seq";
+		}
+
+		public override string GetSelectSequenceNextValString(string sequenceName)
+		{
+			return "next value for " + sequenceName;
+		}
+
+		public override string GetCreateSequenceString(string sequenceName)
+		{
+			return "create sequence " + sequenceName;
+		}
+
+		public override string GetDropSequenceString(string sequenceName)
+		{
+			return "drop sequence " + sequenceName;
+		}
+
 		#region Overridden informational metadata
-		
+
 		public override bool DoesRepeatableReadCauseReadersToBlockWriters => true;
 
 		#endregion
