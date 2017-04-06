@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Param;
@@ -106,7 +106,7 @@ namespace NHibernate.Loader.Criteria
 			return true;
 		}
 
-		protected override object GetResultColumnOrRow(object[] row, IResultTransformer customResultTransformer, IDataReader rs,
+		protected override object GetResultColumnOrRow(object[] row, IResultTransformer customResultTransformer, DbDataReader rs,
 													   ISessionImplementor session)
 		{
 			return ResolveResultTransformer(customResultTransformer)
@@ -114,7 +114,7 @@ namespace NHibernate.Loader.Criteria
 		}
 
 
-		protected override object[] GetResultRow(object[] row, IDataReader rs, ISessionImplementor session)
+		protected override object[] GetResultRow(object[] row, DbDataReader rs, ISessionImplementor session)
 		{
 			object[] result;
 

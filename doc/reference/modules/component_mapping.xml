@@ -114,7 +114,7 @@
 
         <para>
             The <literal>&lt;component&gt;</literal> element allows a <literal>&lt;parent&gt;</literal>
-            subelement that maps a property of the component class as a reference back to the
+            sub-element that maps a property of the component class as a reference back to the
             containing entity.
         </para>
 

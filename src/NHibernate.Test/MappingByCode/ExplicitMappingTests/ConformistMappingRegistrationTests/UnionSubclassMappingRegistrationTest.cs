@@ -64,7 +64,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRe
 		{
 			var hbmClass = hbmMapping.UnionSubclasses.Single();
 			Assert.That(hbmClass, Is.Not.Null);
-			Assert.That(hbmClass.extends, Is.StringContaining("MyClass"));
+			Assert.That(hbmClass.extends, Does.Contain("MyClass"));
 			var hbmProperty = hbmClass.Properties.OfType<HbmProperty>().Single();
 			Assert.That(hbmProperty.name, Is.EqualTo("SomethingElse"));
 			Assert.That(hbmProperty.length, Is.EqualTo("15"));

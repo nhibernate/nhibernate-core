@@ -249,5 +249,22 @@ namespace NHibernate.Dialect
 		{
 			get { return "SELECT CURRENT_TIMESTAMP"; }
 		}
+
+		#region Overridden informational metadata
+
+		public override bool SupportsEmptyInList => false;
+
+		/// <summary> 
+		/// Should LOBs (both BLOB and CLOB) be bound using stream operations (i.e.
+		/// {@link java.sql.PreparedStatement#setBinaryStream}). 
+		/// </summary>
+		/// <returns> True if BLOBs and CLOBs should be bound using stream operations. </returns>
+		public override bool UseInputStreamToInsertBlob => false;
+
+		public override bool SupportsLobValueChangePropogation => false;
+
+		public override bool SupportsUnboundedLobLocatorMaterialization => false;
+
+		#endregion
 	}
 }

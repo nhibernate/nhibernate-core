@@ -32,7 +32,7 @@ namespace NHibernate.Type
 					}
 					else
 					{
-						target[i] = types[i].DeepCopy(values[i], session.EntityMode, session.Factory);
+						target[i] = types[i].DeepCopy(values[i], session.Factory);
 					}
 				}
 			}
@@ -199,7 +199,7 @@ namespace NHibernate.Type
 					object[] componentCopy = ReplaceAssociations(origComponentValues, targetComponentValues, subtypes, session, null, copyCache, foreignKeyDirection);
 					
 					if (!componentType.IsAnyType && target[i] != null)
-						componentType.SetPropertyValues(target[i], componentCopy, session.EntityMode);
+						componentType.SetPropertyValues(target[i], componentCopy);
 					
 					copied[i] = target[i];
 				}

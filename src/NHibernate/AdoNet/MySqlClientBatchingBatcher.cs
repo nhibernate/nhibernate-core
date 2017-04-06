@@ -1,4 +1,4 @@
-using System.Data;
+using System;
 using System.Data.Common;
 using System.Text;
 using NHibernate.AdoNet.Util;
@@ -40,7 +40,7 @@ namespace NHibernate.AdoNet
 		public override void AddToBatch(IExpectation expectation)
 		{
 			totalExpectedRowsAffected += expectation.ExpectedRowCount;
-			IDbCommand batchUpdate = CurrentCommand;
+			var batchUpdate = CurrentCommand;
 			Prepare(batchUpdate);
 			Driver.AdjustCommand(batchUpdate);
 			string lineWithParameters = null;
@@ -67,7 +67,7 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		protected override void DoExecuteBatch(IDbCommand ps)
+		protected override void DoExecuteBatch(DbCommand ps)
 		{
 			Log.DebugFormat("Executing batch");
 			CheckReaders();
@@ -97,6 +97,22 @@ namespace NHibernate.AdoNet
 		private MySqlClientSqlCommandSet CreateConfiguredBatch()
 		{
 			return new MySqlClientSqlCommandSet(batchSize);
+		}
+
+		public override void CloseCommands()
+		{
+			base.CloseCommands();
+
+			try
+			{
+				currentBatch.Dispose();
+			}
+			catch (Exception e)
+			{
+				// Prevent exceptions when closing the batch from hiding any original exception
+				// (We do not know here if this batch closing occurs after a failure or not.)
+				Log.Warn("Exception closing batcher", e);
+			}
 		}
 	}
 }

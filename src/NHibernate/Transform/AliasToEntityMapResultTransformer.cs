@@ -30,18 +30,20 @@ namespace NHibernate.Transform
 		}
 
 
-		public override bool IsTransformedValueATupleElement(String[] aliases, int tupleLength)
+		public override bool IsTransformedValueATupleElement(string[] aliases, int tupleLength)
 		{
 			return false;
 		}
 
 		public override bool Equals(object obj)
 		{
-			if (obj == null)
+			if (obj == null || obj.GetHashCode() != Hasher.GetHashCode())
 			{
 				return false;
 			}
-			return obj.GetHashCode() == Hasher.GetHashCode();
+			// NH-3957: do not rely on hashcode alone.
+			// Must be the exact same type
+			return obj.GetType() == typeof(AliasToEntityMapResultTransformer);
 		}
 
 		public override int GetHashCode()

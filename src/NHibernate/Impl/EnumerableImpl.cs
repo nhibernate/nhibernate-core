@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Data;
 using System.Data.Common;
 
 using NHibernate.Engine;
@@ -22,7 +21,7 @@ namespace NHibernate.Impl
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(EnumerableImpl));
 
-		private IDataReader _reader;
+		private DbDataReader _reader;
 		private IEventSource _session;
 		private IType[] _types;
 		private bool _single;
@@ -30,7 +29,7 @@ namespace NHibernate.Impl
 		private bool _hasNext;
 		private bool _startedReading; // True if at least one MoveNext call was made.
 		private string[][] _names;
-		private IDbCommand _cmd;
+		private DbCommand _cmd;
 		private bool _readOnly;
 
 		// when we start enumerating through the DataReader we are positioned
@@ -40,21 +39,21 @@ namespace NHibernate.Impl
 		private RowSelection _selection;
 
 		/// <summary>
-		/// Create an <see cref="IEnumerable"/> wrapper over an <see cref="IDataReader"/>.
+		/// Create an <see cref="IEnumerable"/> wrapper over an <see cref="DbDataReader"/>.
 		/// </summary>
-		/// <param name="reader">The <see cref="IDataReader"/> to enumerate over.</param>
-		/// <param name="cmd">The <see cref="IDbCommand"/> used to create the <see cref="IDataReader"/>.</param>
+		/// <param name="reader">The <see cref="DbDataReader"/> to enumerate over.</param>
+		/// <param name="cmd">The <see cref="DbCommand"/> used to create the <see cref="DbDataReader"/>.</param>
 		/// <param name="session">The <see cref="ISession"/> to use to load objects.</param>
 		/// <param name="readOnly"></param>
-		/// <param name="types">The <see cref="IType"/>s contained in the <see cref="IDataReader"/>.</param>
-		/// <param name="columnNames">The names of the columns in the <see cref="IDataReader"/>.</param>
-		/// <param name="selection">The <see cref="RowSelection"/> that should be applied to the <see cref="IDataReader"/>.</param>
+		/// <param name="types">The <see cref="IType"/>s contained in the <see cref="DbDataReader"/>.</param>
+		/// <param name="columnNames">The names of the columns in the <see cref="DbDataReader"/>.</param>
+		/// <param name="selection">The <see cref="RowSelection"/> that should be applied to the <see cref="DbDataReader"/>.</param>
 		/// <param name="holderInstantiator">Instantiator of the result holder (used for "select new SomeClass(...)" queries).</param>
 		/// <remarks>
-		/// The <see cref="IDataReader"/> should already be positioned on the first record in <see cref="RowSelection"/>.
+		/// The <see cref="DbDataReader"/> should already be positioned on the first record in <see cref="RowSelection"/>.
 		/// </remarks>
-		public EnumerableImpl(IDataReader reader,
-							  IDbCommand cmd,
+		public EnumerableImpl(DbDataReader reader,
+							  DbCommand cmd,
 							  IEventSource session,
 							  bool readOnly,
 							  IType[] types,
@@ -186,13 +185,13 @@ namespace NHibernate.Impl
 					{
 						object[] currentResults = new object[_types.Length];
 	
-						// move through each of the ITypes contained in the IDataReader and convert them
+						// move through each of the ITypes contained in the DbDataReader and convert them
 						// to their objects.  
 						for (int i = 0; i < _types.Length; i++)
 						{
-							// The IType knows how to extract its value out of the IDataReader.  If the IType
-							// is a value type then the value will simply be pulled out of the IDataReader.  If
-							// the IType is an Entity type then the IType will extract the id from the IDataReader
+							// The IType knows how to extract its value out of the DbDataReader.  If the IType
+							// is a value type then the value will simply be pulled out of the DbDataReader.  If
+							// the IType is an Entity type then the IType will extract the id from the DbDataReader
 							// and use the ISession to load an instance of the object.
 							currentResults[i] = _types[i].NullSafeGet(_reader, _names[i], _session, null);
 						}

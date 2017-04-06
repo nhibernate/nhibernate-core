@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Hql;
 using NHibernate.Param;
@@ -287,7 +287,7 @@ namespace NHibernate.Loader.Custom
 
 		// Not ported: scroll
 
-		protected override object GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, IDataReader rs,
+		protected override object GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, DbDataReader rs,
 		                                               ISessionImplementor session)
 		{
 			return rowProcessor.BuildResultRow(row, rs, resultTransformer != null, session);
@@ -326,7 +326,7 @@ namespace NHibernate.Loader.Custom
 			}
 		}
 
-		protected internal override void AutoDiscoverTypes(IDataReader rs)
+		protected internal override void AutoDiscoverTypes(DbDataReader rs)
 		{
 			MetaData metadata = new MetaData(rs);
 			List<string> aliases = new List<string>();
@@ -396,7 +396,7 @@ namespace NHibernate.Loader.Custom
 			/// At this point, Loader has already processed all non-scalar result data.  We
 			/// just need to account for scalar result data here...
 			/// </remarks>
-			public object BuildResultRow(object[] data, IDataReader resultSet, bool hasTransformer, ISessionImplementor session)
+			public object BuildResultRow(object[] data, DbDataReader resultSet, bool hasTransformer, ISessionImplementor session)
 			{
 				object[] resultRow;
 				// NH Different behavior (patched in NH-1612 to solve Hibernate issue HHH-2831).
@@ -435,7 +435,7 @@ namespace NHibernate.Loader.Custom
 
 		public interface IResultColumnProcessor
 		{
-			object Extract(object[] data, IDataReader resultSet, ISessionImplementor session);
+			object Extract(object[] data, DbDataReader resultSet, ISessionImplementor session);
 			void PerformDiscovery(MetaData metadata, IList<IType> types, IList<string> aliases);
 		}
 
@@ -448,7 +448,7 @@ namespace NHibernate.Loader.Custom
 				this.position = position;
 			}
 
-			public object Extract(object[] data, IDataReader resultSet, ISessionImplementor session)
+			public object Extract(object[] data, DbDataReader resultSet, ISessionImplementor session)
 			{
 				return data[position];
 			}
@@ -473,7 +473,7 @@ namespace NHibernate.Loader.Custom
 				this.type = type;
 			}
 
-			public object Extract(object[] data, IDataReader resultSet, ISessionImplementor session)
+			public object Extract(object[] data, DbDataReader resultSet, ISessionImplementor session)
 			{
 				return type.NullSafeGet(resultSet, alias, session, null);
 			}
@@ -502,13 +502,13 @@ namespace NHibernate.Loader.Custom
 		/// </summary>
 		public class MetaData
 		{
-			private readonly IDataReader resultSet;
+			private readonly DbDataReader resultSet;
 
 			/// <summary>
 			/// Initializes a new instance of the <see cref="MetaData"/> class.
 			/// </summary>
 			/// <param name="resultSet">The result set.</param>
-			public MetaData(IDataReader resultSet)
+			public MetaData(DbDataReader resultSet)
 			{
 				this.resultSet = resultSet;
 			}

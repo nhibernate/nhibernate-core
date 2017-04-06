@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using System.Security;
@@ -47,9 +48,6 @@ namespace NHibernate.Impl
 		private readonly IInterceptor interceptor;
 
 		[NonSerialized]
-		private readonly EntityMode entityMode = EntityMode.Poco;
-
-		[NonSerialized]
 		private FutureCriteriaBatch futureCriteriaBatch;
 		[NonSerialized]
 		private FutureQueryBatch futureQueryBatch;
@@ -78,7 +76,7 @@ namespace NHibernate.Impl
 		private readonly ISession rootSession;
 
 		[NonSerialized]
-		private IDictionary<EntityMode, ISession> childSessionsByEntityMode;
+		ISession _childSession;
 
 		[NonSerialized]
 		private readonly bool flushBeforeCompletionEnabled;
@@ -133,11 +131,7 @@ namespace NHibernate.Impl
 		/// has complete control and what is serialized and those attributes are ignored.  However,
 		/// this method should be in sync with the attributes for easy readability.
 		/// </remarks>
-#if NET_4_0
 		[SecurityCritical]
-#else
-		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-#endif
 		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			log.Debug("writting session to serializer");
@@ -200,19 +194,17 @@ namespace NHibernate.Impl
 		/// <param name="autoclose">NOT USED</param>
 		/// <param name="timestamp">The timestamp for this session</param>
 		/// <param name="interceptor">The interceptor to be applied to this session</param>
-		/// <param name="entityMode">The entity-mode for this session</param>
 		/// <param name="flushBeforeCompletionEnabled">Should we auto flush before completion of transaction</param>
 		/// <param name="autoCloseSessionEnabled">Should we auto close after completion of transaction</param>
 		/// <param name="ignoreExceptionBeforeTransactionCompletion">Should we ignore exceptions in IInterceptor.BeforeTransactionCompletion</param>
 		/// <param name="connectionReleaseMode">The mode by which we should release JDBC connections.</param>
 		/// <param name="defaultFlushMode">The default flush mode for this session</param>
 		internal SessionImpl(
-			IDbConnection connection,
+			DbConnection connection,
 			SessionFactoryImpl factory,
 			bool autoclose,
 			long timestamp,
 			IInterceptor interceptor,
-			EntityMode entityMode,
 			bool flushBeforeCompletionEnabled,
 			bool autoCloseSessionEnabled,
 			bool ignoreExceptionBeforeTransactionCompletion,
@@ -227,7 +219,6 @@ namespace NHibernate.Impl
 
 				rootSession = null;
 				this.timestamp = timestamp;
-				this.entityMode = entityMode;
 				this.interceptor = interceptor;
 				listeners = factory.EventListeners;
 				actionQueue = new ActionQueue(this);
@@ -258,8 +249,7 @@ namespace NHibernate.Impl
 		/// Constructor used in building "child sessions".
 		/// </summary>
 		/// <param name="parent">The parent Session</param>
-		/// <param name="entityMode">The entity mode</param>
-		private SessionImpl(SessionImpl parent, EntityMode entityMode)
+		private SessionImpl(SessionImpl parent)
 			: base(parent.Factory, parent.SessionId)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -270,7 +260,6 @@ namespace NHibernate.Impl
 				interceptor = parent.interceptor;
 				listeners = parent.listeners;
 				actionQueue = new ActionQueue(this);
-				this.entityMode = entityMode;
 				persistenceContext = new StatefulPersistenceContext(this);
 				flushBeforeCompletionEnabled = false;
 				autoCloseSessionEnabled = false;
@@ -279,7 +268,7 @@ namespace NHibernate.Impl
 				if (Factory.Statistics.IsStatisticsEnabled)
 					Factory.StatisticsImplementor.OpenSession();
 
-				log.Debug("opened session [" + entityMode + "]");
+				log.Debug("Opened session");
 
 				CheckAndUpdateSessionStatus();
 			}
@@ -351,7 +340,7 @@ namespace NHibernate.Impl
 		/// Close() is not aware of distributed transactions
 		/// </remarks>
 		/// </summary>
-		public IDbConnection Close()
+		public DbConnection Close()
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -370,11 +359,11 @@ namespace NHibernate.Impl
 				{
 					try
 					{
-						if (childSessionsByEntityMode != null)
+						if (_childSession != null)
 						{
-							foreach (KeyValuePair<EntityMode, ISession> pair in childSessionsByEntityMode)
+							if (_childSession.IsOpen)
 							{
-								pair.Value.Close();
+								_childSession.Close();
 							}
 						}
 					}
@@ -776,7 +765,6 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 
-				CheckAndUpdateSessionStatus();
 				CollectionFilterImpl filter =
 					new CollectionFilterImpl(queryString, collection, this,
 											 GetFilterQueryPlan(collection, queryString, null, false).ParameterMetadata);
@@ -872,10 +860,10 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				ErrorIfClosed();
-				object result = interceptor.Instantiate(persister.EntityName, entityMode, id);
+				object result = interceptor.Instantiate(persister.EntityName, id);
 				if (result == null)
 				{
-					result = persister.Instantiate(id, entityMode);
+					result = persister.Instantiate(id);
 				}
 				return result;
 			}
@@ -1581,7 +1569,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override IDbConnection Connection
+		public override DbConnection Connection
 		{
 			get { return connectionManager.GetConnection(); }
 		}
@@ -1593,7 +1581,7 @@ namespace NHibernate.Impl
 		/// <see langword="true" /> if the ISession is connected.
 		/// </value>
 		/// <remarks>
-		/// An ISession is considered connected if there is an <see cref="IDbConnection"/> (regardless
+		/// An ISession is considered connected if there is an <see cref="DbConnection"/> (regardless
 		/// of its state) or if it the field <c>connect</c> is true.  Meaning that it will connect
 		/// at the next operation that requires a connection.
 		/// </remarks>
@@ -1603,7 +1591,7 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary></summary>
-		public IDbConnection Disconnect()
+		public DbConnection Disconnect()
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -1623,7 +1611,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public void Reconnect(IDbConnection conn)
+		public void Reconnect(DbConnection conn)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2222,45 +2210,24 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public ISession GetSession(EntityMode entityMode)
+		public ISession GetChildSession()
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				// This is explicitly removed to allow support
-				// for child sessions that want to flush during
-				// the parent session lifecycle. See NH-1714,
-				// and the suggested audit examples.
-				//
-				//if (this.entityMode.Equals(entityMode))
-				//{
-				//    return this;
-				//}
-
 				if (rootSession != null)
 				{
-					return rootSession.GetSession(entityMode);
+					return rootSession.GetChildSession();
 				}
 
 				CheckAndUpdateSessionStatus();
 
-				ISession rtn = null;
-				if (childSessionsByEntityMode == null)
+				if (_childSession == null)
 				{
-					childSessionsByEntityMode = new Dictionary<EntityMode, ISession>();
-				}
-				else
-				{
-					childSessionsByEntityMode.TryGetValue(entityMode, out rtn);
+					log.Debug("Creating child session.");
+					_childSession = new SessionImpl(this);
 				}
 
-				if (rtn == null)
-				{
-					log.DebugFormat("Creating child session with {0}", entityMode);
-					rtn = new SessionImpl(this, entityMode);
-					childSessionsByEntityMode.Add(entityMode, rtn);
-				}
-
-				return rtn;
+				return _childSession;
 			}
 		}
 
@@ -2292,16 +2259,6 @@ namespace NHibernate.Impl
 				}
 				cacheMode = value;
 			}
-		}
-
-		public override EntityMode EntityMode
-		{
-			get { return entityMode; }
-		}
-
-		public EntityMode ActiveEntityMode
-		{
-			get { return entityMode; }
 		}
 
 		public override string FetchProfile
@@ -2629,8 +2586,7 @@ namespace NHibernate.Impl
 					// given entityName
 					try
 					{
-						return Factory.GetEntityPersister(entityName).GetSubclassEntityPersister(obj, Factory,
-																								 entityMode);
+						return Factory.GetEntityPersister(entityName).GetSubclassEntityPersister(obj, Factory);
 					}
 					catch (HibernateException)
 					{

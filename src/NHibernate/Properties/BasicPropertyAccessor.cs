@@ -346,6 +346,11 @@ namespace NHibernate.Properties
 				get { return property.GetSetMethod(true); }
 			}
 
+			public System.Type Type
+			{
+				get { return property.PropertyType; }
+			}
+
 			#endregion
 
 			public void Emit(ILGenerator il)

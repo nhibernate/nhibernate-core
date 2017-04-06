@@ -15,10 +15,10 @@ namespace NHibernate.Linq.Functions
 		{
 			SupportedMethods = new[]
 			                   	{
-			                   		ReflectionHelper.GetMethodDefinition(() => Queryable.Any<object>(null)),
-			                   		ReflectionHelper.GetMethodDefinition(() => Queryable.Any<object>(null, null)),
-			                   		ReflectionHelper.GetMethodDefinition(() => Enumerable.Any<object>(null)),
-			                   		ReflectionHelper.GetMethodDefinition(() => Enumerable.Any<object>(null, null))
+			                   		ReflectHelper.GetMethodDefinition(() => Queryable.Any<object>(null)),
+			                   		ReflectHelper.GetMethodDefinition(() => Queryable.Any<object>(null, null)),
+			                   		ReflectHelper.GetMethodDefinition(() => Enumerable.Any<object>(null)),
+			                   		ReflectHelper.GetMethodDefinition(() => Enumerable.Any<object>(null, null))
 			                   	};
 		}
 
@@ -54,8 +54,8 @@ namespace NHibernate.Linq.Functions
 		{
 			SupportedMethods = new[]
 			                   	{
-			                   		ReflectionHelper.GetMethodDefinition(() => Queryable.All<object>(null, null)),
-			                   		ReflectionHelper.GetMethodDefinition(() => Enumerable.All<object>(null, null))
+			                   		ReflectHelper.GetMethodDefinition(() => Queryable.All<object>(null, null)),
+			                   		ReflectHelper.GetMethodDefinition(() => Enumerable.All<object>(null, null))
 			                   	};
 		}
 
@@ -75,7 +75,7 @@ namespace NHibernate.Linq.Functions
 								)
 							),
 						treeBuilder.Where(
-							treeBuilder.BooleanNot(visitor.Visit(arguments[1]).AsBooleanExpression())
+							treeBuilder.BooleanNot(visitor.Visit(arguments[1]).ToBooleanExpression())
 							)
 						)
 					)
@@ -89,8 +89,8 @@ namespace NHibernate.Linq.Functions
 		{
 			SupportedMethods = new[]
 			                   	{
-			                   		ReflectionHelper.GetMethodDefinition(() => Queryable.Min<object>(null)),
-			                   		ReflectionHelper.GetMethodDefinition(() => Enumerable.Min<object>(null))
+			                   		ReflectHelper.GetMethodDefinition(() => Queryable.Min<object>(null)),
+			                   		ReflectHelper.GetMethodDefinition(() => Enumerable.Min<object>(null))
 			                   	};
 		}
 
@@ -106,8 +106,8 @@ namespace NHibernate.Linq.Functions
 		{
 			SupportedMethods = new[]
 			                   	{
-			                   		ReflectionHelper.GetMethodDefinition(() => Queryable.Max<object>(null)),
-			                   		ReflectionHelper.GetMethodDefinition(() => Enumerable.Max<object>(null))
+			                   		ReflectHelper.GetMethodDefinition(() => Queryable.Max<object>(null)),
+			                   		ReflectHelper.GetMethodDefinition(() => Enumerable.Max<object>(null))
 			                   	};
 		}
 
@@ -143,8 +143,8 @@ namespace NHibernate.Linq.Functions
 		{
 			SupportedMethods = new[]
 			                   	{
-			                   		ReflectionHelper.GetMethodDefinition(() => Queryable.Contains<object>(null, null)),
-			                   		ReflectionHelper.GetMethodDefinition(() => Enumerable.Contains<object>(null, null))
+			                   		ReflectHelper.GetMethodDefinition(() => Queryable.Contains<object>(null, null)),
+			                   		ReflectHelper.GetMethodDefinition(() => Enumerable.Contains<object>(null, null))
 			                   	};
 		}
 

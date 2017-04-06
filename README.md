@@ -64,8 +64,8 @@ of NHibernate (in no particular order):
 * [Log4net][] - logging, by the [Apache Software Foundation][]
 * [JetBrains][] - [ReSharper][] licences for NHibernate developers
 * [LinFu][] - proxy implementation (Philip Laureano)
-* Iesi.Collections - source code taken from an [article][Article] written by Jason Smith
-* [Relinq] - Linq provider for NHibernate
+* Iesi.Collections - source code taken from an [article][] written by Jason Smith
+* [Relinq][] - Linq provider for NHibernate
 
 [NUnit]: http://www.nunit.org
 [Nant]: http://nant.sourceforge.net
@@ -79,5 +79,5 @@ of NHibernate (in no particular order):
 [JetBrains]: http://www.jetbrains.com
 [ReSharper]: http://www.jetbrains.com/resharper
 [LinFu]: http://code.google.com/p/linfu
-[Article]: http://www.codeproject.com/KB/recipes/sets.aspx "Add Support for "Set" Collections to .NET"
-[Relinq]: http://relinq.codeplex.com/ "re-linq: Generic LINQ provider"
+[article]: http://www.codeproject.com/KB/recipes/sets.aspx
+[Relinq]: http://relinq.codeplex.com/

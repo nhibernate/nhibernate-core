@@ -79,7 +79,7 @@ namespace NHibernate.Action
 				}
 				//need to do that here rather than in the save event listener to let
 				//the post insert events to have a id-filled entity when IDENTITY is used (EJB3)
-				persister.SetIdentifier(instance, generatedId, Session.EntityMode);
+				persister.SetIdentifier(instance, generatedId);
 			}
 
 			//TODO from H3.2 : this bit actually has to be called after all cascades!

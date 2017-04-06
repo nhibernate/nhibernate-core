@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -30,7 +29,7 @@ namespace NHibernate.Criterion
 
 		#region ICriterion Members
 
-		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			//Implementation changed from H3.2 to use SqlString
 			string[] columns = criteriaQuery.GetIdentifierColumns(criteria);
@@ -52,7 +51,7 @@ namespace NHibernate.Criterion
 				result.Add(columns[i])
 					.Add(" = ");
 
-				AddValueOrProjection(parameters, i, criteria, criteriaQuery, enabledFilters, result);
+				AddValueOrProjection(parameters, i, criteria, criteriaQuery, result);
 			}
 
 			if (columns.Length > 1)
@@ -62,7 +61,7 @@ namespace NHibernate.Criterion
 			return result.ToSqlString();
 		}
 
-		private void AddValueOrProjection(Parameter[] parameters, int paramIndex, ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters, SqlStringBuilder result)
+		private void AddValueOrProjection(Parameter[] parameters, int paramIndex, ICriteria criteria, ICriteriaQuery criteriaQuery, SqlStringBuilder result)
 		{
 			if (_projection == null)
 			{
@@ -70,7 +69,7 @@ namespace NHibernate.Criterion
 			}
 			else
 			{
-				SqlString sql = _projection.ToSqlString(criteria, GetHashCode(), criteriaQuery, enabledFilters);
+				SqlString sql = _projection.ToSqlString(criteria, GetHashCode(), criteriaQuery);
 				result.Add(SqlStringHelper.RemoveAsAliasesFromSql(sql));
 			}
 		}

@@ -1,18 +1,40 @@
-Build 4.1.0.CR1
+Build 4.1.1.GA
 =============================
 
-    ##### Possible Breaking Changes #####
+    ##### Notes #####
+    The [NH-3904] has been reverted in favor of [NH-2401]: users now required to explicitly specify
+    custom user type via MappedAs method if they want to use IUserType/ICompositeUserType type 
+    parameters in Linq queries, or implement generators the way they take the types into account.
+
+** Sub-task
+    * [NH-3940] - Revert NH-3904
+
+** Bug
+    * [NH-3929] - ExpressionParameterVisitor selects wrong CustomType for ConstantExpression (Linq)
+    * [NH-3941] - MappedAs() does not work
+
+Build 4.1.0.GA
+=============================
+
+    ##### Possible Breaking Changes Since 4.0 #####
     Proxies for classes that used lazy fields (not collections)
     would have any exceptions from the entity wrapped in TargetInvocationException. This
     wrapping exception have now been removed. Where relevant, you should instead catch
     the original exception type you throw.
 
-	For LINQ queries, the startAt parameter and the return value for string.IndexOf() are
-	now correctly translated from .Net's 0-based indexing to SQL's 1-based indexing. LINQ
-	queries that are written to expect SQL semantics for IndexOf() will likely need to be
-	asjusted (NH-3846, NH-3901).
-	Example: A LINQ query should now use 'x=>x.Name.IndexOf("a") == -1' to pick objects where
-	the name doesn't contain the letter "a".
+    For LINQ queries, the startAt parameter and the return value for string.IndexOf() are
+    now correctly translated from .Net's 0-based indexing to SQL's 1-based indexing. LINQ
+    queries that are written to expect SQL semantics for IndexOf() will likely need to be
+    adjusted (NH-3846, NH-3901).
+    Example: A LINQ query should now use 'x=>x.Name.IndexOf("a") == -1' to pick objects where
+    the name doesn't contain the letter "a".
+
+** Bug
+    * [NH-3885] - ThreadSafeDictionary is not threadsafe
+
+
+Build 4.1.0.CR1
+=============================
 
 ** Bug
     * [NH-2038] - No substring length check in RemoveAsAliasesFromSql
@@ -47,7 +69,7 @@ Build 4.1.0.CR1
     * [NH-3666] - Setting native sql query cachable causes ArgumentNullException in CacheableResultTransformer.
     * [NH-3681] - NHibernate.HibernateException: Query Source could not be identified, when using join group and Sum()
     * [NH-3706] - NHibernate.Transform.Transformers should be static class
-    * [NH-3727] -  Criteria which use SubqueryProjection. Cannot be executed more than once. Second try throws exception.
+    * [NH-3727] - Criteria which use SubqueryProjection. Cannot be executed more than once. Second try throws exception.
     * [NH-3741] - Many to Many mapping against interfaces fails (reverts to using ElementRelationMapper instead of ManyToManyRelationMapper)
     * [NH-3743] - Fetch with GroupBy throws NullReferenceException
     * [NH-3747] - Very weak support for predicates in Linq Aggregate functions 
@@ -445,6 +467,13 @@ Build 4.0.0.Alpha1
     * [NH-3347] - Remove obsolete dialects for NH4
 
 
+Build 3.4.1.GA
+=============================
+
+** Bug
+    * [NH-3795] - C# compiler "Roslyn" regression
+
+
 Build 3.4.0.GA
 =============================
 ** Known BREAKING CHANGES from NH3.3.0.GA to NH3.4.0.GA
@@ -530,6 +559,14 @@ Build 3.4.0.CR1
 
 ** Task
     * [NH-3251] - Update to antlr 3.5.0.2
+
+
+Build 3.3.5.GA
+=============================
+
+** Bug
+    * [NH-3795] - C# compiler "Roslyn" regression
+
 
 Build 3.3.4.GA
 =============================

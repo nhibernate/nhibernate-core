@@ -1,8 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using NHibernate.Linq.Visitors;
 using NHibernate.Util;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Parsing;
@@ -38,7 +36,7 @@ namespace NHibernate.Linq.NestedSelects
 
 		protected override Expression VisitMemberExpression(MemberExpression expression)
 		{
-			var memberType = expression.Member.GetPropertyOrFieldType();
+			var memberType = ReflectHelper.GetPropertyOrFieldType(expression.Member);
 
 			if (memberType != null && memberType.IsCollectionType()
 			    && IsChainedFromQuerySourceReference(expression)

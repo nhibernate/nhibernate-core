@@ -259,8 +259,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmMapping = new HbmMapping();
 			var hbmAny = new HbmAny();
 			new AnyMapper(member, typeof(int), hbmAny, hbmMapping);
-			Assert.That(hbmAny.Columns.ElementAt(0).name, Is.StringContaining("MyReferenceClass"));
-			Assert.That(hbmAny.Columns.ElementAt(1).name, Is.StringContaining("MyReferenceClass"));
+			Assert.That(hbmAny.Columns.ElementAt(0).name, Does.Contain("MyReferenceClass"));
+			Assert.That(hbmAny.Columns.ElementAt(1).name, Does.Contain("MyReferenceClass"));
 		}
 
 		[Test]

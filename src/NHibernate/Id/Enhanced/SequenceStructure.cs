@@ -98,8 +98,8 @@ namespace NHibernate.Id.Enhanced
 				_owner._accessCounter++;
 				try
 				{
-					IDbCommand st = _session.Batcher.PrepareCommand(CommandType.Text, _owner._sql, SqlTypeFactory.NoTypes);
-					IDataReader rs = null;
+					var st = _session.Batcher.PrepareCommand(CommandType.Text, _owner._sql, SqlTypeFactory.NoTypes);
+					DbDataReader rs = null;
 					try
 					{
 						rs = _session.Batcher.ExecuteReader(st);

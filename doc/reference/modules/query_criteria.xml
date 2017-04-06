@@ -289,7 +289,7 @@ IList results = session.CreateCriteria(typeof(Cat))
     </sect1>
 
     <sect1 id="querycriteria-detachedqueries">
-        <title>Detached queries and subqueries</title>
+        <title>Detached queries and sub-queries</title>
         <para>
             The <literal>DetachedCriteria</literal> class lets you create a query outside the scope 
             of a session, and then later execute it using some arbitrary <literal>ISession</literal>.
@@ -305,8 +305,8 @@ txn.Commit();
 session.Close();]]></programlisting>
 
         <para>
-            A <literal>DetachedCriteria</literal> may also be used to express a subquery. ICriterion
-            instances involving subqueries may be obtained via <literal>Subqueries</literal>
+            A <literal>DetachedCriteria</literal> may also be used to express a sub-query. ICriterion
+            instances involving sub-queries may be obtained via <literal>Subqueries</literal>
             <!-- or <literal>Property</literal> -->.
         </para>
         
@@ -323,7 +323,7 @@ session.CreateCriteria(typeof(Cat))
     .list();]]></programlisting>
     
         <para>
-            Even correlated subqueries are possible:
+            Even correlated sub-queries are possible:
         </para>
         
         <programlisting><![CDATA[DetachedCriteria avgWeightForSex = DetachedCriteria.For(typeof(Cat), "cat2")

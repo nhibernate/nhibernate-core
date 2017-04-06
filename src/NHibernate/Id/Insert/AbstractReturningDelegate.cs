@@ -1,4 +1,3 @@
-using System.Data;
 using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
@@ -35,7 +34,7 @@ namespace NHibernate.Id.Insert
 			try
 			{
 				// prepare and execute the insert
-				IDbCommand insert = Prepare(insertSQL, session);
+				var insert = Prepare(insertSQL, session);
 				try
 				{
 					binder.BindValues(insert);
@@ -55,13 +54,13 @@ namespace NHibernate.Id.Insert
 
 		#endregion
 
-		protected internal virtual void ReleaseStatement(IDbCommand insert, ISessionImplementor session)
+		protected internal virtual void ReleaseStatement(DbCommand insert, ISessionImplementor session)
 		{
 			session.Batcher.CloseCommand(insert, null);
 		}
 
-		protected internal abstract IDbCommand Prepare(SqlCommandInfo insertSQL, ISessionImplementor session);
+		protected internal abstract DbCommand Prepare(SqlCommandInfo insertSQL, ISessionImplementor session);
 
-		public abstract object ExecuteAndExtract(IDbCommand insert, ISessionImplementor session);
+		public abstract object ExecuteAndExtract(DbCommand insert, ISessionImplementor session);
 	}
 }

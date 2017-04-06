@@ -108,7 +108,7 @@ namespace NHibernate.Event.Default
 		/// <param name="persister"></param>
 		internal virtual void Process(object obj, IEntityPersister persister)
 		{
-			ProcessEntityPropertyValues(persister.GetPropertyValues(obj, Session.EntityMode), persister.PropertyTypes);
+			ProcessEntityPropertyValues(persister.GetPropertyValues(obj), persister.PropertyTypes);
 		}
 
 		public void ProcessEntityPropertyValues(object[] values, IType[] types)

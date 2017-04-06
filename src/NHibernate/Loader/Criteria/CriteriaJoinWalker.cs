@@ -46,11 +46,11 @@ namespace NHibernate.Loader.Criteria
 			if (translator.HasProjection)
 			{
 				InitProjection(
-					translator.GetSelect(enabledFilters),
-					translator.GetWhereCondition(enabledFilters),
+					translator.GetSelect(),
+					translator.GetWhereCondition(),
 					translator.GetOrderBy(),
 					translator.GetGroupBy(),
-					translator.GetHavingCondition(enabledFilters),
+					translator.GetHavingCondition(),
 					enabledFilters, 
 					LockMode.None);
 
@@ -61,7 +61,7 @@ namespace NHibernate.Loader.Criteria
 			}
 			else
 			{
-				InitAll(translator.GetWhereCondition(enabledFilters), translator.GetOrderBy(), LockMode.None);
+				InitAll(translator.GetWhereCondition(), translator.GetOrderBy(), LockMode.None);
 
 				resultTypes = new IType[] { TypeFactory.ManyToOne(persister.EntityName) };
 
@@ -228,7 +228,7 @@ namespace NHibernate.Loader.Criteria
 
 		protected override SqlString GetWithClause(string path)
 		{
-			return translator.GetWithClause(path, EnabledFilters);
+			return translator.GetWithClause(path);
 		}
 	}
 }

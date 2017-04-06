@@ -216,6 +216,12 @@ namespace NHibernate.Util
 		public static readonly ICollection EmptyCollection = EmptyMap;
 		public static readonly IList EmptyList = new EmptyListClass();
 
+		/// <summary>
+		/// Determines if two collections have equals elements, with the same ordering.
+		/// </summary>
+		/// <param name="c1">The first collection.</param>
+		/// <param name="c2">The second collection.</param>
+		/// <returns><c>true</c> if collection are equals, <c>false</c> otherwise.</returns>
 		public static bool CollectionEquals(ICollection c1, ICollection c2)
 		{
 			if (c1 == c2)
@@ -620,6 +626,13 @@ namespace NHibernate.Util
 			return true;
 		}
 
+		/// <summary>
+		/// Determines if two collections have equals elements, with the same ordering.
+		/// </summary>
+		/// <typeparam name="T">The type of the elements.</typeparam>
+		/// <param name="c1">The first collection.</param>
+		/// <param name="c2">The second collection.</param>
+		/// <returns><c>true</c> if collection are equals, <c>false</c> otherwise.</returns>
 		public static bool CollectionEquals<T>(ICollection<T> c1, ICollection<T> c2)
 		{
 			if (c1 == c2)

@@ -64,5 +64,11 @@ namespace NHibernate.Dialect
 
 			return pagingBuilder.ToSqlString();
 		}
+
+		#region Overridden informational metadata
+		
+		public override bool DoesRepeatableReadCauseReadersToBlockWriters => true;
+
+		#endregion
 	}
 }

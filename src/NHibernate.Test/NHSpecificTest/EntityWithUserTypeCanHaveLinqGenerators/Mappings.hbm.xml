@@ -6,5 +6,6 @@
 	</id>
 	<property name="Name" />
 	<property name="Example" type="NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators.ExampleUserType, NHibernate.Test" />
+	<property name="DoubleStoredAsString" type="NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators.DoubleStringUserType, NHibernate.Test" />
   </class>
 </hibernate-mapping>

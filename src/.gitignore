@@ -33,3 +33,4 @@ _ReSharper*/
 SharedAssemblyInfo.*
 hibernate.cfg.xml
 .vs/
+packages/

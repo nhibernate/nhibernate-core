@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Data.Common;
 using NHibernate.Driver;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
@@ -155,7 +156,7 @@ namespace NHibernate.Test.DriverTest
 			_connectionString = cfg.GetProperty("connection.connection_string");
 		}
 
-		private IDbConnection MakeConnection()
+		private DbConnection MakeConnection()
 		{
 			var result = _driver.CreateConnection();
 			result.ConnectionString = _connectionString;
@@ -182,7 +183,7 @@ namespace NHibernate.Test.DriverTest
 			}
 		}
 
-		private IDbCommand BuildSelectCaseCommand(SqlType paramType)
+		private DbCommand BuildSelectCaseCommand(SqlType paramType)
 		{
 			var sqlString = new SqlStringBuilder()
 					.Add("select (case when col = ")
@@ -197,7 +198,7 @@ namespace NHibernate.Test.DriverTest
 			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType, paramType, paramType });
 		}
 
-		private IDbCommand BuildSelectConcatCommand(SqlType paramType)
+		private DbCommand BuildSelectConcatCommand(SqlType paramType)
 		{
 			var sqlString = new SqlStringBuilder()
 					.Add("select col || ")
@@ -210,7 +211,7 @@ namespace NHibernate.Test.DriverTest
 			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
 		}
 
-		private IDbCommand BuildSelectAddCommand(SqlType paramType)
+		private DbCommand BuildSelectAddCommand(SqlType paramType)
 		{
 			var sqlString = new SqlStringBuilder()
 					.Add("select col + ")
@@ -221,7 +222,7 @@ namespace NHibernate.Test.DriverTest
 			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
 		}
 
-		private IDbCommand BuildInsertWithParamsInSelectCommand(SqlType paramType)
+		private DbCommand BuildInsertWithParamsInSelectCommand(SqlType paramType)
 		{
 			var sqlString = new SqlStringBuilder()
 				.Add("insert into table1 (col1, col2) ")
@@ -232,8 +233,7 @@ namespace NHibernate.Test.DriverTest
 
 			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
 		}
-
-		private IDbCommand BuildInsertWithParamsInSelectCommandWithSelectInColumnName(SqlType paramType)
+		private DbCommand BuildInsertWithParamsInSelectCommandWithSelectInColumnName(SqlType paramType)
 		{
 			var sqlString = new SqlStringBuilder()
 				.Add("insert into table1 (col1_select_aaa) ")
@@ -245,7 +245,7 @@ namespace NHibernate.Test.DriverTest
 			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
 		}
 
-        private IDbCommand BuildInsertWithParamsInSelectCommandWithWhereInColumnName(SqlType paramType)
+        private DbCommand BuildInsertWithParamsInSelectCommandWithWhereInColumnName(SqlType paramType)
 		{
 			var sqlString = new SqlStringBuilder()
 				.Add("insert into table1 (col1_where_aaa) ")

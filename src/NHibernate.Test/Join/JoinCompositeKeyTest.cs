@@ -2,7 +2,6 @@ using log4net;
 using NUnit.Framework;
 using System;
 using System.Collections;
-using System.Data;
 
 namespace NHibernate.Test.Join
 {

@@ -1,5 +1,6 @@
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using NHibernate.AdoNet;
 using NHibernate.Bytecode;
 using NHibernate.Cache;
@@ -130,7 +131,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 		public void NH2890Loquacious()
 		{
 			var cfg = new Configuration();
-			cfg.Configure("TestEnbeddedConfig.cfg.xml")
+			cfg.Configure(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestEnbeddedConfig.cfg.xml"))
 				.SetDefaultAssembly("NHibernate.DomainModel")
 				.SetDefaultNamespace("NHibernate.DomainModel")
 				.SessionFactory()

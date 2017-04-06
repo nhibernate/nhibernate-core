@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
@@ -293,7 +293,7 @@ namespace NHibernate.Engine
 		/// <summary> The guessed entity name for an entity not in an association</summary>
 		string GuessEntityName(object entity);
 
-		IDbConnection Connection { get; }
+		DbConnection Connection { get; }
 
 		IQuery GetNamedQuery(string queryName);
 
@@ -313,9 +313,6 @@ namespace NHibernate.Engine
 		/// or is there a JTA transaction in progress?
 		/// </summary>
 		bool TransactionInProgress { get; }
-
-		/// <summary> Retrieve the entity mode in effect for this session. </summary>
-		EntityMode EntityMode { get; }
 
 		/// <summary> Execute a native SQL update or delete query</summary>
 		int ExecuteNativeUpdate(NativeSQLQuerySpecification specification, QueryParameters queryParameters);

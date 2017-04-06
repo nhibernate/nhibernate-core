@@ -109,10 +109,10 @@ namespace NHibernate.Tool.hbm2ddl
 				string sql = dialect.QuerySequencesString;
 				if (sql != null)
 				{
-					using (IDbCommand statement = connection.CreateCommand())
+					using (var statement = connection.CreateCommand())
 					{
 						statement.CommandText = sql;
-						using (IDataReader rs = statement.ExecuteReader())
+						using (var rs = statement.ExecuteReader())
 						{
 							while (rs.Read())
 								sequences.Add(((string) rs[0]).ToLower().Trim());

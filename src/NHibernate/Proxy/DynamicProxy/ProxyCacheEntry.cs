@@ -11,52 +11,57 @@ using System.Collections.Generic;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
-	[Serializable]
-	public class ProxyCacheEntry
+	public class ProxyCacheEntry : IEquatable<ProxyCacheEntry>
 	{
-		private readonly int hashCode;
+		private readonly int _hashCode;
 
 		public ProxyCacheEntry(System.Type baseType, System.Type[] interfaces)
 		{
 			if (baseType == null)
-			{
-				throw new ArgumentNullException("baseType");
-			}
+				throw new ArgumentNullException(nameof(baseType));
 			BaseType = baseType;
-			Interfaces = interfaces ?? new System.Type[0];
+			_uniqueInterfaces = new HashSet<System.Type>(interfaces ?? new System.Type[0]);
 
-			if (Interfaces.Length == 0)
+			if (_uniqueInterfaces.Count == 0)
 			{
-				hashCode = baseType.GetHashCode();
+				_hashCode = baseType.GetHashCode();
 				return;
 			}
-
-			// duplicated type exclusion
-			var set = new HashSet<System.Type>(Interfaces) { baseType };
-			hashCode = 59;
-			foreach (System.Type type in set)
+			
+			var allTypes = new List<System.Type>(_uniqueInterfaces) { baseType };
+			_hashCode = 59;
+			foreach (System.Type type in allTypes)
 			{
-				hashCode ^= type.GetHashCode();
+				// This simple implementation is nonsensitive to list order. If changing it for a sensitive one,
+				// take care of ordering the list.
+				_hashCode ^= type.GetHashCode();
 			}
 		}
 
-		public System.Type BaseType { get; private set; }
-		public System.Type[] Interfaces { get; private set; }
+		public System.Type BaseType { get; }
+		public IReadOnlyCollection<System.Type> Interfaces { get { return _uniqueInterfaces; } }
+		
+		private HashSet<System.Type> _uniqueInterfaces;
 
 		public override bool Equals(object obj)
 		{
 			var that = obj as ProxyCacheEntry;
-			if (ReferenceEquals(null, that))
+			return Equals(that);
+		}
+
+		public bool Equals(ProxyCacheEntry other)
+		{
+			if (ReferenceEquals(null, other) ||
+				// hashcode inequality allows an early exit, but their equality is not enough for guaranteeing instances equality.
+				_hashCode != other._hashCode ||
+				BaseType != other.BaseType)
 			{
 				return false;
 			}
 
-			return hashCode == that.GetHashCode();
+			return _uniqueInterfaces.SetEquals(other.Interfaces);
 		}
 
-		public override int GetHashCode()
-		{
-			return hashCode;
-		}
+		public override int GetHashCode() => _hashCode;
 	}
 }

@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.Data.Common;
 using NHibernate.SqlCommand;
 using NHibernate.Engine;
 using NHibernate.Loader.Criteria;
@@ -15,22 +15,16 @@ namespace NHibernate.Criterion
 		/// <param name="criteria">The criteria.</param>
 		/// <param name="position">The position.</param>
 		/// <param name="criteriaQuery">The criteria query.</param>
-		/// <param name="enabledFilters">The enabled filters.</param>
 		/// <returns></returns>
-		SqlString ToSqlString(ICriteria criteria, int position,
-			ICriteriaQuery criteriaQuery, 
-			IDictionary<string, IFilter> enabledFilters);
+		SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery);
 
 		/// <summary>
 		/// Render the SQL Fragment to be used in the Group By Clause.
 		/// </summary>
 		/// <param name="criteria">The criteria.</param>
 		/// <param name="criteriaQuery">The criteria query.</param>
-		/// <param name="enabledFilters">The enabled filters.</param>
 		/// <returns></returns>
-		SqlString ToGroupSqlString(ICriteria criteria, 
-			ICriteriaQuery criteriaQuery,
-			IDictionary<string, IFilter> enabledFilters);
+		SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery);
 
 		/// <summary>
 		/// Return types for a particular user-visible alias
@@ -75,7 +69,7 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// Get the SQL column aliases used by this projection for the columns it writes for inclusion into the
 		/// <code>SELECT</code> clause <see cref="IProjection.ToSqlString" />.  NHibernate always uses column aliases 
-		/// to extract data from the <see cref="System.Data.IDataReader" />, so it is important that these be implemented 
+		/// to extract data from the <see cref="DbDataReader" />, so it is important that these be implemented 
 		/// correctly in order for NHibernate to be able to extract these values correctly.
 		/// </summary>
 		/// <param name="position">Just as in <see cref="IProjection.ToSqlString" />, represents the number of columns rendered prior to this projection.</param>

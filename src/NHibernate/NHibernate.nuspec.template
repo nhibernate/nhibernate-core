@@ -13,24 +13,25 @@
     <language>en-US</language>
     <tags>ORM, DataBase, DAL, ObjectRelationalMapping</tags>
     <dependencies>
-	  <!-- Bet that if there is ever an Iesi.Collections 5.0, it would be incompatible. -->
+      <!-- Bet that if there is ever an Iesi.Collections 5.0, it would be incompatible. -->
       <dependency id="Iesi.Collections" version="[4,5)" />
+      <dependency id="Remotion.Linq" version="[1.15.15,2)" />
     </dependencies>
-	<projectUrl>
-		http://nhibernate.info
-	</projectUrl>
-	<iconUrl>https://raw.github.com/nhibernate/nhibernate-core/master/logo/NHibernate-NuGet.png</iconUrl>
-	<licenseUrl>https://raw.github.com/nhibernate/nhibernate-core/master/lgpl.txt</licenseUrl>
+    <projectUrl>
+      http://nhibernate.info
+    </projectUrl>
+    <iconUrl>https://raw.github.com/nhibernate/nhibernate-core/master/logo/NHibernate-NuGet.png</iconUrl>
+    <licenseUrl>https://raw.github.com/nhibernate/nhibernate-core/master/lgpl.txt</licenseUrl>
   </metadata>
   <files>
-    <file src="NHibernate.dll" target="lib\net40" />
-	<file src="NHibernate.pdb" target="lib\net40" />
-    <file src="NHibernate.xml" target="lib\net40" />
+    <file src="NHibernate.dll" target="lib\net461" />
+    <file src="NHibernate.pdb" target="lib\net461" />
+    <file src="NHibernate.xml" target="lib\net461" />
     <file src="*.xsd" />
     <file src="NHibernate.releasenotes.txt" />
     <file src="NHibernate.readme.html" />
     <file src="NHibernate.license.txt" />
     <file src="NHibernateXmlConfigurationTemplates\*" target="ConfigurationTemplates" />
-	<file src="..\..\..\src\NHibernate\**\*.cs" target="src" />
+    <file src="..\..\..\src\NHibernate\**\*.cs" target="src" />
   </files>
 </package>

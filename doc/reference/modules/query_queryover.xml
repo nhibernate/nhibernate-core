@@ -8,7 +8,7 @@
         Extension Methods
         and
         Lambda Expressions
-        (both new in .Net 3.5) to provide a statically typesafe wrapper round the ICriteria API.
+        (both new in .Net 3.5) to provide a statically type-safe wrapper round the ICriteria API.
     </para>
     <para>
         QueryOver uses Lambda Expressions to provide some extra
@@ -27,7 +27,7 @@
     <para>
         Note: QueryOver is intended to remove the references to 'magic strings'
         from the ICriteria API while maintaining it's opaqueness.  It is <emphasis role="underline">not</emphasis> a LINQ provider;
-        NHibernate has a built-in Linq provider for this.
+        NHibernate has a built-in <link linkend="querylinq">Linq provider</link> for this.
     </para>
 
     <sect1 id="queryqueryover-querystructure">
@@ -42,7 +42,7 @@
         .List();]]></programlisting>
         <para>&nbsp;</para>
         <para>
-            Detached QueryOver (analagous to DetachedCriteria) can be created, and then used with an ISession using:
+            Detached QueryOver (analogous to DetachedCriteria) can be created, and then used with an ISession using:
         </para>
         <programlisting><![CDATA[QueryOver<Cat> query =
     QueryOver.Of<Cat>()
@@ -172,7 +172,7 @@ IList<Cat> cats =
         <title>Associations</title>
 
         <para>
-            QueryOver can navigate association paths using JoinQueryOver() (analagous to ICriteria.CreateCriteria() to create sub-criteria).
+            QueryOver can navigate association paths using JoinQueryOver() (analogous to ICriteria.CreateCriteria() to create sub-criteria).
         </para>
         <para>
             The factory method QuerOver&lt;T&gt;() on ISession returns an IQueryOver&lt;T&gt;.
@@ -181,7 +181,7 @@ IList<Cat> cats =
         <para>
             An IQueryOver has two types of interest; the root type (the type of entity that the query returns),
             and the type of the 'current' entity being queried.  For example, the following query uses
-            a join to create a sub-QueryOver (analagous to creating sub-criteria in the ICriteria API):
+            a join to create a sub-QueryOver (analogous to creating sub-criteria in the ICriteria API):
         </para>
         <programlisting><![CDATA[IQueryOver<Cat,Kitten> catQuery =
     session.QueryOver<Cat>()
@@ -351,10 +351,10 @@ IList<CatSummary> catReport =
     </sect1>
 
     <sect1 id="queryqueryover-subqueries">
-        <title>Subqueries</title>
+        <title>Sub-queries</title>
 
         <para>
-            The Subqueries factory class has overloads to allow Lambda Expressions to express sub-query
+            The Sub-queries factory class has overloads to allow Lambda Expressions to express sub-query
             restrictions.  For example:
         </para>
         <programlisting><![CDATA[QueryOver<Cat> maximumAge =
@@ -367,7 +367,7 @@ IList<Cat> oldestCats =
         .List();]]></programlisting>
         <para>&nbsp;</para>
         <para>
-            The inline syntax allows you to use subqueries without requalifying the type:
+            The inline syntax allows you to use sub-queries without re-qualifying the type:
         </para>
         <programlisting><![CDATA[IList<Cat> oldestCats =
     session.QueryOver<Cat>()

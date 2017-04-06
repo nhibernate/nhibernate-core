@@ -10,6 +10,8 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
+using NHibernate.Linq;
+using NHibernate.Util;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
@@ -17,13 +19,9 @@ namespace NHibernate.Proxy.DynamicProxy
 	{
 		private static readonly MethodInfo getInterceptor;
 
-		private static readonly MethodInfo getGenericMethodFromHandle = typeof (MethodBase).GetMethod("GetMethodFromHandle",
-																									  BindingFlags.Public | BindingFlags.Static, null,
-																									  new[] {typeof (RuntimeMethodHandle), typeof (RuntimeTypeHandle)}, null);
-
-		private static readonly MethodInfo getMethodFromHandle = typeof (MethodBase).GetMethod("GetMethodFromHandle", new[] {typeof (RuntimeMethodHandle)});
-		private static readonly MethodInfo getTypeFromHandle = typeof(System.Type).GetMethod("GetTypeFromHandle");
-		private static readonly MethodInfo handlerMethod = typeof (IInterceptor).GetMethod("Intercept");
+		private static readonly MethodInfo handlerMethod = ReflectHelper.GetMethod<IInterceptor>(
+			i => i.Intercept(null));
+		private static readonly MethodInfo getArguments = typeof(InvocationInfo).GetMethod("get_Arguments");
 
 		private static readonly ConstructorInfo infoConstructor = typeof (InvocationInfo).GetConstructor(new[]
 			{
@@ -118,7 +116,6 @@ namespace NHibernate.Proxy.DynamicProxy
 		private static void SaveRefArguments(ILGenerator IL, ParameterInfo[] parameters)
 		{
 			// Save the arguments returned from the handler method
-			MethodInfo getArguments = typeof (InvocationInfo).GetMethod("get_Arguments");
 			IL.Emit(OpCodes.Ldloc_1);
 			IL.Emit(OpCodes.Call, getArguments);
 			IL.Emit(OpCodes.Stloc_0);
@@ -192,11 +189,11 @@ namespace NHibernate.Proxy.DynamicProxy
 			if (declaringType.IsGenericType)
 			{
 				IL.Emit(OpCodes.Ldtoken, declaringType);
-				IL.Emit(OpCodes.Call, getGenericMethodFromHandle);
+				IL.Emit(OpCodes.Call, ReflectionCache.MethodBaseMethods.GetMethodFromHandleWithDeclaringType);
 			}
 			else
 			{
-				IL.Emit(OpCodes.Call, getMethodFromHandle);
+				IL.Emit(OpCodes.Call, ReflectionCache.MethodBaseMethods.GetMethodFromHandle);
 			}
 
 			IL.Emit(OpCodes.Castclass, typeof(MethodInfo));
@@ -232,7 +229,7 @@ namespace NHibernate.Proxy.DynamicProxy
 				IL.Emit(OpCodes.Dup);
 				IL.Emit(OpCodes.Ldc_I4, index);
 				IL.Emit(OpCodes.Ldtoken, currentType);
-				IL.Emit(OpCodes.Call, getTypeFromHandle);
+				IL.Emit(OpCodes.Call, ReflectionCache.TypeMethods.GetTypeFromHandle);
 				IL.Emit(OpCodes.Stelem_Ref);
 			}
 		}
