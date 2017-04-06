@@ -67,10 +67,7 @@ namespace NHibernate.Dialect
 
 		#region Overridden informational metadata
 		
-		public override bool DoesRepeatableReadCauseReadersToBlockWriters
-		{
-			get { return true; }
-		}
+		public override bool DoesRepeatableReadCauseReadersToBlockWriters => true;
 
 		#endregion
 	}

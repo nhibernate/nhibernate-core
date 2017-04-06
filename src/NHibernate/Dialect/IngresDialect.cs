@@ -54,25 +54,13 @@ namespace NHibernate.Dialect
 
 		#region Overridden informational metadata
 
-		public override bool SupportsEmptyInList
-		{
-			get { return false; }
-		}
-		
-		public override bool SupportsSubselectAsInPredicateLHS
-		{
-			get { return false; }
-		}
+		public override bool SupportsEmptyInList => false;
 
-		public override bool SupportsExpectedLobUsagePattern
-		{
-			get { return false; }
-		}
+		public override bool SupportsSubselectAsInPredicateLHS => false;
 
-		public override bool DoesReadCommittedCauseWritersToBlockReaders
-		{
-			get { return true; }
-		}
+		public override bool SupportsExpectedLobUsagePattern => false;
+
+		public override bool DoesReadCommittedCauseWritersToBlockReaders => true;
 
 		#endregion
 	}

@@ -273,30 +273,15 @@ namespace NHibernate.Dialect
 
 		#region Overridden informational metadata
 
-		public override bool SupportsEmptyInList
-		{
-			get { return false; }
-		}
+		public override bool SupportsEmptyInList => false;
 
-		public override bool SupportsResultSetPositionQueryMethodsOnForwardOnlyCursor
-		{
-			get { return false; }
-		}
+		public override bool SupportsResultSetPositionQueryMethodsOnForwardOnlyCursor => false;
 
-		public override bool SupportsLobValueChangePropogation
-		{
-			get { return false; }
-		}
+		public override bool SupportsLobValueChangePropogation => false;
 
-		public override bool SupportsExistsInSelect
-		{
-			get { return false; }
-		}
+		public override bool SupportsExistsInSelect => false;
 
-		public override bool DoesReadCommittedCauseWritersToBlockReaders
-		{
-			get { return true; }
-		}
+		public override bool DoesReadCommittedCauseWritersToBlockReaders => true;
 
 		#endregion
 	}
