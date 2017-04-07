@@ -114,8 +114,9 @@ namespace NHibernate.Test.TypesTest
 				var revision = result.Revision;
 				Assert.AreEqual(DateTimeKind.Utc, revision.Kind, "Kind is NOT Utc");
 
-				var differenceInSeconds = Math.Abs((revision - DateTime.UtcNow).TotalSeconds);
-				Assert.IsTrue(differenceInSeconds < 1d, "Difference should be less then 1 second.");
+				var differenceInMinutes = Math.Abs((revision - DateTime.UtcNow).TotalMinutes);
+				// Take a wide margin for accounting for sometimes bad build servers performances.
+				Assert.Less(differenceInMinutes, 2, "Difference should be less than 2 minutes.");
 
 				tx.Commit();
 				session.Close();
