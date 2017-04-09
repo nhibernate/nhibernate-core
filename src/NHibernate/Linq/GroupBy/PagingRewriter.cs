@@ -9,17 +9,16 @@ namespace NHibernate.Linq.GroupBy
 {
 	internal static class PagingRewriter
 	{
-		private static readonly System.Type[] PagingResultOperators = new[]
-																		  {
-																			  typeof (SkipResultOperator),
-																			  typeof (TakeResultOperator),
-																		  };
+		private static readonly System.Type[] PagingResultOperators =
+			new[]
+			{
+				typeof (SkipResultOperator),
+				typeof (TakeResultOperator),
+			};
 
 		public static void ReWrite(QueryModel queryModel)
 		{
-			var subQueryExpression = queryModel.MainFromClause.FromExpression as SubQueryExpression;
-
-			if (subQueryExpression != null &&
+			if (queryModel.MainFromClause.FromExpression is SubQueryExpression subQueryExpression &&
 				subQueryExpression.QueryModel.ResultOperators.All(x => PagingResultOperators.Contains(x.GetType())))
 			{
 				FlattenSubQuery(subQueryExpression, queryModel);
@@ -28,7 +27,7 @@ namespace NHibernate.Linq.GroupBy
 
 		private static void FlattenSubQuery(SubQueryExpression subQueryExpression, QueryModel queryModel)
 		{
-			// we can not flattern subquery if outer query has body clauses.
+			// we can not flatten subquery if outer query has body clauses.
 			var subQueryModel = subQueryExpression.QueryModel;
 			var subQueryMainFromClause = subQueryModel.MainFromClause;
 			if (queryModel.BodyClauses.Count == 0)
@@ -46,9 +45,13 @@ namespace NHibernate.Linq.GroupBy
 			{
 				var cro = new ContainsResultOperator(new QuerySourceReferenceExpression(subQueryMainFromClause));
 
+				// Cloning may cause having/join/with clauses listed in VisitorParameters to no more be matched.
+				// Not a problem for now, because those clauses imply a projection, which is not supported
+				// by the "new WhereClause(new SubQueryExpression(newSubQueryModel))" below. See
+				// SingleKeyGroupAndCountWithHavingClausePagingAndOuterWhere test by example.
 				var newSubQueryModel = subQueryModel.Clone();
 				newSubQueryModel.ResultOperators.Add(cro);
-				newSubQueryModel.ResultTypeOverride = typeof (bool);
+				newSubQueryModel.ResultTypeOverride = typeof(bool);
 
 				var where = new WhereClause(new SubQueryExpression(newSubQueryModel));
 				queryModel.BodyClauses.Add(where);

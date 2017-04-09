@@ -296,9 +296,6 @@
     <Compile Include="ISessionFactory.cs" />
     <Compile Include="ITransaction.cs" />
     <Compile Include="LazyInitializationException.cs" />
-    <Compile Include="Linq\Clauses\NhHavingClause.cs" />
-    <Compile Include="Linq\Clauses\NhJoinClause.cs" />
-    <Compile Include="Linq\Clauses\NhWithClause.cs" />
     <Compile Include="Linq\ExpressionExtensions.cs" />
     <Compile Include="Linq\Expressions\NhNominatedExpression.cs" />
     <Compile Include="Linq\ExpressionTransformers\RemoveCharToIntConversion.cs" />
