@@ -18,17 +18,17 @@ namespace NHibernate.Linq.ReWriters
 		private readonly MemberExpressionJoinDetector _memberExpressionJoinDetector;
 		private readonly WhereJoinDetector _whereJoinDetector;
 
-		private AddJoinsReWriter(ISessionFactoryImplementor sessionFactory, QueryModel queryModel)
+		private AddJoinsReWriter(QueryModel queryModel, VisitorParameters parameters)
 		{
-			_sessionFactory = sessionFactory;
-			var joiner = new Joiner(queryModel);
+			_sessionFactory = parameters.SessionFactory;
+			var joiner = new Joiner(queryModel, parameters);
 			_memberExpressionJoinDetector = new MemberExpressionJoinDetector(this, joiner);
 			_whereJoinDetector = new WhereJoinDetector(this, joiner);
 		}
 
 		public static void ReWrite(QueryModel queryModel, VisitorParameters parameters)
 		{
-			var visitor = new AddJoinsReWriter(parameters.SessionFactory, queryModel);
+			var visitor = new AddJoinsReWriter(queryModel, parameters);
 			visitor.VisitQueryModel(queryModel);
 		}
 

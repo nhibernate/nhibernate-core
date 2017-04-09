@@ -135,5 +135,23 @@ namespace NHibernate.Test.Linq.ByMethod
 			var hornRow = orderCounts.Single(row => row.CompanyName == "Around the Horn");
 			Assert.That(hornRow.OrderCount, Is.EqualTo(13));
 		}
+
+		[Test, Explicit("Demonstrate an unsupported case for PagingRewriter")]
+		public void SingleKeyGroupAndCountWithHavingClausePagingAndOuterWhere()
+		{
+			var orderCounts = db.Orders
+				.GroupBy(o => o.Customer.CompanyName)
+				.Where(g => g.Count() > 10)
+				.Select(g => new { CompanyName = g.Key, OrderCount = g.Count() })
+				.OrderBy(oc => oc.CompanyName)
+				.Skip(5)
+				.Take(10)
+				.Where(oc => oc.CompanyName.Contains("F"))
+				.ToList();
+
+			Assert.That(orderCounts, Has.Count.EqualTo(3));
+			var frankRow = orderCounts.Single(row => row.CompanyName == "Frankenversand");
+			Assert.That(frankRow.OrderCount, Is.EqualTo(15));
+		}
 	}
 }

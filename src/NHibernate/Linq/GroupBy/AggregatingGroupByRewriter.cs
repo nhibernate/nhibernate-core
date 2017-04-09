@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using NHibernate.Linq.Clauses;
 using NHibernate.Linq.ReWriters;
 using NHibernate.Linq.Visitors;
 using Remotion.Linq;
@@ -43,11 +42,9 @@ namespace NHibernate.Linq.GroupBy
 				typeof (CacheableResultOperator)
 			};
 
-		public static void ReWrite(QueryModel queryModel)
+		public static void ReWrite(QueryModel queryModel, VisitorParameters parameters)
 		{
-			var subQueryExpression = queryModel.MainFromClause.FromExpression as SubQueryExpression;
-
-			if (subQueryExpression != null)
+			if (queryModel.MainFromClause.FromExpression is SubQueryExpression subQueryExpression)
 			{
 				var operators = subQueryExpression.QueryModel.ResultOperators
 					.Where(x => !QueryReferenceExpressionFlattener.FlattenableResultOperators.Contains(x.GetType()))
@@ -55,17 +52,16 @@ namespace NHibernate.Linq.GroupBy
 
 				if (operators.Length == 1)
 				{
-					var groupBy = operators[0] as GroupResultOperator;
-					if (groupBy != null)
+					if (operators[0] is GroupResultOperator groupBy)
 					{
-						FlattenSubQuery(queryModel, subQueryExpression.QueryModel, groupBy);
+						FlattenSubQuery(queryModel, subQueryExpression.QueryModel, groupBy, parameters);
 						RemoveCostantGroupByKeys(queryModel, groupBy);
 					}
 				}
 			}
 		}
 
-		private static void FlattenSubQuery(QueryModel queryModel, QueryModel subQueryModel, GroupResultOperator groupBy)
+		private static void FlattenSubQuery(QueryModel queryModel, QueryModel subQueryModel, GroupResultOperator groupBy, VisitorParameters parameters)
 		{
 			foreach (var resultOperator in queryModel.ResultOperators.Where(resultOperator => !AcceptableOuterResultOperators.Contains(resultOperator.GetType())))
 			{
@@ -81,11 +77,9 @@ namespace NHibernate.Linq.GroupBy
 				clause.TransformExpressions(s => GroupBySelectClauseRewriter.ReWrite(s, groupBy, subQueryModel));
 
 				//all outer where clauses actually are having clauses
-				var whereClause = clause as WhereClause;
-				if (whereClause != null)
+				if (clause is WhereClause whereClause)
 				{
-					queryModel.BodyClauses.RemoveAt(i);
-					queryModel.BodyClauses.Insert(i, new NhHavingClause(whereClause.Predicate));
+					parameters.AddHavingClause(whereClause);
 				}
 			}
 
