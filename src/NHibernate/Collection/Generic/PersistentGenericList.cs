@@ -230,7 +230,7 @@ namespace NHibernate.Collection.Generic
 				return false;
 			}
 			Read();
-			return CollectionHelper.CollectionEquals(WrappedList, that);
+			return CollectionHelper.SequenceEquals(WrappedList, that);
 		}
 
 		public override int GetHashCode()

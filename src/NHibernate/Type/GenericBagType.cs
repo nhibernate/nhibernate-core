@@ -1,11 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using NHibernate.Collection;
 using NHibernate.Collection.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {
@@ -75,11 +75,7 @@ namespace NHibernate.Type
 
 		protected override bool AreCollectionElementsEqual(IEnumerable original, IEnumerable target)
 		{
-			var first = (IEnumerable<T>)original;
-			var second = (IEnumerable<T>) target;
-
-			return first.Count() == second.Count() && 
-				first.All(element => first.Count(x => x.Equals(element)) == second.Count(x => x.Equals(element)));
+			return CollectionHelper.BagEquals((IEnumerable<T>)original, (IEnumerable<T>)target);
 		}
 	}
 }
