@@ -1439,6 +1439,7 @@
     <Compile Include="Unionsubclass\DatabaseKeyword.cs" />
     <Compile Include="Unionsubclass\DatabaseKeywordBase.cs" />
     <Compile Include="Unionsubclass\DatabaseKeywordsFixture.cs" />
+    <Compile Include="UtilityTest\CollectionHelperFixture.cs" />
     <Compile Include="UtilityTest\ArrayHelperTests.cs" />
     <Compile Include="UnionsubclassPolymorphicFormula\Company.cs" />
     <Compile Include="UnionsubclassPolymorphicFormula\Party.cs" />

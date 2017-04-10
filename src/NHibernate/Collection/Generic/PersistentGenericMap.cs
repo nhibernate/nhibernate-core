@@ -72,7 +72,9 @@ namespace NHibernate.Collection.Generic
 			}
 			foreach (KeyValuePair<TKey, TValue> entry in WrappedMap)
 			{
-				if (elementType.IsDirty(entry.Value, xmap[entry.Key], Session))
+				// This method is not currently called if a key has been removed/added, but better be on the safe side.
+				if (!xmap.TryGetValue(entry.Key, out var value) ||
+					elementType.IsDirty(value, entry.Value, Session))
 				{
 					return false;
 				}

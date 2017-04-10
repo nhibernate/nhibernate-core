@@ -6,6 +6,7 @@ using NHibernate.Collection;
 using NHibernate.Collection.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {
@@ -85,15 +86,6 @@ namespace NHibernate.Type
 			((IList<T>)collection).Add((T)element);
 		}
 
-		protected override bool AreCollectionElementsEqual(IEnumerable original, IEnumerable target)
-		{
-			var first = (IList<T>)original;
-			var second = (IList<T>)target;
-
-			return first.Count == second.Count &&
-			       first.All(element => first.Count(x => x.Equals(element)) == second.Count(x => x.Equals(element)));
-		}
-
 		public override object ReplaceElements(
 			object original,
 			object target,
@@ -152,6 +144,11 @@ namespace NHibernate.Type
 			}
 
 			return target;
+		}
+
+		protected override bool AreCollectionElementsEqual(IEnumerable original, IEnumerable target)
+		{
+			return CollectionHelper.BagEquals((IEnumerable<T>)original, (IEnumerable<T>)target);
 		}
 	}
 }
