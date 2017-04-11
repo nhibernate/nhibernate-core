@@ -190,7 +190,7 @@ session.Disconnect();]]></programlisting>
                 This pattern is problematic if our <literal>ISession</literal> is too big to
                 be stored during user think time, e.g. an <literal>HttpSession</literal> should
                 be kept as small as possible. As the <literal>ISession</literal> is also the
-                (mandatory) first-level cache and contains all loaded objects, we can propably
+                (mandatory) first-level cache and contains all loaded objects, we can probably
                 use this strategy only for a few request/response cycles. This is indeed
                 recommended, as the <literal>ISession</literal> will soon also have stale data.
             </para>
@@ -204,7 +204,7 @@ session.Disconnect();]]></programlisting>
                 Each interaction with the persistent store occurs in a new <literal>ISession</literal>. 
                 However, the same persistent instances are reused for each interaction with the database.
                 The application manipulates the state of detached instances originally loaded in another
-                <literal>ISession</literal> and then "reassociates" them using 
+                <literal>ISession</literal> and then "re-associates" them using 
                 <literal>ISession.Update()</literal> or <literal>ISession.SaveOrUpdate()</literal>.
             </para>
 
@@ -241,7 +241,7 @@ session.Close();]]></programlisting>
                 even timestamps. In both cases, versioning can't rely on a particular column in a table.
                 To force a version check without a version or timestamp property mapping, with a
                 comparison of the state of all fields in a row, turn on <literal>optimistic-lock="all"</literal>
-                in the <literal>&lt;class&gt;</literal> mapping. Note that this concepetually only works
+                in the <literal>&lt;class&gt;</literal> mapping. Note that this conceptually only works
                 if NHibernate can compare the old and new state, i.e. if you use a single long
                 <literal>ISession</literal> and not session-per-request-with-detached-objects.
             </para>
@@ -257,7 +257,7 @@ session.Close();]]></programlisting>
                 comparison, NHibernate uses a single <literal>UPDATE</literal> statement (with an
                 appropriate <literal>WHERE</literal> clause) per entity to execute the version check
                 and update the information. If you use transitive persistence to cascade reattachment
-                to associated entities, NHibernate might execute uneccessary updates. This is usually
+                to associated entities, NHibernate might execute unnecessary updates. This is usually
                 not a problem, but <emphasis>on update</emphasis> triggers in the database might be
                 executed even when no changes have been made to detached instances. You can customize
                 this behavior by setting  <literal>select-before-update="true"</literal> in the
@@ -411,7 +411,7 @@ finally
         <title>Pessimistic Locking</title>
 
         <para>
-            It is not intended that users spend much time worring about locking strategies. It's usually
+            It is not intended that users spend much time worrying about locking strategies. It's usually
             enough to specify an isolation level for the ADO.NET connections and then simply let the
             database do all the work. However, advanced users may sometimes wish to obtain
             exclusive pessimistic locks, or re-obtain locks at the start of a new transaction.
@@ -573,7 +573,7 @@ finally
             System.Transactions</literal> library, <literal>ConnectionReleaseMode.AfterTransaction</literal> may cause
             NHibernate to open and close several connections during one transaction, leading to unnecessary overhead and
             transaction promotion from local to distributed. Specifying <literal>ConnectionReleaseMode.OnClose</literal>
-            will revert to the legacy behavior and prevent this problem from occuring.
+            will revert to the legacy behavior and prevent this problem from occurring.
         </para>
 
     </sect1>

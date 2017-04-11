@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using NHibernate.SqlCommand;
 using NUnit.Framework;
-using System.Data;
 
 namespace NHibernate.Test.NHSpecificTest.NH3004
 {

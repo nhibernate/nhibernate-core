@@ -23,7 +23,7 @@ namespace NHibernate.Type
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		public GenericListType(string role, string propertyRef)
-			: base(role, propertyRef, false)
+			: base(role, propertyRef)
 		{
 		}
 

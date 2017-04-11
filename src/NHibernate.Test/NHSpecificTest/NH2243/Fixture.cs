@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2243
 					cfg.AddInputStream(stream);
 				new SchemaExport(cfg).Execute(s => script.AppendLine(s), false, false);
 
-				Assert.That(script.ToString(), Is.StringContaining("MyNameForFK"));
+				Assert.That(script.ToString(), Does.Contain("MyNameForFK"));
 			}
 	}
 }

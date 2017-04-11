@@ -76,7 +76,7 @@ namespace NHibernate.Criterion
 		/// Converts the SimpleExpression to a <see cref="SqlString"/>.
 		/// </summary>
 		/// <returns>A SqlString that contains a valid Sql fragment.</returns>
-		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			SqlString[] columnNames =
 				CriterionUtil.GetColumnNamesForSimpleExpression(
@@ -84,7 +84,6 @@ namespace NHibernate.Criterion
 					_projection,
 					criteriaQuery,
 					criteria,
-					enabledFilters,
 					this,
 					value);
 

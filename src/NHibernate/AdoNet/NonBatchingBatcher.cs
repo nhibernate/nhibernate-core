@@ -1,5 +1,5 @@
 using System;
-using System.Data;
+using System.Data.Common;
 using NHibernate.AdoNet;
 using NHibernate.Engine;
 
@@ -22,7 +22,7 @@ namespace NHibernate.AdoNet
 		}
 
 		/// <summary>
-		/// Executes the current <see cref="IDbCommand"/> and compares the row Count
+		/// Executes the current <see cref="DbCommand"/> and compares the row Count
 		/// to the <c>expectedRowCount</c>.
 		/// </summary>
 		/// <param name="expectation">
@@ -35,7 +35,7 @@ namespace NHibernate.AdoNet
 		/// </exception>
 		public override void AddToBatch(IExpectation expectation)
 		{
-			IDbCommand cmd = CurrentCommand;
+			var cmd = CurrentCommand;
 			Driver.AdjustCommand(cmd);
 			int rowCount = ExecuteNonQuery(cmd);
 			expectation.VerifyOutcomeNonBatched(rowCount, cmd);
@@ -43,11 +43,11 @@ namespace NHibernate.AdoNet
 
 		/// <summary>
 		/// This Batcher implementation does not support batching so this is a no-op call.  The
-		/// actual execution of the <see cref="IDbCommand"/> is run in the <c>AddToBatch</c> 
+		/// actual execution of the <see cref="DbCommand"/> is run in the <c>AddToBatch</c> 
 		/// method.
 		/// </summary>
 		/// <param name="ps"></param>
-		protected override void DoExecuteBatch(IDbCommand ps)
+		protected override void DoExecuteBatch(DbCommand ps)
 		{
 		}
 

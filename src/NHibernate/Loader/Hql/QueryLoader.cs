@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 using NHibernate.Engine;
 using NHibernate.Event;
@@ -324,7 +324,7 @@ namespace NHibernate.Loader.Hql
 			return HolderInstantiator.ResolveResultTransformer(_selectNewTransformer, resultTransformer);
 		}
 
-		protected override object GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, IDataReader rs,
+		protected override object GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, DbDataReader rs,
 													   ISessionImplementor session)
 		{
 			Object[] resultRow = GetResultRow(row, rs, session);
@@ -335,7 +335,7 @@ namespace NHibernate.Loader.Hql
 			       );
 		}
 
-		protected override object[] GetResultRow(object[] row, IDataReader rs, ISessionImplementor session)
+		protected override object[] GetResultRow(object[] row, DbDataReader rs, ISessionImplementor session)
 		{
 			object[] resultRow;
 
@@ -424,10 +424,10 @@ namespace NHibernate.Loader.Hql
 				stopWath.Start();
 			}
 
-			IDbCommand cmd = PrepareQueryCommand(queryParameters, false, session);
+			var cmd = PrepareQueryCommand(queryParameters, false, session);
 
-			// This IDataReader is disposed of in EnumerableImpl.Dispose
-			IDataReader rs = GetResultSet(cmd, queryParameters.HasAutoDiscoverScalarTypes, false, queryParameters.RowSelection, session);
+			// This DbDataReader is disposed of in EnumerableImpl.Dispose
+			var rs = GetResultSet(cmd, queryParameters.HasAutoDiscoverScalarTypes, false, queryParameters.RowSelection, session);
 
 			HolderInstantiator hi = 
 				HolderInstantiator.GetHolderInstantiator(_selectNewTransformer, queryParameters.ResultTransformer, _queryReturnAliases);

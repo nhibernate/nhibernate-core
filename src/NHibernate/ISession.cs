@@ -1,6 +1,6 @@
 using System;
-using System.Collections;
 using System.Data;
+using System.Data.Common;
 using System.Linq.Expressions;
 using NHibernate.Engine;
 using NHibernate.Stat;
@@ -73,9 +73,6 @@ namespace NHibernate
 	/// </remarks>
 	public interface ISession : IDisposable
 	{
-		/// <summary> The entity mode in effect for this session.</summary>
-		EntityMode ActiveEntityMode { get; } // NH different implementation: changed name to avoid conflicts
-
 		/// <summary>
 		/// Force the <c>ISession</c> to flush.
 		/// </summary>
@@ -114,7 +111,7 @@ namespace NHibernate
 		/// Applications are responsible for calling commit/rollback upon the connection before
 		/// closing the <c>ISession</c>.
 		/// </remarks>
-		IDbConnection Connection { get; }
+		DbConnection Connection { get; }
 
 		/// <summary>
 		/// Disconnect the <c>ISession</c> from the current ADO.NET connection.
@@ -125,7 +122,7 @@ namespace NHibernate
 		/// long transactions.
 		/// </remarks>
 		/// <returns>The connection provided by the application or <see langword="null" /></returns>
-		IDbConnection Disconnect();
+		DbConnection Disconnect();
 
 		/// <summary>
 		/// Obtain a new ADO.NET connection.
@@ -140,7 +137,7 @@ namespace NHibernate
 		/// </summary>
 		/// <remarks>This is used by applications which require long transactions</remarks>
 		/// <param name="connection">An ADO.NET connection</param>
-		void Reconnect(IDbConnection connection);
+		void Reconnect(DbConnection connection);
 
 		/// <summary>
 		/// End the <c>ISession</c> by disconnecting from the ADO.NET connection and cleaning up.
@@ -150,7 +147,7 @@ namespace NHibernate
 		/// at least <c>Disconnect()</c> it.
 		/// </remarks>
 		/// <returns>The connection provided by the application or <see langword="null" /></returns>
-		IDbConnection Close();
+		DbConnection Close();
 
 		/// <summary>
 		/// Cancel execution of the current query.
@@ -932,14 +929,12 @@ namespace NHibernate
 		/// <summary> Get the statistics for this session.</summary>
 		ISessionStatistics Statistics { get; }
 
-		/// <summary>
-		/// Starts a new Session with the given entity mode in effect. This secondary
-		/// Session inherits the connection, transaction, and other context
-		///	information from the primary Session. It doesn't need to be flushed
-		/// or closed by the developer.
-		/// </summary>
-		/// <param name="entityMode">The entity mode to use for the new session.</param>
+		///  <summary>
+		///  Starts a new Session. This secondary Session inherits the connection, transaction,
+		///  and other context information from the primary Session. It doesn't need to be flushed
+		///  or closed by the developer.
+		///  </summary>
 		/// <returns>The new session</returns>
-		ISession GetSession(EntityMode entityMode);
+		ISession GetChildSession();
 	}
 }

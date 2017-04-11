@@ -6,6 +6,7 @@ using System.Reflection;
 using NHibernate.Engine;
 using NHibernate.Param;
 using NHibernate.Type;
+using NHibernate.Util;
 using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
@@ -18,41 +19,57 @@ namespace NHibernate.Linq.Visitors
 		private readonly Dictionary<ConstantExpression, NamedParameter> _parameters = new Dictionary<ConstantExpression, NamedParameter>();
 		private readonly ISessionFactoryImplementor _sessionFactory;
 
+		private static readonly MethodInfo QueryableSkipDefinition =
+			ReflectHelper.GetMethodDefinition(() => Queryable.Skip<object>(null, 0));
+		private static readonly MethodInfo QueryableTakeDefinition =
+			ReflectHelper.GetMethodDefinition(() => Queryable.Take<object>(null, 0));
+		private static readonly MethodInfo EnumerableSkipDefinition =
+			ReflectHelper.GetMethodDefinition(() => Enumerable.Skip<object>(null, 0));
+		private static readonly MethodInfo EnumerableTakeDefinition =
+			ReflectHelper.GetMethodDefinition(() => Enumerable.Take<object>(null, 0));
+
 		private readonly ICollection<MethodBase> _pagingMethods = new HashSet<MethodBase>
 			{
-				ReflectionHelper.GetMethodDefinition(() => Queryable.Skip<object>(null, 0)),
-				ReflectionHelper.GetMethodDefinition(() => Queryable.Take<object>(null, 0)),
-				ReflectionHelper.GetMethodDefinition(() => Enumerable.Skip<object>(null, 0)),
-				ReflectionHelper.GetMethodDefinition(() => Enumerable.Take<object>(null, 0)),
+				QueryableSkipDefinition, QueryableTakeDefinition,
+				EnumerableSkipDefinition, EnumerableTakeDefinition
 			};
-
-		private readonly List<CustomType> _allMappedCustomTypes;
 
 		public ExpressionParameterVisitor(ISessionFactoryImplementor sessionFactory)
 		{
 			_sessionFactory = sessionFactory;
-			_allMappedCustomTypes = _sessionFactory.GetAllClassMetadata().Values
-												.SelectMany(c => c.PropertyTypes)
-												.OfType<CustomType>().ToList();
 		}
 
 		public static IDictionary<ConstantExpression, NamedParameter> Visit(Expression expression, ISessionFactoryImplementor sessionFactory)
 		{
+			return Visit(ref expression, sessionFactory);
+		}
+
+		internal static IDictionary<ConstantExpression, NamedParameter> Visit(ref Expression expression, ISessionFactoryImplementor sessionFactory)
+		{
 			var visitor = new ExpressionParameterVisitor(sessionFactory);
-			
-			visitor.VisitExpression(expression);
+
+			expression = visitor.VisitExpression(expression);
 
 			return visitor._parameters;
 		}
 
 		protected override Expression VisitMethodCallExpression(MethodCallExpression expression)
 		{
-			if (expression.Method.Name == "MappedAs" && expression.Method.DeclaringType == typeof(LinqExtensionMethods))
+			if (expression.Method.Name == nameof(LinqExtensionMethods.MappedAs) && expression.Method.DeclaringType == typeof(LinqExtensionMethods))
 			{
-				var parameter = (ConstantExpression) VisitExpression(expression.Arguments[0]);
-				var type = (ConstantExpression) expression.Arguments[1];
+				var rawParameter = VisitExpression(expression.Arguments[0]);
+				var parameter = rawParameter as ConstantExpression;
+				var type = expression.Arguments[1] as ConstantExpression;
+				if (parameter == null)
+					throw new HibernateException(
+						$"{nameof(LinqExtensionMethods.MappedAs)} must be called on an expression which can be evaluated as " +
+						$"{nameof(ConstantExpression)}. It was call on {rawParameter?.GetType().Name ?? "null"} instead.");
+				if (type == null)
+					throw new HibernateException(
+						$"{nameof(LinqExtensionMethods.MappedAs)} type must be supplied as {nameof(ConstantExpression)}. " +
+						$"It was {expression.Arguments[1]?.GetType().Name ?? "null"} instead.");
 
-				_parameters[parameter].Type = (IType) type.Value;
+				_parameters[parameter].Type = (IType)type.Value;
 
 				return parameter;
 			}
@@ -86,6 +103,7 @@ namespace NHibernate.Linq.Visitors
 			if (!_parameters.ContainsKey(expression) && !typeof(IQueryable).IsAssignableFrom(expression.Type) && !IsNullObject(expression))
 			{
 				// We use null for the type to indicate that the caller should let HQL figure it out.
+				object value = expression.Value;
 				IType type = null;
 
 				// We have a bit more information about the null parameter value.
@@ -93,14 +111,10 @@ namespace NHibernate.Linq.Visitors
 				if (expression.Value == null)
 					type = NHibernateUtil.GuessType(expression.Type);
 
-				if (type == null)
+				// Constant characters should be sent as strings
+				if (expression.Type == typeof(char))
 				{
-					var customType =
-						_allMappedCustomTypes.FirstOrDefault(ct => ct.UserType.ReturnedType.IsAssignableFrom(expression.Type));
-					if (customType != null)
-					{
-						type = customType;
-					}
+					value = value.ToString();
 				}
 
 				// There is more information available in the Linq expression than to HQL directly.
@@ -108,7 +122,7 @@ namespace NHibernate.Linq.Visitors
 				// comes up, it would be nice to combine the HQL parameter type determination code
 				// and the Expression information.
 
-				_parameters.Add(expression, new NamedParameter("p" + (_parameters.Count + 1), expression.Value, type));
+				_parameters.Add(expression, new NamedParameter("p" + (_parameters.Count + 1), value, type));
 			}
 
 			return base.VisitConstantExpression(expression);

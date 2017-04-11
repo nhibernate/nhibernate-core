@@ -122,7 +122,7 @@ namespace NHibernate.Action
 				{
 					return new AfterTransactionCompletionProcessDelegate((success) =>
 					{
-						CacheKey ck = new CacheKey(key, persister.KeyType, persister.Role, Session.EntityMode, Session.Factory);
+						CacheKey ck = new CacheKey(key, persister.KeyType, persister.Role, Session.Factory);
 						persister.Cache.Release(ck, softLock);
 					});
 				}
@@ -164,7 +164,7 @@ namespace NHibernate.Action
 				return roleComparison;
 			}
 			//then by fk
-			return persister.KeyType.Compare(key, other.key, session.EntityMode);
+			return persister.KeyType.Compare(key, other.key);
 		}
 
 		#endregion

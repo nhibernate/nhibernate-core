@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+									 assembly="NHibernate.Test"
+									 namespace="NHibernate.Test.Insertordering.FamilyModel">
+
+  <class name="Woman">
+    <id name="Id" generator="guid.comb" />
+
+    <property name="Name"/>
+    <many-to-one name="Mother" cascade="save-update" />
+    <many-to-one name="Father" cascade="save-update" />
+  </class>
+
+  <class name="Man">
+    <id name="Id" generator="guid.comb" />
+
+    <property name="Name"/>
+    <many-to-one name="Mother" cascade="save-update" />
+    <many-to-one name="Father" cascade="save-update" />
+  </class>
+</hibernate-mapping>

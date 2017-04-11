@@ -41,12 +41,6 @@ namespace NHibernate.Cfg.Loquacious
 			return this;
 		}
 
-		public IFluentSessionFactoryConfiguration Using(EntityMode entityMode)
-		{
-			configuration.SetProperty(Environment.DefaultEntityMode, EntityModeHelper.ToString(entityMode));
-			return this;
-		}
-
 		public IFluentSessionFactoryConfiguration DefaultFlushMode(FlushMode flushMode)
 		{
 			configuration.SetProperty(Environment.DefaultFlushMode, flushMode.ToString());

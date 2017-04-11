@@ -209,9 +209,8 @@ namespace NHibernate.Dialect
 
 		public override long TimestampResolutionInTicks
 		{
-			// Lousy documentation. Various mailing lists and articles seem to 
-			// indicate resolution of 0.1 ms, i.e. 1000 ticks.
-			get { return 1000L; }
+			// Resolution of 1 ms, i.e. 10000 ticks.
+			get { return 10000L; }
 		}
 
 		public override bool SupportsCurrentTimestampSelection

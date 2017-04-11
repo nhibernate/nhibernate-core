@@ -38,7 +38,7 @@ namespace NHibernate.Event.Default
 			source.PersistenceContext.CheckUniqueness(key, entity);
 
 			//get a snapshot
-			object[] values = persister.GetPropertyValues(entity, source.EntityMode);
+			object[] values = persister.GetPropertyValues(entity);
 			TypeHelper.DeepCopy(values, persister.PropertyTypes, persister.PropertyUpdateability, values, source);
 			object version = Versioning.GetVersion(values, persister);
 

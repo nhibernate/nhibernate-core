@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Linq;
-using System.Xml;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
@@ -35,12 +34,12 @@ namespace NHibernate.Param
 
 		#region IParameterSpecification Members
 
-		public void Bind(IDbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		public void Bind(DbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
 			Bind(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session);
 		}
 
-		public void Bind(IDbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		public void Bind(DbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
 			string backTrackId = GetIdsForBackTrack(session.Factory).First(); // just the first because IType suppose the oders in certain sequence
 
@@ -139,11 +138,6 @@ namespace NHibernate.Param
 				get { return false; }
 			}
 
-			public bool IsXMLElement
-			{
-				get { return false; }
-			}
-
 			public bool IsCollectionType
 			{
 				get { return false; }
@@ -194,22 +188,22 @@ namespace NHibernate.Param
 				return false;
 			}
 
-			public object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+			public object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 			{
 				throw new InvalidOperationException();
 			}
 
-			public object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
+			public object NullSafeGet(DbDataReader rs, string name, ISessionImplementor session, object owner)
 			{
 				throw new InvalidOperationException();
 			}
 
-			public void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+			public void NullSafeSet(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 			{
 				throw new InvalidOperationException();
 			}
 
-			public void NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session)
+			public void NullSafeSet(DbCommand st, object value, int index, ISessionImplementor session)
 			{
 				var start = index;
 				var positions = 0;
@@ -228,12 +222,12 @@ namespace NHibernate.Param
 				throw new InvalidOperationException();
 			}
 
-			public object DeepCopy(object val, EntityMode entityMode, ISessionFactoryImplementor factory)
+			public object DeepCopy(object val, ISessionFactoryImplementor factory)
 			{
 				throw new InvalidOperationException();
 			}
 
-			public object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+			public object Hydrate(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 			{
 				throw new InvalidOperationException();
 			}
@@ -258,47 +252,37 @@ namespace NHibernate.Param
 				throw new InvalidOperationException();
 			}
 
-			public bool IsSame(object x, object y, EntityMode entityMode)
+			public bool IsSame(object x, object y)
 			{
 				return false;
 			}
 
-			public bool IsEqual(object x, object y, EntityMode entityMode)
+			public bool IsEqual(object x, object y)
 			{
 				return false;
 			}
 
-			public bool IsEqual(object x, object y, EntityMode entityMode, ISessionFactoryImplementor factory)
+			public bool IsEqual(object x, object y, ISessionFactoryImplementor factory)
 			{
 				return false;
 			}
 
-			public int GetHashCode(object x, EntityMode entityMode)
+			public int GetHashCode(object x)
 			{
 				return GetHashCode();
 			}
 
-			public int GetHashCode(object x, EntityMode entityMode, ISessionFactoryImplementor factory)
+			public int GetHashCode(object x, ISessionFactoryImplementor factory)
 			{
 				return GetHashCode();
 			}
 
-			public int Compare(object x, object y, EntityMode? entityMode)
+			public int Compare(object x, object y)
 			{
 				return 1;
 			}
 
 			public IType GetSemiResolvedType(ISessionFactoryImplementor factory)
-			{
-				throw new InvalidOperationException();
-			}
-
-			public void SetToXMLNode(XmlNode node, object value, ISessionFactoryImplementor factory)
-			{
-				throw new InvalidOperationException();
-			}
-
-			public object FromXMLNode(XmlNode xml, IMapping factory)
 			{
 				throw new InvalidOperationException();
 			}

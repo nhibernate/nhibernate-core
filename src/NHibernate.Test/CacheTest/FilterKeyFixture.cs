@@ -24,13 +24,13 @@ namespace NHibernate.Test.CacheTest
 			string filterName = "DescriptionLike";
 			var f = new FilterImpl(sessions.GetFilterDefinition(filterName));
 			f.SetParameter("pLike", "so%");
-			var fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes, EntityMode.Poco);
+			var fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes);
 			Assert.That(fk.ToString(), Is.EqualTo("FilterKey[DescriptionLike{'pLike'='so%'}]"));
 
 			filterName = "DescriptionEqualAndValueGT";
 			f = new FilterImpl(sessions.GetFilterDefinition(filterName));
 			f.SetParameter("pDesc", "something").SetParameter("pValue", 10);
-			fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes, EntityMode.Poco);
+			fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes);
 			Assert.That(fk.ToString(), Is.EqualTo("FilterKey[DescriptionEqualAndValueGT{'pDesc'='something', 'pValue'='10'}]"));
 		}
 
@@ -51,11 +51,11 @@ namespace NHibernate.Test.CacheTest
 			const string filterName = "DescriptionLike";
 			var f = new FilterImpl(sessions.GetFilterDefinition(filterName));
 			f.SetParameter("pLike", "so%");
-			fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes, EntityMode.Poco);
+			fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes);
 
 			var f1 = new FilterImpl(sessions.GetFilterDefinition(filterName));
 			f1.SetParameter("pLike", "%ing");
-			fk1 = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes, EntityMode.Poco);
+			fk1 = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes);
 		}
 
 		private void FilterDescValueToCompare(out FilterKey fk, out FilterKey fk1)
@@ -63,11 +63,11 @@ namespace NHibernate.Test.CacheTest
 			const string filterName = "DescriptionEqualAndValueGT";
 			var f = new FilterImpl(sessions.GetFilterDefinition(filterName));
 			f.SetParameter("pDesc", "something").SetParameter("pValue", 10);
-			fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes, EntityMode.Poco);
+			fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes);
 
 			var f1 = new FilterImpl(sessions.GetFilterDefinition(filterName));
 			f1.SetParameter("pDesc", "something").SetParameter("pValue", 11);
-			fk1 = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes, EntityMode.Poco);
+			fk1 = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes);
 		}
 
 		[Test]

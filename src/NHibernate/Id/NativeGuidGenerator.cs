@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 
 using NHibernate.Engine;
 using NHibernate.Exceptions;
@@ -24,8 +25,8 @@ namespace NHibernate.Id
 			var sql = new SqlString(session.Factory.Dialect.SelectGUIDString);
 			try
 			{
-				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, SqlTypeFactory.NoTypes);
-				IDataReader reader = null;
+				var st = session.Batcher.PrepareCommand(CommandType.Text, sql, SqlTypeFactory.NoTypes);
+				DbDataReader reader = null;
 				try
 				{
 					reader = session.Batcher.ExecuteReader(st);

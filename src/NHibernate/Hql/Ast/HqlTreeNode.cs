@@ -22,7 +22,7 @@ namespace NHibernate.Hql.Ast
 			AddChildren(children);
 		}
 
-		protected HqlTreeNode(int type, string text, IASTFactory factory, params HqlTreeNode[] children) : this(type, text, factory, (IEnumerable<HqlTreeNode>)children)
+		protected HqlTreeNode(int type, string text, IASTFactory factory, params HqlTreeNode[] children) : this(type, text, factory, (IEnumerable<HqlTreeNode>) children)
 		{
 		}
 
@@ -112,15 +112,45 @@ namespace NHibernate.Hql.Ast
 			return (HqlExpression)node;
 		}
 
+		[Obsolete]
 		public static HqlBooleanExpression AsBooleanExpression(this HqlTreeNode node)
 		{
-			if (node is HqlDot)
-			{
-				return new HqlBooleanDot(node.Factory, (HqlDot)node);
-			}
+			var hqlDot = node as HqlDot;
+			if (hqlDot != null)
+				return new HqlBooleanDot(hqlDot.Factory, hqlDot);
+			var hqlBooleanExpression = node as HqlBooleanExpression;
+			if (hqlBooleanExpression != null)
+				return hqlBooleanExpression;
 
 			// TODO - nice error handling if cast fails
-			return (HqlBooleanExpression)node;
+			throw new NotSupportedException();
+		}
+
+		public static HqlBooleanExpression ToBooleanExpression(this HqlTreeNode node)
+		{
+			var hqlDot = node as HqlDot;
+			if (hqlDot != null)
+				return new HqlBooleanDot(hqlDot.Factory, hqlDot);
+			var hqlBooleanExpression = node as HqlBooleanExpression;
+			if (hqlBooleanExpression != null)
+				return hqlBooleanExpression;
+
+			var builder = new HqlTreeBuilder();
+
+			return builder.Equality(node.AsExpression(), builder.True());
+		}
+
+		internal static HqlExpression ToArithmeticExpression(this HqlTreeNode node)
+		{
+			var hqlBooleanExpression = node as HqlBooleanExpression;
+			if (hqlBooleanExpression != null)
+			{
+				var builder = new HqlTreeBuilder();
+
+				return builder.Case(new[] {builder.When(hqlBooleanExpression, builder.True())}, builder.False());
+			}
+
+			return (HqlExpression) node;
 		}
 	}
 
@@ -288,6 +318,14 @@ namespace NHibernate.Hql.Ast
 	{
 		public HqlAdd(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
 			: base(HqlSqlWalker.PLUS, "+", factory, lhs, rhs)
+		{
+		}
+	}
+
+	public class HqlNegate : HqlExpression
+	{
+		public HqlNegate(IASTFactory factory, HqlExpression expression)
+			: base(HqlSqlWalker.UNARY_MINUS, "-", factory, expression)
 		{
 		}
 	}
@@ -690,7 +728,7 @@ namespace NHibernate.Hql.Ast
 			: base(HqlSqlWalker.AGGREGATE, "max", factory, expression)
 		{
 		}
-	}
+}
 
 	public class HqlMin : HqlExpression
 	{
@@ -822,7 +860,7 @@ namespace NHibernate.Hql.Ast
 		public HqlLike(IASTFactory factory, HqlExpression lhs, HqlExpression rhs, HqlConstant escapeCharacter)
 		: base(HqlSqlWalker.LIKE, "like", factory, lhs, rhs, new HqlEscape(factory, escapeCharacter))
 		{
-		}
+	}
 	}
 
 	public class HqlEscape : HqlStatement

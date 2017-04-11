@@ -22,8 +22,8 @@ namespace NHibernate.Test.IdTest
 			var dialect = new MsSql2005Dialect();
 			var tg = new TableGenerator();
 			tg.Configure(NHibernateUtil.Int64, new Dictionary<string, string> {{"where", customWhere}}, dialect);
-			Assert.That(selectSql.GetValue(tg).ToString(), Is.StringContaining(customWhere));
-			Assert.That(updateSql.GetValue(tg).ToString(), Is.StringContaining(customWhere));
+			Assert.That(selectSql.GetValue(tg).ToString(), Does.Contain(customWhere));
+			Assert.That(updateSql.GetValue(tg).ToString(), Does.Contain(customWhere));
 		}
 	}
 }

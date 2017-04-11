@@ -1,4 +1,5 @@
 using System.Data;
+using System.Data.Common;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NUnit.Framework;
@@ -134,7 +135,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 		{
 			using (ISession session = OpenSession())
 			{
-				IDbCommand command = session.Connection.CreateCommand();
+				var command = session.Connection.CreateCommand();
 				command.CommandText = "ALTER DATABASE " + session.Connection.Database + " set allow_snapshot_isolation "
 				                      + (on ? "on" : "off");
 				command.ExecuteNonQuery();

@@ -8,20 +8,17 @@ namespace NHibernate.Test.DynamicEntity.Interceptor
 			return entityName;
 		}
 
-		public override object Instantiate(string entityName, EntityMode entityMode, object id)
+		public override object Instantiate(string entityName, object id)
 		{
-			if (entityMode == EntityMode.Poco)
+			if (typeof(Customer).FullName.Equals(entityName))
 			{
-				if (typeof(Customer).FullName.Equals(entityName))
-				{
-					return ProxyHelper.NewCustomerProxy(id);
-				}
-				else if (typeof(Company).FullName.Equals(entityName))
-				{
-					return ProxyHelper.NewCompanyProxy(id);
-				}
+				return ProxyHelper.NewCustomerProxy(id);
 			}
-			return base.Instantiate(entityName, entityMode, id);
+			else if (typeof(Company).FullName.Equals(entityName))
+			{
+				return ProxyHelper.NewCompanyProxy(id);
+			}
+			return base.Instantiate(entityName, id);
 		}
 	}
 }

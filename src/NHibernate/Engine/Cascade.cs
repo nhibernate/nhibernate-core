@@ -112,8 +112,7 @@ namespace NHibernate.Engine
 
 				IType[] types = persister.PropertyTypes;
 				CascadeStyle[] cascadeStyles = persister.PropertyCascadeStyles;
-				EntityMode entityMode = eventSource.EntityMode;
-				bool hasUninitializedLazyProperties = persister.HasUninitializedLazyProperties(parent, entityMode);
+				bool hasUninitializedLazyProperties = persister.HasUninitializedLazyProperties(parent);
 				for (int i = 0; i < types.Length; i++)
 				{
 					CascadeStyle style = cascadeStyles[i];
@@ -126,11 +125,11 @@ namespace NHibernate.Engine
 
 					if (style.DoCascade(action))
 					{
-						CascadeProperty(parent, persister.GetPropertyValue(parent, i, entityMode), types[i], style, propertyName, anything, false);
+						CascadeProperty(parent, persister.GetPropertyValue(parent, i), types[i], style, propertyName, anything, false);
 					}
 					else if (action.RequiresNoCascadeChecking)
 					{
-						action.NoCascade(eventSource, persister.GetPropertyValue(parent, i, entityMode), parent, persister, i);
+						action.NoCascade(eventSource, persister.GetPropertyValue(parent, i), parent, persister, i);
 					}
 				}
 
@@ -207,7 +206,7 @@ namespace NHibernate.Engine
 
 		private bool CascadeAssociationNow(IAssociationType associationType)
 		{
-			return associationType.ForeignKeyDirection.CascadeNow(point) && (eventSource.EntityMode != EntityMode.Xml || associationType.IsEmbeddedInXML);
+			return associationType.ForeignKeyDirection.CascadeNow(point);
 		}
 
 		private void CascadeComponent(object parent, object child, IAbstractComponentType componentType, string componentPropertyName, object anything)
@@ -278,11 +277,7 @@ namespace NHibernate.Engine
 		/// <summary> Cascade to the collection elements</summary>
 		private void CascadeCollectionElements(object parent, object child, CollectionType collectionType, CascadeStyle style, IType elemType, object anything, bool isCascadeDeleteEnabled)
 		{
-			// we can't cascade to non-embedded elements
-			bool embeddedElements = eventSource.EntityMode != EntityMode.Xml
-			                        || ((EntityType) collectionType.GetElementType(eventSource.Factory)).IsEmbeddedInXML;
-
-			bool reallyDoCascade = style.ReallyDoCascade(action) && embeddedElements
+			bool reallyDoCascade = style.ReallyDoCascade(action)
 			                       && child != CollectionType.UnfetchedCollection;
 
 			if (reallyDoCascade)

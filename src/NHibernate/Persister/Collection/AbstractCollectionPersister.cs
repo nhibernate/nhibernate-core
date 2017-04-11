@@ -8,7 +8,6 @@ using System.Text;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
-using NHibernate.Cfg;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
@@ -52,9 +51,6 @@ namespace NHibernate.Persister.Collection
 		private readonly bool hasOrder;
 		private readonly bool hasWhere;
 		private readonly int baseIndex;
-		private readonly string nodeName;
-		private readonly string elementNodeName;
-		private readonly string indexNodeName;
 
 		protected internal bool indexContainsFormula;
 		protected internal bool elementIsPureFormula;
@@ -165,8 +161,7 @@ namespace NHibernate.Persister.Collection
 
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (ICollectionPersister));
 
-		public AbstractCollectionPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, Configuration cfg,
-										   ISessionFactoryImplementor factory)
+		public AbstractCollectionPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory)
 		{
 			this.factory = factory;
 			this.cache = cache;
@@ -188,7 +183,6 @@ namespace NHibernate.Persister.Collection
 			entityName = collection.OwnerEntityName;
 			ownerPersister = factory.GetEntityPersister(entityName);
 			queryLoaderName = collection.LoaderName;
-			nodeName = collection.NodeName;
 			isMutable = collection.IsMutable;
 
 			Table table = collection.CollectionTable;
@@ -277,22 +271,16 @@ namespace NHibernate.Persister.Collection
 				CheckColumnDuplication(distinctColumns, element.ColumnIterator);
 			}
 
-			string elemNode = collection.ElementNodeName;
 			if (elementType.IsEntityType)
 			{
 				string _entityName = ((EntityType) elementType).GetAssociatedEntityName();
 				elementPersister = factory.GetEntityPersister(_entityName);
-				if (elemNode == null)
-				{
-					elemNode = cfg.GetClassMapping(_entityName).NodeName;
-				}
 				// NativeSQL: collect element column and auto-aliases
 			}
 			else
 			{
 				elementPersister = null;
 			}
-			elementNodeName = elemNode;
 
 			int elementSpan = element.ColumnSpan;
 			elementColumnAliases = new string[elementSpan];
@@ -377,7 +365,6 @@ namespace NHibernate.Persister.Collection
 				indexContainsFormula = hasFormula;
 				baseIndex = indexedCollection.IsList ? ((List) indexedCollection).BaseIndex : 0;
 
-				indexNodeName = indexedCollection.IndexNodeName;
 				CheckColumnDuplication(distinctColumns, indexedCollection.Index.ColumnIterator);
 			}
 			else
@@ -390,7 +377,6 @@ namespace NHibernate.Persister.Collection
 				indexColumnNames = null;
 				indexColumnAliases = null;
 				baseIndex = 0;
-				indexNodeName = null;
 			}
 
 			hasIdentifier = collection.IsIdentified;
@@ -708,16 +694,16 @@ namespace NHibernate.Persister.Collection
 		}
 
 		/// <summary>
-		/// Reads the Element from the IDataReader.  The IDataReader will probably only contain
+		/// Reads the Element from the DbDataReader.  The DbDataReader will probably only contain
 		/// the id of the Element.
 		/// </summary>
 		/// <remarks>See ReadElementIdentifier for an explanation of why this method will be depreciated.</remarks>
-		public object ReadElement(IDataReader rs, object owner, string[] aliases, ISessionImplementor session)
+		public object ReadElement(DbDataReader rs, object owner, string[] aliases, ISessionImplementor session)
 		{
 			return ElementType.NullSafeGet(rs, aliases, session, owner);
 		}
 
-		public object ReadIndex(IDataReader rs, string[] aliases, ISessionImplementor session)
+		public object ReadIndex(DbDataReader rs, string[] aliases, ISessionImplementor session)
 		{
 			object index = IndexType.NullSafeGet(rs, aliases, session, null);
 			if (index == null)
@@ -738,7 +724,7 @@ namespace NHibernate.Persister.Collection
 			return index;
 		}
 
-		public object ReadIdentifier(IDataReader rs, string alias, ISessionImplementor session)
+		public object ReadIdentifier(DbDataReader rs, string alias, ISessionImplementor session)
 		{
 			object id = IdentifierType.NullSafeGet(rs, alias, session, null);
 			if (id == null)
@@ -749,12 +735,12 @@ namespace NHibernate.Persister.Collection
 			return id;
 		}
 
-		public object ReadKey(IDataReader dr, string[] aliases, ISessionImplementor session)
+		public object ReadKey(DbDataReader dr, string[] aliases, ISessionImplementor session)
 		{
 			return KeyType.NullSafeGet(dr, aliases, session, null);
 		}
 
-		protected int WriteKey(IDbCommand st, object id, int i, ISessionImplementor session)
+		protected int WriteKey(DbCommand st, object id, int i, ISessionImplementor session)
 		{
 			if (id == null)
 			{
@@ -765,13 +751,13 @@ namespace NHibernate.Persister.Collection
 			return i + keyColumnAliases.Length;
 		}
 
-		protected int WriteElement(IDbCommand st, object elt, int i, ISessionImplementor session)
+		protected int WriteElement(DbCommand st, object elt, int i, ISessionImplementor session)
 		{
 			ElementType.NullSafeSet(st, elt, i, elementColumnIsSettable, session);
 			return i + ArrayHelper.CountTrue(elementColumnIsSettable);
 		}
 
-		protected int WriteIndex(IDbCommand st, object idx, int i, ISessionImplementor session)
+		protected int WriteIndex(DbCommand st, object idx, int i, ISessionImplementor session)
 		{
 			IndexType.NullSafeSet(st, IncrementIndexByBase(idx), i, indexColumnIsSettable, session);
 			return i + ArrayHelper.CountTrue(indexColumnIsSettable);
@@ -787,7 +773,7 @@ namespace NHibernate.Persister.Collection
 			return index;
 		}
 
-		protected int WriteElementToWhere(IDbCommand st, object elt, int i, ISessionImplementor session)
+		protected int WriteElementToWhere(DbCommand st, object elt, int i, ISessionImplementor session)
 		{
 			if (elementIsPureFormula)
 			{
@@ -798,7 +784,7 @@ namespace NHibernate.Persister.Collection
 			return i + elementColumnAliases.Length;
 		}
 
-		protected int WriteIndexToWhere(IDbCommand st, object index, int i, ISessionImplementor session)
+		protected int WriteIndexToWhere(DbCommand st, object index, int i, ISessionImplementor session)
 		{
 			if (indexContainsFormula)
 			{
@@ -809,7 +795,7 @@ namespace NHibernate.Persister.Collection
 			return i + indexColumnAliases.Length;
 		}
 
-		protected int WriteIdentifier(IDbCommand st, object idx, int i, ISessionImplementor session)
+		protected int WriteIdentifier(DbCommand st, object idx, int i, ISessionImplementor session)
 		{
 			IdentifierType.NullSafeSet(st, idx, i, session);
 			return i + 1;
@@ -1047,11 +1033,9 @@ namespace NHibernate.Persister.Collection
 					IExpectation expectation = Expectations.AppropriateExpectation(DeleteAllCheckStyle);
 					//bool callable = DeleteAllCallable;
 					bool useBatch = expectation.CanBeBatched;
-					IDbCommand st = useBatch
-										? session.Batcher.PrepareBatchCommand(SqlDeleteString.CommandType, SqlDeleteString.Text,
-																			  SqlDeleteString.ParameterTypes)
-										: session.Batcher.PrepareCommand(SqlDeleteString.CommandType, SqlDeleteString.Text,
-																		 SqlDeleteString.ParameterTypes);
+					var st = useBatch
+						? session.Batcher.PrepareBatchCommand(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes)
+						: session.Batcher.PrepareCommand(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes);
 
 					try
 					{
@@ -1182,7 +1166,7 @@ namespace NHibernate.Persister.Collection
 
 						while (deletes.MoveNext())
 						{
-							IDbCommand st;
+							DbCommand st;
 							IExpectation expectation = Expectations.AppropriateExpectation(deleteCheckStyle);
 							//bool callable = DeleteCallable;
 
@@ -1544,8 +1528,8 @@ namespace NHibernate.Persister.Collection
 					
 				}
 
-				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, GenerateSelectSizeString(session), KeyType.SqlTypes(factory));
-				IDataReader rs = null;
+				var st = session.Batcher.PrepareCommand(CommandType.Text, GenerateSelectSizeString(session), KeyType.SqlTypes(factory));
+				DbDataReader rs = null;
 				try
 				{
 					KeyType.NullSafeSet(st, key, 0, session);
@@ -1583,8 +1567,8 @@ namespace NHibernate.Persister.Collection
 			{
 				List<SqlType> sqlTl = new List<SqlType>(KeyType.SqlTypes(factory));
 				sqlTl.AddRange(indexOrElementType.SqlTypes(factory));
-				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, sqlTl.ToArray());
-				IDataReader rs = null;
+				var st = session.Batcher.PrepareCommand(CommandType.Text, sql, sqlTl.ToArray());
+				DbDataReader rs = null;
 				try
 				{
 					KeyType.NullSafeSet(st, key, 0, session);
@@ -1623,8 +1607,8 @@ namespace NHibernate.Persister.Collection
 			{
 				List<SqlType> sqlTl = new List<SqlType>(KeyType.SqlTypes(factory));
 				sqlTl.AddRange(IndexType.SqlTypes(factory));
-				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sqlSelectRowByIndexString, sqlTl.ToArray());
-				IDataReader rs = null;
+				var st = session.Batcher.PrepareCommand(CommandType.Text, sqlSelectRowByIndexString, sqlTl.ToArray());
+				DbDataReader rs = null;
 				try
 				{
 					KeyType.NullSafeSet(st, key, 0, session);
@@ -1939,21 +1923,6 @@ namespace NHibernate.Persister.Collection
 			get { return isVersioned && OwnerEntityPersister.IsVersioned; }
 		}
 
-		public string NodeName
-		{
-			get { return nodeName; }
-		}
-
-		public string ElementNodeName
-		{
-			get { return elementNodeName; }
-		}
-
-		public string IndexNodeName
-		{
-			get { return indexNodeName; }
-		}
-
 		protected virtual ISQLExceptionConverter SQLExceptionConverter
 		{
 			get { return sqlExceptionConverter; }
@@ -1997,11 +1966,9 @@ namespace NHibernate.Persister.Collection
 		{
 			object entryId = null;
 			int offset = 0;
-			IDbCommand st = useBatch
-								? session.Batcher.PrepareBatchCommand(SqlInsertRowString.CommandType, SqlInsertRowString.Text,
-																	  SqlInsertRowString.ParameterTypes)
-								: session.Batcher.PrepareCommand(SqlInsertRowString.CommandType, SqlInsertRowString.Text,
-																 SqlInsertRowString.ParameterTypes);
+			var st = useBatch
+				? session.Batcher.PrepareBatchCommand(SqlInsertRowString.CommandType, SqlInsertRowString.Text, SqlInsertRowString.ParameterTypes)
+				: session.Batcher.PrepareCommand(SqlInsertRowString.CommandType, SqlInsertRowString.Text, SqlInsertRowString.ParameterTypes);
 			try
 			{
 				//offset += expectation.Prepare(st, factory.ConnectionProvider.Driver);
@@ -2136,7 +2103,7 @@ namespace NHibernate.Persister.Collection
 				get { return entry; }
 			}
 
-			public void BindValues(IDbCommand cm)
+			public void BindValues(DbCommand cm)
 			{
 				int offset = 0;
 				offset = persister.WriteKey(cm, ownerId, offset, session);

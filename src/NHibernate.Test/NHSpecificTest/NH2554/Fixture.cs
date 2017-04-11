@@ -49,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2554
 			{
 				var students = session.CreateQuery("from Student").List<Student>();
 				Assert.That(students.Count, Is.EqualTo(1));
-				Assert.That(students[0].FullName, Is.StringMatching("Julian Maughan"));
+				Assert.That(students[0].FullName, Is.EqualTo("Julian Maughan"));
 				Assert.That(students[0].FullNameAsVarBinary.Length, Is.EqualTo(28));
 				Assert.That(students[0].FullNameAsVarBinary512.Length, Is.EqualTo(28));
 				// Assert.That(students[0].FullNameAsBinary.Length, Is.EqualTo(28)); 30???

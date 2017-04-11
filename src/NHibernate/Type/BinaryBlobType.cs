@@ -8,7 +8,7 @@ namespace NHibernate.Type
 	/// </summary>
 	/// <remarks>
 	/// This is only needed by DataProviders (SqlClient) that need to specify a Size for the
-	/// IDbDataParameter.  Most DataProvider(Oracle) don't need to set the Size so a BinaryType
+	/// DbParameter.  Most DataProvider(Oracle) don't need to set the Size so a BinaryType
 	/// would work just fine.
 	/// </remarks>
 	[Serializable]

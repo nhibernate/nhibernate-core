@@ -1879,7 +1879,7 @@ namespace NHibernate.Dialect
 
 		/// <summary> 
 		/// Does this dialect require that references to result variables
-		/// (i.e, select expresssion aliases) in an ORDER BY clause be
+		/// (i.e, select expression aliases) in an ORDER BY clause be
 		/// replaced by column positions (1-origin) as defined by the select clause?
 		/// </summary>
 		/// <returns> 
@@ -2050,8 +2050,6 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-		#endregion
-
 		/// <summary>
 		/// Does this dialect support subselects?
 		/// </summary>
@@ -2059,6 +2057,8 @@ namespace NHibernate.Dialect
 		{
 			get { return true; }
 		}
+
+		#endregion
 
 		/// <summary>
 		/// Retrieve a set of default Hibernate properties for this database.
@@ -2136,7 +2136,7 @@ namespace NHibernate.Dialect
 		/// <summary> 
 		/// Should the value returned by <see cref="CurrentTimestampSelectString"/>
 		/// be treated as callable.  Typically this indicates that JDBC escape
-		/// sytnax is being used...
+		/// syntax is being used...
 		/// </summary>
 		public virtual bool IsCurrentTimestampSelectStringCallable
 		{

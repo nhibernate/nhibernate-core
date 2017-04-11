@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using System.Text;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
@@ -21,8 +21,8 @@ namespace NHibernate.Type
 		{
 		}
 
-
 		#region IVersionType Members
+
 		//      Note : simply returns null for seed() and next() as the only known
 		//      application of binary types for versioning is for use with the
 		//      TIMESTAMP datatype supported by Sybase and SQL Server, which
@@ -56,16 +56,7 @@ namespace NHibernate.Type
 
 		#endregion
 
-		#region IComparer Members
-
-		public virtual int Compare(object x, object y)
-		{
-			return Compare(x, y, null);
-		}
-
-		#endregion
-
-		public abstract override string Name { get;}
+		public abstract override string Name { get; }
 
 		/// <summary> Convert the byte[] into the expected object type</summary>
 		protected internal abstract object ToExternalFormat(byte[] bytes);
@@ -73,11 +64,11 @@ namespace NHibernate.Type
 		/// <summary> Convert the object into the internal byte[] representation</summary>
 		protected internal abstract byte[] ToInternalFormat(object bytes);
 
-		public override void Set(IDbCommand cmd, object value, int index)
+		public override void Set(DbCommand cmd, object value, int index)
 		{
 			byte[] internalValue = ToInternalFormat(value);
 
-			var parameter = (IDbDataParameter)cmd.Parameters[index];
+			var parameter = cmd.Parameters[index];
 
 			// set the parameter value before the size check, since ODBC changes the size automatically
 			parameter.Value = internalValue;
@@ -87,9 +78,9 @@ namespace NHibernate.Type
 				throw new HibernateException("The length of the byte[] value exceeds the length configured in the mapping/parameter.");
 		}
 
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index)
 		{
-			int length = (int)rs.GetBytes(index, 0, null, 0, 0);
+			int length = (int) rs.GetBytes(index, 0, null, 0, 0);
 			byte[] buffer = new byte[length];
 			if (length > 0)
 			{
@@ -99,12 +90,12 @@ namespace NHibernate.Type
 			return ToExternalFormat(buffer);
 		}
 
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name)
 		{
 			return Get(rs, rs.GetOrdinal(name));
 		}
 
-		public override int GetHashCode(object x, EntityMode entityMode)
+		public override int GetHashCode(object x)
 		{
 			byte[] bytes = ToInternalFormat(x);
 			int hashCode = 1;
@@ -118,7 +109,7 @@ namespace NHibernate.Type
 			return hashCode;
 		}
 
-		public override int Compare(object x, object y, EntityMode? entityMode)
+		public override int Compare(object x, object y)
 		{
 			byte[] xbytes = ToInternalFormat(x);
 			byte[] ybytes = ToInternalFormat(y);
@@ -170,7 +161,7 @@ namespace NHibernate.Type
 			for (int i = 0; i < bytes.Length; i++)
 			{
 				string hexStr = xml.Substring(i * 2, ((i + 1) * 2) - (i * 2));
-				bytes[i] = (byte)(Convert.ToInt32(hexStr, 16) + Byte.MinValue);
+				bytes[i] = (byte) (Convert.ToInt32(hexStr, 16) + Byte.MinValue);
 			}
 			return ToExternalFormat(bytes);
 		}

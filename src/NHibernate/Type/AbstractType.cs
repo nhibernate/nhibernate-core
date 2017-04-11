@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
-using System.Data;
-using System.Xml;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
@@ -20,11 +19,6 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <value>false - by default an <see cref="AbstractType"/> is not an <see cref="IAssociationType"/>.</value>
 		public virtual bool IsAssociationType
-		{
-			get { return false; }
-		}
-
-		public virtual bool IsXMLElement
 		{
 			get { return false; }
 		}
@@ -71,7 +65,7 @@ namespace NHibernate.Type
 			if (value == null) 
 				return null;
 
-			return DeepCopy(value, session.EntityMode, session.Factory);
+			return DeepCopy(value, session.Factory);
 		}
 
 		/// <summary>
@@ -89,7 +83,7 @@ namespace NHibernate.Type
 			if (cached == null)
 				return null;
 
-			return DeepCopy(cached, session.EntityMode, session.Factory);
+			return DeepCopy(cached, session.Factory);
 		}
 
 		public virtual void BeforeAssemble(object cached, ISessionImplementor session)
@@ -107,26 +101,26 @@ namespace NHibernate.Type
 		/// <remarks>This method uses <c>IType.Equals(object, object)</c> to determine the value of IsDirty.</remarks>
 		public virtual bool IsDirty(object old, object current, ISessionImplementor session)
 		{
-			return !IsSame(old, current, session.EntityMode);
+			return !IsSame(old, current);
 		}
 
 		/// <summary>
 		/// Retrieves an instance of the mapped class, or the identifier of an entity 
-		/// or collection from a <see cref="IDataReader"/>.
+		/// or collection from a <see cref="DbDataReader"/>.
 		/// </summary>
-		/// <param name="rs">The <see cref="IDataReader"/> that contains the values.</param>
+		/// <param name="rs">The <see cref="DbDataReader"/> that contains the values.</param>
 		/// <param name="names">
-		/// The names of the columns in the <see cref="IDataReader"/> that contain the 
+		/// The names of the columns in the <see cref="DbDataReader"/> that contain the 
 		/// value to populate the IType with.
 		/// </param>
 		/// <param name="session">the session</param>
 		/// <param name="owner">The parent Entity</param>
 		/// <returns>An identifier or actual object mapped by this IType.</returns>
 		/// <remarks>
-		/// This method uses the <c>IType.NullSafeGet(IDataReader, string[], ISessionImplementor, object)</c> method
+		/// This method uses the <c>IType.NullSafeGet(DbDataReader, string[], ISessionImplementor, object)</c> method
 		/// to Hydrate this <see cref="AbstractType"/>.
 		/// </remarks>
-		public virtual object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public virtual object Hydrate(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			return NullSafeGet(rs, names, session, owner);
 		}
@@ -185,7 +179,7 @@ namespace NHibernate.Type
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.DeepCopy"]/*'
 		/// /> 
-		public abstract object DeepCopy(object val, EntityMode entityMode, ISessionFactoryImplementor factory);
+		public abstract object DeepCopy(object val, ISessionFactoryImplementor factory);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.SqlTypes"]/*'
@@ -213,32 +207,32 @@ namespace NHibernate.Type
 			return include ? Replace(original, target, session, owner, copyCache) : target;
 		}
 
-		public virtual bool IsSame(object x, object y, EntityMode entityMode)
+		public virtual bool IsSame(object x, object y)
 		{
-			return IsEqual(x, y, entityMode);
+			return IsEqual(x, y);
 		}
 
-		public virtual bool IsEqual(object x, object y, EntityMode entityMode)
+		public virtual bool IsEqual(object x, object y)
 		{
 			return EqualsHelper.Equals(x, y);
 		}
 
-		public virtual bool IsEqual(object x, object y, EntityMode entityMode, ISessionFactoryImplementor factory)
+		public virtual bool IsEqual(object x, object y, ISessionFactoryImplementor factory)
 		{
-			return IsEqual(x, y, entityMode);
+			return IsEqual(x, y);
 		}
 
-		public virtual int GetHashCode(object x, EntityMode entityMode)
+		public virtual int GetHashCode(object x)
 		{
 			return x.GetHashCode();
 		}
 
-		public virtual int GetHashCode(object x, EntityMode entityMode, ISessionFactoryImplementor factory)
+		public virtual int GetHashCode(object x, ISessionFactoryImplementor factory)
 		{
-			return GetHashCode(x, entityMode);
+			return GetHashCode(x);
 		}
 
-		public virtual int Compare(object x, object y, EntityMode? entityMode)
+		public virtual int Compare(object x, object y)
 		{
 			IComparable xComp = x as IComparable;
 			IComparable yComp = y as IComparable;
@@ -256,21 +250,9 @@ namespace NHibernate.Type
 			return this;
 		}
 
-		protected internal static void ReplaceNode(XmlNode container, XmlNode value)
-		{
-			if (container != value)
-			{
-				//not really necessary, I guess...
-				XmlNode parent = container.ParentNode;
-				parent.ReplaceChild(value, container);
-			}
-		}
-
 		public abstract object Replace(object original, object current, ISessionImplementor session, object owner,
 									   IDictionary copiedAlready);
 
-		public abstract void SetToXMLNode(XmlNode node, object value, ISessionFactoryImplementor factory);
-		public abstract object FromXMLNode(XmlNode xml, IMapping factory);
 		public abstract bool[] ToColumnNullness(object value, IMapping mapping);
 
 		/// <include file='IType.cs.xmldoc' 
@@ -284,24 +266,24 @@ namespace NHibernate.Type
 		public abstract string Name { get; }
 
 		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(IDataReader, string[], ISessionImplementor, object)"]/*'
+		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, string[], ISessionImplementor, object)"]/*'
 		/// /> 
-		public abstract object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner);
+		public abstract object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner);
 
 		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(IDataReader, string, ISessionImplementor, object)"]/*'
+		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, string, ISessionImplementor, object)"]/*'
 		/// /> 
-		public abstract object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, Object owner);
+		public abstract object NullSafeGet(DbDataReader rs, string name, ISessionImplementor session, Object owner);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet(settable)"]/*'
 		/// /> 
-		public abstract void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session);
+		public abstract void NullSafeSet(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet"]/*'
 		/// /> 
-		public abstract void NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session);
+		public abstract void NullSafeSet(DbCommand st, object value, int index, ISessionImplementor session);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="P:IType.ReturnedClass"]/*'

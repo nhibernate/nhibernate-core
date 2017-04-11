@@ -118,7 +118,7 @@
 
             <para>
                 The <literal>sql-type</literal> attribute allows the user to override the default mapping
-                of NHibernate type to SQL datatype.
+                of NHibernate type to SQL data type.
             </para>
             
             <para>
@@ -157,7 +157,7 @@
                         <row>
                             <entry><literal>not-null</literal></entry>
                             <entry><literal>true|false</literal></entry>
-                            <entry>specfies that the column should be non-nullable</entry>
+                            <entry>specifies that the column should be non-nullable</entry>
                         </row>
                         <row>
                             <entry><literal>unique</literal></entry>
@@ -326,7 +326,7 @@ new SchemaExport(cfg).Create(false, true);]]></programlisting>
         <para>
           The NHibernate code generator may be used to generate skeletal C# implementation classes
           from a NHibernate mapping file. This tool is included in the NHibernate Contrib package
-          (a seperate download in http://sourceforge.net/projects/nhcontrib/).
+          (a separate download in http://sourceforge.net/projects/nhcontrib/).
         </para>
 
         <para>

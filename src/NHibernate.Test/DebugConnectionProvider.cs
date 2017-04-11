@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using NHibernate.Connection;
 
@@ -12,13 +13,13 @@ namespace NHibernate.Test
 	/// </summary>
 	public class DebugConnectionProvider : DriverConnectionProvider
 	{
-		private ConcurrentDictionary<IDbConnection, byte> connections = new ConcurrentDictionary<IDbConnection, byte>();
+		private ConcurrentDictionary<DbConnection, byte> connections = new ConcurrentDictionary<DbConnection, byte>();
 
-		public override IDbConnection GetConnection()
+		public override DbConnection GetConnection()
 		{
 			try
 			{
-				IDbConnection connection = base.GetConnection();
+				var connection = base.GetConnection();
 				connections.TryAdd(connection, 0);
 				return connection;
 			}
@@ -28,7 +29,7 @@ namespace NHibernate.Test
 			}
 		}
 
-		public override void CloseConnection(IDbConnection conn)
+		public override void CloseConnection(DbConnection conn)
 		{
 			base.CloseConnection(conn);
 			byte _;
@@ -40,8 +41,8 @@ namespace NHibernate.Test
 			get
 			{
 				// Disposing of an ISession does not call CloseConnection (should it???)
-				// so a Diposed of ISession will leave an IDbConnection in the list but
-				// the IDbConnection will be closed (atleast with MsSql it works this way).
+				// so a Diposed of ISession will leave an DbConnection in the list but
+				// the DbConnection will be closed (atleast with MsSql it works this way).
 				return connections.Keys.Any(conn => conn.State != ConnectionState.Closed);
 			}
 		}

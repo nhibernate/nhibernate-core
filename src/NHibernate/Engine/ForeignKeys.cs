@@ -84,7 +84,7 @@ namespace NHibernate.Engine
 						}
 					}
 					if (substitute)
-						actype.SetPropertyValues(value, subvalues, session.EntityMode);
+						actype.SetPropertyValues(value, subvalues);
 					return value;
 				}
 				else
@@ -206,14 +206,14 @@ namespace NHibernate.Engine
 				// is transient or detached without querying the database.
 				// This could potentially cause Select N+1 in cascaded saves, so warn the user.
 				log.Warn("Unable to determine if " + entity.ToString()
-					+ " with assigned identifier " + persister.GetIdentifier(entity, session.EntityMode)
+					+ " with assigned identifier " + persister.GetIdentifier(entity)
 					+ " is transient or detached; querying the database."
 					+ " Use explicit Save() or Update() in session to prevent this.");
 			}
 
 			// hit the database, after checking the session cache for a snapshot
 			System.Object[] snapshot =
-				session.PersistenceContext.GetDatabaseSnapshot(persister.GetIdentifier(entity, session.EntityMode), persister);
+				session.PersistenceContext.GetDatabaseSnapshot(persister.GetIdentifier(entity), persister);
 			return snapshot == null;
 		}
 
@@ -265,7 +265,7 @@ namespace NHibernate.Engine
 							string.Format("object references an unsaved transient instance - save the transient instance before flushing or set cascade action for the property to something that would make it autosave. Type: {0}, Entity: {1}", entityName, entityString));
 
 					}
-					id = session.GetEntityPersister(entityName, entity).GetIdentifier(entity, session.EntityMode);
+					id = session.GetEntityPersister(entityName, entity).GetIdentifier(entity);
 				}
 				return id;
 			}

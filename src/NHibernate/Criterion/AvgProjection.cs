@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
@@ -14,7 +13,7 @@ namespace NHibernate.Criterion
 		public AvgProjection(IProjection projection) : base("avg", projection) {}
 		public AvgProjection(string propertyName) : base("avg", propertyName) {}
 
-		public override SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery)
 		{
 			ISessionFactoryImplementor factory = criteriaQuery.Factory;
 			SqlType[] sqlTypeCodes = NHibernateUtil.Double.SqlTypes(factory);
@@ -24,7 +23,7 @@ namespace NHibernate.Criterion
 			sql.Add("cast(");
 			if (projection != null)
 			{
-				sql.Add(SqlStringHelper.RemoveAsAliasesFromSql(projection.ToSqlString(criteria, loc, criteriaQuery, enabledFilters)));
+				sql.Add(SqlStringHelper.RemoveAsAliasesFromSql(projection.ToSqlString(criteria, loc, criteriaQuery)));
 			}
 			else
 			{

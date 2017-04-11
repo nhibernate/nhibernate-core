@@ -1,5 +1,5 @@
 using System;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlTypes;
@@ -29,20 +29,20 @@ namespace NHibernate.Type
 			return NoSqlTypes;
 		}
 
-		public OneToOneType(string referencedEntityName, ForeignKeyDirection foreignKeyType, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool isEmbeddedInXML, string entityName, string propertyName)
-			: base(referencedEntityName, uniqueKeyPropertyName, !lazy, isEmbeddedInXML, unwrapProxy)
+		public OneToOneType(string referencedEntityName, ForeignKeyDirection foreignKeyType, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, string entityName, string propertyName)
+			: base(referencedEntityName, uniqueKeyPropertyName, !lazy, unwrapProxy)
 		{
 			foreignKeyDirection = foreignKeyType;
 			this.propertyName = propertyName;
 			this.entityName = entityName;
 		}
 
-		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override void NullSafeSet(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			//nothing to do
 		}
 
-		public override void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session)
+		public override void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			//nothing to do
 		}
@@ -89,7 +89,7 @@ namespace NHibernate.Type
 			get { return foreignKeyDirection; }
 		}
 
-		public override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override object Hydrate(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			IType type = GetIdentifierOrUniqueKeyType(session.Factory);
 			object identifier = session.GetContextEntityIdentifier(owner);

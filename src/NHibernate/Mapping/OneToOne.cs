@@ -97,7 +97,7 @@ namespace NHibernate.Mapping
 				else
 				{
 					return
-						TypeFactory.OneToOne(ReferencedEntityName, foreignKeyType, referencedPropertyName, IsLazy, UnwrapProxy, Embedded,
+						TypeFactory.OneToOne(ReferencedEntityName, foreignKeyType, referencedPropertyName, IsLazy, UnwrapProxy,
 											 entityName, propertyName);
 				}
 			}
