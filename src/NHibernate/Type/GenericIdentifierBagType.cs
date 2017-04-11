@@ -137,10 +137,11 @@ namespace NHibernate.Type
 			}
 			else
 			{
+				var originalLookup = iterOriginal.ToLookup(e => e);
 				for (var i = 0; i < targetPc.Count; i++)
 				{
 					var currTarget = targetPc[i];
-					var orgToUse = iterOriginal.First(x => currTarget.Equals(x));
+					var orgToUse = originalLookup[currTarget].First();
 					targetPc[i] = (T)elemType.Replace(orgToUse, null, session, owner, copyCache);
 				}
 			}
