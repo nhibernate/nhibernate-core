@@ -197,6 +197,7 @@ namespace NHibernate.Test.TransformTests
 						.List<PrivateInheritedFieldsSimpleDTO>();
 					Assert.That(l.Count, Is.EqualTo(2));
 					Assert.That(l, Has.All.Not.Null);
+					Assert.That(l, Has.All.Property("Id").Not.Null);
 				}
 			}
 			finally
