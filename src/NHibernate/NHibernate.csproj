@@ -677,7 +677,6 @@
     <Compile Include="Transform\ITupleSubsetResultTransformer.cs" />
     <Compile Include="Transform\DistinctRootEntityResultTransformer.cs" />
     <Compile Include="Transform\IResultTransformer.cs" />
-    <Compile Include="Transform\QueryAliasToObjectPropertySetter.cs" />
     <Compile Include="Transform\RootEntityResultTransformer.cs" />
     <Compile Include="TransientObjectException.cs" />
     <Compile Include="Type\AbstractType.cs" />
