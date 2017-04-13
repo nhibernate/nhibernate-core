@@ -3,7 +3,7 @@ using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
 
-namespace NHibernate.Test.NHSpecificTest.EntityWithDatetime2
+namespace NHibernate.Test.NHSpecificTest.NH3984
 {
     [TestFixture]
     public class Fixture : BugTestCase

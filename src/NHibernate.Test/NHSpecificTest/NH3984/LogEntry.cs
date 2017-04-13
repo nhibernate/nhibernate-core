@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NHibernate.Test.NHSpecificTest.EntityWithDatetime2
+namespace NHibernate.Test.NHSpecificTest.NH3984
 {
     public class LogEntry
     {
