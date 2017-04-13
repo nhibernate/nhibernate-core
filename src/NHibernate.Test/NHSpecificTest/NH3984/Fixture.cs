@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using NHibernate.Dialect;
 using NHibernate.Linq;
 using NUnit.Framework;
 
@@ -16,6 +17,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3984
                 s.CreateSQLQuery("delete from LogEntry").ExecuteUpdate();
                 tx.Commit();
             }
+        }
+
+        protected override bool AppliesTo(Dialect.Dialect dialect)
+        {
+            return dialect is MsSql2008Dialect;
         }
 
         [Test]
