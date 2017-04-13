@@ -1363,6 +1363,8 @@
     <Compile Include="NHSpecificTest\NH3800\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3757\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3757\Money.cs" />
+    <Compile Include="NHSpecificTest\EntityWithDatetime2\Fixture.cs" />
+    <Compile Include="NHSpecificTest\EntityWithDatetime2\LogEntry.cs" />
     <Compile Include="NHSpecificTest\Properties\CompositePropertyRefTest.cs" />
     <Compile Include="NHSpecificTest\Properties\DynamicEntityTest.cs" />
     <Compile Include="NHSpecificTest\Properties\Model.cs" />
@@ -3247,6 +3249,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\EntityWithDatetime2\Mappings.hbm.xml" />
     <EmbeddedResource Include="Insertordering\FamilyModel\Mappings.hbm.xml" />
     <EmbeddedResource Include="Insertordering\AnimalModel\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3247\Mappings.hbm.xml" />
