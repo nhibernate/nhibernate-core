@@ -17,6 +17,8 @@ namespace NHibernate.Linq.Visitors
 
 		public QuerySourceNamer QuerySourceNamer { get; }
 
+		public NhLinqExpressionReturnType RootReturnType { get; }
+
 		private readonly HashSet<WhereClause> _havingClauses = new HashSet<WhereClause>();
 		private readonly HashSet<AdditionalFromClause> _leftJoins = new HashSet<AdditionalFromClause>();
 		private readonly HashSet<WhereClause> _withClauses = new HashSet<WhereClause>();
@@ -26,12 +28,14 @@ namespace NHibernate.Linq.Visitors
 			ISessionFactoryImplementor sessionFactory,
 			IDictionary<ConstantExpression, NamedParameter> constantToParameterMap,
 			List<NamedParameterDescriptor> requiredHqlParameters,
-			QuerySourceNamer querySourceNamer)
+			QuerySourceNamer querySourceNamer,
+			NhLinqExpressionReturnType rootReturnType)
 		{
 			SessionFactory = sessionFactory;
 			ConstantToParameterMap = constantToParameterMap;
 			RequiredHqlParameters = requiredHqlParameters;
 			QuerySourceNamer = querySourceNamer;
+			RootReturnType = rootReturnType;
 		}
 
 		/// <summary>
@@ -40,9 +44,7 @@ namespace NHibernate.Linq.Visitors
 		/// <param name="clause">The clause to test.</param>
 		/// <returns><c>true</c> if the clause needs to be converted to a HQL having clause, <c>false</c> otherwise.</returns>
 		public bool IsHavingClause(WhereClause clause)
-		{
-			return _havingClauses.Contains(clause);
-		}
+			=> _havingClauses.Contains(clause);
 
 		/// <summary>
 		/// Indicates if a Linq where clause needs to be converted to a HQL with clause.
@@ -50,9 +52,7 @@ namespace NHibernate.Linq.Visitors
 		/// <param name="clause">The clause to test.</param>
 		/// <returns><c>true</c> if the clause needs to be converted to a HQL with clause, <c>false</c> otherwise.</returns>
 		public bool IsWithClause(WhereClause clause)
-		{
-			return _withClauses.Contains(clause);
-		}
+			=> _withClauses.Contains(clause);
 
 		/// <summary>
 		/// Indicates if a Linq join clause needs to be converted to a HQL left join.
@@ -60,9 +60,7 @@ namespace NHibernate.Linq.Visitors
 		/// <param name="join">The join to test.</param>
 		/// <returns><c>true</c> if the clause needs to be converted to a HQL left join, <c>false</c> otherwise.</returns>
 		public bool IsLeftJoin(AdditionalFromClause join)
-		{
-			return _leftJoins.Contains(join);
-		}
+			=> _leftJoins.Contains(join);
 
 		/// <summary>
 		/// Get the clauses to apply to the join as HQL with clauses.

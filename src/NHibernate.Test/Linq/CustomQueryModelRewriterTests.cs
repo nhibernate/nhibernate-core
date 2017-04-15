@@ -44,12 +44,12 @@ namespace NHibernate.Test.Linq
 		{
 			public override void VisitWhereClause(WhereClause whereClause, QueryModel queryModel, int index)
 			{
-				whereClause.TransformExpressions(new Visitor().VisitExpression);
+				whereClause.TransformExpressions(new Visitor().Visit);
 			}
 
-			private class Visitor : ExpressionTreeVisitor
+			private class Visitor : RelinqExpressionVisitor
 			{
-				protected override Expression VisitBinaryExpression(BinaryExpression expression)
+				protected override Expression VisitBinary(BinaryExpression expression)
 				{
 					if (
 						expression.NodeType == ExpressionType.Equal ||
@@ -68,9 +68,7 @@ namespace NHibernate.Test.Linq
 							reverse = true;
 						}
 
-						var constant = left as ConstantExpression;
-
-						if (constant != null && constant.Value == null)
+						if (left is ConstantExpression constant && constant.Value == null)
 						{
 							left = Expression.Constant("Thomas Hardy");
 
@@ -82,7 +80,7 @@ namespace NHibernate.Test.Linq
 						}
 					}
 
-					return base.VisitBinaryExpression(expression);
+					return base.VisitBinary(expression);
 				}
 			}
 		}

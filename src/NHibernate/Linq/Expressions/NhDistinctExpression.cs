@@ -5,13 +5,10 @@ namespace NHibernate.Linq.Expressions
 	public class NhDistinctExpression : NhAggregatedExpression
 	{
 		public NhDistinctExpression(Expression expression)
-			: base(expression, NhExpressionType.Distinct)
-		{
-		}
+			: base(expression) { }
 
-		public override Expression CreateNew(Expression expression)
-		{
-			return new NhDistinctExpression(expression);
-		}
+		public override NhExpressionType NhNodeType => NhExpressionType.Distinct;
+
+		public override Expression CreateNew(Expression expression) => new NhDistinctExpression(expression);
 	}
 }

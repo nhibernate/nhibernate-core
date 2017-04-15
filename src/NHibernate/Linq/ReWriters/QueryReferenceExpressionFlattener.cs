@@ -9,7 +9,7 @@ using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.ReWriters
 {
-	public class QueryReferenceExpressionFlattener : ExpressionTreeVisitor
+	public class QueryReferenceExpressionFlattener : RelinqExpressionVisitor
 	{
 		private readonly QueryModel _model;
 
@@ -29,24 +29,22 @@ namespace NHibernate.Linq.ReWriters
 		public static void ReWrite(QueryModel model)
 		{
 			var visitor = new QueryReferenceExpressionFlattener(model);
-			model.TransformExpressions(visitor.VisitExpression);
+			model.TransformExpressions(visitor.Visit);
 		}
 
-		protected override Expression VisitSubQueryExpression(SubQueryExpression subQuery)
+		protected override Expression VisitSubQuery(SubQueryExpression subQuery)
 		{
 			var subQueryModel = subQuery.QueryModel;
 			var hasBodyClauses = subQueryModel.BodyClauses.Count > 0;
 			if (hasBodyClauses)
 			{
-				return base.VisitSubQueryExpression(subQuery);
+				return base.VisitSubQuery(subQuery);
 			}
 
 			var resultOperators = subQueryModel.ResultOperators;
 			if (resultOperators.Count == 0 || HasJustAllFlattenableOperator(resultOperators))
 			{
-				var selectQuerySource = subQueryModel.SelectClause.Selector as QuerySourceReferenceExpression;
-
-				if (selectQuerySource != null && selectQuerySource.ReferencedQuerySource == subQueryModel.MainFromClause)
+				if (subQueryModel.SelectClause.Selector is QuerySourceReferenceExpression selectQuerySource && selectQuerySource.ReferencedQuerySource == subQueryModel.MainFromClause)
 				{
 					foreach (var resultOperator in resultOperators)
 					{
@@ -57,7 +55,7 @@ namespace NHibernate.Linq.ReWriters
 				}
 			}
 
-			return base.VisitSubQueryExpression(subQuery);
+			return base.VisitSubQuery(subQuery);
 		}
 
 		private static bool HasJustAllFlattenableOperator(IEnumerable<ResultOperatorBase> resultOperators)
@@ -65,18 +63,16 @@ namespace NHibernate.Linq.ReWriters
 			return resultOperators.All(x => FlattenableResultOperators.Contains(x.GetType()));
 		}
 
-		protected override Expression VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
+		protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression expression)
 		{
-			var fromClauseBase = expression.ReferencedQuerySource as FromClauseBase;
-
-			if (fromClauseBase != null &&
+			if (expression.ReferencedQuerySource is FromClauseBase fromClauseBase &&
 				fromClauseBase.FromExpression is QuerySourceReferenceExpression &&
 				expression.Type == fromClauseBase.FromExpression.Type)
 			{
 				return fromClauseBase.FromExpression;
 			}
 
-			return base.VisitQuerySourceReferenceExpression(expression);
+			return base.VisitQuerySourceReference(expression);
 		}
 	}
 }

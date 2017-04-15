@@ -10,7 +10,8 @@ namespace NHibernate.Linq.Visitors
 {
 	public static class VisitorUtil
 	{
-		public static bool IsDynamicComponentDictionaryGetter(MethodInfo method, Expression targetObject, IEnumerable<Expression> arguments, ISessionFactory sessionFactory, out string memberName)
+		public static bool IsDynamicComponentDictionaryGetter(MethodInfo method, Expression targetObject,
+			IEnumerable<Expression> arguments, ISessionFactory sessionFactory, out string memberName)
 		{
 			memberName = null;
 
@@ -37,23 +38,22 @@ namespace NHibernate.Linq.Visitors
 			//Walk backwards if the owning member is not a mapped class (i.e a possible Component)
 			targetObject = member.Expression;
 			while (metaData == null && targetObject != null &&
-			       (targetObject.NodeType == ExpressionType.MemberAccess || targetObject.NodeType == ExpressionType.Parameter ||
-			        targetObject.NodeType == QuerySourceReferenceExpression.ExpressionType))
+				(targetObject.NodeType == ExpressionType.MemberAccess || targetObject.NodeType == ExpressionType.Parameter ||
+					targetObject is QuerySourceReferenceExpression))
 			{
 				System.Type memberType;
-				if (targetObject.NodeType == QuerySourceReferenceExpression.ExpressionType)
+				if (targetObject is QuerySourceReferenceExpression querySourceExpression)
 				{
-					var querySourceExpression = (QuerySourceReferenceExpression) targetObject;
 					memberType = querySourceExpression.Type;
 				}
 				else if (targetObject.NodeType == ExpressionType.Parameter)
 				{
-					var parameterExpression = (ParameterExpression) targetObject;
+					var parameterExpression = (ParameterExpression)targetObject;
 					memberType = parameterExpression.Type;
 				}
 				else //targetObject.NodeType == ExpressionType.MemberAccess
 				{
-					var memberExpression = ((MemberExpression) targetObject);
+					var memberExpression = ((MemberExpression)targetObject);
 					memberPath = memberExpression.Member.Name + "." + memberPath;
 					memberType = memberExpression.Type;
 					targetObject = memberExpression.Expression;
@@ -70,16 +70,10 @@ namespace NHibernate.Linq.Visitors
 		}
 
 		public static bool IsDynamicComponentDictionaryGetter(MethodCallExpression expression, ISessionFactory sessionFactory, out string memberName)
-		{
-			return IsDynamicComponentDictionaryGetter(expression.Method, expression.Object, expression.Arguments, sessionFactory, out memberName);
-		}
+			=> IsDynamicComponentDictionaryGetter(expression.Method, expression.Object, expression.Arguments, sessionFactory, out memberName);
 
 		public static bool IsDynamicComponentDictionaryGetter(MethodCallExpression expression, ISessionFactory sessionFactory)
-		{
-			string memberName;
-			return IsDynamicComponentDictionaryGetter(expression, sessionFactory, out memberName);
-		}
-
+			=> IsDynamicComponentDictionaryGetter(expression, sessionFactory, out string memberName);
 
 		public static bool IsNullConstant(Expression expression)
 		{
@@ -90,13 +84,11 @@ namespace NHibernate.Linq.Visitors
 				constantExpression.Value == null;
 		}
 
-
 		public static bool IsBooleanConstant(Expression expression, out bool value)
 		{
-			var constantExpr = expression as ConstantExpression;
-			if (constantExpr != null && constantExpr.Type == typeof (bool))
+			if (expression is ConstantExpression constantExpr && constantExpr.Type == typeof(bool))
 			{
-				value = (bool) constantExpr.Value;
+				value = (bool)constantExpr.Value;
 				return true;
 			}
 

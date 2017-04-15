@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using NHibernate.Linq.ResultOperators;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
-using Remotion.Linq.Clauses.ExpressionTreeVisitors;
+using Remotion.Linq.Clauses.ExpressionVisitors;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
 
@@ -13,8 +13,8 @@ namespace NHibernate.Linq.GroupBy
 	{
 		public static void ReWrite(QueryModel queryModel)
 		{
-			if (queryModel.ResultOperators.Count == 1 
-				&& queryModel.ResultOperators[0] is GroupResultOperator 
+			if (queryModel.ResultOperators.Count == 1
+				&& queryModel.ResultOperators[0] is GroupResultOperator
 				&& IsNonAggregatingGroupBy(queryModel))
 			{
 				var resultOperator = (GroupResultOperator)queryModel.ResultOperators[0];
@@ -23,11 +23,9 @@ namespace NHibernate.Linq.GroupBy
 				return;
 			}
 
-			var subQueryExpression = queryModel.MainFromClause.FromExpression as SubQueryExpression;
-
-			if ((subQueryExpression != null) 
-				&& (subQueryExpression.QueryModel.ResultOperators.Count == 1) 
-				&& (subQueryExpression.QueryModel.ResultOperators[0] is GroupResultOperator) 
+			if ((queryModel.MainFromClause.FromExpression is SubQueryExpression subQueryExpression)
+				&& (subQueryExpression.QueryModel.ResultOperators.Count == 1)
+				&& (subQueryExpression.QueryModel.ResultOperators[0] is GroupResultOperator)
 				&& (IsNonAggregatingGroupBy(queryModel)))
 			{
 				FlattenSubQuery(subQueryExpression, queryModel);
@@ -58,7 +56,7 @@ namespace NHibernate.Linq.GroupBy
 				throw new NotImplementedException();
 			}
 
-			queryModel.ResultOperators.Add(new NonAggregatingGroupBy((GroupResultOperator) subQueryModel.ResultOperators[0]));
+			queryModel.ResultOperators.Add(new NonAggregatingGroupBy((GroupResultOperator)subQueryModel.ResultOperators[0]));
 			queryModel.ResultOperators.Add(clientSideSelect);
 		}
 
@@ -67,26 +65,24 @@ namespace NHibernate.Linq.GroupBy
 			// TODO - don't like calling GetGenericArguments here...
 
 			var parameter = Expression.Parameter(expression.Type.GetGenericArguments()[0], "inputParameter");
-			
+
 			var mapping = new QuerySourceMapping();
 			mapping.AddMapping(queryModel.MainFromClause, parameter);
-			
-			var body = ReferenceReplacingExpressionTreeVisitor.ReplaceClauseReferences(queryModel.SelectClause.Selector, mapping, false);
-			
+
+			var body = ReferenceReplacingExpressionVisitor.ReplaceClauseReferences(queryModel.SelectClause.Selector, mapping, false);
+
 			var lambda = Expression.Lambda(body, parameter);
-			
+
 			return new ClientSideSelect(lambda);
 		}
 
 		private static bool IsNonAggregatingGroupBy(QueryModel queryModel)
-		{
-			return new IsNonAggregatingGroupByDetectionVisitor().IsNonAggregatingGroupBy(queryModel.SelectClause.Selector);
-		}
+			=> new IsNonAggregatingGroupByDetectionVisitor().IsNonAggregatingGroupBy(queryModel.SelectClause.Selector);
 	}
 
 	public class ClientSideSelect : ClientSideTransformOperator
 	{
-		public LambdaExpression SelectClause { get; private set; }
+		public LambdaExpression SelectClause { get; }
 
 		public ClientSideSelect(LambdaExpression selectClause)
 		{
@@ -96,7 +92,7 @@ namespace NHibernate.Linq.GroupBy
 
 	public class ClientSideSelect2 : ClientSideTransformOperator
 	{
-		public LambdaExpression SelectClause { get; private set; }
+		public LambdaExpression SelectClause { get; }
 
 		public ClientSideSelect2(LambdaExpression selectClause)
 		{

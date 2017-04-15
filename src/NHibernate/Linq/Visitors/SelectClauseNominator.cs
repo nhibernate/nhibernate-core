@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq.Expressions;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Expressions;
-using NHibernate.Util;
 using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
@@ -12,7 +10,7 @@ namespace NHibernate.Linq.Visitors
 	/// Analyze the select clause to determine what parts can be translated
 	/// fully to HQL, and some other properties of the clause.
 	/// </summary>
-	class SelectClauseHqlNominator : ExpressionTreeVisitor
+	class SelectClauseHqlNominator : RelinqExpressionVisitor
 	{
 		private readonly ILinqToHqlGeneratorsRegistry _functionRegistry;
 
@@ -35,28 +33,22 @@ namespace NHibernate.Linq.Visitors
 		public SelectClauseHqlNominator(VisitorParameters parameters)
 		{
 			_functionRegistry = parameters.SessionFactory.Settings.LinqToHqlGeneratorsRegistry;
-		}
-
-		internal Expression Visit(Expression expression)
-		{
 			HqlCandidates = new HashSet<Expression>();
 			ContainsUntranslatedMethodCalls = false;
 			_canBeCandidate = true;
 			_stateStack = new Stack<bool>();
 			_stateStack.Push(false);
-
-			return VisitExpression(expression);
 		}
 
-		public override Expression VisitExpression(Expression expression)
+		public override Expression Visit(Expression expression)
 		{
 			if (expression == null)
 				return null;
 
-			if (expression.NodeType == (ExpressionType)NhExpressionType.Nominator)
+			if (expression is NhNominatedExpression nominatedExpression)
 			{
 				// Add the nominated clause and strip the nominator wrapper from the select expression
-				var innerExpression = ((NhNominatedExpression)expression).Expression;
+				var innerExpression = nominatedExpression.Expression;
 				HqlCandidates.Add(innerExpression);
 				return innerExpression;
 			}
@@ -86,7 +78,7 @@ namespace NHibernate.Linq.Visitors
 					return expression;
 				}
 
-				expression = base.VisitExpression(expression);
+				expression = base.Visit(expression);
 
 				if (_canBeCandidate)
 				{
@@ -113,21 +105,24 @@ namespace NHibernate.Linq.Visitors
 		{
 			if (expression.NodeType == ExpressionType.Call)
 			{
-				var methodCallExpression = (MethodCallExpression) expression;
-				IHqlGeneratorForMethod methodGenerator;
-				if (_functionRegistry.TryGetGenerator(methodCallExpression.Method, out methodGenerator))
+				var methodCallExpression = (MethodCallExpression)expression;
+				if (_functionRegistry.TryGetGenerator(methodCallExpression.Method, out IHqlGeneratorForMethod methodGenerator))
 				{
 					return methodCallExpression.Object == null || // is static or extension method
 						   methodCallExpression.Object.NodeType != ExpressionType.Constant; // does not belong to parameter 
 				}
 			}
-			else if (expression.NodeType == (ExpressionType)NhExpressionType.Sum ||
-						expression.NodeType == (ExpressionType)NhExpressionType.Count ||
-						expression.NodeType == (ExpressionType)NhExpressionType.Average ||
-						expression.NodeType == (ExpressionType)NhExpressionType.Max ||
-						expression.NodeType == (ExpressionType)NhExpressionType.Min)
+			else if (expression is NhExpression nhExpression)
 			{
-				return true;
+				switch (nhExpression.NhNodeType)
+				{
+					case NhExpressionType.Sum:
+					case NhExpressionType.Count:
+					case NhExpressionType.Average:
+					case NhExpressionType.Max:
+					case NhExpressionType.Min:
+						return true;
+				}
 			}
 			return false;
 
@@ -136,8 +131,8 @@ namespace NHibernate.Linq.Visitors
 		private bool CanBeEvaluatedInHqlSelectStatement(Expression expression, bool projectConstantsInHql)
 		{
 			// HQL can't do New or Member Init
-			if (expression.NodeType == ExpressionType.MemberInit || 
-				expression.NodeType == ExpressionType.New || 
+			if (expression.NodeType == ExpressionType.MemberInit ||
+				expression.NodeType == ExpressionType.New ||
 				expression.NodeType == ExpressionType.NewArrayInit ||
 				expression.NodeType == ExpressionType.NewArrayBounds)
 			{
@@ -171,8 +166,6 @@ namespace NHibernate.Linq.Visitors
 		}
 
 		private static bool CanBeEvaluatedInHqlStatementShortcut(Expression expression)
-		{
-			return ((NhExpressionType)expression.NodeType) == NhExpressionType.Count;
-		}
+			=> expression is NhExpression nhExpression && nhExpression.NhNodeType == NhExpressionType.Count;
 	}
 }

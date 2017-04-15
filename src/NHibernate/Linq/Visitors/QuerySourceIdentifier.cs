@@ -54,17 +54,16 @@ namespace NHibernate.Linq.Visitors
 
 		public override void VisitResultOperator(ResultOperatorBase resultOperator, QueryModel queryModel, int index)
 		{
-			var groupBy = resultOperator as GroupResultOperator;
-			if (groupBy != null)
+			if (resultOperator is GroupResultOperator groupBy)
 				_namer.Add(groupBy);
 		}
 
 		public override void VisitSelectClause(SelectClause selectClause, QueryModel queryModel)
 		{
 			//Find nested query sources
-			new QueryExpressionSourceIdentifer(this).VisitExpression(selectClause.Selector);
+			new QueryExpressionSourceIdentifer(this).Visit(selectClause.Selector);
 		}
 
-		public QuerySourceNamer Namer { get { return _namer; } }
+		public QuerySourceNamer Namer => _namer;
 	}
 }

@@ -21,8 +21,7 @@ namespace NHibernate.Linq.Visitors
 {
 	public class QueryModelVisitor : QueryModelVisitorBase
 	{
-		public static ExpressionToHqlTranslationResults GenerateHqlQuery(QueryModel queryModel, VisitorParameters parameters, bool root,
-			NhLinqExpressionReturnType? rootReturnType)
+		public static ExpressionToHqlTranslationResults GenerateHqlQuery(QueryModel queryModel, VisitorParameters parameters, bool root)
 		{
 			NestedSelectRewriter.ReWrite(queryModel, parameters);
 
@@ -81,17 +80,14 @@ namespace NHibernate.Linq.Visitors
 			// Identify and name query sources
 			QuerySourceIdentifier.Visit(parameters.QuerySourceNamer, queryModel);
 
-			var visitor = new QueryModelVisitor(parameters, root, queryModel, rootReturnType)
-			{
-				RewrittenOperatorResult = result,
-			};
+			var visitor = new QueryModelVisitor(parameters, root, queryModel, result);
 			visitor.Visit();
 
 			return visitor._hqlTree.GetTranslation();
 		}
 
 		private readonly IntermediateHqlTree _hqlTree;
-		private readonly NhLinqExpressionReturnType? _rootReturnType;
+		private readonly NhLinqExpressionReturnType _rootReturnType;
 		private static readonly ResultOperatorMap ResultOperatorMap;
 		private bool _serverSide = true;
 
@@ -103,7 +99,7 @@ namespace NHibernate.Linq.Visitors
 
 		public QueryModel Model { get; }
 
-		public ResultOperatorRewriterResult RewrittenOperatorResult { get; private set; }
+		public ResultOperatorRewriterResult RewrittenOperatorResult { get; }
 
 		static QueryModelVisitor()
 		{
@@ -132,11 +128,12 @@ namespace NHibernate.Linq.Visitors
 		}
 
 		private QueryModelVisitor(VisitorParameters visitorParameters, bool root, QueryModel queryModel,
-			NhLinqExpressionReturnType? rootReturnType)
+			ResultOperatorRewriterResult rewrittenOperatorResult)
 		{
 			VisitorParameters = visitorParameters;
 			Model = queryModel;
-			_rootReturnType = root ? rootReturnType : null;
+			_rootReturnType = visitorParameters.RootReturnType;
+			RewrittenOperatorResult = rewrittenOperatorResult;
 			_hqlTree = new IntermediateHqlTree(root);
 		}
 
@@ -148,10 +145,12 @@ namespace NHibernate.Linq.Visitors
 
 		private void AddAdditionalPostExecuteTransformer()
 		{
-			if (_rootReturnType == NhLinqExpressionReturnType.Scalar && Model.ResultTypeOverride != null)
+			if (_hqlTree.IsRoot && _rootReturnType == NhLinqExpressionReturnType.Scalar && Model.ResultTypeOverride != null &&
+				Model.SelectClause.Selector.NodeType == ExpressionType.Extension &&
+				Model.SelectClause.Selector is NhExpression nhExpression)
 			{
 				// NH-3850: handle polymorphic scalar results aggregation
-				switch ((NhExpressionType)Model.SelectClause.Selector.NodeType)
+				switch (nhExpression.NhNodeType)
 				{
 					case NhExpressionType.Average:
 						// Polymorphic case complex to handle and not implemented. (HQL query must be reshaped for adding
@@ -299,7 +298,7 @@ namespace NHibernate.Linq.Visitors
 			if (fromClause.FromExpression is MemberExpression)
 			{
 				// It's a join
-				var expression = HqlGeneratorExpressionTreeVisitor.Visit(fromClause.FromExpression, VisitorParameters).AsExpression();
+				var expression = HqlGeneratorExpressionVisitor.Visit(fromClause.FromExpression, VisitorParameters).AsExpression();
 				var querySourceName = VisitorParameters.QuerySourceNamer.GetName(fromClause);
 				var alias = _hqlTree.TreeBuilder.Alias(querySourceName);
 				var hqlJoin = VisitorParameters.IsLeftJoin(fromClause) ?
@@ -308,7 +307,7 @@ namespace NHibernate.Linq.Visitors
 
 				foreach (var withClause in VisitorParameters.GetRestrictions(fromClause))
 				{
-					var booleanExpression = HqlGeneratorExpressionTreeVisitor.Visit(withClause.Predicate, VisitorParameters).ToBooleanExpression();
+					var booleanExpression = HqlGeneratorExpressionVisitor.Visit(withClause.Predicate, VisitorParameters).ToBooleanExpression();
 					hqlJoin.AddChild(_hqlTree.TreeBuilder.With(booleanExpression));
 				}
 
@@ -327,7 +326,7 @@ namespace NHibernate.Linq.Visitors
 			var querySourceName = VisitorParameters.QuerySourceNamer.GetName(fromClause);
 			_hqlTree.AddFromClause(
 				_hqlTree.TreeBuilder.Range(
-					HqlGeneratorExpressionTreeVisitor.Visit(fromClause.FromExpression, VisitorParameters),
+					HqlGeneratorExpressionVisitor.Visit(fromClause.FromExpression, VisitorParameters),
 					_hqlTree.TreeBuilder.Alias(querySourceName)));
 		}
 
@@ -357,7 +356,7 @@ namespace NHibernate.Linq.Visitors
 
 			var visitor = new SelectClauseVisitor(typeof(object[]), VisitorParameters);
 
-			visitor.Visit(selectClause.Selector);
+			visitor.VisitRoot(selectClause.Selector);
 
 			if (visitor.ProjectionExpression != null)
 			{
@@ -372,10 +371,10 @@ namespace NHibernate.Linq.Visitors
 		public override void VisitWhereClause(WhereClause whereClause, QueryModel queryModel, int index)
 		{
 			var visitor = new SimplifyConditionalVisitor();
-			whereClause.Predicate = visitor.VisitExpression(whereClause.Predicate);
+			whereClause.Predicate = visitor.Visit(whereClause.Predicate);
 
 			// Visit the predicate to build the query
-			var expression = HqlGeneratorExpressionTreeVisitor.Visit(whereClause.Predicate, VisitorParameters).ToBooleanExpression();
+			var expression = HqlGeneratorExpressionVisitor.Visit(whereClause.Predicate, VisitorParameters).ToBooleanExpression();
 			if (VisitorParameters.IsHavingClause(whereClause))
 			{
 				_hqlTree.AddHavingClause(expression);
@@ -391,7 +390,7 @@ namespace NHibernate.Linq.Visitors
 		{
 			foreach (var clause in orderByClause.Orderings)
 			{
-				_hqlTree.AddOrderByClause(HqlGeneratorExpressionTreeVisitor.Visit(clause.Expression, VisitorParameters).AsExpression(),
+				_hqlTree.AddOrderByClause(HqlGeneratorExpressionVisitor.Visit(clause.Expression, VisitorParameters).AsExpression(),
 								clause.OrderingDirection == OrderingDirection.Asc
 									? _hqlTree.TreeBuilder.Ascending()
 									: (HqlDirectionStatement)_hqlTree.TreeBuilder.Descending());
@@ -407,7 +406,7 @@ namespace NHibernate.Linq.Visitors
 
 			_hqlTree.AddFromClause(
 				_hqlTree.TreeBuilder.Range(
-					HqlGeneratorExpressionTreeVisitor.Visit(joinClause.InnerSequence, VisitorParameters),
+					HqlGeneratorExpressionVisitor.Visit(joinClause.InnerSequence, VisitorParameters),
 					_hqlTree.TreeBuilder.Alias(joinClause.ItemName)));
 		}
 

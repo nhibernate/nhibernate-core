@@ -8,37 +8,27 @@ using NHibernate.Linq.Functions;
 using NHibernate.Param;
 using NHibernate.Util;
 using Remotion.Linq.Clauses.Expressions;
-using Remotion.Linq.Clauses.ResultOperators;
 
 namespace NHibernate.Linq.Visitors
 {
-	public class HqlGeneratorExpressionTreeVisitor : IHqlExpressionVisitor
+	public class HqlGeneratorExpressionVisitor : IHqlExpressionVisitor
 	{
 		private readonly HqlTreeBuilder _hqlTreeBuilder = new HqlTreeBuilder();
 		private readonly VisitorParameters _parameters;
 		private readonly ILinqToHqlGeneratorsRegistry _functionRegistry;
 
 		public static HqlTreeNode Visit(Expression expression, VisitorParameters parameters)
-		{
-			return new HqlGeneratorExpressionTreeVisitor(parameters).VisitExpression(expression);
-		}
+			=> new HqlGeneratorExpressionVisitor(parameters).Visit(expression);
 
-		public HqlGeneratorExpressionTreeVisitor(VisitorParameters parameters)
+		public HqlGeneratorExpressionVisitor(VisitorParameters parameters)
 		{
 			_functionRegistry = parameters.SessionFactory.Settings.LinqToHqlGeneratorsRegistry;
 			_parameters = parameters;
 		}
 
-
-		public ISessionFactory SessionFactory { get { return _parameters.SessionFactory; } }
-
-
+		public ISessionFactory SessionFactory => _parameters.SessionFactory;
+		
 		public HqlTreeNode Visit(Expression expression)
-		{
-			return VisitExpression(expression);
-		}
-
-		protected HqlTreeNode VisitExpression(Expression expression)
 		{
 			if (expression == null)
 				return null;
@@ -54,7 +44,7 @@ namespace NHibernate.Linq.Visitors
 				case ExpressionType.Quote:
 				case ExpressionType.TypeAs:
 				case ExpressionType.UnaryPlus:
-					return VisitUnaryExpression((UnaryExpression) expression);
+					return VisitUnaryExpression((UnaryExpression)expression);
 				case ExpressionType.Add:
 				case ExpressionType.AddChecked:
 				case ExpressionType.Divide:
@@ -79,66 +69,63 @@ namespace NHibernate.Linq.Visitors
 				case ExpressionType.LessThanOrEqual:
 				case ExpressionType.Coalesce:
 				case ExpressionType.ArrayIndex:
-					return VisitBinaryExpression((BinaryExpression) expression);
+					return VisitBinaryExpression((BinaryExpression)expression);
 				case ExpressionType.Conditional:
-					return VisitConditionalExpression((ConditionalExpression) expression);
+					return VisitConditionalExpression((ConditionalExpression)expression);
 				case ExpressionType.Constant:
-					return VisitConstantExpression((ConstantExpression) expression);
+					return VisitConstantExpression((ConstantExpression)expression);
 				case ExpressionType.Invoke:
-					return VisitInvocationExpression((InvocationExpression) expression);
+					return VisitInvocationExpression((InvocationExpression)expression);
 				case ExpressionType.Lambda:
-					return VisitLambdaExpression((LambdaExpression) expression);
+					return VisitLambdaExpression((LambdaExpression)expression);
 				case ExpressionType.MemberAccess:
-					return VisitMemberExpression((MemberExpression) expression);
+					return VisitMemberExpression((MemberExpression)expression);
 				case ExpressionType.Call:
-					return VisitMethodCallExpression((MethodCallExpression) expression);
-					//case ExpressionType.New:
-					//    return VisitNewExpression((NewExpression)expression);
-					//case ExpressionType.NewArrayBounds:
+					return VisitMethodCallExpression((MethodCallExpression)expression);
+				//case ExpressionType.New:
+				//    return VisitNewExpression((NewExpression)expression);
+				//case ExpressionType.NewArrayBounds:
 				case ExpressionType.NewArrayInit:
-					return VisitNewArrayExpression((NewArrayExpression) expression);
-					//case ExpressionType.MemberInit:
-					//    return VisitMemberInitExpression((MemberInitExpression)expression);
-					//case ExpressionType.ListInit:
-					//    return VisitListInitExpression((ListInitExpression)expression);
+					return VisitNewArrayExpression((NewArrayExpression)expression);
+				//case ExpressionType.MemberInit:
+				//    return VisitMemberInitExpression((MemberInitExpression)expression);
+				//case ExpressionType.ListInit:
+				//    return VisitListInitExpression((ListInitExpression)expression);
 				case ExpressionType.Parameter:
-					return VisitParameterExpression((ParameterExpression) expression);
+					return VisitParameterExpression((ParameterExpression)expression);
 				case ExpressionType.TypeIs:
-					return VisitTypeBinaryExpression((TypeBinaryExpression) expression);
+					return VisitTypeBinaryExpression((TypeBinaryExpression)expression);
 
 				default:
-					var subQueryExpression = expression as SubQueryExpression;
-					if (subQueryExpression != null)
-						return VisitSubQueryExpression(subQueryExpression);
-
-					var querySourceReferenceExpression = expression as QuerySourceReferenceExpression;
-					if (querySourceReferenceExpression != null)
-						return VisitQuerySourceReferenceExpression(querySourceReferenceExpression);
-
-					var vbStringComparisonExpression = expression as VBStringComparisonExpression;
-					if (vbStringComparisonExpression != null)
-						return VisitVBStringComparisonExpression(vbStringComparisonExpression);
-
-					switch ((NhExpressionType) expression.NodeType)
+					switch (expression)
 					{
-						case NhExpressionType.Average:
-							return VisitNhAverage((NhAverageExpression) expression);
-						case NhExpressionType.Min:
-							return VisitNhMin((NhMinExpression) expression);
-						case NhExpressionType.Max:
-							return VisitNhMax((NhMaxExpression) expression);
-						case NhExpressionType.Sum:
-							return VisitNhSum((NhSumExpression) expression);
-						case NhExpressionType.Count:
-							return VisitNhCount((NhCountExpression) expression);
-						case NhExpressionType.Distinct:
-							return VisitNhDistinct((NhDistinctExpression) expression);
-						case NhExpressionType.Star:
-							return VisitNhStar((NhStarExpression) expression);
-						case NhExpressionType.Nominator:
-							return VisitExpression(((NhNominatedExpression) expression).Expression);
-							//case NhExpressionType.New:
-							//    return VisitNhNew((NhNewExpression)expression);
+						case SubQueryExpression subQueryExpression:
+							return VisitSubQueryExpression(subQueryExpression);
+						case QuerySourceReferenceExpression querySourceReferenceExpression:
+							return VisitQuerySourceReferenceExpression(querySourceReferenceExpression);
+						case VBStringComparisonExpression vbStringComparisonExpression:
+							return VisitVBStringComparisonExpression(vbStringComparisonExpression);
+						case NhSimpleExpression nhExpression:
+							switch (nhExpression.NhNodeType)
+							{
+								case NhExpressionType.Average:
+									return VisitNhAverage(nhExpression);
+								case NhExpressionType.Min:
+									return VisitNhMin(nhExpression);
+								case NhExpressionType.Max:
+									return VisitNhMax(nhExpression);
+								case NhExpressionType.Sum:
+									return VisitNhSum(nhExpression);
+								case NhExpressionType.Count:
+									return VisitNhCount(nhExpression);
+								case NhExpressionType.Distinct:
+									return VisitNhDistinct(nhExpression);
+								case NhExpressionType.Star:
+									return VisitNhStar(nhExpression);
+								case NhExpressionType.Nominator:
+									return Visit(nhExpression.Expression);
+							}
+							break;
 					}
 
 					throw new NotSupportedException(expression.ToString());
@@ -146,20 +133,17 @@ namespace NHibernate.Linq.Visitors
 		}
 
 		private HqlTreeNode VisitTypeBinaryExpression(TypeBinaryExpression expression)
-		{
-			return BuildOfType(expression.Expression, expression.TypeOperand);
-		}
+			=> BuildOfType(expression.Expression, expression.TypeOperand);
 
 		internal HqlBooleanExpression BuildOfType(Expression expression, System.Type type)
 		{
 			var sessionFactory = _parameters.SessionFactory;
-			var meta = sessionFactory.GetClassMetadata(type) as Persister.Entity.AbstractEntityPersister;
-			if (meta != null && !meta.IsExplicitPolymorphism)
+			if (sessionFactory.GetClassMetadata(type) is Persister.Entity.AbstractEntityPersister meta && !meta.IsExplicitPolymorphism)
 			{
 				//Adapted the logic found in SingleTableEntityPersister.DiscriminatorFilterFragment
 				var nodes = meta
 					.SubclassClosure
-					.Select(typeName => (NHibernate.Persister.Entity.IQueryable) sessionFactory.GetEntityPersister(typeName))
+					.Select(typeName => (NHibernate.Persister.Entity.IQueryable)sessionFactory.GetEntityPersister(typeName))
 					.Where(persister => !persister.IsAbstract)
 					.Select(persister => _hqlTreeBuilder.Ident(persister.EntityName))
 					.ToList();
@@ -183,7 +167,7 @@ namespace NHibernate.Linq.Visitors
 				if (nodes.Count == 0)
 				{
 					const string abstractClassWithNoSubclassExceptionMessageTemplate =
-@"The class {0} can't be instatiated and does not have mapped subclasses; 
+@"The class {0} can't be instantiated and does not have mapped subclasses;
 possible solutions:
 - don't map the abstract class
 - map its subclasses.";
@@ -197,61 +181,45 @@ possible solutions:
 				_hqlTreeBuilder.Ident(type.FullName));
 		}
 
-		protected HqlTreeNode VisitNhStar(NhStarExpression expression)
-		{
-			return _hqlTreeBuilder.Star();
-		}
+		protected HqlTreeNode VisitNhStar(NhSimpleExpression expression)
+			=> _hqlTreeBuilder.Star();
 
 		private HqlTreeNode VisitInvocationExpression(InvocationExpression expression)
-		{
-			return VisitExpression(expression.Expression);
-		}
+			=> Visit(expression.Expression);
 
-		protected HqlTreeNode VisitNhAverage(NhAverageExpression expression)
+		protected HqlTreeNode VisitNhAverage(NhSimpleExpression expression)
 		{
-			var hqlExpression = VisitExpression(expression.Expression).AsExpression();
+			var hqlExpression = Visit(expression.Expression).AsExpression();
 			if (expression.Type != expression.Expression.Type)
 				hqlExpression = _hqlTreeBuilder.Cast(hqlExpression, expression.Type);
 
 			return _hqlTreeBuilder.Cast(_hqlTreeBuilder.Average(hqlExpression), expression.Type);
 		}
 
-		protected HqlTreeNode VisitNhCount(NhCountExpression expression)
-		{
-			return _hqlTreeBuilder.Cast(_hqlTreeBuilder.Count(VisitExpression(expression.Expression).AsExpression()), expression.Type);
-		}
+		protected HqlTreeNode VisitNhCount(NhSimpleExpression expression)
+			=> _hqlTreeBuilder.Cast(_hqlTreeBuilder.Count(Visit(expression.Expression).AsExpression()), expression.Type);
 
-		protected HqlTreeNode VisitNhMin(NhMinExpression expression)
-		{
-			return _hqlTreeBuilder.Min(VisitExpression(expression.Expression).AsExpression());
-		}
+		protected HqlTreeNode VisitNhMin(NhSimpleExpression expression)
+			=>_hqlTreeBuilder.Min(Visit(expression.Expression).AsExpression());
 
-		protected HqlTreeNode VisitNhMax(NhMaxExpression expression)
-		{
-			return _hqlTreeBuilder.Max(VisitExpression(expression.Expression).AsExpression());
-		}
+		protected HqlTreeNode VisitNhMax(NhSimpleExpression expression)
+			=> _hqlTreeBuilder.Max(Visit(expression.Expression).AsExpression());
 
-		protected HqlTreeNode VisitNhSum(NhSumExpression expression)
-		{
-			return _hqlTreeBuilder.Cast(_hqlTreeBuilder.Sum(VisitExpression(expression.Expression).AsExpression()), expression.Type);
-		}
+		protected HqlTreeNode VisitNhSum(NhSimpleExpression expression)
+			=> _hqlTreeBuilder.Cast(_hqlTreeBuilder.Sum(Visit(expression.Expression).AsExpression()), expression.Type);
 
-		protected HqlTreeNode VisitNhDistinct(NhDistinctExpression expression)
+		protected HqlTreeNode VisitNhDistinct(NhSimpleExpression expression)
 		{
-			var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters);
-			return _hqlTreeBuilder.ExpressionSubTreeHolder(_hqlTreeBuilder.Distinct(), visitor.VisitExpression(expression.Expression));
+			var visitor = new HqlGeneratorExpressionVisitor(_parameters);
+			return _hqlTreeBuilder.ExpressionSubTreeHolder(_hqlTreeBuilder.Distinct(), visitor.Visit(expression.Expression));
 		}
 
 		protected HqlTreeNode VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
-		{
-			return _hqlTreeBuilder.Ident(_parameters.QuerySourceNamer.GetName(expression.ReferencedQuerySource));
-		}
+			=> _hqlTreeBuilder.Ident(_parameters.QuerySourceNamer.GetName(expression.ReferencedQuerySource));
 
 		private HqlTreeNode VisitVBStringComparisonExpression(VBStringComparisonExpression expression)
-		{
 			// We ignore the case sensitivity flag in the same way that == does.
-			return VisitExpression(expression.Comparison);
-		}
+			=> Visit(expression.Comparison);
 
 		protected HqlTreeNode VisitBinaryExpression(BinaryExpression expression)
 		{
@@ -264,8 +232,8 @@ possible solutions:
 				return TranslateInequalityComparison(expression);
 			}
 
-			var lhs = VisitExpression(expression.Left).AsExpression();
-			var rhs = VisitExpression(expression.Right).AsExpression();
+			var lhs = Visit(expression.Left).AsExpression();
+			var rhs = Visit(expression.Right).AsExpression();
 
 			switch (expression.NodeType)
 			{
@@ -282,7 +250,7 @@ possible solutions:
 					return _hqlTreeBuilder.BooleanOr(lhs.ToBooleanExpression(), rhs.ToBooleanExpression());
 
 				case ExpressionType.Add:
-					if (expression.Left.Type == typeof (string) && expression.Right.Type == typeof(string))
+					if (expression.Left.Type == typeof(string) && expression.Right.Type == typeof(string))
 					{
 						return _hqlTreeBuilder.MethodCall("concat", lhs, rhs);
 					}
@@ -321,8 +289,8 @@ possible solutions:
 
 		private HqlTreeNode TranslateInequalityComparison(BinaryExpression expression)
 		{
-			var lhs = VisitExpression(expression.Left).ToArithmeticExpression();
-			var rhs = VisitExpression(expression.Right).ToArithmeticExpression();
+			var lhs = Visit(expression.Left).ToArithmeticExpression();
+			var rhs = Visit(expression.Right).ToArithmeticExpression();
 
 			// Check for nulls on left or right.
 			if (VisitorUtil.IsNullConstant(expression.Right))
@@ -355,8 +323,8 @@ possible solutions:
 				return inequality;
 			}
 
-			var lhs2 = VisitExpression(expression.Left).ToArithmeticExpression();
-			var rhs2 = VisitExpression(expression.Right).ToArithmeticExpression();
+			var lhs2 = Visit(expression.Left).ToArithmeticExpression();
+			var rhs2 = Visit(expression.Right).ToArithmeticExpression();
 
 			HqlBooleanExpression booleanExpression;
 			if (lhsNullable && rhsNullable)
@@ -379,8 +347,8 @@ possible solutions:
 
 		private HqlTreeNode TranslateEqualityComparison(BinaryExpression expression)
 		{
-			var lhs = VisitExpression(expression.Left).ToArithmeticExpression();
-			var rhs = VisitExpression(expression.Right).ToArithmeticExpression();
+			var lhs = Visit(expression.Left).ToArithmeticExpression();
+			var rhs = Visit(expression.Right).ToArithmeticExpression();
 
 			// Check for nulls on left or right.
 			if (VisitorUtil.IsNullConstant(expression.Right))
@@ -418,8 +386,8 @@ possible solutions:
 				return equality;
 			}
 
-			var lhs2 = VisitExpression(expression.Left).ToArithmeticExpression();
-			var rhs2 = VisitExpression(expression.Right).ToArithmeticExpression();
+			var lhs2 = Visit(expression.Left).ToArithmeticExpression();
+			var rhs2 = Visit(expression.Right).ToArithmeticExpression();
 
 			return _hqlTreeBuilder.BooleanOr(
 				equality,
@@ -429,31 +397,28 @@ possible solutions:
 		}
 
 		static bool IsNullable(HqlExpression original)
-		{
-			var hqlDot = original as HqlDot;
-			return hqlDot != null && hqlDot.Children.Last() is HqlIdent;
-		}
+			=> original is HqlDot hqlDot && hqlDot.Children.Last() is HqlIdent;
 
 		protected HqlTreeNode VisitUnaryExpression(UnaryExpression expression)
 		{
 			switch (expression.NodeType)
 			{
 				case ExpressionType.Negate:
-					return _hqlTreeBuilder.Negate(VisitExpression(expression.Operand).AsExpression());
+					return _hqlTreeBuilder.Negate(Visit(expression.Operand).AsExpression());
 				case ExpressionType.UnaryPlus:
-					return VisitExpression(expression.Operand).AsExpression();
+					return Visit(expression.Operand).AsExpression();
 				case ExpressionType.Not:
-					return _hqlTreeBuilder.BooleanNot(VisitExpression(expression.Operand).ToBooleanExpression());
+					return _hqlTreeBuilder.BooleanNot(Visit(expression.Operand).ToBooleanExpression());
 				case ExpressionType.Convert:
 				case ExpressionType.ConvertChecked:
 				case ExpressionType.TypeAs:
 					if ((expression.Operand.Type.IsPrimitive || expression.Operand.Type == typeof(Decimal)) &&
 						(expression.Type.IsPrimitive || expression.Type == typeof(Decimal)))
 					{
-						return _hqlTreeBuilder.Cast(VisitExpression(expression.Operand).AsExpression(), expression.Type);
+						return _hqlTreeBuilder.Cast(Visit(expression.Operand).AsExpression(), expression.Type);
 					}
 
-					return VisitExpression(expression.Operand);
+					return Visit(expression.Operand);
 			}
 
 			throw new NotSupportedException(expression.ToString());
@@ -462,37 +427,32 @@ possible solutions:
 		protected HqlTreeNode VisitMemberExpression(MemberExpression expression)
 		{
 			// Strip out the .Value property of a nullable type, HQL doesn't need that
-			if (expression.Member.Name == "Value" && expression.Expression.Type.IsNullable())
+			if (expression.Member.Name == nameof(Nullable<int>.Value) && expression.Expression.Type.IsNullable())
 			{
-				return VisitExpression(expression.Expression);
+				return Visit(expression.Expression);
 			}
 
 			// Look for "special" properties (DateTime.Month etc)
-			IHqlGeneratorForProperty generator;
-
-			if (_functionRegistry.TryGetGenerator(expression.Member, out generator))
+			if (_functionRegistry.TryGetGenerator(expression.Member, out IHqlGeneratorForProperty generator))
 			{
 				return generator.BuildHql(expression.Member, expression.Expression, _hqlTreeBuilder, this);
 			}
 
 			// Else just emit standard HQL for a property reference
-			return _hqlTreeBuilder.Dot(VisitExpression(expression.Expression).AsExpression(), _hqlTreeBuilder.Ident(expression.Member.Name));
+			return _hqlTreeBuilder.Dot(Visit(expression.Expression).AsExpression(), _hqlTreeBuilder.Ident(expression.Member.Name));
 		}
 
 		protected HqlTreeNode VisitConstantExpression(ConstantExpression expression)
 		{
 			if (expression.Value != null)
 			{
-				IEntityNameProvider entityName = expression.Value as IEntityNameProvider;
-				if (entityName != null)
+				if (expression.Value is IEntityNameProvider entityName)
 				{
 					return _hqlTreeBuilder.Ident(entityName.EntityName);
 				}
 			}
 
-			NamedParameter namedParameter;
-
-			if (_parameters.ConstantToParameterMap.TryGetValue(expression, out namedParameter))
+			if (_parameters.ConstantToParameterMap.TryGetValue(expression, out NamedParameter namedParameter))
 			{
 				_parameters.RequiredHqlParameters.Add(new NamedParameterDescriptor(namedParameter.Name, null, false));
 
@@ -504,10 +464,8 @@ possible solutions:
 
 		protected HqlTreeNode VisitMethodCallExpression(MethodCallExpression expression)
 		{
-			IHqlGeneratorForMethod generator;
-
 			var method = expression.Method;
-			if (!_functionRegistry.TryGetGenerator(method, out generator))
+			if (!_functionRegistry.TryGetGenerator(method, out IHqlGeneratorForMethod generator))
 			{
 				throw new NotSupportedException(method.ToString());
 			}
@@ -516,39 +474,35 @@ possible solutions:
 		}
 
 		protected HqlTreeNode VisitLambdaExpression(LambdaExpression expression)
-		{
-			return VisitExpression(expression.Body);
-		}
+			=> Visit(expression.Body);
 
 		protected HqlTreeNode VisitParameterExpression(ParameterExpression expression)
-		{
-			return _hqlTreeBuilder.Ident(expression.Name);
-		}
+			=> _hqlTreeBuilder.Ident(expression.Name);
 
 		protected HqlTreeNode VisitConditionalExpression(ConditionalExpression expression)
 		{
-			var test = VisitExpression(expression.Test).ToBooleanExpression();
-			var ifTrue = VisitExpression(expression.IfTrue).ToArithmeticExpression();
+			var test = Visit(expression.Test).ToBooleanExpression();
+			var ifTrue = Visit(expression.IfTrue).ToArithmeticExpression();
 			var ifFalse = (expression.IfFalse != null
-							   ? VisitExpression(expression.IfFalse).ToArithmeticExpression()
-							   : null);
+				? Visit(expression.IfFalse).ToArithmeticExpression()
+				: null);
 
-			HqlExpression @case = _hqlTreeBuilder.Case(new[] {_hqlTreeBuilder.When(test, ifTrue)}, ifFalse);
+			HqlExpression @case = _hqlTreeBuilder.Case(new[] { _hqlTreeBuilder.When(test, ifTrue) }, ifFalse);
 
-			return (expression.Type == typeof (bool) || expression.Type == (typeof (bool?)))
-					   ? @case
-					   : _hqlTreeBuilder.Cast(@case, expression.Type);
+			return (expression.Type == typeof(bool) || expression.Type == (typeof(bool?)))
+				? @case
+				: _hqlTreeBuilder.Cast(@case, expression.Type);
 		}
 
 		protected HqlTreeNode VisitSubQueryExpression(SubQueryExpression expression)
 		{
-			ExpressionToHqlTranslationResults query = QueryModelVisitor.GenerateHqlQuery(expression.QueryModel, _parameters, false, null);
+			var query = QueryModelVisitor.GenerateHqlQuery(expression.QueryModel, _parameters, false);
 			return query.Statement;
 		}
 
 		protected HqlTreeNode VisitNewArrayExpression(NewArrayExpression expression)
 		{
-			var expressionSubTree = expression.Expressions.Select(exp => VisitExpression(exp)).ToArray();
+			var expressionSubTree = expression.Expressions.Select(exp => Visit(exp)).ToArray();
 			return _hqlTreeBuilder.ExpressionSubTreeHolder(expressionSubTree);
 		}
 	}

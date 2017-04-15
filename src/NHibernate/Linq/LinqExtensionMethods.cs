@@ -7,7 +7,7 @@ using NHibernate.Impl;
 using NHibernate.Type;
 using NHibernate.Util;
 using Remotion.Linq;
-using Remotion.Linq.Parsing.ExpressionTreeVisitors;
+using Remotion.Linq.Parsing.ExpressionVisitors;
 
 namespace NHibernate.Linq
 {
@@ -104,6 +104,14 @@ namespace NHibernate.Linq
 			return (IFutureValue<T>) future;
 		}
 
+		/// <summary>
+		/// Allows to specify the parameter NHibernate type to use for a literal in a queryable expression.
+		/// </summary>
+		/// <typeparam name="T">The type of the literal.</typeparam>
+		/// <param name="parameter">The literal value.</param>
+		/// <param name="type">The NHibernate type, usually obtained from <c>NHibernateUtil</c> properties.</param>
+		/// <returns>The literal value.</returns>
+		[DBOnly]
 		public static T MappedAs<T>(this T parameter, IType type)
 		{
 			throw new InvalidOperationException("The method should be used inside Linq to indicate a type of a parameter");
@@ -117,7 +125,7 @@ namespace NHibernate.Linq
 
 			var provider = (INhQueryProvider) query.Provider;
 
-			var expression = ReplacingExpressionTreeVisitor.Replace(selector.Parameters.Single(),
+			var expression = ReplacingExpressionVisitor.Replace(selector.Parameters.Single(),
 																	query.Expression,
 																	selector.Body);
 

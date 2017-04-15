@@ -55,8 +55,6 @@ namespace NHibernate.Linq.GroupJoin
 		}
 
 		private static IsAggregatingResults IsAggregatingGroupJoin(QueryModel model, IEnumerable<GroupJoinClause> clause)
-		{
-			return GroupJoinAggregateDetectionVisitor.Visit(clause, model.SelectClause.Selector);
-		}
+			=> GroupJoinAggregateDetectionVisitor.Visit(clause, model.SelectClause.Selector);
 	}
 }

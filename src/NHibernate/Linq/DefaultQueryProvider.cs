@@ -35,9 +35,7 @@ namespace NHibernate.Linq
 
 		public virtual object Execute(Expression expression)
 		{
-			IQuery query;
-			NhLinqExpression nhQuery;
-			NhLinqExpression nhLinqExpression = PrepareQuery(expression, out query, out nhQuery);
+			var nhLinqExpression = PrepareQuery(expression, out IQuery query, out NhLinqExpression nhQuery);
 
 			return ExecuteQuery(nhLinqExpression, query, nhQuery);
 		}
@@ -61,9 +59,7 @@ namespace NHibernate.Linq
 
 		public virtual object ExecuteFuture(Expression expression)
 		{
-			IQuery query;
-			NhLinqExpression nhQuery;
-			NhLinqExpression nhLinqExpression = PrepareQuery(expression, out query, out nhQuery);
+			var nhLinqExpression = PrepareQuery(expression, out IQuery query, out NhLinqExpression nhQuery);
 			return ExecuteFutureQuery(nhLinqExpression, query, nhQuery);
 		}
 
