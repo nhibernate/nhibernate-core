@@ -238,13 +238,13 @@ namespace NHibernate.Test
 
 		private bool CheckConnectionsWereClosed()
 		{
-			if (_sessionFactory?.ConnectionProvider?.HasOpenConnections != true)
+			if (_sessionFactory?.DebugConnectionProvider?.HasOpenConnections != true)
 			{
 				return true;
 			}
 
 			log.Error("Test case didn't close all open connections, closing");
-			_sessionFactory.ConnectionProvider.CloseAllConnections();
+			_sessionFactory.DebugConnectionProvider.CloseAllConnections();
 			return false;
 		}
 

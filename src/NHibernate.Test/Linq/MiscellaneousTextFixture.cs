@@ -86,16 +86,17 @@ namespace NHibernate.Test.Linq
 							"the second, third and fourth pages of products")]
 		public void TriplePageSelection()
 		{
-			IQueryable<Product> q = (
-			                        	from p in db.Products
-			                        	where p.ProductId > 1
-			                        	orderby p.ProductId
-			                        	select p
-			);
+			var q =
+				from p in db.Products
+				where p.ProductId > 1
+				orderby p.ProductId
+				select p;
 
-            IQueryable<Product> page2 = q.Skip(5).Take(5);
-            IQueryable<Product> page3 = q.Skip(10).Take(5);
-            IQueryable<Product> page4 = q.Skip(15).Take(5);
+			// ToList required otherwise the First call alters the paging and test something else than paging three pages.
+			// (And Skip().Take().First() causes a bug with Oracle.)
+			var page2 = q.Skip(5).Take(5).ToList();
+			var page3 = q.Skip(10).Take(5).ToList();
+			var page4 = q.Skip(15).Take(5).ToList();
 
 			var firstResultOnPage2 = page2.First();
 			var firstResultOnPage3 = page3.First();

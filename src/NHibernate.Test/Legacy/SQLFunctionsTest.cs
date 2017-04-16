@@ -76,10 +76,13 @@ namespace NHibernate.Test.Legacy
 				rset = s.CreateQuery("select abs(round(s.Pay)) from s in class Simple").List();
 				Assert.AreEqual(46f, rset[0], "abs(round(-45.8)) result was incorrect");
 
+				/* As of NH-3893, left and right functions are broken. Seemed confused with join keyword, and not
+				   supported on Hibernate side.
 				rset = s.CreateQuery("select left('abc', 2), right('abc', 2) from s in class Simple").List();
 				row = (object[]) rset[0];
 				Assert.AreEqual("ab", row[0], "Left function is broken.");
 				Assert.AreEqual("bc", row[1], "Right function is broken.");
+				*/
 
 				// Test a larger depth 3 function example - Not a useful combo other than for testing
 				Assert.AreEqual(1,

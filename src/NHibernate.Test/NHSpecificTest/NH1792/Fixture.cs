@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using NHibernate.Criterion;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1792
@@ -79,6 +80,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1792
 		[Test]
 		public void PageWithRawSqlSubqueryWithOrderBy()
 		{
+			// Theoretically, the ordering of elements in a "where col in (elements)" should not change anything.
+			// That is not the case for SQL Server, but Oracle just refuses any ordering there.
+			if (Dialect is Oracle8iDialect)
+				Assert.Ignore("Oracle does not support pointless order by");
+
 			using (ISession session = OpenSession())
 			{
 				string top = "";
