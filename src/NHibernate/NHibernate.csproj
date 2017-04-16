@@ -159,6 +159,9 @@
     <Compile Include="IStatelessSessionBuilder.cs" />
     <Compile Include="ISessionBuilder.cs" />
     <Compile Include="Impl\ISessionCreationOptions.cs" />
+    <Compile Include="Linq\IQueryableOptions.cs" />
+    <Compile Include="Linq\NhQueryableOptions.cs" />
+    <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessOptions.cs" />
     <Compile Include="Tool\hbm2ddl\IDatabaseMetadata.cs" />
     <Compile Include="Util\DelegateHelper.cs" />
     <Compile Include="Dialect\BitwiseFunctionOperation.cs" />
@@ -351,7 +354,6 @@
     <Compile Include="Linq\Visitors\QueryExpressionSourceIdentifer.cs" />
     <Compile Include="Linq\Visitors\QuerySourceIdentifier.cs" />
     <Compile Include="Linq\Visitors\MemberExpressionJoinDetector.cs" />
-    <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessTimeout.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessAggregateFromSeed.cs" />
     <Compile Include="Linq\NestedSelects\NestedSelectRewriter.cs" />
     <Compile Include="Linq\Visitors\SelectClauseNominator.cs" />
@@ -1020,7 +1022,6 @@
     <Compile Include="Linq\IntermediateHqlTree.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessCast.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessOfType.cs" />
-    <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessCacheable.cs" />
     <Compile Include="Linq\Visitors\QuerySourceLocator.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessFetch.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessFetchMany.cs" />

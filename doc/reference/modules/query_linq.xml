@@ -49,7 +49,7 @@ using NHibernate.Linq;]]></programlisting>
     session.Query<Cat>()
         .Where(c => c.Color == "black")
         // Allows 10 seconds only.
-        .TimeOut(10)
+        .SetOptions(o => o.SetTimeout(10))
         .ToList();]]></programlisting>
   </sect1>
 
@@ -477,24 +477,22 @@ IList<Cat> oldCats =
     <para>&nbsp;</para>
     
     <para>
-      <literal>Cacheable</literal> extension method enables the cache for the query.
+      <literal>SetOptions</literal> extension method allows to enable the cache for the query.
     </para>
     <programlisting><![CDATA[IList<Cat> oldCats =
     session.Query<Cat>()
         .Where(c => c.BirthDate.Year < 2010)
-        .Cacheable()
+        .SetOptions(o => o.SetCacheable(true))
         .ToList();]]></programlisting>
     <para>&nbsp;</para>
 
     <para>
-      <literal>CacheMode</literal> and <literal>CacheRegion</literal> extension methods set
-      the cache mode and the cache region respectively.
+      The cache mode and cache region can be specified too.
     </para>
     <programlisting><![CDATA[IList<Cat> cats =
     session.Query<Cat>()
         .Where(c => c.Name == "Max")
-        .Cacheable()
-        .CacheRegion("catNames")
+        .SetOptions(o => o.SetCacheable(true).SetCacheRegion("catNames").SetCacheMode(CacheMode.Put))
         .ToList();]]></programlisting>
   </sect1>
 
