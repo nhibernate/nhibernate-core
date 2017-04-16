@@ -73,7 +73,7 @@ namespace NHibernate.Impl
 		private readonly StatefulPersistenceContext persistenceContext;
 
 		[NonSerialized]
-		private readonly ISession rootSession;
+		private readonly SessionImpl rootSession;
 
 		[NonSerialized]
 		ISession _childSession;
@@ -381,6 +381,7 @@ namespace NHibernate.Impl
 				{
 					SetClosed();
 					Cleanup();
+					if (rootSession != null) rootSession._childSession = null;
 				}
 			}
 		}
@@ -1681,6 +1682,7 @@ namespace NHibernate.Impl
 				// free unmanaged resources here
 
 				IsAlreadyDisposed = true;
+
 				// nothing for Finalizer to do - so tell the GC to ignore it
 				GC.SuppressFinalize(this);
 			}
