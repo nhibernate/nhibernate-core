@@ -11,8 +11,10 @@
 
 		<discriminator column="subclass" />
 
-		<version	name="Version"	column="version_column" type="Timestamp" generated="always" />
-		<property name="Name"			column="name_column"																				/>
+		<version	name="Version" type="Timestamp" generated="always">
+      <column name="version_column" sql-type="datetime2(3)" />
+    </version>
+		<property name="Name" column="name_column" />
 
 		<bag name="Pages">
 			<key column="book_id" />
@@ -37,8 +39,10 @@
 
 		<discriminator column="subclass" />
 
-		<version	name="Version"	column="version_column" type="Timestamp" generated="never"	/>
-		<property name="Name"			column="name_column"																				/>
+    <version	name="Version" type="Timestamp" generated="never">
+      <column name="version_column" sql-type="datetime2(3)" />
+    </version>
+		<property name="Name" column="name_column"																				/>
 
 		<bag name="Pages">
 			<key column="book_id" />
