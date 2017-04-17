@@ -63,15 +63,15 @@ namespace NHibernate
 			}
 			catch (MissingMethodException ex)
 			{
-				throw new ApplicationException("Public constructor was not found for " + loggerFactoryType, ex);
+				throw new InstantiationException("Public constructor was not found for " + loggerFactoryType, ex, loggerFactoryType);
 			}
 			catch (InvalidCastException ex)
 			{
-				throw new ApplicationException(loggerFactoryType + "Type does not implement " + typeof (ILoggerFactory), ex);
+				throw new InstantiationException(loggerFactoryType + "Type does not implement " + typeof (ILoggerFactory), ex, loggerFactoryType);
 			}
 			catch (Exception ex)
 			{
-				throw new ApplicationException("Unable to instantiate: " + loggerFactoryType, ex);
+				throw new InstantiationException("Unable to instantiate: " + loggerFactoryType, ex, loggerFactoryType);
 			}
 			return loggerFactory;
 		}

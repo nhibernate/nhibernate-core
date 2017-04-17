@@ -10,11 +10,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1985
 	{
 		protected override void OnSetUp()
 		{
-			base.OnSetUp();
-
 			if (0 == ExecuteStatement("INSERT INTO DomainClass (Id, Label) VALUES (1, 'TEST record');"))
 			{
-				throw new ApplicationException("Insertion of test record failed.");
+				Assert.Fail("Insertion of test record failed.");
 			}
 		}
 
@@ -26,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1985
 		}
 
 		[Test]
-		[Ignore("It is valid to be delete immutable entities")]
+		[Ignore("It is valid to delete immutable entities")]
 		public void AttemptToDeleteImmutableObjectShouldThrow()
 		{
 			using (ISession session = OpenSession())
