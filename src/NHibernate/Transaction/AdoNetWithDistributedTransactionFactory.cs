@@ -43,7 +43,7 @@ namespace NHibernate.Transaction
 				{
 					using (new SessionIdLoggingContext(session.SessionId))
 					{
-						((DistributedTransactionContext) session.TransactionContext).IsInActiveTransaction = false;
+						((DistributedTransactionContext)session.TransactionContext).IsInActiveTransaction = false;
 
 						bool wasSuccessful = false;
 						try
@@ -94,7 +94,7 @@ namespace NHibernate.Transaction
 		{
 			public System.Transactions.Transaction AmbientTransation { get; set; }
 			public bool ShouldCloseSessionOnDistributedTransactionCompleted { get; set; }
-			private readonly ISessionImplementor sessionImplementor;
+			private ISessionImplementor sessionImplementor;
 			public bool IsInActiveTransaction;
 
 			public DistributedTransactionContext(ISessionImplementor sessionImplementor, System.Transactions.Transaction transaction)
@@ -178,6 +178,8 @@ namespace NHibernate.Transaction
 			{
 				if (AmbientTransation != null)
 					AmbientTransation.Dispose();
+				AmbientTransation = null;
+				sessionImplementor = null;
 			}
 		}
 	}
