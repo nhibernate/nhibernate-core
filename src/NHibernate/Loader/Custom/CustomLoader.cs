@@ -542,19 +542,19 @@ namespace NHibernate.Loader.Custom
 				return resultSet.GetName(position);
 			}
 
-			/// <summary>
-			/// Gets the Hibernate type of the specified column.
-			/// </summary>
-			/// <param name="columnPos">The column position.</param>
-			/// <returns>The Hibernate type.</returns>
-			public IType GetHibernateType(int columnPos)
-			{
-				var type = TypeFactory.Basic(resultSet.GetDataTypeName(columnPos));
-				if (type == null)
-					return TypeFactory.Basic(resultSet.GetFieldType(columnPos).Name);
-			
-				return type;
+            /// <summary>
+            /// Gets the Hibernate type of the specified column.
+            /// </summary>
+            /// <param name="columnPos">The column position.</param>
+            /// <returns>The Hibernate type.</returns>
+            public IType GetHibernateType(int columnPos)
+            {
+                var type = TypeFactory.Basic(resultSet.GetDataTypeName(columnPos));
+                if (type == null)
+                    return TypeFactory.Basic(resultSet.GetFieldType(columnPos).Name);
+
+                return type;
             }
-		}
-	}
+        }
+    }
 }
