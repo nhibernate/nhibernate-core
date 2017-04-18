@@ -20,8 +20,8 @@
     <projectUrl>
       http://nhibernate.info
     </projectUrl>
-    <iconUrl>https://raw.github.com/nhibernate/nhibernate-core/master/logo/NHibernate-NuGet.png</iconUrl>
-    <licenseUrl>https://raw.github.com/nhibernate/nhibernate-core/master/lgpl.txt</licenseUrl>
+    <iconUrl>https://raw.githubusercontent.com/nhibernate/nhibernate-core/master/logo/NHibernate-NuGet.png</iconUrl>
+    <licenseUrl>https://raw.githubusercontent.com/nhibernate/nhibernate-core/master/LICENSE.txt</licenseUrl>
   </metadata>
   <files>
     <file src="NHibernate.dll" target="lib\net461" />

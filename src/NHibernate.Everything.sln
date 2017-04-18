@@ -35,9 +35,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NAnt Build", "NAnt Build", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Information", "Information", "{1631B0BA-59AC-4F0D-B300-3F64CC7579C9}"
 	ProjectSection(SolutionItems) = preProject
-		..\gfdl.txt = ..\gfdl.txt
-		..\lgpl.txt = ..\lgpl.txt
-		..\readme.html = ..\readme.html
+		..\LICENSE.txt = ..\LICENSE.txt
+		..\README.md = ..\README.md
 		..\releasenotes.txt = ..\releasenotes.txt
 		..\sample build commands.txt = ..\sample build commands.txt
 		..\ShowBuildMenu.bat = ..\ShowBuildMenu.bat

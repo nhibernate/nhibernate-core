@@ -26,6 +26,7 @@
 
 	<target name="manual" depends="init">
 		<property name="lang" value="en" />
+		<copy file="LICENSE.txt" todir="${doc.out.dir}"/>
 		<nant target="build" buildfile="reference/reference.build">
 			<properties>
 				<property name="lang" value="${lang}" />
