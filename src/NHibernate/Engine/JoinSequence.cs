@@ -174,11 +174,20 @@ namespace NHibernate.Engine
 					// defined specifically on the many-to-many
 					string manyToManyFilter = ((IQueryableCollection)last)
 						.GetManyToManyFilterFragment(join.Alias, enabledFilters);
-					condition = new SqlString("".Equals(manyToManyFilter)
-												? on
-												: "".Equals(on)
-														? manyToManyFilter
-														: on + " and " + manyToManyFilter);
+
+                    string conditionString = "".Equals(manyToManyFilter)
+                                                ? on
+                                                : "".Equals(on)
+                                                        ? manyToManyFilter
+                                                        : on + manyToManyFilter;
+				    if (conditionString.Trim() != "and")
+				    {
+				        condition = new SqlString(conditionString);
+				    }
+				    else
+				    {
+                        condition = new SqlString("");
+                    }
 				}
 				else
 				{
