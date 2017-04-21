@@ -3,7 +3,7 @@
 	<namespace name="NHibernate">The core classes and interfaces for working with NHibernate.</namespace> 
 	<namespace name="NHibernate.Cache">The classes and interfaces that make up the second-level cache.</namespace> 
 	<namespace name="NHibernate.Cfg">The classes used to configure an NHibernate ISession and ISessionFactory.</namespace> 
-	<namespace name="NHibernate.Collection">The classes that implement IList, IDictionary, and Iesi.Collections.ISet and the Persister to read/write to the database.</namespace> 
+	<namespace name="NHibernate.Collection">The classes that implement IList&lt;&gt;, IDictionary&lt;&gt;, and ISet&lt;&gt; and the Persister to read/write to the database.</namespace> 
 	<namespace name="NHibernate.Connection">The classes and interfaces that NHibernate uses to get connections to the database.</namespace> 
 	<namespace name="NHibernate.Dialect">The classes and interfaces that NHibernate uses to create SQL Statements that conform to the particular database.</namespace> 
 	<namespace name="NHibernate.Driver">The classes and interfaces that NHibernate uses to interface with the various .NET Data Providers.</namespace> 

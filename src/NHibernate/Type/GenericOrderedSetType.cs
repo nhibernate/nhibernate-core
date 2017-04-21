@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
+using System.Reflection;
 
 namespace NHibernate.Type
 {
@@ -11,6 +11,9 @@ namespace NHibernate.Type
 	[Serializable]
 	public class GenericOrderedSetType<T> : GenericSetType<T>
 	{
+		// ReSharper disable once StaticMemberInGenericType
+		static ConstructorInfo _setConstructor;
+
 		/// <summary>
 		/// Initializes a new instance of a <see cref="GenericOrderedSetType{T}"/> class for
 		/// a specific role.
@@ -24,9 +27,41 @@ namespace NHibernate.Type
 		{
 		}
 
+		static ConstructorInfo SetConstructor
+		{
+			get
+			{
+				if (_setConstructor == null)
+				{
+					lock (typeof(GenericOrderedSetType<>))
+					{
+						if (_setConstructor == null)
+						{
+							_setConstructor = GetSetConstructor();
+						}
+					}
+				}
+				return _setConstructor;
+			}
+		}
+
+		static ConstructorInfo GetSetConstructor()
+		{
+			var type = System.Type.GetType("Iesi.Collections.Generic.LinkedHashSet`1, Iesi.Collections", false);
+			if (type == null)
+				throw new TypeLoadException(
+					@"Could not load Iesi.Collections.Generic.LinkedHashSet`1
+
+Please make sure that you have referenced the Iesi.Collections package.");
+
+			return type
+				.MakeGenericType(typeof(T))
+				.GetConstructor(System.Type.EmptyTypes);
+		}
+
 		public override object Instantiate(int anticipatedSize)
 		{
-			return new LinkedHashSet<T>();
+			return SetConstructor.Invoke(null);
 		}
 	}
 }
