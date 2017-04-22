@@ -128,7 +128,9 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			if ((expectedType.IsValueType)
 				|| (expected is System.Type)
-				|| (expected is string))
+				|| (expected is string)
+				|| (expected is FieldInfo)
+				|| (expected is PropertyInfo))
 			{
 				Assert.AreEqual(expected, actual, fieldPath);
 				_fieldPath.Pop();

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+    assembly="NHibernate.Test"
+    namespace="NHibernate.Test.NHSpecificTest.NH1904">
+
+  <class name="InvoiceWithAddress">
+    <id name="ID" type="Int32">
+      <generator class="hilo" />
+    </id>
+
+    <property name="Issued" type="DateTime" />
+
+    <component name="BillingAddress">
+      <property name="Line"/>
+      <property name="Line2"/>
+      <property name="City"/>
+      <property name="ZipCode"/>
+      <property name="Country"/>
+    </component>
+  </class>
+
+</hibernate-mapping>
