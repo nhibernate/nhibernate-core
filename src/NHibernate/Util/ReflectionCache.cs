@@ -1,7 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using NHibernate.Linq;
 
 namespace NHibernate.Util
 {
@@ -26,14 +26,26 @@ namespace NHibernate.Util
 			internal static readonly MethodInfo AggregateWithSeedAndResultSelectorDefinition =
 				ReflectHelper.GetMethodDefinition(() => Enumerable.Aggregate<object, object, object>(null, null, null, null));
 
+			internal static readonly MethodInfo AllDefinition =
+				ReflectHelper.GetMethodDefinition(() => Enumerable.All<object>(null, null));
+
 			internal static readonly MethodInfo CastDefinition =
 				ReflectHelper.GetMethodDefinition(() => Enumerable.Cast<object>(null));
 
 			internal static readonly MethodInfo GroupByWithElementSelectorDefinition = ReflectHelper.GetMethodDefinition(
 				() => Enumerable.GroupBy<object, object, object>(null, null, default(Func<object, object>)));
 
+			internal static readonly MethodInfo MaxDefinition =
+				ReflectHelper.GetMethodDefinition(() => Enumerable.Max<object>(null));
+
+			internal static readonly MethodInfo MinDefinition =
+				ReflectHelper.GetMethodDefinition(() => Enumerable.Min<object>(null));
+
 			internal static readonly MethodInfo SelectDefinition =
 				ReflectHelper.GetMethodDefinition(() => Enumerable.Select(null, default(Func<object, object>)));
+
+			internal static readonly MethodInfo SumOnInt =
+				ReflectHelper.GetMethod(() => Enumerable.Sum(default(IEnumerable<int>)));
 
 			internal static readonly MethodInfo ToArrayDefinition =
 				ReflectHelper.GetMethodDefinition(() => Enumerable.ToArray<object>(null));
@@ -45,15 +57,15 @@ namespace NHibernate.Util
 		internal static class MethodBaseMethods
 		{
 			internal static readonly MethodInfo GetMethodFromHandle =
-				ReflectHelper.GetMethod(() => MethodBase.GetMethodFromHandle(new RuntimeMethodHandle()));
+				ReflectHelper.GetMethod(() => MethodBase.GetMethodFromHandle(default(RuntimeMethodHandle)));
 			internal static readonly MethodInfo GetMethodFromHandleWithDeclaringType =
-				ReflectHelper.GetMethod(() => MethodBase.GetMethodFromHandle(new RuntimeMethodHandle(), new RuntimeTypeHandle()));
+				ReflectHelper.GetMethod(() => MethodBase.GetMethodFromHandle(default(RuntimeMethodHandle), default(RuntimeTypeHandle)));
 		}
 
 		internal static class TypeMethods
 		{
 			internal static readonly MethodInfo GetTypeFromHandle =
-				ReflectHelper.GetMethod(() => System.Type.GetTypeFromHandle(new RuntimeTypeHandle()));
+				ReflectHelper.GetMethod(() => System.Type.GetTypeFromHandle(default(RuntimeTypeHandle)));
 		}
 	}
 }

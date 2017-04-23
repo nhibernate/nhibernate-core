@@ -49,7 +49,7 @@ namespace NHibernate.Util
 		public static MethodInfo GetMethod<TSource>(Expression<Action<TSource>> method)
 		{
 			if (method == null)
-				throw new ArgumentNullException("method");
+				throw new ArgumentNullException(nameof(method));
 
 			return ((MethodCallExpression)method.Body).Method;
 		}
@@ -74,9 +74,38 @@ namespace NHibernate.Util
 		public static MethodInfo GetMethod(Expression<System.Action> method)
 		{
 			if (method == null)
-				throw new ArgumentNullException("method");
+				throw new ArgumentNullException(nameof(method));
 
 			return ((MethodCallExpression)method.Body).Method;
+		}
+
+		/// <summary>
+		/// Get the <see cref="MethodInfo"/> for a public overload of a given method if the method does not match
+		/// given parameter types, otherwise directly yield the given method.
+		/// </summary>
+		/// <param name="method">The method for which finding an overload.</param>
+		/// <param name="parameterTypes">The arguments types of the overload to get.</param>
+		/// <returns>The <see cref="MethodInfo"/> of the method.</returns>
+		/// <remarks>Whenever possible, use GetMethod() instead for performance reasons.</remarks>
+		public static MethodInfo GetMethodOverload(MethodInfo method, params System.Type[] parameterTypes)
+		{
+			if (method == null)
+				throw new ArgumentNullException(nameof(method));
+			if (parameterTypes == null)
+				throw new ArgumentNullException(nameof(parameterTypes));
+
+			if (ParameterTypesMatch(method.GetParameters(), parameterTypes))
+				return method;
+
+			var overload = method.DeclaringType.GetMethod(method.Name,
+				(method.IsStatic ? BindingFlags.Static : BindingFlags.Instance) | BindingFlags.Public,
+				null, parameterTypes, null);
+
+			if (overload == null)
+				throw new InvalidOperationException(
+					$"No overload found for method '{method.DeclaringType.Name}.{method.Name}' and parameter types '{string.Join(", ", parameterTypes.Select(t => t.Name))}'");
+
+			return overload;
 		}
 
 		/// <summary>
@@ -90,21 +119,45 @@ namespace NHibernate.Util
 		{
 			if (property == null)
 			{
-				throw new ArgumentNullException("property");
+				throw new ArgumentNullException(nameof(property));
 			}
 			return ((MemberExpression)property.Body).Member;
 		}
 
+		internal static bool ParameterTypesMatch(ParameterInfo[] parameters, System.Type[] types)
+		{
+			if (parameters.Length != types.Length)
+			{
+				return false;
+			}
+
+			for (int i = 0; i < parameters.Length; i++)
+			{
+				if (parameters[i].ParameterType == types[i])
+				{
+					continue;
+				}
+
+				if (parameters[i].ParameterType.ContainsGenericParameters && types[i].ContainsGenericParameters &&
+					parameters[i].ParameterType.GetGenericArguments().Length == types[i].GetGenericArguments().Length)
+				{
+					continue;
+				}
+
+				return false;
+			}
+
+			return true;
+		}
+
 		internal static System.Type GetPropertyOrFieldType(this MemberInfo memberInfo)
 		{
-			var propertyInfo = memberInfo as PropertyInfo;
-			if (propertyInfo != null)
+			if (memberInfo is PropertyInfo propertyInfo)
 			{
 				return propertyInfo.PropertyType;
 			}
 
-			var fieldInfo = memberInfo as FieldInfo;
-			if (fieldInfo != null)
+			if (memberInfo is FieldInfo fieldInfo)
 			{
 				return fieldInfo.FieldType;
 			}
@@ -143,7 +196,7 @@ namespace NHibernate.Util
 			}
 			catch (AmbiguousMatchException)
 			{
-				// an ambigious match means that there is an override and it
+				// an ambiguous match means that there is an override and it
 				// can't determine which one to use.
 				return true;
 			}
@@ -765,7 +818,7 @@ namespace NHibernate.Util
 			/// <returns>true if the property exists; otherwise false.</returns>
 			/// <remarks>
 			/// When the user defines a field.xxxxx access strategy should be because both the property and the field exists.
-			/// NHibernate can work even when the property does not exist but in this case the user should use the appropiate accessor.
+			/// NHibernate can work even when the property does not exist but in this case the user should use the appropriate accessor.
 			/// </remarks>
 			public static bool HasProperty(this System.Type source, string propertyName)
 			{

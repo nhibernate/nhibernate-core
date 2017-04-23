@@ -13,20 +13,20 @@ namespace NHibernate.Linq
 {
 	public class NhLinqExpression : IQueryExpression
 	{
-		public string Key { get; private set; }
+		public string Key { get; }
 
 		public System.Type Type { get; private set; }
 
 		public IList<NamedParameterDescriptor> ParameterDescriptors { get; private set; }
 
-		public NhLinqExpressionReturnType ReturnType { get; private set; }
+		public NhLinqExpressionReturnType ReturnType { get; }
 
-		public IDictionary<string, Tuple<object, IType>> ParameterValuesByName { get; private set; }
+		public IDictionary<string, Tuple<object, IType>> ParameterValuesByName { get; }
 
 		public ExpressionToHqlTranslationResults ExpressionToHqlTranslationResults { get; private set; }
 
-		internal Expression _expression;
-		internal IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
+		private Expression _expression;
+		private readonly IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
 
 		public NhLinqExpression(Expression expression, ISessionFactoryImplementor sessionFactory)
 		{
@@ -64,7 +64,10 @@ namespace NHibernate.Linq
 			var queryModel = NhRelinqQueryParser.Parse(_expression);
 			var visitorParameters = new VisitorParameters(sessionFactory, _constantToParameterMap, requiredHqlParameters, querySourceNamer);
 
-			ExpressionToHqlTranslationResults = QueryModelVisitor.GenerateHqlQuery(queryModel, visitorParameters, true);
+			ExpressionToHqlTranslationResults = QueryModelVisitor.GenerateHqlQuery(queryModel, visitorParameters, true, ReturnType);
+
+			if (ExpressionToHqlTranslationResults.ExecuteResultTypeOverride != null)
+				Type = ExpressionToHqlTranslationResults.ExecuteResultTypeOverride;
 
 			ParameterDescriptors = requiredHqlParameters.AsReadOnly();
 			
@@ -75,6 +78,8 @@ namespace NHibernate.Linq
 		{
 			ExpressionToHqlTranslationResults = other.ExpressionToHqlTranslationResults;
 			ParameterDescriptors = other.ParameterDescriptors;
+			// Type could have been overridden by translation.
+			Type = other.Type;
 		}
 	}
 }

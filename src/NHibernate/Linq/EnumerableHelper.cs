@@ -65,7 +65,7 @@ namespace NHibernate.Linq
 			return ReflectHelper.GetProperty(property);
 		}
 	}
-	
+
 	[Obsolete("Please use NHibernate.Util.ReflectHelper instead")]
 	public static class EnumerableHelper
 	{
@@ -73,7 +73,7 @@ namespace NHibernate.Linq
 		{
 			return typeof(Enumerable).GetMethods(BindingFlags.Static | BindingFlags.Public)
 				.Where(m => m.Name == name &&
-							ParameterTypesMatch(m.GetParameters(), parameterTypes))
+					ReflectHelper.ParameterTypesMatch(m.GetParameters(), parameterTypes))
 				.Single();
 		}
 
@@ -83,35 +83,9 @@ namespace NHibernate.Linq
 				.Where(m => m.Name == name &&
 							m.ContainsGenericParameters &&
 							m.GetGenericArguments().Count() == genericTypeParameters.Length &&
-							ParameterTypesMatch(m.GetParameters(), parameterTypes))
+							ReflectHelper.ParameterTypesMatch(m.GetParameters(), parameterTypes))
 				.Single()
 				.MakeGenericMethod(genericTypeParameters);
-		}
-
-		private static bool ParameterTypesMatch(ParameterInfo[] parameters, System.Type[] types)
-		{
-			if (parameters.Length != types.Length)
-			{
-				return false;
-			}
-
-			for (int i = 0; i < parameters.Length; i++)
-			{
-				if (parameters[i].ParameterType == types[i])
-				{
-					continue;
-				}
-
-				if (parameters[i].ParameterType.ContainsGenericParameters && types[i].ContainsGenericParameters &&
-					parameters[i].ParameterType.GetGenericArguments().Length == types[i].GetGenericArguments().Length)
-				{
-					continue;
-				}
-
-				return false;
-			}
-
-			return true;
 		}
 	}
 }

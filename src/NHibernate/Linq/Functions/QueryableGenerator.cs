@@ -53,10 +53,10 @@ namespace NHibernate.Linq.Functions
 		public AllHqlGenerator()
 		{
 			SupportedMethods = new[]
-			                   	{
-			                   		ReflectHelper.GetMethodDefinition(() => Queryable.All<object>(null, null)),
-			                   		ReflectHelper.GetMethodDefinition(() => Enumerable.All<object>(null, null))
-			                   	};
+			{
+				ReflectHelper.GetMethodDefinition(() => Queryable.All<object>(null, null)),
+				ReflectHelper.GetMethodDefinition(() => Enumerable.All<object>(null, null))
+			};
 		}
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
