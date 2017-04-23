@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	public class GenericOrderedSetType<T> : GenericSetType<T>
 	{
 		// ReSharper disable once StaticMemberInGenericType
-		static ConstructorInfo _setConstructor;
+		static readonly Lazy<ConstructorInfo> SetConstructor = new Lazy<ConstructorInfo>(GetSetConstructor);
 
 		/// <summary>
 		/// Initializes a new instance of a <see cref="GenericOrderedSetType{T}"/> class for
@@ -25,24 +25,6 @@ namespace NHibernate.Type
 		public GenericOrderedSetType(string role, string propertyRef)
 			: base(role, propertyRef)
 		{
-		}
-
-		static ConstructorInfo SetConstructor
-		{
-			get
-			{
-				if (_setConstructor == null)
-				{
-					lock (typeof(GenericOrderedSetType<>))
-					{
-						if (_setConstructor == null)
-						{
-							_setConstructor = GetSetConstructor();
-						}
-					}
-				}
-				return _setConstructor;
-			}
 		}
 
 		static ConstructorInfo GetSetConstructor()
@@ -61,7 +43,7 @@ Please make sure that you have referenced the Iesi.Collections package.");
 
 		public override object Instantiate(int anticipatedSize)
 		{
-			return SetConstructor.Invoke(null);
+			return SetConstructor.Value.Invoke(null);
 		}
 	}
 }
