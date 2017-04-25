@@ -12,11 +12,11 @@
 *.msbuild text
 *.md      text
 
-*.sln text eol=crlf merge=union
-*.csproj text merge=union
-*.vbproj text merge=union
-*.fsproj text merge=union
-*.dbproj text merge=union
+*.sln text eol=crlf
+*.csproj text eol=crlf
+*.vbproj text eol=crlf
+*.fsproj text eol=crlf
+*.dbproj text eol=crlf
 
 # Resharper DotSettings files are in Unix format
 *.DotSettings text eol=lf 
