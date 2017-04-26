@@ -1,7 +1,6 @@
 using System;
 using log4net;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Logging
 {
@@ -285,25 +284,25 @@ namespace NHibernate.Test.Logging
 			logger.Fatal(null);
 			logger.Fatal(null, null);
 
-			logMock.debug.Should().Be(1);
-			logMock.debugException.Should().Be(1);
-			logMock.debugFormat.Should().Be(1);
-			logMock.info.Should().Be(1);
-			logMock.infoException.Should().Be(1);
-			logMock.infoFormat.Should().Be(1);
-			logMock.warn.Should().Be(1);
-			logMock.warnException.Should().Be(1);
-			logMock.warnFormat.Should().Be(1);
-			logMock.error.Should().Be(1);
-			logMock.errorException.Should().Be(1);
-			logMock.errorFormat.Should().Be(1);
-			logMock.fatal.Should().Be(1);
-			logMock.fatalException.Should().Be(1);
-			logMock.isDebugEnabled.Should().Be.GreaterThan(1);
-			logMock.isInfoEnabled.Should().Be.GreaterThan(1);
-			logMock.isWarnEnabled.Should().Be.GreaterThan(1);
-			logMock.isErrorEnabled.Should().Be.GreaterThan(1);
-			logMock.isFatalEnabled.Should().Be.GreaterThan(1);
+			Assert.That(logMock.debug, Is.EqualTo(1));
+			Assert.That(logMock.debugException, Is.EqualTo(1));
+			Assert.That(logMock.debugFormat, Is.EqualTo(1));
+			Assert.That(logMock.info, Is.EqualTo(1));
+			Assert.That(logMock.infoException, Is.EqualTo(1));
+			Assert.That(logMock.infoFormat, Is.EqualTo(1));
+			Assert.That(logMock.warn, Is.EqualTo(1));
+			Assert.That(logMock.warnException, Is.EqualTo(1));
+			Assert.That(logMock.warnFormat, Is.EqualTo(1));
+			Assert.That(logMock.error, Is.EqualTo(1));
+			Assert.That(logMock.errorException, Is.EqualTo(1));
+			Assert.That(logMock.errorFormat, Is.EqualTo(1));
+			Assert.That(logMock.fatal, Is.EqualTo(1));
+			Assert.That(logMock.fatalException, Is.EqualTo(1));
+			Assert.That(logMock.isDebugEnabled, Is.GreaterThan(1));
+			Assert.That(logMock.isInfoEnabled, Is.GreaterThan(1));
+			Assert.That(logMock.isWarnEnabled, Is.GreaterThan(1));
+			Assert.That(logMock.isErrorEnabled, Is.GreaterThan(1));
+			Assert.That(logMock.isFatalEnabled, Is.GreaterThan(1));
 		}
 	}
 }

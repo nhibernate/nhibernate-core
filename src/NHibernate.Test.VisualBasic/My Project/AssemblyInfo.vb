@@ -9,7 +9,7 @@ Imports System.Runtime.InteropServices
 ' Review the values of the assembly attributes
 
 <Assembly: AssemblyTitle("NHibernate.Test.VisualBasic")> 
-<Assembly: AssemblyDescription("")> 
+<Assembly: AssemblyDescription("The Visual Basic Unit Tests for NHibernate.")> 
 <Assembly: AssemblyCompany("Microsoft")> 
 <Assembly: AssemblyProduct("NHibernate.Test.VisualBasic")> 
 <Assembly: AssemblyCopyright("Copyright © Microsoft 2011")> 
@@ -31,5 +31,4 @@ Imports System.Runtime.InteropServices
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("1.0.0.0")> 
-<Assembly: AssemblyFileVersion("1.0.0.0")> 
+<Assembly: CLSCompliant(False)> 

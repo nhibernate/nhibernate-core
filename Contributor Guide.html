@@ -21,7 +21,7 @@ For the least friction, please follow the steps in the order presented, being ca
 
 <h2>Check for Existing Issues</h2>
 
-Visit <a href="http://jira.nhforge.org/">http://jira.nhforge.org</a> and search for your issue.  If you see it, voting for it is a good way to increase the visibility of the issue.
+Visit <a href="https://nhibernate.jira.com/">https://nhibernate.jira.com</a> and search for your issue.  If you see it, voting for it is a good way to increase the visibility of the issue.
 
 <h2>Create a JIRA Issue</h2>
 
@@ -124,16 +124,20 @@ Create a feature branch so it's easy to keep it separate from other improvements
 </p>
 
 <p>
-When you commit, please include the issue number in your commit message.  This will allow the JIRA issue tracker to link to automatically link your commits to the issue.  For example: NH-1234
+When you commit, please include the issue number in your commit message.  This will allow the JIRA issue tracker to automatically link your commits to the issue.  By example: <i>NH-1234 - test case for blah trouble</i>.  Make sure you do not put any non whitespace character adjacent to the issue number, as this would prevent JIRA to match it. (Avoid <i>NH-1234: test case for blah trouble</i>.)
 </p>
 
 <h2>Implementing the Bug Fix or Improvement</h2>
 
-Since you now have a failing test case, it should be straight-forward to step into NHibernate to attempt to ascertain what the problem is.  While this may seem daunting at first, feel free to give it a go.  It's just code afterall. :)
+Since you now have a failing test case, it should be straight-forward to step into NHibernate to attempt to ascertain what the problem is.  While this may seem daunting at first, feel free to give it a go.  It's just code after all. :)
 
 <h3>Ensure All Tests Pass</h3>
-
-Once you've made changes to the NHibernate code base, you'll want to ensure that you haven't caused any previously passing tests to fail.  The easiest way to check this is to select option D from the build menu, ensure the root tree node is selected, then press run to have all the tests run.
+<p>
+    Once you've made changes to the NHibernate code base, you'll want to ensure that you haven't caused any previously passing tests to fail.  The easiest way to check this is to select option D from the build menu, ensure the root tree node is selected, then press run to have all the tests run.
+</p>
+<p>
+    Please note that some tests assume a case insensitive accent sensitive database when performing string comparison.  Some tests assume SQL user locales to be en-US.  They will fail otherwise.  With SQL Server, collation with supplementary characters (_SC suffix on collation name) are no supported by legacy tests on "text" types.
+</p>
 
 <h2>Submit a Pull Request</h2>
 
@@ -142,7 +146,10 @@ Once you've made changes to the NHibernate code base, you'll want to ensure that
 </p>
 <p>We use tabs for code indentation, not spaces. As this is not the default in Visual Studio, you will need to reconfigure Visual Studio to indent with tabs whenever you work on the NHibernate codebase. To make this easier, NHibernate has an 
     <a href="http://www.editorconfig.org/">editorconfig</a> configuration file to switch Visual Studio automatically between
-tabs and spaces mode. It is recomended you install editorconfig from the Visual Studio Extension Manager.</p>
+tabs and spaces mode. It is recommended you install editorconfig from the Visual Studio Extension Manager.</p>
+<p>
+    After submitting your pull request, come back later to check the outcome of automated builds. If some have failed, they will be listed in your pull request with a link to the corresponding TeamCity build. Find out in the build which tests are newly failing, and take appropriate action. Some of those builds have many known failing tests, which does not trigger a build failure. A <i>Comparison.txt</i> file in build Artifacts may help finding which failing tests are not known failing tests and must be addressed.
+</p>
 
 <h2>Further Discussion</h2>
 

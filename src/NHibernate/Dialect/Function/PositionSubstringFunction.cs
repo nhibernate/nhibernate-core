@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Text;
+using Antlr.Runtime;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -49,30 +50,34 @@ namespace NHibernate.Dialect.Function
 			SqlStringBuilder buf = new SqlStringBuilder();
 			if (threeArgs)
 			{
-				buf.Add("(");
-			}
-			buf.Add("position(")
-				.AddObject(pattern)
-				.Add(" in ");
-			if (threeArgs)
-			{
-				buf.Add("substring(");
-			}
-			buf.AddObject(orgString);
-			if (threeArgs)
-			{
-				buf.Add(", ")
-					.AddObject(start)
-					.Add(")");
-			}
-			buf.Add(")");
-			if (threeArgs)
-			{
+				buf.Add("(case ");
+				RenderPositionInSubstring(buf, pattern, orgString, start);
+				buf.Add(" when 0 then 0 else (");
+				RenderPositionInSubstring(buf, pattern, orgString, start);
 				buf.Add("+")
-					.AddObject(start)
-					.Add("-1)");
+				   .AddObject(start)
+				   .Add("-1) end)");
+			}
+			else
+			{
+				buf.Add("position(")
+				.AddObject(pattern)
+				.Add(" in ")
+				.AddObject(orgString)
+				.Add(")");
 			}
 			return buf.ToSqlString();
+		}
+
+		private static void RenderPositionInSubstring(SqlStringBuilder buf, object pattern, object orgString, object start)
+		{
+			buf.Add("position(")
+			   .AddObject(pattern)
+			   .Add(" in substring(")
+			   .AddObject(orgString)
+			   .Add(", ")
+			   .AddObject(start)
+			   .Add("))");
 		}
 
 		#endregion

@@ -1,7 +1,6 @@
 using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2234
 {
@@ -17,13 +16,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2234
 	  [Test]
 	  public void CanQueryViaLinq()
 	  {
-	    using (var s = OpenSession())
-	    {
-        var qry = from item in s.Query<SomethingLinq>() where item.Relation == MyUserTypes.Value1 select item;
+		using (var s = OpenSession())
+		{
+		var qry = from item in s.Query<SomethingLinq>() where item.Relation == MyUserTypes.Value1 select item;
 
-	    	qry.ToList();
-	    	qry.Executing(q => q.ToList()).NotThrows();
-	    }
+			qry.ToList();
+			Assert.That(() => qry.ToList(), Throws.Nothing);
+		}
 	  }
 	}
 }

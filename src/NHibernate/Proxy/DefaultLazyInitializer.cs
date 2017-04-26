@@ -4,22 +4,17 @@ using NHibernate.Engine;
 using NHibernate.Proxy.DynamicProxy;
 using NHibernate.Proxy.Poco;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Proxy
 {
 	[Serializable]
 	public class DefaultLazyInitializer : BasicLazyInitializer, DynamicProxy.IInterceptor
 	{
-		[NonSerialized]
-		private static readonly MethodInfo exceptionInternalPreserveStackTrace =
-			typeof (Exception).GetMethod("InternalPreserveStackTrace", BindingFlags.Instance | BindingFlags.NonPublic);
-
 		public DefaultLazyInitializer(string entityName, System.Type persistentClass, object id, MethodInfo getIdentifierMethod,
 							   MethodInfo setIdentifierMethod, IAbstractComponentType componentIdType,
-							   ISessionImplementor session)
-			: base(entityName, persistentClass, id, getIdentifierMethod, setIdentifierMethod, componentIdType, session) {}
-
-		#region Implementation of IInterceptor
+							   ISessionImplementor session, bool overridesEquals)
+			: base(entityName, persistentClass, id, getIdentifierMethod, setIdentifierMethod, componentIdType, session, overridesEquals) {}
 
 		public object Intercept(InvocationInfo info)
 		{
@@ -38,13 +33,10 @@ namespace NHibernate.Proxy
 			}
 			catch (TargetInvocationException ex)
 			{
-				exceptionInternalPreserveStackTrace.Invoke(ex.InnerException, new Object[] {});
-				throw ex.InnerException;
+				throw ReflectHelper.UnwrapTargetInvocationException(ex);
 			}
 
 			return returnValue;
 		}
-
-		#endregion
 	}
 }

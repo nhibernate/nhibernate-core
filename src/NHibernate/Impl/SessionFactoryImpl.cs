@@ -1,6 +1,7 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security;
@@ -50,10 +51,10 @@ namespace NHibernate.Impl
 	/// Caches "compiled" queries (memory sensitive cache)
 	/// </item>
 	/// <item>
-	/// Manages <c>PreparedStatements/IDbCommands</c> - how true in NH?
+	/// Manages <c>PreparedStatements/DbCommands</c> - how true in NH?
 	/// </item>
 	/// <item>
-	/// Delegates <c>IDbConnection</c> management to the <see cref="IConnectionProvider"/>
+	/// Delegates <c>DbConnection</c> management to the <see cref="IConnectionProvider"/>
 	/// </item>
 	/// <item>
 	/// Factory for instances of <see cref="ISession"/>
@@ -93,8 +94,8 @@ namespace NHibernate.Impl
 		private static readonly IIdentifierGenerator UuidGenerator = new UUIDHexGenerator();
 
 		[NonSerialized]
-		private readonly ThreadSafeDictionary<string, ICache> allCacheRegions =
-			new ThreadSafeDictionary<string, ICache>(new Dictionary<string, ICache>());
+		private readonly ConcurrentDictionary<string, ICache> allCacheRegions =
+			new ConcurrentDictionary<string, ICache>();
 
 		[NonSerialized]
 		private readonly IDictionary<string, IClassMetadata> classMetadata;
@@ -147,7 +148,7 @@ namespace NHibernate.Impl
 		private readonly IQueryCache queryCache;
 
 		[NonSerialized]
-		private readonly IDictionary<string, IQueryCache> queryCaches;
+		private readonly ConcurrentDictionary<string, IQueryCache> queryCaches;
 		[NonSerialized]
 		private readonly SchemaExport schemaExport;
 		[NonSerialized]
@@ -160,7 +161,7 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private readonly UpdateTimestampsCache updateTimestampsCache;
 		[NonSerialized]
-		private readonly IDictionary<string, string[]> entityNameImplementorsMap = new ThreadSafeDictionary<string, string[]>(new Dictionary<string, string[]>(100));
+		private readonly IDictionary<string, string[]> entityNameImplementorsMap = new ConcurrentDictionary<string, string[]>(4 * System.Environment.ProcessorCount, 100);
 		private readonly string uuid;
 		private bool disposed;
 
@@ -247,7 +248,10 @@ namespace NHibernate.Impl
 					if (cache != null)
 					{
 						caches.Add(cacheRegion, cache);
-						allCacheRegions.Add(cache.RegionName, cache.Cache);
+						if (!allCacheRegions.TryAdd(cache.RegionName, cache.Cache))
+						{
+							throw new HibernateException("An item with the same key has already been added to allCacheRegions.");
+						}
 					}
 				}
 				IEntityPersister cp = PersisterFactory.CreateClassPersister(model, cache, this, mapping);
@@ -272,7 +276,7 @@ namespace NHibernate.Impl
 				{
 					allCacheRegions[cache.RegionName] = cache.Cache;
 				}
-				ICollectionPersister persister = PersisterFactory.CreateCollectionPersister(cfg, model, cache, this);
+				ICollectionPersister persister = PersisterFactory.CreateCollectionPersister(model, cache, this);
 				collectionPersisters[model.Role] = persister;
 				IType indexType = persister.IndexType;
 				if (indexType != null && indexType.IsAssociationType && !indexType.IsAnyType)
@@ -375,7 +379,7 @@ namespace NHibernate.Impl
 			{
 				updateTimestampsCache = new UpdateTimestampsCache(settings, properties);
 				queryCache = settings.QueryCacheFactory.GetQueryCache(null, updateTimestampsCache, settings, properties);
-				queryCaches = new ThreadSafeDictionary<string, IQueryCache>(new Dictionary<string, IQueryCache>());
+				queryCaches = new ConcurrentDictionary<string, IQueryCache>();
 			}
 			else
 			{
@@ -419,9 +423,7 @@ namespace NHibernate.Impl
 
 		#region IObjectReference Members
 
-#if NET_4_0
 		[SecurityCritical]
-#endif
 		public object GetRealObject(StreamingContext context)
 		{
 			// the SessionFactory that was serialized only has values in the properties
@@ -463,12 +465,12 @@ namespace NHibernate.Impl
 			return OpenSession(interceptor);
 		}
 
-		public ISession OpenSession(IDbConnection connection)
+		public ISession OpenSession(DbConnection connection)
 		{
 			return OpenSession(connection, interceptor);
 		}
 
-		public ISession OpenSession(IDbConnection connection, IInterceptor sessionLocalInterceptor)
+		public ISession OpenSession(DbConnection connection, IInterceptor sessionLocalInterceptor)
 		{
 			if (sessionLocalInterceptor == null)
 			{
@@ -487,7 +489,7 @@ namespace NHibernate.Impl
 			return OpenSession(null, true, timestamp, sessionLocalInterceptor);
 		}
 
-		public ISession OpenSession(IDbConnection connection, bool flushBeforeCompletionEnabled, bool autoCloseSessionEnabled,
+		public ISession OpenSession(DbConnection connection, bool flushBeforeCompletionEnabled, bool autoCloseSessionEnabled,
 									ConnectionReleaseMode connectionReleaseMode)
 		{
 #pragma warning disable 618
@@ -495,9 +497,8 @@ namespace NHibernate.Impl
 #pragma warning restore 618
 
 			return
-				new SessionImpl(connection, this, true, settings.CacheProvider.NextTimestamp(), interceptor,
-								settings.DefaultEntityMode, flushBeforeCompletionEnabled, autoCloseSessionEnabled,
-								isInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled, connectionReleaseMode);
+				new SessionImpl(connection, this, true, settings.CacheProvider.NextTimestamp(), interceptor, flushBeforeCompletionEnabled, autoCloseSessionEnabled,
+								isInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled, connectionReleaseMode, settings.DefaultFlushMode);
 		}
 
 		public IEntityPersister GetEntityPersister(string entityName)
@@ -650,7 +651,7 @@ namespace NHibernate.Impl
 						return knownMap;
 					}
 					// NH : take care with this because we are forcing the Poco EntityMode
-					clazz = checkPersister.GetMappedClass(EntityMode.Poco);
+					clazz = checkPersister.MappedClass;
 				}
 
 				if (clazz == null)
@@ -711,7 +712,7 @@ namespace NHibernate.Impl
 							bool assignableSuperclass;
 							if (q.IsInherited)
 							{
-								System.Type mappedSuperclass = GetEntityPersister(q.MappedSuperclass).GetMappedClass(EntityMode.Poco);
+								System.Type mappedSuperclass = GetEntityPersister(q.MappedSuperclass).MappedClass;
 								assignableSuperclass = clazz.IsAssignableFrom(mappedSuperclass);
 							}
 							else
@@ -733,7 +734,7 @@ namespace NHibernate.Impl
 
 		private static bool IsMatchingImplementor(string entityOrClassName, System.Type entityClass, IQueryable implementor)
 		{
-			var implementorClass = implementor.GetMappedClass(EntityMode.Poco);
+			var implementorClass = implementor.MappedClass;
 			if (implementorClass == null)
 			{
 				return false;
@@ -906,7 +907,7 @@ namespace NHibernate.Impl
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("evicting second-level cache: " + MessageHelper.InfoString(p, id));
+					log.Debug("evicting second-level cache: " + MessageHelper.CollectionInfoString(p, id));
 				}
 				CacheKey ck = GenerateCacheKeyForEvict(id, p.KeyType, p.Role);
 				p.Cache.Remove(ck);
@@ -924,7 +925,7 @@ namespace NHibernate.Impl
 					.GenerateCacheKey(id, type, entityOrRoleName);
 			}
 
-			return new CacheKey(id, type, entityOrRoleName, EntityMode.Poco, this);
+			return new CacheKey(id, type, entityOrRoleName, this);
 		}
 
 		public void EvictCollection(string roleName)
@@ -967,10 +968,8 @@ namespace NHibernate.Impl
 
 		public IDictionary<string, ICache> GetAllSecondLevelCacheRegions()
 		{
-			lock (allCacheRegions.SyncRoot)
-			{
-				return new Dictionary<string, ICache>(allCacheRegions);
-			}
+			// ToArray creates a moment in time snapshot
+			return allCacheRegions.ToArray().ToDictionary(kv => kv.Key, kv => kv.Value);
 		}
 
 		public ICache GetSecondLevelCacheRegion(string regionName)
@@ -1002,18 +1001,14 @@ namespace NHibernate.Impl
 				return null;
 			}
 
-			lock (allCacheRegions.SyncRoot)
-			{
-				IQueryCache currentQueryCache;
-				if (!queryCaches.TryGetValue(cacheRegion, out currentQueryCache))
+			return queryCaches.GetOrAdd(
+				cacheRegion,
+				cr =>
 				{
-					currentQueryCache =
-						settings.QueryCacheFactory.GetQueryCache(cacheRegion, updateTimestampsCache, settings, properties);
-					queryCaches[cacheRegion] = currentQueryCache;
+					IQueryCache currentQueryCache = settings.QueryCacheFactory.GetQueryCache(cacheRegion, updateTimestampsCache, settings, properties);
 					allCacheRegions[currentQueryCache.RegionName] = currentQueryCache.Cache;
-				}
-				return currentQueryCache;
-			}
+					return currentQueryCache;
+				});
 		}
 
 		public void EvictQueries()
@@ -1097,7 +1092,7 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary> Get a new stateless session for the given ADO.NET connection.</summary>
-		public IStatelessSession OpenStatelessSession(IDbConnection connection)
+		public IStatelessSession OpenStatelessSession(DbConnection connection)
 		{
 			return new StatelessSessionImpl(connection, this);
 		}
@@ -1180,8 +1175,8 @@ namespace NHibernate.Impl
 					NativeSQLQuerySpecification spec;
 					if (qd.ResultSetRef != null)
 					{
-						ResultSetMappingDefinition definition = sqlResultSetMappings[qd.ResultSetRef];
-						if (definition == null)
+						ResultSetMappingDefinition definition;
+						if (!sqlResultSetMappings.TryGetValue(qd.ResultSetRef, out definition))
 						{
 							throw new MappingException("Unable to find resultset-ref definition: " + qd.ResultSetRef);
 						}
@@ -1206,16 +1201,16 @@ namespace NHibernate.Impl
 			return errors;
 		}
 
-		private SessionImpl OpenSession(IDbConnection connection, bool autoClose, long timestamp, IInterceptor sessionLocalInterceptor)
+		private SessionImpl OpenSession(DbConnection connection, bool autoClose, long timestamp, IInterceptor sessionLocalInterceptor)
 		{
 #pragma warning disable 618
 			var isInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled = settings.IsInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled;
 #pragma warning restore 618
 
-			SessionImpl session = new SessionImpl(connection, this, autoClose, timestamp, sessionLocalInterceptor ?? interceptor,
-												  settings.DefaultEntityMode, settings.IsFlushBeforeCompletionEnabled,
+			SessionImpl session = new SessionImpl(connection, this, autoClose, timestamp, sessionLocalInterceptor ?? interceptor, settings.IsFlushBeforeCompletionEnabled,
 												  settings.IsAutoCloseSessionEnabled, isInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled,
-												  settings.ConnectionReleaseMode);
+												  settings.ConnectionReleaseMode, settings.DefaultFlushMode);
+
 			if (sessionLocalInterceptor != null)
 			{
 				// NH specific feature

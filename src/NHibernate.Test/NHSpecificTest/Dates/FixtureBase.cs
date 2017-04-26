@@ -32,10 +32,6 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 			{
 				return false;
 			}
-			catch (Exception)
-			{
-				Assert.Fail("Probably a bug in the test case.");
-			}
 
 			return true;
 		}

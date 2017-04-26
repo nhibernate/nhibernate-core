@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
+using NHibernate.Linq;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Stateless.FetchingLazyCollections
 {
@@ -15,18 +16,18 @@ namespace NHibernate.Test.Stateless.FetchingLazyCollections
 			var mapper = new ModelMapper();
 			mapper.BeforeMapClass += (mi, t, cm) => cm.Id(im => im.Generator(Generators.HighLow));
 			mapper.Class<Animal>(mc =>
-			                     {
-			                     	mc.Id(x => x.Id);
-			                     	mc.Discriminator(dm => dm.Column("kind"));
-			                     	mc.Property(x => x.Description);
-			                     });
+								 {
+									mc.Id(x => x.Id);
+									mc.Discriminator(dm => dm.Column("kind"));
+									mc.Property(x => x.Description);
+								 });
 			mapper.Subclass<Reptile>(mc => { mc.Property(x => x.BodyTemperature); });
 			mapper.Subclass<Human>(mc =>
-			                       {
-			                       	mc.Property(x => x.Name);
-			                       	mc.Property(x => x.NickName);
-			                       	mc.Property(x => x.Birthdate, pm => pm.Type(NHibernateUtil.Date));
-			                       });
+								   {
+									mc.Property(x => x.Name);
+									mc.Property(x => x.NickName);
+									mc.Property(x => x.Birthdate, pm => pm.Type(NHibernateUtil.Date));
+								   });
 			mapper.AddMapping<FamilyMap<Reptile>>();
 			mapper.AddMapping<FamilyMap<Human>>();
 			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
@@ -48,23 +49,23 @@ namespace NHibernate.Test.Stateless.FetchingLazyCollections
 				DiscriminatorValue(familyOf);
 				Where(string.Format("familyKind = '{0}'", familyOf));
 				ManyToOne(x => x.Father, map =>
-				                         {
-				                         	map.Lazy(LazyRelation.NoLazy);
-				                         	map.Class(typeof (T));
-				                         	map.Cascade(Mapping.ByCode.Cascade.All);
-				                         });
+										 {
+											map.Lazy(LazyRelation.NoLazy);
+											map.Class(typeof (T));
+											map.Cascade(Mapping.ByCode.Cascade.All);
+										 });
 				ManyToOne(x => x.Mother, map =>
-				                         {
-				                         	map.Lazy(LazyRelation.NoLazy);
-				                         	map.Class(typeof (T));
-				                         	map.Cascade(Mapping.ByCode.Cascade.All);
-				                         });
+										 {
+											map.Lazy(LazyRelation.NoLazy);
+											map.Class(typeof (T));
+											map.Cascade(Mapping.ByCode.Cascade.All);
+										 });
 				Set(x => x.Childs, cam =>
-				                   {
-				                   	cam.Key(km => km.Column("familyId"));
-				                   	cam.Cascade(Mapping.ByCode.Cascade.All);
-				                   },
-				    rel => rel.OneToMany());
+								   {
+									cam.Key(km => km.Column("familyId"));
+									cam.Cascade(Mapping.ByCode.Cascade.All);
+								   },
+					rel => rel.OneToMany());
 			}
 		}
 
@@ -118,13 +119,33 @@ namespace NHibernate.Test.Stateless.FetchingLazyCollections
 				Assert.That(hf.Count, Is.EqualTo(1));
 				Assert.That(hf[0].Father.Name, Is.EqualTo(humanFather));
 				Assert.That(hf[0].Mother.Name, Is.EqualTo(humanMother));
-				NHibernateUtil.IsInitialized(hf[0].Childs).Should("Lazy collection should NOT be initialized").Be.False();
+				Assert.That(NHibernateUtil.IsInitialized(hf[0].Childs), Is.False, "Lazy collection should NOT be initialized");
 
 				IList<Family<Reptile>> rf = s.CreateQuery("from ReptileFamily").List<Family<Reptile>>();
 				Assert.That(rf.Count, Is.EqualTo(1));
 				Assert.That(rf[0].Father.Description, Is.EqualTo(crocodileFather));
 				Assert.That(rf[0].Mother.Description, Is.EqualTo(crocodileMother));
-				NHibernateUtil.IsInitialized(hf[0].Childs).Should("Lazy collection should NOT be initialized").Be.False();
+				Assert.That(NHibernateUtil.IsInitialized(hf[0].Childs), Is.False, "Lazy collection should NOT be initialized");
+
+				tx.Commit();
+			}
+
+			using (IStatelessSession s = sessions.OpenStatelessSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				IList<Family<Human>> hf = s.Query<Family<Human>>().FetchMany(f => f.Childs).ToList();
+				Assert.That(hf.Count, Is.EqualTo(1));
+				Assert.That(hf[0].Father.Name, Is.EqualTo(humanFather));
+				Assert.That(hf[0].Mother.Name, Is.EqualTo(humanMother));
+				var initialized1 = NHibernateUtil.IsInitialized(hf[0].Childs);
+				Assert.That(initialized1, Is.True, "Lazy collection should be initialized");
+
+				IList<Family<Reptile>> rf = s.Query<Family<Reptile>>().FetchMany(f => f.Childs).ToList();
+				Assert.That(rf.Count, Is.EqualTo(1));
+				Assert.That(rf[0].Father.Description, Is.EqualTo(crocodileFather));
+				Assert.That(rf[0].Mother.Description, Is.EqualTo(crocodileMother));
+				var initialized2 = NHibernateUtil.IsInitialized(hf[0].Childs);
+				Assert.That(initialized2, Is.True, "Lazy collection should be initialized");
 
 				tx.Commit();
 			}

@@ -51,7 +51,7 @@ namespace NHibernate.Event.Default
 		{
 			// Sub-insertions should occur before containing insertion so
 			// Try to do the callback now
-			if (persister.ImplementsLifecycle(source.EntityMode))
+			if (persister.ImplementsLifecycle)
 			{
 				log.Debug("calling OnSave()");
 				if (((ILifecycle)entity).OnSave(source) == LifecycleVeto.Veto)
@@ -65,7 +65,7 @@ namespace NHibernate.Event.Default
 
 		protected virtual void Validate(object entity, IEntityPersister persister, IEventSource source)
 		{
-			if (persister.ImplementsValidatable(source.EntityMode))
+			if (persister.ImplementsValidatable)
 			{
 				((IValidatable)entity).Validate();
 			}
@@ -173,7 +173,7 @@ namespace NHibernate.Event.Default
 						throw new NonUniqueObjectException(id, persister.EntityName);
 					}
 				}
-				persister.SetIdentifier(entity, id, source.EntityMode);
+				persister.SetIdentifier(entity, id);
 			}
 			else
 			{
@@ -242,7 +242,7 @@ namespace NHibernate.Event.Default
 
 			if (substitute)
 			{
-				persister.SetPropertyValues(entity, values, source.EntityMode);
+				persister.SetPropertyValues(entity, values);
 			}
 
 			TypeHelper.DeepCopy(values, types, persister.PropertyUpdateability, values, source);
@@ -301,7 +301,7 @@ namespace NHibernate.Event.Default
 		{
 			if (FieldInterceptionHelper.IsInstrumented(entity))
 			{
-				IFieldInterceptor interceptor = FieldInterceptionHelper.InjectFieldInterceptor(entity, persister.EntityName, persister.GetMappedClass(source.EntityMode), null, null, source);
+				IFieldInterceptor interceptor = FieldInterceptionHelper.InjectFieldInterceptor(entity, persister.EntityName, persister.MappedClass, null, null, source);
 				interceptor.MarkDirty();
 			}
 		}

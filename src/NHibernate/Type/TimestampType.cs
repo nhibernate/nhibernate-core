@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -30,16 +30,28 @@ namespace NHibernate.Type
 	[Serializable]
 	public class TimestampType : PrimitiveType, IVersionType, ILiteralType
 	{
+		/// <summary>
+		/// Retrieve the current system Local time.
+		/// </summary>
+		/// <value>DateTime.Now</value>
+		protected virtual DateTime Now => DateTime.Now;
+
+		/// <summary>
+		/// Returns the DateTimeKind for type <see cref="TimestampUtcType"/>.
+		/// </summary>
+		/// <value>Returns DateTimeKind.Unspecified</value>
+		protected virtual DateTimeKind Kind => DateTimeKind.Unspecified;
+
 		public TimestampType() : base(SqlTypeFactory.DateTime)
 		{
 		}
 
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index)
 		{
-			return Convert.ToDateTime(rs[index]);
+			return DateTime.SpecifyKind(Convert.ToDateTime(rs[index]), Kind);
 		}
 
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name)
 		{
 			return Get(rs, rs.GetOrdinal(name));
 		}
@@ -50,17 +62,17 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Sets the value of this Type in the IDbCommand.
+		/// Sets the value of this Type in the DbCommand.
 		/// </summary>
-		/// <param name="st">The IDbCommand to add the Type's value to.</param>
+		/// <param name="st">The DbCommand to add the Type's value to.</param>
 		/// <param name="value">The value of the Type.</param>
-		/// <param name="index">The index of the IDataParameter in the IDbCommand.</param>
+		/// <param name="index">The index of the DbParameter in the DbCommand.</param>
 		/// <remarks>
-		/// No null values will be written to the IDbCommand for this Type. 
+		/// No null values will be written to the DbCommand for this Type. 
 		/// </remarks>
-		public override void Set(IDbCommand st, object value, int index)
+		public override void Set(DbCommand st, object value, int index)
 		{
-			((IDataParameter)st.Parameters[index]).Value = (value is DateTime) ? value:DateTime.Now;
+			st.Parameters[index].Value = (value is DateTime) ? value : DateTime.SpecifyKind(Now, Kind);
 		}
 
 		public override string Name
@@ -70,7 +82,7 @@ namespace NHibernate.Type
 
 		public override string ToString(object val)
 		{
-			return ((DateTime) val).ToShortTimeString();
+			return ((DateTime) val).ToString("O");
 		}
 
 		public override object FromStringValue(string xml)
@@ -94,9 +106,9 @@ namespace NHibernate.Type
 		{
 			if (session == null)
 			{
-				return DateTime.Now;
+				return Now;
 			}
-			return Round(DateTime.Now, session.Factory.Dialect.TimestampResolutionInTicks);
+			return Round(Now, session.Factory.Dialect.TimestampResolutionInTicks);
 		}
 
 		public IComparer Comparator
@@ -108,7 +120,7 @@ namespace NHibernate.Type
 
 		public object StringToObject(string xml)
 		{
-			return DateTime.Parse(xml);
+			return FromStringValue(xml);
 		}
 
 		public override System.Type PrimitiveClass

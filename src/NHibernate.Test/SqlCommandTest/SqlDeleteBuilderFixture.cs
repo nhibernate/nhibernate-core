@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.SqlCommandTest
 {
 	/// <summary>
-	/// Tests all of the functionallity of the SqlDeleteBuilderFixture
+	/// Tests all of the functionality of the SqlDeleteBuilderFixture
 	/// </summary>
 	[TestFixture]
 	public class SqlDeleteBuilderFixture

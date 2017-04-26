@@ -366,7 +366,7 @@
 						The name of the connection in the applications configuration file to use for registering the
 						cache dependency for change notifications. If no value is supplied for <literal>connectionName
 						</literal> or <literal>connectionStringProviderType</literal>, the connection properties from
-						the NHibernate configruation will be used.
+						the NHibernate configuration will be used.
 					</listitem>
 				</varlistentry>
 

@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public class PropertyContainerCustomizer<TEntity> where TEntity : class
+	public class PropertyContainerCustomizer<TEntity>
 	{
 		private readonly IModelExplicitDeclarationsHolder explicitDeclarationsHolder;
 
@@ -69,26 +69,23 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		}
 
 		public void Component<TComponent>(Expression<Func<TEntity, TComponent>> property, Action<IComponentMapper<TComponent>> mapping)
-			where TComponent : class
 		{
 			RegisterComponentMapping(property, mapping);
 		}
 
-		public void Component<TComponent>(Expression<Func<TEntity, TComponent>> property) where TComponent : class
+		public void Component<TComponent>(Expression<Func<TEntity, TComponent>> property)
 		{
 			RegisterComponentMapping(property, x => { });
 		}
 
 		protected virtual void RegisterComponentMapping<TComponent>(Expression<Func<TEntity, TComponent>> property, Action<IComponentMapper<TComponent>> mapping)
-			where TComponent : class
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
 			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
-			RegisterComponentMapping<TComponent>(mapping, member, memberOf);
+			RegisterComponentMapping(mapping, member, memberOf);
 		}
 
 		protected void RegisterComponentMapping<TComponent>(Action<IComponentMapper<TComponent>> mapping, params MemberInfo[] members)
-			where TComponent : class
 		{
 			foreach (var member in members)
 			{
@@ -96,9 +93,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			}
 		}
 
-		public void Component<TComponent>(Expression<Func<TEntity, IDictionary>> property,
-													 TComponent dynamicComponentTemplate,
-													 Action<IDynamicComponentMapper<TComponent>> mapping) where TComponent : class
+		public void Component<TComponent>(Expression<Func<TEntity, IDictionary>> property, TComponent dynamicComponentTemplate, Action<IDynamicComponentMapper<TComponent>> mapping)
 		{
 			if (dynamicComponentTemplate is IDictionary<string, System.Type>)
 			{
@@ -110,11 +105,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			}
 		}
 
-		protected virtual void RegisterDynamicComponentMapping<TComponent>(Expression<Func<TEntity, IDictionary>> property, Action<IDynamicComponentMapper<TComponent>> mapping) where TComponent : class
+		protected virtual void RegisterDynamicComponentMapping<TComponent>(Expression<Func<TEntity, IDictionary>> property, Action<IDynamicComponentMapper<TComponent>> mapping)
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
 			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
-			RegisterDynamicComponentMapping<TComponent>(mapping, member, memberOf);
+			RegisterDynamicComponentMapping(mapping, member, memberOf);
 		}
 
 		protected virtual void RegisterDynamicComponentMapping<TComponent>(Expression<Func<TEntity, IDictionary>> property, IDictionary<string, System.Type> template, Action<IDynamicComponentMapper<TComponent>> mapping) where TComponent : class
@@ -134,7 +129,6 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		}
 
 		protected void RegisterDynamicComponentMapping<TComponent>(Action<IDynamicComponentMapper<TComponent>> mapping, params MemberInfo[] members)
-			where TComponent : class
 		{
 			foreach (var member in members)
 			{
@@ -486,7 +480,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			RegisterManyToOneMapping<TProperty>(mapping, member, memberOf);
 		}
 
-		public void Component<TComponent>(string notVisiblePropertyOrFieldName, Action<IComponentMapper<TComponent>> mapping) where TComponent : class
+		public void Component<TComponent>(string notVisiblePropertyOrFieldName, Action<IComponentMapper<TComponent>> mapping)
 		{
 			MemberInfo member = GetPropertyOrFieldMatchingNameOrThrow(notVisiblePropertyOrFieldName);
 			var propertyOrFieldType = member.GetPropertyOrFieldType();
@@ -499,12 +493,12 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			RegisterComponentMapping<TComponent>(mapping, member, memberOf);
 		}
 
-		public void Component<TComponent>(string notVisiblePropertyOrFieldName) where TComponent : class
+		public void Component<TComponent>(string notVisiblePropertyOrFieldName)
 		{
 			Component<TComponent>(notVisiblePropertyOrFieldName, x => { });
 		}
 
-		public void Component<TComponent>(string notVisiblePropertyOrFieldName, TComponent dynamicComponentTemplate, Action<IDynamicComponentMapper<TComponent>> mapping) where TComponent : class
+		public void Component<TComponent>(string notVisiblePropertyOrFieldName, TComponent dynamicComponentTemplate, Action<IDynamicComponentMapper<TComponent>> mapping)
 		{
 			MemberInfo member = GetPropertyOrFieldMatchingNameOrThrow(notVisiblePropertyOrFieldName);
 			MemberInfo memberOf = member.GetMemberFromReflectedType(typeof(TEntity));

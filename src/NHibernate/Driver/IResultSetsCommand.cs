@@ -1,4 +1,4 @@
-using System.Data;
+using System.Data.Common;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Driver
@@ -8,6 +8,6 @@ namespace NHibernate.Driver
 		void Append(ISqlCommand command);
 		bool HasQueries { get; }
 		SqlString Sql { get; }
-		IDataReader GetReader(int? commandTimeout);
+		DbDataReader GetReader(int? commandTimeout);
 	}
 }

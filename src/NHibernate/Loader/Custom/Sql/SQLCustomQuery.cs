@@ -20,7 +20,7 @@ namespace NHibernate.Loader.Custom.Sql
 		private readonly List<IReturn> customQueryReturns = new List<IReturn>();
 		private readonly ISet<string> querySpaces = new HashSet<string>();
 		private readonly SqlString sql;
-		private List<IParameterSpecification> parametersSpecifications;
+		private readonly List<IParameterSpecification> parametersSpecifications;
 
 		public SQLCustomQuery(INativeSQLQueryReturn[] queryReturns, string sqlQuery, ICollection<string> additionalQuerySpaces,
 		                      ISessionFactoryImplementor factory)

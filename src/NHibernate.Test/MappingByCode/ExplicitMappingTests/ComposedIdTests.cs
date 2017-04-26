@@ -2,7 +2,6 @@ using System;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 {
@@ -36,18 +35,18 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var mapper = new ModelMapper(inspector);
 			mapper.Class<MyClass>(map =>
 															map.ComposedId(cm=>
-															               {
+																		   {
 																							 cm.Property(x => x.Code);
 																							 cm.ManyToOne(x => x.Relation);
-															               })
-			                      );
+																		   })
+								  );
 
-			inspector.IsMemberOfComposedId(For<MyClass>.Property(x => x.Code)).Should().Be.True();
-			inspector.IsMemberOfComposedId(For<MyClass>.Property(x => x.Relation)).Should().Be.True();
-			inspector.IsPersistentProperty(For<MyClass>.Property(x => x.Code)).Should().Be.True();
-			inspector.IsPersistentProperty(For<MyClass>.Property(x => x.Relation)).Should().Be.True();
-			inspector.IsPersistentId(For<MyClass>.Property(x => x.Code)).Should().Be.False();
-			inspector.IsPersistentId(For<MyClass>.Property(x => x.Relation)).Should().Be.False();
+			Assert.That(inspector.IsMemberOfComposedId(For<MyClass>.Property(x => x.Code)), Is.True);
+			Assert.That(inspector.IsMemberOfComposedId(For<MyClass>.Property(x => x.Relation)), Is.True);
+			Assert.That(inspector.IsPersistentProperty(For<MyClass>.Property(x => x.Code)), Is.True);
+			Assert.That(inspector.IsPersistentProperty(For<MyClass>.Property(x => x.Relation)), Is.True);
+			Assert.That(inspector.IsPersistentId(For<MyClass>.Property(x => x.Code)), Is.False);
+			Assert.That(inspector.IsPersistentId(For<MyClass>.Property(x => x.Relation)), Is.False);
 		}
 
 		[Test]
@@ -64,8 +63,8 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
 			var hbmClass = hbmMapping.RootClasses[0];
 			var hbmCompositId = hbmClass.CompositeId;
-			hbmCompositId.Items.Should().Have.Count.EqualTo(2);
-			hbmClass.Properties.Should().Be.Empty();
+			Assert.That(hbmCompositId.Items, Has.Length.EqualTo(2));
+			Assert.That(hbmClass.Properties, Is.Empty);
 		}
 
 		[Test]
@@ -73,21 +72,21 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 		{
 			var mapper = new ModelMapper();
 			mapper.Class<MyClass>(map =>
-			                      {
-			                      	map.ComposedId(cm =>
-			                      	               {
-			                      	               	cm.Property(x => x.Code);
-			                      	               	cm.ManyToOne(x => x.Relation);
-			                      	               });
-			                      	map.Property(x => x.Code);
-			                      	map.ManyToOne(x => x.Relation);
-			                      }
+								  {
+									map.ComposedId(cm =>
+												   {
+													cm.Property(x => x.Code);
+													cm.ManyToOne(x => x.Relation);
+												   });
+									map.Property(x => x.Code);
+									map.ManyToOne(x => x.Relation);
+								  }
 				);
 			HbmMapping hbmMapping = mapper.CompileMappingFor(new[] {typeof (MyClass)});
 			HbmClass hbmClass = hbmMapping.RootClasses[0];
 			HbmCompositeId hbmCompositId = hbmClass.CompositeId;
-			hbmCompositId.Items.Should().Have.Count.EqualTo(2);
-			hbmClass.Properties.Should().Be.Empty();
+			Assert.That(hbmCompositId.Items, Has.Length.EqualTo(2));
+			Assert.That(hbmClass.Properties, Is.Empty);
 		}
 
 		[Test]
@@ -102,10 +101,10 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 					cm.ManyToOne(x => x.Relation);
 				});
 				map.NaturalId(nm =>
-				              {
+							  {
 												nm.Property(x => x.Code);
 												nm.ManyToOne(x => x.Relation);
-				              });
+							  });
 				map.Property(x => x.Code);
 				map.ManyToOne(x => x.Relation);
 			}
@@ -113,9 +112,9 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			HbmMapping hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
 			HbmClass hbmClass = hbmMapping.RootClasses[0];
 			HbmCompositeId hbmCompositId = hbmClass.CompositeId;
-			hbmCompositId.Items.Should().Have.Count.EqualTo(2);
-			hbmClass.naturalid.Should().Be.Null();
-			hbmClass.Properties.Should().Be.Empty();
+			Assert.That(hbmCompositId.Items, Has.Length.EqualTo(2));
+			Assert.That(hbmClass.naturalid, Is.Null);
+			Assert.That(hbmClass.Properties, Is.Empty);
 		}
 
 		[Test]
@@ -133,8 +132,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyOtherSubclass) });
 			var hbmClass = hbmMapping.RootClasses[0];
 			var hbmCompositeId = hbmClass.CompositeId;
-			hbmCompositeId.Items.Should().Have.Count.EqualTo(2);
+			Assert.That(hbmCompositeId.Items, Has.Length.EqualTo(2));
 		}
-
 	}
 }

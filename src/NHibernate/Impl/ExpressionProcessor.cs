@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-
+using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using NHibernate.Criterion;
 using NHibernate.Util;
 using Expression = System.Linq.Expressions.Expression;
@@ -86,7 +87,7 @@ namespace NHibernate.Impl
 
 
 			/// <summary>
-			/// Retreive the property name from a supplied PropertyProjection
+			/// Retrieve the property name from a supplied PropertyProjection
 			/// Note:  throws is the supplied IProjection is not a PropertyProjection
 			/// </summary>
 			public string AsProperty()
@@ -173,6 +174,7 @@ namespace NHibernate.Impl
 		    RegisterCustomProjection(() => default(DateTimeOffset).Second, e => ProjectionsExtensions.ProcessSecond(e.Expression));
 		    RegisterCustomProjection(() => default(DateTimeOffset).Date, e => ProjectionsExtensions.ProcessDate(e.Expression));
 
+#pragma warning disable 618
 			RegisterCustomProjection(() => ProjectionsExtensions.YearPart(default(DateTime)), e => ProjectionsExtensions.ProcessYear(e.Arguments[0]));
 			RegisterCustomProjection(() => ProjectionsExtensions.DayPart(default(DateTime)), e => ProjectionsExtensions.ProcessDay(e.Arguments[0]));
 			RegisterCustomProjection(() => ProjectionsExtensions.MonthPart(default(DateTime)), e => ProjectionsExtensions.ProcessMonth(e.Arguments[0]));
@@ -180,6 +182,7 @@ namespace NHibernate.Impl
 			RegisterCustomProjection(() => ProjectionsExtensions.MinutePart(default(DateTime)), e => ProjectionsExtensions.ProcessMinute(e.Arguments[0]));
 			RegisterCustomProjection(() => ProjectionsExtensions.SecondPart(default(DateTime)), e => ProjectionsExtensions.ProcessSecond(e.Arguments[0]));
 			RegisterCustomProjection(() => ProjectionsExtensions.DatePart(default(DateTime)), e => ProjectionsExtensions.ProcessDate(e.Arguments[0]));
+#pragma warning restore 618
 
             RegisterCustomProjection(() => ProjectionsExtensions.Sqrt(default(int)), ProjectionsExtensions.ProcessSqrt);
 			RegisterCustomProjection(() => ProjectionsExtensions.Sqrt(default(double)), ProjectionsExtensions.ProcessSqrt);
@@ -290,6 +293,21 @@ namespace NHibernate.Impl
 			return ProjectionInfo.ForProperty(FindMemberExpression(expression));
 		}
 
+		//http://stackoverflow.com/a/2509524/259946
+		private static readonly Regex GeneratedMemberNameRegex = new Regex(@"^(CS\$)?<\w*>[1-9a-s]__[a-zA-Z]+[0-9]*$", RegexOptions.Compiled | RegexOptions.Singleline);
+
+		private static bool IsCompilerGeneratedMemberExpressionOfCompilerGeneratedClass(Expression expression)
+		{
+			var memberExpression = expression as MemberExpression;
+			if (memberExpression != null && memberExpression.Member.DeclaringType != null)
+			{
+				return Attribute.GetCustomAttribute(memberExpression.Member.DeclaringType, typeof(CompilerGeneratedAttribute)) != null 
+					&& GeneratedMemberNameRegex.IsMatch(memberExpression.Member.Name);
+			}
+
+			return false;
+		}
+
 		/// <summary>
 		/// Retrieves the name of the property from a member expression
 		/// </summary>
@@ -301,23 +319,32 @@ namespace NHibernate.Impl
 			var memberExpression = expression as MemberExpression;
 			if (memberExpression != null)
 			{
-				if (memberExpression.Expression.NodeType == ExpressionType.MemberAccess
-					|| memberExpression.Expression.NodeType == ExpressionType.Call)
+				var parentExpression = memberExpression.Expression;
+				if (parentExpression != null)
 				{
-					if (memberExpression.Member.DeclaringType.IsNullable())
+					if (parentExpression.NodeType == ExpressionType.MemberAccess
+						|| parentExpression.NodeType == ExpressionType.Call)
 					{
-						// it's a Nullable<T>, so ignore any .Value
-						if (memberExpression.Member.Name == "Value")
-							return FindMemberExpression(memberExpression.Expression);
-					}
+						if (memberExpression.Member.DeclaringType.IsNullable())
+						{
+							// it's a Nullable<T>, so ignore any .Value
+							if (memberExpression.Member.Name == "Value")
+								return FindMemberExpression(parentExpression);
+						}
 
-					return FindMemberExpression(memberExpression.Expression) + "." + memberExpression.Member.Name;
+						if (IsCompilerGeneratedMemberExpressionOfCompilerGeneratedClass(parentExpression))
+						{
+							return memberExpression.Member.Name;
+						}
+
+						return FindMemberExpression(parentExpression) + "." + memberExpression.Member.Name;
+					}
+					if (IsConversion(parentExpression.NodeType))
+					{
+						return (FindMemberExpression(parentExpression) + "." + memberExpression.Member.Name).TrimStart('.');
+					}
 				}
-				if (IsConversion(memberExpression.Expression.NodeType))
-				{
-					return (FindMemberExpression(memberExpression.Expression) + "." + memberExpression.Member.Name).TrimStart('.');
-				}
-				
+
 				return memberExpression.Member.Name;
 			}
 
@@ -365,7 +392,7 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Retrieves a detached criteria from an appropriate lambda expression
 		/// </summary>
-		/// <param name="expression">Expresson for detached criteria using .As&lt;>() extension"/></param>
+		/// <param name="expression">Expression for detached criteria using .As&lt;>() extension"/></param>
 		/// <returns>Evaluated detached criteria</returns>
 		public static DetachedCriteria FindDetachedCriteria(Expression expression)
 		{

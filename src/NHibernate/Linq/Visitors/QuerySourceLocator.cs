@@ -1,5 +1,6 @@
 ﻿using Remotion.Linq;
 using Remotion.Linq.Clauses;
+using Remotion.Linq.Collections;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -21,6 +22,20 @@ namespace NHibernate.Linq.Visitors
 
             return finder._querySource;
         }
+
+		public override void VisitAdditionalFromClause(AdditionalFromClause fromClause, QueryModel queryModel, int index)
+		{
+			if (_type.IsAssignableFrom(fromClause.ItemType))
+			{
+				if (_querySource == null)
+				{
+					_querySource = fromClause;
+					return;
+				}
+			}
+
+			base.VisitAdditionalFromClause(fromClause, queryModel, index);
+		}
 
         public override void VisitMainFromClause(MainFromClause fromClause, QueryModel queryModel)
         {

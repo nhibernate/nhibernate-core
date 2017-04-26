@@ -42,11 +42,7 @@ namespace NHibernate
 			Errors = (ICollection<string>)info.GetValue("errors", typeof(ICollection));
 		}
 
-#if NET_4_0
 		[SecurityCritical]
-#else
-		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-#endif
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData(info, context);

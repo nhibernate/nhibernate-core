@@ -3,6 +3,7 @@ using NHibernate.Cfg.Loquacious;
 using NHibernate.Context;
 using NHibernate.Engine;
 using NHibernate.Hql;
+using NHibernate.Linq;
 using NHibernate.Linq.Functions;
 using NHibernate.Util;
 
@@ -43,6 +44,12 @@ namespace NHibernate.Cfg
 		public static Configuration HqlQueryTranslator<TQueryTranslator>(this Configuration configuration) where TQueryTranslator : IQueryTranslatorFactory
 		{
 			configuration.SetProperty(Environment.QueryTranslator, typeof(TQueryTranslator).AssemblyQualifiedName);
+			return configuration;
+		}
+
+		public static Configuration LinqQueryProvider<TQueryProvider>(this Configuration configuration) where TQueryProvider : INhQueryProvider
+		{
+			configuration.SetProperty(Environment.QueryLinqProvider, typeof(TQueryProvider).AssemblyQualifiedName);
 			return configuration;
 		}
 
@@ -92,7 +99,7 @@ namespace NHibernate.Cfg
 		/// <summary>
 		/// Add a type-definition for mappings.
 		/// </summary>
-		/// <typeparam name="TDef">The peristent type.</typeparam>
+		/// <typeparam name="TDef">The persistent type.</typeparam>
 		/// <param name="configuration">The <see cref="Configuration"/> where add the type-definition.</param>
 		/// <param name="typeDefConfiguration">The custom configuration action.</param>
 		/// <returns>The <see cref="Configuration"/>.</returns>

@@ -7,7 +7,7 @@ namespace NHibernate.Engine
 	/// <summary> 
 	/// Used to uniquely key an entity instance in relation to a particular session
 	/// by some unique property reference, as opposed to identifier.
-	/// Uniqueing information consists of the entity-name, the referenced
+	/// Unique information consists of the entity-name, the referenced
 	/// property name, and the referenced property value. 
 	/// </summary>
 	/// <seealso cref="EntityKey"/>
@@ -19,9 +19,8 @@ namespace NHibernate.Engine
 		private readonly object key;
 		private readonly IType keyType;
 		private readonly int hashCode;
-		private readonly EntityMode entityMode;
 
-		public EntityUniqueKey(string entityName, string uniqueKeyName, object semiResolvedKey, IType keyType, EntityMode entityMode, ISessionFactoryImplementor factory)
+		public EntityUniqueKey(string entityName, string uniqueKeyName, object semiResolvedKey, IType keyType, ISessionFactoryImplementor factory)
 		{
 			if (string.IsNullOrEmpty(entityName))
 				throw new ArgumentNullException("entityName");
@@ -36,7 +35,6 @@ namespace NHibernate.Engine
 			this.uniqueKeyName = uniqueKeyName;
 			key = semiResolvedKey;
 			this.keyType = keyType.GetSemiResolvedType(factory);
-			this.entityMode = entityMode;
 			hashCode = GenerateHashCode(factory);
 		}
 
@@ -47,7 +45,7 @@ namespace NHibernate.Engine
 			{
 				result = 37 * result + entityName.GetHashCode();
 				result = 37 * result + uniqueKeyName.GetHashCode();
-				result = 37 * result + keyType.GetHashCode(key, entityMode, factory);
+				result = 37 * result + keyType.GetHashCode(key, factory);
 			}
 			return result;
 		}
@@ -81,7 +79,7 @@ namespace NHibernate.Engine
 		public bool Equals(EntityUniqueKey that)
 		{
 			return that == null ? false :
-				that.EntityName.Equals(entityName) && that.UniqueKeyName.Equals(uniqueKeyName) && keyType.IsEqual(that.key, key, entityMode);
+				that.EntityName.Equals(entityName) && that.UniqueKeyName.Equals(uniqueKeyName) && keyType.IsEqual(that.key, key);
 		}
 
 		public override string ToString()

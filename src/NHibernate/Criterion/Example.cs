@@ -274,9 +274,9 @@ namespace NHibernate.Criterion
 		private object[] GetPropertyValues(IEntityPersister persister, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			System.Type type = _entity.GetType();
-			if(type == persister.GetMappedClass(GetEntityMode(criteria, criteriaQuery))) //not using anon object
+			if(type == persister.MappedClass) //not using anon object
 			{
-				return persister.GetPropertyValues(_entity, GetEntityMode(criteria, criteriaQuery));
+				return persister.GetPropertyValues(_entity);
 			}
 			var list = new List<object>();
 			for(int i = 0; i < persister.PropertyNames.Length; i++)
@@ -295,7 +295,7 @@ namespace NHibernate.Criterion
 			return list.ToArray();
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			SqlStringBuilder builder = new SqlStringBuilder();
 			builder.Add(StringHelper.OpenParen);
@@ -321,7 +321,6 @@ namespace NHibernate.Criterion
 							(IAbstractComponentType) propertyTypes[i],
 							criteria,
 							criteriaQuery,
-							enabledFilters,
 							builder
 							);
 					}
@@ -332,7 +331,6 @@ namespace NHibernate.Criterion
 							propertyValue,
 							criteria,
 							criteriaQuery,
-							enabledFilters,
 							builder
 							);
 					}
@@ -386,18 +384,6 @@ namespace NHibernate.Criterion
 			return null;
 		}
 
-		private EntityMode GetEntityMode(ICriteria criteria, ICriteriaQuery criteriaQuery)
-		{
-			IEntityPersister meta = criteriaQuery.Factory.GetEntityPersister(criteriaQuery.GetEntityName(criteria));
-			EntityMode? result = meta.GuessEntityMode(_entity);
-			if (!result.HasValue)
-			{
-				return EntityMode.Poco; //this occurs for anon objects
-				//throw new InvalidCastException(_entity.GetType().FullName);
-			}
-			return result.Value;
-		}
-
 		/// <summary>
 		/// Adds a <see cref="TypedValue"/> based on the <c>value</c> 
 		/// and <c>type</c> parameters to the <see cref="IList"/> in the
@@ -429,8 +415,7 @@ namespace NHibernate.Criterion
 					}
 					value = stringValue;
 				}
-				list.Add(new TypedValue(type, value, EntityMode.Poco));
-					// TODO NH Different behavior: In H3.2 EntityMode is nullable
+				list.Add(new TypedValue(type, value));
 			}
 		}
 
@@ -440,7 +425,7 @@ namespace NHibernate.Criterion
 			{
 				string[] propertyNames = type.PropertyNames;
 				IType[] subtypes = type.Subtypes;
-				object[] values = type.GetPropertyValues(component, GetEntityMode(criteria, criteriaQuery));
+				object[] values = type.GetPropertyValues(component);
 
 				for (int i = 0; i < propertyNames.Length; i++)
 				{
@@ -467,7 +452,6 @@ namespace NHibernate.Criterion
 			object propertyValue,
 			ICriteria criteria,
 			ICriteriaQuery cq,
-			IDictionary<string, IFilter> enabledFilters,
 			SqlStringBuilder builder)
 		{
 			if (builder.Count > 1)
@@ -478,7 +462,7 @@ namespace NHibernate.Criterion
 			ICriterion crit = propertyValue != null
 								? GetNotNullPropertyCriterion(propertyValue, propertyName)
 								: new NullExpression(propertyName);
-			builder.Add(crit.ToSqlString(criteria, cq, enabledFilters));
+			builder.Add(crit.ToSqlString(criteria, cq));
 		}
 
 		protected virtual ICriterion GetNotNullPropertyCriterion(object propertyValue, string propertyName)
@@ -497,13 +481,12 @@ namespace NHibernate.Criterion
 			IAbstractComponentType type,
 			ICriteria criteria,
 			ICriteriaQuery criteriaQuery,
-			IDictionary<string, IFilter> enabledFilters,
 			SqlStringBuilder builder)
 		{
 			if (component != null)
 			{
 				String[] propertyNames = type.PropertyNames;
-				object[] values = type.GetPropertyValues(component, GetEntityMode(criteria, criteriaQuery));
+				object[] values = type.GetPropertyValues(component);
 				IType[] subtypes = type.Subtypes;
 				for (int i = 0; i < propertyNames.Length; i++)
 				{
@@ -520,7 +503,6 @@ namespace NHibernate.Criterion
 								(IAbstractComponentType) subtype,
 								criteria,
 								criteriaQuery,
-								enabledFilters,
 								builder);
 						}
 						else
@@ -530,7 +512,6 @@ namespace NHibernate.Criterion
 								value,
 								criteria,
 								criteriaQuery,
-								enabledFilters,
 								builder
 								);
 						}

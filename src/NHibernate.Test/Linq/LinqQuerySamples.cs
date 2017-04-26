@@ -281,7 +281,7 @@ namespace NHibernate.Test.Linq
 				//q2.ToList();
 
 				///////////
-				/// Batching Select
+				///// Batching Select
 				///////////
 				var dbOrders3 = s.CreateQuery("select o.OrderId from Order o").List<int>();
 
@@ -1493,6 +1493,18 @@ namespace NHibernate.Test.Linq
 			var q =
 				from c in db.Customers
 				join o in db.Orders on new {c.CustomerId} equals new {o.Customer.CustomerId}
+				select new { c.ContactName, o.OrderId };
+
+			ObjectDumper.Write(q);
+		}
+
+		[Category("JOIN")]
+		[Test(Description = "This sample explictly joins two tables with a composite key and projects results from both tables.")]
+		public void DLinqJoin5d()
+		{
+			var q =
+				from c in db.Customers
+				join o in db.Orders on new {c.CustomerId, HasContractTitle = c.ContactTitle != null} equals new {o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null }
 				select new { c.ContactName, o.OrderId };
 
 			ObjectDumper.Write(q);

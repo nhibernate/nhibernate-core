@@ -95,55 +95,54 @@ namespace NHibernate.Metadata
 		/// <summary>
 		/// The persistent class
 		/// </summary>
-		System.Type GetMappedClass(EntityMode entityMode);
+		System.Type MappedClass { get; }
 
 		/// <summary>
 		/// Create a class instance initialized with the given identifier
 		/// </summary>
-		object Instantiate(object id, EntityMode entityMode);
+		object Instantiate(object id);
 
 		/// <summary>
 		/// Get the value of a particular (named) property 
 		/// </summary>
-		object GetPropertyValue(object obj, string propertyName, EntityMode entityMode);
+		object GetPropertyValue(object obj, string propertyName);
 
 		/// <summary> Extract the property values from the given entity. </summary>
 		/// <param name="entity">The entity from which to extract the property values. </param>
-		/// <param name="entityMode">The entity-mode of the given entity </param>
 		/// <returns> The property values. </returns>
-		object[] GetPropertyValues(object entity, EntityMode entityMode);
+		object[] GetPropertyValues(object entity);
 
 		/// <summary>
 		/// Set the value of a particular (named) property 
 		/// </summary>
-		void SetPropertyValue(object obj, string propertyName, object value, EntityMode entityMode);
+		void SetPropertyValue(object obj, string propertyName, object value);
 
 		/// <summary>
 		/// Set the given values to the mapped properties of the given object
 		/// </summary>
-		void SetPropertyValues(object entity, object[] values, EntityMode entityMode);
+		void SetPropertyValues(object entity, object[] values);
 
 		/// <summary>
 		/// Get the identifier of an instance (throw an exception if no identifier property)
 		/// </summary>
-		object GetIdentifier(object entity, EntityMode entityMode);
+		object GetIdentifier(object entity);
 
 		/// <summary>
 		/// Set the identifier of an instance (or do nothing if no identifier property)
 		/// </summary>
-		void SetIdentifier(object entity, object id, EntityMode entityMode);
+		void SetIdentifier(object entity, object id);
 
 		/// <summary> Does the class implement the <see cref="Classic.ILifecycle"/> interface?</summary>
-		bool ImplementsLifecycle(EntityMode entityMode);
+		bool ImplementsLifecycle { get; }
 
 		/// <summary> Does the class implement the <see cref="Classic.IValidatable"/> interface?</summary>
-		bool ImplementsValidatable(EntityMode entityMode);
+		bool ImplementsValidatable { get; }
 
 		/// <summary>
 		/// Get the version number (or timestamp) from the object's version property 
 		/// (or return null if not versioned)
 		/// </summary>
-		object GetVersion(object obj, EntityMode entityMode);
+		object GetVersion(object obj);
 
 		#endregion
 	}

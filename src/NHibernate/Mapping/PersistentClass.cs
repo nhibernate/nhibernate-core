@@ -4,6 +4,7 @@ using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NHibernate.Mapping
 {
@@ -26,7 +27,6 @@ namespace NHibernate.Mapping
 		private string entityName;
 		private string className;
 		private string proxyInterfaceName;
-		private string nodeName;
 		private string discriminatorValue;
 		private bool lazy;
 		private readonly List<Property> properties = new List<Property>();
@@ -436,15 +436,7 @@ namespace NHibernate.Mapping
 
 		public virtual int PropertyClosureSpan
 		{
-			get
-			{
-				int span = properties.Count;
-				foreach (Join join in joins)
-				{
-					span += join.PropertySpan;
-				}
-				return span;
-			}
+			get { return properties.Count + joins.Sum(j => j.PropertySpan); }
 		}
 
 		/// <summary> 
@@ -546,12 +538,6 @@ namespace NHibernate.Mapping
 		protected virtual internal IEnumerable<ISelectable> DiscriminatorColumnIterator
 		{
 			get { return new CollectionHelper.EmptyEnumerableClass<ISelectable>(); }
-		}
-
-		public string NodeName
-		{
-			get { return nodeName; }
-			set { nodeName = value; }
 		}
 
 		public virtual bool HasSubselectLoadableCollections
@@ -1169,10 +1155,8 @@ namespace NHibernate.Mapping
 
 		public virtual string GetTuplizerImplClassName(EntityMode mode)
 		{
-			if (tuplizerImpls == null)
-				return null;
-			string result;
-			tuplizerImpls.TryGetValue(mode, out result);
+			string result = null;
+			tuplizerImpls?.TryGetValue(mode, out result);
 			return result;
 		}
 

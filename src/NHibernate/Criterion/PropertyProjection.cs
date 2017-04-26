@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -51,7 +50,7 @@ namespace NHibernate.Criterion
 			return new IType[] {criteriaQuery.GetType(criteria, propertyName)};
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery)
 		{
 			SqlStringBuilder s = new SqlStringBuilder();
 			string[] cols = criteriaQuery.GetColumnsUsingProjection(criteria, propertyName);
@@ -67,7 +66,7 @@ namespace NHibernate.Criterion
 			return s.ToSqlString();
 		}
 
-		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			if (!grouped)
 			{

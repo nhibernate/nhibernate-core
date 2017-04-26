@@ -18,8 +18,8 @@ namespace NHibernate.Type
 	{
 		private readonly IUserCollectionType userType;
 
-		public CustomCollectionType(System.Type userTypeClass, string role, string foreignKeyPropertyName, bool isEmbeddedInXML)
-			: base(role, foreignKeyPropertyName, isEmbeddedInXML)
+		public CustomCollectionType(System.Type userTypeClass, string role, string foreignKeyPropertyName)
+			: base(role, foreignKeyPropertyName)
 		{
 			if (!typeof(IUserCollectionType).IsAssignableFrom(userTypeClass))
 			{

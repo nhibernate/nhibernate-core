@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.NH712
 	//<created>Fri, 15 Sep 2006 07:31:13 -0400 (EDT)</created> 
 	//<version>1.2.0.Alpha1</version> 
 	//<component>Core</component> 
-  //<link>http://jira.nhibernate.org/browse/NH-712</link> 
+  //<link>http://nhibernate.jira.com/browse/NH-712</link> 
 	[TestFixture]
 	public class Fixture
 	{

@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
@@ -75,17 +75,12 @@ namespace NHibernate.Impl
 
 		public EntityKey GenerateEntityKey(object id, IEntityPersister persister)
 		{
-			return GenerateEntityKey(id, persister, EntityMode);
-		}
-
-		protected EntityKey GenerateEntityKey(object id, IEntityPersister persister, EntityMode entityMode)
-		{
-			return new EntityKey(id, persister, entityMode);
+			return new EntityKey(id, persister);
 		}
 
 		public CacheKey GenerateCacheKey(object id, IType type, string entityOrRoleName)
 		{
-			return new CacheKey(id, type, entityOrRoleName, EntityMode, Factory);
+			return new CacheKey(id, type, entityOrRoleName, Factory);
 		}
 
 		public ISessionFactoryImplementor Factory
@@ -93,7 +88,6 @@ namespace NHibernate.Impl
 			get { return factory; }
 			protected set { factory = value; }
 		}
-		public abstract EntityMode EntityMode { get; }
 
 		public abstract IBatcher Batcher { get; }
 		public abstract void CloseSessionFromDistributedTransaction();
@@ -258,7 +252,7 @@ namespace NHibernate.Impl
 		public abstract string FetchProfile { get; set; }
 		public abstract string BestGuessEntityName(object entity);
 		public abstract string GuessEntityName(object entity);
-		public abstract IDbConnection Connection { get; }
+		public abstract DbConnection Connection { get; }
 		public abstract int ExecuteNativeUpdate(NativeSQLQuerySpecification specification, QueryParameters queryParameters);
 		public abstract FutureCriteriaBatch FutureCriteriaBatch { get; protected internal set; }
 		public abstract FutureQueryBatch FutureQueryBatch { get; protected internal set; }

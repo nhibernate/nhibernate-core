@@ -39,7 +39,7 @@ namespace NHibernate.Type
 			return original;
 		}
 
-		public override object DeepCopy(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
+		public override object DeepCopy(object value, ISessionFactoryImplementor factory)
 		{
 			return value;
 		}

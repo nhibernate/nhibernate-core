@@ -1,31 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
 	[Serializable]
-	public class GroupedProjection:IProjection
+	public class GroupedProjection : IProjection
 	{
 		private readonly IProjection projection;
+		private SqlString renderedProjection;
 
 		public GroupedProjection(IProjection projection)
 		{
 			this.projection = projection;
 		}
 
-		public virtual SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public virtual SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
 		{
-			return projection.ToSqlString(criteria, position, criteriaQuery, enabledFilters);
+			return renderedProjection = projection.ToSqlString(criteria, position, criteriaQuery);
 		}
 
-		public virtual SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public virtual SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return SqlStringHelper.RemoveAsAliasesFromSql(this.projection.ToSqlString(criteria, 0, criteriaQuery, enabledFilters));
+			//This is kind of a hack. The hack is based on the fact that ToGroupSqlString always called after ToSqlString.
+			return SqlStringHelper.RemoveAsAliasesFromSql(renderedProjection);
 		}
 
 		public virtual IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
@@ -35,7 +34,7 @@ namespace NHibernate.Criterion
 
 		public virtual IType[] GetTypes(String alias, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return this.projection.GetTypes(alias,criteria,criteriaQuery);
+			return this.projection.GetTypes(alias, criteria, criteriaQuery);
 		}
 
 		public string[] GetColumnAliases(int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
@@ -50,7 +49,7 @@ namespace NHibernate.Criterion
 
 		public virtual string[] Aliases
 		{
-			get { return new string[] { }; }
+			get { return new string[] {}; }
 		}
 
 		public virtual bool IsGrouped

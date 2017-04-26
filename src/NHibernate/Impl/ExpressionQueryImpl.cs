@@ -43,7 +43,7 @@ namespace NHibernate.Impl
 				var type = me.Value.Type;
 
 				var typedValues = (from object value in vals
-								   select new TypedValue(type, value, Session.EntityMode))
+								   select new TypedValue(type, value))
 					.ToList();
 
 				if (typedValues.Count == 1)

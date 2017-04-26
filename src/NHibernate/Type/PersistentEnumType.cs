@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
 {
-	using System.Runtime.Serialization;
-
 	/// <summary>
 	/// PersistentEnumType
 	/// </summary>
@@ -179,7 +177,7 @@ namespace NHibernate.Type
 			return result;
 		}
 
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index)
 		{
 			object code = rs[index];
 			if (code == DBNull.Value || code == null)
@@ -224,13 +222,12 @@ namespace NHibernate.Type
 		}
 
 
-		public override void Set(IDbCommand cmd, object value, int index)
+		public override void Set(DbCommand cmd, object value, int index)
 		{
-			IDataParameter par = (IDataParameter) cmd.Parameters[index];
-			par.Value = value != null ? GetValue(value) : DBNull.Value;
+			cmd.Parameters[index].Value = value != null ? GetValue(value) : DBNull.Value;
 		}
 
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name)
 		{
 			return Get(rs, rs.GetOrdinal(name));
 		}

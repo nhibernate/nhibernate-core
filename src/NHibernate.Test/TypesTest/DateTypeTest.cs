@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using NHibernate.Dialect;
 using NHibernate.Type;
 using NUnit.Framework;
-using SharpTestsEx;
 using System;
 
 namespace NHibernate.Test.TypesTest
@@ -13,7 +12,7 @@ namespace NHibernate.Test.TypesTest
 		public void WhenNoParameterThenDefaultValueIsBaseDateValue()
 		{
 			var dateType = new DateType();
-			dateType.DefaultValue.Should().Be(DateType.BaseDateValue);
+			Assert.That(dateType.DefaultValue, Is.EqualTo(DateType.BaseDateValue));
 		}
 
 		[Test]
@@ -21,14 +20,14 @@ namespace NHibernate.Test.TypesTest
 		{
 			var dateType = new DateType();
 			dateType.SetParameterValues(new Dictionary<string, string>{{DateType.BaseValueParameterName, "0001/01/01"}});
-			dateType.DefaultValue.Should().Be(DateTime.MinValue);
+			Assert.That(dateType.DefaultValue, Is.EqualTo(DateTime.MinValue));
 		}
 
 		[Test]
 		public void WhenSetParameterNullThenNotThrow()
 		{
 			var dateType = new DateType();
-			dateType.Executing(dt=> dt.SetParameterValues(null)).NotThrows();
+			Assert.That(() => dateType.SetParameterValues(null), Throws.Nothing);
 		}
 	}
 
@@ -47,7 +46,7 @@ namespace NHibernate.Test.TypesTest
 				Assert.Ignore("This test does not apply to " + Dialect);
 			}
 			var sqlType = Dialect.GetTypeName(NHibernateUtil.Date.SqlType);
-			sqlType.ToLowerInvariant().Should().Be("date");
+			Assert.That(sqlType.ToLowerInvariant(), Is.EqualTo("date"));
 		}
 
 		[Test]
@@ -65,7 +64,7 @@ namespace NHibernate.Test.TypesTest
 			using (ISession s = OpenSession())
 			{
 				basic = s.Get<DateClass>(savedId);
-				basic.DateValue.Should().Be(expected);
+				Assert.That(basic.DateValue, Is.EqualTo(expected));
 				s.Delete(basic);
 				s.Flush();
 			}
@@ -84,7 +83,7 @@ namespace NHibernate.Test.TypesTest
 			using (ISession s = OpenSession())
 			{
 				basic = s.Get<DateClass>(savedId);
-				basic.DateValue.HasValue.Should().Be.False();
+				Assert.That(basic.DateValue.HasValue, Is.False);
 				s.Delete(basic);
 				s.Flush();
 			}

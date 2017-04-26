@@ -9,6 +9,12 @@ namespace NHibernate.Properties
 	public interface IOptimizableSetter
 	{
 		/// <summary>
+		/// When implemented by a class, gets the <see cref="System.Type"/> of the Property/Field.
+		/// </summary>
+		/// <value>The <see cref="System.Type"/> of the Property/Field.</value>
+		System.Type Type { get; }
+
+		/// <summary>
 		/// Emit IL to set the property of an object to the value. The object
 		/// is loaded onto the stack first, then the value, then this method
 		/// is called.

@@ -3,7 +3,6 @@ using NHibernate.Cfg.MappingSchema;
 using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2691
 {
@@ -25,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2691
 			using (session.BeginTransaction())
 			{
 				var baseQuery = from cat in session.Query<Cat>() orderby cat.BirthDate select cat;
-				Executing.This(() => baseQuery.Count()).Should().NotThrow();
+				Assert.That(() => baseQuery.Count(), Throws.Nothing);
 				session.Transaction.Commit();
 			}
 		}
@@ -37,7 +36,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2691
 			using (session.BeginTransaction())
 			{
 				var baseQuery = from cat in session.Query<Cat>() orderby cat.BirthDate select cat;
-				Executing.This(() => baseQuery.LongCount()).Should().NotThrow();
+				Assert.That(() => baseQuery.LongCount(), Throws.Nothing);
 				session.Transaction.Commit();
 			}
 		}

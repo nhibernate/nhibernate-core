@@ -95,7 +95,7 @@ sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE FROM CATS").AddEntity(typeof(Cat
       <title>Handling associations and collections</title>
 
       <para>It is possible to eagerly join in the <literal>Dog</literal> to
-      avoid the possible extra roundtrip for initializing the proxy. This is
+      avoid the possible extra round-trip for initializing the proxy. This is
       done via the <literal>AddJoin()</literal> method, which allows you to
       join in an association or collection.</para>
 
@@ -106,7 +106,7 @@ sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE FROM CATS").AddEntity(typeof(Cat
 
       <para>In this example the returned <literal>Cat</literal>'s will have
       their <literal>Dog</literal> property fully initialized without any
-      extra roundtrip to the database. Notice that we added a alias name
+      extra round-trip to the database. Notice that we added a alias name
       ("cat") to be able to specify the target property path of the join. It
       is possible to do the same eager joining for collections, e.g. if the
       <literal>Cat</literal> had a one-to-many to <literal>Dog</literal>
@@ -144,7 +144,7 @@ sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE FROM CATS").AddEntity(typeof(Cat
       row, a cat and its mother. This will fail since there is a conflict of
       names since they are mapped to the same column names and on some
       databases the returned column aliases will most likely be on the form
-      "c.ID", "c.NAME", etc. which are not equal to the columns specificed in
+      "c.ID", "c.NAME", etc. which are not equal to the columns specified in
       the mappings ("ID" and "NAME").</para>
 
       <para>The following form is not vulnerable to column name
@@ -169,7 +169,7 @@ sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE FROM CATS").AddEntity(typeof(Cat
       </itemizedlist>
 
       <para>The {cat.*} and {mother.*} notation used above is a shorthand for
-      "all properties". Alternatively, you may list the columns explicity, but
+      "all properties". Alternatively, you may list the columns explicitly, but
       even in this case we let NHibernate inject the SQL column aliases for
       each property. The placeholder for a column alias is just the property
       name qualified by the table alias. In the following example, we retrieve
@@ -294,7 +294,7 @@ IList loggedCats = sess.CreateSQLQuery(sql)
               </row>
 
               <row>
-                <entry>All properties of the the collection</entry>
+                <entry>All properties of the collection</entry>
 
                 <entry><literal>{[aliasname].*}</literal></entry>
 
@@ -417,7 +417,7 @@ IList pusList = query.SetString("name", "Pus%").List();          ]]></programlis
 </sql-query>]]></programlisting>
 
     <para>You can externalize the resultset mapping informations in a
-    <literal>&lt;resultset&gt;</literal> element to either reuse them accross
+    <literal>&lt;resultset&gt;</literal> element to either reuse them across
     several named queries or through the
     <literal>SetResultSetMapping()</literal> API.</para>
 
@@ -564,7 +564,7 @@ IList pusList = query.SetString("name", "Pus%").List();          ]]></programlis
             <para>A function must return a result set. The first parameter of
             a procedure must be an <literal>OUT</literal> that returns a
             result set. This is done by using a
-            <literal>SYS_REFCURSOR</literal> type in Oracle 9 or 10. In Oracle
+            <literal>SYS_REFCURSOR</literal> type in Oracle 9i or later. In Oracle
             you need to define a <literal>REF CURSOR</literal> type, see
             Oracle literature.</para>
           </listitem>

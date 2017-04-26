@@ -3,7 +3,6 @@ using NHibernate.Cfg.MappingSchema;
 using NUnit.Framework;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRegistrationTests
 {
@@ -70,7 +69,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRe
 		public void WhenRegisterClassMappingThroughCollectionOfTypeThenFilterValidMappings()
 		{
 			var mapper = new ModelMapper();
-			mapper.Executing(x => x.AddMappings(new[] { typeof(object), typeof(MyClassMap), typeof(MyClass), typeof(MyClassBaseMap<>) })).NotThrows();
+			Assert.That(() => mapper.AddMappings(new[] { typeof(object), typeof(MyClassMap), typeof(MyClass), typeof(MyClassBaseMap<>) }), Throws.Nothing);
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
 
 			ModelIsWellFormed(hbmMapping);
@@ -89,18 +88,18 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRe
 		private void ModelIsWellFormed(HbmMapping hbmMapping)
 		{
 			var hbmClass = hbmMapping.RootClasses[0];
-			hbmClass.Should().Not.Be.Null();
+			Assert.That(hbmClass, Is.Not.Null);
 			var hbmId = hbmClass.Id;
-			hbmId.Should().Not.Be.Null();
-			hbmId.name.Should().Be("Id");
+			Assert.That(hbmId, Is.Not.Null);
+			Assert.That(hbmId.name, Is.EqualTo("Id"));
 			var hbmGenerator = hbmId.generator;
-			hbmGenerator.Should().Not.Be.Null();
-			hbmGenerator.@class.Should().Be("hilo");
-			hbmGenerator.param[0].name.Should().Be("max_low");
-			hbmGenerator.param[0].GetText().Should().Be("100");
+			Assert.That(hbmGenerator, Is.Not.Null);
+			Assert.That(hbmGenerator.@class, Is.EqualTo("hilo"));
+			Assert.That(hbmGenerator.param[0].name, Is.EqualTo("max_low"));
+			Assert.That(hbmGenerator.param[0].GetText(), Is.EqualTo("100"));
 			var hbmProperty = hbmClass.Properties.OfType<HbmProperty>().Single();
-			hbmProperty.name.Should().Be("Something");
-			hbmProperty.length.Should().Be("150");
+			Assert.That(hbmProperty.name, Is.EqualTo("Something"));
+			Assert.That(hbmProperty.length, Is.EqualTo("150"));
 		}
 	}
 }

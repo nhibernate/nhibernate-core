@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using NHibernate.Linq.Visitors;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
-using Remotion.Linq.Collections;
 
 namespace NHibernate.Linq.Clauses
 {

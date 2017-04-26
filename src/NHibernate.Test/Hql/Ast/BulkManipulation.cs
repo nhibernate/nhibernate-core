@@ -6,7 +6,6 @@ using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Id;
 using NHibernate.Persister.Entity;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Hql.Ast
 {
@@ -350,8 +349,8 @@ namespace NHibernate.Test.Hql.Ast
 			s = OpenSession();
 			t = s.BeginTransaction();
 			string updateQryString = "update Human h " + "set h.description = 'updated' " + "where exists ("
-			                         + "      select f.id " + "      from h.friends f " + "      where f.name.last = 'Public' "
-			                         + ")";
+									 + "      select f.id " + "      from h.friends f " + "      where f.name.last = 'Public' "
+									 + ")";
 			int count = s.CreateQuery(updateQryString).ExecuteUpdate();
 			Assert.That(count, Is.EqualTo(1));
 			s.Delete(doll);
@@ -376,15 +375,15 @@ namespace NHibernate.Test.Hql.Ast
 			t = s.BeginTransaction();
 			// one-to-many test
 			updateQryString = "update SimpleEntityWithAssociation e set e.Name = 'updated' where "
-			                  + "exists(select a.id from e.AssociatedEntities a " + "where a.Name = 'one-to-many-association')";
+							  + "exists(select a.id from e.AssociatedEntities a " + "where a.Name = 'one-to-many-association')";
 			count = s.CreateQuery(updateQryString).ExecuteUpdate();
 			Assert.That(count, Is.EqualTo(1));
 			// many-to-many test
 			if (Dialect.SupportsSubqueryOnMutatingTable)
 			{
 				updateQryString = "update SimpleEntityWithAssociation e set e.Name = 'updated' where "
-				                  + "exists(select a.id from e.ManyToManyAssociatedEntities a "
-				                  + "where a.Name = 'many-to-many-association')";
+								  + "exists(select a.id from e.ManyToManyAssociatedEntities a "
+								  + "where a.Name = 'many-to-many-association')";
 				count = s.CreateQuery(updateQryString).ExecuteUpdate();
 				Assert.That(count, Is.EqualTo(1));
 			}
@@ -514,9 +513,8 @@ namespace NHibernate.Test.Hql.Ast
 			ITransaction t = s.BeginTransaction();
 
 			s.CreateQuery("update Animal a set a.mother = null where a.id = 2").ExecuteUpdate();
-			if (! (Dialect is MySQLDialect))
+			if (Dialect.SupportsSubqueryOnMutatingTable)
 			{
-				// MySQL does not support (even un-correlated) subqueries against the update-mutating table
 				s.CreateQuery("update Animal a set a.mother = (from Animal where id = 1) where a.id = 2").ExecuteUpdate();
 			}
 
@@ -545,7 +543,7 @@ namespace NHibernate.Test.Hql.Ast
 			var e =
 				Assert.Throws<QueryException>(
 					() => s.CreateQuery("update Human set mother.name.initial = :initial").SetString("initial", "F").ExecuteUpdate());
-			Assert.That(e.Message, Is.StringStarting("Implied join paths are not assignable in update"));
+			Assert.That(e.Message, Does.StartWith("Implied join paths are not assignable in update"));
 
 			s.CreateQuery("delete Human where mother is not null").ExecuteUpdate();
 			s.CreateQuery("delete Human").ExecuteUpdate();
@@ -620,14 +618,13 @@ namespace NHibernate.Test.Hql.Ast
 
 			count =
 				s.CreateQuery("update Animal set bodyWeight = bodyWeight + :w1 + :w2")
-				.SetDouble("w1", 1)
-				.SetDouble("w2", 2)
+				.SetSingle("w1", 1)
+				.SetSingle("w2", 2)
 				.ExecuteUpdate();
 			Assert.That(count, Is.EqualTo(6), "incorrect count on 'complex' update assignment");
 
-			if (! (Dialect is MySQLDialect))
+			if (Dialect.SupportsSubqueryOnMutatingTable)
 			{
-				// MySQL does not support (even un-correlated) subqueries against the update-mutating table
 				s.CreateQuery("update Animal set bodyWeight = ( select max(bodyWeight) from Animal )").ExecuteUpdate();
 			}
 
@@ -650,10 +647,10 @@ namespace NHibernate.Test.Hql.Ast
 					s.CreateQuery("update Animal set description = :newDesc, bodyWeight = :w1 where description = :desc")
 						.SetString("desc", data.Polliwog.Description)
 						.SetString("newDesc", "Tadpole")
-						.SetDouble("w1", 3)
+						.SetSingle("w1", 3)
 						.ExecuteUpdate();
 				
-				count.Should().Be(1);
+				Assert.That(count, Is.EqualTo(1));
 				t.Commit();
 			}
 
@@ -661,8 +658,8 @@ namespace NHibernate.Test.Hql.Ast
 			using (s.BeginTransaction())
 			{
 				var tadpole = s.Get<Animal>(data.Polliwog.Id);
-				tadpole.Description.Should().Be("Tadpole");
-				tadpole.BodyWeight.Should().Be(3);
+				Assert.That(tadpole.Description, Is.EqualTo("Tadpole"));
+				Assert.That(tadpole.BodyWeight, Is.EqualTo(3));
 			}
 
 			data.Cleanup();
@@ -683,9 +680,8 @@ namespace NHibernate.Test.Hql.Ast
 			count = s.CreateQuery("update Mammal set bodyWeight = 25").ExecuteUpdate();
 			Assert.That(count, Is.EqualTo(2), "incorrect update count against 'middle' of joined-subclass hierarchy");
 
-			if (! (Dialect is MySQLDialect))
+			if (Dialect.SupportsSubqueryOnMutatingTable)
 			{
-				// MySQL does not support (even un-correlated) subqueries against the update-mutating table
 				count = s.CreateQuery("update Mammal set bodyWeight = ( select max(bodyWeight) from Animal )").ExecuteUpdate();
 				Assert.That(count, Is.EqualTo(2), "incorrect update count against 'middle' of joined-subclass hierarchy");
 			}
@@ -726,7 +722,7 @@ namespace NHibernate.Test.Hql.Ast
 			using (ISession s = OpenSession())
 			{
 				var e = Assert.Throws<QueryException>(() => s.CreateQuery("update Vehicle set owner = null where owner = 'Steve'").ExecuteUpdate());
-				Assert.That(e.Message, Is.StringStarting("Left side of assigment should be a case sensitive property or a field"));
+				Assert.That(e.Message, Does.StartWith("Left side of assigment should be a case sensitive property or a field"));
 			}
 		}
 

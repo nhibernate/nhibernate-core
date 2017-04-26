@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH3512">
+
+	<class name="Person">
+		<id name="Id" generator="identity" />
+		<version name="Version" />
+		<property name="Name" />
+		<property name="Age" />
+
+		<joined-subclass name="Employee">
+			<key column="Id" />
+			<property name="Salary" />
+		</joined-subclass>
+	</class>
+
+</hibernate-mapping>

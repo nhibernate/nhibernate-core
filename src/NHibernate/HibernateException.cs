@@ -10,7 +10,7 @@ namespace NHibernate
 	/// Exceptions that occur in the database layer are left as native exceptions.
 	/// </remarks>
 	[Serializable]
-	public class HibernateException : ApplicationException
+	public class HibernateException : Exception
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HibernateException"/> class.

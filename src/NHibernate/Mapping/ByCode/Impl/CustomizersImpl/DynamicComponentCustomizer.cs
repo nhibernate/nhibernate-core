@@ -5,7 +5,7 @@ using System.Reflection.Emit;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public class DynamicComponentCustomizer<TComponent> : PropertyContainerCustomizer<TComponent>, IDynamicComponentMapper<TComponent> where TComponent : class
+	public class DynamicComponentCustomizer<TComponent> : PropertyContainerCustomizer<TComponent>, IDynamicComponentMapper<TComponent>
 	{
 		public DynamicComponentCustomizer(IModelExplicitDeclarationsHolder explicitDeclarationsHolder, ICustomizersHolder customizersHolder, PropertyPath propertyPath)
 			: base(explicitDeclarationsHolder, customizersHolder, propertyPath)

@@ -106,7 +106,9 @@ namespace NHibernate.Action
 		{
 			get
 			{
-				return new BeforeTransactionCompletionProcessDelegate(BeforeTransactionCompletionProcessImpl);
+				return NeedsBeforeTransactionCompletion()
+					? new BeforeTransactionCompletionProcessDelegate(BeforeTransactionCompletionProcessImpl)
+					: null;
 			}
 		}
 		
@@ -120,11 +122,18 @@ namespace NHibernate.Action
 			}
 		}
 		
-		private bool NeedsAfterTransactionCompletion()
+		protected virtual bool NeedsAfterTransactionCompletion()
 		{
 			return persister.HasCache || HasPostCommitEventListeners;
 		}
-		
+
+		protected virtual bool NeedsBeforeTransactionCompletion()
+		{
+			// At the moment, there is no need to add the delegate, 
+			// Subclasses can override this method and add the delegate if needed.
+			return false;
+		}
+
 		protected virtual void BeforeTransactionCompletionProcessImpl()
 		{
 		}
@@ -146,7 +155,7 @@ namespace NHibernate.Action
 				return roleComparison;
 			}
 			//then by id
-			return persister.IdentifierType.Compare(id, other.id, session.EntityMode);
+			return persister.IdentifierType.Compare(id, other.id);
 		}
 
 		#endregion

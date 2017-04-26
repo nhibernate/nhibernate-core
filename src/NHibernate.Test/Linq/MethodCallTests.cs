@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
@@ -100,6 +101,32 @@ namespace NHibernate.Test.Linq
 			Assert.That(result.Length, Is.EqualTo(3));
 			Assert.That(result[1], Is.EqualTo("Admin"));
 			Assert.That(result[2], Is.EqualTo("output"));
+		}
+
+		[Test(Description = "NH-2782")] 
+		public void CanSelectPropertiesIntoObjectArrayInProperty()
+		{
+			var result = db.Users
+				.Select(u => new { Cells = new object[] { u.Id, u.Name, new object[u.Id] } })
+				.First();
+
+			var cells = result.Cells;
+			Assert.That(cells.Length, Is.EqualTo(3));
+			Assert.That(cells[1], Is.EqualTo("ayende"));
+			Assert.That(cells[2], Is.InstanceOf<object[]>().And.Length.EqualTo(cells[0]));
+		}
+
+		[Test(Description = "NH-2782")] 
+		public void CanSelectPropertiesIntoPropertyListInProperty()
+		{
+			var result = db.Users
+				.Select(u => new { Cells = new List<object> { u.Id, u.Name, new object[u.Id] } })
+				.First();
+
+			var cells = result.Cells;
+			Assert.That(cells.Count, Is.EqualTo(3));
+			Assert.That(cells[1], Is.EqualTo("ayende"));
+			Assert.That(cells[2], Is.InstanceOf<object[]>().And.Length.EqualTo(cells[0]));
 		} 
 
 		[Test, Description("NH-2744")]

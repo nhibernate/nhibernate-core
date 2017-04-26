@@ -180,7 +180,7 @@ namespace NHibernate.Transform
 		/// <param name="aliases">The aliases that correspond to the untransformed tuple.</param>
 		/// <param name="transformer">The transformer for the re-transformation.</param>
 		/// <param name="includeInTuple"></param>
-		/// <returns>transformedResults, with each element re-transformed (if nececessary).</returns>
+		/// <returns>transformedResults, with each element re-transformed (if necessary).</returns>
 		public IList RetransformResults(IList transformedResults,
 		                                string[] aliases,
 		                                IResultTransformer transformer,
@@ -240,7 +240,7 @@ namespace NHibernate.Transform
 		/// excluded tuple elements will be null.
 		/// </remarks>
 		/// <param name="results">Results that were previously transformed.</param>
-		/// <returns>results, with each element untransformed (if nececessary).</returns>
+		/// <returns>results, with each element untransformed (if necessary).</returns>
 		public IList UntransformToTuples(IList results)
 		{
 			if (_includeInTransformIndex == null)

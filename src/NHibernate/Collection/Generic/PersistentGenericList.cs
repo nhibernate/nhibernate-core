@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
@@ -53,12 +53,10 @@ namespace NHibernate.Collection.Generic
 
 		public override object GetSnapshot(ICollectionPersister persister)
 		{
-			EntityMode entityMode = Session.EntityMode;
-
 			var clonedList = new List<T>(WrappedList.Count);
 			foreach (T current in WrappedList)
 			{
-				var deepCopy = (T)persister.ElementType.DeepCopy(current, entityMode, persister.Factory);
+				var deepCopy = (T)persister.ElementType.DeepCopy(current, persister.Factory);
 				clonedList.Add(deepCopy);
 			}
 
@@ -115,7 +113,7 @@ namespace NHibernate.Collection.Generic
 			return StringHelper.CollectionToString(WrappedList);
 		}
 
-		public override object ReadFrom(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
+		public override object ReadFrom(DbDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
 		{
 			var element = (T)role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
 			int index = (int)role.ReadIndex(rs, descriptor.SuffixedIndexAliases, Session);
@@ -232,7 +230,7 @@ namespace NHibernate.Collection.Generic
 				return false;
 			}
 			Read();
-			return CollectionHelper.CollectionEquals(WrappedList, that);
+			return CollectionHelper.SequenceEquals(WrappedList, that);
 		}
 
 		public override int GetHashCode()

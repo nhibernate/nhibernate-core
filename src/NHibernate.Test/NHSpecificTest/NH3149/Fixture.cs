@@ -3,7 +3,6 @@ using System.Threading;
 using NHibernate.Dialect;
 using NUnit.Framework;
 using NHibernate.Criterion;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH3149
 {
@@ -85,7 +84,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3149
 
 				thread.Join();
 
-				watch.ElapsedMilliseconds.Should().Be.LessThan(3000);
+				Assert.That(watch.ElapsedMilliseconds, Is.LessThan(3000));
 			}
 		}
 	}

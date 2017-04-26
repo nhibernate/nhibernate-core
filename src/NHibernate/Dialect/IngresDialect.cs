@@ -51,5 +51,17 @@ namespace NHibernate.Dialect
 
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.IngresDriver";
 		}
+
+		#region Overridden informational metadata
+
+		public override bool SupportsEmptyInList => false;
+
+		public override bool SupportsSubselectAsInPredicateLHS => false;
+
+		public override bool SupportsExpectedLobUsagePattern => false;
+
+		public override bool DoesReadCommittedCauseWritersToBlockReaders => true;
+
+		#endregion
 	}
 }

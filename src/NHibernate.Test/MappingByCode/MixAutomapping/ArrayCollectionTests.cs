@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.MixAutomapping
 {
@@ -38,7 +37,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var autoinspector = new SimpleModelInspector();
 			var inspector = (IModelInspector)autoinspector;
 
-			inspector.IsArray(mi).Should().Be.True();
+			Assert.That(inspector.IsArray(mi), Is.True);
 		}
 
 		[Test]
@@ -48,7 +47,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var autoinspector = new SimpleModelInspector();
 			var inspector = (IModelInspector)autoinspector;
 
-			inspector.IsArray(mi).Should().Be.True();
+			Assert.That(inspector.IsArray(mi), Is.True);
 		}
 
 		[Test]
@@ -58,7 +57,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var autoinspector = new SimpleModelInspector();
 			var inspector = (IModelInspector)autoinspector;
 
-			inspector.IsArray(mi).Should().Be.True();
+			Assert.That(inspector.IsArray(mi), Is.True);
 		}
 
 		[Test]
@@ -68,7 +67,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var autoinspector = new SimpleModelInspector();
 			var inspector = (IModelInspector)autoinspector;
 
-			inspector.IsArray(mi).Should().Be.False();
+			Assert.That(inspector.IsArray(mi), Is.False);
 		}
 
 		[Test]
@@ -78,7 +77,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var autoinspector = new SimpleModelInspector();
 			var inspector = (IModelInspector)autoinspector;
 
-			inspector.IsArray(mi).Should().Be.False();
+			Assert.That(inspector.IsArray(mi), Is.False);
 		}
 
 		[Test]
@@ -88,7 +87,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var autoinspector = new SimpleModelInspector();
 			var inspector = (IModelInspector)autoinspector;
 
-			inspector.IsArray(mi).Should().Be.False();
+			Assert.That(inspector.IsArray(mi), Is.False);
 		}
 
 		[Test]
@@ -98,7 +97,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var autoinspector = new SimpleModelInspector();
 			var inspector = (IModelInspector)autoinspector;
 
-			inspector.IsArray(mi).Should().Be.False();
+			Assert.That(inspector.IsArray(mi), Is.False);
 		}
 
 		[Test]
@@ -108,7 +107,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var autoinspector = new SimpleModelInspector();
 			var inspector = (IModelInspector)autoinspector;
 
-			inspector.IsArray(mi).Should().Be.False();
+			Assert.That(inspector.IsArray(mi), Is.False);
 		}
 	}
 }

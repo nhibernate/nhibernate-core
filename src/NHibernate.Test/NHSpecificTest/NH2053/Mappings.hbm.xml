@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH2053">
+
+	<class name="Animal">
+		<id name="AnimalId">
+			<generator class="identity"/>
+		</id>
+		<property name="Name"/>
+	</class>
+  <joined-subclass
+    extends="Animal"
+    name="Dog">
+    <key column="AnimalId" />
+    <property column="Talkable" type="Boolean" name="Talkable" not-null="true"></property>
+    <filter name="talkableFilter" condition="Talkable = :talkable" />
+  </joined-subclass>
+  <joined-subclass
+    extends="Animal"
+    name="Cat">
+    <key column="AnimalId" />
+  </joined-subclass>
+  <filter-def name="talkableFilter">
+    <filter-param name="talkable" type="Boolean"/>
+  </filter-def>
+
+</hibernate-mapping>

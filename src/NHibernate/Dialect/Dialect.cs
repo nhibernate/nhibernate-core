@@ -113,6 +113,12 @@ namespace NHibernate.Dialect
 			RegisterFunction("month", new SQLFunctionTemplate(NHibernateUtil.Int32, "extract(month from ?1)"));
 			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.Int32, "extract(year from ?1)"));
 
+			// Bitwise operations
+			RegisterFunction("band", new BitwiseNativeOperation("&"));
+			RegisterFunction("bor", new BitwiseNativeOperation("|"));
+			RegisterFunction("bxor", new BitwiseNativeOperation("^"));
+			RegisterFunction("bnot", new BitwiseNativeOperation("~", true));
+
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as char)"));
 
 			// register hibernate types for default use in scalar sqlquery type auto detection
@@ -635,7 +641,7 @@ namespace NHibernate.Dialect
 		#region Callable statement support
 
 		/// <summary> 
-		/// Registers an OUT parameter which will be returing a
+		/// Registers an OUT parameter which will be returning a
 		/// <see cref="DbDataReader"/>.  How this is accomplished varies greatly
 		/// from DB to DB, hence its inclusion (along with {@link #getResultSet}) here.
 		///  </summary>
@@ -1156,23 +1162,23 @@ namespace NHibernate.Dialect
 
 				int nextTokenIndex = index += 1;
 
-				if (token.StartsWithCaseInsensitive("select"))
+				if (token.EqualsCaseInsensitive("select"))
 					continue;
 
-				if (token.StartsWithCaseInsensitive("distinct"))
+				if (token.EqualsCaseInsensitive("distinct"))
 					continue;
 
-				if (token.StartsWithCaseInsensitive(","))
+				if (token.EqualsCaseInsensitive(","))
 					continue;
 
-				if (token.StartsWithCaseInsensitive("from"))
+				if (token.EqualsCaseInsensitive("from"))
 					break;
 
 				// handle composite expressions like "2 * 4 as foo"
 				while ((nextTokenIndex < tokens.Count)
-					&& (tokens[nextTokenIndex].StartsWithCaseInsensitive("as") == false
-					&& tokens[nextTokenIndex].StartsWithCaseInsensitive("from") == false
-					&& tokens[nextTokenIndex].StartsWithCaseInsensitive(",") == false))
+					&& (tokens[nextTokenIndex].EqualsCaseInsensitive("as") == false
+					&& tokens[nextTokenIndex].EqualsCaseInsensitive("from") == false
+					&& tokens[nextTokenIndex].EqualsCaseInsensitive(",") == false))
 				{
 					SqlString nextToken = tokens[nextTokenIndex];
 					token = token.Append(nextToken);
@@ -1217,7 +1223,7 @@ namespace NHibernate.Dialect
 		/// <summary>
 		/// This specialized string tokenizier will break a string to tokens, taking
 		/// into account single quotes, parenthesis and commas and [ ]
-		/// Notice that we aren't differenciating between [ ) and ( ] on purpose, it would complicate
+		/// Notice that we aren't differentiating between [ ) and ( ] on purpose, it would complicate
 		/// the code and it is not legal at any rate.
 		/// </summary>
 		public class QuotedAndParenthesisStringTokenizer : IEnumerable<SqlString>
@@ -1872,6 +1878,20 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary> 
+		/// Does this dialect require that references to result variables
+		/// (i.e, select expression aliases) in an ORDER BY clause be
+		/// replaced by column positions (1-origin) as defined by the select clause?
+		/// </summary>
+		/// <returns> 
+		/// true if result variable references in the ORDER BY clause should 
+		/// be replaced by column positions; false otherwise. 
+		/// </returns>
+		public virtual bool ReplaceResultVariableInOrderByClauseWithPosition
+		{
+			get { return false; }
+		}
+
+		/// <summary> 
 		/// Does this dialect support asking the result set its positioning
 		/// information on forward only cursors.  Specifically, in the case of
 		/// scrolling fetches, Hibernate needs to use
@@ -2030,8 +2050,6 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-		#endregion
-
 		/// <summary>
 		/// Does this dialect support subselects?
 		/// </summary>
@@ -2039,6 +2057,8 @@ namespace NHibernate.Dialect
 		{
 			get { return true; }
 		}
+
+		#endregion
 
 		/// <summary>
 		/// Retrieve a set of default Hibernate properties for this database.
@@ -2116,7 +2136,7 @@ namespace NHibernate.Dialect
 		/// <summary> 
 		/// Should the value returned by <see cref="CurrentTimestampSelectString"/>
 		/// be treated as callable.  Typically this indicates that JDBC escape
-		/// sytnax is being used...
+		/// syntax is being used...
 		/// </summary>
 		public virtual bool IsCurrentTimestampSelectStringCallable
 		{

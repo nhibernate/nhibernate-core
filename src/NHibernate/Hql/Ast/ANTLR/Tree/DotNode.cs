@@ -39,9 +39,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private string _path;
 
 		/// <summary>
-		/// The type of dereference that hapened (DEREF_xxx).
+		/// The type of dereference that happened (DEREF_xxx).
 		/// </summary>
+#pragma warning disable 414
 		private int _dereferenceType = DerefUnknown;
+#pragma warning restore 414
 
 		/// <summary>
 		/// The identifier that is the name of the property.
@@ -407,7 +409,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			else 
 			{
-				joinIsNeeded = generateJoin || ( Walker.IsInSelect || Walker.IsInFrom );
+				joinIsNeeded = generateJoin || ( (Walker.IsInSelect && !Walker.IsInCase ) || Walker.IsInFrom );
 			}
 
 			if ( joinIsNeeded ) 
@@ -569,7 +571,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// to customer's PK...
 		/// </summary>
 		/// <param name="propertyName">The name of the property to check.</param>
-		/// <param name="owningType">The type represeting the entity "owning" the property</param>
+		/// <param name="owningType">The type representing the entity "owning" the property</param>
 		/// <returns>True if propertyName references the entity's (owningType->associatedEntity) primary key; false otherwise.</returns>
 		private bool IsReferenceToPrimaryKey(string propertyName, EntityType owningType)
 		{

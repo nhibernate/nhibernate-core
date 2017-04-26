@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using NHibernate.Util;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.UtilityTest.EnumerableExtensionsTests
 {
@@ -11,19 +10,19 @@ namespace NHibernate.Test.UtilityTest.EnumerableExtensionsTests
 		[Test]
 		public void WhenNullThenThenThrows()
 		{
-			Executing.This(() => ((IEnumerable)null).First()).Should().Throw<ArgumentNullException>();
+			Assert.That(() => ((IEnumerable)null).First(), Throws.TypeOf<ArgumentNullException>());
 		}
 
 		[Test]
 		public void WhenHasElementsThenReturnFirst()
 		{
-			(new[] { 2, 1 }).First().Should().Be(2);
+			Assert.That((new[] { 2, 1 }).First(), Is.EqualTo(2));
 		}
 
 		[Test]
 		public void WhenEmptyThenThrowsInvalidOperation()
 		{
-			Executing.This(() => (new object[0]).First()).Should().Throw<InvalidOperationException>();
+			Assert.That(() => (new object[0]).First(), Throws.TypeOf<InvalidOperationException>());
 		}
 	}
 }

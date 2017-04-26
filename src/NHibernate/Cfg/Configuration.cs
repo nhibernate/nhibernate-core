@@ -121,9 +121,7 @@ namespace NHibernate.Cfg
 			return (T)info.GetValue(name, typeof(T));
 		}
 
-#if NET_4_0
 		[SecurityCritical]
-#endif
 		public void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			ConfigureProxyFactoryFactory();
@@ -1227,7 +1225,7 @@ namespace NHibernate.Cfg
 		{
 			#region Way for the user to specify their own ProxyFactory
 
-			//http://jira.nhibernate.org/browse/NH-975
+			//http://nhibernate.jira.com/browse/NH-975
 
 			var ipff = Environment.BytecodeProvider as IInjectableProxyFactoryFactory;
 			string pffClassName;
@@ -2319,7 +2317,7 @@ namespace NHibernate.Cfg
 		/// Generate DDL for altering tables
 		///</summary>
 		/// <seealso cref="NHibernate.Tool.hbm2ddl.SchemaUpdate"/>
-		public string[] GenerateSchemaUpdateScript(Dialect.Dialect dialect, DatabaseMetadata databaseMetadata)
+		public string[] GenerateSchemaUpdateScript(Dialect.Dialect dialect, IDatabaseMetadata databaseMetadata)
 		{
 			SecondPassCompile();
 
@@ -2399,7 +2397,7 @@ namespace NHibernate.Cfg
 			return script.ToArray();
 		}
 
-		public void ValidateSchema(Dialect.Dialect dialect, DatabaseMetadata databaseMetadata)
+		public void ValidateSchema(Dialect.Dialect dialect, IDatabaseMetadata databaseMetadata)
 		{
 			SecondPassCompile();
 

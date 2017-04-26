@@ -256,18 +256,11 @@ namespace Eg
             (using <literal>Dictionaries</literal> of <literal>Dictionary</literal>s at runtime) . With this approach, you don't
             write persistent classes, only mapping files.
         </para>
-        
-        <para>
-            By default, NHibernate works in normal POCO mode. You may set a default entity
-            representation mode for a particular <literal>ISessionFactory</literal> using the
-            <literal>default_entity_mode</literal> configuration option (see
-            <xref linkend="configuration-optional-properties"/>.
-        </para>
-        
+
         <para>
             The following examples demonstrates the representation using <literal>Map</literal>s (Dictionary).
             First, in the mapping file, an <literal>entity-name</literal> has to be declared
-            instead of (or in addition to) a class name:
+            instead of a class name:
         </para>
         
         <programlisting><![CDATA[<hibernate-mapping>
@@ -305,16 +298,13 @@ namespace Eg
 </hibernate-mapping>]]></programlisting>
         
         <para>
-            
             Note that even though associations are declared using target class names,
             the target type of an associations may also be a dynamic entity instead
             of a POCO.
         </para>
         
         <para>
-            After setting the default entity mode to <literal>dynamic-map</literal>
-            for the <literal>ISessionFactory</literal>, we can at runtime work with
-            <literal>Dictionaries</literal> of <literal>Dictionaries</literal>:
+            At runtime we can work with <literal>Dictionaries</literal> of <literal>Dictionaries</literal>:
         </para>
         
         <programlisting><![CDATA[using(ISession s = OpenSession())
@@ -345,33 +335,6 @@ using(ITransaction tx = s.BeginTransaction())
             to the NHibernate mapping, the database schema can easily be normalized and sound,
             allowing to add a proper domain model implementation on top later on.
         </para>
-        
-        <para>
-            Entity representation modes can also be set on a per <literal>ISession</literal>
-            basis:
-        </para>
-        
-        <programlisting><![CDATA[using (ISession dynamicSession = pocoSession.GetSession(EntityMode.Map))
-{
-    // Create a customer
-    var frank = new Dictionary<string, object>();
-    frank["name"] = "Frank";
-    dynamicSession.Save("Customer", frank);
-    ...
-}
-// Continue on pocoSession
-]]></programlisting>
-        
-        
-        <para>
-            Please note that the call to <literal>GetSession()</literal> using an
-            <literal>EntityMode</literal> is on the <literal>ISession</literal> API, not the
-            <literal>ISessionFactory</literal>. That way, the new <literal>ISession</literal>
-            shares the underlying ADO connection, transaction, and other context
-            information. This means you don't have tocall <literal>Flush()</literal>
-            and <literal>Close()</literal> on the secondary <literal>ISession</literal>, and
-            also leave the transaction and connection handling to the primary unit of work.
-        </para>
     </sect1>
     
     <sect1 id="persistent-classes-tuplizers" revision="1">
@@ -383,7 +346,7 @@ using(ITransaction tx = s.BeginTransaction())
             <literal>NHibernate.EntityMode</literal>.  If a given piece of data is thought of as
             a data structure, then a tuplizer is the thing which knows how to create such a data structure
             and how to extract values from and inject values into such a data structure.  For example,
-            for the POCO entity mode, the correpsonding tuplizer knows how create the POCO through its
+            for the POCO entity mode, the corresponding tuplizer knows how create the POCO through its
             constructor and how to access the POCO properties using the defined property accessors.
             There are two high-level types of Tuplizers, represented by the
             <literal>NHibernate.Tuple.Entity.IEntityTuplizer</literal> and <literal>NHibernate.Tuple.Component.IComponentTuplizer</literal>
@@ -452,9 +415,8 @@ public class CustomMapTuplizerImpl : NHibernate.Tuple.Entity.DynamicMapEntityTup
         </para>
 
         <para>
-            <!-- TODO: add xref to interceptor -->
-            The NHibernate <literal>IInterceptor</literal> offers a less intrusive
-            alternative, however.
+            The NHibernate <link linkend="objectstate-interceptors"><literal>IInterceptor</literal></link>
+            offers a less intrusive alternative, however.
         </para>
 
         <programlistingco>

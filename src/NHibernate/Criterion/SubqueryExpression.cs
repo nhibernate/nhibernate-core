@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -7,6 +6,7 @@ using NHibernate.Loader.Criteria;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
@@ -20,10 +20,8 @@ namespace NHibernate.Criterion
 		private QueryParameters parameters;
 		private IType[] types;
 
-		[NonSerialized] private CriteriaQueryTranslator innerQuery;
-
 		protected SubqueryExpression(String op, String quantifier, DetachedCriteria dc)
-			:this(op, quantifier, dc, true)
+			: this(op, quantifier, dc, true)
 		{
 		}
 
@@ -42,23 +40,29 @@ namespace NHibernate.Criterion
 
 		protected abstract SqlString ToLeftSqlString(ICriteria criteria, ICriteriaQuery outerQuery);
 
-		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			InitializeInnerQueryAndParameters(criteriaQuery);
+			ISessionFactoryImplementor factory = criteriaQuery.Factory;
+
+			var innerQuery = new CriteriaQueryTranslator(
+				factory,
+				criteriaImpl, //implicit polymorphism not supported (would need a union)
+				criteriaImpl.EntityOrClassName,
+				criteriaQuery.GenerateSQLAlias(),
+				criteriaQuery);
+
+			types = innerQuery.HasProjection ? innerQuery.ProjectedTypes : null;
 
 			if (innerQuery.HasProjection == false)
 			{
 				throw new QueryException("Cannot use subqueries on a criteria without a projection.");
 			}
 
-			ISessionFactoryImplementor factory = criteriaQuery.Factory;
+			IOuterJoinLoadable persister = (IOuterJoinLoadable) factory.GetEntityPersister(criteriaImpl.EntityOrClassName);
 
-			IOuterJoinLoadable persister = (IOuterJoinLoadable)factory.GetEntityPersister(criteriaImpl.EntityOrClassName);
+			criteriaImpl.Session = DeriveRootSession(criteria);
 
-			//patch to generate joins on subqueries
-			//stolen from CriteriaLoader
-			CriteriaJoinWalker walker =
-				new CriteriaJoinWalker(persister, innerQuery, factory, criteriaImpl, criteriaImpl.EntityOrClassName, enabledFilters);
+			var walker = new CriteriaJoinWalker(persister, innerQuery, factory, criteriaImpl, criteriaImpl.EntityOrClassName, criteriaImpl.Session.EnabledFilters);
 
 			parameters = innerQuery.GetQueryParameters(); // parameters can be inferred only after initialize the walker
 
@@ -73,11 +77,6 @@ namespace NHibernate.Criterion
 				sql = factory.Dialect.GetLimitString(sql, offset, limit, offsetParameter, limitParameter);
 			}
 
-			// during CriteriaImpl.Clone we are doing a shallow copy of each criterion.
-			// this is not a problem for common criterion but not for SubqueryExpression because here we are holding the state of inner CriteriaTraslator (ICriteriaQuery).
-			// After execution (ToSqlString) we have to clean the internal state because the next execution may be performed in a different tree reusing the same istance of SubqueryExpression.
-			innerQuery = null;
-
 			SqlStringBuilder buf = new SqlStringBuilder().Add(ToLeftSqlString(criteria, criteriaQuery));
 			if (op != null)
 			{
@@ -88,7 +87,7 @@ namespace NHibernate.Criterion
 			{
 				buf.Add(quantifier).Add(" ");
 			}
-			
+
 			buf.Add("(").Add(sql).Add(")");
 
 			if (quantifier != null && prefixOp == false)
@@ -99,11 +98,12 @@ namespace NHibernate.Criterion
 			return buf.ToSqlString();
 		}
 
+
 		public override string ToString()
 		{
-			if(prefixOp)
+			if (prefixOp)
 				return string.Format("{0} {1} ({2})", op, quantifier, criteriaImpl);
-			
+
 			return string.Format("{0} ({1}) {2}", op, criteriaImpl, quantifier);
 		}
 
@@ -117,27 +117,22 @@ namespace NHibernate.Criterion
 			return null;
 		}
 
-		public void InitializeInnerQueryAndParameters(ICriteriaQuery criteriaQuery)
+		// NH-1146
+		public ICriteria Criteria => criteriaImpl;
+
+		static ISessionImplementor DeriveRootSession(ICriteria criteria)
 		{
-			if (innerQuery == null)
+			while (criteria is CriteriaImpl.Subcriteria subcriteria)
 			{
-				ISessionFactoryImplementor factory = criteriaQuery.Factory;
-
-				innerQuery = new CriteriaQueryTranslator(
-					factory,
-					criteriaImpl, //implicit polymorphism not supported (would need a union)
-					criteriaImpl.EntityOrClassName,
-					criteriaQuery.GenerateSQLAlias(),
-					criteriaQuery);
-
-				types = innerQuery.HasProjection ? innerQuery.ProjectedTypes : null;
+				criteria = subcriteria.Parent;
 			}
-		}
-
-		public ICriteria Criteria
-		{
-			// NH-1146
-			get { return criteriaImpl; }
+			if (criteria is CriteriaImpl criteriaImpl)
+			{
+				return criteriaImpl.Session;
+			}
+			// could happen for custom Criteria impls.  Not likely, but...
+			// for long term solution, see HHH-3514
+			return null;
 		}
 	}
 }

@@ -1,6 +1,5 @@
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 {
@@ -22,7 +21,7 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 			inspector.AddAsTablePerClassHierarchyEntity(typeof(Inherited1));
 
 			inspector.AddAsRootEntity(typeof(MyClass));
-			inspector.IsTablePerClassHierarchy(typeof(Inherited1)).Should().Be.True();
+			Assert.That(inspector.IsTablePerClassHierarchy(typeof(Inherited1)), Is.True);
 		}
 
 		[Test]
@@ -31,7 +30,7 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 			var inspector = new ExplicitlyDeclaredModel();
 			inspector.AddAsTablePerClassHierarchyEntity(typeof(Inherited1));
 
-			inspector.Executing(x => x.IsTablePerClassHierarchy(typeof(Inherited1))).Throws<MappingException>();
+			Assert.That(() => inspector.IsTablePerClassHierarchy(typeof(Inherited1)), Throws.TypeOf<MappingException>());
 		}
 	}
 }

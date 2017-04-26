@@ -37,19 +37,13 @@ namespace NHibernate.Mapping.ByCode
 
 	public interface IBasePlainPropertyContainerMapper<TContainer> : IMinimalPlainPropertyContainerMapper<TContainer>
 	{
-		void Component<TComponent>(Expression<Func<TContainer, TComponent>> property,
-															 Action<IComponentMapper<TComponent>> mapping) where TComponent : class;
-		void Component<TComponent>(Expression<Func<TContainer, TComponent>> property) where TComponent : class;
-		void Component<TComponent>(Expression<Func<TContainer, IDictionary>> property,
-								   TComponent dynamicComponentTemplate,
-								   Action<IDynamicComponentMapper<TComponent>> mapping) where TComponent : class;
+		void Component<TComponent>(Expression<Func<TContainer, TComponent>> property, Action<IComponentMapper<TComponent>> mapping);
+		void Component<TComponent>(Expression<Func<TContainer, TComponent>> property);
+		void Component<TComponent>(Expression<Func<TContainer, IDictionary>> property, TComponent dynamicComponentTemplate, Action<IDynamicComponentMapper<TComponent>> mapping);
 
-		void Component<TComponent>(string notVisiblePropertyOrFieldName,
-															 Action<IComponentMapper<TComponent>> mapping) where TComponent : class;
-		void Component<TComponent>(string notVisiblePropertyOrFieldName) where TComponent : class;
-		void Component<TComponent>(string notVisiblePropertyOrFieldName,
-															 TComponent dynamicComponentTemplate,
-															 Action<IDynamicComponentMapper<TComponent>> mapping) where TComponent : class;
+		void Component<TComponent>(string notVisiblePropertyOrFieldName, Action<IComponentMapper<TComponent>> mapping);
+		void Component<TComponent>(string notVisiblePropertyOrFieldName);
+		void Component<TComponent>(string notVisiblePropertyOrFieldName, TComponent dynamicComponentTemplate, Action<IDynamicComponentMapper<TComponent>> mapping);
 
 		void Any<TProperty>(Expression<Func<TContainer, TProperty>> property, System.Type idTypeOfMetaType, Action<IAnyMapper> mapping) where TProperty : class;
 		void Any<TProperty>(string notVisiblePropertyOrFieldName, System.Type idTypeOfMetaType, Action<IAnyMapper> mapping) where TProperty : class;
