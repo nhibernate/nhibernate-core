@@ -112,7 +112,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			RegisterDynamicComponentMapping(mapping, member, memberOf);
 		}
 
-		protected virtual void RegisterDynamicComponentMapping<TComponent>(Expression<Func<TEntity, IDictionary>> property, IDictionary<string, System.Type> template, Action<IDynamicComponentMapper<TComponent>> mapping) where TComponent : class
+		protected virtual void RegisterDynamicComponentMapping<TComponent>(Expression<Func<TEntity, IDictionary>> property, IDictionary<string, System.Type> template, Action<IDynamicComponentMapper<TComponent>> mapping) 
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
 			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
@@ -120,7 +120,6 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		}
 
 		protected void RegisterDynamicComponentMapping<TComponent>(IDictionary<string, System.Type> template, Action<IDynamicComponentMapper<TComponent>> mapping, params MemberInfo[] members)
-			where TComponent : class
 		{
 			foreach (var member in members)
 			{

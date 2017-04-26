@@ -35,8 +35,8 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(Person) });
 			var hbmClass = hbmMapping.RootClasses[0];
 			var hbmDynamicComponent = hbmClass.Properties.OfType<HbmDynamicComponent>().SingleOrDefault();
-			hbmDynamicComponent.Should().Not.Be.Null();
-			hbmDynamicComponent.Properties.Select(x => x.Name).Should().Have.SameValuesAs("MyInt", "MyDate");
+			Assert.That(hbmDynamicComponent, Is.Not.Null);
+			Assert.That(hbmDynamicComponent.Properties.Select(x => x.Name), Is.EquivalentTo(new[] { "MyInt", "MyDate" }));
 		}
 
 		[Test]
@@ -53,8 +53,8 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(Person) });
 			var hbmClass = hbmMapping.RootClasses[0];
 			var hbmDynamicComponent = hbmClass.Properties.OfType<HbmDynamicComponent>().SingleOrDefault();
-			hbmDynamicComponent.Should().Not.Be.Null();
-			hbmDynamicComponent.Properties.Select(x => x.Name).Should().Have.SameValuesAs("MyInt", "MyDate");
+			Assert.That(hbmDynamicComponent, Is.Not.Null);
+			Assert.That(hbmDynamicComponent.Properties.Select(x => x.Name), Is.EquivalentTo(new[] { "MyInt", "MyDate" }));
 		}
 
 		[Test]
