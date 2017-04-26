@@ -113,8 +113,6 @@ namespace NHibernate.Cfg
 		// Unused, not implemented
 		public const string StatementFetchSize = "jdbc.fetch_size";
 
-		public const string BatchVersionedData = "jdbc.batch_versioned_data";
-
 		// Unused, not implemented
 		public const string OutputStylesheet = "xml.output_stylesheet";
 
@@ -154,6 +152,7 @@ namespace NHibernate.Cfg
 		// Unused, not implemented
 		public const string SqlExceptionConverter = "sql_exception_converter";
 
+		public const string BatchVersionedData = "adonet.batch_versioned_data";
 		public const string WrapResultSets = "adonet.wrap_result_sets";
 		public const string BatchSize = "adonet.batch_size";
 		public const string BatchStrategy = "adonet.factory_class";

@@ -230,7 +230,6 @@ namespace NHibernate.Cfg
 
 			//ADO.NET and connection settings:
 
-			// TODO: Environment.BatchVersionedData
 			settings.AdoBatchSize = PropertiesHelper.GetInt32(Environment.BatchSize, properties, 0);
 			bool orderInserts = PropertiesHelper.GetBoolean(Environment.OrderInserts, properties, (settings.AdoBatchSize > 0));
 			log.Info("Order SQL inserts for batching: " + EnabledDisabled(orderInserts));
@@ -243,6 +242,11 @@ namespace NHibernate.Cfg
 			bool wrapResultSets = PropertiesHelper.GetBoolean(Environment.WrapResultSets, properties, false);
 			log.Debug("Wrap result sets: " + EnabledDisabled(wrapResultSets));
 			settings.IsWrapResultSetsEnabled = wrapResultSets;
+
+			bool batchVersionedData = PropertiesHelper.GetBoolean(Environment.BatchVersionedData, properties, false);
+			log.Debug("Batch versioned data: " + EnabledDisabled(batchVersionedData));
+			settings.IsBatchVersionedDataEnabled = batchVersionedData;
+
 			settings.BatcherFactory = CreateBatcherFactory(properties, settings.AdoBatchSize, connectionProvider);
 
 			string isolationString = PropertiesHelper.GetString(Environment.Isolation, properties, String.Empty);

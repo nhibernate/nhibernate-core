@@ -959,6 +959,8 @@
     <Compile Include="NHSpecificTest\NH3634\PersonMapper.cs" />
     <Compile Include="NHSpecificTest\NH3727\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3727\FixtureByCode.cs" />
+    <Compile Include="NHSpecificTest\NH3771\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3771\Model.cs" />
     <Compile Include="NHSpecificTest\NH3795\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3844\Domain.cs" />
     <Compile Include="NHSpecificTest\NH3844\Fixture.cs" />
@@ -3269,6 +3271,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH2204\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3874\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\EntityWithUserTypeCanHaveLinqGenerators\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3771\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2218\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3046\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3518\Mappings.hbm.xml" />
