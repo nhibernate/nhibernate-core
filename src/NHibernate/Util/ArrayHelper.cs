@@ -93,7 +93,7 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="to"></param>
 		/// <param name="from"></param>
-		public static void AddAll(IList to, IList from)
+		public static void AddAll(IList to, IEnumerable from)
 		{
 			foreach (object obj in from)
 			{

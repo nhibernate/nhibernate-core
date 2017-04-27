@@ -4,7 +4,7 @@ using NHibernate.Engine;
 using NHibernate.Proxy;
 using NUnit.Framework;
 
-namespace NHibernate.Test.PolymorphicGetAndLoad
+namespace NHibernate.Test.Polymorphy
 {
 	public class PolymorphicGetAndLoadTest: TestCase
 	{
@@ -15,7 +15,7 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 
 		protected override IList Mappings
 		{
-			get { return new[] { "PolymorphicGetAndLoad.Mappings.hbm.xml" }; }
+			get { return new[] { "Polymorphy.Mappings.hbm.xml" }; }
 		}
 
 		public class ScenarioWithA : IDisposable
@@ -57,7 +57,7 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 			public ScenarioWithB(ISessionFactory factory)
 			{
 				this.factory = factory;
-				b = new B { Name = "Patrick", Occupation = "hincha pelotas (en el buen sentido), but good candidate to be committer."};
+				b = new B { Name = "Patrick", Occupation = "hincha pelotas (en el buen sentido), but good candidate to be committer." };
 				using (var s = factory.OpenSession())
 				{
 					s.Save(b);
@@ -79,6 +79,7 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 				}
 			}
 		}
+
 
 		[Test]
 		public void WhenSaveDeleteBaseClassCastedToInterfaceThenNotThrows()

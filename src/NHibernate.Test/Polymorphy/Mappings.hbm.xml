@@ -2,7 +2,7 @@
 <hibernate-mapping
 	xmlns="urn:nhibernate-mapping-2.2"
 	assembly="NHibernate.Test"
-	namespace="NHibernate.Test.PolymorphicGetAndLoad">
+	namespace="NHibernate.Test.Polymorphy">
 
   <class name="A">
     <id name="Id">
@@ -28,5 +28,4 @@
     </id>
     <property name="Name"/>
   </class>
-
 </hibernate-mapping>

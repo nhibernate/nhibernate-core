@@ -1,4 +1,4 @@
-namespace NHibernate.Test.PolymorphicGetAndLoad
+namespace NHibernate.Test.Polymorphy
 {
 	public class A: INamed
 	{
@@ -37,5 +37,4 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 	{
 		string Name { get; set; }
 	}
-
 }
