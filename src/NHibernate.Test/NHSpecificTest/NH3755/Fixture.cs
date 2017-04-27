@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3755
 			}
 		}
 
-		[Test, KnownBug("NH-3755")]
+		[Test]
 		public void TestCompositeProxy()
 		{
 			using (var session = OpenSession())
