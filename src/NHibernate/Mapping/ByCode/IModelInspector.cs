@@ -7,7 +7,7 @@ namespace NHibernate.Mapping.ByCode
 	{
 		bool IsRootEntity(System.Type type);
 		bool IsComponent(System.Type type);
-		bool IsEntity(System.Type type);
+		bool IsEntity(System.Type type, bool explicitlyDeclared = false);
 
 		bool IsTablePerClass(System.Type type);
 		bool IsTablePerClassSplit(System.Type type, object splitGroupId, MemberInfo member);
