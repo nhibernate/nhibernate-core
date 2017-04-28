@@ -25,6 +25,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Date, "DATE");
 			RegisterColumnType(DbType.DateTime, "TIMESTAMP(4)");
 			RegisterColumnType(DbType.Time, "TIMESTAMP(4)");
+			RegisterColumnType(DbType.Xml, "XMLTYPE");
 		}
 
 		public override long TimestampResolutionInTicks
