@@ -616,16 +616,9 @@ namespace NHibernate.Persister.Entity
 			get { return sqlVersionSelectString; }
 		}
 
-		public bool IsBatchable
-		{
-			get
-			{
-				return
-					OptimisticLockMode == Versioning.OptimisticLock.None
-					|| (!IsVersioned && OptimisticLockMode == Versioning.OptimisticLock.Version);
-				//|| Factory.Settings.IsJdbcBatchVersionedData();
-			}
-		}
+		public bool IsBatchable => OptimisticLockMode == Versioning.OptimisticLock.None ||
+		                           (!IsVersioned && OptimisticLockMode == Versioning.OptimisticLock.Version) ||
+		                           Factory.Settings.IsBatchVersionedDataEnabled;
 
 		public virtual string[] QuerySpaces
 		{

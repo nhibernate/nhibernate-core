@@ -676,6 +676,13 @@ ISession session = sessions.OpenSession(conn);
                             </entry>
                         </row>
                         <row>
+                            <entry>PostgreSQL 8.3</entry> 
+                            <entry><literal>NHibernate.Dialect.PostgreSQL83Dialect</literal></entry>
+                            <entry>
+                                This dialect supports <literal>XML</literal> type.
+                            </entry>
+                        </row>
+                        <row>
                             <entry>MySQL 3 or 4</entry> 
                             <entry><literal>NHibernate.Dialect.MySQLDialect</literal></entry>
                             <entry></entry>

@@ -1,8 +1,8 @@
 using System.Data;
-using System.Data.Common;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 
 namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 {
@@ -64,18 +64,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 			p2.IdentificationNumber += 2;
 
 			SavePerson(p1);
-			Assert.AreEqual(person.Version + 1, p1.Version);
-			try
-			{
-				SavePerson(p2);
-				Assert.Fail("Expecting stale object state exception");
-			}
-			catch (StaleObjectStateException sose)
-			{
-				Assert.AreEqual(typeof (Person).FullName, sose.EntityName);
-				Assert.AreEqual(p2.Id, sose.Identifier);
-				// as expected.
-			}
+			Assert.That(p1.Version, Is.EqualTo(person.Version + 1));
+
+			var expectedException = sessions.Settings.IsBatchVersionedDataEnabled
+				? (IResolveConstraint) Throws.InstanceOf<StaleStateException>()
+				: Throws.InstanceOf<StaleObjectStateException>()
+				        .And.Property("EntityName").EqualTo(typeof(Person).FullName)
+				        .And.Property("Identifier").EqualTo(p2.Id);
+
+			Assert.That(() => SavePerson(p2), expectedException);
 		}
 
 		/// <summary>
@@ -89,46 +86,43 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 
 			p1.IdentificationNumber++;
 
-			using (ISession session1 = OpenSession())
+			using (var session1 = OpenSession())
+			using (var tr1 = BeginTransaction(session1))
 			{
-				using (ITransaction tr1 = BeginTransaction(session1))
+				session1.SaveOrUpdate(p1);
+				session1.Flush();
+
+				using (var session2 = OpenSession())
+				using (var tr2 = BeginTransaction(session2))
 				{
-					session1.SaveOrUpdate(p1);
-					session1.Flush();
+					var p2 = session2.Get<Person>(person.Id);
+					p2.IdentificationNumber += 2;
 
-					using (ISession session2 = OpenSession())
-					{
-						using (ITransaction tr2 = BeginTransaction(session2))
+					tr1.Commit();
+					Assert.That(p1.Version, Is.EqualTo(person.Version + 1));
+
+					session2.SaveOrUpdate(p2);
+
+					var expectedException = sessions.Settings.IsBatchVersionedDataEnabled
+						? (IConstraint) Throws.InstanceOf<StaleStateException>()
+						: Throws.InstanceOf<StaleObjectStateException>()
+						        .And.Property("EntityName").EqualTo(typeof(Person).FullName)
+						        .And.Property("Identifier").EqualTo(p2.Id);
+
+					Assert.That(
+						() =>
 						{
-							var p2 = session2.Get<Person>(person.Id);
-							p2.IdentificationNumber += 2;
-
-							tr1.Commit();
-							Assert.AreEqual(person.Version + 1, p1.Version);
-
-							try
-							{
-								session2.SaveOrUpdate(p2);
-								session2.Flush();
-
-								tr2.Commit();
-								Assert.Fail("StaleObjectStateException expected");
-							}
-							catch (StaleObjectStateException sose)
-							{
-								Assert.AreEqual(typeof (Person).FullName, sose.EntityName);
-								Assert.AreEqual(p2.Id, sose.Identifier);
-								// as expected
-							}
-						}
-					}
+							session2.Flush();
+							tr2.Commit();
+						},
+						expectedException);
 				}
 			}
 		}
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return dialect is MsSql2005Dialect || dialect is MsSql2008Dialect;
+			return dialect is MsSql2005Dialect;
 		}
 
 		private void SetAllowSnapshotIsolation(bool on)

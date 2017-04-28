@@ -9,6 +9,7 @@ using System.Text;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Linq;
+using NHibernate.SqlTypes;
 using NHibernate.Util;
 using NUnit.Framework;
 
@@ -22,20 +23,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		private const int _totalEntityCount = 10;
 		private readonly DateTime _testDate = DateTime.Now;
 		private readonly DateTimeOffset _testDateWithOffset = DateTimeOffset.Now;
-		
+
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			var typeNames = (TypeNames)typeof(Dialect.Dialect).GetField("_typeNames", ReflectHelper.AnyVisibilityInstance).GetValue(Dialect);
-			try
-			{
-				typeNames.Get(DbType.DateTimeOffset);
-			}
-			catch (ArgumentException)
-			{
-				return false;
-			}
-
-			return true;
+			return TestDialect.SupportsSqlType(new SqlType(DbType.DateTimeOffset));
 		}
 
 		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
