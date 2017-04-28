@@ -9,6 +9,7 @@
 		</id>
 
 		<discriminator column="TYPE" type="string" length="1"/>
+		<property name="Name" column="NAME" type="string"/>
 
         <bag name="Children" inverse="true" cascade="all">
             <key column="parent_id"/>
