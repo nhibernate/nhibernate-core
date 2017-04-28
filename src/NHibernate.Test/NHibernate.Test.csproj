@@ -1435,7 +1435,7 @@
     <Compile Include="TestCaseMappingByCode.cs" />
     <Compile Include="TestDialect.cs" />
     <Compile Include="TestDialects\MsSql2008TestDialect.cs" />
-    <Compile Include="TestDialects\PostgreSQL82TestDialect.cs" />
+    <Compile Include="TestDialects\PostgreSQL83TestDialect.cs" />
     <Compile Include="TestDialects\SQLiteTestDialect.cs" />
     <Compile Include="Tools\hbm2ddl\SchemaExportTests\ExportToFileFixture.cs" />
     <Compile Include="TransformTests\ImplementationOfEqualityTests.cs" />
@@ -3518,10 +3518,10 @@
     <Content Include="DbScripts\MsSql2012DialectLinqReadonlyDropScript.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="DbScripts\PostgreSQL82DialectLinqReadonlyCreateScript.sql">
+    <Content Include="DbScripts\PostgreSQL83DialectLinqReadonlyCreateScript.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="DbScripts\PostgreSQL82DialectLinqReadonlyDropScript.sql">
+    <Content Include="DbScripts\PostgreSQL83DialectLinqReadonlyDropScript.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="DynamicEntity\package.html" />
