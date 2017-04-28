@@ -37,6 +37,12 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			Parent(parent, x => { });
 		}
 
+		public void Parent(string notVisiblePropertyOrFieldName, Action<IComponentParentMapper> parentMapping)
+		{
+			MemberInfo member = GetPropertyOrFieldMatchingNameOrThrow(notVisiblePropertyOrFieldName);
+			AddCustomizer(m => m.Parent(member, parentMapping));
+		}
+
 		public void Parent<TProperty>(Expression<Func<TComponent, TProperty>> parent, Action<IComponentParentMapper> parentMapping) where TProperty : class
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(parent);
