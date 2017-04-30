@@ -125,8 +125,6 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-		public override System.Type NativeIdentifierGeneratorClass => typeof(TableHiLoGenerator);
-
 		public override bool SupportsCircularCascadeDeleteConstraints => false;
 
 		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
