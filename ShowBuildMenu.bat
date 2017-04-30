@@ -130,6 +130,7 @@ set LIB_FILES2=
 goto test-setup-generic
 
 :test-setup-generic
+set CFGNAME=
 set /p CFGNAME=Enter a name for your test configuration or press enter to use default name: 
 if /I "%CFGNAME%"=="" set CFGNAME=%CONFIG_NAME%-%PLATFORM%
 mkdir "%AVAILABLE_CONFIGURATIONS%\%CFGNAME%"
