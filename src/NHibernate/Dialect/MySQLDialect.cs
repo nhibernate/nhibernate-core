@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using System.Globalization;
 using System.Text;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
@@ -246,8 +247,10 @@ namespace NHibernate.Dialect
 
 		public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
 		{
-			var pagingBuilder = new SqlStringBuilder(queryString);
-			pagingBuilder.Add(" limit ");
+			var pagingBuilder = new SqlStringBuilder()
+				.Add("SELECT * FROM (")
+				.Add(queryString)
+				.Add(" limit ");
 
 			if (offset != null)
 			{
@@ -258,7 +261,9 @@ namespace NHibernate.Dialect
 			if (limit != null)
 				pagingBuilder.Add(limit);
 			else
-				pagingBuilder.Add(int.MaxValue.ToString());
+				pagingBuilder.Add(int.MaxValue.ToString(CultureInfo.InvariantCulture));
+
+			pagingBuilder.Add(") q_");
 
 			return pagingBuilder.ToSqlString();
 		}
