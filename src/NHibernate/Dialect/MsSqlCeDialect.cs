@@ -207,5 +207,14 @@ namespace NHibernate.Dialect
 				return TimeSpan.TicksPerMillisecond*10L;
 			}
 		}
+
+		#region Informational metadata
+
+		/// <summary>
+		/// Does this dialect support pooling parameter in connection string?
+		/// </summary>
+		public override bool SupportsPoolingParameter => false;
+
+		#endregion
 	}
 }

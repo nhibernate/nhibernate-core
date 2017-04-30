@@ -26,57 +26,69 @@ namespace NHibernate.Id.Insert
 
 		public abstract IdentifierGeneratingInsert PrepareIdentifierGeneratingInsert();
 
-		public object PerformInsert(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder)
+		public object PerformInsert(SqlCommandInfo insertSql, ISessionImplementor session, IBinder binder)
 		{
+			// NH-2145: Prevent connection releases between insert and select when we cannot perform
+			// them as a single statement. Retrieving id most of the time relies on using the same connection.
+			session.ConnectionManager.FlushBeginning();
 			try
 			{
-				// prepare and execute the insert
-				var insert = session.Batcher.PrepareCommand(insertSQL.CommandType, insertSQL.Text, insertSQL.ParameterTypes);
 				try
 				{
-					binder.BindValues(insert);
-					session.Batcher.ExecuteNonQuery(insert);
-				}
-				finally
-				{
-					session.Batcher.CloseCommand(insert, null);
-				}
-			}
-			catch (DbException sqle)
-			{
-				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
-				                                 "could not insert: " + persister.GetInfoString(), insertSQL.Text);
-			}
-
-			SqlString selectSQL = SelectSQL;
-			using (new SessionIdLoggingContext(session.SessionId)) 
-			try
-			{
-				//fetch the generated id in a separate query
-				var idSelect = session.Batcher.PrepareCommand(CommandType.Text, selectSQL, ParametersTypes);
-				try
-				{
-					BindParameters(session, idSelect, binder.Entity);
-					var rs = session.Batcher.ExecuteReader(idSelect);
+					// prepare and execute the insert
+					var insert = session.Batcher.PrepareCommand(insertSql.CommandType, insertSql.Text, insertSql.ParameterTypes);
 					try
 					{
-						return GetResult(session, rs, binder.Entity);
+						binder.BindValues(insert);
+						session.Batcher.ExecuteNonQuery(insert);
 					}
 					finally
 					{
-						session.Batcher.CloseReader(rs);
+						session.Batcher.CloseCommand(insert, null);
 					}
 				}
-				finally
+				catch (DbException sqle)
 				{
-					session.Batcher.CloseCommand(idSelect, null);
+					throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
+					                                 "could not insert: " + persister.GetInfoString(), insertSql.Text);
+				}
+
+				var selectSql = SelectSQL;
+				using (new SessionIdLoggingContext(session.SessionId))
+				{
+					try
+					{
+						//fetch the generated id in a separate query
+						var idSelect = session.Batcher.PrepareCommand(CommandType.Text, selectSql, ParametersTypes);
+						try
+						{
+							BindParameters(session, idSelect, binder.Entity);
+							var rs = session.Batcher.ExecuteReader(idSelect);
+							try
+							{
+								return GetResult(session, rs, binder.Entity);
+							}
+							finally
+							{
+								session.Batcher.CloseReader(rs);
+							}
+						}
+						finally
+						{
+							session.Batcher.CloseCommand(idSelect, null);
+						}
+					}
+					catch (DbException sqle)
+					{
+						throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
+						                                 "could not retrieve generated id after insert: " + persister.GetInfoString(),
+						                                 insertSql.Text);
+					}
 				}
 			}
-			catch (DbException sqle)
+			finally
 			{
-				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
-				                                 "could not retrieve generated id after insert: " + persister.GetInfoString(),
-				                                 insertSQL.Text);
+				session.ConnectionManager.FlushEnding();
 			}
 		}
 

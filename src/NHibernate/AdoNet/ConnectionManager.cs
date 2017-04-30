@@ -3,7 +3,6 @@ using System.Data;
 using System.Data.Common;
 using System.Runtime.Serialization;
 using System.Security;
-using System.Security.Permissions;
 
 using NHibernate.Engine;
 
@@ -13,7 +12,7 @@ namespace NHibernate.AdoNet
 	/// Manages the database connection and transaction for an <see cref="ISession" />.
 	/// </summary>
 	/// <remarks>
-	/// This class corresponds to ConnectionManager and JDBCContext in Hibernate,
+	/// This class corresponds to LogicalConnectionImplementor and JdbcCoordinator in Hibernate,
 	/// combined.
 	/// </remarks>
 	[Serializable]
@@ -44,7 +43,7 @@ namespace NHibernate.AdoNet
 		private readonly IInterceptor interceptor;
 
 		[NonSerialized]
-		private bool isFlushing;
+		private bool _releasesEnabled = true;
 
 		private bool flushingFromDtcTransaction;
 
@@ -227,9 +226,9 @@ namespace NHibernate.AdoNet
 		{
 			if (IsAggressiveRelease)
 			{
-				if (isFlushing)
+				if (!_releasesEnabled)
 				{
-					log.Debug("skipping aggressive-release due to flush cycle");
+					log.Debug("skipping aggressive-release due to manual disabling");
 				}
 				else if (batcher.HasOpenResources)
 				{
@@ -259,16 +258,31 @@ namespace NHibernate.AdoNet
 			}
 		}
 
+		[NonSerialized]
+		private int _flushDepth;
+
 		public void FlushBeginning()
 		{
-			log.Debug("registering flush begin");
-			isFlushing = true;
+			if (_flushDepth == 0)
+			{
+				log.Debug("registering flush begin");
+				_releasesEnabled = false;
+			}
+			_flushDepth++;
 		}
 
 		public void FlushEnding()
 		{
-			log.Debug("registering flush end");
-			isFlushing = false;
+			_flushDepth--;
+			if (_flushDepth < 0)
+			{
+				throw new HibernateException("Mismatched flush handling");
+			}
+			if (_flushDepth == 0)
+			{
+				_releasesEnabled = true;
+				log.Debug("registering flush end");
+			}
 			AfterStatement();
 		}
 
