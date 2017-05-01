@@ -29,7 +29,6 @@ namespace NHibernate.Cfg
 		#region JDBC Specific (Not Ported)
 
 		//private int jdbcFetchSize;
-		//private bool isJdbcBatchVersionedData;
 
 		#endregion
 		public SqlStatementLogger SqlStatementLogger { get; internal set; }
@@ -117,6 +116,8 @@ namespace NHibernate.Cfg
 		public bool IsDataDefinitionInTransactionSupported { get; internal set; }
 
 		public bool IsNamedQueryStartupCheckingEnabled { get; internal set; }
+
+		public bool IsBatchVersionedDataEnabled { get; internal set; }
 
 		#region NH specific
 

@@ -141,6 +141,8 @@ namespace NHibernate.Proxy.DynamicProxy
 			var proxyMethod = GenerateMethodSignature(method.Name, method, typeBuilder);
 
 			MethodBodyEmitter.EmitMethodBody(proxyMethod, callbackMethod, method, field);
+
+			typeBuilder.DefineMethodOverride(proxyMethod, method);
 		}
 	}
 }
