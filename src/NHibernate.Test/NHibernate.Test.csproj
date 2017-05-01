@@ -959,6 +959,8 @@
     <Compile Include="NHSpecificTest\NH3634\PersonMapper.cs" />
     <Compile Include="NHSpecificTest\NH3727\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3727\FixtureByCode.cs" />
+    <Compile Include="NHSpecificTest\NH3771\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3771\Model.cs" />
     <Compile Include="NHSpecificTest\NH3795\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3844\Domain.cs" />
     <Compile Include="NHSpecificTest\NH3844\Fixture.cs" />
@@ -976,6 +978,15 @@
     <Compile Include="NHSpecificTest\NH3993\Entities.cs" />
     <Compile Include="NHSpecificTest\NH3993\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3993\Mappers.cs" />
+    <Compile Include="NHSpecificTest\NH3755\Circle.cs" />
+    <Compile Include="NHSpecificTest\NH3755\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3755\ICircle.cs" />
+    <Compile Include="NHSpecificTest\NH3755\IShape.cs" />
+    <Compile Include="NHSpecificTest\NH3755\IShapeContainer.cs" />
+    <Compile Include="NHSpecificTest\NH3755\ISquare.cs" />
+    <Compile Include="NHSpecificTest\NH3755\Shape.cs" />
+    <Compile Include="NHSpecificTest\NH3755\ShapeContainer.cs" />
+    <Compile Include="NHSpecificTest\NH3755\Square.cs" />
     <Compile Include="NHSpecificTest\NH646\Domain.cs" />
     <Compile Include="NHSpecificTest\NH646\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3234\Fixture.cs" />
@@ -1427,7 +1438,7 @@
     <Compile Include="TestCaseMappingByCode.cs" />
     <Compile Include="TestDialect.cs" />
     <Compile Include="TestDialects\MsSql2008TestDialect.cs" />
-    <Compile Include="TestDialects\PostgreSQL82TestDialect.cs" />
+    <Compile Include="TestDialects\PostgreSQL83TestDialect.cs" />
     <Compile Include="TestDialects\SQLiteTestDialect.cs" />
     <Compile Include="Tools\hbm2ddl\SchemaExportTests\ExportToFileFixture.cs" />
     <Compile Include="TransformTests\ImplementationOfEqualityTests.cs" />
@@ -3272,6 +3283,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH2204\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3874\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\EntityWithUserTypeCanHaveLinqGenerators\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3771\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2218\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3046\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3518\Mappings.hbm.xml" />
@@ -3291,6 +3303,7 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="NHSpecificTest\NH3757\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3755\Mappings.hbm.xml" />
     <EmbeddedResource Include="LazyComponentTest\Person.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3372\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3567\Mappings.hbm.xml" />
@@ -3508,10 +3521,10 @@
     <Content Include="DbScripts\MsSql2012DialectLinqReadonlyDropScript.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="DbScripts\PostgreSQL82DialectLinqReadonlyCreateScript.sql">
+    <Content Include="DbScripts\PostgreSQL83DialectLinqReadonlyCreateScript.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="DbScripts\PostgreSQL82DialectLinqReadonlyDropScript.sql">
+    <Content Include="DbScripts\PostgreSQL83DialectLinqReadonlyDropScript.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="DynamicEntity\package.html" />

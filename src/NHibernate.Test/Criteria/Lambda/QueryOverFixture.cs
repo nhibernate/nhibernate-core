@@ -755,21 +755,6 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void OrderByYearPartFunction()
-		{
-			ICriteria expected =
-				CreateTestCriteria(typeof(Person), "personAlias")
-					.AddOrder(Order.Desc(Projections.SqlFunction("year", NHibernateUtil.Int32, Projections.Property("personAlias.BirthDate"))));
-
-			Person personAlias = null;
-			IQueryOver<Person> actual =
-				CreateTestQueryOver<Person>(() => personAlias)
-					.OrderBy(() => personAlias.BirthDate.YearPart()).Desc;
-
-			AssertCriteriaAreEqual(expected, actual);
-		}
-
-		[Test]
 		public void OrderByYearFunction()
 		{
 			ICriteria expected =

@@ -5,9 +5,9 @@ using System.Text;
 
 namespace NHibernate.Test.TestDialects
 {
-	public class PostgreSQL82TestDialect : TestDialect
+	public class PostgreSQL83TestDialect : TestDialect
 	{
-        public PostgreSQL82TestDialect(Dialect.Dialect dialect)
+        public PostgreSQL83TestDialect(Dialect.Dialect dialect)
             : base(dialect)
         {
         }

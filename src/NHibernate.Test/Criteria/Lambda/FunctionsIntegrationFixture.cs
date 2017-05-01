@@ -8,15 +8,9 @@ namespace NHibernate.Test.Criteria.Lambda
 	[TestFixture]
 	public class FunctionsIntegrationFixture : TestCase
 	{
-		protected override string MappingsAssembly
-		{
-			get { return "NHibernate.Test"; }
-		}
+		protected override string MappingsAssembly => "NHibernate.Test";
 
-		protected override IList Mappings
-		{
-			get { return new[] { "Criteria.Lambda.Mappings.hbm.xml" }; }
-		}
+		protected override IList Mappings => new[] { "Criteria.Lambda.Mappings.hbm.xml" };
 
 		protected override void OnTearDown()
 		{
@@ -38,69 +32,6 @@ namespace NHibernate.Test.Criteria.Lambda
 				s.Save(new Person { Name = "pP3", BirthDate = new DateTime(2007, 06, 05) });
 
 				t.Commit();
-			}
-		}
-
-		[Test]
-		public void YearPartEqual()
-		{
-			using (var s = OpenSession())
-			using (s.BeginTransaction())
-			{
-				var persons = s.QueryOver<Person>()
-					.Where(p => p.BirthDate.YearPart() == 2008)
-					.List();
-
-				Assert.That(persons.Count, Is.EqualTo(1));
-				Assert.That(persons[0].Name, Is.EqualTo("p2"));
-			}
-		}
-
-		[Test]
-		public void YearPartIsIn()
-		{
-			using (var s = OpenSession())
-			using (s.BeginTransaction())
-			{
-				var persons = s.QueryOver<Person>()
-					.Where(p => p.BirthDate.YearPart().IsIn(new[] { 2008, 2009 }))
-					.OrderBy(p => p.Name).Asc
-					.List();
-
-				Assert.That(persons.Count, Is.EqualTo(2));
-				Assert.That(persons[0].Name, Is.EqualTo("p1"));
-				Assert.That(persons[1].Name, Is.EqualTo("p2"));
-			}
-		}
-
-		[Test]
-		public void YearPartSingleOrDefault()
-		{
-			using (var s = OpenSession())
-			using (s.BeginTransaction())
-			{
-				var yearOfBirth = s.QueryOver<Person>()
-					.Where(p => p.Name == "p2")
-					.Select(p => p.BirthDate.YearPart())
-					.SingleOrDefault<object>();
-
-				Assert.That(yearOfBirth.GetType(), Is.EqualTo(typeof (int)));
-				Assert.That(yearOfBirth, Is.EqualTo(2008));
-			}
-		}
-
-		[Test]
-		public void SelectAvgYearPart()
-		{
-			using (var s = OpenSession())
-			using (s.BeginTransaction())
-			{
-				var avgYear = s.QueryOver<Person>()
-					.SelectList(list => list.SelectAvg(p => p.BirthDate.YearPart()))
-					.SingleOrDefault<object>();
-
-				Assert.That(avgYear.GetType(), Is.EqualTo(typeof (double)));
-				Assert.That(string.Format("{0:0}", avgYear), Is.EqualTo("2008"));
 			}
 		}
 
@@ -213,38 +144,6 @@ namespace NHibernate.Test.Criteria.Lambda
 					.SingleOrDefault<string>();
 
 				Assert.That(name, Is.EqualTo("p1, p1"));
-			}
-		}
-
-		[Test]
-		public void MonthPartEqualsDayPart()
-		{
-			using (var s = OpenSession())
-			using (s.BeginTransaction())
-			{
-				var persons = s.QueryOver<Person>()
-					.Where(p => p.BirthDate.MonthPart() == p.BirthDate.DayPart())
-					.List();
-
-				Assert.That(persons.Count, Is.EqualTo(1));
-				Assert.That(persons[0].Name, Is.EqualTo("p2"));
-			}
-		}
-
-		[Test]
-		public void OrderByYearPart()
-		{
-			using (var s = OpenSession())
-			using (s.BeginTransaction())
-			{
-				var persons = s.QueryOver<Person>()
-					.OrderBy(p => p.BirthDate.YearPart()).Desc
-					.List();
-
-				Assert.That(persons.Count, Is.EqualTo(3));
-				Assert.That(persons[0].Name, Is.EqualTo("p1"));
-				Assert.That(persons[1].Name, Is.EqualTo("p2"));
-				Assert.That(persons[2].Name, Is.EqualTo("pP3"));
 			}
 		}
 
