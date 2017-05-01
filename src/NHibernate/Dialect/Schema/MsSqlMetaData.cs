@@ -68,6 +68,7 @@ namespace NHibernate.Dialect.Schema
 			// Clearly, we cannot use the same names when connected via ODBC...
 			this.SetColumnSize(SchemaHelper.GetValue(rs, "CHARACTER_MAXIMUM_LENGTH", "COLUMN_SIZE"));
 			this.SetNumericalPrecision(SchemaHelper.GetValue(rs, "NUMERIC_PRECISION", "COLUMN_SIZE"));
+            this.SetNumericalScale(SchemaHelper.GetValue(rs, "NUMERIC_SCALE"));
 
 			Nullable = Convert.ToString(rs["IS_NULLABLE"]);
 

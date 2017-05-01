@@ -10,6 +10,7 @@ namespace NHibernate.Dialect.Schema
 		private int columnSize;
 		private int numericalPrecision;
 		private string isNullable;
+        private int numericalScale;
 
 		public AbstractColumnMetaData(DataRow rs)
 		{
@@ -45,6 +46,13 @@ namespace NHibernate.Dialect.Schema
 			protected set { isNullable = value; }
 		}
 
+        public int NumericalScale
+        {
+            get { return numericalScale; }
+            protected set { numericalScale = value; }
+        }
+
+
 		public override string ToString()
 		{
 			return "ColumnMetadata(" + name + ')';
@@ -66,5 +74,13 @@ namespace NHibernate.Dialect.Schema
 				NumericalPrecision = Convert.ToInt32(numericalPrecisionValue);
 			}
 		}
+
+        protected void SetNumericalScale(object numericalScaleValue)
+        {
+            if (numericalScaleValue != DBNull.Value)
+            {
+                NumericalScale = Convert.ToInt32(numericalScaleValue);
+            }
+        }
 	}
 }
