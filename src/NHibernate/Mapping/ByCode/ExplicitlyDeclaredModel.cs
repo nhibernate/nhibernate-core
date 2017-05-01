@@ -18,7 +18,7 @@ namespace NHibernate.Mapping.ByCode
 			return Components.Contains(type);
 		}
 
-		public virtual bool IsEntity(System.Type type)
+		public virtual bool IsEntity(System.Type type, bool explicitlyDeclared = false)
 		{
 			return RootEntities.Contains(type) || type.GetBaseTypes().Any(t => RootEntities.Contains(t))
 			       || HasDelayedEntityRegistration(type);
@@ -28,6 +28,7 @@ namespace NHibernate.Mapping.ByCode
 		{
 			return RootEntities.Contains(type) || HasDelayedEntityRegistration(type);
 		}
+
 
 		public virtual bool IsTablePerClass(System.Type type)
 		{
