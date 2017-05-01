@@ -20,8 +20,15 @@ namespace NHibernate.Mapping.ByCode
 
 		public virtual bool IsEntity(System.Type type)
 		{
-			return RootEntities.Contains(type) || type.GetBaseTypes().Any(t => RootEntities.Contains(t)) || HasDelayedEntityRegistration(type);
+			return RootEntities.Contains(type) || type.GetBaseTypes().Any(t => RootEntities.Contains(t))
+			       || HasDelayedEntityRegistration(type);
 		}
+
+		public virtual bool IsDeclaredEntity(System.Type type)
+		{
+			return RootEntities.Contains(type) || HasDelayedEntityRegistration(type);
+		}
+
 
 		public virtual bool IsTablePerClass(System.Type type)
 		{
