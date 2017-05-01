@@ -29,6 +29,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3993
 		public IEnumerable<Element> Elements => _elements.Values;
 	}
 
+	public class SimpleComponent
+	{
+		public virtual string SimpleComponentName { get; set; }
+	}
+
 	public class Element
 	{
 		// To cover added Property in Componenent Element Customiser
@@ -37,6 +42,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3993
 		{
 			get => _name;
 			set => _name = value;
+		}
+
+		// To cover added Component Component Element Customiser
+		private SimpleComponent _component;
+
+		public virtual SimpleComponent Component
+		{
+			get => _component;
+			set => _component = value;
 		}
 
 		// To cover added Parent in Componenent Element Customiser

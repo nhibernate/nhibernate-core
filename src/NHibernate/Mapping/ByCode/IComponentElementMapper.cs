@@ -14,5 +14,9 @@ namespace NHibernate.Mapping.ByCode
 		void Component<TNestedComponent>(Expression<Func<TComponent, TNestedComponent>> property,
 										 Action<IComponentElementMapper<TNestedComponent>> mapping)
 			where TNestedComponent : class;
+
+		void Component<TNestedComponent>(string notVisiblePropertyOrFieldName,
+			Action<IComponentElementMapper<TNestedComponent>> mapping)
+			where TNestedComponent : class;
 	}
 }

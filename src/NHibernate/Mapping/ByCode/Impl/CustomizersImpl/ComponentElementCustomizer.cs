@@ -118,6 +118,15 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			mapping(new ComponentElementCustomizer<TNestedComponent>(_explicitDeclarationsHolder, new PropertyPath(_propertyPath, memberOf), _customizersHolder));
 		}
 
+		public void Component<TNestedComponent>(string notVisiblePropertyOrFieldName, Action<IComponentElementMapper<TNestedComponent>> mapping)
+			where TNestedComponent : class
+		{
+			MemberInfo member = GetPropertyOrFieldMatchingNameOrThrow(notVisiblePropertyOrFieldName);
+			mapping(new ComponentElementCustomizer<TNestedComponent>(_explicitDeclarationsHolder, new PropertyPath(_propertyPath, member), _customizersHolder));
+			MemberInfo memberOf = member.GetMemberFromReflectedType(typeof(TComponent));
+			mapping(new ComponentElementCustomizer<TNestedComponent>(_explicitDeclarationsHolder, new PropertyPath(_propertyPath, memberOf), _customizersHolder));
+		}
+
 		public void ManyToOne<TProperty>(Expression<Func<TComponent, TProperty>> property, Action<IManyToOneMapper> mapping) where TProperty : class
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);

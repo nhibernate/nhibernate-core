@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
-using NHibernate.Mapping.ByCode;
+﻿using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
 
 namespace NHibernate.Test.NHSpecificTest.NH3993
 {
-	public class BaseEntityMapper: ClassMapping<BaseEntity>
+	public class BaseEntityMapper : ClassMapping<BaseEntity>
 	{
+		#region Constructors
+
 		public BaseEntityMapper()
 		{
 			Component(c => c.Component,
@@ -22,14 +23,22 @@ namespace NHibernate.Test.NHSpecificTest.NH3993
 								p => p.Column("Name"));
 							e.Parent("_parent",
 								p => p.Access(Accessor.NoSetter));
-							e.ManyToOne<string>("_description", r => r.Column("Desc"));
+							e.ManyToOne<string>("_description",
+								r => r.Column("Desc"));
+							e.Component<SimpleComponent>("_component",
+								c => c.Property("SimpleComponentName",
+									p => p.Column("SimpleComponentName")));
 						}));
 				});
 		}
+
+		#endregion
 	}
 
 	public class InvalidPropertyMapper : ClassMapping<BaseEntity>
 	{
+		#region Constructors
+
 		public InvalidPropertyMapper()
 		{
 			Component(c => c.Component,
@@ -45,10 +54,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3993
 						}));
 				});
 		}
+
+		#endregion
 	}
 
 	public class InvalidRelationshipMapper : ClassMapping<BaseEntity>
 	{
+		#region Constructors
+
 		public InvalidRelationshipMapper()
 		{
 			Component(c => c.Component,
@@ -59,9 +72,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3993
 						key => key.Element(element => element.Formula("Key")),
 						rel => rel.Component(e =>
 						{
-							e.ManyToOne<Element>("_description", r => r.Column("Desc"));
+							e.ManyToOne<Element>("_description",
+								r => r.Column("Desc"));
 						}));
 				});
 		}
+
+		#endregion
 	}
 }

@@ -30,12 +30,16 @@ namespace NHibernate.Test.NHSpecificTest.NH3993
 			Assert.IsNotNull(elementMapping, "Component did not map elements");
 			// Component element property
 			var privateProperty = elementMapping.Properties.SingleOrDefault(p => p.Name == "_name");
-			Assert.IsNotNull(privateProperty, "Component did not map private property");
+			Assert.IsNotNull(privateProperty, "Component Element did not map private property");
 			// Component element parent
-			Assert.IsNotNull(elementMapping.Parent, "ElementMapping did not map parent");
+			Assert.IsNotNull(elementMapping.Parent, "Component Element did not map parent");
 			// Component element relation
-			var relationproperty = elementMapping.Properties.SingleOrDefault(p => p.Name == "_name");
-			Assert.IsNotNull(relationproperty, "Component did not map one to many relationship");
+			var relationproperty = elementMapping.Properties.SingleOrDefault(p => p.Name == "_description");
+			Assert.IsNotNull(relationproperty, "Component Element did not map one to many relationship");
+			// Component element component
+			var componentMapping = elementMapping.Properties.SingleOrDefault(p => p.Name == "_component");
+			Assert.IsNotNull(componentMapping, "Component Element did not private component");
+
 		}
 
 		[Test]
