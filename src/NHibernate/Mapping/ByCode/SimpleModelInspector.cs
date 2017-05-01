@@ -29,10 +29,15 @@ namespace NHibernate.Mapping.ByCode
 				return inspector.IsRootEntity(entityType);
 			}
 
-			public bool IsEntity(System.Type type, bool explicitlyDeclared = false)
+			public bool IsEntity(System.Type type)
 			{
-				return RootEntities.Contains(type) || !explicitlyDeclared && type.GetBaseTypes().Any(t => RootEntities.Contains(t))
+				return RootEntities.Contains(type) || type.GetBaseTypes().Any(t => RootEntities.Contains(t))
 				       || HasDelayedEntityRegistration(type);
+			}
+
+			public bool IsDeclaredEntity(System.Type type)
+			{
+				return RootEntities.Contains(type) || HasDelayedEntityRegistration(type);
 			}
 
 			public bool IsTablePerClass(System.Type type)
@@ -677,12 +682,17 @@ namespace NHibernate.Mapping.ByCode
 			return isComponent(type, declaredResult);
 		}
 
-		bool IModelInspector.IsEntity(System.Type type, bool explicitlyDeclared)
+		bool IModelInspector.IsEntity(System.Type type)
 		{
-			bool declaredResult = declaredModel.IsEntity(type, explicitlyDeclared);
+			bool declaredResult = declaredModel.IsEntity(type);
 			return isEntity(type, declaredResult);
 		}
 
+		bool IModelInspector.IsDeclaredEntity(System.Type type)
+		{
+			bool declaredResult = declaredModel.IsDeclaredEntity(type);
+			return isEntity(type, declaredResult);
+		}
 
 		bool IModelInspector.IsTablePerClass(System.Type type)
 		{
