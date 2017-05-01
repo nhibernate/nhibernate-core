@@ -29,7 +29,7 @@ namespace NHibernate.Mapping.ByCode
 				return inspector.IsRootEntity(entityType);
 			}
 
-			public bool IsEntity(System.Type type, bool explicitlyDeclared = false)
+			public bool IsEntity(System.Type type)
 			{
 				return RootEntities.Contains(type) || type.GetBaseTypes().Any(t => RootEntities.Contains(t))
 				       || HasDelayedEntityRegistration(type);
@@ -682,9 +682,9 @@ namespace NHibernate.Mapping.ByCode
 			return isComponent(type, declaredResult);
 		}
 
-		bool IModelInspector.IsEntity(System.Type type, bool explicitlyDeclared)
+		bool IModelInspector.IsEntity(System.Type type)
 		{
-			bool declaredResult = declaredModel.IsEntity(type, explicitlyDeclared);
+			bool declaredResult = declaredModel.IsEntity(type);
 			return isEntity(type, declaredResult);
 		}
 
