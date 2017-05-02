@@ -13,6 +13,14 @@ namespace NHibernate.Linq
 {
 	public static class LinqExtensionMethods
 	{
+		public static IQueryable<T> AsStateless<T>(this IQueryable<T> query)
+		{
+			var session = (query.Provider as DefaultQueryProvider).Session;
+			var statelessSession = (session as SessionImpl).GetStatelessSession();
+
+			return new DefaultQueryProvider(statelessSession.GetSessionImplementation()).CreateQuery<T>(query.Expression);
+		}
+
 		public static IQueryable<T> Query<T>(this ISession session)
 		{
 			return new NhQueryable<T>(session.GetSessionImplementation());

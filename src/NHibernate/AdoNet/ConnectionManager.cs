@@ -34,7 +34,7 @@ namespace NHibernate.AdoNet
 		private bool ownConnection;
 
 		[NonSerialized]
-		private ITransaction transaction;
+		internal ITransaction transaction;
 
 		[NonSerialized]
 		private IBatcher batcher;
