@@ -617,7 +617,7 @@ namespace NHibernate.Test.Legacy
 			// instead of just the usual openSession()
 			using (ISession s = sessions.OpenSession())
 			{
-				s.FlushMode = FlushMode.Never;
+				s.FlushMode = FlushMode.Manual;
 
 				Simple simple = new Simple();
 				simple.Address = "123 Main St. Anytown USA";
@@ -656,7 +656,7 @@ namespace NHibernate.Test.Legacy
 
 			using (ISession s = sessions.OpenSession())
 			{
-				s.FlushMode = FlushMode.Never;
+				s.FlushMode = FlushMode.Manual;
 				Simple simple = (Simple) s.Get(typeof(Simple), 10L);
 				Assert.AreEqual(check.Name, simple.Name, "Not same parent instances");
 				Assert.AreEqual(check.Other.Name, other.Name, "Not same child instances");
@@ -679,7 +679,7 @@ namespace NHibernate.Test.Legacy
 			// Test deletions across serializations
 			using (ISession s = sessions.OpenSession())
 			{
-				s.FlushMode = FlushMode.Never;
+				s.FlushMode = FlushMode.Manual;
 				Simple simple = (Simple) s.Get(typeof(Simple), 10L);
 				Assert.AreEqual(check.Name, simple.Name, "Not same parent instances");
 				Assert.AreEqual(check.Other.Name, other.Name, "Not same child instances");

@@ -81,6 +81,8 @@ namespace NHibernate.Cfg
 
 		public bool IsIdentifierRollbackEnabled { get; internal set; }
 
+		// Since v5
+		[Obsolete("Please use DefaultFlushMode instead.")]
 		public bool IsFlushBeforeCompletionEnabled { get; internal set; }
 
 		public bool IsAutoCloseSessionEnabled { get; internal set; }
@@ -129,9 +131,6 @@ namespace NHibernate.Cfg
 		/// Get the registry to provide Hql-Generators for known properties/methods.
 		/// </summary>
 		public ILinqToHqlGeneratorsRegistry LinqToHqlGeneratorsRegistry { get; internal set; }
-
-		[Obsolete("This setting is likely to be removed in a future version of NHibernate. The workaround is to catch all exceptions in the IInterceptor implementation.")]
-		public bool IsInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled { get; internal set; }
 
 		public IQueryModelRewriterFactory QueryModelRewriterFactory { get; internal set; }
 		

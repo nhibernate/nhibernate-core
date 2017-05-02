@@ -14,11 +14,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3985
 		{
 			using (var rootSession = OpenSession())
 			{
-				using (var childSession1 = rootSession.GetChildSession())
+				using (var childSession1 = rootSession.SessionWithOptions().Connection().OpenSession())
 				{
 				}
 
-				using (var childSession2 = rootSession.GetChildSession())
+				using (var childSession2 = rootSession.SessionWithOptions().Connection().OpenSession())
 				{
 					Assert.DoesNotThrow(() => { childSession2.Get<Process>(Guid.NewGuid()); });
 				}
@@ -30,10 +30,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3985
 		{
 			using (var rootSession = OpenSession())
 			{
-				var childSession1 = rootSession.GetChildSession();
+				var childSession1 = rootSession.SessionWithOptions().Connection().OpenSession();
 				childSession1.Close();
 
-				using (var childSession2 = rootSession.GetChildSession())
+				using (var childSession2 = rootSession.SessionWithOptions().Connection().OpenSession())
 				{
 					Assert.DoesNotThrow(() => { childSession2.Get<Process>(Guid.NewGuid()); });
 				}

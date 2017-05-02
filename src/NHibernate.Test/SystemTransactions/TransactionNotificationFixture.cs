@@ -20,7 +20,7 @@ namespace NHibernate.Test.SystemTransactions
 		public void NoTransaction()
 		{
 			var interceptor = new RecordingInterceptor();
-			using (sessions.OpenSession(interceptor))
+			using (sessions.WithOptions().Interceptor(interceptor).OpenSession())
 			{
 				Assert.AreEqual(0, interceptor.afterTransactionBeginCalled);
 				Assert.AreEqual(0, interceptor.beforeTransactionCompletionCalled);
@@ -33,7 +33,7 @@ namespace NHibernate.Test.SystemTransactions
 		{
 			var interceptor = new RecordingInterceptor();
 			using (new TransactionScope()) 
-			using (sessions.OpenSession(interceptor))
+			using (sessions.WithOptions().Interceptor(interceptor).OpenSession())
 			{
 				Assert.AreEqual(1, interceptor.afterTransactionBeginCalled);
 				Assert.AreEqual(0, interceptor.beforeTransactionCompletionCalled);
@@ -48,7 +48,7 @@ namespace NHibernate.Test.SystemTransactions
 			ISession session;
 			using(var scope = new TransactionScope())
 			{
-				session = sessions.OpenSession(interceptor);
+				session = sessions.WithOptions().Interceptor(interceptor).OpenSession();
 				scope.Complete();
 			}
 			session.Dispose();
@@ -62,7 +62,7 @@ namespace NHibernate.Test.SystemTransactions
 		{
 			var interceptor = new RecordingInterceptor();
 			using (new TransactionScope())
-			using (sessions.OpenSession(interceptor))
+			using (sessions.WithOptions().Interceptor(interceptor).OpenSession())
 			{
 			}
 			Assert.AreEqual(0, interceptor.beforeTransactionCompletionCalled);
@@ -73,7 +73,7 @@ namespace NHibernate.Test.SystemTransactions
 		public void TwoTransactionScopesInsideOneSession()
 		{
 			var interceptor = new RecordingInterceptor();
-			using (var session = sessions.OpenSession(interceptor))
+			using (var session = sessions.WithOptions().Interceptor(interceptor).OpenSession())
 			{
 				using (var scope = new TransactionScope())
 				{
@@ -96,7 +96,7 @@ namespace NHibernate.Test.SystemTransactions
 		public void OneTransactionScopesInsideOneSession()
 		{
 			var interceptor = new RecordingInterceptor();
-			using (var session = sessions.OpenSession(interceptor))
+			using (var session = sessions.WithOptions().Interceptor(interceptor).OpenSession())
 			{
 				using (var scope = new TransactionScope())
 				{
@@ -165,16 +165,9 @@ namespace NHibernate.Test.SystemTransactions
 
 				try
 				{
-					try
+					using (s1 = sessions.WithOptions().Connection(ownConnection1).Interceptor(interceptor).OpenSession())
 					{
-						s1 = sessions.OpenSession(ownConnection1, interceptor);
-
 						s1.CreateCriteria<object>().List();
-					}
-					finally
-					{
-						if (s1 != null)
-							s1.Dispose();
 					}
 
 					if (doCommit)

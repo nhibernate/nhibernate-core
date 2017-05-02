@@ -19,16 +19,14 @@ using NHibernate.Type;
 
 namespace NHibernate.Impl
 {
-	
-
 	/// <summary> Functionality common to stateless and stateful sessions </summary>
 	[Serializable]
 	public abstract class AbstractSessionImpl : ISessionImplementor
 	{
 		[NonSerialized]
-		private ISessionFactoryImplementor factory;
+		private ISessionFactoryImplementor _factory;
+		private FlushMode _flushMode;
 
-		private readonly Guid sessionId = Guid.NewGuid();
 		private bool closed;
 
 		public ITransactionContext TransactionContext
@@ -40,22 +38,16 @@ namespace NHibernate.Impl
 
 		private static readonly IInternalLogger logger = LoggerProvider.LoggerFor(typeof(AbstractSessionImpl));
 
-		public Guid SessionId
-		{
-			get { return sessionId; }
-		}
+		public Guid SessionId { get; } = Guid.NewGuid();
 
 		internal AbstractSessionImpl() { }
 
-		protected internal AbstractSessionImpl(ISessionFactoryImplementor factory)
+		protected internal AbstractSessionImpl(ISessionFactoryImplementor factory, ISessionCreationOptions options)
 		{
-			this.factory = factory;
-		}
-
-		protected internal AbstractSessionImpl(ISessionFactoryImplementor factory, Guid sessionId)
-			: this(factory)
-		{
-			this.sessionId = sessionId;
+			_factory = factory;
+			Timestamp = factory.Settings.CacheProvider.NextTimestamp();
+			_flushMode = options.GetInitialSessionFlushMode();
+			Interceptor = options.GetInterceptor() ?? EmptyInterceptor.Instance;
 		}
 
 		#region ISessionImplementor Members
@@ -71,7 +63,6 @@ namespace NHibernate.Impl
 		public abstract void InitializeCollection(IPersistentCollection collection, bool writing);
 		public abstract object InternalLoad(string entityName, object id, bool eager, bool isNullable);
 		public abstract object ImmediateLoad(string entityName, object id);
-		public abstract long Timestamp { get; }
 
 		public EntityKey GenerateEntityKey(object id, IEntityPersister persister)
 		{
@@ -85,8 +76,8 @@ namespace NHibernate.Impl
 
 		public ISessionFactoryImplementor Factory
 		{
-			get { return factory; }
-			protected set { factory = value; }
+			get => _factory;
+			protected set => _factory = value;
 		}
 
 		public abstract IBatcher Batcher { get; }
@@ -112,9 +103,10 @@ namespace NHibernate.Impl
 
 		public virtual IList List(IQueryExpression queryExpression, QueryParameters parameters)
 		{
-			var results = (IList) typeof (List<>).MakeGenericType(queryExpression.Type)
-												 .GetConstructor(System.Type.EmptyTypes)
-												 .Invoke(null);
+			var results = (IList)typeof(List<>)
+				.MakeGenericType(queryExpression.Type)
+				.GetConstructor(System.Type.EmptyTypes)
+				.Invoke(null);
 			List(queryExpression, parameters, results);
 			return results;
 		}
@@ -142,7 +134,7 @@ namespace NHibernate.Impl
 		}
 
 		public abstract void List(CriteriaImpl criteria, IList results);
-		
+
 		public virtual IList List(CriteriaImpl criteria)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -218,13 +210,13 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				NamedSQLQueryDefinition nsqlqd = factory.GetNamedSQLQuery(name);
+				var nsqlqd = _factory.GetNamedSQLQuery(name);
 				if (nsqlqd == null)
 				{
 					throw new MappingException("Named SQL query not known: " + name);
 				}
-				IQuery query = new SqlQueryImpl(nsqlqd, this,
-												factory.QueryPlanCache.GetSQLParameterMetadata(nsqlqd.QueryString));
+				var query = new SqlQueryImpl(nsqlqd, this,
+					_factory.QueryPlanCache.GetSQLParameterMetadata(nsqlqd.QueryString));
 				query.SetComment("named native SQL query " + name);
 				InitQuery(query, nsqlqd);
 				return query;
@@ -236,9 +228,8 @@ namespace NHibernate.Impl
 		{
 			return GetQueries(query.ToQueryExpression(), scalar);
 		}
-		
+
 		public abstract IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar);
-		public abstract IInterceptor Interceptor { get; }
 		public abstract EventListeners Listeners { get; }
 		public abstract int DontFlushFromFind { get; }
 		public abstract ConnectionManager ConnectionManager { get; }
@@ -248,7 +239,6 @@ namespace NHibernate.Impl
 		public abstract CacheMode CacheMode { get; set; }
 		public abstract bool IsOpen { get; }
 		public abstract bool IsConnected { get; }
-		public abstract FlushMode FlushMode { get; set; }
 		public abstract string FetchProfile { get; set; }
 		public abstract string BestGuessEntityName(object entity);
 		public abstract string GuessEntityName(object entity);
@@ -257,28 +247,36 @@ namespace NHibernate.Impl
 		public abstract FutureCriteriaBatch FutureCriteriaBatch { get; protected internal set; }
 		public abstract FutureQueryBatch FutureQueryBatch { get; protected internal set; }
 
+		public virtual IInterceptor Interceptor { get; protected set; }
+
+		public virtual FlushMode FlushMode
+		{
+			get => _flushMode;
+			set => _flushMode = value;
+		}
+
 		public virtual IQuery GetNamedQuery(string queryName)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				NamedQueryDefinition nqd = factory.GetNamedQuery(queryName);
+				var nqd = _factory.GetNamedQuery(queryName);
 				IQuery query;
 				if (nqd != null)
 				{
-					string queryString = nqd.QueryString;
+					var queryString = nqd.QueryString;
 					query = new QueryImpl(queryString, nqd.FlushMode, this, GetHQLQueryPlan(queryString.ToQueryExpression(), false).ParameterMetadata);
 					query.SetComment("named HQL query " + queryName);
 				}
 				else
 				{
-					NamedSQLQueryDefinition nsqlqd = factory.GetNamedSQLQuery(queryName);
+					var nsqlqd = _factory.GetNamedSQLQuery(queryName);
 					if (nsqlqd == null)
 					{
 						throw new MappingException("Named query not known: " + queryName);
 					}
 					query = new SqlQueryImpl(nsqlqd, this,
-											 factory.QueryPlanCache.GetSQLParameterMetadata(nsqlqd.QueryString));
+						_factory.QueryPlanCache.GetSQLParameterMetadata(nsqlqd.QueryString));
 					query.SetComment("named native SQL query " + queryName);
 					nqd = nsqlqd;
 				}
@@ -286,6 +284,8 @@ namespace NHibernate.Impl
 				return query;
 			}
 		}
+
+		public virtual long Timestamp { get; protected set; }
 
 		public bool IsClosed
 		{
@@ -302,7 +302,7 @@ namespace NHibernate.Impl
 		{
 			if (IsClosed || IsAlreadyDisposed)
 			{
-				throw new ObjectDisposedException("ISession", "Session is closed!");
+				throw new ObjectDisposedException(nameof(ISession), "Session is closed!");
 			}
 		}
 
@@ -387,7 +387,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				SqlQueryImpl query = new SqlQueryImpl(sql, this, factory.QueryPlanCache.GetSQLParameterMetadata(sql));
+				var query = new SqlQueryImpl(sql, this, _factory.QueryPlanCache.GetSQLParameterMetadata(sql));
 				query.SetComment("dynamic native SQL query");
 				return query;
 			}
@@ -403,7 +403,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				return factory.QueryPlanCache.GetHQLQueryPlan(queryExpression, shallow, EnabledFilters);
+				return _factory.QueryPlanCache.GetHQLQueryPlan(queryExpression, shallow, EnabledFilters);
 			}
 		}
 
@@ -411,7 +411,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				return factory.QueryPlanCache.GetNativeSQLQueryPlan(spec);
+				return _factory.QueryPlanCache.GetNativeSQLQueryPlan(spec);
 			}
 		}
 
@@ -419,7 +419,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				return ADOExceptionHelper.Convert(factory.SQLExceptionConverter, sqlException, message);
+				return ADOExceptionHelper.Convert(_factory.SQLExceptionConverter, sqlException, message);
 			}
 		}
 
@@ -437,7 +437,7 @@ namespace NHibernate.Impl
 
 		protected void EnlistInAmbientTransactionIfNeeded()
 		{
-			factory.TransactionFactory.EnlistInDistributedTransactionIfNeeded(this);
+			_factory.TransactionFactory.EnlistInDistributedTransactionIfNeeded(this);
 		}
 
 		internal IOuterJoinLoadable GetOuterJoinLoadable(string entityName)

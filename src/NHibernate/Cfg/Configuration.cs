@@ -172,7 +172,7 @@ namespace NHibernate.Cfg
 			secondPasses = new List<SecondPassCommand>();
 			propertyReferences = new List<Mappings.PropertyReference>();
 			FilterDefinitions = new Dictionary<string, FilterDefinition>();
-			interceptor = emptyInterceptor;
+			interceptor = EmptyInterceptor.Instance;
 			properties = Environment.Properties;
 			auxiliaryDatabaseObjects = new List<IAuxiliaryDatabaseObject>();
 			SqlFunctions = new Dictionary<string, ISQLFunction>();
@@ -184,6 +184,7 @@ namespace NHibernate.Cfg
 			columnNameBindingPerTable = new Dictionary<Table, Mappings.ColumnNames>();
 			filtersSecondPasses = new Queue<FilterSecondPassArgs>();
 		}
+
 		[Serializable]
 		private class Mapping : IMapping
 		{
@@ -1216,8 +1217,7 @@ namespace NHibernate.Cfg
 		{
 			get { return eventListeners; }
 		}
-
-		private static readonly IInterceptor emptyInterceptor = new EmptyInterceptor();
+		
 		private string defaultAssembly;
 		private string defaultNamespace;
 
