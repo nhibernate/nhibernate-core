@@ -31,6 +31,13 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		#region IComponentElementMapper<TComponent> Members
 
+		public void Parent(string notVisiblePropertyOrFieldName, Action<IComponentParentMapper> parentMapping)
+		{
+			MemberInfo member = GetPropertyOrFieldMatchingNameOrThrow(notVisiblePropertyOrFieldName);
+			_customizersHolder.AddCustomizer(typeof(TComponent), (IComponentAttributesMapper x) => x.Parent(member, parentMapping));
+			_explicitDeclarationsHolder.AddAsPersistentMember(member);
+		}
+
 		public void Parent<TProperty>(Expression<Func<TComponent, TProperty>> parent) where TProperty : class
 		{
 			Parent(parent, x => { });
@@ -68,6 +75,25 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			_customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.Class(typeof (TConcrete)));
 		}
 
+		public void Property(string notVisiblePropertyOrFieldName, Action<IPropertyMapper> mapping)
+		{
+			MemberInfo member = GetPropertyOrFieldMatchingNameOrThrow(notVisiblePropertyOrFieldName);
+			MemberInfo memberOf = member.GetMemberFromReflectedType(typeof(TComponent));
+			_customizersHolder.AddCustomizer(new PropertyPath(_propertyPath, member), mapping);
+			_explicitDeclarationsHolder.AddAsProperty(memberOf);
+		}
+
+		public static MemberInfo GetPropertyOrFieldMatchingNameOrThrow(string memberName)
+		{
+			var result = typeof(TComponent).GetPropertyOrFieldMatchingName(memberName);
+			if (result == null)
+			{
+				throw new MappingException(string.Format("Member not found. The member '{0}' does not exists in type {1}", memberName, typeof(TComponent).FullName));
+			}
+			return result;
+		}
+
+
 		public void Property<TProperty>(Expression<Func<TComponent, TProperty>> property, Action<IPropertyMapper> mapping)
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
@@ -92,6 +118,15 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			mapping(new ComponentElementCustomizer<TNestedComponent>(_explicitDeclarationsHolder, new PropertyPath(_propertyPath, memberOf), _customizersHolder));
 		}
 
+		public void Component<TNestedComponent>(string notVisiblePropertyOrFieldName, Action<IComponentElementMapper<TNestedComponent>> mapping)
+			where TNestedComponent : class
+		{
+			MemberInfo member = GetPropertyOrFieldMatchingNameOrThrow(notVisiblePropertyOrFieldName);
+			mapping(new ComponentElementCustomizer<TNestedComponent>(_explicitDeclarationsHolder, new PropertyPath(_propertyPath, member), _customizersHolder));
+			MemberInfo memberOf = member.GetMemberFromReflectedType(typeof(TComponent));
+			mapping(new ComponentElementCustomizer<TNestedComponent>(_explicitDeclarationsHolder, new PropertyPath(_propertyPath, memberOf), _customizersHolder));
+		}
+
 		public void ManyToOne<TProperty>(Expression<Func<TComponent, TProperty>> property, Action<IManyToOneMapper> mapping) where TProperty : class
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
@@ -105,6 +140,20 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		public void ManyToOne<TProperty>(Expression<Func<TComponent, TProperty>> property) where TProperty : class
 		{
 			ManyToOne(property, x => { });
+		}
+
+		public void ManyToOne<TProperty>(string notVisiblePropertyOrFieldName, Action<IManyToOneMapper> mapping) where TProperty : class
+		{
+			MemberInfo member = GetPropertyOrFieldMatchingNameOrThrow(notVisiblePropertyOrFieldName);
+			var propertyOrFieldType = member.GetPropertyOrFieldType();
+			if (!typeof(TProperty).Equals(propertyOrFieldType))
+			{
+				throw new MappingException(string.Format("Wrong relation type. For the property/field '{0}' of {1} was expected a many-to-one with {2} but was {3}",
+					notVisiblePropertyOrFieldName, typeof(TComponent).FullName, typeof(TProperty).Name, propertyOrFieldType.Name));
+			}
+			MemberInfo memberOf = member.GetMemberFromReflectedType(typeof(TComponent));
+			_explicitDeclarationsHolder.AddAsManyToOneRelation(member);
+			_explicitDeclarationsHolder.AddAsManyToOneRelation(memberOf);
 		}
 
 		public void Access(Accessor accessor)

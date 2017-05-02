@@ -975,6 +975,9 @@
     <Compile Include="NHSpecificTest\NH3909\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3957\ResultTransformerEqualityFixture.cs" />
     <Compile Include="NHSpecificTest\NH3956\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3993\Entities.cs" />
+    <Compile Include="NHSpecificTest\NH3993\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3993\Mappers.cs" />
     <Compile Include="NHSpecificTest\NH3755\Circle.cs" />
     <Compile Include="NHSpecificTest\NH3755\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3755\ICircle.cs" />
