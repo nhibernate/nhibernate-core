@@ -39,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.NH4005 {
 		protected override void Configure(Configuration configuration)
 		{
 			// Add a dynamic component at run time
-			var persistentClass = configuration.GetClassMapping("NHibernate.Test.NHSpecificTest.NH0001.Person");
+			var persistentClass = configuration.GetClassMapping("NHibernate.Test.NHSpecificTest.NH4005.Person");
 
 			// Create the component
 			var component = new NHibernate.Mapping.Component(persistentClass);
