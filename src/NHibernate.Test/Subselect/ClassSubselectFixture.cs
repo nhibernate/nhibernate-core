@@ -1,10 +1,16 @@
 using System.Collections;
+using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Subselect
 {
 	public class ClassSubselectFixture: TestCase
 	{
+		class Dummy
+		{
+			public int Id { get; protected set; }
+		}
+
 		protected override IList Mappings
 		{
 			get { return new[] {"Subselect.Beings.hbm.xml"}; }
@@ -13,6 +19,21 @@ namespace NHibernate.Test.Subselect
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
+		}
+
+		[Test]
+		public void EntityMappedAsSubselectIsNonMutable()
+		{
+			//NH-3715
+			var modelMapper = new ModelMapper();
+			modelMapper.Class<Dummy>(c =>
+				{
+					c.Subselect("SELECT 1");
+				});
+
+			var dummyMapping = modelMapper.CompileMappingFor(new [] { typeof(Dummy) });
+
+			Assert.AreEqual(false, dummyMapping.RootClasses[0].mutable);
 		}
 
 		[Test]
