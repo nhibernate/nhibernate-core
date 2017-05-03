@@ -113,7 +113,7 @@ namespace NHibernate.Test.NHSpecificTest.NH4005 {
 			}
 		}
 
-		[Test]
+		[Test, Ignore("Not fixed yet")]
 		public void DynamicComponentConfiguredAtRuntimeWorks()
 		{
 			using (ISession session = OpenSession())
