@@ -422,7 +422,10 @@ namespace NHibernate.Event.Default
 				//the object is transient or detached
 				//the entity is not associated with the session, so
 				//try interceptor and unsaved-value
-				if (ForeignKeys.IsTransient(entityName, entity, AssumedUnsaved, source))
+				var assumed = AssumedUnsaved;
+				if (assumed.HasValue
+					? ForeignKeys.IsTransientFast(entityName, entity, source).GetValueOrDefault(assumed.Value)
+					: ForeignKeys.IsTransientSlow(entityName, entity, source))
 				{
 					if (log.IsDebugEnabled)
 					{
