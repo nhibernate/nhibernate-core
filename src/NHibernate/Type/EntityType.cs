@@ -239,7 +239,7 @@ namespace NHibernate.Type
 				{
 					return target;
 				}
-				if (session.GetContextEntityIdentifier(original) == null && ForeignKeys.IsTransient(associatedEntityName, original, false, session))
+				if (session.GetContextEntityIdentifier(original) == null && ForeignKeys.IsTransientFast(associatedEntityName, original, session).GetValueOrDefault())
 				{
 					object copy = session.Factory.GetEntityPersister(associatedEntityName).Instantiate(null);
 					//TODO: should this be Session.instantiate(Persister, ...)?
