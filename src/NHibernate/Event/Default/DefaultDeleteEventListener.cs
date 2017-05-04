@@ -45,8 +45,8 @@ namespace NHibernate.Event.Default
 				log.Debug("entity was not persistent in delete processing");
 
 				persister = source.GetEntityPersister(@event.EntityName, entity);
-				
-				if (ForeignKeys.IsTransient(persister.EntityName, entity, null, source))
+
+				if (ForeignKeys.IsTransientSlow(persister.EntityName, entity, source))
 				{
 					DeleteTransientEntity(source, entity, @event.CascadeDeleteEnabled, persister, transientEntities);
 					// EARLY EXIT!!!
