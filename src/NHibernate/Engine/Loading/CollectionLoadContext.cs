@@ -318,7 +318,7 @@ namespace NHibernate.Engine.Loading
 				versionComparator = null;
 			}
 
-			CollectionCacheEntry entry = new CollectionCacheEntry(lce.Collection, persister);
+			CollectionCacheEntry entry = CollectionCacheEntry.Create(lce.Collection, persister);
 			CacheKey cacheKey = session.GenerateCacheKey(lce.Key, persister.KeyType, persister.Role);
 			bool put = persister.Cache.Put(cacheKey, persister.CacheEntryStructure.Structure(entry), 
 								session.Timestamp, version, versionComparator,

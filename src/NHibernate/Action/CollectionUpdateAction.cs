@@ -139,7 +139,7 @@ namespace NHibernate.Action
 							// or detached from the session
 							if (Collection.WasInitialized && Session.PersistenceContext.ContainsCollection(Collection))
 							{
-								CollectionCacheEntry entry = new CollectionCacheEntry(Collection, Persister);
+								CollectionCacheEntry entry = CollectionCacheEntry.Create(Collection, Persister);
 								bool put = Persister.Cache.AfterUpdate(ck, entry, null, Lock);
 
 								if (put && Session.Factory.Statistics.IsStatisticsEnabled)
