@@ -2,7 +2,7 @@
 
 namespace NHibernate.Impl
 {
-    public class FutureQueryBatch : FutureBatch<IQuery, IMultiQuery>
+    public partial class FutureQueryBatch : FutureBatch<IQuery, IMultiQuery>
     {
         public FutureQueryBatch(SessionImpl session) : base(session) {}
 

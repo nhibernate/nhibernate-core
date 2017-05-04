@@ -62,7 +62,7 @@ namespace NHibernate.Type
 	/// </para>
 	/// </remarks>
 	[Serializable]
-	public abstract class EnumStringType : AbstractEnumType
+	public abstract partial class EnumStringType : AbstractEnumType
 	{
 		/// <summary>
 		/// Hardcoding of <c>255</c> for the maximum length

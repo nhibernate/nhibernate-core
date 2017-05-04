@@ -28,7 +28,7 @@ namespace NHibernate.Action
 	/// Usually, the operation is a database insert/update/delete,
 	/// together with required second-level cache management.
 	/// </summary>
-	public interface IExecutable
+	public partial interface IExecutable
 	{
 		/// <summary>
 		/// What spaces (tables) are affected by this action?

@@ -26,7 +26,7 @@ namespace NHibernate.Event.Default
 	/// A convenience bas class for listeners responding to save events. 
 	/// </summary>
 	[Serializable]
-	public abstract class AbstractSaveEventListener : AbstractReassociateEventListener
+	public abstract partial class AbstractSaveEventListener : AbstractReassociateEventListener
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(AbstractSaveEventListener));
 

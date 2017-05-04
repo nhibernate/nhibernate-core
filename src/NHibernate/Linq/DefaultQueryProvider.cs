@@ -20,7 +20,7 @@ namespace NHibernate.Linq
 		object ExecuteFutureAsync(Expression expression);
 	}
 
-	public class DefaultQueryProvider : INhQueryProvider
+	public partial class DefaultQueryProvider : INhQueryProvider
 	{
 		private static readonly MethodInfo CreateQueryMethodDefinition = ReflectHelper.GetMethodDefinition((INhQueryProvider p) => p.CreateQuery<object>(null));
 

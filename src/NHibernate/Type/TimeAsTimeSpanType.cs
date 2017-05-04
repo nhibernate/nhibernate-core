@@ -14,7 +14,7 @@ namespace NHibernate.Type
 	/// but mapping against a <see cref="DateTime"/>.
 	/// </summary>
 	[Serializable]
-	public class TimeAsTimeSpanType : PrimitiveType, IVersionType
+	public partial class TimeAsTimeSpanType : PrimitiveType, IVersionType
 	{
 		private static readonly DateTime BaseDateValue = new DateTime(1753, 01, 01);
 

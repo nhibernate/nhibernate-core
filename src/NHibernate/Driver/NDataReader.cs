@@ -18,7 +18,7 @@ namespace NHibernate.Driver
 	/// This is a completely off-line DataReader - the underlying DbDataReader that was used to create
 	/// this has been closed and no connections to the Db exists.
 	/// </remarks>
-	public class NDataReader : DbDataReader
+	public partial class NDataReader : DbDataReader
 	{
 		private NResult[] results;
 
@@ -481,7 +481,7 @@ namespace NHibernate.Driver
 		/// <summary>
 		/// Stores a Result from a DataReader in memory.
 		/// </summary>
-		private class NResult
+		private partial class NResult
 		{
 			// [row][column]
 			private object[][] records;

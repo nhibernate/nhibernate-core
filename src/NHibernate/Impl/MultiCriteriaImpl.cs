@@ -15,7 +15,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Impl
 {
-	public class MultiCriteriaImpl : IMultiCriteria
+	public partial class MultiCriteriaImpl : IMultiCriteria
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(MultiCriteriaImpl));
 		private readonly IList<ICriteria> criteriaQueries = new List<ICriteria>();

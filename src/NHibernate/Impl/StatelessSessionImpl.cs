@@ -24,7 +24,7 @@ using NHibernate.Util;
 namespace NHibernate.Impl
 {
 	[Serializable]
-	public class StatelessSessionImpl : AbstractSessionImpl, IStatelessSession
+	public partial class StatelessSessionImpl : AbstractSessionImpl, IStatelessSession
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(StatelessSessionImpl));
 		[NonSerialized]

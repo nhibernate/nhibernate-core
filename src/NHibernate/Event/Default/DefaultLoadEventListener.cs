@@ -17,7 +17,7 @@ namespace NHibernate.Event.Default
 	/// in response to generated load events.
 	/// </summary>
 	[Serializable]
-	public class DefaultLoadEventListener : AbstractLockUpgradeEventListener, ILoadEventListener
+	public partial class DefaultLoadEventListener : AbstractLockUpgradeEventListener, ILoadEventListener
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultLoadEventListener));
 		public static readonly object RemovedEntityMarker = new object();

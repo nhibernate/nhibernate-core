@@ -36,7 +36,7 @@ namespace NHibernate
 	///		.List();
 	/// </code>
 	/// </remarks>
-	public interface IQueryOver<TRoot> : IQueryOver
+	public partial interface IQueryOver<TRoot> : IQueryOver
 	{
 		/// <summary>
 		/// Get the results of the root type and fill the <see cref="IList&lt;T&gt;"/>

@@ -12,7 +12,7 @@ namespace NHibernate.Engine
 	/// <summary>
 	/// A session action that may be cascaded from parent entity to its children
 	/// </summary>
-	public abstract class CascadingAction
+	public abstract partial class CascadingAction
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(CascadingAction));
 
@@ -143,7 +143,7 @@ namespace NHibernate.Engine
 
 		#endregion
 
-		private class DeleteCascadingAction : CascadingAction
+		private partial class DeleteCascadingAction : CascadingAction
 		{
 			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
 			{
@@ -166,7 +166,7 @@ namespace NHibernate.Engine
 			}
 		}
 
-		private class LockCascadingAction : CascadingAction
+		private partial class LockCascadingAction : CascadingAction
 		{
 			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
 			{
@@ -188,7 +188,7 @@ namespace NHibernate.Engine
 			}
 		}
 
-		private class RefreshCascadingAction : CascadingAction
+		private partial class RefreshCascadingAction : CascadingAction
 		{
 			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
 			{
@@ -209,7 +209,7 @@ namespace NHibernate.Engine
 			}
 		}
 
-		private class EvictCascadingAction : CascadingAction
+		private partial class EvictCascadingAction : CascadingAction
 		{
 			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
 			{
@@ -234,7 +234,7 @@ namespace NHibernate.Engine
 			}
 		}
 
-		private class SaveUpdateCascadingAction : CascadingAction
+		private partial class SaveUpdateCascadingAction : CascadingAction
 		{
 			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
 			{
@@ -260,7 +260,7 @@ namespace NHibernate.Engine
 			}
 		}
 
-		private class MergeCascadingAction : CascadingAction
+		private partial class MergeCascadingAction : CascadingAction
 		{
 			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
 			{
@@ -283,7 +283,7 @@ namespace NHibernate.Engine
 			}
 		}
         
-		private class PersistCascadingAction : CascadingAction
+		private partial class PersistCascadingAction : CascadingAction
 		{
 			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
 			{
@@ -308,7 +308,7 @@ namespace NHibernate.Engine
 			}
 		}
 
-		private class PersistOnFlushCascadingAction : CascadingAction
+		private partial class PersistOnFlushCascadingAction : CascadingAction
 		{
 			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
 			{
@@ -366,7 +366,7 @@ namespace NHibernate.Engine
 			}
 		}
 
-		private class ReplicateCascadingAction : CascadingAction
+		private partial class ReplicateCascadingAction : CascadingAction
 		{
 			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
 			{

@@ -19,7 +19,7 @@ namespace NHibernate.Tool.hbm2ddl
 	/// This Class can be used directly or the command line wrapper NHibernate.Tool.hbm2ddl.exe can be
 	/// used when a dll can not be directly used.
 	/// </remarks>
-	public class SchemaExport
+	public partial class SchemaExport
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (SchemaExport));
 		private bool wasInitialized;

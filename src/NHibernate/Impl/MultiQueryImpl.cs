@@ -17,7 +17,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Impl
 {
-	public class MultiQueryImpl : IMultiQuery
+	public partial class MultiQueryImpl : IMultiQuery
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(MultiQueryImpl));
 

@@ -14,7 +14,7 @@ namespace NHibernate.Action
 	/// Any action relating to insert/update/delete of a collection
 	/// </summary>
 	[Serializable]
-	public abstract class CollectionAction : IExecutable, IComparable<CollectionAction>, IDeserializationCallback
+	public abstract partial class CollectionAction : IExecutable, IComparable<CollectionAction>, IDeserializationCallback
 	{
 		private readonly object key;
 		private object finalKey;

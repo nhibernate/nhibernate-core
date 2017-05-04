@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace NHibernate.Tool.hbm2ddl
 {
 	// Candidate to be exstensions of ISessionFactory and Configuration
-	public static class SchemaMetadataUpdater
+	public static partial class SchemaMetadataUpdater
 	{
 		public static void Update(ISessionFactory sessionFactory)
 		{

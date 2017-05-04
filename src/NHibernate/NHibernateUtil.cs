@@ -18,7 +18,7 @@ namespace NHibernate
 	/// IType instances may be used to bind values to query parameters.
 	/// Also a factory for new Blobs and Clobs.
 	/// </summary>
-	public static class NHibernateUtil
+	public static partial class NHibernateUtil
 	{
 		static private readonly Dictionary<System.Type, IType> clrTypeToNHibernateType = new Dictionary<System.Type, IType>();
 

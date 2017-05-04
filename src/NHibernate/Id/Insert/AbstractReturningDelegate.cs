@@ -11,7 +11,7 @@ namespace NHibernate.Id.Insert
 	/// effect of performing the insert statement.  Thus, there is no need for an
 	/// additional sql statement to determine the generated identifier. 
 	/// </summary>
-	public abstract class AbstractReturningDelegate : IInsertGeneratedIdentifierDelegate
+	public abstract partial class AbstractReturningDelegate : IInsertGeneratedIdentifierDelegate
 	{
 		private readonly IPostInsertIdentityPersister persister;
 

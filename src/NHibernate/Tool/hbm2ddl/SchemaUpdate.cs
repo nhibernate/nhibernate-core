@@ -8,7 +8,7 @@ using NHibernate.AdoNet.Util;
 
 namespace NHibernate.Tool.hbm2ddl
 {
-	public class SchemaUpdate
+	public partial class SchemaUpdate
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (SchemaUpdate));
 		private readonly Configuration configuration;

@@ -6,7 +6,7 @@ using NHibernate.Persister.Entity;
 
 namespace NHibernate.Event
 {
-	public interface IEventSource : ISessionImplementor, ISession
+	public partial interface IEventSource : ISessionImplementor, ISession
 	{
 		/// <summary> Get the ActionQueue for this session</summary>
 		ActionQueue ActionQueue { get;}

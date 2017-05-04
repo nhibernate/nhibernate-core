@@ -10,7 +10,7 @@ namespace NHibernate.Type
 	/// PersistentEnumType
 	/// </summary>
 	[Serializable]
-	public class PersistentEnumType : AbstractEnumType
+	public partial class PersistentEnumType : AbstractEnumType
 	{
 		#region Converters
 

@@ -12,7 +12,7 @@ namespace NHibernate.Event.Default
 	/// Defines the default listener used by Hibernate for handling save-update events. 
 	/// </summary>
 	[Serializable]
-	public class DefaultSaveOrUpdateEventListener : AbstractSaveEventListener, ISaveOrUpdateEventListener
+	public partial class DefaultSaveOrUpdateEventListener : AbstractSaveEventListener, ISaveOrUpdateEventListener
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultSaveOrUpdateEventListener));
 

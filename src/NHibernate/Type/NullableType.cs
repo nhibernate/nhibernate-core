@@ -15,7 +15,7 @@ namespace NHibernate.Type
 	/// the Struct will be written to the column - not <see langword="null" />. 
 	/// </remarks>
 	[Serializable]
-	public abstract class NullableType : AbstractType
+	public abstract partial class NullableType : AbstractType
 	{
 		private static readonly bool IsDebugEnabled;
 

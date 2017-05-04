@@ -38,7 +38,7 @@ namespace NHibernate.Persister.Entity
 	/// <remarks>
 	/// May be considered an immutable view of the mapping object
 	/// </remarks>
-	public abstract class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata, IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer, IPostInsertIdentityPersister, ILockable
+	public abstract partial class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata, IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer, IPostInsertIdentityPersister, ILockable
 	{
 		#region InclusionChecker
 

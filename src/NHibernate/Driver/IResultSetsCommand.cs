@@ -3,7 +3,7 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Driver
 {
-	public interface IResultSetsCommand
+	public partial interface IResultSetsCommand
 	{
 		void Append(ISqlCommand command);
 		bool HasQueries { get; }

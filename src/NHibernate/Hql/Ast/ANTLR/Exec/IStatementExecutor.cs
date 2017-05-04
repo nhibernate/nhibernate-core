@@ -7,7 +7,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 	/// Encapsulates the strategy required to execute various types of update, delete,
 	/// and insert statements issued through HQL. 
 	/// </summary>
-	public interface IStatementExecutor
+	public partial interface IStatementExecutor
 	{
 		SqlString[] SqlStatements { get; }
 

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
-	public abstract class FutureBatch<TQueryApproach, TMultiApproach>
+	public abstract partial class FutureBatch<TQueryApproach, TMultiApproach>
 	{
 		private readonly List<TQueryApproach> queries = new List<TQueryApproach>();
 		private readonly IList<System.Type> resultTypes = new List<System.Type>();

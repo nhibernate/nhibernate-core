@@ -8,7 +8,7 @@ namespace NHibernate.Type
 	/// <include file='IType.cs.xmldoc' 
 	///		path='//members[@type="IType"]/member[@name="T:IType"]/*'
 	/// />
-	public interface IType : ICacheAssembler
+	public partial interface IType : ICacheAssembler
 	{
 		// QUESTION:
 		// How do we implement Serializable interface? Standard .NET pattern or other?

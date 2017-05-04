@@ -14,7 +14,7 @@ namespace NHibernate.Id
 	/// value assigned by the database. The correct row is located using a unique key.
 	/// </summary>
 	/// <remarks>One mapping parameter is required: key (unless a natural-id is defined in the mapping).</remarks>
-	public class SelectGenerator : AbstractPostInsertGenerator, IConfigurable
+	public partial class SelectGenerator : AbstractPostInsertGenerator, IConfigurable
 	{
 		private string uniqueKeyPropertyName;
 
@@ -66,7 +66,7 @@ namespace NHibernate.Id
 		#region Nested type: SelectGeneratorDelegate
 
 		/// <summary> The delegate for the select generation strategy.</summary>
-		public class SelectGeneratorDelegate : AbstractSelectingDelegate
+		public partial class SelectGeneratorDelegate : AbstractSelectingDelegate
 		{
 			private readonly ISessionFactoryImplementor factory;
 			private readonly SqlString idSelectString;

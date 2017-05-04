@@ -11,7 +11,7 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Event.Default
 {
 	[Serializable]
-	public class DefaultInitializeCollectionEventListener : IInitializeCollectionEventListener
+	public partial class DefaultInitializeCollectionEventListener : IInitializeCollectionEventListener
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultInitializeCollectionEventListener));
 

@@ -11,7 +11,7 @@ namespace NHibernate.Event.Default
 	/// entities in response to generated replicate events. 
 	/// </summary>
 	[Serializable]
-	public class DefaultReplicateEventListener : AbstractSaveEventListener, IReplicateEventListener
+	public partial class DefaultReplicateEventListener : AbstractSaveEventListener, IReplicateEventListener
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultReplicateEventListener));
 

@@ -17,7 +17,7 @@ namespace NHibernate.Event.Default
 	/// A convenience base class for listeners whose functionality results in flushing.
 	/// </summary>
 	[Serializable]
-	public abstract class AbstractFlushingEventListener
+	public abstract partial class AbstractFlushingEventListener
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (AbstractFlushingEventListener));
 

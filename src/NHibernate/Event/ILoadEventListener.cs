@@ -3,7 +3,7 @@ namespace NHibernate.Event
 	/// <summary>
 	/// Defines the contract for handling of load events generated from a session. 
 	/// </summary>
-	public interface ILoadEventListener
+	public partial interface ILoadEventListener
 	{
 		/// <summary> 
 		/// Handle the given load event. 

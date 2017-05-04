@@ -14,7 +14,7 @@ namespace NHibernate.Type
 	/// to the database.
 	/// </summary>
 	[Serializable]
-	public class GenericMapType<TKey, TValue> : CollectionType
+	public partial class GenericMapType<TKey, TValue> : CollectionType
 	{
 		/// <summary>
 		/// Initializes a new instance of a <see cref="GenericMapType{TKey, TValue}"/> class for

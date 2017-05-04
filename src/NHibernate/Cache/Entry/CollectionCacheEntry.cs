@@ -6,7 +6,7 @@ using NHibernate.Util;
 namespace NHibernate.Cache.Entry
 {
 	[Serializable]
-	public class CollectionCacheEntry
+	public partial class CollectionCacheEntry
 	{
 		private readonly object state;
 

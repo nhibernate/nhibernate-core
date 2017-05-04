@@ -19,7 +19,7 @@ namespace NHibernate.Driver
 	/// Please check <a href="http://www.sqlite.org/">http://www.sqlite.org/</a> for more information regarding SQLite.
 	/// </p>
 	/// </remarks>
-	public class SQLite20Driver : ReflectionBasedDriver
+	public partial class SQLite20Driver : ReflectionBasedDriver
 	{
 		/// <summary>
 		/// Initializes a new instance of <see cref="SQLite20Driver"/>.

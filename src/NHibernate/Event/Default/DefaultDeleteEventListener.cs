@@ -16,7 +16,7 @@ namespace NHibernate.Event.Default
 	/// from the datastore in response to generated delete events. 
 	/// </summary>
 	[Serializable]
-	public class DefaultDeleteEventListener : IDeleteEventListener
+	public partial class DefaultDeleteEventListener : IDeleteEventListener
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultDeleteEventListener));
 

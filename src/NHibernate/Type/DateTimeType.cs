@@ -18,7 +18,7 @@ namespace NHibernate.Type
 	/// or the <see cref="TicksType"/>
 	/// </remarks>
 	[Serializable]
-	public class DateTimeType : PrimitiveType, IIdentifierType, ILiteralType, IVersionType
+	public partial class DateTimeType : PrimitiveType, IIdentifierType, ILiteralType, IVersionType
 	{
 		private static readonly DateTime BaseDateValue = DateTime.MinValue;
 

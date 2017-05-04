@@ -25,7 +25,7 @@ namespace NHibernate.Dialect
 	///	</item>
 	/// </list>
 	/// </remarks>
-	public class SybaseASE15Dialect : Dialect
+	public partial class SybaseASE15Dialect : Dialect
 	{
 		public SybaseASE15Dialect()
 		{

@@ -6,7 +6,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Engine
 {
-	public static class Collections
+	public static partial class Collections
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(Collections));
 

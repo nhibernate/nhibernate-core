@@ -10,7 +10,7 @@ namespace NHibernate.Type
 	/// <summary>
 	/// Collection of convenience methods relating to operations across arrays of types...
 	/// </summary>
-	public static class TypeHelper
+	public static partial class TypeHelper
 	{
 		public static readonly IType[] EmptyTypeArray = new IType[0];
 

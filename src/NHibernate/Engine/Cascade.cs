@@ -68,7 +68,7 @@ namespace NHibernate.Engine
 	/// Delegate responsible, in conjunction with the various
 	/// <see cref="CascadingAction"/>, for implementing cascade processing. 
 	/// </summary>
-	public sealed class Cascade
+	public sealed partial class Cascade
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(Cascade));
 

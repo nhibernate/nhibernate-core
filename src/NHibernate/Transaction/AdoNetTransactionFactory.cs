@@ -11,7 +11,7 @@ using NHibernate.Impl;
 
 namespace NHibernate.Transaction
 {
-	public class AdoNetTransactionFactory : ITransactionFactory
+	public partial class AdoNetTransactionFactory : ITransactionFactory
 	{
 		private readonly IInternalLogger isolaterLog = LoggerProvider.LoggerFor(typeof(ITransactionFactory));
 

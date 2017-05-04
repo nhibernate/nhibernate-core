@@ -72,7 +72,7 @@ namespace NHibernate.Impl
 	/// <seealso cref="IEntityPersister"/>
 	/// <seealso cref="ICollectionPersister"/>
 	[Serializable]
-	public sealed class SessionFactoryImpl : ISessionFactoryImplementor, IObjectReference
+	public sealed partial class SessionFactoryImpl : ISessionFactoryImplementor, IObjectReference
 	{
 		#region Default entity not found delegate
 

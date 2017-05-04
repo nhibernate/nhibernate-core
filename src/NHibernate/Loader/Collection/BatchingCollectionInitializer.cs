@@ -11,7 +11,7 @@ namespace NHibernate.Loader.Collection
 	/// </summary>
 	/// <seealso cref="BasicCollectionLoader"/>
 	/// <seealso cref="OneToManyLoader"/>
-	public class BatchingCollectionInitializer : ICollectionInitializer
+	public partial class BatchingCollectionInitializer : ICollectionInitializer
 	{
 		private readonly Loader[] loaders;
 		private readonly int[] batchSizes;
