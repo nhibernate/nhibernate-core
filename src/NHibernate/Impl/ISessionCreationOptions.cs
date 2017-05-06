@@ -8,17 +8,17 @@ namespace NHibernate.Impl
 	/// <seealso cref="ISessionBuilder"/>
 	public interface ISessionCreationOptions
 	{
-		// NH note: it is tempting to convert them to properties, but then their names conflict
-		// with ISessionBuilder, which is implemented along this interface.
-		FlushMode GetInitialSessionFlushMode();
+		// NH note: naming "adjusted" for converting Java methods to properties while avoiding conflicts with
+		// ISessionBuilder.
+		FlushMode InitialSessionFlushMode { get; }
 
-		bool ShouldAutoClose();
+		bool ShouldAutoClose { get; }
 
-		DbConnection GetConnection();
+		DbConnection UserSuppliedConnection { get; }
 
-		IInterceptor GetInterceptor();
+		IInterceptor SessionInterceptor { get; }
 
 		// Todo: port PhysicalConnectionHandlingMode
-		ConnectionReleaseMode GetConnectionReleaseMode();
+		ConnectionReleaseMode SessionConnectionReleaseMode { get; }
 	}
 }

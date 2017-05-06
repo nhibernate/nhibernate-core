@@ -1309,20 +1309,18 @@ namespace NHibernate.Impl
 
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			// SessionCreationOptions
-			// NH note: it is tempting to convert them to properties, but then their names conflict
-			// with SessionBuilder interface.
 
-			public virtual FlushMode GetInitialSessionFlushMode() => _flushMode;
+			public virtual FlushMode InitialSessionFlushMode => _flushMode;
 
-			public virtual bool ShouldAutoClose() => _autoClose;
+			public virtual bool ShouldAutoClose => _autoClose;
 
-			public DbConnection GetConnection() => _connection;
+			public DbConnection UserSuppliedConnection => _connection;
 
 			// NH different implementation: Hibernate here ignore EmptyInterceptor.Instance too, resulting
 			// in the "NoInterceptor" being unable to override a session factory interceptor.
-			public virtual IInterceptor GetInterceptor() => _interceptor ?? _sessionFactory.Interceptor;
+			public virtual IInterceptor SessionInterceptor => _interceptor ?? _sessionFactory.Interceptor;
 
-			public virtual ConnectionReleaseMode GetConnectionReleaseMode() => _connectionReleaseMode;
+			public virtual ConnectionReleaseMode SessionConnectionReleaseMode => _connectionReleaseMode;
 
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			// SessionBuilder
@@ -1400,15 +1398,15 @@ namespace NHibernate.Impl
 				return this;
 			}
 
-			public FlushMode GetInitialSessionFlushMode() => FlushMode.Always;
+			public FlushMode InitialSessionFlushMode => FlushMode.Always;
 
-			public bool ShouldAutoClose() => false;
+			public bool ShouldAutoClose => false;
 
-			public DbConnection GetConnection() => _connection;
+			public DbConnection UserSuppliedConnection => _connection;
 
-			public IInterceptor GetInterceptor() => EmptyInterceptor.Instance;
+			public IInterceptor SessionInterceptor => EmptyInterceptor.Instance;
 
-			public ConnectionReleaseMode GetConnectionReleaseMode() => ConnectionReleaseMode.AfterTransaction;
+			public ConnectionReleaseMode SessionConnectionReleaseMode => ConnectionReleaseMode.AfterTransaction;
 		}
 	}
 }

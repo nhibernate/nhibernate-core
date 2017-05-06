@@ -189,22 +189,22 @@ namespace NHibernate.Impl
 				actionQueue = new ActionQueue(this);
 				persistenceContext = new StatefulPersistenceContext(this);
 
-				autoCloseSessionEnabled = options.ShouldAutoClose();
+				autoCloseSessionEnabled = options.ShouldAutoClose;
 
 				listeners = factory.EventListeners;
-				connectionReleaseMode = options.GetConnectionReleaseMode();
+				connectionReleaseMode = options.SessionConnectionReleaseMode;
 
-				if (options is ISharedSessionCreationOptions sharedOptions && sharedOptions.IsTransactionCoordinatorShared())
+				if (options is ISharedSessionCreationOptions sharedOptions && sharedOptions.IsTransactionCoordinatorShared)
 				{
 					// NH specific implementation: need to port Hibernate transaction management.
 					_transactionCoordinatorShared = true;
-					if (options.GetConnection() != null)
+					if (options.UserSuppliedConnection != null)
 						throw new SessionException("Cannot simultaneously share transaction context and specify connection");
-					connectionManager = sharedOptions.GetConnectionManager();
+					connectionManager = sharedOptions.ConnectionManager;
 				}
 				else
 				{
-					connectionManager = new ConnectionManager(this, options.GetConnection(), connectionReleaseMode, Interceptor);
+					connectionManager = new ConnectionManager(this, options.UserSuppliedConnection, connectionReleaseMode, Interceptor);
 				}
 
 				if (factory.Statistics.IsStatisticsEnabled)
@@ -2555,11 +2555,10 @@ namespace NHibernate.Impl
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			// SharedSessionCreationOptions
 
-			// NH note: not converting them to properties for staying in sync with ISessionCreationOptions.
-			public virtual bool IsTransactionCoordinatorShared() => _shareTransactionContext;
+			public virtual bool IsTransactionCoordinatorShared => _shareTransactionContext;
 
 			// NH different implementation: need to port Hibernate transaction management.
-			public ConnectionManager GetConnectionManager() => _shareTransactionContext ? _session.ConnectionManager : null;
+			public ConnectionManager ConnectionManager => _shareTransactionContext ? _session.ConnectionManager : null;
 		}
 	}
 }

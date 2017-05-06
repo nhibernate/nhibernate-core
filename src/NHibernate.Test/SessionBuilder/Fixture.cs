@@ -37,7 +37,7 @@ namespace NHibernate.Test.SessionBuilder
 		private void CanSetAutoClose<T>(T sb) where T : ISessionBuilder<T>
 		{
 			var options = (ISessionCreationOptions)sb;
-			CanSet(sb, sb.AutoClose, options.ShouldAutoClose,
+			CanSet(sb, sb.AutoClose, () => options.ShouldAutoClose,
 				sb is ISharedSessionBuilder ssb ? ssb.AutoClose : default(Func<ISharedSessionBuilder>),
 				// initial values
 				false,
@@ -63,34 +63,34 @@ namespace NHibernate.Test.SessionBuilder
 			try
 			{
 				var options = (ISessionCreationOptions)sb;
-				Assert.IsNull(options.GetConnection(), $"{sbType}: Initial value");
+				Assert.IsNull(options.UserSuppliedConnection, $"{sbType}: Initial value");
 				var fsb = sb.Connection(conn);
-				Assert.AreEqual(conn, options.GetConnection(), $"{sbType}: After call with a connection");
+				Assert.AreEqual(conn, options.UserSuppliedConnection, $"{sbType}: After call with a connection");
 				Assert.AreEqual(sb, fsb, $"{sbType}: Unexpected fluent return after call with a connection");
 
 				if (sb is ISharedSessionBuilder ssb)
 				{
 					var sharedOptions = (ISharedSessionCreationOptions)options;
-					Assert.IsFalse(sharedOptions.IsTransactionCoordinatorShared(), $"{sbType}: Transaction coordinator shared before sharing");
-					Assert.IsNull(sharedOptions.GetConnectionManager(), $"{sbType}: Connection manager shared before sharing");
+					Assert.IsFalse(sharedOptions.IsTransactionCoordinatorShared, $"{sbType}: Transaction coordinator shared before sharing");
+					Assert.IsNull(sharedOptions.ConnectionManager, $"{sbType}: Connection manager shared before sharing");
 
 					var fssb = ssb.Connection();
 					// Sharing connection shares the connection manager, not the connection.
-					Assert.IsNull(options.GetConnection(), $"{sbType}: After call with previous session connection");
-					Assert.IsTrue(sharedOptions.IsTransactionCoordinatorShared(), $"{sbType}: Transaction coordinator not shared after sharing");
-					Assert.IsNotNull(sharedOptions.GetConnectionManager(), $"{sbType}: Connection manager not shared after sharing");
+					Assert.IsNull(options.UserSuppliedConnection, $"{sbType}: After call with previous session connection");
+					Assert.IsTrue(sharedOptions.IsTransactionCoordinatorShared, $"{sbType}: Transaction coordinator not shared after sharing");
+					Assert.IsNotNull(sharedOptions.ConnectionManager, $"{sbType}: Connection manager not shared after sharing");
 					Assert.AreEqual(sb, fssb, $"{sbType}: Unexpected fluent return on shared");
 
 					fsb = sb.Connection(null);
-					Assert.IsNull(options.GetConnection(), $"{sbType}: After call with null");
-					Assert.IsFalse(sharedOptions.IsTransactionCoordinatorShared(), $"{sbType}: Transaction coordinator shared after un-sharing");
-					Assert.IsNull(sharedOptions.GetConnectionManager(), $"{sbType}: Connection manager shared after un-sharing");
+					Assert.IsNull(options.UserSuppliedConnection, $"{sbType}: After call with null");
+					Assert.IsFalse(sharedOptions.IsTransactionCoordinatorShared, $"{sbType}: Transaction coordinator shared after un-sharing");
+					Assert.IsNull(sharedOptions.ConnectionManager, $"{sbType}: Connection manager shared after un-sharing");
 					Assert.AreEqual(sb, fsb, $"{sbType}: Unexpected fluent return after un-sharing");
 				}
 				else
 				{
 					fsb = sb.Connection(null);
-					Assert.IsNull(options.GetConnection(), $"{sbType}: After call with null");
+					Assert.IsNull(options.UserSuppliedConnection, $"{sbType}: After call with null");
 					Assert.AreEqual(sb, fsb, $"{sbType}: Unexpected fluent return after call with null");
 				}
 			}
@@ -109,13 +109,13 @@ namespace NHibernate.Test.SessionBuilder
 			try
 			{
 				var options = (ISessionCreationOptions)sb;
-				Assert.IsNull(options.GetConnection(), $"{sbType}: Initial value");
+				Assert.IsNull(options.UserSuppliedConnection, $"{sbType}: Initial value");
 				var fsb = sb.Connection(conn);
-				Assert.AreEqual(conn, options.GetConnection(), $"{sbType}: After call with a connection");
+				Assert.AreEqual(conn, options.UserSuppliedConnection, $"{sbType}: After call with a connection");
 				Assert.AreEqual(sb, fsb, $"{sbType}: Unexpected fluent return after call with a connection");
 
 				fsb = sb.Connection(null);
-				Assert.IsNull(options.GetConnection(), $"{sbType}: After call with null");
+				Assert.IsNull(options.UserSuppliedConnection, $"{sbType}: After call with null");
 				Assert.AreEqual(sb, fsb, $"{sbType}: Unexpected fluent return after call with null");
 			}
 			finally
@@ -138,7 +138,7 @@ namespace NHibernate.Test.SessionBuilder
 		private void CanSetConnectionReleaseMode<T>(T sb) where T : ISessionBuilder<T>
 		{
 			var options = (ISessionCreationOptions)sb;
-			CanSet(sb, sb.ConnectionReleaseMode, options.GetConnectionReleaseMode,
+			CanSet(sb, sb.ConnectionReleaseMode, () => options.SessionConnectionReleaseMode,
 				sb is ISharedSessionBuilder ssb ? ssb.ConnectionReleaseMode : default(Func<ISharedSessionBuilder>),
 				// initial values
 				sessions.Settings.ConnectionReleaseMode,
@@ -160,7 +160,7 @@ namespace NHibernate.Test.SessionBuilder
 		private void CanSetFlushMode<T>(T sb) where T : ISessionBuilder<T>
 		{
 			var options = (ISessionCreationOptions)sb;
-			CanSet(sb, sb.FlushMode, options.GetInitialSessionFlushMode,
+			CanSet(sb, sb.FlushMode, () => options.InitialSessionFlushMode,
 				sb is ISharedSessionBuilder ssb ? ssb.FlushMode : default(Func<ISharedSessionBuilder>),
 				// initial values
 				sessions.Settings.DefaultFlushMode,
@@ -186,22 +186,22 @@ namespace NHibernate.Test.SessionBuilder
 			var interceptor = new EmptyInterceptor();
 			var options = (ISessionCreationOptions)sb;
 
-			Assert.AreEqual(sessions.Interceptor, options.GetInterceptor(), $"{sbType}: Initial value");
+			Assert.AreEqual(sessions.Interceptor, options.SessionInterceptor, $"{sbType}: Initial value");
 			var fsb = sb.Interceptor(interceptor);
-			Assert.AreEqual(interceptor, options.GetInterceptor(), $"{sbType}: After call with an interceptor");
+			Assert.AreEqual(interceptor, options.SessionInterceptor, $"{sbType}: After call with an interceptor");
 			Assert.AreEqual(sb, fsb, $"{sbType}: Unexpected fluent return after call with an interceptor");
 
 			if (sb is ISharedSessionBuilder ssb)
 			{
 				var fssb = ssb.Interceptor();
-				Assert.AreEqual(EmptyInterceptor.Instance, options.GetInterceptor(), $"{sbType}: After call with shared interceptor");
+				Assert.AreEqual(EmptyInterceptor.Instance, options.SessionInterceptor, $"{sbType}: After call with shared interceptor");
 				Assert.AreEqual(sb, fssb, $"{sbType}: Unexpected fluent return on shared");
 			}
 
 			Assert.Throws<ArgumentNullException>(() => sb.Interceptor(null), $"{sbType}: After call with null");
 
 			fsb = sb.NoInterceptor();
-			Assert.AreEqual(EmptyInterceptor.Instance, options.GetInterceptor(), $"{sbType}: After no call");
+			Assert.AreEqual(EmptyInterceptor.Instance, options.SessionInterceptor, $"{sbType}: After no call");
 			Assert.AreEqual(sb, fsb, $"{sbType}: Unexpected fluent return after no call");
 		}
 

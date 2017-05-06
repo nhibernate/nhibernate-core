@@ -38,7 +38,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				temporaryPersistenceContext = new StatefulPersistenceContext(this);
-				connectionManager = new ConnectionManager(this, options.GetConnection(), ConnectionReleaseMode.AfterTransaction,
+				connectionManager = new ConnectionManager(this, options.UserSuppliedConnection, ConnectionReleaseMode.AfterTransaction,
 					EmptyInterceptor.Instance);
 
 				if (log.IsDebugEnabled)

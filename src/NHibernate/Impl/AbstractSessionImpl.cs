@@ -46,8 +46,8 @@ namespace NHibernate.Impl
 		{
 			_factory = factory;
 			Timestamp = factory.Settings.CacheProvider.NextTimestamp();
-			_flushMode = options.GetInitialSessionFlushMode();
-			Interceptor = options.GetInterceptor() ?? EmptyInterceptor.Instance;
+			_flushMode = options.InitialSessionFlushMode;
+			Interceptor = options.SessionInterceptor ?? EmptyInterceptor.Instance;
 		}
 
 		#region ISessionImplementor Members

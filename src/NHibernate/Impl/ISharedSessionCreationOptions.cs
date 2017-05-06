@@ -9,9 +9,10 @@ namespace NHibernate.Impl
 	/// <seealso cref="ISharedSessionBuilder"/>
 	public interface ISharedSessionCreationOptions : ISessionCreationOptions
 	{
-		// NH note: not converting them to properties for staying in sync with ISessionCreationOptions.
-		bool IsTransactionCoordinatorShared();
+		// NH note: naming "adjusted" for converting Java methods to properties while avoiding conflicts with
+		// ISessionBuilder.
+		bool IsTransactionCoordinatorShared { get; }
 		// NH different implementation: need to port Hibernate transaction management.
-		ConnectionManager GetConnectionManager();
+		ConnectionManager ConnectionManager { get; }
 	}
 }
