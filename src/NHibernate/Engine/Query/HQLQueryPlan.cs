@@ -152,13 +152,26 @@ namespace NHibernate.Engine.Query
 
 		public IEnumerable PerformIterate(QueryParameters queryParameters, IEventSource session)
 		{
-			bool? many;
-			IEnumerable[] results;
-			IEnumerable result;
-
-			DoIterate(queryParameters, session, out many, out results, out result);
-
-			return (many.HasValue && many.Value) ? new JoinedEnumerable(results) : result;
+			if (Log.IsDebugEnabled)
+			{
+				Log.Debug("enumerable: " + _sourceQuery);
+				queryParameters.LogParameters(session.Factory);
+			}
+			if (Translators.Length == 0)
+			{
+				return CollectionHelper.EmptyEnumerable;
+			}
+			if (Translators.Length == 1)
+			{
+				return Translators[0].GetEnumerable(queryParameters, session);
+			}
+			var results = new IEnumerable[Translators.Length];
+			for (int i = 0; i < Translators.Length; i++)
+			{
+				var result = Translators[i].GetEnumerable(queryParameters, session);
+				results[i] = result;
+			}
+			return new JoinedEnumerable(results);
 		}
 
 		public IEnumerable<T> PerformIterate<T>(QueryParameters queryParameters, IEventSource session)
@@ -185,40 +198,7 @@ namespace NHibernate.Engine.Query
             return result;
         }
 
-		void DoIterate(QueryParameters queryParameters, IEventSource session, out bool? isMany, out IEnumerable[] results, out IEnumerable result)
-		{
-			isMany = null;
-			results = null;
-			if (Log.IsDebugEnabled)
-			{
-				Log.Debug("enumerable: " + _sourceQuery);
-				queryParameters.LogParameters(session.Factory);
-			}
-			if (Translators.Length == 0)
-			{
-				result = CollectionHelper.EmptyEnumerable;
-			}
-			else
-			{
-				results = null;
-				bool many = Translators.Length > 1;
-				if (many)
-				{
-					results = new IEnumerable[Translators.Length];
-				}
-
-				result = null;
-				for (int i = 0; i < Translators.Length; i++)
-				{
-					result = Translators[i].GetEnumerable(queryParameters, session);
-					if (many)
-						results[i] = result;
-				}
-				isMany = many;
-			}
-		}
-
-        void FinaliseQueryPlan()
+		void FinaliseQueryPlan()
         {
             BuildSqlStringsAndQuerySpaces();
             BuildMetaData();
