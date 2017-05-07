@@ -10,9 +10,9 @@ namespace NHibernate.Cache.Entry
 	{
 		private readonly object state;
 
-		public static CollectionCacheEntry Create(IPersistentCollection collection, ICollectionPersister persister)
+		public CollectionCacheEntry(IPersistentCollection collection, ICollectionPersister persister)
 		{
-			return new CollectionCacheEntry(collection.Disassemble(persister));
+			state = collection.Disassemble(persister);
 		}
 
 		internal CollectionCacheEntry(object state)
