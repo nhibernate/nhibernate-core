@@ -60,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1714
 				return false;
 
 			// this will join into the parent's transaction
-			using (var session = e.Session.GetChildSession())
+			using (var session = e.Session.SessionWithOptions().Connection().OpenSession())
 			{
 				//should insert log record here
 				session.Save(new LogClass());

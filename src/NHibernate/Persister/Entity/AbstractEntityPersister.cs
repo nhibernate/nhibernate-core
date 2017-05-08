@@ -4160,7 +4160,7 @@ namespace NHibernate.Persister.Entity
 			query.SetOptionalId(id);
 			query.SetOptionalEntityName(this.EntityName);
 			query.SetOptionalObject(entity);
-			query.SetFlushMode(FlushMode.Never);
+			query.SetFlushMode(FlushMode.Manual);
 			query.List();
 		}
 

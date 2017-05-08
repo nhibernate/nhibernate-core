@@ -204,7 +204,7 @@ namespace NHibernate.Test.Legacy
 
 			using (ISession s = OpenSession())
 			{
-				s.FlushMode = FlushMode.Never;
+				s.FlushMode = FlushMode.Manual;
 				using (ITransaction t = s.BeginTransaction())
 				{
 					Foo foo = (Foo) s.Get(typeof(Foo), id);
@@ -4977,21 +4977,27 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void UserProvidedConnection()
 		{
-			IConnectionProvider prov = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties);
-			ISession s = sessions.OpenSession(prov.GetConnection());
-			ITransaction tx = s.BeginTransaction();
-			s.CreateQuery("from foo in class NHibernate.DomainModel.Fo").List();
-			tx.Commit();
+			using (var prov = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties))
+			using (var connection = prov.GetConnection())
+			using (var s = sessions.WithOptions().Connection(connection).OpenSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					s.CreateQuery("from foo in class NHibernate.DomainModel.Fo").List();
+					tx.Commit();
+				}
+				var c = s.Disconnect();
+				Assert.IsNotNull(c);
 
-			var c = s.Disconnect();
-			Assert.IsNotNull(c);
-
-			s.Reconnect(c);
-			tx = s.BeginTransaction();
-			s.CreateQuery("from foo in class NHibernate.DomainModel.Fo").List();
-			tx.Commit();
-			Assert.AreSame(c, s.Close());
-			c.Close();
+				s.Reconnect(c);
+				using (var tx = s.BeginTransaction())
+				{
+					s.CreateQuery("from foo in class NHibernate.DomainModel.Fo").List();
+					tx.Commit();
+				}
+				Assert.AreSame(c, s.Close());
+				c.Close();
+			}
 		}
 
 		[Test]
@@ -5181,7 +5187,7 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 
 			s = OpenSession();
-			s.FlushMode = FlushMode.Never;
+			s.FlushMode = FlushMode.Manual;
 			l =
 				(Location)
 				s.CreateQuery("from l in class Location where l.CountryCode = 'AU' and l.Description='foo bar'").List()[0];

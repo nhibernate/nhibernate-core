@@ -61,7 +61,7 @@ namespace NHibernate.Test.NHSpecificTest
 		public void NullInterceptor()
 		{
 			IInterceptor nullInterceptor = null;
-			Assert.Throws<ArgumentNullException>(() => sessions.OpenSession(nullInterceptor).Close());
+			Assert.Throws<ArgumentNullException>(() => sessions.WithOptions().Interceptor(nullInterceptor).OpenSession().Close());
 		}
 
 		[Test]

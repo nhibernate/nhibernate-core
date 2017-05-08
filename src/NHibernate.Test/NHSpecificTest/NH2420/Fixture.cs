@@ -73,7 +73,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2420
 				using (connection)
 				{
 					connection.Open();
-					using (s = Sfi.OpenSession(connection))
+					using (s = Sfi.WithOptions().Connection(connection).OpenSession())
 					{
 						s.Save(new MyTable { String = "hello!" });
 					}

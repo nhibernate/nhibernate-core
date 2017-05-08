@@ -4294,14 +4294,18 @@ namespace NHibernate.Cfg.MappingSchema {
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("auto")]
         Auto,
-        
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlEnumAttribute("never")]
-        Never,
-        
+        [System.Xml.Serialization.XmlEnumAttribute("manual")]
+        Manual,
+
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("always")]
         Always,
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("never")]
+        Never,
     }
     
     /// <remarks/>

@@ -376,7 +376,7 @@ namespace NHibernate.Test
 
 		protected virtual ISession OpenSession(IInterceptor sessionLocalInterceptor)
 		{
-			_lastOpenedSession = sessions.OpenSession(sessionLocalInterceptor);
+			_lastOpenedSession = sessions.WithOptions().Interceptor(sessionLocalInterceptor).OpenSession();
 			_openedSessions.Add(_lastOpenedSession);
 			return _lastOpenedSession;
 		}

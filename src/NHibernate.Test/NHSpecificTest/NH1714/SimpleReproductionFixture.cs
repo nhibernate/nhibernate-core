@@ -22,7 +22,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1714
                     var entity = new DomainClass();
                     session.Save(entity);
 
-                    using (var otherSession = session.GetChildSession())
+                    using (var otherSession = session.SessionWithOptions().Connection().OpenSession())
                     {
                         otherSession.Save(new DomainClass());
                         otherSession.Flush();
