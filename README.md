@@ -19,7 +19,7 @@ NuGet (<http://nuget.org/List/Packages/NHibernate>).
 
 Alternatively binaries are available from SourceForge at <http://sourceforge.net/projects/nhibernate>.
 
-You are encouraged to review the release notes (releasenotes.txt), particularly when upgrading to a 
+You are encouraged to review the release notes ([releasenotes.txt](releasenotes.txt)), particularly when upgrading to a 
 later version. The release notes will generally document any breaking changes.
 
 Community Forums
