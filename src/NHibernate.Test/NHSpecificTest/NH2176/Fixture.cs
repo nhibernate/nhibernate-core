@@ -1,5 +1,10 @@
 using System;
+using System.Collections;
 using System.Transactions;
+using NHibernate.Cfg;
+using NHibernate.Engine;
+using NHibernate.Engine.Transaction;
+using NHibernate.Transaction;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2176
@@ -7,6 +12,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2176
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override void Configure(Configuration configuration)
+		{
+			configuration.SetProperty(Cfg.Environment.TransactionStrategy, "NHibernate.Test.NHSpecificTest.NH2176.CustomAdoNetTransactionFactory, NHibernate.Test");
+		}
+
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();
@@ -70,6 +80,46 @@ namespace NHibernate.Test.NHSpecificTest.NH2176
 					// causes the test to run without an exception.
 					//System.Threading.Thread.Sleep(1000);
 				}
+			}
+		}
+	}
+
+	// Unfortunately, cannot derive and override NHibernate impl, methods are not virtual.
+	public class CustomAdoNetTransactionFactory : ITransactionFactory
+	{
+		private readonly AdoNetTransactionFactory _adoNetTransactionFactory =
+			new AdoNetTransactionFactory();
+
+		public void Configure(IDictionary props) { }
+
+		public ITransaction CreateTransaction(ISessionImplementor session)
+		{
+			return new AdoTransaction(session);
+		}
+
+		public void EnlistInDistributedTransactionIfNeeded(ISessionImplementor session)
+		{
+			// No enlistment. This disables automatic flushes before ambient transaction
+			// commits. Explicit Flush calls required.
+		}
+
+		public bool IsInDistributedActiveTransaction(ISessionImplementor session)
+		{
+			// Avoid agressive connection release while a transaction is ongoing. Allow
+			// auto-flushes (flushes before queries on dirtied entities).
+			return System.Transactions.Transaction.Current != null;
+		}
+
+		public void ExecuteWorkInIsolation(ISessionImplementor session, IIsolatedWork work,
+			bool transacted)
+		{
+			using (var tx = new TransactionScope(TransactionScopeOption.Suppress))
+			{
+				// instead of duplicating the logic, we suppress the DTC transaction
+				// and create our own transaction instead
+				_adoNetTransactionFactory.ExecuteWorkInIsolation(session, work,
+					transacted);
+				tx.Complete();
 			}
 		}
 	}
