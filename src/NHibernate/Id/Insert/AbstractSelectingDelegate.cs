@@ -28,55 +28,59 @@ namespace NHibernate.Id.Insert
 
 		public object PerformInsert(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder)
 		{
+			DbCommand insert = null;
 			try
 			{
-				// prepare and execute the insert
-				var insert = session.Batcher.PrepareCommand(insertSQL.CommandType, insertSQL.Text, insertSQL.ParameterTypes);
 				try
 				{
+					// prepare and execute the insert
+					insert = session.Batcher.PrepareCommand(insertSQL.CommandType, insertSQL.Text, insertSQL.ParameterTypes);
 					binder.BindValues(insert);
 					session.Batcher.ExecuteNonQuery(insert);
 				}
-				finally
+				catch (DbException sqle)
 				{
-					session.Batcher.CloseCommand(insert, null);
+					throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
+						"could not insert: " + persister.GetInfoString(), insertSQL.Text);
 				}
-			}
-			catch (DbException sqle)
-			{
-				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
-				                                 "could not insert: " + persister.GetInfoString(), insertSQL.Text);
-			}
 
-			SqlString selectSQL = SelectSQL;
-			using (new SessionIdLoggingContext(session.SessionId)) 
-			try
-			{
-				//fetch the generated id in a separate query
-				var idSelect = session.Batcher.PrepareCommand(CommandType.Text, selectSQL, ParametersTypes);
-				try
-				{
-					BindParameters(session, idSelect, binder.Entity);
-					var rs = session.Batcher.ExecuteReader(idSelect);
+				var selectSQL = SelectSQL;
+				using (new SessionIdLoggingContext(session.SessionId))
 					try
 					{
-						return GetResult(session, rs, binder.Entity);
+						//fetch the generated id in a separate query
+						var idSelect = session.Batcher.PrepareCommand(CommandType.Text, selectSQL, ParametersTypes);
+						try
+						{
+							BindParameters(session, idSelect, binder.Entity);
+							var rs = session.Batcher.ExecuteReader(idSelect);
+							try
+							{
+								return GetResult(session, rs, binder.Entity);
+							}
+							finally
+							{
+								session.Batcher.CloseReader(rs);
+							}
+						}
+						finally
+						{
+							session.Batcher.CloseCommand(idSelect, null);
+						}
 					}
-					finally
+					catch (DbException sqle)
 					{
-						session.Batcher.CloseReader(rs);
+						throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
+							"could not retrieve generated id after insert: " + persister.GetInfoString(),
+							insertSQL.Text);
 					}
-				}
-				finally
-				{
-					session.Batcher.CloseCommand(idSelect, null);
-				}
 			}
-			catch (DbException sqle)
+			finally
 			{
-				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
-				                                 "could not retrieve generated id after insert: " + persister.GetInfoString(),
-				                                 insertSQL.Text);
+				// NH-3997: Must release it after identity retrieval, otherwise this may trigger a connection release
+				// before identity retrieval, and then we can no more guarantee identity retrieval.
+				if (insert != null)
+					session.Batcher.CloseCommand(insert, null);
 			}
 		}
 
