@@ -1,7 +1,10 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
+using System.Data.Common;
 using System.Transactions;
 using NHibernate.Cfg;
+using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.Engine.Transaction;
 using NHibernate.Transaction;
@@ -23,12 +26,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2176
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				var steve = new Person {Name = "Steve"};
-				var peter = new Person {Name = "Peter"};
-				var simon = new Person {Name = "Simon"};
-				var paul = new Person {Name = "Paul"};
-				var john = new Person {Name = "John"};
-				var eric = new Person {Name = "Eric"};
+				var steve = new Person { Name = "Steve" };
+				var peter = new Person { Name = "Peter" };
+				var simon = new Person { Name = "Simon" };
+				var paul = new Person { Name = "Paul" };
+				var john = new Person { Name = "John" };
+				var eric = new Person { Name = "Eric" };
 
 				s.Save(steve);
 				s.Save(peter);
@@ -75,8 +78,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2176
 						scope.Complete();
 					}
 
-					// The exeption is caused by a race condition between two threads.
-					// This can be demonstracted by uncommenting the following line which
+					// The exception is caused by a race condition between two threads.
+					// This can be demonstrated by uncommenting the following line which
 					// causes the test to run without an exception.
 					//System.Threading.Thread.Sleep(1000);
 				}
@@ -90,6 +93,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2176
 		private readonly AdoNetTransactionFactory _adoNetTransactionFactory =
 			new AdoNetTransactionFactory();
 
+		private readonly ConcurrentDictionary<DbConnection, System.Transactions.Transaction> _sessionsTransaction =
+			new ConcurrentDictionary<DbConnection, System.Transactions.Transaction>();
+
 		public void Configure(IDictionary props) { }
 
 		public ITransaction CreateTransaction(ISessionImplementor session)
@@ -99,8 +105,44 @@ namespace NHibernate.Test.NHSpecificTest.NH2176
 
 		public void EnlistInDistributedTransactionIfNeeded(ISessionImplementor session)
 		{
-			// No enlistment. This disables automatic flushes before ambient transaction
+			// No session enlistment. This disables automatic flushes before ambient transaction
 			// commits. Explicit Flush calls required.
+			// Still make sure the session connection is enlisted, in case it was acquired before 
+			// transaction scope start.
+			// Will not support nested transaction scope. (Will throw, while current NHibernate
+			// just stay in previous scope.)
+			// Will cause an "earlier than required" connection acquisition.
+			// It is required to enlist with null when the scope is ended, otherwise using
+			// the transaction without a new scope will fail by attempting to use it inside
+			// the completed scope.
+			// If an explicit transaction is ongoing, we must not enlist. We should not enlist
+			// either if the connection was supplied by user (let him handle that in such case),
+			// but there are currently no ways to know this from here.
+			if (!session.ConnectionManager.Transaction.IsActive)
+			{
+				// Enlist is called terribly frequently, and in some circumstances, it will
+				// not support to be called with the same value. So track what was the previous
+				// call and do not call it again if unneeded.
+				// (And Sql/OleDb/Odbc/Oracle manage/PostgreSql/MySql/Firebird/SQLite connections
+				// support multiple calls with the same ongoing transaction, but some others may not.)
+				var current = System.Transactions.Transaction.Current;
+				var connection = session.Connection;
+				System.Transactions.Transaction previous;
+				if (!_sessionsTransaction.TryGetValue(connection, out previous) || previous != current)
+				{
+					_sessionsTransaction.AddOrUpdate(connection, current, (s, t) => current);
+					if (current == null &&
+						// This will need an ad-hoc property on Dialect base class instead.
+						(session.Factory.Dialect is SQLiteDialect || session.Factory.Dialect is MsSqlCeDialect))
+					{
+						// Some connections does not support enlisting with null
+						// Let them with their previous transaction if any, the application
+						// will fail if the connection was left with a completed transaction due to this.
+						return;
+					}
+					session.Connection.EnlistTransaction(System.Transactions.Transaction.Current);
+				}
+			}
 		}
 
 		public bool IsInDistributedActiveTransaction(ISessionImplementor session)
