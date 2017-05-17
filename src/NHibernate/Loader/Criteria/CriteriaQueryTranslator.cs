@@ -45,8 +45,8 @@ namespace NHibernate.Loader.Criteria
 		private readonly ICollection<IParameterSpecification> collectedParameterSpecifications;
 		private readonly ICollection<NamedParameter> namedParameters;
 		private readonly ISet<string> subQuerySpaces = new HashSet<string>();
-
-		
+		private IType[] _cachedProjectedTypes;
+		private string[] _cachedProjectedColumnAliases;
 
 		public CriteriaQueryTranslator(ISessionFactoryImplementor factory, CriteriaImpl criteria, string rootEntityName,
 									   string rootSQLAlias, ICriteriaQuery outerQuery)
@@ -178,12 +178,22 @@ namespace NHibernate.Loader.Criteria
 
 		public IType[] ProjectedTypes
 		{
-			get { return rootCriteria.Projection.GetTypes(rootCriteria, this); }
+			get
+			{
+				if (_cachedProjectedTypes == null)
+					_cachedProjectedTypes = rootCriteria.Projection.GetTypes(rootCriteria, this);
+				return _cachedProjectedTypes;
+			}
 		}
 
 		public string[] ProjectedColumnAliases
 		{
-			get { return rootCriteria.Projection.GetColumnAliases(0, rootCriteria, this); }
+			get
+			{
+				if (_cachedProjectedColumnAliases == null)
+					_cachedProjectedColumnAliases = rootCriteria.Projection.GetColumnAliases(0, rootCriteria, this);
+				return _cachedProjectedColumnAliases;
+			}
 		}
 
 		public string[] ProjectedAliases
