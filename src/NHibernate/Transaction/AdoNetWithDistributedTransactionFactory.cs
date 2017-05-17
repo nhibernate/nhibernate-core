@@ -29,7 +29,9 @@ namespace NHibernate.Transaction
 			
 			if (System.Transactions.Transaction.Current == null)
 				return;
-			
+
+			session.Connection.EnlistTransaction(System.Transactions.Transaction.Current);
+
 			var transactionContext = new DistributedTransactionContext(session,
 																	   System.Transactions.Transaction.Current);
 			session.TransactionContext = transactionContext;
