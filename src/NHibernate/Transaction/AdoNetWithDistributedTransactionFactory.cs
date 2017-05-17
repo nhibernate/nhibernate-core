@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Threading;
 using System.Transactions;
 using NHibernate.Engine;
 using NHibernate.Engine.Transaction;
@@ -9,9 +10,9 @@ namespace NHibernate.Transaction
 {
 	public class AdoNetWithDistributedTransactionFactory : ITransactionFactory
 	{
-		private static readonly IInternalLogger logger = LoggerProvider.LoggerFor(typeof(ITransactionFactory));
+		private static readonly IInternalLogger _logger = LoggerProvider.LoggerFor(typeof(ITransactionFactory));
 
-		private readonly AdoNetTransactionFactory adoNetTransactionFactory = new AdoNetTransactionFactory();
+		private readonly AdoNetTransactionFactory _adoNetTransactionFactory = new AdoNetTransactionFactory();
 
 		public void Configure(IDictionary props)
 		{
@@ -24,8 +25,13 @@ namespace NHibernate.Transaction
 
 		public void EnlistInDistributedTransactionIfNeeded(ISessionImplementor session)
 		{
+			// Ensure the session does not run on a thread supposed to be blocked, waiting
+			// for transaction completion.
+			session.TransactionContext?.WaitOne();
 			if (session.TransactionContext != null)
+			{
 				return;
+			}
 
 			var transaction = System.Transactions.Transaction.Current;
 			if (transaction == null)
@@ -40,12 +46,15 @@ namespace NHibernate.Transaction
 			}
 			var transactionContext = new DistributedTransactionContext(session, transaction);
 			session.TransactionContext = transactionContext;
-			logger.DebugFormat("enlisted into DTC transaction: {0}",
-							   transactionContext.AmbientTransation.IsolationLevel);
+			_logger.DebugFormat(
+				"enlisted into DTC transaction: {0}",
+				transactionContext.AmbientTransation.IsolationLevel);
 			session.AfterTransactionBegin(null);
 
-			transactionContext.AmbientTransation.EnlistVolatile(transactionContext,
-																EnlistmentOptions.EnlistDuringPrepareRequired);
+			transactionContext.AmbientTransation.TransactionCompleted += transactionContext.TransactionCompleted;
+			transactionContext.AmbientTransation.EnlistVolatile(
+				transactionContext,
+				EnlistmentOptions.EnlistDuringPrepareRequired);
 		}
 
 		public bool IsInDistributedActiveTransaction(ISessionImplementor session)
@@ -61,7 +70,7 @@ namespace NHibernate.Transaction
 			{
 				// instead of duplicating the logic, we suppress the DTC transaction and create
 				// our own transaction instead
-				adoNetTransactionFactory.ExecuteWorkInIsolation(session, work, transacted);
+				_adoNetTransactionFactory.ExecuteWorkInIsolation(session, work, transacted);
 				tx.Complete();
 			}
 		}
@@ -70,44 +79,80 @@ namespace NHibernate.Transaction
 		{
 			public System.Transactions.Transaction AmbientTransation { get; set; }
 			public bool ShouldCloseSessionOnDistributedTransactionCompleted { get; set; }
-			private readonly ISessionImplementor sessionImplementor;
+
+			private readonly ISessionImplementor _sessionImplementor;
+			private readonly ManualResetEvent _waitEvent = new ManualResetEvent(true);
+			private readonly AsyncLocal<bool> _bypassWait = new AsyncLocal<bool>();
+
 			public bool IsInActiveTransaction;
 
-			public DistributedTransactionContext(ISessionImplementor sessionImplementor, System.Transactions.Transaction transaction)
+			public DistributedTransactionContext(
+				ISessionImplementor sessionImplementor,
+				System.Transactions.Transaction transaction)
 			{
-				this.sessionImplementor = sessionImplementor;
+				_sessionImplementor = sessionImplementor;
 				AmbientTransation = transaction.Clone();
 				IsInActiveTransaction = true;
+			}
+
+			public void WaitOne()
+			{
+				if (_bypassWait.Value || _isDisposed)
+					return;
+				try
+				{
+					if (!_waitEvent.WaitOne(5000))
+					{
+						// A call occurring after transaction scope disposal should not have to wait long, since
+						// the scope disposal is supposed to block until the transaction has completed: I hope
+						// that it at least ensure IO are done, even if experience shows DTC lets the scope
+						// disposal leave before having finished with volatile ressources and
+						// TransactionCompleted event.
+						_waitEvent.Set();
+						throw new HibernateException(
+							"Synchronization timeout for transaction completion. This is very likely a bug in NHibernate.");
+					}
+				}
+				catch(Exception ex)
+				{
+					_logger.Warn(
+						"Synchronization failure, assuming it has been concurrently disposed and do not need sync anymore.",
+						ex);
+				}
 			}
 
 			#region IEnlistmentNotification Members
 
 			void IEnlistmentNotification.Prepare(PreparingEnlistment preparingEnlistment)
 			{
-				using (new SessionIdLoggingContext(sessionImplementor.SessionId))
+				using (new SessionIdLoggingContext(_sessionImplementor.SessionId))
 				{
 					try
 					{
 						using (var tx = new TransactionScope(AmbientTransation))
 						{
-							sessionImplementor.BeforeTransactionCompletion(null);
-							if (sessionImplementor.FlushMode != FlushMode.Never && sessionImplementor.ConnectionManager.IsConnected)
+							_sessionImplementor.BeforeTransactionCompletion(null);
+							if (_sessionImplementor.FlushMode != FlushMode.Never && _sessionImplementor.ConnectionManager.IsConnected)
 							{
-								using (sessionImplementor.ConnectionManager.FlushingFromDtcTransaction)
+								using (_sessionImplementor.ConnectionManager.FlushingFromDtcTransaction)
 								{
-									logger.Debug(string.Format("[session-id={0}] Flushing from Dtc Transaction", sessionImplementor.SessionId));
-									sessionImplementor.Flush();
+									_logger.DebugFormat("[session-id={0}] Flushing from Dtc Transaction", _sessionImplementor.SessionId);
+									_sessionImplementor.Flush();
 								}
 							}
-							logger.Debug("prepared for DTC transaction");
+							_logger.Debug("prepared for DTC transaction");
 
 							tx.Complete();
 						}
+						// Lock the session to ensure second phase gets done before the session is used by code following
+						// the transaction scope disposal.
+						_waitEvent.Reset();
+
 						preparingEnlistment.Prepared();
 					}
 					catch (Exception exception)
 					{
-						logger.Error("DTC transaction prepare phase failed", exception);
+						_logger.Error("DTC transaction prepare phase failed", exception);
 						preparingEnlistment.ForceRollback(exception);
 					}
 				}
@@ -124,43 +169,106 @@ namespace NHibernate.Transaction
 
 			private void ProcessSecondPhase(Enlistment enlistment, bool? success)
 			{
-				using (new SessionIdLoggingContext(sessionImplementor.SessionId))
+				using (new SessionIdLoggingContext(_sessionImplementor.SessionId))
 				{
-					logger.Debug(success.HasValue
-						? success.Value ? "committing DTC transaction" : "rolled back DTC transaction"
-						: "DTC transaction is in doubt");
+					_logger.Debug(
+						success.HasValue
+							? success.Value
+								? "committing DTC transaction"
+								: "rolled back DTC transaction"
+							: "DTC transaction is in doubt");
 					// we have not much to do here, since it is the actual
 					// DB connection that will commit/rollback the transaction
-					IsInActiveTransaction = false;
-					// In doubt means the transaction may get carried on successfully, but maybe one hour later, the
-					// time for the failing durable ressource to come back online and tell. We won't wait for knowing,
-					// so better be pessimist.
-					var signalSuccess = success ?? false;
-					// May fail by releasing the connection while the connection has its own second phase to do.
-					// Since we can release connection before completing an ambient transaction, maybe it will never
-					// fail, but here we are at the transaction completion stage, which is not documented for
-					// supporting this. See next comment as for why we cannot do that within
-					// TransactionCompletion event.
-					sessionImplementor.AfterTransactionCompletion(signalSuccess, null);
-
-					if (sessionImplementor.TransactionContext.ShouldCloseSessionOnDistributedTransactionCompleted)
+					// Usual cases will raise after transaction actions from TransactionCompleted event.
+					if (!success.HasValue)
 					{
-						sessionImplementor.CloseSessionFromDistributedTransaction();
+						// In-doubt. A durable ressource has failed and may recover, but we won't wait to know.
+						RunAfterTransactionActions(false);
 					}
-					sessionImplementor.TransactionContext = null;
 
-					// Do not signal it is finished before having processed after-transaction actions, otherwise they
-					// may be executed concurrently to next scope, which causes a bunch of issues.
 					enlistment.Done();
 				}
 			}
 
 			#endregion
 
+			public void TransactionCompleted(object sender, TransactionEventArgs e)
+			{
+				e.Transaction.TransactionCompleted -= TransactionCompleted;
+				// This event may execute before second phase, so we cannot try to get the success from second phase.
+				// Using this event is required in case the prepare phase failed and called force rollback: no second
+				// phase would occur for this ressource.
+				var wasSuccessful = false;
+				try
+				{
+					wasSuccessful = e.Transaction.TransactionInformation.Status
+									== TransactionStatus.Committed;
+				}
+				catch (ObjectDisposedException ode)
+				{
+					_logger.Warn("Completed transaction was disposed, assuming transaction rollback", ode);
+				}
+				RunAfterTransactionActions(wasSuccessful);
+			}
+
+			private volatile bool _afterTransactionActionDone;
+
+			private void RunAfterTransactionActions(bool wasSuccessful)
+			{
+				if (_afterTransactionActionDone)
+					// Probably called from In-Doubt and TransactionCompleted.
+					return;
+				// Allow transaction completed actions to run while others stay blocked.
+				_bypassWait.Value = true;
+				try
+				{
+					using (new SessionIdLoggingContext(_sessionImplementor.SessionId))
+					{
+						// Flag active as false before running actions, otherwise the connection manager will refuse
+						// releasing the connection.
+						IsInActiveTransaction = false;
+						_sessionImplementor.AfterTransactionCompletion(wasSuccessful, null);
+						if (ShouldCloseSessionOnDistributedTransactionCompleted)
+						{
+							_sessionImplementor.CloseSessionFromDistributedTransaction();
+						}
+						_sessionImplementor.TransactionContext = null;
+					}
+				}
+				finally
+				{
+					_afterTransactionActionDone = true;
+					// Dispose releases blocked threads by the way.
+					// Must dispose in case !ShouldCloseSessionOnDistributedTransactionCompleted, since
+					// we nullify session TransactionContext, causing it to have nothing still holding it.
+					Dispose();
+				}
+			}
+
+			private volatile bool _isDisposed;
+
 			public void Dispose()
 			{
-				if (AmbientTransation != null)
-					AmbientTransation.Dispose();
+				if (_isDisposed)
+					// Avoid disposing twice (happen when ShouldCloseSessionOnDistributedTransactionCompleted).
+					return;
+				_isDisposed = true;
+				Dispose(true);
+				GC.SuppressFinalize(this);
+			}
+
+			protected virtual void Dispose(bool disposing)
+			{
+				if (disposing)
+				{
+					if (AmbientTransation != null)
+					{
+						AmbientTransation.Dispose();
+						AmbientTransation = null;
+					}
+					_waitEvent.Set();
+					_waitEvent.Dispose();
+				}
 			}
 		}
 	}

@@ -92,11 +92,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2420
 				connection?.Dispose();
 			}
 
-			// Here it appears the second phase of the 2PC is not guaranteed to be executed
-			// before exiting transaction scope disposal... So long for the current pattern,
-			// it looks doomed. Sleeping here allow to keep that test succeeding by letting
-			// enough time for the second phase to disconnect the session.
-			//Thread.Sleep(100);
+			// It appears neither the second phase of the 2PC nor TransactionCompleted 
+			// event are guaranteed to be executed before exiting transaction scope disposal.
+			// When having only 2PC, the second phase tends to occur after reaching that point
+			// here. When having TransactionCompleted event, this event and the second phase
+			// tend to occur before reaching here. But some other NH cases demonstrate that
+			// TransactionCompleted may also occur "too late".
+			((ISessionImplementor) s).TransactionContext?.WaitOne();
 
 			// Prior to the patch, an InvalidOperationException exception would occur in the
 			// TransactionCompleted delegate at this point with the message, "Disconnect cannot
