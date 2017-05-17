@@ -19,6 +19,11 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(DtcFailuresFixture));
 
+		protected override void Configure(Configuration configuration)
+		{
+			configuration.SetProperty(Cfg.Environment.TransactionStrategy, "NHibernate.Test.NHSpecificTest.NH2176.CustomAdoNetTransactionFactory, NHibernate.Test");
+		}
+
 		protected override IList Mappings
 		{
 			get { return new[] {"NHSpecificTest.DtcFailures.Mappings.hbm.xml"}; }
@@ -60,7 +65,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
             prop.notnullSpecified = true;
         }
 
-		[Test]
+		[Test, Ignore("With custom transaction factory, changes not explicitly flushed are ignored, so this test can no more test anything")]
 		public void WillNotCrashOnDtcPrepareFailure()
 		{
 			var tx = new TransactionScope();
@@ -87,8 +92,8 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 		[Test]
 		public void Can_roll_back_transaction()
 		{
-			if (Dialect is FirebirdDialect)
-				Assert.Ignore("Firebird driver does not support distributed transactions");
+			/*if (Dialect is FirebirdDialect)
+				Assert.Ignore("Firebird driver does not support distributed transactions");*/
 
 			var tx = new TransactionScope();
 			using (ISession s = sessions.OpenSession())
@@ -113,8 +118,8 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 		[Description("Another action inside the transaction do the rollBack outside nh-session-scope.")]
 		public void RollbackOutsideNh()
 		{
-			if (Dialect is FirebirdDialect)
-				Assert.Ignore("Firebird driver does not support distributed transactions");
+			/*if (Dialect is FirebirdDialect)
+				Assert.Ignore("Firebird driver does not support distributed transactions");*/
 
 			try
 			{
@@ -143,8 +148,8 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 		[Description("rollback inside nh-session-scope should not commit save and the transaction should be aborted.")]
 		public void TransactionInsertWithRollBackTask()
 		{
-			if (Dialect is FirebirdDialect)
-				Assert.Ignore("Firebird driver does not support distributed transactions");
+			/*if (Dialect is FirebirdDialect)
+				Assert.Ignore("Firebird driver does not support distributed transactions");*/
 
 			try
 			{

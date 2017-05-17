@@ -125,7 +125,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2176
 				// call and do not call it again if unneeded.
 				// (And Sql/OleDb/Odbc/Oracle manage/PostgreSql/MySql/Firebird/SQLite connections
 				// support multiple calls with the same ongoing transaction, but some others may not.)
-				var current = System.Transactions.Transaction.Current;
+				var current = GetCurrentTransaction();
 				var connection = session.Connection;
 				System.Transactions.Transaction previous;
 				if (!_sessionsTransaction.TryGetValue(connection, out previous) || previous != current)
@@ -140,7 +140,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2176
 						// will fail if the connection was left with a completed transaction due to this.
 						return;
 					}
-					session.Connection.EnlistTransaction(System.Transactions.Transaction.Current);
+					session.Connection.EnlistTransaction(current);
 				}
 			}
 		}
@@ -149,7 +149,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2176
 		{
 			// Avoid agressive connection release while a transaction is ongoing. Allow
 			// auto-flushes (flushes before queries on dirtied entities).
-			return System.Transactions.Transaction.Current != null;
+			return GetCurrentTransaction() != null;
 		}
 
 		public void ExecuteWorkInIsolation(ISessionImplementor session, IIsolatedWork work,
@@ -162,6 +162,26 @@ namespace NHibernate.Test.NHSpecificTest.NH2176
 				_adoNetTransactionFactory.ExecuteWorkInIsolation(session, work,
 					transacted);
 				tx.Complete();
+			}
+		}
+
+		private System.Transactions.Transaction GetCurrentTransaction()
+		{
+			try
+			{
+				return System.Transactions.Transaction.Current;
+			}
+			catch (InvalidOperationException)
+			{
+				// This damn thing may yield an invalid operation exception (instead of null
+				// or of a completed transaction) if we are between scope.Complete() and
+				// scope.Dispose(). This happen when having completed the scope then disposing
+				// the session and only after that disposing the scope.
+				// Instead of testing System.Transactions.Transaction.Current here, storing in
+				// connection manager the ambient transaction associated to the connection
+				// (and updating it when enlisting) then checking that stored transaction would
+				// reduce testes on Transaction.Current.
+				return null;
 			}
 		}
 	}
