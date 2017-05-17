@@ -17,7 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2176
 	{
 		protected override void Configure(Configuration configuration)
 		{
-			configuration.SetProperty(Cfg.Environment.TransactionStrategy, "NHibernate.Test.NHSpecificTest.NH2176.CustomAdoNetTransactionFactory, NHibernate.Test");
+			//configuration.SetProperty(Cfg.Environment.TransactionStrategy, "NHibernate.Test.NHSpecificTest.NH2176.CustomAdoNetTransactionFactory, NHibernate.Test");
 		}
 
 		protected override void OnSetUp()

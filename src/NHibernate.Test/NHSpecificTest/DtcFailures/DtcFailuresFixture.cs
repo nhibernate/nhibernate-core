@@ -19,11 +19,6 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(DtcFailuresFixture));
 
-		protected override void Configure(Configuration configuration)
-		{
-			configuration.SetProperty(Cfg.Environment.TransactionStrategy, "NHibernate.Test.NHSpecificTest.NH2176.CustomAdoNetTransactionFactory, NHibernate.Test");
-		}
-
 		protected override IList Mappings
 		{
 			get { return new[] {"NHSpecificTest.DtcFailures.Mappings.hbm.xml"}; }
@@ -65,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
             prop.notnullSpecified = true;
         }
 
-		[Test, Ignore("With custom transaction factory, changes not explicitly flushed are ignored, so this test can no more test anything")]
+		[Test]
 		public void WillNotCrashOnDtcPrepareFailure()
 		{
 			var tx = new TransactionScope();
