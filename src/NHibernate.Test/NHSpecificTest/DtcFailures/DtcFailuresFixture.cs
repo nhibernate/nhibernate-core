@@ -169,7 +169,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 			}
 		}
 
-		[Test, Ignore("Not fixed.")]
+		[Test/*, Ignore("Not fixed.")*/]
 		[Description(@"Two session in two txscope 
 (without an explicit NH transaction and without an explicit flush) 
 and with a rollback in the second dtc and a ForceRollback outside nh-session-scope.")]

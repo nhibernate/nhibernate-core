@@ -26,47 +26,23 @@ namespace NHibernate.Transaction
 		{
 			if (session.TransactionContext != null)
 				return;
-			
-			if (System.Transactions.Transaction.Current == null)
+
+			var transaction = System.Transactions.Transaction.Current;
+			if (transaction == null)
 				return;
-			
-			var transactionContext = new DistributedTransactionContext(session,
-																	   System.Transactions.Transaction.Current);
+
+			if (session.ConnectionManager.RequireExplicitEnlistment)
+			{
+				// Will fail if the connection is already enlisted in another not yet completed transaction.
+				// Probable case: nested transaction scope. Supporting this could be done by releasing the
+				// connection instead of enlisting.
+				session.Connection.EnlistTransaction(transaction);
+			}
+			var transactionContext = new DistributedTransactionContext(session, transaction);
 			session.TransactionContext = transactionContext;
 			logger.DebugFormat("enlisted into DTC transaction: {0}",
 							   transactionContext.AmbientTransation.IsolationLevel);
 			session.AfterTransactionBegin(null);
-
-			TransactionCompletedEventHandler handler = null;
-
-			handler = delegate(object sender, TransactionEventArgs e)
-				{
-					using (new SessionIdLoggingContext(session.SessionId))
-					{
-						((DistributedTransactionContext) session.TransactionContext).IsInActiveTransaction = false;
-
-						bool wasSuccessful = false;
-						try
-						{
-							wasSuccessful = e.Transaction.TransactionInformation.Status
-											== TransactionStatus.Committed;
-						}
-						catch (ObjectDisposedException ode)
-						{
-							logger.Warn("Completed transaction was disposed, assuming transaction rollback", ode);
-						}
-						session.AfterTransactionCompletion(wasSuccessful, null);
-						if (transactionContext.ShouldCloseSessionOnDistributedTransactionCompleted)
-						{
-							session.CloseSessionFromDistributedTransaction();
-						}
-						session.TransactionContext = null;
-					}
-
-					e.Transaction.TransactionCompleted -= handler;
-				};
-
-			transactionContext.AmbientTransation.TransactionCompleted += handler;
 
 			transactionContext.AmbientTransation.EnlistVolatile(transactionContext,
 																EnlistmentOptions.EnlistDuringPrepareRequired);
@@ -138,37 +114,44 @@ namespace NHibernate.Transaction
 			}
 
 			void IEnlistmentNotification.Commit(Enlistment enlistment)
-			{
-				using (new SessionIdLoggingContext(sessionImplementor.SessionId))
-				{
-					logger.Debug("committing DTC transaction");
-					// we have nothing to do here, since it is the actual
-					// DB connection that will commit the transaction
-					enlistment.Done();
-					IsInActiveTransaction = false;
-				}
-			}
+				=> ProcessSecondPhase(enlistment, true);
 
 			void IEnlistmentNotification.Rollback(Enlistment enlistment)
-			{
-				using (new SessionIdLoggingContext(sessionImplementor.SessionId))
-				{
-					logger.Debug("rolled back DTC transaction");
-					// Currently AfterTransactionCompletion is called by the handler for the TransactionCompleted event.
-					//sessionImplementor.AfterTransactionCompletion(false, null);
-					enlistment.Done();
-					IsInActiveTransaction = false;
-				}
-			}
+				=> ProcessSecondPhase(enlistment, false);
 
 			void IEnlistmentNotification.InDoubt(Enlistment enlistment)
+				=> ProcessSecondPhase(enlistment, null);
+
+			private void ProcessSecondPhase(Enlistment enlistment, bool? success)
 			{
 				using (new SessionIdLoggingContext(sessionImplementor.SessionId))
 				{
-					sessionImplementor.AfterTransactionCompletion(false, null);
-					logger.Debug("DTC transaction is in doubt");
-					enlistment.Done();
+					logger.Debug(success.HasValue
+						? success.Value ? "committing DTC transaction" : "rolled back DTC transaction"
+						: "DTC transaction is in doubt");
+					// we have not much to do here, since it is the actual
+					// DB connection that will commit/rollback the transaction
 					IsInActiveTransaction = false;
+					// In doubt means the transaction may get carried on successfully, but maybe one hour later, the
+					// time for the failing durable ressource to come back online and tell. We won't wait for knowing,
+					// so better be pessimist.
+					var signalSuccess = success ?? false;
+					// May fail by releasing the connection while the connection has its own second phase to do.
+					// Since we can release connection before completing an ambient transaction, maybe it will never
+					// fail, but here we are at the transaction completion stage, which is not documented for
+					// supporting this. See next comment as for why we cannot do that within
+					// TransactionCompletion event.
+					sessionImplementor.AfterTransactionCompletion(signalSuccess, null);
+
+					if (sessionImplementor.TransactionContext.ShouldCloseSessionOnDistributedTransactionCompleted)
+					{
+						sessionImplementor.CloseSessionFromDistributedTransaction();
+					}
+					sessionImplementor.TransactionContext = null;
+
+					// Do not signal it is finished before having processed after-transaction actions, otherwise they
+					// may be executed concurrently to next scope, which causes a bunch of issues.
+					enlistment.Done();
 				}
 			}
 

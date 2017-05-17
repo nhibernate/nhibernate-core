@@ -3,7 +3,6 @@ using System.Data;
 using System.Data.Common;
 using System.Runtime.Serialization;
 using System.Security;
-using System.Security.Permissions;
 
 using NHibernate.Engine;
 
@@ -30,6 +29,12 @@ namespace NHibernate.AdoNet
 
 		[NonSerialized]
 		private DbConnection connection;
+		[NonSerialized]
+		private DbConnection _dtcBackupConnection;
+		[NonSerialized]
+		private System.Transactions.Transaction _connectionAmbientTransaction;
+		[NonSerialized]
+		private System.Transactions.Transaction _dtcBackupConnectionAmbientTransaction;
 		// Whether we own the connection, i.e. connect and disconnect automatically.
 		private bool ownConnection;
 
@@ -185,6 +190,7 @@ namespace NHibernate.AdoNet
 				if (ownConnection)
 				{
 					connection = Factory.ConnectionProvider.GetConnection();
+					_connectionAmbientTransaction = System.Transactions.Transaction.Current;
 					if (Factory.Statistics.IsStatisticsEnabled)
 					{
 						Factory.StatisticsImplementor.Connect();
@@ -380,10 +386,29 @@ namespace NHibernate.AdoNet
 			get { return batcher; }
 		}
 
+		/// <summary>
+		/// Tell if according to current ambient transaction, the connection should be explicitly enlisted
+		/// for ensuring it to participate in transaction. Always <see langword="false" /> for supplied
+		/// connection, enlistment is user business in such case.
+		/// </summary>
+		public bool RequireExplicitEnlistment
+			=> ownConnection && connection != null &&
+			_connectionAmbientTransaction != System.Transactions.Transaction.Current;
+
 		public IDisposable FlushingFromDtcTransaction
 		{
 			get
 			{
+				if (ownConnection)
+				{
+					if (Batcher.HasOpenResources)
+						throw new InvalidOperationException("Batcher still has opened ressources at time of Flush from DTC.");
+					// Swap out current connection for avoiding using it concurrently to its own 2PC
+					_dtcBackupConnection = connection;
+					_dtcBackupConnectionAmbientTransaction = _connectionAmbientTransaction;
+					connection = null;
+					_connectionAmbientTransaction = null;
+				}
 				flushingFromDtcTransaction = true;
 				return new StopFlushingFromDtcTransaction(this);
 			}
@@ -401,6 +426,17 @@ namespace NHibernate.AdoNet
 			public void Dispose()
 			{
 				manager.flushingFromDtcTransaction = false;
+
+				if (manager.ownConnection)
+				{
+					// Release the connection potentially acquired for flushing from DTC.
+					manager.DisconnectOwnConnection();
+					// Swap back current connection
+					manager.connection = manager._dtcBackupConnection;
+					manager._connectionAmbientTransaction = manager._dtcBackupConnectionAmbientTransaction;
+					manager._dtcBackupConnection = null;
+					manager._dtcBackupConnectionAmbientTransaction = null;
+				}
 			}
 		}
 

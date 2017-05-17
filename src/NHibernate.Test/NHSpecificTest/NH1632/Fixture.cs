@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 		{
 			configuration
 				.SetProperty(Environment.UseSecondLevelCache, "true")
-				.SetProperty(Environment.CacheProvider, typeof (HashtableCacheProvider).AssemblyQualifiedName);
+				.SetProperty(Environment.CacheProvider, typeof(HashtableCacheProvider).AssemblyQualifiedName);
 		}
 
 		[Test]
@@ -40,9 +40,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 				var generator = sessions.GetIdentifierGenerator(typeof(Person).FullName);
 				Assert.That(generator, Is.InstanceOf<TableHiLoGenerator>());
 
-				using(var session = sessions.OpenSession())
+				using (var session = sessions.OpenSession())
 				{
-					var id = generator.Generate((ISessionImplementor) session, new Person());
+					var id = generator.Generate((ISessionImplementor)session, new Person());
 				}
 
 				// intentionally dispose without committing
@@ -56,7 +56,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 				scalar2 = command.ExecuteScalar();
 			}
 
-			Assert.AreNotEqual(scalar1, scalar2,"HiLo must run with in its own transaction");
+			Assert.AreNotEqual(scalar1, scalar2, "HiLo must run with in its own transaction");
 		}
 
 		[Test]
@@ -84,43 +84,53 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			{
 				using (var s = sessions.OpenSession())
 				{
-					s.Save(new Nums {ID = 29, NumA = 1, NumB = 3});
+					s.Save(new Nums { ID = 29, NumA = 1, NumB = 3 });
 				}
 				tx.Complete();
 			}
+			try
+			{
 
-			using (var tx = new TransactionScope())
+				using (var tx = new TransactionScope())
+				{
+					using (var s = sessions.OpenSession())
+					{
+						var nums = s.Load<Nums>(29);
+						Assert.AreEqual(1, nums.NumA);
+						Assert.AreEqual(3, nums.NumB);
+					}
+					tx.Complete();
+				}
+
+				//closing the connection to ensure we can't really use it.
+				var connection = sessions.ConnectionProvider.GetConnection();
+				sessions.ConnectionProvider.CloseConnection(connection);
+				// The session is supposed to succeed because the second level cache should have the
+				// entity to load, allowing the session to not use the connection at all.
+				// Will fail if transaction manager tries to enlist user supplied connection, due
+				// to the transaction scope below.
+
+				using (var tx = new TransactionScope())
+				{
+					using (var s = sessions.OpenSession(connection))
+					{
+						Nums nums = null;
+						Assert.DoesNotThrow(() => nums = s.Load<Nums>(29), "Failed loading entity from second level cache.");
+						Assert.AreEqual(1, nums.NumA);
+						Assert.AreEqual(3, nums.NumB);
+					}
+					tx.Complete();
+				}
+			}
+			finally
 			{
 				using (var s = sessions.OpenSession())
+				using (var tx = s.BeginTransaction())
 				{
 					var nums = s.Load<Nums>(29);
-					Assert.AreEqual(1, nums.NumA);
-					Assert.AreEqual(3, nums.NumB);
+					s.Delete(nums);
+					tx.Commit();
 				}
-				tx.Complete();
-			}
-
-			//closing the connection to ensure we can't really use it.
-			var connection = sessions.ConnectionProvider.GetConnection();
-			sessions.ConnectionProvider.CloseConnection(connection);
-
-			using (var tx = new TransactionScope())
-			{
-				using (var s = sessions.OpenSession(connection))
-				{
-					var nums = s.Load<Nums>(29);
-					Assert.AreEqual(1, nums.NumA);
-					Assert.AreEqual(3, nums.NumB);
-				}
-				tx.Complete();
-			}
-
-			using (var s = sessions.OpenSession())
-			using (var tx = s.BeginTransaction())
-			{
-				var nums = s.Load<Nums>(29);
-				s.Delete(nums);
-				tx.Commit();
 			}
 		}
 
