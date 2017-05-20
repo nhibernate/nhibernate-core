@@ -74,7 +74,6 @@ namespace NHibernate.AdoNet
 			if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
 			{
 				Factory.Settings.SqlStatementLogger.LogBatchCommand(currentBatchCommandsLog.ToString());
-				currentBatchCommandsLog = new StringBuilder().AppendLine("Batch commands:");
 			}
 
 			int rowsAffected;
@@ -89,14 +88,24 @@ namespace NHibernate.AdoNet
 
 			Expectations.VerifyOutcomeBatched(totalExpectedRowsAffected, rowsAffected);
 
-			currentBatch.Dispose();
-			totalExpectedRowsAffected = 0;
-			currentBatch = CreateConfiguredBatch();
+			ClearCurrentBatch();
 		}
 
 		private MySqlClientSqlCommandSet CreateConfiguredBatch()
 		{
 			return new MySqlClientSqlCommandSet(batchSize);
+		}
+
+		private void ClearCurrentBatch()
+		{
+			currentBatch.Dispose();
+			totalExpectedRowsAffected = 0;
+			currentBatch = CreateConfiguredBatch();
+
+			if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
+			{
+				currentBatchCommandsLog = new StringBuilder().AppendLine("Batch commands:");
+			}
 		}
 
 		public override void CloseCommands()
@@ -105,12 +114,27 @@ namespace NHibernate.AdoNet
 
 			try
 			{
+				ClearCurrentBatch();
+			}
+			catch (Exception e)
+			{
+				// Prevent exceptions when clearing the batch from hiding any original exception
+				// (We do not know here if this batch closing occurs after a failure or not.)
+				Log.Warn("Exception clearing batch", e);
+			}
+		}
+
+		protected override void Dispose(bool isDisposing)
+		{
+			base.Dispose(isDisposing);
+			// Prevent exceptions when closing the batch from hiding any original exception
+			// (We do not know here if this batch closing occurs after a failure or not.)
+			try
+			{
 				currentBatch.Dispose();
 			}
 			catch (Exception e)
 			{
-				// Prevent exceptions when closing the batch from hiding any original exception
-				// (We do not know here if this batch closing occurs after a failure or not.)
 				Log.Warn("Exception closing batcher", e);
 			}
 		}
