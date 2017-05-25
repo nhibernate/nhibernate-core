@@ -276,6 +276,9 @@ and with a rollback in the second dtc and a ForceRollback outside nh-session-sco
 				}
 			}
 
+			// Dodging "latency" due to db still haven't actually committed a distributed tx after scope disposal.
+			Thread.Sleep(100);
+
 			using (var tx = new TransactionScope())
 			{
 				using (ISession s = OpenSession())
@@ -287,6 +290,9 @@ and with a rollback in the second dtc and a ForceRollback outside nh-session-sco
 					tx.Complete();
 				}
 			}
+
+			// Dodging "latency" due to db still haven't actually committed a distributed tx after scope disposal.
+			Thread.Sleep(100);
 		}
 
 		[Test]
