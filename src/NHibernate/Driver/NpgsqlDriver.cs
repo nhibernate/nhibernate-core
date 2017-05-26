@@ -89,6 +89,11 @@ namespace NHibernate.Driver
 
 		public override void AdjustCommand(DbCommand command)
 		{
+			if (DriverVersion?.Major < 3)
+				// Prior to v3, Npgsql was expecting DateTime for time. Nothing to do.
+				// https://github.com/npgsql/npgsql/issues/347
+				return;
+
 			foreach (var parameter in command.Parameters.Cast<DbParameter>().Where(x => x.DbType == DbType.Time))
 			{
 				if (parameter.Value is DateTime dateTimeValue)
