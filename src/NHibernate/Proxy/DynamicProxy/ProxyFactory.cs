@@ -68,29 +68,29 @@ namespace NHibernate.Proxy.DynamicProxy
 		{
 			System.Type[] baseInterfaces = ReferenceEquals(null, interfaces) ? new System.Type[0] : interfaces.Where(t => t != null).ToArray();
 			
-			System.Type proxyType;
+			TypeInfo proxyTypeInfo;
 
 			// Reuse the previous results, if possible, Fast path without locking.
-			if (Cache.TryGetProxyType(baseType, baseInterfaces, out proxyType))
-				return proxyType;
+			if (Cache.TryGetProxyType(baseType, baseInterfaces, out proxyTypeInfo))
+				return proxyTypeInfo;
 
 			lock (Cache)
 			{
 				// Recheck in case we got interrupted.
-				if (!Cache.TryGetProxyType(baseType, baseInterfaces, out proxyType))
+				if (!Cache.TryGetProxyType(baseType, baseInterfaces, out proxyTypeInfo))
 				{
-					proxyType = CreateUncachedProxyType(baseType, baseInterfaces);
+					proxyTypeInfo = CreateUncachedProxyType(baseType, baseInterfaces);
 
 					// Cache the proxy type
-					if (proxyType != null && Cache != null)
-						Cache.StoreProxyType(proxyType, baseType, baseInterfaces);
+					if (proxyTypeInfo != null && Cache != null)
+						Cache.StoreProxyType(proxyTypeInfo, baseType, baseInterfaces);
 				}
 
-				return proxyType;
+				return proxyTypeInfo;
 			}
 		}
 
-		private System.Type CreateUncachedProxyType(System.Type baseType, System.Type[] baseInterfaces)
+		private TypeInfo CreateUncachedProxyType(System.Type baseType, System.Type[] baseInterfaces)
 		{
 			AppDomain currentDomain = AppDomain.CurrentDomain;
 			string typeName = string.Format("{0}Proxy", baseType.Name);
@@ -145,7 +145,7 @@ namespace NHibernate.Proxy.DynamicProxy
 
 			// Make the proxy serializable
 			AddSerializationSupport(baseType, baseInterfaces, typeBuilder, interceptorField, defaultConstructor);
-			System.Type proxyType = typeBuilder.CreateType();
+			TypeInfo proxyType = typeBuilder.CreateTypeInfo();
 
 			ProxyAssemblyBuilder.Save(assemblyBuilder);
 			return proxyType;
