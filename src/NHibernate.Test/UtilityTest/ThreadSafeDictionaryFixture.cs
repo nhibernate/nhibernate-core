@@ -12,7 +12,7 @@ namespace NHibernate.Test.UtilityTest
 	{
 		public ThreadSafeDictionaryFixture()
 		{
-			log4net.Config.XmlConfigurator.Configure();
+			log4net.Config.XmlConfigurator.Configure(LogManager.GetRepository(typeof(ThreadSafeDictionaryFixture).Assembly));
 		}
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(ThreadSafeDictionaryFixture));

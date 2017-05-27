@@ -40,8 +40,8 @@ namespace NHibernate.Test
 		public LogSpy(System.Type loggerType) : this(LogManager.GetLogger(loggerType), false) { }
 		public LogSpy(System.Type loggerType, bool disable) : this(LogManager.GetLogger(loggerType), disable) { }
 
-		public LogSpy(string loggerName) : this(LogManager.GetLogger(loggerName), false) { }
-		public LogSpy(string loggerName, bool disable) : this(LogManager.GetLogger(loggerName), disable) { }
+		public LogSpy(string loggerName) : this(LogManager.GetLogger(typeof(LogSpy).Assembly, loggerName), false) { }
+		public LogSpy(string loggerName, bool disable) : this(LogManager.GetLogger(typeof(LogSpy).Assembly, loggerName), disable) { }
 
 		public MemoryAppender Appender
 		{

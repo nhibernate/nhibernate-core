@@ -83,7 +83,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1093
 		protected override void BuildSessionFactory()
 		{
 			// Without configured cache, should log warn.
-			using (var ls = new LogSpy(LogManager.GetLogger("NHibernate"), Level.Warn))
+			using (var ls = new LogSpy(LogManager.GetLogger(typeof(Fixture).Assembly, "NHibernate"), Level.Warn))
 			{
 				base.BuildSessionFactory();
 				Assert.That(ls.GetWholeLog(), Does.Contain("Fake cache used"));

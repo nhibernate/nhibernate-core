@@ -3,6 +3,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using NHibernate.Util;
 
 namespace NHibernate
@@ -222,16 +223,16 @@ namespace NHibernate
 	public class Log4NetLoggerFactory: ILoggerFactory
 	{
 		private static readonly System.Type LogManagerType = System.Type.GetType("log4net.LogManager, log4net");
-		private static readonly Func<string, object> GetLoggerByNameDelegate;
+		private static readonly Func<Assembly, string, object> GetLoggerByNameDelegate;
 		private static readonly Func<System.Type, object> GetLoggerByTypeDelegate;
 		static Log4NetLoggerFactory()
 		{
-			GetLoggerByNameDelegate = GetGetLoggerMethodCall<string>();
+			GetLoggerByNameDelegate = GetGetLoggerByNameMethodCall();
 			GetLoggerByTypeDelegate = GetGetLoggerMethodCall<System.Type>();
 		}
 		public IInternalLogger LoggerFor(string keyName)
 		{
-			return new Log4NetLogger(GetLoggerByNameDelegate(keyName));
+			return new Log4NetLogger(GetLoggerByNameDelegate(typeof(Log4NetLoggerFactory).Assembly, keyName));
 		}
 
 		public IInternalLogger LoggerFor(System.Type type)
@@ -246,6 +247,15 @@ namespace NHibernate
 			ParameterExpression keyParam = Expression.Parameter(typeof(TParameter), "key");
 			MethodCallExpression methodCall = Expression.Call(null, method, resultValue = keyParam);
 			return Expression.Lambda<Func<TParameter, object>>(methodCall, resultValue).Compile();
+		}
+
+		private static Func<Assembly, string, object> GetGetLoggerByNameMethodCall()
+		{
+			var method = LogManagerType.GetMethod("GetLogger", new[] {typeof(Assembly), typeof(string)});
+			ParameterExpression nameParam = Expression.Parameter(typeof(string), "name");
+			ParameterExpression repositoryAssemblyParam = Expression.Parameter(typeof(Assembly), "repositoryAssembly");
+			MethodCallExpression methodCall = Expression.Call(null, method, repositoryAssemblyParam, nameParam);
+			return Expression.Lambda<Func<Assembly, string, object>>(methodCall, repositoryAssemblyParam, nameParam).Compile();
 		}
 	}
 

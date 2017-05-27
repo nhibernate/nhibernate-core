@@ -13,8 +13,10 @@ using NHibernate.Type;
 using NUnit.Framework;
 using NHibernate.Hql.Ast.ANTLR;
 using System.Collections.Concurrent;
+using System.IO;
 using NUnit.Framework.Interfaces;
 using System.Text;
+using log4net.Util;
 using static NUnit.Framework.TestContext;
 
 namespace NHibernate.Test
@@ -68,7 +70,7 @@ namespace NHibernate.Test
 		static TestCase()
 		{
 			// Configure log4net here since configuration through an attribute doesn't always work.
-			XmlConfigurator.Configure();
+			XmlConfigurator.Configure(LogManager.GetRepository(typeof(TestCase).Assembly));
 		}
 
 		/// <summary>

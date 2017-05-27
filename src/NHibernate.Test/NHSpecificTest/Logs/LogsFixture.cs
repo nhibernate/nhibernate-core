@@ -68,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 					Threshold = Level.All,
 					Writer = new StringWriter(stringBuilder)
 				};
-				loggerImpl = (Logger)LogManager.GetLogger(loggerName).Logger;
+				loggerImpl = (Logger)LogManager.GetLogger(typeof(LogsFixture).Assembly, loggerName).Logger;
 				loggerImpl.AddAppender(appender);
 				loggerImpl.Level = Level.All;
 			}
