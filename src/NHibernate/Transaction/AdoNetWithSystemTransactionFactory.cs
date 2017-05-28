@@ -34,10 +34,36 @@ namespace NHibernate.Transaction
 
 		public void EnlistInSystemTransactionIfNeeded(ISessionImplementor session)
 		{
+			if (!session.ConnectionManager.ShouldAutoJoinTransaction)
+			{
+				return;
+			}
+
+			JoinSystemTransaction(session, System.Transactions.Transaction.Current);
+		}
+
+		/// <inheritdoc />
+		public virtual void ExplicitJoinSystemTransaction(ISessionImplementor session)
+		{
+			if (session == null)
+				throw new ArgumentNullException(nameof(session));
+			var transaction = System.Transactions.Transaction.Current;
+			if (transaction == null)
+				throw new HibernateException("No current system transaction to join.");
+
+			JoinSystemTransaction(session, transaction);
+		}
+
+		/// <summary>
+		/// Enlist the session in the supplied transaction.
+		/// </summary>
+		/// <param name="session">The session to enlist.</param>
+		/// <param name="transaction">The transaction to enlist with. Can be <see langword="null"/>.</param>
+		protected virtual void JoinSystemTransaction(ISessionImplementor session, System.Transactions.Transaction transaction)
+		{
 			// Handle the transaction on the originating session only.
 			var originatingSession = session.ConnectionManager.Session;
 
-			var transaction = System.Transactions.Transaction.Current;
 			if (originatingSession.TransactionContext == null ||
 				// Support connection switch when connection auto-enlistment is not enabled
 				originatingSession.ConnectionManager.ProcessingFromSystemTransaction)
@@ -201,6 +227,8 @@ namespace NHibernate.Transaction
 							{
 								using (_sessionImplementor.ConnectionManager.BeginFlushingFromSystemTransaction(IsDistributed))
 								{
+									// Required when both connection auto-enlistment and session auto-enlistment are disabled.
+									_sessionImplementor.JoinTransaction();
 									_sessionImplementor.BeforeTransactionCompletion(null);
 									foreach (var dependentSession in _sessionImplementor.ConnectionManager.DependentSessions)
 										dependentSession.BeforeTransactionCompletion(null);
@@ -289,6 +317,13 @@ namespace NHibernate.Transaction
 						// releasing the connection.
 						IsInActiveTransaction = false;
 						_sessionImplementor.ConnectionManager.AfterTransaction();
+						// Required for un-enlisting the connection manager when auto-join is false.
+						// For avoiding a failure case with supplied connection potentially already
+						// closed, do not do it is the session is to be disposed: the connection is
+						// going to be closed anyway.
+						if (!ShouldCloseSessionOnSystemTransactionCompleted)
+							_sessionImplementor.ConnectionManager.EnlistIfRequired(null);
+
 						_sessionImplementor.AfterTransactionCompletion(wasSuccessful, null);
 						foreach (var dependentSession in _sessionImplementor.ConnectionManager.DependentSessions)
 							dependentSession.AfterTransactionCompletion(wasSuccessful, null);

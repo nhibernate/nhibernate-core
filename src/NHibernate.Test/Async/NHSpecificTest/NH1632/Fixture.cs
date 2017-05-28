@@ -100,10 +100,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 				//closing the connection to ensure we can't really use it.
 				var connection = await (Sfi.ConnectionProvider.GetConnectionAsync(CancellationToken.None));
 				Sfi.ConnectionProvider.CloseConnection(connection);
+
 				// The session is supposed to succeed because the second level cache should have the
 				// entity to load, allowing the session to not use the connection at all.
-				// Will fail if transaction manager tries to enlist user supplied connection, due
-				// to using a transaction scope below.
+				// Will fail if a transaction manager tries to enlist user supplied connection. Do
+				// not add a transaction scope below.
 				using (var s = Sfi.WithOptions().Connection(connection).OpenSession())
 				{
 					Nums nums = null;

@@ -14,6 +14,8 @@ namespace NHibernate.Impl
 
 		bool ShouldAutoClose { get; }
 
+		bool ShouldAutoJoinTransaction { get; }
+
 		DbConnection UserSuppliedConnection { get; }
 
 		IInterceptor SessionInterceptor { get; }

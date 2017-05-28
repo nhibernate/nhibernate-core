@@ -1,7 +1,4 @@
-using System;
 using System.Collections;
-using System.Data.Common;
-using System.Threading;
 using System.Transactions;
 using NUnit.Framework;
 
@@ -11,28 +8,37 @@ namespace NHibernate.Test.SystemTransactions
 	public class TransactionNotificationFixture : TestCase
 	{
 		protected override IList Mappings
-		{
-			get { return new string[] {}; }
-		}
-
+			=> new string[] { };
 
 		[Test]
 		public void NoTransaction()
 		{
 			var interceptor = new RecordingInterceptor();
-			using (Sfi.WithOptions().Interceptor(interceptor).OpenSession())
+			using (Sfi.WithOptions().Interceptor(interceptor).OpenSession()) { }
+			Assert.AreEqual(0, interceptor.afterTransactionBeginCalled);
+			Assert.AreEqual(0, interceptor.beforeTransactionCompletionCalled);
+			Assert.AreEqual(0, interceptor.afterTransactionCompletionCalled);
+		}
+
+		[Test]
+		public void TransactionDisabled()
+		{
+			var interceptor = new RecordingInterceptor();
+			using (var ts = new TransactionScope())
+			using (Sfi.WithOptions().Interceptor(interceptor).AutoJoinTransaction(false).OpenSession())
 			{
-				Assert.AreEqual(0, interceptor.afterTransactionBeginCalled);
-				Assert.AreEqual(0, interceptor.beforeTransactionCompletionCalled);
-				Assert.AreEqual(0, interceptor.afterTransactionCompletionCalled);
+				ts.Complete();
 			}
+			Assert.AreEqual(0, interceptor.afterTransactionBeginCalled);
+			Assert.AreEqual(0, interceptor.beforeTransactionCompletionCalled);
+			Assert.AreEqual(0, interceptor.afterTransactionCompletionCalled);
 		}
 
 		[Test]
 		public void AfterBegin()
 		{
 			var interceptor = new RecordingInterceptor();
-			using (new TransactionScope()) 
+			using (new TransactionScope())
 			using (Sfi.WithOptions().Interceptor(interceptor).OpenSession())
 			{
 				Assert.AreEqual(1, interceptor.afterTransactionBeginCalled);
@@ -46,7 +52,7 @@ namespace NHibernate.Test.SystemTransactions
 		{
 			var interceptor = new RecordingInterceptor();
 			ISession session;
-			using(var scope = new TransactionScope())
+			using (var scope = new TransactionScope())
 			{
 				session = Sfi.WithOptions().Interceptor(interceptor).OpenSession();
 				scope.Complete();
@@ -54,7 +60,7 @@ namespace NHibernate.Test.SystemTransactions
 			session.Dispose();
 			Assert.AreEqual(1, interceptor.beforeTransactionCompletionCalled);
 			Assert.AreEqual(1, interceptor.afterTransactionCompletionCalled);
-			
+
 		}
 
 		[Test]

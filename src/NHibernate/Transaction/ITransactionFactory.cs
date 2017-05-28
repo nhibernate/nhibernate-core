@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Engine.Transaction;
@@ -26,6 +27,15 @@ namespace NHibernate.Transaction
 		ITransaction CreateTransaction(ISessionImplementor session);
 
 		void EnlistInSystemTransactionIfNeeded(ISessionImplementor session);
+
+		/// <summary>
+		/// Enlist the session in the current system <see cref="System.Transactions.Transaction"/>.
+		/// </summary>
+		/// <param name="session">The session to enlist.</param>
+		/// <exception cref="NotSupportedException">Thrown if the transaction factory does not support system
+		/// transactions.</exception>
+		/// <exception cref="HibernateException">Thrown if there is no current transaction.</exception>
+		void ExplicitJoinSystemTransaction(ISessionImplementor session);
 
 		bool IsInActiveSystemTransaction(ISessionImplementor session);
 

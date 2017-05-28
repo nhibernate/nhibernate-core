@@ -69,7 +69,8 @@ namespace NHibernate.AdoNet
 			ISessionImplementor session,
 			DbConnection suppliedConnection,
 			ConnectionReleaseMode connectionReleaseMode,
-			IInterceptor interceptor)
+			IInterceptor interceptor,
+			bool shouldAutoJoinTransaction)
 		{
 			Session = session;
 			_connection = suppliedConnection;
@@ -79,6 +80,7 @@ namespace NHibernate.AdoNet
 			_batcher = session.Factory.Settings.BatcherFactory.CreateBatcher(this, interceptor);
 
 			_ownConnection = suppliedConnection == null;
+			ShouldAutoJoinTransaction = shouldAutoJoinTransaction;
 		}
 
 		public void AddDependentSession(ISessionImplementor session)
@@ -99,6 +101,8 @@ namespace NHibernate.AdoNet
 
 		public bool IsConnected
 			=> _connection != null || _ownConnection;
+
+		public bool ShouldAutoJoinTransaction { get; }
 
 		public void Reconnect()
 		{
@@ -122,7 +126,7 @@ namespace NHibernate.AdoNet
 			_ownConnection = false;
 
 			// May fail if the supplied connection is enlisted in another transaction, which would be an user
-			// error.
+			// error. (Either disable auto join transaction or supply an enlist-able connection.)
 			if (_currentSystemTransaction != null)
 				_connection.EnlistTransaction(_currentSystemTransaction);
 		}

@@ -8,23 +8,19 @@
 //------------------------------------------------------------------------------
 
 
-using System;
 using System.Collections;
-using System.Data.Common;
-using System.Threading;
 using System.Transactions;
 using NUnit.Framework;
 
 namespace NHibernate.Test.SystemTransactions
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	[TestFixture]
 	public class TransactionNotificationFixtureAsync : TestCase
 	{
 		protected override IList Mappings
-		{
-			get { return new string[] {}; }
-		}
+			=> new string[] { };
 
 		[Test]
 		public async Task TwoTransactionScopesInsideOneSessionAsync()

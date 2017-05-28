@@ -25,6 +25,12 @@ namespace NHibernate.Transaction
 			// nothing need to do here, we only support local transactions with this factory
 		}
 
+		/// <inheritdoc />
+		public virtual void ExplicitJoinSystemTransaction(ISessionImplementor session)
+		{
+			throw new NotSupportedException("The current transaction factory does not support system transactions.");
+		}
+
 		public bool IsInActiveSystemTransaction(ISessionImplementor session)
 		{
 			return false;

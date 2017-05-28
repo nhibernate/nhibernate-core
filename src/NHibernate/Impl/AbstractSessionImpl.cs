@@ -416,6 +416,12 @@ namespace NHibernate.Impl
 			_factory.TransactionFactory.EnlistInSystemTransactionIfNeeded(this);
 		}
 
+		public void JoinTransaction()
+		{
+			CheckAndUpdateSessionStatus();
+			_factory.TransactionFactory.ExplicitJoinSystemTransaction(this);
+		}
+
 		internal IOuterJoinLoadable GetOuterJoinLoadable(string entityName)
 		{
 			using (new SessionIdLoggingContext(SessionId))

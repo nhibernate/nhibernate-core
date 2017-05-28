@@ -41,7 +41,7 @@ namespace NHibernate.Impl
 			{
 				temporaryPersistenceContext = new StatefulPersistenceContext(this);
 				connectionManager = new ConnectionManager(this, options.UserSuppliedConnection, ConnectionReleaseMode.AfterTransaction,
-					EmptyInterceptor.Instance);
+					EmptyInterceptor.Instance, options.ShouldAutoJoinTransaction);
 
 				if (log.IsDebugEnabled)
 				{

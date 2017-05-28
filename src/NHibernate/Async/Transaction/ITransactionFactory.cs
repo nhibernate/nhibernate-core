@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Engine.Transaction;

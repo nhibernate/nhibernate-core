@@ -22,6 +22,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1054
 			throw new NotImplementedException();
 		}
 
+		public void ExplicitJoinSystemTransaction(ISessionImplementor session)
+		{
+			throw new NotImplementedException();
+		}
+
 		public bool IsInActiveSystemTransaction(ISessionImplementor session)
 		{
 			return false;

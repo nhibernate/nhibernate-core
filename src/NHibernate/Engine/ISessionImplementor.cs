@@ -264,20 +264,23 @@ namespace NHibernate.Engine
 
 		IQuery GetNamedQuery(string queryName);
 
-		/// <summary> Determine whether the session is closed.  Provided separately from
-		/// {@link #isOpen()} as this method does not attempt any JTA sync
-		/// registration, where as {@link #isOpen()} does; which makes this one
-		/// nicer to use for most internal purposes. 
+		/// <summary>
+		/// Determine whether the session is closed. Provided separately from
+		/// <c>IsOpen</c> as this method does not attempt any system transaction sync
+		/// registration, whereas <c>IsOpen</c> is allowed to (does not currently, but may do
+		/// in a future version as it is the case in Hibernate); which makes this one
+		/// nicer to use for most internal purposes.
 		/// </summary>
-		/// <returns> True if the session is closed; false otherwise.
+		/// <returns>
+		/// <see langword="true" /> if the session is closed; <see langword="false" /> otherwise.
 		/// </returns>
 		bool IsClosed { get; }
 
 		void Flush();
 
-		/// <summary> 
-		/// Does this <tt>Session</tt> have an active Hibernate transaction
-		/// or is there a JTA transaction in progress?
+		/// <summary>
+		/// Does this <c>ISession</c> have an active NHibernate transaction
+		/// or is there a system transaction in progress in which the session is enlisted?
 		/// </summary>
 		bool TransactionInProgress { get; }
 
@@ -294,6 +297,23 @@ namespace NHibernate.Engine
 		Guid SessionId { get; }
 
 		ITransactionContext TransactionContext { get; set; }
+
+		/// <summary>
+		/// Join the <see cref="System.Transactions.Transaction.Current"/> system transaction.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// Sessions auto-join current transaction by default on their first usage within a scope.
+		/// This can be disabled with <see cref="ISessionBuilder{T}.AutoJoinTransaction(bool)"/> from
+		/// a session builder obtained with <see cref="ISessionFactory.WithOptions()"/>.
+		/// </para>
+		/// <para>
+		/// This method allows to explicitly join the current transaction. It does nothing if it is already
+		/// joined.
+		/// </para>
+		/// </remarks>
+		/// <exception cref="HibernateException">Thrown if there is no current transaction.</exception>
+		void JoinTransaction();
 
 		void CloseSessionFromSystemTransaction();
 

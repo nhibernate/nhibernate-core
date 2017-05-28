@@ -555,7 +555,8 @@ namespace NHibernate.Dialect
 		/// Does this dialect support distributed transaction?
 		/// </summary>
 		/// <remarks>
-		/// As of v2.5, fails rollback-ing changes when distributed: changes are instead persisted in database.
+		/// As of v2.5 and 3.0.2, fails rollback-ing changes when distributed: changes are instead persisted in database.
+		/// (With ADO .Net Provider 5.9.1)
 		/// </remarks>
 		public override bool SupportsDistributedTransactions => false;
 

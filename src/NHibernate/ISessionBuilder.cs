@@ -66,6 +66,16 @@ namespace NHibernate
 		T AutoClose(bool autoClose);
 
 		/// <summary>
+		/// Should the session be automatically enlisted in ambient system transaction?
+		/// Enabled by default. Disabling it does not prevent connections having auto-enlistment
+		/// enabled to get enlisted in current ambient transaction when opened.
+		/// </summary>
+		/// <param name="autoJoinTransaction">Should the session be automatically explicitly
+		/// enlisted in ambient transaction.</param>
+		/// <returns><see langword="this" />, for method chaining.</returns>
+		T AutoJoinTransaction(bool autoJoinTransaction);
+
+		/// <summary>
 		/// Specify the initial FlushMode to use for the opened Session.
 		/// </summary>
 		/// <param name="flushMode">The initial FlushMode to use for the opened Session.</param>

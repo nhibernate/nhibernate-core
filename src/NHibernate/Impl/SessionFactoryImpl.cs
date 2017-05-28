@@ -1291,6 +1291,7 @@ namespace NHibernate.Impl
 			private ConnectionReleaseMode _connectionReleaseMode;
 			private FlushMode _flushMode;
 			private bool _autoClose;
+			private bool _autoJoinTransaction = true;
 
 			public SessionBuilderImpl(SessionFactoryImpl sessionFactory)
 			{
@@ -1314,6 +1315,8 @@ namespace NHibernate.Impl
 			public virtual FlushMode InitialSessionFlushMode => _flushMode;
 
 			public virtual bool ShouldAutoClose => _autoClose;
+
+			public virtual bool ShouldAutoJoinTransaction => _autoJoinTransaction;
 
 			public DbConnection UserSuppliedConnection => _connection;
 
@@ -1372,6 +1375,12 @@ namespace NHibernate.Impl
 				return _this;
 			}
 
+			public virtual T AutoJoinTransaction(bool autoJoinTransaction)
+			{
+				_autoJoinTransaction = autoJoinTransaction;
+				return _this;
+			}
+
 			public virtual T FlushMode(FlushMode flushMode)
 			{
 				_flushMode = flushMode;
@@ -1384,7 +1393,6 @@ namespace NHibernate.Impl
 		internal class StatelessSessionBuilderImpl : IStatelessSessionBuilder, ISessionCreationOptions
 		{
 			private readonly SessionFactoryImpl _sessionFactory;
-			private DbConnection _connection;
 
 			public StatelessSessionBuilderImpl(SessionFactoryImpl sessionFactory)
 			{
@@ -1395,7 +1403,13 @@ namespace NHibernate.Impl
 
 			public IStatelessSessionBuilder Connection(DbConnection connection)
 			{
-				_connection = connection;
+				UserSuppliedConnection = connection;
+				return this;
+			}
+
+			public IStatelessSessionBuilder AutoJoinTransaction(bool autoJoinTransaction)
+			{
+				ShouldAutoJoinTransaction = autoJoinTransaction;
 				return this;
 			}
 
@@ -1403,7 +1417,9 @@ namespace NHibernate.Impl
 
 			public bool ShouldAutoClose => false;
 
-			public DbConnection UserSuppliedConnection => _connection;
+			public bool ShouldAutoJoinTransaction { get; private set; } = true;
+
+			public DbConnection UserSuppliedConnection { get; private set; }
 
 			public IInterceptor SessionInterceptor => EmptyInterceptor.Instance;
 
