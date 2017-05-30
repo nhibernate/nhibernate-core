@@ -102,20 +102,20 @@ namespace NHibernate.Test.NHSpecificTest.NH3050
 		/// <param name="factory"></param>
 		/// <param name="size"></param>
 		/// <returns></returns>
-		private static bool TrySetQueryPlanCacheSize(NHibernate.ISessionFactory factory, int size)
+		private static bool TrySetQueryPlanCacheSize(ISessionFactory factory, int size)
 		{
-			var factoryImpl = factory as NHibernate.Impl.SessionFactoryImpl;
+			var factoryImpl = (factory as DebugSessionFactory)?.ActualFactory as Impl.SessionFactoryImpl;
 			if (factoryImpl != null)
 			{
-				var queryPlanCacheFieldInfo = typeof(NHibernate.Impl.SessionFactoryImpl).GetField("queryPlanCache", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+				var queryPlanCacheFieldInfo = typeof(Impl.SessionFactoryImpl).GetField("queryPlanCache", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
 				if (queryPlanCacheFieldInfo != null)
 				{
-					var queryPlanCache = (NHibernate.Engine.Query.QueryPlanCache)queryPlanCacheFieldInfo.GetValue(factoryImpl);
+					var queryPlanCache = (Engine.Query.QueryPlanCache)queryPlanCacheFieldInfo.GetValue(factoryImpl);
 
-					var planCacheFieldInfo = typeof(NHibernate.Engine.Query.QueryPlanCache).GetField("planCache", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+					var planCacheFieldInfo = typeof(Engine.Query.QueryPlanCache).GetField("planCache", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
 					if (planCacheFieldInfo != null)
 					{
-						var softLimitMRUCache = new NHibernate.Util.SoftLimitMRUCache(size);
+						var softLimitMRUCache = new Util.SoftLimitMRUCache(size);
 
 						planCacheFieldInfo.SetValue(queryPlanCache, softLimitMRUCache);
 						return true;

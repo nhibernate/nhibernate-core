@@ -71,7 +71,7 @@ namespace NHibernate.Test.ExceptionsTest
 		{
 
 			//ISQLExceptionConverter converter = Dialect.BuildSQLExceptionConverter();
-			ISQLExceptionConverter converter = sessions.Settings.SqlExceptionConverter;
+			ISQLExceptionConverter converter = Sfi.Settings.SqlExceptionConverter;
 
 			ISession session = OpenSession();
 			session.BeginTransaction();
@@ -134,7 +134,7 @@ namespace NHibernate.Test.ExceptionsTest
 		public void BadGrammar()
 		{
 			//ISQLExceptionConverter converter = Dialect.BuildSQLExceptionConverter();
-			ISQLExceptionConverter converter = sessions.Settings.SqlExceptionConverter;
+			ISQLExceptionConverter converter = Sfi.Settings.SqlExceptionConverter;
 
 			ISession session = OpenSession();
 			var connection = session.Connection;

@@ -163,7 +163,7 @@ namespace NHibernate.Test.Hql.Ast
 		public void InsertWithGeneratedId()
 		{
 			// Make sure the env supports bulk inserts with generated ids...
-			IEntityPersister persister = sessions.GetEntityPersister(typeof (PettingZoo).FullName);
+			IEntityPersister persister = Sfi.GetEntityPersister(typeof (PettingZoo).FullName);
 			IIdentifierGenerator generator = persister.IdentifierGenerator;
 			if (!HqlSqlWalker.SupportsIdGenWithBulkInsertion(generator))
 			{
@@ -206,7 +206,7 @@ namespace NHibernate.Test.Hql.Ast
 		public void InsertWithGeneratedVersionAndId()
 		{
 			// Make sure the env supports bulk inserts with generated ids...
-			IEntityPersister persister = sessions.GetEntityPersister(typeof (IntegerVersioned).FullName);
+			IEntityPersister persister = Sfi.GetEntityPersister(typeof (IntegerVersioned).FullName);
 			IIdentifierGenerator generator = persister.IdentifierGenerator;
 			if (!HqlSqlWalker.SupportsIdGenWithBulkInsertion(generator))
 			{
@@ -257,7 +257,7 @@ namespace NHibernate.Test.Hql.Ast
 		public void InsertWithGeneratedTimestampVersion()
 		{
 			// Make sure the env supports bulk inserts with generated ids...
-			IEntityPersister persister = sessions.GetEntityPersister(typeof (TimestampVersioned).FullName);
+			IEntityPersister persister = Sfi.GetEntityPersister(typeof (TimestampVersioned).FullName);
 			IIdentifierGenerator generator = persister.IdentifierGenerator;
 			if (!HqlSqlWalker.SupportsIdGenWithBulkInsertion(generator))
 			{

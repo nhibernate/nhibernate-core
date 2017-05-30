@@ -11,11 +11,7 @@ namespace NHibernate.Test.SessionBuilder
 	{
 		protected override string MappingsAssembly => "NHibernate.Test";
 
-		protected override IList Mappings =>
-			new string[]
-			{
-				"SessionBuilder.Mappings.hbm.xml"
-			};
+		protected override IList Mappings => new [] { "SessionBuilder.Mappings.hbm.xml" };
 
 		protected override void Configure(Configuration configuration)
 		{
@@ -26,7 +22,7 @@ namespace NHibernate.Test.SessionBuilder
 		[Test]
 		public void CanSetAutoClose()
 		{
-			var sb = sessions.WithOptions();
+			var sb = Sfi.WithOptions();
 			CanSetAutoClose(sb);
 			using (var s = sb.OpenSession())
 			{
@@ -36,7 +32,7 @@ namespace NHibernate.Test.SessionBuilder
 
 		private void CanSetAutoClose<T>(T sb) where T : ISessionBuilder<T>
 		{
-			var options = (ISessionCreationOptions)sb;
+			var options = DebugSessionFactory.GetCreationOptions(sb);
 			CanSet(sb, sb.AutoClose, () => options.ShouldAutoClose,
 				sb is ISharedSessionBuilder ssb ? ssb.AutoClose : default(Func<ISharedSessionBuilder>),
 				// initial values
@@ -48,7 +44,7 @@ namespace NHibernate.Test.SessionBuilder
 		[Test]
 		public void CanSetConnection()
 		{
-			var sb = sessions.WithOptions();
+			var sb = Sfi.WithOptions();
 			CanSetConnection(sb);
 			using (var s = sb.OpenSession())
 			{
@@ -59,10 +55,10 @@ namespace NHibernate.Test.SessionBuilder
 		private void CanSetConnection<T>(T sb) where T : ISessionBuilder<T>
 		{
 			var sbType = sb.GetType().Name;
-			var conn = sessions.ConnectionProvider.GetConnection();
+			var conn = Sfi.ConnectionProvider.GetConnection();
 			try
 			{
-				var options = (ISessionCreationOptions)sb;
+				var options = DebugSessionFactory.GetCreationOptions(sb);
 				Assert.IsNull(options.UserSuppliedConnection, $"{sbType}: Initial value");
 				var fsb = sb.Connection(conn);
 				Assert.AreEqual(conn, options.UserSuppliedConnection, $"{sbType}: After call with a connection");
@@ -96,19 +92,19 @@ namespace NHibernate.Test.SessionBuilder
 			}
 			finally
 			{
-				sessions.ConnectionProvider.CloseConnection(conn);
+				Sfi.ConnectionProvider.CloseConnection(conn);
 			}
 		}
 
 		[Test]
 		public void CanSetConnectionOnStateless()
 		{
-			var sb = sessions.WithStatelessOptions();
+			var sb = Sfi.WithStatelessOptions();
 			var sbType = sb.GetType().Name;
-			var conn = sessions.ConnectionProvider.GetConnection();
+			var conn = Sfi.ConnectionProvider.GetConnection();
 			try
 			{
-				var options = (ISessionCreationOptions)sb;
+				var options = DebugSessionFactory.GetCreationOptions(sb);
 				Assert.IsNull(options.UserSuppliedConnection, $"{sbType}: Initial value");
 				var fsb = sb.Connection(conn);
 				Assert.AreEqual(conn, options.UserSuppliedConnection, $"{sbType}: After call with a connection");
@@ -120,14 +116,14 @@ namespace NHibernate.Test.SessionBuilder
 			}
 			finally
 			{
-				sessions.ConnectionProvider.CloseConnection(conn);
+				Sfi.ConnectionProvider.CloseConnection(conn);
 			}
 		}
 
 		[Test]
 		public void CanSetConnectionReleaseMode()
 		{
-			var sb = sessions.WithOptions();
+			var sb = Sfi.WithOptions();
 			CanSetConnectionReleaseMode(sb);
 			using (var s = sb.OpenSession())
 			{
@@ -137,11 +133,11 @@ namespace NHibernate.Test.SessionBuilder
 
 		private void CanSetConnectionReleaseMode<T>(T sb) where T : ISessionBuilder<T>
 		{
-			var options = (ISessionCreationOptions)sb;
+			var options = DebugSessionFactory.GetCreationOptions(sb);
 			CanSet(sb, sb.ConnectionReleaseMode, () => options.SessionConnectionReleaseMode,
 				sb is ISharedSessionBuilder ssb ? ssb.ConnectionReleaseMode : default(Func<ISharedSessionBuilder>),
 				// initial values
-				sessions.Settings.ConnectionReleaseMode,
+				Sfi.Settings.ConnectionReleaseMode,
 				// values
 				ConnectionReleaseMode.OnClose, ConnectionReleaseMode.AfterStatement, ConnectionReleaseMode.AfterTransaction);
 		}
@@ -149,7 +145,7 @@ namespace NHibernate.Test.SessionBuilder
 		[Test]
 		public void CanSetFlushMode()
 		{
-			var sb = sessions.WithOptions();
+			var sb = Sfi.WithOptions();
 			CanSetFlushMode(sb);
 			using (var s = sb.OpenSession())
 			{
@@ -159,11 +155,11 @@ namespace NHibernate.Test.SessionBuilder
 
 		private void CanSetFlushMode<T>(T sb) where T : ISessionBuilder<T>
 		{
-			var options = (ISessionCreationOptions)sb;
+			var options = DebugSessionFactory.GetCreationOptions(sb);
 			CanSet(sb, sb.FlushMode, () => options.InitialSessionFlushMode,
 				sb is ISharedSessionBuilder ssb ? ssb.FlushMode : default(Func<ISharedSessionBuilder>),
 				// initial values
-				sessions.Settings.DefaultFlushMode,
+				Sfi.Settings.DefaultFlushMode,
 				// values
 				FlushMode.Always, FlushMode.Auto, FlushMode.Commit, FlushMode.Manual);
 		}
@@ -171,7 +167,7 @@ namespace NHibernate.Test.SessionBuilder
 		[Test]
 		public void CanSetInterceptor()
 		{
-			var sb = sessions.WithOptions();
+			var sb = Sfi.WithOptions();
 			CanSetInterceptor(sb);
 			using (var s = sb.OpenSession())
 			{
@@ -184,9 +180,9 @@ namespace NHibernate.Test.SessionBuilder
 			var sbType = sb.GetType().Name;
 			// Do not use .Instance here, we want another instance.
 			var interceptor = new EmptyInterceptor();
-			var options = (ISessionCreationOptions)sb;
+			var options = DebugSessionFactory.GetCreationOptions(sb);
 
-			Assert.AreEqual(sessions.Interceptor, options.SessionInterceptor, $"{sbType}: Initial value");
+			Assert.AreEqual(Sfi.Interceptor, options.SessionInterceptor, $"{sbType}: Initial value");
 			var fsb = sb.Interceptor(interceptor);
 			Assert.AreEqual(interceptor, options.SessionInterceptor, $"{sbType}: After call with an interceptor");
 			Assert.AreEqual(sb, fsb, $"{sbType}: Unexpected fluent return after call with an interceptor");

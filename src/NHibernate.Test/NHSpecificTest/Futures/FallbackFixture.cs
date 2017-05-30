@@ -47,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 
 		protected override void OnTearDown()
 		{
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			{
 				session.Delete("from Person");
 				session.Flush();
@@ -59,7 +59,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		[Test]
 		public void FutureOfCriteriaFallsBackToListImplementationWhenQueryBatchingIsNotSupported()
 		{
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			{
 				var results = session.CreateCriteria<Person>().Future<Person>();
 				results.GetEnumerator().MoveNext();
@@ -71,7 +71,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		{
 			int personId = CreatePerson();
 
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			{
 				var futurePerson = session.CreateCriteria<Person>()
 					.Add(Restrictions.Eq("Id", personId))
@@ -85,7 +85,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		{
 			CreatePerson();
 
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			{
 				var futureCount = session.CreateCriteria<Person>()
 					.SetProjection(Projections.RowCount())
@@ -97,7 +97,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		[Test]
 		public void FutureOfQueryFallsBackToListImplementationWhenQueryBatchingIsNotSupported()
 		{
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			{
 				var results = session.CreateQuery("from Person").Future<Person>();
 				results.GetEnumerator().MoveNext();
@@ -109,7 +109,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		{
 			int personId = CreatePerson();
 
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			{
 				var futurePerson = session.CreateQuery("from Person where Id = :id")
 					.SetInt32("id", personId)
@@ -123,7 +123,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		{
 			CreatePerson();
 
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			{
 				var futureCount = session.CreateQuery("select count(*) from Person")
 					.FutureValue<long>();
@@ -134,7 +134,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		[Test]
 		public void FutureOfLinqFallsBackToListImplementationWhenQueryBatchingIsNotSupported()
 		{
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			{
 				var results = session.Query<Person>().ToFuture();
 				results.GetEnumerator().MoveNext();
@@ -146,7 +146,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		{
 			var personId = CreatePerson();
 
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			{
 				var futurePerson = session.Query<Person>()
 					.Where(x => x.Id == personId)
@@ -157,7 +157,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 
 		private int CreatePerson()
 		{
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			{
 				var person = new Person();
 				session.Save(person);

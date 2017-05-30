@@ -52,7 +52,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 		public void ShouldHitCacheUsingNamedQueryWithProjection()
 		{
 			FillDb(1);
-			sessions.Statistics.Clear();
+			Sfi.Statistics.Clear();
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
@@ -61,11 +61,11 @@ namespace NHibernate.Test.SecondLevelCacheTests
 				tx.Commit();
 			}
 
-			Assert.That(sessions.Statistics.QueryExecutionCount, Is.EqualTo(1));
-			Assert.That(sessions.Statistics.QueryCachePutCount, Is.EqualTo(1));
-			Assert.That(sessions.Statistics.QueryCacheHitCount, Is.EqualTo(0));
+			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(1));
+			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(1));
+			Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(0));
 
-			sessions.Statistics.Clear();
+			Sfi.Statistics.Clear();
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
@@ -74,10 +74,10 @@ namespace NHibernate.Test.SecondLevelCacheTests
 				tx.Commit();
 			}
 
-			Assert.That(sessions.Statistics.QueryExecutionCount, Is.EqualTo(0));
-			Assert.That(sessions.Statistics.QueryCacheHitCount, Is.EqualTo(1));
+			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(0));
+			Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(1));
 
-			sessions.Statistics.LogSummary();
+			Sfi.Statistics.LogSummary();
 			CleanUp();
 		}
 
@@ -85,7 +85,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 		public void ShouldHitCacheUsingQueryWithProjection()
 		{
 			FillDb(1);
-			sessions.Statistics.Clear();
+			Sfi.Statistics.Clear();
 
 			int resultCount;
 			using (ISession s = OpenSession())
@@ -97,11 +97,11 @@ namespace NHibernate.Test.SecondLevelCacheTests
 				tx.Commit();
 			}
 
-			Assert.That(sessions.Statistics.QueryExecutionCount, Is.EqualTo(1));
-			Assert.That(sessions.Statistics.QueryCachePutCount, Is.EqualTo(1));
-			Assert.That(sessions.Statistics.QueryCacheHitCount, Is.EqualTo(0));
+			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(1));
+			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(1));
+			Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(0));
 
-			sessions.Statistics.Clear();
+			Sfi.Statistics.Clear();
 
 			int secondResultCount;
 			using (ISession s = OpenSession())
@@ -112,26 +112,26 @@ namespace NHibernate.Test.SecondLevelCacheTests
 				tx.Commit();
 			}
 
-			Assert.That(sessions.Statistics.QueryExecutionCount, Is.EqualTo(0));
-			Assert.That(sessions.Statistics.QueryCacheHitCount, Is.EqualTo(1));
+			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(0));
+			Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(1));
 			Assert.That(secondResultCount, Is.EqualTo(resultCount));
 
-			sessions.Statistics.LogSummary();
+			Sfi.Statistics.LogSummary();
 			CleanUp();
 		}
 
 		[Test]
 		public void QueryCacheInvalidation()
 		{
-			sessions.EvictQueries();
-			sessions.Statistics.Clear();
+			Sfi.EvictQueries();
+			Sfi.Statistics.Clear();
 
 			const string queryString = "from Item i where i.Name='widget'";
 
 			object savedId = CreateItem(queryString);
 
-			QueryStatistics qs = sessions.Statistics.GetQueryStatistics(queryString);
-			EntityStatistics es = sessions.Statistics.GetEntityStatistics(typeof(Item).FullName);
+			QueryStatistics qs = Sfi.Statistics.GetQueryStatistics(queryString);
+			EntityStatistics es = Sfi.Statistics.GetEntityStatistics(typeof(Item).FullName);
 
 			Thread.Sleep(200);
 
@@ -211,8 +211,8 @@ namespace NHibernate.Test.SecondLevelCacheTests
 		public void SimpleProjections()
 		{
 			var transformer = new CustomTransformer();
-			sessions.EvictQueries();
-			sessions.Statistics.Clear();
+			Sfi.EvictQueries();
+			Sfi.Statistics.Clear();
 
 			const string queryString = "select i.Name, i.Description from AnotherItem i where i.Name='widget'";
 
@@ -226,8 +226,8 @@ namespace NHibernate.Test.SecondLevelCacheTests
 				tx.Commit();
 			}
 
-			QueryStatistics qs = sessions.Statistics.GetQueryStatistics(queryString);
-			EntityStatistics es = sessions.Statistics.GetEntityStatistics(typeof(AnotherItem).FullName);
+			QueryStatistics qs = Sfi.Statistics.GetQueryStatistics(queryString);
+			EntityStatistics es = Sfi.Statistics.GetEntityStatistics(typeof(AnotherItem).FullName);
 
 			Thread.Sleep(200);
 

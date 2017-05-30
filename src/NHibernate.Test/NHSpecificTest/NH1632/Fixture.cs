@@ -28,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 		{
 			object scalar1, scalar2;
 
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			using (var command = session.Connection.CreateCommand())
 			{
 				command.CommandText = "select next_hi from hibernate_unique_key";
@@ -37,10 +37,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 
 			using (var tx = new TransactionScope())
 			{
-				var generator = sessions.GetIdentifierGenerator(typeof(Person).FullName);
+				var generator = Sfi.GetIdentifierGenerator(typeof(Person).FullName);
 				Assert.That(generator, Is.InstanceOf<TableHiLoGenerator>());
 
-				using(var session = sessions.OpenSession())
+				using(var session = Sfi.OpenSession())
 				{
 					var id = generator.Generate((ISessionImplementor) session, new Person());
 				}
@@ -49,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 				tx.Dispose();
 			}
 
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			using (var command = session.Connection.CreateCommand())
 			{
 				command.CommandText = "select next_hi from hibernate_unique_key";
@@ -66,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 
 			using (var tx = new TransactionScope())
 			{
-				using (s = sessions.OpenSession())
+				using (s = Sfi.OpenSession())
 				{
 
 				}
@@ -82,7 +82,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 		{
 			using (var tx = new TransactionScope())
 			{
-				using (var s = sessions.OpenSession())
+				using (var s = Sfi.OpenSession())
 				{
 					s.Save(new Nums {ID = 29, NumA = 1, NumB = 3});
 				}
@@ -91,7 +91,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 
 			using (var tx = new TransactionScope())
 			{
-				using (var s = sessions.OpenSession())
+				using (var s = Sfi.OpenSession())
 				{
 					var nums = s.Load<Nums>(29);
 					Assert.AreEqual(1, nums.NumA);
@@ -101,12 +101,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			}
 
 			//closing the connection to ensure we can't really use it.
-			var connection = sessions.ConnectionProvider.GetConnection();
-			sessions.ConnectionProvider.CloseConnection(connection);
+			var connection = Sfi.ConnectionProvider.GetConnection();
+			Sfi.ConnectionProvider.CloseConnection(connection);
 
 			using (var tx = new TransactionScope())
 			{
-				using (var s = sessions.WithOptions().Connection(connection).OpenSession())
+				using (var s = Sfi.WithOptions().Connection(connection).OpenSession())
 				{
 					var nums = s.Load<Nums>(29);
 					Assert.AreEqual(1, nums.NumA);
@@ -115,7 +115,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 				tx.Complete();
 			}
 
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
 				var nums = s.Load<Nums>(29);
@@ -130,14 +130,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			object id;
 			using (var tx = new TransactionScope())
 			{
-				using (ISession s = sessions.OpenSession())
+				using (ISession s = Sfi.OpenSession())
 				{
 					id = s.Save(new Nums { NumA = 1, NumB = 2, ID = 5 });
 				}
 				tx.Complete();
 			}
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				Nums nums = s.Get<Nums>(id);
@@ -154,7 +154,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			object id;
 			using (var tx = new TransactionScope())
 			{
-				using (ISession s = sessions.OpenSession())
+				using (ISession s = Sfi.OpenSession())
 				{
 					s.FlushMode = FlushMode.Manual;
 					id = s.Save(new Nums { NumA = 1, NumB = 2, ID = 5 });
@@ -162,7 +162,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 				tx.Complete();
 			}
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				Nums nums = s.Get<Nums>(id);
@@ -180,8 +180,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			object id1, id2;
 			using (var tx = new TransactionScope())
 			{
-				using (ISession s1 = sessions.OpenSession())
-				using (ISession s2 = sessions.OpenSession())
+				using (ISession s1 = Sfi.OpenSession())
+				using (ISession s2 = Sfi.OpenSession())
 				{
 
 					id1 = s1.Save(new Nums { NumA = 1, NumB = 2, ID = 5 });
@@ -194,7 +194,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 				}
 			}
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				Nums nums = s.Get<Nums>(id1);
@@ -218,8 +218,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			object id1, id2;
 			using (var tx = new TransactionScope())
 			{
-				using (ISession s1 = sessions.OpenSession())
-				using (ISession s2 = sessions.OpenSession())
+				using (ISession s1 = Sfi.OpenSession())
+				using (ISession s2 = Sfi.OpenSession())
 				{
 
 					id1 = s1.Save(new Nums { NumA = 1, NumB = 2, ID = 5 });
@@ -230,7 +230,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 				}
 			}
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				Nums nums = s.Get<Nums>(id1);

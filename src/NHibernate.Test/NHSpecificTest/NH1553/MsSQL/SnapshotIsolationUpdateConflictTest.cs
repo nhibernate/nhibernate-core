@@ -66,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 			SavePerson(p1);
 			Assert.That(p1.Version, Is.EqualTo(person.Version + 1));
 
-			var expectedException = sessions.Settings.IsBatchVersionedDataEnabled
+			var expectedException = Sfi.Settings.IsBatchVersionedDataEnabled
 				? (IResolveConstraint) Throws.InstanceOf<StaleStateException>()
 				: Throws.InstanceOf<StaleObjectStateException>()
 				        .And.Property("EntityName").EqualTo(typeof(Person).FullName)
@@ -103,7 +103,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 
 					session2.SaveOrUpdate(p2);
 
-					var expectedException = sessions.Settings.IsBatchVersionedDataEnabled
+					var expectedException = Sfi.Settings.IsBatchVersionedDataEnabled
 						? (IConstraint) Throws.InstanceOf<StaleStateException>()
 						: Throws.InstanceOf<StaleObjectStateException>()
 						        .And.Property("EntityName").EqualTo(typeof(Person).FullName)

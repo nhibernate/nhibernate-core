@@ -45,9 +45,9 @@ namespace NHibernate.Test.TypesTest
 			EntityClass b = new EntityClass(2);
 			EntityClass c = new EntityClass(1);
 
-			Assert.IsTrue(type.IsEqual(a, a, (ISessionFactoryImplementor) sessions));
-			Assert.IsFalse(type.IsEqual(a, b, (ISessionFactoryImplementor) sessions));
-			Assert.IsTrue(type.IsEqual(a, c, (ISessionFactoryImplementor) sessions));
+			Assert.IsTrue(type.IsEqual(a, a, (ISessionFactoryImplementor) Sfi));
+			Assert.IsFalse(type.IsEqual(a, b, (ISessionFactoryImplementor) Sfi));
+			Assert.IsTrue(type.IsEqual(a, c, (ISessionFactoryImplementor) Sfi));
 		}
 	}
 }

@@ -16,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2189
 		{
 			base.OnSetUp();
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				TeamMember tm1 = new TeamMember() { Name = "Joe" };
@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2189
 
 		protected override void OnTearDown()
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				s.Delete("FROM Task");
@@ -57,7 +57,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2189
 		[Test]
 		public void FutureQueryReturnsExistingProxy()
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				Policy policyProxy = s.Load<Policy>(_policy2Id);
@@ -77,7 +77,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2189
 		[Test]
 		public void FutureCriteriaReturnsExistingProxy()
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				Policy policyProxy = s.Load<Policy>(_policy2Id);
@@ -97,7 +97,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2189
 		[Test]
 		public void FutureQueryEagerLoadUsesAlreadyLoadedEntity()
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				Policy policy2 = s.CreateQuery("SELECT p FROM Policy p " +
@@ -125,7 +125,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2189
 		[Test]
 		public void FutureCriteriaEagerLoadUsesAlreadyLoadedEntity()
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				Policy policy2 =

@@ -30,7 +30,7 @@ namespace NHibernate.Test.Ondelete
 		[Test]
 		public void JoinedSubclass()
 		{
-			IStatistics statistics = sessions.Statistics;
+			IStatistics statistics = Sfi.Statistics;
 			statistics.Clear();
 
 			ISession s = OpenSession();

@@ -44,7 +44,7 @@ namespace NHibernate.Test.Criteria
 
 		protected override void OnTearDown()
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				session.Delete("from System.Object");
 				session.Flush();
@@ -54,7 +54,7 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void UsingSqlFunctions_Concat()
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				string result = session.CreateCriteria(typeof(Student))
 					.SetProjection(new SqlFunctionProjection("concat",
@@ -75,7 +75,7 @@ namespace NHibernate.Test.Criteria
 			{
 				Assert.Ignore("Not supported by the active dialect:{0}.", Dialect);
 			}
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				string result = session.CreateCriteria(typeof(Student))
 					.SetProjection(Projections.SqlFunction("concat",
@@ -92,7 +92,7 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void CanUseParametersWithProjections()
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				long result = session.CreateCriteria(typeof(Student))
 					.SetProjection(new AddNumberProjection("id", 15))
@@ -104,7 +104,7 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void UsingConditionals()
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				string result = session.CreateCriteria(typeof(Student))
 					.SetProjection(
@@ -132,7 +132,7 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void UseInWithProjection()
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				IList<Student> list = session.CreateCriteria(typeof(Student))
 					.Add(Expression.In(Projections.Id(), new object[] { 27 }))
@@ -145,7 +145,7 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void UseLikeWithProjection()
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				IList<Student> list = session.CreateCriteria(typeof(Student))
 					.Add(Expression.Like(Projections.Property("Name"), "aye", MatchMode.Start))
@@ -157,7 +157,7 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void UseInsensitiveLikeWithProjection()
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				IList<Student> list = session.CreateCriteria(typeof(Student))
 					.Add(Expression.InsensitiveLike(Projections.Property("Name"), "AYE", MatchMode.Start))
@@ -169,7 +169,7 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void UseIdEqWithProjection()
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				IList<Student> list = session.CreateCriteria(typeof(Student))
 					.Add(Expression.IdEq(Projections.Id()))
@@ -181,7 +181,7 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void UseEqWithProjection()
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				IList<Student> list = session.CreateCriteria(typeof(Student))
 					.Add(Expression.Eq(Projections.Id(), 27L))
@@ -194,7 +194,7 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void UseGtWithProjection()
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				IList<Student> list = session.CreateCriteria(typeof(Student))
 					.Add(Expression.Gt(Projections.Id(), 2L))
@@ -206,7 +206,7 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void UseLtWithProjection()
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				IList<Student> list = session.CreateCriteria(typeof(Student))
 					.Add(Expression.Lt(Projections.Id(), 200L))
@@ -218,7 +218,7 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void UseLeWithProjection()
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				IList<Student> list = session.CreateCriteria(typeof(Student))
 					.Add(Expression.Le(Projections.Id(), 27L))
@@ -230,7 +230,7 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void UseGeWithProjection()
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				IList<Student> list = session.CreateCriteria(typeof(Student))
 					.Add(Expression.Ge(Projections.Id(), 27L))
@@ -242,7 +242,7 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void UseBetweenWithProjection()
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				IList<Student> list = session.CreateCriteria(typeof(Student))
 					.Add(Expression.Between(Projections.Id(), 10L, 28L))
@@ -254,7 +254,7 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void UseIsNullWithProjection()
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				IList<Student> list = session.CreateCriteria(typeof(Student))
 					.Add(Expression.IsNull(Projections.Id()))
@@ -266,7 +266,7 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void UseIsNotNullWithProjection()
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				IList<Student> list = session.CreateCriteria(typeof(Student))
 					.Add(Expression.IsNotNull(Projections.Id()))
@@ -278,7 +278,7 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void UseEqPropertyWithProjection()
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				IList<Student> list = session.CreateCriteria(typeof(Student))
 					.Add(Expression.EqProperty(Projections.Id(), Projections.Id()))
@@ -290,7 +290,7 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void UseGePropertyWithProjection()
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				IList<Student> list = session.CreateCriteria(typeof(Student))
 					.Add(Expression.GeProperty(Projections.Id(), Projections.Id()))
@@ -302,7 +302,7 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void UseGtPropertyWithProjection()
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				IList<Student> list = session.CreateCriteria(typeof(Student))
 					.Add(Expression.GtProperty(Projections.Id(), Projections.Id()))
@@ -314,7 +314,7 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void UseLtPropertyWithProjection()
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				IList<Student> list = session.CreateCriteria(typeof(Student))
 					.Add(Expression.LtProperty(Projections.Id(), Projections.Id()))
@@ -326,7 +326,7 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void UseLePropertyWithProjection()
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				IList<Student> list = session.CreateCriteria(typeof(Student))
 					.Add(Expression.LeProperty(Projections.Id(), Projections.Id()))
@@ -338,7 +338,7 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void UseNotEqPropertyWithProjection()
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				IList<Student> list = session.CreateCriteria(typeof(Student))
 					.Add(Expression.NotEqProperty("id", Projections.Id()))

@@ -61,13 +61,13 @@ namespace NHibernate.Test.NHSpecificTest
 		public void NullInterceptor()
 		{
 			IInterceptor nullInterceptor = null;
-			Assert.Throws<ArgumentNullException>(() => sessions.WithOptions().Interceptor(nullInterceptor).OpenSession().Close());
+			Assert.Throws<ArgumentNullException>(() => Sfi.WithOptions().Interceptor(nullInterceptor).OpenSession().Close());
 		}
 
 		[Test]
 		public void DisconnectShouldNotCloseUserSuppliedConnection()
 		{
-			var conn = sessions.ConnectionProvider.GetConnection();
+			var conn = Sfi.ConnectionProvider.GetConnection();
 			try
 			{
 				using (ISession s = OpenSession())
@@ -80,7 +80,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 			finally
 			{
-				sessions.ConnectionProvider.CloseConnection(conn);
+				Sfi.ConnectionProvider.CloseConnection(conn);
 			}
 		}
 	}

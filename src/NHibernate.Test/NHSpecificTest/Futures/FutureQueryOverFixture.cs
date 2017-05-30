@@ -35,7 +35,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		public void DefaultReadOnlyTest()
 		{
 			//NH-3575
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				s.DefaultReadOnly = true;
 
@@ -48,7 +48,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		[Test]
 		public void CanUseFutureCriteria()
 		{
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
 
@@ -82,7 +82,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		[Test]
 		public void TwoFuturesRunInTwoRoundTrips()
 		{
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
 
@@ -110,7 +110,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		[Test]
 		public void CanCombineSingleFutureValueWithEnumerableFutures()
 		{
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
 

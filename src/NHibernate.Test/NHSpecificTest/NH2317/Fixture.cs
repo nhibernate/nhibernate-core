@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2317
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();
-			using (var session = sessions.OpenStatelessSession())
+			using (var session = Sfi.OpenStatelessSession())
 			using (var tx = session.BeginTransaction())
 			{
 				foreach (var artistName in new[] { "Foo", "Bar", "Baz", "Soz", "Tiz", "Fez" })
@@ -24,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2317
 		[Test]
 		public void QueryShouldWork()
 		{
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			using(session.BeginTransaction())
 			{
 				// The HQL : "select a.id from Artist a where a in (from Artist take 3)"
@@ -40,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2317
 
 		protected override void OnTearDown()
 		{
-			using(var session = sessions.OpenStatelessSession())
+			using(var session = Sfi.OpenStatelessSession())
 			using (var tx = session.BeginTransaction())
 			{
 				session.CreateQuery("delete Artist").ExecuteUpdate();

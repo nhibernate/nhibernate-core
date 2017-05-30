@@ -25,10 +25,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3771
 		[Description("Should be two batchs with two sentences each.")]
 		public void InsertAndUpdateWithBatch()
 		{
-			sessions.Statistics.Clear();
+			Sfi.Statistics.Clear();
 
 			using (var sqlLog = new SqlLogSpy())
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				Singer vs1 = new Singer();
@@ -71,7 +71,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3771
 				Assert.AreEqual(2, batchs);
 				Assert.AreEqual(0, sqls);
 				Assert.AreEqual(4, batchCommands);
-				Assert.AreEqual(2, sessions.Statistics.PrepareStatementCount);
+				Assert.AreEqual(2, Sfi.Statistics.PrepareStatementCount);
 
 				tx.Rollback();
 			}

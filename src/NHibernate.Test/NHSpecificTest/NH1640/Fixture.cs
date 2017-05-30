@@ -19,7 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1640
 				}
 			}
 
-			using (IStatelessSession session = sessions.OpenStatelessSession())
+			using (IStatelessSession session = Sfi.OpenStatelessSession())
 			{
 				var parent =
 					session.CreateQuery("from Entity p join fetch p.Child where p.Id=:pId").SetInt32("pId", savedId).UniqueResult

@@ -22,14 +22,19 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			get { return new string[] { "SecondLevelCacheTest.Item.hbm.xml" }; }
 		}
 
+		protected override void Configure(Configuration configuration)
+		{
+			base.Configure(configuration);
+			configuration.Properties[Environment.CacheProvider] = typeof(HashtableCacheProvider).AssemblyQualifiedName;
+			configuration.Properties[Environment.UseQueryCache] = "true";
+		}
+
 		protected override void OnSetUp()
 		{
-			cfg.Properties[Environment.CacheProvider] = typeof(HashtableCacheProvider).AssemblyQualifiedName;
-			cfg.Properties[Environment.UseQueryCache] = "true";
-			sessions = (ISessionFactoryImplementor)cfg.BuildSessionFactory();
-
+			// Clear cache at each test.
+			RebuildSessionFactory();
 			using (ISession session = OpenSession())
-			using(ITransaction tx = session.BeginTransaction())
+			using (ITransaction tx = session.BeginTransaction())
 			{
 				Item item = new Item();
 				item.Id = 1;
@@ -46,15 +51,15 @@ namespace NHibernate.Test.SecondLevelCacheTests
 				for (int i = 0; i < 5; i++)
 				{
 					AnotherItem obj = new AnotherItem("Item #" + i);
-					obj.Id = i+1;
+					obj.Id = i + 1;
 					session.Save(obj);
 				}
 
 				tx.Commit();
 			}
 
-			sessions.Evict(typeof(Item));
-			sessions.EvictCollection(typeof(Item).FullName + ".Children");
+			Sfi.Evict(typeof(Item));
+			Sfi.EvictCollection(typeof(Item).FullName + ".Children");
 		}
 
 		protected override void OnTearDown()

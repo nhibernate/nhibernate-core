@@ -54,7 +54,7 @@ namespace NHibernate.Test.TypeParameters
 			s = OpenSession();
 			t = s.BeginTransaction();
 
-			IDriver driver = sessions.ConnectionProvider.Driver;
+			IDriver driver = Sfi.ConnectionProvider.Driver;
 
 			var connection = s.Connection;
 			var statement = driver.GenerateCommand(

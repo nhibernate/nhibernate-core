@@ -176,8 +176,8 @@ namespace NHibernate.Test.ConnectionTest
 		{
 			Prepare();
 
-			using (var originalConnection = sessions.ConnectionProvider.GetConnection())
-			using (var session = sessions.WithOptions().Connection(originalConnection).OpenSession())
+			using (var originalConnection = Sfi.ConnectionProvider.GetConnection())
+			using (var session = Sfi.WithOptions().Connection(originalConnection).OpenSession())
 			{
 				var silly = new Silly("silly");
 				session.Save(silly);

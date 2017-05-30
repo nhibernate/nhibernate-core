@@ -19,12 +19,13 @@ namespace NHibernate.Test.LazyProperty
 			get { return new[] { "LazyProperty.Mappings.hbm.xml" }; }
 		}
 
-		protected override void BuildSessionFactory()
+		protected override DebugSessionFactory BuildSessionFactory()
 		{
 			using (var logSpy = new LogSpy(typeof(EntityMetamodel)))
 			{
-				base.BuildSessionFactory();
+				var factory = base.BuildSessionFactory();
 				log = logSpy.GetWholeLog();
+				return factory;
 			}
 		}
 

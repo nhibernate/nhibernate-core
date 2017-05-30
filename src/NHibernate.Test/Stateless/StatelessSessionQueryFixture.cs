@@ -76,10 +76,10 @@ namespace NHibernate.Test.Stateless
 		[Test]
 		public void Criteria()
 		{
-			var testData = new TestData(sessions);
+			var testData = new TestData(Sfi);
 			testData.createData();
 
-			using (IStatelessSession s = sessions.OpenStatelessSession())
+			using (IStatelessSession s = Sfi.OpenStatelessSession())
 			{
 				Assert.AreEqual(1, s.CreateCriteria<Contact>().List().Count);
 			}
@@ -90,10 +90,10 @@ namespace NHibernate.Test.Stateless
 		[Test]
 		public void CriteriaWithSelectFetchMode()
 		{
-			var testData = new TestData(sessions);
+			var testData = new TestData(Sfi);
 			testData.createData();
 
-			using (IStatelessSession s = sessions.OpenStatelessSession())
+			using (IStatelessSession s = Sfi.OpenStatelessSession())
 			{
 				Assert.AreEqual(1, s.CreateCriteria<Contact>().SetFetchMode("Org", FetchMode.Select).List().Count);
 			}
@@ -104,10 +104,10 @@ namespace NHibernate.Test.Stateless
 		[Test]
 		public void Hql()
 		{
-			var testData = new TestData(sessions);
+			var testData = new TestData(Sfi);
 			testData.createData();
 
-			using (IStatelessSession s = sessions.OpenStatelessSession())
+			using (IStatelessSession s = Sfi.OpenStatelessSession())
 			{
 				Assert.AreEqual(1, s.CreateQuery("from Contact c join fetch c.Org join fetch c.Org.Country").List<Contact>().Count);
 			}
