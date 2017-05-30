@@ -62,8 +62,15 @@ namespace NHibernate.Type
 
 		public override void Set(DbCommand st, object value, int index)
 		{
-			DateTime date = BaseDateValue.AddTicks(((TimeSpan)value).Ticks);
-			st.Parameters[index].Value = date;
+			if (st.Parameters[index].DbType == DbType.DateTime)
+			{
+				var date = BaseDateValue.AddTicks(((TimeSpan)value).Ticks);
+				st.Parameters[index].Value = date;
+			}
+			else
+			{
+				st.Parameters[index].Value = value;
+			}
 		}
 
 		public override System.Type ReturnedClass
