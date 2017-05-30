@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NHibernate.Impl
@@ -52,21 +53,21 @@ namespace NHibernate.Impl
 			return new DelayedEnumerator<TResult>(() => GetCurrentResult<TResult>(currentIndex));
 		}
 
-		public IFutureValueAsync<TResult> GetFutureValueAsync<TResult>()
+		public IFutureValueAsync<TResult> GetFutureValueAsync<TResult>(CancellationToken cancellationToken)
 		{
 			int currentIndex = index;
-			return new FutureValueAsync<TResult>(() => GetCurrentResultAsync<TResult>(currentIndex));
+			return new FutureValueAsync<TResult>(() => GetCurrentResultAsync<TResult>(currentIndex, cancellationToken));
 		}
 
-		public IAsyncEnumerable<TResult> GetAsyncEnumerator<TResult>()
+		public IAsyncEnumerable<TResult> GetAsyncEnumerator<TResult>(CancellationToken cancellationToken)
 		{
 			int currentIndex = index;
-			return new DelayedAsyncEnumerator<TResult>(() => GetCurrentResultAsync<TResult>(currentIndex));
+			return new DelayedAsyncEnumerator<TResult>(() => GetCurrentResultAsync<TResult>(currentIndex, cancellationToken));
 		}
 
-		private async Task<IEnumerable<TResult>> GetCurrentResultAsync<TResult>(int currentIndex)
+		private async Task<IEnumerable<TResult>> GetCurrentResultAsync<TResult>(int currentIndex, CancellationToken cancellationToken)
 		{
-			return ((IList)(await GetResultsAsync())[currentIndex]).Cast<TResult>();
+			return ((IList)(await GetResultsAsync(cancellationToken))[currentIndex]).Cast<TResult>();
 		}
 
 		private IList GetResults()

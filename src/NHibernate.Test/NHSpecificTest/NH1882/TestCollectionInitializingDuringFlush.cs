@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1882
 {
 	[TestFixture]
-	public class TestCollectionInitializingDuringFlush : TestCaseMappingByCode
+	public partial class TestCollectionInitializingDuringFlush : TestCaseMappingByCode
 	{
 		private readonly InitializingPreUpdateEventListener listener = new InitializingPreUpdateEventListener();
 
@@ -51,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1882
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 
-		public class InitializingPreUpdateEventListener : IPreUpdateEventListener
+		public partial class InitializingPreUpdateEventListener : IPreUpdateEventListener
 		{
 			public static InitializingPreUpdateEventListener Instance = new InitializingPreUpdateEventListener();
 

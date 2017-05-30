@@ -7,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1789
 	/// The base for all objects in the model
 	///</summary>
 	[Serializable]
-	public abstract class DomainObject : IDomainObject
+	public abstract partial class DomainObject : IDomainObject
 	{
 		protected long _id;
 

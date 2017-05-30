@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-
+using System.Threading;
 using NHibernate.Criterion;
 using NHibernate.Criterion.Lambda;
 using NHibernate.SqlCommand;
@@ -119,13 +119,15 @@ namespace NHibernate
 		/// Get a enumerable that when enumerated will execute
 		/// a batch of queries in a single database roundtrip
 		/// </summary>
-		IAsyncEnumerable<TRoot> FutureAsync();
+		/// <param name="cancellationToken"></param>
+		IAsyncEnumerable<TRoot> FutureAsync(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Get a enumerable that when enumerated will execute
 		/// a batch of queries in a single database roundtrip
 		/// </summary>
-		IAsyncEnumerable<U> FutureAsync<U>();
+		/// <param name="cancellationToken"></param>
+		IAsyncEnumerable<U> FutureAsync<U>(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Get an <see cref="IFutureValueAsync{T}"/> instance, whose value can be retrieved through
@@ -133,7 +135,8 @@ namespace NHibernate
 		/// the GetValue method is called, which will execute other Future queries as well in a
 		/// single roundtrip
 		/// </summary>
-		IFutureValueAsync<TRoot> FutureValueAsync();
+		/// <param name="cancellationToken"></param>
+		IFutureValueAsync<TRoot> FutureValueAsync(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Get an <see cref="IFutureValueAsync{T}"/> instance, whose value can be retrieved through
@@ -141,7 +144,8 @@ namespace NHibernate
 		/// the GetValue method is called, which will execute other Future queries as well in a
 		/// single roundtrip
 		/// </summary>
-		IFutureValueAsync<U> FutureValueAsync<U>();
+		/// <param name="cancellationToken"></param>
+		IFutureValueAsync<U> FutureValueAsync<U>(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Creates an exact clone of the IQueryOver

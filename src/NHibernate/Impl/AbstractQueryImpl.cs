@@ -10,6 +10,7 @@ using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Linq;
+using System.Threading;
 
 namespace NHibernate.Impl
 {
@@ -904,26 +905,26 @@ namespace NHibernate.Impl
 			return session.FutureQueryBatch.GetFutureValue<T>();
 		}
 
-		public IAsyncEnumerable<T> FutureAsync<T>()
+		public IAsyncEnumerable<T> FutureAsync<T>(CancellationToken cancellationToken)
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				return new DelayedAsyncEnumerator<T>(async () => await ListAsync<T>());
+				return new DelayedAsyncEnumerator<T>(async () => await ListAsync<T>(cancellationToken));
 			}
 
 			session.FutureQueryBatch.Add<T>(this);
-			return session.FutureQueryBatch.GetAsyncEnumerator<T>();
+			return session.FutureQueryBatch.GetAsyncEnumerator<T>(cancellationToken);
 		}
 
-		public IFutureValueAsync<T> FutureValueAsync<T>()
+		public IFutureValueAsync<T> FutureValueAsync<T>(CancellationToken cancellationToken)
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				return new FutureValueAsync<T>(async () => await ListAsync<T>());
+				return new FutureValueAsync<T>(async () => await ListAsync<T>(cancellationToken));
 			}
 
 			session.FutureQueryBatch.Add<T>(this);
-			return session.FutureQueryBatch.GetFutureValueAsync<T>();
+			return session.FutureQueryBatch.GetFutureValueAsync<T>(cancellationToken);
 		}
 
 		/// <summary> Override the current session cache mode, just for this query.

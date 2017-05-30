@@ -16,7 +16,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest
 {
-	internal class CollectionPersisterStub : ICollectionPersister
+	internal partial class CollectionPersisterStub : ICollectionPersister
 	{
 		#region ICollectionPersister Members
 

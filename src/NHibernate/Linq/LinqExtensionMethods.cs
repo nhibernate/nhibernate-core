@@ -8,7 +8,7 @@ using NHibernate.Type;
 using NHibernate.Util;
 using Remotion.Linq;
 using Remotion.Linq.Parsing.ExpressionTreeVisitors;
-using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NHibernate.Linq
@@ -109,40 +109,42 @@ namespace NHibernate.Linq
 		/// <summary>Determines whether a sequence contains any elements.</summary>
 		/// <returns>true if the source sequence contains any elements; otherwise, false.</returns>
 		/// <param name="source">A sequence to check for being empty.</param>
+		/// <param name="cancellationToken"></param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
-		public static Task<bool> AnyAsync<TSource>(this IQueryable<TSource> source)
+		public static Task<bool> AnyAsync<TSource>(this IQueryable<TSource> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["Any"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<bool>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<bool>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>Determines whether any element of a sequence satisfies a condition.</summary>
 		/// <returns>true if any elements in the source sequence pass the test in the specified predicate; otherwise, false.</returns>
 		/// <param name="source">A sequence whose elements to test for a condition.</param>
 		/// <param name="predicate">A function to test each element for a condition.</param>
+		/// <param name="cancellationToken"></param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="predicate" /> is null.</exception>
-		public static Task<bool> AnyAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate)
+		public static Task<bool> AnyAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (predicate == null)
 			{
-				throw new ArgumentNullException("predicate");
+				throw new ArgumentNullException(nameof(predicate));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["AnyParam"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(predicate) };
-			return provider.ExecuteAsync<bool>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<bool>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		#endregion
@@ -152,42 +154,44 @@ namespace NHibernate.Linq
 		/// <summary>Returns the number of elements in a sequence.</summary>
 		/// <returns>The number of elements in the input sequence.</returns>
 		/// <param name="source">The <see cref="T:System.Linq.IQueryable`1" /> that contains the elements to be counted.</param>
+		/// <param name="cancellationToken"></param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
 		/// <exception cref="T:System.OverflowException">The number of elements in <paramref name="source" /> is larger than <see cref="F:System.Int32.MaxValue" />.</exception>
-		public static Task<int> CountAsync<TSource>(this IQueryable<TSource> source)
+		public static Task<int> CountAsync<TSource>(this IQueryable<TSource> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["Count"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<int>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<int>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>Returns the number of elements in the specified sequence that satisfies a condition.</summary>
 		/// <returns>The number of elements in the sequence that satisfies the condition in the predicate function.</returns>
 		/// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> that contains the elements to be counted.</param>
 		/// <param name="predicate">A function to test each element for a condition.</param>
+		/// <param name="cancellationToken"></param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="predicate" /> is null.</exception>
 		/// <exception cref="T:System.OverflowException">The number of elements in <paramref name="source" /> is larger than <see cref="F:System.Int32.MaxValue" />.</exception>
-		public static Task<int> CountAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate)
+		public static Task<int> CountAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (predicate == null)
 			{
-				throw new ArgumentNullException("predicate");
+				throw new ArgumentNullException(nameof(predicate));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["CountParam"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(predicate) };
-			return provider.ExecuteAsync<int>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<int>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		#endregion
@@ -202,19 +206,20 @@ namespace NHibernate.Linq
 		/// The sum of the values in the sequence.
 		/// </returns>
 		/// <param name="source">A sequence of <see cref="T:System.Int32"/> values to calculate the sum of.</param>
+		/// <param name="cancellationToken"></param>
 		/// <exception cref="T:System.ArgumentNullException">
 		///   <paramref name="source"/> is null.</exception>
 		/// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Int32.MaxValue"/>.</exception>
-		public static Task<int> SumAsync(this IQueryable<int> source)
+		public static Task<int> SumAsync(this IQueryable<int> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["SumInt"];
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<int>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<int>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -225,19 +230,20 @@ namespace NHibernate.Linq
 		/// The sum of the values in the sequence.
 		/// </returns>
 		/// <param name="source">A sequence of nullable <see cref="T:System.Int32"/> values to calculate the sum of.</param>
+		/// <param name="cancellationToken"></param>
 		/// <exception cref="T:System.ArgumentNullException">
 		///   <paramref name="source"/> is null.</exception>
 		/// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Int32.MaxValue"/>.</exception>
-		public static Task<int?> SumAsync(this IQueryable<int?> source)
+		public static Task<int?> SumAsync(this IQueryable<int?> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["SumInt?"];
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<int?>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<int?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -248,19 +254,20 @@ namespace NHibernate.Linq
 		/// The sum of the values in the sequence.
 		/// </returns>
 		/// <param name="source">A sequence of <see cref="T:System.Int64"/> values to calculate the sum of.</param>
+		/// <param name="cancellationToken"></param>
 		/// <exception cref="T:System.ArgumentNullException">
 		///   <paramref name="source"/> is null.</exception>
 		/// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Int64.MaxValue"/>.</exception>
-		public static Task<long> SumAsync(this IQueryable<long> source)
+		public static Task<long> SumAsync(this IQueryable<long> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["SumLong"];
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<long>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<long>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -271,19 +278,20 @@ namespace NHibernate.Linq
 		/// The sum of the values in the sequence.
 		/// </returns>
 		/// <param name="source">A sequence of nullable <see cref="T:System.Int64"/> values to calculate the sum of.</param>
+		/// <param name="cancellationToken"></param>
 		/// <exception cref="T:System.ArgumentNullException">
 		///   <paramref name="source"/> is null.</exception>
 		/// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Int64.MaxValue"/>.</exception>
-		public static Task<long?> SumAsync(this IQueryable<long?> source)
+		public static Task<long?> SumAsync(this IQueryable<long?> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["SumLong?"];
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<long?>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<long?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -294,19 +302,20 @@ namespace NHibernate.Linq
 		/// The sum of the values in the sequence.
 		/// </returns>
 		/// <param name="source">A sequence of <see cref="T:System.Single"/> values to calculate the sum of.</param>
+		/// <param name="cancellationToken"></param>
 		/// <exception cref="T:System.ArgumentNullException">
 		///   <paramref name="source"/> is null.</exception>
 		/// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Single.MaxValue"/>.</exception>
-		public static Task<float> SumAsync(this IQueryable<float> source)
+		public static Task<float> SumAsync(this IQueryable<float> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["SumFloat"];
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<float>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<float>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -320,16 +329,16 @@ namespace NHibernate.Linq
 		/// <exception cref="T:System.ArgumentNullException">
 		///   <paramref name="source"/> is null.</exception>
 		/// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Single.MaxValue"/>.</exception>
-		public static Task<float?> SumAsync(this IQueryable<float?> source)
+		public static Task<float?> SumAsync(this IQueryable<float?> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["SumFloat?"];
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<float?>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<float?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -343,16 +352,16 @@ namespace NHibernate.Linq
 		/// <exception cref="T:System.ArgumentNullException">
 		///   <paramref name="source"/> is null.</exception>
 		/// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Double.MaxValue"/>.</exception>
-		public static Task<double> SumAsync(this IQueryable<double> source)
+		public static Task<double> SumAsync(this IQueryable<double> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["SumDouble"];
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<double>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<double>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -366,16 +375,16 @@ namespace NHibernate.Linq
 		/// <exception cref="T:System.ArgumentNullException">
 		///   <paramref name="source"/> is null.</exception>
 		/// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Double.MaxValue"/>.</exception>
-		public static Task<double?> SumAsync(this IQueryable<double?> source)
+		public static Task<double?> SumAsync(this IQueryable<double?> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["SumDouble?"];
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<double?>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<double?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -389,16 +398,16 @@ namespace NHibernate.Linq
 		/// <exception cref="T:System.ArgumentNullException">
 		///   <paramref name="source"/> is null.</exception>
 		/// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Decimal.MaxValue"/>.</exception>
-		public static Task<decimal> SumAsync(this IQueryable<decimal> source)
+		public static Task<decimal> SumAsync(this IQueryable<decimal> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["SumDecimal"];
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<decimal>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<decimal>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -412,16 +421,16 @@ namespace NHibernate.Linq
 		/// <exception cref="T:System.ArgumentNullException">
 		///   <paramref name="source"/> is null.</exception>
 		/// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Decimal.MaxValue"/>.</exception>
-		public static Task<decimal?> SumAsync(this IQueryable<decimal?> source)
+		public static Task<decimal?> SumAsync(this IQueryable<decimal?> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["SumDecimal?"];
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<decimal?>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<decimal?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -436,20 +445,20 @@ namespace NHibernate.Linq
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
 		/// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Int32.MaxValue"/>.</exception>
-		public static Task<int> SumAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, int>> selector)
+		public static Task<int> SumAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, int>> selector, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (selector == null)
 			{
-				throw new ArgumentNullException("selector");
+				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["SumIntParam"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
-			return provider.ExecuteAsync<int>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<int>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -464,20 +473,20 @@ namespace NHibernate.Linq
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
 		/// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Int32.MaxValue"/>.</exception>
-		public static Task<int?> SumAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, int?>> selector)
+		public static Task<int?> SumAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, int?>> selector, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (selector == null)
 			{
-				throw new ArgumentNullException("selector");
+				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["SumInt?Param"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
-			return provider.ExecuteAsync<int?>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<int?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -492,20 +501,20 @@ namespace NHibernate.Linq
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
 		/// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Int64.MaxValue"/>.</exception>
-		public static Task<long> SumAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, long>> selector)
+		public static Task<long> SumAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, long>> selector, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (selector == null)
 			{
-				throw new ArgumentNullException("selector");
+				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["SumLongParam"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
-			return provider.ExecuteAsync<long>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<long>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -520,20 +529,20 @@ namespace NHibernate.Linq
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
 		/// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Int64.MaxValue"/>.</exception>
-		public static Task<long?> SumAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, long?>> selector)
+		public static Task<long?> SumAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, long?>> selector, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (selector == null)
 			{
-				throw new ArgumentNullException("selector");
+				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["SumLong?Param"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
-			return provider.ExecuteAsync<long?>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<long?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -548,20 +557,20 @@ namespace NHibernate.Linq
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
 		/// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Single.MaxValue"/>.</exception>
-		public static Task<float> SumAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, float>> selector)
+		public static Task<float> SumAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, float>> selector, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (selector == null)
 			{
-				throw new ArgumentNullException("selector");
+				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["SumFloatParam"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
-			return provider.ExecuteAsync<float>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<float>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -576,20 +585,20 @@ namespace NHibernate.Linq
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
 		/// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Single.MaxValue"/>.</exception>
-		public static Task<float?> SumAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, float?>> selector)
+		public static Task<float?> SumAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, float?>> selector, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (selector == null)
 			{
-				throw new ArgumentNullException("selector");
+				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["SumFloat?Param"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
-			return provider.ExecuteAsync<float?>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<float?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -604,20 +613,20 @@ namespace NHibernate.Linq
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
 		/// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Double.MaxValue"/>.</exception>
-		public static Task<double> SumAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, double>> selector)
+		public static Task<double> SumAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, double>> selector, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (selector == null)
 			{
-				throw new ArgumentNullException("selector");
+				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["SumDoubleParam"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
-			return provider.ExecuteAsync<double>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<double>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -632,20 +641,20 @@ namespace NHibernate.Linq
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
 		/// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Double.MaxValue"/>.</exception>
-		public static Task<double?> SumAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, double?>> selector)
+		public static Task<double?> SumAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, double?>> selector, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (selector == null)
 			{
-				throw new ArgumentNullException("selector");
+				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["SumDouble?Param"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
-			return provider.ExecuteAsync<double?>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<double?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -660,20 +669,20 @@ namespace NHibernate.Linq
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
 		/// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Decimal.MaxValue"/>.</exception>
-		public static Task<decimal> SumAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, decimal>> selector)
+		public static Task<decimal> SumAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, decimal>> selector, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (selector == null)
 			{
-				throw new ArgumentNullException("selector");
+				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["SumDecimalParam"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
-			return provider.ExecuteAsync<decimal>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<decimal>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -688,20 +697,20 @@ namespace NHibernate.Linq
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
 		/// <exception cref="T:System.OverflowException">The sum is larger than <see cref="F:System.Decimal.MaxValue"/>.</exception>
-		public static Task<decimal?> SumAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, decimal?>> selector)
+		public static Task<decimal?> SumAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, decimal?>> selector, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (selector == null)
 			{
-				throw new ArgumentNullException("selector");
+				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["SumDecimal?Param"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
-			return provider.ExecuteAsync<decimal?>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<decimal?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		#endregion
@@ -718,16 +727,16 @@ namespace NHibernate.Linq
 		/// <param name="source">A sequence of <see cref="T:System.Int32"/> values to calculate the average of.</param>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
 		/// <exception cref="T:System.InvalidOperationException"><paramref name="source"/> contains no elements.</exception>
-		public static Task<double> AverageAsync(this IQueryable<int> source)
+		public static Task<double> AverageAsync(this IQueryable<int> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["AverageInt"];
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<double>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<double>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -739,16 +748,16 @@ namespace NHibernate.Linq
 		/// </returns>
 		/// <param name="source">A sequence of nullable <see cref="T:System.Int32"/> values to calculate the average of.</param>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
-		public static Task<double?> AverageAsync(this IQueryable<int?> source)
+		public static Task<double?> AverageAsync(this IQueryable<int?> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["AverageInt?"];
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<double?>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<double?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -761,16 +770,16 @@ namespace NHibernate.Linq
 		/// <param name="source">A sequence of <see cref="T:System.Int64"/> values to calculate the average of.</param>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
 		/// <exception cref="T:System.InvalidOperationException"><paramref name="source"/> contains no elements.</exception>
-		public static Task<double> AverageAsync(this IQueryable<long> source)
+		public static Task<double> AverageAsync(this IQueryable<long> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["AverageLong"];
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<double>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<double>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -782,16 +791,16 @@ namespace NHibernate.Linq
 		/// </returns>
 		/// <param name="source">A sequence of nullable <see cref="T:System.Int64"/> values to calculate the average of.</param>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
-		public static Task<double?> AverageAsync(this IQueryable<long?> source)
+		public static Task<double?> AverageAsync(this IQueryable<long?> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["AverageLong?"];
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<double?>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<double?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -804,16 +813,16 @@ namespace NHibernate.Linq
 		/// <param name="source">A sequence of <see cref="T:System.Single"/> values to calculate the average of.</param>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
 		/// <exception cref="T:System.InvalidOperationException"><paramref name="source"/> contains no elements.</exception>
-		public static Task<float> AverageAsync(this IQueryable<float> source)
+		public static Task<float> AverageAsync(this IQueryable<float> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["AverageFloat"];
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<float>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<float>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -825,16 +834,16 @@ namespace NHibernate.Linq
 		/// </returns>
 		/// <param name="source">A sequence of nullable <see cref="T:System.Single"/> values to calculate the average of.</param>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
-		public static Task<float?> AverageAsync(this IQueryable<float?> source)
+		public static Task<float?> AverageAsync(this IQueryable<float?> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["AverageFloat?"];
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<float?>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<float?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -847,16 +856,16 @@ namespace NHibernate.Linq
 		/// <param name="source">A sequence of <see cref="T:System.Double"/> values to calculate the average of.</param>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
 		/// <exception cref="T:System.InvalidOperationException"><paramref name="source"/> contains no elements.</exception>
-		public static Task<double> AverageAsync(this IQueryable<double> source)
+		public static Task<double> AverageAsync(this IQueryable<double> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["AverageDouble"];
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<double>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<double>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -868,16 +877,16 @@ namespace NHibernate.Linq
 		/// </returns>
 		/// <param name="source">A sequence of nullable <see cref="T:System.Double"/> values to calculate the average of.</param>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
-		public static Task<double?> AverageAsync(this IQueryable<double?> source)
+		public static Task<double?> AverageAsync(this IQueryable<double?> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["AverageDouble?"];
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<double?>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<double?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -890,16 +899,16 @@ namespace NHibernate.Linq
 		/// <param name="source">A sequence of <see cref="T:System.Decimal"/> values to calculate the average of.</param>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
 		/// <exception cref="T:System.InvalidOperationException"><paramref name="source"/> contains no elements.</exception>
-		public static Task<decimal> AverageAsync(this IQueryable<decimal> source)
+		public static Task<decimal> AverageAsync(this IQueryable<decimal> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["AverageDecimal"];
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<decimal>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<decimal>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -911,16 +920,16 @@ namespace NHibernate.Linq
 		/// </returns>
 		/// <param name="source">A sequence of nullable <see cref="T:System.Decimal"/> values to calculate the average of.</param>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
-		public static Task<decimal?> AverageAsync(this IQueryable<decimal?> source)
+		public static Task<decimal?> AverageAsync(this IQueryable<decimal?> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["AverageDecimal?"];
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<decimal?>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<decimal?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -935,20 +944,20 @@ namespace NHibernate.Linq
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
 		/// <exception cref="T:System.InvalidOperationException"><paramref name="source"/> contains no elements.</exception>
-		public static Task<double> AverageAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, int>> selector)
+		public static Task<double> AverageAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, int>> selector, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (selector == null)
 			{
-				throw new ArgumentNullException("selector");
+				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["AverageIntParam"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
-			return provider.ExecuteAsync<double>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<double>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -962,20 +971,20 @@ namespace NHibernate.Linq
 		/// <param name="selector">A projection function to apply to each element.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
-		public static Task<double?> AverageAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, int?>> selector)
+		public static Task<double?> AverageAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, int?>> selector, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (selector == null)
 			{
-				throw new ArgumentNullException("selector");
+				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["AverageInt?Param"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
-			return provider.ExecuteAsync<double?>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<double?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -990,20 +999,20 @@ namespace NHibernate.Linq
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
 		/// <exception cref="T:System.InvalidOperationException"><paramref name="source"/> contains no elements.</exception>
-		public static Task<double> AverageAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, long>> selector)
+		public static Task<double> AverageAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, long>> selector, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (selector == null)
 			{
-				throw new ArgumentNullException("selector");
+				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["AverageLongParam"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
-			return provider.ExecuteAsync<double>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<double>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -1017,20 +1026,20 @@ namespace NHibernate.Linq
 		/// <param name="selector">A projection function to apply to each element.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
-		public static Task<double?> AverageAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, long?>> selector)
+		public static Task<double?> AverageAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, long?>> selector, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (selector == null)
 			{
-				throw new ArgumentNullException("selector");
+				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["AverageLong?Param"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
-			return provider.ExecuteAsync<double?>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<double?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -1045,20 +1054,20 @@ namespace NHibernate.Linq
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
 		/// <exception cref="T:System.InvalidOperationException"><paramref name="source"/> contains no elements.</exception>
-		public static Task<float> AverageAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, float>> selector)
+		public static Task<float> AverageAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, float>> selector, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (selector == null)
 			{
-				throw new ArgumentNullException("selector");
+				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["AverageFloatParam"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
-			return provider.ExecuteAsync<float>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<float>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -1072,20 +1081,20 @@ namespace NHibernate.Linq
 		/// <param name="selector">A projection function to apply to each element.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
-		public static Task<float?> AverageAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, float?>> selector)
+		public static Task<float?> AverageAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, float?>> selector, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (selector == null)
 			{
-				throw new ArgumentNullException("selector");
+				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["AverageFloat?Param"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
-			return provider.ExecuteAsync<float?>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<float?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -1100,20 +1109,20 @@ namespace NHibernate.Linq
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
 		/// <exception cref="T:System.InvalidOperationException"><paramref name="source"/> contains no elements.</exception>
-		public static Task<double> AverageAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, double>> selector)
+		public static Task<double> AverageAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, double>> selector, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (selector == null)
 			{
-				throw new ArgumentNullException("selector");
+				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["AverageDoubleParam"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
-			return provider.ExecuteAsync<double>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<double>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -1127,20 +1136,20 @@ namespace NHibernate.Linq
 		/// <param name="selector">A projection function to apply to each element.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
-		public static Task<double?> AverageAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, double?>> selector)
+		public static Task<double?> AverageAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, double?>> selector, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (selector == null)
 			{
-				throw new ArgumentNullException("selector");
+				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["AverageDouble?Param"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
-			return provider.ExecuteAsync<double?>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<double?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -1155,20 +1164,20 @@ namespace NHibernate.Linq
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
 		/// <exception cref="T:System.InvalidOperationException"><paramref name="source"/> contains no elements.</exception>
-		public static Task<decimal> AverageAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, decimal>> selector)
+		public static Task<decimal> AverageAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, decimal>> selector, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (selector == null)
 			{
-				throw new ArgumentNullException("selector");
+				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["AverageDecimalParam"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
-			return provider.ExecuteAsync<decimal>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<decimal>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -1182,20 +1191,20 @@ namespace NHibernate.Linq
 		/// <param name="selector">A projection function to apply to each element.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
-		public static Task<decimal?> AverageAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, decimal?>> selector)
+		public static Task<decimal?> AverageAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, decimal?>> selector, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (selector == null)
 			{
-				throw new ArgumentNullException("selector");
+				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["AverageDecimal?Param"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
-			return provider.ExecuteAsync<decimal?>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<decimal?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		#endregion
@@ -1212,16 +1221,16 @@ namespace NHibernate.Linq
 		/// <param name="source">A sequence of values to determine the minimum of.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
-		public static Task<TSource> MinAsync<TSource>(this IQueryable<TSource> source)
+		public static Task<TSource> MinAsync<TSource>(this IQueryable<TSource> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["Min"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -1236,20 +1245,20 @@ namespace NHibernate.Linq
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <typeparam name="TResult">The type of the value returned by the function represented by <paramref name="selector"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
-		public static Task<TResult> MinAsync<TSource, TResult>(this IQueryable<TSource> source, Expression<Func<TSource, TResult>> selector)
+		public static Task<TResult> MinAsync<TSource, TResult>(this IQueryable<TSource> source, Expression<Func<TSource, TResult>> selector, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (selector == null)
 			{
-				throw new ArgumentNullException("selector");
+				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["MinParam"].MakeGenericMethod(typeof(TSource), typeof(TResult));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
-			return provider.ExecuteAsync<TResult>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<TResult>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		#endregion
@@ -1266,16 +1275,16 @@ namespace NHibernate.Linq
 		/// <param name="source">A sequence of values to determine the maximum of.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
-		public static Task<TSource> MaxAsync<TSource>(this IQueryable<TSource> source)
+		public static Task<TSource> MaxAsync<TSource>(this IQueryable<TSource> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["Max"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>
@@ -1290,20 +1299,20 @@ namespace NHibernate.Linq
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <typeparam name="TResult">The type of the value returned by the function represented by <paramref name="selector"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
-		public static Task<TResult> MaxAsync<TSource, TResult>(this IQueryable<TSource> source, Expression<Func<TSource, TResult>> selector)
+		public static Task<TResult> MaxAsync<TSource, TResult>(this IQueryable<TSource> source, Expression<Func<TSource, TResult>> selector, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (selector == null)
 			{
-				throw new ArgumentNullException("selector");
+				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["MaxParam"].MakeGenericMethod(typeof(TSource), typeof(TResult));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
-			return provider.ExecuteAsync<TResult>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<TResult>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		#endregion
@@ -1316,16 +1325,16 @@ namespace NHibernate.Linq
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
 		/// <exception cref="T:System.OverflowException">The number of elements in <paramref name="source" /> is larger than <see cref="F:System.Int64.MaxValue" />.</exception>
-		public static Task<long> LongCountAsync<TSource>(this IQueryable<TSource> source)
+		public static Task<long> LongCountAsync<TSource>(this IQueryable<TSource> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["LongCount"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<long>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<long>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>Returns the number of elements in the specified sequence that satisfies a condition.</summary>
@@ -1335,20 +1344,20 @@ namespace NHibernate.Linq
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="predicate" /> is null.</exception>
 		/// <exception cref="T:System.OverflowException">The number of elements in <paramref name="source" /> is larger than <see cref="F:System.Int64.MaxValue" />.</exception>
-		public static Task<long> LongCountAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate)
+		public static Task<long> LongCountAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (predicate == null)
 			{
-				throw new ArgumentNullException("predicate");
+				throw new ArgumentNullException(nameof(predicate));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["LongCountParam"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(predicate) };
-			return provider.ExecuteAsync<long>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<long>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		#endregion
@@ -1361,16 +1370,16 @@ namespace NHibernate.Linq
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
 		/// <exception cref="T:System.InvalidOperationException">The source sequence is empty.</exception>
-		public static Task<TSource> FirstAsync<TSource>(this IQueryable<TSource> source)
+		public static Task<TSource> FirstAsync<TSource>(this IQueryable<TSource> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["First"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>Returns the first element of a sequence that satisfies a specified condition.</summary>
@@ -1380,20 +1389,20 @@ namespace NHibernate.Linq
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="predicate" /> is null.</exception>
 		/// <exception cref="T:System.InvalidOperationException">No element satisfies the condition in <paramref name="predicate" />.-or-The source sequence is empty.</exception>
-		public static Task<TSource> FirstAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate)
+		public static Task<TSource> FirstAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (predicate == null)
 			{
-				throw new ArgumentNullException("predicate");
+				throw new ArgumentNullException(nameof(predicate));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["FirstParam"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(predicate) };
-			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		#endregion
@@ -1406,39 +1415,40 @@ namespace NHibernate.Linq
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
 		/// <exception cref="T:System.InvalidOperationException">The source sequence is empty.</exception>
-		public static Task<TSource> SingleAsync<TSource>(this IQueryable<TSource> source)
+		public static Task<TSource> SingleAsync<TSource>(this IQueryable<TSource> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["Single"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>Returns the only element of a sequence, and throws an exception if there is not exactly one element in the sequence.</summary>
 		/// <returns>The single element in <paramref name="source" /> that passes the test in <paramref name="predicate" />.</returns>
 		/// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to return an element from.</param>
 		/// <param name="predicate">A function to test each element for a condition.</param>
+		/// <param name="cancellationToken"></param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="predicate" /> is null.</exception>
 		/// <exception cref="T:System.InvalidOperationException">No element satisfies the condition in <paramref name="predicate" />.-or-The source sequence is empty.</exception>
-		public static Task<TSource> SingleAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate)
+		public static Task<TSource> SingleAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (predicate == null)
 			{
-				throw new ArgumentNullException("predicate");
+				throw new ArgumentNullException(nameof(predicate));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["SingleParam"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(predicate) };
-			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		#endregion
@@ -1450,16 +1460,16 @@ namespace NHibernate.Linq
 		/// <param name="source">The <see cref="T:System.Linq.IQueryable`1" /> to return the single element of.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
-		public static Task<TSource> SingleOrDefaultAsync<TSource>(this IQueryable<TSource> source)
+		public static Task<TSource> SingleOrDefaultAsync<TSource>(this IQueryable<TSource> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["SingleOrDefault"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>Returns the only element of a sequence, or a default value if the sequence is empty; this method throws an exception if there is more than one element in the sequence.</summary>
@@ -1468,20 +1478,20 @@ namespace NHibernate.Linq
 		/// <param name="predicate">A function to test each element for a condition.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="predicate" /> is null.</exception>
-		public static Task<TSource> SingleOrDefaultAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate)
+		public static Task<TSource> SingleOrDefaultAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (predicate == null)
 			{
-				throw new ArgumentNullException("predicate");
+				throw new ArgumentNullException(nameof(predicate));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["SingleOrDefaultParam"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(predicate) };
-			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		#endregion
@@ -1493,81 +1503,81 @@ namespace NHibernate.Linq
 		/// <param name="source">The <see cref="T:System.Linq.IQueryable`1" /> to return the first element of.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
-		public static Task<TSource> FirstOrDefaultAsync<TSource>(this IQueryable<TSource> source)
+		public static Task<TSource> FirstOrDefaultAsync<TSource>(this IQueryable<TSource> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["FirstOrDefault"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression };
-			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		/// <summary>Returns the first element of a sequence that satisfies a specified condition or a default value if no such element is found.</summary>
 		/// <returns>default(<paramref name="source" />) if <paramref name="source" /> is empty or if no element passes the test specified by <paramref name="predicate" />; otherwise, the first element in <paramref name="source" /> that passes the test specified by <paramref name="predicate" />.</returns>
 		/// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to return an element from.</param>
 		/// <param name="predicate">A function to test each element for a condition.</param>
+		/// <param name="cancellationToken"></param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="predicate" /> is null.</exception>
-		public static Task<TSource> FirstOrDefaultAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate)
+		public static Task<TSource> FirstOrDefaultAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 			if (predicate == null)
 			{
-				throw new ArgumentNullException("predicate");
+				throw new ArgumentNullException(nameof(predicate));
 			}
 			var provider = (INhQueryProvider)source.Provider;
 			var methodInfo = cachableQueryableMethods["FirstOrDefaultParam"].MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(predicate) };
-			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression));
+			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
 
 		#endregion
 
-		public static async Task<List<TSource>> ToListAsync<TSource>(this IQueryable<TSource> query)
+		public static async Task<List<TSource>> ToListAsync<TSource>(this IQueryable<TSource> query, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var nhQueryable = query as QueryableBase<TSource>;
 			if (nhQueryable == null)
 				throw new NotSupportedException("Query needs to be of type QueryableBase<TSource>");
 
 			var provider = (INhQueryProvider)nhQueryable.Provider;
-			var result = await provider.ExecuteAsync<IEnumerable<TSource>>(nhQueryable.Expression);
+			var result = await provider.ExecuteAsync<IEnumerable<TSource>>(nhQueryable.Expression, cancellationToken);
 			return result.ToList();
 		}
 
-		public static IAsyncEnumerable<TSource> ToFutureAsync<TSource>(this IQueryable<TSource> query)
+		public static IAsyncEnumerable<TSource> ToFutureAsync<TSource>(this IQueryable<TSource> query, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var nhQueryable = query as QueryableBase<TSource>;
 			if (nhQueryable == null)
 				throw new NotSupportedException("Query needs to be of type QueryableBase<TSource>");
 
 			var provider = (INhQueryProvider)nhQueryable.Provider;
-			return (IAsyncEnumerable<TSource>)provider.ExecuteFutureAsync(nhQueryable.Expression);
+			return (IAsyncEnumerable<TSource>)provider.ExecuteFutureAsync(nhQueryable.Expression, cancellationToken);
 		}
 
-		public static IFutureValueAsync<TSource> ToFutureValueAsync<TSource>(this IQueryable<TSource> query)
+		public static IFutureValueAsync<TSource> ToFutureValueAsync<TSource>(this IQueryable<TSource> query, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var nhQueryable = query as QueryableBase<TSource>;
 			if (nhQueryable == null)
 				throw new NotSupportedException("Query needs to be of type QueryableBase<TSource>");
 
 			var provider = (INhQueryProvider)nhQueryable.Provider;
-			var future = provider.ExecuteFutureAsync(nhQueryable.Expression);
-			if (future is IAsyncEnumerable<TSource>)
+			var future = provider.ExecuteFutureAsync(nhQueryable.Expression, cancellationToken);
+			if (future is IAsyncEnumerable<TSource> asyncEnumerable)
 			{
-				return new FutureValueAsync<TSource>(async () => await ((IAsyncEnumerable<TSource>)future).ToList());
+				return new FutureValueAsync<TSource>(async () => await asyncEnumerable.ToList(cancellationToken));
 			}
 
 			return (FutureValueAsync<TSource>)future;
 		}
 
-		public static IFutureValueAsync<TResult> ToFutureValueAsync<TSource, TResult>(this IQueryable<TSource> query, 
-			Expression<Func<IQueryable<TSource>, TResult>> selector)
+		public static IFutureValueAsync<TResult> ToFutureValueAsync<TSource, TResult>(this IQueryable<TSource> query, Expression<Func<IQueryable<TSource>, TResult>> selector, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var nhQueryable = query as QueryableBase<TSource>;
 			if (nhQueryable == null)
@@ -1578,7 +1588,7 @@ namespace NHibernate.Linq
 																	query.Expression,
 																	selector.Body);
 
-			return (IFutureValueAsync<TResult>)provider.ExecuteFutureAsync(expression);
+			return (IFutureValueAsync<TResult>)provider.ExecuteFutureAsync(expression, cancellationToken);
 		}
 
 		public static IQueryable<T> Query<T>(this ISession session)

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using NHibernate.Criterion;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
@@ -319,9 +320,10 @@ namespace NHibernate
 		/// Get a enumerable that when enumerated will execute
 		/// a batch of queries in a single database roundtrip
 		/// </summary>
+		/// <param name="cancellationToken"></param>
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
-		IAsyncEnumerable<T> FutureAsync<T>();
+		IAsyncEnumerable<T> FutureAsync<T>(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Get an <see cref="IFutureValueAsync{T}"/> instance, whose value can be retrieved through
@@ -329,9 +331,10 @@ namespace NHibernate
 		/// the GetValue method is called, which will execute other Future queries as well in a
 		/// single roundtrip
 		/// </summary>
+		/// <param name="cancellationToken"></param>
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
-		IFutureValueAsync<T> FutureValueAsync<T>();
+		IFutureValueAsync<T> FutureValueAsync<T>(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Set the read-only mode for entities (and proxies) loaded by this Criteria. This

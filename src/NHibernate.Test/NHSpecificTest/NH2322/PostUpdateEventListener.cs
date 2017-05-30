@@ -5,7 +5,7 @@ using NHibernate.Event;
 
 namespace NHibernate.Test.NHSpecificTest.NH2322
 {
-	public class PostUpdateEventListener : IPostUpdateEventListener
+	public partial class PostUpdateEventListener : IPostUpdateEventListener
 	{
 		void IPostUpdateEventListener.OnPostUpdate(PostUpdateEvent @event)
 		{
