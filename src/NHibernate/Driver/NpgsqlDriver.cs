@@ -1,5 +1,7 @@
+using System;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 
 namespace NHibernate.Driver
 {
@@ -83,6 +85,20 @@ namespace NHibernate.Driver
 			// Since the .NET currency type has 4 decimal places, we use a decimal type in PostgreSQL instead of its native 2 decimal currency type.
 			if (sqlType.DbType == DbType.Currency)
 				dbParam.DbType = DbType.Decimal;
+		}
+
+		public override void AdjustCommand(DbCommand command)
+		{
+			if (DriverVersion?.Major < 3)
+				// Prior to v3, Npgsql was expecting DateTime for time. Nothing to do.
+				// https://github.com/npgsql/npgsql/issues/347
+				return;
+
+			foreach (var parameter in command.Parameters.Cast<DbParameter>().Where(x => x.DbType == DbType.Time))
+			{
+				if (parameter.Value is DateTime dateTimeValue)
+					parameter.Value = dateTimeValue.TimeOfDay;
+			}
 		}
 	}
 }
