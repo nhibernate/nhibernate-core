@@ -217,6 +217,8 @@
     <Compile Include="Async\IdTest\HiLoTableGeneratorInt16Fixture.cs" />
     <Compile Include="Async\IdTest\HiLoTableGeneratorInt32Fixture.cs" />
     <Compile Include="Async\IdTest\HiLoTableGeneratorInt64Fixture.cs" />
+    <Compile Include="Async\IdTest\IdentityGeneratorFixture.cs" />
+    <Compile Include="Async\IdTest\IdentityGeneratorNoPoolingFixture.cs" />
     <Compile Include="Async\IdTest\MultipleHiLoPerTableGeneratorTest.cs" />
     <Compile Include="Async\IdTest\UseIdentifierRollbackTest.cs" />
     <Compile Include="Async\Immutable\ImmutableTest.cs" />
