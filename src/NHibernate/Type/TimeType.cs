@@ -71,8 +71,8 @@ namespace NHibernate.Type
 			if (dateTime >= BaseDateValue)
 			{
 				st.Parameters[index].Value = (st.Parameters[index].DbType == DbType.DateTime) ?
-					dateTime : 
-					dateTime.TimeOfDay;
+					(object) dateTime : 
+					(object) dateTime.TimeOfDay;
 			} 
 			else 
 			{
