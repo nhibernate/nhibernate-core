@@ -43,7 +43,7 @@ namespace NHibernate.Test
 		public DebugSessionFactory(ISessionFactory actualFactory)
 		{
 			ActualFactory = (ISessionFactoryImplementor)actualFactory;
-			ConnectionProvider = (DebugConnectionProvider)ActualFactory.ConnectionProvider;
+			ConnectionProvider = ActualFactory.ConnectionProvider as DebugConnectionProvider;
 		}
 
 		#region Session tracking
