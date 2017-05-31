@@ -50,12 +50,13 @@ namespace NHibernate.Type
 		/// <param name="cmd">The <see cref="DbCommand"/> to put the value into.</param>
 		/// <param name="value">The object that contains the value.</param>
 		/// <param name="index">The index of the <see cref="DbParameter"/> to start writing the values to.</param>
+		/// <param name="session">The session for which the operation is done.</param>
 		/// <remarks>
 		/// Implementors do not need to handle possibility of null values because this will
-		/// only be called from <see cref="NullSafeSet(DbCommand, object, int)"/> after 
+		/// only be called from <see cref="NullSafeSet(DbCommand, object, int, ISessionImplementor)"/> after 
 		/// it has checked for nulls.
 		/// </remarks>
-		public abstract void Set(DbCommand cmd, object value, int index);
+		public abstract void Set(DbCommand cmd, object value, int index, ISessionImplementor session);
 
 		/// <summary>
 		/// When implemented by a class, gets the object in the 
@@ -63,8 +64,9 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="rs">The <see cref="DbDataReader"/> that contains the value.</param>
 		/// <param name="index">The index of the field to get the value from.</param>
+		/// <param name="session">The session for which the operation is done.</param>
 		/// <returns>An object with the value from the database.</returns>
-		public abstract object Get(DbDataReader rs, int index);
+		public abstract object Get(DbDataReader rs, int index, ISessionImplementor session);
 
 		/// <summary>
 		/// When implemented by a class, gets the object in the 
@@ -72,12 +74,13 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="rs">The <see cref="DbDataReader"/> that contains the value.</param>
 		/// <param name="name">The name of the field to get the value from.</param>
+		/// <param name="session">The session for which the operation is done.</param>
 		/// <returns>An object with the value from the database.</returns>
 		/// <remarks>
-		/// Most implementors just call the <see cref="Get(DbDataReader, int)"/> 
+		/// Most implementors just call the <see cref="Get(DbDataReader, int, ISessionImplementor)"/> 
 		/// overload of this method.
 		/// </remarks>
-		public abstract object Get(DbDataReader rs, string name);
+		public abstract object Get(DbDataReader rs, string name, ISessionImplementor session);
 
 
 		/// <summary>
@@ -116,7 +119,7 @@ namespace NHibernate.Type
 
 		public override void NullSafeSet(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
-			if (settable[0]) NullSafeSet(st, value, index);
+			if (settable[0]) NullSafeSet(st, value, index, session);
 		}
 
 		/// <include file='IType.cs.xmldoc' 
@@ -124,36 +127,19 @@ namespace NHibernate.Type
 		/// /> 
 		/// <remarks>
 		/// <para>
-		/// This implementation forwards the call to <see cref="NullSafeSet(DbCommand, object, int)" />.
+		/// This method has been "sealed" because the Types inheriting from <see cref="NullableType"/>
+		/// do not need to and should not override this method.
 		/// </para>
-		/// <para>
-		/// It has been "sealed" because the Types inheriting from <see cref="NullableType"/>
-		/// do not need to and should not override this method.  All of their implementation
-		/// should be in <see cref="NullSafeSet(DbCommand, object, int)" />.
-		/// </para>
-		/// </remarks>
-		public override sealed void NullSafeSet(DbCommand st, object value, int index, ISessionImplementor session)
-		{
-			NullSafeSet(st, value, index);
-		}
-
-		/// <summary>
-		/// Puts the value from the mapped class into the <see cref="DbCommand"/>.
-		/// </summary>
-		/// <param name="cmd">The <see cref="DbCommand"/> to put the values into.</param>
-		/// <param name="value">The object that contains the values.</param>
-		/// <param name="index">The index of the <see cref="DbParameter"/> to write the value to.</param>
-		/// <remarks>
 		/// <para>
 		/// This method checks to see if value is null, if it is then the value of 
 		/// <see cref="DBNull"/> is written to the <see cref="DbCommand"/>.
 		/// </para>
 		/// <para>
-		/// If the value is not null, then the method <see cref="Set(DbCommand, object, int)"/> 
+		/// If the value is not null, then the method <see cref="Set(DbCommand, object, int, ISessionImplementor)"/> 
 		/// is called and that method is responsible for setting the value.
 		/// </para>
 		/// </remarks>
-		public void NullSafeSet(DbCommand cmd, object value, int index)
+		public sealed override void NullSafeSet(DbCommand st, object value, int index, ISessionImplementor session)
 		{
 			if (value == null)
 			{
@@ -166,7 +152,7 @@ namespace NHibernate.Type
 				// TODO: find out why a certain Parameter would not take a null value...
 				// From reading the .NET SDK the default is to NOT accept a null value. 
 				// I definitely need to look into this more...
-				cmd.Parameters[index].Value = DBNull.Value;
+				st.Parameters[index].Value = DBNull.Value;
 			}
 			else
 			{
@@ -175,7 +161,7 @@ namespace NHibernate.Type
 					Log.Debug("binding '" + ToString(value) + "' to parameter: " + index);
 				}
 
-				Set(cmd, value, index);
+				Set(st, value, index, session);
 			}
 		}
 
@@ -184,13 +170,13 @@ namespace NHibernate.Type
 		/// /> 
 		/// <remarks>
 		/// This has been sealed because no other class should override it.  This 
-		/// method calls <see cref="NullSafeGet(DbDataReader, String)" /> for a single value.  
+		/// method calls <see cref="NullSafeGet(DbDataReader, String, ISessionImplementor)" /> for a single value.  
 		/// It only takes the first name from the string[] names parameter - that is a 
 		/// safe thing to do because a Nullable Type only has one field.
 		/// </remarks>
-		public override sealed object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public sealed override object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			return NullSafeGet(rs, names[0]);
+			return NullSafeGet(rs, names[0], session);
 		}
 
 		/// <summary>
@@ -198,6 +184,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="rs">The DataReader positioned on the correct record</param>
 		/// <param name="names">An array of field names.</param>
+		/// <param name="session">The session for which the operation is done.</param>
 		/// <returns>The value off the field from the DataReader</returns>
 		/// <remarks>
 		/// In this class this just ends up passing the first name to the NullSafeGet method
@@ -208,9 +195,9 @@ namespace NHibernate.Type
 		/// 
 		/// TODO: determine if this is needed
 		/// </remarks>
-		public virtual object NullSafeGet(DbDataReader rs, string[] names)
+		public virtual object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session)
 		{
-			return NullSafeGet(rs, names[0]);
+			return NullSafeGet(rs, names[0], session);
 		}
 
 		/// <summary>
@@ -218,6 +205,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="rs">The <see cref="DbDataReader" /> positioned on the correct record.</param>
 		/// <param name="name">The name of the field to get the value from.</param>
+		/// <param name="session">The session for which the operation is done.</param>
 		/// <returns>The value of the field.</returns>
 		/// <remarks>
 		/// <para>
@@ -225,11 +213,11 @@ namespace NHibernate.Type
 		/// from this method.
 		/// </para>
 		/// <para>
-		/// If the value is not null, then the method <see cref="Get(DbDataReader, Int32)"/> 
+		/// If the value is not null, then the method <see cref="Get(DbDataReader, Int32, ISessionImplementor)"/> 
 		/// is called and that method is responsible for retrieving the value.
 		/// </para>
 		/// </remarks>
-		public virtual object NullSafeGet(DbDataReader rs, string name)
+		public virtual object NullSafeGet(DbDataReader rs, string name, ISessionImplementor session)
 		{
 			int index = rs.GetOrdinal(name);
 
@@ -248,7 +236,7 @@ namespace NHibernate.Type
 				object val;
 				try
 				{
-					val = Get(rs, index);
+					val = Get(rs, index, session);
 				}
 				catch (InvalidCastException ice)
 				{
@@ -272,17 +260,17 @@ namespace NHibernate.Type
 		/// /> 
 		/// <remarks>
 		/// <para>
-		/// This implementation forwards the call to <see cref="NullSafeGet(DbDataReader, String)" />.
+		/// This implementation forwards the call to <see cref="NullSafeGet(DbDataReader, String, ISessionImplementor)" />.
 		/// </para>
 		/// <para>
 		/// It has been "sealed" because the Types inheriting from <see cref="NullableType"/>
 		/// do not need to and should not override this method.  All of their implementation
-		/// should be in <see cref="NullSafeGet(DbDataReader, String)" />.
+		/// should be in <see cref="NullSafeGet(DbDataReader, String, ISessionImplementor)" />.
 		/// </para>
 		/// </remarks>
-		public override sealed object NullSafeGet(DbDataReader rs, string name, ISessionImplementor session, object owner)
+		public sealed override object NullSafeGet(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
-			return NullSafeGet(rs, name);
+			return NullSafeGet(rs, name, session);
 		}
 
 		/// <summary>

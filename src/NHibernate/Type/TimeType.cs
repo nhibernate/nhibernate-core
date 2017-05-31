@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -36,13 +37,12 @@ namespace NHibernate.Type
 			get { return "Time"; }
 		}
 
-		public override object Get(DbDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			try
 			{
-				if(rs[index] is TimeSpan) //For those dialects where DbType.Time means TimeSpan.
+				if (rs[index] is TimeSpan time) //For those dialects where DbType.Time means TimeSpan.
 				{
-					TimeSpan time = (TimeSpan) rs[index];
 					return BaseDateValue.AddTicks(time.Ticks);
 				}
 
@@ -55,9 +55,9 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object Get(DbDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
-			return Get(rs, rs.GetOrdinal(name));
+			return Get(rs, rs.GetOrdinal(name), session);
 		}
 
 		public override System.Type ReturnedClass
@@ -65,9 +65,18 @@ namespace NHibernate.Type
 			get { return typeof(DateTime); }
 		}
 
-		public override void Set(DbCommand st, object value, int index)
+		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
-			st.Parameters[index].Value = ((DateTime)value >= BaseDateValue) ? value : DBNull.Value;
+			var dateTime = (DateTime)value;
+			if (dateTime < BaseDateValue)
+			{
+				st.Parameters[index].Value = DBNull.Value;
+				return;
+			}
+			if (session.Factory.ConnectionProvider.Driver.RequiresTimeSpanForTime)
+				st.Parameters[index].Value = dateTime.TimeOfDay;
+			else
+				st.Parameters[index].Value = dateTime;
 		}
 
 		public override bool IsEqual(object x, object y)
@@ -83,12 +92,12 @@ namespace NHibernate.Type
 
 			DateTime date1 = (DateTime)x;
 			DateTime date2 = (DateTime)y;
-			if(date1.Equals(date2)) 
+			if (date1.Equals(date2))
 				return true;
 
 			return date1.Hour == date2.Hour
-						 && date1.Minute == date2.Minute
-						 && date1.Second == date2.Second;
+				&& date1.Minute == date2.Minute
+				&& date1.Second == date2.Second;
 		}
 
 		public override int GetHashCode(object x)
@@ -106,7 +115,7 @@ namespace NHibernate.Type
 
 		public override string ToString(object val)
 		{
-			return ((DateTime) val).ToString("T");
+			return ((DateTime)val).ToString("T");
 		}
 
 		public object StringToObject(string xml)

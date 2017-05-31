@@ -52,7 +52,7 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 
 		public void NullSafeSet(DbCommand cmd, object value, int index)
 		{
-			NHibernateUtil.Binary.NullSafeSet(cmd, value, index);
+			NHibernateUtil.Binary.NullSafeSet(cmd, value, index, null);
 		}
 
 		public object Replace(object original, object target, object owner)

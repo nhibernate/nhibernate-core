@@ -54,7 +54,7 @@ namespace NHibernate.DomainModel.NHSpecific
 			}
 			else
 			{
-				_int32Type.Set(cmd, value, index);
+				_int32Type.Set(cmd, value, index, null);
 			}
 		}
 
@@ -65,7 +65,7 @@ namespace NHibernate.DomainModel.NHSpecific
 
 		public object NullSafeGet(DbDataReader rs, string[] names, object owner)
 		{
-			return _int32Type.NullSafeGet(rs, names);
+			return _int32Type.NullSafeGet(rs, names, null);
 		}
 
 		public bool IsMutable

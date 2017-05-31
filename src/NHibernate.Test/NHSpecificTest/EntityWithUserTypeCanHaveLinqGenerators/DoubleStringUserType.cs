@@ -34,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 
 		public object NullSafeGet(DbDataReader rs, string[] names, object owner)
 		{
-			object obj = NHibernateUtil.String.NullSafeGet(rs, names[0]);
+			object obj = NHibernateUtil.String.NullSafeGet(rs, names[0], null);
 			if (obj == null)
 			{
 				return null;

@@ -44,7 +44,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				string str = (string) NHibernateUtil.String.Get(rs, index);
+				string str = (string) NHibernateUtil.String.Get(rs, index, session);
 				return string.IsNullOrEmpty(str) ? null : str;
 			}
 		}
@@ -62,7 +62,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				NHibernateUtil.String.Set(st, value, index);
+				NHibernateUtil.String.Set(st, value, index, session);
 			}
 		}
 

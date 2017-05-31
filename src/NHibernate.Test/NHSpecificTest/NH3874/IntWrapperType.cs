@@ -33,7 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3874
 
 		public object NullSafeGet(DbDataReader dr, string[] names, object owner)
 		{
-			object obj = NHNullableType.NullSafeGet(dr, names[0]);
+			object obj = NHNullableType.NullSafeGet(dr, names[0], null);
 			if (obj == null) return null;
 			return new IntWrapper((int)obj);
 		}

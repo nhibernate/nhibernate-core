@@ -52,7 +52,7 @@ namespace NHibernate.Test.TypeParameters
 			}
 			else
 			{
-				_int32Type.Set(cmd, value, index);
+				_int32Type.Set(cmd, value, index, null);
 			}
 		}
 
@@ -63,7 +63,7 @@ namespace NHibernate.Test.TypeParameters
 
 		public object NullSafeGet(DbDataReader rs, string[] names, object owner)
 		{
-			object value = _int32Type.NullSafeGet(rs, names);
+			object value = _int32Type.NullSafeGet(rs, names, null);
 			if (value == null)
 				return defaultValue;
 			return value;

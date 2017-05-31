@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 
@@ -66,7 +67,7 @@ namespace NHibernate.Test
 		{
 			if (value == null)
 			{
-				NHibernateUtil.DateTime.NullSafeSet(cmd, null, index);
+				NHibernateUtil.DateTime.NullSafeSet(cmd, null, index, null);
 			}
 			else
 			{
