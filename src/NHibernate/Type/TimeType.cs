@@ -67,7 +67,17 @@ namespace NHibernate.Type
 
 		public override void Set(DbCommand st, object value, int index)
 		{
-			st.Parameters[index].Value = ((DateTime)value >= BaseDateValue) ? value : DBNull.Value;
+			var dateTime = (DateTime)value;
+			if (dateTime >= BaseDateValue)
+			{
+				st.Parameters[index].Value = (st.Parameters[index].DbType == DbType.DateTime) ?
+					(object) dateTime : 
+					(object) dateTime.TimeOfDay;
+			} 
+			else 
+			{
+				st.Parameters[index].Value = DBNull.Value;
+			}
 		}
 
 		public override bool IsEqual(object x, object y)
