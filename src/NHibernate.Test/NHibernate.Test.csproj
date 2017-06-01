@@ -144,7 +144,6 @@
     <Compile Include="Async\CompositeId\CompositeIdFixture.cs" />
     <Compile Include="Async\ConnectionStringTest\NamedConnectionStringFixture.cs" />
     <Compile Include="Async\ConnectionTest\AggressiveReleaseTest.cs" />
-    <Compile Include="Async\ConnectionTest\ThreadLocalCurrentSessionTest.cs" />
     <Compile Include="Async\Criteria\CriteriaQueryTest.cs" />
     <Compile Include="Async\Criteria\DetachedCriteriaSerializable.cs" />
     <Compile Include="Async\Criteria\Lambda\FunctionsIntegrationFixture.cs" />
@@ -219,8 +218,6 @@
     <Compile Include="Async\IdTest\HiLoTableGeneratorInt64Fixture.cs" />
     <Compile Include="Async\IdTest\IdentityGeneratorFixture.cs" />
     <Compile Include="Async\IdTest\IdentityGeneratorNoPoolingFixture.cs" />
-    <Compile Include="Async\IdTest\MultipleHiLoPerTableGeneratorTest.cs" />
-    <Compile Include="Async\IdTest\UseIdentifierRollbackTest.cs" />
     <Compile Include="Async\Immutable\ImmutableTest.cs" />
     <Compile Include="Async\Insertordering\AnimalModel\Fixture.cs" />
     <Compile Include="Async\Insertordering\FamilyModel\Fixture.cs" />
@@ -246,7 +243,6 @@
     <Compile Include="Async\Legacy\SQLLoaderTest.cs" />
     <Compile Include="Async\Linq\BinaryBooleanExpressionTests.cs" />
     <Compile Include="Async\Linq\BinaryExpressionOrdererTests.cs" />
-    <Compile Include="Async\Linq\BooleanMethodExtensionExample.cs" />
     <Compile Include="Async\Linq\ByMethod\AnyTests.cs" />
     <Compile Include="Async\Linq\ByMethod\AverageTests.cs" />
     <Compile Include="Async\Linq\ByMethod\CountTests.cs" />
@@ -320,7 +316,6 @@
     <Compile Include="Async\NHSpecificTest\ManyToOneFilters20Behaviour\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\MapFixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH0000\Fixture.cs" />
-    <Compile Include="Async\NHSpecificTest\NH1001\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH1007\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH1018\NH1018Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH1027\Fixture.cs" />
@@ -348,8 +343,6 @@
     <Compile Include="Async\NHSpecificTest\NH1179\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH1182\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH1192\Fixture.cs" />
-    <Compile Include="Async\NHSpecificTest\NH1217\Fixture.cs" />
-    <Compile Include="Async\NHSpecificTest\NH1230\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH1230\PreSaveDoVeto.cs" />
     <Compile Include="Async\NHSpecificTest\NH1235\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH1250\PolymorphicJoinFetchFixture.cs" />
@@ -360,8 +353,6 @@
     <Compile Include="Async\NHSpecificTest\NH1274ExportExclude\NH1274ExportExcludeFixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH1275\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH1280\NH1280Fixture.cs" />
-    <Compile Include="Async\NHSpecificTest\NH1284\Fixture.cs" />
-    <Compile Include="Async\NHSpecificTest\NH1289\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH1291AnonExample\NH1291AnonExampleFixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH1293\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH1297\Fixture.cs" />
@@ -437,7 +428,6 @@
     <Compile Include="Async\NHSpecificTest\NH1700\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH1706\KeyPropertyRefFixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH1710\Fixture.cs" />
-    <Compile Include="Async\NHSpecificTest\NH1713\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH1714\SimpleReproductionFixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH1714\UseCaseDemonstrationFixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH1715\Fixture.cs" />
@@ -537,7 +527,6 @@
     <Compile Include="Async\NHSpecificTest\NH2201\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2202\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2204\Fixture.cs" />
-    <Compile Include="Async\NHSpecificTest\NH2207\SampleTest.cs" />
     <Compile Include="Async\NHSpecificTest\NH2214\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2224\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2230\Fixture.cs" />
@@ -572,7 +561,6 @@
     <Compile Include="Async\NHSpecificTest\NH2459\Test.cs" />
     <Compile Include="Async\NHSpecificTest\NH2469\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2470\Class1Class2Tests.cs" />
-    <Compile Include="Async\NHSpecificTest\NH2477\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH247\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2484\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2490\Fixture.cs" />
@@ -590,7 +578,6 @@
     <Compile Include="Async\NHSpecificTest\NH2697\SampleTest.cs" />
     <Compile Include="Async\NHSpecificTest\NH2703\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2705\Test.cs" />
-    <Compile Include="Async\NHSpecificTest\NH2721\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2733\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2736\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2760\Fixture.cs" />
@@ -599,7 +586,6 @@
     <Compile Include="Async\NHSpecificTest\NH2772\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2779\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2789\Fixture.cs" />
-    <Compile Include="Async\NHSpecificTest\NH2806\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2808\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH280\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2812\Fixture.cs" />
@@ -611,13 +597,10 @@
     <Compile Include="Async\NHSpecificTest\NH2869\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2880\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2898\Fixture.cs" />
-    <Compile Include="Async\NHSpecificTest\NH2907\Fixture.cs" />
-    <Compile Include="Async\NHSpecificTest\NH2951\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2955\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2959\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH295\SubclassFixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2960\Fixture.cs" />
-    <Compile Include="Async\NHSpecificTest\NH2969\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH296\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2976\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2982\Fixture.cs" />
@@ -630,7 +613,6 @@
     <Compile Include="Async\NHSpecificTest\NH3057\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3058\SampleTest.cs" />
     <Compile Include="Async\NHSpecificTest\NH3070\Fixture.cs" />
-    <Compile Include="Async\NHSpecificTest\NH3074\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH309\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3121\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3126\InvalidCastTestCase.cs" />
@@ -645,8 +627,6 @@
     <Compile Include="Async\NHSpecificTest\NH3171\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3175\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH317\Fixture.cs" />
-    <Compile Include="Async\NHSpecificTest\NH3182\Fixture.cs" />
-    <Compile Include="Async\NHSpecificTest\NH3187\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH318\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3202\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3221\Fixture.cs" />
@@ -661,7 +641,6 @@
     <Compile Include="Async\NHSpecificTest\NH3377\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3386\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3392\Fixture.cs" />
-    <Compile Include="Async\NHSpecificTest\NH3401\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3428\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3453\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3455\Fixture.cs" />
@@ -669,7 +648,6 @@
     <Compile Include="Async\NHSpecificTest\NH345\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3480\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3487\Fixture.cs" />
-    <Compile Include="Async\NHSpecificTest\NH3489\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3505\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH350\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3518\XmlColumnTest.cs" />
@@ -725,8 +703,6 @@
     <Compile Include="Async\NHSpecificTest\NH637\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH642\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH643\Fixture.cs" />
-    <Compile Include="Async\NHSpecificTest\NH646\Fixture.cs" />
-    <Compile Include="Async\NHSpecificTest\NH662\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH681\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH687\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH704\Fixture.cs" />
