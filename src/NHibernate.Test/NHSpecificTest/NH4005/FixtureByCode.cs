@@ -12,11 +12,6 @@ namespace NHibernate.Test.NHSpecificTest.NH4005
 {
 	public class ByCodeFixture : TestCaseMappingByCode
 	{
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			return dialect is MsSql2000Dialect;
-		}
-
 		protected override HbmMapping GetMappings()
 		{
 			var mapper = new ModelMapper();
