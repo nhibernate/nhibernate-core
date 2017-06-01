@@ -967,6 +967,8 @@
     <Compile Include="NHSpecificTest\NH3909\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3957\ResultTransformerEqualityFixture.cs" />
     <Compile Include="NHSpecificTest\NH3956\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH4005\FixtureByCode.cs" />
+    <Compile Include="NHSpecificTest\NH4005\Person.cs" />
     <Compile Include="NHSpecificTest\NH646\Domain.cs" />
     <Compile Include="NHSpecificTest\NH646\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3234\Fixture.cs" />

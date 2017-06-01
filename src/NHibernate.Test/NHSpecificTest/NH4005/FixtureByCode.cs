@@ -1,29 +1,22 @@
 ﻿using System.Collections;
-using System.Data;
 using System.Linq;
-using System.Reflection;
-using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Dialect;
 using NHibernate.Linq;
 using NHibernate.Mapping;
 using NHibernate.Mapping.ByCode;
-using NHibernate.Mapping.ByCode.Conformist;
-using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
 
-namespace NHibernate.Test.NHSpecificTest.NH4005 {
-	/// <summary>
-	/// Fixture using 'by code' mappings
-	/// </summary>
-	/// <remarks>
-	/// This fixture is identical to <see cref="Fixture" /> except the <see cref="Entity" /> mapping is performed 
-	/// by code in the GetMappings method, and does not require the <c>Mappings.hbm.xml</c> file. Use this approach
-	/// if you prefer.
-	/// </remarks>
+namespace NHibernate.Test.NHSpecificTest.NH4005
+{
 	public class ByCodeFixture : TestCaseMappingByCode
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect is MsSql2000Dialect;
+		}
+
 		protected override HbmMapping GetMappings()
 		{
 			var mapper = new ModelMapper();
@@ -58,25 +51,18 @@ namespace NHibernate.Test.NHSpecificTest.NH4005 {
 			// Add the "Name" property
 			var simpleValue = new SimpleValue(persistentClass.Table) { TypeName = "String" };
 
-			simpleValue.AddColumn(new Column(name)
+			var column = new Column(name)
 			{
 				Value = simpleValue,
 				Length = 100,
 				IsNullable = true,
-			});
+			};
+			simpleValue.Table.AddColumn(column); // <--- HERE
+			simpleValue.AddColumn(column);
 
 			component.AddProperty(new Property() { Name = name, Value = simpleValue });
 		}
 
-		protected override void CreateSchema()
-		{
-			base.CreateSchema();
-
-			ExecuteStatement("ALTER TABLE [Person] ADD [MainFullName] TEXT");
-			ExecuteStatement("ALTER TABLE [Person] ADD [MainEmail] TEXT");
-			ExecuteStatement("ALTER TABLE [Person] ADD [ContactFullName] TEXT");
-			ExecuteStatement("ALTER TABLE [Person] ADD [ContactEmail] TEXT");
-		}
 
 		protected override void OnSetUp()
 		{
@@ -113,7 +99,7 @@ namespace NHibernate.Test.NHSpecificTest.NH4005 {
 			}
 		}
 
-		[Test, Ignore("Not fixed yet")]
+		[Test]
 		public void DynamicComponentConfiguredAtRuntimeWorks()
 		{
 			using (ISession session = OpenSession())
