@@ -30,7 +30,7 @@ namespace NHibernate.Test
 			get { return new[] { new SqlType(DbType.DateTime) }; }
 		}
 
-		public object NullSafeGet(DbDataReader dr, string[] names, object owner)
+		public object NullSafeGet(DbDataReader dr, string[] names, ISessionImplementor session, object owner)
 		{
 			var name = names[0];
 			int index = dr.GetOrdinal(name);
@@ -40,7 +40,7 @@ namespace NHibernate.Test
 				return null;
 			}
 			try
-			{                
+			{
 				DateTime storedTime;
 				try
 				{
@@ -63,11 +63,11 @@ namespace NHibernate.Test
 			}		
 		}
 
-		public void NullSafeSet(DbCommand cmd, object value, int index)
+		public void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			if (value == null)
 			{
-				NHibernateUtil.DateTime.NullSafeSet(cmd, null, index, null);
+				NHibernateUtil.DateTime.NullSafeSet(cmd, null, index, session);
 			}
 			else
 			{
