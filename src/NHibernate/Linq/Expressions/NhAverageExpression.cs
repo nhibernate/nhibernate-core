@@ -6,9 +6,8 @@ namespace NHibernate.Linq.Expressions
 {
 	public class NhAverageExpression : NhAggregatedExpression
 	{
-		public NhAverageExpression(Expression expression) : base(expression, CalculateAverageType(expression.Type), NhExpressionType.Average)
-		{
-		}
+		public NhAverageExpression(Expression expression)
+			: base(expression, CalculateAverageType(expression.Type)) { }
 
 		private static System.Type CalculateAverageType(System.Type inputType)
 		{
@@ -27,7 +26,7 @@ namespace NHibernate.Linq.Expressions
 				case TypeCode.Int64:
 				case TypeCode.Single:
 				case TypeCode.Double:
-					return isNullable ? typeof(double?) : typeof (double);
+					return isNullable ? typeof(double?) : typeof(double);
 				case TypeCode.Decimal:
 					return isNullable ? typeof(decimal?) : typeof(decimal);
 			}
@@ -35,9 +34,8 @@ namespace NHibernate.Linq.Expressions
 			throw new NotSupportedException(inputType.FullName);
 		}
 
-		public override Expression CreateNew(Expression expression)
-		{
-			return new NhAverageExpression(expression);
-		}
+		public override NhExpressionType NhNodeType => NhExpressionType.Average;
+
+		public override Expression CreateNew(Expression expression) => new NhAverageExpression(expression);
 	}
 }

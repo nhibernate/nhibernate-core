@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using NHibernate.Linq.Clauses;
 using NHibernate.Linq.GroupBy;
 using NHibernate.Linq.Visitors;
+using NHibernate.Type;
 using NHibernate.Util;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
@@ -26,20 +26,20 @@ namespace NHibernate.Linq.NestedSelects
 		private static readonly PropertyInfo IGroupingKeyProperty = (PropertyInfo)
 			ReflectHelper.GetProperty<IGrouping<Tuple, Tuple>, Tuple>(g => g.Key);
 
-		public static void ReWrite(QueryModel queryModel, ISessionFactory sessionFactory)
+		public static void ReWrite(QueryModel queryModel, VisitorParameters parameters)
 		{
-			var nsqmv = new NestedSelectDetector(sessionFactory);
-			nsqmv.VisitExpression(queryModel.SelectClause.Selector);
+			var nsqmv = new NestedSelectDetector(parameters.SessionFactory);
+			nsqmv.Visit(queryModel.SelectClause.Selector);
 			if (!nsqmv.HasSubqueries)
 				return;
 
 			var elementExpression = new List<ExpressionHolder>();
-			var group = Expression.Parameter(typeof (IGrouping<Tuple, Tuple>), "g");
-			
+			var group = Expression.Parameter(typeof(IGrouping<Tuple, Tuple>), "g");
+
 			var replacements = new Dictionary<Expression, Expression>();
 			foreach (var expression in nsqmv.Expressions)
 			{
-				var processed = ProcessExpression(queryModel, sessionFactory, expression, elementExpression, group);
+				var processed = ProcessExpression(queryModel, expression, elementExpression, group, parameters);
 				if (processed != null)
 					replacements.Add(expression, processed);
 			}
@@ -48,109 +48,115 @@ namespace NHibernate.Linq.NestedSelects
 
 			var expressions = new List<ExpressionHolder>();
 
-			var identifier = GetIdentifier(sessionFactory, new QuerySourceReferenceExpression(queryModel.MainFromClause));
+			var identifier = GetIdentifier(parameters.SessionFactory, new QuerySourceReferenceExpression(queryModel.MainFromClause));
 
 			var rewriter = new SelectClauseRewriter(key, expressions, identifier, replacements);
 
-			var resultSelector = rewriter.VisitExpression(queryModel.SelectClause.Selector);
+			var resultSelector = rewriter.Visit(queryModel.SelectClause.Selector);
 
 			elementExpression.AddRange(expressions);
 
 			var keySelector = CreateSelector(elementExpression, 0);
 
 			var elementSelector = CreateSelector(elementExpression, 1);
-			
-			var input = Expression.Parameter(typeof (IEnumerable<object>), "input");
+
+			var input = Expression.Parameter(typeof(IEnumerable<object>), "input");
 
 			var lambda = Expression.Lambda(
 				Expression.Call(GroupByMethod,
-								Expression.Call(CastMethod, input),
-								keySelector,
-								elementSelector),
+					Expression.Call(CastMethod, input),
+					keySelector,
+					elementSelector),
 				input);
 
 			queryModel.ResultOperators.Add(new ClientSideSelect2(lambda));
-			queryModel.ResultOperators.Add(new ClientSideSelect(Expression.Lambda(resultSelector, @group)));
+			queryModel.ResultOperators.Add(new ClientSideSelect(Expression.Lambda(resultSelector, group)));
 
 			var initializers = elementExpression.Select(e => ConvertToObject(e.Expression));
 
-			queryModel.SelectClause.Selector = Expression.NewArrayInit(typeof (object), initializers);
+			queryModel.SelectClause.Selector = Expression.NewArrayInit(typeof(object), initializers);
 		}
 
-		private static Expression ProcessExpression(QueryModel queryModel, ISessionFactory sessionFactory, Expression expression, List<ExpressionHolder> elementExpression, ParameterExpression @group)
+		private static Expression ProcessExpression(QueryModel queryModel, Expression expression, List<ExpressionHolder> elementExpression,
+			ParameterExpression group, VisitorParameters parameters)
 		{
-			var memberExpression = expression as MemberExpression;
-			if (memberExpression != null)
-				return ProcessMemberExpression(sessionFactory, elementExpression, queryModel, @group, memberExpression);
-			
-			var subQueryExpression = expression as SubQueryExpression;
-			if (subQueryExpression != null)
-				return ProcessSubquery(sessionFactory, elementExpression, queryModel, @group, subQueryExpression.QueryModel);
-			
+			if (expression is MemberExpression memberExpression)
+				return ProcessMemberExpression(elementExpression, queryModel, group, memberExpression, parameters);
+
+			if (expression is SubQueryExpression subQueryExpression)
+				return ProcessSubquery(elementExpression, queryModel, group, subQueryExpression.QueryModel, parameters);
+
 			return null;
 		}
 
-		private static Expression ProcessSubquery(ISessionFactory sessionFactory, ICollection<ExpressionHolder> elementExpression, QueryModel queryModel, Expression @group, QueryModel subQueryModel)
+		private static Expression ProcessSubquery(ICollection<ExpressionHolder> elementExpression, QueryModel queryModel, Expression group,
+			QueryModel subQueryModel, VisitorParameters parameters)
 		{
 			var subQueryMainFromClause = subQueryModel.MainFromClause;
 
-			var restrictions = subQueryModel.BodyClauses
-											.OfType<WhereClause>()
-											.Select(w => new NhWithClause(w.Predicate));
+			var restrictions = subQueryModel.BodyClauses.OfType<WhereClause>().ToList();
+			var join = new AdditionalFromClause(
+				subQueryMainFromClause.ItemName,
+				subQueryMainFromClause.ItemType,
+				subQueryMainFromClause.FromExpression);
 
-			var join = new NhJoinClause(subQueryMainFromClause.ItemName,
-										subQueryMainFromClause.ItemType,
-										subQueryMainFromClause.FromExpression,
-										restrictions);
+			parameters.AddLeftJoin(join, restrictions);
+			queryModel.BodyClauses.Add(join);
+			foreach (var withClause in restrictions)
+			{
+				queryModel.BodyClauses.Add(withClause);
+			}
 
-			queryModel.BodyClauses.Add(@join);
-
-			var visitor = new SwapQuerySourceVisitor(subQueryMainFromClause, @join);
+			var visitor = new SwapQuerySourceVisitor(subQueryMainFromClause, join);
 
 			queryModel.TransformExpressions(visitor.Swap);
 
 			var selector = subQueryModel.SelectClause.Selector;
 
 			var collectionType = subQueryModel.GetResultType();
-			
+
 			var elementType = selector.Type;
 
-			var source = new QuerySourceReferenceExpression(@join);
+			var source = new QuerySourceReferenceExpression(join);
 
-			return BuildSubCollectionQuery(sessionFactory, elementExpression, @group, source, selector, elementType, collectionType);
+			return BuildSubCollectionQuery(parameters.SessionFactory, elementExpression, group, source, selector, elementType, collectionType);
 		}
 
-		private static Expression ProcessMemberExpression(ISessionFactory sessionFactory, ICollection<ExpressionHolder> elementExpression, QueryModel queryModel, Expression @group, Expression memberExpression)
+		private static Expression ProcessMemberExpression(ICollection<ExpressionHolder> elementExpression, QueryModel queryModel, Expression group,
+			Expression memberExpression, VisitorParameters parameters)
 		{
-			var join = new NhJoinClause(new NameGenerator(queryModel).GetNewName(),
-										GetElementType(memberExpression.Type),
-										memberExpression);
+			var join = new AdditionalFromClause(
+				new NameGenerator(queryModel).GetNewName(),
+				GetElementType(memberExpression.Type),
+				memberExpression);
+			parameters.AddLeftJoin(join, null);
 
-			queryModel.BodyClauses.Add(@join);
+			queryModel.BodyClauses.Add(join);
 
-			var source = new QuerySourceReferenceExpression(@join);
+			var source = new QuerySourceReferenceExpression(join);
 
-			return BuildSubCollectionQuery(sessionFactory, elementExpression, @group, source, source, source.Type, memberExpression.Type);
+			return BuildSubCollectionQuery(parameters.SessionFactory, elementExpression, group, source, source, source.Type, memberExpression.Type);
 		}
 
-		private static Expression BuildSubCollectionQuery(ISessionFactory sessionFactory, ICollection<ExpressionHolder> expressions, Expression @group, Expression source, Expression select, System.Type elementType, System.Type collectionType)
+		private static Expression BuildSubCollectionQuery(ISessionFactory sessionFactory, ICollection<ExpressionHolder> expressions, Expression group,
+			Expression source, Expression select, System.Type elementType, System.Type collectionType)
 		{
 			var predicate = MakePredicate(expressions.Count);
 
 			var identifier = GetIdentifier(sessionFactory, source);
 
-			var selector = MakeSelector(expressions, @select, identifier);
+			var selector = MakeSelector(expressions, select, identifier);
 
-			return SubCollectionQuery(collectionType, elementType, @group, predicate, selector);
+			return SubCollectionQuery(collectionType, elementType, group, predicate, selector);
 		}
 
-		private static LambdaExpression MakeSelector(ICollection<ExpressionHolder> elementExpression, Expression @select, Expression identifier)
+		private static LambdaExpression MakeSelector(ICollection<ExpressionHolder> elementExpression, Expression select, Expression identifier)
 		{
-			var parameter = Expression.Parameter(typeof (Tuple), "value");
+			var parameter = Expression.Parameter(typeof(Tuple), "value");
 
 			var rewriter = new SelectClauseRewriter(parameter, elementExpression, identifier, 1, new Dictionary<Expression, Expression>());
 
-			var selectorBody = rewriter.VisitExpression(@select);
+			var selectorBody = rewriter.Visit(select);
 
 			return Expression.Lambda(selectorBody, parameter);
 		}
@@ -161,27 +167,29 @@ namespace NHibernate.Linq.NestedSelects
 
 			var selectMethod = ReflectionCache.EnumerableMethods.SelectDefinition.MakeGenericMethod(new[] { typeof(Tuple), elementType });
 
-			var select = Expression.Call(selectMethod,
-										 Expression.Call(WhereMethod, source, predicate),
-										 selector);
+			var select = Expression.Call(
+				selectMethod,
+				Expression.Call(WhereMethod, source, predicate),
+				selector);
 
 			if (collectionType.IsArray)
 			{
 				var toArrayMethod = ReflectionCache.EnumerableMethods.ToArrayDefinition.MakeGenericMethod(new[] { elementType });
 
-				var array = Expression.Call(toArrayMethod, @select);
+				var array = Expression.Call(toArrayMethod, select);
 				return array;
 			}
 
 			var constructor = GetCollectionConstructor(collectionType, elementType);
 			if (constructor != null)
-				return Expression.New(constructor, (Expression) @select);
+				return Expression.New(constructor, select);
 
 			var toListMethod = ReflectionCache.EnumerableMethods.ToListDefinition.MakeGenericMethod(new[] { elementType });
 
-			return Expression.Call(Expression.Call(toListMethod, @select),
-								   "AsReadonly",
-								   System.Type.EmptyTypes);
+			return Expression.Call(
+				Expression.Call(toListMethod, select),
+				"AsReadonly",
+				System.Type.EmptyTypes);
 		}
 
 		private static ConstructorInfo GetCollectionConstructor(System.Type collectionType, System.Type elementType)
@@ -201,12 +209,13 @@ namespace NHibernate.Linq.NestedSelects
 		private static LambdaExpression MakePredicate(int index)
 		{
 			// t => Not(ReferenceEquals(t.Items[index], null))
-			var t = Expression.Parameter(typeof (Tuple), "t");
+			var t = Expression.Parameter(typeof(Tuple), "t");
 			return Expression.Lambda(
 				Expression.Not(
-					Expression.Call(ObjectReferenceEquals,
-									ArrayIndex(Expression.Property(t, Tuple.ItemsProperty), index),
-									Expression.Constant(null))),
+					Expression.Call(
+						ObjectReferenceEquals,
+						ArrayIndex(Expression.Property(t, Tuple.ItemsProperty), index),
+						Expression.Constant(null))),
 				t);
 		}
 
@@ -219,26 +228,26 @@ namespace NHibernate.Linq.NestedSelects
 			if (classMetadata == null)
 				return Expression.Constant(null);
 
-            var propertyName=classMetadata.IdentifierPropertyName;
-            NHibernate.Type.EmbeddedComponentType componentType;
-            if (propertyName == null && (componentType=classMetadata.IdentifierType as NHibernate.Type.EmbeddedComponentType)!=null)
-            {
-                //The identifier is an embedded composite key. We only need one property from it for a null check
-                propertyName = componentType.PropertyNames.First();
-            }
+			var propertyName = classMetadata.IdentifierPropertyName;
+			EmbeddedComponentType componentType;
+			if (propertyName == null && (componentType = classMetadata.IdentifierType as EmbeddedComponentType) != null)
+			{
+				//The identifier is an embedded composite key. We only need one property from it for a null check
+				propertyName = componentType.PropertyNames.First();
+			}
 
-            return ConvertToObject(Expression.PropertyOrField(expression, propertyName));
+			return ConvertToObject(Expression.PropertyOrField(expression, propertyName));
 		}
 
 		private static LambdaExpression CreateSelector(IEnumerable<ExpressionHolder> expressions, int tuple)
 		{
-			var parameter = Expression.Parameter(typeof (object[]), "x");
+			var parameter = Expression.Parameter(typeof(object[]), "x");
 
-			var initializers = expressions.Select((x, index) => new { x.Tuple, index})
+			var initializers = expressions.Select((x, index) => new { x.Tuple, index })
 				.Where(x => x.Tuple == tuple)
 				.Select(x => ArrayIndex(parameter, x.index));
 
-			var newArrayInit = Expression.NewArrayInit(typeof (object), initializers);
+			var newArrayInit = Expression.NewArrayInit(typeof(object), initializers);
 
 			return Expression.Lambda(
 				Expression.New(Tuple.Constructor, newArrayInit),
@@ -252,7 +261,7 @@ namespace NHibernate.Linq.NestedSelects
 
 		private static Expression ConvertToObject(Expression expression)
 		{
-			return Expression.Convert(expression, typeof (object));
+			return Expression.Convert(expression, typeof(object));
 		}
 
 		private static System.Type GetElementType(System.Type type)
@@ -261,6 +270,6 @@ namespace NHibernate.Linq.NestedSelects
 			if (elementType == null)
 				throw new NotSupportedException("Unknown collection type " + type.FullName);
 			return elementType;
-	}
+		}
 	}
 }

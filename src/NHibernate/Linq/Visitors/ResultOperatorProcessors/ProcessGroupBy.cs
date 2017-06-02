@@ -16,7 +16,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 			else
 				groupByKeys = new[] {resultOperator.KeySelector};
 
-			IEnumerable<HqlExpression> hqlGroupByKeys = groupByKeys.Select(k => HqlGeneratorExpressionTreeVisitor.Visit(k, queryModelVisitor.VisitorParameters).AsExpression());
+			IEnumerable<HqlExpression> hqlGroupByKeys = groupByKeys.Select(k => HqlGeneratorExpressionVisitor.Visit(k, queryModelVisitor.VisitorParameters).AsExpression());
 
         	tree.AddGroupByClause(tree.TreeBuilder.GroupBy(hqlGroupByKeys.ToArray()));
         }

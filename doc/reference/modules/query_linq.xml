@@ -539,16 +539,18 @@ IList<Cat> cats =
       <programlisting><![CDATA[public static class CustomLinqExtensions
 {
     [LinqExtensionMethod("dbo.aCustomFunction")]
+    [DBOnly]
     public static string ACustomFunction(this string input, string otherInput)
     {
         throw new NotImplementedException();
     }
 }]]></programlisting>
       <para>
-        The method call will always be translated to SQL if at least one of the parameters of the
-        method call has its value originating from an entity. Otherwise, the Linq provider will try to
-        evaluate the method call with .Net runtime instead. Since NHibernate 5.0, if this runtime
-        evaluation fails (throws an exception), then the method call will be translated to SQL too.
+        By default, the Linq provider will try to evaluate the method call with .Net runtime
+        whenever possible, instead of translating it to SQL. It will not do it if at least one
+        of the parameters of the method call has its value originating from an entity, or if
+        the method is marked with the <literal>DBOnly</literal> attribute (available since
+        NHibernate 5.0).
       </para>
     </sect2>
 
@@ -655,6 +657,13 @@ cfg.LinqToHqlGeneratorsRegistry<ExtendedLinqToHqlGeneratorsRegistry>();
         .Min();]]></programlisting>
       <para>
         (Of course, the same result could be obtained with <literal>(DateTime?)(c.BirthDate)</literal>.)
+      </para>
+      <para>
+        By default, the Linq provider will try to evaluate the method call with .Net runtime
+        whenever possible, instead of translating it to SQL. It will not do it if at least one
+        of the parameters of the method call has its value originating from an entity, or if
+        the method is marked with the <literal>DBOnly</literal> attribute (available since
+        NHibernate 5.0).
       </para>
     </sect2>
   </sect1>

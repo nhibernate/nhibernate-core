@@ -10,7 +10,7 @@ using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.StreamedData;
 using Remotion.Linq.EagerFetching.Parsing;
-using Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation;
+using Remotion.Linq.Parsing.ExpressionVisitors.Transformation;
 using Remotion.Linq.Parsing.Structure;
 using Remotion.Linq.Parsing.Structure.ExpressionTreeProcessors;
 using Remotion.Linq.Parsing.Structure.IntermediateModel;
@@ -55,7 +55,7 @@ namespace NHibernate.Linq
 		/// <returns>The transformed expression.</returns>
 		public static Expression PreTransform(Expression expression)
 		{
-			var partiallyEvaluatedExpression = NhPartialEvaluatingExpressionTreeVisitor.EvaluateIndependentSubtrees(expression);
+			var partiallyEvaluatedExpression = NhPartialEvaluatingExpressionVisitor.EvaluateIndependentSubtrees(expression);
 			return PreProcessor.Process(partiallyEvaluatedExpression);
 		}
 
@@ -140,9 +140,8 @@ namespace NHibernate.Linq
 			return Source.Resolve(inputParameter, expressionToBeResolved, clauseGenerationContext);
 		}
 
-		protected override QueryModel ApplyNodeSpecificSemantics(QueryModel queryModel, ClauseGenerationContext clauseGenerationContext)
+		protected override void ApplyNodeSpecificSemantics(QueryModel queryModel, ClauseGenerationContext clauseGenerationContext)
 		{
-			return queryModel;
 		}
 	}
 

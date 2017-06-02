@@ -41,7 +41,7 @@ namespace NHibernate.Linq
 			_constantToParameterMap = ExpressionParameterVisitor.Visit(ref _expression, sessionFactory);
 
 			ParameterValuesByName = _constantToParameterMap.Values.ToDictionary(p => p.Name,
-																				p => System.Tuple.Create(p.Value, p.Type));
+				p => System.Tuple.Create(p.Value, p.Type));
 
 			Key = ExpressionKeyVisitor.Visit(_expression, _constantToParameterMap);
 
@@ -62,15 +62,15 @@ namespace NHibernate.Linq
 			var requiredHqlParameters = new List<NamedParameterDescriptor>();
 			var querySourceNamer = new QuerySourceNamer();
 			var queryModel = NhRelinqQueryParser.Parse(_expression);
-			var visitorParameters = new VisitorParameters(sessionFactory, _constantToParameterMap, requiredHqlParameters, querySourceNamer);
+			var visitorParameters = new VisitorParameters(sessionFactory, _constantToParameterMap, requiredHqlParameters, querySourceNamer, ReturnType);
 
-			ExpressionToHqlTranslationResults = QueryModelVisitor.GenerateHqlQuery(queryModel, visitorParameters, true, ReturnType);
+			ExpressionToHqlTranslationResults = QueryModelVisitor.GenerateHqlQuery(queryModel, visitorParameters, true);
 
 			if (ExpressionToHqlTranslationResults.ExecuteResultTypeOverride != null)
 				Type = ExpressionToHqlTranslationResults.ExecuteResultTypeOverride;
 
 			ParameterDescriptors = requiredHqlParameters.AsReadOnly();
-			
+
 			return ExpressionToHqlTranslationResults.Statement.AstNode;
 		}
 

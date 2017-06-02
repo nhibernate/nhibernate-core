@@ -5,57 +5,51 @@ using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.NestedSelects
 {
-	class SelectClauseRewriter : ExpressionTreeVisitor
+	class SelectClauseRewriter : RelinqExpressionVisitor
 	{
 		private readonly Dictionary<Expression, Expression> _dictionary;
+		private readonly ICollection<ExpressionHolder> _expressions;
+		private readonly Expression _parameter;
+		private readonly int _tuple;
 
-		readonly ICollection<ExpressionHolder> expressions;
-		readonly Expression parameter;
-		readonly int tuple;
+		public SelectClauseRewriter(Expression parameter, ICollection<ExpressionHolder> expressions, Expression expression,
+			Dictionary<Expression, Expression> dictionary)
+			: this(parameter, expressions, expression, 0, dictionary) { }
 
-		public SelectClauseRewriter(Expression parameter, ICollection<ExpressionHolder> expressions, Expression expression, Dictionary<Expression, Expression> dictionary) 
-			: this(parameter, expressions, expression, 0, dictionary)
+		public SelectClauseRewriter(Expression parameter, ICollection<ExpressionHolder> expressions, Expression expression,
+			int tuple, Dictionary<Expression, Expression> dictionary)
 		{
-		}
-
-		public SelectClauseRewriter(Expression parameter, ICollection<ExpressionHolder> expressions, Expression expression, int tuple, Dictionary<Expression, Expression> dictionary)
-		{
-			this.expressions = expressions;
-			this.parameter = parameter;
-			this.tuple = tuple;
-			this.expressions.Add(new ExpressionHolder { Expression = expression, Tuple = tuple }); //ID placeholder
+			_expressions = expressions;
+			_parameter = parameter;
+			_tuple = tuple;
+			_expressions.Add(new ExpressionHolder { Expression = expression, Tuple = tuple }); //ID placeholder
 			_dictionary = dictionary;
 		}
 
-		public override Expression VisitExpression(Expression expression)
+		public override Expression Visit(Expression expression)
 		{
 			if (expression == null)
 				return null;
-			Expression replacement;
-			if (_dictionary.TryGetValue(expression, out replacement))
+			if (_dictionary.TryGetValue(expression, out Expression replacement))
 				return replacement;
 
-			return base.VisitExpression(expression);
+			return base.Visit(expression);
 		}
 
-		protected override Expression VisitMemberExpression(MemberExpression expression)
-		{
-			return AddAndConvertExpression(expression);
-		}
+		protected override Expression VisitMember(MemberExpression expression)
+			=> AddAndConvert(expression);
 
-		protected override Expression VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
-		{
-			return AddAndConvertExpression(expression);
-		}
+		protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression expression)
+			=> AddAndConvert(expression);
 
-		private Expression AddAndConvertExpression(Expression expression)
+		private Expression AddAndConvert(Expression expression)
 		{
-			expressions.Add(new ExpressionHolder { Expression = expression, Tuple = tuple });
+			_expressions.Add(new ExpressionHolder { Expression = expression, Tuple = _tuple });
 
 			return Expression.Convert(
 				Expression.ArrayIndex(
-					Expression.Property(parameter, Tuple.ItemsProperty),
-					Expression.Constant(expressions.Count - 1)),
+					Expression.Property(_parameter, Tuple.ItemsProperty),
+					Expression.Constant(_expressions.Count - 1)),
 				expression.Type);
 		}
 	}

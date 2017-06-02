@@ -5,7 +5,7 @@ using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.GroupJoin
 {
-	public class LocateGroupJoinQuerySource : ExpressionTreeVisitor
+	public class LocateGroupJoinQuerySource : RelinqExpressionVisitor
 	{
 		private readonly IsAggregatingResults _results;
 		private GroupJoinClause _groupJoin;
@@ -17,19 +17,18 @@ namespace NHibernate.Linq.GroupJoin
 
 		public GroupJoinClause Detect(Expression expression)
 		{
-			VisitExpression(expression);
+			Visit(expression);
 			return _groupJoin;
 		}
 
-		protected override Expression VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
+		protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression expression)
 		{
-			var groupJoinClause = expression.ReferencedQuerySource as GroupJoinClause;
-			if (groupJoinClause != null && _results.AggregatingClauses.Contains(groupJoinClause))
+			if (expression.ReferencedQuerySource is GroupJoinClause groupJoinClause && _results.AggregatingClauses.Contains(groupJoinClause))
 			{
 				_groupJoin = groupJoinClause;
 			}
 
-			return base.VisitQuerySourceReferenceExpression(expression);
+			return base.VisitQuerySourceReference(expression);
 		}
 	}
 }

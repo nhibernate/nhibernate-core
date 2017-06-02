@@ -61,6 +61,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3386
 	public static class SqlServerFunction
 	{
 		[LinqExtensionMethod]
+		[DBOnly]
 		public static Guid NewID()
 		{
 			throw new InvalidOperationException("To be translated to SQL only");

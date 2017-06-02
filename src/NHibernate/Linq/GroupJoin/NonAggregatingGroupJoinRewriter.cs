@@ -64,7 +64,7 @@ namespace NHibernate.Linq.Visitors
 				//                join s in dc.Status on o.StatusId equals s.Id into os
 				//                from y in os.DefaultIfEmpty()
 				//                select new { o.OrderNumber, x.VendorName, y.StatusName }
-				//            This is used to repesent an outer join, and again the "from" is removing the hierarchy. So
+				//            This is used to represent an outer join, and again the "from" is removing the hierarchy. So
 				//            simply change the group join to an outer join
 
 				_locator = new QuerySourceUsageLocator(nonAggregatingJoin);
@@ -122,39 +122,20 @@ namespace NHibernate.Linq.Visitors
 		}
 
 		private bool IsOuterJoin(GroupJoinClause nonAggregatingJoin)
-		{
-			return false;
-		}
+			=> false;
 
 		private bool IsFlattenedJoin(GroupJoinClause nonAggregatingJoin)
-		{
-			if (_locator.Clauses.Count == 1)
-			{
-				var from = _locator.Clauses[0] as AdditionalFromClause;
-
-				if (from != null)
-				{
-					return true;
-				}
-			}
-
-			return false;
-		}
+			=> _locator.Clauses.Count == 1 && _locator.Clauses[0] is AdditionalFromClause from;
 
 		private bool IsHierarchicalJoin(GroupJoinClause nonAggregatingJoin)
-		{
-			return _locator.Clauses.Count == 0;
-		}
+			=> _locator.Clauses.Count == 0;
 
 		// TODO - rename this and share with the AggregatingGroupJoinRewriter
 		private IsAggregatingResults GetGroupJoinInformation(IEnumerable<GroupJoinClause> clause)
-		{
-			return GroupJoinAggregateDetectionVisitor.Visit(clause, _model.SelectClause.Selector);
-		}
-
+			=> GroupJoinAggregateDetectionVisitor.Visit(clause, _model.SelectClause.Selector);
 	}
 
-	internal class QuerySourceUsageLocator : ExpressionTreeVisitor
+	internal class QuerySourceUsageLocator : RelinqExpressionVisitor
 	{
 		private readonly IQuerySource _querySource;
 		private bool _references;
@@ -165,10 +146,7 @@ namespace NHibernate.Linq.Visitors
 			_querySource = querySource;
 		}
 
-		public IList<IBodyClause> Clauses
-		{
-			get { return _clauses.AsReadOnly(); }
-		}
+		public IList<IBodyClause> Clauses => _clauses.AsReadOnly();
 
 		public void Search(IBodyClause clause)
 		{
@@ -184,11 +162,11 @@ namespace NHibernate.Linq.Visitors
 
 		private Expression ExpressionSearcher(Expression arg)
 		{
-			VisitExpression(arg);
+			Visit(arg);
 			return arg;
 		}
 
-		protected override Expression VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
+		protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression expression)
 		{
 			if (expression.ReferencedQuerySource == _querySource)
 			{

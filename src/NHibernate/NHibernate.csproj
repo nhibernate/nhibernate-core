@@ -79,10 +79,14 @@
       <HintPath>..\packages\Iesi.Collections.4.0.1.4000\lib\net40\Iesi.Collections.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Remotion.Linq, Version=1.15.15.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
-      <HintPath>..\packages\Remotion.Linq.1.15.15.0\lib\portable-net45+wp80+wpa81+win\Remotion.Linq.dll</HintPath>
+    <Reference Include="Remotion.Linq, Version=2.1.0.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Remotion.Linq.2.1.1\lib\net45\Remotion.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="Remotion.Linq.EagerFetching, Version=2.0.0.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Remotion.Linq.EagerFetching.2.0.1\lib\net45\Remotion.Linq.EagerFetching.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.ServiceModel" />
@@ -144,6 +148,14 @@
     <Compile Include="Connection\DriverConnectionProvider.cs" />
     <Compile Include="Connection\IConnectionProvider.cs" />
     <Compile Include="Connection\UserSuppliedConnectionProvider.cs" />
+    <Compile Include="Linq\Expressions\NhAggregatedExpression.cs" />
+    <Compile Include="Linq\Expressions\NhExpression.cs" />
+    <Compile Include="Linq\Expressions\NhExpressionType.cs" />
+    <Compile Include="Linq\Expressions\NhStarExpression.cs" />
+    <Compile Include="Linq\DBOnlyAttribute.cs" />
+    <Compile Include="Linq\Visitors\HqlGeneratorExpressionVisitor.cs" />
+    <Compile Include="Linq\Visitors\NhExpressionVisitor.cs" />
+    <Compile Include="Linq\Visitors\NhPartialEvaluatingExpressionVisitor.cs" />
     <Compile Include="Dialect\PostgreSQL83Dialect.cs" />
     <Compile Include="Impl\ISharedSessionCreationOptions.cs" />
     <Compile Include="ISharedSessionBuilder.cs" />
@@ -301,9 +313,6 @@
     <Compile Include="ISessionFactory.cs" />
     <Compile Include="ITransaction.cs" />
     <Compile Include="LazyInitializationException.cs" />
-    <Compile Include="Linq\Clauses\NhHavingClause.cs" />
-    <Compile Include="Linq\Clauses\NhJoinClause.cs" />
-    <Compile Include="Linq\Clauses\NhWithClause.cs" />
     <Compile Include="Linq\ExpressionExtensions.cs" />
     <Compile Include="Linq\Expressions\NhNominatedExpression.cs" />
     <Compile Include="Linq\ExpressionTransformers\RemoveCharToIntConversion.cs" />
@@ -329,7 +338,6 @@
     <Compile Include="Linq\ExpressionTransformers\SimplifyCompareTransformer.cs" />
     <Compile Include="Linq\LinqLogging.cs" />
     <Compile Include="Linq\SqlMethods.cs" />
-    <Compile Include="Linq\Visitors\NhPartialEvaluatingExpressionTreeVisitor.cs" />
     <Compile Include="Linq\QuerySourceNamer.cs" />
     <Compile Include="Linq\ReWriters\AddJoinsReWriter.cs" />
     <Compile Include="Linq\ReWriters\MoveOrderByToEndRewriter.cs" />
@@ -984,11 +992,9 @@
     <Compile Include="Linq\Functions\StandardLinqExtensionMethodGenerator.cs" />
     <Compile Include="Linq\LinqExtensionMethodAttribute.cs" />
     <Compile Include="Linq\NhRelinqQueryParser.cs" />
-    <Compile Include="Linq\Expressions\NhAggregatedExpression.cs" />
     <Compile Include="Linq\Expressions\NhAverageExpression.cs" />
     <Compile Include="Linq\Expressions\NhCountExpression.cs" />
     <Compile Include="Linq\Expressions\NhDistinctExpression.cs" />
-    <Compile Include="Linq\Expressions\NhExpressionType.cs" />
     <Compile Include="Linq\Expressions\NhMaxExpression.cs" />
     <Compile Include="Linq\Expressions\NhMinExpression.cs" />
     <Compile Include="Linq\Expressions\NhSumExpression.cs" />
@@ -1048,11 +1054,9 @@
     <Compile Include="Linq\ExpressionToHqlTranslationResults.cs" />
     <Compile Include="Linq\EnumerableHelper.cs" />
     <Compile Include="Linq\GroupBy\GroupBySelectClauseRewriter.cs" />
-    <Compile Include="Linq\Visitors\HqlGeneratorExpressionTreeVisitor.cs" />
     <Compile Include="Linq\LinqExtensionMethods.cs" />
     <Compile Include="Linq\ReWriters\MergeAggregatingResultsRewriter.cs" />
     <Compile Include="Param\NamedParameter.cs" />
-    <Compile Include="Linq\Visitors\NhExpressionTreeVisitor.cs" />
     <Compile Include="Linq\Expressions\NhNewExpression.cs" />
     <Compile Include="Linq\NhQueryable.cs" />
     <Compile Include="Linq\ResultOperators\NonAggregatingGroupBy.cs" />
@@ -1804,6 +1808,7 @@
     <Antlr3 Include="Hql\Ast\ANTLR\Hql.g" />
     <Antlr3 Include="Hql\Ast\ANTLR\HqlSqlWalker.g" />
     <Antlr3 Include="Hql\Ast\ANTLR\SqlGenerator.g" />
+    <None Include="app.config" />
     <None Include="NHibernate.build" />
     <None Include="NHibernate.nuspec.template" />
     <None Include="packages.config" />

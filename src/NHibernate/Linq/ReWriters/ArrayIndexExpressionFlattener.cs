@@ -5,17 +5,17 @@ using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.ReWriters
 {
-	public class ArrayIndexExpressionFlattener : ExpressionTreeVisitor
+	public class ArrayIndexExpressionFlattener : RelinqExpressionVisitor
 	{
 		public static void ReWrite(QueryModel model)
 		{
 			var visitor = new ArrayIndexExpressionFlattener();
-			model.TransformExpressions(visitor.VisitExpression);
+			model.TransformExpressions(visitor.Visit);
 		}
 
-		protected override Expression VisitBinaryExpression(BinaryExpression expression)
+		protected override Expression VisitBinary(BinaryExpression expression)
 		{
-			var visitedExpression = base.VisitBinaryExpression(expression);
+			var visitedExpression = base.VisitBinary(expression);
 
 			if (visitedExpression.NodeType != ExpressionType.ArrayIndex)
 				return visitedExpression;
@@ -25,16 +25,16 @@ namespace NHibernate.Linq.ReWriters
 				return visitedExpression;
 
 			var expressionList = expression.Left as NewArrayExpression;
-			if (expressionList == null ||  expressionList.NodeType != ExpressionType.NewArrayInit)
+			if (expressionList == null || expressionList.NodeType != ExpressionType.NewArrayInit)
 				return visitedExpression;
 
-			return VisitExpression(expressionList.Expressions[(int)index.Value]);
+			return Visit(expressionList.Expressions[(int)index.Value]);
 		}
 
-		protected override Expression VisitSubQueryExpression(SubQueryExpression expression)
+		protected override Expression VisitSubQuery(SubQueryExpression expression)
 		{
 			ReWrite(expression.QueryModel);
-			return expression; // Note that we modifiy the (mutable) QueryModel, we return an unchanged expression
+			return expression; // Note that we modify the (mutable) QueryModel, we return an unchanged expression
 		}
 	}
 }

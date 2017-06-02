@@ -34,7 +34,7 @@ namespace NHibernate.Linq.Visitors
 	/// a.B.C == 1 &amp;&amp; a.D.E == 1 can be inner joined.
 	/// a.B.C == 1 || a.D.E == 1 must be outer joined.
 	/// 
-	/// By default we outer join via the code in VisitExpression.  The use of inner joins is only
+	/// By default we outer join via the code in Visit.  The use of inner joins is only
 	/// an optimization hint to the database.
 	/// 
 	/// More examples:
@@ -56,14 +56,14 @@ namespace NHibernate.Linq.Visitors
 	/// 
 	/// The code here is based on the excellent work started by Harald Mueller.
 	/// </summary>
-	internal class WhereJoinDetector : ExpressionTreeVisitor
+	internal class WhereJoinDetector : RelinqExpressionVisitor
 	{
 		// TODO: There are a number of types of expressions that we didn't handle here due to time constraints.  For example, the ?: operator could be checked easily.
 		private readonly IIsEntityDecider _isEntityDecider;
 		private readonly IJoiner _joiner;
 
 		private readonly Stack<bool> _handled = new Stack<bool>();
-		
+
 		// Stack of result values of each expression.  After an expression has processed itself, it adds itself to the stack.
 		private readonly Stack<ExpressionValues> _values = new Stack<ExpressionValues>();
 
@@ -78,7 +78,7 @@ namespace NHibernate.Linq.Visitors
 
 		public void Transform(WhereClause whereClause)
 		{
-			whereClause.TransformExpressions(VisitExpression);
+			whereClause.TransformExpressions(Visit);
 
 			var values = _values.Pop();
 
@@ -92,7 +92,7 @@ namespace NHibernate.Linq.Visitors
 			}
 		}
 
-		public override Expression VisitExpression(Expression expression)
+		public override Expression Visit(Expression expression)
 		{
 			if (expression == null)
 				return null;
@@ -104,13 +104,13 @@ namespace NHibernate.Linq.Visitors
 			_handled.Push(false);
 			int originalCount = _values.Count;
 
-			Expression result = base.VisitExpression(expression);
+			Expression result = base.Visit(expression);
 
 			if (!_handled.Pop())
 			{
 				// If this expression was not handled in a known way, we throw away any values that might
 				// have been returned and we return "all values" for this expression, since we don't know
-				// what the expresson might result in.
+				// what the expression might result in.
 				while (_values.Count > originalCount)
 					_values.Pop();
 				_values.Push(new ExpressionValues(PossibleValueSet.CreateAllValues(expression.Type)));
@@ -119,174 +119,164 @@ namespace NHibernate.Linq.Visitors
 			return result;
 		}
 
-		protected override Expression VisitBinaryExpression(BinaryExpression expression)
+		protected override Expression VisitBinary(BinaryExpression expression)
 		{
-			var result = base.VisitBinaryExpression(expression);
+			var result = base.VisitBinary(expression);
 
-			if (expression.NodeType == ExpressionType.AndAlso)
+			switch (expression.NodeType)
 			{
-				HandleBinaryOperation((a, b) => a.AndAlso(b));
-			}
-			else if (expression.NodeType == ExpressionType.OrElse)
-			{
-				HandleBinaryOperation((a, b) => a.OrElse(b));
-			}
-			else if (expression.NodeType == ExpressionType.NotEqual && VisitorUtil.IsNullConstant(expression.Right))
-			{
-				// Discard result from right null.  Left is visited first, so it's below right on the stack.
-				_values.Pop();
+				case ExpressionType.AndAlso:
+					HandleBinaryOperation((a, b) => a.AndAlso(b));
+					break;
+				case ExpressionType.OrElse:
+					HandleBinaryOperation((a, b) => a.OrElse(b));
+					break;
 
-				HandleUnaryOperation(pvs => pvs.IsNotNull());
-			}
-			else if (expression.NodeType == ExpressionType.NotEqual && VisitorUtil.IsNullConstant(expression.Left))
-			{
-				// Discard result from left null.
-				var right = _values.Pop();
-				_values.Pop(); // Discard left.
-				_values.Push(right);
+				case ExpressionType.NotEqual:
+					if (VisitorUtil.IsNullConstant(expression.Right))
+					{
+						// Discard result from right null.  Left is visited first, so it's below right on the stack.
+						_values.Pop();
+						HandleUnaryOperation(pvs => pvs.IsNotNull());
+					}
+					else if (VisitorUtil.IsNullConstant(expression.Left))
+					{
+						// Discard result from left null.
+						var right = _values.Pop();
+						_values.Pop(); // Discard left.
+						_values.Push(right);
+						HandleUnaryOperation(pvs => pvs.IsNotNull());
+					}
+					else
+					{
+						HandleBinaryOperation((a, b) => a.NotEqual(b));
+					}
+					break;
 
-				HandleUnaryOperation(pvs => pvs.IsNotNull());
-			}
-			else if (expression.NodeType == ExpressionType.Equal && VisitorUtil.IsNullConstant(expression.Right))
-			{
-				// Discard result from right null.  Left is visited first, so it's below right on the stack.
-				_values.Pop();
+				case ExpressionType.Equal:
+					if (VisitorUtil.IsNullConstant(expression.Right))
+					{
+						// Discard result from right null.  Left is visited first, so it's below right on the stack.
+						_values.Pop();
+						HandleUnaryOperation(pvs => pvs.IsNull());
+					}
+					else if (VisitorUtil.IsNullConstant(expression.Left))
+					{
+						// Discard result from left null.
+						var right = _values.Pop();
+						_values.Pop(); // Discard left.
+						_values.Push(right);
+						HandleUnaryOperation(pvs => pvs.IsNull());
+					}
+					else
+					{
+						HandleBinaryOperation((a, b) => a.Equal(b));
+					}
+					break;
 
-				HandleUnaryOperation(pvs => pvs.IsNull());
-			}
-			else if (expression.NodeType == ExpressionType.Equal && VisitorUtil.IsNullConstant(expression.Left))
-			{
-				// Discard result from left null.
-				var right = _values.Pop();
-				_values.Pop(); // Discard left.
-				_values.Push(right);
-
-				HandleUnaryOperation(pvs => pvs.IsNull());
-			}
-			else if (expression.NodeType == ExpressionType.Coalesce)
-			{
-				HandleBinaryOperation((a, b) => a.Coalesce(b));
-			}
-			else if (expression.NodeType == ExpressionType.Add || expression.NodeType == ExpressionType.AddChecked)
-			{
-				HandleBinaryOperation((a, b) => a.Add(b, expression.Type));
-			}
-			else if (expression.NodeType == ExpressionType.Divide)
-			{
-				HandleBinaryOperation((a, b) => a.Divide(b, expression.Type));
-			}
-			else if (expression.NodeType == ExpressionType.Modulo)
-			{
-				HandleBinaryOperation((a, b) => a.Modulo(b, expression.Type));
-			}
-			else if (expression.NodeType == ExpressionType.Multiply || expression.NodeType == ExpressionType.MultiplyChecked)
-			{
-				HandleBinaryOperation((a, b) => a.Multiply(b, expression.Type));
-			}
-			else if (expression.NodeType == ExpressionType.Power)
-			{
-				HandleBinaryOperation((a, b) => a.Power(b, expression.Type));
-			}
-			else if (expression.NodeType == ExpressionType.Subtract || expression.NodeType == ExpressionType.SubtractChecked)
-			{
-				HandleBinaryOperation((a, b) => a.Subtract(b, expression.Type));
-			}
-			else if (expression.NodeType == ExpressionType.And)
-			{
-				HandleBinaryOperation((a, b) => a.And(b, expression.Type));
-			}
-			else if (expression.NodeType == ExpressionType.Or)
-			{
-				HandleBinaryOperation((a, b) => a.Or(b, expression.Type));
-			}
-			else if (expression.NodeType == ExpressionType.ExclusiveOr)
-			{
-				HandleBinaryOperation((a, b) => a.ExclusiveOr(b, expression.Type));
-			}
-			else if (expression.NodeType == ExpressionType.LeftShift)
-			{
-				HandleBinaryOperation((a, b) => a.LeftShift(b, expression.Type));
-			}
-			else if (expression.NodeType == ExpressionType.RightShift)
-			{
-				HandleBinaryOperation((a, b) => a.RightShift(b, expression.Type));
-			}
-			else if (expression.NodeType == ExpressionType.Equal)
-			{
-				HandleBinaryOperation((a, b) => a.Equal(b));
-			}
-			else if (expression.NodeType == ExpressionType.NotEqual)
-			{
-				HandleBinaryOperation((a, b) => a.NotEqual(b));
-			}
-			else if (expression.NodeType == ExpressionType.GreaterThanOrEqual)
-			{
-				HandleBinaryOperation((a, b) => a.GreaterThanOrEqual(b));
-			}
-			else if (expression.NodeType == ExpressionType.GreaterThan)
-			{
-				HandleBinaryOperation((a, b) => a.GreaterThan(b));
-			}
-			else if (expression.NodeType == ExpressionType.LessThan)
-			{
-				HandleBinaryOperation((a, b) => a.LessThan(b));
-			}
-			else if (expression.NodeType == ExpressionType.LessThanOrEqual)
-			{
-				HandleBinaryOperation((a, b) => a.LessThanOrEqual(b));
+				case ExpressionType.Coalesce:
+					HandleBinaryOperation((a, b) => a.Coalesce(b));
+					break;
+				case ExpressionType.Add:
+				case ExpressionType.AddChecked:
+					HandleBinaryOperation((a, b) => a.Add(b, expression.Type));
+					break;
+				case ExpressionType.Divide:
+					HandleBinaryOperation((a, b) => a.Divide(b, expression.Type));
+					break;
+				case ExpressionType.Modulo:
+					HandleBinaryOperation((a, b) => a.Modulo(b, expression.Type));
+					break;
+				case ExpressionType.Multiply:
+				case ExpressionType.MultiplyChecked:
+					HandleBinaryOperation((a, b) => a.Multiply(b, expression.Type));
+					break;
+				case ExpressionType.Power:
+					HandleBinaryOperation((a, b) => a.Power(b, expression.Type));
+					break;
+				case ExpressionType.Subtract:
+				case ExpressionType.SubtractChecked:
+					HandleBinaryOperation((a, b) => a.Subtract(b, expression.Type));
+					break;
+				case ExpressionType.And:
+					HandleBinaryOperation((a, b) => a.And(b, expression.Type));
+					break;
+				case ExpressionType.Or:
+					HandleBinaryOperation((a, b) => a.Or(b, expression.Type));
+					break;
+				case ExpressionType.ExclusiveOr:
+					HandleBinaryOperation((a, b) => a.ExclusiveOr(b, expression.Type));
+					break;
+				case ExpressionType.LeftShift:
+					HandleBinaryOperation((a, b) => a.LeftShift(b, expression.Type));
+					break;
+				case ExpressionType.RightShift:
+					HandleBinaryOperation((a, b) => a.RightShift(b, expression.Type));
+					break;
+				case ExpressionType.GreaterThanOrEqual:
+					HandleBinaryOperation((a, b) => a.GreaterThanOrEqual(b));
+					break;
+				case ExpressionType.GreaterThan:
+					HandleBinaryOperation((a, b) => a.GreaterThan(b));
+					break;
+				case ExpressionType.LessThan:
+					HandleBinaryOperation((a, b) => a.LessThan(b));
+					break;
+				case ExpressionType.LessThanOrEqual:
+					HandleBinaryOperation((a, b) => a.LessThanOrEqual(b));
+					break;
 			}
 
 			return result;
 		}
 
-		protected override Expression VisitUnaryExpression(UnaryExpression expression)
+		protected override Expression VisitUnary(UnaryExpression expression)
 		{
-			Expression result = base.VisitUnaryExpression(expression);
+			var result = base.VisitUnary(expression);
 
-			if (expression.NodeType == ExpressionType.Not && expression.Type == typeof(bool))
+			switch (expression.NodeType)
 			{
-				HandleUnaryOperation(pvs => pvs.Not());
+				case ExpressionType.Not:
+					if (expression.Type == typeof(bool))
+						HandleUnaryOperation(pvs => pvs.Not());
+					else
+						HandleUnaryOperation(pvs => pvs.BitwiseNot(expression.Type));
+					break;
+				case ExpressionType.ArrayLength:
+					HandleUnaryOperation(pvs => pvs.ArrayLength(expression.Type));
+					break;
+				case ExpressionType.Convert:
+				case ExpressionType.ConvertChecked:
+					HandleUnaryOperation(pvs => pvs.Convert(expression.Type));
+					break;
+				case ExpressionType.Negate:
+				case ExpressionType.NegateChecked:
+					HandleUnaryOperation(pvs => pvs.Negate(expression.Type));
+					break;
+				case ExpressionType.UnaryPlus:
+					HandleUnaryOperation(pvs => pvs.UnaryPlus(expression.Type));
+					break;
 			}
-			else if (expression.NodeType == ExpressionType.Not)
-			{
-				HandleUnaryOperation(pvs => pvs.BitwiseNot(expression.Type));
-			}
-			else if (expression.NodeType == ExpressionType.ArrayLength)
-			{
-				HandleUnaryOperation(pvs => pvs.ArrayLength(expression.Type));
-			}
-			else if (expression.NodeType == ExpressionType.Convert || expression.NodeType == ExpressionType.ConvertChecked)
-			{
-				HandleUnaryOperation(pvs => pvs.Convert(expression.Type));
-			}
-			else if (expression.NodeType == ExpressionType.Negate || expression.NodeType == ExpressionType.NegateChecked)
-			{
-				HandleUnaryOperation(pvs => pvs.Negate(expression.Type));
-			}
-			else if (expression.NodeType == ExpressionType.UnaryPlus)
-			{
-				HandleUnaryOperation(pvs => pvs.UnaryPlus(expression.Type));
-			}
-			
+
 			return result;
 		}
 
-		protected override Expression VisitSubQueryExpression(SubQueryExpression expression)
+		protected override Expression VisitSubQuery(SubQueryExpression expression)
 		{
-			expression.QueryModel.TransformExpressions(VisitExpression);
+			expression.QueryModel.TransformExpressions(Visit);
 			return expression;
 		}
 
-		// We would usually get NULL if one of our inner member expresions was null.
+		// We would usually get NULL if one of our inner member expressions was null.
 		// However, it's possible a method call will convert the null value from the failed join into a non-null value.
 		// This could be optimized by actually checking what the method does.  For example StartsWith("s") would leave null as null and would still allow us to inner join.
-		//protected override Expression VisitMethodCallExpression(MethodCallExpression expression)
+		//protected override Expression VisitMethodCall(MethodCallExpression expression)
 		//{
-		//    Expression result = base.VisitMethodCallExpression(expression);
+		//    Expression result = base.VisitMethodCall(expression);
 		//    return result;
 		//}
 
-		protected override Expression VisitMemberExpression(MemberExpression expression)
+		protected override Expression VisitMember(MemberExpression expression)
 		{
 			// The member expression we're visiting might be on the end of a variety of things, such as:
 			//   a.B
@@ -300,7 +290,7 @@ namespace NHibernate.Linq.Visitors
 			if (!isIdentifier)
 				_memberExpressionDepth++;
 
-			var result = base.VisitMemberExpression(expression);
+			var result = base.VisitMember(expression);
 
 			if (!isIdentifier)
 				_memberExpressionDepth--;
@@ -320,7 +310,7 @@ namespace NHibernate.Linq.Visitors
 				values.MemberExpressionValuesIfEmptyOuterJoined[key] = PossibleValueSet.CreateNull(expression.Type);
 			}
 			SetResultValues(values);
-			
+
 			return result;
 		}
 
@@ -356,7 +346,7 @@ namespace NHibernate.Linq.Visitors
 			/// For example, if we have an expression "3" and we request the state for "a.B.C", we'll
 			/// use "3" from Values since it won't exist in MemberExpressionValuesIfEmptyOuterJoined.
 			/// </summary>
-			private PossibleValueSet Values { get; set; }
+			private PossibleValueSet Values { get; }
 
 			/// <summary>
 			/// Stores the possible values of an expression that would result if the given member expression
@@ -365,20 +355,16 @@ namespace NHibernate.Linq.Visitors
 			/// member expression, it may not appear in this list.  In that case, the emptily outer joined
 			/// value set for that member expression will be whatever's in Values instead.
 			/// </summary>
-			public Dictionary<string, PossibleValueSet> MemberExpressionValuesIfEmptyOuterJoined { get; private set; }
+			public Dictionary<string, PossibleValueSet> MemberExpressionValuesIfEmptyOuterJoined { get; }
 
 			public PossibleValueSet GetValues(string memberExpression)
 			{
-				PossibleValueSet value;
-				if (MemberExpressionValuesIfEmptyOuterJoined.TryGetValue(memberExpression, out value))
+				if (MemberExpressionValuesIfEmptyOuterJoined.TryGetValue(memberExpression, out PossibleValueSet value))
 					return value;
 				return Values;
 			}
 
-			public IEnumerable<string> MemberExpressions
-			{
-				get { return MemberExpressionValuesIfEmptyOuterJoined.Keys; }
-			}
+			public IEnumerable<string> MemberExpressions => MemberExpressionValuesIfEmptyOuterJoined.Keys;
 
 			public ExpressionValues Operation(ExpressionValues mergeWith, Func<PossibleValueSet, PossibleValueSet, PossibleValueSet> operation)
 			{

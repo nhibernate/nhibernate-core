@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
-using Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation;
+using Remotion.Linq.Parsing.ExpressionVisitors.Transformation;
 
 namespace NHibernate.Linq.ExpressionTransformers
 {
@@ -57,18 +57,12 @@ namespace NHibernate.Linq.ExpressionTransformers
 		}
 
 		private static bool IsConvertExpression(Expression expression)
-		{
-			return (expression.NodeType == ExpressionType.Convert);
-		}
+			=> expression.NodeType == ExpressionType.Convert;
 
 		private static bool IsConstantExpression(Expression expression)
-		{
-			return (expression.NodeType == ExpressionType.Constant);
-		}
+			=> expression.NodeType == ExpressionType.Constant;
 
 		public ExpressionType[] SupportedExpressionTypes
-		{
-			get { return _supportedExpressionTypes; }
-		}
+			=> _supportedExpressionTypes;
 	}
 }

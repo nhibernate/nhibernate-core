@@ -8,7 +8,7 @@ using Remotion.Linq.Clauses.Expressions;
 
 namespace NHibernate.Linq.GroupJoin
 {
-	internal class GroupJoinAggregateDetectionVisitor : NhExpressionTreeVisitor
+	internal class GroupJoinAggregateDetectionVisitor : NhExpressionVisitor
 	{
 		private readonly HashSet<GroupJoinClause> _groupJoinClauses;
 		private readonly StackFlag _inAggregate = new StackFlag();
@@ -27,18 +27,18 @@ namespace NHibernate.Linq.GroupJoin
 		{
 			var visitor = new GroupJoinAggregateDetectionVisitor(groupJoinClause);
 
-			visitor.VisitExpression(selectExpression);
+			visitor.Visit(selectExpression);
 
 			return new IsAggregatingResults { NonAggregatingClauses = visitor._nonAggregatingGroupJoins, AggregatingClauses = visitor._aggregatingGroupJoins, NonAggregatingExpressions = visitor._nonAggregatingExpressions };
 		}
 
-		protected override Expression VisitSubQueryExpression(SubQueryExpression expression)
+		protected override Expression VisitSubQuery(SubQueryExpression expression)
 		{
-			VisitExpression(expression.QueryModel.SelectClause.Selector);
+			Visit(expression.QueryModel.SelectClause.Selector);
 			return expression;
 		}
 
-		protected override Expression VisitNhAggregate(NhAggregatedExpression expression)
+		public override Expression VisitNhAggregate(NhAggregatedExpression expression)
 		{
 			using (_inAggregate.SetFlag())
 			{
@@ -46,7 +46,7 @@ namespace NHibernate.Linq.GroupJoin
 			}
 		}
 
-		protected override Expression VisitMemberExpression(MemberExpression expression)
+		protected override Expression VisitMember(MemberExpression expression)
 		{
 			if (_inAggregate.FlagIsFalse && _parentExpressionProcessed.FlagIsFalse)
 			{
@@ -55,19 +55,17 @@ namespace NHibernate.Linq.GroupJoin
 
 			using (_parentExpressionProcessed.SetFlag())
 			{
-				return base.VisitMemberExpression(expression);
+				return base.VisitMember(expression);
 			}
 		}
 
-		protected override Expression VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
+		protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression expression)
 		{
-			var fromClause = (FromClauseBase) expression.ReferencedQuerySource;
+			var fromClause = (FromClauseBase)expression.ReferencedQuerySource;
 
-			var querySourceReference = fromClause.FromExpression as QuerySourceReferenceExpression;
-			if (querySourceReference != null)
+			if (fromClause.FromExpression is QuerySourceReferenceExpression querySourceReference)
 			{
-				var groupJoinClause = querySourceReference.ReferencedQuerySource as GroupJoinClause;
-				if (groupJoinClause != null && _groupJoinClauses.Contains(groupJoinClause))
+				if (querySourceReference.ReferencedQuerySource is GroupJoinClause groupJoinClause && _groupJoinClauses.Contains(groupJoinClause))
 				{
 					if (_inAggregate.FlagIsFalse)
 					{
@@ -80,7 +78,7 @@ namespace NHibernate.Linq.GroupJoin
 				}
 			}
 
-			return base.VisitQuerySourceReferenceExpression(expression);
+			return base.VisitQuerySourceReference(expression);
 		}
 
 		internal class StackFlag

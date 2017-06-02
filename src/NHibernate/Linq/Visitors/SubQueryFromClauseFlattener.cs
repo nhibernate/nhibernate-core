@@ -3,7 +3,7 @@ using System.Linq;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
-using Remotion.Linq.Clauses.ExpressionTreeVisitors;
+using Remotion.Linq.Clauses.ExpressionVisitors;
 using Remotion.Linq.EagerFetching;
 
 namespace NHibernate.Linq.Visitors
@@ -23,28 +23,26 @@ namespace NHibernate.Linq.Visitors
 
 		public override void VisitAdditionalFromClause(AdditionalFromClause fromClause, QueryModel queryModel, int index)
 		{
-			var subQueryExpression = fromClause.FromExpression as SubQueryExpression;
-			if (subQueryExpression != null)
+			if (fromClause.FromExpression is SubQueryExpression subQueryExpression)
 				FlattenSubQuery(subQueryExpression, fromClause, queryModel, index + 1);
 			base.VisitAdditionalFromClause(fromClause, queryModel, index);
 		}
 
 		public override void VisitMainFromClause(MainFromClause fromClause, QueryModel queryModel)
 		{
-			var subQueryExpression = fromClause.FromExpression as SubQueryExpression;
-			if (subQueryExpression != null)
+			if (fromClause.FromExpression is SubQueryExpression subQueryExpression)
 				FlattenSubQuery(subQueryExpression, fromClause, queryModel, 0);
 			base.VisitMainFromClause(fromClause, queryModel);
 		}
 
 		private static bool CheckFlattenable(QueryModel subQueryModel)
 		{
-			if (subQueryModel.BodyClauses.OfType<OrderByClause>().Any()) 
+			if (subQueryModel.BodyClauses.OfType<OrderByClause>().Any())
 				return false;
 
-			if (subQueryModel.ResultOperators.Count == 0) 
+			if (subQueryModel.ResultOperators.Count == 0)
 				return true;
-			
+
 			return HasJustAllFlattenableOperator(subQueryModel.ResultOperators);
 		}
 
@@ -70,14 +68,14 @@ namespace NHibernate.Linq.Visitors
 
 			var innerSelectorMapping = new QuerySourceMapping();
 			innerSelectorMapping.AddMapping(fromClause, subQueryExpression.QueryModel.SelectClause.Selector);
-			queryModel.TransformExpressions(ex => ReferenceReplacingExpressionTreeVisitor.ReplaceClauseReferences(ex, innerSelectorMapping, false));
+			queryModel.TransformExpressions(ex => ReferenceReplacingExpressionVisitor.ReplaceClauseReferences(ex, innerSelectorMapping, false));
 
 			InsertBodyClauses(subQueryExpression.QueryModel.BodyClauses, queryModel, destinationIndex);
 			InsertResultOperators(subQueryExpression.QueryModel.ResultOperators, queryModel);
 
 			var innerBodyClauseMapping = new QuerySourceMapping();
 			innerBodyClauseMapping.AddMapping(mainFromClause, new QuerySourceReferenceExpression(fromClause));
-			queryModel.TransformExpressions(ex => ReferenceReplacingExpressionTreeVisitor.ReplaceClauseReferences(ex, innerBodyClauseMapping, false));
+			queryModel.TransformExpressions(ex => ReferenceReplacingExpressionVisitor.ReplaceClauseReferences(ex, innerBodyClauseMapping, false));
 		}
 
 		internal static void InsertResultOperators(IEnumerable<ResultOperatorBase> resultOperators, QueryModel queryModel)
@@ -92,7 +90,7 @@ namespace NHibernate.Linq.Visitors
 
 		private static void InsertBodyClauses(IEnumerable<IBodyClause> bodyClauses, QueryModel queryModel, int destinationIndex)
 		{
-			foreach (var bodyClause in  bodyClauses)
+			foreach (var bodyClause in bodyClauses)
 			{
 				queryModel.BodyClauses.Insert(destinationIndex, bodyClause);
 				++destinationIndex;

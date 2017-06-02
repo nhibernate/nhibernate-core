@@ -2,33 +2,33 @@
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Parsing;
-using Remotion.Linq.Parsing.ExpressionTreeVisitors;
+using Remotion.Linq.Parsing.ExpressionVisitors;
 
 namespace NHibernate.Linq.Visitors
 {
-	internal class PagingRewriterSelectClauseVisitor : ExpressionTreeVisitor
+	internal class PagingRewriterSelectClauseVisitor : RelinqExpressionVisitor
 	{
-		private readonly FromClauseBase querySource;
+		private readonly FromClauseBase _querySource;
 
 		public PagingRewriterSelectClauseVisitor(FromClauseBase querySource)
 		{
-			this.querySource = querySource;
+			_querySource = querySource;
 		}
 
 		public Expression Swap(Expression expression)
 		{
-			return TransparentIdentifierRemovingExpressionTreeVisitor.ReplaceTransparentIdentifiers(VisitExpression(expression));
+			return TransparentIdentifierRemovingExpressionVisitor.ReplaceTransparentIdentifiers(Visit(expression));
 		}
 
-		protected override Expression VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
+		protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression expression)
 		{
 			var innerSelector = GetSubQuerySelectorOrNull(expression);
 			if (innerSelector != null)
 			{
-				return VisitExpression(innerSelector);
+				return Visit(innerSelector);
 			}
 
-			return base.VisitQuerySourceReferenceExpression(expression);
+			return base.VisitQuerySourceReference(expression);
 		}
 
 		/// <summary>
@@ -37,7 +37,7 @@ namespace NHibernate.Linq.Visitors
 		/// </summary>
 		private Expression GetSubQuerySelectorOrNull(QuerySourceReferenceExpression expression)
 		{
-			if (expression.ReferencedQuerySource != querySource)
+			if (expression.ReferencedQuerySource != _querySource)
 				return null;
 
 			var fromClause = expression.ReferencedQuerySource as FromClauseBase;

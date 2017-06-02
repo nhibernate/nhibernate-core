@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using NHibernate.Util;
 using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
@@ -7,26 +6,24 @@ namespace NHibernate.Linq.Visitors
 	/// <summary>
 	/// Some conditional expressions can be reduced to just their IfTrue or IfFalse part.
 	/// </summary>
-	internal class SimplifyConditionalVisitor :ExpressionTreeVisitor
+	internal class SimplifyConditionalVisitor : RelinqExpressionVisitor
 	{
-		protected override Expression VisitConditionalExpression(ConditionalExpression expression)
+		protected override Expression VisitConditional(ConditionalExpression expression)
 		{
-			var testExpression = VisitExpression(expression.Test);
+			var testExpression = Visit(expression.Test);
 
-			bool testExprResult;
-			if (VisitorUtil.IsBooleanConstant(testExpression, out testExprResult))
+			if (VisitorUtil.IsBooleanConstant(testExpression, out bool testExprResult))
 			{
 				if (testExprResult)
-					return VisitExpression(expression.IfTrue);
+					return Visit(expression.IfTrue);
 
-				return VisitExpression(expression.IfFalse);
+				return Visit(expression.IfFalse);
 			}
 
-			return base.VisitConditionalExpression(expression);
+			return base.VisitConditional(expression);
 		}
 
-
-		protected override Expression VisitBinaryExpression(BinaryExpression expression)
+		protected override Expression VisitBinary(BinaryExpression expression)
 		{
 			// See NH-3423. Conditional expression where the test expression is a comparison
 			// of a construction expression and null will happen in WCF DS.
@@ -42,24 +39,18 @@ namespace NHibernate.Linq.Visitors
 					return Expression.Constant(true);
 			}
 
-			return base.VisitBinaryExpression(expression);
+			return base.VisitBinary(expression);
 		}
-
 
 		private static bool IsConstruction(Expression expression)
-		{
-			return expression is NewExpression || expression is MemberInitExpression;
-		}
-
+			=> expression is NewExpression || expression is MemberInitExpression;
 
 		private static bool IsConstructionToNullComparison(Expression expression)
 		{
-			var testExpression = expression as BinaryExpression;
-
-			if (testExpression != null)
+			if (expression is BinaryExpression testExpression)
 			{
 				if ((IsConstruction(testExpression.Left) && VisitorUtil.IsNullConstant(testExpression.Right))
-				    || (IsConstruction(testExpression.Right) && VisitorUtil.IsNullConstant(testExpression.Left)))
+					|| (IsConstruction(testExpression.Right) && VisitorUtil.IsNullConstant(testExpression.Left)))
 				{
 					return true;
 				}
