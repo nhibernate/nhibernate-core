@@ -91,9 +91,7 @@ namespace NHibernate.Type
 		/// <returns>An Xml formatted string.</returns>
 		public abstract string ToString(object val);
 
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.ToString"]/*'
-		/// /> 
+		/// <inheritdoc />
 		/// <remarks>
 		/// <para>
 		/// This implementation forwards the call to <see cref="ToString(object)"/> if the parameter 
@@ -122,9 +120,7 @@ namespace NHibernate.Type
 			if (settable[0]) NullSafeSet(st, value, index, session);
 		}
 
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet"]/*'
-		/// /> 
+		/// <inheritdoc />
 		/// <remarks>
 		/// <para>
 		/// This method has been "sealed" because the Types inheriting from <see cref="NullableType"/>
@@ -165,9 +161,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, String[], ISessionImplementor, Object)"]/*'
-		/// /> 
+		/// <inheritdoc />
 		/// <remarks>
 		/// This has been sealed because no other class should override it.  This 
 		/// method calls <see cref="NullSafeGet(DbDataReader, String, ISessionImplementor)" /> for a single value.  
@@ -255,9 +249,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, String, ISessionImplementor, Object)"]/*'
-		/// /> 
+		/// <inheritdoc />
 		/// <remarks>
 		/// <para>
 		/// This implementation forwards the call to <see cref="NullSafeGet(DbDataReader, String, ISessionImplementor)" />.
@@ -288,9 +280,7 @@ namespace NHibernate.Type
 			get { return _sqlType; }
 		}
 
-		/// <include file='IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.SqlTypes"]/*'
-		/// /> 
+		/// <inheritdoc />
 		/// <remarks>
 		/// <para>
 		/// This implementation forwards the call to <see cref="NullableType.SqlType" />.

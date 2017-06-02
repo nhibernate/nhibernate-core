@@ -2095,7 +2095,6 @@
     <None Include="NHibernate.build" />
     <None Include="NHibernate.nuspec.template" />
     <None Include="packages.config" />
-    <None Include="Type\IType.cs.xmldoc" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="NamespaceSummary.xml" />
