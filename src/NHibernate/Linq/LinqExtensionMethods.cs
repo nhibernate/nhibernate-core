@@ -15,95 +15,6 @@ namespace NHibernate.Linq
 {
 	public static class LinqExtensionMethods
 	{
-		private static readonly Dictionary<string, MethodInfo> cachableQueryableMethods;
-
-		static LinqExtensionMethods()
-		{
-			cachableQueryableMethods = new Dictionary<string, MethodInfo>
-			{
-				{"Count", GetMethod(() => new EnumerableQuery<int>(new int[] { }).Count())},
-				{"CountParam", GetMethod(() => new EnumerableQuery<int>(new int[] { }).Count(o => true))},
-
-				{"LongCount", GetMethod(() => new EnumerableQuery<long>(new long[] { }).LongCount())},
-				{"LongCountParam", GetMethod(() => new EnumerableQuery<long>(new long[] { }).LongCount(o => true))},
-
-				{"Any", GetMethod(() => new EnumerableQuery<int>(new int[] { }).Any())},
-				{"AnyParam", GetMethod(() => new EnumerableQuery<int>(new int[] { }).Any(o => true))},
-
-				{"First", GetMethod(() => new EnumerableQuery<int>(new int[] { }).First())},
-				{"FirstParam", GetMethod(() => new EnumerableQuery<int>(new int[] { }).First(o => true))},
-
-				{"FirstOrDefault", GetMethod(() => new EnumerableQuery<int>(new int[] { }).FirstOrDefault())},
-				{"FirstOrDefaultParam", GetMethod(() => new EnumerableQuery<int>(new int[] { }).FirstOrDefault(o => true))},
-
-				{"Single", GetMethod(() => new EnumerableQuery<int>(new int[] { }).Single())},
-				{"SingleParam", GetMethod(() => new EnumerableQuery<int>(new int[] { }).Single(o => true))},
-
-				{"SingleOrDefault", GetMethod(() => new EnumerableQuery<int>(new int[] { }).SingleOrDefault())},
-				{"SingleOrDefaultParam", GetMethod(() => new EnumerableQuery<int>(new int[] { }).SingleOrDefault(o => true))},
-
-				{"Min", GetMethod(() => new EnumerableQuery<int>(new int[] { }).Min())},
-				{"MinParam", GetMethod(() => new EnumerableQuery<int>(new int[] { }).Min(o => true))},
-
-				{"Max", GetMethod(() => new EnumerableQuery<int>(new int[] { }).Max())},
-				{"MaxParam", GetMethod(() => new EnumerableQuery<int>(new int[] { }).Max(o => true))},
-
-				{"SumInt", GetMethod(() => new EnumerableQuery<int>(new int[] { }).Sum())},
-				{"SumInt?", GetMethod(() => new EnumerableQuery<int?>(new int?[] { }).Sum())},
-				{"SumLong", GetMethod(() => new EnumerableQuery<long>(new long[] { }).Sum())},
-				{"SumLong?", GetMethod(() => new EnumerableQuery<long?>(new long?[] { }).Sum())},
-				{"SumFloat", GetMethod(() => new EnumerableQuery<float>(new float[] { }).Sum())},
-				{"SumFloat?", GetMethod(() => new EnumerableQuery<float?>(new float?[] { }).Sum())},
-				{"SumDouble", GetMethod(() => new EnumerableQuery<double>(new double[] { }).Sum())},
-				{"SumDouble?", GetMethod(() => new EnumerableQuery<double?>(new double?[] { }).Sum())},
-				{"SumDecimal", GetMethod(() => new EnumerableQuery<decimal>(new decimal[] { }).Sum())},
-				{"SumDecimal?", GetMethod(() => new EnumerableQuery<decimal?>(new decimal?[] { }).Sum())},
-				{"SumIntParam", GetMethod(() => new EnumerableQuery<int>(new int[] { }).Sum(o => 1))},
-				{"SumInt?Param", GetMethod(() => new EnumerableQuery<int?>(new int?[] { }).Sum(o => (int?)1))},
-				{"SumLongParam", GetMethod(() => new EnumerableQuery<long>(new long[] { }).Sum(o => (long)1))},
-				{"SumLong?Param", GetMethod(() => new EnumerableQuery<long?>(new long?[] { }).Sum(o => (long?)1))},
-				{"SumFloatParam", GetMethod(() => new EnumerableQuery<float>(new float[] { }).Sum(o => (float)1))},
-				{"SumFloat?Param", GetMethod(() => new EnumerableQuery<float?>(new float?[] { }).Sum(o => (float?)1))},
-				{"SumDoubleParam", GetMethod(() => new EnumerableQuery<double>(new double[] { }).Sum(o => (double)1))},
-				{"SumDouble?Param", GetMethod(() => new EnumerableQuery<double?>(new double?[] { }).Sum(o => (double?)1))},
-				{"SumDecimalParam", GetMethod(() => new EnumerableQuery<decimal>(new decimal[] { }).Sum(o => (decimal)1))},
-				{"SumDecimal?Param", GetMethod(() => new EnumerableQuery<decimal?>(new decimal?[] { }).Sum(o => (decimal?)1))},
-
-				{"AverageInt", GetMethod(() => new EnumerableQuery<int>(new int[] { }).Average())},
-				{"AverageInt?", GetMethod(() => new EnumerableQuery<int?>(new int?[] { }).Average())},
-				{"AverageLong", GetMethod(() => new EnumerableQuery<long>(new long[] { }).Average())},
-				{"AverageLong?", GetMethod(() => new EnumerableQuery<long?>(new long?[] { }).Average())},
-				{"AverageFloat", GetMethod(() => new EnumerableQuery<float>(new float[] { }).Average())},
-				{"AverageFloat?", GetMethod(() => new EnumerableQuery<float?>(new float?[] { }).Average())},
-				{"AverageDouble", GetMethod(() => new EnumerableQuery<double>(new double[] { }).Average())},
-				{"AverageDouble?", GetMethod(() => new EnumerableQuery<double?>(new double?[] { }).Average())},
-				{"AverageDecimal", GetMethod(() => new EnumerableQuery<decimal>(new decimal[] { }).Average())},
-				{"AverageDecimal?", GetMethod(() => new EnumerableQuery<decimal?>(new decimal?[] { }).Average())},
-				{"AverageIntParam", GetMethod(() => new EnumerableQuery<int>(new int[] { }).Average(o => 1))},
-				{"AverageInt?Param", GetMethod(() => new EnumerableQuery<int?>(new int?[] { }).Average(o => (int?)1))},
-				{"AverageLongParam", GetMethod(() => new EnumerableQuery<long>(new long[] { }).Average(o => (long)1))},
-				{"AverageLong?Param", GetMethod(() => new EnumerableQuery<long?>(new long?[] { }).Average(o => (long?)1))},
-				{"AverageFloatParam", GetMethod(() => new EnumerableQuery<float>(new float[] { }).Average(o => (float)1))},
-				{"AverageFloat?Param", GetMethod(() => new EnumerableQuery<float?>(new float?[] { }).Average(o => (float?)1))},
-				{"AverageDoubleParam", GetMethod(() => new EnumerableQuery<double>(new double[] { }).Average(o => (double)1))},
-				{"AverageDouble?Param", GetMethod(() => new EnumerableQuery<double?>(new double?[] { }).Average(o => (double?)1))},
-				{"AverageDecimalParam", GetMethod(() => new EnumerableQuery<decimal>(new decimal[] { }).Average(o => (decimal)1))},
-				{"AverageDecimal?Param", GetMethod(() => new EnumerableQuery<decimal?>(new decimal?[] { }).Average(o => (decimal?)1))},
-			};
-		}
-
-		private static MethodInfo GetMethod<T>(Expression<Func<T>> expression)
-		{
-			var member = expression.Body as MethodCallExpression;
-			if (member == null)
-			{
-				throw new ArgumentException("Expression is not a method", nameof(expression));
-			}
-			return member.Method.IsGenericMethod
-				? member.Method.GetGenericMethodDefinition()
-				: member.Method;
-		}
-
 		#region AnyAsync
 
 		/// <summary>Determines whether a sequence contains any elements.</summary>
@@ -119,7 +30,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["Any"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.AnyDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<bool>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -142,7 +53,34 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(predicate));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["AnyParam"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.AnyWithPredicateDefinition.MakeGenericMethod(typeof(TSource));
+			var expression = new[] { source.Expression, Expression.Quote(predicate) };
+			return provider.ExecuteAsync<bool>(Expression.Call(null, methodInfo, expression), cancellationToken);
+		}
+
+		#endregion
+
+		#region AllAsync
+
+		/// <summary>Determines whether all elements of a sequence satisfies a condition.</summary>
+		/// <param name="source">A sequence whose elements to test for a condition.</param>
+		/// <param name="predicate">A function to test each element for a condition.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work.</param>
+		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
+		/// <returns>true if all elements in the source sequence pass the test in the specified predicate; otherwise, false.</returns>
+		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="predicate" /> is null.</exception>
+		public static Task<bool> AllAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (source == null)
+			{
+				throw new ArgumentNullException(nameof(source));
+			}
+			if (predicate == null)
+			{
+				throw new ArgumentNullException(nameof(predicate));
+			}
+			var provider = (INhQueryProvider)source.Provider;
+			var methodInfo = ReflectionCache.QueryableMethods.AllDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(predicate) };
 			return provider.ExecuteAsync<bool>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -165,7 +103,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["Count"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.CountDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<int>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -189,7 +127,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(predicate));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["CountParam"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.CountWithPredicateDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(predicate) };
 			return provider.ExecuteAsync<int>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -215,7 +153,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["SumInt"];
+			var methodInfo = ReflectionCache.QueryableMethods.SumOfInt;
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<int>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -237,7 +175,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["SumInt?"];
+			var methodInfo = ReflectionCache.QueryableMethods.SumOfNullableInt;
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<int?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -259,7 +197,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["SumLong"];
+			var methodInfo = ReflectionCache.QueryableMethods.SumOfLong;
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<long>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -281,7 +219,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["SumLong?"];
+			var methodInfo = ReflectionCache.QueryableMethods.SumOfNullableLong;
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<long?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -303,7 +241,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["SumFloat"];
+			var methodInfo = ReflectionCache.QueryableMethods.SumOfFloat;
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<float>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -325,7 +263,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["SumFloat?"];
+			var methodInfo = ReflectionCache.QueryableMethods.SumOfNullableFloat;
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<float?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -347,7 +285,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["SumDouble"];
+			var methodInfo = ReflectionCache.QueryableMethods.SumOfDouble;
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<double>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -369,7 +307,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["SumDouble?"];
+			var methodInfo = ReflectionCache.QueryableMethods.SumOfNullableDouble;
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<double?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -391,7 +329,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["SumDecimal"];
+			var methodInfo = ReflectionCache.QueryableMethods.SumOfDecimal;
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<decimal>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -413,7 +351,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["SumDecimal?"];
+			var methodInfo = ReflectionCache.QueryableMethods.SumOfNullableDecimal;
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<decimal?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -441,7 +379,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["SumIntParam"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.SumWithSelectorOfIntDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
 			return provider.ExecuteAsync<int>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -469,7 +407,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["SumInt?Param"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.SumWithSelectorOfNullableIntDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
 			return provider.ExecuteAsync<int?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -497,7 +435,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["SumLongParam"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.SumWithSelectorOfLongDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
 			return provider.ExecuteAsync<long>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -525,7 +463,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["SumLong?Param"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.SumWithSelectorOfNullableLongDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
 			return provider.ExecuteAsync<long?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -553,7 +491,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["SumFloatParam"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.SumWithSelectorOfFloatDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
 			return provider.ExecuteAsync<float>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -581,7 +519,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["SumFloat?Param"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.SumWithSelectorOfNullableFloatDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
 			return provider.ExecuteAsync<float?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -609,7 +547,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["SumDoubleParam"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.SumWithSelectorOfDoubleDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
 			return provider.ExecuteAsync<double>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -637,7 +575,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["SumDouble?Param"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.SumWithSelectorOfNullableDoubleDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
 			return provider.ExecuteAsync<double?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -665,7 +603,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["SumDecimalParam"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.SumWithSelectorOfDecimalDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
 			return provider.ExecuteAsync<decimal>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -693,7 +631,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["SumDecimal?Param"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.SumWithSelectorOfNullableDecimalDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
 			return provider.ExecuteAsync<decimal?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -719,7 +657,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["AverageInt"];
+			var methodInfo = ReflectionCache.QueryableMethods.AverageOfInt;
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<double>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -740,7 +678,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["AverageInt?"];
+			var methodInfo = ReflectionCache.QueryableMethods.AverageOfNullableInt;
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<double?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -762,7 +700,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["AverageLong"];
+			var methodInfo = ReflectionCache.QueryableMethods.AverageOfLong;
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<double>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -783,7 +721,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["AverageLong?"];
+			var methodInfo = ReflectionCache.QueryableMethods.AverageOfNullableLong;
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<double?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -805,7 +743,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["AverageFloat"];
+			var methodInfo = ReflectionCache.QueryableMethods.AverageOfFloat;
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<float>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -826,7 +764,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["AverageFloat?"];
+			var methodInfo = ReflectionCache.QueryableMethods.AverageOfNullableFloat;
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<float?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -848,7 +786,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["AverageDouble"];
+			var methodInfo = ReflectionCache.QueryableMethods.AverageOfDouble;
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<double>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -869,7 +807,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["AverageDouble?"];
+			var methodInfo = ReflectionCache.QueryableMethods.AverageOfNullableDouble;
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<double?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -891,7 +829,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["AverageDecimal"];
+			var methodInfo = ReflectionCache.QueryableMethods.AverageOfDecimal;
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<decimal>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -912,7 +850,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["AverageDecimal?"];
+			var methodInfo = ReflectionCache.QueryableMethods.AverageOfNullableDecimal;
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<decimal?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -940,7 +878,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["AverageIntParam"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.AverageWithSelectorOfIntDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
 			return provider.ExecuteAsync<double>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -967,7 +905,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["AverageInt?Param"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.AverageWithSelectorOfNullableIntDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
 			return provider.ExecuteAsync<double?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -995,7 +933,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["AverageLongParam"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.AverageWithSelectorOfLongDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
 			return provider.ExecuteAsync<double>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -1022,7 +960,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["AverageLong?Param"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.AverageWithSelectorOfNullableLongDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
 			return provider.ExecuteAsync<double?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -1050,7 +988,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["AverageFloatParam"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.AverageWithSelectorOfFloatDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
 			return provider.ExecuteAsync<float>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -1077,7 +1015,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["AverageFloat?Param"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.AverageWithSelectorOfNullableFloatDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
 			return provider.ExecuteAsync<float?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -1105,7 +1043,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["AverageDoubleParam"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.AverageWithSelectorOfDoubleDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
 			return provider.ExecuteAsync<double>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -1132,7 +1070,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["AverageDouble?Param"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.AverageWithSelectorOfNullableDoubleDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
 			return provider.ExecuteAsync<double?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -1160,7 +1098,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["AverageDecimalParam"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.AverageWithSelectorOfDecimalDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
 			return provider.ExecuteAsync<decimal>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -1187,7 +1125,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["AverageDecimal?Param"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.AverageWithSelectorOfNullableDecimalDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
 			return provider.ExecuteAsync<decimal?>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -1213,7 +1151,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["Min"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.MinDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -1241,7 +1179,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["MinParam"].MakeGenericMethod(typeof(TSource), typeof(TResult));
+			var methodInfo = ReflectionCache.QueryableMethods.MinWithSelectorDefinition.MakeGenericMethod(typeof(TSource), typeof(TResult));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
 			return provider.ExecuteAsync<TResult>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -1267,7 +1205,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["Max"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.MaxDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -1295,7 +1233,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(selector));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["MaxParam"].MakeGenericMethod(typeof(TSource), typeof(TResult));
+			var methodInfo = ReflectionCache.QueryableMethods.MaxWithSelectorDefinition.MakeGenericMethod(typeof(TSource), typeof(TResult));
 			var expression = new[] { source.Expression, Expression.Quote(selector) };
 			return provider.ExecuteAsync<TResult>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -1318,7 +1256,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["LongCount"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.LongCountDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<long>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -1342,7 +1280,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(predicate));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["LongCountParam"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.LongCountWithPredicateDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(predicate) };
 			return provider.ExecuteAsync<long>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -1365,7 +1303,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["First"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.FirstDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -1389,7 +1327,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(predicate));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["FirstParam"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.FirstWithPredicateDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(predicate) };
 			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -1412,7 +1350,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["Single"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.SingleDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -1436,7 +1374,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(predicate));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["SingleParam"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.SingleWithPredicateDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(predicate) };
 			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -1458,7 +1396,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["SingleOrDefault"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.SingleOrDefaultDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -1481,7 +1419,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(predicate));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["SingleOrDefaultParam"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.SingleOrDefaultWithPredicateDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(predicate) };
 			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -1503,7 +1441,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(source));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["FirstOrDefault"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.FirstOrDefaultDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression };
 			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}
@@ -1526,7 +1464,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(predicate));
 			}
 			var provider = (INhQueryProvider)source.Provider;
-			var methodInfo = cachableQueryableMethods["FirstOrDefaultParam"].MakeGenericMethod(typeof(TSource));
+			var methodInfo = ReflectionCache.QueryableMethods.FirstOrDefaultWithPredicateDefinition.MakeGenericMethod(typeof(TSource));
 			var expression = new[] { source.Expression, Expression.Quote(predicate) };
 			return provider.ExecuteAsync<TSource>(Expression.Call(null, methodInfo, expression), cancellationToken);
 		}

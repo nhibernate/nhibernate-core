@@ -8,9 +8,9 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 	public class ProcessSingle : ProcessFirstOrSingleBase, IResultOperatorProcessor<SingleResultOperator>
 	{
 		private static readonly MethodInfo SingleOrDefault =
-			ReflectHelper.GetMethodDefinition(() => Queryable.SingleOrDefault<object>(null));
+			ReflectionCache.QueryableMethods.SingleOrDefaultDefinition);
 		private static readonly MethodInfo Single =
-			ReflectHelper.GetMethodDefinition(() => Queryable.Single<object>(null));
+			ReflectionCache.QueryableMethods.SingleDefinition);
 
 		public void Process(SingleResultOperator resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
 		{

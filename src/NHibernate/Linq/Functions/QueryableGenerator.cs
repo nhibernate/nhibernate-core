@@ -14,12 +14,12 @@ namespace NHibernate.Linq.Functions
 		public AnyHqlGenerator()
 		{
 			SupportedMethods = new[]
-			                   	{
-			                   		ReflectHelper.GetMethodDefinition(() => Queryable.Any<object>(null)),
-			                   		ReflectHelper.GetMethodDefinition(() => Queryable.Any<object>(null, null)),
-			                   		ReflectHelper.GetMethodDefinition(() => Enumerable.Any<object>(null)),
-			                   		ReflectHelper.GetMethodDefinition(() => Enumerable.Any<object>(null, null))
-			                   	};
+			{
+				ReflectionCache.QueryableMethods.AnyDefinition,
+				ReflectionCache.QueryableMethods.AnyWithPredicateDefinition,
+				ReflectHelper.GetMethodDefinition(() => Enumerable.Any<object>(null)),
+				ReflectHelper.GetMethodDefinition(() => Enumerable.Any<object>(null, null))
+			};
 		}
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
@@ -54,7 +54,7 @@ namespace NHibernate.Linq.Functions
 		{
 			SupportedMethods = new[]
 			{
-				ReflectHelper.GetMethodDefinition(() => Queryable.All<object>(null, null)),
+				ReflectionCache.QueryableMethods.AllDefinition,
 				ReflectHelper.GetMethodDefinition(() => Enumerable.All<object>(null, null))
 			};
 		}
@@ -88,10 +88,10 @@ namespace NHibernate.Linq.Functions
 		public MinHqlGenerator()
 		{
 			SupportedMethods = new[]
-			                   	{
-			                   		ReflectHelper.GetMethodDefinition(() => Queryable.Min<object>(null)),
-			                   		ReflectHelper.GetMethodDefinition(() => Enumerable.Min<object>(null))
-			                   	};
+			{
+				ReflectionCache.QueryableMethods.MinDefinition,
+				ReflectHelper.GetMethodDefinition(() => Enumerable.Min<object>(null))
+			};
 		}
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
@@ -105,10 +105,10 @@ namespace NHibernate.Linq.Functions
 		public MaxHqlGenerator()
 		{
 			SupportedMethods = new[]
-			                   	{
-			                   		ReflectHelper.GetMethodDefinition(() => Queryable.Max<object>(null)),
-			                   		ReflectHelper.GetMethodDefinition(() => Enumerable.Max<object>(null))
-			                   	};
+			{
+				ReflectionCache.QueryableMethods.MaxDefinition,
+			    ReflectHelper.GetMethodDefinition(() => Enumerable.Max<object>(null))
+			};
 		}
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
