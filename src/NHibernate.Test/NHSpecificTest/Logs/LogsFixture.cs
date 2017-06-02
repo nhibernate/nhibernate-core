@@ -34,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 			ThreadContext.Properties["sessionId"] = new SessionIdCapturer();
 
 			using (var spy = new TextLogSpy("NHibernate.SQL", "%message | SessionId: %property{sessionId}"))
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				var sessionId = ((SessionImpl)s).SessionId;
 

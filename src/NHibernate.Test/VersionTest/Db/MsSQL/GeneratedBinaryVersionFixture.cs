@@ -100,7 +100,7 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 
 					versioned.Something = "new string";
 
-					var expectedException = sessions.Settings.IsBatchVersionedDataEnabled
+					var expectedException = Sfi.Settings.IsBatchVersionedDataEnabled
 						? Throws.InstanceOf<StaleStateException>()
 						: Throws.InstanceOf<StaleObjectStateException>();
 

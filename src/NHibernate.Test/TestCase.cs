@@ -12,12 +12,8 @@ using NHibernate.Tool.hbm2ddl;
 using NHibernate.Type;
 using NUnit.Framework;
 using NHibernate.Hql.Ast.ANTLR;
-using System.Collections.Concurrent;
-using System.IO;
 using NUnit.Framework.Interfaces;
 using System.Text;
-using log4net.Util;
-using static NUnit.Framework.TestContext;
 
 namespace NHibernate.Test
 {
@@ -25,7 +21,7 @@ namespace NHibernate.Test
 	{
 		private const bool OutputDdl = false;
 		protected Configuration cfg;
-		protected ISessionFactoryImplementor sessions;
+		private DebugSessionFactory _sessionFactory;
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(TestCase));
 
@@ -38,21 +34,6 @@ namespace NHibernate.Test
 		{
 			get { return TestDialect.GetTestDialect(Dialect); }
 		}
-
-		/// <summary>
-		/// To use in in-line test
-		/// </summary>
-		protected bool IsAntlrParser
-		{
-			get
-			{
-				return sessions.Settings.QueryTranslatorFactory is ASTQueryTranslatorFactory;
-			}
-		}
-
-		private ConcurrentBag<ISession> _openedSessions = new ConcurrentBag<ISession>();
-		private ISession _lastOpenedSession;
-		private DebugConnectionProvider connectionProvider;
 
 		/// <summary>
 		/// Mapping files used in the TestCase
@@ -90,8 +71,8 @@ namespace NHibernate.Test
 				CreateSchema();
 				try
 				{
-					BuildSessionFactory();
-					if (!AppliesTo(sessions))
+					_sessionFactory = BuildSessionFactory();
+					if (!AppliesTo(_sessionFactory))
 					{
 						Assert.Ignore(GetType() + " does not apply with the current session-factory configuration");
 					}
@@ -108,6 +89,11 @@ namespace NHibernate.Test
 				log.Error("Error while setting up the test fixture", e);
 				throw;
 			}
+		}
+
+		protected void RebuildSessionFactory()
+		{
+			_sessionFactory = BuildSessionFactory();
 		}
 
 		/// <summary>
@@ -166,7 +152,7 @@ namespace NHibernate.Test
 			try
 			{
 				OnTearDown();
-				var wereClosed = CheckSessionsWereClosed();
+				var wereClosed = _sessionFactory.CheckSessionsWereClosed();
 				var wasCleaned = CheckDatabaseWasCleaned();
 				var wereConnectionsClosed = CheckConnectionsWereClosed();
 				fail = !wereClosed || !wasCleaned || !wereConnectionsClosed;
@@ -200,7 +186,7 @@ namespace NHibernate.Test
 			}
 		}
 
-		private string GetCombinedFailureMessage(ResultAdapter result, string tearDownFailure, string tearDownStackTrace)
+		private string GetCombinedFailureMessage(TestContext.ResultAdapter result, string tearDownFailure, string tearDownStackTrace)
 		{
 			var message = new StringBuilder()
 				.Append("The test failed and then failed to cleanup. Test failure is: ")
@@ -217,26 +203,9 @@ namespace NHibernate.Test
 			return message.ToString();
 		}
 
-		// Factory is exposed to descendant, any session opened directly from it will not be handled by following check.
-		private bool CheckSessionsWereClosed()
-		{
-			var allClosed = true;
-			foreach (var session in _openedSessions)
-			{
-				if (session.IsOpen)
-				{
-					log.Error($"Test case didn't close session {session.GetSessionImplementation().SessionId}, closing");
-					allClosed = false;
-					session.Close();
-				}
-			}
-
-			return allClosed;
-		}
-
 		protected virtual bool CheckDatabaseWasCleaned()
 		{
-			if (sessions.GetAllClassMetadata().Count == 0)
+			if (Sfi.GetAllClassMetadata().Count == 0)
 			{
 				// Return early in the case of no mappings, also avoiding
 				// a warning when executing the HQL below.
@@ -244,7 +213,7 @@ namespace NHibernate.Test
 			}
 
 			bool empty;
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			{
 				IList objects = s.CreateQuery("from System.Object o").List();
 				empty = objects.Count == 0;
@@ -262,13 +231,13 @@ namespace NHibernate.Test
 
 		private bool CheckConnectionsWereClosed()
 		{
-			if (connectionProvider == null || !connectionProvider.HasOpenConnections)
+			if (_sessionFactory?.ConnectionProvider?.HasOpenConnections != true)
 			{
 				return true;
 			}
 
 			log.Error("Test case didn't close all open connections, closing");
-			connectionProvider.CloseAllConnections();
+			_sessionFactory.ConnectionProvider.CloseAllConnections();
 			return false;
 		}
 
@@ -303,22 +272,15 @@ namespace NHibernate.Test
 			new SchemaExport(cfg).Drop(OutputDdl, true);
 		}
 
-		protected virtual void BuildSessionFactory()
+		protected virtual DebugSessionFactory BuildSessionFactory()
 		{
-			sessions = (ISessionFactoryImplementor)cfg.BuildSessionFactory();
-			connectionProvider = sessions.ConnectionProvider as DebugConnectionProvider;
+			return new DebugSessionFactory(cfg.BuildSessionFactory());
 		}
 
 		private void Cleanup()
 		{
-			if (sessions != null)
-			{
-				sessions.Close();
-			}
-			sessions = null;
-			connectionProvider = null;
-			_lastOpenedSession = null;
-			_openedSessions = new ConcurrentBag<ISession>();
+			Sfi?.Close();
+			_sessionFactory = null;
 			cfg = null;
 		}
 
@@ -364,23 +326,16 @@ namespace NHibernate.Test
 			}
 		}
 
-		protected ISessionFactoryImplementor Sfi
-		{
-			get { return sessions; }
-		}
+		protected ISessionFactoryImplementor Sfi => _sessionFactory;
 
 		protected virtual ISession OpenSession()
 		{
-			_lastOpenedSession = sessions.OpenSession();
-			_openedSessions.Add(_lastOpenedSession);
-			return _lastOpenedSession;
+			return Sfi.OpenSession();
 		}
 
 		protected virtual ISession OpenSession(IInterceptor sessionLocalInterceptor)
 		{
-			_lastOpenedSession = sessions.WithOptions().Interceptor(sessionLocalInterceptor).OpenSession();
-			_openedSessions.Add(_lastOpenedSession);
-			return _lastOpenedSession;
+			return Sfi.WithOptions().Interceptor(sessionLocalInterceptor).OpenSession();
 		}
 
 		protected virtual void ApplyCacheSettings(Configuration configuration)
@@ -398,7 +353,7 @@ namespace NHibernate.Test
 					if (prop.Value.IsSimpleValue)
 					{
 						IType type = ((SimpleValue)prop.Value).Type;
-						if (type == NHibernateUtil.BinaryBlob)
+						if (ReferenceEquals(type, NHibernateUtil.BinaryBlob))
 						{
 							hasLob = true;
 						}

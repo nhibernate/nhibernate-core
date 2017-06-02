@@ -64,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 		public void WillNotCrashOnDtcPrepareFailure()
 		{
 			var tx = new TransactionScope();
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = OpenSession())
 			{
 				s.Save(new Person {NotNullData = null});  // Cause a SQL not null constraint violation.
 			}
@@ -91,7 +91,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 				Assert.Ignore("Firebird driver does not support distributed transactions");
 
 			var tx = new TransactionScope();
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = OpenSession())
 			{
 				new ForceEscalationToDistributedTx(true); //will rollback tx
 				s.Save(new Person { CreatedAt = DateTime.Today });
@@ -120,7 +120,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 			{
 				using (var txscope = new TransactionScope())
 				{
-					using (ISession s = sessions.OpenSession())
+					using (ISession s = OpenSession())
 					{
 						var person = new Person { CreatedAt = DateTime.Now };
 						s.Save(person);
@@ -150,7 +150,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 			{
 				using (var txscope = new TransactionScope())
 				{
-					using (ISession s = sessions.OpenSession())
+					using (ISession s = OpenSession())
 					{
 						var person = new Person {CreatedAt = DateTime.Now};
 						s.Save(person);
@@ -178,7 +178,7 @@ and with a rollback in the second dtc and a ForceRollback outside nh-session-sco
 			object savedId;
 			using (var txscope = new TransactionScope())
 			{
-				using (ISession s = sessions.OpenSession())
+				using (ISession s = OpenSession())
 				{
 					var person = new Person {CreatedAt = DateTime.Now};
 					savedId = s.Save(person);
@@ -189,7 +189,7 @@ and with a rollback in the second dtc and a ForceRollback outside nh-session-sco
 			{
 				using (var txscope = new TransactionScope())
 				{
-					using (ISession s = sessions.OpenSession())
+					using (ISession s = OpenSession())
 					{
 						var person = s.Get<Person>(savedId);
 						person.CreatedAt = DateTime.Now;
@@ -211,7 +211,7 @@ and with a rollback in the second dtc and a ForceRollback outside nh-session-sco
 			{
 				using (var txscope = new TransactionScope())
 				{
-					using (ISession s = sessions.OpenSession())
+					using (ISession s = OpenSession())
 					{
 						var person = s.Get<Person>(savedId);
 						s.Delete(person);
@@ -266,7 +266,7 @@ and with a rollback in the second dtc and a ForceRollback outside nh-session-sco
 			object id;
 			using (var tx = new TransactionScope())
 			{
-				using (ISession s = sessions.OpenSession())
+				using (ISession s = OpenSession())
 				{
 					id = s.Save(new Person {CreatedAt = DateTime.Today});
 
@@ -278,7 +278,7 @@ and with a rollback in the second dtc and a ForceRollback outside nh-session-sco
 
 			using (var tx = new TransactionScope())
 			{
-				using (ISession s = sessions.OpenSession())
+				using (ISession s = OpenSession())
 				{
 					new ForceEscalationToDistributedTx();
 
@@ -295,12 +295,12 @@ and with a rollback in the second dtc and a ForceRollback outside nh-session-sco
 		{
 			using (var tx = new TransactionScope())
 			{
-				using (ISession s = sessions.OpenSession())
+				using (ISession s = OpenSession())
 				{
 					s.Flush();
 				}
 
-				using (ISession s = sessions.OpenSession())
+				using (ISession s = OpenSession())
 				{
 					s.Flush();
 				}

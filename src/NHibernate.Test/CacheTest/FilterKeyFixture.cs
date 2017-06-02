@@ -22,13 +22,13 @@ namespace NHibernate.Test.CacheTest
 		public void ToStringIncludeAll()
 		{
 			string filterName = "DescriptionLike";
-			var f = new FilterImpl(sessions.GetFilterDefinition(filterName));
+			var f = new FilterImpl(Sfi.GetFilterDefinition(filterName));
 			f.SetParameter("pLike", "so%");
 			var fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes);
 			Assert.That(fk.ToString(), Is.EqualTo("FilterKey[DescriptionLike{'pLike'='so%'}]"));
 
 			filterName = "DescriptionEqualAndValueGT";
-			f = new FilterImpl(sessions.GetFilterDefinition(filterName));
+			f = new FilterImpl(Sfi.GetFilterDefinition(filterName));
 			f.SetParameter("pDesc", "something").SetParameter("pValue", 10);
 			fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes);
 			Assert.That(fk.ToString(), Is.EqualTo("FilterKey[DescriptionEqualAndValueGT{'pDesc'='something', 'pValue'='10'}]"));
@@ -49,11 +49,11 @@ namespace NHibernate.Test.CacheTest
 		private void FilterDescLikeToCompare(out FilterKey fk, out FilterKey fk1)
 		{
 			const string filterName = "DescriptionLike";
-			var f = new FilterImpl(sessions.GetFilterDefinition(filterName));
+			var f = new FilterImpl(Sfi.GetFilterDefinition(filterName));
 			f.SetParameter("pLike", "so%");
 			fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes);
 
-			var f1 = new FilterImpl(sessions.GetFilterDefinition(filterName));
+			var f1 = new FilterImpl(Sfi.GetFilterDefinition(filterName));
 			f1.SetParameter("pLike", "%ing");
 			fk1 = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes);
 		}
@@ -61,11 +61,11 @@ namespace NHibernate.Test.CacheTest
 		private void FilterDescValueToCompare(out FilterKey fk, out FilterKey fk1)
 		{
 			const string filterName = "DescriptionEqualAndValueGT";
-			var f = new FilterImpl(sessions.GetFilterDefinition(filterName));
+			var f = new FilterImpl(Sfi.GetFilterDefinition(filterName));
 			f.SetParameter("pDesc", "something").SetParameter("pValue", 10);
 			fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes);
 
-			var f1 = new FilterImpl(sessions.GetFilterDefinition(filterName));
+			var f1 = new FilterImpl(Sfi.GetFilterDefinition(filterName));
 			f1.SetParameter("pDesc", "something").SetParameter("pValue", 11);
 			fk1 = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes);
 		}

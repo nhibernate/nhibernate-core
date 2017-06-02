@@ -28,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 		[Test]
 		public void MultiHqlShouldThrowUserException()
 		{
-			var driver = sessions.ConnectionProvider.Driver;
+			var driver = Sfi.ConnectionProvider.Driver;
 			if (!driver.SupportsMultipleQueries)
 				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
 
@@ -57,7 +57,7 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 		[Test]
 		public void MultiCriteriaShouldThrowUserException()
 		{
-			var driver = sessions.ConnectionProvider.Driver;
+			var driver = Sfi.ConnectionProvider.Driver;
 			if (!driver.SupportsMultipleQueries)
 				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
 

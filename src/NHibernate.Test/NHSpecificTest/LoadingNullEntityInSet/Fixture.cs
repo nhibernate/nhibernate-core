@@ -21,13 +21,13 @@ namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
             get { return "NHibernate.Test"; }
         }
 
-		protected override void BuildSessionFactory()
+		protected override DebugSessionFactory BuildSessionFactory()
 		{
 			cfg.GetCollectionMapping(typeof (Employee).FullName + ".Primaries")
 				.CollectionTable.Name = "WantedProfessions";
 			cfg.GetCollectionMapping(typeof (Employee).FullName + ".Secondaries")
 				.CollectionTable.Name = "WantedProfessions";
-			base.BuildSessionFactory();
+			return base.BuildSessionFactory();
 		}
 
 		protected override void OnTearDown()

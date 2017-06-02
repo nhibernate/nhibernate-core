@@ -1199,7 +1199,7 @@ namespace NHibernate.Test.Legacy
 			s.Flush();
 			s.Close();
 
-			sessions.EvictCollection("NHibernate.DomainModel.Assignable.Categories");
+			Sfi.EvictCollection("NHibernate.DomainModel.Assignable.Categories");
 
 			s = OpenSession();
 			a = (Assignable) s.Get(typeof(Assignable), "foo");
@@ -1211,7 +1211,7 @@ namespace NHibernate.Test.Legacy
 			s.Flush();
 			s.Close();
 
-			sessions.EvictCollection("NHibernate.DomainModel.Assignable.Categories");
+			Sfi.EvictCollection("NHibernate.DomainModel.Assignable.Categories");
 
 			s = OpenSession();
 			a = (Assignable) s.Get(typeof(Assignable), "foo");
@@ -1224,7 +1224,7 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(3, a.Categories.Count);
 			s.Close();
 
-			sessions.EvictCollection("NHibernate.DomainModel.Assignable.Categories");
+			Sfi.EvictCollection("NHibernate.DomainModel.Assignable.Categories");
 
 			s = OpenSession();
 			a = (Assignable) s.Get(typeof(Assignable), "foo");
@@ -1259,7 +1259,7 @@ namespace NHibernate.Test.Legacy
 		public void ToStringWithNoIdentifier()
 		{
 			NHibernateUtil.Entity(typeof(Master)).ToLoggableString(new Master(),
-			                                                       (ISessionFactoryImplementor) sessions);
+			                                                       (ISessionFactoryImplementor) Sfi);
 		}
 
 		[Test]

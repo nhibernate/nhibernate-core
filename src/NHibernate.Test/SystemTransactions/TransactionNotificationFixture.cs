@@ -20,7 +20,7 @@ namespace NHibernate.Test.SystemTransactions
 		public void NoTransaction()
 		{
 			var interceptor = new RecordingInterceptor();
-			using (sessions.WithOptions().Interceptor(interceptor).OpenSession())
+			using (Sfi.WithOptions().Interceptor(interceptor).OpenSession())
 			{
 				Assert.AreEqual(0, interceptor.afterTransactionBeginCalled);
 				Assert.AreEqual(0, interceptor.beforeTransactionCompletionCalled);
@@ -33,7 +33,7 @@ namespace NHibernate.Test.SystemTransactions
 		{
 			var interceptor = new RecordingInterceptor();
 			using (new TransactionScope()) 
-			using (sessions.WithOptions().Interceptor(interceptor).OpenSession())
+			using (Sfi.WithOptions().Interceptor(interceptor).OpenSession())
 			{
 				Assert.AreEqual(1, interceptor.afterTransactionBeginCalled);
 				Assert.AreEqual(0, interceptor.beforeTransactionCompletionCalled);
@@ -48,7 +48,7 @@ namespace NHibernate.Test.SystemTransactions
 			ISession session;
 			using(var scope = new TransactionScope())
 			{
-				session = sessions.WithOptions().Interceptor(interceptor).OpenSession();
+				session = Sfi.WithOptions().Interceptor(interceptor).OpenSession();
 				scope.Complete();
 			}
 			session.Dispose();
@@ -62,7 +62,7 @@ namespace NHibernate.Test.SystemTransactions
 		{
 			var interceptor = new RecordingInterceptor();
 			using (new TransactionScope())
-			using (sessions.WithOptions().Interceptor(interceptor).OpenSession())
+			using (Sfi.WithOptions().Interceptor(interceptor).OpenSession())
 			{
 			}
 			Assert.AreEqual(0, interceptor.beforeTransactionCompletionCalled);
@@ -73,7 +73,7 @@ namespace NHibernate.Test.SystemTransactions
 		public void TwoTransactionScopesInsideOneSession()
 		{
 			var interceptor = new RecordingInterceptor();
-			using (var session = sessions.WithOptions().Interceptor(interceptor).OpenSession())
+			using (var session = Sfi.WithOptions().Interceptor(interceptor).OpenSession())
 			{
 				using (var scope = new TransactionScope())
 				{
@@ -96,7 +96,7 @@ namespace NHibernate.Test.SystemTransactions
 		public void OneTransactionScopesInsideOneSession()
 		{
 			var interceptor = new RecordingInterceptor();
-			using (var session = sessions.WithOptions().Interceptor(interceptor).OpenSession())
+			using (var session = Sfi.WithOptions().Interceptor(interceptor).OpenSession())
 			{
 				using (var scope = new TransactionScope())
 				{
@@ -161,11 +161,11 @@ namespace NHibernate.Test.SystemTransactions
 
 			using (var tx = new TransactionScope())
 			{
-				var ownConnection1 = sessions.ConnectionProvider.GetConnection();
+				var ownConnection1 = Sfi.ConnectionProvider.GetConnection();
 
 				try
 				{
-					using (s1 = sessions.WithOptions().Connection(ownConnection1).Interceptor(interceptor).OpenSession())
+					using (s1 = Sfi.WithOptions().Connection(ownConnection1).Interceptor(interceptor).OpenSession())
 					{
 						s1.CreateCriteria<object>().List();
 					}
@@ -175,7 +175,7 @@ namespace NHibernate.Test.SystemTransactions
 				}
 				finally
 				{
-					sessions.ConnectionProvider.CloseConnection(ownConnection1);
+					Sfi.ConnectionProvider.CloseConnection(ownConnection1);
 				}
 			}
 

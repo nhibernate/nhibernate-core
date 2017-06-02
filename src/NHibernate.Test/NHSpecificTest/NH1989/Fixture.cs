@@ -17,11 +17,17 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 			return factory.ConnectionProvider.Driver.SupportsMultipleQueries;
 		}
 
+		protected override void Configure(Configuration configuration)
+		{
+			base.Configure(configuration);
+			configuration.Properties[Environment.CacheProvider] = typeof(HashtableCacheProvider).AssemblyQualifiedName;
+			configuration.Properties[Environment.UseQueryCache] = "true";
+		}
+
 		protected override void OnSetUp()
 		{
-			cfg.Properties[Environment.CacheProvider] = typeof(HashtableCacheProvider).AssemblyQualifiedName;
-			cfg.Properties[Environment.UseQueryCache] = "true";
-			sessions = (ISessionFactoryImplementor)cfg.BuildSessionFactory();
+			// Clear cache at each test.
+			RebuildSessionFactory();
 		}
 
 		protected override void OnTearDown()

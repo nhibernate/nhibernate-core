@@ -19,7 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1082
 			var c = new C {ID = 1, Value = "value"};
 
 			var sessionInterceptor = new SessionInterceptorThatThrowsExceptionAtBeforeTransactionCompletion();
-			using (var s = sessions.WithOptions().Interceptor(sessionInterceptor).OpenSession())
+			using (var s = Sfi.WithOptions().Interceptor(sessionInterceptor).OpenSession())
 			using (var t = s.BeginTransaction())
 			{
 				s.Save(c);
@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1082
 				Assert.Throws<BadException>(t.Commit);
 			}
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			{
 				var objectInDb = s.Get<C>(1);
 				Assert.IsNull(objectInDb);
@@ -41,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1082
 			var c = new C { ID = 1, Value = "value" };
 
 			var synchronization = new SynchronizationThatThrowsExceptionAtBeforeTransactionCompletion();
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				t.RegisterSynchronization(synchronization);
@@ -51,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1082
 				Assert.Throws<BadException>(t.Commit);
 			}
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			{
 				var objectInDb = s.Get<C>(1);
 				Assert.IsNull(objectInDb);

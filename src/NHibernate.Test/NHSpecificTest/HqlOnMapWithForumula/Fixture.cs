@@ -17,7 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.HqlOnMapWithForumula
 		[Test]
 		public void TestBug()
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			{
 				s.CreateQuery("from A a where 1 in elements(a.MyMaps)")
 					.List();

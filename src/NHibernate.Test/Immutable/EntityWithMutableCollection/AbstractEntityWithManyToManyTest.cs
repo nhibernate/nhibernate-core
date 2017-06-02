@@ -33,11 +33,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 		{
 			base.OnSetUp();
 			
-			isPlanContractsInverse = sessions.GetCollectionPersister(typeof(Plan).FullName + ".Contracts").IsInverse;
+			isPlanContractsInverse = Sfi.GetCollectionPersister(typeof(Plan).FullName + ".Contracts").IsInverse;
 
 			try
 			{
-				sessions.GetCollectionPersister(typeof(Contract).FullName + ".Plans");
+				Sfi.GetCollectionPersister(typeof(Contract).FullName + ".Plans");
 				isPlanContractsBidirectional = true;
 			}
 			catch (MappingException)
@@ -45,8 +45,8 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 				isPlanContractsBidirectional = false;
 			}
 
-			isPlanVersioned = sessions.GetEntityPersister(typeof(Plan).FullName).IsVersioned;
-			isContractVersioned = sessions.GetEntityPersister(typeof(Contract).FullName).IsVersioned;
+			isPlanVersioned = Sfi.GetEntityPersister(typeof(Plan).FullName).IsVersioned;
+			isContractVersioned = Sfi.GetEntityPersister(typeof(Contract).FullName).IsVersioned;
 		}
 		
 		[Test]

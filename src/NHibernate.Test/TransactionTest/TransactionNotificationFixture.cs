@@ -17,7 +17,7 @@ namespace NHibernate.Test.TransactionTest
 		public void NoTransaction()
 		{
 			var interceptor = new RecordingInterceptor();
-			using (sessions.WithOptions().Interceptor(interceptor).OpenSession())
+			using (Sfi.WithOptions().Interceptor(interceptor).OpenSession())
 			{
 				Assert.That(interceptor.afterTransactionBeginCalled, Is.EqualTo(0));
 				Assert.That(interceptor.beforeTransactionCompletionCalled, Is.EqualTo(0));
@@ -29,7 +29,7 @@ namespace NHibernate.Test.TransactionTest
 		public void AfterBegin()
 		{
 			var interceptor = new RecordingInterceptor();
-			using (var session = sessions.WithOptions().Interceptor(interceptor).OpenSession())
+			using (var session = Sfi.WithOptions().Interceptor(interceptor).OpenSession())
 			using (session.BeginTransaction())
 			{
 				Assert.That(interceptor.afterTransactionBeginCalled, Is.EqualTo(1));
@@ -42,7 +42,7 @@ namespace NHibernate.Test.TransactionTest
 		public void Commit()
 		{
 			var interceptor = new RecordingInterceptor();
-			using (var session = sessions.WithOptions().Interceptor(interceptor).OpenSession())
+			using (var session = Sfi.WithOptions().Interceptor(interceptor).OpenSession())
 			{
 				ITransaction tx = session.BeginTransaction();
 				tx.Commit();
@@ -56,7 +56,7 @@ namespace NHibernate.Test.TransactionTest
 		public void Rollback()
 		{
 			var interceptor = new RecordingInterceptor();
-			using (var session = sessions.WithOptions().Interceptor(interceptor).OpenSession())
+			using (var session = Sfi.WithOptions().Interceptor(interceptor).OpenSession())
 			{
 				ITransaction tx = session.BeginTransaction();
 				tx.Rollback();
@@ -96,9 +96,9 @@ namespace NHibernate.Test.TransactionTest
 			var interceptor = new RecordingInterceptor();
 			ISession s;
 
-			using (var ownConnection = sessions.ConnectionProvider.GetConnection())
+			using (var ownConnection = Sfi.ConnectionProvider.GetConnection())
 			{
-				using (s = sessions.WithOptions().Connection(ownConnection).Interceptor(interceptor).OpenSession())
+				using (s = Sfi.WithOptions().Connection(ownConnection).Interceptor(interceptor).OpenSession())
 				using (s.BeginTransaction())
 				{
 					s.CreateCriteria<object>().List();

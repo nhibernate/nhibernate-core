@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 
 		protected void IgnoreThisTestIfMultipleQueriesArentSupportedByDriver()
 		{
-			var driver = sessions.ConnectionProvider.Driver;
+			var driver = Sfi.ConnectionProvider.Driver;
 			if (driver.SupportsMultipleQueries == false)
 				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
 		}

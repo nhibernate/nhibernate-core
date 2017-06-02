@@ -266,7 +266,7 @@ namespace NHibernate.Test.Legacy
 				s.Flush();
 			}
 
-			sessions.EvictCollection("NHibernate.DomainModel.Baz.FooSet");
+			Sfi.EvictCollection("NHibernate.DomainModel.Baz.FooSet");
 
 			using (ISession s = OpenSession())
 			{
@@ -323,7 +323,7 @@ namespace NHibernate.Test.Legacy
 				s.Flush();
 			}
 
-			sessions.EvictCollection("NHibernate.DomainModel.Baz.FooSet");
+			Sfi.EvictCollection("NHibernate.DomainModel.Baz.FooSet");
 
 			using (ISession s = OpenSession())
 			{
@@ -1677,7 +1677,7 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void ForceOuterJoin()
 		{
-			if (sessions.Settings.IsOuterJoinFetchEnabled == false)
+			if (Sfi.Settings.IsOuterJoinFetchEnabled == false)
 			{
 				// don't bother to run the test if we can't test it
 				return;
@@ -3554,7 +3554,7 @@ namespace NHibernate.Test.Legacy
 				txn.Commit();
 			}
 
-			sessions.Evict(typeof(Glarch));
+			Sfi.Evict(typeof(Glarch));
 
 			using (ISession s = OpenSession())
 			using (ITransaction txn = s.BeginTransaction())
@@ -3576,7 +3576,7 @@ namespace NHibernate.Test.Legacy
 				txn.Commit();
 			}
 
-			sessions.Evict(typeof(Glarch));
+			Sfi.Evict(typeof(Glarch));
 
 			using (ISession s = OpenSession())
 			using (ITransaction txn = s.BeginTransaction())
@@ -4979,7 +4979,7 @@ namespace NHibernate.Test.Legacy
 		{
 			using (var prov = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties))
 			using (var connection = prov.GetConnection())
-			using (var s = sessions.WithOptions().Connection(connection).OpenSession())
+			using (var s = Sfi.WithOptions().Connection(connection).OpenSession())
 			{
 				using (var tx = s.BeginTransaction())
 				{
@@ -5374,7 +5374,7 @@ namespace NHibernate.Test.Legacy
 				|| (b2 == barprox && !(b1 is INHibernateProxy))); //one-to-many
 			Assert.IsTrue(baz.FooArray[0] is INHibernateProxy); //many-to-many
 			Assert.AreEqual(bar2prox, baz.FooArray[1]);
-			if (sessions.Settings.IsOuterJoinFetchEnabled)
+			if (Sfi.Settings.IsOuterJoinFetchEnabled)
 			{
 				enumer = baz.FooBag.GetEnumerator();
 				enumer.MoveNext();

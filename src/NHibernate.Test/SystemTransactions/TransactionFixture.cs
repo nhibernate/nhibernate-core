@@ -17,7 +17,7 @@ namespace NHibernate.Test.SystemTransactions
 		public void CanUseSystemTransactionsToCommit()
 		{
 			object identifier;
-			using(ISession session = sessions.OpenSession())
+			using(ISession session = Sfi.OpenSession())
 			using(TransactionScope tx = new TransactionScope())
 			{
 				W s = new W();
@@ -26,7 +26,7 @@ namespace NHibernate.Test.SystemTransactions
 				tx.Complete();
 			}
 
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			using (TransactionScope tx = new TransactionScope())
 			{
 				W w = session.Get<W>(identifier);

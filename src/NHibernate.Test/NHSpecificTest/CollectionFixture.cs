@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 		protected override void OnTearDown()
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				session.Delete("from LLParent");
 				session.Flush();

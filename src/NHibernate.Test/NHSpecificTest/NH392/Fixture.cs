@@ -37,7 +37,7 @@ namespace NHibernate.Test.NHSpecificTest.NH392
 
         protected override void OnTearDown()
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			{
 				s.Delete("from UnsavedValueMinusOne");
 				s.Flush();
