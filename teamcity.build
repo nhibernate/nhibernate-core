@@ -88,11 +88,10 @@
 	<target name="setup-teamcity-firebird32">
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.FirebirdClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.FirebirdDialect" />
-		<property name="nhibernate.connection.connection_string"	value="Database=NHibernate.fdb;ServerType=1;UserID=SYSDBA" />
+		<property name="nhibernate.connection.connection_string"	value="Database=nhibernate;UserID=SYSDBA;Password=masterkey" />
 		<copy todir="${bin.dir}">
-			<fileset basedir="${root.dir}/lib/teamcity/firebird/x86">
+			<fileset basedir="${root.dir}/lib/teamcity/firebird">
 				<include name="*.dll"/>
-				<include name="*.msg"/>
 			</fileset>
 		</copy>
 		<property name="NHibernate.Test.IgnoreFail" value="true" />
@@ -103,11 +102,10 @@
 		<property name="nunit-x64" value="true" />
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.FirebirdClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.FirebirdDialect" />
-		<property name="nhibernate.connection.connection_string"	value="Database=NHibernate.fdb;ServerType=1;UserID=SYSDBA" />
+		<property name="nhibernate.connection.connection_string"	value="Database=nhibernate;UserID=SYSDBA;Password=masterkey" />
 		<copy todir="${bin.dir}">
-			<fileset basedir="${root.dir}/lib/teamcity/firebird/x64">
+			<fileset basedir="${root.dir}/lib/teamcity/firebird">
 				<include name="*.dll"/>
-				<include name="*.msg"/>
 			</fileset>
 		</copy>
 		<property name="NHibernate.Test.IgnoreFail" value="true" />
