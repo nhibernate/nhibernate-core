@@ -1,3 +1,4 @@
+using System;
 using System.Data.Common;
 using NHibernate.Util;
 
@@ -11,6 +12,11 @@ namespace NHibernate.Driver
 		                                                                       + "application configuration file to specify the full name of the assembly.";
 
 		private readonly IDriveConnectionCommandProvider connectionCommandProvider;
+
+		/// <summary>
+		/// If the driver use a third party driver (not a .Net Framework DbProvider), its assembly version.
+		/// </summary>
+		protected Version DriverVersion { get; } 
 
 		/// <summary>
 		/// Initializes a new instance of <see cref="ReflectionBasedDriver" /> with
@@ -51,6 +57,7 @@ namespace NHibernate.Driver
 			else
 			{
 				connectionCommandProvider = new ReflectionDriveConnectionCommandProvider(connectionType, commandType);
+				DriverVersion = connectionType.Assembly.GetName().Version;
 			}
 		}
 

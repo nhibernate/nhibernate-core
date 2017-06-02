@@ -88,5 +88,7 @@ namespace NHibernate.Driver
 		{
 			get { return true; }
 		}
+
+		public override bool RequiresTimeSpanForTime => true;
 	}
 }

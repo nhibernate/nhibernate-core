@@ -1,64 +1,65 @@
 using System.Collections.Generic;
 using System.Data.Common;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 
 namespace NHibernate.Test.NHSpecificTest.NH2234
 {
-  public class MyUsertype
-  {
-    public MyUsertype(int id, string value)
-    {
-      Id = id;
-      Value = value;
-    }
+	public class MyUsertype
+	{
+		public MyUsertype(int id, string value)
+		{
+			Id = id;
+			Value = value;
+		}
 
-    public int Id { get; set; }
-    public string Value { get; set; }
+		public int Id { get; set; }
+		public string Value { get; set; }
 
-    public override int GetHashCode()
-    {
-      return Id.GetHashCode();
-    }
+		public override int GetHashCode()
+		{
+			return Id.GetHashCode();
+		}
 
-    public override bool Equals(object obj)
-    {
-      var mut = obj as MyUsertype;
-      return mut != null && mut.Id == Id;
-    }
+		public override bool Equals(object obj)
+		{
+			var mut = obj as MyUsertype;
+			return mut != null && mut.Id == Id;
+		}
 
-    public static bool operator ==(MyUsertype left, MyUsertype right)
-    {
-      return Equals(left, right);
-    }
+		public static bool operator ==(MyUsertype left, MyUsertype right)
+		{
+			return Equals(left, right);
+		}
 
-    public static bool operator !=(MyUsertype left, MyUsertype right)
-    {
-      return !Equals(left, right);
-    }
-  }
+		public static bool operator !=(MyUsertype left, MyUsertype right)
+		{
+			return !Equals(left, right);
+		}
+	}
 
-  public static class MyUserTypes
-  {
-    public static readonly List<MyUsertype> _values = new List<MyUsertype>()
-                                                        {new MyUsertype(1, "Value 1"), new MyUsertype(2, "Value 2")};
+	public static class MyUserTypes
+	{
+		public static readonly List<MyUsertype> _values =
+			new List<MyUsertype> { new MyUsertype(1, "Value 1"), new MyUsertype(2, "Value 2") };
 
 
-    public static MyUsertype Value1
-    {
-      get { return _values[0]; }
-    }
+		public static MyUsertype Value1
+		{
+			get { return _values[0]; }
+		}
 
-    public static MyUsertype Value2
-    {
-      get { return _values[1]; }
-    }
+		public static MyUsertype Value2
+		{
+			get { return _values[1]; }
+		}
 
-    public static MyUsertype Find(int id)
-    {
-      return _values.Find(item => item.Id == id);
-    }
-  }
+		public static MyUsertype Find(int id)
+		{
+			return _values.Find(item => item.Id == id);
+		}
+	}
 
 	public class SimpleCustomType : IUserType
 	{
@@ -87,12 +88,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2234
 			return value;
 		}
 
-		public void NullSafeSet(DbCommand cmd, object value, int index)
+		public void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			if (value == null)
-			  NHibernateUtil.Int32.NullSafeSet(cmd, null, index, null);
+				NHibernateUtil.Int32.NullSafeSet(cmd, null, index, session);
 			else
-        NHibernateUtil.Int32.NullSafeSet(cmd, ((MyUsertype)value).Id, index, null);
+				NHibernateUtil.Int32.NullSafeSet(cmd, ((MyUsertype)value).Id, index, session);
 		}
 
 		public System.Type ReturnedType
@@ -100,10 +101,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2234
 			get { return typeof(MyUsertype); }
 		}
 
-		public object NullSafeGet(DbDataReader rs, string[] names, object owner)
+		public object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			int value = (int)NHibernateUtil.Int32.NullSafeGet(rs, names[0], null, owner);
-		  return MyUserTypes.Find(value);
+			int value = (int)NHibernateUtil.Int32.NullSafeGet(rs, names[0], session, owner);
+			return MyUserTypes.Find(value);
 		}
 
 		public bool IsMutable

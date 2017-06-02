@@ -17,13 +17,6 @@ namespace NHibernate.Driver
 			}
 		}
 
-		public override void AdjustCommand(DbCommand command)
-		{
-			foreach (var parameter in command.Parameters.Cast<SqlParameter>().Where(x => x.SqlDbType == SqlDbType.Time && (x.Value is DateTime)))
-			{
-				var dateTimeValue = (DateTime)parameter.Value;
-				parameter.Value = dateTimeValue.TimeOfDay;
-			}
-		}
+		public override bool RequiresTimeSpanForTime => true;
 	}
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Data.Common;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -31,17 +32,17 @@ namespace NHibernate.Type
 			return new Uri(xml, UriKind.RelativeOrAbsolute);
 		}
 
-		public override void Set(DbCommand cmd, object value, int index)
+		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			cmd.Parameters[index].Value = ToString(value);
 		}
 
-		public override object Get(DbDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			return StringToObject(Convert.ToString(rs[index]));
 		}
 
-		public override object Get(DbDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
 			return StringToObject(Convert.ToString(rs[name]));
 		}
