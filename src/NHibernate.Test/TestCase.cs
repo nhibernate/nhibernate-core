@@ -36,11 +36,6 @@ namespace NHibernate.Test
 		}
 
 		/// <summary>
-		/// To use in in-line test
-		/// </summary>
-		protected bool IsAntlrParser => Sfi.Settings.QueryTranslatorFactory is ASTQueryTranslatorFactory;
-
-		/// <summary>
 		/// Mapping files used in the TestCase
 		/// </summary>
 		protected abstract IList Mappings { get; }
