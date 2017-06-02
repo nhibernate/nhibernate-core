@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Properties;
 using NHibernate.Type;
 using NHibernate.UserTypes;
 
@@ -50,6 +51,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void Access(System.Type accessorType)
 		{
 			entityPropertyMapper.Access(accessorType);
+		}
+
+		public void Access<T>() where T : IPropertyAccessor, new()
+		{
+			this.Access(typeof(T));
 		}
 
 		public void OptimisticLock(bool takeInConsiderationForOptimisticLock)

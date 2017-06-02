@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using NHibernate.Properties;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
@@ -21,6 +22,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void Access(Accessor accessor)
 		{
 			_realMapper.Access(accessor);
+		}
+
+		public void Access<T>() where T : IPropertyAccessor, new()
+		{
+			this.Access(typeof(T));
 		}
 
 		public void Access(System.Type accessorType)

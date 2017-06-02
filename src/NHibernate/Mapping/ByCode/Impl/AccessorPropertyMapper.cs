@@ -92,9 +92,39 @@ namespace NHibernate.Mapping.ByCode.Impl
 				case Accessor.None:
 					setAccessor("none");
 					break;
+				//NH-3720
+				case Accessor.FieldCamelCase:
+					setAccessor("field.camelcase");
+					break;
+				case Accessor.FieldCamelCaseMUnderscore:
+					setAccessor("field.camelcase-m-underscore");
+					break;
+				case Accessor.FieldCamelCaseUnderscore:
+					setAccessor("field.camelcase-underscore");
+					break;
+				case Accessor.FieldLowerCase:
+					setAccessor("field.lowercase");
+					break;
+				case Accessor.FieldLowerCaseUnderscore:
+					setAccessor("field.lowercase-underscore");
+					break;
+				case Accessor.FieldPascalCaseM:
+					setAccessor("field.pascalcase-m");
+					break;
+				case Accessor.FieldPascalCaseUnderscore:
+					setAccessor("field.pascalcase-underscore");
+					break;
+				case Accessor.FieldPascalCaseMUnderscore:
+					setAccessor("field.pascalcase-m-underscore");
+					break;
 				default:
 					throw new ArgumentOutOfRangeException("accessor");
 			}
+		}
+
+		public void Access<T>() where T : IPropertyAccessor, new()
+		{
+			this.Access(typeof(T));
 		}
 
 		public void Access(System.Type accessorType)

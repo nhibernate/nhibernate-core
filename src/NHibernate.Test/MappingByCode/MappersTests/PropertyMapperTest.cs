@@ -34,6 +34,11 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 				AccessorCalled = true;
 			}
 
+			public void Access<T>() where T : IPropertyAccessor, new()
+			{
+
+			}
+
 			public void Access(System.Type accessorType)
 			{
 				

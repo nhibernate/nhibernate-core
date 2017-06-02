@@ -1,6 +1,7 @@
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using NHibernate.Properties;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
@@ -81,6 +82,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		public void Access(Accessor accessor)
 		{
 			AddCustomizer(m => m.Access(accessor));
+		}
+
+		public void Access<T>() where T : IPropertyAccessor, new()
+		{
+			this.Access(typeof(T));
 		}
 
 		public void Access(System.Type accessorType)
