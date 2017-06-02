@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3374
 {
-	[Ignore("Not fixed yet.")]
+	[TestFixture]
 	public class ByCodeFixture : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
@@ -27,11 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3374
 					map.Id(x => x.Id, idMapper => idMapper.Generator(Generators.Identity));
 					map.Property(x => x.Bytes, y =>
 						{
-							y.Column(x =>
-							{
-								x.SqlType("varbinary(max)");
-								x.Length(int.MaxValue);
-							});
+							y.Length(int.MaxValue);
 							y.Lazy(true);
 						});
 				});
