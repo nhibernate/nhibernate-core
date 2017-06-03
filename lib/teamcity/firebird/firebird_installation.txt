@@ -6,17 +6,6 @@ Installation steps for Firebird for NH TeamCity:
 3.  Leave other settings with their defaults.
 4.  The setup should install Firebird on the machine;
 5.  Go into Firebird folder (c:\program files\firebird\) and create a folder named Data.
-
-Creating the NH database:
-
-a.  Open ISQL (start -> programs -> Firebird -> ISQL);
-b.  Type:
-create database 'localhost:c:\Program Files\Firebird\Data\NHibernate.fdb' page_size 8192
-user 'sysdba' password 'masterkey';
-
-Please do not omit "localhost:", otherwise file access rights will not be adequate. Specifying localhost ensures
-the database is created by the server process. Otherwise it is create in embedded mode, with connected user acl.
-c.  Go in Firebird installation directory and open databases.conf;
-d.  Add in "Live Databases" section:
+6.  Go in Firebird installation directory and open databases.conf;
+7.  Add in "Live Databases" section:
 nhibernate = C:\Program Files\Firebird\Data\NHIBERNATE.FDB
-
