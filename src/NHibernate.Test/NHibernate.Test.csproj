@@ -152,6 +152,7 @@
     <Compile Include="Async\Criteria\Lambda\SimpleIntegrationFixture.cs" />
     <Compile Include="Async\Criteria\Lambda\SubQueryIntegrationFixture.cs" />
     <Compile Include="Async\Criteria\ProjectionsTest.cs" />
+    <Compile Include="Async\DebugSessionFactory.cs" />
     <Compile Include="Async\Deletetransient\DeleteTransientEntityTest.cs" />
     <Compile Include="Async\DialectTest\DialectFixture.cs" />
     <Compile Include="Async\DriverTest\FirebirdClientDriverFixture.cs" />
@@ -641,6 +642,7 @@
     <Compile Include="Async\NHSpecificTest\NH3332\TestJoinsWithSameTable.cs" />
     <Compile Include="Async\NHSpecificTest\NH335\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3372\Fixture.cs" />
+    <Compile Include="Async\NHSpecificTest\NH3374\FixtureByCode.cs" />
     <Compile Include="Async\NHSpecificTest\NH3377\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3386\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3392\Fixture.cs" />
