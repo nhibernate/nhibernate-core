@@ -88,7 +88,7 @@
 	<target name="setup-teamcity-firebird32">
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.FirebirdClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.FirebirdDialect" />
-		<property name="nhibernate.connection.connection_string"	value="DataSource=localhost;Database=nhibernate;UserID=SYSDBA;Password=masterkey" />
+		<property name="nhibernate.connection.connection_string"	value="DataSource=localhost;ServerType=0;Database=nhibernate;User ID=SYSDBA;Password=masterkey;Charset=NONE;" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/firebird">
 				<include name="*.dll"/>
@@ -102,7 +102,7 @@
 		<property name="nunit-x64" value="true" />
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.FirebirdClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.FirebirdDialect" />
-		<property name="nhibernate.connection.connection_string"	value="DataSource=localhost;Database=nhibernate;UserID=SYSDBA;Password=masterkey" />
+		<property name="nhibernate.connection.connection_string"	value="DataSource=localhost;ServerType=0;Database=nhibernate;User ID=SYSDBA;Password=masterkey;Charset=NONE;" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/firebird">
 				<include name="*.dll"/>
