@@ -78,15 +78,14 @@ namespace NHibernate.Linq
 
 		public async Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
 		{
-			return (TResult)await ExecuteAsync(expression, cancellationToken);
+			return (TResult)await ExecuteAsync(expression, cancellationToken).ConfigureAwait(false);
 		}
 
-		public virtual async Task<object> ExecuteAsync(Expression expression, CancellationToken cancellationToken)
+		public virtual Task<object> ExecuteAsync(Expression expression, CancellationToken cancellationToken)
 		{
-			IQuery query;
-			NhLinqExpression nhLinqExpression = PrepareQuery(expression, out query);
+			NhLinqExpression nhLinqExpression = PrepareQuery(expression, out var query);
 
-			return await ExecuteQueryAsync(nhLinqExpression, query, nhLinqExpression, cancellationToken);
+			return ExecuteQueryAsync(nhLinqExpression, query, nhLinqExpression, cancellationToken);
 		}
 
 		protected virtual NhLinqExpression PrepareQuery(Expression expression, out IQuery query)

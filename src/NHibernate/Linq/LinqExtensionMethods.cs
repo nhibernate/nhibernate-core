@@ -1478,7 +1478,7 @@ namespace NHibernate.Linq
 				throw new NotSupportedException("Query needs to be of type QueryableBase<TSource>");
 
 			var provider = (INhQueryProvider)nhQueryable.Provider;
-			var result = await provider.ExecuteAsync<IEnumerable<TSource>>(nhQueryable.Expression, cancellationToken);
+			var result = await provider.ExecuteAsync<IEnumerable<TSource>>(nhQueryable.Expression, cancellationToken).ConfigureAwait(false);
 			return result.ToList();
 		}
 
@@ -1502,7 +1502,7 @@ namespace NHibernate.Linq
 			var future = provider.ExecuteFutureAsync(nhQueryable.Expression, cancellationToken);
 			if (future is IAsyncEnumerable<TSource> asyncEnumerable)
 			{
-				return new FutureValueAsync<TSource>(async () => await asyncEnumerable.ToList(cancellationToken));
+				return new FutureValueAsync<TSource>(async () => await asyncEnumerable.ToList(cancellationToken).ConfigureAwait(false));
 			}
 
 			return (FutureValueAsync<TSource>)future;

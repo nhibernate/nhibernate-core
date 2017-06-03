@@ -18,18 +18,13 @@ namespace NHibernate.Impl
 
 		public async Task<T> GetValue()
 		{
-			var result = await getResult();
+			var result = await getResult().ConfigureAwait(false);
 			if (ExecuteOnEval != null)
 				// When not null, ExecuteOnEval is fetched with PostExecuteTransformer from IntermediateHqlTree
 				// through ExpressionToHqlTranslationResults, which requires a IQueryable as input and directly
 				// yields the scalar result when the query is scalar.
 				return (T)ExecuteOnEval.DynamicInvoke(result.AsQueryable());
-			var enumerator = result.GetEnumerator();
-
-			if (!enumerator.MoveNext())
-				return default(T);
-
-			return enumerator.Current;
+			return result.FirstOrDefault();
 		}
 
 		public Delegate ExecuteOnEval { get; set; }

@@ -130,7 +130,7 @@ namespace NHibernate.Driver
 
 		public override async Task<bool> ReadAsync(CancellationToken cancellationToken)
 		{
-			_isMidstream = await _reader.ReadAsync(cancellationToken);
+			_isMidstream = await _reader.ReadAsync(cancellationToken).ConfigureAwait(false);
 			return _isMidstream;
 		}
 

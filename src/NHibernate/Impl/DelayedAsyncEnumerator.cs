@@ -30,15 +30,15 @@ namespace NHibernate.Impl
 
 		private sealed class Enumerator : IAsyncEnumerator<T>
 		{
-			private IEnumerable data;
-			private GetResult result;
-			private Delegate executeOnEval;
-			private IEnumerator enumerator;
+			private IEnumerable<T> _data;
+			private readonly GetResult _result;
+			private readonly Delegate _executeOnEval;
+			private IEnumerator<T> _enumerator;
 
 			public Enumerator(GetResult result, Delegate executeOnEval)
 			{
-				this.result = result;
-				this.executeOnEval = executeOnEval;
+				_result = result;
+				_executeOnEval = executeOnEval;
 			}
 
 			public T Current { get; private set; }
@@ -46,23 +46,24 @@ namespace NHibernate.Impl
 			public async Task<bool> MoveNext(CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				if (enumerator == null)
+				if (_enumerator == null)
 				{
-					data = await result();
-					if (executeOnEval != null)
-						data = (IEnumerable)executeOnEval.DynamicInvoke(data);
-					enumerator = data.GetEnumerator();
+					_data = await _result().ConfigureAwait(false);
+					if (_executeOnEval != null)
+						_data = (IEnumerable<T>)_executeOnEval.DynamicInvoke(_data);
+					_enumerator = _data.GetEnumerator();
 				}
-				if (!enumerator.MoveNext())
+				if (!_enumerator.MoveNext())
 				{
 					return false;
 				}
-				Current = (T)enumerator.Current;
+				Current = _enumerator.Current;
 				return true;
 			}
 
 			public void Dispose()
 			{
+				_enumerator.Dispose();
 			}
 		}
 	}
