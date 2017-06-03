@@ -102,17 +102,17 @@ namespace NHibernate.TestDatabaseSetup
 
 		private static void SetupFirebird(Cfg.Configuration cfg)
 		{
+			var connStr = cfg.Properties[Cfg.Environment.ConnectionString];
 			try
 			{
-				if (File.Exists("NHibernate.fdb"))
-					File.Delete("NHibernate.fdb");
+				FbConnection.DropDatabase(connStr);
 			}
 			catch (Exception e)
 			{
 				Console.WriteLine(e);
 			}
 
-			FbConnection.CreateDatabase("Database=NHibernate.fdb;ServerType=1");
+			FbConnection.CreateDatabase(connStr);
 		}
 
 		private static void SetupSqlServerCe(Cfg.Configuration cfg)
