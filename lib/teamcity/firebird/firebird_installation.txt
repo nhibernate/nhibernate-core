@@ -17,3 +17,8 @@ UserManager = Srp
 10. Ensure WireCrypt is set to Enabled.
 WireCrypt = Enabled
 11. Restart Firebird service.
+
+The TestDatabaseSetup will create the database on the Teamcity agent.
+For manual testing, take care of not creating it with inadequate acl on the file. This may happen
+if you use ISQL with a connection string causing it to create it in embedded mode, without actually
+using the server. Prefixing your path with "localhost:" should avoid that.
