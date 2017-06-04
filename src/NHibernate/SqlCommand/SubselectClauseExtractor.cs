@@ -76,22 +76,24 @@ namespace NHibernate.SqlCommand
 		/// statement.</returns>
 		public SqlString GetSqlString()
 		{
-			IEnumerator partEnumerator = sql.GetEnumerator();
-			parenNestCount = 0;
-			// Process the parts until FROM is found
-			while (partEnumerator.MoveNext())
+			using (var partEnumerator = sql.GetEnumerator())
 			{
-				object part = partEnumerator.Current;
-				if (ProcessPartBeforeFrom(part))
+				parenNestCount = 0;
+				// Process the parts until FROM is found
+				while (partEnumerator.MoveNext())
 				{
-					break;
+					var part = partEnumerator.Current;
+					if (ProcessPartBeforeFrom(part))
+					{
+						break;
+					}
 				}
-			}
 
-			// Process the rest
-			while (partEnumerator.MoveNext())
-			{
-				AddPart(partEnumerator.Current);
+				// Process the rest
+				while (partEnumerator.MoveNext())
+				{
+					AddPart(partEnumerator.Current);
+				}
 			}
 
 			RemoveLastOrderByClause();

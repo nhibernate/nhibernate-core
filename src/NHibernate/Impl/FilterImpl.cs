@@ -93,10 +93,19 @@ namespace NHibernate.Impl
 			if (values.Count > 0)
 			{
 				var e = values.GetEnumerator();
-				e.MoveNext();
-				if (!type.ReturnedClass.IsInstanceOfType(e.Current))
+				try
 				{
-					throw new HibernateException("Incorrect type for parameter [" + name + "]");
+					e.MoveNext();
+					if (!type.ReturnedClass.IsInstanceOfType(e.Current))
+					{
+						throw new HibernateException("Incorrect type for parameter [" + name + "]");
+					}
+				}
+				finally
+				{
+					// Most enumerators are indeed disposable. foreach takes care of disposing them, but
+					// when using them directly, we have to do it.
+					(e as IDisposable)?.Dispose();
 				}
 			}
 			parameters[name] = values;

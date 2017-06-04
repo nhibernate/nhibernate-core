@@ -244,16 +244,22 @@ namespace NHibernate.Util
 				return false;
 			}
 
-			IEnumerator e1 = c1.GetEnumerator();
-			IEnumerator e2 = c2.GetEnumerator();
-
-			while (e1.MoveNext())
+			var e2 = c2.GetEnumerator();
+			try
 			{
-				e2.MoveNext();
-				if (!Equals(e1.Current, e2.Current))
+				foreach (var item1 in c1)
 				{
-					return false;
+					e2.MoveNext();
+					if (!Equals(item1, e2.Current))
+					{
+						return false;
+					}
 				}
+			}
+			finally
+			{
+				// Most IEnumerator will have a disposable concrete implementation, must check it.
+				(e2 as IDisposable)?.Dispose();
 			}
 
 			return true;
