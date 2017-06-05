@@ -11,11 +11,9 @@ using NHibernate.Mapping;
 using NHibernate.Tool.hbm2ddl;
 using NHibernate.Type;
 using NUnit.Framework;
-using NHibernate.Hql.Ast.ANTLR;
 using NUnit.Framework.Interfaces;
 using System.Text;
-using NHibernate.Dialect;
-using NHibernate.Util;
+using NHibernate.Driver;
 
 namespace NHibernate.Test
 {
@@ -271,7 +269,7 @@ namespace NHibernate.Test
 
 		protected virtual void DropSchema()
 		{
-			if (Dialect is FirebirdDialect)
+			if (Sfi.ConnectionProvider.Driver is FirebirdClientDriver fbDriver)
 			{
 				// Firebird will pool each connection created during the test and will marked as used any table
 				// referenced by queries. It will at best delays those tables drop until connections are actually
@@ -279,17 +277,7 @@ namespace NHibernate.Test
 				// This results in other tests failing when they try to create tables with same name.
 				// By clearing the connection pool the tables will get dropped. This is done by the following code.
 				// Moved from NH1908 test case, contributed by Amro El-Fakharany.
-				var clearConnection = Sfi.ConnectionProvider.GetConnection();
-				try
-				{
-					var fbConnectionType = clearConnection.GetType();
-					var clearPool = fbConnectionType.GetMethod("ClearPool");
-					clearPool.Invoke(null, new object[] {clearConnection});
-				}
-				finally
-				{
-					Sfi.ConnectionProvider.CloseConnection(clearConnection);
-				}
+				fbDriver.ClearPool(null);
 			}
 
 			new SchemaExport(cfg).Drop(OutputDdl, true);
