@@ -245,231 +245,267 @@
 			<import namespace="System.Data.Common"/>
 			<import namespace="System.Data.SqlClient"/>
 			<import namespace="System.IO"/>
+			<import namespace="System.Linq"/>
 			<import namespace="System.Xml"/>
 		</imports>
 		<code>
 			<![CDATA[
 
-						public static void StripAttributes(XmlDocument source, string xpath)
+		public static void StripAttributes(XmlDocument source, string xpath)
+		{
+			foreach (XmlAttribute att in source.SelectNodes(xpath))
+				att.OwnerElement.RemoveAttribute(att.Name);
+		}
+
+		public static void StripElements(XmlDocument source, string xpath)
+		{
+			foreach (XmlElement el in source.SelectNodes(xpath))
+				el.ParentNode.RemoveChild(el);
+		}
+
+		[Function("StripTimings")]
+		public static string StripTimings(string testResultFile, string outputFile)
+		{
+			try
+			{
+				XmlDocument testResults = new XmlDocument();
+				testResults.Load(testResultFile);
+
+				StripElements(testResults, "//stack-trace");
+				StripAttributes(testResults, "//@cwd");
+				StripAttributes(testResults, "//@total");
+				StripAttributes(testResults, "//@date");
+				StripAttributes(testResults, "//@time");
+				StripAttributes(testResults, "//@machine-name");
+				StripAttributes(testResults, "//@user");
+				StripAttributes(testResults, "//@user-domain");
+
+				outputFile = Path.GetDirectoryName(testResultFile) + "/" + outputFile;
+				testResults.Save(outputFile);
+				return outputFile;
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				throw;
+			}
+		}
+
+		public enum ResultStatus
+		{
+			None,
+			Ignored,
+			Success,
+			Failure
+		}
+
+		public class Result
+		{
+			public string Name;
+			public ResultStatus Status;
+			public bool Executed;
+			public bool Success;
+			public bool Inconclusive => Executed && !Success && Status == ResultStatus.Success;
+
+			private static Result Parse(XmlNode testCase)
+			{
+				var result = new Result
+				{
+					Name = testCase.Attributes["name"].Value,
+					Executed = bool.Parse(testCase.Attributes["executed"].Value)
+				};
+
+				Enum.TryParse<ResultStatus>(testCase.Attributes["result"].Value, out var status);
+				result.Status = status;
+
+				if (result.Executed)
+					result.Success = bool.Parse(testCase.Attributes["success"].Value);
+
+				return result;
+			}
+
+			public override string ToString()
+			{
+				var prefix = "IGNORED - ";
+				if (Executed)
+					prefix = Success ? "PASS    - " :
+						Inconclusive ? "INCONCL - " : "FAIL    - ";
+				return prefix + Name;
+			}
+
+			public static IList<Result> ParseFile(string file)
+			{
+				var run1 = new XmlDocument();
+				run1.Load(file);
+
+				var results = new List<Result>();
+				foreach (XmlNode testCase in run1.SelectNodes("//test-case"))
+				{
+					var result = Parse(testCase);
+					results.Add(result);
+				}
+				return results;
+			}
+		}
+
+		[Function("CompareResults")]
+		public static string CompareResults(string currentResult, string lastResult)
+		{
+			try
+			{
+				var outputFile = Path.GetDirectoryName(currentResult) + "/Comparison.txt";
+				var report = new StringBuilder();
+
+				report.AppendLine("Comparison Results");
+				report.AppendLine("==================");
+
+				var before = Result.ParseFile(lastResult);
+				var beforeByName = before.ToDictionary(b => b.Name);
+				var after = Result.ParseFile(currentResult);
+
+				var newFailingTests = new List<Result>();
+				var newInconclusiveTests = new List<Result>();
+				var newNotFailingTests = new List<Result>();
+				var fixedTests = new List<Result>();
+				var ignoredTests = new List<Result>();
+				var brokenTests = new List<Result>();
+				var inconclusiveTests = new List<Result>();
+				foreach (var afterResult in after)
+					if (beforeByName.TryGetValue(afterResult.Name, out var beforeResult))
+					{
+						if (!beforeResult.Success && afterResult.Success)
+							fixedTests.Add(afterResult);
+						if (beforeResult.Executed && !afterResult.Executed)
+							ignoredTests.Add(afterResult);
+						if (beforeResult.Success && afterResult.Executed && !afterResult.Success)
 						{
-							foreach(XmlAttribute att in source.SelectNodes(xpath))
-								att.OwnerElement.RemoveAttribute(att.Name);
+							if (afterResult.Inconclusive)
+								inconclusiveTests.Add(afterResult);
+							else
+								brokenTests.Add(afterResult);
 						}
-						
-						public static void StripElements(XmlDocument source, string xpath)
+						if (beforeResult.Inconclusive && afterResult.Executed && !afterResult.Success && !afterResult.Inconclusive)
+							brokenTests.Add(afterResult);
+					}
+					else
+					{
+						if (afterResult.Executed && !afterResult.Success)
 						{
-							foreach(XmlElement el in source.SelectNodes(xpath))
-								el.ParentNode.RemoveChild(el);
+							if (afterResult.Inconclusive)
+								newInconclusiveTests.Add(afterResult);
+							else
+								newFailingTests.Add(afterResult);
 						}
-						
-            [Function("StripTimings")]
-            public static string StripTimings(string testResultFile, string outputFile)
-            {
-							try
-							{
-								XmlDocument testResults = new XmlDocument();
-								testResults.Load(testResultFile);
+						else
+							newNotFailingTests.Add(afterResult);
+					}
 
-								StripElements(testResults, "//stack-trace");
-								StripAttributes(testResults, "//@cwd");
-								StripAttributes(testResults, "//@total");
-								StripAttributes(testResults, "//@date");
-								StripAttributes(testResults, "//@time");
-								StripAttributes(testResults, "//@machine-name");
-								StripAttributes(testResults, "//@user");
-								StripAttributes(testResults, "//@user-domain");
-							
-								outputFile = Path.GetDirectoryName(testResultFile) + "/" + outputFile;
-								testResults.Save(outputFile);
-								return outputFile;
-							}
-							catch(Exception e)
-							{
-								Console.WriteLine(e);
-								throw;
-							}
-            }
-						
-						public class Result
-						{
-							public string Name;
-							public bool Executed;
-							public bool Success;
+				var afterTestNames = new HashSet<string>();
+				foreach (var result in after) afterTestNames.Add(result.Name);
+				var missingTests = new List<Result>();
+				foreach (var result in before)
+					if (!afterTestNames.Contains(result.Name))
+						missingTests.Add(result);
 
-							private static Result Parse(XmlNode testCase)
-							{
-								Result result = new Result();
+				report.AppendLine();
+				report.AppendLine("*** Tests broken since last recorded results ***");
+				if (brokenTests.Count > 0)
+				{
+					foreach (var result in brokenTests)
+						report.AppendLine(result.ToString());
+				}
+				else
+					report.AppendLine("None");
 
-								result.Name = testCase.Attributes["name"].Value;
-								result.Executed = bool.Parse(testCase.Attributes["executed"].Value);
+				report.AppendLine();
+				report.AppendLine("*** Tests new (failed) since last recorded results ***");
+				if (newFailingTests.Count > 0)
+				{
+					foreach (var result in newFailingTests)
+						report.AppendLine(result.ToString());
+				}
+				else
+					report.AppendLine("None");
 
-								if (result.Executed)
-									result.Success = bool.Parse(testCase.Attributes["success"].Value);
+				report.AppendLine();
+				report.AppendLine("*** Tests inconclusive since last recorded results ***");
+				if (brokenTests.Count > 0)
+				{
+					foreach (var result in inconclusiveTests)
+						report.AppendLine(result.ToString());
+				}
+				else
+					report.AppendLine("None");
 
-								return result;
-							}
-							
-							public override string ToString()
-							{
-								string prefix = "IGNORED - ";
-								if (Executed) prefix = Success ? "PASS    - " : "FAIL    - ";
-								return prefix + Name;
-							}
+				report.AppendLine();
+				report.AppendLine("*** Tests new (inconclusive) since last recorded results ***");
+				if (newFailingTests.Count > 0)
+				{
+					foreach (var result in newInconclusiveTests)
+						report.AppendLine(result.ToString());
+				}
+				else
+					report.AppendLine("None");
 
-							public static IList<Result> ParseFile(string file)
-							{
-								XmlDocument run1 = new XmlDocument();
-								run1.Load(file);
+				report.AppendLine();
+				report.AppendLine("*** Tests new (not failing) since last recorded results ***");
+				if (newNotFailingTests.Count > 0)
+				{
+					foreach (var result in newNotFailingTests)
+						report.AppendLine(result.ToString());
+				}
+				else
+					report.AppendLine("None");
 
-								IList<Result> results = new List<Result>();
-								foreach (XmlNode testCase in run1.SelectNodes("//test-case"))
-								{
-									Result result = Result.Parse(testCase);
-									results.Add(result);
-								}
-								return results;
-							}
-						}
+				report.AppendLine();
+				report.AppendLine("*** Tests fixed since last recorded results ***");
+				if (fixedTests.Count > 0)
+				{
+					foreach (Result result in fixedTests)
+						report.AppendLine(result.ToString());
+				}
+				else
+					report.AppendLine("None");
 
-						[Function("CompareResults")]
-						public static string CompareResults(string currentResult, string lastResult)
-						{
-							try
-							{
-								string outputFile = Path.GetDirectoryName(currentResult) + "/Comparison.txt";
-								StringBuilder report = new StringBuilder();
+				report.AppendLine();
+				report.AppendLine("*** Tests ignored since last recorded results ***");
+				if (ignoredTests.Count > 0)
+				{
+					foreach (Result result in ignoredTests)
+						report.AppendLine(result.ToString());
+				}
+				else
+					report.AppendLine("None");
 
-								report.AppendLine("Comparison Results");
-								report.AppendLine("==================");
-							
-								IList<Result> before = Result.ParseFile(lastResult);
-								IList<Result> after = Result.ParseFile(currentResult);
-							
-								IList<string> beforeTestNames = new List<string>();
-								IList<string> afterTestNames = new List<string>();
-							
-								foreach(Result result in before) beforeTestNames.Add(result.Name);
-								foreach(Result result in after) afterTestNames.Add(result.Name);
-							
-								IList<Result> afterExistingTests = new List<Result>();
-								foreach(Result result in after)
-									if (beforeTestNames.Contains(result.Name))
-										afterExistingTests.Add(result);
-							
-								IList<Result> newFailingTests = new List<Result>();
-								IList<Result> newNotFailingTests = new List<Result>();
-								foreach(Result result in after)
-									if (!beforeTestNames.Contains(result.Name))
-										if (result.Executed && !result.Success)
-											newFailingTests.Add(result);
-										else
-											newNotFailingTests.Add(result);
-									
-								report.AppendLine();
-								report.AppendLine("*** Tests new (not failing) since last recorded results ***");
-								if (newNotFailingTests.Count > 0)
-								{
-									foreach(Result result in newNotFailingTests)
-										report.AppendLine(result.ToString());
-								}
-								else
-									report.AppendLine("None");
-							
-								report.AppendLine();
-								report.AppendLine("*** Tests new (failed) since last recorded results ***");
-								if (newFailingTests.Count > 0)
-								{
-									foreach(Result result in newFailingTests)
-										report.AppendLine(result.ToString());
-								}
-								else
-									report.AppendLine("None");
-							
-								IList<Result> fixedTests = new List<Result>();
-								foreach(Result afterResult in afterExistingTests)
-									foreach(Result beforeResult in before)
-										if (beforeResult.Name == afterResult.Name)
-											if (!beforeResult.Success && afterResult.Success)
-												fixedTests.Add(afterResult);
-							
-								report.AppendLine();
-								report.AppendLine("*** Tests fixed since last recorded results ***");
-								if (fixedTests.Count > 0)
-								{
-									foreach(Result result in fixedTests)
-										report.AppendLine(result.ToString());
-								}
-								else
-									report.AppendLine("None");
-							
-								IList<Result> missingTests = new List<Result>();
-								foreach(Result result in before)
-									if (!afterTestNames.Contains(result.Name))
-										missingTests.Add(result);
+				report.AppendLine();
+				report.AppendLine("*** Tests missing since last recorded results ***");
+				if (missingTests.Count > 0)
+				{
+					foreach (var result in missingTests)
+						report.AppendLine(result.ToString());
+				}
+				else
+					report.AppendLine("None");
 
-								report.AppendLine();
-								report.AppendLine("*** Tests missing since last recorded results ***");
-								if (missingTests.Count > 0)
-								{
-									foreach(Result result in missingTests)
-										report.AppendLine(result.ToString());
-								}
-								else
-									report.AppendLine("None");
-									
-								IList<Result> ignoredTests = new List<Result>();
-								foreach(Result afterResult in afterExistingTests)
-									foreach(Result beforeResult in before)
-										if (beforeResult.Name == afterResult.Name)
-											if (beforeResult.Executed && !afterResult.Executed)
-												ignoredTests.Add(afterResult);
+				var output = report.ToString();
+				File.WriteAllText(outputFile, output);
 
-								report.AppendLine();
-								report.AppendLine("*** Tests ignored since last recorded results ***");
-								if (ignoredTests.Count > 0)
-								{
-									foreach(Result result in ignoredTests)
-										report.AppendLine(result.ToString());
-								}
-								else
-									report.AppendLine("None");
+				if (brokenTests.Count > 0)
+					throw new Exception("Previously passing tests have been broken\n\n" + output);
 
-								IList<Result> brokenTests = new List<Result>();
-								foreach(Result afterResult in afterExistingTests)
-									foreach(Result beforeResult in before)
-										if (beforeResult.Name == afterResult.Name)
-											if (beforeResult.Success && afterResult.Executed && !afterResult.Success)
-												brokenTests.Add(afterResult);
+				if (newFailingTests.Count > 0)
+					throw new Exception("New tests that fail have been added\n\n" + output);
 
-								report.AppendLine();
-								report.AppendLine("*** Tests broken since last recorded results ***");
-								if (brokenTests.Count > 0)
-								{
-									foreach(Result result in brokenTests)
-										report.AppendLine(result.ToString());
-								}
-								else
-									report.AppendLine("None");
+				return output;
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				throw;
+			}
+		}
 
-								string output = report.ToString();
-								File.WriteAllText(outputFile, output);
-							
-								if (brokenTests.Count > 0)
-									throw new Exception("Previously passing tests have been broken\n\n" + output);
-							
-								if (newFailingTests.Count > 0)
-									throw new Exception("New tests that fail have been added\n\n" + output);
-							
-								return output;
-							}
-							catch(Exception e)
-							{
-								Console.WriteLine(e);
-								throw;
-							}
-						}
-
-            ]]>
+			]]>
 		</code>
 	</script>
 
