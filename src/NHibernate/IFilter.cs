@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Engine;
 
 namespace NHibernate
@@ -10,7 +11,7 @@ namespace NHibernate
 	public interface IFilter
 	{
 		/// <summary>
-		/// Get the name of this filter. 
+		/// Get the name of this filter.
 		/// </summary>
 		/// <returns>This filter's name.</returns>
 		string Name { get; }
@@ -23,7 +24,7 @@ namespace NHibernate
 		FilterDefinition FilterDefinition { get; }
 
 		/// <summary>
-		/// Set the named parameter's value list for this filter. 
+		/// Set the named parameter's value list for this filter.
 		/// </summary>
 		/// <param name="name">The parameter's name.</param>
 		/// <param name="value">The values to be applied.</param>
@@ -31,26 +32,18 @@ namespace NHibernate
 		IFilter SetParameter(string name, object value);
 
 		/// <summary>
-		/// Set the named parameter's value list for this filter.  Used
-		/// in conjunction with IN-style filter criteria.        
+		/// Set the named parameter's value list for this filter. Used
+		/// in conjunction with IN-style filter criteria.
 		/// </summary>
 		/// <param name="name">The parameter's name.</param>
 		/// <param name="values">The values to be expanded into an SQL IN list.</param>
+		/// <typeparam name="T">The type of the values.</typeparam>
 		/// <returns>This FilterImpl instance (for method chaining).</returns>
-		IFilter SetParameterList(string name, ICollection values);
-
-		/// <summary>
-		/// Set the named parameter's value list for this filter.  Used
-		/// in conjunction with IN-style filter criteria.        
-		/// </summary>
-		/// <param name="name">The parameter's name.</param>
-		/// <param name="values">The values to be expanded into an SQL IN list.</param>
-		/// <returns>This FilterImpl instance (for method chaining).</returns>
-		IFilter SetParameterList(string name, object[] values);
+		IFilter SetParameterList<T>(string name, ICollection<T> values);
 
 		/// <summary>
 		/// Perform validation of the filter state.  This is used to verify the
-		/// state of the filter after its enablement and before its use.
+		/// state of the filter after its activation and before its use.
 		/// </summary>
 		/// <returns></returns>
 		void Validate();

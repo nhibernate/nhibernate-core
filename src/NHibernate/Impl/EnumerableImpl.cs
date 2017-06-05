@@ -17,8 +17,8 @@ namespace NHibernate.Impl
 	/// <remarks>
 	/// <para>This is the IteratorImpl in H2.0.3</para>
 	/// <para>This thing is scary. It is an <see cref="IEnumerable" /> which returns itself as a <see cref="IEnumerator" />
-	/// when <c>GetEnumerator</c> is called, and EnumerableImpl is disposable. Iterating over it with a <c>foreach</c>
-	/// will cause it to be disposed, probably unexpectedly. (https://stackoverflow.com/a/11179175/1178314)
+	/// when <c>GetEnumerator</c> is called, and <c>EnumerableImpl</c> is disposable. Iterating over it with a <c>foreach</c>
+	/// will cause it to be disposed, probably unexpectedly for the developer. (https://stackoverflow.com/a/11179175/1178314)
 	/// "Fortunately", it does not currently support multiple iterations anyway.</para>
 	/// </remarks>
 	public class EnumerableImpl : IEnumerable, IEnumerator, IDisposable
