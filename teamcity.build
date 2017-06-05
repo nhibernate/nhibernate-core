@@ -94,8 +94,6 @@
 				<include name="*.dll"/>
 			</fileset>
 		</copy>
-		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/firebird/NHibernate.Test.last-results.xml" />
 	</target>
 
 	<target name="setup-teamcity-firebird64">
@@ -108,8 +106,6 @@
 				<include name="*.dll"/>
 			</fileset>
 		</copy>
-		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/firebird/NHibernate.Test.last-results.xml" />
 	</target>
 
 	<target name="setup-teamcity-sqlite32">
