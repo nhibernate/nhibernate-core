@@ -305,7 +305,14 @@
 			public ResultStatus Status;
 			public bool Executed;
 			public bool Success;
-			public bool Inconclusive => Executed && !Success && Status == ResultStatus.Success;
+
+			public bool Inconclusive
+			{
+				get
+				{
+					return Executed && !Success && Status == ResultStatus.Success;
+				}
+			}
 
 			private static Result Parse(XmlNode testCase)
 			{
@@ -371,7 +378,9 @@
 				var brokenTests = new List<Result>();
 				var inconclusiveTests = new List<Result>();
 				foreach (var afterResult in after)
-					if (beforeByName.TryGetValue(afterResult.Name, out var beforeResult))
+				{
+					Result beforeResult;
+					if (beforeByName.TryGetValue(afterResult.Name, out beforeResult))
 					{
 						if (!beforeResult.Success && afterResult.Success)
 							fixedTests.Add(afterResult);
@@ -399,6 +408,7 @@
 						else
 							newNotFailingTests.Add(afterResult);
 					}
+				}
 
 				var afterTestNames = new HashSet<string>();
 				foreach (var result in after) afterTestNames.Add(result.Name);
