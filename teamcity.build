@@ -323,7 +323,8 @@
 					Executed = bool.Parse(testCase.Attributes["executed"].Value)
 				};
 
-				Enum.TryParse<ResultStatus>(testCase.Attributes["result"].Value, out var status);
+				ResultStatus status;
+				Enum.TryParse<ResultStatus>(testCase.Attributes["result"].Value, out status);
 				result.Status = status;
 
 				if (result.Executed)
