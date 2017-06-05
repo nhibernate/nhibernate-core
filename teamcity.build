@@ -369,7 +369,7 @@
 				report.AppendLine("==================");
 
 				var before = Result.ParseFile(lastResult);
-				var beforeByName = before.ToDictionary(b => b.Name);
+				var beforeByName = before.GroupBy(b => b.Name).ToDictionary(g => g.Key, g => g.First());
 				var after = Result.ParseFile(currentResult);
 
 				var newFailingTests = new List<Result>();
