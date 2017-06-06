@@ -18,9 +18,9 @@ for your own use before compile tests in VisualStudio.
 	<session-factory name="NHibernate.Test">
 		<property name="connection.driver_class">NHibernate.Driver.FirebirdClientDriver</property>
 		<property name="connection.connection_string">
-			DataSourec=localhost;
+			DataSource=localhost;
 			Database=nhibernate;
-			User=SYSDBA;Password=masterkey;
+			User ID=SYSDBA;Password=masterkey;
 			MaxPoolSize=200;
 		</property>
 		<property name="show_sql">false</property>
