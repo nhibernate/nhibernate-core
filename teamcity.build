@@ -362,14 +362,28 @@
 		{
 			try
 			{
-				var outputFile = Path.GetDirectoryName(currentResult) + "/Comparison.txt";
+				var outputFile = Path.Combine(Path.GetDirectoryName(currentResult), "Comparison.txt");
 				var report = new StringBuilder();
 
 				report.AppendLine("Comparison Results");
 				report.AppendLine("==================");
 
 				var before = Result.ParseFile(lastResult);
-				var beforeByName = before.GroupBy(b => b.Name).ToDictionary(g => g.Key, g => g.First());
+				var beforeByName = before
+					// Some multi-value tests may be duplicated
+					.GroupBy(b => b.Name)
+					.ToDictionary(
+						g => g.Key,
+						// Take one, preferably not failing first, thus ensuring an after failing test
+						// will be match as broken in case one of the dup was not failing.
+						g => g
+							// Succeeded
+							.OrderByDescending(r => r.Success)
+							// Else ignored
+							.ThenBy(r => r.Executed)
+							// Else inconclusive
+							.ThenBy(r => r.Status == ResultStatus.Success ? 0 : 1)
+							.First());
 				var after = Result.ParseFile(currentResult);
 
 				var newFailingTests = new List<Result>();
@@ -379,8 +393,10 @@
 				var ignoredTests = new List<Result>();
 				var brokenTests = new List<Result>();
 				var inconclusiveTests = new List<Result>();
+				var afterTestNames = new HashSet<string>();
 				foreach (var afterResult in after)
 				{
+					afterTestNames.Add(afterResult.Name);
 					Result beforeResult;
 					if (beforeByName.TryGetValue(afterResult.Name, out beforeResult))
 					{
@@ -412,8 +428,6 @@
 					}
 				}
 
-				var afterTestNames = new HashSet<string>();
-				foreach (var result in after) afterTestNames.Add(result.Name);
 				var missingTests = new List<Result>();
 				foreach (var result in before)
 					if (!afterTestNames.Contains(result.Name))
@@ -460,16 +474,6 @@
 					report.AppendLine("None");
 
 				report.AppendLine();
-				report.AppendLine("*** Tests new (not failing) since last recorded results ***");
-				if (newNotFailingTests.Count > 0)
-				{
-					foreach (var result in newNotFailingTests)
-						report.AppendLine(result.ToString());
-				}
-				else
-					report.AppendLine("None");
-
-				report.AppendLine();
 				report.AppendLine("*** Tests fixed since last recorded results ***");
 				if (fixedTests.Count > 0)
 				{
@@ -484,6 +488,16 @@
 				if (ignoredTests.Count > 0)
 				{
 					foreach (Result result in ignoredTests)
+						report.AppendLine(result.ToString());
+				}
+				else
+					report.AppendLine("None");
+
+				report.AppendLine();
+				report.AppendLine("*** Tests new (not failing) since last recorded results ***");
+				if (newNotFailingTests.Count > 0)
+				{
+					foreach (var result in newNotFailingTests)
 						report.AppendLine(result.ToString());
 				}
 				else
