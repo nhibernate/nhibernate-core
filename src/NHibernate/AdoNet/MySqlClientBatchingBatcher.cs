@@ -69,26 +69,31 @@ namespace NHibernate.AdoNet
 
 		protected override void DoExecuteBatch(DbCommand ps)
 		{
-			Log.DebugFormat("Executing batch");
-			CheckReaders();
-			if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
-			{
-				Factory.Settings.SqlStatementLogger.LogBatchCommand(currentBatchCommandsLog.ToString());
-			}
-
-			int rowsAffected;
 			try
 			{
-				rowsAffected = currentBatch.ExecuteNonQuery();
+				Log.DebugFormat("Executing batch");
+				CheckReaders();
+				if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
+				{
+					Factory.Settings.SqlStatementLogger.LogBatchCommand(currentBatchCommandsLog.ToString());
+				}
+
+				int rowsAffected;
+				try
+				{
+					rowsAffected = currentBatch.ExecuteNonQuery();
+				}
+				catch (DbException e)
+				{
+					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
+				}
+
+				Expectations.VerifyOutcomeBatched(totalExpectedRowsAffected, rowsAffected);
 			}
-			catch (DbException e)
+			finally
 			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
+				ClearCurrentBatch();
 			}
-
-			Expectations.VerifyOutcomeBatched(totalExpectedRowsAffected, rowsAffected);
-
-			ClearCurrentBatch();
 		}
 
 		private MySqlClientSqlCommandSet CreateConfiguredBatch()
