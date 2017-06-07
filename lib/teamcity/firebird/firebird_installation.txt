@@ -22,3 +22,11 @@ The TestDatabaseSetup will create the database on the Teamcity agent.
 For manual testing, take care of not creating it with inadequate acl on the file. This may happen
 if you use ISQL with a connection string causing it to create it in embedded mode, without actually
 using the server. Prefixing your path with "localhost:" should avoid that.
+
+For tests performances, and since it is just an expandable test database, better disable forced writes.
+Since those tests drop/create schema constantly, they are quite heavy on writes and this single setting
+can have a six fold impact on their duration. For changing it, do:
+a.  Stop Firebird service.
+b.  From Firebird installation folder, run:
+gfix -w async nhibernate -user SYSDBA
+c.  Restart Firebird service.
