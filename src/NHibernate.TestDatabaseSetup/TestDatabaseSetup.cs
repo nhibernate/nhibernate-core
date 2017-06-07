@@ -102,8 +102,17 @@ namespace NHibernate.TestDatabaseSetup
 
 		private static void SetupFirebird(Cfg.Configuration cfg)
 		{
+			Directory.CreateDirectory(@"D:\SqlData\Firebird");
 			var connStr = cfg.Properties[Cfg.Environment.ConnectionString];
-			FbConnection.CreateDatabase(connStr, forcedWrites:false, overwrite:true);
+			try
+			{
+				FbConnection.DropDatabase(connStr);
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+			}
+			FbConnection.CreateDatabase(connStr, forcedWrites:false);
 		}
 
 		private static void SetupSqlServerCe(Cfg.Configuration cfg)

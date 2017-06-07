@@ -8,7 +8,7 @@ Installation steps for Firebird for NH TeamCity:
 5.  Go into Firebird folder (c:\program files\firebird\) and create a folder named Data;
 6.  Go in Firebird installation directory and open databases.conf;
 7.  Add in "Live Databases" section:
-nhibernate = C:\Program Files\Firebird\Data\nhibernate.fdb
+nhibernate = D:\SqlData\Firebird\nhibernate.fdb
 8.  Open firebird.conf;
 9.  Ensure AuthClient, AuthServer and UserManager are set to Srp only:
 AuthServer = Srp
@@ -18,7 +18,9 @@ UserManager = Srp
 WireCrypt = Enabled
 11. Restart Firebird service.
 
-The TestDatabaseSetup will create the database on the Teamcity agent.
+The TestDatabaseSetup will create the database on the Teamcity agent. It will create the folder
+D:\SqlData\Firebird if it is missing. Firebird is particularly sensitive to disk performances,
+and D: is supposed to be local to the host, thus this choice.
 For manual testing, take care of not creating it with inadequate acl on the file. This may happen
 if you use ISQL with a connection string causing it to create it in embedded mode, without actually
 using the server. Prefixing your path with "localhost:" should avoid that.
