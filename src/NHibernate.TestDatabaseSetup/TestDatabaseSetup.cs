@@ -102,7 +102,6 @@ namespace NHibernate.TestDatabaseSetup
 
 		private static void SetupFirebird(Cfg.Configuration cfg)
 		{
-			Directory.CreateDirectory(@"D:\SqlData\Firebird");
 			var connStr = cfg.Properties[Cfg.Environment.ConnectionString];
 			try
 			{
