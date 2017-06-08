@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using NHibernate.Linq.Clauses;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.ExpressionTreeVisitors;
@@ -11,9 +10,16 @@ namespace NHibernate.Linq.Visitors
 {
 	public class LeftJoinRewriter : QueryModelVisitorBase
 	{
-		public static void ReWrite(QueryModel queryModel)
+		public static void ReWrite(QueryModel queryModel, VisitorParameters parameters)
 		{
-			new LeftJoinRewriter().VisitQueryModel(queryModel);
+			new LeftJoinRewriter(parameters).VisitQueryModel(queryModel);
+		}
+
+		private readonly VisitorParameters _parameters;
+
+		public LeftJoinRewriter(VisitorParameters parameters)
+		{
+			_parameters = parameters;
 		}
 
 		public override void VisitAdditionalFromClause(AdditionalFromClause fromClause, QueryModel queryModel, int index)
@@ -28,14 +34,9 @@ namespace NHibernate.Linq.Visitors
 
 			var mainFromClause = subQueryModel.MainFromClause;
 
-			var restrictions = subQueryModel.BodyClauses
-				.OfType<WhereClause>()
-				.Select(w => new NhWithClause(w.Predicate));
-
-			var join = new NhJoinClause(mainFromClause.ItemName,
-										mainFromClause.ItemType,
-										mainFromClause.FromExpression,
-										restrictions);
+			var join = new AdditionalFromClause(mainFromClause.ItemName, mainFromClause.ItemType, mainFromClause.FromExpression);
+			var restrictions = subQueryModel.BodyClauses.OfType<WhereClause>().ToList();
+			_parameters.AddLeftJoin(join, restrictions);
 
 			var innerSelectorMapping = new QuerySourceMapping();
 			innerSelectorMapping.AddMapping(fromClause, subQueryModel.SelectClause.Selector);
@@ -43,11 +44,11 @@ namespace NHibernate.Linq.Visitors
 			queryModel.TransformExpressions(ex => ReferenceReplacingExpressionTreeVisitor.ReplaceClauseReferences(ex, innerSelectorMapping, false));
 
 			queryModel.BodyClauses.RemoveAt(index);
-			queryModel.BodyClauses.Insert(index, @join);
-			InsertBodyClauses(subQueryModel.BodyClauses.Where(b => !(b is WhereClause)), queryModel, index + 1);
+			queryModel.BodyClauses.Insert(index, join);
+			InsertBodyClauses(subQueryModel.BodyClauses, queryModel, index + 1);
 
 			var innerBodyClauseMapping = new QuerySourceMapping();
-			innerBodyClauseMapping.AddMapping(mainFromClause, new QuerySourceReferenceExpression(@join));
+			innerBodyClauseMapping.AddMapping(mainFromClause, new QuerySourceReferenceExpression(join));
 
 			queryModel.TransformExpressions(ex => ReferenceReplacingExpressionTreeVisitor.ReplaceClauseReferences(ex, innerBodyClauseMapping, false));
 		}
@@ -57,14 +58,14 @@ namespace NHibernate.Linq.Visitors
 			foreach (var bodyClause in bodyClauses)
 			{
 				destinationQueryModel.BodyClauses.Insert(destinationIndex, bodyClause);
-				++destinationIndex;
+				destinationIndex++;
 			}
 		}
 
 		private static bool IsLeftJoin(QueryModel subQueryModel)
 		{
 			return subQueryModel.ResultOperators.Count == 1 &&
-				   subQueryModel.ResultOperators[0] is DefaultIfEmptyResultOperator;
+				subQueryModel.ResultOperators[0] is DefaultIfEmptyResultOperator;
 		}
 	}
 }
