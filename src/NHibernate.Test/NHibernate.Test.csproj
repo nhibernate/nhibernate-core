@@ -205,8 +205,10 @@
     <Compile Include="CompositeId\Order.cs" />
     <Compile Include="CompositeId\Product.cs" />
     <Compile Include="ConnectionStringTest\NamedConnectionStringFixture.cs" />
+    <Compile Include="ConnectionTest\BatcherFixture.cs" />
     <Compile Include="ConnectionTest\AggressiveReleaseTest.cs" />
     <Compile Include="ConnectionTest\ConnectionManagementTestCase.cs" />
+    <Compile Include="ConnectionTest\YetAnother.cs" />
     <Compile Include="ConnectionTest\Other.cs" />
     <Compile Include="ConnectionTest\Silly.cs" />
     <Compile Include="ConnectionTest\MapBasedSessionContextFixture.cs" />
