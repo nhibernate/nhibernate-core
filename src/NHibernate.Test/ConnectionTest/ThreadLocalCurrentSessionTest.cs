@@ -79,13 +79,13 @@ namespace NHibernate.Test.ConnectionTest
 
 		public static bool IsSessionBound(ISession session)
 		{
-			return context != null && context.ContainsKey(me.factory)
-			       && context[me.factory] == session;
+
+			return session.SessionFactory.GetCurrentSession() == session;
 		}
 
 		public static bool HasBind()
 		{
-			return context != null && context.ContainsKey(me.factory);
+			return me.Session != null;
 		}
 	}
 }
