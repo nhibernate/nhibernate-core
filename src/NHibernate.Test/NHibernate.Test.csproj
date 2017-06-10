@@ -144,6 +144,7 @@
     <Compile Include="Async\CompositeId\CompositeIdFixture.cs" />
     <Compile Include="Async\ConnectionStringTest\NamedConnectionStringFixture.cs" />
     <Compile Include="Async\ConnectionTest\AggressiveReleaseTest.cs" />
+    <Compile Include="Async\ConnectionTest\BatcherFixture.cs" />
     <Compile Include="Async\Criteria\CriteriaQueryTest.cs" />
     <Compile Include="Async\Criteria\DetachedCriteriaSerializable.cs" />
     <Compile Include="Async\Criteria\Lambda\FunctionsIntegrationFixture.cs" />
