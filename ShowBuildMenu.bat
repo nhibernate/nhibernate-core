@@ -91,14 +91,12 @@ goto test-setup-generic
 set CONFIG_NAME=FireBird
 set PLATFORM=x86
 set LIB_FILES=lib\teamcity\firebird\*.dll
-set LIB_FILES2=lib\teamcity\firebird\x86\*
 goto test-setup-generic
 
 :test-setup-firebirdx64
 set CONFIG_NAME=FireBird
 set PLATFORM=x64
 set LIB_FILES=lib\teamcity\firebird\*.dll
-set LIB_FILES2=lib\teamcity\firebird\x64\*
 goto test-setup-generic
 
 :test-setup-sqlitex86
