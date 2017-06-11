@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -63,7 +62,7 @@ namespace NHibernate.Impl
 
 			public void Dispose()
 			{
-				_enumerator.Dispose();
+				_enumerator?.Dispose();
 			}
 		}
 	}
