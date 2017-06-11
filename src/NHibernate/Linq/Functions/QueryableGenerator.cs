@@ -107,7 +107,7 @@ namespace NHibernate.Linq.Functions
 			SupportedMethods = new[]
 			{
 				ReflectionCache.QueryableMethods.MaxDefinition,
-			    ReflectHelper.GetMethodDefinition(() => Enumerable.Max<object>(null))
+				ReflectHelper.GetMethodDefinition(() => Enumerable.Max<object>(null))
 			};
 		}
 
