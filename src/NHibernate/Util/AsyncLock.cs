@@ -4,44 +4,33 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Util
 {
-	public class AsyncLock
+	// Source from https://www.hanselman.com/blog/ComparingTwoTechniquesInNETAsynchronousCoordinationPrimitives.aspx
+	public sealed class AsyncLock
 	{
-		private readonly AsyncSemaphore semaphore;
-		private readonly Task<Releaser> releaser;
+		private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+		private readonly Task<IDisposable> _releaser;
 
 		public AsyncLock()
 		{
-			semaphore = new AsyncSemaphore(1);
-			releaser = Task.FromResult(new Releaser(this));
+			_releaser = Task.FromResult((IDisposable)new Releaser(this));
 		}
 
-		public Task<Releaser> LockAsync()
+		public Task<IDisposable> LockAsync()
 		{
-			var wait = semaphore.WaitAsync();
-			return wait.IsCompleted
-				? releaser
-				: wait.ContinueWith(
-					(_, state) => new Releaser((AsyncLock)state),
-					this,
-					CancellationToken.None,
-					TaskContinuationOptions.ExecuteSynchronously,
-					TaskScheduler.Default);
+			var wait = _semaphore.WaitAsync();
+			return wait.IsCompleted ?
+				_releaser :
+				wait.ContinueWith(
+					(_, state) => (IDisposable)state,
+					_releaser.Result, CancellationToken.None,
+					TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
 		}
 
-		public struct Releaser : IDisposable
+		private sealed class Releaser : IDisposable
 		{
-			private readonly AsyncLock toRelease;
-
-			internal Releaser(AsyncLock toRelease)
-			{
-				this.toRelease = toRelease;
-			}
-
-			public void Dispose()
-			{
-				if (toRelease != null)
-					toRelease.semaphore.Release();
-			}
+			private readonly AsyncLock _toRelease;
+			internal Releaser(AsyncLock toRelease) { _toRelease = toRelease; }
+			public void Dispose() { _toRelease._semaphore.Release(); }
 		}
 	}
 }
