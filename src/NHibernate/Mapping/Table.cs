@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
 using NHibernate.Util;
@@ -25,8 +26,7 @@ namespace NHibernate.Mapping
 	[Serializable]
 	public class Table : IRelationalModel
 	{
-		[ThreadStatic]
-		private static int tableCounter;
+		private static AsyncLocal<int> _tableCounter;
 
 		private readonly List<string> checkConstraints = new List<string>();
 		private readonly LinkedHashMap<string, Column> columns = new LinkedHashMap<string, Column>();
@@ -51,7 +51,10 @@ namespace NHibernate.Mapping
 		/// </summary>
 		public Table()
 		{
-			uniqueInteger = tableCounter++;
+			if (_tableCounter == null)
+				_tableCounter = new AsyncLocal<int>();
+			uniqueInteger = _tableCounter.Value + 1;
+			_tableCounter.Value = uniqueInteger;
 		}
 
 		public Table(string name) : this()
