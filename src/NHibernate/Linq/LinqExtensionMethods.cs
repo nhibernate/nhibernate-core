@@ -2394,12 +2394,12 @@ namespace NHibernate.Linq
 		#region ToFuture/Value/Async
 
 		/// <summary>
-		/// Wraps the query in a deferred <see cref="IAsyncEnumerator{T}"/> which enumeration will trigger a batch of all pending future queries.
+		/// Wraps the query in a deferred <see cref="IAsyncEnumerable{T}"/> which enumeration will trigger a batch of all pending future queries.
 		/// </summary>
 		/// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to convert to a future query.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the later work of enumerating the result of <paramref name="source"/>.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
-		/// <returns>A <see cref="IAsyncEnumerator{T}"/>.</returns>
+		/// <returns>A <see cref="IAsyncEnumerable{T}"/>.</returns>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is <see langword="null"/>.</exception>
 		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
 		public static IAsyncEnumerable<TSource> ToFutureAsync<TSource>(this IQueryable<TSource> source, CancellationToken cancellationToken = default(CancellationToken))
