@@ -83,6 +83,10 @@ namespace NHibernate.Linq
 
 		public virtual Task<object> ExecuteAsync(Expression expression, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				var nhLinqExpression = PrepareQuery(expression, out var query);

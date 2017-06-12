@@ -67,6 +67,7 @@ namespace NHibernate.Impl
 
 		private async Task<IEnumerable<TResult>> GetCurrentResultAsync<TResult>(int currentIndex, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			return ((IList)(await GetResultsAsync(cancellationToken).ConfigureAwait(false))[currentIndex]).Cast<TResult>();
 		}
 
