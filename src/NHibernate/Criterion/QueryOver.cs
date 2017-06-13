@@ -102,24 +102,24 @@ namespace NHibernate.Criterion
 			return criteria.FutureValue<U>();
 		}
 
-		private IAsyncEnumerable<TRoot> FutureAsync(CancellationToken cancellationToken)
+		private IAsyncEnumerable<TRoot> FutureAsync()
 		{
-			return criteria.FutureAsync<TRoot>(cancellationToken);
+			return criteria.FutureAsync<TRoot>();
 		}
 
-		private IAsyncEnumerable<U> FutureAsync<U>(CancellationToken cancellationToken)
+		private IAsyncEnumerable<U> FutureAsync<U>()
 		{
-			return criteria.FutureAsync<U>(cancellationToken);
+			return criteria.FutureAsync<U>();
 		}
 
-		private IFutureValueAsync<TRoot> FutureValueAsync(CancellationToken cancellationToken)
+		private IFutureValueAsync<TRoot> FutureValueAsync()
 		{
-			return criteria.FutureValueAsync<TRoot>(cancellationToken);
+			return criteria.FutureValueAsync<TRoot>();
 		}
 
-		private IFutureValueAsync<U> FutureValueAsync<U>(CancellationToken cancellationToken)
+		private IFutureValueAsync<U> FutureValueAsync<U>()
 		{
-			return criteria.FutureValueAsync<U>(cancellationToken);
+			return criteria.FutureValueAsync<U>();
 		}
 
         /// <summary>
@@ -266,17 +266,17 @@ namespace NHibernate.Criterion
 		IFutureValue<U> IQueryOver<TRoot>.FutureValue<U>()
 		{ return FutureValue<U>(); }
 
-		IAsyncEnumerable<TRoot> IQueryOver<TRoot>.FutureAsync(CancellationToken cancellationToken)
-		{ return FutureAsync(cancellationToken); }
+		IAsyncEnumerable<TRoot> IQueryOver<TRoot>.FutureAsync()
+		{ return FutureAsync(); }
 
-		IAsyncEnumerable<U> IQueryOver<TRoot>.FutureAsync<U>(CancellationToken cancellationToken)
-		{ return FutureAsync<U>(cancellationToken); }
+		IAsyncEnumerable<U> IQueryOver<TRoot>.FutureAsync<U>()
+		{ return FutureAsync<U>(); }
 
-		IFutureValueAsync<TRoot> IQueryOver<TRoot>.FutureValueAsync(CancellationToken cancellationToken)
-		{ return FutureValueAsync(cancellationToken); }
+		IFutureValueAsync<TRoot> IQueryOver<TRoot>.FutureValueAsync()
+		{ return FutureValueAsync(); }
 
-		IFutureValueAsync<U> IQueryOver<TRoot>.FutureValueAsync<U>(CancellationToken cancellationToken)
-		{ return FutureValueAsync<U>(cancellationToken); }
+		IFutureValueAsync<U> IQueryOver<TRoot>.FutureValueAsync<U>()
+		{ return FutureValueAsync<U>(); }
 
 		IQueryOver<TRoot,TRoot> IQueryOver<TRoot>.Clone()
 		{ return Clone(); }

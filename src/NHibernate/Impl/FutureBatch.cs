@@ -53,16 +53,16 @@ namespace NHibernate.Impl
 			return new DelayedEnumerator<TResult>(() => GetCurrentResult<TResult>(currentIndex));
 		}
 
-		public IFutureValueAsync<TResult> GetFutureValueAsync<TResult>(CancellationToken cancellationToken)
+		public IFutureValueAsync<TResult> GetFutureValueAsync<TResult>()
 		{
 			int currentIndex = index;
-			return new FutureValueAsync<TResult>(() => GetCurrentResultAsync<TResult>(currentIndex, cancellationToken));
+			return new FutureValueAsync<TResult>(cancellationToken => GetCurrentResultAsync<TResult>(currentIndex, cancellationToken));
 		}
 
-		public IAsyncEnumerable<TResult> GetAsyncEnumerator<TResult>(CancellationToken cancellationToken)
+		public IAsyncEnumerable<TResult> GetAsyncEnumerator<TResult>()
 		{
 			int currentIndex = index;
-			return new DelayedAsyncEnumerator<TResult>(() => GetCurrentResultAsync<TResult>(currentIndex, cancellationToken));
+			return new DelayedAsyncEnumerator<TResult>(cancellationToken => GetCurrentResultAsync<TResult>(currentIndex, cancellationToken));
 		}
 
 		private async Task<IEnumerable<TResult>> GetCurrentResultAsync<TResult>(int currentIndex, CancellationToken cancellationToken)

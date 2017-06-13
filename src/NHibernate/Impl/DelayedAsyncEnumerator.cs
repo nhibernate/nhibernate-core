@@ -7,22 +7,22 @@ namespace NHibernate.Impl
 {
 	internal class DelayedAsyncEnumerator<T> : IAsyncEnumerable<T>, IDelayedValue
 	{
-		public delegate Task<IEnumerable<T>> GetResult();
+		public delegate Task<IEnumerable<T>> GetResult(CancellationToken cancellationToken);
 
-		private readonly GetResult result;
+		private readonly GetResult _result;
 
 		public Delegate ExecuteOnEval { get; set; }
 
 		public DelayedAsyncEnumerator(GetResult result)
 		{
-			this.result = result;
+			_result = result;
 		}
 
 		#region IAsyncEnumerator<T> Members
 
 		IAsyncEnumerator<T> IAsyncEnumerable<T>.GetEnumerator()
 		{
-			return new Enumerator(result, ExecuteOnEval);
+			return new Enumerator(_result, ExecuteOnEval);
 		}
 
 		#endregion
@@ -47,7 +47,7 @@ namespace NHibernate.Impl
 				cancellationToken.ThrowIfCancellationRequested();
 				if (_enumerator == null)
 				{
-					_data = await _result().ConfigureAwait(false);
+					_data = await _result(cancellationToken).ConfigureAwait(false);
 					if (_executeOnEval != null)
 						_data = (IEnumerable<T>)_executeOnEval.DynamicInvoke(_data);
 					_enumerator = _data.GetEnumerator();

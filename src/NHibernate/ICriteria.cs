@@ -320,10 +320,9 @@ namespace NHibernate
 		/// Get a enumerable that when enumerated will execute
 		/// a batch of queries in a single database roundtrip
 		/// </summary>
-		/// <param name="cancellationToken"></param>
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
-		IAsyncEnumerable<T> FutureAsync<T>(CancellationToken cancellationToken = default(CancellationToken));
+		IAsyncEnumerable<T> FutureAsync<T>();
 
 		/// <summary>
 		/// Get an <see cref="IFutureValueAsync{T}"/> instance, whose value can be retrieved through
@@ -331,10 +330,9 @@ namespace NHibernate
 		/// the GetValue method is called, which will execute other Future queries as well in a
 		/// single roundtrip
 		/// </summary>
-		/// <param name="cancellationToken"></param>
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
-		IFutureValueAsync<T> FutureValueAsync<T>(CancellationToken cancellationToken = default(CancellationToken));
+		IFutureValueAsync<T> FutureValueAsync<T>();
 
 		/// <summary>
 		/// Set the read-only mode for entities (and proxies) loaded by this Criteria. This

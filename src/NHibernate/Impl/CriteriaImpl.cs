@@ -424,26 +424,26 @@ namespace NHibernate.Impl
 			return session.FutureCriteriaBatch.GetEnumerator<T>();
 		}
 
-		public IFutureValueAsync<T> FutureValueAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
+		public IFutureValueAsync<T> FutureValueAsync<T>()
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				return new FutureValueAsync<T>(async () => await ListAsync<T>(cancellationToken).ConfigureAwait(false));
+				return new FutureValueAsync<T>(async cancellationToken => await ListAsync<T>(cancellationToken).ConfigureAwait(false));
 			}
 
 			session.FutureCriteriaBatch.Add<T>(this);
-			return session.FutureCriteriaBatch.GetFutureValueAsync<T>(cancellationToken);
+			return session.FutureCriteriaBatch.GetFutureValueAsync<T>();
 		}
 
-		public IAsyncEnumerable<T> FutureAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
+		public IAsyncEnumerable<T> FutureAsync<T>()
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				return new DelayedAsyncEnumerator<T>(async () => await ListAsync<T>(cancellationToken).ConfigureAwait(false));
+				return new DelayedAsyncEnumerator<T>(async cancellationToken => await ListAsync<T>(cancellationToken).ConfigureAwait(false));
 			}
 
 			session.FutureCriteriaBatch.Add<T>(this);
-			return session.FutureCriteriaBatch.GetAsyncEnumerator<T>(cancellationToken);
+			return session.FutureCriteriaBatch.GetAsyncEnumerator<T>();
 		}
 
 		public object UniqueResult()
@@ -818,14 +818,14 @@ namespace NHibernate.Impl
 				return root.Future<T>();
 			}
 
-			public IFutureValueAsync<T> FutureValueAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
+			public IFutureValueAsync<T> FutureValueAsync<T>()
 			{
-				return root.FutureValueAsync<T>(cancellationToken);
+				return root.FutureValueAsync<T>();
 			}
 
-			public IAsyncEnumerable<T> FutureAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
+			public IAsyncEnumerable<T> FutureAsync<T>()
 			{
-				return root.FutureAsync<T>(cancellationToken);
+				return root.FutureAsync<T>();
 			}
 
 			public void List(IList results)

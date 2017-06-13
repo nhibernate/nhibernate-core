@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
 	internal class FutureValueAsync<T> : IFutureValueAsync<T>, IDelayedValue
 	{
-		public delegate Task<IEnumerable<T>> GetResult();
+		public delegate Task<IEnumerable<T>> GetResult(CancellationToken cancellationToken);
 
 		private readonly GetResult getResult;
 
@@ -16,9 +17,9 @@ namespace NHibernate.Impl
 			getResult = result;
 		}
 
-		public async Task<T> GetValue()
+		public async Task<T> GetValue(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			var result = await getResult().ConfigureAwait(false);
+			var result = await getResult(cancellationToken).ConfigureAwait(false);
 			if (ExecuteOnEval != null)
 				// When not null, ExecuteOnEval is fetched with PostExecuteTransformer from IntermediateHqlTree
 				// through ExpressionToHqlTranslationResults, which requires a IQueryable as input and directly
