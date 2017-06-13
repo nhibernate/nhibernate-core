@@ -913,7 +913,7 @@ namespace NHibernate.Impl
 			}
 
 			session.FutureQueryBatch.Add<T>(this);
-			return session.FutureQueryBatch.GetAsyncEnumerator<T>();
+			return session.FutureQueryBatch.GetEnumerator<T>();
 		}
 
 		/// <summary> Override the current session cache mode, just for this query.

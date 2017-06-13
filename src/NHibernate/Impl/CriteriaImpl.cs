@@ -432,7 +432,7 @@ namespace NHibernate.Impl
 			}
 
 			session.FutureCriteriaBatch.Add<T>(this);
-			return session.FutureCriteriaBatch.GetAsyncEnumerator<T>();
+			return session.FutureCriteriaBatch.GetEnumerator<T>();
 		}
 
 		public object UniqueResult()
