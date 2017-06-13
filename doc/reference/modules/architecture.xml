@@ -259,7 +259,8 @@
             <listitem>
                 <para>
                     <literal>NHibernate.Context.ThreadStaticSessionContext</literal> - current session is
-                    stored in a thread-static variable. This context only supports one session factory.
+                    stored in a thread-static variable. This context supports multiple session factory only
+                    since NHibernate v5.
                     You are responsible to bind and unbind an <literal>ISession</literal> instance with
                     static methods of class <literal>CurrentSessionContext</literal>.
                 </para>
