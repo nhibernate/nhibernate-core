@@ -1224,6 +1224,8 @@ namespace NHibernate.Impl
 			{
 				case null:
 					return null;
+				case "async_local":
+					return new AsyncLocalSessionContext(this);
 				case "call":
 					return new CallSessionContext(this);
 				case "thread_static":
