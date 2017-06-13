@@ -112,16 +112,6 @@ namespace NHibernate.Criterion
 			return criteria.FutureAsync<U>();
 		}
 
-		private IFutureValueAsync<TRoot> FutureValueAsync()
-		{
-			return criteria.FutureValueAsync<TRoot>();
-		}
-
-		private IFutureValueAsync<U> FutureValueAsync<U>()
-		{
-			return criteria.FutureValueAsync<U>();
-		}
-
         /// <summary>
         /// Get an executable instance of <c>IQueryOver&lt;TRoot&gt;</c>,
         /// to actually run the query.</summary>
@@ -271,12 +261,6 @@ namespace NHibernate.Criterion
 
 		IAsyncEnumerable<U> IQueryOver<TRoot>.FutureAsync<U>()
 		{ return FutureAsync<U>(); }
-
-		IFutureValueAsync<TRoot> IQueryOver<TRoot>.FutureValueAsync()
-		{ return FutureValueAsync(); }
-
-		IFutureValueAsync<U> IQueryOver<TRoot>.FutureValueAsync<U>()
-		{ return FutureValueAsync<U>(); }
 
 		IQueryOver<TRoot,TRoot> IQueryOver<TRoot>.Clone()
 		{ return Clone(); }

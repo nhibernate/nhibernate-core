@@ -643,15 +643,5 @@ namespace NHibernate
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
 		IAsyncEnumerable<T> FutureAsync<T>();
-
-		/// <summary>
-		/// Get an IFutureValueAsync instance, whose value can be retrieved through
-		/// its GetValue method. The query is not executed until the GetValue method
-		/// is called, which will execute other Future queries as well in a
-		/// single roundtrip
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		IFutureValueAsync<T> FutureValueAsync<T>();
 	}
 }

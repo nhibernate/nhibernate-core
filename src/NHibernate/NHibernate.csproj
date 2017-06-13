@@ -448,9 +448,6 @@
     <Compile Include="ISessionBuilder.cs" />
     <Compile Include="Impl\ISessionCreationOptions.cs" />
     <Compile Include="Tool\hbm2ddl\IDatabaseMetadata.cs" />
-    <Compile Include="IFutureValueAsync.cs" />
-    <Compile Include="Impl\DelayedAsyncEnumerator.cs" />
-    <Compile Include="Impl\FutureValueAsync.cs" />
     <Compile Include="Util\AsyncLock.cs" />
     <Compile Include="Util\DelegateHelper.cs" />
     <Compile Include="Dialect\BitwiseFunctionOperation.cs" />

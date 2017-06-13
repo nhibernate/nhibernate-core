@@ -128,22 +128,6 @@ namespace NHibernate
 		IAsyncEnumerable<U> FutureAsync<U>();
 
 		/// <summary>
-		/// Get an <see cref="IFutureValueAsync{T}"/> instance, whose value can be retrieved through
-		/// its <see cref="IFutureValueAsync{T}.GetValue"/> method. The query is not executed until
-		/// the GetValue method is called, which will execute other Future queries as well in a
-		/// single roundtrip
-		/// </summary>
-		IFutureValueAsync<TRoot> FutureValueAsync();
-
-		/// <summary>
-		/// Get an <see cref="IFutureValueAsync{T}"/> instance, whose value can be retrieved through
-		/// its <see cref="IFutureValueAsync{T}.GetValue"/> method. The query is not executed until
-		/// the GetValue method is called, which will execute other Future queries as well in a
-		/// single roundtrip
-		/// </summary>
-		IFutureValueAsync<U> FutureValueAsync<U>();
-
-		/// <summary>
 		/// Creates an exact clone of the IQueryOver
 		/// </summary>
 		IQueryOver<TRoot,TRoot> Clone();

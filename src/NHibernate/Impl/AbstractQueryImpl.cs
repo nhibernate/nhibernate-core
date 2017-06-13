@@ -887,7 +887,7 @@ namespace NHibernate.Impl
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				return new DelayedEnumerator<T>(List<T>);
+				return new DelayedEnumerator<T>(List<T>, async cancellationToken => await ListAsync<T>(cancellationToken).ConfigureAwait(false));
 			}
 
 			session.FutureQueryBatch.Add<T>(this);
@@ -898,7 +898,7 @@ namespace NHibernate.Impl
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				return new FutureValue<T>(List<T>);
+				return new FutureValue<T>(List<T>, async cancellationToken => await ListAsync<T>(cancellationToken).ConfigureAwait(false));
 			}
 			
 			session.FutureQueryBatch.Add<T>(this);
@@ -909,22 +909,11 @@ namespace NHibernate.Impl
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				return new DelayedAsyncEnumerator<T>(async cancellationToken => await ListAsync<T>(cancellationToken).ConfigureAwait(false));
+				return new DelayedEnumerator<T>(List<T> , async cancellationToken => await ListAsync<T>(cancellationToken).ConfigureAwait(false));
 			}
 
 			session.FutureQueryBatch.Add<T>(this);
 			return session.FutureQueryBatch.GetAsyncEnumerator<T>();
-		}
-
-		public IFutureValueAsync<T> FutureValueAsync<T>()
-		{
-			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
-			{
-				return new FutureValueAsync<T>(async cancellationToken => await ListAsync<T>(cancellationToken).ConfigureAwait(false));
-			}
-
-			session.FutureQueryBatch.Add<T>(this);
-			return session.FutureQueryBatch.GetFutureValueAsync<T>();
 		}
 
 		/// <summary> Override the current session cache mode, just for this query.
