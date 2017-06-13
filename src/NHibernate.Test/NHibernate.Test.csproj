@@ -209,6 +209,7 @@
     <Compile Include="ConnectionTest\AggressiveReleaseTest.cs" />
     <Compile Include="ConnectionTest\ConnectionManagementTestCase.cs" />
     <Compile Include="ConnectionTest\AsyncLocalSessionContextFixture.cs" />
+    <Compile Include="ConnectionTest\ThreadStaticSessionContextFixture.cs" />
     <Compile Include="ConnectionTest\YetAnother.cs" />
     <Compile Include="ConnectionTest\Other.cs" />
     <Compile Include="ConnectionTest\Silly.cs" />
