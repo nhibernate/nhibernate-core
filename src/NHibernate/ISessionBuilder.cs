@@ -59,7 +59,7 @@ namespace NHibernate
 		T ConnectionReleaseMode(ConnectionReleaseMode connectionReleaseMode);
 
 		/// <summary>
-		/// Should the session be automatically closed after transaction completion?
+		/// Should the session be automatically closed after transaction completion? Not yet implemented, will have no effect.
 		/// </summary>
 		/// <param name="autoClose">Should the session be automatically closed.</param>
 		/// <returns><see langword="this" />, for method chaining.</returns>
