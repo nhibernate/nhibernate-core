@@ -140,7 +140,9 @@ namespace NHibernate.Test
 			bool autoCloseSessionEnabled,
 			ConnectionReleaseMode connectionReleaseMode)
 		{
+#pragma warning disable CS0618 // Type or member is obsolete
 			var s = ActualFactory.OpenSession(connection, flushBeforeCompletionEnabled, autoCloseSessionEnabled, connectionReleaseMode);
+#pragma warning restore CS0618 // Type or member is obsolete
 			_openedSessions.Add(s.GetSessionImplementation());
 			return s;
 		}

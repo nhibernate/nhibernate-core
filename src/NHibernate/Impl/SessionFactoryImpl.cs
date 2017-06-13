@@ -505,7 +505,6 @@ namespace NHibernate.Impl
 		{
 			return WithOptions()
 				.Connection(connection)
-				.Interceptor(interceptor)
 				.AutoClose(autoCloseSessionEnabled)
 				.ConnectionReleaseMode(connectionReleaseMode)
 				.OpenSession();
