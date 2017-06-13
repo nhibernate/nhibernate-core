@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 
 namespace NHibernate.Action
 {
@@ -16,45 +15,42 @@ namespace NHibernate.Action
 	[Serializable]
 	public class DelayedPostInsertIdentifier
 	{
-		private static readonly object _locker = new object();
-		private static AsyncLocal<long> _sequence;
-		private readonly long _sequenceValue;
+		[ThreadStatic]
+		private static long _Sequence = 0;
+		private readonly long sequence;
 
 		public DelayedPostInsertIdentifier()
 		{
-			lock (_locker)
+			lock (typeof(DelayedPostInsertIdentifier))
 			{
-				if (_sequence == null)
-					_sequence = new AsyncLocal<long> { Value = 0 };
-				if (_sequence.Value == long.MaxValue)
+				if (_Sequence == long.MaxValue)
 				{
-					_sequence.Value = 0;
+					_Sequence = 0;
 				}
-				_sequenceValue = _sequence.Value + 1;
-				_sequence.Value = _sequenceValue;
+				sequence = _Sequence++;
 			}
 		}
 
 		public override bool Equals(object obj)
 		{
-			if (ReferenceEquals(this, obj))
+			if(ReferenceEquals(this,obj)) 
 				return true;
 			return Equals(obj as DelayedPostInsertIdentifier);
 		}
 
 		public bool Equals(DelayedPostInsertIdentifier that)
 		{
-			return that == null ? false : _sequenceValue == that._sequenceValue;
+			return that == null ? false : sequence == that.sequence;
 		}
 
 		public override int GetHashCode()
 		{
-			return _sequenceValue.GetHashCode();
+			return sequence.GetHashCode();
 		}
 
 		public override string ToString()
 		{
-			return string.Format("<delayed:{0}>", _sequenceValue);
+			return string.Format("<delayed:{0}>", sequence);
 		}
 	}
 }
