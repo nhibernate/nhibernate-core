@@ -1,0 +1,249 @@
+﻿solution:
+  filePath: ..\..\..\src\NHibernate.sln #wants to resolve from the execuing path.
+  concurrentRun: true
+  applyChanges: true
+  projects:
+  - name: NHibernate
+    analyzation:
+      methodConversion:
+      - conversion: Ignore
+        hasAttributeName: ObsoleteAttribute
+      - conversion: Ignore
+        name: PostProcessInsert
+        containingTypeName: HqlSqlWalker
+      - conversion: Ignore
+        name: Intercept
+        containingTypeName: IInterceptor
+      - conversion: Ignore
+        name: Intercept
+        containingTypeName: IFieldInterceptor
+      - conversion: Ignore
+        name: InitializeOrGetAssociation
+        containingTypeName: AbstractFieldInterceptor
+      - conversion: Ignore
+        name: InitializeLazyProperty
+        containingTypeName: ILazyPropertyInitializer
+      - conversion: Ignore
+        name: InitializeLazyPropertiesFromDatastore
+        containingTypeName: AbstractEntityPersister
+      - conversion: Ignore
+        name: InitializeLazyPropertiesFromCache
+        containingTypeName: AbstractEntityPersister
+      - conversion: Ignore
+        name: Invoke
+        containingTypeName: BasicLazyInitializer
+      - conversion: Ignore
+        name: SetReadOnly
+        containingTypeName: StatefulPersistenceContext
+      - conversion: Ignore
+        name: Unproxy
+        containingTypeName: StatefulPersistenceContext
+      - conversion: Ignore
+        name: Contains
+        containingTypeName: CollectionType
+      - conversion: Ignore
+        name: GuessClass
+        containingTypeName: NHibernateProxyHelper
+      - conversion: Ignore
+        name: IsPropertyInitialized
+        containingTypeName: NHibernateUtil
+      - conversion: Ignore
+        name: BestGuessEntityName
+        containingTypeName: ISession
+      - conversion: Ignore
+        name: Contains
+        containingTypeName: ISession
+      - conversion: Ignore
+        name: BestGuessEntityName
+        containingTypeName: ISessionImplementor
+      - conversion: Ignore
+        name: Contains
+        containingTypeName: ISessionImplementor
+      - conversion: Ignore
+        name: GetUnsavedVersionValue
+        containingTypeName: UnsavedValueFactory
+      - conversion: Ignore
+        name: ReadSize
+        containingTypeName: AbstractPersistentCollection
+      - conversion: Ignore
+        name: ReadIndexExistence
+        containingTypeName: AbstractPersistentCollection
+      - conversion: Ignore
+        name: ReadElementExistence
+        containingTypeName: AbstractPersistentCollection
+      - conversion: Ignore
+        name: ReadElementByIndex
+        containingTypeName: AbstractPersistentCollection
+      - conversion: Ignore
+        name: Read
+        containingTypeName: AbstractPersistentCollection
+      - conversion: Ignore
+        name: Write
+        containingTypeName: AbstractPersistentCollection
+      - conversion: Ignore
+        name: GetSize
+        containingTypeName: ICollectionPersister
+      - conversion: Ignore
+        name: IndexExists
+        containingTypeName: ICollectionPersister
+      - conversion: Ignore
+        name: ElementExists
+        containingTypeName: ICollectionPersister
+      - conversion: Ignore
+        name: GetElementByIndex
+        containingTypeName: ICollectionPersister
+      - conversion: Ignore
+        name: Exists
+        containingTypeName: ICollectionPersister
+      - conversion: Ignore
+        name: Exists
+        containingTypeName: AbstractCollectionPersister
+      - conversion: ToAsync
+        name: ExecuteReader
+        containingTypeName: IBatcher
+      - conversion: ToAsync
+        name: ExecuteNonQuery
+        containingTypeName: IBatcher
+      - conversion: ToAsync
+        rule: EventListener
+      ignoreSearchForAsyncCounterparts:
+      - name: GetFieldValue
+      - name: IsDBNull
+      - name: WriteLine
+      callForwarding: true
+      cancellationTokens:
+        guards: true
+        methodParameter:
+        - anyInterfaceRule: PubliclyExposedType
+          parameter: Optional
+        - parameter: Optional
+          rule: PubliclyExposedType
+        - parameter: Required
+        requiresCancellationToken:
+        - rule: EventListener
+      scanMethodBody: true
+    transformation:
+      configureAwaitArgument: false
+      localFunctions: true
+      asyncLock:
+        type: NHibernate.Util.AsyncLock
+        methodName: LockAsync
+      documentationComments:
+        addOrReplaceMethodSummary:
+          - name: Commit
+            containingTypeName: AdoTransaction
+            content: |
+                /// Commits the <see cref="ITransaction"/> by flushing asynchronously the <see cref="ISession"/>
+                /// then committing synchronously the <see cref="DbTransaction"/>.
+    registerPlugin:
+    - type: AsyncGenerator.Core.Plugins.TransactionScopeAsyncFlowAdder
+      assemblyName: AsyncGenerator.Core
+    - type: AsyncGenerator.Core.Plugins.EmptyRegionRemover
+      assemblyName: AsyncGenerator.Core
+  - name: NHibernate.DomainModel
+    analyzation:
+      scanMethodBody: true
+      scanForMissingAsyncMembers:
+      - all: true
+  - name: NHibernate.Test
+    analyzation:
+      methodConversion:
+      - conversion: Ignore
+        hasAttributeName: IgnoreAttribute
+      - conversion: Smart
+        hasAttributeName: TestAttribute
+      preserveReturnType:
+      - hasAttributeName: TestAttribute
+      typeConversion:
+      - conversion: Ignore
+        name: NorthwindDbCreator
+      - conversion: Ignore
+        name: ObjectAssert
+      - conversion: Ignore
+        name: LinqReadonlyTestsContext
+      - conversion: Ignore
+        hasAttributeName: IgnoreAttribute
+      - conversion: NewType
+        hasAttributeName: TestFixtureAttribute
+      - conversion: Ignore
+        rule: IsTestCase
+      - conversion: Ignore
+        anyBaseTypeRule: IsTestCase
+      ignoreDocuments:
+      - filePathEndsWith: Linq\MathTests.cs
+      - filePathEndsWith: Linq\ExpressionSessionLeakTest.cs
+      cancellationTokens:
+        withoutCancellationToken:
+        - hasAttributeName: TestAttribute
+      scanMethodBody: true
+      scanForMissingAsyncMembers:
+      - anyInterfaceRule: NHibernateAssembly
+    registerPlugin:
+    - type: AsyncGenerator.Core.Plugins.TransactionScopeAsyncFlowAdder
+      assemblyName: AsyncGenerator.Core
+    - type: AsyncGenerator.Tests.ExternalProjects.NHibernate.LinqAsyncCounterpartsFinder
+      assemblyName: AsyncGenerator.Tests
+    - type: NUnitAsyncCountepartFinder
+methodRules:
+- filters:
+  - containingTypeName: IAutoFlushEventListener
+  - containingTypeName: IFlushEventListener
+  - containingTypeName: IDeleteEventListener
+  - containingTypeName: ISaveOrUpdateEventListener
+  - containingTypeName: IPostCollectionRecreateEventListener
+  - containingTypeName: IPostCollectionRemoveEventListener
+  - containingTypeName: IPostCollectionUpdateEventListener
+  - containingTypeName: IPostDeleteEventListener
+  - containingTypeName: IPostInsertEventListener
+  - containingTypeName: IPostUpdateEventListener
+  - containingTypeName: IPreCollectionRecreateEventListener
+  - containingTypeName: IPreCollectionRemoveEventListener
+  - containingTypeName: IPreCollectionUpdateEventListener
+  - containingTypeName: IPreDeleteEventListener
+  - containingTypeName: IPreInsertEventListener
+  - containingTypeName: IPreLoadEventListener
+  - containingTypeName: IPreUpdateEventListener
+  name: EventListener
+- filters:
+  - containingNamespace: NHibernate
+  - containingType: NHibernate.Tool.hbm2ddl.SchemaUpdate
+  - containingType: NHibernate.Tool.hbm2ddl.SchemaValidator
+  - containingType: NHibernate.Tool.hbm2ddl.SchemaExport
+  name: PubliclyExposedType
+typeRules:
+- filters:
+  - containingAssemblyName: NHibernate
+  name: NHibernateAssembly
+- filters:
+  - name: TestCase
+  name: IsTestCase
+cSharpScript: | 
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using AsyncGenerator.Core;
+    using AsyncGenerator.Core.Configuration;
+    using AsyncGenerator.Core.Plugins;
+    using Microsoft.CodeAnalysis;
+
+    public class NUnitAsyncCountepartFinder : IAsyncCounterpartsFinder
+    {
+        public Task Initialize(Project project, IProjectConfiguration configuration)
+        {
+            return Task.CompletedTask;
+        }
+
+        public IEnumerable<IMethodSymbol> FindAsyncCounterparts(IMethodSymbol syncMethodSymbol, ITypeSymbol invokedFromType, AsyncCounterpartsSearchOptions options)
+        {
+            if (syncMethodSymbol.Name != "That" || syncMethodSymbol.ContainingType.Name != "Assert" ||syncMethodSymbol.ContainingType.ContainingNamespace.ToString() != "NUnit.Framework")
+            {
+                yield break;
+            }
+
+            var firstParamType = syncMethodSymbol.Parameters.First().Type;
+            if (firstParamType.Name == "ActualValueDelegate" || firstParamType.Name == "TestDelegate")
+            {
+                yield return syncMethodSymbol;
+            }
+        }
+    }
