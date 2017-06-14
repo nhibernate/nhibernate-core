@@ -65,6 +65,11 @@ In most cases, you will be adding your test to the NHibernate.Test project. If t
 1.  Sometimes tests fail when run under x64. If required (ex. SQLite and Firebird), go to the project properties Build tab and set the target to x86.
 2.  Next, just run the tests as usual.
 
+## Regenerate async code
+
+NHibernate uses a code generator for its async implementation and tests. If your changes, including tests, involve any synchronous method having an async
+counter-part, you should regenerate the async code. Use build-menu option H for this. Then test any async counter-part it may have generated from your tests.
+
 ## Commit your Test Case
 
 Ensure that your e-mail address and name are configured appropriately in Git. 

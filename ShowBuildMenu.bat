@@ -19,6 +19,9 @@ echo E. Build NHibernate (Debug)
 echo F. Build NHibernate (Release)
 echo G. Build Release Package (Also runs tests and creates documentation)
 echo.
+echo --- Code generation ---
+echo H. Generate async code (Generates files in Async sub-folders)
+echo.
 echo --- TeamCity (CI) build options
 echo I. TeamCity build menu
 echo.
@@ -26,9 +29,10 @@ echo --- Exit ---
 echo X. Make the beautiful build menu go away.
 echo.
 
-%BUILDTOOL% prompt BCDEFGIX
-if errorlevel 7 goto end
-if errorlevel 6 goto teamcity-menu
+%BUILDTOOL% prompt BCDEFGHIX
+if errorlevel 8 goto end
+if errorlevel 7 goto teamcity-menu
+if errorlevel 6 goto build-async
 if errorlevel 5 goto build-release-package
 if errorlevel 4 goto build-release
 if errorlevel 3 goto build-debug
@@ -167,6 +171,10 @@ goto main-menu
 rem :build-test
 rem %NANT% test
 rem goto main-menu
+
+:build-async
+%NANT% generate-async
+goto main-menu
 
 :build-debug
 %NANT% clean build
