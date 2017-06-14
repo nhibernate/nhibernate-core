@@ -155,6 +155,21 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 			}
 		}
 
+		[Test]
+		public void FutureValueWithSelectorOfLinqCanGetSingleEntityWhenQueryBatchingIsNotSupported()
+		{
+			var personId = CreatePerson();
+
+			using (var session = OpenSession())
+			{
+				var futurePerson = session
+					.Query<Person>()
+					.Where(x => x.Id == personId)
+					.ToFutureValue(q => q.FirstOrDefault());
+				Assert.IsNotNull(futurePerson.Value);
+			}
+		}
+
 		private int CreatePerson()
 		{
 			using (var session = Sfi.OpenSession())
