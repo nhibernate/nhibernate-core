@@ -99,8 +99,7 @@ namespace NHibernate.Linq
 			{
 				throw new NotSupportedException($"Source {nameof(source.Provider)} must be a {nameof(INhQueryProvider)}");
 			}
-			var future = provider.ExecuteFuture(source.Expression);
-			return (IEnumerable<TSource>)future;
+			return provider.ExecuteFuture<TSource>(source.Expression);
 		}
 
 		/// <summary>
@@ -122,13 +121,8 @@ namespace NHibernate.Linq
 			{
 				throw new NotSupportedException($"Source {nameof(source.Provider)} must be a {nameof(INhQueryProvider)}");
 			}
-			var future = provider.ExecuteFuture(source.Expression);
-			if (future is IEnumerable<TSource> enumerable)
-			{
-				return new FutureValue<TSource>(() => enumerable);
-			}
-
-			return (IFutureValue<TSource>)future;
+			var future = provider.ExecuteFuture<TSource>(source.Expression);
+			return new FutureValue<TSource>(() => future);
 		}
 
 		/// <summary>
@@ -156,7 +150,7 @@ namespace NHibernate.Linq
 			var expression = ReplacingExpressionTreeVisitor
 				.Replace(selector.Parameters.Single(), source.Expression, selector.Body);
 
-			return (IFutureValue<TResult>)provider.ExecuteFuture(expression);
+			return provider.ExecuteFutureValue<TResult>(expression);
 		}
 
 		public static T MappedAs<T>(this T parameter, IType type)
