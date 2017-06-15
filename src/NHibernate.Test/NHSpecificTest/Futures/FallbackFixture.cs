@@ -31,17 +31,22 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			var cp = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties);
-			return !cp.Driver.SupportsMultipleQueries;
+			using (var cp = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties))
+			{
+				return !cp.Driver.SupportsMultipleQueries;
+			}
 		}
 
 		protected override void Configure(Configuration configuration)
 		{
 			base.Configure(configuration);
-			if (Dialect is MsSql2000Dialect)
+			using (var cp = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties))
 			{
-				configuration.Properties[Environment.ConnectionDriver] =
-					typeof (TestDriverThatDoesntSupportQueryBatching).AssemblyQualifiedName;
+				if (cp.Driver is SqlClientDriver)
+				{
+					configuration.Properties[Environment.ConnectionDriver] =
+						typeof(TestDriverThatDoesntSupportQueryBatching).AssemblyQualifiedName;
+				}
 			}
 		}
 
