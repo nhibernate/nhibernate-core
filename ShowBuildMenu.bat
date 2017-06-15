@@ -21,7 +21,7 @@ echo --- BUILD ---
 echo E. Generate async code ((re)generates files in Async sub-folders)
 echo F. Build NHibernate (Debug)
 echo G. Build NHibernate (Release)
-echo H. Build Release Package (Also runs tests and creates documentation)X
+echo H. Build Release Package (Also runs tests and creates documentation)
 echo.
 echo --- TeamCity (CI) build options
 echo I. TeamCity build menu
