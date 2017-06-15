@@ -113,6 +113,13 @@ This would be something like ReSharper.
 <li>Next, just run the tests as usual.</li>
 </ol>
 
+<h2>Regenerate async code</h2>
+
+<p>
+NHibernate uses a code generator for its async implementation and tests. If your changes, including tests, involve any synchronous method having an async
+counter-part, you should regenerate the async code. Use build-menu option E for this. Then test any async counter-part it may have generated from your tests.
+</p>
+
 <h2>Commit your Test Case</h2>
 
 <p>

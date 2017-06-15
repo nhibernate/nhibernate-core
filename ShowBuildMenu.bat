@@ -18,9 +18,10 @@ echo C. (Step 2) Activate a test configuration.
 echo D. (Step 3) Run tests using active configuration.
 echo.
 echo --- BUILD ---
-echo E. Build NHibernate (Debug)
-echo F. Build NHibernate (Release)
-echo G. Build Release Package (Also runs tests and creates documentation)
+echo E. Generate async code ((re)generates files in Async sub-folders)
+echo F. Build NHibernate (Debug)
+echo G. Build NHibernate (Release)
+echo H. Build Release Package (Also runs tests and creates documentation)X
 echo.
 echo --- TeamCity (CI) build options
 echo I. TeamCity build menu
@@ -29,12 +30,13 @@ echo --- Exit ---
 echo X. Make the beautiful build menu go away.
 echo.
 
-%BUILDTOOL% prompt ABCDEFGIX
-if errorlevel 8 goto end
-if errorlevel 7 goto teamcity-menu
-if errorlevel 6 goto build-release-package
-if errorlevel 5 goto build-release
-if errorlevel 4 goto build-debug
+%BUILDTOOL% prompt ABCDEFGHIX
+if errorlevel 9 goto end
+if errorlevel 8 goto teamcity-menu
+if errorlevel 7 goto build-release-package
+if errorlevel 6 goto build-release
+if errorlevel 5 goto build-debug
+if errorlevel 4 goto build-async
 if errorlevel 3 goto test-run
 if errorlevel 2 goto test-activate
 if errorlevel 1 goto test-setup-menu
@@ -165,6 +167,10 @@ rem goto main-menu
 
 :build-visual-studio
 %NANT% visual-studio
+goto main-menu
+
+:build-async
+%NANT% generate-async
 goto main-menu
 
 :build-debug
