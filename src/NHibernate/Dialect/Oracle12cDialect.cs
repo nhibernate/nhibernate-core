@@ -27,12 +27,25 @@ namespace NHibernate.Dialect
 
 			if (offset != null)
 			{
-				result.Add(" OFFSET ");
-				result.Add(offset).Add(" ROWS");
+				result.Add(" OFFSET ").Add(offset).Add(" ROWS");
 			}
 
 			if (limit != null)
 			{
+				if (offset == null)
+				{
+					result.Add(" OFFSET 0 ROWS");
+
+					// According to Oracle Docs: 
+					// http://docs.oracle.com/javadb/10.8.3.0/ref/rrefsqljoffsetfetch.html
+					// the 'limit' param must be 1 or higher, but we have situations with limit=0.
+					// This leads to undetermined behaviour of Oracle DBMS. It seems that the query
+					// was executed correctly but the execution takes pretty long time.
+					//
+					// Empirically estimated that adding 'OFFSET 0 ROWS' to these types of queries 
+					// ensures much faster execution. Stated above is a kind of hack to fix 
+					// described situation.
+				}
 				result.Add(" FETCH FIRST ").Add(limit).Add(" ROWS ONLY");
 			}
 
