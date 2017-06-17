@@ -413,18 +413,7 @@ namespace NHibernate.Impl
 			return session.FutureCriteriaBatch.GetFutureValue<T>();
 		}
 
-		public IEnumerable<T> Future<T>()
-		{
-			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
-			{
-				return List<T>();
-			}
-
-			session.FutureCriteriaBatch.Add<T>(this);
-			return session.FutureCriteriaBatch.GetEnumerator<T>();
-		}
-
-		public IAsyncEnumerable<T> FutureAsync<T>()
+		public IFutureEnumerable<T> Future<T>()
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
@@ -802,14 +791,9 @@ namespace NHibernate.Impl
 				return root.FutureValue<T>();
 			}
 
-			public IEnumerable<T> Future<T>()
+			public IFutureEnumerable<T> Future<T>()
 			{
 				return root.Future<T>();
-			}
-
-			public IAsyncEnumerable<T> FutureAsync<T>()
-			{
-				return root.FutureAsync<T>();
 			}
 
 			public void List(IList results)

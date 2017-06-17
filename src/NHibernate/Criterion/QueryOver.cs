@@ -82,12 +82,12 @@ namespace NHibernate.Criterion
 			return criteria.UniqueResult<U>();
 		}
 
-		private IEnumerable<TRoot> Future()
+		private IFutureEnumerable<TRoot> Future()
 		{
 			return criteria.Future<TRoot>();
 		}
 
-		private IEnumerable<U> Future<U>()
+		private IFutureEnumerable<U> Future<U>()
 		{
 			return criteria.Future<U>();
 		}
@@ -100,16 +100,6 @@ namespace NHibernate.Criterion
 		private IFutureValue<U> FutureValue<U>()
 		{
 			return criteria.FutureValue<U>();
-		}
-
-		private IAsyncEnumerable<TRoot> FutureAsync()
-		{
-			return criteria.FutureAsync<TRoot>();
-		}
-
-		private IAsyncEnumerable<U> FutureAsync<U>()
-		{
-			return criteria.FutureAsync<U>();
 		}
 
         /// <summary>
@@ -244,10 +234,10 @@ namespace NHibernate.Criterion
 		U IQueryOver<TRoot>.SingleOrDefault<U>()
 		{ return SingleOrDefault<U>(); }
 
-		IEnumerable<TRoot> IQueryOver<TRoot>.Future()
+		IFutureEnumerable<TRoot> IQueryOver<TRoot>.Future()
 		{ return Future(); }
 
-		IEnumerable<U> IQueryOver<TRoot>.Future<U>()
+		IFutureEnumerable<U> IQueryOver<TRoot>.Future<U>()
 		{ return Future<U>(); }
 
 		IFutureValue<TRoot> IQueryOver<TRoot>.FutureValue()
@@ -255,12 +245,6 @@ namespace NHibernate.Criterion
 
 		IFutureValue<U> IQueryOver<TRoot>.FutureValue<U>()
 		{ return FutureValue<U>(); }
-
-		IAsyncEnumerable<TRoot> IQueryOver<TRoot>.FutureAsync()
-		{ return FutureAsync(); }
-
-		IAsyncEnumerable<U> IQueryOver<TRoot>.FutureAsync<U>()
-		{ return FutureAsync<U>(); }
 
 		IQueryOver<TRoot,TRoot> IQueryOver<TRoot>.Clone()
 		{ return Clone(); }

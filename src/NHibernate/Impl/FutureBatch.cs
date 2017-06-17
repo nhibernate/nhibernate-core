@@ -47,7 +47,7 @@ namespace NHibernate.Impl
 			return new FutureValue<TResult>(() => GetCurrentResult<TResult>(currentIndex), cancellationToken => GetCurrentResultAsync<TResult>(currentIndex, cancellationToken));
 		}
 
-		internal DelayedEnumerator<TResult> GetEnumerator<TResult>()
+		public IFutureEnumerable<TResult> GetEnumerator<TResult>()
 		{
 			var currentIndex = index;
 			return new DelayedEnumerator<TResult>(() => GetCurrentResult<TResult>(currentIndex), cancellationToken => GetCurrentResultAsync<TResult>(currentIndex, cancellationToken));

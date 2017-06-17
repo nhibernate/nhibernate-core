@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
-	internal class DelayedEnumerator<T> : IEnumerable<T>, IAsyncEnumerable<T>, IDelayedValue
+	internal class DelayedEnumerator<T> : IFutureEnumerable<T>, IAsyncEnumerable<T>, IDelayedValue
 	{
 		public delegate IEnumerable<T> GetResult();
 		public delegate Task<IEnumerable<T>> GetResultAsync(CancellationToken cancellationToken);
@@ -56,6 +56,12 @@ namespace NHibernate.Impl
 		{
 			return new AsyncEnumerator(_resultAsync, ExecuteOnEval);
 		}
+
+		#endregion
+
+		#region IFutureEnumerable<T> Members
+
+		public IAsyncEnumerable<T> AsyncEnumerable => this;
 
 		#endregion
 

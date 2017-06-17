@@ -883,7 +883,7 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IEnumerable<T> Future<T>()
+		public IFutureEnumerable<T> Future<T>()
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
@@ -903,17 +903,6 @@ namespace NHibernate.Impl
 			
 			session.FutureQueryBatch.Add<T>(this);
 			return session.FutureQueryBatch.GetFutureValue<T>();
-		}
-
-		public IAsyncEnumerable<T> FutureAsync<T>()
-		{
-			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
-			{
-				return new DelayedEnumerator<T>(List<T> , async cancellationToken => await ListAsync<T>(cancellationToken).ConfigureAwait(false));
-			}
-
-			session.FutureQueryBatch.Add<T>(this);
-			return session.FutureQueryBatch.GetEnumerator<T>();
 		}
 
 		/// <summary> Override the current session cache mode, just for this query.

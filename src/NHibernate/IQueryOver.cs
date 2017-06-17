@@ -91,13 +91,13 @@ namespace NHibernate
 		/// Get a enumerable that when enumerated will execute
 		/// a batch of queries in a single database roundtrip
 		/// </summary>
-		IEnumerable<TRoot> Future();
+		IFutureEnumerable<TRoot> Future();
 
 		/// <summary>
 		/// Get a enumerable that when enumerated will execute
 		/// a batch of queries in a single database roundtrip
 		/// </summary>
-		IEnumerable<U> Future<U>();
+		IFutureEnumerable<U> Future<U>();
 
 		/// <summary>
 		/// Get an IFutureValue instance, whose value can be retrieved through
@@ -114,18 +114,6 @@ namespace NHibernate
 		/// single roundtrip
 		/// </summary>
 		IFutureValue<U> FutureValue<U>();
-
-		/// <summary>
-		/// Get a enumerable that when enumerated will execute
-		/// a batch of queries in a single database roundtrip
-		/// </summary>
-		IAsyncEnumerable<TRoot> FutureAsync();
-
-		/// <summary>
-		/// Get a enumerable that when enumerated will execute
-		/// a batch of queries in a single database roundtrip
-		/// </summary>
-		IAsyncEnumerable<U> FutureAsync<U>();
 
 		/// <summary>
 		/// Creates an exact clone of the IQueryOver

@@ -15,11 +15,10 @@ namespace NHibernate.Linq
 {
 	public interface INhQueryProvider : IQueryProvider
 	{
-		IEnumerable<TResult> ExecuteFuture<TResult>(Expression expression);
+		IFutureEnumerable<TResult> ExecuteFuture<TResult>(Expression expression);
 		IFutureValue<TResult> ExecuteFutureValue<TResult>(Expression expression);
 		void SetResultTransformerAndAdditionalCriteria(IQuery query, NhLinqExpression nhExpression, IDictionary<string, Tuple<object, IType>> parameters);
 		Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken);
-		object ExecuteFutureAsync(Expression expression);
 	}
 
 	public partial class DefaultQueryProvider : INhQueryProvider
@@ -63,7 +62,7 @@ namespace NHibernate.Linq
 			return new NhQueryable<T>(this, expression);
 		}
 
-		public virtual IEnumerable<TResult> ExecuteFuture<TResult>(Expression expression)
+		public virtual IFutureEnumerable<TResult> ExecuteFuture<TResult>(Expression expression)
 		{
 			var nhExpression = PrepareQuery(expression, out var query);
 
@@ -89,13 +88,6 @@ namespace NHibernate.Linq
 				return;
 
 			result.ExecuteOnEval = nhExpression.ExpressionToHqlTranslationResults.PostExecuteTransformer;
-		}
-
-		public virtual object ExecuteFutureAsync(Expression expression)
-		{
-			IQuery query;
-			NhLinqExpression nhLinqExpression = PrepareQuery(expression, out query);
-			return ExecuteFutureQueryAsync(nhLinqExpression, query);
 		}
 
 		public async Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
@@ -130,22 +122,6 @@ namespace NHibernate.Linq
 			SetResultTransformerAndAdditionalCriteria(query, nhLinqExpression, nhLinqExpression.ParameterValuesByName);
 
 			return nhLinqExpression;
-		}
-
-		static readonly MethodInfo FutureAsync = ReflectHelper.GetMethodDefinition<IQuery>(q => q.FutureAsync<object>());
-
-		protected virtual object ExecuteFutureQueryAsync(NhLinqExpression nhLinqExpression, IQuery query)
-		{
-			var method = FutureAsync.MakeGenericMethod(nhLinqExpression.Type);
-
-			var result = method.Invoke(query, null);
-
-			if (nhLinqExpression.ExpressionToHqlTranslationResults.PostExecuteTransformer != null)
-			{
-				((IDelayedValue)result).ExecuteOnEval = nhLinqExpression.ExpressionToHqlTranslationResults.PostExecuteTransformer;
-			}
-
-			return result;
 		}
 
 		protected virtual object ExecuteQuery(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery)

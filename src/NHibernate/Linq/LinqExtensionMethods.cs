@@ -2395,31 +2395,6 @@ namespace NHibernate.Linq
 
 		#endregion
 
-		#region ToFutureAsync
-
-		/// <summary>
-		/// Wraps the query in a deferred <see cref="IAsyncEnumerable{T}"/> which enumeration will trigger a batch of all pending future queries.
-		/// </summary>
-		/// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to convert to a future query.</param>
-		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
-		/// <returns>A <see cref="IAsyncEnumerable{T}"/>.</returns>
-		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is <see langword="null"/>.</exception>
-		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
-		public static IAsyncEnumerable<TSource> ToFutureAsync<TSource>(this IQueryable<TSource> source)
-		{
-			if (source == null)
-			{
-				throw new ArgumentNullException(nameof(source));
-			}
-			if (!(source.Provider is INhQueryProvider provider))
-			{
-				throw new NotSupportedException($"Source {nameof(source.Provider)} must be a {nameof(INhQueryProvider)}");
-			}
-			return (IAsyncEnumerable<TSource>)provider.ExecuteFutureAsync(source.Expression);
-		}
-
-		#endregion
-
 		public static IQueryable<T> Query<T>(this ISession session)
 		{
 			return new NhQueryable<T>(session.GetSessionImplementation());
@@ -2484,15 +2459,15 @@ namespace NHibernate.Linq
 			return new NhQueryable<T>(query.Provider, callExpression);
 		}
 
-		/// <summary>
-		/// Wraps the query in a deferred <see cref="IEnumerable{T}"/> which enumeration will trigger a batch of all pending future queries.
-		/// </summary>
-		/// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to convert to a future query.</param>
-		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
-		/// <returns>A <see cref="IEnumerable{T}"/>.</returns>
-		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is <see langword="null"/>.</exception>
-		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
-		public static IEnumerable<TSource> ToFuture<TSource>(this IQueryable<TSource> source)
+        /// <summary>
+        /// Wraps the query in a deferred <see cref="IFutureEnumerable{T}"/> which enumeration will trigger a batch of all pending future queries.
+        /// </summary>
+        /// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to convert to a future query.</param>
+        /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
+        /// <returns>A <see cref="IFutureEnumerable{T}"/>.</returns>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is <see langword="null"/>.</exception>
+        /// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
+        public static IFutureEnumerable<TSource> ToFuture<TSource>(this IQueryable<TSource> source)
 		{
 			if (source == null)
 			{
@@ -2525,7 +2500,7 @@ namespace NHibernate.Linq
 				throw new NotSupportedException($"Source {nameof(source.Provider)} must be a {nameof(INhQueryProvider)}");
 			}
 			var future = provider.ExecuteFuture<TSource>(source.Expression);
-			return new FutureValue<TSource>(() => future, async cancellationToken => await ((IAsyncEnumerable<TSource>)future).ToList(cancellationToken).ConfigureAwait(false));
+			return new FutureValue<TSource>(() => future, async cancellationToken => await future.AsyncEnumerable.ToList(cancellationToken).ConfigureAwait(false));
 		}
 
 		/// <summary>
