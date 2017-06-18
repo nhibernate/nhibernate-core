@@ -2,21 +2,17 @@ using System.Linq;
 using NHibernate.Cfg;
 using NHibernate.Connection;
 using NHibernate.Criterion;
-using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Linq;
 using NUnit.Framework;
 
-using Environment=NHibernate.Cfg.Environment;
+using Environment = NHibernate.Cfg.Environment;
 
-namespace NHibernate.Test.NHSpecificTest.Futures
+namespace NHibernate.Test.Futures
 {
 	public class TestDriverThatDoesntSupportQueryBatching : SqlClientDriver
 	{
-		public override bool SupportsMultipleQueries
-		{
-			get { return false; }
-		}
+		public override bool SupportsMultipleQueries => false;
 	}
 
 	/// <summary>

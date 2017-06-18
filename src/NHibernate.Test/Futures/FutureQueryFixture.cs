@@ -1,12 +1,9 @@
 ﻿using System.Linq;
 using NHibernate.Driver;
-using NHibernate.Impl;
 using NUnit.Framework;
 
-namespace NHibernate.Test.NHSpecificTest.Futures
+namespace NHibernate.Test.Futures
 {
-	using System.Collections;
-
 	[TestFixture]
 	public class FutureQueryFixture : FutureFixture
 	{
