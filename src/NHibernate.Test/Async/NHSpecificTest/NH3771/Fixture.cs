@@ -84,7 +84,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3771
 				Assert.AreEqual(4, batchCommands);
 				Assert.AreEqual(2, Sfi.Statistics.PrepareStatementCount);
 
-				tx.Rollback();
+				await (tx.RollbackAsync());
 			}
 		}
 	}

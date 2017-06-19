@@ -195,7 +195,8 @@ namespace NHibernate.Collection
 			{
 				if (current != null && await (ForeignKeys.IsNotTransientSlowAsync(entityName, current, session, cancellationToken)).ConfigureAwait(false))
 				{
-					object currentId = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, current, session);
+					cancellationToken.ThrowIfCancellationRequested();
+					object currentId = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, current, session)).ConfigureAwait(false);
 					currentIds.Add(new TypedValue(idType, currentId));
 				}
 			}
@@ -203,7 +204,8 @@ namespace NHibernate.Collection
 			// iterate over the *old* list
 			foreach (object old in oldElements)
 			{
-				object oldId = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, old, session);
+				cancellationToken.ThrowIfCancellationRequested();
+				object oldId = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, old, session)).ConfigureAwait(false);
 				if (!currentIds.Contains(new TypedValue(idType, oldId)))
 				{
 					res.Add(old);
@@ -219,8 +221,9 @@ namespace NHibernate.Collection
 			if (obj != null && await (ForeignKeys.IsNotTransientSlowAsync(entityName, obj, session, cancellationToken)).ConfigureAwait(false))
 			{
 				IType idType = session.Factory.GetEntityPersister(entityName).IdentifierType;
+				cancellationToken.ThrowIfCancellationRequested();
 
-				object idOfCurrent = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, obj, session);
+				object idOfCurrent = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, obj, session)).ConfigureAwait(false);
 				List<object> toRemove = new List<object>(list.Count);
 				foreach (object current in list)
 				{
@@ -228,7 +231,8 @@ namespace NHibernate.Collection
 					{
 						continue;
 					}
-					object idOfOld = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, current, session);
+					cancellationToken.ThrowIfCancellationRequested();
+					object idOfOld = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, current, session)).ConfigureAwait(false);
 					if (idType.IsEqual(idOfCurrent, idOfOld, session.Factory))
 					{
 						toRemove.Add(current);
@@ -242,6 +246,20 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
+		/// Disassemble the collection, ready for the cache
+		/// </summary>
+		/// <param name="persister"></param>
+		/// <returns></returns>
+		public abstract Task<object> DisassembleAsync(ICollectionPersister persister);
+
+		/// <summary>
+		/// Get all the elements that need deleting
+		/// </summary>
+		public abstract Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula);
+
+		public abstract Task<bool> EqualsSnapshotAsync(ICollectionPersister persister);
+
+		/// <summary>
 		/// Read the state of the collection from a disassembled cached value.
 		/// </summary>
 		/// <param name="persister"></param>
@@ -249,6 +267,15 @@ namespace NHibernate.Collection
 		/// <param name="owner"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		public abstract Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner, CancellationToken cancellationToken);
+
+		/// <summary>
+		/// Do we need to update this element?
+		/// </summary>
+		/// <param name="entry"></param>
+		/// <param name="i"></param>
+		/// <param name="elemType"></param>
+		/// <returns></returns>
+		public abstract Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType);
 
 		/// <summary>
 		/// Reads the row from the <see cref="DbDataReader"/>.
@@ -261,5 +288,14 @@ namespace NHibernate.Collection
 		/// <returns>The object that was contained in the row.</returns>
 		public abstract Task<object> ReadFromAsync(DbDataReader reader, ICollectionPersister role, ICollectionAliases descriptor,
 										object owner, CancellationToken cancellationToken);
+
+		/// <summary>
+		/// Do we need to insert this element?
+		/// </summary>
+		/// <param name="entry"></param>
+		/// <param name="i"></param>
+		/// <param name="elemType"></param>
+		/// <returns></returns>
+		public abstract Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType);
 	}
 }

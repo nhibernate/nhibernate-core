@@ -116,6 +116,175 @@ namespace NHibernate.Impl
 			eventListeners.DestroyListeners();
 		}
 
+		public Task EvictAsync(System.Type persistentClass, object id)
+		{
+			try
+			{
+				IEntityPersister p = GetEntityPersister(persistentClass.FullName);
+				if (p.HasCache)
+				{
+					if (log.IsDebugEnabled)
+					{
+						log.Debug("evicting second-level cache: " + MessageHelper.InfoString(p, id));
+					}
+					CacheKey ck = GenerateCacheKeyForEvict(id, p.IdentifierType, p.RootEntityName);
+					return p.Cache.RemoveAsync(ck);
+				}
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		public Task EvictAsync(System.Type persistentClass)
+		{
+			try
+			{
+				IEntityPersister p = GetEntityPersister(persistentClass.FullName);
+				if (p.HasCache)
+				{
+					if (log.IsDebugEnabled)
+					{
+						log.Debug("evicting second-level cache: " + p.EntityName);
+					}
+					return p.Cache.ClearAsync();
+				}
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		public Task EvictEntityAsync(string entityName)
+		{
+			try
+			{
+				IEntityPersister p = GetEntityPersister(entityName);
+				if (p.HasCache)
+				{
+					if (log.IsDebugEnabled)
+					{
+						log.Debug("evicting second-level cache: " + p.EntityName);
+					}
+					return p.Cache.ClearAsync();
+				}
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		public Task EvictEntityAsync(string entityName, object id)
+		{
+			try
+			{
+				IEntityPersister p = GetEntityPersister(entityName);
+				if (p.HasCache)
+				{
+					if (log.IsDebugEnabled)
+					{
+						log.Debug("evicting second-level cache: " + MessageHelper.InfoString(p, id, this));
+					}
+					CacheKey cacheKey = GenerateCacheKeyForEvict(id, p.IdentifierType, p.RootEntityName);
+					return p.Cache.RemoveAsync(cacheKey);
+				}
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		public Task EvictCollectionAsync(string roleName, object id)
+		{
+			try
+			{
+				ICollectionPersister p = GetCollectionPersister(roleName);
+				if (p.HasCache)
+				{
+					if (log.IsDebugEnabled)
+					{
+						log.Debug("evicting second-level cache: " + MessageHelper.CollectionInfoString(p, id));
+					}
+					CacheKey ck = GenerateCacheKeyForEvict(id, p.KeyType, p.Role);
+					return p.Cache.RemoveAsync(ck);
+				}
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		public Task EvictCollectionAsync(string roleName)
+		{
+			try
+			{
+				ICollectionPersister p = GetCollectionPersister(roleName);
+				if (p.HasCache)
+				{
+					if (log.IsDebugEnabled)
+					{
+						log.Debug("evicting second-level cache: " + p.Role);
+					}
+					return p.Cache.ClearAsync();
+				}
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		public async Task EvictQueriesAsync()
+		{
+			// NH Different implementation
+			if (queryCache != null)
+			{
+				await (queryCache.ClearAsync()).ConfigureAwait(false);
+				if (queryCaches.Count == 0)
+				{
+					await (updateTimestampsCache.ClearAsync()).ConfigureAwait(false);
+				}
+			}
+		}
+
+		public Task EvictQueriesAsync(string cacheRegion)
+		{
+			try
+			{
+				if (string.IsNullOrEmpty(cacheRegion))
+				{
+					return Task.FromException<object>(new ArgumentNullException("cacheRegion", "use the zero-argument form to evict the default query cache"));
+				}
+				else
+				{
+					if (settings.IsQueryCacheEnabled)
+					{
+						IQueryCache currentQueryCache;
+						if (queryCaches.TryGetValue(cacheRegion, out currentQueryCache))
+						{
+							return currentQueryCache.ClearAsync();
+						}
+					}
+				}
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
 		#endregion
 	}
 }

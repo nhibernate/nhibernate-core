@@ -82,7 +82,7 @@ namespace NHibernate.Persister.Entity
 
 		#endregion
 
-		private class GeneratedIdentifierBinder : IBinder
+		private partial class GeneratedIdentifierBinder : IBinder
 		{
 			private readonly object[] fields;
 			private readonly bool[] notNull;

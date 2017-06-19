@@ -59,7 +59,8 @@ namespace NHibernate.Event.Default
 				if (persister.HasCache)
 				{
 					ck = source.GenerateCacheKey(entry.Id, persister.IdentifierType, persister.RootEntityName);
-					slock = persister.Cache.Lock(ck, entry.Version);
+					cancellationToken.ThrowIfCancellationRequested();
+					slock = await (persister.Cache.LockAsync(ck, entry.Version)).ConfigureAwait(false);
 				}
 				else
 				{
@@ -87,7 +88,8 @@ namespace NHibernate.Event.Default
 					// so release the soft lock
 					if (persister.HasCache)
 					{
-						persister.Cache.Release(ck, slock);
+						cancellationToken.ThrowIfCancellationRequested();
+						await (persister.Cache.ReleaseAsync(ck, slock)).ConfigureAwait(false);
 					}
 				}
 			}

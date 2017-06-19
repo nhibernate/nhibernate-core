@@ -40,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1948
 
 				await (s.SaveAsync(person));
 				await (s.FlushAsync());
-				tx.Rollback();
+				await (tx.RollbackAsync());
 			}
 		}
 	}

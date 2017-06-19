@@ -94,35 +94,25 @@ namespace NHibernate.Action
 			}
 		}
 
-		protected override Task AfterTransactionCompletionProcessImplAsync(bool success, CancellationToken cancellationToken)
+		protected override async Task AfterTransactionCompletionProcessImplAsync(bool success, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			//Make 100% certain that this is called before any subsequent ScheduledUpdate.afterTransactionCompletion()!!
+			IEntityPersister persister = Persister;
+			if (success && IsCachePutEnabled(persister))
 			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				//Make 100% certain that this is called before any subsequent ScheduledUpdate.afterTransactionCompletion()!!
-				IEntityPersister persister = Persister;
-				if (success && IsCachePutEnabled(persister))
-				{
-					CacheKey ck = Session.GenerateCacheKey(Id, persister.IdentifierType, persister.RootEntityName);
-					bool put = persister.Cache.AfterInsert(ck, cacheEntry, version);
+				CacheKey ck = Session.GenerateCacheKey(Id, persister.IdentifierType, persister.RootEntityName);
+				cancellationToken.ThrowIfCancellationRequested();
+				bool put = await (persister.Cache.AfterInsertAsync(ck, cacheEntry, version)).ConfigureAwait(false);
 
-					if (put && Session.Factory.Statistics.IsStatisticsEnabled)
-					{
-						Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
-					}
-				}
-				if (success)
+				if (put && Session.Factory.Statistics.IsStatisticsEnabled)
 				{
-					return PostCommitInsertAsync(cancellationToken);
+					Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
 				}
-				return Task.CompletedTask;
 			}
-			catch (Exception ex)
+			if (success)
 			{
-				return Task.FromException<object>(ex);
+				await (PostCommitInsertAsync(cancellationToken)).ConfigureAwait(false);
 			}
 		}
 

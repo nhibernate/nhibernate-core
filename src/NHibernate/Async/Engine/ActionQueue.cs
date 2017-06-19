@@ -27,6 +27,11 @@ namespace NHibernate.Engine
 	/// </content>
 	public partial class ActionQueue
 	{
+
+		public Task AddActionAsync(BulkOperationCleanupAction cleanupAction)
+		{
+			return RegisterCleanupActionsAsync(cleanupAction);
+		}
 	
 		private async Task ExecuteActionsAsync(IList list, CancellationToken cancellationToken)
 		{
@@ -48,8 +53,21 @@ namespace NHibernate.Engine
 			}
 			finally
 			{
-				RegisterCleanupActions(executable);
+				cancellationToken.ThrowIfCancellationRequested();
+				await (RegisterCleanupActionsAsync(executable)).ConfigureAwait(false);
 			}
+		}
+		
+		private async Task RegisterCleanupActionsAsync(IExecutable executable)
+		{
+			beforeTransactionProcesses.Register(executable.BeforeTransactionCompletionProcess);
+			if (session.Factory.Settings.IsQueryCacheEnabled)
+			{
+				string[] spaces = executable.PropertySpaces;
+				afterTransactionProcesses.AddSpacesToInvalidate(spaces);
+				await (session.Factory.UpdateTimestampsCache.PreInvalidateAsync(spaces)).ConfigureAwait(false);
+			}
+			afterTransactionProcesses.Register(executable.AfterTransactionCompletionProcess);
 		}
 
 		/// <summary> 
@@ -78,6 +96,67 @@ namespace NHibernate.Engine
 			await (ExecuteActionsAsync(collectionUpdates, cancellationToken)).ConfigureAwait(false);
 			await (ExecuteActionsAsync(collectionCreations, cancellationToken)).ConfigureAwait(false);
 			await (ExecuteActionsAsync(deletions, cancellationToken)).ConfigureAwait(false);
+		}
+
+		private async Task PrepareActionsAsync(IList queue)
+		{
+			foreach (IExecutable executable in queue)
+				await (executable.BeforeExecutionsAsync()).ConfigureAwait(false);
+		}
+
+		/// <summary>
+		/// Prepares the internal action queues for execution.  
+		/// </summary>
+		public async Task PrepareActionsAsync()
+		{
+			await (PrepareActionsAsync(collectionRemovals)).ConfigureAwait(false);
+			await (PrepareActionsAsync(collectionUpdates)).ConfigureAwait(false);
+			await (PrepareActionsAsync(collectionCreations)).ConfigureAwait(false);
+		}
+		
+		/// <summary> 
+		/// Performs cleanup of any held cache softlocks.
+		/// </summary>
+		/// <param name="success">Was the transaction successful.</param>
+		public Task AfterTransactionCompletionAsync(bool success)
+		{
+			return afterTransactionProcesses.AfterTransactionCompletionAsync(success);
+		}
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
+		private partial class AfterTransactionCompletionProcessQueue 
+		{
+	
+			public async Task AfterTransactionCompletionAsync(bool success) 
+			{
+				int size = processes.Count;
+				
+				for (int i = 0; i < size; i++)
+				{
+					try
+					{
+						AfterTransactionCompletionProcessDelegate process = processes[i];
+						process(success);
+					}
+					catch (CacheException e)
+					{
+						log.Error( "could not release a cache lock", e);
+						// continue loop
+					}
+					catch (Exception e)
+					{
+						throw new AssertionFailure("Unable to perform AfterTransactionCompletion callback", e);
+					}
+				}
+				processes.Clear();
+	
+				if (session.Factory.Settings.IsQueryCacheEnabled) 
+				{
+					await (session.Factory.UpdateTimestampsCache.InvalidateAsync(querySpacesToInvalidate.ToArray())).ConfigureAwait(false);
+				}
+				querySpacesToInvalidate.Clear();
+			}
 		}
 	}
 }

@@ -600,6 +600,7 @@
     <Compile Include="Async\NHSpecificTest\NH2865\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2869\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2880\Fixture.cs" />
+    <Compile Include="Async\NHSpecificTest\NH2898\BinaryFormatterCache.cs" />
     <Compile Include="Async\NHSpecificTest\NH2898\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2955\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2959\Fixture.cs" />
@@ -656,6 +657,7 @@
     <Compile Include="Async\NHSpecificTest\NH3505\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH350\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3518\XmlColumnTest.cs" />
+    <Compile Include="Async\NHSpecificTest\NH3564\FixtureByCode.cs" />
     <Compile Include="Async\NHSpecificTest\NH3567\NH3567Tests.cs" />
     <Compile Include="Async\NHSpecificTest\NH3570\BiFixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3570\UniFixture.cs" />
@@ -713,6 +715,7 @@
     <Compile Include="Async\NHSpecificTest\NH704\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH706\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH719\Fixture.cs" />
+    <Compile Include="Async\NHSpecificTest\NH720\Domain.cs" />
     <Compile Include="Async\NHSpecificTest\NH732\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH734\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH739\Fixture.cs" />
@@ -785,6 +788,7 @@
     <Compile Include="Async\SubselectFetchTest\SubselectFetchFixture.cs" />
     <Compile Include="Async\SystemTransactions\TransactionFixture.cs" />
     <Compile Include="Async\SystemTransactions\TransactionNotificationFixture.cs" />
+    <Compile Include="Async\TestTestCase.cs" />
     <Compile Include="Async\Tools\hbm2ddl\SchemaExportTests\ExportToFileFixture.cs" />
     <Compile Include="Async\Tools\hbm2ddl\SchemaMetadataUpdaterTest\SchemaMetadataUpdaterFixture.cs" />
     <Compile Include="Async\Tools\hbm2ddl\SchemaUpdate\MigrationFixture.cs" />

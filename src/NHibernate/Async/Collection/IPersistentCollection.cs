@@ -50,6 +50,24 @@ namespace NHibernate.Collection
 		Task<object> ReadFromAsync(DbDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner, CancellationToken cancellationToken);
 
 		/// <summary>
+		/// Does the current state exactly match the snapshot?
+		/// </summary>
+		/// <param name="persister">The <see cref="ICollectionPersister"/> to compare the elements of the Collection.</param>
+		/// <returns>
+		/// <see langword="true" /> if the wrapped collection is different than the snapshot
+		/// of the collection or if one of the elements in the collection is
+		/// dirty.
+		/// </returns>
+		Task<bool> EqualsSnapshotAsync(ICollectionPersister persister);
+
+		/// <summary>
+		/// Disassemble the collection, ready for the cache
+		/// </summary>
+		/// <param name="persister">The <see cref="ICollectionPersister"/> for this Collection.</param>
+		/// <returns>The contents of the persistent collection in a cacheable form.</returns>
+		Task<object> DisassembleAsync(ICollectionPersister persister);
+
+		/// <summary>
 		/// To be called internally by the session, forcing
 		/// immediate initalization.
 		/// </summary>
@@ -58,6 +76,21 @@ namespace NHibernate.Collection
 		/// This method is similar to <see cref="AbstractPersistentCollection.Initialize" />, except that different exceptions are thrown.
 		/// </remarks>
 		Task ForceInitializationAsync(CancellationToken cancellationToken);
+
+		/// <summary>
+		/// Do we need to insert this element?
+		/// </summary>
+		Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType);
+
+		/// <summary>
+		/// Do we need to update this element?
+		/// </summary>
+		Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType);
+
+		/// <summary>
+		/// Get all the elements that need deleting
+		/// </summary>
+		Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula);
 
 		/// <summary> Get the "queued" orphans</summary>
 		Task<ICollection> GetQueuedOrphansAsync(string entityName, CancellationToken cancellationToken);

@@ -35,6 +35,44 @@ namespace NHibernate.DomainModel
 		#region IEntityPersister Members
 		#region IOptimisticCacheSource Members
 
+		public Task<int[]> FindDirtyAsync(object[] currentState, object[] previousState, object entity, ISessionImplementor session)
+		{
+			try
+			{
+				if (!EqualsHelper.Equals(currentState[0], previousState[0]))
+				{
+					return Task.FromResult<int[]>(new int[] { 0 });
+				}
+				else
+				{
+					return Task.FromResult<int[]>(null);
+				}
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<int[]>(ex);
+			}
+		}
+
+		public Task<int[]> FindModifiedAsync(object[] old, object[] current, object entity, ISessionImplementor session)
+		{
+			try
+			{
+				if (!EqualsHelper.Equals(old[0], current[0]))
+				{
+					return Task.FromResult<int[]>(new int[] { 0 });
+				}
+				else
+				{
+					return Task.FromResult<int[]>(null);
+				}
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<int[]>(ex);
+			}
+		}
+
 		public Task<object[]> GetNaturalIdentifierSnapshotAsync(object id, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			return Task.FromResult<object[]>(null);
@@ -127,6 +165,18 @@ namespace NHibernate.DomainModel
 		public Task<object> ForceVersionIncrementAsync(object id, object currentVersion, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			return Task.FromResult<object>(null);
+		}
+
+		public Task<bool?> IsTransientAsync(object obj, ISessionImplementor session)
+		{
+			try
+			{
+				return Task.FromResult<bool?>(((Custom) obj).Id == null);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<bool?>(ex);
+			}
 		}
 
 		public Task ProcessInsertGeneratedPropertiesAsync(object id, object entity, object[] state, ISessionImplementor session, CancellationToken cancellationToken)

@@ -27,8 +27,9 @@ namespace NHibernate.Loader.Collection
 		public async Task InitializeAsync(object id, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			cancellationToken.ThrowIfCancellationRequested();
 			object[] batch =
-				session.PersistenceContext.BatchFetchQueue.GetCollectionBatch(collectionPersister, id, batchSizes[0]);
+				await (session.PersistenceContext.BatchFetchQueue.GetCollectionBatchAsync(collectionPersister, id, batchSizes[0])).ConfigureAwait(false);
 
 			for (int i = 0; i < batchSizes.Length; i++)
 			{

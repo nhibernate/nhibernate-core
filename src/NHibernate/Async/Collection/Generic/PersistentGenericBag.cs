@@ -30,6 +30,43 @@ namespace NHibernate.Collection.Generic
 	public partial class PersistentGenericBag<T> : AbstractPersistentCollection, IList<T>, IList
 	{
 
+		public override async Task<object> DisassembleAsync(ICollectionPersister persister)
+		{
+			var length = _gbag.Count;
+			var result = new object[length];
+
+			for (var i = 0; i < length; i++)
+			{
+				result[i] = await (persister.ElementType.DisassembleAsync(_gbag[i], Session, null)).ConfigureAwait(false);
+			}
+
+			return result;
+		}
+
+		public override Task<bool> EqualsSnapshotAsync(ICollectionPersister persister)
+		{
+			try
+			{
+				return Task.FromResult<bool>(EqualsSnapshot(persister));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<bool>(ex);
+			}
+		}
+
+		public override Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula)
+		{
+			try
+			{
+				return Task.FromResult<IEnumerable>(GetDeletes(persister, indexIsFormula));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<IEnumerable>(ex);
+			}
+		}
+
 		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -67,6 +104,30 @@ namespace NHibernate.Collection.Generic
 				{
 					_gbag.Add((T) element);
 				}
+			}
+		}
+
+		public override Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType)
+		{
+			try
+			{
+				return Task.FromResult<bool>(NeedsInserting(entry, i, elemType));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<bool>(ex);
+			}
+		}
+
+		public override Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType)
+		{
+			try
+			{
+				return Task.FromResult<bool>(NeedsUpdating(entry, i, elemType));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<bool>(ex);
 			}
 		}
 

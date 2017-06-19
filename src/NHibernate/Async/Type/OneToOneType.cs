@@ -25,6 +25,70 @@ namespace NHibernate.Type
 	public partial class OneToOneType : EntityType, IAssociationType
 	{
 
+		public override Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		{
+			try
+			{
+				NullSafeSet(st, value, index, settable, session);
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+			//nothing to do
+		}
+
+		public override Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session)
+		{
+			try
+			{
+				NullSafeSet(cmd, value, index, session);
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+			//nothing to do
+		}
+
+		public override Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session)
+		{
+			try
+			{
+				return Task.FromResult<bool>(IsDirty(old, current, session));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<bool>(ex);
+			}
+		}
+
+		public override Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session)
+		{
+			try
+			{
+				return Task.FromResult<bool>(IsDirty(old, current, checkable, session));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<bool>(ex);
+			}
+		}
+
+		public override Task<bool> IsModifiedAsync(object old, object current, bool[] checkable, ISessionImplementor session)
+		{
+			try
+			{
+				return Task.FromResult<bool>(IsModified(old, current, checkable, session));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<bool>(ex);
+			}
+		}
+
 		public override async Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -38,7 +102,8 @@ namespace NHibernate.Type
 				EmbeddedComponentType ownerIdType = session.GetEntityPersister(null, owner).IdentifierType as EmbeddedComponentType;
 				if (ownerIdType != null)
 				{
-					object[] values = ownerIdType.GetPropertyValues(identifier, session);
+					cancellationToken.ThrowIfCancellationRequested();
+					object[] values = await (ownerIdType.GetPropertyValuesAsync(identifier, session)).ConfigureAwait(false);
 					object id = await (componentType.ResolveIdentifierAsync(values, session, null, cancellationToken)).ConfigureAwait(false);
 					IEntityPersister persister = session.Factory.GetEntityPersister(type.ReturnedClass.FullName);
 					var key = session.GenerateEntityKey(id, persister);
@@ -46,6 +111,18 @@ namespace NHibernate.Type
 				}
 			}
 			return identifier;
+		}
+
+		public override Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner)
+		{
+			try
+			{
+				return Task.FromResult<object>(Disassemble(value, session, owner));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 
 		public override Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken)

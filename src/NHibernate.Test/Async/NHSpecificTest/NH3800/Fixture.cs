@@ -105,7 +105,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3800
 
 				Assert.That(results.Sum(x => (decimal?)x[2]), Is.EqualTo(71));
 
-				transaction.Rollback();
+				await (transaction.RollbackAsync());
 			}
 		}
 
@@ -129,7 +129,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3800
 
 				Assert.That(results.Sum(x => (decimal?)x[2]), Is.EqualTo(71));
 
-				transaction.Rollback();
+				await (transaction.RollbackAsync());
 			}
 		}
 
@@ -151,7 +151,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3800
 
 				Assert.That(results.Sum(x => (decimal?)x[2]), Is.EqualTo(71));
 
-				transaction.Rollback();
+				await (transaction.RollbackAsync());
 			}
 		}
 
@@ -177,7 +177,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3800
 
 				Assert.That(results.Sum(x => (decimal?)x[2]), Is.EqualTo(81));
 
-				transaction.Rollback();
+				await (transaction.RollbackAsync());
 			}
 		}
 
@@ -197,7 +197,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3800
 				Assert.That(results.Select(x => x[1]), Is.EquivalentTo(new[] { 4, 2, 2, 2, 2 }));
 				Assert.That(results.Select(x => x[2]), Is.EquivalentTo(new[] { 0, 1, 1, 1, 1 }));
 
-				transaction.Rollback();
+				await (transaction.RollbackAsync());
 			}
 		}
 	}

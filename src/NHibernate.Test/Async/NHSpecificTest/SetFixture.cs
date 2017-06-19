@@ -116,7 +116,7 @@ namespace NHibernate.Test.NHSpecificTest
 				CollectionPersisterStub collectionPersister = new CollectionPersisterStub();
 				collectionPersister.ElementType = NHibernateUtil.Int32;
 
-				object disassembled = set.Disassemble(collectionPersister);
+				object disassembled = await (set.DisassembleAsync(collectionPersister));
 
 				var assembledSet = new PersistentGenericSet<int>(si);
 				await (assembledSet.InitializeFromCacheAsync(collectionPersister, disassembled, null, CancellationToken.None));

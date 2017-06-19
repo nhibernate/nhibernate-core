@@ -98,10 +98,11 @@ namespace NHibernate.Engine
 				CacheEntry entry =
 					new CacheEntry(hydratedState, persister, entityEntry.LoadedWithLazyPropertiesUnfetched, version, session, entity);
 				CacheKey cacheKey = session.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
+				cancellationToken.ThrowIfCancellationRequested();
 				bool put =
-					persister.Cache.Put(cacheKey, persister.CacheEntryStructure.Structure(entry), session.Timestamp, version,
+					await (persister.Cache.PutAsync(cacheKey, persister.CacheEntryStructure.Structure(entry), session.Timestamp, version,
 										persister.IsVersioned ? persister.VersionType.Comparator : null,
-										UseMinimalPuts(session, entityEntry));
+										UseMinimalPuts(session, entityEntry))).ConfigureAwait(false);
 
 				if (put && factory.Statistics.IsStatisticsEnabled)
 				{

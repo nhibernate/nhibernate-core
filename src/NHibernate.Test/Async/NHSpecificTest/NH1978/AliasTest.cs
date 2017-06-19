@@ -30,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1978
 				var emp = new Employee {EmpName = "name", PlanParent = plan};
 				await (s.SaveAsync(emp));
 
-				trans.Rollback();
+				await (trans.RollbackAsync());
 			}
 		}
 	}

@@ -124,8 +124,16 @@
     <Compile Include="Async\AdoNet\SqlClientBatchingBatcher.cs" />
     <Compile Include="Async\Cache\Entry\CacheEntry.cs" />
     <Compile Include="Async\Cache\Entry\CollectionCacheEntry.cs" />
+    <Compile Include="Async\Cache\FakeCache.cs" />
+    <Compile Include="Async\Cache\HashtableCache.cs" />
+    <Compile Include="Async\Cache\ICache.cs" />
+    <Compile Include="Async\Cache\ICacheConcurrencyStrategy.cs" />
     <Compile Include="Async\Cache\IQueryCache.cs" />
+    <Compile Include="Async\Cache\NonstrictReadWriteCache.cs" />
+    <Compile Include="Async\Cache\ReadOnlyCache.cs" />
+    <Compile Include="Async\Cache\ReadWriteCache.cs" />
     <Compile Include="Async\Cache\StandardQueryCache.cs" />
+    <Compile Include="Async\Cache\UpdateTimestampsCache.cs" />
     <Compile Include="Async\Collection\AbstractPersistentCollection.cs" />
     <Compile Include="Async\Collection\Generic\PersistentGenericBag.cs" />
     <Compile Include="Async\Collection\Generic\PersistentGenericIdentifierBag.cs" />
@@ -138,6 +146,7 @@
     <Compile Include="Async\Connection\DriverConnectionProvider.cs" />
     <Compile Include="Async\Connection\IConnectionProvider.cs" />
     <Compile Include="Async\Connection\UserSuppliedConnectionProvider.cs" />
+    <Compile Include="Async\Context\ThreadLocalSessionContext.cs" />
     <Compile Include="Async\Criterion\QueryOver.cs" />
     <Compile Include="Async\Dialect\Dialect.cs" />
     <Compile Include="Async\Dialect\InformixDialect.cs" />
@@ -152,6 +161,7 @@
     <Compile Include="Async\Driver\NHybridDataReader.cs" />
     <Compile Include="Async\Driver\SQLite20Driver.cs" />
     <Compile Include="Async\Engine\ActionQueue.cs" />
+    <Compile Include="Async\Engine\BatchFetchQueue.cs" />
     <Compile Include="Async\Engine\Cascade.cs" />
     <Compile Include="Async\Engine\CascadingAction.cs" />
     <Compile Include="Async\Engine\CollectionEntry.cs" />
@@ -160,6 +170,7 @@
     <Compile Include="Async\Engine\IBatcher.cs" />
     <Compile Include="Async\Engine\IPersistenceContext.cs" />
     <Compile Include="Async\Engine\ISessionImplementor.cs" />
+    <Compile Include="Async\Engine\Loading\CollectionLoadContext.cs" />
     <Compile Include="Async\Engine\Query\HQLQueryPlan.cs" />
     <Compile Include="Async\Engine\Query\NativeSQLQueryPlan.cs" />
     <Compile Include="Async\Engine\StatefulPersistenceContext.cs" />
@@ -253,6 +264,7 @@
     <Compile Include="Async\Id\IncrementGenerator.cs" />
     <Compile Include="Async\Id\Insert\AbstractReturningDelegate.cs" />
     <Compile Include="Async\Id\Insert\AbstractSelectingDelegate.cs" />
+    <Compile Include="Async\Id\Insert\IBinder.cs" />
     <Compile Include="Async\Id\Insert\IInsertGeneratedIdentifierDelegate.cs" />
     <Compile Include="Async\Id\Insert\OutputParamReturningDelegate.cs" />
     <Compile Include="Async\Id\NativeGuidGenerator.cs" />
@@ -361,6 +373,7 @@
     <Compile Include="Async\Type\EnumStringType.cs" />
     <Compile Include="Async\Type\GenericIdentifierBagType.cs" />
     <Compile Include="Async\Type\GenericMapType.cs" />
+    <Compile Include="Async\Type\IAbstractComponentType.cs" />
     <Compile Include="Async\Type\ICacheAssembler.cs" />
     <Compile Include="Async\Type\ImmutableType.cs" />
     <Compile Include="Async\Type\Int16Type.cs" />

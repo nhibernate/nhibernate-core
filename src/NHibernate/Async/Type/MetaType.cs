@@ -38,6 +38,29 @@ namespace NHibernate.Type
 			return key == null ? null : values[key];
 		}
 
+		public override Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		{
+			try
+			{
+				if (settable[0]) return NullSafeSetAsync(st, value, index, session);
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		public override Task NullSafeSetAsync(DbCommand st,object value,int index,ISessionImplementor session)
+		{
+			return baseType.NullSafeSetAsync(st, value == null ? null : keys[(string)value], index, session);
+		}
+
+		public override async Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session)
+		{
+			return checkable[0] && await (IsDirtyAsync(old, current, session)).ConfigureAwait(false);
+		}
+
 		public override Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner, System.Collections.IDictionary copiedAlready, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)

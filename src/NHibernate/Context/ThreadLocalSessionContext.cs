@@ -31,7 +31,7 @@ namespace NHibernate.Context
 	/// <para>The cleanup on transaction end is indeed not implemented.</para>
 	/// </summary>
 	[Serializable]
-	public class ThreadLocalSessionContext : ICurrentSessionContext
+	public partial class ThreadLocalSessionContext : ICurrentSessionContext
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ThreadLocalSessionContext));
 

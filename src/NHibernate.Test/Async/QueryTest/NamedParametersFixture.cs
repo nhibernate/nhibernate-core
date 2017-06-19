@@ -28,7 +28,7 @@ namespace NHibernate.Test.QueryTest
 		}
 
 		[Test]
-		public void TestMissingHQLParametersAsync()
+		public async Task TestMissingHQLParametersAsync()
 		{
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
@@ -44,7 +44,7 @@ namespace NHibernate.Test.QueryTest
 			}
 			finally
 			{
-				t.Rollback();
+				await (t.RollbackAsync());
 				s.Close();
 			}
 		}

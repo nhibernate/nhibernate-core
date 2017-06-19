@@ -296,7 +296,7 @@ namespace NHibernate.Test.Criteria
 					{
 						// expected
 					}
-					t.Rollback();
+					await (t.RollbackAsync());
 				}
 			}
 
@@ -319,7 +319,7 @@ namespace NHibernate.Test.Criteria
 					}
 					finally
 					{
-						t.Rollback();
+						await (t.RollbackAsync());
 					}
 				}
 			}
@@ -341,7 +341,7 @@ namespace NHibernate.Test.Criteria
 				}
 				finally
 				{
-					t.Rollback();
+					await (t.RollbackAsync());
 				}
 			}
 	
@@ -365,7 +365,7 @@ namespace NHibernate.Test.Criteria
 				}
 				finally
 				{
-					t.Rollback();
+					await (t.RollbackAsync());
 				}
 			}
 	
@@ -391,7 +391,7 @@ namespace NHibernate.Test.Criteria
 				}
 				finally
 				{
-					t.Rollback();
+					await (t.RollbackAsync());
 				}
 			}
 	
@@ -417,7 +417,7 @@ namespace NHibernate.Test.Criteria
 				.Add(Property.ForName("m.class").Eq(typeof(Reptile)));
 			ICriteria cloned = CriteriaTransformer.Clone(c);
 			await (cloned.ListAsync());
-			t.Rollback();
+			await (t.RollbackAsync());
 			s.Close();
 		}
 
@@ -436,7 +436,7 @@ namespace NHibernate.Test.Criteria
 
 
 			await (cloned.ListAsync());
-			t.Rollback();
+			await (t.RollbackAsync());
 			s.Close();
 		}
 
@@ -1939,7 +1939,7 @@ namespace NHibernate.Test.Criteria
 				.Add(Expression.IsNotEmpty("offspring"))
 				.ListAsync());
 
-			t.Rollback();
+			await (t.RollbackAsync());
 			s.Close();
 		}
 
@@ -1954,7 +1954,7 @@ namespace NHibernate.Test.Criteria
 				.CreateAlias("mother", "m")
 				.Add(Property.ForName("m.class").Eq(typeof(Reptile)));
 			await (c.ListAsync());
-			t.Rollback();
+			await (t.RollbackAsync());
 			s.Close();
 		}
 
@@ -1965,7 +1965,7 @@ namespace NHibernate.Test.Criteria
 			ITransaction t = s.BeginTransaction();
 			await (s.CreateCriteria(typeof(Course)).SetProjection(Projections.Property("CourseCode")).ListAsync());
 			await (s.CreateCriteria(typeof(Course)).SetProjection(Projections.Id()).ListAsync());
-			t.Rollback();
+			await (t.RollbackAsync());
 			s.Close();
 		}
 		
@@ -2016,7 +2016,7 @@ namespace NHibernate.Test.Criteria
 					.SetProjection(Projections.Id())
 					.ListAsync());
 				
-				t.Rollback();
+				await (t.RollbackAsync());
 			}
 		}
 		
@@ -2070,7 +2070,7 @@ namespace NHibernate.Test.Criteria
 						.Add(Projections.Id()))
 				.ListAsync());
 				
-				t.Rollback();
+				await (t.RollbackAsync());
 			}
 		}
 		
@@ -2089,7 +2089,7 @@ namespace NHibernate.Test.Criteria
 		
 				IList data = (IList)await (s.CreateCriteria<CourseMeeting>().SetProjection(Projections.Id()).ListAsync());
 
-				t.Rollback();
+				await (t.RollbackAsync());
 			}
 		}
 
@@ -2110,7 +2110,7 @@ namespace NHibernate.Test.Criteria
 					.SetProjection(Projections.Id().As("id"))
 					.ListAsync());
 
-				t.Rollback();
+				await (t.RollbackAsync());
 			}
 		}
 	
@@ -2131,7 +2131,7 @@ namespace NHibernate.Test.Criteria
 					.SetProjection(Projections.Property("CityState"))
 					.ListAsync());
 				
-				t.Rollback();
+				await (t.RollbackAsync());
 			}
 		}
 
@@ -2154,7 +2154,7 @@ namespace NHibernate.Test.Criteria
 						.Add(Projections.Property("Name")))
 						.ListAsync());
 				
-				t.Rollback();
+				await (t.RollbackAsync());
 			}
 		}
 		
@@ -2165,7 +2165,7 @@ namespace NHibernate.Test.Criteria
 			ITransaction t = s.BeginTransaction();
 			await (s.CreateCriteria<Course>().SetProjection(Projections.Property("CourseCode")).ListAsync());
 			await (CriteriaTransformer.Clone(s.CreateCriteria(typeof(Course)).SetProjection(Projections.Id())).ListAsync());
-			t.Rollback();
+			await (t.RollbackAsync());
 			s.Close();
 		}
 
@@ -2212,7 +2212,7 @@ namespace NHibernate.Test.Criteria
 
 			Assert.AreEqual(3, result.Count);
 
-			t.Rollback();
+			await (t.RollbackAsync());
 			session.Dispose();
 		}
 
@@ -2471,7 +2471,7 @@ namespace NHibernate.Test.Criteria
 
 			await (crit.ListAsync<Animal>());
 
-			t.Rollback();
+			await (t.RollbackAsync());
 			s.Close();
 		}
 
@@ -2539,7 +2539,7 @@ namespace NHibernate.Test.Criteria
 
 				await (countCriteria.ListAsync());
 
-				t.Rollback();
+				await (t.RollbackAsync());
 			}
 		}
 

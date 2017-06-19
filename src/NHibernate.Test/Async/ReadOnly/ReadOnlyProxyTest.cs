@@ -825,7 +825,7 @@ namespace NHibernate.Test.ReadOnly
 			}
 			finally
 			{
-				t.Rollback();
+				await (t.RollbackAsync());
 				s.Close();
 			}
 	
@@ -854,7 +854,7 @@ namespace NHibernate.Test.ReadOnly
 			}
 			finally
 			{
-				t.Rollback();
+				await (t.RollbackAsync());
 				s.Close();
 			}
 	
@@ -875,7 +875,7 @@ namespace NHibernate.Test.ReadOnly
 			}
 			finally
 			{
-				t.Rollback();
+				await (t.RollbackAsync());
 				s.Close();
 			}
 		}

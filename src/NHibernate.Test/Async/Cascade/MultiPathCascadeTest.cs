@@ -181,7 +181,7 @@ namespace NHibernate.Test.Cascade
 			}
 			finally
 			{
-				s.Transaction.Rollback();
+				await (s.Transaction.RollbackAsync());
 			}
 			s.Close();
 		}
@@ -233,7 +233,7 @@ namespace NHibernate.Test.Cascade
 			}
 			finally
 			{
-				s.Transaction.Rollback();
+				await (s.Transaction.RollbackAsync());
 			}
 			s.Close();
 		}
@@ -285,7 +285,7 @@ namespace NHibernate.Test.Cascade
 			}
 			finally
 			{
-				s.Transaction.Rollback();
+				await (s.Transaction.RollbackAsync());
 			}
 			s.Close();
 		}

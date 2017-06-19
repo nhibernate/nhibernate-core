@@ -51,7 +51,8 @@ namespace NHibernate.Persister.Collection
 				int count = 0;
 				foreach (object entry in entries)
 				{
-					if (collection.NeedsUpdating(entry, i, ElementType))
+					cancellationToken.ThrowIfCancellationRequested();
+					if (await (collection.NeedsUpdatingAsync(entry, i, ElementType)).ConfigureAwait(false))
 					{
 						int offset = 0;
 						if (useBatch)
@@ -72,23 +73,28 @@ namespace NHibernate.Persister.Collection
 
 						try
 						{
+							cancellationToken.ThrowIfCancellationRequested();
 							//offset += expectation.Prepare(st, Factory.ConnectionProvider.Driver);
 
-							int loc = WriteElement(st, collection.GetElement(entry), offset, session);
+							int loc = await (WriteElementAsync(st, collection.GetElement(entry), offset, session)).ConfigureAwait(false);
 							if (hasIdentifier)
 							{
-								WriteIdentifier(st, collection.GetIdentifier(entry, i), loc, session);
+								cancellationToken.ThrowIfCancellationRequested();
+								await (WriteIdentifierAsync(st, collection.GetIdentifier(entry, i), loc, session)).ConfigureAwait(false);
 							}
 							else
 							{
-								loc = WriteKey(st, id, loc, session);
+								cancellationToken.ThrowIfCancellationRequested();
+								loc = await (WriteKeyAsync(st, id, loc, session)).ConfigureAwait(false);
 								if (HasIndex && !indexContainsFormula)
 								{
-									WriteIndexToWhere(st, collection.GetIndex(entry, i, this), loc, session);
+									cancellationToken.ThrowIfCancellationRequested();
+									await (WriteIndexToWhereAsync(st, collection.GetIndex(entry, i, this), loc, session)).ConfigureAwait(false);
 								}
 								else
 								{
-									WriteElementToWhere(st, collection.GetSnapshotElement(entry, i), loc, session);
+									cancellationToken.ThrowIfCancellationRequested();
+									await (WriteElementToWhereAsync(st, collection.GetSnapshotElement(entry, i), loc, session)).ConfigureAwait(false);
 								}
 							}
 

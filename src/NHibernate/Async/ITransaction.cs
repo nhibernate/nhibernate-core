@@ -32,5 +32,10 @@ namespace NHibernate
 		/// was initiated by this object.
 		/// </remarks>
 		Task CommitAsync(CancellationToken cancellationToken = default(CancellationToken));
+
+		/// <summary>
+		/// Force the underlying transaction to roll back.
+		/// </summary>
+		Task RollbackAsync();
 	}
 }

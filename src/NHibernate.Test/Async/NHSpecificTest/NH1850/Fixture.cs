@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1850
 				var wholeLog = spy.GetWholeLog();
 				Assert.That(wholeLog.Contains("ExecuteNonQuery took"), Is.True);
 
-				tx.Rollback();
+				await (tx.RollbackAsync());
 			}
 		}
 
@@ -74,7 +74,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1850
 				}
 				Assert.AreEqual(3, batches);
 
-				tx.Rollback();
+				await (tx.RollbackAsync());
 			}
 		}
 
@@ -91,7 +91,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1850
 				Assert.That(wholeLog.Contains("ExecuteReader took"), Is.True);
 				Assert.That(wholeLog.Contains("DataReader was closed after"), Is.True);
 
-				tx.Rollback();
+				await (tx.RollbackAsync());
 			}
 		}
 	}

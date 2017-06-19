@@ -43,6 +43,26 @@ namespace NHibernate.Collection
 			return result;
 		}
 
+		public override async Task<bool> EqualsSnapshotAsync(ICollectionPersister persister)
+		{
+			IType elementType = persister.ElementType;
+			Array snapshot = (Array) GetSnapshot();
+
+			int xlen = snapshot.Length;
+			if (xlen != array.Length)
+			{
+				return false;
+			}
+			for (int i = 0; i < xlen; i++)
+			{
+				if (await (elementType.IsDirtyAsync(snapshot.GetValue(i), array.GetValue(i), Session)).ConfigureAwait(false))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
 		public override async Task<object> ReadFromAsync(DbDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -74,6 +94,49 @@ namespace NHibernate.Collection
 			{
 				array.SetValue(await (persister.ElementType.AssembleAsync(cached[i], Session, owner, cancellationToken)).ConfigureAwait(false), i);
 			}
+		}
+
+		public override async Task<object> DisassembleAsync(ICollectionPersister persister)
+		{
+			int length = array.Length;
+			object[] result = new object[length];
+			for (int i = 0; i < length; i++)
+			{
+				result[i] = await (persister.ElementType.DisassembleAsync(array.GetValue(i), Session, null)).ConfigureAwait(false);
+			}
+			return result;
+		}
+
+		public override Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula)
+		{
+			try
+			{
+				return Task.FromResult<IEnumerable>(GetDeletes(persister, indexIsFormula));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<IEnumerable>(ex);
+			}
+		}
+
+		public override Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType)
+		{
+			try
+			{
+				return Task.FromResult<bool>(NeedsInserting(entry, i, elemType));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<bool>(ex);
+			}
+		}
+
+		public override async Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType)
+		{
+			Array sn = (Array) GetSnapshot();
+			return
+				i < sn.Length && sn.GetValue(i) != null && array.GetValue(i) != null
+				&& await (elemType.IsDirtyAsync(array.GetValue(i), sn.GetValue(i), Session)).ConfigureAwait(false);
 		}
 	}
 }

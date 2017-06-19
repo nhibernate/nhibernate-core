@@ -53,6 +53,37 @@ namespace NHibernate.Type
 			return NullSafeGetAsync(rs, new[] { name }, session, owner, cancellationToken);
 		}
 
+		public override Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		{
+			try
+			{
+				NullSafeSet(st, value, index, settable, session);
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		public override Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session)
+		{
+			try
+			{
+				NullSafeSet(cmd, value, index, session);
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		public override async Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session)
+		{
+			return checkable[0] && await (IsDirtyAsync(old, current, session)).ConfigureAwait(false);
+		}
+
 		public Task<object> NextAsync(object current, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -111,6 +142,18 @@ namespace NHibernate.Type
 			try
 			{
 				return Task.FromResult<object>(Assemble(cached, session, owner));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		public override Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner)
+		{
+			try
+			{
+				return Task.FromResult<object>(Disassemble(value, session, owner));
 			}
 			catch (Exception ex)
 			{

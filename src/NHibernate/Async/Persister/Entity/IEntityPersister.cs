@@ -30,6 +30,22 @@ namespace NHibernate.Persister.Entity
 
 		#region stuff that is persister-centric and/or EntityInfo-centric
 
+		/// <summary> Locate the property-indices of all properties considered to be dirty. </summary>
+		/// <param name="currentState">The current state of the entity (the state to be checked). </param>
+		/// <param name="previousState">The previous state of the entity (the state to be checked against). </param>
+		/// <param name="entity">The entity for which we are checking state dirtiness. </param>
+		/// <param name="session">The session in which the check is occurring. </param>
+		/// <returns> <see langword="null" /> or the indices of the dirty properties </returns>
+		Task<int[]> FindDirtyAsync(object[] currentState, object[] previousState, object entity, ISessionImplementor session);
+
+		/// <summary> Locate the property-indices of all properties considered to be dirty. </summary>
+		/// <param name="old">The old state of the entity.</param>
+		/// <param name="current">The current state of the entity. </param>
+		/// <param name="entity">The entity for which we are checking state modification. </param>
+		/// <param name="session">The session in which the check is occurring. </param>
+		/// <returns>return <see langword="null" /> or the indicies of the modified properties</returns>
+		Task<int[]> FindModifiedAsync(object[] old, object[] current, object entity, ISessionImplementor session);
+
 		/// <summary> 
 		/// Retrieve the current state of the natural-id properties from the database. 
 		/// </summary>
@@ -116,6 +132,9 @@ namespace NHibernate.Persister.Entity
 
 		#endregion
 		#region stuff that is tuplizer-centric, but is passed a session
+
+		/// <summary> Is this a new transient instance?</summary>
+		Task<bool?> IsTransientAsync(object obj, ISessionImplementor session);
 
 		/// <summary>
 		/// Perform a select to retrieve the values of any generated properties

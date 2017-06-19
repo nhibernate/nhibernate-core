@@ -114,10 +114,12 @@ namespace NHibernate.Event.Default
 			if (persister.HasCache)
 			{
 				CacheKey ck = source.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
-				persister.Cache.Remove(ck);
+				cancellationToken.ThrowIfCancellationRequested();
+				await (persister.Cache.RemoveAsync(ck)).ConfigureAwait(false);
 			}
+			cancellationToken.ThrowIfCancellationRequested();
 
-			EvictCachedCollections(persister, id, source.Factory);
+			await (EvictCachedCollectionsAsync(persister, id, source.Factory)).ConfigureAwait(false);
 
 			// NH Different behavior : NH-1601
 			// At this point the entity need the real refresh, all elementes of collections are Refreshed,
@@ -136,11 +138,34 @@ namespace NHibernate.Event.Default
 					source.SetReadOnly(result, (e == null ? source.DefaultReadOnly : e.IsReadOnly));
 			
 			source.FetchProfile = previousFetchProfile;
+			cancellationToken.ThrowIfCancellationRequested();
 
 			// NH Different behavior : we are ignoring transient entities without throw any kind of exception
 			// because a transient entity is "self refreshed"
-			if (!ForeignKeys.IsTransientFast(persister.EntityName, obj, @event.Session).GetValueOrDefault(result == null))
+			if (!(await (ForeignKeys.IsTransientFastAsync(persister.EntityName, obj, @event.Session)).ConfigureAwait(false)).GetValueOrDefault(result == null))
 				UnresolvableObjectException.ThrowIfNull(result, id, persister.EntityName);
+		}
+
+		// Evict collections from the factory-level cache
+		private Task EvictCachedCollectionsAsync(IEntityPersister persister, object id, ISessionFactoryImplementor factory)
+		{
+			return EvictCachedCollectionsAsync(persister.PropertyTypes, id, factory);
+		}
+
+		private async Task EvictCachedCollectionsAsync(IType[] types, object id, ISessionFactoryImplementor factory)
+		{
+			for (int i = 0; i < types.Length; i++)
+			{
+				if (types[i].IsCollectionType)
+				{
+					await (factory.EvictCollectionAsync(((CollectionType)types[i]).Role, id)).ConfigureAwait(false);
+				}
+				else if (types[i].IsComponentType)
+				{
+					IAbstractComponentType actype = (IAbstractComponentType)types[i];
+					await (EvictCachedCollectionsAsync(actype.Subtypes, id, factory)).ConfigureAwait(false);
+				}
+			}
 		}
 	}
 }

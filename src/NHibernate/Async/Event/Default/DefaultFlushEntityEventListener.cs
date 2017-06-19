@@ -222,9 +222,10 @@ namespace NHibernate.Event.Default
 
 			if (!entry.IsBeingReplicated)
 			{
+				cancellationToken.ThrowIfCancellationRequested();
 				// give the Interceptor a chance to process property values, if the properties
 				// were modified by the Interceptor, we need to set them back to the object
-				intercepted = HandleInterception(@event);
+				intercepted = await (HandleInterceptionAsync(@event)).ConfigureAwait(false);
 			}
 			else
 			{
@@ -265,6 +266,35 @@ namespace NHibernate.Event.Default
 					entity, 
 					persister, 
 					session));
+
+			return intercepted;
+		}
+
+		protected virtual async Task<bool> HandleInterceptionAsync(FlushEntityEvent @event)
+		{
+			ISessionImplementor session = @event.Session;
+			EntityEntry entry = @event.EntityEntry;
+			IEntityPersister persister = entry.Persister;
+			object entity = @event.Entity;
+
+			//give the Interceptor a chance to modify property values
+			object[] values = @event.PropertyValues;
+			bool intercepted = InvokeInterceptor(session, entity, entry, values, persister);
+
+			//now we might need to recalculate the dirtyProperties array
+			if (intercepted && @event.DirtyCheckPossible && !@event.DirtyCheckHandledByInterceptor)
+			{
+				int[] dirtyProperties;
+				if (@event.HasDatabaseSnapshot)
+				{
+					dirtyProperties = await (persister.FindModifiedAsync(@event.DatabaseSnapshot, values, entity, session)).ConfigureAwait(false);
+				}
+				else
+				{
+					dirtyProperties = await (persister.FindDirtyAsync(values, entry.LoadedState, entity, session)).ConfigureAwait(false);
+				}
+				@event.DirtyProperties = dirtyProperties;
+			}
 
 			return intercepted;
 		}
@@ -388,8 +418,9 @@ namespace NHibernate.Event.Default
 				cannotDirtyCheck = loadedState == null; // object loaded by update()
 				if (!cannotDirtyCheck)
 				{
+					cancellationToken.ThrowIfCancellationRequested();
 					// dirty check against the usual snapshot of the entity
-					dirtyProperties = persister.FindDirty(values, loadedState, entity, session);
+					dirtyProperties = await (persister.FindDirtyAsync(values, loadedState, entity, session)).ConfigureAwait(false);
 				}
 				else if (entry.Status == Status.Deleted && !@event.EntityEntry.IsModifiableEntity())
 				{
@@ -408,7 +439,8 @@ namespace NHibernate.Event.Default
 					//   references to transient entities set to null.
 					// - dirtyProperties will only contain properties that refer to transient entities
 					object[] currentState = persister.GetPropertyValues(@event.Entity);
-					dirtyProperties = persister.FindDirty(entry.DeletedState, currentState, entity, session);
+					cancellationToken.ThrowIfCancellationRequested();
+					dirtyProperties = await (persister.FindDirtyAsync(entry.DeletedState, currentState, entity, session)).ConfigureAwait(false);
 					cannotDirtyCheck = false;
 				}
 				else
@@ -417,7 +449,8 @@ namespace NHibernate.Event.Default
 					object[] databaseSnapshot = await (GetDatabaseSnapshotAsync(session, persister, id, cancellationToken)).ConfigureAwait(false);
 					if (databaseSnapshot != null)
 					{
-						dirtyProperties = persister.FindModified(databaseSnapshot, values, entity, session);
+						cancellationToken.ThrowIfCancellationRequested();
+						dirtyProperties = await (persister.FindModifiedAsync(databaseSnapshot, values, entity, session)).ConfigureAwait(false);
 						cannotDirtyCheck = false;
 						@event.DatabaseSnapshot = databaseSnapshot;
 					}

@@ -563,7 +563,7 @@ namespace NHibernate.Test.Hql.Ast
 			int count = await (s.CreateQuery("update PettingZoo set name = name").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass update count");
 
-			t.Rollback();
+			await (t.RollbackAsync());
 			t = s.BeginTransaction();
 
 			count =
@@ -571,13 +571,13 @@ namespace NHibernate.Test.Hql.Ast
 					ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass update count");
 
-			t.Rollback();
+			await (t.RollbackAsync());
 			t = s.BeginTransaction();
 
 			count = await (s.CreateQuery("update Zoo as z set z.name = z.name").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(2), "Incorrect discrim subclass update count");
 
-			t.Rollback();
+			await (t.RollbackAsync());
 			t = s.BeginTransaction();
 
 			// TODO : not so sure this should be allowed.  Seems to me that if they specify an alias,

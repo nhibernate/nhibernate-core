@@ -428,7 +428,7 @@ namespace NHibernate.Engine
 		}
 
 		[Serializable]
-		private class AfterTransactionCompletionProcessQueue 
+		private partial class AfterTransactionCompletionProcessQueue 
 		{
 			private ISessionImplementor session;
 			private HashSet<string> querySpacesToInvalidate = new HashSet<string>();

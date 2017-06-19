@@ -49,10 +49,11 @@ namespace NHibernate.Event.Default
 			session.Interceptor.PreFlush((ICollection) persistenceContext.EntitiesByKey.Values);
 
 			await (PrepareEntityFlushesAsync(session, cancellationToken)).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
 			// we could move this inside if we wanted to
 			// tolerate collection initializations during
 			// collection dirty checking:
-			PrepareCollectionFlushes(session);
+			await (PrepareCollectionFlushesAsync(session)).ConfigureAwait(false);
 			// now, any collections that are initialized
 			// inside this block do not get updated - they
 			// are ignored until the next flush
@@ -170,6 +171,20 @@ namespace NHibernate.Event.Default
 			source.ActionQueue.SortActions();
 		}
 
+		// Initialize the flags of the CollectionEntry, including the dirty check.
+		protected virtual async Task PrepareCollectionFlushesAsync(ISessionImplementor session)
+		{
+			// Initialize dirty flags for arrays + collections with composite elements
+			// and reset reached, doupdate, etc.
+			log.Debug("dirty checking collections");
+
+			ICollection list = IdentityMap.Entries(session.PersistenceContext.CollectionEntries);
+			foreach (DictionaryEntry entry in list)
+			{
+				await (((CollectionEntry) entry.Value).PreFlushAsync((IPersistentCollection) entry.Key)).ConfigureAwait(false);
+			}
+		}
+
 		//process cascade save/update at the start of a flush to discover
 		//any newly referenced entity that must be passed to saveOrUpdate(),
 		//and also apply orphan delete
@@ -235,10 +250,11 @@ namespace NHibernate.Event.Default
 				//		lazy collections during their processing.
 				// For more information, see HHH-2763 / NH-1882
 				session.PersistenceContext.Flushing = true;
+				cancellationToken.ThrowIfCancellationRequested();
 				// we need to lock the collection caches before
 				// executing entity inserts/updates in order to
 				// account for bidi associations
-				session.ActionQueue.PrepareActions();
+				await (session.ActionQueue.PrepareActionsAsync()).ConfigureAwait(false);
 				await (session.ActionQueue.ExecuteActionsAsync(cancellationToken)).ConfigureAwait(false);
 			}
 			catch (HibernateException he)

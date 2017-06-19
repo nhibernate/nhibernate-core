@@ -26,6 +26,17 @@ namespace NHibernate.Transaction
 	public partial class AdoTransaction : ITransaction
 	{
 
+		private async Task AfterTransactionCompletionAsync(bool successful)
+		{
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				await (session.AfterTransactionCompletionAsync(successful, this)).ConfigureAwait(false);
+				NotifyLocalSynchsAfterTransactionCompletion(successful);
+				session = null;
+				begun = false;
+			}
+		}
+
 		/// <summary>
 		/// Commits the <see cref="ITransaction"/> by flushing asynchronously the <see cref="ISession"/>
 		/// then committing synchronously the <see cref="DbTransaction"/>.
@@ -60,13 +71,15 @@ namespace NHibernate.Transaction
 					log.Debug("DbTransaction Committed");
 
 					committed = true;
-					AfterTransactionCompletion(true);
+					cancellationToken.ThrowIfCancellationRequested();
+					await (AfterTransactionCompletionAsync(true)).ConfigureAwait(false);
 					Dispose();
 				}
 				catch (HibernateException e)
 				{
 					log.Error("Commit failed", e);
-					AfterTransactionCompletion(false);
+					cancellationToken.ThrowIfCancellationRequested();
+					await (AfterTransactionCompletionAsync(false)).ConfigureAwait(false);
 					commitFailed = true;
 					// Don't wrap HibernateExceptions
 					throw;
@@ -74,7 +87,8 @@ namespace NHibernate.Transaction
 				catch (Exception e)
 				{
 					log.Error("Commit failed", e);
-					AfterTransactionCompletion(false);
+					cancellationToken.ThrowIfCancellationRequested();
+					await (AfterTransactionCompletionAsync(false)).ConfigureAwait(false);
 					commitFailed = true;
 					throw new TransactionException("Commit failed with SQL exception", e);
 				}
@@ -84,5 +98,101 @@ namespace NHibernate.Transaction
 				}
 			}
 		}
+
+		/// <summary>
+		/// Rolls back the <see cref="ITransaction"/> by calling the method <c>Rollback</c> 
+		/// on the underlying <see cref="DbTransaction"/>.
+		/// </summary>
+		/// <exception cref="TransactionException">
+		/// Thrown if there is any exception while trying to call <c>Rollback()</c> on 
+		/// the underlying <see cref="DbTransaction"/>.
+		/// </exception>
+		public async Task RollbackAsync()
+		{
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				CheckNotDisposed();
+				CheckBegun();
+				CheckNotZombied();
+
+				log.Debug("Rollback");
+
+				if (!commitFailed)
+				{
+					try
+					{
+						trans.Rollback();
+						log.Debug("DbTransaction RolledBack");
+						rolledBack = true;
+						Dispose();
+					}
+					catch (HibernateException e)
+					{
+						log.Error("Rollback failed", e);
+						// Don't wrap HibernateExceptions
+						throw;
+					}
+					catch (Exception e)
+					{
+						log.Error("Rollback failed", e);
+						throw new TransactionException("Rollback failed with SQL Exception", e);
+					}
+					finally
+					{
+						await (AfterTransactionCompletionAsync(false)).ConfigureAwait(false);
+						CloseIfRequired();
+					}
+				}
+			}
+		}
+
+		#region System.IDisposable Members
+
+		/// <summary>
+		/// Takes care of freeing the managed and unmanaged resources that 
+		/// this class is responsible for.
+		/// </summary>
+		/// <param name="isDisposing">Indicates if this AdoTransaction is being Disposed of or Finalized.</param>
+		/// <remarks>
+		/// If this AdoTransaction is being Finalized (<c>isDisposing==false</c>) then make sure not
+		/// to call any methods that could potentially bring this AdoTransaction back to life.
+		/// </remarks>
+		protected virtual async Task DisposeAsync(bool isDisposing)
+		{
+			using (new SessionIdLoggingContext(sessionId))
+			{
+				if (_isAlreadyDisposed)
+				{
+					// don't dispose of multiple times.
+					return;
+				}
+
+				// free managed resources that are being managed by the AdoTransaction if we
+				// know this call came through Dispose()
+				if (isDisposing)
+				{
+					if (trans != null)
+					{
+						trans.Dispose();
+						trans = null;
+						log.Debug("DbTransaction disposed.");
+					}
+
+					if (IsActive && session != null)
+					{
+						// Assume we are rolled back
+						await (AfterTransactionCompletionAsync(false)).ConfigureAwait(false);
+					}
+				}
+
+				// free unmanaged resources here
+
+				_isAlreadyDisposed = true;
+				// nothing for Finalizer to do - so tell the GC to ignore it
+				GC.SuppressFinalize(this);
+			}
+		}
+
+		#endregion
 	}
 }

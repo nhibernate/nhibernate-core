@@ -333,12 +333,13 @@ namespace NHibernate.Loader
 				{
 					if (collectionPersisters[i].IsArray)
 					{
+						cancellationToken.ThrowIfCancellationRequested();
 						//for arrays, we should end the collection load before resolving
 						//the entities, since the actual array instances are not instantiated
 						//during loading
 						//TODO: or we could do this polymorphically, and have two
 						//      different operations implemented differently for arrays
-						EndCollectionLoad(resultSetId, session, collectionPersisters[i]);
+						await (EndCollectionLoadAsync(resultSetId, session, collectionPersisters[i])).ConfigureAwait(false);
 					}
 				}
 			}
@@ -378,13 +379,28 @@ namespace NHibernate.Loader
 				{
 					if (!collectionPersisters[i].IsArray)
 					{
+						cancellationToken.ThrowIfCancellationRequested();
 						//for sets, we should end the collection load after resolving
 						//the entities, since we might call hashCode() on the elements
 						//TODO: or we could do this polymorphically, and have two
 						//      different operations implemented differently for arrays
-						EndCollectionLoad(resultSetId, session, collectionPersisters[i]);
+						await (EndCollectionLoadAsync(resultSetId, session, collectionPersisters[i])).ConfigureAwait(false);
 					}
 				}
+			}
+		}
+
+		private static Task EndCollectionLoadAsync(object resultSetId, ISessionImplementor session, ICollectionPersister collectionPersister)
+		{
+			try
+			{
+				//this is a query and we are loading multiple instances of the same collection role
+				return session.PersistenceContext.LoadContexts.GetCollectionLoadContext((DbDataReader)resultSetId).EndLoadingCollectionsAsync(
+				collectionPersister);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
 			}
 		}
 
@@ -1118,7 +1134,8 @@ namespace NHibernate.Loader
 			if (result == null)
 			{
 				result = await (DoListAsync(session, queryParameters, key.ResultTransformer, cancellationToken)).ConfigureAwait(false);
-				PutResultInQueryCache(session, queryParameters, resultTypes, queryCache, key, result);
+				cancellationToken.ThrowIfCancellationRequested();
+				await (PutResultInQueryCacheAsync(session, queryParameters, resultTypes, queryCache, key, result)).ConfigureAwait(false);
 			}
 
 			IResultTransformer resolvedTransformer = ResolveResultTransformer(queryParameters.ResultTransformer);
@@ -1177,6 +1194,19 @@ namespace NHibernate.Loader
 
 			}
 			return result;
+		}
+
+		private async Task PutResultInQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters, IType[] resultTypes,
+										   IQueryCache queryCache, QueryKey key, IList result)
+		{
+			if ((session.CacheMode & CacheMode.Put) == CacheMode.Put)
+			{
+				bool put = await (queryCache.PutAsync(key, key.ResultTransformer.GetCachedResultTypes(resultTypes), result, queryParameters.NaturalKeyLookup, session)).ConfigureAwait(false);
+				if (put && _factory.Statistics.IsStatisticsEnabled)
+				{
+					_factory.StatisticsImplementor.QueryCachePut(QueryIdentifier, queryCache.RegionName);
+				}
+			}
 		}
 
 		/// <summary>

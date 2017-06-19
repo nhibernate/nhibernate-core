@@ -19,6 +19,12 @@ namespace NHibernate.Type
 	/// </content>
 	public partial interface ICacheAssembler
 	{
+		/// <summary> Return a cacheable "disassembled" representation of the object.</summary>
+		/// <param name="value">the value to cache </param>
+		/// <param name="session">the session </param>
+		/// <param name="owner">optional parent entity object (needed for collections) </param>
+		/// <returns> the disassembled, deep cloned state </returns>		
+		Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner);
 
 		/// <summary> Reconstruct the object from its cached "disassembled" state.</summary>
 		/// <param name="cached">the disassembled state from the cache </param>

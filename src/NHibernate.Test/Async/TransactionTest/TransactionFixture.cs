@@ -63,6 +63,25 @@ namespace NHibernate.Test.TransactionTest
 		}
 
 		[Test]
+		public Task RollbackAfterDisposeThrowsExceptionAsync()
+		{
+			try
+			{
+				using (ISession s = OpenSession())
+				{
+					ITransaction t = s.BeginTransaction();
+					t.Dispose();
+					Assert.ThrowsAsync<ObjectDisposedException>(() => t.RollbackAsync());
+				}
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		[Test]
 		public async Task CommandAfterTransactionShouldWorkAsync()
 		{
 			using (ISession s = OpenSession())
@@ -82,7 +101,7 @@ namespace NHibernate.Test.TransactionTest
 
 				using (ITransaction t = s.BeginTransaction())
 				{
-					t.Rollback();
+					await (t.RollbackAsync());
 				}
 
 				await (s.CreateQuery("from Simple").ListAsync());
@@ -116,7 +135,7 @@ namespace NHibernate.Test.TransactionTest
 
 				using (ITransaction t = s.BeginTransaction())
 				{
-					t.Rollback();
+					await (t.RollbackAsync());
 
 					// ISession.Transaction returns a new transaction
 					// if the previous one completed!

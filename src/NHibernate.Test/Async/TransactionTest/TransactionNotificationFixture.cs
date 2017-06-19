@@ -38,6 +38,20 @@ namespace NHibernate.Test.TransactionTest
 			}
 		}
 
+		[Test]
+		public async Task RollbackAsync()
+		{
+			var interceptor = new RecordingInterceptor();
+			using (var session = Sfi.WithOptions().Interceptor(interceptor).OpenSession())
+			{
+				ITransaction tx = session.BeginTransaction();
+				await (tx.RollbackAsync());
+				Assert.That(interceptor.afterTransactionBeginCalled, Is.EqualTo(1));
+				Assert.That(interceptor.beforeTransactionCompletionCalled, Is.EqualTo(0));
+				Assert.That(interceptor.afterTransactionCompletionCalled, Is.EqualTo(1));
+			}
+		}
+
 
 		[Theory]
 		[Description("NH2128")]

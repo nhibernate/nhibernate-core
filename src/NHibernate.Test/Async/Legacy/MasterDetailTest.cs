@@ -1200,7 +1200,7 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 
-			Sfi.EvictCollection("NHibernate.DomainModel.Assignable.Categories");
+			await (Sfi.EvictCollectionAsync("NHibernate.DomainModel.Assignable.Categories"));
 
 			s = OpenSession();
 			a = (Assignable) await (s.GetAsync(typeof(Assignable), "foo"));
@@ -1212,7 +1212,7 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 
-			Sfi.EvictCollection("NHibernate.DomainModel.Assignable.Categories");
+			await (Sfi.EvictCollectionAsync("NHibernate.DomainModel.Assignable.Categories"));
 
 			s = OpenSession();
 			a = (Assignable) await (s.GetAsync(typeof(Assignable), "foo"));
@@ -1225,7 +1225,7 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(3, a.Categories.Count);
 			s.Close();
 
-			Sfi.EvictCollection("NHibernate.DomainModel.Assignable.Categories");
+			await (Sfi.EvictCollectionAsync("NHibernate.DomainModel.Assignable.Categories"));
 
 			s = OpenSession();
 			a = (Assignable) await (s.GetAsync(typeof(Assignable), "foo"));

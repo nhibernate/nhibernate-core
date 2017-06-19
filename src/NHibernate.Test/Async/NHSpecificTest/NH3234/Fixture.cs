@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3234
 		private async Task EvictAsync(ISession session, GridWidget widget, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			await (session.EvictAsync(widget, cancellationToken));
-			Sfi.Evict(widget.GetType());
+			await (Sfi.EvictAsync(widget.GetType()));
 		}
 
 		private static async Task SaveAsync(ISession session, GridWidget widget, CancellationToken cancellationToken = default(CancellationToken))

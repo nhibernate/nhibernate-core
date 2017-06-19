@@ -56,7 +56,8 @@ namespace NHibernate.Persister.Collection
 
 					foreach (object entry in entries)
 					{
-						if (collection.NeedsUpdating(entry, i, ElementType))
+						cancellationToken.ThrowIfCancellationRequested();
+						if (await (collection.NeedsUpdatingAsync(entry, i, ElementType)).ConfigureAwait(false))
 						{
 							DbCommand st = null;
 							// will still be issued when it used to be null
@@ -73,8 +74,10 @@ namespace NHibernate.Persister.Collection
 
 							try
 							{
-								int loc = WriteKey(st, id, offset, session);
-								WriteElementToWhere(st, collection.GetSnapshotElement(entry, i), loc, session);
+								cancellationToken.ThrowIfCancellationRequested();
+								int loc = await (WriteKeyAsync(st, id, offset, session)).ConfigureAwait(false);
+								cancellationToken.ThrowIfCancellationRequested();
+								await (WriteElementToWhereAsync(st, collection.GetSnapshotElement(entry, i), loc, session)).ConfigureAwait(false);
 								if (useBatch)
 								{
 									await (session.Batcher.AddToBatchAsync(deleteExpectation, cancellationToken)).ConfigureAwait(false);
@@ -117,7 +120,8 @@ namespace NHibernate.Persister.Collection
 					IEnumerable entries = collection.Entries(this);
 					foreach (object entry in entries)
 					{
-						if (collection.NeedsUpdating(entry, i, ElementType))
+						cancellationToken.ThrowIfCancellationRequested();
+						if (await (collection.NeedsUpdatingAsync(entry, i, ElementType)).ConfigureAwait(false))
 						{
 							DbCommand st = null;
 							if (useBatch)
@@ -133,13 +137,16 @@ namespace NHibernate.Persister.Collection
 
 							try
 							{
+								cancellationToken.ThrowIfCancellationRequested();
 								//offset += insertExpectation.Prepare(st, Factory.ConnectionProvider.Driver);
-								int loc = WriteKey(st, id, offset, session);
+								int loc = await (WriteKeyAsync(st, id, offset, session)).ConfigureAwait(false);
 								if (HasIndex && !indexContainsFormula)
 								{
-									loc = WriteIndexToWhere(st, collection.GetIndex(entry, i, this), loc, session);
+									cancellationToken.ThrowIfCancellationRequested();
+									loc = await (WriteIndexToWhereAsync(st, collection.GetIndex(entry, i, this), loc, session)).ConfigureAwait(false);
 								}
-								WriteElementToWhere(st, collection.GetElement(entry), loc, session);
+								cancellationToken.ThrowIfCancellationRequested();
+								await (WriteElementToWhereAsync(st, collection.GetElement(entry), loc, session)).ConfigureAwait(false);
 								if (useBatch)
 								{
 									await (session.Batcher.AddToBatchAsync(insertExpectation, cancellationToken)).ConfigureAwait(false);

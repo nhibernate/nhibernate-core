@@ -118,7 +118,8 @@ namespace NHibernate.Impl
 				}
 				finally
 				{
-					AfterOperation(success);
+					cancellationToken.ThrowIfCancellationRequested();
+					await (AfterOperationAsync(success)).ConfigureAwait(false);
 				}
 				temporaryPersistenceContext.Clear();
 			}
@@ -160,7 +161,8 @@ namespace NHibernate.Impl
 				}
 				finally
 				{
-					AfterOperation(success);
+					cancellationToken.ThrowIfCancellationRequested();
+					await (AfterOperationAsync(success)).ConfigureAwait(false);
 				}
 				temporaryPersistenceContext.Clear();
 			}
@@ -196,6 +198,19 @@ namespace NHibernate.Impl
 			throw new NotSupportedException();
 		}
 
+		public override Task AfterTransactionCompletionAsync(bool successful, ITransaction tx)
+		{
+			try
+			{
+				AfterTransactionCompletion(successful, tx);
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
 		public override async Task ListCustomQueryAsync(ICustomQuery customQuery, QueryParameters queryParameters, IList results, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -213,7 +228,8 @@ namespace NHibernate.Impl
 				}
 				finally
 				{
-					AfterOperation(success);
+					cancellationToken.ThrowIfCancellationRequested();
+					await (AfterOperationAsync(success)).ConfigureAwait(false);
 				}
 				temporaryPersistenceContext.Clear();
 			}
@@ -536,7 +552,8 @@ namespace NHibernate.Impl
 				if (persister.HasCache)
 				{
 					CacheKey ck = GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
-					persister.Cache.Remove(ck);
+					cancellationToken.ThrowIfCancellationRequested();
+					await (persister.Cache.RemoveAsync(ck)).ConfigureAwait(false);
 				}
 
 				string previousFetchProfile = FetchProfile;
@@ -574,7 +591,8 @@ namespace NHibernate.Impl
 				}
 				finally
 				{
-					AfterOperation(success);
+					cancellationToken.ThrowIfCancellationRequested();
+					await (AfterOperationAsync(success)).ConfigureAwait(false);
 				}
 				temporaryPersistenceContext.Clear();
 				return result;
@@ -598,7 +616,8 @@ namespace NHibernate.Impl
 				}
 				finally
 				{
-					AfterOperation(success);
+					cancellationToken.ThrowIfCancellationRequested();
+					await (AfterOperationAsync(success)).ConfigureAwait(false);
 				}
 				temporaryPersistenceContext.Clear();
 				return result;

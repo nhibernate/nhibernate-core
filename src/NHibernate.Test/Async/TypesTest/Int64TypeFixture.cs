@@ -43,6 +43,21 @@ namespace NHibernate.Test.TypesTest
 			Assert.IsTrue(await (type.SeedAsync(null, CancellationToken.None)) is Int64, "seed should be int64");
 		}
 
+		[Test]
+		public async Task NullableWrapperDirtyAsync()
+		{
+			Int64Type type = (Int64Type)NHibernateUtil.Int64;
+
+			long? nullLong = null;
+			long? valueLong = 5;
+			long? fiveAgain = 5;
+			using (ISession s = OpenSession())
+			{
+				Assert.IsTrue(await (type.IsDirtyAsync(nullLong, valueLong, (ISessionImplementor)s)), "should be dirty - null to '5'");
+				Assert.IsFalse(await (type.IsDirtyAsync(valueLong, fiveAgain, (ISessionImplementor)s)), "should not be dirty - 5 to 5");
+			}
+		}
+
 		protected override IList Mappings
 		{
 			get { return new List<string>(); }

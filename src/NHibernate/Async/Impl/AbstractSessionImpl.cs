@@ -95,6 +95,7 @@ namespace NHibernate.Impl
 		public abstract Task<IList<T>> ListFilterAsync<T>(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken);
 		public abstract Task<IEnumerable> EnumerableFilterAsync(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken);
 		public abstract Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken);
+		public abstract Task AfterTransactionCompletionAsync(bool successful, ITransaction tx);
 
 		public virtual async Task<IList> ListAsync(NativeSQLQuerySpecification spec, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
@@ -152,6 +153,18 @@ namespace NHibernate.Impl
 		public abstract Task FlushAsync(CancellationToken cancellationToken);
 
 		#endregion
+
+		protected async Task AfterOperationAsync(bool success)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				if (!ConnectionManager.IsInActiveTransaction)
+				{
+					ConnectionManager.AfterNonTransactionalQuery(success);
+					await (AfterTransactionCompletionAsync(success, null)).ConfigureAwait(false);
+				}
+			}
+		}
 
 		public abstract Task<IEnumerable> EnumerableAsync(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken);
 

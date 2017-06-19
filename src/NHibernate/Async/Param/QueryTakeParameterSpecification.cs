@@ -34,9 +34,23 @@ namespace NHibernate.Param
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
+			cancellationToken.ThrowIfCancellationRequested();
+			return BindAsync(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session);
+		}
+
+		public Task BindAsync(DbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		{
 			try
 			{
-				Bind(command, sqlQueryParametersList, queryParameters, session);
+				// The QueryTakeParameterSpecification is unique so we can use multiSqlQueryParametersList
+				var effectiveParameterLocations = multiSqlQueryParametersList.GetEffectiveParameterLocations(limitParametersNameForThisQuery).ToArray();
+				if (effectiveParameterLocations.Any())
+				{
+					// if the dialect does not support variable limits the parameter may was removed
+					int value = Loader.Loader.GetLimitUsingDialect(queryParameters.RowSelection, session.Factory.Dialect) ?? queryParameters.RowSelection.MaxRows;
+					int position = effectiveParameterLocations.Single();
+					return type.NullSafeSetAsync(command, value, position, session);
+				}
 				return Task.CompletedTask;
 			}
 			catch (Exception ex)

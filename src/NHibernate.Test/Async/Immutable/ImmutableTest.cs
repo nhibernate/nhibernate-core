@@ -95,7 +95,7 @@ namespace NHibernate.Test.Immutable
 			}
 			finally
 			{
-				t.Rollback();
+				await (t.RollbackAsync());
 				s.Close();
 			}
 	
@@ -162,7 +162,7 @@ namespace NHibernate.Test.Immutable
 			}
 			finally
 			{
-				t.Rollback();
+				await (t.RollbackAsync());
 				s.Close();
 			}
 	
@@ -905,7 +905,7 @@ namespace NHibernate.Test.Immutable
 			}
 			finally
 			{
-				t.Rollback();
+				await (t.RollbackAsync());
 				s.Close();
 			}
 	
@@ -1147,7 +1147,7 @@ namespace NHibernate.Test.Immutable
 			catch ( HibernateException )
 			{
 				// expected
-				t.Rollback();
+				await (t.RollbackAsync());
 			}
 			finally
 			{

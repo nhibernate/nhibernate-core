@@ -56,7 +56,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1938
 
 				Assert.That(matchingPeople.Count, Is.EqualTo(0));
 
-				t.Rollback();
+				await (t.RollbackAsync());
 			}
 		} 
 

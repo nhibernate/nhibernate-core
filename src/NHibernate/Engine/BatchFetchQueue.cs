@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Engine
 {
-	public class BatchFetchQueue
+	public partial class BatchFetchQueue
 	{
 		private static readonly object Marker = new object();
 

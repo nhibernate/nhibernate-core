@@ -233,7 +233,8 @@ namespace NHibernate.Event.Default
 			if (persister.HasCache)
 			{
 				ck = source.GenerateCacheKey(@event.EntityId, persister.IdentifierType, persister.RootEntityName);
-				sLock = persister.Cache.Lock(ck, null);
+				cancellationToken.ThrowIfCancellationRequested();
+				sLock = await (persister.Cache.LockAsync(ck, null)).ConfigureAwait(false);
 			}
 			else
 			{
@@ -249,7 +250,8 @@ namespace NHibernate.Event.Default
 			{
 				if (persister.HasCache)
 				{
-					persister.Cache.Release(ck, sLock);
+					cancellationToken.ThrowIfCancellationRequested();
+					await (persister.Cache.ReleaseAsync(ck, sLock)).ConfigureAwait(false);
 				}
 			}
 
@@ -401,58 +403,49 @@ namespace NHibernate.Event.Default
 		/// <param name="options">The load options. </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The entity from the second-level cache, or null. </returns>
-		protected virtual Task<object> LoadFromSecondLevelCacheAsync(LoadEvent @event, IEntityPersister persister, LoadType options, CancellationToken cancellationToken)
+		protected virtual async Task<object> LoadFromSecondLevelCacheAsync(LoadEvent @event, IEntityPersister persister, LoadType options, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				ISessionImplementor source = @event.Session;
-				bool useCache = persister.HasCache && ((source.CacheMode & CacheMode.Get) == CacheMode.Get)
+			cancellationToken.ThrowIfCancellationRequested();
+			ISessionImplementor source = @event.Session;
+			bool useCache = persister.HasCache && ((source.CacheMode & CacheMode.Get) == CacheMode.Get)
 				&& @event.LockMode.LessThan(LockMode.Read);
 
-				if (useCache)
+			if (useCache)
+			{
+				ISessionFactoryImplementor factory = source.Factory;
+
+				CacheKey ck = source.GenerateCacheKey(@event.EntityId, persister.IdentifierType, persister.RootEntityName);
+				cancellationToken.ThrowIfCancellationRequested();
+				object ce = await (persister.Cache.GetAsync(ck, source.Timestamp)).ConfigureAwait(false);
+
+				if (factory.Statistics.IsStatisticsEnabled)
 				{
-					ISessionFactoryImplementor factory = source.Factory;
-
-					CacheKey ck = source.GenerateCacheKey(@event.EntityId, persister.IdentifierType, persister.RootEntityName);
-					object ce = persister.Cache.Get(ck, source.Timestamp);
-
-					if (factory.Statistics.IsStatisticsEnabled)
+					if (ce == null)
 					{
-						if (ce == null)
-						{
-							factory.StatisticsImplementor.SecondLevelCacheMiss(persister.Cache.RegionName);
-							log.DebugFormat("Entity cache miss: {0}", ck);
-						}
-						else
-						{
-							factory.StatisticsImplementor.SecondLevelCacheHit(persister.Cache.RegionName);
-							log.DebugFormat("Entity cache hit: {0}", ck);
-						}
+						factory.StatisticsImplementor.SecondLevelCacheMiss(persister.Cache.RegionName);
+						log.DebugFormat("Entity cache miss: {0}", ck);
 					}
-
-					if (ce != null)
+					else
 					{
-						CacheEntry entry = (CacheEntry) persister.CacheEntryStructure.Destructure(ce, factory);
-
-						// Entity was found in second-level cache...
-						// NH: Different behavior (take a look to options.ExactPersister (NH-295))
-						if (!options.ExactPersister || persister.EntityMetamodel.SubclassEntityNames.Contains(entry.Subclass))
-						{
-							return AssembleCacheEntryAsync(entry, @event.EntityId, persister, @event, cancellationToken);
-						}
+						factory.StatisticsImplementor.SecondLevelCacheHit(persister.Cache.RegionName);
+						log.DebugFormat("Entity cache hit: {0}", ck);
 					}
 				}
 
-				return Task.FromResult<object>(null);
+				if (ce != null)
+				{
+					CacheEntry entry = (CacheEntry) persister.CacheEntryStructure.Destructure(ce, factory);
+
+					// Entity was found in second-level cache...
+					// NH: Different behavior (take a look to options.ExactPersister (NH-295))
+					if (!options.ExactPersister || persister.EntityMetamodel.SubclassEntityNames.Contains(entry.Subclass))
+					{
+						return await (AssembleCacheEntryAsync(entry, @event.EntityId, persister, @event, cancellationToken)).ConfigureAwait(false);
+					}
+				}
 			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+
+			return null;
 		}
 
 		private async Task<object> AssembleCacheEntryAsync(CacheEntry entry, object id, IEntityPersister persister, LoadEvent @event, CancellationToken cancellationToken)

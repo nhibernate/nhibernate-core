@@ -66,9 +66,9 @@ namespace NHibernate.Test.NHSpecificTest.NH995
 			}
 
 			// Clear the cache
-			Sfi.Evict(typeof(ClassA));
-			Sfi.Evict(typeof(ClassB));
-			Sfi.Evict(typeof(ClassC));
+			await (Sfi.EvictAsync(typeof(ClassA)));
+			await (Sfi.EvictAsync(typeof(ClassB)));
+			await (Sfi.EvictAsync(typeof(ClassC)));
 			
 			using(ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())

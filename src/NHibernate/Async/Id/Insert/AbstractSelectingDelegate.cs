@@ -42,7 +42,8 @@ namespace NHibernate.Id.Insert
 					var insert = await (session.Batcher.PrepareCommandAsync(insertSql.CommandType, insertSql.Text, insertSql.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 					try
 					{
-						binder.BindValues(insert);
+						cancellationToken.ThrowIfCancellationRequested();
+						await (binder.BindValuesAsync(insert)).ConfigureAwait(false);
 						await (session.Batcher.ExecuteNonQueryAsync(insert, cancellationToken)).ConfigureAwait(false);
 					}
 					finally
@@ -65,7 +66,8 @@ namespace NHibernate.Id.Insert
 						var idSelect = await (session.Batcher.PrepareCommandAsync(CommandType.Text, selectSql, ParametersTypes, cancellationToken)).ConfigureAwait(false);
 						try
 						{
-							BindParameters(session, idSelect, binder.Entity);
+							cancellationToken.ThrowIfCancellationRequested();
+							await (BindParametersAsync(session, idSelect, binder.Entity)).ConfigureAwait(false);
 							var rs = await (session.Batcher.ExecuteReaderAsync(idSelect, cancellationToken)).ConfigureAwait(false);
 							try
 							{
@@ -104,5 +106,22 @@ namespace NHibernate.Id.Insert
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The generated identifier </returns>
 		protected internal abstract Task<object> GetResultAsync(ISessionImplementor session, DbDataReader rs, object entity, CancellationToken cancellationToken);
+
+		/// <summary> Bind any required parameter values into the SQL command <see cref="SelectSQL"/>. </summary>
+		/// <param name="session">The session </param>
+		/// <param name="ps">The prepared <see cref="SelectSQL"/> command </param>
+		/// <param name="entity">The entity being saved. </param>
+		protected internal virtual Task BindParametersAsync(ISessionImplementor session, DbCommand ps, object entity)
+		{
+			try
+			{
+				BindParameters(session, ps, entity);
+				return Task.CompletedTask;
+			}
+			catch (System.Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
 	}
 }

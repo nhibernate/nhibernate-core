@@ -60,7 +60,7 @@ namespace NHibernate.Test.Linq
 					 where NHibernate.Linq.SqlMethods.Like(e.FirstName, employeeNameEscaped, e.FirstName.First())
 					 select e).ToListAsync();
 				});
-				tx.Rollback();
+				await (tx.RollbackAsync());
 			}
 		}
 

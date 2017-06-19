@@ -26,6 +26,20 @@ namespace NHibernate.Action
 
 		#region IExecutable Members
 
+		public Task BeforeExecutionsAsync()
+		{
+			try
+			{
+				BeforeExecutions();
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+			// nothing to do
+		}
+
 		public Task ExecuteAsync(CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -44,6 +58,34 @@ namespace NHibernate.Action
 			// nothing to do
 		}
 
+		private async Task EvictCollectionRegionsAsync()
+		{
+			if (affectedCollectionRoles != null)
+			{
+				foreach (string roleName in affectedCollectionRoles)
+				{
+					await (session.Factory.EvictCollectionAsync(roleName)).ConfigureAwait(false);
+				}
+			}
+		}
+
+		private async Task EvictEntityRegionsAsync()
+		{
+			if (affectedEntityNames != null)
+			{
+				foreach (string entityName in affectedEntityNames)
+				{
+					await (session.Factory.EvictEntityAsync(entityName)).ConfigureAwait(false);
+				}
+			}
+		}
+
 		#endregion
+
+		public virtual async Task InitAsync()
+		{
+			await (EvictEntityRegionsAsync()).ConfigureAwait(false);
+			await (EvictCollectionRegionsAsync()).ConfigureAwait(false);
+		}
 	}
 }

@@ -104,7 +104,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3567
 					Assert.That(numberOfComments, Is.EqualTo(2), "Query with sub-query returned an invalid number of rows.");
 
 
-					transaction.Rollback();
+					await (transaction.RollbackAsync());
 
 				}
 

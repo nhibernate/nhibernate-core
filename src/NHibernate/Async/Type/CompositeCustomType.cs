@@ -28,6 +28,30 @@ namespace NHibernate.Type
 	public partial class CompositeCustomType : AbstractType, IAbstractComponentType
 	{
 
+		public virtual Task<object[]> GetPropertyValuesAsync(object component, ISessionImplementor session)
+		{
+			try
+			{
+				return Task.FromResult<object[]>(GetPropertyValues(component, session));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object[]>(ex);
+			}
+		}
+
+		public virtual Task<object> GetPropertyValueAsync(object component, int i, ISessionImplementor session)
+		{
+			try
+			{
+				return Task.FromResult<object>(GetPropertyValue(component, i, session));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
 		public override Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -37,6 +61,18 @@ namespace NHibernate.Type
 			try
 			{
 				return Task.FromResult<object>(Assemble(cached, session, owner));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		public override Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner)
+		{
+			try
+			{
+				return Task.FromResult<object>(Disassemble(value, session, owner));
 			}
 			catch (Exception ex)
 			{
@@ -74,6 +110,37 @@ namespace NHibernate.Type
 			{
 				return Task.FromException<object>(ex);
 			}
+		}
+
+		public override Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		{
+			try
+			{
+				NullSafeSet(st, value, index, settable, session);
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		public override Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session)
+		{
+			try
+			{
+				NullSafeSet(cmd, value, index, session);
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		public override Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session)
+		{
+			return IsDirtyAsync(old, current, session);
 		}
 
 		public override Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner, IDictionary copiedAlready, CancellationToken cancellationToken)

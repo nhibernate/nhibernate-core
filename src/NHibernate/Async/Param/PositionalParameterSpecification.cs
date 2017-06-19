@@ -32,14 +32,20 @@ namespace NHibernate.Param
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
+			cancellationToken.ThrowIfCancellationRequested();
+			return BindAsync(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session);
+		}
+
+		public override async Task BindAsync(DbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		{
+			IType type = ExpectedType;
+			object value = queryParameters.PositionalParameterValues[hqlPosition];
+
+			string backTrackId = GetIdsForBackTrack(session.Factory).First(); // just the first because IType suppose the oders in certain sequence
+			// an HQL positional parameter can appear more than once because a custom HQL-Function can duplicate it
+			foreach (int position in sqlQueryParametersList.GetEffectiveParameterLocations(backTrackId))
 			{
-				Bind(command, sqlQueryParametersList, queryParameters, session);
-				return Task.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
+				await (type.NullSafeSetAsync(command, GetPagingValue(value, session.Factory.Dialect, queryParameters), position + singleSqlParametersOffset, session)).ConfigureAwait(false);
 			}
 		}
 	}

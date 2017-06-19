@@ -26,6 +26,28 @@ namespace NHibernate.Type
 	{
 
 		/// <summary>
+		/// Disassembles the object into a cacheable representation.
+		/// </summary>
+		/// <param name="value">The value to disassemble.</param>
+		/// <param name="session">The <see cref="ISessionImplementor"/> is not used by this method.</param>
+		/// <param name="owner">optional parent entity object (needed for collections) </param>
+		/// <returns>The disassembled, deep cloned state of the object</returns>
+		/// <remarks>
+		/// This method calls DeepCopy if the value is not null.
+		/// </remarks>
+		public virtual Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner)
+		{
+			try
+			{
+				return Task.FromResult<object>(Disassemble(value, session, owner));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		/// <summary>
 		/// Reconstructs the object from its cached "disassembled" state.
 		/// </summary>
 		/// <param name="cached">The disassembled state from the cache</param>
@@ -66,6 +88,27 @@ namespace NHibernate.Type
 			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
+			}
+		}
+
+		/// <summary>
+		/// Should the parent be considered dirty, given both the old and current 
+		/// field or element value?
+		/// </summary>
+		/// <param name="old">The old value</param>
+		/// <param name="current">The current value</param>
+		/// <param name="session">The <see cref="ISessionImplementor"/> is not used by this method.</param>
+		/// <returns>true if the field is dirty</returns>
+		/// <remarks>This method uses <c>IType.Equals(object, object)</c> to determine the value of IsDirty.</remarks>
+		public virtual Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session)
+		{
+			try
+			{
+				return Task.FromResult<bool>(IsDirty(old, current, session));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<bool>(ex);
 			}
 		}
 
@@ -138,6 +181,18 @@ namespace NHibernate.Type
 			}
 		}
 
+		/// <summary>
+		/// Says whether the value has been modified
+		/// </summary>
+		public virtual Task<bool> IsModifiedAsync(
+			object old,
+			object current,
+			bool[] checkable,
+			ISessionImplementor session)
+		{
+			return IsDirtyAsync(old, current, session);
+		}
+
 		public virtual Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache,
 							  ForeignKeyDirection foreignKeyDirection, CancellationToken cancellationToken)
 		{
@@ -173,5 +228,13 @@ namespace NHibernate.Type
 
 		/// <inheritdoc />
 		public abstract Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, Object owner, CancellationToken cancellationToken);
+
+		/// <inheritdoc />
+		public abstract Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session);
+
+		/// <inheritdoc />
+		public abstract Task NullSafeSetAsync(DbCommand st, object value, int index, ISessionImplementor session);
+
+		public abstract Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session);
 	}
 }

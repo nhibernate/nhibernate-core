@@ -61,11 +61,11 @@ namespace NHibernate.Test.Naturalid.Mutable
 			}
 			catch (HibernateException)
 			{
-				s.Transaction.Rollback();
+				await (s.Transaction.RollbackAsync());
 			}
 			catch (Exception)
 			{
-					s.Transaction.Rollback();
+					await (s.Transaction.RollbackAsync());
 			}
 			finally
 			{

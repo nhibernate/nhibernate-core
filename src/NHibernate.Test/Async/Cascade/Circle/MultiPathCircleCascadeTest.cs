@@ -102,7 +102,7 @@ namespace NHibernate.Test.Cascade.Circle
 				}
 				finally
 				{
-					transaction.Rollback();
+					await (transaction.RollbackAsync());
 				}
 			}
 		}
@@ -136,7 +136,7 @@ namespace NHibernate.Test.Cascade.Circle
 				}
 				finally
 				{
-					transaction.Rollback();
+					await (transaction.RollbackAsync());
 				}
 			}
 		}
@@ -168,7 +168,7 @@ namespace NHibernate.Test.Cascade.Circle
 				}
 				finally
 				{
-					transaction.Rollback();
+					await (transaction.RollbackAsync());
 				}
 			}
 		}

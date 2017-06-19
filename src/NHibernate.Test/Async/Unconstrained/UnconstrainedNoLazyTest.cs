@@ -42,7 +42,7 @@ namespace NHibernate.Test.Unconstrained
 			await (tx.CommitAsync());
 			session.Close();
 
-			Sfi.Evict(typeof(Person));
+			await (Sfi.EvictAsync(typeof(Person)));
 
 			session = OpenSession();
 			tx = session.BeginTransaction();
@@ -52,7 +52,7 @@ namespace NHibernate.Test.Unconstrained
 			await (tx.CommitAsync());
 			session.Close();
 
-			Sfi.Evict(typeof(Person));
+			await (Sfi.EvictAsync(typeof(Person)));
 
 			session = OpenSession();
 			tx = session.BeginTransaction();
@@ -75,7 +75,7 @@ namespace NHibernate.Test.Unconstrained
 			await (tx.CommitAsync());
 			session.Close();
 
-			Sfi.Evict(typeof(Person));
+			await (Sfi.EvictAsync(typeof(Person)));
 
 			session = OpenSession();
 			tx = session.BeginTransaction();
@@ -88,7 +88,7 @@ namespace NHibernate.Test.Unconstrained
 			await (tx.CommitAsync());
 			session.Close();
 
-			Sfi.Evict(typeof(Person));
+			await (Sfi.EvictAsync(typeof(Person)));
 
 			session = OpenSession();
 			tx = session.BeginTransaction();

@@ -278,7 +278,7 @@ namespace NHibernate.Test.Legacy
 				await (s.FlushAsync());
 			}
 
-			Sfi.EvictCollection("NHibernate.DomainModel.Baz.FooSet");
+			await (Sfi.EvictCollectionAsync("NHibernate.DomainModel.Baz.FooSet"));
 
 			using (ISession s = OpenSession())
 			{
@@ -335,7 +335,7 @@ namespace NHibernate.Test.Legacy
 				await (s.FlushAsync());
 			}
 
-			Sfi.EvictCollection("NHibernate.DomainModel.Baz.FooSet");
+			await (Sfi.EvictCollectionAsync("NHibernate.DomainModel.Baz.FooSet"));
 
 			using (ISession s = OpenSession())
 			{
@@ -3566,7 +3566,7 @@ namespace NHibernate.Test.Legacy
 				await (txn.CommitAsync());
 			}
 
-			Sfi.Evict(typeof(Glarch));
+			await (Sfi.EvictAsync(typeof(Glarch)));
 
 			using (ISession s = OpenSession())
 			using (ITransaction txn = s.BeginTransaction())
@@ -3588,7 +3588,7 @@ namespace NHibernate.Test.Legacy
 				await (txn.CommitAsync());
 			}
 
-			Sfi.Evict(typeof(Glarch));
+			await (Sfi.EvictAsync(typeof(Glarch)));
 
 			using (ISession s = OpenSession())
 			using (ITransaction txn = s.BeginTransaction())
@@ -4432,7 +4432,7 @@ namespace NHibernate.Test.Legacy
 			}
 			catch (Exception)
 			{
-				t.Rollback();
+				await (t.RollbackAsync());
 				throw;
 			}
 			finally
@@ -4451,7 +4451,7 @@ namespace NHibernate.Test.Legacy
 			}
 			catch (Exception)
 			{
-				t.Rollback();
+				await (t.RollbackAsync());
 			}
 			finally
 			{
@@ -4469,7 +4469,7 @@ namespace NHibernate.Test.Legacy
 			}
 			catch (Exception)
 			{
-				t.Rollback();
+				await (t.RollbackAsync());
 				throw;
 			}
 			finally

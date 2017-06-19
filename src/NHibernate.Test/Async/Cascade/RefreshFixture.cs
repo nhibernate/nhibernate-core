@@ -57,7 +57,7 @@ namespace NHibernate.Test.Cascade
 						Assert.That(job.Status, Is.EqualTo(1), "Jobs not refreshed!");
 					}
 
-					txn.Rollback();
+					await (txn.RollbackAsync());
 				}
 			}
 		}
@@ -90,7 +90,7 @@ namespace NHibernate.Test.Cascade
 					var batch = new JobBatch(DateTime.Now);
 					await (session.RefreshAsync(batch));
 
-					txn.Rollback();
+					await (txn.RollbackAsync());
 				}
 			}
 		}
@@ -112,7 +112,7 @@ namespace NHibernate.Test.Cascade
 					await (session.RefreshAsync(batch));
 					Assert.That(batch.Jobs.Count == 1);
 
-					txn.Rollback();
+					await (txn.RollbackAsync());
 				}
 			}
 		}
@@ -131,7 +131,7 @@ namespace NHibernate.Test.Cascade
 			catch (UnresolvableObjectException)
 			{
 				// as expected
-				txn.Rollback();
+				await (txn.RollbackAsync());
 				session.Close();
 			}
 		}

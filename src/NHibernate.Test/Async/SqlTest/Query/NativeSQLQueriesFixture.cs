@@ -494,7 +494,7 @@ namespace NHibernate.Test.SqlTest.Query
 				.ListAsync());
 			Assert.AreEqual(l.Count, 1);
 
-			t.Rollback();
+			await (t.RollbackAsync());
 			s.Close();
 		}
 

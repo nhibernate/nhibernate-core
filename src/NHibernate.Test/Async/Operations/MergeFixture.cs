@@ -260,7 +260,7 @@ namespace NHibernate.Test.Operations
 			AssertUpdateCount(1);
 			ClearCounts();
 
-			Sfi.Evict(typeof (NumberedNode));
+			await (Sfi.EvictAsync(typeof (NumberedNode)));
 
 			var child2 = new NumberedNode("child2");
 			var grandchild3 = new NumberedNode("grandchild3");
@@ -331,7 +331,7 @@ namespace NHibernate.Test.Operations
 					Assert.That(
 						await (s.CreateCriteria(typeof(NumberedNode)).SetProjection(Projections.RowCount()).UniqueResultAsync()),
 						Is.EqualTo(2));
-					tx.Rollback();
+					await (tx.RollbackAsync());
 				}
 			}
 		}
@@ -423,7 +423,7 @@ namespace NHibernate.Test.Operations
 			{
 				if (s2 != null)
 				{
-					s2.Transaction.Rollback();
+					await (s2.Transaction.RollbackAsync());
 					s2.Close();
 				}
 				await (CleanupAsync());

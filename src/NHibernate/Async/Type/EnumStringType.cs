@@ -47,5 +47,17 @@ namespace NHibernate.Type
 				return Task.FromException<object>(ex);
 			}
 		}
+
+		public override Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner)
+		{
+			try
+			{
+				return Task.FromResult<object>(Disassemble(value, session, owner));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
 	}
 }

@@ -25,6 +25,18 @@ namespace NHibernate.Type
 	public partial class ManyToOneType : EntityType
 	{
 
+		public override async Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		{
+			await (GetIdentifierOrUniqueKeyType(session.Factory)
+				.NullSafeSetAsync(st, await (GetReferenceValueAsync(value, session)).ConfigureAwait(false), index, settable, session)).ConfigureAwait(false);
+		}
+
+		public override async Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session)
+		{
+			await (GetIdentifierOrUniqueKeyType(session.Factory)
+				.NullSafeSetAsync(cmd, await (GetReferenceValueAsync(value, session)).ConfigureAwait(false), index, session)).ConfigureAwait(false);
+		}
+
 		/// <summary>
 		/// Hydrates the Identifier from <see cref="DbDataReader"/>.
 		/// </summary>
@@ -46,6 +58,39 @@ namespace NHibernate.Type
 				.NullSafeGetAsync(rs, names, session, owner, cancellationToken)).ConfigureAwait(false);
 			ScheduleBatchLoadIfNeeded(id, session);
 			return id;
+		}
+
+		public override async Task<bool> IsModifiedAsync(object old, object current, bool[] checkable, ISessionImplementor session)
+		{
+			if (current == null)
+			{
+				return old != null;
+			}
+			if (old == null)
+			{
+				return true;
+			}
+			// the ids are fully resolved, so compare them with isDirty(), not isModified()
+			return await (GetIdentifierOrUniqueKeyType(session.Factory).IsDirtyAsync(old, await (GetIdentifierAsync(current, session)).ConfigureAwait(false), session)).ConfigureAwait(false);
+		}
+
+		public override async Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner)
+		{
+			if (value == null)
+			{
+				return null;
+			}
+			else
+			{
+				// cache the actual id of the object, not the value of the
+				// property-ref, which might not be initialized
+				object id = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(GetAssociatedEntityName(), value, session)).ConfigureAwait(false);
+				if (id == null)
+				{
+					throw new AssertionFailure("cannot cache a reference to an object with a null id: " + GetAssociatedEntityName());
+				}
+				return await (GetIdentifierType(session).DisassembleAsync(id, session, owner)).ConfigureAwait(false);
+			}
 		}
 
 		public override async Task<object> AssembleAsync(object oid, ISessionImplementor session, object owner, CancellationToken cancellationToken)
@@ -86,6 +131,37 @@ namespace NHibernate.Type
 			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
+			}
+		}
+
+		public override async Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session)
+		{
+			if (IsSame(old, current))
+			{
+				return false;
+			}
+
+			object oldid = await (GetIdentifierAsync(old, session)).ConfigureAwait(false);
+			object newid = await (GetIdentifierAsync(current, session)).ConfigureAwait(false);
+			return await (GetIdentifierType(session).IsDirtyAsync(oldid, newid, session)).ConfigureAwait(false);
+		}
+
+		public override async Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session)
+		{
+			if (IsAlwaysDirtyChecked)
+			{
+				return await (IsDirtyAsync(old, current, session)).ConfigureAwait(false);
+			}
+			else
+			{
+				if (IsSame(old, current))
+				{
+					return false;
+				}
+
+				object oldid = await (GetIdentifierAsync(old, session)).ConfigureAwait(false);
+				object newid = await (GetIdentifierAsync(current, session)).ConfigureAwait(false);
+				return await (GetIdentifierType(session).IsDirtyAsync(oldid, newid, checkable, session)).ConfigureAwait(false);
 			}
 		}
 	}

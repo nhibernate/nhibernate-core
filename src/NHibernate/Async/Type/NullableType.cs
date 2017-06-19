@@ -24,6 +24,47 @@ namespace NHibernate.Type
 	public abstract partial class NullableType : AbstractType
 	{
 
+		public override Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		{
+			try
+			{
+				if (settable[0]) return NullSafeSetAsync(st, value, index, session);
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		/// <inheritdoc />
+		/// <remarks>
+		/// <para>
+		/// This method has been "sealed" because the Types inheriting from <see cref="NullableType"/>
+		/// do not need to and should not override this method.
+		/// </para>
+		/// <para>
+		/// This method checks to see if value is null, if it is then the value of 
+		/// <see cref="DBNull"/> is written to the <see cref="DbCommand"/>.
+		/// </para>
+		/// <para>
+		/// If the value is not null, then the method <see cref="Set(DbCommand, object, int, ISessionImplementor)"/> 
+		/// is called and that method is responsible for setting the value.
+		/// </para>
+		/// </remarks>
+		public sealed override Task NullSafeSetAsync(DbCommand st, object value, int index, ISessionImplementor session)
+		{
+			try
+			{
+				NullSafeSet(st, value, index, session);
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
 		/// <inheritdoc />
 		/// <remarks>
 		/// This has been sealed because no other class should override it.  This 
@@ -72,6 +113,11 @@ namespace NHibernate.Type
 			{
 				return Task.FromException<object>(ex);
 			}
+		}
+
+		public override async Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session)
+		{
+			return checkable[0] && await (IsDirtyAsync(old, current, session)).ConfigureAwait(false);
 		}
 	}
 }

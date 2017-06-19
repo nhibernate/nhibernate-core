@@ -76,7 +76,7 @@ namespace NHibernate.Test.TypesTest
 			{
 				await (session.SaveAsync(entity));
 				Assert.That(() => session.FlushAsync(), Throws.TypeOf<PropertyValueException>());
-				tx.Rollback();
+				await (tx.RollbackAsync());
 			}
 		}
 

@@ -30,10 +30,43 @@ namespace NHibernate.Action
 
 		#region IExecutable Members
 
+		/// <summary> Called before executing any actions</summary>
+		public virtual async Task BeforeExecutionsAsync()
+		{
+			// we need to obtain the lock before any actions are
+			// executed, since this may be an inverse="true"
+			// bidirectional association and it is one of the
+			// earlier entity actions which actually updates
+			// the database (this action is responsible for
+			// second-level cache invalidation only)
+			if (persister.HasCache)
+			{
+				CacheKey ck = session.GenerateCacheKey(key, persister.KeyType, persister.Role);
+				softLock = await (persister.Cache.LockAsync(ck, null)).ConfigureAwait(false);
+			}
+		}
+
 		/// <summary>Execute this action</summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		public abstract Task ExecuteAsync(CancellationToken cancellationToken);
 
 		#endregion
+
+		protected internal Task EvictAsync()
+		{
+			try
+			{
+				if (persister.HasCache)
+				{
+					CacheKey ck = session.GenerateCacheKey(key, persister.KeyType, persister.Role);
+					return persister.Cache.EvictAsync(ck);
+				}
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
 	}
 }

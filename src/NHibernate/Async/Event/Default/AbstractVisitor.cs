@@ -94,7 +94,8 @@ namespace NHibernate.Event.Default
 			cancellationToken.ThrowIfCancellationRequested();
 			if (component != null)
 			{
-				await (ProcessValuesAsync(componentType.GetPropertyValues(component, session), componentType.Subtypes, cancellationToken)).ConfigureAwait(false);
+				cancellationToken.ThrowIfCancellationRequested();
+				await (ProcessValuesAsync(await (componentType.GetPropertyValuesAsync(component, session)).ConfigureAwait(false), componentType.Subtypes, cancellationToken)).ConfigureAwait(false);
 			}
 			return null;
 		}

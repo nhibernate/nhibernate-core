@@ -29,8 +29,9 @@ namespace NHibernate.Loader.Entity
 		public async Task<object> LoadAsync(object id, object optionalObject, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			cancellationToken.ThrowIfCancellationRequested();
 			object[] batch =
-				session.PersistenceContext.BatchFetchQueue.GetEntityBatch(persister, id, batchSizes[0]);
+				await (session.PersistenceContext.BatchFetchQueue.GetEntityBatchAsync(persister, id, batchSizes[0])).ConfigureAwait(false);
 
 			for (int i = 0; i < batchSizes.Length - 1; i++)
 			{

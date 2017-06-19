@@ -34,14 +34,17 @@ namespace NHibernate.Param
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
+			cancellationToken.ThrowIfCancellationRequested();
+			return BindAsync(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session);
+		}
+
+		public async Task BindAsync(DbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		{
+			TypedValue typedValue = queryParameters.NamedParameters[name];
+			string backTrackId = GetIdsForBackTrack(session.Factory).First();
+			foreach (int position in sqlQueryParametersList.GetEffectiveParameterLocations(backTrackId))
 			{
-				Bind(command, sqlQueryParametersList, queryParameters, session);
-				return Task.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
+				await (ExpectedType.NullSafeSetAsync(command, typedValue.Value, position + singleSqlParametersOffset, session)).ConfigureAwait(false);
 			}
 		}
 

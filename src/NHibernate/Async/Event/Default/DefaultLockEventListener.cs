@@ -61,7 +61,8 @@ namespace NHibernate.Event.Default
 				{
 					IEntityPersister persister = source.GetEntityPersister(@event.EntityName, entity);
 					object id = persister.GetIdentifier(entity);
-					if (ForeignKeys.IsTransientFast(@event.EntityName, entity, source).GetValueOrDefault())
+					cancellationToken.ThrowIfCancellationRequested();
+					if ((await (ForeignKeys.IsTransientFastAsync(@event.EntityName, entity, source)).ConfigureAwait(false)).GetValueOrDefault())
 					{
 						throw new TransientObjectException("cannot lock an unsaved transient instance: " + persister.EntityName);
 					}

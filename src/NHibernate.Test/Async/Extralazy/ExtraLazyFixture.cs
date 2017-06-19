@@ -65,8 +65,8 @@ namespace NHibernate.Test.Extralazy
 
 				await (t.CommitAsync());
 			}
-			Sfi.Evict(typeof (User));
-			Sfi.Evict(typeof (Photo));
+			await (Sfi.EvictAsync(typeof (User)));
+			await (Sfi.EvictAsync(typeof (Photo)));
 		}
 
 		[Test]

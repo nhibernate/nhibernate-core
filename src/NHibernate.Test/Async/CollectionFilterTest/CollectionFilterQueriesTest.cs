@@ -87,7 +87,7 @@ namespace NHibernate.Test.CollectionFilterTest
 					// Collection filtering disallows DML queries
 				});
 
-				t.Rollback();
+				await (t.RollbackAsync());
 			}
 		}
 
@@ -106,7 +106,7 @@ namespace NHibernate.Test.CollectionFilterTest
 					// Collection filtering disallows DML queries
 				});
 
-				t.Rollback();
+				await (t.RollbackAsync());
 			}
 		}
 
@@ -125,7 +125,7 @@ namespace NHibernate.Test.CollectionFilterTest
 					// Collection filtering disallows DML queries
 				});
 
-				t.Rollback();
+				await (t.RollbackAsync());
 			}
 		}
 
@@ -141,7 +141,7 @@ namespace NHibernate.Test.CollectionFilterTest
 					.ListAsync());
 				// Filter should only affect outer query, not inner
 
-				t.Rollback();
+				await (t.RollbackAsync());
 			}
 		}
 
@@ -160,7 +160,7 @@ namespace NHibernate.Test.CollectionFilterTest
 					// Inner query for filter query should have FROM clause 
 				});
 
-				t.Rollback();
+				await (t.RollbackAsync());
 			}
 		}
 	}

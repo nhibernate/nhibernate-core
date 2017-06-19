@@ -32,7 +32,13 @@ namespace NHibernate.Param
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			int position = sqlQueryParametersList.GetEffectiveParameterLocations(IdBackTrack).Single(); // version parameter can't appear more than once
-			type.NullSafeSet(command, await (type.SeedAsync(session, cancellationToken)).ConfigureAwait(false), position, session);
+			cancellationToken.ThrowIfCancellationRequested();
+			await (type.NullSafeSetAsync(command, await (type.SeedAsync(session, cancellationToken)).ConfigureAwait(false), position, session)).ConfigureAwait(false);
+		}
+
+		public Task BindAsync(DbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		{
+			throw new NotSupportedException("Not supported for multiquery loader.");
 		}
 
 		#endregion

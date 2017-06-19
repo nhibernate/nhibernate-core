@@ -50,8 +50,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2985
 			}
 
 			// Clear the cache
-			Sfi.Evict(typeof (ClassA));
-			Sfi.Evict(typeof (WebImage));
+			await (Sfi.EvictAsync(typeof (ClassA)));
+			await (Sfi.EvictAsync(typeof (WebImage)));
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())

@@ -113,7 +113,7 @@ namespace NHibernate.Test.DriverTest
 				Assert.That(afterCount - beforeCount, Is.LessThan(insertCount - 1),
 					string.Format("Excessive query plans created: before={0} after={1}", beforeCount, afterCount));
 
-				t.Rollback();
+				await (t.RollbackAsync());
 			}
 		}
 	}

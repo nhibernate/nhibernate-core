@@ -108,6 +108,69 @@ namespace NHibernate.Persister.Collection
 			return KeyType.NullSafeGetAsync(dr, aliases, session, null, cancellationToken);
 		}
 
+		protected Task<int> WriteKeyAsync(DbCommand st, object id, int i, ISessionImplementor session)
+		{
+			if (id == null)
+			{
+				throw new ArgumentNullException("id", "Null key for collection: " + role);
+			}
+			return InternalWriteKeyAsync();
+			async Task<int> InternalWriteKeyAsync()
+			{
+
+				await (KeyType.NullSafeSetAsync(st, id, i, session)).ConfigureAwait(false);
+				return i + keyColumnAliases.Length;
+			}
+		}
+
+		protected async Task<int> WriteElementAsync(DbCommand st, object elt, int i, ISessionImplementor session)
+		{
+			await (ElementType.NullSafeSetAsync(st, elt, i, elementColumnIsSettable, session)).ConfigureAwait(false);
+			return i + ArrayHelper.CountTrue(elementColumnIsSettable);
+		}
+
+		protected async Task<int> WriteIndexAsync(DbCommand st, object idx, int i, ISessionImplementor session)
+		{
+			await (IndexType.NullSafeSetAsync(st, IncrementIndexByBase(idx), i, indexColumnIsSettable, session)).ConfigureAwait(false);
+			return i + ArrayHelper.CountTrue(indexColumnIsSettable);
+		}
+
+		protected Task<int> WriteElementToWhereAsync(DbCommand st, object elt, int i, ISessionImplementor session)
+		{
+			if (elementIsPureFormula)
+			{
+				throw new AssertionFailure("cannot use a formula-based element in the where condition");
+			}
+			return InternalWriteElementToWhereAsync();
+			async Task<int> InternalWriteElementToWhereAsync()
+			{
+
+				await (ElementType.NullSafeSetAsync(st, elt, i, elementColumnIsInPrimaryKey, session)).ConfigureAwait(false);
+				return i + elementColumnAliases.Length;
+			}
+		}
+
+		protected Task<int> WriteIndexToWhereAsync(DbCommand st, object index, int i, ISessionImplementor session)
+		{
+			if (indexContainsFormula)
+			{
+				throw new AssertionFailure("cannot use a formula-based index in the where condition");
+			}
+			return InternalWriteIndexToWhereAsync();
+			async Task<int> InternalWriteIndexToWhereAsync()
+			{
+
+				await (IndexType.NullSafeSetAsync(st, IncrementIndexByBase(index), i, session)).ConfigureAwait(false);
+				return i + indexColumnAliases.Length;
+			}
+		}
+
+		protected async Task<int> WriteIdentifierAsync(DbCommand st, object idx, int i, ISessionImplementor session)
+		{
+			await (IdentifierType.NullSafeSetAsync(st, idx, i, session)).ConfigureAwait(false);
+			return i + 1;
+		}
+
 		public async Task RemoveAsync(object id, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -131,8 +194,9 @@ namespace NHibernate.Persister.Collection
 
 					try
 					{
+						cancellationToken.ThrowIfCancellationRequested();
 						//offset += expectation.Prepare(st, factory.ConnectionProvider.Driver);
-						WriteKey(st, id, offset, session);
+						await (WriteKeyAsync(st, id, offset, session)).ConfigureAwait(false);
 						if (useBatch)
 						{
 							await (session.Batcher.AddToBatchAsync(expectation, cancellationToken)).ConfigureAwait(false);
@@ -250,8 +314,9 @@ namespace NHibernate.Persister.Collection
 
 				try
 				{
+					cancellationToken.ThrowIfCancellationRequested();
 					// delete all the deleted entries
-					IEnumerator deletes = collection.GetDeletes(this, !deleteByIndex).GetEnumerator();
+					IEnumerator deletes = (await (collection.GetDeletesAsync(this, !deleteByIndex)).ConfigureAwait(false)).GetEnumerator();
 					if (deletes.MoveNext())
 					{
 						deletes.Reset();
@@ -283,19 +348,23 @@ namespace NHibernate.Persister.Collection
 								int loc = offset;
 								if (hasIdentifier)
 								{
-									WriteIdentifier(st, entry, loc, session);
+									cancellationToken.ThrowIfCancellationRequested();
+									await (WriteIdentifierAsync(st, entry, loc, session)).ConfigureAwait(false);
 								}
 								else
 								{
-									loc = WriteKey(st, id, loc, session);
+									cancellationToken.ThrowIfCancellationRequested();
+									loc = await (WriteKeyAsync(st, id, loc, session)).ConfigureAwait(false);
 
 									if (deleteByIndex)
 									{
-										WriteIndexToWhere(st, entry, loc, session);
+										cancellationToken.ThrowIfCancellationRequested();
+										await (WriteIndexToWhereAsync(st, entry, loc, session)).ConfigureAwait(false);
 									}
 									else
 									{
-										WriteElementToWhere(st, entry, loc, session);
+										cancellationToken.ThrowIfCancellationRequested();
+										await (WriteElementToWhereAsync(st, entry, loc, session)).ConfigureAwait(false);
 									}
 								}
 								if (useBatch)
@@ -369,7 +438,8 @@ namespace NHibernate.Persister.Collection
 					IEnumerable entries = collection.Entries(this);
 					foreach (object entry in entries)
 					{
-						if (collection.NeedsInserting(entry, i, elementType))
+						cancellationToken.ThrowIfCancellationRequested();
+						if (await (collection.NeedsInsertingAsync(entry, i, elementType)).ConfigureAwait(false))
 						{
 							object entryId;
 							if (!IsIdentifierAssignedByInsert)
@@ -433,18 +503,22 @@ namespace NHibernate.Persister.Collection
 				: await (session.Batcher.PrepareCommandAsync(SqlInsertRowString.CommandType, SqlInsertRowString.Text, SqlInsertRowString.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 			try
 			{
+				cancellationToken.ThrowIfCancellationRequested();
 				//offset += expectation.Prepare(st, factory.ConnectionProvider.Driver);
-				offset = WriteKey(st, ownerId, offset, session);
+				offset = await (WriteKeyAsync(st, ownerId, offset, session)).ConfigureAwait(false);
 				if (hasIdentifier)
 				{
 					entryId = collection.GetIdentifier(entry, index);
-					offset = WriteIdentifier(st, entryId, offset, session);
+					cancellationToken.ThrowIfCancellationRequested();
+					offset = await (WriteIdentifierAsync(st, entryId, offset, session)).ConfigureAwait(false);
 				}
 				if (hasIndex)
 				{
-					offset = WriteIndex(st, collection.GetIndex(entry, index, this), offset, session);
+					cancellationToken.ThrowIfCancellationRequested();
+					offset = await (WriteIndexAsync(st, collection.GetIndex(entry, index, this), offset, session)).ConfigureAwait(false);
 				}
-				WriteElement(st, collection.GetElement(entry), offset, session);
+				cancellationToken.ThrowIfCancellationRequested();
+				await (WriteElementAsync(st, collection.GetElement(entry), offset, session)).ConfigureAwait(false);
 				if (useBatch)
 				{
 					await (session.Batcher.AddToBatchAsync(expectation, cancellationToken)).ConfigureAwait(false);
@@ -496,6 +570,24 @@ namespace NHibernate.Persister.Collection
 			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
+			}
+		}
+
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
+		protected partial class GeneratedIdentifierBinder : IBinder
+		{
+
+			public async Task BindValuesAsync(DbCommand cm)
+			{
+				int offset = 0;
+				offset = await (persister.WriteKeyAsync(cm, ownerId, offset, session)).ConfigureAwait(false);
+				if (persister.HasIndex)
+				{
+					offset = await (persister.WriteIndexAsync(cm, collection.GetIndex(entry, index, persister), offset, session)).ConfigureAwait(false);
+				}
+				await (persister.WriteElementAsync(cm, collection.GetElement(entry), offset, session)).ConfigureAwait(false);
 			}
 		}
 

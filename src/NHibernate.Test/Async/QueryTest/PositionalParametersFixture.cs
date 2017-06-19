@@ -27,7 +27,7 @@ namespace NHibernate.Test.QueryTest
 		}
 
 		[Test]
-		public void TestMissingHQLParametersAsync()
+		public async Task TestMissingHQLParametersAsync()
 		{
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
@@ -43,13 +43,13 @@ namespace NHibernate.Test.QueryTest
 			}
 			finally
 			{
-				t.Rollback();
+				await (t.RollbackAsync());
 				s.Close();
 			}
 		}
 
 		[Test]
-		public void TestMissingHQLParameters2Async()
+		public async Task TestMissingHQLParameters2Async()
 		{
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
@@ -65,7 +65,43 @@ namespace NHibernate.Test.QueryTest
 			}
 			finally
 			{
-				t.Rollback();
+				await (t.RollbackAsync());
+				s.Close();
+			}
+		}
+
+		[Test]
+		public async Task TestPositionOutOfBoundsAsync()
+		{
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+			try
+			{
+				IQuery q = s.CreateQuery("from s in class Simple where s.Name=? and s.Count=?");
+				// Try to set the third positional parameter
+				Assert.Throws<ArgumentException>(() => q.SetParameter(3, "Fred"));
+			}
+			finally
+			{
+				await (t.RollbackAsync());
+				s.Close();
+			}
+		}
+
+		[Test]
+		public async Task TestNoPositionalParametersAsync()
+		{
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+			try
+			{
+				IQuery q = s.CreateQuery("from s in class Simple where s.Name=:Name and s.Count=:Count");
+				// Try to set the first property
+				Assert.Throws<ArgumentException>(() => q.SetParameter(0, "Fred"));
+			}
+			finally
+			{
+				await (t.RollbackAsync());
 				s.Close();
 			}
 		}

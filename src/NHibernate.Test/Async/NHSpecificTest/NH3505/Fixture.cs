@@ -68,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3505
                 }
                 catch
                 {
-                    trans.Rollback();
+                    await (trans.RollbackAsync());
                     throw;
                 }
             }

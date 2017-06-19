@@ -37,11 +37,24 @@ namespace NHibernate.Engine.Query
 	public partial class NativeSQLQueryPlan
 	{
 
+		private async Task CoordinateSharedCacheCleanupAsync(ISessionImplementor session)
+		{
+			BulkOperationCleanupAction action = new BulkOperationCleanupAction(session, CustomQuery.QuerySpaces);
+
+			await (action.InitAsync()).ConfigureAwait(false);
+
+			if (session.IsEventSource)
+			{
+				await (((IEventSource)session).ActionQueue.AddActionAsync(action)).ConfigureAwait(false);
+			}
+		}
+
 		// DONE : H3.2 Executable query (now can be supported for named SQL query/ storedProcedure)
 		public async Task<int> PerformExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			CoordinateSharedCacheCleanup(session);
+			cancellationToken.ThrowIfCancellationRequested();
+			await (CoordinateSharedCacheCleanupAsync(session)).ConfigureAwait(false);
 
 			if (queryParameters.Callable)
 			{

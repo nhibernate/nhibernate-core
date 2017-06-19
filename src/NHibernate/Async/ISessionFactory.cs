@@ -35,5 +35,64 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		Task CloseAsync(CancellationToken cancellationToken = default(CancellationToken));
+
+		/// <summary>
+		/// Evict all entries from the process-level cache.  This method occurs outside
+		/// of any transaction; it performs an immediate "hard" remove, so does not respect
+		/// any transaction isolation semantics of the usage strategy.  Use with care.
+		/// </summary>
+		/// <param name="persistentClass"></param>
+		Task EvictAsync(System.Type persistentClass);
+
+		/// <summary>
+		/// Evict an entry from the process-level cache.  This method occurs outside
+		/// of any transaction; it performs an immediate "hard" remove, so does not respect
+		/// any transaction isolation semantics of the usage strategy.  Use with care.
+		/// </summary>
+		/// <param name="persistentClass"></param>
+		/// <param name="id"></param>
+		Task EvictAsync(System.Type persistentClass, object id);
+
+		/// <summary> 
+		/// Evict all entries from the second-level cache. This method occurs outside
+		/// of any transaction; it performs an immediate "hard" remove, so does not respect
+		/// any transaction isolation semantics of the usage strategy. Use with care.
+		/// </summary>
+		Task EvictEntityAsync(string entityName);
+
+		/// <summary> 
+		/// Evict an entry from the second-level  cache. This method occurs outside
+		/// of any transaction; it performs an immediate "hard" remove, so does not respect
+		/// any transaction isolation semantics of the usage strategy. Use with care.
+		/// </summary>
+		Task EvictEntityAsync(string entityName, object id);
+
+		/// <summary>
+		/// Evict all entries from the process-level cache.  This method occurs outside
+		/// of any transaction; it performs an immediate "hard" remove, so does not respect
+		/// any transaction isolation semantics of the usage strategy.  Use with care.
+		/// </summary>
+		/// <param name="roleName"></param>
+		Task EvictCollectionAsync(string roleName);
+
+		/// <summary>
+		/// Evict an entry from the process-level cache.  This method occurs outside
+		/// of any transaction; it performs an immediate "hard" remove, so does not respect
+		/// any transaction isolation semantics of the usage strategy.  Use with care.
+		/// </summary>
+		/// <param name="roleName"></param>
+		/// <param name="id"></param>
+		Task EvictCollectionAsync(string roleName, object id);
+
+		/// <summary>
+		/// Evict any query result sets cached in the default query cache region.
+		/// </summary>
+		Task EvictQueriesAsync();
+
+		/// <summary>
+		/// Evict any query result sets cached in the named query cache region.
+		/// </summary>
+		/// <param name="cacheRegion"></param>
+		Task EvictQueriesAsync(string cacheRegion);
 	}
 }

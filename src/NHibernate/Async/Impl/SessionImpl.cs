@@ -45,6 +45,42 @@ namespace NHibernate.Impl
 	{
 
 		/// <summary>
+		/// Ensure that the locks are downgraded to <see cref="LockMode.None"/>
+		/// and that all of the softlocks in the <see cref="Cache"/> have
+		/// been released.
+		/// </summary>
+		public override async Task AfterTransactionCompletionAsync(bool success, ITransaction tx)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				log.Debug("transaction completion");
+				if (Factory.Statistics.IsStatisticsEnabled)
+				{
+					Factory.StatisticsImplementor.EndTransaction(success);
+				}
+
+				connectionManager.AfterTransaction();
+				persistenceContext.AfterTransactionCompletion();
+				await (actionQueue.AfterTransactionCompletionAsync(success)).ConfigureAwait(false);
+				if (!_transactionCoordinatorShared)
+				{
+					try
+					{
+						Interceptor.AfterTransactionCompletion(tx);
+					}
+					catch (Exception t)
+					{
+						log.Error("exception in interceptor afterTransactionCompletion()", t);
+					}
+				}
+
+
+				//if (autoClear)
+				//	Clear();
+			}
+		}
+
+		/// <summary>
 		/// Save a transient object. An id is generated, assigned to the object and returned
 		/// </summary>
 		/// <param name="obj"></param>
@@ -217,7 +253,8 @@ namespace NHibernate.Impl
 				finally
 				{
 					dontFlushFromFind--;
-					AfterOperation(success);
+					cancellationToken.ThrowIfCancellationRequested();
+					await (AfterOperationAsync(success)).ConfigureAwait(false);
 				}
 			}
 		}
@@ -703,7 +740,8 @@ namespace NHibernate.Impl
 				}
 				finally
 				{
-					AfterOperation(success);
+					cancellationToken.ThrowIfCancellationRequested();
+					await (AfterOperationAsync(success)).ConfigureAwait(false);
 				}
 			}
 		}
@@ -824,7 +862,8 @@ namespace NHibernate.Impl
 				}
 				finally
 				{
-					AfterOperation(success);
+					cancellationToken.ThrowIfCancellationRequested();
+					await (AfterOperationAsync(success)).ConfigureAwait(false);
 				}
 			}
 		}
@@ -1008,7 +1047,8 @@ namespace NHibernate.Impl
 				finally
 				{
 					dontFlushFromFind--;
-					AfterOperation(success);
+					cancellationToken.ThrowIfCancellationRequested();
+					await (AfterOperationAsync(success)).ConfigureAwait(false);
 				}
 			}
 		}
@@ -1108,7 +1148,8 @@ namespace NHibernate.Impl
 				finally
 				{
 					dontFlushFromFind--;
-					AfterOperation(success);
+					cancellationToken.ThrowIfCancellationRequested();
+					await (AfterOperationAsync(success)).ConfigureAwait(false);
 				}
 			}
 		}
@@ -1148,7 +1189,8 @@ namespace NHibernate.Impl
 				finally
 				{
 					dontFlushFromFind--;
-					AfterOperation(success);
+					cancellationToken.ThrowIfCancellationRequested();
+					await (AfterOperationAsync(success)).ConfigureAwait(false);
 				}
 			}
 		}
@@ -1431,7 +1473,8 @@ namespace NHibernate.Impl
 				}
 				finally
 				{
-					AfterOperation(success);
+					cancellationToken.ThrowIfCancellationRequested();
+					await (AfterOperationAsync(success)).ConfigureAwait(false);
 				}
 				return result;
 			}
@@ -1456,7 +1499,8 @@ namespace NHibernate.Impl
 				}
 				finally
 				{
-					AfterOperation(success);
+					cancellationToken.ThrowIfCancellationRequested();
+					await (AfterOperationAsync(success)).ConfigureAwait(false);
 				}
 				return result;
 			}

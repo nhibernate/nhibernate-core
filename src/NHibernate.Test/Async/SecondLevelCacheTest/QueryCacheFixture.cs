@@ -134,7 +134,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 		[Test]
 		public async Task QueryCacheInvalidationAsync()
 		{
-			Sfi.EvictQueries();
+			await (Sfi.EvictQueriesAsync());
 			Sfi.Statistics.Clear();
 
 			const string queryString = "from Item i where i.Name='widget'";
@@ -222,7 +222,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 		public async Task SimpleProjectionsAsync()
 		{
 			var transformer = new CustomTransformer();
-			Sfi.EvictQueries();
+			await (Sfi.EvictQueriesAsync());
 			Sfi.Statistics.Clear();
 
 			const string queryString = "select i.Name, i.Description from AnotherItem i where i.Name='widget'";

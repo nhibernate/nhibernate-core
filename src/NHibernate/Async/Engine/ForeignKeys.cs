@@ -77,7 +77,8 @@ namespace NHibernate.Engine
 				else if (type.IsComponentType)
 				{
 					IAbstractComponentType actype = (IAbstractComponentType)type;
-					object[] subvalues = actype.GetPropertyValues(value, session);
+					cancellationToken.ThrowIfCancellationRequested();
+					object[] subvalues = await (actype.GetPropertyValuesAsync(value, session)).ConfigureAwait(false);
 					IType[] subtypes = actype.Subtypes;
 					bool substitute = false;
 					for (int i = 0; i < subvalues.Length; i++)
@@ -172,6 +173,28 @@ namespace NHibernate.Engine
 
 		/// <summary> 
 		/// Is this instance, which we know is not persistent, actually transient? 
+		/// Don't hit the database to make the determination, instead return null; 
+		/// </summary>
+		/// <remarks>
+		/// Don't hit the database to make the determination, instead return null; 
+		/// </remarks>
+		public static async Task<bool?> IsTransientFastAsync(string entityName, object entity, ISessionImplementor session)
+		{
+			if (Equals(Intercept.LazyPropertyInitializer.UnfetchedProperty, entity))
+			{
+				// an unfetched association can only point to
+				// an entity that already exists in the db
+				return false;
+			}
+
+			// let the interceptor inspect the instance to decide
+			// let the persister inspect the instance to decide
+			return session.Interceptor.IsTransient(entity) ??
+			       await (session.GetEntityPersister(entityName, entity).IsTransientAsync(entity, session)).ConfigureAwait(false);
+		}
+
+		/// <summary> 
+		/// Is this instance, which we know is not persistent, actually transient? 
 		/// </summary>
 		/// <remarks>
 		/// Hit the database to make the determination.
@@ -179,7 +202,8 @@ namespace NHibernate.Engine
 		public static async Task<bool> IsTransientSlowAsync(string entityName, object entity, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			return IsTransientFast(entityName, entity, session) ??
+			cancellationToken.ThrowIfCancellationRequested();
+			return await (IsTransientFastAsync(entityName, entity, session)).ConfigureAwait(false) ??
 			       await (HasDbSnapshotAsync(entityName, entity, session, cancellationToken)).ConfigureAwait(false);
 		}
 
@@ -203,6 +227,60 @@ namespace NHibernate.Engine
 			System.Object[] snapshot =
 				await (session.PersistenceContext.GetDatabaseSnapshotAsync(persister.GetIdentifier(entity), persister, cancellationToken)).ConfigureAwait(false);
 			return snapshot == null;
+		}
+
+		/// <summary> 
+		/// Return the identifier of the persistent or transient object, or throw
+		/// an exception if the instance is "unsaved"
+		/// </summary>
+		/// <remarks>
+		/// Used by OneToOneType and ManyToOneType to determine what id value should 
+		/// be used for an object that may or may not be associated with the session. 
+		/// This does a "best guess" using any/all info available to use (not just the 
+		/// EntityEntry).
+		/// </remarks>
+		public static async Task<object> GetEntityIdentifierIfNotUnsavedAsync(string entityName, object entity, ISessionImplementor session)
+		{
+			if (entity == null)
+			{
+				return null;
+			}
+			else
+			{
+				object id = session.GetContextEntityIdentifier(entity);
+				if (id == null)
+				{
+					// context-entity-identifier returns null explicitly if the entity
+					// is not associated with the persistence context; so make some deeper checks...
+
+					/***********************************************/
+					// NH-479 (very dirty patch)
+					if (entity.GetType().IsPrimitive)
+						return entity;
+					/**********************************************/
+
+					if ((await (IsTransientFastAsync(entityName, entity, session)).ConfigureAwait(false)).GetValueOrDefault())
+					{
+						/***********************************************/
+						// TODO NH verify the behavior of NH607 test
+						// these lines are only to pass test NH607 during PersistenceContext porting
+						// i'm not secure that NH607 is a test for a right behavior
+						EntityEntry entry = session.PersistenceContext.GetEntry(entity);
+						if (entry != null)
+							return entry.Id;
+						// the check was put here to have les possible impact
+						/**********************************************/
+
+						entityName = entityName ?? session.GuessEntityName(entity);
+						string entityString = entity.ToString();
+						throw new TransientObjectException(
+							string.Format("object references an unsaved transient instance - save the transient instance before flushing or set cascade action for the property to something that would make it autosave. Type: {0}, Entity: {1}", entityName, entityString));
+
+					}
+					id = session.GetEntityPersister(entityName, entity).GetIdentifier(entity);
+				}
+				return id;
+			}
 		}
 	}
 }

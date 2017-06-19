@@ -27,6 +27,25 @@ namespace NHibernate.Type
 	public partial class ArrayType : CollectionType
 	{
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="st"></param>
+		/// <param name="value"></param>
+		/// <param name="index"></param>
+		/// <param name="session"></param>
+		public override Task NullSafeSetAsync(DbCommand st, object value, int index, ISessionImplementor session)
+		{
+			try
+			{
+				return base.NullSafeSetAsync(st, session.PersistenceContext.GetCollectionHolder(value), index, session);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
 		public override async Task<object> ReplaceElementsAsync(object original, object target, object owner, IDictionary copyCache, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();

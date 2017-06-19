@@ -51,6 +51,85 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
+		public override async Task<object> DisassembleAsync(ICollectionPersister persister)
+		{
+			object[] result = new object[_values.Count * 2];
+
+			int i = 0;
+			for (int j = 0; j < _values.Count; j++)
+			{
+				object val = _values[j];
+				result[i++] = await (persister.IdentifierType.DisassembleAsync(_identifiers[j], Session, null)).ConfigureAwait(false);
+				result[i++] = await (persister.ElementType.DisassembleAsync(val, Session, null)).ConfigureAwait(false);
+			}
+
+			return result;
+		}
+
+		public override async Task<bool> EqualsSnapshotAsync(ICollectionPersister persister)
+		{
+			IType elementType = persister.ElementType;
+			var snap = (ISet<SnapshotElement>)GetSnapshot();
+			if (snap.Count != _values.Count)
+			{
+				return false;
+			}
+			for (int i = 0; i < _values.Count; i++)
+			{
+				object val = _values[i];
+				object id = GetIdentifier(i);
+				object old = snap.Where(x => Equals(x.Id, id)).Select(x => x.Value).FirstOrDefault();
+				if (await (elementType.IsDirtyAsync(old, val, Session)).ConfigureAwait(false))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		public override Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula)
+		{
+			try
+			{
+				return Task.FromResult<IEnumerable>(GetDeletes(persister, indexIsFormula));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<IEnumerable>(ex);
+			}
+		}
+
+		public override Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType)
+		{
+			try
+			{
+				return Task.FromResult<bool>(NeedsInserting(entry, i, elemType));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<bool>(ex);
+			}
+		}
+
+		public override async Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType)
+		{
+			if (entry == null)
+			{
+				return false;
+			}
+			var snap = (ISet<SnapshotElement>)GetSnapshot();
+
+			object id = GetIdentifier(i);
+			if (id == null)
+			{
+				return false;
+			}
+
+			object old = snap.Where(x => Equals(x.Id, id)).Select(x => x.Value).FirstOrDefault();
+			return old != null && await (elemType.IsDirtyAsync(old, entry, Session)).ConfigureAwait(false);
+		}
+
 		public override async Task<object> ReadFromAsync(DbDataReader reader, ICollectionPersister persister, ICollectionAliases descriptor, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();

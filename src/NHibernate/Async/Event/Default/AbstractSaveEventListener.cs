@@ -396,8 +396,9 @@ namespace NHibernate.Event.Default
 				//the entity is not associated with the session, so
 				//try interceptor and unsaved-value
 				var assumed = AssumedUnsaved;
+				cancellationToken.ThrowIfCancellationRequested();
 				if (assumed.HasValue
-					? ForeignKeys.IsTransientFast(entityName, entity, source).GetValueOrDefault(assumed.Value)
+					? (await (ForeignKeys.IsTransientFastAsync(entityName, entity, source)).ConfigureAwait(false)).GetValueOrDefault(assumed.Value)
 					: await (ForeignKeys.IsTransientSlowAsync(entityName, entity, source, cancellationToken)).ConfigureAwait(false))
 				{
 					if (log.IsDebugEnabled)

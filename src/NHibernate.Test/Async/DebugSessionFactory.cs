@@ -52,6 +52,46 @@ namespace NHibernate.Test
 			return ActualFactory.CloseAsync(cancellationToken);
 		}
 
+		Task ISessionFactory.EvictAsync(System.Type persistentClass)
+		{
+			return ActualFactory.EvictAsync(persistentClass);
+		}
+
+		Task ISessionFactory.EvictAsync(System.Type persistentClass, object id)
+		{
+			return ActualFactory.EvictAsync(persistentClass, id);
+		}
+
+		Task ISessionFactory.EvictEntityAsync(string entityName)
+		{
+			return ActualFactory.EvictEntityAsync(entityName);
+		}
+
+		Task ISessionFactory.EvictEntityAsync(string entityName, object id)
+		{
+			return ActualFactory.EvictEntityAsync(entityName, id);
+		}
+
+		Task ISessionFactory.EvictCollectionAsync(string roleName)
+		{
+			return ActualFactory.EvictCollectionAsync(roleName);
+		}
+
+		Task ISessionFactory.EvictCollectionAsync(string roleName, object id)
+		{
+			return ActualFactory.EvictCollectionAsync(roleName, id);
+		}
+
+		Task ISessionFactory.EvictQueriesAsync()
+		{
+			return ActualFactory.EvictQueriesAsync();
+		}
+
+		Task ISessionFactory.EvictQueriesAsync(string cacheRegion)
+		{
+			return ActualFactory.EvictQueriesAsync(cacheRegion);
+		}
+
 		#endregion
 	}
 }

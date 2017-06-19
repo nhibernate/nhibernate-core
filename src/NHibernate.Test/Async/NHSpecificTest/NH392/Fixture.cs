@@ -41,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH392
 				}
 				catch
 				{
-					tran.Rollback();
+					await (tran.RollbackAsync());
 				}
 			}
 		}

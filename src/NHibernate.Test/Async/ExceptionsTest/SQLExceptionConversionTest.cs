@@ -137,7 +137,7 @@ namespace NHibernate.Test.ExceptionsTest
 				}
 			}
 
-			session.Transaction.Rollback();
+			await (session.Transaction.RollbackAsync());
 			session.Close();
 		}
 

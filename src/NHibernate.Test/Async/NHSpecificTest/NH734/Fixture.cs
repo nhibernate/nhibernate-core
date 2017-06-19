@@ -40,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH734
 				{
 					if (session.Transaction != null)
 					{
-						session.Transaction.Rollback();
+						await (session.Transaction.RollbackAsync());
 					}
 					throw;
 				}
