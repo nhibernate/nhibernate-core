@@ -85,6 +85,10 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Interactive.Async, Version=3.0.3000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Interactive.Async.3.1.1\lib\net46\System.Interactive.Async.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Xml" />
@@ -151,6 +155,11 @@
     <Compile Include="ISessionBuilder.cs" />
     <Compile Include="Impl\ISessionCreationOptions.cs" />
     <Compile Include="Tool\hbm2ddl\IDatabaseMetadata.cs" />
+    <Compile Include="IFutureValueAsync.cs" />
+    <Compile Include="Impl\DelayedAsyncEnumerator.cs" />
+    <Compile Include="Impl\FutureValueAsync.cs" />
+    <Compile Include="Util\AsyncLock.cs" />
+    <Compile Include="Util\AsyncSemaphore.cs" />
     <Compile Include="Util\DelegateHelper.cs" />
     <Compile Include="Dialect\BitwiseFunctionOperation.cs" />
     <Compile Include="Dialect\DB2Dialect.cs" />

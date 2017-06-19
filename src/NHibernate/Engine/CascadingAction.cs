@@ -343,7 +343,7 @@ namespace NHibernate.Engine
 				{
 					string childEntityName = ((EntityType)type).GetAssociatedEntityName(session.Factory);
 
-					if (!IsInManagedState(child, session) && !(child.IsProxy()) && ForeignKeys.IsTransient(childEntityName, child, null, session))
+					if (!IsInManagedState(child, session) && !child.IsProxy() && ForeignKeys.IsTransientSlow(childEntityName, child, session))
 					{
 						string parentEntiytName = persister.EntityName;
 						string propertyName = persister.PropertyNames[propertyIndex];

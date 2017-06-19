@@ -8,6 +8,7 @@ using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Threading.Tasks;
 
 namespace NHibernate.Linq
 {
@@ -15,6 +16,8 @@ namespace NHibernate.Linq
 	{
 		object ExecuteFuture(Expression expression);
 		void SetResultTransformerAndAdditionalCriteria(IQuery query, NhLinqExpression nhExpression, IDictionary<string, Tuple<object, IType>> parameters);
+		Task<TResult> ExecuteAsync<TResult>(Expression expression);
+		object ExecuteFutureAsync(Expression expression);
 	}
 
 	public class DefaultQueryProvider : INhQueryProvider
@@ -67,6 +70,28 @@ namespace NHibernate.Linq
 			return ExecuteFutureQuery(nhLinqExpression, query, nhQuery);
 		}
 
+		public virtual object ExecuteFutureAsync(Expression expression)
+		{
+			IQuery query;
+			NhLinqExpression nhQuery;
+			NhLinqExpression nhLinqExpression = PrepareQuery(expression, out query, out nhQuery);
+			return ExecuteFutureQuery(nhLinqExpression, query, nhQuery, true);
+		}
+
+		public async Task<TResult> ExecuteAsync<TResult>(Expression expression)
+		{
+			return (TResult)await ExecuteAsync(expression);
+		}
+
+		public virtual async Task<object> ExecuteAsync(Expression expression)
+		{
+			IQuery query;
+			NhLinqExpression nhQuery;
+			NhLinqExpression nhLinqExpression = PrepareQuery(expression, out query, out nhQuery);
+
+			return await ExecuteQueryAsync(nhLinqExpression, query, nhQuery);
+		}
+
 		protected virtual NhLinqExpression PrepareQuery(Expression expression, out IQuery query, out NhLinqExpression nhQuery)
 		{
 			var nhLinqExpression = new NhLinqExpression(expression, Session.Factory);
@@ -83,10 +108,17 @@ namespace NHibernate.Linq
 		private static readonly MethodInfo Future = ReflectHelper.GetMethodDefinition<IQuery>(q => q.Future<object>());
 		private static readonly MethodInfo FutureValue = ReflectHelper.GetMethodDefinition<IQuery>(q => q.FutureValue<object>());
 
-		protected virtual object ExecuteFutureQuery(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery)
+		protected virtual object ExecuteFutureQuery(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery, bool async = false)
 		{
-			var method = (nhLinqExpression.ReturnType == NhLinqExpressionReturnType.Sequence ? Future : FutureValue)
-				.MakeGenericMethod(nhQuery.Type);
+			MethodInfo method;
+			if (nhLinqExpression.ReturnType == NhLinqExpressionReturnType.Sequence)
+			{
+				method = typeof(IQuery).GetMethod(async ? "FutureAsync" : "Future").MakeGenericMethod(nhQuery.Type);
+			}
+			else
+			{
+				method = typeof(IQuery).GetMethod(async ? "FutureValueAsync" : "FutureValue").MakeGenericMethod(nhQuery.Type);
+			}
 
 			object result = method.Invoke(query, new object[0]);
 
