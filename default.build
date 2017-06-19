@@ -31,7 +31,7 @@
 
 	<target name="generate-async" depends="common.generate-assemblyinfo common.nuget-restore">
 		<exec
-			basedir="${tools.dir}/CSharpAsyncGenerator.CommandLine.0.2.2/tools"
+			basedir="${tools.dir}/CSharpAsyncGenerator.CommandLine.0.2.3/tools"
 			workingdir="${root.dir}/src"
 			program="AsyncGenerator.CommandLine.exe"/>
 	</target>
