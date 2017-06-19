@@ -106,6 +106,24 @@
         containingTypeName: IBatcher
       - conversion: ToAsync
         rule: EventListener
+      - conversion: ToAsync
+        containingType: NHibernate.Cache.ICache
+        name: Get
+      - conversion: ToAsync
+        containingType: NHibernate.Cache.ICache
+        name: Put
+      - conversion: ToAsync
+        containingType: NHibernate.Cache.ICache
+        name: Remove
+      - conversion: ToAsync
+        containingType: NHibernate.Cache.ICache
+        name: Clear
+      - conversion: ToAsync
+        containingType: NHibernate.Cache.ICache
+        name: Lock
+      - conversion: ToAsync
+        containingType: NHibernate.Cache.ICache
+        name: Unlock
       ignoreSearchForAsyncCounterparts:
       - name: GetFieldValue
       - name: IsDBNull
