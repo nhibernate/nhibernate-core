@@ -751,6 +751,8 @@
     <Compile Include="NHSpecificTest\EntityWithUserTypeCanHaveLinqGenerators\FooExample.cs" />
     <Compile Include="NHSpecificTest\EntityWithUserTypeCanHaveLinqGenerators\IExample.cs" />
     <Compile Include="Insertordering\NH3931Entities.cs" />
+    <Compile Include="NHSpecificTest\NH4004\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH4004\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1904\StructFixture.cs" />
     <Compile Include="NHSpecificTest\NH3985\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3985\Fixture.cs" />
