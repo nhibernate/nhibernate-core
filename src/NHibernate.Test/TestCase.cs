@@ -151,20 +151,27 @@ namespace NHibernate.Test
 			string badCleanupMessage = null;
 			try
 			{
-				OnTearDown();
-				var wereClosed = _sessionFactory.CheckSessionsWereClosed();
-				var wasCleaned = CheckDatabaseWasCleaned();
-				var wereConnectionsClosed = CheckConnectionsWereClosed();
-				fail = !wereClosed || !wasCleaned || !wereConnectionsClosed;
-
-				if (fail)
+				try
 				{
-					badCleanupMessage = "Test didn't clean up after itself. session closed: " + wereClosed + "; database cleaned: " + wasCleaned
-						+ "; connection closed: " + wereConnectionsClosed;
-					if (testResult != null && testResult.Outcome.Status == TestStatus.Failed)
+					OnTearDown();
+				}
+				finally
+				{
+					var wereClosed = _sessionFactory.CheckSessionsWereClosed();
+					var wasCleaned = CheckDatabaseWasCleaned();
+					var wereConnectionsClosed = CheckConnectionsWereClosed();
+					fail = !wereClosed || !wasCleaned || !wereConnectionsClosed;
+
+					if (fail)
 					{
-						// Avoid hiding a test failure (asserts are usually not hidden, but other exception would be).
-						badCleanupMessage = GetCombinedFailureMessage(testResult, badCleanupMessage, null);
+						badCleanupMessage = "Test didn't clean up after itself. session closed: " + wereClosed + "; database cleaned: " +
+											wasCleaned
+											+ "; connection closed: " + wereConnectionsClosed;
+						if (testResult != null && testResult.Outcome.Status == TestStatus.Failed)
+						{
+							// Avoid hiding a test failure (asserts are usually not hidden, but other exception would be).
+							badCleanupMessage = GetCombinedFailureMessage(testResult, badCleanupMessage, null);
+						}
 					}
 				}
 			}
