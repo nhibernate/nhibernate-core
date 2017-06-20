@@ -22,6 +22,33 @@ namespace NHibernate.Test.ProxyTest
 		}
 
 		[Test]
+		public void CanUpdateProxy()
+		{
+			var proxy = new AProxy { Name = "a proxy" };
+
+			using (var session = this.sessions.OpenSession())
+			{
+				session.Save(proxy);
+				session.Flush();
+				session.Clear();
+
+				proxy = session.Load<AProxy>(proxy.Id);
+
+				NHibernateUtil.Initialize(proxy);
+			}
+
+			using (var session = this.sessions.OpenStatelessSession())
+			using (session.BeginTransaction())
+			{
+				proxy.Name = "changed";
+
+				session.Update(proxy);
+				session.Delete(proxy);
+				session.Transaction.Commit();
+			}
+		}
+
+		[Test]
 		public void GetClassOfProxy()
 		{
 			ISession s = null;
