@@ -107,23 +107,7 @@
       - conversion: ToAsync
         rule: EventListener
       - conversion: ToAsync
-        containingType: NHibernate.Cache.ICache
-        name: Get
-      - conversion: ToAsync
-        containingType: NHibernate.Cache.ICache
-        name: Put
-      - conversion: ToAsync
-        containingType: NHibernate.Cache.ICache
-        name: Remove
-      - conversion: ToAsync
-        containingType: NHibernate.Cache.ICache
-        name: Clear
-      - conversion: ToAsync
-        containingType: NHibernate.Cache.ICache
-        name: Lock
-      - conversion: ToAsync
-        containingType: NHibernate.Cache.ICache
-        name: Unlock
+        rule: ICache
       ignoreSearchForAsyncCounterparts:
       - name: GetFieldValue
       - name: IsDBNull
@@ -139,6 +123,7 @@
         - parameter: Required
         requiresCancellationToken:
         - rule: EventListener
+        - rule: ICache
       scanMethodBody: true
     transformation:
       configureAwaitArgument: false
@@ -225,6 +210,20 @@ methodRules:
   - containingTypeName: IPreLoadEventListener
   - containingTypeName: IPreUpdateEventListener
   name: EventListener
+- filters:
+  - containingType: NHibernate.Cache.ICache
+    name: Get
+  - containingType: NHibernate.Cache.ICache
+    name: Put
+  - containingType: NHibernate.Cache.ICache
+    name: Remove
+  - containingType: NHibernate.Cache.ICache
+    name: Clear
+  - containingType: NHibernate.Cache.ICache
+    name: Lock
+  - containingType: NHibernate.Cache.ICache
+    name: Unlock
+  name: ICache
 - filters:
   - containingNamespace: NHibernate
   - containingType: NHibernate.Tool.hbm2ddl.SchemaUpdate
