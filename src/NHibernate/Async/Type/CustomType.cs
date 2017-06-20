@@ -53,8 +53,12 @@ namespace NHibernate.Type
 			return NullSafeGetAsync(rs, new[] { name }, session, owner, cancellationToken);
 		}
 
-		public override Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				NullSafeSet(st, value, index, settable, session);
@@ -66,8 +70,12 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session)
+		public override Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				NullSafeSet(cmd, value, index, session);
@@ -79,9 +87,10 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override async Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session)
+		public override async Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			return checkable[0] && await (IsDirtyAsync(old, current, session)).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			return checkable[0] && await (IsDirtyAsync(old, current, session, cancellationToken)).ConfigureAwait(false);
 		}
 
 		public Task<object> NextAsync(object current, ISessionImplementor session, CancellationToken cancellationToken)
@@ -149,8 +158,12 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner)
+		public override Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object>(Disassemble(value, session, owner));

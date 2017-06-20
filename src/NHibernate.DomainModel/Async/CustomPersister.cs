@@ -35,7 +35,7 @@ namespace NHibernate.DomainModel
 		#region IEntityPersister Members
 		#region IOptimisticCacheSource Members
 
-		public Task<int[]> FindDirtyAsync(object[] currentState, object[] previousState, object entity, ISessionImplementor session)
+		public Task<int[]> FindDirtyAsync(object[] currentState, object[] previousState, object entity, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			try
 			{
@@ -54,7 +54,7 @@ namespace NHibernate.DomainModel
 			}
 		}
 
-		public Task<int[]> FindModifiedAsync(object[] old, object[] current, object entity, ISessionImplementor session)
+		public Task<int[]> FindModifiedAsync(object[] old, object[] current, object entity, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			try
 			{
@@ -167,7 +167,7 @@ namespace NHibernate.DomainModel
 			return Task.FromResult<object>(null);
 		}
 
-		public Task<bool?> IsTransientAsync(object obj, ISessionImplementor session)
+		public Task<bool?> IsTransientAsync(object obj, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			try
 			{

@@ -51,8 +51,7 @@ namespace NHibernate.Persister.Collection
 				int count = 0;
 				foreach (object entry in entries)
 				{
-					cancellationToken.ThrowIfCancellationRequested();
-					if (await (collection.NeedsUpdatingAsync(entry, i, ElementType)).ConfigureAwait(false))
+					if (await (collection.NeedsUpdatingAsync(entry, i, ElementType, cancellationToken)).ConfigureAwait(false))
 					{
 						int offset = 0;
 						if (useBatch)
@@ -73,28 +72,23 @@ namespace NHibernate.Persister.Collection
 
 						try
 						{
-							cancellationToken.ThrowIfCancellationRequested();
 							//offset += expectation.Prepare(st, Factory.ConnectionProvider.Driver);
 
-							int loc = await (WriteElementAsync(st, collection.GetElement(entry), offset, session)).ConfigureAwait(false);
+							int loc = await (WriteElementAsync(st, collection.GetElement(entry), offset, session, cancellationToken)).ConfigureAwait(false);
 							if (hasIdentifier)
 							{
-								cancellationToken.ThrowIfCancellationRequested();
-								await (WriteIdentifierAsync(st, collection.GetIdentifier(entry, i), loc, session)).ConfigureAwait(false);
+								await (WriteIdentifierAsync(st, collection.GetIdentifier(entry, i), loc, session, cancellationToken)).ConfigureAwait(false);
 							}
 							else
 							{
-								cancellationToken.ThrowIfCancellationRequested();
-								loc = await (WriteKeyAsync(st, id, loc, session)).ConfigureAwait(false);
+								loc = await (WriteKeyAsync(st, id, loc, session, cancellationToken)).ConfigureAwait(false);
 								if (HasIndex && !indexContainsFormula)
 								{
-									cancellationToken.ThrowIfCancellationRequested();
-									await (WriteIndexToWhereAsync(st, collection.GetIndex(entry, i, this), loc, session)).ConfigureAwait(false);
+									await (WriteIndexToWhereAsync(st, collection.GetIndex(entry, i, this), loc, session, cancellationToken)).ConfigureAwait(false);
 								}
 								else
 								{
-									cancellationToken.ThrowIfCancellationRequested();
-									await (WriteElementToWhereAsync(st, collection.GetSnapshotElement(entry, i), loc, session)).ConfigureAwait(false);
+									await (WriteElementToWhereAsync(st, collection.GetSnapshotElement(entry, i), loc, session, cancellationToken)).ConfigureAwait(false);
 								}
 							}
 

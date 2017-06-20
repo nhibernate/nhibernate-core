@@ -31,12 +31,17 @@ namespace NHibernate.Type
 		/// <param name="value">The value to disassemble.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> is not used by this method.</param>
 		/// <param name="owner">optional parent entity object (needed for collections) </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The disassembled, deep cloned state of the object</returns>
 		/// <remarks>
 		/// This method calls DeepCopy if the value is not null.
 		/// </remarks>
-		public virtual Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner)
+		public virtual Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object>(Disassemble(value, session, owner));
@@ -98,10 +103,15 @@ namespace NHibernate.Type
 		/// <param name="old">The old value</param>
 		/// <param name="current">The current value</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> is not used by this method.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>true if the field is dirty</returns>
 		/// <remarks>This method uses <c>IType.Equals(object, object)</c> to determine the value of IsDirty.</remarks>
-		public virtual Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session)
+		public virtual Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<bool>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<bool>(IsDirty(old, current, session));
@@ -188,9 +198,13 @@ namespace NHibernate.Type
 			object old,
 			object current,
 			bool[] checkable,
-			ISessionImplementor session)
+			ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			return IsDirtyAsync(old, current, session);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<bool>(cancellationToken);
+			}
+			return IsDirtyAsync(old, current, session, cancellationToken);
 		}
 
 		public virtual Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache,
@@ -230,11 +244,11 @@ namespace NHibernate.Type
 		public abstract Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, Object owner, CancellationToken cancellationToken);
 
 		/// <inheritdoc />
-		public abstract Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session);
+		public abstract Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session, CancellationToken cancellationToken);
 
 		/// <inheritdoc />
-		public abstract Task NullSafeSetAsync(DbCommand st, object value, int index, ISessionImplementor session);
+		public abstract Task NullSafeSetAsync(DbCommand st, object value, int index, ISessionImplementor session, CancellationToken cancellationToken);
 
-		public abstract Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session);
+		public abstract Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken);
 	}
 }

@@ -17,6 +17,7 @@ using NHibernate.Cfg;
 namespace NHibernate.Cache
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -26,21 +27,26 @@ namespace NHibernate.Cache
 		private readonly NHibernate.Util.AsyncLock _invalidate = new NHibernate.Util.AsyncLock();
 		private readonly NHibernate.Util.AsyncLock _isUpToDate = new NHibernate.Util.AsyncLock();
 
-		public Task ClearAsync()
+		public Task ClearAsync(CancellationToken cancellationToken)
 		{
-			return updateTimestamps.ClearAsync();
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return updateTimestamps.ClearAsync(cancellationToken);
 		}
 
 		[MethodImpl()]
-		public async Task PreInvalidateAsync(object[] spaces)
+		public async Task PreInvalidateAsync(object[] spaces, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			using (await _preInvalidate.LockAsync())
 			{
 				//TODO: to handle concurrent writes correctly, this should return a Lock to the client
 				long ts = updateTimestamps.NextTimestamp() + updateTimestamps.Timeout;
 				for (int i = 0; i < spaces.Length; i++)
 				{
-					await (updateTimestamps.PutAsync(spaces[i], ts)).ConfigureAwait(false);
+					await (updateTimestamps.PutAsync(spaces[i], ts, cancellationToken)).ConfigureAwait(false);
 				}
 				//TODO: return new Lock(ts);
 			}
@@ -49,8 +55,9 @@ namespace NHibernate.Cache
 
 		/// <summary></summary>
 		[MethodImpl()]
-		public async Task InvalidateAsync(object[] spaces)
+		public async Task InvalidateAsync(object[] spaces, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			using (await _invalidate.LockAsync())
 			{
 				//TODO: to handle concurrent writes correctly, the client should pass in a Lock
@@ -59,19 +66,20 @@ namespace NHibernate.Cache
 				for (int i = 0; i < spaces.Length; i++)
 				{
 					log.Debug(string.Format("Invalidating space [{0}]", spaces[i]));
-					await (updateTimestamps.PutAsync(spaces[i], ts)).ConfigureAwait(false);
+					await (updateTimestamps.PutAsync(spaces[i], ts, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}
 
 		[MethodImpl()]
-		public async Task<bool> IsUpToDateAsync(ISet<string> spaces, long timestamp /* H2.1 has Long here */)
+		public async Task<bool> IsUpToDateAsync(ISet<string> spaces, long timestamp /* H2.1 has Long here */, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			using (await _isUpToDate.LockAsync())
 			{
 				foreach (string space in spaces)
 				{
-					object lastUpdate = await (updateTimestamps.GetAsync(space)).ConfigureAwait(false);
+					object lastUpdate = await (updateTimestamps.GetAsync(space, cancellationToken)).ConfigureAwait(false);
 					if (lastUpdate == null)
 					{
 						//the last update timestamp was lost from the cache

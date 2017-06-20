@@ -28,9 +28,13 @@ namespace NHibernate.Engine
 	public partial class ActionQueue
 	{
 
-		public Task AddActionAsync(BulkOperationCleanupAction cleanupAction)
+		public Task AddActionAsync(BulkOperationCleanupAction cleanupAction, CancellationToken cancellationToken)
 		{
-			return RegisterCleanupActionsAsync(cleanupAction);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return RegisterCleanupActionsAsync(cleanupAction, cancellationToken);
 		}
 	
 		private async Task ExecuteActionsAsync(IList list, CancellationToken cancellationToken)
@@ -53,19 +57,19 @@ namespace NHibernate.Engine
 			}
 			finally
 			{
-				cancellationToken.ThrowIfCancellationRequested();
-				await (RegisterCleanupActionsAsync(executable)).ConfigureAwait(false);
+				await (RegisterCleanupActionsAsync(executable, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 		
-		private async Task RegisterCleanupActionsAsync(IExecutable executable)
+		private async Task RegisterCleanupActionsAsync(IExecutable executable, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			beforeTransactionProcesses.Register(executable.BeforeTransactionCompletionProcess);
 			if (session.Factory.Settings.IsQueryCacheEnabled)
 			{
 				string[] spaces = executable.PropertySpaces;
 				afterTransactionProcesses.AddSpacesToInvalidate(spaces);
-				await (session.Factory.UpdateTimestampsCache.PreInvalidateAsync(spaces)).ConfigureAwait(false);
+				await (session.Factory.UpdateTimestampsCache.PreInvalidateAsync(spaces, cancellationToken)).ConfigureAwait(false);
 			}
 			afterTransactionProcesses.Register(executable.AfterTransactionCompletionProcess);
 		}
@@ -98,29 +102,37 @@ namespace NHibernate.Engine
 			await (ExecuteActionsAsync(deletions, cancellationToken)).ConfigureAwait(false);
 		}
 
-		private async Task PrepareActionsAsync(IList queue)
+		private async Task PrepareActionsAsync(IList queue, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			foreach (IExecutable executable in queue)
-				await (executable.BeforeExecutionsAsync()).ConfigureAwait(false);
+				await (executable.BeforeExecutionsAsync(cancellationToken)).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// Prepares the internal action queues for execution.  
 		/// </summary>
-		public async Task PrepareActionsAsync()
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public async Task PrepareActionsAsync(CancellationToken cancellationToken)
 		{
-			await (PrepareActionsAsync(collectionRemovals)).ConfigureAwait(false);
-			await (PrepareActionsAsync(collectionUpdates)).ConfigureAwait(false);
-			await (PrepareActionsAsync(collectionCreations)).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			await (PrepareActionsAsync(collectionRemovals, cancellationToken)).ConfigureAwait(false);
+			await (PrepareActionsAsync(collectionUpdates, cancellationToken)).ConfigureAwait(false);
+			await (PrepareActionsAsync(collectionCreations, cancellationToken)).ConfigureAwait(false);
 		}
 		
 		/// <summary> 
 		/// Performs cleanup of any held cache softlocks.
 		/// </summary>
 		/// <param name="success">Was the transaction successful.</param>
-		public Task AfterTransactionCompletionAsync(bool success)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public Task AfterTransactionCompletionAsync(bool success, CancellationToken cancellationToken)
 		{
-			return afterTransactionProcesses.AfterTransactionCompletionAsync(success);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return afterTransactionProcesses.AfterTransactionCompletionAsync(success, cancellationToken);
 		}
 		/// <content>
 		/// Contains generated async methods
@@ -128,8 +140,9 @@ namespace NHibernate.Engine
 		private partial class AfterTransactionCompletionProcessQueue 
 		{
 	
-			public async Task AfterTransactionCompletionAsync(bool success) 
+			public async Task AfterTransactionCompletionAsync(bool success, CancellationToken cancellationToken) 
 			{
+				cancellationToken.ThrowIfCancellationRequested();
 				int size = processes.Count;
 				
 				for (int i = 0; i < size; i++)
@@ -153,7 +166,7 @@ namespace NHibernate.Engine
 	
 				if (session.Factory.Settings.IsQueryCacheEnabled) 
 				{
-					await (session.Factory.UpdateTimestampsCache.InvalidateAsync(querySpacesToInvalidate.ToArray())).ConfigureAwait(false);
+					await (session.Factory.UpdateTimestampsCache.InvalidateAsync(querySpacesToInvalidate.ToArray(), cancellationToken)).ConfigureAwait(false);
 				}
 				querySpacesToInvalidate.Clear();
 			}

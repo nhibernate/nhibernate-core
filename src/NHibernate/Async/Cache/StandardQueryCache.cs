@@ -29,13 +29,18 @@ namespace NHibernate.Cache
 
 		#region IQueryCache Members
 
-		public Task ClearAsync()
+		public Task ClearAsync(CancellationToken cancellationToken)
 		{
-			return _queryCache.ClearAsync();
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return _queryCache.ClearAsync(cancellationToken);
 		}
 
-		public async Task<bool> PutAsync(QueryKey key, ICacheAssembler[] returnTypes, IList result, bool isNaturalKeyLookup, ISessionImplementor session)
+		public async Task<bool> PutAsync(QueryKey key, ICacheAssembler[] returnTypes, IList result, bool isNaturalKeyLookup, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (isNaturalKeyLookup && result.Count == 0)
 				return false;
 
@@ -49,15 +54,15 @@ namespace NHibernate.Cache
 			{
 				if (returnTypes.Length == 1)
 				{
-					cacheable.Add(await (returnTypes[0].DisassembleAsync(result[i], session, null)).ConfigureAwait(false));
+					cacheable.Add(await (returnTypes[0].DisassembleAsync(result[i], session, null, cancellationToken)).ConfigureAwait(false));
 				}
 				else
 				{
-					cacheable.Add(await (TypeHelper.DisassembleAsync((object[]) result[i], returnTypes, null, session, null)).ConfigureAwait(false));
+					cacheable.Add(await (TypeHelper.DisassembleAsync((object[]) result[i], returnTypes, null, session, null, cancellationToken)).ConfigureAwait(false));
 				}
 			}
 
-			await (_queryCache.PutAsync(key, cacheable)).ConfigureAwait(false);
+			await (_queryCache.PutAsync(key, cacheable, cancellationToken)).ConfigureAwait(false);
 
 			return true;
 		}
@@ -67,9 +72,8 @@ namespace NHibernate.Cache
 			cancellationToken.ThrowIfCancellationRequested();
 			if (Log.IsDebugEnabled)
 				Log.DebugFormat("checking cached query results in region: '{0}'; {1}", _regionName, key);
-			cancellationToken.ThrowIfCancellationRequested();
 
-			var cacheable = (IList)await (_queryCache.GetAsync(key)).ConfigureAwait(false);
+			var cacheable = (IList)await (_queryCache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
 			if (cacheable == null)
 			{
 				Log.DebugFormat("query results were not found in cache: {0}", key);
@@ -80,9 +84,8 @@ namespace NHibernate.Cache
 
 			if (Log.IsDebugEnabled)
 				Log.DebugFormat("Checking query spaces for up-to-dateness [{0}]", StringHelper.CollectionToString(spaces));
-			cancellationToken.ThrowIfCancellationRequested();
 
-			if (!isNaturalKeyLookup && !await (IsUpToDateAsync(spaces, timestamp)).ConfigureAwait(false))
+			if (!isNaturalKeyLookup && !await (IsUpToDateAsync(spaces, timestamp, cancellationToken)).ConfigureAwait(false))
 			{
 				Log.DebugFormat("cached query results were not up to date for: {0}", key);
 				return null;
@@ -123,8 +126,7 @@ namespace NHibernate.Cache
 						//      the UnresolvableObjectException could occur while resolving
 						//      associations, leaving the PC in an inconsistent state
 						Log.Debug("could not reassemble cached result set");
-						cancellationToken.ThrowIfCancellationRequested();
-						await (_queryCache.RemoveAsync(key)).ConfigureAwait(false);
+						await (_queryCache.RemoveAsync(key, cancellationToken)).ConfigureAwait(false);
 						return null;
 					}
 
@@ -137,9 +139,13 @@ namespace NHibernate.Cache
 
 		#endregion
 
-		protected virtual Task<bool> IsUpToDateAsync(ISet<string> spaces, long timestamp)
+		protected virtual Task<bool> IsUpToDateAsync(ISet<string> spaces, long timestamp, CancellationToken cancellationToken)
 		{
-			return _updateTimestampsCache.IsUpToDateAsync(spaces, timestamp);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<bool>(cancellationToken);
+			}
+			return _updateTimestampsCache.IsUpToDateAsync(spaces, timestamp, cancellationToken);
 		}
 	}
 }

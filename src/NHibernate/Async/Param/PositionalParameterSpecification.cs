@@ -32,12 +32,12 @@ namespace NHibernate.Param
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			cancellationToken.ThrowIfCancellationRequested();
-			return BindAsync(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session);
+			return BindAsync(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session, cancellationToken);
 		}
 
-		public override async Task BindAsync(DbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		public override async Task BindAsync(DbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IType type = ExpectedType;
 			object value = queryParameters.PositionalParameterValues[hqlPosition];
 
@@ -45,7 +45,7 @@ namespace NHibernate.Param
 			// an HQL positional parameter can appear more than once because a custom HQL-Function can duplicate it
 			foreach (int position in sqlQueryParametersList.GetEffectiveParameterLocations(backTrackId))
 			{
-				await (type.NullSafeSetAsync(command, GetPagingValue(value, session.Factory.Dialect, queryParameters), position + singleSqlParametersOffset, session)).ConfigureAwait(false);
+				await (type.NullSafeSetAsync(command, GetPagingValue(value, session.Factory.Dialect, queryParameters), position + singleSqlParametersOffset, session, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 	}

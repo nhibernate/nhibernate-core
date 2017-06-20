@@ -271,8 +271,7 @@ namespace NHibernate.Impl
 			{
 				log.Debug("Cache miss for multi query");
 				var list = await (DoListAsync(cancellationToken)).ConfigureAwait(false);
-				cancellationToken.ThrowIfCancellationRequested();
-				await (queryCache.PutAsync(key, new ICacheAssembler[] { assembler }, new object[] { list }, false, session)).ConfigureAwait(false);
+				await (queryCache.PutAsync(key, new ICacheAssembler[] { assembler }, new object[] { list }, false, session, cancellationToken)).ConfigureAwait(false);
 				result = list;
 			}
 

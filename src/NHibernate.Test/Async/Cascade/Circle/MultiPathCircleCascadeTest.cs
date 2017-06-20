@@ -168,7 +168,7 @@ namespace NHibernate.Test.Cascade.Circle
 				}
 				finally
 				{
-					await (transaction.RollbackAsync());
+					await (transaction.RollbackAsync(cancellationToken));
 				}
 			}
 		}

@@ -11,14 +11,19 @@
 namespace NHibernate.Cache
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class FakeCache : ICache
 	{
 
-		public Task<object> GetAsync(object key)
+		public Task<object> GetAsync(object key, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object>(Get(key));
@@ -29,8 +34,12 @@ namespace NHibernate.Cache
 			}
 		}
 
-		public Task PutAsync(object key, object value)
+		public Task PutAsync(object key, object value, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				Put(key, value);
@@ -42,8 +51,12 @@ namespace NHibernate.Cache
 			}
 		}
 
-		public Task RemoveAsync(object key)
+		public Task RemoveAsync(object key, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				Remove(key);
@@ -55,8 +68,12 @@ namespace NHibernate.Cache
 			}
 		}
 
-		public Task ClearAsync()
+		public Task ClearAsync(CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				Clear();
@@ -68,8 +85,12 @@ namespace NHibernate.Cache
 			}
 		}
 
-		public Task LockAsync(object key)
+		public Task LockAsync(object key, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				Lock(key);
@@ -81,8 +102,12 @@ namespace NHibernate.Cache
 			}
 		}
 
-		public Task UnlockAsync(object key)
+		public Task UnlockAsync(object key, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				Unlock(key);

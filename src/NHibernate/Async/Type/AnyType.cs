@@ -71,8 +71,9 @@ namespace NHibernate.Type
 			throw new NotSupportedException("any mappings may not form part of a property-ref");
 		}
 
-		public override async Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override async Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object id;
 			string entityName;
 			if (value == null)
@@ -83,29 +84,33 @@ namespace NHibernate.Type
 			else
 			{
 				entityName = session.BestGuessEntityName(value);
-				id = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, value, session)).ConfigureAwait(false);
+				id = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, value, session, cancellationToken)).ConfigureAwait(false);
 			}
 
 			// metaType is assumed to be single-column type
 			if (settable == null || settable[0])
 			{
-				await (metaType.NullSafeSetAsync(st, entityName, index, session)).ConfigureAwait(false);
+				await (metaType.NullSafeSetAsync(st, entityName, index, session, cancellationToken)).ConfigureAwait(false);
 			}
 			if (settable == null)
 			{
-				await (identifierType.NullSafeSetAsync(st, id, index + 1, session)).ConfigureAwait(false);
+				await (identifierType.NullSafeSetAsync(st, id, index + 1, session, cancellationToken)).ConfigureAwait(false);
 			}
 			else
 			{
 				bool[] idsettable = new bool[settable.Length - 1];
 				Array.Copy(settable, 1, idsettable, 0, idsettable.Length);
-				await (identifierType.NullSafeSetAsync(st, id, index + 1, idsettable, session)).ConfigureAwait(false);
+				await (identifierType.NullSafeSetAsync(st, id, index + 1, idsettable, session, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
-		public override Task NullSafeSetAsync(DbCommand st, object value, int index, ISessionImplementor session)
+		public override Task NullSafeSetAsync(DbCommand st, object value, int index, ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			return NullSafeSetAsync(st, value, index, null, session);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return NullSafeSetAsync(st, value, index, null, session, cancellationToken);
 		}
 
 		public override Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken)
@@ -125,11 +130,12 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override async Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner)
+		public override async Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			return value == null ? null : 
 				new ObjectTypeCacheEntry(session.BestGuessEntityName(value), 
-				await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(session.BestGuessEntityName(value), value, session)).ConfigureAwait(false));
+				await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(session.BestGuessEntityName(value), value, session, cancellationToken)).ConfigureAwait(false));
 		}
 
 		public override async Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner,
@@ -143,17 +149,20 @@ namespace NHibernate.Type
 			else
 			{
 				string entityName = session.BestGuessEntityName(original);
-				cancellationToken.ThrowIfCancellationRequested();
-				object id = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, original, session)).ConfigureAwait(false);
+				object id = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, original, session, cancellationToken)).ConfigureAwait(false);
 				return await (session.InternalLoadAsync(entityName, id, false, false, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
-		public Task<object> GetPropertyValueAsync(Object component, int i, ISessionImplementor session)
+		public Task<object> GetPropertyValueAsync(Object component, int i, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
-				return i == 0 ? Task.FromResult<object>(session.BestGuessEntityName(component) ): IdAsync(component, session);
+				return i == 0 ? Task.FromResult<object>(session.BestGuessEntityName(component) ): IdAsync(component, session, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -161,16 +170,18 @@ namespace NHibernate.Type
 			}
 		}
 
-		public async Task<object[]> GetPropertyValuesAsync(object component, ISessionImplementor session)
+		public async Task<object[]> GetPropertyValuesAsync(object component, ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			return new object[] { session.BestGuessEntityName(component), await (IdAsync(component, session)).ConfigureAwait(false) };
+			cancellationToken.ThrowIfCancellationRequested();
+			return new object[] { session.BestGuessEntityName(component), await (IdAsync(component, session, cancellationToken)).ConfigureAwait(false) };
 		}
 
-		private static async Task<object> IdAsync(object component, ISessionImplementor session)
+		private static async Task<object> IdAsync(object component, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			try
 			{
-				return await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(session.BestGuessEntityName(component), component, session)).ConfigureAwait(false);
+				return await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(session.BestGuessEntityName(component), component, session, cancellationToken)).ConfigureAwait(false);
 			}
 			catch (TransientObjectException)
 			{
@@ -178,14 +189,19 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session)
+		public override Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<bool>(cancellationToken);
+			}
 			//TODO!!!
-			return IsDirtyAsync(old, current, session);
+			return IsDirtyAsync(old, current, session, cancellationToken);
 		}
 
-		public override async Task<bool> IsModifiedAsync(object old, object current, bool[] checkable, ISessionImplementor session)
+		public override async Task<bool> IsModifiedAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (current == null)
 				return old != null;
 			if (old == null)
@@ -194,7 +210,7 @@ namespace NHibernate.Type
 			bool[] idcheckable = new bool[checkable.Length - 1];
 			Array.Copy(checkable, 1, idcheckable, 0, idcheckable.Length);
 			return (checkable[0] && !holder.entityName.Equals(session.BestGuessEntityName(current))) || 
-				await (identifierType.IsModifiedAsync(holder.id, await (IdAsync(current, session)).ConfigureAwait(false), idcheckable, session)).ConfigureAwait(false);
+				await (identifierType.IsModifiedAsync(holder.id, await (IdAsync(current, session, cancellationToken)).ConfigureAwait(false), idcheckable, session, cancellationToken)).ConfigureAwait(false);
 		}
 
 		private Task<object> ResolveAnyAsync(string entityName, object id, ISessionImplementor session, CancellationToken cancellationToken)

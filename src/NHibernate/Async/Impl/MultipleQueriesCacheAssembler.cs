@@ -26,8 +26,9 @@ namespace NHibernate.Impl
 
 		#region ICacheAssembler Members
 
-		public async Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner)
+		public async Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IList srcList = (IList) value;
 			var cacheable = new List<object>();
 			for (int i = 0; i < srcList.Count; i++)
@@ -39,11 +40,11 @@ namespace NHibernate.Impl
 				{
 					if (assemblers.Length == 1)
 					{
-						singleQueryCached.Add(await (assemblers[0].DisassembleAsync(objToCache, session, owner)).ConfigureAwait(false));
+						singleQueryCached.Add(await (assemblers[0].DisassembleAsync(objToCache, session, owner, cancellationToken)).ConfigureAwait(false));
 					}
 					else
 					{
-						singleQueryCached.Add(await (TypeHelper.DisassembleAsync((object[]) objToCache, assemblers, null, session, null)).ConfigureAwait(false));
+						singleQueryCached.Add(await (TypeHelper.DisassembleAsync((object[]) objToCache, assemblers, null, session, null, cancellationToken)).ConfigureAwait(false));
 					}
 				}
 				cacheable.Add(singleQueryCached);

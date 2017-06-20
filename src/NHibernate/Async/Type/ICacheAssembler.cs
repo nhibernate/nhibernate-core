@@ -23,8 +23,9 @@ namespace NHibernate.Type
 		/// <param name="value">the value to cache </param>
 		/// <param name="session">the session </param>
 		/// <param name="owner">optional parent entity object (needed for collections) </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> the disassembled, deep cloned state </returns>		
-		Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner);
+		Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken);
 
 		/// <summary> Reconstruct the object from its cached "disassembled" state.</summary>
 		/// <param name="cached">the disassembled state from the cache </param>

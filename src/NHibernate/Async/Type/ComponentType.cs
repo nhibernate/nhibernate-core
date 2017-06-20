@@ -29,8 +29,9 @@ namespace NHibernate.Type
 	public partial class ComponentType : AbstractType, IAbstractComponentType
 	{
 
-		public override async Task<bool> IsDirtyAsync(object x, object y, ISessionImplementor session)
+		public override async Task<bool> IsDirtyAsync(object x, object y, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (x == y)
 			{
 				return false;
@@ -47,7 +48,7 @@ namespace NHibernate.Type
 			object[] yvalues = GetPropertyValues(y);
 			for (int i = 0; i < xvalues.Length; i++)
 			{
-				if (await (propertyTypes[i].IsDirtyAsync(xvalues[i], yvalues[i], session)).ConfigureAwait(false))
+				if (await (propertyTypes[i].IsDirtyAsync(xvalues[i], yvalues[i], session, cancellationToken)).ConfigureAwait(false))
 				{
 					return true;
 				}
@@ -55,8 +56,9 @@ namespace NHibernate.Type
 			return false;
 		}
 
-		public override async Task<bool> IsDirtyAsync(object x, object y, bool[] checkable, ISessionImplementor session)
+		public override async Task<bool> IsDirtyAsync(object x, object y, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (x == y)
 			{
 				return false;
@@ -78,7 +80,7 @@ namespace NHibernate.Type
 				if (len <= 1)
 				{
 					bool dirty = (len == 0 || checkable[loc]) &&
-								 await (propertyTypes[i].IsDirtyAsync(xvalues[i], yvalues[i], session)).ConfigureAwait(false);
+								 await (propertyTypes[i].IsDirtyAsync(xvalues[i], yvalues[i], session, cancellationToken)).ConfigureAwait(false);
 					if (dirty)
 					{
 						return true;
@@ -88,7 +90,7 @@ namespace NHibernate.Type
 				{
 					bool[] subcheckable = new bool[len];
 					Array.Copy(checkable, loc, subcheckable, 0, len);
-					bool dirty = await (propertyTypes[i].IsDirtyAsync(xvalues[i], yvalues[i], subcheckable, session)).ConfigureAwait(false);
+					bool dirty = await (propertyTypes[i].IsDirtyAsync(xvalues[i], yvalues[i], subcheckable, session, cancellationToken)).ConfigureAwait(false);
 					if (dirty)
 					{
 						return true;
@@ -112,19 +114,22 @@ namespace NHibernate.Type
 		/// <param name="value"></param>
 		/// <param name="begin"></param>
 		/// <param name="session"></param>
-		public override async Task NullSafeSetAsync(DbCommand st, object value, int begin, ISessionImplementor session)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public override async Task NullSafeSetAsync(DbCommand st, object value, int begin, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object[] subvalues = NullSafeGetValues(value);
 
 			for (int i = 0; i < propertySpan; i++)
 			{
-				await (propertyTypes[i].NullSafeSetAsync(st, subvalues[i], begin, session)).ConfigureAwait(false);
+				await (propertyTypes[i].NullSafeSetAsync(st, subvalues[i], begin, session, cancellationToken)).ConfigureAwait(false);
 				begin += propertyTypes[i].GetColumnSpan(session.Factory);
 			}
 		}
 
-		public override async Task NullSafeSetAsync(DbCommand st, object value, int begin, bool[] settable, ISessionImplementor session)
+		public override async Task NullSafeSetAsync(DbCommand st, object value, int begin, bool[] settable, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object[] subvalues = NullSafeGetValues(value);
 
 			int loc = 0;
@@ -139,7 +144,7 @@ namespace NHibernate.Type
 				{
 					if (settable[loc])
 					{
-						await (propertyTypes[i].NullSafeSetAsync(st, subvalues[i], begin, session)).ConfigureAwait(false);
+						await (propertyTypes[i].NullSafeSetAsync(st, subvalues[i], begin, session, cancellationToken)).ConfigureAwait(false);
 						begin++;
 					}
 				}
@@ -147,7 +152,7 @@ namespace NHibernate.Type
 				{
 					bool[] subsettable = new bool[len];
 					Array.Copy(settable, loc, subsettable, 0, len);
-					await (propertyTypes[i].NullSafeSetAsync(st, subvalues[i], begin, subsettable, session)).ConfigureAwait(false);
+					await (propertyTypes[i].NullSafeSetAsync(st, subvalues[i], begin, subsettable, session, cancellationToken)).ConfigureAwait(false);
 					begin += ArrayHelper.CountTrue(subsettable);
 				}
 				loc += len;
@@ -163,8 +168,12 @@ namespace NHibernate.Type
 			return NullSafeGetAsync(rs, new string[] {name}, session, owner, cancellationToken);
 		}
 
-		public Task<object> GetPropertyValueAsync(object component, int i, ISessionImplementor session)
+		public Task<object> GetPropertyValueAsync(object component, int i, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object>(GetPropertyValue(component, i, session));
@@ -175,8 +184,12 @@ namespace NHibernate.Type
 			}
 		}
 
-		public Task<object[]> GetPropertyValuesAsync(object component, ISessionImplementor session)
+		public Task<object[]> GetPropertyValuesAsync(object component, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object[]>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object[]>(GetPropertyValues(component, session));
@@ -216,8 +229,9 @@ namespace NHibernate.Type
 			return result;
 		}
 
-		public override async Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner)
+		public override async Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (value == null)
 			{
 				return null;
@@ -227,7 +241,7 @@ namespace NHibernate.Type
 				object[] values = GetPropertyValues(value);
 				for (int i = 0; i < propertyTypes.Length; i++)
 				{
-					values[i] = await (propertyTypes[i].DisassembleAsync(values[i], session, owner)).ConfigureAwait(false);
+					values[i] = await (propertyTypes[i].DisassembleAsync(values[i], session, owner, cancellationToken)).ConfigureAwait(false);
 				}
 				return values;
 			}
@@ -318,8 +332,9 @@ namespace NHibernate.Type
 			return ResolveIdentifierAsync(value, session, owner, cancellationToken);
 		}
 
-		public override async Task<bool> IsModifiedAsync(object old, object current, bool[] checkable, ISessionImplementor session)
+		public override async Task<bool> IsModifiedAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (current == null)
 			{
 				return old != null;
@@ -328,7 +343,7 @@ namespace NHibernate.Type
 			{
 				return current != null;
 			}
-			object[] currentValues = await (GetPropertyValuesAsync(current, session)).ConfigureAwait(false);
+			object[] currentValues = await (GetPropertyValuesAsync(current, session, cancellationToken)).ConfigureAwait(false);
 			object[] oldValues = (Object[]) old;
 			int loc = 0;
 			for (int i = 0; i < currentValues.Length; i++)
@@ -336,7 +351,7 @@ namespace NHibernate.Type
 				int len = propertyTypes[i].GetColumnSpan(session.Factory);
 				bool[] subcheckable = new bool[len];
 				Array.Copy(checkable, loc, subcheckable, 0, len);
-				if (await (propertyTypes[i].IsModifiedAsync(oldValues[i], currentValues[i], subcheckable, session)).ConfigureAwait(false))
+				if (await (propertyTypes[i].IsModifiedAsync(oldValues[i], currentValues[i], subcheckable, session, cancellationToken)).ConfigureAwait(false))
 				{
 					return true;
 				}

@@ -42,11 +42,12 @@ namespace NHibernate.Param
 		/// <param name="sqlQueryParametersList">The list of Sql query parameter in the exact sequence they are present in the query where this <see cref="IParameterSpecification"/> was used.</param>
 		/// <param name="queryParameters">The defined values for the query where this <see cref="IParameterSpecification"/> was used.</param>
 		/// <param name="session">The session against which the current execution is occuring.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <remarks>
 		/// Suppose the <paramref name="command"/> is composed by two queries. The <paramref name="singleSqlParametersOffset"/> for the first query is zero.
 		/// If the first query in <paramref name="command"/> has 12 parameters (size of its SqlType array) the offset to bind all <see cref="IParameterSpecification"/>s of the second query in the
 		/// <paramref name="command"/> is 12 (for the first query we are using from 0 to 11).
 		/// </remarks>
-		Task BindAsync(DbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session);
+		Task BindAsync(DbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken);
 	}
 }

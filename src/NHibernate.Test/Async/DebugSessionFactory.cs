@@ -52,44 +52,44 @@ namespace NHibernate.Test
 			return ActualFactory.CloseAsync(cancellationToken);
 		}
 
-		Task ISessionFactory.EvictAsync(System.Type persistentClass)
+		Task ISessionFactory.EvictAsync(System.Type persistentClass, CancellationToken cancellationToken)
 		{
-			return ActualFactory.EvictAsync(persistentClass);
+			return ActualFactory.EvictAsync(persistentClass, cancellationToken);
 		}
 
-		Task ISessionFactory.EvictAsync(System.Type persistentClass, object id)
+		Task ISessionFactory.EvictAsync(System.Type persistentClass, object id, CancellationToken cancellationToken)
 		{
-			return ActualFactory.EvictAsync(persistentClass, id);
+			return ActualFactory.EvictAsync(persistentClass, id, cancellationToken);
 		}
 
-		Task ISessionFactory.EvictEntityAsync(string entityName)
+		Task ISessionFactory.EvictEntityAsync(string entityName, CancellationToken cancellationToken)
 		{
-			return ActualFactory.EvictEntityAsync(entityName);
+			return ActualFactory.EvictEntityAsync(entityName, cancellationToken);
 		}
 
-		Task ISessionFactory.EvictEntityAsync(string entityName, object id)
+		Task ISessionFactory.EvictEntityAsync(string entityName, object id, CancellationToken cancellationToken)
 		{
-			return ActualFactory.EvictEntityAsync(entityName, id);
+			return ActualFactory.EvictEntityAsync(entityName, id, cancellationToken);
 		}
 
-		Task ISessionFactory.EvictCollectionAsync(string roleName)
+		Task ISessionFactory.EvictCollectionAsync(string roleName, CancellationToken cancellationToken)
 		{
-			return ActualFactory.EvictCollectionAsync(roleName);
+			return ActualFactory.EvictCollectionAsync(roleName, cancellationToken);
 		}
 
-		Task ISessionFactory.EvictCollectionAsync(string roleName, object id)
+		Task ISessionFactory.EvictCollectionAsync(string roleName, object id, CancellationToken cancellationToken)
 		{
-			return ActualFactory.EvictCollectionAsync(roleName, id);
+			return ActualFactory.EvictCollectionAsync(roleName, id, cancellationToken);
 		}
 
-		Task ISessionFactory.EvictQueriesAsync()
+		Task ISessionFactory.EvictQueriesAsync(CancellationToken cancellationToken)
 		{
-			return ActualFactory.EvictQueriesAsync();
+			return ActualFactory.EvictQueriesAsync(cancellationToken);
 		}
 
-		Task ISessionFactory.EvictQueriesAsync(string cacheRegion)
+		Task ISessionFactory.EvictQueriesAsync(string cacheRegion, CancellationToken cancellationToken)
 		{
-			return ActualFactory.EvictQueriesAsync(cacheRegion);
+			return ActualFactory.EvictQueriesAsync(cacheRegion, cancellationToken);
 		}
 
 		#endregion

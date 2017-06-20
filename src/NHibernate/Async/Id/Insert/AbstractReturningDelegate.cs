@@ -34,8 +34,7 @@ namespace NHibernate.Id.Insert
 				var insert = await (PrepareAsync(insertSQL, session, cancellationToken)).ConfigureAwait(false);
 				try
 				{
-					cancellationToken.ThrowIfCancellationRequested();
-					await (binder.BindValuesAsync(insert)).ConfigureAwait(false);
+					await (binder.BindValuesAsync(insert, cancellationToken)).ConfigureAwait(false);
 					return await (ExecuteAndExtractAsync(insert, session, cancellationToken)).ConfigureAwait(false);
 				}
 				finally

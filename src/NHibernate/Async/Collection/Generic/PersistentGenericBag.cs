@@ -30,21 +30,26 @@ namespace NHibernate.Collection.Generic
 	public partial class PersistentGenericBag<T> : AbstractPersistentCollection, IList<T>, IList
 	{
 
-		public override async Task<object> DisassembleAsync(ICollectionPersister persister)
+		public override async Task<object> DisassembleAsync(ICollectionPersister persister, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			var length = _gbag.Count;
 			var result = new object[length];
 
 			for (var i = 0; i < length; i++)
 			{
-				result[i] = await (persister.ElementType.DisassembleAsync(_gbag[i], Session, null)).ConfigureAwait(false);
+				result[i] = await (persister.ElementType.DisassembleAsync(_gbag[i], Session, null, cancellationToken)).ConfigureAwait(false);
 			}
 
 			return result;
 		}
 
-		public override Task<bool> EqualsSnapshotAsync(ICollectionPersister persister)
+		public override Task<bool> EqualsSnapshotAsync(ICollectionPersister persister, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<bool>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<bool>(EqualsSnapshot(persister));
@@ -55,8 +60,12 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		public override Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula)
+		public override Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IEnumerable>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<IEnumerable>(GetDeletes(persister, indexIsFormula));
@@ -107,8 +116,12 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		public override Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType)
+		public override Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<bool>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<bool>(NeedsInserting(entry, i, elemType));
@@ -119,8 +132,12 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		public override Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType)
+		public override Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<bool>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<bool>(NeedsUpdating(entry, i, elemType));

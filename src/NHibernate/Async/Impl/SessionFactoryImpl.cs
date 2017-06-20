@@ -116,8 +116,12 @@ namespace NHibernate.Impl
 			eventListeners.DestroyListeners();
 		}
 
-		public Task EvictAsync(System.Type persistentClass, object id)
+		public Task EvictAsync(System.Type persistentClass, object id, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				IEntityPersister p = GetEntityPersister(persistentClass.FullName);
@@ -128,7 +132,7 @@ namespace NHibernate.Impl
 						log.Debug("evicting second-level cache: " + MessageHelper.InfoString(p, id));
 					}
 					CacheKey ck = GenerateCacheKeyForEvict(id, p.IdentifierType, p.RootEntityName);
-					return p.Cache.RemoveAsync(ck);
+					return p.Cache.RemoveAsync(ck, cancellationToken);
 				}
 				return Task.CompletedTask;
 			}
@@ -138,8 +142,12 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public Task EvictAsync(System.Type persistentClass)
+		public Task EvictAsync(System.Type persistentClass, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				IEntityPersister p = GetEntityPersister(persistentClass.FullName);
@@ -149,7 +157,7 @@ namespace NHibernate.Impl
 					{
 						log.Debug("evicting second-level cache: " + p.EntityName);
 					}
-					return p.Cache.ClearAsync();
+					return p.Cache.ClearAsync(cancellationToken);
 				}
 				return Task.CompletedTask;
 			}
@@ -159,8 +167,12 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public Task EvictEntityAsync(string entityName)
+		public Task EvictEntityAsync(string entityName, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				IEntityPersister p = GetEntityPersister(entityName);
@@ -170,7 +182,7 @@ namespace NHibernate.Impl
 					{
 						log.Debug("evicting second-level cache: " + p.EntityName);
 					}
-					return p.Cache.ClearAsync();
+					return p.Cache.ClearAsync(cancellationToken);
 				}
 				return Task.CompletedTask;
 			}
@@ -180,8 +192,12 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public Task EvictEntityAsync(string entityName, object id)
+		public Task EvictEntityAsync(string entityName, object id, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				IEntityPersister p = GetEntityPersister(entityName);
@@ -192,7 +208,7 @@ namespace NHibernate.Impl
 						log.Debug("evicting second-level cache: " + MessageHelper.InfoString(p, id, this));
 					}
 					CacheKey cacheKey = GenerateCacheKeyForEvict(id, p.IdentifierType, p.RootEntityName);
-					return p.Cache.RemoveAsync(cacheKey);
+					return p.Cache.RemoveAsync(cacheKey, cancellationToken);
 				}
 				return Task.CompletedTask;
 			}
@@ -202,8 +218,12 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public Task EvictCollectionAsync(string roleName, object id)
+		public Task EvictCollectionAsync(string roleName, object id, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				ICollectionPersister p = GetCollectionPersister(roleName);
@@ -214,7 +234,7 @@ namespace NHibernate.Impl
 						log.Debug("evicting second-level cache: " + MessageHelper.CollectionInfoString(p, id));
 					}
 					CacheKey ck = GenerateCacheKeyForEvict(id, p.KeyType, p.Role);
-					return p.Cache.RemoveAsync(ck);
+					return p.Cache.RemoveAsync(ck, cancellationToken);
 				}
 				return Task.CompletedTask;
 			}
@@ -224,8 +244,12 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public Task EvictCollectionAsync(string roleName)
+		public Task EvictCollectionAsync(string roleName, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				ICollectionPersister p = GetCollectionPersister(roleName);
@@ -235,7 +259,7 @@ namespace NHibernate.Impl
 					{
 						log.Debug("evicting second-level cache: " + p.Role);
 					}
-					return p.Cache.ClearAsync();
+					return p.Cache.ClearAsync(cancellationToken);
 				}
 				return Task.CompletedTask;
 			}
@@ -245,21 +269,26 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public async Task EvictQueriesAsync()
+		public async Task EvictQueriesAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			// NH Different implementation
 			if (queryCache != null)
 			{
-				await (queryCache.ClearAsync()).ConfigureAwait(false);
+				await (queryCache.ClearAsync(cancellationToken)).ConfigureAwait(false);
 				if (queryCaches.Count == 0)
 				{
-					await (updateTimestampsCache.ClearAsync()).ConfigureAwait(false);
+					await (updateTimestampsCache.ClearAsync(cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}
 
-		public Task EvictQueriesAsync(string cacheRegion)
+		public Task EvictQueriesAsync(string cacheRegion, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				if (string.IsNullOrEmpty(cacheRegion))
@@ -273,7 +302,7 @@ namespace NHibernate.Impl
 						IQueryCache currentQueryCache;
 						if (queryCaches.TryGetValue(cacheRegion, out currentQueryCache))
 						{
-							return currentQueryCache.ClearAsync();
+							return currentQueryCache.ClearAsync(cancellationToken);
 						}
 					}
 				}

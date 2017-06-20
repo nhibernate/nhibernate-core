@@ -82,9 +82,8 @@ namespace NHibernate.Action
 			}
 
 			Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection);
-			cancellationToken.ThrowIfCancellationRequested();
 
-			await (EvictAsync()).ConfigureAwait(false);
+			await (EvictAsync(cancellationToken)).ConfigureAwait(false);
 
 			await (PostUpdateAsync(cancellationToken)).ConfigureAwait(false);
 

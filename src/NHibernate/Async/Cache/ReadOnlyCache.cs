@@ -15,15 +15,17 @@ using NHibernate.Cache.Access;
 namespace NHibernate.Cache
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class ReadOnlyCache : ICacheConcurrencyStrategy
 	{
 
-		public async Task<object> GetAsync(CacheKey key, long timestamp)
+		public async Task<object> GetAsync(CacheKey key, long timestamp, CancellationToken cancellationToken)
 		{
-			object result = await (cache.GetAsync(key)).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			object result = await (cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
 			if (result != null && log.IsDebugEnabled)
 			{
 				log.Debug("Cache hit: " + key);
@@ -34,8 +36,12 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Unsupported!
 		/// </summary>
-		public Task<ISoftLock> LockAsync(CacheKey key, object version)
+		public Task<ISoftLock> LockAsync(CacheKey key, object version, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<ISoftLock>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<ISoftLock>(Lock(key, version));
@@ -47,15 +53,16 @@ namespace NHibernate.Cache
 		}
 
 		public async Task<bool> PutAsync(CacheKey key, object value, long timestamp, object version, IComparer versionComparator,
-						bool minimalPut)
+						bool minimalPut, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (timestamp == long.MinValue)
 			{
 				// MinValue means cache is disabled
 				return false;
 			}
 
-			if (minimalPut && await (cache.GetAsync(key)).ConfigureAwait(false) != null)
+			if (minimalPut && await (cache.GetAsync(key, cancellationToken)).ConfigureAwait(false) != null)
 			{
 				if (log.IsDebugEnabled)
 				{
@@ -67,15 +74,19 @@ namespace NHibernate.Cache
 			{
 				log.Debug("Caching: " + key);
 			}
-			await (cache.PutAsync(key, value)).ConfigureAwait(false);
+			await (cache.PutAsync(key, value, cancellationToken)).ConfigureAwait(false);
 			return true;
 		}
 
 		/// <summary>
 		/// Unsupported!
 		/// </summary>
-		public Task ReleaseAsync(CacheKey key, ISoftLock @lock)
+		public Task ReleaseAsync(CacheKey key, ISoftLock @lock, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				Release(key, @lock);
@@ -87,21 +98,33 @@ namespace NHibernate.Cache
 			}
 		}
 
-		public Task ClearAsync()
+		public Task ClearAsync(CancellationToken cancellationToken)
 		{
-			return cache.ClearAsync();
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return cache.ClearAsync(cancellationToken);
 		}
 
-		public Task RemoveAsync(CacheKey key)
+		public Task RemoveAsync(CacheKey key, CancellationToken cancellationToken)
 		{
-			return cache.RemoveAsync(key);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return cache.RemoveAsync(key, cancellationToken);
 		}
 
 		/// <summary>
 		/// Unsupported!
 		/// </summary>
-		public Task<bool> AfterUpdateAsync(CacheKey key, object value, object version, ISoftLock @lock)
+		public Task<bool> AfterUpdateAsync(CacheKey key, object value, object version, ISoftLock @lock, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<bool>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<bool>(AfterUpdate(key, value, version, @lock));
@@ -115,8 +138,12 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Do nothing.
 		/// </summary>
-		public Task<bool> AfterInsertAsync(CacheKey key, object value, object version)
+		public Task<bool> AfterInsertAsync(CacheKey key, object value, object version, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<bool>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<bool>(AfterInsert(key, value, version));
@@ -130,8 +157,12 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Do nothing.
 		/// </summary>
-		public Task EvictAsync(CacheKey key)
+		public Task EvictAsync(CacheKey key, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				Evict(key);
@@ -147,8 +178,12 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Unsupported!
 		/// </summary>
-		public Task<bool> UpdateAsync(CacheKey key, object value, object currentVersion, object previousVersion)
+		public Task<bool> UpdateAsync(CacheKey key, object value, object currentVersion, object previousVersion, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<bool>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<bool>(Update(key, value, currentVersion, previousVersion));

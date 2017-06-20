@@ -46,7 +46,7 @@ namespace NHibernate.Test.FilterTest
 			Assert.IsTrue(persister.HasCache, "No cache for collection");
 			CacheKey cacheKey =
 				new CacheKey(testData.steveId, persister.KeyType, persister.Role, (ISessionFactoryImplementor) Sfi);
-			CollectionCacheEntry cachedData = (CollectionCacheEntry)await (persister.Cache.Cache.GetAsync(cacheKey));
+			CollectionCacheEntry cachedData = (CollectionCacheEntry)await (persister.Cache.Cache.GetAsync(cacheKey, CancellationToken.None));
 			Assert.IsNotNull(cachedData, "collection was not in cache");
 
 			session.Close();
@@ -58,7 +58,7 @@ namespace NHibernate.Test.FilterTest
 			                   	.UniqueResultAsync());
 			Assert.AreEqual(1, sp.Orders.Count, "Filtered-collection not bypassing 2L-cache");
 
-			CollectionCacheEntry cachedData2 = (CollectionCacheEntry)await (persister.Cache.Cache.GetAsync(cacheKey));
+			CollectionCacheEntry cachedData2 = (CollectionCacheEntry)await (persister.Cache.Cache.GetAsync(cacheKey, CancellationToken.None));
 			Assert.IsNotNull(cachedData2, "collection no longer in cache!");
 			Assert.AreSame(cachedData, cachedData2, "Different cache values!");
 

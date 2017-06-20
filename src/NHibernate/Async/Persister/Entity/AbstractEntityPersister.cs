@@ -55,9 +55,13 @@ namespace NHibernate.Persister.Entity
 		private partial class GeneratedIdentifierBinder : IBinder
 		{
 
-			public virtual Task BindValuesAsync(DbCommand ps)
+			public virtual Task BindValuesAsync(DbCommand ps, CancellationToken cancellationToken)
 			{
-				return entityPersister.DehydrateAsync(null, fields, notNull, entityPersister.propertyColumnInsertable, 0, ps, session);
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object>(cancellationToken);
+				}
+				return entityPersister.DehydrateAsync(null, fields, notNull, entityPersister.propertyColumnInsertable, 0, ps, session, cancellationToken);
 			}
 		}
 
@@ -76,8 +80,7 @@ namespace NHibernate.Persister.Entity
 				DbDataReader rs = null;
 				try
 				{
-					cancellationToken.ThrowIfCancellationRequested();
-					await (IdentifierType.NullSafeSetAsync(st, id, 0, session)).ConfigureAwait(false);
+					await (IdentifierType.NullSafeSetAsync(st, id, 0, session, cancellationToken)).ConfigureAwait(false);
 					rs = await (session.Batcher.ExecuteReaderAsync(st, cancellationToken)).ConfigureAwait(false);
 
 					if (!await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false))
@@ -154,12 +157,9 @@ namespace NHibernate.Persister.Entity
 					var st = await (session.Batcher.PrepareCommandAsync(versionIncrementCommand.CommandType, versionIncrementCommand.Text, versionIncrementCommand.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 					try
 					{
-						cancellationToken.ThrowIfCancellationRequested();
-						await (VersionType.NullSafeSetAsync(st, nextVersion, 0, session)).ConfigureAwait(false);
-						cancellationToken.ThrowIfCancellationRequested();
-						await (IdentifierType.NullSafeSetAsync(st, id, 1, session)).ConfigureAwait(false);
-						cancellationToken.ThrowIfCancellationRequested();
-						await (VersionType.NullSafeSetAsync(st, currentVersion, 1 + IdentifierColumnSpan, session)).ConfigureAwait(false);
+						await (VersionType.NullSafeSetAsync(st, nextVersion, 0, session, cancellationToken)).ConfigureAwait(false);
+						await (IdentifierType.NullSafeSetAsync(st, id, 1, session, cancellationToken)).ConfigureAwait(false);
+						await (VersionType.NullSafeSetAsync(st, currentVersion, 1 + IdentifierColumnSpan, session, cancellationToken)).ConfigureAwait(false);
 						Check(await (session.Batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false), id, 0, expectation, st);
 					}
 					finally
@@ -200,8 +200,7 @@ namespace NHibernate.Persister.Entity
 				DbDataReader rs = null;
 				try
 				{
-					cancellationToken.ThrowIfCancellationRequested();
-					await (IdentifierType.NullSafeSetAsync(st, id, 0, session)).ConfigureAwait(false);
+					await (IdentifierType.NullSafeSetAsync(st, id, 0, session, cancellationToken)).ConfigureAwait(false);
 					rs = await (session.Batcher.ExecuteReaderAsync(st, cancellationToken)).ConfigureAwait(false);
 					if (!await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false))
 					{
@@ -264,15 +263,20 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		protected Task<int> DehydrateAsync(object id, object[] fields, bool[] includeProperty, bool[][] includeColumns, int j, DbCommand st, ISessionImplementor session)
+		protected Task<int> DehydrateAsync(object id, object[] fields, bool[] includeProperty, bool[][] includeColumns, int j, DbCommand st, ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			return DehydrateAsync(id, fields, null, includeProperty, includeColumns, j, st, session, 0);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<int>(cancellationToken);
+			}
+			return DehydrateAsync(id, fields, null, includeProperty, includeColumns, j, st, session, 0, cancellationToken);
 		}
 
 		/// <summary> Marshall the fields of a persistent instance to a prepared statement</summary>
 		protected async Task<int> DehydrateAsync(object id, object[] fields, object rowId, bool[] includeProperty, bool[][] includeColumns, int table,
-			DbCommand statement, ISessionImplementor session, int index)
+			DbCommand statement, ISessionImplementor session, int index, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("Dehydrating entity: " + MessageHelper.InfoString(this, id, Factory));
@@ -287,7 +291,7 @@ namespace NHibernate.Persister.Entity
 				{
 					try
 					{
-						await (PropertyTypes[i].NullSafeSetAsync(statement, fields[i], index, includeColumns[i], session)).ConfigureAwait(false);
+						await (PropertyTypes[i].NullSafeSetAsync(statement, fields[i], index, includeColumns[i], session, cancellationToken)).ConfigureAwait(false);
 						index += ArrayHelper.CountTrue(includeColumns[i]); //TODO:  this is kinda slow...
 					}
 					catch (Exception ex)
@@ -307,7 +311,7 @@ namespace NHibernate.Persister.Entity
 			else if (id != null)
 			{
 				var property = GetIdentiferProperty(table);
-				await (property.Type.NullSafeSetAsync(statement, id, index, session)).ConfigureAwait(false);
+				await (property.Type.NullSafeSetAsync(statement, id, index, session, cancellationToken)).ConfigureAwait(false);
 				index += property.Type.GetColumnSpan(factory);
 			}
 
@@ -343,8 +347,7 @@ namespace NHibernate.Persister.Entity
 					{
 						//TODO: I am not so sure about the exception handling in this bit!
 						sequentialSelect = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, IdentifierType.SqlTypes(factory), cancellationToken)).ConfigureAwait(false);
-						cancellationToken.ThrowIfCancellationRequested();
-						await (rootPersister.IdentifierType.NullSafeSetAsync(sequentialSelect, id, 0, session)).ConfigureAwait(false);
+						await (rootPersister.IdentifierType.NullSafeSetAsync(sequentialSelect, id, 0, session, cancellationToken)).ConfigureAwait(false);
 						sequentialResultSet = await (session.Batcher.ExecuteReaderAsync(sequentialSelect, cancellationToken)).ConfigureAwait(false);
 						if (!await (sequentialResultSet.ReadAsync(cancellationToken)).ConfigureAwait(false))
 						{
@@ -506,14 +509,13 @@ namespace NHibernate.Persister.Entity
 				try
 				{
 					int index = 0;
-					cancellationToken.ThrowIfCancellationRequested();
 					//index += expectation.Prepare(insertCmd, factory.ConnectionProvider.Driver);
 
 					// Write the values of the field onto the prepared statement - we MUST use the
 					// state at the time the insert was issued (cos of foreign key constraints).
 					// Not necessarily the obect's current state
 
-					await (DehydrateAsync(tableId, fields, null, notNull, propertyColumnInsertable, j, insertCmd, session, index)).ConfigureAwait(false);
+					await (DehydrateAsync(tableId, fields, null, notNull, propertyColumnInsertable, j, insertCmd, session, index, cancellationToken)).ConfigureAwait(false);
 
 					if (useBatch)
 					{
@@ -619,17 +621,16 @@ namespace NHibernate.Persister.Entity
 					: await (session.Batcher.PrepareCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 				try
 				{
-					cancellationToken.ThrowIfCancellationRequested();
 					//index += expectation.Prepare(statement, factory.ConnectionProvider.Driver);
 
 					//Now write the values of fields onto the prepared statement
-					index = await (DehydrateAsync(id, fields, rowId, includeProperty, propertyColumnUpdateable, j, statement, session, index)).ConfigureAwait(false);
+					index = await (DehydrateAsync(id, fields, rowId, includeProperty, propertyColumnUpdateable, j, statement, session, index, cancellationToken)).ConfigureAwait(false);
 
 					// Write any appropriate versioning conditional parameters
 					if (useVersion && Versioning.OptimisticLock.Version == entityMetamodel.OptimisticLockMode)
 					{
 						if (CheckVersion(includeProperty))
-							await (VersionType.NullSafeSetAsync(statement, oldVersion, index, session)).ConfigureAwait(false);
+							await (VersionType.NullSafeSetAsync(statement, oldVersion, index, session, cancellationToken)).ConfigureAwait(false);
 					}
 					else if (entityMetamodel.OptimisticLockMode > Versioning.OptimisticLock.Version && oldFields != null)
 					{
@@ -647,8 +648,7 @@ namespace NHibernate.Persister.Entity
 							if (include)
 							{
 								bool[] settable = types[i].ToColumnNullness(oldFields[i], Factory);
-								cancellationToken.ThrowIfCancellationRequested();
-								await (types[i].NullSafeSetAsync(statement, oldFields[i], index, settable, session)).ConfigureAwait(false);
+								await (types[i].NullSafeSetAsync(statement, oldFields[i], index, settable, session, cancellationToken)).ConfigureAwait(false);
 								index += ArrayHelper.CountTrue(settable);
 							}
 						}
@@ -758,15 +758,13 @@ namespace NHibernate.Persister.Entity
 					// Do the key. The key is immutable so we can use the _current_ object state - not necessarily
 					// the state at the time the delete was issued
 					var property = GetIdentiferProperty(j);
-					cancellationToken.ThrowIfCancellationRequested();
-					await (property.Type.NullSafeSetAsync(statement, tableId, index, session)).ConfigureAwait(false);
+					await (property.Type.NullSafeSetAsync(statement, tableId, index, session, cancellationToken)).ConfigureAwait(false);
 					index += property.Type.GetColumnSpan(factory);
 
 					// We should use the _current_ object state (ie. after any updates that occurred during flush)
 					if (useVersion)
 					{
-						cancellationToken.ThrowIfCancellationRequested();
-						await (VersionType.NullSafeSetAsync(statement, version, index, session)).ConfigureAwait(false);
+						await (VersionType.NullSafeSetAsync(statement, version, index, session, cancellationToken)).ConfigureAwait(false);
 					}
 					else if (entityMetamodel.OptimisticLockMode > Versioning.OptimisticLock.Version && loadedState != null)
 					{
@@ -779,9 +777,8 @@ namespace NHibernate.Persister.Entity
 								// this property belongs to the table and it is not specifically
 								// excluded from optimistic locking by optimistic-lock="false"
 								bool[] settable = types[i].ToColumnNullness(loadedState[i], Factory);
-								cancellationToken.ThrowIfCancellationRequested();
 
-								await (types[i].NullSafeSetAsync(statement, loadedState[i], index, settable, session)).ConfigureAwait(false);
+								await (types[i].NullSafeSetAsync(statement, loadedState[i], index, settable, session, cancellationToken)).ConfigureAwait(false);
 								index += ArrayHelper.CountTrue(settable);
 							}
 						}
@@ -1010,10 +1007,11 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		public virtual async Task<int[]> FindDirtyAsync(object[] currentState, object[] previousState, object entity, ISessionImplementor session)
+		public virtual async Task<int[]> FindDirtyAsync(object[] currentState, object[] previousState, object entity, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			int[] props = await (TypeHelper.FindDirtyAsync(
-				entityMetamodel.Properties, currentState, previousState, propertyColumnUpdateable, HasUninitializedLazyProperties(entity), session)).ConfigureAwait(false);
+				entityMetamodel.Properties, currentState, previousState, propertyColumnUpdateable, HasUninitializedLazyProperties(entity), session, cancellationToken)).ConfigureAwait(false);
 
 			if (props == null)
 			{
@@ -1026,10 +1024,11 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		public virtual async Task<int[]> FindModifiedAsync(object[] old, object[] current, object entity, ISessionImplementor session)
+		public virtual async Task<int[]> FindModifiedAsync(object[] old, object[] current, object entity, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			int[] props = await (TypeHelper.FindModifiedAsync(
-				entityMetamodel.Properties, current, old, propertyColumnUpdateable, HasUninitializedLazyProperties(entity), session)).ConfigureAwait(false);
+				entityMetamodel.Properties, current, old, propertyColumnUpdateable, HasUninitializedLazyProperties(entity), session, cancellationToken)).ConfigureAwait(false);
 			if (props == null)
 			{
 				return null;
@@ -1041,8 +1040,9 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		public virtual async Task<bool?> IsTransientAsync(object entity, ISessionImplementor session)
+		public virtual async Task<bool?> IsTransientAsync(object entity, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object id;
 			if (CanExtractIdOutOfEntity)
 			{
@@ -1092,7 +1092,7 @@ namespace NHibernate.Persister.Entity
 			if (HasCache)
 			{
 				CacheKey ck = session.GenerateCacheKey(id, IdentifierType, RootEntityName);
-				if (await (Cache.GetAsync(ck, session.Timestamp)).ConfigureAwait(false) != null)
+				if (await (Cache.GetAsync(ck, session.Timestamp, cancellationToken)).ConfigureAwait(false) != null)
 					return false;
 			}
 
@@ -1173,8 +1173,7 @@ namespace NHibernate.Persister.Entity
 				DbDataReader rs = null;
 				try
 				{
-					cancellationToken.ThrowIfCancellationRequested();
-					await (IdentifierType.NullSafeSetAsync(cmd, id, 0, session)).ConfigureAwait(false);
+					await (IdentifierType.NullSafeSetAsync(cmd, id, 0, session, cancellationToken)).ConfigureAwait(false);
 					rs = await (session.Batcher.ExecuteReaderAsync(cmd, cancellationToken)).ConfigureAwait(false);
 					if (!await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false))
 					{
@@ -1294,8 +1293,7 @@ namespace NHibernate.Persister.Entity
 					DbDataReader rs = null;
 					try
 					{
-						cancellationToken.ThrowIfCancellationRequested();
-						await (IdentifierType.NullSafeSetAsync(ps, id, 0, session)).ConfigureAwait(false);
+						await (IdentifierType.NullSafeSetAsync(ps, id, 0, session, cancellationToken)).ConfigureAwait(false);
 						rs = await (session.Batcher.ExecuteReaderAsync(ps, cancellationToken)).ConfigureAwait(false);
 						//if there is no resulting row, return null
 						if (!await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false))

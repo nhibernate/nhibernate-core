@@ -64,11 +64,10 @@ namespace NHibernate.Id
 			object id;
 			try
 			{
-				cancellationToken.ThrowIfCancellationRequested();
 				id = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(
 					foreignValueSourceType.GetAssociatedEntityName(),
 					associatedObject,
-					sessionImplementor)).ConfigureAwait(false);
+					sessionImplementor, cancellationToken)).ConfigureAwait(false);
 			}
 			catch (TransientObjectException)
 			{

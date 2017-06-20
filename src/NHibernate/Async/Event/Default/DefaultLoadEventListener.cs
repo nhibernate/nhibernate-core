@@ -233,8 +233,7 @@ namespace NHibernate.Event.Default
 			if (persister.HasCache)
 			{
 				ck = source.GenerateCacheKey(@event.EntityId, persister.IdentifierType, persister.RootEntityName);
-				cancellationToken.ThrowIfCancellationRequested();
-				sLock = await (persister.Cache.LockAsync(ck, null)).ConfigureAwait(false);
+				sLock = await (persister.Cache.LockAsync(ck, null, cancellationToken)).ConfigureAwait(false);
 			}
 			else
 			{
@@ -250,8 +249,7 @@ namespace NHibernate.Event.Default
 			{
 				if (persister.HasCache)
 				{
-					cancellationToken.ThrowIfCancellationRequested();
-					await (persister.Cache.ReleaseAsync(ck, sLock)).ConfigureAwait(false);
+					await (persister.Cache.ReleaseAsync(ck, sLock, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 
@@ -415,8 +413,7 @@ namespace NHibernate.Event.Default
 				ISessionFactoryImplementor factory = source.Factory;
 
 				CacheKey ck = source.GenerateCacheKey(@event.EntityId, persister.IdentifierType, persister.RootEntityName);
-				cancellationToken.ThrowIfCancellationRequested();
-				object ce = await (persister.Cache.GetAsync(ck, source.Timestamp)).ConfigureAwait(false);
+				object ce = await (persister.Cache.GetAsync(ck, source.Timestamp, cancellationToken)).ConfigureAwait(false);
 
 				if (factory.Statistics.IsStatisticsEnabled)
 				{

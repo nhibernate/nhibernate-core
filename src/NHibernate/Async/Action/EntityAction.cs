@@ -28,7 +28,7 @@ namespace NHibernate.Action
 
 		#region IExecutable Members
 
-		public Task BeforeExecutionsAsync()
+		public Task BeforeExecutionsAsync(CancellationToken cancellationToken)
 		{
 			throw new AssertionFailure("BeforeExecutions() called for non-collection action");
 		}

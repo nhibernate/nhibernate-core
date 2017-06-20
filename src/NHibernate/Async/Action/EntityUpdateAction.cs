@@ -59,8 +59,7 @@ namespace NHibernate.Action
 			if (persister.HasCache)
 			{
 				ck = session.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
-				cancellationToken.ThrowIfCancellationRequested();
-				slock = await (persister.Cache.LockAsync(ck, previousVersion)).ConfigureAwait(false);
+				slock = await (persister.Cache.LockAsync(ck, previousVersion, cancellationToken)).ConfigureAwait(false);
 			}
 
 			if (!veto)
@@ -99,16 +98,14 @@ namespace NHibernate.Action
 			{
 				if (persister.IsCacheInvalidationRequired || entry.Status != Status.Loaded)
 				{
-					cancellationToken.ThrowIfCancellationRequested();
-					await (persister.Cache.EvictAsync(ck)).ConfigureAwait(false);
+					await (persister.Cache.EvictAsync(ck, cancellationToken)).ConfigureAwait(false);
 				}
 				else
 				{
 					CacheEntry ce = new CacheEntry(state, persister, persister.HasUninitializedLazyProperties(instance), nextVersion, Session, instance);
 					cacheEntry = persister.CacheEntryStructure.Structure(ce);
-					cancellationToken.ThrowIfCancellationRequested();
 
-					bool put = await (persister.Cache.UpdateAsync(ck, cacheEntry, nextVersion, previousVersion)).ConfigureAwait(false);
+					bool put = await (persister.Cache.UpdateAsync(ck, cacheEntry, nextVersion, previousVersion, cancellationToken)).ConfigureAwait(false);
 
 					if (put && factory.Statistics.IsStatisticsEnabled)
 					{
@@ -136,8 +133,7 @@ namespace NHibernate.Action
 
 				if (success && cacheEntry != null)
 				{
-					cancellationToken.ThrowIfCancellationRequested();
-					bool put = await (persister.Cache.AfterUpdateAsync(ck, cacheEntry, nextVersion, slock)).ConfigureAwait(false);
+					bool put = await (persister.Cache.AfterUpdateAsync(ck, cacheEntry, nextVersion, slock, cancellationToken)).ConfigureAwait(false);
 
 					if (put && Session.Factory.Statistics.IsStatisticsEnabled)
 					{
@@ -146,8 +142,7 @@ namespace NHibernate.Action
 				}
 				else
 				{
-					cancellationToken.ThrowIfCancellationRequested();
-					await (persister.Cache.ReleaseAsync(ck, slock)).ConfigureAwait(false);
+					await (persister.Cache.ReleaseAsync(ck, slock, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 			if (success)

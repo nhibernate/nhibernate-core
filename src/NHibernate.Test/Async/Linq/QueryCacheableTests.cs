@@ -16,6 +16,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
     using System.Threading.Tasks;
+    using System.Threading;
     [TestFixture]
     public class QueryCacheableTestsAsync : LinqTestCase
     {
@@ -30,7 +31,7 @@ namespace NHibernate.Test.Linq
         public async Task QueryIsCacheableAsync()
         {
             Sfi.Statistics.Clear();
-            await (Sfi.QueryCache.ClearAsync());
+            await (Sfi.QueryCache.ClearAsync(CancellationToken.None));
 
             var x = await ((from c in db.Customers
                      select c).Cacheable().ToListAsync());
@@ -47,7 +48,7 @@ namespace NHibernate.Test.Linq
         public async Task QueryIsCacheable2Async()
         {
             Sfi.Statistics.Clear();
-            await (Sfi.QueryCache.ClearAsync());
+            await (Sfi.QueryCache.ClearAsync(CancellationToken.None));
 
             var x = await ((from c in db.Customers
                      select c).Cacheable().ToListAsync());
@@ -64,7 +65,7 @@ namespace NHibernate.Test.Linq
         public async Task QueryIsCacheable3Async()
         {
             Sfi.Statistics.Clear();
-            await (Sfi.QueryCache.ClearAsync());
+            await (Sfi.QueryCache.ClearAsync(CancellationToken.None));
 
             var x = await ((from c in db.Customers.Cacheable()
                      select c).ToListAsync());
@@ -81,7 +82,7 @@ namespace NHibernate.Test.Linq
         public async Task QueryIsCacheableWithRegionAsync()
         {
             Sfi.Statistics.Clear();
-            await (Sfi.QueryCache.ClearAsync());
+            await (Sfi.QueryCache.ClearAsync(CancellationToken.None));
 
             var x = await ((from c in db.Customers
                      select c).Cacheable().CacheRegion("test").ToListAsync());
@@ -101,7 +102,7 @@ namespace NHibernate.Test.Linq
         public async Task CacheableBeforeOtherClausesAsync()
         {
             Sfi.Statistics.Clear();
-            await (Sfi.QueryCache.ClearAsync());
+            await (Sfi.QueryCache.ClearAsync(CancellationToken.None));
 
             await (db.Customers.Cacheable().Where(c => c.ContactName != c.CompanyName).Take(1).ToListAsync());
             await (db.Customers.Where(c => c.ContactName != c.CompanyName).Take(1).ToListAsync());
@@ -115,7 +116,7 @@ namespace NHibernate.Test.Linq
         public async Task CacheableRegionBeforeOtherClausesAsync()
         {
             Sfi.Statistics.Clear();
-            await (Sfi.QueryCache.ClearAsync());
+            await (Sfi.QueryCache.ClearAsync(CancellationToken.None));
 
             await (db.Customers.Cacheable().CacheRegion("test").Where(c => c.ContactName != c.CompanyName).Take(1).ToListAsync());
             await (db.Customers.Cacheable().CacheRegion("test").Where(c => c.ContactName != c.CompanyName).Take(1).ToListAsync());
@@ -130,7 +131,7 @@ namespace NHibernate.Test.Linq
 		public async Task GroupByQueryIsCacheableAsync()
 		{
 			Sfi.Statistics.Clear();
-			await (Sfi.QueryCache.ClearAsync());
+			await (Sfi.QueryCache.ClearAsync(CancellationToken.None));
 
 			var c = await (db
 				.Customers
@@ -161,7 +162,7 @@ namespace NHibernate.Test.Linq
 		public async Task GroupByQueryIsCacheable2Async()
 		{
 			Sfi.Statistics.Clear();
-			await (Sfi.QueryCache.ClearAsync());
+			await (Sfi.QueryCache.ClearAsync(CancellationToken.None));
 
 			var c = await (db
 				.Customers.Cacheable()

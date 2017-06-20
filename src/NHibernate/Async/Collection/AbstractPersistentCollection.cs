@@ -195,8 +195,7 @@ namespace NHibernate.Collection
 			{
 				if (current != null && await (ForeignKeys.IsNotTransientSlowAsync(entityName, current, session, cancellationToken)).ConfigureAwait(false))
 				{
-					cancellationToken.ThrowIfCancellationRequested();
-					object currentId = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, current, session)).ConfigureAwait(false);
+					object currentId = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, current, session, cancellationToken)).ConfigureAwait(false);
 					currentIds.Add(new TypedValue(idType, currentId));
 				}
 			}
@@ -204,8 +203,7 @@ namespace NHibernate.Collection
 			// iterate over the *old* list
 			foreach (object old in oldElements)
 			{
-				cancellationToken.ThrowIfCancellationRequested();
-				object oldId = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, old, session)).ConfigureAwait(false);
+				object oldId = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, old, session, cancellationToken)).ConfigureAwait(false);
 				if (!currentIds.Contains(new TypedValue(idType, oldId)))
 				{
 					res.Add(old);
@@ -221,9 +219,8 @@ namespace NHibernate.Collection
 			if (obj != null && await (ForeignKeys.IsNotTransientSlowAsync(entityName, obj, session, cancellationToken)).ConfigureAwait(false))
 			{
 				IType idType = session.Factory.GetEntityPersister(entityName).IdentifierType;
-				cancellationToken.ThrowIfCancellationRequested();
 
-				object idOfCurrent = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, obj, session)).ConfigureAwait(false);
+				object idOfCurrent = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, obj, session, cancellationToken)).ConfigureAwait(false);
 				List<object> toRemove = new List<object>(list.Count);
 				foreach (object current in list)
 				{
@@ -231,8 +228,7 @@ namespace NHibernate.Collection
 					{
 						continue;
 					}
-					cancellationToken.ThrowIfCancellationRequested();
-					object idOfOld = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, current, session)).ConfigureAwait(false);
+					object idOfOld = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, current, session, cancellationToken)).ConfigureAwait(false);
 					if (idType.IsEqual(idOfCurrent, idOfOld, session.Factory))
 					{
 						toRemove.Add(current);
@@ -249,15 +245,16 @@ namespace NHibernate.Collection
 		/// Disassemble the collection, ready for the cache
 		/// </summary>
 		/// <param name="persister"></param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
-		public abstract Task<object> DisassembleAsync(ICollectionPersister persister);
+		public abstract Task<object> DisassembleAsync(ICollectionPersister persister, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Get all the elements that need deleting
 		/// </summary>
-		public abstract Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula);
+		public abstract Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula, CancellationToken cancellationToken);
 
-		public abstract Task<bool> EqualsSnapshotAsync(ICollectionPersister persister);
+		public abstract Task<bool> EqualsSnapshotAsync(ICollectionPersister persister, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Read the state of the collection from a disassembled cached value.
@@ -274,8 +271,9 @@ namespace NHibernate.Collection
 		/// <param name="entry"></param>
 		/// <param name="i"></param>
 		/// <param name="elemType"></param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
-		public abstract Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType);
+		public abstract Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Reads the row from the <see cref="DbDataReader"/>.
@@ -295,7 +293,8 @@ namespace NHibernate.Collection
 		/// <param name="entry"></param>
 		/// <param name="i"></param>
 		/// <param name="elemType"></param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
-		public abstract Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType);
+		public abstract Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType, CancellationToken cancellationToken);
 	}
 }

@@ -39,12 +39,10 @@ namespace NHibernate.Dialect.Lock
 				DbDataReader rs = null;
 				try
 				{
-					cancellationToken.ThrowIfCancellationRequested();
-					await (lockable.IdentifierType.NullSafeSetAsync(st, id, 0, session)).ConfigureAwait(false);
+					await (lockable.IdentifierType.NullSafeSetAsync(st, id, 0, session, cancellationToken)).ConfigureAwait(false);
 					if (lockable.IsVersioned)
 					{
-						cancellationToken.ThrowIfCancellationRequested();
-						await (lockable.VersionType.NullSafeSetAsync(st, version, lockable.IdentifierType.GetColumnSpan(factory), session)).ConfigureAwait(false);
+						await (lockable.VersionType.NullSafeSetAsync(st, version, lockable.IdentifierType.GetColumnSpan(factory), session, cancellationToken)).ConfigureAwait(false);
 					}
 
 					rs = await (session.Batcher.ExecuteReaderAsync(st, cancellationToken)).ConfigureAwait(false);

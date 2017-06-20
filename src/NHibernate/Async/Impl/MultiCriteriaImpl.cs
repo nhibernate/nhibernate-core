@@ -116,8 +116,7 @@ namespace NHibernate.Impl
 				result = list;
 				if ((session.CacheMode & CacheMode.Put) == CacheMode.Put)
 				{
-					cancellationToken.ThrowIfCancellationRequested();
-					bool put = await (queryCache.PutAsync(key, new ICacheAssembler[] { assembler }, new object[] { list }, combinedParameters.NaturalKeyLookup, session)).ConfigureAwait(false);
+					bool put = await (queryCache.PutAsync(key, new ICacheAssembler[] { assembler }, new object[] { list }, combinedParameters.NaturalKeyLookup, session, cancellationToken)).ConfigureAwait(false);
 					if (put && factory.Statistics.IsStatisticsEnabled)
 					{
 						factory.StatisticsImplementor.QueryCachePut(key.ToString(), queryCache.RegionName);

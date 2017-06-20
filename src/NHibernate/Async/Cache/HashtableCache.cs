@@ -13,6 +13,7 @@ using System.Collections;
 namespace NHibernate.Cache
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -22,8 +23,12 @@ namespace NHibernate.Cache
 		#region ICache Members
 
 		/// <summary></summary>
-		public Task<object> GetAsync(object key)
+		public Task<object> GetAsync(object key, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object>(Get(key));
@@ -35,8 +40,12 @@ namespace NHibernate.Cache
 		}
 
 		/// <summary></summary>
-		public Task PutAsync(object key, object value)
+		public Task PutAsync(object key, object value, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				Put(key, value);
@@ -49,8 +58,12 @@ namespace NHibernate.Cache
 		}
 
 		/// <summary></summary>
-		public Task RemoveAsync(object key)
+		public Task RemoveAsync(object key, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				Remove(key);
@@ -63,8 +76,13 @@ namespace NHibernate.Cache
 		}
 
 		/// <summary></summary>
-		public Task ClearAsync()
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public Task ClearAsync(CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				Clear();
@@ -77,8 +95,12 @@ namespace NHibernate.Cache
 		}
 
 		/// <summary></summary>
-		public Task LockAsync(object key)
+		public Task LockAsync(object key, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				Lock(key);
@@ -92,8 +114,12 @@ namespace NHibernate.Cache
 		}
 
 		/// <summary></summary>
-		public Task UnlockAsync(object key)
+		public Task UnlockAsync(object key, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				Unlock(key);

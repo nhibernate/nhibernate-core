@@ -56,8 +56,7 @@ namespace NHibernate.Action
 			if (persister.HasCache)
 			{
 				ck = session.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
-				cancellationToken.ThrowIfCancellationRequested();
-				sLock = await (persister.Cache.LockAsync(ck, version)).ConfigureAwait(false);
+				sLock = await (persister.Cache.LockAsync(ck, version, cancellationToken)).ConfigureAwait(false);
 			}
 			else
 			{
@@ -87,7 +86,7 @@ namespace NHibernate.Action
 			persistenceContext.RemoveProxy(key);
 
 			if (persister.HasCache)
-				await (persister.Cache.EvictAsync(ck)).ConfigureAwait(false);
+				await (persister.Cache.EvictAsync(ck, cancellationToken)).ConfigureAwait(false);
 
 			await (PostDeleteAsync(cancellationToken)).ConfigureAwait(false);
 
@@ -134,8 +133,7 @@ namespace NHibernate.Action
 			if (Persister.HasCache)
 			{
 				CacheKey ck = Session.GenerateCacheKey(Id, Persister.IdentifierType, Persister.RootEntityName);
-				cancellationToken.ThrowIfCancellationRequested();
-				await (Persister.Cache.ReleaseAsync(ck, sLock)).ConfigureAwait(false);
+				await (Persister.Cache.ReleaseAsync(ck, sLock, cancellationToken)).ConfigureAwait(false);
 			}
 			if (success)
 			{

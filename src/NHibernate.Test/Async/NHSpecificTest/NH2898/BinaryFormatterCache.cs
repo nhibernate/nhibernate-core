@@ -16,13 +16,14 @@ using NHibernate.Cache;
 namespace NHibernate.Test.NHSpecificTest.NH2898
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class BinaryFormatterCache : ICache
 	{
 
-		public Task<object> GetAsync(object key)
+		public Task<object> GetAsync(object key, CancellationToken cancellationToken)
 		{
 			try
 			{
@@ -42,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 			}
 		}
 
-		public Task PutAsync(object key, object value)
+		public Task PutAsync(object key, object value, CancellationToken cancellationToken)
 		{
 			try
 			{
@@ -60,7 +61,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 			}
 		}
 
-		public Task RemoveAsync(object key)
+		public Task RemoveAsync(object key, CancellationToken cancellationToken)
 		{
 			try
 			{
@@ -73,7 +74,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 			}
 		}
 
-		public Task ClearAsync()
+		public Task ClearAsync(CancellationToken cancellationToken)
 		{
 			try
 			{
@@ -86,13 +87,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 			}
 		}
 
-		public Task LockAsync(object key)
+		public Task LockAsync(object key, CancellationToken cancellationToken)
 		{
 			return Task.CompletedTask;
 			// local cache, so we use synchronization
 		}
 
-		public Task UnlockAsync(object key)
+		public Task UnlockAsync(object key, CancellationToken cancellationToken)
 		{
 			return Task.CompletedTask;
 			// local cache, so we use synchronization

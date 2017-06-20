@@ -26,11 +26,12 @@ namespace NHibernate.Transaction
 	public partial class AdoTransaction : ITransaction
 	{
 
-		private async Task AfterTransactionCompletionAsync(bool successful)
+		private async Task AfterTransactionCompletionAsync(bool successful, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			using (new SessionIdLoggingContext(sessionId))
 			{
-				await (session.AfterTransactionCompletionAsync(successful, this)).ConfigureAwait(false);
+				await (session.AfterTransactionCompletionAsync(successful, this, cancellationToken)).ConfigureAwait(false);
 				NotifyLocalSynchsAfterTransactionCompletion(successful);
 				session = null;
 				begun = false;
@@ -71,15 +72,13 @@ namespace NHibernate.Transaction
 					log.Debug("DbTransaction Committed");
 
 					committed = true;
-					cancellationToken.ThrowIfCancellationRequested();
-					await (AfterTransactionCompletionAsync(true)).ConfigureAwait(false);
+					await (AfterTransactionCompletionAsync(true, cancellationToken)).ConfigureAwait(false);
 					Dispose();
 				}
 				catch (HibernateException e)
 				{
 					log.Error("Commit failed", e);
-					cancellationToken.ThrowIfCancellationRequested();
-					await (AfterTransactionCompletionAsync(false)).ConfigureAwait(false);
+					await (AfterTransactionCompletionAsync(false, cancellationToken)).ConfigureAwait(false);
 					commitFailed = true;
 					// Don't wrap HibernateExceptions
 					throw;
@@ -87,8 +86,7 @@ namespace NHibernate.Transaction
 				catch (Exception e)
 				{
 					log.Error("Commit failed", e);
-					cancellationToken.ThrowIfCancellationRequested();
-					await (AfterTransactionCompletionAsync(false)).ConfigureAwait(false);
+					await (AfterTransactionCompletionAsync(false, cancellationToken)).ConfigureAwait(false);
 					commitFailed = true;
 					throw new TransactionException("Commit failed with SQL exception", e);
 				}
@@ -103,12 +101,14 @@ namespace NHibernate.Transaction
 		/// Rolls back the <see cref="ITransaction"/> by calling the method <c>Rollback</c> 
 		/// on the underlying <see cref="DbTransaction"/>.
 		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <exception cref="TransactionException">
 		/// Thrown if there is any exception while trying to call <c>Rollback()</c> on 
 		/// the underlying <see cref="DbTransaction"/>.
 		/// </exception>
-		public async Task RollbackAsync()
+		public async Task RollbackAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			using (new SessionIdLoggingContext(sessionId))
 			{
 				CheckNotDisposed();
@@ -139,7 +139,7 @@ namespace NHibernate.Transaction
 					}
 					finally
 					{
-						await (AfterTransactionCompletionAsync(false)).ConfigureAwait(false);
+						await (AfterTransactionCompletionAsync(false, cancellationToken)).ConfigureAwait(false);
 						CloseIfRequired();
 					}
 				}
@@ -153,12 +153,14 @@ namespace NHibernate.Transaction
 		/// this class is responsible for.
 		/// </summary>
 		/// <param name="isDisposing">Indicates if this AdoTransaction is being Disposed of or Finalized.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <remarks>
 		/// If this AdoTransaction is being Finalized (<c>isDisposing==false</c>) then make sure not
 		/// to call any methods that could potentially bring this AdoTransaction back to life.
 		/// </remarks>
-		protected virtual async Task DisposeAsync(bool isDisposing)
+		protected virtual async Task DisposeAsync(bool isDisposing, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			using (new SessionIdLoggingContext(sessionId))
 			{
 				if (_isAlreadyDisposed)
@@ -181,7 +183,7 @@ namespace NHibernate.Transaction
 					if (IsActive && session != null)
 					{
 						// Assume we are rolled back
-						await (AfterTransactionCompletionAsync(false)).ConfigureAwait(false);
+						await (AfterTransactionCompletionAsync(false, cancellationToken)).ConfigureAwait(false);
 					}
 				}
 

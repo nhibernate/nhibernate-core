@@ -38,11 +38,15 @@ namespace NHibernate.Type
 			return NullSafeGetAsync(rs, new string[] {name}, session, owner, cancellationToken);
 		}
 
-		protected internal Task<object> GetIdentifierAsync(object value, ISessionImplementor session)
+		protected internal Task<object> GetIdentifierAsync(object value, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
-				return ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(GetAssociatedEntityName(), value, session); //tolerates nulls
+				return ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(GetAssociatedEntityName(), value, session, cancellationToken); //tolerates nulls
 			}
 			catch (Exception ex)
 			{
@@ -50,15 +54,16 @@ namespace NHibernate.Type
 			}
 		}
 
-		protected internal async Task<object> GetReferenceValueAsync(object value, ISessionImplementor session)
+		protected internal async Task<object> GetReferenceValueAsync(object value, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (value == null)
 			{
 				return null;
 			}
 			else if (IsReferenceToPrimaryKey)
 			{
-				return await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(GetAssociatedEntityName(), value, session)).ConfigureAwait(false); //tolerates nulls
+				return await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(GetAssociatedEntityName(), value, session, cancellationToken)).ConfigureAwait(false); //tolerates nulls
 			}
 			else
 			{
@@ -71,7 +76,7 @@ namespace NHibernate.Type
 				IType type = entityPersister.GetPropertyType(uniqueKeyPropertyName);
 				if (type.IsEntityType)
 				{
-					propertyValue = await (((EntityType) type).GetReferenceValueAsync(propertyValue, session)).ConfigureAwait(false);
+					propertyValue = await (((EntityType) type).GetReferenceValueAsync(propertyValue, session, cancellationToken)).ConfigureAwait(false);
 				}
 
 				return propertyValue;
@@ -96,8 +101,7 @@ namespace NHibernate.Type
 				{
 					return target;
 				}
-				cancellationToken.ThrowIfCancellationRequested();
-				if (session.GetContextEntityIdentifier(original) == null && (await (ForeignKeys.IsTransientFastAsync(associatedEntityName, original, session)).ConfigureAwait(false)).GetValueOrDefault())
+				if (session.GetContextEntityIdentifier(original) == null && (await (ForeignKeys.IsTransientFastAsync(associatedEntityName, original, session, cancellationToken)).ConfigureAwait(false)).GetValueOrDefault())
 				{
 					object copy = session.Factory.GetEntityPersister(associatedEntityName).Instantiate(null);
 					//TODO: should this be Session.instantiate(Persister, ...)?
@@ -106,8 +110,7 @@ namespace NHibernate.Type
 				}
 				else
 				{
-					cancellationToken.ThrowIfCancellationRequested();
-					object id = await (GetReferenceValueAsync(original, session)).ConfigureAwait(false);
+					object id = await (GetReferenceValueAsync(original, session, cancellationToken)).ConfigureAwait(false);
 					if (id == null)
 					{
 						throw new AssertionFailure("non-transient entity has a null id");

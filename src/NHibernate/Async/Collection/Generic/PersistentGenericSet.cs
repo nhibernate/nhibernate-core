@@ -53,8 +53,9 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		public override async Task<bool> EqualsSnapshotAsync(ICollectionPersister persister)
+		public override async Task<bool> EqualsSnapshotAsync(ICollectionPersister persister, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			var elementType = persister.ElementType;
 			var snapshot = (ISetSnapshot<T>)GetSnapshot();
 			if (((ICollection)snapshot).Count != WrappedSet.Count)
@@ -66,7 +67,7 @@ namespace NHibernate.Collection.Generic
 			foreach (T obj in WrappedSet)
 			{
 				T oldValue;
-				if (!snapshot.TryGetValue(obj, out oldValue) || await (elementType.IsDirtyAsync(oldValue, obj, Session)).ConfigureAwait(false))
+				if (!snapshot.TryGetValue(obj, out oldValue) || await (elementType.IsDirtyAsync(oldValue, obj, Session, cancellationToken)).ConfigureAwait(false))
 					return false;
 			}
 
@@ -108,20 +109,22 @@ namespace NHibernate.Collection.Generic
 			return element;
 		}
 
-		public override async Task<object> DisassembleAsync(ICollectionPersister persister)
+		public override async Task<object> DisassembleAsync(ICollectionPersister persister, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			var result = new object[WrappedSet.Count];
 			int i = 0;
 
 			foreach (object obj in WrappedSet)
 			{
-				result[i++] = await (persister.ElementType.DisassembleAsync(obj, Session, null)).ConfigureAwait(false);
+				result[i++] = await (persister.ElementType.DisassembleAsync(obj, Session, null, cancellationToken)).ConfigureAwait(false);
 			}
 			return result;
 		}
 
-		public override async Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula)
+		public override async Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IType elementType = persister.ElementType;
 			var sn = (ISetSnapshot<T>)GetSnapshot();
 			var deletes = new List<T>(((ICollection<T>)sn).Count);
@@ -132,26 +135,31 @@ namespace NHibernate.Collection.Generic
 			foreach (var obj in WrappedSet)
 			{
 				T oldValue;
-				if (sn.TryGetValue(obj, out oldValue) && await (elementType.IsDirtyAsync(obj, oldValue, Session)).ConfigureAwait(false))
+				if (sn.TryGetValue(obj, out oldValue) && await (elementType.IsDirtyAsync(obj, oldValue, Session, cancellationToken)).ConfigureAwait(false))
 					deletes.Add(oldValue);
 			}
 
 			return deletes;
 		}
 
-		public override async Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType)
+		public override async Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			var sn = (ISetSnapshot<T>)GetSnapshot();
 			T oldKey;
 
 			// note that it might be better to iterate the snapshot but this is safe,
 			// assuming the user implements equals() properly, as required by the PersistentSet
 			// contract!
-			return !sn.TryGetValue((T) entry, out oldKey) || await (elemType.IsDirtyAsync(oldKey, entry, Session)).ConfigureAwait(false);
+			return !sn.TryGetValue((T) entry, out oldKey) || await (elemType.IsDirtyAsync(oldKey, entry, Session, cancellationToken)).ConfigureAwait(false);
 		}
 
-		public override Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType)
+		public override Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<bool>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<bool>(NeedsUpdating(entry, i, elemType));

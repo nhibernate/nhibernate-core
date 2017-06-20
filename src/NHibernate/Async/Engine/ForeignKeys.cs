@@ -77,8 +77,7 @@ namespace NHibernate.Engine
 				else if (type.IsComponentType)
 				{
 					IAbstractComponentType actype = (IAbstractComponentType)type;
-					cancellationToken.ThrowIfCancellationRequested();
-					object[] subvalues = await (actype.GetPropertyValuesAsync(value, session)).ConfigureAwait(false);
+					object[] subvalues = await (actype.GetPropertyValuesAsync(value, session, cancellationToken)).ConfigureAwait(false);
 					IType[] subtypes = actype.Subtypes;
 					bool substitute = false;
 					for (int i = 0; i < subvalues.Length; i++)
@@ -178,8 +177,9 @@ namespace NHibernate.Engine
 		/// <remarks>
 		/// Don't hit the database to make the determination, instead return null; 
 		/// </remarks>
-		public static async Task<bool?> IsTransientFastAsync(string entityName, object entity, ISessionImplementor session)
+		public static async Task<bool?> IsTransientFastAsync(string entityName, object entity, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (Equals(Intercept.LazyPropertyInitializer.UnfetchedProperty, entity))
 			{
 				// an unfetched association can only point to
@@ -190,7 +190,7 @@ namespace NHibernate.Engine
 			// let the interceptor inspect the instance to decide
 			// let the persister inspect the instance to decide
 			return session.Interceptor.IsTransient(entity) ??
-			       await (session.GetEntityPersister(entityName, entity).IsTransientAsync(entity, session)).ConfigureAwait(false);
+			       await (session.GetEntityPersister(entityName, entity).IsTransientAsync(entity, session, cancellationToken)).ConfigureAwait(false);
 		}
 
 		/// <summary> 
@@ -202,8 +202,7 @@ namespace NHibernate.Engine
 		public static async Task<bool> IsTransientSlowAsync(string entityName, object entity, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			cancellationToken.ThrowIfCancellationRequested();
-			return await (IsTransientFastAsync(entityName, entity, session)).ConfigureAwait(false) ??
+			return await (IsTransientFastAsync(entityName, entity, session, cancellationToken)).ConfigureAwait(false) ??
 			       await (HasDbSnapshotAsync(entityName, entity, session, cancellationToken)).ConfigureAwait(false);
 		}
 
@@ -239,8 +238,9 @@ namespace NHibernate.Engine
 		/// This does a "best guess" using any/all info available to use (not just the 
 		/// EntityEntry).
 		/// </remarks>
-		public static async Task<object> GetEntityIdentifierIfNotUnsavedAsync(string entityName, object entity, ISessionImplementor session)
+		public static async Task<object> GetEntityIdentifierIfNotUnsavedAsync(string entityName, object entity, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (entity == null)
 			{
 				return null;
@@ -259,7 +259,7 @@ namespace NHibernate.Engine
 						return entity;
 					/**********************************************/
 
-					if ((await (IsTransientFastAsync(entityName, entity, session)).ConfigureAwait(false)).GetValueOrDefault())
+					if ((await (IsTransientFastAsync(entityName, entity, session, cancellationToken)).ConfigureAwait(false)).GetValueOrDefault())
 					{
 						/***********************************************/
 						// TODO NH verify the behavior of NH607 test

@@ -96,8 +96,7 @@ namespace NHibernate.Event.Default
 				ISessionFactoryImplementor factory = source.Factory;
 
 				CacheKey ck = source.GenerateCacheKey(id, persister.KeyType, persister.Role);
-				cancellationToken.ThrowIfCancellationRequested();
-				object ce = await (persister.Cache.GetAsync(ck, source.Timestamp)).ConfigureAwait(false);
+				object ce = await (persister.Cache.GetAsync(ck, source.Timestamp, cancellationToken)).ConfigureAwait(false);
 
 				if (factory.Statistics.IsStatisticsEnabled)
 				{

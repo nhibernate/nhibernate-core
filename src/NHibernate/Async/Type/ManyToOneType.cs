@@ -25,16 +25,18 @@ namespace NHibernate.Type
 	public partial class ManyToOneType : EntityType
 	{
 
-		public override async Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override async Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			await (GetIdentifierOrUniqueKeyType(session.Factory)
-				.NullSafeSetAsync(st, await (GetReferenceValueAsync(value, session)).ConfigureAwait(false), index, settable, session)).ConfigureAwait(false);
+				.NullSafeSetAsync(st, await (GetReferenceValueAsync(value, session, cancellationToken)).ConfigureAwait(false), index, settable, session, cancellationToken)).ConfigureAwait(false);
 		}
 
-		public override async Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session)
+		public override async Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			await (GetIdentifierOrUniqueKeyType(session.Factory)
-				.NullSafeSetAsync(cmd, await (GetReferenceValueAsync(value, session)).ConfigureAwait(false), index, session)).ConfigureAwait(false);
+				.NullSafeSetAsync(cmd, await (GetReferenceValueAsync(value, session, cancellationToken)).ConfigureAwait(false), index, session, cancellationToken)).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -60,8 +62,9 @@ namespace NHibernate.Type
 			return id;
 		}
 
-		public override async Task<bool> IsModifiedAsync(object old, object current, bool[] checkable, ISessionImplementor session)
+		public override async Task<bool> IsModifiedAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (current == null)
 			{
 				return old != null;
@@ -71,11 +74,12 @@ namespace NHibernate.Type
 				return true;
 			}
 			// the ids are fully resolved, so compare them with isDirty(), not isModified()
-			return await (GetIdentifierOrUniqueKeyType(session.Factory).IsDirtyAsync(old, await (GetIdentifierAsync(current, session)).ConfigureAwait(false), session)).ConfigureAwait(false);
+			return await (GetIdentifierOrUniqueKeyType(session.Factory).IsDirtyAsync(old, await (GetIdentifierAsync(current, session, cancellationToken)).ConfigureAwait(false), session, cancellationToken)).ConfigureAwait(false);
 		}
 
-		public override async Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner)
+		public override async Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (value == null)
 			{
 				return null;
@@ -84,12 +88,12 @@ namespace NHibernate.Type
 			{
 				// cache the actual id of the object, not the value of the
 				// property-ref, which might not be initialized
-				object id = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(GetAssociatedEntityName(), value, session)).ConfigureAwait(false);
+				object id = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(GetAssociatedEntityName(), value, session, cancellationToken)).ConfigureAwait(false);
 				if (id == null)
 				{
 					throw new AssertionFailure("cannot cache a reference to an object with a null id: " + GetAssociatedEntityName());
 				}
-				return await (GetIdentifierType(session).DisassembleAsync(id, session, owner)).ConfigureAwait(false);
+				return await (GetIdentifierType(session).DisassembleAsync(id, session, owner, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
@@ -134,23 +138,25 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override async Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session)
+		public override async Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (IsSame(old, current))
 			{
 				return false;
 			}
 
-			object oldid = await (GetIdentifierAsync(old, session)).ConfigureAwait(false);
-			object newid = await (GetIdentifierAsync(current, session)).ConfigureAwait(false);
-			return await (GetIdentifierType(session).IsDirtyAsync(oldid, newid, session)).ConfigureAwait(false);
+			object oldid = await (GetIdentifierAsync(old, session, cancellationToken)).ConfigureAwait(false);
+			object newid = await (GetIdentifierAsync(current, session, cancellationToken)).ConfigureAwait(false);
+			return await (GetIdentifierType(session).IsDirtyAsync(oldid, newid, session, cancellationToken)).ConfigureAwait(false);
 		}
 
-		public override async Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session)
+		public override async Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (IsAlwaysDirtyChecked)
 			{
-				return await (IsDirtyAsync(old, current, session)).ConfigureAwait(false);
+				return await (IsDirtyAsync(old, current, session, cancellationToken)).ConfigureAwait(false);
 			}
 			else
 			{
@@ -159,9 +165,9 @@ namespace NHibernate.Type
 					return false;
 				}
 
-				object oldid = await (GetIdentifierAsync(old, session)).ConfigureAwait(false);
-				object newid = await (GetIdentifierAsync(current, session)).ConfigureAwait(false);
-				return await (GetIdentifierType(session).IsDirtyAsync(oldid, newid, checkable, session)).ConfigureAwait(false);
+				object oldid = await (GetIdentifierAsync(old, session, cancellationToken)).ConfigureAwait(false);
+				object newid = await (GetIdentifierAsync(current, session, cancellationToken)).ConfigureAwait(false);
+				return await (GetIdentifierType(session).IsDirtyAsync(oldid, newid, checkable, session, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 	}

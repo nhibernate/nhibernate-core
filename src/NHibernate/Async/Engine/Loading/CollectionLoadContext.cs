@@ -22,6 +22,7 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Engine.Loading
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -34,8 +35,10 @@ namespace NHibernate.Engine.Loading
 		/// complete. 
 		/// </summary>
 		/// <param name="persister">The persister for which to complete loading. </param>
-		public async Task EndLoadingCollectionsAsync(ICollectionPersister persister)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public async Task EndLoadingCollectionsAsync(ICollectionPersister persister, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (!loadContexts.HasLoadingCollectionEntries && (localLoadingCollectionKeys.Count == 0))
 			{
 				return;
@@ -78,7 +81,7 @@ namespace NHibernate.Engine.Loading
 			}
 			localLoadingCollectionKeys.ExceptWith(toRemove);
 
-			await (EndLoadingCollectionsAsync(persister, matches)).ConfigureAwait(false);
+			await (EndLoadingCollectionsAsync(persister, matches, cancellationToken)).ConfigureAwait(false);
 			if ((localLoadingCollectionKeys.Count == 0))
 			{
 				// todo : hack!!!
@@ -91,8 +94,9 @@ namespace NHibernate.Engine.Loading
 			}
 		}
 
-		private async Task EndLoadingCollectionsAsync(ICollectionPersister persister, IList<LoadingCollectionEntry> matchedCollectionEntries)
+		private async Task EndLoadingCollectionsAsync(ICollectionPersister persister, IList<LoadingCollectionEntry> matchedCollectionEntries, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (matchedCollectionEntries == null || matchedCollectionEntries.Count == 0)
 			{
 				if (log.IsDebugEnabled)
@@ -110,7 +114,7 @@ namespace NHibernate.Engine.Loading
 
 			for (int i = 0; i < count; i++)
 			{
-				await (EndLoadingCollectionAsync(matchedCollectionEntries[i], persister)).ConfigureAwait(false);
+				await (EndLoadingCollectionAsync(matchedCollectionEntries[i], persister, cancellationToken)).ConfigureAwait(false);
 			}
 
 			if (log.IsDebugEnabled)
@@ -119,8 +123,9 @@ namespace NHibernate.Engine.Loading
 			}
 		}
 
-		private async Task EndLoadingCollectionAsync(LoadingCollectionEntry lce, ICollectionPersister persister)
+		private async Task EndLoadingCollectionAsync(LoadingCollectionEntry lce, ICollectionPersister persister, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("ending loading collection [" + lce + "]");
@@ -156,7 +161,7 @@ namespace NHibernate.Engine.Loading
 
 			if (addToCache)
 			{
-				await (AddCollectionToCacheAsync(lce, persister)).ConfigureAwait(false);
+				await (AddCollectionToCacheAsync(lce, persister, cancellationToken)).ConfigureAwait(false);
 			}
 
 			if (log.IsDebugEnabled)
@@ -174,8 +179,10 @@ namespace NHibernate.Engine.Loading
 		/// <summary> Add the collection to the second-level cache </summary>
 		/// <param name="lce">The entry representing the collection to add </param>
 		/// <param name="persister">The persister </param>
-		private async Task AddCollectionToCacheAsync(LoadingCollectionEntry lce, ICollectionPersister persister)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		private async Task AddCollectionToCacheAsync(LoadingCollectionEntry lce, ICollectionPersister persister, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			ISessionImplementor session = LoadContext.PersistenceContext.Session;
 			ISessionFactoryImplementor factory = session.Factory;
 
@@ -214,7 +221,7 @@ namespace NHibernate.Engine.Loading
 			CacheKey cacheKey = session.GenerateCacheKey(lce.Key, persister.KeyType, persister.Role);
 			bool put = await (persister.Cache.PutAsync(cacheKey, persister.CacheEntryStructure.Structure(entry), 
 								session.Timestamp, version, versionComparator,
-													factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh)).ConfigureAwait(false);
+													factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh, cancellationToken)).ConfigureAwait(false);
 
 			if (put && factory.Statistics.IsStatisticsEnabled)
 			{

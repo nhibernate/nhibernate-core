@@ -36,19 +36,19 @@ namespace NHibernate.Param
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			cancellationToken.ThrowIfCancellationRequested();
-			return BindAsync(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session);
+			return BindAsync(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session, cancellationToken);
 		}
 
-		public async Task BindAsync(DbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		public async Task BindAsync(DbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			string backTrackId = GetIdsForBackTrack(session.Factory).First(); // just the first because IType suppose the oders in certain sequence
 
 			// The same filterName-parameterName can appear more than once in the whole query
 			object value = session.GetFilterParameterValue(filterParameterFullName);
 			foreach (int position in multiSqlQueryParametersList.GetEffectiveParameterLocations(backTrackId))
 			{
-				await (ExpectedType.NullSafeSetAsync(command, value, position, session)).ConfigureAwait(false);
+				await (ExpectedType.NullSafeSetAsync(command, value, position, session, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
@@ -59,7 +59,7 @@ namespace NHibernate.Param
 		private partial class CollectionOfValuesType : IType
 		{
 
-			public Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner)
+			public Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 			{
 				throw new InvalidOperationException();
 			}
@@ -86,8 +86,12 @@ namespace NHibernate.Param
 				}
 			}
 
-			public Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session)
+			public Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session, CancellationToken cancellationToken)
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<bool>(cancellationToken);
+				}
 				try
 				{
 					return Task.FromResult<bool>(IsDirty(old, current, session));
@@ -98,8 +102,12 @@ namespace NHibernate.Param
 				}
 			}
 
-			public Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session)
+			public Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<bool>(cancellationToken);
+				}
 				try
 				{
 					return Task.FromResult<bool>(IsDirty(old, current, checkable, session));
@@ -110,8 +118,12 @@ namespace NHibernate.Param
 				}
 			}
 
-			public Task<bool> IsModifiedAsync(object oldHydratedState, object currentState, bool[] checkable, ISessionImplementor session)
+			public Task<bool> IsModifiedAsync(object oldHydratedState, object currentState, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<bool>(cancellationToken);
+				}
 				try
 				{
 					return Task.FromResult<bool>(IsModified(oldHydratedState, currentState, checkable, session));
@@ -132,13 +144,14 @@ namespace NHibernate.Param
 				throw new InvalidOperationException();
 			}
 
-			public Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+			public Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session, CancellationToken cancellationToken)
 			{
 				throw new InvalidOperationException();
 			}
 
-			public async Task NullSafeSetAsync(DbCommand st, object value, int index, ISessionImplementor session)
+			public async Task NullSafeSetAsync(DbCommand st, object value, int index, ISessionImplementor session, CancellationToken cancellationToken)
 			{
+				cancellationToken.ThrowIfCancellationRequested();
 				var start = index;
 				var positions = 0;
 				var singleParameterColumnSpan = elementType.GetColumnSpan(session.Factory);
@@ -146,7 +159,7 @@ namespace NHibernate.Param
 				var collection = (IEnumerable) value;
 				foreach (var element in collection)
 				{
-					await (elementType.NullSafeSetAsync(st, element, start + positions, session)).ConfigureAwait(false);
+					await (elementType.NullSafeSetAsync(st, element, start + positions, session, cancellationToken)).ConfigureAwait(false);
 					positions += singleParameterColumnSpan;
 				}
 			}

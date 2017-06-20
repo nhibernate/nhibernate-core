@@ -26,8 +26,12 @@ namespace NHibernate.Action
 
 		#region IExecutable Members
 
-		public Task BeforeExecutionsAsync()
+		public Task BeforeExecutionsAsync(CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				BeforeExecutions();
@@ -58,34 +62,37 @@ namespace NHibernate.Action
 			// nothing to do
 		}
 
-		private async Task EvictCollectionRegionsAsync()
+		private async Task EvictCollectionRegionsAsync(CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (affectedCollectionRoles != null)
 			{
 				foreach (string roleName in affectedCollectionRoles)
 				{
-					await (session.Factory.EvictCollectionAsync(roleName)).ConfigureAwait(false);
+					await (session.Factory.EvictCollectionAsync(roleName, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private async Task EvictEntityRegionsAsync()
+		private async Task EvictEntityRegionsAsync(CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (affectedEntityNames != null)
 			{
 				foreach (string entityName in affectedEntityNames)
 				{
-					await (session.Factory.EvictEntityAsync(entityName)).ConfigureAwait(false);
+					await (session.Factory.EvictEntityAsync(entityName, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}
 
 		#endregion
 
-		public virtual async Task InitAsync()
+		public virtual async Task InitAsync(CancellationToken cancellationToken)
 		{
-			await (EvictEntityRegionsAsync()).ConfigureAwait(false);
-			await (EvictCollectionRegionsAsync()).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			await (EvictEntityRegionsAsync(cancellationToken)).ConfigureAwait(false);
+			await (EvictCollectionRegionsAsync(cancellationToken)).ConfigureAwait(false);
 		}
 	}
 }

@@ -34,12 +34,15 @@ namespace NHibernate.Param
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			cancellationToken.ThrowIfCancellationRequested();
-			return BindAsync(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session);
+			return BindAsync(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session, cancellationToken);
 		}
 
-		public Task BindAsync(DbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		public Task BindAsync(DbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				// The QueryTakeParameterSpecification is unique so we can use multiSqlQueryParametersList
@@ -49,7 +52,7 @@ namespace NHibernate.Param
 					// if the dialect does not support variable limits the parameter may was removed
 					int value = Loader.Loader.GetLimitUsingDialect(queryParameters.RowSelection, session.Factory.Dialect) ?? queryParameters.RowSelection.MaxRows;
 					int position = effectiveParameterLocations.Single();
-					return type.NullSafeSetAsync(command, value, position, session);
+					return type.NullSafeSetAsync(command, value, position, session, cancellationToken);
 				}
 				return Task.CompletedTask;
 			}

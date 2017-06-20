@@ -69,8 +69,7 @@ namespace NHibernate.Event.Default
 			cancellationToken.ThrowIfCancellationRequested();
 			if (component != null)
 			{
-				cancellationToken.ThrowIfCancellationRequested();
-				object[] values = await (componentType.GetPropertyValuesAsync(component, Session)).ConfigureAwait(false);
+				object[] values = await (componentType.GetPropertyValuesAsync(component, Session, cancellationToken)).ConfigureAwait(false);
 				IType[] types = componentType.Subtypes;
 				bool substituteComponent = false;
 				for (int i = 0; i < types.Length; i++)

@@ -53,19 +53,21 @@ namespace NHibernate.Collection
 		/// Does the current state exactly match the snapshot?
 		/// </summary>
 		/// <param name="persister">The <see cref="ICollectionPersister"/> to compare the elements of the Collection.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>
 		/// <see langword="true" /> if the wrapped collection is different than the snapshot
 		/// of the collection or if one of the elements in the collection is
 		/// dirty.
 		/// </returns>
-		Task<bool> EqualsSnapshotAsync(ICollectionPersister persister);
+		Task<bool> EqualsSnapshotAsync(ICollectionPersister persister, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Disassemble the collection, ready for the cache
 		/// </summary>
 		/// <param name="persister">The <see cref="ICollectionPersister"/> for this Collection.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The contents of the persistent collection in a cacheable form.</returns>
-		Task<object> DisassembleAsync(ICollectionPersister persister);
+		Task<object> DisassembleAsync(ICollectionPersister persister, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// To be called internally by the session, forcing
@@ -80,17 +82,17 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Do we need to insert this element?
 		/// </summary>
-		Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType);
+		Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Do we need to update this element?
 		/// </summary>
-		Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType);
+		Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Get all the elements that need deleting
 		/// </summary>
-		Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula);
+		Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula, CancellationToken cancellationToken);
 
 		/// <summary> Get the "queued" orphans</summary>
 		Task<ICollection> GetQueuedOrphansAsync(string entityName, CancellationToken cancellationToken);

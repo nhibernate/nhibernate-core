@@ -34,17 +34,17 @@ namespace NHibernate.Param
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			cancellationToken.ThrowIfCancellationRequested();
-			return BindAsync(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session);
+			return BindAsync(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session, cancellationToken);
 		}
 
-		public async Task BindAsync(DbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		public async Task BindAsync(DbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			TypedValue typedValue = queryParameters.NamedParameters[name];
 			string backTrackId = GetIdsForBackTrack(session.Factory).First();
 			foreach (int position in sqlQueryParametersList.GetEffectiveParameterLocations(backTrackId))
 			{
-				await (ExpectedType.NullSafeSetAsync(command, typedValue.Value, position + singleSqlParametersOffset, session)).ConfigureAwait(false);
+				await (ExpectedType.NullSafeSetAsync(command, typedValue.Value, position + singleSqlParametersOffset, session, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 

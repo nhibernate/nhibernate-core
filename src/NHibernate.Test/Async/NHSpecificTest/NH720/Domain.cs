@@ -18,6 +18,7 @@ using System.Collections.Generic;
 namespace NHibernate.Test.NHSpecificTest.NH720
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 
 	/// <content>
 	/// Contains generated async methods
@@ -25,32 +26,32 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 	public partial class FooCache : ICache
 	{
 
-		public Task<object> GetAsync(object key)
+		public Task<object> GetAsync(object key, CancellationToken cancellationToken)
 		{
 			return Task.FromResult<object>(null);
 		}
 
-		public Task PutAsync(object key, object value)
+		public Task PutAsync(object key, object value, CancellationToken cancellationToken)
 		{
 			return Task.CompletedTask;
 		}
 
-		public Task RemoveAsync(object key)
+		public Task RemoveAsync(object key, CancellationToken cancellationToken)
 		{
 			return Task.CompletedTask;
 		}
 
-		public Task ClearAsync()
+		public Task ClearAsync(CancellationToken cancellationToken)
 		{
 			return Task.CompletedTask;
 		}
 
-		public Task LockAsync(object key)
+		public Task LockAsync(object key, CancellationToken cancellationToken)
 		{
 			return Task.CompletedTask;
 		}
 
-		public Task UnlockAsync(object key)
+		public Task UnlockAsync(object key, CancellationToken cancellationToken)
 		{
 			return Task.CompletedTask;
 		}

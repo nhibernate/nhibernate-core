@@ -15,6 +15,7 @@ using NHibernate.Cache.Access;
 namespace NHibernate.Cache
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -24,14 +25,15 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Get the most recent version, if available.
 		/// </summary>
-		public async Task<object> GetAsync(CacheKey key, long txTimestamp)
+		public async Task<object> GetAsync(CacheKey key, long txTimestamp, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("Cache lookup: " + key);
 			}
 
-			object result = await (cache.GetAsync(key)).ConfigureAwait(false);
+			object result = await (cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
 			if (result != null)
 			{
 				log.Debug("Cache hit");
@@ -47,15 +49,16 @@ namespace NHibernate.Cache
 		/// Add an item to the cache
 		/// </summary>
 		public async Task<bool> PutAsync(CacheKey key, object value, long txTimestamp, object version, IComparer versionComparator,
-		                bool minimalPut)
+		                bool minimalPut, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (txTimestamp == long.MinValue)
 			{
 				// MinValue means cache is disabled
 				return false;
 			}
 
-			if (minimalPut && await (cache.GetAsync(key)).ConfigureAwait(false) != null)
+			if (minimalPut && await (cache.GetAsync(key, cancellationToken)).ConfigureAwait(false) != null)
 			{
 				if (log.IsDebugEnabled)
 				{
@@ -67,15 +70,19 @@ namespace NHibernate.Cache
 			{
 				log.Debug("Caching: " + key);
 			}
-			await (cache.PutAsync(key, value)).ConfigureAwait(false);
+			await (cache.PutAsync(key, value, cancellationToken)).ConfigureAwait(false);
 			return true;
 		}
 
 		/// <summary>
 		/// Do nothing
 		/// </summary>
-		public Task<ISoftLock> LockAsync(CacheKey key, object version)
+		public Task<ISoftLock> LockAsync(CacheKey key, object version, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<ISoftLock>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<ISoftLock>(Lock(key, version));
@@ -86,15 +93,19 @@ namespace NHibernate.Cache
 			}
 		}
 
-		public Task RemoveAsync(CacheKey key)
+		public Task RemoveAsync(CacheKey key, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("Removing: " + key);
 				}
-				return cache.RemoveAsync(key);
+				return cache.RemoveAsync(key, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -102,15 +113,19 @@ namespace NHibernate.Cache
 			}
 		}
 
-		public Task ClearAsync()
+		public Task ClearAsync(CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("Clearing");
 				}
-				return cache.ClearAsync();
+				return cache.ClearAsync(cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -121,15 +136,19 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Invalidate the item
 		/// </summary>
-		public Task EvictAsync(CacheKey key)
+		public Task EvictAsync(CacheKey key, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("Invalidating: " + key);
 				}
-				return cache.RemoveAsync(key);
+				return cache.RemoveAsync(key, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -140,17 +159,22 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Invalidate the item
 		/// </summary>
-		public async Task<bool> UpdateAsync(CacheKey key, object value, object currentVersion, object previousVersion)
+		public async Task<bool> UpdateAsync(CacheKey key, object value, object currentVersion, object previousVersion, CancellationToken cancellationToken)
 		{
-			await (EvictAsync(key)).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			await (EvictAsync(key, cancellationToken)).ConfigureAwait(false);
 			return false;
 		}
 
 		/// <summary>
 		/// Invalidate the item (again, for safety).
 		/// </summary>
-		public Task ReleaseAsync(CacheKey key, ISoftLock @lock)
+		public Task ReleaseAsync(CacheKey key, ISoftLock @lock, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				if (log.IsDebugEnabled)
@@ -158,7 +182,7 @@ namespace NHibernate.Cache
 					log.Debug("Invalidating (again): " + key);
 				}
 
-				return cache.RemoveAsync(key);
+				return cache.RemoveAsync(key, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -169,17 +193,22 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Invalidate the item (again, for safety).
 		/// </summary>
-		public async Task<bool> AfterUpdateAsync(CacheKey key, object value, object version, ISoftLock @lock)
+		public async Task<bool> AfterUpdateAsync(CacheKey key, object value, object version, ISoftLock @lock, CancellationToken cancellationToken)
 		{
-			await (ReleaseAsync(key, @lock)).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			await (ReleaseAsync(key, @lock, cancellationToken)).ConfigureAwait(false);
 			return false;
 		}
 
 		/// <summary>
 		/// Do nothing
 		/// </summary>
-		public Task<bool> AfterInsertAsync(CacheKey key, object value, object version)
+		public Task<bool> AfterInsertAsync(CacheKey key, object value, object version, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<bool>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<bool>(AfterInsert(key, value, version));

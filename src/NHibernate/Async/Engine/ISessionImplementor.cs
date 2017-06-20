@@ -131,7 +131,7 @@ namespace NHibernate.Engine
 		/// (Also we should release cache softlocks). May be called multiple times during the transaction
 		/// completion process.
 		/// </summary>
-		Task AfterTransactionCompletionAsync(bool successful, ITransaction tx);
+		Task AfterTransactionCompletionAsync(bool successful, ITransaction tx, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Execute an SQL Query

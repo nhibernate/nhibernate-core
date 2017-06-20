@@ -19,6 +19,7 @@ using System.Collections.Generic;
 namespace NHibernate.Engine
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -31,9 +32,11 @@ namespace NHibernate.Engine
 		/// <param name="collectionPersister">The persister for the collection role.</param>
 		/// <param name="id">A key that must be included in the batch fetch</param>
 		/// <param name="batchSize">the maximum number of keys to return</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>an array of collection keys, of length batchSize (padded with nulls)</returns>
-		public async Task<object[]> GetCollectionBatchAsync(ICollectionPersister collectionPersister, object id, int batchSize)
+		public async Task<object[]> GetCollectionBatchAsync(ICollectionPersister collectionPersister, object id, int batchSize, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object[] keys = new object[batchSize];
 			keys[0] = id;
 			int i = 1;
@@ -63,7 +66,7 @@ namespace NHibernate.Engine
 						end = i;
 						//checkForEnd = false;
 					}
-					else if (!await (IsCachedAsync(ce.LoadedKey, collectionPersister)).ConfigureAwait(false))
+					else if (!await (IsCachedAsync(ce.LoadedKey, collectionPersister, cancellationToken)).ConfigureAwait(false))
 					{
 						keys[i++] = ce.LoadedKey;
 						//count++;
@@ -90,9 +93,11 @@ namespace NHibernate.Engine
 		/// <param name="persister">The persister for the entities being loaded.</param>
 		/// <param name="id">The identifier of the entity currently demanding load.</param>
 		/// <param name="batchSize">The maximum number of keys to return</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>an array of identifiers, of length batchSize (possibly padded with nulls)</returns>
-		public async Task<object[]> GetEntityBatchAsync(IEntityPersister persister,object id,int batchSize)
+		public async Task<object[]> GetEntityBatchAsync(IEntityPersister persister,object id,int batchSize, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object[] ids = new object[batchSize];
 			ids[0] = id; //first element of array is reserved for the actual instance we are loading!
 			int i = 1;
@@ -115,7 +120,7 @@ namespace NHibernate.Engine
 					}
 					else
 					{
-						if (!await (IsCachedAsync(key, persister)).ConfigureAwait(false))
+						if (!await (IsCachedAsync(key, persister, cancellationToken)).ConfigureAwait(false))
 						{
 							ids[i++] = key.Identifier;
 						}
@@ -131,22 +136,24 @@ namespace NHibernate.Engine
 			return ids; //we ran out of ids to try
 		}
 
-		private async Task<bool> IsCachedAsync(EntityKey entityKey, IEntityPersister persister)
+		private async Task<bool> IsCachedAsync(EntityKey entityKey, IEntityPersister persister, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (persister.HasCache)
 			{
 				CacheKey key = context.Session.GenerateCacheKey(entityKey.Identifier, persister.IdentifierType, entityKey.EntityName);
-				return await (persister.Cache.Cache.GetAsync(key)).ConfigureAwait(false) != null;
+				return await (persister.Cache.Cache.GetAsync(key, cancellationToken)).ConfigureAwait(false) != null;
 			}
 			return false;
 		}
 
-		private async Task<bool> IsCachedAsync(object collectionKey, ICollectionPersister persister)
+		private async Task<bool> IsCachedAsync(object collectionKey, ICollectionPersister persister, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (persister.HasCache)
 			{
 				CacheKey cacheKey = context.Session.GenerateCacheKey(collectionKey, persister.KeyType, persister.Role);
-				return await (persister.Cache.Cache.GetAsync(cacheKey)).ConfigureAwait(false) != null;
+				return await (persister.Cache.Cache.GetAsync(cacheKey, cancellationToken)).ConfigureAwait(false) != null;
 			}
 			return false;
 		}

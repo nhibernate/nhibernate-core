@@ -102,8 +102,7 @@ namespace NHibernate.Action
 			if (success && IsCachePutEnabled(persister))
 			{
 				CacheKey ck = Session.GenerateCacheKey(Id, persister.IdentifierType, persister.RootEntityName);
-				cancellationToken.ThrowIfCancellationRequested();
-				bool put = await (persister.Cache.AfterInsertAsync(ck, cacheEntry, version)).ConfigureAwait(false);
+				bool put = await (persister.Cache.AfterInsertAsync(ck, cacheEntry, version, cancellationToken)).ConfigureAwait(false);
 
 				if (put && Session.Factory.Statistics.IsStatisticsEnabled)
 				{

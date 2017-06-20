@@ -51,23 +51,25 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		public override async Task<object> DisassembleAsync(ICollectionPersister persister)
+		public override async Task<object> DisassembleAsync(ICollectionPersister persister, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object[] result = new object[_values.Count * 2];
 
 			int i = 0;
 			for (int j = 0; j < _values.Count; j++)
 			{
 				object val = _values[j];
-				result[i++] = await (persister.IdentifierType.DisassembleAsync(_identifiers[j], Session, null)).ConfigureAwait(false);
-				result[i++] = await (persister.ElementType.DisassembleAsync(val, Session, null)).ConfigureAwait(false);
+				result[i++] = await (persister.IdentifierType.DisassembleAsync(_identifiers[j], Session, null, cancellationToken)).ConfigureAwait(false);
+				result[i++] = await (persister.ElementType.DisassembleAsync(val, Session, null, cancellationToken)).ConfigureAwait(false);
 			}
 
 			return result;
 		}
 
-		public override async Task<bool> EqualsSnapshotAsync(ICollectionPersister persister)
+		public override async Task<bool> EqualsSnapshotAsync(ICollectionPersister persister, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IType elementType = persister.ElementType;
 			var snap = (ISet<SnapshotElement>)GetSnapshot();
 			if (snap.Count != _values.Count)
@@ -79,7 +81,7 @@ namespace NHibernate.Collection.Generic
 				object val = _values[i];
 				object id = GetIdentifier(i);
 				object old = snap.Where(x => Equals(x.Id, id)).Select(x => x.Value).FirstOrDefault();
-				if (await (elementType.IsDirtyAsync(old, val, Session)).ConfigureAwait(false))
+				if (await (elementType.IsDirtyAsync(old, val, Session, cancellationToken)).ConfigureAwait(false))
 				{
 					return false;
 				}
@@ -88,8 +90,12 @@ namespace NHibernate.Collection.Generic
 			return true;
 		}
 
-		public override Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula)
+		public override Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IEnumerable>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<IEnumerable>(GetDeletes(persister, indexIsFormula));
@@ -100,8 +106,12 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		public override Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType)
+		public override Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<bool>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<bool>(NeedsInserting(entry, i, elemType));
@@ -112,8 +122,9 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		public override async Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType)
+		public override async Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (entry == null)
 			{
 				return false;
@@ -127,7 +138,7 @@ namespace NHibernate.Collection.Generic
 			}
 
 			object old = snap.Where(x => Equals(x.Id, id)).Select(x => x.Value).FirstOrDefault();
-			return old != null && await (elemType.IsDirtyAsync(old, entry, Session)).ConfigureAwait(false);
+			return old != null && await (elemType.IsDirtyAsync(old, entry, Session, cancellationToken)).ConfigureAwait(false);
 		}
 
 		public override async Task<object> ReadFromAsync(DbDataReader reader, ICollectionPersister persister, ICollectionAliases descriptor, object owner, CancellationToken cancellationToken)

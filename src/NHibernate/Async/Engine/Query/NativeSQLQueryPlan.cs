@@ -37,15 +37,16 @@ namespace NHibernate.Engine.Query
 	public partial class NativeSQLQueryPlan
 	{
 
-		private async Task CoordinateSharedCacheCleanupAsync(ISessionImplementor session)
+		private async Task CoordinateSharedCacheCleanupAsync(ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			BulkOperationCleanupAction action = new BulkOperationCleanupAction(session, CustomQuery.QuerySpaces);
 
-			await (action.InitAsync()).ConfigureAwait(false);
+			await (action.InitAsync(cancellationToken)).ConfigureAwait(false);
 
 			if (session.IsEventSource)
 			{
-				await (((IEventSource)session).ActionQueue.AddActionAsync(action)).ConfigureAwait(false);
+				await (((IEventSource)session).ActionQueue.AddActionAsync(action, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
@@ -53,8 +54,7 @@ namespace NHibernate.Engine.Query
 		public async Task<int> PerformExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			cancellationToken.ThrowIfCancellationRequested();
-			await (CoordinateSharedCacheCleanupAsync(session)).ConfigureAwait(false);
+			await (CoordinateSharedCacheCleanupAsync(session, cancellationToken)).ConfigureAwait(false);
 
 			if (queryParameters.Callable)
 			{

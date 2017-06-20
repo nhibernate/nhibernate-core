@@ -28,8 +28,12 @@ namespace NHibernate.Type
 	public partial class CompositeCustomType : AbstractType, IAbstractComponentType
 	{
 
-		public virtual Task<object[]> GetPropertyValuesAsync(object component, ISessionImplementor session)
+		public virtual Task<object[]> GetPropertyValuesAsync(object component, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object[]>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object[]>(GetPropertyValues(component, session));
@@ -40,8 +44,12 @@ namespace NHibernate.Type
 			}
 		}
 
-		public virtual Task<object> GetPropertyValueAsync(object component, int i, ISessionImplementor session)
+		public virtual Task<object> GetPropertyValueAsync(object component, int i, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object>(GetPropertyValue(component, i, session));
@@ -68,8 +76,12 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner)
+		public override Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object>(Disassemble(value, session, owner));
@@ -112,8 +124,12 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				NullSafeSet(st, value, index, settable, session);
@@ -125,8 +141,12 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session)
+		public override Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				NullSafeSet(cmd, value, index, session);
@@ -138,9 +158,13 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session)
+		public override Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			return IsDirtyAsync(old, current, session);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<bool>(cancellationToken);
+			}
+			return IsDirtyAsync(old, current, session, cancellationToken);
 		}
 
 		public override Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner, IDictionary copiedAlready, CancellationToken cancellationToken)

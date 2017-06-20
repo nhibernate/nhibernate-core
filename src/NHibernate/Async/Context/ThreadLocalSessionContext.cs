@@ -17,14 +17,16 @@ using NHibernate.Engine;
 namespace NHibernate.Context
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class ThreadLocalSessionContext : ICurrentSessionContext
 	{
 
-		private static async Task CleanupAnyOrphanedSessionAsync(ISessionFactory factory)
+		private static async Task CleanupAnyOrphanedSessionAsync(ISessionFactory factory, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			ISession orphan = DoUnbind(factory, false);
 
 			if (orphan != null)
@@ -37,7 +39,7 @@ namespace NHibernate.Context
 					{
 						try
 						{
-							await (orphan.Transaction.RollbackAsync()).ConfigureAwait(false);
+							await (orphan.Transaction.RollbackAsync(cancellationToken)).ConfigureAwait(false);
 						}
 						catch (Exception ex)
 						{
@@ -53,10 +55,11 @@ namespace NHibernate.Context
 			}
 		}
 
-		public static async Task BindAsync(ISession session)
+		public static async Task BindAsync(ISession session, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			ISessionFactory factory = session.SessionFactory;
-			await (CleanupAnyOrphanedSessionAsync(factory)).ConfigureAwait(false);
+			await (CleanupAnyOrphanedSessionAsync(factory, cancellationToken)).ConfigureAwait(false);
 			DoBind(session, factory);
 		}
 	}

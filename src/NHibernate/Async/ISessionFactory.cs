@@ -42,7 +42,8 @@ namespace NHibernate
 		/// any transaction isolation semantics of the usage strategy.  Use with care.
 		/// </summary>
 		/// <param name="persistentClass"></param>
-		Task EvictAsync(System.Type persistentClass);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task EvictAsync(System.Type persistentClass, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Evict an entry from the process-level cache.  This method occurs outside
@@ -51,21 +52,22 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="persistentClass"></param>
 		/// <param name="id"></param>
-		Task EvictAsync(System.Type persistentClass, object id);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task EvictAsync(System.Type persistentClass, object id, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary> 
 		/// Evict all entries from the second-level cache. This method occurs outside
 		/// of any transaction; it performs an immediate "hard" remove, so does not respect
 		/// any transaction isolation semantics of the usage strategy. Use with care.
 		/// </summary>
-		Task EvictEntityAsync(string entityName);
+		Task EvictEntityAsync(string entityName, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary> 
 		/// Evict an entry from the second-level  cache. This method occurs outside
 		/// of any transaction; it performs an immediate "hard" remove, so does not respect
 		/// any transaction isolation semantics of the usage strategy. Use with care.
 		/// </summary>
-		Task EvictEntityAsync(string entityName, object id);
+		Task EvictEntityAsync(string entityName, object id, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Evict all entries from the process-level cache.  This method occurs outside
@@ -73,7 +75,8 @@ namespace NHibernate
 		/// any transaction isolation semantics of the usage strategy.  Use with care.
 		/// </summary>
 		/// <param name="roleName"></param>
-		Task EvictCollectionAsync(string roleName);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task EvictCollectionAsync(string roleName, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Evict an entry from the process-level cache.  This method occurs outside
@@ -82,17 +85,20 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="roleName"></param>
 		/// <param name="id"></param>
-		Task EvictCollectionAsync(string roleName, object id);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task EvictCollectionAsync(string roleName, object id, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Evict any query result sets cached in the default query cache region.
 		/// </summary>
-		Task EvictQueriesAsync();
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task EvictQueriesAsync(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Evict any query result sets cached in the named query cache region.
 		/// </summary>
 		/// <param name="cacheRegion"></param>
-		Task EvictQueriesAsync(string cacheRegion);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task EvictQueriesAsync(string cacheRegion, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

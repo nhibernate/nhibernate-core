@@ -14,6 +14,7 @@ using NHibernate.Engine;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -24,8 +25,8 @@ namespace NHibernate.Type
 		/// Get the values of the component properties of 
 		/// a component instance
 		/// </summary>
-		Task<object[]> GetPropertyValuesAsync(object component, ISessionImplementor session);
+		Task<object[]> GetPropertyValuesAsync(object component, ISessionImplementor session, CancellationToken cancellationToken);
 
-		Task<object> GetPropertyValueAsync(object component, int i, ISessionImplementor session);
+		Task<object> GetPropertyValueAsync(object component, int i, ISessionImplementor session, CancellationToken cancellationToken);
 	}
 }

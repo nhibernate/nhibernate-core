@@ -34,11 +34,16 @@ namespace NHibernate.Type
 		/// <param name="value"></param>
 		/// <param name="index"></param>
 		/// <param name="session"></param>
-		public override Task NullSafeSetAsync(DbCommand st, object value, int index, ISessionImplementor session)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public override Task NullSafeSetAsync(DbCommand st, object value, int index, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
-				return base.NullSafeSetAsync(st, session.PersistenceContext.GetCollectionHolder(value), index, session);
+				return base.NullSafeSetAsync(st, session.PersistenceContext.GetCollectionHolder(value), index, session, cancellationToken);
 			}
 			catch (Exception ex)
 			{

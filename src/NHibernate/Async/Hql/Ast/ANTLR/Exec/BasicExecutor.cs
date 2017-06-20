@@ -37,8 +37,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 		public override async Task<int> ExecuteAsync(QueryParameters parameters, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			cancellationToken.ThrowIfCancellationRequested();
-			await (CoordinateSharedCacheCleanupAsync(session)).ConfigureAwait(false);
+			await (CoordinateSharedCacheCleanupAsync(session, cancellationToken)).ConfigureAwait(false);
 
 			DbCommand st = null;
 			RowSelection selection = parameters.RowSelection;

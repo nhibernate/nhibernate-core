@@ -39,8 +39,12 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner)
+		public override Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object>(Disassemble(value, session, owner));

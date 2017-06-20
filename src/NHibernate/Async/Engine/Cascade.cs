@@ -170,8 +170,7 @@ namespace NHibernate.Engine
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			componentPathStack.Push(componentPropertyName);
-			cancellationToken.ThrowIfCancellationRequested();
-			object[] children = await (componentType.GetPropertyValuesAsync(child, eventSource)).ConfigureAwait(false);
+			object[] children = await (componentType.GetPropertyValuesAsync(child, eventSource, cancellationToken)).ConfigureAwait(false);
 			IType[] types = componentType.Subtypes;
 			for (int i = 0; i < types.Length; i++)
 			{

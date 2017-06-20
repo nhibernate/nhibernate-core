@@ -25,8 +25,12 @@ namespace NHibernate.Type
 	public partial class OneToOneType : EntityType, IAssociationType
 	{
 
-		public override Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				NullSafeSet(st, value, index, settable, session);
@@ -39,8 +43,12 @@ namespace NHibernate.Type
 			//nothing to do
 		}
 
-		public override Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session)
+		public override Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				NullSafeSet(cmd, value, index, session);
@@ -53,8 +61,12 @@ namespace NHibernate.Type
 			//nothing to do
 		}
 
-		public override Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session)
+		public override Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<bool>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<bool>(IsDirty(old, current, session));
@@ -65,8 +77,12 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session)
+		public override Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<bool>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<bool>(IsDirty(old, current, checkable, session));
@@ -77,8 +93,12 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task<bool> IsModifiedAsync(object old, object current, bool[] checkable, ISessionImplementor session)
+		public override Task<bool> IsModifiedAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<bool>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<bool>(IsModified(old, current, checkable, session));
@@ -102,8 +122,7 @@ namespace NHibernate.Type
 				EmbeddedComponentType ownerIdType = session.GetEntityPersister(null, owner).IdentifierType as EmbeddedComponentType;
 				if (ownerIdType != null)
 				{
-					cancellationToken.ThrowIfCancellationRequested();
-					object[] values = await (ownerIdType.GetPropertyValuesAsync(identifier, session)).ConfigureAwait(false);
+					object[] values = await (ownerIdType.GetPropertyValuesAsync(identifier, session, cancellationToken)).ConfigureAwait(false);
 					object id = await (componentType.ResolveIdentifierAsync(values, session, null, cancellationToken)).ConfigureAwait(false);
 					IEntityPersister persister = session.Factory.GetEntityPersister(type.ReturnedClass.FullName);
 					var key = session.GenerateEntityKey(id, persister);
@@ -113,8 +132,12 @@ namespace NHibernate.Type
 			return identifier;
 		}
 
-		public override Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner)
+		public override Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object>(Disassemble(value, session, owner));

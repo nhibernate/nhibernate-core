@@ -47,8 +47,9 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		public override async Task<bool> EqualsSnapshotAsync(ICollectionPersister persister)
+		public override async Task<bool> EqualsSnapshotAsync(ICollectionPersister persister, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IType elementType = persister.ElementType;
 			var xmap = (IDictionary<TKey, TValue>)GetSnapshot();
 			if (xmap.Count != WrappedMap.Count)
@@ -59,7 +60,7 @@ namespace NHibernate.Collection.Generic
 			{
 				// This method is not currently called if a key has been removed/added, but better be on the safe side.
 				if (!xmap.TryGetValue(entry.Key, out var value) ||
-					await (elementType.IsDirtyAsync(value, entry.Value, Session)).ConfigureAwait(false))
+					await (elementType.IsDirtyAsync(value, entry.Value, Session, cancellationToken)).ConfigureAwait(false))
 				{
 					return false;
 				}
@@ -97,20 +98,25 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		public override async Task<object> DisassembleAsync(ICollectionPersister persister)
+		public override async Task<object> DisassembleAsync(ICollectionPersister persister, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object[] result = new object[WrappedMap.Count * 2];
 			int i = 0;
 			foreach (KeyValuePair<TKey, TValue> e in WrappedMap)
 			{
-				result[i++] = await (persister.IndexType.DisassembleAsync(e.Key, Session, null)).ConfigureAwait(false);
-				result[i++] = await (persister.ElementType.DisassembleAsync(e.Value, Session, null)).ConfigureAwait(false);
+				result[i++] = await (persister.IndexType.DisassembleAsync(e.Key, Session, null, cancellationToken)).ConfigureAwait(false);
+				result[i++] = await (persister.ElementType.DisassembleAsync(e.Value, Session, null, cancellationToken)).ConfigureAwait(false);
 			}
 			return result;
 		}
 
-		public override Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula)
+		public override Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IEnumerable>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<IEnumerable>(GetDeletes(persister, indexIsFormula));
@@ -121,8 +127,12 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		public override Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType)
+		public override Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<bool>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<bool>(NeedsInserting(entry, i, elemType));
@@ -133,13 +143,14 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		public override async Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType)
+		public override async Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			var sn = (IDictionary)GetSnapshot();
 			var e = (KeyValuePair<TKey, TValue>)entry;
 			var snValue = sn[e.Key];
 			var isNew = !sn.Contains(e.Key);
-			return e.Value != null && snValue != null && await (elemType.IsDirtyAsync(snValue, e.Value, Session)).ConfigureAwait(false)
+			return e.Value != null && snValue != null && await (elemType.IsDirtyAsync(snValue, e.Value, Session, cancellationToken)).ConfigureAwait(false)
 				|| (!isNew && ((e.Value == null) != (snValue == null)));
 		}
 	}

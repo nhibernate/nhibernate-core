@@ -38,11 +38,15 @@ namespace NHibernate.Type
 			return key == null ? null : values[key];
 		}
 
-		public override Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
-				if (settable[0]) return NullSafeSetAsync(st, value, index, session);
+				if (settable[0]) return NullSafeSetAsync(st, value, index, session, cancellationToken);
 				return Task.CompletedTask;
 			}
 			catch (Exception ex)
@@ -51,14 +55,19 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task NullSafeSetAsync(DbCommand st,object value,int index,ISessionImplementor session)
+		public override Task NullSafeSetAsync(DbCommand st,object value,int index,ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			return baseType.NullSafeSetAsync(st, value == null ? null : keys[(string)value], index, session);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return baseType.NullSafeSetAsync(st, value == null ? null : keys[(string)value], index, session, cancellationToken);
 		}
 
-		public override async Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session)
+		public override async Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			return checkable[0] && await (IsDirtyAsync(old, current, session)).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			return checkable[0] && await (IsDirtyAsync(old, current, session, cancellationToken)).ConfigureAwait(false);
 		}
 
 		public override Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner, System.Collections.IDictionary copiedAlready, CancellationToken cancellationToken)

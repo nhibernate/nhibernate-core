@@ -13,11 +13,12 @@ using System.Data.Common;
 namespace NHibernate.Id.Insert
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial interface IBinder
 	{
-		Task BindValuesAsync(DbCommand cm);
+		Task BindValuesAsync(DbCommand cm, CancellationToken cancellationToken);
 	}
 }

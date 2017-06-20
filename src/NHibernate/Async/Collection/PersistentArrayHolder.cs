@@ -43,8 +43,9 @@ namespace NHibernate.Collection
 			return result;
 		}
 
-		public override async Task<bool> EqualsSnapshotAsync(ICollectionPersister persister)
+		public override async Task<bool> EqualsSnapshotAsync(ICollectionPersister persister, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IType elementType = persister.ElementType;
 			Array snapshot = (Array) GetSnapshot();
 
@@ -55,7 +56,7 @@ namespace NHibernate.Collection
 			}
 			for (int i = 0; i < xlen; i++)
 			{
-				if (await (elementType.IsDirtyAsync(snapshot.GetValue(i), array.GetValue(i), Session)).ConfigureAwait(false))
+				if (await (elementType.IsDirtyAsync(snapshot.GetValue(i), array.GetValue(i), Session, cancellationToken)).ConfigureAwait(false))
 				{
 					return false;
 				}
@@ -96,19 +97,24 @@ namespace NHibernate.Collection
 			}
 		}
 
-		public override async Task<object> DisassembleAsync(ICollectionPersister persister)
+		public override async Task<object> DisassembleAsync(ICollectionPersister persister, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			int length = array.Length;
 			object[] result = new object[length];
 			for (int i = 0; i < length; i++)
 			{
-				result[i] = await (persister.ElementType.DisassembleAsync(array.GetValue(i), Session, null)).ConfigureAwait(false);
+				result[i] = await (persister.ElementType.DisassembleAsync(array.GetValue(i), Session, null, cancellationToken)).ConfigureAwait(false);
 			}
 			return result;
 		}
 
-		public override Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula)
+		public override Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IEnumerable>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<IEnumerable>(GetDeletes(persister, indexIsFormula));
@@ -119,8 +125,12 @@ namespace NHibernate.Collection
 			}
 		}
 
-		public override Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType)
+		public override Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<bool>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<bool>(NeedsInserting(entry, i, elemType));
@@ -131,12 +141,13 @@ namespace NHibernate.Collection
 			}
 		}
 
-		public override async Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType)
+		public override async Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			Array sn = (Array) GetSnapshot();
 			return
 				i < sn.Length && sn.GetValue(i) != null && array.GetValue(i) != null
-				&& await (elemType.IsDirtyAsync(array.GetValue(i), sn.GetValue(i), Session)).ConfigureAwait(false);
+				&& await (elemType.IsDirtyAsync(array.GetValue(i), sn.GetValue(i), Session, cancellationToken)).ConfigureAwait(false);
 		}
 	}
 }

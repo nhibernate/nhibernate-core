@@ -29,14 +29,15 @@ namespace NHibernate.Engine
 		/// Determine if the collection is "really" dirty, by checking dirtiness
 		/// of the collection elements, if necessary
 		/// </summary>
-		private async Task DirtyAsync(IPersistentCollection collection)
+		private async Task DirtyAsync(IPersistentCollection collection, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			// if the collection is initialized and it was previously persistent
 			// initialize the dirty flag
 			bool forceDirty = collection.WasInitialized && !collection.IsDirty && LoadedPersister != null
 							  && LoadedPersister.IsMutable
 							  && (collection.IsDirectlyAccessible || LoadedPersister.ElementType.IsMutable)
-							  && !await (collection.EqualsSnapshotAsync(LoadedPersister)).ConfigureAwait(false);
+							  && !await (collection.EqualsSnapshotAsync(LoadedPersister, cancellationToken)).ConfigureAwait(false);
 
 			if (forceDirty)
 			{
@@ -48,14 +49,16 @@ namespace NHibernate.Engine
 		/// Prepares this CollectionEntry for the Flush process.
 		/// </summary>
 		/// <param name="collection">The <see cref="IPersistentCollection"/> that this CollectionEntry will be responsible for flushing.</param>
-		public async Task PreFlushAsync(IPersistentCollection collection)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public async Task PreFlushAsync(IPersistentCollection collection, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			bool nonMutableChange = collection.IsDirty && LoadedPersister != null && !LoadedPersister.IsMutable;
 			if (nonMutableChange)
 			{
 				throw new HibernateException("changed an immutable collection instance: " + MessageHelper.InfoString(LoadedPersister.Role, LoadedKey));
 			}
-			await (DirtyAsync(collection)).ConfigureAwait(false);
+			await (DirtyAsync(collection, cancellationToken)).ConfigureAwait(false);
 
 			if (log.IsDebugEnabled && collection.IsDirty && loadedPersister != null)
 			{

@@ -35,12 +35,16 @@ namespace NHibernate.Id
 		public partial class SelectGeneratorDelegate : AbstractSelectingDelegate
 		{
 
-			protected internal override Task BindParametersAsync(ISessionImplementor session, DbCommand ps, object entity)
+			protected internal override Task BindParametersAsync(ISessionImplementor session, DbCommand ps, object entity, CancellationToken cancellationToken)
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object>(cancellationToken);
+				}
 				try
 				{
 					object uniqueKeyValue = ((IEntityPersister) persister).GetPropertyValue(entity, uniqueKeyPropertyName);
-					return uniqueKeyType.NullSafeSetAsync(ps, uniqueKeyValue, 0, session);
+					return uniqueKeyType.NullSafeSetAsync(ps, uniqueKeyValue, 0, session, cancellationToken);
 				}
 				catch (System.Exception ex)
 				{

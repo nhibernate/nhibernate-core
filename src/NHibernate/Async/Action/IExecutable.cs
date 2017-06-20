@@ -22,7 +22,8 @@ namespace NHibernate.Action
 	{
 
 		/// <summary> Called before executing any actions</summary>
-		Task BeforeExecutionsAsync();
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task BeforeExecutionsAsync(CancellationToken cancellationToken);
 
 		/// <summary> Execute this action</summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
