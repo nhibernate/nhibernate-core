@@ -850,7 +850,6 @@ namespace NHibernate.Test.Linq
 
 					// Over floats.
 					TestRow(p => p.ShippingWeight.CompareTo((float) 4.98) <= 0, 17, false),
-					TestRow(p => p.ShippingWeight.CompareTo((float) 4.98) <= 0, 17, false),
 
 					// Over nullable decimals.
 					TestRow(p => p.UnitPrice.Value.CompareTo((decimal) 14.00) <= 0, 24, false),

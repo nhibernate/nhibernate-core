@@ -267,8 +267,7 @@ namespace NHibernate.Persister.Collection
 					int count = 0;
 
 					// create all the new entries
-					IEnumerator entries = collection.Entries(this).GetEnumerator();
-					while (entries.MoveNext())
+					foreach (var entry in collection.Entries(this))
 					{
 						// Init, if we're on the first element.
 						if (count == 0)
@@ -278,8 +277,7 @@ namespace NHibernate.Persister.Collection
 							//bool callable = InsertCallable;
 							useBatch = expectation.CanBeBatched;
 						}
-
-						object entry = entries.Current;
+						
 						if (collection.EntryExists(entry, i))
 						{
 							object entryId;
@@ -329,97 +327,87 @@ namespace NHibernate.Persister.Collection
 				try
 				{
 					// delete all the deleted entries
-					IEnumerator deletes = (await (collection.GetDeletesAsync(this, !deleteByIndex, cancellationToken)).ConfigureAwait(false)).GetEnumerator();
-					if (deletes.MoveNext())
+					var offset = 0;
+					var count = 0;
+
+					foreach (var entry in await (collection.GetDeletesAsync(this, !deleteByIndex, cancellationToken)).ConfigureAwait(false))
 					{
-						deletes.Reset();
-						int offset = 0;
-						int count = 0;
+						DbCommand st;
+						var expectation = Expectations.AppropriateExpectation(deleteCheckStyle);
+						//var callable = DeleteCallable;
 
-						while (deletes.MoveNext())
+						var useBatch = expectation.CanBeBatched;
+						if (useBatch)
 						{
-							DbCommand st;
-							IExpectation expectation = Expectations.AppropriateExpectation(deleteCheckStyle);
-							//bool callable = DeleteCallable;
-
-							bool useBatch = expectation.CanBeBatched;
-							if (useBatch)
+							st =
+								await (session.Batcher.PrepareBatchCommandAsync(SqlDeleteRowString.CommandType, SqlDeleteRowString.Text,
+																	SqlDeleteRowString.ParameterTypes, cancellationToken)).ConfigureAwait(false);
+						}
+						else
+						{
+							st =
+								await (session.Batcher.PrepareCommandAsync(SqlDeleteRowString.CommandType, SqlDeleteRowString.Text,
+																SqlDeleteRowString.ParameterTypes, cancellationToken)).ConfigureAwait(false);
+						}
+						try
+						{
+							var loc = offset;
+							if (hasIdentifier)
 							{
-								st =
-									await (session.Batcher.PrepareBatchCommandAsync(SqlDeleteRowString.CommandType, SqlDeleteRowString.Text,
-																		SqlDeleteRowString.ParameterTypes, cancellationToken)).ConfigureAwait(false);
+								await (WriteIdentifierAsync(st, entry, loc, session, cancellationToken)).ConfigureAwait(false);
 							}
 							else
 							{
-								st =
-									await (session.Batcher.PrepareCommandAsync(SqlDeleteRowString.CommandType, SqlDeleteRowString.Text,
-																   SqlDeleteRowString.ParameterTypes, cancellationToken)).ConfigureAwait(false);
-							}
-							try
-							{
-								object entry = deletes.Current;
-								int loc = offset;
-								if (hasIdentifier)
-								{
-									await (WriteIdentifierAsync(st, entry, loc, session, cancellationToken)).ConfigureAwait(false);
-								}
-								else
-								{
-									loc = await (WriteKeyAsync(st, id, loc, session, cancellationToken)).ConfigureAwait(false);
+								loc = await (WriteKeyAsync(st, id, loc, session, cancellationToken)).ConfigureAwait(false);
 
-									if (deleteByIndex)
-									{
-										await (WriteIndexToWhereAsync(st, entry, loc, session, cancellationToken)).ConfigureAwait(false);
-									}
-									else
-									{
-										await (WriteElementToWhereAsync(st, entry, loc, session, cancellationToken)).ConfigureAwait(false);
-									}
-								}
-								if (useBatch)
+								if (deleteByIndex)
 								{
-									await (session.Batcher.AddToBatchAsync(expectation, cancellationToken)).ConfigureAwait(false);
+									await (WriteIndexToWhereAsync(st, entry, loc, session, cancellationToken)).ConfigureAwait(false);
 								}
 								else
 								{
-									expectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false), st);
+									await (WriteElementToWhereAsync(st, entry, loc, session, cancellationToken)).ConfigureAwait(false);
 								}
-								count++;
 							}
-							catch (Exception e)
+							if (useBatch)
 							{
-								if (useBatch)
-								{
-									session.Batcher.AbortBatch(e);
-								}
-								throw;
+								await (session.Batcher.AddToBatchAsync(expectation, cancellationToken)).ConfigureAwait(false);
 							}
-							finally
+							else
 							{
-								if (!useBatch)
-								{
-									session.Batcher.CloseCommand(st, null);
-								}
+								expectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false), st);
 							}
+							count++;
 						}
-
-						if (log.IsDebugEnabled)
+						catch (Exception e)
 						{
-							log.Debug("done deleting collection rows: " + count + " deleted");
+							if (useBatch)
+							{
+								session.Batcher.AbortBatch(e);
+							}
+							throw;
+						}
+						finally
+						{
+							if (!useBatch)
+							{
+								session.Batcher.CloseCommand(st, null);
+							}
 						}
 					}
-					else
+
+					if (log.IsDebugEnabled)
 					{
-						if (log.IsDebugEnabled)
-						{
+						if (count > 0)
+							log.Debug("done deleting collection rows: " + count + " deleted");
+						else
 							log.Debug("no rows to delete");
-						}
 					}
 				}
 				catch (DbException sqle)
 				{
 					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle,
-													 "could not delete collection rows: " + MessageHelper.CollectionInfoString(this, collection, id, session));
+						"could not delete collection rows: " + MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 			}
 		}

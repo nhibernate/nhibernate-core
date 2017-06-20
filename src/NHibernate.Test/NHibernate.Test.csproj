@@ -176,6 +176,8 @@
     <Compile Include="Async\Extralazy\ExtraLazyFixture.cs" />
     <Compile Include="Async\FilterTest\DynamicFilterTest.cs" />
     <Compile Include="Async\FilterTest\FilterBinaryParameterTest.cs" />
+    <Compile Include="Async\Futures\FallbackFixture.cs" />
+    <Compile Include="Async\Futures\LinqFutureFixture.cs" />
     <Compile Include="Async\Generatedkeys\ByTrigger\GeneratedIdentityFixture.cs" />
     <Compile Include="Async\Generatedkeys\Identity\IdentityGeneratedKeysTest.cs" />
     <Compile Include="Async\Generatedkeys\Identity\SimpleIdentityGeneratedFixture.cs" />
