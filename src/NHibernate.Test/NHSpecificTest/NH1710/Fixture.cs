@@ -38,7 +38,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1710
 			var script = new StringBuilder();
 			new SchemaExport(cfg).Create(sl => script.AppendLine(sl), true);
 			Assert.That(script.ToString(), Does.Contain(expectedExportString));
-			new SchemaExport(cfg).Drop(false, true);
+			TestCase.DropSchema(false, new SchemaExport(cfg), factory);
 		}
 
 		private Dialect.Dialect GetDialect()
