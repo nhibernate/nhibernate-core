@@ -2,21 +2,17 @@ using System.Linq;
 using NHibernate.Cfg;
 using NHibernate.Connection;
 using NHibernate.Criterion;
-using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Linq;
 using NUnit.Framework;
 
-using Environment=NHibernate.Cfg.Environment;
+using Environment = NHibernate.Cfg.Environment;
 
-namespace NHibernate.Test.NHSpecificTest.Futures
+namespace NHibernate.Test.Futures
 {
 	public class TestDriverThatDoesntSupportQueryBatching : SqlClientDriver
 	{
-		public override bool SupportsMultipleQueries
-		{
-			get { return false; }
-		}
+		public override bool SupportsMultipleQueries => false;
 	}
 
 	/// <summary>
@@ -31,17 +27,22 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			var cp = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties);
-			return !cp.Driver.SupportsMultipleQueries;
+			using (var cp = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties))
+			{
+				return !cp.Driver.SupportsMultipleQueries;
+			}
 		}
 
 		protected override void Configure(Configuration configuration)
 		{
 			base.Configure(configuration);
-			if (Dialect is MsSql2000Dialect)
+			using (var cp = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties))
 			{
-				configuration.Properties[Environment.ConnectionDriver] =
-					typeof (TestDriverThatDoesntSupportQueryBatching).AssemblyQualifiedName;
+				if (cp.Driver is SqlClientDriver)
+				{
+					configuration.Properties[Environment.ConnectionDriver] =
+						typeof(TestDriverThatDoesntSupportQueryBatching).AssemblyQualifiedName;
+				}
 			}
 		}
 
@@ -151,6 +152,21 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 				var futurePerson = session.Query<Person>()
 					.Where(x => x.Id == personId)
 					.ToFutureValue();
+				Assert.IsNotNull(futurePerson.Value);
+			}
+		}
+
+		[Test]
+		public void FutureValueWithSelectorOfLinqCanGetSingleEntityWhenQueryBatchingIsNotSupported()
+		{
+			var personId = CreatePerson();
+
+			using (var session = OpenSession())
+			{
+				var futurePerson = session
+					.Query<Person>()
+					.Where(x => x.Id == personId)
+					.ToFutureValue(q => q.FirstOrDefault());
 				Assert.IsNotNull(futurePerson.Value);
 			}
 		}

@@ -1096,8 +1096,7 @@ namespace NHibernate.Persister.Collection
 					int count = 0;
 
 					// create all the new entries
-					IEnumerator entries = collection.Entries(this).GetEnumerator();
-					while (entries.MoveNext())
+					foreach (var entry in collection.Entries(this))
 					{
 						// Init, if we're on the first element.
 						if (count == 0)
@@ -1107,8 +1106,7 @@ namespace NHibernate.Persister.Collection
 							//bool callable = InsertCallable;
 							useBatch = expectation.CanBeBatched;
 						}
-
-						object entry = entries.Current;
+						
 						if (collection.EntryExists(entry, i))
 						{
 							object entryId;
@@ -1157,97 +1155,87 @@ namespace NHibernate.Persister.Collection
 				try
 				{
 					// delete all the deleted entries
-					IEnumerator deletes = collection.GetDeletes(this, !deleteByIndex).GetEnumerator();
-					if (deletes.MoveNext())
+					var offset = 0;
+					var count = 0;
+
+					foreach (var entry in collection.GetDeletes(this, !deleteByIndex))
 					{
-						deletes.Reset();
-						int offset = 0;
-						int count = 0;
+						DbCommand st;
+						var expectation = Expectations.AppropriateExpectation(deleteCheckStyle);
+						//var callable = DeleteCallable;
 
-						while (deletes.MoveNext())
+						var useBatch = expectation.CanBeBatched;
+						if (useBatch)
 						{
-							DbCommand st;
-							IExpectation expectation = Expectations.AppropriateExpectation(deleteCheckStyle);
-							//bool callable = DeleteCallable;
-
-							bool useBatch = expectation.CanBeBatched;
-							if (useBatch)
+							st =
+								session.Batcher.PrepareBatchCommand(SqlDeleteRowString.CommandType, SqlDeleteRowString.Text,
+																	SqlDeleteRowString.ParameterTypes);
+						}
+						else
+						{
+							st =
+								session.Batcher.PrepareCommand(SqlDeleteRowString.CommandType, SqlDeleteRowString.Text,
+																SqlDeleteRowString.ParameterTypes);
+						}
+						try
+						{
+							var loc = offset;
+							if (hasIdentifier)
 							{
-								st =
-									session.Batcher.PrepareBatchCommand(SqlDeleteRowString.CommandType, SqlDeleteRowString.Text,
-																		SqlDeleteRowString.ParameterTypes);
+								WriteIdentifier(st, entry, loc, session);
 							}
 							else
 							{
-								st =
-									session.Batcher.PrepareCommand(SqlDeleteRowString.CommandType, SqlDeleteRowString.Text,
-																   SqlDeleteRowString.ParameterTypes);
-							}
-							try
-							{
-								object entry = deletes.Current;
-								int loc = offset;
-								if (hasIdentifier)
-								{
-									WriteIdentifier(st, entry, loc, session);
-								}
-								else
-								{
-									loc = WriteKey(st, id, loc, session);
+								loc = WriteKey(st, id, loc, session);
 
-									if (deleteByIndex)
-									{
-										WriteIndexToWhere(st, entry, loc, session);
-									}
-									else
-									{
-										WriteElementToWhere(st, entry, loc, session);
-									}
-								}
-								if (useBatch)
+								if (deleteByIndex)
 								{
-									session.Batcher.AddToBatch(expectation);
+									WriteIndexToWhere(st, entry, loc, session);
 								}
 								else
 								{
-									expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
+									WriteElementToWhere(st, entry, loc, session);
 								}
-								count++;
 							}
-							catch (Exception e)
+							if (useBatch)
 							{
-								if (useBatch)
-								{
-									session.Batcher.AbortBatch(e);
-								}
-								throw;
+								session.Batcher.AddToBatch(expectation);
 							}
-							finally
+							else
 							{
-								if (!useBatch)
-								{
-									session.Batcher.CloseCommand(st, null);
-								}
+								expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
 							}
+							count++;
 						}
-
-						if (log.IsDebugEnabled)
+						catch (Exception e)
 						{
-							log.Debug("done deleting collection rows: " + count + " deleted");
+							if (useBatch)
+							{
+								session.Batcher.AbortBatch(e);
+							}
+							throw;
+						}
+						finally
+						{
+							if (!useBatch)
+							{
+								session.Batcher.CloseCommand(st, null);
+							}
 						}
 					}
-					else
+
+					if (log.IsDebugEnabled)
 					{
-						if (log.IsDebugEnabled)
-						{
+						if (count > 0)
+							log.Debug("done deleting collection rows: " + count + " deleted");
+						else
 							log.Debug("no rows to delete");
-						}
 					}
 				}
 				catch (DbException sqle)
 				{
 					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle,
-													 "could not delete collection rows: " + MessageHelper.CollectionInfoString(this, collection, id, session));
+						"could not delete collection rows: " + MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 			}
 		}

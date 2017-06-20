@@ -887,7 +887,7 @@ namespace NHibernate.Impl
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				return List<T>();
+				return new DelayedEnumerator<T>(List<T>);
 			}
 
 			session.FutureQueryBatch.Add<T>(this);

@@ -6,13 +6,17 @@ using System.Reflection;
 using NHibernate.Impl;
 using NHibernate.Type;
 using NHibernate.Util;
-using Remotion.Linq;
 using Remotion.Linq.Parsing.ExpressionTreeVisitors;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace NHibernate.Linq
 {
+	/// <summary>
+	/// NHibernate LINQ extension methods. They are meant to work with <see cref="NhQueryable{T}"/>. Supplied <see cref="IQueryable{T}"/> parameters
+	/// should at least have an <see cref="INhQueryProvider"/> <see cref="IQueryable.Provider"/>. <see cref="LinqExtensionMethods.Query{T}(ISession)"/> and
+	/// its overloads supply such queryables.
+	/// </summary>
 	public static class LinqExtensionMethods
 	{
 		#region AnyAsync
@@ -2537,51 +2541,81 @@ namespace NHibernate.Linq
 			return new NhQueryable<T>(query.Provider, callExpression);
 		}
 
-		public static IEnumerable<T> ToFuture<T>(this IQueryable<T> query)
+		/// <summary>
+		/// Wraps the query in a deferred <see cref="IEnumerable{T}"/> which enumeration will trigger a batch of all pending future queries.
+		/// </summary>
+		/// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to convert to a future query.</param>
+		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
+		/// <returns>A <see cref="IEnumerable{T}"/>.</returns>
+		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is <see langword="null"/>.</exception>
+		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
+		public static IEnumerable<TSource> ToFuture<TSource>(this IQueryable<TSource> source)
 		{
-			var nhQueryable = query as QueryableBase<T>;
-			if (nhQueryable == null)
-				throw new NotSupportedException("Query needs to be of type QueryableBase<T>");
-
-			var provider = (INhQueryProvider) nhQueryable.Provider;
-			var future = provider.ExecuteFuture(nhQueryable.Expression);
-			return (IEnumerable<T>) future;
+			if (source == null)
+			{
+				throw new ArgumentNullException(nameof(source));
+			}
+			if (!(source.Provider is INhQueryProvider provider))
+			{
+				throw new NotSupportedException($"Source {nameof(source.Provider)} must be a {nameof(INhQueryProvider)}");
+			}
+			return provider.ExecuteFuture<TSource>(source.Expression);
 		}
 
-		public static IFutureValue<T> ToFutureValue<T>(this IQueryable<T> query)
+		/// <summary>
+		/// Wraps the query in a deferred <see cref="IFutureValue{T}"/> which will trigger a batch of all pending future queries
+		/// when its <see cref="IFutureValue{T}.Value"/> is read.
+		/// </summary>
+		/// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to convert to a future query.</param>
+		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
+		/// <returns>A <see cref="IFutureValue{T}"/>.</returns>
+		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is <see langword="null"/>.</exception>
+		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
+		public static IFutureValue<TSource> ToFutureValue<TSource>(this IQueryable<TSource> source)
 		{
-			var nhQueryable = query as QueryableBase<T>;
-			if (nhQueryable == null)
-				throw new NotSupportedException("Query needs to be of type QueryableBase<T>");
-
-			var provider = (INhQueryProvider) nhQueryable.Provider;
-			var future = provider.ExecuteFuture(nhQueryable.Expression);
-			if (future is IEnumerable<T>)
+			if (source == null)
 			{
-				return new FutureValue<T>(() => ((IEnumerable<T>) future));
+				throw new ArgumentNullException(nameof(source));
+			}
+			if (!(source.Provider is INhQueryProvider provider))
+			{
+				throw new NotSupportedException($"Source {nameof(source.Provider)} must be a {nameof(INhQueryProvider)}");
+			}
+			var future = provider.ExecuteFuture<TSource>(source.Expression);
+			return new FutureValue<TSource>(() => future);
+		}
+
+		/// <summary>
+		/// Wraps the query in a deferred <see cref="IFutureValue{T}"/> which will trigger a batch of all pending future queries
+		/// when its <see cref="IFutureValue{T}.Value"/> is read.
+		/// </summary>
+		/// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to convert to a future query.</param>
+		/// <param name="selector">An aggregation function to apply to <paramref name="source"/>.</param>
+		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
+		/// <typeparam name="TResult">The type of the value returned by the function represented by <paramref name="selector"/>.</typeparam>
+		/// <returns>A <see cref="IFutureValue{T}"/>.</returns>
+		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is <see langword="null"/>.</exception>
+		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
+		public static IFutureValue<TResult> ToFutureValue<TSource, TResult>(this IQueryable<TSource> source, Expression<Func<IQueryable<TSource>, TResult>> selector)
+		{
+			if (source == null)
+			{
+				throw new ArgumentNullException(nameof(source));
+			}
+			if (!(source.Provider is INhQueryProvider provider))
+			{
+				throw new NotSupportedException($"Source {nameof(source.Provider)} must be a {nameof(INhQueryProvider)}");
 			}
 
-			return (IFutureValue<T>) future;
+			var expression = ReplacingExpressionTreeVisitor
+				.Replace(selector.Parameters.Single(), source.Expression, selector.Body);
+
+			return provider.ExecuteFutureValue<TResult>(expression);
 		}
 
 		public static T MappedAs<T>(this T parameter, IType type)
 		{
 			throw new InvalidOperationException("The method should be used inside Linq to indicate a type of a parameter");
-		}
-
-		public static IFutureValue<TResult> ToFutureValue<T, TResult>(this IQueryable<T> query, Expression<Func<IQueryable<T>, TResult>> selector)
-		{
-			var nhQueryable = query as QueryableBase<T>;
-			if (nhQueryable == null)
-				throw new NotSupportedException("Query needs to be of type QueryableBase<T>");
-
-			var provider = (INhQueryProvider) query.Provider;
-
-			var expression = ReplacingExpressionTreeVisitor.Replace(selector.Parameters.Single(),
-																	query.Expression,
-																	selector.Body);
-
-			return (IFutureValue<TResult>) provider.ExecuteFuture(expression);
 		}
 	}
 }

@@ -343,11 +343,13 @@ namespace NHibernate.Dialect
 
 		public override SqlString GetLimitString(SqlString querySqlString, SqlString offset, SqlString limit)
 		{
-			var tokenEnum = new SqlTokenizer(querySqlString).GetEnumerator();
-			if (!tokenEnum.TryParseUntilFirstMsSqlSelectColumn()) return null;
+			using (var tokenEnum = new SqlTokenizer(querySqlString).GetEnumerator())
+			{
+				if (!tokenEnum.TryParseUntilFirstMsSqlSelectColumn()) return null;
 
-			int insertPoint = tokenEnum.Current.SqlIndex;
-			return querySqlString.Insert(insertPoint, new SqlString("top ", limit, " "));
+				var insertPoint = tokenEnum.Current.SqlIndex;
+				return querySqlString.Insert(insertPoint, new SqlString("top ", limit, " "));
+			}
 		}
 
 		/// <summary>

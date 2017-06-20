@@ -3,7 +3,7 @@ using NHibernate.Linq;
 using NUnit.Framework;
 using System.Linq;
 
-namespace NHibernate.Test.NHSpecificTest.Futures
+namespace NHibernate.Test.Futures
 {
 	[TestFixture]
 	public class LinqFutureFixture : FutureFixture
