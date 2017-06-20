@@ -146,7 +146,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 				await (t.CommitAsync());
 			}
 
-			await (new SchemaExport(configuration).DropAsync(false, false));
+			await (new SchemaExport(configuration).DropAsync(false, true));
 		}
 
 		[Test]
