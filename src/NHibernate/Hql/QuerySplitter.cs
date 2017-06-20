@@ -113,7 +113,7 @@ namespace NHibernate.Hql
 				templateQuery.Append(token);
 			}
 			string[] results =
-				StringHelper.Multiply(templateQuery.ToString(), placeholders.GetEnumerator(), replacements.GetEnumerator());
+				StringHelper.Multiply(templateQuery.ToString(), placeholders, replacements);
 			if (results.Length == 0)
 			{
 				log.Warn("no persistent classes found for query class: " + query);

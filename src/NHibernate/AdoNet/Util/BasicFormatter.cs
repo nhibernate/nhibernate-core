@@ -59,14 +59,15 @@ namespace NHibernate.AdoNet.Util
 
 		public virtual string Format(string source)
 		{
-			return new FormatProcess(source).Perform();
+			using (var fp = new FormatProcess(source))
+				return fp.Perform();
 		}
 
 		#endregion
 
 		#region Nested type: FormatProcess
 
-		private class FormatProcess
+		private class FormatProcess : IDisposable
 		{
 			private readonly List<bool> afterByOrFromOrSelects = new List<bool>();
 			private readonly List<int> parenCounts = new List<int>();
@@ -440,6 +441,11 @@ namespace NHibernate.AdoNet.Util
 					result.Append(IndentString);
 				}
 				beginLine = true;
+			}
+
+			public void Dispose()
+			{
+				tokens.Dispose();
 			}
 		}
 

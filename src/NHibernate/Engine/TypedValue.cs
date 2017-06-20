@@ -101,14 +101,21 @@ namespace NHibernate.Engine
 				if (x.Count != y.Count)
 					return false;
 
-				IEnumerator xe = x.GetEnumerator();
-				IEnumerator ye = y.GetEnumerator();
-
-				while (xe.MoveNext())
+				var ye = y.GetEnumerator();
+				try
 				{
-					ye.MoveNext();
-					if (!type.IsEqual(xe.Current, ye.Current))
-						return false;
+					foreach (var xItem in x)
+					{
+						ye.MoveNext();
+						if (!type.IsEqual(xItem, ye.Current))
+							return false;
+					}
+				}
+				finally
+				{
+					// The old non generic IEnumerator is not disposable, but in most cases the concrete enumerator
+					// will be a generic one, disposable. https://stackoverflow.com/a/11179175/1178314
+					(ye as IDisposable)?.Dispose();
 				}
 
 				return true;

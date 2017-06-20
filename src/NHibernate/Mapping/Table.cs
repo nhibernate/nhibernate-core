@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
@@ -564,12 +565,7 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public Column GetColumn(int n)
 		{
-			IEnumerator<Column> iter = columns.Values.GetEnumerator();
-			for (int i = 0; i <= n; i++)
-			{
-				iter.MoveNext();
-			}
-			return iter.Current;
+			return columns.Values.Skip(n).First();
 		}
 
 		/// <summary>

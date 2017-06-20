@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -27,12 +26,7 @@ namespace NHibernate.Impl
 					// yields the scalar result when the query is scalar.
 					return (T)ExecuteOnEval.DynamicInvoke(result.AsQueryable());
 
-				var enumerator = result.GetEnumerator();
-
-				if (!enumerator.MoveNext())
-					return default(T);
-
-				return enumerator.Current;
+				return result.FirstOrDefault();
 			}
 		}
 
