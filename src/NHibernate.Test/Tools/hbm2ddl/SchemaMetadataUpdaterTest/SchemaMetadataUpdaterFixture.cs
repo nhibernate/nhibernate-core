@@ -151,7 +151,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 				t.Commit();
 			}
 
-			new SchemaExport(configuration).Drop(false, false);
+			new SchemaExport(configuration).Drop(false, true);
 		}
 
 		[Test]
