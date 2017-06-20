@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace NHibernate.Test.NHSpecificTest.Futures
+namespace NHibernate.Test.Futures
 {
 	public class Person
 	{

@@ -1,16 +1,14 @@
 using System.Collections;
-using NHibernate.Driver;
-using NHibernate.Impl;
 
 using NUnit.Framework;
 
-namespace NHibernate.Test.NHSpecificTest.Futures
+namespace NHibernate.Test.Futures
 {
 	public abstract class FutureFixture : TestCase
 	{
 		protected override IList Mappings
 		{
-			get { return new[] { "NHSpecificTest.Futures.Mappings.hbm.xml" }; }
+			get { return new[] { "Futures.Mappings.hbm.xml" }; }
 		}
 
 		protected override string MappingsAssembly

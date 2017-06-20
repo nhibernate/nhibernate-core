@@ -1,9 +1,8 @@
 using System.Linq;
 using NHibernate.Criterion;
-using NHibernate.Impl;
 using NUnit.Framework;
 
-namespace NHibernate.Test.NHSpecificTest.Futures
+namespace NHibernate.Test.Futures
 {
     [TestFixture]
     public class FutureCriteriaFixture : FutureFixture
