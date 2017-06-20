@@ -29,11 +29,10 @@
 		depends="check-framework-version init prepare-build-directory common.compile-all"
 		description="Builds NHibernate in the current configuration" />
 
-	<target name="generate-async" depends="common.generate-assemblyinfo common.nuget-restore">
+	<target name="generate-async" depends="common.generate-assemblyinfo common.nuget-restore common.find-async-generator-console">
 		<exec
-			basedir="${tools.dir}/CSharpAsyncGenerator.CommandLine.0.2.3/tools"
 			workingdir="${root.dir}/src"
-			program="AsyncGenerator.CommandLine.exe"/>
+			program="${async-generator-console}" />
 	</target>
 	
 	<target name="check-framework-version">

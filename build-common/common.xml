@@ -259,10 +259,27 @@
 		</fileset>
 		<resourcefileset id="project.resources" />
 	</target>
-	
-	<target name="common.find-nunit">
-		<property name="nunit-console" value="${tools.dir}/NUnit.ConsoleRunner.3.6.1/tools/nunit3-console.exe" />
+
+	<target name="common.get-nuget-package-path">
+		<xmlpeek 
+			file="${tools.dir}/packages.config" 
+			xpath="/packages/package[@id = '${nuget-package-id}']/@version"
+			property="nuget-package-version" />
+		<property name="nuget-package-path" value="${tools.dir}/${nuget-package-id}.${nuget-package-version}/" />
 	</target>
+
+	<target name="common.find-async-generator-console">
+		<property name="nuget-package-id" value="CSharpAsyncGenerator.CommandLine" />
+		<call target="common.get-nuget-package-path" />
+		<property name="async-generator-console"  value="${nuget-package-path}/tools/AsyncGenerator.CommandLine.exe" />
+	</target>
+
+	<target name="common.find-nunit">
+		<property name="nunit-package-id" value="NUnit.ConsoleRunner" />
+		<call target="common.get-nuget-package-path" />
+		<property name="nunit-console" value="${nuget-package-path}/tools/nunit3-console.exe" />
+	</target>
+
 	<target name="common.find-ndoc">
 		<property name="ndoc-console" value="${tools.dir}/ndoc/NDocConsole.exe" />
 	</target>
