@@ -1,19 +1,15 @@
 using System;
 using System.Collections;
-using System.Data.Common;
+using System.Collections.Generic;
+using System.Linq;
+using NHibernate.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.TransactionTest
 {
 	[TestFixture]
-	public class TransactionFixture : TestCase
+	public class TransactionFixture : TransactionFixtureBase
 	{
-		protected override IList Mappings
-		{
-			// The mapping is only actually needed in one test
-			get { return new string[] {"Simple.hbm.xml"}; }
-		}
-
 		[Test]
 		public void SecondTransactionShouldntBeCommitted()
 		{
@@ -74,25 +70,25 @@ namespace NHibernate.Test.TransactionTest
 		{
 			using (ISession s = OpenSession())
 			{
-				using (ITransaction t = s.BeginTransaction())
+				using (s.BeginTransaction())
 				{
 				}
 
-				s.CreateQuery("from Simple").List();
+				s.CreateQuery("from Person").List();
 
 				using (ITransaction t = s.BeginTransaction())
 				{
 					t.Commit();
 				}
 
-				s.CreateQuery("from Simple").List();
+				s.CreateQuery("from Person").List();
 
 				using (ITransaction t = s.BeginTransaction())
 				{
 					t.Rollback();
 				}
 
-				s.CreateQuery("from Simple").List();
+				s.CreateQuery("from Person").List();
 			}
 		}
 
@@ -139,6 +135,41 @@ namespace NHibernate.Test.TransactionTest
 					Assert.IsFalse(t.IsActive);
 					Assert.IsFalse(s.Transaction.IsActive);
 				}
+			}
+		}
+
+		[Test]
+		public void FlushFromTransactionAppliesToSharingSession()
+		{
+			var flushOrder = new List<int>();
+			using (var s = OpenSession(new TestInterceptor(0, flushOrder)))
+			{
+				var builder = s.SessionWithOptions().Connection();
+
+				using (var s1 = builder.Interceptor(new TestInterceptor(1, flushOrder)).OpenSession())
+				using (var s2 = builder.Interceptor(new TestInterceptor(2, flushOrder)).OpenSession())
+				using (var s3 = s1.SessionWithOptions().Connection().Interceptor(new TestInterceptor(3, flushOrder)).OpenSession())
+				using (var t = s.BeginTransaction())
+				{
+					var p1 = new Person();
+					var p2 = new Person();
+					var p3 = new Person();
+					var p4 = new Person();
+					s1.Save(p1);
+					s2.Save(p2);
+					s3.Save(p3);
+					s.Save(p4);
+					t.Commit();
+				}
+			}
+
+			Assert.That(flushOrder, Is.EqualTo(new[] { 1, 2, 3, 0 }));
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				Assert.That(s.Query<Person>().Count(), Is.EqualTo(4));
+				t.Commit();
 			}
 		}
 	}

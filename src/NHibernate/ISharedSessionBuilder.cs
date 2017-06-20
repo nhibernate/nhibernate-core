@@ -9,6 +9,8 @@ namespace NHibernate
 	{
 		/// <summary>
 		/// Signifies that the connection from the original session should be used to create the new session.
+		/// The original session remains responsible for it and its closing will cause sharing sessions to be no
+		/// more usable.
 		/// </summary>
 		/// <returns><see langword="this" />, for method chaining.</returns>
 		ISharedSessionBuilder Connection();

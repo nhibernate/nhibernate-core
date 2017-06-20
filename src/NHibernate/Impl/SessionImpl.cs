@@ -201,6 +201,7 @@ namespace NHibernate.Impl
 					if (options.UserSuppliedConnection != null)
 						throw new SessionException("Cannot simultaneously share transaction context and specify connection");
 					connectionManager = sharedOptions.ConnectionManager;
+					connectionManager.AddDependentSession(this);
 				}
 				else
 				{
@@ -298,8 +299,8 @@ namespace NHibernate.Impl
 				{
 					if (!_transactionCoordinatorShared)
 						return connectionManager.Close();
-					else
-						return null;
+					connectionManager.RemoveDependentSession(this);
+					return null;
 				}
 				finally
 				{
@@ -316,6 +317,12 @@ namespace NHibernate.Impl
 		/// </summary>
 		public override void AfterTransactionCompletion(bool success, ITransaction tx)
 		{
+			if (!_transactionCoordinatorShared)
+				foreach (var dependentSession in ConnectionManager.DependentSessions)
+				{
+					dependentSession.AfterTransactionCompletion(success, tx);
+				}
+
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				log.Debug("transaction completion");
@@ -324,10 +331,15 @@ namespace NHibernate.Impl
 					Factory.StatisticsImplementor.EndTransaction(success);
 				}
 
-				connectionManager.AfterTransaction();
+				// Let the originating session notify the connection manager
+				if (!_transactionCoordinatorShared)
+				{
+					connectionManager.AfterTransaction();
+				}
+
 				persistenceContext.AfterTransactionCompletion();
 				actionQueue.AfterTransactionCompletion(success);
-				if (!_transactionCoordinatorShared)
+				if (!_transactionCoordinatorShared || Interceptor != ConnectionManager.Session.Interceptor)
 				{
 					try
 					{
@@ -2092,17 +2104,33 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				Interceptor.AfterTransactionBegin(tx);
+
+				if (!_transactionCoordinatorShared || Interceptor != ConnectionManager.Session.Interceptor)
+				{
+					Interceptor.AfterTransactionBegin(tx);
+				}
 			}
+
+			if (!_transactionCoordinatorShared)
+				foreach (var dependentSession in ConnectionManager.DependentSessions)
+				{
+					dependentSession.AfterTransactionBegin(tx);
+				}
 		}
 
 		public override void BeforeTransactionCompletion(ITransaction tx)
 		{
+			if (!_transactionCoordinatorShared)
+				foreach (var dependentSession in ConnectionManager.DependentSessions)
+				{
+					dependentSession.BeforeTransactionCompletion(tx);
+				}
+
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				log.Debug("before transaction completion");
 				actionQueue.BeforeTransactionCompletion();
-				if (!_transactionCoordinatorShared)
+				if (!_transactionCoordinatorShared || Interceptor != ConnectionManager.Session.Interceptor)
 				{
 					try
 					{
