@@ -155,12 +155,15 @@
         hasAttributeName: IgnoreAttribute
       - conversion: Smart
         hasAttributeName: TestAttribute
+      - conversion: Smart
+        hasAttributeName: TheoryAttribute
       asyncExtensionMethods:
         projectFiles:
         - fileName: LinqExtensionMethods.cs
           projectName: NHibernate
       preserveReturnType:
       - hasAttributeName: TestAttribute
+      - hasAttributeName: TheoryAttribute
       typeConversion:
       - conversion: Ignore
         name: NorthwindDbCreator
@@ -182,6 +185,7 @@
       cancellationTokens:
         withoutCancellationToken:
         - hasAttributeName: TestAttribute
+        - hasAttributeName: TheoryAttribute
       scanMethodBody: true
       scanForMissingAsyncMembers:
       - anyInterfaceRule: NHibernateAssembly
