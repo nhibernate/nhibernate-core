@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH2241">
+
+  <class name="User" table="Users">
+    <id name="Id">
+      <generator class="native"/>
+    </id>
+
+    <many-to-one name="Country" column="CountryCode" cascade="none" />
+  </class>
+
+  <class name="Country">
+    <cache region="ShortTerm" usage="read-write" />
+
+    <id name="CountryCode">
+      <generator class="assigned"/>
+    </id>
+
+    <property name="CountryName" />
+
+  </class>
+
+</hibernate-mapping>
