@@ -2517,6 +2517,7 @@ namespace NHibernate.Impl
 		{
 			private readonly SessionImpl _session;
 			private bool _shareTransactionContext;
+			private bool _shareInterceptor;
 
 			public SharedSessionBuilderImpl(SessionImpl session)
 				: base((SessionFactoryImpl)session.Factory)
@@ -2526,9 +2527,37 @@ namespace NHibernate.Impl
 			}
 
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// SessionBuilder
+
+			// NH specific feature.
+			protected override void SetSessionOnInterceptor(SessionImpl session)
+			{
+				if (_shareInterceptor)
+					return;
+				base.SetSessionOnInterceptor(session);
+			}
+
+			public override ISharedSessionBuilder Interceptor(IInterceptor interceptor)
+			{
+				_shareInterceptor = false;
+				return base.Interceptor(interceptor);
+			}
+
+			// NH different implementation, avoid an error case.
+			public override ISharedSessionBuilder Connection(DbConnection connection)
+			{
+				_shareTransactionContext = false;
+				return base.Connection(connection);
+			}
+
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			// SharedSessionBuilder
 
-			public virtual ISharedSessionBuilder Interceptor() => Interceptor(_session.Interceptor);
+			public virtual ISharedSessionBuilder Interceptor()
+			{
+				_shareInterceptor = true;
+				return Interceptor(_session.Interceptor);
+			}
 
 			public virtual ISharedSessionBuilder Connection()
 			{
@@ -2544,13 +2573,6 @@ namespace NHibernate.Impl
 			public virtual ISharedSessionBuilder FlushMode() => FlushMode(_session.FlushMode);
 
 			public virtual ISharedSessionBuilder AutoClose() => AutoClose(_session.autoCloseSessionEnabled);
-
-			// NH different implementation, avoid an error case.
-			public override ISharedSessionBuilder Connection(DbConnection connection)
-			{
-				_shareTransactionContext = false;
-				return base.Connection(connection);
-			}
 
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			// SharedSessionCreationOptions

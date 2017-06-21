@@ -1330,15 +1330,17 @@ namespace NHibernate.Impl
 			{
 				_log.Debug("Opening Hibernate Session.");
 				var session = new SessionImpl(_sessionFactory, this);
-				if (_interceptor != null)
-				{
-					// NH specific feature
-					// _interceptor may be the shared accros threads EmptyInterceptor.Instance, but that is
-					// not an issue, SetSession is no-op on it.
-					_interceptor.SetSession(session);
-				}
+				SetSessionOnInterceptor(session);
 
 				return session;
+			}
+
+			protected virtual void SetSessionOnInterceptor(SessionImpl session)
+			{
+				// NH specific feature
+				// _interceptor may be the shared accros threads EmptyInterceptor.Instance, but that is
+				// not an issue, SetSession is no-op on it.
+				_interceptor?.SetSession(session);
 			}
 
 			public virtual T Interceptor(IInterceptor interceptor)
