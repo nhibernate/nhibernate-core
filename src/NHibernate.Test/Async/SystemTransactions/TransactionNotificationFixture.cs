@@ -69,7 +69,7 @@ namespace NHibernate.Test.SystemTransactions
 
 		[Description("NH2128, NH3572")]
 		[Theory]
-		public async Task ShouldNotifyAfterDistributedTransactionAsync(bool doCommit, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task ShouldNotifyAfterDistributedTransactionAsync(bool doCommit)
 		{
 			// Note: For distributed transaction, calling Close() on the session isn't
 			// supported, so we don't need to test that scenario.
@@ -85,8 +85,8 @@ namespace NHibernate.Test.SystemTransactions
 					s1 = OpenSession(interceptor);
 					s2 = OpenSession(interceptor);
 
-					await (s1.CreateCriteria<object>().ListAsync(cancellationToken));
-					await (s2.CreateCriteria<object>().ListAsync(cancellationToken));
+					await (s1.CreateCriteria<object>().ListAsync());
+					await (s2.CreateCriteria<object>().ListAsync());
 				}
 				finally
 				{
@@ -108,7 +108,7 @@ namespace NHibernate.Test.SystemTransactions
 
 		[Description("NH2128")]
 		[Theory]
-		public async Task ShouldNotifyAfterDistributedTransactionWithOwnConnectionAsync(bool doCommit, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task ShouldNotifyAfterDistributedTransactionWithOwnConnectionAsync(bool doCommit)
 		{
 			// Note: For distributed transaction, calling Close() on the session isn't
 			// supported, so we don't need to test that scenario.
@@ -118,13 +118,13 @@ namespace NHibernate.Test.SystemTransactions
 
 			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
-				var ownConnection1 = await (Sfi.ConnectionProvider.GetConnectionAsync(cancellationToken));
+				var ownConnection1 = await (Sfi.ConnectionProvider.GetConnectionAsync(CancellationToken.None));
 
 				try
 				{
 					using (s1 = Sfi.WithOptions().Connection(ownConnection1).Interceptor(interceptor).OpenSession())
 					{
-						await (s1.CreateCriteria<object>().ListAsync(cancellationToken));
+						await (s1.CreateCriteria<object>().ListAsync());
 					}
 
 					if (doCommit)
