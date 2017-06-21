@@ -53,9 +53,9 @@ namespace NHibernate.Test.TransactionTest
 		}
 
 
+		[Theory]
 		[Description("NH2128")]
-		[Test]
-		public async Task ShouldNotifyAfterTransactionAsync([Values(false, true)] bool usePrematureClose)
+		public async Task ShouldNotifyAfterTransactionAsync(bool usePrematureClose, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var interceptor = new RecordingInterceptor();
 			ISession s;
@@ -63,7 +63,7 @@ namespace NHibernate.Test.TransactionTest
 			using (s = OpenSession(interceptor))
 			using (s.BeginTransaction())
 			{
-				await (s.CreateCriteria<object>().ListAsync());
+				await (s.CreateCriteria<object>().ListAsync(cancellationToken));
 
 				// Call session close while still inside transaction?
 				if (usePrematureClose)
@@ -76,18 +76,18 @@ namespace NHibernate.Test.TransactionTest
 
 
 		[Description("NH2128")]
-		[Test]
-		public async Task ShouldNotifyAfterTransactionWithOwnConnectionAsync([Values(false, true)] bool usePrematureClose)
+		[Theory]
+		public async Task ShouldNotifyAfterTransactionWithOwnConnectionAsync(bool usePrematureClose, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var interceptor = new RecordingInterceptor();
 			ISession s;
 
-			using (var ownConnection = await (Sfi.ConnectionProvider.GetConnectionAsync(CancellationToken.None)))
+			using (var ownConnection = await (Sfi.ConnectionProvider.GetConnectionAsync(cancellationToken)))
 			{
 				using (s = Sfi.WithOptions().Connection(ownConnection).Interceptor(interceptor).OpenSession())
 				using (s.BeginTransaction())
 				{
-					await (s.CreateCriteria<object>().ListAsync());
+					await (s.CreateCriteria<object>().ListAsync(cancellationToken));
 
 					// Call session close while still inside transaction?
 					if (usePrematureClose)

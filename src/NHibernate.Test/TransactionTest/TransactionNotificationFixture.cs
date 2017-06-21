@@ -67,9 +67,9 @@ namespace NHibernate.Test.TransactionTest
 		}
 
 
+		[Theory]
 		[Description("NH2128")]
-		[Test]
-		public void ShouldNotifyAfterTransaction([Values(false, true)] bool usePrematureClose)
+		public void ShouldNotifyAfterTransaction(bool usePrematureClose)
 		{
 			var interceptor = new RecordingInterceptor();
 			ISession s;
@@ -90,8 +90,8 @@ namespace NHibernate.Test.TransactionTest
 
 
 		[Description("NH2128")]
-		[Test]
-		public void ShouldNotifyAfterTransactionWithOwnConnection([Values(false, true)] bool usePrematureClose)
+		[Theory]
+		public void ShouldNotifyAfterTransactionWithOwnConnection(bool usePrematureClose)
 		{
 			var interceptor = new RecordingInterceptor();
 			ISession s;

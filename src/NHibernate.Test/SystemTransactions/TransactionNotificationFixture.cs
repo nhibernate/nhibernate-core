@@ -111,8 +111,8 @@ namespace NHibernate.Test.SystemTransactions
 
 
 		[Description("NH2128, NH3572")]
-		[Test]
-		public void ShouldNotifyAfterDistributedTransaction([Values(false, true)] bool doCommit)
+		[Theory]
+		public void ShouldNotifyAfterDistributedTransaction(bool doCommit)
 		{
 			// Note: For distributed transaction, calling Close() on the session isn't
 			// supported, so we don't need to test that scenario.
@@ -150,8 +150,8 @@ namespace NHibernate.Test.SystemTransactions
 
 
 		[Description("NH2128")]
-		[Test]
-		public void ShouldNotifyAfterDistributedTransactionWithOwnConnection([Values(false, true)] bool doCommit)
+		[Theory]
+		public void ShouldNotifyAfterDistributedTransactionWithOwnConnection(bool doCommit)
 		{
 			// Note: For distributed transaction, calling Close() on the session isn't
 			// supported, so we don't need to test that scenario.
