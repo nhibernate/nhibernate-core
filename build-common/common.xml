@@ -275,7 +275,7 @@
 	</target>
 
 	<target name="common.find-nunit">
-		<property name="nunit-package-id" value="NUnit.ConsoleRunner" />
+		<property name="nuget-package-id" value="NUnit.ConsoleRunner" />
 		<call target="common.get-nuget-package-path" />
 		<property name="nunit-console" value="${nuget-package-path}/tools/nunit3-console.exe" />
 	</target>
