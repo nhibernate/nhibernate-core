@@ -49,6 +49,7 @@ DROP TRIGGER my_entity_BI;
 		<dialect-scope name="NHibernate.Dialect.Oracle8iDialect"/>
 		<dialect-scope name="NHibernate.Dialect.Oracle9iDialect"/>
 		<dialect-scope name="NHibernate.Dialect.Oracle10gDialect"/>
+		<dialect-scope name="NHibernate.Dialect.Oracle12cDialect"/>
 	</database-object>
 
 	<database-object>
@@ -66,6 +67,7 @@ DROP TRIGGER my_entity_BI;
 		<dialect-scope name="NHibernate.Dialect.Oracle8iDialect"/>
 		<dialect-scope name="NHibernate.Dialect.Oracle9iDialect"/>
 		<dialect-scope name="NHibernate.Dialect.Oracle10gDialect"/>
+		<dialect-scope name="NHibernate.Dialect.Oracle12cDialect"/>
 	</database-object>
 
 

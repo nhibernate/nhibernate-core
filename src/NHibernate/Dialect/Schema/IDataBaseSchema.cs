@@ -72,7 +72,7 @@ namespace NHibernate.Dialect.Schema
 		/// <param name="catalog">A catalog, retrieves those without a catalog</param>
 		/// <param name="schemaPattern">Schema pattern, retrieves those without the schema</param>
 		/// <param name="tableNamePattern">A table name pattern</param>
-		/// <param name="columnNamePattern">a columng name patterm</param>
+		/// <param name="columnNamePattern">a column name pattern</param>
 		/// <returns>A description of the table columns available</returns>
 		DataTable GetColumns(string catalog, string schemaPattern, string tableNamePattern, string columnNamePattern);
 

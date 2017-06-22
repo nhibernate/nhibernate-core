@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Text;
 using NHibernate.Dialect;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2697
 {
@@ -65,9 +64,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 			//}
 
 			using (ISession session = this.OpenSession()) {
-			    string hql = "from ArticleGroupItem";
-			    session.Delete(hql);
-			    session.Flush();
+				string hql = "from ArticleGroupItem";
+				session.Delete(hql);
+				session.Flush();
 			}
 
 		}
@@ -90,7 +89,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 			using (ISession session = this.OpenSession()) {
 				result = session.CreateQuery(HQL).List<ArticleGroupItem>();
 			}
-			result.Count.Should().Be.GreaterThan(0);
+			Assert.That(result.Count, Is.GreaterThan(0));
 		}
 
 		[Test]
@@ -113,7 +112,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 			using (ISession session = this.OpenSession()) {
 				result = session.CreateQuery(HQL).List<ArticleItem>();
 			}
-			result.Count.Should().Be.GreaterThan(0);
+			Assert.That(result.Count, Is.GreaterThan(0));
 		}
 
 
@@ -142,7 +141,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 			using (ISession session = this.OpenSession()) {
 				result = session.CreateQuery(HQL).List<ArticleItem>();
 			}
-			result.Count.Should().Be.GreaterThan(0);
+			Assert.That(result.Count, Is.GreaterThan(0));
 
 		}
 	}

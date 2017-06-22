@@ -52,11 +52,11 @@ namespace NHibernate.Event.Default
 			CollectionEntry ce = (CollectionEntry)Session.PersistenceContext.CollectionEntries[collection];
 			Session.PersistenceContext.CollectionEntries.Remove(collection);
 			if (log.IsDebugEnabled)
-				log.Debug("evicting collection: " + MessageHelper.InfoString(ce.LoadedPersister, ce.LoadedKey, Session.Factory));
+				log.Debug("evicting collection: " + MessageHelper.CollectionInfoString(ce.LoadedPersister, collection, ce.LoadedKey, Session));
 			if (ce.LoadedPersister != null && ce.LoadedKey != null)
 			{
 				//TODO: is this 100% correct?
-				Session.PersistenceContext.CollectionsByKey.Remove(new CollectionKey(ce.LoadedPersister, ce.LoadedKey, Session.EntityMode));
+				Session.PersistenceContext.CollectionsByKey.Remove(new CollectionKey(ce.LoadedPersister, ce.LoadedKey));
 			}
 		}
 	}

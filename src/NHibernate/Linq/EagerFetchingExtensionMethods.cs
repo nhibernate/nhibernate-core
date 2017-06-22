@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Remotion.Linq;
-using Remotion.Linq.Utilities;
 
 namespace NHibernate.Linq
 {
@@ -13,8 +12,8 @@ namespace NHibernate.Linq
         public static INhFetchRequest<TOriginating, TRelated> Fetch<TOriginating, TRelated>(
             this IQueryable<TOriginating> query, Expression<Func<TOriginating, TRelated>> relatedObjectSelector)
         {
-            ArgumentUtility.CheckNotNull("query", query);
-            ArgumentUtility.CheckNotNull("relatedObjectSelector", relatedObjectSelector);
+            if (query == null) throw new ArgumentNullException(nameof(query));
+            if (relatedObjectSelector == null) throw new ArgumentNullException(nameof(relatedObjectSelector));
 
             var methodInfo = ((MethodInfo)MethodBase.GetCurrentMethod()).MakeGenericMethod(typeof(TOriginating), typeof(TRelated));
             return CreateFluentFetchRequest<TOriginating, TRelated>(methodInfo, query, relatedObjectSelector);
@@ -23,8 +22,8 @@ namespace NHibernate.Linq
         public static INhFetchRequest<TOriginating, TRelated> FetchMany<TOriginating, TRelated>(
             this IQueryable<TOriginating> query, Expression<Func<TOriginating, IEnumerable<TRelated>>> relatedObjectSelector)
         {
-            ArgumentUtility.CheckNotNull("query", query);
-            ArgumentUtility.CheckNotNull("relatedObjectSelector", relatedObjectSelector);
+            if (query == null) throw new ArgumentNullException(nameof(query));
+            if (relatedObjectSelector == null) throw new ArgumentNullException(nameof(relatedObjectSelector));
 
             var methodInfo = ((MethodInfo)MethodBase.GetCurrentMethod()).MakeGenericMethod(typeof(TOriginating), typeof(TRelated));
             return CreateFluentFetchRequest<TOriginating, TRelated>(methodInfo, query, relatedObjectSelector);
@@ -33,8 +32,8 @@ namespace NHibernate.Linq
         public static INhFetchRequest<TQueried, TRelated> ThenFetch<TQueried, TFetch, TRelated>(
             this INhFetchRequest<TQueried, TFetch> query, Expression<Func<TFetch, TRelated>> relatedObjectSelector)
         {
-            ArgumentUtility.CheckNotNull("query", query);
-            ArgumentUtility.CheckNotNull("relatedObjectSelector", relatedObjectSelector);
+            if (query == null) throw new ArgumentNullException(nameof(query));
+            if (relatedObjectSelector == null) throw new ArgumentNullException(nameof(relatedObjectSelector));
 
             var methodInfo = ((MethodInfo)MethodBase.GetCurrentMethod()).MakeGenericMethod(typeof(TQueried), typeof(TFetch), typeof(TRelated));
             return CreateFluentFetchRequest<TQueried, TRelated>(methodInfo, query, relatedObjectSelector);
@@ -43,8 +42,8 @@ namespace NHibernate.Linq
         public static INhFetchRequest<TQueried, TRelated> ThenFetchMany<TQueried, TFetch, TRelated>(
             this INhFetchRequest<TQueried, TFetch> query, Expression<Func<TFetch, IEnumerable<TRelated>>> relatedObjectSelector)
         {
-            ArgumentUtility.CheckNotNull("query", query);
-            ArgumentUtility.CheckNotNull("relatedObjectSelector", relatedObjectSelector);
+            if (query == null) throw new ArgumentNullException(nameof(query));
+            if (relatedObjectSelector == null) throw new ArgumentNullException(nameof(relatedObjectSelector));
 
             var methodInfo = ((MethodInfo)MethodBase.GetCurrentMethod()).MakeGenericMethod(typeof(TQueried), typeof(TFetch), typeof(TRelated));
             return CreateFluentFetchRequest<TQueried, TRelated>(methodInfo, query, relatedObjectSelector);

@@ -209,9 +209,8 @@ namespace NHibernate.Dialect
 
 		public override long TimestampResolutionInTicks
 		{
-			// Lousy documentation. Various mailing lists and articles seem to 
-			// indicate resolution of 0.1 ms, i.e. 1000 ticks.
-			get { return 1000L; }
+			// Resolution of 1 ms, i.e. 10000 ticks.
+			get { return 10000L; }
 		}
 
 		public override bool SupportsCurrentTimestampSelection
@@ -322,6 +321,11 @@ namespace NHibernate.Dialect
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as VARCHAR(255))"));
 			RegisterFunction("sysdate", new CastedFunction("today", NHibernateUtil.Date));
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "cast(?1 as date)"));
+			// Bitwise operations
+			RegisterFunction("band", new BitwiseFunctionOperation("bin_and"));
+			RegisterFunction("bor", new BitwiseFunctionOperation("bin_or"));
+			RegisterFunction("bxor", new BitwiseFunctionOperation("bin_xor"));
+			RegisterFunction("bnot", new BitwiseFunctionOperation("bin_not"));
 		}
 
 		private void RegisterFirebirdServerEmbeddedFunctions()
@@ -349,9 +353,6 @@ namespace NHibernate.Dialect
 		private void RegisterMathematicalFunctions()
 		{
 			RegisterFunction("abs", new StandardSQLFunction("abs", NHibernateUtil.Double));
-			RegisterFunction("bin_and", new StandardSQLFunction("bin_and", NHibernateUtil.Int32));
-			RegisterFunction("bin_or", new StandardSQLFunction("bin_or", NHibernateUtil.Int32));
-			RegisterFunction("bin_xor", new StandardSQLFunction("bin_xor", NHibernateUtil.Int32));
 			RegisterFunction("ceiling", new StandardSQLFunction("ceiling", NHibernateUtil.Double));
 			RegisterFunction("div", new StandardSQLFunction("div", NHibernateUtil.Double));
 			RegisterFunction("dpower", new StandardSQLFunction("dpower", NHibernateUtil.Double));

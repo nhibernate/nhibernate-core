@@ -4,7 +4,6 @@ using NHibernate.Mapping.ByCode;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode.Impl;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.MappersTests
 {
@@ -23,7 +22,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		{
 			var hbmId = new HbmId();
 			new IdMapper(hbmId).Generator(Generators.HighLow);
-			hbmId.generator.@class.Should().Be.EqualTo("hilo");
+			Assert.That(hbmId.generator.@class, Is.EqualTo("hilo"));
 		}
 
 		[Test]
@@ -31,10 +30,10 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		{
 			var hbmId = new HbmId();
 			new IdMapper(hbmId).Generator(Generators.HighLow, p => p.Params(new { max_low = 99, where = "TableName" }));
-			hbmId.generator.@class.Should().Be.EqualTo("hilo");
-			hbmId.generator.param.Should().Have.Count.EqualTo(2);
-			hbmId.generator.param.Select(p => p.name).Should().Have.SameValuesAs("max_low", "where");
-			hbmId.generator.param.Select(p => p.GetText()).Should().Have.SameValuesAs("99", "TableName");
+			Assert.That(hbmId.generator.@class, Is.EqualTo("hilo"));
+			Assert.That(hbmId.generator.param, Has.Length.EqualTo(2));
+			Assert.That(hbmId.generator.param.Select(p => p.name), Is.EquivalentTo(new [] {"max_low", "where"}));
+			Assert.That(hbmId.generator.param.Select(p => p.GetText()), Is.EquivalentTo(new [] {"99", "TableName"}));
 		}
 
 		[Test]
@@ -42,7 +41,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		{
 			var hbmId = new HbmId();
 			new IdMapper(hbmId).Generator(Generators.Guid);
-			hbmId.generator.@class.Should().Be.EqualTo("guid");
+			Assert.That(hbmId.generator.@class, Is.EqualTo("guid"));
 		}
 
 		[Test]
@@ -50,7 +49,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		{
 			var hbmId = new HbmId();
 			new IdMapper(hbmId).Generator(Generators.GuidComb);
-			hbmId.generator.@class.Should().Be.EqualTo("guid.comb");
+			Assert.That(hbmId.generator.@class, Is.EqualTo("guid.comb"));
 		}
 
 		[Test]
@@ -58,7 +57,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		{
 			var hbmId = new HbmId();
 			new IdMapper(hbmId).Generator(Generators.Sequence);
-			hbmId.generator.@class.Should().Be.EqualTo("sequence");
+			Assert.That(hbmId.generator.@class, Is.EqualTo("sequence"));
 		}
 
 		[Test]
@@ -66,7 +65,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		{
 			var hbmId = new HbmId();
 			new IdMapper(hbmId).Generator(Generators.Identity);
-			hbmId.generator.@class.Should().Be.EqualTo("identity");
+			Assert.That(hbmId.generator.@class, Is.EqualTo("identity"));
 		}
 
 		private class MyClass
@@ -85,9 +84,11 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		{
 			var hbmId = new HbmId();
 			new IdMapper(hbmId).Generator(Generators.Foreign<MyClass>(mc => mc.OneToOne));
-			hbmId.generator.@class.Should().Be.EqualTo("foreign");
-			hbmId.generator.param.Should().Not.Be.Null().And.Have.Count.EqualTo(1);
-			hbmId.generator.param.Single().Satisfy(p => p.name == "property" && p.GetText() == "OneToOne");
+			Assert.That(hbmId.generator.@class, Is.EqualTo("foreign"));
+			Assert.That(hbmId.generator.param, Is.Not.Null.And.Length.EqualTo(1));
+			var p = hbmId.generator.param.Single();
+			Assert.That(p.GetText(), Is.EqualTo("OneToOne"));
+			Assert.That(p.name, Is.EqualTo("property"));
 		}
 
 		[Test]
@@ -95,7 +96,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		{
 			var hbmId = new HbmId();
 			new IdMapper(hbmId).Generator(Generators.Assigned);
-			hbmId.generator.@class.Should().Be.EqualTo("assigned");
+			Assert.That(hbmId.generator.@class, Is.EqualTo("assigned"));
 		}
 
 		[Test]
@@ -103,7 +104,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		{
 			var hbmId = new HbmId();
 			new IdMapper(hbmId).Generator(Generators.EnhancedSequence);
-			hbmId.generator.@class.Should().Be.EqualTo("enhanced-sequence");
+			Assert.That(hbmId.generator.@class, Is.EqualTo("enhanced-sequence"));
 		}
 
 		[Test]
@@ -111,7 +112,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		{
 			var hbmId = new HbmId();
 			new IdMapper(hbmId).Generator(Generators.EnhancedTable);
-			hbmId.generator.@class.Should().Be.EqualTo("enhanced-table");
+			Assert.That(hbmId.generator.@class, Is.EqualTo("enhanced-table"));
 		}
 		private class BaseEntity
 		{
@@ -137,7 +138,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmId = new HbmId();
 			var mapper = new IdMapper(member, hbmId);
 			mapper.Access(Accessor.NoSetter);
-			hbmId.access.Should().Be("nosetter.camelcase");
+			Assert.That(hbmId.access, Is.EqualTo("nosetter.camelcase"));
 		}
 
 		[Test]
@@ -146,7 +147,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmId = new HbmId();
 			var mapper = new IdMapper(null, hbmId);
 			mapper.Column("MyName");
-			hbmId.Columns.Single().name.Should().Be("MyName");
+			Assert.That(hbmId.Columns.Single().name, Is.EqualTo("MyName"));
 		}
 
 		[TestCase(-1, "-1")]
@@ -156,7 +157,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmId = new HbmId();
 			var mapper = new IdMapper(null, hbmId);
 			mapper.UnsavedValue(unsavedValue);
-			hbmId.unsavedvalue.Should().Be(expectedUnsavedValue);
+			Assert.That(hbmId.unsavedvalue, Is.EqualTo(expectedUnsavedValue));
 		}
 
 		[Test]
@@ -164,7 +165,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		{
 			var hbmId = new HbmId();
 			var mapper = new IdMapper(null, hbmId);
-			hbmId.unsavedvalue.Should().Be(null);
+			Assert.That(hbmId.unsavedvalue, Is.EqualTo(null));
 		}
 
 		[Test]
@@ -173,7 +174,37 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmId = new HbmId();
 			var mapper = new IdMapper(null, hbmId);
 			mapper.Length(10);
-			hbmId.length.Should().Be("10");
+			Assert.That(hbmId.length, Is.EqualTo("10"));
+		}
+
+		[Test]
+		public void CanSetPrecision()
+		{
+			//NH-2824
+			var hbmId = new HbmId();
+			var mapper = new IdMapper(null, hbmId);
+			mapper.Column(x => x.Precision(10));
+			Assert.That(hbmId.column[0].precision, Is.EqualTo("10"));
+		}
+
+		[Test]
+		public void CanSetScale()
+		{
+			//NH-2824
+			var hbmId = new HbmId();
+			var mapper = new IdMapper(null, hbmId);
+			mapper.Column(x => x.Scale(10));
+			Assert.That(hbmId.column[0].scale, Is.EqualTo("10"));
+		}
+
+		[Test]
+		public void CanSqlType()
+		{
+			//NH-3452
+			var hbmId = new HbmId();
+			var mapper = new IdMapper(null, hbmId);
+			mapper.Column(x => x.SqlType("CHAR(10)"));
+			Assert.That(hbmId.column[0].sqltype, Is.EqualTo("CHAR(10)"));
 		}
 	}
 }

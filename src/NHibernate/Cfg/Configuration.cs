@@ -121,9 +121,7 @@ namespace NHibernate.Cfg
 			return (T)info.GetValue(name, typeof(T));
 		}
 
-#if NET_4_0
 		[SecurityCritical]
-#endif
 		public void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			ConfigureProxyFactoryFactory();
@@ -174,7 +172,7 @@ namespace NHibernate.Cfg
 			secondPasses = new List<SecondPassCommand>();
 			propertyReferences = new List<Mappings.PropertyReference>();
 			FilterDefinitions = new Dictionary<string, FilterDefinition>();
-			interceptor = emptyInterceptor;
+			interceptor = EmptyInterceptor.Instance;
 			properties = Environment.Properties;
 			auxiliaryDatabaseObjects = new List<IAuxiliaryDatabaseObject>();
 			SqlFunctions = new Dictionary<string, ISQLFunction>();
@@ -186,6 +184,7 @@ namespace NHibernate.Cfg
 			columnNameBindingPerTable = new Dictionary<Table, Mappings.ColumnNames>();
 			filtersSecondPasses = new Queue<FilterSecondPassArgs>();
 		}
+
 		[Serializable]
 		private class Mapping : IMapping
 		{
@@ -1218,8 +1217,7 @@ namespace NHibernate.Cfg
 		{
 			get { return eventListeners; }
 		}
-
-		private static readonly IInterceptor emptyInterceptor = new EmptyInterceptor();
+		
 		private string defaultAssembly;
 		private string defaultNamespace;
 
@@ -1227,7 +1225,7 @@ namespace NHibernate.Cfg
 		{
 			#region Way for the user to specify their own ProxyFactory
 
-			//http://jira.nhibernate.org/browse/NH-975
+			//http://nhibernate.jira.com/browse/NH-975
 
 			var ipff = Environment.BytecodeProvider as IInjectableProxyFactoryFactory;
 			string pffClassName;
@@ -2319,7 +2317,7 @@ namespace NHibernate.Cfg
 		/// Generate DDL for altering tables
 		///</summary>
 		/// <seealso cref="NHibernate.Tool.hbm2ddl.SchemaUpdate"/>
-		public string[] GenerateSchemaUpdateScript(Dialect.Dialect dialect, DatabaseMetadata databaseMetadata)
+		public string[] GenerateSchemaUpdateScript(Dialect.Dialect dialect, IDatabaseMetadata databaseMetadata)
 		{
 			SecondPassCompile();
 
@@ -2399,7 +2397,7 @@ namespace NHibernate.Cfg
 			return script.ToArray();
 		}
 
-		public void ValidateSchema(Dialect.Dialect dialect, DatabaseMetadata databaseMetadata)
+		public void ValidateSchema(Dialect.Dialect dialect, IDatabaseMetadata databaseMetadata)
 		{
 			SecondPassCompile();
 

@@ -71,10 +71,10 @@ namespace NHibernate.Test.ReadOnly
 				t.Commit();
 			}
 			
-			Assert.That(sessions.Statistics.EntityInsertCount, Is.EqualTo(4));
-			Assert.That(sessions.Statistics.EntityUpdateCount, Is.EqualTo(0));
+			Assert.That(Sfi.Statistics.EntityInsertCount, Is.EqualTo(4));
+			Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(0));
 
-			sessions.Statistics.Clear();
+			Sfi.Statistics.Clear();
 				
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
@@ -119,10 +119,10 @@ namespace NHibernate.Test.ReadOnly
 				t.Commit();
 			}
 
-			Assert.That(sessions.Statistics.EntityUpdateCount, Is.EqualTo(1));
-			Assert.That(sessions.Statistics.EntityDeleteCount, Is.EqualTo(4));
+			Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(1));
+			Assert.That(Sfi.Statistics.EntityDeleteCount, Is.EqualTo(4));
 			
-			sessions.Statistics.Clear();
+			Sfi.Statistics.Clear();
 		}
 		
 		[Test]

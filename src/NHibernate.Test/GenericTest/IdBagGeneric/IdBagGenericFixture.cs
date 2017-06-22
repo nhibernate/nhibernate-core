@@ -21,7 +21,7 @@ namespace NHibernate.Test.GenericTest.IdBagGeneric
 
 		protected override void OnTearDown()
 		{
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = Sfi.OpenSession() )
 			{
 				s.Delete( "from A" );
 				s.Flush();

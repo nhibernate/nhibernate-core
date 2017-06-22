@@ -19,7 +19,7 @@ namespace NHibernate.Test.CollectionTest
 
 		protected override void OnTearDown()
 		{
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				s.Delete("from Parent");
 				s.Flush();

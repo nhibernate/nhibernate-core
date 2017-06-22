@@ -101,7 +101,7 @@
                     fetched when the instance variable is accessed. Compared to proxy fetching, 
                     this approach is less lazy (the association is fetched even when only the 
                     identifier is accessed) but more transparent, since no proxy is visible to 
-                    the application. This approach requires buildtime bytecode instrumentation 
+                    the application. This approach requires build-time bytecode instrumentation 
                     and is rarely necessary.
                 </para>
             </listitem>
@@ -109,7 +109,7 @@
                 <para>
                     <emphasis>Lazy attribute fetching</emphasis> - an attribute or single
                     valued association is fetched when the instance variable is accessed. 
-                    This approach requires buildtime bytecode instrumentation and is rarely 
+                    This approach requires build-time bytecode instrumentation and is rarely 
                     necessary.
                 </para>
             </listitem>
@@ -408,7 +408,7 @@ ICat fritz = (ICat) iter.Current;]]></programlisting>
             <para>
                 By choosing <literal>lazy="no-proxy"</literal> instead of the default 
                 <literal>lazy="proxy"</literal>, we can avoid the problems associated with typecasting.
-                However, we will require buildtime bytecode instrumentation, and all operations
+                However, we will require build-time bytecode instrumentation, and all operations
                 will result in immediate proxy initialization.
             </para>
             -->
@@ -604,7 +604,7 @@ ICat fritz = (ICat) iter.Current;]]></programlisting>
 </class>]]></programlisting>
 
             <para>
-                Lazy property loading requires buildtime bytecode instrumentation! If your persistent
+                Lazy property loading requires build-time bytecode instrumentation! If your persistent
                 classes are not enhanced, NHibernate will silently ignore lazy property settings and
                 fall back to immediate fetching.
             </para>
@@ -630,8 +630,8 @@ ICat fritz = (ICat) iter.Current;]]></programlisting>
             <para>
                 A different (better?) way to avoid unnecessary column reads, at least for
                 read-only transactions is to use the projection features of HQL or Criteria
-                queries. This avoids the need for buildtime bytecode processing and is
-                certainly a prefered solution.
+                queries. This avoids the need for build-time bytecode processing and is
+                certainly a preferred solution.
             </para>
             
             <para>
@@ -743,7 +743,7 @@ ICat fritz = (ICat) iter.Current;]]></programlisting>
             </programlistingco>
             
             <para>
-                Alternatively (preferrably?), you may specify <literal>&lt;class-cache&gt;</literal> and 
+                Alternatively (preferably?), you may specify <literal>&lt;class-cache&gt;</literal> and 
                 <literal>&lt;collection-cache&gt;</literal> elements in <literal>hibernate.cfg.xml</literal>.
             </para>
             
@@ -954,7 +954,7 @@ sessionFactory.EvictCollection("Eg.Cat.Kittens"); //evict all kitten collections
             If the query should force a refresh of its query cache region, you may call
             <literal>IQuery.SetForceCacheRefresh()</literal> to <literal>true</literal>.
             This is particularly useful in cases where underlying data may have been updated
-            via a seperate process (i.e., not modified through NHibernate) and allows the
+            via a separate process (i.e., not modified through NHibernate) and allows the
             application to selectively refresh the query cache regions based on its
             knowledge of those events. This is a more efficient alternative to eviction of 
             a query cache region via <literal>ISessionFactory.EvictQueries()</literal>.
@@ -1021,7 +1021,7 @@ sessionFactory.EvictCollection("Eg.Cat.Kittens"); //evict all kitten collections
                 Sets have a primary key consisting of <literal>&lt;key&gt;</literal> and element
                 columns. This may be less efficient for some types of collection element, particularly
                 composite elements or large text or binary fields; the database may not be able to index
-                a complex primary key as efficently.  On the other hand, for one to many or many to many
+                a complex primary key as efficiently.  On the other hand, for one to many or many to many
                 associations, particularly in the case of synthetic identifiers, it is likely to be just
                 as efficient. (Side-note: if you want <literal>SchemaExport</literal> to actually create
                 the primary key of a <literal>&lt;set&gt;</literal> for you, you must declare all columns
@@ -1149,7 +1149,7 @@ sessionFactory.EvictCollection("Eg.Cat.Kittens"); //evict all kitten collections
             </para>
 
             <para>
-                one-shot-delete apply to collections mapped <literal>inverse="true"</literal>.
+                Of course, one-shot-delete does not apply to collections mapped <literal>inverse="true"</literal>.
             </para>
 
         </sect2>
@@ -1309,8 +1309,8 @@ ICollection<Customer> customers = CollectionHelper.ToArray<Customer>(results[0])
 ICollection<Policy> policies = CollectionHelper.ToArray<Policy>(results[1]);]]></programlisting>
 
 		<para>
-			As you see, we get a query that represnt the customers we can access, and then we can utlize this query further in order to 
-			perform additional logic (getting the policies of the customers we are associated with), all in a single database roundtrip.
+			As you see, we get a query that represents the customers we can access, and then we can utilize this query further in order to 
+			perform additional logic (getting the policies of the customers we are associated with), all in a single database round-trip.
 		</para>
     </sect1>
 </chapter>

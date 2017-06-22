@@ -4,7 +4,6 @@ using System.Threading;
 using NHibernate.Criterion;
 using NHibernate.Engine;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Stateless
 {
@@ -36,7 +35,7 @@ namespace NHibernate.Test.Stateless
 			Document doc;
 			DateTime? initVersion;
 
-			using (IStatelessSession ss = sessions.OpenStatelessSession())
+			using (IStatelessSession ss = Sfi.OpenStatelessSession())
 			{
 				ITransaction tx;
 				using (tx = ss.BeginTransaction())
@@ -94,7 +93,7 @@ namespace NHibernate.Test.Stateless
 		[Test]
 		public void HqlBulk()
 		{
-			IStatelessSession ss = sessions.OpenStatelessSession();
+			IStatelessSession ss = Sfi.OpenStatelessSession();
 			ITransaction tx = ss.BeginTransaction();
 			var doc = new Document("blah blah blah", "Blahs");
 			ss.Insert(doc);
@@ -125,7 +124,7 @@ namespace NHibernate.Test.Stateless
 		{
 			Paper paper;
 
-			using (IStatelessSession ss = sessions.OpenStatelessSession())
+			using (IStatelessSession ss = Sfi.OpenStatelessSession())
 			{
 				ITransaction tx;
 				using (tx = ss.BeginTransaction())
@@ -148,7 +147,7 @@ namespace NHibernate.Test.Stateless
 		{
 			Paper paper;
 
-			using (IStatelessSession ss = sessions.OpenStatelessSession())
+			using (IStatelessSession ss = Sfi.OpenStatelessSession())
 			{
 				using (ITransaction tx = ss.BeginTransaction())
 				{
@@ -157,7 +156,7 @@ namespace NHibernate.Test.Stateless
 					tx.Commit();
 				}
 			}
-			using (IStatelessSession ss = sessions.OpenStatelessSession())
+			using (IStatelessSession ss = Sfi.OpenStatelessSession())
 			{
 				using (ITransaction tx = ss.BeginTransaction())
 				{
@@ -167,7 +166,7 @@ namespace NHibernate.Test.Stateless
 					tx.Commit();
 				}
 			}
-			using (IStatelessSession ss = sessions.OpenStatelessSession())
+			using (IStatelessSession ss = Sfi.OpenStatelessSession())
 			{
 				using (ITransaction tx = ss.BeginTransaction())
 				{
@@ -183,23 +182,23 @@ namespace NHibernate.Test.Stateless
 		[Test]
 		public void WhenSetTheBatchSizeThenSetTheBatchSizeOfTheBatcher()
 		{
-            if (!Dialect.SupportsSqlBatches)
-                Assert.Ignore("Dialect does not support sql batches.");
+			if (!Dialect.SupportsSqlBatches)
+				Assert.Ignore("Dialect does not support sql batches.");
 
-			using (IStatelessSession ss = sessions.OpenStatelessSession())
+			using (IStatelessSession ss = Sfi.OpenStatelessSession())
 			{
 				ss.SetBatchSize(37);
 				var impl = (ISessionImplementor)ss;
-				impl.Batcher.BatchSize.Should().Be(37);
+				Assert.That(impl.Batcher.BatchSize, Is.EqualTo(37));
 			}
 		}
 
 		[Test]
 		public void CanGetImplementor()
 		{
-			using (IStatelessSession ss = sessions.OpenStatelessSession())
+			using (IStatelessSession ss = Sfi.OpenStatelessSession())
 			{
-				ss.GetSessionImplementation().Should().Be.SameInstanceAs(ss);
+				Assert.That(ss.GetSessionImplementation(), Is.SameAs(ss));
 			}
 		}
 
@@ -207,11 +206,11 @@ namespace NHibernate.Test.Stateless
 		public void HavingDetachedCriteriaThenCanGetExecutableCriteriaFromStatelessSession()
 		{
 			var dc = DetachedCriteria.For<Paper>();
-			using (IStatelessSession ss = sessions.OpenStatelessSession())
+			using (IStatelessSession ss = Sfi.OpenStatelessSession())
 			{
 				ICriteria criteria = null;
-				Executing.This(()=> criteria = dc.GetExecutableCriteria(ss)).Should().NotThrow();
-				criteria.Executing(c => c.List()).NotThrows();
+				Assert.That(() => criteria = dc.GetExecutableCriteria(ss), Throws.Nothing);
+				Assert.That(() => criteria.List(), Throws.Nothing);
 			}
 		}
 		
@@ -220,7 +219,7 @@ namespace NHibernate.Test.Stateless
 		{
 			try
 			{
-				IStatelessSession ss = sessions.OpenStatelessSession();
+				IStatelessSession ss = Sfi.OpenStatelessSession();
 				ss.Close();
 				ss.Dispose();
 			}

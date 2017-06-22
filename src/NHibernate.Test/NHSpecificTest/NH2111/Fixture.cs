@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2111
 	{
 		protected override void OnTearDown()
 		{
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = Sfi.OpenSession() )
 			{
 				s.Delete( "from A" );
 				s.Flush();

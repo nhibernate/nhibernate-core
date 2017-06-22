@@ -92,7 +92,7 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary>
-		/// Adds a string to the WhereFragement
+		/// Adds a string to the WhereFragment
 		/// </summary>
 		/// <param name="whereSql">A well formed sql statement with no parameters.</param>
 		/// <returns>The SqlDeleteBuilder</returns>

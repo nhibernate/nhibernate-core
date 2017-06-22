@@ -25,11 +25,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2092
 				{
 					var employee = s.Get<Employee>(1);
 
-					Assert.False(NHibernateUtil.IsInitialized(employee.Person));
+					Assert.That(NHibernateUtil.IsInitialized(employee.Person), Is.False);
 
-					Assert.AreEqual(employee.Person.Name, "Person1");
+					Assert.That("Person1", Is.EqualTo(employee.Person.Name));
 
-					Assert.True(NHibernateUtil.IsInitialized(employee.Person));
+					Assert.That(NHibernateUtil.IsInitialized(employee.Person), Is.True);
 				}
 			}
 			finally

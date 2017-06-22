@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using System.Security;
@@ -26,11 +27,11 @@ using NHibernate.Util;
 namespace NHibernate.Impl
 {
 	/// <summary>
-	/// Concrete implementation of an <see cref="NHibernate.ISession" />, also the central, organizing component
+	/// Concrete implementation of an <see cref="ISession" />, also the central, organizing component
 	/// of NHibernate's internal implementation.
 	/// </summary>
 	/// <remarks>
-	/// Exposes two interfaces: <see cref="NHibernate.ISession" /> itself, to the application and 
+	/// Exposes two interfaces: <see cref="ISession" /> itself, to the application and 
 	/// <see cref="ISessionImplementor" /> to other components of NHibernate. This is where the 
 	/// hard stuff is... This class is NOT THREADSAFE.
 	/// </remarks>
@@ -39,15 +40,7 @@ namespace NHibernate.Impl
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SessionImpl));
 
-		private readonly long timestamp;
-
 		private CacheMode cacheMode = CacheMode.Normal;
-		private FlushMode flushMode = FlushMode.Auto;
-
-		private readonly IInterceptor interceptor;
-
-		[NonSerialized]
-		private readonly EntityMode entityMode = EntityMode.Poco;
 
 		[NonSerialized]
 		private FutureCriteriaBatch futureCriteriaBatch;
@@ -75,19 +68,11 @@ namespace NHibernate.Impl
 		private readonly StatefulPersistenceContext persistenceContext;
 
 		[NonSerialized]
-		private readonly ISession rootSession;
-
-		[NonSerialized]
-		private IDictionary<EntityMode, ISession> childSessionsByEntityMode;
-
-		[NonSerialized]
-		private readonly bool flushBeforeCompletionEnabled;
-		[NonSerialized]
 		private readonly bool autoCloseSessionEnabled;
 		[NonSerialized]
-		private readonly bool ignoreExceptionBeforeTransactionCompletion;
-		[NonSerialized]
 		private readonly ConnectionReleaseMode connectionReleaseMode;
+		[NonSerialized]
+		private readonly bool _transactionCoordinatorShared;
 
 		#region System.Runtime.Serialization.ISerializable Members
 
@@ -103,8 +88,7 @@ namespace NHibernate.Impl
 		/// </remarks>
 		private SessionImpl(SerializationInfo info, StreamingContext context)
 		{
-			timestamp = info.GetInt64("timestamp");
-
+			Timestamp = info.GetInt64("timestamp");
 			SessionFactoryImpl fact = (SessionFactoryImpl)info.GetValue("factory", typeof(SessionFactoryImpl));
 			Factory = fact;
 			listeners = fact.EventListeners;
@@ -112,10 +96,10 @@ namespace NHibernate.Impl
 
 			actionQueue = (ActionQueue)info.GetValue("actionQueue", typeof(ActionQueue));
 
-			flushMode = (FlushMode)info.GetValue("flushMode", typeof(FlushMode));
+			FlushMode = (FlushMode)info.GetValue("flushMode", typeof(FlushMode));
 			cacheMode = (CacheMode)info.GetValue("cacheMode", typeof(CacheMode));
 
-			interceptor = (IInterceptor)info.GetValue("interceptor", typeof(IInterceptor));
+			Interceptor = (IInterceptor)info.GetValue("interceptor", typeof(IInterceptor));
 
 			enabledFilters = (IDictionary<string, IFilter>)info.GetValue("enabledFilters", typeof(Dictionary<string, IFilter>));
 			enabledFilterNames = (List<string>)info.GetValue("enabledFilterNames", typeof(List<string>));
@@ -131,13 +115,9 @@ namespace NHibernate.Impl
 		/// <remarks>
 		/// The fields are marked with [NonSerializable] as just a point of reference.  This method
 		/// has complete control and what is serialized and those attributes are ignored.  However,
-		/// this method should be in synch with the attributes for easy readability.
+		/// this method should be in sync with the attributes for easy readability.
 		/// </remarks>
-#if NET_4_0
 		[SecurityCritical]
-#else
-		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-#endif
 		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			log.Debug("writting session to serializer");
@@ -146,15 +126,19 @@ namespace NHibernate.Impl
 			{
 				throw new InvalidOperationException("Cannot serialize a Session while connected");
 			}
+			if (_transactionCoordinatorShared)
+			{
+				throw new InvalidOperationException("Cannot serialize a Session sharing its transaction coordinator");
+			}
 
 			info.AddValue("factory", Factory, typeof(SessionFactoryImpl));
 			info.AddValue("persistenceContext", persistenceContext, typeof(StatefulPersistenceContext));
 			info.AddValue("actionQueue", actionQueue, typeof(ActionQueue));
-			info.AddValue("timestamp", timestamp);
-			info.AddValue("flushMode", flushMode);
+			info.AddValue("timestamp", Timestamp);
+			info.AddValue("flushMode", FlushMode);
 			info.AddValue("cacheMode", cacheMode);
 
-			info.AddValue("interceptor", interceptor, typeof(IInterceptor));
+			info.AddValue("interceptor", Interceptor, typeof(IInterceptor));
 
 			info.AddValue("enabledFilters", enabledFilters, typeof(IDictionary<string, IFilter>));
 			info.AddValue("enabledFilterNames", enabledFilterNames, typeof(List<string>));
@@ -195,88 +179,41 @@ namespace NHibernate.Impl
 		/// Constructor used for OpenSession(...) processing, as well as construction
 		/// of sessions for GetCurrentSession().
 		/// </summary>
-		/// <param name="connection">The user-supplied connection to use for this session.</param>
-		/// <param name="factory">The factory from which this session was obtained</param>
-		/// <param name="autoclose">NOT USED</param>
-		/// <param name="timestamp">The timestamp for this session</param>
-		/// <param name="interceptor">The interceptor to be applied to this session</param>
-		/// <param name="entityMode">The entity-mode for this session</param>
-		/// <param name="flushBeforeCompletionEnabled">Should we auto flush before completion of transaction</param>
-		/// <param name="autoCloseSessionEnabled">Should we auto close after completion of transaction</param>
-		/// <param name="ignoreExceptionBeforeTransactionCompletion">Should we ignore exceptions in IInterceptor.BeforeTransactionCompletion</param>
-		/// <param name="connectionReleaseMode">The mode by which we should release JDBC connections.</param>
-		internal SessionImpl(
-			IDbConnection connection,
-			SessionFactoryImpl factory,
-			bool autoclose,
-			long timestamp,
-			IInterceptor interceptor,
-			EntityMode entityMode,
-			bool flushBeforeCompletionEnabled,
-			bool autoCloseSessionEnabled,
-			bool ignoreExceptionBeforeTransactionCompletion,
-			ConnectionReleaseMode connectionReleaseMode)
-			: base(factory)
+		/// <param name="factory">The factory from which this session was obtained.</param>
+		/// <param name="options">The options of the session.</param>
+		internal SessionImpl(SessionFactoryImpl factory, ISessionCreationOptions options)
+			: base(factory, options)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				if (interceptor == null)
-					throw new AssertionFailure("The interceptor can not be null.");
-
-				rootSession = null;
-				this.timestamp = timestamp;
-				this.entityMode = entityMode;
-				this.interceptor = interceptor;
-				listeners = factory.EventListeners;
 				actionQueue = new ActionQueue(this);
 				persistenceContext = new StatefulPersistenceContext(this);
-				this.flushBeforeCompletionEnabled = flushBeforeCompletionEnabled;
-				this.autoCloseSessionEnabled = autoCloseSessionEnabled;
-				this.connectionReleaseMode = connectionReleaseMode;
-				this.ignoreExceptionBeforeTransactionCompletion = ignoreExceptionBeforeTransactionCompletion;
-				connectionManager = new ConnectionManager(this, connection, connectionReleaseMode, interceptor);
+
+				autoCloseSessionEnabled = options.ShouldAutoClose;
+
+				listeners = factory.EventListeners;
+				connectionReleaseMode = options.SessionConnectionReleaseMode;
+
+				if (options is ISharedSessionCreationOptions sharedOptions && sharedOptions.IsTransactionCoordinatorShared)
+				{
+					// NH specific implementation: need to port Hibernate transaction management.
+					_transactionCoordinatorShared = true;
+					if (options.UserSuppliedConnection != null)
+						throw new SessionException("Cannot simultaneously share transaction context and specify connection");
+					connectionManager = sharedOptions.ConnectionManager;
+				}
+				else
+				{
+					connectionManager = new ConnectionManager(this, options.UserSuppliedConnection, connectionReleaseMode, Interceptor);
+				}
 
 				if (factory.Statistics.IsStatisticsEnabled)
 				{
 					factory.StatisticsImplementor.OpenSession();
 				}
 
-				if (log.IsDebugEnabled)
-				{
-					log.DebugFormat("[session-id={0}] opened session at timestamp: {1}, for session factory: [{2}/{3}]",
-						SessionId, timestamp, factory.Name, factory.Uuid);
-				}
-
-				CheckAndUpdateSessionStatus();
-			}
-		}
-
-		/// <summary>
-		/// Constructor used in building "child sessions".
-		/// </summary>
-		/// <param name="parent">The parent Session</param>
-		/// <param name="entityMode">The entity mode</param>
-		private SessionImpl(SessionImpl parent, EntityMode entityMode)
-			: base(parent.Factory, parent.SessionId)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				rootSession = parent;
-				timestamp = parent.timestamp;
-				connectionManager = parent.connectionManager;
-				interceptor = parent.interceptor;
-				listeners = parent.listeners;
-				actionQueue = new ActionQueue(this);
-				this.entityMode = entityMode;
-				persistenceContext = new StatefulPersistenceContext(this);
-				flushBeforeCompletionEnabled = false;
-				autoCloseSessionEnabled = false;
-				connectionReleaseMode = parent.ConnectionReleaseMode; // NH different
-
-				if (Factory.Statistics.IsStatisticsEnabled)
-					Factory.StatisticsImplementor.OpenSession();
-
-				log.Debug("opened session [" + entityMode + "]");
+				log.DebugFormat("[session-id={0}] opened session at timestamp: {1}, for session factory: [{2}/{3}]",
+					SessionId, Timestamp, factory.Name, factory.Uuid);
 
 				CheckAndUpdateSessionStatus();
 			}
@@ -320,12 +257,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary></summary>
-		public override long Timestamp
-		{
-			get { return timestamp; }
-		}
-
 		public ConnectionReleaseMode ConnectionReleaseMode
 		{
 			get { return connectionReleaseMode; }
@@ -348,7 +279,7 @@ namespace NHibernate.Impl
 		/// Close() is not aware of distributed transactions
 		/// </remarks>
 		/// </summary>
-		public IDbConnection Close()
+		public DbConnection Close()
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -365,22 +296,7 @@ namespace NHibernate.Impl
 
 				try
 				{
-					try
-					{
-						if (childSessionsByEntityMode != null)
-						{
-							foreach (KeyValuePair<EntityMode, ISession> pair in childSessionsByEntityMode)
-							{
-								pair.Value.Close();
-							}
-						}
-					}
-					catch
-					{
-						// just ignore
-					}
-
-					if (rootSession == null)
+					if (!_transactionCoordinatorShared)
 						return connectionManager.Close();
 					else
 						return null;
@@ -411,11 +327,11 @@ namespace NHibernate.Impl
 				connectionManager.AfterTransaction();
 				persistenceContext.AfterTransactionCompletion();
 				actionQueue.AfterTransactionCompletion(success);
-				if (rootSession == null)
+				if (!_transactionCoordinatorShared)
 				{
 					try
 					{
-						interceptor.AfterTransactionCompletion(tx);
+						Interceptor.AfterTransactionCompletion(tx);
 					}
 					catch (Exception t)
 					{
@@ -773,7 +689,6 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 
-				CheckAndUpdateSessionStatus();
 				CollectionFilterImpl filter =
 					new CollectionFilterImpl(queryString, collection, this,
 											 GetFilterQueryPlan(collection, queryString, null, false).ParameterMetadata);
@@ -869,10 +784,10 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				ErrorIfClosed();
-				object result = interceptor.Instantiate(persister.EntityName, entityMode, id);
+				object result = Interceptor.Instantiate(persister.EntityName, id);
 				if (result == null)
 				{
-					result = persister.Instantiate(id, entityMode);
+					result = persister.Instantiate(id);
 				}
 				return result;
 			}
@@ -1008,17 +923,9 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary></summary>
-		public override FlushMode FlushMode
-		{
-			get { return flushMode; }
-			set { flushMode = value; }
-		}
-
-		public bool FlushBeforeCompletionEnabled
-		{
-			get { return flushBeforeCompletionEnabled; }
-		}
+		// Obsolete in v5, and was already having no usages previously.
+		[Obsolete("Please use FlushMode instead.")]
+		public bool FlushBeforeCompletionEnabled => FlushMode >= FlushMode.Commit;
 
 		public override string BestGuessEntityName(object entity)
 		{
@@ -1030,7 +937,7 @@ namespace NHibernate.Impl
 					ILazyInitializer initializer = proxy.HibernateLazyInitializer;
 
 					// it is possible for this method to be called during flush processing,
-					// so make certain that we do not accidently initialize an uninitialized proxy
+					// so make certain that we do not accidentally initialize an uninitialized proxy
 					if (initializer.IsUninitialized)
 					{
 						return initializer.PersistentClass.FullName;
@@ -1059,7 +966,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				string entityName = interceptor.GetEntityName(entity);
+				string entityName = Interceptor.GetEntityName(entity);
 				if (entityName == null)
 				{
 					System.Type t = entity.GetType();
@@ -1088,7 +995,7 @@ namespace NHibernate.Impl
 
 				if (result == null)
 				{
-					object newObject = interceptor.GetEntity(key.EntityName, key.Identifier);
+					object newObject = Interceptor.GetEntity(key.EntityName, key.Identifier);
 					if (newObject != null)
 					{
 						Lock(newObject, LockMode.None);
@@ -1122,7 +1029,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				if (!TransactionInProgress)
+				if (!ConnectionManager.IsInActiveTransaction)
 				{
 					// do not auto-flush while outside a transaction
 					return false;
@@ -1392,7 +1299,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				if (rootSession != null)
+				if (_transactionCoordinatorShared)
 				{
 					// Todo : should seriously consider not allowing a txn to begin from a child session
 					//      can always route the request to the root session...
@@ -1408,7 +1315,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				if (rootSession != null)
+				if (_transactionCoordinatorShared)
 				{
 					// Todo : should seriously consider not allowing a txn to begin from a child session
 					//      can always route the request to the root session...
@@ -1432,7 +1339,7 @@ namespace NHibernate.Impl
 		/// This can be called from commit() or at the start of a List() method.
 		/// <para>
 		/// Perform all the necessary SQL statements in a sensible order, to allow
-		/// users to repect foreign key constraints:
+		/// users to respect foreign key constraints:
 		/// <list type="">
 		///		<item>Inserts, in the order they were performed</item>
 		///		<item>Updates</item>
@@ -1465,10 +1372,7 @@ namespace NHibernate.Impl
 
 		public override bool TransactionInProgress
 		{
-			get
-			{
-				return !IsClosed && Transaction.IsActive;
-			}
+			get { return ConnectionManager.IsInActiveTransaction; }
 		}
 
 		public bool IsDirty()
@@ -1581,7 +1485,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override IDbConnection Connection
+		public override DbConnection Connection
 		{
 			get { return connectionManager.GetConnection(); }
 		}
@@ -1593,7 +1497,7 @@ namespace NHibernate.Impl
 		/// <see langword="true" /> if the ISession is connected.
 		/// </value>
 		/// <remarks>
-		/// An ISession is considered connected if there is an <see cref="IDbConnection"/> (regardless
+		/// An ISession is considered connected if there is an <see cref="DbConnection"/> (regardless
 		/// of its state) or if it the field <c>connect</c> is true.  Meaning that it will connect
 		/// at the next operation that requires a connection.
 		/// </remarks>
@@ -1603,7 +1507,7 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary></summary>
-		public IDbConnection Disconnect()
+		public DbConnection Disconnect()
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -1623,7 +1527,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public void Reconnect(IDbConnection conn)
+		public void Reconnect(DbConnection conn)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -1693,6 +1597,7 @@ namespace NHibernate.Impl
 				// free unmanaged resources here
 
 				IsAlreadyDisposed = true;
+
 				// nothing for Finalizer to do - so tell the GC to ignore it
 				GC.SuppressFinalize(this);
 			}
@@ -2002,7 +1907,11 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary></summary>
+		public ISharedSessionBuilder SessionWithOptions()
+		{
+			return new SharedSessionBuilderImpl(this);
+		}
+
 		public void Clear()
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -2183,7 +2092,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				interceptor.AfterTransactionBegin(tx);
+				Interceptor.AfterTransactionBegin(tx);
 			}
 		}
 
@@ -2193,18 +2102,17 @@ namespace NHibernate.Impl
 			{
 				log.Debug("before transaction completion");
 				actionQueue.BeforeTransactionCompletion();
-				if (rootSession == null)
+				if (!_transactionCoordinatorShared)
 				{
 					try
 					{
-						interceptor.BeforeTransactionCompletion(tx);
+						Interceptor.BeforeTransactionCompletion(tx);
 					}
 					catch (Exception e)
 					{
 						log.Error("exception in interceptor BeforeTransactionCompletion()", e);
 
-						if (ignoreExceptionBeforeTransactionCompletion == false)
-							throw;
+						throw;
 					}
 				}
 			}
@@ -2216,57 +2124,21 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-
 		public ISessionImplementor GetSessionImplementation()
 		{
 			return this;
 		}
 
+		// Obsolete since v5
+		[Obsolete("Please use SessionWithOptions instead.")]
 		public ISession GetSession(EntityMode entityMode)
 		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				// This is explicitly removed to allow support
-				// for child sessions that want to flush during
-				// the parent session lifecycle. See NH-1714,
-				// and the suggested audit examples.
-				//
-				//if (this.entityMode.Equals(entityMode))
-				//{
-				//    return this;
-				//}
-
-				if (rootSession != null)
-				{
-					return rootSession.GetSession(entityMode);
-				}
-
-				CheckAndUpdateSessionStatus();
-
-				ISession rtn = null;
-				if (childSessionsByEntityMode == null)
-				{
-					childSessionsByEntityMode = new Dictionary<EntityMode, ISession>();
-				}
-				else
-				{
-					childSessionsByEntityMode.TryGetValue(entityMode, out rtn);
-				}
-
-				if (rtn == null)
-				{
-					log.DebugFormat("Creating child session with {0}", entityMode);
-					rtn = new SessionImpl(this, entityMode);
-					childSessionsByEntityMode.Add(entityMode, rtn);
-				}
-
-				return rtn;
-			}
-		}
-
-		public override IInterceptor Interceptor
-		{
-			get { return interceptor; }
+			return SessionWithOptions()
+				.Connection()
+				.ConnectionReleaseMode()
+				.FlushMode()
+				.Interceptor()
+				.OpenSession();
 		}
 
 		/// <summary> Retrieves the configured event listeners from this event source. </summary>
@@ -2292,16 +2164,6 @@ namespace NHibernate.Impl
 				}
 				cacheMode = value;
 			}
-		}
-
-		public override EntityMode EntityMode
-		{
-			get { return entityMode; }
-		}
-
-		public EntityMode ActiveEntityMode
-		{
-			get { return entityMode; }
 		}
 
 		public override string FetchProfile
@@ -2629,8 +2491,7 @@ namespace NHibernate.Impl
 					// given entityName
 					try
 					{
-						return Factory.GetEntityPersister(entityName).GetSubclassEntityPersister(obj, Factory,
-																								 entityMode);
+						return Factory.GetEntityPersister(entityName).GetSubclassEntityPersister(obj, Factory);
 					}
 					catch (HibernateException)
 					{
@@ -2647,6 +2508,57 @@ namespace NHibernate.Impl
 					}
 				}
 			}
+		}
+
+		// NH different implementation: will not try to support covariant return type for specializations
+		// of SharedSessionBuilderImpl until they need to exist.
+		private class SharedSessionBuilderImpl : SessionFactoryImpl.SessionBuilderImpl<ISharedSessionBuilder>,
+			ISharedSessionBuilder, ISharedSessionCreationOptions
+		{
+			private readonly SessionImpl _session;
+			private bool _shareTransactionContext;
+
+			public SharedSessionBuilderImpl(SessionImpl session)
+				: base((SessionFactoryImpl)session.Factory)
+			{
+				_session = session;
+				SetSelf(this);
+			}
+
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// SharedSessionBuilder
+
+			public virtual ISharedSessionBuilder Interceptor() => Interceptor(_session.Interceptor);
+
+			public virtual ISharedSessionBuilder Connection()
+			{
+				// Ensure any previously user supplied connection is removed.
+				base.Connection(null);
+				// We share the connection manager
+				_shareTransactionContext = true; 
+				return this;
+			}
+
+			public virtual ISharedSessionBuilder ConnectionReleaseMode() => ConnectionReleaseMode(_session.ConnectionReleaseMode);
+
+			public virtual ISharedSessionBuilder FlushMode() => FlushMode(_session.FlushMode);
+
+			public virtual ISharedSessionBuilder AutoClose() => AutoClose(_session.autoCloseSessionEnabled);
+
+			// NH different implementation, avoid an error case.
+			public override ISharedSessionBuilder Connection(DbConnection connection)
+			{
+				_shareTransactionContext = false;
+				return base.Connection(connection);
+			}
+
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// SharedSessionCreationOptions
+
+			public virtual bool IsTransactionCoordinatorShared => _shareTransactionContext;
+
+			// NH different implementation: need to port Hibernate transaction management.
+			public ConnectionManager ConnectionManager => _shareTransactionContext ? _session.ConnectionManager : null;
 		}
 	}
 }

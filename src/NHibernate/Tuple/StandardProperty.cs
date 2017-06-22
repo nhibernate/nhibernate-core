@@ -28,8 +28,6 @@ namespace NHibernate.Tuple
 		/// </summary>
 		/// <param name="name">The name by which the property can be referenced within
 		/// its owner.</param>
-		/// <param name="node">The node name to use for XML-based representation of this
-		/// property.</param>
 		/// <param name="type">The Hibernate Type of this property.</param>
 		/// <param name="lazy">Should this property be handled lazily?</param>
 		/// <param name="insertable">Is this property an insertable value?</param>
@@ -43,7 +41,6 @@ namespace NHibernate.Tuple
 		/// <param name="fetchMode">Any fetch mode defined for this property </param>
 		public StandardProperty(
 			String name,
-			String node,
 			IType type,
 			bool lazy,
 			bool insertable,
@@ -55,7 +52,7 @@ namespace NHibernate.Tuple
 			bool versionable,
 			CascadeStyle cascadeStyle,
 			FetchMode? fetchMode)
-			: base(name, node, type)
+			: base(name, type)
 		{
 			this.lazy = lazy;
 			this.insertable = insertable;

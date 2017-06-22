@@ -3,7 +3,7 @@
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	/// <summary>
-	/// An interface for initializeable AST nodes.
+	/// An interface for initializable AST nodes.
 	/// </summary>
 	public interface IInitializableNode
 	{

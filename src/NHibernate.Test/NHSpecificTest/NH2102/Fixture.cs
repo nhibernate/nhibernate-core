@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2102
 {
@@ -26,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2102
 				{
 					var employee = s.Get<Employee>(1);
 
-					employee.Should().Be.OfType<Employee>();
+					Assert.That(employee, Is.TypeOf<Employee>());
 				}
 			}
 			finally

@@ -1,6 +1,6 @@
 using System;
-using System.Collections;
 using System.Data;
+using System.Data.Common;
 using System.Linq.Expressions;
 using NHibernate.Engine;
 using NHibernate.Stat;
@@ -73,16 +73,20 @@ namespace NHibernate
 	/// </remarks>
 	public interface ISession : IDisposable
 	{
-		/// <summary> The entity mode in effect for this session.</summary>
-		EntityMode ActiveEntityMode { get; } // NH different implementation: changed name to avoid conflicts
+		/// <summary>
+		/// Obtain a <see cref="ISession"/> builder with the ability to grab certain information from
+		/// this session. The built <c>ISession</c> will require its own flushes and disposal.
+		/// </summary>
+		/// <returns>The session builder.</returns>
+		ISharedSessionBuilder SessionWithOptions();
 
 		/// <summary>
 		/// Force the <c>ISession</c> to flush.
 		/// </summary>
 		/// <remarks>
-		/// Must be called at the end of a unit of work, before commiting the transaction and closing
+		/// Must be called at the end of a unit of work, before committing the transaction and closing
 		/// the session (<c>Transaction.Commit()</c> calls this method). <i>Flushing</i> is the process
-		/// of synchronising the underlying persistent store with persistable state held in memory.
+		/// of synchronizing the underlying persistent store with persistable state held in memory.
 		/// </remarks>
 		void Flush();
 
@@ -114,7 +118,7 @@ namespace NHibernate
 		/// Applications are responsible for calling commit/rollback upon the connection before
 		/// closing the <c>ISession</c>.
 		/// </remarks>
-		IDbConnection Connection { get; }
+		DbConnection Connection { get; }
 
 		/// <summary>
 		/// Disconnect the <c>ISession</c> from the current ADO.NET connection.
@@ -125,7 +129,7 @@ namespace NHibernate
 		/// long transactions.
 		/// </remarks>
 		/// <returns>The connection provided by the application or <see langword="null" /></returns>
-		IDbConnection Disconnect();
+		DbConnection Disconnect();
 
 		/// <summary>
 		/// Obtain a new ADO.NET connection.
@@ -140,7 +144,7 @@ namespace NHibernate
 		/// </summary>
 		/// <remarks>This is used by applications which require long transactions</remarks>
 		/// <param name="connection">An ADO.NET connection</param>
-		void Reconnect(IDbConnection connection);
+		void Reconnect(DbConnection connection);
 
 		/// <summary>
 		/// End the <c>ISession</c> by disconnecting from the ADO.NET connection and cleaning up.
@@ -150,7 +154,7 @@ namespace NHibernate
 		/// at least <c>Disconnect()</c> it.
 		/// </remarks>
 		/// <returns>The connection provided by the application or <see langword="null" /></returns>
-		IDbConnection Close();
+		DbConnection Close();
 
 		/// <summary>
 		/// Cancel execution of the current query.
@@ -914,7 +918,7 @@ namespace NHibernate
 		/// Gets the session implementation.
 		/// </summary>
 		/// <remarks>
-		/// This method is provided in order to get the <b>NHibernate</b> implementation of the session from wrapper implementions.
+		/// This method is provided in order to get the <b>NHibernate</b> implementation of the session from wrapper implementations.
 		/// Implementors of the <seealso cref="ISession"/> interface should return the NHibernate implementation of this method.
 		/// </remarks>
 		/// <returns>
@@ -932,14 +936,16 @@ namespace NHibernate
 		/// <summary> Get the statistics for this session.</summary>
 		ISessionStatistics Statistics { get; }
 
+		// Obsolete since v5.
 		/// <summary>
 		/// Starts a new Session with the given entity mode in effect. This secondary
 		/// Session inherits the connection, transaction, and other context
-		///	information from the primary Session. It doesn't need to be flushed
-		/// or closed by the developer.
+		///	information from the primary Session. It has to be flushed
+		/// or disposed by the developer since v5.
 		/// </summary>
-		/// <param name="entityMode">The entity mode to use for the new session.</param>
-		/// <returns>The new session</returns>
+		/// <param name="entityMode">Ignored.</param>
+		/// <returns>The new session.</returns>
+		[Obsolete("Please use SessionWithOptions instead. Now requires to be flushed and disposed of.")]
 		ISession GetSession(EntityMode entityMode);
 	}
 }

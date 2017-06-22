@@ -1,6 +1,6 @@
 using System;
-using System.Data;
-
+using System.Data.Common;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 
@@ -26,14 +26,14 @@ namespace NHibernate.DomainModel.NHSpecific
 			get { return typeof(NullableInt32); }
 		}
 
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			return new NullableInt32(Convert.ToInt32(rs[index]));
 		}
 
-		public override void Set(IDbCommand cmd, object value, int index)
+		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			IDataParameter parameter = (IDataParameter) cmd.Parameters[index];
+			var parameter = cmd.Parameters[index];
 			NullableInt32 nullableValue = (NullableInt32) value;
 
 			if (nullableValue.HasValue)

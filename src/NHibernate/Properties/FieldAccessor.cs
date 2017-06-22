@@ -320,6 +320,11 @@ namespace NHibernate.Properties
 				get { return null; }
 			}
 
+			public System.Type Type
+			{
+				get { return field.FieldType; }
+			}
+
 			#endregion
 
 			public void Emit(ILGenerator il)

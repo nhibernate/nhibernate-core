@@ -13,13 +13,12 @@ namespace NHibernate.Criterion
 			string propertyName,
 			IProjection projection,
 			ICriteriaQuery criteriaQuery,
-			ICriteria criteria,
-			IDictionary<string, IFilter> enabledFilters)
+			ICriteria criteria)
 		{
 			if (projection == null)
 				return GetColumnNamesUsingPropertyName(criteriaQuery, criteria, propertyName);
 			else
-				return GetColumnNamesUsingProjection(projection, criteriaQuery, criteria, enabledFilters);
+				return GetColumnNamesUsingProjection(projection, criteriaQuery, criteria);
 		}
 
 		public static SqlString[] GetColumnNamesForSimpleExpression(
@@ -27,7 +26,6 @@ namespace NHibernate.Criterion
 			IProjection projection,
 			ICriteriaQuery criteriaQuery,
 			ICriteria criteria,
-			IDictionary<string, IFilter> enabledFilters,
 			ICriterion criterion,
 			object value)
 		{
@@ -42,17 +40,15 @@ namespace NHibernate.Criterion
 			}
 			else
 			{
-				return GetColumnNamesUsingProjection(projection, criteriaQuery, criteria, enabledFilters);
+				return GetColumnNamesUsingProjection(projection, criteriaQuery, criteria);
 			}
 		}
 
-		internal static SqlString[] GetColumnNamesUsingProjection(IProjection projection, ICriteriaQuery criteriaQuery, ICriteria criteria,
-																	 IDictionary<string, IFilter> enabledFilters)
+		internal static SqlString[] GetColumnNamesUsingProjection(IProjection projection, ICriteriaQuery criteriaQuery, ICriteria criteria)
 		{
 			SqlString sqlString = projection.ToSqlString(criteria, 
 				criteriaQuery.GetIndexForAlias(),
-				criteriaQuery, 
-				enabledFilters);
+				criteriaQuery);
 			return new SqlString[]
 				{
 					SqlStringHelper.RemoveAsAliasesFromSql(sqlString)
@@ -115,7 +111,7 @@ namespace NHibernate.Criterion
 			{
 				foreach (object value in values)
 				{
-					types.Add(new TypedValue(NHibernateUtil.GuessType((object)value), value, EntityMode.Poco));
+					types.Add(new TypedValue(NHibernateUtil.GuessType((object)value), value));
 				}
 			}
 			return types.ToArray();

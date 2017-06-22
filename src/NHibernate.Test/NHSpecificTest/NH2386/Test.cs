@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2386 {
 
         protected override void OnTearDown() {
             if (memoryAppender != null) {
-                var repository = (Hierarchy) LogManager.GetRepository();
+                var repository = (Hierarchy) LogManager.GetRepository(typeof(Test).Assembly);
                 repository.Root.RemoveAppender(memoryAppender);
                 memoryAppender = null;
             }

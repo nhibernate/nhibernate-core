@@ -1,7 +1,6 @@
 ﻿using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode
 {
@@ -23,13 +22,13 @@ namespace NHibernate.Test.MappingByCode
 
 			var hbmMapping = mapper.CompileMappingForAllExplicitlyAddedEntities();
 
-			hbmMapping.Imports.Length.Should().Be.EqualTo(2);
+			Assert.That(hbmMapping.Imports.Length, Is.EqualTo(2));
 
-			hbmMapping.Imports[0].@class.Should().Be.EqualTo("Dto");
-			hbmMapping.Imports[0].rename.Should().Be.EqualTo("Dto");
+			Assert.That(hbmMapping.Imports[0].@class, Is.EqualTo("Dto"));
+			Assert.That(hbmMapping.Imports[0].rename, Is.EqualTo("Dto"));
 
-			hbmMapping.Imports[1].@class.Should().Be.EqualTo("Dto");
-			hbmMapping.Imports[1].rename.Should().Be.EqualTo("DtoRenamed");
+			Assert.That(hbmMapping.Imports[1].@class, Is.EqualTo("Dto"));
+			Assert.That(hbmMapping.Imports[1].rename, Is.EqualTo("DtoRenamed"));
 		}
 	}
 }

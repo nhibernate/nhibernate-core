@@ -93,6 +93,7 @@
 								<xs:enumeration value="cache.default_expiration" />
 								<xs:enumeration value="query.substitutions" />
 								<xs:enumeration value="query.factory_class" />
+								<xs:enumeration value="query.linq_provider_class" />
 								<xs:enumeration value="query.imports" />
 								<xs:enumeration value="hbm2ddl.auto" />
 								<xs:enumeration value="hbm2ddl.keywords" />
@@ -110,12 +111,17 @@
 								<xs:enumeration value="adonet.factory_class" />
 								<xs:enumeration value="default_batch_fetch_size" />
 								<xs:enumeration value="default_entity_mode" />
+								<xs:enumeration value="default_flush_mode" />
 								<xs:enumeration value="use_sql_comments" />
 								<xs:enumeration value="format_sql" />
 								<xs:enumeration value="collectiontype.factory_class" />
 								<xs:enumeration value="interceptors.beforetransactioncompletion_ignore_exceptions" />
 								<xs:enumeration value="order_inserts" />
+								<xs:enumeration value="order_updates" />
+								<xs:enumeration value="query.query_model_rewriter_factory" />
 								<xs:enumeration value="linqtohql.generatorsregistry" />
+								<xs:enumeration value="odbc.explicit_datetime_scale" />
+								<xs:enumeration value="adonet.batch_versioned_data" />
 							</xs:restriction>
 						</xs:simpleType>
 					</xs:attribute>

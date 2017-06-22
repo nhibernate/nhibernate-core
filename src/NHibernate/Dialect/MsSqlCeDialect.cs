@@ -4,6 +4,7 @@ using System.Data.Common;
 using System.Text;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
+using NHibernate.Id;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 using Environment = NHibernate.Cfg.Environment;
@@ -124,6 +125,10 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
+		public override System.Type NativeIdentifierGeneratorClass => typeof(TableHiLoGenerator);
+
+		public override bool SupportsCircularCascadeDeleteConstraints => false;
+
 		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
 			return new MsSqlCeDataBaseSchema(connection);
@@ -202,5 +207,14 @@ namespace NHibernate.Dialect
 				return TimeSpan.TicksPerMillisecond*10L;
 			}
 		}
+
+		#region Informational metadata
+
+		/// <summary>
+		/// Does this dialect support pooling parameter in connection string?
+		/// </summary>
+		public override bool SupportsPoolingParameter => false;
+
+		#endregion
 	}
 }

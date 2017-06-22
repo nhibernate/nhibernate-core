@@ -7,16 +7,17 @@
 #endregion
 
 using System;
+using System.Reflection;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
 	public interface IProxyCache
 	{
 		bool Contains(System.Type baseType, params System.Type[] baseInterfaces);
-		System.Type GetProxyType(System.Type baseType, params System.Type[] baseInterfaces);
+		TypeInfo GetProxyType(System.Type baseType, params System.Type[] baseInterfaces);
 
-		bool TryGetProxyType(System.Type baseType, System.Type[] baseInterfaces, out System.Type proxyType);
+		bool TryGetProxyType(System.Type baseType, System.Type[] baseInterfaces, out TypeInfo proxyType);
 
-		void StoreProxyType(System.Type result, System.Type baseType, params System.Type[] baseInterfaces);
+		void StoreProxyType(TypeInfo result, System.Type baseType, params System.Type[] baseInterfaces);
 	}
 }

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using NHibernate.SqlCommand;
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -48,25 +47,24 @@ namespace NHibernate.Criterion
 			return new IType[] {criteriaQuery.GetType(criteria, propertyName)};
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery)
 		{
-			if (projection != null)
+			if (projection == null)
 			{
-				return
-					new SqlString(new object[]
-								  	{
-								  		aggregate, "(",
-								  		SqlStringHelper.RemoveAsAliasesFromSql(projection.ToSqlString(criteria, loc, criteriaQuery,
-								  																   enabledFilters)), ") as y",
-								  		loc.ToString(), "_"
-								  	});
+				return new SqlString(aggregate, "(", criteriaQuery.GetColumn(criteria, propertyName), ") as y", loc.ToString(), "_");
 			}
-			else
-			{
-				return
-					new SqlString(new object[]
-								  	{aggregate, "(", criteriaQuery.GetColumn(criteria, propertyName), ") as y", loc.ToString(), "_"});
-			}
+
+			return new SqlString(
+				aggregate,
+				"(",
+				SqlStringHelper.RemoveAsAliasesFromSql(
+					projection.ToSqlString(
+						criteria,
+						loc,
+						criteriaQuery)),
+				") as y",
+				loc.ToString(),
+				"_");
 		}
 
 		public override bool IsGrouped
@@ -74,7 +72,7 @@ namespace NHibernate.Criterion
 			get { return false; }
 		}
 
-		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			throw new InvalidOperationException("not a grouping projection");
 		}

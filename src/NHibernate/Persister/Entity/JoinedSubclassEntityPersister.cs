@@ -130,21 +130,23 @@ namespace NHibernate.Persister.Entity
 			List<string> tables = new List<string>();
 			List<string[]> keyColumns = new List<string[]>();
 			List<bool> cascadeDeletes = new List<bool>();
-			IEnumerator<IKeyValue> kiter = persistentClass.KeyClosureIterator.GetEnumerator();
-			foreach (Table tab in persistentClass.TableClosureIterator)
+			using (var kiter = persistentClass.KeyClosureIterator.GetEnumerator())
 			{
-				kiter.MoveNext();
-				IKeyValue key = kiter.Current;
-				string tabname = tab.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName);
-				tables.Add(tabname);
+				foreach (var tab in persistentClass.TableClosureIterator)
+				{
+					kiter.MoveNext();
+					var key = kiter.Current;
+					var tabname = tab.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName);
+					tables.Add(tabname);
 
-				List<string> keyCols = new List<string>(idColumnSpan);
-				IEnumerable<Column> enumerableKCols = new SafetyEnumerable<Column>(key.ColumnIterator);
-				foreach (Column kcol in enumerableKCols)
-					keyCols.Add(kcol.GetQuotedName(factory.Dialect));
+					var keyCols = new List<string>(idColumnSpan);
+					var enumerableKCols = new SafetyEnumerable<Column>(key.ColumnIterator);
+					foreach (var kcol in enumerableKCols)
+						keyCols.Add(kcol.GetQuotedName(factory.Dialect));
 
-				keyColumns.Add(keyCols.ToArray());
-				cascadeDeletes.Add(key.IsCascadeDeleteEnabled && factory.Dialect.SupportsCascadeDelete);				
+					keyColumns.Add(keyCols.ToArray());
+					cascadeDeletes.Add(key.IsCascadeDeleteEnabled && factory.Dialect.SupportsCascadeDelete);
+				}
 			}
 			naturalOrderTableNames = tables.ToArray();
 			naturalOrderTableKeyColumns = keyColumns.ToArray();
@@ -345,6 +347,11 @@ namespace NHibernate.Persister.Entity
 			get { return discriminatorValue; }
 		}
 
+		public override string[] SubclassClosure
+		{
+			get { return subclassClosure; }
+		}
+
 		public override string[] PropertySpaces
 		{
 			get
@@ -389,7 +396,7 @@ namespace NHibernate.Persister.Entity
 			get { return constraintOrderedTableNames; }
 		}
 
-		public override string[][] ContraintOrderedTableKeyColumnClosure
+		public override string[][] ConstraintOrderedTableKeyColumnClosure
 		{
 			get { return constraintOrderedKeyColumnNames; }
 		}
@@ -589,6 +596,55 @@ namespace NHibernate.Persister.Entity
 				return Declarer.SubClass;
 			}
 			return base.GetSubclassPropertyDeclarer(propertyPath);
+		}
+
+		protected override bool[] GetTableUpdateNeeded(int[] dirtyProperties, bool hasDirtyCollection)
+		{
+			bool[] tableUpdateNeeded = base.GetTableUpdateNeeded(dirtyProperties, hasDirtyCollection);
+
+			if (IsVersioned && IsVersionPropertyGenerated)
+			{
+				// NH-3512: if this is table-per-subclass inheritance and version property is generated,
+				// then it should be updated even if no other base class properties changed
+
+				tableUpdateNeeded[0] = true;
+			}
+
+			return tableUpdateNeeded;
+		}
+
+		protected override bool[] GetPropertiesToUpdate(int[] dirtyProperties, bool hasDirtyCollection)
+		{
+			bool[] propsToUpdate = base.GetPropertiesToUpdate(dirtyProperties, hasDirtyCollection);
+
+			if (IsVersioned && IsVersionPropertyGenerated)
+			{
+				// NH-3512
+				// find first updatable property in base class to include it in
+				bool found = false;
+
+				for (int i = 0; i < propsToUpdate.Length; ++i)
+				{
+					if (i == VersionProperty || !IsPropertyOfTable(i, 0))
+					{
+						continue;
+					}
+
+					if (PropertyUpdateability[i])
+					{
+						propsToUpdate[i] = true;
+						found = true;
+						break;
+					}
+				}
+
+				if (!found)
+				{
+					// TODO: we failed to find suitable property, so version won't be updated and optimistic concurrency check won't work
+				}
+			}
+
+			return propsToUpdate;
 		}
 	}
 }

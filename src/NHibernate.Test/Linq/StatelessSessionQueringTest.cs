@@ -3,7 +3,6 @@ using System.Text;
 using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
 using NHibernate.Linq;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Linq
 {
@@ -15,7 +14,7 @@ namespace NHibernate.Test.Linq
 			using (var statelessSession = Sfi.OpenStatelessSession())
 			{
 				var query = statelessSession.Query<Customer>();
-				query.Executing(q => q.ToList()).NotThrows();
+				Assert.That(() => query.ToList(), Throws.Nothing);
 			}
 		}
 
@@ -26,7 +25,7 @@ namespace NHibernate.Test.Linq
 			{
 				StringBuilder query = (from c in statelessSession.Query<Customer>() where c.CustomerId.StartsWith("A") select c.CustomerId)
 					.Aggregate(new StringBuilder(), (sb, id) => sb.Append(id).Append(","));
-				query.ToString().Should().Be("ALFKI,ANATR,ANTON,AROUT,");
+				Assert.That(query.ToString(), Is.EqualTo("ALFKI,ANATR,ANTON,AROUT,"));
 			}
 		}
 	}

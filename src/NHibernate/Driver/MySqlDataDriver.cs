@@ -57,8 +57,8 @@ namespace NHibernate.Driver
 		}
 
 		/// <summary>
-		/// The MySql.Data driver does NOT support more than 1 open IDataReader
-		/// with only 1 IDbConnection.
+		/// The MySql.Data driver does NOT support more than 1 open DbDataReader
+		/// with only 1 DbConnection.
 		/// </summary>
 		/// <value><see langword="false" /> - it is not supported.</value>
 		public override bool SupportsMultipleOpenReaders
@@ -88,5 +88,7 @@ namespace NHibernate.Driver
 		{
 			get { return true; }
 		}
+
+		public override bool RequiresTimeSpanForTime => true;
 	}
 }

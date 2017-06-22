@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2828
 {
@@ -15,13 +14,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2828
 			//Now in a second transaction i remove the address and persist Company: for a cascade option the Address will be removed
 			using (var sl = new SqlLogSpy())
 			{
-				using (ISession session = sessions.OpenSession())
+				using (ISession session = Sfi.OpenSession())
 				{
 					using (ITransaction tx = session.BeginTransaction())
 					{
 						var company = session.Get<Company>(companyId);
-						company.Addresses.Count().Should().Be.EqualTo(1);
-						company.RemoveAddress(company.Addresses.First()).Should().Be.EqualTo(true);
+						Assert.That(company.Addresses.Count(), Is.EqualTo(1));
+						Assert.That(company.RemoveAddress(company.Addresses.First()), Is.EqualTo(true));
 
 						//now this company will be saved and deleting the address.
 						//BUT it should not try to load the BanckAccound collection!
@@ -30,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2828
 					}
 				}
 				var wholeMessage = sl.GetWholeLog();
-				wholeMessage.Should().Not.Contain("BankAccount");
+				Assert.That(wholeMessage, Does.Not.Contain("BankAccount"));
 			}
 
 			Cleanup(companyId);
@@ -38,7 +37,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2828
 
 		private void Cleanup(Guid companyId)
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				using (ITransaction tx = session.BeginTransaction())
 				{
@@ -55,7 +54,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2828
 			var bankAccount = new BankAccount() {Name = "Bank test"};
 			company.AddAddress(address);
 			company.AddBank(bankAccount);
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				using (ITransaction tx = session.BeginTransaction())
 				{

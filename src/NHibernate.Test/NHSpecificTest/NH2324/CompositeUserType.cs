@@ -1,5 +1,5 @@
 using System;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.UserTypes;
@@ -111,15 +111,15 @@ namespace NHibernate.Test.NHSpecificTest.NH2324
 		}
 
 		/// <summary>
-		/// Retrieve an instance of the mapped class from a IDataReader. Implementors
+		/// Retrieve an instance of the mapped class from a DbDataReader. Implementors
 		/// should handle possibility of null values.
 		/// </summary>
-		/// <param name="dr">IDataReader</param>
+		/// <param name="dr">DbDataReader</param>
 		/// <param name="names">the column names</param>
 		/// <param name="session"></param>
 		/// <param name="owner">the containing entity</param>
 		/// <returns></returns>
-		public object NullSafeGet(IDataReader dr, string[] names, ISessionImplementor session, object owner)
+		public object NullSafeGet(DbDataReader dr, string[] names, ISessionImplementor session, object owner)
 		{
 			var data = new CompositeData();
 			data.DataA = (DateTime) NHibernateUtil.DateTime.NullSafeGet(dr, new[] {names[0]}, session, owner);
@@ -138,18 +138,18 @@ namespace NHibernate.Test.NHSpecificTest.NH2324
 		/// <param name="index"></param>
 		/// <param name="settable"></param>
 		/// <param name="session"></param>
-		public void NullSafeSet(IDbCommand cmd, object value, int index, bool[] settable, ISessionImplementor session)
+		public void NullSafeSet(DbCommand cmd, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			if (value == null)
 			{
-				if (settable[0]) ((IDataParameter) cmd.Parameters[index++]).Value = DBNull.Value;
-				if (settable[1]) ((IDataParameter) cmd.Parameters[index]).Value = DBNull.Value;
+				if (settable[0]) cmd.Parameters[index++].Value = DBNull.Value;
+				if (settable[1]) cmd.Parameters[index].Value = DBNull.Value;
 			}
 			else
 			{
 				var data = (CompositeData) value;
-				if (settable[0]) NHibernateUtil.DateTime.Set(cmd, data.DataA, index++);
-				if (settable[1]) NHibernateUtil.DateTime.Set(cmd, data.DataB, index);
+				if (settable[0]) NHibernateUtil.DateTime.Set(cmd, data.DataA, index++, session);
+				if (settable[1]) NHibernateUtil.DateTime.Set(cmd, data.DataB, index, session);
 			}
 		}
 

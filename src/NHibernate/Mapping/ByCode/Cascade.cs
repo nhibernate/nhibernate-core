@@ -6,7 +6,7 @@ namespace NHibernate.Mapping.ByCode
 	/// Defines behavior of soft-cascade actions.
 	/// </summary>
 	/// <remarks>
-	/// To check the content or to include/exclude values, from cascade, is strongly recommanded the usage of extensions methods defined in <see cref="CascadeExtensions"/>
+	/// To check the content or to include/exclude values, from cascade, is strongly recommended the usage of extensions methods defined in <see cref="CascadeExtensions"/>
 	/// </remarks>
 	/// <seealso cref="CascadeExtensions.Has"/>
 	/// <seealso cref="CascadeExtensions.Include"/>

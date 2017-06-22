@@ -1,7 +1,6 @@
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode
 {
@@ -18,7 +17,7 @@ namespace NHibernate.Test.MappingByCode
 		public void WhenMergeWithNullThenNotThrow()
 		{
 			var emptyHolder = new CustomizersHolder();
-			emptyHolder.Executing(x=> x.Merge(null)).NotThrows();
+			Assert.That(() => emptyHolder.Merge(null), Throws.Nothing);
 		}
 
 		[Test]
@@ -32,7 +31,7 @@ namespace NHibernate.Test.MappingByCode
 			emptyHolder.Merge(holder);
 			emptyHolder.InvokeCustomizers(propertyPath, (IAnyMapper)null);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -46,7 +45,7 @@ namespace NHibernate.Test.MappingByCode
 			emptyHolder.Merge(holder);
 			emptyHolder.InvokeCustomizers(propertyPath, (IBagPropertiesMapper)null);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -60,7 +59,7 @@ namespace NHibernate.Test.MappingByCode
 			emptyHolder.Merge(holder);
 			emptyHolder.InvokeCustomizers(propertyPath, (IIdBagPropertiesMapper)null);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -74,7 +73,7 @@ namespace NHibernate.Test.MappingByCode
 			emptyHolder.Merge(holder);
 			emptyHolder.InvokeCustomizers(propertyPath, (IBagPropertiesMapper)null);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -88,7 +87,7 @@ namespace NHibernate.Test.MappingByCode
 			emptyHolder.Merge(holder);
 			emptyHolder.InvokeCustomizers(propertyPath, (IElementMapper)null);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -102,7 +101,7 @@ namespace NHibernate.Test.MappingByCode
 			emptyHolder.Merge(holder);
 			emptyHolder.InvokeCustomizers(propertyPath, (IManyToManyMapper)null);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -116,7 +115,7 @@ namespace NHibernate.Test.MappingByCode
 			emptyHolder.Merge(holder);
 			emptyHolder.InvokeCustomizers(propertyPath, (IManyToAnyMapper) null);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -130,7 +129,7 @@ namespace NHibernate.Test.MappingByCode
 			emptyHolder.Merge(holder);
 			emptyHolder.InvokeCustomizers(propertyPath, (IOneToManyMapper)null);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -144,7 +143,7 @@ namespace NHibernate.Test.MappingByCode
 			emptyHolder.Merge(holder);
 			emptyHolder.InvokeCustomizers(propertyPath, (IComponentAttributesMapper)null);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -158,7 +157,7 @@ namespace NHibernate.Test.MappingByCode
 			emptyHolder.Merge(holder);
 			emptyHolder.InvokeCustomizers(propertyPath, (IListPropertiesMapper)null);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -172,7 +171,7 @@ namespace NHibernate.Test.MappingByCode
 			emptyHolder.Merge(holder);
 			emptyHolder.InvokeCustomizers(propertyPath, (IManyToOneMapper)null);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -186,7 +185,7 @@ namespace NHibernate.Test.MappingByCode
 			emptyHolder.Merge(holder);
 			emptyHolder.InvokeCustomizers(propertyPath, (IMapPropertiesMapper)null);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -200,7 +199,7 @@ namespace NHibernate.Test.MappingByCode
 			emptyHolder.Merge(holder);
 			emptyHolder.InvokeCustomizers(propertyPath, (IMapKeyMapper)null);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -214,7 +213,7 @@ namespace NHibernate.Test.MappingByCode
 			emptyHolder.Merge(holder);
 			emptyHolder.InvokeCustomizers(propertyPath, (IMapKeyManyToManyMapper)null);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -228,7 +227,7 @@ namespace NHibernate.Test.MappingByCode
 			emptyHolder.Merge(holder);
 			emptyHolder.InvokeCustomizers(propertyPath, (IOneToOneMapper)null);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -242,7 +241,7 @@ namespace NHibernate.Test.MappingByCode
 			emptyHolder.Merge(holder);
 			emptyHolder.InvokeCustomizers(propertyPath, (IPropertyMapper)null);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -256,7 +255,7 @@ namespace NHibernate.Test.MappingByCode
 			emptyHolder.Merge(holder);
 			emptyHolder.InvokeCustomizers(propertyPath, (ISetPropertiesMapper)null);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -270,7 +269,7 @@ namespace NHibernate.Test.MappingByCode
 			emptyHolder.Merge(holder);
 			emptyHolder.InvokeCustomizers(typeof(MyClass), (IJoinedSubclassAttributesMapper)null);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -284,7 +283,7 @@ namespace NHibernate.Test.MappingByCode
 			emptyHolder.Merge(holder);
 			emptyHolder.InvokeCustomizers(typeof(MyClass), (IClassMapper)null);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -298,7 +297,7 @@ namespace NHibernate.Test.MappingByCode
 			emptyHolder.Merge(holder);
 			emptyHolder.InvokeCustomizers(typeof(MyClass), (ISubclassMapper)null);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -312,7 +311,7 @@ namespace NHibernate.Test.MappingByCode
 			emptyHolder.Merge(holder);
 			emptyHolder.InvokeCustomizers(typeof(MyClass), (IJoinAttributesMapper)null);
 			
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -326,7 +325,7 @@ namespace NHibernate.Test.MappingByCode
 			emptyHolder.Merge(holder);
 			emptyHolder.InvokeCustomizers(typeof(MyClass), (IUnionSubclassAttributesMapper)null);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -340,7 +339,7 @@ namespace NHibernate.Test.MappingByCode
 			emptyHolder.Merge(holder);
 			emptyHolder.InvokeCustomizers(typeof(MyClass), (IComponentAttributesMapper)null);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -354,7 +353,7 @@ namespace NHibernate.Test.MappingByCode
 			emptyHolder.Merge(holder);
 			emptyHolder.InvokeCustomizers(propertyPath, (IDynamicComponentAttributesMapper)null);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -368,7 +367,7 @@ namespace NHibernate.Test.MappingByCode
 			emptyHolder.Merge(holder);
 			emptyHolder.InvokeCustomizers(propertyPath, (IComponentAsIdAttributesMapper)null);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 	}
 }

@@ -11,3 +11,5 @@ current-test-configuration
 # This will be copied from the build directory to the lib directory in order
 # to satisfy later build steps. But it should not be committed.
 NHibernate.dll
+TestResult.xml
+.vscode

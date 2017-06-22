@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2056
 {
@@ -21,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2056
 		public void CanUpdateInheritedClass()
 		{
 			object savedId;
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			using (var t = session.BeginTransaction())
 			{
 				IDictionary address = new Dictionary<string, object>();
@@ -33,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2056
 				t.Commit();
 			}
 
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			using (var t = session.BeginTransaction())
 			{
 				var query = session.CreateQuery("Update Address address set address.AddressF1 = :val1, address.AddressF2 = :val2 where ID=:theID");
@@ -47,14 +46,14 @@ namespace NHibernate.Test.NHSpecificTest.NH2056
 
 				t.Commit();
 			}
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			using (var t = session.BeginTransaction())
 			{
 				var updated = (IDictionary) session.Get("Address", savedId);
-				updated["BaseF1"].Should().Be("base1");
-				updated["BaseF2"].Should().Be("base2");
-				updated["AddressF1"].Should().Be("foo");
-				updated["AddressF2"].Should().Be("bar");
+				Assert.That(updated["BaseF1"], Is.EqualTo("base1"));
+				Assert.That(updated["BaseF2"], Is.EqualTo("base2"));
+				Assert.That(updated["AddressF1"], Is.EqualTo("foo"));
+				Assert.That(updated["AddressF2"], Is.EqualTo("bar"));
 
 				t.Commit();
 			}

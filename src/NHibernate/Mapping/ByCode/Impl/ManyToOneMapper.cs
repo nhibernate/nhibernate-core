@@ -45,7 +45,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Cascade(Cascade cascadeStyle)
 		{
-			_manyToOne.cascade = (cascadeStyle.Exclude(ByCode.Cascade.DeleteOrphans)).ToCascadeString();
+			_manyToOne.cascade = cascadeStyle.ToCascadeString();
 		}
 
 		public void NotNullable(bool notnull)

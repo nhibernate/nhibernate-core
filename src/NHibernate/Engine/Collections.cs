@@ -34,13 +34,13 @@ namespace NHibernate.Engine
 			ICollectionPersister loadedPersister = entry.LoadedPersister;
 
 			if (log.IsDebugEnabled && loadedPersister != null)
-				log.Debug("Collection dereferenced: " + MessageHelper.InfoString(loadedPersister, entry.LoadedKey, session.Factory));
+				log.Debug("Collection dereferenced: " + MessageHelper.CollectionInfoString(loadedPersister, coll, entry.LoadedKey, session));
 
 			// do a check
 			bool hasOrphanDelete = loadedPersister != null && loadedPersister.HasOrphanDelete;
 			if (hasOrphanDelete)
 			{
-				object ownerId = loadedPersister.OwnerEntityPersister.GetIdentifier(coll.Owner, session.EntityMode);
+				object ownerId = loadedPersister.OwnerEntityPersister.GetIdentifier(coll.Owner);
 				// TODO NH Different behavior
 				//if (ownerId == null)
 				//{
@@ -77,25 +77,25 @@ namespace NHibernate.Engine
 			// do the work
 			entry.CurrentPersister = null;
 			entry.CurrentKey = null;
-			PrepareCollectionForUpdate(coll, entry, session.EntityMode, session.Factory);
+			PrepareCollectionForUpdate(coll, entry, session.Factory);
 		}
 
 		private static void ProcessNeverReferencedCollection(IPersistentCollection coll, ISessionImplementor session)
 		{
 			CollectionEntry entry = session.PersistenceContext.GetCollectionEntry(coll);
 
-			log.Debug("Found collection with unloaded owner: " + MessageHelper.InfoString(entry.LoadedPersister, entry.LoadedKey, session.Factory));
+			log.Debug("Found collection with unloaded owner: " + MessageHelper.CollectionInfoString(entry.LoadedPersister, coll, entry.LoadedKey, session));
 
 			entry.CurrentPersister = entry.LoadedPersister;
 			entry.CurrentKey = entry.LoadedKey;
 
-			PrepareCollectionForUpdate(coll, entry, session.EntityMode, session.Factory);
+			PrepareCollectionForUpdate(coll, entry, session.Factory);
 		}
 
 		/// <summary> 
 		/// Initialize the role of the collection. 
 		/// </summary>
-		/// <param name="collection">The collection to be updated by reachibility. </param>
+		/// <param name="collection">The collection to be updated by reachability. </param>
 		/// <param name="type">The type of the collection. </param>
 		/// <param name="entity">The owner of the collection. </param>
 		/// <param name="session">The session.</param>
@@ -127,15 +127,15 @@ namespace NHibernate.Engine
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("Collection found: " + 
-				          MessageHelper.InfoString(persister, ce.CurrentKey, factory) + ", was: " + 
-				          MessageHelper.InfoString(ce.LoadedPersister, ce.LoadedKey, factory) + 
-				          (collection.WasInitialized ? " (initialized)" : " (uninitialized)"));
+						  MessageHelper.CollectionInfoString(persister, collection, ce.CurrentKey, session) + ", was: " +
+						  MessageHelper.CollectionInfoString(ce.LoadedPersister, collection, ce.LoadedKey, session) + 
+						  (collection.WasInitialized ? " (initialized)" : " (uninitialized)"));
 			}
 
-			PrepareCollectionForUpdate(collection, ce, session.EntityMode, factory);
+			PrepareCollectionForUpdate(collection, ce, factory);
 		}
 
-		private static void PrepareCollectionForUpdate(IPersistentCollection collection, CollectionEntry entry, EntityMode entityMode, ISessionFactoryImplementor factory)
+		private static void PrepareCollectionForUpdate(IPersistentCollection collection, CollectionEntry entry, ISessionFactoryImplementor factory)
 		{
 			//1. record the collection role that this collection is referenced by
 			//2. decide if the collection needs deleting/creating/updating (but don't actually schedule the action yet)
@@ -151,7 +151,7 @@ namespace NHibernate.Engine
 			{
 				// it is or was referenced _somewhere_
 				bool ownerChanged = loadedPersister != currentPersister ||
-					!currentPersister.KeyType.IsEqual(entry.LoadedKey, entry.CurrentKey, entityMode, factory);
+					!currentPersister.KeyType.IsEqual(entry.LoadedKey, entry.CurrentKey, factory);
 
 				if (ownerChanged)
 				{

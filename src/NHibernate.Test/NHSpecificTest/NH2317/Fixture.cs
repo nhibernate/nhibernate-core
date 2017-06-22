@@ -1,7 +1,6 @@
 using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2317
 {
@@ -11,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2317
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();
-			using (var session = sessions.OpenStatelessSession())
+			using (var session = Sfi.OpenStatelessSession())
 			using (var tx = session.BeginTransaction())
 			{
 				foreach (var artistName in new[] { "Foo", "Bar", "Baz", "Soz", "Tiz", "Fez" })
@@ -25,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2317
 		[Test]
 		public void QueryShouldWork()
 		{
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			using(session.BeginTransaction())
 			{
 				// The HQL : "select a.id from Artist a where a in (from Artist take 3)"
@@ -35,13 +34,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2317
 
 				var expected = session.CreateQuery("select a.id from Artist a take 3").List<int>();
 				var actual = session.Query<Artist>().Take(3).Select(a => a.Id).ToArray();
-				actual.Should().Have.SameValuesAs(expected);
+				Assert.That(actual, Is.EquivalentTo(expected));
 			}
 		}
 
 		protected override void OnTearDown()
 		{
-			using(var session = sessions.OpenStatelessSession())
+			using(var session = Sfi.OpenStatelessSession())
 			using (var tx = session.BeginTransaction())
 			{
 				session.CreateQuery("delete Artist").ExecuteUpdate();

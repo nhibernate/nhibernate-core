@@ -34,7 +34,7 @@ namespace NHibernate.Dialect.Function
 		/// Initializes a new instance of the StandardSQLFunction class.
 		/// </summary>
 		/// <param name="name">SQL function name.</param>
-		/// <param name="typeValue">Return type for the fuction.</param>
+		/// <param name="typeValue">Return type for the function.</param>
 		public StandardSQLFunction(string name, IType typeValue)
 			: this(name)
 		{

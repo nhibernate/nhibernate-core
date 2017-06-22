@@ -104,7 +104,7 @@ namespace NHibernate.Persister.Entity
 				get { return entity; }
 			}
 
-			public virtual void BindValues(IDbCommand ps)
+			public virtual void BindValues(DbCommand ps)
 			{
 				entityPersister.Dehydrate(null, fields, notNull, entityPersister.propertyColumnInsertable, 0, ps, session);
 			}
@@ -276,7 +276,7 @@ namespace NHibernate.Persister.Entity
 				}
 			}
 
-			batchSize = persistentClass.BatchSize.HasValue ? persistentClass.BatchSize.Value : factory.Settings.DefaultBatchFetchSize;
+			batchSize = persistentClass.BatchSize ?? factory.Settings.DefaultBatchFetchSize;
 			hasSubselectLoadableCollections = persistentClass.HasSubselectLoadableCollections;
 
 			propertyMapping = new BasicEntityPropertyMapping(this);
@@ -332,7 +332,7 @@ namespace NHibernate.Persister.Entity
 			#region PROPERTIES
 
 			// NH: see consistence with the implementation on EntityMetamodel where we are disabling lazy-properties for no lazy entities
-			bool lazyAvailable = IsInstrumented(EntityMode.Poco) && entityMetamodel.IsLazy;
+			bool lazyAvailable = IsInstrumented && entityMetamodel.IsLazy;
 
 			int hydrateSpan = entityMetamodel.PropertySpan;
 			propertyColumnSpans = new int[hydrateSpan];
@@ -616,16 +616,9 @@ namespace NHibernate.Persister.Entity
 			get { return sqlVersionSelectString; }
 		}
 
-		public bool IsBatchable
-		{
-			get
-			{
-				return
-					OptimisticLockMode == Versioning.OptimisticLock.None
-					|| (!IsVersioned && OptimisticLockMode == Versioning.OptimisticLock.Version);
-				//|| Factory.Settings.IsJdbcBatchVersionedData();
-			}
-		}
+		public bool IsBatchable => OptimisticLockMode == Versioning.OptimisticLock.None ||
+		                           (!IsVersioned && OptimisticLockMode == Versioning.OptimisticLock.Version) ||
+		                           Factory.Settings.IsBatchVersionedDataEnabled;
 
 		public virtual string[] QuerySpaces
 		{
@@ -878,6 +871,11 @@ namespace NHibernate.Persister.Entity
 			get { return IdentifierColumnNames; }
 		}
 
+		public string[] JoinColumnNames
+		{
+			get { return KeyColumnNames; }
+		}
+
 		public string Name
 		{
 			get { return EntityName; }
@@ -988,6 +986,11 @@ namespace NHibernate.Persister.Entity
 			get { return entityMetamodel.IdentifierProperty.Name; }
 		}
 
+		public virtual IType GetIdentifierType(int j)
+		{
+			return IdentifierType;
+		}
+
 		public virtual IType IdentifierType
 		{
 			get { return entityMetamodel.IdentifierProperty.Type; }
@@ -998,11 +1001,12 @@ namespace NHibernate.Persister.Entity
 			get { return entityMetamodel.NaturalIdentifierProperties; }
 		}
 
-		public abstract string[][] ContraintOrderedTableKeyColumnClosure { get;}
+		public abstract string[][] ConstraintOrderedTableKeyColumnClosure { get;}
 		public abstract IType DiscriminatorType { get;}
 		public abstract string[] ConstraintOrderedTableNameClosure { get;}
 		public abstract string DiscriminatorSQLValue { get;}
 		public abstract object DiscriminatorValue { get;}
+		public abstract string[] SubclassClosure { get; }
 		public abstract string[] PropertySpaces { get;}
 
 		protected virtual void AddDiscriminatorToInsert(SqlInsertBuilder insert) { }
@@ -1010,6 +1014,23 @@ namespace NHibernate.Persister.Entity
 		protected virtual void AddDiscriminatorToSelect(SelectFragment select, string name, string suffix) { }
 
 		public abstract string GetSubclassTableName(int j);
+
+		//gets the identifier for a join table if other than pk
+		protected virtual object GetJoinTableId(int j, object[] fields)
+		{
+			return null;
+		}
+
+		protected virtual object GetJoinTableId(int table, object obj)
+		{
+			return null;
+		}
+
+		//for joining to other keys than pk
+		protected virtual string[] GetJoinIdKeyColumns(int j)
+		{
+			return IdentifierColumnNames;
+		}
 
 		protected abstract string[] GetSubclassTableKeyColumns(int j);
 
@@ -1026,6 +1047,25 @@ namespace NHibernate.Persister.Entity
 		protected abstract string[] GetKeyColumns(int table);
 
 		protected abstract bool IsPropertyOfTable(int property, int table);
+
+		protected virtual int? GetRefIdColumnOfTable(int table)
+		{
+			return null;
+		}
+
+		protected virtual Tuple.Property GetIdentiferProperty(int table)
+		{
+			var refId = GetRefIdColumnOfTable(table);
+			if (refId == null)
+				return entityMetamodel.IdentifierProperty;
+
+			return entityMetamodel.Properties[refId.Value];
+		}
+
+		protected virtual bool IsIdOfTable(int property, int table)
+		{
+			return false;
+		}
 
 		protected abstract int GetSubclassPropertyTableNumber(int i);
 
@@ -1106,7 +1146,7 @@ namespace NHibernate.Persister.Entity
 		/// The return here is an array of boolean values with each index corresponding
 		/// to a given table in the scope of this persister.
 		/// </remarks>
-		private bool[] GetTableUpdateNeeded(int[] dirtyProperties, bool hasDirtyCollection)
+		protected virtual bool[] GetTableUpdateNeeded(int[] dirtyProperties, bool hasDirtyCollection)
 		{
 			if (dirtyProperties == null)
 			{
@@ -1234,8 +1274,8 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				object result = null;
-				IDbCommand ps = null;
-				IDataReader rs = null;
+				DbCommand ps = null;
+				DbDataReader rs = null;
 				try
 				{
 					SqlString lazySelect = SQLLazySelectString;
@@ -1306,11 +1346,11 @@ namespace NHibernate.Persister.Entity
 
 		private bool InitializeLazyProperty(string fieldName, object entity, ISessionImplementor session, object[] snapshot, int j, object propValue)
 		{
-			SetPropertyValue(entity, lazyPropertyNumbers[j], propValue, session.EntityMode);
+			SetPropertyValue(entity, lazyPropertyNumbers[j], propValue);
 			if (snapshot != null)
 			{
 				// object have been loaded with setReadOnly(true); HHH-2236
-				snapshot[lazyPropertyNumbers[j]] = lazyPropertyTypes[j].DeepCopy(propValue, session.EntityMode, factory);
+				snapshot[lazyPropertyNumbers[j]] = lazyPropertyTypes[j].DeepCopy(propValue, factory);
 			}
 			return fieldName.Equals(lazyPropertyNames[j]);
 		}
@@ -1410,8 +1450,8 @@ namespace NHibernate.Persister.Entity
 			using (new SessionIdLoggingContext(session.SessionId))
 			try
 			{
-				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, SQLSnapshotSelectString, IdentifierType.SqlTypes(factory));
-				IDataReader rs = null;
+				var st = session.Batcher.PrepareCommand(CommandType.Text, SQLSnapshotSelectString, IdentifierType.SqlTypes(factory));
+				DbDataReader rs = null;
 				try
 				{
 					IdentifierType.NullSafeSet(st, id, 0, session);
@@ -1611,7 +1651,7 @@ namespace NHibernate.Persister.Entity
 			SqlCommandInfo versionIncrementCommand = GenerateVersionIncrementUpdateString();
 			try
 			{
-				IDbCommand st = session.Batcher.PrepareCommand(versionIncrementCommand.CommandType, versionIncrementCommand.Text, versionIncrementCommand.ParameterTypes);
+				var st = session.Batcher.PrepareCommand(versionIncrementCommand.CommandType, versionIncrementCommand.Text, versionIncrementCommand.ParameterTypes);
 				try
 				{
 					VersionType.NullSafeSet(st, nextVersion, 0, session);
@@ -1665,8 +1705,8 @@ namespace NHibernate.Persister.Entity
 			using(new SessionIdLoggingContext(session.SessionId))
 			try
 			{
-				IDbCommand st = session.Batcher.PrepareQueryCommand(CommandType.Text, VersionSelectString, IdentifierType.SqlTypes(Factory));
-				IDataReader rs = null;
+				var st = session.Batcher.PrepareQueryCommand(CommandType.Text, VersionSelectString, IdentifierType.SqlTypes(Factory));
+				DbDataReader rs = null;
 				try
 				{
 					IdentifierType.NullSafeSet(st, id, 0, session);
@@ -2160,7 +2200,7 @@ namespace NHibernate.Persister.Entity
 			return CreateEntityLoader(lockMode, new CollectionHelper.EmptyMapClass<string, IFilter>());
 		}
 
-		protected bool Check(int rows, object id, int tableNumber, IExpectation expectation, IDbCommand statement)
+		protected bool Check(int rows, object id, int tableNumber, IExpectation expectation, DbCommand statement)
 		{
 			try
 			{
@@ -2200,9 +2240,9 @@ namespace NHibernate.Persister.Entity
 
 			// select the correct row by either pk or rowid
 			if (useRowId)
-				updateBuilder.SetIdentityColumn(new string[] { rowIdName }, NHibernateUtil.Int32); //TODO: eventually, rowIdName[j]
+				updateBuilder.SetIdentityColumn(new[] {rowIdName}, NHibernateUtil.Int32); //TODO: eventually, rowIdName[j]
 			else
-				updateBuilder.SetIdentityColumn(GetKeyColumns(j), IdentifierType);
+				updateBuilder.SetIdentityColumn(GetKeyColumns(j), GetIdentifierType(j));
 
 			bool hasColumns = false;
 			for (int i = 0; i < entityMetamodel.PropertySpan; i++)
@@ -2316,7 +2356,7 @@ namespace NHibernate.Persister.Entity
 			}
 			else
 			{
-				builder.AddColumns(GetKeyColumns(j), null, IdentifierType);
+				builder.AddColumns(GetKeyColumns(j), null, GetIdentifierType(j));
 			}
 
 			if (Factory.Settings.IsCommentsEnabled)
@@ -2366,7 +2406,7 @@ namespace NHibernate.Persister.Entity
 			var deleteBuilder = new SqlDeleteBuilder(Factory.Dialect, Factory);
 			deleteBuilder
 				.SetTableName(GetTableName(j))
-				.SetIdentityColumn(GetKeyColumns(j), IdentifierType);
+				.SetIdentityColumn(GetKeyColumns(j), GetIdentifierType(j));
 
 			// NH: Only add version to where clause if optimistic lock mode is Version
 			if (j == 0 && IsVersioned && entityMetamodel.OptimisticLockMode == Versioning.OptimisticLock.Version)
@@ -2381,14 +2421,14 @@ namespace NHibernate.Persister.Entity
 			return deleteBuilder.ToSqlCommandInfo();
 		}
 
-		protected int Dehydrate(object id, object[] fields, bool[] includeProperty, bool[][] includeColumns, int j, IDbCommand st, ISessionImplementor session)
+		protected int Dehydrate(object id, object[] fields, bool[] includeProperty, bool[][] includeColumns, int j, DbCommand st, ISessionImplementor session)
 		{
 			return Dehydrate(id, fields, null, includeProperty, includeColumns, j, st, session, 0);
 		}
 
 		/// <summary> Marshall the fields of a persistent instance to a prepared statement</summary>
 		protected int Dehydrate(object id, object[] fields, object rowId, bool[] includeProperty, bool[][] includeColumns, int table,
-			IDbCommand statement, ISessionImplementor session, int index)
+			DbCommand statement, ISessionImplementor session, int index)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -2423,8 +2463,9 @@ namespace NHibernate.Persister.Entity
 			}
 			else if (id != null)
 			{
-				IdentifierType.NullSafeSet(statement, id, index, session);
-				index += IdentifierColumnSpan;
+				var property = GetIdentiferProperty(table);
+				property.Type.NullSafeSet(statement, id, index, session);
+				index += property.Type.GetColumnSpan(factory);
 			}
 
 			return index;
@@ -2434,7 +2475,7 @@ namespace NHibernate.Persister.Entity
 		/// Unmarshall the fields of a persistent instance from a result set,
 		/// without resolving associations or collections
 		/// </summary>
-		public object[] Hydrate(IDataReader rs, object id, object obj, ILoadable rootLoadable,
+		public object[] Hydrate(DbDataReader rs, object id, object obj, ILoadable rootLoadable,
 			string[][] suffixedPropertyColumns, bool allProperties, ISessionImplementor session)
 		{
 			if (log.IsDebugEnabled)
@@ -2445,8 +2486,8 @@ namespace NHibernate.Persister.Entity
 			AbstractEntityPersister rootPersister = (AbstractEntityPersister)rootLoadable;
 
 			bool hasDeferred = rootPersister.HasSequentialSelect;
-			IDbCommand sequentialSelect = null;
-			IDataReader sequentialResultSet = null;
+			DbCommand sequentialSelect = null;
+			DbDataReader sequentialResultSet = null;
 			bool sequentialSelectEmpty = false;
 			using (new SessionIdLoggingContext(session.SessionId)) 
 			try
@@ -2511,7 +2552,7 @@ namespace NHibernate.Persister.Entity
 						}
 						else
 						{
-							IDataReader propertyResultSet = propertyIsDeferred ? sequentialResultSet : rs;
+							var propertyResultSet = propertyIsDeferred ? sequentialResultSet : rs;
 							string[] cols = propertyIsDeferred ? propertyColumnAliases[i] : suffixedPropertyColumns[i];
 							values[i] = types[i].Hydrate(propertyResultSet, cols, session, obj);
 						}
@@ -2591,6 +2632,9 @@ namespace NHibernate.Persister.Entity
 		protected void Insert(object id, object[] fields, bool[] notNull, int j,
 			SqlCommandInfo sql, object obj, ISessionImplementor session)
 		{
+			//check if the id comes from an alternate column
+			object tableId = GetJoinTableId(j, fields) ?? id;
+
 			if (IsInverseTable(j))
 			{
 				return;
@@ -2605,7 +2649,7 @@ namespace NHibernate.Persister.Entity
 
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("Inserting entity: " + MessageHelper.InfoString(this, id, Factory));
+				log.Debug("Inserting entity: " + MessageHelper.InfoString(this, tableId, Factory));
 				if (j == 0 && IsVersioned)
 				{
 					log.Debug("Version: " + Versioning.GetVersion(fields, this));
@@ -2621,9 +2665,9 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				// Render the SQL query
-				IDbCommand insertCmd = useBatch
-																? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes)
-																: session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
+				var insertCmd = useBatch
+					? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes)
+					: session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
 
 				try
 				{
@@ -2634,7 +2678,7 @@ namespace NHibernate.Persister.Entity
 					// state at the time the insert was issued (cos of foreign key constraints).
 					// Not necessarily the obect's current state
 
-					Dehydrate(id, fields, null, notNull, propertyColumnInsertable, j, insertCmd, session, index);
+					Dehydrate(tableId, fields, null, notNull, propertyColumnInsertable, j, insertCmd, session, index);
 
 					if (useBatch)
 					{
@@ -2666,10 +2710,10 @@ namespace NHibernate.Persister.Entity
 				var exceptionContext = new AdoExceptionContextInfo
 										{
 											SqlException = sqle,
-											Message = "could not insert: " + MessageHelper.InfoString(this, id),
+											Message = "could not insert: " + MessageHelper.InfoString(this, tableId),
 											Sql = sql.ToString(),
 											EntityName = EntityName,
-											EntityId = id
+											EntityId = tableId
 										};
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
 			}
@@ -2681,6 +2725,9 @@ namespace NHibernate.Persister.Entity
 		{
 			if (!IsInverseTable(j))
 			{
+				//check if the id comes from an alternate column
+				object tableId = GetJoinTableId(j, fields) ?? id;
+
 				bool isRowToUpdate;
 				if (IsNullableTable(j) && oldFields != null && IsAllNull(oldFields, j))
 				{
@@ -2691,13 +2738,13 @@ namespace NHibernate.Persister.Entity
 				{
 					//if all fields are null, we might need to delete existing row
 					isRowToUpdate = true;
-					Delete(id, oldVersion, j, obj, SqlDeleteStrings[j], session, null);
+					Delete(tableId, oldVersion, j, obj, SqlDeleteStrings[j], session, null);
 				}
 				else
 				{
 					//there is probably a row there, so try to update
 					//if no rows were updated, we will find out
-					isRowToUpdate = Update(id, fields, oldFields, rowId, includeProperty, j, oldVersion, obj, sql, session);
+					isRowToUpdate = Update(tableId, fields, oldFields, rowId, includeProperty, j, oldVersion, obj, sql, session);
 				}
 
 				if (!isRowToUpdate && !IsAllNull(fields, j))
@@ -2705,7 +2752,7 @@ namespace NHibernate.Persister.Entity
 					// assume that the row was not there since it previously had only null
 					// values, so do an INSERT instead
 					//TODO: does not respect dynamic-insert
-					Insert(id, fields, PropertyInsertability, j, SqlInsertStrings[j], obj, session);
+					Insert(tableId, fields, PropertyInsertability, j, SqlInsertStrings[j], obj, session);
 				}
 			}
 		}
@@ -2730,9 +2777,9 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				int index = 0;
-				IDbCommand statement = useBatch
-																? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes)
-																: session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
+				var statement = useBatch
+					? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes)
+					: session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
 				try
 				{
 					//index += expectation.Prepare(statement, factory.ConnectionProvider.Driver);
@@ -2824,6 +2871,9 @@ namespace NHibernate.Persister.Entity
 		public void Delete(object id, object version, int j, object obj, SqlCommandInfo sql, ISessionImplementor session,
 											 object[] loadedState)
 		{
+			//check if the id should come from another column
+			object tableId = GetJoinTableId(j, obj) ?? id;
+
 			if (IsInverseTable(j))
 			{
 				return;
@@ -2838,7 +2888,7 @@ namespace NHibernate.Persister.Entity
 
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("Deleting entity: " + MessageHelper.InfoString(this, id, Factory));
+				log.Debug("Deleting entity: " + MessageHelper.InfoString(this, tableId, Factory));
 				if (useVersion)
 				{
 					log.Debug("Version: " + version);
@@ -2857,15 +2907,9 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				int index = 0;
-				IDbCommand statement;
-				if (useBatch)
-				{
-					statement = session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
-				}
-				else
-				{
-					statement = session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
-				}
+				var statement = useBatch 
+					? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes) 
+					: session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
 
 				try
 				{
@@ -2873,8 +2917,9 @@ namespace NHibernate.Persister.Entity
 
 					// Do the key. The key is immutable so we can use the _current_ object state - not necessarily
 					// the state at the time the delete was issued
-					IdentifierType.NullSafeSet(statement, id, index, session);
-					index += IdentifierColumnSpan;
+					var property = GetIdentiferProperty(j);
+					property.Type.NullSafeSet(statement, tableId, index, session);
+					index += property.Type.GetColumnSpan(factory);
 
 					// We should use the _current_ object state (ie. after any updates that occurred during flush)
 					if (useVersion)
@@ -2905,7 +2950,7 @@ namespace NHibernate.Persister.Entity
 					}
 					else
 					{
-						Check(session.Batcher.ExecuteNonQuery(statement), id, j, expectation, statement);
+						Check(session.Batcher.ExecuteNonQuery(statement), tableId, j, expectation, statement);
 					}
 				}
 				catch (Exception e)
@@ -2929,10 +2974,10 @@ namespace NHibernate.Persister.Entity
 				var exceptionContext = new AdoExceptionContextInfo
 										{
 											SqlException = sqle,
-											Message = "could not delete: " + MessageHelper.InfoString(this, id, Factory),
+											Message = "could not delete: " + MessageHelper.InfoString(this, tableId, Factory),
 											Sql = sql.Text.ToString(),
 											EntityName = EntityName,
-											EntityId = id
+											EntityId = tableId
 										};
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
 			}
@@ -2998,8 +3043,8 @@ namespace NHibernate.Persister.Entity
 			else
 			{
 				// For the case of dynamic-update="false", or no snapshot, we use the static SQL
-				updateStrings = GetUpdateStrings(rowId != null, HasUninitializedLazyProperties(obj, session.EntityMode));
-				propsToUpdate = GetPropertyUpdateability(obj, session.EntityMode);
+				updateStrings = GetUpdateStrings(rowId != null, HasUninitializedLazyProperties(obj));
+				propsToUpdate = GetPropertyUpdateability(obj);
 			}
 
 			for (int j = 0; j < span; j++)
@@ -3110,7 +3155,7 @@ namespace NHibernate.Persister.Entity
 			{
 				SqlDeleteBuilder delete = new SqlDeleteBuilder(Factory.Dialect, Factory)
 					.SetTableName(GetTableName(j))
-					.SetIdentityColumn(GetKeyColumns(j), IdentifierType);
+					.SetIdentityColumn(GetKeyColumns(j), GetIdentifierType(j));
 
 				if (Factory.Settings.IsCommentsEnabled)
 				{
@@ -3296,11 +3341,12 @@ namespace NHibernate.Persister.Entity
 
 		private JoinFragment CreateJoin(string name, bool innerjoin, bool includeSubclasses)
 		{
-			string[] idCols = StringHelper.Qualify(name, IdentifierColumnNames); //all joins join to the pk of the driving table
 			JoinFragment join = Factory.Dialect.CreateOuterJoinFragment();
 			int tableSpan = SubclassTableSpan;
 			for (int j = 1; j < tableSpan; j++) //notice that we skip the first table; it is the driving table!
 			{
+				string[] idCols = StringHelper.Qualify(name, GetJoinIdKeyColumns(j)); //some joins may be to non primary keys
+
 				bool joinIsIncluded = IsClassOrSuperclassTable(j) ||
 					(includeSubclasses && !IsSubclassTableSequentialSelect(j) && !IsSubclassTableLazy(j));
 				if (joinIsIncluded)
@@ -3585,7 +3631,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary> 
 		/// Transform the array of property indexes to an array of booleans, true when the property is dirty
 		/// </summary>
-		protected bool[] GetPropertiesToUpdate(int[] dirtyProperties, bool hasDirtyCollection)
+		protected virtual bool[] GetPropertiesToUpdate(int[] dirtyProperties, bool hasDirtyCollection)
 		{
 			bool[] propsToUpdate = new bool[entityMetamodel.PropertySpan];
 			bool[] updateability = PropertyUpdateability; //no need to check laziness, dirty checking handles that
@@ -3623,7 +3669,7 @@ namespace NHibernate.Persister.Entity
 		public virtual int[] FindDirty(object[] currentState, object[] previousState, object entity, ISessionImplementor session)
 		{
 			int[] props = TypeHelper.FindDirty(
-				entityMetamodel.Properties, currentState, previousState, propertyColumnUpdateable, HasUninitializedLazyProperties(entity, session.EntityMode), session);
+				entityMetamodel.Properties, currentState, previousState, propertyColumnUpdateable, HasUninitializedLazyProperties(entity), session);
 
 			if (props == null)
 			{
@@ -3639,7 +3685,7 @@ namespace NHibernate.Persister.Entity
 		public virtual int[] FindModified(object[] old, object[] current, object entity, ISessionImplementor session)
 		{
 			int[] props = TypeHelper.FindModified(
-				entityMetamodel.Properties, current, old, propertyColumnUpdateable, HasUninitializedLazyProperties(entity, session.EntityMode), session);
+				entityMetamodel.Properties, current, old, propertyColumnUpdateable, HasUninitializedLazyProperties(entity), session);
 			if (props == null)
 			{
 				return null;
@@ -3652,9 +3698,9 @@ namespace NHibernate.Persister.Entity
 		}
 
 		/// <summary> Which properties appear in the SQL update? (Initialized, updateable ones!) </summary>
-		protected bool[] GetPropertyUpdateability(object entity, EntityMode entityMode)
+		protected bool[] GetPropertyUpdateability(object entity)
 		{
-			return HasUninitializedLazyProperties(entity, entityMode) ? NonLazyPropertyUpdateability : PropertyUpdateability;
+			return HasUninitializedLazyProperties(entity) ? NonLazyPropertyUpdateability : PropertyUpdateability;
 		}
 
 		private void LogDirtyProperties(int[] props)
@@ -3671,13 +3717,9 @@ namespace NHibernate.Persister.Entity
 
 		protected internal IEntityTuplizer GetTuplizer(ISessionImplementor session)
 		{
-			return GetTuplizer(session.EntityMode);
+			return EntityTuplizer;
 		}
 
-		protected internal IEntityTuplizer GetTuplizer(EntityMode entityMode)
-		{
-			return entityMetamodel.GetTuplizer(entityMode);
-		}
 
 		public virtual bool HasCache
 		{
@@ -3722,7 +3764,7 @@ namespace NHibernate.Persister.Entity
 				}
 				else
 				{
-					IFieldInterceptor fieldInterceptor = FieldInterceptionHelper.InjectFieldInterceptor(entity, EntityName, GetMappedClass(session.EntityMode), null, null, session);
+					IFieldInterceptor fieldInterceptor = FieldInterceptionHelper.InjectFieldInterceptor(entity, EntityName, MappedClass, null, null, session);
 					fieldInterceptor.MarkDirty();
 				}
 			}
@@ -3733,7 +3775,7 @@ namespace NHibernate.Persister.Entity
 			object id;
 			if (CanExtractIdOutOfEntity)
 			{
-				id = GetIdentifier(entity, session.EntityMode);
+				id = GetIdentifier(entity);
 			}
 			else
 			{
@@ -3767,7 +3809,7 @@ namespace NHibernate.Persister.Entity
             // check the version unsaved-value, if appropriate
             if (IsVersioned)
             {
-                object version = GetVersion(entity, session.EntityMode);
+                object version = GetVersion(entity);
                 bool? result = entityMetamodel.VersionProperty.UnsavedValue.IsUnsaved(version);
                 if (result.HasValue)
                 {
@@ -3858,7 +3900,7 @@ namespace NHibernate.Persister.Entity
 
 		public object CreateProxy(object id, ISessionImplementor session)
 		{
-			return entityMetamodel.GetTuplizer(session.EntityMode).CreateProxy(id, session);
+			return entityMetamodel.Tuplizer.CreateProxy(id, session);
 		}
 
 		public override string ToString()
@@ -3872,10 +3914,9 @@ namespace NHibernate.Persister.Entity
 			return SelectFragment(lhsAlias, entitySuffix);
 		}
 
-		public bool IsInstrumented(EntityMode entityMode)
+		public bool IsInstrumented
 		{
-			IEntityTuplizer tuplizer = entityMetamodel.GetTuplizerOrNull(entityMode);
-			return tuplizer != null && tuplizer.IsInstrumented;
+			get { return EntityTuplizer.IsInstrumented; }
 		}
 
 		public bool HasInsertGeneratedProperties
@@ -3890,7 +3931,7 @@ namespace NHibernate.Persister.Entity
 
 		public void AfterInitialize(object entity, bool lazyPropertiesAreUnfetched, ISessionImplementor session)
 		{
-			GetTuplizer(session).AfterInitialize(entity, lazyPropertiesAreUnfetched, session);
+			EntityTuplizer.AfterInitialize(entity, lazyPropertiesAreUnfetched, session);
 		}
 
 		public virtual bool[] PropertyUpdateability
@@ -3898,70 +3939,69 @@ namespace NHibernate.Persister.Entity
 			get { return entityMetamodel.PropertyUpdateability; }
 		}
 
-		public System.Type GetMappedClass(EntityMode entityMode)
+		public System.Type MappedClass
 		{
-			ITuplizer tup = entityMetamodel.GetTuplizerOrNull(entityMode);
-			return tup == null ? null : tup.MappedClass;
+			get { return EntityTuplizer.MappedClass; }
 		}
 
-		public bool ImplementsLifecycle(EntityMode entityMode)
+		public bool ImplementsLifecycle
 		{
-			return GetTuplizer(entityMode).IsLifecycleImplementor;
+			get { return EntityTuplizer.IsLifecycleImplementor; }
 		}
 
-		public bool ImplementsValidatable(EntityMode entityMode)
+		public bool ImplementsValidatable
 		{
-			return GetTuplizer(entityMode).IsValidatableImplementor;
+			get { return EntityTuplizer.IsValidatableImplementor; }
 		}
 
-		public System.Type GetConcreteProxyClass(EntityMode entityMode)
+		public System.Type ConcreteProxyClass
 		{
-			return GetTuplizer(entityMode).ConcreteProxyClass;
+			get { return EntityTuplizer.ConcreteProxyClass; }
 		}
 
-		public void SetPropertyValues(object obj, object[] values, EntityMode entityMode)
+		public void SetPropertyValues(object obj, object[] values)
 		{
-			GetTuplizer(entityMode).SetPropertyValues(obj, values);
+			EntityTuplizer.SetPropertyValues(obj, values);
 		}
 
-		public void SetPropertyValue(object obj, int i, object value, EntityMode entityMode)
+		public void SetPropertyValue(object obj, int i, object value)
 		{
-			GetTuplizer(entityMode).SetPropertyValue(obj, i, value);
+			EntityTuplizer.SetPropertyValue(obj, i, value);
 		}
 
-		public object[] GetPropertyValues(object obj, EntityMode entityMode)
+		public object[] GetPropertyValues(object obj)
 		{
-			return GetTuplizer(entityMode).GetPropertyValues(obj);
+			return EntityTuplizer.GetPropertyValues(obj);
 		}
 
-		public object GetPropertyValue(object obj, int i, EntityMode entityMode)
+		public object GetPropertyValue(object obj, int i)
 		{
-			return GetTuplizer(entityMode).GetPropertyValue(obj, i);
+			return EntityTuplizer.GetPropertyValue(obj, i);
 		}
 
-		public object GetPropertyValue(object obj, string propertyName, EntityMode entityMode)
+		public object GetPropertyValue(object obj, string propertyName)
 		{
-			return GetTuplizer(entityMode).GetPropertyValue(obj, propertyName);
+			return EntityTuplizer.GetPropertyValue(obj, propertyName);
 		}
 
-		public virtual object GetIdentifier(object obj, EntityMode entityMode)
+		public virtual object GetIdentifier(object obj)
 		{
-			return GetTuplizer(entityMode).GetIdentifier(obj);
+			return EntityTuplizer.GetIdentifier(obj);
 		}
 
-		public virtual void SetIdentifier(object obj, object id, EntityMode entityMode)
+		public virtual void SetIdentifier(object obj, object id)
 		{
-			GetTuplizer(entityMode).SetIdentifier(obj, id);
+			EntityTuplizer.SetIdentifier(obj, id);
 		}
 
-		public virtual object GetVersion(object obj, EntityMode entityMode)
+		public virtual object GetVersion(object obj)
 		{
-			return GetTuplizer(entityMode).GetVersion(obj);
+			return EntityTuplizer.GetVersion(obj);
 		}
 
-		public virtual object Instantiate(object id, EntityMode entityMode)
+		public virtual object Instantiate(object id)
 		{
-			return GetTuplizer(entityMode).Instantiate(id);
+			return EntityTuplizer.Instantiate(id);
 		}
 
 		/// <summary>
@@ -3969,27 +4009,25 @@ namespace NHibernate.Persister.Entity
 		/// managed by this persister.
 		/// </summary>
 		/// <param name="entity">The entity.</param>
-		/// <param name="entityMode">The entity mode.</param>
 		/// <returns>
 		/// 	<see langword="true"/> if the specified entity is an instance; otherwise, <see langword="false"/>.
 		/// </returns>
-		public bool IsInstance(object entity, EntityMode entityMode)
+		public bool IsInstance(object entity)
 		{
-			return GetTuplizer(entityMode).IsInstance(entity);
+			return EntityTuplizer.IsInstance(entity);
 		}
 
-		public virtual bool HasUninitializedLazyProperties(object obj, EntityMode entityMode)
+		public virtual bool HasUninitializedLazyProperties(object obj)
 		{
-			return GetTuplizer(entityMode).HasUninitializedLazyProperties(obj);
+			return EntityTuplizer.HasUninitializedLazyProperties(obj);
 		}
 
-		public virtual void ResetIdentifier(object entity, object currentId, object currentVersion, EntityMode entityMode)
+		public virtual void ResetIdentifier(object entity, object currentId, object currentVersion)
 		{
-			GetTuplizer(entityMode).ResetIdentifier(entity, currentId, currentVersion);
+			EntityTuplizer.ResetIdentifier(entity, currentId, currentVersion);
 		}
 
-		public IEntityPersister GetSubclassEntityPersister(object instance, ISessionFactoryImplementor factory,
-																											EntityMode entityMode)
+		public IEntityPersister GetSubclassEntityPersister(object instance, ISessionFactoryImplementor factory)
 		{
 			if (!HasSubclasses)
 			{
@@ -3998,7 +4036,7 @@ namespace NHibernate.Persister.Entity
 			// TODO : really need a way to do something like :
 			//      getTuplizer(entityMode).determineConcreteSubclassEntityName(instance)
 			var clazz = instance.GetType();
-			if (clazz == GetMappedClass(entityMode))
+			if (clazz == MappedClass)
 			{
 				return this;
 			}
@@ -4010,14 +4048,9 @@ namespace NHibernate.Persister.Entity
 			return factory.GetEntityPersister(subclassEntityName);
 		}
 
-		public virtual EntityMode? GuessEntityMode(object obj)
-		{
-			return entityMetamodel.GuessEntityMode(obj);
-		}
-
 		public virtual object[] GetPropertyValuesToInsert(object obj, IDictionary mergeMap, ISessionImplementor session)
 		{
-			return GetTuplizer(session.EntityMode).GetPropertyValuesToInsert(obj, mergeMap, session);
+			return EntityTuplizer.GetPropertyValuesToInsert(obj, mergeMap, session);
 		}
 
 		public void ProcessInsertGeneratedProperties(object id, object entity, object[] state, ISessionImplementor session)
@@ -4026,7 +4059,23 @@ namespace NHibernate.Persister.Entity
 			{
 				throw new AssertionFailure("no insert-generated properties");
 			}
-			ProcessGeneratedProperties(id, entity, state, session, sqlInsertGeneratedValuesSelectString, PropertyInsertGenerationInclusions);
+
+			session.Batcher.ExecuteBatch(); //force immediate execution of the insert
+
+			if (loaderName == null)
+			{
+				ProcessGeneratedPropertiesWithGeneratedSql(id, entity, state, session, sqlInsertGeneratedValuesSelectString, PropertyInsertGenerationInclusions);
+		}
+			else
+			{
+				ProcessGeneratedPropertiesWithLoader(id, entity, session);
+
+				// The loader has added the entity to the first-level cache. We must remove
+				// the entity from the first-level cache to avoid problems in the Save or SaveOrUpdate
+				// event listeners, which don't expect the entity to already be present in the 
+				// first-level cache.
+				session.PersistenceContext.RemoveEntity(session.GenerateEntityKey(id, this));
+			}
 		}
 
 		public void ProcessUpdateGeneratedProperties(object id, object entity, object[] state, ISessionImplementor session)
@@ -4035,20 +4084,30 @@ namespace NHibernate.Persister.Entity
 			{
 				throw new AssertionFailure("no update-generated properties");
 			}
-			ProcessGeneratedProperties(id, entity, state, session, sqlUpdateGeneratedValuesSelectString, PropertyUpdateGenerationInclusions);
+
+			session.Batcher.ExecuteBatch(); //force immediate execution of the update
+
+			if (loaderName == null)
+			{
+				ProcessGeneratedPropertiesWithGeneratedSql(id, entity, state, session, sqlUpdateGeneratedValuesSelectString, PropertyUpdateGenerationInclusions);
+			}
+			else
+			{
+				// Remove entity from first-level cache to ensure that loader fetches fresh data from database.
+				// The loader will ensure that the same entity is added back to the first-level cache.
+				session.PersistenceContext.RemoveEntity(session.GenerateEntityKey(id, this));
+				ProcessGeneratedPropertiesWithLoader(id, entity, session);
+			}
 		}
 
-		private void ProcessGeneratedProperties(object id, object entity, object[] state,
-				ISessionImplementor session, SqlString selectionSQL, ValueInclusion[] includeds)
+		private void ProcessGeneratedPropertiesWithGeneratedSql(object id, object entity, object[] state,
+			ISessionImplementor session, SqlString selectionSQL, ValueInclusion[] generationInclusions)
 		{
-			session.Batcher.ExecuteBatch(); //force immediate execution of the insert
-
 			using (new SessionIdLoggingContext(session.SessionId)) 
 			try
 			{
-				IDbCommand cmd =
-					session.Batcher.PrepareQueryCommand(CommandType.Text, selectionSQL, IdentifierType.SqlTypes(Factory));
-				IDataReader rs = null;
+				var cmd = session.Batcher.PrepareQueryCommand(CommandType.Text, selectionSQL, IdentifierType.SqlTypes(Factory));
+				DbDataReader rs = null;
 				try
 				{
 					IdentifierType.NullSafeSet(cmd, id, 0, session);
@@ -4060,11 +4119,11 @@ namespace NHibernate.Persister.Entity
 					}
 					for (int i = 0; i < PropertySpan; i++)
 					{
-						if (includeds[i] != ValueInclusion.None)
+						if (generationInclusions[i] != ValueInclusion.None)
 						{
 							object hydratedState = PropertyTypes[i].Hydrate(rs, GetPropertyAliases(string.Empty, i), session, entity);
 							state[i] = PropertyTypes[i].ResolveIdentifier(hydratedState, session, entity);
-							SetPropertyValue(entity, i, state[i], session.EntityMode);
+							SetPropertyValue(entity, i, state[i]);
 						}
 					}
 				}
@@ -4085,6 +4144,24 @@ namespace NHibernate.Persister.Entity
 										};
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
 			}
+		}
+
+		private void ProcessGeneratedPropertiesWithLoader(object id, object entity, ISessionImplementor session)
+		{
+			var query = (AbstractQueryImpl)session.GetNamedQuery(loaderName);
+			if (query.HasNamedParameters)
+			{
+				query.SetParameter(query.NamedParameters[0], id, this.IdentifierType);
+			}
+			else
+			{
+				query.SetParameter(0, id, this.IdentifierType);
+			}
+			query.SetOptionalId(id);
+			query.SetOptionalEntityName(this.EntityName);
+			query.SetOptionalObject(entity);
+			query.SetFlushMode(FlushMode.Manual);
+			query.List();
 		}
 
 		public bool HasSubselectLoadableCollections
@@ -4136,8 +4213,8 @@ namespace NHibernate.Persister.Entity
 			using (new SessionIdLoggingContext(session.SessionId)) 
 			try
 			{
-				IDbCommand ps = session.Batcher.PrepareCommand(CommandType.Text, sql, IdentifierType.SqlTypes(factory));
-				IDataReader rs = null;
+				var ps = session.Batcher.PrepareCommand(CommandType.Text, sql, IdentifierType.SqlTypes(factory));
+				DbDataReader rs = null;
 				try
 				{
 					IdentifierType.NullSafeSet(ps, id, 0, session);
@@ -4194,10 +4271,14 @@ namespace NHibernate.Persister.Entity
 			get { return entityMetamodel.HasNaturalIdentifier; }
 		}
 
-		public virtual void SetPropertyValue(object obj, string propertyName, object value, EntityMode entityMode)
+		public virtual void SetPropertyValue(object obj, string propertyName, object value)
 		{
-			GetTuplizer(entityMode).SetPropertyValue(obj, propertyName, value);
+			EntityTuplizer.SetPropertyValue(obj, propertyName, value);
 		}
+
+		public EntityMode EntityMode => entityMetamodel.EntityMode;
+
+		public IEntityTuplizer EntityTuplizer => entityMetamodel.Tuplizer;
 
 		public abstract string GetPropertyTableName(string propertyName);
 		public abstract string FromTableFragment(string alias);

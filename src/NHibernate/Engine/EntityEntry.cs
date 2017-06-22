@@ -24,7 +24,6 @@ namespace NHibernate.Engine
 		[NonSerialized]
 		private IEntityPersister persister; // for convenience to save some lookups
 
-		private readonly EntityMode entityMode;
 		private readonly string entityName;
 		private EntityKey cachedEntityKey;
 		private readonly bool isBeingReplicated;
@@ -44,11 +43,10 @@ namespace NHibernate.Engine
 		/// <param name="lockMode">The <see cref="LockMode"/> for the Entity.</param>
 		/// <param name="existsInDatabase">A boolean indicating if the Entity exists in the database.</param>
 		/// <param name="persister">The <see cref="IEntityPersister"/> that is responsible for this Entity.</param>
-		/// <param name="entityMode"></param>
 		/// <param name="disableVersionIncrement"></param>
 		/// <param name="lazyPropertiesAreUnfetched"></param>
 		internal EntityEntry(Status status, object[] loadedState, object rowId, object id, object version, LockMode lockMode,
-			bool existsInDatabase, IEntityPersister persister, EntityMode entityMode,
+			bool existsInDatabase, IEntityPersister persister,
 			bool disableVersionIncrement, bool lazyPropertiesAreUnfetched)
 		{
 			this.status = status;
@@ -63,7 +61,6 @@ namespace NHibernate.Engine
 			isBeingReplicated = disableVersionIncrement;
 			loadedWithLazyPropertiesUnfetched = lazyPropertiesAreUnfetched;
 			this.persister = persister;
-			this.entityMode = entityMode;
 			entityName = persister == null ? null : persister.EntityName;
 		}
 
@@ -200,7 +197,7 @@ namespace NHibernate.Engine
 					if (id == null)
 						throw new InvalidOperationException("cannot generate an EntityKey when id is null.");
 
-					cachedEntityKey = new EntityKey(id, persister, entityMode);
+					cachedEntityKey = new EntityKey(id, persister);
 				}
 				return cachedEntityKey;
 			}
@@ -234,7 +231,7 @@ namespace NHibernate.Engine
 			if (Persister.IsVersioned)
 			{
 				version = nextVersion;
-				Persister.SetPropertyValue(entity, Persister.VersionProperty, nextVersion, entityMode);
+				Persister.SetPropertyValue(entity, Persister.VersionProperty, nextVersion);
 			}
 			FieldInterceptionHelper.ClearDirty(entity);
 		}
@@ -255,7 +252,7 @@ namespace NHibernate.Engine
 			version = nextVersion;
 			loadedState[persister.VersionProperty] = version;
 			LockMode = LockMode.Force;
-			persister.SetPropertyValue(entity, Persister.VersionProperty, nextVersion, entityMode);
+			persister.SetPropertyValue(entity, Persister.VersionProperty, nextVersion);
 		}
 		
 		public bool IsNullifiable(bool earlyInsert, ISessionImplementor session)
@@ -312,7 +309,7 @@ namespace NHibernate.Engine
 					throw new InvalidOperationException("Cannot make an immutable entity modifiable.");
 
 				Status = Status.Loaded;
-				loadedState = Persister.GetPropertyValues(entity, entityMode);
+				loadedState = Persister.GetPropertyValues(entity);
 			}
 		}
 

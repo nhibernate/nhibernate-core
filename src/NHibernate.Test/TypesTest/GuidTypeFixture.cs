@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Criterion;
 using NHibernate.Type;
 using NUnit.Framework;
@@ -102,13 +103,17 @@ namespace NHibernate.Test.TypesTest
 			row["guid"] = value;
 			row["varchar"] = value.ToString();
 			data.Rows.Add(row);
-			IDataReader reader = data.CreateDataReader();
+			var reader = data.CreateDataReader();
 			reader.Read();
 
-			Assert.AreEqual(value, type.Get(reader, "guid"));
-			Assert.AreEqual(value, type.Get(reader, 0));
-			Assert.AreEqual(value, type.Get(reader, "varchar"));
-			Assert.AreEqual(value, type.Get(reader, 1));
+			using (var s = OpenSession())
+			{
+				var si = s.GetSessionImplementation();
+				Assert.AreEqual(value, type.Get(reader, "guid", si));
+				Assert.AreEqual(value, type.Get(reader, 0, si));
+				Assert.AreEqual(value, type.Get(reader, "varchar", si));
+				Assert.AreEqual(value, type.Get(reader, 1, si));
+			}
 		}
 	}
 }

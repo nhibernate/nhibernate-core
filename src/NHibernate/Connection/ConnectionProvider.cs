@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Configuration;
-using System.Data;
+using System.Data.Common;
 
 using NHibernate.Driver;
 using NHibernate.Util;
@@ -20,10 +20,10 @@ namespace NHibernate.Connection
 		private IDriver driver;
 
 		/// <summary>
-		/// Closes the <see cref="IDbConnection"/>.
+		/// Closes the <see cref="DbConnection"/>.
 		/// </summary>
-		/// <param name="conn">The <see cref="IDbConnection"/> to clean up.</param>
-		public virtual void CloseConnection(IDbConnection conn)
+		/// <param name="conn">The <see cref="DbConnection"/> to clean up.</param>
+		public virtual void CloseConnection(DbConnection conn)
 		{
 			log.Debug("Closing connection");
 			try
@@ -116,11 +116,11 @@ namespace NHibernate.Connection
 		}
 
 		/// <summary>
-		/// Gets the <see cref="String"/> for the <see cref="IDbConnection"/>
+		/// Gets the <see cref="String"/> for the <see cref="DbConnection"/>
 		/// to connect to the database.
 		/// </summary>
 		/// <value>
-		/// The <see cref="String"/> for the <see cref="IDbConnection"/>
+		/// The <see cref="String"/> for the <see cref="DbConnection"/>
 		/// to connect to the database.
 		/// </value>
 		protected virtual string ConnectionString
@@ -129,10 +129,10 @@ namespace NHibernate.Connection
 		}
 
 		/// <summary>
-		/// Gets the <see cref="IDriver"/> that can create the <see cref="IDbConnection"/> object.
+		/// Gets the <see cref="IDriver"/> that can create the <see cref="DbConnection"/> object.
 		/// </summary>
 		/// <value>
-		/// The <see cref="IDriver"/> that can create the <see cref="IDbConnection"/>.
+		/// The <see cref="IDriver"/> that can create the <see cref="DbConnection"/>.
 		/// </value>
 		public IDriver Driver
 		{
@@ -140,10 +140,10 @@ namespace NHibernate.Connection
 		}
 
 		/// <summary>
-		/// Get an open <see cref="IDbConnection"/>.
+		/// Get an open <see cref="DbConnection"/>.
 		/// </summary>
-		/// <returns>An open <see cref="IDbConnection"/>.</returns>
-		public abstract IDbConnection GetConnection();
+		/// <returns>An open <see cref="DbConnection"/>.</returns>
+		public abstract DbConnection GetConnection();
 
 		#region IDisposable Members
 

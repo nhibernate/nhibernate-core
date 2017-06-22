@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -13,6 +14,8 @@ namespace NHibernate.Type
 	[Serializable]
 	public class DateTimeOffsetType : PrimitiveType, IIdentifierType, ILiteralType, IVersionType
 	{
+		static readonly DateTimeOffset BaseDateValue = DateTimeOffset.MinValue;
+
 		/// <summary></summary>
 		public DateTimeOffsetType()
 			: base(SqlTypeFactory.DateTimeOffSet)
@@ -36,7 +39,7 @@ namespace NHibernate.Type
 
 		public override object DefaultValue
 		{
-			get { throw new NotImplementedException(); }
+			get { return BaseDateValue; }
 		}
 
 		public IComparer Comparator
@@ -44,19 +47,18 @@ namespace NHibernate.Type
 			get { return Comparer<DateTimeOffset>.Default; }
 		}
 
-		public override void Set(IDbCommand st, object value, int index)
+		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
 			var dateValue = (DateTimeOffset) value;
-			((IDataParameter) st.Parameters[index]).Value =
+			st.Parameters[index].Value =
 				new DateTimeOffset(dateValue.Ticks, dateValue.Offset);
 		}
 
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			try
 			{
 				var dbValue = (DateTimeOffset) rs[index];
-				;
 				return new DateTimeOffset(dbValue.Ticks, dbValue.Offset);
 			}
 			catch (Exception ex)
@@ -65,9 +67,9 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
-			return Get(rs, rs.GetOrdinal(name));
+			return Get(rs, rs.GetOrdinal(name), session);
 		}
 
 		public object Next(object current, ISessionImplementor session)

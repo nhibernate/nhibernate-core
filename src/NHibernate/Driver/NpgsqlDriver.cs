@@ -1,4 +1,5 @@
 using System.Data;
+using System.Data.Common;
 
 namespace NHibernate.Driver
 {
@@ -75,7 +76,7 @@ namespace NHibernate.Driver
 			get { return true; }
 		}
 
-		protected override void InitializeParameter(IDbDataParameter dbParam, string name, SqlTypes.SqlType sqlType)
+		protected override void InitializeParameter(DbParameter dbParam, string name, SqlTypes.SqlType sqlType)
 		{
 			base.InitializeParameter(dbParam, name, sqlType);
 
@@ -83,5 +84,9 @@ namespace NHibernate.Driver
 			if (sqlType.DbType == DbType.Currency)
 				dbParam.DbType = DbType.Decimal;
 		}
+
+		// Prior to v3, Npgsql was expecting DateTime for time.
+		// https://github.com/npgsql/npgsql/issues/347
+		public override bool RequiresTimeSpanForTime => (DriverVersion?.Major ?? 3) >= 3;
 	}
 }

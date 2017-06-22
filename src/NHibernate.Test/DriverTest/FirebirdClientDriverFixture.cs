@@ -1,9 +1,10 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
+using System.Data.Common;
 using NHibernate.Driver;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.DriverTest
 {
@@ -17,48 +18,58 @@ namespace NHibernate.Test.DriverTest
 		public void ConnectionPooling_OpenThenCloseThenOpenAnotherOne_OnlyOneConnectionIsPooled()
 		{
 			MakeDriver();
+
+			_driver.ClearPool(_connectionString);
+
+			var allreadyEstablished = GetEstablishedConnections();
+
 			var connection1 = MakeConnection();
 			var connection2 = MakeConnection();
 
 			//open first connection
 			connection1.Open();
-			VerifyCountOfEstablishedConnectionsIs(1);
+			VerifyCountOfEstablishedConnectionsIs(allreadyEstablished + 1, "After first open");
 
 			//return it to the pool
 			connection1.Close();
-			VerifyCountOfEstablishedConnectionsIs(1);
+			VerifyCountOfEstablishedConnectionsIs(allreadyEstablished + 1, "After first close");
 
 			//open the second connection
 			connection2.Open();
-			VerifyCountOfEstablishedConnectionsIs(1);
+			VerifyCountOfEstablishedConnectionsIs(allreadyEstablished + 1, "After second open");
 
 			//return it to the pool
 			connection2.Close();
-			VerifyCountOfEstablishedConnectionsIs(1);
+			VerifyCountOfEstablishedConnectionsIs(allreadyEstablished + 1, "After second close");
 		}
 
 		[Test]
 		public void ConnectionPooling_OpenThenCloseTwoAtTheSameTime_TowConnectionsArePooled()
 		{
 			MakeDriver();
+
+			_driver.ClearPool(_connectionString);
+
+			var allreadyEstablished = GetEstablishedConnections();
+
 			var connection1 = MakeConnection();
 			var connection2 = MakeConnection();
 
 			//open first connection
 			connection1.Open();
-			VerifyCountOfEstablishedConnectionsIs(1);
+			VerifyCountOfEstablishedConnectionsIs(allreadyEstablished + 1, "After first open");
 
 			//open second one
 			connection2.Open();
-			VerifyCountOfEstablishedConnectionsIs(2);
+			VerifyCountOfEstablishedConnectionsIs(allreadyEstablished + 2, "After second open");
 
 			//return connection1 to the pool
 			connection1.Close();
-			VerifyCountOfEstablishedConnectionsIs(2);
+			VerifyCountOfEstablishedConnectionsIs(allreadyEstablished + 2, "After first close");
 
 			//return connection2 to the pool
 			connection2.Close();
-			VerifyCountOfEstablishedConnectionsIs(2);
+			VerifyCountOfEstablishedConnectionsIs(allreadyEstablished + 2, "After second close");
 		}
 
 		[Test]
@@ -70,7 +81,7 @@ namespace NHibernate.Test.DriverTest
 			_driver.AdjustCommand(cmd);
 
 			var expectedCommandTxt = "select (case when col = @p0 then cast(@p1 as VARCHAR(255)) else cast(@p2 as VARCHAR(255)) end) from table";
-			cmd.CommandText.Should().Be(expectedCommandTxt);
+			Assert.That(cmd.CommandText, Is.EqualTo(expectedCommandTxt));
 		}
 
 		[Test]
@@ -82,7 +93,7 @@ namespace NHibernate.Test.DriverTest
 			_driver.AdjustCommand(cmd);
 
 			var expectedCommandTxt = "select (case when col = @p0 then cast(@p1 as INTEGER) else cast(@p2 as INTEGER) end) from table";
-			cmd.CommandText.Should().Be(expectedCommandTxt);
+			Assert.That(cmd.CommandText, Is.EqualTo(expectedCommandTxt));
 		}
 
 		[Test]
@@ -94,7 +105,7 @@ namespace NHibernate.Test.DriverTest
 			_driver.AdjustCommand(cmd);
 
 			var expected = "select col || cast(@p0 as VARCHAR(255)) || col from table";
-			cmd.CommandText.Should().Be(expected);
+			Assert.That(cmd.CommandText, Is.EqualTo(expected));
 		}
 
 		[Test]
@@ -106,7 +117,7 @@ namespace NHibernate.Test.DriverTest
 			_driver.AdjustCommand(cmd);
 
 			var expected = "select col + cast(@p0 as VARCHAR(255)) from table";
-			cmd.CommandText.Should().Be(expected);
+			Assert.That(cmd.CommandText, Is.EqualTo(expected));
 		}
 
 		[Test]
@@ -118,7 +129,31 @@ namespace NHibernate.Test.DriverTest
 			_driver.AdjustCommand(cmd);
 
 			var expected = "insert into table1 (col1, col2) select col1, cast(@p0 as INTEGER) from table2";
-			cmd.CommandText.Should().Be(expected);
+			Assert.That(cmd.CommandText, Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void AdjustCommand_InsertWithParamsInSelect_ParameterIsNotCasted_WhenColumnNameContainsSelect()
+		{
+			MakeDriver();
+			var cmd = BuildInsertWithParamsInSelectCommandWithSelectInColumnName(SqlTypeFactory.Int32);
+
+			_driver.AdjustCommand(cmd);
+
+			var expected = "insert into table1 (col1_select_aaa) values(@p0) from table2";
+			Assert.That(cmd.CommandText, Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void AdjustCommand_InsertWithParamsInSelect_ParameterIsNotCasted_WhenColumnNameContainsWhere()
+		{
+			MakeDriver();
+			var cmd = BuildInsertWithParamsInSelectCommandWithWhereInColumnName(SqlTypeFactory.Int32);
+
+			_driver.AdjustCommand(cmd);
+
+			var expected = "insert into table1 (col1_where_aaa) values(@p0) from table2";
+			Assert.That(cmd.CommandText, Is.EqualTo(expected));
 		}
 
 		private void MakeDriver()
@@ -132,17 +167,17 @@ namespace NHibernate.Test.DriverTest
 			_connectionString = cfg.GetProperty("connection.connection_string");
 		}
 
-		private IDbConnection MakeConnection()
+		private DbConnection MakeConnection()
 		{
 			var result = _driver.CreateConnection();
 			result.ConnectionString = _connectionString;
 			return result;
 		}
 
-		private void VerifyCountOfEstablishedConnectionsIs(int expectedCount)
+		private void VerifyCountOfEstablishedConnectionsIs(int expectedCount, string step)
 		{
 			var physicalConnections = GetEstablishedConnections();
-			physicalConnections.Should().Be(expectedCount);
+			Assert.That(physicalConnections, Is.EqualTo(expectedCount), step);
 		}
 
 		private int GetEstablishedConnections()
@@ -154,12 +189,12 @@ namespace NHibernate.Test.DriverTest
 				using (var cmd = conn.CreateCommand())
 				{
 					cmd.CommandText = "select count(*) from mon$attachments where mon$attachment_id <> current_connection";
-					return (int)cmd.ExecuteScalar();
+					return Convert.ToInt32(cmd.ExecuteScalar());
 				}
 			}
 		}
 
-		private IDbCommand BuildSelectCaseCommand(SqlType paramType)
+		private DbCommand BuildSelectCaseCommand(SqlType paramType)
 		{
 			var sqlString = new SqlStringBuilder()
 					.Add("select (case when col = ")
@@ -171,10 +206,10 @@ namespace NHibernate.Test.DriverTest
 					.Add(" end) from table")
 					.ToSqlString();
 
-			return _driver.GenerateCommand(CommandType.Text, sqlString, new SqlType[] { paramType, paramType, paramType });
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType, paramType, paramType });
 		}
 
-		private IDbCommand BuildSelectConcatCommand(SqlType paramType)
+		private DbCommand BuildSelectConcatCommand(SqlType paramType)
 		{
 			var sqlString = new SqlStringBuilder()
 					.Add("select col || ")
@@ -184,10 +219,10 @@ namespace NHibernate.Test.DriverTest
 					.Add("from table")
 					.ToSqlString();
 
-			return _driver.GenerateCommand(CommandType.Text, sqlString, new SqlType[] { paramType });
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
 		}
 
-		private IDbCommand BuildSelectAddCommand(SqlType paramType)
+		private DbCommand BuildSelectAddCommand(SqlType paramType)
 		{
 			var sqlString = new SqlStringBuilder()
 					.Add("select col + ")
@@ -195,10 +230,10 @@ namespace NHibernate.Test.DriverTest
 					.Add(" from table")
 					.ToSqlString();
 
-			return _driver.GenerateCommand(CommandType.Text, sqlString, new SqlType[] { paramType });
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
 		}
 
-		private IDbCommand BuildInsertWithParamsInSelectCommand(SqlType paramType)
+		private DbCommand BuildInsertWithParamsInSelectCommand(SqlType paramType)
 		{
 			var sqlString = new SqlStringBuilder()
 				.Add("insert into table1 (col1, col2) ")
@@ -207,8 +242,30 @@ namespace NHibernate.Test.DriverTest
 				.Add(" from table2")
 				.ToSqlString();
 
-			return _driver.GenerateCommand(CommandType.Text, sqlString, new SqlType[] { paramType });
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
+		}
+		private DbCommand BuildInsertWithParamsInSelectCommandWithSelectInColumnName(SqlType paramType)
+		{
+			var sqlString = new SqlStringBuilder()
+				.Add("insert into table1 (col1_select_aaa) ")
+				.Add("values(")
+				.AddParameter()
+				.Add(") from table2")
+				.ToSqlString();
+
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
 		}
 
+        private DbCommand BuildInsertWithParamsInSelectCommandWithWhereInColumnName(SqlType paramType)
+		{
+			var sqlString = new SqlStringBuilder()
+				.Add("insert into table1 (col1_where_aaa) ")
+				.Add("values(")
+				.AddParameter()
+				.Add(") from table2")
+				.ToSqlString();
+
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
+		}
 	}
 }

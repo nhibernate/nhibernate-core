@@ -1,7 +1,6 @@
 using System.Collections;
 using NUnit.Framework;
 using System.Collections.Generic;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Stateless
 {
@@ -24,7 +23,7 @@ namespace NHibernate.Test.Stateless
 			const string crocodileFather = "Crocodile father";
 			const string crocodileMother = "Crocodile mother";
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				var rf = new Reptile { Description = crocodileFather };
@@ -43,7 +42,7 @@ namespace NHibernate.Test.Stateless
 
 			const string humanFather = "Fred";
 			const string humanMother = "Wilma";
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				var hf = new Human { Description = "Flinstone", Name = humanFather };
@@ -59,27 +58,27 @@ namespace NHibernate.Test.Stateless
 				tx.Commit();
 			}
 
-			using (IStatelessSession s = sessions.OpenStatelessSession())
+			using (IStatelessSession s = Sfi.OpenStatelessSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				IList<Family<Human>> hf = s.CreateQuery("from HumanFamily").List<Family<Human>>();
 				Assert.That(hf.Count, Is.EqualTo(1));
 				Assert.That(hf[0].Father.Name, Is.EqualTo(humanFather));
 				Assert.That(hf[0].Mother.Name, Is.EqualTo(humanMother));
-				NHibernateUtil.IsInitialized(hf[0].Childs).Should("No lazy collection should be initialized").Be.True();
+				Assert.That(NHibernateUtil.IsInitialized(hf[0].Childs), Is.True, "No lazy collection should be initialized");
 				//Assert.That(hf[0].Childs, Is.Null, "Collections should be ignored by stateless session.");
 
 				IList<Family<Reptile>> rf = s.CreateQuery("from ReptilesFamily").List<Family<Reptile>>();
 				Assert.That(rf.Count, Is.EqualTo(1));
 				Assert.That(rf[0].Father.Description, Is.EqualTo(crocodileFather));
 				Assert.That(rf[0].Mother.Description, Is.EqualTo(crocodileMother));
-				NHibernateUtil.IsInitialized(hf[0].Childs).Should("No lazy collection should be initialized").Be.True();
+				Assert.That(NHibernateUtil.IsInitialized(hf[0].Childs), Is.True, "No lazy collection should be initialized");
 				//Assert.That(rf[0].Childs, Is.Null, "Collections should be ignored by stateless session.");
 
 				tx.Commit();
 			}
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				s.Delete("from HumanFamily");

@@ -1,7 +1,6 @@
 using System.Collections;
 using NHibernate.Transform;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH1836
 {
@@ -37,9 +36,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1836
 					);
 
 				IList results = null;
-				Executing.This(() => results = multiQuery.List()).Should().NotThrow();
+				Assert.That(() => results = multiQuery.List(), Throws.Nothing);
 				var elementOfFirstResult = ((IList)results[0])[0];
-				elementOfFirstResult.Should().Be.OfType<EntityDTO>().And.ValueOf.EntityId.Should().Be(1);
+				Assert.That(elementOfFirstResult, Is.TypeOf<EntityDTO>().And.Property("EntityId").EqualTo(1));
 			}
 		}
 

@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH508
 
 			object userId = null;
 
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			using (ITransaction tran = session.BeginTransaction())
 			{
 				session.Save(friend1);
@@ -38,7 +38,7 @@ namespace NHibernate.Test.NHSpecificTest.NH508
 			}
 
 			// reload the user and remove one of the 3 friends
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			using (ITransaction tran = session.BeginTransaction())
 			{
 				User reloadedFriend = (User) session.Load(typeof(User), friend1.UserId);
@@ -47,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.NH508
 				tran.Commit();
 			}
 
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
 				User admin = (User) session.Get(typeof(User), userId);

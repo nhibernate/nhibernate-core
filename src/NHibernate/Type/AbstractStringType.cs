@@ -1,5 +1,6 @@
 using System;
-using System.Data;
+using System.Data.Common;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -12,9 +13,9 @@ namespace NHibernate.Type
 		{
 		}
 
-		public override void Set(IDbCommand cmd, object value, int index)
+		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			IDbDataParameter parameter = (IDbDataParameter)cmd.Parameters[index];
+			var parameter = cmd.Parameters[index];
 
 			// set the parameter value before the size check, since ODBC changes the size automatically
 			parameter.Value = value;
@@ -23,12 +24,12 @@ namespace NHibernate.Type
 				throw new HibernateException("The length of the string value exceeds the length configured in the mapping/parameter.");
 		}
 
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			return Convert.ToString(rs[index]);
 		}
 
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
 			return Convert.ToString(rs[name]);
 		}

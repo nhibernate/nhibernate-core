@@ -15,7 +15,6 @@ namespace NHibernate.Mapping
 		private readonly Table referencingTable;
 		private PersistentClass associatedClass;
 		private bool ignoreNotFound;
-		private bool embedded;
 
 		public OneToMany(PersistentClass owner)
 		{
@@ -24,7 +23,7 @@ namespace NHibernate.Mapping
 
 		private EntityType EntityType
 		{
-			get { return TypeFactory.ManyToOne(ReferencedEntityName, null, false, false, IsEmbedded, IsIgnoreNotFound); }
+			get { return TypeFactory.ManyToOne(ReferencedEntityName, null, false, false, IsIgnoreNotFound, false); }
 		}
 
 		public bool IsIgnoreNotFound
@@ -153,12 +152,6 @@ namespace NHibernate.Mapping
 		public bool[] ColumnUpdateability
 		{
 			get { throw new InvalidOperationException(); }
-		}
-
-		public bool IsEmbedded
-		{
-			get { return embedded; }
-			set { embedded = value; }
 		}
 	}
 }

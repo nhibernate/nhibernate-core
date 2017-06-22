@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" namespace="NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators" assembly="NHibernate.Test, Version=4.1.0.1001, Culture=neutral, PublicKeyToken=null" xmlns="urn:nhibernate-mapping-2.2">
+  <class name="EntityWithUserTypeProperty">
+	<id name="Id" type="Int32">
+	  <generator class="assigned" />
+	</id>
+	<property name="Name" />
+	<property name="Example" type="NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators.ExampleUserType, NHibernate.Test" />
+	<property name="DoubleStoredAsString" type="NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators.DoubleStringUserType, NHibernate.Test" />
+  </class>
+</hibernate-mapping>

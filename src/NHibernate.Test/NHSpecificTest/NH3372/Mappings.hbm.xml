@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH3372">
+
+  <class name="Entity" table="entity" lazy="false">
+    <id name="Id" column="id" generator="native" />
+    <property name="ShardId" generated="always" insert="false" update="false" />
+    <property name="Content" column="content" />
+    <loader query-ref="LoadEntity" /> 
+  </class>
+
+  <sql-query name="LoadEntity" xml:space="preserve">
+    <return class="Entity" alias="e" />
+    SELECT  id AS {e.Id}
+        ,   DB_NAME() AS {e.ShardId}
+        ,   content AS {e.Content}
+    FROM    entity
+    WHERE   id = ?
+  </sql-query>
+</hibernate-mapping>

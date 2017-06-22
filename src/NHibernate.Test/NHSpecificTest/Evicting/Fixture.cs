@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.Evicting
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
 				session.Save(new Employee
@@ -30,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.Evicting
 
 		protected override void OnTearDown()
 		{
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
 				session.Delete(session.Load<Employee>(1));
@@ -44,7 +44,7 @@ namespace NHibernate.Test.NHSpecificTest.Evicting
 		[Test]
 		public void Can_evict_entity_from_session()
 		{
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
 				var employee = session.Load<Employee>(1);
@@ -62,7 +62,7 @@ namespace NHibernate.Test.NHSpecificTest.Evicting
 		public void Can_evict_non_persistent_object()
 		{
 
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
 				var employee = new Employee();
@@ -80,11 +80,11 @@ namespace NHibernate.Test.NHSpecificTest.Evicting
 		public void Can_evict_when_trying_to_evict_entity_from_another_session()
 		{
 
-			using (var session1 = sessions.OpenSession())
+			using (var session1 = Sfi.OpenSession())
 			using (var tx1 = session1.BeginTransaction())
 			{
 
-				using (var session2 = sessions.OpenSession())
+				using (var session2 = Sfi.OpenSession())
 				using (var tx2 = session2.BeginTransaction())
 				{
 					var employee = session2.Load<Employee>(1);

@@ -1,7 +1,6 @@
 using System;
 using NHibernate.Collection;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH1323
 {
@@ -68,9 +67,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1323
 				using (session.BeginTransaction())
 				{
 					var merged = (MyClass)session.Merge(scenario.Entity);
-					((IPersistentCollection)merged.Children).Owner.Should().Not.Be.Null();
-					((IPersistentCollection)merged.Components).Owner.Should().Not.Be.Null();
-					((IPersistentCollection)merged.Elements).Owner.Should().Not.Be.Null();
+					Assert.That(((IPersistentCollection)merged.Children).Owner, Is.Not.Null);
+					Assert.That(((IPersistentCollection)merged.Components).Owner, Is.Not.Null);
+					Assert.That(((IPersistentCollection)merged.Elements).Owner, Is.Not.Null);
 					session.Transaction.Commit();
 				}
 			}
@@ -101,9 +100,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1323
 				using (session.BeginTransaction())
 				{
 					var fresh = session.Get<MyClass>(scenario.Entity.Id);
-					fresh.Children.Should().Have.Count.EqualTo(2);
-					fresh.Components.Should().Have.Count.EqualTo(2);
-					fresh.Elements.Should().Have.Count.EqualTo(2);
+					Assert.That(fresh.Children, Has.Count.EqualTo(2));
+					Assert.That(fresh.Components, Has.Count.EqualTo(2));
+					Assert.That(fresh.Elements, Has.Count.EqualTo(2));
 					session.Transaction.Commit();
 				}
 			}
@@ -133,9 +132,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1323
 				using (session.BeginTransaction())
 				{
 					var fresh = session.Get<MyClass>(scenario.Entity.Id);
-					fresh.Children.Should().Have.Count.EqualTo(2);
-					fresh.Components.Should().Have.Count.EqualTo(2);
-					fresh.Elements.Should().Have.Count.EqualTo(2);
+					Assert.That(fresh.Children, Has.Count.EqualTo(2));
+					Assert.That(fresh.Components, Has.Count.EqualTo(2));
+					Assert.That(fresh.Elements, Has.Count.EqualTo(2));
 					session.Transaction.Commit();
 				}
 			}
@@ -165,9 +164,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1323
 				using (session.BeginTransaction())
 				{
 					var fresh = session.Get<MyClass>(scenario.Entity.Id);
-					fresh.Children.Should().Have.Count.EqualTo(2);
-					fresh.Components.Should().Have.Count.EqualTo(2);
-					fresh.Elements.Should().Have.Count.EqualTo(2);
+					Assert.That(fresh.Children, Has.Count.EqualTo(2));
+					Assert.That(fresh.Components, Has.Count.EqualTo(2));
+					Assert.That(fresh.Elements, Has.Count.EqualTo(2));
 					session.Transaction.Commit();
 				}
 			}
@@ -193,7 +192,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1323
 				using (session.BeginTransaction())
 				{
 					var fresh = session.Get<MyClass>(scenario.Entity.Id);
-					fresh.Should().Be.Null();
+					Assert.That(fresh, Is.Null);
 					session.Transaction.Commit();
 				}
 			}

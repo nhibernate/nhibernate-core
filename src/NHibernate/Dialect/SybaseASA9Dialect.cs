@@ -164,7 +164,7 @@ namespace NHibernate.Dialect
 		/// <summary>
 		/// ASA does not require to drop constraint before dropping tables, and DROP statement
 		/// syntax used by Hibernate to drop constraint is not compatible with ASA, so disable it.
-		/// Comments matchs SybaseAnywhereDialect from Hibernate-3.1 src
+		/// Comments matches SybaseAnywhereDialect from Hibernate-3.1 src
 		/// </summary>
 		public override bool DropConstraints
 		{

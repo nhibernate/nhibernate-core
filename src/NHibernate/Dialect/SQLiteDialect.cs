@@ -91,6 +91,32 @@ namespace NHibernate.Dialect
 		protected virtual void RegisterKeywords()
 		{
 			RegisterKeyword("int"); // Used in our function templates.
+			RegisterKeyword("integer"); // a commonly-used alias for 'int'
+			RegisterKeyword("tinyint");
+			RegisterKeyword("smallint");
+			RegisterKeyword("bigint");
+			RegisterKeyword("numeric");
+			RegisterKeyword("decimal");
+			RegisterKeyword("bit");
+			RegisterKeyword("money");
+			RegisterKeyword("smallmoney");
+			RegisterKeyword("float");
+			RegisterKeyword("real");
+			RegisterKeyword("datetime");
+			RegisterKeyword("smalldatetime");
+			RegisterKeyword("char");
+			RegisterKeyword("varchar");
+			RegisterKeyword("text");
+			RegisterKeyword("nchar");
+			RegisterKeyword("nvarchar");
+			RegisterKeyword("ntext");
+			RegisterKeyword("binary");
+			RegisterKeyword("varbinary");
+			RegisterKeyword("image");
+			RegisterKeyword("cursor");
+			RegisterKeyword("timestamp");
+			RegisterKeyword("uniqueidentifier");
+			RegisterKeyword("sql_variant");
 		}
 
 		protected virtual void RegisterDefaultProperties()

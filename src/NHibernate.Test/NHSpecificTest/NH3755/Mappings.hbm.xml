@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="true" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH3755">
+
+	<class name="Shape" proxy="IShape">
+    <id name="Id">
+      <generator class="guid.comb" />
+    </id> 
+		<property name="Property1" />
+	</class>
+
+  <joined-subclass proxy="ISquare" extends="Shape" name="Square">
+    <key column="ShapeId" />
+    <property name="Property2"/>
+    <property name="Property3"/>
+  </joined-subclass>
+
+  <joined-subclass proxy="ICircle" extends="Shape" name="Circle">
+    <key column="ShapeId" />
+    <property name="Property2"/>
+    <property name="Property3"/>
+  </joined-subclass>
+  
+  <class name="ShapeContainer" proxy="IShapeContainer">
+    <id name="Id">
+      <generator class="guid.comb" />
+    </id>
+    <property name="Name" />
+    <many-to-one name="Shape" class="Shape" />
+  </class>
+  
+  
+
+
+</hibernate-mapping>

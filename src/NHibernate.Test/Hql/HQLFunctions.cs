@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Hql
 {
 	/// <summary>
-	/// This test run each HQL function separatelly so is easy to know wich function need
+	/// This test run each HQL function separately so is easy to know which function need
 	/// an override in the specific dialect implementation.
 	/// </summary>
 	[TestFixture]
@@ -731,6 +731,14 @@ namespace NHibernate.Test.Hql
 					if (Dialect is Oracle8iDialect)
 					{
 						if (!ex.InnerException.Message.StartsWith("ORA-00979"))
+							throw;
+					}
+					else if (Dialect is FirebirdDialect)
+					{
+						string msgToCheck =
+							"not contained in either an aggregate function or the GROUP BY clause";
+						// This test raises an exception in Firebird for an unknown reason.
+						if (!ex.InnerException.Message.Contains(msgToCheck))
 							throw;
 					}
 					else

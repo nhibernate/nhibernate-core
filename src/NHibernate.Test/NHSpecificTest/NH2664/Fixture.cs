@@ -120,8 +120,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2664
 				Expression<Func<IEnumerable>> key1 = () => (from a in session.Query<Product>() where a.Properties["Name"] == "val" select a);
 				Expression<Func<IEnumerable>> key2 = () => (from a in session.Query<Product>() where a.Properties["Description"] == "val" select a);
 
-				var nhKey1 = new NhLinqExpression(key1.Body, sessions);
-				var nhKey2 = new NhLinqExpression(key2.Body, sessions);
+				var nhKey1 = new NhLinqExpression(key1.Body, Sfi);
+				var nhKey2 = new NhLinqExpression(key2.Body, Sfi);
 
 				Assert.AreNotEqual(nhKey1.Key, nhKey2.Key);
 			}

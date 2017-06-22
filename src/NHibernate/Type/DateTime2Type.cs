@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Data;
+using System.Data.Common;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -20,7 +22,7 @@ namespace NHibernate.Type
 			get { return "DateTime2"; }
 		}
 
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			try
 			{
@@ -32,9 +34,9 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override void Set(IDbCommand st, object value, int index)
+		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
-			((IDataParameter) st.Parameters[index]).Value = (DateTime) value;
+			st.Parameters[index].Value = (DateTime) value;
 		}
 
 		public override bool IsEqual(object x, object y)
@@ -52,12 +54,12 @@ namespace NHibernate.Type
 			return x.Equals(y);
 		}
 
-		public override object Next(object current, Engine.ISessionImplementor session)
+		public override object Next(object current, ISessionImplementor session)
 		{
 			return Seed(session);
 		}
 
-		public override object Seed(Engine.ISessionImplementor session)
+		public override object Seed(ISessionImplementor session)
 		{
 			return DateTime.Now;
 		}

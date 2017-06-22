@@ -1,5 +1,6 @@
+using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Connection;
@@ -132,22 +133,18 @@ namespace NHibernate.Engine
 		/// <summary> Get a named second-level cache region</summary>
 		ICache GetSecondLevelCacheRegion(string regionName);
 
+		// Obsolete since v5
 		/// <summary>
 		/// Open a session conforming to the given parameters. Used mainly
 		/// for current session processing.
 		/// </summary>
 		/// <param name="connection">The external ado.net connection to use, if one (i.e., optional).</param>
-		/// <param name="flushBeforeCompletionEnabled">
-		/// Should the session be auto-flushed 
-		/// prior to transaction completion?
-		/// </param>
-		/// <param name="autoCloseSessionEnabled">
-		/// Should the session be auto-closed after
-		/// transaction completion?
-		/// </param>
+		/// <param name="flushBeforeCompletionEnabled">No usage.</param>
+		/// <param name="autoCloseSessionEnabled">Not yet implemented.</param>
 		/// <param name="connectionReleaseMode">The release mode for managed jdbc connections.</param>
 		/// <returns>An appropriate session.</returns>
-		ISession OpenSession(IDbConnection connection, bool flushBeforeCompletionEnabled, bool autoCloseSessionEnabled,
+		[Obsolete("Please use WithOptions() instead.")]
+		ISession OpenSession(DbConnection connection, bool flushBeforeCompletionEnabled, bool autoCloseSessionEnabled,
 		                     ConnectionReleaseMode connectionReleaseMode);
 
 		/// <summary> 
@@ -180,7 +177,7 @@ namespace NHibernate.Engine
 		/// Get the entity-name for a given mapped class.
 		/// </summary>
 		/// <param name="implementor">the mapped class</param>
-		/// <returns>the enntity name where available or null</returns>
+		/// <returns>the entity name where available or null</returns>
 		string TryGetGuessEntityName(System.Type implementor);
 		#endregion
 	}

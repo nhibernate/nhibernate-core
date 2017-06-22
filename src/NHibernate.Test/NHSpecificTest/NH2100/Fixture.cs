@@ -1,7 +1,6 @@
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2100
 {
@@ -80,17 +79,17 @@ namespace NHibernate.Test.NHSpecificTest.NH2100
 					tx.Commit();
 				}
 				// After close the second transaction the version was not changed
-				c1_1.EntityVersion.Should().Be(originalVersionC1_1);
-				c1_2.EntityVersion.Should().Be(originalVersionC1_2);
-				c2_1.EntityVersion.Should().Be(originalVersionC2_1);
-				c2_2.EntityVersion.Should().Be(originalVersionC2_2);
+				Assert.That(c1_1.EntityVersion, Is.EqualTo(originalVersionC1_1));
+				Assert.That(c1_2.EntityVersion, Is.EqualTo(originalVersionC1_2));
+				Assert.That(c2_1.EntityVersion, Is.EqualTo(originalVersionC2_1));
+				Assert.That(c2_2.EntityVersion, Is.EqualTo(originalVersionC2_2));
 			}
 
 			// After close the session the version was not changed
-			c1_1.EntityVersion.Should().Be(originalVersionC1_1);
-			c1_2.EntityVersion.Should().Be(originalVersionC1_2);
-			c2_1.EntityVersion.Should().Be(originalVersionC2_1);
-			c2_2.EntityVersion.Should().Be(originalVersionC2_2);
+			Assert.That(c1_1.EntityVersion, Is.EqualTo(originalVersionC1_1));
+			Assert.That(c1_2.EntityVersion, Is.EqualTo(originalVersionC1_2));
+			Assert.That(c2_1.EntityVersion, Is.EqualTo(originalVersionC2_1));
+			Assert.That(c2_2.EntityVersion, Is.EqualTo(originalVersionC2_2));
 
 			using (ISession s = OpenSession())
 			{
@@ -102,10 +101,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2100
 					c1_2 = s.Get<Class1>(c1_2.ID);
 
 					// to be 100% sure the version was not changed in DB
-					c1_1.EntityVersion.Should().Be(originalVersionC1_1);
-					c1_2.EntityVersion.Should().Be(originalVersionC1_2);
-					c2_1.EntityVersion.Should().Be(originalVersionC2_1);
-					c2_2.EntityVersion.Should().Be(originalVersionC2_2);
+					Assert.That(c1_1.EntityVersion, Is.EqualTo(originalVersionC1_1));
+					Assert.That(c1_2.EntityVersion, Is.EqualTo(originalVersionC1_2));
+					Assert.That(c2_1.EntityVersion, Is.EqualTo(originalVersionC2_1));
+					Assert.That(c2_2.EntityVersion, Is.EqualTo(originalVersionC2_2));
 
 					s.Delete(c2_1);
 					s.Delete(c1_1);

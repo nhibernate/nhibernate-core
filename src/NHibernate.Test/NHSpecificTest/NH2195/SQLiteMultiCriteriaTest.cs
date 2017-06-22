@@ -94,7 +94,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2195
 		[Test]
 		public void MultiCriteriaQueriesWithIntsShouldExecuteCorrectly()
 		{
-			var driver = sessions.ConnectionProvider.Driver;
+			var driver = Sfi.ConnectionProvider.Driver;
 			if (!driver.SupportsMultipleQueries)
 				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
 
@@ -123,7 +123,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2195
 		[Test]
 		public void MultiCriteriaQueriesWithStringsShouldExecuteCorrectly()
 		{
-			var driver = sessions.ConnectionProvider.Driver;
+			var driver = Sfi.ConnectionProvider.Driver;
 			if (!driver.SupportsMultipleQueries)
 				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
 

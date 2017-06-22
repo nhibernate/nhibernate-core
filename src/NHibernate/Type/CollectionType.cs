@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
-using System.Data;
-using System.Xml;
+using System.Data.Common;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -10,6 +9,8 @@ using NHibernate.Proxy;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 using System.Collections.Generic;
+using System.Linq;
+using NHibernate.Impl;
 
 namespace NHibernate.Type
 {
@@ -20,12 +21,13 @@ namespace NHibernate.Type
 	[Serializable]
 	public abstract class CollectionType : AbstractType, IAssociationType
 	{
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(CollectionType));
+
 		private static readonly object NotNullCollection = new object(); // place holder
 		public static readonly object UnfetchedCollection = new object(); // place holder
 
 		private readonly string role;
 		private readonly string foreignKeyPropertyName;
-		private readonly bool isEmbeddedInXML;
 
 		private static readonly SqlType[] NoSqlTypes = {};
 
@@ -39,11 +41,9 @@ namespace NHibernate.Type
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.
 		/// </param>
-		/// <param name="isEmbeddedInXML"></param>
-		protected CollectionType(string role, string foreignKeyPropertyName, bool isEmbeddedInXML)
+		protected CollectionType(string role, string foreignKeyPropertyName)
 		{
 			this.role = role;
-			this.isEmbeddedInXML = isEmbeddedInXML;
 			this.foreignKeyPropertyName = foreignKeyPropertyName;
 		}
 
@@ -57,14 +57,14 @@ namespace NHibernate.Type
 			get { return true; }
 		}
 
-		public override bool IsEqual(object x, object y, EntityMode entityMode)
+		public override bool IsEqual(object x, object y)
 		{
 			return x == y || 
 				(x is IPersistentCollection && ((IPersistentCollection)x).IsWrapper(y)) || 
 				(y is IPersistentCollection && ((IPersistentCollection)y).IsWrapper(x));
 		}
 
-		public override int GetHashCode(object x, EntityMode entityMode)
+		public override int GetHashCode(object x)
 		{
 			throw new InvalidOperationException("cannot perform lookups on collections");
 		}
@@ -79,22 +79,22 @@ namespace NHibernate.Type
 		/// <returns> The instantiated collection. </returns>
 		public abstract IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister, object key);
 
-		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
+		public override object NullSafeGet(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
 			return NullSafeGet(rs, new string[] { name }, session, owner);
 		}
 
-		public override object NullSafeGet(IDataReader rs, string[] name, ISessionImplementor session, object owner)
+		public override object NullSafeGet(DbDataReader rs, string[] name, ISessionImplementor session, object owner)
 		{
 			return ResolveIdentifier(null, session, owner);
 		}
 
-		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override void NullSafeSet(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			// NOOP
 		}
 
-		public override void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session)
+		public override void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 		}
 
@@ -124,7 +124,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object DeepCopy(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
+		public override object DeepCopy(object value, ISessionFactoryImplementor factory)
 		{
 			return value;
 		}
@@ -215,7 +215,7 @@ namespace NHibernate.Type
 			get { return ForeignKeyDirection.ForeignKeyToParent; }
 		}
 
-		public override object Hydrate(IDataReader rs, string[] name, ISessionImplementor session, object owner)
+		public override object Hydrate(DbDataReader rs, string[] name, ISessionImplementor session, object owner)
 		{
 			// can't just return null here, since that would
 			// cause an owning component to become null
@@ -236,19 +236,13 @@ namespace NHibernate.Type
 		{
 			ICollectionPersister persister = GetPersister(session);
 			IPersistenceContext persistenceContext = session.PersistenceContext;
-			EntityMode entityMode = session.EntityMode;
-
-			if (entityMode == EntityMode.Xml && !isEmbeddedInXML)
-			{
-				return UnfetchedCollection;
-			}
 
 			// check if collection is currently being loaded
 			IPersistentCollection collection = persistenceContext.LoadContexts.LocateLoadingCollection(persister, key);
 			if (collection == null)
 			{
 				// check if it is already completely loaded, but unowned
-				collection = persistenceContext.UseUnownedCollection(new CollectionKey(persister, key, entityMode));
+				collection = persistenceContext.UseUnownedCollection(new CollectionKey(persister, key));
 				if (collection == null)
 				{
 					// create a new collection wrapper, to be initialized later
@@ -258,7 +252,7 @@ namespace NHibernate.Type
 					persistenceContext.AddUninitializedCollection(persister, collection, key);
 
 					// some collections are not lazy:
-					if (InitializeImmediately(entityMode))
+					if (InitializeImmediately())
 					{
 						session.InitializeCollection(collection, false);
 					}
@@ -267,10 +261,15 @@ namespace NHibernate.Type
 						persistenceContext.AddNonLazyCollection(collection);
 					}
 
-					if (HasHolder(entityMode))
+					if (HasHolder())
 					{
 						session.PersistenceContext.AddCollectionHolder(collection);
 					}
+				}
+
+				if (log.IsDebugEnabled)
+				{
+					log.Debug("Created collection wrapper: " + MessageHelper.CollectionInfoString(persister, collection, key, session));
 				}
 			}
 			collection.Owner = owner;
@@ -361,36 +360,54 @@ namespace NHibernate.Type
 			return result;
 		}
 
-		public virtual object ReplaceElements(object original, object target, object owner, IDictionary copyCache,
-											  ISessionImplementor session)
+		public virtual object ReplaceElements(object original, object target, object owner, IDictionary copyCache, ISessionImplementor session)
 		{
-			// TODO: does not work for EntityMode.DOM4J yet!
-			object result = target;
-			Clear(result);
+			var elemType = GetElementType(session.Factory);
+			var targetPc = target as IPersistentCollection;
+			var originalPc = original as IPersistentCollection;
+			var iterOriginal = (IEnumerable)original;
+			var clearTargetsDirtyFlag = ShouldTargetsDirtyFlagBeCleared(targetPc, originalPc, iterOriginal);
 
 			// copy elements into newly empty target collection
-			IType elemType = GetElementType(session.Factory);
-			IEnumerable iter = (IEnumerable)original;
-			foreach (object obj in iter)
+			Clear(target);
+			foreach (var obj in iterOriginal)
 			{
-				Add(result, elemType.Replace(obj, null, session, owner, copyCache));
+				Add(target, elemType.Replace(obj, null, session, owner, copyCache));
 			}
 
-			// if the original is a PersistentCollection, and that original
-			// was not flagged as dirty, then reset the target's dirty flag
-			// here after the copy operation.
-			// One thing to be careful of here is a "bare" original collection
-			// in which case we should never ever ever reset the dirty flag
-			// on the target because we simply do not know...
-			IPersistentCollection originalPc = original as IPersistentCollection;
-			IPersistentCollection resultPc = result as IPersistentCollection;
-			if(originalPc != null && resultPc!=null)
+			if(clearTargetsDirtyFlag)
+			{
+				targetPc.ClearDirty();
+			}
+
+			return target;
+		}
+
+		internal bool ShouldTargetsDirtyFlagBeCleared(IPersistentCollection targetPc, IPersistentCollection originalPc, IEnumerable original)
+		{
+			if (targetPc == null)
+				return false;
+
+			if (originalPc == null)
+			{
+				if (!targetPc.IsDirty && AreCollectionElementsEqual(original, (IEnumerable)targetPc))
+				{
+					return true;
+				}
+			}
+			else
 			{
 				if (!originalPc.IsDirty)
-					resultPc.ClearDirty();
+				{
+					return true;
+				}
 			}
+			return false;
+		}
 
-			return result;
+		protected virtual bool AreCollectionElementsEqual(IEnumerable original, IEnumerable target)
+		{ 
+			return original.Cast<object>().SequenceEqual(target.Cast<object>());
 		}
 
 		public IType GetElementType(ISessionFactoryImplementor factory)
@@ -442,11 +459,6 @@ namespace NHibernate.Type
 			get { return true; }
 		}
 
-		public bool IsEmbeddedInXML
-		{
-			get { return isEmbeddedInXML; }
-		}
-
 		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
 			return IsDirty(old, current, session);
@@ -459,8 +471,7 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Get the key value from the owning entity instance, usually the identifier, but might be some
-		/// other unique key, in the case of property-ref
+		/// Get the key value from the owning entity instance.
 		/// </summary>
 		public object GetKeyOfOwner(object owner, ISessionImplementor session)
 		{
@@ -469,36 +480,7 @@ namespace NHibernate.Type
 				return null; // This just handles a particular case of component
 			// projection, perhaps get rid of it and throw an exception
 
-			if (foreignKeyPropertyName == null)
-			{
-				return entityEntry.Id;
-			}
-			else
-			{
-				// TODO: at the point where we are resolving collection references, we don't
-				// know if the uk value has been resolved (depends if it was earlier or
-				// later in the mapping document) - now, we could try and use e.getStatus()
-				// to decide to semiResolve(), trouble is that initializeEntity() reuses
-				// the same array for resolved and hydrated values
-				object id;
-				if (entityEntry.LoadedState != null)
-				{
-					id = entityEntry.GetLoadedValue(foreignKeyPropertyName);
-				}
-				else
-				{
-					id = entityEntry.Persister.GetPropertyValue(owner, foreignKeyPropertyName, session.EntityMode);
-				}
-
-				// NOTE VERY HACKISH WORKAROUND!!
-				IType keyType = GetPersister(session).KeyType;
-				if (!keyType.ReturnedClass.IsInstanceOfType(id))
-				{
-					id = keyType.SemiResolve(entityEntry.GetLoadedValue(foreignKeyPropertyName), session, owner);
-				}
-
-				return id;
-			}
+			return entityEntry.Id;
 		}
 
 		/// <summary> 
@@ -523,11 +505,11 @@ namespace NHibernate.Type
 				IType keyType = GetPersister(session).KeyType;
 				IEntityPersister ownerPersister = GetPersister(session).OwnerEntityPersister;
 				// TODO: Fix this so it will work for non-POJO entity mode
-				System.Type ownerMappedClass = ownerPersister.GetMappedClass(session.EntityMode);
+				System.Type ownerMappedClass = ownerPersister.MappedClass;
 				if (ownerMappedClass.IsAssignableFrom(keyType.ReturnedClass) && keyType.ReturnedClass.IsInstanceOfType(key))
 				{
 					// the key is the owning entity itself, so get the ID from the key
-					ownerId = ownerPersister.GetIdentifier(key, session.EntityMode);
+					ownerId = ownerPersister.GetIdentifier(key);
 				}
 				else
 				{
@@ -553,23 +535,12 @@ namespace NHibernate.Type
 			return GetAssociatedJoinable(factory).FilterFragment(alias, enabledFilters);
 		}
 
-		public override object FromXMLNode(XmlNode xml, IMapping factory)
-		{
-			return xml;
-		}
-
-		public override void SetToXMLNode(XmlNode node, object value, ISessionFactoryImplementor factory)
-		{
-			if (isEmbeddedInXML)
-				ReplaceNode(node, (XmlNode)value);
-		}
-
 		public override bool[] ToColumnNullness(object value, IMapping mapping)
 		{
 			return ArrayHelper.EmptyBoolArray;
 		}
 
-		public override int Compare(object x, object y, EntityMode? entityMode)
+		public override int Compare(object x, object y)
 		{
 			return 0; // collections cannot be compared
 		}
@@ -620,12 +591,12 @@ namespace NHibernate.Type
 			return ((IEnumerable)collection);
 		}
 
-		public virtual bool HasHolder(EntityMode entityMode)
+		public virtual bool HasHolder()
 		{
 			return false;// entityMode == EntityMode.DOM4J;
 		}
 
-		protected internal virtual bool InitializeImmediately(EntityMode entityMode)
+		protected internal virtual bool InitializeImmediately()
 		{
 			return false;// entityMode == EntityMode.DOM4J;
 		}

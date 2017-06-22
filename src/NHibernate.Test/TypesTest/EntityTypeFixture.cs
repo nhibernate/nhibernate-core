@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
 {
-	// http://jira.nhibernate.org/browse/NH-1473
+	// http://nhibernate.jira.com/browse/NH-1473
 	[TestFixture]
 	public class EntityTypeFixture : TypeFixtureBase
 	{
@@ -24,16 +24,16 @@ namespace NHibernate.Test.TypesTest
 			EntityClass ca = new ComparableEntityClass(1);
 			EntityClass cb = new ComparableEntityClass(2);
 
-			Assert.AreEqual(-1, type.Compare(a, cb, EntityMode.Poco));
-			Assert.AreEqual(-1, type.Compare(ca, b, EntityMode.Poco));
-			Assert.AreEqual(-1, type.Compare(ca, cb, EntityMode.Poco));
+			Assert.AreEqual(-1, type.Compare(a, cb));
+			Assert.AreEqual(-1, type.Compare(ca, b));
+			Assert.AreEqual(-1, type.Compare(ca, cb));
 
-			Assert.AreEqual(1, type.Compare(b, ca, EntityMode.Poco));
-			Assert.AreEqual(1, type.Compare(cb, a, EntityMode.Poco));
-			Assert.AreEqual(1, type.Compare(cb, ca, EntityMode.Poco));
+			Assert.AreEqual(1, type.Compare(b, ca));
+			Assert.AreEqual(1, type.Compare(cb, a));
+			Assert.AreEqual(1, type.Compare(cb, ca));
 
-			Assert.AreEqual(0, type.Compare(ca, a, EntityMode.Poco));
-			Assert.AreEqual(0, type.Compare(a, ca, EntityMode.Poco));
+			Assert.AreEqual(0, type.Compare(ca, a));
+			Assert.AreEqual(0, type.Compare(a, ca));
 		}
 
 		[Test]
@@ -45,9 +45,9 @@ namespace NHibernate.Test.TypesTest
 			EntityClass b = new EntityClass(2);
 			EntityClass c = new EntityClass(1);
 
-			Assert.IsTrue(type.IsEqual(a, a, EntityMode.Poco, (ISessionFactoryImplementor) sessions));
-			Assert.IsFalse(type.IsEqual(a, b, EntityMode.Poco, (ISessionFactoryImplementor) sessions));
-			Assert.IsTrue(type.IsEqual(a, c, EntityMode.Poco, (ISessionFactoryImplementor) sessions));
+			Assert.IsTrue(type.IsEqual(a, a, (ISessionFactoryImplementor) Sfi));
+			Assert.IsFalse(type.IsEqual(a, b, (ISessionFactoryImplementor) Sfi));
+			Assert.IsTrue(type.IsEqual(a, c, (ISessionFactoryImplementor) Sfi));
 		}
 	}
 }
