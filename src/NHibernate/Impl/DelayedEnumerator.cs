@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
-	internal class DelayedEnumerator<T> : IFutureEnumerable<T>, IAsyncEnumerable<T>, IDelayedValue
+	internal class DelayedEnumerator<T> : IFutureEnumerable<T>, IDelayedValue
 	{
 		public delegate IEnumerable<T> GetResult();
 		public delegate Task<IEnumerable<T>> GetResultAsync(CancellationToken cancellationToken);
@@ -50,59 +50,33 @@ namespace NHibernate.Impl
 
 		#endregion
 
-		#region IAsyncEnumerator<T> Members
-
-		IAsyncEnumerator<T> IAsyncEnumerable<T>.GetEnumerator()
-		{
-			return new AsyncEnumerator(_resultAsync, ExecuteOnEval);
-		}
-
-		#endregion
-
 		#region IFutureEnumerable<T> Members
 
-		public IAsyncEnumerable<T> AsyncEnumerable => this;
-
-		#endregion
-
-		private sealed class AsyncEnumerator : IAsyncEnumerator<T>
+		public Task<IEnumerable<T>> GetEnumerableAsync(CancellationToken cancellationToken)
 		{
-			private IEnumerable<T> _data;
-			private readonly GetResultAsync _result;
-			private readonly Delegate _executeOnEval;
-			private IEnumerator<T> _enumerator;
-
-			public AsyncEnumerator(GetResultAsync result, Delegate executeOnEval)
+			if (cancellationToken.IsCancellationRequested)
 			{
-				_result = result;
-				_executeOnEval = executeOnEval;
+				return Task.FromCanceled<IEnumerable<T>>(cancellationToken);
+			}
+			try
+			{
+				if (ExecuteOnEval == null)
+					return _resultAsync(cancellationToken);
+				return getEnumerableAsync();
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<IEnumerable<T>>(ex);
 			}
 
-			public T Current { get; private set; }
-
-			public async Task<bool> MoveNext(CancellationToken cancellationToken)
+			async Task<IEnumerable<T>> getEnumerableAsync()
 			{
-				cancellationToken.ThrowIfCancellationRequested();
-				if (_enumerator == null)
-				{
-					_data = await _result(cancellationToken).ConfigureAwait(false);
-					if (_executeOnEval != null)
-						_data = (IEnumerable<T>)_executeOnEval.DynamicInvoke(_data);
-					_enumerator = _data.GetEnumerator();
-				}
-				if (!_enumerator.MoveNext())
-				{
-					return false;
-				}
-				Current = _enumerator.Current;
-				return true;
-			}
-
-			public void Dispose()
-			{
-				_enumerator?.Dispose();
+				var result = await _resultAsync(cancellationToken).ConfigureAwait(false);
+				return (IEnumerable<T>)ExecuteOnEval.DynamicInvoke(result);
 			}
 		}
+
+		#endregion
 	}
 
 	internal interface IDelayedValue

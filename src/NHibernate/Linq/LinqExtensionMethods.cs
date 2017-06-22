@@ -2500,7 +2500,7 @@ namespace NHibernate.Linq
 				throw new NotSupportedException($"Source {nameof(source.Provider)} must be a {nameof(INhQueryProvider)}");
 			}
 			var future = provider.ExecuteFuture<TSource>(source.Expression);
-			return new FutureValue<TSource>(() => future, async cancellationToken => await future.AsyncEnumerable.ToList(cancellationToken).ConfigureAwait(false));
+			return new FutureValue<TSource>(() => future, async cancellationToken => await future.GetEnumerableAsync(cancellationToken).ConfigureAwait(false));
 		}
 
 		/// <summary>
