@@ -753,8 +753,13 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
+				//TODO: The query below shall be 
+				// s.Query<Dragon>().Update(x => new { FireTemperature = 300});
+				// Because setter on Dragon.FireTemperature ment to be protected
+
 				var count =
 					s.Query<Dragon>().Update(x => new Dragon { FireTemperature = 300});
+
 				Assert.That(count, Is.EqualTo(1), "Incorrect entity-updated count");
 
 				t.Commit();
