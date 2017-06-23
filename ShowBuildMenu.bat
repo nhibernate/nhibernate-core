@@ -50,12 +50,14 @@ echo F. Add a test configuration for PostgreSQL.
 echo G. Add a test configuration for Oracle.
 echo H. Add a test configuration for SQL Server Compact (x86).
 echo I. Add a test configuration for SQL Server Compact (x64).
+echo J. Add a test configuration for MySql.
 echo.
 echo X.  Exit to main menu.
 echo.
 
-%BUILDTOOL% prompt ABCDEFGHIX
-if errorlevel 9 goto main-menu
+%BUILDTOOL% prompt ABCDEFGHIJX
+if errorlevel 10 goto main-menu
+if errorlevel 9 goto test-setup-mysql
 if errorlevel 8 goto test-setup-sqlservercex64
 if errorlevel 7 goto test-setup-sqlservercex86
 if errorlevel 6 goto test-setup-oracle
@@ -117,6 +119,13 @@ goto test-setup-generic
 set CONFIG_NAME=PostgreSQL
 set PLATFORM=AnyCPU
 set LIB_FILES=lib\teamcity\postgresql\*.dll
+set LIB_FILES2=
+goto test-setup-generic
+
+:test-setup-mysql
+set CONFIG_NAME=MySql
+set PLATFORM=AnyCPU
+set LIB_FILES=lib\teamcity\mysql\*.dll
 set LIB_FILES2=
 goto test-setup-generic
 
