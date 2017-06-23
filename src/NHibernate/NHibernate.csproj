@@ -319,7 +319,6 @@
     <Compile Include="Linq\GroupBy\KeySelectorVisitor.cs" />
     <Compile Include="Linq\GroupBy\PagingRewriter.cs" />
     <Compile Include="Linq\GroupResultOperatorExtensions.cs" />
-    <Compile Include="Linq\InsertSyntax.cs" />
     <Compile Include="Linq\NestedSelects\NestedSelectDetector.cs" />
     <Compile Include="Linq\NestedSelects\Tuple.cs" />
     <Compile Include="Linq\NestedSelects\SelectClauseRewriter.cs" />
@@ -332,7 +331,6 @@
     <Compile Include="Linq\NhLinqUpdateExpression.cs" />
     <Compile Include="Linq\QueryMode.cs" />
     <Compile Include="Linq\Assignments.cs" />
-    <Compile Include="Linq\UpdateSyntax.cs" />
     <Compile Include="Linq\Visitors\LeftJoinRewriter.cs" />
     <Compile Include="Linq\Functions\CompareGenerator.cs" />
     <Compile Include="Linq\ExpressionTransformers\SimplifyCompareTransformer.cs" />

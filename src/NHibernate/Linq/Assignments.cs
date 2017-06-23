@@ -25,46 +25,6 @@ namespace NHibernate.Linq
 		private readonly List<Assignment> _sets = new List<Assignment>();
 
 		/// <summary>
-		/// Sets the specified property.
-		/// </summary>
-		/// <typeparam name="TProp">The type of the property.</typeparam>
-		/// <param name="property">The property.</param>
-		/// <param name="expression">The expression that should be assigned to the property.</param>
-		/// <returns>The current assignments list.</returns>
-		public Assignments<TSource, TTarget> Set<TProp>(Expression<Func<TTarget, TProp>> property, Expression<Func<TSource, TProp>> expression)
-		{
-			if (expression == null)
-				throw new ArgumentNullException(nameof(expression));
-			var member = GetMemberExpression(property);
-			_sets.Add(new Assignment(member.GetMemberPath(), expression));
-			return this;
-		}
-
-		/// <summary>
-		/// Sets the specified property.
-		/// </summary>
-		/// <typeparam name="TProp">The type of the property.</typeparam>
-		/// <param name="property">The property.</param>
-		/// <param name="value">The value.</param>
-		/// <returns>The current assignments list.</returns>
-		public Assignments<TSource, TTarget> Set<TProp>(Expression<Func<TTarget, TProp>> property, TProp value)
-		{
-			var member = GetMemberExpression(property);
-			_sets.Add(new Assignment(member.GetMemberPath(), Expression.Constant(value, typeof(TProp))));
-			return this;
-		}
-
-		private static MemberExpression GetMemberExpression<TProp>(Expression<Func<TTarget, TProp>> property)
-		{
-			if (property == null)
-				throw new ArgumentNullException(nameof(property));
-			var param = property.Parameters.Single();
-			var member = property.Body as MemberExpression ??
-				throw new ArgumentException($"The property expression must refer to a property of {param.Name}({param.Type.Name})", nameof(property));
-			return member;
-		}
-
-		/// <summary>
 		/// Converts the assignments into a lambda expression, which creates a Dictionary&lt;string,object%gt;.
 		/// </summary>
 		/// <returns>A lambda expression representing the assignments.</returns>

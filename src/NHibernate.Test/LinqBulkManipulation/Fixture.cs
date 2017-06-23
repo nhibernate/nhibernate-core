@@ -232,8 +232,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var count = s.Query<Car>()
-					.Insert().Into<Pickup>(x => x.Set(y => y.Id, y => y.Id).Set(y => y.Vin, y => y.Vin).Set(y => y.Owner, "The owner"));
+				var count = s.Query<Car>().Insert(x => new Pickup {Id = x.Id, Vin = x.Vin, Owner = "The owner"});
 				Assert.AreEqual(1, count);
 
 				t.Commit();
@@ -247,8 +246,8 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var t = s.BeginTransaction())
 			{
 				var count = s.Query<Car>()
-					.Select(x => new { x.Id, x.Owner, UpperOwner = x.Owner.ToUpper() })
-					.Insert().Into<Pickup>(x => x.Set(y => y.Id, y => y.Id).Set(y => y.Vin, y => y.UpperOwner));
+				             .Select(x => new {x.Id, x.Owner, UpperOwner = x.Owner.ToUpper()})
+				             .Insert(x => new Pickup {Id = x.Id, Vin = x.UpperOwner});
 				Assert.AreEqual(1, count);
 
 				t.Commit();
@@ -462,14 +461,12 @@ namespace NHibernate.Test.LinqBulkManipulation
 			{
 				const string correctName = "Steve";
 
-				var count =
-					s.Query<SimpleClassWithComponent>().Insert().Into<SimpleClassWithComponent>(x => x.Set(y => y.Name.First, y => correctName));
+				var count = s.Query<SimpleClassWithComponent>().Insert(x => new SimpleClassWithComponent {Name = {First = correctName}});
 				Assert.That(count, Is.EqualTo(1), "incorrect insert count");
 
-				count =
-					s.Query<SimpleClassWithComponent>()
-						.Where(x => x.Name.First == correctName)
-						.Insert(x => new SimpleClassWithComponent { Name = new Name { First = x.Name.First, Last = x.Name.Last, Initial = 'Z' } });
+				count = s.Query<SimpleClassWithComponent>()
+				         .Where(x => x.Name.First == correctName)
+				         .Insert(x => new SimpleClassWithComponent {Name = {First = x.Name.First, Last = x.Name.Last, Initial = 'Z'}});
 				Assert.That(count, Is.EqualTo(1), "incorrect insert from corrected count");
 				t.Commit();
 			}
@@ -504,8 +501,8 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var t = s.BeginTransaction())
 			{
 				var count = s.Query<Human>()
-					.Where(x => x.Friends.OfType<Human>().Any(f => f.Name.Last == "Public"))
-					.Update().Assign(x => x.Set(y => y.Description, "updated"));
+				             .Where(x => x.Friends.OfType<Human>().Any(f => f.Name.Last == "Public"))
+				             .Update(x => new Human {Description = "updated"});
 				Assert.That(count, Is.EqualTo(1));
 				t.Commit();
 			}
@@ -516,15 +513,15 @@ namespace NHibernate.Test.LinqBulkManipulation
 			{
 				// one-to-many test
 				var count = s.Query<SimpleEntityWithAssociation>()
-					.Where(x => x.AssociatedEntities.Any(a => a.Name == "one-to-many-association"))
-					.Update().Assign(x => x.Set(y => y.Name, "updated"));
+				             .Where(x => x.AssociatedEntities.Any(a => a.Name == "one-to-many-association"))
+				             .Update(x => new SimpleEntityWithAssociation {Name = "updated"});
 				Assert.That(count, Is.EqualTo(1));
 				// many-to-many test
 				if (Dialect.SupportsSubqueryOnMutatingTable)
 				{
 					count = s.Query<SimpleEntityWithAssociation>()
-						.Where(x => x.ManyToManyAssociatedEntities.Any(a => a.Name == "many-to-many-association"))
-						.Update().Assign(x => x.Set(y => y.Name, "updated"));
+					         .Where(x => x.ManyToManyAssociatedEntities.Any(a => a.Name == "many-to-many-association"))
+					         .Update(x => new SimpleEntityWithAssociation {Name = "updated"});
 
 					Assert.That(count, Is.EqualTo(1));
 				}
@@ -544,7 +541,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 					// Note: Update more than one column to showcase NH-3624, which involved losing some columns. /2014-07-26
 					var count =
 						s.Query<IntegerVersioned>()
-						 .Update().Assign(x => x.Set(y => y.Name, y => y.Name + "upd").Set(y => y.Data, y => y.Data + "upd"), true);
+						 .UpdateVersioned(x => new IntegerVersioned {Name = x.Name + "upd", Data = x.Data + "upd"});
 					Assert.That(count, Is.EqualTo(1), "incorrect exec count");
 					t.Commit();
 				}
@@ -573,7 +570,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 				{
 					// Note: Update more than one column to showcase NH-3624, which involved losing some columns. /2014-07-26
 					var count = s.Query<TimestampVersioned>()
-						.Update().Assign(x => x.Set(y => y.Name, y => y.Name + "upd").Set(y => y.Data, y => y.Data + "upd"), true);
+					             .UpdateVersioned(x => new TimestampVersioned {Name = x.Name + "upd", Data = x.Data + "upd"});
 					Assert.That(count, Is.EqualTo(1), "incorrect exec count");
 					t.Commit();
 				}
@@ -646,12 +643,21 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				Assert.DoesNotThrow(() => { s.Query<Animal>().Where(x => x.Id == 2).Update().Assign(x => x.Set(y => y.Mother, y => null)); });
+				Assert.DoesNotThrow(
+					() =>
+					{
+						s.Query<Animal>().Where(x => x.Id == 2).Update(x => new Animal {Mother = null});
+					});
 
 				if (Dialect.SupportsSubqueryOnMutatingTable)
 				{
 					Assert.DoesNotThrow(
-						() => { s.Query<Animal>().Where(x => x.Id == 2).Update().Assign(x => x.Set(y => y.Mother, y => s.Query<Animal>().First(z => z.Id == 1))); });
+						() =>
+						{
+							s.Query<Animal>()
+							 .Where(x => x.Id == 2)
+							 .Update(x => new Animal {Mother = s.Query<Animal>().First(z => z.Id == 1)});
+						});
 				}
 
 				t.Commit();
@@ -665,22 +671,21 @@ namespace NHibernate.Test.LinqBulkManipulation
 			{
 				using (var t = s.BeginTransaction())
 				{
-					var count = s.Query<PettingZoo>().Update().Assign(x => x.Set(y => y.Name, y => y.Name));
+					var count = s.Query<PettingZoo>().Update(x => new PettingZoo {Name = x.Name});
 					Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass update count");
 
 					t.Rollback();
 				}
 				using (var t = s.BeginTransaction())
 				{
-					var count = s.Query<PettingZoo>().Where(x => x.Id == _pettingZoo.Id).Update().Assign(x => x.Set(y => y.Name, y => y.Name));
+					var count = s.Query<PettingZoo>().Where(x => x.Id == _pettingZoo.Id).Update(x => new PettingZoo {Name = x.Name});
 					Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass update count");
 
 					t.Rollback();
 				}
 				using (var t = s.BeginTransaction())
 				{
-
-					var count = s.Query<Zoo>().Update().Assign(x => x.Set(y => y.Name, y => y.Name));
+					var count = s.Query<Zoo>().Update(x => new Zoo {Name = x.Name});
 					Assert.That(count, Is.EqualTo(2), "Incorrect discrim subclass update count");
 
 					t.Rollback();
@@ -689,7 +694,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 				{
 					// TODO : not so sure this should be allowed.  Seems to me that if they specify an alias,
 					// property-refs should be required to be qualified.
-					var count = s.Query<Zoo>().Where(x => x.Id == _zoo.Id).Update().Assign(x => x.Set(y => y.Name, y => y.Name));
+					var count = s.Query<Zoo>().Where(x => x.Id == _zoo.Id).Update(x => new Zoo {Name = x.Name});
 					Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass update count");
 
 					t.Commit();
@@ -711,28 +716,28 @@ namespace NHibernate.Test.LinqBulkManipulation
 				//var count = s.Query<Animal>().Where(x => x.Description == data.Frog.Description).Update(x => x.Set(y => y.Description, y => y.Description));
 				//Assert.That(count, Is.EqualTo(1), "Incorrect entity-updated count");
 
-				var count =
-					s.Query<Animal>().Where(x => x.Description == _polliwog.Description).Update().Assign(x => x.Set(y => y.Description, y => "Tadpole"));
+				var count = s.Query<Animal>().Where(x => x.Description == _polliwog.Description).Update(x => new Animal {Description = "Tadpole"});
 				Assert.That(count, Is.EqualTo(1), "Incorrect entity-updated count");
 
 				var tadpole = s.Load<Animal>(_polliwog.Id);
 
 				Assert.That(tadpole.Description, Is.EqualTo("Tadpole"), "Update did not take effect");
 
-				count =
-					s.Query<Dragon>().Update().Assign(x => x.Set(y => y.FireTemperature, 300));
+				count = s.Query<Dragon>().Update(x => new Dragon {FireTemperature = 300});
 				Assert.That(count, Is.EqualTo(1), "Incorrect entity-updated count");
 
 
-				count =
-					s.Query<Animal>().Update().Assign(x => x.Set(y => y.BodyWeight, y => y.BodyWeight + 1 + 1));
+				count = s.Query<Animal>().Update(x => new Animal {BodyWeight = x.BodyWeight + 1 + 1});
 				Assert.That(count, Is.EqualTo(10), "incorrect count on 'complex' update assignment");
 
 				if (Dialect.SupportsSubqueryOnMutatingTable)
 				{
-					Assert.DoesNotThrow(() => { s.Query<Animal>().Update().Assign(x => x.Set(y => y.BodyWeight, y => s.Query<Animal>().Max(z => z.BodyWeight))); });
+					Assert.DoesNotThrow(
+						() =>
+						{
+							s.Query<Animal>().Update(x => new Animal {BodyWeight = s.Query<Animal>().Max(z => z.BodyWeight)});
+						});
 				}
-
 				t.Commit();
 			}
 		}
@@ -749,7 +754,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var t = s.BeginTransaction())
 			{
 				var count =
-					s.Query<Dragon>().Update().Assign(x => x.Set(y => y.FireTemperature, 300));
+					s.Query<Dragon>().Update(x => new Dragon {FireTemperature = 300});
 				Assert.That(count, Is.EqualTo(1), "Incorrect entity-updated count");
 
 				t.Commit();
@@ -770,7 +775,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 				var count =
 					s.Query<Animal>()
 					 .Where(x => x.Description == _polliwog.Description)
-					 .Update().Assign(x => x.Set(y => y.Description, y => "Tadpole").Set(y => y.BodyWeight, 3));
+					 .Update(x => new Animal {Description = "Tadpole", BodyWeight = 3});
 
 				Assert.That(count, Is.EqualTo(1));
 				t.Commit();
@@ -796,16 +801,16 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var count = s.Query<Mammal>().Update().Assign(x => x.Set(y => y.Description, y => y.Description));
+				var count = s.Query<Mammal>().Update(x => new Mammal {Description = x.Description});
 
 				Assert.That(count, Is.EqualTo(5), "incorrect update count against 'middle' of joined-subclass hierarchy");
 
-				count = s.Query<Mammal>().Update().Assign(x => x.Set(y => y.BodyWeight, 25));
+				count = s.Query<Mammal>().Update(x => new Mammal {BodyWeight = 25});
 				Assert.That(count, Is.EqualTo(5), "incorrect update count against 'middle' of joined-subclass hierarchy");
 
 				if (Dialect.SupportsSubqueryOnMutatingTable)
 				{
-					count = s.Query<Mammal>().Update().Assign(x => x.Set(y => y.BodyWeight, y => s.Query<Animal>().Max(z => z.BodyWeight)));
+					count = s.Query<Mammal>().Update(x => new Mammal {BodyWeight = s.Query<Animal>().Max(z => z.BodyWeight)});
 					Assert.That(count, Is.EqualTo(5), "incorrect update count against 'middle' of joined-subclass hierarchy");
 				}
 
@@ -825,9 +830,9 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var count = s.Query<Vehicle>().Update().Assign(x => x.Set(y => y.Owner, "Steve"));
+				var count = s.Query<Vehicle>().Update(x => new Vehicle {Owner = "Steve"});
 				Assert.That(count, Is.EqualTo(4), "incorrect restricted update count");
-				count = s.Query<Vehicle>().Where(x => x.Owner == "Steve").Update().Assign(x => x.Set(y => y.Owner, default(string)));
+				count = s.Query<Vehicle>().Where(x => x.Owner == "Steve").Update(x => new Vehicle {Owner = null});
 				Assert.That(count, Is.EqualTo(4), "incorrect restricted update count");
 
 				count = s.CreateQuery("delete Vehicle where Owner is null").ExecuteUpdate();
@@ -843,13 +848,13 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var count = s.Query<PettingZoo>().Update().Assign(x => x.Set(y => y.Address.City, default(string)));
+				var count = s.Query<PettingZoo>().Update(x => new PettingZoo {Address = {City = null}});
 
 				Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass delete count");
 				count = s.CreateQuery("delete Zoo where Address.City is null").ExecuteUpdate();
 				Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass delete count");
 
-				count = s.Query<Zoo>().Update().Assign(x => x.Set(y => y.Address.City, default(string)));
+				count = s.Query<Zoo>().Update(x => new Zoo {Address = {City = null}});
 				Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass delete count");
 				count = s.CreateQuery("delete Zoo where Address.City is null").ExecuteUpdate();
 				Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass delete count");
@@ -869,7 +874,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var count = s.Query<Mammal>().Update().Assign(x => x.Set(y => y.BodyWeight, -1));
+				var count = s.Query<Mammal>().Update(x => new Mammal {BodyWeight = -1});
 				Assert.That(count, Is.EqualTo(5), "Incorrect update count on joined subclass");
 
 				count = s.Query<Mammal>().Count(m => m.BodyWeight > -1.0001 && m.BodyWeight < -0.9999);

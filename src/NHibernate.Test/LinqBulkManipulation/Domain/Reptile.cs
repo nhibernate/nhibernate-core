@@ -16,7 +16,7 @@ namespace NHibernate.Test.LinqBulkManipulation.Domain
 		public virtual float FireTemperature
 		{
 			get { return fireTemperature; }
-			protected set { fireTemperature = value; }
+			set { fireTemperature = value; }
 		}
 
 		public virtual void SetFireTemperature(float temperature)
