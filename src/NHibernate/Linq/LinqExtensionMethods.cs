@@ -156,6 +156,34 @@ namespace NHibernate.Linq
 			return new UpdateSyntax<TSource>(source.Expression, provider);
 		}
 
+		/// <summary>
+		/// Initiate an update for the entities selected by the query. The update operation will be performed in the database without reading the entities out of it.
+		/// </summary>
+		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
+		/// <param name="source">The query matching the entities to update.</param>
+		/// <param name="expression"></param>
+		/// <returns>An update builder, allowing to specify assignments to the entities properties.</returns>
+		public static int Update<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, TSource>> expression)
+		{
+			var provider = GetNhProvider(source);
+			var assignments = Assignments<TSource, TSource>.FromExpression(expression);
+			return provider.ExecuteUpdate(source.Expression, assignments, false);
+		}
+
+		/// <summary>
+		/// Initiate an update for the entities selected by the query. The update operation will be performed in the database without reading the entities out of it.
+		/// </summary>
+		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
+		/// <param name="source">The query matching the entities to update.</param>
+		/// <param name="expression"></param>
+		/// <returns>An update builder, allowing to specify assignments to the entities properties.</returns>
+		public static int UpdateVersioned<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, TSource>> expression)
+		{
+			var provider = GetNhProvider(source);
+			var assignments = Assignments<TSource, TSource>.FromExpression(expression);
+			return provider.ExecuteUpdate(source.Expression, assignments, true);
+		}
+
         /// <summary>
         /// Initiate an insert using selected entities as a source. Will use <c>INSERT INTO [...] SELECT FROM [...]</c> in the database.
         /// </summary>
@@ -180,8 +208,8 @@ namespace NHibernate.Linq
 			this IQueryable<TSource> source,
 			Expression<Func<TSource, TTarget>> expression)
 		{
-			var assignments = Assignments<TSource, TTarget>.FromExpression(expression);
 			var provider = GetNhProvider(source);
+			var assignments = Assignments<TSource, TTarget>.FromExpression(expression);
 			return provider.ExecuteInsert(source.Expression, assignments);
 		}
 

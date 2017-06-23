@@ -604,7 +604,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 				using (var t = s.BeginTransaction())
 				{
 					var count =
-						s.Query<Human>().Where(x => x.Id == _stevee.Id).Update().As(x => new Human { Name = { First = correctName } });
+						s.Query<Human>().Where(x => x.Id == _stevee.Id).Update(x => new Human { Name = { First = correctName } });
 
 					Assert.That(count, Is.EqualTo(1), "incorrect update count");
 					t.Commit();
@@ -628,7 +628,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var t = s.BeginTransaction())
 			{
 				Assert.Throws<NotSupportedException>(() =>
-					s.Query<Human>().Where(x => x.Id == _stevee.Id).Update().As(x => new Human { Name = { First = x.Name.First.PadLeft(200) } })
+					s.Query<Human>().Where(x => x.Id == _stevee.Id).Update(x => new Human { Name = { First = x.Name.First.PadLeft(200) } })
 				);
 
 				t.Commit();
