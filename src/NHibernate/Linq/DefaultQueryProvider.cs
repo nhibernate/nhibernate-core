@@ -16,9 +16,7 @@ namespace NHibernate.Linq
 		IEnumerable<TResult> ExecuteFuture<TResult>(Expression expression);
 		IFutureValue<TResult> ExecuteFutureValue<TResult>(Expression expression);
 		void SetResultTransformerAndAdditionalCriteria(IQuery query, NhLinqExpression nhExpression, IDictionary<string, Tuple<object, IType>> parameters);
-		int ExecuteDelete<T>(Expression predicate);
-		int ExecuteUpdate<T>(Expression expression, bool versioned);
-		int ExecuteInsert<T>(Expression expression);
+		int ExecuteDml<T>(QueryMode queryMode, Expression expression);
 	}
 
 	public class DefaultQueryProvider : INhQueryProvider
@@ -174,31 +172,9 @@ namespace NHibernate.Linq
 			}
 		}
 
-		public int ExecuteDelete<T>(Expression predicate)
+		public int ExecuteDml<T>(QueryMode queryMode, Expression expression)
 		{
-			var nhLinqExpression = new NhLinqDeleteExpression(predicate, Session.Factory);
-
-			var query = Session.CreateQuery(nhLinqExpression);
-
-			SetParameters(query, nhLinqExpression.ParameterValuesByName);
-
-			return query.ExecuteUpdate();
-		}
-
-		public int ExecuteUpdate<T>(Expression expression, bool versioned)
-		{
-			var nhLinqExpression = new NhLinqUpdateExpression<T>(Session.Factory, expression, versioned);
-
-			var query = Session.CreateQuery(nhLinqExpression);
-
-			SetParameters(query, nhLinqExpression.ParameterValuesByName);
-
-			return query.ExecuteUpdate();
-		}
-
-		public int ExecuteInsert<T>(Expression expression)
-		{
-			var nhLinqExpression = new NhLinqInsertExpression<T>(Session.Factory, expression);
+			var nhLinqExpression = new NhLinqDmlExpression<T>(queryMode, expression, Session.Factory);
 
 			var query = Session.CreateQuery(nhLinqExpression);
 

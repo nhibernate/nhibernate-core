@@ -325,9 +325,7 @@
     <Compile Include="Linq\ReWriters\ArrayIndexExpressionFlattener.cs" />
     <Compile Include="Linq\Visitors\IQueryModelRewriterFactory.cs" />
     <Compile Include="Linq\QueryProviderFactory.cs" />
-    <Compile Include="Linq\NhLinqDeleteExpression.cs" />
-    <Compile Include="Linq\NhLinqInsertExpression.cs" />
-    <Compile Include="Linq\NhLinqUpdateExpression.cs" />
+    <Compile Include="Linq\NhLinqDmlExpression.cs" />
     <Compile Include="Linq\QueryMode.cs" />
     <Compile Include="Linq\DmlExpressionRewriter.cs" />
     <Compile Include="Linq\Visitors\LeftJoinRewriter.cs" />
