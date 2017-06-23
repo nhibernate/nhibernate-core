@@ -32,7 +32,7 @@ namespace NHibernate.Linq
 
 		protected virtual QueryMode QueryMode => QueryMode.Select;
 
-		private Expression _expression;
+		private readonly Expression _expression;
 		private readonly IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
 
 		public NhLinqExpression(Expression expression, ISessionFactoryImplementor sessionFactory)

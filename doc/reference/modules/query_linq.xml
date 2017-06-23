@@ -544,9 +544,9 @@ IList<Cat> oldCats =
         In both cases, unspecified properties are not included in the resulting SQL update. This could
         be changed for <link linkend="mapping-declaration-version"><literal>version</literal></link> and
         <link linkend="mapping-declaration-timestamp"><literal>timestamp</literal></link> properties:
-        <literal>As</literal> and <literal>Assign</literal> methods take an optional boolean parameter,
-        <literal>versioned</literal>, which allows incrementing the version. Custom version types
-        (<literal>NHibernate.Usertype.IUserVersionType</literal>) are not supported.
+        using <literal>UpdateVersioned</literal> instead of <literal>Update</literal> allows incrementing
+        the version. Custom version types (<literal>NHibernate.Usertype.IUserVersionType</literal>) are
+        not supported.
       </para>
     </sect2>
 

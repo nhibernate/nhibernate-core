@@ -11,42 +11,44 @@ namespace NHibernate.Linq
 	{
 		private readonly Expression _sourceExpression;
 		private readonly INhQueryProvider _provider;
+		private readonly bool _versioned;
 
-		internal UpdateSyntax(Expression sourceExpression, INhQueryProvider provider)
+		internal UpdateSyntax(Expression sourceExpression, INhQueryProvider provider, bool versioned)
 		{
 			_sourceExpression = sourceExpression;
 			_provider = provider;
+			_versioned = versioned;
 		}
 
 		/// <summary>
 		/// Specify the assignments and execute the update.
 		/// </summary>
-		/// <param name="assignments">The assignments.</param>
-		/// <param name="versioned">If set to <c>true</c> [versioned].</param>
+		/// <param name="assignmentActions">The assignments.</param>
 		/// <returns>The number of updated entities.</returns>
-		public int Assign(Action<Assignments<T, T>> assignments, bool versioned = false)
+		public int Assign(Action<Assignments<T, T>> assignmentActions)
 		{
-			var u = new Assignments<T, T>();
-			assignments.Invoke(u);
+			if (assignmentActions == null)
+				throw new ArgumentNullException(nameof(assignmentActions));
+			var assignments = new Assignments<T, T>();
+			assignmentActions.Invoke(assignments);
 
-			return ExecuteUpdate(versioned, u);
+			return ExecuteUpdate(DmlExpressionRewriter.PrepareExpression<T>(_sourceExpression, assignments.List));
 		}
 
 		/// <summary>
 		/// Specify the assignments and execute the update.
 		/// </summary>
-		/// <param name="expression">The assignments expressed as a member initialization, e.g. <c>x => new Dog { Name = x.Name, Age = x.Age + 5 }</c>. Unset members are ignored and left untouched.</param>
-		/// <param name="versioned">If set to <c>true</c> [versioned].</param>
+		/// <param name="expression">The assignments expressed as a member initialization, e.g.
+		/// <c>x => new Dog { Name = x.Name, Age = x.Age + 5 }</c>. Unset members are ignored and left untouched.</param>
 		/// <returns>The number of updated entities.</returns>
-		public int As(Expression<Func<T, T>> expression, bool versioned = false)
+		public int As(Expression<Func<T, T>> expression)
 		{
-			var assignments = Assignments<T, T>.FromExpression(expression);
-			return ExecuteUpdate(versioned, assignments);
+			return ExecuteUpdate(DmlExpressionRewriter.PrepareExpression(_sourceExpression, expression));
 		}
 
-		private int ExecuteUpdate(bool versioned, Assignments<T, T> assignments)
+		private int ExecuteUpdate(Expression updateExpression)
 		{
-			return _provider.ExecuteUpdate(_sourceExpression, assignments, versioned);
+			return _provider.ExecuteDml<T>(_versioned ? QueryMode.UpdateVersioned : QueryMode.Update, updateExpression);
 		}
 	}
 }

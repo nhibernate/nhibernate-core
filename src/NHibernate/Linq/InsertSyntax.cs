@@ -30,7 +30,8 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(assignmentActions));
 			var assignments = new Assignments<TSource, TTarget>();
 			assignmentActions.Invoke(assignments);
-			return InsertInto(assignments);
+
+			return ExecuteInsert<TTarget>(DmlExpressionRewriter.PrepareExpression<TSource>(_sourceExpression, assignments.List));
 		}
 
 		/// <summary>
@@ -41,13 +42,12 @@ namespace NHibernate.Linq
 		/// <returns>The number of inserted entities.</returns>
 		public int As<TTarget>(Expression<Func<TSource, TTarget>> expression)
 		{
-			var assignments = Assignments<TSource, TTarget>.FromExpression(expression);
-			return InsertInto(assignments);
+			return ExecuteInsert<TTarget>(DmlExpressionRewriter.PrepareExpression(_sourceExpression, expression));
 		}
 
-		internal int InsertInto<TTarget>(Assignments<TSource, TTarget> assignments)
+		private int ExecuteInsert<TTarget>(Expression insertExpression)
 		{
-			return _provider.ExecuteInsert(_sourceExpression, assignments);
+			return _provider.ExecuteDml<TTarget>(QueryMode.Insert, insertExpression);
 		}
 	}
 }

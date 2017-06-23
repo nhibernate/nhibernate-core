@@ -131,7 +131,7 @@ namespace NHibernate.Linq
 		public static int Delete<TSource>(this IQueryable<TSource> source)
 		{
 			var provider = GetNhProvider(source);
-			return provider.ExecuteDelete(source.Expression);
+			return provider.ExecuteDml<TSource>(QueryMode.Delete, source.Expression);
 		}
 
 		/// <summary>
@@ -143,7 +143,20 @@ namespace NHibernate.Linq
 		public static UpdateSyntax<TSource> Update<TSource>(this IQueryable<TSource> source)
 		{
 			var provider = GetNhProvider(source);
-			return new UpdateSyntax<TSource>(source.Expression, provider);
+			return new UpdateSyntax<TSource>(source.Expression, provider, false);
+		}
+
+		/// <summary>
+		/// Initiate a <c>update versioned</c> for the entities selected by the query. The update operation
+		/// will be performed in the database without reading the entities out of it.
+		/// </summary>
+		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
+		/// <param name="source">The query matching the entities to update.</param>
+		/// <returns>An update builder, allowing to specify assignments to the entities properties.</returns>
+		public static UpdateSyntax<TSource> UpdateVersioned<TSource>(this IQueryable<TSource> source)
+		{
+			var provider = GetNhProvider(source);
+			return new UpdateSyntax<TSource>(source.Expression, provider, true);
 		}
 
 		/// <summary>

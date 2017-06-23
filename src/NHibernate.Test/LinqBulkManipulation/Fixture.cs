@@ -542,7 +542,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 					// Note: Update more than one column to showcase NH-3624, which involved losing some columns. /2014-07-26
 					var count =
 						s.Query<IntegerVersioned>()
-						 .Update().Assign(x => x.Set(y => y.Name, y => y.Name + "upd").Set(y => y.Data, y => y.Data + "upd"), true);
+						 .UpdateVersioned().Assign(x => x.Set(y => y.Name, y => y.Name + "upd").Set(y => y.Data, y => y.Data + "upd"));
 					Assert.That(count, Is.EqualTo(1), "incorrect exec count");
 					t.Commit();
 				}
@@ -571,7 +571,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 				{
 					// Note: Update more than one column to showcase NH-3624, which involved losing some columns. /2014-07-26
 					var count = s.Query<TimestampVersioned>()
-						.Update().Assign(x => x.Set(y => y.Name, y => y.Name + "upd").Set(y => y.Data, y => y.Data + "upd"), true);
+						.UpdateVersioned().Assign(x => x.Set(y => y.Name, y => y.Name + "upd").Set(y => y.Data, y => y.Data + "upd"));
 					Assert.That(count, Is.EqualTo(1), "incorrect exec count");
 					t.Commit();
 				}
