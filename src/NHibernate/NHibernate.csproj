@@ -302,7 +302,6 @@
     <Compile Include="ISessionFactory.cs" />
     <Compile Include="ITransaction.cs" />
     <Compile Include="LazyInitializationException.cs" />
-    <Compile Include="Linq\Assignment.cs" />
     <Compile Include="Linq\Clauses\NhHavingClause.cs" />
     <Compile Include="Linq\Clauses\NhJoinClause.cs" />
     <Compile Include="Linq\Clauses\NhWithClause.cs" />
@@ -330,7 +329,7 @@
     <Compile Include="Linq\NhLinqInsertExpression.cs" />
     <Compile Include="Linq\NhLinqUpdateExpression.cs" />
     <Compile Include="Linq\QueryMode.cs" />
-    <Compile Include="Linq\Assignments.cs" />
+    <Compile Include="Linq\DmlExpressionRewriter.cs" />
     <Compile Include="Linq\Visitors\LeftJoinRewriter.cs" />
     <Compile Include="Linq\Functions\CompareGenerator.cs" />
     <Compile Include="Linq\ExpressionTransformers\SimplifyCompareTransformer.cs" />
