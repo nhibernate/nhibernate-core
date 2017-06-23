@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using NHibernate.Engine;
 using NHibernate.Util;
@@ -13,15 +14,15 @@ namespace NHibernate.Linq
 		/// </summary>
 		protected override System.Type TargetType => typeof(TTarget);
 
-		public NhLinqInsertExpression(Expression expression, Assignments<TSource, TTarget> assignments, ISessionFactoryImplementor sessionFactory)
+		public NhLinqInsertExpression(Expression expression, ISessionFactoryImplementor sessionFactory, IReadOnlyCollection<Assignment> assignments)
 			: base(RewriteForInsert(expression, assignments), sessionFactory)
 		{
 			Key = "INSERT " + Key;
 		}
 
-		private static Expression RewriteForInsert(Expression expression, Assignments<TSource, TTarget> assignments)
+		private static Expression RewriteForInsert(Expression expression, IReadOnlyCollection<Assignment> assignments)
 		{
-			var lambda = assignments.ConvertToDictionaryExpression();
+			var lambda = Assignment.ConvertAssignmentsToDictionaryExpression<TSource>(assignments);
 
 			return Expression.Call(
 				ReflectionCache.QueryableMethods.SelectDefinition.MakeGenericMethod(typeof(TSource), lambda.Body.Type),

@@ -16,9 +16,9 @@ namespace NHibernate.Linq
 		IEnumerable<TResult> ExecuteFuture<TResult>(Expression expression);
 		IFutureValue<TResult> ExecuteFutureValue<TResult>(Expression expression);
 		void SetResultTransformerAndAdditionalCriteria(IQuery query, NhLinqExpression nhExpression, IDictionary<string, Tuple<object, IType>> parameters);
-		int ExecuteDelete(Expression predicate);
-		int ExecuteUpdate<T>(Expression expression, Assignments<T, T> assignments, bool versioned);
-		int ExecuteInsert<TInput, TOutput>(Expression expression, Assignments<TInput, TOutput> assignments);
+		int ExecuteDelete<T>(Expression predicate);
+		int ExecuteUpdate<TInput>(Expression expression, bool versioned, IReadOnlyCollection<Assignment> assignments);
+		int ExecuteInsert<TInput, TOutput>(Expression expression, IReadOnlyCollection<Assignment> assignments);
 	}
 
 	public class DefaultQueryProvider : INhQueryProvider
@@ -174,7 +174,7 @@ namespace NHibernate.Linq
 			}
 		}
 
-		public int ExecuteDelete(Expression predicate)
+		public int ExecuteDelete<T>(Expression predicate)
 		{
 			var nhLinqExpression = new NhLinqDeleteExpression(predicate, Session.Factory);
 
@@ -185,9 +185,9 @@ namespace NHibernate.Linq
 			return query.ExecuteUpdate();
 		}
 
-		public int ExecuteUpdate<T>(Expression expression, Assignments<T, T> assignments, bool versioned)
+		public int ExecuteUpdate<T>(Expression expression, bool versioned, IReadOnlyCollection<Assignment> assignments)
 		{
-			var nhLinqExpression = new NhLinqUpdateExpression<T>(expression, assignments, Session.Factory, versioned);
+			var nhLinqExpression = new NhLinqUpdateExpression<T>(expression, Session.Factory, versioned, assignments);
 
 			var query = Session.CreateQuery(nhLinqExpression);
 
@@ -196,9 +196,9 @@ namespace NHibernate.Linq
 			return query.ExecuteUpdate();
 		}
 
-		public int ExecuteInsert<TSource, TTarget>(Expression expression, Assignments<TSource, TTarget> assignments)
+		public int ExecuteInsert<TSource, TTarget>(Expression expression, IReadOnlyCollection<Assignment> assignments)
 		{
-			var nhLinqExpression = new NhLinqInsertExpression<TSource, TTarget>(expression, assignments, Session.Factory);
+			var nhLinqExpression = new NhLinqInsertExpression<TSource, TTarget>(expression, Session.Factory, assignments);
 
 			var query = Session.CreateQuery(nhLinqExpression);
 

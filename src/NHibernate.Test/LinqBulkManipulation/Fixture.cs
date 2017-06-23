@@ -754,7 +754,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var t = s.BeginTransaction())
 			{
 				var count =
-					s.Query<Dragon>().Update(x => new Dragon {FireTemperature = 300});
+					s.Query<Dragon>().Update(x => new Dragon { FireTemperature = 300});
 				Assert.That(count, Is.EqualTo(1), "Incorrect entity-updated count");
 
 				t.Commit();

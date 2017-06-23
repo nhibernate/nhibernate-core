@@ -141,7 +141,7 @@ namespace NHibernate.Linq
 		public static int Delete<TSource>(this IQueryable<TSource> source)
 		{
 			var provider = GetNhProvider(source);
-			return provider.ExecuteDelete(source.Expression);
+			return provider.ExecuteDelete<TSource>(source.Expression);
 		}
 
 		/// <summary>
@@ -154,8 +154,8 @@ namespace NHibernate.Linq
 		public static int Update<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, TSource>> expression)
 		{
 			var provider = GetNhProvider(source);
-			var assignments = Assignments<TSource, TSource>.FromExpression(expression);
-			return provider.ExecuteUpdate(source.Expression, assignments, false);
+			var assignments = Assignments.FromExpression(expression);
+			return provider.ExecuteUpdate<TSource>(source.Expression, false, assignments);
 		}
 
 		/// <summary>
@@ -168,8 +168,8 @@ namespace NHibernate.Linq
 		public static int UpdateVersioned<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, TSource>> expression)
 		{
 			var provider = GetNhProvider(source);
-			var assignments = Assignments<TSource, TSource>.FromExpression(expression);
-			return provider.ExecuteUpdate(source.Expression, assignments, true);
+			var assignments = Assignments.FromExpression(expression);
+			return provider.ExecuteUpdate<TSource>(source.Expression, true, assignments);
 		}
 
 		/// <summary>
@@ -185,8 +185,8 @@ namespace NHibernate.Linq
 			Expression<Func<TSource, TTarget>> expression)
 		{
 			var provider = GetNhProvider(source);
-			var assignments = Assignments<TSource, TTarget>.FromExpression(expression);
-			return provider.ExecuteInsert(source.Expression, assignments);
+			var assignments = Assignments.FromExpression(expression);
+			return provider.ExecuteInsert<TSource, TTarget>(source.Expression, assignments);
 		}
 
 		public static T MappedAs<T>(this T parameter, IType type)

@@ -1,61 +1,49 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using NHibernate.Linq.Visitors;
-using NHibernate.Util;
 
 namespace NHibernate.Linq
 {
-	public abstract class Assignments
+	public class Assignments 
 	{
-		protected static readonly ConstructorInfo DictionaryConstructorInfo = typeof(Dictionary<string, object>).GetConstructor(new[] { typeof(int) });
-		protected static readonly MethodInfo DictionaryAddMethodInfo = ReflectHelper.GetMethod<Dictionary<string, object>>(d => d.Add(null, null));
-	}
+		readonly IReadOnlyCollection<ParameterExpression> _parameters;
+		readonly List<Assignment> _sets  = new List<Assignment>();
 
-	/// <summary>
-	/// Class to hold assignments used in updates and inserts.
-	/// </summary>
-	/// <typeparam name="TSource">The type of the entity source of the insert or to update.</typeparam>
-	/// <typeparam name="TTarget">The type of the entity to insert or to update.</typeparam>
-	public class Assignments<TSource, TTarget> : Assignments
-	{
-		private readonly List<Assignment> _sets = new List<Assignment>();
-
-		/// <summary>
-		/// Converts the assignments into a lambda expression, which creates a Dictionary&lt;string,object%gt;.
-		/// </summary>
-		/// <returns>A lambda expression representing the assignments.</returns>
-		public LambdaExpression ConvertToDictionaryExpression()
+		Assignments(IReadOnlyCollection<ParameterExpression> parameters)
 		{
-			var param = Expression.Parameter(typeof(TSource));
-			var inits = new List<ElementInit>();
-			foreach (var set in _sets)
+			_parameters = parameters;
+		}
+
+		void AddSetsFromBindings(IEnumerable<MemberBinding> bindings, string path)
+		{
+			foreach (var node in bindings)
 			{
-				var setter = set.Expression;
-				if (setter is LambdaExpression setterLambda)
+				switch (node.BindingType)
 				{
-					setter = setterLambda.Body.Replace(setterLambda.Parameters.First(), param);
+					case MemberBindingType.Assignment:
+						AddSetsFromAssignment((MemberAssignment)node, path + "." + node.Member.Name);
+						break;
+					case MemberBindingType.MemberBinding:
+						AddSetsFromBindings(((MemberMemberBinding)node).Bindings, path + "." + node.Member.Name);
+						break;
+					default:
+						throw new InvalidOperationException($"{node.BindingType} is not supported");
 				}
-				inits.Add(Expression.ElementInit(DictionaryAddMethodInfo, Expression.Constant(set.PropertyPath),
-					Expression.Convert(setter, typeof(object))));
 			}
+		}
 
-			//The ListInit is intentionally "infected" with the lambda parameter (param), in the form of an IIF. 
-			//The only relevance is to make sure that the ListInit is not evaluated by the PartialEvaluatingExpressionTreeVisitor,
-			//which could turn it into a Constant
-			var listInit = Expression.ListInit(
-				Expression.New(
-					DictionaryConstructorInfo,
-					Expression.Condition(
-						Expression.Equal(param, Expression.Constant(null, typeof(TSource))),
-						Expression.Constant(_sets.Count),
-						Expression.Constant(_sets.Count))),
-				inits);
-
-			return Expression.Lambda(listInit, param);
+		void AddSetsFromAssignment(MemberAssignment assignment, string path)
+		{
+			// {Property=new Instance{SubProperty="Value"}}
+			if (assignment.Expression is MemberInitExpression memberInit)
+			{
+				AddSetsFromBindings(memberInit.Bindings, path);
+			}
+			else
+			{
+				_sets.Add(new Assignment(path.Substring(1), Expression.Lambda(assignment.Expression, _parameters)));
+			}
 		}
 
 		/// <summary>
@@ -63,45 +51,16 @@ namespace NHibernate.Linq
 		/// </summary>
 		/// <param name="expression">The expression to convert.</param>
 		/// <returns>The corresponding assignments.</returns>
-		public static Assignments<TSource, TTarget> FromExpression(Expression<Func<TSource, TTarget>> expression)
+		public static List<Assignment> FromExpression<TSource, TTarget>(Expression<Func<TSource, TTarget>> expression)
 		{
 			if (expression == null)
 				throw new ArgumentNullException(nameof(expression));
-			var instance = new Assignments<TSource, TTarget>();
 			var memberInitExpression = expression.Body as MemberInitExpression ??
-				throw new ArgumentException("The expression must be member initialization, e.g. x => new Dog { Name = x.Name, Age = x.Age + 5 }");
+			                           throw new ArgumentException("The expression must be member initialization, e.g. x => new Dog { Name = x.Name, Age = x.Age + 5 }");
 
-			AddSetsFromBindings(memberInitExpression.Bindings, instance, "", expression.Parameters);
-
-			return instance;
-		}
-
-		private static void AddSetsFromBindings(IEnumerable<MemberBinding> bindings, Assignments<TSource, TTarget> instance, string path, ReadOnlyCollection<ParameterExpression> parameters)
-		{
-			foreach (var binding in bindings)
-			{
-				if (binding.BindingType == MemberBindingType.Assignment) // {Property="Value"}
-				{
-					AddSetsFromAssignment((MemberAssignment)binding, instance, path + "." + binding.Member.Name, parameters);
-				}
-				else if (binding.BindingType == MemberBindingType.MemberBinding) // {Property={SubProperty="Value}}
-				{
-					AddSetsFromBindings(((MemberMemberBinding)binding).Bindings, instance, path + "." + binding.Member.Name, parameters);
-				}
-			}
-		}
-
-		private static void AddSetsFromAssignment(MemberAssignment assignment, Assignments<TSource, TTarget> instance, string path, ReadOnlyCollection<ParameterExpression> parameters)
-		{
-			// {Property=new Instance{SubProperty="Value"}}
-			if (assignment.Expression is MemberInitExpression memberInit)
-			{
-				AddSetsFromBindings(memberInit.Bindings, instance, path, parameters);
-			}
-			else
-			{
-				instance._sets.Add(new Assignment(path.Substring(1), Expression.Lambda(assignment.Expression, parameters)));
-			}
+			var instance = new Assignments(expression.Parameters);
+			instance.AddSetsFromBindings(memberInitExpression.Bindings, "");
+			return instance._sets;
 		}
 	}
 }
