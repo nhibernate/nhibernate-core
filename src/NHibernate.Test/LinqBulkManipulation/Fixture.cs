@@ -187,7 +187,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var count = s.Query<Car>().Insert().As(x => new Pickup { Id = x.Id, Vin = x.Vin, Owner = x.Owner });
+				var count = s.Query<Car>().Insert(x => new Pickup { Id = x.Id, Vin = x.Vin, Owner = x.Owner });
 				Assert.AreEqual(1, count);
 
 				t.Commit();
@@ -203,7 +203,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 				var count = s.Query<Car>()
 					.GroupBy(x => x.Id)
 					.Select(x => new { Id = x.Key, Vin = x.Max(y => y.Vin), Owner = x.Max(y => y.Owner) })
-					.Insert().As(x => new Pickup { Id = x.Id, Vin = x.Vin, Owner = x.Owner });
+					.Insert(x => new Pickup { Id = x.Id, Vin = x.Vin, Owner = x.Owner });
 				Assert.AreEqual(1, count);
 
 				t.Commit();
@@ -219,7 +219,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 				var count = s.Query<Vehicle>()
 					.Skip(1)
 					.Take(1)
-					.Insert().As(x => new Pickup { Id = -x.Id, Vin = x.Vin, Owner = x.Owner });
+					.Insert(x => new Pickup { Id = -x.Id, Vin = x.Vin, Owner = x.Owner });
 				Assert.AreEqual(1, count);
 
 				t.Commit();
@@ -261,9 +261,9 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				Assert.Throws<NotSupportedException>(() =>
-					s.Query<Car>()
-						.Insert().As(x => new Pickup { Id = x.Id, Vin = x.Vin, Owner = x.Owner.PadRight(200) }));
+				Assert.Throws<NotSupportedException>(
+					() => s.Query<Car>()
+					       .Insert(x => new Pickup {Id = x.Id, Vin = x.Vin, Owner = x.Owner.PadRight(200)}));
 
 				t.Commit();
 			}
@@ -278,7 +278,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var t = s.BeginTransaction())
 			{
 				var count = s.Query<Human>()
-					.Insert().As(x => new Animal { Description = x.Description, BodyWeight = x.BodyWeight, Mother = x.Mother });
+					.Insert(x => new Animal { Description = x.Description, BodyWeight = x.BodyWeight, Mother = x.Mother });
 				Assert.AreEqual(3, count);
 
 				t.Commit();
@@ -294,7 +294,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var t = s.BeginTransaction())
 			{
 				var count = s.Query<Human>()
-					.Insert().As(x => new Animal { Description = x.Description, BodyWeight = x.BodyWeight, Mother = _butterfly });
+					.Insert(x => new Animal { Description = x.Description, BodyWeight = x.BodyWeight, Mother = _butterfly });
 				Assert.AreEqual(3, count);
 
 				t.Commit();
@@ -310,7 +310,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var t = s.BeginTransaction())
 			{
 				var count = s.Query<EntityWithCrazyCompositeKey>()
-					.Insert().As(x => new EntityReferencingEntityWithCrazyCompositeKey { Name = "Child", Parent = x });
+					.Insert(x => new EntityReferencingEntityWithCrazyCompositeKey { Name = "Child", Parent = x });
 				Assert.AreEqual(1, count);
 
 				t.Commit();
@@ -324,7 +324,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var t = s.BeginTransaction())
 			{
 				Assert.Throws<QueryException>(
-					() => s.Query<Lizard>().Insert().As(x => new Human { Id = x.Id, BodyWeight = x.BodyWeight }),
+					() => s.Query<Lizard>().Insert(x => new Human { Id = x.Id, BodyWeight = x.BodyWeight }),
 					"superclass prop insertion did not error");
 
 				t.Commit();
@@ -340,7 +340,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var t = s.BeginTransaction())
 			{
 				Assert.Throws<QueryException>(
-					() => s.Query<Car>().Insert().As(x => new Joiner { Name = x.Vin, JoinedName = x.Owner }),
+					() => s.Query<Car>().Insert(x => new Joiner { Name = x.Vin, JoinedName = x.Owner }),
 					"mapped-join insertion did not error");
 
 				t.Commit();
@@ -355,7 +355,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var count = s.Query<Zoo>().Where(z => z.Id == _zoo.Id).Insert().As(x => new PettingZoo { Name = x.Name });
+				var count = s.Query<Zoo>().Where(z => z.Id == _zoo.Id).Insert(x => new PettingZoo { Name = x.Name });
 				Assert.That(count, Is.EqualTo(1), "unexpected insertion count");
 				t.Commit();
 			}
@@ -384,7 +384,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 				var count =
 					s.Query<IntegerVersioned>()
 						.Where(x => x.Id == initialId)
-						.Insert().As(x => new IntegerVersioned { Name = x.Name, Data = x.Data });
+						.Insert(x => new IntegerVersioned { Name = x.Name, Data = x.Data });
 				Assert.That(count, Is.EqualTo(1), "unexpected insertion count");
 				t.Commit();
 			}
@@ -411,7 +411,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 				var count =
 					s.Query<TimestampVersioned>()
 						.Where(x => x.Id == initialId)
-						.Insert().As(x => new TimestampVersioned { Name = x.Name, Data = x.Data });
+						.Insert(x => new TimestampVersioned { Name = x.Name, Data = x.Data });
 				Assert.That(count, Is.EqualTo(1), "unexpected insertion count");
 
 				t.Commit();
@@ -439,7 +439,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 				Assert.DoesNotThrow(() =>
 				{
 					s.Query<Human>().Where(x => x.Mother.Mother != null)
-						.Insert().As(x => new Animal { Description = x.Description, BodyWeight = x.BodyWeight });
+						.Insert(x => new Animal { Description = x.Description, BodyWeight = x.BodyWeight });
 				});
 
 				s.Transaction.Commit();
@@ -469,7 +469,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 				count =
 					s.Query<SimpleClassWithComponent>()
 						.Where(x => x.Name.First == correctName)
-						.Insert().As(x => new SimpleClassWithComponent { Name = new Name { First = x.Name.First, Last = x.Name.Last, Initial = 'Z' } });
+						.Insert(x => new SimpleClassWithComponent { Name = new Name { First = x.Name.First, Last = x.Name.Last, Initial = 'Z' } });
 				Assert.That(count, Is.EqualTo(1), "incorrect insert from corrected count");
 				t.Commit();
 			}

@@ -33,18 +33,6 @@ namespace NHibernate.Linq
 			return InsertInto(assignments);
 		}
 
-		/// <summary>
-		/// Executes the insert, inserting new entities as specified by the expression.
-		/// </summary>
-		/// <typeparam name="TTarget">The type of the entities to insert.</typeparam>
-		/// <param name="expression">The expression projecting a source entity to the entity to insert.</param>
-		/// <returns>The number of inserted entities.</returns>
-		public int As<TTarget>(Expression<Func<TSource, TTarget>> expression)
-		{
-			var assignments = Assignments<TSource, TTarget>.FromExpression(expression);
-			return InsertInto(assignments);
-		}
-
 		internal int InsertInto<TTarget>(Assignments<TSource, TTarget> assignments)
 		{
 			return _provider.ExecuteInsert(_sourceExpression, assignments);

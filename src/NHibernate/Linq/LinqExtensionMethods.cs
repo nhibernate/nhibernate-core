@@ -168,6 +168,23 @@ namespace NHibernate.Linq
 			return new InsertSyntax<TSource>(source.Expression, provider);
 		}
 
+		/// <summary>
+		/// Initiate an insert using selected entities as a source. Will use <c>INSERT INTO [...] SELECT FROM [...]</c> in the database.
+		/// </summary>
+		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
+		/// <typeparam name="TTarget"></typeparam>
+		/// <param name="source">The query matching entities source of the data to insert.</param>
+		/// <param name="expression"></param>
+		/// <returns>An insert builder, allowing to specify target entity class and assignments to its properties.</returns>
+		public static int Insert<TSource, TTarget>(
+			this IQueryable<TSource> source,
+			Expression<Func<TSource, TTarget>> expression)
+		{
+			var assignments = Assignments<TSource, TTarget>.FromExpression(expression);
+			var provider = GetNhProvider(source);
+			return provider.ExecuteInsert(source.Expression, assignments);
+		}
+
 		public static T MappedAs<T>(this T parameter, IType type)
 		{
 			throw new InvalidOperationException("The method should be used inside Linq to indicate a type of a parameter");
