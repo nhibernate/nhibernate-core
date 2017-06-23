@@ -495,19 +495,9 @@ IList<Cat> oldCats =
       </para>
       <programlisting><![CDATA[session.Query<Cat>()
     .Where(c => c.BodyWeight > 20)
-    .Insert()
-    .As(c => new Dog { Name = c.Name + "dog", BodyWeight = c.BodyWeight });]]></programlisting>
+    .Insert(c => new Dog { Name = c.Name + "dog", BodyWeight = c.BodyWeight });]]></programlisting>
       <para>
-        Or using assignments:
-      </para>
-      <programlisting><![CDATA[session.Query<Cat>()
-    .Where(c => c.BodyWeight > 20)
-    .Insert()
-    .Into<Dog>(a => a
-        .Set(d => d.Name, c => c.Name + "dog")
-        .Set(d => d.BodyWeight, c => c.BodyWeight));]]></programlisting>
-      <para>
-        In both cases, unspecified properties are not included in the resulting SQL insert.
+        Unspecified properties are not included in the resulting SQL insert.
         <link linkend="mapping-declaration-version"><literal>version</literal></link> and
         <link linkend="mapping-declaration-timestamp"><literal>timestamp</literal></link> properties are
         exceptions. If not specified, they are inserted with their <literal>seed</literal> value.
@@ -530,18 +520,9 @@ IList<Cat> oldCats =
       </para>
       <programlisting><![CDATA[session.Query<Cat>()
     .Where(c => c.BodyWeight > 20)
-    .Update()
-    .As(c => new Cat { BodyWeight = c.BodyWeight / 2 });]]></programlisting>
+    .Update(c => new Cat { BodyWeight = c.BodyWeight / 2 });]]></programlisting>
       <para>
-        Or using assignments:
-      </para>
-      <programlisting><![CDATA[session.Query<Cat>()
-    .Where(c => c.BodyWeight > 20)
-    .Update()
-    .Assign(a => a
-        .Set(c => c.BodyWeight, c => c.BodyWeight / 2));]]></programlisting>
-      <para>
-        In both cases, unspecified properties are not included in the resulting SQL update. This could
+        Unspecified properties are not included in the resulting SQL update. This could
         be changed for <link linkend="mapping-declaration-version"><literal>version</literal></link> and
         <link linkend="mapping-declaration-timestamp"><literal>timestamp</literal></link> properties:
         <literal>As</literal> and <literal>Assign</literal> methods take an optional boolean parameter,
