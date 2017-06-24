@@ -260,7 +260,7 @@ namespace NHibernate.Engine.Loading
 			}
 
 			bool addToCache = hasNoQueuedAdds && persister.HasCache && 
-				((session.CacheMode & CacheMode.Put) == CacheMode.Put) && !ce.IsDoremove; // and this is not a forced initialization during flush
+				session.CacheMode.HasFlag(CacheMode.Put) && !ce.IsDoremove; // and this is not a forced initialization during flush
 
 			if (addToCache)
 			{

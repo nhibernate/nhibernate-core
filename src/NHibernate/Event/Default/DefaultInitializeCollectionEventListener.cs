@@ -70,7 +70,7 @@ namespace NHibernate.Event.Default
 				return false;
 			}
 
-			bool useCache = persister.HasCache && ((source.CacheMode & CacheMode.Get) == CacheMode.Get);
+			bool useCache = persister.HasCache && source.CacheMode.HasFlag(CacheMode.Get);
 
 			if (!useCache)
 			{
