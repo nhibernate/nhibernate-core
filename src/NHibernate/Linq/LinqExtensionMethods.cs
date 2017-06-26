@@ -6,7 +6,7 @@ using System.Reflection;
 using NHibernate.Impl;
 using NHibernate.Type;
 using NHibernate.Util;
-using Remotion.Linq.Parsing.ExpressionTreeVisitors;
+using Remotion.Linq.Parsing.ExpressionVisitors;
 
 namespace NHibernate.Linq
 {
@@ -147,7 +147,7 @@ namespace NHibernate.Linq
 				throw new NotSupportedException($"Source {nameof(source.Provider)} must be a {nameof(INhQueryProvider)}");
 			}
 
-			var expression = ReplacingExpressionTreeVisitor
+			var expression = ReplacingExpressionVisitor
 				.Replace(selector.Parameters.Single(), source.Expression, selector.Body);
 
 			return provider.ExecuteFutureValue<TResult>(expression);

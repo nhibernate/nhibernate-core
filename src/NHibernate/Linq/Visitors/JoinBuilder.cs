@@ -72,21 +72,21 @@ namespace NHibernate.Linq.Visitors
 			return resultOperatorBase != null && _queryModel.ResultOperators.Contains(resultOperatorBase);
 		}
 
-		private class QuerySourceExtractor : ExpressionTreeVisitor
+		private class QuerySourceExtractor : RelinqExpressionVisitor
 		{
 			private IQuerySource _querySource;
 
 			public static IQuerySource GetQuerySource(Expression expression)
 			{
 				var sourceExtractor = new QuerySourceExtractor();
-				sourceExtractor.VisitExpression(expression);
+				sourceExtractor.Visit(expression);
 				return sourceExtractor._querySource;
 			}
 
-			protected override Expression VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
+			protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression expression)
 			{
 				_querySource = expression.ReferencedQuerySource;
-				return base.VisitQuerySourceReferenceExpression(expression);
+				return base.VisitQuerySourceReference(expression);
 			}
 		}
 	}

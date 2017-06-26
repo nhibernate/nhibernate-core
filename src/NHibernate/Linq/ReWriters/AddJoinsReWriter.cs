@@ -1,5 +1,7 @@
+using System;
 using System.Linq;
 using NHibernate.Engine;
+using NHibernate.Linq.Clauses;
 using NHibernate.Linq.Visitors;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
@@ -12,7 +14,7 @@ namespace NHibernate.Linq.ReWriters
 		bool IsIdentifier(System.Type type, string propertyName);
 	}
 
-	public class AddJoinsReWriter : QueryModelVisitorBase, IIsEntityDecider
+	public class AddJoinsReWriter : NhQueryModelVisitorBase, IIsEntityDecider
 	{
 		private readonly ISessionFactoryImplementor _sessionFactory;
 		private readonly MemberExpressionJoinDetector _memberExpressionJoinDetector;
@@ -50,6 +52,11 @@ namespace NHibernate.Linq.ReWriters
 		public override void VisitWhereClause(WhereClause whereClause, QueryModel queryModel, int index)
 		{
 			_whereJoinDetector.Transform(whereClause);
+		}
+
+		public override void VisitNhHavingClause(NhHavingClause havingClause, QueryModel queryModel, int index)
+		{
+			_whereJoinDetector.Transform(havingClause);
 		}
 
 		public bool IsEntity(System.Type type)

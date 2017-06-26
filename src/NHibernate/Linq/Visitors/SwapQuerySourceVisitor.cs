@@ -5,7 +5,7 @@ using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
-	public class SwapQuerySourceVisitor : ExpressionTreeVisitor
+	public class SwapQuerySourceVisitor : RelinqExpressionVisitor
 	{
 		private readonly IQuerySource _oldClause;
 		private readonly IQuerySource _newClause;
@@ -18,10 +18,10 @@ namespace NHibernate.Linq.Visitors
 
 		public Expression Swap(Expression expression)
 		{
-			return VisitExpression(expression);
+			return Visit(expression);
 		}
 
-		protected override Expression VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
+		protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression expression)
 		{
 			if (expression.ReferencedQuerySource == _oldClause)
 			{
@@ -33,16 +33,16 @@ namespace NHibernate.Linq.Visitors
 
 			if (mainFromClause != null)
 			{
-				mainFromClause.FromExpression = VisitExpression(mainFromClause.FromExpression);
+				mainFromClause.FromExpression = Visit(mainFromClause.FromExpression);
 			}
 
 			return expression;
 		}
 
-		protected override Expression VisitSubQueryExpression(SubQueryExpression expression)
+		protected override Expression VisitSubQuery(SubQueryExpression expression)
 		{
-			expression.QueryModel.TransformExpressions(VisitExpression);
-			return base.VisitSubQueryExpression(expression);
+			expression.QueryModel.TransformExpressions(Visit);
+			return base.VisitSubQuery(expression);
 		}
 	}
 }
