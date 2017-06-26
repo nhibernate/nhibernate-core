@@ -159,7 +159,7 @@ namespace NHibernate.Engine
 
 					//if ( end == -1 && count > batchSize*10 ) return keys; //try out ten batches, max
 
-					bool isEqual = collectionPersister.KeyType.IsEqual(id, ce.LoadedKey, context.Session.EntityMode, collectionPersister.Factory);
+					bool isEqual = collectionPersister.KeyType.IsEqual(id, ce.LoadedKey, collectionPersister.Factory);
 
 					if (isEqual)
 					{
@@ -212,7 +212,7 @@ namespace NHibernate.Engine
 						//the first id found after the given id
 						return ids;
 					}
-					if (persister.IdentifierType.IsEqual(id, key.Identifier, context.Session.EntityMode))
+					if (persister.IdentifierType.IsEqual(id, key.Identifier))
 					{
 						end = i;
 					}
@@ -236,7 +236,7 @@ namespace NHibernate.Engine
 
 		private bool IsCached(EntityKey entityKey, IEntityPersister persister)
 		{
-			if (persister.HasCache)
+			if (persister.HasCache && context.Session.CacheMode.HasFlag(CacheMode.Get))
 			{
 				CacheKey key = context.Session.GenerateCacheKey(entityKey.Identifier, persister.IdentifierType, entityKey.EntityName);
 				return persister.Cache.Cache.Get(key) != null;
@@ -246,7 +246,7 @@ namespace NHibernate.Engine
 
 		private bool IsCached(object collectionKey, ICollectionPersister persister)
 		{
-			if (persister.HasCache)
+			if (persister.HasCache && context.Session.CacheMode.HasFlag(CacheMode.Get))
 			{
 				CacheKey cacheKey = context.Session.GenerateCacheKey(collectionKey, persister.KeyType, persister.Role);
 				return persister.Cache.Cache.Get(cacheKey) != null;

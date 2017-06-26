@@ -72,21 +72,25 @@ Ensure that your e-mail address and name are configured appropriately in Git.
 
 Create a feature branch so it's easy to keep it separate from other improvements. Having a pull request accepted might involve further commits based on community feedback, so having the feature branch provides a tidy place to work from. Using the issue number as the branch name is good practice. 
 
-When you commit, please include the issue number in your commit message. This will allow the JIRA issue tracker to link to automatically link your commits to the issue. For example: NH-1234 
+When you commit, please include the issue number in your commit message. This will allow the JIRA issue tracker to automatically link your commits to the issue. By example: *NH-1234 - test case for blah trouble*.  Make sure you do not put any non whitespace character adjacent to the issue number, as this would prevent JIRA to match it. (Avoid *NH-1234: test case for blah trouble*.)
 
 ## Implementing the Bug Fix or Improvement
 
-Since you now have a failing test case, it should be straight-forward to step into NHibernate to attempt to ascertain what the problem is. While this may seem daunting at first, feel free to give it a go. It's just code afterall. :) 
+Since you now have a failing test case, it should be straight-forward to step into NHibernate to attempt to ascertain what the problem is. While this may seem daunting at first, feel free to give it a go. It's just code after all. :) 
 
 ### Ensure All Tests Pass
 
 Once you've made changes to the NHibernate code base, you'll want to ensure that you haven't caused any previously passing tests to fail. The easiest way to check this is to select option D from the build menu, ensure the root tree node is selected, then press run to have all the tests run. 
 
+Please note that some tests assume a case insensitive accent sensitive database when performing string comparison. Some tests assume SQL user locales to be en-US. They will fail otherwise. With SQL Server, collation with supplementary characters (\_SC suffix on collation name) are no supported by legacy tests on "text" types.
+
 ## Submit a Pull Request
 
 Be sure to link to the JIRA issue in your GitHub pull request. Also, go back to your JIRA issue and link to the pull request. 
 
-We use tabs for code indentation, not spaces. As this is not the default in Visual Studio, you will need to reconfigure Visual Studio to indent with tabs whenever you work on the NHibernate codebase. To make this easier, NHibernate has an [editorconfig][3] configuration file to switch Visual Studio automatically between tabs and spaces mode. It is recomended you install editorconfig from the Visual Studio Extension Manager.
+We use tabs for code indentation, not spaces. As this is not the default in Visual Studio, you will need to reconfigure Visual Studio to indent with tabs whenever you work on the NHibernate codebase. To make this easier, NHibernate has an [editorconfig][3] configuration file to switch Visual Studio automatically between tabs and spaces mode. It is recommended you install editorconfig from the Visual Studio Extension Manager.
+
+After submitting your pull request, come back later to check the outcome of automated builds. If some have failed, they will be listed in your pull request with a link to the corresponding TeamCity build. Find out in the build which tests are newly failing, and take appropriate action. Some of those builds have many known failing tests, which does not trigger a build failure. A *Comparison.txt* file in build Artifacts may help finding which failing tests are not known failing tests and must be addressed.
 
 ## Further Discussion
 

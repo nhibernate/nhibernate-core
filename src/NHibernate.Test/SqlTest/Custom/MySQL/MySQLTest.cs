@@ -14,7 +14,7 @@ namespace NHibernate.Test.SqlTest.Custom.MySQL
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return dialect is MySQL5Dialect || dialect is MySQLDialect;
+			return dialect is MySQLDialect;
 		}
 	}
 }

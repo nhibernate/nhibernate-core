@@ -1,6 +1,5 @@
 using NHibernate.Cfg;
 using NHibernate.Criterion;
-using NHibernate.Engine;
 using NHibernate.Intercept;
 using NHibernate.Properties;
 using NUnit.Framework;
@@ -10,12 +9,17 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override void Configure(Configuration configuration)
+		{
+			base.Configure(configuration);
+			configuration.Properties[Environment.CacheProvider] = typeof(BinaryFormatterCacheProvider).AssemblyQualifiedName;
+			configuration.Properties[Environment.UseQueryCache] = "true";
+		}
+
 		protected override void OnSetUp()
 		{
-			cfg.Properties[Environment.CacheProvider] = typeof (BinaryFormatterCacheProvider).AssemblyQualifiedName;
-			cfg.Properties[Environment.UseQueryCache] = "true";
-			sessions = (ISessionFactoryImplementor) cfg.BuildSessionFactory();
-
+			// Clear cache at each test.
+			RebuildSessionFactory();
 			using (var session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{

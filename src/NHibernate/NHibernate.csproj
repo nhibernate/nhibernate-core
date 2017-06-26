@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+  <Import Project="..\packages\Antlr3.3.5.1\build\Antlr3.props" Condition="Exists('..\packages\Antlr3.3.5.1\build\Antlr3.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -15,7 +16,7 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -47,6 +48,7 @@
     <NoWarn>1591%3b3001%3b3002%3b3003%3b3004%3b3005</NoWarn>
     <WarningsAsErrors>1717;1574</WarningsAsErrors>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -60,6 +62,7 @@
     <NoWarn>1591;3001;3002;3003;3004;3005</NoWarn>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>bin\Release-2.0\NHibernate.XML</DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -68,23 +71,23 @@
     <AssemblyOriginatorKeyFile>..\NHibernate.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Antlr3.Runtime.3.5.1\lib\net40-client\Antlr3.Runtime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Iesi.Collections, Version=4.0.0.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Iesi.Collections.4.0.1.4000\lib\net40\Iesi.Collections.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Remotion.Linq, Version=1.15.15.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Remotion.Linq.1.15.15.0\lib\portable-net45+wp80+wpa81+win\Remotion.Linq.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Xml" />
-    <Reference Include="Antlr3.Runtime, Version=3.1.0.39271, Culture=neutral, PublicKeyToken=3a9cab8f8d22bfb7">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\Antlr3.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="Iesi.Collections">
-      <HintPath>..\..\lib\net\4.0\Iesi.Collections.dll</HintPath>
-    </Reference>
-    <Reference Include="Remotion.Linq, Version=1.13.100.2, Culture=neutral, PublicKeyToken=cab60358ab4081ea">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\Remotion.Linq.dll</HintPath>
-    </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
@@ -141,6 +144,15 @@
     <Compile Include="Connection\DriverConnectionProvider.cs" />
     <Compile Include="Connection\IConnectionProvider.cs" />
     <Compile Include="Connection\UserSuppliedConnectionProvider.cs" />
+    <Compile Include="Context\AsyncLocalSessionContext.cs" />
+    <Compile Include="Dialect\PostgreSQL83Dialect.cs" />
+    <Compile Include="Impl\ISharedSessionCreationOptions.cs" />
+    <Compile Include="ISharedSessionBuilder.cs" />
+    <Compile Include="IStatelessSessionBuilder.cs" />
+    <Compile Include="ISessionBuilder.cs" />
+    <Compile Include="Impl\ISessionCreationOptions.cs" />
+    <Compile Include="Tool\hbm2ddl\IDatabaseMetadata.cs" />
+    <Compile Include="Util\DelegateHelper.cs" />
     <Compile Include="Dialect\BitwiseFunctionOperation.cs" />
     <Compile Include="Dialect\DB2Dialect.cs" />
     <Compile Include="Dialect\Dialect.cs" />
@@ -729,12 +741,14 @@
     <Compile Include="Type\UInt32Type.cs" />
     <Compile Include="Type\UInt64Type.cs" />
     <Compile Include="Type\PrimitiveType.cs" />
+    <Compile Include="Type\TimestampUtcType.cs" />
     <Compile Include="Type\YesNoType.cs" />
     <Compile Include="UnresolvableObjectException.cs" />
     <Compile Include="Util\ADOExceptionReporter.cs" />
     <Compile Include="Util\ArrayHelper.cs" />
     <Compile Include="Util\CollectionPrinter.cs" />
     <Compile Include="Util\EnumerableExtensions.cs" />
+    <Compile Include="Util\ReflectionCache.cs" />
     <Compile Include="Util\EnumeratorAdapter.cs" />
     <Compile Include="Util\IdentityMap.cs" />
     <Compile Include="Util\JoinedEnumerable.cs" />
@@ -916,7 +930,6 @@
     <Compile Include="Driver\ReflectionDriveConnectionCommandProvider.cs" />
     <Compile Include="Engine\Query\CallableParser.cs" />
     <Compile Include="Engine\Query\QueryExpressionPlan.cs" />
-    <Compile Include="EntityModeEqualityComparer.cs" />
     <Compile Include="Event\AbstractPostDatabaseOperationEvent.cs" />
     <Compile Include="Event\AbstractPreDatabaseOperationEvent.cs" />
     <Compile Include="Event\IDatabaseEventArgs.cs" />
@@ -940,10 +953,6 @@
     <Compile Include="Hql\Ast\ANTLR\Exec\IStatementExecutor.cs" />
     <Compile Include="Hql\Ast\ANTLR\Exec\MultiTableDeleteExecutor.cs" />
     <Compile Include="Hql\Ast\ANTLR\Exec\MultiTableUpdateExecutor.cs" />
-    <Compile Include="Hql\Ast\ANTLR\Generated\HqlLexer.cs" />
-    <Compile Include="Hql\Ast\ANTLR\Generated\HqlParser.cs" />
-    <Compile Include="Hql\Ast\ANTLR\Generated\HqlSqlWalker.cs" />
-    <Compile Include="Hql\Ast\ANTLR\Generated\SqlGenerator.cs" />
     <Compile Include="Hql\Ast\ANTLR\HqlLexer.cs" />
     <Compile Include="Hql\Ast\ANTLR\HqlParser.cs" />
     <Compile Include="Hql\Ast\ANTLR\HqlSqlWalker.cs" />
@@ -1712,16 +1721,15 @@
     <Compile Include="Transform\PassThroughResultTransformer.cs" />
     <Compile Include="Transform\Transformers.cs" />
     <Compile Include="Tuple\Component\AbstractComponentTuplizer.cs" />
-    <Compile Include="Tuple\Component\ComponentEntityModeToTuplizerMapping.cs" />
+    <Compile Include="Tuple\Component\ComponentTuplizerFactory.cs" />
     <Compile Include="Tuple\Component\ComponentMetamodel.cs" />
     <Compile Include="Tuple\Component\DynamicMapComponentTuplizer.cs" />
     <Compile Include="Tuple\Component\IComponentTuplizer.cs" />
     <Compile Include="Tuple\Component\PocoComponentTuplizer.cs" />
     <Compile Include="Tuple\DynamicMapInstantiator.cs" />
-    <Compile Include="Tuple\EntityModeToTuplizerMapping.cs" />
     <Compile Include="Tuple\Entity\AbstractEntityTuplizer.cs" />
     <Compile Include="Tuple\Entity\DynamicMapEntityTuplizer.cs" />
-    <Compile Include="Tuple\Entity\EntityEntityModeToTuplizerMapping.cs" />
+    <Compile Include="Tuple\Entity\EntityTuplizerFactory.cs" />
     <Compile Include="Tuple\Entity\EntityMetamodel.cs" />
     <Compile Include="Tuple\Entity\IEntityTuplizer.cs" />
     <Compile Include="Tuple\Entity\PocoEntityTuplizer.cs" />
@@ -1780,11 +1788,9 @@
     <Compile Include="Util\SimpleMRUCache.cs" />
     <Compile Include="Util\SingletonEnumerable.cs" />
     <Compile Include="Util\SoftLimitMRUCache.cs" />
-    <Compile Include="Util\ThreadSafeDictionary.cs" />
     <Compile Include="Util\TypeNameParser.cs" />
     <Compile Include="Util\UnmodifiableDictionary.cs" />
     <Compile Include="Util\WeakHashtable.cs" />
-    <Compile Include="Properties\XmlAccessor.cs" />
     <EmbeddedResource Include="nhibernate-configuration.xsd">
       <SubType>
       </SubType>
@@ -1796,11 +1802,12 @@
     <None Include="..\NHibernate.snk">
       <Link>NHibernate.snk</Link>
     </None>
-    <None Include="Hql\Ast\ANTLR\Hql.g" />
-    <None Include="Hql\Ast\ANTLR\HqlSqlWalker.g" />
-    <None Include="Hql\Ast\ANTLR\SqlGenerator.g" />
+    <Antlr3 Include="Hql\Ast\ANTLR\Hql.g" />
+    <Antlr3 Include="Hql\Ast\ANTLR\HqlSqlWalker.g" />
+    <Antlr3 Include="Hql\Ast\ANTLR\SqlGenerator.g" />
     <None Include="NHibernate.build" />
     <None Include="NHibernate.nuspec.template" />
+    <None Include="packages.config" />
     <None Include="Type\IType.cs.xmldoc" />
   </ItemGroup>
   <ItemGroup>
@@ -1813,6 +1820,19 @@
   </Target>
   -->
   <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release' ">
-    <Exec Command="$(SolutionDir)..\Tools\ilrepack\ilrepack.exe /verbose /t:library /targetplatform:v4 /keyfile:$(AssemblyOriginatorKeyFile) /internalize:internalize.exclude /out:$(OutputPath)\NHibernate.dll $(IntermediateOutputPath)\NHibernate.dll $(OutputPath)\Remotion.Linq.dll $(OutputPath)\Antlr3.Runtime.dll" />
+    <GetReferenceAssemblyPaths BypassFrameworkInstallChecks="False" TargetFrameworkMoniker="$(TargetFrameworkMoniker)">
+      <Output TaskParameter="FullFrameworkReferenceAssemblyPaths" PropertyName="_ReferenceAssembliesPath" />
+      <!-- Note: _ReferenceAssembliesPath will contain a trailing backslash which /targetplatform
+           can't handle. Circumvented by adding a trailing period below. -->
+    </GetReferenceAssemblyPaths>
+    <Exec Command="$(SolutionDir)..\Tools\ilrepack\ilrepack.exe /verbose /t:library /targetplatform:v4,&quot;$(_ReferenceAssembliesPath).&quot; /keyfile:$(AssemblyOriginatorKeyFile) /internalize /out:$(OutputPath)\NHibernate.dll $(IntermediateOutputPath)\NHibernate.dll $(OutputPath)\Antlr3.Runtime.dll" />
   </Target>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Antlr3.3.5.1\build\Antlr3.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Antlr3.3.5.1\build\Antlr3.props'))" />
+    <Error Condition="!Exists('..\packages\Antlr3.3.5.1\build\Antlr3.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Antlr3.3.5.1\build\Antlr3.targets'))" />
+  </Target>
+  <Import Project="..\packages\Antlr3.3.5.1\build\Antlr3.targets" Condition="Exists('..\packages\Antlr3.3.5.1\build\Antlr3.targets')" />
 </Project>

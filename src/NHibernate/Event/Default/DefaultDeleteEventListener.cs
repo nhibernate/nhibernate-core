@@ -57,7 +57,7 @@ namespace NHibernate.Event.Default
 					PerformDetachedEntityDeletionCheck(@event);
 				}
 
-				id = persister.GetIdentifier(entity, source.EntityMode);
+				id = persister.GetIdentifier(entity);
 
 				if (id == null)
 				{
@@ -70,12 +70,12 @@ namespace NHibernate.Event.Default
 
 				new OnUpdateVisitor(source, id, entity).Process(entity, persister);
 
-				version = persister.GetVersion(entity, source.EntityMode);
+				version = persister.GetVersion(entity);
 
 				entityEntry = persistenceContext.AddEntity(
 					entity, 
 					persister.IsMutable ? Status.Loaded : Status.ReadOnly,
-					persister.GetPropertyValues(entity, source.EntityMode), 
+					persister.GetPropertyValues(entity), 
 					key,
 					version, 
 					LockMode.None, 
@@ -105,7 +105,7 @@ namespace NHibernate.Event.Default
 
 			if (source.Factory.Settings.IsIdentifierRollbackEnabled)
 			{
-				persister.ResetIdentifier(entity, id, version, source.EntityMode);
+				persister.ResetIdentifier(entity, id, version);
 			}
 		}
 
@@ -182,7 +182,7 @@ namespace NHibernate.Event.Default
 			if (entityEntry.LoadedState == null)
 			{
 				//ie. the entity came in from update()
-				currentState = persister.GetPropertyValues(entity, session.EntityMode);
+				currentState = persister.GetPropertyValues(entity);
 			}
 			else
 			{
@@ -228,7 +228,7 @@ namespace NHibernate.Event.Default
 
 		protected virtual bool InvokeDeleteLifecycle(IEventSource session, object entity, IEntityPersister persister)
 		{
-			if (persister.ImplementsLifecycle(session.EntityMode))
+			if (persister.ImplementsLifecycle)
 			{
 				log.Debug("calling onDelete()");
 				if (((ILifecycle)entity).OnDelete(session) == LifecycleVeto.Veto)

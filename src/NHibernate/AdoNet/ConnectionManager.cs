@@ -1,8 +1,8 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using System.Runtime.Serialization;
 using System.Security;
-using System.Security.Permissions;
 
 using NHibernate.Engine;
 
@@ -12,7 +12,7 @@ namespace NHibernate.AdoNet
 	/// Manages the database connection and transaction for an <see cref="ISession" />.
 	/// </summary>
 	/// <remarks>
-	/// This class corresponds to ConnectionManager and JDBCContext in Hibernate,
+	/// This class corresponds to LogicalConnectionImplementor and JdbcCoordinator in Hibernate,
 	/// combined.
 	/// </remarks>
 	[Serializable]
@@ -28,7 +28,7 @@ namespace NHibernate.AdoNet
 		}
 
 		[NonSerialized]
-		private IDbConnection connection;
+		private DbConnection connection;
 		// Whether we own the connection, i.e. connect and disconnect automatically.
 		private bool ownConnection;
 
@@ -43,13 +43,13 @@ namespace NHibernate.AdoNet
 		private readonly IInterceptor interceptor;
 
 		[NonSerialized]
-		private bool isFlushing;
+		private bool _releasesEnabled = true;
 
 		private bool flushingFromDtcTransaction;
 
 		public ConnectionManager(
 			ISessionImplementor session,
-			IDbConnection suppliedConnection,
+			DbConnection suppliedConnection,
 			ConnectionReleaseMode connectionReleaseMode,
 			IInterceptor interceptor)
 		{
@@ -88,7 +88,7 @@ namespace NHibernate.AdoNet
 			ownConnection = true;
 		}
 
-		public void Reconnect(IDbConnection suppliedConnection)
+		public void Reconnect(DbConnection suppliedConnection)
 		{
 			if (IsConnected)
 			{
@@ -100,7 +100,7 @@ namespace NHibernate.AdoNet
 			ownConnection = false;
 		}
 
-		public IDbConnection Close()
+		public DbConnection Close()
 		{
 			if (batcher != null)
 			{
@@ -126,14 +126,14 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		private IDbConnection DisconnectSuppliedConnection()
+		private DbConnection DisconnectSuppliedConnection()
 		{
 			if (connection == null)
 			{
 				throw new HibernateException("Session already disconnected");
 			}
 
-			IDbConnection c = connection;
+			var c = connection;
 			connection = null;
 			return c;
 		}
@@ -154,7 +154,7 @@ namespace NHibernate.AdoNet
 			CloseConnection();
 		}
 
-		public IDbConnection Disconnect()
+		public DbConnection Disconnect()
 		{
 			if (IsInActiveTransaction)
 				throw new InvalidOperationException("Disconnect cannot be called while a transaction is in progress.");
@@ -177,7 +177,7 @@ namespace NHibernate.AdoNet
 			connection = null;
 		}
 
-		public IDbConnection GetConnection()
+		public DbConnection GetConnection()
 		{
 			if (connection == null)
 			{
@@ -226,9 +226,9 @@ namespace NHibernate.AdoNet
 		{
 			if (IsAggressiveRelease)
 			{
-				if (isFlushing)
+				if (!_releasesEnabled)
 				{
-					log.Debug("skipping aggressive-release due to flush cycle");
+					log.Debug("skipping aggressive-release due to manual disabling");
 				}
 				else if (batcher.HasOpenResources)
 				{
@@ -258,16 +258,31 @@ namespace NHibernate.AdoNet
 			}
 		}
 
+		[NonSerialized]
+		private int _flushDepth;
+
 		public void FlushBeginning()
 		{
-			log.Debug("registering flush begin");
-			isFlushing = true;
+			if (_flushDepth == 0)
+			{
+				log.Debug("registering flush begin");
+				_releasesEnabled = false;
+			}
+			_flushDepth++;
 		}
 
 		public void FlushEnding()
 		{
-			log.Debug("registering flush end");
-			isFlushing = false;
+			_flushDepth--;
+			if (_flushDepth < 0)
+			{
+				throw new HibernateException("Mismatched flush handling");
+			}
+			if (_flushDepth == 0)
+			{
+				_releasesEnabled = true;
+				log.Debug("registering flush end");
+			}
 			AfterStatement();
 		}
 
@@ -282,11 +297,7 @@ namespace NHibernate.AdoNet
 			interceptor = (IInterceptor)info.GetValue("interceptor", typeof(IInterceptor));
 		}
 
-#if NET_4_0
 		[SecurityCritical]
-#else
-		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-#endif
 		public void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			info.AddValue("ownConnection", ownConnection);
@@ -407,7 +418,7 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		public IDbCommand CreateCommand()
+		public DbCommand CreateCommand()
 		{
 			var result = GetConnection().CreateCommand();
 			Transaction.Enlist(result);

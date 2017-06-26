@@ -57,7 +57,7 @@ namespace NHibernate.Test.FilterTest
 			var cfg = GetConfiguration();
 			var e = Assert.Throws<MappingException>(() => cfg.AddResource("NHibernate.Test.FilterTest.WrongFilterDefInClass.hbm.xml", GetType().Assembly));
 			Assert.That(e.InnerException, Is.Not.Null);
-			Assert.That(e.InnerException.Message, Is.StringStarting("no filter condition").IgnoreCase);
+			Assert.That(e.InnerException.Message, Does.StartWith("no filter condition").IgnoreCase);
 		}
 
 		[Test]
@@ -93,7 +93,7 @@ namespace NHibernate.Test.FilterTest
 			cfg.AddXmlString(wrongClassMap);
 			cfg.AddXmlString(wrongFilterDef);
 			var e = Assert.Throws<MappingException>(cfg.BuildMappings);
-			Assert.That(e.Message, Is.StringStarting("no filter condition").IgnoreCase);
+			Assert.That(e.Message, Does.StartWith("no filter condition").IgnoreCase);
 		}
 
 		[Test]
@@ -103,8 +103,8 @@ namespace NHibernate.Test.FilterTest
 			var cfg = GetConfiguration();
 			cfg.AddResource("NHibernate.Test.FilterTest.SimpleFiltered.hbm.xml", GetType().Assembly);
 			var e = Assert.Throws<MappingException>(cfg.BuildMappings);
-			Assert.That(e.Message, Is.StringStarting("filter-def for filter named"));
-			Assert.That(e.Message, Is.StringContaining("was not found"));
+			Assert.That(e.Message, Does.StartWith("filter-def for filter named"));
+			Assert.That(e.Message, Does.Contain("was not found"));
 		}
 
 		[Test]
@@ -197,7 +197,7 @@ namespace NHibernate.Test.FilterTest
 			var cfg = GetConfiguration();
 			var e = Assert.Throws<MappingException>(() => cfg.AddXmlString(filterDef));
 			Assert.That(e.InnerException, Is.Not.Null);
-			Assert.That(e.InnerException.Message, Is.StringContaining("Duplicated filter-def"));
+			Assert.That(e.InnerException.Message, Does.Contain("Duplicated filter-def"));
 		}
 
 		[Test]
@@ -223,8 +223,8 @@ namespace NHibernate.Test.FilterTest
 			var cfg = GetConfiguration();
 			cfg.AddXmlString(classMap);
 			var e = Assert.Throws<MappingException>(()=>cfg.BuildSessionFactory());
-			Assert.That(e.Message, Is.StringStarting("filter-def for filter named"));
-			Assert.That(e.Message, Is.StringContaining("was not found"));
+			Assert.That(e.Message, Does.StartWith("filter-def for filter named"));
+			Assert.That(e.Message, Does.Contain("was not found"));
 		}
 
 		[Test]
@@ -242,14 +242,14 @@ namespace NHibernate.Test.FilterTest
 			var cfg = GetConfiguration();
 			cfg.AddXmlString(filterDef);
 		    var memoryAppender = new MemoryAppender();
-		    BasicConfigurator.Configure(memoryAppender);
+		    BasicConfigurator.Configure(LogManager.GetRepository(typeof(ConfigFixture).Assembly), memoryAppender);
             try
 			{
 			    cfg.BuildSessionFactory();
 
                 var wholeLog = String.Join("\r\n", memoryAppender.GetEvents().Select(x => x.RenderedMessage).ToArray());
-			    Assert.That(wholeLog, Is.StringContaining("filter-def for filter named"));
-                Assert.That(wholeLog, Is.StringContaining("was never used to filter classes nor collections."));
+			    Assert.That(wholeLog, Does.Contain("filter-def for filter named"));
+                Assert.That(wholeLog, Does.Contain("was never used to filter classes nor collections."));
 			}
             finally
             {

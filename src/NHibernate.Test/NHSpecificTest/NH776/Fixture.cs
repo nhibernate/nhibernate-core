@@ -18,14 +18,14 @@ namespace NHibernate.Test.NHSpecificTest.NH776
 
 			try
 			{
-				using (ISession session = sessions.OpenSession())
+				using (ISession session = Sfi.OpenSession())
 				{
 					session.Save(a);
 
 					session.Flush();
 				}
 
-				using (ISession session = sessions.OpenSession())
+				using (ISession session = Sfi.OpenSession())
 				{
 					A loadedA = (A) session.Load(typeof(A), 1);
 					Assert.IsNull(loadedA.NotProxied);

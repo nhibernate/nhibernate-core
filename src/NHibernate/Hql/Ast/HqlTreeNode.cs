@@ -92,7 +92,7 @@ namespace NHibernate.Hql.Ast
 
 		internal void AddChild(HqlTreeNode child)
 		{
-			if (child is HqlExpressionSubTreeHolder) 
+			if (child is HqlExpressionSubTreeHolder)
 			{
 				AddChildren(child.Children);
 			}
@@ -112,15 +112,45 @@ namespace NHibernate.Hql.Ast
 			return (HqlExpression)node;
 		}
 
+		[Obsolete]
 		public static HqlBooleanExpression AsBooleanExpression(this HqlTreeNode node)
 		{
-			if (node is HqlDot)
-			{
-				return new HqlBooleanDot(node.Factory, (HqlDot) node);
-			}
+			var hqlDot = node as HqlDot;
+			if (hqlDot != null)
+				return new HqlBooleanDot(hqlDot.Factory, hqlDot);
+			var hqlBooleanExpression = node as HqlBooleanExpression;
+			if (hqlBooleanExpression != null)
+				return hqlBooleanExpression;
 
 			// TODO - nice error handling if cast fails
-			return (HqlBooleanExpression)node;
+			throw new NotSupportedException();
+		}
+
+		public static HqlBooleanExpression ToBooleanExpression(this HqlTreeNode node)
+		{
+			var hqlDot = node as HqlDot;
+			if (hqlDot != null)
+				return new HqlBooleanDot(hqlDot.Factory, hqlDot);
+			var hqlBooleanExpression = node as HqlBooleanExpression;
+			if (hqlBooleanExpression != null)
+				return hqlBooleanExpression;
+
+			var builder = new HqlTreeBuilder();
+
+			return builder.Equality(node.AsExpression(), builder.True());
+		}
+
+		internal static HqlExpression ToArithmeticExpression(this HqlTreeNode node)
+		{
+			var hqlBooleanExpression = node as HqlBooleanExpression;
+			if (hqlBooleanExpression != null)
+			{
+				var builder = new HqlTreeBuilder();
+
+				return builder.Case(new[] {builder.When(hqlBooleanExpression, builder.True())}, builder.False());
+			}
+
+			return (HqlExpression) node;
 		}
 	}
 
@@ -220,8 +250,8 @@ namespace NHibernate.Hql.Ast
 					}
 					if (type == typeof(DateTimeOffset))
 					{
-					    SetText("datetimeoffset");
-					    break;
+						SetText("datetimeoffset");
+						break;
 					}
 					throw new NotSupportedException(string.Format("Don't currently support idents of type {0}", type.Name));
 			}
@@ -288,6 +318,14 @@ namespace NHibernate.Hql.Ast
 	{
 		public HqlAdd(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
 			: base(HqlSqlWalker.PLUS, "+", factory, lhs, rhs)
+		{
+		}
+	}
+
+	public class HqlNegate : HqlExpression
+	{
+		public HqlNegate(IASTFactory factory, HqlExpression expression)
+			: base(HqlSqlWalker.UNARY_MINUS, "-", factory, expression)
 		{
 		}
 	}
@@ -373,7 +411,7 @@ namespace NHibernate.Hql.Ast
 	public class HqlTake : HqlStatement
 	{
 		public HqlTake(IASTFactory factory, HqlExpression parameter)
-			: base(HqlSqlWalker.TAKE, "take", factory, parameter) {}
+			: base(HqlSqlWalker.TAKE, "take", factory, parameter) { }
 	}
 
 	public class HqlConstant : HqlExpression
@@ -816,6 +854,19 @@ namespace NHibernate.Hql.Ast
 	{
 		public HqlLike(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
 			: base(HqlSqlWalker.LIKE, "like", factory, lhs, rhs)
+		{
+		}
+
+		public HqlLike(IASTFactory factory, HqlExpression lhs, HqlExpression rhs, HqlConstant escapeCharacter)
+		: base(HqlSqlWalker.LIKE, "like", factory, lhs, rhs, new HqlEscape(factory, escapeCharacter))
+		{
+	}
+	}
+
+	public class HqlEscape : HqlStatement
+	{
+		public HqlEscape(IASTFactory factory, HqlConstant escapeCharacter)
+			: base(HqlSqlWalker.ESCAPE, "escape", factory, escapeCharacter)
 		{
 		}
 	}

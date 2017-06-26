@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -46,19 +47,19 @@ namespace NHibernate.Type
 			binaryType = (BinaryType) TypeFactory.GetBinaryType(sqlType.Length);
 		}
 
-		public override void Set(IDbCommand st, object value, int index)
+		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
-			binaryType.Set(st, ToBytes(value), index);
+			binaryType.Set(st, ToBytes(value), index, session);
 		}
 
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
-			return Get(rs, rs.GetOrdinal(name));
+			return Get(rs, rs.GetOrdinal(name), session);
 		}
 
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
-			byte[] bytes = (byte[]) binaryType.Get(rs, index);
+			byte[] bytes = (byte[]) binaryType.Get(rs, index, session);
 			if (bytes == null)
 			{
 				return null;
@@ -85,9 +86,9 @@ namespace NHibernate.Type
 			return x.Equals(y) || binaryType.IsEqual(ToBytes(x), ToBytes(y));
 		}
 
-		public override int GetHashCode(Object x, EntityMode entityMode)
+		public override int GetHashCode(Object x)
 		{
-			return binaryType.GetHashCode(ToBytes(x), entityMode);
+			return binaryType.GetHashCode(ToBytes(x));
 		}
 
 		public override string ToString(object value)

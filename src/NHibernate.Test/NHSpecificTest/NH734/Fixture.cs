@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH734
 		[TestAttribute]
 		public void LimitProblem()
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				ICriteria criteria = session.CreateCriteria(typeof(MyClass));
 				criteria.SetMaxResults(100);

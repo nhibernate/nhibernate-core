@@ -386,5 +386,18 @@ namespace NHibernate.Dialect
 				return TimeSpan.TicksPerSecond;
 			}
 		}
+
+		#region Overridden informational metadata
+
+		public override bool SupportsEmptyInList => false;
+
+		public override bool AreStringComparisonsCaseInsensitive => true;
+
+		// note: at least MySQL 5.1 shows this not working...
+		public override bool SupportsLobValueChangePropogation => false;
+
+		public override bool SupportsSubqueryOnMutatingTable => false;
+
+		#endregion
 	}
 }

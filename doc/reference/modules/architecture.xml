@@ -205,7 +205,7 @@
                         The instance was once associated with a persistence
                         context, but that context was closed, or the instance
                         was serialized to another process. It has a persistent 
-                        identity and, perhaps, a corrsponding row in the database.
+                        identity and, perhaps, a corresponding row in the database.
                         For detached instances, NHibernate makes no guarantees 
                         about the relationship between persistent identity and
                         CLR identity.
@@ -241,42 +241,52 @@
         <itemizedlist>
             <listitem>
                 <para>
+                    <literal>NHibernate.Context.AsyncLocalSessionContext</literal> - current sessions are tracked
+                    by current asynchronous flow. You are responsible to bind and unbind an
+                    <literal>ISession</literal> instance with static methods of class
+                    <literal>CurrentSessionContext</literal>. Binding operations from inner flows will not be
+                    propagated to outer or siblings flows.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
                     <literal>NHibernate.Context.CallSessionContext</literal> - current sessions are tracked
-                    by <literal>CallContext</literal>. You are responsible to bind and unbind an <literal>
-                    ISession</literal> instance with static methods of class <literal>CurrentSessionContext
-                    </literal>.
+                    by <literal>CallContext</literal>. You are responsible to bind and unbind an
+                    <literal>ISession</literal> instance with static methods of class
+                    <literal>CurrentSessionContext</literal>.
                 </para>
             </listitem>
             <listitem>
                 <para>
                     <literal>NHibernate.Context.ThreadStaticSessionContext</literal> - current session is
-                    stored in a thread-static variable. This context only supports one session factory.
+                    stored in a thread-static variable. This context supports multiple session factory only
+                    since NHibernate v5.
                     You are responsible to bind and unbind an <literal>ISession</literal> instance with
                     static methods of class <literal>CurrentSessionContext</literal>.
                 </para>
             </listitem>
             <listitem>
                 <para>
-                    <literal>NHibernate.Context.WebSessionContext</literal> - 
-					stores the current session in <literal>HttpContext</literal>. 
-					You are responsible to bind and unbind an <literal>ISession</literal> 
-					instance with static methods of class <literal>CurrentSessionContext</literal>.
+                    <literal>NHibernate.Context.WebSessionContext</literal> -
+                    stores the current session in <literal>HttpContext</literal>.
+                    You are responsible to bind and unbind an <literal>ISession</literal>
+                    instance with static methods of class <literal>CurrentSessionContext</literal>.
                 </para>
             </listitem>
             <listitem>
                 <para>
                     <literal>NHibernate.Context.WcfOperationSessionContext</literal> - current sessions are tracked
                     by WCF <literal>OperationContext</literal>. You need to register the <literal>WcfStateExtension</literal>
-                    extension in WCF. You are responsible to bind and unbind an <literal>ISession
-                    </literal> instance with static methods of class <literal>CurrentSessionContext</literal>.
+                    extension in WCF. You are responsible to bind and unbind an <literal>ISession</literal>
+                    instance with static methods of class <literal>CurrentSessionContext</literal>.
                 </para>
             </listitem>
             <listitem>
                 <para>
                     <literal>NHibernate.Context.ManagedWebSessionContext</literal> - current
-                    sessions are tracked by <literal>HttpContext</literal>. Removed in NHibernate 4.0 
-					- <literal>NHibernate.Context.WebSessionContext</literal> should be used instead.
-					You are responsible to bind and unbind an <literal>ISession</literal> instance with static methods
+                    sessions are tracked by <literal>HttpContext</literal>. Removed in NHibernate 4.0
+                    - <literal>NHibernate.Context.WebSessionContext</literal> should be used instead.
+                    You are responsible to bind and unbind an <literal>ISession</literal> instance with static methods
                     on this class, it never opens, flushes, or closes an <literal>ISession</literal> itself.
                 </para>
             </listitem>
@@ -287,7 +297,8 @@
             defines which <literal>NHibernate.Context.ICurrentSessionContext</literal> implementation
             should be used. Typically, the value of this parameter would just name the implementation
             class to use (including the assembly name); for the out-of-the-box implementations, however,
-            there are corresponding short names: "call", "thread_static", "web" and "wcf_operation",
+            there are corresponding short names: <literal>async_local</literal>, <literal>call</literal>,
+            <literal>thread_static</literal>, <literal>web</literal> and <literal>wcf_operation</literal>,
             respectively.
         </para>
     </sect1>

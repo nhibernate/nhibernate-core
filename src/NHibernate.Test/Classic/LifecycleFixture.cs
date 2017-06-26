@@ -25,13 +25,13 @@ namespace NHibernate.Test.Classic
 		[Test]
 		public void Save()
 		{
-			sessions.Statistics.Clear();
+			Sfi.Statistics.Clear();
 			using (ISession s = OpenSession())
 			{
 				s.Save(new EntityWithLifecycle());
 				s.Flush();
 			}
-			Assert.That(sessions.Statistics.EntityInsertCount, Is.EqualTo(0));
+			Assert.That(Sfi.Statistics.EntityInsertCount, Is.EqualTo(0));
 
 			var v = new EntityWithLifecycle("Shinobi", 10, 10);
 			using (ISession s = OpenSession())
@@ -53,14 +53,14 @@ namespace NHibernate.Test.Classic
 			}
 
 			// update detached
-			sessions.Statistics.Clear();
+			Sfi.Statistics.Clear();
 			v.Heigth = 0;
 			using (ISession s = OpenSession())
 			{
 				s.Update(v);
 				s.Flush();
 			}
-			Assert.That(sessions.Statistics.EntityUpdateCount, Is.EqualTo(0));
+			Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(0));
 
 			// cleanup
 			using (ISession s = OpenSession())
@@ -81,13 +81,13 @@ namespace NHibernate.Test.Classic
 				s.Flush();
 			}
 			v.Heigth = 0;
-			sessions.Statistics.Clear();
+			Sfi.Statistics.Clear();
 			using (ISession s = OpenSession())
 			{
 				s.Merge(v);
 				s.Flush();
 			}
-			Assert.That(sessions.Statistics.EntityUpdateCount, Is.EqualTo(0));
+			Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(0));
 
 			var v1 = new EntityWithLifecycle("Shinobi", 0, 10);
 			using (ISession s = OpenSession())
@@ -95,8 +95,8 @@ namespace NHibernate.Test.Classic
 				s.Merge(v1);
 				s.Flush();
 			}
-			Assert.That(sessions.Statistics.EntityInsertCount, Is.EqualTo(0));
-			Assert.That(sessions.Statistics.EntityUpdateCount, Is.EqualTo(0));
+			Assert.That(Sfi.Statistics.EntityInsertCount, Is.EqualTo(0));
+			Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(0));
 
 
 			// cleanup
@@ -116,11 +116,11 @@ namespace NHibernate.Test.Classic
 			{
 				s.Save(v);
 				s.Flush();
-				sessions.Statistics.Clear();
+				Sfi.Statistics.Clear();
 				v.Heigth = 0;
 				s.Delete(v);
 				s.Flush();
-				Assert.That(sessions.Statistics.EntityDeleteCount, Is.EqualTo(0));
+				Assert.That(Sfi.Statistics.EntityDeleteCount, Is.EqualTo(0));
 			}
 
 			using (ISession s = OpenSession())

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 using NHibernate.Criterion.Lambda;
 using NHibernate.Engine;
@@ -13,10 +12,9 @@ namespace NHibernate.Criterion
 	{
 		private readonly Junction conjunction = new Conjunction();
 
-		public SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery,
-		                             IDictionary<string, IFilter> enabledFilters)
+		public SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return conjunction.ToSqlString(criteria, criteriaQuery, enabledFilters);
+			return conjunction.ToSqlString(criteria, criteriaQuery);
 		}
 
 		public TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)

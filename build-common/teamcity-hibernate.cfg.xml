@@ -22,5 +22,7 @@
 			<property name="command_timeout">444</property>
 			<property name="query.substitutions">true 1, false 0, yes 'Y', no 'N'</property>
 			<property name="adonet.wrap_result_sets">false</property>
+
+			<property name="odbc.explicit_datetime_scale"></property>
 		</session-factory>
 	</hibernate-configuration>

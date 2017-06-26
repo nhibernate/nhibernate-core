@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
@@ -47,11 +47,10 @@ namespace NHibernate.Collection.Generic
 
 		public override object GetSnapshot(ICollectionPersister persister)
 		{
-			EntityMode entityMode = Session.EntityMode;
 			Dictionary<TKey, TValue> clonedMap = new Dictionary<TKey, TValue>(WrappedMap.Count);
 			foreach (KeyValuePair<TKey, TValue> e in WrappedMap)
 			{
-				object copy = persister.ElementType.DeepCopy(e.Value, entityMode, persister.Factory);
+				object copy = persister.ElementType.DeepCopy(e.Value, persister.Factory);
 				clonedMap[e.Key] = (TValue)copy;
 			}
 			return clonedMap;
@@ -73,7 +72,9 @@ namespace NHibernate.Collection.Generic
 			}
 			foreach (KeyValuePair<TKey, TValue> entry in WrappedMap)
 			{
-				if (elementType.IsDirty(entry.Value, xmap[entry.Key], Session))
+				// This method is not currently called if a key has been removed/added, but better be on the safe side.
+				if (!xmap.TryGetValue(entry.Key, out var value) ||
+					elementType.IsDirty(value, entry.Value, Session))
 				{
 					return false;
 				}
@@ -107,7 +108,7 @@ namespace NHibernate.Collection.Generic
 			return StringHelper.CollectionToString(WrappedMap);
 		}
 
-		public override object ReadFrom(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
+		public override object ReadFrom(DbDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
 		{
 			object element = role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
 			object index = role.ReadIndex(rs, descriptor.SuffixedIndexAliases, Session);

@@ -35,7 +35,7 @@ namespace NHibernate.Persister.Collection
 			{
 				query.SetParameter(0, key, persister.KeyType);
 			}
-			query.SetCollectionKey(key).SetFlushMode(FlushMode.Never).List();
+			query.SetCollectionKey(key).SetFlushMode(FlushMode.Manual).List();
 		}
 	}
 }

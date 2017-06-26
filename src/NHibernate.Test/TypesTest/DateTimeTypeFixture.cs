@@ -35,7 +35,7 @@ namespace NHibernate.Test.TypesTest
 			NullableType type = NHibernateUtil.DateTime;
 
 			object value1 = DateTime.Now;
-			object value2 = type.DeepCopy(value1, EntityMode.Poco, null);
+			object value2 = type.DeepCopy(value1, null);
 
 			Assert.AreEqual(value1, value2, "Copies should be the same.");
 
@@ -51,7 +51,7 @@ namespace NHibernate.Test.TypesTest
 			var localTime = DateTime.Now;
 			var unspecifiedKid = new DateTime(localTime.Year, localTime.Month, localTime.Day, localTime.Hour, localTime.Minute, localTime.Second, 0, DateTimeKind.Unspecified);
 			Assert.That(type.IsEqual(localTime, unspecifiedKid), Is.True);
-			Assert.That(type.IsEqual(localTime, unspecifiedKid, EntityMode.Poco), Is.True);
+			Assert.That(type.IsEqual(localTime, unspecifiedKid), Is.True);
 		}
 	}
 }

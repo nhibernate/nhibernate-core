@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace NHibernate.Util
 {
-	public class ParserException : ApplicationException
+	public class ParserException : Exception
 	{
 		public ParserException(string message) : base(message) { }
 	}

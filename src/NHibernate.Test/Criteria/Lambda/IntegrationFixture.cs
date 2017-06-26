@@ -340,7 +340,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		[Test]
 		public void MultiCriteria()
 		{
-			var driver = sessions.ConnectionProvider.Driver;
+			var driver = Sfi.ConnectionProvider.Driver;
 			if (!driver.SupportsMultipleQueries)
 				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
 
@@ -418,7 +418,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		public void StatelessSession()
 		{
 			int personId;
-			using (var ss = sessions.OpenStatelessSession())
+			using (var ss = Sfi.OpenStatelessSession())
 			using (var t = ss.BeginTransaction())
 			{
 				var person = new Person { Name = "test1" };
@@ -427,7 +427,7 @@ namespace NHibernate.Test.Criteria.Lambda
 				t.Commit();
 			}
 
-			using (var ss = sessions.OpenStatelessSession())
+			using (var ss = Sfi.OpenStatelessSession())
 			using (ss.BeginTransaction())
 			{
 				var statelessPerson1 = ss.QueryOver<Person>()

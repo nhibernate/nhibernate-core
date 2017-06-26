@@ -10,8 +10,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 	[TestFixture]
 	public class Fixture : TestCase
 	{
-		protected Child childAliasField = null;
-		protected A aAliasField = null;
+		protected Child ChildAliasField = null;
+		protected A AAliasField = null;
 
 		protected override IList Mappings
 		{
@@ -21,84 +21,89 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 		[Test]
 		public void TestFieldAliasInQueryOver()
 		{
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				A rowalias = null;
-				s.QueryOver(() => aAliasField)
-					.SelectList(list => list
-						.Select(() => aAliasField.Id).WithAlias(() => rowalias.Id))
-					.List();
+				s.QueryOver(() => AAliasField)
+				 .SelectList(
+					 list => list
+						 .Select(() => AAliasField.Id).WithAlias(() => rowalias.Id))
+				 .List();
 			}
 		}
 
 		[Test]
 		public void TestFieldAliasInQueryOverWithConversion()
 		{
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				B rowalias = null;
-				s.QueryOver(() => aAliasField)
-					.SelectList(list => list
-						.Select(() => ((B)aAliasField).Count).WithAlias(() => rowalias.Count))
-					.List();
+				s.QueryOver(() => AAliasField)
+				 .SelectList(
+					 list => list
+						 .Select(() => ((B) AAliasField).Count).WithAlias(() => rowalias.Count))
+				 .List();
 			}
 		}
 
 		[Test]
 		public void TestFieldAliasInJoinAlias()
 		{
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				Child rowalias = null;
 				s.QueryOver<Parent>()
-					.JoinAlias(p => p.Child, () => childAliasField)
-					.SelectList(list => list
-						.Select(() => childAliasField.Id).WithAlias(() => rowalias.Id))
-					.List();
+				 .JoinAlias(p => p.Child, () => ChildAliasField)
+				 .SelectList(
+					 list => list
+						 .Select(() => ChildAliasField.Id).WithAlias(() => rowalias.Id))
+				 .List();
 			}
 		}
 
 		[Test]
 		public void TestFieldAliasInJoinQueryOver()
 		{
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				Child rowalias = null;
 				s.QueryOver<Parent>()
-					.JoinQueryOver(p => p.Child, () => childAliasField)
-					.SelectList(list => list
-						.Select(() => childAliasField.Id).WithAlias(() => rowalias.Id))
-				.List();
+				 .JoinQueryOver(p => p.Child, () => ChildAliasField)
+				 .SelectList(
+					 list => list
+						 .Select(() => ChildAliasField.Id).WithAlias(() => rowalias.Id))
+				 .List();
 			}
 		}
 
 		[Test]
 		public void TestAliasInQueryOver()
 		{
-			Child childAlias = null;
 			A aAlias = null;
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				A rowalias = null;
 				s.QueryOver(() => aAlias)
-					.SelectList(list => list
-						.Select(() => aAlias.Id).WithAlias(() => rowalias.Id))
-					.List();
+				 .SelectList(
+					 list => list
+						 .Select(() => aAlias.Id)
+						 .WithAlias(() => rowalias.Id))
+				 .List();
 			}
 		}
 
 		[Test]
 		public void TestAliasInQueryOverWithConversion()
 		{
-			Child childAlias = null;
 			A aAlias = null;
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				B rowalias = null;
 				s.QueryOver(() => aAlias)
-					.SelectList(list => list
-						.Select(() => ((B) aAlias).Count).WithAlias(() => rowalias.Count))
-					.List();
+				 .SelectList(
+					 list => list.Select(() => ((B) aAlias).Count)
+								 .WithAlias(() => rowalias.Count))
+				 .List();
 			}
 		}
 
@@ -106,15 +111,16 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 		public void TestAliasInJoinAlias()
 		{
 			Child childAlias = null;
-			A aAlias = null;
-			using (var s = sessions.OpenSession())
+
+			using (var s = Sfi.OpenSession())
 			{
 				Child rowalias = null;
 				s.QueryOver<Parent>()
-					.JoinAlias(p => p.Child, () => childAlias)
-					.SelectList(list => list
-						.Select(() => childAlias.Id).WithAlias(() => rowalias.Id))
-					.List();
+				 .JoinAlias(p => p.Child, () => childAlias)
+				 .SelectList(
+					 list => list.Select(() => childAlias.Id)
+								 .WithAlias(() => rowalias.Id))
+				 .List();
 			}
 		}
 
@@ -122,15 +128,16 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 		public void TestAliasInJoinQueryOver()
 		{
 			Child childAlias = null;
-			A aAlias = null;
-			using (var s = sessions.OpenSession())
+
+			using (var s = Sfi.OpenSession())
 			{
 				Child rowalias = null;
 				s.QueryOver<Parent>()
-					.JoinQueryOver(p => p.Child, () => childAlias)
-					.SelectList(list => list
-						.Select(() => childAlias.Id).WithAlias(() => rowalias.Id))
-					.List();
+				 .JoinQueryOver(p => p.Child, () => childAlias)
+				 .SelectList(
+					 list => list.Select(() => childAlias.Id)
+								 .WithAlias(() => rowalias.Id))
+				 .List();
 			}
 		}
 	}

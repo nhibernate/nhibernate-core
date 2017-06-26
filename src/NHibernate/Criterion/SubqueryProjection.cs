@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
@@ -40,13 +39,13 @@ namespace NHibernate.Criterion
 			return _subQuery.GetTypes();
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery)
 		{
-			return _subQuery.ToSqlString(criteria, criteriaQuery, enabledFilters)
+			return _subQuery.ToSqlString(criteria, criteriaQuery)
 				.Append(new SqlString(" as y", loc.ToString(), "_"));
 		}
 
-		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			throw new InvalidOperationException("not a grouping projection");
 		}

@@ -34,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 			ThreadContext.Properties["sessionId"] = new SessionIdCapturer();
 
 			using (var spy = new TextLogSpy("NHibernate.SQL", "%message | SessionId: %property{sessionId}"))
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				var sessionId = ((SessionImpl)s).SessionId;
 
@@ -68,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 					Threshold = Level.All,
 					Writer = new StringWriter(stringBuilder)
 				};
-				loggerImpl = (Logger)LogManager.GetLogger(loggerName).Logger;
+				loggerImpl = (Logger)LogManager.GetLogger(typeof(LogsFixture).Assembly, loggerName).Logger;
 				loggerImpl.AddAppender(appender);
 				loggerImpl.Level = Level.All;
 			}

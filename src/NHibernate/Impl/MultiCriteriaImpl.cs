@@ -93,7 +93,7 @@ namespace NHibernate.Impl
 		{
 			IQueryCache queryCache = session.Factory.GetQueryCache(cacheRegion);
 
-			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters, session.EntityMode);
+			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters);
 
 			ISet<string> querySpaces = new HashSet<string>();
 			List<IType[]> resultTypesList = new List<IType[]>();
@@ -137,7 +137,7 @@ namespace NHibernate.Impl
 				log.Debug("Cache miss for multi criteria query");
 				IList list = DoList();
 				result = list;
-				if ((session.CacheMode & CacheMode.Put) == CacheMode.Put)
+				if (session.CacheMode.HasFlag(CacheMode.Put))
 				{
 					bool put = queryCache.Put(key, new ICacheAssembler[] { assembler }, new object[] { list }, combinedParameters.NaturalKeyLookup, session);
 					if (put && factory.Statistics.IsStatisticsEnabled)

@@ -661,6 +661,7 @@ namespace NHibernate.Test.Legacy
 			MemoryStream stream = new MemoryStream();
 			BinaryFormatter f = new BinaryFormatter();
 			f.Serialize(stream, s);
+			s.Close();
 			stream.Position = 0;
 			Console.WriteLine(stream.Length);
 
@@ -694,6 +695,7 @@ namespace NHibernate.Test.Legacy
 			s.Disconnect();
 			stream = new MemoryStream();
 			f.Serialize(stream, s);
+			s.Close();
 			stream.Position = 0;
 
 			s = (ISession) f.Deserialize(stream);
@@ -1197,7 +1199,7 @@ namespace NHibernate.Test.Legacy
 			s.Flush();
 			s.Close();
 
-			sessions.EvictCollection("NHibernate.DomainModel.Assignable.Categories");
+			Sfi.EvictCollection("NHibernate.DomainModel.Assignable.Categories");
 
 			s = OpenSession();
 			a = (Assignable) s.Get(typeof(Assignable), "foo");
@@ -1209,7 +1211,7 @@ namespace NHibernate.Test.Legacy
 			s.Flush();
 			s.Close();
 
-			sessions.EvictCollection("NHibernate.DomainModel.Assignable.Categories");
+			Sfi.EvictCollection("NHibernate.DomainModel.Assignable.Categories");
 
 			s = OpenSession();
 			a = (Assignable) s.Get(typeof(Assignable), "foo");
@@ -1222,7 +1224,7 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(3, a.Categories.Count);
 			s.Close();
 
-			sessions.EvictCollection("NHibernate.DomainModel.Assignable.Categories");
+			Sfi.EvictCollection("NHibernate.DomainModel.Assignable.Categories");
 
 			s = OpenSession();
 			a = (Assignable) s.Get(typeof(Assignable), "foo");
@@ -1257,7 +1259,7 @@ namespace NHibernate.Test.Legacy
 		public void ToStringWithNoIdentifier()
 		{
 			NHibernateUtil.Entity(typeof(Master)).ToLoggableString(new Master(),
-			                                                       (ISessionFactoryImplementor) sessions);
+			                                                       (ISessionFactoryImplementor) Sfi);
 		}
 
 		[Test]

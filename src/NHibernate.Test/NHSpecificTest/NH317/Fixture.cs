@@ -31,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH317
 			node.Id = 1;
 			node.Name = "Node 1";
 
-			ISession s = sessions.OpenSession();
+			ISession s = OpenSession();
 			s.Save(node);
 			s.Flush();
 			s.Close();

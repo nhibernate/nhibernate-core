@@ -1,9 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Collection;
 using NHibernate.Collection.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {
@@ -23,7 +25,7 @@ namespace NHibernate.Type
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		public GenericBagType(string role, string propertyRef)
-			: base(role, propertyRef, false)
+			: base(role, propertyRef)
 		{
 		}
 
@@ -69,6 +71,11 @@ namespace NHibernate.Type
 		public override object Instantiate(int anticipatedSize)
 		{
 			return anticipatedSize <= 0 ? new List<T>() : new List<T>(anticipatedSize + 1);
+		}
+
+		protected override bool AreCollectionElementsEqual(IEnumerable original, IEnumerable target)
+		{
+			return CollectionHelper.BagEquals((IEnumerable<T>)original, (IEnumerable<T>)target);
 		}
 	}
 }

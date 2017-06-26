@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH3793">
+
+	<class name="ParentEntity" entity-name="ParentEntityOne" table="AAPARN">
+		<composite-id name="ParentEntityKey">
+			<key-property name="Number" column="AAPNUM" />
+			<key-property name="StringKey" column="AAPKEY" />
+		</composite-id>
+		<property name="OtherInformationOne" column="AAOINF" />
+		<set name="Children" inverse="true">
+			<key>
+				<column name="BBPNUM" />
+				<column name="BBPKEY" />
+			</key>
+			<one-to-many class="ChildEntity" entity-name="ChildEntityOne"/>
+		</set>
+	</class>
+
+	<class name="ChildEntity" entity-name="ChildEntityOne" table="AACHLD">
+		<composite-id name="ChildEntityKey">
+			<key-many-to-one name="ParentEntity" entity-name="ParentEntityOne">
+				<column name="AAPNUM" />
+				<column name="AAPKEY" />
+			</key-many-to-one>
+			<key-property name="ChildIdentifier" column="BBCHID" />
+		</composite-id>
+		<property name="ChildIdentifier" column="BBCHID" />
+		<property name="SomeOtherProperty" column="BBZZZZ" />
+	</class>
+
+	<class name="ParentEntity" entity-name="ParentEntityTwo" table="CCPARN">
+		<composite-id name="ParentEntityKey">
+			<key-property name="Number" column="AAPNUM" />
+			<key-property name="StringKey" column="AAPKEY" />
+		</composite-id>
+		<property name="OtherInformationTwo" column="AAOINF" />
+		<set name="Children" inverse="true">
+			<key>
+				<column name="BBPNUM" />
+				<column name="BBPKEY" />
+			</key>
+			<one-to-many class="ChildEntity" entity-name="ChildEntityTwo"/>
+		</set>
+	</class>
+
+	<class name="ChildEntity" entity-name="ChildEntityTwo" table="CCCHLD">
+		<composite-id name="ChildEntityKey">
+			<key-many-to-one name="ParentEntity" class="ParentEntity" entity-name="ParentEntityTwo">
+				<column name="AAPNUM" />
+				<column name="AAPKEY" />
+			</key-many-to-one>
+			<key-property name="ChildIdentifier" column="BBCHID" />
+		</composite-id>
+		<property name="ChildIdentifier" column="BBCHID" />
+		<property name="SomeOtherProperty" column="BBZZZZ" />
+	</class>
+
+	<class name="ObjectWithBothEntityNames" table="OWBOTH">
+		<id name="ObjectWithBothEntityNamesId" column="OWBTID" generator="assigned" />
+		<set name="ParentEntityOneSet">
+			<key column="AAPNUM" />
+			<one-to-many class="ParentEntity" entity-name="ParentEntityOne"/>
+		</set>
+		<set name="ParentEntityTwoSet">
+			<key column="AAPTNM" />
+			<one-to-many class="ParentEntity" entity-name="ParentEntityTwo"/>
+		</set>
+	</class>
+	
+</hibernate-mapping>

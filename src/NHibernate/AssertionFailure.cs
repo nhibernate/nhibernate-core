@@ -8,7 +8,7 @@ namespace NHibernate
 	/// Indicates failure of an assertion: a possible bug in NHibernate
 	/// </summary>
 	[Serializable]
-	public class AssertionFailure : ApplicationException
+	public class AssertionFailure : Exception
 	{
 		private const string DefaultMessage = "An AssertionFailure occurred - this may indicate a bug in NHibernate or in your custom types.";
 

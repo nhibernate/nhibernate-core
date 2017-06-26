@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Xml;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -40,31 +39,31 @@ namespace NHibernate.Type
 			get { return typeof (string); }
 		}
 
-		public override object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			object key = baseType.NullSafeGet(rs, names, session, owner);
 			return key == null ? null : values[key];
 		}
 
-		public override object NullSafeGet(IDataReader rs,string name,ISessionImplementor session,object owner)
+		public override object NullSafeGet(DbDataReader rs,string name,ISessionImplementor session,object owner)
 		{
 			object key = baseType.NullSafeGet(rs, name, session, owner);
 			return key == null ? null : values[key];
 		}
 
-		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override void NullSafeSet(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			if (settable[0]) NullSafeSet(st, value, index, session);
 		}
 
-		public override void NullSafeSet(IDbCommand st,object value,int index,ISessionImplementor session)
+		public override void NullSafeSet(DbCommand st,object value,int index,ISessionImplementor session)
 		{
 			baseType.NullSafeSet(st, value == null ? null : keys[(string)value], index, session);
 		}
 
 		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
 		{
-			return ToXMLString(value, factory);
+			return (string)value;
 		}
 
 		public override string Name
@@ -72,7 +71,7 @@ namespace NHibernate.Type
 			get { return baseType.Name; } //TODO!
 		}
 
-		public override object DeepCopy(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
+		public override object DeepCopy(object value, ISessionFactoryImplementor factory)
 		{
 			return value;
 		}
@@ -87,34 +86,14 @@ namespace NHibernate.Type
 			return checkable[0] && IsDirty(old, current, session);
 		}
 
-		public override object FromXMLNode(XmlNode xml, IMapping factory)
-		{
-			return FromXMLString(xml.Value, factory);
-		}
-
-		public object FromXMLString(string xml, IMapping factory)
-		{
-			return xml; //xml is the entity name
-		}
-
 		public override object Replace(object original, object current, ISessionImplementor session, object owner, System.Collections.IDictionary copiedAlready)
 		{
 			return original;
 		}
 
-		public override void SetToXMLNode(XmlNode node, object value, ISessionFactoryImplementor factory)
-		{
-			node.Value = ToXMLString(value, factory);
-		}
-
 		public override bool[] ToColumnNullness(object value, IMapping mapping)
 		{
 			return baseType.ToColumnNullness(value, mapping);
-		}
-
-		public string ToXMLString(object value, ISessionFactoryImplementor factory)
-		{
-			return (string)value; //value is the entity name
 		}
 
 		internal object GetMetaValue(string className)

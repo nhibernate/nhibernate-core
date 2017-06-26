@@ -46,7 +46,7 @@
 	<target name="test" depends="init build" description="Runs all NHibernate tests for the current framework" unless="${skip.tests}">
 		<property name="testfiles.all" value="NHibernate.TestDatabaseSetup NHibernate.Test NHibernate.Test.VisualBasic" />
 		<foreach item="String" in="${testfiles.all}" delim=" " property="test.file">
-			<call target="common.run-database-tests" failonerror="false"/>
+			<call target="common.run-database-tests"/>
 		</foreach>
 	</target>
 	
@@ -78,8 +78,6 @@
 		<foreach item="String" delim=" " property="framework" in="${supported.frameworks}">
 			<call target="set-${framework}-framework-configuration" />
 			<call target="build" />
-			<!-- Copy and rename the license -->
-			<copy file="lgpl.txt" tofile="${bin.dir}/NHibernate.license.txt"  />
 		</foreach>
 
 		<!-- Reset the current framework to the saved value -->
@@ -124,10 +122,9 @@
 				<include name="build-common/**" />
 
 				<include name="*.build" />
-				<include name="gfdl.txt" />
-				<include name="lgpl.txt" />
+				<include name="LICENSE.txt" />
 				<include name="releasenotes.txt" />
-				<include name="readme.html" />
+				<include name="README.md" />
 
 				<!-- exclude ReSharper stuff -->
 				<exclude name="**/_ReSharper*/**" />
@@ -170,8 +167,7 @@
 		<property name="bin-pack.tests" value="${bin-pack.tmpdir}/Tests" />
 		
 		<copy file="releasenotes.txt" todir="${bin-pack.tmpdir}"/>
-		<copy file="lgpl.txt" todir="${bin-pack.tmpdir}/NHibernate.license.txt"/>
-		<copy file="gfdl.txt" todir="${bin-pack.tmpdir}"/>
+		<copy file="LICENSE.txt" todir="${bin-pack.tmpdir}"/>
 		<copy file="HowInstall.txt" todir="${bin-pack.tmpdir}"/>
 
 		<exec program="CScript.exe"
@@ -271,7 +267,7 @@
     </move>
   </target>
   
-  <target name="nugetpushbat" depends="init binaries nuget.set-properties nuspec nuget"
+  <target name="nugetpushbat" depends="init binaries common.download-nuget nuget.set-properties nuspec nuget"
           description="Creates files for the release on nuget gallery.">
 
     <copy file="${tools.dir}/NuGet.exe" todir="${nuget.nupackages.dir}"/>
@@ -289,7 +285,7 @@
     </foreach>
   </target>
   
-  <target name="nugetpush" depends="init binaries nuget.set-properties nuspec nuget"
+  <target name="nugetpush" depends="init binaries common.download-nuget nuget.set-properties nuspec nuget"
           description="Push packages on nuget gallery.">
     <!-- In order to use this task you have to be sure you have executed 'nuget SetApiKey' -->
     <foreach item="File" property="filename">

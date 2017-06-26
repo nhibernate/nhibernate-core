@@ -42,14 +42,14 @@ namespace NHibernate.Test.TypedManyToOne
 			cust.BillingAddress = bill;
 			cust.ShippingAddress = ship;
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				s.Persist(cust);
 				t.Commit();
 			}
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				IList results = s.CreateQuery("from Customer cust left join fetch cust.BillingAddress where cust.CustomerId='abc123'").List();
@@ -64,7 +64,7 @@ namespace NHibernate.Test.TypedManyToOne
 				t.Commit();
 			}
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				s.SaveOrUpdate(cust);
@@ -87,14 +87,14 @@ namespace NHibernate.Test.TypedManyToOne
 			cust.CustomerId = "xyz123";
 			cust.Name = "Matt";
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				s.Persist(cust);
 				t.Commit();
 			}
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				IList results = s.CreateQuery("from Customer cust left join fetch cust.BillingAddress where cust.CustomerId='xyz123'").List();

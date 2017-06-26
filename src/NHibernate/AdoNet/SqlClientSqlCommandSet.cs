@@ -2,14 +2,14 @@ using System;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Reflection;
+using NHibernate.Util;
 
 namespace NHibernate.AdoNet
 {
-	using Action = System.Action;
 	using SqlCommand = System.Data.SqlClient.SqlCommand;
 
 	/// <summary>
-	/// Expose the batch functionality in ADO.Net 2.0
+	/// Expose the batch functionality in ADO.Net 4.0
 	/// Microsoft in its wisdom decided to make my life hard and mark it internal.
 	/// Through the use of Reflection and some delegates magic, I opened up the functionality.
 	/// 
@@ -18,35 +18,37 @@ namespace NHibernate.AdoNet
 	public class SqlClientSqlCommandSet : IDisposable
 	{
 		private static readonly System.Type sqlCmdSetType;
+		private static readonly Action<object, SqlConnection> connectionSetter;
+		private static readonly Action<object, SqlTransaction> transactionSetter;
+		private static readonly Action<object, int> commandTimeoutSetter;
+		private static readonly Func<object, SqlConnection> connectionGetter;
+		private static readonly Func<object, SqlCommand> batchCommandGetter;
+		private static readonly Action<object, SqlCommand> doAppend;
+		private static readonly Func<object, int> doExecuteNonQuery;
+		private static readonly Action<object> doDispose;
+
 		private readonly object instance;
-		private readonly Action<SqlConnection> connectionSetter;
-		private readonly Action<SqlTransaction> transactionSetter;
-		private readonly Action<int> commandTimeoutSetter;
-		private readonly Func<SqlConnection> connectionGetter;
-		private readonly Func<SqlCommand> commandGetter;
-		private readonly Action<SqlCommand> doAppend;
-		private readonly Func<int> doExecuteNonQuery;
-		private readonly Action doDispose;
 		private int countOfCommands;
 
 		static SqlClientSqlCommandSet()
 		{
-			var sysData = Assembly.Load("System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
+			var sysData = Assembly.Load("System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
 			sqlCmdSetType = sysData.GetType("System.Data.SqlClient.SqlCommandSet");
 			Debug.Assert(sqlCmdSetType != null, "Could not find SqlCommandSet!");
+
+			connectionSetter = DelegateHelper.BuildPropertySetter<SqlConnection>(sqlCmdSetType, "Connection");
+			connectionGetter = DelegateHelper.BuildPropertyGetter<SqlConnection>(sqlCmdSetType, "Connection");
+			transactionSetter = DelegateHelper.BuildPropertySetter<SqlTransaction>(sqlCmdSetType, "Transaction");
+			commandTimeoutSetter = DelegateHelper.BuildPropertySetter<int>(sqlCmdSetType, "CommandTimeout");
+			batchCommandGetter = DelegateHelper.BuildPropertyGetter<SqlCommand>(sqlCmdSetType, "BatchCommand");
+			doAppend = DelegateHelper.BuildAction<SqlCommand>(sqlCmdSetType, "Append");
+			doExecuteNonQuery = DelegateHelper.BuildFunc<int>(sqlCmdSetType, "ExecuteNonQuery");
+			doDispose = DelegateHelper.BuildAction(sqlCmdSetType, "Dispose");
 		}
 
 		public SqlClientSqlCommandSet()
 		{
 			instance = Activator.CreateInstance(sqlCmdSetType, true);
-			connectionSetter = (Action<SqlConnection>) Delegate.CreateDelegate(typeof (Action<SqlConnection>), instance, "set_Connection");
-			transactionSetter = (Action<SqlTransaction>) Delegate.CreateDelegate(typeof (Action<SqlTransaction>), instance, "set_Transaction");
-			commandTimeoutSetter = (Action<int>) Delegate.CreateDelegate(typeof (Action<int>), instance, "set_CommandTimeout");
-			connectionGetter = (Func<SqlConnection>) Delegate.CreateDelegate(typeof (Func<SqlConnection>), instance, "get_Connection");
-			commandGetter = (Func<SqlCommand>) Delegate.CreateDelegate(typeof (Func<SqlCommand>), instance, "get_BatchCommand");
-			doAppend = (Action<SqlCommand>) Delegate.CreateDelegate(typeof (Action<SqlCommand>), instance, "Append");
-			doExecuteNonQuery = (Func<int>) Delegate.CreateDelegate(typeof (Func<int>), instance, "ExecuteNonQuery");
-			doDispose = (Action) Delegate.CreateDelegate(typeof (Action), instance, "Dispose");
 		}
 
 		/// <summary>
@@ -56,7 +58,7 @@ namespace NHibernate.AdoNet
 		public void Append(SqlCommand command)
 		{
 			AssertHasParameters(command);
-			doAppend(command);
+			doAppend(instance, command);
 			countOfCommands++;
 		}
 
@@ -79,7 +81,7 @@ namespace NHibernate.AdoNet
 		/// </summary>
 		public SqlCommand BatchCommand
 		{
-			get { return commandGetter(); }
+			get { return batchCommandGetter(instance); }
 		}
 
 		/// <summary>
@@ -104,23 +106,23 @@ namespace NHibernate.AdoNet
 
 			if (CountOfCommands == 0)
 				return 0;
-			return doExecuteNonQuery();
+			return doExecuteNonQuery(instance);
 		}
 
 		public SqlConnection Connection
 		{
-			get { return connectionGetter(); }
-			set { connectionSetter(value); }
+			get { return connectionGetter(instance); }
+			set { connectionSetter(instance, value); }
 		}
 
 		public SqlTransaction Transaction
 		{
-			set { transactionSetter(value); }
+			set { transactionSetter(instance, value); }
 		}
 
 		public int CommandTimeout
 		{
-			set { commandTimeoutSetter(value); }
+			set { commandTimeoutSetter(instance, value); }
 		}
 
 		///<summary>
@@ -129,7 +131,7 @@ namespace NHibernate.AdoNet
 		///<filterpriority>2</filterpriority>
 		public void Dispose()
 		{
-			doDispose();
+			doDispose(instance);
 		}
 	}
 }

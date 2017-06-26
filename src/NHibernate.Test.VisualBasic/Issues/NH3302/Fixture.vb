@@ -6,7 +6,7 @@ Namespace Issues
 
     Namespace NH3302
         'http://msdn.microsoft.com/en-us/library/swf8kaxw.aspx
-        <TestFixture(), Ignore()> _
+        <TestFixture(), Ignore("Not fixed yet.")> _
         Public Class Fixture
             Inherits IssueTestCase
 

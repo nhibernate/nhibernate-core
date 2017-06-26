@@ -25,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2055
 		[Test] 
 		public void CanCreateAndDropSchema() 
 		{
-            using(var s = sessions.OpenSession())
+            using(var s = Sfi.OpenSession())
             {
                 using(var cmd = s.Connection.CreateCommand())
                 {

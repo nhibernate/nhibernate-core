@@ -46,6 +46,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2568
 
 	public class MyCollectionPersister: OneToManyPersister
 	{
-		public MyCollectionPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, Configuration cfg, ISessionFactoryImplementor factory) : base(collection, cache, cfg, factory) {}
+		public MyCollectionPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory) : base(collection, cache, factory) {}
 	}
 }

@@ -14,7 +14,7 @@ namespace NHibernate.Test.TypesTest
 	{
 		public TypeFactoryFixture()
 		{
-			log4net.Config.XmlConfigurator.Configure();
+			log4net.Config.XmlConfigurator.Configure(LogManager.GetRepository(typeof(TypeFactoryFixture).Assembly));
 		}
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(TypeFactoryFixture));

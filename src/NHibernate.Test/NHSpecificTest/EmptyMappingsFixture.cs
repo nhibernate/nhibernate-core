@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Transaction;
 using NUnit.Framework;
 
@@ -60,13 +61,13 @@ namespace NHibernate.Test.NHSpecificTest
 		public void NullInterceptor()
 		{
 			IInterceptor nullInterceptor = null;
-			Assert.Throws<ArgumentNullException>(() => sessions.OpenSession(nullInterceptor).Close());
+			Assert.Throws<ArgumentNullException>(() => Sfi.WithOptions().Interceptor(nullInterceptor).OpenSession().Close());
 		}
 
 		[Test]
 		public void DisconnectShouldNotCloseUserSuppliedConnection()
 		{
-			IDbConnection conn = sessions.ConnectionProvider.GetConnection();
+			var conn = Sfi.ConnectionProvider.GetConnection();
 			try
 			{
 				using (ISession s = OpenSession())
@@ -79,7 +80,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 			finally
 			{
-				sessions.ConnectionProvider.CloseConnection(conn);
+				Sfi.ConnectionProvider.CloseConnection(conn);
 			}
 		}
 	}

@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using NHibernate.Linq.ResultOperators;
+using NHibernate.Util;
 using Remotion.Linq.Clauses.ExpressionTreeVisitors;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
@@ -26,13 +26,12 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 
 			var elementSelectorExpr = ReverseResolvingExpressionTreeVisitor.ReverseResolve(selector, elementSelector);
 
-			var groupByMethod = EnumerableHelper.GetMethod("GroupBy",
-														   new[] { typeof(IEnumerable<>), typeof(Func<,>), typeof(Func<,>) },
-														   new[] { sourceType, keyType, elementType });
+			var groupByMethod = ReflectionCache.EnumerableMethods.GroupByWithElementSelectorDefinition
+				.MakeGenericMethod(new[] { sourceType, keyType, elementType });
 
-			var castToItem = EnumerableHelper.GetMethod("Cast", new[] { typeof(IEnumerable) }, new[] { sourceType });
+			var castToItem = ReflectionCache.EnumerableMethods.CastDefinition.MakeGenericMethod(new[] { sourceType });
 
-			var toList = EnumerableHelper.GetMethod("ToList", new[] { typeof(IEnumerable<>) }, new[] { resultOperator.GroupBy.ItemType });
+			var toList = ReflectionCache.EnumerableMethods.ToListDefinition.MakeGenericMethod(new[] { resultOperator.GroupBy.ItemType });
 
 			Expression castToItemExpr = Expression.Call(castToItem, listParameter);
 

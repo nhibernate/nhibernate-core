@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2812
 		[Test]
 		public void PerformingAQueryOnAByteColumnShouldNotThrowEqualityOperator()
 		{
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			{
 				var query = (from e in session.Query<EntityWithAByteValue>()
 							 where e.ByteValue == 1
@@ -47,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2812
 		[Test]
 		public void PerformingAQueryOnAByteColumnShouldNotThrowEquals()
 		{
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			{
 				var query = (from e in session.Query<EntityWithAByteValue>()
 							 where e.ByteValue.Equals(1)

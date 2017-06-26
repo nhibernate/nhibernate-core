@@ -6,14 +6,14 @@
 
 #endregion
 
-using System.Collections.Generic;
-using NHibernate.Util;
+using System.Collections.Concurrent;
+using System.Reflection;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
 	public class ProxyCache : IProxyCache
 	{
-		private static readonly IDictionary<ProxyCacheEntry, System.Type> cache = new ThreadSafeDictionary<ProxyCacheEntry, System.Type>(new Dictionary<ProxyCacheEntry, System.Type>());
+		private static readonly ConcurrentDictionary<ProxyCacheEntry, TypeInfo> cache = new ConcurrentDictionary<ProxyCacheEntry, TypeInfo>();
 
 		#region IProxyCache Members
 
@@ -28,13 +28,13 @@ namespace NHibernate.Proxy.DynamicProxy
 			return cache.ContainsKey(entry);
 		}
 
-		public System.Type GetProxyType(System.Type baseType, params System.Type[] baseInterfaces)
+		public TypeInfo GetProxyType(System.Type baseType, params System.Type[] baseInterfaces)
 		{
 			var entry = new ProxyCacheEntry(baseType, baseInterfaces);
 			return cache[entry];
 		}
 
-		public bool TryGetProxyType(System.Type baseType, System.Type[] baseInterfaces, out System.Type proxyType)
+		public bool TryGetProxyType(System.Type baseType, System.Type[] baseInterfaces, out TypeInfo proxyType)
 		{
 			proxyType = null;
 
@@ -45,7 +45,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			return cache.TryGetValue(entry, out proxyType);
 		}
 
-		public void StoreProxyType(System.Type result, System.Type baseType, params System.Type[] baseInterfaces)
+		public void StoreProxyType(TypeInfo result, System.Type baseType, params System.Type[] baseInterfaces)
 		{
 			var entry = new ProxyCacheEntry(baseType, baseInterfaces);
 			cache[entry] = result;

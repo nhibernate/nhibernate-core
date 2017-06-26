@@ -40,9 +40,9 @@ namespace NHibernate.Test.SqlTest.Custom
 			t.Commit();
 			s.Close();
 
-			sessions.Evict(typeof(Organization));
-			sessions.Evict(typeof(Person));
-			sessions.Evict(typeof(Employment));
+			Sfi.Evict(typeof(Organization));
+			Sfi.Evict(typeof(Person));
+			Sfi.Evict(typeof(Employment));
 
 			s = OpenSession();
 			t = s.BeginTransaction();

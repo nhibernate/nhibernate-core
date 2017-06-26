@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 
 using NHibernate.Cache;
@@ -12,18 +12,18 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Engine.Loading
 {
 	/// <summary> 
-	/// Represents state associated with the processing of a given <see cref="IDataReader"/>
+	/// Represents state associated with the processing of a given <see cref="DbDataReader"/>
 	/// in regards to loading collections.
 	/// </summary>
 	/// <remarks>
-	/// Another implementation option to consider is to not expose <see cref="IDataReader">ResultSets</see>
+	/// Another implementation option to consider is to not expose <see cref="DbDataReader">ResultSets</see>
 	/// directly (in the JDBC redesign) but to always "wrap" them and apply a [series of] context[s] to that wrapper.
 	/// </remarks>
 	public class CollectionLoadContext
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(CollectionLoadContext));
 		private readonly LoadContexts loadContexts;
-		private readonly IDataReader resultSet;
+		private readonly DbDataReader resultSet;
 		private readonly ISet<CollectionKey> localLoadingCollectionKeys = new HashSet<CollectionKey>();
 
 		/// <summary> 
@@ -31,7 +31,7 @@ namespace NHibernate.Engine.Loading
 		/// </summary>
 		/// <param name="loadContexts">Callback to other collection load contexts. </param>
 		/// <param name="resultSet">The result set this is "wrapping".</param>
-		public CollectionLoadContext(LoadContexts loadContexts, IDataReader resultSet)
+		public CollectionLoadContext(LoadContexts loadContexts, DbDataReader resultSet)
 		{
 			this.loadContexts = loadContexts;
 			this.resultSet = resultSet;
@@ -42,7 +42,7 @@ namespace NHibernate.Engine.Loading
 			get { return loadContexts; }
 		}
 
-		public IDataReader ResultSet
+		public DbDataReader ResultSet
 		{
 			get { return resultSet; }
 		}
@@ -69,9 +69,7 @@ namespace NHibernate.Engine.Loading
 		/// </remarks>
 		public IPersistentCollection GetLoadingCollection(ICollectionPersister persister, object key)
 		{
-			EntityMode em = loadContexts.PersistenceContext.Session.EntityMode;
-
-			CollectionKey collectionKey = new CollectionKey(persister, key, em);
+			CollectionKey collectionKey = new CollectionKey(persister, key);
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("starting attempt to find loading collection [" + MessageHelper.InfoString(persister.Role, key) + "]");
@@ -97,7 +95,7 @@ namespace NHibernate.Engine.Loading
 				else
 				{
 					object owner = loadContexts.PersistenceContext.GetCollectionOwner(key, persister);
-					bool newlySavedEntity = owner != null && loadContexts.PersistenceContext.GetEntry(owner).Status != Status.Loading && em != EntityMode.Xml;
+					bool newlySavedEntity = owner != null && loadContexts.PersistenceContext.GetEntry(owner).Status != Status.Loading;
 					if (newlySavedEntity)
 					{
 						// important, to account for newly saved entities in query
@@ -173,7 +171,7 @@ namespace NHibernate.Engine.Loading
 					matches.Add(lce);
 					if (lce.Collection.Owner == null)
 					{
-						session.PersistenceContext.AddUnownedCollection(new CollectionKey(persister, lce.Key, session.EntityMode),
+						session.PersistenceContext.AddUnownedCollection(new CollectionKey(persister, lce.Key),
 																		lce.Collection);
 					}
 					if (log.IsDebugEnabled)
@@ -236,7 +234,6 @@ namespace NHibernate.Engine.Loading
 				log.Debug("ending loading collection [" + lce + "]");
 			}
 			ISessionImplementor session = LoadContext.PersistenceContext.Session;
-			EntityMode em = session.EntityMode;
 
 			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
 			var stopWath = new Stopwatch();
@@ -247,7 +244,7 @@ namespace NHibernate.Engine.Loading
 
 			bool hasNoQueuedAdds = lce.Collection.EndRead(persister); // warning: can cause a recursive calls! (proxy initialization)
 
-			if (persister.CollectionType.HasHolder(em))
+			if (persister.CollectionType.HasHolder())
 			{
 				LoadContext.PersistenceContext.AddCollectionHolder(lce.Collection);
 			}
@@ -263,7 +260,7 @@ namespace NHibernate.Engine.Loading
 			}
 
 			bool addToCache = hasNoQueuedAdds && persister.HasCache && 
-				((session.CacheMode & CacheMode.Put) == CacheMode.Put) && !ce.IsDoremove; // and this is not a forced initialization during flush
+				session.CacheMode.HasFlag(CacheMode.Put) && !ce.IsDoremove; // and this is not a forced initialization during flush
 
 			if (addToCache)
 			{

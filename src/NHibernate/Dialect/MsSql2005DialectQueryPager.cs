@@ -33,11 +33,13 @@ namespace NHibernate.Dialect
 
 		private SqlString PageByLimitOnly(SqlString limit)
 		{
-			var tokenEnum = new SqlTokenizer(_sourceQuery).GetEnumerator();
-			if (!tokenEnum.TryParseUntilFirstMsSqlSelectColumn()) return null;
-			
-			int insertPoint = tokenEnum.Current.SqlIndex;
-			return _sourceQuery.Insert(insertPoint, new SqlString("TOP (", limit, ") "));
+			using (var tokenEnum = new SqlTokenizer(_sourceQuery).GetEnumerator())
+			{
+				if (!tokenEnum.TryParseUntilFirstMsSqlSelectColumn()) return null;
+
+				var insertPoint = tokenEnum.Current.SqlIndex;
+				return _sourceQuery.Insert(insertPoint, new SqlString("TOP (", limit, ") "));
+			}
 		}
 
 		private SqlString PageByLimitAndOffset(SqlString offset, SqlString limit)

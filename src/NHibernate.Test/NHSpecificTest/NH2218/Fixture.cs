@@ -61,7 +61,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2218
 		[Test]
 		public void SelectEntitiesByEntityNameFromStatelessSession()
 		{
-			using (var session = sessions.OpenStatelessSession())
+			using (var session = Sfi.OpenStatelessSession())
 			using (session.BeginTransaction())
 			{
 				// verify the instance count for both mappings

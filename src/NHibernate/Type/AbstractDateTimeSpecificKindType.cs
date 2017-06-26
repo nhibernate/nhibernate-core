@@ -1,5 +1,6 @@
 using System;
-using System.Data;
+using System.Data.Common;
+using NHibernate.Engine;
 
 namespace NHibernate.Type
 {
@@ -18,9 +19,9 @@ namespace NHibernate.Type
 			return DateTime.SpecifyKind(DateTime.Parse(xml), DateTimeKind);
 		}
 
-		public override int GetHashCode(object x, EntityMode entityMode)
+		public override int GetHashCode(object x)
 		{
-			int hashCode = base.GetHashCode(x, entityMode);
+			int hashCode = base.GetHashCode(x);
 			unchecked
 			{
 				hashCode = 31*hashCode + ((DateTime) x).Kind.GetHashCode();
@@ -43,13 +44,13 @@ namespace NHibernate.Type
 			return base.IsEqual(x, y) && ((DateTime) x).Kind == ((DateTime) y).Kind;
 		}
 
-		public override void Set(IDbCommand st, object value, int index)
+		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
 			var dateValue = (DateTime) value;
-			((IDataParameter) st.Parameters[index]).Value = CreateDateTime(dateValue);
+			st.Parameters[index].Value = CreateDateTime(dateValue);
 		}
 
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			try
 			{

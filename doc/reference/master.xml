@@ -17,6 +17,7 @@
 <!ENTITY query-hql              SYSTEM "modules/query_hql.xml">
 <!ENTITY query-criteria         SYSTEM "modules/query_criteria.xml">
 <!ENTITY query-queryover        SYSTEM "modules/query_queryover.xml">
+<!ENTITY query-linq             SYSTEM "modules/query_linq.xml">
 <!ENTITY query-sql              SYSTEM "modules/query_sql.xml">
 <!ENTITY filters                SYSTEM "modules/filters.xml">
 <!ENTITY performance            SYSTEM "modules/performance.xml">
@@ -39,7 +40,7 @@
 	<bookinfo>
 		<title>NHibernate - Relational Persistence for Idiomatic .NET</title>
 		<subtitle>NHibernate Reference Documentation</subtitle>
-		<releaseinfo>4.0</releaseinfo>
+		<releaseinfo>5.0</releaseinfo>
 	</bookinfo>
 
 	<toc />
@@ -67,6 +68,7 @@
 	&query-hql;
 	&query-criteria;
 	&query-queryover;
+	&query-linq;
 	&query-sql;
 
 	&filters;

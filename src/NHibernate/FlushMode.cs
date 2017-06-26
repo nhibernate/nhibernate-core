@@ -22,7 +22,15 @@ namespace NHibernate
 		/// called by the application. This mode is very efficient for read only
 		/// transactions
 		/// </summary>
-		Never = 0,
+		Manual = 0,
+		// Obsolete in v5.
+		/// <summary>
+		/// The <c>ISession</c> is never flushed unless <c>Flush()</c> is explicitly
+		/// called by the application. This mode is very efficient for read only
+		/// transactions
+		/// </summary>
+		[Obsolete("Please use Manual instead.")]
+		Never = Manual,
 		/// <summary>
 		/// The <c>ISession</c> is flushed when <c>Transaction.Commit()</c> is called
 		/// </summary>
@@ -32,7 +40,7 @@ namespace NHibernate
 		/// ensure that queries never return stale state. This is the default flush mode.
 		/// </summary>
 		Auto = 10,
-		/// <summary> 
+		/// <summary>
 		/// The <see cref="ISession"/> is flushed before every query. This is
 		/// almost always unnecessary and inefficient.
 		/// </summary>

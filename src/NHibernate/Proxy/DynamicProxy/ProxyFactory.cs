@@ -12,21 +12,21 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.Serialization;
+using NHibernate.Linq;
+using NHibernate.Util;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
 	public sealed class ProxyFactory
 	{
 		private static readonly ConstructorInfo defaultBaseConstructor = typeof(object).GetConstructor(new System.Type[0]);
-		private static readonly MethodInfo getTypeFromHandle = typeof(System.Type).GetMethod("GetTypeFromHandle");
 
-		private static readonly MethodInfo getValue = typeof (SerializationInfo).GetMethod("GetValue", BindingFlags.Public | BindingFlags.Instance, null,
-																																											 new[] { typeof(string), typeof(System.Type) }, null);
-
-		private static readonly MethodInfo setType = typeof(SerializationInfo).GetMethod("SetType", BindingFlags.Public | BindingFlags.Instance, null, new[] { typeof(System.Type) }, null);
-
-		private static readonly MethodInfo addValue = typeof (SerializationInfo).GetMethod("AddValue", BindingFlags.Public | BindingFlags.Instance, null,
-																						   new[] {typeof (string), typeof (object)}, null);
+		private static readonly MethodInfo getValue = ReflectHelper.GetMethod<SerializationInfo>(
+			si => si.GetValue(null, null));
+		private static readonly MethodInfo setType = ReflectHelper.GetMethod<SerializationInfo>(
+			si => si.SetType(null));
+		private static readonly MethodInfo addValue = ReflectHelper.GetMethod<SerializationInfo>(
+			si => si.AddValue(null, null));
 
 		public ProxyFactory()
 			: this(new DefaultyProxyMethodBuilder()) {}
@@ -68,29 +68,29 @@ namespace NHibernate.Proxy.DynamicProxy
 		{
 			System.Type[] baseInterfaces = ReferenceEquals(null, interfaces) ? new System.Type[0] : interfaces.Where(t => t != null).ToArray();
 			
-			System.Type proxyType;
+			TypeInfo proxyTypeInfo;
 
 			// Reuse the previous results, if possible, Fast path without locking.
-			if (Cache.TryGetProxyType(baseType, baseInterfaces, out proxyType))
-				return proxyType;
+			if (Cache.TryGetProxyType(baseType, baseInterfaces, out proxyTypeInfo))
+				return proxyTypeInfo;
 
 			lock (Cache)
 			{
 				// Recheck in case we got interrupted.
-				if (!Cache.TryGetProxyType(baseType, baseInterfaces, out proxyType))
+				if (!Cache.TryGetProxyType(baseType, baseInterfaces, out proxyTypeInfo))
 				{
-					proxyType = CreateUncachedProxyType(baseType, baseInterfaces);
+					proxyTypeInfo = CreateUncachedProxyType(baseType, baseInterfaces);
 
 					// Cache the proxy type
-					if (proxyType != null && Cache != null)
-						Cache.StoreProxyType(proxyType, baseType, baseInterfaces);
+					if (proxyTypeInfo != null && Cache != null)
+						Cache.StoreProxyType(proxyTypeInfo, baseType, baseInterfaces);
 				}
 
-				return proxyType;
+				return proxyTypeInfo;
 			}
 		}
 
-		private System.Type CreateUncachedProxyType(System.Type baseType, System.Type[] baseInterfaces)
+		private TypeInfo CreateUncachedProxyType(System.Type baseType, System.Type[] baseInterfaces)
 		{
 			AppDomain currentDomain = AppDomain.CurrentDomain;
 			string typeName = string.Format("{0}Proxy", baseType.Name);
@@ -145,7 +145,7 @@ namespace NHibernate.Proxy.DynamicProxy
 
 			// Make the proxy serializable
 			AddSerializationSupport(baseType, baseInterfaces, typeBuilder, interceptorField, defaultConstructor);
-			System.Type proxyType = typeBuilder.CreateType();
+			TypeInfo proxyType = typeBuilder.CreateTypeInfo();
 
 			ProxyAssemblyBuilder.Save(assemblyBuilder);
 			return proxyType;
@@ -221,7 +221,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			// info.SetType(typeof(ProxyObjectReference));
 			IL.Emit(OpCodes.Ldarg_1);
 			IL.Emit(OpCodes.Ldtoken, typeof (ProxyObjectReference));
-			IL.Emit(OpCodes.Call, getTypeFromHandle);
+			IL.Emit(OpCodes.Call, ReflectionCache.TypeMethods.GetTypeFromHandle);
 			IL.Emit(OpCodes.Callvirt, setType);
 
 			// info.AddValue("__interceptor", __interceptor);
@@ -276,7 +276,7 @@ namespace NHibernate.Proxy.DynamicProxy
 
 
 			IL.Emit(OpCodes.Ldtoken, typeof (IInterceptor));
-			IL.Emit(OpCodes.Call, getTypeFromHandle);
+			IL.Emit(OpCodes.Call, ReflectionCache.TypeMethods.GetTypeFromHandle);
 			IL.Emit(OpCodes.Stloc, interceptorType);
 
 			IL.Emit(OpCodes.Ldarg_0);

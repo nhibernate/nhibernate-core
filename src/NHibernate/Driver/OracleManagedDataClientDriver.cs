@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using System.Reflection;
 using NHibernate.AdoNet;
 using NHibernate.Engine.Query;
@@ -70,7 +71,7 @@ namespace NHibernate.Driver
 		/// This adds logic to ensure that a DbType.Boolean parameter is not created since
 		/// ODP.NET doesn't support it.
 		/// </remarks>
-		protected override void InitializeParameter(IDbDataParameter dbParam, string name, SqlType sqlType)
+		protected override void InitializeParameter(DbParameter dbParam, string name, SqlType sqlType)
 		{
 			// if the parameter coming in contains a boolean then we need to convert it 
 			// to another type since ODP.NET doesn't support DbType.Boolean
@@ -94,13 +95,13 @@ namespace NHibernate.Driver
 			}
 		}
 
-		private void InitializeParameter(IDbDataParameter dbParam, string name, object sqlType)
+		private void InitializeParameter(DbParameter dbParam, string name, object sqlType)
 		{
 			dbParam.ParameterName = FormatNameForParameter(name);
 			oracleDbType.SetValue(dbParam, sqlType, null);
 		}
 
-		protected override void OnBeforePrepare(IDbCommand command)
+		protected override void OnBeforePrepare(DbCommand command)
 		{
 			base.OnBeforePrepare(command);
 

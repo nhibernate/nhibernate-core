@@ -1,9 +1,7 @@
 using System;
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using System.Reflection;
-using System.Xml;
-
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
@@ -64,10 +62,6 @@ namespace NHibernate.Type
 			}
 			TypeFactory.InjectParameters(userType, parameters);
 			sqlTypes = userType.SqlTypes;
-			if (!userType.ReturnedType.IsSerializable)
-			{
-				LoggerProvider.LoggerFor(typeof(CustomType)).WarnFormat("the custom type '{0}' handled by '{1}' is not Serializable: ", userType.ReturnedType, userTypeClass);
-			}
 		}
 
 		/// <summary>
@@ -96,25 +90,25 @@ namespace NHibernate.Type
 			get { return userType.ReturnedType; }
 		}
 
-		public override object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			return userType.NullSafeGet(rs, names, owner);
+			return userType.NullSafeGet(rs, names, session, owner);
 		}
 
-		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
+		public override object NullSafeGet(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
-			return NullSafeGet(rs, new string[] {name}, session, owner);
+			return NullSafeGet(rs, new[] { name }, session, owner);
 		}
 
-		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override void NullSafeSet(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
-			if (settable[0]) 
-				userType.NullSafeSet(st, value, index);
+			if (settable[0])
+				userType.NullSafeSet(st, value, index, session);
 		}
 
-		public override void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session)
+		public override void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			userType.NullSafeSet(cmd, value, index);
+			userType.NullSafeSet(cmd, value, index, session);
 		}
 
 		/// <summary>
@@ -129,10 +123,12 @@ namespace NHibernate.Type
 			{
 				return "null";
 			}
-			else
+			IEnhancedUserType eut = userType as IEnhancedUserType;
+			if (eut != null)
 			{
-				return ToXMLString(value, factory);
+				return eut.ToXMLString(value);
 			}
+			return value.ToString();
 		}
 
 		/// <summary></summary>
@@ -141,7 +137,7 @@ namespace NHibernate.Type
 			get { return name; }
 		}
 
-		public override object DeepCopy(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
+		public override object DeepCopy(object value, ISessionFactoryImplementor factory)
 		{
 			return userType.DeepCopy(value);
 		}
@@ -167,7 +163,7 @@ namespace NHibernate.Type
 			return userType.GetType().GetHashCode();
 		}
 
-		public override int GetHashCode(object x, EntityMode entityMode)
+		public override int GetHashCode(object x)
 		{
 			return userType.GetHashCode(x);
 		}
@@ -223,29 +219,9 @@ namespace NHibernate.Type
 			return userType.Disassemble(value);
 		}
 
-		public override object FromXMLNode(XmlNode xml, IMapping factory)
-		{
-			return FromXMLString(xml.Value, factory);
-		}
-
-		public virtual object FromXMLString(string xml, IMapping factory)
-		{
-			return ((IEnhancedUserType)userType).FromXMLString(xml);
-		}
-
-		public virtual bool IsEqual(object x, object y)
+		public override bool IsEqual(object x, object y)
 		{
 			return userType.Equals(x, y);
-		}
-
-		public override bool IsEqual(object x, object y, EntityMode entityMode)
-		{
-			return IsEqual(x, y);
-		}
-
-		public override void SetToXMLNode(XmlNode node, object value, ISessionFactoryImplementor factory)
-		{
-			node.Value= ToXMLString(value, factory);
 		}
 
 		public override bool[] ToColumnNullness(object value, IMapping mapping)
@@ -254,21 +230,6 @@ namespace NHibernate.Type
 			if (value != null)
 				ArrayHelper.Fill(result, true);
 			return result;
-		}
-
-		public virtual string ToXMLString(object value, ISessionFactoryImplementor factory)
-		{
-			if (value == null)
-				return null;
-			IEnhancedUserType eut = userType as IEnhancedUserType;
-			if (eut != null)
-			{
-				return eut.ToXMLString(value);
-			}
-			else
-			{
-				return value.ToString();
-			}
 		}
 	}
 }

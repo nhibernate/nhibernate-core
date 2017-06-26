@@ -19,7 +19,7 @@ NuGet (<http://nuget.org/List/Packages/NHibernate>).
 
 Alternatively binaries are available from SourceForge at <http://sourceforge.net/projects/nhibernate>.
 
-You are encouraged to review the release notes (releasenotes.txt), particularly when upgrading to a 
+You are encouraged to review the release notes ([releasenotes.txt](releasenotes.txt)), particularly when upgrading to a 
 later version. The release notes will generally document any breaking changes.
 
 Community Forums
@@ -46,9 +46,13 @@ can be found [here][C2].
 Licenses
 --------
 
-This software is distributed under the terms of the Free Software Foundation [Lesser GNU Public License (LGPL), version 2.1][D1] (see lgpl.txt).
+- This software is distributed under the terms of the Free Software Foundation [Lesser GNU Public License (LGPL), version 2.1][D1] (see [LICENSE.txt][D2]).
+- The documentation for this software is distributed under the terms of the Free Software Foundation [GNU Free Documentation License (GNU FDL), version 1.1][D3] (see [doc/LICENSE.txt][D4]).
 
 [D1]: http://www.gnu.org/licenses/lgpl-2.1-standalone.html
+[D2]: LICENSE.txt
+[D3]: http://www.gnu.org/licenses/old-licenses/fdl-1.1-standalone.html
+[D4]: doc/LICENSE.txt
 
 Credits
 -------
@@ -64,8 +68,8 @@ of NHibernate (in no particular order):
 * [Log4net][] - logging, by the [Apache Software Foundation][]
 * [JetBrains][] - [ReSharper][] licences for NHibernate developers
 * [LinFu][] - proxy implementation (Philip Laureano)
-* Iesi.Collections - source code taken from an [article][Article] written by Jason Smith
-* [Relinq] - Linq provider for NHibernate
+* Iesi.Collections - source code taken from an [article][] written by Jason Smith
+* [Relinq][] - Linq provider for NHibernate
 
 [NUnit]: http://www.nunit.org
 [Nant]: http://nant.sourceforge.net
@@ -79,5 +83,5 @@ of NHibernate (in no particular order):
 [JetBrains]: http://www.jetbrains.com
 [ReSharper]: http://www.jetbrains.com/resharper
 [LinFu]: http://code.google.com/p/linfu
-[Article]: http://www.codeproject.com/KB/recipes/sets.aspx "Add Support for "Set" Collections to .NET"
-[Relinq]: http://relinq.codeplex.com/ "re-linq: Generic LINQ provider"
+[article]: http://www.codeproject.com/KB/recipes/sets.aspx
+[Relinq]: http://relinq.codeplex.com/

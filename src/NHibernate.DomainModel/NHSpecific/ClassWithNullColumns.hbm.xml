@@ -1,29 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?> 
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="false">
 
-    <class 
+<class 
 		name="NHibernate.DomainModel.NHSpecific.ClassWithNullColumns, NHibernate.DomainModel" 
-		table="usertype"
-	>
-		
+		table="usertype">
+
 		<id name="Id" column="id">
 			<generator class="assigned" />
 		</id>
-		
+
 		<property 
 			name="FirstInt32" 
 			type="NHibernate.DomainModel.NHSpecific.NullInt32UserType, NHibernate.DomainModel" 
 			column="f_int32"
 			not-null="false"
 		/>
-		
+
 		<property 
 			name="SecondInt32" 
 			type="NHibernate.DomainModel.NHSpecific.NullInt32UserType, NHibernate.DomainModel" 
 			column="s_int32"
 			not-null="false"
 		/>
-		
+
 	</class>
 </hibernate-mapping>
 	
