@@ -317,40 +317,26 @@ namespace NHibernate.Impl
 		/// </summary>
 		public override void AfterTransactionCompletion(bool success, ITransaction tx)
 		{
-			if (!_transactionCoordinatorShared)
-				foreach (var dependentSession in ConnectionManager.DependentSessions)
-				{
-					dependentSession.AfterTransactionCompletion(success, tx);
-				}
-
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				log.Debug("transaction completion");
+
+				persistenceContext.AfterTransactionCompletion();
+				actionQueue.AfterTransactionCompletion(success);
+
 				if (Factory.Statistics.IsStatisticsEnabled)
 				{
 					Factory.StatisticsImplementor.EndTransaction(success);
 				}
 
-				// Let the originating session notify the connection manager
-				if (!_transactionCoordinatorShared)
+				try
 				{
-					connectionManager.AfterTransaction();
+					Interceptor.AfterTransactionCompletion(tx);
 				}
-
-				persistenceContext.AfterTransactionCompletion();
-				actionQueue.AfterTransactionCompletion(success);
-				if (!_transactionCoordinatorShared || Interceptor != ConnectionManager.Session.Interceptor)
+				catch (Exception t)
 				{
-					try
-					{
-						Interceptor.AfterTransactionCompletion(tx);
-					}
-					catch (Exception t)
-					{
-						log.Error("exception in interceptor afterTransactionCompletion()", t);
-					}
+					log.Error("exception in interceptor afterTransactionCompletion()", t);
 				}
-
 
 				//if (autoClear)
 				//	Clear();
@@ -2104,45 +2090,36 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-
-				if (!_transactionCoordinatorShared || Interceptor != ConnectionManager.Session.Interceptor)
-				{
-					Interceptor.AfterTransactionBegin(tx);
-				}
+				Interceptor.AfterTransactionBegin(tx);
 			}
-
-			if (!_transactionCoordinatorShared)
-				foreach (var dependentSession in ConnectionManager.DependentSessions)
-				{
-					dependentSession.AfterTransactionBegin(tx);
-				}
 		}
 
 		public override void BeforeTransactionCompletion(ITransaction tx)
 		{
-			if (!_transactionCoordinatorShared)
-				foreach (var dependentSession in ConnectionManager.DependentSessions)
-				{
-					dependentSession.BeforeTransactionCompletion(tx);
-				}
-
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				log.Debug("before transaction completion");
+				FlushBeforeTransactionCompletion();
 				actionQueue.BeforeTransactionCompletion();
-				if (!_transactionCoordinatorShared || Interceptor != ConnectionManager.Session.Interceptor)
+				try
 				{
-					try
-					{
-						Interceptor.BeforeTransactionCompletion(tx);
-					}
-					catch (Exception e)
-					{
-						log.Error("exception in interceptor BeforeTransactionCompletion()", e);
-
-						throw;
-					}
+					Interceptor.BeforeTransactionCompletion(tx);
 				}
+				catch (Exception e)
+				{
+					log.Error("exception in interceptor BeforeTransactionCompletion()", e);
+
+					throw;
+				}
+			}
+		}
+
+		public override void FlushBeforeTransactionCompletion()
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				if (FlushMode != FlushMode.Manual)
+					Flush();
 			}
 		}
 

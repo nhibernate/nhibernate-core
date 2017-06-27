@@ -154,6 +154,8 @@ namespace NHibernate.Transaction
 				rolledBack = false;
 
 				session.AfterTransactionBegin(this);
+				foreach (var dependentSession in session.ConnectionManager.DependentSessions)
+					dependentSession.AfterTransactionBegin(this);
 			}
 		}
 
@@ -161,8 +163,12 @@ namespace NHibernate.Transaction
 		{
 			using (new SessionIdLoggingContext(sessionId))
 			{
+				session.ConnectionManager.AfterTransaction();
 				session.AfterTransactionCompletion(successful, this);
 				NotifyLocalSynchsAfterTransactionCompletion(successful);
+				foreach (var dependentSession in session.ConnectionManager.DependentSessions)
+					dependentSession.AfterTransactionCompletion(successful, this);
+
 				session = null;
 				begun = false;
 			}
@@ -186,20 +192,10 @@ namespace NHibernate.Transaction
 
 				log.Debug("Start Commit");
 
-				foreach (var dependentSession in session.ConnectionManager.DependentSessions)
-				{
-					if (dependentSession.FlushMode != FlushMode.Manual)
-					{
-						dependentSession.Flush();
-					}
-				}
-				if (session.FlushMode != FlushMode.Manual)
-				{
-					session.Flush();
-				}
-
-				NotifyLocalSynchsBeforeTransactionCompletion();
 				session.BeforeTransactionCompletion(this);
+				NotifyLocalSynchsBeforeTransactionCompletion();
+				foreach (var dependentSession in session.ConnectionManager.DependentSessions)
+					dependentSession.BeforeTransactionCompletion(this);
 
 				try
 				{

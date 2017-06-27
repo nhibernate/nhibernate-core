@@ -48,6 +48,8 @@ namespace NHibernate.Transaction
 			logger.DebugFormat("enlisted into DTC transaction: {0}",
 							   transactionContext.AmbientTransation.IsolationLevel);
 			session.AfterTransactionBegin(null);
+			foreach (var dependentSession in session.ConnectionManager.DependentSessions)
+				dependentSession.AfterTransactionBegin(null);
 
 			TransactionCompletedEventHandler handler = null;
 
@@ -67,7 +69,11 @@ namespace NHibernate.Transaction
 						{
 							logger.Warn("Completed transaction was disposed, assuming transaction rollback", ode);
 						}
+						session.ConnectionManager.AfterTransaction();
 						session.AfterTransactionCompletion(wasSuccessful, null);
+						foreach (var dependentSession in session.ConnectionManager.DependentSessions)
+							dependentSession.AfterTransactionCompletion(wasSuccessful, null);
+
 						Cleanup(session);
 					}
 
@@ -140,29 +146,19 @@ namespace NHibernate.Transaction
 					{
 						using (var tx = new TransactionScope(AmbientTransation))
 						{
-							sessionImplementor.BeforeTransactionCompletion(null);
 							if (sessionImplementor.ConnectionManager.IsConnected)
 							{
 								using (sessionImplementor.ConnectionManager.FlushingFromDtcTransaction)
 								{
+									sessionImplementor.BeforeTransactionCompletion(null);
 									foreach (var dependentSession in sessionImplementor.ConnectionManager.DependentSessions)
-									{
-										if (dependentSession.FlushMode != FlushMode.Manual)
-										{
-											logger.DebugFormat("[session-id={0}] Flushing from Dtc Transaction", dependentSession.SessionId);
-											dependentSession.Flush();
-										}
-									}
-									if (sessionImplementor.FlushMode != FlushMode.Manual)
-									{
-										logger.DebugFormat("[session-id={0}] Flushing from Dtc Transaction", sessionImplementor.SessionId);
-										sessionImplementor.Flush();
-									}
+										dependentSession.BeforeTransactionCompletion(null);
+
+									logger.Debug("prepared for DTC transaction");
+
+									tx.Complete();
 								}
 							}
-							logger.Debug("prepared for DTC transaction");
-
-							tx.Complete();
 						}
 						preparingEnlistment.Prepared();
 					}
@@ -202,7 +198,10 @@ namespace NHibernate.Transaction
 			{
 				using (new SessionIdLoggingContext(sessionImplementor.SessionId))
 				{
+					sessionImplementor.ConnectionManager.AfterTransaction();
 					sessionImplementor.AfterTransactionCompletion(false, null);
+					foreach (var dependentSession in sessionImplementor.ConnectionManager.DependentSessions)
+						dependentSession.AfterTransactionCompletion(false, null);
 					logger.Debug("DTC transaction is in doubt");
 					enlistment.Done();
 					IsInActiveTransaction = false;

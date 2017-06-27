@@ -163,7 +163,7 @@ namespace NHibernate.Test.TransactionTest
 				}
 			}
 
-			Assert.That(flushOrder, Is.EqualTo(new[] { 1, 2, 3, 0 }));
+			Assert.That(flushOrder, Is.EqualTo(new[] { 0, 1, 2, 3 }));
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
