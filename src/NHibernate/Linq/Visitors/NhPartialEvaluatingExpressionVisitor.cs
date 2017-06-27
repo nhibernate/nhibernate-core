@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using System.Linq.Expressions;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Parsing;
@@ -21,17 +23,30 @@ namespace NHibernate.Linq.Visitors
 
 		public static Expression EvaluateIndependentSubtrees(Expression expression)
 		{
-			var evaluatedExpression = PartialEvaluatingExpressionVisitor.EvaluateIndependentSubtrees(expression, new NullEvaluatableExpressionFilter());
+			var evaluatedExpression = PartialEvaluatingExpressionVisitor.EvaluateIndependentSubtrees(expression, new NhEvaluatableExpressionFilter());
 			return new NhPartialEvaluatingExpressionVisitor().Visit(evaluatedExpression);
 		}
 
-		public Expression VisitPartialEvaluationException(PartialEvaluationExceptionExpression expression)
+		public Expression VisitPartialEvaluationException(PartialEvaluationExceptionExpression partialEvaluationExceptionExpression)
 		{
-			return Visit(expression.Reduce());
+			throw new HibernateException(
+				$"Evaluation failure on {partialEvaluationExceptionExpression.EvaluatedExpression}",
+				partialEvaluationExceptionExpression.Exception);
 		}
 	}
 
-	internal class NullEvaluatableExpressionFilter : EvaluatableExpressionFilterBase
+	internal class NhEvaluatableExpressionFilter : EvaluatableExpressionFilterBase
 	{
+		public override bool IsEvaluatableMethodCall(MethodCallExpression node)
+		{
+			if (node == null)
+				throw new ArgumentNullException(nameof(node));
+
+			var attributes = node.Method
+				.GetCustomAttributes(typeof(LinqExtensionMethodAttributeBase), false)
+				.Cast<LinqExtensionMethodAttributeBase>().ToArray();
+			return attributes.Length == 0 ||
+				attributes.Any(a => a.PreEvaluation == LinqExtensionPreEvaluation.AllowPreEvaluation);
+		}
 	}
 }

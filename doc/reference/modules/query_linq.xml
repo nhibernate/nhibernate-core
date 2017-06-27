@@ -67,6 +67,10 @@ using NHibernate.Linq;]]></programlisting>
     session.Query<Cat>()
         .Where(c => c.BirthDate == DateTime.Today.MappedAs(NHibernateUtil.Date))
         .ToList();]]></programlisting>
+    <programlisting><![CDATA[IList<Cat> cats =
+    session.Query<Cat>()
+        .Where(c => c.Name == "Max".MappedAs(TypeFactory.Basic("AnsiString(200)")))
+        .ToList();]]></programlisting>
   </sect1>
 
   <sect1 id="querylinq-supportedmethods">
@@ -656,11 +660,20 @@ IList<Cat> cats =
     }
 }]]></programlisting>
       <para>
-        The method call will always be translated to SQL if at least one of the parameters of the
-        method call has its value originating from an entity. Otherwise, the Linq provider will try to
-        evaluate the method call with .Net runtime instead. Since NHibernate 5.0, if this runtime
-        evaluation fails (throws an exception), then the method call will be translated to SQL too.
+        Since NHibernate v5.0, the Linq provider will no more evaluate in-memory the method call
+        even when it does not depend on the queried data. If you wish to have the method call evaluated
+        before querying whenever possible, and then replaced in the query by its resulting value, specify
+        <literal>LinqExtensionPreEvaluation.AllowPreEvaluation</literal> on the attribute.
       </para>
+      <programlisting><![CDATA[public static class CustomLinqExtensions
+{
+    [LinqExtensionMethod("dbo.aCustomFunction", LinqExtensionPreEvaluation.AllowPreEvaluation)]
+    public static string ACustomFunction(this string input, string otherInput)
+    {
+        // In-memory evaluation implementation.
+        return input.Replace(otherInput, "blah");
+    }
+}]]></programlisting>
     </sect2>
 
     <sect2 id="querylinq-extending-generator">
@@ -766,6 +779,13 @@ cfg.LinqToHqlGeneratorsRegistry<ExtendedLinqToHqlGeneratorsRegistry>();
         .Min();]]></programlisting>
       <para>
         (Of course, the same result could be obtained with <literal>(DateTime?)(c.BirthDate)</literal>.)
+      </para>
+      <para>
+        By default, the Linq provider will try to evaluate the method call with .Net runtime
+        whenever possible, instead of translating it to SQL. It will not do it if at least one
+        of the parameters of the method call has its value originating from an entity, or if
+        the method is marked with the <literal>NoPreEvaluation</literal> attribute (available
+        since NHibernate 5.0).
       </para>
     </sect2>
   </sect1>
