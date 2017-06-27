@@ -782,6 +782,8 @@
     <Compile Include="NHSpecificTest\EntityWithUserTypeCanHaveLinqGenerators\Fixture.cs" />
     <Compile Include="NHSpecificTest\EntityWithUserTypeCanHaveLinqGenerators\FooExample.cs" />
     <Compile Include="NHSpecificTest\EntityWithUserTypeCanHaveLinqGenerators\IExample.cs" />
+    <Compile Include="NHSpecificTest\NH2241\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2241\Model.cs" />
     <Compile Include="Insertordering\NH3931Entities.cs" />
     <Compile Include="NHSpecificTest\NH4004\Entity.cs" />
     <Compile Include="NHSpecificTest\NH4004\Fixture.cs" />
@@ -3304,6 +3306,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH2241\Mappings.hbm.xml" />
     <EmbeddedResource Include="Futures\Mappings.hbm.xml" />
     <EmbeddedResource Include="SessionBuilder\Mappings.hbm.xml" />
     <EmbeddedResource Include="IdTest\IdentityClass.hbm.xml" />
