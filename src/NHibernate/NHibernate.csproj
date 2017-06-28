@@ -277,7 +277,6 @@
     <Compile Include="Async\Impl\AbstractSessionImpl.cs" />
     <Compile Include="Async\Impl\CollectionFilterImpl.cs" />
     <Compile Include="Async\Impl\CriteriaImpl.cs" />
-    <Compile Include="Async\Impl\EnumerableImpl.cs" />
     <Compile Include="Async\Impl\FutureBatch.cs" />
     <Compile Include="Async\Impl\FutureCriteriaBatch.cs" />
     <Compile Include="Async\Impl\FutureQueryBatch.cs" />
