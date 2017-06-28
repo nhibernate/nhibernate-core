@@ -27,6 +27,8 @@ namespace NHibernate.Dialect.Schema
 			get { return connection; }
 		}
 
+		public virtual bool IncludeDataTypesInReservedWords => true;
+
 		#region IDataBaseSchema Members
 
 		public virtual bool StoresMixedCaseQuotedIdentifiers
@@ -100,6 +102,16 @@ namespace NHibernate.Dialect.Schema
 			{
 				result.Add(row["ReservedWord"].ToString());
 			}
+
+			if (IncludeDataTypesInReservedWords)
+			{
+				DataTable dtTypes = connection.GetSchema(DbMetaDataCollectionNames.DataTypes);
+				foreach (DataRow row in dtTypes.Rows)
+				{
+					result.Add(row["TypeName"].ToString());
+				}
+			}
+
 			return result;
 		}
 

@@ -344,18 +344,134 @@ namespace NHibernate.Dialect
 			RegisterFunction("watcomsql", new StandardSQLFunction("watcomsql", NHibernateUtil.String));
 		}
 
+		#region private static readonly string[] DialectKeywords = { ... }
+
+		private static readonly string[] DialectKeywords =
+		{
+			"aes_decrypt",
+			"asc",
+			"attach",
+			"backup",
+			"bit",
+			"bottom",
+			"break",
+			"capability",
+			"cascade",
+			"char_convert",
+			"checkpoint",
+			"clear",
+			"comment",
+			"compressed",
+			"conflict",
+			"convert",
+			"dbspace",
+			"deleting",
+			"desc",
+			"detach",
+			"elseif",
+			"encrypted",
+			"endif",
+			"exception",
+			"existing",
+			"externlogin",
+			"force",
+			"forward",
+			"goto",
+			"holdlock",
+			"identified",
+			"index",
+			"inserting",
+			"install",
+			"instead",
+			"integrated",
+			"iq",
+			"isolation",
+			"json",
+			"kerberos",
+			"key",
+			"lock",
+			"login",
+			"long",
+			"membership",
+			"message",
+			"mode",
+			"modify",
+			"noholdlock",
+			"notify",
+			"nvarchar",
+			"off",
+			"openstring",
+			"openxml",
+			"option",
+			"options",
+			"others",
+			"passthrough",
+			"print",
+			"privileges",
+			"proc",
+			"publication",
+			"raiserror",
+			"readtext",
+			"reference",
+			"refresh",
+			"remote",
+			"remove",
+			"rename",
+			"reorganize",
+			"resource",
+			"restore",
+			"restrict",
+			"rowtype",
+			"save",
+			"session",
+			"setuser",
+			"share",
+			"spatial",
+			"sqlcode",
+			"stop",
+			"subtrans",
+			"subtransaction",
+			"synchronize",
+			"temporary",
+			"timeline",
+			"tinyint",
+			"truncate",
+			"tsequal",
+			"unbounded",
+			"uniqueidentifier",
+			"unsigned",
+			"updating",
+			"validate",
+			"varbinary",
+			"varbit",
+			"variable",
+			"varray",
+			"view",
+			"wait",
+			"waitfor",
+			"work",
+			"writetext",
+			"xml",
+		};
+
+		#endregion
+
 		protected virtual void RegisterKeywords()
 		{
-			RegisterKeyword("TOP");
-			RegisterKeyword("FIRST");
-			RegisterKeyword("FETCH");
-			RegisterKeyword("START");
-			RegisterKeyword("AT");
-			RegisterKeyword("WITH");
-			RegisterKeyword("CONTAINS");
-			RegisterKeyword("REGEXP");
-			RegisterKeyword("SIMILAR");
-			RegisterKeyword("SEQUENCE");
+			// Register driver returned keywords for SQL Anywhere 16
+			RegisterKeywords(DialectKeywords);
+
+			// Keywords originally registered for SQL Anywhere 10 (none are in the above list)
+			RegisterKeyword("top");
+			RegisterKeyword("first");
+			RegisterKeyword("fetch");
+			RegisterKeyword("start");
+			RegisterKeyword("at");
+			RegisterKeyword("with");
+			RegisterKeyword("contains");
+			RegisterKeyword("regexp");
+			RegisterKeyword("similar");
+			RegisterKeyword("sequence");
 		}
 
 		#region IDENTITY or AUTOINCREMENT support

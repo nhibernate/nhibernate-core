@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NHibernate.Cfg;
+using NHibernate.Dialect;
+using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.Tool.hbm2ddl;
@@ -58,7 +59,95 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 			var sf = (ISessionFactoryImplementor) configuration.BuildSessionFactory();
 			SchemaMetadataUpdater.Update(sf);
 			var match = reservedDb.Intersect(sf.Dialect.Keywords, StringComparer.OrdinalIgnoreCase);
+
+			// tests that nothing in the first metaData.GetReservedWords() is left out of the second metaData.GetReservedWords() call.
+			// i.e. always passes.
 			Assert.That(match, Is.EquivalentTo(reservedDb));
+		}
+
+		[Test]
+		public void EnsureReservedWordsHardCodedInDialect()
+		{
+			var reservedDb = new HashSet<string>();
+			var configuration = TestConfigurationHelper.GetDefaultConfiguration();
+			var dialect = Dialect.Dialect.GetDialect(configuration.Properties);
+			var connectionHelper = new ManagedProviderConnectionHelper(configuration.Properties);
+			connectionHelper.Prepare();
+			try
+			{
+				var metaData = dialect.GetDataBaseSchema(connectionHelper.Connection);
+				foreach (var rw in metaData.GetReservedWords())
+				{
+					if (rw.Contains(" ")) continue;
+					reservedDb.Add(rw.ToLowerInvariant());
+				}
+			}
+			finally
+			{
+				connectionHelper.Release();
+			}
+
+			var sf = (ISessionFactoryImplementor)configuration.BuildSessionFactory();
+
+			// use the dialect as configured, with no update
+			var match = reservedDb.Intersect(sf.Dialect.Keywords).ToList();
+
+			// tests that nothing in metaData.GetReservedWords() is left out of the Dialect.Keywords (without a refresh).
+			var differences = reservedDb.Except(match).ToList();
+			if (differences.Count > 0)
+			{
+				Console.WriteLine("Update Dialect {0} with RegisterKeyword:", sf.Dialect.GetType().Name);
+				foreach (var keyword in differences.OrderBy(x => x))
+				{
+					Console.WriteLine("  RegisterKeyword(\"{0}\");", keyword);
+				}
+			}
+
+			if (sf.ConnectionProvider.Driver is OdbcDriver)
+			{
+				Assert.Inconclusive("ODBC has excess keywords reserved");
+			}
+
+			Assert.That(match, Is.EquivalentTo(reservedDb));
+		}
+
+		[Test, Explicit]
+		public void CheckForExcessReservedWordsHardCodedInDialect()
+		{
+			var reservedDb = new HashSet<string>();
+			var configuration = TestConfigurationHelper.GetDefaultConfiguration();
+			var dialect = Dialect.Dialect.GetDialect(configuration.Properties);
+			var connectionHelper = new ManagedProviderConnectionHelper(configuration.Properties);
+			connectionHelper.Prepare();
+			try
+			{
+				var metaData = dialect.GetDataBaseSchema(connectionHelper.Connection);
+				foreach (var rw in metaData.GetReservedWords())
+				{
+					reservedDb.Add(rw.ToLowerInvariant());
+				}
+			}
+			finally
+			{
+				connectionHelper.Release();
+			}
+
+			var sf = (ISessionFactoryImplementor)configuration.BuildSessionFactory();
+
+			// use the dialect as configured, with no update
+			// tests that nothing in Dialect.Keyword is not in metaData.GetReservedWords()
+			var differences = sf.Dialect.Keywords.Except(reservedDb).Except(AnsiSqlKeywords.Sql2003).ToList();
+			if (differences.Count > 0)
+			{
+				Console.WriteLine("Excess RegisterKeyword in Dialect {0}:", sf.Dialect.GetType().Name);
+				foreach (var keyword in differences.OrderBy(x => x))
+				{
+					Console.WriteLine("  RegisterKeyword(\"{0}\");", keyword);
+				}
+			}
+
+			// Don't fail incase the driver returns nothing.
+			// This is an info-only test.
 		}
 
 		[Test]

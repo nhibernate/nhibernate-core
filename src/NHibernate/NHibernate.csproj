@@ -145,6 +145,7 @@
     <Compile Include="Connection\IConnectionProvider.cs" />
     <Compile Include="Connection\UserSuppliedConnectionProvider.cs" />
     <Compile Include="Context\AsyncLocalSessionContext.cs" />
+    <Compile Include="Dialect\AnsiSqlKeywords.cs" />
     <Compile Include="Dialect\PostgreSQL83Dialect.cs" />
     <Compile Include="Impl\ISharedSessionCreationOptions.cs" />
     <Compile Include="ISharedSessionBuilder.cs" />

@@ -82,6 +82,41 @@ namespace NHibernate.Dialect
 
 			// Register the date function, since when used in LINQ select clauses, NH must know the data type.
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "cast(?1 as date)"));
+
+			RegisterKeywords();
+		}
+
+		#region private static readonly string[] DialectKeywords = { ... }
+
+		private static readonly string[] DialectKeywords =
+		{
+			"analyse",
+			"analyze",
+			"asc",
+			"concurrently",
+			"current_catalog",
+			"current_schema",
+			"deferrable",
+			"desc",
+			"freeze",
+			"ilike",
+			"initially",
+			"isnull",
+			"limit",
+			"notnull",
+			"offset",
+			"placing",
+			"returning",
+			"session_user",
+			"variadic",
+			"verbose",
+		};
+
+		#endregion
+
+		protected virtual void RegisterKeywords()
+		{
+			RegisterKeywords(DialectKeywords);
 		}
 
 		public override string AddColumnString

@@ -81,7 +81,7 @@ namespace NHibernate.Dialect
 
 			_sqlFunctions = CollectionHelper.CreateCaseInsensitiveHashtable(StandardAggregateFunctions);
 
-			Keywords = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			Keywords = new HashSet<string>(AnsiSqlKeywords.Sql2003, StringComparer.OrdinalIgnoreCase);
 
 			// standard sql92 functions (can be overridden by subclasses)
 			RegisterFunction("substring", new AnsiSubstringFunction());
