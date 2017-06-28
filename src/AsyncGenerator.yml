@@ -108,6 +108,9 @@
         rule: EventListener
       - conversion: ToAsync
         rule: ICache
+      typeConversion:
+      - conversion: Ignore
+        name: EnumerableImpl
       ignoreSearchForAsyncCounterparts:
       - name: GetFieldValue
       - name: IsDBNull
