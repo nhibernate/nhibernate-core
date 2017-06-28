@@ -887,7 +887,7 @@ namespace NHibernate.Impl
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				return new DelayedEnumerator<T>(List<T>, async cancellationToken => await ListAsync<T>(cancellationToken).ConfigureAwait(false));
+				return new DelayedEnumerator<T>(() => List<T>(), async cancellationToken => await ListAsync<T>(cancellationToken).ConfigureAwait(false));
 			}
 
 			session.FutureQueryBatch.Add<T>(this);
@@ -898,7 +898,7 @@ namespace NHibernate.Impl
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				return new FutureValue<T>(List<T>, async cancellationToken => await ListAsync<T>(cancellationToken).ConfigureAwait(false));
+				return new FutureValue<T>(() => List<T>(), async cancellationToken => await ListAsync<T>(cancellationToken).ConfigureAwait(false));
 			}
 			
 			session.FutureQueryBatch.Add<T>(this);
