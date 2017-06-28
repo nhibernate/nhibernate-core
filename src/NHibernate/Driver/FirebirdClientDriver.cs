@@ -144,5 +144,40 @@ namespace NHibernate.Driver
 
 			_clearAllPools.Invoke(null, new object[0]);
 		}
+
+		/// <summary>
+		/// This driver support of <see cref="System.Transactions.Transaction"/> is not compliant and too heavily
+		/// restricts what can be done for NHibernate tests. See DNET-764, DNET-766 (and bonus, DNET-765).
+		/// </summary>
+		/// <remarks>
+		/// <list type="bullet">
+		/// <item>
+		/// <term>DNET-764</term>
+		/// <description>When auto-enlistment is enabled (<c>Enlist=true</c> in connection string), the driver throws if
+		/// attempting to open a connection without an ambient transaction. http://tracker.firebirdsql.org/browse/DNET-764
+		/// </description>
+		/// </item>
+		/// <item>
+		/// <term>DNET-765</term>
+		/// <description>When the connection string does not specify auto-enlistment parameter <c>Enlist</c>, the driver
+		/// defaults to <c>false</c>. http://tracker.firebirdsql.org/browse/DNET-765
+		/// </description>
+		/// </item>
+		/// <item>
+		/// <term>DNET-766</term>
+		/// <description>When auto-enlistment is disabled (<c>Enlist=false</c> in connection string), the driver ignores
+		/// calls to <see cref="DbConnection.EnlistTransaction(System.Transactions.Transaction)"/>. They silently do
+		/// nothing, the Firebird connection does not get enlisted. http://tracker.firebirdsql.org/browse/DNET-766
+		/// </description>
+		/// </item>
+		/// </list>
+		/// </remarks>
+		public override bool SupportsSystemTransactions => false;
+
+		/// <summary>
+		/// <see langword="false"/>. Enlistment is completely disabled when auto-enlistment is disabled.
+		/// See http://tracker.firebirdsql.org/browse/DNET-766.
+		/// </summary>
+		public override bool SupportsEnlistmentWhenAutoEnlistmentIsDisabled => false;
 	}
 }

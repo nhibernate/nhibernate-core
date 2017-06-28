@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System.Data;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1632
@@ -38,6 +39,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 		[Test]
 		public async Task When_using_DTC_HiLo_knows_to_create_isolated_DTC_transactionAsync()
 		{
+			if (!Dialect.SupportsConcurrentWritingConnections)
+				Assert.Ignore(Dialect.GetType().Name + " does not support concurrent writing connections, can not isolate work.");
+
 			object scalar1, scalar2;
 
 			using (var session = Sfi.OpenSession())
@@ -47,18 +51,19 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 				scalar1 = await (command.ExecuteScalarAsync());
 			}
 
-			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+			using (new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
 				var generator = Sfi.GetIdentifierGenerator(typeof(Person).FullName);
 				Assert.That(generator, Is.InstanceOf<TableHiLoGenerator>());
 
 				using (var session = OpenSession())
 				{
-					var id = await (generator.GenerateAsync((ISessionImplementor)session, new Person(), CancellationToken.None));
+					// Force connection acquisition for having it enlisted.
+					Assert.That(session.Connection.State, Is.EqualTo(ConnectionState.Open));
+					await (generator.GenerateAsync((ISessionImplementor)session, new Person(), CancellationToken.None));
 				}
 
 				// intentionally dispose without committing
-				tx.Dispose();
 			}
 
 			using (var session = Sfi.OpenSession())

@@ -9,72 +9,30 @@
 
 
 using System;
-using System.Collections;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Transactions;
 using log4net;
 using log4net.Repository.Hierarchy;
-using NHibernate.Cfg;
-using NHibernate.Cfg.MappingSchema;
 using NHibernate.Linq;
-using NHibernate.Tool.hbm2ddl;
+using NHibernate.Test.TransactionTest;
 using NUnit.Framework;
 
-namespace NHibernate.Test.NHSpecificTest.DtcFailures
+namespace NHibernate.Test.SystemTransactions
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class DtcFailuresFixtureAsync : TestCase
+	public class DistributedSystemTransactionFixtureAsync : SystemTransactionFixtureBase
 	{
-		private static readonly ILog _log = LogManager.GetLogger(typeof(DtcFailuresFixtureAsync));
-
-		protected override IList Mappings
-			=> new[] { "NHSpecificTest.DtcFailures.Mappings.hbm.xml" };
-
-		protected override string MappingsAssembly
-			=> "NHibernate.Test";
+		private static readonly ILog _log = LogManager.GetLogger(typeof(DistributedSystemTransactionFixtureAsync));
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
-			=> dialect.SupportsDistributedTransactions;
-
-		protected override void CreateSchema()
-		{
-			// Copied from Configure method.
-			var config = new Configuration();
-			if (TestConfigurationHelper.hibernateConfigFile != null)
-				config.Configure(TestConfigurationHelper.hibernateConfigFile);
-
-			// Our override so we can set nullability on database column without NHibernate knowing about it.
-			config.BeforeBindMapping += BeforeBindMapping;
-
-			// Copied from AddMappings methods.
-			var assembly = Assembly.Load(MappingsAssembly);
-			foreach (var file in Mappings)
-				config.AddResource(MappingsAssembly + "." + file, assembly);
-
-			// Copied from CreateSchema method, but we use our own config.
-			new SchemaExport(config).Create(false, true);
-		}
+			=> dialect.SupportsDistributedTransactions && base.AppliesTo(dialect);
 
 		protected override void OnTearDown()
 		{
 			DodgeTransactionCompletionDelayIfRequired();
-
-			using (var s = OpenSession())
-			using (var t = s.BeginTransaction())
-			{
-				s.CreateQuery("delete from System.Object").ExecuteUpdate();
-				t.Commit();
-			}
-		}
-
-		private void BeforeBindMapping(object sender, BindMappingEventArgs e)
-		{
-			var prop = e.Mapping.RootClasses[0].Properties.OfType<HbmProperty>().Single(p => p.Name == "NotNullData");
-			prop.notnull = true;
-			prop.notnullSpecified = true;
+			base.OnTearDown();
 		}
 
 		[Test]
@@ -91,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 
 				using (var s = OpenSession())
 				{
-					await (s.SaveAsync(new Person { CreatedAt = DateTime.Now }));
+					await (s.SaveAsync(new Person()));
 					// Ensure the connection is acquired (thus enlisted)
 					Assert.DoesNotThrowAsync(() => s.FlushAsync(), "Failure enlisting a connection in a distributed transaction.");
 				}
@@ -105,7 +63,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 			{
 				using (var s = OpenSession())
 				{
-					await (s.SaveAsync(new Person { CreatedAt = DateTime.Now }));
+					await (s.SaveAsync(new Person()));
 					// Ensure the connection is acquired (thus enlisted)
 					await (s.FlushAsync());
 				}
@@ -119,7 +77,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 		}
 
 		[Test]
-		public async Task WillNotCrashOnDtcPrepareFailureAsync()
+		public async Task WillNotCrashOnPrepareFailureAsync()
 		{
 			var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 			var disposeCalled = false;
@@ -163,7 +121,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 				using (var s = OpenSession())
 				{
 					ForceEscalationToDistributedTx.Escalate(true); //will rollback tx
-					await (s.SaveAsync(new Person { CreatedAt = DateTime.Today }));
+					await (s.SaveAsync(new Person()));
 
 					if (explicitFlush)
 						await (s.FlushAsync());
@@ -189,7 +147,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 				}
 			}
 
-			await (AssertNoPersonsAsync());
+			AssertNoPersons();
 		}
 
 		[Test]
@@ -199,14 +157,14 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 			using (var s = OpenSession())
 			{
 				ForceEscalationToDistributedTx.Escalate();
-				await (s.SaveAsync(new Person { CreatedAt = DateTime.Today }));
+				await (s.SaveAsync(new Person()));
 
 				if (explicitFlush)
 					await (s.FlushAsync());
 				// No Complete call for triggering rollback.
 			}
 
-			await (AssertNoPersonsAsync());
+			AssertNoPersons();
 		}
 
 		[Test]
@@ -219,7 +177,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 				{
 					using (var s = OpenSession())
 					{
-						var person = new Person { CreatedAt = DateTime.Now };
+						var person = new Person();
 						await (s.SaveAsync(person));
 
 						if (explicitFlush)
@@ -237,7 +195,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 				_log.Debug("Transaction aborted.");
 			}
 
-			await (AssertNoPersonsAsync());
+			AssertNoPersons();
 		}
 
 		[Test]
@@ -248,17 +206,16 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 			{
 				using (var s = OpenSession())
 				{
-					var person = new Person { CreatedAt = DateTime.Now };
+					var person = new Person();
 					await (s.SaveAsync(person));
 					ForceEscalationToDistributedTx.Escalate();
-					person.CreatedAt = DateTime.Now;
 
 					if (explicitFlush)
 						await (s.FlushAsync());
 				}
 				// No Complete call for triggering rollback.
 			}
-			await (AssertNoPersonsAsync());
+			AssertNoPersons();
 		}
 
 		[Test]
@@ -271,10 +228,9 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 				{
 					using (var s = OpenSession())
 					{
-						var person = new Person { CreatedAt = DateTime.Now };
+						var person = new Person();
 						await (s.SaveAsync(person));
 						ForceEscalationToDistributedTx.Escalate(true); //will rollback tx
-						person.CreatedAt = DateTime.Now;
 
 						if (explicitFlush)
 							await (s.FlushAsync());
@@ -289,7 +245,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 				_log.Debug("Transaction aborted.");
 			}
 
-			await (AssertNoPersonsAsync());
+			AssertNoPersons();
 		}
 
 		[Test]
@@ -396,7 +352,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 			{
 				using (var s = OpenSession())
 				{
-					id = await (s.SaveAsync(new Person { CreatedAt = DateTime.Today }));
+					id = await (s.SaveAsync(new Person()));
 
 					ForceEscalationToDistributedTx.Escalate();
 
@@ -432,7 +388,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 
 			DodgeTransactionCompletionDelayIfRequired();
 
-			await (AssertNoPersonsAsync());
+			AssertNoPersons();
 		}
 
 		[Test]
@@ -456,13 +412,81 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 		}
 
 		[Test]
+		public async Task CanUseSessionWithManyScopesAsync([Values(false, true)] bool explicitFlush)
+		{
+			// Note that this fails with ConnectionReleaseMode.OnClose and SqlServer:
+			// System.Data.SqlClient.SqlException : Microsoft Distributed Transaction Coordinator (MS DTC) has stopped this transaction.
+			using (var s = OpenSession())
+			//using (var s = Sfi.WithOptions().ConnectionReleaseMode(ConnectionReleaseMode.OnClose).OpenSession())
+			{
+				using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+				{
+					ForceEscalationToDistributedTx.Escalate();
+					// Acquire the connection
+					var count = await (s.Query<Person>().CountAsync());
+					Assert.That(count, Is.EqualTo(0), "Unexpected initial entity count.");
+					tx.Complete();
+				}
+				// No dodge here please! Allow to check chaining usages do not fail.
+				using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+				{
+					await (s.SaveAsync(new Person()));
+
+					ForceEscalationToDistributedTx.Escalate();
+
+					if (explicitFlush)
+						await (s.FlushAsync());
+
+					tx.Complete();
+				}
+
+				DodgeTransactionCompletionDelayIfRequired();
+
+				using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+				{
+					ForceEscalationToDistributedTx.Escalate();
+					var count = await (s.Query<Person>().CountAsync());
+					Assert.That(count, Is.EqualTo(1), "Unexpected entity count after committed insert.");
+					tx.Complete();
+				}
+				using (new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+				{
+					await (s.SaveAsync(new Person()));
+
+					ForceEscalationToDistributedTx.Escalate();
+
+					if (explicitFlush)
+						await (s.FlushAsync());
+
+					// No complete for rollback-ing.
+				}
+
+				DodgeTransactionCompletionDelayIfRequired();
+
+				// Do not reuse the session after a rollback, its state does not allow it.
+				// http://nhibernate.info/doc/nhibernate-reference/manipulatingdata.html#manipulatingdata-endingsession-commit
+			}
+
+			using (var s = OpenSession())
+			{
+				using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+				{
+					ForceEscalationToDistributedTx.Escalate();
+					var count = await (s.Query<Person>().CountAsync());
+					Assert.That(count, Is.EqualTo(1), "Unexpected entity count after rollback-ed insert.");
+					tx.Complete();
+				}
+			}
+		}
+
+		[Test]
 		public async Task CanUseSessionOutsideOfScopeAfterScopeAsync([Values(false, true)] bool explicitFlush)
 		{
 			using (var s = Sfi.WithOptions().ConnectionReleaseMode(ConnectionReleaseMode.OnClose).OpenSession())
 			{
 				using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
-					await (s.SaveAsync(new Person { CreatedAt = DateTime.Today }));
+					await (s.SaveAsync(new Person()));
 
 					ForceEscalationToDistributedTx.Escalate();
 
@@ -498,7 +522,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 					{
 						using (var s = OpenSession())
 						{
-							await (s.SaveAsync(new Person { CreatedAt = DateTime.Today }));
+							await (s.SaveAsync(new Person()));
 
 							ForceEscalationToDistributedTx.Escalate();
 
@@ -511,6 +535,15 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 					var count = await (controlSession.Query<Person>().CountAsync());
 					if (count != i)
 					{
+						// See https://github.com/npgsql/npgsql/issues/1571#issuecomment-308651461 discussion with a Microsoft
+						// employee: MSDTC consider a transaction to be committed once it has collected all participant votes
+						// for committing from prepare phase. It then immediately notifies all participants of the outcome.
+						// This causes TransactionScope.Dispose to leave while the second phase of participants may still
+						// be executing. This means the transaction from the db view point can still be pending and not yet
+						// committed. This is by design of MSDTC and we have to cope with that. Some data provider may have
+						// a global locking mechanism causing any subsequent use to wait for the end of the commit phase,
+						// but this is not the usual case. Some other, as Npgsql < v3.2.5, may crash due to this, because
+						// they re-use the connection for the second phase.
 						Thread.Sleep(100);
 						var countSecondTry = await (controlSession.Query<Person>().CountAsync());
 						Assert.Warn($"Unexpected entity count: {count} instead of {i}. " +
@@ -522,13 +555,20 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 			}
 		}
 
-		private async Task AssertNoPersonsAsync(CancellationToken cancellationToken = default(CancellationToken))
+		[Test]
+		public async Task DoNotDeadlockOnAfterTransactionWaitAsync()
 		{
-			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			var interceptor = new AfterTransactionWaitingInterceptor();
+			using (var s = Sfi.WithOptions().Interceptor(interceptor).OpenSession())
+			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
-				Assert.AreEqual(0, await (s.Query<Person>().CountAsync(cancellationToken)), "Entities found in database.");
+				ForceEscalationToDistributedTx.Escalate();
+				await (s.SaveAsync(new Person()));
+
+				await (s.FlushAsync());
+				tx.Complete();
 			}
+			Assert.That(interceptor.Exception, Is.Null);
 		}
 
 		private void DodgeTransactionCompletionDelayIfRequired()

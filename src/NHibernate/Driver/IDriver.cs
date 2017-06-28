@@ -126,11 +126,22 @@ namespace NHibernate.Driver
 		bool RequiresTimeSpanForTime { get; }
 
 		/// <summary>
+		/// Does this driver support <see cref="System.Transactions.Transaction"/>?
+		/// </summary>
+		bool SupportsSystemTransactions { get; }
+
+		/// <summary>
 		/// Does this driver connections support enlisting with a <see langword="null" /> transaction?
 		/// </summary>
 		/// <remarks>Enlisting with <see langword="null" /> allows to leave a completed transaction and
 		/// starts accepting auto-committed statements.</remarks>
 		bool SupportsNullEnlistment { get; }
+
+		/// <summary>
+		/// Does this driver connections support explicitly enlisting with a transaction when auto-enlistment
+		/// is disabled?
+		/// </summary>
+		bool SupportsEnlistmentWhenAutoEnlistmentIsDisabled { get; }
 
 		/// <summary>
 		/// Does sometimes this driver finish distributed transaction after end of scope disposal?

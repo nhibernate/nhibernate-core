@@ -1,69 +1,27 @@
 using System;
-using System.Collections;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Transactions;
 using log4net;
 using log4net.Repository.Hierarchy;
-using NHibernate.Cfg;
-using NHibernate.Cfg.MappingSchema;
 using NHibernate.Linq;
-using NHibernate.Tool.hbm2ddl;
+using NHibernate.Test.TransactionTest;
 using NUnit.Framework;
 
-namespace NHibernate.Test.NHSpecificTest.DtcFailures
+namespace NHibernate.Test.SystemTransactions
 {
 	[TestFixture]
-	public class DtcFailuresFixture : TestCase
+	public class DistributedSystemTransactionFixture : SystemTransactionFixtureBase
 	{
-		private static readonly ILog _log = LogManager.GetLogger(typeof(DtcFailuresFixture));
-
-		protected override IList Mappings
-			=> new[] { "NHSpecificTest.DtcFailures.Mappings.hbm.xml" };
-
-		protected override string MappingsAssembly
-			=> "NHibernate.Test";
+		private static readonly ILog _log = LogManager.GetLogger(typeof(DistributedSystemTransactionFixture));
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
-			=> dialect.SupportsDistributedTransactions;
-
-		protected override void CreateSchema()
-		{
-			// Copied from Configure method.
-			var config = new Configuration();
-			if (TestConfigurationHelper.hibernateConfigFile != null)
-				config.Configure(TestConfigurationHelper.hibernateConfigFile);
-
-			// Our override so we can set nullability on database column without NHibernate knowing about it.
-			config.BeforeBindMapping += BeforeBindMapping;
-
-			// Copied from AddMappings methods.
-			var assembly = Assembly.Load(MappingsAssembly);
-			foreach (var file in Mappings)
-				config.AddResource(MappingsAssembly + "." + file, assembly);
-
-			// Copied from CreateSchema method, but we use our own config.
-			new SchemaExport(config).Create(false, true);
-		}
+			=> dialect.SupportsDistributedTransactions && base.AppliesTo(dialect);
 
 		protected override void OnTearDown()
 		{
 			DodgeTransactionCompletionDelayIfRequired();
-
-			using (var s = OpenSession())
-			using (var t = s.BeginTransaction())
-			{
-				s.CreateQuery("delete from System.Object").ExecuteUpdate();
-				t.Commit();
-			}
-		}
-
-		private void BeforeBindMapping(object sender, BindMappingEventArgs e)
-		{
-			var prop = e.Mapping.RootClasses[0].Properties.OfType<HbmProperty>().Single(p => p.Name == "NotNullData");
-			prop.notnull = true;
-			prop.notnullSpecified = true;
+			base.OnTearDown();
 		}
 
 		[Test]
@@ -80,7 +38,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 
 				using (var s = OpenSession())
 				{
-					s.Save(new Person { CreatedAt = DateTime.Now });
+					s.Save(new Person());
 					// Ensure the connection is acquired (thus enlisted)
 					Assert.DoesNotThrow(s.Flush, "Failure enlisting a connection in a distributed transaction.");
 				}
@@ -94,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 			{
 				using (var s = OpenSession())
 				{
-					s.Save(new Person { CreatedAt = DateTime.Now });
+					s.Save(new Person());
 					// Ensure the connection is acquired (thus enlisted)
 					s.Flush();
 				}
@@ -108,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 		}
 
 		[Test]
-		public void WillNotCrashOnDtcPrepareFailure()
+		public void WillNotCrashOnPrepareFailure()
 		{
 			var tx = new TransactionScope();
 			var disposeCalled = false;
@@ -152,7 +110,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 				using (var s = OpenSession())
 				{
 					ForceEscalationToDistributedTx.Escalate(true); //will rollback tx
-					s.Save(new Person { CreatedAt = DateTime.Today });
+					s.Save(new Person());
 
 					if (explicitFlush)
 						s.Flush();
@@ -188,7 +146,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 			using (var s = OpenSession())
 			{
 				ForceEscalationToDistributedTx.Escalate();
-				s.Save(new Person { CreatedAt = DateTime.Today });
+				s.Save(new Person());
 
 				if (explicitFlush)
 					s.Flush();
@@ -208,7 +166,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 				{
 					using (var s = OpenSession())
 					{
-						var person = new Person { CreatedAt = DateTime.Now };
+						var person = new Person();
 						s.Save(person);
 
 						if (explicitFlush)
@@ -237,10 +195,9 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 			{
 				using (var s = OpenSession())
 				{
-					var person = new Person { CreatedAt = DateTime.Now };
+					var person = new Person();
 					s.Save(person);
 					ForceEscalationToDistributedTx.Escalate();
-					person.CreatedAt = DateTime.Now;
 
 					if (explicitFlush)
 						s.Flush();
@@ -260,10 +217,9 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 				{
 					using (var s = OpenSession())
 					{
-						var person = new Person { CreatedAt = DateTime.Now };
+						var person = new Person();
 						s.Save(person);
 						ForceEscalationToDistributedTx.Escalate(true); //will rollback tx
-						person.CreatedAt = DateTime.Now;
 
 						if (explicitFlush)
 							s.Flush();
@@ -425,7 +381,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 			{
 				using (var s = OpenSession())
 				{
-					id = s.Save(new Person { CreatedAt = DateTime.Today });
+					id = s.Save(new Person());
 
 					ForceEscalationToDistributedTx.Escalate();
 
@@ -485,13 +441,81 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 		}
 
 		[Test]
+		public void CanUseSessionWithManyScopes([Values(false, true)] bool explicitFlush)
+		{
+			// Note that this fails with ConnectionReleaseMode.OnClose and SqlServer:
+			// System.Data.SqlClient.SqlException : Microsoft Distributed Transaction Coordinator (MS DTC) has stopped this transaction.
+			using (var s = OpenSession())
+			//using (var s = Sfi.WithOptions().ConnectionReleaseMode(ConnectionReleaseMode.OnClose).OpenSession())
+			{
+				using (var tx = new TransactionScope())
+				{
+					ForceEscalationToDistributedTx.Escalate();
+					// Acquire the connection
+					var count = s.Query<Person>().Count();
+					Assert.That(count, Is.EqualTo(0), "Unexpected initial entity count.");
+					tx.Complete();
+				}
+				// No dodge here please! Allow to check chaining usages do not fail.
+				using (var tx = new TransactionScope())
+				{
+					s.Save(new Person());
+
+					ForceEscalationToDistributedTx.Escalate();
+
+					if (explicitFlush)
+						s.Flush();
+
+					tx.Complete();
+				}
+
+				DodgeTransactionCompletionDelayIfRequired();
+
+				using (var tx = new TransactionScope())
+				{
+					ForceEscalationToDistributedTx.Escalate();
+					var count = s.Query<Person>().Count();
+					Assert.That(count, Is.EqualTo(1), "Unexpected entity count after committed insert.");
+					tx.Complete();
+				}
+				using (new TransactionScope())
+				{
+					s.Save(new Person());
+
+					ForceEscalationToDistributedTx.Escalate();
+
+					if (explicitFlush)
+						s.Flush();
+
+					// No complete for rollback-ing.
+				}
+
+				DodgeTransactionCompletionDelayIfRequired();
+
+				// Do not reuse the session after a rollback, its state does not allow it.
+				// http://nhibernate.info/doc/nhibernate-reference/manipulatingdata.html#manipulatingdata-endingsession-commit
+			}
+
+			using (var s = OpenSession())
+			{
+				using (var tx = new TransactionScope())
+				{
+					ForceEscalationToDistributedTx.Escalate();
+					var count = s.Query<Person>().Count();
+					Assert.That(count, Is.EqualTo(1), "Unexpected entity count after rollback-ed insert.");
+					tx.Complete();
+				}
+			}
+		}
+
+		[Test]
 		public void CanUseSessionOutsideOfScopeAfterScope([Values(false, true)] bool explicitFlush)
 		{
 			using (var s = Sfi.WithOptions().ConnectionReleaseMode(ConnectionReleaseMode.OnClose).OpenSession())
 			{
 				using (var tx = new TransactionScope())
 				{
-					s.Save(new Person { CreatedAt = DateTime.Today });
+					s.Save(new Person());
 
 					ForceEscalationToDistributedTx.Escalate();
 
@@ -527,7 +551,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 					{
 						using (var s = OpenSession())
 						{
-							s.Save(new Person { CreatedAt = DateTime.Today });
+							s.Save(new Person());
 
 							ForceEscalationToDistributedTx.Escalate();
 
@@ -540,6 +564,15 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 					var count = controlSession.Query<Person>().Count();
 					if (count != i)
 					{
+						// See https://github.com/npgsql/npgsql/issues/1571#issuecomment-308651461 discussion with a Microsoft
+						// employee: MSDTC consider a transaction to be committed once it has collected all participant votes
+						// for committing from prepare phase. It then immediately notifies all participants of the outcome.
+						// This causes TransactionScope.Dispose to leave while the second phase of participants may still
+						// be executing. This means the transaction from the db view point can still be pending and not yet
+						// committed. This is by design of MSDTC and we have to cope with that. Some data provider may have
+						// a global locking mechanism causing any subsequent use to wait for the end of the commit phase,
+						// but this is not the usual case. Some other, as Npgsql < v3.2.5, may crash due to this, because
+						// they re-use the connection for the second phase.
 						Thread.Sleep(100);
 						var countSecondTry = controlSession.Query<Person>().Count();
 						Assert.Warn($"Unexpected entity count: {count} instead of {i}. " +
@@ -551,13 +584,20 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 			}
 		}
 
-		private void AssertNoPersons()
+		[Test]
+		public void DoNotDeadlockOnAfterTransactionWait()
 		{
-			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			var interceptor = new AfterTransactionWaitingInterceptor();
+			using (var s = Sfi.WithOptions().Interceptor(interceptor).OpenSession())
+			using (var tx = new TransactionScope())
 			{
-				Assert.AreEqual(0, s.Query<Person>().Count(), "Entities found in database.");
+				ForceEscalationToDistributedTx.Escalate();
+				s.Save(new Person());
+
+				s.Flush();
+				tx.Complete();
 			}
+			Assert.That(interceptor.Exception, Is.Null);
 		}
 
 		private void DodgeTransactionCompletionDelayIfRequired()
