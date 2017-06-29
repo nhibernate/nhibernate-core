@@ -92,7 +92,7 @@ namespace NHibernate.Transaction
 			originatingSession.TransactionContext = transactionContext;
 
 			_logger.DebugFormat(
-				"enlisted into DTC transaction: {0}",
+				"enlisted into system transaction: {0}",
 				transactionContext.EnlistedTransaction.IsolationLevel);
 
 			originatingSession.AfterTransactionBegin(null);
@@ -124,12 +124,12 @@ namespace NHibernate.Transaction
 			public bool IsInActiveTransaction { get; internal set; } = true;
 
 			private readonly ISessionImplementor _sessionImplementor;
+			private readonly System.Transactions.Transaction _originalTransaction;
 			private readonly ManualResetEventSlim _lock = new ManualResetEventSlim(true);
 			private volatile bool _needCompletionLocking = true;
 			// Required for not locking the completion phase itself when locking session usages from concurrent threads.
 			private readonly AsyncLocal<bool> _bypassLock = new AsyncLocal<bool>();
 			private readonly int _systemTransactionCompletionLockTimeout;
-			private bool IsDistributed => EnlistedTransaction.TransactionInformation.DistributedIdentifier != Guid.Empty;
 
 			public SystemTransactionContext(
 				ISessionImplementor sessionImplementor,
@@ -137,6 +137,7 @@ namespace NHibernate.Transaction
 				int systemTransactionCompletionLockTimeout)
 			{
 				_sessionImplementor = sessionImplementor;
+				_originalTransaction = transaction;
 				EnlistedTransaction = transaction.Clone();
 				EnlistedTransaction.TransactionCompleted += TransactionCompleted;
 				_systemTransactionCompletionLockTimeout = systemTransactionCompletionLockTimeout;
@@ -159,10 +160,11 @@ namespace NHibernate.Transaction
 					if (_lock.Wait(_systemTransactionCompletionLockTimeout))
 						return;
 					// A call occurring after transaction scope disposal should not have to wait long, since
-					// the scope disposal is supposed to block until the transaction has completed: I hope
-					// that it at least ensures IO are done, even if experience shows DTC lets the scope
-					// disposal leave before having finished with volatile ressources and
-					// TransactionCompleted event.
+					// the scope disposal is supposed to block until the transaction has completed. When not
+					// distributed, all is done, no wait. When distributed, with MSDTC, the scope disposal is
+					// left after all prepare phases, and the complete of all resources including the NHibernate
+					// one is concurrently raised. So the wait should indeed only have to wait after NHibernate
+					// AfterTransaction events.
 					// Remove the block then throw.
 					Unlock();
 					throw new HibernateException(
@@ -204,11 +206,18 @@ namespace NHibernate.Transaction
 			{
 				try
 				{
-					return EnlistedTransaction.TransactionInformation.Status;
+					// Cloned transaction is not disposed "unexpectedly", its status is accessible till context disposal.
+					var status = EnlistedTransaction.TransactionInformation.Status;
+					if (status != TransactionStatus.Active)
+						return status;
+
+					// The clone status can be out of date when active, check the original one (which could be disposed if
+					// the clone is out of date).
+					return _originalTransaction.TransactionInformation.Status;
 				}
 				catch (ObjectDisposedException ode)
 				{
-					_logger.Warn("Completed transaction was already disposed, unable to get its status.", ode);
+					_logger.Warn("Enlisted transaction status was wrongly active, original transaction being already disposed. Will assume neither active nor committed.", ode);
 					return null;
 				}
 			}
@@ -225,7 +234,7 @@ namespace NHibernate.Transaction
 						{
 							if (_sessionImplementor.ConnectionManager.IsConnected)
 							{
-								using (_sessionImplementor.ConnectionManager.BeginFlushingFromSystemTransaction(IsDistributed))
+								using (_sessionImplementor.ConnectionManager.BeginFlushingFromSystemTransaction())
 								{
 									// Required when both connection auto-enlistment and session auto-enlistment are disabled.
 									_sessionImplementor.JoinTransaction();
@@ -274,12 +283,7 @@ namespace NHibernate.Transaction
 							: "System transaction is in doubt");
 					// we have not much to do here, since it is the actual
 					// DB connection that will commit/rollback the transaction
-					// Usual cases will raise after transaction actions from TransactionCompleted event.
-					if (!success.HasValue)
-					{
-						// In-doubt. A durable ressource has failed and may recover, but we won't wait to know.
-						RunAfterTransactionActions(false);
-					}
+					// After transaction actions are raised from TransactionCompleted event.
 
 					enlistment.Done();
 				}
@@ -289,28 +293,15 @@ namespace NHibernate.Transaction
 
 			private void TransactionCompleted(object sender, TransactionEventArgs e)
 			{
-				EnlistedTransaction.TransactionCompleted -= TransactionCompleted;
 				// This event may execute before second phase, so we cannot try to get the success from second phase.
 				// Using this event is required by example in case the prepare phase failed and called force rollback:
 				// no second phase would occur for this ressource. Maybe this may happen in some other circumstances
 				// too.
-				var wasSuccessful = GetTransactionStatus() == TransactionStatus.Committed;
-
-				RunAfterTransactionActions(wasSuccessful);
-			}
-
-			private volatile bool _afterTransactionActionsDone;
-
-			private void RunAfterTransactionActions(bool wasSuccessful)
-			{
-				if (_afterTransactionActionsDone)
-					// Probably called from In-Doubt and TransactionCompleted.
-					return;
-				_afterTransactionActionsDone = true;
-				// Allow transaction completed actions to run while others stay blocked.
-				_bypassLock.Value = true;
 				try
 				{
+					EnlistedTransaction.TransactionCompleted -= TransactionCompleted;
+					// Allow transaction completed actions to run while others stay blocked.
+					_bypassLock.Value = true;
 					using (new SessionIdLoggingContext(_sessionImplementor.SessionId))
 					{
 						// Flag active as false before running actions, otherwise the connection manager will refuse
@@ -324,6 +315,7 @@ namespace NHibernate.Transaction
 						if (!ShouldCloseSessionOnSystemTransactionCompleted)
 							_sessionImplementor.ConnectionManager.EnlistIfRequired(null);
 
+						var wasSuccessful = GetTransactionStatus() == TransactionStatus.Committed;
 						_sessionImplementor.AfterTransactionCompletion(wasSuccessful, null);
 						foreach (var dependentSession in _sessionImplementor.ConnectionManager.DependentSessions)
 							dependentSession.AfterTransactionCompletion(wasSuccessful, null);
@@ -368,7 +360,7 @@ namespace NHibernate.Transaction
 				// No dispose, done later.
 			}
 
-			private volatile bool _isDisposed;
+			private bool _isDisposed;
 
 			public void Dispose()
 			{
@@ -385,7 +377,7 @@ namespace NHibernate.Transaction
 				if (disposing)
 				{
 					Unlock();
-					EnlistedTransaction?.Dispose();
+					EnlistedTransaction.Dispose();
 					_lock.Dispose();
 				}
 			}

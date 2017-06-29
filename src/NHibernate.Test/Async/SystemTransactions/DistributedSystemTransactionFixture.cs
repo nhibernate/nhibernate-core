@@ -416,6 +416,7 @@ namespace NHibernate.Test.SystemTransactions
 		{
 			// Note that this fails with ConnectionReleaseMode.OnClose and SqlServer:
 			// System.Data.SqlClient.SqlException : Microsoft Distributed Transaction Coordinator (MS DTC) has stopped this transaction.
+			// Not much an issue since it is advised to not use ConnectionReleaseMode.OnClose.
 			using (var s = OpenSession())
 			//using (var s = Sfi.WithOptions().ConnectionReleaseMode(ConnectionReleaseMode.OnClose).OpenSession())
 			{
@@ -482,7 +483,11 @@ namespace NHibernate.Test.SystemTransactions
 		[Test]
 		public async Task CanUseSessionOutsideOfScopeAfterScopeAsync([Values(false, true)] bool explicitFlush)
 		{
-			using (var s = Sfi.WithOptions().ConnectionReleaseMode(ConnectionReleaseMode.OnClose).OpenSession())
+			// Note that this fails with ConnectionReleaseMode.OnClose and Npgsql (< 3.2.5?):
+			// NpgsqlOperationInProgressException: The connection is already in state 'Executing'
+			// Not much an issue since it is advised to not use ConnectionReleaseMode.OnClose.
+			using (var s = OpenSession())
+			//using (var s = Sfi.WithOptions().ConnectionReleaseMode(ConnectionReleaseMode.OnClose).OpenSession())
 			{
 				using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{

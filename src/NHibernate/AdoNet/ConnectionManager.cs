@@ -441,9 +441,9 @@ namespace NHibernate.AdoNet
 			_connection.EnlistTransaction(transaction);
 		}
 
-		public IDisposable BeginFlushingFromSystemTransaction(bool isDistributed)
+		public IDisposable BeginFlushingFromSystemTransaction()
 		{
-			var needSwapping = _ownConnection && isDistributed &&
+			var needSwapping = _ownConnection &&
 				Factory.Dialect.SupportsConcurrentWritingConnectionsInSameTransaction;
 			if (needSwapping)
 			{
