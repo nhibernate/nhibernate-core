@@ -187,6 +187,11 @@ namespace NHibernate.Engine
 		void BeforeTransactionCompletion(ITransaction tx);
 
 		/// <summary>
+		/// 
+		/// </summary>
+		void FlushBeforeTransactionCompletion();
+
+		/// <summary>
 		/// Notify the session that the transaction completed, so we no longer own the old locks.
 		/// (Also we should release cache softlocks). May be called multiple times during the transaction
 		/// completion process.
