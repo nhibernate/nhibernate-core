@@ -136,6 +136,18 @@
 										</xs:documentation>
 									</xs:annotation>
 								</xs:enumeration>
+								<xs:enumeration value="transaction.use_connection_on_system_prepare">
+									<xs:annotation>
+										<xs:documentation>
+											When a system transaction is being prepared, is using connection during this process enabled?
+											Default is true, for supporting FlushMode.Commit with transaction factories
+											supporting system transactions. But this requires enlisting additional connections, retaining disposed
+											sessions and their connections till transaction end, and may trigger undesired transaction promotions to
+											distributed. Set to false for disabling using connections from system
+											transaction preparation, while still benefiting from FlushMode.Auto on querying.
+										</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
 							</xs:restriction>
 						</xs:simpleType>
 					</xs:attribute>

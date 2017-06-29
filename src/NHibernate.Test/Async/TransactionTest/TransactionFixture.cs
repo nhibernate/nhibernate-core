@@ -18,6 +18,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.TransactionTest
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	[TestFixture]
 	public class TransactionFixtureAsync : TransactionFixtureBase
 	{
@@ -182,6 +183,46 @@ namespace NHibernate.Test.TransactionTest
 			{
 				Assert.That(await (s.Query<Person>().CountAsync()), Is.EqualTo(4));
 				await (t.CommitAsync());
+			}
+		}
+
+		// Taken and adjusted from NH1632 When_commiting_items_in_DTC_transaction_will_add_items_to_2nd_level_cache
+		[Test]
+		public async Task WhenCommittingItemsWillAddThemTo2ndLevelCacheAsync()
+		{
+			int id;
+			const string notNullData = "test";
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var person = new CacheablePerson { NotNullData = notNullData };
+				await (s.SaveAsync(person));
+				id = person.Id;
+
+				await (t.CommitAsync());
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var person = await (s.LoadAsync<CacheablePerson>(id));
+				Assert.That(person.NotNullData, Is.EqualTo(notNullData));
+				await (t.CommitAsync());
+			}
+
+			// Closing the connection to ensure we can't actually use it.
+			var connection = await (Sfi.ConnectionProvider.GetConnectionAsync(CancellationToken.None));
+			Sfi.ConnectionProvider.CloseConnection(connection);
+
+			// The session is supposed to succeed because the second level cache should have the
+			// entity to load, allowing the session to not use the connection at all.
+			// Will fail if a transaction manager tries to enlist user supplied connection. Do
+			// not add a transaction scope below.
+			using (var s = Sfi.WithOptions().Connection(connection).OpenSession())
+			{
+				CacheablePerson person = null;
+				Assert.DoesNotThrowAsync(async () => person = await (s.LoadAsync<CacheablePerson>(id)), "Failed loading entity from second level cache.");
+				Assert.That(person.NotNullData, Is.EqualTo(notNullData));
 			}
 		}
 	}

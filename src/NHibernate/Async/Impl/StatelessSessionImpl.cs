@@ -202,7 +202,20 @@ namespace NHibernate.Impl
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return FlushBeforeTransactionCompletionAsync(cancellationToken);
+			try
+			{
+				var context = TransactionContext;
+				if (tx == null && context == null)
+					return Task.FromException<object>(new InvalidOperationException("Cannot complete a transaction without neither an explicit transaction nor an ambient one."));
+				// Always allow flushing from explicit transactions, otherwise check if flushing from scope is enabled.
+				if (tx != null || context.CanFlushOnSystemTransactionCompleted)
+					return FlushBeforeTransactionCompletionAsync(cancellationToken);
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 
 		public override async Task FlushBeforeTransactionCompletionAsync(CancellationToken cancellationToken)

@@ -12,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-
 using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.Engine.Transaction;

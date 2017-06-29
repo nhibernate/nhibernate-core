@@ -16,6 +16,7 @@ namespace NHibernate.Transaction
 
 		private readonly AdoNetTransactionFactory _adoNetTransactionFactory = new AdoNetTransactionFactory();
 		private int _systemTransactionCompletionLockTimeout;
+		private bool _useConnectionOnSystemTransactionPrepare;
 
 		public void Configure(IDictionary<string, string> props)
 		{
@@ -25,6 +26,8 @@ namespace NHibernate.Transaction
 			if (_systemTransactionCompletionLockTimeout < -1)
 				throw new HibernateException(
 					$"Invalid {Cfg.Environment.SystemTransactionCompletionLockTimeout} value: {_systemTransactionCompletionLockTimeout}. It can not be less than -1.");
+			_useConnectionOnSystemTransactionPrepare =
+				PropertiesHelper.GetBoolean(Cfg.Environment.UseConnectionOnSystemTransactionPrepare, props, true);
 		}
 
 		public ITransaction CreateTransaction(ISessionImplementor session)
@@ -85,10 +88,12 @@ namespace NHibernate.Transaction
 				return;
 			}
 
-			var transactionContext = new SystemTransactionContext(originatingSession, transaction, _systemTransactionCompletionLockTimeout);
+			var transactionContext = new SystemTransactionContext(
+				originatingSession, transaction, _systemTransactionCompletionLockTimeout,
+				_useConnectionOnSystemTransactionPrepare);
 			transactionContext.EnlistedTransaction.EnlistVolatile(
 				transactionContext,
-				EnlistmentOptions.EnlistDuringPrepareRequired);
+				_useConnectionOnSystemTransactionPrepare ? EnlistmentOptions.EnlistDuringPrepareRequired : EnlistmentOptions.None);
 			originatingSession.TransactionContext = transactionContext;
 
 			_logger.DebugFormat(
@@ -122,8 +127,10 @@ namespace NHibernate.Transaction
 			internal System.Transactions.Transaction EnlistedTransaction { get; }
 			public bool ShouldCloseSessionOnSystemTransactionCompleted { get; set; }
 			public bool IsInActiveTransaction { get; internal set; } = true;
+			public bool CanFlushOnSystemTransactionCompleted => _useConnectionOnSystemTransactionPrepare;
 
 			private readonly ISessionImplementor _sessionImplementor;
+			private readonly bool _useConnectionOnSystemTransactionPrepare;
 			private readonly System.Transactions.Transaction _originalTransaction;
 			private readonly ManualResetEventSlim _lock = new ManualResetEventSlim(true);
 			private volatile bool _needCompletionLocking = true;
@@ -134,13 +141,15 @@ namespace NHibernate.Transaction
 			public SystemTransactionContext(
 				ISessionImplementor sessionImplementor,
 				System.Transactions.Transaction transaction,
-				int systemTransactionCompletionLockTimeout)
+				int systemTransactionCompletionLockTimeout,
+				bool useConnectionOnSystemTransactionPrepare)
 			{
 				_sessionImplementor = sessionImplementor;
 				_originalTransaction = transaction;
 				EnlistedTransaction = transaction.Clone();
 				EnlistedTransaction.TransactionCompleted += TransactionCompleted;
 				_systemTransactionCompletionLockTimeout = systemTransactionCompletionLockTimeout;
+				_useConnectionOnSystemTransactionPrepare = useConnectionOnSystemTransactionPrepare;
 			}
 
 			public void Wait()
@@ -230,11 +239,11 @@ namespace NHibernate.Transaction
 				{
 					try
 					{
-						using (var tx = new TransactionScope(EnlistedTransaction))
+						using (_sessionImplementor.ConnectionManager.BeginFlushingFromSystemTransaction(_useConnectionOnSystemTransactionPrepare))
 						{
-							if (_sessionImplementor.ConnectionManager.IsConnected)
+							if (_useConnectionOnSystemTransactionPrepare)
 							{
-								using (_sessionImplementor.ConnectionManager.BeginFlushingFromSystemTransaction())
+								using (var tx = new TransactionScope(EnlistedTransaction))
 								{
 									// Required when both connection auto-enlistment and session auto-enlistment are disabled.
 									_sessionImplementor.JoinTransaction();
@@ -242,16 +251,21 @@ namespace NHibernate.Transaction
 									foreach (var dependentSession in _sessionImplementor.ConnectionManager.DependentSessions)
 										dependentSession.BeforeTransactionCompletion(null);
 
-									_logger.Debug("prepared for system transaction");
-
 									tx.Complete();
 								}
+							}
+							else
+							{
+								_sessionImplementor.BeforeTransactionCompletion(null);
+								foreach (var dependentSession in _sessionImplementor.ConnectionManager.DependentSessions)
+									dependentSession.BeforeTransactionCompletion(null);
 							}
 						}
 						// Lock the session to ensure second phase gets done before the session is used by code following
 						// the transaction scope disposal.
 						Lock();
 
+						_logger.Debug("Prepared for system transaction");
 						preparingEnlistment.Prepared();
 					}
 					catch (Exception exception)
@@ -304,8 +318,8 @@ namespace NHibernate.Transaction
 					_bypassLock.Value = true;
 					using (new SessionIdLoggingContext(_sessionImplementor.SessionId))
 					{
-						// Flag active as false before running actions, otherwise the connection manager will refuse
-						// releasing the connection.
+						// Flag active as false before running actions, otherwise the session may not cleanup as much
+						// as possible.
 						IsInActiveTransaction = false;
 						_sessionImplementor.ConnectionManager.AfterTransaction();
 						// Required for un-enlisting the connection manager when auto-join is false.
@@ -389,6 +403,9 @@ namespace NHibernate.Transaction
 				=> _mainTransactionContext.IsInActiveTransaction;
 
 			public bool ShouldCloseSessionOnSystemTransactionCompleted { get; set; }
+
+			public bool CanFlushOnSystemTransactionCompleted
+				=> _mainTransactionContext.CanFlushOnSystemTransactionCompleted;
 
 			private readonly ITransactionContext _mainTransactionContext;
 

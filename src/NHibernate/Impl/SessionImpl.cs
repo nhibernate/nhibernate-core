@@ -339,6 +339,12 @@ namespace NHibernate.Impl
 					log.Error("exception in interceptor afterTransactionCompletion()", t);
 				}
 
+				if (IsClosed)
+				{
+					// Cleanup was delayed to transaction completion, do it now.
+					persistenceContext.Clear();
+				}
+
 				//if (autoClear)
 				//	Clear();
 			}
@@ -348,6 +354,9 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
+				// Let the after tran clear that if we are still in an active system transaction.
+				if (TransactionContext?.IsInActiveTransaction == true)
+					return;
 				persistenceContext.Clear();
 			}
 		}
@@ -1586,7 +1595,7 @@ namespace NHibernate.Impl
 				// a local variable for avoiding it, but that would turn a failure causing an exception
 				// into a failure causing a session and connection leak. So do not do it, better blow away
 				// with a null ref rather than silently leaking a session. And then fix the synchronization.
-				if (TransactionContext != null)
+				if (TransactionContext != null && TransactionContext.CanFlushOnSystemTransactionCompleted)
 				{
 					TransactionContext.ShouldCloseSessionOnSystemTransactionCompleted = true;
 					return;
@@ -2132,7 +2141,12 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				log.Debug("before transaction completion");
-				FlushBeforeTransactionCompletion();
+				var context = TransactionContext;
+				if (tx == null && context == null)
+					throw new InvalidOperationException("Cannot complete a transaction without neither an explicit transaction nor an ambient one.");
+				// Always allow flushing from explicit transactions, otherwise check if flushing from scope is enabled.
+				if (tx != null || context.CanFlushOnSystemTransactionCompleted)
+					FlushBeforeTransactionCompletion();
 				actionQueue.BeforeTransactionCompletion();
 				try
 				{

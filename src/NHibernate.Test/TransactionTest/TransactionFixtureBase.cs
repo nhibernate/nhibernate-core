@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Linq;
@@ -15,6 +16,13 @@ namespace NHibernate.Test.TransactionTest
 		protected override IList Mappings => new[] { "TransactionTest.Person.hbm.xml" };
 
 		protected override string MappingsAssembly => "NHibernate.Test";
+
+		protected override void Configure(Configuration configuration)
+		{
+			configuration
+				.SetProperty(Environment.UseSecondLevelCache, "true")
+				.SetProperty(Environment.CacheProvider, typeof(HashtableCacheProvider).AssemblyQualifiedName);
+		}
 
 		protected override void CreateSchema()
 		{

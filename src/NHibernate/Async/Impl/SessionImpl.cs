@@ -73,6 +73,12 @@ namespace NHibernate.Impl
 					log.Error("exception in interceptor afterTransactionCompletion()", t);
 				}
 
+				if (IsClosed)
+				{
+					// Cleanup was delayed to transaction completion, do it now.
+					persistenceContext.Clear();
+				}
+
 				//if (autoClear)
 				//	Clear();
 			}
@@ -1207,7 +1213,12 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				log.Debug("before transaction completion");
-				await (FlushBeforeTransactionCompletionAsync(cancellationToken)).ConfigureAwait(false);
+				var context = TransactionContext;
+				if (tx == null && context == null)
+					throw new InvalidOperationException("Cannot complete a transaction without neither an explicit transaction nor an ambient one.");
+				// Always allow flushing from explicit transactions, otherwise check if flushing from scope is enabled.
+				if (tx != null || context.CanFlushOnSystemTransactionCompleted)
+					await (FlushBeforeTransactionCompletionAsync(cancellationToken)).ConfigureAwait(false);
 				actionQueue.BeforeTransactionCompletion();
 				try
 				{

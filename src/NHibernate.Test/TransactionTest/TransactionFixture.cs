@@ -172,5 +172,45 @@ namespace NHibernate.Test.TransactionTest
 				t.Commit();
 			}
 		}
+
+		// Taken and adjusted from NH1632 When_commiting_items_in_DTC_transaction_will_add_items_to_2nd_level_cache
+		[Test]
+		public void WhenCommittingItemsWillAddThemTo2ndLevelCache()
+		{
+			int id;
+			const string notNullData = "test";
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var person = new CacheablePerson { NotNullData = notNullData };
+				s.Save(person);
+				id = person.Id;
+
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var person = s.Load<CacheablePerson>(id);
+				Assert.That(person.NotNullData, Is.EqualTo(notNullData));
+				t.Commit();
+			}
+
+			// Closing the connection to ensure we can't actually use it.
+			var connection = Sfi.ConnectionProvider.GetConnection();
+			Sfi.ConnectionProvider.CloseConnection(connection);
+
+			// The session is supposed to succeed because the second level cache should have the
+			// entity to load, allowing the session to not use the connection at all.
+			// Will fail if a transaction manager tries to enlist user supplied connection. Do
+			// not add a transaction scope below.
+			using (var s = Sfi.WithOptions().Connection(connection).OpenSession())
+			{
+				CacheablePerson person = null;
+				Assert.DoesNotThrow(() => person = s.Load<CacheablePerson>(id), "Failed loading entity from second level cache.");
+				Assert.That(person.NotNullData, Is.EqualTo(notNullData));
+			}
+		}
 	}
 }

@@ -218,7 +218,12 @@ namespace NHibernate.Impl
 
 		public override void BeforeTransactionCompletion(ITransaction tx)
 		{
-			FlushBeforeTransactionCompletion();
+			var context = TransactionContext;
+			if (tx == null && context == null)
+				throw new InvalidOperationException("Cannot complete a transaction without neither an explicit transaction nor an ambient one.");
+			// Always allow flushing from explicit transactions, otherwise check if flushing from scope is enabled.
+			if (tx != null || context.CanFlushOnSystemTransactionCompleted)
+				FlushBeforeTransactionCompletion();
 		}
 
 		public override void FlushBeforeTransactionCompletion()
@@ -869,7 +874,7 @@ namespace NHibernate.Impl
 				// a local variable for avoiding it, but that would turn a failure causing an exception
 				// into a failure causing a session and connection leak. So do not do it, better blow away
 				// with a null ref rather than silently leaking a session. And then fix the synchronization.
-				if (TransactionContext != null)
+				if (TransactionContext != null && TransactionContext.CanFlushOnSystemTransactionCompleted)
 				{
 					TransactionContext.ShouldCloseSessionOnSystemTransactionCompleted = true;
 					return;

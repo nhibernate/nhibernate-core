@@ -301,15 +301,6 @@ namespace NHibernate.Impl
 
 		protected internal void SetClosed()
 		{
-			try
-			{
-				if (TransactionContext != null)
-					TransactionContext.Dispose();
-			}
-			catch (Exception)
-			{
-				//ignore
-			}
 			closed = true;
 		}
 

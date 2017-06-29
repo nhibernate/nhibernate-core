@@ -58,6 +58,8 @@ namespace NHibernate.AdoNet
 
 		[NonSerialized]
 		private bool _processingFromSystemTransaction;
+		[NonSerialized]
+		private bool _allowConnectionUsage = true;
 
 		/// <summary>
 		/// <see langword="true"/> when the connection manager is being used from system transaction completion events,
@@ -203,6 +205,11 @@ namespace NHibernate.AdoNet
 
 		public DbConnection GetConnection()
 		{
+			if (!_allowConnectionUsage)
+			{
+				throw new HibernateException("Connection usage is currently disallowed");
+			}
+
 			if (_connection == null)
 			{
 				if (_ownConnection)
@@ -441,9 +448,9 @@ namespace NHibernate.AdoNet
 			_connection.EnlistTransaction(transaction);
 		}
 
-		public IDisposable BeginFlushingFromSystemTransaction()
+		public IDisposable BeginFlushingFromSystemTransaction(bool allowConnectionUsage)
 		{
-			var needSwapping = _ownConnection &&
+			var needSwapping = _ownConnection && allowConnectionUsage &&
 				Factory.Dialect.SupportsConcurrentWritingConnectionsInSameTransaction;
 			if (needSwapping)
 			{
@@ -456,23 +463,28 @@ namespace NHibernate.AdoNet
 				_currentSystemTransaction = null;
 			}
 			_processingFromSystemTransaction = true;
-			return new EndFlushingFromSystemTransaction(this, needSwapping);
+			var wasAllowingConnectionUsage = _allowConnectionUsage;
+			_allowConnectionUsage = allowConnectionUsage;
+			return new EndFlushingFromSystemTransaction(this, needSwapping, wasAllowingConnectionUsage);
 		}
 
 		private class EndFlushingFromSystemTransaction : IDisposable
 		{
 			private readonly ConnectionManager _manager;
 			private readonly bool _hasSwappedConnection;
+			private readonly bool _wasAllowingConnectionUsage;
 
-			public EndFlushingFromSystemTransaction(ConnectionManager manager, bool hasSwappedConnection)
+			public EndFlushingFromSystemTransaction(ConnectionManager manager, bool hasSwappedConnection, bool wasAllowingConnectionUsage)
 			{
 				_manager = manager;
 				_hasSwappedConnection = hasSwappedConnection;
+				_wasAllowingConnectionUsage = wasAllowingConnectionUsage;
 			}
 
 			public void Dispose()
 			{
 				_manager._processingFromSystemTransaction = false;
+				_manager._allowConnectionUsage = _wasAllowingConnectionUsage;
 
 				if (!_hasSwappedConnection)
 					return;

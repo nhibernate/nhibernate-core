@@ -14,6 +14,7 @@ namespace NHibernate.Test.SystemTransactions
 	public class DistributedSystemTransactionFixture : SystemTransactionFixtureBase
 	{
 		private static readonly ILog _log = LogManager.GetLogger(typeof(DistributedSystemTransactionFixture));
+		protected override bool UseConnectionOnSystemTransactionPrepare => true;
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 			=> dialect.SupportsDistributedTransactions && base.AppliesTo(dialect);
@@ -68,6 +69,7 @@ namespace NHibernate.Test.SystemTransactions
 		[Test]
 		public void WillNotCrashOnPrepareFailure()
 		{
+			IgnoreIfUnsupported(false);
 			var tx = new TransactionScope();
 			var disposeCalled = false;
 			try
@@ -100,9 +102,10 @@ namespace NHibernate.Test.SystemTransactions
 			}
 		}
 
-		[Test]
-		public void CanRollbackTransaction([Values(false, true)] bool explicitFlush)
+		[Theory]
+		public void CanRollbackTransaction(bool explicitFlush)
 		{
+			IgnoreIfUnsupported(explicitFlush);
 			var tx = new TransactionScope();
 			var disposeCalled = false;
 			try
@@ -139,9 +142,10 @@ namespace NHibernate.Test.SystemTransactions
 			AssertNoPersons();
 		}
 
-		[Test]
-		public void CanRollbackTransactionFromScope([Values(false, true)] bool explicitFlush)
+		[Theory]
+		public void CanRollbackTransactionFromScope(bool explicitFlush)
 		{
+			IgnoreIfUnsupported(explicitFlush);
 			using (new TransactionScope())
 			using (var s = OpenSession())
 			{
@@ -156,10 +160,11 @@ namespace NHibernate.Test.SystemTransactions
 			AssertNoPersons();
 		}
 
-		[Test]
+		[Theory]
 		[Description("Another action inside the transaction do the rollBack outside nh-session-scope.")]
-		public void RollbackOutsideNh([Values(false, true)] bool explicitFlush)
+		public void RollbackOutsideNh(bool explicitFlush)
 		{
+			IgnoreIfUnsupported(explicitFlush);
 			try
 			{
 				using (var txscope = new TransactionScope())
@@ -187,10 +192,11 @@ namespace NHibernate.Test.SystemTransactions
 			AssertNoPersons();
 		}
 
-		[Test]
+		[Theory]
 		[Description("rollback inside nh-session-scope should not commit save and the transaction should be aborted.")]
-		public void TransactionInsertWithRollBackFromScope([Values(false, true)] bool explicitFlush)
+		public void TransactionInsertWithRollBackFromScope(bool explicitFlush)
 		{
+			IgnoreIfUnsupported(explicitFlush);
 			using (new TransactionScope())
 			{
 				using (var s = OpenSession())
@@ -207,10 +213,11 @@ namespace NHibernate.Test.SystemTransactions
 			AssertNoPersons();
 		}
 
-		[Test]
+		[Theory]
 		[Description("rollback inside nh-session-scope should not commit save and the transaction should be aborted.")]
-		public void TransactionInsertWithRollBackTask([Values(false, true)] bool explicitFlush)
+		public void TransactionInsertWithRollBackTask(bool explicitFlush)
 		{
+			IgnoreIfUnsupported(explicitFlush);
 			try
 			{
 				using (var txscope = new TransactionScope())
@@ -237,12 +244,13 @@ namespace NHibernate.Test.SystemTransactions
 			AssertNoPersons();
 		}
 
-		[Test]
+		[Theory]
 		[Description(@"Two session in two txscope
  (without an explicit NH transaction)
  and with a rollback in the second dtc and a rollback outside nh-session-scope.")]
-		public void TransactionInsertLoadWithRollBackFromScope([Values(false, true)] bool explicitFlush)
+		public void TransactionInsertLoadWithRollBackFromScope(bool explicitFlush)
 		{
+			IgnoreIfUnsupported(explicitFlush);
 			object savedId;
 			var createdAt = DateTime.Today;
 			using (var txscope = new TransactionScope())
@@ -280,12 +288,13 @@ namespace NHibernate.Test.SystemTransactions
 			}
 		}
 
-		[Test]
+		[Theory]
 		[Description(@"Two session in two txscope
  (without an explicit NH transaction)
  and with a rollback in the second dtc and a ForceRollback outside nh-session-scope.")]
-		public void TransactionInsertLoadWithRollBackTask([Values(false, true)] bool explicitFlush)
+		public void TransactionInsertLoadWithRollBackTask(bool explicitFlush)
 		{
+			IgnoreIfUnsupported(explicitFlush);
 			object savedId;
 			var createdAt = DateTime.Today;
 			using (var txscope = new TransactionScope())
@@ -373,9 +382,10 @@ namespace NHibernate.Test.SystemTransactions
 			_log.DebugFormat("{0} calls", _totalCall);
 		}
 
-		[Test]
-		public void CanDeleteItemInDtc([Values(false, true)] bool explicitFlush)
+		[Theory]
+		public void CanDeleteItemInDtc(bool explicitFlush)
 		{
+			IgnoreIfUnsupported(explicitFlush);
 			object id;
 			using (var tx = new TransactionScope())
 			{
@@ -440,9 +450,10 @@ namespace NHibernate.Test.SystemTransactions
 			}
 		}
 
-		[Test]
-		public void CanUseSessionWithManyScopes([Values(false, true)] bool explicitFlush)
+		[Theory]
+		public void CanUseSessionWithManyScopes(bool explicitFlush)
 		{
+			IgnoreIfUnsupported(explicitFlush);
 			// Note that this fails with ConnectionReleaseMode.OnClose and SqlServer:
 			// System.Data.SqlClient.SqlException : Microsoft Distributed Transaction Coordinator (MS DTC) has stopped this transaction.
 			// Not much an issue since it is advised to not use ConnectionReleaseMode.OnClose.
@@ -509,9 +520,10 @@ namespace NHibernate.Test.SystemTransactions
 			}
 		}
 
-		[Test]
-		public void CanUseSessionOutsideOfScopeAfterScope([Values(false, true)] bool explicitFlush)
+		[Theory]
+		public void CanUseSessionOutsideOfScopeAfterScope(bool explicitFlush)
 		{
+			IgnoreIfUnsupported(explicitFlush);
 			// Note that this fails with ConnectionReleaseMode.OnClose and Npgsql (< 3.2.5?):
 			// NpgsqlOperationInProgressException: The connection is already in state 'Executing'
 			// Not much an issue since it is advised to not use ConnectionReleaseMode.OnClose.
@@ -538,9 +550,11 @@ namespace NHibernate.Test.SystemTransactions
 			}
 		}
 
-		[Test(Description = "Do not fail, but warn in case a delayed after scope disposal commit is made.")]
-		public void DelayedTransactionCompletion([Values(false, true)] bool explicitFlush)
+		[Theory]
+		[Description("Do not fail, but warn in case a delayed after scope disposal commit is made.")]
+		public void DelayedTransactionCompletion(bool explicitFlush)
 		{
+			IgnoreIfUnsupported(explicitFlush);
 			for (var i = 1; i <= 10; i++)
 			{
 				// Isolation level must be read committed on the control session: reading twice while expecting some data insert
@@ -586,6 +600,57 @@ namespace NHibernate.Test.SystemTransactions
 						break;
 					}
 				}
+			}
+		}
+
+		// Taken and adjusted from NH1632 When_commiting_items_in_DTC_transaction_will_add_items_to_2nd_level_cache
+		[Test]
+		public void WhenCommittingItemsAfterSessionDisposalWillAddThemTo2ndLevelCache()
+		{
+			int id;
+			const string notNullData = "test";
+			using (var tx = new TransactionScope())
+			{
+				using (var s = Sfi.OpenSession())
+				{
+					var person = new CacheablePerson { NotNullData = notNullData };
+					s.Save(person);
+					id = person.Id;
+
+					ForceEscalationToDistributedTx.Escalate();
+
+					s.Flush();
+				}
+				tx.Complete();
+			}
+
+			DodgeTransactionCompletionDelayIfRequired();
+
+			using (var tx = new TransactionScope())
+			{
+				using (var s = OpenSession())
+				{
+					ForceEscalationToDistributedTx.Escalate();
+
+					var person = s.Load<CacheablePerson>(id);
+					Assert.That(person.NotNullData, Is.EqualTo(notNullData));
+				}
+				tx.Complete();
+			}
+
+			// Closing the connection to ensure we can't actually use it.
+			var connection = Sfi.ConnectionProvider.GetConnection();
+			Sfi.ConnectionProvider.CloseConnection(connection);
+
+			// The session is supposed to succeed because the second level cache should have the
+			// entity to load, allowing the session to not use the connection at all.
+			// Will fail if a transaction manager tries to enlist user supplied connection. Do
+			// not add a transaction scope below.
+			using (var s = Sfi.WithOptions().Connection(connection).OpenSession())
+			{
+				CacheablePerson person = null;
+				Assert.DoesNotThrow(() => person = s.Load<CacheablePerson>(id), "Failed loading entity from second level cache.");
+				Assert.That(person.NotNullData, Is.EqualTo(notNullData));
 			}
 		}
 
@@ -661,5 +726,11 @@ namespace NHibernate.Test.SystemTransactions
 				enlistment.Done();
 			}
 		}
+	}
+
+	[TestFixture]
+	public class DistributedSystemTransactionWithoutConnectionFromPrepareFixture : DistributedSystemTransactionFixture
+	{
+		protected override bool UseConnectionOnSystemTransactionPrepare => false;
 	}
 }

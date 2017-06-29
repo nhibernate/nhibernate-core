@@ -1,14 +1,23 @@
 using System.Collections;
 using System.Transactions;
+using NHibernate.Cfg;
 using NUnit.Framework;
 
 namespace NHibernate.Test.SystemTransactions
 {
-	[TestFixture]
 	public class TransactionNotificationFixture : TestCase
 	{
 		protected override IList Mappings
 			=> new string[] { };
+
+		protected virtual bool UseConnectionOnSystemTransactionPrepare => true;
+
+		protected override void Configure(Configuration configuration)
+		{
+			configuration.SetProperty(
+				Environment.UseConnectionOnSystemTransactionPrepare,
+				UseConnectionOnSystemTransactionPrepare.ToString());
+		}
 
 		[Test]
 		public void NoTransaction()
@@ -191,6 +200,11 @@ namespace NHibernate.Test.SystemTransactions
 
 			Assert.That(interceptor.afterTransactionCompletionCalled, Is.EqualTo(1));
 		}
+	}
 
+	[TestFixture]
+	public class TransactionWithoutConnectionFromPrepareNotificationFixture : TransactionNotificationFixture
+	{
+		protected override bool UseConnectionOnSystemTransactionPrepare => false;
 	}
 }
