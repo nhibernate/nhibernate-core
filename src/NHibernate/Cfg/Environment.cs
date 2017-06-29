@@ -113,8 +113,6 @@ namespace NHibernate.Cfg
 		// Unused, not implemented
 		public const string StatementFetchSize = "jdbc.fetch_size";
 
-		public const string BatchVersionedData = "jdbc.batch_versioned_data";
-
 		// Unused, not implemented
 		public const string OutputStylesheet = "xml.output_stylesheet";
 
@@ -154,6 +152,7 @@ namespace NHibernate.Cfg
 		// Unused, not implemented
 		public const string SqlExceptionConverter = "sql_exception_converter";
 
+		public const string BatchVersionedData = "adonet.batch_versioned_data";
 		public const string WrapResultSets = "adonet.wrap_result_sets";
 		public const string BatchSize = "adonet.batch_size";
 		public const string BatchStrategy = "adonet.factory_class";
@@ -186,14 +185,6 @@ namespace NHibernate.Cfg
 		/// This may need to be set to 3 if you are using the OdbcDriver with MS SQL Server 2008+.
 		/// </summary>
 		public const string OdbcDateTimeScale = "odbc.explicit_datetime_scale";
-		
-		/// <summary>
-		/// If this setting is set to false, exceptions in IInterceptor.BeforeTransactionCompletion bubble to the caller of ITransaction.Commit and abort the commit.
-		/// If this setting is set to true, exceptions in IInterceptor.BeforeTransactionCompletion are ignored and the commit is performed.
-		/// The default setting is false.
-		/// </summary>
-		[Obsolete("This setting is likely to be removed in a future version of NHibernate. The workaround is to catch all exceptions in the IInterceptor implementation.")]
-		public const string InterceptorsBeforeTransactionCompletionIgnoreExceptions = "interceptors.beforetransactioncompletion_ignore_exceptions";
 
 		private static readonly Dictionary<string, string> GlobalProperties;
 

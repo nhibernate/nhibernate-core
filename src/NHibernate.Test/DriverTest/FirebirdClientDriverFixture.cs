@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Data.Common;
 using NHibernate.Driver;
 using NHibernate.SqlCommand;
@@ -17,48 +18,58 @@ namespace NHibernate.Test.DriverTest
 		public void ConnectionPooling_OpenThenCloseThenOpenAnotherOne_OnlyOneConnectionIsPooled()
 		{
 			MakeDriver();
+
+			_driver.ClearPool(_connectionString);
+
+			var allreadyEstablished = GetEstablishedConnections();
+
 			var connection1 = MakeConnection();
 			var connection2 = MakeConnection();
 
 			//open first connection
 			connection1.Open();
-			VerifyCountOfEstablishedConnectionsIs(1);
+			VerifyCountOfEstablishedConnectionsIs(allreadyEstablished + 1, "After first open");
 
 			//return it to the pool
 			connection1.Close();
-			VerifyCountOfEstablishedConnectionsIs(1);
+			VerifyCountOfEstablishedConnectionsIs(allreadyEstablished + 1, "After first close");
 
 			//open the second connection
 			connection2.Open();
-			VerifyCountOfEstablishedConnectionsIs(1);
+			VerifyCountOfEstablishedConnectionsIs(allreadyEstablished + 1, "After second open");
 
 			//return it to the pool
 			connection2.Close();
-			VerifyCountOfEstablishedConnectionsIs(1);
+			VerifyCountOfEstablishedConnectionsIs(allreadyEstablished + 1, "After second close");
 		}
 
 		[Test]
 		public void ConnectionPooling_OpenThenCloseTwoAtTheSameTime_TowConnectionsArePooled()
 		{
 			MakeDriver();
+
+			_driver.ClearPool(_connectionString);
+
+			var allreadyEstablished = GetEstablishedConnections();
+
 			var connection1 = MakeConnection();
 			var connection2 = MakeConnection();
 
 			//open first connection
 			connection1.Open();
-			VerifyCountOfEstablishedConnectionsIs(1);
+			VerifyCountOfEstablishedConnectionsIs(allreadyEstablished + 1, "After first open");
 
 			//open second one
 			connection2.Open();
-			VerifyCountOfEstablishedConnectionsIs(2);
+			VerifyCountOfEstablishedConnectionsIs(allreadyEstablished + 2, "After second open");
 
 			//return connection1 to the pool
 			connection1.Close();
-			VerifyCountOfEstablishedConnectionsIs(2);
+			VerifyCountOfEstablishedConnectionsIs(allreadyEstablished + 2, "After first close");
 
 			//return connection2 to the pool
 			connection2.Close();
-			VerifyCountOfEstablishedConnectionsIs(2);
+			VerifyCountOfEstablishedConnectionsIs(allreadyEstablished + 2, "After second close");
 		}
 
 		[Test]
@@ -163,10 +174,10 @@ namespace NHibernate.Test.DriverTest
 			return result;
 		}
 
-		private void VerifyCountOfEstablishedConnectionsIs(int expectedCount)
+		private void VerifyCountOfEstablishedConnectionsIs(int expectedCount, string step)
 		{
 			var physicalConnections = GetEstablishedConnections();
-			Assert.That(physicalConnections, Is.EqualTo(expectedCount));
+			Assert.That(physicalConnections, Is.EqualTo(expectedCount), step);
 		}
 
 		private int GetEstablishedConnections()
@@ -178,7 +189,7 @@ namespace NHibernate.Test.DriverTest
 				using (var cmd = conn.CreateCommand())
 				{
 					cmd.CommandText = "select count(*) from mon$attachments where mon$attachment_id <> current_connection";
-					return (int)cmd.ExecuteScalar();
+					return Convert.ToInt32(cmd.ExecuteScalar());
 				}
 			}
 		}

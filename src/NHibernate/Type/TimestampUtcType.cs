@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.Common;
+using NHibernate.Engine;
 
 namespace NHibernate.Type
 {
@@ -30,10 +31,10 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Validate the passed DateTime value if Kind is set to Utc and passes value to base implementation (<see cref="TimestampType.Set(DbCommand, object, int )"/>).
+		/// Validate the passed DateTime value if Kind is set to Utc and passes value to base implementation (<see cref="TimestampType.Set(DbCommand, object, int, ISessionImplementor)"/>).
 		/// </summary>
 		/// <exception cref="ArgumentException">Thrown when Kind is NOT Utc.</exception>
-		public override void Set(DbCommand st, object value, int index)
+		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
 			if (value is DateTime)
 			{
@@ -41,7 +42,7 @@ namespace NHibernate.Type
 				if (v.Kind != DateTimeKind.Utc) throw new ArgumentException("Kind is NOT Utc", nameof(value));
 			}
 
-			base.Set(st, value, index);
+			base.Set(st, value, index, session);
 		}
 
 		/// <summary>

@@ -733,6 +733,14 @@ namespace NHibernate.Test.Hql
 						if (!ex.InnerException.Message.StartsWith("ORA-00979"))
 							throw;
 					}
+					else if (Dialect is FirebirdDialect)
+					{
+						string msgToCheck =
+							"not contained in either an aggregate function or the GROUP BY clause";
+						// This test raises an exception in Firebird for an unknown reason.
+						if (!ex.InnerException.Message.Contains(msgToCheck))
+							throw;
+					}
 					else
 					{
 						string msgToCheck =

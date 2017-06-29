@@ -49,7 +49,7 @@ namespace NHibernate.Test.Component.Basic
 	
 		protected override void OnTearDown()
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				s.Delete("from User");
@@ -65,9 +65,9 @@ namespace NHibernate.Test.Component.Basic
 		{
 			User u;
 			
-			sessions.Statistics.Clear();
+			Sfi.Statistics.Clear();
 				
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				u = new User("gavin", "secret", new Person("Gavin King", new DateTime(1999, 12, 31), "Karbarook Ave"));
@@ -78,10 +78,10 @@ namespace NHibernate.Test.Component.Basic
 				s.Close();
 			}
 			
-			Assert.That(sessions.Statistics.EntityInsertCount, Is.EqualTo(1));
-			Assert.That(sessions.Statistics.EntityUpdateCount, Is.EqualTo(0));
+			Assert.That(Sfi.Statistics.EntityInsertCount, Is.EqualTo(1));
+			Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(0));
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				u = (User)s.Get(typeof(User), "gavin");
@@ -91,7 +91,7 @@ namespace NHibernate.Test.Component.Basic
 				s.Close();
 			}
 			
-			Assert.That(sessions.Statistics.EntityDeleteCount, Is.EqualTo(1));
+			Assert.That(Sfi.Statistics.EntityDeleteCount, Is.EqualTo(1));
 		}
 		
 		[Test]
@@ -99,7 +99,7 @@ namespace NHibernate.Test.Component.Basic
 		{
 			User u;
 			
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				u = new User("gavin", "secret", new Person("Gavin King", new DateTime(1999, 12, 31), "Karbarook Ave"));
@@ -109,7 +109,7 @@ namespace NHibernate.Test.Component.Basic
 				t.Commit();
 			}
 			
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{			
 				u = (User)s.Get(typeof(User), "gavin");
@@ -120,7 +120,7 @@ namespace NHibernate.Test.Component.Basic
 				t.Commit();
 			}
 			
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				u = (User)s.Get(typeof(User), "gavin");
@@ -136,20 +136,20 @@ namespace NHibernate.Test.Component.Basic
 		public void TestComponentStateChangeAndDirtiness() 
 		{
 			// test for HHH-2366
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				User u = new User("steve", "hibernater", new Person( "Steve Ebersole", new DateTime(1999, 12, 31), "Main St"));
 				s.Persist(u);
 				s.Flush();
-				long intialUpdateCount = sessions.Statistics.EntityUpdateCount;
+				long intialUpdateCount = Sfi.Statistics.EntityUpdateCount;
 				u.Person.Address = "Austin";
 				s.Flush();
-				Assert.That(sessions.Statistics.EntityUpdateCount, Is.EqualTo(intialUpdateCount + 1));
-				intialUpdateCount = sessions.Statistics.EntityUpdateCount;
+				Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(intialUpdateCount + 1));
+				intialUpdateCount = Sfi.Statistics.EntityUpdateCount;
 				u.Person.Address = "Cedar Park";
 				s.Flush();
-				Assert.That(sessions.Statistics.EntityUpdateCount, Is.EqualTo(intialUpdateCount + 1));
+				Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(intialUpdateCount + 1));
 				s.Delete(u);
 				t.Commit();
 				s.Close();
@@ -163,7 +163,7 @@ namespace NHibernate.Test.Component.Basic
 			const double HEIGHT_INCHES = 73;
 			const double HEIGHT_CENTIMETERS = HEIGHT_INCHES * 2.54d;
 			
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				User u = new User("steve", "hibernater", new Person( "Steve Ebersole", new DateTime(1999, 12, 31), "Main St"));
@@ -208,7 +208,7 @@ namespace NHibernate.Test.Component.Basic
 		[Ignore("Ported from Hibernate - failing in NH")]
 		public void TestComponentQueries() 
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				Employee emp = new Employee();
@@ -231,7 +231,7 @@ namespace NHibernate.Test.Component.Basic
 		[Test]
 		public void TestComponentFormulaQuery() 
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{			
 				s.CreateQuery("from User u where u.Person.Yob = 1999").List();
@@ -254,7 +254,7 @@ namespace NHibernate.Test.Component.Basic
 		[Test]
 		public void TestNamedQuery() 
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				s.GetNamedQuery("userNameIn")
@@ -271,7 +271,7 @@ namespace NHibernate.Test.Component.Basic
 			Employee emp = null;
 			IEnumerator<Employee> enumerator = null;
 				
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				emp = new Employee();
@@ -284,7 +284,7 @@ namespace NHibernate.Test.Component.Basic
 				s.Close();
 			}
 			
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				emp = (Employee)s.Get(typeof(Employee), emp.Id);
@@ -298,7 +298,7 @@ namespace NHibernate.Test.Component.Basic
 			emp.OptionalComponent.Value1 = "emp-value1";
 			emp.OptionalComponent.Value2 = "emp-value2";
 	
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				emp = (Employee)s.Merge(emp);
@@ -306,7 +306,7 @@ namespace NHibernate.Test.Component.Basic
 				s.Close();
 			}
 			
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				emp = (Employee)s.Get(typeof(Employee), emp.Id);
@@ -320,7 +320,7 @@ namespace NHibernate.Test.Component.Basic
 			emp.OptionalComponent.Value1 = null;
 			emp.OptionalComponent.Value2 = null;
 	
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				emp = (Employee)s.Merge(emp);
@@ -328,7 +328,7 @@ namespace NHibernate.Test.Component.Basic
 				s.Close();
 			}
 			
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				emp = (Employee)s.Get(typeof(Employee), emp.Id);
@@ -346,7 +346,7 @@ namespace NHibernate.Test.Component.Basic
 			emp1.Person.Dob = new DateTime(1999, 12, 31);
 			emp.DirectReports.Add(emp1);
 	
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				emp = (Employee)s.Merge(emp);
@@ -354,7 +354,7 @@ namespace NHibernate.Test.Component.Basic
 				s.Close();
 			}
 			
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				emp = (Employee)s.Get(typeof(Employee), emp.Id);
@@ -374,7 +374,7 @@ namespace NHibernate.Test.Component.Basic
 			emp1.OptionalComponent.Value1 = "emp1-value1";
 			emp1.OptionalComponent.Value2 = "emp1-value2";
 	
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				emp = (Employee)s.Merge(emp);
@@ -382,7 +382,7 @@ namespace NHibernate.Test.Component.Basic
 				s.Close();
 			}
 			
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				emp = (Employee)s.Get(typeof(Employee), emp.Id);
@@ -402,7 +402,7 @@ namespace NHibernate.Test.Component.Basic
 			emp1.OptionalComponent.Value1 = null;
 			emp1.OptionalComponent.Value2 = null;
 	
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				emp = (Employee)s.Merge(emp);
@@ -410,7 +410,7 @@ namespace NHibernate.Test.Component.Basic
 				s.Close();
 			}
 			
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				emp = (Employee)s.Get(typeof(Employee), emp.Id);
@@ -426,7 +426,7 @@ namespace NHibernate.Test.Component.Basic
 			emp1 = (Employee)enumerator.Current;
 			Assert.That(emp1.OptionalComponent, Is.Null);
 	
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				s.Delete( emp );

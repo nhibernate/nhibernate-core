@@ -2058,6 +2058,11 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+		/// <summary>
+		/// Does this dialect support pooling parameter in connection string?
+		/// </summary>
+		public virtual bool SupportsPoolingParameter => true;
+
 		#endregion
 
 		/// <summary>

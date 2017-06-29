@@ -6,6 +6,9 @@ Installation steps for PostgreSQL for NH TeamCity:
 3.  Leave the port number at the default (5432), and leave the default locale;
 4.  The setup should install PostgreSQL on the machine;
 5.  Untick the option to install stack-builder at the end (it's not required).
+6.  Find the postgresql.conf file. It lies in the directory for the databases files.
+7.  Edit its max_prepared_transactions parameter to a positive integer. 100 by example. (This enables distributed transactions.)
+8.  Restart PostgreSQL server.
 
 Creating the NH user:
 

@@ -1,3 +1,4 @@
+using NHibernate.Cfg;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2043
@@ -16,11 +17,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2043
             }
         }
 
-        protected override void  BuildSessionFactory()
-        {
-            cfg.SetInterceptor(new Namer());
- 	        base.BuildSessionFactory();
-        }
+		protected override void Configure(Configuration configuration)
+		{
+			base.Configure(configuration);
+			configuration.SetInterceptor(new Namer());
+		}
 
         [Test]
 		public void Test()

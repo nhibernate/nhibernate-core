@@ -1,6 +1,6 @@
 using System;
 using System.Data.Common;
-
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 
@@ -17,9 +17,9 @@ namespace NHibernate.DomainModel.NHSpecific
 		{
 		}
 
-		public override object NullSafeGet(DbDataReader rs, string name)
+		public override object NullSafeGet(DbDataReader rs, string name, ISessionImplementor session)
 		{
-			object value = base.NullSafeGet(rs, name);
+			object value = base.NullSafeGet(rs, name, session);
 			if (value == null)
 			{
 				return NullValue;
@@ -30,9 +30,9 @@ namespace NHibernate.DomainModel.NHSpecific
 			}
 		}
 
-		public override object Get(DbDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
-			return Get(rs, rs.GetOrdinal(name));
+			return Get(rs, rs.GetOrdinal(name), session);
 		}
 
 		public override string ToString(object value)

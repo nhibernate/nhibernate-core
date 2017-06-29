@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using NHibernate.Dialect;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 using NUnit.Framework;
@@ -78,7 +79,7 @@ namespace NHibernate.Test.NHSpecificTest.NH732
 			return StringComparer.InvariantCultureIgnoreCase.GetHashCode((string)x);
 		}
 
-		public object NullSafeGet(DbDataReader rs, string[] names, object owner)
+		public object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			int ordinal = rs.GetOrdinal(names[0]);
 			string s = rs.GetString(ordinal);
@@ -90,7 +91,7 @@ namespace NHibernate.Test.NHSpecificTest.NH732
 			 */
 		}
 
-		public void NullSafeSet(DbCommand cmd, object value, int index)
+		public void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			var parameter = cmd.Parameters[index];
 			parameter.Value = value ?? DBNull.Value;

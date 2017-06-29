@@ -30,7 +30,7 @@ namespace NHibernate.Dialect
 
 		public override string GetDropSequenceString(string sequenceName)
 		{
-			string dropSequence = "IF EXISTS (select * from sys.sequences where name = N'{0}') DROP SEQUENCE {0}";
+			string dropSequence = "IF EXISTS (SELECT * FROM sys.sequences WHERE object_id = OBJECT_ID(N'{0}')) DROP SEQUENCE {0}";
 
 			return string.Format(dropSequence, sequenceName);
 		}
@@ -58,31 +58,33 @@ namespace NHibernate.Dialect
 
 		public override SqlString GetLimitString(SqlString querySqlString, SqlString offset, SqlString limit)
 		{
-			var tokenEnum = new SqlTokenizer(querySqlString).GetEnumerator();
-			if (!tokenEnum.TryParseUntilFirstMsSqlSelectColumn()) return null;
-
-			var result = new SqlStringBuilder(querySqlString);
-			if (!tokenEnum.TryParseUntil("order"))
+			using (var tokenEnum = new SqlTokenizer(querySqlString).GetEnumerator())
 			{
-				result.Add(" ORDER BY CURRENT_TIMESTAMP");
-			}
+				if (!tokenEnum.TryParseUntilFirstMsSqlSelectColumn()) return null;
 
-			result.Add(" OFFSET ");
-			if (offset != null)
-			{
-				result.Add(offset).Add(" ROWS");
-			}
-			else
-			{
-				result.Add("0 ROWS");
-			}
+				var result = new SqlStringBuilder(querySqlString);
+				if (!tokenEnum.TryParseUntil("order"))
+				{
+					result.Add(" ORDER BY CURRENT_TIMESTAMP");
+				}
 
-			if (limit != null)
-			{
-				result.Add(" FETCH FIRST ").Add(limit).Add(" ROWS ONLY");
-			}
+				result.Add(" OFFSET ");
+				if (offset != null)
+				{
+					result.Add(offset).Add(" ROWS");
+				}
+				else
+				{
+					result.Add("0 ROWS");
+				}
 
-			return result.ToSqlString();
+				if (limit != null)
+				{
+					result.Add(" FETCH FIRST ").Add(limit).Add(" ROWS ONLY");
+				}
+
+				return result.ToSqlString();
+			}
 		}
 	}
 }

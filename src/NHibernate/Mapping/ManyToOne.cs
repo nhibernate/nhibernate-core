@@ -80,13 +80,15 @@ namespace NHibernate.Mapping
 
 					// NH : The four lines below was added to ensure that related columns have same length,
 					// like ForeignKey.AlignColumns() do
-					IEnumerator<Column> fkCols = ConstraintColumns.GetEnumerator();
-					IEnumerator<Column> pkCols = ce.GetEnumerator();
-					while (fkCols.MoveNext() && pkCols.MoveNext())
-						fkCols.Current.Length = pkCols.Current.Length;
+					using (var fkCols = ConstraintColumns.GetEnumerator())
+					using (var pkCols = ce.GetEnumerator())
+					{
+						while (fkCols.MoveNext() && pkCols.MoveNext())
+							fkCols.Current.Length = pkCols.Current.Length;
+					}
 
 					ForeignKey fk =
-						Table.CreateForeignKey(ForeignKeyName, ConstraintColumns, ((EntityType) Type).GetAssociatedEntityName(), ce);
+						Table.CreateForeignKey(ForeignKeyName, ConstraintColumns, ((EntityType)Type).GetAssociatedEntityName(), ce);
 					fk.CascadeDeleteEnabled = IsCascadeDeleteEnabled;
 				}
 			}

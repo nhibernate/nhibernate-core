@@ -84,5 +84,9 @@ namespace NHibernate.Driver
 			if (sqlType.DbType == DbType.Currency)
 				dbParam.DbType = DbType.Decimal;
 		}
+
+		// Prior to v3, Npgsql was expecting DateTime for time.
+		// https://github.com/npgsql/npgsql/issues/347
+		public override bool RequiresTimeSpanForTime => (DriverVersion?.Major ?? 3) >= 3;
 	}
 }

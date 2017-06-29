@@ -115,7 +115,7 @@ namespace NHibernate.Transaction
 						using (var tx = new TransactionScope(AmbientTransation))
 						{
 							sessionImplementor.BeforeTransactionCompletion(null);
-							if (sessionImplementor.FlushMode != FlushMode.Never && sessionImplementor.ConnectionManager.IsConnected)
+							if (sessionImplementor.FlushMode != FlushMode.Manual && sessionImplementor.ConnectionManager.IsConnected)
 							{
 								using (sessionImplementor.ConnectionManager.FlushingFromDtcTransaction)
 								{

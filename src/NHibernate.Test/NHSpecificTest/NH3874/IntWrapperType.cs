@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.Common;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.UserTypes;
@@ -31,14 +32,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3874
 			get { return NHibernateUtil.Int32; }
 		}
 
-		public object NullSafeGet(DbDataReader dr, string[] names, object owner)
+		public object NullSafeGet(DbDataReader dr, string[] names, ISessionImplementor session, object owner)
 		{
-			object obj = NHNullableType.NullSafeGet(dr, names[0]);
+			object obj = NHNullableType.NullSafeGet(dr, names[0], session);
 			if (obj == null) return null;
 			return new IntWrapper((int)obj);
 		}
 
-		public void NullSafeSet(DbCommand cmd, object obj, int index)
+		public void NullSafeSet(DbCommand cmd, object obj, int index, ISessionImplementor session)
 		{
 			if (obj == null)
 			{

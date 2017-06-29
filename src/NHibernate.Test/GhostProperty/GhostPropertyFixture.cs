@@ -57,12 +57,13 @@ namespace NHibernate.Test.GhostProperty
 			}
 		}
 
-		protected override void BuildSessionFactory()
+		protected override DebugSessionFactory BuildSessionFactory()
 		{
 			using (var logSpy = new LogSpy(typeof(EntityMetamodel)))
 			{
-				base.BuildSessionFactory();
+				var factory = base.BuildSessionFactory();
 				log = logSpy.GetWholeLog();
+				return factory;
 			}
 		}
 

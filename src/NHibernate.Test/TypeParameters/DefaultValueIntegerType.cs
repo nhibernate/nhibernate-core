@@ -4,6 +4,7 @@ using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.UserTypes;
 using System.Collections.Generic;
+using NHibernate.Engine;
 
 namespace NHibernate.Test.TypeParameters
 {
@@ -44,7 +45,7 @@ namespace NHibernate.Test.TypeParameters
 			return value;
 		}
 
-		public void NullSafeSet(DbCommand cmd, object value, int index)
+		public void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			if (value.Equals(defaultValue))
 			{
@@ -52,7 +53,7 @@ namespace NHibernate.Test.TypeParameters
 			}
 			else
 			{
-				_int32Type.Set(cmd, value, index);
+				_int32Type.Set(cmd, value, index, session);
 			}
 		}
 
@@ -61,9 +62,9 @@ namespace NHibernate.Test.TypeParameters
 			get { return typeof(Int32); }
 		}
 
-		public object NullSafeGet(DbDataReader rs, string[] names, object owner)
+		public object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			object value = _int32Type.NullSafeGet(rs, names);
+			object value = _int32Type.NullSafeGet(rs, names, session);
 			if (value == null)
 				return defaultValue;
 			return value;

@@ -16,4 +16,11 @@
 		</id>
 		<property name="Name"/>
 	</class>
+
+  <class name="YetAnother">
+    <id name="Id" type="long">
+      <generator class="hilo"/>
+    </id>
+    <property name="Name"/>
+  </class>
 </hibernate-mapping>

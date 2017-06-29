@@ -189,7 +189,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3932
 
 		protected override void OnTearDown()
 		{
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				using (var tx = s.BeginTransaction())
 				{

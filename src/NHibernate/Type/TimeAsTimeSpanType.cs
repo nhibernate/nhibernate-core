@@ -28,13 +28,13 @@ namespace NHibernate.Type
 			get { return "TimeAsTimeSpan"; }
 		}
 
-		public override object Get(DbDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			try
 			{
-				object value = rs[index];
-				if(value is TimeSpan)
-					return (TimeSpan)value;
+				var value = rs[index];
+				if(value is TimeSpan time) //For those dialects where DbType.Time means TimeSpan.
+					return time;
                 
 				return ((DateTime)value).TimeOfDay;
 			}
@@ -44,26 +44,17 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object Get(DbDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
-			try
-			{
-				object value = rs[name];
-				if (value is TimeSpan) //For those dialects where DbType.Time means TimeSpan.
-					return (TimeSpan)value;
-
-				return ((DateTime)value).TimeOfDay;
-			}
-			catch (Exception ex)
-			{
-				throw new FormatException(string.Format("Input string '{0}' was not in the correct format.", rs[name]), ex);
-			}
+			return Get(rs, rs.GetOrdinal(name), session);
 		}
 
-		public override void Set(DbCommand st, object value, int index)
+		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
-			DateTime date = BaseDateValue.AddTicks(((TimeSpan)value).Ticks);
-			st.Parameters[index].Value = date;
+			if (session.Factory.ConnectionProvider.Driver.RequiresTimeSpanForTime)
+				st.Parameters[index].Value = value;
+			else
+				st.Parameters[index].Value = BaseDateValue.AddTicks(((TimeSpan)value).Ticks);
 		}
 
 		public override System.Type ReturnedClass

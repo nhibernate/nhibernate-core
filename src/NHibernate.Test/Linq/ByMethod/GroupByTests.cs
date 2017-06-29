@@ -534,7 +534,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			if (Dialect is FirebirdDialect)
 				Assert.Ignore("Firebird does not support complex group by expressions");
-			if (sessions.ConnectionProvider.Driver is OdbcDriver)
+			if (Sfi.ConnectionProvider.Driver is OdbcDriver)
 				Assert.Ignore("SQL Server seems unable to match complex group by and select list arguments when running over ODBC.");
 			if (Dialect is MsSqlCeDialect)
 				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
@@ -548,7 +548,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			if (Dialect is FirebirdDialect)
 				Assert.Ignore("Firebird does not support complex group by expressions");
-			if (sessions.ConnectionProvider.Driver is OdbcDriver)
+			if (Sfi.ConnectionProvider.Driver is OdbcDriver)
 				Assert.Ignore("SQL Server seems unable to match complex group by and select list arguments when running over ODBC.");
 			if (Dialect is MsSqlCeDialect)
 				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
@@ -562,7 +562,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			if (Dialect is FirebirdDialect)
 				Assert.Ignore("Firebird does not support complex group by expressions");
-			if (sessions.ConnectionProvider.Driver is OdbcDriver)
+			if (Sfi.ConnectionProvider.Driver is OdbcDriver)
 				Assert.Ignore("SQL Server seems unable to match complex group by and select list arguments when running over ODBC.");
 			if (Dialect is MsSqlCeDialect)
 				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
@@ -693,7 +693,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			if (Dialect is FirebirdDialect)
 				Assert.Ignore("Firebird does not support complex group by expressions");
-			if (sessions.ConnectionProvider.Driver is OdbcDriver)
+			if (Sfi.ConnectionProvider.Driver is OdbcDriver)
 				Assert.Ignore("SQL Server seems unable to match complex group by and select list arguments when running over ODBC.");
 			if (Dialect is MsSqlCeDialect)
 				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
@@ -707,7 +707,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			if (Dialect is FirebirdDialect)
 				Assert.Ignore("Firebird does not support complex group by expressions");
-			if (sessions.ConnectionProvider.Driver is OdbcDriver)
+			if (Sfi.ConnectionProvider.Driver is OdbcDriver)
 				Assert.Ignore("SQL Server seems unable to match complex group by and select list arguments when running over ODBC.");
 			if (Dialect is MsSqlCeDialect)
 				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
@@ -721,7 +721,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			if (Dialect is FirebirdDialect)
 				Assert.Ignore("Firebird does not support complex group by expressions");
-			if (sessions.ConnectionProvider.Driver is OdbcDriver)
+			if (Sfi.ConnectionProvider.Driver is OdbcDriver)
 				Assert.Ignore("SQL Server seems unable to match complex group by and select list arguments when running over ODBC.");
 			if (Dialect is MsSqlCeDialect)
 				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
@@ -735,7 +735,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			if (Dialect is FirebirdDialect)
 				Assert.Ignore("Firebird does not support complex group by expressions");
-			if (sessions.ConnectionProvider.Driver is OdbcDriver)
+			if (Sfi.ConnectionProvider.Driver is OdbcDriver)
 				Assert.Ignore("SQL Server seems unable to match complex group by and select list arguments when running over ODBC.");
 			if (Dialect is MsSqlCeDialect)
 				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
@@ -749,7 +749,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			if (Dialect is FirebirdDialect)
 				Assert.Ignore("Firebird does not support complex group by expressions");
-			if (sessions.ConnectionProvider.Driver is OdbcDriver)
+			if (Sfi.ConnectionProvider.Driver is OdbcDriver)
 				Assert.Ignore("SQL Server seems unable to match complex group by and select list arguments when running over ODBC.");
 			if (Dialect is MsSqlCeDialect)
 				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
@@ -763,7 +763,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			if (Dialect is FirebirdDialect)
 				Assert.Ignore("Firebird does not support complex group by expressions");
-			if (sessions.ConnectionProvider.Driver is OdbcDriver)
+			if (Sfi.ConnectionProvider.Driver is OdbcDriver)
 				Assert.Ignore("SQL Server seems unable to match complex group by and select list arguments when running over ODBC.");
 			if (Dialect is MsSqlCeDialect)
 				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
@@ -777,7 +777,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			if (Dialect is FirebirdDialect)
 				Assert.Ignore("Firebird does not support complex group by expressions");
-			if (sessions.ConnectionProvider.Driver is OdbcDriver)
+			if (Sfi.ConnectionProvider.Driver is OdbcDriver)
 				Assert.Ignore("SQL Server seems unable to match complex group by and select list arguments when running over ODBC.");
 			if (Dialect is MsSqlCeDialect)
 				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
@@ -791,7 +791,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			if (Dialect is FirebirdDialect)
 				Assert.Ignore("Firebird does not support complex group by expressions");
-			if (sessions.ConnectionProvider.Driver is OdbcDriver)
+			if (Sfi.ConnectionProvider.Driver is OdbcDriver)
 				Assert.Ignore("SQL Server seems unable to match complex group by and select list arguments when running over ODBC.");
 			if (Dialect is MsSqlCeDialect)
 				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
@@ -805,7 +805,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			if (Dialect is FirebirdDialect)
 				Assert.Ignore("Firebird does not support complex group by expressions");
-			if (sessions.ConnectionProvider.Driver is OdbcDriver)
+			if (Sfi.ConnectionProvider.Driver is OdbcDriver)
 				Assert.Ignore("SQL Server seems unable to match complex group by and select list arguments when running over ODBC.");
 			if (Dialect is MsSqlCeDialect)
 				Assert.Ignore("SQL Server CE does not support complex group by expressions.");

@@ -47,14 +47,14 @@ namespace NHibernate.Type
 			get { return Comparer<DateTimeOffset>.Default; }
 		}
 
-		public override void Set(DbCommand st, object value, int index)
+		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
 			var dateValue = (DateTimeOffset) value;
 			st.Parameters[index].Value =
 				new DateTimeOffset(dateValue.Ticks, dateValue.Offset);
 		}
 
-		public override object Get(DbDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			try
 			{
@@ -67,9 +67,9 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object Get(DbDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
-			return Get(rs, rs.GetOrdinal(name));
+			return Get(rs, rs.GetOrdinal(name), session);
 		}
 
 		public object Next(object current, ISessionImplementor session)

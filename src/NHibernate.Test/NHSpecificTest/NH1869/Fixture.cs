@@ -16,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1869
 
 		protected override void OnTearDown()
 		{
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
 				session.Delete("from NodeKeyword");
@@ -29,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1869
 		[Test]
 		public void Test()
 		{
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
 				_keyword = new Keyword();
@@ -43,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1869
 				transaction.Commit();
 			}
 
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			{
 				//If uncomment the line below the test will pass
 				//GetResult(session);

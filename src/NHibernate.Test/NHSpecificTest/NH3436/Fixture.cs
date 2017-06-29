@@ -98,7 +98,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3436
 
 		private void Run(ICollection<Guid> ids)
 		{
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			using (session.BeginTransaction())
 			{
 				var result = session.Query<TestEntity>()

@@ -47,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 
 			ExecuteStatement(string.Format("UPDATE EMPLOYEES SET DEPARTMENT_ID = 99999 WHERE EMPLOYEE_ID = {0}", employeeId));
 
-			IStatistics stat = sessions.Statistics;
+			IStatistics stat = Sfi.Statistics;
 			stat.Clear();
 			using (ISession sess = OpenSession())
 			using (ITransaction tx = sess.BeginTransaction())

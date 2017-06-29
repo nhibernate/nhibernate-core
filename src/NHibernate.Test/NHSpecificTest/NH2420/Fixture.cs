@@ -65,7 +65,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2420
 					EnlistmentOptions.None);
 
 				DbConnection connection;
-				if (sessions.ConnectionProvider.Driver.GetType() == typeof(OdbcDriver))
+				if (Sfi.ConnectionProvider.Driver.GetType() == typeof(OdbcDriver))
 					connection = new OdbcConnection(connectionString);
 				else
 					connection = new SqlConnection(connectionString);
@@ -73,7 +73,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2420
 				using (connection)
 				{
 					connection.Open();
-					using (s = Sfi.OpenSession(connection))
+					using (s = Sfi.WithOptions().Connection(connection).OpenSession())
 					{
 						s.Save(new MyTable { String = "hello!" });
 					}

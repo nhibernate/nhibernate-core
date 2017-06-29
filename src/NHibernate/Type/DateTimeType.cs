@@ -37,7 +37,7 @@ namespace NHibernate.Type
 			get { return "DateTime"; }
 		}
 
-		public override object Get(DbDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			try
 			{
@@ -50,9 +50,9 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object Get(DbDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
-			return Get(rs, rs.GetOrdinal(name));
+			return Get(rs, rs.GetOrdinal(name), session);
 		}
 
 		public override System.Type ReturnedClass
@@ -60,7 +60,7 @@ namespace NHibernate.Type
 			get { return typeof(DateTime); }
 		}
 
-		public override void Set(DbCommand st, object value, int index)
+		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
 			DateTime dateValue = (DateTime) value;
 			st.Parameters[index].Value =

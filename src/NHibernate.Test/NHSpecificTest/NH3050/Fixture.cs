@@ -61,7 +61,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3050
 			// get the planCache field on the QueryPlanCache and overwrite it with the restricted cache
 			queryPlanCacheType
 				.GetField("planCache", BindingFlags.Instance | BindingFlags.NonPublic)
-				.SetValue(sessions.QueryPlanCache, cache);
+				.SetValue(Sfi.QueryPlanCache, cache);
 
 			// Initiate a LINQ query with a contains with one item in it, of which we know that the underlying IQueryExpression implementations
 			// aka NhLinqExpression and the ExpandedQueryExpression generate the same key.
@@ -82,7 +82,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3050
 				// This will constantly interact with the cache (Once in the PrepareQuery method of the DefaultQueryProvider and once in the Execute)
 				System.Action queryExecutor = () =>
 					{
-						var sessionToUse = sessions.OpenSession();
+						var sessionToUse = Sfi.OpenSession();
 
 						try
 						{

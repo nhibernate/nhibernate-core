@@ -127,17 +127,18 @@ namespace NHibernate.Mapping
 
 		private string GetAlias(int maxAliasLength)
 		{
-			string alias = _name;
+			var name = CanonicalName;
+			string alias = name;
 			string suffix = UniqueInteger.ToString() + StringHelper.Underscore;
 
-			int lastLetter = StringHelper.LastIndexOfLetter(_name);
+			int lastLetter = StringHelper.LastIndexOfLetter(name);
 			if (lastLetter == -1)
 			{
 				alias = "column";
 			}
-			else if (lastLetter < _name.Length - 1)
+			else if (lastLetter < name.Length - 1)
 			{
-				alias = _name.Substring(0, lastLetter + 1);
+				alias = name.Substring(0, lastLetter + 1);
 			}
 
 			// Updated logic ported from Hibernate's fix for HHH-8073.
@@ -147,9 +148,9 @@ namespace NHibernate.Mapping
 			// reason, the checks for "_quoted" and "rowid" looks redundant. If you remove
 			// those checks, then the double checks for total length can be reduced to one.
 			//    But I will leave it like this for now to make it look similar. /Oskar 2016-08-20
-			bool useRawName = _name.Length + suffix.Length <= maxAliasLength &&
+			bool useRawName = name.Length + suffix.Length <= maxAliasLength &&
 			                  !_quoted &&
-			                  !StringHelper.EqualsCaseInsensitive(_name, "rowid");
+			                  !StringHelper.EqualsCaseInsensitive(name, "rowid");
 			if (!useRawName)
 			{
 				if (suffix.Length >= maxAliasLength)

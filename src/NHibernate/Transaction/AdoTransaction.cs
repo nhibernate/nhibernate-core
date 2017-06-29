@@ -119,7 +119,7 @@ namespace NHibernate.Transaction
 				{
 					throw new TransactionException("Cannot restart transaction after failed commit");
 				}
-				
+
 				if (isolationLevel == IsolationLevel.Unspecified)
 				{
 					isolationLevel = session.Factory.Settings.IsolationLevel;
@@ -186,7 +186,7 @@ namespace NHibernate.Transaction
 
 				log.Debug("Start Commit");
 
-				if (session.FlushMode != FlushMode.Never)
+				if (session.FlushMode != FlushMode.Manual)
 				{
 					session.Flush();
 				}
@@ -426,10 +426,7 @@ namespace NHibernate.Transaction
 					catch (Exception e)
 					{
 						log.Error("exception calling user Synchronization", e);
-#pragma warning disable 618
-						if (!session.Factory.Settings.IsInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled)
-							throw;
-#pragma warning restore 618
+						throw;
 					}
 				}
 			}

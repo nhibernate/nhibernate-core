@@ -57,7 +57,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2477
 		{
 			using (new Scenario(Sfi))
 			{
-				using (var session = sessions.OpenSession())
+				using (var session = Sfi.OpenSession())
 				using (session.BeginTransaction())
 				{
 					// This is another case where we have to work with subqueries and we have to write a specific query rewriter for Skip/Take instead flat the query in QueryReferenceExpressionFlattener

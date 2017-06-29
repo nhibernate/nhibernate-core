@@ -177,7 +177,7 @@ namespace NHibernate.Type
 			return result;
 		}
 
-		public override object Get(DbDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			object code = rs[index];
 			if (code == DBNull.Value || code == null)
@@ -222,14 +222,14 @@ namespace NHibernate.Type
 		}
 
 
-		public override void Set(DbCommand cmd, object value, int index)
+		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			cmd.Parameters[index].Value = value != null ? GetValue(value) : DBNull.Value;
 		}
 
-		public override object Get(DbDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
-			return Get(rs, rs.GetOrdinal(name));
+			return Get(rs, rs.GetOrdinal(name), session);
 		}
 
 		public override string Name

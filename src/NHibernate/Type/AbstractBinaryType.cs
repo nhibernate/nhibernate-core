@@ -64,7 +64,7 @@ namespace NHibernate.Type
 		/// <summary> Convert the object into the internal byte[] representation</summary>
 		protected internal abstract byte[] ToInternalFormat(object bytes);
 
-		public override void Set(DbCommand cmd, object value, int index)
+		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			byte[] internalValue = ToInternalFormat(value);
 
@@ -78,7 +78,7 @@ namespace NHibernate.Type
 				throw new HibernateException("The length of the byte[] value exceeds the length configured in the mapping/parameter.");
 		}
 
-		public override object Get(DbDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			int length = (int) rs.GetBytes(index, 0, null, 0, 0);
 			byte[] buffer = new byte[length];
@@ -90,9 +90,9 @@ namespace NHibernate.Type
 			return ToExternalFormat(buffer);
 		}
 
-		public override object Get(DbDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
-			return Get(rs, rs.GetOrdinal(name));
+			return Get(rs, rs.GetOrdinal(name), session);
 		}
 
 		public override int GetHashCode(object x)

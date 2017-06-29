@@ -31,7 +31,7 @@ namespace NHibernate.Test.Stateless.FetchingLazyCollections
 		[Test]
 		public void FetchMultipleHierarchies()
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				var root = new TreeNode {Content = "Root"};
@@ -44,7 +44,7 @@ namespace NHibernate.Test.Stateless.FetchingLazyCollections
 				tx.Commit();
 			}
 
-			using (IStatelessSession s = sessions.OpenStatelessSession())
+			using (IStatelessSession s = Sfi.OpenStatelessSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				IList<TreeNode> rootNodes = s.Query<TreeNode>().Where(t => t.Content == "Root")
@@ -56,7 +56,7 @@ namespace NHibernate.Test.Stateless.FetchingLazyCollections
 				tx.Commit();
 			}
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				s.Delete("from TreeNode");

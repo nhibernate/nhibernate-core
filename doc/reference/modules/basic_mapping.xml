@@ -3114,6 +3114,11 @@
     ...
 </class>]]></programlisting>
 
+        <para>
+            Quoting column identifiers is required if a table contains two columns differing only by case.
+            Ensure you use consistent casing when quoting identifiers.
+        </para>
+
     </sect1>
 
    <sect1 id="mapping-modularfiles">

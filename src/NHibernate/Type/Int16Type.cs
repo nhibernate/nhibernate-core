@@ -27,7 +27,7 @@ namespace NHibernate.Type
 		}
 
 		private static readonly Int16 ZERO = 0;
-		public override object Get(DbDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			try
 			{
@@ -39,7 +39,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object Get(DbDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
 			try
 			{
@@ -56,7 +56,7 @@ namespace NHibernate.Type
 			get { return typeof(Int16); }
 		}
 
-		public override void Set(DbCommand rs, object value, int index)
+		public override void Set(DbCommand rs, object value, int index, ISessionImplementor session)
 		{
 			rs.Parameters[index].Value = value;
 		}

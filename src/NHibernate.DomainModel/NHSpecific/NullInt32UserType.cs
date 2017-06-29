@@ -1,6 +1,6 @@
 using System;
 using System.Data.Common;
-
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.UserTypes;
@@ -46,7 +46,7 @@ namespace NHibernate.DomainModel.NHSpecific
 			return value;
 		}
 
-		public void NullSafeSet(DbCommand cmd, object value, int index)
+		public void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			if (value.Equals(0))
 			{
@@ -54,7 +54,7 @@ namespace NHibernate.DomainModel.NHSpecific
 			}
 			else
 			{
-				_int32Type.Set(cmd, value, index);
+				_int32Type.Set(cmd, value, index, session);
 			}
 		}
 
@@ -63,9 +63,9 @@ namespace NHibernate.DomainModel.NHSpecific
 			get { return typeof(Int32); }
 		}
 
-		public object NullSafeGet(DbDataReader rs, string[] names, object owner)
+		public object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			return _int32Type.NullSafeGet(rs, names);
+			return _int32Type.NullSafeGet(rs, names, session);
 		}
 
 		public bool IsMutable
