@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg;
@@ -5,6 +6,7 @@ using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 {
@@ -23,8 +25,8 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 				var metaData = dialect.GetDataBaseSchema(connectionHelper.Connection);
 				var reserved = metaData.GetReservedWords();
 				Assert.That(reserved, Is.Not.Empty);
-				Assert.That(reserved, Has.Member("SELECT"));
-				Assert.That(reserved, Has.Member("FROM"));
+				Assert.That(reserved, Has.Member("SELECT").IgnoreCase);
+				Assert.That(reserved, Has.Member("FROM").IgnoreCase);
 			}
 			finally
 			{
@@ -35,7 +37,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 		[Test]
 		public void UpdateReservedWordsInDialect()
 		{
-			var reservedDb = new HashSet<string>();
+			var reservedDb = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			var configuration = TestConfigurationHelper.GetDefaultConfiguration();
 			var dialect = Dialect.Dialect.GetDialect(configuration.Properties);
 			var connectionHelper = new ManagedProviderConnectionHelper(configuration.Properties);
@@ -55,7 +57,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 
 			var sf = (ISessionFactoryImplementor) configuration.BuildSessionFactory();
 			SchemaMetadataUpdater.Update(sf);
-			var match = reservedDb.Intersect(sf.Dialect.Keywords);
+			var match = reservedDb.Intersect(sf.Dialect.Keywords, StringComparer.OrdinalIgnoreCase);
 			Assert.That(match, Is.EquivalentTo(reservedDb));
 		}
 
@@ -66,7 +68,11 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 			configuration.AddResource("NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest.HeavyEntity.hbm.xml",
 																GetType().Assembly);
 
-			SchemaMetadataUpdater.QuoteTableAndColumns(configuration);
+			var dialect = Dialect.Dialect.GetDialect(configuration.GetDerivedProperties());
+			dialect.Keywords.Add("Abracadabra");
+
+			SchemaMetadataUpdater.Update(configuration, dialect);
+			SchemaMetadataUpdater.QuoteTableAndColumns(configuration, dialect);
 
 			var cm = configuration.GetClassMapping(typeof(Order));
 			Assert.That(cm.Table.IsQuoted);
@@ -74,6 +80,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 			Assert.That(GetColumnByName(culs, "From").IsQuoted);
 			Assert.That(GetColumnByName(culs, "And").IsQuoted);
 			Assert.That(GetColumnByName(culs, "Select").IsQuoted);
+			Assert.That(GetColumnByName(culs, "Abracadabra").IsQuoted);
 			Assert.That(!GetColumnByName(culs, "Name").IsQuoted);
 		}
 
@@ -97,7 +104,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 		[Test]
 		public void AutoQuoteTableAndColumnsAtStratupIncludeKeyWordsImport()
 		{
-			var reservedDb = new HashSet<string>();
+			var reservedDb = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			var configuration = TestConfigurationHelper.GetDefaultConfiguration();
 			var dialect = Dialect.Dialect.GetDialect(configuration.Properties);
 			var connectionHelper = new ManagedProviderConnectionHelper(configuration.Properties);
@@ -119,8 +126,8 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 			configuration.AddResource("NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest.HeavyEntity.hbm.xml",
 																GetType().Assembly);
 			var sf = (ISessionFactoryImplementor)configuration.BuildSessionFactory();
-			var match = reservedDb.Intersect(sf.Dialect.Keywords);
-			Assert.That(match, Is.EquivalentTo(reservedDb));
+			var match = reservedDb.Intersect(sf.Dialect.Keywords, StringComparer.OrdinalIgnoreCase);
+			Assert.That(match, Is.EquivalentTo(reservedDb).IgnoreCase);
 		}
 
 		private static Column GetColumnByName(IEnumerable<Column> columns, string colName)
@@ -167,7 +174,11 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 			configuration.AddResource("NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest.HeavyEntity.hbm.xml",
 																GetType().Assembly);
 
-			SchemaMetadataUpdater.QuoteTableAndColumns(configuration);
+			var dialect = Dialect.Dialect.GetDialect(configuration.GetDerivedProperties());
+			dialect.Keywords.Add("Abracadabra");
+
+			SchemaMetadataUpdater.Update(configuration, dialect);
+			SchemaMetadataUpdater.QuoteTableAndColumns(configuration, dialect);
 
 			var cm = configuration.GetClassMapping(typeof(Order));
 			Assert.That(cm.Table.IsQuoted);
@@ -175,6 +186,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 			Assert.That(GetColumnByName(culs, "From").IsQuoted);
 			Assert.That(GetColumnByName(culs, "And").IsQuoted);
 			Assert.That(GetColumnByName(culs, "Select").IsQuoted);
+			Assert.That(GetColumnByName(culs, "Abracadabra").IsQuoted);
 			Assert.That(!GetColumnByName(culs, "Name").IsQuoted);
 		}
 	}
