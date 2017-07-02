@@ -41,6 +41,25 @@ namespace NHibernate.AdoNet
 			async Task<DbConnection> InternalGetConnectionAsync()
 			{
 
+				if (_connectionReleaseRequired)
+				{
+					_connectionReleaseRequired = false;
+					if (_connection != null)
+					{
+						_log.Debug("Releasing database connection");
+						CloseConnection();
+					}
+				}
+
+				if (_connectionEnlistmentRequired)
+				{
+					_connectionEnlistmentRequired = false;
+					// No null check on transaction: we need to do it for connection supporting it, and
+					// _connectionEnlistmentRequired should not be set if the transaction is null while the
+					// connection does not support it.
+					_connection?.EnlistTransaction(_currentSystemTransaction);
+				}
+
 				if (_connection == null)
 				{
 					if (_ownConnection)

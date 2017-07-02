@@ -4,9 +4,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Transactions;
 using log4net;
 using log4net.Repository.Hierarchy;
+using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Engine;
@@ -15,9 +17,18 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3023
 {
 	[TestFixture]
-	public class DeadlockConnectionPoolIssueTest : BugTestCase
+	public class DeadlockConnectionPoolIssue : BugTestCase
 	{
-		private static readonly ILog _log = LogManager.GetLogger(typeof(DeadlockConnectionPoolIssueTest));
+		private static readonly ILog _log = LogManager.GetLogger(typeof(DeadlockConnectionPoolIssue));
+
+		protected virtual bool UseConnectionOnSystemTransactionPrepare => true;
+
+		protected override void Configure(Configuration configuration)
+		{
+			configuration.SetProperty(
+				Cfg.Environment.UseConnectionOnSystemTransactionPrepare,
+				UseConnectionOnSystemTransactionPrepare.ToString());
+		}
 
 		// Uses directly SqlConnection.
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)
@@ -35,27 +46,31 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 
 		protected override void OnTearDown()
 		{
+			// Before clearing the pool for dodging pool corruption, we need to wait
+			// for late transaction processing not yet ended.
+			Thread.Sleep(100);
 			//
 			// Hopefully this will clean up the pool so that teardown can succeed
 			//
 			SqlConnection.ClearAllPools();
 
+			RunScript("db-teardown.sql");
+
 			using (var s = OpenSession())
 			{
 				s.CreateQuery("delete from System.Object").ExecuteUpdate();
 			}
-			RunScript("db-teardown.sql");
 		}
 
 		[Theory]
-		public void ConnectionPoolCorruptionAfterDeadlock(bool distributed)
+		public void ConnectionPoolCorruptionAfterDeadlock(bool distributed, bool disposeSessionBeforeScope)
 		{
 			var tryCount = 0;
 			var id = 1;
-			var missingDeadlock = false;
 			do
 			{
 				tryCount++;
+				var missingDeadlock = false;
 
 				try
 				{
@@ -66,13 +81,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 					// wrong when disposing a connection from transaction scope completion.
 					// Note that the transaction completion event can execute as soon as the deadlock occurs. It does
 					// not wait for the scope disposal.
-					using (var session = OpenSession())
-					//using (var session = Sfi.WithOptions().ConnectionReleaseMode(ConnectionReleaseMode.OnClose).OpenSession())
-					using (var scope = distributed ? CreateDistributedTransactionScope() : new TransactionScope())
+					var session = OpenSession();
+					var scope = distributed ? CreateDistributedTransactionScope() : new TransactionScope();
+					try
 					{
 						_log.Debug("Session and scope opened");
 						session.GetSessionImplementation().Factory.TransactionFactory
-							.EnlistInSystemTransactionIfNeeded(session.GetSessionImplementation());
+							   .EnlistInSystemTransactionIfNeeded(session.GetSessionImplementation());
 						_log.Debug("Session enlisted");
 						try
 						{
@@ -89,17 +104,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 								// It did what it was supposed to do.
 								//
 								_log.InfoFormat("Expected deadlock on attempt {0}. {1}", tryCount, x.Message);
-
-								// Check who takes time in the disposing
-								var chrono = new Stopwatch();
-								chrono.Start();
-								scope.Dispose();
-								_log.Debug("Scope disposed");
-								Assert.That(chrono.Elapsed, Is.LessThan(TimeSpan.FromSeconds(2)), "Abnormal scope disposal duration");
-								chrono.Restart();
-								session.Dispose();
-								_log.Debug("Session disposed");
-								Assert.That(chrono.Elapsed, Is.LessThan(TimeSpan.FromSeconds(2)), "Abnormal session disposal duration");
 								continue;
 							}
 
@@ -118,7 +122,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 								new DomainClass
 								{
 									Id = id++,
-									ByteData = new byte[] { 1, 2, 3 }
+									ByteData = new byte[] {1, 2, 3}
 								});
 
 							session.Flush();
@@ -138,6 +142,57 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 						_log.Debug("Completing scope");
 						scope.Complete();
 						_log.Debug("Scope completed");
+					}
+					finally
+					{
+						// Check who takes time in the disposing
+						var chrono = new Stopwatch();
+						if (disposeSessionBeforeScope)
+						{
+							try
+							{
+								chrono.Start();
+								session.Dispose();
+								_log.Debug("Session disposed");
+								Assert.That(chrono.Elapsed, Is.LessThan(TimeSpan.FromSeconds(2)), "Abnormal session disposal duration");
+							}
+							catch (Exception ex)
+							{
+								// Log in case it gets hidden by the next finally
+								_log.Warn("Session disposal failure", ex);
+								throw;
+							}
+							finally
+							{
+								chrono.Restart();
+								scope.Dispose();
+								_log.Debug("Scope disposed");
+								Assert.That(chrono.Elapsed, Is.LessThan(TimeSpan.FromSeconds(2)), "Abnormal scope disposal duration");
+							}
+						}
+						else
+						{
+							try
+							{
+								chrono.Start();
+								scope.Dispose();
+								_log.Debug("Scope disposed");
+								Assert.That(chrono.Elapsed, Is.LessThan(TimeSpan.FromSeconds(2)), "Abnormal scope disposal duration");
+							}
+							catch (Exception ex)
+							{
+								// Log in case it gets hidden by the next finally
+								_log.Warn("Scope disposal failure", ex);
+								throw;
+							}
+							finally
+							{
+								chrono.Restart();
+								session.Dispose();
+								_log.Debug("Session disposed");
+								Assert.That(chrono.Elapsed, Is.LessThan(TimeSpan.FromSeconds(2)), "Abnormal session disposal duration");
+							}
+						}
 					}
 					_log.Debug("Session and scope disposed");
 				}
@@ -234,5 +289,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 				}
 			}
 		}
+	}
+
+	[TestFixture]
+	public class DeadlockConnectionPoolIssueWithoutConnectionFromPrepare : DeadlockConnectionPoolIssue
+	{
+		protected override bool UseConnectionOnSystemTransactionPrepare => false;
 	}
 }

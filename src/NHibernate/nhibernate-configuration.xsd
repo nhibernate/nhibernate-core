@@ -139,7 +139,7 @@
 								<xs:enumeration value="transaction.use_connection_on_system_prepare">
 									<xs:annotation>
 										<xs:documentation>
-											When a system transaction is being prepared, is using connection during this process enabled?
+											When a system transaction is being prepared/prepared, is using connection during this process enabled?
 											Default is true, for supporting FlushMode.Commit with transaction factories
 											supporting system transactions. But this requires enlisting additional connections, retaining disposed
 											sessions and their connections till transaction end, and may trigger undesired transaction promotions to

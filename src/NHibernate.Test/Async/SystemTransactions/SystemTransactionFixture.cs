@@ -478,6 +478,35 @@ namespace NHibernate.Test.SystemTransactions
 			Assert.That(interceptor.Exception, Is.Null);
 		}
 
+		[Test]
+		public async Task EnforceConnectionUsageRulesOnTransactionCompletionAsync()
+		{
+			var interceptor = new TransactionCompleteUsingConnectionInterceptor();
+			// Do not invert session and scope, it would cause an expected failure when
+			// UseConnectionOnSystemTransactionEvents is false, due to the session being closed.
+			using (var s = WithOptions().Interceptor(interceptor).OpenSession())
+			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+			{
+				if (!AutoJoinTransaction)
+					s.JoinTransaction();
+				await (s.SaveAsync(new Person()));
+
+				await (s.FlushAsync());
+				tx.Complete();
+			}
+
+			if (UseConnectionOnSystemTransactionPrepare)
+			{
+				Assert.That(interceptor.BeforeException, Is.Null);
+			}
+			else
+			{
+				Assert.That(interceptor.BeforeException, Is.TypeOf<HibernateException>());
+			}
+			// Currently always forbidden, whatever UseConnectionOnSystemTransactionEvents.
+			Assert.That(interceptor.AfterException, Is.TypeOf<HibernateException>());
+		}
+
 		protected override ISession OpenSession()
 		{
 			if (AutoJoinTransaction)

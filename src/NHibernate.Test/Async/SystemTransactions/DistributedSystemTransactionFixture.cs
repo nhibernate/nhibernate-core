@@ -641,6 +641,34 @@ namespace NHibernate.Test.SystemTransactions
 			Assert.That(interceptor.Exception, Is.Null);
 		}
 
+		[Test]
+		public async Task EnforceConnectionUsageRulesOnTransactionCompletionAsync()
+		{
+			var interceptor = new TransactionCompleteUsingConnectionInterceptor();
+			// Do not invert session and scope, it would cause an expected failure when
+			// UseConnectionOnSystemTransactionEvents is false, due to the session being closed.
+			using (var s = Sfi.WithOptions().Interceptor(interceptor).OpenSession())
+			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+			{
+				ForceEscalationToDistributedTx.Escalate();
+				await (s.SaveAsync(new Person()));
+
+				await (s.FlushAsync());
+				tx.Complete();
+			}
+
+			if (UseConnectionOnSystemTransactionPrepare)
+			{
+				Assert.That(interceptor.BeforeException, Is.Null);
+			}
+			else
+			{
+				Assert.That(interceptor.BeforeException, Is.TypeOf<HibernateException>());
+			}
+			// Currently always forbidden, whatever UseConnectionOnSystemTransactionEvents.
+			Assert.That(interceptor.AfterException, Is.TypeOf<HibernateException>());
+		}
+
 		private void DodgeTransactionCompletionDelayIfRequired()
 		{
 			if (Sfi.ConnectionProvider.Driver.HasDelayedDistributedTransactionCompletion)

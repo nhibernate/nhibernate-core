@@ -60,6 +60,12 @@ namespace NHibernate.AdoNet
 		private bool _processingFromSystemTransaction;
 		[NonSerialized]
 		private bool _allowConnectionUsage = true;
+		// Do we need to release the current connection instead of yielding it?
+		[NonSerialized]
+		private bool _connectionReleaseRequired;
+		// Do we need to explicitly enlist the current connection before yielding it?
+		[NonSerialized]
+		private bool _connectionEnlistmentRequired;
 
 		/// <summary>
 		/// <see langword="true"/> when the connection manager is being used from system transaction completion events,
@@ -210,6 +216,25 @@ namespace NHibernate.AdoNet
 				throw new HibernateException("Connection usage is currently disallowed");
 			}
 
+			if (_connectionReleaseRequired)
+			{
+				_connectionReleaseRequired = false;
+				if (_connection != null)
+				{
+					_log.Debug("Releasing database connection");
+					CloseConnection();
+				}
+			}
+
+			if (_connectionEnlistmentRequired)
+			{
+				_connectionEnlistmentRequired = false;
+				// No null check on transaction: we need to do it for connection supporting it, and
+				// _connectionEnlistmentRequired should not be set if the transaction is null while the
+				// connection does not support it.
+				_connection?.EnlistTransaction(_currentSystemTransaction);
+			}
+
 			if (_connection == null)
 			{
 				if (_ownConnection)
@@ -287,10 +312,15 @@ namespace NHibernate.AdoNet
 		{
 			if (_ownConnection)
 			{
-				_log.Debug("Aggressively releasing database connection");
 				if (_connection != null)
 				{
-					CloseConnection();
+					if (_processingFromSystemTransaction)
+						_connectionReleaseRequired = true;
+					else
+					{
+						_log.Debug("Aggressively releasing database connection");
+						CloseConnection();
+					}
 				}
 			}
 		}
@@ -435,7 +465,7 @@ namespace NHibernate.AdoNet
 			if (IsInActiveExplicitTransaction && transaction != null)
 				throw new InvalidOperationException("Cannot enlist in a system transaction while an explicit transaction has been started on the session.");
 
-			if (_connection == null)
+			if (_connection == null || _connectionReleaseRequired)
 				return;
 
 			// Some drivers do not support enlistment with null. Skip for them, they are supposed
@@ -445,17 +475,23 @@ namespace NHibernate.AdoNet
 				return;
 			}
 
+			if (!_allowConnectionUsage)
+			{
+				_connectionEnlistmentRequired = true;
+				return;
+			}
+
 			_connection.EnlistTransaction(transaction);
 		}
 
-		public IDisposable BeginFlushingFromSystemTransaction(bool allowConnectionUsage)
+		public IDisposable BeginProcessingFromSystemTransaction(bool allowConnectionUsage)
 		{
 			var needSwapping = _ownConnection && allowConnectionUsage &&
 				Factory.Dialect.SupportsConcurrentWritingConnectionsInSameTransaction;
 			if (needSwapping)
 			{
 				if (Batcher.HasOpenResources)
-					throw new InvalidOperationException("Batcher still has opened ressources at time of Flush from DTC.");
+					throw new InvalidOperationException("Batcher still has opened ressources at time of processing from system transaction.");
 				// Swap out current connection for avoiding using it concurrently to its own 2PC
 				_backupConnection = _connection;
 				_backupCurrentSystemTransaction = _currentSystemTransaction;
@@ -489,7 +525,7 @@ namespace NHibernate.AdoNet
 				if (!_hasSwappedConnection)
 					return;
 
-				// Release the connection potentially acquired for flushing from DTC.
+				// Release the connection potentially acquired for processing from system transaction.
 				_manager.DisconnectOwnConnection();
 				// Swap back current connection
 				_manager._connection = _manager._backupConnection;

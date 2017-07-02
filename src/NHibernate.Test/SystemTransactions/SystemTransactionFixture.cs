@@ -468,6 +468,35 @@ namespace NHibernate.Test.SystemTransactions
 		}
 
 		[Test]
+		public void EnforceConnectionUsageRulesOnTransactionCompletion()
+		{
+			var interceptor = new TransactionCompleteUsingConnectionInterceptor();
+			// Do not invert session and scope, it would cause an expected failure when
+			// UseConnectionOnSystemTransactionEvents is false, due to the session being closed.
+			using (var s = WithOptions().Interceptor(interceptor).OpenSession())
+			using (var tx = new TransactionScope())
+			{
+				if (!AutoJoinTransaction)
+					s.JoinTransaction();
+				s.Save(new Person());
+
+				s.Flush();
+				tx.Complete();
+			}
+
+			if (UseConnectionOnSystemTransactionPrepare)
+			{
+				Assert.That(interceptor.BeforeException, Is.Null);
+			}
+			else
+			{
+				Assert.That(interceptor.BeforeException, Is.TypeOf<HibernateException>());
+			}
+			// Currently always forbidden, whatever UseConnectionOnSystemTransactionEvents.
+			Assert.That(interceptor.AfterException, Is.TypeOf<HibernateException>());
+		}
+
+		[Test]
 		public void AdditionalJoinDoesNotThrow()
 		{
 			using (new TransactionScope())

@@ -239,7 +239,7 @@ namespace NHibernate.Transaction
 				{
 					try
 					{
-						using (_sessionImplementor.ConnectionManager.BeginFlushingFromSystemTransaction(_useConnectionOnSystemTransactionPrepare))
+						using (_sessionImplementor.ConnectionManager.BeginProcessingFromSystemTransaction(_useConnectionOnSystemTransactionPrepare))
 						{
 							if (_useConnectionOnSystemTransactionPrepare)
 							{
@@ -321,21 +321,35 @@ namespace NHibernate.Transaction
 						// Flag active as false before running actions, otherwise the session may not cleanup as much
 						// as possible.
 						IsInActiveTransaction = false;
-						_sessionImplementor.ConnectionManager.AfterTransaction();
-						// Required for un-enlisting the connection manager when auto-join is false.
-						// For avoiding a failure case with supplied connection potentially already
-						// closed, do not do it is the session is to be disposed: the connection is
-						// going to be closed anyway.
-						if (!ShouldCloseSessionOnSystemTransactionCompleted)
-							_sessionImplementor.ConnectionManager.EnlistIfRequired(null);
+						// Never allows using connection on after transaction event. And tell the connection manager
+						// it is called from system transaction. Allows releasing of connection on next usage
+						// when release mode is on commit, allows un-enlisting the connection on next usage
+						// when release mode is on close. Without BeginsProcessingFromSystemTransaction(false),
+						// the connection manager would attempt those operations immediately, causing concurrency
+						// issues and crashes for some data providers.
+						using (_sessionImplementor.ConnectionManager.BeginProcessingFromSystemTransaction(false))
+						{
+							_sessionImplementor.ConnectionManager.AfterTransaction();
+							// Required for un-enlisting the connection manager when auto-join is false.
+							// Not done in AfterTransaction, because users may use NHibernate transactions
+							// within scopes, although mixing is not advised.
+							if (!ShouldCloseSessionOnSystemTransactionCompleted)
+								_sessionImplementor.ConnectionManager.EnlistIfRequired(null);
 
-						var wasSuccessful = GetTransactionStatus() == TransactionStatus.Committed;
-						_sessionImplementor.AfterTransactionCompletion(wasSuccessful, null);
-						foreach (var dependentSession in _sessionImplementor.ConnectionManager.DependentSessions)
-							dependentSession.AfterTransactionCompletion(wasSuccessful, null);
+							var wasSuccessful = GetTransactionStatus() == TransactionStatus.Committed;
+							_sessionImplementor.AfterTransactionCompletion(wasSuccessful, null);
+							foreach (var dependentSession in _sessionImplementor.ConnectionManager.DependentSessions)
+								dependentSession.AfterTransactionCompletion(wasSuccessful, null);
 
-						Cleanup(_sessionImplementor);
+							Cleanup(_sessionImplementor);
+						}
 					}
+				}
+				catch (Exception ex)
+				{
+					// May be run in a dedicated thread. Log any error, otherwise they could stay unlogged.
+					_logger.Error("Failure at transaction completion", ex);
+					throw;
 				}
 				finally
 				{
@@ -349,20 +363,22 @@ namespace NHibernate.Transaction
 				foreach (var dependentSession in session.ConnectionManager.DependentSessions.ToList())
 				{
 					var dependentContext = dependentSession.TransactionContext;
-					// Avoid a race condition with session disposal. (Protected on session side by WaitOne,
-					// but better have more safety.)
-					dependentSession.TransactionContext = null;
+					// Do not nullify TransactionContext here, could create a race condition with
+					// would be await-er on session for disposal (test cases cleanup checks by example).
 					if (dependentContext == null)
 						continue;
+					// Race condition with session disposal is protected on session side by Wait.
 					if (dependentContext.ShouldCloseSessionOnSystemTransactionCompleted)
 						// This changes the enumerated collection.
 						dependentSession.CloseSessionFromSystemTransaction();
+					// Now we can (and even must) nullify it.
+					dependentSession.TransactionContext = null;
 					dependentContext.Dispose();
 				}
 				var context = session.TransactionContext;
-				// Avoid a race condition with session disposal. (Protected on session side by WaitOne,
-				// but better have more safety.)
-				session.TransactionContext = null;
+				// Do not nullify TransactionContext here, could create a race condition with
+				// would be await-er on session for disposal (test cases cleanup checks by example).
+				// Race condition with session disposal is protected on session side by Wait.
 				if (context.ShouldCloseSessionOnSystemTransactionCompleted)
 				{
 					// This closes the connection manager, which will release the connection.
@@ -371,7 +387,9 @@ namespace NHibernate.Transaction
 					// UseConnectionOnSystemTransactionPrepare.
 					session.CloseSessionFromSystemTransaction();
 				}
-				// No dispose, done later.
+				// Now we can (and even must) nullify it.
+				session.TransactionContext = null;
+				// No context dispose, done later.
 			}
 
 			private bool _isDisposed;
