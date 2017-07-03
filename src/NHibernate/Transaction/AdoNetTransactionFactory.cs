@@ -10,16 +10,22 @@ using NHibernate.Impl;
 
 namespace NHibernate.Transaction
 {
+	/// <summary>
+	/// Minimal <see cref="ITransaction"/> factory implementation.
+	/// Does not support system <see cref="System.Transactions.Transaction"/>.
+	/// </summary>
 	public partial class AdoNetTransactionFactory : ITransactionFactory
 	{
 		private readonly IInternalLogger isolaterLog = LoggerProvider.LoggerFor(typeof(ITransactionFactory));
 
-		public ITransaction CreateTransaction(ISessionImplementor session)
+		/// <inheritdoc />
+		public virtual ITransaction CreateTransaction(ISessionImplementor session)
 		{
 			return new AdoTransaction(session);
 		}
 
-		public void EnlistInSystemTransactionIfNeeded(ISessionImplementor session)
+		/// <inheritdoc />
+		public virtual void EnlistInSystemTransactionIfNeeded(ISessionImplementor session)
 		{
 			// nothing need to do here, we only support local transactions with this factory
 		}
@@ -30,13 +36,20 @@ namespace NHibernate.Transaction
 			throw new NotSupportedException("The current transaction factory does not support system transactions.");
 		}
 
-		public bool IsInActiveSystemTransaction(ISessionImplementor session)
+		/// <inheritdoc />
+		public virtual bool IsInActiveSystemTransaction(ISessionImplementor session)
 		{
 			return false;
 		}
 
-		public void ExecuteWorkInIsolation(ISessionImplementor session, IIsolatedWork work, bool transacted)
+		/// <inheritdoc />
+		public virtual void ExecuteWorkInIsolation(ISessionImplementor session, IIsolatedWork work, bool transacted)
 		{
+			if (session == null)
+				throw new ArgumentNullException(nameof(session));
+			if (work == null)
+				throw new ArgumentNullException(nameof(work));
+
 			DbConnection connection = null;
 			DbTransaction trans = null;
 			// bool wasAutoCommit = false;
@@ -81,7 +94,7 @@ namespace NHibernate.Transaction
 					}
 					catch (Exception ignore)
 					{
-						isolaterLog.Debug("unable to release connection on exception [" + ignore + "]");
+						isolaterLog.Debug("Unable to rollback transaction", ignore);
 					}
 
 					if (t is HibernateException)
@@ -91,7 +104,7 @@ namespace NHibernate.Transaction
 					else if (t is DbException)
 					{
 						throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, t,
-														 "error performing isolated work");
+						                                 "error performing isolated work");
 					}
 					else
 					{
@@ -113,12 +126,23 @@ namespace NHibernate.Transaction
 				//    log.Debug("was unable to reset connection back to auto-commit");
 				//  }
 				//}
+
+				try
+				{
+					trans?.Dispose();
+				}
+				catch (Exception ignore)
+				{
+					isolaterLog.Warn("Unable to dispose transaction", ignore);
+				}
+
 				if (session.Factory.Dialect is SQLiteDialect == false)
 					session.Factory.ConnectionProvider.CloseConnection(connection);
 			}
 		}
 
-		public void Configure(IDictionary<string, string> props)
+		/// <inheritdoc />
+		public virtual void Configure(IDictionary<string, string> props)
 		{
 		}
 	}

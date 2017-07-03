@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Transactions;
+using NHibernate.AdoNet;
 using NHibernate.Engine;
 using NHibernate.Engine.Transaction;
 using NHibernate.Impl;
@@ -10,33 +11,42 @@ using NHibernate.Util;
 
 namespace NHibernate.Transaction
 {
-	public partial class AdoNetWithSystemTransactionFactory : ITransactionFactory
+	/// <summary>
+	/// <see cref="ITransaction"/> factory implementation supporting system
+	/// <see cref="System.Transactions.Transaction"/>.
+	/// </summary>
+	public partial class AdoNetWithSystemTransactionFactory : AdoNetTransactionFactory
 	{
 		private static readonly IInternalLogger _logger = LoggerProvider.LoggerFor(typeof(ITransactionFactory));
 
-		private readonly AdoNetTransactionFactory _adoNetTransactionFactory = new AdoNetTransactionFactory();
-		private int _systemTransactionCompletionLockTimeout;
-		private bool _useConnectionOnSystemTransactionPrepare;
+		/// <summary>
+		/// See <see cref="Cfg.Environment.SystemTransactionCompletionLockTimeout"/>.
+		/// </summary>
+		protected int SystemTransactionCompletionLockTimeout { get; private set; }
+		/// <summary>
+		/// See <see cref="Cfg.Environment.UseConnectionOnSystemTransactionPrepare"/>.
+		/// </summary>
+		protected bool UseConnectionOnSystemTransactionPrepare { get; private set; }
 
-		public void Configure(IDictionary<string, string> props)
+		/// <inheritdoc />
+		public override void Configure(IDictionary<string, string> props)
 		{
-			_adoNetTransactionFactory.Configure(props);
-			_systemTransactionCompletionLockTimeout =
+			base.Configure(props);
+			SystemTransactionCompletionLockTimeout =
 				PropertiesHelper.GetInt32(Cfg.Environment.SystemTransactionCompletionLockTimeout, props, 5000);
-			if (_systemTransactionCompletionLockTimeout < -1)
+			if (SystemTransactionCompletionLockTimeout < -1)
 				throw new HibernateException(
-					$"Invalid {Cfg.Environment.SystemTransactionCompletionLockTimeout} value: {_systemTransactionCompletionLockTimeout}. It can not be less than -1.");
-			_useConnectionOnSystemTransactionPrepare =
+					$"Invalid {Cfg.Environment.SystemTransactionCompletionLockTimeout} value: {SystemTransactionCompletionLockTimeout}. It can not be less than -1.");
+			UseConnectionOnSystemTransactionPrepare =
 				PropertiesHelper.GetBoolean(Cfg.Environment.UseConnectionOnSystemTransactionPrepare, props, true);
 		}
 
-		public ITransaction CreateTransaction(ISessionImplementor session)
+		/// <inheritdoc />
+		public override void EnlistInSystemTransactionIfNeeded(ISessionImplementor session)
 		{
-			return new AdoTransaction(session);
-		}
+			if (session == null)
+				throw new ArgumentNullException(nameof(session));
 
-		public void EnlistInSystemTransactionIfNeeded(ISessionImplementor session)
-		{
 			if (!session.ConnectionManager.ShouldAutoJoinTransaction)
 			{
 				return;
@@ -46,7 +56,7 @@ namespace NHibernate.Transaction
 		}
 
 		/// <inheritdoc />
-		public virtual void ExplicitJoinSystemTransaction(ISessionImplementor session)
+		public override void ExplicitJoinSystemTransaction(ISessionImplementor session)
 		{
 			if (session == null)
 				throw new ArgumentNullException(nameof(session));
@@ -82,54 +92,96 @@ namespace NHibernate.Transaction
 				if (session.TransactionContext == null)
 				{
 					// New dependent session
-					session.TransactionContext = new DependentContext(originatingSession.TransactionContext);
-					session.AfterTransactionBegin(null);
+					EnlistDependentSession(session, originatingSession.TransactionContext);
 				}
 				return;
 			}
 
-			var transactionContext = new SystemTransactionContext(
-				originatingSession, transaction, _systemTransactionCompletionLockTimeout,
-				_useConnectionOnSystemTransactionPrepare);
-			transactionContext.EnlistedTransaction.EnlistVolatile(
-				transactionContext,
-				_useConnectionOnSystemTransactionPrepare ? EnlistmentOptions.EnlistDuringPrepareRequired : EnlistmentOptions.None);
+			var transactionContext = CreateAndEnlistMainContext(originatingSession, transaction);
 			originatingSession.TransactionContext = transactionContext;
 
 			_logger.DebugFormat(
-				"enlisted into system transaction: {0}",
-				transactionContext.EnlistedTransaction.IsolationLevel);
+				"Enlisted into system transaction: {0}",
+				transaction.IsolationLevel);
 
 			originatingSession.AfterTransactionBegin(null);
 			foreach (var dependentSession in originatingSession.ConnectionManager.DependentSessions)
 			{
-				dependentSession.TransactionContext = new DependentContext(transactionContext);
-				dependentSession.AfterTransactionBegin(null);
+				EnlistDependentSession(dependentSession, transactionContext);
 			}
 		}
 
-		public bool IsInActiveSystemTransaction(ISessionImplementor session)
-			=> session.TransactionContext?.IsInActiveTransaction ?? false;
+		/// <summary>
+		/// Create a transaction context for enlisting a session with a <see cref="System.Transactions.Transaction"/>,
+		/// and enlist the context in the transaction.
+		/// </summary>
+		/// <param name="session">The session to be enlisted.</param>
+		/// <param name="transaction">The transaction into which the context has to be enlisted.</param>
+		/// <returns>The created transaction context.</returns>
+		protected virtual ITransactionContext CreateAndEnlistMainContext(
+			ISessionImplementor session,
+			System.Transactions.Transaction transaction)
+		{
+			var transactionContext = new SystemTransactionContext(
+				session, transaction, SystemTransactionCompletionLockTimeout,
+				UseConnectionOnSystemTransactionPrepare);
+			transactionContext.EnlistedTransaction.EnlistVolatile(
+				transactionContext,
+				UseConnectionOnSystemTransactionPrepare
+					? EnlistmentOptions.EnlistDuringPrepareRequired
+					: EnlistmentOptions.None);
+			return transactionContext;
+		}
 
-		public void ExecuteWorkInIsolation(ISessionImplementor session, IIsolatedWork work, bool transacted)
+		private void EnlistDependentSession(ISessionImplementor dependentSession, ITransactionContext mainContext)
+		{
+			dependentSession.TransactionContext = CreateDependentContext(dependentSession, mainContext);
+			dependentSession.AfterTransactionBegin(null);
+		}
+
+		/// <summary>
+		/// Create a transaction context for a dependent session.
+		/// </summary>
+		/// <param name="dependentSession">The dependent session.</param>
+		/// <param name="mainContext">The context of the session owning the <see cref="ConnectionManager"/>.</param>
+		/// <returns>A dependent context for the session.</returns>
+		protected virtual ITransactionContext CreateDependentContext(ISessionImplementor dependentSession, ITransactionContext mainContext)
+		{
+			return new DependentContext(mainContext);
+		}
+
+		/// <inheritdoc />
+		public override bool IsInActiveSystemTransaction(ISessionImplementor session)
+			=> session?.TransactionContext?.IsInActiveTransaction ?? false;
+
+		/// <inheritdoc />
+		public override void ExecuteWorkInIsolation(ISessionImplementor session, IIsolatedWork work, bool transacted)
 		{
 			using (var tx = new TransactionScope(TransactionScopeOption.Suppress))
 			{
-				// instead of duplicating the logic, we suppress the system transaction and create
-				// our own transaction instead
-				_adoNetTransactionFactory.ExecuteWorkInIsolation(session, work, transacted);
+				base.ExecuteWorkInIsolation(session, work, transacted);
 				tx.Complete();
 			}
 		}
 
+		/// <summary>
+		/// Transaction context for enlisting a session with a system <see cref="System.Transactions.Transaction"/>.
+		/// It is meant for being the concrete class enlisted in the transaction.
+		/// </summary>
 		public class SystemTransactionContext : ITransactionContext, IEnlistmentNotification
 		{
-			internal System.Transactions.Transaction EnlistedTransaction { get; }
+			/// <summary>
+			/// The transaction in which this context is enlisted.
+			/// </summary>
+			protected internal System.Transactions.Transaction EnlistedTransaction { get; }
+			/// <inheritdoc />
 			public bool ShouldCloseSessionOnSystemTransactionCompleted { get; set; }
-			public bool IsInActiveTransaction { get; internal set; } = true;
-			public bool CanFlushOnSystemTransactionCompleted => _useConnectionOnSystemTransactionPrepare;
+			/// <inheritdoc />
+			public bool IsInActiveTransaction { get; protected set; } = true;
+			/// <inheritdoc />
+			public virtual bool CanFlushOnSystemTransactionCompleted => _useConnectionOnSystemTransactionPrepare;
 
-			private readonly ISessionImplementor _sessionImplementor;
+			private readonly ISessionImplementor _session;
 			private readonly bool _useConnectionOnSystemTransactionPrepare;
 			private readonly System.Transactions.Transaction _originalTransaction;
 			private readonly ManualResetEventSlim _lock = new ManualResetEventSlim(true);
@@ -138,21 +190,29 @@ namespace NHibernate.Transaction
 			private readonly AsyncLocal<bool> _bypassLock = new AsyncLocal<bool>();
 			private readonly int _systemTransactionCompletionLockTimeout;
 
+			/// <summary>
+			/// Default constructor.
+			/// </summary>
+			/// <param name="session">The session to enlist with the transaction.</param>
+			/// <param name="transaction">The transaction into which the context will be enlisted.</param>
+			/// <param name="systemTransactionCompletionLockTimeout">See <see cref="Cfg.Environment.SystemTransactionCompletionLockTimeout"/>.</param>
+			/// <param name="useConnectionOnSystemTransactionPrepare">See <see cref="Cfg.Environment.UseConnectionOnSystemTransactionPrepare"/>.</param>
 			public SystemTransactionContext(
-				ISessionImplementor sessionImplementor,
+				ISessionImplementor session,
 				System.Transactions.Transaction transaction,
 				int systemTransactionCompletionLockTimeout,
 				bool useConnectionOnSystemTransactionPrepare)
 			{
-				_sessionImplementor = sessionImplementor;
-				_originalTransaction = transaction;
+				_session = session ?? throw new ArgumentNullException(nameof(session));
+				_originalTransaction = transaction ?? throw new ArgumentNullException(nameof(transaction));
 				EnlistedTransaction = transaction.Clone();
 				EnlistedTransaction.TransactionCompleted += TransactionCompleted;
 				_systemTransactionCompletionLockTimeout = systemTransactionCompletionLockTimeout;
 				_useConnectionOnSystemTransactionPrepare = useConnectionOnSystemTransactionPrepare;
 			}
 
-			public void Wait()
+			/// <inheritdoc />
+			public virtual void Wait()
 			{
 				if (_isDisposed)
 					return;
@@ -177,7 +237,7 @@ namespace NHibernate.Transaction
 					// Remove the block then throw.
 					Unlock();
 					throw new HibernateException(
-						$"Synchronization timeout for transaction completion. Either raise {Cfg.Environment.SystemTransactionCompletionLockTimeout}, or this may be a bug in NHibernate.");
+						"Synchronization timeout for transaction completion. Either raise {Cfg.Environment.SystemTransactionCompletionLockTimeout}, or this may be a bug in NHibernate.");
 				}
 				catch (HibernateException)
 				{
@@ -191,7 +251,11 @@ namespace NHibernate.Transaction
 				}
 			}
 
-			private void Lock()
+			/// <summary>
+			/// Lock the context, causing <see cref="Wait"/> to block until released. Do nothing if the context
+			/// has already been locked once.
+			/// </summary>
+			protected virtual void Lock()
 			{
 				if (!_needCompletionLocking || _isDisposed)
 					return;
@@ -199,7 +263,11 @@ namespace NHibernate.Transaction
 				_lock.Reset();
 			}
 
-			private void Unlock()
+			/// <summary>
+			/// Unlock the context, causing <see cref="Wait"/> to cease blocking. Do nothing if the context
+			/// is not locked.
+			/// </summary>
+			protected virtual void Unlock()
 			{
 				_lock.Set();
 			}
@@ -233,22 +301,31 @@ namespace NHibernate.Transaction
 
 			#region IEnlistmentNotification Members
 
-			void IEnlistmentNotification.Prepare(PreparingEnlistment preparingEnlistment)
+			/// <summary>
+			/// Prepare the session for the transaction commit. Run
+			/// <see cref="ISessionImplementor.BeforeTransactionCompletion(ITransaction)"/> for the session and for
+			/// <see cref="ConnectionManager.DependentSessions"/> if any. <see cref="Lock"/> the context
+			/// before signaling it is done, or before rollback in case of failure.
+			/// </summary>
+			/// <param name="preparingEnlistment">The object for notifying the prepare phase outcome.</param>
+			public virtual void Prepare(PreparingEnlistment preparingEnlistment)
 			{
-				using (new SessionIdLoggingContext(_sessionImplementor.SessionId))
+				using (new SessionIdLoggingContext(_session.SessionId))
 				{
 					try
 					{
-						using (_sessionImplementor.ConnectionManager.BeginProcessingFromSystemTransaction(_useConnectionOnSystemTransactionPrepare))
+						using (_session.ConnectionManager.BeginProcessingFromSystemTransaction(_useConnectionOnSystemTransactionPrepare))
 						{
 							if (_useConnectionOnSystemTransactionPrepare)
 							{
+								// Ensure any newly acquired connection gets enlisted in the transaction. When distributed,
+								// this code runs from another thread and we cannot rely on Transaction.Current.
 								using (var tx = new TransactionScope(EnlistedTransaction))
 								{
 									// Required when both connection auto-enlistment and session auto-enlistment are disabled.
-									_sessionImplementor.JoinTransaction();
-									_sessionImplementor.BeforeTransactionCompletion(null);
-									foreach (var dependentSession in _sessionImplementor.ConnectionManager.DependentSessions)
+									_session.JoinTransaction();
+									_session.BeforeTransactionCompletion(null);
+									foreach (var dependentSession in _session.ConnectionManager.DependentSessions)
 										dependentSession.BeforeTransactionCompletion(null);
 
 									tx.Complete();
@@ -256,8 +333,8 @@ namespace NHibernate.Transaction
 							}
 							else
 							{
-								_sessionImplementor.BeforeTransactionCompletion(null);
-								foreach (var dependentSession in _sessionImplementor.ConnectionManager.DependentSessions)
+								_session.BeforeTransactionCompletion(null);
+								foreach (var dependentSession in _session.ConnectionManager.DependentSessions)
 									dependentSession.BeforeTransactionCompletion(null);
 							}
 						}
@@ -265,29 +342,44 @@ namespace NHibernate.Transaction
 						// the transaction scope disposal.
 						Lock();
 
-						_logger.Debug("Prepared for system transaction");
-						preparingEnlistment.Prepared();
+						_logger.Debug("Prepared and done for system transaction");
+						// We do not have anything more to do in second phases callbacks: the remaining work is handled in
+						// transaction completion event, which always executes, contrary to second phases callbacks which
+						// do not, depending on the rollback cases.
+						// This saves a thread when distributed.
+						preparingEnlistment.Done();
 					}
 					catch (Exception exception)
 					{
 						_logger.Error("System transaction prepare phase failed", exception);
+						Lock();
 						preparingEnlistment.ForceRollback(exception);
 					}
 				}
 			}
 
+			// With Done call above, should never be called.
 			void IEnlistmentNotification.Commit(Enlistment enlistment)
 				=> ProcessSecondPhase(enlistment, true);
 
+			// May be called in case of scope disposal without being completed, on transaction timeout or other failure like
+			// deadlocks. Not called in case of ForceRollback from the prepare phase of this enlistment.
 			void IEnlistmentNotification.Rollback(Enlistment enlistment)
 				=> ProcessSecondPhase(enlistment, false);
 
+			// With Done call above, should never be called.
 			void IEnlistmentNotification.InDoubt(Enlistment enlistment)
 				=> ProcessSecondPhase(enlistment, null);
 
-			private void ProcessSecondPhase(Enlistment enlistment, bool? success)
+			/// <summary>
+			/// Handle the second phase callbacks. Has no actual work to do excepted signaling it is done.
+			/// </summary>
+			/// <param name="enlistment">The enlistment object for signaling to the transaction manager the notification has been handled.</param>
+			/// <param name="success"><see langword="true"/> if this is a commit callback, <see langword="false"/> if this is a rollback
+			/// callback, <see langword="null"/> if this is an in-doubt callback.</param>
+			protected virtual void ProcessSecondPhase(Enlistment enlistment, bool? success)
 			{
-				using (new SessionIdLoggingContext(_sessionImplementor.SessionId))
+				using (new SessionIdLoggingContext(_session.SessionId))
 				{
 					_logger.Debug(
 						success.HasValue
@@ -305,7 +397,16 @@ namespace NHibernate.Transaction
 
 			#endregion
 
-			private void TransactionCompleted(object sender, TransactionEventArgs e)
+			/// <summary>
+			/// Handle the transaction completion event. Notify <see cref="ConnectionManager"/> of the end of the
+			/// transaction. Notify end of transaction to the session and to <see cref="ConnectionManager.DependentSessions"/>
+			/// if any. Close sessions requiring it then cleanup transaction contextes and then <see cref="Unlock"/> blocked
+			/// threads.
+			/// </summary>
+			/// <param name="sender">The object issuing the event.</param>
+			/// <param name="e">The event argument. <see cref="TransactionEventArgs.Transaction"/> is not guaranteed to
+			/// be the transaction on which the event was set, especially when it was set on a clone.</param>
+			protected virtual void TransactionCompleted(object sender, TransactionEventArgs e)
 			{
 				// This event may execute before second phase, so we cannot try to get the success from second phase.
 				// Using this event is required by example in case the prepare phase failed and called force rollback:
@@ -316,7 +417,7 @@ namespace NHibernate.Transaction
 					EnlistedTransaction.TransactionCompleted -= TransactionCompleted;
 					// Allow transaction completed actions to run while others stay blocked.
 					_bypassLock.Value = true;
-					using (new SessionIdLoggingContext(_sessionImplementor.SessionId))
+					using (new SessionIdLoggingContext(_session.SessionId))
 					{
 						// Flag active as false before running actions, otherwise the session may not cleanup as much
 						// as possible.
@@ -327,21 +428,21 @@ namespace NHibernate.Transaction
 						// when release mode is on close. Without BeginsProcessingFromSystemTransaction(false),
 						// the connection manager would attempt those operations immediately, causing concurrency
 						// issues and crashes for some data providers.
-						using (_sessionImplementor.ConnectionManager.BeginProcessingFromSystemTransaction(false))
+						using (_session.ConnectionManager.BeginProcessingFromSystemTransaction(false))
 						{
-							_sessionImplementor.ConnectionManager.AfterTransaction();
+							_session.ConnectionManager.AfterTransaction();
 							// Required for un-enlisting the connection manager when auto-join is false.
 							// Not done in AfterTransaction, because users may use NHibernate transactions
 							// within scopes, although mixing is not advised.
 							if (!ShouldCloseSessionOnSystemTransactionCompleted)
-								_sessionImplementor.ConnectionManager.EnlistIfRequired(null);
+								_session.ConnectionManager.EnlistIfRequired(null);
 
 							var wasSuccessful = GetTransactionStatus() == TransactionStatus.Committed;
-							_sessionImplementor.AfterTransactionCompletion(wasSuccessful, null);
-							foreach (var dependentSession in _sessionImplementor.ConnectionManager.DependentSessions)
+							_session.AfterTransactionCompletion(wasSuccessful, null);
+							foreach (var dependentSession in _session.ConnectionManager.DependentSessions)
 								dependentSession.AfterTransactionCompletion(wasSuccessful, null);
 
-							Cleanup(_sessionImplementor);
+							Cleanup(_session);
 						}
 					}
 				}
@@ -394,6 +495,7 @@ namespace NHibernate.Transaction
 
 			private bool _isDisposed;
 
+			/// <inheritdoc />
 			public void Dispose()
 			{
 				if (_isDisposed)
@@ -404,6 +506,12 @@ namespace NHibernate.Transaction
 				GC.SuppressFinalize(this);
 			}
 
+			/// <summary>
+			/// Dispose of the context.
+			/// </summary>
+			/// <param name="disposing"><see langword="true" /> if called by <see cref="Dispose()"/>.
+			/// <see langword="false" /> otherwise. Do not access managed resources if it is
+			/// <c>false</c>.</param>
 			protected virtual void Dispose(bool disposing)
 			{
 				if (disposing)
@@ -415,27 +523,65 @@ namespace NHibernate.Transaction
 			}
 		}
 
+		/// <summary>
+		/// Transaction context for enlisting a dependent session. Dependent sessions are not owning
+		/// their <see cref="ConnectionManager"/>. The session owning it will have a transaction context
+		/// handling all actions for dependent sessions.
+		/// </summary>
 		public class DependentContext : ITransactionContext
 		{
+			/// <inheritdoc />
 			public bool IsInActiveTransaction
-				=> _mainTransactionContext.IsInActiveTransaction;
+				=> MainTransactionContext.IsInActiveTransaction;
 
+			/// <inheritdoc />
 			public bool ShouldCloseSessionOnSystemTransactionCompleted { get; set; }
 
-			public bool CanFlushOnSystemTransactionCompleted
-				=> _mainTransactionContext.CanFlushOnSystemTransactionCompleted;
+			/// <inheritdoc />
+			public virtual bool CanFlushOnSystemTransactionCompleted
+				=> MainTransactionContext.CanFlushOnSystemTransactionCompleted;
 
-			private readonly ITransactionContext _mainTransactionContext;
+			/// <summary>
+			/// The transaction context of the session owning the <see cref="ConnectionManager"/>.
+			/// </summary>
+			protected ITransactionContext MainTransactionContext { get; }
 
+			/// <summary>
+			/// Default constructor.
+			/// </summary>
+			/// <param name="mainTransactionContext">The transaction context of the session owning the
+			/// <see cref="ConnectionManager"/>.</param>
 			public DependentContext(ITransactionContext mainTransactionContext)
 			{
-				_mainTransactionContext = mainTransactionContext;
+				MainTransactionContext = mainTransactionContext ?? throw new ArgumentNullException(nameof(mainTransactionContext));
 			}
 
-			public void Wait() =>
-				_mainTransactionContext.Wait();
+			/// <inheritdoc />
+			public virtual void Wait() =>
+				MainTransactionContext.Wait();
 
-			public void Dispose() { }
+			private bool _isDisposed;
+
+			/// <inheritdoc />
+			public void Dispose()
+			{
+				if (_isDisposed)
+					// Avoid disposing twice.
+					return;
+				_isDisposed = true;
+				Dispose(true);
+				GC.SuppressFinalize(this);
+			}
+
+			/// <summary>
+			/// Dispose of the context.
+			/// </summary>
+			/// <param name="disposing"><see langword="true" /> if called by <see cref="Dispose()"/>.
+			/// <see langword="false" /> otherwise. Do not access managed resources if it is
+			/// <c>false</c>.</param>
+			protected virtual void Dispose(bool disposing)
+			{
+			}
 		}
 	}
 }

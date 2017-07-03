@@ -23,6 +23,14 @@ namespace NHibernate.Transaction
 	public partial interface ITransactionFactory
 	{
 
+		/// <summary>
+		/// Execute a work outside of the current transaction (if any).
+		/// </summary>
+		/// <param name="session">The session for which an isolated work has to be executed.</param>
+		/// <param name="work">The work to execute.</param>
+		/// <param name="transacted"><see langword="true" /> for encapsulating the work in a dedicated
+		/// transaction, <see langword="false" /> for not transacting it.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		Task ExecuteWorkInIsolationAsync(ISessionImplementor session, IIsolatedWork work, bool transacted, CancellationToken cancellationToken);
 	}
 }

@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Transactions;
+using NHibernate.AdoNet;
 using NHibernate.Engine;
 using NHibernate.Engine.Transaction;
 using NHibernate.Impl;
@@ -24,17 +25,16 @@ namespace NHibernate.Transaction
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
-	public partial class AdoNetWithSystemTransactionFactory : ITransactionFactory
+	public partial class AdoNetWithSystemTransactionFactory : AdoNetTransactionFactory
 	{
 
-		public async Task ExecuteWorkInIsolationAsync(ISessionImplementor session, IIsolatedWork work, bool transacted, CancellationToken cancellationToken)
+		/// <inheritdoc />
+		public override async Task ExecuteWorkInIsolationAsync(ISessionImplementor session, IIsolatedWork work, bool transacted, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (var tx = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
 			{
-				// instead of duplicating the logic, we suppress the system transaction and create
-				// our own transaction instead
-				await (_adoNetTransactionFactory.ExecuteWorkInIsolationAsync(session, work, transacted, cancellationToken)).ConfigureAwait(false);
+				await (base.ExecuteWorkInIsolationAsync(session, work, transacted, cancellationToken)).ConfigureAwait(false);
 				tx.Complete();
 			}
 		}
