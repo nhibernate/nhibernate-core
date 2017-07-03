@@ -174,10 +174,12 @@
 
             <programlisting><![CDATA[// foo is an instance loaded earlier by the Session
 session.Reconnect();
-transaction = session.BeginTransaction();
-foo.Property = "bar";
-session.Flush();
-transaction.Commit();
+using (var transaction = session.BeginTransaction())
+{
+    foo.Property = "bar";
+    session.Flush();
+    transaction.Commit();
+}
 session.Disconnect();]]></programlisting>
 
             <para>
@@ -210,12 +212,13 @@ session.Disconnect();]]></programlisting>
 
             <programlisting><![CDATA[// foo is an instance loaded by a previous Session
 foo.Property = "bar";
-session = factory.OpenSession();
-transaction = session.BeginTransaction();
-session.SaveOrUpdate(foo);
-session.Flush();
-transaction.Commit();
-session.Close();]]></programlisting>
+using (var session = factory.OpenSession())
+using (var transaction = session.BeginTransaction())
+{
+    session.SaveOrUpdate(foo);
+    session.Flush();
+    transaction.Commit();
+}]]></programlisting>
 
             <para>
                 You may also call <literal>Lock()</literal> instead of <literal>Update()</literal>
@@ -280,15 +283,16 @@ session.Close();]]></programlisting>
             </para>
 
             <programlisting><![CDATA[// foo is an instance loaded by a previous Session
-session = factory.OpenSession();
-transaction = session.BeginTransaction();
-int oldVersion = foo.Version;
-session.Load( foo, foo.Key );
-if ( oldVersion != foo.Version ) throw new StaleObjectStateException();
-foo.Property = "bar";
-session.Flush();
-transaction.Commit();
-session.close();]]></programlisting>
+using (var session = factory.OpenSession())
+using (var transaction = session.BeginTransaction())
+{
+    int oldVersion = foo.Version;
+    session.Load( foo, foo.Key );
+    if ( oldVersion != foo.Version ) throw new StaleObjectStateException();
+    foo.Property = "bar";
+    session.Flush();
+    transaction.Commit();
+}]]></programlisting>
 
             <para>
                 Of course, if you are operating in a low-data-concurrency environment and don't
@@ -337,7 +341,7 @@ session.close();]]></programlisting>
         </para>
 
         <para>
-            Heres an example:
+            Here is an example:
         </para>
 
         <programlisting><![CDATA[ISessionFactory sessions;
@@ -569,8 +573,9 @@ finally
         </itemizedlist>
 
         <para>
-            As of NHibernate, if your application manages transactions through .NET APIs such as <literal>
-            System.Transactions</literal> library, <literal>ConnectionReleaseMode.AfterTransaction</literal> may cause
+            If your application manages transactions through .NET APIs such as <literal>System.Transactions</literal> library
+            while not using a compatible transaction factory (see <literal>transaction.factory_class</literal>)
+            in <xref linkend="configuration-optional"/>), <literal>ConnectionReleaseMode.AfterTransaction</literal> may cause
             NHibernate to open and close several connections during one transaction, leading to unnecessary overhead and
             transaction promotion from local to distributed. Specifying <literal>ConnectionReleaseMode.OnClose</literal>
             will revert to the legacy behavior and prevent this problem from occurring.

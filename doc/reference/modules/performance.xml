@@ -132,33 +132,25 @@
                 fetching for single-valued associations. These defaults make sense for almost
                 all associations in almost all applications. 
             </para>
-            
-            <!--
-            <para>
-                <emphasis>Note:</emphasis> if you set 
-                <literal>hibernate.default_batch_fetch_size</literal>, NHibernate will use the 
-                batch fetch optimization for lazy fetching (this optimization may also be enabled 
-                at a more granular level).
-            </para>
-            -->
-            
+
             <para>
                 However, lazy fetching poses one problem that you must be aware of. Access to a 
                 lazy association outside of the context of an open NHibernate session will result 
                 in an exception. For example:
             </para>
-        
-            <programlisting><![CDATA[s = sessions.OpenSession();
-Transaction tx = s.BeginTransaction();
-            
-User u = (User) s.CreateQuery("from User u where u.Name=:userName")
-    .SetString("userName", userName).UniqueResult();
-IDictionary permissions = u.Permissions;
 
-tx.Commit();
-s.Close();
+            <programlisting><![CDATA[IDictionary permissions;
+using (var s = sessions.OpenSession())
+using (Transaction tx = s.BeginTransaction())
+{
+    User u = (User)s.CreateQuery("from User u where u.Name=:userName")
+        .SetString("userName", userName).UniqueResult();
+    IDictionary permissions = u.Permissions;
 
-int accessLevel = (int) permissions["accounts"];  // Error!]]></programlisting>
+    tx.Commit();
+}
+
+int accessLevel = (int)permissions["accounts"];  // Error!]]></programlisting>
 
             <para>
                 Since the <literal>permissions</literal> collection was not initialized
@@ -262,8 +254,9 @@ int accessLevel = (int) permissions["accounts"];  // Error!]]></programlisting>
             </para>
 
             <para>
-                A completely different way to avoid problems with N+1 selects is to use the 
-                second-level cache.
+                A completely different way to avoid problems with N+1 selects is to use the
+                <link linkend="performance-cache">second-level cache</link>, or to enable
+                <link linkend="performance-fetching-batch">batch fetching</link>.
             </para>
 
         </sect2>
@@ -310,9 +303,11 @@ int accessLevel = (int) permissions["accounts"];  // Error!]]></programlisting>
                 instance of <literal>DomesticCat</literal>:
             </para>
 
-            <programlisting><![CDATA[Cat cat = (Cat) session.Load(typeof(Cat), id);  // instantiate a proxy (does not hit the db)
-if ( cat.IsDomesticCat ) {                  // hit the db to initialize the proxy
-    DomesticCat dc = (DomesticCat) cat;       // Error!
+            <programlisting><![CDATA[// instantiate a proxy (does not hit the db)
+Cat cat = (Cat) session.Load(typeof(Cat), id);
+// hit the db to initialize the proxy
+if ( cat.IsDomesticCat ) {
+    DomesticCat dc = (DomesticCat) cat; // Error!
     ....
 }]]></programlisting>
 
@@ -320,10 +315,12 @@ if ( cat.IsDomesticCat ) {                  // hit the db to initialize the prox
                 Secondly, it is possible to break proxy <literal>==</literal>.
             </para>
 
-            <programlisting><![CDATA[Cat cat = (Cat) session.Load(typeof(Cat), id);            // instantiate a Cat proxy
-DomesticCat dc = 
-        (DomesticCat) session.Load(typeof(DomesticCat), id);  // acquire new DomesticCat proxy!
-System.out.println(cat==dc);                            // false]]></programlisting>
+            <programlisting><![CDATA[// instantiate a Cat proxy
+Cat cat = (Cat)session.Load(typeof(Cat), id);
+DomesticCat dc =
+        // acquire new DomesticCat proxy!
+        (DomesticCat)session.Load(typeof(DomesticCat), id);
+Console.WriteLine(cat == dc); // false]]></programlisting>
 
             <para>
                 However, the situation is not quite as bad as it looks. Even though we now have two references
@@ -559,6 +556,12 @@ ICat fritz = (ICat) iter.Current;]]></programlisting>
                 Batch fetching of collections is particularly useful if you have a nested tree of items, ie.
                 the typical bill-of-materials pattern. (Although a <emphasis>nested set</emphasis> or a
                 <emphasis>materialized path</emphasis> might be a better option for read-mostly trees.)
+            </para>
+
+            <para>
+              <emphasis>Note:</emphasis> if you set <literal>default_batch_fetch_size</literal>
+              in configuration, NHibernate will configure the batch fetch optimization for lazy fetching
+              globally. Batch sizes specified at more granular level take precedence.
             </para>
 
         </sect2>

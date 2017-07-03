@@ -319,21 +319,18 @@
                 before restoring the session default.
             </para>
 
-            <programlisting role="c#">
-ISession session = factory.OpenSession();
-ITransaction tx = session.BeginTransaction();
- 
-session.DefaultReadOnly = true;
-Contract contract = session.CreateQuery("from Contract where CustomerName = 'Sherman'").UniqueResult&lt;Contract&gt;();
-NHibernate.Initialize(contract.Plan);
-NHibernate.Initialize(contract.Variations);
-NHibernate.Initialize(contract.Notes);
-session.DefaultReadOnly = false;
-...
-tx.Commit();
-session.Close();
-
-</programlisting> 
+            <programlisting role="c#"><![CDATA[using (ISession session = factory.OpenSession())
+using (ITransaction tx = session.BeginTransaction())
+{
+    session.DefaultReadOnly = true;
+    Contract contract = session.CreateQuery("from Contract where CustomerName = 'Sherman'").UniqueResult<Contract>();
+    NHibernate.Initialize(contract.Plan);
+    NHibernate.Initialize(contract.Variations);
+    NHibernate.Initialize(contract.Notes);
+    session.DefaultReadOnly = false;
+    ...
+    tx.Commit();
+}]]></programlisting>
 
             <para>
                 If Session.DefaultReadOnly returns true, then you can
@@ -511,26 +508,24 @@ s.Flush();
                 will not increment the version if any simple properties change.
             </para>
 
-            <programlisting role="c#">
-ISession session = factory.OpenSession();
-ITransaction tx = session.BeginTransaction();
+            <programlisting role="c#"><![CDATA[using (ISession session = factory.OpenSession())
+using (ITransaction tx = session.BeginTransaction())
+{
+    // get a contract and make it read-only
+    Contract contract = session.Get<Contract>(contractId);
+    session.SetReadOnly(contract, true);
 
-// get a contract and make it read-only
-Contract contract = session.Get&lt;Contract&gt;(contractId);
-session.SetReadOnly(contract, true);
+    // contract.CustomerName is "Sherman"
+    contract.CustomerName = "Yogi";
+    tx.Commit();
 
-// contract.CustomerName is "Sherman"
-contract.CustomerName = "Yogi";
-tx.Commit();
+    tx = session.BeginTransaction();
 
-tx = session.BeginTransaction();
-
-contract = session.Get&lt;Contract&gt;(contractId);
-// contract.CustomerName is still "Sherman"
-...
-tx.Commit();
-session.Close();
-            </programlisting>
+    contract = session.Get<Contract>(contractId);
+    // contract.CustomerName is still "Sherman"
+    ...
+    tx.Commit();
+}]]></programlisting>
 
         </section>
 
@@ -594,22 +589,26 @@ session.Close();
                     on the entity's database representation.
                 </para>
 
-<programlisting role="c#">// get a contract with an existing plan;
-// make the contract read-only and set its plan to null 
-tx = session.BeginTransaction();
-Contract contract = session.Get&lt;Contract&gt;(contractId);
-session.SetReadOnly(contract, true);
-contract.Plan = null;
-tx.Commit();
+                <programlisting role="c#"><![CDATA[// get a contract with an existing plan;
+// make the contract read-only and set its plan to null
+using (var tx = session.BeginTransaction())
+{
+    Contract contract = session.Get<Contract>(contractId);
+    session.SetReadOnly(contract, true);
+    contract.Plan = null;
+    tx.Commit();
+}
 
 // get the same contract
-tx = session.BeginTransaction();
-Contract contract = session.Get&lt;Contract&gt;(contractId);
+using (var tx = session.BeginTransaction())
+{
+    Contract contract = session.Get<Contract>(contractId);
 
-// contract.Plan still refers to the original plan;
+    // contract.Plan still refers to the original plan;
 
-tx.Commit();
-session.Close();</programlisting>
+    tx.Commit();
+}
+session.Close();]]></programlisting>
 
                 <para>
                     The following shows that, even though
@@ -620,26 +619,32 @@ session.Close();</programlisting>
                     changed association.
                 </para>
 
-<programlisting role="c#">// get a contract with an existing plan;
+                <programlisting role="c#"><![CDATA[// get a contract with an existing plan;
 // make the contract read-only and change to a new plan
-tx = session.BeginTransaction();
-Contract contract = session.Get&lt;Contract&gt;(contractId);
-session.SetReadOnly(contract, true);
-Plan newPlan = new Plan("new plan");
-contract.Plan = newPlan;
-tx.Commit();
+Contract contract;
+Plan newPlan;
+using (var tx = session.BeginTransaction())
+{
+    contract = session.Get<Contract>(contractId);
+    session.SetReadOnly(contract, true);
+    newPlan = new Plan("new plan");
+    contract.Plan = newPlan;
+    tx.Commit();
+}
 
 // get the same contract
-tx = session.BeginTransaction();
-contract = session.Get&lt;Contract&gt;(contractId);
-newPlan = session.Get&lt;Plan&gt;(newPlan.Id);
+using (var tx = session.BeginTransaction())
+{
+    contract = session.Get<Contract>(contractId);
+    newPlan = session.Get<Plan>(newPlan.Id);
 
-// contract.Plan still refers to the original plan;
-// newPlan is non-null because it was persisted when 
-// the previous transaction was committed; 
+    // contract.Plan still refers to the original plan;
+    // newPlan is non-null because it was persisted when
+    // the previous transaction was committed;
 
-tx.Commit();
-session.Close();</programlisting>
+    tx.Commit();
+}
+session.Close();]]></programlisting>
 
             </section>
 

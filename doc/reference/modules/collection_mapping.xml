@@ -622,12 +622,14 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
             However, if the application tries something like this:
         </para>
 
-        <programlisting><![CDATA[s = sessions.OpenSession();
-ITransaction tx = sessions.BeginTransaction();
-User u = (User) s.Find("from User u where u.Name=?", userName, NHibernateUtil.String)[0];
-IDictionary permissions = u.Permissions;
-tx.Commit();
-s.Close();
+        <programlisting><![CDATA[IDictionary permissions;
+using (s = sessions.OpenSession())
+using (ITransaction tx = sessions.BeginTransaction())
+{
+    User u = (User) s.Find("from User u where u.Name=?", userName, NHibernateUtil.String)[0];
+    permissions = u.Permissions;
+    tx.Commit();
+}
 
 int accessLevel = (int) permissions["accounts"];  // Error!]]></programlisting>
 
