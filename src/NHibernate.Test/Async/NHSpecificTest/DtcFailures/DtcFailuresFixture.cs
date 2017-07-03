@@ -18,7 +18,7 @@ using log4net;
 using log4net.Repository.Hierarchy;
 using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
-using NHibernate.Dialect;
+using NHibernate.Linq;
 using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
 
@@ -28,280 +28,542 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 	[TestFixture]
 	public class DtcFailuresFixtureAsync : TestCase
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(DtcFailuresFixtureAsync));
+		private static readonly ILog _log = LogManager.GetLogger(typeof(DtcFailuresFixtureAsync));
 
 		protected override IList Mappings
-		{
-			get { return new[] {"NHSpecificTest.DtcFailures.Mappings.hbm.xml"}; }
-		}
+			=> new[] { "NHSpecificTest.DtcFailures.Mappings.hbm.xml" };
 
 		protected override string MappingsAssembly
-		{
-			get { return "NHibernate.Test"; }
-		}
+			=> "NHibernate.Test";
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			return TestDialect.GetTestDialect(dialect).SupportsDistributedTransactions;
-		}
+			=> dialect.SupportsDistributedTransactions;
 
-        protected override void CreateSchema()
-        {
-            // Copied from Configure method.
-            Configuration config = new Configuration();
+		protected override void CreateSchema()
+		{
+			// Copied from Configure method.
+			var config = new Configuration();
 			if (TestConfigurationHelper.hibernateConfigFile != null)
 				config.Configure(TestConfigurationHelper.hibernateConfigFile);
 
-            // Our override so we can set nullability on database column without NHibernate knowing about it.
-            config.BeforeBindMapping += BeforeBindMapping;
+			// Our override so we can set nullability on database column without NHibernate knowing about it.
+			config.BeforeBindMapping += BeforeBindMapping;
 
-            // Copied from AddMappings methods.
-			Assembly assembly = Assembly.Load(MappingsAssembly);
-			foreach (string file in Mappings)
+			// Copied from AddMappings methods.
+			var assembly = Assembly.Load(MappingsAssembly);
+			foreach (var file in Mappings)
 				config.AddResource(MappingsAssembly + "." + file, assembly);
 
-            // Copied from CreateSchema method, but we use our own config.
-            new SchemaExport(config).Create(false, true);
-        }
+			// Copied from CreateSchema method, but we use our own config.
+			new SchemaExport(config).Create(false, true);
+		}
 
-        private void BeforeBindMapping(object sender, BindMappingEventArgs e)
-        {
-            HbmProperty prop = e.Mapping.RootClasses[0].Properties.OfType<HbmProperty>().Single(p => p.Name == "NotNullData");
-            prop.notnull = true;
-            prop.notnullSpecified = true;
-        }
+		protected override void OnTearDown()
+		{
+			DodgeTransactionCompletionDelayIfRequired();
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s.CreateQuery("delete from System.Object").ExecuteUpdate();
+				t.Commit();
+			}
+		}
+
+		private void BeforeBindMapping(object sender, BindMappingEventArgs e)
+		{
+			var prop = e.Mapping.RootClasses[0].Properties.OfType<HbmProperty>().Single(p => p.Name == "NotNullData");
+			prop.notnull = true;
+			prop.notnullSpecified = true;
+		}
+
+		[Test]
+		public async Task SupportsEnlistingInDistributedAsync()
+		{
+			using (new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+			{
+				ForceEscalationToDistributedTx.Escalate();
+
+				Assert.AreNotEqual(
+					Guid.Empty,
+					System.Transactions.Transaction.Current.TransactionInformation.DistributedIdentifier,
+					"Transaction lacks a distributed identifier");
+
+				using (var s = OpenSession())
+				{
+					await (s.SaveAsync(new Person { CreatedAt = DateTime.Now }));
+					// Ensure the connection is acquired (thus enlisted)
+					Assert.DoesNotThrowAsync(() => s.FlushAsync(), "Failure enlisting a connection in a distributed transaction.");
+				}
+			}
+		}
+
+		[Test]
+		public async Task SupportsPromotingToDistributedAsync()
+		{
+			using (new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+			{
+				using (var s = OpenSession())
+				{
+					await (s.SaveAsync(new Person { CreatedAt = DateTime.Now }));
+					// Ensure the connection is acquired (thus enlisted)
+					await (s.FlushAsync());
+				}
+				Assert.DoesNotThrow(() => ForceEscalationToDistributedTx.Escalate(),
+					"Failure promoting the transaction to distributed while already having enlisted a connection.");
+				Assert.AreNotEqual(
+					Guid.Empty,
+					System.Transactions.Transaction.Current.TransactionInformation.DistributedIdentifier,
+					"Transaction lacks a distributed identifier");
+			}
+		}
 
 		[Test]
 		public async Task WillNotCrashOnDtcPrepareFailureAsync()
 		{
 			var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-			using (ISession s = OpenSession())
-			{
-				await (s.SaveAsync(new Person {NotNullData = null}));  // Cause a SQL not null constraint violation.
-			}
-
-			new ForceEscalationToDistributedTx();
-
-			tx.Complete();
+			var disposeCalled = false;
 			try
 			{
-				tx.Dispose();
-				Assert.Fail("Expected failure");
+				using (var s = OpenSession())
+				{
+					await (s.SaveAsync(new Person { NotNullData = null })); // Cause a SQL not null constraint violation.
+				}
+
+				ForceEscalationToDistributedTx.Escalate();
+
+				tx.Complete();
+				disposeCalled = true;
+				Assert.Throws<TransactionAbortedException>(tx.Dispose, "Scope disposal has not rollback and throw.");
 			}
-			catch (AssertionException)
+			finally
 			{
-				throw;
+				if (!disposeCalled)
+				{
+					try
+					{
+						tx.Dispose();
+					}
+					catch
+					{
+						// Ignore, if disposed has not been called, another exception has occurred in the try and
+						// we should avoid overriding it by the disposal failure.
+					}
+				}
 			}
-			catch (Exception) {}
 		}
 
 		[Test]
-		public async Task Can_roll_back_transactionAsync()
+		public async Task CanRollbackTransactionAsync([Values(false, true)] bool explicitFlush)
 		{
 			var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-			using (ISession s = OpenSession())
-			{
-				new ForceEscalationToDistributedTx(true); //will rollback tx
-				await (s.SaveAsync(new Person { CreatedAt = DateTime.Today }));
-
-				tx.Complete();
-			}
+			var disposeCalled = false;
 			try
 			{
-				tx.Dispose();
-				Assert.Fail("Expected tx abort");
+				using (var s = OpenSession())
+				{
+					ForceEscalationToDistributedTx.Escalate(true); //will rollback tx
+					await (s.SaveAsync(new Person { CreatedAt = DateTime.Today }));
+
+					if (explicitFlush)
+						await (s.FlushAsync());
+
+					tx.Complete();
+				}
+				disposeCalled = true;
+				Assert.Throws<TransactionAbortedException>(tx.Dispose, "Scope disposal has not rollback and throw.");
 			}
-			catch (TransactionAbortedException)
+			finally
 			{
-				//expected   
+				if (!disposeCalled)
+				{
+					try
+					{
+						tx.Dispose();
+					}
+					catch
+					{
+						// Ignore, if disposed has not been called, another exception has occurred in the try and
+						// we should avoid overriding it by the disposal failure.
+					}
+				}
 			}
+
+			await (AssertNoPersonsAsync());
+		}
+
+		[Test]
+		public async Task CanRollbackTransactionFromScopeAsync([Values(false, true)] bool explicitFlush)
+		{
+			using (new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+			using (var s = OpenSession())
+			{
+				ForceEscalationToDistributedTx.Escalate();
+				await (s.SaveAsync(new Person { CreatedAt = DateTime.Today }));
+
+				if (explicitFlush)
+					await (s.FlushAsync());
+				// No Complete call for triggering rollback.
+			}
+
+			await (AssertNoPersonsAsync());
 		}
 
 		[Test]
 		[Description("Another action inside the transaction do the rollBack outside nh-session-scope.")]
-		public async Task RollbackOutsideNhAsync()
+		public async Task RollbackOutsideNhAsync([Values(false, true)] bool explicitFlush)
 		{
 			try
 			{
 				using (var txscope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
-					using (ISession s = OpenSession())
+					using (var s = OpenSession())
 					{
 						var person = new Person { CreatedAt = DateTime.Now };
 						await (s.SaveAsync(person));
+
+						if (explicitFlush)
+							await (s.FlushAsync());
 					}
-					new ForceEscalationToDistributedTx(true); //will rollback tx
+					ForceEscalationToDistributedTx.Escalate(true); //will rollback tx
 
 					txscope.Complete();
 				}
 
-				log.DebugFormat("Transaction fail.");
-				Assert.Fail("Expected tx abort");
+				Assert.Fail("Scope disposal has not rollback and throw.");
 			}
 			catch (TransactionAbortedException)
 			{
-				log.DebugFormat("Transaction aborted.");
+				_log.Debug("Transaction aborted.");
 			}
+
+			await (AssertNoPersonsAsync());
 		}
 
 		[Test]
 		[Description("rollback inside nh-session-scope should not commit save and the transaction should be aborted.")]
-		public async Task TransactionInsertWithRollBackTaskAsync()
+		public async Task TransactionInsertWithRollBackFromScopeAsync([Values(false, true)] bool explicitFlush)
+		{
+			using (new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+			{
+				using (var s = OpenSession())
+				{
+					var person = new Person { CreatedAt = DateTime.Now };
+					await (s.SaveAsync(person));
+					ForceEscalationToDistributedTx.Escalate();
+					person.CreatedAt = DateTime.Now;
+
+					if (explicitFlush)
+						await (s.FlushAsync());
+				}
+				// No Complete call for triggering rollback.
+			}
+			await (AssertNoPersonsAsync());
+		}
+
+		[Test]
+		[Description("rollback inside nh-session-scope should not commit save and the transaction should be aborted.")]
+		public async Task TransactionInsertWithRollBackTaskAsync([Values(false, true)] bool explicitFlush)
 		{
 			try
 			{
 				using (var txscope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
-					using (ISession s = OpenSession())
+					using (var s = OpenSession())
 					{
-						var person = new Person {CreatedAt = DateTime.Now};
+						var person = new Person { CreatedAt = DateTime.Now };
 						await (s.SaveAsync(person));
-						new ForceEscalationToDistributedTx(true); //will rollback tx
+						ForceEscalationToDistributedTx.Escalate(true); //will rollback tx
 						person.CreatedAt = DateTime.Now;
-						await (s.UpdateAsync(person));
+
+						if (explicitFlush)
+							await (s.FlushAsync());
 					}
 					txscope.Complete();
 				}
-				log.DebugFormat("Transaction fail.");
-				Assert.Fail("Expected tx abort");
+
+				Assert.Fail("Scope disposal has not rollback and throw.");
 			}
 			catch (TransactionAbortedException)
 			{
-				log.DebugFormat("Transaction aborted.");
+				_log.Debug("Transaction aborted.");
 			}
+
+			await (AssertNoPersonsAsync());
 		}
 
-		[Test, Ignore("Not fixed.")]
-		[Description(@"Two session in two txscope 
-(without an explicit NH transaction and without an explicit flush) 
-and with a rollback in the second dtc and a ForceRollback outside nh-session-scope.")]
-		public async Task TransactionInsertLoadWithRollBackTaskAsync()
+		[Test]
+		[Description(@"Two session in two txscope
+ (without an explicit NH transaction)
+ and with a rollback in the second dtc and a rollback outside nh-session-scope.")]
+		public async Task TransactionInsertLoadWithRollBackFromScopeAsync([Values(false, true)] bool explicitFlush)
 		{
 			object savedId;
+			var createdAt = DateTime.Today;
 			using (var txscope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
-				using (ISession s = OpenSession())
+				using (var s = OpenSession())
 				{
-					var person = new Person {CreatedAt = DateTime.Now};
+					var person = new Person { CreatedAt = createdAt };
 					savedId = await (s.SaveAsync(person));
+
+					if (explicitFlush)
+						await (s.FlushAsync());
 				}
 				txscope.Complete();
 			}
-			try
-			{
-				using (var txscope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-				{
-					using (ISession s = OpenSession())
-					{
-						var person = await (s.GetAsync<Person>(savedId));
-						person.CreatedAt = DateTime.Now;
-						await (s.UpdateAsync(person));
-					}
-					new ForceEscalationToDistributedTx(true);
 
-					log.Debug("completing the tx scope");
-					txscope.Complete();
-				}
-				log.Debug("Transaction fail.");
-				Assert.Fail("Expected tx abort");
-			}
-			catch (TransactionAbortedException)
+			using (new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
-				log.Debug("Transaction aborted.");
-			}
-			finally
-			{
-				using (var txscope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+				using (var s = OpenSession())
 				{
-					using (ISession s = OpenSession())
-					{
-						var person = await (s.GetAsync<Person>(savedId));
-						await (s.DeleteAsync(person));
-					}
-					txscope.Complete();
+					var person = await (s.GetAsync<Person>(savedId));
+					person.CreatedAt = createdAt.AddMonths(-1);
+
+					if (explicitFlush)
+						await (s.FlushAsync());
 				}
+				ForceEscalationToDistributedTx.Escalate();
+
+				// No Complete call for triggering rollback.
+			}
+
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				Assert.AreEqual(createdAt, (await (s.GetAsync<Person>(savedId))).CreatedAt, "Entity update was not rollback-ed.");
 			}
 		}
 
 		[Test]
-		public async Task CanDeleteItemInDtcAsync()
+		[Description(@"Two session in two txscope
+ (without an explicit NH transaction)
+ and with a rollback in the second dtc and a ForceRollback outside nh-session-scope.")]
+		public async Task TransactionInsertLoadWithRollBackTaskAsync([Values(false, true)] bool explicitFlush)
+		{
+			object savedId;
+			var createdAt = DateTime.Today;
+			using (var txscope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+			{
+				using (var s = OpenSession())
+				{
+					var person = new Person { CreatedAt = createdAt };
+					savedId = await (s.SaveAsync(person));
+
+					if (explicitFlush)
+						await (s.FlushAsync());
+				}
+				txscope.Complete();
+			}
+
+			try
+			{
+				using (var txscope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+				{
+					using (var s = OpenSession())
+					{
+						var person = await (s.GetAsync<Person>(savedId));
+						person.CreatedAt = createdAt.AddMonths(-1);
+
+						if (explicitFlush)
+							await (s.FlushAsync());
+					}
+					ForceEscalationToDistributedTx.Escalate(true);
+
+					_log.Debug("completing the tx scope");
+					txscope.Complete();
+				}
+				_log.Debug("Transaction fail.");
+				Assert.Fail("Expected tx abort");
+			}
+			catch (TransactionAbortedException)
+			{
+				_log.Debug("Transaction aborted.");
+			}
+
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				Assert.AreEqual(createdAt, (await (s.GetAsync<Person>(savedId))).CreatedAt, "Entity update was not rollback-ed.");
+			}
+		}
+
+		[Test]
+		public async Task CanDeleteItemInDtcAsync([Values(false, true)] bool explicitFlush)
 		{
 			object id;
 			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
-				using (ISession s = OpenSession())
+				using (var s = OpenSession())
 				{
-					id = await (s.SaveAsync(new Person {CreatedAt = DateTime.Today}));
+					id = await (s.SaveAsync(new Person { CreatedAt = DateTime.Today }));
 
-					new ForceEscalationToDistributedTx();
+					ForceEscalationToDistributedTx.Escalate();
+
+					if (explicitFlush)
+						await (s.FlushAsync());
 
 					tx.Complete();
 				}
 			}
 
-			// Dodging "latency" due to db still haven't actually committed a distributed tx after scope disposal.
-			Thread.Sleep(100);
+			DodgeTransactionCompletionDelayIfRequired();
+
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				Assert.AreEqual(1, await (s.Query<Person>().CountAsync()), "Entity not found in database.");
+			}
 
 			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
-				using (ISession s = OpenSession())
+				using (var s = OpenSession())
 				{
-					new ForceEscalationToDistributedTx();
+					ForceEscalationToDistributedTx.Escalate();
 
 					await (s.DeleteAsync(await (s.GetAsync<Person>(id))));
+
+					if (explicitFlush)
+						await (s.FlushAsync());
 
 					tx.Complete();
 				}
 			}
 
-			// Dodging "latency" due to db still haven't actually committed a distributed tx after scope disposal.
-			Thread.Sleep(100);
+			DodgeTransactionCompletionDelayIfRequired();
+
+			await (AssertNoPersonsAsync());
 		}
 
 		[Test]
 		[Description("Open/Close a session inside a TransactionScope fails.")]
 		public async Task NH1744Async()
 		{
-			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+			using (new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
-				using (ISession s = OpenSession())
+				using (var s = OpenSession())
 				{
 					await (s.FlushAsync());
 				}
 
-				using (ISession s = OpenSession())
+				using (var s = OpenSession())
 				{
 					await (s.FlushAsync());
 				}
 
-				//and I always leave the transaction disposed without calling tx.Complete(), I let the database server to rollback all actions in this test. 
-			} 
+				//and I always leave the transaction disposed without calling tx.Complete(), I let the database server to rollback all actions in this test.
+			}
+		}
+
+		[Test]
+		public async Task CanUseSessionOutsideOfScopeAfterScopeAsync([Values(false, true)] bool explicitFlush)
+		{
+			using (var s = Sfi.WithOptions().ConnectionReleaseMode(ConnectionReleaseMode.OnClose).OpenSession())
+			{
+				using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+				{
+					await (s.SaveAsync(new Person { CreatedAt = DateTime.Today }));
+
+					ForceEscalationToDistributedTx.Escalate();
+
+					if (explicitFlush)
+						await (s.FlushAsync());
+
+					tx.Complete();
+				}
+				var count = 0;
+				Assert.DoesNotThrowAsync(async () => count = await (s.Query<Person>().CountAsync()), "Failed using the session after scope.");
+				if (count != 1)
+					// We are not testing that here, so just issue a warning. Do not use DodgeTransactionCompletionDelayIfRequired
+					// before previous assert. We want to ascertain the session is usable in any cases.
+					Assert.Warn("Unexpected entity count: {0} instead of {1}. The transaction seems to have a delayed commit.", count, 1);
+			}
+		}
+
+		[Test(Description = "Do not fail, but warn in case a delayed after scope disposal commit is made.")]
+		public async Task DelayedTransactionCompletionAsync([Values(false, true)] bool explicitFlush)
+		{
+			for (var i = 1; i <= 10; i++)
+			{
+				// Isolation level must be read committed on the control session: reading twice while expecting some data insert
+				// in between due to a late commit. Repeatable read would block and read uncommitted would see the uncommitted data.
+				using (var controlSession = OpenSession())
+				using (controlSession.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
+				{
+					// We want to have the control session as ready to query as possible, thus beginning its
+					// transaction early for acquiring the connection, even if we will not use it before 
+					// below scope completion.
+
+					using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+					{
+						using (var s = OpenSession())
+						{
+							await (s.SaveAsync(new Person { CreatedAt = DateTime.Today }));
+
+							ForceEscalationToDistributedTx.Escalate();
+
+							if (explicitFlush)
+								await (s.FlushAsync());
+						}
+						tx.Complete();
+					}
+
+					var count = await (controlSession.Query<Person>().CountAsync());
+					if (count != i)
+					{
+						Thread.Sleep(100);
+						var countSecondTry = await (controlSession.Query<Person>().CountAsync());
+						Assert.Warn($"Unexpected entity count: {count} instead of {i}. " +
+							"This may mean current data provider has a delayed commit, occurring after scope disposal. " +
+							$"After waiting, count is now {countSecondTry}. ");
+						break;
+					}
+				}
+			}
+		}
+
+		private async Task AssertNoPersonsAsync(CancellationToken cancellationToken = default(CancellationToken))
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				Assert.AreEqual(0, await (s.Query<Person>().CountAsync(cancellationToken)), "Entities found in database.");
+			}
+		}
+
+		private void DodgeTransactionCompletionDelayIfRequired()
+		{
+			if (Sfi.ConnectionProvider.Driver.HasDelayedDistributedTransactionCompletion)
+				Thread.Sleep(500);
 		}
 
 		public class ForceEscalationToDistributedTx : IEnlistmentNotification
 		{
-			private readonly bool shouldRollBack;
-			private readonly int thread;
+			private readonly bool _shouldRollBack;
+			private readonly int _thread;
 
-			public ForceEscalationToDistributedTx(bool shouldRollBack)
+			public static void Escalate(bool shouldRollBack = false)
 			{
-				this.shouldRollBack = shouldRollBack;
-				thread = Thread.CurrentThread.ManagedThreadId;
-				System.Transactions.Transaction.Current.EnlistDurable(Guid.NewGuid(), this, EnlistmentOptions.None);
+				var force = new ForceEscalationToDistributedTx(shouldRollBack);
+				System.Transactions.Transaction.Current.EnlistDurable(Guid.NewGuid(), force, EnlistmentOptions.None);
 			}
 
-			public ForceEscalationToDistributedTx() : this(false) {}
+			private ForceEscalationToDistributedTx(bool shouldRollBack)
+			{
+				_shouldRollBack = shouldRollBack;
+				_thread = Thread.CurrentThread.ManagedThreadId;
+			}
 
 			public void Prepare(PreparingEnlistment preparingEnlistment)
 			{
-				if (thread == Thread.CurrentThread.ManagedThreadId)
+				if (_thread == Thread.CurrentThread.ManagedThreadId)
 				{
-					log.Warn("Thread.CurrentThread.ManagedThreadId ({0}) is same as creation thread");
+					_log.Warn("Thread.CurrentThread.ManagedThreadId ({0}) is same as creation thread");
 				}
 
-				if (shouldRollBack)
+				if (_shouldRollBack)
 				{
-					log.Debug(">>>>Force Rollback<<<<<");
+					_log.Debug(">>>>Force Rollback<<<<<");
 					preparingEnlistment.ForceRollback();
 				}
 				else

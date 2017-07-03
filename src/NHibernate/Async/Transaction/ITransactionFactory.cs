@@ -8,10 +8,7 @@
 //------------------------------------------------------------------------------
 
 
-using System.Collections;
-using System.Transactions;
-using NHibernate;
-using NHibernate.AdoNet;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Engine.Transaction;
 

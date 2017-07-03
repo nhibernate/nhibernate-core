@@ -109,6 +109,12 @@
     typeConversion:
     - conversion: Ignore
       name: EnumerableImpl
+    - conversion: Ignore
+      name: SystemTransactionContext
+      containingTypeName: AdoNetWithSystemTransactionFactory
+    - conversion: Ignore
+      name: DependentContext
+      containingTypeName: AdoNetWithSystemTransactionFactory
     ignoreSearchForAsyncCounterparts:
     - name: GetFieldValue
     - name: IsDBNull

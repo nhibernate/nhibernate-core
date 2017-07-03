@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 		{
 			configuration
 				.SetProperty(Environment.UseSecondLevelCache, "true")
-				.SetProperty(Environment.CacheProvider, typeof (HashtableCacheProvider).AssemblyQualifiedName);
+				.SetProperty(Environment.CacheProvider, typeof(HashtableCacheProvider).AssemblyQualifiedName);
 		}
 
 		[Test]
@@ -52,9 +52,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 				var generator = Sfi.GetIdentifierGenerator(typeof(Person).FullName);
 				Assert.That(generator, Is.InstanceOf<TableHiLoGenerator>());
 
-				using(var session = Sfi.OpenSession())
+				using (var session = OpenSession())
 				{
-					var id = await (generator.GenerateAsync((ISessionImplementor) session, new Person(), CancellationToken.None));
+					var id = await (generator.GenerateAsync((ISessionImplementor)session, new Person(), CancellationToken.None));
 				}
 
 				// intentionally dispose without committing
@@ -68,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 				scalar2 = await (command.ExecuteScalarAsync());
 			}
 
-			Assert.AreNotEqual(scalar1, scalar2,"HiLo must run with in its own transaction");
+			Assert.AreNotEqual(scalar1, scalar2, "HiLo must run with in its own transaction");
 		}
 
 
@@ -79,43 +79,48 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			{
 				using (var s = Sfi.OpenSession())
 				{
-					await (s.SaveAsync(new Nums {ID = 29, NumA = 1, NumB = 3}));
+					await (s.SaveAsync(new Nums { ID = 29, NumA = 1, NumB = 3 }));
 				}
 				tx.Complete();
 			}
-
-			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+			try
 			{
-				using (var s = Sfi.OpenSession())
+
+				using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
-					var nums = await (s.LoadAsync<Nums>(29));
-					Assert.AreEqual(1, nums.NumA);
-					Assert.AreEqual(3, nums.NumB);
+					using (var s = OpenSession())
+					{
+						var nums = await (s.LoadAsync<Nums>(29));
+						Assert.AreEqual(1, nums.NumA);
+						Assert.AreEqual(3, nums.NumB);
+					}
+					tx.Complete();
 				}
-				tx.Complete();
-			}
 
-			//closing the connection to ensure we can't really use it.
-			var connection = await (Sfi.ConnectionProvider.GetConnectionAsync(CancellationToken.None));
-			Sfi.ConnectionProvider.CloseConnection(connection);
-
-			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-			{
+				//closing the connection to ensure we can't really use it.
+				var connection = await (Sfi.ConnectionProvider.GetConnectionAsync(CancellationToken.None));
+				Sfi.ConnectionProvider.CloseConnection(connection);
+				// The session is supposed to succeed because the second level cache should have the
+				// entity to load, allowing the session to not use the connection at all.
+				// Will fail if transaction manager tries to enlist user supplied connection, due
+				// to using a transaction scope below.
 				using (var s = Sfi.WithOptions().Connection(connection).OpenSession())
 				{
-					var nums = await (s.LoadAsync<Nums>(29));
+					Nums nums = null;
+					Assert.DoesNotThrowAsync(async () => nums = await (s.LoadAsync<Nums>(29)), "Failed loading entity from second level cache.");
 					Assert.AreEqual(1, nums.NumA);
 					Assert.AreEqual(3, nums.NumB);
 				}
-				tx.Complete();
 			}
-
-			using (var s = Sfi.OpenSession())
-			using (var tx = s.BeginTransaction())
+			finally
 			{
-				var nums = await (s.LoadAsync<Nums>(29));
-				await (s.DeleteAsync(nums));
-				await (tx.CommitAsync());
+				using (var s = OpenSession())
+				using (var tx = s.BeginTransaction())
+				{
+					var nums = await (s.LoadAsync<Nums>(29));
+					await (s.DeleteAsync(nums));
+					await (tx.CommitAsync());
+				}
 			}
 		}
 
@@ -169,9 +174,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 		[Test]
 		public async Task When_using_two_sessions_with_explicit_flushAsync()
 		{
-			if (!TestDialect.SupportsConcurrentTransactions)
-				Assert.Ignore(Dialect.GetType().Name + " does not support concurrent transactions.");
-			if (!TestDialect.SupportsDistributedTransactions)
+			if (!Dialect.SupportsConcurrentWritingConnectionsInSameTransaction)
+				Assert.Ignore(Dialect.GetType().Name + " does not support concurrent connections in same transaction.");
+			if (!Dialect.SupportsDistributedTransactions)
 				Assert.Ignore(Dialect.GetType().Name + " does not support distributed transactions.");
 
 			object id1, id2;
@@ -209,9 +214,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 		[Test]
 		public async Task When_using_two_sessionsAsync()
 		{
-			if (!TestDialect.SupportsConcurrentTransactions)
-				Assert.Ignore(Dialect.GetType().Name + " does not support concurrent transactions.");
-			if (!TestDialect.SupportsDistributedTransactions)
+			if (!Dialect.SupportsConcurrentWritingConnectionsInSameTransaction)
+				Assert.Ignore(Dialect.GetType().Name + " does not support concurrent connections in same transaction.");
+			if (!Dialect.SupportsDistributedTransactions)
 				Assert.Ignore(Dialect.GetType().Name + " does not support distributed transactions.");
 
 			object id1, id2;

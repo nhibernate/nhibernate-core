@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Transactions;
-using NHibernate;
-using NHibernate.AdoNet;
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Engine.Transaction;
 
@@ -21,16 +18,16 @@ namespace NHibernate.Transaction
 		/// Configure from the given properties
 		/// </summary>
 		/// <param name="props"></param>
-		void Configure(IDictionary props);
+		void Configure(IDictionary<string, string> props);
 
 		/// <summary>
 		/// Create a new transaction and return it without starting it.
 		/// </summary>
 		ITransaction CreateTransaction(ISessionImplementor session);
 
-		void EnlistInDistributedTransactionIfNeeded(ISessionImplementor session);
+		void EnlistInSystemTransactionIfNeeded(ISessionImplementor session);
 
-		bool IsInDistributedActiveTransaction(ISessionImplementor session);
+		bool IsInActiveSystemTransaction(ISessionImplementor session);
 
 		void ExecuteWorkInIsolation(ISessionImplementor session, IIsolatedWork work, bool transacted);
 	}

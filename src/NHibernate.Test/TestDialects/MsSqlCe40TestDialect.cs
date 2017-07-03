@@ -6,10 +6,6 @@
 		{
 		}
 
-		public override bool SupportsDistributedTransactions => false;
-
-		public override bool SupportsConcurrentTransactions => false;
-
 		public override bool SupportsFullJoin => false;
 
 		public override bool SupportsComplexExpressionInGroupBy => false;

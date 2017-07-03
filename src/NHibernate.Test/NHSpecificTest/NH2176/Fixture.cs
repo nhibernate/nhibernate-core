@@ -13,12 +13,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2176
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				var steve = new Person {Name = "Steve"};
-				var peter = new Person {Name = "Peter"};
-				var simon = new Person {Name = "Simon"};
-				var paul = new Person {Name = "Paul"};
-				var john = new Person {Name = "John"};
-				var eric = new Person {Name = "Eric"};
+				var steve = new Person { Name = "Steve" };
+				var peter = new Person { Name = "Peter" };
+				var simon = new Person { Name = "Simon" };
+				var paul = new Person { Name = "Paul" };
+				var john = new Person { Name = "John" };
+				var eric = new Person { Name = "Eric" };
 
 				s.Save(steve);
 				s.Save(peter);
@@ -65,8 +65,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2176
 						scope.Complete();
 					}
 
-					// The exeption is caused by a race condition between two threads.
-					// This can be demonstracted by uncommenting the following line which
+					// The exception is caused by a race condition between two threads.
+					// This can be demonstrated by uncommenting the following line which
 					// causes the test to run without an exception.
 					//System.Threading.Thread.Sleep(1000);
 				}

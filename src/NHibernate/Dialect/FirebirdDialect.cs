@@ -129,7 +129,7 @@ namespace NHibernate.Dialect
 			return queryString.Insert(insertIndex, limitFragment.ToSqlString());
 		}
 
-		#region Temporaray Table Support
+		#region Temporary Table Support
 
 		public override bool SupportsTemporaryTables
 		{
@@ -548,5 +548,17 @@ namespace NHibernate.Dialect
 		{
 			return dbType == DbType.Decimal && precision > MAX_DECIMAL_PRECISION;
 		}
+
+		#region Informational metadata
+
+		/// <summary>
+		/// Does this dialect support distributed transaction?
+		/// </summary>
+		/// <remarks>
+		/// As of v2.5, fails rollback-ing changes when distributed: changes are instead persisted in database.
+		/// </remarks>
+		public override bool SupportsDistributedTransactions => false;
+
+		#endregion
 	}
 }

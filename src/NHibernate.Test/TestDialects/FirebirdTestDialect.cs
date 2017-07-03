@@ -6,8 +6,6 @@
 		{
 		}
 
-		public override bool SupportsDistributedTransactions => false;
-
 		public override bool SupportsComplexExpressionInGroupBy => false;
 	}
 }

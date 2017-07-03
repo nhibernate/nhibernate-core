@@ -14,8 +14,8 @@ namespace NHibernate.Test.SystemTransactions
 		public void CanUseSystemTransactionsToCommit()
 		{
 			int identifier;
-			using(ISession session = Sfi.OpenSession())
-			using(TransactionScope tx = new TransactionScope())
+			using (var session = OpenSession())
+			using (var tx = new TransactionScope())
 			{
 				var s = new Person();
 				session.Save(s);
@@ -23,11 +23,13 @@ namespace NHibernate.Test.SystemTransactions
 				tx.Complete();
 			}
 
-			using (ISession session = Sfi.OpenSession())
-			using (TransactionScope tx = new TransactionScope())
+			using (var session = OpenSession())
+			using (var tx = new TransactionScope())
 			{
 				var w = session.Get<Person>(identifier);
 				Assert.IsNotNull(w);
+				// Without explicit Flush, this delays the delete to prepare phase, and test flushing from there
+				// while having already acquired a connection due to the Get.
 				session.Delete(w);
 				tx.Complete();
 			}

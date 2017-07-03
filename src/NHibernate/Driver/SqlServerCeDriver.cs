@@ -136,5 +136,7 @@ namespace NHibernate.Driver
 				dbParamSqlDbTypeProperty.SetValue(dbParam, SqlDbType.NText, null);
 			}
 		}
+
+		public override bool SupportsNullEnlistment => false;
 	}
 }

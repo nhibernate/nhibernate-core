@@ -81,7 +81,7 @@ namespace NHibernate.Impl
 		}
 
 		public abstract IBatcher Batcher { get; }
-		public abstract void CloseSessionFromDistributedTransaction();
+		public abstract void CloseSessionFromSystemTransaction();
 
 		public virtual IList List(IQueryExpression queryExpression, QueryParameters parameters)
 		{
@@ -271,6 +271,11 @@ namespace NHibernate.Impl
 		protected internal virtual void CheckAndUpdateSessionStatus()
 		{
 			ErrorIfClosed();
+
+			// Ensure the session does not run on a thread supposed to be blocked, waiting
+			// for transaction completion.
+			TransactionContext?.Wait();
+
 			EnlistInAmbientTransactionIfNeeded();
 		}
 
@@ -408,7 +413,7 @@ namespace NHibernate.Impl
 
 		protected void EnlistInAmbientTransactionIfNeeded()
 		{
-			_factory.TransactionFactory.EnlistInDistributedTransactionIfNeeded(this);
+			_factory.TransactionFactory.EnlistInSystemTransactionIfNeeded(this);
 		}
 
 		internal IOuterJoinLoadable GetOuterJoinLoadable(string entityName)

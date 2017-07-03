@@ -13,7 +13,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
-using System.Threading;
 using log4net;
 using NHibernate.Cache;
 using NHibernate.Cfg;
@@ -37,6 +36,7 @@ using NHibernate.Type;
 namespace NHibernate.Test
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>

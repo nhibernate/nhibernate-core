@@ -130,5 +130,7 @@ namespace NHibernate.Driver
 		{
 			get { return typeof (OracleDataClientBatchingBatcherFactory); }
 		}
+
+		public override bool HasDelayedDistributedTransactionCompletion => true;
 	}
 }

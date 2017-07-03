@@ -295,7 +295,7 @@ namespace NHibernate.Engine
 
 		ITransactionContext TransactionContext { get; set; }
 
-		void CloseSessionFromDistributedTransaction();
+		void CloseSessionFromSystemTransaction();
 
 		EntityKey GenerateEntityKey(object id, IEntityPersister persister);
 

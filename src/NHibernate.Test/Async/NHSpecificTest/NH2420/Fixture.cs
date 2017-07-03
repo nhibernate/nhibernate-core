@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using System;
 using System.Data.Common;
 using System.Data.Odbc;
 using System.Data.SqlClient;
@@ -16,7 +15,6 @@ using System.Configuration;
 using System.Transactions;
 using NHibernate.Dialect;
 using NHibernate.Driver;
-using NHibernate.Engine;
 using NUnit.Framework;
 
 using Environment = NHibernate.Cfg.Environment;
@@ -66,33 +64,49 @@ namespace NHibernate.Test.NHSpecificTest.NH2420
 		{
 			string connectionString = FetchConnectionStringFromConfiguration();
 			ISession s;
-			using (var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+			DbConnection connection = null;
+			try
 			{
-				// Enlisting DummyEnlistment as a durable resource manager will start
-				// a DTC transaction
-				System.Transactions.Transaction.Current.EnlistDurable(
-					DummyEnlistment.Id,
-					new DummyEnlistment(),
-					EnlistmentOptions.None);
-
-				DbConnection connection;
-				if (Sfi.ConnectionProvider.Driver.GetType() == typeof(OdbcDriver))
-					connection = new OdbcConnection(connectionString);
-				else
-					connection = new SqlConnection(connectionString);
-
-				using (connection)
+				using (var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
+					// Enlisting DummyEnlistment as a durable resource manager will start
+					// a DTC transaction
+					System.Transactions.Transaction.Current.EnlistDurable(
+						DummyEnlistment.Id,
+						new DummyEnlistment(),
+						EnlistmentOptions.None);
+
+					if (Sfi.ConnectionProvider.Driver.GetType() == typeof(OdbcDriver))
+						connection = new OdbcConnection(connectionString);
+					else
+						connection = new SqlConnection(connectionString);
+
 					await (connection.OpenAsync());
 					using (s = Sfi.WithOptions().Connection(connection).OpenSession())
 					{
 						await (s.SaveAsync(new MyTable { String = "hello!" }));
 					}
-					connection.Close();
-				}
+					// The ts disposal may try to flush the session, which, depending on the native generator
+					// implementation for current dialect, may have something to do and will then try to use
+					// the supplied connection. dispose connection here => flaky test, failing for dialects
+					// not mandating an immediate insert on native generator save.
+					// Delaying the connection disposal to after ts disposal.
 
-				ts.Complete();
+					ts.Complete();
+				}
 			}
+			finally
+			{
+				connection?.Dispose();
+			}
+
+			// It appears neither the second phase of the 2PC nor TransactionCompleted 
+			// event are guaranteed to be executed before exiting transaction scope disposal.
+			// When having only 2PC, the second phase tends to occur after reaching that point
+			// here. When having TransactionCompleted event, this event and the second phase
+			// tend to occur before reaching here. But some other NH cases demonstrate that
+			// TransactionCompleted may also occur "too late".
+			s.GetSessionImplementation().TransactionContext?.Wait();
 
 			// Prior to the patch, an InvalidOperationException exception would occur in the
 			// TransactionCompleted delegate at this point with the message, "Disconnect cannot
@@ -100,10 +114,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2420
 			// seen reported in the IDE, NUnit fails to see it. The TransactionCompleted event
 			// fires *after* the transaction is committed and so it doesn't affect the success
 			// of the transaction.
-
 			Assert.That(s.IsConnected, Is.False);
-			Assert.That(((ISessionImplementor)s).ConnectionManager.IsConnected, Is.False);
-			Assert.That(((ISessionImplementor)s).IsClosed, Is.True);
+			Assert.That(s.GetSessionImplementation().ConnectionManager.IsConnected, Is.False);
+			Assert.That(s.GetSessionImplementation().IsClosed, Is.True);
 		}
 
 		protected override void OnTearDown()

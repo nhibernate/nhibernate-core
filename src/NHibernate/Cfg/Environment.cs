@@ -5,6 +5,7 @@ using System.Reflection;
 
 using NHibernate.Bytecode;
 using NHibernate.Cfg.ConfigurationSchema;
+using NHibernate.Engine;
 using NHibernate.Util;
 
 namespace NHibernate.Cfg
@@ -118,6 +119,17 @@ namespace NHibernate.Cfg
 		public const string OutputStylesheet = "xml.output_stylesheet";
 
 		public const string TransactionStrategy = "transaction.factory_class";
+		/// <summary>
+		/// <para>Timeout duration in milliseconds for the system transaction completion lock.</para>
+		/// <para>When a system transaction completes, it may have its completion events running on concurrent threads,
+		/// after scope disposal. This occurs when the transaction is distributed.
+		/// This notably concerns <see cref="ISessionImplementor.AfterTransactionCompletion(bool, ITransaction)"/>.
+		/// NHibernate protects the session from being concurrently used by the code following the scope disposal
+		/// with a lock. To prevent any application freeze, this lock has a default timeout of five seconds. If the
+		/// application appears to require longer (!) running transaction completion events, this setting allows to
+		/// raise this timeout. <c>-1</c> disables the timeout.</para>
+		/// </summary>
+		public const string SystemTransactionCompletionLockTimeout = "transaction.system_completion_lock_timeout";
 
 		// Unused, not implemented (and somewhat Java-specific)
 		public const string TransactionManagerStrategy = "transaction.manager_lookup_class";

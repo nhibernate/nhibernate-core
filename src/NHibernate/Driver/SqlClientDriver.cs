@@ -201,5 +201,11 @@ namespace NHibernate.Driver
 		{
 			get { return true; }
 		}
+
+		/// <summary>
+		/// With read committed snapshot or lower, SQL Server may have not actually already committed the transaction
+		/// right after the scope disposal.
+		/// </summary>
+		public override bool HasDelayedDistributedTransactionCompletion => true;
 	}
 }

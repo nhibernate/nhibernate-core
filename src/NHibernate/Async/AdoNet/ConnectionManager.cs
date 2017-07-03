@@ -30,17 +30,23 @@ namespace NHibernate.AdoNet
 		public async Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (connection == null)
+			if (_connection == null)
 			{
-				if (ownConnection)
+				if (_ownConnection)
 				{
-					connection = await (Factory.ConnectionProvider.GetConnectionAsync(cancellationToken)).ConfigureAwait(false);
+					_connection = await (Factory.ConnectionProvider.GetConnectionAsync(cancellationToken)).ConfigureAwait(false);
+					// Will fail if the connection is already enlisted in another transaction.
+					// Probable case: nested transaction scope with connection auto-enlistment enabled.
+					// That is an user error.
+					if (_currentSystemTransaction != null)
+						_connection.EnlistTransaction(_currentSystemTransaction);
+
 					if (Factory.Statistics.IsStatisticsEnabled)
 					{
 						Factory.StatisticsImplementor.Connect();
 					}
 				}
-				else if (session.IsOpen)
+				else if (Session.IsOpen)
 				{
 					throw new HibernateException("Session is currently disconnected");
 				}
@@ -49,7 +55,7 @@ namespace NHibernate.AdoNet
 					throw new HibernateException("Session is closed");
 				}
 			}
-			return connection;
+			return _connection;
 		}
 
 		public async Task<DbCommand> CreateCommandAsync(CancellationToken cancellationToken)

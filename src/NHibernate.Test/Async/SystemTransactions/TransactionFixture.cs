@@ -25,8 +25,8 @@ namespace NHibernate.Test.SystemTransactions
 		public async Task CanUseSystemTransactionsToCommitAsync()
 		{
 			int identifier;
-			using(ISession session = Sfi.OpenSession())
-			using(TransactionScope tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+			using (var session = OpenSession())
+			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
 				var s = new Person();
 				await (session.SaveAsync(s));
@@ -34,11 +34,13 @@ namespace NHibernate.Test.SystemTransactions
 				tx.Complete();
 			}
 
-			using (ISession session = Sfi.OpenSession())
-			using (TransactionScope tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+			using (var session = OpenSession())
+			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
 				var w = await (session.GetAsync<Person>(identifier));
 				Assert.IsNotNull(w);
+				// Without explicit Flush, this delays the delete to prepare phase, and test flushing from there
+				// while having already acquired a connection due to the Get.
 				await (session.DeleteAsync(w));
 				tx.Complete();
 			}
