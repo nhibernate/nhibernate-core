@@ -765,6 +765,9 @@
     <Compile Include="Insertordering\NH3931Entities.cs" />
     <Compile Include="NHSpecificTest\NH4004\Entity.cs" />
     <Compile Include="NHSpecificTest\NH4004\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3992\Entities.cs" />
+    <Compile Include="NHSpecificTest\NH3992\FixtureByCode.cs" />
+    <Compile Include="NHSpecificTest\NH3992\Mappings.cs" />
     <Compile Include="NHSpecificTest\NH1904\StructFixture.cs" />
     <Compile Include="NHSpecificTest\NH3985\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3985\Fixture.cs" />
