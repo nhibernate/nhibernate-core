@@ -126,6 +126,25 @@ namespace NHibernate.Type
 				{
 					copied[i] = target[i];
 				}
+				else if (target[i] == LazyPropertyInitializer.UnfetchedProperty)
+				{
+					// Should be no need to check for target[i] == PropertyAccessStrategyBackRefImpl.UNKNOWN
+					// because PropertyAccessStrategyBackRefImpl.get( object ) returns
+					// PropertyAccessStrategyBackRefImpl.UNKNOWN, so target[i] == original[i].
+					//
+					// We know from above that original[i] != LazyPropertyInitializer.UNFETCHED_PROPERTY &&
+					// original[i] != PropertyAccessStrategyBackRefImpl.UNKNOWN;
+					// This is a case where the entity being merged has a lazy property
+					// that has been initialized. Copy the initialized value from original.
+					if (types[i].IsMutable)
+					{
+						copied[i] = types[i].DeepCopy(original[i], session.Factory);
+					}
+					else
+					{
+						copied[i] = original[i];
+					}
+				}
 				else
 				{
 					copied[i] = types[i].Replace(original[i], target[i], session, owner, copiedAlready);

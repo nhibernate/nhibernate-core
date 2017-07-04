@@ -56,7 +56,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 					top.Name = "new name";
 
-					var expectedException = sessions.Settings.IsBatchVersionedDataEnabled
+					var expectedException = Sfi.Settings.IsBatchVersionedDataEnabled
 						? Throws.InstanceOf<StaleStateException>()
 						: Throws.InstanceOf<StaleObjectStateException>();
 
@@ -95,7 +95,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 					optimistic.String = "new string";
 
-					var expectedException = sessions.Settings.IsBatchVersionedDataEnabled
+					var expectedException = Sfi.Settings.IsBatchVersionedDataEnabled
 						? Throws.InstanceOf<StaleStateException>()
 						: Throws.InstanceOf<StaleObjectStateException>();
 

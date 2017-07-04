@@ -1,0 +1,38 @@
+
+Installation steps for Firebird for NH TeamCity:
+
+1.  Download Firebird (Firebird-3.0.2.32703_0_x64):  https://www.firebirdsql.org/en/server-packages/;
+2.  Run the installer AS ADMINISTRATOR... Use the default firebird password when prompted: masterkey.
+3.  Leave other settings with their defaults.
+4.  The setup should install Firebird on the machine;
+5.  Go into Firebird folder (c:\program files\firebird\) and create a folder named Data;
+6.  Go in Firebird installation directory and open databases.conf.
+7.  Add in "Live Databases" section:
+nhibernate = D:\nhibernate.fdb
+    Firebird is particularly sensitive to disk performances, and D: is supposed to be local to the
+    Teamcity host, thus this choice. Content of this drive may be lost. But the TestDatabaseSetup will
+    instruct Firebird to recreate the database. It is put on the root because Firebird will not create
+    the folder, and the TestDatabaseSetup should not try to do that because it is used by other hosts
+    which may not want to do anything on D:.
+8.  Open firebird.conf.
+9.  Ensure AuthClient, AuthServer and UserManager are set to Srp only:
+AuthServer = Srp
+AuthClient = Srp
+UserManager = Srp
+10. Ensure WireCrypt is set to Enabled.
+WireCrypt = Enabled
+11. Restart Firebird service.
+
+For manual testing, take care of not creating it with inadequate acl on the file. This may happen
+if you use ISQL with a connection string causing it to create it in embedded mode, without actually
+using the server. Prefixing your path with "localhost:" should avoid that.
+
+For tests performances, and since it is just an expandable test database, better disable forced writes.
+Since those tests drop/create schema constantly, they are quite heavy on writes and this single setting
+can have a six fold impact on their duration. For changing it, do:
+a.  Stop Firebird service.
+b.  From Firebird installation folder, run:
+gfix -w async nhibernate -user SYSDBA
+    (Change "nhibernate" to your own alias or path as appropriate for your setup) 
+c.  Restart Firebird service.
+Note that the TestDatabaseSetup will drop and recreate the database when run, with forced writes disabled.

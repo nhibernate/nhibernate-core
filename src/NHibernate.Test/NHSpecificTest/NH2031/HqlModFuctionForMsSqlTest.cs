@@ -26,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2031
 
 		public string GetSql(string query)
 		{
-			var qt = new QueryTranslatorImpl(null, new HqlParseEngine(query, false, sessions).Parse(), new CollectionHelper.EmptyMapClass<string, IFilter>(), sessions);
+			var qt = new QueryTranslatorImpl(null, new HqlParseEngine(query, false, Sfi).Parse(), new CollectionHelper.EmptyMapClass<string, IFilter>(), Sfi);
 			qt.Compile(null, false);
 			return qt.SQLString;
 		}

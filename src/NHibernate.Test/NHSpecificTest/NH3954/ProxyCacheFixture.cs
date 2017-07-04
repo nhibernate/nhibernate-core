@@ -24,11 +24,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3954
 
 			_internalCache = (ConcurrentDictionary<ProxyCacheEntry, System.Type>)InternalCacheField.GetValue(null);
 
-			_cache.StoreProxyType(typeof(Entity1FakeProxy), typeof(Entity1));
-			_cache.StoreProxyType(typeof(Entity2FakeProxy), typeof(Entity2), typeof(INHibernateProxy));
-			_cache.StoreProxyType(typeof(Entity3FakeProxy), typeof(Entity3));
-			_cache.StoreProxyType(typeof(Entity4FakeProxy), typeof(Entity4), typeof(IProxy));
-			_cache.StoreProxyType(typeof(Entity5FakeProxy), typeof(Entity5), typeof(INHibernateProxy), typeof(IProxy));
+			_cache.StoreProxyType(typeof(Entity1FakeProxy).GetTypeInfo(), typeof(Entity1));
+			_cache.StoreProxyType(typeof(Entity2FakeProxy).GetTypeInfo(), typeof(Entity2), typeof(INHibernateProxy));
+			_cache.StoreProxyType(typeof(Entity3FakeProxy).GetTypeInfo(), typeof(Entity3));
+			_cache.StoreProxyType(typeof(Entity4FakeProxy).GetTypeInfo(), typeof(Entity4), typeof(IProxy));
+			_cache.StoreProxyType(typeof(Entity5FakeProxy).GetTypeInfo(), typeof(Entity5), typeof(INHibernateProxy), typeof(IProxy));
 
 			// Artificially inject other entries with same hashcodes
 			_hashCode1 = new ProxyCacheEntry(typeof(Entity1), null).GetHashCode();
@@ -148,7 +148,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3954
 			// Beware not testing the lookup failure of any combination, even tweaked, actually added in cache.
 			// (Otherwise the test may starts failing unexpectedly sometimes, as the original bug ...)
 			// This one was not added in anyway.
-			System.Type result;
+			TypeInfo result;
 			Assert.IsFalse(_cache.TryGetProxyType(typeof(Entity2), new[] { typeof(IProxy) }, out result));
 		}
 	}

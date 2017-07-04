@@ -26,8 +26,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				case HbmFlushMode.Auto:
 					return FlushMode.Auto;
 
+				case HbmFlushMode.Manual:
 				case HbmFlushMode.Never:
-					return FlushMode.Never;
+					return FlushMode.Manual;
 
 				case HbmFlushMode.Always:
 					return FlushMode.Always;

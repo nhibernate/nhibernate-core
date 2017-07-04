@@ -257,7 +257,7 @@ namespace NHibernate.Test.Operations
 			AssertUpdateCount(1);
 			ClearCounts();
 
-			sessions.Evict(typeof (NumberedNode));
+			Sfi.Evict(typeof (NumberedNode));
 
 			var child2 = new NumberedNode("child2");
 			var grandchild3 = new NumberedNode("grandchild3");

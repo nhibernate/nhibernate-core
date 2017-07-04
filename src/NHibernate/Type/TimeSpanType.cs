@@ -26,7 +26,7 @@ namespace NHibernate.Type
 			get { return "TimeSpan"; }
 		}
 
-		public override object Get(DbDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			try
 			{
@@ -38,7 +38,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object Get(DbDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
 			try
 			{
@@ -56,13 +56,7 @@ namespace NHibernate.Type
 			get { return typeof(TimeSpan); }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="st"></param>
-		/// <param name="value"></param>
-		/// <param name="index"></param>
-		public override void Set(DbCommand st, object value, int index)
+		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
 			st.Parameters[index].Value = ((TimeSpan)value).Ticks;
 		}

@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Data;
-using System.Data.Common;
 using System.Reflection;
 using log4net;
 using log4net.Config;
@@ -12,7 +11,9 @@ using NHibernate.Mapping;
 using NHibernate.Tool.hbm2ddl;
 using NHibernate.Type;
 using NUnit.Framework;
-using NHibernate.Hql.Ast.ANTLR;
+using NUnit.Framework.Interfaces;
+using System.Text;
+using NHibernate.Driver;
 
 namespace NHibernate.Test
 {
@@ -20,7 +21,7 @@ namespace NHibernate.Test
 	{
 		private const bool OutputDdl = false;
 		protected Configuration cfg;
-		protected ISessionFactoryImplementor sessions;
+		private DebugSessionFactory _sessionFactory;
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(TestCase));
 
@@ -33,20 +34,6 @@ namespace NHibernate.Test
 		{
 			get { return TestDialect.GetTestDialect(Dialect); }
 		}
-
-		/// <summary>
-		/// To use in in-line test
-		/// </summary>
-		protected bool IsAntlrParser
-		{
-			get
-			{
-				return sessions.Settings.QueryTranslatorFactory is ASTQueryTranslatorFactory;
-			}
-		}
-
-		protected ISession lastOpenedSession;
-		private DebugConnectionProvider connectionProvider;
 
 		/// <summary>
 		/// Mapping files used in the TestCase
@@ -64,7 +51,7 @@ namespace NHibernate.Test
 		static TestCase()
 		{
 			// Configure log4net here since configuration through an attribute doesn't always work.
-			XmlConfigurator.Configure();
+			XmlConfigurator.Configure(LogManager.GetRepository(typeof(TestCase).Assembly));
 		}
 
 		/// <summary>
@@ -84,8 +71,8 @@ namespace NHibernate.Test
 				CreateSchema();
 				try
 				{
-					BuildSessionFactory();
-					if (!AppliesTo(sessions))
+					_sessionFactory = BuildSessionFactory();
+					if (!AppliesTo(_sessionFactory))
 					{
 						Assert.Ignore(GetType() + " does not apply with the current session-factory configuration");
 					}
@@ -102,6 +89,11 @@ namespace NHibernate.Test
 				log.Error("Error while setting up the test fixture", e);
 				throw;
 			}
+		}
+
+		protected void RebuildSessionFactory()
+		{
+			_sessionFactory = BuildSessionFactory();
 		}
 
 		/// <summary>
@@ -154,35 +146,73 @@ namespace NHibernate.Test
 		[TearDown]
 		public void TearDown()
 		{
-			OnTearDown();
+			var testResult = TestContext.CurrentContext.Result;
+			var fail = false;
+			string badCleanupMessage = null;
+			try
+			{
+				try
+				{
+					OnTearDown();
+				}
+				finally
+				{
+					var wereClosed = _sessionFactory.CheckSessionsWereClosed();
+					var wasCleaned = CheckDatabaseWasCleaned();
+					var wereConnectionsClosed = CheckConnectionsWereClosed();
+					fail = !wereClosed || !wasCleaned || !wereConnectionsClosed;
 
-			bool wasClosed = CheckSessionWasClosed();
-			bool wasCleaned = CheckDatabaseWasCleaned();
-			bool wereConnectionsClosed = CheckConnectionsWereClosed();
-			bool fail = !wasClosed || !wasCleaned || !wereConnectionsClosed;
+					if (fail)
+					{
+						badCleanupMessage = "Test didn't clean up after itself. session closed: " + wereClosed + "; database cleaned: " +
+											wasCleaned
+											+ "; connection closed: " + wereConnectionsClosed;
+						if (testResult != null && testResult.Outcome.Status == TestStatus.Failed)
+						{
+							// Avoid hiding a test failure (asserts are usually not hidden, but other exception would be).
+							badCleanupMessage = GetCombinedFailureMessage(testResult, badCleanupMessage, null);
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				if (testResult == null || testResult.Outcome.Status != TestStatus.Failed)
+					throw;
+
+				// Avoid hiding a test failure (asserts are usually not hidden, but other exceptions would be).
+				var exType = ex.GetType();
+				Assert.Fail(GetCombinedFailureMessage(testResult,
+					exType.Namespace + "." + exType.Name + " " + ex.Message,
+					ex.StackTrace));
+			}
 
 			if (fail)
 			{
-				Assert.Fail("Test didn't clean up after itself. session closed: " + wasClosed + " database cleaned: "+ wasCleaned
-					+ " connection closed: " + wereConnectionsClosed);
+				Assert.Fail(badCleanupMessage);
 			}
 		}
 
-		private bool CheckSessionWasClosed()
+		private string GetCombinedFailureMessage(TestContext.ResultAdapter result, string tearDownFailure, string tearDownStackTrace)
 		{
-			if (lastOpenedSession != null && lastOpenedSession.IsOpen)
-			{
-				log.Error("Test case didn't close a session, closing");
-				lastOpenedSession.Close();
-				return false;
-			}
+			var message = new StringBuilder()
+				.Append("The test failed and then failed to cleanup. Test failure is: ")
+				.AppendLine(result.Message)
+				.Append("Tear-down failure is: ")
+				.AppendLine(tearDownFailure)
+				.AppendLine("Test failure stack trace is: ")
+				.AppendLine(result.StackTrace);
 
-			return true;
+			if (!string.IsNullOrEmpty(tearDownStackTrace))
+				message.AppendLine("Tear-down failure stack trace is:")
+					.Append(tearDownStackTrace);
+
+			return message.ToString();
 		}
 
 		protected virtual bool CheckDatabaseWasCleaned()
 		{
-			if (sessions.GetAllClassMetadata().Count == 0)
+			if (Sfi.GetAllClassMetadata().Count == 0)
 			{
 				// Return early in the case of no mappings, also avoiding
 				// a warning when executing the HQL below.
@@ -190,7 +220,7 @@ namespace NHibernate.Test
 			}
 
 			bool empty;
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			{
 				IList objects = s.CreateQuery("from System.Object o").List();
 				empty = objects.Count == 0;
@@ -208,13 +238,13 @@ namespace NHibernate.Test
 
 		private bool CheckConnectionsWereClosed()
 		{
-			if (connectionProvider == null || !connectionProvider.HasOpenConnections)
+			if (_sessionFactory?.ConnectionProvider?.HasOpenConnections != true)
 			{
 				return true;
 			}
 
 			log.Error("Test case didn't close all open connections, closing");
-			connectionProvider.CloseAllConnections();
+			_sessionFactory.ConnectionProvider.CloseAllConnections();
 			return false;
 		}
 
@@ -246,24 +276,29 @@ namespace NHibernate.Test
 
 		protected virtual void DropSchema()
 		{
+			if (Sfi.ConnectionProvider.Driver is FirebirdClientDriver fbDriver)
+			{
+				// Firebird will pool each connection created during the test and will marked as used any table
+				// referenced by queries. It will at best delays those tables drop until connections are actually
+				// closed, or immediately fail dropping them.
+				// This results in other tests failing when they try to create tables with same name.
+				// By clearing the connection pool the tables will get dropped. This is done by the following code.
+				// Moved from NH1908 test case, contributed by Amro El-Fakharany.
+				fbDriver.ClearPool(null);
+			}
+
 			new SchemaExport(cfg).Drop(OutputDdl, true);
 		}
 
-		protected virtual void BuildSessionFactory()
+		protected virtual DebugSessionFactory BuildSessionFactory()
 		{
-			sessions = (ISessionFactoryImplementor)cfg.BuildSessionFactory();
-			connectionProvider = sessions.ConnectionProvider as DebugConnectionProvider;
+			return new DebugSessionFactory(cfg.BuildSessionFactory());
 		}
 
 		private void Cleanup()
 		{
-			if (sessions != null)
-			{
-				sessions.Close();
-			}
-			sessions = null;
-			connectionProvider = null;
-			lastOpenedSession = null;
+			Sfi?.Close();
+			_sessionFactory = null;
 			cfg = null;
 		}
 
@@ -309,21 +344,16 @@ namespace NHibernate.Test
 			}
 		}
 
-		protected ISessionFactoryImplementor Sfi
-		{
-			get { return sessions; }
-		}
+		protected ISessionFactoryImplementor Sfi => _sessionFactory;
 
 		protected virtual ISession OpenSession()
 		{
-			lastOpenedSession = sessions.OpenSession();
-			return lastOpenedSession;
+			return Sfi.OpenSession();
 		}
 
 		protected virtual ISession OpenSession(IInterceptor sessionLocalInterceptor)
 		{
-			lastOpenedSession = sessions.OpenSession(sessionLocalInterceptor);
-			return lastOpenedSession;
+			return Sfi.WithOptions().Interceptor(sessionLocalInterceptor).OpenSession();
 		}
 
 		protected virtual void ApplyCacheSettings(Configuration configuration)
@@ -341,7 +371,7 @@ namespace NHibernate.Test
 					if (prop.Value.IsSimpleValue)
 					{
 						IType type = ((SimpleValue)prop.Value).Type;
-						if (type == NHibernateUtil.BinaryBlob)
+						if (ReferenceEquals(type, NHibernateUtil.BinaryBlob))
 						{
 							hasLob = true;
 						}

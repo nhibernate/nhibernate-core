@@ -1,6 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using NHibernate.Engine;
 using NHibernate.Id;
@@ -168,9 +168,7 @@ namespace NHibernate.Mapping
 			@params[PersistentIdGeneratorParmsNames.Table] = tableName;
 
 			//pass the column name (a generated id almost always has a single column and is not a formula)
-			IEnumerator enu = ColumnIterator.GetEnumerator();
-			enu.MoveNext();
-			string columnName = ((Column)enu.Current).GetQuotedName(dialect);
+			string columnName = ((Column)ColumnIterator.First()).GetQuotedName(dialect);
 
 			@params[PersistentIdGeneratorParmsNames.PK] = columnName;
 

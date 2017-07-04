@@ -74,6 +74,13 @@ namespace NHibernate
 	public interface ISession : IDisposable
 	{
 		/// <summary>
+		/// Obtain a <see cref="ISession"/> builder with the ability to grab certain information from
+		/// this session. The built <c>ISession</c> will require its own flushes and disposal.
+		/// </summary>
+		/// <returns>The session builder.</returns>
+		ISharedSessionBuilder SessionWithOptions();
+
+		/// <summary>
 		/// Force the <c>ISession</c> to flush.
 		/// </summary>
 		/// <remarks>
@@ -929,12 +936,16 @@ namespace NHibernate
 		/// <summary> Get the statistics for this session.</summary>
 		ISessionStatistics Statistics { get; }
 
-		///  <summary>
-		///  Starts a new Session. This secondary Session inherits the connection, transaction,
-		///  and other context information from the primary Session. It doesn't need to be flushed
-		///  or closed by the developer.
-		///  </summary>
-		/// <returns>The new session</returns>
-		ISession GetChildSession();
+		// Obsolete since v5.
+		/// <summary>
+		/// Starts a new Session with the given entity mode in effect. This secondary
+		/// Session inherits the connection, transaction, and other context
+		///	information from the primary Session. It has to be flushed
+		/// or disposed by the developer since v5.
+		/// </summary>
+		/// <param name="entityMode">Ignored.</param>
+		/// <returns>The new session.</returns>
+		[Obsolete("Please use SessionWithOptions instead. Now requires to be flushed and disposed of.")]
+		ISession GetSession(EntityMode entityMode);
 	}
 }

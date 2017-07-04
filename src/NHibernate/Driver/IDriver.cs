@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -118,5 +119,10 @@ namespace NHibernate.Driver
 		/// If you have to adjust parameters values/type (when the command is full filled) this is a good place where do it.
 		/// </remarks>
 		void AdjustCommand(DbCommand command);
+
+		/// <summary>
+		/// Does this driver mandates <see cref="TimeSpan"/> values for time?
+		/// </summary>
+		bool RequiresTimeSpanForTime { get; }
 	}
 }

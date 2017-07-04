@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -19,24 +20,12 @@ namespace NHibernate.Type
 
 		public DoubleType(SqlType sqlType) : base(sqlType) {}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="index"></param>
-		/// <returns></returns>
-		public override object Get(DbDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			return Convert.ToDouble(rs[index]);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		public override object Get(DbDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
 			return Convert.ToDouble(rs[name]);
 		}
@@ -47,13 +36,7 @@ namespace NHibernate.Type
 			get { return typeof(double); }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="st"></param>
-		/// <param name="value"></param>
-		/// <param name="index"></param>
-		public override void Set(DbCommand st, object value, int index)
+		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
 			st.Parameters[index].Value = value;
 		}

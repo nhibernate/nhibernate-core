@@ -144,7 +144,13 @@
     <Compile Include="Connection\DriverConnectionProvider.cs" />
     <Compile Include="Connection\IConnectionProvider.cs" />
     <Compile Include="Connection\UserSuppliedConnectionProvider.cs" />
+    <Compile Include="Context\AsyncLocalSessionContext.cs" />
     <Compile Include="Dialect\PostgreSQL83Dialect.cs" />
+    <Compile Include="Impl\ISharedSessionCreationOptions.cs" />
+    <Compile Include="ISharedSessionBuilder.cs" />
+    <Compile Include="IStatelessSessionBuilder.cs" />
+    <Compile Include="ISessionBuilder.cs" />
+    <Compile Include="Impl\ISessionCreationOptions.cs" />
     <Compile Include="Tool\hbm2ddl\IDatabaseMetadata.cs" />
     <Compile Include="Util\DelegateHelper.cs" />
     <Compile Include="Dialect\BitwiseFunctionOperation.cs" />

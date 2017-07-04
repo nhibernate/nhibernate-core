@@ -1682,8 +1682,13 @@
 	<xs:simpleType name="flushMode">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="auto" />
-			<xs:enumeration value="never" />
+			<xs:enumeration value="manual" />
 			<xs:enumeration value="always" />
+			<xs:enumeration value="never">
+				<xs:annotation>
+					<xs:documentation>Obsolete, please use manual instead.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="cacheMode">

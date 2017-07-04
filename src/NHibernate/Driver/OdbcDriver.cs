@@ -82,5 +82,7 @@ namespace NHibernate.Driver
 			base.InitializeParameter(dbParam, name, sqlType);
 			SetVariableLengthParameterSize(dbParam, sqlType);
 		}
+
+		public override bool RequiresTimeSpanForTime => true;
 	}
 }

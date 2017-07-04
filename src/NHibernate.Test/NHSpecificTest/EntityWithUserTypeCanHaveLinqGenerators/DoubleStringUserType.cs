@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.Common;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 
@@ -32,9 +33,9 @@ namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 			return x.GetHashCode();
 		}
 
-		public object NullSafeGet(DbDataReader rs, string[] names, object owner)
+		public object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			object obj = NHibernateUtil.String.NullSafeGet(rs, names[0]);
+			object obj = NHibernateUtil.String.NullSafeGet(rs, names[0], session);
 			if (obj == null)
 			{
 				return null;
@@ -42,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 			return Convert.ToDouble((string)obj);
 		}
 
-		public void NullSafeSet(DbCommand cmd, object value, int index)
+		public void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			if (value == null)
 			{

@@ -11,7 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2203
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();
-			using (var session = sessions.OpenStatelessSession())
+			using (var session = Sfi.OpenStatelessSession())
 			using (var tx = session.BeginTransaction())
 			{
 				foreach (var artistName in new[] { "Foo", "Bar", "Baz", "Soz", "Tiz", "Fez" })
@@ -25,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2203
 		[Test]
 		public void QueryShouldWork()
 		{
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			using(session.BeginTransaction())
 			{
 				var actual = session.Query<Artist>()
@@ -40,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2203
 
 		protected override void OnTearDown()
 		{
-			using(var session = sessions.OpenStatelessSession())
+			using(var session = Sfi.OpenStatelessSession())
 			using (var tx = session.BeginTransaction())
 			{
 				session.CreateQuery("delete Artist").ExecuteUpdate();

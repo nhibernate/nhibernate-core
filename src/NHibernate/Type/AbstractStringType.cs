@@ -1,5 +1,6 @@
 using System;
 using System.Data.Common;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -12,7 +13,7 @@ namespace NHibernate.Type
 		{
 		}
 
-		public override void Set(DbCommand cmd, object value, int index)
+		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			var parameter = cmd.Parameters[index];
 
@@ -23,12 +24,12 @@ namespace NHibernate.Type
 				throw new HibernateException("The length of the string value exceeds the length configured in the mapping/parameter.");
 		}
 
-		public override object Get(DbDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			return Convert.ToString(rs[index]);
 		}
 
-		public override object Get(DbDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
 			return Convert.ToString(rs[name]);
 		}

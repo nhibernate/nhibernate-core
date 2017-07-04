@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2779
 
 			using (var session = OpenSession())
 			using (var tx = session.BeginTransaction())
-			using (new LogSpy(LogManager.GetLogger("NHibernate"), Level.All)) //  <-- Logging must be set DEBUG to reproduce bug
+			using (new LogSpy(LogManager.GetLogger(typeof(Fixture).Assembly, "NHibernate"), Level.All)) //  <-- Logging must be set DEBUG to reproduce bug
 			{
 				Order order = session.Get<Order>("Order-1");
 				Assert.IsNotNull(order);

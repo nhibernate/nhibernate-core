@@ -185,14 +185,6 @@ namespace NHibernate.Cfg
 		/// This may need to be set to 3 if you are using the OdbcDriver with MS SQL Server 2008+.
 		/// </summary>
 		public const string OdbcDateTimeScale = "odbc.explicit_datetime_scale";
-		
-		/// <summary>
-		/// If this setting is set to false, exceptions in IInterceptor.BeforeTransactionCompletion bubble to the caller of ITransaction.Commit and abort the commit.
-		/// If this setting is set to true, exceptions in IInterceptor.BeforeTransactionCompletion are ignored and the commit is performed.
-		/// The default setting is false.
-		/// </summary>
-		[Obsolete("This setting is likely to be removed in a future version of NHibernate. The workaround is to catch all exceptions in the IInterceptor implementation.")]
-		public const string InterceptorsBeforeTransactionCompletionIgnoreExceptions = "interceptors.beforetransactioncompletion_ignore_exceptions";
 
 		private static readonly Dictionary<string, string> GlobalProperties;
 

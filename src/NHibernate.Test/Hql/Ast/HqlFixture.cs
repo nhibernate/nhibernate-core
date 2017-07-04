@@ -15,7 +15,7 @@ namespace NHibernate.Test.Hql.Ast
 	{
 		protected HQLQueryPlan CreateQueryPlan(string hql, bool scalar)
 		{
-			return new QueryExpressionPlan(new StringQueryExpression(hql), scalar, new CollectionHelper.EmptyMapClass<string, IFilter>(), sessions);
+			return new QueryExpressionPlan(new StringQueryExpression(hql), scalar, new CollectionHelper.EmptyMapClass<string, IFilter>(), Sfi);
 		}
 
 		protected HQLQueryPlan CreateQueryPlan(string hql)

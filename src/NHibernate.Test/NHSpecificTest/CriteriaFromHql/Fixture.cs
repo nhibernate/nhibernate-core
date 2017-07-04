@@ -26,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaFromHql
 			CreateData();
 
 			using (SqlLogSpy spy = new SqlLogSpy())
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
 				Person result = session.CreateQuery(@"
@@ -42,7 +42,7 @@ where p.Parent is null")
 			}
 
 			using (SqlLogSpy spy = new SqlLogSpy())
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
 				Person result = session.CreateCriteria(typeof(Person))
@@ -60,7 +60,7 @@ where p.Parent is null")
 
 		private void DeleteData()
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
 				session.Delete("from Person");
@@ -70,7 +70,7 @@ where p.Parent is null")
 
 		private void CreateData()
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
 				Person root = new Person();

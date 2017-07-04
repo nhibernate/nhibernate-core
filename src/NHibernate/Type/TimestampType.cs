@@ -46,14 +46,14 @@ namespace NHibernate.Type
 		{
 		}
 
-		public override object Get(DbDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			return DateTime.SpecifyKind(Convert.ToDateTime(rs[index]), Kind);
 		}
 
-		public override object Get(DbDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
-			return Get(rs, rs.GetOrdinal(name));
+			return Get(rs, rs.GetOrdinal(name), session);
 		}
 
 		public override System.Type ReturnedClass
@@ -67,10 +67,11 @@ namespace NHibernate.Type
 		/// <param name="st">The DbCommand to add the Type's value to.</param>
 		/// <param name="value">The value of the Type.</param>
 		/// <param name="index">The index of the DbParameter in the DbCommand.</param>
+		/// <param name="session">The session for which the operation is done.</param>
 		/// <remarks>
 		/// No null values will be written to the DbCommand for this Type. 
 		/// </remarks>
-		public override void Set(DbCommand st, object value, int index)
+		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
 			st.Parameters[index].Value = (value is DateTime) ? value : DateTime.SpecifyKind(Now, Kind);
 		}

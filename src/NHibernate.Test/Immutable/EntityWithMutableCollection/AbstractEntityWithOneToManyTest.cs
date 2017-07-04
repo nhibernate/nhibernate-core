@@ -41,10 +41,10 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 	
 		protected override void OnSetUp()
 		{
-			isContractPartiesInverse = sessions.GetCollectionPersister(typeof(Contract).FullName + ".Parties").IsInverse;
+			isContractPartiesInverse = Sfi.GetCollectionPersister(typeof(Contract).FullName + ".Parties").IsInverse;
 			try
 			{
-				sessions.GetEntityPersister(typeof(Party).FullName).GetPropertyType("Contract");
+				Sfi.GetEntityPersister(typeof(Party).FullName).GetPropertyType("Contract");
 				isContractPartiesBidirectional = true;
 			}
 			catch (QueryException)
@@ -53,7 +53,7 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			}
 			try
 			{
-				sessions.GetEntityPersister(typeof(ContractVariation).FullName).GetPropertyType("Contract");
+				Sfi.GetEntityPersister(typeof(ContractVariation).FullName).GetPropertyType("Contract");
 				isContractVariationsBidirectional = true;
 			}
 			catch (QueryException)
@@ -61,7 +61,7 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 				isContractVariationsBidirectional = false;
 			}
 	
-			isContractVersioned = sessions.GetEntityPersister(typeof(Contract).FullName).IsVersioned;
+			isContractVersioned = Sfi.GetEntityPersister(typeof(Contract).FullName).IsVersioned;
 		}
 		
 		[Test]

@@ -2,6 +2,7 @@
 using System.Data.Common;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Engine;
 using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NHibernate.SqlTypes;
@@ -43,7 +44,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2839
 			return x.GetHashCode();
 		}
 
-		public object NullSafeGet(DbDataReader rs, string[] names, object owner)
+		public object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			var ordinal = rs.GetOrdinal(names[0]);
 			if (rs.IsDBNull(ordinal))
@@ -51,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2839
 			return rs.GetInt32(ordinal) == 1;
 		}
 
-		public void NullSafeSet(DbCommand cmd, object value, int index)
+		public void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			cmd.Parameters[index].Value = ((bool) value) ? 1 : -1;
 		}

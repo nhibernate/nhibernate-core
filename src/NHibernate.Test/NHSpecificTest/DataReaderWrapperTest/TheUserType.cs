@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 
@@ -28,14 +29,14 @@ namespace NHibernate.Test.NHSpecificTest.DataReaderWrapperTest
 			return x.GetHashCode();
 		}
 
-		public object NullSafeGet(DbDataReader rs, string[] names, object owner)
+		public object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			return rs.GetValue(rs.GetOrdinal(names[0]));
 		}
 
-		public void NullSafeSet(DbCommand cmd, object value, int index)
+		public void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			NHibernateUtil.String.NullSafeSet(cmd, value, index);
+			NHibernateUtil.String.NullSafeSet(cmd, value, index, session);
 		}
 
 		public object DeepCopy(object value)

@@ -16,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1609
 		[Test]
 		public void Test()
 		{
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			using (session.BeginTransaction())
 			{
 				EntityA a1 = CreateEntityA(session);

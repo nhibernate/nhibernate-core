@@ -33,7 +33,7 @@ namespace NHibernate.Test.BulkManipulation
 
 		public string GetSql(string query)
 		{
-			var qt = new QueryTranslatorImpl(null, new HqlParseEngine(query, false, sessions).Parse(), emptyfilters, sessions);
+			var qt = new QueryTranslatorImpl(null, new HqlParseEngine(query, false, Sfi).Parse(), emptyfilters, Sfi);
 			qt.Compile(null, false);
 			return qt.SQLString;
 		}

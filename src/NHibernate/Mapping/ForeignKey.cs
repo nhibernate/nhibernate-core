@@ -122,12 +122,14 @@ namespace NHibernate.Mapping
 				sb.Append("])");
 				throw new FKUnmatchingColumnsException(sb.ToString());
 			}
-			IEnumerator<Column> fkCols = ColumnIterator.GetEnumerator();
-			IEnumerator<Column> pkCols = referencedTable.PrimaryKey.ColumnIterator.GetEnumerator();
 
-			while (fkCols.MoveNext() && pkCols.MoveNext())
+			using (var fkCols = ColumnIterator.GetEnumerator())
+			using (var pkCols = referencedTable.PrimaryKey.ColumnIterator.GetEnumerator())
 			{
-				fkCols.Current.Length = pkCols.Current.Length;
+				while (fkCols.MoveNext() && pkCols.MoveNext())
+				{
+					fkCols.Current.Length = pkCols.Current.Length;
+				}
 			}
 		}
 
