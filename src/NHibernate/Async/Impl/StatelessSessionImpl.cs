@@ -165,7 +165,7 @@ namespace NHibernate.Impl
 				temporaryPersistenceContext.Clear();
 			}
 		}
-		
+
 		public override Task<IEnumerable> EnumerableAsync(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
 			throw new NotImplementedException();
@@ -194,6 +194,25 @@ namespace NHibernate.Impl
 		public override Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken)
 		{
 			throw new NotSupportedException();
+		}
+
+		public override Task BeforeTransactionCompletionAsync(ITransaction tx, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return FlushBeforeTransactionCompletionAsync(cancellationToken);
+		}
+
+		public override async Task FlushBeforeTransactionCompletionAsync(CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				if (FlushMode != FlushMode.Manual)
+					await (FlushAsync(cancellationToken)).ConfigureAwait(false);
+			}
 		}
 
 		public override Task AfterTransactionCompletionAsync(bool successful, ITransaction tx, CancellationToken cancellationToken)

@@ -139,7 +139,7 @@ namespace NHibernate.Engine
 		private async Task<bool> IsCachedAsync(EntityKey entityKey, IEntityPersister persister, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (persister.HasCache)
+			if (persister.HasCache && context.Session.CacheMode.HasFlag(CacheMode.Get))
 			{
 				CacheKey key = context.Session.GenerateCacheKey(entityKey.Identifier, persister.IdentifierType, entityKey.EntityName);
 				return await (persister.Cache.Cache.GetAsync(key, cancellationToken)).ConfigureAwait(false) != null;
@@ -150,7 +150,7 @@ namespace NHibernate.Engine
 		private async Task<bool> IsCachedAsync(object collectionKey, ICollectionPersister persister, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (persister.HasCache)
+			if (persister.HasCache && context.Session.CacheMode.HasFlag(CacheMode.Get))
 			{
 				CacheKey cacheKey = context.Session.GenerateCacheKey(collectionKey, persister.KeyType, persister.Role);
 				return await (persister.Cache.Cache.GetAsync(cacheKey, cancellationToken)).ConfigureAwait(false) != null;

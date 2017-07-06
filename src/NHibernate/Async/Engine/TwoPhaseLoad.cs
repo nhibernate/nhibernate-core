@@ -89,7 +89,7 @@ namespace NHibernate.Engine
 			
 			ISessionFactoryImplementor factory = session.Factory;
 
-			if (persister.HasCache && ((session.CacheMode & CacheMode.Put) == CacheMode.Put))
+			if (persister.HasCache && session.CacheMode.HasFlag(CacheMode.Put))
 			{
 				if (log.IsDebugEnabled)
 					log.Debug("adding entity to second-level cache: " + MessageHelper.InfoString(persister, id, session.Factory));

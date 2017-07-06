@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections;
+using System.Linq;
 using System.Transactions;
 using NHibernate.Engine;
 using NHibernate.Engine.Transaction;

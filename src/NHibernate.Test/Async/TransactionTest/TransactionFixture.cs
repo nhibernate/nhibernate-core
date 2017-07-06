@@ -10,21 +10,17 @@
 
 using System;
 using System.Collections;
-using System.Data.Common;
+using System.Collections.Generic;
+using System.Linq;
+using NHibernate.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.TransactionTest
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class TransactionFixtureAsync : TestCase
+	public class TransactionFixtureAsync : TransactionFixtureBase
 	{
-		protected override IList Mappings
-		{
-			// The mapping is only actually needed in one test
-			get { return new string[] {"Simple.hbm.xml"}; }
-		}
-
 		[Test]
 		public async Task SecondTransactionShouldntBeCommittedAsync()
 		{
@@ -86,25 +82,25 @@ namespace NHibernate.Test.TransactionTest
 		{
 			using (ISession s = OpenSession())
 			{
-				using (ITransaction t = s.BeginTransaction())
+				using (s.BeginTransaction())
 				{
 				}
 
-				await (s.CreateQuery("from Simple").ListAsync());
+				await (s.CreateQuery("from Person").ListAsync());
 
 				using (ITransaction t = s.BeginTransaction())
 				{
 					await (t.CommitAsync());
 				}
 
-				await (s.CreateQuery("from Simple").ListAsync());
+				await (s.CreateQuery("from Person").ListAsync());
 
 				using (ITransaction t = s.BeginTransaction())
 				{
 					await (t.RollbackAsync());
 				}
 
-				await (s.CreateQuery("from Simple").ListAsync());
+				await (s.CreateQuery("from Person").ListAsync());
 			}
 		}
 
@@ -151,6 +147,41 @@ namespace NHibernate.Test.TransactionTest
 					Assert.IsFalse(t.IsActive);
 					Assert.IsFalse(s.Transaction.IsActive);
 				}
+			}
+		}
+
+		[Test]
+		public async Task FlushFromTransactionAppliesToSharingSessionAsync()
+		{
+			var flushOrder = new List<int>();
+			using (var s = OpenSession(new TestInterceptor(0, flushOrder)))
+			{
+				var builder = s.SessionWithOptions().Connection();
+
+				using (var s1 = builder.Interceptor(new TestInterceptor(1, flushOrder)).OpenSession())
+				using (var s2 = builder.Interceptor(new TestInterceptor(2, flushOrder)).OpenSession())
+				using (var s3 = s1.SessionWithOptions().Connection().Interceptor(new TestInterceptor(3, flushOrder)).OpenSession())
+				using (var t = s.BeginTransaction())
+				{
+					var p1 = new Person();
+					var p2 = new Person();
+					var p3 = new Person();
+					var p4 = new Person();
+					await (s1.SaveAsync(p1));
+					await (s2.SaveAsync(p2));
+					await (s3.SaveAsync(p3));
+					await (s.SaveAsync(p4));
+					await (t.CommitAsync());
+				}
+			}
+
+			Assert.That(flushOrder, Is.EqualTo(new[] { 0, 1, 2, 3 }));
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				Assert.That(await (s.Query<Person>().CountAsync()), Is.EqualTo(4));
+				await (t.CommitAsync());
 			}
 		}
 	}

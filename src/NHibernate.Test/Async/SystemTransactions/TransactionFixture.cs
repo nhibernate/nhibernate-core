@@ -8,30 +8,27 @@
 //------------------------------------------------------------------------------
 
 
-using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Transactions;
-using NHibernate.DomainModel;
+using NHibernate.Linq;
+using NHibernate.Test.TransactionTest;
 using NUnit.Framework;
 
 namespace NHibernate.Test.SystemTransactions
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class TransactionFixtureAsync : TestCase
+	public class TransactionFixtureAsync : TransactionFixtureBase
 	{
-		protected override IList Mappings
-		{
-			get { return new string[] { "WZ.hbm.xml" }; }
-		}
-
 		[Test]
 		public async Task CanUseSystemTransactionsToCommitAsync()
 		{
-			object identifier;
+			int identifier;
 			using(ISession session = Sfi.OpenSession())
 			using(TransactionScope tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
-				W s = new W();
+				var s = new Person();
 				await (session.SaveAsync(s));
 				identifier = s.Id;
 				tx.Complete();
@@ -40,10 +37,83 @@ namespace NHibernate.Test.SystemTransactions
 			using (ISession session = Sfi.OpenSession())
 			using (TransactionScope tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
-				W w = await (session.GetAsync<W>(identifier));
+				var w = await (session.GetAsync<Person>(identifier));
 				Assert.IsNotNull(w);
 				await (session.DeleteAsync(w));
 				tx.Complete();
+			}
+		}
+
+		[Test]
+		public async Task FlushFromTransactionAppliesToDisposedSharingSessionAsync()
+		{
+			var flushOrder = new List<int>();
+			using (var s = OpenSession(new TestInterceptor(0, flushOrder)))
+			{
+				var builder = s.SessionWithOptions().Connection();
+
+				using (var t = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+				{
+					var p1 = new Person();
+					var p2 = new Person();
+					var p3 = new Person();
+					var p4 = new Person();
+
+					using (var s1 = builder.Interceptor(new TestInterceptor(1, flushOrder)).OpenSession())
+						await (s1.SaveAsync(p1));
+					using (var s2 = builder.Interceptor(new TestInterceptor(2, flushOrder)).OpenSession())
+					{
+						await (s2.SaveAsync(p2));
+						using (var s3 = s2.SessionWithOptions().Connection().Interceptor(new TestInterceptor(3, flushOrder)).OpenSession())
+							await (s3.SaveAsync(p3));
+					}
+					await (s.SaveAsync(p4));
+					t.Complete();
+				}
+			}
+
+			Assert.That(flushOrder, Is.EqualTo(new[] { 0, 1, 2, 3 }));
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				Assert.That(await (s.Query<Person>().CountAsync()), Is.EqualTo(4));
+				await (t.CommitAsync());
+			}
+		}
+
+		[Test]
+		public async Task FlushFromTransactionAppliesToSharingSessionAsync()
+		{
+			var flushOrder = new List<int>();
+			using (var s = OpenSession(new TestInterceptor(0, flushOrder)))
+			{
+				var builder = s.SessionWithOptions().Connection();
+
+				using (var s1 = builder.Interceptor(new TestInterceptor(1, flushOrder)).OpenSession())
+				using (var s2 = builder.Interceptor(new TestInterceptor(2, flushOrder)).OpenSession())
+				using (var s3 = s2.SessionWithOptions().Connection().Interceptor(new TestInterceptor(3, flushOrder)).OpenSession())
+				using (var t = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+				{
+					var p1 = new Person();
+					var p2 = new Person();
+					var p3 = new Person();
+					var p4 = new Person();
+					await (s1.SaveAsync(p1));
+					await (s2.SaveAsync(p2));
+					await (s3.SaveAsync(p3));
+					await (s.SaveAsync(p4));
+					t.Complete();
+				}
+			}
+
+			Assert.That(flushOrder, Is.EqualTo(new[] { 0, 1, 2, 3 }));
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				Assert.That(await (s.Query<Person>().CountAsync()), Is.EqualTo(4));
+				await (t.CommitAsync());
 			}
 		}
 	}

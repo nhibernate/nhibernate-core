@@ -405,7 +405,7 @@ namespace NHibernate.Event.Default
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ISessionImplementor source = @event.Session;
-			bool useCache = persister.HasCache && ((source.CacheMode & CacheMode.Get) == CacheMode.Get)
+			bool useCache = persister.HasCache && source.CacheMode .HasFlag(CacheMode.Get)
 				&& @event.LockMode.LessThan(LockMode.Read);
 
 			if (useCache)

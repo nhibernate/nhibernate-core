@@ -127,6 +127,17 @@ namespace NHibernate.Engine
 		Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken);
 
 		/// <summary>
+		/// Notify the session that the transaction is about to complete
+		/// </summary>
+		Task BeforeTransactionCompletionAsync(ITransaction tx, CancellationToken cancellationToken);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task FlushBeforeTransactionCompletionAsync(CancellationToken cancellationToken);
+
+		/// <summary>
 		/// Notify the session that the transaction completed, so we no longer own the old locks.
 		/// (Also we should release cache softlocks). May be called multiple times during the transaction
 		/// completion process.

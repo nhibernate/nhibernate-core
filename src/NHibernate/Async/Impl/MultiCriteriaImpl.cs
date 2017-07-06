@@ -114,7 +114,7 @@ namespace NHibernate.Impl
 				log.Debug("Cache miss for multi criteria query");
 				IList list = await (DoListAsync(cancellationToken)).ConfigureAwait(false);
 				result = list;
-				if ((session.CacheMode & CacheMode.Put) == CacheMode.Put)
+				if (session.CacheMode.HasFlag(CacheMode.Put))
 				{
 					bool put = await (queryCache.PutAsync(key, new ICacheAssembler[] { assembler }, new object[] { list }, combinedParameters.NaturalKeyLookup, session, cancellationToken)).ConfigureAwait(false);
 					if (put && factory.Statistics.IsStatisticsEnabled)

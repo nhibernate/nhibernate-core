@@ -55,26 +55,23 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				log.Debug("transaction completion");
+
+				persistenceContext.AfterTransactionCompletion();
+				await (actionQueue.AfterTransactionCompletionAsync(success, cancellationToken)).ConfigureAwait(false);
+
 				if (Factory.Statistics.IsStatisticsEnabled)
 				{
 					Factory.StatisticsImplementor.EndTransaction(success);
 				}
 
-				connectionManager.AfterTransaction();
-				persistenceContext.AfterTransactionCompletion();
-				await (actionQueue.AfterTransactionCompletionAsync(success, cancellationToken)).ConfigureAwait(false);
-				if (!_transactionCoordinatorShared)
+				try
 				{
-					try
-					{
-						Interceptor.AfterTransactionCompletion(tx);
-					}
-					catch (Exception t)
-					{
-						log.Error("exception in interceptor afterTransactionCompletion()", t);
-					}
+					Interceptor.AfterTransactionCompletion(tx);
 				}
-
+				catch (Exception t)
+				{
+					log.Error("exception in interceptor afterTransactionCompletion()", t);
+				}
 
 				//if (autoClear)
 				//	Clear();
@@ -1205,6 +1202,37 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				await (FireReplicateAsync(new ReplicateEvent(entityName, obj, replicationMode, this), cancellationToken)).ConfigureAwait(false);
+			}
+		}
+
+		public override async Task BeforeTransactionCompletionAsync(ITransaction tx, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				log.Debug("before transaction completion");
+				await (FlushBeforeTransactionCompletionAsync(cancellationToken)).ConfigureAwait(false);
+				actionQueue.BeforeTransactionCompletion();
+				try
+				{
+					Interceptor.BeforeTransactionCompletion(tx);
+				}
+				catch (Exception e)
+				{
+					log.Error("exception in interceptor BeforeTransactionCompletion()", e);
+
+					throw;
+				}
+			}
+		}
+
+		public override async Task FlushBeforeTransactionCompletionAsync(CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				if (FlushMode != FlushMode.Manual)
+					await (FlushAsync(cancellationToken)).ConfigureAwait(false);
 			}
 		}
 

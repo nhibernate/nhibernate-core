@@ -533,6 +533,7 @@
     <Compile Include="Async\NHSpecificTest\NH2224\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2230\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2234\Fixture.cs" />
+    <Compile Include="Async\NHSpecificTest\NH2241\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2242\FormulaTest.cs" />
     <Compile Include="Async\NHSpecificTest\NH2244\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2245\Fixture.cs" />

@@ -31,8 +31,12 @@ namespace NHibernate.Transaction
 			cancellationToken.ThrowIfCancellationRequested();
 			using (new SessionIdLoggingContext(sessionId))
 			{
+				session.ConnectionManager.AfterTransaction();
 				await (session.AfterTransactionCompletionAsync(successful, this, cancellationToken)).ConfigureAwait(false);
 				NotifyLocalSynchsAfterTransactionCompletion(successful);
+				foreach (var dependentSession in session.ConnectionManager.DependentSessions)
+					await (dependentSession.AfterTransactionCompletionAsync(successful, this, cancellationToken)).ConfigureAwait(false);
+
 				session = null;
 				begun = false;
 			}
@@ -58,13 +62,10 @@ namespace NHibernate.Transaction
 
 				log.Debug("Start Commit");
 
-				if (session.FlushMode != FlushMode.Manual)
-				{
-					await (session.FlushAsync(cancellationToken)).ConfigureAwait(false);
-				}
-
+				await (session.BeforeTransactionCompletionAsync(this, cancellationToken)).ConfigureAwait(false);
 				NotifyLocalSynchsBeforeTransactionCompletion();
-				session.BeforeTransactionCompletion(this);
+				foreach (var dependentSession in session.ConnectionManager.DependentSessions)
+					await (dependentSession.BeforeTransactionCompletionAsync(this, cancellationToken)).ConfigureAwait(false);
 
 				try
 				{
