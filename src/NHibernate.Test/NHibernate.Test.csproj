@@ -1479,6 +1479,8 @@
     <Compile Include="NHSpecificTest\EntityWithUserTypeCanHaveLinqGenerators\Fixture.cs" />
     <Compile Include="NHSpecificTest\EntityWithUserTypeCanHaveLinqGenerators\FooExample.cs" />
     <Compile Include="NHSpecificTest\EntityWithUserTypeCanHaveLinqGenerators\IExample.cs" />
+    <Compile Include="NHSpecificTest\NH2241\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2241\Model.cs" />
     <Compile Include="Insertordering\NH3931Entities.cs" />
     <Compile Include="NHSpecificTest\NH4004\Entity.cs" />
     <Compile Include="NHSpecificTest\NH4004\Fixture.cs" />
@@ -2181,6 +2183,8 @@
     <Compile Include="TestDialects\PostgreSQL83TestDialect.cs" />
     <Compile Include="TestDialects\SQLiteTestDialect.cs" />
     <Compile Include="Tools\hbm2ddl\SchemaExportTests\ExportToFileFixture.cs" />
+    <Compile Include="TransactionTest\Person.cs" />
+    <Compile Include="TransactionTest\TransactionFixtureBase.cs" />
     <Compile Include="TransformTests\ImplementationOfEqualityTests.cs" />
     <Compile Include="TypesTest\CharClass.cs" />
     <Compile Include="TypesTest\CharClassFixture.cs" />
@@ -4003,6 +4007,8 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="TransactionTest\Person.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2241\Mappings.hbm.xml" />
     <EmbeddedResource Include="Futures\Mappings.hbm.xml" />
     <EmbeddedResource Include="SessionBuilder\Mappings.hbm.xml" />
     <EmbeddedResource Include="IdTest\IdentityClass.hbm.xml" />

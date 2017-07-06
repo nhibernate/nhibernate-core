@@ -39,9 +39,9 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Decimal, "numeric(18,0)");
 			RegisterColumnType(DbType.Single, "real");
 			RegisterColumnType(DbType.Double, "float");
-			RegisterColumnType(DbType.AnsiStringFixedLength, "char(1)");
+			RegisterColumnType(DbType.AnsiStringFixedLength, "char(255)");
 			RegisterColumnType(DbType.AnsiStringFixedLength, 255, "char($l)");
-			RegisterColumnType(DbType.StringFixedLength, "nchar(1)");
+			RegisterColumnType(DbType.StringFixedLength, "nchar(255)");
 			RegisterColumnType(DbType.StringFixedLength, 255, "nchar($l)");
 			RegisterColumnType(DbType.AnsiString, "varchar(255)");
 			RegisterColumnType(DbType.AnsiString, 16384, "varchar($l)");

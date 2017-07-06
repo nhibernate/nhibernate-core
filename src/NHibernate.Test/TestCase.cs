@@ -276,7 +276,7 @@ namespace NHibernate.Test
 
 		protected virtual void DropSchema()
 		{
-			if (Sfi.ConnectionProvider.Driver is FirebirdClientDriver fbDriver)
+			if (Sfi?.ConnectionProvider.Driver is FirebirdClientDriver fbDriver)
 			{
 				// Firebird will pool each connection created during the test and will marked as used any table
 				// referenced by queries. It will at best delays those tables drop until connections are actually

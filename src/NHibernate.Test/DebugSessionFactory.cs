@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using System.Threading;
 using log4net;
 using NHibernate.Cache;
@@ -53,27 +54,39 @@ namespace NHibernate.Test
 			var allClosed = true;
 			foreach (var session in _openedSessions)
 			{
-				if (session.IsOpen)
+				// Do not inverse, we want to close all of them.
+				allClosed = CheckSessionWasClosed(session) && allClosed;
+				// Catches only session opened from another one while sharing the connection. Those
+				// opened without sharing the connection stay un-monitored.
+				foreach (var dependentSession in session.ConnectionManager.DependentSessions.ToList())
 				{
-					if (session.TransactionContext?.ShouldCloseSessionOnDistributedTransactionCompleted ?? false)
-					{
-						// Delayed transactions not having completed and closed their sessions? Give them a chance to complete.
-						Thread.Sleep(100);
-						if (!session.IsOpen)
-						{
-							_log.Warn($"Test case had a delayed close of session {session.SessionId}.");
-							continue;
-						}
-					}
-
-					_log.Error($"Test case didn't close session {session.SessionId}, closing");
-					allClosed = false;
-					(session as ISession)?.Close();
-					(session as IStatelessSession)?.Close();
+					allClosed = CheckSessionWasClosed(dependentSession) && allClosed;
 				}
 			}
 
 			return allClosed;
+		}
+
+		private bool CheckSessionWasClosed(ISessionImplementor session)
+		{
+			if (!session.IsOpen)
+				return true;
+
+			if (session.TransactionContext?.ShouldCloseSessionOnDistributedTransactionCompleted ?? false)
+			{
+				// Delayed transactions not having completed and closed their sessions? Give them a chance to complete.
+				Thread.Sleep(100);
+				if (!session.IsOpen)
+				{
+					_log.Warn($"Test case had a delayed close of session {session.SessionId}.");
+					return true;
+				}
+			}
+
+			_log.Error($"Test case didn't close session {session.SessionId}, closing");
+			(session as ISession)?.Close();
+			(session as IStatelessSession)?.Close();
+			return false;
 		}
 
 		ISessionBuilder ISessionFactory.WithOptions()

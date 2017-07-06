@@ -152,6 +152,7 @@ namespace NHibernate.Impl
 		public abstract IEntityPersister GetEntityPersister(string entityName, object obj);
 		public abstract void AfterTransactionBegin(ITransaction tx);
 		public abstract void BeforeTransactionCompletion(ITransaction tx);
+		public abstract void FlushBeforeTransactionCompletion();
 		public abstract void AfterTransactionCompletion(bool successful, ITransaction tx);
 		public abstract object GetContextEntityIdentifier(object obj);
 		public abstract object Instantiate(string clazz, object id);
@@ -430,6 +431,7 @@ namespace NHibernate.Impl
 				if (!ConnectionManager.IsInActiveTransaction)
 				{
 					ConnectionManager.AfterNonTransactionalQuery(success);
+					ConnectionManager.AfterTransaction();
 					AfterTransactionCompletion(success, null);
 				}
 			}

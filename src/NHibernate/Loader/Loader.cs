@@ -1582,7 +1582,7 @@ namespace NHibernate.Loader
 		{
 			IList result = null;
 
-			if ((!queryParameters.ForceCacheRefresh) && (session.CacheMode & CacheMode.Get) == CacheMode.Get)
+			if (!queryParameters.ForceCacheRefresh && session.CacheMode.HasFlag(CacheMode.Get))
 			{
 				IPersistenceContext persistenceContext = session.PersistenceContext;
 
@@ -1620,7 +1620,7 @@ namespace NHibernate.Loader
 		private void PutResultInQueryCache(ISessionImplementor session, QueryParameters queryParameters, IType[] resultTypes,
 										   IQueryCache queryCache, QueryKey key, IList result)
 		{
-			if ((session.CacheMode & CacheMode.Put) == CacheMode.Put)
+			if (session.CacheMode.HasFlag(CacheMode.Put))
 			{
 				bool put = queryCache.Put(key, key.ResultTransformer.GetCachedResultTypes(resultTypes), result, queryParameters.NaturalKeyLookup, session);
 				if (put && _factory.Statistics.IsStatisticsEnabled)
