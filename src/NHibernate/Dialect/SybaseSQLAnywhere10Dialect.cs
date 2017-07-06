@@ -63,17 +63,17 @@ namespace NHibernate.Dialect
 
 		protected virtual void RegisterCharacterTypeMappings()
 		{
-			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR(1)");
+			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR(255)");
 			RegisterColumnType(DbType.AnsiStringFixedLength, 32767, "CHAR($l)");
-			RegisterColumnType(DbType.AnsiString, "VARCHAR(1)");
+			RegisterColumnType(DbType.AnsiString, "VARCHAR(255)");
 			RegisterColumnType(DbType.AnsiString, 32767, "VARCHAR($l)");
 			RegisterColumnType(DbType.AnsiString, 2147483647, "LONG VARCHAR");
-			RegisterColumnType(DbType.StringFixedLength, "NCHAR(1)");
+			RegisterColumnType(DbType.StringFixedLength, "NCHAR(255)");
 			RegisterColumnType(DbType.StringFixedLength, 32767, "NCHAR($l)");
-			RegisterColumnType(DbType.String, "NVARCHAR(1)");
+			RegisterColumnType(DbType.String, "NVARCHAR(255)");
 			RegisterColumnType(DbType.String, 32767, "NVARCHAR($l)");
 			RegisterColumnType(DbType.String, 2147483647, "LONG NVARCHAR");
-			RegisterColumnType(DbType.Binary, "BINARY(1)");
+			RegisterColumnType(DbType.Binary, "BINARY(8000)");
 			RegisterColumnType(DbType.Binary, 32767, "VARBINARY($l)");
 			RegisterColumnType(DbType.Binary, 2147483647, "LONG BINARY");
 			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
