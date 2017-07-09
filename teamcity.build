@@ -428,85 +428,14 @@
 					if (!afterTestNames.Contains(result.Name))
 						missingTests.Add(result);
 
-				report.AppendLine();
-				report.AppendLine("*** Tests broken since last recorded results ***");
-				if (brokenTests.Count > 0)
-				{
-					foreach (var result in brokenTests)
-						report.AppendLine(result.ToString());
-				}
-				else
-					report.AppendLine("None");
-
-				report.AppendLine();
-				report.AppendLine("*** Tests new (failed) since last recorded results ***");
-				if (newFailingTests.Count > 0)
-				{
-					foreach (var result in newFailingTests)
-						report.AppendLine(result.ToString());
-				}
-				else
-					report.AppendLine("None");
-
-				report.AppendLine();
-				report.AppendLine("*** Tests inconclusive since last recorded results ***");
-				if (brokenTests.Count > 0)
-				{
-					foreach (var result in inconclusiveTests)
-						report.AppendLine(result.ToString());
-				}
-				else
-					report.AppendLine("None");
-
-				report.AppendLine();
-				report.AppendLine("*** Tests new (inconclusive) since last recorded results ***");
-				if (newFailingTests.Count > 0)
-				{
-					foreach (var result in newInconclusiveTests)
-						report.AppendLine(result.ToString());
-				}
-				else
-					report.AppendLine("None");
-
-				report.AppendLine();
-				report.AppendLine("*** Tests fixed since last recorded results ***");
-				if (fixedTests.Count > 0)
-				{
-					foreach (Result result in fixedTests)
-						report.AppendLine(result.ToString());
-				}
-				else
-					report.AppendLine("None");
-
-				report.AppendLine();
-				report.AppendLine("*** Tests ignored since last recorded results ***");
-				if (ignoredTests.Count > 0)
-				{
-					foreach (Result result in ignoredTests)
-						report.AppendLine(result.ToString());
-				}
-				else
-					report.AppendLine("None");
-
-				report.AppendLine();
-				report.AppendLine("*** Tests new (not failing) since last recorded results ***");
-				if (newNotFailingTests.Count > 0)
-				{
-					foreach (var result in newNotFailingTests)
-						report.AppendLine(result.ToString());
-				}
-				else
-					report.AppendLine("None");
-
-				report.AppendLine();
-				report.AppendLine("*** Tests missing since last recorded results ***");
-				if (missingTests.Count > 0)
-				{
-					foreach (var result in missingTests)
-						report.AppendLine(result.ToString());
-				}
-				else
-					report.AppendLine("None");
+				ReportResultGroup(report, brokenTests, "Tests broken since last recorded results");
+				ReportResultGroup(report, newFailingTests, "Tests new (failed) since last recorded results");
+				ReportResultGroup(report, inconclusiveTests, "Tests inconclusive since last recorded results");
+				ReportResultGroup(report, newInconclusiveTests, "Tests new (inconclusive) since last recorded results");
+				ReportResultGroup(report, fixedTests, "Tests fixed since last recorded results");
+				ReportResultGroup(report, ignoredTests, "Tests ignored since last recorded results");
+				ReportResultGroup(report, newNotFailingTests, "Tests new (not failing) since last recorded results");
+				ReportResultGroup(report, missingTests, "Tests missing since last recorded results");
 
 				var output = report.ToString();
 				File.WriteAllText(outputFile, output);
@@ -524,6 +453,19 @@
 				Console.WriteLine(e);
 				throw;
 			}
+		}
+
+		public static void ReportResultGroup(StringBuilder report, IList<Result> resultGroup, string groupTitle)
+		{
+			report.AppendLine();
+			report.Append("*** ").Append(groupTitle).AppendLine(" ***");
+			if (resultGroup.Count > 0)
+			{
+				foreach (var result in resultGroup)
+					report.AppendLine(result.ToString());
+			}
+			else
+				report.AppendLine("None");
 		}
 
 			]]>
