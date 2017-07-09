@@ -44,7 +44,6 @@ namespace NHibernate.Dialect
 		private readonly TypeNames _hibernateTypeNames = new TypeNames();
 		private readonly IDictionary<string, string> _properties = new Dictionary<string, string>();
 		private readonly IDictionary<string, ISQLFunction> _sqlFunctions;
-		private readonly HashSet<string> _sqlKeywords = new HashSet<string>();
 
 		private static readonly IDictionary<string, ISQLFunction> StandardAggregateFunctions = CollectionHelper.CreateCaseInsensitiveHashtable<ISQLFunction>();
 
@@ -81,7 +80,9 @@ namespace NHibernate.Dialect
 			Log.Info("Using dialect: " + this);
 
 			_sqlFunctions = CollectionHelper.CreateCaseInsensitiveHashtable(StandardAggregateFunctions);
-			
+
+			Keywords = new HashSet<string>(AnsiSqlKeywords.Sql2003, StringComparer.OrdinalIgnoreCase);
+
 			// standard sql92 functions (can be overridden by subclasses)
 			RegisterFunction("substring", new AnsiSubstringFunction());
 			RegisterFunction("locate", new StandardSQLFunction("locate", NHibernateUtil.Int32));
@@ -2086,10 +2087,7 @@ namespace NHibernate.Dialect
 			get { return _sqlFunctions; }
 		}
 
-		public HashSet<string> Keywords
-		{
-			get { return _sqlKeywords; }
-		}
+		public HashSet<string> Keywords { get; }
 
 		/// <summary> 
 		/// Get the command used to select a GUID from the underlying database.
@@ -2244,6 +2242,21 @@ namespace NHibernate.Dialect
 		protected void RegisterKeyword(string word)
 		{
 			Keywords.Add(word);
+		}
+
+		protected internal void RegisterKeywords(params string[] keywords)
+		{
+			Keywords.UnionWith(keywords);
+		}
+
+		protected internal void RegisterKeywords(IEnumerable<string> keywords)
+		{
+			Keywords.UnionWith(keywords);
+		}
+
+		public bool IsKeyword(string str)
+		{
+			return Keywords.Contains(str);
 		}
 
 		protected void RegisterFunction(string name, ISQLFunction function)
