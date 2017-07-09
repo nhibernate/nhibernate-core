@@ -18,6 +18,124 @@ namespace NHibernate.Dialect
 	{
 		public MsSqlCeDialect()
 		{
+			RegisterTypeMapping();
+
+			RegisterFunctions();
+
+			RegisterKeywords();
+
+			RegisterDefaultProperties();
+		}
+
+		#region private static readonly string[] DialectKeywords = { ... }
+
+		private static readonly string[] DialectKeywords =
+		{
+			"apply",
+			"asc",
+			"backup",
+			"bit",
+			"break",
+			"browse",
+			"bulk",
+			"cascade",
+			"checkpoint",
+			"clustered",
+			"coalesce",
+			"compute",
+			"contains",
+			"containstable",
+			"convert",
+			"database",
+			"datetime",
+			"dbcc",
+			"deny",
+			"desc",
+			"disk",
+			"distributed",
+			"dump",
+			"errlvl",
+			"file",
+			"fillfactor",
+			"first",
+			"freetext",
+			"freetexttable",
+			"goto",
+			"holdlock",
+			"identity_insert",
+			"identitycol",
+			"image",
+			"index",
+			"key",
+			"kill",
+			"lineno",
+			"load",
+			"money",
+			"next",
+			"nocheck",
+			"nonclustered",
+			"ntext",
+			"nullif",
+			"nvarchar",
+			"off",
+			"offset",
+			"offsets",
+			"opendatasource",
+			"openquery",
+			"openrowset",
+			"openxml",
+			"option",
+			"percent",
+			"pivot",
+			"plan",
+			"print",
+			"proc",
+			"public",
+			"raiserror",
+			"read",
+			"readtext",
+			"reconfigure",
+			"replication",
+			"restore",
+			"restrict",
+			"revert",
+			"rowcount",
+			"rowguidcol",
+			"rowversion",
+			"rule",
+			"save",
+			"schema",
+			"session_user",
+			"setuser",
+			"shutdown",
+			"statistics",
+			"textsize",
+			"tinyint",
+			"top",
+			"tran",
+			"transaction",
+			"truncate",
+			"tsequal",
+			"uniqueidentifier",
+			"unpivot",
+			"updatetext",
+			"use",
+			"varbinary",
+			"view",
+			"waitfor",
+			"writetext",
+			"xmlunnest",
+		};
+
+		#endregion
+
+		protected virtual void RegisterKeywords()
+		{
+			RegisterKeywords(DialectKeywords);
+		}
+
+		protected virtual void RegisterTypeMapping()
+		{
 			RegisterColumnType(DbType.AnsiStringFixedLength, "NCHAR(255)");
 			RegisterColumnType(DbType.AnsiStringFixedLength, 4000, "NCHAR($l)");
 			RegisterColumnType(DbType.AnsiString, "NVARCHAR(255)");
@@ -45,9 +163,12 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.String, 4000, "NVARCHAR($l)");
 			RegisterColumnType(DbType.String, 1073741823, "NTEXT");
 			RegisterColumnType(DbType.Time, "DATETIME");
+		}
 
+		protected virtual void RegisterFunctions()
+		{
 			RegisterFunction("substring", new EmulatedLengthSubstringFunction());
-			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as nvarchar)")); 
+			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as nvarchar)"));
 
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.DateTime, "dateadd(dd, 0, datediff(dd, 0, ?1))"));
 			RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(second, ?1)"));
@@ -70,7 +191,10 @@ namespace NHibernate.Dialect
 			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "+", ")"));
 
 			RegisterFunction("round", new StandardSQLFunction("round"));
+		}
 
+		protected virtual void RegisterDefaultProperties()
+		{
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SqlServerCeDriver";
 			DefaultProperties[Environment.PrepareSql] = "false";
 		}

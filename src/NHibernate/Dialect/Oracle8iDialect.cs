@@ -75,7 +75,55 @@ namespace NHibernate.Dialect
 
 			RegisterFunctions();
 
+			RegisterKeywords();
+
 			RegisterDefaultProperties();
+		}
+
+		#region private static readonly string[] DialectKeywords = { ... }
+
+		private static readonly string[] DialectKeywords =
+		{
+			"asc",
+			"bfile",
+			"binary_double",
+			"binary_float",
+			"cluster",
+			"compress",
+			"desc",
+			"exclusive",
+			"identified",
+			"index",
+			"lock",
+			"long",
+			"long raw",
+			"minus",
+			"mode",
+			"nocompress",
+			"nowait",
+			"number",
+			"nvarchar2",
+			"option",
+			"pctfree",
+			"prior",
+			"public",
+			"raw",
+			"rename",
+			"resource",
+			"rowid",
+			"share",
+			"size",
+			"synonym",
+			"varchar2",
+			"view",
+			"xmltype",
+		};
+
+		#endregion
+
+		protected virtual void RegisterKeywords()
+		{
+			RegisterKeywords(DialectKeywords);
 		}
 
 		protected virtual void RegisterGuidTypeMapping()
