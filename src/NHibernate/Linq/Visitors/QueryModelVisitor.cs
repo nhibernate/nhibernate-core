@@ -377,6 +377,7 @@ namespace NHibernate.Linq.Visitors
 			switch (_queryMode)
 			{
 				case QueryMode.Delete:
+					VisitDeleteClause(selectClause.Selector);
 					return;
 				case QueryMode.Update:
 				case QueryMode.UpdateVersioned:
@@ -444,6 +445,18 @@ namespace NHibernate.Linq.Visitors
 
 				_hqlTree.AddSet(_hqlTree.TreeBuilder.Equality(_hqlTree.TreeBuilder.Ident((string)member.Value),
 					setterHql));
+			}
+		}
+
+		private void VisitDeleteClause(Expression expression)
+		{
+			// We only need to check there is no unexpected select, for avoiding silently ignoring them.
+			var visitor = new SelectClauseVisitor(typeof(object[]), VisitorParameters);
+			visitor.VisitSelector(expression);
+
+			if (visitor.ProjectionExpression != null)
+			{
+				throw new InvalidOperationException("Delete is not allowed on projections.");
 			}
 		}
 

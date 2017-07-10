@@ -107,6 +107,8 @@ namespace NHibernate.Linq
 
 		static Dictionary<string, Expression> ExtractAssignments<TSource, TTarget>(Expression<Func<TSource, TTarget>> expression, MemberInitExpression memberInitExpression)
 		{
+			if (memberInitExpression.Type != typeof(TTarget))
+				throw new TypeMismatchException($"Expecting an expression of exact type {typeof(TTarget).AssemblyQualifiedName} but got {memberInitExpression.Type.AssemblyQualifiedName}");
 			var instance = new DmlExpressionRewriter(expression.Parameters);
 			instance.AddSettersFromBindings(memberInitExpression.Bindings, "");
 			return instance._assignments;

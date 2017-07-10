@@ -877,6 +877,19 @@ namespace NHibernate.Test.LinqBulkManipulation
 			}
 		}
 
+		[Test]
+		public void UpdateOnOtherClassThrows()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var query = s
+					.Query<Animal>().Where(x => x.Mother == _butterfly)
+					.Update();
+				Assert.That(() => query.As(a => new Human { Description = a.Description + " humanized" }), Throws.TypeOf<TypeMismatchException>());
+			}
+		}
+
 		#endregion
 
 		#region DELETES
@@ -1099,6 +1112,19 @@ namespace NHibernate.Test.LinqBulkManipulation
 				s.Query<EntityWithCrazyCompositeKey>().Where(x => x.Id.Id == 1 && x.Id.OtherId == 2).Delete();
 
 				t.Commit();
+			}
+		}
+
+		[Test]
+		public void DeleteOnProjectionThrows()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var query = s
+					.Query<Animal>().Where(x => x.Mother == _butterfly)
+					.Select(x => new Car { Id = x.Id });
+				Assert.That(() => query.Delete(), Throws.InvalidOperationException);
 			}
 		}
 
