@@ -156,6 +156,14 @@
   applyChanges: true
   analyzation:
     methodConversion:
+    - conversion: Copy
+      hasAttributeName: OneTimeSetUpAttribute
+    - conversion: Copy
+      hasAttributeName: OneTimeTearDownAttribute
+    - conversion: Copy
+      hasAttributeName: SetUpAttribute
+    - conversion: Copy
+      hasAttributeName: TearDownAttribute
     - conversion: Smart
       hasAttributeName: TestAttribute
     - conversion: Smart

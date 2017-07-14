@@ -19,16 +19,44 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 	[TestFixture]
 	public class SchemaValidateFixtureAsync
 	{
-		[Test]
-		public async Task ShouldVerifySameTableAsync()
+		private const string _resourcesPrefix = "NHibernate.Test.Tools.hbm2ddl.SchemaValidator.";
+		private const string _version1Resource = _resourcesPrefix + "1_Version.hbm.xml";
+		private const string _version2Resource = _resourcesPrefix + "2_Version.hbm.xml";
+		private const string _version3Resource = _resourcesPrefix + "3_Version.hbm.xml";
+		private Configuration _configuration1;
+		private SchemaExport _export1;
+
+		[OneTimeSetUp]
+		public void OneTimeSetUp()
 		{
-			const string resource = "NHibernate.Test.Tools.hbm2ddl.SchemaValidator.1_Version.hbm.xml";
-			var cfg = BuildConfiguration(resource);
+			_configuration1 = BuildConfiguration(_version1Resource);
+		}
 
-			await (new SchemaExport(cfg).ExecuteAsync(true, true, false));
+		[SetUp]
+		public void SetUp()
+		{
+			_export1 = new SchemaExport(_configuration1);
+			_export1.Create(true, true);
+		}
 
-			var validator = new Tool.hbm2ddl.SchemaValidator((cfg));
-			await (validator.ValidateAsync());
+		[TearDown]
+		public void TearDown()
+		{
+			_export1.Drop(true, true);
+		}
+
+		[Test]
+		public Task ShouldVerifySameTableAsync()
+		{
+			try
+			{
+				var validator = new Tool.hbm2ddl.SchemaValidator((_configuration1));
+				return validator.ValidateAsync();
+			}
+			catch (System.Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 
 		[Test, SetCulture("tr-TR"), SetUICulture("tr-TR")]
@@ -45,36 +73,49 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 			var v = new Version();
 			Assert.That(v.Id, Is.TypeOf<int>());
 
+			var cfg = BuildConfiguration(_version1Resource);
 
-			const string resource = "NHibernate.Test.Tools.hbm2ddl.SchemaValidator.1_Version.hbm.xml";
-			var cfg = BuildConfiguration(resource);
-
-			await (new SchemaExport(cfg).ExecuteAsync(true, true, false));
-
-			var validator = new Tool.hbm2ddl.SchemaValidator(cfg);
-			await (validator.ValidateAsync());
+			var export = new SchemaExport(cfg);
+			await (export.CreateAsync(true, true));
+			try
+			{
+				var validator = new Tool.hbm2ddl.SchemaValidator(cfg);
+				await (validator.ValidateAsync());
+			}
+			finally
+			{
+				await (export.DropAsync(true, true));
+			}
 		}
 
 		[Test]
-		public async Task ShouldNotVerifyModifiedTableAsync()
+		public void ShouldNotVerifyModifiedTableAsync()
 		{
-			const string resource1 = "NHibernate.Test.Tools.hbm2ddl.SchemaValidator.1_Version.hbm.xml";
-			var cfgV1 = BuildConfiguration(resource1);
-
-			const string resource2 = "NHibernate.Test.Tools.hbm2ddl.SchemaValidator.2_Version.hbm.xml";
-			var cfgV2 = BuildConfiguration(resource2);
-
-			await (new SchemaExport(cfgV1).ExecuteAsync(true, true, false));
-
+			var cfgV2 = BuildConfiguration(_version2Resource);
 			var validatorV2 = new Tool.hbm2ddl.SchemaValidator(cfgV2);
-			try
-			{
-				await (validatorV2.ValidateAsync());
-			}
-			catch (HibernateException e)
-			{
-				Assert.That(e.Message, Does.StartWith("Missing column: Name"));
-			}
+
+			Assert.That(
+				() => validatorV2.ValidateAsync(),
+				Throws.TypeOf<SchemaValidationException>()
+				      .And.Message.EqualTo("Schema validation failed: see list of validation errors")
+				      .And.Property("ValidationErrors").Some.Contains("Missing column: Name in ").IgnoreCase.And.Contains("Version").IgnoreCase);
+		}
+
+		[Test]
+		public void ShouldNotVerifyMultiModifiedTableAsync()
+		{
+			var cfg = BuildConfiguration(_version3Resource);
+
+			var validator = new Tool.hbm2ddl.SchemaValidator(cfg);
+
+			var error = Assert.ThrowsAsync<SchemaValidationException>(() => validator.ValidateAsync());
+			Assert.That(error,
+				Has.Message.EqualTo("Schema validation failed: see list of validation errors")
+					.And.Property("ValidationErrors").Some.Contains("Missing column: Name in ").IgnoreCase.And.Contains("Version").IgnoreCase);
+			Assert.That(error,
+				Has.Property("ValidationErrors").Some.Contains("Missing column: Title in ").IgnoreCase.And.Contains("Version").IgnoreCase);
+			Assert.That(error,
+				Has.Property("ValidationErrors").Some.Contains("Missing sequence or table: ").IgnoreCase.And.Contains("id_table").IgnoreCase);
 		}
 
 		private static Configuration BuildConfiguration(string resource)
