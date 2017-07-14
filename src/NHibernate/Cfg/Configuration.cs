@@ -2404,6 +2404,7 @@ namespace NHibernate.Cfg
 			string defaultCatalog = PropertiesHelper.GetString(Environment.DefaultCatalog, properties, null);
 			string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
 
+			var validationErrors = new List<string>();
 			var iter = TableMappings;
 			foreach (var table in iter)
 			{
@@ -2421,9 +2422,13 @@ namespace NHibernate.Cfg
 						table.Catalog ?? defaultCatalog,
 						table.IsQuoted);
 					if (tableInfo == null)
-						throw new HibernateException("Missing table: " + table.Name);
+					{
+						validationErrors.Add("Missing table: " + table.Name);
+					}
 					else
-						table.ValidateColumns(dialect, mapping, tableInfo);
+					{
+						validationErrors.AddRange(table.ValidateColumns(dialect, mapping, tableInfo));
+					}
 				}
 			}
 
@@ -2433,8 +2438,13 @@ namespace NHibernate.Cfg
 				string key = generator.GeneratorKey();
 				if (!databaseMetadata.IsSequence(key) && !databaseMetadata.IsTable(key))
 				{
-					throw new HibernateException(string.Format("Missing sequence or table: " + key));
+					validationErrors.Add("Missing sequence or table: " + key);
 				}
+			}
+
+			if (validationErrors.Count > 0)
+			{
+				throw new SchemaValidationException("Schema validation failed: see list of validation errors", validationErrors);
 			}
 		}
 

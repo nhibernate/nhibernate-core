@@ -9,6 +9,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 		private int id;
 		private string name;
 		private string description;
+		private string title;
 		private Version previous;
 
 		public virtual int Id
@@ -29,6 +30,11 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 			set { description = value; }
 		}
 
+		public virtual string Title
+		{
+			get { return title; }
+			set { title = value; }
+		}
 
 		public virtual Version Previous
 		{
