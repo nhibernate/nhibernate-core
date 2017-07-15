@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2192
@@ -73,7 +74,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2192
 			threads.ForEach(t => t.Join());
 
 			if (exceptions.Count > 0)
+			{
 				throw exceptions[0];
+			}
 
 			results.ForEach(r => Assert.That(r, Is.EqualTo(2)));
 		}
@@ -83,25 +86,29 @@ namespace NHibernate.Test.NHSpecificTest.NH2192
 		{
 			List<Exception> exceptions = new List<Exception>();
 			Func<int> result = FetchRowResults;
-			List<IAsyncResult> results = new List<IAsyncResult>();
+			List<Task<int>> tasks = new List<Task<int>>();
 
-			for (int i=0; i<_threadCount; i++)
-				results.Add(result.BeginInvoke(null, null));
+			for (int i = 0; i < _threadCount; i++)
+			{
+				tasks.Add(Task.Run<int>(result));
+			}
 
-			results.ForEach(r =>
+			tasks.ForEach(r =>
+			{
+				try
 				{
-					try
-					{
-						Assert.That(result.EndInvoke(r), Is.EqualTo(2));
-					}
-					catch (Exception e)
-					{
-						exceptions.Add(e);
-					}
-				});
+					Assert.That(r.Result, Is.EqualTo(2));
+				}
+				catch (Exception e)
+				{
+					exceptions.Add(e);
+				}
+			});
 
 			if (exceptions.Count > 0)
+			{
 				throw exceptions[0];
+			}
 		}
 
 		private int FetchRowResults()
