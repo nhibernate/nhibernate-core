@@ -64,6 +64,19 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 		[Theory]
 		public void ConnectionPoolCorruptionAfterDeadlock(bool distributed, bool disposeSessionBeforeScope)
 		{
+			if (distributed)
+			{
+#if NETCOREAPP2_0
+				Assert.Ignore("This platform does not support distributed transactions.");
+#endif
+			}
+			else
+			{
+#if NETCOREAPP2_0
+				Assert.Ignore("Enlisting in Ambient transactions is not supported by System.Data.SqlClient.");
+#endif
+			}
+
 			var tryCount = 0;
 			var id = 1;
 			do

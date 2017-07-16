@@ -50,6 +50,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2420
 		}
 
 		[Test]
+#if NETCOREAPP2_0
+		[Ignore("This platform does not support distributed transactions.")]
+#endif
 		public void ShouldBeAbleToReleaseSuppliedConnectionAfterDistributedTransaction()
 		{
 			string connectionString = FetchConnectionStringFromConfiguration();

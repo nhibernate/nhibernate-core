@@ -50,7 +50,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3583
 				Assert.That(result.Count, Is.EqualTo(1));
 			}
 		}
+
 		[Test]
+#if NETCOREAPP2_0
+		[Ignore("This platform does not support distributed transactions.")]
+#endif
 		public void ShouldAutoFlushWhenInDistributedTransaction()
 		{
 			using (new TransactionScope())

@@ -45,6 +45,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2176
 		// Whilst this bug seems specific to Oracle I think it is valid to run the
 		// test against all database types.
 		[Test]
+#if NETCOREAPP2_0
+		[Ignore("This platform does not support distributed transactions.")]
+#endif
 		public void MultipleConsecutiveTransactionScopesCanBeUsedInsideASingleSession()
 		{
 			using (var s = OpenSession())

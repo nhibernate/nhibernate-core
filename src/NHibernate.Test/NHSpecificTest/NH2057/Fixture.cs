@@ -8,6 +8,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2057
 	public class Fixture : BugTestCase
 	{
 		[Test]
+#if NETCOREAPP2_0
+		[Ignore("This platform does not support distributed transactions.")]
+#endif
 		public void WillCloseWhenUsingDTC()
 		{
 			ISession s;

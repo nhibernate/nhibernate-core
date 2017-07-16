@@ -37,6 +37,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 		}
 
 		[Test]
+#if NETCOREAPP2_0
+		[Ignore("This platform does not support distributed transactions.")]
+#endif
 		public async Task When_using_DTC_HiLo_knows_to_create_isolated_DTC_transactionAsync()
 		{
 			if (!Dialect.SupportsConcurrentWritingConnections)
@@ -76,8 +79,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			Assert.AreNotEqual(scalar1, scalar2, "HiLo must run with in its own transaction");
 		}
 
-
 		[Test]
+#if NETCOREAPP2_0
+		[Ignore("This platform does not support distributed transactions.")]
+#endif
 		public async Task When_commiting_items_in_DTC_transaction_will_add_items_to_2nd_level_cacheAsync()
 		{
 			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
@@ -131,6 +136,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 		}
 
 		[Test]
+#if NETCOREAPP2_0
+		[Ignore("This platform does not support distributed transactions.")]
+#endif
 		public async Task When_committing_transaction_scope_will_commit_transactionAsync()
 		{
 			object id;
@@ -178,6 +186,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 		}
 
 		[Test]
+#if NETCOREAPP2_0
+		[Ignore("This platform does not support distributed transactions.")]
+#endif
 		public async Task When_using_two_sessions_with_explicit_flushAsync()
 		{
 			if (!Dialect.SupportsConcurrentWritingConnectionsInSameTransaction)
@@ -218,6 +229,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 		}
 
 		[Test]
+#if NETCOREAPP2_0
+		[Ignore("This platform does not support distributed transactions.")]
+#endif
 		public async Task When_using_two_sessionsAsync()
 		{
 			if (!Dialect.SupportsConcurrentWritingConnectionsInSameTransaction)
