@@ -1,5 +1,5 @@
 using System.Linq;
-using System.Linq.Dynamic;
+using System.Linq.Dynamic.Core;
 using NHibernate.Linq;
 using NUnit.Framework;
 
