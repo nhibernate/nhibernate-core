@@ -206,7 +206,6 @@ namespace NHibernate.Transaction
 				_session = session ?? throw new ArgumentNullException(nameof(session));
 				_originalTransaction = transaction ?? throw new ArgumentNullException(nameof(transaction));
 				EnlistedTransaction = transaction.Clone();
-				EnlistedTransaction.TransactionCompleted += TransactionCompleted;
 				_systemTransactionCompletionLockTimeout = systemTransactionCompletionLockTimeout;
 				_useConnectionOnSystemTransactionPrepare = useConnectionOnSystemTransactionPrepare;
 			}
@@ -342,23 +341,24 @@ namespace NHibernate.Transaction
 						// the transaction scope disposal.
 						Lock();
 
-						_logger.Debug("Prepared and done for system transaction");
-						// We do not have anything more to do in second phases callbacks: the remaining work is handled in
-						// transaction completion event, which always executes, contrary to second phases callbacks which
-						// do not, depending on the rollback cases.
-						// This saves a thread when distributed.
-						preparingEnlistment.Done();
+						_logger.Debug("Prepared for system transaction");
+						preparingEnlistment.Prepared();
 					}
 					catch (Exception exception)
 					{
 						_logger.Error("System transaction prepare phase failed", exception);
-						Lock();
-						preparingEnlistment.ForceRollback(exception);
+						try
+						{
+							CompleteTransaction(false);
+						}
+						finally
+						{
+							preparingEnlistment.ForceRollback(exception);
+						}
 					}
 				}
 			}
 
-			// With Done call above, should never be called.
 			void IEnlistmentNotification.Commit(Enlistment enlistment)
 				=> ProcessSecondPhase(enlistment, true);
 
@@ -367,7 +367,6 @@ namespace NHibernate.Transaction
 			void IEnlistmentNotification.Rollback(Enlistment enlistment)
 				=> ProcessSecondPhase(enlistment, false);
 
-			// With Done call above, should never be called.
 			void IEnlistmentNotification.InDoubt(Enlistment enlistment)
 				=> ProcessSecondPhase(enlistment, null);
 
@@ -387,34 +386,32 @@ namespace NHibernate.Transaction
 								? "Committing system transaction"
 								: "Rolled back system transaction"
 							: "System transaction is in doubt");
-					// we have not much to do here, since it is the actual
-					// DB connection that will commit/rollback the transaction
-					// After transaction actions are raised from TransactionCompleted event.
 
-					enlistment.Done();
+					try
+					{
+						CompleteTransaction(success ?? false);
+					}
+					finally
+					{
+						enlistment.Done();
+					}
 				}
 			}
 
 			#endregion
 
 			/// <summary>
-			/// Handle the transaction completion event. Notify <see cref="ConnectionManager"/> of the end of the
+			/// Handle the transaction completion. Notify <see cref="ConnectionManager"/> of the end of the
 			/// transaction. Notify end of transaction to the session and to <see cref="ConnectionManager.DependentSessions"/>
 			/// if any. Close sessions requiring it then cleanup transaction contextes and then <see cref="Unlock"/> blocked
 			/// threads.
 			/// </summary>
-			/// <param name="sender">The object issuing the event.</param>
-			/// <param name="e">The event argument. <see cref="TransactionEventArgs.Transaction"/> is not guaranteed to
-			/// be the transaction on which the event was set, especially when it was set on a clone.</param>
-			protected virtual void TransactionCompleted(object sender, TransactionEventArgs e)
+			/// <param name="isCommitted"><see langword="true"/> if the transaction is committed, <see langword="false"/>
+			/// otherwise.</param>
+			protected virtual void CompleteTransaction(bool isCommitted)
 			{
-				// This event may execute before second phase, so we cannot try to get the success from second phase.
-				// Using this event is required by example in case the prepare phase failed and called force rollback:
-				// no second phase would occur for this ressource. Maybe this may happen in some other circumstances
-				// too.
 				try
 				{
-					EnlistedTransaction.TransactionCompleted -= TransactionCompleted;
 					// Allow transaction completed actions to run while others stay blocked.
 					_bypassLock.Value = true;
 					using (new SessionIdLoggingContext(_session.SessionId))
@@ -436,11 +433,10 @@ namespace NHibernate.Transaction
 							// within scopes, although mixing is not advised.
 							if (!ShouldCloseSessionOnSystemTransactionCompleted)
 								_session.ConnectionManager.EnlistIfRequired(null);
-
-							var wasSuccessful = GetTransactionStatus() == TransactionStatus.Committed;
-							_session.AfterTransactionCompletion(wasSuccessful, null);
+							
+							_session.AfterTransactionCompletion(isCommitted, null);
 							foreach (var dependentSession in _session.ConnectionManager.DependentSessions)
-								dependentSession.AfterTransactionCompletion(wasSuccessful, null);
+								dependentSession.AfterTransactionCompletion(isCommitted, null);
 
 							Cleanup(_session);
 						}
