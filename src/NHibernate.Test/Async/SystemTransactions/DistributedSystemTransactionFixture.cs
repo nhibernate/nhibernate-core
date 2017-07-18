@@ -14,6 +14,8 @@ using System.Threading;
 using System.Transactions;
 using log4net;
 using log4net.Repository.Hierarchy;
+using NHibernate.Cfg;
+using NHibernate.Engine;
 using NHibernate.Linq;
 using NHibernate.Test.TransactionTest;
 using NUnit.Framework;
@@ -26,6 +28,7 @@ namespace NHibernate.Test.SystemTransactions
 	{
 		private static readonly ILog _log = LogManager.GetLogger(typeof(DistributedSystemTransactionFixtureAsync));
 		protected override bool UseConnectionOnSystemTransactionPrepare => true;
+		protected override bool AutoJoinTransaction => true;
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 			=> dialect.SupportsDistributedTransactions && base.AppliesTo(dialect);
@@ -434,6 +437,8 @@ namespace NHibernate.Test.SystemTransactions
 				using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
 					ForceEscalationToDistributedTx.Escalate();
+					if (!AutoJoinTransaction)
+						s.JoinTransaction();
 					// Acquire the connection
 					var count = await (s.Query<Person>().CountAsync());
 					Assert.That(count, Is.EqualTo(0), "Unexpected initial entity count.");
@@ -442,6 +447,8 @@ namespace NHibernate.Test.SystemTransactions
 				// No dodge here please! Allow to check chaining usages do not fail.
 				using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
+					if (!AutoJoinTransaction)
+						s.JoinTransaction();
 					await (s.SaveAsync(new Person()));
 
 					ForceEscalationToDistributedTx.Escalate();
@@ -457,12 +464,16 @@ namespace NHibernate.Test.SystemTransactions
 				using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
 					ForceEscalationToDistributedTx.Escalate();
+					if (!AutoJoinTransaction)
+						s.JoinTransaction();
 					var count = await (s.Query<Person>().CountAsync());
 					Assert.That(count, Is.EqualTo(1), "Unexpected entity count after committed insert.");
 					tx.Complete();
 				}
 				using (new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
+					if (!AutoJoinTransaction)
+						s.JoinTransaction();
 					await (s.SaveAsync(new Person()));
 
 					ForceEscalationToDistributedTx.Escalate();
@@ -484,6 +495,8 @@ namespace NHibernate.Test.SystemTransactions
 				using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
 					ForceEscalationToDistributedTx.Escalate();
+					if (!AutoJoinTransaction)
+						s.JoinTransaction();
 					var count = await (s.Query<Person>().CountAsync());
 					Assert.That(count, Is.EqualTo(1), "Unexpected entity count after rollback-ed insert.");
 					tx.Complete();
@@ -499,10 +512,12 @@ namespace NHibernate.Test.SystemTransactions
 			// NpgsqlOperationInProgressException: The connection is already in state 'Executing'
 			// Not much an issue since it is advised to not use ConnectionReleaseMode.OnClose.
 			using (var s = OpenSession())
-			//using (var s = Sfi.WithOptions().ConnectionReleaseMode(ConnectionReleaseMode.OnClose).OpenSession())
+			//using (var s = WithOptions().ConnectionReleaseMode(ConnectionReleaseMode.OnClose).OpenSession())
 			{
 				using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
+					if (!AutoJoinTransaction)
+						s.JoinTransaction();
 					await (s.SaveAsync(new Person()));
 
 					ForceEscalationToDistributedTx.Escalate();
@@ -582,7 +597,7 @@ namespace NHibernate.Test.SystemTransactions
 			const string notNullData = "test";
 			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
-				using (var s = Sfi.OpenSession())
+				using (var s = OpenSession())
 				{
 					var person = new CacheablePerson { NotNullData = notNullData };
 					await (s.SaveAsync(person));
@@ -617,7 +632,7 @@ namespace NHibernate.Test.SystemTransactions
 			// entity to load, allowing the session to not use the connection at all.
 			// Will fail if a transaction manager tries to enlist user supplied connection. Do
 			// not add a transaction scope below.
-			using (var s = Sfi.WithOptions().Connection(connection).OpenSession())
+			using (var s = WithOptions().Connection(connection).OpenSession())
 			{
 				CacheablePerson person = null;
 				Assert.DoesNotThrowAsync(async () => person = await (s.LoadAsync<CacheablePerson>(id)), "Failed loading entity from second level cache.");
@@ -633,6 +648,8 @@ namespace NHibernate.Test.SystemTransactions
 			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
 				ForceEscalationToDistributedTx.Escalate();
+				if (!AutoJoinTransaction)
+					s.JoinTransaction();
 				await (s.SaveAsync(new Person()));
 
 				await (s.FlushAsync());
@@ -651,6 +668,8 @@ namespace NHibernate.Test.SystemTransactions
 			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
 				ForceEscalationToDistributedTx.Escalate();
+				if (!AutoJoinTransaction)
+					s.JoinTransaction();
 				await (s.SaveAsync(new Person()));
 
 				await (s.FlushAsync());
@@ -731,5 +750,20 @@ namespace NHibernate.Test.SystemTransactions
 	public class DistributedSystemTransactionWithoutConnectionFromPrepareFixtureAsync : DistributedSystemTransactionFixtureAsync
 	{
 		protected override bool UseConnectionOnSystemTransactionPrepare => false;
+	}
+
+	[TestFixture]
+	public class DistributedSystemTransactionWithoutAutoJoinTransactionAsync : DistributedSystemTransactionFixtureAsync
+	{
+		protected override bool AutoJoinTransaction => false;
+
+		protected override void Configure(Configuration configuration)
+		{
+			base.Configure(configuration);
+			DisableConnectionAutoEnlist(configuration);
+		}
+
+		protected override bool AppliesTo(ISessionFactoryImplementor factory)
+			=> base.AppliesTo(factory) && factory.ConnectionProvider.Driver.SupportsEnlistmentWhenAutoEnlistmentIsDisabled;
 	}
 }

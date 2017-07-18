@@ -1,7 +1,10 @@
 using System;
+using System.Text.RegularExpressions;
 using NHibernate.Cfg;
+using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Test.TransactionTest;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.SystemTransactions
@@ -12,6 +15,7 @@ namespace NHibernate.Test.SystemTransactions
 			=> factory.ConnectionProvider.Driver.SupportsSystemTransactions && base.AppliesTo(factory);
 
 		protected abstract bool UseConnectionOnSystemTransactionPrepare { get; }
+		protected abstract bool AutoJoinTransaction { get; }
 
 		protected override void Configure(Configuration configuration)
 		{
@@ -22,12 +26,56 @@ namespace NHibernate.Test.SystemTransactions
 					UseConnectionOnSystemTransactionPrepare.ToString());
 		}
 
+		protected void DisableConnectionAutoEnlist(Configuration configuration)
+		{
+			var connectionString = configuration.GetProperty(Cfg.Environment.ConnectionString);
+			var autoEnlistmentKeyword = "Enlist";
+			var autoEnlistmentKeywordPattern = autoEnlistmentKeyword;
+			if (configuration.GetDerivedProperties().TryGetValue(Cfg.Environment.ConnectionDriver, out var driver) &&
+				typeof(MySqlDataDriver).IsAssignableFrom(ReflectHelper.ClassForName(driver)))
+			{
+				autoEnlistmentKeyword = "AutoEnlist";
+				autoEnlistmentKeywordPattern = "Auto ?Enlist";
+			}
+			// Purge any previous enlist
+			connectionString = Regex.Replace(
+				connectionString, $"[^;\"a-zA-Z]*{autoEnlistmentKeywordPattern}=[^;\"]*", string.Empty,
+				RegexOptions.IgnoreCase | RegexOptions.Multiline);
+			connectionString += $";{autoEnlistmentKeyword}=false;";
+			configuration.SetProperty(Cfg.Environment.ConnectionString, connectionString);
+		}
+
 		protected void IgnoreIfUnsupported(bool explicitFlush)
 		{
 			Assume.That(
 				new[] { explicitFlush, UseConnectionOnSystemTransactionPrepare },
 				Has.Some.EqualTo(true),
 				"Implicit flush cannot work without using connection from system transaction prepare phase");
+		}
+
+		/// <summary>
+		/// Open a session, manually enlisting it into ambient transaction if there is one.
+		/// </summary>
+		/// <returns>An newly opened session.</returns>
+		protected override ISession OpenSession()
+		{
+			if (AutoJoinTransaction)
+				return base.OpenSession();
+
+			var session = Sfi.WithOptions().AutoJoinTransaction(false).OpenSession();
+			if (System.Transactions.Transaction.Current != null)
+				session.JoinTransaction();
+			return session;
+		}
+
+		/// <summary>
+		/// <c>WithOptions</c> having already set up <c>AutoJoinTransaction()</c>
+		/// according to the fixture <see cref="AutoJoinTransaction"/> property.
+		/// </summary>
+		/// <returns>A session builder.</returns>
+		protected ISessionBuilder WithOptions()
+		{
+			return Sfi.WithOptions().AutoJoinTransaction(AutoJoinTransaction);
 		}
 
 		public class AfterTransactionWaitingInterceptor : EmptyInterceptor

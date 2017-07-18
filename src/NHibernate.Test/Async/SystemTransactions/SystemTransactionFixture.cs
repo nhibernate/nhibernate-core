@@ -11,15 +11,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Transactions;
 using NHibernate.Cfg;
-using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Linq;
 using NHibernate.Test.TransactionTest;
-using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.SystemTransactions
@@ -29,7 +26,7 @@ namespace NHibernate.Test.SystemTransactions
 	public class SystemTransactionFixtureAsync : SystemTransactionFixtureBase
 	{
 		protected override bool UseConnectionOnSystemTransactionPrepare => true;
-		protected virtual bool AutoJoinTransaction => true;
+		protected override bool AutoJoinTransaction => true;
 
 		[Test]
 		public async Task WillNotCrashOnPrepareFailureAsync()
@@ -506,22 +503,6 @@ namespace NHibernate.Test.SystemTransactions
 			// Currently always forbidden, whatever UseConnectionOnSystemTransactionEvents.
 			Assert.That(interceptor.AfterException, Is.TypeOf<HibernateException>());
 		}
-
-		protected override ISession OpenSession()
-		{
-			if (AutoJoinTransaction)
-				return base.OpenSession();
-
-			var session = Sfi.WithOptions().AutoJoinTransaction(false).OpenSession();
-			if (System.Transactions.Transaction.Current != null)
-				session.JoinTransaction();
-			return session;
-		}
-
-		protected ISessionBuilder WithOptions()
-		{
-			return Sfi.WithOptions().AutoJoinTransaction(AutoJoinTransaction);
-		}
 	}
 
 	[TestFixture]
@@ -535,21 +516,8 @@ namespace NHibernate.Test.SystemTransactions
 	{
 		protected override void Configure(Configuration configuration)
 		{
-			var connectionString = configuration.GetProperty(Cfg.Environment.ConnectionString);
-			var autoEnlistmentKeyword = "Enlist";
-			var autoEnlistmentKeywordPattern = autoEnlistmentKeyword;
-			if (configuration.GetDerivedProperties().TryGetValue(Cfg.Environment.ConnectionDriver, out var driver) &&
-				typeof(MySqlDataDriver).IsAssignableFrom(ReflectHelper.ClassForName(driver)))
-			{
-				autoEnlistmentKeyword = "AutoEnlist";
-				autoEnlistmentKeywordPattern = "Auto ?Enlist";
-			}
-			// Purge any previous enlist
-			connectionString = Regex.Replace(
-				connectionString, $"[^;\"a-zA-Z]*{autoEnlistmentKeywordPattern}=[^;\"]*", string.Empty,
-				RegexOptions.IgnoreCase | RegexOptions.Multiline);
-			connectionString += $";{autoEnlistmentKeyword}=false;";
-			configuration.SetProperty(Cfg.Environment.ConnectionString, connectionString);
+			base.Configure(configuration);
+			DisableConnectionAutoEnlist(configuration);
 		}
 
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)

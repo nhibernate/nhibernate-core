@@ -4,6 +4,8 @@ using System.Threading;
 using System.Transactions;
 using log4net;
 using log4net.Repository.Hierarchy;
+using NHibernate.Cfg;
+using NHibernate.Engine;
 using NHibernate.Linq;
 using NHibernate.Test.TransactionTest;
 using NUnit.Framework;
@@ -15,6 +17,7 @@ namespace NHibernate.Test.SystemTransactions
 	{
 		private static readonly ILog _log = LogManager.GetLogger(typeof(DistributedSystemTransactionFixture));
 		protected override bool UseConnectionOnSystemTransactionPrepare => true;
+		protected override bool AutoJoinTransaction => true;
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 			=> dialect.SupportsDistributedTransactions && base.AppliesTo(dialect);
@@ -463,6 +466,8 @@ namespace NHibernate.Test.SystemTransactions
 				using (var tx = new TransactionScope())
 				{
 					ForceEscalationToDistributedTx.Escalate();
+					if (!AutoJoinTransaction)
+						s.JoinTransaction();
 					// Acquire the connection
 					var count = s.Query<Person>().Count();
 					Assert.That(count, Is.EqualTo(0), "Unexpected initial entity count.");
@@ -471,6 +476,8 @@ namespace NHibernate.Test.SystemTransactions
 				// No dodge here please! Allow to check chaining usages do not fail.
 				using (var tx = new TransactionScope())
 				{
+					if (!AutoJoinTransaction)
+						s.JoinTransaction();
 					s.Save(new Person());
 
 					ForceEscalationToDistributedTx.Escalate();
@@ -486,12 +493,16 @@ namespace NHibernate.Test.SystemTransactions
 				using (var tx = new TransactionScope())
 				{
 					ForceEscalationToDistributedTx.Escalate();
+					if (!AutoJoinTransaction)
+						s.JoinTransaction();
 					var count = s.Query<Person>().Count();
 					Assert.That(count, Is.EqualTo(1), "Unexpected entity count after committed insert.");
 					tx.Complete();
 				}
 				using (new TransactionScope())
 				{
+					if (!AutoJoinTransaction)
+						s.JoinTransaction();
 					s.Save(new Person());
 
 					ForceEscalationToDistributedTx.Escalate();
@@ -513,6 +524,8 @@ namespace NHibernate.Test.SystemTransactions
 				using (var tx = new TransactionScope())
 				{
 					ForceEscalationToDistributedTx.Escalate();
+					if (!AutoJoinTransaction)
+						s.JoinTransaction();
 					var count = s.Query<Person>().Count();
 					Assert.That(count, Is.EqualTo(1), "Unexpected entity count after rollback-ed insert.");
 					tx.Complete();
@@ -528,10 +541,12 @@ namespace NHibernate.Test.SystemTransactions
 			// NpgsqlOperationInProgressException: The connection is already in state 'Executing'
 			// Not much an issue since it is advised to not use ConnectionReleaseMode.OnClose.
 			using (var s = OpenSession())
-			//using (var s = Sfi.WithOptions().ConnectionReleaseMode(ConnectionReleaseMode.OnClose).OpenSession())
+			//using (var s = WithOptions().ConnectionReleaseMode(ConnectionReleaseMode.OnClose).OpenSession())
 			{
 				using (var tx = new TransactionScope())
 				{
+					if (!AutoJoinTransaction)
+						s.JoinTransaction();
 					s.Save(new Person());
 
 					ForceEscalationToDistributedTx.Escalate();
@@ -611,7 +626,7 @@ namespace NHibernate.Test.SystemTransactions
 			const string notNullData = "test";
 			using (var tx = new TransactionScope())
 			{
-				using (var s = Sfi.OpenSession())
+				using (var s = OpenSession())
 				{
 					var person = new CacheablePerson { NotNullData = notNullData };
 					s.Save(person);
@@ -646,7 +661,7 @@ namespace NHibernate.Test.SystemTransactions
 			// entity to load, allowing the session to not use the connection at all.
 			// Will fail if a transaction manager tries to enlist user supplied connection. Do
 			// not add a transaction scope below.
-			using (var s = Sfi.WithOptions().Connection(connection).OpenSession())
+			using (var s = WithOptions().Connection(connection).OpenSession())
 			{
 				CacheablePerson person = null;
 				Assert.DoesNotThrow(() => person = s.Load<CacheablePerson>(id), "Failed loading entity from second level cache.");
@@ -662,6 +677,8 @@ namespace NHibernate.Test.SystemTransactions
 			using (var tx = new TransactionScope())
 			{
 				ForceEscalationToDistributedTx.Escalate();
+				if (!AutoJoinTransaction)
+					s.JoinTransaction();
 				s.Save(new Person());
 
 				s.Flush();
@@ -680,6 +697,8 @@ namespace NHibernate.Test.SystemTransactions
 			using (var tx = new TransactionScope())
 			{
 				ForceEscalationToDistributedTx.Escalate();
+				if (!AutoJoinTransaction)
+					s.JoinTransaction();
 				s.Save(new Person());
 
 				s.Flush();
@@ -696,6 +715,17 @@ namespace NHibernate.Test.SystemTransactions
 			}
 			// Currently always forbidden, whatever UseConnectionOnSystemTransactionEvents.
 			Assert.That(interceptor.AfterException, Is.TypeOf<HibernateException>());
+		}
+
+		[Test]
+		public void AdditionalJoinDoesNotThrow()
+		{
+			using (new TransactionScope())
+			using (var s = OpenSession())
+			{
+				ForceEscalationToDistributedTx.Escalate();
+				Assert.DoesNotThrow(() => s.JoinTransaction());
+			}
 		}
 
 		private void DodgeTransactionCompletionDelayIfRequired()
@@ -760,5 +790,34 @@ namespace NHibernate.Test.SystemTransactions
 	public class DistributedSystemTransactionWithoutConnectionFromPrepareFixture : DistributedSystemTransactionFixture
 	{
 		protected override bool UseConnectionOnSystemTransactionPrepare => false;
+	}
+
+	[TestFixture]
+	public class DistributedSystemTransactionWithoutAutoJoinTransaction : DistributedSystemTransactionFixture
+	{
+		protected override bool AutoJoinTransaction => false;
+
+		protected override void Configure(Configuration configuration)
+		{
+			base.Configure(configuration);
+			DisableConnectionAutoEnlist(configuration);
+		}
+
+		protected override bool AppliesTo(ISessionFactoryImplementor factory)
+			=> base.AppliesTo(factory) && factory.ConnectionProvider.Driver.SupportsEnlistmentWhenAutoEnlistmentIsDisabled;
+
+		[Test]
+		public void SessionIsNotEnlisted()
+		{
+			using (new TransactionScope())
+			{
+				ForceEscalationToDistributedTx.Escalate();
+				// Dodge the OpenSession override which call JoinTransaction by calling WithOptions().
+				using (var s = WithOptions().OpenSession())
+				{
+					Assert.That(s.GetSessionImplementation().TransactionContext, Is.Null);
+				}
+			}
+		}
 	}
 }
