@@ -88,35 +88,90 @@ namespace NHibernate.Dialect
 			RegisterFunction("round", new StandardSQLFunction("round"));
 		}
 
+		#region private static readonly string[] DialectKeywords = { ... }
+
+		private static readonly string[] DialectKeywords =
+		{
+			"abort",
+			"action",
+			"after",
+			"analyze",
+			"asc",
+			"attach",
+			"autoincrement",
+			"before",
+			"bit",
+			"bool",
+			"boolean",
+			"cascade",
+			"conflict",
+			"counter",
+			"currency",
+			"database",
+			"datetime",
+			"deferrable",
+			"deferred",
+			"desc",
+			"detach",
+			"exclusive",
+			"explain",
+			"fail",
+			"general",
+			"glob",
+			"guid",
+			"ignore",
+			"image",
+			"index",
+			"indexed",
+			"initially",
+			"instead",
+			"isnull",
+			"key",
+			"limit",
+			"logical",
+			"long",
+			"longtext",
+			"memo",
+			"money",
+			"note",
+			"notnull",
+			"ntext",
+			"nvarchar",
+			"offset",
+			"oleobject",
+			"plan",
+			"pragma",
+			"query",
+			"raise",
+			"regexp",
+			"reindex",
+			"rename",
+			"replace",
+			"restrict",
+			"single",
+			"smalldate",
+			"smalldatetime",
+			"smallmoney",
+			"sql_variant",
+			"string",
+			"temp",
+			"temporary",
+			"text",
+			"tinyint",
+			"transaction",
+			"uniqueidentifier",
+			"vacuum",
+			"varbinary",
+			"view",
+			"virtual",
+			"yesno",
+		};
+
+		#endregion
+
 		protected virtual void RegisterKeywords()
 		{
-			RegisterKeyword("int"); // Used in our function templates.
-			RegisterKeyword("integer"); // a commonly-used alias for 'int'
-			RegisterKeyword("tinyint");
-			RegisterKeyword("smallint");
-			RegisterKeyword("bigint");
-			RegisterKeyword("numeric");
-			RegisterKeyword("decimal");
-			RegisterKeyword("bit");
-			RegisterKeyword("money");
-			RegisterKeyword("smallmoney");
-			RegisterKeyword("float");
-			RegisterKeyword("real");
-			RegisterKeyword("datetime");
-			RegisterKeyword("smalldatetime");
-			RegisterKeyword("char");
-			RegisterKeyword("varchar");
-			RegisterKeyword("text");
-			RegisterKeyword("nchar");
-			RegisterKeyword("nvarchar");
-			RegisterKeyword("ntext");
-			RegisterKeyword("binary");
-			RegisterKeyword("varbinary");
-			RegisterKeyword("image");
-			RegisterKeyword("cursor");
-			RegisterKeyword("timestamp");
-			RegisterKeyword("uniqueidentifier");
-			RegisterKeyword("sql_variant");
+			RegisterKeywords(DialectKeywords);
 		}
 
 		protected virtual void RegisterDefaultProperties()
