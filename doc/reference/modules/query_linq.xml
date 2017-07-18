@@ -474,7 +474,7 @@ IList<Cat> oldCats =
       Beginning with NHibernate 5.0, Linq queries can be used for inserting, updating or deleting entities.
       The query defines the data to delete, update or insert, and then <literal>Delete</literal>,
       <literal>Update</literal> and <literal>Insert</literal> queryable extension methods allow to delete it,
-      or instruct in which way it should updated or inserted. Those queries happen entirely inside the
+      or instruct in which way it should be updated or inserted. Those queries happen entirely inside the
       database, without extracting corresponding entities out of the database.
     </para>
     <para>
@@ -487,7 +487,7 @@ IList<Cat> oldCats =
       <para>
         <literal>Insert</literal> method extension expects a NHibernate queryable defining the data source of
         the insert. This data can be entities or a projection. Then it allows specifying the target entity type
-        to insert, and how to convert source data to those target entities. Two forms of target specification
+        to insert, and how to convert source data to those target entities. Three forms of target specification
         exist.
       </para>
       <para>
@@ -498,6 +498,13 @@ IList<Cat> oldCats =
     .Insert()
     .As(c => new Dog { Name = c.Name + "dog", BodyWeight = c.BodyWeight });]]></programlisting>
       <para>
+        Projections can be done with an anonymous object too, but it requires supplying explicitly the target type:
+      </para>
+      <programlisting><![CDATA[session.Query<Cat>()
+    .Where(c => c.BodyWeight > 20)
+    .Insert()
+    .As<Dog>(c => new { Name = c.Name + "dog", BodyWeight = c.BodyWeight });]]></programlisting>
+      <para>
         Or using assignments:
       </para>
       <programlisting><![CDATA[session.Query<Cat>()
@@ -507,7 +514,7 @@ IList<Cat> oldCats =
         .Set(d => d.Name, c => c.Name + "dog")
         .Set(d => d.BodyWeight, c => c.BodyWeight));]]></programlisting>
       <para>
-        In both cases, unspecified properties are not included in the resulting SQL insert.
+        In all cases, unspecified properties are not included in the resulting SQL insert.
         <link linkend="mapping-declaration-version"><literal>version</literal></link> and
         <link linkend="mapping-declaration-timestamp"><literal>timestamp</literal></link> properties are
         exceptions. If not specified, they are inserted with their <literal>seed</literal> value.
@@ -523,7 +530,7 @@ IList<Cat> oldCats =
       <para>
         <literal>Update</literal> method extension expects a queryable defining the entities to update.
         Then it allows specifying which properties should be updated with which values. As for
-        <literal>Insert</literal>, two forms of target specification exist.
+        <literal>Insert</literal>, three forms of target specification exist.
       </para>
       <para>
         Using projection to updated entity:
@@ -533,6 +540,13 @@ IList<Cat> oldCats =
     .Update()
     .As(c => new Cat { BodyWeight = c.BodyWeight / 2 });]]></programlisting>
       <para>
+        Projections can be done with an anonymous object too:
+      </para>
+      <programlisting><![CDATA[session.Query<Cat>()
+    .Where(c => c.BodyWeight > 20)
+    .Update()
+    .As(c => new { BodyWeight = c.BodyWeight / 2 });]]></programlisting>
+      <para>
         Or using assignments:
       </para>
       <programlisting><![CDATA[session.Query<Cat>()
@@ -541,7 +555,7 @@ IList<Cat> oldCats =
     .Assign(a => a
         .Set(c => c.BodyWeight, c => c.BodyWeight / 2));]]></programlisting>
       <para>
-        In both cases, unspecified properties are not included in the resulting SQL update. This could
+        In all cases, unspecified properties are not included in the resulting SQL update. This could
         be changed for <link linkend="mapping-declaration-version"><literal>version</literal></link> and
         <link linkend="mapping-declaration-timestamp"><literal>timestamp</literal></link> properties:
         using <literal>UpdateVersioned</literal> instead of <literal>Update</literal> allows incrementing

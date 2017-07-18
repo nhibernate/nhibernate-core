@@ -46,6 +46,17 @@ namespace NHibernate.Linq
 			return ExecuteUpdate(DmlExpressionRewriter.PrepareExpression(_sourceExpression, expression));
 		}
 
+		/// <summary>
+		/// Specify the assignments and execute the update.
+		/// </summary>
+		/// <param name="expression">The assignments expressed as an anonymous object, e.g.
+		/// <c>x => new { Name = x.Name, Age = x.Age + 5 }</c>. Unset members are ignored and left untouched.</param>
+		/// <returns>The number of updated entities.</returns>
+		public int As(Expression<Func<T, object>> expression)
+		{
+			return ExecuteUpdate(DmlExpressionRewriter.PrepareExpressionFromAnonymous(_sourceExpression, expression));
+		}
+
 		private int ExecuteUpdate(Expression updateExpression)
 		{
 			return _provider.ExecuteDml<T>(_versioned ? QueryMode.UpdateVersioned : QueryMode.Update, updateExpression);

@@ -45,6 +45,18 @@ namespace NHibernate.Linq
 			return ExecuteInsert<TTarget>(DmlExpressionRewriter.PrepareExpression(_sourceExpression, expression));
 		}
 
+		/// <summary>
+		/// Executes the insert, inserting new entities as specified by the expression.
+		/// </summary>
+		/// <typeparam name="TTarget">The type of the entities to insert.</typeparam>
+		/// <param name="expression">The expression projecting a source entity to an anonymous object representing 
+		/// the entity to insert.</param>
+		/// <returns>The number of inserted entities.</returns>
+		public int As<TTarget>(Expression<Func<TSource, object>> expression)
+		{
+			return ExecuteInsert<TTarget>(DmlExpressionRewriter.PrepareExpressionFromAnonymous(_sourceExpression, expression));
+		}
+
 		private int ExecuteInsert<TTarget>(Expression insertExpression)
 		{
 			return _provider.ExecuteDml<TTarget>(QueryMode.Insert, insertExpression);

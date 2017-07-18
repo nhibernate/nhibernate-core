@@ -25,17 +25,49 @@ namespace NHibernate.Linq
 		void AddSettersFromBindings(IEnumerable<MemberBinding> bindings, string path)
 		{
 			foreach (var node in bindings)
+			{
+				var subPath = path + "." + node.Member.Name;
 				switch (node.BindingType)
 				{
 					case MemberBindingType.Assignment:
-						AddSettersFromAssignment((MemberAssignment) node, path + "." + node.Member.Name);
+						AddSettersFromAssignment((MemberAssignment)node, subPath);
 						break;
 					case MemberBindingType.MemberBinding:
-						AddSettersFromBindings(((MemberMemberBinding) node).Bindings, path + "." + node.Member.Name);
+						AddSettersFromBindings(((MemberMemberBinding)node).Bindings, subPath);
 						break;
 					default:
 						throw new InvalidOperationException($"{node.BindingType} is not supported");
 				}
+			}
+		}
+
+		void AddSettersFromAnonymousConstructor(NewExpression newExpression, string path)
+		{
+			// See Members documentation, this property is specifically designed to match constructor arguments values
+			// in the anonymous object case. It can be null otherwise, or non-matching.
+			var argumentMatchingMembers = newExpression.Members;
+			if (argumentMatchingMembers == null || argumentMatchingMembers.Count != newExpression.Arguments.Count)
+				throw new ArgumentException("The expression must be an anonymous initialization, e.g. x => new { Name = x.Name, Age = x.Age + 5 }");
+
+			var i = 0;
+			foreach (var argument in newExpression.Arguments)
+			{
+				var argumentDefinition = argumentMatchingMembers[i];
+				i++;
+				var subPath = path + "." + argumentDefinition.Name;
+				switch (argument.NodeType)
+				{
+					case ExpressionType.New:
+						AddSettersFromAnonymousConstructor((NewExpression)argument, subPath);
+						break;
+					case ExpressionType.MemberInit:
+						AddSettersFromBindings(((MemberInitExpression)argument).Bindings, subPath);
+						break;
+					default:
+						_assignments.Add(subPath.Substring(1), Expression.Lambda(argument, _parameters));
+						break;
+				}
+			}
 		}
 
 		void AddSettersFromAssignment(MemberAssignment assignment, string path)
@@ -89,10 +121,32 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(expression));
 
 			var memberInitExpression = expression.Body as MemberInitExpression ??
-			                           throw new ArgumentException("The expression must be member initialization, e.g. x => new Dog { Name = x.Name, Age = x.Age + 5 }");
+				throw new ArgumentException("The expression must be a member initialization, e.g. x => new Dog { Name = x.Name, Age = x.Age + 5 }, " +
+					// If someone call InsertSyntax<TSource>.As(source => new {...}), the code will fail here, so we have to hint at how to correctly
+					// use anonymous initialization too.
+					"or an anonymous initialization with an explicitly specified target type when inserting");
 
-			var assignments = ExtractAssignments(expression, memberInitExpression);
-			return PrepareExpression<TSource>(sourceExpression, assignments);
+			if (memberInitExpression.Type != typeof(TTarget))
+				throw new TypeMismatchException($"Expecting an expression of exact type {typeof(TTarget).AssemblyQualifiedName} " +
+					$"but got {memberInitExpression.Type.AssemblyQualifiedName}");
+
+			var instance = new DmlExpressionRewriter(expression.Parameters);
+			instance.AddSettersFromBindings(memberInitExpression.Bindings, "");
+			return PrepareExpression<TSource>(sourceExpression, instance._assignments);
+		}
+
+		public static Expression PrepareExpressionFromAnonymous<TSource>(Expression sourceExpression, Expression<Func<TSource, object>> expression)
+		{
+			if (expression == null)
+				throw new ArgumentNullException(nameof(expression));
+
+			// Anonymous initializations are not implemented as member initialization but as plain constructor call.
+			var newExpression = expression.Body as NewExpression ??
+				throw new ArgumentException("The expression must be an anonymous initialization, e.g. x => new { Name = x.Name, Age = x.Age + 5 }");
+
+			var instance = new DmlExpressionRewriter(expression.Parameters);
+			instance.AddSettersFromAnonymousConstructor(newExpression, "");
+			return PrepareExpression<TSource>(sourceExpression, instance._assignments);
 		}
 
 		public static Expression PrepareExpression<TSource>(Expression sourceExpression, IReadOnlyDictionary<string, Expression> assignments)
@@ -103,15 +157,6 @@ namespace NHibernate.Linq
 				ReflectionCache.QueryableMethods.SelectDefinition.MakeGenericMethod(typeof(TSource), lambda.Body.Type),
 				sourceExpression,
 				Expression.Quote(lambda));
-		}
-
-		static Dictionary<string, Expression> ExtractAssignments<TSource, TTarget>(Expression<Func<TSource, TTarget>> expression, MemberInitExpression memberInitExpression)
-		{
-			if (memberInitExpression.Type != typeof(TTarget))
-				throw new TypeMismatchException($"Expecting an expression of exact type {typeof(TTarget).AssemblyQualifiedName} but got {memberInitExpression.Type.AssemblyQualifiedName}");
-			var instance = new DmlExpressionRewriter(expression.Parameters);
-			instance.AddSettersFromBindings(memberInitExpression.Bindings, "");
-			return instance._assignments;
 		}
 	}
 }
