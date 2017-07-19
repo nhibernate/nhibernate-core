@@ -121,62 +121,12 @@ namespace NHibernate.Linq
 		[Obsolete("Please use SetOptions instead.")]
 		public static IQueryable<T> Timeout<T>(this IQueryable<T> query, int timeout)
 			=> query.SetOptions(o => o.SetTimeout(timeout));
-
-		/// <summary>
-		/// Deletes all entities selected by the specified query. The delete operation is performed in the database without reading the entities out of it.
-		/// </summary>
-		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
-		/// <param name="source">The query matching the entities to delete.</param>
-		/// <returns>The number of deleted entities.</returns>
-		public static int Delete<TSource>(this IQueryable<TSource> source)
-		{
-			var provider = GetNhProvider(source);
-			return provider.ExecuteDml<TSource>(QueryMode.Delete, source.Expression);
-		}
-
-		/// <summary>
-		/// Initiate an update for the entities selected by the query. The update operation will be performed in the database without reading the entities out of it.
-		/// </summary>
-		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
-		/// <param name="source">The query matching the entities to update.</param>
-		/// <returns>An update builder, allowing to specify assignments to the entities properties.</returns>
-		public static UpdateSyntax<TSource> Update<TSource>(this IQueryable<TSource> source)
-		{
-			var provider = GetNhProvider(source);
-			return new UpdateSyntax<TSource>(source.Expression, provider, false);
-		}
-
-		/// <summary>
-		/// Initiate a <c>update versioned</c> for the entities selected by the query. The update operation
-		/// will be performed in the database without reading the entities out of it.
-		/// </summary>
-		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
-		/// <param name="source">The query matching the entities to update.</param>
-		/// <returns>An update builder, allowing to specify assignments to the entities properties.</returns>
-		public static UpdateSyntax<TSource> UpdateVersioned<TSource>(this IQueryable<TSource> source)
-		{
-			var provider = GetNhProvider(source);
-			return new UpdateSyntax<TSource>(source.Expression, provider, true);
-		}
-
-		/// <summary>
-		/// Initiate an insert using selected entities as a source. Will use <c>INSERT INTO [...] SELECT FROM [...]</c> in the database.
-		/// </summary>
-		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
-		/// <param name="source">The query matching entities source of the data to insert.</param>
-		/// <returns>An insert builder, allowing to specify target entity class and assignments to its properties.</returns>
-		public static InsertSyntax<TSource> Insert<TSource>(this IQueryable<TSource> source)
-		{
-			var provider = GetNhProvider(source);
-			return new InsertSyntax<TSource>(source.Expression, provider);
-		}
-
 		public static T MappedAs<T>(this T parameter, IType type)
 		{
 			throw new InvalidOperationException("The method should be used inside Linq to indicate a type of a parameter");
 		}
 
-		private static INhQueryProvider GetNhProvider<TInput>(IQueryable<TInput> source)
+		internal static INhQueryProvider GetNhProvider<TSource>(this IQueryable<TSource> source)
 		{
 			if (source == null)
 			{
