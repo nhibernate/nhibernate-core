@@ -473,7 +473,8 @@ IList<Cat> oldCats =
     <para>
       Beginning with NHibernate 5.0, Linq queries can be used for inserting, updating or deleting entities.
       The query defines the data to delete, update or insert, and then <literal>Delete</literal>,
-      <literal>Update</literal> and <literal>Insert</literal> queryable extension methods allow to delete it,
+      <literal>Update</literal>, <literal>UpdateBuilder</literal>, <literal>InsertInto</literal> and
+      <literal>InsertBuilder</literal> queryable extension methods allow to delete it,
       or instruct in which way it should be updated or inserted. Those queries happen entirely inside the
       database, without extracting corresponding entities out of the database.
     </para>
@@ -485,34 +486,34 @@ IList<Cat> oldCats =
     <sect2 id="querylinq-modifying-insert">
       <title>Inserting new entities</title>
       <para>
-        <literal>Insert</literal> method extension expects a NHibernate queryable defining the data source of
-        the insert. This data can be entities or a projection. Then it allows specifying the target entity type
-        to insert, and how to convert source data to those target entities. Three forms of target specification
-        exist.
+        <literal>InsertInto</literal> and <literal>InsertBuilder</literal> method extensions expect a NHibernate
+        queryable defining the data source of the insert. This data can be entities or a projection. Then they
+        allow specifying the target entity type to insert, and how to convert source data to those target
+        entities. Three forms of target specification exist.
       </para>
       <para>
         Using projection to target entity:
       </para>
       <programlisting><![CDATA[session.Query<Cat>()
     .Where(c => c.BodyWeight > 20)
-    .Insert()
-    .As(c => new Dog { Name = c.Name + "dog", BodyWeight = c.BodyWeight });]]></programlisting>
+    .InsertInto(c => new Dog { Name = c.Name + "dog", BodyWeight = c.BodyWeight });]]></programlisting>
       <para>
-        Projections can be done with an anonymous object too, but it requires supplying explicitly the target type:
+        Projections can be done with an anonymous object too, but it requires supplying explicitly the target
+        type, which in turn requires re-specifying the source type:
       </para>
       <programlisting><![CDATA[session.Query<Cat>()
     .Where(c => c.BodyWeight > 20)
-    .Insert()
-    .As<Dog>(c => new { Name = c.Name + "dog", BodyWeight = c.BodyWeight });]]></programlisting>
+    .InsertInto<Cat, Dog>(c => new { Name = c.Name + "dog", BodyWeight = c.BodyWeight });]]></programlisting>
       <para>
         Or using assignments:
       </para>
       <programlisting><![CDATA[session.Query<Cat>()
     .Where(c => c.BodyWeight > 20)
-    .Insert()
-    .Into<Dog>(a => a
-        .Set(d => d.Name, c => c.Name + "dog")
-        .Set(d => d.BodyWeight, c => c.BodyWeight));]]></programlisting>
+    .InsertBuilder()
+    .Into<Dog>()
+    .Value(d => d.Name, c => c.Name + "dog")
+    .Value(d => d.BodyWeight, c => c.BodyWeight)
+    .Insert();]]></programlisting>
       <para>
         In all cases, unspecified properties are not included in the resulting SQL insert.
         <link linkend="mapping-declaration-version"><literal>version</literal></link> and
@@ -528,32 +529,30 @@ IList<Cat> oldCats =
     <sect2 id="querylinq-modifying-update">
       <title>Updating entities</title>
       <para>
-        <literal>Update</literal> method extension expects a queryable defining the entities to update.
-        Then it allows specifying which properties should be updated with which values. As for
-        <literal>Insert</literal>, three forms of target specification exist.
+        <literal>Update</literal> and <literal>UpdateBuilder</literal> method extensions expect a NHibernate
+        queryable defining the entities to update. Then they allow specifying which properties should be
+        updated with which values. As for insertion, three forms of target specification exist.
       </para>
       <para>
         Using projection to updated entity:
       </para>
       <programlisting><![CDATA[session.Query<Cat>()
     .Where(c => c.BodyWeight > 20)
-    .Update()
-    .As(c => new Cat { BodyWeight = c.BodyWeight / 2 });]]></programlisting>
+    .Update(c => new Cat { BodyWeight = c.BodyWeight / 2 });]]></programlisting>
       <para>
         Projections can be done with an anonymous object too:
       </para>
       <programlisting><![CDATA[session.Query<Cat>()
     .Where(c => c.BodyWeight > 20)
-    .Update()
-    .As(c => new { BodyWeight = c.BodyWeight / 2 });]]></programlisting>
+    .Update(c => new { BodyWeight = c.BodyWeight / 2 });]]></programlisting>
       <para>
         Or using assignments:
       </para>
       <programlisting><![CDATA[session.Query<Cat>()
     .Where(c => c.BodyWeight > 20)
-    .Update()
-    .Assign(a => a
-        .Set(c => c.BodyWeight, c => c.BodyWeight / 2));]]></programlisting>
+    .UpdateBuilder()
+    .Set(c => c.BodyWeight, c => c.BodyWeight / 2)
+    .Update();]]></programlisting>
       <para>
         In all cases, unspecified properties are not included in the resulting SQL update. This could
         be changed for <link linkend="mapping-declaration-version"><literal>version</literal></link> and
@@ -561,6 +560,11 @@ IList<Cat> oldCats =
         using <literal>UpdateVersioned</literal> instead of <literal>Update</literal> allows incrementing
         the version. Custom version types (<literal>NHibernate.Usertype.IUserVersionType</literal>) are
         not supported.
+      </para>
+      <para>
+        When using projection to updated entity, please note that the constructed entity must have the
+        exact same type than the underlying queryable source type. Attempting to project to any other class
+        (anonymous projections excepted) will fail.
       </para>
     </sect2>
 
