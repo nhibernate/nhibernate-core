@@ -334,7 +334,7 @@ namespace NHibernate.Event.Default
 		/// </returns>
 		protected virtual bool SubstituteValuesIfNecessary(object entity, object id, object[] values, IEntityPersister persister, ISessionImplementor source)
 		{
-			bool substitute = source.Interceptor.OnSave(entity, id, values, persister.PropertyNames, persister.PropertyTypes);
+			bool substitute = false;
 
 			//keep the existing version number in the case of replicate!
 			if (persister.IsVersioned)
@@ -343,6 +343,9 @@ namespace NHibernate.Event.Default
 				object versionValue = values[persister.VersionProperty];
 				substitute |= Versioning.SeedVersion(values, persister.VersionProperty, persister.VersionType, persister.IsUnsavedVersion(versionValue), source);
 			}
+
+			// intercept value after set of new version
+			substitute |= source.Interceptor.OnSave(entity, id, values, persister.PropertyNames, persister.PropertyTypes);
 			return substitute;
 		}
 
