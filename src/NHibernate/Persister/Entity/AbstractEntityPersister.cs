@@ -2832,7 +2832,7 @@ namespace NHibernate.Persister.Entity
 						session.Batcher.AbortBatch(e);
 					}
 
-					throw new StaleObjectStateException(EntityName, id);
+					throw new StaleObjectStateException($"{EntityName} Version: Existing[{oldVersion}]-> New[{fields[VersionProperty]}]", id);
 				}
 				catch (Exception e)
 				{

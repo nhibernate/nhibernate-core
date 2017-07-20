@@ -371,7 +371,7 @@ namespace NHibernate.Event.Default
 					{
 						source.Factory.StatisticsImplementor.OptimisticFailure(entityName);
 					}
-					throw new StaleObjectStateException(persister.EntityName, id);
+					throw new StaleObjectStateException($"{persister.EntityName} Version: Existing[{persister.GetVersion(target)}]-> New[{persister.GetVersion(entity)}].", id);
 				}
 
 				// cascade first, so that all unsaved objects get their
