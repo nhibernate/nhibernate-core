@@ -323,6 +323,11 @@ namespace NHibernate.Test.Linq
 				Assert.AreEqual(1, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.TrimStart('h') == "eh")));
 				Assert.AreEqual(1, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.TrimEnd('h') == "he")));
 
+				// Check when passed as array (new overloads in .NET Core App 2.0).
+				Assert.AreEqual(1, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.Trim(new [] { 'h' }) == "e")));
+				Assert.AreEqual(1, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.TrimStart(new[] { 'h' }) == "eh")));
+				Assert.AreEqual(1, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.TrimEnd(new[] { 'h' }) == "he")));
+
 				// Let it rollback to get rid of temporary changes.
 			}
 		}
