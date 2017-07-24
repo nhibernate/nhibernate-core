@@ -223,8 +223,6 @@
 				<include name="*.dll"/>
 			</fileset>
 		</copy>
-		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/mysql/NHibernate.Test.last-results.xml" />
 	</target>
 
 	<script language="C#" prefix="testResult">
