@@ -63,6 +63,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2296
 		[Test]
 		public async Task TestAsync()
 		{
+			// This test causes lazy loading of products to use the first query, restricted to id, as a "in (sub-query)" clause.
+			if (!Dialect.SupportsSubSelectsWithPagingAsInPredicateRhs)
+				Assert.Ignore("Current dialect does not support paging within IN sub-queries");
+
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{

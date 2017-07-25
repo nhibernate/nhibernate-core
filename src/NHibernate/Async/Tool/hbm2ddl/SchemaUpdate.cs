@@ -26,6 +26,25 @@ namespace NHibernate.Tool.hbm2ddl
 	public partial class SchemaUpdate
 	{
 
+		private async Task InitializeAsync(CancellationToken cancellationToken = default(CancellationToken))
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			if (wasInitialized)
+			{
+				return;
+			}
+
+			string autoKeyWordsImport = PropertiesHelper.GetString(Environment.Hbm2ddlKeyWords, configuration.Properties, "not-defined");
+			autoKeyWordsImport = autoKeyWordsImport.ToLowerInvariant();
+			if (autoKeyWordsImport == Hbm2DDLKeyWords.AutoQuote)
+			{
+				await (SchemaMetadataUpdater.UpdateAsync(configuration, dialect, cancellationToken)).ConfigureAwait(false);
+				SchemaMetadataUpdater.QuoteTableAndColumns(configuration, dialect);
+			}
+
+			wasInitialized = true;
+		}
+
 		public static async Task MainAsync(string[] args, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -126,12 +145,7 @@ namespace NHibernate.Tool.hbm2ddl
 			cancellationToken.ThrowIfCancellationRequested();
 			log.Info("Running hbm2ddl schema update");
 
-			string autoKeyWordsImport = PropertiesHelper.GetString(Environment.Hbm2ddlKeyWords, configuration.Properties, "not-defined");
-			autoKeyWordsImport = autoKeyWordsImport.ToLowerInvariant();
-			if (autoKeyWordsImport == Hbm2DDLKeyWords.AutoQuote)
-			{
-				await (SchemaMetadataUpdater.QuoteTableAndColumnsAsync(configuration, cancellationToken)).ConfigureAwait(false);
-			}
+			await (InitializeAsync(cancellationToken)).ConfigureAwait(false);
 
 			DbConnection connection;
 			DbCommand stmt = null;

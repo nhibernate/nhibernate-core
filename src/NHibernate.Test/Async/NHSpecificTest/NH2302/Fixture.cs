@@ -9,6 +9,7 @@
 
 
 using System.Data;
+using NHibernate.Dialect;
 using NHibernate.Mapping;
 using NUnit.Framework;
 
@@ -135,6 +136,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2302
 				[Test]
 				public async Task BlobWithoutLengthAsync()
 				{
+					if (Dialect is MySQLDialect)
+						Assert.Ignore("Not fixed for MySQLDialect, still generating a varchar(255) column for StringClob without length");
 					int id;
 					// buildup a string the exceed the mapping
 					string str = GetFixedLengthString12000();

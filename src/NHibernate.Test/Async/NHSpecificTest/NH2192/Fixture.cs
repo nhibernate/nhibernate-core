@@ -11,11 +11,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2192
 {
-	using System.Threading.Tasks;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{

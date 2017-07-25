@@ -171,6 +171,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 		{
 			if (!TestDialect.SupportsConcurrentTransactions)
 				Assert.Ignore(Dialect.GetType().Name + " does not support concurrent transactions.");
+			if (!TestDialect.SupportsDistributedTransactions)
+				Assert.Ignore(Dialect.GetType().Name + " does not support distributed transactions.");
 
 			object id1, id2;
 			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
@@ -209,6 +211,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 		{
 			if (!TestDialect.SupportsConcurrentTransactions)
 				Assert.Ignore(Dialect.GetType().Name + " does not support concurrent transactions.");
+			if (!TestDialect.SupportsDistributedTransactions)
+				Assert.Ignore(Dialect.GetType().Name + " does not support distributed transactions.");
 
 			object id1, id2;
 			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))

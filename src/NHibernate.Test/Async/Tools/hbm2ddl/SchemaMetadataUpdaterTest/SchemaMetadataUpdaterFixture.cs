@@ -8,13 +8,16 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using NHibernate.Cfg;
+using NHibernate.Dialect;
+using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 {
@@ -35,8 +38,8 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 				var metaData = dialect.GetDataBaseSchema(connectionHelper.Connection);
 				var reserved = metaData.GetReservedWords();
 				Assert.That(reserved, Is.Not.Empty);
-				Assert.That(reserved, Has.Member("SELECT"));
-				Assert.That(reserved, Has.Member("FROM"));
+				Assert.That(reserved, Has.Member("SELECT").IgnoreCase);
+				Assert.That(reserved, Has.Member("FROM").IgnoreCase);
 			}
 			finally
 			{
@@ -47,7 +50,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 		[Test]
 		public async Task UpdateReservedWordsInDialectAsync()
 		{
-			var reservedDb = new HashSet<string>();
+			var reservedDb = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			var configuration = TestConfigurationHelper.GetDefaultConfiguration();
 			var dialect = Dialect.Dialect.GetDialect(configuration.Properties);
 			var connectionHelper = new ManagedProviderConnectionHelper(configuration.Properties);
@@ -67,8 +70,96 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 
 			var sf = (ISessionFactoryImplementor) configuration.BuildSessionFactory();
 			await (SchemaMetadataUpdater.UpdateAsync(sf, CancellationToken.None));
-			var match = reservedDb.Intersect(sf.Dialect.Keywords);
+			var match = reservedDb.Intersect(sf.Dialect.Keywords, StringComparer.OrdinalIgnoreCase);
+
+			// tests that nothing in the first metaData.GetReservedWords() is left out of the second metaData.GetReservedWords() call.
+			// i.e. always passes.
 			Assert.That(match, Is.EquivalentTo(reservedDb));
+		}
+
+		[Test]
+		public async Task EnsureReservedWordsHardCodedInDialectAsync()
+		{
+			var reservedDb = new HashSet<string>();
+			var configuration = TestConfigurationHelper.GetDefaultConfiguration();
+			var dialect = Dialect.Dialect.GetDialect(configuration.Properties);
+			var connectionHelper = new ManagedProviderConnectionHelper(configuration.Properties);
+			await (connectionHelper.PrepareAsync(CancellationToken.None));
+			try
+			{
+				var metaData = dialect.GetDataBaseSchema(connectionHelper.Connection);
+				foreach (var rw in metaData.GetReservedWords())
+				{
+					if (rw.Contains(" ")) continue;
+					reservedDb.Add(rw.ToLowerInvariant());
+				}
+			}
+			finally
+			{
+				connectionHelper.Release();
+			}
+
+			var sf = (ISessionFactoryImplementor)configuration.BuildSessionFactory();
+
+			// use the dialect as configured, with no update
+			var match = reservedDb.Intersect(sf.Dialect.Keywords).ToList();
+
+			// tests that nothing in metaData.GetReservedWords() is left out of the Dialect.Keywords (without a refresh).
+			var differences = reservedDb.Except(match).ToList();
+			if (differences.Count > 0)
+			{
+				Console.WriteLine("Update Dialect {0} with RegisterKeyword:", sf.Dialect.GetType().Name);
+				foreach (var keyword in differences.OrderBy(x => x))
+				{
+					Console.WriteLine("  RegisterKeyword(\"{0}\");", keyword);
+				}
+			}
+
+			if (sf.ConnectionProvider.Driver is OdbcDriver)
+			{
+				Assert.Inconclusive("ODBC has excess keywords reserved");
+			}
+
+			Assert.That(match, Is.EquivalentTo(reservedDb));
+		}
+
+		[Test, Explicit]
+		public async Task CheckForExcessReservedWordsHardCodedInDialectAsync()
+		{
+			var reservedDb = new HashSet<string>();
+			var configuration = TestConfigurationHelper.GetDefaultConfiguration();
+			var dialect = Dialect.Dialect.GetDialect(configuration.Properties);
+			var connectionHelper = new ManagedProviderConnectionHelper(configuration.Properties);
+			await (connectionHelper.PrepareAsync(CancellationToken.None));
+			try
+			{
+				var metaData = dialect.GetDataBaseSchema(connectionHelper.Connection);
+				foreach (var rw in metaData.GetReservedWords())
+				{
+					reservedDb.Add(rw.ToLowerInvariant());
+				}
+			}
+			finally
+			{
+				connectionHelper.Release();
+			}
+
+			var sf = (ISessionFactoryImplementor)configuration.BuildSessionFactory();
+
+			// use the dialect as configured, with no update
+			// tests that nothing in Dialect.Keyword is not in metaData.GetReservedWords()
+			var differences = sf.Dialect.Keywords.Except(reservedDb).Except(AnsiSqlKeywords.Sql2003).ToList();
+			if (differences.Count > 0)
+			{
+				Console.WriteLine("Excess RegisterKeyword in Dialect {0}:", sf.Dialect.GetType().Name);
+				foreach (var keyword in differences.OrderBy(x => x))
+				{
+					Console.WriteLine("  RegisterKeyword(\"{0}\");", keyword);
+				}
+			}
+
+			// Don't fail incase the driver returns nothing.
+			// This is an info-only test.
 		}
 
 		[Test]
@@ -78,7 +169,11 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 			configuration.AddResource("NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest.HeavyEntity.hbm.xml",
 																GetType().Assembly);
 
-			await (SchemaMetadataUpdater.QuoteTableAndColumnsAsync(configuration, CancellationToken.None));
+			var dialect = Dialect.Dialect.GetDialect(configuration.GetDerivedProperties());
+			dialect.Keywords.Add("Abracadabra");
+
+			await (SchemaMetadataUpdater.UpdateAsync(configuration, dialect, CancellationToken.None));
+			SchemaMetadataUpdater.QuoteTableAndColumns(configuration, dialect);
 
 			var cm = configuration.GetClassMapping(typeof(Order));
 			Assert.That(cm.Table.IsQuoted);
@@ -86,13 +181,14 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 			Assert.That(GetColumnByName(culs, "From").IsQuoted);
 			Assert.That(GetColumnByName(culs, "And").IsQuoted);
 			Assert.That(GetColumnByName(culs, "Select").IsQuoted);
+			Assert.That(GetColumnByName(culs, "Abracadabra").IsQuoted);
 			Assert.That(!GetColumnByName(culs, "Name").IsQuoted);
 		}
 
 		[Test]
 		public async Task AutoQuoteTableAndColumnsAtStratupIncludeKeyWordsImportAsync()
 		{
-			var reservedDb = new HashSet<string>();
+			var reservedDb = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			var configuration = TestConfigurationHelper.GetDefaultConfiguration();
 			var dialect = Dialect.Dialect.GetDialect(configuration.Properties);
 			var connectionHelper = new ManagedProviderConnectionHelper(configuration.Properties);
@@ -114,8 +210,8 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 			configuration.AddResource("NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest.HeavyEntity.hbm.xml",
 																GetType().Assembly);
 			var sf = (ISessionFactoryImplementor)configuration.BuildSessionFactory();
-			var match = reservedDb.Intersect(sf.Dialect.Keywords);
-			Assert.That(match, Is.EquivalentTo(reservedDb));
+			var match = reservedDb.Intersect(sf.Dialect.Keywords, StringComparer.OrdinalIgnoreCase);
+			Assert.That(match, Is.EquivalentTo(reservedDb).IgnoreCase);
 		}
 
 		private static Column GetColumnByName(IEnumerable<Column> columns, string colName)
@@ -162,7 +258,11 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 			configuration.AddResource("NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest.HeavyEntity.hbm.xml",
 																GetType().Assembly);
 
-			await (SchemaMetadataUpdater.QuoteTableAndColumnsAsync(configuration, CancellationToken.None));
+			var dialect = Dialect.Dialect.GetDialect(configuration.GetDerivedProperties());
+			dialect.Keywords.Add("Abracadabra");
+
+			await (SchemaMetadataUpdater.UpdateAsync(configuration, dialect, CancellationToken.None));
+			SchemaMetadataUpdater.QuoteTableAndColumns(configuration, dialect);
 
 			var cm = configuration.GetClassMapping(typeof(Order));
 			Assert.That(cm.Table.IsQuoted);
@@ -170,6 +270,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 			Assert.That(GetColumnByName(culs, "From").IsQuoted);
 			Assert.That(GetColumnByName(culs, "And").IsQuoted);
 			Assert.That(GetColumnByName(culs, "Select").IsQuoted);
+			Assert.That(GetColumnByName(culs, "Abracadabra").IsQuoted);
 			Assert.That(!GetColumnByName(culs, "Name").IsQuoted);
 		}
 	}

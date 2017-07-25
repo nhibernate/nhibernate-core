@@ -37,14 +37,16 @@ namespace NHibernate.Tool.hbm2ddl
 			{
 				return;
 			}
+			dialect = Dialect.Dialect.GetDialect(configProperties);
+
 			string autoKeyWordsImport = PropertiesHelper.GetString(Environment.Hbm2ddlKeyWords, configProperties, "not-defined");
 			autoKeyWordsImport = autoKeyWordsImport.ToLowerInvariant();
 			if (autoKeyWordsImport == Hbm2DDLKeyWords.AutoQuote)
 			{
-				await (SchemaMetadataUpdater.QuoteTableAndColumnsAsync(cfg, cancellationToken)).ConfigureAwait(false);
+				await (SchemaMetadataUpdater.UpdateAsync(cfg, dialect, cancellationToken)).ConfigureAwait(false);
+				SchemaMetadataUpdater.QuoteTableAndColumns(cfg, dialect);
 			}
 
-			dialect = Dialect.Dialect.GetDialect(configProperties);
 			dropSQL = cfg.GenerateDropSchemaScript(dialect);
 			createSQL = cfg.GenerateSchemaCreationScript(dialect);
 			formatter = (PropertiesHelper.GetBoolean(Environment.FormatSql, configProperties, true) ? FormatStyle.Ddl : FormatStyle.None).Formatter;
