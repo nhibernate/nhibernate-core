@@ -493,6 +493,9 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void SubqueryPaginationOnlyWithFirst()
 		{
+			if (!Dialect.SupportsSubSelectsWithPagingAsInPredicateRhs)
+				Assert.Ignore("Dialect does not support sub-select as in predicate.");
+
 			using (ISession session = OpenSession())
 			using (ITransaction t = session.BeginTransaction())
 			{
@@ -533,6 +536,9 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void SubqueryPagination()
 		{
+			if (!Dialect.SupportsSubSelectsWithPagingAsInPredicateRhs)
+				Assert.Ignore("Dialect does not support sub-select as in predicate.");
+
 			using (ISession session = OpenSession())
 			using (ITransaction t = session.BeginTransaction())
 			{

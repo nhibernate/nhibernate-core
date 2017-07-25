@@ -499,9 +499,12 @@ namespace NHibernate.Test.Hql
 				lresult = s.CreateQuery(hql).List();
 				Assert.AreEqual(1, lresult.Count);
 
-				hql = "select abs(a.BodyWeight*-1) from Animal a group by abs(a.BodyWeight*-1) having abs(a.BodyWeight*-1)>0";
-				lresult = s.CreateQuery(hql).List();
-				Assert.AreEqual(1, lresult.Count);
+				if (Dialect.SupportsHavingOnGroupedByComputation)
+				{
+					hql = "select abs(a.BodyWeight*-1) from Animal a group by abs(a.BodyWeight*-1) having abs(a.BodyWeight*-1)>0";
+					lresult = s.CreateQuery(hql).List();
+					Assert.AreEqual(1, lresult.Count);
+				}
 			}
 		}
 
@@ -572,10 +575,13 @@ namespace NHibernate.Test.Hql
 				hql = "from Animal an where upper(an.Description)='ABCDEF'";
 				Animal result = (Animal) s.CreateQuery(hql).UniqueResult();
 				Assert.AreEqual("abcdef", result.Description);
-
-				//test only parser
-				hql = "select upper(an.Description) from Animal an group by upper(an.Description) having upper(an.Description)='ABCDEF'";
-				lresult = s.CreateQuery(hql).List();
+				
+				if (Dialect.SupportsHavingOnGroupedByComputation)
+				{
+					//test only parser
+					hql = "select upper(an.Description) from Animal an group by upper(an.Description) having upper(an.Description)='ABCDEF'";
+					lresult = s.CreateQuery(hql).List();
+				}
 			}
 		}
 
@@ -599,9 +605,12 @@ namespace NHibernate.Test.Hql
 				Animal result = (Animal)s.CreateQuery(hql).UniqueResult();
 				Assert.AreEqual("ABCDEF", result.Description);
 
-				//test only parser
-				hql = "select lower(an.Description) from Animal an group by lower(an.Description) having lower(an.Description)='abcdef'";
-				lresult = s.CreateQuery(hql).List();
+				if (Dialect.SupportsHavingOnGroupedByComputation)
+				{
+					//test only parser
+					hql = "select lower(an.Description) from Animal an group by lower(an.Description) having lower(an.Description)='abcdef'";
+					lresult = s.CreateQuery(hql).List();
+				}
 			}
 		}
 
@@ -701,66 +710,72 @@ namespace NHibernate.Test.Hql
 					Assert.That(l[0], Is.TypeOf(typeof(double)));
 				}
 
-				// Rendered in HAVING using a property 
-				hql = "select cast(a.BodyWeight as Double) from Animal a group by cast(a.BodyWeight as Double) having cast(a.BodyWeight as Double)>0";
-				l = s.CreateQuery(hql).List();
-				Assert.AreEqual(1, l.Count);
-				Assert.That(l[0], Is.TypeOf(typeof(double)));
-
-				// Rendered in HAVING using a property in an operation with costants
-				hql = "select cast(7+123.3-1*a.BodyWeight as int) from Animal a group by cast(7+123.3-1*a.BodyWeight as int) having cast(7+123.3-1*a.BodyWeight as int)>0";
-				l = s.CreateQuery(hql).List();
-				Assert.AreEqual(1, l.Count);
-				Assert.AreEqual((int)(7 + 123.3 - 1 * 1.3d), l[0]);
-
-				// Rendered in HAVING using a property and named param (NOT SUPPORTED)
-				try
+				if (Dialect.SupportsHavingOnGroupedByComputation)
 				{
-					hql = "select cast(:aParam+a.BodyWeight as int) from Animal a group by cast(:aParam+a.BodyWeight as int) having cast(:aParam+a.BodyWeight as int)>0";
-					l = s.CreateQuery(hql).SetInt32("aParam", 10).List();
-					Assert.AreEqual(1, l.Count);
-					Assert.AreEqual(11, l[0]);
-				}
-				catch (QueryException ex)
-				{
-					if (!(ex.InnerException is NotSupportedException))
-						throw;
-				}
-				catch (ADOException ex)
-				{
-					if (Dialect is Oracle8iDialect)
-					{
-						if (!ex.InnerException.Message.StartsWith("ORA-00979"))
-							throw;
-					}
-					else if (Dialect is FirebirdDialect)
-					{
-						string msgToCheck =
-							"not contained in either an aggregate function or the GROUP BY clause";
-						// This test raises an exception in Firebird for an unknown reason.
-						if (!ex.InnerException.Message.Contains(msgToCheck))
-							throw;
-					}
-					else
-					{
-						string msgToCheck =
-							"Column 'Animal.BodyWeight' is invalid in the HAVING clause because it is not contained in either an aggregate function or the GROUP BY clause.";
-						// This test raises an exception in SQL Server because named 
-						// parameters internally are always positional (@p0, @p1, etc.)
-						// and named differently hence they mismatch between GROUP BY and HAVING clauses.
-						if (!ex.InnerException.Message.Equals(msgToCheck))
-							throw;
-					}
-				}
-
-				// Rendered in HAVING using a property and nested functions
-				if (!(Dialect is Oracle8iDialect))
-				{
-					string castExpr = "cast(cast(cast(a.BodyWeight as string) as double) as int)";
-					hql = string.Format("select {0} from Animal a group by {0} having {0} = 1", castExpr);
+					// Rendered in HAVING using a property
+					hql =
+						"select cast(a.BodyWeight as Double) from Animal a group by cast(a.BodyWeight as Double) having cast(a.BodyWeight as Double)>0";
 					l = s.CreateQuery(hql).List();
 					Assert.AreEqual(1, l.Count);
-					Assert.AreEqual(1, l[0]);
+					Assert.That(l[0], Is.TypeOf(typeof(double)));
+
+					// Rendered in HAVING using a property in an operation with costants
+					hql =
+						"select cast(7+123.3-1*a.BodyWeight as int) from Animal a group by cast(7+123.3-1*a.BodyWeight as int) having cast(7+123.3-1*a.BodyWeight as int)>0";
+					l = s.CreateQuery(hql).List();
+					Assert.AreEqual(1, l.Count);
+					Assert.AreEqual((int)(7 + 123.3 - 1 * 1.3d), l[0]);
+
+					// Rendered in HAVING using a property and named param (NOT SUPPORTED)
+					try
+					{
+						hql =
+							"select cast(:aParam+a.BodyWeight as int) from Animal a group by cast(:aParam+a.BodyWeight as int) having cast(:aParam+a.BodyWeight as int)>0";
+						l = s.CreateQuery(hql).SetInt32("aParam", 10).List();
+						Assert.AreEqual(1, l.Count);
+						Assert.AreEqual(11, l[0]);
+					}
+					catch (QueryException ex)
+					{
+						if (!(ex.InnerException is NotSupportedException))
+							throw;
+					}
+					catch (ADOException ex)
+					{
+						if (Dialect is Oracle8iDialect)
+						{
+							if (!ex.InnerException.Message.StartsWith("ORA-00979"))
+								throw;
+						}
+						else if (Dialect is FirebirdDialect)
+						{
+							string msgToCheck =
+								"not contained in either an aggregate function or the GROUP BY clause";
+							// This test raises an exception in Firebird for an unknown reason.
+							if (!ex.InnerException.Message.Contains(msgToCheck))
+								throw;
+						}
+						else
+						{
+							string msgToCheck =
+								"Column 'Animal.BodyWeight' is invalid in the HAVING clause because it is not contained in either an aggregate function or the GROUP BY clause.";
+							// This test raises an exception in SQL Server because named 
+							// parameters internally are always positional (@p0, @p1, etc.)
+							// and named differently hence they mismatch between GROUP BY and HAVING clauses.
+							if (!ex.InnerException.Message.Equals(msgToCheck))
+								throw;
+						}
+					}
+
+					// Rendered in HAVING using a property and nested functions
+					if (!(Dialect is Oracle8iDialect))
+					{
+						string castExpr = "cast(cast(cast(a.BodyWeight as string) as double) as int)";
+						hql = string.Format("select {0} from Animal a group by {0} having {0} = 1", castExpr);
+						l = s.CreateQuery(hql).List();
+						Assert.AreEqual(1, l.Count);
+						Assert.AreEqual(1, l[0]);
+					}
 				}
 			}
 		}

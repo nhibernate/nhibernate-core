@@ -2184,6 +2184,7 @@
     <Compile Include="TestDialect.cs" />
     <Compile Include="TestDialects\MsSql2008TestDialect.cs" />
     <Compile Include="TestDialects\PostgreSQL83TestDialect.cs" />
+    <Compile Include="TestDialects\MySQL5TestDialect.cs" />
     <Compile Include="TestDialects\SQLiteTestDialect.cs" />
     <Compile Include="Tools\hbm2ddl\SchemaExportTests\ExportToFileFixture.cs" />
     <Compile Include="TransactionTest\Person.cs" />

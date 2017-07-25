@@ -56,6 +56,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1792
 		[Test]
 		public void PageWithDetachedCriteriaSubqueryWithOrderBy()
 		{
+			if (!Dialect.SupportsSubSelectsWithPagingAsInPredicateRhs)
+				Assert.Ignore("Current dialect does not support paging within IN sub-queries");
 			//create the subquery
 			DetachedCriteria subQuery =
 				DetachedCriteria.For<Product>().SetProjection(Projections.Id()).AddOrder(Order.Desc("Name")).SetMaxResults(5);

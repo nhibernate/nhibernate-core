@@ -524,6 +524,14 @@ namespace NHibernate.Dialect
 
 		public override bool SupportsSubqueryOnMutatingTable => false;
 
+		// v5.7: MySql.Data.MySqlClient.MySqlException : This version of MySQL doesn't yet support 'LIMIT & IN/ALL/ANY/SOME subquery'
+		/// <inheritdoc/>
+		public override bool SupportsSubSelectsWithPagingAsInPredicateRhs => false;
+
+		// v5.7: 
+		/// <inheritdoc/>
+		public override bool SupportsHavingOnGroupedByComputation => false;
+
 		#endregion
 	}
 }

@@ -1934,6 +1934,17 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+		/// <summary>
+		/// <para>
+		/// Are paged sub-selects supported as the right-hand-side (RHS) of IN-predicates?
+		/// </para>
+		/// <para>
+		/// In other words, is syntax like "... someColumn IN ({paged-sub-query}) ..." supported?
+		/// </para>
+		/// </summary>
+		/// <returns><see langword="true"/> if paged sub-selects can appear as the RHS of an in-predicate; <see langword="false"/> otherwise.</returns>
+		public virtual bool SupportsSubSelectsWithPagingAsInPredicateRhs => true;
+
 		/// <summary> 
 		/// Expected LOB usage pattern is such that I can perform an insert
 		/// via prepared statement with a parameter binding for a LOB value
@@ -2063,6 +2074,16 @@ namespace NHibernate.Dialect
 		/// Does this dialect support pooling parameter in connection string?
 		/// </summary>
 		public virtual bool SupportsPoolingParameter => true;
+
+		/// <summary>
+		/// <para>
+		/// Does this dialect support having clause on a grouped by computation?
+		/// </para>
+		/// <para>
+		/// In other words, is syntax like "... group by aComputation having aComputation ..." supported?
+		/// </para>
+		/// </summary>
+		public virtual bool SupportsHavingOnGroupedByComputation => true;
 
 		#endregion
 
