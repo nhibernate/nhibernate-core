@@ -555,6 +555,28 @@
     <Compile Include="LazyOneToOne\Person.cs" />
     <Compile Include="LazyProperty\Book.cs" />
     <Compile Include="LazyProperty\LazyPropertyFixture.cs" />
+    <Compile Include="LinqBulkManipulation\Domain\Address.cs" />
+    <Compile Include="LinqBulkManipulation\Domain\Animal.cs" />
+    <Compile Include="LinqBulkManipulation\Domain\Classification.cs" />
+    <Compile Include="LinqBulkManipulation\Domain\CrazyCompositeKey.cs" />
+    <Compile Include="LinqBulkManipulation\Domain\DomesticAnimal.cs" />
+    <Compile Include="LinqBulkManipulation\Domain\EntityWithCrazyCompositeKey.cs" />
+    <Compile Include="LinqBulkManipulation\Domain\Human.cs" />
+    <Compile Include="LinqBulkManipulation\Domain\IntegerVersioned.cs" />
+    <Compile Include="LinqBulkManipulation\Domain\Joiner.cs" />
+    <Compile Include="LinqBulkManipulation\Domain\Mammal.cs" />
+    <Compile Include="LinqBulkManipulation\Domain\Name.cs" />
+    <Compile Include="LinqBulkManipulation\Domain\Reptile.cs" />
+    <Compile Include="LinqBulkManipulation\Domain\SimpleAssociatedEntity.cs" />
+    <Compile Include="LinqBulkManipulation\Domain\SimpleClass.cs" />
+    <Compile Include="LinqBulkManipulation\Domain\SimpleClassWithComponent.cs" />
+    <Compile Include="LinqBulkManipulation\Domain\SimpleEntityWithAssociation.cs" />
+    <Compile Include="LinqBulkManipulation\Domain\StateProvince.cs" />
+    <Compile Include="LinqBulkManipulation\Domain\TimestampVersioned.cs" />
+    <Compile Include="LinqBulkManipulation\Domain\User.cs" />
+    <Compile Include="LinqBulkManipulation\Domain\Vehicles.cs" />
+    <Compile Include="LinqBulkManipulation\Domain\Zoo.cs" />
+    <Compile Include="LinqBulkManipulation\Fixture.cs" />
     <Compile Include="Linq\AggregateTests.cs" />
     <Compile Include="Linq\ByMethod\AnyTests.cs" />
     <Compile Include="Linq\BinaryBooleanExpressionTests.cs" />
@@ -1000,9 +1022,6 @@
     <Compile Include="NHSpecificTest\NH3909\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3957\ResultTransformerEqualityFixture.cs" />
     <Compile Include="NHSpecificTest\NH3956\Fixture.cs" />
-    <Compile Include="NHSpecificTest\NH3993\Entities.cs" />
-    <Compile Include="NHSpecificTest\NH3993\Fixture.cs" />
-    <Compile Include="NHSpecificTest\NH3993\Mappers.cs" />
     <Compile Include="NHSpecificTest\NH3755\Circle.cs" />
     <Compile Include="NHSpecificTest\NH3755\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3755\ICircle.cs" />
@@ -1012,6 +1031,9 @@
     <Compile Include="NHSpecificTest\NH3755\Shape.cs" />
     <Compile Include="NHSpecificTest\NH3755\ShapeContainer.cs" />
     <Compile Include="NHSpecificTest\NH3755\Square.cs" />
+    <Compile Include="NHSpecificTest\NH3993\Entities.cs" />
+    <Compile Include="NHSpecificTest\NH3993\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3993\Mappers.cs" />
     <Compile Include="NHSpecificTest\NH646\Domain.cs" />
     <Compile Include="NHSpecificTest\NH646\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3234\Fixture.cs" />
@@ -2760,9 +2782,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <EmbeddedResource Include="Cascade\Circle\CascadeMergeToChildBeforeParent.hbm.xml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Cascade\Circle\CascadeMergeToChildBeforeParent.hbm.xml" />
     <EmbeddedResource Include="Cascade\Circle\MultiPathCircleCascade.hbm.xml" />
     <EmbeddedResource Include="Cascade\MultiPathCascade.hbm.xml" />
     <EmbeddedResource Include="Cascade\OneToOneCascadeDelete\Fk\Bidirectional\Mappings.hbm.xml" />
@@ -3297,6 +3317,14 @@
     <EmbeddedResource Include="SessionBuilder\Mappings.hbm.xml" />
     <EmbeddedResource Include="IdTest\IdentityClass.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1904\StructMappings.hbm.xml" />
+    <EmbeddedResource Include="LinqBulkManipulation\Domain\Animal.hbm.xml" />
+    <EmbeddedResource Include="LinqBulkManipulation\Domain\EntityWithCrazyCompositeKey.hbm.xml" />
+    <EmbeddedResource Include="LinqBulkManipulation\Domain\Multi.hbm.xml" />
+    <EmbeddedResource Include="LinqBulkManipulation\Domain\SimpleClass.hbm.xml" />
+    <EmbeddedResource Include="LinqBulkManipulation\Domain\SimpleClassWithComponent.hbm.xml" />
+    <EmbeddedResource Include="LinqBulkManipulation\Domain\SimpleEntityWithAssociation.hbm.xml" />
+    <EmbeddedResource Include="LinqBulkManipulation\Domain\Vehicle.hbm.xml" />
+    <EmbeddedResource Include="LinqBulkManipulation\Domain\Versions.hbm.xml" />
     <EmbeddedResource Include="Insertordering\FamilyModel\Mappings.hbm.xml" />
     <EmbeddedResource Include="Insertordering\AnimalModel\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3247\Mappings.hbm.xml" />
@@ -3314,30 +3342,22 @@
     <EmbeddedResource Include="NHSpecificTest\NH2218\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3046\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3518\Mappings.hbm.xml" />
-    <EmbeddedResource Include="NHSpecificTest\NH3844\Mappings.hbm.xml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <EmbeddedResource Include="NHSpecificTest\NH3844\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3609\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3818\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3817\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3793\Mappings.hbm.xml" />
-    <EmbeddedResource Include="NHSpecificTest\NH3666\Mappings.hbm.xml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <EmbeddedResource Include="NHSpecificTest\NH3666\Mappings.hbm.xml" />
     <EmbeddedResource Include="VersionTest\Db\MsSQL\ProductWithVersionAndLazyProperty.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3754\Mappings.hbm.xml" />
-    <EmbeddedResource Include="NHSpecificTest\NH3800\Mappings.hbm.xml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <EmbeddedResource Include="NHSpecificTest\NH3800\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3757\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3755\Mappings.hbm.xml" />
     <EmbeddedResource Include="LazyComponentTest\Person.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3372\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3567\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3453\Mappings.hbm.xml" />
-    <EmbeddedResource Include="NHSpecificTest\NH3480\Mappings.hbm.xml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <EmbeddedResource Include="NHSpecificTest\NH3480\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3570\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2053\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3455\Mappings.hbm.xml" />
@@ -3345,17 +3365,13 @@
     <EmbeddedResource Include="NHSpecificTest\NH3377\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2865\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2756\Mappings.hbm.xml" />
-    <EmbeddedResource Include="NHSpecificTest\NH3392\Mappings.hbm.xml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <EmbeddedResource Include="NHSpecificTest\NH3392\Mappings.hbm.xml" />
     <EmbeddedResource Include="Unionsubclass\DatabaseKeyword.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1082\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3571\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3512\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3487\Mappings.hbm.xml" />
-    <EmbeddedResource Include="NHSpecificTest\NH2692\Mappings.hbm.xml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <EmbeddedResource Include="NHSpecificTest\NH2692\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3058\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2985\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1818\Mappings.hbm.xml" />
@@ -3373,9 +3389,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH2297\MappingsTypes.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2042\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2860\Mappings.hbm.xml" />
-    <EmbeddedResource Include="NHSpecificTest\NH3332\Mappings.hbm.xml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <EmbeddedResource Include="NHSpecificTest\NH3332\Mappings.hbm.xml" />
     <EmbeddedResource Include="UnionsubclassPolymorphicFormula\Party.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3050\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2469\Mappings.hbm.xml" />
@@ -3386,9 +3400,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH3234\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3057\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2969\Mappings.hbm.xml" />
-    <EmbeddedResource Include="NHSpecificTest\NH2806\Mappings.hbm.xml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <EmbeddedResource Include="NHSpecificTest\NH2806\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3182\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH646\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2955\Mappings.hbm.xml" />
@@ -3433,9 +3445,7 @@
     <EmbeddedResource Include="IdGen\Enhanced\Table\HiLo.hbm.xml" />
     <Compile Include="IdGen\Enhanced\Table\HiLoTableTest.cs" />
     <EmbeddedResource Include="IdGen\Enhanced\Table\Basic.hbm.xml" />
-    <EmbeddedResource Include="NHSpecificTest\NH2976\Mappings.hbm.xml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <EmbeddedResource Include="NHSpecificTest\NH2976\Mappings.hbm.xml" />
     <EmbeddedResource Include="IdGen\Enhanced\Sequence\DefaultOptimized.hbm.xml" />
     <EmbeddedResource Include="IdGen\Enhanced\Forcedtable\Pooled.hbm.xml" />
     <EmbeddedResource Include="IdGen\Enhanced\Forcedtable\HiLo.hbm.xml" />
@@ -3445,9 +3455,7 @@
     <EmbeddedResource Include="IdGen\Enhanced\Sequence\Basic.hbm.xml" />
     <Compile Include="IdGen\Enhanced\Sequence\BasicSequenceTest.cs" />
     <EmbeddedResource Include="NHSpecificTest\NH2951\Mappings.hbm.xml" />
-    <EmbeddedResource Include="NHSpecificTest\NH2913\Mappings.hbm.xml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <EmbeddedResource Include="NHSpecificTest\NH2913\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2846\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1007\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2907\Mappings.hbm.xml" />

@@ -5,6 +5,7 @@ using System.Collections;
 using System.Reflection;
 using NHibernate.Util;
 using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Parsing.ExpressionTreeVisitors;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -102,6 +103,35 @@ namespace NHibernate.Linq.Visitors
 
 			value = false; // Dummy value.
 			return false;
+		}
+
+		/// <summary>
+		/// Replaces a specific expression in an expression tree with a replacement expression.
+		/// </summary>
+		/// <param name="expression">The expression to search.</param>
+		/// <param name="oldExpression">The expression to search for.</param>
+		/// <param name="newExpression">The expression to replace with.</param>
+		/// <returns></returns>
+		public static Expression Replace(this Expression expression, Expression oldExpression, Expression newExpression)
+		{
+			return ReplacingExpressionTreeVisitor.Replace(oldExpression, newExpression, expression);
+		}
+
+		/// <summary>
+		/// Gets the member path.
+		/// </summary>
+		/// <param name="memberExpression">The member expression.</param>
+		/// <returns></returns>
+		public static string GetMemberPath(this MemberExpression memberExpression)
+		{
+			var path = memberExpression.Member.Name;
+			var parentProp = memberExpression.Expression as MemberExpression;
+			while (parentProp != null)
+			{
+				path = parentProp.Member.Name + "." + path;
+				parentProp = parentProp.Expression as MemberExpression;
+			}
+			return path;
 		}
 	}
 }

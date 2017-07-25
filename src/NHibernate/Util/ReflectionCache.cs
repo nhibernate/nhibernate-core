@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace NHibernate.Util
@@ -60,6 +61,12 @@ namespace NHibernate.Util
 				ReflectHelper.GetMethod(() => MethodBase.GetMethodFromHandle(default(RuntimeMethodHandle)));
 			internal static readonly MethodInfo GetMethodFromHandleWithDeclaringType =
 				ReflectHelper.GetMethod(() => MethodBase.GetMethodFromHandle(default(RuntimeMethodHandle), default(RuntimeTypeHandle)));
+		}
+
+		internal static class QueryableMethods
+		{
+			internal static readonly MethodInfo SelectDefinition =
+				ReflectHelper.GetMethodDefinition(() => Queryable.Select(null, default(Expression<Func<object, object>>)));
 		}
 
 		internal static class TypeMethods

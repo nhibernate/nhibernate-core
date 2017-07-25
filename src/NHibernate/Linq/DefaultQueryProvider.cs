@@ -16,6 +16,7 @@ namespace NHibernate.Linq
 		IEnumerable<TResult> ExecuteFuture<TResult>(Expression expression);
 		IFutureValue<TResult> ExecuteFutureValue<TResult>(Expression expression);
 		void SetResultTransformerAndAdditionalCriteria(IQuery query, NhLinqExpression nhExpression, IDictionary<string, Tuple<object, IType>> parameters);
+		int ExecuteDml<T>(QueryMode queryMode, Expression expression);
 	}
 
 	public class DefaultQueryProvider : INhQueryProvider
@@ -45,14 +46,14 @@ namespace NHibernate.Linq
 
 		public TResult Execute<TResult>(Expression expression)
 		{
-			return (TResult) Execute(expression);
+			return (TResult)Execute(expression);
 		}
 
 		public virtual IQueryable CreateQuery(Expression expression)
 		{
 			MethodInfo m = CreateQueryMethodDefinition.MakeGenericMethod(expression.Type.GetGenericArguments()[0]);
 
-			return (IQueryable) m.Invoke(this, new object[] {expression});
+			return (IQueryable)m.Invoke(this, new object[] { expression });
 		}
 
 		public virtual IQueryable<T> CreateQuery<T>(Expression expression)
@@ -94,7 +95,7 @@ namespace NHibernate.Linq
 
 			query = Session.CreateQuery(nhLinqExpression);
 
-			nhQuery = (NhLinqExpression) ((ExpressionQueryImpl) query).QueryExpression;
+			nhQuery = (NhLinqExpression)((ExpressionQueryImpl)query).QueryExpression;
 
 			SetParameters(query, nhLinqExpression.ParameterValuesByName);
 			SetResultTransformerAndAdditionalCriteria(query, nhQuery, nhLinqExpression.ParameterValuesByName);
@@ -169,6 +170,17 @@ namespace NHibernate.Linq
 			{
 				criteria(query, parameters);
 			}
+		}
+
+		public int ExecuteDml<T>(QueryMode queryMode, Expression expression)
+		{
+			var nhLinqExpression = new NhLinqDmlExpression<T>(queryMode, expression, Session.Factory);
+
+			var query = Session.CreateQuery(nhLinqExpression);
+
+			SetParameters(query, nhLinqExpression.ParameterValuesByName);
+
+			return query.ExecuteUpdate();
 		}
 	}
 }

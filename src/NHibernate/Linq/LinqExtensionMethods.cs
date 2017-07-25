@@ -91,14 +91,7 @@ namespace NHibernate.Linq
 		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
 		public static IEnumerable<TSource> ToFuture<TSource>(this IQueryable<TSource> source)
 		{
-			if (source == null)
-			{
-				throw new ArgumentNullException(nameof(source));
-			}
-			if (!(source.Provider is INhQueryProvider provider))
-			{
-				throw new NotSupportedException($"Source {nameof(source.Provider)} must be a {nameof(INhQueryProvider)}");
-			}
+			var provider = GetNhProvider(source);
 			return provider.ExecuteFuture<TSource>(source.Expression);
 		}
 
@@ -113,14 +106,7 @@ namespace NHibernate.Linq
 		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
 		public static IFutureValue<TSource> ToFutureValue<TSource>(this IQueryable<TSource> source)
 		{
-			if (source == null)
-			{
-				throw new ArgumentNullException(nameof(source));
-			}
-			if (!(source.Provider is INhQueryProvider provider))
-			{
-				throw new NotSupportedException($"Source {nameof(source.Provider)} must be a {nameof(INhQueryProvider)}");
-			}
+			var provider = GetNhProvider(source);
 			var future = provider.ExecuteFuture<TSource>(source.Expression);
 			return new FutureValue<TSource>(() => future);
 		}
@@ -138,6 +124,75 @@ namespace NHibernate.Linq
 		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
 		public static IFutureValue<TResult> ToFutureValue<TSource, TResult>(this IQueryable<TSource> source, Expression<Func<IQueryable<TSource>, TResult>> selector)
 		{
+			var provider = GetNhProvider(source);
+
+			var expression = ReplacingExpressionVisitor
+				.Replace(selector.Parameters.Single(), source.Expression, selector.Body);
+
+			return provider.ExecuteFutureValue<TResult>(expression);
+		}
+
+		/// <summary>
+		/// Deletes all entities selected by the specified query. The delete operation is performed in the database without reading the entities out of it.
+		/// </summary>
+		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
+		/// <param name="source">The query matching the entities to delete.</param>
+		/// <returns>The number of deleted entities.</returns>
+		public static int Delete<TSource>(this IQueryable<TSource> source)
+		{
+			var provider = GetNhProvider(source);
+			return provider.ExecuteDml<TSource>(QueryMode.Delete, source.Expression);
+		}
+
+		/// <summary>
+		/// Initiate an update for the entities selected by the query. The update operation will be performed in the database without reading the entities out of it.
+		/// </summary>
+		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
+		/// <param name="source">The query matching the entities to update.</param>
+		/// <param name="expression"></param>
+		/// <returns>An update builder, allowing to specify assignments to the entities properties.</returns>
+		public static int Update<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, TSource>> expression)
+		{
+			var provider = GetNhProvider(source);
+			return provider.ExecuteDml<TSource>(QueryMode.Update, DmlExpressionRewriter.PrepareExpression(source, expression));
+		}
+
+		/// <summary>
+		/// Initiate an update for the entities selected by the query. The update operation will be performed in the database without reading the entities out of it.
+		/// </summary>
+		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
+		/// <param name="source">The query matching the entities to update.</param>
+		/// <param name="expression"></param>
+		/// <returns>An update builder, allowing to specify assignments to the entities properties.</returns>
+		public static int UpdateVersioned<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, TSource>> expression)
+		{
+			var provider = GetNhProvider(source);
+			return provider.ExecuteDml<TSource>(QueryMode.UpdateVersioned, DmlExpressionRewriter.PrepareExpression(source, expression));
+		}
+
+		/// <summary>
+		/// Initiate an insert using selected entities as a source. Will use <c>INSERT INTO [...] SELECT FROM [...]</c> in the database.
+		/// </summary>
+		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
+		/// <typeparam name="TTarget"></typeparam>
+		/// <param name="source">The query matching entities source of the data to insert.</param>
+		/// <param name="expression"></param>
+		/// <returns>An insert builder, allowing to specify target entity class and assignments to its properties.</returns>
+		public static int Insert<TSource, TTarget>(
+			this IQueryable<TSource> source,
+			Expression<Func<TSource, TTarget>> expression)
+		{
+			var provider = GetNhProvider(source);
+			return provider.ExecuteDml<TTarget>(QueryMode.Insert, DmlExpressionRewriter.PrepareExpression(source, expression));
+		}
+
+		public static T MappedAs<T>(this T parameter, IType type)
+		{
+			throw new InvalidOperationException("The method should be used inside Linq to indicate a type of a parameter");
+		}
+
+		private static INhQueryProvider GetNhProvider<TInput>(IQueryable<TInput> source)
+		{
 			if (source == null)
 			{
 				throw new ArgumentNullException(nameof(source));
@@ -146,16 +201,7 @@ namespace NHibernate.Linq
 			{
 				throw new NotSupportedException($"Source {nameof(source.Provider)} must be a {nameof(INhQueryProvider)}");
 			}
-
-			var expression = ReplacingExpressionVisitor
-				.Replace(selector.Parameters.Single(), source.Expression, selector.Body);
-
-			return provider.ExecuteFutureValue<TResult>(expression);
-		}
-
-		public static T MappedAs<T>(this T parameter, IType type)
-		{
-			throw new InvalidOperationException("The method should be used inside Linq to indicate a type of a parameter");
+			return provider;
 		}
 	}
 }
