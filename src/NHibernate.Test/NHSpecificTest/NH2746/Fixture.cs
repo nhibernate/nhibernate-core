@@ -9,6 +9,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2746
 		[Test]
 		public void TestQuery()
 		{
+			if (!Dialect.SupportsSubSelectsWithPagingAsInPredicateRhs)
+				Assert.Ignore("Current dialect does not support paging within IN sub-queries");
+
 			using (ISession session = OpenSession())
 			{
 				DetachedCriteria page = DetachedCriteria.For<T1>()

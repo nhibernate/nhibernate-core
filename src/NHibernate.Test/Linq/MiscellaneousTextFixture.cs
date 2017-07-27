@@ -71,7 +71,14 @@ namespace NHibernate.Test.Linq
                   c.Orders.Any(o => o.ShippedTo == c.CompanyName)
                   select c;
 
-            Assert.AreEqual(85, results.Count());
+			var count = results.Count();
+
+			Assert.That(count,
+				// Accent sensitive case
+				Is.EqualTo(85).
+				// Accent insensitive case (MySql has most of its case insensitive collations accent insensitive too)
+				// https://bugs.mysql.com/bug.php?id=19567
+				Or.EqualTo(87));
         }
 
         [Category("Paging")]
