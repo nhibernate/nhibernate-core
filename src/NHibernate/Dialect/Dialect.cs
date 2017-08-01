@@ -154,7 +154,7 @@ namespace NHibernate.Dialect
 			{
 				throw new HibernateException("The dialect was not set. Set the property 'dialect'.", e);
 			}
-			return InstantiateDialect(dialectName);
+			return InstantiateDialect(dialectName, Environment.Properties);
 		}
 
 		/// <summary>
@@ -167,7 +167,7 @@ namespace NHibernate.Dialect
 		public static Dialect GetDialect(IDictionary<string, string> props)
 		{
 			if (props == null)
-				throw new ArgumentNullException("props");
+				throw new ArgumentNullException(nameof(props));
 			string dialectName;
 			if (props.TryGetValue(Environment.Dialect, out dialectName) == false)
 				throw new InvalidOperationException("Could not find the dialect in the configuration");
@@ -176,19 +176,29 @@ namespace NHibernate.Dialect
 				return GetDialect();
 			}
 
-			return InstantiateDialect(dialectName);
+			return InstantiateDialect(dialectName, props);
 		}
 
-		private static Dialect InstantiateDialect(string dialectName)
+		private static Dialect InstantiateDialect(string dialectName, IDictionary<string, string> props)
 		{
 			try
 			{
-				return (Dialect)Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(dialectName));
+				var dialect = (Dialect)Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(dialectName));
+				dialect.Configure(props);
+				return dialect;
 			}
 			catch (Exception e)
 			{
 				throw new HibernateException("Could not instantiate dialect class " + dialectName, e);
 			}
+		}
+
+		/// <summary>
+		/// Configure the dialect.
+		/// </summary>
+		/// <param name="settings">The configuration settings.</param>
+		public virtual void Configure(IDictionary<string, string> settings)
+		{
 		}
 
 		#endregion

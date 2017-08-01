@@ -208,6 +208,20 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public const string OdbcDateTimeScale = "odbc.explicit_datetime_scale";
 
+		/// <summary>
+		/// <para>Oracle has a dual Unicode support model.</para>
+		/// <para>Either the whole database use an Unicode encoding, and then all string types
+		/// will be Unicode. In such case, Unicode strings should be mapped to non <c>N</c> prefixed
+		/// types, such as <c>Varchar2</c>. This is the default.</para>
+		/// <para>Or <c>N</c> prefixed types such as <c>NVarchar2</c> are to be used for Unicode strings.</para>
+		/// </summary>
+		/// <remarks>
+		/// See https://docs.oracle.com/cd/B19306_01/server.102/b14225/ch6unicode.htm#CACHCAHF
+		/// https://docs.oracle.com/database/121/ODPNT/featOraCommand.htm#i1007557
+		/// This setting applies only to Oracle dialects and ODP.Net managed or unmanaged driver.
+		/// </remarks>
+		public const string OracleUseNPrefixedTypesForUnicode = "oracle.use_n_prefixed_types_for_unicode";
+
 		private static readonly Dictionary<string, string> GlobalProperties;
 
 		private static IBytecodeProvider BytecodeProviderInstance;
