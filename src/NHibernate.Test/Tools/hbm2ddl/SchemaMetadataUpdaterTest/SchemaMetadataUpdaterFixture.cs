@@ -6,6 +6,7 @@ using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.Tool.hbm2ddl;
+using NHibernate.Util;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
 
@@ -254,6 +255,11 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 		public void WhenConfiguredOnlyExplicitAutoQuote()
 		{
 			var configuration = TestConfigurationHelper.GetDefaultConfiguration();
+			var driverClass = ReflectHelper.ClassForName(configuration.GetProperty(Environment.ConnectionDriver));
+			// Test uses the default dialect driver, which will not accept Odbc or OleDb connection strings.
+			if (typeof(OdbcDriver).IsAssignableFrom(driverClass) || typeof(OleDbDriver).IsAssignableFrom(driverClass))
+				Assert.Ignore("Test is not compatible with OleDb or ODBC driver connection strings");
+
 			var configuredDialect = Dialect.Dialect.GetDialect();
 			if(!configuredDialect.DefaultProperties.ContainsKey(Environment.ConnectionDriver))
 			{

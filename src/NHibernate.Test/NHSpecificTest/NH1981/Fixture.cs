@@ -1,3 +1,5 @@
+using NHibernate.Driver;
+using NHibernate.Engine;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1981
@@ -9,6 +11,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1981
 		{
 			// Firebird doesn't support this feature
 			return !(dialect is Dialect.FirebirdDialect);
+		}
+
+		protected override bool AppliesTo(ISessionFactoryImplementor factory)
+		{
+			// When not using a named prefix, the driver use positional parameters, causing parameterized
+			// expression used in group by and select to be not be considered as the same expression.
+			return ((DriverBase)factory.ConnectionProvider.Driver).UseNamedPrefixInParameter;
 		}
 
 		protected override void OnSetUp()

@@ -11,6 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1444
 		{
 			configuration.SetProperty(Environment.FormatSql, "false");
 		}
+
 		[Test]
 		public void Bug()
 		{
@@ -23,8 +24,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1444
 						.SetParameter("filternull", !filter.HasValue)
 						.SetParameter("filterval", filter.HasValue ? filter.Value : 0).List<xchild>();
 					var message = ls.GetWholeLog();
-				    string paramPrefix = ((DriverBase) Sfi.ConnectionProvider.Driver).NamedPrefix;
-					Assert.That(message, Does.Contain("xchild0_.ParentId=xparent1_.Id and (" + paramPrefix + "p0=" + Dialect.ToBooleanValueString(true) + " or xparent1_.A<" + paramPrefix + "p1)"));
+					var paramFormatter = (ISqlParameterFormatter)Sfi.ConnectionProvider.Driver;
+					Assert.That(message, Does.Contain(
+						"xchild0_.ParentId=xparent1_.Id and (" +
+						$"{paramFormatter.GetParameterName(0)}={Dialect.ToBooleanValueString(true)} or " +
+						$"xparent1_.A<{paramFormatter.GetParameterName(1)})"));
 				}
 			}
 		}

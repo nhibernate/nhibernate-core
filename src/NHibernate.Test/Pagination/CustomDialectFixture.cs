@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Cfg;
 using NHibernate.Criterion;
+using NHibernate.Dialect;
+using NHibernate.Driver;
+using NHibernate.Util;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
 
@@ -22,8 +25,12 @@ namespace NHibernate.Test.Pagination
 
 		protected override void Configure(Configuration configuration)
 		{
-			if (!(Dialect is Dialect.MsSql2005Dialect))
+			// Configure is called before Applies, must check here.
+			if (!(Dialect is MsSql2005Dialect))
 				Assert.Ignore("Test is for SQL dialect only");
+			var driverClass = ReflectHelper.ClassForName(cfg.GetProperty(Environment.ConnectionDriver));
+			if (!typeof(SqlClientDriver).IsAssignableFrom(driverClass))
+				Assert.Ignore("Test is compatible only with Sql Server Client driver connection strings");
 
 			cfg.SetProperty(Environment.Dialect, typeof(CustomMsSqlDialect).AssemblyQualifiedName);
 			cfg.SetProperty(Environment.ConnectionDriver, typeof(CustomMsSqlDriver).AssemblyQualifiedName);

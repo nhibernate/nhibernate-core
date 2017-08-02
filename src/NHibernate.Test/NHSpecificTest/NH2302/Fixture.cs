@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using NHibernate.Dialect;
+using NHibernate.Driver;
 using NHibernate.Mapping;
 using NUnit.Framework;
 
@@ -37,6 +38,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2302
         [Test]
         public void StringHugeLength()
         {
+			if (Sfi.ConnectionProvider.Driver is OdbcDriver)
+				Assert.Ignore("NH-4065, not fixed for Odbc");
+
             int id;
             // buildup a string the exceed the mapping
             string str = GetFixedLengthString12000();
