@@ -851,6 +851,7 @@
     <Compile Include="NHSpecificTest\NH3570\BiFixture.cs" />
     <Compile Include="NHSpecificTest\NH3570\Model.cs" />
     <Compile Include="NHSpecificTest\NH3570\UniFixture.cs" />
+    <Compile Include="NHSpecificTest\NH3596\CachingWithTransformerTests.cs" />
     <Compile Include="NHSpecificTest\NH3666\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3666\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3731\Entity.cs" />
