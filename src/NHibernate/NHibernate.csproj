@@ -165,6 +165,9 @@
     <Compile Include="Tool\hbm2ddl\IDatabaseMetadata.cs" />
     <Compile Include="Util\DelegateHelper.cs" />
     <Compile Include="Dialect\BitwiseFunctionOperation.cs" />
+    <Compile Include="Criterion\BaseEntityProjection.cs" />
+    <Compile Include="Criterion\EntityProjection.cs" />
+    <Compile Include="Criterion\RootEntityProjection.cs" />
     <Compile Include="Dialect\DB2Dialect.cs" />
     <Compile Include="Dialect\Dialect.cs" />
     <Compile Include="Dialect\FirebirdDialect.cs" />
