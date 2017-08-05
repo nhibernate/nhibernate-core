@@ -42,11 +42,13 @@
     <PackageReference Include="Antlr3.Runtime" Version="3.5.1" />
     <PackageReference Include="Iesi.Collections" Version="4.0.2" />
     <PackageReference Include="log4net" Version="2.0.8" />
-    <PackageReference Include="nunit" Version="3.6.0" />
+    <PackageReference Include="nunit" Version="3.7.1" />
     <PackageReference Include="Remotion.Linq" Version="2.1.2" />
     <PackageReference Include="Remotion.Linq.EagerFetching" Version="2.1.0" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.7.6" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.3.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.8.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -58,6 +60,10 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data.OracleClient" />
     <Reference Include="System.Transactions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
 
 </Project>
