@@ -53,10 +53,6 @@
 	</target>
 
 	<target name="common.nuget-restore" depends="common.init common.download-nuget">
-		<exec basedir="${tools.dir}" workingdir="${root.dir}/src" program="NuGet.exe">
-			<arg value="restore" />
-			<arg value="NHibernate.sln" />
-		</exec>
 		<exec basedir="${tools.dir}" workingdir="${root.dir}/Tools" program="NuGet.exe">
 			<arg value="install" />
 		</exec>
@@ -70,6 +66,7 @@
 				<arg value="/p:Platform=&quot;Any CPU&quot;" />
 				<arg value="/p:Configuration=&quot;Debug&quot;" if="${build.debug == 'true'}" />
 				<arg value="/p:Configuration=&quot;Release&quot;" if="${build.release == 'true'}" />
+				<arg value="/t:Restore" />
 				<arg value="/t:Rebuild" />
 				<arg value="/v:q" />
 				<arg value="/m" />

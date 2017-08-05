@@ -194,7 +194,7 @@
 		</copy>
 		<!--Required Bins for lazy loading NHibernate.ByteCode.Castle.dll-->
 		<!-- Tests -->
-		<copy file="${bin.dir}/TestEnbeddedConfig.cfg.xml" todir="${bin-pack.tests}"/>
+		<copy file="${bin.dir}/TestEmbeddedConfig.cfg.xml" todir="${bin-pack.tests}"/>
 		<copy file="${bin.dir}/ABC.hbm.xml" todir="${bin-pack.tests}"/>
     <copy todir="${bin-pack.tests}/DbScripts">
       <fileset basedir="${root.dir}/src/NHibernate.Test/DbScripts">

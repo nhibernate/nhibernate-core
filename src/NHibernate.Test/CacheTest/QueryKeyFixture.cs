@@ -21,7 +21,7 @@ namespace NHibernate.Test.CacheTest
 
 		protected override IList Mappings
 		{
-			get { return new[] { "CacheTest.EntityWithFilters.xml" }; }
+			get { return new[] { "CacheTest.EntityWithFilters.hbm.xml" }; }
 		}
 
 		[Test]
