@@ -339,6 +339,9 @@ namespace NHibernate.Dialect
 		/// </summary>
 		public override bool SupportsPoolingParameter => false;
 
+		/// <inheritdoc/>
+		public override bool SupportsScalarSubSelects => false;
+
 		#endregion
 	}
 }

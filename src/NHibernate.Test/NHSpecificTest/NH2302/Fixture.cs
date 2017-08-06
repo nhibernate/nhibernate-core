@@ -38,8 +38,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2302
         [Test]
         public void StringHugeLength()
         {
-			if (Sfi.ConnectionProvider.Driver is OdbcDriver)
-				Assert.Ignore("NH-4065, not fixed for Odbc");
+			if (Sfi.ConnectionProvider.Driver is OdbcDriver || Dialect is MsSqlCeDialect)
+				Assert.Ignore("NH-4065, not fixed for Odbc and MsSqlCe");
 
             int id;
             // buildup a string the exceed the mapping

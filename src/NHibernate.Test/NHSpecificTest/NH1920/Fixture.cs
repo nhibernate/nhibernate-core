@@ -37,8 +37,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1920
 		} 
 
 		[Test] 
-		public void Can_Query_With_Collection_Size_Condition() 
-		{ 
+		public void Can_Query_With_Collection_Size_Condition()
+		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore("Dialect does not support scalar sub-select");
+
 			using (ISession sess = OpenSession()) 
 			using (ITransaction tx = sess.BeginTransaction()) 
 			{ 

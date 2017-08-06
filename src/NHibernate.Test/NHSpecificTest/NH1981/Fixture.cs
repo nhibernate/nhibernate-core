@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1981
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
 			// Firebird doesn't support this feature
-			return !(dialect is Dialect.FirebirdDialect);
+			return !(dialect is Dialect.FirebirdDialect) && TestDialect.SupportsOrderByColumnNumber;
 		}
 
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)

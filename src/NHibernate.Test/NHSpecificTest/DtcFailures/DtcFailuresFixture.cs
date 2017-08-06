@@ -87,9 +87,6 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 		[Test]
 		public void Can_roll_back_transaction()
 		{
-			if (Dialect is FirebirdDialect)
-				Assert.Ignore("Firebird driver does not support distributed transactions");
-
 			var tx = new TransactionScope();
 			using (ISession s = OpenSession())
 			{
@@ -113,9 +110,6 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 		[Description("Another action inside the transaction do the rollBack outside nh-session-scope.")]
 		public void RollbackOutsideNh()
 		{
-			if (Dialect is FirebirdDialect)
-				Assert.Ignore("Firebird driver does not support distributed transactions");
-
 			try
 			{
 				using (var txscope = new TransactionScope())
@@ -143,9 +137,6 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 		[Description("rollback inside nh-session-scope should not commit save and the transaction should be aborted.")]
 		public void TransactionInsertWithRollBackTask()
 		{
-			if (Dialect is FirebirdDialect)
-				Assert.Ignore("Firebird driver does not support distributed transactions");
-
 			try
 			{
 				using (var txscope = new TransactionScope())

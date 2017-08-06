@@ -492,11 +492,14 @@ namespace NHibernate.Test.Legacy
 
 				if (Dialect.SupportsSubSelects && TestDialect.SupportsOperatorSome)
 				{
-					Assert.AreEqual(2,
-									s.CreateQuery(
-										"from s in class Simple where s.Count > ( select min(sim.Count) from sim in class NHibernate.DomainModel.Simple )")
-										.List().Count);
-					t.Commit();
+					if (Dialect.SupportsScalarSubSelects)
+					{
+						Assert.AreEqual(2,
+							s.CreateQuery(
+									"from s in class Simple where s.Count > ( select min(sim.Count) from sim in class NHibernate.DomainModel.Simple )")
+								.List().Count);
+						t.Commit();
+					}
 					t = s.BeginTransaction();
 					Assert.AreEqual(2,
 									s.CreateQuery(

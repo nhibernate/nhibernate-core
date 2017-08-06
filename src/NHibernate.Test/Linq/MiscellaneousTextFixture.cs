@@ -50,6 +50,9 @@ namespace NHibernate.Test.Linq
         [Test(Description = "Predicated count on a child list")]
         public void PredicatedCountOnChildList()
         {
+            if (!Dialect.SupportsScalarSubSelects)
+                Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
             var results = (from c in db.Customers
                            select new
                                       {

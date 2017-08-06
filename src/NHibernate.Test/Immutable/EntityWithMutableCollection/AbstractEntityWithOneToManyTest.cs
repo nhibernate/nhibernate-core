@@ -1223,7 +1223,23 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
-			s.CreateQuery("delete from Party").ExecuteUpdate();
+			// If the entity uses a join mapping, DML queries require temp tables.
+			if (Dialect.SupportsTemporaryTables)
+				s.CreateQuery("delete from Party").ExecuteUpdate();
+			else
+			{
+				// The current join mapping seems a bit invalid or unsupported.
+				// The party_contract join table is optional, but its FK is not-nullable. The test removes the contract
+				// from both parties (explicitly for partyOrig, indirectly by updating cOrig instead of c for newParty),
+				// and it the appears those parties are no more loadable, failing with a "not-null property references a
+				// null or transient value NHibernate.Test.Immutable.EntityWithMutableCollection.Party.Contract".
+				// So we need to "fix" already previously loaded instances before deleting them.
+				partyOrig.Contract = cOrig;
+				newParty.Contract = cOrig;
+				s.Delete(partyOrig);
+				s.Delete(newParty);
+			}
+
 			s.Delete(c);
 			Assert.That(s.CreateCriteria<Contract>().SetProjection(Projections.RowCountInt64()).UniqueResult<long>(), Is.EqualTo(0L));
 			Assert.That(s.CreateCriteria<Party>().SetProjection(Projections.RowCountInt64()).UniqueResult<long>(), Is.EqualTo(0L));

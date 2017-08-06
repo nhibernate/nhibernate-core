@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
-using NHibernate.Dialect;
 using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
@@ -259,7 +258,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3889
 
 		void AssertDialect()
 		{
-			if (Dialect is MsSqlCeDialect) Assert.Ignore(Dialect.GetType() + " does not support this type of query");
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType() + " does not support this type of query");
 		}
 	}
 }

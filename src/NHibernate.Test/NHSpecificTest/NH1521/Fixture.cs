@@ -11,7 +11,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1521
 	{
 		private static void CheckDialect(Configuration configuration)
 		{
-			if (!configuration.Properties[Environment.Dialect].Contains("MsSql"))
+			var dialect = Dialect.Dialect.GetDialect(configuration.Properties);
+			if (!(dialect is MsSql2000Dialect))
 				Assert.Ignore("Specific test for MsSQL dialects");
 		}
 

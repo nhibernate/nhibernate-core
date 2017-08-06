@@ -21,7 +21,15 @@ namespace NHibernate.Test.Hql
 						{"locate", new[] {typeof (SQLiteDialect)}},
 						{"bit_length", new[] {typeof (SQLiteDialect)}},
 						{"extract", new[] {typeof (SQLiteDialect)}},
-						{"nullif", new[] {typeof (Oracle8iDialect)}}
+						{
+							"nullif",
+							new[]
+							{
+								typeof (Oracle8iDialect),
+								// Actually not supported by the db engine. (Well, could likely still be done with a case when override.)
+								typeof (MsSqlCeDialect),
+								typeof (MsSqlCe40Dialect)
+							}}
 					};
 		}
 
@@ -74,9 +82,13 @@ namespace NHibernate.Test.Hql
 			using (ISession s = OpenSession())
 			{
 				// Count in select
-				object result = s.CreateQuery("select count(distinct a.id) from Animal a").UniqueResult();
-				Assert.AreEqual(typeof(long), result.GetType());
-				Assert.AreEqual(2, result);
+				object result;
+				if (TestDialect.SupportsCountDistinct)
+				{
+					result = s.CreateQuery("select count(distinct a.id) from Animal a").UniqueResult();
+					Assert.AreEqual(typeof(long), result.GetType());
+					Assert.AreEqual(2, result);
+				}
 
 				result = s.CreateQuery("select count(*) from Animal").UniqueResult();
 				Assert.AreEqual(typeof(long), result.GetType());
@@ -758,6 +770,17 @@ namespace NHibernate.Test.Hql
 							if (!ex.InnerException.Message.Contains(msgToCheck))
 								throw;
 						}
+						else if (Dialect is MsSqlCeDialect)
+						{
+							var errorCodeProperty = ex.InnerException.GetType().GetProperty("NativeError");
+							if (errorCodeProperty == null ||
+								// 25515 is the error code for "In aggregate and grouping expressions, the SELECT clause can contain only aggregates and grouping expressions."
+								// https://technet.microsoft.com/en-us/library/ms172350(v=sql.110).aspx
+								errorCodeProperty.GetValue(ex.InnerException) as int? != 25515)
+							{
+								throw;
+							}
+						}
 						else
 						{
 							string msgToCheck =
@@ -864,6 +887,7 @@ namespace NHibernate.Test.Hql
 		public void Extract()
 		{
 			IgnoreIfNotSupported("extract");
+			IgnoreIfNotSupported("current_timestamp");
 
 			// test only the parser and render
 			using (ISession s = OpenSession())
@@ -906,6 +930,9 @@ namespace NHibernate.Test.Hql
 		public void HourMinuteSecond()
 		{
 			IgnoreIfNotSupported("second");
+			IgnoreIfNotSupported("minute");
+			IgnoreIfNotSupported("hour");
+			IgnoreIfNotSupported("current_timestamp");
 			// test only the parser and render
 			using (ISession s = OpenSession())
 			{
@@ -997,6 +1024,7 @@ group by mr.Description";
 		[Test]
 		public void NH1725()
 		{
+			IgnoreIfNotSupported("iif");
 			// Only to test the parser
 			using (ISession s = OpenSession())
 			{
