@@ -12,6 +12,11 @@
     <NoWarn>$(NoWarn);3001;3002;3003;3005</NoWarn>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <TreatSpecificWarningsAsErrors />
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="nunit" Version="3.6.0" />
   </ItemGroup>
