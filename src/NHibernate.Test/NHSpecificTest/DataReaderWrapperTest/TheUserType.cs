@@ -19,7 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.DataReaderWrapperTest
 			get { return typeof(string); }
 		}
 
-		public bool Equals(object x, object y)
+		public new bool Equals(object x, object y)
 		{
 			return x.Equals(y);
 		}

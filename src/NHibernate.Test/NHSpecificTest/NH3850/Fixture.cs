@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Data;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Linq;
 using NHibernate.SqlTypes;

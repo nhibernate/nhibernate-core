@@ -13,7 +13,10 @@ namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 
 		private class MyClass
 		{
+			// Assigned by reflection
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 			private int _id;
+#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
 			public int Id
 			{
 				get { return _id; }

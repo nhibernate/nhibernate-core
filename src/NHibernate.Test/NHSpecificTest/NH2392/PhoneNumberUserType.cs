@@ -40,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2392
 			get { return typeof(PhoneNumber); }
 		}
 
-		public bool Equals(object x, object y)
+		public new bool Equals(object x, object y)
 		{
 			if (ReferenceEquals(x, null) && ReferenceEquals(y, null))
 				return true;
