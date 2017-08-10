@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <StartupObject>NHibernate.Tool.HbmXsd.Program</StartupObject>
     <GenerateAssemblyTitleAttribute>False</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyProductAttribute>False</GenerateAssemblyProductAttribute>
     <GenerateAssemblyCompanyAttribute>False</GenerateAssemblyCompanyAttribute>
