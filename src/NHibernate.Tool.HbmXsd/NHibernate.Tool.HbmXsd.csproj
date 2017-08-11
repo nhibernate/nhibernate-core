@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <StartupObject>NHibernate.Tool.HbmXsd.Program</StartupObject>
     <GenerateAssemblyTitleAttribute>False</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyProductAttribute>False</GenerateAssemblyProductAttribute>
     <GenerateAssemblyCompanyAttribute>False</GenerateAssemblyCompanyAttribute>
@@ -9,10 +11,15 @@
     <GenerateAssemblyVersionAttribute>False</GenerateAssemblyVersionAttribute>
     <GenerateAssemblyFileVersionAttribute>False</GenerateAssemblyFileVersionAttribute>
     <GenerateAssemblyInformationalVersionAttribute>False</GenerateAssemblyInformationalVersionAttribute>
+    <AssemblyName>HbmXsd</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Include="..\SharedAssemblyInfo.cs" Link="SharedAssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\NHibernate\nhibernate-mapping.xsd" />
   </ItemGroup>
 
 </Project>
