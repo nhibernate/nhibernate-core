@@ -331,7 +331,11 @@ and with a rollback in the second dtc and a ForceRollback outside nh-session-sco
 
 			public void Prepare(PreparingEnlistment preparingEnlistment)
 			{
-				Assert.AreNotEqual(thread, Thread.CurrentThread.ManagedThreadId);
+				if (thread == Thread.CurrentThread.ManagedThreadId)
+				{
+					log.Warn("Thread.CurrentThread.ManagedThreadId ({0}) is same as creation thread");
+				}
+
 				if (shouldRollBack)
 				{
 					log.Debug(">>>>Force Rollback<<<<<");
