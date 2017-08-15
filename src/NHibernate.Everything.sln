@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.26730.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Support", "Support", "{9BDB5C84-14EC-4384-B423-9E319675B3CA}"
+	ProjectSection(SolutionItems) = preProject
+		..\build-common\NHibernate.props = ..\build-common\NHibernate.props
+	EndProjectSection
 	ProjectSection(FolderStartupServices) = postProject
 		{B4F97281-0DBD-4835-9ED8-7DFB966E87FF} = {B4F97281-0DBD-4835-9ED8-7DFB966E87FF}
 	EndProjectSection
@@ -67,11 +70,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Tool.HbmXsd", "NHibernate.Tool.HbmXsd\NHibernate.Tool.HbmXsd.csproj", "{446E148D-A9D5-4D7D-A706-BEDD45B2BC7D}"
 EndProject
 Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "NHibernate.Test.VisualBasic", "NHibernate.Test.VisualBasic\NHibernate.Test.VisualBasic.vbproj", "{7C2EF610-BCA0-4D1F-898A-DE9908E4970C}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AssemblyInfo", "AssemblyInfo", "{00C03FBC-6720-4917-A203-DEA12FF3C7BF}"
-	ProjectSection(SolutionItems) = preProject
-		SharedAssemblyInfo.cs = SharedAssemblyInfo.cs
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Example.Web", "NHibernate.Example.Web\NHibernate.Example.Web.csproj", "{B291C1C1-599B-418E-8591-8A8CF1CAA188}"
 EndProject
@@ -161,7 +159,6 @@ Global
 		{7AEE5B37-C552-4E59-9B6F-88755BCB5070} = {094F74CD-2DD7-496F-BC48-A6D357BF33FD}
 		{446E148D-A9D5-4D7D-A706-BEDD45B2BC7D} = {92509065-DAEA-4457-8300-C7B64CD0E9F4}
 		{7C2EF610-BCA0-4D1F-898A-DE9908E4970C} = {094F74CD-2DD7-496F-BC48-A6D357BF33FD}
-		{00C03FBC-6720-4917-A203-DEA12FF3C7BF} = {9BDB5C84-14EC-4384-B423-9E319675B3CA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A41913C2-EDEB-440A-BBDE-0AEB56C1CBA6}

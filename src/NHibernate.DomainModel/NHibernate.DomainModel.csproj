@@ -1,14 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../build-common/NHibernate.props" />
 
   <PropertyGroup>
+    <Description>The Domain Model used by the Unit Tests.</Description>
+
     <TargetFramework>net461</TargetFramework>
-    <GenerateAssemblyTitleAttribute>False</GenerateAssemblyTitleAttribute>
-    <GenerateAssemblyProductAttribute>False</GenerateAssemblyProductAttribute>
-    <GenerateAssemblyCompanyAttribute>False</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyDescriptionAttribute>False</GenerateAssemblyDescriptionAttribute>
-    <GenerateAssemblyVersionAttribute>False</GenerateAssemblyVersionAttribute>
-    <GenerateAssemblyFileVersionAttribute>False</GenerateAssemblyFileVersionAttribute>
-    <GenerateAssemblyInformationalVersionAttribute>False</GenerateAssemblyInformationalVersionAttribute>
     <NoWarn>$(NoWarn);3001;3002;3003;3005</NoWarn>
   </PropertyGroup>
 
@@ -23,10 +19,6 @@
 
   <ItemGroup>
     <EmbeddedResource Include="**\*.hbm.xml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="..\SharedAssemblyInfo.cs" Link="SharedAssemblyInfo.cs" />
   </ItemGroup>
 
   <ItemGroup>

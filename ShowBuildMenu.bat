@@ -9,9 +9,6 @@ set NUNIT="%~dp0Tools\NUnit.ConsoleRunner.3.6.0\tools\nunit3-console.exe"
 
 :main-menu
 echo ========================= NHIBERNATE BUILD MENU ==========================
-echo --- SETUP ---
-echo A. Set up for Visual Studio (creates AssemblyInfo.cs files).
-echo.
 echo --- TESTING ---
 echo B. (Step 1) Set up a new test configuration for a particular database.
 echo C. (Step 2) Activate a test configuration.
@@ -29,16 +26,15 @@ echo --- Exit ---
 echo X. Make the beautiful build menu go away.
 echo.
 
-%BUILDTOOL% prompt ABCDEFGIX
-if errorlevel 8 goto end
-if errorlevel 7 goto teamcity-menu
-if errorlevel 6 goto build-release-package
-if errorlevel 5 goto build-release
-if errorlevel 4 goto build-debug
-if errorlevel 3 goto test-run
-if errorlevel 2 goto test-activate
-if errorlevel 1 goto test-setup-menu
-if errorlevel 0 goto build-visual-studio
+%BUILDTOOL% prompt BCDEFGIX
+if errorlevel 7 goto end
+if errorlevel 6 goto teamcity-menu
+if errorlevel 5 goto build-release-package
+if errorlevel 4 goto build-release
+if errorlevel 3 goto build-debug
+if errorlevel 2 goto test-run
+if errorlevel 1 goto test-activate
+if errorlevel 0 goto test-setup-menu
 
 :test-setup-menu
 echo A. Add a test configuration for SQL Server.
@@ -171,10 +167,6 @@ goto main-menu
 rem :build-test
 rem %NANT% test
 rem goto main-menu
-
-:build-visual-studio
-%NANT% visual-studio
-goto main-menu
 
 :build-debug
 %NANT% clean build

@@ -1,14 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../build-common/NHibernate.props" />
 
   <PropertyGroup>
+    <Title>NHibernate.TestDatabaseSetup</Title>
+    <Description>Test Database Setup for NHibernate.</Description>
+
     <TargetFramework>net461</TargetFramework>
-    <GenerateAssemblyTitleAttribute>False</GenerateAssemblyTitleAttribute>
-    <GenerateAssemblyProductAttribute>False</GenerateAssemblyProductAttribute>
-    <GenerateAssemblyCompanyAttribute>False</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyDescriptionAttribute>False</GenerateAssemblyDescriptionAttribute>
-    <GenerateAssemblyVersionAttribute>False</GenerateAssemblyVersionAttribute>
-    <GenerateAssemblyFileVersionAttribute>False</GenerateAssemblyFileVersionAttribute>
-    <GenerateAssemblyInformationalVersionAttribute>False</GenerateAssemblyInformationalVersionAttribute>
     <NoWarn>$(NoWarn);3001;3002;3003;3005</NoWarn>
   </PropertyGroup>
 

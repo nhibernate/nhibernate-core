@@ -13,7 +13,7 @@
   <target name="nuspec" depends="common.init nuget.set-properties" description="Create nuspec for NHibernate">
     <property name="nuspec.destination.file" value="${nuget.workingdir}/${nuspec.destination.filename}" />
     <copy file="NHibernate.nuspec.template" tofile="${nuspec.destination.file}"/>
-    <xmlpoke file="${nuspec.destination.file}" xpath="/package/metadata/version" value="${project.version.nuget}" />
+    <xmlpoke file="${nuspec.destination.file}" xpath="/package/metadata/version" value="${project.version}" />
   </target>
 
   <target name="nuget" depends="common.init common.download-nuget nuget.set-properties nuspec">

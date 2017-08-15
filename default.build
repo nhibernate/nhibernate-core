@@ -138,10 +138,6 @@
 				<exclude name="**/obj/**" />
 			</fileset>
 		</copy>
-
-		<!-- Generate AssemblyInfo.cs files for Visual Studio -->
-		<nant buildfile="${source.tmpdir}/default.build" target="visual-studio" />
-
 	</target>
 
 	<target name="sources-zip" depends="init sources">
@@ -222,9 +218,6 @@
 		description="Creates files for the partial (Alpha-Beta-Candidate) Release on SourceForge">
 
 		<echo message="Created a '${project.config}' package in ${build.dir}" />
-	</target>
-
-	<target name="visual-studio" depends="init common.init common.generate-assemblyinfo" description="Generates SharedAssemblyInfo.cs files to work with Visual Studio">
 	</target>
 
 	<target name="cleanall" description="Deletes every build configuration">

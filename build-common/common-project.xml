@@ -28,9 +28,6 @@
 			- common.compile-all
 				compile a solution, generating the documentation file (.xml)
 
-			- common.generate-assemblyinfo
-				generate an AssemblyInfo.cs file from assembly.* NAnt properties.
-
 			- common.run-tests
 				run compiled NUnit tests.
 
@@ -58,7 +55,7 @@
 		</exec>
 	</target>
 
-	<target name="common.compile-all" depends="common.generate-assemblyinfo common.nuget-restore">
+	<target name="common.compile-all" depends="common.nuget-restore">
 		<!--property name="msbuild.cmd" value="${cmd.sln} ${cmd.out} ${cmd.platform} ${cmd.debug} ${cmd.optimize} ${cmd.doc} /t:Rebuild /v:q /m" /-->		
 		<exec program="${path::combine(tools.dir, 'msbuild.cmd')}" verbose="true">
 				<arg value="${root.dir}/src/NHibernate.sln" />
@@ -71,42 +68,6 @@
 				<arg value="/v:q" />
 				<arg value="/m" />
 		</exec> 
-	</target>
-  
-	<target name="common.set-assembly-attribute-values">
-		<property overwrite="false" name="assembly.version" value="${project.default-assembly-version}" />
-		<property overwrite="false" name="assembly.version.informational" value="${project.version}" />
-		<property overwrite="false" name="assembly.version.file" value="${project.version.numeric}" />
-	</target>
-
-	<target name="common.generate-assemblyinfo"
-		depends="common.init common.set-assembly-attribute-values"
-		description="Generate SharedAssemblyInfo.* using assembly.* properties."
-	>
-		<asminfo output="${root.dir}/src/SharedAssemblyInfo.cs" language="CSharp">
-			<imports>
-				<import namespace="System" />
-				<import namespace="System.Reflection" />
-				<import namespace="System.Runtime.CompilerServices" />
-			</imports>
-			<attributes>
-				<attribute type="AssemblyVersionAttribute" value="${assembly.version}" />
-				<attribute type="AssemblyInformationalVersionAttribute" value="${assembly.version.informational}" />
-				<attribute type="AssemblyFileVersionAttribute" value="${assembly.version.file}" />
-			</attributes>
-		</asminfo>
-		<asminfo output="${root.dir}/src/SharedAssemblyInfo.vb" language="VB">
-			<imports>
-				<import namespace="System" />
-				<import namespace="System.Reflection" />
-				<import namespace="System.Runtime.CompilerServices" />
-			</imports>
-			<attributes>
-				<attribute type="AssemblyVersionAttribute" value="${assembly.version}" />
-				<attribute type="AssemblyInformationalVersionAttribute" value="${assembly.version.informational}" />
-				<attribute type="AssemblyFileVersionAttribute" value="${assembly.version.file}" />
-			</attributes>
-		</asminfo>
 	</target>
 
 	<target name="common.run-tests"
