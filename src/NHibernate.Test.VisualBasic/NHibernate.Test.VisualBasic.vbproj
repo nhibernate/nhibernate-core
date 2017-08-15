@@ -10,11 +10,9 @@
     <GenerateAssemblyFileVersionAttribute>False</GenerateAssemblyFileVersionAttribute>
     <GenerateAssemblyInformationalVersionAttribute>False</GenerateAssemblyInformationalVersionAttribute>
     <NoWarn>$(NoWarn);3001;3002;3003;3005</NoWarn>
+    <OptionExplicit>On</OptionExplicit>
+    <OptionStrict>On</OptionStrict>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Issues\NH3302\**" /> <!--"Like" not supported in new dotnet compiler, not implemented anyways in .net framework-->
-  </ItemGroup>
 
   <ItemGroup>
     <None Remove="**\*.hbm.xml" />
@@ -43,6 +41,7 @@
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.3.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.8.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
+    <PackageReference Include="Microsoft.VisualBasic" Version="10.2.0" />
   </ItemGroup>
 
   <ItemGroup>
