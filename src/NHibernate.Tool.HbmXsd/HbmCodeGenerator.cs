@@ -1,3 +1,4 @@
+using System;
 using System.CodeDom;
 using System.IO;
 using System.Xml.Schema;
@@ -18,6 +19,8 @@ namespace NHibernate.Tool.HbmXsd
 		{
 			using (Stream stream = GetType().Assembly.GetManifestResourceStream(MappingSchemaResourceName))
 			{
+				if (stream == null)
+					throw new InvalidOperationException($"Unable to load resource {MappingSchemaResourceName}");
 				XmlSchema schema = XmlSchema.Read(stream, null);
 				Execute(outputFileName, GeneratedCodeNamespace, schema);
 			}

@@ -44,9 +44,17 @@ namespace NHibernate.Linq.Functions
 				return true;
 
 			// This is .Net 4 only, and in the System.Data.Services assembly, which we don't depend directly on.
-			return methodInfo != null && methodInfo.Name == "Compare" &&
+			if (methodInfo != null && methodInfo.Name == "Compare" &&
 				   methodInfo.DeclaringType != null &&
-				   methodInfo.DeclaringType.FullName == "System.Data.Services.Providers.DataServiceProviderMethods";
+				   methodInfo.DeclaringType.FullName == "System.Data.Services.Providers.DataServiceProviderMethods")
+				return true;
+
+			if (methodInfo != null && methodInfo.Name == "CompareString" &&
+				   methodInfo.DeclaringType != null &&
+				   (methodInfo.DeclaringType.FullName == "Microsoft.VisualBasic.CompilerServices.EmbeddedOperators"))
+				return true;
+
+			return false;
 		}
 
 
