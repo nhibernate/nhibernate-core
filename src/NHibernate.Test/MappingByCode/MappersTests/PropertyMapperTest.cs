@@ -324,7 +324,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 	{
 		#region Implementation of IUserType
 
-		public bool Equals(object x, object y)
+		public new bool Equals(object x, object y)
 		{
 			throw new NotImplementedException();
 		}
@@ -394,7 +394,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			throw new NotImplementedException();
 		}
 
-		public bool Equals(object x, object y)
+		public new bool Equals(object x, object y)
 		{
 			throw new NotImplementedException();
 		}

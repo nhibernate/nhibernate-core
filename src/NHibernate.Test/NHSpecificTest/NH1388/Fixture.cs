@@ -5,7 +5,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1388
 {
 	public class Student
 	{
+		// Assigned by reflection
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 		private int _id;
+#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
 		private readonly IDictionary<Subject, Major> _majors = new Dictionary<Subject, Major>();
 
 		public virtual int Id

@@ -61,6 +61,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3993
 			set => _parent = Parent;
 		}
 
+		// Used by reflection
+#pragma warning disable CS0169 // The field is never used
 		private string _description;
+#pragma warning restore CS0169 // The field is never used
 	}
 }
