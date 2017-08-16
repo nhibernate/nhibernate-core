@@ -1,0 +1,16 @@
+﻿@page
+@model SchemaModel
+@{
+    ViewData["Title"] = "Schema Operations";
+}
+
+<a href="~/">Back to the main page</a>
+
+<form method="POST">
+    <div>
+        <button type="submit" asp-page-handler="CreateSchema">Create Schema</button>
+        <button type="submit" asp-page-handler="DropSchema">Drop Schema</button>
+    </div>
+</form>
+
+<p>@Model.Status</p>
