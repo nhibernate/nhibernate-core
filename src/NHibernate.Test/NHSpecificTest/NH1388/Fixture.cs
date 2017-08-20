@@ -40,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1388
 		[Test]
 		public void BagTest()
 		{
-			int studentId = 1;
+			object studentId;
 
 			// Set major.
 			using (ISession session = OpenSession())
@@ -61,7 +61,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1388
 
 				session.Save(subject1);
 				session.Save(subject2);
-				session.Save(student);
+				studentId = session.Save(student);
 
 				session.Flush();
 				t.Commit();

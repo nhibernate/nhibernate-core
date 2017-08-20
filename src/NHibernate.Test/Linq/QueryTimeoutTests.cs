@@ -2,6 +2,7 @@
 using System.Linq;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
+using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.Linq;
 using NUnit.Framework;
@@ -10,6 +11,12 @@ namespace NHibernate.Test.Linq
 {
 	public class QueryTimeoutTests : LinqTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			//SqlServer CE does not support timeouts
+			return !(dialect is MsSqlCeDialect);
+		}
+
 		protected override void Configure(Configuration configuration)
 		{
 			base.Configure(configuration);

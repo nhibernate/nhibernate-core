@@ -2071,6 +2071,14 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
+		/// Does this dialect support scalar sub-selects?
+		/// </summary>
+		/// <remarks>
+		/// Scalar sub-selects are sub-queries returning a scalar value, not a set. See https://stackoverflow.com/a/648049/1178314
+		/// </remarks>
+		public virtual bool SupportsScalarSubSelects => SupportsSubSelects;
+
+		/// <summary>
 		/// Does this dialect support pooling parameter in connection string?
 		/// </summary>
 		public virtual bool SupportsPoolingParameter => true;

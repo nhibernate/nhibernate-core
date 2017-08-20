@@ -10,6 +10,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2760
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			// All four tests translate to scalar sub-select.
+			return Dialect.SupportsScalarSubSelects;
+		}
+
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();

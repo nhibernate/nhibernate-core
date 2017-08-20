@@ -1,6 +1,5 @@
 ﻿using NHibernate.Cfg.MappingSchema;
 using NHibernate.Criterion;
-using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Mapping.ByCode;
@@ -12,7 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2167
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return !(dialect is FirebirdDialect);
+			return TestDialect.SupportsComplexExpressionInGroupBy;
 		}
 
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)

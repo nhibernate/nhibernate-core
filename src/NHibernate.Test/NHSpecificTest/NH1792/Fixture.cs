@@ -50,6 +50,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1792
 			}
 		}
 
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			// MsSqlCe40Dialect.GetLimitString has a "bug", dodged by MsSql2012. (Not convinced this bug had to be fixed the way MsSql2012 does:
+			// limiting results without specifying an order is not even supported by OFFSET ... FETCH for a reason: the result ordering being undefined,
+			// which rows are "first" is undefined too, and they may change depending on the used query plan. The ordering should always be specified by
+			// the user.)
+			return !(Dialect is MsSqlCe40Dialect);
+		}
+
 		/// <summary>
 		/// Verifies that a subquery created as a detached criteria with an order by 
 		/// will produce valid sql when the main query does not contain an order by clause
