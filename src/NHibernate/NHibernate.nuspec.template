@@ -17,6 +17,7 @@
       <dependency id="Iesi.Collections" version="[4,5)" />
       <dependency id="Remotion.Linq" version="[2.1.2, 3)" />
       <dependency id="Remotion.Linq.EagerFetching" version="[2.1.0, 3)" />
+      <dependency id="Antlr3.Runtime" version="[3.5.1, 4)" />
     </dependencies>
     <projectUrl>
       http://nhibernate.info

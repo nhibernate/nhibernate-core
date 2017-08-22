@@ -17,6 +17,12 @@ namespace NHibernate.Test.Hql.Ast
 			return OpenSession();
 		}
 
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			// Some classes are mapped with table joins, which requires temporary tables for DML to work.
+			return Dialect.SupportsTemporaryTables;
+		}
+
 		#region Non-exists
 
 		[Test]

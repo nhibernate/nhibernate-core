@@ -9,3 +9,16 @@ indent_style = tab
 
 [*.xsd]
 indent_style = tab
+
+[*.json]
+indent_style = space
+indent_size = 2
+
+[*.xml]
+indent_style = space
+indent_size = 2
+
+
+[*.cshtml]
+indent_style = space
+indent_size = 4

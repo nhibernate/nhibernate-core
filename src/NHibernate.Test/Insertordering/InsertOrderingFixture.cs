@@ -6,6 +6,7 @@ using System.Data.Common;
 using System.Linq;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
+using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -33,7 +34,7 @@ namespace NHibernate.Test.Insertordering
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
 			// Custom batcher enforces sql server.
-			return dialect.SupportsSqlBatches;
+			return dialect is MsSql2000Dialect;
 		}
 
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)

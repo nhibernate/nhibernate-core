@@ -48,8 +48,6 @@
 		<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSql2005Dialect" />
 	<!-- The OdbcDriver inherits SupportsMultipleOpenReaders=true from DriverBase, which requires Mars_Connection=yes for SQL Server. -->
 		<property name="nhibernate.connection.connection_string" value="Driver={SQL Server Native Client 11.0};Server=.\SQLExpress;Database=nhibernateOdbc;Trusted_Connection=yes;Mars_Connection=yes;" />
-		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/sqlServerOdbc/NHibernate.Test.last-results.xml" />
 	</target>
 
 	<target name="setup-teamcity-sqlServer2012">
@@ -61,8 +59,6 @@
 		<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSqlCe40Dialect" />
 		<property name="nhibernate.connection.connection_string" value="Data Source=NHibernate.sdf" />
 		<property name="nhibernate.command_timeout" value="0" />
-		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/sqlServerCe/NHibernate.Test.last-results.xml" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/sqlServerCe/X86">
 				<include name="*.dll"/>
@@ -76,8 +72,6 @@
 		<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSqlCe40Dialect" />
 		<property name="nhibernate.connection.connection_string" value="Data Source=NHibernate.sdf" />
 		<property name="nhibernate.command_timeout" value="0" />
-		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/sqlServerCe/NHibernate.Test.last-results.xml" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/sqlServerCe/AMD64">
 				<include name="*.dll"/>
@@ -191,8 +185,6 @@
 				<include name="*.dll"/>
 			</fileset>
 		</copy>
-		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/oracle-managed/NHibernate.Test.last-results.xml" />
 	</target>
 
 	<target name="setup-teamcity-oracle-managed64">
@@ -210,8 +202,6 @@
 				<include name="*.dll"/>
 			</fileset>
 		</copy>
-		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/oracle-managed/NHibernate.Test.last-results.xml" />
 	</target>
 
 	<target name="setup-teamcity-mysql">

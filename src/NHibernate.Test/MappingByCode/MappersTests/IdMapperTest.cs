@@ -116,7 +116,10 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		}
 		private class BaseEntity
 		{
+			// Assigned by reflection
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 			private int id;
+#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
 
 			public int Id
 			{

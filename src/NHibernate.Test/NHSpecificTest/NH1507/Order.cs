@@ -5,7 +5,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1507
 	[Serializable]
 	public class Order
 	{
+		// Used by reflection
+#pragma warning disable CS0169 // The field is never used
 		private int _id;
+#pragma warning restore CS0169 // The field is never used
 
 		protected internal Order() {}
 

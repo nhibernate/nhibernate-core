@@ -131,7 +131,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 		public void NH2890Loquacious()
 		{
 			var cfg = new Configuration();
-			cfg.Configure(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestEnbeddedConfig.cfg.xml"))
+			cfg.Configure(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestEmbeddedConfig.cfg.xml"))
 				.SetDefaultAssembly("NHibernate.DomainModel")
 				.SetDefaultNamespace("NHibernate.DomainModel")
 				.SessionFactory()

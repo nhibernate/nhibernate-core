@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Threading;
+using NHibernate.AdoNet;
 using NHibernate.Criterion;
 using NHibernate.Engine;
 using NUnit.Framework;
@@ -182,8 +183,8 @@ namespace NHibernate.Test.Stateless
 		[Test]
 		public void WhenSetTheBatchSizeThenSetTheBatchSizeOfTheBatcher()
 		{
-			if (!Dialect.SupportsSqlBatches)
-				Assert.Ignore("Dialect does not support sql batches.");
+			if (Sfi.Settings.BatcherFactory is NonBatchingBatcherFactory)
+				Assert.Ignore("Batching not enabled.");
 
 			using (IStatelessSession ss = Sfi.OpenStatelessSession())
 			{

@@ -29,7 +29,7 @@
 		depends="check-framework-version init prepare-build-directory common.compile-all"
 		description="Builds NHibernate in the current configuration" />
 
-	<target name="generate-async" depends="common.generate-assemblyinfo common.nuget-restore common.find-async-generator-console">
+	<target name="generate-async" depends="common.nuget-restore common.find-async-generator-console">
 		<exec
 			workingdir="${root.dir}/src"
 			program="${async-generator-console}" />
@@ -144,10 +144,6 @@
 				<exclude name="**/obj/**" />
 			</fileset>
 		</copy>
-
-		<!-- Generate AssemblyInfo.cs files for Visual Studio -->
-		<nant buildfile="${source.tmpdir}/default.build" target="visual-studio" />
-
 	</target>
 
 	<target name="sources-zip" depends="init sources">
@@ -200,7 +196,7 @@
 		</copy>
 		<!--Required Bins for lazy loading NHibernate.ByteCode.Castle.dll-->
 		<!-- Tests -->
-		<copy file="${bin.dir}/TestEnbeddedConfig.cfg.xml" todir="${bin-pack.tests}"/>
+		<copy file="${bin.dir}/TestEmbeddedConfig.cfg.xml" todir="${bin-pack.tests}"/>
 		<copy file="${bin.dir}/ABC.hbm.xml" todir="${bin-pack.tests}"/>
     <copy todir="${bin-pack.tests}/DbScripts">
       <fileset basedir="${root.dir}/src/NHibernate.Test/DbScripts">
@@ -228,9 +224,6 @@
 		description="Creates files for the partial (Alpha-Beta-Candidate) Release on SourceForge">
 
 		<echo message="Created a '${project.config}' package in ${build.dir}" />
-	</target>
-
-	<target name="visual-studio" depends="init common.init common.generate-assemblyinfo" description="Generates SharedAssemblyInfo.cs files to work with Visual Studio">
 	</target>
 
 	<target name="cleanall" description="Deletes every build configuration">

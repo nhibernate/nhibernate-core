@@ -1,6 +1,8 @@
 using System.Data;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
+using NHibernate.Driver;
+using NHibernate.Engine;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 
@@ -123,6 +125,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
 			return dialect is MsSql2005Dialect;
+		}
+
+		protected override bool AppliesTo(ISessionFactoryImplementor factory)
+		{
+			// SQLUpdateConflictToStaleStateExceptionConverter is specific to Sql client driver, and does not work
+			// with Odbc (and likeley Oledb).
+			return factory.ConnectionProvider.Driver is SqlClientDriver;
 		}
 
 		private void SetAllowSnapshotIsolation(bool on)

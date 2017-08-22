@@ -12,7 +12,10 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 		private class Animal
 		{
 			public int Id { get; set; }
+			// Assigned by reflection
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 			private ICollection<Animal> children;
+#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
 			public ICollection<Animal> Children
 			{
 				get { return children; }

@@ -33,7 +33,12 @@ namespace NHibernate.Test
 	/// <remarks>Sessions opened from other sessions are not tracked.</remarks>
 	public partial class DebugSessionFactory : ISessionFactoryImplementor
 	{
-		public DebugConnectionProvider ConnectionProvider { get; }
+		/// <summary>
+		/// The debug connection provider if configured for using it, <see langword="null"/> otherwise.
+		/// Use <c>ActualFactory.ConnectionProvider</c> if needing unconditionally the connection provider, be
+		/// it debug or not.
+		/// </summary>
+		public DebugConnectionProvider DebugConnectionProvider { get; }
 		public ISessionFactoryImplementor ActualFactory { get; }
 
 		public EventListeners EventListeners => ((SessionFactoryImpl)ActualFactory).EventListeners;
@@ -44,7 +49,7 @@ namespace NHibernate.Test
 		public DebugSessionFactory(ISessionFactory actualFactory)
 		{
 			ActualFactory = (ISessionFactoryImplementor)actualFactory;
-			ConnectionProvider = ActualFactory.ConnectionProvider as DebugConnectionProvider;
+			DebugConnectionProvider = ActualFactory.ConnectionProvider as DebugConnectionProvider;
 		}
 
 		#region Session tracking

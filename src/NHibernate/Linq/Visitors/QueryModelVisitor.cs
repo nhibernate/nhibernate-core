@@ -126,10 +126,9 @@ namespace NHibernate.Linq.Visitors
 			ResultOperatorMap.Add<AllResultOperator, ProcessAll>();
 			ResultOperatorMap.Add<FetchOneRequest, ProcessFetchOne>();
 			ResultOperatorMap.Add<FetchManyRequest, ProcessFetchMany>();
-			ResultOperatorMap.Add<CacheableResultOperator, ProcessCacheable>();
-			ResultOperatorMap.Add<TimeoutResultOperator, ProcessTimeout>();
 			ResultOperatorMap.Add<OfTypeResultOperator, ProcessOfType>();
 			ResultOperatorMap.Add<CastResultOperator, ProcessCast>();
+			ResultOperatorMap.Add<OptionsResultOperator, ProcessOptions>();
 		}
 
 		private QueryModelVisitor(VisitorParameters visitorParameters, bool root, QueryModel queryModel,

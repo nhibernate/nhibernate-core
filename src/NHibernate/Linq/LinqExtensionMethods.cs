@@ -2415,59 +2415,15 @@ namespace NHibernate.Linq
 			return new NhQueryable<T>(session.GetSessionImplementation(), entityName);
 		}
 
-		private static readonly MethodInfo CacheableDefinition = ReflectHelper.GetMethodDefinition(() => Cacheable<object>(null));
-
-		public static IQueryable<T> Cacheable<T>(this IQueryable<T> query)
-		{
-			var method = CacheableDefinition.MakeGenericMethod(typeof(T));
-
-			var callExpression = Expression.Call(method, query.Expression);
-
-			return new NhQueryable<T>(query.Provider, callExpression);
-		}
-
-		private static readonly MethodInfo CacheModeDefinition = ReflectHelper.GetMethodDefinition(() => CacheMode<object>(null, NHibernate.CacheMode.Normal));
-
-		public static IQueryable<T> CacheMode<T>(this IQueryable<T> query, CacheMode cacheMode)
-		{
-			var method = CacheModeDefinition.MakeGenericMethod(typeof(T));
-
-			var callExpression = Expression.Call(method, query.Expression, Expression.Constant(cacheMode));
-
-			return new NhQueryable<T>(query.Provider, callExpression);
-		}
-
-		private static readonly MethodInfo CacheRegionDefinition = ReflectHelper.GetMethodDefinition(() => CacheRegion<object>(null, null));
-
-		public static IQueryable<T> CacheRegion<T>(this IQueryable<T> query, string region)
-		{
-			var method = CacheRegionDefinition.MakeGenericMethod(typeof(T));
-
-			var callExpression = Expression.Call(method, query.Expression, Expression.Constant(region));
-
-			return new NhQueryable<T>(query.Provider, callExpression);
-		}
-
-		private static readonly MethodInfo TimeoutDefinition = ReflectHelper.GetMethodDefinition(() => Timeout<object>(null, 0));
-
-		public static IQueryable<T> Timeout<T>(this IQueryable<T> query, int timeout)
-		{
-			var method = TimeoutDefinition.MakeGenericMethod(typeof(T));
-
-			var callExpression = Expression.Call(method, query.Expression, Expression.Constant(timeout));
-
-			return new NhQueryable<T>(query.Provider, callExpression);
-		}
-
-        /// <summary>
-        /// Wraps the query in a deferred <see cref="IFutureEnumerable{T}"/> which enumeration will trigger a batch of all pending future queries.
-        /// </summary>
-        /// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to convert to a future query.</param>
-        /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
-        /// <returns>A <see cref="IFutureEnumerable{T}"/>.</returns>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
-        public static IFutureEnumerable<TSource> ToFuture<TSource>(this IQueryable<TSource> source)
+		/// <summary>
+		/// Wraps the query in a deferred <see cref="IFutureEnumerable{T}"/> which enumeration will trigger a batch of all pending future queries.
+		/// </summary>
+		/// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to convert to a future query.</param>
+		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
+		/// <returns>A <see cref="IFutureEnumerable{T}"/>.</returns>
+		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is <see langword="null"/>.</exception>
+		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
+		public static IFutureEnumerable<TSource> ToFuture<TSource>(this IQueryable<TSource> source)
 		{
 			if (source == null)
 			{
@@ -2530,6 +2486,40 @@ namespace NHibernate.Linq
 
 			return provider.ExecuteFutureValue<TResult>(expression);
 		}
+
+
+		internal static readonly MethodInfo SetOptionsDefinition =
+			ReflectHelper.GetMethodDefinition(() => SetOptions<object>(null, null));
+
+		/// <summary>
+		/// Allow to set NHibernate query options.
+		/// </summary>
+		/// <typeparam name="T">The type of the queried elements.</typeparam>
+		/// <param name="query">The query on which to set options.</param>
+		/// <param name="setOptions">The options setter.</param>
+		/// <returns>The query altered with the options.</returns>
+		public static IQueryable<T> SetOptions<T>(this IQueryable<T> query, Action<IQueryableOptions> setOptions)
+		{
+			var method = SetOptionsDefinition.MakeGenericMethod(typeof(T));
+			var callExpression = Expression.Call(method, query.Expression, Expression.Constant(setOptions));
+			return new NhQueryable<T>(query.Provider, callExpression);
+		}
+
+		[Obsolete("Please use SetOptions instead.")]
+		public static IQueryable<T> Cacheable<T>(this IQueryable<T> query)
+			=> query.SetOptions(o => o.SetCacheable(true));
+
+		[Obsolete("Please use SetOptions instead.")]
+		public static IQueryable<T> CacheMode<T>(this IQueryable<T> query, CacheMode cacheMode)
+			=> query.SetOptions(o => o.SetCacheMode(cacheMode));
+
+		[Obsolete("Please use SetOptions instead.")]
+		public static IQueryable<T> CacheRegion<T>(this IQueryable<T> query, string region)
+			=> query.SetOptions(o => o.SetCacheRegion(region));
+
+		[Obsolete("Please use SetOptions instead.")]
+		public static IQueryable<T> Timeout<T>(this IQueryable<T> query, int timeout)
+			=> query.SetOptions(o => o.SetTimeout(timeout));
 
 		public static T MappedAs<T>(this T parameter, IType type)
 		{

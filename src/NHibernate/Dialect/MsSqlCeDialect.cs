@@ -170,6 +170,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("substring", new EmulatedLengthSubstringFunction());
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as nvarchar)"));
 
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.DateTime, true));
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.DateTime, "dateadd(dd, 0, datediff(dd, 0, ?1))"));
 			RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(second, ?1)"));
 			RegisterFunction("minute", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(minute, ?1)"));
@@ -187,10 +188,15 @@ namespace NHibernate.Dialect
 			RegisterFunction("lower", new StandardSQLFunction("lower"));
 
 			RegisterFunction("trim", new AnsiTrimEmulationFunction());
+			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
 
 			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "+", ")"));
+			RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "((?1) % (?2))"));
 
 			RegisterFunction("round", new StandardSQLFunction("round"));
+
+			RegisterFunction("bit_length", new SQLFunctionTemplate(NHibernateUtil.Int32, "datalength(?1) * 8"));
+			RegisterFunction("extract", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(?1, ?3)"));
 		}
 
 		protected virtual void RegisterDefaultProperties()
@@ -338,6 +344,9 @@ namespace NHibernate.Dialect
 		/// Does this dialect support pooling parameter in connection string?
 		/// </summary>
 		public override bool SupportsPoolingParameter => false;
+
+		/// <inheritdoc/>
+		public override bool SupportsScalarSubSelects => false;
 
 		#endregion
 	}

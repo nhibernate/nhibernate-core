@@ -35,11 +35,10 @@ The main GitHub repository is at <https://github.com/nhibernate/nhibernate-core>
 ## Setting up For Development
 
 1.  Install your favorite database and optionally set up a user capable of creating and dropping a database called **nhibernate**. There are some per-database instructions in the lib/teamcity/* folders, which you may find helpful. For SQL Server, you might be able to use the **localhost\sqlexpress** instance installed with Visual Studio. Often people already have databases set up, so you might not even need to do anything in this step.
-2.  Run the build menu and select the option A to create the AssemblyInfo.cs files.
-3.  Run the build menu and select option B to create a new test configuration. Notepad will pop up and you should edit the connection string information, saving it when you're done. These configurations will appear in the "available-test-configurations" folder.
-4.  Run the build menu and select option C to activate the test configuration you created. The appropriate configuration will be copied to the "current-test-configuration" folder.
-5.  (Optional) Run all the tests with option D and hopefully you will see no failing tests. The build may fail on certain databases; please ask on the mailing list if you are having trouble.
-6.  Before using the database for unit tests from Visual Studio, you'll need to create an empty database that matches your connection string. [NH-2866][2] will make this easier, but for now you just have to drop/create the database specified in your connection string yourself.
+2.  Run the build menu and select option B to create a new test configuration. Notepad will pop up and you should edit the connection string information, saving it when you're done. These configurations will appear in the "available-test-configurations" folder.
+3.  Run the build menu and select option C to activate the test configuration you created. The appropriate configuration will be copied to the "current-test-configuration" folder.
+4.  (Optional) Run all the tests with option D and hopefully you will see no failing tests. The build may fail on certain databases; please ask on the mailing list if you are having trouble.
+5.  Before using the database for unit tests from Visual Studio, you'll need to create an empty database that matches your connection string. [NH-2866][2] will make this easier, but for now you just have to drop/create the database specified in your connection string yourself.
 
 ## Creating a Test Case to Verify the Issue
 

@@ -220,7 +220,10 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 
 		private abstract class MyAbstract
 		{
+			// Assigned by reflection
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 			protected int aField;
+#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
 			public abstract string Description { get; }
 		}
 
