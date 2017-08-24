@@ -22,6 +22,8 @@ namespace NHibernate.Linq.Visitors
 {
 	public class QueryModelVisitor : NhQueryModelVisitorBase, INhQueryModelVisitor
 	{
+		private readonly QueryMode _queryMode;
+
 		public static ExpressionToHqlTranslationResults GenerateHqlQuery(QueryModel queryModel, VisitorParameters parameters, bool root,
 			NhLinqExpressionReturnType? rootReturnType)
 		{
@@ -134,10 +136,11 @@ namespace NHibernate.Linq.Visitors
 		private QueryModelVisitor(VisitorParameters visitorParameters, bool root, QueryModel queryModel,
 			NhLinqExpressionReturnType? rootReturnType)
 		{
+			_queryMode = root ? visitorParameters.RootQueryMode : QueryMode.Select;
 			VisitorParameters = visitorParameters;
 			Model = queryModel;
 			_rootReturnType = root ? rootReturnType : null;
-			_hqlTree = new IntermediateHqlTree(root);
+			_hqlTree = new IntermediateHqlTree(root, _queryMode);
 		}
 
 		private void Visit()
@@ -316,7 +319,6 @@ namespace NHibernate.Linq.Visitors
 					_hqlTree.TreeBuilder.Range(
 						HqlGeneratorExpressionVisitor.Visit(fromClause.FromExpression, VisitorParameters),
 						_hqlTree.TreeBuilder.Alias(querySourceName)));
-
 			}
 
 			base.VisitAdditionalFromClause(fromClause, queryModel, index);
@@ -372,6 +374,22 @@ namespace NHibernate.Linq.Visitors
 		{
 			CurrentEvaluationType = selectClause.GetOutputDataInfo();
 
+			switch (_queryMode)
+			{
+				case QueryMode.Delete:
+					VisitDeleteClause(selectClause.Selector);
+					return;
+				case QueryMode.Update:
+				case QueryMode.UpdateVersioned:
+					VisitUpdateClause(selectClause.Selector);
+					return;
+				case QueryMode.Insert:
+					VisitInsertClause(selectClause.Selector);
+					return;
+			}
+
+			//This is a standard select query
+
 			var visitor = new SelectClauseVisitor(typeof(object[]), VisitorParameters);
 
 			visitor.VisitSelector(selectClause.Selector);
@@ -384,6 +402,62 @@ namespace NHibernate.Linq.Visitors
 			_hqlTree.AddSelectClause(_hqlTree.TreeBuilder.Select(visitor.GetHqlNodes()));
 
 			base.VisitSelectClause(selectClause, queryModel);
+		}
+
+		private void VisitInsertClause(Expression expression)
+		{
+			var listInit = expression as ListInitExpression
+				?? throw new QueryException("Malformed insert expression");
+			var insertedType = VisitorParameters.TargetEntityType;
+			var idents = new List<HqlIdent>();
+			var selectColumns = new List<HqlExpression>();
+
+			//Extract the insert clause from the projected ListInit
+			foreach (var assignment in listInit.Initializers)
+			{
+				var member = (ConstantExpression)assignment.Arguments[0];
+				var value = assignment.Arguments[1];
+
+				//The target property
+				idents.Add(_hqlTree.TreeBuilder.Ident((string)member.Value));
+
+				var valueHql = HqlGeneratorExpressionVisitor.Visit(value, VisitorParameters).AsExpression();
+				selectColumns.Add(valueHql);
+			}
+
+			//Add the insert clause ([INSERT INTO] insertedType (list of properties))
+			_hqlTree.AddInsertClause(_hqlTree.TreeBuilder.Ident(insertedType.FullName),
+				_hqlTree.TreeBuilder.Range(idents.ToArray()));
+
+			//... and then the select clause
+			_hqlTree.AddSelectClause(_hqlTree.TreeBuilder.Select(selectColumns));
+		}
+
+		private void VisitUpdateClause(Expression expression)
+		{
+			var listInit = expression as ListInitExpression
+				?? throw new QueryException("Malformed update expression");
+			foreach (var initializer in listInit.Initializers)
+			{
+				var member = (ConstantExpression)initializer.Arguments[0];
+				var setter = initializer.Arguments[1];
+				var setterHql = HqlGeneratorExpressionVisitor.Visit(setter, VisitorParameters).AsExpression();
+
+				_hqlTree.AddSet(_hqlTree.TreeBuilder.Equality(_hqlTree.TreeBuilder.Ident((string)member.Value),
+					setterHql));
+			}
+		}
+
+		private void VisitDeleteClause(Expression expression)
+		{
+			// We only need to check there is no unexpected select, for avoiding silently ignoring them.
+			var visitor = new SelectClauseVisitor(typeof(object[]), VisitorParameters);
+			visitor.VisitSelector(expression);
+
+			if (visitor.ProjectionExpression != null)
+			{
+				throw new InvalidOperationException("Delete is not allowed on projections.");
+			}
 		}
 
 		public override void VisitWhereClause(WhereClause whereClause, QueryModel queryModel, int index)

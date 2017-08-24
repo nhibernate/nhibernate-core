@@ -13,9 +13,14 @@ namespace NHibernate.Linq
 {
 	public class NhLinqExpression : IQueryExpression
 	{
-		public string Key { get; }
+		public string Key { get; protected set; }
 
 		public System.Type Type { get; private set; }
+
+		/// <summary>
+		/// Entity type to insert or update when the expression is a DML.
+		/// </summary>
+		protected virtual System.Type TargetType => Type;
 
 		public IList<NamedParameterDescriptor> ParameterDescriptors { get; private set; }
 
@@ -25,7 +30,9 @@ namespace NHibernate.Linq
 
 		public ExpressionToHqlTranslationResults ExpressionToHqlTranslationResults { get; private set; }
 
-		private Expression _expression;
+		protected virtual QueryMode QueryMode => QueryMode.Select;
+
+		private readonly Expression _expression;
 		private readonly IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
 
 		public NhLinqExpression(Expression expression, ISessionFactoryImplementor sessionFactory)
@@ -34,7 +41,7 @@ namespace NHibernate.Linq
 
 			// We want logging to be as close as possible to the original expression sent from the
 			// application. But if we log before partial evaluation done in PreTransform, the log won't
-			// include e.g. subquery expressions if those are defined by the application in a variable
+			// include e.g. sub-query expressions if those are defined by the application in a variable
 			// referenced from the main query.
 			LinqLogging.LogExpression("Expression (partially evaluated)", _expression);
 
@@ -60,9 +67,9 @@ namespace NHibernate.Linq
 		public IASTNode Translate(ISessionFactoryImplementor sessionFactory, bool filter)
 		{
 			var requiredHqlParameters = new List<NamedParameterDescriptor>();
-			var querySourceNamer = new QuerySourceNamer();
 			var queryModel = NhRelinqQueryParser.Parse(_expression);
-			var visitorParameters = new VisitorParameters(sessionFactory, _constantToParameterMap, requiredHqlParameters, querySourceNamer);
+			var visitorParameters = new VisitorParameters(sessionFactory, _constantToParameterMap, requiredHqlParameters,
+				new QuerySourceNamer(), TargetType, QueryMode);
 
 			ExpressionToHqlTranslationResults = QueryModelVisitor.GenerateHqlQuery(queryModel, visitorParameters, true, ReturnType);
 
@@ -70,7 +77,7 @@ namespace NHibernate.Linq
 				Type = ExpressionToHqlTranslationResults.ExecuteResultTypeOverride;
 
 			ParameterDescriptors = requiredHqlParameters.AsReadOnly();
-			
+
 			return ExpressionToHqlTranslationResults.Statement.AstNode;
 		}
 
