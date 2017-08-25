@@ -2425,14 +2425,7 @@ namespace NHibernate.Linq
 		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
 		public static IFutureEnumerable<TSource> ToFuture<TSource>(this IQueryable<TSource> source)
 		{
-			if (source == null)
-			{
-				throw new ArgumentNullException(nameof(source));
-			}
-			if (!(source.Provider is INhQueryProvider provider))
-			{
-				throw new NotSupportedException($"Source {nameof(source.Provider)} must be a {nameof(INhQueryProvider)}");
-			}
+			var provider = GetNhProvider(source);
 			return provider.ExecuteFuture<TSource>(source.Expression);
 		}
 
@@ -2447,14 +2440,7 @@ namespace NHibernate.Linq
 		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
 		public static IFutureValue<TSource> ToFutureValue<TSource>(this IQueryable<TSource> source)
 		{
-			if (source == null)
-			{
-				throw new ArgumentNullException(nameof(source));
-			}
-			if (!(source.Provider is INhQueryProvider provider))
-			{
-				throw new NotSupportedException($"Source {nameof(source.Provider)} must be a {nameof(INhQueryProvider)}");
-			}
+			var provider = GetNhProvider(source);
 			var future = provider.ExecuteFuture<TSource>(source.Expression);
 			return new FutureValue<TSource>(() => future, async cancellationToken => await future.GetEnumerableAsync(cancellationToken).ConfigureAwait(false));
 		}
@@ -2472,14 +2458,7 @@ namespace NHibernate.Linq
 		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
 		public static IFutureValue<TResult> ToFutureValue<TSource, TResult>(this IQueryable<TSource> source, Expression<Func<IQueryable<TSource>, TResult>> selector)
 		{
-			if (source == null)
-			{
-				throw new ArgumentNullException(nameof(source));
-			}
-			if (!(source.Provider is INhQueryProvider provider))
-			{
-				throw new NotSupportedException($"Source {nameof(source.Provider)} must be a {nameof(INhQueryProvider)}");
-			}
+			var provider = GetNhProvider(source);
 
 			var expression = ReplacingExpressionVisitor
 				.Replace(selector.Parameters.Single(), source.Expression, selector.Body);
@@ -2520,10 +2499,22 @@ namespace NHibernate.Linq
 		[Obsolete("Please use SetOptions instead.")]
 		public static IQueryable<T> Timeout<T>(this IQueryable<T> query, int timeout)
 			=> query.SetOptions(o => o.SetTimeout(timeout));
-
 		public static T MappedAs<T>(this T parameter, IType type)
 		{
 			throw new InvalidOperationException("The method should be used inside Linq to indicate a type of a parameter");
+		}
+
+		internal static INhQueryProvider GetNhProvider<TSource>(this IQueryable<TSource> source)
+		{
+			if (source == null)
+			{
+				throw new ArgumentNullException(nameof(source));
+			}
+			if (!(source.Provider is INhQueryProvider provider))
+			{
+				throw new NotSupportedException($"Source {nameof(source.Provider)} must be a {nameof(INhQueryProvider)}");
+			}
+			return provider;
 		}
 	}
 }

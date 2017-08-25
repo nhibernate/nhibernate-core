@@ -18,6 +18,7 @@ namespace NHibernate.Linq
 		IFutureEnumerable<TResult> ExecuteFuture<TResult>(Expression expression);
 		IFutureValue<TResult> ExecuteFutureValue<TResult>(Expression expression);
 		void SetResultTransformerAndAdditionalCriteria(IQuery query, NhLinqExpression nhExpression, IDictionary<string, Tuple<object, IType>> parameters);
+		int ExecuteDml<T>(QueryMode queryMode, Expression expression);
 		Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken);
 	}
 
@@ -192,6 +193,17 @@ namespace NHibernate.Linq
 			{
 				criteria(query, parameters);
 			}
+		}
+
+		public int ExecuteDml<T>(QueryMode queryMode, Expression expression)
+		{
+			var nhLinqExpression = new NhLinqDmlExpression<T>(queryMode, expression, Session.Factory);
+
+			var query = Session.CreateQuery(nhLinqExpression);
+
+			SetParameters(query, nhLinqExpression.ParameterValuesByName);
+
+			return query.ExecuteUpdate();
 		}
 	}
 }

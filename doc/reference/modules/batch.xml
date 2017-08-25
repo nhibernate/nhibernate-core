@@ -133,7 +133,8 @@ session.Close();]]></programlisting>
             (DML) statements: <literal>INSERT</literal>, <literal>UPDATE</literal>, <literal>DELETE</literal>)
             data directly in the database will not affect in-memory state. However, NHibernate provides methods
             for bulk SQL-style DML statement execution which are performed through the
-            Hibernate Query Language (<link linkend="queryhql">HQL</link>).
+            Hibernate Query Language (<link linkend="queryhql">HQL</link>). A
+            <link linkend="querylinq-modifying">Linq implementation</link> is available too.
         </para>
 
 	    <para>

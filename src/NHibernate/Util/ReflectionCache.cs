@@ -65,6 +65,9 @@ namespace NHibernate.Util
 
 		internal static class QueryableMethods
 		{
+			internal static readonly MethodInfo SelectDefinition =
+				ReflectHelper.GetMethodDefinition(() => Queryable.Select(null, default(Expression<Func<object, object>>)));
+
 			internal static readonly MethodInfo CountDefinition =
 				ReflectHelper.GetMethodDefinition(() => Queryable.Count<object>(null));
 			internal static readonly MethodInfo CountWithPredicateDefinition =
