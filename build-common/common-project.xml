@@ -54,6 +54,13 @@
 			<arg value="install" />
 		</exec>
 	</target>
+  
+  <target name="common.solution-restore" depends="common.nuget-restore">
+		<exec program="${path::combine(tools.dir, 'msbuild.cmd')}" verbose="true">
+			<arg value="/t:Restore" />
+			<arg value="${root.dir}/src/NHibernate.sln" />
+		</exec> 
+	</target>
 
 	<target name="common.compile-all" depends="common.nuget-restore">
 		<!--property name="msbuild.cmd" value="${cmd.sln} ${cmd.out} ${cmd.platform} ${cmd.debug} ${cmd.optimize} ${cmd.doc} /t:Rebuild /v:q /m" /-->		
