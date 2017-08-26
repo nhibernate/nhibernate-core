@@ -540,6 +540,7 @@ namespace NHibernate.Persister.Collection
 
 		#region NH specific
 
+
 		/// <summary>
 		/// Perform an SQL INSERT, and then retrieve a generated identifier.
 		/// </summary>

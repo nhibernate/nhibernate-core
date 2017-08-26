@@ -142,6 +142,9 @@ namespace NHibernate.Test.Linq
 		{
 			try
 			{
+				if (!Dialect.SupportsScalarSubSelects)
+					Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 				var q =
 				from c in db.Customers
 				select new
@@ -1126,6 +1129,9 @@ namespace NHibernate.Test.Linq
 		{
 			try
 			{
+				if (!Dialect.SupportsScalarSubSelects)
+					Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 				var q =
 				from c in db.Customers 
 				join o in db.Orders on c.CustomerId equals o.Customer.CustomerId into orders
@@ -1222,6 +1228,9 @@ namespace NHibernate.Test.Linq
 		{
 			try
 			{
+				if (!Dialect.SupportsScalarSubSelects)
+					Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 				var q =
 				from c in db.Customers
 				join o in db.Orders on c.CustomerId equals o.Customer.CustomerId into ords

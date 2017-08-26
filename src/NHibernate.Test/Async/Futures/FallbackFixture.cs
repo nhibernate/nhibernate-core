@@ -75,7 +75,7 @@ namespace NHibernate.Test.Futures
 				var futurePerson = session.CreateCriteria<Person>()
 					.Add(Restrictions.Eq("Id", personId))
 					.FutureValue<Person>();
-				Assert.IsNotNull(futurePerson.Value);
+				Assert.IsNotNull(await (futurePerson.GetValueAsync()));
 			}
 		}
 
@@ -89,7 +89,7 @@ namespace NHibernate.Test.Futures
 				var futureCount = session.CreateCriteria<Person>()
 					.SetProjection(Projections.RowCount())
 					.FutureValue<int>();
-				Assert.That(futureCount.Value, Is.EqualTo(1));
+				Assert.That(await (futureCount.GetValueAsync()), Is.EqualTo(1));
 			}
 		}
 
@@ -103,7 +103,7 @@ namespace NHibernate.Test.Futures
 				var futurePerson = session.CreateQuery("from Person where Id = :id")
 					.SetInt32("id", personId)
 					.FutureValue<Person>();
-				Assert.IsNotNull(futurePerson.Value);
+				Assert.IsNotNull(await (futurePerson.GetValueAsync()));
 			}
 		}
 
@@ -116,7 +116,7 @@ namespace NHibernate.Test.Futures
 			{
 				var futureCount = session.CreateQuery("select count(*) from Person")
 					.FutureValue<long>();
-				Assert.That(futureCount.Value, Is.EqualTo(1L));
+				Assert.That(await (futureCount.GetValueAsync()), Is.EqualTo(1L));
 			}
 		}
 
@@ -130,7 +130,7 @@ namespace NHibernate.Test.Futures
 				var futurePerson = session.Query<Person>()
 					.Where(x => x.Id == personId)
 					.ToFutureValue();
-				Assert.IsNotNull(futurePerson.Value);
+				Assert.IsNotNull(await (futurePerson.GetValueAsync()));
 			}
 		}
 
@@ -145,7 +145,7 @@ namespace NHibernate.Test.Futures
 					.Query<Person>()
 					.Where(x => x.Id == personId)
 					.ToFutureValue(q => q.FirstOrDefault());
-				Assert.IsNotNull(futurePerson.Value);
+				Assert.IsNotNull(await (futurePerson.GetValueAsync()));
 			}
 		}
 

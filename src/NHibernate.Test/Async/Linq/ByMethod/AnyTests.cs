@@ -52,6 +52,9 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test(Description = "NH-2654")]
 		public async Task AnyWithCountAsync()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore("Dialect does not support scalar sub-selects");
+
 			var result = await (db.Orders
 				.AnyAsync(p => p.OrderLines.Count == 0));
 

@@ -95,8 +95,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2664
 		{
 			using (var session = OpenSession())
 			{
+				// Gets translated to SQL, which does not care about reference comparison vs value comparison.
+#pragma warning disable CS0252 // Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'string'
 				var product =
 					await ((from p in session.Query<Product>() where p.Properties["Name"] == "First Product" select p).SingleAsync());
+#pragma warning restore CS0252 // Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'string'
 
 				Assert.IsNotNull(product);
 				Assert.AreEqual("First Product", product.Properties["Name"]);
@@ -108,6 +111,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2664
 		{
 			using (var session = OpenSession())
 			{
+				// Gets translated to SQL, which does not care about reference comparison vs value comparison.
+#pragma warning disable CS0252 // Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'string'
 				// Query by name
 				var product1 = await ((from p in session.Query<Product>()
 								where p.Properties["Name"] == "First Product"
@@ -120,6 +125,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2664
 								where p.Properties["Description"] == "Second Description"
 								select p).SingleAsync());
 				Assert.That(product2.ProductId, Is.EqualTo("2"));
+#pragma warning restore CS0252 // Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'string'
 			}
 		}
 	}

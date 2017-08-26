@@ -28,6 +28,8 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public async Task CountDistinctProperty_ReturnsNumberOfDistinctEntriesForThatPropertyAsync()
 		{
+			if (!TestDialect.SupportsCountDistinct)
+				Assert.Ignore("Dialect does not support count distinct");
 			//NH-2722
 			var result = await (db.Orders
 				.Select(x => x.ShippingDate)
@@ -61,6 +63,8 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public async Task LongCountDistinctProperty_ReturnsNumberOfDistinctEntriesForThatPropertyAsync()
 		{
+			if (!TestDialect.SupportsCountDistinct)
+				Assert.Ignore("Dialect does not support count distinct");
 			//NH-2722
 			var result = await (db.Orders
 				.Select(x => x.ShippingDate)

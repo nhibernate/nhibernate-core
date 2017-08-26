@@ -33,6 +33,7 @@ namespace NHibernate.DomainModel
 	{
 
 		#region IEntityPersister Members
+
 		#region IOptimisticCacheSource Members
 
 		public Task<int[]> FindDirtyAsync(object[] currentState, object[] previousState, object entity, ISessionImplementor session, CancellationToken cancellationToken)

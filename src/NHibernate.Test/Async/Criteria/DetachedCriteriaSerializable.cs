@@ -118,9 +118,12 @@ namespace NHibernate.Test.Criteria
 				.Add(Expression.Lt("StudentNumber", 668L));
 			await (SerializeAndListAsync(dc));
 
-			dc = DetachedCriteria.For(typeof(Enrolment))
-				.SetProjection(Projections.Count("StudentNumber").SetDistinct());
-			await (SerializeAndListAsync(dc));
+			if (TestDialect.SupportsCountDistinct)
+			{
+				dc = DetachedCriteria.For(typeof(Enrolment))
+					.SetProjection(Projections.Count("StudentNumber").SetDistinct());
+				await (SerializeAndListAsync(dc));
+			}
 
 			dc = DetachedCriteria.For(typeof(Enrolment))
 				.SetProjection(Projections.ProjectionList()

@@ -31,7 +31,7 @@ namespace NHibernate.Test.Legacy
 
 		protected override IList Mappings
 		{
-			get { return new string[] {"Simple.hbm.xml", "Blobber.hbm.xml", "Broken.hbm.xml"}; }
+			get { return new string[] { "Simple.hbm.xml", "Blobber.hbm.xml", "Broken.hbm.xml" }; }
 		}
 
 		[Test]
@@ -44,7 +44,7 @@ namespace NHibernate.Test.Legacy
 				.GetEnumerator();
 
 			if (Dialect is MySQLDialect
-			    // Added two dialects below for NH
+				// Added two dialects below for NH
 				|| Dialect is MsSql2000Dialect
 				|| Dialect is PostgreSQLDialect)
 			{
@@ -61,20 +61,20 @@ namespace NHibernate.Test.Legacy
 
 			// Test to make sure allocating an specified object operates correctly.
 			Assert.AreEqual(1,
-			                (await (s.CreateQuery("select new S(s.Count, s.Address) from s in class Simple").ListAsync()))
-			                	.Count);
+							(await (s.CreateQuery("select new S(s.Count, s.Address) from s in class Simple").ListAsync()))
+								.Count);
 
 			// Quick check the base dialect functions operate correctly
 			Assert.AreEqual(1,
-			                (await (s.CreateQuery("select max(s.Count) from s in class Simple").ListAsync())).Count);
+							(await (s.CreateQuery("select max(s.Count) from s in class Simple").ListAsync())).Count);
 			Assert.AreEqual(1,
-			                (await (s.CreateQuery("select count(*) from s in class Simple").ListAsync())).Count);
+							(await (s.CreateQuery("select count(*) from s in class Simple").ListAsync())).Count);
 
 			if (Dialect is Oracle8iDialect)
 			{
 				// Check Oracle Dialect mix of dialect functions - no args (no parenthesis and single arg functions
 				IList rset = await (s.CreateQuery("select s.Name, sysdate, trunc(s.Pay), round(s.Pay) from s in class Simple").ListAsync());
-				object[] row = (object[]) rset[0];
+				object[] row = (object[])rset[0];
 				Assert.IsNotNull(row[0], "Name string should have been returned");
 				Assert.IsNotNull(row[1], "Todays Date should have been returned");
 				Assert.AreEqual(45f, row[2], "trunc(45.8) result was incorrect");
@@ -86,11 +86,6 @@ namespace NHibernate.Test.Legacy
 				// Test type conversions while using nested functions (Float to Int).
 				rset = await (s.CreateQuery("select abs(round(s.Pay)) from s in class Simple").ListAsync());
 				Assert.AreEqual(46f, rset[0], "abs(round(-45.8)) result was incorrect");
-
-				rset = await (s.CreateQuery("select left('abc', 2), right('abc', 2) from s in class Simple").ListAsync());
-				row = (object[]) rset[0];
-				Assert.AreEqual("ab", row[0], "Left function is broken.");
-				Assert.AreEqual("bc", row[1], "Right function is broken.");
 
 				// Test a larger depth 3 function example - Not a useful combo other than for testing
 				Assert.AreEqual(1,
@@ -127,7 +122,7 @@ namespace NHibernate.Test.Legacy
 			ITransaction t = s.BeginTransaction();
 			Simple simple = new Simple();
 			simple.Name = "Simple 1";
-			await (s.SaveAsync(simple, (long) 10));
+			await (s.SaveAsync(simple, (long)10));
 			IQuery q = s.CreateQuery("from s in class Simple where s.Name=:Name and s.Count=:Count");
 			q.SetProperties(simple);
 			Assert.AreEqual(simple, (await (q.ListAsync()))[0]);
@@ -163,7 +158,7 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			b = (Broken) await (s.LoadAsync(typeof(Broken), b));
+			b = (Broken)await (s.LoadAsync(typeof(Broken), b));
 			await (t.CommitAsync());
 			s.Close();
 
@@ -181,19 +176,19 @@ namespace NHibernate.Test.Legacy
 			ITransaction t = s.BeginTransaction();
 			Simple simple = new Simple();
 			simple.Name = "Simple 1";
-			await (s.SaveAsync(simple, (long) 10));
+			await (s.SaveAsync(simple, (long)10));
 			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.UpdateAsync(simple, (long) 10));
+			await (s.UpdateAsync(simple, (long)10));
 			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.UpdateAsync(simple, (long) 10));
+			await (s.UpdateAsync(simple, (long)10));
 			await (s.DeleteAsync(simple));
 			await (t.CommitAsync());
 			s.Close();
@@ -226,7 +221,7 @@ namespace NHibernate.Test.Legacy
 			q.SetString("name", "Simple 1");
 			Assert.AreEqual(1, (await (q.ListAsync())).Count);
 
-			simple = (Simple) (await (q.ListAsync()))[0];
+			simple = (Simple)(await (q.ListAsync()))[0];
 
 			q.SetString("name", "Simple 2");
 			Assert.AreEqual(0, (await (q.ListAsync())).Count);
@@ -304,7 +299,7 @@ namespace NHibernate.Test.Legacy
 			t = s.BeginTransaction();
 			IList result = await (s.CreateQuery(query).ListAsync());
 			Assert.IsTrue(result[0] is Simple,
-			              "Unexpected result type [" + result[0].GetType().Name + "]");
+						  "Unexpected result type [" + result[0].GetType().Name + "]");
 			await (s.DeleteAsync(result[0]));
 			await (t.CommitAsync());
 			s.Close();
@@ -392,7 +387,7 @@ namespace NHibernate.Test.Legacy
 			q.SetCacheable(true);
 			q.SetString("name", "Simple 1");
 			Assert.AreEqual(1, (await (q.ListAsync())).Count);
-			simple = (Simple) (await (q.ListAsync()))[0];
+			simple = (Simple)(await (q.ListAsync()))[0];
 
 			q.SetString("name", "Simple 2");
 			Assert.AreEqual(0, (await (q.ListAsync())).Count);
@@ -430,7 +425,7 @@ namespace NHibernate.Test.Legacy
 				ITransaction t = s.BeginTransaction();
 				Simple simple = new Simple();
 				simple.Name = "Simple 1";
-				await (s.SaveAsync(simple, (long) 10));
+				await (s.SaveAsync(simple, (long)10));
 
 				if (Dialect is DB2Dialect)
 				{
@@ -441,23 +436,23 @@ namespace NHibernate.Test.Legacy
 
 				Assert.AreEqual(1, (await (s.CreateQuery("from s in class Simple where upper(s.Name) = 'SIMPLE 1'").ListAsync())).Count);
 				Assert.AreEqual(1,
-				                (await (s.CreateQuery(
-				                	"from s in class Simple where not( upper(s.Name)='yada' or 1=2 or 'foo'='bar' or not('foo'='foo') or 'foo' like 'bar')")
-				                	.ListAsync())).Count);
+								(await (s.CreateQuery(
+									"from s in class Simple where not( upper(s.Name)='yada' or 1=2 or 'foo'='bar' or not('foo'='foo') or 'foo' like 'bar')")
+									.ListAsync())).Count);
 
 				if (!(Dialect is MySQLDialect) && !(Dialect is MsSql2000Dialect))
 				{
 					// Dialect.MckoiDialect and Dialect.InterbaseDialect also included
 					// My Sql has a funny concatenation operator
 					Assert.AreEqual(1,
-					                (await (s.CreateQuery("from s in class Simple where lower(s.Name || ' foo')='simple 1 foo'").ListAsync())).Count);
+									(await (s.CreateQuery("from s in class Simple where lower(s.Name || ' foo')='simple 1 foo'").ListAsync())).Count);
 				}
 
 				if ((Dialect is MsSql2000Dialect))
 				{
 					Assert.AreEqual(1,
-					                (await (s.CreateQuery("from s in class Simple where lower( s.Name + ' foo' ) = 'simple 1 foo'").ListAsync())).
-					                	Count);
+									(await (s.CreateQuery("from s in class Simple where lower( s.Name + ' foo' ) = 'simple 1 foo'").ListAsync())).
+										Count);
 				}
 
 				/*
@@ -472,46 +467,49 @@ namespace NHibernate.Test.Legacy
 				other.Name = "Simple 2";
 				other.Count = 12;
 				simple.Other = other;
-				await (s.SaveAsync(other, (long) 20));
+				await (s.SaveAsync(other, (long)20));
 				Assert.AreEqual(1, (await (s.CreateQuery("from s in class Simple where upper( s.Other.Name )='SIMPLE 2'").ListAsync())).Count);
 				Assert.AreEqual(0, (await (s.CreateQuery("from s in class Simple where not (upper(s.Other.Name)='SIMPLE 2')").ListAsync())).Count);
 				Assert.AreEqual(1,
-				                (await (s.CreateQuery(
-				                	"select distinct s from s in class Simple where ( ( s.Other.Count + 3) = (15*2)/2 and s.Count = 69) or ( (s.Other.Count + 2) / 7 ) = 2")
-				                	.ListAsync())).Count);
+								(await (s.CreateQuery(
+									"select distinct s from s in class Simple where ( ( s.Other.Count + 3) = (15*2)/2 and s.Count = 69) or ( (s.Other.Count + 2) / 7 ) = 2")
+									.ListAsync())).Count);
 				Assert.AreEqual(1,
-				                (await (s.CreateQuery(
-				                	"select s from s in class Simple where ( ( s.Other.Count + 3) = (15*2)/2 and s.Count = 69) or ( (s.Other.Count + 2) / 7 ) = 2 order by s.Other.Count")
-				                	.ListAsync())).Count);
+								(await (s.CreateQuery(
+									"select s from s in class Simple where ( ( s.Other.Count + 3) = (15*2)/2 and s.Count = 69) or ( (s.Other.Count + 2) / 7 ) = 2 order by s.Other.Count")
+									.ListAsync())).Count);
 
 				Simple min = new Simple();
 				min.Count = -1;
 
-				await (s.SaveAsync(min, (long) 30));
+				await (s.SaveAsync(min, (long)30));
 
 				if (Dialect.SupportsSubSelects && TestDialect.SupportsOperatorSome)
 				{
-					Assert.AreEqual(2,
-					                (await (s.CreateQuery(
-					                	"from s in class Simple where s.Count > ( select min(sim.Count) from sim in class NHibernate.DomainModel.Simple )")
-					                	.ListAsync())).Count);
-					await (t.CommitAsync());
+					if (Dialect.SupportsScalarSubSelects)
+					{
+						Assert.AreEqual(2,
+							(await (s.CreateQuery(
+									"from s in class Simple where s.Count > ( select min(sim.Count) from sim in class NHibernate.DomainModel.Simple )")
+								.ListAsync())).Count);
+						await (t.CommitAsync());
+					}
 					t = s.BeginTransaction();
 					Assert.AreEqual(2,
-					                (await (s.CreateQuery(
-					                	"from s in class Simple where s = some( select sim from sim in class NHibernate.DomainModel.Simple where sim.Count>=0) and s.Count >= 0")
-					                	.ListAsync())).Count);
+									(await (s.CreateQuery(
+										"from s in class Simple where s = some( select sim from sim in class NHibernate.DomainModel.Simple where sim.Count>=0) and s.Count >= 0")
+										.ListAsync())).Count);
 					Assert.AreEqual(1,
-					                (await (s.CreateQuery(
-					                	"from s in class Simple where s = some( select sim from sim in class NHibernate.DomainModel.Simple where sim.Other.Count=s.Other.Count ) and s.Other.Count > 0")
-					                	.ListAsync())).Count);
+									(await (s.CreateQuery(
+										"from s in class Simple where s = some( select sim from sim in class NHibernate.DomainModel.Simple where sim.Other.Count=s.Other.Count ) and s.Other.Count > 0")
+										.ListAsync())).Count);
 				}
 
 				IEnumerator enumer =
 					(await (s.CreateQuery("select sum(s.Count) from s in class Simple group by s.Count having sum(s.Count) > 10 ").EnumerableAsync()))
 						.GetEnumerator();
 				Assert.IsTrue(enumer.MoveNext());
-				Assert.AreEqual(12, (Int64) enumer.Current); // changed cast from Int32 to Int64 (H3.2)
+				Assert.AreEqual(12, (Int64)enumer.Current); // changed cast from Int32 to Int64 (H3.2)
 				Assert.IsFalse(enumer.MoveNext());
 
 				if (Dialect.SupportsSubSelects)
@@ -579,7 +577,7 @@ namespace NHibernate.Test.Legacy
 				list.Add("Simple 1");
 				list.Add("foo");
 				q.SetParameterList("name_list", list);
-				q.SetParameter("count", (int) -1);
+				q.SetParameter("count", (int)-1);
 				Assert.AreEqual(1, (await (q.ListAsync())).Count);
 
 				await (s.DeleteAsync(other));

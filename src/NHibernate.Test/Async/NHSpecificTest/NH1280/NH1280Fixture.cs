@@ -10,6 +10,7 @@
 
 using System.Collections;
 using NHibernate.Criterion;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1280
@@ -169,6 +170,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1280
 		[Test]
 		public async Task MultipleSubqueriesShouldStayInOrderAsync()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore("Dialect does not support scalar sub-select");
+
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
@@ -194,6 +198,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1280
 		[Test]
 		public async Task NestedSubqueriesShouldStayInOrderAsync()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore("Dialect does not support scalar sub-select");
+
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
@@ -223,6 +230,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1280
 		[Test]
 		public async Task SubstringShouldUseAllParametersAsync()
 		{
+			// https://technet.microsoft.com/en-us/library/ms174077(v=sql.110).aspx
+			if (Dialect is MsSqlCeDialect)
+				Assert.Ignore("Sql function left not supported by MS SQL CE");
+
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{

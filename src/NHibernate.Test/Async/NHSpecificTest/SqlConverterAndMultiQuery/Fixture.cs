@@ -9,6 +9,7 @@
 
 
 using NHibernate.Cfg;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
@@ -22,6 +23,13 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 		protected override void Configure(Configuration configuration)
 		{
 			configuration.DataBaseIntegration(x => x.ExceptionConverter<SqlConverter>());
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			// MsSqlCe throws InvalidOperationException instead of a DbException for these tests, preventing
+			// the test SqlConverter to do its job.
+			return !(Dialect is MsSqlCeDialect);
 		}
 
 		[Test]

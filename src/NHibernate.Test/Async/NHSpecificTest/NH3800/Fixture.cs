@@ -8,17 +8,8 @@
 //------------------------------------------------------------------------------
 
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using System.Threading;
 using NHibernate.Linq;
-using NHibernate.Test.ExceptionsTest;
-using NHibernate.Test.MappingByCode;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3800
@@ -184,6 +175,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3800
 		[Test]
 		public async Task OuterJoinGroupingWithSubQueryInProjectionAsync()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore("Dialect does not support scalar sub-select");
+
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{

@@ -294,8 +294,8 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task DoubleAliasingAsync()
 		{
-			if (Dialect is MySQLDialect) return;
-			if (Dialect is FirebirdDialect) return; // See comment below
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore("Dialect does not support scalar sub-select, used by Map formula in B (C1 and C2) mapping");
 
 			ISession session = OpenSession();
 
@@ -325,7 +325,6 @@ namespace NHibernate.Test.Legacy
 			Assert.IsNotNull(list);
 
 			Assert.AreEqual(2, list.Count);
-			// On Firebird the list has 4 elements, I don't understand why.
 
 			await (session.DeleteAsync("from A"));
 			await (session.FlushAsync());
@@ -543,7 +542,8 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task FindBySQLDiscriminatedDiffSessionsAsync()
 		{
-			if (Dialect is MySQLDialect) return;
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore("Dialect does not support scalar sub-select, used by Map formula in B (C1 and C2) mapping");
 
 			ISession session = OpenSession();
 			A savedA = new A();

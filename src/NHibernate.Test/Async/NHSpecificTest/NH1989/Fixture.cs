@@ -76,11 +76,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 			{
 				// Query results should be cached
 				User user =
-					s.CreateCriteria<User>()
+					await (s.CreateCriteria<User>()
 						.Add(Restrictions.NaturalId().Set("Name", "test"))
 						.SetCacheable(true)
 						.FutureValue<User>()
-						.Value;
+						.GetValueAsync());
 
 				Assert.That(user, Is.Not.Null);
 
@@ -90,11 +90,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 			using (ISession s = OpenSession())
 			{
 				User user =
-					s.CreateCriteria<User>()
+					await (s.CreateCriteria<User>()
 						.Add(Restrictions.NaturalId().Set("Name", "test"))
 						.SetCacheable(true)
 						.FutureValue<User>()
-						.Value;
+						.GetValueAsync());
 
 				Assert.That(user, Is.Not.Null,
 					"entity not retrieved from cache");
@@ -116,12 +116,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 			{
 				// Query results should be cached
 				User user =
-					s.CreateCriteria<User>()
+					await (s.CreateCriteria<User>()
 						.Add(Restrictions.NaturalId().Set("Name", "test"))
 						.SetCacheable(true)
 						.SetCacheRegion("region1")
 						.FutureValue<User>()
-						.Value;
+						.GetValueAsync());
 
 				Assert.That(user, Is.Not.Null);
 
@@ -131,12 +131,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 			using (ISession s = OpenSession())
 			{
 				User user =
-					s.CreateCriteria<User>()
+					await (s.CreateCriteria<User>()
 						.Add(Restrictions.NaturalId().Set("Name", "test"))
 						.SetCacheable(true)
 						.SetCacheRegion("region2")
 						.FutureValue<User>()
-						.Value;
+						.GetValueAsync());
 
 				Assert.That(user, Is.Null,
 					"entity from different region should not be retrieved");
@@ -165,12 +165,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 
 				// non cacheable Future causes batch to be non-cacheable
 				int count =
-					s.CreateCriteria<User>()
+					await (s.CreateCriteria<User>()
 						.SetProjection(Projections.RowCount())
 						.FutureValue<int>()
-						.Value;
+						.GetValueAsync());
 
-				Assert.That(userFuture.Value, Is.Not.Null);
+				Assert.That(await (userFuture.GetValueAsync()), Is.Not.Null);
 				Assert.That(count, Is.EqualTo(1));
 
 				await (DeleteObjectsOutsideCacheAsync(s));
@@ -185,12 +185,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 						.FutureValue<User>();
 
 				int count =
-					s.CreateCriteria<User>()
+					await (s.CreateCriteria<User>()
 						.SetProjection(Projections.RowCount())
 						.FutureValue<int>()
-						.Value;
+						.GetValueAsync());
 
-				Assert.That(userFuture.Value, Is.Null,
+				Assert.That(await (userFuture.GetValueAsync()), Is.Null,
 					"query results should not come from cache");
 			}
 		}
@@ -218,14 +218,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 
 				// different cache-region causes batch to be non-cacheable
 				int count =
-					s.CreateCriteria<User>()
+					await (s.CreateCriteria<User>()
 						.SetProjection(Projections.RowCount())
 						.SetCacheable(true)
 						.SetCacheRegion("region2")
 						.FutureValue<int>()
-						.Value;
+						.GetValueAsync());
 
-				Assert.That(userFuture.Value, Is.Not.Null);
+				Assert.That(await (userFuture.GetValueAsync()), Is.Not.Null);
 				Assert.That(count, Is.EqualTo(1));
 
 				await (DeleteObjectsOutsideCacheAsync(s));
@@ -241,14 +241,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 						.FutureValue<User>();
 
 				int count =
-					s.CreateCriteria<User>()
+					await (s.CreateCriteria<User>()
 						.SetProjection(Projections.RowCount())
 						.SetCacheable(true)
 						.SetCacheRegion("region2")
 						.FutureValue<int>()
-						.Value;
+						.GetValueAsync());
 
-				Assert.That(userFuture.Value, Is.Null,
+				Assert.That(await (userFuture.GetValueAsync()), Is.Null,
 					"query results should not come from cache");
 			}
 		}
@@ -268,10 +268,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 			{
 				// Query results should be cached
 				User user =
-					s.CreateQuery("from User u where u.Name='test'")
+					await (s.CreateQuery("from User u where u.Name='test'")
 						.SetCacheable(true)
 						.FutureValue<User>()
-						.Value;
+						.GetValueAsync());
 
 				Assert.That(user, Is.Not.Null);
 
@@ -281,10 +281,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 			using (ISession s = OpenSession())
 			{
 				User user =
-					s.CreateQuery("from User u where u.Name='test'")
+					await (s.CreateQuery("from User u where u.Name='test'")
 						.SetCacheable(true)
 						.FutureValue<User>()
-						.Value;
+						.GetValueAsync());
 
 				Assert.That(user, Is.Not.Null,
 					"entity not retrieved from cache");

@@ -8,12 +8,9 @@
 //------------------------------------------------------------------------------
 
 
-using System;
-using System.Collections.Generic;
+using System.Threading;
 using System.Transactions;
-using NHibernate.Impl;
 using NUnit.Framework;
-using NHibernate.Criterion;
 
 namespace NHibernate.Test.NHSpecificTest.NH2057
 {
@@ -22,21 +19,22 @@ namespace NHibernate.Test.NHSpecificTest.NH2057
 	public class FixtureAsync : BugTestCase
 	{
 		[Test]
-		[Description("This test fails intermittently on SQL Server ODBC. Not sure why.")]
 		public async Task WillCloseWhenUsingDTCAsync()
 		{
-			SessionImpl s;
+			ISession s;
 			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
-				using (s = (SessionImpl)OpenSession())
+				using (s = OpenSession())
 				{
 					await (s.GetAsync<Person>(1));
 				}
 				//not closed because the tx is opened yet
-				Assert.False(s.IsClosed);
+				Assert.That(s.IsOpen, Is.True);
 				tx.Complete();
 			}
-			Assert.That(s.IsClosed, Is.True);
+			// ODBC does promote to distributed, causing the completion to happen concurrently to code
+			// following scope disposal. Sleep a bit for accounting for this.
+			Assert.That(() => s.IsOpen, Is.False.After(500, 100));
 		}
 	}
 }

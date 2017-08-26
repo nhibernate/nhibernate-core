@@ -12,8 +12,11 @@ using System;
 using System.IO;
 using System.Reflection;
 using NHibernate.Cfg;
+using NHibernate.Driver;
 using NHibernate.Tool.hbm2ddl;
+using NHibernate.Util;
 using NUnit.Framework;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.Tools.hbm2ddl.SchemaUpdate
 {
@@ -22,10 +25,15 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaUpdate
 	[TestFixture]
 	public class MigrationFixtureAsync
 	{
-
 		private async Task MigrateSchemaAsync(string resource1, string resource2, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			Configuration v1cfg = TestConfigurationHelper.GetDefaultConfiguration();
+			var driverClass = ReflectHelper.ClassForName(v1cfg.GetProperty(Environment.ConnectionDriver));
+			// Odbc is not supported by schema update: System.Data.Odbc.OdbcConnection.GetSchema("ForeignKeys") fails with an ArgumentException: ForeignKeys is undefined.
+			// It seems it would require its own DataBaseSchema, but this is bound to the dialect, not the driver.
+			if (typeof(OdbcDriver).IsAssignableFrom(driverClass))
+				Assert.Ignore("Test is not compatible with ODBC");
+
 			using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resource1))
 				v1cfg.AddInputStream(stream);
 			await (new SchemaExport(v1cfg).ExecuteAsync(false, true, true, cancellationToken));

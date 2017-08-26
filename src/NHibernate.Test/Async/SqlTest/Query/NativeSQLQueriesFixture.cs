@@ -305,20 +305,23 @@ namespace NHibernate.Test.SqlTest.Query
 			await (t.CommitAsync());
 			s.Close();
 
-			s = OpenSession();
-			t = s.BeginTransaction();
-			sqlQuery = s.GetNamedQuery("organizationreturnproperty");
-			sqlQuery.SetResultTransformer(CriteriaSpecification.AliasToEntityMap);
-			list = await (sqlQuery.ListAsync());
-			Assert.AreEqual(2, list.Count);
-			m = (IDictionary) list[0];
-			Assert.IsTrue(m.Contains("org"));
-			AssertClassAssignability(m["org"].GetType(), typeof(Organization));
-			Assert.IsTrue(m.Contains("emp"));
-			AssertClassAssignability(m["emp"].GetType(), typeof(Employment));
-			Assert.AreEqual(2, m.Count);
-			await (t.CommitAsync());
-			s.Close();
+			if (TestDialect.SupportsDuplicatedColumnAliases)
+			{
+				s = OpenSession();
+				t = s.BeginTransaction();
+				sqlQuery = s.GetNamedQuery("organizationreturnproperty");
+				sqlQuery.SetResultTransformer(CriteriaSpecification.AliasToEntityMap);
+				list = await (sqlQuery.ListAsync());
+				Assert.AreEqual(2, list.Count);
+				m = (IDictionary)list[0];
+				Assert.IsTrue(m.Contains("org"));
+				AssertClassAssignability(m["org"].GetType(), typeof(Organization));
+				Assert.IsTrue(m.Contains("emp"));
+				AssertClassAssignability(m["emp"].GetType(), typeof(Employment));
+				Assert.AreEqual(2, m.Count);
+				await (t.CommitAsync());
+				s.Close();
+			}
 
 			s = OpenSession();
 			t = s.BeginTransaction();
@@ -424,15 +427,18 @@ namespace NHibernate.Test.SqlTest.Query
 
 			s.Clear();
 
-			// TODO : why twice?
-			await (s.GetNamedQuery("organizationreturnproperty").ListAsync());
-			list = await (s.GetNamedQuery("organizationreturnproperty").ListAsync());
-			Assert.AreEqual(2, list.Count);
+			if (TestDialect.SupportsDuplicatedColumnAliases)
+			{
+				// TODO : why twice?
+				await (s.GetNamedQuery("organizationreturnproperty").ListAsync());
+				list = await (s.GetNamedQuery("organizationreturnproperty").ListAsync());
+				Assert.AreEqual(2, list.Count);
 
-			s.Clear();
+				s.Clear();
 
-			list = await (s.GetNamedQuery("organizationautodetect").ListAsync());
-			Assert.AreEqual(2, list.Count);
+				list = await (s.GetNamedQuery("organizationautodetect").ListAsync());
+				Assert.AreEqual(2, list.Count);
+			}
 
 			await (t.CommitAsync());
 			s.Close();
@@ -591,7 +597,7 @@ namespace NHibernate.Test.SqlTest.Query
 					.SetResultTransformer(transformer)
 					.FutureValue<object[]>();
 
-				var v = l.Value;
+				var v = await (l.GetValueAsync());
 
 				Assert.AreEqual("Ricardo", v[0]);
 				Assert.IsTrue(transformer.TransformListCalled);
@@ -632,7 +638,7 @@ namespace NHibernate.Test.SqlTest.Query
 					.CreateSQLQuery("select Name from Person")
 					.FutureValue<string>();
 
-				var v = l.Value;
+				var v = await (l.GetValueAsync());
 
 				Assert.AreEqual("Ricardo", v);
 			}

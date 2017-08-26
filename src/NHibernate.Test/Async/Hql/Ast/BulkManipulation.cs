@@ -28,6 +28,12 @@ namespace NHibernate.Test.Hql.Ast
 			return OpenSession();
 		}
 
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			// Some classes are mapped with table joins, which requires temporary tables for DML to work.
+			return Dialect.SupportsTemporaryTables;
+		}
+
 		#region Non-exists
 
 		[Test]
@@ -76,6 +82,29 @@ namespace NHibernate.Test.Hql.Ast
 		}
 
 		[Test]
+		public async Task SimpleInsertFromAggregateAsync()
+		{
+			var data = new TestData(this);
+			await (data.PrepareAsync());
+
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			await (s.CreateQuery("insert into Pickup (id, Vin, Owner) select id, max(Vin), max(Owner) from Car group by id").ExecuteUpdateAsync());
+
+			await (t.CommitAsync());
+			t = s.BeginTransaction();
+
+			await (s.CreateQuery("delete Vehicle").ExecuteUpdateAsync());
+
+			await (t.CommitAsync());
+			s.Close();
+
+			await (data.CleanupAsync());
+		}
+
+		
+		[Test]
 		public async Task InsertWithManyToOneAsync()
 		{
 			var data = new TestData(this);
@@ -87,6 +116,31 @@ namespace NHibernate.Test.Hql.Ast
 			await (s.CreateQuery(
 				"insert into Animal (description, bodyWeight, mother) select description, bodyWeight, mother from Human").
 				ExecuteUpdateAsync());
+
+			await (t.CommitAsync());
+			t = s.BeginTransaction();
+
+			await (t.CommitAsync());
+			s.Close();
+
+			await (data.CleanupAsync());
+		}
+
+		[Test]
+		public async Task InsertWithManyToOneAsParameterAsync()
+		{
+			var data = new TestData(this);
+			await (data.PrepareAsync());
+
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			var mother = data.Butterfly;
+
+			await (s.CreateQuery(
+				"insert into Animal (description, bodyWeight, mother) select description, bodyWeight, :mother from Human")
+				.SetEntity("mother",mother)
+				.ExecuteUpdateAsync());
 
 			await (t.CommitAsync());
 			t = s.BeginTransaction();

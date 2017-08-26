@@ -977,77 +977,80 @@ namespace NHibernate.Test.ReadOnly
 				
 				await (t.CommitAsync());
 			}
-			
-			using (ISession s = OpenSession())
-			using (ITransaction t = s.BeginTransaction())
+
+			if (Dialect.SupportsScalarSubSelects)
 			{
-				DetachedCriteria dc = NHibernate.Criterion.DetachedCriteria.For<Student>("st")
-					.Add(Property.ForName("st.StudentNumber").EqProperty("e.StudentNumber"))
-					.SetProjection(Property.ForName("Name"));
+				using (ISession s = OpenSession())
+				using (ITransaction t = s.BeginTransaction())
+				{
+					DetachedCriteria dc = NHibernate.Criterion.DetachedCriteria.For<Student>("st")
+						.Add(Property.ForName("st.StudentNumber").EqProperty("e.StudentNumber"))
+						.SetProjection(Property.ForName("Name"));
 				
-				enrolment = await (s.CreateCriteria<Enrolment>("e")
-					.Add(Subqueries.Eq("Gavin King", dc))
-					.SetReadOnly(true)
-					.UniqueResultAsync<Enrolment>());
+					enrolment = await (s.CreateCriteria<Enrolment>("e")
+						.Add(Subqueries.Eq("Gavin King", dc))
+						.SetReadOnly(true)
+						.UniqueResultAsync<Enrolment>());
 				
-				Assert.That(s.IsReadOnly(enrolment), Is.True);
-				Assert.That(NHibernateUtil.IsInitialized(enrolment.Course), Is.False);
-				await (CheckProxyReadOnlyAsync(s, enrolment.Course, true));
+					Assert.That(s.IsReadOnly(enrolment), Is.True);
+					Assert.That(NHibernateUtil.IsInitialized(enrolment.Course), Is.False);
+					await (CheckProxyReadOnlyAsync(s, enrolment.Course, true));
 				
-				await (NHibernateUtil.InitializeAsync(enrolment.Course));
-				Assert.That(NHibernateUtil.IsInitialized(enrolment.Course), Is.True);
-				await (CheckProxyReadOnlyAsync(s, enrolment.Course, true));
-				Assert.That(NHibernateUtil.IsInitialized(enrolment.Student), Is.False);
-				await (CheckProxyReadOnlyAsync(s, enrolment.Student, true));
+					await (NHibernateUtil.InitializeAsync(enrolment.Course));
+					Assert.That(NHibernateUtil.IsInitialized(enrolment.Course), Is.True);
+					await (CheckProxyReadOnlyAsync(s, enrolment.Course, true));
+					Assert.That(NHibernateUtil.IsInitialized(enrolment.Student), Is.False);
+					await (CheckProxyReadOnlyAsync(s, enrolment.Student, true));
 				
-				await (NHibernateUtil.InitializeAsync(enrolment.Student));
-				Assert.That(NHibernateUtil.IsInitialized(enrolment.Student), Is.True);
-				await (CheckProxyReadOnlyAsync(s, enrolment.Student, true));
-				Assert.That(NHibernateUtil.IsInitialized(enrolment.Student.PreferredCourse), Is.False);
-				await (CheckProxyReadOnlyAsync(s, enrolment.Student.PreferredCourse, false));
+					await (NHibernateUtil.InitializeAsync(enrolment.Student));
+					Assert.That(NHibernateUtil.IsInitialized(enrolment.Student), Is.True);
+					await (CheckProxyReadOnlyAsync(s, enrolment.Student, true));
+					Assert.That(NHibernateUtil.IsInitialized(enrolment.Student.PreferredCourse), Is.False);
+					await (CheckProxyReadOnlyAsync(s, enrolment.Student.PreferredCourse, false));
 				
-				await (NHibernateUtil.InitializeAsync(enrolment.Student.PreferredCourse));
-				Assert.That(NHibernateUtil.IsInitialized(enrolment.Student.PreferredCourse), Is.True);
-				await (CheckProxyReadOnlyAsync(s, enrolment.Student.PreferredCourse, false));
+					await (NHibernateUtil.InitializeAsync(enrolment.Student.PreferredCourse));
+					Assert.That(NHibernateUtil.IsInitialized(enrolment.Student.PreferredCourse), Is.True);
+					await (CheckProxyReadOnlyAsync(s, enrolment.Student.PreferredCourse, false));
 			
-				await (t.CommitAsync());
-			}
+					await (t.CommitAsync());
+				}
 			
-			using (ISession s = OpenSession())
-			using (ITransaction t = s.BeginTransaction())
-			{
-				DetachedCriteria dc = NHibernate.Criterion.DetachedCriteria.For<Student>("st")
-					.CreateCriteria("Enrolments")
-					.CreateCriteria("Course")
-					.Add(Property.ForName("Description").Eq("Hibernate Training"))
-					.SetProjection(Property.ForName("st.Name"));
+				using (ISession s = OpenSession())
+				using (ITransaction t = s.BeginTransaction())
+				{
+					DetachedCriteria dc = NHibernate.Criterion.DetachedCriteria.For<Student>("st")
+						.CreateCriteria("Enrolments")
+						.CreateCriteria("Course")
+						.Add(Property.ForName("Description").Eq("Hibernate Training"))
+						.SetProjection(Property.ForName("st.Name"));
 				
-				enrolment = await (s.CreateCriteria<Enrolment>("e")
-					.Add(Subqueries.Eq("Gavin King", dc))
-					.SetReadOnly(true)
-					.UniqueResultAsync<Enrolment>());
+					enrolment = await (s.CreateCriteria<Enrolment>("e")
+						.Add(Subqueries.Eq("Gavin King", dc))
+						.SetReadOnly(true)
+						.UniqueResultAsync<Enrolment>());
 				
-				Assert.That(s.IsReadOnly(enrolment), Is.True);
-				Assert.That(NHibernateUtil.IsInitialized(enrolment.Course), Is.False);
-				await (CheckProxyReadOnlyAsync(s, enrolment.Course, true));
+					Assert.That(s.IsReadOnly(enrolment), Is.True);
+					Assert.That(NHibernateUtil.IsInitialized(enrolment.Course), Is.False);
+					await (CheckProxyReadOnlyAsync(s, enrolment.Course, true));
 				
-				await (NHibernateUtil.InitializeAsync(enrolment.Course));
-				Assert.That(NHibernateUtil.IsInitialized(enrolment.Course), Is.True);
-				await (CheckProxyReadOnlyAsync(s, enrolment.Course, true));
-				Assert.That(NHibernateUtil.IsInitialized(enrolment.Student), Is.False);
-				await (CheckProxyReadOnlyAsync(s, enrolment.Student, true));
+					await (NHibernateUtil.InitializeAsync(enrolment.Course));
+					Assert.That(NHibernateUtil.IsInitialized(enrolment.Course), Is.True);
+					await (CheckProxyReadOnlyAsync(s, enrolment.Course, true));
+					Assert.That(NHibernateUtil.IsInitialized(enrolment.Student), Is.False);
+					await (CheckProxyReadOnlyAsync(s, enrolment.Student, true));
 				
-				await (NHibernateUtil.InitializeAsync(enrolment.Student));
-				Assert.That(NHibernateUtil.IsInitialized(enrolment.Student), Is.True);
-				await (CheckProxyReadOnlyAsync(s, enrolment.Student, true));
-				Assert.That(NHibernateUtil.IsInitialized(enrolment.Student.PreferredCourse), Is.False);
-				await (CheckProxyReadOnlyAsync(s, enrolment.Student.PreferredCourse, false));
+					await (NHibernateUtil.InitializeAsync(enrolment.Student));
+					Assert.That(NHibernateUtil.IsInitialized(enrolment.Student), Is.True);
+					await (CheckProxyReadOnlyAsync(s, enrolment.Student, true));
+					Assert.That(NHibernateUtil.IsInitialized(enrolment.Student.PreferredCourse), Is.False);
+					await (CheckProxyReadOnlyAsync(s, enrolment.Student.PreferredCourse, false));
 				
-				await (NHibernateUtil.InitializeAsync(enrolment.Student.PreferredCourse));
-				Assert.That(NHibernateUtil.IsInitialized(enrolment.Student.PreferredCourse), Is.True);
-				await (CheckProxyReadOnlyAsync(s, enrolment.Student.PreferredCourse, false));
+					await (NHibernateUtil.InitializeAsync(enrolment.Student.PreferredCourse));
+					Assert.That(NHibernateUtil.IsInitialized(enrolment.Student.PreferredCourse), Is.True);
+					await (CheckProxyReadOnlyAsync(s, enrolment.Student.PreferredCourse, false));
 			
-				await (t.CommitAsync());
+					await (t.CommitAsync());
+				}
 			}
 			
 			using (ISession s = OpenSession())

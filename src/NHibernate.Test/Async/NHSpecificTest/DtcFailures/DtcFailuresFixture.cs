@@ -98,9 +98,6 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 		[Test]
 		public async Task Can_roll_back_transactionAsync()
 		{
-			if (Dialect is FirebirdDialect)
-				Assert.Ignore("Firebird driver does not support distributed transactions");
-
 			var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 			using (ISession s = OpenSession())
 			{
@@ -124,9 +121,6 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 		[Description("Another action inside the transaction do the rollBack outside nh-session-scope.")]
 		public async Task RollbackOutsideNhAsync()
 		{
-			if (Dialect is FirebirdDialect)
-				Assert.Ignore("Firebird driver does not support distributed transactions");
-
 			try
 			{
 				using (var txscope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
@@ -154,9 +148,6 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 		[Description("rollback inside nh-session-scope should not commit save and the transaction should be aborted.")]
 		public async Task TransactionInsertWithRollBackTaskAsync()
 		{
-			if (Dialect is FirebirdDialect)
-				Assert.Ignore("Firebird driver does not support distributed transactions");
-
 			try
 			{
 				using (var txscope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
@@ -253,7 +244,11 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 
 			public void Prepare(PreparingEnlistment preparingEnlistment)
 			{
-				Assert.AreNotEqual(thread, Thread.CurrentThread.ManagedThreadId);
+				if (thread == Thread.CurrentThread.ManagedThreadId)
+				{
+					log.Warn("Thread.CurrentThread.ManagedThreadId ({0}) is same as creation thread");
+				}
+
 				if (shouldRollBack)
 				{
 					log.Debug(">>>>Force Rollback<<<<<");

@@ -31,16 +31,15 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test(Description = "NH-3239")]
-		public async Task CanCahceDynamicLinqAsync()
+		public async Task CanCacheDynamicLinqAsync()
 		{
 			//dynamic orderby clause
 			var users = db.Users
-						  .Cacheable()
-						  .Fetch(x => x.Role)
-						  .OrderBy("RegisteredAt");
+				.SetOptions(o => o.SetCacheable(true))
+				.Fetch(x => x.Role)
+				.OrderBy("RegisteredAt");
 
-			await (users
-			  .ToListAsync());
+			await (users.ToListAsync());
 
 			using (var log = new SqlLogSpy())
 			{

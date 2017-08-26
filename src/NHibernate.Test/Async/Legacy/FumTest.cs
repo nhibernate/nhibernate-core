@@ -609,7 +609,8 @@ namespace NHibernate.Test.Legacy
 				if (Dialect.SupportsSubSelects)
 				{
 					await (s.CreateQuery("from fum1 in class Fum where exists elements(fum1.Friends)").ListAsync());
-					await (s.CreateQuery("from fum1 in class Fum where size(fum1.Friends) = 0").ListAsync());
+					if (Dialect.SupportsScalarSubSelects)
+						await (s.CreateQuery("from fum1 in class Fum where size(fum1.Friends) = 0").ListAsync());
 				}
 				await (s.CreateQuery("select elements(fum1.Friends) from fum1 in class Fum").ListAsync());
 				await (s.CreateQuery("from fum1 in class Fum, fr in elements( fum1.Friends )").ListAsync());

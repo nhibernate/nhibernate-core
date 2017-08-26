@@ -12,56 +12,62 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1891
 {
-    using System.Threading.Tasks;
-    [TestFixture]
-    public class FixtureAsync : TestCase
-    {
-        protected override System.Collections.IList Mappings
-        {
-            get { return new string[] { "NHSpecificTest.NH1891.FormulaEscaping.hbm.xml" }; }
-        }
+	using System.Threading.Tasks;
+	[TestFixture]
+	public class FixtureAsync : TestCase
+	{
+		protected override System.Collections.IList Mappings
+		{
+			get { return new[] { "NHSpecificTest.NH1891.FormulaEscaping.hbm.xml" }; }
+		}
 
-        protected override string MappingsAssembly
-        {
-            get { return "NHibernate.Test"; }
-        }
+		protected override string MappingsAssembly
+		{
+			get { return "NHibernate.Test"; }
+		}
 
-        protected override void OnTearDown()
-        {
-            using (ISession s = OpenSession())
-            {
-                s.Delete("from B");
-                s.Flush();
-                s.Delete("from A");
-                s.Flush();
-            }
-        }
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			// Mapping uses a scalar sub-select formula.
+			return dialect.SupportsScalarSubSelects;
+		}
 
-        [Test]
-        public async Task FormulaEscapingAsync()
-        {
-            string name = "Test";
+		protected override void OnTearDown()
+		{
+			using (ISession s = OpenSession())
+			{
+				s.Delete("from B");
+				s.Flush();
+				s.Delete("from A");
+				s.Flush();
+			}
+		}
 
-            B b = new B();
-            b.Name = name;
+		[Test]
+		public async Task FormulaEscapingAsync()
+		{
+			string name = "Test";
 
-            A a = new A();
-            a.FormulaConstraint = name;
+			B b = new B();
+			b.Name = name;
 
-            ISession s = OpenSession();
+			A a = new A();
+			a.FormulaConstraint = name;
 
-            await (s.SaveAsync(b));
-            await (s.SaveAsync(a));
-            await (s.FlushAsync());
-            s.Close();
+			ISession s = OpenSession();
 
-            s = OpenSession();
+			await (s.SaveAsync(b));
+			await (s.SaveAsync(a));
+			await (s.FlushAsync());
+			s.Close();
 
-            a = await (s.GetAsync<A>(a.Id));
+			s = OpenSession();
 
-            Assert.AreEqual(1, a.FormulaCount);
+			a = await (s.GetAsync<A>(a.Id));
 
-            s.Close();
-        }
-    }
+			Assert.AreEqual(1, a.FormulaCount);
+
+			s.Close();
+		}
+	}
 }

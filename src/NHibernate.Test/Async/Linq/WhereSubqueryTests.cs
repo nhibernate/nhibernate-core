@@ -34,6 +34,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task TimeSheetsWithCountSubqueryAsync()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 // ReSharper disable UseMethodAny.1
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Entries.Count() >= 1
@@ -46,6 +49,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task TimeSheetsWithCountSubqueryReversedAsync()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 // ReSharper disable UseMethodAny.1
 			var query = await ((from timesheet in db.Timesheets
 						 where 1 <= timesheet.Entries.Count()
@@ -58,6 +64,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task TimeSheetsWithCountSubqueryComparedToPropertyAsync()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Entries.Count() > timesheet.Id
 						 select timesheet).ToListAsync());
@@ -68,6 +77,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task TimeSheetsWithCountSubqueryComparedToPropertyReversedAsync()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Id < timesheet.Entries.Count()
 						 select timesheet).ToListAsync());
@@ -78,6 +90,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task TimeSheetsWithAverageSubqueryAsync()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Entries.Average(e => e.NumberOfHours) > 12
 						 select timesheet).ToListAsync());
@@ -88,6 +103,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task TimeSheetsWithAverageSubqueryReversedAsync()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 			var query = await ((from timesheet in db.Timesheets
 						 where 12 < timesheet.Entries.Average(e => e.NumberOfHours)
 						 select timesheet).ToListAsync());
@@ -98,6 +116,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task TimeSheetsWithMaxSubqueryAsync()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Entries.Max(e => e.NumberOfHours) == 14
 						 select timesheet).ToListAsync());
@@ -108,6 +129,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task TimeSheetsWithMaxSubqueryReversedAsync()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 			var query = await ((from timesheet in db.Timesheets
 						 where 14 == timesheet.Entries.Max(e => e.NumberOfHours)
 						 select timesheet).ToListAsync());
@@ -118,6 +142,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task TimeSheetsWithMaxSubqueryComparedToPropertyAsync()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Entries.Max(e => e.NumberOfHours) > timesheet.Id
 						 select timesheet).ToListAsync());
@@ -128,6 +155,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task TimeSheetsWithMaxSubqueryComparedToPropertyReversedAsync()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Id < timesheet.Entries.Max(e => e.NumberOfHours)
 						 select timesheet).ToListAsync());
@@ -138,6 +168,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task TimeSheetsWithMinSubqueryAsync()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Entries.Min(e => e.NumberOfHours) < 7
 						 select timesheet).ToListAsync());
@@ -148,6 +181,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task TimeSheetsWithMinSubqueryReversedAsync()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 			var query = await ((from timesheet in db.Timesheets
 						 where 7 > timesheet.Entries.Min(e => e.NumberOfHours)
 						 select timesheet).ToListAsync());
@@ -158,6 +194,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task TimeSheetsWithMinSubqueryComparedToPropertyAsync()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Entries.Min(e => e.NumberOfHours) > timesheet.Id
 						 select timesheet).ToListAsync());
@@ -168,6 +207,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task TimeSheetsWithMinSubqueryComparedToPropertyReversedAsync()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Id < timesheet.Entries.Min(e => e.NumberOfHours)
 						 select timesheet).ToListAsync());
@@ -178,6 +220,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task TimeSheetsWithSumSubqueryAsync()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Entries.Sum(e => e.NumberOfHours) <= 20
 						 select timesheet).ToListAsync());
@@ -188,6 +233,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task TimeSheetsWithSumSubqueryReversedAsync()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 			var query = await ((from timesheet in db.Timesheets
 						 where 20 >= timesheet.Entries.Sum(e => e.NumberOfHours)
 						 select timesheet).ToListAsync());
@@ -491,6 +539,9 @@ where c.Order.Customer.CustomerId = 'VINET'
 		[Test(Description = "NH-3111")]
 		public async Task SubqueryWhereFailingTestAsync()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support subquery in select clause");
+
 			var list = await ((db.OrderLines
 				.Select(ol => new
 				{
@@ -507,6 +558,9 @@ where c.Order.Customer.CustomerId = 'VINET'
 		[Test(Description = "NH-3111")]
 		public async Task SubqueryWhereFailingTest2Async()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support subquery in select clause");
+
 			var list = await (db.OrderLines
 				.Select(ol => new
 				{
@@ -523,6 +577,9 @@ where c.Order.Customer.CustomerId = 'VINET'
 		[Test(Description = "NH-3111")]
 		public async Task SubqueryWhereFailingTest3Async()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support subquery in select clause");
+
 			var list = await (db.OrderLines
 				.Select(ol => new
 				{
@@ -539,6 +596,9 @@ where c.Order.Customer.CustomerId = 'VINET'
 		[Test(Description = "NH-3190")]
 		public async Task ProductsWithSubqueryReturningBoolFirstOrDefaultEqAsync()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 			var result = await ((from p in db.Products
 						  where (from c in db.Categories
 								 where c.Name == "Confections"
@@ -553,6 +613,9 @@ where c.Order.Customer.CustomerId = 'VINET'
 		[Test(Description = "NH-3190")]
 		public async Task SubselectCanHaveBoolResultAsync()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 			var result = await ((from c in db.Categories
 						  where c.Products.OrderBy(p => p.ProductId).Select(p => p.Discontinued).FirstOrDefault() == false
 						  select c).ToListAsync());
@@ -563,6 +626,9 @@ where c.Order.Customer.CustomerId = 'VINET'
 		[Test(Description = "NH-3190")]
 		public async Task ProductsWithSubqueryReturningStringFirstOrDefaultEqAsync()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 			var result = await ((from p in db.Products
 						  where (from c in db.Categories
 								 where c.Name == "Confections"

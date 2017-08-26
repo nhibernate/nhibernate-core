@@ -36,8 +36,6 @@ namespace NHibernate.Dialect
 	/// </content>
 	public abstract partial class Dialect
 	{
-		#region Table support
-		#endregion
 		#region Callable statement support
 
 		/// <summary> 
@@ -53,8 +51,6 @@ namespace NHibernate.Dialect
 			throw new NotSupportedException(GetType().FullName + " does not support resultsets via stored procedures");
 		}
 
-		#endregion
-		#region Native identifier generation
 		#endregion
 	}
 }

@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Linq
 {
-	public interface INhQueryProvider : IQueryProvider
+	public partial interface INhQueryProvider : IQueryProvider
 	{
 		IFutureEnumerable<TResult> ExecuteFuture<TResult>(Expression expression);
 		IFutureValue<TResult> ExecuteFutureValue<TResult>(Expression expression);

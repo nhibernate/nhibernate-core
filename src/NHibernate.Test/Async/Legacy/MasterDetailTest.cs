@@ -402,7 +402,7 @@ namespace NHibernate.Test.Legacy
 			master.AddDetail(d1);
 			master.AddDetail(d2);
 
-			if (Dialect.SupportsSubSelects)
+			if (Dialect.SupportsScalarSubSelects)
 			{
 				string hql = "from d in class NHibernate.DomainModel.Detail, m in class NHibernate.DomainModel.Master " +
 				             "where m = d.Master and m.Outgoing.size = 0 and m.Incoming.size = 0";

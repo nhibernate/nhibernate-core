@@ -312,11 +312,13 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			Assert.That(es.FetchCount, Is.EqualTo(0)); //check that it was being cached
 		}
 
-		public class CustomTransformer: IResultTransformer
+		public class CustomTransformer : IResultTransformer
 		{
 			public object TransformTuple(object[] tuple, string[] aliases)
 			{
-				return new AnotherItem {Name = tuple[0].ToString(), Description = tuple[1].ToString()};
+				// Some db change the empty string to null, causing .ToString() to blow.
+				// https://stackoverflow.com/a/203536/1178314
+				return new AnotherItem { Name = tuple[0]?.ToString(), Description = tuple[1]?.ToString() };
 			}
 
 			public IList TransformList(IList collection)

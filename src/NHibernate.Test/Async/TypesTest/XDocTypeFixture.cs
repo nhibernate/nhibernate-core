@@ -10,6 +10,8 @@
 
 using System.Data;
 using System.Xml.Linq;
+using NHibernate.Driver;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NUnit.Framework;
@@ -28,6 +30,12 @@ namespace NHibernate.Test.TypesTest
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
 			return TestDialect.SupportsSqlType(new SqlType(DbType.Xml));
+		}
+
+		protected override bool AppliesTo(ISessionFactoryImplementor factory)
+		{
+			// No Xml support with Odbc (and likely OleDb too).
+			return factory.ConnectionProvider.Driver is SqlClientDriver;
 		}
 
 		[Test]

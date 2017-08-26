@@ -11,6 +11,7 @@
 using System;
 using System.Collections;
 using System.Threading;
+using NHibernate.AdoNet;
 using NHibernate.Criterion;
 using NHibernate.Engine;
 using NUnit.Framework;

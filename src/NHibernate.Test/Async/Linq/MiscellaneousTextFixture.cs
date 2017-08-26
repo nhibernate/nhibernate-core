@@ -11,6 +11,7 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using NHibernate.Dialect;
 using NHibernate.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
@@ -25,13 +26,13 @@ namespace NHibernate.Test.Linq
 		[Category("COUNT/SUM/MIN/MAX/AVG")]
         [Test(Description = "This sample uses Count to find the number of Orders placed before yesterday in the database.")]
         public async Task CountWithWhereClauseAsync()
-        {
-            var q = from o in db.Orders where o.OrderDate <= DateTime.Today.AddDays(-1) select o;
+  {
+      var q = from o in db.Orders where o.OrderDate <= DateTime.Today.AddDays(-1) select o;
 
-            var count = await (q.CountAsync());
+      var count = await (q.CountAsync());
 
-            Console.WriteLine(count);
-        }
+      Console.WriteLine(count);
+  }
 
         [Category("From NHUser list")]
         [Test(Description = "Telerik grid example, http://www.telerik.com/community/forums/aspnet-mvc/grid/grid-and-nhibernate-linq.aspx")]
@@ -49,6 +50,9 @@ namespace NHibernate.Test.Linq
         [Test(Description = "Predicated count on a child list")]
         public async Task PredicatedCountOnChildListAsync()
         {
+            if (!Dialect.SupportsScalarSubSelects)
+                Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
             var results = await ((from c in db.Customers
                            select new
                                       {
@@ -86,39 +90,63 @@ namespace NHibernate.Test.Linq
 							"the second, third and fourth pages of products")]
 		public async Task TriplePageSelectionAsync()
 		{
-			IQueryable<Product> q = (
-			                        	from p in db.Products
-			                        	where p.ProductId > 1
-			                        	orderby p.ProductId
-			                        	select p
-			);
+			var q =
+				from p in db.Products
+				where p.ProductId > 1
+				orderby p.ProductId
+				select p;
 
-            IQueryable<Product> page2 = q.Skip(5).Take(5);
-            IQueryable<Product> page3 = q.Skip(10).Take(5);
-            IQueryable<Product> page4 = q.Skip(15).Take(5);
+			// ToList required otherwise the First call alters the paging and test something else than paging three pages,
+			// contrary o the test above description.
+			var page2 = await (q.Skip(5).Take(5).ToListAsync());
+			var page3 = await (q.Skip(10).Take(5).ToListAsync());
+			var page4 = await (q.Skip(15).Take(5).ToListAsync());
 
-			var firstResultOnPage2 = await (page2.FirstAsync());
-			var firstResultOnPage3 = await (page3.FirstAsync());
-			var firstResultOnPage4 = await (page4.FirstAsync());
+			var firstResultOnPage2 = page2.First();
+			var firstResultOnPage3 = page3.First();
+			var firstResultOnPage4 = page4.First();
 
 			Assert.AreNotEqual(firstResultOnPage2.ProductId, firstResultOnPage3.ProductId);
 			Assert.AreNotEqual(firstResultOnPage3.ProductId, firstResultOnPage4.ProductId);
 			Assert.AreNotEqual(firstResultOnPage2.ProductId, firstResultOnPage4.ProductId);
 		}
 
-        [Test]
+		[Category("Paging")]
+		[Test(Description = "NH-4061 - This sample uses a where clause and the Skip and Take operators to select " +
+			"the second, third and fourth pages of products, but then add a First causing the Take to be pointless.")]
+		public async Task TriplePageSelectionWithFirstAsync()
+		{
+			if (Dialect is Oracle8iDialect)
+				Assert.Ignore("Not fixed: NH-4061 - Pointless Take calls screw Oracle dialect paging.");
+
+			var q =
+				from p in db.Products
+				where p.ProductId > 1
+				orderby p.ProductId
+				select p;
+
+			var firstResultOnPage2 = await (q.Skip(5).Take(5).FirstAsync());
+			var firstResultOnPage3 = await (q.Skip(10).Take(5).FirstAsync());
+			var firstResultOnPage4 = await (q.Skip(15).Take(5).FirstAsync());
+
+			Assert.AreNotEqual(firstResultOnPage2.ProductId, firstResultOnPage3.ProductId);
+			Assert.AreNotEqual(firstResultOnPage3.ProductId, firstResultOnPage4.ProductId);
+			Assert.AreNotEqual(firstResultOnPage2.ProductId, firstResultOnPage4.ProductId);
+		}
+
+		[Test]
         public async Task SelectFromObjectAsync()
-        {
-            using (var s = OpenSession())
-            {
-                var hql = await (s.CreateQuery("from System.Object o").ListAsync());
+  {
+      using (var s = OpenSession())
+      {
+          var hql = await (s.CreateQuery("from System.Object o").ListAsync());
 
-                var r = from o in s.Query<object>() select o;
+          var r = from o in s.Query<object>() select o;
 
-                var l = await (r.ToListAsync());
+          var l = await (r.ToListAsync());
 
-                Assert.AreEqual(hql.Count, l.Count);
-            } 
-        }
+          Assert.AreEqual(hql.Count, l.Count);
+      } 
+  }
 	}
 }

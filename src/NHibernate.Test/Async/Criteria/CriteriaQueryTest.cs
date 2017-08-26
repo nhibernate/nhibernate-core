@@ -100,6 +100,9 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public async Task AllowToSetLimitOnSubqueriesAsync()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 			using (ISession session = OpenSession())
 			{
 				DetachedCriteria dc = DetachedCriteria.For(typeof(Student))
@@ -117,6 +120,9 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public async Task TestSubcriteriaBeingNullAsync()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 			ISession session = OpenSession();
 			ITransaction t = session.BeginTransaction();
 
@@ -193,37 +199,40 @@ namespace NHibernate.Test.Criteria
 				.Add(Subqueries.In("Gavin King", dc))
 				.ListAsync());
 
-			DetachedCriteria dc2 = DetachedCriteria.For(typeof(Student), "st")
-				.Add(Property.ForName("st.StudentNumber").EqProperty("e.StudentNumber"))
-				.SetProjection(Property.ForName("Name"));
+			if (Dialect.SupportsScalarSubSelects)
+			{
+				DetachedCriteria dc2 = DetachedCriteria.For(typeof(Student), "st")
+					.Add(Property.ForName("st.StudentNumber").EqProperty("e.StudentNumber"))
+					.SetProjection(Property.ForName("Name"));
 
-			await (session.CreateCriteria(typeof(Enrolment), "e")
-				.Add(Subqueries.Eq("Gavin King", dc2))
-				.ListAsync());
+				await (session.CreateCriteria(typeof(Enrolment), "e")
+					.Add(Subqueries.Eq("Gavin King", dc2))
+					.ListAsync());
 
-			DetachedCriteria dc3 = DetachedCriteria.For(typeof(Student), "st")
-				.CreateCriteria("Enrolments")
-				.CreateCriteria("Course")
-				.Add(Property.ForName("Description").Eq("Hibernate Training"))
-				.SetProjection(Property.ForName("st.Name"));
+				DetachedCriteria dc3 = DetachedCriteria.For(typeof(Student), "st")
+					.CreateCriteria("Enrolments")
+					.CreateCriteria("Course")
+					.Add(Property.ForName("Description").Eq("Hibernate Training"))
+					.SetProjection(Property.ForName("st.Name"));
 
-			await (session.CreateCriteria(typeof(Enrolment), "e")
-				.Add(Subqueries.Eq("Gavin King", dc3))
-				.ListAsync());
+				await (session.CreateCriteria(typeof(Enrolment), "e")
+					.Add(Subqueries.Eq("Gavin King", dc3))
+					.ListAsync());
 
-			DetachedCriteria courseCriteria = DetachedCriteria.For(typeof(Course))
-				.Add(Property.ForName("Description").Eq("Hibernate Training"))
-				.SetProjection(Projections.Property("CourseCode"));
+				DetachedCriteria courseCriteria = DetachedCriteria.For(typeof(Course))
+					.Add(Property.ForName("Description").Eq("Hibernate Training"))
+					.SetProjection(Projections.Property("CourseCode"));
 
-			DetachedCriteria enrolmentCriteria = DetachedCriteria.For(typeof(Enrolment))
-				.Add(Property.ForName("CourseCode").Eq(courseCriteria))
-				.SetProjection(Projections.Property("CourseCode"));
+				DetachedCriteria enrolmentCriteria = DetachedCriteria.For(typeof(Enrolment))
+					.Add(Property.ForName("CourseCode").Eq(courseCriteria))
+					.SetProjection(Projections.Property("CourseCode"));
 
-			DetachedCriteria studentCriteria = DetachedCriteria.For(typeof(Student))
-				.Add(Subqueries.Exists(enrolmentCriteria));
+				DetachedCriteria studentCriteria = DetachedCriteria.For(typeof(Student))
+					.Add(Subqueries.Exists(enrolmentCriteria));
 
-			object result = await (studentCriteria.GetExecutableCriteria(session).UniqueResultAsync());
-			Assert.AreSame(gavin, result);
+				object result = await (studentCriteria.GetExecutableCriteria(session).UniqueResultAsync());
+				Assert.AreSame(gavin, result);
+			}
 
 			await (session.DeleteAsync(enrolment2));
 			await (session.DeleteAsync(gavin));
@@ -836,10 +845,13 @@ namespace NHibernate.Test.Criteria
 
 			//s.flush();
 
-			int count = (int)await (s.CreateCriteria(typeof(Enrolment))
-								.SetProjection(Projections.Count("StudentNumber").SetDistinct())
-								.UniqueResultAsync());
-			Assert.AreEqual(2, count);
+			if (TestDialect.SupportsCountDistinct)
+			{
+				int count = (int) await (s.CreateCriteria(typeof(Enrolment))
+				                   .SetProjection(Projections.Count("StudentNumber").SetDistinct())
+				                   .UniqueResultAsync());
+				Assert.AreEqual(2, count);
+			}
 
 			object obj = await (s.CreateCriteria(typeof(Enrolment))
 				.SetProjection(Projections.ProjectionList()
@@ -950,17 +962,20 @@ namespace NHibernate.Test.Criteria
 											.UniqueResultAsync());
 			Assert.AreEqual(typeof(Int64), r.GetType());
 
-			IList list = await (s.CreateCriteria(typeof(Enrolment))
-				.CreateAlias("Student", "st")
-				.CreateAlias("Course", "co")
-				.SetProjection(Projections.ProjectionList()
-								.Add(Projections.GroupProperty("co.CourseCode"))
-								.Add(Projections.Count("st.StudentNumber").SetDistinct())
-								.Add(Projections.GroupProperty("Year"))
-				)
-				.ListAsync());
+			if (TestDialect.SupportsCountDistinct)
+			{
+				IList list = await (s.CreateCriteria(typeof(Enrolment))
+					.CreateAlias("Student", "st")
+					.CreateAlias("Course", "co")
+					.SetProjection(Projections.ProjectionList()
+									.Add(Projections.GroupProperty("co.CourseCode"))
+									.Add(Projections.Count("st.StudentNumber").SetDistinct())
+									.Add(Projections.GroupProperty("Year"))
+					)
+					.ListAsync());
 
-			Assert.AreEqual(2, list.Count);
+				Assert.AreEqual(2, list.Count);
+			}
 
 			object g = await (s.CreateCriteria(typeof(Student))
 				.Add(Expression.IdEq(667L))
@@ -1020,11 +1035,14 @@ namespace NHibernate.Test.Criteria
 
 			//s.flush();
 
-			ICriteria criteriaToBeCloned = s.CreateCriteria(typeof(Enrolment))
-				.SetProjection(Projections.Count("StudentNumber").SetDistinct());
-			int count = (int)await (CriteriaTransformer.Clone(criteriaToBeCloned)
-								.UniqueResultAsync());
-			Assert.AreEqual(2, count);
+			if (TestDialect.SupportsCountDistinct)
+			{
+				ICriteria criteriaToBeCloned = s.CreateCriteria(typeof(Enrolment))
+					.SetProjection(Projections.Count("StudentNumber").SetDistinct());
+				int count = (int)await (CriteriaTransformer.Clone(criteriaToBeCloned)
+					.UniqueResultAsync());
+				Assert.AreEqual(2, count);
+			}
 
 			ICriteria criteriaToClone = s.CreateCriteria(typeof(Enrolment))
 				.SetProjection(Projections.ProjectionList()
@@ -1133,18 +1151,21 @@ namespace NHibernate.Test.Criteria
 
 			Assert.AreEqual(7, array.Length);
 
-			ICriteria criteriaToClone5 = s.CreateCriteria(typeof(Enrolment))
-				.CreateAlias("Student", "st")
-				.CreateAlias("Course", "co")
-				.SetProjection(Projections.ProjectionList()
-								.Add(Projections.GroupProperty("co.CourseCode"))
-								.Add(Projections.Count("st.StudentNumber").SetDistinct())
-								.Add(Projections.GroupProperty("Year"))
-				);
-			IList list = await (CriteriaTransformer.Clone(criteriaToClone5)
-				.ListAsync());
+			if (TestDialect.SupportsCountDistinct)
+			{
+				ICriteria criteriaToClone5 = s.CreateCriteria(typeof(Enrolment))
+					.CreateAlias("Student", "st")
+					.CreateAlias("Course", "co")
+					.SetProjection(Projections.ProjectionList()
+									.Add(Projections.GroupProperty("co.CourseCode"))
+									.Add(Projections.Count("st.StudentNumber").SetDistinct())
+									.Add(Projections.GroupProperty("Year"))
+					);
+				IList list = await (CriteriaTransformer.Clone(criteriaToClone5)
+					.ListAsync());
 
-			Assert.AreEqual(2, list.Count);
+				Assert.AreEqual(2, list.Count);
+			}
 
 			ICriteria criteriaToClone6 = s.CreateCriteria(typeof(Student))
 				.Add(Expression.IdEq(667L))
@@ -1284,13 +1305,17 @@ namespace NHibernate.Test.Criteria
 			Assert.That(aResult[1], Is.InstanceOf<string>());
 			Assert.That(aResult[2], Is.InstanceOf<CityState>());
 			Assert.That(aResult[3], Is.InstanceOf<Course>());
-			
+
 			// Subtest #5
-			int count = (int)await (s.CreateCriteria(typeof(Enrolment))
-								.SetProjection(Property.ForName("StudentNumber").Count().SetDistinct())
-								.UniqueResultAsync());
-			
-			Assert.AreEqual(2, count);
+
+			if (TestDialect.SupportsCountDistinct)
+			{
+				int count = (int) await (s.CreateCriteria(typeof(Enrolment))
+				                   .SetProjection(Property.ForName("StudentNumber").Count().SetDistinct())
+				                   .UniqueResultAsync());
+
+				Assert.AreEqual(2, count);
+			}
 
 			// Subtest #6
 			object obj = await (s.CreateCriteria(typeof(Enrolment))
@@ -1425,48 +1450,53 @@ namespace NHibernate.Test.Criteria
 			
 			Assert.AreEqual(7, array.Length);
 
-			// Subtest #15
-			IList list = await (s.CreateCriteria(typeof(Enrolment))
-				.CreateAlias("Student", "st")
-				.CreateAlias("Course", "co")
-				.SetProjection(Projections.ProjectionList()
-					.Add(Property.ForName("co.CourseCode").Group())
-					.Add(Property.ForName("st.StudentNumber").Count().SetDistinct())
-					.Add(Property.ForName("Year").Group())
-				)
-				.ListAsync());
+			IList list;
 
-			Assert.AreEqual(2, list.Count);
+			if (TestDialect.SupportsCountDistinct)
+			{
+				// Subtest #15
+				list = await (s.CreateCriteria(typeof(Enrolment))
+					.CreateAlias("Student", "st")
+					.CreateAlias("Course", "co")
+					.SetProjection(Projections.ProjectionList()
+						.Add(Property.ForName("co.CourseCode").Group())
+						.Add(Property.ForName("st.StudentNumber").Count().SetDistinct())
+						.Add(Property.ForName("Year").Group())
+					)
+					.ListAsync());
 
-			// Subtest #16
-			list = await (s.CreateCriteria<Enrolment>()
-						.CreateAlias("Student", "st")
-						.CreateAlias("Course", "co")
-						.SetProjection(Projections.ProjectionList()
-							.Add(Property.ForName("co.CourseCode").Group().As("courseCode"))
-							.Add(Property.ForName("st.StudentNumber").Count().SetDistinct().As("studentNumber"))
-							.Add(Property.ForName("Year").Group())
-				)
-				.AddOrder(Order.Asc("courseCode"))
-				.AddOrder(Order.Asc("studentNumber"))
-				.ListAsync());
+				Assert.AreEqual(2, list.Count);
+
+				// Subtest #16
+				list = await (s.CreateCriteria<Enrolment>()
+							.CreateAlias("Student", "st")
+							.CreateAlias("Course", "co")
+							.SetProjection(Projections.ProjectionList()
+								.Add(Property.ForName("co.CourseCode").Group().As("courseCode"))
+								.Add(Property.ForName("st.StudentNumber").Count().SetDistinct().As("studentNumber"))
+								.Add(Property.ForName("Year").Group())
+					)
+					.AddOrder(Order.Asc("courseCode"))
+					.AddOrder(Order.Asc("studentNumber"))
+					.ListAsync());
 	
-			Assert.That(list.Count, Is.EqualTo(2));
+				Assert.That(list.Count, Is.EqualTo(2));
 
-			// Subtest #17
-			list = await (s.CreateCriteria<Enrolment>()
-				.CreateAlias("Student", "st")
-				.CreateAlias("Course", "co")
-				.SetProjection(Projections.ProjectionList()
-					.Add(Property.ForName("co.CourseCode").Group().As("cCode"))
-					.Add(Property.ForName("st.StudentNumber").Count().SetDistinct().As("stNumber"))
-					.Add(Property.ForName("Year").Group())
-				)
-				.AddOrder(Order.Asc("cCode"))
-				.AddOrder(Order.Asc("stNumber"))
-				.ListAsync());
+				// Subtest #17
+				list = await (s.CreateCriteria<Enrolment>()
+					.CreateAlias("Student", "st")
+					.CreateAlias("Course", "co")
+					.SetProjection(Projections.ProjectionList()
+						.Add(Property.ForName("co.CourseCode").Group().As("cCode"))
+						.Add(Property.ForName("st.StudentNumber").Count().SetDistinct().As("stNumber"))
+						.Add(Property.ForName("Year").Group())
+					)
+					.AddOrder(Order.Asc("cCode"))
+					.AddOrder(Order.Asc("stNumber"))
+					.ListAsync());
 	
-			Assert.That(list.Count, Is.EqualTo(2));
+				Assert.That(list.Count, Is.EqualTo(2));
+			}
 
 			await (s.DeleteAsync(gavin));
 			await (s.DeleteAsync(xam));
@@ -1543,13 +1573,16 @@ namespace NHibernate.Test.Criteria
 				.UniqueResultAsync());
 			
 			Assert.That(result, Is.EqualTo(2));
-	
-			result = await (s.CreateCriteria<Student>()
-				.SetProjection(Projections.CountDistinct("CityState.City"))
-				.UniqueResultAsync());
-			
-			Assert.That(result, Is.EqualTo(1));
-			
+
+			if (TestDialect.SupportsCountDistinct)
+			{
+				result = await (s.CreateCriteria<Student>()
+					.SetProjection(Projections.CountDistinct("CityState.City"))
+					.UniqueResultAsync());
+
+				Assert.That(result, Is.EqualTo(1));
+			}
+
 			await (t.CommitAsync());
 			s.Close();
 
@@ -1787,11 +1820,13 @@ namespace NHibernate.Test.Criteria
 			await (s.SaveAsync(enrolment));
 			await (s.FlushAsync());
 
-			int count = (int)await (CriteriaTransformer.Clone(s.CreateCriteria(typeof(Enrolment))
-															.SetProjection(Property.ForName("StudentNumber").Count().SetDistinct())
-								)
-								.UniqueResultAsync());
-			Assert.AreEqual(2, count);
+			if (TestDialect.SupportsCountDistinct)
+			{
+				int count = (int) await (CriteriaTransformer.Clone(
+					s.CreateCriteria(typeof(Enrolment)).SetProjection(Property.ForName("StudentNumber").Count().SetDistinct())
+				).UniqueResultAsync());
+				Assert.AreEqual(2, count);
+			}
 
 			object obj = await (CriteriaTransformer.Clone(s.CreateCriteria(typeof(Enrolment))
 													.SetProjection(Projections.ProjectionList()
@@ -1910,18 +1945,22 @@ namespace NHibernate.Test.Criteria
 											.UniqueResultAsync());
 			Assert.AreEqual(7, array.Length);
 
-			IList list = await (CriteriaTransformer.Clone(s.CreateCriteria(typeof(Enrolment))
-													.CreateAlias("Student", "st")
-													.CreateAlias("Course", "co")
-													.SetProjection(Projections.ProjectionList()
-																	.Add(Property.ForName("co.CourseCode").Group())
-																	.Add(Property.ForName("st.StudentNumber").Count().SetDistinct())
-																	.Add(Property.ForName("Year").Group())
-													)
-				)
-				.ListAsync());
+			if (TestDialect.SupportsCountDistinct)
+			{
+				IList list = await (CriteriaTransformer.Clone(
+					s.CreateCriteria(typeof(Enrolment))
+					 .CreateAlias("Student", "st")
+					 .CreateAlias("Course", "co")
+					 .SetProjection(
+						 Projections.ProjectionList()
+						            .Add(Property.ForName("co.CourseCode").Group())
+						            .Add(Property.ForName("st.StudentNumber").Count().SetDistinct())
+						            .Add(Property.ForName("Year").Group())
+					 )
+				).ListAsync());
 
-			Assert.AreEqual(2, list.Count);
+				Assert.AreEqual(2, list.Count);
+			}
 
 			await (s.DeleteAsync(gavin));
 			await (s.DeleteAsync(xam));

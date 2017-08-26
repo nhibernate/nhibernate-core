@@ -354,7 +354,10 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task CanSelectConditionalKnownTypesAsync()
 		{
-     		var moreThanTwoOrderLinesBool = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? true : false }).ToListAsync());
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
+			var moreThanTwoOrderLinesBool = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? true : false }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesBool.Count(x => x.HasMoreThanTwo == true), Is.EqualTo(410));
 
 			var moreThanTwoOrderLinesNBool = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? true : (bool?)null }).ToListAsync());

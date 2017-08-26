@@ -128,6 +128,9 @@ namespace NHibernate.Test.Criteria.Lambda
 		[Test]
 		public async Task SubQueryAsync()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 			using (var s = OpenSession())
 			{
 				Person personAlias = null;

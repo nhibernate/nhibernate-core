@@ -23,6 +23,13 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Linq
 {
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
+	public partial interface INhQueryProvider : IQueryProvider
+	{
+		Task<int> ExecuteDmlAsync<T>(QueryMode queryMode, Expression expression, CancellationToken cancellationToken);
+	}
 
 	/// <content>
 	/// Contains generated async methods
@@ -53,6 +60,28 @@ namespace NHibernate.Linq
 			}
 
 			return results[0];
+		}
+
+		public Task<int> ExecuteDmlAsync<T>(QueryMode queryMode, Expression expression, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<int>(cancellationToken);
+			}
+			try
+			{
+				var nhLinqExpression = new NhLinqDmlExpression<T>(queryMode, expression, Session.Factory);
+
+				var query = Session.CreateQuery(nhLinqExpression);
+
+				SetParameters(query, nhLinqExpression.ParameterValuesByName);
+
+				return query.ExecuteUpdateAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<int>(ex);
+			}
 		}
 	}
 }

@@ -22,9 +22,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1359
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		public override string BugNumber
+		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			get { return "NH1359"; }
+			return Dialect.SupportsScalarSubSelects;
 		}
 
 		protected override void OnTearDown()
@@ -68,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1359
 		[Test]
 		public async Task CanSetSubQueryProjectionFromDetachedCriteriaWithCountProjectionAsync()
 		{
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			{
 				// This query doesn't make sense at all
 				DetachedCriteria dc = DetachedCriteria.For<Person>()
@@ -96,7 +96,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1359
 		[Test]
 		public async Task CanSubqueryRelatedObjectsNotInMainQueryAsync()
 		{
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			{
 				DetachedCriteria dc = DetachedCriteria.For<Person>().CreateCriteria("Pets", "pets")
 					.SetProjection(Projections.Max("pets.Weight"));
@@ -142,7 +142,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1359
 		[Test]
 		public async Task CanPageAndSortResultsWithParametersAndFiltersAsync()
 		{
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			{
 				s.EnableFilter("ExampleFilter").SetParameter("WeightVal", 100);
 				DetachedCriteria dc = DetachedCriteria.For<Person>().CreateCriteria("Pets", "pets")
@@ -189,7 +189,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1359
 		[Test]
 		public async Task CanOrderByNamedSubqueryAsync()
 		{
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			{
 				DetachedCriteria dc = DetachedCriteria.For<Person>().Add(Restrictions.Eq("Name", "Joe"))
 					.SetProjection(Projections.Max("Name"));

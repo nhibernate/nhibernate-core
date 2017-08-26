@@ -10,6 +10,7 @@
 
 using NUnit.Framework;
 using System.Collections.Generic;
+using NHibernate.Dialect;
 
 namespace NHibernate.Test.NHSpecificTest.NH1773
 {
@@ -21,18 +22,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1773
 		public async Task CustomHQLFunctionsShouldBeRecognizedByTheParserAsync()
 		{
 			using (ISession s = OpenSession())
-			{
-				using (ITransaction tx = s.BeginTransaction())
-				{
-					Country c = new Country() {Id = 100, Name = "US"};
-					Person p = new Person() {Age = 35, Name = "My Name", Id=1, Country = c};
-					await (s.SaveAsync(c));
-					await (s.SaveAsync(p));
-					await (tx.CommitAsync());
-				}
-			}
-
-			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				IList<PersonResult> result = await (s.CreateQuery("select new PersonResult(p, current_timestamp()) from Person p left join fetch p.Country").ListAsync<PersonResult>());
@@ -40,6 +29,25 @@ namespace NHibernate.Test.NHSpecificTest.NH1773
 				Assert.AreEqual("My Name", result[0].Person.Name);
 				Assert.IsTrue(NHibernateUtil.IsInitialized(result[0].Person.Country));
 				await (tx.CommitAsync());
+			}
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			// Fails with MS SQL Ce due to the query generating a duplicated column alias name, which this database does not support.
+			return TestDialect.SupportsDuplicatedColumnAliases;
+		}
+
+		protected override void OnSetUp()
+		{
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var c = new Country { Id = 100, Name = "US" };
+				var p = new Person { Age = 35, Name = "My Name", Id = 1, Country = c };
+				s.Save(c);
+				s.Save(p);
+				tx.Commit();
 			}
 		}
 

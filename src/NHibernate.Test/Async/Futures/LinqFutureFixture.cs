@@ -40,7 +40,7 @@ namespace NHibernate.Test.Futures
 			using (s.BeginTransaction())
 			{
 				var person = s.Query<Person>().Where(p => (p.Name ?? "e") == "e").ToFutureValue();
-				Assert.AreEqual(personId, person.Value.Id);
+				Assert.AreEqual(personId, (await (person.GetValueAsync())).Id);
 			}
 
 			using (ISession s = OpenSession())
@@ -146,6 +146,35 @@ namespace NHibernate.Test.Futures
 			}
 		}
 
+		[Test]
+		public async Task CanCombineSingleFutureValueWithEnumerableFuturesAsync()
+		{
+			IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+			
+			using (var s = Sfi.OpenSession())
+			{
+				var persons = s.Query<Person>()
+					.Take(10)
+					.ToFuture();
+
+				var personCount = s.Query<Person>()
+					.Select(x => x.Id)
+					.ToFutureValue();
+
+				using (var logSpy = new SqlLogSpy())
+				{
+					long count = await (personCount.GetValueAsync());
+
+					foreach (var person in persons)
+					{
+					}
+
+					var events = logSpy.Appender.GetEvents();
+					Assert.AreEqual(1, events.Length);
+				}
+			}
+		}
+
 		[Test(Description = "NH-2385")]
 		public async Task CanCombineSingleFutureValueWithFetchManyAsync()
 		{
@@ -169,7 +198,7 @@ namespace NHibernate.Test.Futures
 								   .FetchMany(x => x.Children)
 								   .ToFutureValue();
 
-				Assert.AreEqual(personId, meContainer.Value.Id);
+				Assert.AreEqual(personId, (await (meContainer.GetValueAsync())).Id);
 			}
 
 			using (var s = OpenSession())
@@ -177,6 +206,40 @@ namespace NHibernate.Test.Futures
 			{
 				await (s.DeleteAsync("from Person"));
 				await (tx.CommitAsync());
+			}
+		}
+
+		[Test]
+		public async Task CanExecuteMultipleQueriesOnSameExpressionAsync()
+		{
+			using (var s = Sfi.OpenSession())
+			{
+				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+
+				var meContainer = s.Query<Person>()
+					.Where(x => x.Id == 1)
+					.ToFutureValue();
+
+				var possiblefriends = s.Query<Person>()
+					.Where(x => x.Id != 2)
+					.ToFuture();
+
+				using (var logSpy = new SqlLogSpy())
+				{
+					var me = await (meContainer.GetValueAsync());
+
+					foreach (var person in possiblefriends)
+					{
+					}
+
+					var events = logSpy.Appender.GetEvents();
+					Assert.AreEqual(1, events.Length);
+					var wholeLog = logSpy.GetWholeLog();
+					string paramPrefix = ((DriverBase)Sfi.ConnectionProvider.Driver).NamedPrefix;
+					Assert.That(
+						wholeLog,
+						Does.Contain(paramPrefix + "p0 = 1 [Type: Int32 (0:0:0)], " + paramPrefix + "p1 = 2 [Type: Int32 (0:0:0)]"));
+				}
 			}
 		}
 	}

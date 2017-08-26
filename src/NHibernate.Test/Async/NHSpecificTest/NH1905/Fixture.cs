@@ -20,6 +20,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1905
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect.SupportsScalarSubSelects;
+		}
+
 		[Test]
 		public async Task QueryAsync()
 		{

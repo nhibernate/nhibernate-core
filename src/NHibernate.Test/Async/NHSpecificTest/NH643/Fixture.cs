@@ -57,7 +57,7 @@ namespace NHibernate.Test.NHSpecificTest.NH643
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				await (session.DeleteAsync(await (session.GetAsync(typeof(Parent), parentId, cancellationToken)), cancellationToken));
+				await (session.DeleteAsync(await (session.GetAsync<Parent>(parentId, cancellationToken)), cancellationToken));
 				await (tx.CommitAsync(cancellationToken));
 			}
 		}
@@ -67,7 +67,7 @@ namespace NHibernate.Test.NHSpecificTest.NH643
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				Parent parent = (Parent) await (session.GetAsync(typeof(Parent), 1, cancellationToken));
+				var parent = await (session.GetAsync<Parent>(parentId, cancellationToken));
 				Child child = new Child();
 				parent.AddChild(child);
 				await (NHibernateUtil.InitializeAsync(parent.Children, cancellationToken));
@@ -79,7 +79,7 @@ namespace NHibernate.Test.NHSpecificTest.NH643
 		{
 			using (ISession session = OpenSession())
 			{
-				Parent parent = (Parent) await (session.GetAsync(typeof(Parent), 1, cancellationToken));
+				var parent = await (session.GetAsync<Parent>(parentId, cancellationToken));
 				Assert.AreEqual(count, parent.Children.Count);
 			}
 		}

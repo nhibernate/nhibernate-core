@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1388
 		[Test]
 		public async Task BagTestAsync()
 		{
-			int studentId = 1;
+			object studentId;
 
 			// Set major.
 			using (ISession session = OpenSession())
@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1388
 
 				await (session.SaveAsync(subject1));
 				await (session.SaveAsync(subject2));
-				await (session.SaveAsync(student));
+				studentId = await (session.SaveAsync(student));
 
 				await (session.FlushAsync());
 				await (t.CommitAsync());

@@ -32,7 +32,15 @@ namespace NHibernate.Test.Hql
 						{"locate", new[] {typeof (SQLiteDialect)}},
 						{"bit_length", new[] {typeof (SQLiteDialect)}},
 						{"extract", new[] {typeof (SQLiteDialect)}},
-						{"nullif", new[] {typeof (Oracle8iDialect)}}
+						{
+							"nullif",
+							new[]
+							{
+								typeof (Oracle8iDialect),
+								// Actually not supported by the db engine. (Well, could likely still be done with a case when override.)
+								typeof (MsSqlCeDialect),
+								typeof (MsSqlCe40Dialect)
+							}}
 					};
 		}
 
@@ -85,9 +93,13 @@ namespace NHibernate.Test.Hql
 			using (ISession s = OpenSession())
 			{
 				// Count in select
-				object result = await (s.CreateQuery("select count(distinct a.id) from Animal a").UniqueResultAsync());
-				Assert.AreEqual(typeof(long), result.GetType());
-				Assert.AreEqual(2, result);
+				object result;
+				if (TestDialect.SupportsCountDistinct)
+				{
+					result = await (s.CreateQuery("select count(distinct a.id) from Animal a").UniqueResultAsync());
+					Assert.AreEqual(typeof(long), result.GetType());
+					Assert.AreEqual(2, result);
+				}
 
 				result = await (s.CreateQuery("select count(*) from Animal").UniqueResultAsync());
 				Assert.AreEqual(typeof(long), result.GetType());
@@ -636,7 +648,7 @@ namespace NHibernate.Test.Hql
 			// 1) Has more then 1 argument
 			// 2) The argument separator is "as" (for the other function is ',' or ' ')
 			// 3) The ReturnType is not fixed (depend on a column type)
-			// 4) The 2th argument is parsed by NH and traslated for a specific Dialect (can't be interpreted directly by RDBMS)
+			// 4) The 2th argument is parsed by NH and translated for a specific Dialect (can't be interpreted directly by RDBMS)
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 1.3f);
@@ -654,7 +666,7 @@ namespace NHibernate.Test.Hql
 				Assert.AreEqual(1, l.Count);
 				Assert.That(l[0], Is.TypeOf(typeof (double)));
 
-				// Rendered in SELECT using a property in an operation with costant 
+				// Rendered in SELECT using a property in an operation with constants
 				hql = "select cast(7+123-5*a.BodyWeight as Double) from Animal a";
 				l = await (s.CreateQuery(hql).ListAsync());
 				Assert.AreEqual(1, l.Count);
@@ -669,7 +681,7 @@ namespace NHibernate.Test.Hql
 					Assert.That(l[0], Is.TypeOf(typeof(double)));
 				}
 
-				// TODO: Rendered in SELECT using string costant assigned with critic chars (separators)
+				// TODO: Rendered in SELECT using string constant assigned with critic chars (separators)
 
 				// Rendered in WHERE using a property 
 				if (!(Dialect is Oracle8iDialect))
@@ -679,7 +691,7 @@ namespace NHibernate.Test.Hql
 					Assert.AreEqual("abcdef", result.Description);
 				}
 
-				// Rendered in WHERE using a property in an operation with costants
+				// Rendered in WHERE using a property in an operation with constants
 				hql = "from Animal a where cast(7+123-2*a.BodyWeight as Double)>0";
 				result = (Animal)await (s.CreateQuery(hql).UniqueResultAsync());
 				Assert.AreEqual("abcdef", result.Description);
@@ -705,7 +717,7 @@ namespace NHibernate.Test.Hql
 				Assert.AreEqual(1, l.Count);
 				Assert.That(l[0], Is.TypeOf(typeof(double)));
 
-				// Rendered in GROUP BY using a property in an operation with costant 
+				// Rendered in GROUP BY using a property in an operation with constants
 				hql = "select cast(7+123-5*a.BodyWeight as Double) from Animal a group by cast(7+123-5*a.BodyWeight as Double)";
 				l = await (s.CreateQuery(hql).ListAsync());
 				Assert.AreEqual(1, l.Count);
@@ -730,7 +742,7 @@ namespace NHibernate.Test.Hql
 					Assert.AreEqual(1, l.Count);
 					Assert.That(l[0], Is.TypeOf(typeof(double)));
 
-					// Rendered in HAVING using a property in an operation with costants
+					// Rendered in HAVING using a property in an operation with constants
 					hql =
 						"select cast(7+123.3-1*a.BodyWeight as int) from Animal a group by cast(7+123.3-1*a.BodyWeight as int) having cast(7+123.3-1*a.BodyWeight as int)>0";
 					l = await (s.CreateQuery(hql).ListAsync());
@@ -753,6 +765,9 @@ namespace NHibernate.Test.Hql
 					}
 					catch (ADOException ex)
 					{
+						if (ex.InnerException == null)
+							throw;
+
 						if (Dialect is Oracle8iDialect)
 						{
 							if (!ex.InnerException.Message.StartsWith("ORA-00979"))
@@ -766,6 +781,17 @@ namespace NHibernate.Test.Hql
 							if (!ex.InnerException.Message.Contains(msgToCheck))
 								throw;
 						}
+						else if (Dialect is MsSqlCeDialect)
+						{
+							var errorCodeProperty = ex.InnerException.GetType().GetProperty("NativeError");
+							if (errorCodeProperty == null ||
+								// 25515 is the error code for "In aggregate and grouping expressions, the SELECT clause can contain only aggregates and grouping expressions."
+								// https://technet.microsoft.com/en-us/library/ms172350(v=sql.110).aspx
+								errorCodeProperty.GetValue(ex.InnerException) as int? != 25515)
+							{
+								throw;
+							}
+						}
 						else
 						{
 							string msgToCheck =
@@ -773,7 +799,7 @@ namespace NHibernate.Test.Hql
 							// This test raises an exception in SQL Server because named 
 							// parameters internally are always positional (@p0, @p1, etc.)
 							// and named differently hence they mismatch between GROUP BY and HAVING clauses.
-							if (!ex.InnerException.Message.Equals(msgToCheck))
+							if (!ex.InnerException.Message.Contains(msgToCheck))
 								throw;
 						}
 					}
@@ -872,6 +898,7 @@ namespace NHibernate.Test.Hql
 		public async Task ExtractAsync()
 		{
 			IgnoreIfNotSupported("extract");
+			IgnoreIfNotSupported("current_timestamp");
 
 			// test only the parser and render
 			using (ISession s = OpenSession())
@@ -914,6 +941,9 @@ namespace NHibernate.Test.Hql
 		public async Task HourMinuteSecondAsync()
 		{
 			IgnoreIfNotSupported("second");
+			IgnoreIfNotSupported("minute");
+			IgnoreIfNotSupported("hour");
+			IgnoreIfNotSupported("current_timestamp");
 			// test only the parser and render
 			using (ISession s = OpenSession())
 			{
@@ -1005,6 +1035,7 @@ group by mr.Description";
 		[Test]
 		public async Task NH1725Async()
 		{
+			IgnoreIfNotSupported("iif");
 			// Only to test the parser
 			using (ISession s = OpenSession())
 			{
