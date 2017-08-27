@@ -85,18 +85,7 @@ namespace NHibernate.Test.CfgTest
 				Assert.That(p, Is.Null);
 			}
 
-			if (((ISessionFactoryImplementor) sf).ConnectionProvider.Driver is FirebirdClientDriver fbDriver)
-			{
-				// Firebird will pool each connection created during the test and will marked as used any table
-				// referenced by queries. It will at best delays those tables drop until connections are actually
-				// closed, or immediately fail dropping them.
-				// This results in other tests failing when they try to create tables with same name.
-				// By clearing the connection pool the tables will get dropped. This is done by the following code.
-				// Moved from NH1908 test case, contributed by Amro El-Fakharany.
-				fbDriver.ClearPool(null);
-			}
-
-			export.Drop(true, true);
+			TestCase.DropSchema(true, export, (ISessionFactoryImplementor)sf);
 		}
 	}
 }
