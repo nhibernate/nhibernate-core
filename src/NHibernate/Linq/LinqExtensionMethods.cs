@@ -2499,6 +2499,15 @@ namespace NHibernate.Linq
 		[Obsolete("Please use SetOptions instead.")]
 		public static IQueryable<T> Timeout<T>(this IQueryable<T> query, int timeout)
 			=> query.SetOptions(o => o.SetTimeout(timeout));
+
+		/// <summary>
+		/// Allows to specify the parameter NHibernate type to use for a literal in a queryable expression.
+		/// </summary>
+		/// <typeparam name="T">The type of the literal.</typeparam>
+		/// <param name="parameter">The literal value.</param>
+		/// <param name="type">The NHibernate type, usually obtained from <c>NHibernateUtil</c> properties.</param>
+		/// <returns>The literal value.</returns>
+		[NoPreEvaluation]
 		public static T MappedAs<T>(this T parameter, IType type)
 		{
 			throw new InvalidOperationException("The method should be used inside Linq to indicate a type of a parameter");
