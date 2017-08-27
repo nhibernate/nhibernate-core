@@ -243,7 +243,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 				await (t.CommitAsync());
 			}
 
-			await (new SchemaExport(configuration).DropAsync(false, true));
+			TestCase.DropSchema(false, new SchemaExport(configuration), (ISessionFactoryImplementor)sf);
 		}
 
 		[Test]
