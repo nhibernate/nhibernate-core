@@ -19,7 +19,6 @@ namespace NHibernate.Test.Stateless.Fetching
 	[TestFixture]
 	public class StatelessSessionFetchingTestAsync : TestCase
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(StatelessSessionFetchingTestAsync));
 
 		protected override string MappingsAssembly
 		{

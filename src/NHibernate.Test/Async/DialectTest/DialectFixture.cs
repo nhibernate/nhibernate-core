@@ -32,10 +32,6 @@ namespace NHibernate.Test.DialectTest
 	{
 		protected Dialect.Dialect d = null;
 
-		private const int BeforeQuoteIndex = 0;
-		private const int AfterQuoteIndex = 1;
-		private const int AfterUnquoteIndex = 2;
-
 		protected string[] tableWithNothingToBeQuoted;
 
 		// simulating a string already enclosed in the Dialects quotes of Quote"d[Na$` 

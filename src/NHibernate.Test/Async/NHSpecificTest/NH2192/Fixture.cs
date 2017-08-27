@@ -45,8 +45,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2192
 			base.OnTearDown();
 		}
 
-		private const int _threadCount = 150;
-
 		private async Task<int> FetchRowResultsAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			using (var s = Sfi.OpenSession())

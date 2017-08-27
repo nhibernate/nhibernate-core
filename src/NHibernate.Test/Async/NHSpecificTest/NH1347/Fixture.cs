@@ -19,7 +19,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1347
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(FixtureAsync));
 
 		public override string BugNumber
 		{

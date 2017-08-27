@@ -171,8 +171,6 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 			}
 		}
 
-		private int totalCall;
-
 		[Test]
 		public async Task CanDeleteItemInDtcAsync()
 		{

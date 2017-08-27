@@ -22,8 +22,6 @@ namespace NHibernate.Test.Subclass
 	[TestFixture]
 	public class SubclassFixtureAsync : TestCase
 	{
-		private DateTime testDateTime = new DateTime(2003, 8, 16);
-		private DateTime updateDateTime = new DateTime(2003, 8, 17);
 
 		protected override string MappingsAssembly
 		{

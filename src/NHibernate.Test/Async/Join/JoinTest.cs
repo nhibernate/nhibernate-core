@@ -26,7 +26,6 @@ namespace NHibernate.Test.Join
 	[TestFixture]
 	public class JoinTestAsync : TestCase
 	{
-		private static ILog log = LogManager.GetLogger(typeof(JoinTestAsync));
 
 		protected override string MappingsAssembly
 		{

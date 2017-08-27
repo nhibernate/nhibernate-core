@@ -19,7 +19,6 @@ namespace NHibernate.Test.Join
 	[TestFixture]
 	public class JoinCompositeKeyTestAsync : TestCase
 	{
-		private static ILog log = LogManager.GetLogger(typeof(JoinCompositeKeyTestAsync));
 
 		protected override string MappingsAssembly
 		{

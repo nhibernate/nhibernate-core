@@ -34,7 +34,6 @@ namespace NHibernate.Test.QueryTest
 		}
 
 		public const int totalFoo = 15;
-		private const string MyComment = "My Comment";
 
 		protected override void OnSetUp()
 		{

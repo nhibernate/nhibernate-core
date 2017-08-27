@@ -95,12 +95,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3952
 			}
 		}
 
-		private static readonly MethodInfo CastMethodDefinition = ReflectHelper.GetMethodDefinition(
-			() => Enumerable.Cast<object>(null));
-
-		private static readonly MethodInfo CastMethod = ReflectHelper.GetMethod(
-			() => Enumerable.Cast<int>(null));
-
 		public static MethodInfo GetMethod2<T, TResult>(Func<T, TResult> func, T arg1)
 		{
 			return func.Method;
