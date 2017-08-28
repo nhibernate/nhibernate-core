@@ -160,8 +160,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3564
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var bob = session.Query<Person>().Cacheable().Where(e => e.DateOfBirth == new DateTime(2015, 4, 22)).ToList();
-				var sally = session.Query<Person>().Cacheable().Where(e => e.DateOfBirth == new DateTime(2014, 4, 22)).ToList();
+				var bob = session.Query<Person>()
+					.SetOptions(o => o.SetCacheable(true))
+					.Where(e => e.DateOfBirth == new DateTime(2015, 4, 22))
+					.ToList();
+				var sally = session.Query<Person>()
+					.SetOptions(o => o.SetCacheable(true))
+					.Where(e => e.DateOfBirth == new DateTime(2014, 4, 22))
+					.ToList();
 
 				Assert.That(bob, Has.Count.EqualTo(1));
 				Assert.That(bob[0].Name, Is.EqualTo("Bob"));

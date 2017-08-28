@@ -29,7 +29,7 @@ namespace NHibernate.Linq.NestedSelects
 		public static void ReWrite(QueryModel queryModel, ISessionFactory sessionFactory)
 		{
 			var nsqmv = new NestedSelectDetector(sessionFactory);
-			nsqmv.VisitExpression(queryModel.SelectClause.Selector);
+			nsqmv.Visit(queryModel.SelectClause.Selector);
 			if (!nsqmv.HasSubqueries)
 				return;
 
@@ -52,7 +52,7 @@ namespace NHibernate.Linq.NestedSelects
 
 			var rewriter = new SelectClauseRewriter(key, expressions, identifier, replacements);
 
-			var resultSelector = rewriter.VisitExpression(queryModel.SelectClause.Selector);
+			var resultSelector = rewriter.Visit(queryModel.SelectClause.Selector);
 
 			elementExpression.AddRange(expressions);
 
@@ -150,7 +150,7 @@ namespace NHibernate.Linq.NestedSelects
 
 			var rewriter = new SelectClauseRewriter(parameter, elementExpression, identifier, 1, new Dictionary<Expression, Expression>());
 
-			var selectorBody = rewriter.VisitExpression(@select);
+			var selectorBody = rewriter.Visit(@select);
 
 			return Expression.Lambda(selectorBody, parameter);
 		}

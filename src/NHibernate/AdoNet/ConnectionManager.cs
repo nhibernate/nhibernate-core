@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Runtime.Serialization;
@@ -41,6 +42,17 @@ namespace NHibernate.AdoNet
 		private readonly ISessionImplementor session;
 		private readonly ConnectionReleaseMode connectionReleaseMode;
 		private readonly IInterceptor interceptor;
+		private readonly List<ISessionImplementor> _dependentSessions = new List<ISessionImplementor>();
+
+		/// <summary>
+		/// The session responsible for the lifecycle of the connection manager.
+		/// </summary>
+		public ISessionImplementor Session => session;
+
+		/// <summary>
+		/// The sessions using the connection manager of the session responsible for it.
+		/// </summary>
+		public IReadOnlyCollection<ISessionImplementor> DependentSessions => _dependentSessions;
 
 		[NonSerialized]
 		private bool _releasesEnabled = true;
@@ -61,6 +73,16 @@ namespace NHibernate.AdoNet
 			batcher = session.Factory.Settings.BatcherFactory.CreateBatcher(this, interceptor);
 
 			ownConnection = suppliedConnection == null;
+		}
+
+		public void AddDependentSession(ISessionImplementor session)
+		{
+			_dependentSessions.Add(session);
+		}
+
+		public void RemoveDependentSession(ISessionImplementor session)
+		{
+			_dependentSessions.Remove(session);
 		}
 
 		public bool IsInActiveTransaction

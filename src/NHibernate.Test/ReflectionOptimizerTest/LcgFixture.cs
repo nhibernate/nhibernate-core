@@ -57,7 +57,10 @@ namespace NHibernate.Test.ReflectionOptimizerTest
 
 		public class GetterTypeMismatchClass
 		{
+			// Assigned by reflection
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 			object _property;
+#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
 
 			public string Property
 			{

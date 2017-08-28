@@ -11,6 +11,7 @@ namespace NHibernate.Tool.hbm2ddl
 	public class SchemaUpdate
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (SchemaUpdate));
+		private bool wasInitialized;
 		private readonly Configuration configuration;
 		private readonly IConnectionHelper connectionHelper;
 		private readonly Dialect.Dialect dialect;
@@ -40,6 +41,24 @@ namespace NHibernate.Tool.hbm2ddl
 			connectionHelper = new SuppliedConnectionProviderConnectionHelper(settings.ConnectionProvider);
 			exceptions = new List<Exception>();
 			formatter = (settings.SqlStatementLogger.FormatSql ? FormatStyle.Ddl : FormatStyle.None).Formatter;
+		}
+
+		private void Initialize()
+		{
+			if (wasInitialized)
+			{
+				return;
+			}
+
+			string autoKeyWordsImport = PropertiesHelper.GetString(Environment.Hbm2ddlKeyWords, configuration.Properties, "not-defined");
+			autoKeyWordsImport = autoKeyWordsImport.ToLowerInvariant();
+			if (autoKeyWordsImport == Hbm2DDLKeyWords.AutoQuote)
+			{
+				SchemaMetadataUpdater.Update(configuration, dialect);
+				SchemaMetadataUpdater.QuoteTableAndColumns(configuration, dialect);
+			}
+
+			wasInitialized = true;
 		}
 
 		/// <summary>
@@ -137,12 +156,7 @@ namespace NHibernate.Tool.hbm2ddl
 		{
 			log.Info("Running hbm2ddl schema update");
 
-			string autoKeyWordsImport = PropertiesHelper.GetString(Environment.Hbm2ddlKeyWords, configuration.Properties, "not-defined");
-			autoKeyWordsImport = autoKeyWordsImport.ToLowerInvariant();
-			if (autoKeyWordsImport == Hbm2DDLKeyWords.AutoQuote)
-			{
-				SchemaMetadataUpdater.QuoteTableAndColumns(configuration);
-			}
+			Initialize();
 
 			DbConnection connection;
 			DbCommand stmt = null;

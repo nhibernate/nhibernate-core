@@ -106,12 +106,138 @@ namespace NHibernate.Dialect
 			//special:
 			RegisterColumnType(DbType.Guid, "VARCHAR(40)");
 
+			RegisterKeywords();
+
 			RegisterCastTypes();
 
 			//functions:
 			RegisterFunctions();
 
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.MySqlDataDriver";
+		}
+
+		#region private static readonly string[] DialectKeywords = { ... }
+
+		private static readonly string[] DialectKeywords =
+		{
+			"accessible",
+			"analyze",
+			"asc",
+			"before",
+			"bit",
+			"cascade",
+			"change",
+			"connection",
+			"contributors",
+			"convert",
+			"database",
+			"databases",
+			"datetime",
+			"day_hour",
+			"day_microsecond",
+			"day_minute",
+			"day_second",
+			"delayed",
+			"desc",
+			"distinctrow",
+			"div",
+			"dual",
+			"elseif",
+			"enclosed",
+			"enum",
+			"escaped",
+			"explain",
+			"float4",
+			"float8",
+			"force",
+			"fulltext",
+			"high_priority",
+			"hour_microsecond",
+			"hour_minute",
+			"hour_second",
+			"ignore",
+			"index",
+			"infile",
+			"int1",
+			"int2",
+			"int3",
+			"int4",
+			"int8",
+			"key",
+			"keys",
+			"kill",
+			"limit",
+			"linear",
+			"lines",
+			"load",
+			"lock",
+			"long",
+			"longblob",
+			"longtext",
+			"low_priority",
+			"mediumblob",
+			"mediumint",
+			"mediumtext",
+			"middleint",
+			"minute_microsecond",
+			"minute_second",
+			"mod",
+			"no_write_to_binlog",
+			"nvarchar",
+			"optimize",
+			"option",
+			"optionally",
+			"outfile",
+			"purge",
+			"read",
+			"read_only",
+			"read_write",
+			"regexp",
+			"rename",
+			"replace",
+			"require",
+			"restrict",
+			"rlike",
+			"schema",
+			"schemas",
+			"second_microsecond",
+			"separator",
+			"show",
+			"spatial",
+			"sql_big_result",
+			"sql_calc_found_rows",
+			"sql_small_result",
+			"ssl",
+			"starting",
+			"straight_join",
+			"terminated",
+			"text",
+			"tiny int",
+			"tinyblob",
+			"tinyint",
+			"tinytext",
+			"unlock",
+			"unsigned",
+			"upgrade",
+			"usage",
+			"use",
+			"utc_date",
+			"utc_time",
+			"utc_timestamp",
+			"varbinary",
+			"varcharacter",
+			"write",
+			"x509",
+			"xor",
+			"year_month",
+			"zerofill",
+		};
+
+		#endregion
+
+		protected virtual void RegisterKeywords()
+		{
+			RegisterKeywords(DialectKeywords);
 		}
 
 		protected virtual void RegisterFunctions()
@@ -397,6 +523,14 @@ namespace NHibernate.Dialect
 		public override bool SupportsLobValueChangePropogation => false;
 
 		public override bool SupportsSubqueryOnMutatingTable => false;
+
+		// v5.7: MySql.Data.MySqlClient.MySqlException : This version of MySQL doesn't yet support 'LIMIT & IN/ALL/ANY/SOME subquery'
+		/// <inheritdoc/>
+		public override bool SupportsSubSelectsWithPagingAsInPredicateRhs => false;
+
+		// v5.7: 
+		/// <inheritdoc/>
+		public override bool SupportsHavingOnGroupedByComputation => false;
 
 		#endregion
 	}

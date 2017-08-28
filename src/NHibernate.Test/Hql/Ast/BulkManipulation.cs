@@ -17,6 +17,12 @@ namespace NHibernate.Test.Hql.Ast
 			return OpenSession();
 		}
 
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			// Some classes are mapped with table joins, which requires temporary tables for DML to work.
+			return Dialect.SupportsTemporaryTables;
+		}
+
 		#region Non-exists
 
 		[Test]
@@ -65,6 +71,29 @@ namespace NHibernate.Test.Hql.Ast
 		}
 
 		[Test]
+		public void SimpleInsertFromAggregate()
+		{
+			var data = new TestData(this);
+			data.Prepare();
+
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			s.CreateQuery("insert into Pickup (id, Vin, Owner) select id, max(Vin), max(Owner) from Car group by id").ExecuteUpdate();
+
+			t.Commit();
+			t = s.BeginTransaction();
+
+			s.CreateQuery("delete Vehicle").ExecuteUpdate();
+
+			t.Commit();
+			s.Close();
+
+			data.Cleanup();
+		}
+
+		
+		[Test]
 		public void InsertWithManyToOne()
 		{
 			var data = new TestData(this);
@@ -76,6 +105,31 @@ namespace NHibernate.Test.Hql.Ast
 			s.CreateQuery(
 				"insert into Animal (description, bodyWeight, mother) select description, bodyWeight, mother from Human").
 				ExecuteUpdate();
+
+			t.Commit();
+			t = s.BeginTransaction();
+
+			t.Commit();
+			s.Close();
+
+			data.Cleanup();
+		}
+
+		[Test]
+		public void InsertWithManyToOneAsParameter()
+		{
+			var data = new TestData(this);
+			data.Prepare();
+
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+
+			var mother = data.Butterfly;
+
+			s.CreateQuery(
+				"insert into Animal (description, bodyWeight, mother) select description, bodyWeight, :mother from Human")
+				.SetEntity("mother",mother)
+				.ExecuteUpdate();
 
 			t.Commit();
 			t = s.BeginTransaction();

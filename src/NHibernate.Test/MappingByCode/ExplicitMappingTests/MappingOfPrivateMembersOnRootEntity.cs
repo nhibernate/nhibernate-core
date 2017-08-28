@@ -9,9 +9,12 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 	{
 		public class MyClass
 		{
+			// Used by reflection.
+#pragma warning disable CS0169 // The field is never used
 			private int id;
 			private int version;
 			private string something;
+#pragma warning disable CS0169 // The field is never used
 		}
 
 		[Test]

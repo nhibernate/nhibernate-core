@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -17,7 +18,7 @@ namespace NHibernate.Linq.Visitors
 	/// generate the same key as 
 	///		from c in Customers where c.City = "Madrid"
 	/// </summary>
-	public class ExpressionKeyVisitor : ExpressionTreeVisitor
+	public class ExpressionKeyVisitor : RelinqExpressionVisitor
 	{
 		private readonly IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
 		readonly StringBuilder _string = new StringBuilder();
@@ -31,7 +32,7 @@ namespace NHibernate.Linq.Visitors
 		{
 			var visitor = new ExpressionKeyVisitor(parameters);
 
-			visitor.VisitExpression(expression);
+			visitor.Visit(expression);
 
 			return visitor.ToString();
 		}
@@ -41,7 +42,7 @@ namespace NHibernate.Linq.Visitors
 			return _string.ToString();
 		}
 
-		protected override Expression VisitBinaryExpression(BinaryExpression expression)
+		protected override Expression VisitBinary(BinaryExpression expression)
 		{
 			if (expression.Method != null)
 			{
@@ -56,27 +57,27 @@ namespace NHibernate.Linq.Visitors
 
 			_string.Append("(");
 
-			VisitExpression(expression.Left);
+			Visit(expression.Left);
 			_string.Append(", ");
-			VisitExpression(expression.Right);
+			Visit(expression.Right);
 
 			_string.Append(")");
 
 			return expression;
 		}
 
-		protected override Expression VisitConditionalExpression(ConditionalExpression expression)
+		protected override Expression VisitConditional(ConditionalExpression expression)
 		{
-			VisitExpression(expression.Test);
+			Visit(expression.Test);
 			_string.Append(" ? ");
-			VisitExpression(expression.IfTrue);
+			Visit(expression.IfTrue);
 			_string.Append(" : ");
-			VisitExpression(expression.IfFalse);
+			Visit(expression.IfFalse);
 
 			return expression;
 		}
 
-		protected override Expression VisitConstantExpression(ConstantExpression expression)
+		protected override Expression VisitConstant(ConstantExpression expression)
 		{
 			NamedParameter param;
 
@@ -122,32 +123,32 @@ namespace NHibernate.Linq.Visitors
 				}
 			}
 
-			return base.VisitConstantExpression(expression);
+			return base.VisitConstant(expression);
 		}
 
 		private T AppendCommas<T>(T expression) where T : Expression
 		{
-			VisitExpression(expression);
+			Visit(expression);
 			_string.Append(", ");
 
 			return expression;
 		}
 
-		protected override Expression VisitLambdaExpression(LambdaExpression expression)
+		protected override Expression VisitLambda<T>(Expression<T> expression)
 		{
 			_string.Append('(');
 
-			VisitList(expression.Parameters, AppendCommas);
+			Visit(expression.Parameters, AppendCommas);
 			_string.Append(") => (");
-			VisitExpression(expression.Body);
+			Visit(expression.Body);
 			_string.Append(')');
 
 			return expression;
 		}
 
-		protected override Expression VisitMemberExpression(MemberExpression expression)
+		protected override Expression VisitMember(MemberExpression expression)
 		{
-			base.VisitMemberExpression(expression);
+			base.VisitMember(expression);
 
 			_string.Append('.');
 			_string.Append(expression.Member.Name);
@@ -156,7 +157,7 @@ namespace NHibernate.Linq.Visitors
 		}
 
 		private bool insideSelectClause;
-		protected override Expression VisitMethodCallExpression(MethodCallExpression expression)
+		protected override Expression VisitMethodCall(MethodCallExpression expression)
 		{
 			var old = insideSelectClause;
 
@@ -175,39 +176,39 @@ namespace NHibernate.Linq.Visitors
 					break;
 			}
 
-			VisitExpression(expression.Object);
+			Visit(expression.Object);
 			_string.Append('.');
 			VisitMethod(expression.Method);
 			_string.Append('(');
-			VisitList(expression.Arguments, AppendCommas);
+			ExpressionVisitor.Visit(expression.Arguments, AppendCommas);
 			_string.Append(')');
 
 			insideSelectClause = old;
 			return expression;
 		}
 
-		protected override Expression VisitNewExpression(NewExpression expression)
+		protected override Expression VisitNew(NewExpression expression)
 		{
 			_string.Append("new ");
 			_string.Append(expression.Constructor.DeclaringType.Name);
 			_string.Append('(');
-			VisitList(expression.Arguments, AppendCommas);
+			Visit(expression.Arguments, AppendCommas);
 			_string.Append(')');
 
 			return expression;
 		}
 
-		protected override Expression VisitParameterExpression(ParameterExpression expression)
+		protected override Expression VisitParameter(ParameterExpression expression)
 		{
 			_string.Append(expression.Name);
 
 			return expression;
 		}
 
-		protected override Expression VisitTypeBinaryExpression(TypeBinaryExpression expression)
+		protected override Expression VisitTypeBinary(TypeBinaryExpression expression)
 		{
 			_string.Append("IsType(");
-			VisitExpression(expression.Expression);
+			Visit(expression.Expression);
 			_string.Append(", ");
 			_string.Append(expression.TypeOperand.FullName);
 			_string.Append(")");
@@ -215,17 +216,17 @@ namespace NHibernate.Linq.Visitors
 			return expression;
 		}
 
-		protected override Expression VisitUnaryExpression(UnaryExpression expression)
+		protected override Expression VisitUnary(UnaryExpression expression)
 		{
 			_string.Append(expression.NodeType);
 			_string.Append('(');
-			VisitExpression(expression.Operand);
+			Visit(expression.Operand);
 			_string.Append(')');
 
 			return expression;
 		}
 
-		protected override Expression VisitQuerySourceReferenceExpression(Remotion.Linq.Clauses.Expressions.QuerySourceReferenceExpression expression)
+		protected override Expression VisitQuerySourceReference(Remotion.Linq.Clauses.Expressions.QuerySourceReferenceExpression expression)
 		{
 			_string.Append(expression.ReferencedQuerySource.ItemName);
 			return expression;

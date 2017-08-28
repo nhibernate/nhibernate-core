@@ -122,10 +122,13 @@ namespace NHibernate.Test.UtilityTest
 		public void GetGenericMethodFrom()
 		{
 			var signature = new[] {typeof (string), typeof (string), typeof (bool)};
+			// This is the fixture for this obsolete member, so disable the obsolete warning.
+#pragma warning disable CS0618 // Type or member is obsolete
 			Assert.That(ReflectHelper.GetGenericMethodFrom<ISomething>("List", new[] {typeof (BRhf)}, signature), Is.Not.Null);
 			Assert.That(ReflectHelper.GetGenericMethodFrom<ISomething>("List", new[] { typeof(int), typeof(string) }, signature), Is.Not.Null);
 			Assert.That(ReflectHelper.GetGenericMethodFrom<ISomething>("List", new[] { typeof(int), typeof(string) }
 				, new[] { typeof(string), typeof(string), typeof(bool), typeof(IComparer<>).MakeGenericType(typeof(int)) }), Is.Not.Null);
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 	}
 

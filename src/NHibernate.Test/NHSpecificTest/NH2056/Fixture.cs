@@ -6,6 +6,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2056
 {
 	public class Fixture:BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			// DML Update on multi-tables entity requires temp table.
+			return Dialect.SupportsTemporaryTables;
+		}
+
 		protected override void OnTearDown()
 		{
 			using (var s = OpenSession())

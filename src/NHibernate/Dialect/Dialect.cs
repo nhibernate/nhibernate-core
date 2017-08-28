@@ -44,7 +44,6 @@ namespace NHibernate.Dialect
 		private readonly TypeNames _hibernateTypeNames = new TypeNames();
 		private readonly IDictionary<string, string> _properties = new Dictionary<string, string>();
 		private readonly IDictionary<string, ISQLFunction> _sqlFunctions;
-		private readonly HashSet<string> _sqlKeywords = new HashSet<string>();
 
 		private static readonly IDictionary<string, ISQLFunction> StandardAggregateFunctions = CollectionHelper.CreateCaseInsensitiveHashtable<ISQLFunction>();
 
@@ -81,7 +80,9 @@ namespace NHibernate.Dialect
 			Log.Info("Using dialect: " + this);
 
 			_sqlFunctions = CollectionHelper.CreateCaseInsensitiveHashtable(StandardAggregateFunctions);
-			
+
+			Keywords = new HashSet<string>(AnsiSqlKeywords.Sql2003, StringComparer.OrdinalIgnoreCase);
+
 			// standard sql92 functions (can be overridden by subclasses)
 			RegisterFunction("substring", new AnsiSubstringFunction());
 			RegisterFunction("locate", new StandardSQLFunction("locate", NHibernateUtil.Int32));
@@ -1933,6 +1934,17 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+		/// <summary>
+		/// <para>
+		/// Are paged sub-selects supported as the right-hand-side (RHS) of IN-predicates?
+		/// </para>
+		/// <para>
+		/// In other words, is syntax like "... someColumn IN ({paged-sub-query}) ..." supported?
+		/// </para>
+		/// </summary>
+		/// <returns><see langword="true"/> if paged sub-selects can appear as the RHS of an in-predicate; <see langword="false"/> otherwise.</returns>
+		public virtual bool SupportsSubSelectsWithPagingAsInPredicateRhs => true;
+
 		/// <summary> 
 		/// Expected LOB usage pattern is such that I can perform an insert
 		/// via prepared statement with a parameter binding for a LOB value
@@ -2059,9 +2071,27 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
+		/// Does this dialect support scalar sub-selects?
+		/// </summary>
+		/// <remarks>
+		/// Scalar sub-selects are sub-queries returning a scalar value, not a set. See https://stackoverflow.com/a/648049/1178314
+		/// </remarks>
+		public virtual bool SupportsScalarSubSelects => SupportsSubSelects;
+
+		/// <summary>
 		/// Does this dialect support pooling parameter in connection string?
 		/// </summary>
 		public virtual bool SupportsPoolingParameter => true;
+
+		/// <summary>
+		/// <para>
+		/// Does this dialect support having clause on a grouped by computation?
+		/// </para>
+		/// <para>
+		/// In other words, is syntax like "... group by aComputation having aComputation ..." supported?
+		/// </para>
+		/// </summary>
+		public virtual bool SupportsHavingOnGroupedByComputation => true;
 
 		#endregion
 
@@ -2086,10 +2116,7 @@ namespace NHibernate.Dialect
 			get { return _sqlFunctions; }
 		}
 
-		public HashSet<string> Keywords
-		{
-			get { return _sqlKeywords; }
-		}
+		public HashSet<string> Keywords { get; }
 
 		/// <summary> 
 		/// Get the command used to select a GUID from the underlying database.
@@ -2244,6 +2271,21 @@ namespace NHibernate.Dialect
 		protected void RegisterKeyword(string word)
 		{
 			Keywords.Add(word);
+		}
+
+		protected internal void RegisterKeywords(params string[] keywords)
+		{
+			Keywords.UnionWith(keywords);
+		}
+
+		protected internal void RegisterKeywords(IEnumerable<string> keywords)
+		{
+			Keywords.UnionWith(keywords);
+		}
+
+		public bool IsKeyword(string str)
+		{
+			return Keywords.Contains(str);
 		}
 
 		protected void RegisterFunction(string name, ISQLFunction function)

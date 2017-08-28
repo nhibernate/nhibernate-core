@@ -30,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2839
 			get { return typeof (bool); }
 		}
 
-		public bool Equals(object x, object y)
+		public new bool Equals(object x, object y)
 		{
 			if (x == y) return true;
 

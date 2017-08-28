@@ -9,6 +9,8 @@ namespace NHibernate.Dialect.Schema
 	{
 		public PostgreSQLDataBaseMetadata(DbConnection connection) : base(connection) { }
 
+		public override bool IncludeDataTypesInReservedWords => false;
+
 		public override ITableMetadata GetTableMetadata(DataRow rs, bool extras)
 		{
 			return new PostgreSQLTableMetadata(rs, this, extras);

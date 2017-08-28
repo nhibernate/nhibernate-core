@@ -17,7 +17,11 @@ namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 
 		private class MyCompo
 		{
+			// Assigned by reflection
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 			private MyClass parent;
+#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
+
 			public MyClass Parent
 			{
 				get { return parent; }
@@ -28,7 +32,10 @@ namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 
 		private class MyNestedCompo
 		{
+			// Assigned by reflection
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 			private MyCompo owner;
+#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
 			public MyCompo Owner
 			{
 				get { return owner; }

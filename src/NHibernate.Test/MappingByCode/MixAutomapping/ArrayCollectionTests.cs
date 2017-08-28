@@ -9,8 +9,11 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 	{
 		private class Entity
 		{
+			// Assigned by reflection
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 			private ICollection<string> others;
 			private string[] emails;
+#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
 			public string[] NickNames { get; set; }
 			public byte[] Photo { get; set; }
 

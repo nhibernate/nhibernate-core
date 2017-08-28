@@ -48,8 +48,6 @@
 		<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSql2005Dialect" />
 	<!-- The OdbcDriver inherits SupportsMultipleOpenReaders=true from DriverBase, which requires Mars_Connection=yes for SQL Server. -->
 		<property name="nhibernate.connection.connection_string" value="Driver={SQL Server Native Client 11.0};Server=.\SQLExpress;Database=nhibernateOdbc;Trusted_Connection=yes;Mars_Connection=yes;" />
-		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/sqlServerOdbc/NHibernate.Test.last-results.xml" />
 	</target>
 
 	<target name="setup-teamcity-sqlServer2012">
@@ -61,8 +59,6 @@
 		<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSqlCe40Dialect" />
 		<property name="nhibernate.connection.connection_string" value="Data Source=NHibernate.sdf" />
 		<property name="nhibernate.command_timeout" value="0" />
-		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/sqlServerCe/NHibernate.Test.last-results.xml" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/sqlServerCe/X86">
 				<include name="*.dll"/>
@@ -76,8 +72,6 @@
 		<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSqlCe40Dialect" />
 		<property name="nhibernate.connection.connection_string" value="Data Source=NHibernate.sdf" />
 		<property name="nhibernate.command_timeout" value="0" />
-		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/sqlServerCe/NHibernate.Test.last-results.xml" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/sqlServerCe/AMD64">
 				<include name="*.dll"/>
@@ -191,8 +185,6 @@
 				<include name="*.dll"/>
 			</fileset>
 		</copy>
-		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/oracle-managed/NHibernate.Test.last-results.xml" />
 	</target>
 
 	<target name="setup-teamcity-oracle-managed64">
@@ -210,8 +202,6 @@
 				<include name="*.dll"/>
 			</fileset>
 		</copy>
-		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/oracle-managed/NHibernate.Test.last-results.xml" />
 	</target>
 
 	<target name="setup-teamcity-mysql">
@@ -223,8 +213,6 @@
 				<include name="*.dll"/>
 			</fileset>
 		</copy>
-		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/mysql/NHibernate.Test.last-results.xml" />
 	</target>
 
 	<script language="C#" prefix="testResult">
@@ -289,9 +277,10 @@
 		public enum ResultStatus
 		{
 			None,
+			Failure,
 			Ignored,
-			Success,
-			Failure
+			Inconclusive,
+			Success
 		}
 
 		public class Result
@@ -305,7 +294,7 @@
 			{
 				get
 				{
-					return Executed && !Success && Status == ResultStatus.Success;
+					return Executed && !Success && (Status == ResultStatus.Success || Status == ResultStatus.Inconclusive);
 				}
 			}
 
@@ -376,7 +365,7 @@
 							// Else ignored
 							.ThenBy(r => r.Executed)
 							// Else inconclusive
-							.ThenBy(r => r.Status == ResultStatus.Success ? 0 : 1)
+							.ThenBy(r => r.Inconclusive ? 0 : 1)
 							.First());
 				var after = Result.ParseFile(currentResult);
 
@@ -427,85 +416,14 @@
 					if (!afterTestNames.Contains(result.Name))
 						missingTests.Add(result);
 
-				report.AppendLine();
-				report.AppendLine("*** Tests broken since last recorded results ***");
-				if (brokenTests.Count > 0)
-				{
-					foreach (var result in brokenTests)
-						report.AppendLine(result.ToString());
-				}
-				else
-					report.AppendLine("None");
-
-				report.AppendLine();
-				report.AppendLine("*** Tests new (failed) since last recorded results ***");
-				if (newFailingTests.Count > 0)
-				{
-					foreach (var result in newFailingTests)
-						report.AppendLine(result.ToString());
-				}
-				else
-					report.AppendLine("None");
-
-				report.AppendLine();
-				report.AppendLine("*** Tests inconclusive since last recorded results ***");
-				if (brokenTests.Count > 0)
-				{
-					foreach (var result in inconclusiveTests)
-						report.AppendLine(result.ToString());
-				}
-				else
-					report.AppendLine("None");
-
-				report.AppendLine();
-				report.AppendLine("*** Tests new (inconclusive) since last recorded results ***");
-				if (newFailingTests.Count > 0)
-				{
-					foreach (var result in newInconclusiveTests)
-						report.AppendLine(result.ToString());
-				}
-				else
-					report.AppendLine("None");
-
-				report.AppendLine();
-				report.AppendLine("*** Tests fixed since last recorded results ***");
-				if (fixedTests.Count > 0)
-				{
-					foreach (Result result in fixedTests)
-						report.AppendLine(result.ToString());
-				}
-				else
-					report.AppendLine("None");
-
-				report.AppendLine();
-				report.AppendLine("*** Tests ignored since last recorded results ***");
-				if (ignoredTests.Count > 0)
-				{
-					foreach (Result result in ignoredTests)
-						report.AppendLine(result.ToString());
-				}
-				else
-					report.AppendLine("None");
-
-				report.AppendLine();
-				report.AppendLine("*** Tests new (not failing) since last recorded results ***");
-				if (newNotFailingTests.Count > 0)
-				{
-					foreach (var result in newNotFailingTests)
-						report.AppendLine(result.ToString());
-				}
-				else
-					report.AppendLine("None");
-
-				report.AppendLine();
-				report.AppendLine("*** Tests missing since last recorded results ***");
-				if (missingTests.Count > 0)
-				{
-					foreach (var result in missingTests)
-						report.AppendLine(result.ToString());
-				}
-				else
-					report.AppendLine("None");
+				ReportResultGroup(report, brokenTests, "Tests broken since last recorded results");
+				ReportResultGroup(report, newFailingTests, "Tests new (failed) since last recorded results");
+				ReportResultGroup(report, inconclusiveTests, "Tests inconclusive since last recorded results");
+				ReportResultGroup(report, newInconclusiveTests, "Tests new (inconclusive) since last recorded results");
+				ReportResultGroup(report, fixedTests, "Tests fixed since last recorded results");
+				ReportResultGroup(report, ignoredTests, "Tests ignored since last recorded results");
+				ReportResultGroup(report, newNotFailingTests, "Tests new (not failing) since last recorded results");
+				ReportResultGroup(report, missingTests, "Tests missing since last recorded results");
 
 				var output = report.ToString();
 				File.WriteAllText(outputFile, output);
@@ -523,6 +441,19 @@
 				Console.WriteLine(e);
 				throw;
 			}
+		}
+
+		public static void ReportResultGroup(StringBuilder report, IList<Result> resultGroup, string groupTitle)
+		{
+			report.AppendLine();
+			report.Append("*** ").Append(groupTitle).AppendLine(" ***");
+			if (resultGroup.Count > 0)
+			{
+				foreach (var result in resultGroup)
+					report.AppendLine(result.ToString());
+			}
+			else
+				report.AppendLine("None");
 		}
 
 			]]>

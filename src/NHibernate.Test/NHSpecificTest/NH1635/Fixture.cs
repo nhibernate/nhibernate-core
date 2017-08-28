@@ -7,6 +7,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1635
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			// Mapping uses a scalar sub-select formula.
+			return Dialect.SupportsScalarSubSelects;
+		}
+
 		private void CreateTestContext()
 		{
 			var t1 = new ForumThread {Id = 1, Name = "Thread 1"};
