@@ -22,30 +22,29 @@ namespace NHibernate.Impl
 			_resultAsync = resultAsync;
 		}
 
-		public IEnumerable<T> Enumerable
+		public IEnumerable<T> GetEnumerable()
 		{
-			get
+			var value = _result();
+			if (ExecuteOnEval != null)
+				value = (IEnumerable<T>) ExecuteOnEval.DynamicInvoke(value);
+			foreach (T item in value)
 			{
-				var value = _result();
-				if (ExecuteOnEval != null)
-					value = (IEnumerable<T>) ExecuteOnEval.DynamicInvoke(value);
-				foreach (T item in value)
-				{
-					yield return item;
-				}
+				yield return item;
 			}
 		}
 
+		// Remove in 6.0
 		#region IEnumerable<T> Members
 
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return ((IEnumerable) Enumerable).GetEnumerator();
+			return ((IEnumerable)GetEnumerable()).GetEnumerator();
 		}
 
+		[Obsolete("Please use GetEnumerable() or GetEnumerableAsync(cancellationToken) instead")]
 		public IEnumerator<T> GetEnumerator()
 		{
-			return Enumerable.GetEnumerator();
+			return GetEnumerable().GetEnumerator();
 		}
 
 		#endregion

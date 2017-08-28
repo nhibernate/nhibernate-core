@@ -185,6 +185,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 					                   .SetFetchMode("Posts", FetchMode.Eager)
 					                   .SetCacheable(true)
 					                   .Future<Blog>()
+					                   .GetEnumerable()
 					                   .ToList();
 					tx.Commit();
 				}

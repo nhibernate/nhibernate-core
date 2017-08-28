@@ -63,7 +63,7 @@ namespace NHibernate.Test.Futures
 			using (var session = Sfi.OpenSession())
 			{
 				var results = session.CreateCriteria<Person>().Future<Person>();
-				results.GetEnumerator().MoveNext();
+				results.GetEnumerable().GetEnumerator().MoveNext();
 			}
 		}
 
@@ -101,7 +101,7 @@ namespace NHibernate.Test.Futures
 			using (var session = Sfi.OpenSession())
 			{
 				var results = session.CreateQuery("from Person").Future<Person>();
-				results.GetEnumerator().MoveNext();
+				results.GetEnumerable().GetEnumerator().MoveNext();
 			}
 		}
 
@@ -138,7 +138,7 @@ namespace NHibernate.Test.Futures
 			using (var session = Sfi.OpenSession())
 			{
 				var results = session.Query<Person>().ToFuture();
-				results.GetEnumerator().MoveNext();
+				results.GetEnumerable().GetEnumerator().MoveNext();
 			}
 		}
 
