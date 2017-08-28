@@ -45,6 +45,54 @@ namespace NHibernate.Test.NHSpecificTest.NH2467
 		}
 		
 		[Test]
+		public async Task ShouldNotThrowOnFuturePagingAsync()
+		{
+			using (var session = OpenSession())
+			{
+			
+				var contentQuery = session
+					.CreateCriteria<DomainClass>()
+					.Add(Restrictions.Eq("Data", "Test"));
+				contentQuery.SetMaxResults(2);
+				contentQuery.SetFirstResult(0);
+				var content = contentQuery.Future<DomainClass>();
+					
+				var countQuery = session
+					.CreateCriteria<DomainClass>()
+					.Add(Restrictions.Eq("Data", "Test"));
+				countQuery.SetProjection(Projections.RowCount());
+				var count = countQuery.FutureValue<int>();
+
+				// triggers batch operation, should not throw
+				var result = (await (content.GetEnumerableAsync())).ToList();
+			}
+		}		
+		
+		[Test]
+		public async Task ShouldNotThrowOnReversedFuturePagingAsync()
+		{
+			using (var session = OpenSession())
+			{
+			
+				var countQuery = session
+					.CreateCriteria<DomainClass>()
+					.Add(Restrictions.Eq("Data", "Test"));
+				countQuery.SetProjection(Projections.RowCount());
+				var count = countQuery.FutureValue<int>();
+
+				var contentQuery = session
+					.CreateCriteria<DomainClass>()
+					.Add(Restrictions.Eq("Data", "Test"));
+				contentQuery.SetMaxResults(2);
+				contentQuery.SetFirstResult(0);
+				var content = contentQuery.Future<DomainClass>();
+
+				// triggers batch operation, should not throw
+				var result = (await (content.GetEnumerableAsync())).ToList();
+			}
+		}		
+		
+		[Test]
 		public async Task ShouldNotThrowOnFuturePagingUsingHqlAsync()
 		{
 			using (var session = OpenSession())
@@ -60,7 +108,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2467
 				countQuery.SetString(0, "Test");
 				var count = countQuery.FutureValue<long>();
 				
-				Assert.AreEqual(1, content.ToList().Count);
+				Assert.AreEqual(1, (await (content.GetEnumerableAsync())).ToList().Count);
 				Assert.AreEqual(1, await (count.GetValueAsync()));
 			}
 		}
@@ -81,7 +129,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2467
 				countQuery.SetString(0, "Test");
 				var count = countQuery.FutureValue<long>();
 				
-				Assert.AreEqual(1, content.ToList().Count);
+				Assert.AreEqual(1, (await (content.GetEnumerableAsync())).ToList().Count);
 				Assert.AreEqual(1, await (count.GetValueAsync()));
 			}
 		}

@@ -64,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2404
 				var query2 = (from entity in session.Query<TestEntity>()
 							  select new TestEntityDto {EntityId = entity.Id, EntityName = entity.Name}).ToFuture();
 
-				Assert.AreEqual(2, query2.Count());
+				Assert.AreEqual(2, (await (query2.GetEnumerableAsync())).Count());
 			}
 		}
 
@@ -86,7 +86,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2404
 						Transformers.AliasToBean(typeof (TestEntityDto)))
 						.Future<TestEntityDto>();
 
-				Assert.AreEqual(2, query2.Count());
+				Assert.AreEqual(2, (await (query2.GetEnumerableAsync())).Count());
 			}
 		}
 	}

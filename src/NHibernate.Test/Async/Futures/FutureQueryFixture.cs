@@ -18,6 +18,78 @@ namespace NHibernate.Test.Futures
 	[TestFixture]
 	public class FutureQueryFixtureAsync : FutureFixture
 	{
+		[Test]
+		public async Task DefaultReadOnlyTestAsync()
+		{
+			//NH-3575
+			using (var s = Sfi.OpenSession())
+			{
+				s.DefaultReadOnly = true;
+
+				var persons = s.CreateQuery("from Person").Future<Person>();
+
+				Assert.IsTrue((await (persons.GetEnumerableAsync())).All(p => s.IsReadOnly(p)));
+			}
+		}
+
+		[Test]
+		public async Task CanUseFutureQueryAsync()
+		{
+			using (var s = Sfi.OpenSession())
+			{
+				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+
+				var persons10 = s.CreateQuery("from Person")
+					.SetMaxResults(10)
+					.Future<Person>();
+				var persons5 = s.CreateQuery("from Person")
+					.SetMaxResults(5)
+					.Future<int>();
+
+				using (var logSpy = new SqlLogSpy())
+				{
+					foreach (var person in await (persons5.GetEnumerableAsync()))
+					{
+
+					}
+
+					foreach (var person in await (persons10.GetEnumerableAsync()))
+					{
+
+					}
+
+					var events = logSpy.Appender.GetEvents();
+					Assert.AreEqual(1, events.Length);
+				}
+			}
+		}
+
+		[Test]
+		public async Task TwoFuturesRunInTwoRoundTripsAsync()
+		{
+			using (var s = Sfi.OpenSession())
+			{
+				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+
+				using (var logSpy = new SqlLogSpy())
+				{
+					var persons10 = s.CreateQuery("from Person")
+						.SetMaxResults(10)
+						.Future<Person>();
+
+					foreach (var person in await (persons10.GetEnumerableAsync())) { } // fire first future round-trip
+
+					var persons5 = s.CreateQuery("from Person")
+						.SetMaxResults(5)
+						.Future<int>();
+
+					foreach (var person in await (persons5.GetEnumerableAsync())) { } // fire second future round-trip
+
+					var events = logSpy.Appender.GetEvents();
+					Assert.AreEqual(2, events.Length);
+				}
+			}
+		}
 
 		[Test]
 		public async Task CanCombineSingleFutureValueWithEnumerableFuturesAsync()
@@ -37,7 +109,7 @@ namespace NHibernate.Test.Futures
 				{
 					long count = await (personCount.GetValueAsync());
 
-					foreach (var person in persons)
+					foreach (var person in await (persons.GetEnumerableAsync()))
 					{
 					}
 
@@ -66,7 +138,7 @@ namespace NHibernate.Test.Futures
 				{
 					var me = await (meContainer.GetValueAsync());
 			
-					foreach (var person in possiblefriends)
+					foreach (var person in await (possiblefriends.GetEnumerableAsync()))
 					{
 					}
 			

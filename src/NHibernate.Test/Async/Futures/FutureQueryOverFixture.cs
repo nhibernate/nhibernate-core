@@ -41,6 +41,82 @@ namespace NHibernate.Test.Futures
 		}
 
 		[Test]
+		public async Task DefaultReadOnlyTestAsync()
+		{
+			//NH-3575
+			using (var s = Sfi.OpenSession())
+			{
+				s.DefaultReadOnly = true;
+
+				var persons = s.QueryOver<Person>().Future<Person>();
+
+				Assert.IsTrue((await (persons.GetEnumerableAsync())).All(p => s.IsReadOnly(p)));
+			}
+		}
+
+		[Test]
+		public async Task CanUseFutureCriteriaAsync()
+		{
+			using (var s = Sfi.OpenSession())
+			{
+				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+
+				var persons10 = s.QueryOver<Person>()
+					.Take(10)
+					.Future();
+				var persons5 = s.QueryOver<Person>()
+					.Select(p => p.Id)
+					.Take(5)
+					.Future<int>();
+
+				using (var logSpy = new SqlLogSpy())
+				{
+					int actualPersons5Count = 0;
+					foreach (var person in await (persons5.GetEnumerableAsync()))
+						actualPersons5Count++;
+
+					int actualPersons10Count = 0;
+					foreach (var person in await (persons10.GetEnumerableAsync()))
+						actualPersons10Count++;
+
+					var events = logSpy.Appender.GetEvents();
+					Assert.AreEqual(1, events.Length);
+
+					Assert.That(actualPersons5Count, Is.EqualTo(1));
+					Assert.That(actualPersons10Count, Is.EqualTo(1));
+				}
+			}
+		}
+
+		[Test]
+		public async Task TwoFuturesRunInTwoRoundTripsAsync()
+		{
+			using (var s = Sfi.OpenSession())
+			{
+				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+
+				using (var logSpy = new SqlLogSpy())
+				{
+					var persons10 = s.QueryOver<Person>()
+						.Take(10)
+						.Future();
+
+					foreach (var person in await (persons10.GetEnumerableAsync())) { } // fire first future round-trip
+
+					var persons5 = s.QueryOver<Person>()
+						.Select(p => p.Id)
+						.Take(5)
+						.Future<int>();
+
+					foreach (var person in await (persons5.GetEnumerableAsync())) { } // fire second future round-trip
+
+					var events = logSpy.Appender.GetEvents();
+					Assert.AreEqual(2, events.Length);
+				}
+			}
+		}
+
+		[Test]
 		public async Task CanCombineSingleFutureValueWithEnumerableFuturesAsync()
 		{
 			using (var s = Sfi.OpenSession())
@@ -63,7 +139,7 @@ namespace NHibernate.Test.Futures
 					Person singlePersonValue = await (singlePerson.GetValueAsync());
 					int personId = await (personIds.GetValueAsync());
 
-					foreach (var person in persons)
+					foreach (var person in await (persons.GetEnumerableAsync()))
 					{
 
 					}

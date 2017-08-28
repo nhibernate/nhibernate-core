@@ -19,6 +19,19 @@ namespace NHibernate.Test.Futures
 	[TestFixture]
 	public class LinqFutureFixtureAsync : FutureFixture
 	{
+		[Test]
+		public async Task DefaultReadOnlyTestAsync()
+		{
+			//NH-3575
+			using (var s = Sfi.OpenSession())
+			{
+				s.DefaultReadOnly = true;
+
+				var persons = s.Query<Person>().ToFuture();
+
+				Assert.IsTrue((await (persons.GetEnumerableAsync())).All(p => s.IsReadOnly(p)));
+			}
+		}
 
 		[Test]
 		public async Task CoalesceShouldWorkForFuturesAsync()
@@ -48,6 +61,39 @@ namespace NHibernate.Test.Futures
 			{
 				await (s.DeleteAsync("from Person"));
 				await (tx.CommitAsync());
+			}
+		}
+
+		[Test]
+		public async Task CanUseToFutureWithContainsAsync()
+		{
+			using (var s = Sfi.OpenSession())
+			{
+				var ids = new[] { 1, 2, 3 };
+				var persons10 = (await (s.Query<Person>()
+					.Where(p => ids.Contains(p.Id))
+					.FetchMany(p => p.Children)
+					.Skip(5)
+					.Take(10)
+					.ToFuture().GetEnumerableAsync())).ToList();
+
+				Assert.IsNotNull(persons10);
+			}
+		}
+
+		[Test]
+		public async Task CanUseToFutureWithContains2Async()
+		{
+			using (var s = Sfi.OpenSession())
+			{
+				var ids = new[] { 1, 2, 3 };
+				var persons10 = (await (s.Query<Person>()
+					.Where(p => ids.Contains(p.Id))
+					.ToFuture()
+					.GetEnumerableAsync()))
+					.ToList();
+
+				Assert.IsNotNull(persons10);
 			}
 		}
 
@@ -82,9 +128,9 @@ namespace NHibernate.Test.Futures
 
 				using (var logSpy = new SqlLogSpy())
 				{
-					foreach (var person in persons5) { }
+					foreach (var person in await (persons5.GetEnumerableAsync())) { }
 
-					foreach (var person in persons10) { }
+					foreach (var person in await (persons10.GetEnumerableAsync())) { }
 
 					var events = logSpy.Appender.GetEvents();
 					Assert.AreEqual(1, events.Length);
@@ -96,6 +142,62 @@ namespace NHibernate.Test.Futures
 			{
 				await (s.DeleteAsync("from Person"));
 				await (tx.CommitAsync());
+			}
+		}
+
+		[Test]
+		public async Task CanUseFutureQueryAsync()
+		{
+			IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+
+			using (var s = Sfi.OpenSession())
+			{
+				var persons10 = s.Query<Person>()
+					.Take(10)
+					.ToFuture();
+				var persons5 = s.Query<Person>()
+					.Take(5)
+					.ToFuture();
+
+				using (var logSpy = new SqlLogSpy())
+				{
+					foreach (var person in await (persons5.GetEnumerableAsync()))
+					{
+					}
+
+					foreach (var person in await (persons10.GetEnumerableAsync()))
+					{
+					}
+
+					var events = logSpy.Appender.GetEvents();
+					Assert.AreEqual(1, events.Length);
+				}
+			}
+		}
+
+		[Test]
+		public async Task CanUseFutureQueryWithAnonymousTypeAsync()
+		{
+			IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+
+			using (var s = Sfi.OpenSession())
+			{
+				var persons = s.Query<Person>()
+					.Select(p => new { Id = p.Id, Name = p.Name })
+					.ToFuture();
+				var persons5 = s.Query<Person>()
+					.Select(p => new { Id = p.Id, Name = p.Name })
+					.Take(5)
+					.ToFuture();
+
+				using (var logSpy = new SqlLogSpy())
+				{
+					(await (persons5.GetEnumerableAsync())).ToList(); // initialize the enumerable
+					(await (persons.GetEnumerableAsync())).ToList();
+
+					var events = logSpy.Appender.GetEvents();
+					Assert.AreEqual(1, events.Length);
+				}
 			}
 		}
 
@@ -130,8 +232,8 @@ namespace NHibernate.Test.Futures
 				using (var logSpy = new SqlLogSpy())
 				{
 
-					Assert.That(persons.Any(x => x.Children.Any()), "No children found");
-					Assert.That(persons10.Any(x => x.Children.Any()), "No children found");
+					Assert.That((await (persons.GetEnumerableAsync())).Any(x => x.Children.Any()), "No children found");
+					Assert.That((await (persons10.GetEnumerableAsync())).Any(x => x.Children.Any()), "No children found");
 
 					var events = logSpy.Appender.GetEvents();
 					Assert.AreEqual(1, events.Length);
@@ -143,6 +245,33 @@ namespace NHibernate.Test.Futures
 			{
 				await (s.DeleteAsync("from Person"));
 				await (tx.CommitAsync());
+			}
+		}
+
+		[Test]
+		public async Task TwoFuturesRunInTwoRoundTripsAsync()
+		{
+			IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+
+			using (var s = Sfi.OpenSession())
+			{
+				using (var logSpy = new SqlLogSpy())
+				{
+					var persons10 = s.Query<Person>()
+						.Take(10)
+						.ToFuture();
+
+					foreach (var person in await (persons10.GetEnumerableAsync())) { } // fire first future round-trip
+
+					var persons5 = s.Query<Person>()
+						.Take(5)
+						.ToFuture();
+
+					foreach (var person in await (persons5.GetEnumerableAsync())) { } // fire second future round-trip
+
+					var events = logSpy.Appender.GetEvents();
+					Assert.AreEqual(2, events.Length);
+				}
 			}
 		}
 
@@ -165,7 +294,7 @@ namespace NHibernate.Test.Futures
 				{
 					long count = await (personCount.GetValueAsync());
 
-					foreach (var person in persons)
+					foreach (var person in await (persons.GetEnumerableAsync()))
 					{
 					}
 
@@ -228,7 +357,7 @@ namespace NHibernate.Test.Futures
 				{
 					var me = await (meContainer.GetValueAsync());
 
-					foreach (var person in possiblefriends)
+					foreach (var person in await (possiblefriends.GetEnumerableAsync()))
 					{
 					}
 

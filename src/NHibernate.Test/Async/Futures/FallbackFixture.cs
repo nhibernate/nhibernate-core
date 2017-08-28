@@ -66,6 +66,16 @@ namespace NHibernate.Test.Futures
 		}
 
 		[Test]
+		public async Task FutureOfCriteriaFallsBackToListImplementationWhenQueryBatchingIsNotSupportedAsync()
+		{
+			using (var session = Sfi.OpenSession())
+			{
+				var results = session.CreateCriteria<Person>().Future<Person>();
+				(await (results.GetEnumerableAsync())).GetEnumerator().MoveNext();
+			}
+		}
+
+		[Test]
 		public async Task FutureValueOfCriteriaCanGetSingleEntityWhenQueryBatchingIsNotSupportedAsync()
 		{
 			int personId = await (CreatePersonAsync());
@@ -94,6 +104,16 @@ namespace NHibernate.Test.Futures
 		}
 
 		[Test]
+		public async Task FutureOfQueryFallsBackToListImplementationWhenQueryBatchingIsNotSupportedAsync()
+		{
+			using (var session = Sfi.OpenSession())
+			{
+				var results = session.CreateQuery("from Person").Future<Person>();
+				(await (results.GetEnumerableAsync())).GetEnumerator().MoveNext();
+			}
+		}
+
+		[Test]
 		public async Task FutureValueOfQueryCanGetSingleEntityWhenQueryBatchingIsNotSupportedAsync()
 		{
 			int personId = await (CreatePersonAsync());
@@ -117,6 +137,16 @@ namespace NHibernate.Test.Futures
 				var futureCount = session.CreateQuery("select count(*) from Person")
 					.FutureValue<long>();
 				Assert.That(await (futureCount.GetValueAsync()), Is.EqualTo(1L));
+			}
+		}
+
+		[Test]
+		public async Task FutureOfLinqFallsBackToListImplementationWhenQueryBatchingIsNotSupportedAsync()
+		{
+			using (var session = Sfi.OpenSession())
+			{
+				var results = session.Query<Person>().ToFuture();
+				(await (results.GetEnumerableAsync())).GetEnumerator().MoveNext();
 			}
 		}
 
