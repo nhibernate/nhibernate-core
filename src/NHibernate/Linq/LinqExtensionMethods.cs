@@ -2442,7 +2442,7 @@ namespace NHibernate.Linq
 		{
 			var provider = GetNhProvider(source);
 			var future = provider.ExecuteFuture<TSource>(source.Expression);
-			return new FutureValue<TSource>(future.GetEnumerable, async cancellationToken => await future.GetEnumerableAsync(cancellationToken).ConfigureAwait(false));
+			return new FutureValue<TSource>(future.GetEnumerable, future.GetEnumerableAsync);
 		}
 
 		/// <summary>
