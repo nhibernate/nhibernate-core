@@ -14,7 +14,7 @@ namespace NHibernate.Event.Default
 	/// pessimistic lock upgrade on an entity. 
 	/// </summary>
 	[Serializable]
-	public class AbstractLockUpgradeEventListener : AbstractReassociateEventListener
+	public partial class AbstractLockUpgradeEventListener : AbstractReassociateEventListener
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(AbstractLockUpgradeEventListener));
 

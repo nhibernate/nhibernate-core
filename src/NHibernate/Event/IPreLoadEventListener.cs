@@ -3,7 +3,7 @@ namespace NHibernate.Event
 	/// <summary> 
 	/// Called before injecting property values into a newly loaded entity instance.
 	/// </summary>
-	public interface IPreLoadEventListener
+	public partial interface IPreLoadEventListener
 	{
 		/// <summary>
 		/// 

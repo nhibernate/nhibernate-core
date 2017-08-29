@@ -8,7 +8,7 @@ namespace NHibernate.Type
 	/// instead of the primary key column of the owning entity. 
 	/// </summary>
 	[Serializable]
-	public class SpecialOneToOneType : OneToOneType
+	public partial class SpecialOneToOneType : OneToOneType
 	{
 		public SpecialOneToOneType(string referencedEntityName, ForeignKeyDirection foreignKeyType, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, string entityName, string propertyName)
 			: base(referencedEntityName, foreignKeyType, uniqueKeyPropertyName, lazy, unwrapProxy, entityName, propertyName)

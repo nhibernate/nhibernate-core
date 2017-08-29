@@ -15,7 +15,7 @@ namespace NHibernate.Type
 	/// using bag semantics with an identifier to the database.
 	/// </summary>
 	[Serializable]
-	public class GenericIdentifierBagType<T> : CollectionType
+	public partial class GenericIdentifierBagType<T> : CollectionType
 	{
 		/// <summary>
 		/// Initializes a new instance of a <see cref="CollectionType"/> class for

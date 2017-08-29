@@ -12,7 +12,7 @@ namespace NHibernate.Dialect.Lock
 	/// READ_UNCOMMITTED isolation.
 	/// </remarks>
 	/// <seealso cref="NHibernate.Dialect.Dialect.GetLockingStrategy"/>
-	public interface ILockingStrategy
+	public partial interface ILockingStrategy
 	{
 		/// <summary> 
 		/// Acquire an appropriate type of lock on the underlying data that will

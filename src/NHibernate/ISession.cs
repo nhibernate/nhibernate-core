@@ -71,7 +71,7 @@ namespace NHibernate
 	/// </para>
 	/// <seealso cref="ISessionFactory"/>
 	/// </remarks>
-	public interface ISession : IDisposable
+	public partial interface ISession : IDisposable
 	{
 		/// <summary>
 		/// Obtain a <see cref="ISession"/> builder with the ability to grab certain information from
@@ -525,11 +525,10 @@ namespace NHibernate
 		/// This operation cascades to associated instances if the association is mapped
 		/// with <tt>cascade="merge"</tt>.<br/>
 		/// The semantics of this method are defined by JSR-220.
+		/// </summary>
 		/// <param name="entityName">Name of the entity.</param>
 		/// <param name="obj">a detached instance with state to be copied </param>
 		/// <returns> an updated persistent instance </returns>
-		/// </summary>
-		/// <returns></returns>
 		object Merge(string entityName, object obj);
 
 		/// <summary>
@@ -555,11 +554,10 @@ namespace NHibernate
 		/// This operation cascades to associated instances if the association is mapped
 		/// with <tt>cascade="merge"</tt>.<br/>
 		/// The semantics of this method are defined by JSR-220.
+		/// </summary>
 		/// <param name="entityName">Name of the entity.</param>
 		/// <param name="entity">a detached instance with state to be copied </param>
 		/// <returns> an updated persistent instance </returns>
-		/// </summary>
-		/// <returns></returns>
 		T Merge<T>(string entityName, T entity) where T : class;
 
 		/// <summary>

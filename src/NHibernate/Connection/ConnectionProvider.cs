@@ -13,7 +13,7 @@ namespace NHibernate.Connection
 	/// <summary>
 	/// The base class for the ConnectionProvider.
 	/// </summary>
-	public abstract class ConnectionProvider : IConnectionProvider
+	public abstract partial class ConnectionProvider : IConnectionProvider
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ConnectionProvider));
 		private string connString;

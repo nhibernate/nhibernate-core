@@ -16,7 +16,7 @@ namespace NHibernate.Event.Default
 	/// Defines the default event listener for handling of merge events generated from a session.
 	/// </summary>
 	[Serializable]
-	public class DefaultMergeEventListener : AbstractSaveEventListener, IMergeEventListener
+	public partial class DefaultMergeEventListener : AbstractSaveEventListener, IMergeEventListener
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultMergeEventListener));
 

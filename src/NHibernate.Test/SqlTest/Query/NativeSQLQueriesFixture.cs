@@ -636,8 +636,8 @@ namespace NHibernate.Test.SqlTest.Query
 					.SetResultTransformer(transformer)
 					.Future<object[]>();
 
-				Assert.AreEqual(l.Count(), 1);
-				Assert.AreEqual("Ricardo", l.ElementAt(0)[0]);
+				Assert.AreEqual(l.GetEnumerable().Count(), 1);
+				Assert.AreEqual("Ricardo", l.GetEnumerable().ElementAt(0)[0]);
 				Assert.IsTrue(transformer.TransformListCalled);
 				Assert.IsTrue(transformer.TransformTupleCalled);
 			}
@@ -681,8 +681,8 @@ namespace NHibernate.Test.SqlTest.Query
 					.CreateSQLQuery("select Name from Person")
 					.Future<string>();
 
-				Assert.AreEqual(l.Count(), 1);
-				Assert.AreEqual("Ricardo", l.ElementAt(0));
+				Assert.AreEqual(l.GetEnumerable().Count(), 1);
+				Assert.AreEqual("Ricardo", l.GetEnumerable().ElementAt(0));
 			}
 		}
 

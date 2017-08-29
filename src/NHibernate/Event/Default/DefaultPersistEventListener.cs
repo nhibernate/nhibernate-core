@@ -13,7 +13,7 @@ namespace NHibernate.Event.Default
 	/// transient entities in response to generated create events. 
 	/// </summary>
 	[Serializable]
-	public class DefaultPersistEventListener : AbstractSaveEventListener, IPersistEventListener
+	public partial class DefaultPersistEventListener : AbstractSaveEventListener, IPersistEventListener
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultPersistEventListener));
 

@@ -15,7 +15,7 @@ namespace NHibernate.Type
 	/// A reference to an entity class
 	/// </summary>
 	[Serializable]
-	public abstract class EntityType : AbstractType, IAssociationType
+	public abstract partial class EntityType : AbstractType, IAssociationType
 	{
 		protected readonly string uniqueKeyPropertyName;
 		private readonly bool eager;
@@ -239,7 +239,7 @@ namespace NHibernate.Type
 				{
 					return target;
 				}
-				if (session.GetContextEntityIdentifier(original) == null && ForeignKeys.IsTransient(associatedEntityName, original, false, session))
+				if (session.GetContextEntityIdentifier(original) == null && ForeignKeys.IsTransientFast(associatedEntityName, original, session).GetValueOrDefault())
 				{
 					object copy = session.Factory.GetEntityPersister(associatedEntityName).Instantiate(null);
 					//TODO: should this be Session.instantiate(Persister, ...)?

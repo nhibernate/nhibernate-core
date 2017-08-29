@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-
+using System.Threading;
 using NHibernate.Criterion;
 using NHibernate.Criterion.Lambda;
 using NHibernate.SqlCommand;
@@ -36,7 +36,7 @@ namespace NHibernate
 	///		.List();
 	/// </code>
 	/// </remarks>
-	public interface IQueryOver<TRoot> : IQueryOver
+	public partial interface IQueryOver<TRoot> : IQueryOver
 	{
 		/// <summary>
 		/// Get the results of the root type and fill the <see cref="IList&lt;T&gt;"/>
@@ -91,13 +91,13 @@ namespace NHibernate
 		/// Get a enumerable that when enumerated will execute
 		/// a batch of queries in a single database roundtrip
 		/// </summary>
-		IEnumerable<TRoot> Future();
+		IFutureEnumerable<TRoot> Future();
 
 		/// <summary>
 		/// Get a enumerable that when enumerated will execute
 		/// a batch of queries in a single database roundtrip
 		/// </summary>
-		IEnumerable<U> Future<U>();
+		IFutureEnumerable<U> Future<U>();
 
 		/// <summary>
 		/// Get an IFutureValue instance, whose value can be retrieved through

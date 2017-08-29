@@ -9,7 +9,7 @@ namespace NHibernate.Type
 	/// Superclass of nullable immutable types.
 	/// </summary>
 	[Serializable]
-	public abstract class ImmutableType : NullableType
+	public abstract partial class ImmutableType : NullableType
 	{
 		/// <summary>
 		/// Initialize a new instance of the ImmutableType class using a 

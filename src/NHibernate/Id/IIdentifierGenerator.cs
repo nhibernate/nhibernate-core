@@ -30,7 +30,7 @@ namespace NHibernate.Id
 	/// Implementors <b>must</b> be threadsafe.
 	/// </para>
 	/// </remarks>
-	public interface IIdentifierGenerator
+	public partial interface IIdentifierGenerator
 	{
 		/// <summary>
 		/// Generate a new identifier

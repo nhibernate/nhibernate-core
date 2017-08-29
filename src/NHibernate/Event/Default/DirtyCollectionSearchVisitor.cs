@@ -29,7 +29,7 @@ namespace NHibernate.Event.Default
 	///		</item>
 	/// </list>
 	/// </remarks>
-	public class DirtyCollectionSearchVisitor : AbstractVisitor
+	public partial class DirtyCollectionSearchVisitor : AbstractVisitor
 	{
 		private readonly bool[] propertyVersionability;
 		private bool dirty = false;

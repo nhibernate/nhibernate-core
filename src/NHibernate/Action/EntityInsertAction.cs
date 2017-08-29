@@ -9,7 +9,7 @@ using NHibernate.Persister.Entity;
 namespace NHibernate.Action
 {
 	[Serializable]
-	public sealed class EntityInsertAction : EntityAction
+	public sealed partial class EntityInsertAction : EntityAction
 	{
 		private readonly object[] state;
 		private object version;

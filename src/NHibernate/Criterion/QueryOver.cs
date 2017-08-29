@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-
+using System.Threading;
 using NHibernate.Criterion.Lambda;
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -59,7 +59,7 @@ namespace NHibernate.Criterion
 	}
 
 	[Serializable]
-	public abstract class QueryOver<TRoot> : QueryOver, IQueryOver<TRoot>
+	public abstract partial class QueryOver<TRoot> : QueryOver, IQueryOver<TRoot>
 	{
 
 		private IList<TRoot> List()
@@ -82,12 +82,12 @@ namespace NHibernate.Criterion
 			return criteria.UniqueResult<U>();
 		}
 
-		private IEnumerable<TRoot> Future()
+		private IFutureEnumerable<TRoot> Future()
 		{
 			return criteria.Future<TRoot>();
 		}
 
-		private IEnumerable<U> Future<U>()
+		private IFutureEnumerable<U> Future<U>()
 		{
 			return criteria.Future<U>();
 		}
@@ -102,10 +102,10 @@ namespace NHibernate.Criterion
 			return criteria.FutureValue<U>();
 		}
 
-		/// <summary>
-		/// Get an executable instance of <c>IQueryOver&lt;TRoot&gt;</c>,
-		/// to actually run the query.</summary>
-		public IQueryOver<TRoot,TRoot> GetExecutableQueryOver(ISession session)
+        /// <summary>
+        /// Get an executable instance of <c>IQueryOver&lt;TRoot&gt;</c>,
+        /// to actually run the query.</summary>
+        public IQueryOver<TRoot,TRoot> GetExecutableQueryOver(ISession session)
 		{
 			impl.Session = session.GetSessionImplementation();
 			return new QueryOver<TRoot,TRoot>(impl);
@@ -234,10 +234,10 @@ namespace NHibernate.Criterion
 		U IQueryOver<TRoot>.SingleOrDefault<U>()
 		{ return SingleOrDefault<U>(); }
 
-		IEnumerable<TRoot> IQueryOver<TRoot>.Future()
+		IFutureEnumerable<TRoot> IQueryOver<TRoot>.Future()
 		{ return Future(); }
 
-		IEnumerable<U> IQueryOver<TRoot>.Future<U>()
+		IFutureEnumerable<U> IQueryOver<TRoot>.Future<U>()
 		{ return Future<U>(); }
 
 		IFutureValue<TRoot> IQueryOver<TRoot>.FutureValue()

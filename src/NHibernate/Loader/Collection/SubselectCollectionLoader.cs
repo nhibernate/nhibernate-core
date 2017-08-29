@@ -9,7 +9,7 @@ using NHibernate.Type;
 namespace NHibernate.Loader.Collection
 {
 	/// <summary> Implements subselect fetching for a collection</summary>
-	public class SubselectCollectionLoader : BasicCollectionLoader
+	public partial class SubselectCollectionLoader : BasicCollectionLoader
 	{
 		private const int BatchSizeForSubselectFetching = 1;
 		private readonly object[] keys;

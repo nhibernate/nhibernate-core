@@ -7,7 +7,7 @@ namespace NHibernate.Cache
 	/// <summary>
 	/// Caches data that is never updated
 	/// </summary>
-	public class ReadOnlyCache : ICacheConcurrencyStrategy
+	public partial class ReadOnlyCache : ICacheConcurrencyStrategy
 	{
 		private ICache cache;
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ReadOnlyCache));

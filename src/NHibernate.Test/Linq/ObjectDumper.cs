@@ -6,7 +6,7 @@ using System.Text;
 
 namespace NHibernate.Test.Linq
 {
-	public class ObjectDumper
+	public partial class ObjectDumper
 	{
 		private readonly int _depth;
 		private readonly TextWriter _writer;

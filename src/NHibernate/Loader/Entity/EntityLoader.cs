@@ -12,7 +12,7 @@ namespace NHibernate.Loader.Entity
 	/// The <see cref="IEntityPersister"/> must implement <see cref="ILoadable" />. For other entities,
 	/// create a customized subclass of <see cref="Loader" />.
 	/// </remarks>
-	public class EntityLoader : AbstractEntityLoader
+	public partial class EntityLoader : AbstractEntityLoader
 	{
 		private readonly bool batchLoader;
 

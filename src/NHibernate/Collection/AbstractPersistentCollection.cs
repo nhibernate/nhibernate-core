@@ -16,7 +16,7 @@ namespace NHibernate.Collection
 	/// Base class for implementing <see cref="IPersistentCollection"/>.
 	/// </summary>
 	[Serializable]
-	public abstract class AbstractPersistentCollection : IPersistentCollection
+	public abstract partial class AbstractPersistentCollection : IPersistentCollection
 	{
 		protected internal static readonly object Unknown = new object(); //place holder
 		protected internal static readonly object NotFound = new object(); //place holder
@@ -714,7 +714,7 @@ namespace NHibernate.Collection
 			var currentIds = new HashSet<TypedValue>();
 			foreach (object current in currentElements)
 			{
-				if (current != null && ForeignKeys.IsNotTransient(entityName, current, null, session))
+				if (current != null && ForeignKeys.IsNotTransientSlow(entityName, current, session))
 				{
 					object currentId = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, current, session);
 					currentIds.Add(new TypedValue(idType, currentId));
@@ -736,7 +736,7 @@ namespace NHibernate.Collection
 
 		public void IdentityRemove(IList list, object obj, string entityName, ISessionImplementor session)
 		{
-			if (obj != null && ForeignKeys.IsNotTransient(entityName, obj, null, session))
+			if (obj != null && ForeignKeys.IsNotTransientSlow(entityName, obj, session))
 			{
 				IType idType = session.Factory.GetEntityPersister(entityName).IdentifierType;
 

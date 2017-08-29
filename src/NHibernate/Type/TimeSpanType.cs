@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	/// Maps a <see cref="System.TimeSpan" /> Property to an <see cref="DbType.Int64" /> column 
 	/// </summary>
 	[Serializable]
-	public class TimeSpanType : PrimitiveType, IVersionType, ILiteralType
+	public partial class TimeSpanType : PrimitiveType, IVersionType, ILiteralType
 	{
 		/// <summary></summary>
 		public TimeSpanType()

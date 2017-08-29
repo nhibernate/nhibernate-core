@@ -11,7 +11,7 @@ namespace NHibernate.Type
 	/// A many-to-one association to an entity
 	/// </summary>
 	[Serializable]
-	public class ManyToOneType : EntityType
+	public partial class ManyToOneType : EntityType
 	{
 		private readonly bool ignoreNotFound;
 		private readonly bool isLogicalOneToOne;

@@ -28,6 +28,12 @@
 	<target name="build"
 		depends="check-framework-version init prepare-build-directory common.compile-all"
 		description="Builds NHibernate in the current configuration" />
+
+	<target name="generate-async" depends="common.nuget-restore common.solution-restore common.find-async-generator-console">
+		<exec
+			workingdir="${root.dir}/src"
+			program="${async-generator-console}" />
+	</target>
 	
 	<target name="check-framework-version">
 			<echo>Running with ${framework::get-target-framework()}</echo>

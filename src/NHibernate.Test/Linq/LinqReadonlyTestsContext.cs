@@ -8,6 +8,7 @@ using NHibernate.Cfg;
 using NHibernate.Connection;
 using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
+using NHibernate.Engine;
 
 namespace NHibernate.Test.Linq
 {
@@ -96,7 +97,8 @@ namespace NHibernate.Test.Linq
 			}
 			else
 			{
-				new SchemaExport(configuration).Drop(false, true);
+				using (var sf = configuration.BuildSessionFactory())
+					TestCase.DropSchema(false, new SchemaExport(configuration), (ISessionFactoryImplementor)sf);
 			}
 		}
 

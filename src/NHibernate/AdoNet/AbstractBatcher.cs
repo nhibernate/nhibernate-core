@@ -18,7 +18,7 @@ namespace NHibernate.AdoNet
 	/// <summary>
 	/// Manages prepared statements and batching. Class exists to enforce separation of concerns
 	/// </summary>
-	public abstract class AbstractBatcher : IBatcher
+	public abstract partial class AbstractBatcher : IBatcher
 	{
 		protected static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(AbstractBatcher));
 
@@ -239,7 +239,7 @@ namespace NHibernate.AdoNet
 
 			if (!_factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders)
 			{
-				reader = new NHybridDataReader(reader);
+				reader = NHybridDataReader.Create(reader);
 			}
 
 			_readersToClose.Add(reader);

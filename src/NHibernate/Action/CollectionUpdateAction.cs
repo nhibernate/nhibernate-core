@@ -11,7 +11,7 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Action
 {
 	[Serializable]
-	public sealed class CollectionUpdateAction : CollectionAction
+	public sealed partial class CollectionUpdateAction : CollectionAction
 	{
 		private readonly bool emptySnapshot;
 

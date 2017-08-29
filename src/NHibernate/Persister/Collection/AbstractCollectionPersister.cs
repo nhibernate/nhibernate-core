@@ -29,7 +29,7 @@ namespace NHibernate.Persister.Collection
 	/// <summary>
 	/// Summary description for AbstractCollectionPersister.
 	/// </summary>
-	public abstract class AbstractCollectionPersister : ICollectionMetadata, ISqlLoadableCollection,
+	public abstract partial class AbstractCollectionPersister : ICollectionMetadata, ISqlLoadableCollection,
 														IPostInsertIdentityPersister
 	{
 		protected static readonly object NotFoundPlaceHolder = new object();
@@ -2066,7 +2066,7 @@ namespace NHibernate.Persister.Collection
 			return identityDelegate.PerformInsert(SqlInsertRowString, session, binder);
 		}
 
-		protected class GeneratedIdentifierBinder : IBinder
+		protected partial class GeneratedIdentifierBinder : IBinder
 		{
 			private readonly object ownerId;
 			private readonly IPersistentCollection collection;

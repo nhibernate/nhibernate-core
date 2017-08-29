@@ -13,7 +13,7 @@ namespace NHibernate.Id
 	/// <summary>
 	/// Generates Guid values using the server side Guid function.
 	/// </summary>
-	public class NativeGuidGenerator : IIdentifierGenerator
+	public partial class NativeGuidGenerator : IIdentifierGenerator
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(NativeGuidGenerator));
 		private readonly IType identifierType = new GuidType();

@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1332
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(Fixture));
 
@@ -48,7 +48,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1332
 			}
 		}
 
-		public class PostCommitDelete : IPostDeleteEventListener
+		public partial class PostCommitDelete : IPostDeleteEventListener
 		{
 			public void OnPostDelete(PostDeleteEvent @event)
 			{

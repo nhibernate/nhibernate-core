@@ -7,10 +7,12 @@ using System.Linq;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace NHibernate.Driver
 {
-	public class BasicResultSetsCommand: IResultSetsCommand
+	public partial class BasicResultSetsCommand: IResultSetsCommand
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(BasicResultSetsCommand));
 		private SqlString sqlString = SqlString.Empty;
@@ -53,7 +55,7 @@ namespace NHibernate.Driver
 			}
 			log.Info(command.CommandText);
 			BindParameters(command);
-			return new BatcherDataReaderWrapper(batcher, command);
+			return BatcherDataReaderWrapper.Create(batcher, command);
 		}
 
 		protected virtual void BindParameters(DbCommand command)
@@ -80,13 +82,13 @@ namespace NHibernate.Driver
 	/// <summary>
 	/// Datareader wrapper with the same life cycle of its command (through the batcher)
 	/// </summary>
-	public class BatcherDataReaderWrapper: DbDataReader
+	public partial class BatcherDataReaderWrapper: DbDataReader
 	{
 		private readonly IBatcher batcher;
 		private readonly DbCommand command;
-		private readonly DbDataReader reader;
+		private DbDataReader reader;
 
-		public BatcherDataReaderWrapper(IBatcher batcher, DbCommand command)
+		protected BatcherDataReaderWrapper(IBatcher batcher, DbCommand command)
 		{
 			if (batcher == null)
 			{
@@ -98,7 +100,14 @@ namespace NHibernate.Driver
 			}
 			this.batcher = batcher;
 			this.command = command;
-			reader = batcher.ExecuteReader(command);
+		}
+
+		public static BatcherDataReaderWrapper Create(IBatcher batcher, DbCommand command)
+		{
+			return new BatcherDataReaderWrapper(batcher, command)
+			{
+				reader = batcher.ExecuteReader(command)
+			};
 		}
 
 		public override string GetName(int i)
@@ -264,6 +273,21 @@ namespace NHibernate.Driver
 		public override bool Read()
 		{
 			return reader.Read();
+		}
+
+		public override Task<bool> ReadAsync(CancellationToken cancellationToken)
+		{
+			return reader.ReadAsync(cancellationToken);
+		}
+
+		public override Task<bool> IsDBNullAsync(int ordinal, CancellationToken cancellationToken)
+		{
+			return reader.IsDBNullAsync(ordinal, cancellationToken);
+		}
+
+		public override Task<bool> NextResultAsync(CancellationToken cancellationToken)
+		{
+			return reader.NextResultAsync(cancellationToken);
 		}
 
 		public override int Depth

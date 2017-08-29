@@ -11,7 +11,7 @@ namespace NHibernate.Cache
 	/// The transactional semantics are necessarily less strict than the semantics
 	/// of an item cache.
 	/// </summary>
-	public interface IQueryCache
+	public partial interface IQueryCache
 	{
 		ICache Cache { get; }
 		string RegionName { get; }

@@ -8,7 +8,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Param
 {
-	public class AggregatedIndexCollectionSelectorParameterSpecifications : IParameterSpecification
+	public partial class AggregatedIndexCollectionSelectorParameterSpecifications : IParameterSpecification
 	{
 		private readonly IList<IParameterSpecification> _paramSpecs;
 		public AggregatedIndexCollectionSelectorParameterSpecifications(IList<IParameterSpecification> paramSpecs) {

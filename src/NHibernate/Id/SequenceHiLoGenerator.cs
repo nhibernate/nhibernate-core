@@ -33,7 +33,7 @@ namespace NHibernate.Id
 	/// alternative.
 	/// </p>
 	/// </remarks>
-	public class SequenceHiLoGenerator : SequenceGenerator
+	public partial class SequenceHiLoGenerator : SequenceGenerator
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SequenceHiLoGenerator));
 
