@@ -23,16 +23,24 @@ namespace NHibernate.Linq
 	{
 		private static readonly MethodInfo CreateQueryMethodDefinition = ReflectHelper.GetMethodDefinition((INhQueryProvider p) => p.CreateQuery<object>(null));
 
-		private readonly WeakReference _session;
+		private readonly WeakReference<ISessionImplementor> _session;
 
 		public DefaultQueryProvider(ISessionImplementor session)
 		{
-			_session = new WeakReference(session, true);
+			// Short reference (no trackResurrection). If the session gets garbage collected, it will be in an unpredictable state:
+			// better throw rather than resurrecting it.
+			// https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/weak-references
+			_session = new WeakReference<ISessionImplementor>(session);
 		}
 
 		protected virtual ISessionImplementor Session
 		{
-			get { return _session.Target as ISessionImplementor; }
+			get
+			{
+				if (!_session.TryGetTarget(out var target))
+					throw new InvalidOperationException("Session has already been garbage collected");
+				return target;
+			}
 		}
 
 		public virtual object Execute(Expression expression)
