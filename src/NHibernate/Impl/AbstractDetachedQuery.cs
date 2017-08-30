@@ -425,7 +425,8 @@ namespace NHibernate.Impl
 				.SetReadOnly(readOnly)
 				.SetTimeout(selection.Timeout)
 				.SetFlushMode(flushMode)
-				.SetFetchSize(selection.FetchSize);
+				.SetFetchSize(selection.FetchSize)
+                .SetOption(selection.Option);
 			if (!string.IsNullOrEmpty(comment))
 				q.SetComment(comment);
 			if (!string.IsNullOrEmpty(cacheRegion))

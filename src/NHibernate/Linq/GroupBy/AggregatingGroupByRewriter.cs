@@ -40,7 +40,8 @@ namespace NHibernate.Linq.GroupBy
 				typeof (AnyResultOperator),
 				typeof (AllResultOperator),
 				typeof (TimeoutResultOperator),
-				typeof (CacheableResultOperator)
+				typeof (CacheableResultOperator),
+                typeof (OptionResultOperator),
 			};
 
 		public static void ReWrite(QueryModel queryModel)

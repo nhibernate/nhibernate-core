@@ -1399,15 +1399,29 @@ namespace NHibernate.Dialect
 			}
 		}
 
-		#endregion
+        #endregion
 
-		#region Limit/offset support
+        #region Query Hint support
 
-		/// <summary>
-		/// Does this Dialect have some kind of <c>LIMIT</c> syntax?
-		/// </summary>
-		/// <value>False, unless overridden.</value>
-		public virtual bool SupportsLimit
+	    public virtual bool SupportsOption
+	    {
+	        get { return false; }
+	    }
+
+        public virtual SqlString GetOptionString(SqlString queryString, string option)
+        {
+            throw new NotSupportedException("Dialect does not have support for query hints.");
+        }
+
+        #endregion
+
+        #region Limit/offset support
+
+        /// <summary>
+        /// Does this Dialect have some kind of <c>LIMIT</c> syntax?
+        /// </summary>
+        /// <value>False, unless overridden.</value>
+        public virtual bool SupportsLimit
 		{
 			get { return false; }
 		}

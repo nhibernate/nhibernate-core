@@ -785,6 +785,12 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+	    public IQuery SetOption(string option)
+	    {
+	        selection.Option = option;
+            return this;
+	    }
+
 		public IQuery SetFetchSize(int fetchSize)
 		{
 			selection.FetchSize = fetchSize;
