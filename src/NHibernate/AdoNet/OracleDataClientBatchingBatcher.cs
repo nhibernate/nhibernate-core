@@ -11,7 +11,7 @@ namespace NHibernate.AdoNet
 	/// Summary description for OracleDataClientBatchingBatcher.
 	/// By Tomer Avissar
 	/// </summary>
-	public class OracleDataClientBatchingBatcher : AbstractBatcher
+	public partial class OracleDataClientBatchingBatcher : AbstractBatcher
 	{
 		private int _batchSize;
 		private int _countOfCommands;

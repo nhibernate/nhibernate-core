@@ -7,7 +7,7 @@ namespace NHibernate.Event.Default
 	/// Abstract superclass of algorithms that walk a tree of property values of an entity, and
 	/// perform specific functionality for collections, components and associated entities. 
 	/// </summary>
-	public abstract class AbstractVisitor
+	public abstract partial class AbstractVisitor
 	{
 		private readonly IEventSource session;
 

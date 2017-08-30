@@ -19,7 +19,7 @@ namespace NHibernate.Loader.Custom
 	/// <summary> 
 	/// Extension point for loaders which use a SQL result set with "unexpected" column aliases. 
 	/// </summary>
-	public class CustomLoader : Loader
+	public partial class CustomLoader : Loader
 	{
 		// Currently *not* cachable if autodiscover types is in effect (e.g. "select * ...")
 
@@ -368,7 +368,7 @@ namespace NHibernate.Loader.Custom
 			get { return parametersSpecifications.OfType<NamedParameterSpecification>().Select(np=> np.Name ); }
 		}
 
-		public class ResultRowProcessor
+		public partial class ResultRowProcessor
 		{
 			private readonly bool hasScalars;
 			private IResultColumnProcessor[] columnProcessors;
@@ -433,13 +433,13 @@ namespace NHibernate.Loader.Custom
 			}
 		}
 
-		public interface IResultColumnProcessor
+		public partial interface IResultColumnProcessor
 		{
 			object Extract(object[] data, DbDataReader resultSet, ISessionImplementor session);
 			void PerformDiscovery(MetaData metadata, IList<IType> types, IList<string> aliases);
 		}
 
-		public class NonScalarResultColumnProcessor : IResultColumnProcessor
+		public partial class NonScalarResultColumnProcessor : IResultColumnProcessor
 		{
 			private readonly int position;
 
@@ -456,7 +456,7 @@ namespace NHibernate.Loader.Custom
 			public void PerformDiscovery(MetaData metadata, IList<IType> types, IList<string> aliases) {}
 		}
 
-		public class ScalarResultColumnProcessor : IResultColumnProcessor
+		public partial class ScalarResultColumnProcessor : IResultColumnProcessor
 		{
 			private int position = -1;
 			private string alias;

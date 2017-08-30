@@ -82,7 +82,7 @@ namespace NHibernate.Id
 	///		</item>
 	/// </list>
 	/// </remarks>
-	public static class IdentifierGeneratorFactory
+	public static partial class IdentifierGeneratorFactory
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (IdentifierGeneratorFactory));
 

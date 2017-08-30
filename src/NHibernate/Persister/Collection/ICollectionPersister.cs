@@ -27,7 +27,7 @@ namespace NHibernate.Persister.Collection
 	/// <para/>
 	/// May be considered an immutable view of the mapping object
 	/// </remarks>
-	public interface ICollectionPersister
+	public partial interface ICollectionPersister
 	{
 		/// <summary>
 		/// Get the cache

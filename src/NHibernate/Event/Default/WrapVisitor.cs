@@ -10,7 +10,7 @@ namespace NHibernate.Event.Default
 	/// <summary> 
 	/// Wrap collections in a Hibernate collection wrapper.
 	/// </summary>
-	public class WrapVisitor : ProxyVisitor
+	public partial class WrapVisitor : ProxyVisitor
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(WrapVisitor));
 		private bool substitute = false;

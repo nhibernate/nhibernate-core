@@ -34,7 +34,7 @@ namespace NHibernate.Id
 	/// The mapping parameters <c>table</c> and <c>column</c> are required.
 	/// </p>
 	/// </remarks>
-	public class TableGenerator : TransactionHelper, IPersistentIdentifierGenerator, IConfigurable
+	public partial class TableGenerator : TransactionHelper, IPersistentIdentifierGenerator, IConfigurable
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (TableGenerator));
 

@@ -17,7 +17,7 @@ namespace NHibernate.Engine
 	/// that may be reused by persisters that do not use the Loader
 	/// framework
 	/// </summary>
-	public static class TwoPhaseLoad
+	public static partial class TwoPhaseLoad
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(TwoPhaseLoad));
 		

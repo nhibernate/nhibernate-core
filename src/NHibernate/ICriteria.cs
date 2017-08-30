@@ -52,7 +52,7 @@ namespace NHibernate
 	/// </code>
 	/// </para>
 	/// </remarks>
-	public interface ICriteria : ICloneable
+	public partial interface ICriteria : ICloneable
 	{
 		/// <summary>
 		/// Get the alias of the entity encapsulated by this criteria instance.

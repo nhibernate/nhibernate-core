@@ -20,7 +20,7 @@ namespace NHibernate.Engine
 	/// Defines the internal contract between the <c>Session</c> and other parts of NHibernate
 	/// such as implementors of <c>Type</c> or <c>ClassPersister</c>
 	/// </summary>
-	public interface ISessionImplementor
+	public partial interface ISessionImplementor
 	{
 		/// <summary>
 		/// Initialize the session after its construction was complete

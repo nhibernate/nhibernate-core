@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	/// <remarks>
 	/// Implementors should usually be immutable and MUST definitely be threadsafe.
 	/// </remarks>
-	public interface IType : ICacheAssembler
+	public partial interface IType : ICacheAssembler
 	{
 		// QUESTION:
 		// How do we implement Serializable interface? Standard .NET pattern or other?

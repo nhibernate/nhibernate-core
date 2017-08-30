@@ -15,7 +15,7 @@ namespace NHibernate.Type
 	/// A reference to an entity class
 	/// </summary>
 	[Serializable]
-	public abstract class EntityType : AbstractType, IAssociationType
+	public abstract partial class EntityType : AbstractType, IAssociationType
 	{
 		protected readonly string uniqueKeyPropertyName;
 		private readonly bool eager;

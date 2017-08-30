@@ -30,7 +30,7 @@ namespace NHibernate.Collection.Generic
 	/// </remarks>
 	[Serializable]
 	[DebuggerTypeProxy(typeof (CollectionProxy<>))]
-	public class PersistentIdentifierBag<T> : AbstractPersistentCollection, IList<T>, IList
+	public partial class PersistentIdentifierBag<T> : AbstractPersistentCollection, IList<T>, IList
 	{
 		/* NH considerations:
 		 * For various reason we know that the underlining type will be a List<T> or a 

@@ -19,7 +19,7 @@ namespace NHibernate.Type
 	/// to the database.
 	/// </summary>
 	[Serializable]
-	public abstract class CollectionType : AbstractType, IAssociationType
+	public abstract partial class CollectionType : AbstractType, IAssociationType
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(CollectionType));
 

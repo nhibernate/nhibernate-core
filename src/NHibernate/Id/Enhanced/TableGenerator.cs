@@ -85,7 +85,7 @@ namespace NHibernate.Id.Enhanced
 	///  </tr>
 	///</table>
 	/// </remarks>
-	public class TableGenerator : TransactionHelper, IPersistentIdentifierGenerator, IConfigurable
+	public partial class TableGenerator : TransactionHelper, IPersistentIdentifierGenerator, IConfigurable
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SequenceStyleGenerator));
 
@@ -410,7 +410,7 @@ namespace NHibernate.Id.Enhanced
 		}
 
 
-		private class TableAccessCallback : IAccessCallback
+		private partial class TableAccessCallback : IAccessCallback
 		{
 			private TableGenerator owner;
 			private readonly ISessionImplementor session;

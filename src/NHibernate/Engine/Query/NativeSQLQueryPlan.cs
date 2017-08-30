@@ -21,7 +21,7 @@ namespace NHibernate.Engine.Query
 {
 	/// <summary> Defines a query execution plan for a native-SQL query. </summary>
 	[Serializable]
-	public class NativeSQLQueryPlan
+	public partial class NativeSQLQueryPlan
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(NativeSQLQueryPlan));
 

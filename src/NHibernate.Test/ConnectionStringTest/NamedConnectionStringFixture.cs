@@ -44,7 +44,7 @@ namespace NHibernate.Test.ConnectionStringTest
 		}
 	}
 	
-	public class MockConnectionProvider : ConnectionProvider
+	public partial class MockConnectionProvider : ConnectionProvider
 	{
 		
 		public string PublicConnectionString

@@ -11,7 +11,7 @@ namespace NHibernate.Event.Default
 	/// 2. associate any initialized PersistentCollections with this session, using the existing snapshot
 	/// 3. throw an exception for each "new" collection 
 	/// </summary>
-	public class OnLockVisitor : ReattachVisitor
+	public partial class OnLockVisitor : ReattachVisitor
 	{
 		public OnLockVisitor(IEventSource session, object ownerIdentifier, object owner) : base(session, ownerIdentifier, owner) { }
 

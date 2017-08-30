@@ -31,7 +31,7 @@ namespace NHibernate.Test
 	/// it is used when testing to check that tests clean up after themselves.
 	/// </summary>
 	/// <remarks>Sessions opened from other sessions are not tracked.</remarks>
-	public class DebugSessionFactory : ISessionFactoryImplementor
+	public partial class DebugSessionFactory : ISessionFactoryImplementor
 	{
 		/// <summary>
 		/// The debug connection provider if configured for using it, <see langword="null"/> otherwise.

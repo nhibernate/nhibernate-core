@@ -20,7 +20,7 @@ namespace NHibernate.Loader.Criteria
 	/// Note that criteria
 	/// queries are more like multi-object <c>Load()</c>s than like HQL queries.
 	/// </remarks>
-	public class CriteriaLoader : OuterJoinLoader
+	public partial class CriteriaLoader : OuterJoinLoader
 	{
 		private readonly CriteriaQueryTranslator translator;
 		private readonly ISet<string> querySpaces;

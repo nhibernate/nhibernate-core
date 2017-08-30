@@ -9,7 +9,7 @@ namespace NHibernate.Event.Default
 	/// in response to generated lock events. 
 	/// </summary>
 	[Serializable]
-	public class DefaultLockEventListener : AbstractLockUpgradeEventListener, ILockEventListener
+	public partial class DefaultLockEventListener : AbstractLockUpgradeEventListener, ILockEventListener
 	{
 		/// <summary>Handle the given lock event. </summary>
 		/// <param name="event">The lock event to be handled.</param>

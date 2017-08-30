@@ -11,7 +11,7 @@ namespace NHibernate.Event.Default
 	/// 2. associate any initialized PersistentCollections with this session, using the existing snapshot
 	/// 3. execute a collection removal (SQL DELETE) for each null collection property or "new" collection 
 	/// </summary>
-	public class OnReplicateVisitor : ReattachVisitor
+	public partial class OnReplicateVisitor : ReattachVisitor
 	{
 		private readonly bool isUpdate;
 

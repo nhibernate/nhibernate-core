@@ -13,7 +13,7 @@ namespace NHibernate.Id
 	///	<code>&lt;generator class="guid" /&gt;</code>
 	/// </p>
 	/// </remarks>
-	public class GuidGenerator : IIdentifierGenerator
+	public partial class GuidGenerator : IIdentifierGenerator
 	{
 		#region IIdentifierGenerator Members
 

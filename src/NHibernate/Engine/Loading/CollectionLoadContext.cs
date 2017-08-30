@@ -19,7 +19,7 @@ namespace NHibernate.Engine.Loading
 	/// Another implementation option to consider is to not expose <see cref="DbDataReader">ResultSets</see>
 	/// directly (in the JDBC redesign) but to always "wrap" them and apply a [series of] context[s] to that wrapper.
 	/// </remarks>
-	public class CollectionLoadContext
+	public partial class CollectionLoadContext
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(CollectionLoadContext));
 		private readonly LoadContexts loadContexts;

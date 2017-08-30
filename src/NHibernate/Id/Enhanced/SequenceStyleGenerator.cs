@@ -61,7 +61,7 @@ namespace NHibernate.Id.Enhanced
 	///   </tr>
 	/// </table>
 	/// </remarks>
-	public class SequenceStyleGenerator : IPersistentIdentifierGenerator, IConfigurable
+	public partial class SequenceStyleGenerator : IPersistentIdentifierGenerator, IConfigurable
 	{
 		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(SequenceStyleGenerator));
 

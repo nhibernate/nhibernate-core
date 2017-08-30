@@ -15,7 +15,7 @@ namespace NHibernate.Cache
 	/// results and re-running queries when it detects this condition, recaching
 	/// the new results.
 	/// </summary>
-	public class StandardQueryCache : IQueryCache
+	public partial class StandardQueryCache : IQueryCache
 	{
 		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof (StandardQueryCache));
 		private readonly ICache _queryCache;

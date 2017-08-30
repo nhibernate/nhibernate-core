@@ -7,11 +7,11 @@ using NHibernate.Type;
 namespace NHibernate.Engine
 {
 	/// <summary> Algorithms related to foreign key constraint transparency </summary>
-	public static class ForeignKeys
+	public static partial class ForeignKeys
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ForeignKeys));
 
-		public class Nullifier
+		public partial class Nullifier
 		{
 			private readonly bool isDelete;
 			private readonly bool isEarlyInsert;

@@ -11,7 +11,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Linq
 {
-	public interface INhQueryProvider : IQueryProvider
+	public partial interface INhQueryProvider : IQueryProvider
 	{
 		IEnumerable<TResult> ExecuteFuture<TResult>(Expression expression);
 		IFutureValue<TResult> ExecuteFutureValue<TResult>(Expression expression);
@@ -19,7 +19,7 @@ namespace NHibernate.Linq
 		int ExecuteDml<T>(QueryMode queryMode, Expression expression);
 	}
 
-	public class DefaultQueryProvider : INhQueryProvider
+	public partial class DefaultQueryProvider : INhQueryProvider
 	{
 		private static readonly MethodInfo CreateQueryMethodDefinition = ReflectHelper.GetMethodDefinition((INhQueryProvider p) => p.CreateQuery<object>(null));
 

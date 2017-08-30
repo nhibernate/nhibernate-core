@@ -23,7 +23,7 @@ namespace NHibernate.Engine
 	/// error checking and making sure the correct number of rows were affected.
 	/// </p>
 	/// </remarks>
-	public interface IBatcher : IDisposable
+	public partial interface IBatcher : IDisposable
 	{
 		/// <summary>
 		/// Get an <see cref="DbCommand"/> for using in loading / querying.

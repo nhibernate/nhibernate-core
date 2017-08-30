@@ -23,7 +23,7 @@ namespace NHibernate.Driver
 	/// <see cref="DbDataReader"/> to <see cref="NDataReader"/> in the middle of its use.
 	/// </para>
 	/// </remarks>
-	public class NHybridDataReader : DbDataReader
+	public partial class NHybridDataReader : DbDataReader
 	{
 		private readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(NHybridDataReader));
 

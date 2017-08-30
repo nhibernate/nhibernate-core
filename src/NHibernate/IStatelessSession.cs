@@ -22,7 +22,7 @@ namespace NHibernate
 	/// For certain kinds of transactions, a stateless session may
 	/// perform slightly faster than a stateful session.
 	/// </remarks>
-	public interface IStatelessSession : IDisposable
+	public partial interface IStatelessSession : IDisposable
 	{
 		/// <summary>
 		/// Returns the current ADO.NET connection associated with this instance.

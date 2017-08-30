@@ -16,7 +16,7 @@ namespace NHibernate.Collection
 	/// Base class for implementing <see cref="IPersistentCollection"/>.
 	/// </summary>
 	[Serializable]
-	public abstract class AbstractPersistentCollection : IPersistentCollection
+	public abstract partial class AbstractPersistentCollection : IPersistentCollection
 	{
 		protected internal static readonly object Unknown = new object(); //place holder
 		protected internal static readonly object NotFound = new object(); //place holder

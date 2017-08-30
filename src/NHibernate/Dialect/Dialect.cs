@@ -27,7 +27,7 @@ namespace NHibernate.Dialect
 	/// Subclasses should provide a public default constructor that <c>Register()</c>
 	/// a set of type mappings and default Hibernate properties.
 	/// </remarks>
-	public abstract class Dialect
+	public abstract partial class Dialect
 	{
 		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(Dialect));
 

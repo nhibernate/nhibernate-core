@@ -7,7 +7,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Tool.hbm2ddl
 {
-	public class SchemaValidator
+	public partial class SchemaValidator
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (SchemaValidator));
 		private readonly Configuration configuration;

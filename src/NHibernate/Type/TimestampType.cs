@@ -28,7 +28,7 @@ namespace NHibernate.Type
 	/// </p>
 	/// </remarks>
 	[Serializable]
-	public class TimestampType : PrimitiveType, IVersionType, ILiteralType
+	public partial class TimestampType : PrimitiveType, IVersionType, ILiteralType
 	{
 		/// <summary>
 		/// Retrieve the current system Local time.

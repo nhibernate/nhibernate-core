@@ -1,7 +1,7 @@
 namespace NHibernate.Event
 {
 	/// <summary> Called after recreating a collection </summary>
-	public interface IPostCollectionRecreateEventListener
+	public partial interface IPostCollectionRecreateEventListener
 	{
 		void OnPostRecreateCollection(PostCollectionRecreateEvent @event);
 	}

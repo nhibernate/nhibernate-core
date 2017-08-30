@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	/// Mapping of the built in Type hierarchy.
 	/// </summary>
 	[Serializable]
-	public abstract class AbstractType : IType
+	public abstract partial class AbstractType : IType
 	{
 		/// <summary>
 		/// Gets a value indicating if the <see cref="AbstractType"/> is an <see cref="IAssociationType"/>.

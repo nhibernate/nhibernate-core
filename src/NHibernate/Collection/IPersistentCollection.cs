@@ -38,7 +38,7 @@ namespace NHibernate.Collection
 	/// time.
 	/// </para>
 	/// </summary>
-	public interface IPersistentCollection
+	public partial interface IPersistentCollection
 	{
 		/// <summary>
 		/// The owning entity.

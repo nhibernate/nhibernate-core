@@ -11,7 +11,7 @@ namespace NHibernate.Param
 	/// <summary>
 	/// Parameter bind specification for an explicit  positional (or ordinal) parameter.
 	/// </summary>
-	public class PositionalParameterSpecification : AbstractExplicitParameterSpecification
+	public partial class PositionalParameterSpecification : AbstractExplicitParameterSpecification
 	{
 		private const string PositionalParameterIdTemplate = "<pos{0}_span{1}>";
 

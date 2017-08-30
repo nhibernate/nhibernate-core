@@ -59,7 +59,7 @@ namespace NHibernate.Criterion
 	}
 
 	[Serializable]
-	public abstract class QueryOver<TRoot> : QueryOver, IQueryOver<TRoot>
+	public abstract partial class QueryOver<TRoot> : QueryOver, IQueryOver<TRoot>
 	{
 
 		private IList<TRoot> List()

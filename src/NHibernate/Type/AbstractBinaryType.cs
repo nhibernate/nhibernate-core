@@ -10,7 +10,7 @@ namespace NHibernate.Type
 {
 	/// <summary> Logic to bind stream of byte into a VARBINARY </summary>
 	[Serializable]
-	public abstract class AbstractBinaryType : MutableType, IVersionType, IComparer
+	public abstract partial class AbstractBinaryType : MutableType, IVersionType, IComparer
 	{
 		internal AbstractBinaryType() : this(new BinarySqlType())
 		{

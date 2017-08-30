@@ -71,7 +71,7 @@ namespace NHibernate
 	/// </para>
 	/// <seealso cref="ISessionFactory"/>
 	/// </remarks>
-	public interface ISession : IDisposable
+	public partial interface ISession : IDisposable
 	{
 		/// <summary>
 		/// Obtain a <see cref="ISession"/> builder with the ability to grab certain information from

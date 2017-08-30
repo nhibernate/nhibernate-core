@@ -14,7 +14,7 @@ namespace NHibernate.Event.Default
 	/// An event that occurs for each entity instance at flush time
 	/// </summary>
 	[Serializable]
-	public class DefaultFlushEntityEventListener : IFlushEntityEventListener
+	public partial class DefaultFlushEntityEventListener : IFlushEntityEventListener
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultFlushEntityEventListener));
 

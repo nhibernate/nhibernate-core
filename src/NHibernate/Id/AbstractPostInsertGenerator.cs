@@ -3,7 +3,7 @@ using NHibernate.Id.Insert;
 
 namespace NHibernate.Id
 {
-	public abstract class AbstractPostInsertGenerator : IPostInsertIdentifierGenerator
+	public abstract partial class AbstractPostInsertGenerator : IPostInsertIdentifierGenerator
 	{
 		/// <summary>
 		/// The IdentityGenerator for autoincrement/identity key generation. 
