@@ -87,6 +87,7 @@ namespace NHibernate.Cfg
 		/// <summary> A default database catalog name to use for unqualified tablenames</summary>
 		public const string DefaultCatalog = "default_catalog";
 
+		// Since v5
 		[Obsolete("DefaultEntityMode is deprecated.")]
 		public const string DefaultEntityMode = "default_entity_mode";
 

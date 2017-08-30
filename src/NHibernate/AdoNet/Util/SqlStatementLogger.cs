@@ -141,14 +141,6 @@ namespace NHibernate.AdoNet.Util
 
 		}
 
-
-		[Obsolete("Use GetParameterLoggableValue(parameter) instead.")]
-		public string GetParameterLogableValue(DbParameter parameter)
-		{
-			return GetParameterLoggableValue(parameter);
-		}
-
-
 		private static string GetBufferAsHexString(byte[] buffer)
 		{
 			const int maxBytes = 128;

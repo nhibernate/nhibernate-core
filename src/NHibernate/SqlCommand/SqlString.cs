@@ -351,21 +351,6 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary>
-		/// Compacts the SqlString into the fewest parts possible.
-		/// </summary>
-		/// <returns>A new SqlString.</returns>
-		/// <remarks>
-		/// Combines all SqlParts that are strings and next to each other into
-		/// one SqlPart.
-		/// </remarks>
-		[Obsolete]
-		public SqlString Compact()
-		{
-			// FIXME: As of january 2012, the SqlString is always in compact form. Once this is settled, perhaps we should remove SqlString.Compact()?
-			return this;
-		}
-
-		/// <summary>
 		/// Makes a copy of the SqlString, with new parameter references (Placeholders)
 		/// </summary>
 		public SqlString Copy()

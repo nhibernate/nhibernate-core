@@ -42,6 +42,7 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 		}
 
+		// Since v5
 		[Obsolete("Use the overload that passes dialect so keywords will be updated and persisted before auto-quoting")]
 		public static void QuoteTableAndColumns(Configuration configuration)
 		{

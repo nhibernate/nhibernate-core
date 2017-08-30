@@ -91,6 +91,7 @@ namespace NHibernate.Linq.Visitors
 		}
 	}
 
+	// Since v5
 	[Obsolete]
 	public static class BooleanToCaseConvertor
 	{

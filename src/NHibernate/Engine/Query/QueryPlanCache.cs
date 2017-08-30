@@ -47,12 +47,6 @@ namespace NHibernate.Engine.Query
 			return metadata;
 		}
 
-		[Obsolete("Please use overload with IQueryExpression")]
-		public IQueryPlan GetHQLQueryPlan(string queryString, bool shallow, IDictionary<string, IFilter> enabledFilters)
-		{
-			return GetHQLQueryPlan(queryString.ToQueryExpression(), shallow, enabledFilters);
-		}
-
 		public IQueryExpressionPlan GetHQLQueryPlan(IQueryExpression queryExpression, bool shallow, IDictionary<string, IFilter> enabledFilters)
 		{
 			var key = new HQLQueryPlanKey(queryExpression, shallow, enabledFilters);

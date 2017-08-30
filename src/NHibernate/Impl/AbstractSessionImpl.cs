@@ -83,24 +83,6 @@ namespace NHibernate.Impl
 		public abstract IBatcher Batcher { get; }
 		public abstract void CloseSessionFromDistributedTransaction();
 
-		[Obsolete("Use overload with IQueryExpression")]
-		public virtual IList List(string query, QueryParameters parameters)
-		{
-			return List(query.ToQueryExpression(), parameters);
-		}
-
-		[Obsolete("Use overload with IQueryExpression")]
-		public virtual void List(string query, QueryParameters queryParameters, IList results)
-		{
-			List(query.ToQueryExpression(), queryParameters, results);
-		}
-
-		[Obsolete("Use overload with IQueryExpression")]
-		public virtual IList<T> List<T>(string query, QueryParameters queryParameters)
-		{
-			return List<T>(query.ToQueryExpression(), queryParameters);
-		}
-
 		public virtual IList List(IQueryExpression queryExpression, QueryParameters parameters)
 		{
 			var results = (IList)typeof(List<>)
@@ -222,12 +204,6 @@ namespace NHibernate.Impl
 				InitQuery(query, nsqlqd);
 				return query;
 			}
-		}
-
-		[Obsolete("Use overload with IQueryExpression")]
-		public virtual IQueryTranslator[] GetQueries(string query, bool scalar)
-		{
-			return GetQueries(query.ToQueryExpression(), scalar);
 		}
 
 		public abstract IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar);
@@ -394,12 +370,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		[Obsolete("Please use overload with IQueryExpression")]
-		protected internal virtual IQueryPlan GetHQLQueryPlan(string query, bool shallow)
-		{
-			return GetHQLQueryPlan(query.ToQueryExpression(), shallow);
-		}
-
 		protected internal virtual IQueryExpressionPlan GetHQLQueryPlan(IQueryExpression queryExpression, bool shallow)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -457,25 +427,7 @@ namespace NHibernate.Impl
 
 		public abstract IEnumerable Enumerable(IQueryExpression queryExpression, QueryParameters queryParameters);
 
-		[Obsolete("Use overload with IQueryExpression")]
-		public virtual IEnumerable Enumerable(string query, QueryParameters queryParameters)
-		{
-			return Enumerable(query.ToQueryExpression(), queryParameters);
-		}
-
-		[Obsolete("Use overload with IQueryExpression")]
-		public virtual IEnumerable<T> Enumerable<T>(string query, QueryParameters queryParameters)
-		{
-			return Enumerable<T>(query.ToQueryExpression(), queryParameters);
-		}
-
 		public abstract IEnumerable<T> Enumerable<T>(IQueryExpression queryExpression, QueryParameters queryParameters);
-
-		[Obsolete("Use overload with IQueryExpression")]
-		public virtual int ExecuteUpdate(string query, QueryParameters queryParameters)
-		{
-			return ExecuteUpdate(query.ToQueryExpression(), queryParameters);
-		}
 
 		public abstract int ExecuteUpdate(IQueryExpression queryExpression, QueryParameters queryParameters);
 	}

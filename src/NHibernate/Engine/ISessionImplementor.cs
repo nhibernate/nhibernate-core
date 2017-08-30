@@ -75,15 +75,6 @@ namespace NHibernate.Engine
 		IBatcher Batcher { get; }
 
 		/// <summary>
-		/// Execute a <c>List()</c> query
-		/// </summary>
-		/// <param name="query"></param>
-		/// <param name="parameters"></param>
-		/// <returns></returns>
-		[Obsolete("Use overload with IQueryExpression")]
-		IList List(string query, QueryParameters parameters);
-
-		/// <summary>
 		/// Execute a <c>List()</c> expression query
 		/// </summary>
 		/// <param name="queryExpression"></param>
@@ -98,16 +89,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		IQuery CreateQuery(IQueryExpression queryExpression);
 
-		[Obsolete("Use overload with IQueryExpression")]
-		void List(string query, QueryParameters parameters, IList results);
-
 		void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results);
-
-		/// <summary>
-		/// Strongly-typed version of <see cref="List(string,QueryParameters)" />
-		/// </summary>
-		[Obsolete("Use overload with IQueryExpression")]
-		IList<T> List<T>(string query, QueryParameters queryParameters);
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="List(IQueryExpression,QueryParameters)" />
@@ -129,22 +111,7 @@ namespace NHibernate.Engine
 		/// <param name="query"></param>
 		/// <param name="parameters"></param>
 		/// <returns></returns>
-		[Obsolete("Use overload with IQueryExpression")]
-		IEnumerable Enumerable(string query, QueryParameters parameters);
-
-		/// <summary>
-		/// Execute an <c>Iterate()</c> query
-		/// </summary>
-		/// <param name="query"></param>
-		/// <param name="parameters"></param>
-		/// <returns></returns>
 		IEnumerable Enumerable(IQueryExpression query, QueryParameters parameters);
-
-		/// <summary>
-		/// Strongly-typed version of <see cref="Enumerable(string, QueryParameters)" />
-		/// </summary>
-		[Obsolete("Use overload with IQueryExpression")]
-		IEnumerable<T> Enumerable<T>(string query, QueryParameters queryParameters);
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="Enumerable(IQueryExpression, QueryParameters)" />
@@ -250,9 +217,6 @@ namespace NHibernate.Engine
 		IDictionary<string, IFilter> EnabledFilters { get; }
 
 		IQuery GetNamedSQLQuery(string name);
-
-		[Obsolete("Use overload with IQueryExpression")]
-		IQueryTranslator[] GetQueries(string query, bool scalar); // NH specific for MultiQuery
 		
 		IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar); // NH specific for MultiQuery
 
@@ -321,10 +285,6 @@ namespace NHibernate.Engine
 
 		/// <summary> Execute a native SQL update or delete query</summary>
 		int ExecuteNativeUpdate(NativeSQLQuerySpecification specification, QueryParameters queryParameters);
-
-		/// <summary> Execute a HQL update or delete query</summary>
-		[Obsolete("Use overload with IQueryExpression")]
-		int ExecuteUpdate(string query, QueryParameters queryParameters);
 
 		/// <summary> Execute a HQL update or delete query</summary>
 		int ExecuteUpdate(IQueryExpression query, QueryParameters queryParameters);
