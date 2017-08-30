@@ -12,6 +12,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using NHibernate.Criterion;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -21,7 +22,6 @@ using NHibernate.Util;
 namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -72,18 +72,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public async Task<IEnumerable<T>> FutureAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
-			{
-				return await (ListAsync<T>(cancellationToken)).ConfigureAwait(false);
-			}
-
-			session.FutureCriteriaBatch.Add<T>(this);
-			return session.FutureCriteriaBatch.GetEnumerator<T>();
-		}
-
 		public async Task<object> UniqueResultAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -102,15 +90,6 @@ namespace NHibernate.Impl
 					return Task.FromCanceled<IList>(cancellationToken);
 				}
 				return root.ListAsync(cancellationToken);
-			}
-
-			public Task<IEnumerable<T>> FutureAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
-			{
-				if (cancellationToken.IsCancellationRequested)
-				{
-					return Task.FromCanceled<IEnumerable<T>>(cancellationToken);
-				}
-				return root.FutureAsync<T>(cancellationToken);
 			}
 
 			public Task ListAsync(IList results, CancellationToken cancellationToken = default(CancellationToken))

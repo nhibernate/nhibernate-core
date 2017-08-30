@@ -20,11 +20,11 @@ using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Linq;
+using System.Threading;
 
 namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>

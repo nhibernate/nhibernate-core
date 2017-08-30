@@ -180,7 +180,7 @@ namespace NHibernate.Test.TransactionTest
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				Assert.That(s.Query<Person>().Count(), Is.EqualTo(4));
+				Assert.That(await (s.Query<Person>().CountAsync()), Is.EqualTo(4));
 				await (t.CommitAsync());
 			}
 		}

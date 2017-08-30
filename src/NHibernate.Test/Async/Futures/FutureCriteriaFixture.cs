@@ -26,9 +26,9 @@ namespace NHibernate.Test.Futures
 			{
 				s.DefaultReadOnly = true;
 
-				var persons = await (s.CreateCriteria(typeof(Person)).FutureAsync<Person>());
+				var persons = s.CreateCriteria(typeof(Person)).Future<Person>();
 
-				Assert.IsTrue(persons.All(p => s.IsReadOnly(p)));
+				Assert.IsTrue((await (persons.GetEnumerableAsync())).All(p => s.IsReadOnly(p)));
 			}
 		}
 
@@ -39,21 +39,21 @@ namespace NHibernate.Test.Futures
             {
                 IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
 
-                var persons10 = await (s.CreateCriteria(typeof(Person))
+                var persons10 = s.CreateCriteria(typeof(Person))
                     .SetMaxResults(10)
-                    .FutureAsync<Person>());
-                var persons5 = await (s.CreateCriteria(typeof(Person))
+                    .Future<Person>();
+                var persons5 = s.CreateCriteria(typeof(Person))
                     .SetMaxResults(5)
-                    .FutureAsync<int>());
+                    .Future<int>();
 
                 using (var logSpy = new SqlLogSpy())
                 {
-                    foreach (var person in persons5)
+                    foreach (var person in await (persons5.GetEnumerableAsync()))
                     {
 
                     }
 
-                    foreach (var person in persons10)
+                    foreach (var person in await (persons10.GetEnumerableAsync()))
                     {
 
                     }
@@ -73,17 +73,17 @@ namespace NHibernate.Test.Futures
 
              using (var logSpy = new SqlLogSpy())
              {
-                 var persons10 = await (s.CreateCriteria(typeof(Person))
+                 var persons10 = s.CreateCriteria(typeof(Person))
                         .SetMaxResults(10)
-                        .FutureAsync<Person>());
+                        .Future<Person>();
 
-                 foreach (var person in persons10) { } // fire first future round-trip
+                 foreach (var person in await (persons10.GetEnumerableAsync())) { } // fire first future round-trip
 
-                 var persons5 = await (s.CreateCriteria(typeof(Person))
+                 var persons5 = s.CreateCriteria(typeof(Person))
                         .SetMaxResults(5)
-                        .FutureAsync<int>());
+                        .Future<int>();
 
-                 foreach (var person in persons5) { } // fire second future round-trip
+                 foreach (var person in await (persons5.GetEnumerableAsync())) { } // fire second future round-trip
 
                  var events = logSpy.Appender.GetEvents();
                  Assert.AreEqual(2, events.Length);
@@ -98,9 +98,9 @@ namespace NHibernate.Test.Futures
 			{
 				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
 
-				var persons = await (s.CreateCriteria(typeof(Person))
+				var persons = s.CreateCriteria(typeof(Person))
 					.SetMaxResults(10)
-					.FutureAsync<Person>());
+					.Future<Person>();
 
 				var personCount = s.CreateCriteria(typeof(Person))
 					.SetProjection(Projections.RowCount())
@@ -108,9 +108,9 @@ namespace NHibernate.Test.Futures
 
 				using (var logSpy = new SqlLogSpy())
 				{
-					int count = personCount.Value;
+					int count = await (personCount.GetValueAsync());
 
-					foreach (var person in persons)
+					foreach (var person in await (persons.GetEnumerableAsync()))
 					{
 
 					}

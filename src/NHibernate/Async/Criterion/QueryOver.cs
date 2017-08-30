@@ -12,7 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-
+using System.Threading;
 using NHibernate.Criterion.Lambda;
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -22,7 +22,6 @@ using NHibernate.Transform;
 namespace NHibernate.Criterion
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -63,24 +62,6 @@ namespace NHibernate.Criterion
 				return Task.FromCanceled<U>(cancellationToken);
 			}
 			return criteria.UniqueResultAsync<U>(cancellationToken);
-		}
-
-		private Task<IEnumerable<TRoot>> FutureAsync(CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<IEnumerable<TRoot>>(cancellationToken);
-			}
-			return criteria.FutureAsync<TRoot>(cancellationToken);
-		}
-
-		private Task<IEnumerable<U>> FutureAsync<U>(CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<IEnumerable<U>>(cancellationToken);
-			}
-			return criteria.FutureAsync<U>(cancellationToken);
 		}
 
 
@@ -150,24 +131,6 @@ namespace NHibernate.Criterion
 				return Task.FromCanceled<U>(cancellationToken);
 			}
 			return SingleOrDefaultAsync<U>(cancellationToken);
-		}
-
-		Task<IEnumerable<TRoot>> IQueryOver<TRoot>.FutureAsync(CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<IEnumerable<TRoot>>(cancellationToken);
-			}
-			return FutureAsync(cancellationToken);
-		}
-
-		Task<IEnumerable<U>> IQueryOver<TRoot>.FutureAsync<U>(CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<IEnumerable<U>>(cancellationToken);
-			}
-			return FutureAsync<U>(cancellationToken);
 		}
 
 	}

@@ -93,5 +93,24 @@ namespace NHibernate.Test.NHSpecificTest.NH2214
 				Assert.ThrowsAsync<HibernateException>(() => query.ListAsync());
 			}
 		}
+
+		[Test]
+		public async Task PagedLinqQueryWithDistinctAsync()
+		{
+			using (var session = OpenSession())
+			{
+				const int page = 2;
+				const int rows = 2;
+
+				var query = (from t in session.Query<DomainClass>()
+				             orderby t.Name
+				             select t.Name).Distinct().Skip((page - 1)*rows).Take(rows);
+
+				var result = await (query.ToListAsync());
+
+				Assert.That(result[0], Is.EqualTo("Name2"));
+				Assert.That(result[1], Is.EqualTo("Name3"));
+			}
+		}
 	}
 }

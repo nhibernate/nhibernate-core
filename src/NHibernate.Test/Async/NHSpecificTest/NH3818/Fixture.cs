@@ -47,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3818
                 await (session.FlushAsync());
 
                 var catInfo =
-                    session.Query<MyLovelyCat>()
+                    await (session.Query<MyLovelyCat>()
                         .Select(o => new
                         {
                             o.Color,
@@ -55,13 +55,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3818
                             o.Name,
                             o.Price,
                         })
-                        .Single();
+                        .SingleAsync());
 
                 //Console.WriteLine(spy.ToString());
                 Assert.That(catInfo.AliveDays == days);
 
                 var catInfo2 =
-                    session.Query<MyLovelyCat>()
+                    await (session.Query<MyLovelyCat>()
                         .Select(o => new
                         {
                             o.Color,
@@ -69,7 +69,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3818
                             o.Name,
                             o.Price,
                         })
-                        .Single();
+                        .SingleAsync());
 
                 //Console.WriteLine(spy.ToString());
                 Assert.That(catInfo2.AliveDays == 0);

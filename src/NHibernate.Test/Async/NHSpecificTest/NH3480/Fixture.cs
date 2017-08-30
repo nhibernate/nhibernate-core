@@ -70,7 +70,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3480
 					var result = from e in session.Query<Entity>()
 								 where e.Name == "Bob"
 								 select e;
-					var entity = result.Single();
+					var entity = await (result.SingleAsync());
 
 					await (NHibernateUtil.InitializeAsync(entity.Children));
 				}

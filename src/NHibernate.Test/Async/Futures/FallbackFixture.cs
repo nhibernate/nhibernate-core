@@ -70,8 +70,8 @@ namespace NHibernate.Test.Futures
 		{
 			using (var session = Sfi.OpenSession())
 			{
-				var results = await (session.CreateCriteria<Person>().FutureAsync<Person>());
-				results.GetEnumerator().MoveNext();
+				var results = session.CreateCriteria<Person>().Future<Person>();
+				(await (results.GetEnumerableAsync())).GetEnumerator().MoveNext();
 			}
 		}
 
@@ -85,7 +85,7 @@ namespace NHibernate.Test.Futures
 				var futurePerson = session.CreateCriteria<Person>()
 					.Add(Restrictions.Eq("Id", personId))
 					.FutureValue<Person>();
-				Assert.IsNotNull(futurePerson.Value);
+				Assert.IsNotNull(await (futurePerson.GetValueAsync()));
 			}
 		}
 
@@ -99,7 +99,17 @@ namespace NHibernate.Test.Futures
 				var futureCount = session.CreateCriteria<Person>()
 					.SetProjection(Projections.RowCount())
 					.FutureValue<int>();
-				Assert.That(futureCount.Value, Is.EqualTo(1));
+				Assert.That(await (futureCount.GetValueAsync()), Is.EqualTo(1));
+			}
+		}
+
+		[Test]
+		public async Task FutureOfQueryFallsBackToListImplementationWhenQueryBatchingIsNotSupportedAsync()
+		{
+			using (var session = Sfi.OpenSession())
+			{
+				var results = session.CreateQuery("from Person").Future<Person>();
+				(await (results.GetEnumerableAsync())).GetEnumerator().MoveNext();
 			}
 		}
 
@@ -113,7 +123,7 @@ namespace NHibernate.Test.Futures
 				var futurePerson = session.CreateQuery("from Person where Id = :id")
 					.SetInt32("id", personId)
 					.FutureValue<Person>();
-				Assert.IsNotNull(futurePerson.Value);
+				Assert.IsNotNull(await (futurePerson.GetValueAsync()));
 			}
 		}
 
@@ -126,7 +136,17 @@ namespace NHibernate.Test.Futures
 			{
 				var futureCount = session.CreateQuery("select count(*) from Person")
 					.FutureValue<long>();
-				Assert.That(futureCount.Value, Is.EqualTo(1L));
+				Assert.That(await (futureCount.GetValueAsync()), Is.EqualTo(1L));
+			}
+		}
+
+		[Test]
+		public async Task FutureOfLinqFallsBackToListImplementationWhenQueryBatchingIsNotSupportedAsync()
+		{
+			using (var session = Sfi.OpenSession())
+			{
+				var results = session.Query<Person>().ToFuture();
+				(await (results.GetEnumerableAsync())).GetEnumerator().MoveNext();
 			}
 		}
 
@@ -140,7 +160,7 @@ namespace NHibernate.Test.Futures
 				var futurePerson = session.Query<Person>()
 					.Where(x => x.Id == personId)
 					.ToFutureValue();
-				Assert.IsNotNull(futurePerson.Value);
+				Assert.IsNotNull(await (futurePerson.GetValueAsync()));
 			}
 		}
 
@@ -155,7 +175,7 @@ namespace NHibernate.Test.Futures
 					.Query<Person>()
 					.Where(x => x.Id == personId)
 					.ToFutureValue(q => q.FirstOrDefault());
-				Assert.IsNotNull(futurePerson.Value);
+				Assert.IsNotNull(await (futurePerson.GetValueAsync()));
 			}
 		}
 

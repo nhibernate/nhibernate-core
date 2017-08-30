@@ -61,6 +61,28 @@ namespace NHibernate.Test.NHSpecificTest.NH3332
 			}
 		}
 
+		[Test]
+		public async Task TestJoinsAsync()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				// this query should return one row
+				var query = from me in session.Query<MasterEntity>()
+							from dtd in me.DataType.DataTypeDescriptions
+							from std in me.State.StateDescriptions
+							where dtd.Culture.CountryCode == "CA"
+								  && dtd.Culture.LanguageCode == "en"
+								  && std.Culture.CountryCode == "CA"
+								  && std.Culture.LanguageCode == "en"
+							select new { me.Id, me.Name, DataTypeName = me.DataType.Name, StateName = me.State.Name };
+
+				var list = await (query.ToListAsync());
+
+				Assert.That(list, Has.Count.EqualTo(1));
+			}
+		}
+
 
 		private async Task CreateObjectsAsync(ISession session, CancellationToken cancellationToken = default(CancellationToken))
 		{

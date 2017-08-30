@@ -18,16 +18,26 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2705
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	[TestFixture]
 	public class TestAsync : BugTestCase
 	{
-		private static IEnumerable<T> GetAndFetch<T>(string name, ISession session) where T : ItemBase
+		private static async Task<IEnumerable<T>> GetAndFetchAsync<T>(string name, ISession session, CancellationToken cancellationToken = default(CancellationToken)) where T : ItemBase
 		{
 			// this is a valid abstraction, the calling code should be able to ask that a property is eagerly loaded/available
 			// without having to know how it is mapped
-			return session.Query<T>()
+			return await (session.Query<T>()
 				.Fetch(p => p.SubItem).ThenFetch(p => p.Details) // should be able to fetch .Details when used with components (NH2615)
-				.Where(p => p.SubItem.Name == name).ToList();
+				.Where(p => p.SubItem.Name == name).ToListAsync(cancellationToken));
+		}
+
+		[Test]
+		public void Fetch_OnComponent_ShouldNotThrowAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				Assert.That(() => GetAndFetchAsync<ItemWithComponentSubItem>("hello", s), Throws.Nothing);
+			}
 		}
 
 		[Test]
@@ -50,6 +60,24 @@ namespace NHibernate.Test.NHSpecificTest.NH2705
 				using (var log = new SqlLogSpy())
 				{
 					Assert.That(() => s.CreateQuery("from ItemWithComponentSubItem i left join fetch i.SubItem.Details").ListAsync(), Throws.Nothing);
+				}
+			}
+		}
+
+		[Test]
+		public void LinqQueryWithFetch_WhenDerivedClassesUseComponentAndManyToOne_DoesNotGenerateInvalidSqlAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				using (var log = new SqlLogSpy())
+				{
+					Assert.That(() => s.Query<ItemBase>()
+									   .Fetch(p => p.SubItem).ToListAsync(), Throws.Nothing);
+
+
+					// fetching second level properties should work too
+					Assert.That(() => s.Query<ItemWithComponentSubItem>()
+									   .Fetch(p => p.SubItem).ThenFetch(p => p.Details).ToListAsync(), Throws.Nothing);
 				}
 			}
 		}

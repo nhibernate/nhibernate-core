@@ -89,12 +89,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2318
             ISession s = OpenSession();
             try
             {
-                IList<A> items = s.Query<A>().Where(a => a.Name.TrimLeading("f").TrimTrailing("t") == "irs").ToList();
+                IList<A> items = await (s.Query<A>().Where(a => a.Name.TrimLeading("f").TrimTrailing("t") == "irs").ToListAsync());
                 Assert.AreEqual(1, items.Count);
                 Assert.AreEqual("first", items[0].Name);
 
                 string trimString = "a";
-                items = s.Query<A>().Where(a => a.Name.TrimLeading(trimString).TrimTrailing(trimString) == "b").ToList();
+                items = await (s.Query<A>().Where(a => a.Name.TrimLeading(trimString).TrimTrailing(trimString) == "b").ToListAsync());
                 Assert.AreEqual(1, items.Count);
                 Assert.AreEqual("aba", items[0].Name);
             }

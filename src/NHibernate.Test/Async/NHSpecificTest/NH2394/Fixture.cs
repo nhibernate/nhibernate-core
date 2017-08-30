@@ -53,21 +53,21 @@ namespace NHibernate.Test.NHSpecificTest.NH2394
 				A item;
 
 				Assert.AreEqual(3, (await (s.CreateQuery("from A a where a.IsNice = ?").SetParameter(0, false).ListAsync())).Count);
-				Assert.AreEqual(3, s.Query<A>().Count(a => a.IsNice == false));
+				Assert.AreEqual(3, await (s.Query<A>().CountAsync(a => a.IsNice == false)));
 
 				item = await (s.CreateQuery("from A a where a.Type = ?").SetParameter(0, TypeOfA.Awesome).UniqueResultAsync<A>());
 				Assert.AreEqual(TypeOfA.Awesome, item.Type);
 				Assert.AreEqual("555-1111", item.Phone.Number);
 
-				item = s.Query<A>().Where(a => a.Type == TypeOfA.Awesome).Single();
+				item = await (s.Query<A>().Where(a => a.Type == TypeOfA.Awesome).SingleAsync());
 				Assert.AreEqual(TypeOfA.Awesome, item.Type);
 				Assert.AreEqual("555-1111", item.Phone.Number);
 
-				item = s.Query<A>().Where(a => TypeOfA.Awesome == a.Type).Single();
+				item = await (s.Query<A>().Where(a => TypeOfA.Awesome == a.Type).SingleAsync());
 				Assert.AreEqual(TypeOfA.Awesome, item.Type);
 				Assert.AreEqual("555-1111", item.Phone.Number);
 
-				IA interfaceItem = s.Query<IA>().Where(a => a.Type == TypeOfA.Awesome).Single();
+				IA interfaceItem = await (s.Query<IA>().Where(a => a.Type == TypeOfA.Awesome).SingleAsync());
 				Assert.AreEqual(TypeOfA.Awesome, interfaceItem.Type);
 				Assert.AreEqual("555-1111", interfaceItem.Phone.Number);
 
@@ -76,18 +76,18 @@ namespace NHibernate.Test.NHSpecificTest.NH2394
 				Assert.AreEqual("555-2222", item.Phone.Number);
 				Assert.AreEqual(TypeOfA.Awesome, item.NullableType);
 
-				item = s.Query<A>().Where(a => a.NullableType == TypeOfA.Awesome).Single();
+				item = await (s.Query<A>().Where(a => a.NullableType == TypeOfA.Awesome).SingleAsync());
 				Assert.AreEqual(TypeOfA.Boring, item.Type);
 				Assert.AreEqual("555-2222", item.Phone.Number);
 				Assert.AreEqual(TypeOfA.Awesome, item.NullableType);
 
-				Assert.AreEqual(2, s.Query<A>().Count(a => a.NullableType == null));
+				Assert.AreEqual(2, await (s.Query<A>().CountAsync(a => a.NullableType == null)));
 
 				item = await (s.CreateQuery("from A a where a.Phone = ?").SetParameter(0, new PhoneNumber(1, "555-2222")).UniqueResultAsync<A>());
 				Assert.AreEqual(TypeOfA.Boring, item.Type);
 				Assert.AreEqual("555-2222", item.Phone.Number);
 
-				item = s.Query<A>().Where(a => a.Phone == new PhoneNumber(1, "555-2222")).Single();
+				item = await (s.Query<A>().Where(a => a.Phone == new PhoneNumber(1, "555-2222")).SingleAsync());
 				Assert.AreEqual(TypeOfA.Boring, item.Type);
 				Assert.AreEqual("555-2222", item.Phone.Number);
 			}

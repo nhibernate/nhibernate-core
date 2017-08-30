@@ -40,13 +40,13 @@ namespace NHibernate.Test.IdTest
 		}
 
 		[Test(Description = "NH-926")]
-		public void NonTransactedInsertAsync()
+		public async Task NonTransactedInsertAsync()
 		{
 			using (var s = OpenSession())
 			{
 				Assert.DoesNotThrowAsync(() => s.SaveAsync(new IdentityClass()));
 				// No need to flush with identity generator.
-				Assert.AreEqual(1, s.Query<IdentityClass>().Count());
+				Assert.AreEqual(1, await (s.Query<IdentityClass>().CountAsync()));
 			}
 		}
 
@@ -58,7 +58,7 @@ namespace NHibernate.Test.IdTest
 			{
 				Assert.DoesNotThrowAsync(() => s.SaveAsync(new IdentityClass()));
 				// No need to flush with identity generator.
-				Assert.AreEqual(1, s.Query<IdentityClass>().Count());
+				Assert.AreEqual(1, await (s.Query<IdentityClass>().CountAsync()));
 				await (t.CommitAsync());
 			}
 		}

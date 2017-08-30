@@ -11,6 +11,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using NHibernate.Criterion;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
@@ -18,7 +19,6 @@ using NHibernate.Transform;
 namespace NHibernate
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -42,15 +42,6 @@ namespace NHibernate
 		/// If there is more than one matching result
 		/// </exception>
 		Task<object> UniqueResultAsync(CancellationToken cancellationToken = default(CancellationToken));
-
-		/// <summary>
-		/// Get a enumerable that when enumerated will execute
-		/// a batch of queries in a single database roundtrip
-		/// </summary>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		Task<IEnumerable<T>> FutureAsync<T>(CancellationToken cancellationToken = default(CancellationToken));
 	
 		#region NHibernate specific
 

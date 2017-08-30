@@ -60,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2412
 			s = OpenSession();
 			try
 			{
-				var orders = s.Query<Order>().OrderBy(o => o.Customer.Name).ToList();
+				var orders = await (s.Query<Order>().OrderBy(o => o.Customer.Name).ToListAsync());
 				Assert.AreEqual(4, orders.Count);
 				if (orders[0].Customer == null)
 				{

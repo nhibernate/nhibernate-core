@@ -73,12 +73,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2189
 				Policy policyProxy = await (s.LoadAsync<Policy>(_policy2Id));
 				Assert.That(NHibernateUtil.IsInitialized(policyProxy), Is.False);
 
-				IEnumerable<Policy> futurePolicy =
+				var futurePolicy =
 					s.CreateQuery("FROM Policy p where p.Id = :id")
 						.SetParameter("id", _policy2Id)
 						.Future<Policy>();
 
-				Policy queriedPolicy = futurePolicy.ElementAt(0);
+				Policy queriedPolicy = (await (futurePolicy.GetEnumerableAsync())).ElementAt(0);
 				Assert.That(NHibernateUtil.IsInitialized(queriedPolicy));
 				Assert.That(queriedPolicy, Is.SameAs(policyProxy));
 			}
@@ -93,12 +93,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2189
 				Policy policyProxy = await (s.LoadAsync<Policy>(_policy2Id));
 				Assert.That(NHibernateUtil.IsInitialized(policyProxy), Is.False);
 
-				IEnumerable<Policy> futurePolicy =
-					await (s.CreateCriteria<Policy>()
+				var futurePolicy =
+					s.CreateCriteria<Policy>()
 						.Add(Restrictions.Eq("Id", _policy2Id))
-						.FutureAsync<Policy>());
+						.Future<Policy>();
 
-				Policy queriedPolicy = futurePolicy.ElementAt(0);
+				Policy queriedPolicy = (await (futurePolicy.GetEnumerableAsync())).ElementAt(0);
 				Assert.That(NHibernateUtil.IsInitialized(queriedPolicy));
 				Assert.That(queriedPolicy, Is.SameAs(policyProxy));
 			}
@@ -120,15 +120,15 @@ namespace NHibernate.Test.NHSpecificTest.NH2189
 				Assert.That(NHibernateUtil.IsInitialized(policy2.Tasks.ElementAt(0)));
 				Assert.That(NHibernateUtil.IsInitialized(policy2.Tasks.ElementAt(1)));
 
-				IEnumerable<Task> tasks = s.CreateQuery("SELECT t FROM Task t " +
+				var tasks = s.CreateQuery("SELECT t FROM Task t " +
 					"INNER JOIN FETCH t.TeamMember ORDER BY t.TaskName")
 					.Future<Task>();
 
-				Assert.That(tasks.Count(), Is.EqualTo(3));
+				Assert.That((await (tasks.GetEnumerableAsync())).Count(), Is.EqualTo(3));
 
-				Assert.That(NHibernateUtil.IsInitialized(tasks.ElementAt(0).TeamMember), Is.True, "Task1 TeamMember not initialized");
-				Assert.That(NHibernateUtil.IsInitialized(tasks.ElementAt(1).TeamMember), Is.True, "Task2 TeamMember not initialized");
-				Assert.That(NHibernateUtil.IsInitialized(tasks.ElementAt(2).TeamMember), Is.True, "Task3 TeamMember not initialized");
+				Assert.That(NHibernateUtil.IsInitialized((await (tasks.GetEnumerableAsync())).ElementAt(0).TeamMember), Is.True, "Task1 TeamMember not initialized");
+				Assert.That(NHibernateUtil.IsInitialized((await (tasks.GetEnumerableAsync())).ElementAt(1).TeamMember), Is.True, "Task2 TeamMember not initialized");
+				Assert.That(NHibernateUtil.IsInitialized((await (tasks.GetEnumerableAsync())).ElementAt(2).TeamMember), Is.True, "Task3 TeamMember not initialized");
 			}
 		}
 
@@ -148,17 +148,17 @@ namespace NHibernate.Test.NHSpecificTest.NH2189
 				Assert.That(NHibernateUtil.IsInitialized(policy2.Tasks.ElementAt(0)));
 				Assert.That(NHibernateUtil.IsInitialized(policy2.Tasks.ElementAt(1)));
 
-				IEnumerable<Task> tasks =
-					await (s.CreateCriteria<Task>()
+				var tasks =
+					s.CreateCriteria<Task>()
 						.SetFetchMode("TeamMember", FetchMode.Eager)
 						.AddOrder(Order.Asc("TaskName"))
-						.FutureAsync<Task>());
+						.Future<Task>();
 
-				Assert.That(tasks.Count(), Is.EqualTo(3));
+				Assert.That((await (tasks.GetEnumerableAsync())).Count(), Is.EqualTo(3));
 
-				Assert.That(NHibernateUtil.IsInitialized(tasks.ElementAt(0).TeamMember), Is.True, "Task1 TeamMember not initialized");
-				Assert.That(NHibernateUtil.IsInitialized(tasks.ElementAt(1).TeamMember), Is.True, "Task2 TeamMember not initialized");
-				Assert.That(NHibernateUtil.IsInitialized(tasks.ElementAt(2).TeamMember), Is.True, "Task3 TeamMember not initialized");
+				Assert.That(NHibernateUtil.IsInitialized((await (tasks.GetEnumerableAsync())).ElementAt(0).TeamMember), Is.True, "Task1 TeamMember not initialized");
+				Assert.That(NHibernateUtil.IsInitialized((await (tasks.GetEnumerableAsync())).ElementAt(1).TeamMember), Is.True, "Task2 TeamMember not initialized");
+				Assert.That(NHibernateUtil.IsInitialized((await (tasks.GetEnumerableAsync())).ElementAt(2).TeamMember), Is.True, "Task3 TeamMember not initialized");
 			}
 		}
 	}

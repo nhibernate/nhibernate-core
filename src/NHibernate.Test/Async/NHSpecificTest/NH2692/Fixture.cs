@@ -18,6 +18,33 @@ namespace NHibernate.Test.NHSpecificTest.NH2692
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
+		[Test]
+		public async Task QueryingParentWhichHasChildrenAsync()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var result = await (session.Query<Parent>()
+									.Where(x => x.ChildComponents.Any())
+									.ToListAsync());
+
+				Assert.That(result, Has.Count.EqualTo(1));
+			}
+		}
+
+		[Test, KnownBug("NH-2692")]
+		public async Task QueryingChildrenComponentsAsync()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var result = await (session.Query<Parent>()
+									.SelectMany(x => x.ChildComponents)
+									.ToListAsync());
+
+				Assert.That(result, Has.Count.EqualTo(1));
+			}
+		}
 
 		[Test, KnownBug("NH-2692")]
 		public async Task QueryingChildrenComponentsHqlAsync()

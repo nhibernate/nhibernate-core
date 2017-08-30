@@ -82,6 +82,65 @@ namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 		}
 
 		[Test]
+		public async Task EqualityWorksForUserTypeAsync()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var newItem = new BarExample { Value = "Larry" };
+				var entities = await (session.Query<EntityWithUserTypeProperty>()
+					.Where(x => x.Example == newItem)
+					.ToListAsync());
+
+				Assert.AreEqual(1, entities.Count);
+			}
+		}
+
+		[Test]
+		public async Task EqualityWorksForExplicitUserTypeAsync()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var newItem = new BarExample { Value = "Larry" };
+				var entities = await (session.Query<EntityWithUserTypeProperty>()
+					.Where(x => x.Example == newItem.MappedAs(NHibernateUtil.Custom(typeof(ExampleUserType))))
+					.ToListAsync());
+
+				Assert.AreEqual(1, entities.Count);
+			}
+		}
+
+		[Test]
+		public async Task LinqMethodWorksForExplicitUserTypeAsync()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var newItem = new BarExample { Value = "Larry" };
+				var entities = await (session.Query<EntityWithUserTypeProperty>()
+					.Where(x => x.Example.IsEquivalentTo(newItem.MappedAs(NHibernateUtil.Custom(typeof(ExampleUserType)))))
+					.ToListAsync());
+
+				Assert.AreEqual(2, entities.Count);
+			}
+		}
+
+		[Test]
+		public async Task LinqMethodWorksForStandardStringPropertyAsync()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var entities = await (session.Query<EntityWithUserTypeProperty>()
+					.Where(x => x.Name == "Bob")
+					.ToListAsync());
+
+				Assert.AreEqual(1, entities.Count);
+			}
+		}
+
+		[Test]
 		public async Task CanQueryWithHqlAsync()
 		{
 			using (var session = OpenSession())

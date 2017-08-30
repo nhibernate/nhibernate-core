@@ -41,86 +41,270 @@ namespace NHibernate.Test.Linq
 
 			// Null literal against itself
 			q = from x in session.Query<AnotherEntity>() where null == null select x;
-			ExpectAll(q);
+			await (ExpectAllAsync(q));
 
 			// Null against constants
 			q = from x in session.Query<AnotherEntity>() where null == "value" select x;
-			ExpectNone(q);
+			await (ExpectNoneAsync(q));
 			q = from x in session.Query<AnotherEntity>() where "value" == null select x;
-			ExpectNone(q);
+			await (ExpectNoneAsync(q));
 
 			// Null against variables
 			q = from x in session.Query<AnotherEntity>() where null == nullVariable select x;
-			ExpectAll(q);
+			await (ExpectAllAsync(q));
 			q = from x in session.Query<AnotherEntity>() where null == notNullVariable select x;
-			ExpectNone(q);
+			await (ExpectNoneAsync(q));
 			q = from x in session.Query<AnotherEntity>() where nullVariable == null select x;
-			ExpectAll(q);
+			await (ExpectAllAsync(q));
 			q = from x in session.Query<AnotherEntity>() where notNullVariable == null select x;
-			ExpectNone(q);
+			await (ExpectNoneAsync(q));
 
 			// Null against columns
 			q = from x in session.Query<AnotherEntity>() where x.Input == null select x;
-			ExpectInputIsNull(q);
+			await (ExpectInputIsNullAsync(q));
 			q = from x in session.Query<AnotherEntity>() where null == x.Input select x;
-			ExpectInputIsNull(q);
+			await (ExpectInputIsNullAsync(q));
 
 			// All null pairings with two columns.
 			q = from x in session.Query<AnotherEntity>() where x.Input == null && x.Output == null select x;
-			Expect(q, BothNull);
+			await (ExpectAsync(q, BothNull));
 			q = from x in session.Query<AnotherEntity>() where x.Input != null && x.Output == null select x;
-			Expect(q, InputSet);
+			await (ExpectAsync(q, InputSet));
 			q = from x in session.Query<AnotherEntity>() where x.Input == null && x.Output != null select x;
-			Expect(q, OutputSet);
+			await (ExpectAsync(q, OutputSet));
 			q = from x in session.Query<AnotherEntity>() where x.Input != null && x.Output != null select x;
-			Expect(q, BothSame, BothDifferent);
+			await (ExpectAsync(q, BothSame, BothDifferent));
 
 			// Variables against variables
 			q = from x in session.Query<AnotherEntity>() where nullVariable == nullVariable2 select x;
-			ExpectAll(q);
+			await (ExpectAllAsync(q));
 			q = from x in session.Query<AnotherEntity>() where nullVariable == notNullVariable select x;
-			ExpectNone(q);
+			await (ExpectNoneAsync(q));
 			q = from x in session.Query<AnotherEntity>() where notNullVariable == nullVariable select x;
-			ExpectNone(q);
+			await (ExpectNoneAsync(q));
 
 			//// Variables against columns
 			q = from x in session.Query<AnotherEntity>() where nullVariable == x.Input select x;
-			ExpectInputIsNull(q);
+			await (ExpectInputIsNullAsync(q));
 			q = from x in session.Query<AnotherEntity>() where notNullVariable == x.Input select x;
-			Expect(q, InputSet, BothDifferent);
+			await (ExpectAsync(q, InputSet, BothDifferent));
 			q = from x in session.Query<AnotherEntity>() where x.Input == nullVariable select x;
-			ExpectInputIsNull(q);
+			await (ExpectInputIsNullAsync(q));
 			q = from x in session.Query<AnotherEntity>() where x.Input == notNullVariable select x;
-			Expect(q, InputSet, BothDifferent);
+			await (ExpectAsync(q, InputSet, BothDifferent));
 
 			// Columns against columns
 			q = from x in session.Query<AnotherEntity>() where x.Input == x.Output select x;
-			Expect(q, BothSame, BothNull);
+			await (ExpectAsync(q, BothSame, BothNull));
 		}
 
-		private void ExpectAll(IQueryable<AnotherEntity> q)
+		[Test]
+		public async Task NullInequalityAsync()
 		{
-			Expect(q, BothNull, BothSame, BothDifferent, InputSet, OutputSet);
+			string nullVariable = null;
+			string nullVariable2 = null;
+			string notNullVariable = "input";
+
+			IQueryable<AnotherEntity> q;
+
+			// Null literal against itself
+			q = from x in session.Query<AnotherEntity>() where null != null select x;
+			await (ExpectNoneAsync(q));
+
+			// Null against constants
+			q = from x in session.Query<AnotherEntity>() where null != "value" select x;
+			await (ExpectAllAsync(q));
+			q = from x in session.Query<AnotherEntity>() where "value" != null select x;
+			await (ExpectAllAsync(q));
+
+			// Null against variables
+			q = from x in session.Query<AnotherEntity>() where null != nullVariable select x;
+			await (ExpectNoneAsync(q));
+			q = from x in session.Query<AnotherEntity>() where null != notNullVariable select x;
+			await (ExpectAllAsync(q));
+			q = from x in session.Query<AnotherEntity>() where nullVariable != null select x;
+			await (ExpectNoneAsync(q));
+			q = from x in session.Query<AnotherEntity>() where notNullVariable != null select x;
+			await (ExpectAllAsync(q));
+
+			// Null against columns.
+			q = from x in session.Query<AnotherEntity>() where x.Input != null select x;
+			await (ExpectInputIsNotNullAsync(q));
+			q = from x in session.Query<AnotherEntity>() where null != x.Input select x;
+			await (ExpectInputIsNotNullAsync(q));
+
+			// Variables against variables.
+			q = from x in session.Query<AnotherEntity>() where nullVariable != nullVariable2 select x;
+			await (ExpectNoneAsync(q));
+			q = from x in session.Query<AnotherEntity>() where nullVariable != notNullVariable select x;
+			await (ExpectAllAsync(q));
+			q = from x in session.Query<AnotherEntity>() where notNullVariable != nullVariable select x;
+			await (ExpectAllAsync(q));
+
+			// Variables against columns.
+			q = from x in session.Query<AnotherEntity>() where nullVariable != x.Input select x;
+			await (ExpectInputIsNotNullAsync(q));
+			q = from x in session.Query<AnotherEntity>() where notNullVariable != x.Input select x;
+			await (ExpectAsync(q, BothSame, BothNull, OutputSet));
+			q = from x in session.Query<AnotherEntity>() where x.Input != nullVariable select x;
+			await (ExpectInputIsNotNullAsync(q));
+			q = from x in session.Query<AnotherEntity>() where x.Input != notNullVariable select x;
+			await (ExpectAsync(q, BothSame, OutputSet, BothNull));
+
+			// Columns against columns
+			q = from x in session.Query<AnotherEntity>() where x.Input != x.Output select x;
+			await (ExpectAsync(q, BothDifferent, InputSet, OutputSet));
 		}
 
-		private void ExpectNone(IQueryable<AnotherEntity> q)
+		[Test]
+		public async Task NullEqualityInvertedAsync()
 		{
-			Expect(q);
+			string nullVariable = null;
+			string nullVariable2 = null;
+			string notNullVariable = "input";
+
+			IQueryable<AnotherEntity> q;
+
+			// Null literal against itself
+			q = from x in session.Query<AnotherEntity>() where !(null == null) select x;
+			await (ExpectNoneAsync(q));
+
+			// Null against constants
+			q = from x in session.Query<AnotherEntity>() where !(null == "value") select x;
+			await (ExpectAllAsync(q));
+			q = from x in session.Query<AnotherEntity>() where !("value" == null) select x;
+			await (ExpectAllAsync(q));
+
+			// Null against variables
+			q = from x in session.Query<AnotherEntity>() where !(null == nullVariable) select x;
+			await (ExpectNoneAsync(q));
+			q = from x in session.Query<AnotherEntity>() where !(null == notNullVariable) select x;
+			await (ExpectAllAsync(q));
+			q = from x in session.Query<AnotherEntity>() where !(nullVariable == null) select x;
+			await (ExpectNoneAsync(q));
+			q = from x in session.Query<AnotherEntity>() where !(notNullVariable == null) select x;
+			await (ExpectAllAsync(q));
+
+			// Null against columns
+			q = from x in session.Query<AnotherEntity>() where !(x.Input == null) select x;
+			await (ExpectInputIsNotNullAsync(q));
+			q = from x in session.Query<AnotherEntity>() where !(null == x.Input) select x;
+			await (ExpectInputIsNotNullAsync(q));
+
+			// All null pairings with two columns.
+			q = from x in session.Query<AnotherEntity>() where !(x.Input == null && x.Output == null) select x;
+			await (ExpectAsync(q, InputSet, OutputSet, BothSame, BothDifferent));
+			q = from x in session.Query<AnotherEntity>() where !(x.Input != null && x.Output == null) select x;
+			await (ExpectAsync(q, OutputSet, BothNull, BothSame, BothDifferent));
+			q = from x in session.Query<AnotherEntity>() where !(x.Input == null && x.Output != null) select x;
+			await (ExpectAsync(q, InputSet, BothSame, BothDifferent, BothNull));
+			q = from x in session.Query<AnotherEntity>() where !(x.Input != null && x.Output != null) select x;
+			await (ExpectAsync(q, InputSet, OutputSet, BothNull));
+
+			// Variables against variables
+			q = from x in session.Query<AnotherEntity>() where !(nullVariable == nullVariable2) select x;
+			await (ExpectNoneAsync(q));
+			q = from x in session.Query<AnotherEntity>() where !(nullVariable == notNullVariable) select x;
+			await (ExpectAllAsync(q));
+			q = from x in session.Query<AnotherEntity>() where !(notNullVariable == nullVariable) select x;
+			await (ExpectAllAsync(q));
+
+			// Variables against columns
+			q = from x in session.Query<AnotherEntity>() where !(nullVariable == x.Input) select x;
+			await (ExpectInputIsNotNullAsync(q));
+			q = from x in session.Query<AnotherEntity>() where !(notNullVariable == x.Input) select x;
+			await (ExpectAsync(q, BothSame));
+			q = from x in session.Query<AnotherEntity>() where !(x.Input == nullVariable) select x;
+			await (ExpectInputIsNotNullAsync(q));
+			q = from x in session.Query<AnotherEntity>() where !(x.Input == notNullVariable) select x;
+			await (ExpectAsync(q, BothSame));
+
+			// Columns against columns
+			q = from x in session.Query<AnotherEntity>() where !(x.Input == x.Output) select x;
+			await (ExpectAsync(q, BothDifferent));
 		}
 
-		private void ExpectInputIsNull(IQueryable<AnotherEntity> q)
+		[Test]
+		public async Task NullInequalityInvertedAsync()
 		{
-			Expect(q, BothNull, OutputSet);
+			string nullVariable = null;
+			string nullVariable2 = null;
+			string notNullVariable = "input";
+
+			IQueryable<AnotherEntity> q;
+
+			// Null literal against itself
+			q = from x in session.Query<AnotherEntity>() where !(null != null) select x;
+			await (ExpectAllAsync(q));
+
+			// Null against constants
+			q = from x in session.Query<AnotherEntity>() where !(null != "value") select x;
+			await (ExpectNoneAsync(q));
+			q = from x in session.Query<AnotherEntity>() where !("value" != null) select x;
+			await (ExpectNoneAsync(q));
+
+			// Null against variables
+			q = from x in session.Query<AnotherEntity>() where !(null != nullVariable) select x;
+			await (ExpectAllAsync(q));
+			q = from x in session.Query<AnotherEntity>() where !(null != notNullVariable) select x;
+			await (ExpectNoneAsync(q));
+			q = from x in session.Query<AnotherEntity>() where !(nullVariable != null) select x;
+			await (ExpectAllAsync(q));
+			q = from x in session.Query<AnotherEntity>() where !(notNullVariable != null) select x;
+			await (ExpectNoneAsync(q));
+
+			// Null against columns.
+			q = from x in session.Query<AnotherEntity>() where !(x.Input != null) select x;
+			await (ExpectInputIsNullAsync(q));
+			q = from x in session.Query<AnotherEntity>() where !(null != x.Input) select x;
+			await (ExpectInputIsNullAsync(q));
+
+			// Variables against variables.
+			q = from x in session.Query<AnotherEntity>() where !(nullVariable != nullVariable2) select x;
+			await (ExpectAllAsync(q));
+			q = from x in session.Query<AnotherEntity>() where !(nullVariable != notNullVariable) select x;
+			await (ExpectNoneAsync(q));
+			q = from x in session.Query<AnotherEntity>() where !(notNullVariable != nullVariable) select x;
+			await (ExpectNoneAsync(q));
+
+			// Variables against columns.
+			q = from x in session.Query<AnotherEntity>() where !(nullVariable != x.Input) select x;
+			await (ExpectInputIsNullAsync(q));
+			q = from x in session.Query<AnotherEntity>() where !(notNullVariable != x.Input) select x;
+			await (ExpectAsync(q, InputSet, BothDifferent));
+			q = from x in session.Query<AnotherEntity>() where !(x.Input != nullVariable) select x;
+			await (ExpectInputIsNullAsync(q));
+			q = from x in session.Query<AnotherEntity>() where !(x.Input != notNullVariable) select x;
+			await (ExpectAsync(q, InputSet, BothDifferent));
+
+			// Columns against columns
+			q = from x in session.Query<AnotherEntity>() where !(x.Input != x.Output) select x;
+			await (ExpectAsync(q, BothSame));
 		}
 
-		private void ExpectInputIsNotNull(IQueryable<AnotherEntity> q)
+		private Task ExpectAllAsync(IQueryable<AnotherEntity> q)
 		{
-			Expect(q, InputSet, BothSame, BothDifferent);
+			return ExpectAsync(q, BothNull, BothSame, BothDifferent, InputSet, OutputSet);
 		}
 
-		private void Expect(IQueryable<AnotherEntity> q, params AnotherEntity[] entities)
+		private Task ExpectNoneAsync(IQueryable<AnotherEntity> q)
 		{
-			IList<AnotherEntity> results = q.ToList().OrderBy(l=> Key(l)).ToList();
+			return ExpectAsync(q);
+		}
+
+		private Task ExpectInputIsNullAsync(IQueryable<AnotherEntity> q)
+		{
+			return ExpectAsync(q, BothNull, OutputSet);
+		}
+
+		private Task ExpectInputIsNotNullAsync(IQueryable<AnotherEntity> q)
+		{
+			return ExpectAsync(q, InputSet, BothSame, BothDifferent);
+		}
+
+		private async Task ExpectAsync(IQueryable<AnotherEntity> q, params AnotherEntity[] entities)
+		{
+			IList<AnotherEntity> results = (await (q.ToListAsync())).OrderBy(l=> Key(l)).ToList();
 			IList<AnotherEntity> check = entities.OrderBy(l => Key(l)).ToList();
 
 			Assert.AreEqual(check.Count, results.Count);

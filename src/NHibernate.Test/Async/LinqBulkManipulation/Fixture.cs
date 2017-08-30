@@ -397,7 +397,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var pz = s.Query<PettingZoo>().Single(z => z.Name == _zoo.Name);
+				var pz = await (s.Query<PettingZoo>().SingleAsync(z => z.Name == _zoo.Name));
 				await (t.CommitAsync());
 
 				Assert.That(_zoo.Id != pz.Id);
@@ -426,7 +426,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var created = s.Query<IntegerVersioned>().Single(iv => iv.Id != initialId);
+				var created = await (s.Query<IntegerVersioned>().SingleAsync(iv => iv.Id != initialId));
 				Assert.That(created.Version, Is.EqualTo(initialVersion), "version was not seeded");
 				await (t.CommitAsync());
 			}
@@ -454,7 +454,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var created = s.Query<TimestampVersioned>().Single(tv => tv.Id != initialId);
+				var created = await (s.Query<TimestampVersioned>().SingleAsync(tv => tv.Id != initialId));
 				Assert.That(created.Version, Is.GreaterThan(DateTime.Today));
 				await (t.CommitAsync());
 			}
@@ -926,7 +926,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 				var count = await (s.Query<Mammal>().UpdateBuilder().Set(y => y.BodyWeight, -1).UpdateAsync(CancellationToken.None));
 				Assert.That(count, Is.EqualTo(5), "Incorrect update count on joined subclass");
 
-				count = s.Query<Mammal>().Count(m => m.BodyWeight > -1.0001 && m.BodyWeight < -0.9999);
+				count = await (s.Query<Mammal>().CountAsync(m => m.BodyWeight > -1.0001 && m.BodyWeight < -0.9999));
 				Assert.That(count, Is.EqualTo(5), "Incorrect body weight count");
 
 				await (t.CommitAsync());
@@ -994,7 +994,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 				count = s.Query<Animal>().Delete();
 				Assert.That(count, Is.EqualTo(8), "Incorrect delete count");
 
-				IList list = s.Query<Animal>().ToList();
+				IList list = await (s.Query<Animal>().ToListAsync());
 				Assert.That(list, Is.Empty, "table not empty");
 
 				await (t.CommitAsync());

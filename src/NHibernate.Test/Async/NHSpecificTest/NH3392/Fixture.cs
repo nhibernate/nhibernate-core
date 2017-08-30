@@ -55,7 +55,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3392
 
 	        using (var s = OpenSession())
             {
-                var result=s.Query<Mum>().Select(x => new { x, x.Kids }).ToList();
+                var result=await (s.Query<Mum>().Select(x => new { x, x.Kids }).ToListAsync());
                 Assert.That(result.Count, Is.EqualTo(1));
                 Assert.That(result[0].x.Kids, Is.EquivalentTo(result[0].Kids));
             }
@@ -84,7 +84,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3392
 
             using (var s = OpenSession())
             {
-                var result=s.Query<Mum>().Select(x => new { x, x.Friends }).ToList();
+                var result=await (s.Query<Mum>().Select(x => new { x, x.Friends }).ToListAsync());
                 Assert.That(result.Count, Is.EqualTo(1));
                 Assert.That(result[0].x.Friends, Is.EquivalentTo(result[0].Friends));
             }

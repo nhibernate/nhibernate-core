@@ -13,11 +13,11 @@ using System.Collections;
 using NHibernate.Transform;
 using NHibernate.Type;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace NHibernate
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>

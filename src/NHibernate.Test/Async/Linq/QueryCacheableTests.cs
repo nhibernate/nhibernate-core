@@ -33,15 +33,15 @@ namespace NHibernate.Test.Linq
 			Sfi.Statistics.Clear();
 			await (Sfi.QueryCache.ClearAsync(CancellationToken.None));
 
-			var x = (from c in db.Customers
+			var x = await ((from c in db.Customers
 					 select c)
 				.SetOptions(o => o.SetCacheable(true))
-				.ToList();
+				.ToListAsync());
 
-			var x2 = (from c in db.Customers
+			var x2 = await ((from c in db.Customers
 					  select c)
 				.SetOptions(o => o.SetCacheable(true))
-				.ToList();
+				.ToListAsync());
 
 			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(1), "Unexpected execution count");
 			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(1), "Unexpected cache put count");
@@ -54,13 +54,13 @@ namespace NHibernate.Test.Linq
 			Sfi.Statistics.Clear();
 			await (Sfi.QueryCache.ClearAsync(CancellationToken.None));
 
-			var x = (from c in db.Customers
+			var x = await ((from c in db.Customers
 					 select c)
 				.SetOptions(o => o.SetCacheable(true))
-				.ToList();
+				.ToListAsync());
 
-			var x2 = (from c in db.Customers
-					  select c).ToList();
+			var x2 = await ((from c in db.Customers
+					  select c).ToListAsync());
 
 			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(2), "Unexpected execution count");
 			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(1), "Unexpected cache put count");
@@ -73,11 +73,11 @@ namespace NHibernate.Test.Linq
 			Sfi.Statistics.Clear();
 			await (Sfi.QueryCache.ClearAsync(CancellationToken.None));
 
-			var x = (from c in db.Customers.SetOptions(o => o.SetCacheable(true))
-					 select c).ToList();
+			var x = await ((from c in db.Customers.SetOptions(o => o.SetCacheable(true))
+					 select c).ToListAsync());
 
-			var x2 = (from c in db.Customers
-					  select c).ToList();
+			var x2 = await ((from c in db.Customers
+					  select c).ToListAsync());
 
 			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(2), "Unexpected execution count");
 			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(1), "Unexpected cache put count");
@@ -90,20 +90,20 @@ namespace NHibernate.Test.Linq
 			Sfi.Statistics.Clear();
 			await (Sfi.QueryCache.ClearAsync(CancellationToken.None));
 
-			var x = (from c in db.Customers
+			var x = await ((from c in db.Customers
 					 select c)
 				.SetOptions(o => o.SetCacheable(true).SetCacheRegion("test"))
-				.ToList();
+				.ToListAsync());
 
-			var x2 = (from c in db.Customers
+			var x2 = await ((from c in db.Customers
 					  select c)
 				.SetOptions(o => o.SetCacheable(true).SetCacheRegion("test"))
-				.ToList();
+				.ToListAsync());
 
-			var x3 = (from c in db.Customers
+			var x3 = await ((from c in db.Customers
 					  select c)
 				.SetOptions(o => o.SetCacheable(true).SetCacheRegion("other"))
-				.ToList();
+				.ToListAsync());
 
 			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(2), "Unexpected execution count");
 			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(2), "Unexpected cache put count");
@@ -116,10 +116,10 @@ namespace NHibernate.Test.Linq
 			Sfi.Statistics.Clear();
 			await (Sfi.QueryCache.ClearAsync(CancellationToken.None));
 
-			db.Customers
+			await (db.Customers
 				.SetOptions(o => o.SetCacheable(true))
-				.Where(c => c.ContactName != c.CompanyName).Take(1).ToList();
-			db.Customers.Where(c => c.ContactName != c.CompanyName).Take(1).ToList();
+				.Where(c => c.ContactName != c.CompanyName).Take(1).ToListAsync());
+			await (db.Customers.Where(c => c.ContactName != c.CompanyName).Take(1).ToListAsync());
 
 			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(2), "Unexpected execution count");
 			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(1), "Unexpected cache put count");
@@ -132,18 +132,18 @@ namespace NHibernate.Test.Linq
 			Sfi.Statistics.Clear();
 			await (Sfi.QueryCache.ClearAsync(CancellationToken.None));
 
-			db.Customers
+			await (db.Customers
 				.SetOptions(o => o.SetCacheable(true).SetCacheRegion("test"))
 				.Where(c => c.ContactName != c.CompanyName).Take(1)
-				.ToList();
-			db.Customers
+				.ToListAsync());
+			await (db.Customers
 				.SetOptions(o => o.SetCacheable(true).SetCacheRegion("test"))
 				.Where(c => c.ContactName != c.CompanyName).Take(1)
-				.ToList();
-			db.Customers
+				.ToListAsync());
+			await (db.Customers
 				.SetOptions(o => o.SetCacheable(true).SetCacheRegion("other"))
 				.Where(c => c.ContactName != c.CompanyName).Take(1)
-				.ToList();
+				.ToListAsync());
 
 			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(2), "Unexpected execution count");
 			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(2), "Unexpected cache put count");
@@ -156,14 +156,14 @@ namespace NHibernate.Test.Linq
 			Sfi.Statistics.Clear();
 			await (Sfi.QueryCache.ClearAsync(CancellationToken.None));
 
-			db.Customers
+			await (db.Customers
 				.Where(c => c.ContactName != c.CompanyName).Take(1)
 				.SetOptions(o => o.SetCacheable(true).SetCacheRegion("test"))
-				.ToList();
-			db.Customers
+				.ToListAsync());
+			await (db.Customers
 				.Where(c => c.ContactName != c.CompanyName).Take(1)
 				.SetOptions(o => o.SetCacheRegion("test").SetCacheable(true))
-				.ToList();
+				.ToListAsync());
 
 			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(1), "Unexpected execution count");
 			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(1), "Unexpected cache put count");
@@ -176,25 +176,25 @@ namespace NHibernate.Test.Linq
 			Sfi.Statistics.Clear();
 			await (Sfi.QueryCache.ClearAsync(CancellationToken.None));
 
-			var c = db
+			var c = await (db
 				.Customers
 				.GroupBy(x => x.Address.Country)
 				.Select(x => x.Key)
 				.SetOptions(o => o.SetCacheable(true))
-				.ToList();
+				.ToListAsync());
 
-			c = db
+			c = await (db
 				.Customers
 				.GroupBy(x => x.Address.Country)
 				.Select(x => x.Key)
-				.ToList();
+				.ToListAsync());
 
-			c = db
+			c = await (db
 				.Customers
 				.GroupBy(x => x.Address.Country)
 				.Select(x => x.Key)
 				.SetOptions(o => o.SetCacheable(true))
-				.ToList();
+				.ToListAsync());
 
 			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(2), "Unexpected execution count");
 			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(1), "Unexpected cache put count");
@@ -207,25 +207,25 @@ namespace NHibernate.Test.Linq
 			Sfi.Statistics.Clear();
 			await (Sfi.QueryCache.ClearAsync(CancellationToken.None));
 
-			var c = db
+			var c = await (db
 				.Customers
 				.SetOptions(o => o.SetCacheable(true))
 				.GroupBy(x => x.Address.Country)
 				.Select(x => x.Key)
-				.ToList();
+				.ToListAsync());
 
-			c = db
+			c = await (db
 				.Customers
 				.GroupBy(x => x.Address.Country)
 				.Select(x => x.Key)
-				.ToList();
+				.ToListAsync());
 
-			c = db
+			c = await (db
 				.Customers
 				.SetOptions(o => o.SetCacheable(true))
 				.GroupBy(x => x.Address.Country)
 				.Select(x => x.Key)
-				.ToList();
+				.ToListAsync());
 
 			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(2), "Unexpected execution count");
 			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(1), "Unexpected cache put count");

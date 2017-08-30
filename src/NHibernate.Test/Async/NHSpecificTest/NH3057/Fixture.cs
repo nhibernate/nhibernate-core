@@ -44,6 +44,21 @@ namespace NHibernate.Test.NHSpecificTest.NH3057
 		}
 
 		[Test]
+		public async Task CollectionQueryOnJoinedSubclassInheritedPropertyAsync()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var entities = await (session.Query<AClass>()
+					.Where(a => a.Bs.Any(b => b.InheritedProperty == "B2"))
+					.ToListAsync());
+
+				Assert.AreEqual(1, entities.Count);
+				Assert.AreEqual(1, entities[0].Id);
+			}
+		}
+
+		[Test]
 		public async Task CollectionQueryOnJoinedSubclassInheritedPropertyHqlAsync()
 		{
 			using (var session = OpenSession())

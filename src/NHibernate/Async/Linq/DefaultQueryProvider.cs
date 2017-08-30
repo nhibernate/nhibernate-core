@@ -14,15 +14,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Threading.Tasks;
 
 namespace NHibernate.Linq
 {
-	using System.Threading.Tasks;
-	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>

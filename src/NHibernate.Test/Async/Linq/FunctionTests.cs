@@ -22,6 +22,16 @@ namespace NHibernate.Test.Linq
 	[TestFixture]
 	public class FunctionTestsAsync : LinqTestCase
 	{
+		[Test]
+		public async Task LikeFunctionAsync()
+		{
+			var query = await ((from e in db.Employees
+						 where NHibernate.Linq.SqlMethods.Like(e.FirstName, "Ma%et")
+						 select e).ToListAsync());
+
+			Assert.That(query.Count, Is.EqualTo(1));
+			Assert.That(query[0].FirstName, Is.EqualTo("Margaret"));
+		}
 
 		[Test]
 		public async Task LikeFunctionWithEscapeCharacterAsync()
@@ -38,18 +48,18 @@ namespace NHibernate.Test.Linq
 				await (session.FlushAsync());
 
 
-				var query = (from e in db.Employees
+				var query = await ((from e in db.Employees
 				             where NHibernate.Linq.SqlMethods.Like(e.FirstName, employeeNameEscaped, escapeChar)
-				             select e).ToList();
+				             select e).ToListAsync());
 
 				Assert.That(query.Count, Is.EqualTo(1));
 				Assert.That(query[0].FirstName, Is.EqualTo(employeeName));
 
-				Assert.Throws<ArgumentException>(() =>
+				Assert.ThrowsAsync<ArgumentException>(() =>
 				{
-					(from e in db.Employees
+					return (from e in db.Employees
 					 where NHibernate.Linq.SqlMethods.Like(e.FirstName, employeeNameEscaped, e.FirstName.First())
-					 select e).ToList();
+					 select e).ToListAsync();
 				});
 				await (tx.RollbackAsync());
 			}
@@ -61,6 +71,56 @@ namespace NHibernate.Test.Linq
 			{
 				throw new NotImplementedException();
 			}
+		}
+
+		[Test]
+		public async Task LikeFunctionUserDefinedAsync()
+		{
+			// Verify that any method named Like, in a class named SqlMethods, will be translated.
+
+			// ReSharper disable RedundantNameQualifier
+			// NOTE: Deliberately use full namespace for our SqlMethods class below, to reduce
+			// risk of accidentally referencing NHibernate.Linq.SqlMethods.
+			var query = await ((from e in db.Employees
+						 where NHibernate.Test.Linq.FunctionTestsAsync.SqlMethods.Like(e.FirstName, "Ma%et")
+						 select e).ToListAsync());
+			// ReSharper restore RedundantNameQualifier
+
+			Assert.That(query.Count, Is.EqualTo(1));
+			Assert.That(query[0].FirstName, Is.EqualTo("Margaret"));
+		}
+
+		[Test]
+		public async Task SubstringFunction2Async()
+		{
+			var query = await ((from e in db.Employees
+				where e.FirstName.Substring(0, 2) == "An"
+				select e).ToListAsync());
+
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
+
+		[Test]
+		public async Task SubstringFunction1Async()
+		{
+			var query = await ((from e in db.Employees
+				where e.FirstName.Substring(3) == "rew"
+				select e).ToListAsync());
+
+			Assert.That(query.Count, Is.EqualTo(1));
+			Assert.That(query[0].FirstName, Is.EqualTo("Andrew"));
+		}
+
+		[Test]
+		public async Task LeftFunctionAsync()
+		{
+			var query = await ((from e in db.Employees
+						 where e.FirstName.Substring(0, 2) == "An"
+						 select e.FirstName.Substring(3)).ToListAsync());
+
+			Assert.That(query.Count, Is.EqualTo(2));
+			Assert.That(query[0], Is.EqualTo("rew")); //Andrew
+			Assert.That(query[1], Is.EqualTo("e")); //Anne
 		}
 
 		[Test]
@@ -86,7 +146,7 @@ namespace NHibernate.Test.Linq
 								AfterEvaluableExtensionConst = suppliedName.ReplaceWithEvaluation("An", "Zan"),
 								AfterEvaluable2ExtensionConst = suppliedName.ReplaceWithEvaluation2("An", "Zan")
 						};
-			var results = query.ToList();
+			var results = await (query.ToListAsync());
 			var s = await (ObjectDumper.WriteAsync(results));
 
 			foreach (var result in results)
@@ -117,111 +177,83 @@ namespace NHibernate.Test.Linq
 							Before = e.FirstName,
 							AfterEvaluableExtensionConst = suppliedName.ReplaceWithEvaluation("An", "Zan")
 						};
-			Assert.That(() => failingQuery.ToList(), Throws.InstanceOf<HibernateException>().And.InnerException.InstanceOf<ArgumentNullException>());
+			Assert.That(() => failingQuery.ToListAsync(), Throws.InstanceOf<HibernateException>().And.InnerException.InstanceOf<ArgumentNullException>());
 		}
 
 		[Test]
-		public Task CharIndexFunctionAsync()
+		public async Task CharIndexFunctionAsync()
 		{
-			try
-			{
-				if (!TestDialect.SupportsLocate)
-					Assert.Ignore("Locate function not supported.");
+			if (!TestDialect.SupportsLocate)
+				Assert.Ignore("Locate function not supported.");
 
-				var raw = (from e in db.Employees select e.FirstName).ToList();
-				var expected = raw.Select(x => x.ToLower()).Where(x => x.IndexOf('a') == 0).ToList();
+			var raw = await ((from e in db.Employees select e.FirstName).ToListAsync());
+			var expected = raw.Select(x => x.ToLower()).Where(x => x.IndexOf('a') == 0).ToList();
 
-				var query = from e in db.Employees
+			var query = from e in db.Employees
 						let lowerName = e.FirstName.ToLower()
 						where lowerName.IndexOf('a') == 0
 						select lowerName;
-				var result = query.ToList();
+			var result = await (query.ToListAsync());
 
-				Assert.That(result, Is.EqualTo(expected), "Expected {0} but was {1}", string.Join("|", expected), string.Join("|", result));
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			Assert.That(result, Is.EqualTo(expected), "Expected {0} but was {1}", string.Join("|", expected), string.Join("|", result));
+			await (ObjectDumper.WriteAsync(query));
 		}
 
 		[Test]
-		public Task CharIndexOffsetNegativeFunctionAsync()
+		public async Task CharIndexOffsetNegativeFunctionAsync()
 		{
-			try
-			{
-				if (!TestDialect.SupportsLocate)
-					Assert.Ignore("Locate function not supported.");
+			if (!TestDialect.SupportsLocate)
+				Assert.Ignore("Locate function not supported.");
 
-				var raw = (from e in db.Employees select e.FirstName).ToList();
-				var expected = raw.Select(x => x.ToLower()).Where(x => x.IndexOf('a', 2) == -1).ToList();
+			var raw = await ((from e in db.Employees select e.FirstName).ToListAsync());
+			var expected = raw.Select(x => x.ToLower()).Where(x => x.IndexOf('a', 2) == -1).ToList();
 
-				var query = from e in db.Employees
+			var query = from e in db.Employees
 						let lowerName = e.FirstName.ToLower()
 						where lowerName.IndexOf('a', 2) == -1
 						select lowerName;
-				var result = query.ToList();
+			var result = await (query.ToListAsync());
 
-				Assert.That(result, Is.EqualTo(expected), "Expected {0} but was {1}", string.Join("|", expected), string.Join("|", result));
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			Assert.That(result, Is.EqualTo(expected), "Expected {0} but was {1}", string.Join("|", expected), string.Join("|", result));
+			await (ObjectDumper.WriteAsync(query));
 		}
 
 		[Test]
-		public Task IndexOfFunctionExpressionAsync()
+		public async Task IndexOfFunctionExpressionAsync()
 		{
-			try
-			{
-				if (!TestDialect.SupportsLocate)
-					Assert.Ignore("Locate function not supported.");
+			if (!TestDialect.SupportsLocate)
+				Assert.Ignore("Locate function not supported.");
 
-				var raw = (from e in db.Employees select e.FirstName).ToList();
-				var expected = raw.Select(x => x.ToLower()).Where(x => x.IndexOf("an") == 0).ToList();
+			var raw = await ((from e in db.Employees select e.FirstName).ToListAsync());
+			var expected = raw.Select(x => x.ToLower()).Where(x => x.IndexOf("an") == 0).ToList();
 
-				var query = from e in db.Employees
+			var query = from e in db.Employees
 						let lowerName = e.FirstName.ToLower()
 						where lowerName.IndexOf("an") == 0
 						select lowerName;
-				var result = query.ToList();
+			var result = await (query.ToListAsync());
 
-				Assert.That(result, Is.EqualTo(expected), "Expected {0} but was {1}", string.Join("|", expected), string.Join("|", result));
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			Assert.That(result, Is.EqualTo(expected), "Expected {0} but was {1}", string.Join("|", expected), string.Join("|", result));
+			await (ObjectDumper.WriteAsync(query));
 		}
 
 		[Test]
-		public Task IndexOfFunctionProjectionAsync()
+		public async Task IndexOfFunctionProjectionAsync()
 		{
-			try
-			{
-				if (!TestDialect.SupportsLocate)
-					Assert.Ignore("Locate function not supported.");
+			if (!TestDialect.SupportsLocate)
+				Assert.Ignore("Locate function not supported.");
 
-				var raw = (from e in db.Employees select e.FirstName).ToList();
-				var expected = raw.Select(x => x.ToLower()).Where(x => x.Contains("a")).Select(x => x.IndexOf("a", 1)).ToList();
+			var raw = await ((from e in db.Employees select e.FirstName).ToListAsync());
+			var expected = raw.Select(x => x.ToLower()).Where(x => x.Contains("a")).Select(x => x.IndexOf("a", 1)).ToList();
 
-				var query = from e in db.Employees
+			var query = from e in db.Employees
 						let lowerName = e.FirstName.ToLower()
 						where lowerName.Contains("a")
 						select lowerName.IndexOf("a", 1);
-				var result = query.ToList();
+			var result = await (query.ToListAsync());
 
-				Assert.That(result, Is.EqualTo(expected), "Expected {0} but was {1}", string.Join("|", expected), string.Join("|", result));
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			Assert.That(result, Is.EqualTo(expected), "Expected {0} but was {1}", string.Join("|", expected), string.Join("|", result));
+			await (ObjectDumper.WriteAsync(query));
 		}
 
 		[Test]
@@ -245,6 +277,32 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public async Task ToStringFunctionAsync()
+		{
+			var query = from ol in db.OrderLines
+						where ol.Quantity.ToString() == "4"
+						select ol;
+
+			Assert.AreEqual(55, await (query.CountAsync()));
+		}
+
+		[Test]
+		public async Task ToStringWithContainsAsync()
+		{
+			var query = from ol in db.OrderLines
+						where ol.Quantity.ToString().Contains("5")
+						select ol;
+
+			Assert.AreEqual(498, await (query.CountAsync()));
+		}
+
+		[Test]
+		public async Task CoalesceAsync()
+		{
+			Assert.AreEqual(2, await (session.Query<AnotherEntity>().CountAsync(e => (e.Input ?? "hello") == "hello")));
+		}
+
+		[Test]
 		public async Task TrimAsync()
 		{
 			using (session.BeginTransaction())
@@ -257,13 +315,13 @@ namespace NHibernate.Test.Linq
 				await (session.SaveAsync(ae3));
 				await (session.FlushAsync());
 
-				Assert.AreEqual(2, session.Query<AnotherEntity>().Count(e => e.Input.Trim() == "hi"));
-				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.TrimEnd() == " hi"));
+				Assert.AreEqual(2, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.Trim() == "hi")));
+				Assert.AreEqual(1, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.TrimEnd() == " hi")));
 
 				// Emulated trim does not support multiple trim characters, but for many databases it should work fine anyways.
-				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.Trim('h') == "e"));
-				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.TrimStart('h') == "eh"));
-				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.TrimEnd('h') == "he"));
+				Assert.AreEqual(1, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.Trim('h') == "e")));
+				Assert.AreEqual(1, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.TrimStart('h') == "eh")));
+				Assert.AreEqual(1, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.TrimEnd('h') == "he")));
 
 				// Let it rollback to get rid of temporary changes.
 			}
@@ -279,59 +337,38 @@ namespace NHibernate.Test.Linq
 				await (session.SaveAsync(new AnotherEntity {Input = "heh"}));
 				await (session.FlushAsync());
 
-				Assert.That(session.Query<AnotherEntity>().Count(e => e.Input.TrimStart() == "hi"), Is.EqualTo(2));
+				Assert.That(await (session.Query<AnotherEntity>().CountAsync(e => e.Input.TrimStart() == "hi")), Is.EqualTo(2));
 
 				// Let it rollback to get rid of temporary changes.
 			}
 		}
 
 		[Test]
-		public Task WhereStringEqualAsync()
+		public async Task WhereStringEqualAsync()
 		{
-			try
-			{
-				var query = (from item in db.Users
+			var query = await ((from item in db.Users
 						 where item.Name.Equals("ayende")
-						 select item).ToList();
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+						 select item).ToListAsync());
+			await (ObjectDumper.WriteAsync(query));
 		}
 
 		[Test, Description("NH-3367")]
-		public Task WhereStaticStringEqualAsync()
+		public async Task WhereStaticStringEqualAsync()
 		{
-			try
-			{
-				var query = (from item in db.Users
+			var query = await ((from item in db.Users
 						 where string.Equals(item.Name, "ayende")
-						 select item).ToList();
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+						 select item).ToListAsync());
+			await (ObjectDumper.WriteAsync(query));
 		}
 
 		[Test]
-		public Task WhereIntEqualAsync()
+		public async Task WhereIntEqualAsync()
 		{
-			try
-			{
-				var query = (from item in db.Users
+			var query = await ((from item in db.Users
 						 where item.Id.Equals(-1)
-						 select item).ToList();
+						 select item).ToListAsync());
 
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(query));
 		}
 
 		[Test]

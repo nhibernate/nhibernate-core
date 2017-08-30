@@ -41,10 +41,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3614
 
 			using (var s = OpenSession())
 			{
-				var result = s.Query<Entity>()
+				var result = await (s.Query<Entity>()
 					.Where(x => x.Id == id)
 					.Select(x => x.SomeStrings)
-					.ToList();
+					.ToListAsync());
 
 				Assert.AreEqual(1, result.Count);
 

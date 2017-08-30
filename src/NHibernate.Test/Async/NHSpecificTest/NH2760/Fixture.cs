@@ -76,7 +76,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2760
 					orderby ug.Users.Count()
 					select ug;
 
-				var queryResults = query.ToList();
+				var queryResults = await (query.ToListAsync());
 
 				Assert.AreEqual(2, queryResults.Count);
 				Assert.AreEqual(2, queryResults[0].Id);
@@ -97,7 +97,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2760
 					where ug.Users.Count() > 1
 					select ug;
 
-				var queryResults = query.ToList();
+				var queryResults = await (query.ToListAsync());
 
 				Assert.AreEqual(1, queryResults.Count);
 				Assert.AreEqual(1, queryResults[0].Id);
@@ -121,7 +121,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2760
 						count = ug.Users.Count(),
 					};
 
-				var queryResults = query.ToList();
+				var queryResults = await (query.ToListAsync());
 
 				Assert.AreEqual(2, queryResults.Count);
 				Assert.AreEqual(1, queryResults[0].id);

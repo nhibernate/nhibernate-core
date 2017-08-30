@@ -55,7 +55,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2467
 					.Add(Restrictions.Eq("Data", "Test"));
 				contentQuery.SetMaxResults(2);
 				contentQuery.SetFirstResult(0);
-				var content = await (contentQuery.FutureAsync<DomainClass>());
+				var content = contentQuery.Future<DomainClass>();
 					
 				var countQuery = session
 					.CreateCriteria<DomainClass>()
@@ -64,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2467
 				var count = countQuery.FutureValue<int>();
 
 				// triggers batch operation, should not throw
-				var result = content.ToList();
+				var result = (await (content.GetEnumerableAsync())).ToList();
 			}
 		}		
 		
@@ -85,11 +85,53 @@ namespace NHibernate.Test.NHSpecificTest.NH2467
 					.Add(Restrictions.Eq("Data", "Test"));
 				contentQuery.SetMaxResults(2);
 				contentQuery.SetFirstResult(0);
-				var content = await (contentQuery.FutureAsync<DomainClass>());
+				var content = contentQuery.Future<DomainClass>();
 
 				// triggers batch operation, should not throw
-				var result = content.ToList();
+				var result = (await (content.GetEnumerableAsync())).ToList();
 			}
 		}		
+		
+		[Test]
+		public async Task ShouldNotThrowOnFuturePagingUsingHqlAsync()
+		{
+			using (var session = OpenSession())
+			{
+
+				var contentQuery = session.CreateQuery("from DomainClass as d where d.Data = ?");
+				contentQuery.SetString(0, "Test");
+				contentQuery.SetMaxResults(2);
+				contentQuery.SetFirstResult(0);
+				var content = contentQuery.Future<DomainClass>();
+
+				var countQuery = session.CreateQuery("select count(d) from DomainClass as d where d.Data = ?");
+				countQuery.SetString(0, "Test");
+				var count = countQuery.FutureValue<long>();
+				
+				Assert.AreEqual(1, (await (content.GetEnumerableAsync())).ToList().Count);
+				Assert.AreEqual(1, await (count.GetValueAsync()));
+			}
+		}
+
+		[Test]
+		public async Task ShouldNotThrowOnReversedFuturePagingUsingHqlAsync()
+		{
+			using (var session = OpenSession())
+			{
+
+				var contentQuery = session.CreateQuery("from DomainClass as d where d.Data = ?");
+				contentQuery.SetString(0, "Test");
+				contentQuery.SetMaxResults(2);
+				contentQuery.SetFirstResult(0);
+				var content = contentQuery.Future<DomainClass>();
+
+				var countQuery = session.CreateQuery("select count(d) from DomainClass as d where d.Data = ?");
+				countQuery.SetString(0, "Test");
+				var count = countQuery.FutureValue<long>();
+				
+				Assert.AreEqual(1, (await (content.GetEnumerableAsync())).ToList().Count);
+				Assert.AreEqual(1, await (count.GetValueAsync()));
+			}
+		}
 	}
 }

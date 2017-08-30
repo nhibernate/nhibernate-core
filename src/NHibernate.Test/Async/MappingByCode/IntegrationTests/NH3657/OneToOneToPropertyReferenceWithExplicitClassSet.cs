@@ -100,7 +100,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3657
 			{
 				var person1 = await (session.GetAsync<Person>(1));
 				var person2 = await (session.GetAsync<Person>(2));
-				var personDetail = session.Query<PersonDetail>().Single();
+				var personDetail = await (session.Query<PersonDetail>().SingleAsync());
 
 				Assert.IsNull(person2.PersonDetail);
 				Assert.IsNotNull(person1.PersonDetail);

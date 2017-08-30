@@ -574,8 +574,8 @@ namespace NHibernate.Test.SqlTest.Query
 					.SetResultTransformer(transformer)
 					.Future<object[]>();
 
-				Assert.AreEqual(l.Count(), 1);
-				Assert.AreEqual("Ricardo", l.ElementAt(0)[0]);
+				Assert.AreEqual((await (l.GetEnumerableAsync())).Count(), 1);
+				Assert.AreEqual("Ricardo", (await (l.GetEnumerableAsync())).ElementAt(0)[0]);
 				Assert.IsTrue(transformer.TransformListCalled);
 				Assert.IsTrue(transformer.TransformTupleCalled);
 			}
@@ -597,7 +597,7 @@ namespace NHibernate.Test.SqlTest.Query
 					.SetResultTransformer(transformer)
 					.FutureValue<object[]>();
 
-				var v = l.Value;
+				var v = await (l.GetValueAsync());
 
 				Assert.AreEqual("Ricardo", v[0]);
 				Assert.IsTrue(transformer.TransformListCalled);
@@ -619,8 +619,8 @@ namespace NHibernate.Test.SqlTest.Query
 					.CreateSQLQuery("select Name from Person")
 					.Future<string>();
 
-				Assert.AreEqual(l.Count(), 1);
-				Assert.AreEqual("Ricardo", l.ElementAt(0));
+				Assert.AreEqual((await (l.GetEnumerableAsync())).Count(), 1);
+				Assert.AreEqual("Ricardo", (await (l.GetEnumerableAsync())).ElementAt(0));
 			}
 		}
 
@@ -638,7 +638,7 @@ namespace NHibernate.Test.SqlTest.Query
 					.CreateSQLQuery("select Name from Person")
 					.FutureValue<string>();
 
-				var v = l.Value;
+				var v = await (l.GetValueAsync());
 
 				Assert.AreEqual("Ricardo", v);
 			}

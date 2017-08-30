@@ -22,6 +22,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypesTest
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <summary>
 	/// Various tests regarding handling of size of query parameters.
 	/// </summary>
@@ -65,61 +66,75 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		[Description("Values longer than the maximum possible string length " +
 		             "should raise an exception if they would otherwise be truncated.")]
-		public void ShouldPreventInsertionOfVeryLongStringThatWouldBeTruncatedAsync()
+		public Task ShouldPreventInsertionOfVeryLongStringThatWouldBeTruncatedAsync()
 		{
-			// This test case is for when the current driver will use a parameter size
-			// that is significantly larger than the mapped column size (e.g. SqlClientDriver currently).
+			try
+			{
+				// This test case is for when the current driver will use a parameter size
+				// that is significantly larger than the mapped column size (e.g. SqlClientDriver currently).
 
-			// Note: This test could possible be written as
-			//   "database must raise an error OR it must store and return the full value"
-			// to avoid this dialect specific exception.
-			if (Dialect is SQLiteDialect)
-				Assert.Ignore("SQLite does not enforce specified string lengths.");
+				// Note: This test could possible be written as
+				//   "database must raise an error OR it must store and return the full value"
+				// to avoid this dialect specific exception.
+				if (Dialect is SQLiteDialect)
+					Assert.Ignore("SQLite does not enforce specified string lengths.");
 
-			int maxStringLength = GetLongStringMappedLength();
+				int maxStringLength = GetLongStringMappedLength();
 
-			var ex = Assert.CatchAsync<Exception>(
+				var ex = Assert.CatchAsync<Exception>(
 				async () =>
-				{
-					using (ISession s = OpenSession())
 					{
-						StringClass b = new StringClass {LongStringValue = new string('x', maxStringLength + 1)};
-						await (s.SaveAsync(b));
-						await (s.FlushAsync());
-					}
-				});
+						using (ISession s = OpenSession())
+						{
+							StringClass b = new StringClass {LongStringValue = new string('x', maxStringLength + 1)};
+							await (s.SaveAsync(b));
+							await (s.FlushAsync());
+						}
+					});
 
-			AssertFailedInsertExceptionDetailsAndEmptyTable(ex);
+				return AssertFailedInsertExceptionDetailsAndEmptyTableAsync(ex);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 
 		[Test]
 		[Description("Values longer than the mapped string length " +
 		             "should raise an exception if they would otherwise be truncated.")]
-		public void ShouldPreventInsertionOfTooLongStringThatWouldBeTruncatedAsync()
+		public Task ShouldPreventInsertionOfTooLongStringThatWouldBeTruncatedAsync()
 		{
-			// Note: This test could possible be written as
-			//   "database must raise an error OR it must store and return the full value"
-			// to avoid this dialect specific exception.
-			if (Dialect is SQLiteDialect)
-				Assert.Ignore("SQLite does not enforce specified string lengths.");
+			try
+			{
+				// Note: This test could possible be written as
+				//   "database must raise an error OR it must store and return the full value"
+				// to avoid this dialect specific exception.
+				if (Dialect is SQLiteDialect)
+					Assert.Ignore("SQLite does not enforce specified string lengths.");
 
-			var ex = Assert.CatchAsync<Exception>(
+				var ex = Assert.CatchAsync<Exception>(
 				async () =>
-				{
-					using (ISession s = OpenSession())
 					{
-						StringClass b = new StringClass {StringValue = "0123456789a"};
-						await (s.SaveAsync(b));
-						await (s.FlushAsync());
-					}
-				},
+						using (ISession s = OpenSession())
+						{
+							StringClass b = new StringClass {StringValue = "0123456789a"};
+							await (s.SaveAsync(b));
+							await (s.FlushAsync());
+						}
+					},
 				"An exception was expected when trying to put too large a value into a column.");
 
-			AssertFailedInsertExceptionDetailsAndEmptyTable(ex);
+				return AssertFailedInsertExceptionDetailsAndEmptyTableAsync(ex);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 
 
-		private void AssertFailedInsertExceptionDetailsAndEmptyTable(Exception ex)
+		private async Task AssertFailedInsertExceptionDetailsAndEmptyTableAsync(Exception ex, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			// We can get different sort of exceptions.
 			if (ex is PropertyValueException)
@@ -152,7 +167,7 @@ namespace NHibernate.Test.TypesTest
 			// In any case, nothing should have been inserted.
 			using (ISession s = OpenSession())
 			{
-				Assert.That(s.Query<StringClass>().ToList(), Is.Empty);
+				Assert.That(await (s.Query<StringClass>().ToListAsync(cancellationToken)), Is.Empty);
 			}
 		}
 

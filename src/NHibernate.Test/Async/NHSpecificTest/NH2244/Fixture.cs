@@ -50,7 +50,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2244
 			s = OpenSession();
 			try
 			{
-				A item = s.Query<A>().Where(a => a.Phone == new PhoneNumber(1, "555-2222")).Single();
+				A item = await (s.Query<A>().Where(a => a.Phone == new PhoneNumber(1, "555-2222")).SingleAsync());
 				Assert.AreEqual("555-2222", item.Phone.Number);
 			}
 			finally

@@ -47,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2344
 			using (ISession s = OpenSession())
 			using (s.BeginTransaction())
 			{
-				var person = s.Query<Person>().Where(p => (p.Name ?? "e") == "e").First();
+				var person = await (s.Query<Person>().Where(p => (p.Name ?? "e") == "e").FirstAsync());
 				Assert.AreEqual(personId, person.Id);
 			}
 		}

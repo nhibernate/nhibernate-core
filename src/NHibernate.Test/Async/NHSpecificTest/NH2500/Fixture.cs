@@ -69,25 +69,25 @@ namespace NHibernate.Test.NHSpecificTest.NH2500
         {
          this.count = 1;
 
-         var foos1 = session.Query<Foo>()
+         var foos1 = await (session.Query<Foo>()
             		.Where(x => x.Name == "Banana")
             		.Select(x => new
             		{
             			x.Name,
             			count,
             			User = "abc"
-            		}).First();
+            		}).FirstAsync());
 
          this.count = 2;
 
-         var foos2 = session.Query<Foo>()
+         var foos2 = await (session.Query<Foo>()
             		.Where(x => x.Name == "Egg")
             		.Select(x => new
             		{
             			x.Name,
             			count,
             			User = "def"
-            		}).First();
+            		}).FirstAsync());
 
 Assert.AreEqual(1, foos1.count);
 Assert.AreEqual(2, foos2.count);

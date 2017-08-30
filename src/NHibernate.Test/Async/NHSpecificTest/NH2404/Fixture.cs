@@ -49,6 +49,24 @@ namespace NHibernate.Test.NHSpecificTest.NH2404
 				transaction.Commit();
 			}
 		}
+	
+		[Test]
+		public async Task ProjectionsShouldWorkWithLinqProviderAndFuturesAsync()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var query1 = await ((from entity in session.Query<TestEntity>()
+							  select new TestEntityDto {EntityId = entity.Id, EntityName = entity.Name}).ToListAsync());
+
+				Assert.AreEqual(2, query1.Count());
+
+				var query2 = (from entity in session.Query<TestEntity>()
+							  select new TestEntityDto {EntityId = entity.Id, EntityName = entity.Name}).ToFuture();
+
+				Assert.AreEqual(2, (await (query2.GetEnumerableAsync())).Count());
+			}
+		}
 
 		[Test]
 		public async Task ProjectionsShouldWorkWithHqlAndFuturesAsync()
@@ -68,7 +86,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2404
 						Transformers.AliasToBean(typeof (TestEntityDto)))
 						.Future<TestEntityDto>();
 
-				Assert.AreEqual(2, query2.Count());
+				Assert.AreEqual(2, (await (query2.GetEnumerableAsync())).Count());
 			}
 		}
 	}

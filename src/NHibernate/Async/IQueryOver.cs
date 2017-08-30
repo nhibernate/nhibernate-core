@@ -12,7 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-
+using System.Threading;
 using NHibernate.Criterion;
 using NHibernate.Criterion.Lambda;
 using NHibernate.SqlCommand;
@@ -21,7 +21,6 @@ using NHibernate.Transform;
 namespace NHibernate
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 
 	/// <content>
 	/// Contains generated async methods
@@ -70,20 +69,6 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		Task<U> SingleOrDefaultAsync<U>(CancellationToken cancellationToken = default(CancellationToken));
-
-		/// <summary>
-		/// Get a enumerable that when enumerated will execute
-		/// a batch of queries in a single database roundtrip
-		/// </summary>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task<IEnumerable<TRoot>> FutureAsync(CancellationToken cancellationToken = default(CancellationToken));
-
-		/// <summary>
-		/// Get a enumerable that when enumerated will execute
-		/// a batch of queries in a single database roundtrip
-		/// </summary>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task<IEnumerable<U>> FutureAsync<U>(CancellationToken cancellationToken = default(CancellationToken));
 
 	}
 

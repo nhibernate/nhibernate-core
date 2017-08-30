@@ -48,9 +48,9 @@ namespace NHibernate.Test.Futures
 			{
 				s.DefaultReadOnly = true;
 
-				var persons = await (s.QueryOver<Person>().FutureAsync<Person>());
+				var persons = s.QueryOver<Person>().Future<Person>();
 
-				Assert.IsTrue(persons.All(p => s.IsReadOnly(p)));
+				Assert.IsTrue((await (persons.GetEnumerableAsync())).All(p => s.IsReadOnly(p)));
 			}
 		}
 
@@ -61,22 +61,22 @@ namespace NHibernate.Test.Futures
 			{
 				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
 
-				var persons10 = await (s.QueryOver<Person>()
+				var persons10 = s.QueryOver<Person>()
 					.Take(10)
-					.FutureAsync());
-				var persons5 = await (s.QueryOver<Person>()
+					.Future();
+				var persons5 = s.QueryOver<Person>()
 					.Select(p => p.Id)
 					.Take(5)
-					.FutureAsync<int>());
+					.Future<int>();
 
 				using (var logSpy = new SqlLogSpy())
 				{
 					int actualPersons5Count = 0;
-					foreach (var person in persons5)
+					foreach (var person in await (persons5.GetEnumerableAsync()))
 						actualPersons5Count++;
 
 					int actualPersons10Count = 0;
-					foreach (var person in persons10)
+					foreach (var person in await (persons10.GetEnumerableAsync()))
 						actualPersons10Count++;
 
 					var events = logSpy.Appender.GetEvents();
@@ -97,18 +97,18 @@ namespace NHibernate.Test.Futures
 
 				using (var logSpy = new SqlLogSpy())
 				{
-					var persons10 = await (s.QueryOver<Person>()
+					var persons10 = s.QueryOver<Person>()
 						.Take(10)
-						.FutureAsync());
+						.Future();
 
-					foreach (var person in persons10) { } // fire first future round-trip
+					foreach (var person in await (persons10.GetEnumerableAsync())) { } // fire first future round-trip
 
-					var persons5 = await (s.QueryOver<Person>()
+					var persons5 = s.QueryOver<Person>()
 						.Select(p => p.Id)
 						.Take(5)
-						.FutureAsync<int>());
+						.Future<int>();
 
-					foreach (var person in persons5) { } // fire second future round-trip
+					foreach (var person in await (persons5.GetEnumerableAsync())) { } // fire second future round-trip
 
 					var events = logSpy.Appender.GetEvents();
 					Assert.AreEqual(2, events.Length);
@@ -123,9 +123,9 @@ namespace NHibernate.Test.Futures
 			{
 				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
 
-				var persons = await (s.QueryOver<Person>()
+				var persons = s.QueryOver<Person>()
 					.Take(10)
-					.FutureAsync());
+					.Future();
 
 				var personIds = s.QueryOver<Person>()
 					.Select(p => p.Id)
@@ -136,10 +136,10 @@ namespace NHibernate.Test.Futures
 
 				using (var logSpy = new SqlLogSpy())
 				{
-					Person singlePersonValue = singlePerson.Value;
-					int personId = personIds.Value;
+					Person singlePersonValue = await (singlePerson.GetValueAsync());
+					int personId = await (personIds.GetValueAsync());
 
-					foreach (var person in persons)
+					foreach (var person in await (persons.GetEnumerableAsync()))
 					{
 
 					}
