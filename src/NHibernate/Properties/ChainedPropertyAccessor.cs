@@ -2,9 +2,9 @@ using System;
 
 namespace NHibernate.Properties
 {
-	// To be removed in v6.0
-	[Serializable]
+	// Since v5
 	[Obsolete("This class has no more usages in NHibernate and will be removed in a future version.")]
+	[Serializable]
 	public class ChainedPropertyAccessor : IPropertyAccessor
 	{
 		private readonly IPropertyAccessor[] chain;

@@ -112,6 +112,7 @@ namespace NHibernate.Hql.Ast
 			return (HqlExpression)node;
 		}
 
+		// Since v5
 		[Obsolete]
 		public static HqlBooleanExpression AsBooleanExpression(this HqlTreeNode node)
 		{

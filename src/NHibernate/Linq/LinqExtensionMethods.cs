@@ -106,18 +106,22 @@ namespace NHibernate.Linq
 			return new NhQueryable<T>(query.Provider, callExpression);
 		}
 
+		// Since v5
 		[Obsolete("Please use SetOptions instead.")]
 		public static IQueryable<T> Cacheable<T>(this IQueryable<T> query)
 			=> query.SetOptions(o => o.SetCacheable(true));
 
+		// Since v5
 		[Obsolete("Please use SetOptions instead.")]
 		public static IQueryable<T> CacheMode<T>(this IQueryable<T> query, CacheMode cacheMode)
 			=> query.SetOptions(o => o.SetCacheMode(cacheMode));
 
+		// Since v5
 		[Obsolete("Please use SetOptions instead.")]
 		public static IQueryable<T> CacheRegion<T>(this IQueryable<T> query, string region)
 			=> query.SetOptions(o => o.SetCacheRegion(region));
 
+		// Since v5
 		[Obsolete("Please use SetOptions instead.")]
 		public static IQueryable<T> Timeout<T>(this IQueryable<T> query, int timeout)
 			=> query.SetOptions(o => o.SetTimeout(timeout));
