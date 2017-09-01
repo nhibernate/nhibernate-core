@@ -276,7 +276,12 @@ namespace NHibernate.Test
 
 		protected virtual void DropSchema()
 		{
-			if (Sfi?.ConnectionProvider.Driver is FirebirdClientDriver fbDriver)
+			DropSchema(OutputDdl, new SchemaExport(cfg), Sfi);
+		}
+
+		public static void DropSchema(bool useStdOut, SchemaExport export, ISessionFactoryImplementor sfi)
+		{
+			if (sfi?.ConnectionProvider.Driver is FirebirdClientDriver fbDriver)
 			{
 				// Firebird will pool each connection created during the test and will marked as used any table
 				// referenced by queries. It will at best delays those tables drop until connections are actually
@@ -287,7 +292,7 @@ namespace NHibernate.Test
 				fbDriver.ClearPool(null);
 			}
 
-			new SchemaExport(cfg).Drop(OutputDdl, true);
+			export.Drop(useStdOut, true);
 		}
 
 		protected virtual DebugSessionFactory BuildSessionFactory()

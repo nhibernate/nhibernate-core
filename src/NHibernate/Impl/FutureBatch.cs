@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
-	public abstract class FutureBatch<TQueryApproach, TMultiApproach>
+	public abstract partial class FutureBatch<TQueryApproach, TMultiApproach>
 	{
 		private readonly List<TQueryApproach> queries = new List<TQueryApproach>();
 		private readonly IList<System.Type> resultTypes = new List<System.Type>();
@@ -18,18 +20,6 @@ namespace NHibernate.Impl
 		protected FutureBatch(SessionImpl session)
 		{
 			this.session = session;
-		}
-
-		public IList Results
-		{
-			get
-			{
-				if (results == null)
-				{
-					GetResults();
-				}
-				return results;
-			}
 		}
 
 		public void Add<TResult>(TQueryApproach query)
@@ -54,17 +44,21 @@ namespace NHibernate.Impl
 		public IFutureValue<TResult> GetFutureValue<TResult>()
 		{
 			int currentIndex = index;
-			return new FutureValue<TResult>(() => GetCurrentResult<TResult>(currentIndex));
+			return new FutureValue<TResult>(() => GetCurrentResult<TResult>(currentIndex), cancellationToken => GetCurrentResultAsync<TResult>(currentIndex, cancellationToken));
 		}
 
-		public IEnumerable<TResult> GetEnumerator<TResult>()
+		public IFutureEnumerable<TResult> GetEnumerator<TResult>()
 		{
-			int currentIndex = index;
-			return new DelayedEnumerator<TResult>(() => GetCurrentResult<TResult>(currentIndex));
+			var currentIndex = index;
+			return new DelayedEnumerator<TResult>(() => GetCurrentResult<TResult>(currentIndex), cancellationToken => GetCurrentResultAsync<TResult>(currentIndex, cancellationToken));
 		}
 
-		private void GetResults()
+		private IList GetResults()
 		{
+			if (results != null)
+			{
+				return results;
+			}
 			var multiApproach = CreateMultiApproach(isCacheable, cacheRegion);
 			for (int i = 0; i < queries.Count; i++)
 			{
@@ -72,11 +66,12 @@ namespace NHibernate.Impl
 			}
 			results = GetResultsFrom(multiApproach);
 			ClearCurrentFutureBatch();
+			return results;
 		}
 
 		private IEnumerable<TResult> GetCurrentResult<TResult>(int currentIndex)
 		{
-			return ((IList)Results[currentIndex]).Cast<TResult>();
+			return ((IList) GetResults()[currentIndex]).Cast<TResult>();
 		}
 
 		protected abstract TMultiApproach CreateMultiApproach(bool isCacheable, string cacheRegion);

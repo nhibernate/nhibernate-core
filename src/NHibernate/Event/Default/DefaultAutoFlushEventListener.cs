@@ -9,7 +9,7 @@ namespace NHibernate.Event.Default
 	/// flushing session state in response to generated auto-flush events.
 	/// </summary>
 	[Serializable]
-	public class DefaultAutoFlushEventListener : AbstractFlushingEventListener, IAutoFlushEventListener
+	public partial class DefaultAutoFlushEventListener : AbstractFlushingEventListener, IAutoFlushEventListener
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultAutoFlushEventListener));
 

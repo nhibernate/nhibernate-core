@@ -14,7 +14,7 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
 	[CLSCompliant(false)]
-	public class MultiTableDeleteExecutor : AbstractStatementExecutor
+	public partial class MultiTableDeleteExecutor : AbstractStatementExecutor
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(MultiTableDeleteExecutor));
 		private readonly IQueryable persister;

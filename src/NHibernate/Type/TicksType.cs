@@ -17,7 +17,7 @@ namespace NHibernate.Type
 	/// The System.DateTime.Ticks is accurate to 100-nanosecond intervals. 
 	/// </remarks>
 	[Serializable]
-	public class TicksType : PrimitiveType, IVersionType, ILiteralType
+	public partial class TicksType : PrimitiveType, IVersionType, ILiteralType
 	{
 		/// <summary></summary>
 		public TicksType()

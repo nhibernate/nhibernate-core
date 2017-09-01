@@ -2,7 +2,7 @@ using NHibernate.Engine;
 
 namespace NHibernate.Proxy
 {
-	public interface ILazyInitializer
+	public partial interface ILazyInitializer
 	{
 		/// <summary>
 		/// Perform an ImmediateLoad of the actual object for the Proxy.

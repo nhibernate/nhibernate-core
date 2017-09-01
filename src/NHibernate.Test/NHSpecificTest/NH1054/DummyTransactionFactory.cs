@@ -7,7 +7,7 @@ using NHibernate.Transaction;
 
 namespace NHibernate.Test.NHSpecificTest.NH1054
 {
-	public class DummyTransactionFactory : ITransactionFactory
+	public partial class DummyTransactionFactory : ITransactionFactory
 	{
 		public void Configure(IDictionary props)
 		{

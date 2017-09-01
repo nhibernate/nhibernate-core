@@ -32,7 +32,7 @@ namespace NHibernate.Id
 	/// The <c>sequence</c> parameter is required while the <c>schema</c> is optional.
 	/// </p>
 	/// </remarks>
-	public class SequenceGenerator : IPersistentIdentifierGenerator, IConfigurable
+	public partial class SequenceGenerator : IPersistentIdentifierGenerator, IConfigurable
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SequenceGenerator));
 

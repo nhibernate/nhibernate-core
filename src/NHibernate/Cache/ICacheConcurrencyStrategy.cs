@@ -18,7 +18,7 @@ namespace NHibernate.Cache
 	/// for a collection.
 	/// </para>
 	/// </remarks>
-	public interface ICacheConcurrencyStrategy
+	public partial interface ICacheConcurrencyStrategy
 	{
 		/// <summary>
 		/// Attempt to retrieve an object from the Cache

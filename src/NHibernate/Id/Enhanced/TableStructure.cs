@@ -12,7 +12,7 @@ namespace NHibernate.Id.Enhanced
 	/// <summary>
 	/// Describes a table used to mimic sequence behavior
 	/// </summary>
-	public class TableStructure : TransactionHelper, IDatabaseStructure
+	public partial class TableStructure : TransactionHelper, IDatabaseStructure
 	{
 		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(IDatabaseStructure));
 
@@ -164,7 +164,7 @@ namespace NHibernate.Id.Enhanced
 
 		#region Nested type: TableAccessCallback
 
-		private class TableAccessCallback : IAccessCallback
+		private partial class TableAccessCallback : IAccessCallback
 		{
 			private readonly TableStructure _owner;
 			private readonly ISessionImplementor _session;

@@ -8,7 +8,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Param
 {
-	public class VersionTypeSeedParameterSpecification : IParameterSpecification
+	public partial class VersionTypeSeedParameterSpecification : IParameterSpecification
 	{
 		private const string IdBackTrack = "<nhv_seed_nh>";
 		private readonly string[] idForBackTracks = new[] {IdBackTrack};

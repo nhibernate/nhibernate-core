@@ -31,7 +31,7 @@ namespace NHibernate.Dialect
 	///		</item>
 	/// </list>
 	/// </remarks>
-	public class InformixDialect : Dialect
+	public partial class InformixDialect : Dialect
 	{
 		/// <summary></summary>
 		public InformixDialect()

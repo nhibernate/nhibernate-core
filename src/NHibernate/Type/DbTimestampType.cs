@@ -19,7 +19,7 @@ namespace NHibernate.Type
 	/// a true notion of timestamp
 	/// </remarks>
 	[Serializable]
-	public class DbTimestampType : TimestampType, IVersionType
+	public partial class DbTimestampType : TimestampType, IVersionType
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (DbTimestampType));
 		private static readonly SqlType[] EmptyParams = new SqlType[0];

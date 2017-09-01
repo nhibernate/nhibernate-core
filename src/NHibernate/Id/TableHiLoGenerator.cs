@@ -37,7 +37,7 @@ namespace NHibernate.Id
 	/// better choice (where supported).
 	/// </p>
 	/// </remarks>
-	public class TableHiLoGenerator : TableGenerator
+	public partial class TableHiLoGenerator : TableGenerator
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(TableHiLoGenerator));
 

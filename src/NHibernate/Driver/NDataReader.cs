@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Util;
 
 namespace NHibernate.Driver
@@ -16,7 +18,7 @@ namespace NHibernate.Driver
 	/// This is a completely off-line DataReader - the underlying DbDataReader that was used to create
 	/// this has been closed and no connections to the Db exists.
 	/// </remarks>
-	public class NDataReader : DbDataReader
+	public partial class NDataReader : DbDataReader
 	{
 		private NResult[] results;
 
@@ -32,6 +34,8 @@ namespace NHibernate.Driver
 		private char[] cachedCharArray;
 		private int cachedColIndex = -1;
 
+		protected NDataReader() { }
+
 		/// <summary>
 		/// Creates a NDataReader from a <see cref="DbDataReader" />
 		/// </summary>
@@ -43,8 +47,9 @@ namespace NHibernate.Driver
 		/// pick up the <see cref="DbDataReader"/> midstream so that the underlying <see cref="DbDataReader"/> can be closed 
 		/// so a new one can be opened.
 		/// </remarks>
-		public NDataReader(DbDataReader reader, bool isMidstream)
+		public static NDataReader Create(DbDataReader reader, bool isMidstream)
 		{
+			var dataReader = new NDataReader();
 			var resultList = new List<NResult>(2);
 
 			try
@@ -53,19 +58,19 @@ namespace NHibernate.Driver
 				// positioned on the first row (index=0)
 				if (isMidstream)
 				{
-					currentRowIndex = 0;
+					dataReader.currentRowIndex = 0;
 				}
 
 				// there will be atleast one result 
-				resultList.Add(new NResult(reader, isMidstream));
+				resultList.Add(NResult.Create(reader, isMidstream));
 
 				while (reader.NextResult())
 				{
 					// the second, third, nth result is not processed midstream
-					resultList.Add(new NResult(reader, false));
+					resultList.Add(NResult.Create(reader, false));
 				}
 
-				results = resultList.ToArray();
+				dataReader.results = resultList.ToArray();
 			}
 			catch (Exception e)
 			{
@@ -75,6 +80,7 @@ namespace NHibernate.Driver
 			{
 				reader.Close();
 			}
+			return dataReader;
 		}
 
 		/// <summary>
@@ -155,6 +161,21 @@ namespace NHibernate.Driver
 			ClearCache();
 
 			return true;
+		}
+
+		public override Task<bool> ReadAsync(CancellationToken cancellationToken)
+		{
+			return Task.FromResult(Read());
+		}
+
+		public override Task<bool> NextResultAsync(CancellationToken cancellationToken)
+		{
+			return Task.FromResult(NextResult());
+		}
+
+		public override Task<bool> IsDBNullAsync(int ordinal, CancellationToken cancellationToken)
+		{
+			return Task.FromResult(IsDBNull(ordinal));
 		}
 
 		/// <summary></summary>
@@ -460,13 +481,13 @@ namespace NHibernate.Driver
 		/// <summary>
 		/// Stores a Result from a DataReader in memory.
 		/// </summary>
-		private class NResult
+		private partial class NResult
 		{
 			// [row][column]
-			private readonly object[][] records;
+			private object[][] records;
 			private int colCount = 0;
 
-			private readonly DataTable schemaTable;
+			private DataTable schemaTable;
 
 			// key = field name
 			// index = field index
@@ -474,6 +495,8 @@ namespace NHibernate.Driver
 			private readonly IList<string> fieldIndexToName = new List<string>();
 			private readonly IList<System.Type> fieldTypes = new List<System.Type>();
 			private readonly IList<string> fieldDataTypeNames = new List<string>();
+
+			private NResult() { }
 
 			/// <summary>
 			/// Initializes a new instance of the NResult class.
@@ -483,9 +506,12 @@ namespace NHibernate.Driver
 			/// <see langword="true" /> if the <see cref="DbDataReader"/> is already positioned on the record
 			/// to start reading from.
 			/// </param>
-			internal NResult(DbDataReader reader, bool isMidstream)
+			internal static NResult Create(DbDataReader reader, bool isMidstream)
 			{
-				schemaTable = reader.GetSchemaTable();
+				var result = new NResult
+				{
+					schemaTable = reader.GetSchemaTable()
+				};
 
 				List<object[]> recordsList = new List<object[]>();
 				int rowIndex = 0;
@@ -499,13 +525,13 @@ namespace NHibernate.Driver
 						for (int i = 0; i < reader.FieldCount; i++)
 						{
 							string fieldName = reader.GetName(i);
-							fieldNameToIndex[fieldName] = i;
-							fieldIndexToName.Add(fieldName);
-							fieldTypes.Add(reader.GetFieldType(i));
-							fieldDataTypeNames.Add(reader.GetDataTypeName(i));
+							result.fieldNameToIndex[fieldName] = i;
+							result.fieldIndexToName.Add(fieldName);
+							result.fieldTypes.Add(reader.GetFieldType(i));
+							result.fieldDataTypeNames.Add(reader.GetDataTypeName(i));
 						}
 
-						colCount = reader.FieldCount;
+						result.colCount = reader.FieldCount;
 					}
 
 					rowIndex++;
@@ -519,7 +545,8 @@ namespace NHibernate.Driver
 					isMidstream = false;
 				}
 
-				records = recordsList.ToArray();
+				result.records = recordsList.ToArray();
+				return result;
 			}
 
 			/// <summary>

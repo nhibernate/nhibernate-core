@@ -12,7 +12,7 @@ using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.NHSpecificTest.NH3564
 {
-	public class MyDummyCache : ICache
+	public partial class MyDummyCache : ICache
 	{
 		private IDictionary hashtable = new Hashtable();
 		private readonly string regionName;

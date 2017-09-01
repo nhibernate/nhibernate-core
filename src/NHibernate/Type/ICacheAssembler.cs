@@ -2,7 +2,7 @@ using NHibernate.Engine;
 
 namespace NHibernate.Type
 {
-	public interface ICacheAssembler
+	public partial interface ICacheAssembler
 	{
 		/// <summary> Return a cacheable "disassembled" representation of the object.</summary>
 		/// <param name="value">the value to cache </param>

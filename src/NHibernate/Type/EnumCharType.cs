@@ -6,7 +6,7 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type
 {
 	[Serializable]
-	public class EnumCharType<T> : AbstractEnumType
+	public partial class EnumCharType<T> : AbstractEnumType
 	{
 
 		public EnumCharType() : base(new StringFixedLengthSqlType(1),typeof(T))

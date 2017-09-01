@@ -26,7 +26,7 @@ namespace NHibernate.Type
 	/// </para>
 	/// </remarks>
 	[Serializable]
-	public class SerializableType : MutableType
+	public partial class SerializableType : MutableType
 	{
 		private readonly System.Type serializableClass;
 		private readonly BinaryType binaryType;

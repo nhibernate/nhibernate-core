@@ -5,7 +5,7 @@ namespace NHibernate.Loader.Entity
 	/// <summary>
 	///  Loads entities for a <see cref="NHibernate.Persister.Entity.IEntityPersister"/>
 	/// </summary>
-	public interface IUniqueEntityLoader
+	public partial interface IUniqueEntityLoader
 	{
 		/// <summary>
 		/// Load an entity instance. If <c>OptionalObject</c> is supplied, load the entity

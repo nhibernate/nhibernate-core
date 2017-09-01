@@ -5,7 +5,7 @@ using NHibernate.Loader.Collection;
 
 namespace NHibernate.Persister.Collection
 {
-	public class NamedQueryCollectionInitializer : ICollectionInitializer
+	public partial class NamedQueryCollectionInitializer : ICollectionInitializer
 	{
 		private readonly string queryName;
 		private readonly ICollectionPersister persister;

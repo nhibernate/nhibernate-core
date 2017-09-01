@@ -5,7 +5,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Id.Enhanced
 {
-	public class OptimizerFactory
+	public partial class OptimizerFactory
 	{
 		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(OptimizerFactory));
 
@@ -96,7 +96,7 @@ namespace NHibernate.Id.Enhanced
 
 		#region Nested type: HiLoOptimizer
 
-		public class HiLoOptimizer : OptimizerSupport
+		public partial class HiLoOptimizer : OptimizerSupport
 		{
 			private long _upperLimit;
 			private long _lastSourceValue = -1;
@@ -170,7 +170,7 @@ namespace NHibernate.Id.Enhanced
 
 		#region Nested type: NoopOptimizer
 
-		public class NoopOptimizer : OptimizerSupport
+		public partial class NoopOptimizer : OptimizerSupport
 		{
 			private long _lastSourceValue = -1;
 
@@ -210,7 +210,7 @@ namespace NHibernate.Id.Enhanced
 		/// <summary>
 		/// Common support for optimizer implementations.
 		/// </summary>
-		public abstract class OptimizerSupport : IOptimizer
+		public abstract partial class OptimizerSupport : IOptimizer
 		{
 			/// <summary>
 			/// Construct an optimizer
@@ -262,7 +262,7 @@ namespace NHibernate.Id.Enhanced
 		/// range, then use the PooledLoOptimizer strategy.
 		/// </para>
 		/// </summary>
-		public class PooledOptimizer : OptimizerSupport, IInitialValueAwareOptimizer
+		public partial class PooledOptimizer : OptimizerSupport, IInitialValueAwareOptimizer
 		{
 			private long _hiValue = -1;
 			private long _value;
@@ -339,7 +339,7 @@ namespace NHibernate.Id.Enhanced
 
 		#region Nested type: PooledLoOptimizer
 
-		public class PooledLoOptimizer : OptimizerSupport
+		public partial class PooledLoOptimizer : OptimizerSupport
 		{
 			private long _lastSourceValue = -1; // last value read from db source
 			private long _value; // the current generator value

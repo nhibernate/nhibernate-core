@@ -9,7 +9,7 @@ namespace NHibernate.AdoNet
 	/// An implementation of the <see cref="IBatcher" /> 
 	/// interface that does no batching.
 	/// </summary>
-	public class NonBatchingBatcher : AbstractBatcher
+	public partial class NonBatchingBatcher : AbstractBatcher
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NonBatchingBatcher"/> class.

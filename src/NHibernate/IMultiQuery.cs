@@ -8,7 +8,7 @@ namespace NHibernate
 	/// <summary>
 	/// Combines several queries into a single database call
 	/// </summary>
-	public interface IMultiQuery
+	public partial interface IMultiQuery
 	{
 		/// <summary>
 		/// Get all the results

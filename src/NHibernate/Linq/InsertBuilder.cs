@@ -33,7 +33,7 @@ namespace NHibernate.Linq
 	/// </summary>
 	/// <typeparam name="TSource">The type of the entities selected as source of the insert.</typeparam>
 	/// <typeparam name="TTarget">The type of the entities to insert.</typeparam>
-	public class InsertBuilder<TSource, TTarget>
+	public partial class InsertBuilder<TSource, TTarget>
 	{
 		private readonly IQueryable<TSource> _source;
 		private readonly Assignments<TSource, TTarget> _assignments = new Assignments<TSource, TTarget>();

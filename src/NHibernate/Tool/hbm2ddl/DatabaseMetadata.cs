@@ -10,7 +10,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Tool.hbm2ddl
 {
-	public class DatabaseMetadata : IDatabaseMetadata
+	public partial class DatabaseMetadata : IDatabaseMetadata
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (DatabaseMetadata));
 

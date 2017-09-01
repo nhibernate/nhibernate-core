@@ -14,7 +14,7 @@ namespace NHibernate.Event.Default
 	/// (references held by application or other persistent instances are okay) 
 	/// </summary>
 	[Serializable]
-	public class DefaultEvictEventListener : IEvictEventListener
+	public partial class DefaultEvictEventListener : IEvictEventListener
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultEvictEventListener));
 

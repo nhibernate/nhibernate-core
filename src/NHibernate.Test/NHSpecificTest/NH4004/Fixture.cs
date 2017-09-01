@@ -2,7 +2,6 @@
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Dialect;
 using NHibernate.Mapping.ByCode;
-using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH4004
@@ -45,7 +44,7 @@ namespace NHibernate.Test.NHSpecificTest.NH4004
 		[Test]
 		public void SequenceShallBeDropped()
 		{
-			new SchemaExport(cfg).Drop(true, true);
+			DropSchema();
 
 			using (var connection = Sfi.ConnectionProvider.GetConnection())
 			{

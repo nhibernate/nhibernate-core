@@ -39,7 +39,7 @@ namespace NHibernate.Test.Futures
 
 				var persons = s.QueryOver<Person>().Future<Person>();
 
-				Assert.IsTrue(persons.All(p => s.IsReadOnly(p)));
+				Assert.IsTrue(persons.GetEnumerable().All(p => s.IsReadOnly(p)));
 			}
 		}
 
@@ -61,11 +61,11 @@ namespace NHibernate.Test.Futures
 				using (var logSpy = new SqlLogSpy())
 				{
 					int actualPersons5Count = 0;
-					foreach (var person in persons5)
+					foreach (var person in persons5.GetEnumerable())
 						actualPersons5Count++;
 
 					int actualPersons10Count = 0;
-					foreach (var person in persons10)
+					foreach (var person in persons10.GetEnumerable())
 						actualPersons10Count++;
 
 					var events = logSpy.Appender.GetEvents();
@@ -90,14 +90,14 @@ namespace NHibernate.Test.Futures
 						.Take(10)
 						.Future();
 
-					foreach (var person in persons10) { } // fire first future round-trip
+					foreach (var person in persons10.GetEnumerable()) { } // fire first future round-trip
 
 					var persons5 = s.QueryOver<Person>()
 						.Select(p => p.Id)
 						.Take(5)
 						.Future<int>();
 
-					foreach (var person in persons5) { } // fire second future round-trip
+					foreach (var person in persons5.GetEnumerable()) { } // fire second future round-trip
 
 					var events = logSpy.Appender.GetEvents();
 					Assert.AreEqual(2, events.Length);
@@ -128,7 +128,7 @@ namespace NHibernate.Test.Futures
 					Person singlePersonValue = singlePerson.Value;
 					int personId = personIds.Value;
 
-					foreach (var person in persons)
+					foreach (var person in persons.GetEnumerable())
 					{
 
 					}

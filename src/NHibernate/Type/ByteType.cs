@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.Byte"/> column.
 	/// </summary>
 	[Serializable]
-	public class ByteType : PrimitiveType, IDiscriminatorType, IVersionType
+	public partial class ByteType : PrimitiveType, IDiscriminatorType, IVersionType
 	{
 		private static readonly byte ZERO = 0;
 

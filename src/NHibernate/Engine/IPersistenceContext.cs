@@ -12,7 +12,7 @@ namespace NHibernate.Engine
 	/// Holds the state of the persistence context, including the
 	/// first-level cache, entries, snapshots, proxies, etc.
 	/// </summary>
-	public interface IPersistenceContext
+	public partial interface IPersistenceContext
 	{
 		bool IsStateless { get;}
 

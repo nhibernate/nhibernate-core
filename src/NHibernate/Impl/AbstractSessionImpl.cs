@@ -21,7 +21,7 @@ namespace NHibernate.Impl
 {
 	/// <summary> Functionality common to stateless and stateful sessions </summary>
 	[Serializable]
-	public abstract class AbstractSessionImpl : ISessionImplementor
+	public abstract partial class AbstractSessionImpl : ISessionImplementor
 	{
 		[NonSerialized]
 		private ISessionFactoryImplementor _factory;

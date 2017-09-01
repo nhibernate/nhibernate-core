@@ -14,7 +14,7 @@ namespace NHibernate.Proxy
 	/// to cglib was made in .net.
 	/// </remarks>
 	[Serializable]
-	public abstract class AbstractLazyInitializer : ILazyInitializer
+	public abstract partial class AbstractLazyInitializer : ILazyInitializer
 	{
 		/// <summary>
 		/// If this is returned by Invoke then the subclass needs to Invoke the

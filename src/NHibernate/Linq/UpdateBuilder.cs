@@ -8,7 +8,7 @@ namespace NHibernate.Linq
 	/// An update builder on which values to update can be specified.
 	/// </summary>
 	/// <typeparam name="TSource">The type of the entities to update.</typeparam>
-	public class UpdateBuilder<TSource>
+	public partial class UpdateBuilder<TSource>
 	{
 		private readonly IQueryable<TSource> _source;
 		private readonly Assignments<TSource, TSource> _assignments = new Assignments<TSource, TSource>();

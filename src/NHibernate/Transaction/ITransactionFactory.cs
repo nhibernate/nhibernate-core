@@ -15,7 +15,7 @@ namespace NHibernate.Transaction
 	/// Implementors must be threadsafe and should declare a public default constructor. 
 	/// <seealso cref="ITransactionContext"/>
 	/// </summary>
-	public interface ITransactionFactory
+	public partial interface ITransactionFactory
 	{
 		/// <summary>
 		/// Configure from the given properties

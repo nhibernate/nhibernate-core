@@ -10,7 +10,7 @@ namespace NHibernate.Type
 	/// Maps a <see cref="System.DateTime" /> Property to a <see cref="DbType.DateTime"/>
 	/// </summary>
 	[Serializable]
-	public class DateTime2Type : DateTimeType
+	public partial class DateTime2Type : DateTimeType
 	{
 		/// <summary></summary>
 		internal DateTime2Type() : base(SqlTypeFactory.DateTime2)

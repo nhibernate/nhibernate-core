@@ -8,7 +8,7 @@ namespace NHibernate.Persister.Entity
 	/// <summary> 
 	/// Not really a <tt>Loader</tt>, just a wrapper around a named query.
 	/// </summary>
-	public class NamedQueryLoader : IUniqueEntityLoader
+	public partial class NamedQueryLoader : IUniqueEntityLoader
 	{
 		private readonly string queryName;
 		private readonly IEntityPersister persister;

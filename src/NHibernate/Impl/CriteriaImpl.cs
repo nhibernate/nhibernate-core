@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using NHibernate.Criterion;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -14,7 +15,7 @@ namespace NHibernate.Impl
 	/// Implementation of the <see cref="ICriteria"/> interface
 	/// </summary>
 	[Serializable]
-	public class CriteriaImpl : ICriteria
+	public partial class CriteriaImpl : ICriteria
 	{
 		private readonly System.Type persistentClass;
 		private readonly List<CriterionEntry> criteria = new List<CriterionEntry>();
@@ -405,18 +406,18 @@ namespace NHibernate.Impl
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				return new FutureValue<T>(List<T>);
+				return new FutureValue<T>(List<T>, async cancellationToken => await ListAsync<T>(cancellationToken).ConfigureAwait(false));
 			}
 
 			session.FutureCriteriaBatch.Add<T>(this);
 			return session.FutureCriteriaBatch.GetFutureValue<T>();
 		}
 
-		public IEnumerable<T> Future<T>()
+		public IFutureEnumerable<T> Future<T>()
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				return List<T>();
+				return new DelayedEnumerator<T>(List<T>, async cancellationToken => await ListAsync<T>(cancellationToken).ConfigureAwait(false));
 			}
 
 			session.FutureCriteriaBatch.Add<T>(this);
@@ -634,7 +635,7 @@ namespace NHibernate.Impl
 		}
 
 		[Serializable]
-		public sealed class Subcriteria : ICriteria
+		public sealed partial class Subcriteria : ICriteria
 		{
 			// Added to simulate Java-style inner class
 			private readonly CriteriaImpl root;
@@ -790,7 +791,7 @@ namespace NHibernate.Impl
 				return root.FutureValue<T>();
 			}
 
-			public IEnumerable<T> Future<T>()
+			public IFutureEnumerable<T> Future<T>()
 			{
 				return root.Future<T>();
 			}
