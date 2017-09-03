@@ -16,7 +16,7 @@ namespace NHibernate.Test.SqlTest.Custom.Oracle
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class OracleCustomSQLFixtureAsync : CustomStoredProcSupportTest
+	public class OracleCustomSQLFixtureAsync : CustomStoredProcSupportTestAsync
 	{
 		protected override IList Mappings
 		{

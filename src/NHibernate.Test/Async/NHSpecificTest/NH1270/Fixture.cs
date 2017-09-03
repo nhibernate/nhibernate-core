@@ -19,11 +19,44 @@ namespace NHibernate.Test.NHSpecificTest.NH1270
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
-	public partial class Fixture
+	[TestFixture]
+	public class FixtureAsync
 	{
+		private HbmMapping GetMappings()
+		{
+			var mapper = new ModelMapper();
+			mapper.Class<User>(rt =>
+							   {
+								rt.Id(x => x.Id, map => map.Generator(Generators.Guid));
+								rt.Property(x => x.Name);
+													rt.Set(x => x.Roles, map =>
+																							 {
+																								 map.Table("UsersToRoles");
+																								 map.Inverse(true);
+																								 map.Key(km => km.Column("UserId"));
+																							 }, rel => rel.ManyToMany(mm =>
+																													  {
+																																					mm.Column("RoleId");
+																														mm.ForeignKey("FK_RoleInUser");
+																													  }));
+							   });
+			mapper.Class<Role>(rt =>
+							   {
+								rt.Id(x => x.Id, map => map.Generator(Generators.Guid));
+								rt.Property(x => x.Name);
+								rt.Set(x => x.Users, map =>
+													 {
+														map.Table("UsersToRoles");
+																								map.Key(km => km.Column("RoleId"));
+																							 }, rel => rel.ManyToMany(mm =>
+																													  {
+																																					mm.Column("UserId");
+																														mm.ForeignKey("FK_UserInRole");
+																													  }));
+							   });
+			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
+			return mappings;
+		}
 
 		[Test]
 		public Task WhenMapCustomFkNamesThenUseItAsync()

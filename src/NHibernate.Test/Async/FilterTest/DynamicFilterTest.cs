@@ -77,7 +77,7 @@ namespace NHibernate.Test.FilterTest
 			Assert.AreEqual(2, sp.Orders.Count, "Actual cached version got over-written");
 
 			session.Close();
-			testData.Release();
+			await (testData.ReleaseAsync());
 		}
 
 		[Test]
@@ -105,7 +105,7 @@ namespace NHibernate.Test.FilterTest
 			Assert.AreEqual(sp.Orders.Count, 1, "Incorrect order count");
 
 			session.Close();
-			testData.Release();
+			await (testData.ReleaseAsync());
 		}
 
 		[Test]
@@ -139,7 +139,7 @@ namespace NHibernate.Test.FilterTest
 			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
 
 			session.Close();
-			testData.Release();
+			await (testData.ReleaseAsync());
 		}
 
 		[Test]
@@ -169,7 +169,7 @@ namespace NHibernate.Test.FilterTest
 			Assert.IsTrue(results.Count == 1);
 
 			session.Close();
-			testData.Release();
+			await (testData.ReleaseAsync());
 		}
 
 		[Test]
@@ -205,7 +205,7 @@ namespace NHibernate.Test.FilterTest
 			Assert.AreEqual(1, products.Count, "Incorrect product count");
 
 			session.Close();
-			testData.Release();
+			await (testData.ReleaseAsync());
 		}
 
 
@@ -348,7 +348,7 @@ namespace NHibernate.Test.FilterTest
 			Assert.AreEqual(1, salesperson.Orders.Count, "Incorrect order count");
 
 			session.Close();
-			testData.Release();
+			await (testData.ReleaseAsync());
 		}
 
 		[Test]
@@ -371,7 +371,7 @@ namespace NHibernate.Test.FilterTest
 			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
 
 			session.Close();
-			testData.Release();
+			await (testData.ReleaseAsync());
 		}
 
 		[Test]
@@ -393,7 +393,7 @@ namespace NHibernate.Test.FilterTest
 			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
 
 			session.Close();
-			testData.Release();
+			await (testData.ReleaseAsync());
 		}
 
         [Test]
@@ -414,7 +414,7 @@ namespace NHibernate.Test.FilterTest
 			Assert.AreEqual(1, prod.Categories.Count, "Incorrect Product.categories count for filter");
 
 			session.Close();
-			testData.Release();
+			await (testData.ReleaseAsync());
 		}
 
 		[Test]
@@ -461,7 +461,7 @@ namespace NHibernate.Test.FilterTest
 			//    );
 
 			session.Close();
-			testData.Release();
+			await (testData.ReleaseAsync());
 		}
 
 		[Test]
@@ -484,7 +484,7 @@ namespace NHibernate.Test.FilterTest
 			Assert.AreEqual(1, prod.Categories.Count, "Incorrect Product.categories count for filter on collection Load");
 
 			session.Close();
-			testData.Release();
+			await (testData.ReleaseAsync());
 		}
 
 		[Test]
@@ -505,7 +505,7 @@ namespace NHibernate.Test.FilterTest
 			Assert.AreEqual(1, prod.Categories.Count, "Incorrect Product.categories count for filter with HQL");
 
 			session.Close();
-			testData.Release();
+			await (testData.ReleaseAsync());
 		}
 
 		[Test]
@@ -553,7 +553,7 @@ namespace NHibernate.Test.FilterTest
 			//);
 
 			session.Close();
-			testData.Release();
+			await (testData.ReleaseAsync());
 		}
 
 		[Test]
@@ -603,7 +603,7 @@ namespace NHibernate.Test.FilterTest
 			//    );
 
 			session.Close();
-			testData.Release();
+			await (testData.ReleaseAsync());
 		}
 
 		protected override string MappingsAssembly => "NHibernate.Test";
@@ -734,6 +734,20 @@ namespace NHibernate.Test.FilterTest
 
 				await (session.SaveAsync(order2, cancellationToken));
 				entitiesToCleanUp.Add(order2);
+
+				await (transaction.CommitAsync(cancellationToken));
+				session.Close();
+			}
+
+			public async Task ReleaseAsync(CancellationToken cancellationToken = default(CancellationToken))
+			{
+				ISession session = outer.OpenSession();
+				ITransaction transaction = session.BeginTransaction();
+
+				foreach (object obj in entitiesToCleanUp)
+				{
+					await (session.DeleteAsync(obj, cancellationToken));
+				}
 
 				await (transaction.CommitAsync(cancellationToken));
 				session.Close();

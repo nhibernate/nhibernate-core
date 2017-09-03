@@ -93,4 +93,77 @@ namespace NHibernate.Test.NHSpecificTest.NH3564
 			// local cache, so we use synchronization
 		}
 	}
+
+	[TestFixture]
+	public class FixtureByCodeAsync : TestCaseMappingByCode
+	{
+		protected override HbmMapping GetMappings()
+		{
+			var mapper = new ModelMapper();
+			mapper.Class<Person>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+				rc.Property(x => x.DateOfBirth, pm =>
+				{
+					pm.Type(NHibernateUtil.Timestamp);
+				});
+			});
+
+			return mapper.CompileMappingForAllExplicitlyAddedEntities();
+		}
+
+		protected override void Configure(Configuration configuration)
+		{
+			configuration.SetProperty(Environment.CacheProvider, typeof (MyDummyCacheProvider).AssemblyQualifiedName);
+			configuration.SetProperty(Environment.UseQueryCache, "true");
+		}
+
+		protected override void OnSetUp()
+		{
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				session.Save(new Person {Name = "Bob", DateOfBirth = new DateTime(2015, 4, 22)});
+				session.Save(new Person {Name = "Sally", DateOfBirth = new DateTime(2014, 4, 22)});
+
+				transaction.Commit();
+			}
+		}
+
+		protected override void OnTearDown()
+		{
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				session.Delete("from System.Object");
+
+				session.Flush();
+				transaction.Commit();
+			}
+		}
+
+		[Test]
+		public async Task ShouldUseDifferentCacheAsync()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var bob = await (session.Query<Person>()
+					.SetOptions(o => o.SetCacheable(true))
+					.Where(e => e.DateOfBirth == new DateTime(2015, 4, 22))
+					.ToListAsync());
+				var sally = await (session.Query<Person>()
+					.SetOptions(o => o.SetCacheable(true))
+					.Where(e => e.DateOfBirth == new DateTime(2014, 4, 22))
+					.ToListAsync());
+
+				Assert.That(bob, Has.Count.EqualTo(1));
+				Assert.That(bob[0].Name, Is.EqualTo("Bob"));
+
+				Assert.That(sally, Has.Count.EqualTo(1));
+				Assert.That(sally[0].Name, Is.EqualTo("Sally"));
+			}
+		}
+	}
 }
