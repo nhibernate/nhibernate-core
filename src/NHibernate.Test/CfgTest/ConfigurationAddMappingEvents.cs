@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.CfgTest
 {
+	[TestFixture]
 	public class ConfigurationAddMappingEvents
 	{
 		private const string ProductLineMapping =

@@ -15,6 +15,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Insertordering
 {
+	[TestFixture]
 	public class InsertOrderingFixture : TestCase
 	{
 		const int batchSize = 10;

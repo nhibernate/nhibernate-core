@@ -6,6 +6,7 @@ using NHibernate.Mapping.ByCode.Conformist;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRegistrationTests
 {
+	[TestFixture]
 	public class UnionSubclassMappingRegistrationTest
 	{
 		public class MyClass

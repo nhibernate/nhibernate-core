@@ -8,6 +8,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests
 {
+	[TestFixture]
 	public class ComponentWithBagOfNestedComponentsTests : TestCase
 	{
 		public class OwnedItem

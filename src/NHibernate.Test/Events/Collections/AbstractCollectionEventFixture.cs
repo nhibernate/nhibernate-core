@@ -8,6 +8,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Events.Collections
 {
+	[TestFixture]
 	public abstract class AbstractCollectionEventFixture : TestCase
 	{
 		protected override string MappingsAssembly

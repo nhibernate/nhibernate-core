@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2188
 {
+	[TestFixture]
 	public class AppDomainWithMultipleSearchPath
 	{
 		public class MyNhConfiguration: Configuration

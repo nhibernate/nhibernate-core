@@ -3,6 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 {
+	[TestFixture]
 	public class GetFirstImplementorConcreteClassesTest
 	{
 		private class MyClass1

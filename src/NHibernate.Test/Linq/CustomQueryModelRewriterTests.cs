@@ -11,6 +11,7 @@ using Remotion.Linq.Parsing;
 
 namespace NHibernate.Test.Linq
 {
+	[TestFixture]
 	public class CustomQueryModelRewriterTests : LinqTestCase
 	{
 		protected override void Configure(Cfg.Configuration configuration)

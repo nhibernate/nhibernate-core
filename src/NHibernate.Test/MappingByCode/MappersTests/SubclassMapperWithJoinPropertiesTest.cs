@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests
 {
+	[TestFixture]
 	public class SubclassMapperWithJoinPropertiesTest
 	{
 		private class MyClass

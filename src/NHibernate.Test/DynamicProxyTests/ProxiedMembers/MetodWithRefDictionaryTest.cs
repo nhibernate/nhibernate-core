@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.DynamicProxyTests.ProxiedMembers
 {
+	[TestFixture]
 	public class MetodWithRefDictionaryTest
 	{
 		public class MyClass

@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Linq.ByMethod
 {
+	[TestFixture]
 	public class CastTests : LinqTestCase
 	{
 		[Test]

@@ -9,6 +9,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 {
+	[TestFixture]
 	public class TypeExtensionsTest
 	{
 		private const BindingFlags BindingFlagsIncludePrivate = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;

@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests
 {
+	[TestFixture]
 	public class IdMapperTest
 	{
 		// The strategy Assigned is the default and does not need the "generator"

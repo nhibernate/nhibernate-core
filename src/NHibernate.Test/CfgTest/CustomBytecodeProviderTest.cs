@@ -7,6 +7,7 @@ using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.CfgTest
 {
+	[TestFixture]
 	public class CustomBytecodeProviderTest
 	{
 		private class MyByteCodeProvider : AbstractBytecodeProvider

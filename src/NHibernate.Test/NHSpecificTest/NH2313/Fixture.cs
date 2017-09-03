@@ -3,6 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2313
 {
+	[TestFixture]
 	public class Fixture
 	{
 		[Test]

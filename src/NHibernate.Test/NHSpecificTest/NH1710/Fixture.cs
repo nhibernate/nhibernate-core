@@ -11,6 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1710
 		public virtual decimal? Amount { get; set; }
 	}
 
+	[TestFixture]
 	public abstract class BaseFixture
 	{
 		protected const string TestNameSpace = "NHibernate.Test.NHSpecificTest.NH1710.";

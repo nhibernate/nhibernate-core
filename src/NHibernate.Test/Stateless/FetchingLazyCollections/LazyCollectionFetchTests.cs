@@ -9,6 +9,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Stateless.FetchingLazyCollections
 {
+	[TestFixture]
 	public class LazyCollectionFetchTests : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()

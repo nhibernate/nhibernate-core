@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 
 namespace NHibernate.Test.NHSpecificTest.NH1421
 {
+	[TestFixture]
 	public class Fixture: BugTestCase
 	{
 		[Test]

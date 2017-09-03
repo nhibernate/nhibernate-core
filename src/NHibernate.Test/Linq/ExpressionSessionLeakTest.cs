@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
 {
+	[TestFixture]
 	public class ExpressionSessionLeakTest : LinqTestCase
 	{
 		[Test]

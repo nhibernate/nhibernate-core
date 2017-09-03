@@ -16,6 +16,7 @@ namespace NHibernate.Test.DynamicProxyTests.ProxiedMembers
 		}
 	}
 
+	[TestFixture]
 	public class Fixture
 	{
 		[Test]

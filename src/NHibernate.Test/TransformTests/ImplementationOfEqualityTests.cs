@@ -8,6 +8,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.TransformTests
 {
+	[TestFixture]
 	public class ImplementationOfEqualityTests
 	{
 		private readonly IEnumerable<System.Type> transformerTypes =

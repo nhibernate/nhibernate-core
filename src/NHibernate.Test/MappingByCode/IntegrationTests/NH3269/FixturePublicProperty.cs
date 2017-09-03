@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3269
 {
+	[TestFixture]
 	public class FixturePublicProperty : TestCaseMappingByCode
 	{
 		[Test]

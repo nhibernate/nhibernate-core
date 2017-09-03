@@ -3,6 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Events.Collections.Association
 {
+	[TestFixture]
 	public abstract class AbstractAssociationCollectionEventFixture : AbstractCollectionEventFixture
 	{
 		[Test]

@@ -11,6 +11,7 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 	/// <summary>
 	/// Hibernate tests ported from trunk revision 19910 (July 8, 2010)
 	/// </summary>
+	[TestFixture]
 	public abstract class AbstractEntityWithManyToManyTest : TestCase
 	{
 		private bool isPlanContractsInverse;

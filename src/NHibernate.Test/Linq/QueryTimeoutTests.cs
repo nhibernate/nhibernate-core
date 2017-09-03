@@ -9,6 +9,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
 {
+	[TestFixture]
 	public class QueryTimeoutTests : LinqTestCase
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)

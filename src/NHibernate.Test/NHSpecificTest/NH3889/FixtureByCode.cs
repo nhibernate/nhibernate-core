@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3889
 {
+	[TestFixture]
 	public class ByCodeFixture : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()

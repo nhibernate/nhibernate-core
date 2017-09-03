@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MixAutomapping
 {
+	[TestFixture]
 	public class PolymorphicPropertiesMapping
 	{
 		const BindingFlags RootClassPropertiesBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy;

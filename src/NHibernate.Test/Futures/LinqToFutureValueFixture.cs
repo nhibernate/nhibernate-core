@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Futures
 {
+	[TestFixture]
 	public class LinqToFutureValueFixture : FutureFixture
 	{
 		[Test]

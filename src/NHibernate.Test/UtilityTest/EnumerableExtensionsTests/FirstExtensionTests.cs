@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.UtilityTest.EnumerableExtensionsTests
 {
+	[TestFixture]
 	public class FirstExtensionTests
 	{
 		[Test]

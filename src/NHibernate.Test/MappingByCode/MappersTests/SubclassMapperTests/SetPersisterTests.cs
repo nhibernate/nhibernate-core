@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests.SubclassMapperTests
 {
+	[TestFixture]
 	public class SetPersisterTests
 	{
 		private class EntitySimple

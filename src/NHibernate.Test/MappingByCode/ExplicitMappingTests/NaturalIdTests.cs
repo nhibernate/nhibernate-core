@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 {
+	[TestFixture]
 	public class NaturalIdTests
 	{
 		private class MyClass

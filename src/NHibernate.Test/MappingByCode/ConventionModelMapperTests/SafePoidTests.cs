@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 {
+	[TestFixture]
 	public class SafePoidTests
 	{
 		private class MyClassWithoutPoid

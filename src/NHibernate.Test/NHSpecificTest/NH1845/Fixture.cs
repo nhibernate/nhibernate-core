@@ -3,6 +3,7 @@ using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1845
 {
+	[TestFixture]
 	public class Fixture : TestCaseMappingByCode
 	{
 

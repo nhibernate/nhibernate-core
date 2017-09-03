@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.DriverTest
 {
+	[TestFixture]
 	public class DbProviderFactoryDriveConnectionCommandProviderTest
 	{
 		[Test]

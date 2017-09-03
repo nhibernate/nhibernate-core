@@ -7,7 +7,8 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2583
 {
-    public class ManualTestFixture : BugTestCase
+	[TestFixture]
+	public class ManualTestFixture : BugTestCase
     {
         /// <summary>
         /// This setup is used in most tests in here - but not all; and we might want to

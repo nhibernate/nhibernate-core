@@ -18,6 +18,7 @@ namespace NHibernate.Test.Events
 		}
 	}
 
+	[TestFixture]
 	public partial class DisposableListenersTest
 	{
 		[Test]
