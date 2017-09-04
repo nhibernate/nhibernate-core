@@ -961,10 +961,18 @@ namespace NHibernate.Impl
 				{
 					throw new HibernateException("Flush during cascade is dangerous");
 				}
-				IFlushEventListener[] flushEventListener = listeners.FlushEventListeners;
-				for (int i = 0; i < flushEventListener.Length; i++)
+				dontFlushFromFind++;
+				try
 				{
-					await (flushEventListener[i].OnFlushAsync(new FlushEvent(this), cancellationToken)).ConfigureAwait(false);
+					IFlushEventListener[] flushEventListener = listeners.FlushEventListeners;
+					for (int i = 0; i < flushEventListener.Length; i++)
+					{
+						await (flushEventListener[i].OnFlushAsync(new FlushEvent(this), cancellationToken)).ConfigureAwait(false);
+					}
+				}
+				finally
+				{
+					dontFlushFromFind--;
 				}
 			}
 		}
