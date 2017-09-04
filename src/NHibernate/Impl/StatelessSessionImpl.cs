@@ -306,11 +306,6 @@ namespace NHibernate.Impl
 			get { throw new NotSupportedException(); }
 		}
 
-		public override int DontFlushFromFind
-		{
-			get { return 0; }
-		}
-
 		public override ConnectionManager ConnectionManager
 		{
 			get { return connectionManager; }

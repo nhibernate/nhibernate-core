@@ -11,6 +11,11 @@ namespace NHibernate.Event
 		/// <summary> Get the ActionQueue for this session</summary>
 		ActionQueue ActionQueue { get;}
 
+		/// <summary>
+		/// Is auto-flush suspended?
+		/// </summary>
+		bool AutoFlushSuspended { get; }
+
 		/// <summary> 
 		/// Instantiate an entity instance, using either an interceptor,
 		/// or the given persister
@@ -34,5 +39,12 @@ namespace NHibernate.Event
         
 		/// <summary> Cascade delete an entity instance</summary>
 		void Delete(string entityName, object child, bool isCascadeDeleteEnabled, ISet<object> transientEntities);
+
+		/// <summary>
+		/// Suspend auto-flushing, yielding a disposable to dispose when auto flush should be restored. Supports
+		/// being called multiple times.
+		/// </summary>
+		/// <returns>A disposable to dispose when auto flush should be restored.</returns>
+		IDisposable SuspendAutoFlush();
 	}
 }

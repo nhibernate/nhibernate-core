@@ -208,7 +208,6 @@ namespace NHibernate.Impl
 
 		public abstract IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar);
 		public abstract EventListeners Listeners { get; }
-		public abstract int DontFlushFromFind { get; }
 		public abstract ConnectionManager ConnectionManager { get; }
 		public abstract bool IsEventSource { get; }
 		public abstract object GetEntityUsingInterceptor(EntityKey key);

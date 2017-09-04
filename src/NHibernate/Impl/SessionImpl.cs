@@ -53,10 +53,10 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private readonly ActionQueue actionQueue;
 
-		private readonly ConnectionManager connectionManager;
-
 		[NonSerialized]
-		private int dontFlushFromFind;
+		private int _suspendAutoFlushCount;
+
+		private readonly ConnectionManager connectionManager;
 
 		[NonSerialized]
 		private readonly IDictionary<string, IFilter> enabledFilters = new Dictionary<string, IFilter>();
@@ -536,25 +536,26 @@ namespace NHibernate.Impl
 				AutoFlushIfRequired(plan.QuerySpaces);
 
 				bool success = false;
-				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
-				try
+				using (SuspendAutoFlush()) //stops flush being called multiple times if this method is recursively called
 				{
-					plan.PerformList(queryParameters, this, results);
-					success = true;
-				}
-				catch (HibernateException)
-				{
-					// Do not call Convert on HibernateExceptions
-					throw;
-				}
-				catch (Exception e)
-				{
-					throw Convert(e, "Could not execute query");
-				}
-				finally
-				{
-					dontFlushFromFind--;
-					AfterOperation(success);
+					try
+					{
+						plan.PerformList(queryParameters, this, results);
+						success = true;
+					}
+					catch (HibernateException)
+					{
+						// Do not call Convert on HibernateExceptions
+						throw;
+					}
+					catch (Exception e)
+					{
+						throw Convert(e, "Could not execute query");
+					}
+					finally
+					{
+						AfterOperation(success);
+					}
 				}
 			}
 		}
@@ -578,14 +579,9 @@ namespace NHibernate.Impl
 				var plan = GetHQLQueryPlan(queryExpression, true);
 				AutoFlushIfRequired(plan.QuerySpaces);
 
-				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
-				try
+				using (SuspendAutoFlush()) //stops flush being called multiple times if this method is recursively called
 				{
 					return plan.PerformIterate<T>(queryParameters, this);
-				}
-				finally
-				{
-					dontFlushFromFind--;
 				}
 			}
 		}
@@ -599,14 +595,9 @@ namespace NHibernate.Impl
 				var plan = GetHQLQueryPlan(queryExpression, true);
 				AutoFlushIfRequired(plan.QuerySpaces);
 
-				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
-				try
+				using (SuspendAutoFlush()) //stops flush being called multiple times if this method is recursively called
 				{
 					return plan.PerformIterate(queryParameters, this);
-				}
-				finally
-				{
-					dontFlushFromFind--;
 				}
 			}
 		}
@@ -858,6 +849,34 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				FireDelete(new DeleteEvent(entityName, child, isCascadeDeleteEnabled, this), transientEntities);
+			}
+		}
+
+		/// <inheritdoc/>
+		public bool AutoFlushSuspended => _suspendAutoFlushCount != 0;
+
+		/// <inheritdoc/>
+		public IDisposable SuspendAutoFlush()
+		{
+			return new SuspendAutoFlushHelper(this);
+		}
+
+		private sealed class SuspendAutoFlushHelper : IDisposable
+		{
+			private SessionImpl _session;
+
+			public SuspendAutoFlushHelper(SessionImpl session)
+			{
+				_session = session;
+				_session._suspendAutoFlushCount++;
+			}
+
+			public void Dispose()
+			{
+				if (_session == null)
+					throw new ObjectDisposedException("The auto-flush suspension helper has been disposed already");
+				_session._suspendAutoFlushCount--;
+				_session = null;
 			}
 		}
 
@@ -1360,18 +1379,13 @@ namespace NHibernate.Impl
 				{
 					throw new HibernateException("Flush during cascade is dangerous");
 				}
-				dontFlushFromFind++;
-				try
+				using (SuspendAutoFlush())
 				{
 					IFlushEventListener[] flushEventListener = listeners.FlushEventListeners;
 					for (int i = 0; i < flushEventListener.Length; i++)
 					{
 						flushEventListener[i].OnFlush(new FlushEvent(this));
 					}
-				}
-				finally
-				{
-					dontFlushFromFind--;
 				}
 			}
 		}
@@ -1619,25 +1633,26 @@ namespace NHibernate.Impl
 				FilterQueryPlan plan = GetFilterQueryPlan(collection, filter, queryParameters, false);
 
 				bool success = false;
-				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
-				try
+				using (SuspendAutoFlush()) //stops flush being called multiple times if this method is recursively called
 				{
-					plan.PerformList(queryParameters, this, results);
-					success = true;
-				}
-				catch (HibernateException)
-				{
-					// Do not call Convert on HibernateExceptions
-					throw;
-				}
-				catch (Exception e)
-				{
-					throw Convert(e, "could not execute query");
-				}
-				finally
-				{
-					dontFlushFromFind--;
-					AfterOperation(success);
+					try
+					{
+						plan.PerformList(queryParameters, this, results);
+						success = true;
+					}
+					catch (HibernateException)
+					{
+						// Do not call Convert on HibernateExceptions
+						throw;
+					}
+					catch (Exception e)
+					{
+						throw Convert(e, "could not execute query");
+					}
+					finally
+					{
+						AfterOperation(success);
+					}
 				}
 			}
 		}
@@ -1801,30 +1816,30 @@ namespace NHibernate.Impl
 
 				AutoFlushIfRequired(spaces);
 
-				dontFlushFromFind++;
-
 				bool success = false;
-				try
+				using (SuspendAutoFlush())
 				{
-					for (int i = size - 1; i >= 0; i--)
+					try
 					{
-						ArrayHelper.AddAll(results, loaders[i].List(this));
+						for (int i = size - 1; i >= 0; i--)
+						{
+							ArrayHelper.AddAll(results, loaders[i].List(this));
+						}
+						success = true;
 					}
-					success = true;
-				}
-				catch (HibernateException)
-				{
-					// Do not call Convert on HibernateExceptions
-					throw;
-				}
-				catch (Exception sqle)
-				{
-					throw Convert(sqle, "Unable to perform find");
-				}
-				finally
-				{
-					dontFlushFromFind--;
-					AfterOperation(success);
+					catch (HibernateException)
+					{
+						// Do not call Convert on HibernateExceptions
+						throw;
+					}
+					catch (Exception sqle)
+					{
+						throw Convert(sqle, "Unable to perform find");
+					}
+					finally
+					{
+						AfterOperation(success);
+					}
 				}
 			}
 		}
@@ -1899,16 +1914,17 @@ namespace NHibernate.Impl
 				AutoFlushIfRequired(loader.QuerySpaces);
 
 				bool success = false;
-				dontFlushFromFind++;
-				try
+				using (SuspendAutoFlush())
 				{
-					ArrayHelper.AddAll(results, loader.List(this, queryParameters));
-					success = true;
-				}
-				finally
-				{
-					dontFlushFromFind--;
-					AfterOperation(success);
+					try
+					{
+						ArrayHelper.AddAll(results, loader.List(this, queryParameters));
+						success = true;
+					}
+					finally
+					{
+						AfterOperation(success);
+					}
 				}
 			}
 		}
@@ -2158,11 +2174,6 @@ namespace NHibernate.Impl
 		public override EventListeners Listeners
 		{
 			get { return listeners; }
-		}
-
-		public override int DontFlushFromFind
-		{
-			get { return dontFlushFromFind; }
 		}
 
 		public override CacheMode CacheMode

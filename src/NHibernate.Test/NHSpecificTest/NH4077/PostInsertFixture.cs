@@ -28,6 +28,25 @@ namespace NHibernate.Test.NHSpecificTest.NH4077
 			}
 		}
 
+		[Test]
+		public void Autoflush_MayTriggerAdditionalAutoFlushFromEvents()
+		{
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				// using FlushMode.Commit prevents the issue; using the default FlushMode.Auto breaks.
+				//session.FlushMode = FlushMode.Commit;
+				session.Save(new Entity { Code = "one" });
+				session.Save(new Entity { Code = "two" });
+
+				// Querying the entity triggers an auto-flush
+				var count = session.CreateQuery("select count(o) from Entity o").UniqueResult<long>();
+				Assert.That(count, Is.GreaterThan(0));
+				transaction.Commit();
+				session.Flush();
+			}
+		}
+
 		protected override HbmMapping GetMappings()
 		{
 			var mapper = new ModelMapper();

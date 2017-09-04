@@ -36,34 +36,37 @@ namespace NHibernate.Event.Default
 
 			if (FlushMightBeNeeded(source))
 			{
-				int oldSize = source.ActionQueue.CollectionRemovalsCount;
-
-				await (FlushEverythingToExecutionsAsync(@event, cancellationToken)).ConfigureAwait(false);
-
-				if (FlushIsReallyNeeded(@event, source))
+				using (source.SuspendAutoFlush())
 				{
-					if (log.IsDebugEnabled)
-						log.Debug("Need to execute flush");
+					int oldSize = source.ActionQueue.CollectionRemovalsCount;
 
-					await (PerformExecutionsAsync(source, cancellationToken)).ConfigureAwait(false);
-					PostFlush(source);
-					// note: performExecutions() clears all collectionXxxxtion
-					// collections (the collection actions) in the session
+					await (FlushEverythingToExecutionsAsync(@event, cancellationToken)).ConfigureAwait(false);
 
-					if (source.Factory.Statistics.IsStatisticsEnabled)
+					if (FlushIsReallyNeeded(@event, source))
 					{
-						source.Factory.StatisticsImplementor.Flush();
+						if (log.IsDebugEnabled)
+							log.Debug("Need to execute flush");
+
+						await (PerformExecutionsAsync(source, cancellationToken)).ConfigureAwait(false);
+						PostFlush(source);
+						// note: performExecutions() clears all collectionXxxxtion
+						// collections (the collection actions) in the session
+
+						if (source.Factory.Statistics.IsStatisticsEnabled)
+						{
+							source.Factory.StatisticsImplementor.Flush();
+						}
 					}
-				}
-				else
-				{
+					else
+					{
 
-					if (log.IsDebugEnabled)
-						log.Debug("Dont need to execute flush");
-					source.ActionQueue.ClearFromFlushNeededCheck(oldSize);
-				}
+						if (log.IsDebugEnabled)
+							log.Debug("Dont need to execute flush");
+						source.ActionQueue.ClearFromFlushNeededCheck(oldSize);
+					}
 
-				@event.FlushRequired = FlushIsReallyNeeded(@event, source);
+					@event.FlushRequired = FlushIsReallyNeeded(@event, source);
+				}
 			}
 		}
 
