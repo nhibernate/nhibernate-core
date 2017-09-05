@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Event;
 using NHibernate.Event.Default;
 
@@ -157,6 +159,15 @@ namespace NHibernate.Test.Events.Collections
 			{
 				base.OnInitializeCollection(@event);
 				AddEvent(@event, this);
+			}
+
+			public override Task OnInitializeCollectionAsync(InitializeCollectionEvent @event, CancellationToken cancellationToken)
+			{
+				var result = base.OnInitializeCollectionAsync(@event, cancellationToken);
+
+				AddEvent(@event, this);
+
+				return result;
 			}
 		}
 

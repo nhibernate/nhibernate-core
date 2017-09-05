@@ -156,8 +156,6 @@
   applyChanges: true
   analyzation:
     methodConversion:
-    - conversion: Ignore
-      hasAttributeName: IgnoreAttribute
     - conversion: Smart
       hasAttributeName: TestAttribute
     - conversion: Smart

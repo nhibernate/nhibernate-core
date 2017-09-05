@@ -1,5 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Exceptions;
 using NHibernate.Linq;
 using NUnit.Framework;
 
@@ -30,8 +33,10 @@ namespace NHibernate.Test.Linq.ByMethod
 		public void CastDowncast()
 		{
 			var query = session.Query<Mammal>().Cast<Dog>();
+			List<Dog> list;
 			// the list contains at least one Cat then should Throws
-			Assert.That(() => query.ToList(), Throws.Exception);
+			// Do not use bare Throws.Exception due to https://github.com/nunit/nunit/issues/1899
+			Assert.That(() => list = query.ToList(), Throws.InstanceOf<GenericADOException>());
 		}
 
 		[Test]
@@ -47,7 +52,8 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			var query = session.Query<Animal>().OfType<Mammal>().Cast<Dog>();
 			// the list contains at least one Cat then should Throws
-			Assert.That(() => query.ToList(), Throws.Exception);
+			// Do not use bare Throws.Exception due to https://github.com/nunit/nunit/issues/1899
+			Assert.That(() => query.ToList(), Throws.InstanceOf<Exception>());
 		}
 	}
 }
