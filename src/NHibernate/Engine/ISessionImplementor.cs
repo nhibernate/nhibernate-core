@@ -225,8 +225,6 @@ namespace NHibernate.Engine
 		/// <summary> Retrieves the configured event listeners from this event source. </summary>
 		EventListeners Listeners { get; }
 
-		int DontFlushFromFind { get; }
-
 		ConnectionManager ConnectionManager { get; }
 
 		bool IsEventSource { get; }

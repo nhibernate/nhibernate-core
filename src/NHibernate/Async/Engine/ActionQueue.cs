@@ -40,9 +40,12 @@ namespace NHibernate.Engine
 		private async Task ExecuteActionsAsync(IList list, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			int size = list.Count;
-			for (int i = 0; i < size; i++)
-				await (ExecuteAsync((IExecutable)list[i], cancellationToken)).ConfigureAwait(false);
+			// Actions may raise events to which user code can react and cause changes to action list.
+			// It will then fail here due to list being modified. (Some previous code was dodging the
+			// trouble with a for loop which was not failing provided the list was not getting smaller.
+			// But then it was clearing it without having executed added actions (if any), ...)
+			foreach (IExecutable executable in list)
+				await (ExecuteAsync(executable, cancellationToken)).ConfigureAwait(false);
 
 			list.Clear();
 			await (session.Batcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);

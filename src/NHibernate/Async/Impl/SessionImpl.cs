@@ -233,25 +233,26 @@ namespace NHibernate.Impl
 				await (AutoFlushIfRequiredAsync(plan.QuerySpaces, cancellationToken)).ConfigureAwait(false);
 
 				bool success = false;
-				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
-				try
+				using (SuspendAutoFlush()) //stops flush being called multiple times if this method is recursively called
 				{
-					await (plan.PerformListAsync(queryParameters, this, results, cancellationToken)).ConfigureAwait(false);
-					success = true;
-				}
-				catch (HibernateException)
-				{
-					// Do not call Convert on HibernateExceptions
-					throw;
-				}
-				catch (Exception e)
-				{
-					throw Convert(e, "Could not execute query");
-				}
-				finally
-				{
-					dontFlushFromFind--;
-					await (AfterOperationAsync(success, cancellationToken)).ConfigureAwait(false);
+					try
+					{
+						await (plan.PerformListAsync(queryParameters, this, results, cancellationToken)).ConfigureAwait(false);
+						success = true;
+					}
+					catch (HibernateException)
+					{
+						// Do not call Convert on HibernateExceptions
+						throw;
+					}
+					catch (Exception e)
+					{
+						throw Convert(e, "Could not execute query");
+					}
+					finally
+					{
+						await (AfterOperationAsync(success, cancellationToken)).ConfigureAwait(false);
+					}
 				}
 			}
 		}
@@ -277,14 +278,9 @@ namespace NHibernate.Impl
 				var plan = GetHQLQueryPlan(queryExpression, true);
 				await (AutoFlushIfRequiredAsync(plan.QuerySpaces, cancellationToken)).ConfigureAwait(false);
 
-				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
-				try
+				using (SuspendAutoFlush()) //stops flush being called multiple times if this method is recursively called
 				{
 					return await (plan.PerformIterateAsync<T>(queryParameters, this, cancellationToken)).ConfigureAwait(false);
-				}
-				finally
-				{
-					dontFlushFromFind--;
 				}
 			}
 		}
@@ -299,14 +295,9 @@ namespace NHibernate.Impl
 				var plan = GetHQLQueryPlan(queryExpression, true);
 				await (AutoFlushIfRequiredAsync(plan.QuerySpaces, cancellationToken)).ConfigureAwait(false);
 
-				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
-				try
+				using (SuspendAutoFlush()) //stops flush being called multiple times if this method is recursively called
 				{
 					return await (plan.PerformIterateAsync(queryParameters, this, cancellationToken)).ConfigureAwait(false);
-				}
-				finally
-				{
-					dontFlushFromFind--;
 				}
 			}
 		}
@@ -961,10 +952,13 @@ namespace NHibernate.Impl
 				{
 					throw new HibernateException("Flush during cascade is dangerous");
 				}
-				IFlushEventListener[] flushEventListener = listeners.FlushEventListeners;
-				for (int i = 0; i < flushEventListener.Length; i++)
+				using (SuspendAutoFlush())
 				{
-					await (flushEventListener[i].OnFlushAsync(new FlushEvent(this), cancellationToken)).ConfigureAwait(false);
+					IFlushEventListener[] flushEventListener = listeners.FlushEventListeners;
+					for (int i = 0; i < flushEventListener.Length; i++)
+					{
+						await (flushEventListener[i].OnFlushAsync(new FlushEvent(this), cancellationToken)).ConfigureAwait(false);
+					}
 				}
 			}
 		}
@@ -1024,25 +1018,26 @@ namespace NHibernate.Impl
 				FilterQueryPlan plan = await (GetFilterQueryPlanAsync(collection, filter, queryParameters, false, cancellationToken)).ConfigureAwait(false);
 
 				bool success = false;
-				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
-				try
+				using (SuspendAutoFlush()) //stops flush being called multiple times if this method is recursively called
 				{
-					await (plan.PerformListAsync(queryParameters, this, results, cancellationToken)).ConfigureAwait(false);
-					success = true;
-				}
-				catch (HibernateException)
-				{
-					// Do not call Convert on HibernateExceptions
-					throw;
-				}
-				catch (Exception e)
-				{
-					throw Convert(e, "could not execute query");
-				}
-				finally
-				{
-					dontFlushFromFind--;
-					await (AfterOperationAsync(success, cancellationToken)).ConfigureAwait(false);
+					try
+					{
+						await (plan.PerformListAsync(queryParameters, this, results, cancellationToken)).ConfigureAwait(false);
+						success = true;
+					}
+					catch (HibernateException)
+					{
+						// Do not call Convert on HibernateExceptions
+						throw;
+					}
+					catch (Exception e)
+					{
+						throw Convert(e, "could not execute query");
+					}
+					finally
+					{
+						await (AfterOperationAsync(success, cancellationToken)).ConfigureAwait(false);
+					}
 				}
 			}
 		}
@@ -1119,30 +1114,30 @@ namespace NHibernate.Impl
 
 				await (AutoFlushIfRequiredAsync(spaces, cancellationToken)).ConfigureAwait(false);
 
-				dontFlushFromFind++;
-
 				bool success = false;
-				try
+				using (SuspendAutoFlush())
 				{
-					for (int i = size - 1; i >= 0; i--)
+					try
 					{
-						ArrayHelper.AddAll(results, await (loaders[i].ListAsync(this, cancellationToken)).ConfigureAwait(false));
+						for (int i = size - 1; i >= 0; i--)
+						{
+							ArrayHelper.AddAll(results, await (loaders[i].ListAsync(this, cancellationToken)).ConfigureAwait(false));
+						}
+						success = true;
 					}
-					success = true;
-				}
-				catch (HibernateException)
-				{
-					// Do not call Convert on HibernateExceptions
-					throw;
-				}
-				catch (Exception sqle)
-				{
-					throw Convert(sqle, "Unable to perform find");
-				}
-				finally
-				{
-					dontFlushFromFind--;
-					await (AfterOperationAsync(success, cancellationToken)).ConfigureAwait(false);
+					catch (HibernateException)
+					{
+						// Do not call Convert on HibernateExceptions
+						throw;
+					}
+					catch (Exception sqle)
+					{
+						throw Convert(sqle, "Unable to perform find");
+					}
+					finally
+					{
+						await (AfterOperationAsync(success, cancellationToken)).ConfigureAwait(false);
+					}
 				}
 			}
 		}
@@ -1173,16 +1168,17 @@ namespace NHibernate.Impl
 				await (AutoFlushIfRequiredAsync(loader.QuerySpaces, cancellationToken)).ConfigureAwait(false);
 
 				bool success = false;
-				dontFlushFromFind++;
-				try
+				using (SuspendAutoFlush())
 				{
-					ArrayHelper.AddAll(results, await (loader.ListAsync(this, queryParameters, cancellationToken)).ConfigureAwait(false));
-					success = true;
-				}
-				finally
-				{
-					dontFlushFromFind--;
-					await (AfterOperationAsync(success, cancellationToken)).ConfigureAwait(false);
+					try
+					{
+						ArrayHelper.AddAll(results, await (loader.ListAsync(this, queryParameters, cancellationToken)).ConfigureAwait(false));
+						success = true;
+					}
+					finally
+					{
+						await (AfterOperationAsync(success, cancellationToken)).ConfigureAwait(false);
+					}
 				}
 			}
 		}
