@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests.ClassMapperTests
 {
+	[TestFixture]
 	public class ComponetAsIdTests
 	{
 		private class PersonId

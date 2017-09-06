@@ -4,6 +4,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2773 {
+   [TestFixture]
    public class Fixture : BugTestCase {
       private Guid _entityGuid;
 

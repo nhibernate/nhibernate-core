@@ -7,6 +7,7 @@ using NHibernate.Proxy.DynamicProxy;
 
 namespace NHibernate.Test.DynamicProxyTests
 {
+	[TestFixture]
 	public class PeVerifyFixture
 	{
 		private static bool wasCalled;

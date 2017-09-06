@@ -3,6 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MixAutomapping
 {
+	[TestFixture]
 	public class InheritedVersionTest
 	{
 		private class BaseEntity

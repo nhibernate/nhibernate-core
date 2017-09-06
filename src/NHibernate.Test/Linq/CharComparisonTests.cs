@@ -8,6 +8,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
 {
+	[TestFixture]
 	public class CharEqualityTests : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()

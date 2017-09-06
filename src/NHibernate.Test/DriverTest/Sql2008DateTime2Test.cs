@@ -14,6 +14,7 @@ namespace NHibernate.Test.DriverTest
 		public virtual TimeSpan TimeSpanProp { get; set; }
 	}
 
+	[TestFixture]
 	public class Sql2008DateTime2Test : TestCase
 	{
 		protected override void Configure(Configuration configuration)

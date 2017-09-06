@@ -4,6 +4,7 @@ using NHibernate.Criterion;
 
 namespace NHibernate.Test.NHSpecificTest.NH2251
 {
+	[TestFixture]
 	public class Fixture : BugTestCase
 	{
 		[Test]

@@ -3,6 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.SqlTest.Identity
 {
+	[TestFixture]
 	public abstract class IdentityInsertWithStoredProcsTest : TestCase
 	{
 		protected override string MappingsAssembly

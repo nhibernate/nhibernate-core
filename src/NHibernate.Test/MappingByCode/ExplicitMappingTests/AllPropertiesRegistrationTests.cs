@@ -8,6 +8,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 {
+	[TestFixture]
 	public class AllPropertiesRegistrationTests
 	{
 		private class MyClass

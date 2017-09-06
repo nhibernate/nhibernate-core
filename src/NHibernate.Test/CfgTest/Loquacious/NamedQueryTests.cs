@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.CfgTest.Loquacious
 {
+	[TestFixture]
 	public class NamedQueryTests
 	{
 		[Test]

@@ -12,6 +12,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2510
 		public virtual int Id { get; set; }
 		public virtual byte[] Data { get; set; }
 	}
+
+	[TestFixture]
 	public class Fixture: TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()

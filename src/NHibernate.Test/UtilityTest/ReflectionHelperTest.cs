@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.UtilityTest
 {
+	[TestFixture]
 	public class ReflectionHelperTest
 	{
 		private class MyClass

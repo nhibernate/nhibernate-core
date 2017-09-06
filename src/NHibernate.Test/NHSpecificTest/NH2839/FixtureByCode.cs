@@ -98,6 +98,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2839
 		}
 	}
 
+	[TestFixture]
 	public class FixtureByCode : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()

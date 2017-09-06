@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.SessionBuilder
 {
+	[TestFixture]
 	public class Fixture : TestCase
 	{
 		protected override string MappingsAssembly => "NHibernate.Test";

@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MixAutomapping
 {
+	[TestFixture]
 	public class BagCollectionTests
 	{
 		// match any IEnumerable

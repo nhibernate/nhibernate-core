@@ -26,6 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2587
 		public virtual Foo Foo { get; set; }
 	}
 
+	[TestFixture]
 	public class CachingWithLinq : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()

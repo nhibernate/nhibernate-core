@@ -171,6 +171,58 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 			}
 		}
 
+		[Test, Ignore("Not fixed.")]
+		[Description(@"Two session in two txscope 
+(without an explicit NH transaction and without an explicit flush) 
+and with a rollback in the second dtc and a ForceRollback outside nh-session-scope.")]
+		public async Task TransactionInsertLoadWithRollBackTaskAsync()
+		{
+			object savedId;
+			using (var txscope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+			{
+				using (ISession s = OpenSession())
+				{
+					var person = new Person {CreatedAt = DateTime.Now};
+					savedId = await (s.SaveAsync(person));
+				}
+				txscope.Complete();
+			}
+			try
+			{
+				using (var txscope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+				{
+					using (ISession s = OpenSession())
+					{
+						var person = await (s.GetAsync<Person>(savedId));
+						person.CreatedAt = DateTime.Now;
+						await (s.UpdateAsync(person));
+					}
+					new ForceEscalationToDistributedTx(true);
+
+					log.Debug("completing the tx scope");
+					txscope.Complete();
+				}
+				log.Debug("Transaction fail.");
+				Assert.Fail("Expected tx abort");
+			}
+			catch (TransactionAbortedException)
+			{
+				log.Debug("Transaction aborted.");
+			}
+			finally
+			{
+				using (var txscope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+				{
+					using (ISession s = OpenSession())
+					{
+						var person = await (s.GetAsync<Person>(savedId));
+						await (s.DeleteAsync(person));
+					}
+					txscope.Complete();
+				}
+			}
+		}
+
 		[Test]
 		public async Task CanDeleteItemInDtcAsync()
 		{

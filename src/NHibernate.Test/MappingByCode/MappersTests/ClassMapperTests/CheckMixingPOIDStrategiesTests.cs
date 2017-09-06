@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests.ClassMapperTests
 {
+	[TestFixture]
 	public class CheckMixingPoidStrategiesTests
 	{
 		private class PersonId

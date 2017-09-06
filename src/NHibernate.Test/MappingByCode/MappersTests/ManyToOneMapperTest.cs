@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests
 {
+	[TestFixture]
 	public class ManyToOneMapperTest
 	{
 		private class MyClass

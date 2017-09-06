@@ -106,6 +106,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3564
 		public virtual DateTime DateOfBirth { get; set; }
 	}
 
+	[TestFixture]
 	public class FixtureByCode : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()

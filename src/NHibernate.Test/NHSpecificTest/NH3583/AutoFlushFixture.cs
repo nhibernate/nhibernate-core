@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3583
 {
+	[TestFixture]
 	public class AutoFlushFixture : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()

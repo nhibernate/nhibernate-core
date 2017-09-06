@@ -337,6 +337,20 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			}
 		}
 
+		// Failing case till NH-3850 is fixed
+		[Test, Ignore("Won't fix: requires reshaping the query")]
+		public Task AverageBBaseAsync()
+		{
+			return AverageAsync<DomainClassBExtendedByA>(1.5m);
+		}
+
+		// Failing case till NH-3850 is fixed
+		[Test, Ignore("Won't fix: requires reshaping the query")]
+		public Task AverageCBaseAsync()
+		{
+			return AverageAsync<DomainClassCExtendedByD>(1.5m);
+		}
+
 		// Non-reg case
 		[Test]
 		public Task AverageEAsync()
@@ -349,6 +363,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		public Task AverageFAsync()
 		{
 			return AverageAsync<DomainClassF>(null);
+		}
+
+		// Failing case till NH-3850 is fixed
+		[Test, Ignore("Won't fix: requires reshaping the query")]
+		public Task AverageGBaseAsync()
+		{
+			return AverageAsync<DomainClassGExtendedByH>(2.5m);
 		}
 
 		private async Task AverageAsync<DC>(decimal? expectedResult, CancellationToken cancellationToken = default(CancellationToken)) where DC : DomainClassBase
@@ -380,6 +401,17 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 						.Or.InnerException.InstanceOf<ArgumentNullException>(),
 						"Non nullable decimal average has failed");
 				}
+			}
+		}
+
+		// Failing case till NH-3850 is fixed
+		[Test, Ignore("Won't fix: requires reshaping the query")]
+		public async Task AverageObjectAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var result = await (session.Query<object>().AverageAsync(o => (int?)2));
+				Assert.AreEqual(2, result);
 			}
 		}
 

@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.PolymorphicGetAndLoad
 {
+	[TestFixture]
 	public class PolymorphicGetAndLoadTest: TestCase
 	{
 		protected override string MappingsAssembly

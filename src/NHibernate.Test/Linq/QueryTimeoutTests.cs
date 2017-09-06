@@ -1,5 +1,7 @@
 ﻿using System.Data.Common;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
@@ -9,6 +11,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
 {
+	[TestFixture]
 	public class QueryTimeoutTests : LinqTestCase
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
@@ -103,6 +106,12 @@ namespace NHibernate.Test.Linq
 			{
 				LastCommandTimeout = cmd.CommandTimeout;
 				return base.ExecuteReader(cmd);
+			}
+
+			public override Task<DbDataReader> ExecuteReaderAsync(DbCommand cmd, CancellationToken cancellationToken)
+			{
+				LastCommandTimeout = cmd.CommandTimeout;
+				return base.ExecuteReaderAsync(cmd, cancellationToken);
 			}
 		}
 

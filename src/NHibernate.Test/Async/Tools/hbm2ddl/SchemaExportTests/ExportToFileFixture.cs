@@ -14,11 +14,9 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Tools.hbm2ddl.SchemaExportTests
 {
-    using System.Threading.Tasks;
-    /// <content>
-    /// Contains generated async methods
-    /// </content>
-    public partial class ExportToFileFixture
+	using System.Threading.Tasks;
+	[TestFixture]
+	public partial class ExportToFileFixtureAsync
     {
         [Test]
         public async Task ExportToFileUsingSetOutputFileAndCreateAsync()

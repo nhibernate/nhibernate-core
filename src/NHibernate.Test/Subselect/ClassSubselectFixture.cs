@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Subselect
 {
+	[TestFixture]
 	public class ClassSubselectFixture: TestCase
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)

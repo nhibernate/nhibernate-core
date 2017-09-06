@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
@@ -13,8 +15,11 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NUnit.Framework;
 
+using AsyncTask = System.Threading.Tasks.Task;
+
 namespace NHibernate.Test.Insertordering
 {
+	[TestFixture]
 	public class InsertOrderingFixture : TestCase
 	{
 		const int batchSize = 10;
@@ -558,10 +563,26 @@ namespace NHibernate.Test.Insertordering
 			{
 				var result = base.PrepareBatchCommand(type, sql, parameterTypes);
 
-				if (!StatsEnabled)
-					return result;
+				PrepareStats(sql);
 
-				string sqlstring = sql.ToString();
+				return result;
+			}
+
+			public override Task<DbCommand> PrepareBatchCommandAsync(CommandType type, SqlString sql, SqlType[] parameterTypes, CancellationToken cancellationToken)
+			{
+				var result = base.PrepareBatchCommandAsync(type, sql, parameterTypes, cancellationToken);
+
+				PrepareStats(sql);
+
+				return result;
+			}
+
+			private static void PrepareStats(SqlString sql)
+			{
+				if (!StatsEnabled)
+					return;
+
+				var sqlstring = sql.ToString();
 				if (batchSQL == null || !sqlstring.Equals(batchSQL))
 				{
 					currentBatch++;
@@ -570,28 +591,49 @@ namespace NHibernate.Test.Insertordering
 					Console.WriteLine("--------------------------------------------------------");
 					Console.WriteLine("Preparing statement [" + batchSQL + "]");
 				}
-				return result;
 			}
 
 			public override void AddToBatch(IExpectation expectation)
 			{
-				if (StatsEnabled)
-				{
-					batchSizes[currentBatch]++;
-					Console.WriteLine("Adding to batch [" + batchSQL + "]");
-				}
+				AddStats();
 				base.AddToBatch(expectation);
+			}
+
+			public override AsyncTask AddToBatchAsync(IExpectation expectation, CancellationToken cancellationToken)
+			{
+				AddStats();
+				return base.AddToBatchAsync(expectation, cancellationToken);
+			}
+
+			private static void AddStats()
+			{
+				if (!StatsEnabled)
+					return;
+
+				batchSizes[currentBatch]++;
+				Console.WriteLine("Adding to batch [" + batchSQL + "]");
 			}
 
 			protected override void DoExecuteBatch(DbCommand ps)
 			{
-				if (StatsEnabled)
-				{
-					Console.WriteLine("executing batch [" + batchSQL + "]");
-					Console.WriteLine("--------------------------------------------------------");
-				}
-				batchSQL = null;
+				ExecuteStats();
 				base.DoExecuteBatch(ps);
+			}
+
+			protected override AsyncTask DoExecuteBatchAsync(DbCommand ps, CancellationToken cancellationToken)
+			{
+				ExecuteStats();
+				return base.DoExecuteBatchAsync(ps, cancellationToken);
+			}
+
+			private static void ExecuteStats()
+			{
+				if (!StatsEnabled)
+					return;
+
+				Console.WriteLine("executing batch [" + batchSQL + "]");
+				Console.WriteLine("--------------------------------------------------------");
+				batchSQL = null;
 			}
 		}
 

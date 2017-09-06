@@ -6,6 +6,7 @@ using System;
 
 namespace NHibernate.Test.TypesTest
 {
+	[TestFixture]
 	public class DateTypeTest
 	{
 		[Test]

@@ -28,10 +28,8 @@ namespace NHibernate.Test.Events
 		}
 	}
 
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
-	public partial class DisposableListenersTest
+	[TestFixture]
+	public partial class DisposableListenersTestAsync
 	{
 		[Test]
 		public async Task WhenCloseSessionFactoryThenCallDisposeOfListenerAsync()

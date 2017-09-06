@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH4004
 {
+	[TestFixture]
 	public class Fixture : TestCaseMappingByCode
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
