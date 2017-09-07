@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	[TestFixture]
-	public class QueryTimeoutTests : LinqTestCase
+	public partial class QueryTimeoutTests : LinqTestCase
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
@@ -89,7 +89,7 @@ namespace NHibernate.Test.Linq
 		}
 
 
-		public class TimeoutCatchingNonBatchingBatcher : NonBatchingBatcher
+		public partial class TimeoutCatchingNonBatchingBatcher : NonBatchingBatcher
 		{
 			// Is there an easier way to inspect the DbCommand instead of
 			// creating a custom batcher?
@@ -107,16 +107,10 @@ namespace NHibernate.Test.Linq
 				LastCommandTimeout = cmd.CommandTimeout;
 				return base.ExecuteReader(cmd);
 			}
-
-			public override Task<DbDataReader> ExecuteReaderAsync(DbCommand cmd, CancellationToken cancellationToken)
-			{
-				LastCommandTimeout = cmd.CommandTimeout;
-				return base.ExecuteReaderAsync(cmd, cancellationToken);
-			}
 		}
 
 
-		public class TimeoutCatchingNonBatchingBatcherFactory : IBatcherFactory
+		public partial class TimeoutCatchingNonBatchingBatcherFactory : IBatcherFactory
 		{
 			public IBatcher CreateBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
 			{

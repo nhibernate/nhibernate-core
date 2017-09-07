@@ -137,7 +137,7 @@ namespace NHibernate.Test.Events.Collections
 
 		#region Nested type: InitializeCollectionListener
 
-		public class InitializeCollectionListener : DefaultInitializeCollectionEventListener, IListener
+		public partial class InitializeCollectionListener : DefaultInitializeCollectionEventListener, IListener
 		{
 			private readonly CollectionListeners listeners;
 
@@ -159,15 +159,6 @@ namespace NHibernate.Test.Events.Collections
 			{
 				base.OnInitializeCollection(@event);
 				AddEvent(@event, this);
-			}
-
-			public override Task OnInitializeCollectionAsync(InitializeCollectionEvent @event, CancellationToken cancellationToken)
-			{
-				var result = base.OnInitializeCollectionAsync(@event, cancellationToken);
-
-				AddEvent(@event, this);
-
-				return result;
 			}
 		}
 
