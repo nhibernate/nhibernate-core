@@ -26,6 +26,11 @@ namespace NHibernate.Driver
 		public const byte MaxDateTime2 = 8;
 		public const byte MaxDateTimeOffset = 10;
 
+		public override BulkProvider GetBulkProvider()
+		{
+			return new SqlBulkProvider();
+		}
+
 		/// <summary>
 		/// Creates an uninitialized <see cref="DbConnection" /> object for
 		/// the SqlClientDriver.

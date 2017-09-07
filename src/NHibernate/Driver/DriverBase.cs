@@ -21,6 +21,11 @@ namespace NHibernate.Driver
 		private int commandTimeout;
 		private bool prepareSql;
 
+		public virtual BulkProvider GetBulkProvider()
+		{
+			return new DefaultBulkProvider();
+		}
+
 		public virtual void Configure(IDictionary<string, string> settings)
 		{
 			// Command timeout

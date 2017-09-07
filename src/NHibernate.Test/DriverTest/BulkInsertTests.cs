@@ -1,0 +1,60 @@
+﻿using System.Linq;
+using NHibernate.Cfg;
+using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Linq;
+using NHibernate.Test.Linq;
+using NUnit.Framework;
+
+namespace NHibernate.Test.DriverTest
+{
+	[TestFixture]
+	public class BulkInsertTests : LinqTestCase
+	{
+		protected override void Configure(Configuration configuration)
+		{
+			configuration.SetProperty(Environment.Hbm2ddlAuto, SchemaAutoAction.Create.ToString());
+
+			base.Configure(configuration);
+		}
+
+		[Test]
+		public void CanBulkInsertEntitiesWithComponents()
+		{
+			//NH-3675
+			using (var statelessSession = session.SessionFactory.OpenStatelessSession())
+			using (statelessSession.BeginTransaction())
+			{
+				var customers = new Customer[] { new Customer { Address = new Address("street", "city", "region", "postalCode", "country", "phoneNumber", "fax"), CompanyName = "Company", ContactName = "Contact", ContactTitle = "Title", CustomerId = "12345" } };
+
+				statelessSession.CreateQuery("delete from Customer").ExecuteUpdate();
+
+				statelessSession.BulkInsert(customers);
+
+				var count = statelessSession.Query<Customer>().Count();
+
+				Assert.AreEqual(customers.Count(), count);
+			}
+		}
+
+		[Test]
+		public void CanBulkInsertEntitiesWithComponentsAndAssociations()
+		{
+			//NH-3675
+			using (var statelessSession = session.SessionFactory.OpenStatelessSession())
+			using (statelessSession.BeginTransaction())
+			{
+				var superior = new Employee { Address = new Address("street", "city", "region", "zip", "country", "phone", "fax"), BirthDate = System.DateTime.Now, EmployeeId = 1, Extension = "1", FirstName = "Superior", LastName = "Last" };
+				var employee = new Employee { Address = new Address("street", "city", "region", "zip", "country", "phone", "fax"), BirthDate = System.DateTime.Now, EmployeeId = 2, Extension = "2", FirstName = "Employee", LastName = "Last", Superior = superior };
+				var employees = new Employee[] { superior, employee };
+
+				statelessSession.CreateQuery("delete from Employee").ExecuteUpdate();
+
+				statelessSession.BulkInsert(employees);
+
+				var count = statelessSession.Query<Employee>().Count();
+
+				Assert.AreEqual(employees.Count(), count);
+			}
+		}
+	}
+}

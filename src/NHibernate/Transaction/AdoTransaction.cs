@@ -454,5 +454,10 @@ namespace NHibernate.Transaction
 				}
 			}
 		}
+
+		internal IDbTransaction GetNativeTransaction()
+		{
+			return trans;
+		}
 	}
 }

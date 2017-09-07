@@ -66,6 +66,10 @@ namespace NHibernate.Cfg
 			}
 		}
 
+		public const String BulkProviderClass = "adonet.bulk_provider_class";
+		public const String BulkProviderTimeout = "adonet.bulk_provider_timeout";
+		public const String BulkProviderBatchSize = "adonet.bulk_provider_batch_size";
+
 		public const string ConnectionProvider = "connection.provider";
 		public const string ConnectionDriver = "connection.driver_class";
 		public const string ConnectionString = "connection.connection_string";

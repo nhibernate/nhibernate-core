@@ -52,6 +52,11 @@ namespace NHibernate.Driver
 			oracleDbTypeXmlType = Enum.Parse(oracleDbTypeEnum, "XmlType");
 		}
 
+		public override BulkProvider GetBulkProvider()
+		{
+			return new OracleDataClientBulkProvider();
+		}
+
 		/// <summary></summary>
 		public override bool UseNamedPrefixInSql
 		{
