@@ -25,12 +25,10 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NUnit.Framework;
 
-using AsyncTask = System.Threading.Tasks.Task;
-
 namespace NHibernate.Test.Insertordering
 {
 	[TestFixture]
-	public class InsertOrderingFixtureAsync : TestCase
+	public partial class InsertOrderingFixtureAsync : TestCase
 	{
 		const int batchSize = 10;
 		const int instancesPerEach = 12;
@@ -546,7 +544,7 @@ namespace NHibernate.Test.Insertordering
 
 		#region Nested type: StatsBatcher
 
-		public class StatsBatcher : SqlClientBatchingBatcher
+		public partial class StatsBatcher : SqlClientBatchingBatcher
 		{
 			private static string batchSQL;
 			private static IList<int> batchSizes = new List<int>();
@@ -569,18 +567,18 @@ namespace NHibernate.Test.Insertordering
 				batchSQL = null;
 			}
 
-			public override DbCommand PrepareBatchCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
+			public override async System.Threading.Tasks.Task<DbCommand> PrepareBatchCommandAsync(CommandType type, SqlString sql, SqlType[] parameterTypes, CancellationToken cancellationToken)
 			{
-				var result = base.PrepareBatchCommand(type, sql, parameterTypes);
+				var result = await (base.PrepareBatchCommandAsync(type, sql, parameterTypes, cancellationToken));
 
 				PrepareStats(sql);
 
 				return result;
 			}
 
-			public override Task<DbCommand> PrepareBatchCommandAsync(CommandType type, SqlString sql, SqlType[] parameterTypes, CancellationToken cancellationToken)
+			public override DbCommand PrepareBatchCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
 			{
-				var result = base.PrepareBatchCommandAsync(type, sql, parameterTypes, cancellationToken);
+				var result = base.PrepareBatchCommand(type, sql, parameterTypes);
 
 				PrepareStats(sql);
 
@@ -603,16 +601,23 @@ namespace NHibernate.Test.Insertordering
 				}
 			}
 
+			public override System.Threading.Tasks.Task AddToBatchAsync(IExpectation expectation, CancellationToken cancellationToken)
+			{
+				try
+				{
+					AddStats();
+					return base.AddToBatchAsync(expectation, cancellationToken);
+				}
+				catch (Exception ex)
+				{
+					return System.Threading.Tasks.Task.FromException<object>(ex);
+				}
+			}
+
 			public override void AddToBatch(IExpectation expectation)
 			{
 				AddStats();
 				base.AddToBatch(expectation);
-			}
-
-			public override AsyncTask AddToBatchAsync(IExpectation expectation, CancellationToken cancellationToken)
-			{
-				AddStats();
-				return base.AddToBatchAsync(expectation, cancellationToken);
 			}
 
 			private static void AddStats()
@@ -624,16 +629,23 @@ namespace NHibernate.Test.Insertordering
 				Console.WriteLine("Adding to batch [" + batchSQL + "]");
 			}
 
+			protected override System.Threading.Tasks.Task DoExecuteBatchAsync(DbCommand ps, CancellationToken cancellationToken)
+			{
+				try
+				{
+					ExecuteStats();
+					return base.DoExecuteBatchAsync(ps, cancellationToken);
+				}
+				catch (Exception ex)
+				{
+					return System.Threading.Tasks.Task.FromException<object>(ex);
+				}
+			}
+
 			protected override void DoExecuteBatch(DbCommand ps)
 			{
 				ExecuteStats();
 				base.DoExecuteBatch(ps);
-			}
-
-			protected override AsyncTask DoExecuteBatchAsync(DbCommand ps, CancellationToken cancellationToken)
-			{
-				ExecuteStats();
-				return base.DoExecuteBatchAsync(ps, cancellationToken);
 			}
 
 			private static void ExecuteStats()
@@ -651,7 +663,7 @@ namespace NHibernate.Test.Insertordering
 
 		#region Nested type: StatsBatcherFactory
 
-		public class StatsBatcherFactory : IBatcherFactory
+		public partial class StatsBatcherFactory : IBatcherFactory
 		{
 			#region IBatcherFactory Members
 
@@ -665,4 +677,66 @@ namespace NHibernate.Test.Insertordering
 
 		#endregion
 	}
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
+	public partial class InsertOrderingFixture : TestCase
+	{
+
+
+
+
+
+
+
+
+
+
+
+		
+		
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
+		public partial class StatsBatcher : SqlClientBatchingBatcher
+		{
+
+			public override async System.Threading.Tasks.Task<DbCommand> PrepareBatchCommandAsync(CommandType type, SqlString sql, SqlType[] parameterTypes, CancellationToken cancellationToken)
+			{
+				var result = await (base.PrepareBatchCommandAsync(type, sql, parameterTypes, cancellationToken));
+
+				PrepareStats(sql);
+
+				return result;
+			}
+
+			public override System.Threading.Tasks.Task AddToBatchAsync(IExpectation expectation, CancellationToken cancellationToken)
+			{
+				try
+				{
+					AddStats();
+					return base.AddToBatchAsync(expectation, cancellationToken);
+				}
+				catch (Exception ex)
+				{
+					return System.Threading.Tasks.Task.FromException<object>(ex);
+				}
+			}
+
+			protected override System.Threading.Tasks.Task DoExecuteBatchAsync(DbCommand ps, CancellationToken cancellationToken)
+			{
+				try
+				{
+					ExecuteStats();
+					return base.DoExecuteBatchAsync(ps, cancellationToken);
+				}
+				catch (Exception ex)
+				{
+					return System.Threading.Tasks.Task.FromException<object>(ex);
+				}
+			}
+		}
+
+
+			}
 }

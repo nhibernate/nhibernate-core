@@ -15,12 +15,10 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NUnit.Framework;
 
-using AsyncTask = System.Threading.Tasks.Task;
-
 namespace NHibernate.Test.Insertordering
 {
 	[TestFixture]
-	public class InsertOrderingFixture : TestCase
+	public partial class InsertOrderingFixture : TestCase
 	{
 		const int batchSize = 10;
 		const int instancesPerEach = 12;
@@ -536,7 +534,7 @@ namespace NHibernate.Test.Insertordering
 
 		#region Nested type: StatsBatcher
 
-		public class StatsBatcher : SqlClientBatchingBatcher
+		public partial class StatsBatcher : SqlClientBatchingBatcher
 		{
 			private static string batchSQL;
 			private static IList<int> batchSizes = new List<int>();
@@ -568,15 +566,6 @@ namespace NHibernate.Test.Insertordering
 				return result;
 			}
 
-			public override Task<DbCommand> PrepareBatchCommandAsync(CommandType type, SqlString sql, SqlType[] parameterTypes, CancellationToken cancellationToken)
-			{
-				var result = base.PrepareBatchCommandAsync(type, sql, parameterTypes, cancellationToken);
-
-				PrepareStats(sql);
-
-				return result;
-			}
-
 			private static void PrepareStats(SqlString sql)
 			{
 				if (!StatsEnabled)
@@ -599,12 +588,6 @@ namespace NHibernate.Test.Insertordering
 				base.AddToBatch(expectation);
 			}
 
-			public override AsyncTask AddToBatchAsync(IExpectation expectation, CancellationToken cancellationToken)
-			{
-				AddStats();
-				return base.AddToBatchAsync(expectation, cancellationToken);
-			}
-
 			private static void AddStats()
 			{
 				if (!StatsEnabled)
@@ -618,12 +601,6 @@ namespace NHibernate.Test.Insertordering
 			{
 				ExecuteStats();
 				base.DoExecuteBatch(ps);
-			}
-
-			protected override AsyncTask DoExecuteBatchAsync(DbCommand ps, CancellationToken cancellationToken)
-			{
-				ExecuteStats();
-				return base.DoExecuteBatchAsync(ps, cancellationToken);
 			}
 
 			private static void ExecuteStats()
@@ -641,7 +618,7 @@ namespace NHibernate.Test.Insertordering
 
 		#region Nested type: StatsBatcherFactory
 
-		public class StatsBatcherFactory : IBatcherFactory
+		public partial class StatsBatcherFactory : IBatcherFactory
 		{
 			#region IBatcherFactory Members
 

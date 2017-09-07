@@ -29,7 +29,25 @@ namespace NHibernate.Test.Events.Collections
 		#region Nested type: IListener
 
 		#endregion
+
 		#region Nested type: InitializeCollectionListener
+
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
+		public partial class InitializeCollectionListener : DefaultInitializeCollectionEventListener, IListener
+		{
+
+			#region IListener Members
+
+			#endregion
+
+			public override async Task OnInitializeCollectionAsync(InitializeCollectionEvent @event, CancellationToken cancellationToken)
+			{
+				await (base.OnInitializeCollectionAsync(@event, cancellationToken));
+				AddEvent(@event, this);
+			}
+		}
 
 		#endregion
 

@@ -132,6 +132,8 @@
       - rule: EventListener
       - rule: ICache
     scanMethodBody: true
+    scanForMissingAsyncMembers:
+    - all: true
   transformation:
     configureAwaitArgument: false
     localFunctions: true
@@ -207,7 +209,7 @@
       - hasAttributeName: TheoryAttribute
     scanMethodBody: true
     scanForMissingAsyncMembers:
-    - anyInterfaceRule: NHibernateAssembly
+    - all: true
   registerPlugin:
   - type: AsyncGenerator.Core.Plugins.NUnitAsyncCounterpartsFinder
     assemblyName: AsyncGenerator.Core

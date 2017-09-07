@@ -11,7 +11,7 @@ namespace NHibernate.Test
 	/// This connection provider keeps a list of all open connections,
 	/// it is used when testing to check that tests clean up after themselves.
 	/// </summary>
-	public class DebugConnectionProvider : DriverConnectionProvider
+	public partial class DebugConnectionProvider : DriverConnectionProvider
 	{
 		private ConcurrentDictionary<DbConnection, byte> connections = new ConcurrentDictionary<DbConnection, byte>();
 
