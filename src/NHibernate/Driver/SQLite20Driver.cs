@@ -5,19 +5,20 @@ using System.Data.Common;
 namespace NHibernate.Driver
 {
 	/// <summary>
-	/// NHibernate driver for the System.Data.SQLite data provider for .NET 2.0.
+	/// NHibernate driver for the System.Data.SQLite data provider for .NET.
 	/// </summary>
 	/// <remarks>
-	/// <p>
+	/// <para>
 	/// In order to use this driver you must have the System.Data.SQLite.dll assembly available
 	/// for NHibernate to load. This assembly includes the SQLite.dll or SQLite3.dll libraries.
-	/// </p>    
-	/// <p>
-	/// You can get the System.Data.SQLite.dll assembly from http://sourceforge.net/projects/sqlite-dotnet2.
-	/// </p>
-	/// <p>
-	/// Please check <a href="http://www.sqlite.org/">http://www.sqlite.org/</a> for more information regarding SQLite.
-	/// </p>
+	/// </para>
+	/// <para>
+	/// You can get the System.Data.SQLite.dll assembly from
+	/// <a href="https://system.data.sqlite.org/">https://system.data.sqlite.org/</a>
+	/// </para>
+	/// <para>
+	/// Please check <a href="https://www.sqlite.org/">https://www.sqlite.org/</a> for more information regarding SQLite.
+	/// </para>
 	/// </remarks>
 	public partial class SQLite20Driver : ReflectionBasedDriver
 	{
@@ -86,5 +87,9 @@ namespace NHibernate.Driver
 		{
 			get { return true; }
 		}
+		
+		public override bool SupportsNullEnlistment => false;
+
+		public override bool HasDelayedDistributedTransactionCompletion => true;
 	}
 }

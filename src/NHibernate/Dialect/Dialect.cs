@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Text;
+using System.Transactions;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Lock;
 using NHibernate.Dialect.Schema;
@@ -1400,6 +1401,16 @@ namespace NHibernate.Dialect
 			}
 		}
 
+		/// <summary>
+		/// Does this dialect support concurrent writing connections?
+		/// </summary>
+		public virtual bool SupportsConcurrentWritingConnections => true;
+
+		/// <summary>
+		/// Does this dialect support concurrent writing connections in the same transaction?
+		/// </summary>
+		public virtual bool SupportsConcurrentWritingConnectionsInSameTransaction => SupportsConcurrentWritingConnections;
+
 		#endregion
 
 		#region Limit/offset support
@@ -2092,6 +2103,15 @@ namespace NHibernate.Dialect
 		/// </para>
 		/// </summary>
 		public virtual bool SupportsHavingOnGroupedByComputation => true;
+
+		/// <summary>
+		/// Does this dialect support distributed transaction?
+		/// </summary>
+		/// <remarks>
+		/// Distributed transactions usually imply the use of<see cref="TransactionScope"/>, but using
+		/// <c>TransactionScope</c> does not imply the transaction will be distributed.
+		/// </remarks>
+		public virtual bool SupportsDistributedTransactions => true;
 
 		#endregion
 

@@ -121,6 +121,33 @@
 								<xs:enumeration value="linqtohql.generatorsregistry" />
 								<xs:enumeration value="odbc.explicit_datetime_scale" />
 								<xs:enumeration value="adonet.batch_versioned_data" />
+								<xs:enumeration value="transaction.system_completion_lock_timeout">
+									<xs:annotation>
+										<xs:documentation>
+											Timeout duration in milliseconds for the system transaction completion lock.
+
+											When a system transaction completes, it may have its completion events running on concurrent threads,
+											after scope disposal. This occurs when the transaction is distributed.
+											This notably concerns ISessionImplementor.AfterTransactionCompletion(bool, ITransaction).
+											NHibernate protects the session from being concurrently used by the code following the scope disposal
+											with a lock. To prevent any application freeze, this lock has a default timeout of five seconds. If the
+											application appears to require longer (!) running transaction completion events, this setting allows to
+											raise this timeout. -1 disables the timeout.
+										</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="transaction.use_connection_on_system_prepare">
+									<xs:annotation>
+										<xs:documentation>
+											When a system transaction is being prepared/prepared, is using connection during this process enabled?
+											Default is true, for supporting FlushMode.Commit with transaction factories
+											supporting system transactions. But this requires enlisting additional connections, retaining disposed
+											sessions and their connections till transaction end, and may trigger undesired transaction promotions to
+											distributed. Set to false for disabling using connections from system
+											transaction preparation, while still benefiting from FlushMode.Auto on querying.
+										</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
 							</xs:restriction>
 						</xs:simpleType>
 					</xs:attribute>

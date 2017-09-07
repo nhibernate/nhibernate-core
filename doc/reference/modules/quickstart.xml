@@ -1,5 +1,5 @@
 <chapter id="quickstart">
-    <title>Quickstart with IIS and Microsoft SQL Server</title>
+    <title>Quick-start with IIS and Microsoft SQL Server</title>
 
     <sect1 id="quickstart-intro">
         <title>Getting started with NHibernate</title>
@@ -368,18 +368,23 @@ namespace QuickStart
         </para>
 
         <programlisting><![CDATA[ISession session = NHibernateHelper.GetCurrentSession();
+try
+{
+    using (ITransaction tx = session.BeginTransaction())
+    {
+        Cat princess = new Cat();
+        princess.Name = "Princess";
+        princess.Sex = 'F';
+        princess.Weight = 7.4f;
 
-ITransaction tx = session.BeginTransaction();
-
-Cat princess = new Cat();
-princess.Name = "Princess";
-princess.Sex = 'F';
-princess.Weight = 7.4f;
-
-session.Save(princess);
-tx.Commit();
-
-NHibernateHelper.CloseSession();]]></programlisting>
+        session.Save(princess);
+        tx.Commit();
+    }
+}
+finally
+{
+    NHibernateHelper.CloseSession();
+}]]></programlisting>
 
         <para>
             In an <literal>ISession</literal>, every database operation occurs inside a
@@ -406,16 +411,17 @@ NHibernateHelper.CloseSession();]]></programlisting>
             which is an easy to learn and powerful object-oriented extension to SQL:
         </para>
 
-        <programlisting><![CDATA[ITransaction tx = session.BeginTransaction();
-
-IQuery query = session.CreateQuery("select c from Cat as c where c.Sex = :sex");
-query.SetCharacter("sex", 'F');
-foreach (Cat cat in query.Enumerable())
+        <programlisting><![CDATA[using(ITransaction tx = session.BeginTransaction())
 {
-    Console.Out.WriteLine("Female Cat: " + cat.Name);
-}
+    IQuery query = session.CreateQuery("select c from Cat as c where c.Sex = :sex");
+    query.SetCharacter("sex", 'F');
+    foreach (Cat cat in query.Enumerable())
+    {
+        Console.Out.WriteLine("Female Cat: " + cat.Name);
+    }
 
-tx.Commit();]]></programlisting>
+    tx.Commit();
+}]]></programlisting>
 
         <para>
             NHibernate also offers an object-oriented <emphasis>query by criteria</emphasis> API

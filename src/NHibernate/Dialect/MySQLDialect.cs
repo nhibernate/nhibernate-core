@@ -513,6 +513,15 @@ namespace NHibernate.Dialect
 			}
 		}
 
+		/// <summary>
+		/// Does this dialect support concurrent writing connections in the same transaction?
+		/// </summary>
+		/// <remarks>
+		/// NotSupportedException : Multiple simultaneous connections or connections with different 
+		/// connection strings inside the same transaction are not currently supported.
+		/// </remarks>
+		public override bool SupportsConcurrentWritingConnectionsInSameTransaction => false;
+
 		#region Overridden informational metadata
 
 		public override bool SupportsEmptyInList => false;
@@ -531,6 +540,15 @@ namespace NHibernate.Dialect
 		// v5.7: 
 		/// <inheritdoc/>
 		public override bool SupportsHavingOnGroupedByComputation => false;
+
+		/// <summary>
+		/// Does this dialect support distributed transaction?
+		/// </summary>
+		/// <remarks>
+		/// Fails enlisting a connection into a distributed transaction, fails promoting a transaction
+		/// to distributed when it has already a connection enlisted.
+		/// </remarks>
+		public override bool SupportsDistributedTransactions => false;
 
 		#endregion
 	}

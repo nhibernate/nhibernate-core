@@ -41,7 +41,7 @@ namespace NHibernate.Impl
 			{
 				temporaryPersistenceContext = new StatefulPersistenceContext(this);
 				connectionManager = new ConnectionManager(this, options.UserSuppliedConnection, ConnectionReleaseMode.AfterTransaction,
-					EmptyInterceptor.Instance);
+					EmptyInterceptor.Instance, options.ShouldAutoJoinTransaction);
 
 				if (log.IsDebugEnabled)
 				{
@@ -105,7 +105,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override void CloseSessionFromDistributedTransaction()
+		public override void CloseSessionFromSystemTransaction()
 		{
 			Dispose(true);
 		}
@@ -218,7 +218,12 @@ namespace NHibernate.Impl
 
 		public override void BeforeTransactionCompletion(ITransaction tx)
 		{
-			FlushBeforeTransactionCompletion();
+			var context = TransactionContext;
+			if (tx == null && context == null)
+				throw new InvalidOperationException("Cannot complete a transaction without neither an explicit transaction nor an ambient one.");
+			// Always allow flushing from explicit transactions, otherwise check if flushing from scope is enabled.
+			if (tx != null || context.CanFlushOnSystemTransactionCompleted)
+				FlushBeforeTransactionCompletion();
 		}
 
 		public override void FlushBeforeTransactionCompletion()
@@ -861,9 +866,17 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				log.Debug("running IStatelessSession.Dispose()");
-				if (TransactionContext != null)
+				// Ensure we are not disposing concurrently to transaction completion, which would
+				// remove the context. (Do not store it into a local variable before the Wait.)
+				TransactionContext?.Wait();
+				// If the synchronization above is bugged and lets a race condition remaining, we may
+				// blow here with a null ref exception after the null check. We could introduce
+				// a local variable for avoiding it, but that would turn a failure causing an exception
+				// into a failure causing a session and connection leak. So do not do it, better blow away
+				// with a null ref rather than silently leaking a session. And then fix the synchronization.
+				if (TransactionContext != null && TransactionContext.CanFlushOnSystemTransactionCompleted)
 				{
-					TransactionContext.ShouldCloseSessionOnDistributedTransactionCompleted = true;
+					TransactionContext.ShouldCloseSessionOnSystemTransactionCompleted = true;
 					return;
 				}
 				Dispose(true);

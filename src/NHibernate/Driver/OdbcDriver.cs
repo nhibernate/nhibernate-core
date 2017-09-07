@@ -84,5 +84,10 @@ namespace NHibernate.Driver
 		}
 
 		public override bool RequiresTimeSpanForTime => true;
+
+		/// <summary>
+		/// Depends on target DB in the Odbc case. This in facts depends on both the driver and the database.
+		/// </summary>
+		public override bool HasDelayedDistributedTransactionCompletion => true;
 	}
 }

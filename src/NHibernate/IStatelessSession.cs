@@ -250,6 +250,23 @@ namespace NHibernate
 		ITransaction BeginTransaction(IsolationLevel isolationLevel);
 
 		/// <summary>
+		/// Join the <see cref="System.Transactions.Transaction.Current"/> system transaction.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// Sessions auto-join current transaction by default on their first usage within a scope.
+		/// This can be disabled with <see cref="IStatelessSessionBuilder.AutoJoinTransaction(bool)"/> from
+		/// a session builder obtained with <see cref="ISessionFactory.WithStatelessOptions()"/>.
+		/// </para>
+		/// <para>
+		/// This method allows to explicitly join the current transaction. It does nothing if it is already
+		/// joined.
+		/// </para>
+		/// </remarks>
+		/// <exception cref="HibernateException">Thrown if there is no current transaction.</exception>
+		void JoinTransaction();
+
+		/// <summary>
 		/// Sets the batch size of the session
 		/// </summary>
 		/// <param name="batchSize">The batch size.</param>

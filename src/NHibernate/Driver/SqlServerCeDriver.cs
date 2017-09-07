@@ -136,5 +136,14 @@ namespace NHibernate.Driver
 				dbParamSqlDbTypeProperty.SetValue(dbParam, SqlDbType.NText, null);
 			}
 		}
+
+		public override bool SupportsNullEnlistment => false;
+
+		/// <summary>
+		/// <see langword="false"/>. Enlistment is completely disabled when auto-enlistment is disabled.
+		/// <see cref="DbConnection.EnlistTransaction(System.Transactions.Transaction)"/> does nothing in
+		/// this case.
+		/// </summary>
+		public override bool SupportsEnlistmentWhenAutoEnlistmentIsDisabled => false;
 	}
 }

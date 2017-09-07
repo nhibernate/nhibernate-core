@@ -294,15 +294,16 @@ IList results = session.CreateCriteria(typeof(Cat))
             The <literal>DetachedCriteria</literal> class lets you create a query outside the scope 
             of a session, and then later execute it using some arbitrary <literal>ISession</literal>.
         </para>
-        
+
         <programlisting><![CDATA[DetachedCriteria query = DetachedCriteria.For(typeof(Cat))
     .Add( Expression.Eq("sex", 'F') );
-    
-ISession session = ....;
-ITransaction txn = session.BeginTransaction();
-IList results = query.GetExecutableCriteria(session).SetMaxResults(100).List();
-txn.Commit();
-session.Close();]]></programlisting>
+
+using (ISession session = ....)
+using (ITransaction txn = session.BeginTransaction())
+{
+    IList results = query.GetExecutableCriteria(session).SetMaxResults(100).List();
+    txn.Commit();
+}]]></programlisting>
 
         <para>
             A <literal>DetachedCriteria</literal> may also be used to express a sub-query. ICriterion

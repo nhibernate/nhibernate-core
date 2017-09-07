@@ -205,7 +205,8 @@ namespace NHibernate.Impl
 				}
 				else
 				{
-					connectionManager = new ConnectionManager(this, options.UserSuppliedConnection, connectionReleaseMode, Interceptor);
+					connectionManager = new ConnectionManager(
+						this, options.UserSuppliedConnection, connectionReleaseMode, Interceptor, options.ShouldAutoJoinTransaction);
 				}
 
 				if (factory.Statistics.IsStatisticsEnabled)
@@ -338,6 +339,12 @@ namespace NHibernate.Impl
 					log.Error("exception in interceptor afterTransactionCompletion()", t);
 				}
 
+				if (IsClosed)
+				{
+					// Cleanup was delayed to transaction completion, do it now.
+					persistenceContext.Clear();
+				}
+
 				//if (autoClear)
 				//	Clear();
 			}
@@ -347,6 +354,9 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
+				// Let the after tran clear that if we are still in an active system transaction.
+				if (TransactionContext?.IsInActiveTransaction == true)
+					return;
 				persistenceContext.Clear();
 			}
 		}
@@ -521,7 +531,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override void CloseSessionFromDistributedTransaction()
+		public override void CloseSessionFromSystemTransaction()
 		{
 			Dispose(true);
 		}
@@ -1576,10 +1586,18 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				log.Debug(string.Format("[session-id={0}] running ISession.Dispose()", SessionId));
-				if (TransactionContext != null)
+				log.DebugFormat("[session-id={0}] running ISession.Dispose()", SessionId);
+				// Ensure we are not disposing concurrently to transaction completion, which would
+				// remove the context. (Do not store it into a local variable before the Wait.)
+				TransactionContext?.Wait();
+				// If the synchronization above is bugged and lets a race condition remaining, we may
+				// blow here with a null ref exception after the null check. We could introduce
+				// a local variable for avoiding it, but that would turn a failure causing an exception
+				// into a failure causing a session and connection leak. So do not do it, better blow away
+				// with a null ref rather than silently leaking a session. And then fix the synchronization.
+				if (TransactionContext != null && TransactionContext.CanFlushOnSystemTransactionCompleted)
 				{
-					TransactionContext.ShouldCloseSessionOnDistributedTransactionCompleted = true;
+					TransactionContext.ShouldCloseSessionOnSystemTransactionCompleted = true;
 					return;
 				}
 				Dispose(true);
@@ -2123,7 +2141,12 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				log.Debug("before transaction completion");
-				FlushBeforeTransactionCompletion();
+				var context = TransactionContext;
+				if (tx == null && context == null)
+					throw new InvalidOperationException("Cannot complete a transaction without neither an explicit transaction nor an ambient one.");
+				// Always allow flushing from explicit transactions, otherwise check if flushing from scope is enabled.
+				if (tx != null || context.CanFlushOnSystemTransactionCompleted)
+					FlushBeforeTransactionCompletion();
 				actionQueue.BeforeTransactionCompletion();
 				try
 				{
@@ -2568,6 +2591,8 @@ namespace NHibernate.Impl
 			public virtual ISharedSessionBuilder FlushMode() => FlushMode(_session.FlushMode);
 
 			public virtual ISharedSessionBuilder AutoClose() => AutoClose(_session.autoCloseSessionEnabled);
+
+			public virtual ISharedSessionBuilder AutoJoinTransaction() => AutoJoinTransaction(_session.ConnectionManager.ShouldAutoJoinTransaction);
 
 			// NH different implementation, avoid an error case.
 			public override ISharedSessionBuilder Connection(DbConnection connection)

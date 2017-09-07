@@ -37,13 +37,17 @@ namespace NHibernate.Test
 		}
 
 		public bool HasOpenConnections
+			=> connections.Keys.Any(IsNotClosed);
+
+		private static bool IsNotClosed(DbConnection conn)
 		{
-			get
+			try
 			{
-				// Disposing of an ISession does not call CloseConnection (should it???)
-				// so a Diposed of ISession will leave an DbConnection in the list but
-				// the DbConnection will be closed (atleast with MsSql it works this way).
-				return connections.Keys.Any(conn => conn.State != ConnectionState.Closed);
+				return conn.State != ConnectionState.Closed;
+			}
+			catch (ObjectDisposedException)
+			{
+				return false;
 			}
 		}
 

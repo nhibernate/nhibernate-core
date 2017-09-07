@@ -7,7 +7,7 @@ namespace NHibernate.Test.DynamicProxyTests
 {
 	// utility class to run PEVerify.exe against a saved-to-disk assembly, similar to:
 	// http://stackoverflow.com/questions/7290893/is-there-an-api-for-verifying-the-msil-of-a-dynamic-assembly-at-runtime
-	public class PeVerifier
+	public partial class PeVerifier
 	{
 		private string _assemlyLocation;
 		private string _peVerifyPath;

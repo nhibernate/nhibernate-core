@@ -174,10 +174,12 @@
 
             <programlisting><![CDATA[// foo is an instance loaded earlier by the Session
 session.Reconnect();
-transaction = session.BeginTransaction();
-foo.Property = "bar";
-session.Flush();
-transaction.Commit();
+using (var transaction = session.BeginTransaction())
+{
+    foo.Property = "bar";
+    session.Flush();
+    transaction.Commit();
+}
 session.Disconnect();]]></programlisting>
 
             <para>
@@ -210,12 +212,13 @@ session.Disconnect();]]></programlisting>
 
             <programlisting><![CDATA[// foo is an instance loaded by a previous Session
 foo.Property = "bar";
-session = factory.OpenSession();
-transaction = session.BeginTransaction();
-session.SaveOrUpdate(foo);
-session.Flush();
-transaction.Commit();
-session.Close();]]></programlisting>
+using (var session = factory.OpenSession())
+using (var transaction = session.BeginTransaction())
+{
+    session.SaveOrUpdate(foo);
+    session.Flush();
+    transaction.Commit();
+}]]></programlisting>
 
             <para>
                 You may also call <literal>Lock()</literal> instead of <literal>Update()</literal>
@@ -280,15 +283,16 @@ session.Close();]]></programlisting>
             </para>
 
             <programlisting><![CDATA[// foo is an instance loaded by a previous Session
-session = factory.OpenSession();
-transaction = session.BeginTransaction();
-int oldVersion = foo.Version;
-session.Load( foo, foo.Key );
-if ( oldVersion != foo.Version ) throw new StaleObjectStateException();
-foo.Property = "bar";
-session.Flush();
-transaction.Commit();
-session.close();]]></programlisting>
+using (var session = factory.OpenSession())
+using (var transaction = session.BeginTransaction())
+{
+    int oldVersion = foo.Version;
+    session.Load( foo, foo.Key );
+    if ( oldVersion != foo.Version ) throw new StaleObjectStateException();
+    foo.Property = "bar";
+    session.Flush();
+    transaction.Commit();
+}]]></programlisting>
 
             <para>
                 Of course, if you are operating in a low-data-concurrency environment and don't
@@ -337,7 +341,7 @@ session.close();]]></programlisting>
         </para>
 
         <para>
-            Heres an example:
+            Here is an example:
         </para>
 
         <programlisting><![CDATA[ISessionFactory sessions;
@@ -569,12 +573,100 @@ finally
         </itemizedlist>
 
         <para>
-            As of NHibernate, if your application manages transactions through .NET APIs such as <literal>
-            System.Transactions</literal> library, <literal>ConnectionReleaseMode.AfterTransaction</literal> may cause
+            If your application manages transactions through .NET APIs such as <literal>System.Transactions</literal> library
+            while not using a compatible transaction factory (see <literal>transaction.factory_class</literal>
+            in <xref linkend="configuration-optional"/>), <literal>ConnectionReleaseMode.AfterTransaction</literal> may cause
             NHibernate to open and close several connections during one transaction, leading to unnecessary overhead and
             transaction promotion from local to distributed. Specifying <literal>ConnectionReleaseMode.OnClose</literal>
             will revert to the legacy behavior and prevent this problem from occurring.
         </para>
+
+    </sect1>
+
+    <sect1 id="transactions-scopes">
+        <title>Transaction scopes (System.Transactions)</title>
+
+        <para>
+            Instead of using NHibernate <literal>ITransaction</literal>, <literal>TransactionScope</literal>
+            can be used. Please do not use both simultaneously. Using <literal>TransactionScope</literal>
+            requires using a compatible transaction factory (see <literal>transaction.factory_class</literal>
+            in <xref linkend="configuration-optional"/>). The default transaction factory supports scopes.
+        </para>
+
+        <para>
+            When using <literal>TransactionScope</literal> with NHibernate, you need to be aware of following
+            points:
+        </para>
+
+        <itemizedlist>
+            <listitem>
+                <para>
+                    The session will enlist with the first scope in which the session is used (or opened).
+                    As of NHibernate v5.0, it will enlist its connection in the transaction regardless of
+                    connection string <literal>Enlist</literal> setting. Prior to v5.0, it was relying on
+                    that setting being considered <literal>true</literal>, and on acquiring the connection
+                    within the scope.
+                </para>
+                <para>
+                    Sub-scopes are not supported. The session will be enlisted in the first scope within
+                    which it was used, until this scope is committed or rollback. If auto-enlistment is
+                    enabled on the connection and the session used on others scopes than the one in which
+                    it is currently enlisted, the connection may enlist in another scope, and the session
+                    will then fail to use it.
+                </para>
+                <para>
+                    As of NHibernate v5.0, session auto-enlistment can be disabled from the session builder
+                    obtained with <literal>ISessionFactory.WithOptions()</literal>, using the
+                    <literal>AutoJoinTransaction</literal> option. The connection may still enlist itself
+                    if connection string <literal>Enlist</literal> setting is not <literal>false</literal>.
+                    A session can explicitly join the current system transaction by calling
+                    <literal>ISession.JoinTransaction()</literal>.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    As of NHibernate v5.0, <literal>FlushMode.Commit</literal> requires the configuration setting
+                    <literal>transaction.use_connection_on_system_events</literal> to be true for flushing
+                    from transaction scope commit. Otherwise, it will be your responsibility to flush the session
+                    before completing the scope.
+                </para>
+                <para>
+                    Using <literal>transaction.use_connection_on_system_events</literal> can cause undesired
+                    transaction promotions to distributed: it requires using a dedicated connection for flushing,
+                    and it delays session disposal (if done inside the scope) to the scope disposal. If you want
+                    to avoid this, set this setting to <literal>false</literal> and manually flush your sessions.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    As of NHibernate v5.0, <literal>ConnectionReleaseMode.AfterTransaction</literal> has no more
+                    by default an "immediate" effect with transaction scopes. Previously, it was releasing the
+                    connection from transaction completion events. But this is not officially supported by
+                    Microsoft and this can cause issues especially with distributed transactions.
+                </para>
+                <para>
+                    Since v5.0, by default, the connection will be actually released after the scope disposal at the
+                    first session usage involving a connection, or at the session closing, whichever come first.
+                    Alternatively, you may <literal>Disconnect()</literal> the session. (Requires
+                    <literal>Reconnect()</literal> before re-using the session.)
+                </para>
+                <para>
+                    When using <literal>transaction.use_connection_on_system_events</literal>, if the session is
+                    disposed within the scope, the connection releasing will still occurs from transaction
+                    completion event.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    As of NHibernate v5.0, using transaction scope and trying to use the session connection within
+                    <literal>AfterTransactionCompletion</literal> is forbidden and will raise an exception.
+                    If the setting <literal>transaction.use_connection_on_system_events</literal>
+                    is <literal>false</literal>, it will forbid any connection usage from
+                    <literal>BeforeTransactionCompletion</literal> event too, when this event is triggered by
+                    a transaction scope commit or rollback.
+                </para>
+            </listitem>
+        </itemizedlist>
 
     </sect1>
 

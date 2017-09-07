@@ -329,6 +329,11 @@ namespace NHibernate.Dialect
 			throw new NotSupportedException("The query should start with 'SELECT' or 'SELECT DISTINCT'");
 		}
 
+		/// <summary>
+		/// Does this dialect support concurrent writing connections in the same transaction?
+		/// </summary>
+		public override bool SupportsConcurrentWritingConnectionsInSameTransaction => false;
+
 		public override long TimestampResolutionInTicks
 		{
 			get
@@ -347,6 +352,15 @@ namespace NHibernate.Dialect
 
 		/// <inheritdoc/>
 		public override bool SupportsScalarSubSelects => false;
+
+		/// <summary>
+		/// Does this dialect support distributed transaction?
+		/// </summary>
+		/// <remarks>
+		/// Fails enlisting a connection into a distributed transaction, fails promoting a transaction
+		/// to distributed when it has already a connection enlisted.
+		/// </remarks>
+		public override bool SupportsDistributedTransactions => false;
 
 		#endregion
 	}

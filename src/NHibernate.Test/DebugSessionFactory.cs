@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
-using System.Threading;
 using log4net;
 using NHibernate.Cache;
 using NHibernate.Cfg;
@@ -74,19 +73,10 @@ namespace NHibernate.Test
 
 		private bool CheckSessionWasClosed(ISessionImplementor session)
 		{
+			session.TransactionContext?.Wait();
+
 			if (!session.IsOpen)
 				return true;
-
-			if (session.TransactionContext?.ShouldCloseSessionOnDistributedTransactionCompleted ?? false)
-			{
-				// Delayed transactions not having completed and closed their sessions? Give them a chance to complete.
-				Thread.Sleep(100);
-				if (!session.IsOpen)
-				{
-					_log.Warn($"Test case had a delayed close of session {session.SessionId}.");
-					return true;
-				}
-			}
 
 			_log.Error($"Test case didn't close session {session.SessionId}, closing");
 			(session as ISession)?.Close();
@@ -451,6 +441,12 @@ namespace NHibernate.Test
 				return this;
 			}
 
+			ISessionBuilder ISessionBuilder<ISessionBuilder>.AutoJoinTransaction(bool autoJoinTransaction)
+			{
+				_actualBuilder.AutoJoinTransaction(autoJoinTransaction);
+				return this;
+			}
+
 			ISessionBuilder ISessionBuilder<ISessionBuilder>.FlushMode(FlushMode flushMode)
 			{
 				_actualBuilder.FlushMode(flushMode);
@@ -485,6 +481,12 @@ namespace NHibernate.Test
 			IStatelessSessionBuilder IStatelessSessionBuilder.Connection(DbConnection connection)
 			{
 				_actualBuilder.Connection(connection);
+				return this;
+			}
+
+			IStatelessSessionBuilder IStatelessSessionBuilder.AutoJoinTransaction(bool autoJoinTransaction)
+			{
+				_actualBuilder.AutoJoinTransaction(autoJoinTransaction);
 				return this;
 			}
 

@@ -780,15 +780,18 @@ sess.Lock(pk, LockMode.Upgrade);]]></programlisting>
         </para>
 
         <programlisting><![CDATA[sess = sf.OpenSession();
-ITransaction tx = sess.BeginTransaction();
-sess.FlushMode = FlushMode.Commit; //allow queries to return stale state
-Cat izi = (Cat) sess.Load(typeof(Cat), id);
-izi.Name = "iznizi";
-// execute some queries....
-sess.Find("from Cat as cat left outer join cat.Kittens kitten");
-//change to izi is not flushed!
-...
-tx.Commit(); //flush occurs]]></programlisting>
+using (ITransaction tx = sess.BeginTransaction())
+{
+    // allow queries to return stale state
+    sess.FlushMode = FlushMode.Commit;
+    Cat izi = (Cat) sess.Load(typeof(Cat), id);
+    izi.Name = "iznizi";
+    // execute some queries....
+    sess.Find("from Cat as cat left outer join cat.Kittens kitten");
+    // change to izi is not flushed!
+    ...
+    tx.Commit(); // flush occurs
+}]]></programlisting>
 
     </sect1>
 
