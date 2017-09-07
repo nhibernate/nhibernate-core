@@ -34,3 +34,4 @@ SharedAssemblyInfo.*
 hibernate.cfg.xml
 .vs/
 packages/
+.idea/

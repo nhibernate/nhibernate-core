@@ -808,16 +808,7 @@ namespace NHibernate.Impl
 
 			public T UniqueResult<T>()
 			{
-				object result = UniqueResult();
-				if (result == null && typeof (T).IsValueType)
-				{
-					throw new InvalidCastException(
-						"UniqueResult<T>() cannot cast null result to value type. Call UniqueResult<T?>() instead");
-				}
-				else
-				{
-					return (T) result;
-				}
+				return root.UniqueResult<T>();
 			}
 
 			public void ClearOrders()
