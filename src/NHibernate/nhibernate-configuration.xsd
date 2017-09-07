@@ -148,6 +148,20 @@
 										</xs:documentation>
 									</xs:annotation>
 								</xs:enumeration>
+								<xs:enumeration value="oracle.use_n_prefixed_types_for_unicode">
+									<xs:annotation>
+										<xs:documentation>
+											Oracle has a dual Unicode support model.
+											Either the whole database use an Unicode encoding, and then all string types
+											will be Unicode. In such case, Unicode strings should be mapped to non N prefixed
+											types, such as Varchar2. This is the default.
+											Or N prefixed types such as NVarchar2 are to be used for Unicode strings.
+											See https://docs.oracle.com/cd/B19306_01/server.102/b14225/ch6unicode.htm#CACHCAHF
+											https://docs.oracle.com/database/121/ODPNT/featOraCommand.htm#i1007557
+											This setting applies only to Oracle dialects and ODP.Net managed or unmanaged driver.
+										</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
 							</xs:restriction>
 						</xs:simpleType>
 					</xs:attribute>

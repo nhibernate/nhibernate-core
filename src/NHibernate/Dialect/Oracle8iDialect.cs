@@ -64,9 +64,23 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
+		/// <summary>
+		/// <para>Oracle has a dual Unicode support model.</para>
+		/// <para>Either the whole database use an Unicode encoding, and then all string types
+		/// will be Unicode. In such case, Unicode strings should be mapped to non <c>N</c> prefixed
+		/// types, such as <c>Varchar2</c>. This is the default.</para>
+		/// <para>Or <c>N</c> prefixed types such as <c>NVarchar2</c> are to be used for Unicode strings.</para>
+		/// <para>This property is set according to <see cref="Cfg.Environment.OracleUseNPrefixedTypesForUnicode"/>
+		/// configuration parameter.</para>
+		/// </summary>
+		/// <remarks>
+		/// See https://docs.oracle.com/cd/B19306_01/server.102/b14225/ch6unicode.htm#CACHCAHF
+		/// https://docs.oracle.com/database/121/ODPNT/featOraCommand.htm#i1007557
+		/// </remarks>
+		public bool UseNPrefixedTypesForUnicode { get; private set; }
+
 		public Oracle8iDialect()
 		{
-			RegisterCharacterTypeMappings();
 			RegisterNumericTypeMappings();
 			RegisterDateTimeTypeMappings();
 			RegisterLargeObjectTypeMappings();
@@ -78,6 +92,16 @@ namespace NHibernate.Dialect
 			RegisterKeywords();
 
 			RegisterDefaultProperties();
+		}
+
+		/// <inheritdoc/>
+		public override void Configure(IDictionary<string, string> settings)
+		{
+			base.Configure(settings);
+
+			// If changing the default value, keep it in sync with OracleDataClientDriverBase.Configure.
+			UseNPrefixedTypesForUnicode = PropertiesHelper.GetBoolean(Environment.OracleUseNPrefixedTypesForUnicode, settings, false);
+			RegisterCharacterTypeMappings();
 		}
 
 		#region private static readonly string[] DialectKeywords = { ... }
@@ -137,10 +161,14 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.AnsiStringFixedLength, 2000, "CHAR($l)");
 			RegisterColumnType(DbType.AnsiString, "VARCHAR2(255)");
 			RegisterColumnType(DbType.AnsiString, 4000, "VARCHAR2($l)");
-			RegisterColumnType(DbType.StringFixedLength, "NCHAR(255)");
-			RegisterColumnType(DbType.StringFixedLength, 2000, "NCHAR($l)");
-			RegisterColumnType(DbType.String, "NVARCHAR2(255)");
-			RegisterColumnType(DbType.String, 4000, "NVARCHAR2($l)");
+			RegisterColumnType(DbType.AnsiString, 2147483647, "CLOB"); // should use the IType.ClobType
+
+			var prefix = UseNPrefixedTypesForUnicode ? "N" : string.Empty;
+			RegisterColumnType(DbType.StringFixedLength, prefix + "CHAR(255)");
+			RegisterColumnType(DbType.StringFixedLength, 2000, prefix + "CHAR($l)");
+			RegisterColumnType(DbType.String, prefix + "VARCHAR2(255)");
+			RegisterColumnType(DbType.String, 4000, prefix + "VARCHAR2($l)");
+			RegisterColumnType(DbType.String, 1073741823, prefix + "CLOB");
 		}
 
 		protected virtual void RegisterNumericTypeMappings()
@@ -174,8 +202,6 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Binary, "RAW(2000)");
 			RegisterColumnType(DbType.Binary, 2000, "RAW($l)");
 			RegisterColumnType(DbType.Binary, 2147483647, "BLOB");
-			RegisterColumnType(DbType.AnsiString, 2147483647, "CLOB"); // should use the IType.ClobType
-			RegisterColumnType(DbType.String, 1073741823, "NCLOB");
 		}
 
 		protected virtual void RegisterReverseHibernateTypeMappings() {}

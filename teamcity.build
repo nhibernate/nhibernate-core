@@ -148,6 +148,8 @@
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.OracleDataClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.Oracle10gDialect" />
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))" />
+		<!-- Teamcity Oracle test database is configured with a non-Unicode encoding -->
+		<property name="nhibernate.oracle.use_n_prefixed_types_for_unicode" value="true" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/oracle/x86">
 				<include name="*.dll"/>
@@ -162,6 +164,8 @@
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.OracleDataClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.Oracle10gDialect" />
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))" />
+		<!-- Teamcity Oracle test database is configured with a non-Unicode encoding -->
+		<property name="nhibernate.oracle.use_n_prefixed_types_for_unicode" value="true" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/oracle/x64">
 				<include name="*.dll"/>
@@ -175,6 +179,8 @@
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.OracleManagedDataClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.Oracle10gDialect" />
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))" />
+		<!-- Teamcity Oracle test database is configured with a non-Unicode encoding -->
+		<property name="nhibernate.oracle.use_n_prefixed_types_for_unicode" value="true" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/oracle-managed/common">
 				<include name="*.dll"/>
@@ -192,6 +198,8 @@
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.OracleManagedDataClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.Oracle10gDialect" />
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))" />
+		<!-- Teamcity Oracle test database is configured with a non-Unicode encoding -->
+		<property name="nhibernate.oracle.use_n_prefixed_types_for_unicode" value="true" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/oracle-managed/common">
 				<include name="*.dll"/>

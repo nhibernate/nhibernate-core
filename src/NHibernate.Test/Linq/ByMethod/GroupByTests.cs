@@ -771,15 +771,13 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
 		}
 
-		[Test(Description = "NH-3801")]
+		[Test(Description = "NH-3801, NH-4062")]
 		public void GroupByComputedValueInObjectArrayWithJoinInRightSideOfCase()
 		{
 			if (!TestDialect.SupportsComplexExpressionInGroupBy)
 				Assert.Ignore(Dialect.GetType().Name + " does not support complex group by expressions");
 			if (Sfi.ConnectionProvider.Driver is OdbcDriver)
 				Assert.Ignore("SQL Server seems unable to match complex group by and select list arguments when running over ODBC.");
-			if (Dialect is Oracle8iDialect)
-				Assert.Ignore("ORA-12704: character set mismatch. Due to NHibernate creating Unicode string types as NVarchar2 but querying them as Varchar2.");
 
 			var orderGroups = db.OrderLines.GroupBy(o => new[] { o.Order.Customer.CustomerId == null ? "unknown" : o.Order.Customer.CompanyName }).Select(g => new { Key = g.Key, Count = g.Count() }).ToList();
 			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
