@@ -110,19 +110,13 @@ namespace NHibernate.Impl
 				return root.ListAsync<T>(cancellationToken);
 			}
 
-			public async Task<T> UniqueResultAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
+			public Task<T> UniqueResultAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
 			{
-				cancellationToken.ThrowIfCancellationRequested();
-				object result = await (UniqueResultAsync(cancellationToken)).ConfigureAwait(false);
-				if (result == null && typeof (T).IsValueType)
+				if (cancellationToken.IsCancellationRequested)
 				{
-					throw new InvalidCastException(
-						"UniqueResult<T>() cannot cast null result to value type. Call UniqueResult<T?>() instead");
+					return Task.FromCanceled<T>(cancellationToken);
 				}
-				else
-				{
-					return (T) result;
-				}
+				return root.UniqueResultAsync<T>(cancellationToken);
 			}
 
 			public Task<object> UniqueResultAsync(CancellationToken cancellationToken = default(CancellationToken))

@@ -347,6 +347,29 @@ namespace NHibernate.Test.Criteria
 			}
 		}
 
+		[Test]
+		public void UseSumWithNullResultWithProjection()
+		{
+			using (ISession session = Sfi.OpenSession())
+			{
+				long sum = session.CreateCriteria(typeof(Reptile))
+					.SetProjection(Projections.Sum(Projections.Id()))
+					.UniqueResult<long>();
+				Assert.AreEqual(0, sum);
+			}
+		}
 
+		[Test]
+		public void UseSubquerySumWithNullResultWithProjection()
+		{
+			using (ISession session = Sfi.OpenSession())
+			{
+				int sum = session.CreateCriteria(typeof(Enrolment))
+					.CreateCriteria("Student", "s")
+					.SetProjection(Projections.Sum(Projections.SqlFunction("length", NHibernateUtil.Int32, Projections.Property("s.Name"))))
+					.UniqueResult<int>();
+				Assert.AreEqual(0, sum);
+			}
+		}
 	}
 }
