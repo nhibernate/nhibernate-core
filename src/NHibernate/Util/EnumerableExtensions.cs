@@ -22,6 +22,8 @@ namespace NHibernate.Util
 			return false;
 		}
 
+		// Since v5
+		[Obsolete("This extension has no more usages in NHibernate and will be removed in a future version")]
 		public static object First(this IEnumerable source)
 		{
 			if (source == null)

@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Threading;
@@ -33,7 +33,7 @@ namespace NHibernate.Util
 		// values here since the values pertaining to the MRU entries are kept in a
 		// separate hard reference cache (to avoid their enqueuement/garbage-collection).
 		[NonSerialized]
-		private readonly IDictionary softReferenceCache = new WeakHashtable();
+		private readonly IDictionary<object, object> softReferenceCache = new WeakHashtable();
 
 		// the MRU cache used to keep hard references to the most recently used query plans;
 		// note : LRU here is a bit of a misnomer, it indicates that LRU entries are removed, the
@@ -77,8 +77,7 @@ namespace NHibernate.Util
 			{
 				lock (SyncRoot)
 				{
-					object result = softReferenceCache[key];
-					if (result != null)
+					if (softReferenceCache.TryGetValue(key, out var result))
 					{
 						strongReferenceCache.Add(key, result);
 					}

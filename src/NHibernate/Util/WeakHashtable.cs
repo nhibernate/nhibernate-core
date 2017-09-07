@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using NHibernate.DebugHelpers;
 
 namespace NHibernate.Util
@@ -15,7 +16,7 @@ namespace NHibernate.Util
 		private WeakReference reference;
 		private int hashCode;
 
-		public WeakRefWrapper(object target)
+		private WeakRefWrapper(object target)
 		{
 			reference = new WeakReference(target);
 			hashCode = target.GetHashCode();
@@ -28,13 +29,13 @@ namespace NHibernate.Util
 				return true;
 			}
 
-			WeakRefWrapper that = obj as WeakRefWrapper;
+			var that = obj as WeakRefWrapper;
 			if (that == null)
 			{
 				return false;
 			}
 
-			object target = Target;
+			var target = Target;
 			if (target == null)
 			{
 				// If the reference is dead, we are only equal to ourselves,
@@ -66,62 +67,47 @@ namespace NHibernate.Util
 			return new WeakRefWrapper(value);
 		}
 
-		public static object Unwrap(object value)
+		public static object Unwrap(WeakRefWrapper value)
 		{
 			if (value == null)
 			{
 				return null;
 			}
-			return ((WeakRefWrapper) value).Target;
+			return value.Target;
 		}
 	}
 
-	public class WeakEnumerator : IDictionaryEnumerator
+	public class WeakEnumerator : IEnumerator<KeyValuePair<object, object>>
 	{
-		private IDictionaryEnumerator innerEnumerator;
+		private IEnumerator<KeyValuePair<WeakRefWrapper, WeakRefWrapper>> _innerEnumerator;
 
-		public WeakEnumerator(IDictionaryEnumerator innerEnumerator)
+		public WeakEnumerator(IEnumerator<KeyValuePair<WeakRefWrapper, WeakRefWrapper>> innerEnumerator)
 		{
-			this.innerEnumerator = innerEnumerator;
+			_innerEnumerator = innerEnumerator;
 		}
 
 		// Unwrapped key and value stored here so that they
 		// do not get collected between calls to MoveNext and Current.
-		private object currentKey, currentValue;
-
-		public object Key
-		{
-			get { return currentKey; }
-		}
-
-		public object Value
-		{
-			get { return currentValue; }
-		}
-
-		public DictionaryEntry Entry
-		{
-			get { return new DictionaryEntry(currentKey, currentValue); }
-		}
+		private KeyValuePair<object, object> _current;
 
 		public bool MoveNext()
 		{
 			// Skip any garbage-collected key/value pairs
 			while (true)
 			{
-				currentKey = null;
-				currentValue = null;
 
-				if (!innerEnumerator.MoveNext())
+				if (!_innerEnumerator.MoveNext())
 				{
+					_current = default(KeyValuePair<object, object>);
 					return false;
 				}
 
-				currentKey = WeakRefWrapper.Unwrap(innerEnumerator.Key);
-				currentValue = WeakRefWrapper.Unwrap(innerEnumerator.Value);
+				var currentKey = WeakRefWrapper.Unwrap(_innerEnumerator.Current.Key);
+				var currentValue = WeakRefWrapper.Unwrap(_innerEnumerator.Current.Value);
 
 				if (currentKey != null && currentValue != null)
 				{
+					_current = new KeyValuePair<object, object>(currentKey, currentValue);
 					break;
 				}
 			}
@@ -131,124 +117,154 @@ namespace NHibernate.Util
 
 		public void Reset()
 		{
-			innerEnumerator.Reset();
-			currentKey = currentValue = null;
+			_innerEnumerator.Reset();
+			_current = default(KeyValuePair<object, object>);
 		}
 
-		public object Current
+		public KeyValuePair<object, object> Current => _current;
+
+		object IEnumerator.Current => _current;
+
+		#region IDisposable Support
+		private bool _disposedValue = false; // To detect redundant calls
+
+		protected virtual void Dispose(bool disposing)
 		{
-			get { return Entry; }
+			if (!_disposedValue)
+			{
+				if (disposing)
+				{
+					_innerEnumerator.Dispose();
+					_current = default(KeyValuePair<object, object>);
+				}
+
+				_disposedValue = true;
+			}
 		}
+
+		// This code added to correctly implement the disposable pattern.
+		public void Dispose()
+		{
+			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+			Dispose(true);
+		}
+		#endregion
 	}
 
 	[Serializable]
-	public class WeakHashtable : IDictionary
+	public class WeakHashtable : IDictionary<object, object>
 	{
-		private Hashtable innerHashtable = new Hashtable();
+		private Dictionary<WeakRefWrapper, WeakRefWrapper> _innerHashtable = new Dictionary<WeakRefWrapper, WeakRefWrapper>();
 
 		public void Scavenge()
 		{
-			var deadKeys = new List<object>();
+			var deadKeys = new List<WeakRefWrapper>();
 
-			foreach (DictionaryEntry de in innerHashtable)
+			foreach (var de in _innerHashtable)
 			{
-				WeakRefWrapper key = (WeakRefWrapper) de.Key;
-				WeakRefWrapper value = (WeakRefWrapper) de.Value;
-
-				if (!key.IsAlive || !value.IsAlive)
+				if (!de.Key.IsAlive || !de.Value.IsAlive)
 				{
-					deadKeys.Add(key);
+					deadKeys.Add(de.Key);
 				}
 			}
 
-			foreach (object key in deadKeys)
+			foreach (var key in deadKeys)
 			{
-				innerHashtable.Remove(key);
+				_innerHashtable.Remove(key);
 			}
 		}
 
-		public bool Contains(object key)
+		public bool ContainsKey(object key)
 		{
-			return innerHashtable.Contains(WeakRefWrapper.Wrap(key));
+			return _innerHashtable.ContainsKey(WeakRefWrapper.Wrap(key));
 		}
 
 		public void Add(object key, object value)
 		{
 			Scavenge();
-			innerHashtable.Add(WeakRefWrapper.Wrap(key), WeakRefWrapper.Wrap(value));
+			_innerHashtable.Add(WeakRefWrapper.Wrap(key), WeakRefWrapper.Wrap(value));
 		}
 
 		public void Clear()
 		{
-			innerHashtable.Clear();
+			_innerHashtable.Clear();
 		}
 
-		public IDictionaryEnumerator GetEnumerator()
+		public bool Remove(object key)
 		{
-			return new WeakEnumerator(innerHashtable.GetEnumerator());
+			return _innerHashtable.Remove(WeakRefWrapper.Wrap(key));
 		}
 
-		public void Remove(object key)
+		public bool TryGetValue(object key, out object value)
 		{
-			innerHashtable.Remove(WeakRefWrapper.Wrap(key));
+			if (_innerHashtable.TryGetValue(WeakRefWrapper.Wrap(key), out var wrappedValue))
+			{
+				value = WeakRefWrapper.Unwrap(wrappedValue);
+				// If it was no more alive, it will be unwrapped as null.
+				return value != null;
+			}
+			value = null;
+			return false;
 		}
 
 		public object this[object key]
 		{
-			get { return WeakRefWrapper.Unwrap(innerHashtable[WeakRefWrapper.Wrap(key)]); }
+			get { return WeakRefWrapper.Unwrap(_innerHashtable[WeakRefWrapper.Wrap(key)]); }
 			set
 			{
 				Scavenge();
-				innerHashtable[WeakRefWrapper.Wrap(key)] = WeakRefWrapper.Wrap(value);
+				_innerHashtable[WeakRefWrapper.Wrap(key)] = WeakRefWrapper.Wrap(value);
 			}
 		}
 
-		public ICollection Keys
+		public ICollection<object> Keys
+			=> _innerHashtable.Keys.Select(k => WeakRefWrapper.Unwrap(k)).ToArray();
+
+		public ICollection<object> Values
+			=> _innerHashtable.Values.Select(k => WeakRefWrapper.Unwrap(k)).ToArray();
+
+		#region ICollection<object, object>
+
+		public void Add(KeyValuePair<object, object> item)
 		{
-			get { throw new NotImplementedException(); }
+			Scavenge();
+			_innerHashtable.Add(WeakRefWrapper.Wrap(item.Key), WeakRefWrapper.Wrap(item.Value));
 		}
 
-		public ICollection Values
+		public bool Contains(KeyValuePair<object, object> item)
 		{
-			get { throw new NotImplementedException(); }
+			return TryGetValue(item.Key, out var value) && value == item.Value;
 		}
 
-		public bool IsReadOnly
+		public void CopyTo(KeyValuePair<object, object>[] array, int arrayIndex)
 		{
-			get { return innerHashtable.IsReadOnly; }
+			if (array == null)
+				throw new ArgumentNullException(nameof(array));
+
+			foreach(var pair in this)
+			{
+				array[arrayIndex] = pair;
+				arrayIndex++;
+			}
 		}
 
-		public bool IsFixedSize
+		public bool Remove(KeyValuePair<object, object> item)
 		{
-			get { return innerHashtable.IsFixedSize; }
-		}
-
-		public void CopyTo(Array array, int index)
-		{
-			throw new NotImplementedException();
+			return Contains(item) && Remove(item.Key);
 		}
 
 		/// <summary>
-		/// Count of elements in the collection. Unreliable!
+		/// Count of elements in the collection. Unreliable: does not exclude dead references, contrary to the enumerator.
 		/// </summary>
-		public int Count
-		{
-			get { return innerHashtable.Count; }
-		}
+		public int Count => _innerHashtable.Count;
 
-		public object SyncRoot
-		{
-			get { return innerHashtable.SyncRoot; }
-		}
+		public bool IsReadOnly => false;
 
-		public bool IsSynchronized
-		{
-			get { return innerHashtable.IsSynchronized; }
-		}
+		#endregion
 
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
-		}
+		public IEnumerator<KeyValuePair<object, object>> GetEnumerator()
+			=> new WeakEnumerator(_innerHashtable.GetEnumerator());
+
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}
 }
