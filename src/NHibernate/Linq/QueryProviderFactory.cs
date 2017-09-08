@@ -9,16 +9,20 @@ namespace NHibernate.Linq
 		/// Builds a new query provider.
 		/// </summary>
 		/// <param name="session">A session.</param>
+		/// <param name="collection">If the query is to be filtered as belonging to an entity collection, the collection.</param>
 		/// <returns>The new query provider instance.</returns>
-		public static INhQueryProvider CreateQueryProvider(ISessionImplementor session)
+		public static INhQueryProvider CreateQueryProvider(ISessionImplementor session, object collection)
 		{
 			if (session.Factory.Settings.LinqQueryProviderType == null)
 			{
-				return new DefaultQueryProvider(session);
+				return new DefaultQueryProvider(session, collection);
 			}
 			else
 			{
-				return Activator.CreateInstance(session.Factory.Settings.LinqQueryProviderType, session) as INhQueryProvider;
+				// For backward compatibility, prioritize using the version without collection.
+				return (collection == null
+					? Activator.CreateInstance(session.Factory.Settings.LinqQueryProviderType, session)
+					: Activator.CreateInstance(session.Factory.Settings.LinqQueryProviderType, session, collection)) as INhQueryProvider;
 			}
 		}
 	}
