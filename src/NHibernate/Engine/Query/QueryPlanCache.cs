@@ -67,23 +67,30 @@ namespace NHibernate.Engine.Query
 				{
 					log.Debug("located HQL query plan in cache (" + queryExpression.Key + ")");
 				}
-				var planExpression = plan.QueryExpression as NhLinqExpression;
-				var expression = queryExpression as NhLinqExpression;
-				if (planExpression != null && expression != null)
-				{
-					//NH-3413
-					//Here we have to use original expression.
-					//In most cases NH do not translate expression in second time, but 
-					// for cases when we have list parameters in query, like @p1.Contains(...),
-					// it does, and then it uses parameters from first try. 
-					//TODO: cache only required parts of QueryExpression
+				plan = CopyIfRequired(plan, queryExpression);
+			}
 
-					//NH-3436
-					// We have to return new instance plan with it's own query expression
-					// because other treads can override queryexpression of current plan during execution of query if we will use cached instance of plan 
-					expression.CopyExpressionTranslation(planExpression);
-					plan = plan.Copy(expression);
-				}
+			return plan;
+		}
+
+		private static QueryExpressionPlan CopyIfRequired(QueryExpressionPlan plan, IQueryExpression queryExpression)
+		{
+			var planExpression = plan.QueryExpression as NhLinqExpression;
+			var expression = queryExpression as NhLinqExpression;
+			if (planExpression != null && expression != null)
+			{
+				//NH-3413
+				//Here we have to use original expression.
+				//In most cases NH do not translate expression in second time, but 
+				// for cases when we have list parameters in query, like @p1.Contains(...),
+				// it does, and then it uses parameters from first try. 
+				//TODO: cache only required parts of QueryExpression
+
+				//NH-3436
+				// We have to return new instance plan with it's own query expression
+				// because other treads can override queryexpression of current plan during execution of query if we will use cached instance of plan 
+				expression.CopyExpressionTranslation(planExpression);
+				plan = plan.Copy(expression);
 			}
 
 			return plan;
@@ -97,23 +104,18 @@ namespace NHibernate.Engine.Query
 		public IQueryExpressionPlan GetFilterQueryPlan(IQueryExpression queryExpression, string collectionRole, bool shallow, IDictionary<string, IFilter> enabledFilters)
 		{
 			var key = new FilterQueryPlanKey(queryExpression.Key, collectionRole, shallow, enabledFilters);
-			var plan = (IQueryExpressionPlan) planCache[key];
+			var plan = (QueryExpressionPlan) planCache[key];
 
 			if (plan == null)
 			{
-				if (log.IsDebugEnabled)
-				{
-					log.Debug(string.Format("unable to locate collection-filter query plan in cache; generating ({0} : {1})", collectionRole, queryExpression.Key));
-				}
+				log.DebugFormat("unable to locate collection-filter query plan in cache; generating ({0} : {1})", collectionRole, queryExpression.Key);
 				plan = new FilterQueryPlan(queryExpression, collectionRole, shallow, enabledFilters, factory);
 				planCache.Put(key, plan);
 			}
 			else
 			{
-				if (log.IsDebugEnabled)
-				{
-					log.Debug(string.Format("located collection-filter query plan in cache ({0} : {1})", collectionRole, queryExpression.Key));
-				}
+				log.DebugFormat("located collection-filter query plan in cache ({0} : {1})", collectionRole, queryExpression.Key);
+				plan = CopyIfRequired(plan, queryExpression);
 			}
 
 			return plan;
