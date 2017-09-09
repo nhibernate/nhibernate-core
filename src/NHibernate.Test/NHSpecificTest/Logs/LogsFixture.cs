@@ -61,6 +61,7 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 			private readonly TextWriterAppender appender;
 			private readonly Logger loggerImpl;
 			private readonly StringBuilder stringBuilder;
+			private readonly Level previousLevel;
 
 			public TextLogSpy(string loggerName, string pattern)
 			{
@@ -73,6 +74,7 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 				};
 				loggerImpl = (Logger)LogManager.GetLogger(typeof(LogsFixture).Assembly, loggerName).Logger;
 				loggerImpl.AddAppender(appender);
+				previousLevel = loggerImpl.Level;
 				loggerImpl.Level = Level.All;
 			}
 
@@ -87,6 +89,7 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 			public void Dispose()
 			{
 				loggerImpl.RemoveAppender(appender);
+				loggerImpl.Level = previousLevel;
 			}
 		}
 	}
