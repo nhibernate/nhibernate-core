@@ -8,6 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2319
 		public virtual Guid Id { get; set; }
 		public virtual string Name { get; set; }
 		public virtual ICollection<Child> Children { get; set; } = new List<Child>();
+		public virtual IDictionary<Guid, Child> ChildrenMap { get; set; } = new Dictionary<Guid, Child>();
 	}
 
 	class Child

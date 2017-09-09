@@ -54,6 +54,14 @@ using NHibernate.Linq;]]></programlisting>
       This will be executed as a query on that <literal>cat</literal>'s kittens without loading the
       entire collection.
     </para>
+    <para>
+      If the collection is a map, call <literal>AsQueryable</literal> on its <literal>Values</literal>
+      property.
+    </para>
+    <programlisting><![CDATA[IList<Cat> whiteKittens =
+    cat.Kittens.Values.AsQueryable()
+        .Where(k => k.Color == "white")
+        .ToList();]]></programlisting>
     <para>&nbsp;</para>
 
     <para>
