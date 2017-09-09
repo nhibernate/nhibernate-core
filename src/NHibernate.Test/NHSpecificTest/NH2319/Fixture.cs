@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Collection;
+using NHibernate.Engine.Query;
 using NHibernate.Mapping.ByCode;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2319
@@ -11,16 +14,23 @@ namespace NHibernate.Test.NHSpecificTest.NH2319
 	[TestFixture]
 	public abstract class FixtureBase : TestCaseMappingByCode
 	{
-		private Guid _parentId;
+		private Guid _parent1Id;
 		private Guid _child1Id;
+		private Guid _parent2Id;
+		private Guid _child3Id;
 
 		[Test]
 		public void ShouldBeAbleToFindChildrenByName()
 		{
+			FindChildrenByName(_parent1Id, _child1Id);
+		}
+
+		private void FindChildrenByName(Guid parentId, Guid childId)
+		{
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var parent = session.Get<Parent>(_parentId);
+				var parent = session.Get<Parent>(parentId);
 
 				Assert.That(parent, Is.Not.Null);
 
@@ -30,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2319
 					.ToList();
 
 				Assert.That(filtered, Has.Count.EqualTo(1));
-				Assert.That(filtered[0].Id, Is.EqualTo(_child1Id));
+				Assert.That(filtered[0].Id, Is.EqualTo(childId));
 			}
 		}
 
@@ -40,7 +50,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2319
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var parent = session.Get<Parent>(_parentId);
+				var parent = session.Get<Parent>(_parent1Id);
 
 				Assert.NotNull(parent);
 
@@ -56,12 +66,34 @@ namespace NHibernate.Test.NHSpecificTest.NH2319
 		}
 
 		[Test]
+		public void ShouldBeAbleToReuseQueryPlan()
+		{
+			ShouldBeAbleToFindChildrenByName();
+			using (var spy = new LogSpy(typeof(QueryPlanCache)))
+			{
+				Assert.That(ShouldBeAbleToFindChildrenByName, Throws.Nothing);
+				AssertFilterPlanCacheHit(spy);
+			}
+		}
+
+		[Test]
+		public void ShouldNotMixResults()
+		{
+			FindChildrenByName(_parent1Id, _child1Id);
+			using (var spy = new LogSpy(typeof(QueryPlanCache)))
+			{
+				FindChildrenByName(_parent2Id, _child3Id);
+				AssertFilterPlanCacheHit(spy);
+			}
+		}
+
+		[Test]
 		public void ShouldNotInitializeCollectionWhenPerformingQuery()
 		{
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var parent = session.Get<Parent>(_parentId);
+				var parent = session.Get<Parent>(_parent1Id);
 				Assert.That(parent, Is.Not.Null);
 
 				var persistentCollection = (IPersistentCollection) parent.Children;
@@ -82,7 +114,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2319
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var parent = session.Get<Parent>(_parentId);
+				var parent = session.Get<Parent>(_parent1Id);
 				Assert.That(parent, Is.Not.Null);
 
 				var loaded = parent.Children.ToList();
@@ -108,7 +140,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2319
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var parent = session.Get<Parent>(_parentId);
+				var parent = session.Get<Parent>(_parent1Id);
 				Assert.That(parent, Is.Not.Null);
 
 				var children = session.CreateFilter(parent.Children, "where this.Name = 'Jack'")
@@ -117,6 +149,35 @@ namespace NHibernate.Test.NHSpecificTest.NH2319
 				Assert.That(children, Has.Count.EqualTo(1));
 			}
 		}
+
+		[Test]
+		public void TestPlanCacheMiss()
+		{
+			var internalPlanCache = typeof(QueryPlanCache)
+				.GetField("planCache", BindingFlags.NonPublic | BindingFlags.Instance)
+				?.GetValue(Sfi.QueryPlanCache) as SoftLimitMRUCache;
+			Assert.That(internalPlanCache, Is.Not.Null,
+				$"Unable to find the internal query plan cache for clearing it, please adapt code to current {nameof(QueryPlanCache)} implementation.");
+
+			using (var spy = new LogSpy(typeof(QueryPlanCache)))
+			{
+				internalPlanCache.Clear();
+				ShouldBeAbleToFindChildrenByName();
+				AssertFilterPlanCacheMiss(spy);
+			}
+		}
+
+		private const string _filterPlanCacheMissLog = "unable to locate collection-filter query plan in cache";
+
+		private static void AssertFilterPlanCacheHit(LogSpy spy) =>
+			// Each query currently ask the cache two times, so asserting reuse requires to check cache has not been missed
+			// rather than only asserting it has been hit.
+			Assert.That(spy.GetWholeLog(),
+				Contains.Substring("located collection-filter query plan in cache (")
+				.And.Not.Contains(_filterPlanCacheMissLog));
+
+		private static void AssertFilterPlanCacheMiss(LogSpy spy) =>
+			Assert.That(spy.GetWholeLog(), Contains.Substring(_filterPlanCacheMissLog));
 
 		protected override void Configure(Configuration configuration)
 		{
@@ -129,11 +190,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2319
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var parent1 = new Parent {Name = "Bob"};
-				_parentId = (Guid) session.Save(parent1);
+				var parent1 = new Parent { Name = "Bob" };
+				_parent1Id = (Guid) session.Save(parent1);
 
-				var parent2 = new Parent {Name = "Martin"};
-				session.Save(parent2);
+				var parent2 = new Parent { Name = "Martin" };
+				_parent2Id = (Guid) session.Save(parent2);
 
 				var child1 = new Child
 				{
@@ -173,7 +234,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2319
 					Parent = parent2
 				};
 				parent2.Children.Add(child3);
-				session.Save(child3);
+				_child3Id = (Guid) session.Save(child3);
 
 				session.Flush();
 				transaction.Commit();
