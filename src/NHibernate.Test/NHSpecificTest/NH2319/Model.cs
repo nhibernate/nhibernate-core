@@ -16,11 +16,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2319
 		public virtual Guid Id { get; set; }
 		public virtual string Name { get; set; }
 		public virtual ICollection<GrandChild> GrandChildren { get; set; } = new List<GrandChild>();
+		public virtual ICollection<Parent> Parents { get; set; } = new List<Parent>();
 	}
 	class GrandChild
 	{
 		public virtual Child Child { get; set; }
 		public virtual Guid Id { get; set; }
 		public virtual string Name { get; set; }
+		public virtual ICollection<Child> ParentChidren { get; set; } = new List<Child>();
 	}
 }

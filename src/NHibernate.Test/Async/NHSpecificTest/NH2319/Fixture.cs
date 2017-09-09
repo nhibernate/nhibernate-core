@@ -215,6 +215,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2319
 					Parent = parent1
 				};
 				parent1.Children.Add(child1);
+				child1.Parents.Add(parent1);
 				_child1Id = (Guid) session.Save(child1);
 
 				var child2 = new Child
@@ -223,6 +224,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2319
 					Parent = parent1
 				};
 				parent1.Children.Add(child2);
+				child2.Parents.Add(parent1);
 				session.Save(child2);
 
 				var grandChild1 = new GrandChild
@@ -231,6 +233,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2319
 					Child = child2
 				};
 				child2.GrandChildren.Add(grandChild1);
+				grandChild1.ParentChidren.Add(child2);
 				session.Save(grandChild1);
 
 				var grandChild2 = new GrandChild
@@ -239,6 +242,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2319
 					Child = child2
 				};
 				child2.GrandChildren.Add(grandChild2);
+				grandChild2.ParentChidren.Add(child2);
 				session.Save(grandChild2);
 
 				var child3 = new Child
@@ -247,6 +251,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2319
 					Parent = parent2
 				};
 				parent2.Children.Add(child3);
+				child3.Parents.Add(parent2);
 				_child3Id = (Guid) session.Save(child3);
 
 				session.Flush();
@@ -277,9 +282,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2319
 			{
 				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
 				rc.Property(x => x.Name);
-				rc.Bag(x => x.Children,
-					   map => map.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans),
-					   rel => rel.OneToMany());
+				rc.Bag(x => x.Children, map => map.Inverse(true), rel => rel.OneToMany());
 			});
 
 			mapper.Class<Child>(rc =>
@@ -287,7 +290,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2319
 				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
 				rc.Property(x => x.Name);
 				rc.ManyToOne(x => x.Parent);
-				rc.Bag(x => x.GrandChildren, map => map.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans), rel => rel.OneToMany());
+				rc.Bag(x => x.GrandChildren,
+					map =>
+					{
+						map.Key(k => k.Column("child_id"));
+						map.Inverse(true);
+					},
+					rel => rel.OneToMany());
 			});
 
 			mapper.Class<GrandChild>(rc =>
@@ -299,7 +308,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2319
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
-
 	}
 
 	[TestFixture]
@@ -312,9 +320,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2319
 			{
 				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
 				rc.Property(x => x.Name);
-				rc.Set(x => x.Children,
-					   map => map.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans),
-					   rel => rel.OneToMany());
+				rc.Set(x => x.Children, map => map.Inverse(true), rel => rel.OneToMany());
 			});
 
 			mapper.Class<Child>(rc =>
@@ -323,52 +329,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2319
 				rc.Property(x => x.Name);
 				rc.ManyToOne(x => x.Parent);
 				rc.Set(x => x.GrandChildren,
-					   map => map.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans),
-					   rel => rel.OneToMany());
-			});
-
-			mapper.Class<GrandChild>(rc =>
-			{
-				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
-				rc.Property(x => x.Name);
-				rc.ManyToOne(x => x.Child, x => x.Column("child_id"));
-			});
-
-			return mapper.CompileMappingForAllExplicitlyAddedEntities();
-		}
-	}
-
-	[TestFixture]
-	public class ListFixtureAsync : FixtureBaseAsync
-	{
-		protected override HbmMapping GetMappings()
-		{
-			var mapper = new ModelMapper();
-			mapper.Class<Parent>(rc =>
-			{
-				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
-				rc.Property(x => x.Name);
-				rc.List(
-					x => x.Children,
-					list =>
+					map =>
 					{
-						list.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans);
-						list.Index(i => i.Column("i"));
-					},
-					rel => rel.OneToMany());
-			});
-
-			mapper.Class<Child>(rc =>
-			{
-				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
-				rc.Property(x => x.Name);
-				rc.ManyToOne(x => x.Parent);
-				rc.List(
-					c => c.GrandChildren,
-					list =>
-					{
-						list.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans);
-						list.Index(i => i.Column("i"));
+						map.Key(k => k.Column("child_id"));
+						map.Inverse(true);
 					},
 					rel => rel.OneToMany());
 			});
@@ -385,7 +349,283 @@ namespace NHibernate.Test.NHSpecificTest.NH2319
 	}
 
 	[TestFixture]
-	public class IdBagFixtureAsync : FixtureBaseAsync
+	public class ManyToManyBagFixtureAsync : FixtureBaseAsync
+	{
+		protected override HbmMapping GetMappings()
+		{
+			var mapper = new ModelMapper();
+			mapper.Class<Parent>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+				rc.Bag(x => x.Children,
+					map =>
+					{
+						map.Key(k => k.Column("Parent"));
+						map.Table("ParentChild");
+						map.Inverse(true);
+					},
+					rel => rel.ManyToMany(map => map.Column("Child")));
+			});
+
+			mapper.Class<Child>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+				rc.Bag(x => x.Parents,
+					map =>
+					{
+						map.Key(k => k.Column("Child"));
+						map.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans);
+						map.Table("ParentChild");
+					},
+					rel => rel.ManyToMany(map => map.Column("Parent")));
+				rc.Bag(x => x.GrandChildren,
+					map =>
+					{
+						map.Key(k => k.Column("Child"));
+						map.Table("ChildGrandChild");
+						map.Inverse(true);
+					},
+					rel => rel.ManyToMany(map => map.Column("GrandChild")));
+			});
+
+			mapper.Class<GrandChild>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+				rc.Bag(x => x.ParentChidren,
+					map =>
+					{
+						map.Key(k => k.Column("GrandChild"));
+						map.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans);
+						map.Table("ChildGrandChild");
+					},
+					rel => rel.ManyToMany(map => map.Column("Child")));
+			});
+
+			return mapper.CompileMappingForAllExplicitlyAddedEntities();
+		}
+	}
+
+	[TestFixture]
+	public class ManyToManySetFixtureAsync : FixtureBaseAsync
+	{
+		protected override HbmMapping GetMappings()
+		{
+			var mapper = new ModelMapper();
+			mapper.Class<Parent>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+				rc.Set(x => x.Children,
+					map =>
+					{
+						map.Key(k => k.Column("Parent"));
+						map.Table("ParentChild");
+						map.Inverse(true);
+					},
+					rel => rel.ManyToMany(map => map.Column("Child")));
+			});
+
+			mapper.Class<Child>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+				rc.Set(x => x.Parents,
+					map =>
+					{
+						map.Key(k => k.Column("Child"));
+						map.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans);
+						map.Table("ParentChild");
+					},
+					rel => rel.ManyToMany(map => map.Column("Parent")));
+				rc.Set(x => x.GrandChildren,
+					map =>
+					{
+						map.Key(k => k.Column("Child"));
+						map.Table("ChildGrandChild");
+						map.Inverse(true);
+					},
+					rel => rel.ManyToMany(map => map.Column("GrandChild")));
+			});
+
+			mapper.Class<GrandChild>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+				rc.Set(x => x.ParentChidren,
+					map =>
+					{
+						map.Key(k => k.Column("GrandChild"));
+						map.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans);
+						map.Table("ChildGrandChild");
+					},
+					rel => rel.ManyToMany(map => map.Column("Child")));
+			});
+
+			return mapper.CompileMappingForAllExplicitlyAddedEntities();
+		}
+	}
+
+	// No bidi list/idbag: mapping not supported unless not marking inverse the parent side with list, which is not
+	// normal for a bidi. This is a general limitation, not a limitation of the feature tested here.
+
+	[TestFixture]
+	public class UnidiBagFixtureAsync : FixtureBaseAsync
+	{
+		protected override HbmMapping GetMappings()
+		{
+			var mapper = new ModelMapper();
+			mapper.Class<Parent>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+				rc.Bag(x => x.Children,
+					map =>
+					{
+						map.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans);
+					},
+					rel => rel.OneToMany());
+			});
+
+			mapper.Class<Child>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+				rc.Bag(x => x.GrandChildren,
+					map =>
+					{
+						map.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans);
+					},
+					rel => rel.OneToMany());
+			});
+
+			mapper.Class<GrandChild>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+			});
+
+			return mapper.CompileMappingForAllExplicitlyAddedEntities();
+		}
+	}
+
+	[TestFixture]
+	public class UnidiListFixtureAsync : FixtureBaseAsync
+	{
+		protected override HbmMapping GetMappings()
+		{
+			var mapper = new ModelMapper();
+			mapper.Class<Parent>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+				rc.List(
+					x => x.Children,
+					map =>
+					{
+						map.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans);
+						map.Key(k => k.Column("child_id"));
+						map.Index(i => i.Column("i"));
+					},
+					rel => rel.OneToMany());
+			});
+
+			mapper.Class<Child>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+				rc.List(
+					c => c.GrandChildren,
+					map =>
+					{
+						map.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans);
+						map.Index(i => i.Column("i"));
+					},
+					rel => rel.OneToMany());
+			});
+
+			mapper.Class<GrandChild>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+			});
+
+			return mapper.CompileMappingForAllExplicitlyAddedEntities();
+		}
+	}
+
+	[TestFixture]
+	public class UnidiSetFixtureAsync : FixtureBaseAsync
+	{
+		protected override HbmMapping GetMappings()
+		{
+			var mapper = new ModelMapper();
+			mapper.Class<Parent>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+				rc.Set(x => x.Children,
+					map => map.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans),
+					rel => rel.OneToMany());
+			});
+
+			mapper.Class<Child>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+				rc.Set(x => x.GrandChildren,
+					map => map.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans),
+					rel => rel.OneToMany());
+			});
+
+			mapper.Class<GrandChild>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+			});
+
+			return mapper.CompileMappingForAllExplicitlyAddedEntities();
+		}
+	}
+
+	[TestFixture]
+	public class UnidiManyToManyBagFixtureAsync : FixtureBaseAsync
+	{
+		protected override HbmMapping GetMappings()
+		{
+			var mapper = new ModelMapper();
+			mapper.Class<Parent>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+				rc.Bag(x => x.Children,
+					map => map.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans),
+					rel => rel.ManyToMany());
+			});
+
+			mapper.Class<Child>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+				rc.Bag(x => x.GrandChildren,
+					map => map.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans),
+					rel => rel.ManyToMany());
+			});
+
+			mapper.Class<GrandChild>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+			});
+
+			return mapper.CompileMappingForAllExplicitlyAddedEntities();
+		}
+	}
+
+	[TestFixture]
+	public class UnidiManyToManyIdBagFixtureAsync : FixtureBaseAsync
 	{
 		protected override HbmMapping GetMappings()
 		{
@@ -396,9 +636,47 @@ namespace NHibernate.Test.NHSpecificTest.NH2319
 				rc.Property(x => x.Name);
 				rc.IdBag(
 					x => x.Children,
-					list =>
+					map => map.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans),
+					rel => rel.ManyToMany());
+			});
+
+			mapper.Class<Child>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+				rc.IdBag(
+					c => c.GrandChildren,
+					map => map.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans),
+					rel => rel.ManyToMany());
+			});
+
+			mapper.Class<GrandChild>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+			});
+
+			return mapper.CompileMappingForAllExplicitlyAddedEntities();
+		}
+	}
+
+	[TestFixture]
+	public class UnidiManyToManyListFixtureAsync : FixtureBaseAsync
+	{
+		protected override HbmMapping GetMappings()
+		{
+			var mapper = new ModelMapper();
+			mapper.Class<Parent>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+				rc.List(
+					x => x.Children,
+					map =>
 					{
-						list.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans);
+						map.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans);
+						map.Key(k => k.Column("child_id"));
+						map.Index(i => i.Column("i"));
 					},
 					rel => rel.ManyToMany());
 			});
@@ -407,12 +685,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2319
 			{
 				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
 				rc.Property(x => x.Name);
-				//rc.ManyToOne(x => x.Parent);
-				rc.IdBag(
+				rc.List(
 					c => c.GrandChildren,
-					list =>
+					map =>
 					{
-						list.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans);
+						map.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans);
+						map.Index(i => i.Column("i"));
 					},
 					rel => rel.ManyToMany());
 			});
@@ -421,7 +699,40 @@ namespace NHibernate.Test.NHSpecificTest.NH2319
 			{
 				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
 				rc.Property(x => x.Name);
-				//rc.ManyToOne(x => x.Child, x => x.Column("child_id"));
+			});
+
+			return mapper.CompileMappingForAllExplicitlyAddedEntities();
+		}
+	}
+
+	[TestFixture]
+	public class UnidiManyToManySetFixtureAsync : FixtureBaseAsync
+	{
+		protected override HbmMapping GetMappings()
+		{
+			var mapper = new ModelMapper();
+			mapper.Class<Parent>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+				rc.Set(x => x.Children,
+					map => map.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans),
+					rel => rel.ManyToMany());
+			});
+
+			mapper.Class<Child>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+				rc.Set(x => x.GrandChildren,
+					map => map.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans),
+					rel => rel.ManyToMany());
+			});
+
+			mapper.Class<GrandChild>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
 			});
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
