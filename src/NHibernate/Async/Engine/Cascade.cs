@@ -9,6 +9,7 @@
 
 
 using System.Collections;
+using System.Collections.Generic;
 
 using NHibernate.Collection;
 using NHibernate.Event;
@@ -128,7 +129,7 @@ namespace NHibernate.Engine
 							{
 								EntityType entityType = (EntityType)type;
 								object loadedValue;
-								if (!componentPathStack.Any())
+								if (componentPathStack.Count == 0)
 								{
 									// association defined on entity
 									loadedValue = entry.GetLoadedValue(propertyName);

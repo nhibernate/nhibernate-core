@@ -4,8 +4,12 @@ using System.Collections.Generic;
 
 namespace NHibernate.Util
 {
+	// Since v5
+	[Obsolete("Those extensions will be removed in a future version")]
 	public static class EnumerableExtensions
 	{
+		// Since v5, to switch to internal
+		[Obsolete("This extension will be removed in a future version")]
 		public static bool Any(this IEnumerable source)
 		{
 			if (source == null)
@@ -51,6 +55,8 @@ namespace NHibernate.Util
 			throw new InvalidOperationException("Sequence contains no elements");
 		}
 
+		// Since v5
+		[Obsolete("This extension has no more non-obsolete usages in NHibernate and will be removed in a future version")]
 		public static object FirstOrNull(this IEnumerable source)
 		{
 			if (source == null)
@@ -78,6 +84,8 @@ namespace NHibernate.Util
 			return null;
 		}
 
+		// Since v5
+		[Obsolete("This extension has no more usages in NHibernate and will be removed in a future version")]
 		public static void ForEach<T>(this IEnumerable<T> query, Action<T> method)
 		{
 			foreach (T item in query)

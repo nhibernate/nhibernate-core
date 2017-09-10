@@ -300,6 +300,7 @@ namespace NHibernate
 		/// <param name="type">The NHibernate type of the values</param>
 		IQuery SetParameterList(string name, IEnumerable vals, IType type);
 
+		// Obsolete since v5.0
 		/// <summary>
 		/// Bind multiple values to a named query parameter, guessing the NHibernate
 		/// type from the class of the first object in the collection. This is useful for binding a list
@@ -307,7 +308,21 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="vals">A collection of values to list</param>
+		[Obsolete("Please use overload with a generic type parameter")]
 		IQuery SetParameterList(string name, IEnumerable vals);
+
+		/// <summary>
+		/// Bind multiple values to a named query parameter, guessing the NHibernate
+		/// type from <typeparamref name="T"/>. This is useful for binding a list
+		/// of values to an expression such as <c>foo.bar in (:value_list)</c>
+		/// </summary>
+		/// <param name="name">The name of the parameter.</param>
+		/// <param name="vals">A collection of values to list.</param>
+		/// <typeparam name="T">The type of the element of the list. Used to type the parameter when the query parsing
+		/// does not allow to determine its type.</typeparam>
+		/// <returns><see langword="this" /> for chaining.</returns>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="vals"/> is <see langword="null" />.</exception>
+		IQuery SetParameterList<T>(string name, IEnumerable<T> vals);
 
 		/// <summary>
 		/// Bind the property values of the given object to named parameters of the query,

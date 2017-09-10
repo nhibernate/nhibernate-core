@@ -24,6 +24,7 @@ namespace NHibernate.Linq
 
 	public partial class DefaultQueryProvider : INhQueryProvider
 	{
+		private static readonly IInternalLogger _log = LoggerProvider.LoggerFor(typeof(DefaultQueryProvider));
 		private static readonly MethodInfo CreateQueryMethodDefinition = ReflectHelper.GetMethodDefinition((INhQueryProvider p) => p.CreateQuery<object>(null));
 
 		private readonly WeakReference<ISessionImplementor> _session;
@@ -177,9 +178,21 @@ namespace NHibernate.Linq
 				}
 				else
 				{
-					if (param.Item1 is IEnumerable && !(param.Item1 is string))
+					if (param.Item1 is IEnumerable enu && !(param.Item1 is string))
 					{
-						query.SetParameterList(parameterName, (IEnumerable)param.Item1);
+						var elementType = enu.GetCollectionElementType();
+						if (elementType != null)
+						{
+							var setMethod = ReflectionCache.IQueryMethods.SetParameterListMethodDefinition.MakeGenericMethod(elementType);
+							setMethod.Invoke(query, new object[] { parameterName, enu });
+						}
+						else
+						{
+							_log.WarnFormat("A non generic parameter list value has been used, which is obsolete and may be no more supported in a future release.");
+#pragma warning disable 618 // SetParameterList(taking non generic IEnumerable) is obsolete
+							query.SetParameterList(parameterName, enu);
+#pragma warning restore 618
+						}
 					}
 					else if (param.Item2 != null)
 					{

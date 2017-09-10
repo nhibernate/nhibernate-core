@@ -95,9 +95,24 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		// Obsolete since v5.0
+		/// <inheritdoc />
+		[Obsolete("Please use overload with a generic type parameter")]
 		public IMultiQuery SetParameterList(string name, IEnumerable vals)
 		{
 			foreach (IQuery query in queries)
+			{
+#pragma warning disable 618 // SetParameterList(taking non generic IEnumerable) is obsolete
+				query.SetParameterList(name, vals);
+#pragma warning restore 618
+			}
+			return this;
+		}
+
+		/// <inheritdoc />
+		public IMultiQuery SetParameterList<T>(string name, IEnumerable<T> vals)
+		{
+			foreach (var query in queries)
 			{
 				query.SetParameterList(name, vals);
 			}

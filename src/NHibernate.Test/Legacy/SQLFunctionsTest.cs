@@ -582,7 +582,9 @@ namespace NHibernate.Test.Legacy
 				IList list = new ArrayList(2);
 				list.Add("Simple 1");
 				list.Add("foo");
+#pragma warning disable 618 // Switch ArrayList(2) to string array or generic list if the obsolete is removed.
 				q.SetParameterList("name_list", list);
+#pragma warning restore 618
 				q.SetParameter("count", (int)-1);
 				Assert.AreEqual(1, q.List().Count);
 
