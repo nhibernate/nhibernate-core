@@ -42,7 +42,7 @@ namespace NHibernate.Collection.Generic
 			try
 			{
 				var sn = (IDictionary<TKey, TValue>) snapshot;
-				return GetOrphansAsync((ICollection)sn.Values, (ICollection)WrappedMap.Values, entityName, Session, cancellationToken);
+				return GetOrphansAsync((ICollection)sn.Values, (ICollection)_wrappedMap.Values, entityName, Session, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -55,11 +55,11 @@ namespace NHibernate.Collection.Generic
 			cancellationToken.ThrowIfCancellationRequested();
 			IType elementType = persister.ElementType;
 			var xmap = (IDictionary<TKey, TValue>)GetSnapshot();
-			if (xmap.Count != WrappedMap.Count)
+			if (xmap.Count != _wrappedMap.Count)
 			{
 				return false;
 			}
-			foreach (KeyValuePair<TKey, TValue> entry in WrappedMap)
+			foreach (KeyValuePair<TKey, TValue> entry in _wrappedMap)
 			{
 				// This method is not currently called if a key has been removed/added, but better be on the safe side.
 				if (!xmap.TryGetValue(entry.Key, out var value) ||
@@ -96,7 +96,7 @@ namespace NHibernate.Collection.Generic
 			BeforeInitialize(persister, size);
 			for (int i = 0; i < size; i += 2)
 			{
-				WrappedMap[(TKey)await (persister.IndexType.AssembleAsync(array[i], Session, owner, cancellationToken)).ConfigureAwait(false)] =
+				_wrappedMap[(TKey)await (persister.IndexType.AssembleAsync(array[i], Session, owner, cancellationToken)).ConfigureAwait(false)] =
 					(TValue)await (persister.ElementType.AssembleAsync(array[i + 1], Session, owner, cancellationToken)).ConfigureAwait(false);
 			}
 		}
@@ -104,9 +104,9 @@ namespace NHibernate.Collection.Generic
 		public override async Task<object> DisassembleAsync(ICollectionPersister persister, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			object[] result = new object[WrappedMap.Count * 2];
+			object[] result = new object[_wrappedMap.Count * 2];
 			int i = 0;
-			foreach (KeyValuePair<TKey, TValue> e in WrappedMap)
+			foreach (KeyValuePair<TKey, TValue> e in _wrappedMap)
 			{
 				result[i++] = await (persister.IndexType.DisassembleAsync(e.Key, Session, null, cancellationToken)).ConfigureAwait(false);
 				result[i++] = await (persister.ElementType.DisassembleAsync(e.Value, Session, null, cancellationToken)).ConfigureAwait(false);
