@@ -8,9 +8,9 @@ namespace NHibernate.Test.UtilityTest
 	[TestFixture]
 	public class WeakHashtableFixture
 	{
-		protected WeakHashtable Create()
+		protected WeakHashtable<object, object> Create()
 		{
-			return new WeakHashtable();
+			return new WeakHashtable<object, object>();
 		}
 
 		[Test]
@@ -20,7 +20,7 @@ namespace NHibernate.Test.UtilityTest
 			object key = new object();
 			object value = new object();
 
-			WeakHashtable table = Create();
+			var table = Create();
 
 			table[key] = value;
 
@@ -31,21 +31,21 @@ namespace NHibernate.Test.UtilityTest
 		public void WeakReferenceGetsFreedButHashCodeRemainsConstant()
 		{
 			var obj = new object();
-			var wr = WeakRefWrapper.Wrap(obj);
+			var wr = WeakRefWrapper<object>.Wrap(obj);
 			int hashCode = wr.GetHashCode();
 			obj = null;
 
 			GC.Collect();
 
-			Assert.IsFalse(wr.IsAlive);
-			Assert.IsNull(wr.Target);
+			Assert.IsFalse(wr.TryGetTarget(out var target));
+			Assert.IsNull(target);
 			Assert.AreEqual(hashCode, wr.GetHashCode());
 		}
 
 		[Test]
 		public void Scavenging()
 		{
-			WeakHashtable table = Create();
+			var table = Create();
 
 			table[new object()] = new object();
 			table[new object()] = new object();
@@ -59,7 +59,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void IterationAfterGC()
 		{
-			WeakHashtable table = Create();
+			var table = Create();
 
 			table[new object()] = new object();
 			table[new object()] = new object();
@@ -76,7 +76,7 @@ namespace NHibernate.Test.UtilityTest
 			object key = new object();
 			object value = new object();
 
-			WeakHashtable table = Create();
+			var table = Create();
 			table[key] = value;
 
 			foreach (var de in table)
@@ -98,15 +98,15 @@ namespace NHibernate.Test.UtilityTest
 		public void WeakRefWrapperEquals()
 		{
 			object obj = new object();
-			Assert.AreEqual(WeakRefWrapper.Wrap(obj), WeakRefWrapper.Wrap(obj));
-			Assert.IsFalse(WeakRefWrapper.Wrap(obj).Equals(null));
-			Assert.IsFalse(WeakRefWrapper.Wrap(obj).Equals(10));
+			Assert.AreEqual(WeakRefWrapper<object>.Wrap(obj), WeakRefWrapper<object>.Wrap(obj));
+			Assert.IsFalse(WeakRefWrapper<object>.Wrap(obj).Equals(null));
+			Assert.IsFalse(WeakRefWrapper<object>.Wrap(obj).Equals(10));
 		}
 
 		[Test]
 		public void IsSerializable()
 		{
-			WeakHashtable weakHashtable = new WeakHashtable();
+			var weakHashtable = Create();
 			weakHashtable.Add("key", new object());
 			NHAssert.IsSerializable(weakHashtable);
 		}

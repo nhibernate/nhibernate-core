@@ -24,7 +24,7 @@ namespace NHibernate.Engine.Query
 		private readonly SimpleMRUCache sqlParamMetadataCache = new SimpleMRUCache();
 
 		// the cache of the actual plans...
-		private readonly SoftLimitMRUCache planCache = new SoftLimitMRUCache(128);
+		private readonly SoftLimitMRUCache<QueryPlanKey, object> planCache = new SoftLimitMRUCache<QueryPlanKey, object>(128);
 
 		public QueryPlanCache(ISessionFactoryImplementor factory)
 		{
@@ -33,7 +33,7 @@ namespace NHibernate.Engine.Query
 
 		public ParameterMetadata GetSQLParameterMetadata(string query)
 		{
-			var metadata = (ParameterMetadata)sqlParamMetadataCache[query];
+			var metadata = (ParameterMetadata) sqlParamMetadataCache[query];
 			if (metadata == null)
 			{
 				// for native-sql queries, the param metadata is determined outside
@@ -50,7 +50,7 @@ namespace NHibernate.Engine.Query
 		public IQueryExpressionPlan GetHQLQueryPlan(IQueryExpression queryExpression, bool shallow, IDictionary<string, IFilter> enabledFilters)
 		{
 			var key = new HQLQueryPlanKey(queryExpression, shallow, enabledFilters);
-			var plan = (QueryExpressionPlan)planCache[key];
+			var plan = (QueryExpressionPlan) planCache[key];
 
 			if (plan == null)
 			{
@@ -117,7 +117,7 @@ namespace NHibernate.Engine.Query
 
 		public NativeSQLQueryPlan GetNativeSQLQueryPlan(NativeSQLQuerySpecification spec)
 		{
-			var plan = (NativeSQLQueryPlan)planCache[spec];
+			var plan = (NativeSQLQueryPlan) planCache[spec];
 
 			if (plan == null)
 			{
@@ -157,16 +157,15 @@ namespace NHibernate.Engine.Query
 				string name = entry.Key;
 				ParamLocationRecognizer.NamedParameterDescription description = entry.Value;
 				namedParamDescriptorMap[name] =
-					new NamedParameterDescriptor(name, null, description.JpaStyle);				
+					new NamedParameterDescriptor(name, null, description.JpaStyle);
 			}
 
 			return new ParameterMetadata(ordinalDescriptors, namedParamDescriptorMap);
 		}
 
 		[Serializable]
-		private class HQLQueryPlanKey : IEquatable<HQLQueryPlanKey>
+		private class HQLQueryPlanKey : QueryPlanKey
 		{
-			private readonly string query;
 			private readonly bool shallow;
 			private readonly HashSet<string> filterNames;
 			private readonly int hashCode;
@@ -183,9 +182,9 @@ namespace NHibernate.Engine.Query
 			}
 
 			protected HQLQueryPlanKey(System.Type queryTypeDiscriminator, string query, bool shallow, IDictionary<string, IFilter> enabledFilters)
+				: base(query)
 			{
 				this.queryTypeDiscriminator = queryTypeDiscriminator;
-				this.query = query;
 				this.shallow = shallow;
 
 				if (enabledFilters == null || (enabledFilters.Count == 0))
@@ -200,46 +199,24 @@ namespace NHibernate.Engine.Query
 				unchecked
 				{
 					var hash = query.GetHashCode();
-					hash = 29*hash + (shallow ? 1 : 0);
-					hash = 29*hash + CollectionHelper.GetHashCode(filterNames);
-					hash = 29*hash + queryTypeDiscriminator.GetHashCode();
+					hash = 29 * hash + (shallow ? 1 : 0);
+					hash = 29 * hash + CollectionHelper.GetHashCode(filterNames);
+					hash = 29 * hash + queryTypeDiscriminator.GetHashCode();
 					hashCode = hash;
 				}
 			}
 
-			public override bool Equals(object obj)
+			public override bool Equals(QueryPlanKey other)
 			{
-				return this == obj || Equals(obj as HQLQueryPlanKey);
-			}
-
-			public bool Equals(HQLQueryPlanKey that)
-			{
-				if (that == null)
-				{
+				if (!base.Equals(other))
 					return false;
-				}
 
-				if (shallow != that.shallow)
-				{
-					return false;
-				}
+				var that = other as HQLQueryPlanKey;
 
-				if (!filterNames.SetEquals(that.filterNames))
-				{
-					return false;
-				}
-
-				if (!query.Equals(that.query))
-				{
-					return false;
-				}
-
-				if (queryTypeDiscriminator != that.queryTypeDiscriminator)
-				{
-					return false;
-				}
-
-				return true;
+				return that != null &&
+					shallow == that.shallow &&
+					queryTypeDiscriminator == that.queryTypeDiscriminator &&
+					filterNames.SetEquals(that.filterNames);
 			}
 
 			public override int GetHashCode()
@@ -249,17 +226,16 @@ namespace NHibernate.Engine.Query
 		}
 
 		[Serializable]
-		private class FilterQueryPlanKey
+		private class FilterQueryPlanKey : QueryPlanKey
 		{
-			private readonly string query;
 			private readonly string collectionRole;
 			private readonly bool shallow;
 			private readonly HashSet<string> filterNames;
 			private readonly int hashCode;
 
 			public FilterQueryPlanKey(string query, string collectionRole, bool shallow, IDictionary<string, IFilter> enabledFilters)
+				: base(query)
 			{
-				this.query = query;
 				this.collectionRole = collectionRole;
 				this.shallow = shallow;
 
@@ -279,35 +255,17 @@ namespace NHibernate.Engine.Query
 				hashCode = hash;
 			}
 
-			public override bool Equals(object obj)
+			public override bool Equals(QueryPlanKey other)
 			{
-				return this == obj || Equals(obj as FilterQueryPlanKey);
-			}
+				if (!base.Equals(other))
+					return false;
 
-			public bool Equals(FilterQueryPlanKey that)
-			{
-				if (that == null)
-				{
-					return false;
-				}
-				if (shallow != that.shallow)
-				{
-					return false;
-				}
-				if (!filterNames.SetEquals(that.filterNames))
-				{
-					return false;
-				}
-				if (!query.Equals(that.query))
-				{
-					return false;
-				}
-				if (!collectionRole.Equals(that.collectionRole))
-				{
-					return false;
-				}
+				var that = other as FilterQueryPlanKey;
 
-				return true;
+				return that != null &&
+					shallow == that.shallow &&
+					filterNames.SetEquals(that.filterNames) &&
+					collectionRole.Equals(that.collectionRole);
 			}
 
 			public override int GetHashCode()
@@ -315,5 +273,28 @@ namespace NHibernate.Engine.Query
 				return hashCode;
 			}
 		}
+	}
+
+	[Serializable]
+	public abstract class QueryPlanKey : IEquatable<QueryPlanKey>
+	{
+		public string QueryString { get; }
+
+		public QueryPlanKey(string query)
+		{
+			QueryString = query;
+		}
+
+		public sealed override bool Equals(object obj)
+			=> obj == this || Equals(obj as QueryPlanKey);
+
+		public virtual bool Equals(QueryPlanKey other)
+			=> this == other ||
+				other != null &&
+				// NH-3956: hashcode inequality rules out equality, but hashcode equality is not enough.
+				other.GetHashCode() == GetHashCode() &&
+				other.QueryString == QueryString;
+
+		public override int GetHashCode() => throw new NotImplementedException();
 	}
 }

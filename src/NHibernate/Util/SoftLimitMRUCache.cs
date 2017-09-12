@@ -22,33 +22,33 @@ namespace NHibernate.Util
 	/// enqueuement.
 	/// </remarks>
 	[Serializable]
-	public class SoftLimitMRUCache : IDeserializationCallback
+	public class SoftLimitMRUCache<TKey, TValue> : IDeserializationCallback where TKey : class where TValue : class
 	{
 		private const int DefaultStrongRefCount = 128;
 		private object _syncRoot;
 
-		private readonly int strongReferenceCount;
+		private readonly int _strongReferenceCount;
 
 		// actual cache of the entries.  soft references are used for both the keys and the
 		// values here since the values pertaining to the MRU entries are kept in a
 		// separate hard reference cache (to avoid their enqueuement/garbage-collection).
 		[NonSerialized]
-		private readonly IDictionary<object, object> softReferenceCache = new WeakHashtable();
+		private readonly IDictionary<TKey, TValue> _softReferenceCache = new WeakHashtable<TKey, TValue>();
 
 		// the MRU cache used to keep hard references to the most recently used query plans;
 		// note : LRU here is a bit of a misnomer, it indicates that LRU entries are removed, the
 		// actual kept entries are the MRU entries
 		[NonSerialized]
-		private LRUMap strongReferenceCache;
+		private LRUMap _strongReferenceCache;
 
 		public SoftLimitMRUCache(int strongReferenceCount)
 		{
-			this.strongReferenceCount = strongReferenceCount;
-			strongReferenceCache = new LRUMap(strongReferenceCount);
+			_strongReferenceCount = strongReferenceCount;
+			_strongReferenceCache = new LRUMap(strongReferenceCount);
 		}
 
 		public SoftLimitMRUCache()
-			: this(DefaultStrongRefCount) {}
+			: this(DefaultStrongRefCount) { }
 
 		private object SyncRoot
 		{
@@ -65,21 +65,21 @@ namespace NHibernate.Util
 
 		void IDeserializationCallback.OnDeserialization(object sender)
 		{
-			strongReferenceCache = new LRUMap(strongReferenceCount);
+			_strongReferenceCache = new LRUMap(_strongReferenceCount);
 		}
 
 		#endregion
 
-		public object this[object key]
+		public TValue this[TKey key]
 		{
 			[MethodImpl(MethodImplOptions.Synchronized)]
 			get
 			{
 				lock (SyncRoot)
 				{
-					if (softReferenceCache.TryGetValue(key, out var result))
+					if (_softReferenceCache.TryGetValue(key, out var result))
 					{
-						strongReferenceCache.Add(key, result);
+						_strongReferenceCache.Add(key, result);
 					}
 					return result;
 				}
@@ -87,12 +87,12 @@ namespace NHibernate.Util
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		public void Put(object key, object value)
+		public void Put(TKey key, TValue value)
 		{
 			lock (SyncRoot)
 			{
-				softReferenceCache[key] = value;
-				strongReferenceCache[key] = value;
+				_softReferenceCache[key] = value;
+				_strongReferenceCache[key] = value;
 			}
 		}
 
@@ -103,7 +103,7 @@ namespace NHibernate.Util
 			{
 				lock (SyncRoot)
 				{
-					return strongReferenceCache.Count;
+					return _strongReferenceCache.Count;
 				}
 			}
 		}
@@ -115,7 +115,7 @@ namespace NHibernate.Util
 			{
 				lock (SyncRoot)
 				{
-					return softReferenceCache.Count;
+					return _softReferenceCache.Count;
 				}
 			}
 		}
@@ -125,8 +125,8 @@ namespace NHibernate.Util
 		{
 			lock (SyncRoot)
 			{
-				strongReferenceCache.Clear();
-				softReferenceCache.Clear();
+				_strongReferenceCache.Clear();
+				_softReferenceCache.Clear();
 			}
 		}
 	}
