@@ -2395,26 +2395,6 @@ namespace NHibernate.Linq
 
 		#endregion
 
-		public static IQueryable<T> Query<T>(this ISession session)
-		{
-			return new NhQueryable<T>(session.GetSessionImplementation());
-		}
-
-		public static IQueryable<T> Query<T>(this ISession session, string entityName)
-		{
-			return new NhQueryable<T>(session.GetSessionImplementation(), entityName);
-		}
-
-		public static IQueryable<T> Query<T>(this IStatelessSession session)
-		{
-			return new NhQueryable<T>(session.GetSessionImplementation());
-		}
-
-		public static IQueryable<T> Query<T>(this IStatelessSession session, string entityName)
-		{
-			return new NhQueryable<T>(session.GetSessionImplementation(), entityName);
-		}
-
 		/// <summary>
 		/// Wraps the query in a deferred <see cref="IFutureEnumerable{T}"/> which enumeration will trigger a batch of all pending future queries.
 		/// </summary>

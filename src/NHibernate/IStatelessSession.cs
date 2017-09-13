@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Engine;
 
@@ -272,5 +273,20 @@ namespace NHibernate
 		/// <param name="batchSize">The batch size.</param>
 		/// <returns>The same instance of the session for methods chain.</returns>
 		IStatelessSession SetBatchSize(int batchSize);
+
+		/// <summary>
+		/// Creates a new Linq <see cref="IQueryable{T}"/> for the entity class.
+		/// </summary>
+		/// <typeparam name="T">The entity class</typeparam>
+		/// <returns>An <see cref="IQueryable{T}"/> instance</returns>
+		IQueryable<T> Query<T>();
+
+		/// <summary>
+		/// Creates a new Linq <see cref="IQueryable{T}"/> for the entity class and with given entity name.
+		/// </summary>
+		/// <typeparam name="T">The type of entity to query.</typeparam>
+		/// <param name="entityName">The entity name.</param>
+		/// <returns>An <see cref="IQueryable{T}"/> instance</returns>
+		IQueryable<T> Query<T>(string entityName);
 	}
 }

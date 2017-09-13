@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
@@ -11,6 +12,7 @@ using NHibernate.Engine.Query.Sql;
 using NHibernate.Event;
 using NHibernate.Exceptions;
 using NHibernate.Hql;
+using NHibernate.Linq;
 using NHibernate.Loader.Custom;
 using NHibernate.Loader.Custom.Sql;
 using NHibernate.Persister.Entity;
@@ -444,5 +446,26 @@ namespace NHibernate.Impl
 		public abstract IEnumerable<T> Enumerable<T>(IQueryExpression queryExpression, QueryParameters queryParameters);
 
 		public abstract int ExecuteUpdate(IQueryExpression queryExpression, QueryParameters queryParameters);
+		
+		/// <summary>
+		/// Creates a new Linq <see cref="IQueryable{T}"/> for the entity class.
+		/// </summary>
+		/// <typeparam name="T">The entity class</typeparam>
+		/// <returns>An <see cref="IQueryable{T}"/> instance</returns>
+		public IQueryable<T> Query<T>()
+		{
+			return new NhQueryable<T>(this);
+		}
+
+		/// <summary>
+		/// Creates a new Linq <see cref="IQueryable{T}"/> for the entity class and with given entity name.
+		/// </summary>
+		/// <typeparam name="T">The type of entity to query.</typeparam>
+		/// <param name="entityName">The entity name.</param>
+		/// <returns>An <see cref="IQueryable{T}"/> instance</returns>
+		public IQueryable<T> Query<T>(string entityName)
+		{
+			return new NhQueryable<T>(this, entityName);
+		}
 	}
 }
