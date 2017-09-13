@@ -110,6 +110,11 @@ namespace NHibernate.Impl
 			Dispose(true);
 		}
 
+		public override IQuery CreateFilter(object collection, IQueryExpression queryExpression)
+		{
+			throw new NotSupportedException();
+		}
+
 		public override void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -193,6 +198,11 @@ namespace NHibernate.Impl
 		}
 
 		public override IList ListFilter(object collection, string filter, QueryParameters parameters)
+		{
+			throw new NotSupportedException();
+		}
+
+		protected override void ListFilter(object collection, IQueryExpression queryExpression, QueryParameters parameters, IList results)
 		{
 			throw new NotSupportedException();
 		}

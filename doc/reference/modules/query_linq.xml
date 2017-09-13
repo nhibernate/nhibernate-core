@@ -43,6 +43,28 @@ using NHibernate.Linq;]]></programlisting>
         .ToList();]]></programlisting>
 
     <para>
+      Starting with NHibernate 5.0, queries can also be created from an entity collection, with the standard
+      Linq extension <literal>AsQueryable</literal> available from <literal>System.Linq</literal> namespace.
+    </para>
+    <programlisting><![CDATA[IList<Cat> whiteKittens =
+    cat.Kittens.AsQueryable()
+        .Where(k => k.Color == "white")
+        .ToList();]]></programlisting>
+    <para>
+      This will be executed as a query on that <literal>cat</literal>'s kittens without loading the
+      entire collection.
+    </para>
+    <para>
+      If the collection is a map, call <literal>AsQueryable</literal> on its <literal>Values</literal>
+      property.
+    </para>
+    <programlisting><![CDATA[IList<Cat> whiteKittens =
+    cat.Kittens.Values.AsQueryable()
+        .Where(k => k.Color == "white")
+        .ToList();]]></programlisting>
+    <para>&nbsp;</para>
+
+    <para>
       A client timeout for the query can be defined.
     </para>
     <programlisting><![CDATA[IList<Cat> cats =

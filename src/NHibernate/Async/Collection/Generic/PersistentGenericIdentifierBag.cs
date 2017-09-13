@@ -14,9 +14,11 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
 using NHibernate.Id;
+using NHibernate.Linq;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
@@ -28,7 +30,7 @@ namespace NHibernate.Collection.Generic
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
-	public partial class PersistentIdentifierBag<T> : AbstractPersistentCollection, IList<T>, IList
+	public partial class PersistentIdentifierBag<T> : AbstractPersistentCollection, IList<T>, IList, IQueryable<T>
 	{
 
 		/// <summary>

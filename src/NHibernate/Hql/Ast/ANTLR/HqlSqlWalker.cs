@@ -730,7 +730,17 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		IASTNode CreateFromFilterElement(IASTNode filterEntity, IASTNode alias)
 		{
-			FromElement fromElement = _currentFromClause.AddFromElement(filterEntity.Text, alias);
+			var fromElementFound = true;
+
+			var fromElement = _currentFromClause.GetFromElement(alias.Text) ??
+							  _currentFromClause.GetFromElementByClassName(filterEntity.Text);
+
+			if (fromElement == null)
+			{
+				fromElementFound = false;
+				fromElement = _currentFromClause.AddFromElement(filterEntity.Text, alias);
+			}
+
 			FromClause fromClause = fromElement.FromClause;
 			IQueryableCollection persister = _sessionFactoryHelper.GetCollectionPersister(_collectionFilterRole);
 
@@ -760,7 +770,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 			{
 				log.Debug("createFromFilterElement() : processed filter FROM element.");
 			}
-	
+
+			if (fromElementFound)
+				return (IASTNode) adaptor.Nil();
+
 			return fromElement;
 		}
 

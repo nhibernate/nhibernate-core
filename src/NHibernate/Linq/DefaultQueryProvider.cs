@@ -36,6 +36,14 @@ namespace NHibernate.Linq
 			_session = new WeakReference<ISessionImplementor>(session);
 		}
 
+		public DefaultQueryProvider(ISessionImplementor session, object collection)
+			: this(session)
+		{
+			Collection = collection;
+		}
+
+		public object Collection { get; }
+
 		protected virtual ISessionImplementor Session
 		{
 			get
@@ -125,7 +133,14 @@ namespace NHibernate.Linq
 		{
 			var nhLinqExpression = new NhLinqExpression(expression, Session.Factory);
 
-			query = Session.CreateQuery(nhLinqExpression);
+			if (Collection == null)
+			{
+				query = Session.CreateQuery(nhLinqExpression);
+			}
+			else
+			{
+				query = Session.CreateFilter(Collection, nhLinqExpression);
+			}
 
 			SetParameters(query, nhLinqExpression.ParameterValuesByName);
 			SetResultTransformerAndAdditionalCriteria(query, nhLinqExpression, nhLinqExpression.ParameterValuesByName);

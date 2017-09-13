@@ -684,7 +684,6 @@ namespace NHibernate.Test.SystemTransactions
 		[OneTimeSetUp]
 		public void TestFixtureSetUp()
 		{
-			((Logger)_log.Logger).Level = log4net.Core.Level.Info;
 			_spy = new LogSpy(_log);
 			_spy.Appender.Layout = new PatternLayout("%d{ABSOLUTE} [%t] - %m%n");
 		}

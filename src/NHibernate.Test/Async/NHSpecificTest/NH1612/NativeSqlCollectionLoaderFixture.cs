@@ -51,8 +51,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			Country country = await (LoadCountryWithNativeSQLAsync(CreateCountry(stats), "LoadAreaStatisticsWithSimpleHbmAliasInjection"));
 
 			Assert.That(country, Is.Not.Null);
-			Assert.That((ICollection) country.Statistics.Keys, Is.EquivalentTo((ICollection) stats.Keys), "Keys");
-			Assert.That((ICollection) country.Statistics.Values, Is.EquivalentTo((ICollection) stats.Values), "Elements");
+			Assert.That(country.Statistics.Keys, Is.EquivalentTo(stats.Keys), "Keys");
+			Assert.That(country.Statistics.Values, Is.EquivalentTo(stats.Values), "Elements");
 			await (CleanupWithPersonsAsync());
 		}
 
@@ -63,8 +63,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			Country country = await (LoadCountryWithNativeSQLAsync(CreateCountry(stats), "LoadAreaStatisticsWithComplexHbmAliasInjection"));
 
 			Assert.That(country, Is.Not.Null);
-			Assert.That((ICollection) country.Statistics.Keys, Is.EquivalentTo((ICollection) stats.Keys), "Keys");
-			Assert.That((ICollection) country.Statistics.Values, Is.EquivalentTo((ICollection) stats.Values), "Elements");
+			Assert.That(country.Statistics.Keys, Is.EquivalentTo(stats.Keys), "Keys");
+			Assert.That(country.Statistics.Values, Is.EquivalentTo(stats.Values), "Elements");
 			await (CleanupWithPersonsAsync());
 		}
 
@@ -75,8 +75,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			Country country = await (LoadCountryWithNativeSQLAsync(CreateCountry(stats), "LoadAreaStatisticsWithCustomAliases"));
 
 			Assert.That(country, Is.Not.Null);
-			Assert.That((ICollection) country.Statistics.Keys, Is.EquivalentTo((ICollection) stats.Keys), "Keys");
-			Assert.That((ICollection) country.Statistics.Values, Is.EquivalentTo((ICollection) stats.Values), "Elements");
+			Assert.That(country.Statistics.Keys, Is.EquivalentTo(stats.Keys), "Keys");
+			Assert.That(country.Statistics.Values, Is.EquivalentTo(stats.Values), "Elements");
 
 			await (CleanupWithPersonsAsync());
 		}
@@ -201,8 +201,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			{
 				var a = await (session.GetAsync<Area>(country.Code));
 				Assert.That(a, Is.Not.Null, "area");
-				Assert.That((ICollection) a.Statistics.Keys, Is.EquivalentTo((ICollection) stats.Keys), "area.Keys");
-				Assert.That((ICollection) a.Statistics.Values, Is.EquivalentTo((ICollection) stats.Values), "area.Elements");
+				Assert.That(a.Statistics.Keys, Is.EquivalentTo(stats.Keys), "area.Keys");
+				Assert.That(a.Statistics.Values, Is.EquivalentTo(stats.Values), "area.Elements");
 			}
 			await (CleanupWithPersonsAsync());
 		}

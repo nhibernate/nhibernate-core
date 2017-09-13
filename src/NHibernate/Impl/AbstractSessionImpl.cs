@@ -128,6 +128,17 @@ namespace NHibernate.Impl
 		}
 
 		public abstract IList ListFilter(object collection, string filter, QueryParameters parameters);
+		public IList ListFilter(object collection, IQueryExpression queryExpression, QueryParameters parameters)
+		{
+			var results = (IList)typeof(List<>).MakeGenericType(queryExpression.Type)
+									.GetConstructor(System.Type.EmptyTypes)
+									.Invoke(null);
+
+			ListFilter(collection, queryExpression, parameters, results);
+			return results;
+		}
+		protected abstract void ListFilter(object collection, IQueryExpression queryExpression, QueryParameters parameters, IList results);
+
 		public abstract IList<T> ListFilter<T>(object collection, string filter, QueryParameters parameters);
 		public abstract IEnumerable EnumerableFilter(object collection, string filter, QueryParameters parameters);
 		public abstract IEnumerable<T> EnumerableFilter<T>(object collection, string filter, QueryParameters parameters);
@@ -412,6 +423,8 @@ namespace NHibernate.Impl
 			CheckAndUpdateSessionStatus();
 			_factory.TransactionFactory.ExplicitJoinSystemTransaction(this);
 		}
+
+		public abstract IQuery CreateFilter(object collection, IQueryExpression queryExpression);
 
 		internal IOuterJoinLoadable GetOuterJoinLoadable(string entityName)
 		{

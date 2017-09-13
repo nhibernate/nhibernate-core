@@ -112,6 +112,11 @@ namespace NHibernate.Engine
 		Task<IList> ListFilterAsync(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken);
 
 		/// <summary>
+		/// Execute a filter
+		/// </summary>
+		Task<IList> ListFilterAsync(object collection, IQueryExpression queryExpression, QueryParameters parameters, CancellationToken cancellationToken);
+
+		/// <summary>
 		/// Execute a filter (strongly-typed version).
 		/// </summary>
 		Task<IList<T>> ListFilterAsync<T>(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken);
@@ -176,5 +181,7 @@ namespace NHibernate.Engine
 
 		/// <summary> Execute a HQL update or delete query</summary>
 		Task<int> ExecuteUpdateAsync(IQueryExpression query, QueryParameters queryParameters, CancellationToken cancellationToken);
+
+		Task<IQuery> CreateFilterAsync(object collection, IQueryExpression queryExpression, CancellationToken cancellationToken);
 	}
 }
