@@ -6,9 +6,11 @@
     for querying with NHibernate.
   </para>
   <para>
-    The Linq provider works as an extension of the <literal>ISession</literal>. It is defined in the
-    <literal>NHibernate.Linq</literal> namespace, so this namespace has to be imported for using the
-    Linq provider. Of course, the Linq namespace is still needed too.
+    <literal>IQueryable</literal> queries are obtained with the <literal>Query</literal> methods used on the
+    <literal>ISession</literal> or <literal>IStatelessSession</literal>. (Prior to NHibernate 5.0, these
+    methods were extensions defined in the <literal>NHibernate.Linq</literal> namespace.) A number of
+    NHibernate Linq extensions giving access to NHibernate specific features are defined in the
+    <literal>NHibernate.Linq</literal> namespace. Of course, the Linq namespace is still needed too.
   </para>
   <programlisting><![CDATA[using System.Linq;
 using NHibernate.Linq;]]></programlisting>
@@ -65,7 +67,9 @@ using NHibernate.Linq;]]></programlisting>
     <para>&nbsp;</para>
 
     <para>
-      A client timeout for the query can be defined.
+      A client timeout for the query can be defined. As most others NHibernate specific features for
+      Linq, this is available through an extension defined in <literal>NHibernate.Linq</literal>
+      namespace.
     </para>
     <programlisting><![CDATA[IList<Cat> cats =
     session.Query<Cat>()
@@ -453,7 +457,8 @@ if (catCount.Value > 10)
     <para>
       A Linq query may load associated entities or collection of entities. Once the query is defined, using
       <literal>Fetch</literal> allows fetching a related entity, and <literal>FetchMany</literal> allows
-      fetching a collection.
+      fetching a collection. These methods are defined as extensions in <literal>NHibernate.Linq</literal>
+      namespace.
     </para>
     <programlisting><![CDATA[IList<Cat> oldCats =
     session.Query<Cat>()
