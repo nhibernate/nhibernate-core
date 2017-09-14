@@ -6,7 +6,7 @@ namespace NHibernate.Linq
 {
 	/// <summary>
 	/// NHibernate LINQ DML extension methods. They are meant to work with <see cref="NhQueryable{T}"/>. Supplied <see cref="IQueryable{T}"/> parameters
-	/// should at least have an <see cref="INhQueryProvider"/> <see cref="IQueryable.Provider"/>. <see cref="LinqExtensionMethods.Query{T}(ISession)"/> and
+	/// should at least have an <see cref="INhQueryProvider"/> <see cref="IQueryable.Provider"/>. <see cref="ISession.Query{T}()"/> and
 	/// its overloads supply such queryables.
 	/// </summary>
 	public static partial class DmlExtensionMethods
