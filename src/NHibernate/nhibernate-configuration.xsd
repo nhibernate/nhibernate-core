@@ -13,7 +13,7 @@
 				<xs:element ref="bytecode-provider" minOccurs="0" maxOccurs="1" >
 					<xs:annotation>
 						<xs:documentation>
-							There are 3 default short-cut values
+							There are 2 default short-cut values
 							- lcg     : default for .NET2.0 and higher.
 							- null    : Disable the reflection optimization completely.
 							In addition you can specify the AssemblyQualifiedName of your custom bytecode-provider (implementation of IBytecodeProvider).
