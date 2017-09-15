@@ -10,8 +10,6 @@ namespace NHibernate.Cfg.ConfigurationSchema
 	/// </summary>
 	public enum BytecodeProviderType
 	{
-		/// <summary>Xml value: codedom</summary>
-		Codedom,
 		/// <summary>Xml value: lcg</summary>
 		Lcg,
 		/// <summary>Xml value: null</summary>
