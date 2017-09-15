@@ -324,19 +324,15 @@ ISession session = sessions.OpenSession(conn);
 
 	<hibernate-configuration xmlns="urn:nhibernate-configuration-2.2">
 		<session-factory>
-			<property name="dialect">NHibernate.Dialect.MsSql2005Dialect</property>
+			<property name="dialect">NHibernate.Dialect.MsSql2012Dialect</property>
 			<property name="connection.connection_string">
 				Server=(local);initial catalog=theDb;Integrated Security=SSPI
 			</property>
 			<property name="connection.isolation">ReadCommitted</property>
-
-			<property name="proxyfactory.factory_class">
-				NHibernate.ByteCode.LinFu.ProxyFactoryFactory, NHibernate.ByteCode.LinFu
-			</property>
 		</session-factory>
 	</hibernate-configuration>
 
-    <!-- other app specific config follows -->
+	<!-- other app specific config follows -->
 </configuration>]]></programlisting>
 
         <para>

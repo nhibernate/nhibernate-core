@@ -40,8 +40,7 @@
             configuration elements according to the listing below:
         </para>
 
-        <programlisting>
-				<![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+        <programlisting><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
 <configuration>
     <!-- Add this element -->
     <configSections>
@@ -57,7 +56,6 @@
             <property name="dialect">NHibernate.Dialect.MsSql2005Dialect</property>
             <property name="connection.provider">NHibernate.Connection.DriverConnectionProvider</property>
             <property name="connection.connection_string">Server=localhost\SQLEXPRESS;initial catalog=quickstart;Integrated Security=True</property>
-            <property name="proxyfactory.factory_class">NHibernate.ByteCode.LinFu.ProxyFactoryFactory, NHibernate.ByteCode.LinFu</property>
 
             <mapping assembly="QuickStart" />
         </session-factory>
