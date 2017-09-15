@@ -54,7 +54,7 @@
 						<para>
 							Uses <classname>System.Web.Caching.Cache</classname> as the cache provider. This means that you can
 							rely on ASP.NET caching feature to understand how it works. For more information, read (on the MSDN):
-							<ulink url="http://msdn.microsoft.com/library/en-us/cpguide/html/cpconcacheapis.asp">Caching Application Data</ulink>.
+							<ulink url="https://msdn.microsoft.com/en-us/library/6hbbsfk6.aspx">Caching Application Data</ulink>.
 						</para>
 					</listitem>
 				</varlistentry>
@@ -75,7 +75,7 @@
 					<term><classname>NHibernate.Caches.MemCache</classname></term>
 					<listitem>
 						<para>
-							Uses <literal>memcached</literal>. See <ulink url="http://www.danga.com/memcached/">memcached homepage</ulink>
+							Uses <literal>memcached</literal>. See <ulink url="http://memcached.org/">memcached homepage</ulink>
 							for more information.
 						</para>
 					</listitem>
@@ -84,9 +84,9 @@
 					<term><classname>NCache provider for NHibernate</classname></term>
 					<listitem>
 						<para>
-							Uses <literal>NCache</literal>,NCache is a commercial distributed caching system with a provider for NHibernate. 
+							Uses <literal>NCache</literal>. NCache is a commercial distributed caching system with a provider for NHibernate. 
 							The NCache Express version is free for use, see 
-							<ulink url="http://www.alachisoft.com/ncache/ncache_express.html">NCache Express homepage</ulink>
+							<ulink url="http://www.alachisoft.com/ncache/">NCache Express homepage</ulink>
 							for more information.
 						</para>
 					</listitem>
@@ -153,7 +153,15 @@
 				they are destroyed with the SessionFactory instance; so you must keep them alive as long as you need
 				them.
 			</para>
+			<para>
+				The second level cache requires the use of transactions, be it through transaction scopes or NHibernate
+				transactions. Interacting with the data store without an explicit transaction is discouraged, and will
+				not allow the second level cache to work as intended.
+			</para>
 		</formalpara>
+		<para>
+			See also <xref linkend="performance-cache" />.
+		</para>
 	</section>
 
 	<section id="NHibernate.Caches.Prevalence">
@@ -478,17 +486,6 @@
 					</listitem>
 				</varlistentry>
 			</variablelist>
-		</section>
-
-		<section>
-			<title>Patches</title>
-
-			<para>
-				There is a known issue where some SQL Server 2005 notifications might not be received when an
-				application subscribes to query notifications by using ADO.NET 2.0. To fix this problem install
-				<ulink url="http://support.microsoft.com/Default.aspx?kbid=913364">SQL hotfix for kb 913364</ulink>.
-			</para>
-
 		</section>
 
 	</section>

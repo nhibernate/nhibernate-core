@@ -659,7 +659,13 @@ ICat fritz = (ICat) iter.Current;]]></programlisting>
             <emphasis>In NHibernate 1.x the second level cache does not work correctly in combination with
             distributed transactions.</emphasis>
         </para>
-        
+
+        <para>
+          The second level cache requires the use of transactions, be it through transaction scopes or NHibernate
+          transactions. Interacting with the data store without an explicit transaction is discouraged, and will
+          not allow the second level cache to work as intended.
+        </para>
+
         <para>
             By default, NHibernate uses HashtableCache for process-level caching. You may choose a different
             implementation by specifying the name of a class that implements <literal>NHibernate.Cache.ICacheProvider</literal> 
