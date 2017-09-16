@@ -64,7 +64,7 @@
         </mediaobject>
 
         <para>
-            Heres some definitions of the objects in the diagrams:
+            Here are some definitions of the objects in the diagrams:
 
             <variablelist spacing="compact">
                 <varlistentry>
@@ -122,7 +122,8 @@
                             (Optional) A single-threaded, short-lived object used by the application to
                             specify atomic units of work. Abstracts application from underlying ADO.NET
                             transaction. An <literal>ISession</literal> might span several
-                            <literal>ITransaction</literal>s in some cases.
+                            <literal>ITransaction</literal>s in some cases. Transaction scopes may be used
+                            instead.
                         </para>
                     </listitem>
                 </varlistentry>
@@ -245,7 +246,7 @@
                     by current asynchronous flow. You are responsible to bind and unbind an
                     <literal>ISession</literal> instance with static methods of class
                     <literal>CurrentSessionContext</literal>. Binding operations from inner flows will not be
-                    propagated to outer or siblings flows.
+                    propagated to outer or siblings flows. Added in NHibernate 5.0.
                 </para>
             </listitem>
             <listitem>
