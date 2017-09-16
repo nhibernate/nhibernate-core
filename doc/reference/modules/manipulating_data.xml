@@ -199,7 +199,7 @@ foreach ( Qux qux in en )
             you expect that many of the objects are already loaded and cached by 
             the session, or if the query results contain the same objects many
             times. (When no data is cached or repeated, <literal>Find()</literal> 
-            is almost always faster.) Heres an example of a query that should be
+            is almost always faster.) Here is an example of a query that should be
             called using <literal>Enumerable()</literal>:
         </para>
         
@@ -772,8 +772,9 @@ sess.Lock(pk, LockMode.Upgrade);]]></programlisting>
             It is possible to change the default behavior so that flush occurs less frequently.
             The <literal>FlushMode</literal> class defines three different modes:
             only flush at commit time (and only when the NHibernate <literal>ITransaction</literal>
-          API is used), flush automatically using the explained routine (will only work inside an explicit NHibernate <literal>ITransaction</literal>), 
-          or never flush unless
+            API is used, or inside a transaction scope), flush automatically using the explained
+            routine (will only work inside an explicit NHibernate <literal>ITransaction</literal> or
+            inside a transaction scope), or never flush unless
             <literal>Flush()</literal> is called explicitly. The last mode is useful for long
             running units of work, where an ISession is kept open and disconnected for a long time
             (see <xref linkend="transactions-optimistic" />).
@@ -940,7 +941,7 @@ using (ITransaction tx = sess.BeginTransaction())
             Or, when manually managing ADO.NET transactions:
         </para>
 
-		<programlisting><![CDATA[ISession sess = factory.openSession();
+        <programlisting><![CDATA[ISession sess = factory.openSession();
 try
 {
     // do some work
@@ -957,33 +958,10 @@ finally
 {
     sess.Close();
 }]]></programlisting>
-
-<!--
-		<para>
-			Or, when using a distributed transaction:
-		</para>
-
-		<programlisting><![CDATA[ISession sess = factory.openSession();
-try
-{
-    // do some work
-    ...
-    sess.Flush();
-}
-catch (Exception e)
-{
-    // ContextUtil.SetAbort();
-    throw;
-}
-finally
-{
-    sess.Close();
-}]]></programlisting>
--->
-	</sect1>
+    </sect1>
 
     <sect1 id="manipulatingdata-graphs">
-        <title>Lifecyles and object graphs</title>
+        <title>Lifecycles and object graphs</title>
 
         <para>
             To save or update all objects in a graph of associated objects, you must either
