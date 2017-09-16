@@ -51,12 +51,12 @@
 				(java <ulink url="http://www.manning.com/bauer/" />)
 				or <emphasis>NHibernate in Action</emphasis>
 				(<ulink url="http://www.manning.com/kuate/" />)
-        or <emphasis>NHibernate 3.0 Cookbook</emphasis>
-        (<ulink url="https://www.packtpub.com/nhibernate-3-0-cookbook/book" />)
-        or <emphasis>NHibernate 2 Beginner's Guide</emphasis>
-        (<ulink url="http://www.packtpub.com/nhibernate-2-x-beginners-guide/book" />)if you need more help
-        with application design or if you prefer a step-by-step tutorial. Also visit
-        <ulink url="http://nhibernate.sourceforge.net/NHibernateEg/" /> for NHibernate
+				or <emphasis>NHibernate 4.x Cookbook - Second Edition</emphasis>
+				(<ulink url="https://www.packtpub.com/application-development/nhibernate-40-cookbook" />)
+				or <emphasis>NHibernate 2 Beginner's Guide</emphasis>
+				(<ulink url="http://www.packtpub.com/nhibernate-2-x-beginners-guide/book" />) if you need more help
+				with application design or if you prefer a step-by-step tutorial. Also visit
+				<ulink url="http://nhibernate.sourceforge.net/NHibernateEg/" /> for NHibernate
 				tutorial with examples.
 			</para>
 		</listitem>
