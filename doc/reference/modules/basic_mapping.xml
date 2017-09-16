@@ -15,7 +15,9 @@
             Note that, even though many NHibernate users choose to define XML mappings by hand,
             a number of tools exist to generate the mapping document, including
             NHibernate.Mapping.Attributes library and various template-based code
-            generators (CodeSmith, MyGeneration).
+            generators (CodeSmith, MyGeneration). You may also use
+            <literal>NHibernate.Mapping.ByCode</literal> available since NHibernate 3.2, or
+            <ulink url="https://github.com/jagregory/fluent-nhibernate">Fluent NHibernate</ulink>.
         </para>
 
         <para>
@@ -615,7 +617,7 @@
                             <para>
                                 uses the algorithm to generate a new <literal>System.Guid</literal>
                                 described by Jimmy Nilsson in the article 
-                                http://www.informit.com/articles/article.asp?p=25862.
+                                <ulink url="http://www.informit.com/articles/article.asp?p=25862" />.
                             </para>
                         </listitem>
                         </varlistentry>
