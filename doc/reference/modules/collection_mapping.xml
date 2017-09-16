@@ -702,7 +702,7 @@ int accessLevel = (int) permissions["accounts"];  // Error!]]></programlisting>
                 <para>
                     You may also attach a previously loaded object to a new <literal>ISession</literal>
                     with <literal>Update()</literal> or <literal>Lock()</literal> before
-                    accessing unitialized collections (or other proxies). NHibernate can not
+                    accessing uninitialized collections (or other proxies). NHibernate can not
                     do this automatically, as it would introduce ad hoc transaction semantics!
                 </para>
             </listitem>
