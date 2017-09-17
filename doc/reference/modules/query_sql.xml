@@ -416,7 +416,7 @@ IList pusList = query.SetString("name", "Pus%").List();          ]]></programlis
     FROM PERSON p WHERE p.NAME LIKE 'Hiber%'
 </sql-query>]]></programlisting>
 
-    <para>You can externalize the resultset mapping informations in a
+    <para>You can externalize the resultset mapping information in a
     <literal>&lt;resultset&gt;</literal> element to either reuse them across
     several named queries or through the
     <literal>SetResultSetMapping()</literal> API.</para>
