@@ -48,10 +48,10 @@ public class AuditInterceptor : EmptyInterceptor {
 
     public override bool OnFlushDirty(object entity, 
                                       object id, 
-				      object[] currentState,
-				      object[] previousState, 
-				      string[] propertyNames,
-				      IType[] types) 
+                                      object[] currentState,
+                                      object[] previousState,
+                                      string[] propertyNames,
+                                      IType[] types)
     {
         if ( entity is IAuditable ) {
             updates++;
@@ -67,9 +67,9 @@ public class AuditInterceptor : EmptyInterceptor {
 
     public override bool OnLoad(object entity, 
                                 object id, 
-				object[] state, 
-				string[] propertyNames, 
-				IType[] types)
+                                object[] state,
+                                string[] propertyNames,
+                                IType[] types)
     {
         if ( entity is IAuditable ) {
             loads++;
@@ -79,9 +79,9 @@ public class AuditInterceptor : EmptyInterceptor {
 
     public override bool OnSave(object entity, 
                                 object id, 
-				object[] state, 
-				string[] propertyNames, 
-				IType[] types)
+                                object[] state,
+                                string[] propertyNames,
+                                IType[] types)
     {
         if ( entity is IAuditable ) {
             creates++;
