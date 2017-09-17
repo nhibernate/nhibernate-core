@@ -4,7 +4,7 @@
     <para>
         The ICriteria API
         is NHibernate's implementation of Query Object.
-        NHibernate 3.0 introduces the QueryOver api, which combines the use of
+        NHibernate 3.0 introduces the QueryOver API, which combines the use of
         Extension Methods
         and
         Lambda Expressions
