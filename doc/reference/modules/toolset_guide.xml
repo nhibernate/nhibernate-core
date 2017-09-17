@@ -241,7 +241,7 @@ new SchemaExport(cfg).Create(false, true);]]></programlisting>
                     <para>in <literal>hibernate.properties</literal></para>
                 </listitem>
                 <listitem>
-                    <para>in a named properties file with <literal>--properties</literal></para>
+                    <para>in a named properties file with <literal>- -properties</literal></para>
                 </listitem>
             </itemizedlist>
 
