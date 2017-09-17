@@ -245,9 +245,9 @@ int accessLevel = (int)permissions["accounts"];  // Error!]]></programlisting>
             </para>
             
             <programlisting><![CDATA[User user = (User) session.CreateCriteria(typeof(User))
-                .SetFetchMode("Permissions", FetchMode.Join)
-                .Add( Expression.Eq("Id", userId) )
-                .UniqueResult();]]></programlisting>
+    .SetFetchMode("Permissions", FetchMode.Join)
+    .Add( Expression.Eq("Id", userId) )
+    .UniqueResult();]]></programlisting>
                 
             <para>
                 (This is NHibernate's equivalent of what some ORM solutions call a "fetch plan".)
@@ -1175,7 +1175,7 @@ sessionFactory.EvictCollection("Eg.Cat.Kittens"); //evict all kitten collections
             
         <itemizedlist>
             <listitem>
-                <para>the Nhibernate's drive used for your RDBMS may not supports batching,</para>
+                <para>the NHibernate's drive used for your RDBMS may not supports batching,</para>
             </listitem>
             <listitem>
                 <para>since the implementation uses reflection to access members and types
@@ -1207,9 +1207,9 @@ sessionFactory.EvictCollection("Eg.Cat.Kittens"); //evict all kitten collections
         
         <programlisting><![CDATA[IMultiQuery multiQuery = s.CreateMultiQuery()
     .Add(s.CreateQuery("from Item i where i.Id > ?")
-            .SetInt32(0, 50).SetFirstResult(10))
+          .SetInt32(0, 50).SetFirstResult(10))
     .Add(s.CreateQuery("select count(*) from Item i where i.Id > ?")
-            .SetInt32(0, 50));
+          .SetInt32(0, 50));
 IList results = multiQuery.List();
 IList items = (IList)results[0];
 long count = (long)((IList)results[1])[0];]]></programlisting>
@@ -1222,7 +1222,7 @@ long count = (long)((IList)results[1])[0];]]></programlisting>
 
         <programlisting><![CDATA[IList results = s.CreateMultiQuery()
     .Add(s.CreateQuery("from Item i where i.Id > :id")
-        .SetFirstResult(10) )
+          .SetFirstResult(10))
     .Add("select count(*) from Item i where i.Id > :id")
     .SetInt32("id", 50)
     .List();
@@ -1255,12 +1255,11 @@ long count = (long)((IList)results[1])[0];]]></programlisting>
         
         <programlisting><![CDATA[IList allEmployeesId  = ...; //1,500 items
 IMultiQuery multiQuery = s.CreateMultiQuery()
-	.Add(s.CreateQuery("from Employee e where e.Id in :empIds")
-		.SetParameter("empIds", allEmployeesId).SetFirstResult(10))
-	.Add(s.CreateQuery("select count(*) from Employee e where e.Id in :empIds")
-		.SetParameter("empIds", allEmployeesId));
-	IList results = multiQuery.List(); // will throw an exception from SQL Server]]>
-	</programlisting>
+    .Add(s.CreateQuery("from Employee e where e.Id in :empIds")
+          .SetParameter("empIds", allEmployeesId).SetFirstResult(10))
+    .Add(s.CreateQuery("select count(*) from Employee e where e.Id in :empIds")
+          .SetParameter("empIds", allEmployeesId));
+IList results = multiQuery.List(); // will throw an exception from SQL Server]]></programlisting>
 
         <para>
             An interesting usage of this feature is to load several collections of an object in one
@@ -1279,19 +1278,19 @@ IMultiQuery multiQuery = s.CreateMultiQuery()
         <title>Multi Criteria</title>
         
         <para>
-			This is the counter-part to Multi Query, and allows you to perform several criteria queries
-			in a single round trip. A simple use case is executing a paged query while
+            This is the counter-part to Multi Query, and allows you to perform several criteria queries
+            in a single round trip. A simple use case is executing a paged query while
             also getting the total count of results, in a single round-trip. Here is a simple
             example:
         </para>
         
         <programlisting><![CDATA[IMultiCriteria multiCrit = s.CreateMultiCriteria()
     .Add(s.CreateCriteria(typeof(Item))
-            .Add(Expression.Gt("Id", 50))
-            .SetFirstResult(10))
+          .Add(Expression.Gt("Id", 50))
+          .SetFirstResult(10))
     .Add(s.CreateCriteria(typeof(Item))
-            .Add(Expression.Gt("Id", 50))
-            .SetProject(Projections.RowCount()));
+          .Add(Expression.Gt("Id", 50))
+          .SetProject(Projections.RowCount()));
 IList results = multiCrit.List();
 IList items = (IList)results[0];
 long count = (long)((IList)results[1])[0];]]></programlisting>
@@ -1299,27 +1298,28 @@ long count = (long)((IList)results[1])[0];]]></programlisting>
         <para>
             The result is a list of query results, ordered according to the order of queries
             added to the multi criteria. 
-		</para>
-		
+        </para>
+
         <para>
             You can add <literal>ICriteria</literal> or <literal>DetachedCriteria</literal> to the Multi Criteria query.
             In fact, using DetachedCriteria in this fashion has some interesting implications. 
         </para>
         <programlisting><![CDATA[DetachedCriteria customersCriteria = AuthorizationService.GetAssociatedCustomersQuery();
 IList results = session.CreateMultiCriteria()
-	.Add(customersCriteria)
-	.Add(DetachedCriteria.For<Policy>()
-		.Add( Subqueries.PropertyIn("id", CriteriaTransformer.Clone(customersCriteria)
-                                                    .SetProjection(Projections.Id())
-                      ) )
-	).List();
+    .Add(customersCriteria)
+    .Add(DetachedCriteria.For<Policy>()
+        .Add(Subqueries.PropertyIn("id",
+            CriteriaTransformer.Clone(customersCriteria)
+                .SetProjection(Projections.Id())
+            )))
+    .List();
 
 ICollection<Customer> customers = CollectionHelper.ToArray<Customer>(results[0]);
 ICollection<Policy> policies = CollectionHelper.ToArray<Policy>(results[1]);]]></programlisting>
 
-		<para>
-			As you see, we get a query that represents the customers we can access, and then we can utilize this query further in order to 
-			perform additional logic (getting the policies of the customers we are associated with), all in a single database round-trip.
-		</para>
+        <para>
+          As you see, we get a query that represents the customers we can access, and then we can utilize this query further in order to 
+          perform additional logic (getting the policies of the customers we are associated with), all in a single database round-trip.
+        </para>
     </sect1>
 </chapter>
