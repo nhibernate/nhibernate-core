@@ -65,7 +65,7 @@
 		<echo if="${api.uptodate}">API documentation is up to date, skipping generation step.</echo>
 
 		<if test="${not api.uptodate}">
-			<exec program="${path::combine(tools.dir, 'msbuild.cmd')}">
+			<exec program="${path::combine(tools.dir, 'actual_msbuild.cmd')}">
 				<arg line="NHibernate.shfbproj" />
 			</exec>
 		</if>
