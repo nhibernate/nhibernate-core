@@ -63,11 +63,10 @@ List cats = crit.List();]]></programlisting>
             subclasses), but one that is especially useful lets you specify SQL directly.
         </para>
 
-        <programlisting><![CDATA[
-        // Create a string parameter for the SqlString below
-        IList cats = sess.CreateCriteria(typeof(Cat))
-            .Add( Expression.Sql("lower({alias}.Name) like lower(?)", "Fritz%", NHibernateUtil.String )
-            .List();]]></programlisting>
+        <programlisting><![CDATA[// Create a string parameter for the SqlString below
+IList cats = sess.CreateCriteria(typeof(Cat))
+    .Add( Expression.Sql("lower({alias}.Name) like lower(?)", "Fritz%", NHibernateUtil.String )
+    .List();]]></programlisting>
     
         <para>
             The <literal>{alias}</literal> placeholder with be replaced by the row alias
@@ -307,8 +306,8 @@ using (ITransaction txn = session.BeginTransaction())
 
         <para>
             A <literal>DetachedCriteria</literal> may also be used to express a sub-query. ICriterion
-            instances involving sub-queries may be obtained via <literal>Subqueries</literal>
-            <!-- or <literal>Property</literal> -->.
+            instances involving sub-queries may be obtained via <literal>Subqueries</literal>.
+            <!-- or <literal>Property</literal>.-->
         </para>
         
         <programlisting><![CDATA[DetachedCriteria avgWeight = DetachedCriteria.For(typeof(Cat))
