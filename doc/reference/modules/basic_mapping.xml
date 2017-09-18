@@ -616,8 +616,9 @@
                         <listitem>
                             <para>
                                 uses the algorithm to generate a new <literal>System.Guid</literal>
-                                described by Jimmy Nilsson in the article 
-                                <ulink url="http://www.informit.com/articles/article.asp?p=25862" />.
+                                described by Jimmy Nilsson in
+                                <ulink url="https://www.informit.com/articles/article.aspx?p=25862">this
+                                article</ulink>.
                             </para>
                         </listitem>
                         </varlistentry>

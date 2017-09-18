@@ -75,7 +75,7 @@
 					<term><classname>NHibernate.Caches.MemCache</classname></term>
 					<listitem>
 						<para>
-							Uses <literal>memcached</literal>. See <ulink url="http://memcached.org/">memcached homepage</ulink>
+							Uses <literal>memcached</literal>. See <ulink url="https://memcached.org/">memcached homepage</ulink>
 							for more information.
 						</para>
 					</listitem>

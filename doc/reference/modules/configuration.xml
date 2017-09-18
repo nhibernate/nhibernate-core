@@ -927,7 +927,7 @@ ISession session = sessions.OpenSession(conn);
         </para>
 
         <para>
-            You may download log4net from <ulink url="http://logging.apache.org/log4net/" />,
+            You may download log4net from <ulink url="https://logging.apache.org/log4net/" />,
             or install it with NuGet.
             To use log4net you will need a <literal>log4net</literal> configuration section in
             the application configuration file.  An example of the configuration section is

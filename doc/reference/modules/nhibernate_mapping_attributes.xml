@@ -6,7 +6,7 @@
 	<abstract id="mapping-attributes-abstract">
 		<title>What is NHibernate.Mapping.Attributes?</title>
 		<formalpara>
-			<title>NHibernate.Mapping.Attributes is an add-in for <ulink url="http://www.nhibernate.org">NHibernate</ulink> contributed by Pierre Henri Kuat&eacute; (aka <emphasis>KPixel</emphasis>); the former implementation was made by John Morris.</title>
+			<title>NHibernate.Mapping.Attributes is an add-in for <ulink url="http://nhibernate.info/">NHibernate</ulink> contributed by Pierre Henri Kuat&eacute; (aka <emphasis>KPixel</emphasis>); the former implementation was made by John Morris.</title>
 			<para>NHibernate require mapping streams to bind your domain model to your database. Usually, they are written (and maintained) in separated hbm.xml files.</para>
 		</formalpara>
 		<para>With NHibernate.Mapping.Attributes, you can use .NET attributes to decorate your entities and these attributes will be used to generate these mapping .hbm.xml (as files or streams). So you will no longer have to bother with these <emphasis>nasty</emphasis> xml files ;).</para>
