@@ -204,14 +204,15 @@
 		<example>
 			<programlisting><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
 <configuration>
-	<configSections>
-		<section name="syscache" type="NHibernate.Caches.SysCache.SysCacheSectionHandler,NHibernate.Caches.SysCache" />
-	</configSections>
+  <configSections>
+    <section name="syscache"
+      type="NHibernate.Caches.SysCache.SysCacheSectionHandler,NHibernate.Caches.SysCache" />
+  </configSections>
 
-	<syscache>
-		<cache region="foo" expiration="500" priority="4" />
-		<cache region="bar" expiration="300" priority="3" />
-	</syscache>
+  <syscache>
+    <cache region="foo" expiration="500" priority="4" />
+    <cache region="bar" expiration="300" priority="3" />
+  </syscache>
 </configuration>]]></programlisting>
 		</example>
 	</section>
@@ -234,7 +235,8 @@
 		<example>
 			<programlisting><![CDATA[
 <configSections>
-	<section name="syscache2" type="NHibernate.Caches.SysCache2.SysCacheSection, NHibernate.Caches.SysCache2"/>
+  <section name="syscache2"
+    type="NHibernate.Caches.SysCache2.SysCacheSection, NHibernate.Caches.SysCache2"/>
 </configSections>]]></programlisting>
 		</example>
 
@@ -258,15 +260,15 @@
 
 			<example>
 				<programlisting><![CDATA[<syscache2>
-	<cacheRegion name="Product">
-		<dependencies>
-			<tables>
-				<add name="price"
-					databaseEntryName="Default"
-					tableName="VideoTitle" />
-			</tables>
-		</dependencies>
-	</cacheRegion>	
+  <cacheRegion name="Product">
+    <dependencies>
+      <tables>
+        <add name="price"
+          databaseEntryName="Default"
+          tableName="VideoTitle" />
+      </tables>
+    </dependencies>
+  </cacheRegion>
 </syscache2>]]></programlisting>
 			</example>
 
@@ -323,13 +325,13 @@
 				<title>Stored Procedure</title>
 
 				<programlisting><![CDATA[<cacheRegion name="Product" priority="High" >
-	<dependencies>
-		<commands>
-			<add name="price"
-				command="ActiveProductsStoredProcedure" 
-				isStoredProcedure="true"/>
-		</commands>
-	</dependencies>
+  <dependencies>
+    <commands>
+      <add name="price"
+        command="ActiveProductsStoredProcedure" 
+        isStoredProcedure="true"/>
+    </commands>
+  </dependencies>
 </cacheRegion>]]></programlisting>
 			</example>
 
@@ -337,14 +339,14 @@
 				<title>SELECT Statement</title>
 
 				<programlisting><![CDATA[<cacheRegion name="Product" priority="High">
-	<dependencies>
-		<commands>
-			<add name="price"
-				command="Select VideoTitleId from dbo.VideoTitle where Active = 1"
-				connectionName="default"
-				connectionStringProviderType="NHibernate.Caches.SysCache2.ConfigConnectionStringProvider, NHibernate.Caches.SysCache2"/>
-		</commands>
-	</dependencies>
+  <dependencies>
+    <commands>
+      <add name="price"
+        command="Select VideoTitleId from dbo.VideoTitle where Active = 1"
+        connectionName="default"
+        connectionStringProviderType="NHibernate.Caches.SysCache2.ConfigConnectionStringProvider, NHibernate.Caches.SysCache2"/>
+    </commands>
+  </dependencies>
 </cacheRegion>]]></programlisting>
 			</example>
 
@@ -402,36 +404,34 @@
 				<title>Multiple commands</title>
 
 				<programlisting><![CDATA[<cacheRegion name="Product">
-	<dependencies>
-		<commands>
-			<add name="price"
-				command="ActiveProductsStoredProcedure" 
-				isStoredProcedure="true"/>
-			<add name="quantity"
-				command="Select quantityAvailable from dbo.VideoAvailability"/>
-		</commands>
-	</dependencies>
-</cacheRegion>
-]]>
-				</programlisting>
+  <dependencies>
+    <commands>
+      <add name="price"
+        command="ActiveProductsStoredProcedure" 
+        isStoredProcedure="true"/>
+      <add name="quantity"
+        command="Select quantityAvailable from dbo.VideoAvailability"/>
+    </commands>
+  </dependencies>
+</cacheRegion>]]></programlisting>
 			</example>
 
 			<example>
 				<title>Mixed</title>
 				
 				<programlisting><![CDATA[<cacheRegion name="Product">
-	<dependencies>
-		<commands>
-			<add name="price"
-				command="ActiveProductsStoredProcedure" 
-				isStoredProcedure="true"/>
-		</commands>
-		<tables>
-			<add name="quantity"
-				databaseEntryName="Default"
-				tableName=" VideoAvailability" />
-		</tables>
-	</dependencies>
+  <dependencies>
+    <commands>
+      <add name="price"
+        command="ActiveProductsStoredProcedure" 
+        isStoredProcedure="true"/>
+    </commands>
+    <tables>
+      <add name="quantity"
+        databaseEntryName="Default"
+        tableName=" VideoAvailability" />
+    </tables>
+  </dependencies>
 </cacheRegion>]]></programlisting>
 			</example>
 		</section>

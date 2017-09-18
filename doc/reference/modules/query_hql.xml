@@ -932,7 +932,8 @@ having count(msg) = 0]]></programlisting>
             Properties of an object can be bound to named query parameters:
         </para>
 
-        <programlisting><![CDATA[IQuery q = s.CreateQuery("from foo in class Foo where foo.Name=:Name and foo.Size=:Size");
+        <programlisting><![CDATA[IQuery q =
+    s.CreateQuery("from foo in class Foo where foo.Name=:Name and foo.Size=:Size");
 q.SetProperties(fooBean); // fooBean has properties Name and Size
 IList foos = q.List();]]></programlisting>
 
@@ -950,7 +951,8 @@ IList page = q.List();]]></programlisting>
         </para>
         
         <programlisting><![CDATA[ICollection orderedCollection = s.Filter( collection, "order by this.Amount" );
-ICollection counts = s.Filter( collection, "select this.Type, count(this) group by this.Type" );]]></programlisting>
+ICollection counts =
+    s.Filter( collection, "select this.Type, count(this) group by this.Type" );]]></programlisting>
 
     </sect1>
 

@@ -386,7 +386,8 @@ using(ITransaction tx = s.BeginTransaction())
 public class CustomMapTuplizerImpl : NHibernate.Tuple.Entity.DynamicMapEntityTuplizer
 {
     // override the BuildInstantiator() method to plug in our custom map...
-    protected override IInstantiator BuildInstantiator(NHibernate.Mapping.PersistentClass mappingInfo)
+    protected override IInstantiator BuildInstantiator(
+        NHibernate.Mapping.PersistentClass mappingInfo)
     {
         return new CustomMapInstantiator(mappingInfo);
     }

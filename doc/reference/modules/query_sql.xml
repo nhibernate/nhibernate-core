@@ -85,8 +85,8 @@ sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE FROM CATS").AddEntity(typeof(Cat
       the following example for a <literal>many-to-one</literal> to a
       <literal>Dog</literal>:</para>
 
-      <programlisting><![CDATA[sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE, DOG_ID FROM CATS").AddEntity(typeof(Cat));
-]]></programlisting>
+      <programlisting><![CDATA[sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE, DOG_ID FROM CATS")
+    .AddEntity(typeof(Cat));]]></programlisting>
 
       <para>This will allow cat.Dog property access to function properly.</para>
     </sect2>
@@ -99,10 +99,12 @@ sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE FROM CATS").AddEntity(typeof(Cat
       done via the <literal>AddJoin()</literal> method, which allows you to
       join in an association or collection.</para>
 
-      <programlisting><![CDATA[sess.CreateSQLQuery("SELECT c.ID, NAME, BIRTHDATE, DOG_ID, D_ID, D_NAME FROM CATS c, DOGS d WHERE c.DOG_ID = d.D_ID")
- .AddEntity("cat", typeof(Cat))
- .AddJoin("cat.Dog");
-]]></programlisting>
+      <programlisting><![CDATA[sess
+    .CreateSQLQuery(
+        "SELECT c.ID, NAME, BIRTHDATE, DOG_ID, D_ID, D_NAME " +
+        "FROM CATS c, DOGS d WHERE c.DOG_ID = d.D_ID")
+    .AddEntity("cat", typeof(Cat))
+    .AddJoin("cat.Dog");]]></programlisting>
 
       <para>In this example the returned <literal>Cat</literal>'s will have
       their <literal>Dog</literal> property fully initialized without any
@@ -112,10 +114,12 @@ sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE FROM CATS").AddEntity(typeof(Cat
       <literal>Cat</literal> had a one-to-many to <literal>Dog</literal>
       instead.</para>
 
-      <programlisting><![CDATA[sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE, D_ID, D_NAME, CAT_ID FROM CATS c, DOGS d WHERE c.ID = d.CAT_ID")
- .AddEntity("cat", typeof(Cat))
- .AddJoin("cat.Dogs");
-]]></programlisting>
+      <programlisting><![CDATA[sess
+    .CreateSQLQuery(
+        "SELECT ID, NAME, BIRTHDATE, D_ID, D_NAME, CAT_ID " +
+        "FROM CATS c, DOGS d WHERE c.ID = d.CAT_ID")
+    .AddEntity("cat", typeof(Cat))
+    .AddJoin("cat.Dogs");]]></programlisting>
 
       <para>At this stage we are reaching the limits of what is possible with
       native queries without starting to enhance the SQL queries to make them
@@ -135,10 +139,11 @@ sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE FROM CATS").AddEntity(typeof(Cat
       <para>Column alias injection is needed in the following query (which
       most likely will fail):</para>
 
-      <programlisting><![CDATA[sess.CreateSQLQuery("SELECT c.*, m.*  FROM CATS c, CATS m WHERE c.MOTHER_ID = c.ID")
- .AddEntity("cat", typeof(Cat))
- .AddEntity("mother", typeof(Cat))
-]]></programlisting>
+      <programlisting><![CDATA[sess
+    .CreateSQLQuery(
+        "SELECT c.*, m.* FROM CATS c, CATS m WHERE c.MOTHER_ID = c.ID")
+    .AddEntity("cat", typeof(Cat))
+    .AddEntity("mother", typeof(Cat))]]></programlisting>
 
       <para>The intention for this query is to return two Cat instances per
       row, a cat and its mother. This will fail since there is a conflict of
@@ -150,10 +155,12 @@ sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE FROM CATS").AddEntity(typeof(Cat
       <para>The following form is not vulnerable to column name
       duplication:</para>
 
-      <programlisting><![CDATA[sess.CreateSQLQuery("SELECT {cat.*}, {mother.*}  FROM CATS c, CATS m WHERE c.MOTHER_ID = c.ID")
- .AddEntity("cat", typeof(Cat))
- .AddEntity("mother", typeof(Cat))
-]]></programlisting>
+      <programlisting><![CDATA[sess
+    .CreateSQLQuery(
+        "SELECT {cat.*}, {mother.*} " +
+        "FROM CATS c, CATS m WHERE c.MOTHER_ID = c.ID")
+    .AddEntity("cat", typeof(Cat))
+    .AddEntity("mother", typeof(Cat))]]></programlisting>
 
       <para>This query specified:</para>
 
@@ -350,11 +357,15 @@ IList loggedCats = sess.CreateSQLQuery(sql)
       <para>Native SQL queries support positional as well as named
       parameters:</para>
 
-      <programlisting><![CDATA[Query query = sess.CreateSQLQuery("SELECT * FROM CATS WHERE NAME like ?").AddEntity(typeof(Cat));
+      <programlisting><![CDATA[Query query = sess
+    .CreateSQLQuery("SELECT * FROM CATS WHERE NAME like ?")
+    .AddEntity(typeof(Cat));
 IList pusList = query.SetString(0, "Pus%").List();
-     
-query = sess.createSQLQuery("SELECT * FROM CATS WHERE NAME like :name").AddEntity(typeof(Cat));
-IList pusList = query.SetString("name", "Pus%").List();          ]]></programlisting>
+
+query = sess
+    .createSQLQuery("SELECT * FROM CATS WHERE NAME like :name")
+    .AddEntity(typeof(Cat));
+IList pusList = query.SetString("name", "Pus%").List();]]></programlisting>
     </sect2>
     
     
@@ -444,8 +455,9 @@ IList pusList = query.SetString("name", "Pus%").List();          ]]></programlis
     .hbm.xml files directly in code.</para>
 
     <programlisting><![CDATA[IList cats = sess.CreateSQLQuery(
-        "select {cat.*}, {kitten.*} from cats cat, cats kitten where kitten.mother = cat.id"
-    )
+        "select {cat.*}, {kitten.*} " +
+        "from cats cat, cats kitten " +
+        "where kitten.mother = cat.id")
     .SetResultSetMapping("catAndKitten")
     .List();]]></programlisting>
 

@@ -65,7 +65,8 @@ List cats = crit.List();]]></programlisting>
 
         <programlisting><![CDATA[// Create a string parameter for the SqlString below
 IList cats = sess.CreateCriteria(typeof(Cat))
-    .Add( Expression.Sql("lower({alias}.Name) like lower(?)", "Fritz%", NHibernateUtil.String )
+    .Add(Expression.Sql("lower({alias}.Name) like lower(?)",
+        "Fritz%", NHibernateUtil.String))
     .List();]]></programlisting>
     
         <para>

@@ -919,10 +919,14 @@ foreach (Cat cat in cats)
             role.
         </para>
         
-        <programlisting><![CDATA[sessionFactory.Evict(typeof(Cat), catId); //evict a particular Cat
-sessionFactory.Evict(typeof(Cat));  //evict all Cats
-sessionFactory.EvictCollection("Eg.Cat.Kittens", catId); //evict a particular collection of kittens
-sessionFactory.EvictCollection("Eg.Cat.Kittens"); //evict all kitten collections]]></programlisting>
+        <programlisting><![CDATA[//evict a particular Cat
+sessionFactory.Evict(typeof(Cat), catId);
+//evict all Cats
+sessionFactory.Evict(typeof(Cat));
+//evict a particular collection of kittens
+sessionFactory.EvictCollection("Eg.Cat.Kittens", catId);
+//evict all kitten collections
+sessionFactory.EvictCollection("Eg.Cat.Kittens");]]></programlisting>
 
     </sect1>
     

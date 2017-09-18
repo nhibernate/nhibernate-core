@@ -367,10 +367,11 @@ try
 {
     tx = s.BeginTransaction())
 
-    fooList = s.Find(
-    	"select foo from Eg.Foo foo where foo.Date = current date"
-        // uses db2 date function
-    );
+    fooList = s
+        .CreateQuery(
+            "select foo from Eg.Foo foo where foo.Date = current date"
+            // uses db2 date function
+        ).List<Foo>();
 
     bar = new Bar();
     s.Save(bar);

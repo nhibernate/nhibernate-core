@@ -883,23 +883,24 @@ int count = (int) countEn.Current;]]></programlisting>
         </para>
 
         <programlisting><![CDATA[<class name="NHibernate.Auction.Category, NHibernate.Auction">
-    <id name="Id" column="ID"/>
-    ...
-    <bag name="Items" table="CATEGORY_ITEM" lazy="true">
-        <key column="CATEGORY_ID"/>
-        <many-to-many class="NHibernate.Auction.Item, NHibernate.Auction" column="ITEM_ID"/>
-    </bag>
+  <id name="Id" column="ID"/>
+  ...
+  <bag name="Items" table="CATEGORY_ITEM" lazy="true">
+    <key column="CATEGORY_ID"/>
+    <many-to-many class="NHibernate.Auction.Item, NHibernate.Auction" column="ITEM_ID"/>
+  </bag>
 </class>
 
 <class name="NHibernate.Auction.Item, NHibernate.Auction">
-    <id name="id" column="ID"/>
-    ...
+  <id name="id" column="ID"/>
+  ...
 
-    <!-- inverse end -->
-    <bag name="categories" table="CATEGORY_ITEM" inverse="true" lazy="true">
-        <key column="ITEM_ID"/>
-        <many-to-many class="NHibernate.Auction.Category, NHibernate.Auction" column="CATEGORY_ID"/>
-    </bag>
+  <!-- inverse end -->
+  <bag name="categories" table="CATEGORY_ITEM" inverse="true" lazy="true">
+    <key column="ITEM_ID"/>
+    <many-to-many class="NHibernate.Auction.Category, NHibernate.Auction"
+        column="CATEGORY_ID"/>
+  </bag>
 </class>]]></programlisting>
 
         <para>
@@ -1054,8 +1055,8 @@ namespace Eg
             This maps to the following table definitions:
         </para>
 
-        <programlisting><![CDATA[create table parent ( Id bigint not null primary key )
-create table child ( Id bigint not null primary key, Name varchar(255), parent_id bigint )
+        <programlisting><![CDATA[create table parent (Id bigint not null primary key)
+create table child (Id bigint not null primary key, Name varchar(255), parent_id bigint)
 alter table child add constraint childfk0 (parent_id) references parent]]></programlisting>
 
         <para>

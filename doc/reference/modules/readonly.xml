@@ -323,7 +323,9 @@
 using (ITransaction tx = session.BeginTransaction())
 {
     session.DefaultReadOnly = true;
-    Contract contract = session.CreateQuery("from Contract where CustomerName = 'Sherman'").UniqueResult<Contract>();
+    Contract contract = session
+        .CreateQuery("from Contract where CustomerName = 'Sherman'")
+        .UniqueResult<Contract>();
     NHibernate.Initialize(contract.Plan);
     NHibernate.Initialize(contract.Variations);
     NHibernate.Initialize(contract.Notes);

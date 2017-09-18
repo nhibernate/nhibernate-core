@@ -98,7 +98,10 @@ public class AuditInterceptor : EmptyInterceptor {
     public override void AfterTransactionCompletion(ITransaction tx)
     {
         if ( tx.WasCommitted ) {
-            System.Console.WriteLine("Creations: " + creates + ", Updates: " + updates, "Loads: " + loads);
+            System.Console.WriteLine(
+                "Creations: " + creates +
+                ", Updates: " + updates +
+                ", Loads: " + loads);
         }
         updates=0;
         creates=0;
@@ -202,7 +205,8 @@ public class AuditInterceptor : EmptyInterceptor {
         </para>
 
         <programlisting><![CDATA[Configuration cfg = new Configuration();
-ILoadEventListener[] stack = new ILoadEventListener[] { new MyLoadListener(), new DefaultLoadEventListener() };
+ILoadEventListener[] stack =
+    new ILoadEventListener[] { new MyLoadListener(), new DefaultLoadEventListener() };adEventListener() };
 cfg.EventListeners.LoadEventListeners = stack;]]></programlisting>
 
         <para>

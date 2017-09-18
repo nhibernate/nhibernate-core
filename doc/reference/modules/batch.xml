@@ -208,7 +208,8 @@ using (ITransaction tx = session.BeginTransaction())
         <programlisting><![CDATA[using (ISession session = sessionFactory.OpenSession())
 using (ITransaction tx = session.BeginTransaction())
 {
-    string hqlVersionedUpdate = "update versioned Customer set name = :newName where name = :oldName";
+    string hqlVersionedUpdate =
+        "update versioned Customer set name = :newName where name = :oldName";
     int updatedEntities = s.CreateQuery(hqlUpdate)
         .SetString("newName", newName)
         .SetString("oldName", oldName)
@@ -313,7 +314,9 @@ using (ITransaction tx = session.BeginTransaction())
         <programlisting><![CDATA[using (ISession session = sessionFactory.OpenSession())
 using (ITransaction tx = session.BeginTransaction())
 {
-    var hqlInsert = "insert into DelinquentAccount (id, name) select c.id, c.name from Customer c where ...";
+    var hqlInsert =
+        "insert into DelinquentAccount (id, name) " +
+        "select c.id, c.name from Customer c where ...";
     int createdEntities = s.CreateQuery(hqlInsert)
         .ExecuteUpdate();
     tx.Commit();

@@ -116,10 +116,10 @@ public class Base {
         public string Name;
     }</programlisting>
 		<para>After this step, you use <classname>NHibernate.Mapping.Attributes.HbmSerializer</classname>: (here, we use <methodname>Default</methodname> which is an instance you can use if you don't need/want to create it yourself).</para>
-		<programlisting>
-    NHibernate.Cfg.Configuration cfg = new NHibernate.Cfg.Configuration();
+		<programlisting>NHibernate.Cfg.Configuration cfg = new NHibernate.Cfg.Configuration();
     cfg.Configure();
-    NHibernate.Mapping.Attributes.HbmSerializer.Default.Validate = true; // Enable validation (optional)
+    // Enable validation (optional)
+    NHibernate.Mapping.Attributes.HbmSerializer.Default.Validate = true;
     // Here, we serialize all decorated classes (but you can also do it class by class)
     cfg.AddInputStream( NHibernate.Mapping.Attributes.HbmSerializer.Default.Serialize(
         System.Reflection.Assembly.GetExecutingAssembly() ); );
@@ -189,12 +189,12 @@ public class Base {
 			</listitem>
 		</orderedlist>
 		<para>Example using some this tips: (0, 1 and 2 are position indexes)
-<programlisting>
-    [NHibernate.Mapping.Attributes.Id(0, TypeType=typeof(int))] // Don't put it after [ManyToOne] !!!
+<programlisting>// Don't put it after [ManyToOne] !!!
+    [NHibernate.Mapping.Attributes.Id(0, TypeType=typeof(int))]
         [NHibernate.Mapping.Attributes.Generator(1, Class="uuid.hex")]
-    [NHibernate.Mapping.Attributes.ManyToOne(2, ClassType=typeof(Foo), OuterJoin=OuterJoinStrategy.True)]
-    private Foo Entity;
-</programlisting>
+    [NHibernate.Mapping.Attributes.ManyToOne(2,
+        ClassType=typeof(Foo), OuterJoin=OuterJoinStrategy.True)]
+    private Foo Entity;</programlisting>
 			Generates:
 <programlisting><![CDATA[
     <id type="Int32">
@@ -212,22 +212,19 @@ public class Base {
 
 		<para>A <methodname>Position</methodname> property has been added to all attributes to order them. But there is still a problem:</para>
 		<para>When a parent element "p" has a child element "x" that is also the child element of another child element "c" of "p" (preceding "x") :D
-Illustration:<programlisting><![CDATA[
-    <p>
-        <c>
-            <x />
-        </c>
+Illustration:<programlisting><![CDATA[<p>
+    <c>
         <x />
-    </p>
-]]></programlisting>
+    </c>
+    <x />
+</p>]]></programlisting>
 		</para>
 		<para>In this case, when writing:
-			<programlisting>
-    [Attributes.P(0)]
-        [Attributes.C(1)]
-            [Attributes.X(2)]
-        [Attributes.X(3)]
-    public MyType MyProperty;</programlisting>
+			<programlisting>[Attributes.P(0)]
+    [Attributes.C(1)]
+        [Attributes.X(2)]
+    [Attributes.X(3)]
+public MyType MyProperty;</programlisting>
 		X(3) will always belong to C(1) ! (as X(2)).
 		</para>
 		<para>It is the case for <literal>&lt;dynamic-component&gt;</literal> and <literal>&lt;nested-composite-element&gt;</literal>.</para>

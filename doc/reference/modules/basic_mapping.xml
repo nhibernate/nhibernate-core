@@ -2931,9 +2931,10 @@
                 are possible.
             </para>
 
-            <programlisting><![CDATA[<property name="TwoStrings" type="NHibernate.DomainModel.DoubleStringType, NHibernate.DomainModel">
-    <column name="first_string"/>
-    <column name="second_string"/>
+            <programlisting><![CDATA[<property name="TwoStrings"
+    type="NHibernate.DomainModel.DoubleStringType, NHibernate.DomainModel">
+  <column name="first_string"/>
+  <column name="second_string"/>
 </property>]]></programlisting>
 
             <para>
