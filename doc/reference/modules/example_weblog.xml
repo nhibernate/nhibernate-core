@@ -19,7 +19,7 @@ namespace Eg
     {
         public virtual long Id { get; set;}
 
-        public virtual ISet<BlogItem> Items { get; set;}
+        public virtual IList<BlogItem> Items { get; set;}
 
         public virtual string Name { get; set;}
     }
@@ -75,7 +75,7 @@ namespace Eg
             not-null="true" 
             unique="true"/>
             
-        <set
+        <bag
             name="Items" 
             inverse="true" 
             lazy="true"
@@ -85,7 +85,7 @@ namespace Eg
             <key column="BLOG_ID"/>
             <one-to-many class="BlogItem"/>
             
-        </set>
+        </bag>
         
     </class>
     
@@ -156,17 +156,13 @@ namespace Eg
 
         public void Configure()
         {
-            _sessions = new Configuration()
-                .AddClass(typeof(Blog))
-                .AddClass(typeof(BlogItem))
+            _sessions = new Configuration().Configure()
                 .BuildSessionFactory();
         }
 
         public void ExportTables()
         {
-            var cfg = new Configuration().Configure()
-                .AddClass(typeof(Blog))
-                .AddClass(typeof(BlogItem));
+            var cfg = new Configuration().Configure();
             new SchemaExport(cfg).Create(true, true);
         }
 
@@ -175,7 +171,7 @@ namespace Eg
             var blog = new Blog
             {
                 Name = name,
-                Items = new HashSet<BlogItem>()
+                Items = new List<BlogItem>()
             };
 
             using (var session = _sessions.OpenSession())
@@ -319,6 +315,40 @@ namespace Eg
         }
     }
 }]]></programlisting>
+
+        <para>
+            It requires some configuration settings in <literal>web.config</literal>, such as:
+        </para>
+
+        <programlisting><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <!-- Add this element -->
+  <configSections>
+    <section
+        name="hibernate-configuration"
+        type="NHibernate.Cfg.ConfigurationSectionHandler, NHibernate" />
+  </configSections>
+
+  <!-- Add this element -->
+  <hibernate-configuration xmlns="urn:nhibernate-configuration-2.2">
+    <session-factory>
+      <property name="dialect">NHibernate.Dialect.MsSql2012Dialect</property>
+      <property name="connection.provider">
+        NHibernate.Connection.DriverConnectionProvider
+      </property>
+      <property name="connection.connection_string">
+        Server=localhost\SQLEXPRESS;initial catalog=Eg;Integrated Security=True
+      </property>
+
+      <mapping assembly="Eg" />
+    </session-factory>
+  </hibernate-configuration>
+
+  <!-- Leave the other sections unchanged -->
+  <system.web>
+    ...
+  </system.web>
+</configuration>]]></programlisting>
 
     </sect1>
 
