@@ -101,8 +101,8 @@ sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE FROM CATS").AddEntity(typeof(Cat
 
       <programlisting><![CDATA[sess
     .CreateSQLQuery(
-        "SELECT c.ID, NAME, BIRTHDATE, DOG_ID, D_ID, D_NAME " +
-        "FROM CATS c, DOGS d WHERE c.DOG_ID = d.D_ID")
+        "SELECT cat.ID, NAME, BIRTHDATE, DOG_ID, D_ID, D_NAME " +
+        "FROM CATS cat, DOGS d WHERE cat.DOG_ID = d.D_ID")
     .AddEntity("cat", typeof(Cat))
     .AddJoin("cat.Dog");]]></programlisting>
 
@@ -117,7 +117,7 @@ sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE FROM CATS").AddEntity(typeof(Cat
       <programlisting><![CDATA[sess
     .CreateSQLQuery(
         "SELECT ID, NAME, BIRTHDATE, D_ID, D_NAME, CAT_ID " +
-        "FROM CATS c, DOGS d WHERE c.ID = d.CAT_ID")
+        "FROM CATS cat, DOGS d WHERE cat.ID = d.CAT_ID")
     .AddEntity("cat", typeof(Cat))
     .AddJoin("cat.Dogs");]]></programlisting>
 
@@ -141,7 +141,8 @@ sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE FROM CATS").AddEntity(typeof(Cat
 
       <programlisting><![CDATA[sess
     .CreateSQLQuery(
-        "SELECT c.*, m.* FROM CATS c, CATS m WHERE c.MOTHER_ID = c.ID")
+        "SELECT cat.*, mother.* " +
+        "FROM CATS cat, CATS mother WHERE cat.MOTHER_ID = mother.ID")
     .AddEntity("cat", typeof(Cat))
     .AddEntity("mother", typeof(Cat))]]></programlisting>
 
@@ -158,7 +159,7 @@ sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE FROM CATS").AddEntity(typeof(Cat
       <programlisting><![CDATA[sess
     .CreateSQLQuery(
         "SELECT {cat.*}, {mother.*} " +
-        "FROM CATS c, CATS m WHERE c.MOTHER_ID = c.ID")
+        "FROM CATS cat, CATS mother WHERE cat.MOTHER_ID = mother.ID")
     .AddEntity("cat", typeof(Cat))
     .AddEntity("mother", typeof(Cat))]]></programlisting>
 
@@ -184,13 +185,13 @@ sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE FROM CATS").AddEntity(typeof(Cat
       declared in the mapping metadata. Notice that we may even use the
       property aliases in the where clause if we like.</para>
 
-      <programlisting><![CDATA[String sql = "SELECT ID as {c.Id}, NAME as {c.Name}, " + 
-         "BIRTHDATE as {c.BirthDate}, MOTHER_ID as {c.Mother}, {mother.*} " +
-         "FROM CAT_LOG c, CAT_LOG m WHERE {c.Mother} = c.ID";
+      <programlisting><![CDATA[String sql = "SELECT c.ID as {c.Id}, c.NAME as {c.Name}, " + 
+         "c.BIRTHDATE as {c.BirthDate}, c.MOTHER_ID as {c.Mother}, {mother.*} " +
+         "FROM CAT_LOG c, CAT_LOG m WHERE {c.Mother} = m.ID";
 
 var loggedCats = sess.CreateSQLQuery(sql)
-    .AddEntity("cat", typeof(Cat))
-    .AddEntity("mother", typeof(Cat)).List<object[]>();
+    .AddEntity("c", typeof(Cat))
+    .AddEntity("m", typeof(Cat)).List<object[]>();
 ]]></programlisting>
 
       <sect3 id="querysql-aliasreferences" revision="2">
