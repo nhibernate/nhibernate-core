@@ -1,9 +1,7 @@
 @echo off
-set pre=Microsoft.VisualStudio.Product.
-set ids=%pre%Community %pre%Professional %pre%Enterprise %pre%BuildTools
 
-for /f "usebackq tokens=1* delims=: " %%i in (`%~dp0\vswhere.2.1.4\tools\vswhere.exe -latest -products %ids% -requires Microsoft.Component.MSBuild`) do (
-  if /i "%%i"=="installationPath" set InstallDir=%%j
+for /f "usebackq tokens=*" %%i in (`%~dp0\vswhere.2.1.4\tools\vswhere -latest -products * -requires Microsoft.Component.MSBuild -property installationPath`) do (
+  set InstallDir=%%i
 )
 
 if exist "%InstallDir%\MSBuild\15.0\Bin\MSBuild.exe" (
