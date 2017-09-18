@@ -277,7 +277,7 @@
 
             <para>
                 <literal>Query.SetReadOnly(true)</literal> must be called before
-                <literal>Query.List()</literal>, <literal>Query.UniqueResult()</literal>, or <literal>Query.Iterate()</literal>
+                <literal>Query.List()</literal>, <literal>Query.UniqueResult()</literal>, or <literal>Query.Enumerable()</literal>
             </para>
 
             <para>
