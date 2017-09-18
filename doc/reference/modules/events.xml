@@ -206,7 +206,7 @@ public class AuditInterceptor : EmptyInterceptor {
 
         <programlisting><![CDATA[Configuration cfg = new Configuration();
 ILoadEventListener[] stack =
-    new ILoadEventListener[] { new MyLoadListener(), new DefaultLoadEventListener() };adEventListener() };
+    new ILoadEventListener[] { new MyLoadListener(), new DefaultLoadEventListener() };
 cfg.EventListeners.LoadEventListeners = stack;]]></programlisting>
 
         <para>
