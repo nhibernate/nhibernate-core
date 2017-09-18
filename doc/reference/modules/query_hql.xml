@@ -508,7 +508,7 @@ from Eg.DomesticCat cat where cat.Name not in ( 'Foo', 'Bar', 'Baz' )]]></progra
             configuration:
         </para>
 
-        <programlisting><![CDATA[<property name="hibernate.query.substitutions">true 1, false 0</property>]]></programlisting>
+        <programlisting><![CDATA[<property name="query.substitutions">true 1, false 0</property>]]></programlisting>
 
         <para>
             This will replace the keywords <literal>true</literal> and <literal>false</literal> with the

@@ -228,7 +228,7 @@
             Starting with version 1.2, NHibernate added the <literal>ISessionFactory.GetCurrentSession()</literal>
             method. The processing behind <literal>ISessionFactory.GetCurrentSession()</literal> is pluggable.
             An extension interface (<literal>NHibernate.Context.ICurrentSessionContext</literal>) and a new
-            configuration parameter (<literal>hibernate.current_session_context_class</literal>) have been added
+            configuration parameter (<literal>current_session_context_class</literal>) have been added
             to allow pluggability of the scope and context of defining current sessions.
         </para>
         <para>
@@ -294,7 +294,7 @@
         </itemizedlist>
 
         <para>
-            The <literal>hibernate.current_session_context_class</literal> configuration parameter
+            The <literal>current_session_context_class</literal> configuration parameter
             defines which <literal>NHibernate.Context.ICurrentSessionContext</literal> implementation
             should be used. Typically, the value of this parameter would just name the implementation
             class to use (including the assembly name); for the out-of-the-box implementations, however,

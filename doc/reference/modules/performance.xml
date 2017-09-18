@@ -669,7 +669,7 @@ ICat fritz = (ICat) iter.Current;]]></programlisting>
         <para>
             By default, NHibernate uses HashtableCache for process-level caching. You may choose a different
             implementation by specifying the name of a class that implements <literal>NHibernate.Cache.ICacheProvider</literal> 
-            using the property <literal>hibernate.cache.provider_class</literal>.
+            using the property <literal>cache.provider_class</literal>.
         </para>
 
         <table frame="topbot" id="cacheproviders" revision="1">
@@ -927,7 +927,7 @@ sessionFactory.EvictCollection("Eg.Cat.Kittens"); //evict all kitten collections
             frequently with the same parameters. To use the query cache you must first enable it:
         </para>
 
-        <programlisting><![CDATA[<add key="hibernate.cache.use_query_cache" value="true" />]]></programlisting>       
+        <programlisting><![CDATA[<property name="cache.use_query_cache">true</property>>]]></programlisting>       
 
         <para>
             This setting causes the creation of two new cache regions - one holding cached query

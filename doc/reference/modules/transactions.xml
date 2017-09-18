@@ -557,7 +557,7 @@ finally
         </itemizedlist>
 
         <para>
-            The configuration parameter <literal>hibernate.connection.release_mode</literal> is used
+            The configuration parameter <literal>connection.release_mode</literal> is used
             to specify which release mode to use.  The possible values:
         </para>
 

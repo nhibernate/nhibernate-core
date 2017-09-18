@@ -115,8 +115,8 @@
 						<filename>.cfg.xml</filename> file, in the latter case the syntax will be different from what
 						is shown below):
 						<programlisting>
-&lt;add key="hibernate.cache.provider_class" value="<literal>XXX</literal>" /&gt;<co id="hibernate.cache.provider_class-co" linkends="hibernate.cache.provider_class"/>
-&lt;add key="expiration" value="<literal>120</literal>" /&gt;<co id="nhcaches-expiration-co" linkends="nhcaches-expiration"/>
+&lt;property name="cache.provider_class"&gt;<literal>XXX</literal>&lt;/property&gt;<co id="hibernate.cache.provider_class-co" linkends="hibernate.cache.provider_class"/>
+&lt;property name="cache.default_expiration"&gt;<literal>120</literal>&lt;/property&gt;<co id="nhcaches-expiration-co" linkends="nhcaches-expiration"/>
 						</programlisting>
 						<calloutlist>
 							<callout arearefs="hibernate.cache.provider_class-co" id="hibernate.cache.provider_class">
