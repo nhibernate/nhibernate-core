@@ -158,7 +158,7 @@ var problems = sess
     .List<GoldFish>();]]></programlisting>
 
         <para>
-            These given <literal>Set</lteral> parameters are used to bind the given values to the
+            These given <literal>Set</literal> parameters are used to bind the given values to the
             <literal>?</literal> query placeholders (which map to input
             parameters of an ADO.NET <literal>IDbCommand</literal>). Just
             as in ADO.NET, you should use this binding mechanism in preference to string
@@ -896,8 +896,8 @@ sess.Close();]]></programlisting>
 
             <para>
                 If you provided your own connection, <literal>Close()</literal> returns a reference 
-                to it, so you can manually close it or return it to the pool. Otherwise <literal>Close()
-                </literal> returns it to the pool.
+                to it, so you can manually close it or return it to the pool. Otherwise
+                <literal>Close()</literal> returns it to the pool.
             </para>
 
         </sect2>
@@ -909,8 +909,8 @@ sess.Close();]]></programlisting>
 
         <para>
             NHibernate use might lead to exceptions, usually <literal>HibernateException</literal>.
-            This exception can have	a nested inner exception (the root cause), use the <literal>
-            InnerException</literal> property to access it.
+            This exception can have	a nested inner exception (the root cause), use the
+            <literal>InnerException</literal> property to access it.
         </para>
 
         <para>
