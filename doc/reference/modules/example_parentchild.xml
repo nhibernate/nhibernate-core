@@ -128,7 +128,7 @@ session.Flush();]]></programlisting>
             The following code would be used to add a new <literal>Child</literal>.
         </para>
 
-        <programlisting><![CDATA[Parent p = (Parent) session.Load(typeof(Parent), pid);
+        <programlisting><![CDATA[Parent p = session.Load<Parent>(pid);
 Child c = new Child();
 c.Parent = p;
 p.Children.Add(c);
@@ -154,7 +154,7 @@ session.Flush();]]></programlisting>
             Now, the code to add a <literal>Child</literal> looks like
         </para>
 
-        <programlisting><![CDATA[Parent p = (Parent) session.Load(typeof(Parent), pid);
+        <programlisting><![CDATA[Parent p = session.Load<Parent>(pid);
 Child c = new Child();
 p.AddChild(c);
 session.Save(c);
@@ -179,7 +179,7 @@ session.Flush();]]></programlisting>
              This simplifies the code above to
          </para>
 
-        <programlisting><![CDATA[Parent p = (Parent) session.Load(typeof(Parent), pid);
+        <programlisting><![CDATA[Parent p = session.Load<Parent>(pid);
 Child c = new Child();
 p.AddChild(c);
 session.Flush();]]></programlisting>
@@ -189,7 +189,7 @@ session.Flush();]]></programlisting>
              The following removes <literal>p</literal> and all its children from the database.
          </para>
 
-        <programlisting><![CDATA[Parent p = (Parent) session.Load(typeof(Parent), pid);
+        <programlisting><![CDATA[Parent p = session.Load<Parent>(pid);
 session.Delete(p);
 session.Flush();]]></programlisting>
      
@@ -197,7 +197,7 @@ session.Flush();]]></programlisting>
              However, this code
          </para>
 
-        <programlisting><![CDATA[Parent p = (Parent) session.Load(typeof(Parent), pid);
+        <programlisting><![CDATA[Parent p = session.Load<Parent>(pid);
 // Get one child out of the set
 IEnumerator childEnumerator = p.Children.GetEnumerator();
 childEnumerator.MoveNext();
@@ -213,7 +213,7 @@ session.Flush();]]></programlisting>
              <literal>Delete()</literal> the <literal>Child</literal>.
          </para>
 
-        <programlisting><![CDATA[Parent p = (Parent) session.Load(typeof(Parent), pid);
+        <programlisting><![CDATA[Parent p = session.Load<Parent>(pid);
 // Get one child out of the set
 IEnumerator childEnumerator = p.Children.GetEnumerator();
 childEnumerator.MoveNext();

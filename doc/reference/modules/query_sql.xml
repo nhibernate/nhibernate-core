@@ -188,9 +188,9 @@ sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE FROM CATS").AddEntity(typeof(Cat
          "BIRTHDATE as {c.BirthDate}, MOTHER_ID as {c.Mother}, {mother.*} " +
          "FROM CAT_LOG c, CAT_LOG m WHERE {c.Mother} = c.ID";
 
-IList loggedCats = sess.CreateSQLQuery(sql)
-        .AddEntity("cat", typeof(Cat))
-        .AddEntity("mother", typeof(Cat)).List();
+var loggedCats = sess.CreateSQLQuery(sql)
+    .AddEntity("cat", typeof(Cat))
+    .AddEntity("mother", typeof(Cat)).List<object[]>();
 ]]></programlisting>
 
       <sect3 id="querysql-aliasreferences" revision="2">
@@ -357,15 +357,15 @@ IList loggedCats = sess.CreateSQLQuery(sql)
       <para>Native SQL queries support positional as well as named
       parameters:</para>
 
-      <programlisting><![CDATA[Query query = sess
+      <programlisting><![CDATA[var query = sess
     .CreateSQLQuery("SELECT * FROM CATS WHERE NAME like ?")
     .AddEntity(typeof(Cat));
-IList pusList = query.SetString(0, "Pus%").List();
+var pusList = query.SetString(0, "Pus%").List<Cat>();
 
 query = sess
     .createSQLQuery("SELECT * FROM CATS WHERE NAME like :name")
     .AddEntity(typeof(Cat));
-IList pusList = query.SetString("name", "Pus%").List();]]></programlisting>
+var pusList = query.SetString("name", "Pus%").List<Cat>();]]></programlisting>
     </sect2>
     
     
@@ -389,10 +389,10 @@ IList pusList = query.SetString("name", "Pus%").List();]]></programlisting>
     WHERE person.NAME LIKE :namePattern
 </sql-query>]]></programlisting>
 
-    <programlisting><![CDATA[IList people = sess.GetNamedQuery("persons")
+    <programlisting><![CDATA[var people = sess.GetNamedQuery("persons")
     .SetString("namePattern", namePattern)
     .SetMaxResults(50)
-    .List();]]></programlisting>
+    .List<Person>();]]></programlisting>
 
     <para>The <literal>&lt;return-join&gt;</literal> and
     <literal>&lt;load-collection&gt;</literal> elements are used to join
@@ -454,12 +454,12 @@ IList pusList = query.SetString("name", "Pus%").List();]]></programlisting>
     <para>You can alternatively use the resultset mapping information in your
     .hbm.xml files directly in code.</para>
 
-    <programlisting><![CDATA[IList cats = sess.CreateSQLQuery(
+    <programlisting><![CDATA[var cats = sess.CreateSQLQuery(
         "select {cat.*}, {kitten.*} " +
         "from cats cat, cats kitten " +
         "where kitten.mother = cat.id")
     .SetResultSetMapping("catAndKitten")
-    .List();]]></programlisting>
+    .List<Cat>();]]></programlisting>
 
     <sect2 id="propertyresults">
       <title>Using return-property to explicitly specify column/alias

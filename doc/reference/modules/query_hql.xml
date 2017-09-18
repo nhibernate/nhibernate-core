@@ -888,7 +888,7 @@ order by account.Type.SortOrder, account.AccountNumber, payment.DueDate]]></prog
             You can count the number of query results without actually returning them:
         </para>
 
-        <programlisting><![CDATA[int count = (int) session.CreateQuery("select count(*) from ....").UniqueResult();]]></programlisting>
+        <programlisting><![CDATA[var count = session.CreateQuery("select count(*) from ....").UniqueResult<long>();]]></programlisting>
 
         <para>
             To order a result by the size of a collection, use the following query:
@@ -935,7 +935,7 @@ having count(msg) = 0]]></programlisting>
         <programlisting><![CDATA[IQuery q =
     s.CreateQuery("from foo in class Foo where foo.Name=:Name and foo.Size=:Size");
 q.SetProperties(fooBean); // fooBean has properties Name and Size
-IList foos = q.List();]]></programlisting>
+var foos = q.List<Foo>();]]></programlisting>
 
         <para>
             Collections are pageable by using the <literal>IQuery</literal> interface with a filter:
@@ -944,7 +944,7 @@ IList foos = q.List();]]></programlisting>
         <programlisting><![CDATA[IQuery q = s.CreateFilter( collection, "" ); // the trivial filter
 q.setMaxResults(PageSize);
 q.setFirstResult(PageSize * pageNumber);
-IList page = q.List();]]></programlisting>
+var page = q.List<Cat>();]]></programlisting>
 
         <para>
             Collection elements may be ordered or grouped using a query filter:

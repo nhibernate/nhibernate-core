@@ -139,18 +139,18 @@
                 in an exception. For example:
             </para>
 
-            <programlisting><![CDATA[IDictionary permissions;
+            <programlisting><![CDATA[IDictionary<string, int> permissions;
 using (var s = sessions.OpenSession())
 using (Transaction tx = s.BeginTransaction())
 {
-    User u = (User)s.CreateQuery("from User u where u.Name=:userName")
-        .SetString("userName", userName).UniqueResult();
-    IDictionary permissions = u.Permissions;
+    User u = s.CreateQuery("from User u where u.Name=:userName")
+        .SetString("userName", userName).UniqueResult<User>();
+    permissions = u.Permissions;
 
     tx.Commit();
 }
 
-int accessLevel = (int)permissions["accounts"];  // Error!]]></programlisting>
+int accessLevel = permissions["accounts"];  // Error!]]></programlisting>
 
             <para>
                 Since the <literal>permissions</literal> collection was not initialized
@@ -244,10 +244,10 @@ int accessLevel = (int)permissions["accounts"];  // Error!]]></programlisting>
                 <literal>ICriteria</literal> query, for example:
             </para>
             
-            <programlisting><![CDATA[User user = (User) session.CreateCriteria(typeof(User))
+            <programlisting><![CDATA[User user = session.CreateCriteria(typeof(User))
     .SetFetchMode("Permissions", FetchMode.Join)
     .Add( Expression.Eq("Id", userId) )
-    .UniqueResult();]]></programlisting>
+    .UniqueResult<User>();]]></programlisting>
                 
             <para>
                 (This is NHibernate's equivalent of what some ORM solutions call a "fetch plan".)
@@ -304,7 +304,7 @@ int accessLevel = (int)permissions["accounts"];  // Error!]]></programlisting>
             </para>
 
             <programlisting><![CDATA[// instantiate a proxy (does not hit the db)
-Cat cat = (Cat) session.Load(typeof(Cat), id);
+Cat cat = session.Load<Cat>(id);
 // hit the db to initialize the proxy
 if ( cat.IsDomesticCat ) {
     DomesticCat dc = (DomesticCat) cat; // Error!
@@ -316,10 +316,10 @@ if ( cat.IsDomesticCat ) {
             </para>
 
             <programlisting><![CDATA[// instantiate a Cat proxy
-Cat cat = (Cat)session.Load(typeof(Cat), id);
+Cat cat = session.Load<Cat>(id);
 DomesticCat dc =
         // acquire new DomesticCat proxy!
-        (DomesticCat)session.Load(typeof(DomesticCat), id);
+        session.Load<DomesticCat>(id);
 Console.WriteLine(cat == dc); // false]]></programlisting>
 
             <para>
@@ -500,14 +500,14 @@ using(var iter = session
                 You can use a collection filter to get the size of a collection without initializing it:
             </para>
 
-            <programlisting><![CDATA[(int) s.CreateFilter( collection, "select count(*)" ).List()[0]]]></programlisting>
+            <programlisting><![CDATA[s.CreateFilter(collection, "select count(*)").UniqueResult<long>()]]></programlisting>
 
             <para>
                 The <literal>CreateFilter()</literal> method is also used to efficiently retrieve subsets
                 of a collection without needing to initialize the whole collection:
             </para>
 
-            <programlisting><![CDATA[s.CreateFilter( lazyCollection, "").SetFirstResult(0).SetMaxResults(10).List();]]></programlisting>
+            <programlisting><![CDATA[s.CreateFilter(lazyCollection, "").SetFirstResult(0).SetMaxResults(10).List<Entity>();]]></programlisting>
 
         </sect2>
 
@@ -963,12 +963,12 @@ sessionFactory.EvictCollection("Eg.Cat.Kittens");]]></programlisting>
             <literal>IQuery.SetCacheRegion()</literal>.
         </para>
         
-        <programlisting><![CDATA[IList blogs = sess.CreateQuery("from Blog blog where blog.Blogger = :blogger")
+        <programlisting><![CDATA[var blogs = sess.CreateQuery("from Blog blog where blog.Blogger = :blogger")
     .SetEntity("blogger", blogger)
     .SetMaxResults(15)
     .SetCacheable(true)
     .SetCacheRegion("frontpages")
-    .List();]]></programlisting>
+    .List<Blog>();]]></programlisting>
 
         <para>
             If the query should force a refresh of its query cache region, you may call
@@ -1117,7 +1117,7 @@ sessionFactory.EvictCollection("Eg.Cat.Kittens");]]></programlisting>
                 (unlike an <literal>ISet</literal>). This can make the following common code much faster.
             </para>
 
-            <programlisting><![CDATA[Parent p = (Parent) sess.Load(typeof(Parent), id);
+            <programlisting><![CDATA[Parent p = sess.Load<Parent>(id);
     Child c = new Child();
     c.Parent = p;
     p.Children.Add(c);  //no need to fetch the collection!

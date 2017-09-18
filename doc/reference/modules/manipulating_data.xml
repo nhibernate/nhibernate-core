@@ -54,10 +54,10 @@ sess.Save( pk, 1234L );]]></programlisting>
             circumstances (DIY instance pooling etc.)
         </para>
 
-        <programlisting><![CDATA[Cat fritz = (Cat) sess.Load<Cat>(typeof(Cat), generatedId);]]></programlisting>
+        <programlisting><![CDATA[Cat fritz = sess.Load<Cat>(generatedId);]]></programlisting>
 
 <programlisting><![CDATA[long pkId = 1234;
-DomesticCat pk = (DomesticCat) sess.Load( typeof(Cat), pkId );]]></programlisting>
+DomesticCat pk = sess.Load<DomesticCat>(pkId);]]></programlisting>
 
 <programlisting><![CDATA[Cat cat = new DomesticCat();
 // load pk's state into cat
@@ -77,7 +77,7 @@ ISet kittens = cat.Kittens;]]></programlisting>
             method, which hits the database immediately and returns null if there is no matching row.
         </para>
         
-        <programlisting><![CDATA[Cat cat = (Cat) sess.Get(typeof(Cat), id);
+        <programlisting><![CDATA[Cat cat = sess.Get<Cat>(id);
 if (cat==null) {
     cat = new Cat();
     sess.Save(cat, id);
@@ -89,7 +89,7 @@ return cat;]]></programlisting>
             section for a discussion of NHibernate <literal>LockMode</literal>s.
         </para>
 
-        <programlisting><![CDATA[Cat cat = (Cat) sess.Get(typeof(Cat), id, LockMode.Upgrade);]]></programlisting>
+        <programlisting><![CDATA[Cat cat = sess.Get<Cat>(id, LockMode.Upgrade);]]></programlisting>
         
         <para>
             Note that any associated instances or contained collections are <emphasis>not</emphasis> selected 
@@ -278,7 +278,7 @@ foreach (object[] row in results)
             <programlisting><![CDATA[IQuery q = sess.CreateQuery("from DomesticCat cat");
 q.SetFirstResult(20);
 q.SetMaxResults(10);
-IList cats = q.List();]]></programlisting>
+var cats = q.List<Cat>();]]></programlisting>
         
             <para>
                 You may even define a named query in the mapping document. (Remember to use a
@@ -295,7 +295,7 @@ IList cats = q.List();]]></programlisting>
             <programlisting><![CDATA[IQuery q = sess.GetNamedQuery("Eg.DomesticCat.by.name.and.minimum.weight");
 q.SetString(0, name);
 q.SetInt32(1, minWeight);
-IList cats = q.List();]]></programlisting>
+var cats = q.List<Cat>();]]></programlisting>
 
             <para>
                 The query interface supports the use of named parameters. Named parameters
@@ -327,20 +327,20 @@ IList cats = q.List();]]></programlisting>
             <programlisting><![CDATA[//named parameter (preferred)
 IQuery q = sess.CreateQuery("from DomesticCat cat where cat.Name = :name");
 q.SetString("name", "Fritz");
-IEnumerable cats = q.Enumerable();]]></programlisting>
+var cats = q.Enumerable<DomesticCat>();]]></programlisting>
         
             <programlisting><![CDATA[//positional parameter
 IQuery q = sess.CreateQuery("from DomesticCat cat where cat.Name = ?");
 q.SetString(0, "Izi");
-IEnumerable cats = q.Enumerable();]]></programlisting>
+var cats = q.Enumerable<DomesticCat>();]]></programlisting>
 
             <programlisting><![CDATA[//named parameter list
-IList names = new ArrayList();
+var names = new List<string>();
 names.Add("Izi");
 names.Add("Fritz");
 IQuery q = sess.CreateQuery("from DomesticCat cat where cat.Name in (:namesList)");
 q.SetParameterList("namesList", names);
-IList cats = q.List();]]></programlisting>
+var cats = q.List<DomesticCat>();]]></programlisting>
 
         </sect2>
 
@@ -381,10 +381,10 @@ IList cats = q.List();]]></programlisting>
                 NHibernate provides an intuitive <literal>ICriteria</literal> query API.
             </para>
 
-            <programlisting><![CDATA[ICriteria crit = session.CreateCriteria(typeof(Cat));
-crit.Add( Expression.Eq("color", Eg.Color.Black) );
+            <programlisting><![CDATA[ICriteria crit = session.CreateCriteria<Cat>();
+crit.Add(Expression.Eq("color", Eg.Color.Black));
 crit.SetMaxResults(10);
-IList cats = crit.List();]]></programlisting>
+var cats = crit.List<Cat>();]]></programlisting>
     
             <para>
                 If you are uncomfortable with SQL-like syntax, this is perhaps the easiest way to get started
@@ -400,19 +400,18 @@ IList cats = crit.List();]]></programlisting>
                 SQL aliases in braces.
             </para>
 
-            <programlisting><![CDATA[IList cats = session.CreateSQLQuery(
-    "SELECT {cat.*} FROM CAT {cat} WHERE ROWNUM<10",
-    "cat",
-    typeof(Cat)
-).List();]]></programlisting>
-                
-            <programlisting><![CDATA[IList cats = session.CreateSQLQuery(
-    "SELECT {cat}.ID AS {cat.Id}, {cat}.SEX AS {cat.Sex}, " +
+            <programlisting><![CDATA[var cats = session
+    .CreateSQLQuery("SELECT {cat.*} FROM CAT {cat} WHERE ROWNUM<10")
+    .AddEntity("cat", typeof(Cat))
+    .List<Cat>();]]></programlisting>
+
+            <programlisting><![CDATA[var cats = session
+    .CreateSQLQuery(
+        "SELECT {cat}.ID AS {cat.Id}, {cat}.SEX AS {cat.Sex}, " +
            "{cat}.MATE AS {cat.Mate}, {cat}.SUBCLASS AS {cat.class}, ... " +
-    "FROM CAT {cat} WHERE ROWNUM<10",
-    "cat",
-    typeof(Cat)
-).List()]]></programlisting>
+        "FROM CAT {cat} WHERE ROWNUM<10")
+    .AddEntity("cat", typeof(Cat))
+    .List<Cat>()]]></programlisting>
 
             <para>
                 SQL queries may contain named and positional parameters, just like NHibernate queries.
@@ -438,7 +437,7 @@ IList cats = crit.List();]]></programlisting>
                 and then manipulate it directly, while the <literal>ISession</literal> is open:
             </para>
 
-            <programlisting><![CDATA[DomesticCat cat = (DomesticCat) sess.Load( typeof(Cat), 69L );
+            <programlisting><![CDATA[DomesticCat cat = sess.Load<DomesticCat>(69L);
 cat.Name = "PK";
 sess.Flush();  // changes to cat are automatically detected and persisted]]></programlisting>
 
@@ -465,7 +464,7 @@ sess.Flush();  // changes to cat are automatically detected and persisted]]></pr
             </para>
 
             <programlisting><![CDATA[// in the first session
-Cat cat = (Cat) firstSession.Load(typeof(Cat), catId);
+Cat cat = firstSession.Load<Cat>(catId);
 Cat potentialMate = new Cat();
 firstSession.Save(potentialMate);
 
@@ -548,7 +547,7 @@ secondSession.Update(mate); // update mate]]></programlisting>
             </para>
 
             <programlisting><![CDATA[// in the first session
-Cat cat = (Cat) firstSession.Load(typeof(Cat), catID);
+Cat cat = firstSession.Load<Cat>(catID);
 
 // in a higher tier of the application
 Cat mate = new Cat();
@@ -791,11 +790,11 @@ using (ITransaction tx = sess.BeginTransaction())
 {
     // allow queries to return stale state
     sess.FlushMode = FlushMode.Commit;
-    Cat izi = (Cat) sess.Load(typeof(Cat), id);
+    Cat izi = sess.Load<Cat>(id);
     izi.Name = "iznizi";
     // execute some queries....
     sess.CreateQuery("from Cat as cat left outer join cat.Kittens kitten")
-        .List();
+        .List<object[]>();
     // change to izi is not flushed!
     ...
     tx.Commit(); // flush occurs
@@ -1227,18 +1226,18 @@ object[] propertyValues = catMeta.GetPropertyValues(fritz);
 string[] propertyNames = catMeta.PropertyNames;
 IType[] propertyTypes = catMeta.PropertyTypes;
 
-// get an IDictionary of all properties which are not collections or associations
+// get an dictionary of all properties which are not collections or associations
 // TODO: what about components?
 
-IDictionary namedValues = new Hashtable();
-for ( int i=0; i<propertyNames.Length; i++ )
+var namedValues = new Dictionary<string, object>();
+for (int i = 0; i < propertyNames.Length; i++)
 {
-    if ( !propertyTypes[i].IsEntityType && !propertyTypes[i].IsCollectionType )
-	{
-        namedValues[ propertyNames[i] ] = propertyValues[i];
+    if (!propertyTypes[i].IsEntityType && !propertyTypes[i].IsCollectionType)
+    {
+        namedValues[propertyNames[i]] = propertyValues[i];
     }
 }]]></programlisting>
-        
+
     </sect1>
 
 </chapter>

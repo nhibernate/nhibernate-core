@@ -127,7 +127,7 @@
             NHibernate is not restricted in its usage of property types, all .NET
             types and primitives (like <literal>string</literal>, <literal>char</literal>
             and <literal>DateTime</literal>) can be mapped, including classes from the
-            <literal>System.Collections</literal> namespace. You can map them as values,
+            <literal>System.Collections.Generic</literal> namespace. You can map them as values,
             collections of values, or associations to other entities. The <literal>Id</literal>
             is a special property that represents the database identifier (primary key) of
             that class, it is highly recommended for entities like a <literal>Cat</literal>.

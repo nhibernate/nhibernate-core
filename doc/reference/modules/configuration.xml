@@ -74,7 +74,7 @@
             A <literal>Configuration</literal> also specifies various optional properties:
         </para>
 
-        <programlisting><![CDATA[IDictionary props = new Hashtable();
+        <programlisting><![CDATA[var props = new Dictionary<string, string>();
 ...
 Configuration cfg = new Configuration()
     .AddClass(typeof(NHibernate.Auction.Item))
