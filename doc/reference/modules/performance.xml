@@ -362,10 +362,15 @@ Console.WriteLine( dc.Weight );  // 11.0]]></programlisting>
                 does not usually return proxies.)
             </para>
 
-            <programlisting><![CDATA[ICat cat = (ICat) session.Load(typeof(CatImpl), catid);
-IEnumerator iter = session.Enumerable("from CatImpl as cat where cat.Name='fritz'").GetEnumerator();
-iter.MoveNext();
-ICat fritz = (ICat) iter.Current;]]></programlisting>
+            <programlisting><![CDATA[ICat cat = session.Load<CatImpl>(catid);
+using(var iter = session
+    .CreateQuery("from CatImpl as cat where cat.Name='fritz'")
+    .Enumerable<CatImpl>()
+    .GetEnumerator())
+{
+    iter.MoveNext();
+    ICat fritz = iter.Current;
+}]]></programlisting>
 
             <para>
                 Relationships are also lazily initialized. This means you must declare any properties to be of
@@ -885,8 +890,10 @@ ICat fritz = (ICat) iter.Current;]]></programlisting>
             from the first-level cache.
         </para>
         
-        <programlisting><![CDATA[IEnumerable cats = sess.Enumerable("from Eg.Cat as cat"); //a huge result set
-foreach( Cat cat in cats )
+        <programlisting><![CDATA[IEnumerable<Cat> cats = sess
+    .CreateQuery("from Eg.Cat as cat")
+    .List<Cat>(); //a huge result set
+foreach (Cat cat in cats)
 {
     DoSomethingWithACat(cat);
     sess.Evict(cat);

@@ -626,7 +626,7 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
 using (s = sessions.OpenSession())
 using (ITransaction tx = sessions.BeginTransaction())
 {
-    User u = (User) s.Find("from User u where u.Name=?", userName, NHibernateUtil.String)[0];
+    var u = s.Load<User>(userId);
     permissions = u.Permissions;
     tx.Commit();
 }

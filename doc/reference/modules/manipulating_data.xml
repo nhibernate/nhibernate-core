@@ -54,7 +54,7 @@ sess.Save( pk, 1234L );]]></programlisting>
             circumstances (DIY instance pooling etc.)
         </para>
 
-        <programlisting><![CDATA[Cat fritz = (Cat) sess.Load(typeof(Cat), generatedId);]]></programlisting>
+        <programlisting><![CDATA[Cat fritz = (Cat) sess.Load<Cat>(typeof(Cat), generatedId);]]></programlisting>
 
 <programlisting><![CDATA[long pkId = 1234;
 DomesticCat pk = (DomesticCat) sess.Load( typeof(Cat), pkId );]]></programlisting>
@@ -119,49 +119,46 @@ sess.Refresh(cat); //re-read the state (after the trigger executes)]]></programl
         <title>Querying</title>
 
         <para>
-            If you don't know the identifier(s) of the object(s) you are looking for, use the <literal>Find()
-            </literal> methods of <literal>ISession</literal>. NHibernate supports a simple but powerful object 
-            oriented query language.
+            If you don't know the identifier(s) of the object(s) you are looking for, use the
+            <literal>CreateQuery()</literal> method of <literal>ISession</literal>. NHibernate
+            supports a simple but powerful object oriented query language.
         </para>
 
-        <programlisting><![CDATA[IList cats = sess.Find(
-    "from Cat as cat where cat.Birthdate = ?",
-    date,
-    NHibernateUtil.Date
+        <programlisting><![CDATA[IList<Cat> cats = sess
+    .CreateQuery("from Cat as cat where cat.Birthdate = ?")
+    .SetDateTime(0, date)
+    .List<Cat>();
+
+var mates = sess
+    .CreateQuery("select mate from Cat as cat join cat.Mate as mate " +
+        "where cat.name = ?")
+    .SetString(0, name)
+    .List<Cat>();
+
+var cats = sess
+    .CreateQuery("from Cat as cat where cat.Mate.Birthdate is null")
+    .List<Cat>();
+
+var moreCats = sess
+    .CreateQuery("from Cat as cat where " +
+        "cat.Name = 'Fritz' or cat.id = ? or cat.id = ?")
+    .SetInt64(0, id1)
+    .SetParameter(1, id2, NHibernateUtil.Int64)
+    .List<Cat>();
+
+var mates = sess
+    .CreateQuery("from Cat as cat where cat.Mate = ?")
+    .SetEntity(0, izi)
+    .List<Cat>();
 );
 
-IList mates = sess.Find(
-    "select mate from Cat as cat join cat.Mate as mate " +
-    "where cat.name = ?",
-    name,
-    NHibernateUtil.String
-);
-
-IList cats = sess.Find( "from Cat as cat where cat.Mate.Birthdate is null" );
-
-IList moreCats = sess.Find(
-    "from Cat as cat where " + 
-    "cat.Name = 'Fritz' or cat.id = ? or cat.id = ?",
-    new object[] { id1, id2 },
-    new IType[] { NHibernateUtil.Int64, NHibernateUtil.Int64 }
-);
-
-IList mates = sess.Find(
-    "from Cat as cat where cat.Mate = ?",
-    izi,
-    NHibernateUtil.Entity(typeof(Cat))
-);
-
-IList problems = sess.Find(
-    "from GoldFish as fish " +
-    "where fish.Birthday > fish.Deceased or fish.Birthday is null"
-);]]></programlisting>
-
+var problems = sess
+    .CreateQuery("from GoldFish as fish " +
+        "where fish.Birthday > fish.Deceased or fish.Birthday is null")
+    .List<GoldFish>();]]></programlisting>
 
         <para>
-            The second argument to <literal>Find()</literal> accepts an object
-            or array of objects. The third argument accepts a NHibernate type or array of
-            NHibernate types. These given types are used to bind the given objects to the
+            These given <literal>Set</lteral> parameters are used to bind the given values to the
             <literal>?</literal> query placeholders (which map to input
             parameters of an ADO.NET <literal>IDbCommand</literal>). Just
             as in ADO.NET, you should use this binding mechanism in preference to string
@@ -177,15 +174,17 @@ IList problems = sess.Find(
         <para>
             If you expect your query to return a very large number of objects, but you 
             don't expect to use them all, you might get better performance from the
-            <literal>Enumerable()</literal> methods, which return a
-            <literal>System.Collections.IEnumerable</literal>. The iterator will load objects
+            <literal>Enumerable()</literal> method, which return a
+            <literal>IEnumerable</literal>. The iterator will load objects
             on demand, using the identifiers returned by an initial SQL query (n+1 selects
             total).
         </para>
         
         <programlisting><![CDATA[// fetch ids
-IEnumerable en = sess.Enumerable("from eg.Qux q order by q.Likeliness"); 
-foreach ( Qux qux in en )
+IEnumerable<Qux> en = sess
+    .CreateQuery("from eg.Qux q order by q.Likeliness")
+    .Enumerable<Qux>();
+foreach (Qux qux in en)
 {
     // something we couldnt express in the query
     if ( qux.CalculateComplicatedAlgorithm() ) {
@@ -198,22 +197,23 @@ foreach ( Qux qux in en )
             The <literal>Enumerable()</literal> method also performs better if
             you expect that many of the objects are already loaded and cached by 
             the session, or if the query results contain the same objects many
-            times. (When no data is cached or repeated, <literal>Find()</literal> 
+            times. (When no data is cached or repeated, <literal>CreateQuery()</literal>
             is almost always faster.) Here is an example of a query that should be
             called using <literal>Enumerable()</literal>:
         </para>
         
 <programlisting><![CDATA[
-IEnumerable en = sess.Enumerable(
-    "select customer, product " + 
-    "from Customer customer, " +
-    "Product product " +
-    "join customer.Purchases purchase " +
-    "where product = purchase.Product"
-);]]></programlisting>
+var en = sess
+    .CreateQuery(
+        "select customer, product " +
+        "from Customer customer, " +
+        "Product product " +
+        "join customer.Purchases purchase " +
+        "where product = purchase.Product")
+    .Enumerable<object[]>();]]></programlisting>
 
         <para>
-            Calling the previous query using <literal>Find()</literal> would return a very
+            Calling the previous query using <literal>CreateQuery()</literal> would return a very
             large ADO.NET result set containing the same data many times.
         </para>
 
@@ -222,10 +222,11 @@ IEnumerable en = sess.Enumerable(
             is returned as an array:
         </para>
 
-        <programlisting><![CDATA[IEnumerable foosAndBars = sess.Enumerable(
-    "select foo, bar from Foo foo, Bar bar " +
-    "where bar.Date = foo.Date"
-);
+        <programlisting><![CDATA[var foosAndBars = sess
+    .CreateQuery(
+        "select foo, bar from Foo foo, Bar bar " +
+        "where bar.Date = foo.Date")
+    .Enumerable<object[]>();
 foreach (object[] tuple in foosAndBars)
 {
     Foo foo = tuple[0]; Bar bar = tuple[1];
@@ -241,11 +242,12 @@ foreach (object[] tuple in foosAndBars)
                 "scalar" results.
             </para>
 
-            <programlisting><![CDATA[IEnumerable results = sess.Enumerable(
+            <programlisting><![CDATA[var results = sess
+    .CreateQuery(
         "select cat.Color, min(cat.Birthdate), count(cat) from Cat cat " +
-        "group by cat.Color"
-);
-foreach ( object[] row in results )
+        "group by cat.Color")
+    .Enumerable<object[]>();
+foreach (object[] row in results)
 {
     Color type = (Color) row[0];
     DateTime oldest = (DateTime) row[1];
@@ -253,13 +255,14 @@ foreach ( object[] row in results )
     .....
 }]]></programlisting>
 
-            <programlisting><![CDATA[IEnumerable en = sess.Enumerable(
-    "select cat.Type, cat.Birthdate, cat.Name from DomesticCat cat"
-);]]></programlisting>
+            <programlisting><![CDATA[var en = sess
+    .CreateQuery(
+        "select cat.Type, cat.Birthdate, cat.Name from DomesticCat cat")
+    .Enumerable<object[]>();]]></programlisting>
 
-        <programlisting><![CDATA[IList list = sess.Find(
-    "select cat, cat.Mate.Name from DomesticCat cat"
-);]]></programlisting>
+        <programlisting><![CDATA[IList<object[]> list = sess
+    .CreateQuery("select cat, cat.Mate.Name from DomesticCat cat")
+    .List<object[]>();]]></programlisting>
 
         </sect2>
 
@@ -701,7 +704,8 @@ sess.Lock(pk, LockMode.Upgrade);]]></programlisting>
         <itemizedlist spacing="compact">
             <listitem>
                 <para>
-                    from some invocations of <literal>Find()</literal> or <literal>Enumerable()</literal>
+                    from some invocations of <literal>IQuery</literal> methods such as <literal>List</literal>
+                    or <literal>Enumerable</literal>, and from similar methods of other querying API.
                 </para>
             </listitem>
             <listitem>
@@ -764,8 +768,8 @@ sess.Lock(pk, LockMode.Upgrade);]]></programlisting>
             Except when you explicitly <literal>Flush()</literal>, there are absolutely no 
             guarantees about <emphasis>when</emphasis> the <literal>Session</literal> executes 
             the ADO.NET calls, only the <emphasis>order</emphasis> in which they are executed.
-            However, NHibernate does guarantee that the <literal>ISession.Find(..)</literal> 
-            methods will never return stale data; nor will they return the wrong data.
+            However, NHibernate does guarantee that the queries methods will never return stale
+            data; nor will they return the wrong data.
         </para>
 
         <para>
@@ -788,7 +792,8 @@ using (ITransaction tx = sess.BeginTransaction())
     Cat izi = (Cat) sess.Load(typeof(Cat), id);
     izi.Name = "iznizi";
     // execute some queries....
-    sess.Find("from Cat as cat left outer join cat.Kittens kitten");
+    sess.CreateQuery("from Cat as cat left outer join cat.Kittens kitten")
+        .List();
     // change to izi is not flushed!
     ...
     tx.Commit(); // flush occurs
