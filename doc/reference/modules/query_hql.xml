@@ -950,9 +950,13 @@ IList page = q.List();]]></programlisting>
             Collection elements may be ordered or grouped using a query filter:
         </para>
         
-        <programlisting><![CDATA[ICollection orderedCollection = s.Filter( collection, "order by this.Amount" );
-ICollection counts =
-    s.Filter( collection, "select this.Type, count(this) group by this.Type" );]]></programlisting>
+        <programlisting><![CDATA[var orderedCollection = s
+    .CreateFilter(collection, "order by this.Amount")
+    .List<Cat>();
+var counts = s
+    .CreateFilter(collection,
+        "select this.Type, count(this) group by this.Type")
+    .List<object[]>();]]></programlisting>
 
     </sect1>
 

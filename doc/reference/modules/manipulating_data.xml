@@ -352,9 +352,10 @@ IList cats = q.List();]]></programlisting>
                 meaning the current collection element.
             </para>
 
-            <programlisting><![CDATA[ICollection blackKittens = session.Filter(
-    pk.Kittens, "where this.Color = ?", Color.Black, NHibernateUtil.Enum(typeof(Color))
-);]]></programlisting>
+            <programlisting><![CDATA[var blackKittens = session
+    .CreateFilter(pk.Kittens, "where this.Color = ?")
+    .SetEnum(0, Color.Black)
+    .List<Cat>();]]></programlisting>
         
             <para>
                 The returned collection is considered a bag.
@@ -365,9 +366,10 @@ IList cats = q.List();]]></programlisting>
                 one if required). Filters are not limited to returning the collection elements themselves.
             </para>
 
-            <programlisting><![CDATA[ICollection blackKittenMates = session.Filter(
-    pk.Kittens, "select this.Mate where this.Color = Eg.Color.Black"
-);]]></programlisting>
+            <programlisting><![CDATA[var blackKittenMates = session
+    .CreateFilter(pk.Kittens,
+        "select this.Mate where this.Color = Eg.Color.Black")
+    .List<Cat>();]]></programlisting>
 
         </sect2>
 

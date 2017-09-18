@@ -709,17 +709,16 @@ int accessLevel = (int) permissions["accounts"];  // Error!]]></programlisting>
         </itemizedlist>
 
         <para>
-            You can use the <literal>Filter()</literal> method of the NHibernate ISession API to
+            You can use the <literal>CreateFilter()</literal> method of the NHibernate ISession API to
             get the size of a collection without initializing it:
         </para>
 
-        <programlisting><![CDATA[ICollection countColl = s.Filter( collection, "select count(*)" );
-IEnumerator countEn = countColl.GetEnumerator();
-countEn.MoveNext();
-int count = (int) countEn.Current;]]></programlisting>
+        <programlisting><![CDATA[var count = s
+    .CreateFilter(collection, "select count(*)")
+    .UniqueResult<int>();]]></programlisting>
 
         <para>
-            <literal>Filter()</literal> or <literal>CreateFilter()</literal> are also used to
+            <literal>CreateFilter()</literal> is also used to
             efficiently retrieve subsets of a collection without needing to initialize the whole
             collection.
         </para>
@@ -784,10 +783,12 @@ int count = (int) countEn.Current;]]></programlisting>
 
         <para>
             Associations may even be sorted by some arbitrary criteria at runtime using a
-            <literal>Filter()</literal>.
+            <literal>CreateFilter()</literal>.
         </para>
 
-        <programlisting><![CDATA[sortedUsers = s.Filter( group.Users, "order by this.Name" );]]></programlisting>
+        <programlisting><![CDATA[sortedUsers = s
+    .CreateFilter(group.Users, "order by this.Name")
+    .List<User>();]]></programlisting>
 
     </sect1>
 
