@@ -185,8 +185,6 @@
     - hasAttributeName: TheoryAttribute
     typeConversion:
     - conversion: Ignore
-      name: NorthwindDbCreator
-    - conversion: Ignore
       name: ObjectAssert
     - conversion: Ignore
       name: LinqReadonlyTestsContext
@@ -200,9 +198,13 @@
       rule: IsTestCase
     - conversion: Ignore
       anyBaseTypeRule: IsTestCase
+    ignoreSearchForMethodReferences:
+    - hasAttributeName: TheoryAttribute
+    - hasAttributeName: TestAttribute
     ignoreDocuments:
     - filePathEndsWith: Linq\MathTests.cs
     - filePathEndsWith: Linq\ExpressionSessionLeakTest.cs
+    - filePathEndsWith: Linq\NorthwindDbCreator.cs
     cancellationTokens:
       withoutCancellationToken:
       - hasAttributeName: TestAttribute
