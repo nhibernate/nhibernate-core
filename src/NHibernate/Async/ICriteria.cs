@@ -19,9 +19,6 @@ using NHibernate.Transform;
 namespace NHibernate
 {
 	using System.Threading.Tasks;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial interface ICriteria : ICloneable
 	{
 

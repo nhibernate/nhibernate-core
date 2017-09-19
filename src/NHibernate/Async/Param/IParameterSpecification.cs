@@ -18,9 +18,6 @@ namespace NHibernate.Param
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial interface IParameterSpecification
 	{
 		/// <summary>

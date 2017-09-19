@@ -19,9 +19,6 @@ namespace NHibernate
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial interface IStatelessSession : IDisposable
 	{
 

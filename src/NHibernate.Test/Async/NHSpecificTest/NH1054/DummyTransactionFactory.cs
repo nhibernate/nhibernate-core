@@ -18,9 +18,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1054
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class DummyTransactionFactory : ITransactionFactory
 	{
 

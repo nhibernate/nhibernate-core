@@ -17,9 +17,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2322
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class PostUpdateEventListener : IPostUpdateEventListener
 	{
 		Task IPostUpdateEventListener.OnPostUpdateAsync(PostUpdateEvent @event, CancellationToken cancellationToken)

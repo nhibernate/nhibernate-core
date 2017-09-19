@@ -20,9 +20,6 @@ namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class DefaultPersistEventListener : AbstractSaveEventListener, IPersistEventListener
 	{
 

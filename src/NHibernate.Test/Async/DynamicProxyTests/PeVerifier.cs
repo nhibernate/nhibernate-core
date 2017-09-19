@@ -16,11 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.DynamicProxyTests
 {
 	using System.Threading.Tasks;
-	
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
-
 	public partial class PeVerifier
 	{
 

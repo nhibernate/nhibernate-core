@@ -80,15 +80,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1332
 			}
 		}
 	}
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class Fixture : BugTestCase
 	{
 
-		/// <content>
-		/// Contains generated async methods
-		/// </content>
 		public partial class PostCommitDelete : IPostDeleteEventListener
 		{
 			public Task OnPostDeleteAsync(PostDeleteEvent @event, CancellationToken cancellationToken)

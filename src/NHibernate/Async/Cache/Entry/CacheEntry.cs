@@ -18,9 +18,6 @@ namespace NHibernate.Cache.Entry
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public sealed partial class CacheEntry
 	{
 

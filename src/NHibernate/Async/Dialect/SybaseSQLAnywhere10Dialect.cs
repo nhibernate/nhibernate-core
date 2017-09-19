@@ -20,9 +20,6 @@ namespace NHibernate.Dialect
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class SybaseSQLAnywhere10Dialect : Dialect
 	{
 		#region Callable statement support

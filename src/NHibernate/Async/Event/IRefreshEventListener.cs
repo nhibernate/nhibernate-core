@@ -14,9 +14,6 @@ namespace NHibernate.Event
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial interface IRefreshEventListener
 	{
 		/// <summary> Handle the given refresh event. </summary>

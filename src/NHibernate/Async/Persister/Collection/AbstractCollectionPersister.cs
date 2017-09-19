@@ -38,9 +38,6 @@ namespace NHibernate.Persister.Collection
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public abstract partial class AbstractCollectionPersister : ICollectionMetadata, ISqlLoadableCollection,
 														IPostInsertIdentityPersister
 	{
@@ -566,9 +563,6 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
-		/// <content>
-		/// Contains generated async methods
-		/// </content>
 		protected partial class GeneratedIdentifierBinder : IBinder
 		{
 

@@ -22,9 +22,6 @@ namespace NHibernate.Engine.Query
 {
     using System.Threading.Tasks;
     using System.Threading;
-    /// <content>
-    /// Contains generated async methods
-    /// </content>
     public partial interface IQueryPlan
     {
         Task PerformListAsync(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl, IList results, CancellationToken cancellationToken);
@@ -32,9 +29,6 @@ namespace NHibernate.Engine.Query
         Task<IEnumerable<T>> PerformIterateAsync<T>(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken);
         Task<IEnumerable> PerformIterateAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken);
     }
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class HQLQueryPlan : IQueryPlan
 	{
 

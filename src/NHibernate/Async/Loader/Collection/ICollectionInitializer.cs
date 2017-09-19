@@ -14,9 +14,6 @@ namespace NHibernate.Loader.Collection
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial interface ICollectionInitializer
 	{
 		/// <summary>

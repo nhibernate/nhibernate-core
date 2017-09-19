@@ -64,9 +64,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1714
 		}
 	}
 
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class MyCustomEventListener : IPreInsertEventListener
 	{
 		public async Task<bool> OnPreInsertAsync(PreInsertEvent e, CancellationToken cancellationToken)

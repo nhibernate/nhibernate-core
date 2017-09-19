@@ -16,9 +16,6 @@ namespace NHibernate.Id
 	using System.Threading;
 
 
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial interface IIdentifierGenerator
 	{
 		/// <summary>

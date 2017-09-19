@@ -420,6 +420,12 @@ finally
             cases.
         </para>
 
+        <para>
+            Since NHibernate 5.0, the session and its queries IO bound methods have async counterparts.
+            Each call to an async method must be awaited before further interacting with the session or
+            its queries.
+        </para>
+
     </sect1>
 
     <sect1 id="quickstart-summary">

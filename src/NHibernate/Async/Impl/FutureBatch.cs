@@ -16,9 +16,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public abstract partial class FutureBatch<TQueryApproach, TMultiApproach>
 	{
 

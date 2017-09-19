@@ -21,17 +21,11 @@ namespace NHibernate.Id
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class SelectGenerator : AbstractPostInsertGenerator, IConfigurable
 	{
 
 		#region Nested type: SelectGeneratorDelegate
 
-		/// <content>
-		/// Contains generated async methods
-		/// </content>
 		public partial class SelectGeneratorDelegate : AbstractSelectingDelegate
 		{
 

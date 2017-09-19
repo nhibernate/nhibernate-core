@@ -20,9 +20,6 @@ namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class UInt16Type : PrimitiveType, IDiscriminatorType, IVersionType
 	{
 

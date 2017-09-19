@@ -21,17 +21,11 @@ namespace NHibernate.Id.Enhanced
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class SequenceStructure : IDatabaseStructure
 	{
 
 		#region Nested type: SequenceAccessCallback
 
-		/// <content>
-		/// Contains generated async methods
-		/// </content>
 		private partial class SequenceAccessCallback : IAccessCallback
 		{
 

@@ -37,9 +37,6 @@ namespace NHibernate.Test
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class DebugSessionFactory : ISessionFactoryImplementor
 	{
 

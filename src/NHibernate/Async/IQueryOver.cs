@@ -22,9 +22,6 @@ namespace NHibernate
 {
 	using System.Threading.Tasks;
 
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial interface IQueryOver<TRoot> : IQueryOver
 	{
 		/// <summary>

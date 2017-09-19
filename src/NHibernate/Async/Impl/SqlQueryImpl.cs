@@ -21,9 +21,6 @@ namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class SqlQueryImpl : AbstractQueryImpl, ISQLQuery
 	{
 

@@ -29,9 +29,6 @@ namespace NHibernate.Persister.Collection
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class BasicCollectionPersister : AbstractCollectionPersister
 	{
 

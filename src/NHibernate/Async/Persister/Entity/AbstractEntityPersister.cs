@@ -43,15 +43,9 @@ namespace NHibernate.Persister.Entity
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public abstract partial class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata, IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer, IPostInsertIdentityPersister, ILockable
 	{
 
-		/// <content>
-		/// Contains generated async methods
-		/// </content>
 		private partial class GeneratedIdentifierBinder : IBinder
 		{
 

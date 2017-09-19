@@ -17,9 +17,6 @@ using log4net;
 namespace NHibernate.Test.NHSpecificTest.NH3023
 {
 	using System.Threading.Tasks;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class DeadlockHelper
 	{
 

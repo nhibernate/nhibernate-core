@@ -39,9 +39,6 @@ namespace NHibernate.Loader
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public abstract partial class Loader
 	{
 

@@ -17,9 +17,6 @@ namespace NHibernate.Persister.Entity
 	using System.Threading.Tasks;
 	using System.Threading;
 
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial interface ILoadable : IEntityPersister
 	{
 

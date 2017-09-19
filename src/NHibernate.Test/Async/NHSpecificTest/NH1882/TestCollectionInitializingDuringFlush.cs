@@ -155,15 +155,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1882
 			Assert.That(listener.FoundAny, Is.True);
 		}
 	}
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class TestCollectionInitializingDuringFlush : TestCaseMappingByCode
 	{
 
-		/// <content>
-		/// Contains generated async methods
-		/// </content>
 		public partial class InitializingPreUpdateEventListener : IPreUpdateEventListener
 		{
 

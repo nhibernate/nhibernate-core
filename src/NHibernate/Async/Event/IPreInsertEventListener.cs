@@ -12,9 +12,6 @@ namespace NHibernate.Event
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial interface IPreInsertEventListener
 	{
 		/// <summary> Return true if the operation should be vetoed</summary>

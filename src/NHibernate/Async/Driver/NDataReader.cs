@@ -19,9 +19,6 @@ using NHibernate.Util;
 
 namespace NHibernate.Driver
 {
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class NDataReader : DbDataReader
 	{
 
@@ -74,9 +71,6 @@ namespace NHibernate.Driver
 			return dataReader;
 		}
 
-		/// <content>
-		/// Contains generated async methods
-		/// </content>
 		private partial class NResult
 		{
 

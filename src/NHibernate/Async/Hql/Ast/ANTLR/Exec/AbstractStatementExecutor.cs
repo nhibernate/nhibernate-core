@@ -29,9 +29,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public abstract partial class AbstractStatementExecutor : IStatementExecutor
 	{
 
@@ -138,9 +135,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			}
 		}
 
-		/// <content>
-		/// Contains generated async methods
-		/// </content>
 		private partial class TmpIdTableCreationIsolatedWork : IIsolatedWork
 		{
 
@@ -177,9 +171,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			}
 		}
 
-		/// <content>
-		/// Contains generated async methods
-		/// </content>
 		private partial class TmpIdTableDropIsolatedWork : IIsolatedWork
 		{
 

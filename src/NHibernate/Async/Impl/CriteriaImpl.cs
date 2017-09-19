@@ -22,9 +22,6 @@ using NHibernate.Util;
 namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class CriteriaImpl : ICriteria
 	{
 
@@ -77,9 +74,6 @@ namespace NHibernate.Impl
 			cancellationToken.ThrowIfCancellationRequested();
 			return AbstractQueryImpl.UniqueElement(await (ListAsync(cancellationToken)).ConfigureAwait(false));
 		}
-		/// <content>
-		/// Contains generated async methods
-		/// </content>
 		public sealed partial class Subcriteria : ICriteria
 		{
 
