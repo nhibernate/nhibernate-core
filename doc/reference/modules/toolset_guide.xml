@@ -26,9 +26,10 @@
     </para>
 
     <itemizedlist>
+        <!-- No more maintained
         <listitem><para>
             C# source generation from a mapping file (aka <literal>hbm2net</literal>)
-        </para></listitem>
+        </para></listitem> -->
         <listitem><para>
             mapping file generation from .NET classes marked with attributes
             (<literal>NHibernate.Mapping.Attributes</literal>, or NHMA for short)
@@ -223,6 +224,8 @@ new SchemaExport(cfg).Create(false, true);]]></programlisting>
 
         </sect2>
 
+        <!-- Not ported as a standalone tool or Ant task
+
         <sect2 id="toolsetguide-s1-4">
             <title>Properties</title>
 
@@ -238,7 +241,7 @@ new SchemaExport(cfg).Create(false, true);]]></programlisting>
                     <para>in <literal>hibernate.properties</literal></para>
                 </listitem>
                 <listitem>
-                    <para>in a named properties file with <literal>--properties</literal></para>
+                    <para>in a named properties file with <literal>- -properties</literal></para>
                 </listitem>
             </itemizedlist>
 
@@ -317,8 +320,10 @@ new SchemaExport(cfg).Create(false, true);]]></programlisting>
                 build.properties.
             </para>
 
-        </sect2>
+        </sect2> -->
     </sect1>
+
+    <!-- No more maintained, left on sourceforge with obsolete links to the dead nhforge
 
     <sect1 id="toolsetguide-s2">
         <title>Code Generation</title>
@@ -369,7 +374,7 @@ new SchemaExport(cfg).Create(false, true);]]></programlisting>
       </para>
 
 
-    </sect1>
+    </sect1> -->
 
 </chapter>
 

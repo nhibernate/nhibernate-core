@@ -139,18 +139,18 @@
                 in an exception. For example:
             </para>
 
-            <programlisting><![CDATA[IDictionary permissions;
+            <programlisting><![CDATA[IDictionary<string, int> permissions;
 using (var s = sessions.OpenSession())
 using (Transaction tx = s.BeginTransaction())
 {
-    User u = (User)s.CreateQuery("from User u where u.Name=:userName")
-        .SetString("userName", userName).UniqueResult();
-    IDictionary permissions = u.Permissions;
+    User u = s.CreateQuery("from User u where u.Name=:userName")
+        .SetString("userName", userName).UniqueResult<User>();
+    permissions = u.Permissions;
 
     tx.Commit();
 }
 
-int accessLevel = (int)permissions["accounts"];  // Error!]]></programlisting>
+int accessLevel = permissions["accounts"];  // Error!]]></programlisting>
 
             <para>
                 Since the <literal>permissions</literal> collection was not initialized
@@ -244,10 +244,10 @@ int accessLevel = (int)permissions["accounts"];  // Error!]]></programlisting>
                 <literal>ICriteria</literal> query, for example:
             </para>
             
-            <programlisting><![CDATA[User user = (User) session.CreateCriteria(typeof(User))
-                .SetFetchMode("Permissions", FetchMode.Join)
-                .Add( Expression.Eq("Id", userId) )
-                .UniqueResult();]]></programlisting>
+            <programlisting><![CDATA[User user = session.CreateCriteria(typeof(User))
+    .SetFetchMode("Permissions", FetchMode.Join)
+    .Add( Expression.Eq("Id", userId) )
+    .UniqueResult<User>();]]></programlisting>
                 
             <para>
                 (This is NHibernate's equivalent of what some ORM solutions call a "fetch plan".)
@@ -304,7 +304,7 @@ int accessLevel = (int)permissions["accounts"];  // Error!]]></programlisting>
             </para>
 
             <programlisting><![CDATA[// instantiate a proxy (does not hit the db)
-Cat cat = (Cat) session.Load(typeof(Cat), id);
+Cat cat = session.Load<Cat>(id);
 // hit the db to initialize the proxy
 if ( cat.IsDomesticCat ) {
     DomesticCat dc = (DomesticCat) cat; // Error!
@@ -316,10 +316,10 @@ if ( cat.IsDomesticCat ) {
             </para>
 
             <programlisting><![CDATA[// instantiate a Cat proxy
-Cat cat = (Cat)session.Load(typeof(Cat), id);
+Cat cat = session.Load<Cat>(id);
 DomesticCat dc =
         // acquire new DomesticCat proxy!
-        (DomesticCat)session.Load(typeof(DomesticCat), id);
+        session.Load<DomesticCat>(id);
 Console.WriteLine(cat == dc); // false]]></programlisting>
 
             <para>
@@ -362,10 +362,15 @@ Console.WriteLine( dc.Weight );  // 11.0]]></programlisting>
                 does not usually return proxies.)
             </para>
 
-            <programlisting><![CDATA[ICat cat = (ICat) session.Load(typeof(CatImpl), catid);
-IEnumerator iter = session.Enumerable("from CatImpl as cat where cat.Name='fritz'").GetEnumerator();
-iter.MoveNext();
-ICat fritz = (ICat) iter.Current;]]></programlisting>
+            <programlisting><![CDATA[ICat cat = session.Load<CatImpl>(catid);
+using(var iter = session
+    .CreateQuery("from CatImpl as cat where cat.Name='fritz'")
+    .Enumerable<CatImpl>()
+    .GetEnumerator())
+{
+    iter.MoveNext();
+    ICat fritz = iter.Current;
+}]]></programlisting>
 
             <para>
                 Relationships are also lazily initialized. This means you must declare any properties to be of
@@ -495,14 +500,14 @@ ICat fritz = (ICat) iter.Current;]]></programlisting>
                 You can use a collection filter to get the size of a collection without initializing it:
             </para>
 
-            <programlisting><![CDATA[(int) s.CreateFilter( collection, "select count(*)" ).List()[0]]]></programlisting>
+            <programlisting><![CDATA[s.CreateFilter(collection, "select count(*)").UniqueResult<long>()]]></programlisting>
 
             <para>
                 The <literal>CreateFilter()</literal> method is also used to efficiently retrieve subsets
                 of a collection without needing to initialize the whole collection:
             </para>
 
-            <programlisting><![CDATA[s.CreateFilter( lazyCollection, "").SetFirstResult(0).SetMaxResults(10).List();]]></programlisting>
+            <programlisting><![CDATA[s.CreateFilter(lazyCollection, "").SetFirstResult(0).SetMaxResults(10).List<Entity>();]]></programlisting>
 
         </sect2>
 
@@ -659,11 +664,17 @@ ICat fritz = (ICat) iter.Current;]]></programlisting>
             <emphasis>In NHibernate 1.x the second level cache does not work correctly in combination with
             distributed transactions.</emphasis>
         </para>
-        
+
+        <para>
+          The second level cache requires the use of transactions, be it through transaction scopes or NHibernate
+          transactions. Interacting with the data store without an explicit transaction is discouraged, and will
+          not allow the second level cache to work as intended.
+        </para>
+
         <para>
             By default, NHibernate uses HashtableCache for process-level caching. You may choose a different
             implementation by specifying the name of a class that implements <literal>NHibernate.Cache.ICacheProvider</literal> 
-            using the property <literal>hibernate.cache.provider_class</literal>.
+            using the property <literal>cache.provider_class</literal>.
         </para>
 
         <table frame="topbot" id="cacheproviders" revision="1">
@@ -879,8 +890,10 @@ ICat fritz = (ICat) iter.Current;]]></programlisting>
             from the first-level cache.
         </para>
         
-        <programlisting><![CDATA[IEnumerable cats = sess.Enumerable("from Eg.Cat as cat"); //a huge result set
-foreach( Cat cat in cats )
+        <programlisting><![CDATA[IEnumerable<Cat> cats = sess
+    .CreateQuery("from Eg.Cat as cat")
+    .List<Cat>(); //a huge result set
+foreach (Cat cat in cats)
 {
     DoSomethingWithACat(cat);
     sess.Evict(cat);
@@ -906,10 +919,14 @@ foreach( Cat cat in cats )
             role.
         </para>
         
-        <programlisting><![CDATA[sessionFactory.Evict(typeof(Cat), catId); //evict a particular Cat
-sessionFactory.Evict(typeof(Cat));  //evict all Cats
-sessionFactory.EvictCollection("Eg.Cat.Kittens", catId); //evict a particular collection of kittens
-sessionFactory.EvictCollection("Eg.Cat.Kittens"); //evict all kitten collections]]></programlisting>
+        <programlisting><![CDATA[//evict a particular Cat
+sessionFactory.Evict(typeof(Cat), catId);
+//evict all Cats
+sessionFactory.Evict(typeof(Cat));
+//evict a particular collection of kittens
+sessionFactory.EvictCollection("Eg.Cat.Kittens", catId);
+//evict all kitten collections
+sessionFactory.EvictCollection("Eg.Cat.Kittens");]]></programlisting>
 
     </sect1>
     
@@ -921,7 +938,7 @@ sessionFactory.EvictCollection("Eg.Cat.Kittens"); //evict all kitten collections
             frequently with the same parameters. To use the query cache you must first enable it:
         </para>
 
-        <programlisting><![CDATA[<add key="hibernate.cache.use_query_cache" value="true" />]]></programlisting>       
+        <programlisting><![CDATA[<property name="cache.use_query_cache">true</property>>]]></programlisting>       
 
         <para>
             This setting causes the creation of two new cache regions - one holding cached query
@@ -946,12 +963,12 @@ sessionFactory.EvictCollection("Eg.Cat.Kittens"); //evict all kitten collections
             <literal>IQuery.SetCacheRegion()</literal>.
         </para>
         
-        <programlisting><![CDATA[IList blogs = sess.CreateQuery("from Blog blog where blog.Blogger = :blogger")
+        <programlisting><![CDATA[var blogs = sess.CreateQuery("from Blog blog where blog.Blogger = :blogger")
     .SetEntity("blogger", blogger)
     .SetMaxResults(15)
     .SetCacheable(true)
     .SetCacheRegion("frontpages")
-    .List();]]></programlisting>
+    .List<Blog>();]]></programlisting>
 
         <para>
             If the query should force a refresh of its query cache region, you may call
@@ -1100,7 +1117,7 @@ sessionFactory.EvictCollection("Eg.Cat.Kittens"); //evict all kitten collections
                 (unlike an <literal>ISet</literal>). This can make the following common code much faster.
             </para>
 
-            <programlisting><![CDATA[Parent p = (Parent) sess.Load(typeof(Parent), id);
+            <programlisting><![CDATA[Parent p = sess.Load<Parent>(id);
     Child c = new Child();
     c.Parent = p;
     p.Children.Add(c);  //no need to fetch the collection!
@@ -1169,7 +1186,7 @@ sessionFactory.EvictCollection("Eg.Cat.Kittens"); //evict all kitten collections
             
         <itemizedlist>
             <listitem>
-                <para>the Nhibernate's drive used for your RDBMS may not supports batching,</para>
+                <para>the NHibernate's drive used for your RDBMS may not supports batching,</para>
             </listitem>
             <listitem>
                 <para>since the implementation uses reflection to access members and types
@@ -1201,9 +1218,9 @@ sessionFactory.EvictCollection("Eg.Cat.Kittens"); //evict all kitten collections
         
         <programlisting><![CDATA[IMultiQuery multiQuery = s.CreateMultiQuery()
     .Add(s.CreateQuery("from Item i where i.Id > ?")
-            .SetInt32(0, 50).SetFirstResult(10))
+          .SetInt32(0, 50).SetFirstResult(10))
     .Add(s.CreateQuery("select count(*) from Item i where i.Id > ?")
-            .SetInt32(0, 50));
+          .SetInt32(0, 50));
 IList results = multiQuery.List();
 IList items = (IList)results[0];
 long count = (long)((IList)results[1])[0];]]></programlisting>
@@ -1216,7 +1233,7 @@ long count = (long)((IList)results[1])[0];]]></programlisting>
 
         <programlisting><![CDATA[IList results = s.CreateMultiQuery()
     .Add(s.CreateQuery("from Item i where i.Id > :id")
-        .SetFirstResult(10) )
+          .SetFirstResult(10))
     .Add("select count(*) from Item i where i.Id > :id")
     .SetInt32("id", 50)
     .List();
@@ -1249,12 +1266,11 @@ long count = (long)((IList)results[1])[0];]]></programlisting>
         
         <programlisting><![CDATA[IList allEmployeesId  = ...; //1,500 items
 IMultiQuery multiQuery = s.CreateMultiQuery()
-	.Add(s.CreateQuery("from Employee e where e.Id in :empIds")
-		.SetParameter("empIds", allEmployeesId).SetFirstResult(10))
-	.Add(s.CreateQuery("select count(*) from Employee e where e.Id in :empIds")
-		.SetParameter("empIds", allEmployeesId));
-	IList results = multiQuery.List(); // will throw an exception from SQL Server]]>
-	</programlisting>
+    .Add(s.CreateQuery("from Employee e where e.Id in :empIds")
+          .SetParameter("empIds", allEmployeesId).SetFirstResult(10))
+    .Add(s.CreateQuery("select count(*) from Employee e where e.Id in :empIds")
+          .SetParameter("empIds", allEmployeesId));
+IList results = multiQuery.List(); // will throw an exception from SQL Server]]></programlisting>
 
         <para>
             An interesting usage of this feature is to load several collections of an object in one
@@ -1273,19 +1289,19 @@ IMultiQuery multiQuery = s.CreateMultiQuery()
         <title>Multi Criteria</title>
         
         <para>
-			This is the counter-part to Multi Query, and allows you to perform several criteria queries
-			in a single round trip. A simple use case is executing a paged query while
+            This is the counter-part to Multi Query, and allows you to perform several criteria queries
+            in a single round trip. A simple use case is executing a paged query while
             also getting the total count of results, in a single round-trip. Here is a simple
             example:
         </para>
         
         <programlisting><![CDATA[IMultiCriteria multiCrit = s.CreateMultiCriteria()
     .Add(s.CreateCriteria(typeof(Item))
-            .Add(Expression.Gt("Id", 50))
-            .SetFirstResult(10))
+          .Add(Expression.Gt("Id", 50))
+          .SetFirstResult(10))
     .Add(s.CreateCriteria(typeof(Item))
-            .Add(Expression.Gt("Id", 50))
-            .SetProject(Projections.RowCount()));
+          .Add(Expression.Gt("Id", 50))
+          .SetProject(Projections.RowCount()));
 IList results = multiCrit.List();
 IList items = (IList)results[0];
 long count = (long)((IList)results[1])[0];]]></programlisting>
@@ -1293,27 +1309,28 @@ long count = (long)((IList)results[1])[0];]]></programlisting>
         <para>
             The result is a list of query results, ordered according to the order of queries
             added to the multi criteria. 
-		</para>
-		
+        </para>
+
         <para>
             You can add <literal>ICriteria</literal> or <literal>DetachedCriteria</literal> to the Multi Criteria query.
             In fact, using DetachedCriteria in this fashion has some interesting implications. 
         </para>
         <programlisting><![CDATA[DetachedCriteria customersCriteria = AuthorizationService.GetAssociatedCustomersQuery();
 IList results = session.CreateMultiCriteria()
-	.Add(customersCriteria)
-	.Add(DetachedCriteria.For<Policy>()
-		.Add( Subqueries.PropertyIn("id", CriteriaTransformer.Clone(customersCriteria)
-                                                    .SetProjection(Projections.Id())
-                      ) )
-	).List();
+    .Add(customersCriteria)
+    .Add(DetachedCriteria.For<Policy>()
+        .Add(Subqueries.PropertyIn("id",
+            CriteriaTransformer.Clone(customersCriteria)
+                .SetProjection(Projections.Id())
+            )))
+    .List();
 
 ICollection<Customer> customers = CollectionHelper.ToArray<Customer>(results[0]);
 ICollection<Policy> policies = CollectionHelper.ToArray<Policy>(results[1]);]]></programlisting>
 
-		<para>
-			As you see, we get a query that represents the customers we can access, and then we can utilize this query further in order to 
-			perform additional logic (getting the policies of the customers we are associated with), all in a single database round-trip.
-		</para>
+        <para>
+          As you see, we get a query that represents the customers we can access, and then we can utilize this query further in order to 
+          perform additional logic (getting the policies of the customers we are associated with), all in a single database round-trip.
+        </para>
     </sect1>
 </chapter>

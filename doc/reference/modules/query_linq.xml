@@ -636,7 +636,10 @@ IList<Cat> oldCats =
     <programlisting><![CDATA[IList<Cat> cats =
     session.Query<Cat>()
         .Where(c => c.Name == "Max")
-        .SetOptions(o => o.SetCacheable(true).SetCacheRegion("catNames").SetCacheMode(CacheMode.Put))
+        .SetOptions(o => o
+            .SetCacheable(true)
+            .SetCacheRegion("catNames")
+            .SetCacheMode(CacheMode.Put))
         .ToList();]]></programlisting>
   </sect1>
 
@@ -694,7 +697,8 @@ IList<Cat> cats =
       </para>
       <programlisting><![CDATA[public static class CustomLinqExtensions
 {
-    [LinqExtensionMethod("dbo.aCustomFunction", LinqExtensionPreEvaluation.AllowPreEvaluation)]
+    [LinqExtensionMethod("dbo.aCustomFunction",
+        LinqExtensionPreEvaluation.AllowPreEvaluation)]
     public static string ACustomFunction(this string input, string otherInput)
     {
         // In-memory evaluation implementation.
@@ -751,8 +755,8 @@ IList<Cat> cats =
         HqlTreeBuilder treeBuilder,
         IHqlExpressionVisitor visitor)
     {
-        // This has just to transmit the argument "as is", HQL does not need a specific call for
-        // null conversion.
+        // This has just to transmit the argument "as is", HQL does not need
+        // a specific call for null conversion.
         return visitor.Visit(arguments[0]).AsExpression();
     }
 }]]></programlisting>
@@ -788,7 +792,9 @@ DefaultLinqToHqlGeneratorsRegistry
         <link linkend="configuration-programmatic">code</link> before building the session factory.
         Use one of them.
       </para>
-      <programlisting><![CDATA[<property name="linqtohql.generatorsregistry">YourNameSpace.ExtendedLinqToHqlGeneratorsRegistry, YourAssemblyName</property>]]></programlisting>
+      <programlisting><![CDATA[<property name="linqtohql.generatorsregistry">
+    YourNameSpace.ExtendedLinqToHqlGeneratorsRegistry, YourAssemblyName
+</property>]]></programlisting>
       <programlisting><![CDATA[using NHibernate.Cfg;
 // ...
 

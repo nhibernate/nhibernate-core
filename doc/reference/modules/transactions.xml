@@ -27,14 +27,26 @@
             Each call to a service method could create a new <literal>ISession</literal>,
             <literal>Flush()</literal> it, <literal>Commit()</literal> its transaction,
             <literal>Close()</literal> it and finally discard it. (The <literal>ISessionFactory</literal>
-            may also be kept in <!-- Active Directory or --> a static <emphasis>Singleton</emphasis> helper variable.)
+            may also be kept in a static <emphasis>Singleton</emphasis> helper variable.)
         </para>
 
         <para>
             We use the NHibernate <literal>ITransaction</literal> API as discussed previously,
             a single <literal>Commit()</literal> of a NHibernate <literal>ITransaction</literal>
-            flushes the state and commits any underlying database connection (with special
-            handling of distributed transactions).
+            flushes the state and commits any underlying database connection. Transaction scopes
+            can be used instead, which allows the transaction to be distributed. See
+            <xref linkend="transactions-scopes"/>.
+        </para>
+
+        <para>
+            NHibernate may be used without managing transactions neither with the
+            <literal>ITransaction</literal> API nor with transaction scopes. We advise against
+            such a pattern, because this causes each single interaction of the session with the
+            database to be a transaction on its own. This causes overhead, breaks the unit of
+            work in case of errors during flushing, and causes some features to be disabled like
+            auto-flush and second level cache. If the application encounters locks contention or
+            deadlocks, investigate lowering the isolation level (like enabling read committed
+            snapshot with SQL Server) or shortening your transactions rather than removing them.
         </para>
 
         <para>
@@ -308,7 +320,7 @@ using (var transaction = session.BeginTransaction())
 
         <para>
             The first approach described above is to maintain a single <literal>ISession</literal> 
-            for a whole business process thats spans user think time. (For example, a servlet might 
+            for a whole business process that spans user think time. (For example, a servlet might 
             keep an <literal>ISession</literal> in the user's <literal>HttpSession</literal>.) For 
             performance reasons you should
         </para>
@@ -345,7 +357,7 @@ using (var transaction = session.BeginTransaction())
         </para>
 
         <programlisting><![CDATA[ISessionFactory sessions;
-IList fooList;
+IList<Foo> fooList;
 Bar bar;
 ....
 ISession s = sessions.OpenSession();
@@ -355,10 +367,11 @@ try
 {
     tx = s.BeginTransaction())
 
-    fooList = s.Find(
-    	"select foo from Eg.Foo foo where foo.Date = current date"
-        // uses db2 date function
-    );
+    fooList = s
+        .CreateQuery(
+            "select foo from Eg.Foo foo where foo.Date = current date"
+            // uses db2 date function
+        ).List<Foo>();
 
     bar = new Bar();
     s.Save(bar);
@@ -545,7 +558,7 @@ finally
         </itemizedlist>
 
         <para>
-            The configuration parameter <literal>hibernate.connection.release_mode</literal> is used
+            The configuration parameter <literal>connection.release_mode</literal> is used
             to specify which release mode to use.  The possible values:
         </para>
 

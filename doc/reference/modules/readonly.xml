@@ -277,7 +277,7 @@
 
             <para>
                 <literal>Query.SetReadOnly(true)</literal> must be called before
-                <literal>Query.List()</literal>, <literal>Query.UniqueResult()</literal>, or <literal>Query.Iterate()</literal>
+                <literal>Query.List()</literal>, <literal>Query.UniqueResult()</literal>, or <literal>Query.Enumerable()</literal>
             </para>
 
             <para>
@@ -323,7 +323,9 @@
 using (ITransaction tx = session.BeginTransaction())
 {
     session.DefaultReadOnly = true;
-    Contract contract = session.CreateQuery("from Contract where CustomerName = 'Sherman'").UniqueResult<Contract>();
+    Contract contract = session
+        .CreateQuery("from Contract where CustomerName = 'Sherman'")
+        .UniqueResult<Contract>();
     NHibernate.Initialize(contract.Plan);
     NHibernate.Initialize(contract.Variations);
     NHibernate.Initialize(contract.Notes);
@@ -374,7 +376,7 @@ using (ITransaction tx = session.BeginTransaction())
             <para>        
                 To throw away non-flushed changes and make the persistent entity 
                 consistent with its database representation, call:
-			</para>
+            </para>
             <programlisting role="c#">Session.Refresh(entity);</programlisting>
 
             <para>
@@ -383,16 +385,14 @@ using (ITransaction tx = session.BeginTransaction())
                 consistent with the current state of the persistent
                 entity:
             </para>
-<programlisting role="c#">
-// evict the read-only entity so it is detached
+            <programlisting role="c#">// evict the read-only entity so it is detached
 session.Evict(entity);
 
 // make the detached entity (with the non-flushed changes) persistent
 session.Update(entity);
 
 // now entity is no longer read-only and its changes can be flushed
-s.Flush();
-</programlisting>
+s.Flush();</programlisting>
         </section>
     </section>
 
