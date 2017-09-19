@@ -27,9 +27,6 @@ namespace NHibernate.Collection.Generic
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class PersistentIdentifierBag<T> : AbstractPersistentCollection, IList<T>, IList, IQueryable<T>
 	{
 

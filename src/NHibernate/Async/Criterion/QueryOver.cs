@@ -22,9 +22,6 @@ using NHibernate.Transform;
 namespace NHibernate.Criterion
 {
 	using System.Threading.Tasks;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public abstract partial class QueryOver<TRoot> : QueryOver, IQueryOver<TRoot>
 	{
 

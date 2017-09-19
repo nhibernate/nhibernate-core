@@ -14,9 +14,6 @@ namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial interface ICacheAssembler
 	{
 		/// <summary> Return a cacheable "disassembled" representation of the object.</summary>

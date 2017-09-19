@@ -22,7 +22,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1274ExportExclude
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class NH1274ExportExcludeFixtureAsync
 	{

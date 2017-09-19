@@ -22,9 +22,6 @@ namespace NHibernate.Action
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public abstract partial class CollectionAction : IExecutable, IComparable<CollectionAction>, IDeserializationCallback
 	{
 

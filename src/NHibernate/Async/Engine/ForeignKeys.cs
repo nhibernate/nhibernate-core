@@ -18,15 +18,9 @@ namespace NHibernate.Engine
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public static partial class ForeignKeys
 	{
 
-		/// <content>
-		/// Contains generated async methods
-		/// </content>
 		public partial class Nullifier
 		{
 

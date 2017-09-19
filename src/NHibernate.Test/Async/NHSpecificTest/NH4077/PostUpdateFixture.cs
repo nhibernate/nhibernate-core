@@ -149,15 +149,9 @@ namespace NHibernate.Test.NHSpecificTest.NH4077
 			}
 		}
 	}
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class PostUpdateFixture : TestCaseMappingByCode
 	{
 
-		/// <content>
-		/// Contains generated async methods
-		/// </content>
 		private sealed partial class CausesAutoflushListener : IPostUpdateEventListener
 		{
 

@@ -17,9 +17,6 @@ using System.Text;
 namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class ObjectDumper
 	{
 

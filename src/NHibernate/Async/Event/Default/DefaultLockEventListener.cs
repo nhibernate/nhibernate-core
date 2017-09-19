@@ -16,9 +16,6 @@ namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class DefaultLockEventListener : AbstractLockUpgradeEventListener, ILockEventListener
 	{
 		/// <summary>Handle the given lock event. </summary>

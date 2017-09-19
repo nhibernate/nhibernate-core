@@ -23,17 +23,11 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Linq
 {
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial interface INhQueryProvider : IQueryProvider
 	{
 		Task<int> ExecuteDmlAsync<T>(QueryMode queryMode, Expression expression, CancellationToken cancellationToken);
 	}
 
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class DefaultQueryProvider : INhQueryProvider
 	{
 

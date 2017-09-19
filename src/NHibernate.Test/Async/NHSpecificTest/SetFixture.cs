@@ -28,9 +28,6 @@ namespace NHibernate.Test.NHSpecificTest
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	internal partial class CollectionPersisterStub : ICollectionPersister
 	{
 

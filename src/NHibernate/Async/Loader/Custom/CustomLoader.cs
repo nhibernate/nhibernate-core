@@ -28,9 +28,6 @@ namespace NHibernate.Loader.Custom
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class CustomLoader : Loader
 	{
 
@@ -55,9 +52,6 @@ namespace NHibernate.Loader.Custom
 			return rowProcessor.BuildResultRowAsync(row, rs, resultTransformer != null, session, cancellationToken);
 		}
 
-		/// <content>
-		/// Contains generated async methods
-		/// </content>
 		public partial class ResultRowProcessor
 		{
 
@@ -99,17 +93,11 @@ namespace NHibernate.Loader.Custom
 			}
 		}
 
-		/// <content>
-		/// Contains generated async methods
-		/// </content>
 		public partial interface IResultColumnProcessor
 		{
 			Task<object> ExtractAsync(object[] data, DbDataReader resultSet, ISessionImplementor session, CancellationToken cancellationToken);
 		}
 
-		/// <content>
-		/// Contains generated async methods
-		/// </content>
 		public partial class NonScalarResultColumnProcessor : IResultColumnProcessor
 		{
 
@@ -130,9 +118,6 @@ namespace NHibernate.Loader.Custom
 			}
 		}
 
-		/// <content>
-		/// Contains generated async methods
-		/// </content>
 		public partial class ScalarResultColumnProcessor : IResultColumnProcessor
 		{
 

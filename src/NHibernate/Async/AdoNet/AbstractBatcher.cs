@@ -26,9 +26,6 @@ using NHibernate.AdoNet.Util;
 namespace NHibernate.AdoNet
 {
 	using System.Threading.Tasks;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public abstract partial class AbstractBatcher : IBatcher
 	{
 

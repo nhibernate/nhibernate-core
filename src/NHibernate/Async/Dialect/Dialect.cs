@@ -32,9 +32,6 @@ namespace NHibernate.Dialect
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public abstract partial class Dialect
 	{
 		#region Callable statement support

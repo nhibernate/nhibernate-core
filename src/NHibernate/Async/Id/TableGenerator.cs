@@ -27,9 +27,6 @@ namespace NHibernate.Id
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class TableGenerator : TransactionHelper, IPersistentIdentifierGenerator, IConfigurable
 	{
 		private readonly NHibernate.Util.AsyncLock _generate = new NHibernate.Util.AsyncLock();

@@ -19,15 +19,9 @@ namespace NHibernate.Id
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class IdentityGenerator : AbstractPostInsertGenerator
 	{
 
-		/// <content>
-		/// Contains generated async methods
-		/// </content>
 		public partial class InsertSelectDelegate : AbstractReturningDelegate, IInsertGeneratedIdentifierDelegate
 		{
 
@@ -55,9 +49,6 @@ namespace NHibernate.Id
 			}
 		}
 
-		/// <content>
-		/// Contains generated async methods
-		/// </content>
 		public partial class BasicDelegate : AbstractSelectingDelegate, IInsertGeneratedIdentifierDelegate
 		{
 

@@ -22,9 +22,6 @@ using NHibernate.Util;
 namespace NHibernate.Transaction
 {
 	using System.Threading.Tasks;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class AdoNetWithSystemTransactionFactory : AdoNetTransactionFactory
 	{
 

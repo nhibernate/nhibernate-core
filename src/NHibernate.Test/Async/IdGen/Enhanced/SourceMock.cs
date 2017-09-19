@@ -14,9 +14,6 @@ namespace NHibernate.Test.IdGen.Enhanced
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class SourceMock : IAccessCallback
 	{
 

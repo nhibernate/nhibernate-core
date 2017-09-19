@@ -14,9 +14,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 {
     using System.Threading.Tasks;
     using System.Threading;
-    /// <content>
-    /// Contains generated async methods
-    /// </content>
     public partial class MyRef1
     {
 
@@ -41,9 +38,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
         }
     }
 
-    /// <content>
-    /// Contains generated async methods
-    /// </content>
     public partial class MyBO
     {
 

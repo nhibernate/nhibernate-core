@@ -677,9 +677,6 @@ namespace NHibernate.Test.Insertordering
 
 		#endregion
 	}
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class InsertOrderingFixture : TestCase
 	{
 
@@ -695,9 +692,6 @@ namespace NHibernate.Test.Insertordering
 
 		
 		
-		/// <content>
-		/// Contains generated async methods
-		/// </content>
 		public partial class StatsBatcher : SqlClientBatchingBatcher
 		{
 

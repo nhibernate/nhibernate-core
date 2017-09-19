@@ -17,9 +17,6 @@ namespace NHibernate.Test.Events
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class MyDisposableListener : IPostUpdateEventListener, IDisposable
 	{
 		public Task OnPostUpdateAsync(PostUpdateEvent @event, CancellationToken cancellationToken)

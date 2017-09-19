@@ -17,9 +17,6 @@ using NHibernate.Event.Default;
 
 namespace NHibernate.Test.Events.Collections
 {
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class CollectionListeners
 	{
 
@@ -32,9 +29,6 @@ namespace NHibernate.Test.Events.Collections
 
 		#region Nested type: InitializeCollectionListener
 
-		/// <content>
-		/// Contains generated async methods
-		/// </content>
 		public partial class InitializeCollectionListener : DefaultInitializeCollectionEventListener, IListener
 		{
 
@@ -53,9 +47,6 @@ namespace NHibernate.Test.Events.Collections
 
 		#region Nested type: PostCollectionRecreateListener
 
-		/// <content>
-		/// Contains generated async methods
-		/// </content>
 		public partial class PostCollectionRecreateListener : AbstractListener, IPostCollectionRecreateEventListener
 		{
 
@@ -81,9 +72,6 @@ namespace NHibernate.Test.Events.Collections
 
 		#region Nested type: PostCollectionRemoveListener
 
-		/// <content>
-		/// Contains generated async methods
-		/// </content>
 		public partial class PostCollectionRemoveListener : AbstractListener, IPostCollectionRemoveEventListener
 		{
 
@@ -109,9 +97,6 @@ namespace NHibernate.Test.Events.Collections
 
 		#region Nested type: PostCollectionUpdateListener
 
-		/// <content>
-		/// Contains generated async methods
-		/// </content>
 		public partial class PostCollectionUpdateListener : AbstractListener, IPostCollectionUpdateEventListener
 		{
 
@@ -137,9 +122,6 @@ namespace NHibernate.Test.Events.Collections
 
 		#region Nested type: PreCollectionRecreateListener
 
-		/// <content>
-		/// Contains generated async methods
-		/// </content>
 		public partial class PreCollectionRecreateListener : AbstractListener, IPreCollectionRecreateEventListener
 		{
 
@@ -165,9 +147,6 @@ namespace NHibernate.Test.Events.Collections
 
 		#region Nested type: PreCollectionRemoveListener
 
-		/// <content>
-		/// Contains generated async methods
-		/// </content>
 		public partial class PreCollectionRemoveListener : AbstractListener, IPreCollectionRemoveEventListener
 		{
 
@@ -193,9 +172,6 @@ namespace NHibernate.Test.Events.Collections
 
 		#region Nested type: PreCollectionUpdateListener
 
-		/// <content>
-		/// Contains generated async methods
-		/// </content>
 		public partial class PreCollectionUpdateListener : AbstractListener, IPreCollectionUpdateEventListener
 		{
 

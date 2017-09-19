@@ -141,16 +141,10 @@ namespace NHibernate.Test.Linq
 			}
 		}
 	}
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class QueryTimeoutTests : LinqTestCase
 	{
 
 
-		/// <content>
-		/// Contains generated async methods
-		/// </content>
 		public partial class TimeoutCatchingNonBatchingBatcher : NonBatchingBatcher
 		{
 

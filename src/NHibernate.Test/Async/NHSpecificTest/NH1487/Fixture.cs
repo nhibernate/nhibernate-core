@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1487
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 
 	/// <summary>
 	/// Summary description for TestTestCase.

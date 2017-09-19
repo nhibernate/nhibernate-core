@@ -22,9 +22,6 @@ namespace NHibernate.Engine
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class ActionQueue
 	{
 
@@ -137,9 +134,6 @@ namespace NHibernate.Engine
 			}
 			return afterTransactionProcesses.AfterTransactionCompletionAsync(success, cancellationToken);
 		}
-		/// <content>
-		/// Contains generated async methods
-		/// </content>
 		private partial class AfterTransactionCompletionProcessQueue 
 		{
 	

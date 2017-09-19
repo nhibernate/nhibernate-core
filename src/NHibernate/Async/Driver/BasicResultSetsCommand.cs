@@ -22,9 +22,6 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.Driver
 {
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class BasicResultSetsCommand: IResultSetsCommand
 	{
 
@@ -45,9 +42,6 @@ namespace NHibernate.Driver
 		}
 	}
 
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class BatcherDataReaderWrapper: DbDataReader
 	{
 

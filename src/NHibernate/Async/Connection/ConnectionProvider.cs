@@ -22,9 +22,6 @@ namespace NHibernate.Connection
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public abstract partial class ConnectionProvider : IConnectionProvider
 	{
 

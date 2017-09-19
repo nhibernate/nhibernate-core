@@ -25,9 +25,6 @@ namespace NHibernate.Id
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class SequenceGenerator : IPersistentIdentifierGenerator, IConfigurable
 	{
 

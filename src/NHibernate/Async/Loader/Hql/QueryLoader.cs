@@ -32,9 +32,6 @@ namespace NHibernate.Loader.Hql
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class QueryLoader : BasicLoader
 	{
 

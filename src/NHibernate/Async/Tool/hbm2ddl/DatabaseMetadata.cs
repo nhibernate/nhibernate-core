@@ -22,9 +22,6 @@ namespace NHibernate.Tool.hbm2ddl
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class DatabaseMetadata : IDatabaseMetadata
 	{
 

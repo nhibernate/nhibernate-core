@@ -17,9 +17,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Driver
 {
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class NHybridDataReader : DbDataReader
 	{
 

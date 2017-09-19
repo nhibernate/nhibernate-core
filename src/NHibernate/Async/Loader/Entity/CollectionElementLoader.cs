@@ -25,9 +25,6 @@ namespace NHibernate.Loader.Entity
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	/// <content>
-	/// Contains generated async methods
-	/// </content>
 	public partial class CollectionElementLoader : OuterJoinLoader
 	{
 
