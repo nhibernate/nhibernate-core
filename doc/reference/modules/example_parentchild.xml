@@ -342,8 +342,7 @@ session.Flush();]]></programlisting>
              and <literal>OnSave()</literal> as follows.
          </para>
 
-         <programlisting>
-	<![CDATA[public object IsTransient(object entity)
+         <programlisting><![CDATA[public object IsTransient(object entity)
 {
     if (entity is Persistent)
     {

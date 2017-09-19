@@ -106,9 +106,8 @@
                      <area id="hm5" coords="6 55"/>
                    <area id="hm6" coords="7 55"/>
                    <area id="hm7" coords="8 55"/>
-                 </areaspec>   
-                 <programlisting>
-           <![CDATA[<hibernate-mapping
+                 </areaspec>
+                 <programlisting><![CDATA[<hibernate-mapping
          schema="schemaName"
          default-cascade="none|save-update"
          auto-import="true|false"
@@ -681,7 +680,7 @@
 
                 <para>
                     Unfortunately, you can't use <literal>hilo</literal> when supplying your own
-                    <literal>IDbConnection</literal> to NHibernate. NHibernate must be able to
+                    <literal>DbConnection</literal> to NHibernate. NHibernate must be able to
                     fetch the "hi" value in a new transaction.
                 </para>
             </sect3>
@@ -1198,9 +1197,11 @@
             </programlistingco>
 
             <para>
-                Version numbers may be of type <literal>Int64</literal>, <literal>Int32</literal>,
+                Version may be of type <literal>Int64</literal>, <literal>Int32</literal>,
                 <literal>Int16</literal>, <literal>Ticks</literal>, <literal>Timestamp</literal>,
-                or <literal>TimeSpan</literal> (or their nullable counterparts in .NET 2.0).
+                <literal>TimeSpan</literal>, <literal>datetimeoffset</literal>, ... (or their nullable
+                counterparts in .NET 2.0). Any type implementing <literal>IVersionType</literal> is
+                usable as a version.
             </para>
 
         </sect2>
@@ -1433,7 +1434,11 @@
                 attribute. (For example, to distinguish between <literal>NHibernateUtil.DateTime</literal> and
                 <literal>NHibernateUtil.Timestamp</literal>, or to specify a custom type.)
             </para>
-            
+
+            <para>
+                See also <xref linkend="mapping-types" />.
+            </para>
+
             <para>
                 The <literal>access</literal> attribute lets you control how NHibernate will access
                 the value of the property at runtime.  The value of the <literal>access</literal> attribute should
@@ -2584,8 +2589,10 @@
             <para>
                 The <emphasis>basic types</emphasis> may be roughly categorized into three groups - <literal>System.ValueType</literal>
                 types, <literal>System.Object</literal> types, and <literal>System.Object</literal> types for large objects.  Just like
-                the .NET Types, columns for System.ValueType types <emphasis>can not</emphasis> store <literal>null</literal> values
-                and System.Object types	<emphasis>can</emphasis> store <literal>null</literal> values.
+                Columns for System.ValueType types can handle <literal>null</literal> values only if the entity property is properly
+                typed with a <literal>Nullable&lt;T&gt;</literal>. Otherwise <literal>null</literal> will be replaced by the default
+                value for the type when reading, and when be overwritten by it when persisting the entity, potentially leading to
+                phantom updates.
             </para>
             <table>
                 <title>System.ValueType Mapping Types</title>
@@ -2643,7 +2650,7 @@
                             </entry>
                             <entry>
                                 Default when no <literal>type</literal> attribute specified. Does no
-                                more ignore milliseconds since NHibernate v5.0.
+                                longer ignore fractional seconds since NHibernate v5.0.
                             </entry>
                         </row>
                         <row>
@@ -2652,7 +2659,10 @@
                             <entry>
                                 <literal>DbType.DateTime</literal> / <literal>DbType.DateTime2</literal><coref linkend="basic_mapping.datetime-co" />
                             </entry>
-                            <entry><literal>type="DateTimeNoMs"</literal> must be specified. Ignores milliseconds.</entry>
+                            <entry>
+                                <literal>type="DateTimeNoMs"</literal> must be specified. Ignores fractional seconds.
+                                Available since NHibernate v5.0.
+                            </entry>
                         </row>
                         <row>
                             <entry><literal>DateTime2</literal></entry>
@@ -2727,7 +2737,7 @@
                                 <literal>type="LocalDateTime"</literal> must be specified. Ensures the
                                 <literal>DateTimeKind</literal> is set to <literal>DateTimeKind.Local</literal>.
                                 Throws if set with a date having another kind.
-                                Does no more ignore milliseconds since NHibernate v5.0.
+                                Does no longer ignore fractional seconds since NHibernate v5.0.
                             </entry>
                         </row>
                         <row>
@@ -2738,7 +2748,8 @@
                             </entry>
                             <entry>
                                 <literal>type="LocalDateTimeNoMs"</literal> must be specified. Similar to
-                                <literal>type="LocalDateTime"</literal> but ignores milliseconds.
+                                <literal>LocalDateTime</literal> but ignores fractional seconds.
+                                Available since NHibernate v5.0.
                             </entry>
                         </row>
                         <row>
@@ -2829,7 +2840,7 @@
                             <entry>
                                 Ensures the <literal>DateTimeKind</literal> is set to <literal>DateTimeKind.Utc</literal>.
                                 Throws if set with a date having another kind.
-                                Does no more ignore milliseconds since NHibernate v5.0.
+                                Does no longer ignore fractional seconds since NHibernate v5.0.
                             </entry>
                         </row>
                         <row>
@@ -2840,7 +2851,8 @@
                             </entry>
                             <entry>
                                 <literal>type="UtcDateTimeNoMs"</literal> must be specified. Similar to
-                                <literal>type="LocalDateTime"</literal> but ignores milliseconds.
+                                <literal>UtcDateTime</literal> but ignores fractional seconds.
+                                Available since NHibernate v5.0.
                             </entry>
                         </row>
                         <row>
@@ -3251,7 +3263,7 @@
             NHibernate's schema evolution tools, to provide the ability to fully define
             a user schema within the NHibernate mapping files.  Although designed specifically
             for creating and dropping things like triggers or stored procedures, really any
-            SQL command that can be run via a <literal>IDbCommand.ExecuteNonQuery()</literal>
+            SQL command that can be run via a <literal>DbCommand.ExecuteNonQuery()</literal>
             method is valid here (ALTERs, INSERTS, etc).  There are essentially two modes for
             defining auxiliary database objects.
         </para>

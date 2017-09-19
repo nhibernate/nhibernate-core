@@ -337,9 +337,9 @@ IList<CatSummary> catReport =
 
         <para>
             In addition to projecting properties, there are extension methods to allow certain common dialect-registered
-            functions to be applied.  For example you can write the following to extract just the year part of a date:
+            functions to be applied.  For example you can write the following to get 3 letters named people.
         </para>
-        <programlisting><![CDATA[        .Where(p => p.BirthDate.YearPart() == 1971)]]></programlisting>
+        <programlisting><![CDATA[        .Where(p => p.FirstName.StrLength() == 3)]]></programlisting>
         
         <para>
             The functions can also be used inside projections:
