@@ -13,9 +13,8 @@
 				<xs:element ref="bytecode-provider" minOccurs="0" maxOccurs="1" >
 					<xs:annotation>
 						<xs:documentation>
-							There are 3 default short-cut values
+							There are 2 default short-cut values
 							- lcg     : default for .NET2.0 and higher.
-							- codedom : CodeDOM-based bytecode provider (mostly for .NET1.1).
 							- null    : Disable the reflection optimization completely.
 							In addition you can specify the AssemblyQualifiedName of your custom bytecode-provider (implementation of IBytecodeProvider).
 							Note: the bytecode-provider will be effective only when specified in the app.config or web.config.
@@ -257,7 +256,6 @@
 			<xs:attribute name="type" default="lcg">
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
-						<xs:enumeration value="codedom" />
 						<xs:enumeration value="lcg" />
 						<xs:enumeration value="null" />
 					</xs:restriction>

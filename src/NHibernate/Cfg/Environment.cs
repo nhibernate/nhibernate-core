@@ -370,8 +370,6 @@ namespace NHibernate.Cfg
 		{
 			switch (providerName)
 			{
-				case "codedom":
-					return new Bytecode.CodeDom.BytecodeProviderImpl();
 				case "lcg":
 					return new Bytecode.Lightweight.BytecodeProviderImpl();
 				case "null":
