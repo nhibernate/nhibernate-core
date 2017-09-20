@@ -190,8 +190,11 @@
 		</copy>
 		<copy todir="${bin-pack.required}">
 			<fileset basedir="${bin.dir}">
+				<include name="Antlr3.Runtime.???" />
 				<include name="Iesi.Collections.???" />
 				<include name="NHibernate.???" />
+				<include name="Remotion.Linq.???" />
+				<include name="Remotion.Linq.EagerFetching.???" />
 			</fileset>
 		</copy>
 		<!--Required Bins for lazy loading NHibernate.ByteCode.Castle.dll-->
