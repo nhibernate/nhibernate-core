@@ -12,7 +12,7 @@ echo ========================= NHIBERNATE BUILD MENU ==========================
 echo --- TESTING ---
 echo B. (Step 1) Set up a new test configuration for a particular database.
 echo C. (Step 2) Activate a test configuration.
-echo D. (Step 3) Run tests using active configuration.
+echo D. (Step 3) Run tests using active configuration (Needs built in Visual Studio).
 echo.
 echo --- BUILD ---
 echo E. Build NHibernate (Debug)
@@ -165,7 +165,9 @@ echo Configuration activated.
 goto main-menu
 
 :test-run
-start "nunit3-console" cmd /K %NUNIT% --x86 --agents=1 --process=separate NHibernate.nunit
+SET NUNITPLATFORM=
+IF /I "%PLATFORM%" NEQ "x64" set NUNITPLATFORM=--x86
+start "nunit3-console" cmd /K %NUNIT% %NUNITPLATFORM% --agents=1 --process=separate NHibernate.nunit
 goto main-menu
 
 rem :build-test
