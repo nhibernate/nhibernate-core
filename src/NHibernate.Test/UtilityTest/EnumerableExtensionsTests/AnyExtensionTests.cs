@@ -11,13 +11,17 @@ namespace NHibernate.Test.UtilityTest.EnumerableExtensionsTests
 		[Test]
 		public void WhenEmptyListThenReturnFalse()
 		{
+#pragma warning disable 618
 			Assert.That((new object[0]).Any(), Is.False);
+#pragma warning restore 618
 		}
 
 		[Test]
 		public void WhenNoEmptyListThenReturnTrue()
 		{
+#pragma warning disable 618
 			Assert.That((new object[1]).Any(), Is.True);
+#pragma warning restore 618
 		}
 
 		private class MyDisposableList: IEnumerable
@@ -68,7 +72,9 @@ namespace NHibernate.Test.UtilityTest.EnumerableExtensionsTests
 		public void WhenDisposableListThenCallDispose()
 		{
 			var disposeCalled = false;
+#pragma warning disable 618
 			(new MyDisposableList(()=> disposeCalled = true)).Any();
+#pragma warning restore 618
 			Assert.That(disposeCalled, Is.True);
 		}
 	}

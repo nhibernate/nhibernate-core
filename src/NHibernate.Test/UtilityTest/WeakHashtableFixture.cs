@@ -1,7 +1,4 @@
 using System;
-using System.Collections;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 
 using NHibernate.Util;
 using NUnit.Framework;
@@ -11,9 +8,9 @@ namespace NHibernate.Test.UtilityTest
 	[TestFixture]
 	public class WeakHashtableFixture
 	{
-		protected WeakHashtable Create()
+		protected WeakHashtable<object, object> Create()
 		{
-			return new WeakHashtable();
+			return new WeakHashtable<object, object>();
 		}
 
 		[Test]
@@ -23,7 +20,7 @@ namespace NHibernate.Test.UtilityTest
 			object key = new object();
 			object value = new object();
 
-			WeakHashtable table = Create();
+			var table = Create();
 
 			table[key] = value;
 
@@ -33,22 +30,22 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void WeakReferenceGetsFreedButHashCodeRemainsConstant()
 		{
-			object obj = new object();
-			WeakRefWrapper wr = new WeakRefWrapper(obj);
+			var obj = new object();
+			var wr = WeakRefWrapper<object>.Wrap(obj);
 			int hashCode = wr.GetHashCode();
 			obj = null;
 
 			GC.Collect();
 
-			Assert.IsFalse(wr.IsAlive);
-			Assert.IsNull(wr.Target);
+			Assert.IsFalse(wr.TryGetTarget(out var target));
+			Assert.IsNull(target);
 			Assert.AreEqual(hashCode, wr.GetHashCode());
 		}
 
 		[Test]
 		public void Scavenging()
 		{
-			WeakHashtable table = Create();
+			var table = Create();
 
 			table[new object()] = new object();
 			table[new object()] = new object();
@@ -62,7 +59,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void IterationAfterGC()
 		{
-			WeakHashtable table = Create();
+			var table = Create();
 
 			table[new object()] = new object();
 			table[new object()] = new object();
@@ -79,10 +76,10 @@ namespace NHibernate.Test.UtilityTest
 			object key = new object();
 			object value = new object();
 
-			WeakHashtable table = Create();
+			var table = Create();
 			table[key] = value;
 
-			foreach (DictionaryEntry de in table)
+			foreach (var de in table)
 			{
 				Assert.AreSame(key, de.Key);
 				Assert.AreSame(value, de.Value);
@@ -92,8 +89,8 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void RetrieveNonExistentItem()
 		{
-			WeakHashtable table = Create();
-			object obj = table[new object()];
+			var table = Create();
+			table.TryGetValue(new object(), out var obj);
 			Assert.IsNull(obj);
 		}
 
@@ -101,15 +98,15 @@ namespace NHibernate.Test.UtilityTest
 		public void WeakRefWrapperEquals()
 		{
 			object obj = new object();
-			Assert.AreEqual(new WeakRefWrapper(obj), new WeakRefWrapper(obj));
-			Assert.IsFalse(new WeakRefWrapper(obj).Equals(null));
-			Assert.IsFalse(new WeakRefWrapper(obj).Equals(10));
+			Assert.AreEqual(WeakRefWrapper<object>.Wrap(obj), WeakRefWrapper<object>.Wrap(obj));
+			Assert.IsFalse(WeakRefWrapper<object>.Wrap(obj).Equals(null));
+			Assert.IsFalse(WeakRefWrapper<object>.Wrap(obj).Equals(10));
 		}
 
 		[Test]
 		public void IsSerializable()
 		{
-			WeakHashtable weakHashtable = new WeakHashtable();
+			var weakHashtable = Create();
 			weakHashtable.Add("key", new object());
 			NHAssert.IsSerializable(weakHashtable);
 		}

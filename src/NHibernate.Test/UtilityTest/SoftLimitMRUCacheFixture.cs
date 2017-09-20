@@ -12,7 +12,7 @@ namespace NHibernate.Test.UtilityTest
 		{
 			// NH-1671
 			const int count = 32;
-			var s = new SoftLimitMRUCache(count);
+			var s = new SoftLimitMRUCache<object, object>(count);
 			for (int i = 0; i < count+10; i++)
 			{
 				s.Put(new object(), new object());

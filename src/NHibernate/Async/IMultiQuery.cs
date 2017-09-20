@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Transform;
 using NHibernate.Type;
 

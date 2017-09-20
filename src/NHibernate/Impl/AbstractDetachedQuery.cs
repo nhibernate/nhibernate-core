@@ -5,6 +5,7 @@ using NHibernate.Engine;
 using NHibernate.Proxy;
 using NHibernate.Transform;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Impl
 {
@@ -22,6 +23,8 @@ namespace NHibernate.Impl
 	[Serializable]
 	public abstract class AbstractDetachedQuery : IDetachedQuery, IDetachedQueryImplementor
 	{
+		private static readonly IInternalLogger _log = LoggerProvider.LoggerFor(typeof(AbstractDetachedQuery));
+		
 		// Fields are protected for test scope
 		// All information are hold local to have more probability to make AbstractDetachedQuery serializable without
 		// touch any other NH class.
@@ -149,10 +152,22 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		// Obsolete since v5.0
+		/// <inheritdoc />
+		[Obsolete("Please use overload with a generic type parameter")]
 		public IDetachedQuery SetParameterList(string name, IEnumerable vals)
 		{
 			if (string.IsNullOrEmpty(name))
 				throw new ArgumentNullException("name", "Is null or empty.");
+			namedUntypeListParams[name] = vals;
+			return this;
+		}
+		
+		/// <inheritdoc />
+		public IDetachedQuery SetParameterList<T>(string name, IEnumerable<T> vals)
+		{
+			if (string.IsNullOrEmpty(name))
+				throw new ArgumentNullException(nameof(name), "Is null or empty.");
 			namedUntypeListParams[name] = vals;
 			return this;
 		}
@@ -460,7 +475,21 @@ namespace NHibernate.Impl
 
 			// Set untyped named parameters list
 			foreach (var nulp in namedUntypeListParams)
-				q.SetParameterList(nulp.Key, nulp.Value);
+			{
+				var elementType = nulp.Value.GetCollectionElementType();
+				if (elementType != null)
+				{
+					var setMethod = ReflectionCache.IQueryMethods.SetParameterListMethodDefinition.MakeGenericMethod(elementType);
+					setMethod.Invoke(q, new object[] { nulp.Key, nulp.Value });
+				}
+				else
+				{
+					_log.WarnFormat("A non generic parameter list value has been used, which is obsolete and may be no more supported in a future release.");
+#pragma warning disable 618 // SetParameterList(taking non generic IEnumerable) is obsolete
+					q.SetParameterList(nulp.Key, nulp.Value);
+#pragma warning restore 618
+				}
+			}
 
 			// Set typed positional parameters
 			foreach (var pp in posParams)
@@ -559,7 +588,21 @@ namespace NHibernate.Impl
 
 			// Set untyped named parameters list
 			foreach (var nulp in namedUntypeListParams)
-				destination.SetParameterList(nulp.Key, nulp.Value);
+			{
+				var elementType = nulp.Value.GetCollectionElementType();
+				if (elementType != null)
+				{
+					var setMethod = ReflectionCache.IDetachedQueryMethods.SetParameterListMethodDefinition.MakeGenericMethod(elementType);
+					setMethod.Invoke(destination, new object[] { nulp.Key, nulp.Value });
+				}
+				else
+				{
+					_log.WarnFormat("A non generic parameter list value has been used, which is obsolete and may be no more supported in a future release.");
+#pragma warning disable 618 // SetParameterList(taking non generic IEnumerable) is obsolete
+					destination.SetParameterList(nulp.Key, nulp.Value);
+#pragma warning restore 618
+				}
+			}
 
 			// Set typed positional parameters
 			foreach (var pp in posParams)

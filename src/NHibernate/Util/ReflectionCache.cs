@@ -55,6 +55,18 @@ namespace NHibernate.Util
 				ReflectHelper.GetMethodDefinition(() => Enumerable.ToList<object>(null));
 		}
 
+		internal static class IDetachedQueryMethods
+		{
+			internal static readonly MethodInfo SetParameterListMethodDefinition =
+				ReflectHelper.GetMethodDefinition<IDetachedQuery>(q => q.SetParameterList(null, default(IEnumerable<object>)));
+		}
+
+		internal static class IQueryMethods
+		{
+			internal static readonly MethodInfo SetParameterListMethodDefinition =
+				ReflectHelper.GetMethodDefinition<IQuery>(q => q.SetParameterList(null, default(IEnumerable<object>)));
+		}
+
 		internal static class MethodBaseMethods
 		{
 			internal static readonly MethodInfo GetMethodFromHandle =

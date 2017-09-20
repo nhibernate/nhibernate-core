@@ -15,6 +15,7 @@ using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System;
+using NHibernate.Engine.Query;
 
 namespace NHibernate.Test.NHSpecificTest.NH3050
 {
@@ -126,7 +127,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3050
 					var planCacheFieldInfo = typeof(Engine.Query.QueryPlanCache).GetField("planCache", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
 					if (planCacheFieldInfo != null)
 					{
-						var softLimitMRUCache = new Util.SoftLimitMRUCache(size);
+						var softLimitMRUCache = new Util.SoftLimitMRUCache<QueryPlanKey, object>(size);
 
 						planCacheFieldInfo.SetValue(queryPlanCache, softLimitMRUCache);
 						return true;

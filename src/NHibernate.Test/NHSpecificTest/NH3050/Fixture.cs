@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
@@ -53,9 +51,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3050
 			//
 			//    So this test will simulate the pushing out by clearing the cache as long as the QueryExpression of the query plan is NhLinqExpression, once it is an ExpandedQueryExpression
 			//    it will stop clearing the cache, and the exception will occur, resulting in a failure of the test. 
-			//    The test will pass once all LINQ expression are executed (1000 max) and no exception occured
+			//    The test will pass once all LINQ expression are executed (1000 max) and no exception occurred
 
-			var cache = new SoftLimitMRUCache(1);
+			var cache = new SoftLimitMRUCache<QueryPlanKey, object>(1);
 
 			var queryPlanCacheType = typeof (QueryPlanCache);
 
@@ -112,12 +110,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3050
 				// the planCache now contains one item with a key of type HQLQueryPlanKey, 
 				// so we are going to retrieve the generated key so that we can use it afterwards to interact with the cache.
 				// The softReferenceCache field value from the SoftLimitMRUCache cache instance contains this key
-				var field = cache.GetType().GetField("softReferenceCache", BindingFlags.NonPublic | BindingFlags.Instance);
+				var field = cache.GetType().GetField("_softReferenceCache", BindingFlags.NonPublic | BindingFlags.Instance);
 
-				var softReferenceCache = (IEnumerable) field.GetValue(cache);
+				var softReferenceCache = (IDictionary<QueryPlanKey, object>) field.GetValue(cache);
 
 				// Since the cache only contains one item, the first one will be our key
-				var queryPlanCacheKey = ((DictionaryEntry) softReferenceCache.First()).Key;
+				var queryPlanCacheKey = softReferenceCache.Keys.First();
 
 				// Setup an action that will be run on another thread and that will do nothing more than clearing the cache as long
 				// as the value stored behind the cachekey is not of type ExpandedQueryExpression, which triggers the error.

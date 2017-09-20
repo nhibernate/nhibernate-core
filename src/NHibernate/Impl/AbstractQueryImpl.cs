@@ -19,6 +19,8 @@ namespace NHibernate.Impl
 	/// </summary>
 	public abstract partial class AbstractQueryImpl : IQuery
 	{
+		private static readonly IInternalLogger _log = LoggerProvider.LoggerFor(typeof(AbstractQueryImpl));
+		
 		private readonly string queryString;
 		private readonly ISessionImplementor session;
 		protected internal ParameterMetadata parameterMetadata;
@@ -647,9 +649,20 @@ namespace NHibernate.Impl
 				{
 					continue;
 				}
-				if (obj is IEnumerable && !(obj is string))
+				if (obj is IEnumerable enu && !(obj is string))
 				{
-					SetParameterList(namedParam, (IEnumerable) obj);
+					var elementType = enu.GetCollectionElementType();
+					if (elementType != null)
+					{
+						SetParameterList(namedParam, enu, DetermineType(namedParam, elementType));
+					}
+					else
+					{
+						_log.WarnFormat("A non generic parameter list value has been used, which is obsolete and may be no more supported in a future release.");
+#pragma warning disable 618 // SetParameterList(taking non generic IEnumerable) is obsolete
+						SetParameterList(namedParam, enu);
+#pragma warning restore 618
+					}
 				}
 				else
 				{
@@ -671,9 +684,22 @@ namespace NHibernate.Impl
 					var getter = ReflectHelper.GetGetter(clazz, namedParam, "property");
 					var retType = getter.ReturnType;
 					var obj = getter.Get(bean);
-					if (typeof(IEnumerable).IsAssignableFrom(retType) && retType != typeof(string))
+					if (obj is IEnumerable enu && retType != typeof(string))
 					{
-						SetParameterList(namedParam, (IEnumerable) obj);
+						
+						var elementType = enu.GetCollectionElementType();
+						if (elementType != null)
+						{
+							SetParameterList(namedParam, enu, DetermineType(namedParam, elementType));
+						}
+						else
+						{
+							_log.WarnFormat(
+								"A non generic parameter list value has been used, which is obsolete and may be no more supported in a future release.");
+#pragma warning disable 618 // SetParameterList(taking non generic IEnumerable) is obsolete
+							SetParameterList(namedParam, enu);
+#pragma warning restore 618
+						}
 					}
 					else
 					{
@@ -701,7 +727,9 @@ namespace NHibernate.Impl
 			{
 				throw new ArgumentNullException("type","Can't determine the type of parameter-list elements.");
 			}
+#pragma warning disable 618 // Any(taking non generic IEnumerable) is obsolete for turning it internal
 			if(!vals.Any())
+#pragma warning restore 618
 			{
 				throw new QueryException(string.Format("An empty parameter-list generates wrong SQL; parameter name '{0}'", name));
 			}
@@ -709,6 +737,9 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		// Obsolete since v5.0
+		/// <inheritdoc />
+		[Obsolete("Please use overload with a generic type parameter")]
 		public IQuery SetParameterList(string name, IEnumerable vals)
 		{
 			if (vals == null)
@@ -722,8 +753,32 @@ namespace NHibernate.Impl
 					return this;
 			}
 
+#pragma warning disable 618 // FirstOrNull is obsolete
 			object firstValue = vals.FirstOrNull();
+#pragma warning restore 618
 			SetParameterList(name, vals, firstValue == null ? GuessType(vals.GetCollectionElementType()) : DetermineType(name, firstValue));
+
+			return this;
+		}
+
+		/// <summary>
+		/// Set the list of values for a named list parameter.
+		/// </summary>
+		/// <param name="name">The name of the parameter.</param>
+		/// <param name="vals">The list of values.</param>
+		/// <typeparam name="T">The type of the element of the list. Used to type the parameter when the query parsing
+		/// does not allow to determine its type.</typeparam>
+		/// <returns><see langword="this" /> for chaining.</returns>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="vals"/> is <see langword="null" />.</exception>
+		public IQuery SetParameterList<T>(string name, IEnumerable<T> vals)
+		{
+			if (vals == null)
+				throw new ArgumentNullException(nameof(vals));
+
+			if (!parameterMetadata.NamedParameterNames.Contains(name) && shouldIgnoredUnknownNamedParameters)
+					return this;
+
+			SetParameterList(name, vals, DetermineType(name, GuessType(typeof(T))));
 
 			return this;
 		}

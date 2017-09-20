@@ -3,9 +3,8 @@ using NHibernate.Util;
 
 namespace NHibernate.Engine.Query.Sql
 {
-	public class NativeSQLQuerySpecification
+	public class NativeSQLQuerySpecification : QueryPlanKey
 	{
-		private readonly string queryString;
 		private readonly INativeSQLQueryReturn[] sqlQueryReturns;
 		private readonly ISet<string> querySpaces;
 		private readonly int hashCode;
@@ -13,9 +12,8 @@ namespace NHibernate.Engine.Query.Sql
 		public NativeSQLQuerySpecification(
 			string queryString,
 			INativeSQLQueryReturn[] sqlQueryReturns,
-			ICollection<string> querySpaces)
+			ICollection<string> querySpaces) : base(queryString)
 		{
-			this.queryString = queryString;
 			this.sqlQueryReturns = sqlQueryReturns;
 
 			this.querySpaces = new HashSet<string>();
@@ -36,11 +34,6 @@ namespace NHibernate.Engine.Query.Sql
 			hashCode = hCode;
 		}
 
-		public string QueryString
-		{
-			get { return queryString; }
-		}
-
 		public INativeSQLQueryReturn[] SqlQueryReturns
 		{
 			get { return sqlQueryReturns; }
@@ -51,22 +44,18 @@ namespace NHibernate.Engine.Query.Sql
 			get { return querySpaces; }
 		}
 
-		public override bool Equals(object obj)
+		public override bool Equals(QueryPlanKey other)
 		{
-			if (this == obj)
-				return true;
+			if (!base.Equals(other))
+				return false;
 
-			var that = obj as NativeSQLQuerySpecification;
+			var that = other as NativeSQLQuerySpecification;
 
 			if (that == null)
 				return false;
 
-			// NH-3956: hashcode inequality rules out equality, but hashcode equality is not enough.
-			// Code taken back from 8e92af3f and amended according to NH-1931.
-			return hashCode == that.hashCode &&
-				queryString.Equals(that.queryString) &&
-				CollectionHelper.SequenceEquals(querySpaces, that.querySpaces) &&
-				CollectionHelper.SequenceEquals<INativeSQLQueryReturn>(sqlQueryReturns, that.sqlQueryReturns);
+			return CollectionHelper.SequenceEquals(querySpaces, that.querySpaces) &&
+				CollectionHelper.SequenceEquals(sqlQueryReturns, that.sqlQueryReturns);
 		}
 
 		public override int GetHashCode()
