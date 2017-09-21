@@ -145,5 +145,8 @@ namespace NHibernate.Driver
 		/// this case.
 		/// </summary>
 		public override bool SupportsEnlistmentWhenAutoEnlistmentIsDisabled => false;
+
+		/// <inheritdoc />
+		public override DateTime MinDate => new DateTime(1753, 1, 1);
 	}
 }

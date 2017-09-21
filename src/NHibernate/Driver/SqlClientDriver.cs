@@ -1,8 +1,8 @@
+using System;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using NHibernate.AdoNet;
-using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -207,5 +207,8 @@ namespace NHibernate.Driver
 		/// right after the scope disposal.
 		/// </summary>
 		public override bool HasDelayedDistributedTransactionCompletion => true;
+
+		/// <inheritdoc />
+		public override DateTime MinDate => new DateTime(1753, 1, 1);
 	}
 }

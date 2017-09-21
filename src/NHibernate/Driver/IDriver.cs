@@ -158,5 +158,10 @@ namespace NHibernate.Driver
 		/// crash due to this, because they re-use the connection in the second phase.
 		/// </remarks>
 		bool HasDelayedDistributedTransactionCompletion { get; }
+
+		/// <summary>
+		/// The minimal date supplied as a <see cref="DateTime" /> supported by this driver.
+		/// </summary>
+		DateTime MinDate { get; }
 	}
 }
