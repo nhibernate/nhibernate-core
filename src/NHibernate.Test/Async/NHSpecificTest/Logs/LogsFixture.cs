@@ -51,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 
 				await (s.GetAsync<Person>(1));//will execute some sql
 
-				var loggingEvent = spy.Events[0];
+				var loggingEvent = spy.GetWholeLog();
 				Assert.That(loggingEvent.Contains(sessionId.ToString()), Is.True);
 			}
 		}
@@ -89,12 +89,9 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 				loggerImpl.Level = Level.All;
 			}
 
-			public string[] Events
+			public string GetWholeLog()
 			{
-				get
-				{
-					return stringBuilder.ToString().Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
-				}
+				return stringBuilder.ToString();
 			}
 
 			public void Dispose()
