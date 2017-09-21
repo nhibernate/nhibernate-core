@@ -67,6 +67,17 @@ namespace NHibernate.Test.TypesTest
 			ReadWrite(expected);
 		}
 
+		[Test]
+		public void ReadWriteYear750()
+		{
+			var expected = new DateTime(750, 5, 13);
+			if (Sfi.ConnectionProvider.Driver.MinDate > expected)
+			{
+				Assert.Ignore($"The driver does not support dates below {Sfi.ConnectionProvider.Driver.MinDate:O}");
+			}
+			ReadWrite(expected);
+		}
+
 		private void ReadWrite(DateTime expected)
 		{
 			// Add an hour to check it is correctly ignored once read back from db.

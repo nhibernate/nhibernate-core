@@ -57,6 +57,24 @@ namespace NHibernate.Test.TypesTest
 			}
 		}
 
+		[Test]
+		public Task ReadWriteYear750Async()
+		{
+			try
+			{
+				var expected = new DateTime(750, 5, 13);
+				if (Sfi.ConnectionProvider.Driver.MinDate > expected)
+				{
+					Assert.Ignore($"The driver does not support dates below {Sfi.ConnectionProvider.Driver.MinDate:O}");
+				}
+				return ReadWriteAsync(expected);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
 		private async Task ReadWriteAsync(DateTime expected, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			// Add an hour to check it is correctly ignored once read back from db.
