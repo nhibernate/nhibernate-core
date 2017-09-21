@@ -50,6 +50,10 @@
 		<property name="nhibernate.connection.connection_string" value="Driver={SQL Server Native Client 11.0};Server=.\SQLExpress;Database=nhibernateOdbc;Trusted_Connection=yes;Mars_Connection=yes;" />
 	</target>
 
+	<target name="setup-teamcity-sqlServer-Sql2008ClientDriver">
+		<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.Sql2008ClientDriver" />
+	</target>
+
 	<target name="setup-teamcity-sqlServer2012">
 		<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSql2012Dialect" />
 	</target>
