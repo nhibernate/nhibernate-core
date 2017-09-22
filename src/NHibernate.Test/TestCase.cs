@@ -68,20 +68,12 @@ namespace NHibernate.Test
 					Assert.Ignore(GetType() + " does not apply to " + Dialect);
 				}
 
+				_sessionFactory = BuildSessionFactory();
+				if (!AppliesTo(_sessionFactory))
+				{
+					Assert.Ignore(GetType() + " does not apply with the current session-factory configuration");
+				}
 				CreateSchema();
-				try
-				{
-					_sessionFactory = BuildSessionFactory();
-					if (!AppliesTo(_sessionFactory))
-					{
-						Assert.Ignore(GetType() + " does not apply with the current session-factory configuration");
-					}
-				}
-				catch
-				{
-					DropSchema();
-					throw;
-				}
 			}
 			catch (Exception e)
 			{
@@ -116,7 +108,8 @@ namespace NHibernate.Test
 				if (!AppliesTo(Dialect))
 					return;
 
-				DropSchema();
+				if (AppliesTo(_sessionFactory))
+					DropSchema();
 				Cleanup();
 			}
 		}
