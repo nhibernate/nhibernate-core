@@ -11,4 +11,6 @@ using System.Security;
 [assembly: AssemblyDelaySignAttribute(false)]
 [assembly: AllowPartiallyTrustedCallersAttribute()]
 [assembly: SecurityRulesAttribute(SecurityRuleSet.Level1)]
+[assembly: AssemblyFileVersion("4.1.0.4000")]
+[assembly: AssemblyVersion("4.1.0.4000")]
 
