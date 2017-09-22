@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Xml;
 using System.Xml.Linq;
 using NHibernate.Bytecode;
+using NHibernate.Cfg;
 using NHibernate.Classic;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
@@ -311,6 +312,25 @@ namespace NHibernate.Type
 						 l =>
 						 GetType(NHibernateUtil.Serializable, l,
 								 len => new SerializableType(typeof (object), SqlTypeFactory.GetBinary(len))));
+		}
+
+		/// <summary>
+		/// <para>Defines which NHibernate type should be chosen by default for handling a given .Net type.</para>
+		/// <para>This must be done before any operation on NHibernate, including building its
+		/// <see cref="Configuration" /> and building session factory. Otherwise the behavior will be undefined.</para>
+		/// </summary>
+		/// <param name="targetType">The NHibernate type.</param>
+		/// <typeparam name="T">The .Net type.</typeparam>
+		public static void SetDefaultType<T>(IType targetType)
+		{
+			if (targetType == null)
+				throw new ArgumentNullException(nameof(targetType));
+
+			var type = typeof(T);
+			foreach (var alias in GetClrTypeAliases(type))
+			{
+				typeByTypeOfName[alias] = targetType;
+			}
 		}
 
 		private static ICollectionTypeFactory CollectionTypeFactory =>
