@@ -254,7 +254,10 @@ namespace NHibernate.Test
 			return false;
 		}
 
-		private void Configure()
+		/// <summary>
+		/// (Re)Create the configuration.
+		/// </summary>
+		protected void Configure()
 		{
 			cfg = TestConfigurationHelper.GetDefaultConfiguration();
 
