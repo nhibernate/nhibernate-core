@@ -136,6 +136,7 @@ namespace NHibernate.Test.TypesTest
 		}
 	}
 
+	[TestFixture]
 	public class GenericEnumTypeTest
 	{
 		[Test]

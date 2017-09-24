@@ -19,6 +19,7 @@ namespace NHibernate.Test.TypesTest
 		public virtual string StringClob { get; set; }
 	}
 
+	[TestFixture]
 	public abstract class TypeSqlTypeFixture
 	{
 		protected const string TestNameSpace = "NHibernate.Test.TypesTest.";
