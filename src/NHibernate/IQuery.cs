@@ -3,7 +3,6 @@ using System.Collections;
 using NHibernate.Transform;
 using NHibernate.Type;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace NHibernate
 {
@@ -413,7 +412,11 @@ namespace NHibernate
 		/// <param name="name">The name of the parameter</param>
 		IQuery SetDateTime(string name, DateTime val);
 
+		// Since v5.0
+		[Obsolete("Use SetDateTime instead, it uses DateTime2 with dialects supporting it.")]
 		IQuery SetDateTime2(int position, DateTime val);
+		// Since v5.0
+		[Obsolete("Use SetDateTime instead, it uses DateTime2 with dialects supporting it.")]
 		IQuery SetDateTime2(string name, DateTime val);
 		IQuery SetTimeSpan(int position, TimeSpan val);
 		IQuery SetTimeSpan(string name, TimeSpan val);

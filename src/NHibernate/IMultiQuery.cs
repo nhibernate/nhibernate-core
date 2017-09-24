@@ -243,6 +243,8 @@ namespace NHibernate
 		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetDateTime(string name, DateTime val);
 
+		// Since v5.0
+		[Obsolete("Use SetDateTime instead, it uses DateTime2 with dialects supporting it.")]
 		IMultiQuery SetDateTime2(string name, DateTime val);
 		IMultiQuery SetTimeSpan(string name, TimeSpan val);
 		IMultiQuery SetTimeAsTimeSpan(string name, TimeSpan val);

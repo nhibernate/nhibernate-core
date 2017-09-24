@@ -27,6 +27,8 @@ namespace NHibernate.Type
 		{
 		}
 
+		// Since v5.0
+		[Obsolete("Support an obsolete type.")]
 		public DateTimeType(SqlType sqlTypeDateTime) : base(sqlTypeDateTime)
 		{
 		}

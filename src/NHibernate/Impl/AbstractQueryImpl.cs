@@ -4,13 +4,11 @@ using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Hql;
-using NHibernate.Properties;
 using NHibernate.Proxy;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Linq;
-using System.Threading;
 
 namespace NHibernate.Impl
 {
@@ -558,12 +556,16 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		// Since v5.0
+		[Obsolete("Use SetDateTime instead, it uses DateTime2 with dialects supporting it.")]
 		public IQuery SetDateTime2(int position, DateTime val)
 		{
 			SetParameter(position, val, NHibernateUtil.DateTime2);
 			return this;
 		}
 
+		// Since v5.0
+		[Obsolete("Use SetDateTime instead, it uses DateTime2 with dialects supporting it.")]
 		public IQuery SetDateTime2(string name, DateTime val)
 		{
 			SetParameter(name, val, NHibernateUtil.DateTime2);

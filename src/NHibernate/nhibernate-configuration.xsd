@@ -161,6 +161,14 @@
 										</xs:documentation>
 									</xs:annotation>
 								</xs:enumeration>
+								<xs:enumeration value="sql_types.keep_datetime">
+									<xs:annotation>
+										<xs:documentation>
+											Disable switching built-in NHibernate date-time types from DbType.DateTime to DbType.DateTime2
+											for dialects supporting datetime2.
+										</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
 							</xs:restriction>
 						</xs:simpleType>
 					</xs:attribute>

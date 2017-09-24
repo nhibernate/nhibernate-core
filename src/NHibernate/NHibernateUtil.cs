@@ -115,9 +115,11 @@ namespace NHibernate
 		/// </summary>
 		public static readonly DateTimeType DateTime = new DateTimeType();
 
+		// Obsolete since v5.0
 		/// <summary>
 		/// NHibernate date type
 		/// </summary>
+		[Obsolete("Use DateTimeType instead, it uses DateTime2 with dialects supporting it.")]
 		public static readonly DateTime2Type DateTime2 = new DateTime2Type();
 
 		/// <summary>

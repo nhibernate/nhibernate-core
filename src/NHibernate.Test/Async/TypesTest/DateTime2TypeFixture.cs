@@ -20,6 +20,7 @@ namespace NHibernate.Test.TypesTest
 	/// TestFixtures for the <see cref="DateTimeType"/>.
 	/// </summary>
 	[TestFixture]
+	[Obsolete]
 	public class DateTime2TypeFixtureAsync
 	{
 		[Test]

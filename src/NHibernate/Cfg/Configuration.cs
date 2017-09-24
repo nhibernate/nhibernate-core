@@ -6,11 +6,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
 using System.Xml;
 using System.Xml.Schema;
-using System.Xml.Serialization;
 
 using NHibernate.Bytecode;
 using NHibernate.Cfg.ConfigurationSchema;
@@ -29,7 +29,6 @@ using NHibernate.Tool.hbm2ddl;
 using NHibernate.Type;
 using NHibernate.Util;
 using Array = System.Array;
-using System.Runtime.Serialization;
 
 namespace NHibernate.Cfg
 {
@@ -236,6 +235,9 @@ namespace NHibernate.Cfg
 			{
 				return "id".Equals(GetIdentifierPropertyName(className));
 			}
+
+			public Dialect.Dialect Dialect =>
+				NHibernate.Dialect.Dialect.GetDialect(configuration.Properties);
 		}
 
 		private IMapping mapping;

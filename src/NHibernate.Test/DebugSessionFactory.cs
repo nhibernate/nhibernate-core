@@ -179,6 +179,8 @@ namespace NHibernate.Test
 			return ActualFactory.HasNonIdentifierPropertyNamedId(className);
 		}
 
+		Dialect.Dialect IMapping.Dialect => ActualFactory.Dialect;
+
 		void IDisposable.Dispose()
 		{
 			ActualFactory.Dispose();
@@ -269,8 +271,6 @@ namespace NHibernate.Test
 		bool ISessionFactory.IsClosed => ActualFactory.IsClosed;
 
 		ICollection<string> ISessionFactory.DefinedFilterNames => ActualFactory.DefinedFilterNames;
-
-		Dialect.Dialect ISessionFactoryImplementor.Dialect => ActualFactory.Dialect;
 
 		IInterceptor ISessionFactoryImplementor.Interceptor => ActualFactory.Interceptor;
 

@@ -39,7 +39,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					return fe.DataType;
 				}
 				ISQLFunction sf = Walker.SessionFactoryHelper.FindSQLFunction(Text);
-				return sf == null ? null : sf.ReturnType(null, null);
+				return sf?.ReturnType(null, Walker.SessionFactoryHelper.Factory);
 			}
 
 			set

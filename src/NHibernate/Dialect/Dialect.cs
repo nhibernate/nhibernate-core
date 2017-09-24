@@ -292,6 +292,14 @@ namespace NHibernate.Dialect
 			_typeNames.Put(code, name);
 		}
 
+		/// <summary>
+		/// Override provided <see cref="SqlType"/>s.
+		/// </summary>
+		/// <param name="type">The original <see cref="SqlType"/>.</param>
+		/// <returns>Refined <see cref="SqlType"/>s.</returns>
+		public virtual SqlType OverrideSqlType(SqlType type) =>
+			type;
+
 		#endregion
 
 		#region DDL support

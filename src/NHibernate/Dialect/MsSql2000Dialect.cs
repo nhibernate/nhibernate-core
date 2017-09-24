@@ -410,10 +410,8 @@ namespace NHibernate.Dialect
 			get { return "CURRENT_TIMESTAMP"; }
 		}
 
-		public override string CurrentTimestampSelectString
-		{
-			get { return "SELECT CURRENT_TIMESTAMP"; }
-		}
+		public override string CurrentTimestampSelectString =>
+			"SELECT " + CurrentTimestampSQLFunctionName;
 
 		public override bool IsCurrentTimestampSelectStringCallable
 		{

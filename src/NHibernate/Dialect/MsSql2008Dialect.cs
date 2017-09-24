@@ -1,12 +1,36 @@
-﻿using System.Data;
-using NHibernate.Cfg;
+﻿using System.Collections.Generic;
+using System.Data;
 using NHibernate.Dialect.Function;
 using NHibernate.Driver;
+using NHibernate.SqlTypes;
+using NHibernate.Util;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
 {
 	public class MsSql2008Dialect : MsSql2005Dialect
 	{
+		/// <summary>
+		/// Should <see cref="DbType.DateTime" /> be preserved instead of switching it to <see cref="DbType.DateTime2" />?
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> for preserving <see cref="DbType.DateTime" />, <see langword="false" /> for
+		/// replacing it with <see cref="DbType.DateTime2" />.
+		/// </value>
+		protected bool KeepDateTime { get; private set; }
+
+		public override void Configure(IDictionary<string, string> settings)
+		{
+			base.Configure(settings);
+
+			KeepDateTime = PropertiesHelper.GetBoolean(Environment.SqlTypesKeepDateTime, settings, false);
+			if (KeepDateTime)
+			{
+				// Re-register functions, they depend on this setting.
+				RegisterFunctions();
+			}
+		}
+
 		protected override void RegisterDateTimeTypeMappings()
 		{
 			base.RegisterDateTimeTypeMappings();
@@ -19,8 +43,15 @@ namespace NHibernate.Dialect
 		protected override void RegisterFunctions()
 		{
 			base.RegisterFunctions();
-			RegisterFunction("current_timestamp", new NoArgSQLFunction("sysdatetime", NHibernateUtil.DateTime2, true));
-			RegisterFunction("current_timestamp_offset", new NoArgSQLFunction("sysdatetimeoffset", NHibernateUtil.DateTimeOffset, true));
+			if (!KeepDateTime)
+			{
+				RegisterFunction(
+					"current_timestamp",
+					new NoArgSQLFunction("sysdatetime", NHibernateUtil.DateTime, true));
+			}
+			RegisterFunction(
+				"current_timestamp_offset",
+				new NoArgSQLFunction("sysdatetimeoffset", NHibernateUtil.DateTimeOffset, true));
 		}
 
 		protected override void RegisterKeywords()
@@ -35,6 +66,24 @@ namespace NHibernate.Dialect
 		{
 			base.RegisterDefaultProperties();
 			DefaultProperties[Environment.ConnectionDriver] = typeof(Sql2008ClientDriver).AssemblyQualifiedName;
+		}
+
+		public override string CurrentTimestampSQLFunctionName =>
+			KeepDateTime ? base.CurrentTimestampSQLFunctionName : "SYSDATETIME()";
+
+		public override long TimestampResolutionInTicks =>
+			KeepDateTime
+				? base.TimestampResolutionInTicks
+				// MS SQL resolution with datetime2 is 100ns, one tick.
+				: 1;
+
+		/// <inheritdoc />
+		public override SqlType OverrideSqlType(SqlType type)
+		{
+			type = base.OverrideSqlType(type);
+			return !KeepDateTime && SqlTypeFactory.DateTime.Equals(type)
+				? SqlTypeFactory.DateTime2
+				: type;
 		}
 	}
 }

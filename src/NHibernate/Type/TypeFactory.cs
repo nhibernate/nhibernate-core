@@ -8,7 +8,6 @@ using System.Xml;
 using System.Xml.Linq;
 using NHibernate.Bytecode;
 using NHibernate.Classic;
-using NHibernate.Linq;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 using NHibernate.Util;
@@ -33,7 +32,7 @@ namespace NHibernate.Type
 			Length,
 			PrecisionScale
 		}
-
+		
 		private static readonly string[] EmptyAliases= new string[0];
 		private static readonly char[] PrecisionScaleSplit = new[] { '(', ')', ',' };
 		private static readonly char[] LengthSplit = new[] { '(', ')' };
@@ -259,7 +258,7 @@ namespace NHibernate.Type
 			
 			RegisterType(NHibernateUtil.StringClob, EmptyAliases,
 						 l => GetType(NHibernateUtil.StringClob, l, len => new StringClobType(SqlTypeFactory.GetStringClob(len))));
-
+			
 			RegisterType(NHibernateUtil.Date, new[] { "date" });
 			RegisterType(NHibernateUtil.Timestamp, new[] { "timestamp" });
 			RegisterType(NHibernateUtil.DbTimestamp, new[] { "dbtimestamp" });
@@ -270,11 +269,13 @@ namespace NHibernate.Type
 			RegisterType(NHibernateUtil.TimeAsTimeSpan, EmptyAliases);
 			RegisterType(NHibernateUtil.LocalDateTime, new[] { "localdatetime" });
 			RegisterType(NHibernateUtil.UtcDateTime, new[] { "utcdatetime" });
-
+			
 			RegisterType(NHibernateUtil.Currency, new[] { "currency" },
 				(p, s) => GetType(NHibernateUtil.Currency, p, s, st => new CurrencyType(st)));
 
+#pragma warning disable 618 // DateTime2 is obsolete
 			RegisterType(NHibernateUtil.DateTime2, new[] { "datetime2" });
+#pragma warning restore 618
 			RegisterType(NHibernateUtil.Serializable, new[] {"Serializable", "serializable"},
 						 l =>
 						 GetType(NHibernateUtil.Serializable, l,
