@@ -22,9 +22,10 @@ namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class DbTimestampType : TimestampType, IVersionType
+	public partial class DbTimestampType : TimestampType
 	{
 
+		/// <inheritdoc />
 		public override Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -36,7 +37,7 @@ namespace NHibernate.Type
 				if (session == null)
 				{
 					log.Debug("incoming session was null; using current vm time");
-					return base.SeedAsync(session, cancellationToken);
+					return base.SeedAsync(null, cancellationToken);
 				}
 				else if (!session.Factory.Dialect.SupportsCurrentTimestampSelection)
 				{

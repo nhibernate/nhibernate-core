@@ -241,7 +241,18 @@ namespace NHibernate
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
 		/// <param name="name">The name of the parameter</param>
 		/// <returns>The instance for method chain.</returns>
+		/// <remarks>Since v5.0, does no more cut milliseconds. Use <see cref="SetDateTimeNoMs" />
+		/// for this</remarks>
 		IMultiQuery SetDateTime(string name, DateTime val);
+
+		/// <summary>
+		/// Bind an instance of a <see cref="DateTime" /> to a named parameter
+		/// using an NHibernate <see cref="DateTimeNoMsType"/>.
+		/// </summary>
+		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
+		/// <param name="name">The name of the parameter</param>
+		/// <returns>The instance for method chain.</returns>
+		IMultiQuery SetDateTimeNoMs(string name, DateTime val);
 
 		// Since v5.0
 		[Obsolete("Use SetDateTime instead, it uses DateTime2 with dialects supporting it.")]

@@ -9,30 +9,19 @@
 
 
 using System;
-using System.Collections;
-using System.Data.Common;
 using NHibernate.Engine;
-using NHibernate.SqlTypes;
+using System.Data;
 
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class TimestampType : PrimitiveType, IVersionType, ILiteralType
+	public partial class DateTimeNoMsType : AbstractDateTimeType
 	{
 
 		#region IVersionType Members
 
-		public Task<object> NextAsync(object current, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			return SeedAsync(session, cancellationToken);
-		}
-
-		public virtual Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken)
+		public override Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

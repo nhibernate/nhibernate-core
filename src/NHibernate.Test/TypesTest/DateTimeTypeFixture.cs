@@ -54,20 +54,11 @@ namespace NHibernate.Test.TypesTest
 		}
 
 		[Test]
-		public void EqualityShouldIgnoreKindAndMillisecond()
+		public void EqualityShouldIgnoreKindAndNotIgnoreMillisecond()
 		{
 			var type = NHibernateUtil.DateTime;
 			var localTime = DateTime.Now;
-			var unspecifiedKid = new DateTime(
-				localTime.Year,
-				localTime.Month,
-				localTime.Day,
-				localTime.Hour,
-				localTime.Minute,
-				localTime.Second,
-				0,
-				DateTimeKind.Unspecified);
-			Assert.That(type.IsEqual(localTime, unspecifiedKid), Is.True);
+			var unspecifiedKid = new DateTime(localTime.Ticks, DateTimeKind.Unspecified);
 			Assert.That(type.IsEqual(localTime, unspecifiedKid), Is.True);
 		}
 	}

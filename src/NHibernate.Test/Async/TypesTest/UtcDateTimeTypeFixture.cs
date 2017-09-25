@@ -20,35 +20,36 @@ namespace NHibernate.Test.TypesTest
 	[TestFixture]
 	public class UtcDateTimeTypeFixtureAsync : TypeFixtureBase
 	{
-		protected override string TypeName
-		{
-			get { return "DateTime"; }
-		}
+		protected override string TypeName => "DateTime";
 
 		[Test]
 		public async Task ReadWriteAsync()
 		{
-			DateTime val = DateTime.UtcNow;
-			DateTime expected = new DateTime(val.Year, val.Month, val.Day, val.Hour, val.Minute, val.Second, DateTimeKind.Utc);
+			var val = RoundForDialect(DateTime.UtcNow);
+			var expected = RoundForDialect(DateTime.SpecifyKind(val, DateTimeKind.Utc));
 
-			DateTimeClass basic = new DateTimeClass();
-			basic.Id = 1;
-			basic.UtcDateTimeValue = val;
+			var basic = new DateTimeClass
+			{
+				Id = 1,
+				UtcDateTimeValue = val
+			};
 
-			ISession s = OpenSession();
-			await (s.SaveAsync(basic));
-			await (s.FlushAsync());
-			s.Close();
+			using (var s = OpenSession())
+			{
+				await (s.SaveAsync(basic));
+				await (s.FlushAsync());
+			}
 
-			s = OpenSession();
-			basic = (DateTimeClass) await (s.LoadAsync(typeof (DateTimeClass), 1));
+			using (var s = OpenSession())
+			{
+				basic = (DateTimeClass) await (s.LoadAsync(typeof(DateTimeClass), 1));
 
-			Assert.AreEqual(DateTimeKind.Utc, basic.UtcDateTimeValue.Value.Kind);
-			Assert.AreEqual(expected, basic.UtcDateTimeValue.Value);
+				Assert.AreEqual(DateTimeKind.Utc, basic.UtcDateTimeValue.Value.Kind);
+				Assert.AreEqual(expected, basic.UtcDateTimeValue);
 
-			await (s.DeleteAsync(basic));
-			await (s.FlushAsync());
-			s.Close();
+				await (s.DeleteAsync(basic));
+				await (s.FlushAsync());
+			}
 		}
 	}
 }

@@ -3,16 +3,22 @@ using System;
 namespace NHibernate.Type
 {
 	[Serializable]
-	public class UtcDateTimeType : AbstractDateTimeSpecificKindType
+	public class UtcDateTimeType : DateTimeType
 	{
-		protected override DateTimeKind DateTimeKind
-		{
-			get { return DateTimeKind.Utc; }
-		}
+		/// <inheritdoc />
+		protected override DateTimeKind Kind => DateTimeKind.Utc;
 
-		public override string Name
-		{
-			get { return "UtcDateTime"; }
-		}
+		/// <inheritdoc />
+		public override string Name => "UtcDateTime";
+	}
+
+	[Serializable]
+	public class UtcDateTimeNoMsType : DateTimeNoMsType
+	{
+		/// <inheritdoc />
+		protected override DateTimeKind Kind => DateTimeKind.Utc;
+
+		/// <inheritdoc />
+		public override string Name => "UtcDateTimeNoMs";
 	}
 }

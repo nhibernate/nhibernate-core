@@ -17,27 +17,27 @@ namespace NHibernate.Test.TypesTest
 	using System.Threading.Tasks;
 	using System.Threading;
 	/// <summary>
-	/// TestFixtures for the <see cref="DateTimeType"/>.
+	/// TestFixtures for the <see cref="DateTimeNoMsType"/>.
 	/// </summary>
 	[TestFixture]
-	[Obsolete]
-	public class DateTime2TypeFixtureAsync
+	public class DateTimeNoMsTypeFixtureAsync
 	{
 		[Test]
 		public async Task NextAsync()
 		{
-			var type = NHibernateUtil.DateTime2;
-			object current = DateTime.Now.AddMilliseconds(-1);
+			var type = NHibernateUtil.DateTimeNoMs;
+			object current = DateTime.Parse("2004-01-01");
 			object next = await (type.NextAsync(current, null, CancellationToken.None));
 
-			Assert.That(next, Is.TypeOf<DateTime>().And.GreaterThan(current));
+			Assert.That(next, Is.TypeOf<DateTime>(), "next should be DateTime");
+			Assert.That(next, Is.GreaterThan(current), "next should be greater than current");
 		}
 
 		[Test]
 		public async Task SeedAsync()
 		{
-			var type = NHibernateUtil.DateTime2;
-			Assert.IsTrue(await (type.SeedAsync(null, CancellationToken.None)) is DateTime, "seed should be DateTime");
+			var type = NHibernateUtil.DateTimeNoMs;
+			Assert.That(await (type.SeedAsync(null, CancellationToken.None)), Is.TypeOf<DateTime>(), "seed should be DateTime");
 		}
 	}
 }

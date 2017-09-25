@@ -9,35 +9,35 @@ namespace NHibernate.Test.TypesTest
 	[TestFixture]
 	public class LocalDateTimeTypeFixture : TypeFixtureBase
 	{
-		protected override string TypeName
-		{
-			get { return "DateTime"; }
-		}
+		protected override string TypeName => "DateTime";
 
 		[Test]
 		public void ReadWrite()
 		{
-			DateTime val = DateTime.UtcNow;
-			DateTime expected = new DateTime(val.Year, val.Month, val.Day, val.Hour, val.Minute, val.Second, DateTimeKind.Local);
+			var val = RoundForDialect(DateTime.UtcNow);
+			var expected = RoundForDialect(DateTime.SpecifyKind(val, DateTimeKind.Local));
+			var basic = new DateTimeClass
+			{
+				Id = 1,
+				LocalDateTimeValue = val
+			};
 
-			DateTimeClass basic = new DateTimeClass();
-			basic.Id = 1;
-			basic.LocalDateTimeValue = val;
+			using (var s = OpenSession())
+			{
+				s.Save(basic);
+				s.Flush();
+			}
 
-			ISession s = OpenSession();
-			s.Save(basic);
-			s.Flush();
-			s.Close();
+			using (var s = OpenSession())
+			{
+				basic = s.Load<DateTimeClass>(1);
 
-			s = OpenSession();
-			basic = (DateTimeClass) s.Load(typeof (DateTimeClass), 1);
+				Assert.AreEqual(DateTimeKind.Local, basic.LocalDateTimeValue.Value.Kind);
+				Assert.AreEqual(expected, basic.LocalDateTimeValue);
 
-			Assert.AreEqual(DateTimeKind.Local, basic.LocalDateTimeValue.Value.Kind);
-			Assert.AreEqual(expected, basic.LocalDateTimeValue.Value);
-
-			s.Delete(basic);
-			s.Flush();
-			s.Close();
+				s.Delete(basic);
+				s.Flush();
+			}
 		}
 	}
 }

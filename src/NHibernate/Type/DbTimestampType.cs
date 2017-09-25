@@ -16,25 +16,24 @@ namespace NHibernate.Type
 	/// </summary>
 	/// <remarks>
 	/// Note: May/may-not cause issues on dialects which do not properly support
-	/// a true notion of timestamp
+	/// a true notion of timestamp.
 	/// </remarks>
 	[Serializable]
-	public partial class DbTimestampType : TimestampType, IVersionType
+	public partial class DbTimestampType : TimestampType
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (DbTimestampType));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DbTimestampType));
 		private static readonly SqlType[] EmptyParams = new SqlType[0];
 
-		public override string Name
-		{
-			get { return "DbTimestamp"; }
-		}
+		/// <inheritdoc />
+		public override string Name => "DbTimestamp";
 
+		/// <inheritdoc />
 		public override object Seed(ISessionImplementor session)
 		{
 			if (session == null)
 			{
 				log.Debug("incoming session was null; using current vm time");
-				return base.Seed(session);
+				return base.Seed(null);
 			}
 			else if (!session.Factory.Dialect.SupportsCurrentTimestampSelection)
 			{

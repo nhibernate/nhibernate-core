@@ -9,35 +9,36 @@ namespace NHibernate.Test.TypesTest
 	[TestFixture]
 	public class UtcDateTimeTypeFixture : TypeFixtureBase
 	{
-		protected override string TypeName
-		{
-			get { return "DateTime"; }
-		}
+		protected override string TypeName => "DateTime";
 
 		[Test]
 		public void ReadWrite()
 		{
-			DateTime val = DateTime.UtcNow;
-			DateTime expected = new DateTime(val.Year, val.Month, val.Day, val.Hour, val.Minute, val.Second, DateTimeKind.Utc);
+			var val = RoundForDialect(DateTime.UtcNow);
+			var expected = RoundForDialect(DateTime.SpecifyKind(val, DateTimeKind.Utc));
 
-			DateTimeClass basic = new DateTimeClass();
-			basic.Id = 1;
-			basic.UtcDateTimeValue = val;
+			var basic = new DateTimeClass
+			{
+				Id = 1,
+				UtcDateTimeValue = val
+			};
 
-			ISession s = OpenSession();
-			s.Save(basic);
-			s.Flush();
-			s.Close();
+			using (var s = OpenSession())
+			{
+				s.Save(basic);
+				s.Flush();
+			}
 
-			s = OpenSession();
-			basic = (DateTimeClass) s.Load(typeof (DateTimeClass), 1);
+			using (var s = OpenSession())
+			{
+				basic = (DateTimeClass) s.Load(typeof(DateTimeClass), 1);
 
-			Assert.AreEqual(DateTimeKind.Utc, basic.UtcDateTimeValue.Value.Kind);
-			Assert.AreEqual(expected, basic.UtcDateTimeValue.Value);
+				Assert.AreEqual(DateTimeKind.Utc, basic.UtcDateTimeValue.Value.Kind);
+				Assert.AreEqual(expected, basic.UtcDateTimeValue);
 
-			s.Delete(basic);
-			s.Flush();
-			s.Close();
+				s.Delete(basic);
+				s.Flush();
+			}
 		}
 	}
 }

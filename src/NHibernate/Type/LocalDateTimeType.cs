@@ -3,16 +3,22 @@ using System;
 namespace NHibernate.Type
 {
 	[Serializable]
-	public class LocalDateTimeType : AbstractDateTimeSpecificKindType
+	public class LocalDateTimeType : DateTimeType
 	{
-		protected override DateTimeKind DateTimeKind
-		{
-			get { return DateTimeKind.Local; }
-		}
+		/// <inheritdoc />
+		protected override DateTimeKind Kind => DateTimeKind.Local;
 
-		public override string Name
-		{
-			get { return "LocalDateTime"; }
-		}
+		/// <inheritdoc />
+		public override string Name => "LocalDateTime";
+	}
+
+	[Serializable]
+	public class LocalDateTimeNoMsType : DateTimeNoMsType
+	{
+		/// <inheritdoc />
+		protected override DateTimeKind Kind => DateTimeKind.Local;
+
+		/// <inheritdoc />
+		public override string Name => "LocalDateTimeNoMs";
 	}
 }

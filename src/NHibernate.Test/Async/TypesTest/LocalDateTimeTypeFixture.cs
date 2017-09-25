@@ -20,35 +20,35 @@ namespace NHibernate.Test.TypesTest
 	[TestFixture]
 	public class LocalDateTimeTypeFixtureAsync : TypeFixtureBase
 	{
-		protected override string TypeName
-		{
-			get { return "DateTime"; }
-		}
+		protected override string TypeName => "DateTime";
 
 		[Test]
 		public async Task ReadWriteAsync()
 		{
-			DateTime val = DateTime.UtcNow;
-			DateTime expected = new DateTime(val.Year, val.Month, val.Day, val.Hour, val.Minute, val.Second, DateTimeKind.Local);
+			var val = RoundForDialect(DateTime.UtcNow);
+			var expected = RoundForDialect(DateTime.SpecifyKind(val, DateTimeKind.Local));
+			var basic = new DateTimeClass
+			{
+				Id = 1,
+				LocalDateTimeValue = val
+			};
 
-			DateTimeClass basic = new DateTimeClass();
-			basic.Id = 1;
-			basic.LocalDateTimeValue = val;
+			using (var s = OpenSession())
+			{
+				await (s.SaveAsync(basic));
+				await (s.FlushAsync());
+			}
 
-			ISession s = OpenSession();
-			await (s.SaveAsync(basic));
-			await (s.FlushAsync());
-			s.Close();
+			using (var s = OpenSession())
+			{
+				basic = await (s.LoadAsync<DateTimeClass>(1));
 
-			s = OpenSession();
-			basic = (DateTimeClass) await (s.LoadAsync(typeof (DateTimeClass), 1));
+				Assert.AreEqual(DateTimeKind.Local, basic.LocalDateTimeValue.Value.Kind);
+				Assert.AreEqual(expected, basic.LocalDateTimeValue);
 
-			Assert.AreEqual(DateTimeKind.Local, basic.LocalDateTimeValue.Value.Kind);
-			Assert.AreEqual(expected, basic.LocalDateTimeValue.Value);
-
-			await (s.DeleteAsync(basic));
-			await (s.FlushAsync());
-			s.Close();
+				await (s.DeleteAsync(basic));
+				await (s.FlushAsync());
+			}
 		}
 	}
 }

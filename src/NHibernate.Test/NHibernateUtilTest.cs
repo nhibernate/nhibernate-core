@@ -1,3 +1,5 @@
+using System;
+
 namespace NHibernate.Test
 {
 	using NUnit.Framework;
@@ -25,13 +27,19 @@ namespace NHibernate.Test
 				NHibernateUtil.GuessType(typeof(int?)));
 		}
 
-
 		[Test]
 		public void CanGuessTypeOfNullableInt32ByValue()
 		{
 			int? val = 15;
 			Assert.AreEqual(NHibernateUtil.Int32,
 				NHibernateUtil.GuessType(val));
+		}
+
+		[Test]
+		public void CanGuessTypeOfDateTime()
+		{
+			Assert.AreEqual(NHibernateUtil.DateTime,
+				NHibernateUtil.GuessType(typeof(DateTime)));
 		}
 	}
 }

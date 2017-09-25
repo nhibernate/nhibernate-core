@@ -14,7 +14,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void Next()
 		{
-			DateTimeType type = NHibernateUtil.DateTime2;
+			var type = NHibernateUtil.DateTime2;
 			object current = DateTime.Now.AddMilliseconds(-1);
 			object next = type.Next(current, null);
 
@@ -24,14 +24,14 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void Seed()
 		{
-			DateTimeType type = NHibernateUtil.DateTime;
+			var type = NHibernateUtil.DateTime2;
 			Assert.IsTrue(type.Seed(null) is DateTime, "seed should be DateTime");
 		}
 
 		[Test]
 		public void DeepCopyNotNull()
 		{
-			NullableType type = NHibernateUtil.DateTime;
+			var type = NHibernateUtil.DateTime2;
 
 			object value1 = DateTime.Now;
 			object value2 = type.DeepCopy(value1, null);

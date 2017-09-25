@@ -258,7 +258,8 @@ namespace NHibernate.Type
 			
 			RegisterType(NHibernateUtil.StringClob, EmptyAliases,
 						 l => GetType(NHibernateUtil.StringClob, l, len => new StringClobType(SqlTypeFactory.GetStringClob(len))));
-			
+
+			RegisterType(NHibernateUtil.DateTimeNoMs, new[] { "datetimenoms" });
 			RegisterType(NHibernateUtil.Date, new[] { "date" });
 			RegisterType(NHibernateUtil.Timestamp, new[] { "timestamp" });
 			RegisterType(NHibernateUtil.DbTimestamp, new[] { "dbtimestamp" });
@@ -269,7 +270,9 @@ namespace NHibernate.Type
 			RegisterType(NHibernateUtil.TimeAsTimeSpan, EmptyAliases);
 			RegisterType(NHibernateUtil.LocalDateTime, new[] { "localdatetime" });
 			RegisterType(NHibernateUtil.UtcDateTime, new[] { "utcdatetime" });
-			
+			RegisterType(NHibernateUtil.LocalDateTimeNoMs, new[] { "localdatetimenoms" });
+			RegisterType(NHibernateUtil.UtcDateTimeNoMs, new[] { "utcdatetimenoms" });
+
 			RegisterType(NHibernateUtil.Currency, new[] { "currency" },
 				(p, s) => GetType(NHibernateUtil.Currency, p, s, st => new CurrencyType(st)));
 
