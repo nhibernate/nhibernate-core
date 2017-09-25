@@ -1206,7 +1206,7 @@ namespace NHibernate.Loader
 
 				IDriver driver = _factory.ConnectionProvider.Driver;
 				driver.RemoveUnusedCommandParameters(command, sqlString);
-				driver.ExpandQueryParameters(command, sqlString);
+				driver.ExpandQueryParameters(command, sqlString, sqlCommand.ParameterTypes);
 			}
 			catch (HibernateException)
 			{

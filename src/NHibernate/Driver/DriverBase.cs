@@ -231,7 +231,7 @@ namespace NHibernate.Driver
 				.ForEach(unusedParameterName => cmd.Parameters.RemoveAt(unusedParameterName));
 		}
 
-		public virtual void ExpandQueryParameters(DbCommand cmd, SqlString sqlString)
+		public virtual void ExpandQueryParameters(DbCommand cmd, SqlString sqlString, SqlType[] parameterTypes)
 		{
 			if (UseNamedPrefixInSql)
 				return;  // named parameters are ok
@@ -242,8 +242,10 @@ namespace NHibernate.Driver
 				var parameter = part as Parameter;
 				if (parameter != null)
 				{
-					var originalParameter = cmd.Parameters[parameter.ParameterPosition.Value];
-					expandedParameters.Add(CloneParameter(cmd, originalParameter));
+					var index = parameter.ParameterPosition.Value;
+					var originalParameter = cmd.Parameters[index];
+					var originalType = parameterTypes[index];
+					expandedParameters.Add(CloneParameter(cmd, originalParameter, originalType));
 				}
 			}
 
@@ -262,11 +264,9 @@ namespace NHibernate.Driver
 			get { return false; }
 		}
 
-		protected virtual DbParameter CloneParameter(DbCommand cmd, DbParameter originalParameter)
+		protected virtual DbParameter CloneParameter(DbCommand cmd, DbParameter originalParameter, SqlType originalType)
 		{
-			var clone = cmd.CreateParameter();
-			clone.DbType = originalParameter.DbType;
-			clone.ParameterName = originalParameter.ParameterName;
+			var clone = GenerateParameter(cmd, originalParameter.ParameterName, originalType);
 			clone.Value = originalParameter.Value;
 			return clone;
 		}

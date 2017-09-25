@@ -105,7 +105,7 @@ namespace NHibernate.Driver
 		/// for 'select ... from MyTable t where t.Col1 = @p0 and t.Col2 = @p0' we can issue
 		/// 'select ... from MyTable t where t.Col1 = ? and t.Col2 = ?'
 		/// </remarks>
-		void ExpandQueryParameters(DbCommand cmd, SqlString sqlString);
+		void ExpandQueryParameters(DbCommand cmd, SqlString sqlString, SqlType[] parameterTypes);
 
 		IResultSetsCommand GetResultSetsCommand(ISessionImplementor session);
 		bool SupportsMultipleQueries { get; }

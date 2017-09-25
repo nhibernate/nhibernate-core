@@ -329,9 +329,9 @@ namespace NHibernate.Test.TypesTest
 			_driverImplementation.RemoveUnusedCommandParameters(cmd, sqlString);
 		}
 
-		void IDriver.ExpandQueryParameters(DbCommand cmd, SqlString sqlString)
+		void IDriver.ExpandQueryParameters(DbCommand cmd, SqlString sqlString, SqlType[] parameterTypes)
 		{
-			_driverImplementation.ExpandQueryParameters(cmd, sqlString);
+			_driverImplementation.ExpandQueryParameters(cmd, sqlString, parameterTypes);
 		}
 
 		IResultSetsCommand IDriver.GetResultSetsCommand(ISessionImplementor session)
