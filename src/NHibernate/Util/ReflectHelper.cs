@@ -413,6 +413,15 @@ namespace NHibernate.Util
 					return null;
 				}
 
+				if (ReflectHelperMemoryAssembly.Instance.GetAssemblyCount() > 0)
+				{
+					type = ReflectHelperMemoryAssembly.Instance.GetType(name.Type, name.Assembly);
+					if (type != null)
+					{
+						return type;
+					}
+				}
+
 				Assembly assembly = Assembly.Load(name.Assembly);
 
 				if (assembly == null)
