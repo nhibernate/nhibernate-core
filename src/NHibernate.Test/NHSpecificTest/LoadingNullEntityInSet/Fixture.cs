@@ -27,16 +27,15 @@ namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
 				.CollectionTable.Name = "WantedProfessions";
 			cfg.GetCollectionMapping(typeof (Employee).FullName + ".Secondaries")
 				.CollectionTable.Name = "WantedProfessions";
-			return base.BuildSessionFactory();
-		}
-
-		protected override void OnTearDown()
-		{
-			cfg.GetCollectionMapping(typeof (Employee).FullName + ".Primaries")
-				.CollectionTable.Name = "WantedProfessions_DUMMY_1";
-			cfg.GetCollectionMapping(typeof (Employee).FullName + ".Secondaries")
-				.CollectionTable.Name = "WantedProfessions_DUMMY_2";
-			base.OnTearDown();
+			try
+			{
+				return base.BuildSessionFactory();
+			}
+			finally
+			{
+				// Restore configuration.
+				Configure();
+			}
 		}
 
         [Test]
