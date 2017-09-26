@@ -321,5 +321,8 @@ namespace NHibernate.Driver
 		public virtual bool SupportsEnlistmentWhenAutoEnlistmentIsDisabled => true;
 
 		public virtual bool HasDelayedDistributedTransactionCompletion => false;
+
+		/// <inheritdoc />
+		public virtual DateTime MinDate => DateTime.MinValue;
 	}
 }

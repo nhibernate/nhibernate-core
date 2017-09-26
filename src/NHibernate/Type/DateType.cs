@@ -15,9 +15,16 @@ namespace NHibernate.Type
 	[Serializable]
 	public class DateType : PrimitiveType, IIdentifierType, ILiteralType, IParameterizedType
 	{
+		private static readonly IInternalLogger _log = LoggerProvider.LoggerFor(typeof(DateType));
+		// Since v5.0
+		[Obsolete("Explicitly affect your values to your entities properties instead.")]
 		public const string BaseValueParameterName = "BaseValue";
-		public static readonly DateTime BaseDateValue = new DateTime(1753, 01, 01);
-		private DateTime customBaseDate = BaseDateValue;
+		// Since v5.0
+		[Obsolete("Use DateTime.MinValue.")]
+		public static readonly DateTime BaseDateValue = _baseDateValue;
+		private DateTime customBaseDate = _baseDateValue;
+
+		private static readonly DateTime _baseDateValue = DateTime.MinValue;
 
 		/// <summary></summary>
 		public DateType() : base(SqlTypeFactory.Date)
@@ -57,8 +64,7 @@ namespace NHibernate.Type
 		{
 			var parm = st.Parameters[index];
 			var dateTime = (DateTime)value;
-			if (dateTime < customBaseDate) parm.Value = DBNull.Value;
-			else parm.Value = dateTime.Date;
+			parm.Value = dateTime.Date;
 		}
 
 		public override bool IsEqual(object x, object y)
@@ -125,6 +131,8 @@ namespace NHibernate.Type
 			return "\'" + ((DateTime)value).ToShortDateString() + "\'";
 		}
 
+		// Since v5
+		[Obsolete("Its only parameter, BaseValue, is obsolete.")]
 		public void SetParameterValues(IDictionary<string, string> parameters)
 		{
 			if(parameters == null)
@@ -134,6 +142,9 @@ namespace NHibernate.Type
 			string value;
 			if (parameters.TryGetValue(BaseValueParameterName, out value))
 			{
+				_log.WarnFormat(
+					"Parameter {0} is obsolete and will be remove in a future version. Explicitly affect your values to your entities properties instead.",
+					BaseValueParameterName);
 				customBaseDate = DateTime.Parse(value);
 			}
 		}

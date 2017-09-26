@@ -11,12 +11,20 @@ namespace NHibernate.Driver
 		protected override void InitializeParameter(DbParameter dbParam, string name, SqlTypes.SqlType sqlType)
 		{
 			base.InitializeParameter(dbParam, name, sqlType);
-			if (sqlType.DbType == DbType.Time)
+			switch (sqlType.DbType)
 			{
-				((SqlParameter) dbParam).SqlDbType = SqlDbType.Time;
+				case DbType.Time:
+					((SqlParameter) dbParam).SqlDbType = SqlDbType.Time;
+					break;
+				case DbType.Date:
+					((SqlParameter) dbParam).SqlDbType = SqlDbType.Date;
+					break;
 			}
 		}
 
 		public override bool RequiresTimeSpanForTime => true;
+
+		/// <inheritdoc />
+		public override DateTime MinDate => DateTime.MinValue;
 	}
 }

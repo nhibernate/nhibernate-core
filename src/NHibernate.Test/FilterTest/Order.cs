@@ -7,8 +7,8 @@ namespace NHibernate.Test.FilterTest
 	{
 		private long id;
 		private String region;
-		private DateTime placementDate;
-		private DateTime fulfillmentDate;
+		private DateTime? placementDate;
+		private DateTime? fulfillmentDate;
 		private Salesperson salesperson;
 		private String buyer;
 		private IList<LineItem> lineItems = new List<LineItem>();
@@ -25,13 +25,13 @@ namespace NHibernate.Test.FilterTest
 			set { region = value; }
 		}
 
-		public virtual DateTime PlacementDate
+		public virtual DateTime? PlacementDate
 		{
 			get { return placementDate; }
 			set { placementDate = value; }
 		}
 
-		public virtual DateTime FulfillmentDate
+		public virtual DateTime? FulfillmentDate
 		{
 			get { return fulfillmentDate; }
 			set { fulfillmentDate = value; }

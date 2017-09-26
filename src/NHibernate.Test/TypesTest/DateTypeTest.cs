@@ -9,22 +9,22 @@ namespace NHibernate.Test.TypesTest
 	[TestFixture]
 	public class DateTypeTest
 	{
-		[Test]
+		[Test, Obsolete("Testing obsolete SetParameterValues")]
 		public void WhenNoParameterThenDefaultValueIsBaseDateValue()
 		{
 			var dateType = new DateType();
 			Assert.That(dateType.DefaultValue, Is.EqualTo(DateType.BaseDateValue));
 		}
 
-		[Test]
+		[Test, Obsolete("Testing obsolete SetParameterValues")]
 		public void WhenSetParameterThenDefaultValueIsParameterValue()
 		{
 			var dateType = new DateType();
-			dateType.SetParameterValues(new Dictionary<string, string>{{DateType.BaseValueParameterName, "0001/01/01"}});
+			dateType.SetParameterValues(new Dictionary<string, string> { { DateType.BaseValueParameterName, "0001/01/01" } });
 			Assert.That(dateType.DefaultValue, Is.EqualTo(DateTime.MinValue));
 		}
 
-		[Test]
+		[Test, Obsolete("Testing obsolete SetParameterValues")]
 		public void WhenSetParameterNullThenNotThrow()
 		{
 			var dateType = new DateType();
@@ -32,6 +32,7 @@ namespace NHibernate.Test.TypesTest
 		}
 	}
 
+	[TestFixture]
 	public class DateTypeFixture : TypeFixtureBase
 	{
 		protected override string TypeName
@@ -53,38 +54,44 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void ReadWriteNormal()
 		{
-			var expected = DateTime.Today.Date;
+			var expected = DateTime.Today;
 
-			var basic = new DateClass { DateValue = expected.AddHours(1) };
-			object savedId;
-			using (ISession s = OpenSession())
-			{
-				savedId = s.Save(basic);
-				s.Flush();
-			}
-			using (ISession s = OpenSession())
-			{
-				basic = s.Get<DateClass>(savedId);
-				Assert.That(basic.DateValue, Is.EqualTo(expected));
-				s.Delete(basic);
-				s.Flush();
-			}
+			ReadWrite(expected);
 		}
 
 		[Test]
-		public void ReadWriteBaseValue()
+		public void ReadWriteMin()
 		{
-			var basic = new DateClass { DateValue = new DateTime(1899,1,1) };
-			object savedId;
-			using (ISession s = OpenSession())
+			var expected = Sfi.ConnectionProvider.Driver.MinDate;
+
+			ReadWrite(expected);
+		}
+
+		[Test]
+		public void ReadWriteYear750()
+		{
+			var expected = new DateTime(750, 5, 13);
+			if (Sfi.ConnectionProvider.Driver.MinDate > expected)
 			{
-				savedId = s.Save(basic);
+				Assert.Ignore($"The driver does not support dates below {Sfi.ConnectionProvider.Driver.MinDate:O}");
+			}
+			ReadWrite(expected);
+		}
+
+		private void ReadWrite(DateTime expected)
+		{
+			// Add an hour to check it is correctly ignored once read back from db.
+			var basic = new DateClass { DateValue = expected.AddHours(1) };
+			object savedId;
+			using (var s = OpenSession())
+			{
+				savedId = s.Save(basic); 
 				s.Flush();
 			}
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
 			{
 				basic = s.Get<DateClass>(savedId);
-				Assert.That(basic.DateValue.HasValue, Is.False);
+				Assert.That(basic.DateValue, Is.EqualTo(expected));
 				s.Delete(basic);
 				s.Flush();
 			}

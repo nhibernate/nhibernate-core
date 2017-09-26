@@ -89,5 +89,8 @@ namespace NHibernate.Driver
 		/// Depends on target DB in the Odbc case. This in facts depends on both the driver and the database.
 		/// </summary>
 		public override bool HasDelayedDistributedTransactionCompletion => true;
+
+		/// <inheritdoc />
+		public override DateTime MinDate => new DateTime(1753, 1, 1);
 	}
 }
