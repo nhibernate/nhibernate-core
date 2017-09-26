@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
 using System.Data.Odbc;
 using NHibernate.SqlTypes;
@@ -62,7 +61,7 @@ namespace NHibernate.Driver
 		private void SetVariableLengthParameterSize(DbParameter dbParam, SqlType sqlType)
 		{
 			if (Equals(sqlType, SqlTypeFactory.DateTime) && _dbDateTimeScale != null)
-				((IDbDataParameter)dbParam).Scale = _dbDateTimeScale.Value;
+				dbParam.Scale = _dbDateTimeScale.Value;
 
 			// Override the defaults using data from SqlType.
 			if (sqlType.LengthDefined)
@@ -72,8 +71,8 @@ namespace NHibernate.Driver
 
 			if (sqlType.PrecisionDefined)
 			{
-				((IDbDataParameter)dbParam).Precision = sqlType.Precision;
-				((IDbDataParameter)dbParam).Scale = sqlType.Scale;
+				dbParam.Precision = sqlType.Precision;
+				dbParam.Scale = sqlType.Scale;
 			}
 		}
 

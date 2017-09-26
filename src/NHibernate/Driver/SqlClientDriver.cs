@@ -114,8 +114,8 @@ namespace NHibernate.Driver
 
 			if (sqlType.PrecisionDefined)
 			{
-				((IDbDataParameter) dbParam).Precision = sqlType.Precision;
-				((IDbDataParameter) dbParam).Scale = sqlType.Scale;
+				dbParam.Precision = sqlType.Precision;
+				dbParam.Scale = sqlType.Scale;
 			}
 		}
 
@@ -131,8 +131,8 @@ namespace NHibernate.Driver
 					dbParam.Size = IsBlob(dbParam, sqlType) ? MaxSizeForBlob : MaxSizeForLengthLimitedBinary;
 					break;
 				case DbType.Decimal:
-					((IDbDataParameter) dbParam).Precision = MaxPrecision;
-					((IDbDataParameter) dbParam).Scale = MaxScale;
+					dbParam.Precision = MaxPrecision;
+					dbParam.Scale = MaxScale;
 					break;
 				case DbType.String:
 				case DbType.StringFixedLength:
