@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Data.Odbc;
 using NHibernate.SqlTypes;
@@ -63,10 +64,27 @@ namespace NHibernate.Driver
 			if (Equals(sqlType, SqlTypeFactory.DateTime) && _dbDateTimeScale != null)
 				dbParam.Scale = _dbDateTimeScale.Value;
 
-			// Override the defaults using data from SqlType.
 			if (sqlType.LengthDefined)
 			{
-				dbParam.Size = sqlType.Length;
+				switch (dbParam.DbType)
+				{
+					case DbType.AnsiString:
+					case DbType.AnsiStringFixedLength:
+					case DbType.String:
+					case DbType.StringFixedLength:
+						// NH-4083: do not limit to column length if above 2000. Setting size may trigger conversion from
+						// nvarchar to ntext when size is superior or equal to 2000, causing some queries to fail:
+						// https://stackoverflow.com/q/8569844/1178314
+						// So we cannot do as the SqlServerClientDriver which set max default length instead.
+						// This may also cause NH-3895, forbidding like comparisons which may need
+						// some more length.
+						// Moreover specifying size is a SQL Server optimization for query
+						// plan cache, but we have no knowledge here if the target database will be SQL-Server.
+						break;
+					default:
+						dbParam.Size = sqlType.Length;
+						break;
+				}
 			}
 
 			if (sqlType.PrecisionDefined)
