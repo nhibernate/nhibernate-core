@@ -1,7 +1,6 @@
 using System;
 using System.Data;
 using System.Data.Common;
-
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Impl;
@@ -39,14 +38,17 @@ namespace NHibernate.Type
 			return GetCurrentTimestamp(session);
 		}
 
-		private object GetCurrentTimestamp(ISessionImplementor session)
+		protected virtual DateTime GetCurrentTimestamp(ISessionImplementor session)
 		{
-			Dialect.Dialect dialect = session.Factory.Dialect;
-			string timestampSelectString = dialect.CurrentTimestampSelectString;
-			return UsePreparedStatement(timestampSelectString, session);
+			var dialect = session.Factory.Dialect;
+			// Need to round notably for Sql Server DateTime with Odbc, which has a 3.33ms resolution,
+			// causing stale data update failure 2/3 of times if not rounded to 10ms.
+			return Round(
+				UsePreparedStatement(dialect.CurrentTimestampSelectString, session),
+				dialect.TimestampResolutionInTicks);
 		}
 
-		protected virtual object UsePreparedStatement(string timestampSelectString, ISessionImplementor session)
+		protected virtual DateTime UsePreparedStatement(string timestampSelectString, ISessionImplementor session)
 		{
 			var tsSelect = new SqlString(timestampSelectString);
 			DbCommand ps = null;

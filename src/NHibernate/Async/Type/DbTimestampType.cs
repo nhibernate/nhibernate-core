@@ -11,7 +11,6 @@
 using System;
 using System.Data;
 using System.Data.Common;
-
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Impl;
@@ -26,51 +25,34 @@ namespace NHibernate.Type
 	{
 
 		/// <inheritdoc />
-		public override Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken)
+		public override async Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			if (session == null)
 			{
-				return Task.FromCanceled<object>(cancellationToken);
+				log.Debug("incoming session was null; using current application host time");
+				return await (base.SeedAsync(null, cancellationToken)).ConfigureAwait(false);
 			}
-			try
+			if (!session.Factory.Dialect.SupportsCurrentTimestampSelection)
 			{
-				if (session == null)
-				{
-					log.Debug("incoming session was null; using current application host time");
-					return base.SeedAsync(null, cancellationToken);
-				}
-				if (!session.Factory.Dialect.SupportsCurrentTimestampSelection)
-				{
-					log.Info("falling back to application host based timestamp, as dialect does not support current timestamp selection");
-					return base.SeedAsync(session, cancellationToken);
-				}
-				return GetCurrentTimestampAsync(session, cancellationToken);
+				log.Info("falling back to application host based timestamp, as dialect does not support current timestamp selection");
+				return await (base.SeedAsync(session, cancellationToken)).ConfigureAwait(false);
 			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			return await (GetCurrentTimestampAsync(session, cancellationToken)).ConfigureAwait(false);
 		}
 
-		private Task<object> GetCurrentTimestampAsync(ISessionImplementor session, CancellationToken cancellationToken)
+		protected virtual async Task<DateTime> GetCurrentTimestampAsync(ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				Dialect.Dialect dialect = session.Factory.Dialect;
-				string timestampSelectString = dialect.CurrentTimestampSelectString;
-				return UsePreparedStatementAsync(timestampSelectString, session, cancellationToken);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			cancellationToken.ThrowIfCancellationRequested();
+			var dialect = session.Factory.Dialect;
+			// Need to round notably for Sql Server DateTime with Odbc, which has a 3.33ms resolution,
+			// causing stale data update failure 2/3 of times if not rounded to 10ms.
+			return Round(
+				await (UsePreparedStatementAsync(dialect.CurrentTimestampSelectString, session, cancellationToken)).ConfigureAwait(false),
+				dialect.TimestampResolutionInTicks);
 		}
 
-		protected virtual async Task<object> UsePreparedStatementAsync(string timestampSelectString, ISessionImplementor session, CancellationToken cancellationToken)
+		protected virtual async Task<DateTime> UsePreparedStatementAsync(string timestampSelectString, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var tsSelect = new SqlString(timestampSelectString);
