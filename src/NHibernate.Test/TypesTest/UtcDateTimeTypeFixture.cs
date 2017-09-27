@@ -1,4 +1,4 @@
-using System;
+using NHibernate.Type;
 using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
@@ -7,38 +7,16 @@ namespace NHibernate.Test.TypesTest
 	/// The Unit Tests for the UtcDateTimeType.
 	/// </summary>
 	[TestFixture]
-	public class UtcDateTimeTypeFixture : TypeFixtureBase
+	public class UtcDateTimeTypeFixture : AbstractDateTimeTypeFixture
 	{
-		protected override string TypeName => "DateTime";
+		protected override string TypeName => "UtcDateTime";
+		protected override AbstractDateTimeType Type => NHibernateUtil.UtcDateTime;
+	}
 
-		[Test]
-		public void ReadWrite()
-		{
-			var val = RoundForDialect(DateTime.UtcNow);
-			var expected = RoundForDialect(DateTime.SpecifyKind(val, DateTimeKind.Utc));
-
-			var basic = new DateTimeClass
-			{
-				Id = 1,
-				UtcDateTimeValue = val
-			};
-
-			using (var s = OpenSession())
-			{
-				s.Save(basic);
-				s.Flush();
-			}
-
-			using (var s = OpenSession())
-			{
-				basic = (DateTimeClass) s.Load(typeof(DateTimeClass), 1);
-
-				Assert.AreEqual(DateTimeKind.Utc, basic.UtcDateTimeValue.Value.Kind);
-				Assert.AreEqual(expected, basic.UtcDateTimeValue);
-
-				s.Delete(basic);
-				s.Flush();
-			}
-		}
+	[TestFixture]
+	public class UtcDateTimeNoMsTypeFixture : DateTimeNoMsTypeFixture
+	{
+		protected override string TypeName => "UtcDateTimeNoMs";
+		protected override AbstractDateTimeType Type => NHibernateUtil.UtcDateTimeNoMs;
 	}
 }

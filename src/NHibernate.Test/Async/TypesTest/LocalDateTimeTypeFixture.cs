@@ -8,47 +8,26 @@
 //------------------------------------------------------------------------------
 
 
-using System;
+using NHibernate.Type;
 using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
 {
 	using System.Threading.Tasks;
 	/// <summary>
-	/// The Unit Tests for the UtcDateTimeType.
+	/// The Unit Tests for the LocalDateTimeType.
 	/// </summary>
 	[TestFixture]
-	public class LocalDateTimeTypeFixtureAsync : TypeFixtureBase
+	public class LocalDateTimeTypeFixtureAsync : AbstractDateTimeTypeFixtureAsync
 	{
-		protected override string TypeName => "DateTime";
+		protected override string TypeName => "LocalDateTime";
+		protected override AbstractDateTimeType Type => NHibernateUtil.LocalDateTime;
+	}
 
-		[Test]
-		public async Task ReadWriteAsync()
-		{
-			var val = RoundForDialect(DateTime.UtcNow);
-			var expected = RoundForDialect(DateTime.SpecifyKind(val, DateTimeKind.Local));
-			var basic = new DateTimeClass
-			{
-				Id = 1,
-				LocalDateTimeValue = val
-			};
-
-			using (var s = OpenSession())
-			{
-				await (s.SaveAsync(basic));
-				await (s.FlushAsync());
-			}
-
-			using (var s = OpenSession())
-			{
-				basic = await (s.LoadAsync<DateTimeClass>(1));
-
-				Assert.AreEqual(DateTimeKind.Local, basic.LocalDateTimeValue.Value.Kind);
-				Assert.AreEqual(expected, basic.LocalDateTimeValue);
-
-				await (s.DeleteAsync(basic));
-				await (s.FlushAsync());
-			}
-		}
+	[TestFixture]
+	public class LocalDateTimeNoMsTypeFixtureAsync : DateTimeNoMsTypeFixtureAsync
+	{
+		protected override string TypeName => "LocalDateTimeNoMs";
+		protected override AbstractDateTimeType Type => NHibernateUtil.LocalDateTimeNoMs;
 	}
 }

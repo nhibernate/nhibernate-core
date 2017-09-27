@@ -9,220 +9,95 @@
 
 
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
-using System.Linq;
 using NHibernate.Cfg;
-using NHibernate.Driver;
-using NHibernate.Engine;
-using NHibernate.SqlCommand;
-using NHibernate.SqlTypes;
-using NHibernate.Tool.hbm2ddl;
+using NHibernate.Dialect;
 using NHibernate.Type;
-using NHibernate.Util;
 using NUnit.Framework;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.TypesTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// TestFixtures for the <see cref="DateTimeType"/>.
 	/// </summary>
 	[TestFixture]
-	public class DateTimeTypeFixtureAsync
-	{
-		[Test]
-		public async Task NextAsync()
-		{
-			var type = NHibernateUtil.DateTime;
-			object current = DateTime.Parse("2004-01-01");
-			object next = await (type.NextAsync(current, null, CancellationToken.None));
-
-			Assert.That(next, Is.TypeOf<DateTime>(), "next should be DateTime");
-			Assert.That(next, Is.GreaterThan(current), "next should be greater than current");
-		}
-
-		[Test]
-		public async Task SeedAsync()
-		{
-			var type = NHibernateUtil.DateTime;
-			Assert.That(await (type.SeedAsync(null, CancellationToken.None)), Is.TypeOf<DateTime>(), "seed should be DateTime");
-		}
-	}
-
-	[TestFixture]
-	public class DateTimeSqlTypeFixtureAsync : TypeFixtureBase
+	public class DateTimeTypeFixtureAsync : AbstractDateTimeTypeFixtureAsync
 	{
 		protected override string TypeName => "DateTime";
-		private const int _dateId = 1;
+		protected override AbstractDateTimeType Type => NHibernateUtil.DateTime;
+	}
+
+	// Testing SQL Server 2008 with datetime in db instead of datetime2
+	[TestFixture]
+	public class DateTimeTypeMixedDateTimeFixtureAsync : DateTimeTypeFixtureAsync
+	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return base.AppliesTo(dialect) && dialect is MsSql2008Dialect;
+		}
 
 		protected override void Configure(Configuration configuration)
 		{
 			base.Configure(configuration);
 
-			var driverClass = ReflectHelper.ClassForName(configuration.GetProperty(Cfg.Environment.ConnectionDriver));
-			ClientDriverWithParamsStats.DriverClass = driverClass;
-
-			configuration.SetProperty(
-				Cfg.Environment.ConnectionDriver,
-				typeof(ClientDriverWithParamsStats).AssemblyQualifiedName);
+			configuration.SetProperty(Environment.SqlTypesKeepDateTime, "true");
 		}
 
-		protected override void OnSetUp()
+		/* Uncomment for testing how it fails if NHibernate uses DateTime2 while the db column is DateTime.
+		 * It fails two thirds of times on update with an undue optimistic locking exception, due to the datetimes
+		 * ending with 3.333ms (transmitted as 3) or 6.666ms (transmitted as 7), which does not match the datetime2
+		 * sent by NHibernate for checking the revision has not changed. Demonstrated by UpdateUseExpectedSqlType.
+		 * It furthermore causes undue optimistic failures if re-updating the same entity without loading it in-between,
+		 * as demonstrated by ReadWrite.
+		 * Another way to demonstrate this is to use a <version ...><column sql-type="datetime" ... /></version>
+		 * mapping, without using SqlTypesKeepDateTime. This causes the column to be typed datetime in db but the
+		 * parameters are still transmitted as datetime2 because this sql-type attribute is only used in DDL.
+		 *
+		protected override DebugSessionFactory BuildSessionFactory()
 		{
-			base.OnSetUp();
-
-			using (var s = OpenSession())
-			using (var t = s.BeginTransaction())
-			{
-				var d = new DateTimeClass
-				{
-					Id = _dateId,
-					LocalDateTimeValue = DateTime.Now.AddDays(-1),
-					UtcDateTimeValue = DateTime.UtcNow.AddDays(-1),
-					NormalDateTimeValue = DateTime.Now.AddDays(-1)
-				};
-				s.Save(d);
-				t.Commit();
-			}
-		}
-
-		protected override void OnTearDown()
-		{
-			base.OnTearDown();
-
-			using (var s = OpenSession())
-			using (var t = s.BeginTransaction())
-			{
-				s.CreateQuery("delete from DateTimeClass").ExecuteUpdate();
-				t.Commit();
-			}
-		}
-
-		protected override void DropSchema()
-		{
-			(Sfi.ConnectionProvider.Driver as ClientDriverWithParamsStats)?.CleanUp();
-			base.DropSchema();
-		}
-
-		[Test]
-		public Task DbHasExpectedTypeAsync()
-		{
+			cfg.SetProperty(Environment.SqlTypesKeepDateTime, "false");
 			try
 			{
-				var validator = new SchemaValidator(cfg);
-				return validator.ValidateAsync();
+				return base.BuildSessionFactory();
 			}
-			catch (Exception ex)
+			finally
 			{
-				return Task.FromException<object>(ex);
+				cfg.SetProperty(Environment.SqlTypesKeepDateTime, "true");
 			}
 		}
+		//*/
+	}
 
-		[Test]
-		public async Task SaveUseExpectedSqlTypeAsync()
+	/// <summary>
+	/// TestFixtures for the <see cref="DateTimeNoMsType"/>.
+	/// </summary>
+	[TestFixture]
+	public class DateTimeNoMsTypeFixtureAsync : AbstractDateTimeTypeFixtureAsync
+	{
+		protected override string TypeName => "DateTimeNoMs";
+		protected override AbstractDateTimeType Type => NHibernateUtil.DateTimeNoMs;
+		protected override bool RevisionCheck => false;
+		protected override long DateAccuracyInTicks => TimeSpan.TicksPerSecond;
+
+		protected override DateTime GetTestDate(DateTimeKind kind)
 		{
-			var driver = (ClientDriverWithParamsStats) Sfi.ConnectionProvider.Driver;
-
-			using (var s = OpenSession())
-			using (var t = s.BeginTransaction())
-			{
-				var d = new DateTimeClass
-				{
-					Id = 2,
-					LocalDateTimeValue = DateTime.Now,
-					UtcDateTimeValue = DateTime.UtcNow,
-					NormalDateTimeValue = DateTime.Now
-				};
-				driver.ClearStats();
-				await (s.SaveAsync(d));
-				await (t.CommitAsync());
-			}
-
-			AssertSqlType(driver, 3);
+			var date = base.GetTestDate(kind);
+			return new DateTime(
+				date.Year,
+				date.Month,
+				date.Day,
+				date.Hour,
+				date.Minute,
+				date.Second,
+				0,
+				kind);
 		}
 
-		[Test]
-		public async Task UpdateUseExpectedSqlTypeAsync()
+		protected override DateTime GetSameDate(DateTime original)
 		{
-			var driver = (ClientDriverWithParamsStats) Sfi.ConnectionProvider.Driver;
-
-			using (var s = OpenSession())
-			using (var t = s.BeginTransaction())
-			{
-				var d = await (s.GetAsync<DateTimeClass>(_dateId));
-				d.LocalDateTimeValue = DateTime.Now;
-				d.UtcDateTimeValue = DateTime.UtcNow;
-				d.NormalDateTimeValue = DateTime.Now;
-				driver.ClearStats();
-				await (t.CommitAsync());
-			}
-
-			AssertSqlType(driver, 3);
-		}
-
-		[Test]
-		public async Task QueryUseExpectedSqlTypeAsync()
-		{
-			if (!TestDialect.SupportsNonDataBoundCondition)
-				Assert.Ignore("Dialect does not support the test query");
-
-			var driver = (ClientDriverWithParamsStats) Sfi.ConnectionProvider.Driver;
-
-			using (var s = OpenSession())
-			using (var t = s.BeginTransaction())
-			{
-				var q = s
-					.CreateQuery(
-						"from DateTimeClass d where d.LocalDateTimeValue = :local and " +
-						"d.UtcDateTimeValue = :utc and d.NormalDateTimeValue = :normal and " +
-						":other1 = :other2")
-					.SetDateTime("local", DateTime.Now)
-					.SetDateTime("utc", DateTime.UtcNow)
-					.SetDateTime("normal", DateTime.Now)
-					.SetDateTime("other1", DateTime.Now)
-					.SetDateTime("other2", DateTime.Now);
-				driver.ClearStats();
-				await (q.ListAsync<DateTimeClass>());
-				await (t.CommitAsync());
-			}
-
-			AssertSqlType(driver, 5);
-		}
-
-		private void AssertSqlType(ClientDriverWithParamsStats driver, int expectedCount)
-		{
-			if (NHibernateUtil.DateTime.SqlTypes(Sfi).Any(t => Equals(t, SqlTypeFactory.DateTime2)))
-			{
-				Assert.That(
-					driver.GetCount(SqlTypeFactory.DateTime),
-					Is.EqualTo(0),
-					"Found unexpected SqlTypeFactory.DateTime usages.");
-				Assert.That(
-					driver.GetCount(SqlTypeFactory.DateTime2),
-					Is.EqualTo(expectedCount),
-					"Unexpected SqlTypeFactory.DateTime2 usage count.");
-				Assert.That(driver.GetCount(DbType.DateTime), Is.EqualTo(0), "Found unexpected DbType.DateTime usages.");
-				Assert.That(
-					driver.GetCount(DbType.DateTime2),
-					Is.EqualTo(expectedCount),
-					"Unexpected DbType.DateTime2 usage count.");
-			}
-			else
-			{
-				Assert.That(
-					driver.GetCount(SqlTypeFactory.DateTime2),
-					Is.EqualTo(0),
-					"Found unexpected SqlTypeFactory.DateTime2 usages.");
-				Assert.That(
-					driver.GetCount(SqlTypeFactory.DateTime),
-					Is.EqualTo(expectedCount),
-					"Unexpected SqlTypeFactory.DateTime usage count.");
-				Assert.That(driver.GetCount(DbType.DateTime2), Is.EqualTo(0), "Found unexpected DbType.DateTime2 usages.");
-				Assert.That(driver.GetCount(DbType.DateTime), Is.EqualTo(expectedCount), "Unexpected DbType.DateTime usage count.");
-			}
+			var date = base.GetSameDate(original);
+			return date.AddMilliseconds(date.Millisecond < 500 ? 500 : -500);
 		}
 	}
 }
