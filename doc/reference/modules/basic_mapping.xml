@@ -2638,14 +2638,30 @@
                         <row>
                             <entry><literal>DateTime</literal></entry>
                             <entry><literal>System.DateTime</literal></entry>
-                            <entry><literal>DbType.DateTime</literal> - ignores the milliseconds</entry>
-                            <entry>Default when no <literal>type</literal> attribute specified.</entry>
+                            <entry>
+                                <literal>DbType.DateTime</literal> / <literal>DbType.DateTime2</literal><co id="basic_mapping.datetime-co" linkends="basic_mapping.datetime"/>
+                            </entry>
+                            <entry>
+                                Default when no <literal>type</literal> attribute specified. Does no
+                                more ignore milliseconds since NHibernate v5.0.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry><literal>DateTimeNoMs</literal></entry>
+                            <entry><literal>System.DateTime</literal></entry>
+                            <entry>
+                                <literal>DbType.DateTime</literal> / <literal>DbType.DateTime2</literal><coref linkend="basic_mapping.datetime-co" />
+                            </entry>
+                            <entry><literal>type="DateTimeNoMs"</literal> must be specified. Ignores milliseconds.</entry>
                         </row>
                         <row>
                             <entry><literal>DateTime2</literal></entry>
                             <entry><literal>System.DateTime</literal></entry>
                             <entry><literal>DbType.DateTime2</literal></entry>
-                            <entry><literal>type="DateTime2"</literal> must be specified.</entry>
+                            <entry>
+                                <literal>type="DateTime2"</literal> must be specified. Obsolete since
+                                NHibernate v5.0, use <literal>DateTime</literal> instead.
+                            </entry>
                         </row>
                         <row>
                             <entry><literal>DateTimeOffset</literal></entry>
@@ -2656,9 +2672,14 @@
                         <row>
                             <entry><literal>DbTimestamp</literal></entry>
                             <entry><literal>System.DateTime</literal></entry>
-                            <entry><literal>DbType.DateTime</literal> - as specific as database supports.</entry>
-                            <entry><literal>type="DbTimestamp"</literal> must be specified.  When used as a <literal>version</literal>
-                            field, uses the database's current time rather than the client's current time.</entry>
+                            <entry>
+                                <literal>DbType.DateTime</literal> / <literal>DbType.DateTime2</literal><coref linkend="basic_mapping.datetime-co" />
+                            </entry>
+                            <entry>
+                                <literal>type="DbTimestamp"</literal> must be specified.  When used as a
+                                <literal>version</literal> field, uses the database's current time retrieved
+                                in dedicated queries, rather than the client's current time.
+                            </entry>
                         </row>
                         <row>
                             <entry><literal>Decimal</literal></entry>
@@ -2699,9 +2720,26 @@
                         <row>
                             <entry><literal>LocalDateTime</literal></entry>
                             <entry><literal>System.DateTime</literal></entry>
-                            <entry><literal>DbType.DateTime</literal> - ignores the milliseconds</entry>
-                            <entry><literal>type="LocalDateTime"</literal> must be specified.  Ensures the
-                            <literal>DateTimeKind</literal> is set to <literal>DateTimeKind.Local</literal></entry>
+                            <entry>
+                                <literal>DbType.DateTime</literal> / <literal>DbType.DateTime2</literal><coref linkend="basic_mapping.datetime-co" />
+                            </entry>
+                            <entry>
+                                <literal>type="LocalDateTime"</literal> must be specified. Ensures the
+                                <literal>DateTimeKind</literal> is set to <literal>DateTimeKind.Local</literal>.
+                                Throws if set with a date having another kind.
+                                Does no more ignore milliseconds since NHibernate v5.0.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry><literal>LocalDateTimeNoMs</literal></entry>
+                            <entry><literal>System.DateTime</literal></entry>
+                            <entry>
+                                <literal>DbType.DateTime</literal> / <literal>DbType.DateTime2</literal><coref linkend="basic_mapping.datetime-co" />
+                            </entry>
+                            <entry>
+                                <literal>type="LocalDateTimeNoMs"</literal> must be specified. Similar to
+                                <literal>type="LocalDateTime"</literal> but ignores milliseconds.
+                            </entry>
                         </row>
                         <row>
                             <entry><literal>PersistentEnum</literal></entry>
@@ -2750,15 +2788,13 @@
                         <row>
                             <entry><literal>Timestamp</literal></entry>
                             <entry><literal>System.DateTime</literal></entry>
-                            <entry><literal>DbType.DateTime</literal> - as specific as database supports.</entry>
-                            <entry><literal>type="Timestamp"</literal> must be specified.</entry>
-                        </row>
-                        <row>
-                            <entry><literal>TimestampUtc</literal></entry>
-                            <entry><literal>System.DateTime</literal></entry>
-                            <entry><literal>DbType.DateTime</literal> - as specific as database supports.</entry>
-                            <entry><literal>type="TimestampUtc"</literal> must be specified.  Ensures the
-                            <literal>DateTimeKind</literal> is set to <literal>DateTimeKind.Utc</literal></entry>
+                            <entry>
+                                <literal>DbType.DateTime</literal> / <literal>DbType.DateTime2</literal><coref linkend="basic_mapping.datetime-co" />
+                            </entry>
+                            <entry>
+                                Obsolete, its <literal>Timestamp</literal> alias will be remapped to
+                                <literal>DateTime</literal> in a future version.
+                            </entry>
                         </row>
                         <row>
                             <entry><literal>TrueFalse</literal></entry>
@@ -2787,8 +2823,25 @@
                         <row>
                             <entry><literal>UtcDateTime</literal></entry>
                             <entry><literal>System.DateTime</literal></entry>
-                            <entry><literal>DbType.DateTime</literal> - ignores the milliseconds</entry>
-                            <entry>Ensures the <literal>DateTimeKind</literal> is set to <literal>DateTimeKind.Utc</literal></entry>
+                            <entry>
+                                <literal>DbType.DateTime</literal> / <literal>DbType.DateTime2</literal><coref linkend="basic_mapping.datetime-co" />
+                            </entry>
+                            <entry>
+                                Ensures the <literal>DateTimeKind</literal> is set to <literal>DateTimeKind.Utc</literal>.
+                                Throws if set with a date having another kind.
+                                Does no more ignore milliseconds since NHibernate v5.0.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry><literal>UtcDateTimeNoMs</literal></entry>
+                            <entry><literal>System.DateTime</literal></entry>
+                            <entry>
+                                <literal>DbType.DateTime</literal> / <literal>DbType.DateTime2</literal><coref linkend="basic_mapping.datetime-co" />
+                            </entry>
+                            <entry>
+                                <literal>type="UtcDateTimeNoMs"</literal> must be specified. Similar to
+                                <literal>type="LocalDateTime"</literal> but ignores milliseconds.
+                            </entry>
                         </row>
                         <row>
                             <entry><literal>YesNo</literal></entry>
@@ -2799,6 +2852,16 @@
                     </tbody>
                 </tgroup>
             </table>
+
+            <calloutlist>
+              <callout arearefs="basic_mapping.datetime-co" id="basic_mapping.datetime">
+                <para>
+                  Since NHibernate v5.0 and if the dialect supports it, <literal>DbType.DateTime2</literal>
+                  is used instead of <literal>DbType.DateTime</literal>. This may be disabled by setting
+                  <literal>sql_types.keep_datetime</literal> to <literal>true</literal>.
+                </para>
+              </callout>
+            </calloutlist>
 
             <table>
                 <title>System.Object Mapping Types</title>
