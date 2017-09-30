@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
 {
@@ -15,6 +16,21 @@ namespace NHibernate.Type
 	[Serializable]
 	public class DateTimeType : AbstractDateTimeType
 	{
+		/// <summary>
+		/// Default constructor.
+		/// </summary>
+		public DateTimeType()
+		{
+		}
+
+		/// <summary>
+		/// Constructor for specifying a datetime with a scale. Use <see cref="SqlTypeFactory.GetDateTime"/>.
+		/// </summary>
+		/// <param name="sqlType">The sql type to use for the type.</param>
+		public DateTimeType(DateTimeSqlType sqlType) : base(sqlType)
+		{
+		}
+
 		/// <inheritdoc />
 		public override string Name => "DateTime";
 	}

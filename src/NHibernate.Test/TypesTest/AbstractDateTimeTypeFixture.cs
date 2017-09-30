@@ -237,6 +237,21 @@ namespace NHibernate.Test.TypesTest
 		}
 
 		[Test]
+		public void PropertiesHasExpectedType()
+		{
+			var classMetaData = Sfi.GetClassMetadata(typeof(DateTimeClass));
+			Assert.That(
+				classMetaData.GetPropertyType(nameof(DateTimeClass.Revision)),
+				Is.EqualTo(Type));
+			Assert.That(
+				classMetaData.GetPropertyType(nameof(DateTimeClass.Value)),
+				Is.EqualTo(Type));
+			Assert.That(
+				classMetaData.GetPropertyType(nameof(DateTimeClass.NullableValue)),
+				Is.EqualTo(Type));
+		}
+
+		[Test]
 		public void DbHasExpectedType()
 		{
 			var validator = new SchemaValidator(cfg);
@@ -263,7 +278,7 @@ namespace NHibernate.Test.TypesTest
 			}
 
 			// 2 properties + revision
-			AssertSqlType(driver, 3);
+			AssertSqlType(driver, 3, true);
 		}
 
 		[Test]
@@ -282,7 +297,7 @@ namespace NHibernate.Test.TypesTest
 			}
 
 			// 2 properties + revision x 2 (check + update)
-			AssertSqlType(driver, 4);
+			AssertSqlType(driver, 4, true);
 		}
 
 		[Test]
@@ -312,7 +327,28 @@ namespace NHibernate.Test.TypesTest
 				t.Commit();
 			}
 
-			AssertSqlType(driver, 5);
+			AssertSqlType(driver, 5, false);
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var q = s
+					.CreateQuery(
+						"from DateTimeClass d where d.Value = :value and " +
+						"d.NullableValue = :nullableValue and " +
+						"d.Revision = :revision and " +
+						":other1 = :other2")
+					.SetParameter("value", Now, Type)
+					.SetParameter("nullableValue", Now, Type)
+					.SetParameter("revision", Now, Type)
+					.SetParameter("other1", Now, Type)
+					.SetParameter("other2", Now, Type);
+				driver.ClearStats();
+				q.List<DateTimeClass>();
+				t.Commit();
+			}
+
+			AssertSqlType(driver, 5, true);
 		}
 
 		/// <summary>
@@ -361,38 +397,41 @@ namespace NHibernate.Test.TypesTest
 			Assert.That(unspecified, Is.EqualTo(local), assertMessage);
 		}
 
-		private void AssertSqlType(ClientDriverWithParamsStats driver, int expectedCount)
+		private void AssertSqlType(ClientDriverWithParamsStats driver, int expectedCount, bool exactType)
 		{
-			if (Type.SqlTypes(Sfi).Any(t => Equals(t, SqlTypeFactory.DateTime2)))
+			var typeSqlTypes = Type.SqlTypes(Sfi);
+			if (typeSqlTypes.Any(t => t is DateTime2SqlType))
 			{
+				var expectedType = exactType ? typeSqlTypes.First(t => t is DateTime2SqlType) : SqlTypeFactory.DateTime2;
 				Assert.That(
 					driver.GetCount(SqlTypeFactory.DateTime),
 					Is.EqualTo(0),
 					"Found unexpected SqlTypeFactory.DateTime usages.");
 				Assert.That(
-					driver.GetCount(SqlTypeFactory.DateTime2),
+					driver.GetCount(expectedType),
 					Is.EqualTo(expectedCount),
 					"Unexpected SqlTypeFactory.DateTime2 usage count.");
 				Assert.That(driver.GetCount(DbType.DateTime), Is.EqualTo(0), "Found unexpected DbType.DateTime usages.");
 				Assert.That(
-					driver.GetCount(DbType.DateTime2),
+					driver.GetCount(expectedType),
 					Is.EqualTo(expectedCount),
 					"Unexpected DbType.DateTime2 usage count.");
 			}
-			else if (Type.SqlTypes(Sfi).Any(t => Equals(t, SqlTypeFactory.DateTime)))
+			else if (typeSqlTypes.Any(t => t is DateTimeSqlType))
 			{
+				var expectedType = exactType ? typeSqlTypes.First(t => t is DateTimeSqlType) : SqlTypeFactory.DateTime;
 				Assert.That(
 					driver.GetCount(SqlTypeFactory.DateTime2),
 					Is.EqualTo(0),
 					"Found unexpected SqlTypeFactory.DateTime2 usages.");
 				Assert.That(
-					driver.GetCount(SqlTypeFactory.DateTime),
+					driver.GetCount(expectedType),
 					Is.EqualTo(expectedCount),
 					"Unexpected SqlTypeFactory.DateTime usage count.");
 				Assert.That(driver.GetCount(DbType.DateTime2), Is.EqualTo(0), "Found unexpected DbType.DateTime2 usages.");
-				Assert.That(driver.GetCount(DbType.DateTime), Is.EqualTo(expectedCount), "Unexpected DbType.DateTime usage count.");
+				Assert.That(driver.GetCount(expectedType), Is.EqualTo(expectedCount), "Unexpected DbType.DateTime usage count.");
 			}
-			else if (Type.SqlTypes(Sfi).Any(t => Equals(t, SqlTypeFactory.Date)))
+			else if (typeSqlTypes.Any(t => Equals(t, SqlTypeFactory.Date)))
 			{
 				Assert.That(
 					driver.GetCount(SqlTypeFactory.DateTime),
@@ -404,6 +443,10 @@ namespace NHibernate.Test.TypesTest
 					"Unexpected SqlTypeFactory.Date usage count.");
 				Assert.That(driver.GetCount(DbType.DateTime), Is.EqualTo(0), "Found unexpected DbType.DateTime usages.");
 				Assert.That(driver.GetCount(DbType.Date), Is.EqualTo(expectedCount), "Unexpected DbType.Date usage count.");
+			}
+			else
+			{
+				Assert.Ignore("Test does not involve tested types");
 			}
 		}
 

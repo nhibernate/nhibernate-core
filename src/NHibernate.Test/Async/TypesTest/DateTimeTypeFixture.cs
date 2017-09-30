@@ -28,6 +28,49 @@ namespace NHibernate.Test.TypesTest
 		protected override AbstractDateTimeType Type => NHibernateUtil.DateTime;
 	}
 
+	/// <summary>
+	/// TestFixtures for the <see cref="DateTimeType"/>.
+	/// </summary>
+	[TestFixture]
+	public class DateTimeTypeWithScaleFixtureAsync : AbstractDateTimeTypeFixtureAsync
+	{
+		protected override string TypeName => "DateTimeWithScale";
+		protected override AbstractDateTimeType Type => (AbstractDateTimeType)TypeFactory.GetDateTimeType(3);
+		protected override long DateAccuracyInTicks => Math.Max(TimeSpan.TicksPerMillisecond, base.DateAccuracyInTicks);
+		// The timestamp rounding in seeding does not account scale.
+		protected override bool RevisionCheck => false;
+
+		[Test]
+		public async Task LowerDigitsAreIgnoredAsync()
+		{
+			if (!Dialect.SupportsDateTimeScale)
+				Assert.Ignore("Lower digits cannot be ignored when dialect does not support scale");
+
+			var baseDate = new DateTime(2017, 10, 01, 17, 55, 24, 548, GetTypeKind());
+			var entity = new DateTimeClass
+			{
+				Id = AdditionalDateId,
+				Value = baseDate.AddTicks(TimeSpan.TicksPerMillisecond / 3)
+			};
+			Assert.That(entity.Value, Is.Not.EqualTo(baseDate));
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				await (s.SaveAsync(entity));
+				await (t.CommitAsync());
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var retrieved = await (s.LoadAsync<DateTimeClass>(AdditionalDateId));
+				Assert.That(retrieved.Value, Is.EqualTo(baseDate));
+				await (t.CommitAsync());
+			}
+		}
+	}
+
 	// Testing SQL Server 2008 with datetime in db instead of datetime2
 	[TestFixture]
 	public class DateTimeTypeMixedDateTimeFixtureAsync : DateTimeTypeFixtureAsync

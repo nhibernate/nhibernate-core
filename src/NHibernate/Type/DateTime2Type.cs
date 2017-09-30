@@ -12,7 +12,18 @@ namespace NHibernate.Type
 	[Serializable]
 	public class DateTime2Type : AbstractDateTimeType
 	{
-		internal DateTime2Type() : base(SqlTypeFactory.DateTime2)
+		/// <summary>
+		/// Default constructor.
+		/// </summary>
+		public DateTime2Type() : base(SqlTypeFactory.DateTime2)
+		{
+		}
+
+		/// <summary>
+		/// Constructor for specifying a datetime with a scale. Use <see cref="SqlTypeFactory.GetDateTime2"/>.
+		/// </summary>
+		/// <param name="sqlType">The sql type to use for the type.</param>
+		public DateTime2Type(DateTime2SqlType sqlType) : base(sqlType)
 		{
 		}
 

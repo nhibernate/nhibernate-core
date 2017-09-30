@@ -61,7 +61,7 @@ namespace NHibernate.Driver
 
 		private void SetVariableLengthParameterSize(DbParameter dbParam, SqlType sqlType)
 		{
-			if (Equals(sqlType, SqlTypeFactory.DateTime) && _dbDateTimeScale != null)
+			if (sqlType is DateTimeSqlType && _dbDateTimeScale != null)
 				dbParam.Scale = _dbDateTimeScale.Value;
 
 			if (sqlType.LengthDefined)

@@ -14,6 +14,13 @@ namespace NHibernate.Test.TypesTest
 	}
 
 	[TestFixture]
+	public class UtcDateTimeTypeWithScaleFixture : DateTimeTypeWithScaleFixture
+	{
+		protected override string TypeName => "UtcDateTimeWithScale";
+		protected override AbstractDateTimeType Type => (AbstractDateTimeType)TypeFactory.GetUtcDateTimeType(3);
+	}
+
+	[TestFixture]
 	public class UtcDateTimeNoMsTypeFixture : DateTimeNoMsTypeFixture
 	{
 		protected override string TypeName => "UtcDateTimeNoMs";

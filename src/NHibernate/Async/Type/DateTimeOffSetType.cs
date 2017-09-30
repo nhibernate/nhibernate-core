@@ -32,7 +32,8 @@ namespace NHibernate.Type
 			return SeedAsync(session, cancellationToken);
 		}
 
-		public Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken)
+		/// <inheritdoc />
+		public virtual Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

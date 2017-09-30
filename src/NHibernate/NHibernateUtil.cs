@@ -16,7 +16,8 @@ namespace NHibernate
 	/// <summary>
 	/// Provides access to the full range of NHibernate built-in types.
 	/// IType instances may be used to bind values to query parameters.
-	/// Also a factory for new Blobs and Clobs.
+	/// <see cref="TypeFactory" /> if needing to specify type size,
+	/// precision or scale.
 	/// </summary>
 	public static partial class NHibernateUtil
 	{

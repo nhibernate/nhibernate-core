@@ -213,7 +213,7 @@ namespace NHibernate.Dialect
 		/// <returns>The database type name used by ddl.</returns>
 		public virtual string GetTypeName(SqlType sqlType)
 		{
-			if (sqlType.LengthDefined || sqlType.PrecisionDefined)
+			if (sqlType.LengthDefined || sqlType.PrecisionDefined || sqlType.ScaleDefined)
 			{
 				string resultWithLength = _typeNames.Get(sqlType.DbType, sqlType.Length, sqlType.Precision, sqlType.Scale);
 				if (resultWithLength != null) return resultWithLength;
@@ -274,7 +274,7 @@ namespace NHibernate.Dialect
 		/// length (if appropriate)
 		/// </summary>
 		/// <param name="code">The typecode</param>
-		/// <param name="capacity">Maximum length of database type</param>
+		/// <param name="capacity">Maximum length or scale of database type</param>
 		/// <param name="name">The database type name</param>
 		protected void RegisterColumnType(DbType code, int capacity, string name)
 		{
@@ -2130,6 +2130,11 @@ namespace NHibernate.Dialect
 		/// <c>TransactionScope</c> does not imply the transaction will be distributed.
 		/// </remarks>
 		public virtual bool SupportsDistributedTransactions => true;
+
+		/// <summary>
+		/// Does this dialect handles date and time types scale (fractional seconds precision)?
+		/// </summary>
+		public virtual bool SupportsDateTimeScale => false;
 
 		#endregion
 

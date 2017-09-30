@@ -78,14 +78,8 @@ namespace NHibernate.Mapping
 
 					IEnumerable<Column> ce = new SafetyEnumerable<Column>(property.ColumnIterator);
 
-					// NH : The four lines below was added to ensure that related columns have same length,
-					// like ForeignKey.AlignColumns() do
-					using (var fkCols = ConstraintColumns.GetEnumerator())
-					using (var pkCols = ce.GetEnumerator())
-					{
-						while (fkCols.MoveNext() && pkCols.MoveNext())
-							fkCols.Current.Length = pkCols.Current.Length;
-					}
+					// NH : Ensure that related columns have same length
+					ForeignKey.AlignColumns(ConstraintColumns, ce);
 
 					ForeignKey fk =
 						Table.CreateForeignKey(ForeignKeyName, ConstraintColumns, ((EntityType)Type).GetAssociatedEntityName(), ce);

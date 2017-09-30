@@ -34,10 +34,14 @@ namespace NHibernate.Dialect
 		protected override void RegisterDateTimeTypeMappings()
 		{
 			base.RegisterDateTimeTypeMappings();
+			// Not overriding default scale: it is already the max, 7.
 			RegisterColumnType(DbType.DateTime2, "DATETIME2");
+			RegisterColumnType(DbType.DateTime2, 7, "DATETIME2($s)");
 			RegisterColumnType(DbType.DateTimeOffset, "DATETIMEOFFSET");
+			RegisterColumnType(DbType.DateTimeOffset, 7, "DATETIMEOFFSET($s)");
 			RegisterColumnType(DbType.Date, "DATE");
 			RegisterColumnType(DbType.Time, "TIME");
+			RegisterColumnType(DbType.Time, 7, "TIME($s)");
 		}
 
 		protected override void RegisterFunctions()
@@ -81,9 +85,14 @@ namespace NHibernate.Dialect
 		public override SqlType OverrideSqlType(SqlType type)
 		{
 			type = base.OverrideSqlType(type);
-			return !KeepDateTime && SqlTypeFactory.DateTime.Equals(type)
-				? SqlTypeFactory.DateTime2
+			return !KeepDateTime && type is DateTimeSqlType dateTimeType
+				? dateTimeType.ScaleDefined
+					? SqlTypeFactory.GetDateTime2(dateTimeType.Scale)
+					: SqlTypeFactory.DateTime2
 				: type;
 		}
+
+		/// <inheritdoc />
+		public override bool SupportsDateTimeScale => !KeepDateTime;
 	}
 }

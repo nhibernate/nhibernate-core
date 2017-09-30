@@ -25,6 +25,13 @@ namespace NHibernate.Test.TypesTest
 	}
 
 	[TestFixture]
+	public class LocalDateTimeTypeWithScaleFixtureAsync : DateTimeTypeWithScaleFixtureAsync
+	{
+		protected override string TypeName => "LocalDateTimeWithScale";
+		protected override AbstractDateTimeType Type => (AbstractDateTimeType)TypeFactory.GetLocalDateTimeType(3);
+	}
+
+	[TestFixture]
 	public class LocalDateTimeNoMsTypeFixtureAsync : DateTimeNoMsTypeFixtureAsync
 	{
 		protected override string TypeName => "LocalDateTimeNoMs";

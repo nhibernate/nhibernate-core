@@ -72,42 +72,61 @@ namespace NHibernate.Dialect
 		/// <param name="scale">the SQL scale </param>
 		/// <param name="precision">the SQL precision </param>
 		/// <returns>
-		/// The associated name with smallest capacity >= size if available and the
-		/// default type name otherwise
+		/// The associated name with smallest capacity >= size (or scale for date time types) if available,
+		/// otherwise the default type name.
 		/// </returns>
 		public string Get(DbType typecode, int size, int precision, int scale)
 		{
-			SortedList<int, string> map;
-			weighted.TryGetValue(typecode, out map);
+			weighted.TryGetValue(typecode, out var map);
 			if (map != null && map.Count > 0)
 			{
-				foreach (KeyValuePair<int, string> entry in map)
+				var requiredCapacity = IsScaleType(typecode) ? scale : size;
+				foreach (var entry in map)
 				{
-					if (size <= entry.Key)
+					if (requiredCapacity <= entry.Key)
 					{
 						return Replace(entry.Value, size, precision, scale);
 					}
 				}
 			}
-			//Could not find a specific type for the size, using the default
+			//Could not find a specific type for the capacity, using the default
 			return Replace(Get(typecode), size, precision, scale);
 		}
 
 		/// <summary>
-		/// For types with a simple length, this method returns the definition
+		/// For types with a simple length (or scale for date time types), this method returns the definition
 		/// for the longest registered type.
 		/// </summary>
 		/// <param name="typecode"></param>
 		/// <returns></returns>
 		public string GetLongest(DbType typecode)
 		{
-			SortedList<int, string> map;
-			weighted.TryGetValue(typecode, out map);
-
+			weighted.TryGetValue(typecode, out var map);
 			if (map != null && map.Count > 0)
-				return Replace(map.Values[map.Count - 1], map.Keys[map.Count - 1], 0, 0);
+			{
+				var isScaleType = IsScaleType(typecode);
+				var capacity = map.Keys[map.Count - 1];
+				return Replace(
+					map.Values[map.Count - 1],
+					isScaleType ? 0 : capacity,
+					0,
+					isScaleType ? capacity : 0);
+			}
 
 			return Get(typecode);
+		}
+
+		private static bool IsScaleType(DbType typecode)
+		{
+			switch (typecode)
+			{
+				case DbType.DateTime:
+				case DbType.DateTime2:
+				case DbType.DateTimeOffset:
+				case DbType.Time:
+					return true;
+			}
+			return false;
 		}
 
 		private static string Replace(string type, int size, int precision, int scale)
@@ -121,7 +140,7 @@ namespace NHibernate.Dialect
 		/// Set a type name for specified type key and capacity
 		/// </summary>
 		/// <param name="typecode">the type key</param>
-		/// <param name="capacity">the (maximum) type size/length</param>
+		/// <param name="capacity">the (maximum) type size/length or scale</param>
 		/// <param name="value">The associated name</param>
 		public void Put(DbType typecode, int capacity, string value)
 		{

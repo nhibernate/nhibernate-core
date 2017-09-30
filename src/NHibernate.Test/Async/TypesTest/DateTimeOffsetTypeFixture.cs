@@ -9,15 +9,10 @@
 
 
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.Linq;
-using System.Reflection;
 using NHibernate.Cfg;
 using NHibernate.Driver;
-using NHibernate.Engine;
-using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Tool.hbm2ddl;
 using NHibernate.Type;
@@ -29,13 +24,21 @@ namespace NHibernate.Test.TypesTest
 	using System.Threading.Tasks;
 	using System.Threading;
 	[TestFixture]
-	public abstract class AbstractDateTimeTypeFixtureAsync : TypeFixtureBase
+	public class DateTimeOffsetTypeFixtureAsync : TypeFixtureBase
 	{
-		protected abstract AbstractDateTimeType Type { get; }
+		protected override string TypeName => "DateTimeOffset";
+		protected virtual DateTimeOffsetType Type => NHibernateUtil.DateTimeOffset;
 		protected virtual bool RevisionCheck => true;
 
 		protected const int DateId = 1;
 		protected const int AdditionalDateId = 2;
+
+		protected override bool AppliesTo(Dialect.Dialect dialect) =>
+			TestDialect.SupportsSqlType(SqlTypeFactory.DateTimeOffSet);
+
+		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory) =>
+			// Cannot handle DbType.DateTimeOffset via .Net ODBC.
+			!(factory.ConnectionProvider.Driver is OdbcDriver);
 
 		protected override void Configure(Configuration configuration)
 		{
@@ -56,7 +59,7 @@ namespace NHibernate.Test.TypesTest
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var d = new DateTimeClass
+				var d = new DateTimeOffsetClass
 				{
 					Id = DateId,
 					Value = Now
@@ -73,7 +76,7 @@ namespace NHibernate.Test.TypesTest
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				s.CreateQuery("delete from DateTimeClass").ExecuteUpdate();
+				s.CreateQuery("delete from DateTimeOffsetClass").ExecuteUpdate();
 				t.Commit();
 			}
 		}
@@ -87,32 +90,28 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public async Task NextAsync()
 		{
-			var current = DateTime.Parse("2004-01-01");
+			var current = DateTimeOffset.Parse("2004-01-01");
 			var next = await (Type.NextAsync(current, null, CancellationToken.None));
 
-			Assert.That(next, Is.TypeOf<DateTime>(), "next should be DateTime");
+			Assert.That(next, Is.TypeOf<DateTimeOffset>(), "next should be DateTimeOffset");
 			Assert.That(next, Is.GreaterThan(current), "next should be greater than current");
 		}
 
 		[Test]
 		public async Task SeedAsync()
 		{
-			Assert.That(await (Type.SeedAsync(null, CancellationToken.None)), Is.TypeOf<DateTime>(), "seed should be DateTime");
+			Assert.That(await (Type.SeedAsync(null, CancellationToken.None)), Is.TypeOf<DateTimeOffset>(), "seed should be DateTime");
 		}
 
 		[Test]
-		[TestCase(DateTimeKind.Unspecified)]
-		[TestCase(DateTimeKind.Local)]
-		[TestCase(DateTimeKind.Utc)]
-		public async Task ReadWriteAsync(DateTimeKind kind)
+		public async Task ReadWriteAsync()
 		{
-			var entity = new DateTimeClass
+			var entity = new DateTimeOffsetClass
 			{
 				Id = AdditionalDateId,
-				Value = GetTestDate(kind)
+				Value = GetTestDate()
 			};
 
-			var typeKind = GetTypeKind();
 			// Now must be acquired before transaction because some db freezes current_timestamp at transaction start,
 			// like PostgreSQL. https://www.postgresql.org/docs/7.2/static/functions-datetime.html#AEN6700
 			// This then wrecks tests with DbTimestampType if the always out of tran Now is called for fetching
@@ -124,11 +123,6 @@ namespace NHibernate.Test.TypesTest
 			using (var t = s.BeginTransaction())
 			{
 				await (s.SaveAsync(entity));
-				if (kind != typeKind && typeKind != DateTimeKind.Unspecified)
-				{
-					Assert.That(() => t.CommitAsync(), Throws.TypeOf<PropertyValueException>());
-					return;
-				}
 				await (t.CommitAsync());
 			}
 			var afterNow = Now.AddTicks(DateAccuracyInTicks);
@@ -136,37 +130,29 @@ namespace NHibernate.Test.TypesTest
 			if (RevisionCheck)
 			{
 				Assert.That(entity.Revision, Is.GreaterThan(beforeNow).And.LessThan(afterNow), "Revision not correctly seeded.");
-				if (typeKind != DateTimeKind.Unspecified)
-					Assert.That(entity.Revision.Kind, Is.EqualTo(typeKind), "Revision kind not correctly seeded.");
 				Assert.That(entity.NullableValue, Is.Null, "NullableValue unexpectedly seeded.");
 			}
 
 			// Retrieve, compare then update
-			DateTimeClass retrieved;
+			DateTimeOffsetClass retrieved;
 			using (var s = OpenSession())
 			{
 				using (var t = s.BeginTransaction())
 				{
-					retrieved = await (s.GetAsync<DateTimeClass>(AdditionalDateId));
+					retrieved = await (s.GetAsync<DateTimeOffsetClass>(AdditionalDateId));
 
 					Assert.That(retrieved, Is.Not.Null, "Entity not saved or cannot be retrieved by its key.");
-					Assert.That(retrieved.Value, Is.EqualTo(GetExpectedValue(entity.Value)), "Unexpected value.");
+					Assert.That(retrieved.Value, Is.EqualTo(entity.Value), "Unexpected value.");
 					if (RevisionCheck)
 						Assert.That(retrieved.Revision, Is.EqualTo(entity.Revision), "Revision should be the same.");
 					Assert.That(retrieved.NullableValue, Is.EqualTo(entity.NullableValue), "NullableValue should be the same.");
-					if (typeKind != DateTimeKind.Unspecified)
-					{
-						Assert.That(retrieved.Value.Kind, Is.EqualTo(typeKind), "Value kind not correctly retrieved.");
-						if (RevisionCheck)
-							Assert.That(retrieved.Revision.Kind, Is.EqualTo(typeKind), "Revision kind not correctly retrieved.");
-					}
 					await (t.CommitAsync());
 				}
 				beforeNow = Now.AddTicks(-DateAccuracyInTicks);
 				using (var t = s.BeginTransaction())
 				{
-					retrieved.NullableValue = GetTestDate(kind);
-					retrieved.Value = GetTestDate(kind).AddMonths(-1);
+					retrieved.NullableValue = GetTestDate();
+					retrieved.Value = GetTestDate().AddMonths(-1);
 					await (t.CommitAsync());
 				}
 				afterNow = Now.AddTicks(DateAccuracyInTicks);
@@ -178,37 +164,25 @@ namespace NHibernate.Test.TypesTest
 					retrieved.Revision,
 					Is.GreaterThan(beforeNow).And.LessThan(afterNow).And.GreaterThanOrEqualTo(entity.Revision),
 					"Revision not correctly incremented.");
-				if (typeKind != DateTimeKind.Unspecified)
-					Assert.That(retrieved.Revision.Kind, Is.EqualTo(typeKind), "Revision kind incorrectly changed.");
 			}
 
 			// Retrieve and compare again
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var retrievedAgain = await (s.GetAsync<DateTimeClass>(AdditionalDateId));
+				var retrievedAgain = await (s.GetAsync<DateTimeOffsetClass>(AdditionalDateId));
 
 				Assert.That(retrievedAgain, Is.Not.Null, "Entity deleted or cannot be retrieved again by its key.");
 				Assert.That(
 					retrievedAgain.Value,
-					Is.EqualTo(GetExpectedValue(retrieved.Value)),
+					Is.EqualTo(retrieved.Value),
 					"Unexpected value at second compare.");
 				if (RevisionCheck)
 					Assert.That(retrievedAgain.Revision, Is.EqualTo(retrieved.Revision), "Revision should be the same again.");
 				Assert.That(
 					retrievedAgain.NullableValue,
-					Is.EqualTo(GetExpectedValue(retrieved.NullableValue.Value)),
+					Is.EqualTo(retrieved.NullableValue.Value),
 					"Unexpected NullableValue at second compare.");
-				if (typeKind != DateTimeKind.Unspecified)
-				{
-					Assert.That(retrievedAgain.Value.Kind, Is.EqualTo(typeKind), "Value kind not correctly retrieved again.");
-					if (RevisionCheck)
-						Assert.That(retrievedAgain.Revision.Kind, Is.EqualTo(typeKind), "Revision kind not correctly retrieved again.");
-					Assert.That(
-						retrievedAgain.NullableValue.Value.Kind,
-						Is.EqualTo(typeKind),
-						"NullableValue kind not correctly retrieved again.");
-				}
 				await (t.CommitAsync());
 			}
 		}
@@ -235,7 +209,7 @@ namespace NHibernate.Test.TypesTest
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var d = new DateTimeClass
+				var d = new DateTimeOffsetClass
 				{
 					Id = 2,
 					Value = Now,
@@ -258,7 +232,7 @@ namespace NHibernate.Test.TypesTest
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var d = await (s.GetAsync<DateTimeClass>(DateId));
+				var d = await (s.GetAsync<DateTimeOffsetClass>(DateId));
 				d.Value = Now;
 				d.NullableValue = Now;
 				driver.ClearStats();
@@ -282,17 +256,17 @@ namespace NHibernate.Test.TypesTest
 			{
 				var q = s
 					.CreateQuery(
-						"from DateTimeClass d where d.Value = :value and " +
+						"from DateTimeOffsetClass d where d.Value = :value and " +
 						"d.NullableValue = :nullableValue and " +
 						"d.Revision = :revision and " +
 						":other1 = :other2")
-					.SetDateTime("value", Now)
-					.SetDateTime("nullableValue", Now)
-					.SetDateTime("revision", Now)
-					.SetDateTime("other1", Now)
-					.SetDateTime("other2", Now);
+					.SetDateTimeOffset("value", Now)
+					.SetDateTimeOffset("nullableValue", Now)
+					.SetDateTimeOffset("revision", Now)
+					.SetDateTimeOffset("other1", Now)
+					.SetDateTimeOffset("other2", Now);
 				driver.ClearStats();
-				await (q.ListAsync<DateTimeClass>());
+				await (q.ListAsync<DateTimeOffsetClass>());
 				await (t.CommitAsync());
 			}
 
@@ -303,7 +277,7 @@ namespace NHibernate.Test.TypesTest
 			{
 				var q = s
 					.CreateQuery(
-						"from DateTimeClass d where d.Value = :value and " +
+						"from DateTimeOffsetClass d where d.Value = :value and " +
 						"d.NullableValue = :nullableValue and " +
 						"d.Revision = :revision and " +
 						":other1 = :other2")
@@ -313,7 +287,7 @@ namespace NHibernate.Test.TypesTest
 					.SetParameter("other1", Now, Type)
 					.SetParameter("other2", Now, Type);
 				driver.ClearStats();
-				await (q.ListAsync<DateTimeClass>());
+				await (q.ListAsync<DateTimeOffsetClass>());
 				await (t.CommitAsync());
 			}
 
@@ -323,9 +297,9 @@ namespace NHibernate.Test.TypesTest
 		private void AssertSqlType(ClientDriverWithParamsStats driver, int expectedCount, bool exactType)
 		{
 			var typeSqlTypes = Type.SqlTypes(Sfi);
-			if (typeSqlTypes.Any(t => t is DateTime2SqlType))
+			if (typeSqlTypes.Any(t => t is DateTimeOffsetSqlType))
 			{
-				var expectedType = exactType ? typeSqlTypes.First(t => t is DateTime2SqlType) : SqlTypeFactory.DateTime2;
+				var expectedType = exactType ? typeSqlTypes.First(t => t is DateTimeOffsetSqlType) : SqlTypeFactory.DateTimeOffSet;
 				Assert.That(
 					driver.GetCount(SqlTypeFactory.DateTime),
 					Is.EqualTo(0),
@@ -340,33 +314,6 @@ namespace NHibernate.Test.TypesTest
 					Is.EqualTo(expectedCount),
 					"Unexpected DbType.DateTime2 usage count.");
 			}
-			else if (typeSqlTypes.Any(t => t is DateTimeSqlType))
-			{
-				var expectedType = exactType ? typeSqlTypes.First(t => t is DateTimeSqlType) : SqlTypeFactory.DateTime;
-				Assert.That(
-					driver.GetCount(SqlTypeFactory.DateTime2),
-					Is.EqualTo(0),
-					"Found unexpected SqlTypeFactory.DateTime2 usages.");
-				Assert.That(
-					driver.GetCount(expectedType),
-					Is.EqualTo(expectedCount),
-					"Unexpected SqlTypeFactory.DateTime usage count.");
-				Assert.That(driver.GetCount(DbType.DateTime2), Is.EqualTo(0), "Found unexpected DbType.DateTime2 usages.");
-				Assert.That(driver.GetCount(expectedType), Is.EqualTo(expectedCount), "Unexpected DbType.DateTime usage count.");
-			}
-			else if (typeSqlTypes.Any(t => Equals(t, SqlTypeFactory.Date)))
-			{
-				Assert.That(
-					driver.GetCount(SqlTypeFactory.DateTime),
-					Is.EqualTo(0),
-					"Found unexpected SqlTypeFactory.DateTime usages.");
-				Assert.That(
-					driver.GetCount(SqlTypeFactory.Date),
-					Is.EqualTo(expectedCount),
-					"Unexpected SqlTypeFactory.Date usage count.");
-				Assert.That(driver.GetCount(DbType.DateTime), Is.EqualTo(0), "Found unexpected DbType.DateTime usages.");
-				Assert.That(driver.GetCount(DbType.Date), Is.EqualTo(expectedCount), "Unexpected DbType.Date usage count.");
-			}
 			else
 			{
 				Assert.Ignore("Test does not involve tested types");
@@ -375,26 +322,13 @@ namespace NHibernate.Test.TypesTest
 
 		protected virtual long DateAccuracyInTicks => Dialect.TimestampResolutionInTicks;
 
-		protected virtual DateTime Now => GetTypeKind() == DateTimeKind.Utc ? DateTime.UtcNow : DateTime.Now;
+		protected virtual DateTimeOffset Now => DateTimeOffset.Now;
 
-		protected virtual DateTime GetTestDate(DateTimeKind kind)
+		protected virtual DateTimeOffset GetTestDate()
 		{
-			return AbstractDateTimeType.Round(
-					kind == DateTimeKind.Utc ? DateTime.UtcNow : DateTime.SpecifyKind(DateTime.Now, kind),
-					DateAccuracyInTicks)
+			return DateTimeOffsetType.Round(Now, DateAccuracyInTicks)
 				// Take another date than now for checking the value do not get overridden by seeding.
 				.AddDays(1);
-		}
-
-		private DateTime GetExpectedValue(DateTime value)
-		{
-			var expectedValue = value;
-			var typeKind = GetTypeKind();
-			if (typeKind != DateTimeKind.Unspecified && typeKind != value.Kind && value.Kind != DateTimeKind.Unspecified)
-			{
-				expectedValue = typeKind == DateTimeKind.Local ? expectedValue.ToLocalTime() : expectedValue.ToUniversalTime();
-			}
-			return expectedValue;
 		}
 
 		/// <summary>
@@ -402,20 +336,9 @@ namespace NHibernate.Test.TypesTest
 		/// </summary>
 		/// <param name="original">The originale date time.</param>
 		/// <returns>An equal date time.</returns>
-		protected virtual DateTime GetSameDate(DateTime original)
+		protected virtual DateTimeOffset GetSameDate(DateTimeOffset original)
 		{
-			if (GetTypeKind() != DateTimeKind.Unspecified)
-				return new DateTime(original.Ticks, original.Kind);
-
-			switch (original.Kind)
-			{
-				case DateTimeKind.Local:
-					return DateTime.SpecifyKind(original, DateTimeKind.Unspecified);
-				case DateTimeKind.Unspecified:
-					return DateTime.SpecifyKind(original, DateTimeKind.Utc);
-				default:
-					return DateTime.SpecifyKind(original, DateTimeKind.Local);
-			}
+			return new DateTimeOffset(original.Ticks, original.Offset);
 		}
 
 		/// <summary>
@@ -423,17 +346,49 @@ namespace NHibernate.Test.TypesTest
 		/// </summary>
 		/// <param name="original">The originale date time.</param>
 		/// <returns>An inequal date time.</returns>
-		protected virtual DateTime GetDifferentDate(DateTime original)
+		protected virtual DateTimeOffset GetDifferentDate(DateTimeOffset original)
 		{
 			return original.AddTicks(DateAccuracyInTicks);
 		}
+	}
 
-		private static readonly PropertyInfo _kindProperty =
-			typeof(AbstractDateTimeType).GetProperty("Kind", BindingFlags.Instance | BindingFlags.NonPublic);
+	[TestFixture]
+	public class DateTimeOffsetTypeWithScaleFixtureAsync : DateTimeOffsetTypeFixtureAsync
+	{
+		protected override string TypeName => "DateTimeOffsetWithScale";
+		protected override DateTimeOffsetType Type => (DateTimeOffsetType)TypeFactory.GetDateTimeOffsetType(3);
+		protected override long DateAccuracyInTicks => Math.Max(TimeSpan.TicksPerMillisecond, base.DateAccuracyInTicks);
+		// The timestamp rounding in seeding does not account scale.
+		protected override bool RevisionCheck => false;
 
-		protected DateTimeKind GetTypeKind()
+		[Test]
+		public async Task LowerDigitsAreIgnoredAsync()
 		{
-			return (DateTimeKind) _kindProperty.GetValue(Type);
+			if (!Dialect.SupportsDateTimeScale)
+				Assert.Ignore("Lower digits cannot be ignored when dialect does not support scale");
+
+			var baseDate = new DateTimeOffset(2017, 10, 01, 17, 55, 24, 548, TimeSpan.FromHours(2));
+			var entity = new DateTimeOffsetClass
+			{
+				Id = AdditionalDateId,
+				Value = baseDate.AddTicks(TimeSpan.TicksPerMillisecond / 3)
+			};
+			Assert.That(entity.Value, Is.Not.EqualTo(baseDate));
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				await (s.SaveAsync(entity));
+				await (t.CommitAsync());
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var retrieved = await (s.LoadAsync<DateTimeOffsetClass>(AdditionalDateId));
+				Assert.That(retrieved.Value, Is.EqualTo(baseDate));
+				await (t.CommitAsync());
+			}
 		}
 	}
 }
