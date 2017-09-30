@@ -73,42 +73,28 @@ namespace NHibernate.Test.TypesTest
 		}
 
 		private readonly Random rnd = new Random();
-		private int totalCall;
 
-		[Test, Explicit]
+		[Test]
 		public void MultiThreadAccess()
 		{
 			// Test added for NH-1251
-			// If one thread break the test you can see the result in the console.
-			((Logger) log.Logger).Level = log4net.Core.Level.Debug;
-			MultiThreadRunner<object>.ExecuteAction[] actions = new MultiThreadRunner<object>.ExecuteAction[]
+			var mtr = new MultiThreadRunner<object>(
+				100,
+				o => TypeFactory.GetStringType(rnd.Next(1, 50)),
+				o => TypeFactory.GetBinaryType(rnd.Next(1, 50)),
+				o => TypeFactory.GetSerializableType(rnd.Next(1, 50)),
+				o => TypeFactory.GetTypeType(rnd.Next(1, 20)))
 			{
-				delegate(object o)
-					{
-						TypeFactory.GetStringType(rnd.Next(1, 50));
-						totalCall++;
-					},
-				delegate(object o)
-					{
-						TypeFactory.GetBinaryType(rnd.Next(1, 50));
-						totalCall++;
-					},
-				delegate(object o)
-					{
-						TypeFactory.GetSerializableType(rnd.Next(1, 50));
-						totalCall++;
-					},
-				delegate(object o)
-					{
-						TypeFactory.GetTypeType(rnd.Next(1, 20));
-						totalCall++;
-					},
+				EndTimeout = 2000,
+				TimeoutBetweenThreadStart = 2
 			};
-			MultiThreadRunner<object> mtr = new MultiThreadRunner<object>(100, actions);
-			mtr.EndTimeout = 2000;
-			mtr.TimeoutBetweenThreadStart = 2;
-			mtr.Run(null);
-			log.DebugFormat("{0} calls", totalCall);
+			var totalCalls = mtr.Run(null);
+			log.DebugFormat("{0} calls", totalCalls);
+			var errors = mtr.GetErrors();
+			if (errors.Length > 0)
+			{
+				Assert.Fail("One or more thread failed, found {0} errors. First exception: {1}", errors.Length, errors[0]);
+			}
 		}
 
 		[Test]
