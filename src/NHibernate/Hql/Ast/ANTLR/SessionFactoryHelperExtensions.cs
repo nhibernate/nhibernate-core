@@ -77,7 +77,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 			if (first != null)
 			{
-				if (functionName == "cast")
+				if (sqlFunction is CastFunction)
 				{
 					argumentType = TypeFactory.HeuristicType(first.NextSibling.Text);
 				}

@@ -98,6 +98,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("upper", new StandardSQLFunction("upper"));
 			RegisterFunction("lower", new StandardSQLFunction("lower"));
 			RegisterFunction("cast", new CastFunction());
+			RegisterFunction("transparentcast", new TransparentCastFunction());
 			RegisterFunction("extract", new AnsiExtractFunction());
 			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "||", ")"));
 
