@@ -58,7 +58,7 @@ namespace NHibernate.Type
 				}
 
 				DateTime dbValue = Convert.ToDateTime(rs[index]);
-				return new DateTime(1753, 01, 01, dbValue.Hour, dbValue.Minute, dbValue.Second);
+				return BaseDateValue.Add(dbValue.TimeOfDay);
 			}
 			catch (Exception ex)
 			{
