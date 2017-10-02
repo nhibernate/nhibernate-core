@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using NHibernate.Type;
 using NUnit.Framework;
 
@@ -15,6 +16,7 @@ namespace NHibernate.Test.TypesTest
 {
 	using System.Threading.Tasks;
 	[TestFixture]
+	[Obsolete]
 	public class TimestampTypeFixtureAsync : AbstractDateTimeTypeFixtureAsync
 	{
 		protected override string TypeName => "Timestamp";

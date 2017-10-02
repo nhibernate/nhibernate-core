@@ -359,6 +359,7 @@ namespace NHibernate
 		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetTime(string name, DateTime val);
 
+		// Obsolete since v5.0
 		/// <summary>
 		/// Bind an instance of a <see cref="DateTime" /> to a named parameter
 		/// using an NHibernate <see cref="TimestampType"/>.
@@ -366,6 +367,7 @@ namespace NHibernate
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
 		/// <returns>The instance for method chain.</returns>
+		[Obsolete("Use SetDateTime instead.")]
 		IMultiQuery SetTimestamp(string name, DateTime val);
 
 		/// <summary>

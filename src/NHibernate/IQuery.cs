@@ -589,20 +589,24 @@ namespace NHibernate
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
 		IQuery SetTime(string name, DateTime val);
 
+		// Obsolete since v5.0
 		/// <summary>
 		/// Bind an instance of a <see cref="DateTime" /> to an indexed parameter
 		/// using an NHibernate <see cref="TimestampType"/>.
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
+		[Obsolete("Use SetDateTime instead.")]
 		IQuery SetTimestamp(int position, DateTime val);
 
+		// Obsolete since v5.0
 		/// <summary>
 		/// Bind an instance of a <see cref="DateTime" /> to a named parameter
 		/// using an NHibernate <see cref="TimestampType"/>.
 		/// </summary>
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
+		[Obsolete("Use SetDateTime instead.")]
 		IQuery SetTimestamp(string name, DateTime val);
 
 		/// <summary>

@@ -9,6 +9,7 @@
     </id>
     <version name="Revision" column="`Revision`" type="timestamp"/>
     <property name="Value" column="`Value`" type="timestamp"/>
-    <property name="NullableValue" type="timestamp"/>
+    <!-- Testing obsolete message -->
+    <property name="NullableValue" type="NHibernate.Type.TimestampType"/>
   </class>
 </hibernate-mapping>

@@ -22,7 +22,7 @@ namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class DbTimestampType : TimestampType
+	public partial class DbTimestampType : AbstractDateTimeType
 	{
 
 		/// <inheritdoc />
@@ -36,18 +36,15 @@ namespace NHibernate.Type
 			{
 				if (session == null)
 				{
-					log.Debug("incoming session was null; using current vm time");
+					log.Debug("incoming session was null; using current application host time");
 					return base.SeedAsync(null, cancellationToken);
 				}
-				else if (!session.Factory.Dialect.SupportsCurrentTimestampSelection)
+				if (!session.Factory.Dialect.SupportsCurrentTimestampSelection)
 				{
-					log.Debug("falling back to vm-based timestamp, as dialect does not support current timestamp selection");
+					log.Info("falling back to application host based timestamp, as dialect does not support current timestamp selection");
 					return base.SeedAsync(session, cancellationToken);
 				}
-				else
-				{
-					return GetCurrentTimestampAsync(session, cancellationToken);
-				}
+				return GetCurrentTimestampAsync(session, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -79,35 +76,37 @@ namespace NHibernate.Type
 			var tsSelect = new SqlString(timestampSelectString);
 			DbCommand ps = null;
 			DbDataReader rs = null;
-			using (new SessionIdLoggingContext(session.SessionId)) 
-			try
+			using (new SessionIdLoggingContext(session.SessionId))
 			{
-				ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, tsSelect, EmptyParams, cancellationToken)).ConfigureAwait(false);
-				rs = await (session.Batcher.ExecuteReaderAsync(ps, cancellationToken)).ConfigureAwait(false);
-				await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false);
-				DateTime ts = rs.GetDateTime(0);
-				if (log.IsDebugEnabled)
+				try
 				{
-					log.Debug("current timestamp retreived from db : " + ts + " (tiks=" + ts.Ticks + ")");
+					ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, tsSelect, EmptyParams, cancellationToken)).ConfigureAwait(false);
+					rs = await (session.Batcher.ExecuteReaderAsync(ps, cancellationToken)).ConfigureAwait(false);
+					await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false);
+					var ts = rs.GetDateTime(0);
+					log.DebugFormat("current timestamp retreived from db : {0} (ticks={1})", ts, ts.Ticks);
+					return ts;
 				}
-				return ts;
-			}
-			catch (DbException sqle)
-			{
-				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
-				                                 "could not select current db timestamp", tsSelect);
-			}
-			finally
-			{
-				if (ps != null)
+				catch (DbException sqle)
 				{
-					try
+					throw ADOExceptionHelper.Convert(
+						session.Factory.SQLExceptionConverter,
+						sqle,
+						"could not select current db timestamp",
+						tsSelect);
+				}
+				finally
+				{
+					if (ps != null)
 					{
-						session.Batcher.CloseCommand(ps, rs);
-					}
-					catch (DbException sqle)
-					{
-						log.Warn("unable to clean up prepared statement", sqle);
+						try
+						{
+							session.Batcher.CloseCommand(ps, rs);
+						}
+						catch (DbException sqle)
+						{
+							log.Warn("unable to clean up prepared statement", sqle);
+						}
 					}
 				}
 			}

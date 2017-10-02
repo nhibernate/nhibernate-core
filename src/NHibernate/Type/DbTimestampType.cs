@@ -10,16 +10,12 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
 {
-	/// <summary> An extension of <see cref="TimestampType"/> which
-	/// maps to the database's current timestamp, rather than the vm's
-	/// current timestamp.
+	/// <summary>
+	/// When used as a version, gets seeded and incremented by querying the database's
+	/// current timestamp, rather than the application host's current timestamp.
 	/// </summary>
-	/// <remarks>
-	/// Note: May/may-not cause issues on dialects which do not properly support
-	/// a true notion of timestamp.
-	/// </remarks>
 	[Serializable]
-	public partial class DbTimestampType : TimestampType
+	public partial class DbTimestampType : AbstractDateTimeType
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DbTimestampType));
 		private static readonly SqlType[] EmptyParams = new SqlType[0];
@@ -32,18 +28,15 @@ namespace NHibernate.Type
 		{
 			if (session == null)
 			{
-				log.Debug("incoming session was null; using current vm time");
+				log.Debug("incoming session was null; using current application host time");
 				return base.Seed(null);
 			}
-			else if (!session.Factory.Dialect.SupportsCurrentTimestampSelection)
+			if (!session.Factory.Dialect.SupportsCurrentTimestampSelection)
 			{
-				log.Debug("falling back to vm-based timestamp, as dialect does not support current timestamp selection");
+				log.Info("falling back to application host based timestamp, as dialect does not support current timestamp selection");
 				return base.Seed(session);
 			}
-			else
-			{
-				return GetCurrentTimestamp(session);
-			}
+			return GetCurrentTimestamp(session);
 		}
 
 		private object GetCurrentTimestamp(ISessionImplementor session)
@@ -58,35 +51,37 @@ namespace NHibernate.Type
 			var tsSelect = new SqlString(timestampSelectString);
 			DbCommand ps = null;
 			DbDataReader rs = null;
-			using (new SessionIdLoggingContext(session.SessionId)) 
-			try
+			using (new SessionIdLoggingContext(session.SessionId))
 			{
-				ps = session.Batcher.PrepareCommand(CommandType.Text, tsSelect, EmptyParams);
-				rs = session.Batcher.ExecuteReader(ps);
-				rs.Read();
-				DateTime ts = rs.GetDateTime(0);
-				if (log.IsDebugEnabled)
+				try
 				{
-					log.Debug("current timestamp retreived from db : " + ts + " (tiks=" + ts.Ticks + ")");
+					ps = session.Batcher.PrepareCommand(CommandType.Text, tsSelect, EmptyParams);
+					rs = session.Batcher.ExecuteReader(ps);
+					rs.Read();
+					var ts = rs.GetDateTime(0);
+					log.DebugFormat("current timestamp retreived from db : {0} (ticks={1})", ts, ts.Ticks);
+					return ts;
 				}
-				return ts;
-			}
-			catch (DbException sqle)
-			{
-				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
-				                                 "could not select current db timestamp", tsSelect);
-			}
-			finally
-			{
-				if (ps != null)
+				catch (DbException sqle)
 				{
-					try
+					throw ADOExceptionHelper.Convert(
+						session.Factory.SQLExceptionConverter,
+						sqle,
+						"could not select current db timestamp",
+						tsSelect);
+				}
+				finally
+				{
+					if (ps != null)
 					{
-						session.Batcher.CloseCommand(ps, rs);
-					}
-					catch (DbException sqle)
-					{
-						log.Warn("unable to clean up prepared statement", sqle);
+						try
+						{
+							session.Batcher.CloseCommand(ps, rs);
+						}
+						catch (DbException sqle)
+						{
+							log.Warn("unable to clean up prepared statement", sqle);
+						}
 					}
 				}
 			}

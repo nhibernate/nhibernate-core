@@ -244,7 +244,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("right", new SQLFunctionTemplate(NHibernateUtil.String, "substr(?1, -?2)"));
 
 			RegisterFunction("to_char", new StandardSQLFunction("to_char", NHibernateUtil.String));
-			RegisterFunction("to_date", new StandardSQLFunction("to_date", NHibernateUtil.Timestamp));
+			RegisterFunction("to_date", new StandardSQLFunction("to_date", NHibernateUtil.DateTime));
 
 			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.Date, false));
 			RegisterFunction("current_time", new NoArgSQLFunction("current_timestamp", NHibernateUtil.Time, false));
@@ -260,7 +260,7 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("last_day", new StandardSQLFunction("last_day", NHibernateUtil.Date));
 			RegisterFunction("sysdate", new NoArgSQLFunction("sysdate", NHibernateUtil.Date, false));
-			RegisterFunction("systimestamp", new NoArgSQLFunction("systimestamp", NHibernateUtil.Timestamp, false));
+			RegisterFunction("systimestamp", new NoArgSQLFunction("systimestamp", NHibernateUtil.DateTime, false));
 			RegisterFunction("uid", new NoArgSQLFunction("uid", NHibernateUtil.Int32, false));
 			RegisterFunction("user", new NoArgSQLFunction("user", NHibernateUtil.String, false));
 

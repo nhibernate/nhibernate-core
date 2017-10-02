@@ -19,7 +19,9 @@ namespace NHibernate.Test.DialectTest
 			cfg.SetProperty(Environment.Dialect, typeof(MsSql2005Dialect).FullName);
 			var mapping = GetMapping(cfg);
 			AssertSqlType(NHibernateUtil.DateTime, SqlTypeFactory.DateTime, mapping);
+#pragma warning disable 618 // Timestamp is obsolete
 			AssertSqlType(NHibernateUtil.Timestamp, SqlTypeFactory.DateTime, mapping);
+#pragma warning restore 618
 			AssertSqlType(NHibernateUtil.DbTimestamp, SqlTypeFactory.DateTime, mapping);
 			AssertSqlType(NHibernateUtil.LocalDateTime, SqlTypeFactory.DateTime, mapping);
 			AssertSqlType(NHibernateUtil.UtcDateTime, SqlTypeFactory.DateTime, mapping);
@@ -35,7 +37,9 @@ namespace NHibernate.Test.DialectTest
 			cfg.SetProperty(Environment.Dialect, typeof(MsSql2008Dialect).FullName);
 			var mapping = GetMapping(cfg);
 			AssertSqlType(NHibernateUtil.DateTime, SqlTypeFactory.DateTime2, mapping);
+#pragma warning disable 618 // Timestamp is obsolete
 			AssertSqlType(NHibernateUtil.Timestamp, SqlTypeFactory.DateTime2, mapping);
+#pragma warning restore 618
 			AssertSqlType(NHibernateUtil.DbTimestamp, SqlTypeFactory.DateTime2, mapping);
 			AssertSqlType(NHibernateUtil.LocalDateTime, SqlTypeFactory.DateTime2, mapping);
 			AssertSqlType(NHibernateUtil.UtcDateTime, SqlTypeFactory.DateTime2, mapping);
@@ -52,7 +56,9 @@ namespace NHibernate.Test.DialectTest
 			cfg.SetProperty(Environment.SqlTypesKeepDateTime, "true");
 			var mapping = GetMapping(cfg);
 			AssertSqlType(NHibernateUtil.DateTime, SqlTypeFactory.DateTime, mapping);
+#pragma warning disable 618 // Timestamp is obsolete
 			AssertSqlType(NHibernateUtil.Timestamp, SqlTypeFactory.DateTime, mapping);
+#pragma warning restore 618
 			AssertSqlType(NHibernateUtil.DbTimestamp, SqlTypeFactory.DateTime, mapping);
 			AssertSqlType(NHibernateUtil.LocalDateTime, SqlTypeFactory.DateTime, mapping);
 			AssertSqlType(NHibernateUtil.UtcDateTime, SqlTypeFactory.DateTime, mapping);

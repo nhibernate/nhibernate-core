@@ -66,7 +66,7 @@ namespace NHibernate.Test.VersionTest.Db
 			t.Commit();
 			s.Close();
 
-			Assert.That(!NHibernateUtil.Timestamp.IsEqual(guyTimestamp, guy.Timestamp), "owner version not incremented");
+			Assert.That(!NHibernateUtil.DbTimestamp.IsEqual(guyTimestamp, guy.Timestamp), "owner version not incremented");
 
 			guyTimestamp = guy.Timestamp;
 			Thread.Sleep(1500);
@@ -78,7 +78,7 @@ namespace NHibernate.Test.VersionTest.Db
 			t.Commit();
 			s.Close();
 
-			Assert.That(!NHibernateUtil.Timestamp.IsEqual(guyTimestamp, guy.Timestamp), "owner version not incremented");
+			Assert.That(!NHibernateUtil.DbTimestamp.IsEqual(guyTimestamp, guy.Timestamp), "owner version not incremented");
 
 			s = OpenSession();
 			t = s.BeginTransaction();
@@ -111,7 +111,7 @@ namespace NHibernate.Test.VersionTest.Db
 			s.Close();
 
 			const string ownerVersionWasIncremented = "owner version was incremented ({0:o} => {1:o})";
-			Assert.That(NHibernateUtil.Timestamp.IsEqual(guyTimestamp, guy.Timestamp),
+			Assert.That(NHibernateUtil.DbTimestamp.IsEqual(guyTimestamp, guy.Timestamp),
 			            string.Format(ownerVersionWasIncremented, guyTimestamp, guy.Timestamp));
 			Console.WriteLine(string.Format(ownerVersionWasIncremented, guyTimestamp, guy.Timestamp));
 
@@ -122,7 +122,7 @@ namespace NHibernate.Test.VersionTest.Db
 			t.Commit();
 			s.Close();
 
-			Assert.That(NHibernateUtil.Timestamp.IsEqual(guyTimestamp, guy.Timestamp),
+			Assert.That(NHibernateUtil.DbTimestamp.IsEqual(guyTimestamp, guy.Timestamp),
 			            string.Format(ownerVersionWasIncremented, guyTimestamp, guy.Timestamp));
 
 			s = OpenSession();

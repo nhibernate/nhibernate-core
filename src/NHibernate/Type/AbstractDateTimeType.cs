@@ -14,7 +14,7 @@ namespace NHibernate.Type
 	[Serializable]
 	public abstract partial class AbstractDateTimeType : PrimitiveType, IIdentifierType, ILiteralType, IVersionType
 	{
-		private static readonly DateTime _baseDateValue = DateTime.MinValue;
+		private static readonly DateTime BaseDateValue = DateTime.MinValue;
 
 		/// <summary>
 		/// Returns the <see cref="DateTimeKind" /> for the type.
@@ -82,17 +82,16 @@ namespace NHibernate.Type
 		}
 
 		/// <inheritdoc />
-		public override void Set(DbCommand st, object value, int index, ISessionImplementor session) =>
-			st.Parameters[index].Value = GetDateTimeToSet(value, session);
-
-		/// <summary>
-		/// Get the <see cref="DateTime" /> from the value to set in a parameter.
-		/// </summary>
-		/// <param name="value">The original value.</param>
-		/// <param name="session">The session for which the operation is done.</param>
-		/// <returns>The <see cref="DateTime" /> to set as parameter value.</returns>
-		protected virtual DateTime GetDateTimeToSet(object value, ISessionImplementor session) =>
-			AdjustDateTime((DateTime) value);
+		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
+		{
+			var dateValue = (DateTime) value;
+			// We could try convert. This is always doable when going to local. But the other way may encounter
+			// ambiguous times. .Net then always assumes the time to be without daylight shift, causing the ambiguous
+			// hour with daylight shift to be always wrongly converted. So better just fail.
+			if (Kind != DateTimeKind.Unspecified && dateValue.Kind != Kind)
+				throw new ArgumentException($"{Name} expect date kind {Kind} but it is {dateValue.Kind}", nameof(value));
+			st.Parameters[index].Value = AdjustDateTime(dateValue);
+		}
 
 		#region IVersionType Members
 
@@ -127,7 +126,7 @@ namespace NHibernate.Type
 		/// <returns><see langword="true" /> if they are equals, <see langword="false" /> otherwise.</returns>
 		public override bool IsEqual(object x, object y) =>
 			base.IsEqual(x, y) &&
-				(Kind == DateTimeKind.Unspecified || x == null || ((DateTime) x).Kind == ((DateTime) y).Kind);
+			(Kind == DateTimeKind.Unspecified || x == null || ((DateTime) x).Kind == ((DateTime) y).Kind);
 
 		/// <inheritdoc />
 		public override string ToString(object val) =>
@@ -151,10 +150,10 @@ namespace NHibernate.Type
 		public override System.Type PrimitiveClass => typeof(DateTime);
 
 		/// <inheritdoc />
-		public override object DefaultValue => _baseDateValue;
+		public override object DefaultValue => BaseDateValue;
 
 		/// <inheritdoc />
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect) =>
-			"'" + (DateTime)value + "'";
+			"'" + (DateTime) value + "'";
 	}
 }

@@ -135,7 +135,7 @@ namespace NHibernate.Dialect
 			RegisterHibernateType(DbType.Int16, NHibernateUtil.Int16.Name);
 			RegisterHibernateType(DbType.SByte, NHibernateUtil.SByte.Name);
 			RegisterHibernateType(DbType.Time, NHibernateUtil.Time.Name);
-			RegisterHibernateType(DbType.DateTime, NHibernateUtil.Timestamp.Name);
+			RegisterHibernateType(DbType.DateTime, NHibernateUtil.DateTime.Name);
 			RegisterHibernateType(DbType.String, NHibernateUtil.String.Name);
 			RegisterHibernateType(DbType.VarNumeric, NHibernateUtil.Decimal.Name);
 			RegisterHibernateType(DbType.Decimal, NHibernateUtil.Decimal.Name);

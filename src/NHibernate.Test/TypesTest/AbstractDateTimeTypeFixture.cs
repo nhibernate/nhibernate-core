@@ -127,7 +127,7 @@ namespace NHibernate.Test.TypesTest
 		[TestCase(DateTimeKind.Unspecified)]
 		[TestCase(DateTimeKind.Local)]
 		[TestCase(DateTimeKind.Utc)]
-		public virtual void ReadWrite(DateTimeKind kind)
+		public void ReadWrite(DateTimeKind kind)
 		{
 			var entity = new DateTimeClass
 			{
@@ -135,6 +135,7 @@ namespace NHibernate.Test.TypesTest
 				Value = GetTestDate(kind)
 			};
 
+			var typeKind = GetTypeKind();
 			// Now must be acquired before transaction because some db freezes current_timestamp at transaction start,
 			// like PostgreSQL. https://www.postgresql.org/docs/7.2/static/functions-datetime.html#AEN6700
 			// This then wrecks tests with DbTimestampType if the always out of tran Now is called for fetching
@@ -146,11 +147,15 @@ namespace NHibernate.Test.TypesTest
 			using (var t = s.BeginTransaction())
 			{
 				s.Save(entity);
+				if (kind != typeKind && typeKind != DateTimeKind.Unspecified)
+				{
+					Assert.That(() => t.Commit(), Throws.TypeOf<PropertyValueException>());
+					return;
+				}
 				t.Commit();
 			}
 			var afterNow = Now.AddTicks(DateAccuracyInTicks);
 
-			var typeKind = GetTypeKind();
 			if (RevisionCheck)
 			{
 				Assert.That(entity.Revision, Is.GreaterThan(beforeNow).And.LessThan(afterNow), "Revision not correctly seeded.");
@@ -168,7 +173,7 @@ namespace NHibernate.Test.TypesTest
 					retrieved = s.Get<DateTimeClass>(AdditionalDateId);
 
 					Assert.That(retrieved, Is.Not.Null, "Entity not saved or cannot be retrieved by its key.");
-					Assert.That(retrieved.Value, Is.EqualTo(entity.Value), "Value should be the same.");
+					Assert.That(retrieved.Value, Is.EqualTo(GetExpectedValue(entity.Value)), "Unexpected value.");
 					if (RevisionCheck)
 						Assert.That(retrieved.Revision, Is.EqualTo(entity.Revision), "Revision should be the same.");
 					Assert.That(retrieved.NullableValue, Is.EqualTo(entity.NullableValue), "NullableValue should be the same.");
@@ -207,13 +212,16 @@ namespace NHibernate.Test.TypesTest
 				var retrievedAgain = s.Get<DateTimeClass>(AdditionalDateId);
 
 				Assert.That(retrievedAgain, Is.Not.Null, "Entity deleted or cannot be retrieved again by its key.");
-				Assert.That(retrievedAgain.Value, Is.EqualTo(retrieved.Value), "Value should be the same again.");
+				Assert.That(
+					retrievedAgain.Value,
+					Is.EqualTo(GetExpectedValue(retrieved.Value)),
+					"Unexpected value at second compare.");
 				if (RevisionCheck)
 					Assert.That(retrievedAgain.Revision, Is.EqualTo(retrieved.Revision), "Revision should be the same again.");
 				Assert.That(
 					retrievedAgain.NullableValue,
-					Is.EqualTo(retrieved.NullableValue),
-					"NullableValue should be the same again.");
+					Is.EqualTo(GetExpectedValue(retrieved.NullableValue.Value)),
+					"Unexpected NullableValue at second compare.");
 				if (typeKind != DateTimeKind.Unspecified)
 				{
 					Assert.That(retrievedAgain.Value.Kind, Is.EqualTo(typeKind), "Value kind not correctly retrieved again.");
@@ -307,6 +315,52 @@ namespace NHibernate.Test.TypesTest
 			AssertSqlType(driver, 5);
 		}
 
+		/// <summary>
+		/// Tests if the type FromStringValue implementation behaves as expected.
+		/// </summary>
+		/// <param name="timestampValue"></param>
+		[Test]
+		[TestCase("2011-01-27T15:50:59.6220000+02:00")]
+		[TestCase("2011-01-27T14:50:59.6220000+01:00")]
+		[TestCase("2011-01-27T13:50:59.6220000Z")]
+		public void FromStringValue_ParseValidValues(string timestampValue)
+		{
+			var timestamp = DateTime.Parse(timestampValue);
+
+			Assert.That(
+				timestamp.Kind,
+				Is.EqualTo(DateTimeKind.Local),
+				"Kind is NOT Local. dotnet framework parses datetime values with kind set to Local and " +
+				"time correct to local timezone.");
+
+			var typeKind = GetTypeKind();
+			if (typeKind == DateTimeKind.Utc)
+				timestamp = timestamp.ToUniversalTime();
+
+			var value = (DateTime) Type.FromStringValue(timestampValue);
+
+			Assert.That(value, Is.EqualTo(timestamp), timestampValue);
+
+			if (typeKind != DateTimeKind.Unspecified)
+				Assert.AreEqual(GetTypeKind(), value.Kind, "Unexpected FromStringValue kind");
+		}
+
+		/// <summary>
+		/// Test the framework IsEqual behavior. If the test fails then the <see cref="AbstractDateTimeType"/>
+		/// and <see cref="DateTimeNoMsType"/> implemention could not work propertly at run-time.
+		/// </summary>
+		[Test, Category("Expected framework behavior")]
+		public void ExpectedIsEqualDotnetFrameworkBehavior()
+		{
+			const string assertMessage = "Values should be equal dotnet framework ignores Kind value.";
+			var utc = new DateTime(1976, 11, 30, 10, 0, 0, 300, DateTimeKind.Utc);
+			var local = new DateTime(1976, 11, 30, 10, 0, 0, 300, DateTimeKind.Local);
+			var unspecified = new DateTime(1976, 11, 30, 10, 0, 0, 300, DateTimeKind.Unspecified);
+			Assert.That(utc, Is.EqualTo(local), assertMessage);
+			Assert.That(utc, Is.EqualTo(unspecified), assertMessage);
+			Assert.That(unspecified, Is.EqualTo(local), assertMessage);
+		}
+
 		private void AssertSqlType(ClientDriverWithParamsStats driver, int expectedCount)
 		{
 			if (Type.SqlTypes(Sfi).Any(t => Equals(t, SqlTypeFactory.DateTime2)))
@@ -364,6 +418,17 @@ namespace NHibernate.Test.TypesTest
 					DateAccuracyInTicks)
 				// Take another date than now for checking the value do not get overridden by seeding.
 				.AddDays(1);
+		}
+
+		private DateTime GetExpectedValue(DateTime value)
+		{
+			var expectedValue = value;
+			var typeKind = GetTypeKind();
+			if (typeKind != DateTimeKind.Unspecified && typeKind != value.Kind && value.Kind != DateTimeKind.Unspecified)
+			{
+				expectedValue = typeKind == DateTimeKind.Local ? expectedValue.ToLocalTime() : expectedValue.ToUniversalTime();
+			}
+			return expectedValue;
 		}
 
 		/// <summary>

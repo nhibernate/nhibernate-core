@@ -1,12 +1,10 @@
 using System;
-using NHibernate.Engine;
 
 namespace NHibernate.Type
 {
+	// Obsolete since v5.0
 	/// <summary>
-	/// This is almost the exact same type as the <see cref="DateTimeType" /> excepted it can be used
-	/// in the version column, stores it to the accuracy the database supports
-	/// and will default to the value of <see cref="AbstractDateTimeType.Now" /> if the value is not valid.
+	/// This is almost the exact same type as the <see cref="DateTimeType" />.
 	/// </summary>
 	/// <remarks>
 	/// <para>
@@ -28,15 +26,12 @@ namespace NHibernate.Type
 	/// <see cref="TicksType"/>.
 	/// </para>
 	/// </remarks>
+	[Obsolete("Please use DateTimeType instead.")]
 	[Serializable]
 	public class TimestampType : AbstractDateTimeType
 	{
 		/// <inheritdoc />
 		public override string Name => "Timestamp";
-
-		/// <inheritdoc />
-		protected override DateTime GetDateTimeToSet(object value, ISessionImplementor session) =>
-			(value as DateTime?) ?? Now;
 
 		/// <summary>
 		/// Retrieve the string representation of the timestamp object. This is in the following format:

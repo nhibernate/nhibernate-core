@@ -52,5 +52,17 @@ namespace NHibernate.Test.TypesTest
 			Assert.That(type.IsEqual(localTime, unspecifiedKid), Is.True);
 			Assert.That(type.IsEqual(localTime, unspecifiedKid), Is.True);
 		}
+
+		[Test]
+		public void ObsoleteMessage()
+		{
+			using (var spy = new LogSpy(typeof(TypeFactory)))
+			{
+				TypeFactory.Basic(NHibernateUtil.DateTime2.Name);
+					Assert.That(
+						spy.GetWholeLog(),
+						Does.Contain($"{NHibernateUtil.DateTime2.Name} is obsolete. Use DateTimeType instead").IgnoreCase);
+			}
+		}
 	}
 }

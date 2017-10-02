@@ -32,7 +32,8 @@ namespace NHibernate.Type
 			Length,
 			PrecisionScale
 		}
-		
+
+		private static readonly IInternalLogger _log = LoggerProvider.LoggerFor(typeof(TypeFactory));
 		private static readonly string[] EmptyAliases= new string[0];
 		private static readonly char[] PrecisionScaleSplit = new[] { '(', ')', ',' };
 		private static readonly char[] LengthSplit = new[] { '(', ')' };
@@ -79,6 +80,9 @@ namespace NHibernate.Type
 
 		private static readonly ConcurrentDictionary<string, IType> typeByTypeOfName =
 			new ConcurrentDictionary<string, IType>();
+
+		private static readonly ConcurrentDictionary<string, string> _obsoleteMessageByAlias =
+			new ConcurrentDictionary<string, string>();
 
 		private static readonly ConcurrentDictionary<string, GetNullableTypeWithLength> getTypeDelegatesWithLength =
 			new ConcurrentDictionary<string, GetNullableTypeWithLength>();
@@ -140,7 +144,7 @@ namespace NHibernate.Type
 			var typeAliases = new List<string>(aliases) { nhibernateType.Name };
 			foreach (var alias in typeAliases)
 			{
-				typeByTypeOfName[alias] = nhibernateType;
+				RegisterTypeAlias(nhibernateType, alias);
 			}
 		}
 
@@ -149,7 +153,7 @@ namespace NHibernate.Type
 			var typeAliases = new List<string>(aliases) { nhibernateType.Name };
 			foreach (var alias in typeAliases)
 			{
-				typeByTypeOfName[alias] = nhibernateType;
+				RegisterTypeAlias(nhibernateType, alias);
 				if (!getTypeDelegatesWithLength.TryAdd(alias, ctorLength))
 				{
 					throw new HibernateException("An item with the same key has already been added to getTypeDelegatesWithLength.");
@@ -162,11 +166,28 @@ namespace NHibernate.Type
 			var typeAliases = new List<string>(aliases) { nhibernateType.Name };
 			foreach (var alias in typeAliases)
 			{
-				typeByTypeOfName[alias] = nhibernateType;
+				RegisterTypeAlias(nhibernateType, alias);
 				if (!getTypeDelegatesWithPrecision.TryAdd(alias, ctorPrecision))
 				{
 					throw new HibernateException("An item with the same key has already been added to getTypeDelegatesWithPrecision.");
 				}
+			}
+		}
+
+		private static void RegisterTypeAlias(IType nhibernateType, string alias)
+		{
+			typeByTypeOfName[alias] = nhibernateType;
+			// Ignore obsolete search for aliases which are to be remapped to other types.
+			switch (alias)
+			{
+				case "timestamp":
+				case "Timestamp":
+					return;
+			}
+			var obsolete = nhibernateType.GetType().GetCustomAttribute<ObsoleteAttribute>(false);
+			if (obsolete != null)
+			{
+				_obsoleteMessageByAlias[alias] = obsolete.Message;
 			}
 		}
 
@@ -261,7 +282,9 @@ namespace NHibernate.Type
 
 			RegisterType(NHibernateUtil.DateTimeNoMs, new[] { "datetimenoms" });
 			RegisterType(NHibernateUtil.Date, new[] { "date" });
+#pragma warning disable 618 // Timestamp is obsolete
 			RegisterType(NHibernateUtil.Timestamp, new[] { "timestamp" });
+#pragma warning restore 618
 			RegisterType(NHibernateUtil.DbTimestamp, new[] { "dbtimestamp" });
 			RegisterType(NHibernateUtil.Time, new[] { "time" });
 			RegisterType(NHibernateUtil.TrueFalse, new[] { "true_false" });
@@ -362,6 +385,8 @@ namespace NHibernate.Type
 			IType returnType;
 			if (typeByTypeOfName.TryGetValue(name, out returnType))
 			{
+				if (_obsoleteMessageByAlias.TryGetValue(name, out string obsoleteMessage))
+					_log.WarnFormat("{0} is obsolete. {1}", name, obsoleteMessage);
 				return returnType;
 			}
 
@@ -542,6 +567,12 @@ namespace NHibernate.Type
 					throw new MappingException("Could not instantiate IType " + typeClass.Name + ": " + e, e);
 				}
 				InjectParameters(type, parameters);
+
+				var obsolete = typeClass.GetCustomAttribute<ObsoleteAttribute>(false);
+				if (obsolete != null)
+				{
+					_log.WarnFormat("{0} is obsolete. {1}", typeName, obsolete.Message);
+				}
 				return type;
 			}
 			if (typeof(ICompositeUserType).IsAssignableFrom(typeClass))

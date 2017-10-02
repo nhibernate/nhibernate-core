@@ -474,6 +474,8 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		// Since v5.0
+		[Obsolete("Use SetDateTime instead.")]
 		public IQuery SetTimestamp(int position, DateTime val)
 		{
 			SetParameter(position, val, NHibernateUtil.Timestamp);
@@ -620,6 +622,8 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		// Since v5.0
+		[Obsolete("Use SetDateTime instead.")]
 		public IQuery SetTimestamp(string name, DateTime val)
 		{
 			SetParameter(name, val, NHibernateUtil.Timestamp);
