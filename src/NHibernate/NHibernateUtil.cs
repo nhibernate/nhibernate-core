@@ -238,11 +238,6 @@ namespace NHibernate
 		public static readonly DbTimestampType DbTimestamp = new DbTimestampType();
 
 		/// <summary>
-		/// NHibernate timestamp utc type.
-		/// </summary>
-		public static readonly TimestampUtcType TimestampUtc = new TimestampUtcType();
-
-		/// <summary>
 		/// NHibernate TrueFalse type
 		/// </summary>
 		public static readonly TrueFalseType TrueFalse = new TrueFalseType();

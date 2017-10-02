@@ -33,7 +33,7 @@ namespace NHibernate.Type
 			Length,
 			PrecisionScale
 		}
-		
+
 		private static readonly string[] EmptyAliases= new string[0];
 		private static readonly char[] PrecisionScaleSplit = new[] { '(', ')', ',' };
 		private static readonly char[] LengthSplit = new[] { '(', ')' };
@@ -259,10 +259,9 @@ namespace NHibernate.Type
 			
 			RegisterType(NHibernateUtil.StringClob, EmptyAliases,
 						 l => GetType(NHibernateUtil.StringClob, l, len => new StringClobType(SqlTypeFactory.GetStringClob(len))));
-			
+
 			RegisterType(NHibernateUtil.Date, new[] { "date" });
 			RegisterType(NHibernateUtil.Timestamp, new[] { "timestamp" });
-			RegisterType(NHibernateUtil.TimestampUtc, new[] { "timestamputc" });
 			RegisterType(NHibernateUtil.DbTimestamp, new[] { "dbtimestamp" });
 			RegisterType(NHibernateUtil.Time, new[] { "time" });
 			RegisterType(NHibernateUtil.TrueFalse, new[] { "true_false" });
@@ -271,10 +270,10 @@ namespace NHibernate.Type
 			RegisterType(NHibernateUtil.TimeAsTimeSpan, EmptyAliases);
 			RegisterType(NHibernateUtil.LocalDateTime, new[] { "localdatetime" });
 			RegisterType(NHibernateUtil.UtcDateTime, new[] { "utcdatetime" });
-			
+
 			RegisterType(NHibernateUtil.Currency, new[] { "currency" },
 				(p, s) => GetType(NHibernateUtil.Currency, p, s, st => new CurrencyType(st)));
-			
+
 			RegisterType(NHibernateUtil.DateTime2, new[] { "datetime2" });
 			RegisterType(NHibernateUtil.Serializable, new[] {"Serializable", "serializable"},
 						 l =>
