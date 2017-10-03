@@ -65,7 +65,7 @@ namespace NHibernate.Driver
 		{
 			var convertedSqlType = sqlType;
 			if (convertedSqlType.DbType == DbType.Currency)
-				convertedSqlType = new SqlType(DbType.Decimal);
+				convertedSqlType = SqlTypeFactory.Decimal;
 
 			base.InitializeParameter(dbParam, name, convertedSqlType);
 		}

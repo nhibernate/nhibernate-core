@@ -1,15 +1,16 @@
-﻿<?xml version="1.0" encoding="utf-8" ?> 
+﻿<?xml version="1.0" encoding="utf-8" ?>
 
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="false">
 
-    <class 
-		name="NHibernate.Test.TypesTest.DecimalClass, NHibernate.Test" 
-		table="bc_dub">
-		
-		<id name="Id" column="id">
-			<generator class="assigned" />
-		</id>
-		
-		<property name="DecimalValue" type="Decimal(19,5)" column="decim"/>
-	</class>
+  <class
+    name="NHibernate.Test.TypesTest.DecimalClass, NHibernate.Test"
+    table="bc_dub">
+
+    <id name="Id" column="id">
+      <generator class="assigned"/>
+    </id>
+
+    <property name="DecimalValue" type="Decimal(19,5)" column="decim"/>
+    <property name="HighScaleDecimalValue" type="decimal" scale="9" precision="18"/>
+  </class>
 </hibernate-mapping>
