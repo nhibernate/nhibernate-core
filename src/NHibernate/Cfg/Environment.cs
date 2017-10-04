@@ -209,6 +209,12 @@ namespace NHibernate.Cfg
 		public const string OdbcDateTimeScale = "odbc.explicit_datetime_scale";
 
 		/// <summary>
+		/// Disable switching built-in NHibernate date-time types from DbType.DateTime to DbType.DateTime2
+		/// for dialects supporting datetime2.
+		/// </summary>
+		public const string SqlTypesKeepDateTime = "sql_types.keep_datetime";
+
+		/// <summary>
 		/// <para>Oracle has a dual Unicode support model.</para>
 		/// <para>Either the whole database use an Unicode encoding, and then all string types
 		/// will be Unicode. In such case, Unicode strings should be mapped to non <c>N</c> prefixed

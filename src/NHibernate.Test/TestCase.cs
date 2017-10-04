@@ -426,5 +426,14 @@ namespace NHibernate.Test
 		}
 
 		#endregion
+
+		#region Utilities
+
+		protected DateTime RoundForDialect(DateTime value)
+		{
+			return AbstractDateTimeType.Round(value, Dialect.TimestampResolutionInTicks);
+		}
+		
+		#endregion
 	}
 }

@@ -15,9 +15,9 @@ using NHibernate.Criterion;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Exceptions;
-using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
+using NHibernate.Linq;
 
 namespace NHibernate.Test.TypesTest
 {
@@ -62,6 +62,16 @@ namespace NHibernate.Test.TypesTest
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 
+		protected override void OnTearDown()
+		{
+			base.OnTearDown();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s.CreateQuery("delete from System.Object").ExecuteUpdate();
+				t.Commit();
+			}
+		}
 
 		[Test]
 		[Description("Values longer than the maximum possible string length " +
@@ -100,6 +110,57 @@ namespace NHibernate.Test.TypesTest
 			}
 		}
 
+		// NH-4083
+		[Test]
+		public async Task CanCompareShortValueWithLongStringAsync()
+		{
+			var maxStringLength = GetLongStringMappedLength();
+			var longString = new string('x', maxStringLength);
+			using (var s = OpenSession())
+			{
+				var b = new StringClass { LongStringValue = longString };
+				await (s.SaveAsync(b));
+				await (s.FlushAsync());
+			}
+
+			using (var s = OpenSession())
+			{
+				var q = s.CreateQuery("from StringClass s where s.LongStringValue != :shortString")
+				         // Do not replace with SetString, otherwise length will be unspecified.
+				         .SetParameter("shortString", "aaa");
+				var sc = await (q.UniqueResultAsync<StringClass>());
+				Assert.That(sc, Is.Not.Null);
+				Assert.That(sc.LongStringValue, Is.EqualTo(longString));
+			}
+		}
+
+		[Test]
+		public async Task CanCompareLongValueWithLongStringAsync()
+		{
+			var maxStringLength = GetLongStringMappedLength();
+
+			if (Sfi.ConnectionProvider.Driver is OdbcDriver && maxStringLength >= 2000)
+				Assert.Ignore("Odbc wrecks nvarchar parameter types when they are longer than 2000, it switch them to ntext");
+
+			var longString = new string('x', maxStringLength);
+			using (var s = OpenSession())
+			{
+				var b = new StringClass { LongStringValue = longString };
+				await (s.SaveAsync(b));
+				await (s.FlushAsync());
+			}
+
+			using (var s = OpenSession())
+			{
+				var q = s.CreateQuery("from StringClass s where s.LongStringValue = :longString")
+				         // Do not replace with SetString, otherwise length will be unspecified.
+				         .SetParameter("longString", longString);
+				var sc = await (q.UniqueResultAsync<StringClass>());
+				Assert.That(sc, Is.Not.Null);
+				Assert.That(sc.LongStringValue, Is.EqualTo(longString));
+			}
+		}
+
 		[Test]
 		[Description("Values longer than the mapped string length " +
 		             "should raise an exception if they would otherwise be truncated.")]
@@ -132,7 +193,6 @@ namespace NHibernate.Test.TypesTest
 				return Task.FromException<object>(ex);
 			}
 		}
-
 
 		private async Task AssertFailedInsertExceptionDetailsAndEmptyTableAsync(Exception ex, CancellationToken cancellationToken = default(CancellationToken))
 		{
@@ -171,43 +231,92 @@ namespace NHibernate.Test.TypesTest
 			}
 		}
 
-
-		/// <summary>
-		/// Some test cases doesn't work during some scenarios for well-known reasons. If the test
-		/// fails under these circumstances, mark it as IGNORED. If it _stops_ failing, mark it
-		/// as a FAILURE so that it can be investigated.
-		/// </summary>
-		private void AssertExpectedFailureOrNoException(Exception exception, bool requireExceptionAndIgnoreTest)
+		[Test]
+		public async Task CriteriaLikeParameterCanExceedColumnSizeAsync()
 		{
-			if (requireExceptionAndIgnoreTest)
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
 			{
-				Assert.NotNull(
-					exception,
-					"Test was expected to have a well-known, but ignored, failure for the current configuration. If " +
-					"that expected failure no longer occurs, it may now be possible to remove this exception.");
+				await (s.SaveAsync(new StringClass {Id = 1, StringValue = "AAAAAAAAAB"}));
+				await (s.SaveAsync(new StringClass {Id = 2, StringValue = "BAAAAAAAAA"}));
 
-				Assert.Ignore("This test is known to fail for the current configuration.");
+				var aaItems =
+					await (s.CreateCriteria<StringClass>()
+					 .Add(Restrictions.Like("StringValue", "%AAAAAAAAA%"))
+					 .ListAsync());
+
+				Assert.That(aaItems.Count, Is.EqualTo(2));
 			}
-
-			// If the above didn't ignore the exception, it's for real - rethrow to trigger test failure.
-			if (exception != null)
-				throw new Exception("Wrapped exception.", exception);
 		}
 
-
-		private TException CatchException<TException>(System.Action action)
-			where TException : Exception
+		[Test]
+		public async Task HqlLikeParameterCanExceedColumnSizeAsync()
 		{
-			try
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
 			{
-				action();
+				await (s.SaveAsync(new StringClass {Id = 1, StringValue = "AAAAAAAAAB"}));
+				await (s.SaveAsync(new StringClass {Id = 2, StringValue = "BAAAAAAAAA"}));
+
+				var aaItems =
+					await (s.CreateQuery("from StringClass s where s.StringValue like :likeValue")
+					 .SetParameter("likeValue", "%AAAAAAAAA%")
+					 .ListAsync());
+
+				Assert.That(aaItems.Count, Is.EqualTo(2));
 			}
-			catch (TException exception)
+		}
+
+		[Test]
+		public async Task CriteriaEqualityParameterCanExceedColumnSizeAsync()
+		{
+			if (!TestDialect.SupportsNonDataBoundCondition)
 			{
-				return exception;
+				// Doesn't work on Firebird due to Firebird not figuring out parameter types on its own.
+				Assert.Ignore("Dialect does not support this test");
 			}
 
-			return null;
+			// We should be able to query a column with a value longer than
+			// the specified column size, to avoid tedious exceptions.
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				await (s.SaveAsync(new StringClass {Id = 1, StringValue = "AAAAAAAAAB"}));
+				await (s.SaveAsync(new StringClass {Id = 2, StringValue = "BAAAAAAAAA"}));
+
+				var aaItems =
+					await (s.CreateCriteria<StringClass>()
+					 .Add(Restrictions.Eq("StringValue", "AAAAAAAAABx"))
+					 .ListAsync());
+
+				Assert.That(aaItems.Count, Is.EqualTo(0));
+			}
+		}
+
+		[Test]
+		public async Task HqlEqualityParameterCanExceedColumnSizeAsync()
+		{
+			if (!TestDialect.SupportsNonDataBoundCondition)
+			{
+				// Doesn't work on Firebird due to Firebird not figuring out parameter types on its own.
+				Assert.Ignore("Dialect does not support this test");
+			}
+
+			// We should be able to query a column with a value longer than
+			// the specified column size, to avoid tedious exceptions.
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				await (s.SaveAsync(new StringClass {Id = 1, StringValue = "AAAAAAAAAB"}));
+				await (s.SaveAsync(new StringClass {Id = 2, StringValue = "BAAAAAAAAA"}));
+
+				var aaItems =
+					await (s.CreateQuery("from StringClass s where s.StringValue = :likeValue")
+					 .SetParameter("likeValue", "AAAAAAAAABx")
+					 .ListAsync());
+
+				Assert.That(aaItems.Count, Is.EqualTo(0));
+			}
 		}
 	}
 }

@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="false">
+  <class
+    name="NHibernate.Test.TypesTest.DateTimeOffsetClass, NHibernate.Test"
+    table="bc_datetimeoffset">
+    <id name="Id" column="id">
+      <generator class="assigned"/>
+    </id>
+    <version name="Revision" type="datetimeoffset">
+      <column name="`Revision`" scale="3" />
+    </version>
+    <property name="Value" column="`Value`" type="datetimeoffset" scale="3" />
+    <property name="NullableValue" type="datetimeoffset(3)" />
+  </class>
+</hibernate-mapping>

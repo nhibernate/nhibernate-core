@@ -29,7 +29,8 @@ namespace NHibernate.Dialect
 		public PostgreSQLDialect()
 		{
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.NpgsqlDriver";
-			
+
+			RegisterDateTimeTypeMappings();
 			RegisterColumnType(DbType.AnsiStringFixedLength, "char(255)");
 			RegisterColumnType(DbType.AnsiStringFixedLength, 8000, "char($l)");
 			RegisterColumnType(DbType.AnsiString, "varchar(255)");
@@ -40,8 +41,6 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Boolean, "boolean");
 			RegisterColumnType(DbType.Byte, "int2");
 			RegisterColumnType(DbType.Currency, "decimal(16,4)");
-			RegisterColumnType(DbType.Date, "date");
-			RegisterColumnType(DbType.DateTime, "timestamp");
 			RegisterColumnType(DbType.Decimal, "decimal(19,5)");
 			RegisterColumnType(DbType.Decimal, 19, "decimal($p, $s)");
 			RegisterColumnType(DbType.Double, "float8");
@@ -54,7 +53,6 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.String, "varchar(255)");
 			RegisterColumnType(DbType.String, 4000, "varchar($l)");
 			RegisterColumnType(DbType.String, 1073741823, "text");
-			RegisterColumnType(DbType.Time, "time");
 
 			// Override standard HQL function
 			RegisterFunction("current_timestamp", new NoArgSQLFunction("now", NHibernateUtil.DateTime, true));
@@ -113,6 +111,13 @@ namespace NHibernate.Dialect
 		};
 
 		#endregion
+
+		protected virtual void RegisterDateTimeTypeMappings()
+		{
+			RegisterColumnType(DbType.Date, "date");
+			RegisterColumnType(DbType.DateTime, "timestamp");
+			RegisterColumnType(DbType.Time, "time");
+		}
 
 		protected virtual void RegisterKeywords()
 		{

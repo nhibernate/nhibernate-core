@@ -16,7 +16,8 @@ namespace NHibernate
 	/// <summary>
 	/// Provides access to the full range of NHibernate built-in types.
 	/// IType instances may be used to bind values to query parameters.
-	/// Also a factory for new Blobs and Clobs.
+	/// <see cref="TypeFactory" /> if needing to specify type size,
+	/// precision or scale.
 	/// </summary>
 	public static partial class NHibernateUtil
 	{
@@ -33,10 +34,11 @@ namespace NHibernate
 				clrTypeToNHibernateType[type.ReturnedClass] = type;
 			}
 
-			// There are multiple possibilites for boolean and strings.
+			// There are multiple possibilites for boolean, strings and datetime.
 			// Override so that we use the most natural mapping.
 			clrTypeToNHibernateType[Boolean.ReturnedClass] = Boolean;
 			clrTypeToNHibernateType[String.ReturnedClass] = String;
+			clrTypeToNHibernateType[DateTime.ReturnedClass] = DateTime;
 		}
 
 		/// <summary>
@@ -111,27 +113,45 @@ namespace NHibernate
 		public static readonly CultureInfoType CultureInfo = new CultureInfoType();
 
 		/// <summary>
-		/// NHibernate date type
+		/// NHibernate date time type. Since v5.0, does no more cut milliseconds.
 		/// </summary>
+		/// <remarks>Use <see cref="DateTimeNoMs" /> if needing cutting milliseconds.</remarks>
 		public static readonly DateTimeType DateTime = new DateTimeType();
 
 		/// <summary>
-		/// NHibernate date type
+		/// NHibernate date time cutting milliseconds type
 		/// </summary>
+		public static readonly DateTimeNoMsType DateTimeNoMs = new DateTimeNoMsType();
+
+		// Obsolete since v5.0
+		/// <summary>
+		/// NHibernate date time 2 type
+		/// </summary>
+		[Obsolete("Use DateTimeType instead, it uses DateTime2 with dialects supporting it.")]
 		public static readonly DateTime2Type DateTime2 = new DateTime2Type();
 
 		/// <summary>
-		/// NHibernate local date type
+		/// NHibernate local date time type
 		/// </summary>
 		public static readonly LocalDateTimeType LocalDateTime = new LocalDateTimeType();
 
 		/// <summary>
-		/// NHibernate utc date type
+		/// NHibernate utc date time type
 		/// </summary>
 		public static readonly UtcDateTimeType UtcDateTime = new UtcDateTimeType();
 
 		/// <summary>
-		/// NHibernate date type
+		/// NHibernate local date time cutting milliseconds type
+		/// </summary>
+		public static readonly LocalDateTimeNoMsType LocalDateTimeNoMs = new LocalDateTimeNoMsType();
+
+		/// <summary>
+		/// NHibernate utc date time cutting milliseconds type
+		/// </summary>
+		public static readonly UtcDateTimeNoMsType UtcDateTimeNoMs = new UtcDateTimeNoMsType();
+
+		/// <summary>
+		/// NHibernate date time with offset type
 		/// </summary>
 		public static readonly DateTimeOffsetType DateTimeOffset = new DateTimeOffsetType();
 
@@ -230,17 +250,17 @@ namespace NHibernate
 		/// </summary>
 		public static readonly TimeSpanType TimeSpan = new TimeSpanType();
 
+		// Obsolete since v5.0
 		/// <summary>
 		/// NHibernate Timestamp type
 		/// </summary>
+		[Obsolete("Use DateTime instead.")]
 		public static readonly TimestampType Timestamp = new TimestampType();
 
-		public static readonly DbTimestampType DbTimestamp = new DbTimestampType();
-
 		/// <summary>
-		/// NHibernate timestamp utc type.
+		/// NHibernate Timestamp type, seeded db side.
 		/// </summary>
-		public static readonly TimestampUtcType TimestampUtc = new TimestampUtcType();
+		public static readonly DbTimestampType DbTimestamp = new DbTimestampType();
 
 		/// <summary>
 		/// NHibernate TrueFalse type

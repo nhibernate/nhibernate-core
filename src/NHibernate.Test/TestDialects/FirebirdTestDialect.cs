@@ -7,5 +7,6 @@
 		}
 
 		public override bool SupportsComplexExpressionInGroupBy => false;
+		public override bool SupportsNonDataBoundCondition => false;
 	}
 }

@@ -23,16 +23,14 @@ namespace NHibernate.Dialect
 		protected override void RegisterDateTimeTypeMappings()
 		{
 			RegisterColumnType(DbType.Date, "DATE");
-			RegisterColumnType(DbType.DateTime, "TIMESTAMP(4)");
-			RegisterColumnType(DbType.Time, "TIMESTAMP(4)");
+			RegisterColumnType(DbType.DateTime, "TIMESTAMP(7)");
+			RegisterColumnType(DbType.DateTime, 9, "TIMESTAMP($s)");
+			RegisterColumnType(DbType.Time, "TIMESTAMP(7)");
+			RegisterColumnType(DbType.Time, 9, "TIMESTAMP($s)");
 			RegisterColumnType(DbType.Xml, "XMLTYPE");
 		}
 
-		public override long TimestampResolutionInTicks
-		{
-			// matches precision of TIMESTAMP(4)
-			get { return 1000L; }
-		}
+		public override long TimestampResolutionInTicks => 1;
 
 		public override string GetSelectClauseNullString(SqlType sqlType)
 		{
@@ -44,5 +42,8 @@ namespace NHibernate.Dialect
 			// Oracle did add support for ANSI CASE statements in 9i
 			return new ANSICaseFragment(this);
 		}
+
+		/// <inheritdoc />
+		public override bool SupportsDateTimeScale => true;
 	}
 }

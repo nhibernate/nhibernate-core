@@ -84,7 +84,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("date", new StandardSQLFunction("date", NHibernateUtil.DateTime));
 			RegisterFunction("mdy", new SQLFunctionTemplate(NHibernateUtil.DateTime, "mdy(?1, ?2, ?3)"));
 			RegisterFunction("to_char", new StandardSQLFunction("to_char", NHibernateUtil.String));
-			RegisterFunction("to_date", new StandardSQLFunction("to_date", NHibernateUtil.Timestamp));
+			RegisterFunction("to_date", new StandardSQLFunction("to_date", NHibernateUtil.DateTime));
 			RegisterFunction("instr", new StandardSQLFunction("instr", NHibernateUtil.String));
 			// actually there is no Instr (or equivalent) in Informix; you have to write your own SPL or UDR
 

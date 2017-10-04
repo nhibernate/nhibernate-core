@@ -362,7 +362,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			// TODO NH: we should check the "generated" property
 			// currently only the Hibernate-supplied DbTimestampType is supported here
-			return type is TimestampType;
+			return type is DbTimestampType;
 		}
 
 		private static bool IsIntegral(IType type)

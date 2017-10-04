@@ -33,11 +33,20 @@ namespace NHibernate.Test.TypesTest
 	}
 
 	[TestFixture]
-	public class DateTypeFixture : TypeFixtureBase
+	public class DateTypeFixture : AbstractDateTimeTypeFixture
 	{
-		protected override string TypeName
+		protected override string TypeName => "Date";
+		protected override AbstractDateTimeType Type => NHibernateUtil.Date;
+		protected override bool RevisionCheck => false;
+		protected override long DateAccuracyInTicks => TimeSpan.TicksPerDay;
+
+		protected override DateTime GetTestDate(DateTimeKind kind)
+			=> base.GetTestDate(kind).Date;
+
+		protected override DateTime GetSameDate(DateTime original)
 		{
-			get { return "Date"; }
+			var date = base.GetSameDate(original);
+			return date.AddHours(date.Hour < 12 ? 12 : -12);
 		}
 
 		[Test]
@@ -47,7 +56,7 @@ namespace NHibernate.Test.TypesTest
 			{
 				Assert.Ignore("This test does not apply to " + Dialect);
 			}
-			var sqlType = Dialect.GetTypeName(NHibernateUtil.Date.SqlType);
+			var sqlType = Dialect.GetTypeName(Type.SqlType);
 			Assert.That(sqlType.ToLowerInvariant(), Is.EqualTo("date"));
 		}
 
@@ -81,20 +90,36 @@ namespace NHibernate.Test.TypesTest
 		private void ReadWrite(DateTime expected)
 		{
 			// Add an hour to check it is correctly ignored once read back from db.
-			var basic = new DateClass { DateValue = expected.AddHours(1) };
-			object savedId;
+			var basic = new DateTimeClass { Id = AdditionalDateId, Value = expected.AddHours(1) };
 			using (var s = OpenSession())
 			{
-				savedId = s.Save(basic); 
+				s.Save(basic); 
 				s.Flush();
 			}
 			using (var s = OpenSession())
 			{
-				basic = s.Get<DateClass>(savedId);
-				Assert.That(basic.DateValue, Is.EqualTo(expected));
+				basic = s.Get<DateTimeClass>(AdditionalDateId);
+				Assert.That(basic.Value, Is.EqualTo(expected));
 				s.Delete(basic);
 				s.Flush();
 			}
+		}
+
+		// They furthermore cause some issues with Sql Server Ce, which switch DbType.Date for DbType.DateTime
+		// on its parameters.
+		[Ignore("Test relevant for datetime, not for date.")]
+		public override void SaveUseExpectedSqlType()
+		{
+		}
+
+		[Ignore("Test relevant for datetime, not for date.")]
+		public override void UpdateUseExpectedSqlType()
+		{
+		}
+
+		[Ignore("Test relevant for datetime, not for date.")]
+		public override void QueryUseExpectedSqlType()
+		{
 		}
 	}
 }

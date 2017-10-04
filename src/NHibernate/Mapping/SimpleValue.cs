@@ -261,6 +261,10 @@ namespace NHibernate.Mapping
 				{
 					result = TypeFactory.BuiltInType(typeName, Convert.ToByte(col.Precision), Convert.ToByte(col.Scale));
 				}
+				else if (col.IsScaleDefined())
+				{
+					result = TypeFactory.BuiltInType(typeName, col.Scale);
+				}
 			}
 			return result ?? TypeFactory.HeuristicType(typeName, typeParameters);
 		}

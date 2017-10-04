@@ -24,7 +24,7 @@ namespace NHibernate.Type
 			return 0;
 		}
 
-		public override SqlType[] SqlTypes(IMapping session)
+		public override SqlType[] SqlTypes(IMapping mapping)
 		{
 			return NoSqlTypes;
 		}

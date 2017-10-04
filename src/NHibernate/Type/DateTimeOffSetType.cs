@@ -16,9 +16,18 @@ namespace NHibernate.Type
 	{
 		static readonly DateTimeOffset BaseDateValue = DateTimeOffset.MinValue;
 
-		/// <summary></summary>
-		public DateTimeOffsetType()
-			: base(SqlTypeFactory.DateTimeOffSet)
+		/// <summary>
+		/// Default constructor.
+		/// </summary>
+		public DateTimeOffsetType() : base(SqlTypeFactory.DateTimeOffSet)
+		{
+		}
+
+		/// <summary>
+		/// Constructor for specifying a datetimeoffset with a scale. Use <see cref="SqlTypeFactory.GetDateTimeOffset"/>.
+		/// </summary>
+		/// <param name="sqlType">The sql type to use for the type.</param>
+		public DateTimeOffsetType(DateTimeOffsetSqlType sqlType) : base(sqlType)
 		{
 		}
 
@@ -77,10 +86,18 @@ namespace NHibernate.Type
 			return Seed(session);
 		}
 
-		public object Seed(ISessionImplementor session)
-		{
-			return DateTimeOffset.Now;
-		}
+		/// <summary>
+		/// Truncate a <see cref="DateTimeOffset"/> according to specified resolution.
+		/// </summary>
+		/// <param name="value">The value to round.</param>
+		/// <param name="resolution">The resolution in ticks (100ns).</param>
+		/// <returns>A rounded <see cref="DateTimeOffset"/>.</returns>
+		public static DateTimeOffset Round(DateTimeOffset value, long resolution) =>
+			value.AddTicks(-(value.Ticks % resolution));
+
+		/// <inheritdoc />
+		public virtual object Seed(ISessionImplementor session) =>
+			session == null ? DateTimeOffset.Now : Round(DateTimeOffset.Now, session.Factory.Dialect.TimestampResolutionInTicks);
 
 		public override bool IsEqual(object x, object y)
 		{

@@ -40,14 +40,14 @@ namespace NHibernate.Test.Legacy
 			long simple1Key = 15;
 			Simple simple1 = new Simple();
 			simple1.Address = "Street 12";
-			simple1.Date = DateTime.Now;
+			simple1.Date = RoundForDialect(DateTime.Now);
 			simple1.Name = "For Criteria Test";
 			simple1.Count = 16;
 
 			long notSimple1Key = 17;
 			Simple notSimple1 = new Simple();
 			notSimple1.Address = "Street 123";
-			notSimple1.Date = DateTime.Now;
+			notSimple1.Date = RoundForDialect(DateTime.Now);
 			notSimple1.Name = "Don't be found";
 			notSimple1.Count = 18;
 
@@ -62,19 +62,19 @@ namespace NHibernate.Test.Legacy
 			using (ISession s2 = OpenSession())
 			using (ITransaction t2 = s2.BeginTransaction())
 			{
-				IList results2 = await (s2.CreateCriteria(typeof(Simple))
-					.Add(Expression.Eq("Address", "Street 12"))
-					.ListAsync());
+				var results2 = await (s2.CreateCriteria<Simple>()
+					.Add(Restrictions.Eq("Address", "Street 12"))
+					.ListAsync<Simple>());
 
-				Assert.AreEqual(1, results2.Count);
+				Assert.That(results2.Count, Is.EqualTo(1), "Unexpected result count");
 
-				Simple simple2 = (Simple) results2[0];
+				var simple2 = results2[0];
 
-				Assert.IsNotNull(simple2, "Unable to load object");
-				Assert.AreEqual(simple1.Count, simple2.Count, "Load failed");
-				Assert.AreEqual(simple1.Name, simple2.Name, "Load failed");
-				Assert.AreEqual(simple1.Address, simple2.Address, "Load failed");
-				Assert.AreEqual(simple1.Date.ToString(), simple2.Date.ToString(), "Load failed");
+				Assert.That(simple2, Is.Not.Null, "Unable to load object");
+				Assert.That(simple2.Count, Is.EqualTo(simple1.Count), "Unexpected Count property value");
+				Assert.That(simple2.Name, Is.EqualTo(simple1.Name), "Unexpected name");
+				Assert.That(simple2.Address, Is.EqualTo(simple1.Address), "Unexpected address");
+				Assert.That(simple2.Date, Is.EqualTo(simple1.Date), "Unexpected date");
 
 				await (s2.DeleteAsync("from Simple"));
 

@@ -16,7 +16,7 @@ namespace NHibernate.Type
 	{
 		public override SqlType[] SqlTypes(IMapping mapping)
 		{
-			return new SqlType[] { NHibernateUtil.String.SqlType };
+			return NHibernateUtil.String.SqlTypes(mapping);
 		}
 
 		public override int GetColumnSpan(IMapping mapping)

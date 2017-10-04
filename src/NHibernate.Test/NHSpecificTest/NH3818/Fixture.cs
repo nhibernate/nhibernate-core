@@ -1,22 +1,16 @@
 using System;
 using System.Linq;
-using System.Linq.Dynamic;
-using NHibernate.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3818
 {
-	[TestFixture]
-	public class Fixture : BugTestCase
-	{
-		public override string BugNumber
-		{
-            get { return "NH3818"; }
-		}
-
+    [TestFixture]
+    public class Fixture : BugTestCase
+    {
         [Test]
         public void SelectConditionalValuesTest()
         {
+            var now = RoundForDialect(DateTime.Now);
             using (var spy = new SqlLogSpy())
             using (var session = OpenSession())
             using (session.BeginTransaction())
@@ -26,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3818
                 var cat = new MyLovelyCat
                 {
                     GUID = Guid.NewGuid(),
-                    Birthdate = DateTime.Now.AddDays(-days),
+                    Birthdate = now.AddDays(-days),
                     Color = "Black",
                     Name = "Kitty",
                     Price = 0
@@ -40,28 +34,30 @@ namespace NHibernate.Test.NHSpecificTest.NH3818
                         .Select(o => new
                         {
                             o.Color,
-                            AliveDays = (int)(DateTime.Now - o.Birthdate).TotalDays,
+                            AliveDays = (now - o.Birthdate).TotalDays,
                             o.Name,
                             o.Price,
                         })
                         .Single();
 
                 //Console.WriteLine(spy.ToString());
-                Assert.That(catInfo.AliveDays == days);
+                // We need a tolerance: we are diffing dates as a timespan instead of counting days boundaries,
+                // yielding a float. TimeSpan.Days yould always truncate a resulting partial day, so do not use it.
+                Assert.That(catInfo.AliveDays, Is.EqualTo(days).Within(0.1));
 
                 var catInfo2 =
                     session.Query<MyLovelyCat>()
                         .Select(o => new
                         {
                             o.Color,
-                            AliveDays = o.Price > 0 ? (DateTime.Now - o.Birthdate).TotalDays : 0,
+                            AliveDays = o.Price > 0 ? (now - o.Birthdate).TotalDays : 0,
                             o.Name,
                             o.Price,
                         })
                         .Single();
 
                 //Console.WriteLine(spy.ToString());
-                Assert.That(catInfo2.AliveDays == 0);
+                Assert.That(catInfo2.AliveDays, Is.EqualTo(0));
 
             }
         }

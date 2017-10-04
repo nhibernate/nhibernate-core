@@ -15,5 +15,10 @@ namespace NHibernate.Engine
 		IType GetReferencedPropertyType(string className, string propertyName);
 
 		bool HasNonIdentifierPropertyNamedId(string className);
+
+		/// <summary>
+		/// The current <see cref="NHibernate.Dialect.Dialect" />.
+		/// </summary>
+		Dialect.Dialect Dialect { get; }
 	}
 }

@@ -28,7 +28,18 @@ namespace NHibernate.Type
 	{
 		private static readonly DateTime BaseDateValue = new DateTime(1753, 01, 01);
 
+		/// <summary>
+		/// Default constructor.
+		/// </summary>
 		public TimeType() : base(SqlTypeFactory.Time)
+		{
+		}
+
+		/// <summary>
+		/// Constructor for specifying a time with a scale. Use <see cref="SqlTypeFactory.GetTime"/>.
+		/// </summary>
+		/// <param name="sqlType">The sql type to use for the type.</param>
+		public TimeType(TimeSqlType sqlType) : base(sqlType)
 		{
 		}
 
@@ -47,7 +58,7 @@ namespace NHibernate.Type
 				}
 
 				DateTime dbValue = Convert.ToDateTime(rs[index]);
-				return new DateTime(1753, 01, 01, dbValue.Hour, dbValue.Minute, dbValue.Second);
+				return BaseDateValue.Add(dbValue.TimeOfDay);
 			}
 			catch (Exception ex)
 			{

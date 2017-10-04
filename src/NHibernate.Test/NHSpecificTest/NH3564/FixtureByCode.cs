@@ -118,7 +118,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3564
 				rc.Property(x => x.Name);
 				rc.Property(x => x.DateOfBirth, pm =>
 				{
-					pm.Type(NHibernateUtil.Timestamp);
+					pm.Type(NHibernateUtil.DateTime);
 				});
 			});
 

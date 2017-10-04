@@ -9,8 +9,10 @@
 
 
 using System;
-using System.Data;
+using System.Collections;
+using System.Collections.Generic;
 using System.Data.Common;
+using System.Globalization;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -18,19 +20,17 @@ namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class DateTime2Type : DateTimeType
+	public abstract partial class AbstractDateTimeType : PrimitiveType, IIdentifierType, ILiteralType, IVersionType
 	{
 
-		public override Task<object> NextAsync(object current, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			return SeedAsync(session, cancellationToken);
-		}
+		#region IVersionType Members
 
-		public override Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken)
+		/// <inheritdoc />
+		public Task<object> NextAsync(object current, ISessionImplementor session, CancellationToken cancellationToken) =>
+			SeedAsync(session, cancellationToken);
+
+		/// <inheritdoc />
+		public virtual Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -45,5 +45,7 @@ namespace NHibernate.Type
 				return Task.FromException<object>(ex);
 			}
 		}
+
+		#endregion
 	}
 }

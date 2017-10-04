@@ -97,7 +97,7 @@ namespace NHibernate.Test.QueryTest
 			tdq.SetSingle(14, 1.1f);
 			tdq.SetString(15, "");
 			tdq.SetTime(16, DateTime.Now);
-			tdq.SetTimestamp(17, DateTime.Now);
+			tdq.SetDateTimeNoMs(17, DateTime.Now);
 			tdq.SetGuid(18, Guid.Empty);
 			Assert.IsTrue(tdq.PosParams[1].Type.Equals(NHibernateUtil.AnsiString));
 			Assert.IsTrue(tdq.PosParams[2].Type.Equals(NHibernateUtil.Binary));
@@ -115,7 +115,7 @@ namespace NHibernate.Test.QueryTest
 			Assert.IsTrue(tdq.PosParams[14].Type.Equals(NHibernateUtil.Single));
 			Assert.IsTrue(tdq.PosParams[15].Type.Equals(NHibernateUtil.String));
 			Assert.IsTrue(tdq.PosParams[16].Type.Equals(NHibernateUtil.Time));
-			Assert.IsTrue(tdq.PosParams[17].Type.Equals(NHibernateUtil.Timestamp));
+			Assert.IsTrue(tdq.PosParams[17].Type.Equals(NHibernateUtil.DateTimeNoMs));
 			Assert.IsTrue(tdq.PosParams[18].Type.Equals(NHibernateUtil.Guid));
 
 			tdq.SetAnsiString("1", "");
@@ -134,7 +134,7 @@ namespace NHibernate.Test.QueryTest
 			tdq.SetSingle("14", 1.1f);
 			tdq.SetString("15", "");
 			tdq.SetTime("16", DateTime.Now);
-			tdq.SetTimestamp("17", DateTime.Now);
+			tdq.SetDateTimeNoMs("17", DateTime.Now);
 			tdq.SetGuid("18", Guid.Empty);
 			Assert.IsTrue(tdq.NamedParams["1"].Type.Equals(NHibernateUtil.AnsiString));
 			Assert.IsTrue(tdq.NamedParams["2"].Type.Equals(NHibernateUtil.Binary));
@@ -152,7 +152,7 @@ namespace NHibernate.Test.QueryTest
 			Assert.IsTrue(tdq.NamedParams["14"].Type.Equals(NHibernateUtil.Single));
 			Assert.IsTrue(tdq.NamedParams["15"].Type.Equals(NHibernateUtil.String));
 			Assert.IsTrue(tdq.NamedParams["16"].Type.Equals(NHibernateUtil.Time));
-			Assert.IsTrue(tdq.NamedParams["17"].Type.Equals(NHibernateUtil.Timestamp));
+			Assert.IsTrue(tdq.NamedParams["17"].Type.Equals(NHibernateUtil.DateTimeNoMs));
 			Assert.IsTrue(tdq.NamedParams["18"].Type.Equals(NHibernateUtil.Guid));
 
 			tdq.SetParameter(10, 123456m);

@@ -34,9 +34,9 @@ namespace NHibernate.Type
 
 		/// <summary>
 		/// Initialize a new instance of the NullableType class using a 
-		/// <see cref="SqlType"/>. 
+		/// <see cref="NHibernate.SqlTypes.SqlType"/>. 
 		/// </summary>
-		/// <param name="sqlType">The underlying <see cref="SqlType"/>.</param>
+		/// <param name="sqlType">The underlying <see cref="NHibernate.SqlTypes.SqlType"/>.</param>
 		/// <remarks>This is used when the Property is mapped to a single column.</remarks>
 		protected NullableType(SqlType sqlType)
 		{
@@ -266,10 +266,10 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Gets the underlying <see cref="SqlType" /> for 
+		/// Gets the underlying <see cref="NHibernate.SqlTypes.SqlType" /> for 
 		/// the column mapped by this <see cref="NullableType" />.
 		/// </summary>
-		/// <value>The underlying <see cref="SqlType"/>.</value>
+		/// <value>The underlying <see cref="NHibernate.SqlTypes.SqlType"/>.</value>
 		/// <remarks>
 		/// This implementation should be suitable for all subclasses unless they need to
 		/// do some special things to get the value.  There are no built in <see cref="NullableType"/>s
@@ -291,9 +291,20 @@ namespace NHibernate.Type
 		/// column.  All of their implementation should be in <see cref="NullableType.SqlType" />.
 		/// </para>
 		/// </remarks>
-		public override sealed SqlType[] SqlTypes(IMapping mapping)
+		public sealed override SqlType[] SqlTypes(IMapping mapping)
 		{
-			return new SqlType[] {SqlType};
+			return new[] { OverrideSqlType(mapping, SqlType) };
+		}
+
+		/// <summary>
+		/// Overrides the sql type.
+		/// </summary>
+		/// <param name="type">The type to override.</param>
+		/// <param name="mapping">The mapping for which to override <paramref name="type"/>.</param>
+		/// <returns>The refined types.</returns>
+		static SqlType OverrideSqlType(IMapping mapping, SqlType type)
+		{
+			return mapping != null ? mapping.Dialect.OverrideSqlType(type) : type;
 		}
 
 		/// <summary>

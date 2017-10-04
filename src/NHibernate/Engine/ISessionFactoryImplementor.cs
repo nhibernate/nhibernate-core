@@ -24,11 +24,6 @@ namespace NHibernate.Engine
 	/// </summary>
 	public interface ISessionFactoryImplementor : IMapping, ISessionFactory
 	{
-		/// <summary>
-		/// Get the SQL <see cref="NHibernate.Dialect.Dialect"/>.
-		/// </summary>
-		Dialect.Dialect Dialect { get; }
-
 		IInterceptor Interceptor { get; }
 
 		QueryPlanCache QueryPlanCache { get; }

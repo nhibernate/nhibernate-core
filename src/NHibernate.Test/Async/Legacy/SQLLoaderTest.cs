@@ -60,7 +60,7 @@ namespace NHibernate.Test.Legacy
 			await (session.SaveAsync(sim, 1L));
 			IQuery q = session.CreateSQLQuery("select {sim.*} from Simple {sim} where {sim}.date_ = ?")
 				.AddEntity("sim", typeof(Simple));
-			q.SetTimestamp(0, sim.Date);
+			q.SetDateTime(0, sim.Date);
 			Assert.AreEqual(1, (await (q.ListAsync())).Count, "q.List.Count");
 			await (session.DeleteAsync(sim));
 			await (txn.CommitAsync());
@@ -84,7 +84,7 @@ namespace NHibernate.Test.Legacy
 			IQuery q =
 				session.CreateSQLQuery("select {sim.*} from Simple {sim} where {sim}.date_ = :fred")
 				.AddEntity("sim", typeof(Simple));
-			q.SetTimestamp("fred", sim.Date);
+			q.SetDateTime("fred", sim.Date);
 			Assert.AreEqual(1, (await (q.ListAsync())).Count, "q.List.Count");
 			await (session.DeleteAsync(sim));
 			await (txn.CommitAsync());

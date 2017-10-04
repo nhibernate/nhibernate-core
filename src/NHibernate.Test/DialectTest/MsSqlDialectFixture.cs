@@ -63,12 +63,12 @@ namespace NHibernate.Test.DialectTest
 		}
 
 		[Test]
-		public void TimestampRounding()
+		public void DateTimeRounding()
 		{
 			DateTime input = new DateTime(2000, 1, 1, 10, 11, 12, 13);
 			DateTime expected = new DateTime(2000, 1, 1, 10, 11, 12, 10);
 
-			Assert.AreEqual(expected, TimestampType.Round(input, d.TimestampResolutionInTicks));
+			Assert.AreEqual(expected, AbstractDateTimeType.Round(input, d.TimestampResolutionInTicks));
 		}
 	}
 }

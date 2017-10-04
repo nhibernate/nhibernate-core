@@ -20,11 +20,20 @@ namespace NHibernate.Test.TypesTest
 	using System.Threading;
 
 	[TestFixture]
-	public class DateTypeFixtureAsync : TypeFixtureBase
+	public class DateTypeFixtureAsync : AbstractDateTimeTypeFixtureAsync
 	{
-		protected override string TypeName
+		protected override string TypeName => "Date";
+		protected override AbstractDateTimeType Type => NHibernateUtil.Date;
+		protected override bool RevisionCheck => false;
+		protected override long DateAccuracyInTicks => TimeSpan.TicksPerDay;
+
+		protected override DateTime GetTestDate(DateTimeKind kind)
+			=> base.GetTestDate(kind).Date;
+
+		protected override DateTime GetSameDate(DateTime original)
 		{
-			get { return "Date"; }
+			var date = base.GetSameDate(original);
+			return date.AddHours(date.Hour < 12 ? 12 : -12);
 		}
 
 		[Test]
@@ -78,20 +87,39 @@ namespace NHibernate.Test.TypesTest
 		private async Task ReadWriteAsync(DateTime expected, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			// Add an hour to check it is correctly ignored once read back from db.
-			var basic = new DateClass { DateValue = expected.AddHours(1) };
-			object savedId;
+			var basic = new DateTimeClass { Id = AdditionalDateId, Value = expected.AddHours(1) };
 			using (var s = OpenSession())
 			{
-				savedId = await (s.SaveAsync(basic, cancellationToken)); 
+				await (s.SaveAsync(basic, cancellationToken)); 
 				await (s.FlushAsync(cancellationToken));
 			}
 			using (var s = OpenSession())
 			{
-				basic = await (s.GetAsync<DateClass>(savedId, cancellationToken));
-				Assert.That(basic.DateValue, Is.EqualTo(expected));
+				basic = await (s.GetAsync<DateTimeClass>(AdditionalDateId, cancellationToken));
+				Assert.That(basic.Value, Is.EqualTo(expected));
 				await (s.DeleteAsync(basic, cancellationToken));
 				await (s.FlushAsync(cancellationToken));
 			}
+		}
+
+		// They furthermore cause some issues with Sql Server Ce, which switch DbType.Date for DbType.DateTime
+		// on its parameters.
+		[Ignore("Test relevant for datetime, not for date.")]
+		public override Task SaveUseExpectedSqlTypeAsync()
+		{
+			return Task.CompletedTask;
+		}
+
+		[Ignore("Test relevant for datetime, not for date.")]
+		public override Task UpdateUseExpectedSqlTypeAsync()
+		{
+			return Task.CompletedTask;
+		}
+
+		[Ignore("Test relevant for datetime, not for date.")]
+		public override Task QueryUseExpectedSqlTypeAsync()
+		{
+			return Task.CompletedTask;
 		}
 	}
 }

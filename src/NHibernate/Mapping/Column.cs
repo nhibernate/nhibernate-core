@@ -229,8 +229,11 @@ namespace NHibernate.Mapping
 		{
 			if (IsCaracteristicsDefined())
 			{
-				// NH-1070 (the size should be 0 if the precision is defined)
-				return dialect.GetTypeName(GetSqlTypeCode(mapping), (!IsPrecisionDefined()) ? Length:0, Precision, Scale);
+				// NH-1070: the size should be 0 if the precision or scale is defined.
+				return dialect.GetTypeName(
+					GetSqlTypeCode(mapping),
+					IsPrecisionDefined() || IsScaleDefined() ? 0 : Length,
+					Precision, Scale);
 			}
 			else
 				return dialect.GetTypeName(GetSqlTypeCode(mapping));
@@ -431,12 +434,17 @@ namespace NHibernate.Mapping
 
 		public bool IsCaracteristicsDefined()
 		{
-			return IsLengthDefined() || IsPrecisionDefined();
+			return IsLengthDefined() || IsPrecisionDefined() || IsScaleDefined();
 		}
 
 		public bool IsPrecisionDefined()
 		{
-			return _precision.HasValue || _scale.HasValue;
+			return _precision.HasValue;
+		}
+
+		public bool IsScaleDefined()
+		{
+			return _scale.HasValue;
 		}
 
 		public bool IsLengthDefined()

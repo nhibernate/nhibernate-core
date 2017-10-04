@@ -158,6 +158,17 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		public IMultiQuery SetDateTimeNoMs(string name, DateTime val)
+		{
+			foreach (var query in queries)
+			{
+				query.SetDateTimeNoMs(name, val);
+			}
+			return this;
+		}
+
+		// Since v5.0
+		[Obsolete("Use SetDateTime instead, it uses DateTime2 with dialects supporting it.")]
 		public IMultiQuery SetDateTime2(string name, DateTime val)
 		{
 			foreach (IQuery query in queries)
@@ -293,6 +304,8 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		// Since v5.0
+		[Obsolete("Use SetDateTime instead.")]
 		public IMultiQuery SetTimestamp(string name, DateTime val)
 		{
 			foreach (IQuery query in queries)

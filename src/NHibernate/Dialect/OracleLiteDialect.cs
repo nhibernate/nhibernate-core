@@ -80,7 +80,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int64));
 
 			RegisterFunction("to_char", new StandardSQLFunction("to_char", NHibernateUtil.String));
-			RegisterFunction("to_date", new StandardSQLFunction("to_date", NHibernateUtil.Timestamp));
+			RegisterFunction("to_date", new StandardSQLFunction("to_date", NHibernateUtil.DateTime));
 
 			RegisterFunction("last_day", new StandardSQLFunction("last_day", NHibernateUtil.Date));
 			RegisterFunction("sysdate", new NoArgSQLFunction("sysdate", NHibernateUtil.Date, false));

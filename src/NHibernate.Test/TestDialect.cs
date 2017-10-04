@@ -55,6 +55,11 @@ namespace NHibernate.Test
 		/// </summary>
 		public virtual bool SupportsEmptyInserts => true;
 
+		/// <summary>
+		/// Supports condition not bound to any data, like "where @p1 = @p2".
+		/// </summary>
+		public virtual bool SupportsNonDataBoundCondition => true;
+
 		public bool SupportsSqlType(SqlType sqlType)
 		{
 			try

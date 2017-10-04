@@ -8,47 +8,33 @@
 //------------------------------------------------------------------------------
 
 
-using System;
+using NHibernate.Type;
 using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
 {
 	using System.Threading.Tasks;
 	/// <summary>
-	/// The Unit Tests for the UtcDateTimeType.
+	/// The Unit Tests for the LocalDateTimeType.
 	/// </summary>
 	[TestFixture]
-	public class LocalDateTimeTypeFixtureAsync : TypeFixtureBase
+	public class LocalDateTimeTypeFixtureAsync : AbstractDateTimeTypeFixtureAsync
 	{
-		protected override string TypeName
-		{
-			get { return "DateTime"; }
-		}
+		protected override string TypeName => "LocalDateTime";
+		protected override AbstractDateTimeType Type => NHibernateUtil.LocalDateTime;
+	}
 
-		[Test]
-		public async Task ReadWriteAsync()
-		{
-			DateTime val = DateTime.UtcNow;
-			DateTime expected = new DateTime(val.Year, val.Month, val.Day, val.Hour, val.Minute, val.Second, DateTimeKind.Local);
+	[TestFixture]
+	public class LocalDateTimeTypeWithScaleFixtureAsync : DateTimeTypeWithScaleFixtureAsync
+	{
+		protected override string TypeName => "LocalDateTimeWithScale";
+		protected override AbstractDateTimeType Type => (AbstractDateTimeType)TypeFactory.GetLocalDateTimeType(3);
+	}
 
-			DateTimeClass basic = new DateTimeClass();
-			basic.Id = 1;
-			basic.LocalDateTimeValue = val;
-
-			ISession s = OpenSession();
-			await (s.SaveAsync(basic));
-			await (s.FlushAsync());
-			s.Close();
-
-			s = OpenSession();
-			basic = (DateTimeClass) await (s.LoadAsync(typeof (DateTimeClass), 1));
-
-			Assert.AreEqual(DateTimeKind.Local, basic.LocalDateTimeValue.Value.Kind);
-			Assert.AreEqual(expected, basic.LocalDateTimeValue.Value);
-
-			await (s.DeleteAsync(basic));
-			await (s.FlushAsync());
-			s.Close();
-		}
+	[TestFixture]
+	public class LocalDateTimeNoMsTypeFixtureAsync : DateTimeNoMsTypeFixtureAsync
+	{
+		protected override string TypeName => "LocalDateTimeNoMs";
+		protected override AbstractDateTimeType Type => NHibernateUtil.LocalDateTimeNoMs;
 	}
 }
