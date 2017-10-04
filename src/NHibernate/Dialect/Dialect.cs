@@ -215,17 +215,10 @@ namespace NHibernate.Dialect
 		{
 			if (sqlType.LengthDefined || sqlType.PrecisionDefined || sqlType.ScaleDefined)
 			{
-				string resultWithLength = _typeNames.Get(sqlType.DbType, sqlType.Length, sqlType.Precision, sqlType.Scale);
-				if (resultWithLength != null) return resultWithLength;
+				return _typeNames.Get(sqlType.DbType, sqlType.Length, sqlType.Precision, sqlType.Scale);
 			}
 
-			string result = _typeNames.Get(sqlType.DbType);
-			if (result == null)
-			{
-				throw new HibernateException(string.Format("No default type mapping for SqlType {0}", sqlType));
-			}
-
-			return result;
+			return _typeNames.Get(sqlType.DbType);
 		}
 
 		/// <summary>
@@ -239,12 +232,7 @@ namespace NHibernate.Dialect
 		/// <returns>The database type name used by ddl.</returns>
 		public virtual string GetTypeName(SqlType sqlType, int length, int precision, int scale)
 		{
-			string result = _typeNames.Get(sqlType.DbType, length, precision, scale);
-			if (result == null)
-			{
-				throw new HibernateException(string.Format("No type mapping for SqlType {0} of length {1}", sqlType, length));
-			}
-			return result;
+			return _typeNames.Get(sqlType.DbType, length, precision, scale);
 		}
 
 		/// <summary>

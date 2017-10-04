@@ -43,7 +43,8 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Date, "DATE");
 			RegisterColumnType(DbType.DateTime, "TIMESTAMP(4)");
 			RegisterColumnType(DbType.Decimal, "NUMBER(19,5)");
-			RegisterColumnType(DbType.Decimal, 19, "NUMBER(19, $l)");
+			// Oracle max precision is 39-40, but .Net is limited to 28-29.
+			RegisterColumnType(DbType.Decimal, 28, "NUMBER($p, $s)");
 			// having problems with both ODP and OracleClient from MS not being able
 			// to read values out of a field that is DOUBLE PRECISION
 			RegisterColumnType(DbType.Double, "DOUBLE PRECISION"); //"FLOAT(53)" );
