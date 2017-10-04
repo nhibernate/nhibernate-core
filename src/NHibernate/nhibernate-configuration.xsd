@@ -169,6 +169,30 @@
 										</xs:documentation>
 									</xs:annotation>
 								</xs:enumeration>
+								<xs:enumeration value="query.default_cast_length">
+									<xs:annotation>
+										<xs:documentation>
+											Set the default length used in casting when the target type is length bound and
+											does not specify it. 4000 by default, automatically trim down according to dialect type registration.
+										</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="query.default_cast_precision">
+									<xs:annotation>
+										<xs:documentation>
+											Set the default precision used in casting when the target type is decimal and
+											does not specify it. 28 by default, automatically trim down according to dialect type registration.
+										</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="query.default_cast_scale">
+									<xs:annotation>
+										<xs:documentation>
+											Set the default scale used in casting when the target type is decimal and
+											does not specify it. 10 by default, automatically trim down according to dialect type registration.
+										</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
 							</xs:restriction>
 						</xs:simpleType>
 					</xs:attribute>

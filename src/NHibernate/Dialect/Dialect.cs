@@ -199,6 +199,9 @@ namespace NHibernate.Dialect
 		/// <param name="settings">The configuration settings.</param>
 		public virtual void Configure(IDictionary<string, string> settings)
 		{
+			DefaultCastLength = PropertiesHelper.GetInt32(Environment.QueryDefaultCastLength, settings, 4000);
+			DefaultCastPrecision = PropertiesHelper.GetByte(Environment.QueryDefaultCastPrecision, settings, null) ?? 28;
+			DefaultCastScale = PropertiesHelper.GetByte(Environment.QueryDefaultCastScale, settings, null) ?? 10;
 		}
 
 		#endregion
@@ -245,15 +248,48 @@ namespace NHibernate.Dialect
 			return _typeNames.GetLongest(dbType);
 		}
 
+		protected int DefaultCastLength { get; set; }
+		protected byte DefaultCastPrecision { get; set; }
+		protected byte DefaultCastScale { get; set; }
+
 		/// <summary> 
 		/// Get the name of the database type appropriate for casting operations
 		/// (via the CAST() SQL function) for the given <see cref="SqlType"/> typecode.
 		/// </summary>
 		/// <param name="sqlType">The <see cref="SqlType"/> typecode </param>
 		/// <returns> The database type name </returns>
-		public virtual string GetCastTypeName(SqlType sqlType)
+		public virtual string GetCastTypeName(SqlType sqlType) =>
+			GetCastTypeName(sqlType, _typeNames);
+
+		/// <summary> 
+		/// Get the name of the database type appropriate for casting operations
+		/// (via the CAST() SQL function) for the given <see cref="SqlType"/> typecode.
+		/// </summary>
+		/// <param name="sqlType">The <see cref="SqlType"/> typecode.</param>
+		/// <param name="castTypeNames">The source for type names.</param>
+		/// <returns>The database type name.</returns>
+		protected virtual string GetCastTypeName(SqlType sqlType, TypeNames castTypeNames)
 		{
-			return GetTypeName(sqlType, Column.DefaultLength, Column.DefaultPrecision, Column.DefaultScale);
+			if (sqlType.LengthDefined || sqlType.PrecisionDefined || sqlType.ScaleDefined)
+				return castTypeNames.Get(sqlType.DbType, sqlType.Length, sqlType.Precision, sqlType.Scale);
+			switch (sqlType.DbType)
+			{
+				case DbType.Decimal:
+					// We cannot know if the user needs its digit after or before the dot, so use a configurable
+					// default.
+					return castTypeNames.Get(DbType.Decimal, 0, DefaultCastPrecision, DefaultCastScale);
+				case DbType.DateTime:
+				case DbType.DateTime2:
+				case DbType.DateTimeOffset:
+				case DbType.Time:
+				case DbType.Currency:
+					// Use default for these, dialects are supposed to map them to max capacity
+					return castTypeNames.Get(sqlType.DbType);
+				default:
+					// Other types are either length bound or not length/precision/scale bound. Otherwise they need to be
+					// handled previously.
+					return castTypeNames.Get(sqlType.DbType, DefaultCastLength, 0, 0);
+			}
 		}
 
 		/// <summary>

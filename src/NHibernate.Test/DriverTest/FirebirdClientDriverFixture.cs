@@ -76,7 +76,7 @@ namespace NHibernate.Test.DriverTest
 		public void AdjustCommand_StringParametersWithinConditionalSelect_ThenParameterIsWrappedByAVarcharCastStatement()
 		{
 			MakeDriver();
-			var cmd = BuildSelectCaseCommand(SqlTypeFactory.GetString(0));
+			var cmd = BuildSelectCaseCommand(SqlTypeFactory.GetString(255));
 
 			_driver.AdjustCommand(cmd);
 
@@ -100,7 +100,7 @@ namespace NHibernate.Test.DriverTest
 		public void AdjustCommand_ParameterWithinSelectConcat_ParameterIsCasted()
 		{
 			MakeDriver();
-			var cmd = BuildSelectConcatCommand(SqlTypeFactory.GetString(0));
+			var cmd = BuildSelectConcatCommand(SqlTypeFactory.GetString(255));
 
 			_driver.AdjustCommand(cmd);
 
@@ -112,7 +112,7 @@ namespace NHibernate.Test.DriverTest
 		public void AdjustCommand_ParameterWithinSelectAddFunction_ParameterIsCasted()
 		{
 			MakeDriver();
-			var cmd = BuildSelectAddCommand(SqlTypeFactory.GetString(0));
+			var cmd = BuildSelectAddCommand(SqlTypeFactory.GetString(255));
 
 			_driver.AdjustCommand(cmd);
 

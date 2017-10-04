@@ -4,7 +4,6 @@ using System.Data.Common;
 using System.Text;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
-using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
@@ -64,7 +63,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.String, 16777215, "MEDIUMTEXT");
 			//todo: future: add compatibility with decimal???
 			//An unpacked fixed-point number. Behaves like a CHAR column; 
-			//ìunpackedî means the number is stored as a string, using one character for each digit of the value.
+			//‚Äúunpacked‚Äù means the number is stored as a string, using one character for each digit of the value.
 			//M is the total number of digits and D is the number of digits after the decimal point
 			//DECIMAL[(M[,D])] [UNSIGNED] [ZEROFILL]
 
@@ -494,15 +493,8 @@ namespace NHibernate.Dialect
 		/// </summary>
 		/// <param name="sqlType">The <see cref="SqlType"/> typecode </param>
 		/// <returns> The database type name </returns>
-		public override string GetCastTypeName(SqlType sqlType)
-		{
-			string result = castTypeNames.Get(sqlType.DbType, Column.DefaultLength, Column.DefaultPrecision, Column.DefaultScale);
-			if (result == null)
-			{
-				throw new HibernateException(string.Format("No CAST() type mapping for SqlType {0}", sqlType));
-			}
-			return result;
-		}
+		public override string GetCastTypeName(SqlType sqlType) =>
+			GetCastTypeName(sqlType, castTypeNames);
 
 		public override long TimestampResolutionInTicks
 		{
