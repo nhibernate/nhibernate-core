@@ -275,9 +275,11 @@ namespace NHibernate.Dialect
 			switch (sqlType.DbType)
 			{
 				case DbType.Decimal:
+				// Oracle dialect defines precision and scale for double, because it uses number instead of binary_double.
+				case DbType.Double:
 					// We cannot know if the user needs its digit after or before the dot, so use a configurable
 					// default.
-					return castTypeNames.Get(DbType.Decimal, 0, DefaultCastPrecision, DefaultCastScale);
+					return castTypeNames.Get(sqlType.DbType, 0, DefaultCastPrecision, DefaultCastScale);
 				case DbType.DateTime:
 				case DbType.DateTime2:
 				case DbType.DateTimeOffset:

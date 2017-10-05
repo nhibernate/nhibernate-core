@@ -11,8 +11,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using NHibernate.Criterion;
 using NHibernate.Dialect;
+using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NUnit.Framework;
 
@@ -105,6 +107,11 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public async Task CastWithLengthAsync()
 		{
+			if (Regex.IsMatch(Dialect.GetCastTypeName(SqlTypeFactory.GetString(3)), @"^[^(]*$"))
+			{
+				Assert.Ignore($"Dialect {Dialect} does not seem to handle string length in cast");
+			}
+
 			using (var s = OpenSession())
 			{
 				try
@@ -120,8 +127,7 @@ namespace NHibernate.Test.Criteria
 				}
 				catch (Exception e)
 				{
-					if (!e.Message.Contains("truncation") && 
-						(e.InnerException == null || !e.InnerException.Message.Contains("truncation")))
+					if (e.InnerException == null || !e.InnerException.Message.Contains("truncation"))
 						throw;
 				}
 			}
