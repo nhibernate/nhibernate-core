@@ -113,7 +113,7 @@ namespace NHibernate
 		public static readonly CultureInfoType CultureInfo = new CultureInfoType();
 
 		/// <summary>
-		/// NHibernate date time type. Since v5.0, does no more cut milliseconds.
+		/// NHibernate date time type. Since v5.0, does no more cut fractional seconds.
 		/// </summary>
 		/// <remarks>Use <see cref="DateTimeNoMs" /> if needing cutting milliseconds.</remarks>
 		public static readonly DateTimeType DateTime = new DateTimeType();
