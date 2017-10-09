@@ -40,6 +40,12 @@ namespace NHibernate.Driver
 
 		}
 
+		public override void Configure(IDictionary<string, string> settings)
+		{
+			base.Configure(settings);
+			_fbDialect.Configure(settings);
+		}
+
 		public override bool UseNamedPrefixInSql
 		{
 			get { return true; }
@@ -72,12 +78,13 @@ namespace NHibernate.Driver
 			if (!string.IsNullOrWhiteSpace(expWithParams))
 			{
 				var candidates = GetCastCandidates(expWithParams);
-				var castParams = from DbParameter p in command.Parameters
-								 where candidates.Contains(p.ParameterName)
-								 select p;
-				foreach (var param in castParams)
+
+				var index = 0;
+				foreach (DbParameter p in command.Parameters)
 				{
-					TypeCastParam(param, command);
+					if (candidates.Contains(p.ParameterName))
+						TypeCastParam(p, command, parameterTypes[index]);
+					index++;
 				}
 			}
 
@@ -99,15 +106,26 @@ namespace NHibernate.Driver
 			return new HashSet<string>(candidates);
 		}
 
-		private void TypeCastParam(DbParameter param, DbCommand command)
+		private void TypeCastParam(DbParameter param, DbCommand command, SqlType sqlType)
 		{
-			var castType = GetFbTypeFromDbType(param.DbType);
-			command.CommandText = command.CommandText.ReplaceWholeWord(param.ParameterName, string.Format("cast({0} as {1})", param.ParameterName, castType));
+			var castType = GetFbTypeForParam(sqlType);
+			command.CommandText = command.CommandText.ReplaceWholeWord(
+				param.ParameterName,
+				$"cast({param.ParameterName} as {castType})");
 		}
 
-		private string GetFbTypeFromDbType(DbType dbType)
+		private string GetFbTypeForParam(SqlType sqlType)
 		{
-			return _fbDialect.GetCastTypeName(new SqlType(dbType));
+			if (sqlType.LengthDefined)
+				switch (sqlType.DbType)
+				{
+					case DbType.AnsiString:
+					case DbType.String:
+						// Use default length instead for supporting like expressions requiring longer length.
+						sqlType = new SqlType(sqlType.DbType);
+						break;
+				}
+			return _fbDialect.GetCastTypeName(sqlType);
 		}
 
 		private static volatile MethodInfo _clearPool;

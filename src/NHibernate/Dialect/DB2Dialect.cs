@@ -39,7 +39,8 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Date, "DATE");
 			RegisterColumnType(DbType.DateTime, "TIMESTAMP");
 			RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
-			RegisterColumnType(DbType.Decimal, 19, "DECIMAL(19, $l)");
+			// DB2 max precision is 31, but .Net is 28-29 anyway.
+			RegisterColumnType(DbType.Decimal, 28, "DECIMAL($p, $s)");
 			RegisterColumnType(DbType.Double, "DOUBLE");
 			RegisterColumnType(DbType.Int16, "SMALLINT");
 			RegisterColumnType(DbType.Int32, "INTEGER");

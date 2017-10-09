@@ -199,6 +199,9 @@ namespace NHibernate.Dialect
 		/// <param name="settings">The configuration settings.</param>
 		public virtual void Configure(IDictionary<string, string> settings)
 		{
+			DefaultCastLength = PropertiesHelper.GetInt32(Environment.QueryDefaultCastLength, settings, 4000);
+			DefaultCastPrecision = PropertiesHelper.GetByte(Environment.QueryDefaultCastPrecision, settings, null) ?? 28;
+			DefaultCastScale = PropertiesHelper.GetByte(Environment.QueryDefaultCastScale, settings, null) ?? 10;
 		}
 
 		#endregion
@@ -215,17 +218,10 @@ namespace NHibernate.Dialect
 		{
 			if (sqlType.LengthDefined || sqlType.PrecisionDefined || sqlType.ScaleDefined)
 			{
-				string resultWithLength = _typeNames.Get(sqlType.DbType, sqlType.Length, sqlType.Precision, sqlType.Scale);
-				if (resultWithLength != null) return resultWithLength;
+				return _typeNames.Get(sqlType.DbType, sqlType.Length, sqlType.Precision, sqlType.Scale);
 			}
 
-			string result = _typeNames.Get(sqlType.DbType);
-			if (result == null)
-			{
-				throw new HibernateException(string.Format("No default type mapping for SqlType {0}", sqlType));
-			}
-
-			return result;
+			return _typeNames.Get(sqlType.DbType);
 		}
 
 		/// <summary>
@@ -239,12 +235,7 @@ namespace NHibernate.Dialect
 		/// <returns>The database type name used by ddl.</returns>
 		public virtual string GetTypeName(SqlType sqlType, int length, int precision, int scale)
 		{
-			string result = _typeNames.Get(sqlType.DbType, length, precision, scale);
-			if (result == null)
-			{
-				throw new HibernateException(string.Format("No type mapping for SqlType {0} of length {1}", sqlType, length));
-			}
-			return result;
+			return _typeNames.Get(sqlType.DbType, length, precision, scale);
 		}
 
 		/// <summary>
@@ -257,15 +248,50 @@ namespace NHibernate.Dialect
 			return _typeNames.GetLongest(dbType);
 		}
 
+		protected int DefaultCastLength { get; set; }
+		protected byte DefaultCastPrecision { get; set; }
+		protected byte DefaultCastScale { get; set; }
+
 		/// <summary> 
 		/// Get the name of the database type appropriate for casting operations
 		/// (via the CAST() SQL function) for the given <see cref="SqlType"/> typecode.
 		/// </summary>
 		/// <param name="sqlType">The <see cref="SqlType"/> typecode </param>
 		/// <returns> The database type name </returns>
-		public virtual string GetCastTypeName(SqlType sqlType)
+		public virtual string GetCastTypeName(SqlType sqlType) =>
+			GetCastTypeName(sqlType, _typeNames);
+
+		/// <summary> 
+		/// Get the name of the database type appropriate for casting operations
+		/// (via the CAST() SQL function) for the given <see cref="SqlType"/> typecode.
+		/// </summary>
+		/// <param name="sqlType">The <see cref="SqlType"/> typecode.</param>
+		/// <param name="castTypeNames">The source for type names.</param>
+		/// <returns>The database type name.</returns>
+		protected virtual string GetCastTypeName(SqlType sqlType, TypeNames castTypeNames)
 		{
-			return GetTypeName(sqlType, Column.DefaultLength, Column.DefaultPrecision, Column.DefaultScale);
+			if (sqlType.LengthDefined || sqlType.PrecisionDefined || sqlType.ScaleDefined)
+				return castTypeNames.Get(sqlType.DbType, sqlType.Length, sqlType.Precision, sqlType.Scale);
+			switch (sqlType.DbType)
+			{
+				case DbType.Decimal:
+				// Oracle dialect defines precision and scale for double, because it uses number instead of binary_double.
+				case DbType.Double:
+					// We cannot know if the user needs its digit after or before the dot, so use a configurable
+					// default.
+					return castTypeNames.Get(sqlType.DbType, 0, DefaultCastPrecision, DefaultCastScale);
+				case DbType.DateTime:
+				case DbType.DateTime2:
+				case DbType.DateTimeOffset:
+				case DbType.Time:
+				case DbType.Currency:
+					// Use default for these, dialects are supposed to map them to max capacity
+					return castTypeNames.Get(sqlType.DbType);
+				default:
+					// Other types are either length bound or not length/precision/scale bound. Otherwise they need to be
+					// handled previously.
+					return castTypeNames.Get(sqlType.DbType, DefaultCastLength, 0, 0);
+			}
 		}
 
 		/// <summary>

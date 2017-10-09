@@ -6,7 +6,6 @@ using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
-using NHibernate.SqlTypes;
 using NHibernate.Type;
 using Environment = NHibernate.Cfg.Environment;
 
@@ -30,12 +29,6 @@ namespace NHibernate.Dialect
 	/// </remarks>
 	public class FirebirdDialect : Dialect
 	{
-		#region Fields
-
-		private const int MAX_DECIMAL_PRECISION = 18;
-
-		#endregion
-
 		public FirebirdDialect()
 		{
 			RegisterKeywords();
@@ -47,23 +40,6 @@ namespace NHibernate.Dialect
 		public override string AddColumnString
 		{
 			get { return "add"; }
-		}
-
-		public override string GetTypeName(SqlType sqlType)
-		{
-			if (IsUnallowedDecimal(sqlType.DbType, sqlType.Precision))
-				return base.GetTypeName(new SqlType(sqlType.DbType, MAX_DECIMAL_PRECISION, sqlType.Scale));
-
-			return base.GetTypeName(sqlType);
-		}
-
-		public override string GetTypeName(SqlType sqlType, int length, int precision, int scale)
-		{
-			var fbDecimalPrecision = precision;
-			if (IsUnallowedDecimal(sqlType.DbType, precision))
-				fbDecimalPrecision = MAX_DECIMAL_PRECISION;
-
-			return base.GetTypeName(sqlType, length, fbDecimalPrecision, scale);
 		}
 
 		public override string GetSelectSequenceNextValString(string sequenceName)
@@ -542,11 +518,6 @@ namespace NHibernate.Dialect
 			RegisterFunction("sinh", new StandardSQLFunction("sinh", NHibernateUtil.Double));
 			RegisterFunction("tan", new StandardSQLFunction("tan", NHibernateUtil.Double));
 			RegisterFunction("tanh", new StandardSQLFunction("tanh", NHibernateUtil.Double));
-		}
-
-		private static bool IsUnallowedDecimal(DbType dbType, int precision)
-		{
-			return dbType == DbType.Decimal && precision > MAX_DECIMAL_PRECISION;
 		}
 
 		#region Informational metadata

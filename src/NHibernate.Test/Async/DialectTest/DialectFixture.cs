@@ -11,7 +11,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Engine;

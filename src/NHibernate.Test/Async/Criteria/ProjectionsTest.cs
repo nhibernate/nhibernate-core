@@ -8,10 +8,14 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using NHibernate.Criterion;
 using NHibernate.Dialect;
+using NHibernate.SqlTypes;
+using NHibernate.Type;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Criteria
@@ -97,6 +101,63 @@ namespace NHibernate.Test.Criteria
 					))
 					.UniqueResultAsync<string>());
 				Assert.AreEqual("27 ayende", result);
+			}
+		}
+
+		[Test]
+		public async Task CastWithLengthAsync()
+		{
+			if (Regex.IsMatch(Dialect.GetCastTypeName(SqlTypeFactory.GetString(3)), @"^[^(]*$"))
+			{
+				Assert.Ignore($"Dialect {Dialect} does not seem to handle string length in cast");
+			}
+
+			using (var s = OpenSession())
+			{
+				try
+				{
+					var shortName = await (s
+						.CreateCriteria<Student>()
+						.SetProjection(
+							Projections.Cast(
+								TypeFactory.GetStringType(3),
+								Projections.Property("Name")))
+						.UniqueResultAsync<string>());
+					Assert.That(shortName, Is.EqualTo("aye"));
+				}
+				catch (Exception e)
+				{
+					if (e.InnerException == null || !e.InnerException.Message.Contains("truncation"))
+						throw;
+				}
+			}
+		}
+
+		[Test]
+		public async Task CastWithPrecisionScaleAsync()
+		{
+			if (TestDialect.HasBrokenDecimalType)
+				Assert.Ignore("Dialect does not correctly handle decimal.");
+
+			using (var s = OpenSession())
+			{
+				var value = await (s
+					.CreateCriteria<Student>()
+					.SetProjection(
+						Projections.Cast(
+							TypeFactory.Basic("decimal(18,9)"),
+							Projections.Constant(123456789.123456789m, TypeFactory.Basic("decimal(18,9)"))))
+					.UniqueResultAsync<decimal>());
+				Assert.That(value, Is.EqualTo(123456789.123456789m), "Same type cast");
+
+				value = await (s
+					.CreateCriteria<Student>()
+					.SetProjection(
+						Projections.Cast(
+							TypeFactory.Basic("decimal(18,7)"),
+							Projections.Constant(123456789.987654321m, TypeFactory.Basic("decimal(18,9)"))))
+					.UniqueResultAsync<decimal>());
+				Assert.That(value, Is.EqualTo(123456789.9876543m), "Reduced scale cast");
 			}
 		}
 

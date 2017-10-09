@@ -204,6 +204,24 @@ namespace NHibernate.Cfg
 		public const string QueryModelRewriterFactory = "query.query_model_rewriter_factory";
 
 		/// <summary>
+		/// Set the default length used in casting when the target type is length bound and
+		/// does not specify it. <c>4000</c> by default, automatically trim down according to dialect type registration.
+		/// </summary>
+		public const string QueryDefaultCastLength = "query.default_cast_length";
+
+		/// <summary>
+		/// Set the default precision used in casting when the target type is decimal and
+		/// does not specify it. <c>28</c> by default, automatically trim down according to dialect type registration.
+		/// </summary>
+		public const string QueryDefaultCastPrecision = "query.default_cast_precision";
+
+		/// <summary>
+		/// Set the default scale used in casting when the target type is decimal and
+		/// does not specify it. <c>10</c> by default, automatically trim down according to dialect type registration.
+		/// </summary>
+		public const string QueryDefaultCastScale = "query.default_cast_scale";
+
+		/// <summary>
 		/// This may need to be set to 3 if you are using the OdbcDriver with MS SQL Server 2008+.
 		/// </summary>
 		public const string OdbcDateTimeScale = "odbc.explicit_datetime_scale";
