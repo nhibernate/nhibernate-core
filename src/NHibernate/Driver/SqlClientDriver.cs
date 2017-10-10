@@ -100,7 +100,6 @@ namespace NHibernate.Driver
 			SetVariableLengthParameterSize(dbParam, sqlType);
 		}
 
-		// Used from SqlServerCeDriver as well
 		public static void SetVariableLengthParameterSize(DbParameter dbParam, SqlType sqlType)
 		{
 			SetDefaultParameterSize(dbParam, sqlType);
