@@ -23,12 +23,13 @@
                 xmlns="http://www.w3.org/TR/xhtml1/transitional"
                 exclude-result-prefixes="#default">
                 
-<xsl:import href="&db_xsl_path;/html/docbook.xsl"/>
+<xsl:import href="&db_xsl_path;/html/onechunk.xsl"/>
 
 <!--###################################################
                      HTML Settings
     ################################################### -->   
 
+    <xsl:param name="chunker.output.encoding">UTF-8</xsl:param>
     <xsl:param name="html.stylesheet">../shared/css/html.css</xsl:param>
 
     <!-- These extensions are required for table printing and other stuff -->
