@@ -160,7 +160,7 @@ var problems = sess
         <para>
             These given <literal>Set</literal> parameters are used to bind the given values to the
             <literal>?</literal> query placeholders (which map to input
-            parameters of an ADO.NET <literal>IDbCommand</literal>). Just
+            parameters of an ADO.NET <literal>DbCommand</literal>). Just
             as in ADO.NET, you should use this binding mechanism in preference to string
             manipulation.
         </para>

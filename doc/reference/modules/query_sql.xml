@@ -588,7 +588,7 @@ var pusList = query.SetString("name", "Pus%").List<Cat>();]]></programlisting>
         <itemizedlist spacing="compact">
           <listitem>
             <para>The procedure must return a result set. NHibernate will
-            use <literal>IDbCommand.ExecuteReader()</literal> to obtain
+            use <literal>DbCommand.ExecuteReader()</literal> to obtain
             the results.
             </para>
           </listitem>
@@ -657,7 +657,7 @@ var pusList = query.SetString("name", "Pus%").List<Cat>();]]></programlisting>
 
     <para>The stored procedures are by default required to affect the same number
     of rows as NHibernate-generated SQL would. NHibernate uses
-    <literal>IDbCommand.ExecuteNonQuery</literal> to retrieve the number of rows
+    <literal>DbCommand.ExecuteNonQuery</literal> to retrieve the number of rows
     affected. This check can be disabled by using <literal>check="none"</literal>
     attribute in <literal>sql-insert</literal> element.
     </para>

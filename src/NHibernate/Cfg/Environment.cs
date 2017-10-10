@@ -205,19 +205,19 @@ namespace NHibernate.Cfg
 
 		/// <summary>
 		/// Set the default length used in casting when the target type is length bound and
-		/// does not specify it. <c>4000</c> by default, automatically trim down according to dialect type registration.
+		/// does not specify it. <c>4000</c> by default, automatically trimmed down according to dialect type registration.
 		/// </summary>
 		public const string QueryDefaultCastLength = "query.default_cast_length";
 
 		/// <summary>
 		/// Set the default precision used in casting when the target type is decimal and
-		/// does not specify it. <c>28</c> by default, automatically trim down according to dialect type registration.
+		/// does not specify it. <c>28</c> by default, automatically trimmed down according to dialect type registration.
 		/// </summary>
 		public const string QueryDefaultCastPrecision = "query.default_cast_precision";
 
 		/// <summary>
 		/// Set the default scale used in casting when the target type is decimal and
-		/// does not specify it. <c>10</c> by default, automatically trim down according to dialect type registration.
+		/// does not specify it. <c>10</c> by default, automatically trimmed down according to dialect type registration.
 		/// </summary>
 		public const string QueryDefaultCastScale = "query.default_cast_scale";
 

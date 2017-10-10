@@ -402,7 +402,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="position">The position of the parameter in the query string, numbered from <c>0</c></param>
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
-		/// <remarks>Since v5.0, does no more cut milliseconds. Use <see cref="SetDateTimeNoMs(int, DateTime)" />
+		/// <remarks>Since v5.0, does no more cut fractional seconds. Use <see cref="SetDateTimeNoMs(int, DateTime)" />
 		/// for this</remarks>
 		IQuery SetDateTime(int position, DateTime val);
 
@@ -412,7 +412,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="val">A non-null instance of a <see cref="DateTime"/>.</param>
 		/// <param name="name">The name of the parameter</param>
-		/// <remarks>Since v5.0, does no more cut milliseconds. Use <see cref="SetDateTimeNoMs(string, DateTime)" />
+		/// <remarks>Since v5.0, does no more cut fractional seconds. Use <see cref="SetDateTimeNoMs(string, DateTime)" />
 		/// for this</remarks>
 		IQuery SetDateTime(string name, DateTime val);
 
