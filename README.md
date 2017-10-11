@@ -36,11 +36,11 @@ There are two official NHibernate community forums:
 Bug Reports
 -----------
 
-If you find any bugs, please report them using the [JIRA bug tracker][C1]. A
+If you find any bugs, please report them using the [GitHub issue tracker][C1]. A
 test-case that demonstrates the issue is usually required. Instructions on providing a test-case
 can be found [here][C2].
 
-[C1]: http://nhibernate.jira.com
+[C1]: http://github.com/nhibernate/nhibernate-core/issues
 [C2]: http://nhibernate.info/blog/2008/10/03/the-best-way-to-solve-nhibernate-bugs-submit-good-unit-test.html
 
 Licenses

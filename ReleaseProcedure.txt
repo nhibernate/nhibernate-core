@@ -1,12 +1,11 @@
 These are the tasks typically needed to create an official NHibernate release.
 
 
-  * In Jira, make sure no open issues have "fix version" set to the release
+  * In GitHub, make sure no open issues have milestone set to the release
     that is about to happen (as these will show in the release notes).
   
-  * Update releasenotes.txt with list of issues from Jira's Release Notes
-    feature. See if any additions to the list of "known breaking changes"
-    are necessary.
+  * Update releasenotes.txt with list of issues. See if any additions to the 
+    list of "known breaking changes" are necessary.
 	
   * Check/update version number in build-common/common.xml.
   
@@ -24,7 +23,7 @@ These are the tasks typically needed to create an official NHibernate release.
 	
   * If no error or other issue requiring further changes occurred, tag the
     current git HEAD with a tag according to version number. Don't forget to
-	push the tag to github.
+	  push the tag to github.
 	
   * Upload binary and source zip files to SourceForge. Update the "latest
     release".
@@ -35,17 +34,11 @@ These are the tasks typically needed to create an official NHibernate release.
     should already be available in the build directory, together with a batch
     file to push them.
   
-  * In Jira, mark the version as released.
+  * In GitHub, mark the milestone as released.
   
   * Post release announcement to nhusers, nhibernate-development and as
     project news on SourceForge.
-	
-	
+		
   * If this was a stable branch, merge it forward to master. Perhaps some
     changes need to be edited out in the merge, but this will reduce the
-	risk of some issue being left unfixed on master.
-
-
-  * Several weeks or months after the release, in Jira, we will assume all
-    issues resolved in the release have been verified. Go ahead and close
-    them.
+	  risk of some issue being left unfixed on master.
