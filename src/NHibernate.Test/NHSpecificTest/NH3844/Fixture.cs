@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Linq;
 using NUnit.Framework;
@@ -17,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3844
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)
 		{
 			// SQL Server seems unable to match complex group by and select list arguments when running over ODBC.";
-			return !(factory.ConnectionProvider.Driver is OdbcDriver);
+			return !(factory.ConnectionProvider.Driver.IsOdbcDriver());
 		}
 
 		protected override void OnSetUp()

@@ -46,7 +46,7 @@ namespace NHibernate.Test.Futures
 			base.Configure(configuration);
 			using (var cp = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties))
 			{
-				if (cp.Driver is SqlClientDriver)
+				if (cp.Driver.IsSqlClientDriver())
 				{
 					configuration.Properties[Environment.ConnectionDriver] =
 						typeof(TestDriverThatDoesntSupportQueryBatching).AssemblyQualifiedName;

@@ -12,7 +12,6 @@ using System;
 using System.IO;
 using System.Reflection;
 using NHibernate.Cfg;
-using NHibernate.Driver;
 using NHibernate.Tool.hbm2ddl;
 using NHibernate.Util;
 using NUnit.Framework;
@@ -31,7 +30,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaUpdate
 			var driverClass = ReflectHelper.ClassForName(v1cfg.GetProperty(Environment.ConnectionDriver));
 			// Odbc is not supported by schema update: System.Data.Odbc.OdbcConnection.GetSchema("ForeignKeys") fails with an ArgumentException: ForeignKeys is undefined.
 			// It seems it would require its own DataBaseSchema, but this is bound to the dialect, not the driver.
-			if (typeof(OdbcDriver).IsAssignableFrom(driverClass))
+			if (driverClass.IsOdbcDriver())
 				Assert.Ignore("Test is not compatible with ODBC");
 
 			using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resource1))

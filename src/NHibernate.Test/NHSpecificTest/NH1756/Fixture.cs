@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using NHibernate.Dialect;
-using NHibernate.Driver;
 using NHibernate.Engine;
 using NUnit.Framework;
 
@@ -30,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1756
 			//     N'@P1 nvarchar(18),@P2 int,@P3 datetime2',N'modified test book',1,'2017-08-02 16:37:16.0630000'
 			// Setting the scale to 2 still causes failure for two thirds of tries, due to 3ms/7ms being truncated in such case
 			// with ODBC and SQL Server 2008+ Client, which is rejected by ODBC.
-			return !(factory.ConnectionProvider.Driver is OdbcDriver);
+			return !(factory.ConnectionProvider.Driver.IsOdbcDriver());
 		}
 
 		[Test]

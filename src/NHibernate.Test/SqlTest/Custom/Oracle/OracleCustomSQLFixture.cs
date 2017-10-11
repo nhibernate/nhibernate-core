@@ -14,7 +14,7 @@ namespace NHibernate.Test.SqlTest.Custom.Oracle
 
 		protected override bool AppliesTo(NHibernate.Engine.ISessionFactoryImplementor factory)
 		{
-			return factory.ConnectionProvider.Driver is Driver.OracleDataClientDriver;
+			return factory.ConnectionProvider.Driver.IsOracleDataClientDriver();
 		}
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)

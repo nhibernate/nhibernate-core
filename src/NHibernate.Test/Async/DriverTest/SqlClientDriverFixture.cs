@@ -36,7 +36,7 @@ namespace NHibernate.Test.DriverTest
 
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)
 		{
-			return factory.ConnectionProvider.Driver is SqlClientDriver;
+			return factory.ConnectionProvider.Driver.IsSqlClientDriver();
 		}
 
 		protected override void OnTearDown()
