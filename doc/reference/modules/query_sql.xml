@@ -42,7 +42,8 @@
         </listitem>
       </itemizedlist>
 
-      <para>This will return an IList of Object arrays (object[]) with
+      <para>This will return an <literal>IList</literal> of <literal>Object</literal>
+      arrays (<literal>object[]</literal>) with
       scalar values for each column in the CATS table. Only these three
       columns will be returned, even though the query is using
       <literal>*</literal> and could return more than the three listed

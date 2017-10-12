@@ -190,7 +190,7 @@
             <programlisting role="c#">Session.DefaultReadOnly;</programlisting>
 
             <para> 
-                If Session.DefaultReadOnly property returns true, entities loaded by 
+                If <literal>Session.DefaultReadOnly</literal> property returns true, entities loaded by
                 the following are automatically made read-only:
             </para>
             <itemizedlist>
@@ -232,16 +232,16 @@
                 <listitem>
                     <para>
                         persistent entities that are refreshed via
-                        Session.Refresh(); a refreshed persistent 
+                        <literal>Session.Refresh()</literal>; a refreshed persistent
                         entity will only be read-only if it was 
                         read-only before refreshing
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-                        persistent entities added by the application via 
-                        Session.Persist(), Session.Save(), and Session.Update()
-                        Session.SaveOrUpdate()
+                        persistent entities added by the application via
+                        <literal>Session.Persist()</literal>, <literal>Session.Save()</literal>,
+                        <literal>Session.Update()</literal> and <literal>Session.SaveOrUpdate()</literal>
                     </para>   
                 </listitem>
             </itemizedlist>
@@ -259,7 +259,7 @@
             </note>
 
            <para>
-                If Session.DefaultReadOnly returns false (the default) 
+                If <literal>Session.DefaultReadOnly</literal> returns false (the default)
                 when an HQL query or criteria executes, then entities 
                 and proxies of mutable classes loaded by the query will 
                 not be read-only.
@@ -299,7 +299,7 @@
                 Uninitialized persistent collections returned by the query are 
                 not affected. Later, when the collection is initialized,
                 entities loaded into the session will be read-only if 
-                Session.DefaultReadOnly returns true.   
+                <literal>Session.DefaultReadOnly</literal> returns true.
             </para>
 
             <para>
@@ -335,7 +335,7 @@ using (ITransaction tx = session.BeginTransaction())
 }]]></programlisting>
 
             <para>
-                If Session.DefaultReadOnly returns true, then you can
+                If <literal>Session.DefaultReadOnly</literal> returns true, then you can
                 use Query.SetReadOnly(false) and Criteria.SetReadOnly(false)
                 to override this session setting and load entities that are 
                 not read-only.

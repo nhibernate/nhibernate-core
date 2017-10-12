@@ -250,7 +250,7 @@ int accessLevel = permissions["accounts"];  // Error!]]></programlisting>
     .UniqueResult<User>();]]></programlisting>
                 
             <para>
-                (This is NHibernate's equivalent of what some ORM solutions call a "fetch plan".)
+                (This is NHibernate's equivalent of what some <emphasis>ORM</emphasis> solutions call a "fetch plan".)
             </para>
 
             <para>
