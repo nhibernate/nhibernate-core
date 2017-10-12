@@ -16,7 +16,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaExportTests
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public partial class ExportToFileFixtureAsync
+	public class ExportToFileFixtureAsync
     {
         [Test]
         public async Task ExportToFileUsingSetOutputFileAndCreateAsync()

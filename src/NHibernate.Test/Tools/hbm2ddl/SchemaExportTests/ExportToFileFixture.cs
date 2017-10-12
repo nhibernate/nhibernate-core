@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Tools.hbm2ddl.SchemaExportTests
 {
 	[TestFixture]
-	public partial class ExportToFileFixture
+	public class ExportToFileFixture
     {
         [Test]
         public void ExportToFileUsingSetOutputFileAndCreate()

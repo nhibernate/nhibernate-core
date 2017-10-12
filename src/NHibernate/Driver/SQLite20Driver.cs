@@ -1,4 +1,3 @@
-using System;
 using System.Data;
 using System.Data.Common;
 
@@ -20,7 +19,7 @@ namespace NHibernate.Driver
 	/// Please check <a href="https://www.sqlite.org/">https://www.sqlite.org/</a> for more information regarding SQLite.
 	/// </para>
 	/// </remarks>
-	public partial class SQLite20Driver : ReflectionBasedDriver
+	public class SQLite20Driver : ReflectionBasedDriver
 	{
 		/// <summary>
 		/// Initializes a new instance of <see cref="SQLite20Driver"/>.
