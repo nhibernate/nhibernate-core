@@ -433,7 +433,7 @@
     &lt;![CDATA[
     SELECT cat.ID, cat.NAME, cat.SEX, cat.MATE FROM cat
     ]]&gt;
-&lt;/subselect&gt;]]></programlisting>
+&lt;/subselect&gt;</programlisting>
 
             <para>
                 Usually, when mapping a query using <literal>subselect</literal> you will want to mark
@@ -451,7 +451,7 @@
     SELECT cat.ID, cat.NAME, cat.SEX, cat.MATE FROM cat
     ]]&gt;
 &lt;/subselect&gt;
-&lt;syncronize table="cat"/&gt;]]></programlisting>
+&lt;syncronize table="cat"/&gt;</programlisting>
 
             <para>
                 You then still have to declare the class id and properties.
