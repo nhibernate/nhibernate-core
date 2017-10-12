@@ -62,7 +62,7 @@ namespace Eg
 
             <para>
                 <literal>Cat</literal> declares properties for all the persistent fields.
-                Many other ORM tools directly persist instance variables. We believe 
+                Many other <emphasis>ORM tools</emphasis> directly persist instance variables. We believe 
                 it is far better to decouple this implementation detail from the persistence 
                 mechanism. NHibernate persists properties, using their getter and setter methods.
             </para>
