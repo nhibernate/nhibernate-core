@@ -242,9 +242,8 @@ HashSet<Cat> hs = (HashSet<Cat>) cat.Kittens; //Error!]]></programlisting>
                 </callout>
                 <callout arearefs="mappingcollection14">
                     <para>
-                        <literal>generic</literal> (optional): Choose between generic and non-generic collection
-                        interface. If this option is not specified, NHibernate will use reflection to choose
-                        the interface.
+                        <literal>generic</literal> (optional, obsolete): Choose between generic and non-generic
+                        collection interfaces. But currently NHibernate only supports generic collections.
                     </para>
                 </callout>
             </calloutlist>

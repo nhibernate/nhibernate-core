@@ -215,7 +215,7 @@
         <itemizedlist spacing="compact">
             <listitem>
                 <para>
-                    It must be <literal>Serializable</literal>.
+                    It must be marked with the <literal>Serializable</literal> attribute.
                 </para>
             </listitem>
             <listitem>
