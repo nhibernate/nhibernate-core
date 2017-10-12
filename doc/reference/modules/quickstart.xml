@@ -29,7 +29,7 @@
             First, we have to create a new Web project. We use the name <literal>QuickStart</literal>.
             In the project, add a NuGet reference to <literal>NHibernate</literal>. Visual Studio
             will automatically copy the library and its dependencies to the project output directory.
-            If you are using a database other than SQL Server, add a reference to the driver assembly
+            If you are using a database other than SQL Server, add a reference to its driver assembly
             to your project.
         </para>
 
@@ -161,7 +161,7 @@
             foreign key relationships to other entities) to database tables.
         </para>
         <para>
-            Please note that the Cat.hbm.xml should be set to an embedded resource.
+            Please note that the <literal>Cat.hbm.xml</literal> file should be set to an embedded resource.
         </para>
 
         <programlisting><![CDATA[<?xml version="1.0" encoding="utf-8" ?>

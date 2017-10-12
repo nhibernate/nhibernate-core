@@ -206,13 +206,14 @@ var session = sessions.OpenSession(conn);
                     <literal>connection.provider</literal>
                 </entry>
                 <entry>
-                    The type of a custom <literal>IConnectionProvider</literal>.
+                    The type of a custom <literal>IConnectionProvider</literal> implementation.
                     <para>
                         <emphasis role="strong">eg.</emphasis> 
                         <literal>full.classname.of.ConnectionProvider</literal> if the Provider 
                         is built into NHibernate, or <literal>full.classname.of.ConnectionProvider, 
                         assembly</literal> if using an implementation of <literal>IConnectionProvider</literal>
-                        not included in NHibernate.
+                        not included in NHibernate. The default is 
+                        <literal>NHibernate.Connection.DriverConnectionProvider</literal>.
                     </para>
                 </entry>
             </row>
