@@ -460,7 +460,7 @@ sess.Flush();  // changes to cat are automatically detected and persisted]]></pr
                 usually use versioned  data to ensure transaction isolation.) This approach
                 requires a slightly different  programming model to the one described in the
                 last section. NHibernate supports this model by providing the
-                method <literal>Session.Update()</literal>.
+                method <literal>ISession.Update()</literal>.
             </para>
 
             <programlisting><![CDATA[// in the first session
@@ -683,6 +683,8 @@ sess.Lock(pk, LockMode.Upgrade);]]></programlisting>
             You may also delete many objects at once by passing a NHibernate query string to
             <literal>Delete()</literal>.
         </para>
+
+        <programlisting><![CDATA[sess.Delete("from Cat");]]></programlisting>
 
         <para>
             You may now delete objects in any order you like, without risk of foreign key

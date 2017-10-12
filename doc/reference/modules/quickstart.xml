@@ -409,8 +409,9 @@ finally
 
         <para>
             NHibernate also offers an object-oriented <emphasis>query by criteria</emphasis> API
-            that can be used to formulate type-safe queries, and the Hibernate Query Language (HQL),
-            which is an easy to learn and powerful object-oriented extension to SQL.
+            that can be used to formulate type-safe queries, the Hibernate Query Language (HQL),
+            which is an easy to learn and powerful object-oriented extension to SQL, as well as a
+            strongly-typed LINQ API which translates internally to HQL.
             NHibernate of course uses <literal>DbCommand</literal>s and parameter binding for all
             SQL communication with the database. You may also use NHibernate's direct SQL query
             feature or get a plain ADO.NET connection from an <literal>ISession</literal> in rare
