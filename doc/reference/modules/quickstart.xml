@@ -16,7 +16,7 @@
             </listitem>
             <listitem>
                 Microsoft SQL Server 2012 - the database server. This tutorial uses
-                the desktop edition (SQL-EXPRESS), a free download from Microsoft. Support
+                the desktop edition (SQL Express), a free download from Microsoft. Support
                 for other databases is only a matter of changing the NHibernate SQL
                 dialect and driver configuration.
             </listitem>

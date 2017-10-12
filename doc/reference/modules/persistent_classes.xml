@@ -21,7 +21,7 @@
         </para>
 
         <programlisting><![CDATA[using System;
-using Iesi.Collections;
+using System.Collections.Generic;
 
 namespace Eg
 {
@@ -41,7 +41,7 @@ namespace Eg
         public virtual DateTime Birthdate { get; set; }
         public virtual float Weight { get; set; }
         public virtual Color Color { get; set; }
-        public virtual ISet Kittens { get; set; }
+        public virtual ISet<Cat> Kittens { get; set; }
         public virtual char Sex { get; set; }
 
         // AddKitten not needed by NHibernate

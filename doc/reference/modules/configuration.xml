@@ -526,6 +526,15 @@ var session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
+                            <literal>query.linq_provider_class</literal>
+                        </entry>
+                        <entry>
+                            The classname of a custom LINQ provider class, one that implements <literal>INhQueryProvider</literal>.
+                            The default is <literal>DefaultQueryProvider</literal>.
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
                             <literal>show_sql</literal>
                         </entry>
                         <entry>
@@ -601,6 +610,14 @@ var session = sessions.OpenSession(conn);
                                 <emphasis role="strong">eg.</emphasis> 
                                 <literal>classname.of.TransactionFactory, assembly</literal>
                             </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>default_flush_mode</literal>
+                        </entry>
+                        <entry>
+                            The default <literal>FlushMode</literal>, <literal>Auto</literal> when not specified.
                         </entry>
                     </row>
                 </tbody>
@@ -710,11 +727,11 @@ var session = sessions.OpenSession(conn);
                         </row>
                         <row>
                             <entry>Microsoft SQL Server Compact Edition</entry>
-                            <entry><literal>NHibernate.Dialect.MsSqlCe40Dialect</literal></entry>
+                            <entry><literal>NHibernate.Dialect.MsSqlCeDialect</literal></entry>
                         </row>
                         <row>
                             <entry>Microsoft SQL Server Compact Edition 4.0</entry>
-                            <entry><literal>NHibernate.Dialect.MsSqlCeDialect</literal></entry>
+                            <entry><literal>NHibernate.Dialect.MsSqlCe40Dialect</literal></entry>
                         </row>
                         <row>
                             <entry>MySQL 3 or 4</entry> 

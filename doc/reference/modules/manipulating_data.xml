@@ -22,7 +22,7 @@ long generatedId = (long) sess.Save(fritz);]]></programlisting>
 pk.Color = Color.Tabby;
 pk.Sex = 'F';
 pk.Name = "PK";
-pk.Kittens = new HashSet();
+pk.Kittens = new HashSet<Cat>();
 pk.AddKitten(fritz);
 sess.Save( pk, 1234L );]]></programlisting>
 
@@ -62,7 +62,7 @@ DomesticCat pk = sess.Load<DomesticCat>(pkId);]]></programlisting>
 <programlisting><![CDATA[Cat cat = new DomesticCat();
 // load pk's state into cat
 sess.Load( cat, pkId );
-ISet kittens = cat.Kittens;]]></programlisting>
+var kittens = cat.Kittens;]]></programlisting>
 
         <para>
             Note that <literal>Load()</literal> will throw an unrecoverable exception if there is no matching 
