@@ -52,7 +52,7 @@ namespace NHibernate.Type
 		/// <param name="dateValue">The <see cref="System.DateTime" /> to adjust.</param>
 		/// <returns>A <see cref="System.DateTime" />.</returns>
 		protected virtual DateTime AdjustDateTime(DateTime dateValue) =>
-			Kind == DateTimeKind.Unspecified ? dateValue : DateTime.SpecifyKind(dateValue, Kind);
+			DateTime.SpecifyKind(dateValue, Kind);
 
 		/// <inheritdoc />
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session) =>
