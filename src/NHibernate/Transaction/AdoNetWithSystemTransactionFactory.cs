@@ -17,7 +17,7 @@ namespace NHibernate.Transaction
 	/// </summary>
 	public partial class AdoNetWithSystemTransactionFactory : AdoNetTransactionFactory
 	{
-		private static readonly IInternalLogger _logger = LoggerProvider.LoggerFor(typeof(ITransactionFactory));
+		private static readonly IInternalLogger2 _logger = LoggerProvider.LoggerFor(typeof(ITransactionFactory));
 
 		/// <summary>
 		/// See <see cref="Cfg.Environment.SystemTransactionCompletionLockTimeout"/>.
@@ -100,7 +100,7 @@ namespace NHibernate.Transaction
 			var transactionContext = CreateAndEnlistMainContext(originatingSession, transaction);
 			originatingSession.TransactionContext = transactionContext;
 
-			_logger.DebugFormat(
+			_logger.Debug(
 				"Enlisted into system transaction: {0}",
 				transaction.IsolationLevel);
 
@@ -245,8 +245,8 @@ namespace NHibernate.Transaction
 				catch (Exception ex)
 				{
 					_logger.Warn(
-						"Synchronization failure, assuming it has been concurrently disposed and does not need sync anymore.",
-						ex);
+						ex,
+						"Synchronization failure, assuming it has been concurrently disposed and does not need sync anymore.");
 				}
 			}
 
@@ -293,7 +293,7 @@ namespace NHibernate.Transaction
 				}
 				catch (ObjectDisposedException ode)
 				{
-					_logger.Warn("Enlisted transaction status was wrongly active, original transaction being already disposed. Will assume neither active nor committed.", ode);
+					_logger.Warn(ode, "Enlisted transaction status was wrongly active, original transaction being already disposed. Will assume neither active nor committed.");
 					return null;
 				}
 			}
@@ -346,7 +346,7 @@ namespace NHibernate.Transaction
 					}
 					catch (Exception exception)
 					{
-						_logger.Error("System transaction prepare phase failed", exception);
+						_logger.Error(exception, "System transaction prepare phase failed");
 						try
 						{
 							CompleteTransaction(false);
@@ -445,7 +445,7 @@ namespace NHibernate.Transaction
 				catch (Exception ex)
 				{
 					// May be run in a dedicated thread. Log any error, otherwise they could stay unlogged.
-					_logger.Error("Failure at transaction completion", ex);
+					_logger.Error(ex, "Failure at transaction completion");
 					throw;
 				}
 				finally

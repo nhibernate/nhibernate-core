@@ -17,7 +17,7 @@ namespace NHibernate.Engine
 	[Serializable]
 	public sealed class QueryParameters
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (QueryParameters));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof (QueryParameters));
 
 		private bool readOnly;
 
@@ -171,12 +171,12 @@ namespace NHibernate.Engine
 			var print = new Printer(factory);
 			if (PositionalParameterValues.Length != 0)
 			{
-				log.Debug("parameters: " + print.ToString(PositionalParameterTypes, PositionalParameterValues));
+				log.Debug("parameters: {0}", print.ToString(PositionalParameterTypes, PositionalParameterValues));
 			}
 
 			if (NamedParameters != null)
 			{
-				log.Debug("named parameters: " + print.ToString(NamedParameters));
+				log.Debug("named parameters: {0}", print.ToString(NamedParameters));
 			}
 		}
 

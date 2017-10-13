@@ -31,7 +31,7 @@ namespace NHibernate.Engine.Query
 	[Serializable]
 	public partial class HQLQueryPlan : IQueryPlan
 	{
-		protected static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(HQLQueryPlan));
+		protected static readonly IInternalLogger2 Log = LoggerProvider.LoggerFor(typeof(HQLQueryPlan));
 
 		private readonly string _sourceQuery;
 
@@ -87,7 +87,7 @@ namespace NHibernate.Engine.Query
 		{
 			if (Log.IsDebugEnabled)
 			{
-				Log.Debug("find: " + _sourceQuery);
+				Log.Debug("find: {0}", _sourceQuery);
 				queryParameters.LogParameters(session.Factory);
 			}
 
@@ -154,7 +154,7 @@ namespace NHibernate.Engine.Query
 		{
 			if (Log.IsDebugEnabled)
 			{
-				Log.Debug("enumerable: " + _sourceQuery);
+				Log.Debug("enumerable: {0}", _sourceQuery);
 				queryParameters.LogParameters(session.Factory);
 			}
 			if (Translators.Length == 0)
@@ -183,12 +183,12 @@ namespace NHibernate.Engine.Query
         {
             if (Log.IsDebugEnabled)
             {
-                Log.Debug("executeUpdate: " + _sourceQuery);
+                Log.Debug("executeUpdate: {0}", _sourceQuery);
                 queryParameters.LogParameters(session.Factory);
             }
             if (Translators.Length != 1)
             {
-                Log.Warn("manipulation query [" + _sourceQuery + "] resulted in [" + Translators.Length + "] split queries");
+                Log.Warn("manipulation query [{0}] resulted in [{1}] split queries", _sourceQuery, Translators.Length);
             }
             int result = 0;
             for (int i = 0; i < Translators.Length; i++)

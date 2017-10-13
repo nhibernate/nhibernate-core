@@ -13,7 +13,7 @@ namespace NHibernate.Type
 	[Serializable]
 	public class DateType : AbstractDateTimeType, IParameterizedType
 	{
-		private static readonly IInternalLogger _log = LoggerProvider.LoggerFor(typeof(DateType));
+		private static readonly IInternalLogger2 _log = LoggerProvider.LoggerFor(typeof(DateType));
 		// Since v5.0
 		[Obsolete("Explicitly affect your values to your entities properties instead.")]
 		public const string BaseValueParameterName = "BaseValue";
@@ -94,7 +94,7 @@ namespace NHibernate.Type
 			string value;
 			if (parameters.TryGetValue(BaseValueParameterName, out value))
 			{
-				_log.WarnFormat(
+				_log.Warn(
 					"Parameter {0} is obsolete and will be remove in a future version. Explicitly affect your values to your entities properties instead.",
 					BaseValueParameterName);
 				customBaseDate = DateTime.Parse(value);

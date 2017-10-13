@@ -48,7 +48,7 @@ namespace NHibernate.Event.Default
 
 				if (log.IsDebugEnabled)
 				{
-					log.Debug(string.Format("locking {0} in mode: {1}", MessageHelper.InfoString(persister, entry.Id, source.Factory), requestedLockMode));
+					log.Debug("locking {0} in mode: {1}", MessageHelper.InfoString(persister, entry.Id, source.Factory), requestedLockMode);
 				}
 
 				ISoftLock slock;

@@ -201,7 +201,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				// TODO NH : add schema-action to the xsd
 				model.CollectionTable = mappings.AddTable(schema, catalog, tableName, collectionMapping.Subselect, false, "all");
 
-				log.InfoFormat("Mapping collection: {0} -> {1}", model.Role, model.CollectionTable.Name);
+				log.Info("Mapping collection: {0} -> {1}", model.Role, model.CollectionTable.Name);
 			}
 
 			//SORT
@@ -483,7 +483,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private static void PreCollectionSecondPass(Mapping.Collection collection)
 		{
 			if (log.IsDebugEnabled)
-				log.Debug("Second pass for collection: " + collection.Role);
+				log.Debug("Second pass for collection: {0}", collection.Role);
 		}
 
 		private static void PostCollectionSecondPass(Mapping.Collection collection)
@@ -492,17 +492,17 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			if (log.IsDebugEnabled)
 			{
-				string msg = "Mapped collection key: " + string.Join(",", collection.Key.ColumnIterator.Select(c => c.Text).ToArray());
+				string info = "";
 				if (collection.IsIndexed)
-					msg += ", index: " + string.Join(",", ((IndexedCollection)collection).Index.ColumnIterator.Select(c => c.Text).ToArray());
+					info += ", index: " + string.Join(",", ((IndexedCollection)collection).Index.ColumnIterator.Select(c => c.Text).ToArray());
 				if (collection.IsOneToMany)
-					msg += ", one-to-many: " + collection.Element.Type.Name;
+					info += ", one-to-many: " + collection.Element.Type.Name;
 				else
 				{
-					msg += ", element: " + string.Join(",", collection.Element.ColumnIterator.Select(c => c.Text).ToArray());
-					msg += ", type: " + collection.Element.Type.Name;
+					info += ", element: " + string.Join(",", collection.Element.ColumnIterator.Select(c => c.Text).ToArray());
+					info += ", type: " + collection.Element.Type.Name;
 				}
-				log.Debug(msg);
+				log.Debug("Mapped collection key: {0}{1}", string.Join(",", collection.Key.ColumnIterator.Select(c => c.Text).ToArray()), info);
 			}
 		}
 
@@ -754,7 +754,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				}
 
 				if (log.IsInfoEnabled)
-					log.Info("mapping collection: " + model.Role + " -> " + model.CollectionTable.Name);
+					log.Info("mapping collection: {0} -> {1}", model.Role, model.CollectionTable.Name);
 			}
 
 			//CHECK

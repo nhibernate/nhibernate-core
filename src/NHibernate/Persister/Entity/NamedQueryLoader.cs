@@ -13,7 +13,7 @@ namespace NHibernate.Persister.Entity
 		private readonly string queryName;
 		private readonly IEntityPersister persister;
 
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(NamedQueryLoader));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(NamedQueryLoader));
 
 		public NamedQueryLoader(string queryName, IEntityPersister persister)
 		{
@@ -25,7 +25,7 @@ namespace NHibernate.Persister.Entity
 		{
 			if (log.IsDebugEnabled)
 			{
-				log.Debug(string.Format("loading entity: {0} using named query: {1}", persister.EntityName, queryName));
+				log.Debug("loading entity: {0} using named query: {1}", persister.EntityName, queryName);
 			}
 
 			AbstractQueryImpl query = (AbstractQueryImpl) session.GetNamedQuery(queryName);

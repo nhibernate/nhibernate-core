@@ -59,7 +59,7 @@ namespace NHibernate.AdoNet
 			}
 			if (Log.IsDebugEnabled)
 			{
-				Log.Debug("Adding to batch:" + lineWithParameters);
+				Log.Debug("Adding to batch:{0}", lineWithParameters);
 			}
 			_currentBatch.Append((System.Data.SqlClient.SqlCommand)batchUpdate);
 
@@ -73,7 +73,7 @@ namespace NHibernate.AdoNet
 		{
 			try
 			{
-				Log.DebugFormat("Executing batch");
+				Log.Debug("Executing batch");
 				CheckReaders();
 				Prepare(_currentBatch.BatchCommand);
 				if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
@@ -111,7 +111,7 @@ namespace NHibernate.AdoNet
 				{
 					if (Log.IsWarnEnabled)
 					{
-						Log.Warn(e.ToString());
+						Log.Warn(e, e.ToString());
 					}
 				}
 			}
@@ -143,7 +143,7 @@ namespace NHibernate.AdoNet
 			}
 			catch (Exception e)
 			{
-				Log.Warn("Exception clearing batch", e);
+				Log.Warn(e, "Exception clearing batch");
 			}
 		}
 
@@ -158,7 +158,7 @@ namespace NHibernate.AdoNet
 			}
 			catch (Exception e)
 			{
-				Log.Warn("Exception closing batcher", e);
+				Log.Warn(e, "Exception closing batcher");
 			}
 		}
 	}

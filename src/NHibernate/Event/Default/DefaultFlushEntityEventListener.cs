@@ -16,7 +16,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public partial class DefaultFlushEntityEventListener : IFlushEntityEventListener
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultFlushEntityEventListener));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(DefaultFlushEntityEventListener));
 
 		/// <summary>
 		/// Flushes a single entity's state to the database, by scheduling an update action, if necessary
@@ -215,20 +215,20 @@ namespace NHibernate.Event.Default
 				{
 					if (!persister.IsMutable)
 					{
-						log.Debug("Updating immutable, deleted entity: " + MessageHelper.InfoString(persister, entry.Id, session.Factory));
+						log.Debug("Updating immutable, deleted entity: {0}", MessageHelper.InfoString(persister, entry.Id, session.Factory));
 					}
 					else if (!entry.IsModifiableEntity())
 					{
-						log.Debug("Updating non-modifiable, deleted entity: " + MessageHelper.InfoString(persister, entry.Id, session.Factory));
+						log.Debug("Updating non-modifiable, deleted entity: {0}", MessageHelper.InfoString(persister, entry.Id, session.Factory));
 					}
 					else
 					{
-						log.Debug("Updating deleted entity: " + MessageHelper.InfoString(persister, entry.Id, session.Factory));
+						log.Debug("Updating deleted entity: {0}", MessageHelper.InfoString(persister, entry.Id, session.Factory));
 					}
 				}
 				else
 				{
-					log.Debug("Updating entity: " + MessageHelper.InfoString(persister, entry.Id, session.Factory));
+					log.Debug("Updating entity: {0}", MessageHelper.InfoString(persister, entry.Id, session.Factory));
 				}
 			}
 

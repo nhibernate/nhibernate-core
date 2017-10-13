@@ -14,7 +14,7 @@ namespace NHibernate.Event.Default
 	{
 		private readonly object ownerIdentifier;
 		private readonly object owner;
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(AbstractFlushingEventListener));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(AbstractFlushingEventListener));
 
 		protected ReattachVisitor(IEventSource session, object ownerIdentifier, object owner)
 			: base(session)
@@ -58,7 +58,7 @@ namespace NHibernate.Event.Default
 		{
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("collection dereferenced while transient " + MessageHelper.CollectionInfoString(role, ownerIdentifier, source.Factory));
+				log.Debug("collection dereferenced while transient {0}", MessageHelper.CollectionInfoString(role, ownerIdentifier, source.Factory));
 			}
 			source.ActionQueue.AddAction(new CollectionRemoveAction(owner, role, collectionKey, false, source));
 		}

@@ -209,11 +209,8 @@ namespace NHibernate.Engine
 				// When using assigned identifiers we cannot tell if an entity
 				// is transient or detached without querying the database.
 				// This could potentially cause Select N+1 in cascaded saves, so warn the user.
-				log.Warn(
-					"Unable to determine if " + entity.ToString()
-					+ " with assigned identifier " + persister.GetIdentifier(entity)
-					+ " is transient or detached; querying the database."
-					+ " Use explicit Save() or Update() in session to prevent this.");
+				log.Warn("Unable to determine if {0} with assigned identifier {1} is transient or detached; querying the database. Use explicit Save() or Update() in session to prevent this.", 
+					entity, persister.GetIdentifier(entity));
 			}
 
 			// hit the database, after checking the session cache for a snapshot

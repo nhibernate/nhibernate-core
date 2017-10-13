@@ -18,7 +18,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class FromElement : HqlSqlWalkerNode, IDisplayableNode, IParameterContainer
 	{
-		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(FromElement));
+		private static readonly IInternalLogger2 Log = LoggerProvider.LoggerFor(typeof(FromElement));
 
 		private bool _isAllPropertyFetch;
 		private FromElementType _elementType;
@@ -391,7 +391,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				{
 					if (!_includeSubclasses && Log.IsInfoEnabled)
 					{
-						Log.Info("attempt to disable subclass-inclusions", new Exception("stack-trace source"));
+						Log.Info(new Exception("stack-trace source"), "attempt to disable subclass-inclusions");
 					}
 				}
 				_includeSubclasses = value;
@@ -532,7 +532,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 					if (Log.IsInfoEnabled)
 					{
-						Log.Info("handling property dereference [" + persister.EntityName + " (" + ClassAlias + ") -> " + propertyName + " (" + propertyDeclarer + ")]");
+						Log.Info("handling property dereference [{0} ({1}) -> {2} ({3})]", persister.EntityName, ClassAlias, propertyName, propertyDeclarer);
 					}
 					if (propertyDeclarer == Declarer.SubClass)
 					{
@@ -597,7 +597,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				if (!includeSubclasses && Log.IsInfoEnabled)
 				{
-					Log.Info("attempt to disable subclass-inclusions", new Exception("stack-trace source"));
+					Log.Info(new Exception("stack-trace source"), "attempt to disable subclass-inclusions");
 				}
 			}
 			_includeSubclasses = includeSubclasses;
@@ -690,8 +690,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			if (Log.IsDebugEnabled)
 			{
-				Log.Debug(fromClause + " :  " + className + " ("
-						+ (classAlias ?? "no alias") + ") -> " + tableAlias);
+				Log.Debug("{0} :  {1} ({2}) -> {3}",
+				          fromClause,
+				          className,
+				          (classAlias ?? "no alias"),
+				          tableAlias);
 			}
 		}
 

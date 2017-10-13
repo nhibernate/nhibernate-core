@@ -16,7 +16,7 @@ namespace NHibernate.Cache
 	{
 		private ICache cache;
 
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(NonstrictReadWriteCache));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(NonstrictReadWriteCache));
 
 		/// <summary>
 		/// Gets the cache region name.
@@ -39,7 +39,7 @@ namespace NHibernate.Cache
 		{
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("Cache lookup: " + key);
+				log.Debug("Cache lookup: {0}", key);
 			}
 
 			object result = cache.Get(key);
@@ -70,13 +70,13 @@ namespace NHibernate.Cache
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("item already cached: " + key);
+					log.Debug("item already cached: {0}", key);
 				}
 				return false;
 			}
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("Caching: " + key);
+				log.Debug("Caching: {0}", key);
 			}
 			cache.Put(key, value);
 			return true;
@@ -94,7 +94,7 @@ namespace NHibernate.Cache
 		{
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("Removing: " + key);
+				log.Debug("Removing: {0}", key);
 			}
 			cache.Remove(key);
 		}
@@ -116,7 +116,7 @@ namespace NHibernate.Cache
 			}
 			catch (Exception e)
 			{
-				log.Warn("Could not destroy cache", e);
+				log.Warn(e, "Could not destroy cache");
 			}
 		}
 
@@ -127,7 +127,7 @@ namespace NHibernate.Cache
 		{
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("Invalidating: " + key);
+				log.Debug("Invalidating: {0}", key);
 			}
 			cache.Remove(key);
 		}
@@ -156,7 +156,7 @@ namespace NHibernate.Cache
 		{
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("Invalidating (again): " + key);
+				log.Debug("Invalidating (again): {0}", key);
 			}
 
 			cache.Remove(key);

@@ -67,7 +67,7 @@ namespace NHibernate.Impl
 				}
 				catch (Exception t)
 				{
-					log.Error("exception in interceptor afterTransactionCompletion()", t);
+					log.Error(t, "exception in interceptor afterTransactionCompletion()");
 				}
 
 				if (IsClosed)
@@ -366,10 +366,10 @@ namespace NHibernate.Impl
 
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("delete: " + query);
+					log.Debug("delete: {0}", query);
 					if (values.Length != 0)
 					{
-						log.Debug("parameters: " + StringHelper.ToString(values));
+						log.Debug("parameters: {0}", StringHelper.ToString(values));
 					}
 				}
 
@@ -518,8 +518,8 @@ namespace NHibernate.Impl
 				CheckAndUpdateSessionStatus();
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("flushing to force deletion of re-saved object: " +
-							  MessageHelper.InfoString(entityEntry.Persister, entityEntry.Id, Factory));
+					log.Debug("flushing to force deletion of re-saved object: {0}",
+					          MessageHelper.InfoString(entityEntry.Persister, entityEntry.Id, Factory));
 				}
 
 				if (persistenceContext.CascadeLevel > 0)
@@ -923,7 +923,7 @@ namespace NHibernate.Impl
 				if (log.IsDebugEnabled)
 				{
 					IEntityPersister persister = Factory.GetEntityPersister(entityName);
-					log.Debug("initializing proxy: " + MessageHelper.InfoString(persister, id, Factory));
+					log.Debug("initializing proxy: {0}", MessageHelper.InfoString(persister, id, Factory));
 				}
 
 				LoadEvent loadEvent = new LoadEvent(id, entityName, true, this);
@@ -1276,7 +1276,7 @@ namespace NHibernate.Impl
 				}
 				catch (Exception e)
 				{
-					log.Error("exception in interceptor BeforeTransactionCompletion()", e);
+					log.Error(e, "exception in interceptor BeforeTransactionCompletion()");
 
 					throw;
 				}

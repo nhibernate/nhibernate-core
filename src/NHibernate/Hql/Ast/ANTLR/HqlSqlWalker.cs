@@ -19,7 +19,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 {
 	public partial class HqlSqlWalker
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(HqlSqlWalker));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(HqlSqlWalker));
 
 		// Fields
 		private readonly string _collectionFilterRole;
@@ -177,7 +177,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			_currentStatementType = statementType;
 			if (log.IsDebugEnabled)
 			{
-				log.Debug(statementName + " << begin [level=" + _level + ", statement=" + _statementTypeName + "]");
+				log.Debug("{0} << begin [level={1}, statement={2}]", statementName, _level, _statementTypeName);
 			}
 		}
 
@@ -185,7 +185,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			if (log.IsDebugEnabled)
 			{
-				log.Debug(statementName + " : finishing up [level=" + _level + ", statement=" + _statementTypeName + "]");
+				log.Debug("{0} : finishing up [level={1}, statement={2}]", statementName, _level, _statementTypeName);
 			}
 		}
 
@@ -401,7 +401,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			if (log.IsDebugEnabled)
 			{
-				log.Debug(statementName + " >> end [level=" + _level + ", statement=" + _statementTypeName + "]");
+				log.Debug("{0} >> end [level={1}, statement={2}]", statementName, _level, _statementTypeName);
 			}
 			_level--;
 		}
@@ -457,7 +457,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		void ProcessQuery(IASTNode select, IASTNode query)
 		{
 			if ( log.IsDebugEnabled ) {
-				log.Debug( "processQuery() : " + query.ToStringTree() );
+				log.Debug("processQuery() : {0}", query.ToStringTree());
 			}
 
 			try {
@@ -717,7 +717,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 			if ( log.IsDebugEnabled )
 			{
-				log.Debug( "createFromJoinElement() : " + _printer.ShowAsString( fromElement, "-- join tree --" ) );
+				log.Debug("createFromJoinElement() : {0}", _printer.ShowAsString( fromElement, "-- join tree --" ));
 			}
 		}
 
@@ -844,7 +844,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			{
 				FromElement fromElement = (FromElement) fromElements[0];
 
-				log.Info( "attempting to resolve property [" + identText + "] as a non-qualified ref" );
+				log.Info("attempting to resolve property [{0}] as a non-qualified ref", identText);
 
 				IType type;
 				return fromElement.GetPropertyMapping(identText).TryToType(identText, out type);
@@ -1069,7 +1069,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("handleWithFragment() : " + _printer.ShowAsString(hqlSqlWithNode, "-- with clause --"));
+					log.Debug("handleWithFragment() : {0}", _printer.ShowAsString(hqlSqlWithNode, "-- with clause --"));
 				}
 				WithClauseVisitor visitor = new WithClauseVisitor(fromElement);
 				NodeTraverser traverser = new NodeTraverser(visitor);

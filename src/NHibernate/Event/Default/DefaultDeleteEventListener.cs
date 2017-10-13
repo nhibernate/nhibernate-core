@@ -18,7 +18,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public partial class DefaultDeleteEventListener : IDeleteEventListener
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultDeleteEventListener));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(DefaultDeleteEventListener));
 
 		#region IDeleteEventListener Members
 
@@ -170,7 +170,7 @@ namespace NHibernate.Event.Default
 		{
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("deleting " + MessageHelper.InfoString(persister, entityEntry.Id, session.Factory));
+				log.Debug("deleting {0}", MessageHelper.InfoString(persister, entityEntry.Id, session.Factory));
 			}
 
 			IPersistenceContext persistenceContext = session.PersistenceContext;

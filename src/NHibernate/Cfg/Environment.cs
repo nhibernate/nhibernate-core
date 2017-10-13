@@ -275,7 +275,7 @@ namespace NHibernate.Cfg
 		private static IBytecodeProvider BytecodeProviderInstance;
 		private static bool EnableReflectionOptimizer;
 
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(Environment));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(Environment));
 
 		/// <summary>
 		/// Issue warnings to user when any obsolete property names are used.
@@ -289,7 +289,7 @@ namespace NHibernate.Cfg
 			// Computing the version string is a bit expensive, so do it only if logging is enabled.
 			if (log.IsInfoEnabled)
 			{
-				log.Info("NHibernate " + Version);
+				log.Info("NHibernate {0}", Version);
 			}
 
 			GlobalProperties = new Dictionary<string, string>();
@@ -312,7 +312,7 @@ namespace NHibernate.Cfg
 
 			if (config == null)
 			{
-				log.Info(string.Format("{0} section not found in application configuration file", CfgXmlHelper.CfgSectionName));
+				log.Info("{0} section not found in application configuration file", CfgXmlHelper.CfgSectionName);
 				return;
 			}
 
@@ -320,9 +320,8 @@ namespace NHibernate.Cfg
 			if (nhConfig == null)
 			{
 				log.Info(
-					string.Format(
 						"{0} section handler, in application configuration file, is not IHibernateConfiguration, section ignored",
-						CfgXmlHelper.CfgSectionName));
+						CfgXmlHelper.CfgSectionName);
 				return;
 			}
 
@@ -410,7 +409,7 @@ namespace NHibernate.Cfg
 		{
 			const string defaultBytecodeProvider = "lcg";
 			string provider = PropertiesHelper.GetString(PropertyBytecodeProvider, properties, defaultBytecodeProvider);
-			log.Info("Bytecode provider name : " + provider);
+			log.Info("Bytecode provider name : {0}", provider);
 			return BuildBytecodeProvider(provider);
 		}
 
@@ -423,7 +422,7 @@ namespace NHibernate.Cfg
 				case "null":
 					return new NullBytecodeProvider();
 				default:
-					log.Info("custom bytecode provider [" + providerName + "]");
+					log.Info("custom bytecode provider [{0}]", providerName);
 					return CreateCustomBytecodeProvider(providerName);
 			}
 		}

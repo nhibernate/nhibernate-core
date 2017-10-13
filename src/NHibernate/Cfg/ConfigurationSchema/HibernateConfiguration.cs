@@ -21,7 +21,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 	/// </summary>
 	public class HibernateConfiguration : IHibernateConfiguration
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(HibernateConfiguration));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(HibernateConfiguration));
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HibernateConfiguration"/> class.
@@ -106,7 +106,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		private static void LogWarnIgnoredProperty(string propName)
 		{
 			if (log.IsWarnEnabled)
-				log.Warn(string.Format("{0} property is ignored out of application configuration file.", propName));
+				log.Warn("{0} property is ignored out of application configuration file.", propName);
 		}
 
 		private void ParseReflectionOptimizer(XPathNavigator navigator, bool fromAppConfig)

@@ -46,7 +46,7 @@ namespace NHibernate.AdoNet
 				}
 				if (Log.IsDebugEnabled)
 				{
-					Log.Debug("Adding to batch:" + lineWithParameters);
+					Log.Debug("Adding to batch:{0}", lineWithParameters);
 				}
 
 				if (_currentBatch == null)

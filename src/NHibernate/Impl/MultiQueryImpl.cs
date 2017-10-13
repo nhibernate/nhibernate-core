@@ -19,7 +19,7 @@ namespace NHibernate.Impl
 {
 	public partial class MultiQueryImpl : IMultiQuery
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(MultiQueryImpl));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(MultiQueryImpl));
 
 		private readonly List<IQuery> queries = new List<IQuery>();
 		private readonly List<ITranslator> translators = new List<ITranslator>();
@@ -413,10 +413,10 @@ namespace NHibernate.Impl
 
 				if (log.IsDebugEnabled)
 				{
-					log.DebugFormat("Multi query with {0} queries.", queries.Count);
+					log.Debug("Multi query with {0} queries.", queries.Count);
 					for (int i = 0; i < queries.Count; i++)
 					{
-						log.DebugFormat("Query #{0}: {1}", i, queries[i]);
+						log.Debug("Query #{0}: {1}", i, queries[i]);
 					}
 				}
 
@@ -530,7 +530,7 @@ namespace NHibernate.Impl
 				{
 					if (log.IsDebugEnabled)
 					{
-						log.DebugFormat("Executing {0} queries", translators.Count);
+						log.Debug("Executing {0} queries", translators.Count);
 					}
 					for (int i = 0; i < translators.Count; i++)
 					{
@@ -571,7 +571,7 @@ namespace NHibernate.Impl
 						{
 							if (log.IsDebugEnabled)
 							{
-								log.Debug("result set row: " + count);
+								log.Debug("result set row: {0}", count);
 							}
 
 							rowCount++;
@@ -588,14 +588,14 @@ namespace NHibernate.Impl
 
 						if (log.IsDebugEnabled)
 						{
-							log.Debug(string.Format("done processing result set ({0} rows)", count));
+							log.Debug("done processing result set ({0} rows)", count);
 						}
 
 						results.Add(tempResults);
 
 						if (log.IsDebugEnabled)
 						{
-							log.DebugFormat("Query {0} returned {1} results", i, tempResults.Count);
+							log.Debug("Query {0} returned {1} results", i, tempResults.Count);
 						}
 
 						reader.NextResult();
@@ -617,8 +617,7 @@ namespace NHibernate.Impl
 			}
 			catch (Exception sqle)
 			{
-				var message = string.Format("Failed to execute multi query: [{0}]", resultSetsCommand.Sql);
-				log.Error(message, sqle);
+				log.Error(sqle, "Failed to execute multi query: [{0}]", resultSetsCommand.Sql);
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "Failed to execute multi query", resultSetsCommand.Sql);
 			}
 

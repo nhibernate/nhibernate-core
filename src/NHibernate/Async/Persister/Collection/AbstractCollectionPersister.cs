@@ -190,7 +190,7 @@ namespace NHibernate.Persister.Collection
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("Deleting collection: " + MessageHelper.CollectionInfoString(this, id, Factory));
+					log.Debug("Deleting collection: {0}", MessageHelper.CollectionInfoString(this, id, Factory));
 				}
 
 				// Remove all the old entries
@@ -253,7 +253,7 @@ namespace NHibernate.Persister.Collection
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("Inserting collection: " + MessageHelper.CollectionInfoString(this, collection, id, session));
+					log.Debug("Inserting collection: {0}", MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 
 				try
@@ -296,7 +296,7 @@ namespace NHibernate.Persister.Collection
 					if (log.IsDebugEnabled)
 					{
 						if (count > 0)
-							log.Debug(string.Format("done inserting collection: {0} rows inserted", count));
+							log.Debug("done inserting collection: {0} rows inserted", count);
 						else
 							log.Debug("collection was empty");
 					}
@@ -316,7 +316,7 @@ namespace NHibernate.Persister.Collection
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("Deleting rows of collection: " + MessageHelper.CollectionInfoString(this, collection, id, session));
+					log.Debug("Deleting rows of collection: {0}", MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 
 				bool deleteByIndex = !IsOneToMany && hasIndex && !indexContainsFormula;
@@ -396,7 +396,7 @@ namespace NHibernate.Persister.Collection
 					if (log.IsDebugEnabled)
 					{
 						if (count > 0)
-							log.Debug("done deleting collection rows: " + count + " deleted");
+							log.Debug("done deleting collection rows: {0} deleted", count);
 						else
 							log.Debug("no rows to delete");
 					}
@@ -416,7 +416,7 @@ namespace NHibernate.Persister.Collection
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("Inserting rows of collection: " + MessageHelper.CollectionInfoString(this, collection, id, session));
+					log.Debug("Inserting rows of collection: {0}", MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 
 				try
@@ -452,7 +452,7 @@ namespace NHibernate.Persister.Collection
 
 					if (log.IsDebugEnabled)
 					{
-						log.Debug(string.Format("done inserting rows: {0} inserted", count));
+						log.Debug("done inserting rows: {0} inserted", count);
 					}
 				}
 				catch (DbException sqle)
@@ -470,7 +470,7 @@ namespace NHibernate.Persister.Collection
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug(string.Format("Updating rows of collection: {0}#{1}", role, id));
+					log.Debug("Updating rows of collection: {0}#{1}", role, id);
 				}
 
 				// update all the modified entries
@@ -478,7 +478,7 @@ namespace NHibernate.Persister.Collection
 
 				if (log.IsDebugEnabled)
 				{
-					log.Debug(string.Format("done updating rows: {0} updated", count));
+					log.Debug("done updating rows: {0} updated", count);
 				}
 			}
 		}

@@ -42,7 +42,7 @@ namespace NHibernate.AdoNet
 			}
 			if (Log.IsDebugEnabled)
 			{
-				Log.Debug("Adding to batch:" + lineWithParameters);
+				Log.Debug("Adding to batch:{0}", lineWithParameters);
 			}
 			currentBatch.Append(batchUpdate);
 
@@ -57,7 +57,7 @@ namespace NHibernate.AdoNet
 			cancellationToken.ThrowIfCancellationRequested();
 			try
 			{
-				Log.DebugFormat("Executing batch");
+				Log.Debug("Executing batch");
 				await (CheckReadersAsync(cancellationToken)).ConfigureAwait(false);
 				if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
 				{

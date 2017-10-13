@@ -28,7 +28,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public abstract partial class AbstractSaveEventListener : AbstractReassociateEventListener
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(AbstractSaveEventListener));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(AbstractSaveEventListener));
 
 		protected virtual bool? AssumedUnsaved
 		{
@@ -122,9 +122,9 @@ namespace NHibernate.Event.Default
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug(string.Format("generated identifier: {0}, using strategy: {1}",
-						persister.IdentifierType.ToLoggableString(generatedId, source.Factory),
-						persister.IdentifierGenerator.GetType().FullName));
+					log.Debug("generated identifier: {0}, using strategy: {1}", 
+						persister.IdentifierType.ToLoggableString(generatedId, source.Factory), 
+						persister.IdentifierGenerator.GetType().FullName);
 				}
 				return PerformSave(entity, generatedId, persister, false, anything, source, true);
 			}
@@ -154,7 +154,7 @@ namespace NHibernate.Event.Default
 		{
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("saving " + MessageHelper.InfoString(persister, id, source.Factory));
+				log.Debug("saving {0}", MessageHelper.InfoString(persister, id, source.Factory));
 			}
 
 			EntityKey key;
@@ -403,7 +403,7 @@ namespace NHibernate.Event.Default
 					// do nothing for persistent instances
 					if (log.IsDebugEnabled)
 					{
-						log.Debug("persistent instance of: " + GetLoggableName(entityName, entity));
+						log.Debug("persistent instance of: {0}", GetLoggableName(entityName, entity));
 					}
 					return EntityState.Persistent;
 				}
@@ -412,7 +412,7 @@ namespace NHibernate.Event.Default
 					//ie. e.status==DELETED
 					if (log.IsDebugEnabled)
 					{
-						log.Debug("deleted instance of: " + GetLoggableName(entityName, entity));
+						log.Debug("deleted instance of: {0}", GetLoggableName(entityName, entity));
 					}
 					return EntityState.Deleted;
 				}
@@ -429,7 +429,7 @@ namespace NHibernate.Event.Default
 				{
 					if (log.IsDebugEnabled)
 					{
-						log.Debug("transient instance of: " + GetLoggableName(entityName, entity));
+						log.Debug("transient instance of: {0}", GetLoggableName(entityName, entity));
 					}
 					return EntityState.Transient;
 				}
@@ -437,7 +437,7 @@ namespace NHibernate.Event.Default
 				{
 					if (log.IsDebugEnabled)
 					{
-						log.Debug("detached instance of: " + GetLoggableName(entityName, entity));
+						log.Debug("detached instance of: {0}", GetLoggableName(entityName, entity));
 					}
 					return EntityState.Detached;
 				}

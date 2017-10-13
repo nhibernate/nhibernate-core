@@ -279,7 +279,7 @@ namespace NHibernate.Loader
 					{
 						if (Log.IsDebugEnabled)
 						{
-							Log.Debug("result set row: " + count);
+							Log.Debug("result set row: {0}", count);
 						}
 
 						object result = await (GetRowFromResultSetAsync(rs, session, queryParameters, lockModeArray, optionalObjectKey,
@@ -296,7 +296,7 @@ namespace NHibernate.Loader
 
 					if (Log.IsDebugEnabled)
 					{
-						Log.Debug(string.Format("done processing result set ({0} rows)", count));
+						Log.Debug("done processing result set ({0} rows)", count);
 					}
 				}
 				catch (Exception e)
@@ -360,7 +360,7 @@ namespace NHibernate.Loader
 
 				if (Log.IsDebugEnabled)
 				{
-					Log.Debug(string.Format("total objects hydrated: {0}", hydratedObjectsSize));
+					Log.Debug("total objects hydrated: {0}", hydratedObjectsSize);
 				}
 
 				for (int i = 0; i < hydratedObjectsSize; i++)
@@ -460,7 +460,7 @@ namespace NHibernate.Loader
 
 				if (Log.IsDebugEnabled)
 				{
-					Log.Debug("found row of collection: " + MessageHelper.CollectionInfoString(persister, collectionRowKey));
+					Log.Debug("found row of collection: {0}", MessageHelper.CollectionInfoString(persister, collectionRowKey));
 				}
 
 				object owner = optionalOwner;
@@ -492,7 +492,7 @@ namespace NHibernate.Loader
 
 				if (Log.IsDebugEnabled)
 				{
-					Log.Debug("result set contains (possibly empty) collection: " + MessageHelper.CollectionInfoString(persister, optionalKey));
+					Log.Debug("result set contains (possibly empty) collection: {0}", MessageHelper.CollectionInfoString(persister, optionalKey));
 				}
 				persistenceContext.LoadContexts.GetCollectionLoadContext(rs).GetLoadingCollection(persister, optionalKey);
 				// handle empty collection
@@ -581,7 +581,7 @@ namespace NHibernate.Loader
 
 			if (Log.IsDebugEnabled)
 			{
-				Log.Debug("result row: " + StringHelper.ToString(keys));
+				Log.Debug("result row: {0}", StringHelper.ToString(keys));
 			}
 
 			object[] rowResults = new object[cols];
@@ -705,7 +705,7 @@ namespace NHibernate.Loader
 
 			if (Log.IsDebugEnabled)
 			{
-				Log.Debug("Initializing object from DataReader: " + MessageHelper.InfoString(persister, id));
+				Log.Debug("Initializing object from DataReader: {0}", MessageHelper.InfoString(persister, id));
 			}
 
 			bool eagerPropertyFetch = IsEagerPropertyFetchEnabled(i);
@@ -897,7 +897,7 @@ namespace NHibernate.Loader
 			cancellationToken.ThrowIfCancellationRequested();
 			if (Log.IsDebugEnabled)
 			{
-				Log.Debug("loading entity: " + MessageHelper.InfoString(persister, id, identifierType, Factory));
+				Log.Debug("loading entity: {0}", MessageHelper.InfoString(persister, id, identifierType, Factory));
 			}
 
 			IList result;
@@ -963,7 +963,7 @@ namespace NHibernate.Loader
 			cancellationToken.ThrowIfCancellationRequested();
 			if (Log.IsDebugEnabled)
 			{
-				Log.Debug("batch loading entity: " + MessageHelper.InfoString(persister, ids, Factory));
+				Log.Debug("batch loading entity: {0}", MessageHelper.InfoString(persister, ids, Factory));
 			}
 
 			IType[] types = new IType[ids.Length];
@@ -1000,7 +1000,7 @@ namespace NHibernate.Loader
 			cancellationToken.ThrowIfCancellationRequested();
 			if (Log.IsDebugEnabled)
 			{
-				Log.Debug("loading collection: " + MessageHelper.CollectionInfoString(CollectionPersisters[0], id));
+				Log.Debug("loading collection: {0}", MessageHelper.CollectionInfoString(CollectionPersisters[0], id));
 			}
 
 			object[] ids = new object[] { id };
@@ -1031,7 +1031,7 @@ namespace NHibernate.Loader
 			cancellationToken.ThrowIfCancellationRequested();
 			if (Log.IsDebugEnabled)
 			{
-				Log.Debug("batch loading collection: " + MessageHelper.CollectionInfoString(CollectionPersisters[0], ids));
+				Log.Debug("batch loading collection: {0}", MessageHelper.CollectionInfoString(CollectionPersisters[0], ids));
 			}
 
 			IType[] idTypes = new IType[ids.Length];

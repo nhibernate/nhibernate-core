@@ -19,7 +19,7 @@ namespace NHibernate.Tuple.Entity
 	/// <summary> An <see cref="IEntityTuplizer"/> specific to the POCO entity mode. </summary>
 	public class PocoEntityTuplizer : AbstractEntityTuplizer
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(PocoEntityTuplizer));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(PocoEntityTuplizer));
 		private readonly System.Type mappedClass;
 		private readonly System.Type proxyInterface;
 		private readonly bool islifecycleImplementor;
@@ -110,12 +110,12 @@ namespace NHibernate.Tuple.Entity
 		{
 			if (optimizer == null)
 			{
-				log.Debug("Create Instantiator without optimizer for:" + persistentClass.MappedClass.FullName);
+				log.Debug("Create Instantiator without optimizer for:{0}", persistentClass.MappedClass.FullName);
 				return new PocoInstantiator(persistentClass, null, ProxyFactory, EntityMetamodel.HasLazyProperties || EntityMetamodel.HasUnwrapProxyForProperties);
 			}
 			else
 			{
-				log.Debug("Create Instantiator using optimizer for:" + persistentClass.MappedClass.FullName);
+				log.Debug("Create Instantiator using optimizer for:{0}", persistentClass.MappedClass.FullName);
 				return new PocoInstantiator(persistentClass, optimizer.InstantiationOptimizer, ProxyFactory, EntityMetamodel.HasLazyProperties || EntityMetamodel.HasUnwrapProxyForProperties);
 			}
 		}
@@ -190,7 +190,7 @@ namespace NHibernate.Tuple.Entity
 			}
 			catch (HibernateException he)
 			{
-				log.Warn("could not create proxy factory for:" + EntityName, he);
+				log.Warn(he, "could not create proxy factory for:{0}", EntityName);
 				pf = null;
 			}
 			return pf;
@@ -210,16 +210,14 @@ namespace NHibernate.Tuple.Entity
 				MethodInfo method = property.GetGetter(clazz).Method;
 				if (!proxyValidator.IsProxeable(method))
 				{
-					log.Error(
-						string.Format("Getters of lazy classes cannot be final: {0}.{1}", persistentClass.MappedClass.FullName,
-						              property.Name));
+					log.Error("Getters of lazy classes cannot be final: {0}.{1}", persistentClass.MappedClass.FullName,
+						              property.Name);
 				}
 				method = property.GetSetter(clazz).Method;
 				if (!proxyValidator.IsProxeable(method))
 				{
-					log.Error(
-						string.Format("Setters of lazy classes cannot be final: {0}.{1}", persistentClass.MappedClass.FullName,
-						              property.Name));
+					log.Error("Setters of lazy classes cannot be final: {0}.{1}", persistentClass.MappedClass.FullName,
+						              property.Name);
 				}
 			}
 		}

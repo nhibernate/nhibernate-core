@@ -74,7 +74,7 @@ namespace NHibernate.AdoNet
 			{
 				if (Log.IsDebugEnabled)
 				{
-					Log.Debug("reusing command " + _batchCommand.CommandText);
+					Log.Debug("reusing command {0}", _batchCommand.CommandText);
 				}
 			}
 			else
@@ -126,13 +126,13 @@ namespace NHibernate.AdoNet
 			catch (Exception e)
 			{
 				e.Data["actual-sql-query"] = cmd.CommandText;
-				Log.Error("Could not execute command: " + cmd.CommandText, e);
+				Log.Error(e, "Could not execute command: {0}", cmd.CommandText);
 				throw;
 			}
 			finally
 			{
 				if (Log.IsDebugEnabled && duration != null)
-					Log.DebugFormat("ExecuteNonQuery took {0} ms", duration.ElapsedMilliseconds);
+					Log.Debug("ExecuteNonQuery took {0} ms", duration.ElapsedMilliseconds);
 			}
 		}
 
@@ -153,14 +153,14 @@ namespace NHibernate.AdoNet
 			catch (Exception e)
 			{
 				e.Data["actual-sql-query"] = cmd.CommandText;
-				Log.Error("Could not execute query: " + cmd.CommandText, e);
+				Log.Error(e, "Could not execute query: {0}", cmd.CommandText);
 				throw;
 			}
 			finally
 			{
 				if (Log.IsDebugEnabled && duration != null && reader != null)
 				{
-					Log.DebugFormat("ExecuteReader took {0} ms", duration.ElapsedMilliseconds);
+					Log.Debug("ExecuteReader took {0} ms", duration.ElapsedMilliseconds);
 					_readersDuration[reader] = duration;
 				}
 			}
@@ -224,7 +224,7 @@ namespace NHibernate.AdoNet
 			var countBeforeExecutingBatch = CountOfStatementsInCurrentBatch;
 			await (DoExecuteBatchAsync(ps, cancellationToken)).ConfigureAwait(false);
 			if (Log.IsDebugEnabled && duration != null)
-				Log.DebugFormat("ExecuteBatch for {0} statements took {1} ms",
+				Log.Debug("ExecuteBatch for {0} statements took {1} ms",
 					countBeforeExecutingBatch,
 					duration.ElapsedMilliseconds);
 		}

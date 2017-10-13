@@ -17,7 +17,7 @@ namespace NHibernate.Loader.Criteria
 	public class CriteriaQueryTranslator : ICriteriaQuery
 	{
 		public static readonly string RootSqlAlias = CriteriaSpecification.RootAlias + '_';
-		private static readonly IInternalLogger logger = LoggerProvider.LoggerFor(typeof(CriteriaQueryTranslator));
+		private static readonly IInternalLogger2 logger = LoggerProvider.LoggerFor(typeof(CriteriaQueryTranslator));
 		
 		private const int AliasCount = 0;
 		
@@ -263,7 +263,7 @@ namespace NHibernate.Loader.Criteria
 		{
 			ICriteria result;
 			associationPathCriteriaMap.TryGetValue(path, out result);
-			logger.DebugFormat("getCriteria for path={0} crit={1}", path, result);
+			logger.Debug("getCriteria for path={0} crit={1}", path, result);
 			return result;
 		}
 
@@ -448,7 +448,7 @@ namespace NHibernate.Loader.Criteria
 			foreach (string token in tokens)
 			{
 				componentPath += token;
-				logger.DebugFormat("searching for {0}", componentPath);
+				logger.Debug("searching for {0}", componentPath);
 				IType type = provider.GetType(componentPath);
 				if (type.IsAssociationType)
 				{
@@ -486,7 +486,7 @@ namespace NHibernate.Loader.Criteria
 				}
 			}
 
-			logger.DebugFormat("returning entity name={0} for path={1} class={2}",
+			logger.Debug("returning entity name={0} for path={1} class={2}",
 				provider.Name, path, provider.GetType().Name);
 			return provider;
 		}
@@ -504,7 +504,7 @@ namespace NHibernate.Loader.Criteria
 					alias = me.Value.Name; // the entity name
 				}
 				criteriaSQLAliasMap[crit] = StringHelper.GenerateAlias(alias, i++);
-				logger.DebugFormat("put criteria={0} alias={1}",
+				logger.Debug("put criteria={0} alias={1}",
 					crit, criteriaSQLAliasMap[crit]);
 			}
 			criteriaSQLAliasMap[rootCriteria] = rootSQLAlias;
@@ -518,7 +518,7 @@ namespace NHibernate.Loader.Criteria
 		public string GetSQLAlias(ICriteria criteria)
 		{
 			String alias = criteriaSQLAliasMap[criteria];
-			logger.DebugFormat("returning alias={0} for criteria={1}", alias, criteria);
+			logger.Debug("returning alias={0} for criteria={1}", alias, criteria);
 			return alias;
 		}
 

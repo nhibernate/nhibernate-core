@@ -37,7 +37,7 @@ namespace NHibernate.Event.Default
 			cancellationToken.ThrowIfCancellationRequested();
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("Reassociating transient instance: " + MessageHelper.InfoString(persister, id, @event.Session.Factory));
+				log.Debug("Reassociating transient instance: {0}", MessageHelper.InfoString(persister, id, @event.Session.Factory));
 			}
 
 			IEventSource source = @event.Session;

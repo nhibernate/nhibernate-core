@@ -20,7 +20,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class DotNode : FromReferenceNode 
 	{
-		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(DotNode));
+		private static readonly IInternalLogger2 Log = LoggerProvider.LoggerFor(typeof(DotNode));
 
 		private const int DerefUnknown = 0;
 		private const int DerefEntity = 1;
@@ -270,7 +270,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				IType propertyType = fromElement.GetPropertyType(_propertyName, _propertyPath);
 				if (Log.IsDebugEnabled)
 				{
-					Log.Debug("getDataType() : " + _propertyPath + " -> " + propertyType);
+					Log.Debug("getDataType() : {0} -> {1}", _propertyPath, propertyType);
 				}
 
 				DataType = propertyType;
@@ -336,7 +336,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			if ( Log.IsDebugEnabled ) 
 			{
-				Log.Debug( "dereferenceCollection() : Created new FROM element for " + propName + " : " + elem );
+				Log.Debug("dereferenceCollection() : Created new FROM element for {0} : {1}", propName, elem);
 			}
 
 			SetImpliedJoin( elem );
@@ -428,9 +428,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			// this must only occur at the _end_ of a path expression
 			if (Log.IsDebugEnabled)
 			{
-				Log.Debug("dereferenceShortcut() : property " +
-					propertyName + " in " + FromElement.ClassName +
-					" does not require a join.");
+				Log.Debug("dereferenceShortcut() : property {0} in {1} does not require a join.",
+				          propertyName,
+				          FromElement.ClassName);
 			}
 
 			InitText();
@@ -449,11 +449,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			_dereferenceType = DerefEntity;
 			if ( Log.IsDebugEnabled ) 
 			{
-				Log.Debug( "dereferenceEntityJoin() : generating join for " + _propertyName + " in "
-						+ FromElement.ClassName + " "
-						+ ( ( classAlias == null ) ? "{no alias}" : "(" + classAlias + ")" )
-						+ " parent = " + ASTUtil.GetDebugstring( parent )
-				);
+				Log.Debug( "dereferenceEntityJoin() : generating join for {0} in {1} {2} parent = {3}",
+				           _propertyName,
+				           FromElement.ClassName,
+				           ( ( classAlias == null ) ? "{no alias}" : "(" + classAlias + ")" ),
+				           ASTUtil.GetDebugstring( parent ));
 			}
 
 			// Create a new FROM node for the referenced class.
@@ -601,7 +601,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				if (Log.IsDebugEnabled)
 				{
-					Log.Debug(methodName + "() : correlated subquery");
+					Log.Debug("{0}() : correlated subquery", methodName);
 				}
 			}
 		}
@@ -646,14 +646,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				dotNode._propertyPath = _propertyPath;
 				if (Log.IsDebugEnabled)
 				{
-					Log.Debug("Unresolved property path is now '" + dotNode._propertyPath + "'");
+					Log.Debug("Unresolved property path is now '{0}'", dotNode._propertyPath);
 				}
 			}
 			else
 			{
 				if (Log.IsDebugEnabled)
 				{
-					Log.Debug("terminal propertyPath = [" + _propertyPath + "]");
+					Log.Debug("terminal propertyPath = [{0}]", _propertyPath);
 				}
 			}
 		}

@@ -23,7 +23,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 	[CLSCompliant(false)]
 	public partial class QueryTranslatorImpl : IFilterTranslator
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(QueryTranslatorImpl));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(QueryTranslatorImpl));
 
 		private readonly string _queryIdentifier;
 		private readonly IASTNode _stageOneAst;
@@ -366,7 +366,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				// log it here for diagnostic purposes
 				if ( log.IsInfoEnabled ) 
 				{
-					log.Info( "converted antlr.RecognitionException", e );
+					log.Info(e, "converted antlr.RecognitionException");
 				}
 				throw QuerySyntaxException.Convert(e, _queryIdentifier);
 			}
@@ -436,7 +436,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 	public class HqlParseEngine
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(HqlParseEngine));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(HqlParseEngine));
 
 		private readonly string _hql;
 		private CommonTokenStream _tokens;
@@ -460,7 +460,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("parse() - HQL: " + _hql);
+				log.Debug("parse() - HQL: {0}", _hql);
 			}
 
 			try
@@ -580,7 +580,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 	internal class HqlSqlGenerator
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(HqlSqlGenerator));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(HqlSqlGenerator));
 
 		private readonly IASTNode _ast;
 		private readonly ISessionFactoryImplementor _sfi;
@@ -617,7 +617,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 					if (log.IsDebugEnabled)
 					{
-						log.Debug("SQL: " + _sql);
+						log.Debug("SQL: {0}", _sql);
 					}
 				}
 				finally

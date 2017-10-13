@@ -30,7 +30,7 @@ namespace NHibernate.Persister.Collection
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug(string.Format("initializing collection: {0} using named query: {1}", persister.Role, queryName));
+					log.Debug("initializing collection: {0} using named query: {1}", persister.Role, queryName);
 				}
 
 				//TODO: is there a more elegant way than downcasting?

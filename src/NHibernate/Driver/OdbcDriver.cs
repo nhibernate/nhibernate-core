@@ -17,7 +17,7 @@ namespace NHibernate.Driver
 	/// </remarks>
 	public class OdbcDriver : DriverBase
 	{
-		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(OdbcDriver));
+		private static readonly IInternalLogger2 Log = LoggerProvider.LoggerFor(typeof(OdbcDriver));
 
 		private byte? _dbDateTimeScale;
 
@@ -30,7 +30,7 @@ namespace NHibernate.Driver
 			_dbDateTimeScale = PropertiesHelper.GetByte(Environment.OdbcDateTimeScale, settings, null);
 			if (_dbDateTimeScale != null && Log.IsInfoEnabled)
 			{
-				Log.Info(string.Format("Will use scale {0} for DbType.DateTime parameters.", _dbDateTimeScale));
+				Log.Info("Will use scale {0} for DbType.DateTime parameters.", _dbDateTimeScale);
 			}
 		}
 

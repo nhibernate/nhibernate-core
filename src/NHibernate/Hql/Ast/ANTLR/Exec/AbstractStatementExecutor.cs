@@ -20,9 +20,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 	[CLSCompliant(false)]
 	public abstract partial class AbstractStatementExecutor : IStatementExecutor
 	{
-		private readonly IInternalLogger log;
+		private readonly IInternalLogger2 log;
 
-		protected AbstractStatementExecutor(IStatement statement, IInternalLogger log)
+		protected AbstractStatementExecutor(IStatement statement, IInternalLogger2 log)
 		{
 			Statement = statement;
 			Walker = statement.Walker;
@@ -202,7 +202,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				}
 				catch (Exception t)
 				{
-					log.Warn("unable to cleanup temporary id table after use [" + t + "]");
+					log.Warn(t, "unable to cleanup temporary id table after use [{0}]", t);
 				}
 				finally
 				{
@@ -224,10 +224,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 		private partial class TmpIdTableCreationIsolatedWork : IIsolatedWork
 		{
 			private readonly IQueryable persister;
-			private readonly IInternalLogger log;
+			private readonly IInternalLogger2 log;
 			private readonly ISessionImplementor session;
 
-			public TmpIdTableCreationIsolatedWork(IQueryable persister, IInternalLogger log, ISessionImplementor session)
+			public TmpIdTableCreationIsolatedWork(IQueryable persister, IInternalLogger2 log, ISessionImplementor session)
 			{
 				this.persister = persister;
 				this.log = log;
@@ -247,7 +247,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				}
 				catch (Exception t)
 				{
-					log.Debug("unable to create temporary id table [" + t.Message + "]");
+					log.Debug(t, "unable to create temporary id table [{0}]", t.Message);
 				}
 				finally
 				{
@@ -268,7 +268,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 
 		private partial class TmpIdTableDropIsolatedWork : IIsolatedWork
 		{
-			public TmpIdTableDropIsolatedWork(IQueryable persister, IInternalLogger log, ISessionImplementor session)
+			public TmpIdTableDropIsolatedWork(IQueryable persister, IInternalLogger2 log, ISessionImplementor session)
 			{
 				this.persister = persister;
 				this.log = log;
@@ -276,7 +276,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			}
 
 			private readonly IQueryable persister;
-			private readonly IInternalLogger log;
+			private readonly IInternalLogger2 log;
 			private readonly ISessionImplementor session;
 
 			public void DoWork(DbConnection connection, DbTransaction transaction)
@@ -292,7 +292,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				}
 				catch (Exception t)
 				{
-					log.Warn("unable to drop temporary id table after use [" + t.Message + "]");
+					log.Warn("unable to drop temporary id table after use [{0}]", t.Message);
 				}
 				finally
 				{

@@ -17,7 +17,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class FromClause : HqlSqlWalkerNode, IDisplayableNode
 	{
-		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(FromClause));
+		private static readonly IInternalLogger2 Log = LoggerProvider.LoggerFor(typeof(FromClause));
 		private const int RootLevel = 1;
 
 		private int _level = RootLevel;
@@ -132,7 +132,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			if (Log.IsDebugEnabled)
 			{
-				Log.Debug("addJoinByPathMap() : " + path + " -> " + destination);
+				Log.Debug("addJoinByPathMap() : {0} -> {1}", path, destination);
 			}
 
 			_fromElementsByPath.Add(path, destination);
@@ -142,7 +142,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			if (Log.IsDebugEnabled)
 			{
-				Log.Debug("addCollectionJoinFromElementByPath() : " + path + " -> " + destination);
+				Log.Debug("addCollectionJoinFromElementByPath() : {0} -> {1}", path, destination);
 			}
 			_collectionJoinFromElementsByPath.Add(path, destination);	// Add the new node to the map so that we don't create it twice.
 		}

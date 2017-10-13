@@ -7,7 +7,7 @@ namespace NHibernate.Id.Enhanced
 {
 	public partial class OptimizerFactory
 	{
-		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(OptimizerFactory));
+		private static readonly IInternalLogger2 Log = LoggerProvider.LoggerFor(typeof(OptimizerFactory));
 
 		public const string None = "none";
 		public const string HiLo = "hilo";
@@ -74,9 +74,9 @@ namespace NHibernate.Id.Enhanced
 
 				return (IOptimizer)ctor.Invoke(new object[] { returnClass, incrementSize });
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				Log.Error("Unable to instantiate id generator optimizer.");  // FIXME: Review log message.
+				Log.Error(ex, "Unable to instantiate id generator optimizer.");  // FIXME: Review log message.
 			}
 
 			// the default...
@@ -110,7 +110,7 @@ namespace NHibernate.Id.Enhanced
 				}
 				if (Log.IsDebugEnabled)
 				{
-					Log.Debug("Creating hilo optimizer with [incrementSize=" + incrementSize + "; returnClass=" + returnClass.FullName + "]");
+					Log.Debug("Creating hilo optimizer with [incrementSize={0}; returnClass={1}]", incrementSize, returnClass.FullName);
 				}
 			}
 
@@ -276,7 +276,7 @@ namespace NHibernate.Id.Enhanced
 				}
 				if (Log.IsDebugEnabled)
 				{
-					Log.Debug("Creating pooled optimizer with [incrementSize=" + incrementSize + "; returnClass=" + returnClass.FullName + "]");
+					Log.Debug("Creating pooled optimizer with [incrementSize={0}; returnClass={1}]", incrementSize, returnClass.FullName);
 				}
 			}
 
@@ -315,7 +315,7 @@ namespace NHibernate.Id.Enhanced
 						// to 1 as an initial value like we do the others
 						// because we would not be able to control this if
 						// we are using a sequence...
-						Log.Info("pooled optimizer source reported [" + _value + "] as the initial value; use of 1 or greater highly recommended");
+						Log.Info("pooled optimizer source reported [{0}] as the initial value; use of 1 or greater highly recommended", _value);
 					}
 
 					if ((_initialValue == -1 && _value < IncrementSize) || _value == _initialValue)
@@ -352,7 +352,7 @@ namespace NHibernate.Id.Enhanced
 				}
 				if (Log.IsDebugEnabled)
 				{
-					Log.DebugFormat("Creating pooled optimizer (lo) with [incrementSize={0}; returnClass={1}]", incrementSize, returnClass.FullName);
+					Log.Debug("Creating pooled optimizer (lo) with [incrementSize={0}; returnClass={1}]", incrementSize, returnClass.FullName);
 				}
 			}
 

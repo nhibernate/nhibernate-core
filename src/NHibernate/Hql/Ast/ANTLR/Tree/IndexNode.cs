@@ -19,7 +19,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class IndexNode : FromReferenceNode
 	{
-		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(IndexNode));
+		private static readonly IInternalLogger2 Log = LoggerProvider.LoggerFor(typeof(IndexNode));
 
 		public IndexNode(IToken token) : base(token)
 		{
@@ -72,15 +72,16 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				elem = factory.CreateCollectionElementsJoin( queryableCollection, elementTable );
 				if ( Log.IsDebugEnabled )
 				{
-					Log.Debug( "No FROM element found for the elements of collection join path " + path
-							+ ", created " + elem );
+					Log.Debug( "No FROM element found for the elements of collection join path {0}, created {1}",
+					           path,
+					           elem);
 				}
 			}
 			else 
 			{
 				if ( Log.IsDebugEnabled ) 
 				{
-					Log.Debug( "FROM element found for collection join path " + path );
+					Log.Debug("FROM element found for collection join path {0}", path);
 				}
 			}
 
@@ -172,7 +173,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			    if (Log.IsDebugEnabled) 
                 {
-				    Log.Debug( "Creating join for many-to-many elements for " + path );
+				    Log.Debug("Creating join for many-to-many elements for {0}", path);
 			    }
 
 			    FromElementFactory factory = new FromElementFactory( fromElement.FromClause, fromElement, path );

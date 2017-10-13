@@ -42,7 +42,7 @@ namespace NHibernate.Id
 
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("Natively generated identity: " + id);
+				log.Debug("Natively generated identity: {0}", id);
 			}
 			return id;
 		}

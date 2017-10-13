@@ -6,7 +6,7 @@ namespace NHibernate.Dialect.Schema
 {
 	public abstract class AbstractTableMetadata : ITableMetadata
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ITableMetadata));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(ITableMetadata));
 		private string catalog;
 		private string schema;
 		private string name;
@@ -25,12 +25,12 @@ namespace NHibernate.Dialect.Schema
 			}
 			string cat = catalog == null ? "" : catalog + '.';
 			string schem = schema == null ? "" : schema + '.';
-			log.Info("table found: " + cat + schem + name);
-			log.Info("columns: " + StringHelper.CollectionToString(columns.Keys));
+			log.Info("table found: {0}{1}{2}", cat, schem, name);
+			log.Info("columns: {0}", StringHelper.CollectionToString(columns.Keys));
 			if (extras)
 			{
-				log.Info("foreign keys: " + StringHelper.CollectionToString(foreignKeys.Keys));
-				log.Info("indexes: " + StringHelper.CollectionToString(indexes.Keys));
+				log.Info("foreign keys: {0}", StringHelper.CollectionToString(foreignKeys.Keys));
+				log.Info("indexes: {0}", StringHelper.CollectionToString(indexes.Keys));
 			}
 		}
 

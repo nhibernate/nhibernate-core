@@ -48,7 +48,7 @@ namespace NHibernate.Id.Enhanced
 							long result = Convert.ToInt64(rs.GetValue(0));
 							if (Log.IsDebugEnabled)
 							{
-								Log.Debug("Sequence value obtained: " + result);
+								Log.Debug("Sequence value obtained: {0}", result);
 							}
 							return result;
 						}

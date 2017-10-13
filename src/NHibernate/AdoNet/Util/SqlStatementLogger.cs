@@ -8,7 +8,7 @@ namespace NHibernate.AdoNet.Util
 	/// <summary> Centralize logging handling for SQL statements. </summary>
 	public class SqlStatementLogger
 	{
-		private static readonly IInternalLogger Logger = LoggerProvider.LoggerFor("NHibernate.SQL");
+		private static readonly IInternalLogger2 Logger = LoggerProvider.LoggerFor("NHibernate.SQL");
 
 		/// <summary> Constructs a new SqlStatementLogger instance.</summary>
 		public SqlStatementLogger() : this(false, false)

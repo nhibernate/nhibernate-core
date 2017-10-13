@@ -15,24 +15,57 @@ namespace NHibernate
 		bool IsDebugEnabled { get; }
 		bool IsInfoEnabled { get; }
 		bool IsWarnEnabled { get; }
+
 		void Error(object message);
+
+		[Obsolete("Use Error(Exception, string, params object[])")]
 		void Error(object message, Exception exception);
+
+		[Obsolete("Use Error(string, params object[])")]
 		void ErrorFormat(string format, params object[] args);
 
 		void Fatal(object message);
+
+		[Obsolete("Use Fatal(Exception, string, params object[])")]
 		void Fatal(object message, Exception exception);
 
 		void Debug(object message);
+
+		[Obsolete("Use Debug(Exception, string, params object[])")]
 		void Debug(object message, Exception exception);
+
+		[Obsolete("Use Debug(string, params object[])")]
 		void DebugFormat(string format, params object[] args);
 
 		void Info(object message);
+
+		[Obsolete("Use Info(Exception, string, params object[])")]
 		void Info(object message, Exception exception);
+
+		[Obsolete("Use Info(string, params object[])")]
 		void InfoFormat(string format, params object[] args);
 
 		void Warn(object message);
+
+		[Obsolete("Use Warn(Exception, string, params object[])")]
 		void Warn(object message, Exception exception);
+
+		[Obsolete("Use Warn(string, params object[])")]
 		void WarnFormat(string format, params object[] args);
+	}
+
+	public interface IInternalLogger2 : IInternalLogger
+	{
+		void Fatal(Exception exception, string format, params object[] args);
+		void Fatal(string format, params object[] args);
+		void Error(Exception exception, string format, params object[] args);
+		void Error(string format, params object[] args);
+		void Warn(Exception exception, string format, params object[] args);
+		void Warn(string format, params object[] args);
+		void Info(Exception exception, string format, params object[] args);
+		void Info(string format, params object[] args);
+		void Debug(Exception exception, string format, params object[] args);
+		void Debug(string format, params object[] args);
 	}
 
 	public interface ILoggerFactory
@@ -111,20 +144,200 @@ namespace NHibernate
 			this.loggerFactory = loggerFactory;
 		}
 
-		public static IInternalLogger LoggerFor(string keyName)
+		public static IInternalLogger2 LoggerFor(string keyName)
 		{
-			return instance.loggerFactory.LoggerFor(keyName);
+			var internalLogger = instance.loggerFactory.LoggerFor(keyName);
+			if (internalLogger is IInternalLogger2 internalLogger2) return internalLogger2;
+			else return new InternalLogger2Thunk(internalLogger);
 		}
 
-		public static IInternalLogger LoggerFor(System.Type type)
+		public static IInternalLogger2 LoggerFor(System.Type type)
 		{
-			return instance.loggerFactory.LoggerFor(type);
+			var internalLogger = instance.loggerFactory.LoggerFor(type);
+			if (internalLogger is IInternalLogger2 internalLogger2) return internalLogger2;
+			else return new InternalLogger2Thunk(internalLogger);
 		}
+	}
+
+	public class InternalLogger2Thunk : IInternalLogger2
+	{
+#pragma warning disable 618
+		private readonly IInternalLogger _internalLogger;
+
+		public InternalLogger2Thunk(IInternalLogger internalLogger)
+		{
+			_internalLogger = internalLogger ?? throw new ArgumentNullException(nameof(internalLogger));
+		}
+
+		#region Passthrough to IInternalLogger
+
+		public bool IsErrorEnabled => _internalLogger.IsErrorEnabled;
+
+		public bool IsFatalEnabled => _internalLogger.IsFatalEnabled;
+
+		public bool IsDebugEnabled => _internalLogger.IsDebugEnabled;
+
+		public bool IsInfoEnabled => _internalLogger.IsInfoEnabled;
+
+		public bool IsWarnEnabled => _internalLogger.IsWarnEnabled;
+
+		public void Error(object message)
+		{
+			_internalLogger.Error(message);
+		}
+
+		public void Error(object message, Exception exception)
+		{
+			_internalLogger.Error(message, exception);
+		}
+
+		public void ErrorFormat(string format, params object[] args)
+		{
+			_internalLogger.ErrorFormat(format, args);
+		}
+
+		public void Fatal(object message)
+		{
+			_internalLogger.Fatal(message);
+		}
+
+		public void Fatal(object message, Exception exception)
+		{
+			_internalLogger.Fatal(message, exception);
+		}
+
+		public void Debug(object message)
+		{
+			_internalLogger.Debug(message);
+		}
+
+		public void Debug(object message, Exception exception)
+		{
+			_internalLogger.Debug(message, exception);
+		}
+
+		public void DebugFormat(string format, params object[] args)
+		{
+			_internalLogger.DebugFormat(format, args);
+		}
+
+		public void Info(object message)
+		{
+			_internalLogger.Info(message);
+		}
+
+		public void Info(object message, Exception exception)
+		{
+			_internalLogger.Info(message, exception);
+		}
+
+		public void InfoFormat(string format, params object[] args)
+		{
+			_internalLogger.InfoFormat(format, args);
+		}
+
+		public void Warn(object message)
+		{
+			_internalLogger.Warn(message);
+		}
+
+		public void Warn(object message, Exception exception)
+		{
+			_internalLogger.Warn(message, exception);
+		}
+
+		public void WarnFormat(string format, params object[] args)
+		{
+			_internalLogger.WarnFormat(format, args);
+		}
+
+		#endregion
+
+		public void Fatal(Exception exception, string format, params object[] args)
+		{
+			if (IsFatalEnabled && args?.Length > 0)
+				_internalLogger.Fatal(string.Format(format, args), exception);
+			else
+				_internalLogger.Fatal(format, exception);
+		}
+
+		public void Fatal(string format, params object[] args)
+		{
+			if (IsFatalEnabled && args?.Length > 0)
+				_internalLogger.Fatal(string.Format(format, args));
+			else
+				_internalLogger.Fatal(format);
+		}
+
+		public void Error(Exception exception, string format, params object[] args)
+		{
+			if (IsErrorEnabled && args?.Length > 0)
+				_internalLogger.Error(string.Format(format, args), exception);
+			else
+				_internalLogger.Error(format);
+		}
+
+		public void Error(string format, params object[] args)
+		{
+			if (args?.Length > 0)
+				_internalLogger.ErrorFormat(format, args);
+			else
+				_internalLogger.Error(format);
+		}
+
+		public void Warn(Exception exception, string format, params object[] args)
+		{
+			if (IsWarnEnabled && args?.Length > 0)
+				_internalLogger.Warn(string.Format(format, args), exception);
+			else
+				_internalLogger.Warn(format);
+		}
+
+		public void Warn(string format, params object[] args)
+		{
+			if (args?.Length > 0)
+				_internalLogger.WarnFormat(format, args);
+			else
+				_internalLogger.Warn(format);
+		}
+
+		public void Info(Exception exception, string format, params object[] args)
+		{
+			if (IsInfoEnabled && args?.Length > 0)
+				_internalLogger.Info(string.Format(format, args), exception);
+			else
+				_internalLogger.Info(format, exception);
+		}
+
+		public void Info(string format, params object[] args)
+		{
+			if (args?.Length > 0)
+				_internalLogger.InfoFormat(format, args);
+			else
+				_internalLogger.Info(format);
+		}
+
+		public void Debug(Exception exception, string format, params object[] args)
+		{
+			if (IsDebugEnabled && args?.Length > 0)
+				_internalLogger.Debug(string.Format(format, args), exception);
+			else
+				_internalLogger.Debug(format, exception);
+		}
+
+		public void Debug(string format, params object[] args)
+		{
+			if (args?.Length > 0)
+				_internalLogger.DebugFormat(format, args);
+			else
+				_internalLogger.Debug(format);
+		}
+#pragma warning restore 618
 	}
 
 	public class NoLoggingLoggerFactory: ILoggerFactory
 	{
-		private static readonly IInternalLogger Nologging = new NoLoggingInternalLogger();
+		private static readonly IInternalLogger2 Nologging = new NoLoggingInternalLogger();
 		public IInternalLogger LoggerFor(string keyName)
 		{
 			return Nologging;
@@ -136,7 +349,7 @@ namespace NHibernate
 		}
 	}
 
-	public class NoLoggingInternalLogger: IInternalLogger
+	public class NoLoggingInternalLogger: IInternalLogger2
 	{
 		public bool IsErrorEnabled
 		{
@@ -216,6 +429,46 @@ namespace NHibernate
 		}
 
 		public void WarnFormat(string format, params object[] args)
+		{
+		}
+
+		public void Fatal(Exception exception, string format, params object[] args)
+		{
+		}
+
+		public void Fatal(string format, params object[] args)
+		{
+		}
+
+		public void Error(Exception exception, string format, params object[] args)
+		{
+		}
+
+		public void Error(string format, params object[] args)
+		{
+		}
+
+		public void Warn(Exception exception, string format, params object[] args)
+		{
+		}
+
+		public void Warn(string format, params object[] args)
+		{
+		}
+
+		public void Info(Exception exception, string format, params object[] args)
+		{
+		}
+
+		public void Info(string format, params object[] args)
+		{
+		}
+
+		public void Debug(Exception exception, string format, params object[] args)
+		{
+		}
+
+		public void Debug(string format, params object[] args)
 		{
 		}
 	}

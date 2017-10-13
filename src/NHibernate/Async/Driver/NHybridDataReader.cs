@@ -70,7 +70,7 @@ namespace NHibernate.Driver
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("Moving DbDataReader into an NDataReader.  It was converted in midstream " + _isMidstream.ToString());
+					log.Debug("Moving DbDataReader into an NDataReader.  It was converted in midstream {0}", _isMidstream);
 				}
 				_reader = await (NDataReader.CreateAsync(_reader, _isMidstream, cancellationToken)).ConfigureAwait(false);
 			}

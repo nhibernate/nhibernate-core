@@ -13,7 +13,7 @@ namespace NHibernate.Event.Default
 	/// </summary>
 	public partial class EvictVisitor : AbstractVisitor
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(EvictVisitor));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(EvictVisitor));
 
 		public EvictVisitor(IEventSource session) : base(session) { }
 
@@ -52,7 +52,7 @@ namespace NHibernate.Event.Default
 			CollectionEntry ce = (CollectionEntry)Session.PersistenceContext.CollectionEntries[collection];
 			Session.PersistenceContext.CollectionEntries.Remove(collection);
 			if (log.IsDebugEnabled)
-				log.Debug("evicting collection: " + MessageHelper.CollectionInfoString(ce.LoadedPersister, collection, ce.LoadedKey, Session));
+				log.Debug("evicting collection: {0}", MessageHelper.CollectionInfoString(ce.LoadedPersister, collection, ce.LoadedKey, Session));
 			if (ce.LoadedPersister != null && ce.LoadedKey != null)
 			{
 				//TODO: is this 100% correct?

@@ -11,7 +11,7 @@ namespace NHibernate.Engine
 	/// </summary>
 	public class VersionValue
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(VersionValue));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(VersionValue));
 
 		private readonly object value;
 
@@ -38,7 +38,7 @@ namespace NHibernate.Engine
 		{
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("unsaved-value: " + value);
+				log.Debug("unsaved-value: {0}", value);
 			}
 			return version == null || version.Equals(value);
 		}
@@ -58,7 +58,7 @@ namespace NHibernate.Engine
 		{
 			public override bool? IsUnsaved(object version)
 			{
-				log.Debug("version unsaved-value strategy NULL");
+				log.Debug("version unsaved-value strategy {0}", "NULL");
 				return version == null;
 			}
 
@@ -78,7 +78,7 @@ namespace NHibernate.Engine
 		{
 			public override bool? IsUnsaved(object version)
 			{
-				log.Debug("version unsaved-value strategy UNDEFINED");
+				log.Debug("version unsaved-value strategy {0}", "UNDEFINED");
 				if (version == null)
 					return true;
 				else
@@ -101,7 +101,7 @@ namespace NHibernate.Engine
 		{
 			public override bool? IsUnsaved(object version)
 			{
-				log.Debug("version unsaved-value strategy NEGATIVE");
+				log.Debug("version unsaved-value strategy {0}", "NEGATIVE");
 				if (version is short || version is int || version is long)
 				{
 					return Convert.ToInt64(version) < 0L;

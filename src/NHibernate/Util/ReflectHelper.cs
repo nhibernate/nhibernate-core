@@ -17,7 +17,7 @@ namespace NHibernate.Util
 	/// </summary>
 	public static class ReflectHelper
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ReflectHelper));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(ReflectHelper));
 
 		public const BindingFlags AnyVisibilityInstance = BindingFlags.Instance | BindingFlags.Public |
 														   BindingFlags.NonPublic;
@@ -407,9 +407,8 @@ namespace NHibernate.Util
 				if (name.Assembly == null)
 				{
 					// No assembly was specified for the type, so just fail
-					string message = "Could not load type " + name + ". Possible cause: no assembly name specified.";
-					log.Warn(message);
-					if (throwOnError) throw new TypeLoadException(message);
+					log.Warn("Could not load type {0}. Possible cause: no assembly name specified.", name);
+					if (throwOnError) throw new TypeLoadException("Could not load type " + name + ". Possible cause: no assembly name specified.");
 					return null;
 				}
 
@@ -417,7 +416,7 @@ namespace NHibernate.Util
 
 				if (assembly == null)
 				{
-					log.Warn("Could not load type " + name + ". Possible cause: incorrect assembly name specified.");
+					log.Warn("Could not load type {0}. Possible cause: incorrect assembly name specified.", name);
 					return null;
 				}
 
@@ -425,7 +424,7 @@ namespace NHibernate.Util
 
 				if (type == null)
 				{
-					log.Warn("Could not load type " + name + ".");
+					log.Warn("Could not load type {0}.", name);
 					return null;
 				}
 
@@ -435,7 +434,7 @@ namespace NHibernate.Util
 			{
 				if (log.IsErrorEnabled)
 				{
-					log.Error("Could not load type " + name + ".", e);
+					log.Error(e, "Could not load type {0}.", name);
 				}
 				if (throwOnError) throw;
 				return null;

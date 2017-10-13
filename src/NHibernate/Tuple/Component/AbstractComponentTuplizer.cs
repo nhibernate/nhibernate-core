@@ -9,7 +9,7 @@ namespace NHibernate.Tuple.Component
 	[Serializable]
 	public abstract class AbstractComponentTuplizer : IComponentTuplizer
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(AbstractComponentTuplizer));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(AbstractComponentTuplizer));
 
 		protected internal int propertySpan;
 		protected internal IGetter[] getters;
@@ -37,7 +37,7 @@ namespace NHibernate.Tuple.Component
 			}
 			if (log.IsDebugEnabled)
 			{
-				log.DebugFormat("{0} accessors found for component: {1}", foundCustomAccessor ? "Custom" : "No custom",
+				log.Debug("{0} accessors found for component: {1}", foundCustomAccessor ? "Custom" : "No custom",
 								component.ComponentClassName);
 			}
 			hasCustomAccessors = foundCustomAccessor;

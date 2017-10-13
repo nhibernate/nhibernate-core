@@ -16,7 +16,7 @@ namespace NHibernate.Driver
 	/// </summary>
 	public abstract class DriverBase : IDriver, ISqlParameterFormatter
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DriverBase));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(DriverBase));
 
 		private int commandTimeout;
 		private bool prepareSql;
@@ -150,7 +150,7 @@ namespace NHibernate.Driver
 				{
 					if (log.IsWarnEnabled)
 					{
-						log.Warn(e.ToString());
+						log.Warn(e, e.ToString());
 					}
 				}
 			}

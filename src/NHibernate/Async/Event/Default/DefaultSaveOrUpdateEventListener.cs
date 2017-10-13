@@ -184,7 +184,7 @@ namespace NHibernate.Event.Default
 
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("updating " + MessageHelper.InfoString(persister, @event.RequestedId, @event.Session.Factory));
+				log.Debug("updating {0}", MessageHelper.InfoString(persister, @event.RequestedId, @event.Session.Factory));
 			}
 
 			IEventSource source = @event.Session;
@@ -230,7 +230,7 @@ namespace NHibernate.Event.Default
 
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("updating " + MessageHelper.InfoString(persister, @event.RequestedId, source.Factory));
+				log.Debug("updating {0}", MessageHelper.InfoString(persister, @event.RequestedId, source.Factory));
 			}
 
 			await (CascadeOnUpdateAsync(@event, persister, entity, cancellationToken)).ConfigureAwait(false);

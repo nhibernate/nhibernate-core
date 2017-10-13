@@ -38,7 +38,7 @@ namespace NHibernate.Impl
 	[Serializable]
 	public sealed partial class SessionImpl : AbstractSessionImpl, IEventSource, ISerializable, IDeserializationCallback
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SessionImpl));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(SessionImpl));
 
 		private CacheMode cacheMode = CacheMode.Normal;
 
@@ -214,7 +214,7 @@ namespace NHibernate.Impl
 					factory.StatisticsImplementor.OpenSession();
 				}
 
-				log.DebugFormat("[session-id={0}] opened session at timestamp: {1}, for session factory: [{2}/{3}]",
+				log.Debug("[session-id={0}] opened session at timestamp: {1}, for session factory: [{2}/{3}]",
 					SessionId, Timestamp, factory.Name, factory.Uuid);
 
 				CheckAndUpdateSessionStatus();
@@ -336,7 +336,7 @@ namespace NHibernate.Impl
 				}
 				catch (Exception t)
 				{
-					log.Error("exception in interceptor afterTransactionCompletion()", t);
+					log.Error(t, "exception in interceptor afterTransactionCompletion()");
 				}
 
 				if (IsClosed)
@@ -674,10 +674,10 @@ namespace NHibernate.Impl
 
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("delete: " + query);
+					log.Debug("delete: {0}", query);
 					if (values.Length != 0)
 					{
-						log.Debug("parameters: " + StringHelper.ToString(values));
+						log.Debug("parameters: {0}", StringHelper.ToString(values));
 					}
 				}
 
@@ -857,8 +857,8 @@ namespace NHibernate.Impl
 				CheckAndUpdateSessionStatus();
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("flushing to force deletion of re-saved object: " +
-							  MessageHelper.InfoString(entityEntry.Persister, entityEntry.Id, Factory));
+					log.Debug("flushing to force deletion of re-saved object: {0}",
+					          MessageHelper.InfoString(entityEntry.Persister, entityEntry.Id, Factory));
 				}
 
 				if (persistenceContext.CascadeLevel > 0)
@@ -1328,7 +1328,7 @@ namespace NHibernate.Impl
 				if (log.IsDebugEnabled)
 				{
 					IEntityPersister persister = Factory.GetEntityPersister(entityName);
-					log.Debug("initializing proxy: " + MessageHelper.InfoString(persister, id, Factory));
+					log.Debug("initializing proxy: {0}", MessageHelper.InfoString(persister, id, Factory));
 				}
 
 				LoadEvent loadEvent = new LoadEvent(id, entityName, true, this);
@@ -1642,7 +1642,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				log.DebugFormat("[session-id={0}] running ISession.Dispose()", SessionId);
+				log.Debug("[session-id={0}] running ISession.Dispose()", SessionId);
 				// Ensure we are not disposing concurrently to transaction completion, which would
 				// remove the context. (Do not store it into a local variable before the Wait.)
 				TransactionContext?.Wait();
@@ -1679,7 +1679,7 @@ namespace NHibernate.Impl
 					return;
 				}
 
-				log.Debug(string.Format("[session-id={0}] executing real Dispose({1})", SessionId, isDisposing));
+				log.Debug("[session-id={0}] executing real Dispose({1})", SessionId, isDisposing);
 
 				// free managed resources that are being managed by the session if we
 				// know this call came through Dispose()
@@ -2210,7 +2210,7 @@ namespace NHibernate.Impl
 				}
 				catch (Exception e)
 				{
-					log.Error("exception in interceptor BeforeTransactionCompletion()", e);
+					log.Error(e, "exception in interceptor BeforeTransactionCompletion()");
 
 					throw;
 				}
@@ -2263,7 +2263,7 @@ namespace NHibernate.Impl
 				CheckAndUpdateSessionStatus();
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("setting cache mode to: " + value);
+					log.Debug("setting cache mode to: {0}", value);
 				}
 				cacheMode = value;
 			}

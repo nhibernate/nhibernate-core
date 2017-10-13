@@ -72,7 +72,7 @@ namespace NHibernate.Event.Default
 				id = persister.GetIdentifier(obj);
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("refreshing transient " + MessageHelper.InfoString(persister, id, source.Factory));
+					log.Debug("refreshing transient {0}", MessageHelper.InfoString(persister, id, source.Factory));
 				}
 				EntityKey key = source.GenerateEntityKey(id, persister);
 				if (source.PersistenceContext.GetEntry(key) != null)
@@ -85,7 +85,7 @@ namespace NHibernate.Event.Default
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("refreshing " + MessageHelper.InfoString(e.Persister, e.Id, source.Factory));
+					log.Debug("refreshing {0}", MessageHelper.InfoString(e.Persister, e.Id, source.Factory));
 				}
 				if (!e.ExistsInDatabase)
 				{

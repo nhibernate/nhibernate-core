@@ -216,7 +216,7 @@ namespace NHibernate.Type
 
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("Created collection wrapper: " + MessageHelper.CollectionInfoString(persister, collection, key, session));
+					log.Debug("Created collection wrapper: {0}", MessageHelper.CollectionInfoString(persister, collection, key, session));
 				}
 			}
 			collection.Owner = owner;

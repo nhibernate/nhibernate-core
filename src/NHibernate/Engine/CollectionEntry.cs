@@ -14,7 +14,7 @@ namespace NHibernate.Engine
 	[Serializable]
 	public partial class CollectionEntry
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (CollectionEntry));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof (CollectionEntry));
 
 		/// <summary>session-start/post-flush persistent state</summary>
 		private object snapshot;
@@ -281,7 +281,7 @@ namespace NHibernate.Engine
 
 			if (log.IsDebugEnabled && collection.IsDirty && loadedPersister != null)
 			{
-				log.Debug("Collection dirty: " + MessageHelper.CollectionInfoString(loadedPersister, loadedKey));
+				log.Debug("Collection dirty: {0}", MessageHelper.CollectionInfoString(loadedPersister, loadedKey));
 			}
 
 			// reset all of these values so any previous flush status 

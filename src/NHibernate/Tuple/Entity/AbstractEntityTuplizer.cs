@@ -14,7 +14,7 @@ namespace NHibernate.Tuple.Entity
 	/// <summary> Support for tuplizers relating to entities. </summary>
 	public abstract class AbstractEntityTuplizer : IEntityTuplizer
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(AbstractEntityTuplizer));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(AbstractEntityTuplizer));
 		private readonly EntityMetamodel entityMetamodel;
 		private readonly IGetter idGetter;
 		private readonly ISetter idSetter;
@@ -61,7 +61,7 @@ namespace NHibernate.Tuple.Entity
 			}
 			if (log.IsDebugEnabled)
 			{
-				log.DebugFormat("{0} accessors found for entity: {1}", foundCustomAccessor ? "Custom" : "No custom",
+				log.Debug("{0} accessors found for entity: {1}", foundCustomAccessor ? "Custom" : "No custom",
 				                mappingInfo.EntityName);
 			}
 			hasCustomAccessors = foundCustomAccessor;

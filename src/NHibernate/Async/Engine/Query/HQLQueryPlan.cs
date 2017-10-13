@@ -37,7 +37,7 @@ namespace NHibernate.Engine.Query
 			cancellationToken.ThrowIfCancellationRequested();
 			if (Log.IsDebugEnabled)
 			{
-				Log.Debug("find: " + _sourceQuery);
+				Log.Debug("find: {0}", _sourceQuery);
 				queryParameters.LogParameters(session.Factory);
 			}
 
@@ -105,7 +105,7 @@ namespace NHibernate.Engine.Query
 			cancellationToken.ThrowIfCancellationRequested();
 			if (Log.IsDebugEnabled)
 			{
-				Log.Debug("enumerable: " + _sourceQuery);
+				Log.Debug("enumerable: {0}", _sourceQuery);
 				queryParameters.LogParameters(session.Factory);
 			}
 			if (Translators.Length == 0)
@@ -136,12 +136,12 @@ namespace NHibernate.Engine.Query
                cancellationToken.ThrowIfCancellationRequested();
             if (Log.IsDebugEnabled)
             {
-                Log.Debug("executeUpdate: " + _sourceQuery);
+                Log.Debug("executeUpdate: {0}", _sourceQuery);
                 queryParameters.LogParameters(session.Factory);
             }
             if (Translators.Length != 1)
             {
-                Log.Warn("manipulation query [" + _sourceQuery + "] resulted in [" + Translators.Length + "] split queries");
+                Log.Warn("manipulation query [{0}] resulted in [{1}] split queries", _sourceQuery, Translators.Length);
             }
             int result = 0;
             for (int i = 0; i < Translators.Length; i++)

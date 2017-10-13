@@ -30,8 +30,8 @@ namespace NHibernate.Engine
 	public partial class StatefulPersistenceContext : IPersistenceContext, ISerializable, IDeserializationCallback
 	{
 		private const int InitCollectionSize = 8;
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(StatefulPersistenceContext));
-		private static readonly IInternalLogger ProxyWarnLog = LoggerProvider.LoggerFor(typeof(StatefulPersistenceContext).FullName + ".ProxyWarnLog");
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(StatefulPersistenceContext));
+		private static readonly IInternalLogger2 ProxyWarnLog = LoggerProvider.LoggerFor(typeof(StatefulPersistenceContext).FullName + ".ProxyWarnLog");
 
 		public static readonly object NoRow = new object();
 
@@ -594,7 +594,7 @@ namespace NHibernate.Engine
 				
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("setting proxy identifier: " + id);
+					log.Debug("setting proxy identifier: {0}", id);
 				}
 				ILazyInitializer li = proxy.HibernateLazyInitializer;
 				li.Identifier = id;
@@ -714,7 +714,7 @@ namespace NHibernate.Engine
 			{
 				if (ProxyWarnLog.IsWarnEnabled)
 				{
-					ProxyWarnLog.Warn("Narrowing proxy to " + persister.ConcreteProxyClass + " - this operation breaks ==");
+					ProxyWarnLog.Warn("Narrowing proxy to {0} - this operation breaks ==", persister.ConcreteProxyClass);
 				}
 
 				if (obj != null)

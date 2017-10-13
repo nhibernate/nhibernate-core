@@ -14,7 +14,7 @@ namespace NHibernate.Loader.Entity
 
 			PostInstantiate();
 
-			log.Debug(string.Format("Static select for action {0} on entity {1}: {2}", action, entityName, SqlString));
+			log.Debug("Static select for action {0} on entity {1}: {2}", action, entityName, SqlString);
 		}
 	}
 }

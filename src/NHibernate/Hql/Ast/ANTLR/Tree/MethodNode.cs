@@ -16,7 +16,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class MethodNode : AbstractSelectExpression 
 	{
-		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(MethodNode));
+		private static readonly IInternalLogger2 Log = LoggerProvider.LoggerFor(typeof(MethodNode));
 
 		private string[] _selectColumns;
 		private string _methodName;
@@ -148,7 +148,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			if ( Log.IsDebugEnabled ) 
 			{
-				Log.Debug( "collectionProperty() :  name=" + name + " type=" + type );
+				Log.Debug("collectionProperty() :  name={0} type={1}", name, type);
 			}
 
 			ResolveCollectionProperty( expr );
@@ -176,7 +176,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			IQueryableCollection queryableCollection = collectionFromElement.QueryableCollection;
 
 			String path = collectionNode.Path + "[]." + propertyName;
-			Log.Debug("Creating elements for " + path);
+			Log.Debug("Creating elements for {0}", path);
 
 			_fromElement = collectionFromElement;
 			if (!collectionFromElement.IsCollectionOfValuesOrComponents)

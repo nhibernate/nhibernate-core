@@ -47,7 +47,7 @@ namespace NHibernate.AdoNet
 				}
 				if (Log.IsDebugEnabled)
 				{
-					Log.Debug("Adding to batch:" + lineWithParameters);
+					Log.Debug("Adding to batch:{0}", lineWithParameters);
 				}
 				_currentBatch.Append((System.Data.SqlClient.SqlCommand)batchUpdate);
 
@@ -68,7 +68,7 @@ namespace NHibernate.AdoNet
 			cancellationToken.ThrowIfCancellationRequested();
 			try
 			{
-				Log.DebugFormat("Executing batch");
+				Log.Debug("Executing batch");
 				await (CheckReadersAsync(cancellationToken)).ConfigureAwait(false);
 				await (PrepareAsync(_currentBatch.BatchCommand, cancellationToken)).ConfigureAwait(false);
 				if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)

@@ -13,7 +13,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public partial class DefaultInitializeCollectionEventListener : IInitializeCollectionEventListener
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultInitializeCollectionEventListener));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(DefaultInitializeCollectionEventListener));
 
 		/// <summary> called by a collection that wants to initialize itself</summary>
 		public virtual void OnInitializeCollection(InitializeCollectionEvent @event)
@@ -35,7 +35,7 @@ namespace NHibernate.Event.Default
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("initializing collection " + MessageHelper.CollectionInfoString(ce.LoadedPersister, collection, ce.LoadedKey, source));
+					log.Debug("initializing collection {0}", MessageHelper.CollectionInfoString(ce.LoadedPersister, collection, ce.LoadedKey, source));
 				}
 
 				log.Debug("checking second-level cache");
@@ -97,11 +97,11 @@ namespace NHibernate.Event.Default
 
 				if (ce == null)
 				{
-					log.DebugFormat("Collection cache miss: {0}", ck);
+					log.Debug("Collection cache miss: {0}", ck);
 				}
 				else
 				{
-					log.DebugFormat("Collection cache hit: {0}", ck);
+					log.Debug("Collection cache hit: {0}", ck);
 				}
 
 				if (ce == null)

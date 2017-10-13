@@ -9,7 +9,7 @@ namespace NHibernate.Cache
 	/// </summary>
 	public static class CacheFactory
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(CacheFactory));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(CacheFactory));
 
 		public const string ReadOnly = "read-only";
 		public const string ReadWrite = "read-write";
@@ -40,7 +40,7 @@ namespace NHibernate.Cache
 
 			if (log.IsDebugEnabled)
 			{
-				log.Debug(string.Format("cache for: {0} usage strategy: {1}", name, usage));
+				log.Debug("cache for: {0} usage strategy: {1}", name, usage);
 			}
 
 			ICacheConcurrencyStrategy ccs;
@@ -49,7 +49,7 @@ namespace NHibernate.Cache
 				case ReadOnly:
 					if (mutable)
 					{
-						log.Warn("read-only cache configured for mutable: " + name);
+						log.Warn("read-only cache configured for mutable: {0}", name);
 					}
 					ccs = new ReadOnlyCache();
 					break;

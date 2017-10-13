@@ -7,7 +7,7 @@ namespace NHibernate.Linq
 {
 	internal static class LinqLogging
 	{
-		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor("NHibernate.Linq");
+		private static readonly IInternalLogger2 Log = LoggerProvider.LoggerFor("NHibernate.Linq");
 
 		/// <summary>
 		/// If debug logging is enabled, log a string such as "msg: expression.ToString()".
@@ -24,7 +24,7 @@ namespace NHibernate.Linq
 				var visitor = new ProxyReplacingExpressionVisitor();
 				var preparedExpression = visitor.Visit(expression);
 
-				Log.DebugFormat("{0}: {1}", msg, preparedExpression.ToString());
+				Log.Debug("{0}: {1}", msg, preparedExpression.ToString());
 			}
 		}
 

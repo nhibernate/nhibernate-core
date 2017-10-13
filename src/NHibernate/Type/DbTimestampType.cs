@@ -16,7 +16,7 @@ namespace NHibernate.Type
 	[Serializable]
 	public partial class DbTimestampType : AbstractDateTimeType
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DbTimestampType));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(DbTimestampType));
 		private static readonly SqlType[] EmptyParams = new SqlType[0];
 
 		/// <inheritdoc />
@@ -61,7 +61,7 @@ namespace NHibernate.Type
 					rs = session.Batcher.ExecuteReader(ps);
 					rs.Read();
 					var ts = rs.GetDateTime(0);
-					log.DebugFormat("current timestamp retreived from db : {0} (ticks={1})", ts, ts.Ticks);
+					log.Debug("current timestamp retreived from db : {0} (ticks={1})", ts, ts.Ticks);
 					return ts;
 				}
 				catch (DbException sqle)
@@ -82,7 +82,7 @@ namespace NHibernate.Type
 						}
 						catch (DbException sqle)
 						{
-							log.Warn("unable to clean up prepared statement", sqle);
+							log.Warn(sqle, "unable to clean up prepared statement");
 						}
 					}
 				}

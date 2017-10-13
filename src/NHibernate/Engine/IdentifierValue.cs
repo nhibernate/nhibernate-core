@@ -9,7 +9,7 @@ namespace NHibernate.Engine
 	/// </summary>
 	public class IdentifierValue
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(IdentifierValue));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(IdentifierValue));
 
 		private readonly object value;
 
@@ -36,7 +36,7 @@ namespace NHibernate.Engine
 		{
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("unsaved-value: " + value);
+				log.Debug("unsaved-value: {0}", value);
 			}
 			return id == null || id.Equals(value);
 		}
@@ -55,7 +55,7 @@ namespace NHibernate.Engine
 		{
 			public override bool? IsUnsaved(object id)
 			{
-				log.Debug("unsaved-value strategy ANY");
+				log.Debug("unsaved-value strategy {0}", "ANY");
 				return true;
 			}
 
@@ -74,7 +74,7 @@ namespace NHibernate.Engine
 		{
 			public override bool? IsUnsaved(object id)
 			{
-				log.Debug("unsaved-value strategy NONE");
+				log.Debug("unsaved-value strategy {0}", "NONE");
 				return false;
 			}
 
@@ -94,7 +94,7 @@ namespace NHibernate.Engine
 		{
 			public override bool? IsUnsaved(object id)
 			{
-				log.Debug("unsaved-value strategy NULL");
+				log.Debug("unsaved-value strategy {0}", "NULL");
 				return id == null;
 			}
 
@@ -111,7 +111,7 @@ namespace NHibernate.Engine
 		{
 			public override bool? IsUnsaved(object id)
 			{
-				log.Debug("id unsaved-value strategy UNDEFINED");
+				log.Debug("id unsaved-value strategy {0}", "UNDEFINED");
 				return null;
 			}
 			public override object GetDefaultValue(object currentValue)

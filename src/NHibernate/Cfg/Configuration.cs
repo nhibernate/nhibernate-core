@@ -75,7 +75,7 @@ namespace NHibernate.Cfg
 		protected IDictionary<string, Mappings.TableDescription> tableNameBinding;
 		protected IDictionary<Table, Mappings.ColumnNames> columnNameBindingPerTable;
 
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(Configuration));
+		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(Configuration));
 
 		protected internal SettingsFactory settingsFactory;
 
@@ -339,7 +339,7 @@ namespace NHibernate.Cfg
 		{
 			if (log.IsErrorEnabled)
 			{
-				log.Error(exception.Message, exception);
+				log.Error(exception, exception.Message);
 			}
 
 			throw exception;
@@ -352,7 +352,7 @@ namespace NHibernate.Cfg
 		/// <returns>This configuration object.</returns>
 		public Configuration AddXmlFile(string xmlFile)
 		{
-			log.Info("Mapping file: " + xmlFile);
+			log.Info("Mapping file: {0}", xmlFile);
 			XmlTextReader textReader = null;
 			try
 			{
@@ -393,7 +393,7 @@ namespace NHibernate.Cfg
 		{
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("Mapping XML:\n" + xml);
+				log.Debug("Mapping XML:\n{0}", xml);
 			}
 			XmlTextReader reader = null;
 			try
@@ -468,7 +468,7 @@ namespace NHibernate.Cfg
 		{
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("Mapping XML:\n" + doc.OuterXml);
+				log.Debug("Mapping XML:\n{0}", doc.OuterXml);
 			}
 
 			try
@@ -663,7 +663,7 @@ namespace NHibernate.Cfg
 		public Configuration AddResource(string path, Assembly assembly)
 		{
 			string debugName = path;
-			log.Info("Mapping resource: " + debugName);
+			log.Info("Mapping resource: {0}", debugName);
 			Stream rsrc = assembly.GetManifestResourceStream(path);
 			if (rsrc == null)
 			{
@@ -740,7 +740,7 @@ namespace NHibernate.Cfg
 		/// </remarks>
 		public Configuration AddAssembly(string assemblyName)
 		{
-			log.Info("Searching for mapped documents in assembly: " + assemblyName);
+			log.Info("Searching for mapped documents in assembly: {0}", assemblyName);
 
 			Assembly assembly = null;
 			try
@@ -765,7 +765,7 @@ namespace NHibernate.Cfg
 			IList<string> resourceNames = GetAllHbmXmlResourceNames(assembly);
 			if (resourceNames.Count == 0)
 			{
-				log.Warn("No mapped documents found in assembly: " + assembly.FullName);
+				log.Warn("No mapped documents found in assembly: {0}", assembly.FullName);
 			}
 			foreach (var name in resourceNames)
 			{
@@ -1009,7 +1009,7 @@ namespace NHibernate.Cfg
 						// if you are going to remove this exception at least add a log.Error
 						// because the usage of filter-def, outside its scope, may cause unexpected behaviour
 						// during queries.
-						log.ErrorFormat("filter-def for filter named '{0}' was never used to filter classes nor collections.\r\nThis may result in unexpected behavior during queries", filterName);
+						log.Error("filter-def for filter named '{0}' was never used to filter classes nor collections.\r\nThis may result in unexpected behavior during queries", filterName);
 					}
 				}
 			}
@@ -1161,7 +1161,7 @@ namespace NHibernate.Cfg
 
 					if (log.IsDebugEnabled)
 					{
-						log.Debug("resolving reference to class: " + referencedEntityName);
+						log.Debug("resolving reference to class: {0}", referencedEntityName);
 					}
 
 					PersistentClass referencedClass;
@@ -1405,7 +1405,7 @@ namespace NHibernate.Cfg
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug(kvp.Key + "=" + kvp.Value);
+					log.Debug("{0}={1}", kvp.Key, kvp.Value);
 				}
 				properties[kvp.Key] = kvp.Value;
 			}
@@ -1542,7 +1542,7 @@ namespace NHibernate.Cfg
 			}
 			catch (Exception e)
 			{
-				log.Error("Problem parsing configuration", e);
+				log.Error(e, "Problem parsing configuration");
 				throw;
 			}
 		}
@@ -1567,17 +1567,17 @@ namespace NHibernate.Cfg
 				}
 				if (!string.IsNullOrEmpty(mc.Resource) && !string.IsNullOrEmpty(mc.Assembly))
 				{
-					log.Debug(factoryConfiguration.Name + "<-" + mc.Resource + " in " + mc.Assembly);
+					log.Debug("{0}<-{1} in {2}", factoryConfiguration.Name, mc.Resource, mc.Assembly);
 					AddResource(mc.Resource, Assembly.Load(mc.Assembly));
 				}
 				else if (!string.IsNullOrEmpty(mc.Assembly))
 				{
-					log.Debug(factoryConfiguration.Name + "<-" + mc.Assembly);
+					log.Debug("{0}<-{1}", factoryConfiguration.Name, mc.Assembly);
 					AddAssembly(mc.Assembly);
 				}
 				else if (!string.IsNullOrEmpty(mc.File))
 				{
-					log.Debug(factoryConfiguration.Name + "<-" + mc.File);
+					log.Debug("{0}<-{1}", factoryConfiguration.Name, mc.File);
 					AddFile(mc.File);
 				}
 			}
@@ -1613,21 +1613,21 @@ namespace NHibernate.Cfg
 				{
 					listenerClasses[i] = ec.Listeners[i].Class;
 				}
-				log.Debug("Event listeners: " + ec.Type + "=" + StringHelper.ToString(listenerClasses));
+				log.Debug("Event listeners: {0}={1}", ec.Type, StringHelper.ToString(listenerClasses));
 				SetListeners(ec.Type, listenerClasses);
 			}
 			// Listeners
 			foreach (var lc in factoryConfiguration.Listeners)
 			{
-				log.Debug("Event listener: " + lc.Type + "=" + lc.Class);
+				log.Debug("Event listener: {0}={1}", lc.Type, lc.Class);
 				SetListeners(lc.Type, new[] { lc.Class });
 			}
 
 			if (!string.IsNullOrEmpty(factoryConfiguration.Name))
 			{
-				log.Info("Configured SessionFactory: " + factoryConfiguration.Name);
+				log.Info("Configured SessionFactory: {0}", factoryConfiguration.Name);
 			}
-			log.Debug("properties: " + properties);
+			log.Debug("properties: {0}", properties);
 
 			return this;
 		}
@@ -2063,7 +2063,7 @@ namespace NHibernate.Cfg
 					eventListeners.PostCollectionUpdateEventListeners = new IPostCollectionUpdateEventListener[] { };
 					break;
 				default:
-					log.Warn("Unrecognized listener type [" + type + "]");
+					log.Warn("Unrecognized listener type [{0}]", type);
 					break;
 			}
 		}
@@ -2186,7 +2186,7 @@ namespace NHibernate.Cfg
 					eventListeners.PostCollectionUpdateEventListeners = (IPostCollectionUpdateEventListener[])listeners;
 					break;
 				default:
-					log.Warn("Unrecognized listener type [" + type + "]");
+					log.Warn("Unrecognized listener type [{0}]", type);
 					break;
 			}
 		}
@@ -2303,7 +2303,7 @@ namespace NHibernate.Cfg
 					eventListeners.PostCollectionUpdateEventListeners = AppendListeners(eventListeners.PostCollectionUpdateEventListeners, (IPostCollectionUpdateEventListener[])listeners);
 					break;
 				default:
-					log.Warn("Unrecognized listener type [" + type + "]");
+					log.Warn("Unrecognized listener type [{0}]", type);
 					break;
 			}
 		}

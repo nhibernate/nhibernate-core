@@ -25,7 +25,7 @@ namespace NHibernate.Persister.Entity
 			cancellationToken.ThrowIfCancellationRequested();
 			if (log.IsDebugEnabled)
 			{
-				log.Debug(string.Format("loading entity: {0} using named query: {1}", persister.EntityName, queryName));
+				log.Debug("loading entity: {0} using named query: {1}", persister.EntityName, queryName);
 			}
 
 			AbstractQueryImpl query = (AbstractQueryImpl) session.GetNamedQuery(queryName);

@@ -33,7 +33,7 @@ namespace NHibernate.Type
 			PrecisionScale
 		}
 
-		private static readonly IInternalLogger _log = LoggerProvider.LoggerFor(typeof(TypeFactory));
+		private static readonly IInternalLogger2 _log = LoggerProvider.LoggerFor(typeof(TypeFactory));
 		private static readonly string[] EmptyAliases= new string[0];
 		private static readonly char[] PrecisionScaleSplit = new[] { '(', ')', ',' };
 		private static readonly char[] LengthSplit = new[] { '(', ')' };
@@ -393,7 +393,7 @@ namespace NHibernate.Type
 			if (typeByTypeOfName.TryGetValue(name, out returnType))
 			{
 				if (_obsoleteMessageByAlias.TryGetValue(name, out string obsoleteMessage))
-					_log.WarnFormat("{0} is obsolete. {1}", name, obsoleteMessage);
+					_log.Warn("{0} is obsolete. {1}", name, obsoleteMessage);
 				return returnType;
 			}
 
@@ -578,7 +578,7 @@ namespace NHibernate.Type
 				var obsolete = typeClass.GetCustomAttribute<ObsoleteAttribute>(false);
 				if (obsolete != null)
 				{
-					_log.WarnFormat("{0} is obsolete. {1}", typeName, obsolete.Message);
+					_log.Warn("{0} is obsolete. {1}", typeName, obsolete.Message);
 				}
 				return type;
 			}

@@ -48,7 +48,7 @@ namespace NHibernate.Id
 					{
 						reader.Close();
 					}
-					log.Debug("GUID identifier generated: " + result);
+					log.Debug("GUID identifier generated: {0}", result);
 					return result;
 				}
 				finally

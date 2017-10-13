@@ -76,7 +76,7 @@ namespace NHibernate.Engine
 				{
 					if (log.IsDebugEnabled)
 					{
-						log.Debug("cascading to delete: " + entityName);
+						log.Debug("cascading to delete: {0}", entityName);
 					}
 					return session.DeleteAsync(entityName, child, isCascadeDeleteEnabled, (ISet<object>)anything, cancellationToken);
 				}
@@ -99,7 +99,7 @@ namespace NHibernate.Engine
 				{
 					if (log.IsDebugEnabled)
 					{
-						log.Debug("cascading to lock: " + entityName);
+						log.Debug("cascading to lock: {0}", entityName);
 					}
 					return session.LockAsync(entityName, child, LockMode.None, cancellationToken);
 				}
@@ -122,7 +122,7 @@ namespace NHibernate.Engine
 				{
 					if (log.IsDebugEnabled)
 					{
-						log.Debug("cascading to refresh: " + entityName);
+						log.Debug("cascading to refresh: {0}", entityName);
 					}
 					return session.RefreshAsync(child, (IDictionary)anything, cancellationToken);
 				}
@@ -145,7 +145,7 @@ namespace NHibernate.Engine
 				{
 					if (log.IsDebugEnabled)
 					{
-						log.Debug("cascading to evict: " + entityName);
+						log.Debug("cascading to evict: {0}", entityName);
 					}
 					return session.EvictAsync(child, cancellationToken);
 				}
@@ -168,7 +168,7 @@ namespace NHibernate.Engine
 				{
 					if (log.IsDebugEnabled)
 					{
-						log.Debug("cascading to saveOrUpdate: " + entityName);
+						log.Debug("cascading to saveOrUpdate: {0}", entityName);
 					}
 					return session.SaveOrUpdateAsync(entityName, child, cancellationToken);
 				}
@@ -191,7 +191,7 @@ namespace NHibernate.Engine
 				{
 					if (log.IsDebugEnabled)
 					{
-						log.Debug("cascading to merge: " + entityName);
+						log.Debug("cascading to merge: {0}", entityName);
 					}
 					return session.MergeAsync(entityName, child, (IDictionary)anything, cancellationToken);
 				}
@@ -214,7 +214,7 @@ namespace NHibernate.Engine
 				{
 					if (log.IsDebugEnabled)
 					{
-						log.Debug("cascading to persist: " + entityName);
+						log.Debug("cascading to persist: {0}", entityName);
 					}
 					return session.PersistAsync(entityName, child, (IDictionary)anything, cancellationToken);
 				}
@@ -237,7 +237,7 @@ namespace NHibernate.Engine
 				{
 					if (log.IsDebugEnabled)
 					{
-						log.Debug("cascading to persistOnFlush: " + entityName);
+						log.Debug("cascading to persistOnFlush: {0}", entityName);
 					}
 					return session.PersistOnFlushAsync(entityName, child, (IDictionary)anything, cancellationToken);
 				}
@@ -284,7 +284,7 @@ namespace NHibernate.Engine
 				{
 					if (log.IsDebugEnabled)
 					{
-						log.Debug("cascading to replicate: " + entityName);
+						log.Debug("cascading to replicate: {0}", entityName);
 					}
 					return session.ReplicateAsync(entityName, child, (ReplicationMode)anything, cancellationToken);
 				}

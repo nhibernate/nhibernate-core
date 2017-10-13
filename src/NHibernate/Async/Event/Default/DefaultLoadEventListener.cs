@@ -93,7 +93,7 @@ namespace NHibernate.Event.Default
 			}
 			catch (HibernateException e)
 			{
-				log.Info("Error performing load command", e);
+				log.Info(e, "Error performing load command");
 				throw;
 			}
 		}
@@ -147,7 +147,7 @@ namespace NHibernate.Event.Default
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("loading entity: " + MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
+					log.Debug("loading entity: {0}", MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
 				}
 
 				if (!persister.HasProxy)
@@ -271,7 +271,7 @@ namespace NHibernate.Event.Default
 			cancellationToken.ThrowIfCancellationRequested();
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("attempting to resolve: " + MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
+				log.Debug("attempting to resolve: {0}", MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
 			}
 
 			object entity = await (LoadFromSessionCacheAsync(@event, keyToLoad, options, cancellationToken)).ConfigureAwait(false);
@@ -289,7 +289,7 @@ namespace NHibernate.Event.Default
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("resolved object in session cache: " + MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
+					log.Debug("resolved object in session cache: {0}", MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
 				}
 				return entity;
 			}
@@ -299,14 +299,14 @@ namespace NHibernate.Event.Default
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("resolved object in second-level cache: " + MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
+					log.Debug("resolved object in second-level cache: {0}", MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
 				}
 				return entity;
 			}
 
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("object not resolved in any cache: " + MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
+				log.Debug("object not resolved in any cache: {0}", MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
 			}
 
 			return await (LoadFromDatasourceAsync(@event, persister, keyToLoad, options, cancellationToken)).ConfigureAwait(false);
@@ -417,12 +417,12 @@ namespace NHibernate.Event.Default
 					if (ce == null)
 					{
 						factory.StatisticsImplementor.SecondLevelCacheMiss(persister.Cache.RegionName);
-						log.DebugFormat("Entity cache miss: {0}", ck);
+						log.Debug("Entity cache miss: {0}", ck);
 					}
 					else
 					{
 						factory.StatisticsImplementor.SecondLevelCacheHit(persister.Cache.RegionName);
-						log.DebugFormat("Entity cache hit: {0}", ck);
+						log.Debug("Entity cache hit: {0}", ck);
 					}
 				}
 
@@ -451,7 +451,7 @@ namespace NHibernate.Event.Default
 
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("assembling entity from second-level cache: " + MessageHelper.InfoString(persister, id, factory));
+				log.Debug("assembling entity from second-level cache: {0}", MessageHelper.InfoString(persister, id, factory));
 			}
 
 			IEntityPersister subclassPersister = factory.GetEntityPersister(entry.Subclass);
@@ -468,7 +468,7 @@ namespace NHibernate.Event.Default
 			object version = Versioning.GetVersion(values, subclassPersister);
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("Cached Version: " + version);
+				log.Debug("Cached Version: {0}", version);
 			}
 
 			IPersistenceContext persistenceContext = session.PersistenceContext;

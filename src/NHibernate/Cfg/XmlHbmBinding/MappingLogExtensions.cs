@@ -8,7 +8,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public static class MappingLogExtensions
 	{
-		public static void LogMapped(this Property property, IInternalLogger log)
+		public static void LogMapped(this Property property, IInternalLogger2 log)
 		{
 			if (log.IsDebugEnabled)
 			{
