@@ -15,7 +15,7 @@ namespace NHibernate.Test.Logging
 		[Test]
 		public void WhenNotConfiguredAndLog4NetExistsThenUseLog4NetFactory()
 		{
-			Assert.That(LoggerProvider.LoggerFor("pizza"), Is.InstanceOf<Log4NetLogger>());
+			Assert.That(LoggerProvider.LoggerFor("pizza"), Is.Not.InstanceOf<NoLoggingInternalLogger>());
 		}
 	}
 }

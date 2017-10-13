@@ -64,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1144
 						await (tx.CommitAsync());
 						foreach (LoggingEvent loggingEvent in spy.Appender.GetEvents())
 						{
-							if ("Executing batch".Equals(loggingEvent.MessageObject))
+							if ("Executing batch".Equals(loggingEvent.RenderedMessage))
 							{
 								executedBatch = true;
 								break;
