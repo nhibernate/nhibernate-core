@@ -298,6 +298,63 @@ q.SetInt32(1, minWeight);
 var cats = q.List<Cat>();]]></programlisting>
 
             <para>
+                Named queries are by default validated at startup time, allowing to catch errors
+                more easily than having to test all the application features using HQL queries. In
+                case of validation errors, the details of failing queries are logged and a
+                validation error is raised.
+            </para>
+
+            <para>
+                Named queries accepts a number of attributes matching settings available on the
+                <literal>IQuery</literal> interface.
+            </para>
+
+            <itemizedlist spacing="compact">
+                <listitem>
+                    <para>
+                    <literal>flush-mode</literal> - override the session flush mode just for this query.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>cacheable</literal> - allow the query results to be cached by the second level cache.
+                    See <xref linkend="caches"/>.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>cache-region</literal> - specify the cache region of the query.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>cache-mode</literal> - specify the cache mode of the query.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>fetch-size</literal> - set a fetch size for the underlying ADO query.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>timeout</literal> - set the query timeout in seconds.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>read-only</literal> - <literal>true</literal> switches yielded entities to read-only.
+                    See <xref linkend="readonly"/>.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>comment</literal> - add a custom comment to the generated SQL.
+                    </para>
+                </listitem>
+            </itemizedlist>
+
+            <para>
                 The query interface supports the use of named parameters. Named parameters
                 are identifiers of the form <literal>:name</literal> in the query string.
                 There are methods on <literal>IQuery</literal> for binding values to named

@@ -516,7 +516,7 @@ using(var iter = session
 
             <para>
                 NHibernate can make efficient use of batch fetching, that is, NHibernate can load several uninitialized
-                proxies if one proxy is accessed (or collections. Batch fetching is an optimization of the lazy select
+                proxies if one proxy is accessed (or collections). Batch fetching is an optimization of the lazy select
                 fetching strategy. There are two ways you can tune batch fetching: on the class and the collection level.
             </para>
 
