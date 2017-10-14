@@ -8,6 +8,7 @@ using NHibernate.Util;
 
 namespace NHibernate
 {
+	[Obsolete("Implement and use NHibernate.IInternalLogger2")]
 	public interface IInternalLogger
 	{
 		bool IsErrorEnabled { get; }
@@ -17,45 +18,33 @@ namespace NHibernate
 		bool IsWarnEnabled { get; }
 
 		void Error(object message);
-
-		[Obsolete("Use Error(Exception, string, params object[])")]
 		void Error(object message, Exception exception);
-
-		[Obsolete("Use Error(string, params object[])")]
 		void ErrorFormat(string format, params object[] args);
 
 		void Fatal(object message);
-
-		[Obsolete("Use Fatal(Exception, string, params object[])")]
 		void Fatal(object message, Exception exception);
 
 		void Debug(object message);
-
-		[Obsolete("Use Debug(Exception, string, params object[])")]
 		void Debug(object message, Exception exception);
-
-		[Obsolete("Use Debug(string, params object[])")]
 		void DebugFormat(string format, params object[] args);
 
 		void Info(object message);
-
-		[Obsolete("Use Info(Exception, string, params object[])")]
 		void Info(object message, Exception exception);
-
-		[Obsolete("Use Info(string, params object[])")]
 		void InfoFormat(string format, params object[] args);
 
 		void Warn(object message);
-
-		[Obsolete("Use Warn(Exception, string, params object[])")]
 		void Warn(object message, Exception exception);
-
-		[Obsolete("Use Warn(string, params object[])")]
 		void WarnFormat(string format, params object[] args);
 	}
 
-	public interface IInternalLogger2 : IInternalLogger
+	public interface IInternalLogger2
 	{
+		bool IsErrorEnabled { get; }
+		bool IsFatalEnabled { get; }
+		bool IsDebugEnabled { get; }
+		bool IsInfoEnabled { get; }
+		bool IsWarnEnabled { get; }
+
 		void Fatal(Exception exception, string format, params object[] args);
 		void Fatal(string format, params object[] args);
 		void Error(Exception exception, string format, params object[] args);
@@ -66,34 +55,83 @@ namespace NHibernate
 		void Info(string format, params object[] args);
 		void Debug(Exception exception, string format, params object[] args);
 		void Debug(string format, params object[] args);
+
+		// catch any method calls with an Exception argument second as they would otherwise silently be consumed by `parms object[] args`.
+
+		/// <summary>
+		/// Don't use or implement, simply throw new NotImplementedException();
+		/// </summary>
+		[Obsolete("Use Fatal(Exception, string, params object[])", true)]
+		void Fatal(string message, Exception ex);
+
+		/// <summary>
+		/// Don't use or implement, simply throw new NotImplementedException();
+		/// </summary>
+		[Obsolete("Use Error(Exception, string, params object[])", true)]
+		void Error(string message, Exception ex);
+
+		/// <summary>
+		/// Don't use or implement, simply throw new NotImplementedException();
+		/// </summary>
+		[Obsolete("Use Warn(Exception, string, params object[])", true)]
+		void Warn(string message, Exception ex);
+
+		/// <summary>
+		/// Don't use or implement, simply throw new NotImplementedException();
+		/// </summary>
+		[Obsolete("Use Info(Exception, string, params object[])", true)]
+		void Info(string message, Exception ex);
+
+		/// <summary>
+		/// Don't use or implement, simply throw new NotImplementedException();
+		/// </summary>
+		[Obsolete("Use Debug(Exception, string, params object[])", true)]
+		void Debug(string message, Exception ex);
 	}
 
+	[Obsolete("Implement INHibernateLoggerFactory instead")]
 	public interface ILoggerFactory
 	{
 		IInternalLogger LoggerFor(string keyName);
 		IInternalLogger LoggerFor(System.Type type);
 	}
 
+	public interface INHibernateLoggerFactory
+	{
+		IInternalLogger2 LoggerFor(string keyName);
+		IInternalLogger2 LoggerFor(System.Type type);
+	}
+
 	public class LoggerProvider
 	{
-		private const string NhibernateLoggerConfKey = "nhibernate-logger";
-		private readonly ILoggerFactory loggerFactory;
-		private static LoggerProvider instance;
+		private const string nhibernateLoggerConfKey = "nhibernate-logger";
+		private readonly INHibernateLoggerFactory _loggerFactory;
+		private static LoggerProvider _instance;
 
 		static LoggerProvider()
 		{
 			string nhibernateLoggerClass = GetNhibernateLoggerClass();
-			ILoggerFactory loggerFactory = string.IsNullOrEmpty(nhibernateLoggerClass) ? new NoLoggingLoggerFactory() : GetLoggerFactory(nhibernateLoggerClass);
+			INHibernateLoggerFactory loggerFactory = string.IsNullOrEmpty(nhibernateLoggerClass) ? new NoLoggingLoggerFactory() : GetLoggerFactory(nhibernateLoggerClass);
 			SetLoggersFactory(loggerFactory);
 		}
 
-		private static ILoggerFactory GetLoggerFactory(string nhibernateLoggerClass)
+		private static INHibernateLoggerFactory GetLoggerFactory(string nhibernateLoggerClass)
 		{
-			ILoggerFactory loggerFactory;
+			INHibernateLoggerFactory loggerFactory;
 			var loggerFactoryType = System.Type.GetType(nhibernateLoggerClass);
 			try
 			{
-				loggerFactory = (ILoggerFactory) Activator.CreateInstance(loggerFactoryType);
+				object loadedLoggerFactory = Activator.CreateInstance(loggerFactoryType);
+#pragma warning disable 618
+				if (loadedLoggerFactory is ILoggerFactory oldStyleFactory)
+				{
+					loggerFactory = new LegacyLoggerFactoryAdaptor(oldStyleFactory);
+				}
+#pragma warning restore 618
+				else
+				{
+					loggerFactory = (INHibernateLoggerFactory) loadedLoggerFactory;
+				}
 			}
 			catch (MissingMethodException ex)
 			{
@@ -101,7 +139,9 @@ namespace NHibernate
 			}
 			catch (InvalidCastException ex)
 			{
-				throw new InstantiationException(loggerFactoryType + "Type does not implement " + typeof (ILoggerFactory), ex, loggerFactoryType);
+#pragma warning disable 618
+				throw new InstantiationException(loggerFactoryType + "Type does not implement " + typeof(INHibernateLoggerFactory) + " or " + typeof (ILoggerFactory), ex, loggerFactoryType);
+#pragma warning restore 618
 			}
 			catch (Exception ex)
 			{
@@ -112,7 +152,7 @@ namespace NHibernate
 
 		private static string GetNhibernateLoggerClass()
 		{
-			var nhibernateLogger = ConfigurationManager.AppSettings.Keys.Cast<string>().FirstOrDefault(k => NhibernateLoggerConfKey.Equals(k.ToLowerInvariant()));
+			var nhibernateLogger = ConfigurationManager.AppSettings.Keys.Cast<string>().FirstOrDefault(k => nhibernateLoggerConfKey.Equals(k.ToLowerInvariant()));
 			string nhibernateLoggerClass = null;
 			if (string.IsNullOrEmpty(nhibernateLogger))
 			{
@@ -134,42 +174,63 @@ namespace NHibernate
 			return nhibernateLoggerClass;
 		}
 
+		[Obsolete("Implement INHibernateLoggerFactory instead")]
 		public static void SetLoggersFactory(ILoggerFactory loggerFactory)
 		{
-			instance = new LoggerProvider(loggerFactory);
+			_instance = new LoggerProvider(new LegacyLoggerFactoryAdaptor(loggerFactory));
 		}
 
-		private LoggerProvider(ILoggerFactory loggerFactory)
+		public static void SetLoggersFactory(INHibernateLoggerFactory loggerFactory)
 		{
-			this.loggerFactory = loggerFactory;
+			_instance = new LoggerProvider(loggerFactory);
+		}
+
+		private LoggerProvider(INHibernateLoggerFactory loggerFactory)
+		{
+			this._loggerFactory = loggerFactory;
 		}
 
 		public static IInternalLogger2 LoggerFor(string keyName)
 		{
-			var internalLogger = instance.loggerFactory.LoggerFor(keyName);
-			if (internalLogger is IInternalLogger2 internalLogger2) return internalLogger2;
-			else return new InternalLogger2Thunk(internalLogger);
+			return _instance._loggerFactory.LoggerFor(keyName);
 		}
 
 		public static IInternalLogger2 LoggerFor(System.Type type)
 		{
-			var internalLogger = instance.loggerFactory.LoggerFor(type);
-			if (internalLogger is IInternalLogger2 internalLogger2) return internalLogger2;
-			else return new InternalLogger2Thunk(internalLogger);
+			return _instance._loggerFactory.LoggerFor(type);
+		}
+
+		[Obsolete("Used only in Obsolete functions to thunk to INHibernateLoggerFactory")]
+		private class LegacyLoggerFactoryAdaptor : INHibernateLoggerFactory
+		{
+			private readonly ILoggerFactory _factory;
+
+			public LegacyLoggerFactoryAdaptor(ILoggerFactory factory)
+			{
+				_factory = factory;
+			}
+
+			public IInternalLogger2 LoggerFor(string keyName)
+			{
+				return new InternalLogger2Thunk(_factory.LoggerFor(keyName));
+			}
+
+			public IInternalLogger2 LoggerFor(System.Type type)
+			{
+				return new InternalLogger2Thunk(_factory.LoggerFor(type));
+			}
 		}
 	}
 
-	public class InternalLogger2Thunk : IInternalLogger2
+	[Obsolete("Used only in Obsolete functions to thunk to INHibernateLoggerFactory")]
+	internal class InternalLogger2Thunk : IInternalLogger2
 	{
-#pragma warning disable 618
 		private readonly IInternalLogger _internalLogger;
 
 		public InternalLogger2Thunk(IInternalLogger internalLogger)
 		{
 			_internalLogger = internalLogger ?? throw new ArgumentNullException(nameof(internalLogger));
 		}
-
-		#region Passthrough to IInternalLogger
 
 		public bool IsErrorEnabled => _internalLogger.IsErrorEnabled;
 
@@ -180,78 +241,6 @@ namespace NHibernate
 		public bool IsInfoEnabled => _internalLogger.IsInfoEnabled;
 
 		public bool IsWarnEnabled => _internalLogger.IsWarnEnabled;
-
-		public void Error(object message)
-		{
-			_internalLogger.Error(message);
-		}
-
-		public void Error(object message, Exception exception)
-		{
-			_internalLogger.Error(message, exception);
-		}
-
-		public void ErrorFormat(string format, params object[] args)
-		{
-			_internalLogger.ErrorFormat(format, args);
-		}
-
-		public void Fatal(object message)
-		{
-			_internalLogger.Fatal(message);
-		}
-
-		public void Fatal(object message, Exception exception)
-		{
-			_internalLogger.Fatal(message, exception);
-		}
-
-		public void Debug(object message)
-		{
-			_internalLogger.Debug(message);
-		}
-
-		public void Debug(object message, Exception exception)
-		{
-			_internalLogger.Debug(message, exception);
-		}
-
-		public void DebugFormat(string format, params object[] args)
-		{
-			_internalLogger.DebugFormat(format, args);
-		}
-
-		public void Info(object message)
-		{
-			_internalLogger.Info(message);
-		}
-
-		public void Info(object message, Exception exception)
-		{
-			_internalLogger.Info(message, exception);
-		}
-
-		public void InfoFormat(string format, params object[] args)
-		{
-			_internalLogger.InfoFormat(format, args);
-		}
-
-		public void Warn(object message)
-		{
-			_internalLogger.Warn(message);
-		}
-
-		public void Warn(object message, Exception exception)
-		{
-			_internalLogger.Warn(message, exception);
-		}
-
-		public void WarnFormat(string format, params object[] args)
-		{
-			_internalLogger.WarnFormat(format, args);
-		}
-
-		#endregion
 
 		public void Fatal(Exception exception, string format, params object[] args)
 		{
@@ -332,18 +321,42 @@ namespace NHibernate
 			else
 				_internalLogger.Debug(format);
 		}
-#pragma warning restore 618
+
+		public void Fatal(string message, Exception ex)
+		{
+			throw new NotImplementedException("Should not have compiled with call to this method");
+		}
+
+		public void Error(string message, Exception ex)
+		{
+			throw new NotImplementedException("Should not have compiled with call to this method");
+		}
+
+		public void Warn(string message, Exception ex)
+		{
+			throw new NotImplementedException("Should not have compiled with call to this method");
+		}
+
+		public void Info(string message, Exception ex)
+		{
+			throw new NotImplementedException("Should not have compiled with call to this method");
+		}
+
+		public void Debug(string message, Exception ex)
+		{
+			throw new NotImplementedException("Should not have compiled with call to this method");
+		}
 	}
 
-	public class NoLoggingLoggerFactory: ILoggerFactory
+	public class NoLoggingLoggerFactory: INHibernateLoggerFactory
 	{
 		private static readonly IInternalLogger2 Nologging = new NoLoggingInternalLogger();
-		public IInternalLogger LoggerFor(string keyName)
+		public IInternalLogger2 LoggerFor(string keyName)
 		{
 			return Nologging;
 		}
 
-		public IInternalLogger LoggerFor(System.Type type)
+		public IInternalLogger2 LoggerFor(System.Type type)
 		{
 			return Nologging;
 		}
@@ -351,86 +364,15 @@ namespace NHibernate
 
 	public class NoLoggingInternalLogger: IInternalLogger2
 	{
-		public bool IsErrorEnabled
-		{
-			get { return false;}
-		}
+		public bool IsErrorEnabled => false;
 
-		public bool IsFatalEnabled
-		{
-			get { return false; }
-		}
+		public bool IsFatalEnabled => false;
 
-		public bool IsDebugEnabled
-		{
-			get { return false; }
-		}
+		public bool IsDebugEnabled => false;
 
-		public bool IsInfoEnabled
-		{
-			get { return false; }
-		}
+		public bool IsInfoEnabled => false;
 
-		public bool IsWarnEnabled
-		{
-			get { return false; }
-		}
-
-		public void Error(object message)
-		{
-		}
-
-		public void Error(object message, Exception exception)
-		{
-		}
-
-		public void ErrorFormat(string format, params object[] args)
-		{
-		}
-
-		public void Fatal(object message)
-		{
-		}
-
-		public void Fatal(object message, Exception exception)
-		{
-		}
-
-		public void Debug(object message)
-		{
-		}
-
-		public void Debug(object message, Exception exception)
-		{
-		}
-
-		public void DebugFormat(string format, params object[] args)
-		{
-		}
-
-		public void Info(object message)
-		{
-		}
-
-		public void Info(object message, Exception exception)
-		{
-		}
-
-		public void InfoFormat(string format, params object[] args)
-		{
-		}
-
-		public void Warn(object message)
-		{
-		}
-
-		public void Warn(object message, Exception exception)
-		{
-		}
-
-		public void WarnFormat(string format, params object[] args)
-		{
-		}
+		public bool IsWarnEnabled => false;
 
 		public void Fatal(Exception exception, string format, params object[] args)
 		{
@@ -471,18 +413,48 @@ namespace NHibernate
 		public void Debug(string format, params object[] args)
 		{
 		}
+
+		public void Fatal(string message, Exception ex)
+		{
+			throw new NotImplementedException("Should not have compiled with call to this method");
+		}
+
+		public void Error(string message, Exception ex)
+		{
+			throw new NotImplementedException("Should not have compiled with call to this method");
+		}
+
+		public void Warn(string message, Exception ex)
+		{
+			throw new NotImplementedException("Should not have compiled with call to this method");
+		}
+
+		public void Info(string message, Exception ex)
+		{
+			throw new NotImplementedException("Should not have compiled with call to this method");
+		}
+
+		public void Debug(string message, Exception ex)
+		{
+			throw new NotImplementedException("Should not have compiled with call to this method");
+		}
 	}
 
+#pragma warning disable 618
 	public class Log4NetLoggerFactory: ILoggerFactory
+#pragma warning restore 618
 	{
 		private static readonly System.Type LogManagerType = System.Type.GetType("log4net.LogManager, log4net");
 		private static readonly Func<Assembly, string, object> GetLoggerByNameDelegate;
 		private static readonly Func<System.Type, object> GetLoggerByTypeDelegate;
+
 		static Log4NetLoggerFactory()
 		{
 			GetLoggerByNameDelegate = GetGetLoggerByNameMethodCall();
 			GetLoggerByTypeDelegate = GetGetLoggerMethodCall<System.Type>();
 		}
+
+#pragma warning disable 618
 		public IInternalLogger LoggerFor(string keyName)
 		{
 			return new Log4NetLogger(GetLoggerByNameDelegate(typeof(Log4NetLoggerFactory).Assembly, keyName));
@@ -492,6 +464,7 @@ namespace NHibernate
 		{
 			return new Log4NetLogger(GetLoggerByTypeDelegate(type));
 		}
+#pragma warning restore 618
 
 		private static Func<TParameter, object> GetGetLoggerMethodCall<TParameter>()
 		{
@@ -512,7 +485,9 @@ namespace NHibernate
 		}
 	}
 
+#pragma warning disable 618
 	public class Log4NetLogger: IInternalLogger
+#pragma warning restore 618
 	{
 		private static readonly System.Type ILogType = System.Type.GetType("log4net.ILog, log4net");
 		private static readonly Func<object, bool> IsErrorEnabledDelegate;
