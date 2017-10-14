@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace NHibernate.Example.Web.Infrastructure
 {
-	public class NHibernateToMicrosoftLogger : IInternalLogger
+	public class NHibernateToMicrosoftLogger : IInternalLogger2
 	{
 		private readonly ILogger _msLogger;
 
@@ -12,116 +12,79 @@ namespace NHibernate.Example.Web.Infrastructure
 			_msLogger = msLogger ?? throw new ArgumentNullException(nameof(msLogger));
 		}
 
-		public void Error(object message)
+		public void Fatal(Exception exception, string format, params object[] args)
 		{
-			if (IsErrorEnabled)
-			{
-				_msLogger.LogError(message.ToString());
-			}
+			_msLogger.LogCritical(exception, format, args);
 		}
 
-		public void Error(object message, Exception exception)
+		public void Fatal(string format, params object[] args)
 		{
-			if (IsErrorEnabled)
-			{
-				_msLogger.LogError(exception, message.ToString());
-			}
+			_msLogger.LogCritical(format, args);
 		}
 
-		public void ErrorFormat(string format, params object[] args)
+		public void Error(Exception exception, string format, params object[] args)
 		{
-			if (IsErrorEnabled)
-			{
-				_msLogger.LogError(format, args);
-			}
+			_msLogger.LogError(exception, format, args);
 		}
 
-		public void Fatal(object message)
+		public void Error(string format, params object[] args)
 		{
-			if (IsFatalEnabled)
-			{
-				_msLogger.LogCritical(message.ToString());
-			}
+			_msLogger.LogError(format, args);
 		}
 
-		public void Fatal(object message, Exception exception)
+		public void Warn(Exception exception, string format, params object[] args)
 		{
-			if (IsFatalEnabled)
-			{
-				_msLogger.LogCritical(exception, message.ToString());
-			}
+			_msLogger.LogWarning(exception, format, args);
 		}
 
-		public void Debug(object message)
+		public void Warn(string format, params object[] args)
 		{
-			if (IsDebugEnabled)
-			{
-				_msLogger.LogDebug(message.ToString());
-			}
+			_msLogger.LogWarning(format, args);
 		}
 
-		public void Debug(object message, Exception exception)
+		public void Info(Exception exception, string format, params object[] args)
 		{
-			if (IsDebugEnabled)
-			{
-				_msLogger.LogDebug(exception, message.ToString());
-			}
+			_msLogger.LogInformation(exception, format, args);
 		}
 
-		public void DebugFormat(string format, params object[] args)
+		public void Info(string format, params object[] args)
 		{
-			if (IsDebugEnabled)
-			{
-				_msLogger.LogDebug(format, args);
-			}
+			_msLogger.LogInformation(format, args);
 		}
 
-		public void Info(object message)
+		public void Debug(Exception exception, string format, params object[] args)
 		{
-			if (IsInfoEnabled)
-			{
-				_msLogger.LogInformation(message.ToString());
-			}
+			_msLogger.LogDebug(exception, format, args);
 		}
 
-		public void Info(object message, Exception exception)
+		public void Debug(string format, params object[] args)
 		{
-			if (IsInfoEnabled)
-			{
-				_msLogger.LogInformation(exception, message.ToString());
-			}
+			_msLogger.LogDebug(format, args);
 		}
 
-		public void InfoFormat(string format, params object[] args)
+		public void Fatal(string message, Exception ex)
 		{
-			if (IsInfoEnabled)
-			{
-				_msLogger.LogInformation(format, args);
-			}
+			throw new NotImplementedException();
 		}
 
-		public void Warn(object message)
+		public void Error(string message, Exception ex)
 		{
-			if (IsWarnEnabled)
-			{
-				_msLogger.LogWarning(message.ToString());
-			}
+			throw new NotImplementedException();
 		}
 
-		public void Warn(object message, Exception exception)
+		public void Warn(string message, Exception ex)
 		{
-			if (IsWarnEnabled)
-			{
-				_msLogger.LogWarning(exception, message.ToString());
-			}
+			throw new NotImplementedException();
 		}
 
-		public void WarnFormat(string format, params object[] args)
+		public void Info(string message, Exception ex)
 		{
-			if (IsWarnEnabled)
-			{
-				_msLogger.LogWarning(format, args);
-			}
+			throw new NotImplementedException();
+		}
+
+		public void Debug(string message, Exception ex)
+		{
+			throw new NotImplementedException();
 		}
 
 		public bool IsErrorEnabled => _msLogger.IsEnabled(LogLevel.Error);
