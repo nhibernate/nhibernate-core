@@ -309,12 +309,6 @@ namespace NHibernate.Dialect
 		protected internal virtual void RegisterDefaultProperties()
 		{
 			//DefaultProperties[Environment.DefaultBatchFetchSize] = DefaultBatchSize; It can break some test and it is a user matter
-
-			// Oracle driver reports to support GetGeneratedKeys(), but they only
-			// support the version taking an array of the names of the columns to
-			// be returned (via its RETURNING clause).  No other driver seems to
-			// support this overloaded version.
-			DefaultProperties[Environment.UseGetGeneratedKeys] = "false";
 		}
 
 		// features which change between 8i, 9i, and 10g ~~~~~~~~~~~~~~~~~~~~~~~~~~
