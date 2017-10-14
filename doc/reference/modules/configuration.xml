@@ -820,6 +820,13 @@ var session = sessions.OpenSession(conn);
                                 Set <literal>driver_class</literal> to
                                 <literal>NHibernate.Driver.SQLite20Driver</literal>
                                 for System.Data.SQLite provider for .NET 2.0.
+                                <para>
+                                    Due to
+                                    <ulink url="https://system.data.sqlite.org/index.html/tktview/44a0955ea344a777ffdbcc077831e1adc8b77a36">the
+                                    behavior of System.Data.SQLite</ulink> with <literal>DateTime</literal>, consider using
+                                    <literal>DateTimeFormatString=yyyy-MM-dd HH:mm:ss.FFFFFFF;</literal> in the SQLite
+                                    connection string for preventing undesired time shifts with its default configuration.
+                                </para>
                             </entry>
                         </row>
                         <row>

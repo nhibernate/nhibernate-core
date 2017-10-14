@@ -108,8 +108,12 @@
 
 	<target name="setup-teamcity-sqlite32">
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.SQLite20Driver" />
+		<!-- DateTimeFormatString allows to prevent storing the fact that written date was having kind UTC,
+		     which dodges the undesirable time conversion to local done on reads by System.Data.SQLite.
+		     See https://system.data.sqlite.org/index.html/tktview/44a0955ea344a777ffdbcc077831e1adc8b77a36
+		     and https://github.com/nhibernate/nhibernate-core/issues/1362 -->
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.SQLiteDialect" />
-		<property name="nhibernate.connection.connection_string"	value="Data Source=NHibernate.db" />
+		<property name="nhibernate.connection.connection_string"	value="Data Source=NHibernate.db;DateTimeFormatString=yyyy-MM-dd HH:mm:ss.FFFFFFF;" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/sqlite/x86">
 				<include name="*.dll"/>
@@ -120,8 +124,12 @@
 	<target name="setup-teamcity-sqlite64">
 		<property name="nunit-x64" value="true" />
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.SQLite20Driver" />
+		<!-- DateTimeFormatString allows to prevent storing the fact that written date was having kind UTC,
+		     which dodges the undesirable time conversion to local done on reads by System.Data.SQLite.
+		     See https://system.data.sqlite.org/index.html/tktview/44a0955ea344a777ffdbcc077831e1adc8b77a36
+		     and https://github.com/nhibernate/nhibernate-core/issues/1362 -->
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.SQLiteDialect" />
-		<property name="nhibernate.connection.connection_string"	value="Data Source=NHibernate.db" />
+		<property name="nhibernate.connection.connection_string"	value="Data Source=NHibernate.db;DateTimeFormatString=yyyy-MM-dd HH:mm:ss.FFFFFFF;" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/sqlite/x64">
 				<include name="*.dll"/>
