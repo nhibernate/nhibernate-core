@@ -463,6 +463,56 @@ var pusList = query.SetString("name", "Pus%").List<Cat>();]]></programlisting>
     .SetResultSetMapping("catAndKitten")
     .List<Cat>();]]></programlisting>
 
+            <para>
+                Like HQL named queries, SQL named queries accepts a number of attributes matching settings
+                available on the <literal>ISQLQuery</literal> interface.
+            </para>
+
+            <itemizedlist spacing="compact">
+                <listitem>
+                    <para>
+                    <literal>flush-mode</literal> - override the session flush mode just for this query.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>cacheable</literal> - allow the query results to be cached by the second level cache.
+                    See <xref linkend="caches"/>.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>cache-region</literal> - specify the cache region of the query.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>cache-mode</literal> - specify the cache mode of the query.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>fetch-size</literal> - set a fetch size for the underlying ADO query.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>timeout</literal> - set the query timeout in seconds.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>read-only</literal> - <literal>true</literal> switches yielded entities to read-only.
+                    See <xref linkend="readonly"/>.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                    <literal>comment</literal> - add a custom comment to the SQL.
+                    </para>
+                </listitem>
+            </itemizedlist>
+
     <sect2 id="propertyresults">
       <title>Using return-property to explicitly specify column/alias
       names</title>
