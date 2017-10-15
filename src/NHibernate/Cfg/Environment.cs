@@ -6,6 +6,7 @@ using System.Reflection;
 using NHibernate.Bytecode;
 using NHibernate.Cfg.ConfigurationSchema;
 using NHibernate.Engine;
+using NHibernate.Linq;
 using NHibernate.Util;
 
 namespace NHibernate.Cfg
@@ -78,6 +79,7 @@ namespace NHibernate.Cfg
 		public const string ConnectionStringName = "connection.connection_string_name";
 
 		// Unused, Java-specific
+		// But has many code usage though.
 		public const string SessionFactoryName = "session_factory_name";
 
 		public const string Dialect = "dialect";
@@ -109,13 +111,16 @@ namespace NHibernate.Cfg
 		/// <summary> Enable formatting of SQL logged to the console</summary>
 		public const string FormatSql = "format_sql";
 
-		// Unused, Java-specific
+		// Since v5.0.1
+		[Obsolete("This setting has no usages and will be removed in a future version")]
 		public const string UseGetGeneratedKeys = "jdbc.use_get_generated_keys";
 
-		// Unused, not implemented
+		// Since v5.0.1
+		[Obsolete("This setting has no usages and will be removed in a future version")]
 		public const string StatementFetchSize = "jdbc.fetch_size";
 
-		// Unused, not implemented
+		// Since v5.0.1
+		[Obsolete("This setting has no usages and will be removed in a future version")]
 		public const string OutputStylesheet = "xml.output_stylesheet";
 
 		public const string TransactionStrategy = "transaction.factory_class";
@@ -140,7 +145,8 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public const string UseConnectionOnSystemTransactionPrepare = "transaction.use_connection_on_system_prepare";
 
-		// Unused, not implemented (and somewhat Java-specific)
+		// Since v5.0.1
+		[Obsolete("This setting has no usages and will be removed in a future version")]
 		public const string TransactionManagerStrategy = "transaction.manager_lookup_class";
 
 		public const string CacheProvider = "cache.provider_class";
@@ -159,19 +165,25 @@ namespace NHibernate.Cfg
 		/// <summary> Enable statistics collection</summary>
 		public const string GenerateStatistics = "generate_statistics";
 
+		// Its test is ignored with reason "Not supported yet".
 		public const string UseIdentifierRollBack = "use_identifier_rollback";
 
-		// The classname of the HQL query parser factory
+		/// <summary>
+		/// The classname of the HQL query parser factory.
+		/// </summary>
 		public const string QueryTranslator = "query.factory_class";
 
-		// The class name of the LINQ query provider class, implementing from <see cref="INhQueryProvider"/>
+		/// <summary>
+		/// The class name of the LINQ query provider class, implementing <see cref="INhQueryProvider"/>.
+		/// </summary>
 		public const string QueryLinqProvider = "query.linq_provider_class";
 
+		// Since v5.0.1
+		[Obsolete("This setting has no usages and will be removed in a future version")]
 		public const string QueryImports = "query.imports";
 		public const string Hbm2ddlAuto = "hbm2ddl.auto";
 		public const string Hbm2ddlKeyWords = "hbm2ddl.keywords";
 
-		// Unused, not implemented
 		public const string SqlExceptionConverter = "sql_exception_converter";
 
 		public const string BatchVersionedData = "adonet.batch_versioned_data";
@@ -195,10 +207,10 @@ namespace NHibernate.Cfg
 
 		public const string LinqToHqlGeneratorsRegistry = "linqtohql.generatorsregistry";
 
-		/// <summary> Enable ordering of insert statements for the purpose of more effecient batching.</summary>
+		/// <summary> Enable ordering of insert statements for the purpose of more efficient batching.</summary>
 		public const string OrderInserts = "order_inserts";
 
-		/// <summary> Enable ordering of update statements for the purpose of more effecient batching.</summary>
+		/// <summary> Enable ordering of update statements for the purpose of more efficient batching.</summary>
 		public const string OrderUpdates = "order_updates";
 
 		public const string QueryModelRewriterFactory = "query.query_model_rewriter_factory";

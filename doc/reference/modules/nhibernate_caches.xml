@@ -91,6 +91,14 @@
 						</para>
 					</listitem>
 				</varlistentry>
+				<varlistentry>
+					<term><classname>NHibernate.Caches.RtMemoryCache</classname></term>
+					<listitem>
+						<para>
+							Uses <classname>System.Runtime.Caching.MemoryCache.Default</classname> as the cache provider.
+						</para>
+					</listitem>
+				</varlistentry>
 			</variablelist>
 		</para>
 	</abstract>

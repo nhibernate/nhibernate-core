@@ -1763,6 +1763,7 @@
             <para>
                 The <literal>cascade</literal> attribute permits the following values: 
                 <literal>all</literal>, <literal>save-update</literal>, <literal>delete</literal>,
+                <literal>delete-orphan</literal>, <literal>all-delete-orphan</literal> and
                 <literal>none</literal>. Setting a value other than <literal>none</literal>
                 will propagate certain operations to the associated (child) object.
                 See "Lifecycle Objects" below.

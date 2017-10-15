@@ -853,12 +853,6 @@ int accessLevel = permissions["accounts"];  // Error!]]></programlisting>
         </para>
 
         <para>
-            Please note that NHibernate does not support bidirectional one-to-many associations
-            with an indexed collection (list, map or array) as the "many" end, you have to
-            use a set or bag mapping.
-        </para>
-
-        <para>
             You may specify a bidirectional many-to-many association simply by mapping two
             many-to-many associations to the same database table and declaring one end as
             <emphasis>inverse</emphasis> (which one is your choice). Here's an example of
@@ -933,6 +927,75 @@ session.Update(category);                 // The relationship will be saved]]></
         <para>
             Mapping one end of an association with <literal>inverse="true"</literal> doesn't
             affect the operation of cascades, both are different concepts!
+        </para>
+
+    </sect1>
+
+    <sect1 id="collections-indexedbidirectional">
+        <title>Bidirectional associations with indexed collections</title>
+
+        <para>
+            There are some additional considerations for bidirectional mappings with indexed collections
+            (where one end is represented as a <literal>&lt;list&gt;</literal> or <literal>&lt;map&gt;</literal>)
+            when using NHibernate mapping files. If there is a property of the child class that maps to the
+            index column you can use <literal>inverse="true"</literal> on the collection mapping:
+        </para>
+
+        <programlisting><![CDATA[<class name="Parent">
+    <id name="Id" column="parent_id"/>
+    ....
+    <map name="Children" inverse="true">
+        <key column="parent_id"/>
+        <map-key column="name"
+            type="string"/>
+        <one-to-many class="Child"/>
+    </map>
+</class>
+
+<class name="Child">
+    <id name="Id" column="child_id"/>
+    ....
+    <property name="Name" column="name"
+        not-null="true"/>
+    <many-to-one name="Parent"
+        class="Parent"
+        column="parent_id"
+        not-null="true"/>
+</class>]]></programlisting>
+
+        <para>
+            If there is no such property on the child class, the association cannot be considered truly
+            bidirectional. That is, there is information available at one end of the association that is not
+            available at the other end. In this case, you cannot map the collection
+            <literal>inverse="true"</literal>. Instead, you could use the following mapping:
+        </para>
+
+        <programlisting><![CDATA[<class name="Parent">
+    <id name="Id" column="parent_id"/>
+    ....
+    <map name="Children">
+        <key column="parent_id"
+            not-null="true"/>
+        <map-key column="name"
+            type="string"/>
+        <one-to-many class="Child"/>
+    </map>
+</class>
+
+<class name="Child">
+    <id name="Id" column="child_id"/>
+    ....
+    <many-to-one name="Parent"
+        class="Parent"
+        column="parent_id"
+        insert="false"
+        update="false"
+        not-null="true"/>
+</class>]]></programlisting>
+
+        <para>
+            Note that in this mapping, the collection-valued end of the association is responsible for
+            updates to the foreign key.
         </para>
 
     </sect1>
