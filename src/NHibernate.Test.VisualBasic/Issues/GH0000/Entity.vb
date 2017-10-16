@@ -1,6 +1,6 @@
 ﻿Namespace Issues
 
-    Namespace NH0000
+    Namespace GH0000
 
         Public Class Entity
 

@@ -4,7 +4,7 @@ using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
-namespace NHibernate.Test.NHSpecificTest.NH0000
+namespace NHibernate.Test.NHSpecificTest.GH0000
 {
 	/// <summary>
 	/// Fixture using 'by code' mappings

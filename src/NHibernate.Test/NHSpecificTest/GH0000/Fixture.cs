@@ -2,7 +2,7 @@
 using NHibernate.Linq;
 using NUnit.Framework;
 
-namespace NHibernate.Test.NHSpecificTest.NH0000
+namespace NHibernate.Test.NHSpecificTest.GH0000
 {
 	[TestFixture]
 	public class Fixture : BugTestCase

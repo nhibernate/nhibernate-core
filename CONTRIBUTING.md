@@ -45,9 +45,13 @@ In most cases, you will be adding your test to the NHibernate.Test project. If t
 
 1.  Open **NHibernate.sln** from the src folder.
 2.  If adding a C# test, go to the NHSpecificTest folder in the NHibernate.Test project. If adding a VisualBasic test, go to the Issues folder in the NHibernate.Test.VisualBasic project.
-3.  Copy and paste the NH0000 folder to create a duplicate test ("Copy of NH0000").
-4.  Replace the four (five for vb) instances of NH0000 with your issue number.
+3.  Copy and paste the GH0000 folder to create a duplicate test ("Copy of GH0000").
+4.  Replace the four instances of GH0000 with your issue number.
 5.  Edit the test as you see fit. Don't commit yet; there are details in a later step.
+
+Do not use anymore the NHxxxx naming, they match issue numbers from https://nhibernate.jira.com/
+
+NHibernate has migrated its issue tracking from Jira to GitHub, and using the Jira naming may lead to conflicts with previous Jira issues.
 
 ## Running Your Unit Test
 
@@ -55,7 +59,7 @@ In most cases, you will be adding your test to the NHibernate.Test project. If t
 
 1.  Right click on the project (ex. NHibernate.Test) in Visual Studio.
 2.  Select: Debug -> Start New Instance
-3.  Type the name of your unit test to quickly go to it. For example: NH2318
+3.  Type the name of your unit test to quickly go to it. For example: GH2318
 4.  Select and run the test.
 5.  You can also make the test project your startup project and it will run NUnit when you press F5.
 
