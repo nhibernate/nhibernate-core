@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using System.Data.Common;
 
@@ -56,6 +57,23 @@ namespace NHibernate.Driver
                 }
             }
         }
+
+		public override void AdjustCommand(DbCommand command)
+		{
+			ChangeDateTimeKindToUnspecified(command.Parameters);
+		}
+
+		private static void ChangeDateTimeKindToUnspecified(DbParameterCollection commandParameters)
+		{
+			for (var i = 0; i < commandParameters.Count; i++)
+			{
+				var commandParameter = commandParameters[i];
+				if (commandParameter.Value is DateTime dateTimeParameter)
+				{
+					commandParameter.Value = DateTime.SpecifyKind(dateTimeParameter, DateTimeKind.Unspecified);
+				}
+			}
+		}
 
 		public override bool UseNamedPrefixInSql
 		{
