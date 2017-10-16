@@ -121,6 +121,10 @@ namespace NHibernate.Transform
 		/// same visibility and inheritance depth.</exception>
 		private void SetProperty(string alias, object value, object resultObj)
 		{
+			if (alias == null)
+				// Grouping properties in criteria are selected without alias, just ignore them.
+				return;
+
 			if (TrySet(alias, value, resultObj, _propertiesByNameCaseSensitive))
 				return;
 			if (TrySet(alias, value, resultObj, _fieldsByNameCaseSensitive))
