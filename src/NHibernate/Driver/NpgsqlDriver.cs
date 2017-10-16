@@ -40,31 +40,18 @@ namespace NHibernate.Driver
 		{
 		}
 
-		public override bool UseNamedPrefixInSql
-		{
-			get { return true; }
-		}
+		public override bool UseNamedPrefixInSql => true;
 
-		public override bool UseNamedPrefixInParameter
-		{
-			get { return true; }
-		}
+		public override bool UseNamedPrefixInParameter => true;
 
-		public override string NamedPrefix
-		{
-			get { return ":"; }
-		}
+		public override string NamedPrefix => ":";
 
-		public override bool SupportsMultipleOpenReaders
-		{
-			get { return false; }
-		}
+		public override bool SupportsMultipleOpenReaders => false;
 
-		protected override bool SupportsPreparingCommands
-		{
-			// NH-2267 Patrick Earl
-			get { return true; }
-		}
+		/// <remarks>
+		/// NH-2267 Patrick Earl
+		/// </remarks>
+		protected override bool SupportsPreparingCommands => true;
 
 		public override bool SupportsNullEnlistment => false;
 
@@ -73,10 +60,7 @@ namespace NHibernate.Driver
 			return new BasicResultSetsCommand(session);
 		}
 
-		public override bool SupportsMultipleQueries
-		{
-			get { return true; }
-		}
+		public override bool SupportsMultipleQueries => true;
 
 		protected override void InitializeParameter(DbParameter dbParam, string name, SqlTypes.SqlType sqlType)
 		{

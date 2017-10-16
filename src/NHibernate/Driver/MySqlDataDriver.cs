@@ -36,35 +36,23 @@ namespace NHibernate.Driver
 		/// MySql.Data uses named parameters in the sql.
 		/// </summary>
 		/// <value><see langword="true" /> - MySql uses <c>?</c> in the sql.</value>
-		public override bool UseNamedPrefixInSql
-		{
-			get { return true; }
-		}
+		public override bool UseNamedPrefixInSql => true;
 
 		/// <summary></summary>
-		public override bool UseNamedPrefixInParameter
-		{
-			get { return true; }
-		}
+		public override bool UseNamedPrefixInParameter => true;
 
 		/// <summary>
 		/// MySql.Data use the <c>?</c> to locate parameters in sql.
 		/// </summary>
 		/// <value><c>?</c> is used to locate parameters in sql.</value>
-		public override string NamedPrefix
-		{
-			get { return "?"; }
-		}
+		public override string NamedPrefix => "?";
 
 		/// <summary>
 		/// The MySql.Data driver does NOT support more than 1 open DbDataReader
 		/// with only 1 DbConnection.
 		/// </summary>
 		/// <value><see langword="false" /> - it is not supported.</value>
-		public override bool SupportsMultipleOpenReaders
-		{
-			get { return false; }
-		}
+		public override bool SupportsMultipleOpenReaders => false;
 
 		/// <summary>
 		/// MySql.Data does not support preparing of commands.
@@ -74,20 +62,14 @@ namespace NHibernate.Driver
 		/// With the Gamma MySql.Data provider it is throwing an exception with the 
 		/// message "Expected End of data packet" when a select command is prepared.
 		/// </remarks>
-		protected override bool SupportsPreparingCommands
-		{
-			get { return false; }
-		}
+		protected override bool SupportsPreparingCommands => false;
 
 		public override IResultSetsCommand GetResultSetsCommand(Engine.ISessionImplementor session)
 		{
 			return new BasicResultSetsCommand(session);
 		}
 
-		public override bool SupportsMultipleQueries
-		{
-			get { return true; }
-		}
+		public override bool SupportsMultipleQueries => true;
 
 		public override bool RequiresTimeSpanForTime => true;
 
