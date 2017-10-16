@@ -4,7 +4,7 @@ Imports NHibernate.Linq
 
 Namespace Issues
 
-    Namespace NH0000
+    Namespace GH0000
 
         <TestFixture()> _
         Public Class Fixture
