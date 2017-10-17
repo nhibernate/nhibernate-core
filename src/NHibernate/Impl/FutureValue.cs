@@ -1,16 +1,20 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Impl
 {
 	internal class FutureValue<T> : IFutureValue<T>, IDelayedValue
 	{
-		public delegate IEnumerable<T> GetResult();
+		public delegate IEnumerable GetResult();
 
-		public delegate Task<IEnumerable<T>> GetResultAsync(CancellationToken cancellationToken);
+		public delegate Task<IEnumerable> GetResultAsync(CancellationToken cancellationToken);
 
 		private readonly GetResult _getResult;
 
@@ -28,12 +32,9 @@ namespace NHibernate.Impl
 			{
 				var result = _getResult();
 				if (ExecuteOnEval != null)
-					// When not null, ExecuteOnEval is fetched with PostExecuteTransformer from IntermediateHqlTree
-					// through ExpressionToHqlTranslationResults, which requires a IQueryable as input and directly
-					// yields the scalar result when the query is scalar.
-					return (T)ExecuteOnEval.DynamicInvoke(result.AsQueryable());
+					return InvokeExecuteOnEval(result);
 
-				return result.FirstOrDefault();
+				return result.Cast<T>().FirstOrDefault();
 			}
 		}
 
@@ -41,11 +42,20 @@ namespace NHibernate.Impl
 		{
 			var result = await _getResultAsync(cancellationToken).ConfigureAwait(false);
 			if (ExecuteOnEval != null)
-				// When not null, ExecuteOnEval is fetched with PostExecuteTransformer from IntermediateHqlTree
-				// through ExpressionToHqlTranslationResults, which requires a IQueryable as input and directly
-				// yields the scalar result when the query is scalar.
-				return (T)ExecuteOnEval.DynamicInvoke(result.AsQueryable());
-			return result.FirstOrDefault();
+				return InvokeExecuteOnEval(result);
+
+			return result.Cast<T>().FirstOrDefault();
+		}
+
+		private T InvokeExecuteOnEval(IEnumerable result)
+		{
+			// We get the required element type of ExecuteOnEval and cast the result enumerable
+			var elementType = ExecuteOnEval.Method.GetParameters()[1].ParameterType.GetGenericArguments()[0];
+
+			// When not null, ExecuteOnEval is fetched with PostExecuteTransformer from IntermediateHqlTree
+			// through ExpressionToHqlTranslationResults, which requires a IQueryable as input and directly
+			// yields the scalar result when the query is scalar.
+			return (T)ExecuteOnEval.DynamicInvoke(MakeQueryableHelper.MakeQueryable(result, elementType));
 		}
 
 		public Delegate ExecuteOnEval
