@@ -74,7 +74,7 @@ namespace NHibernate.Engine
 				}
 				try
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						log.Debug("cascading to delete: {0}", entityName);
 					}
@@ -97,7 +97,7 @@ namespace NHibernate.Engine
 				}
 				try
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						log.Debug("cascading to lock: {0}", entityName);
 					}
@@ -120,7 +120,7 @@ namespace NHibernate.Engine
 				}
 				try
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						log.Debug("cascading to refresh: {0}", entityName);
 					}
@@ -143,7 +143,7 @@ namespace NHibernate.Engine
 				}
 				try
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						log.Debug("cascading to evict: {0}", entityName);
 					}
@@ -166,7 +166,7 @@ namespace NHibernate.Engine
 				}
 				try
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						log.Debug("cascading to saveOrUpdate: {0}", entityName);
 					}
@@ -189,7 +189,7 @@ namespace NHibernate.Engine
 				}
 				try
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						log.Debug("cascading to merge: {0}", entityName);
 					}
@@ -212,7 +212,7 @@ namespace NHibernate.Engine
 				}
 				try
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						log.Debug("cascading to persist: {0}", entityName);
 					}
@@ -235,7 +235,7 @@ namespace NHibernate.Engine
 				}
 				try
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						log.Debug("cascading to persistOnFlush: {0}", entityName);
 					}
@@ -282,7 +282,7 @@ namespace NHibernate.Engine
 				}
 				try
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						log.Debug("cascading to replicate: {0}", entityName);
 					}

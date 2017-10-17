@@ -42,7 +42,7 @@ namespace NHibernate.Impl
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static void AddInstance(string uid, string name, ISessionFactory instance, IDictionary<string, string> properties)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				string nameMsg = ((!string.IsNullOrEmpty(name)) ? name : "unnamed");
 

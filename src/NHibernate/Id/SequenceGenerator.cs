@@ -122,7 +122,7 @@ namespace NHibernate.Id
 					{
 						reader.Read();
 						object result = IdentifierGeneratorFactory.Get(reader, identifierType, session);
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 						{
 							log.Debug("Sequence identifier generated: {0}", result);
 						}

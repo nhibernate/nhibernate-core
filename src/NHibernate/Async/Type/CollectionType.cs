@@ -214,7 +214,7 @@ namespace NHibernate.Type
 					}
 				}
 
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("Created collection wrapper: {0}", MessageHelper.CollectionInfoString(persister, collection, key, session));
 				}

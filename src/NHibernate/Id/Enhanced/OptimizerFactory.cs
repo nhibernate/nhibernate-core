@@ -108,7 +108,7 @@ namespace NHibernate.Id.Enhanced
 				{
 					throw new HibernateException("increment size cannot be less than 1");
 				}
-				if (Log.IsDebugEnabled)
+				if (Log.IsDebugEnabled())
 				{
 					Log.Debug("Creating hilo optimizer with [incrementSize={0}; returnClass={1}]", incrementSize, returnClass.FullName);
 				}
@@ -274,7 +274,7 @@ namespace NHibernate.Id.Enhanced
 				{
 					throw new HibernateException("increment size cannot be less than 1");
 				}
-				if (Log.IsDebugEnabled)
+				if (Log.IsDebugEnabled())
 				{
 					Log.Debug("Creating pooled optimizer with [incrementSize={0}; returnClass={1}]", incrementSize, returnClass.FullName);
 				}
@@ -350,7 +350,7 @@ namespace NHibernate.Id.Enhanced
 				{
 					throw new HibernateException("increment size cannot be less than 1");
 				}
-				if (Log.IsDebugEnabled)
+				if (Log.IsDebugEnabled())
 				{
 					Log.Debug("Creating pooled optimizer (lo) with [incrementSize={0}; returnClass={1}]", incrementSize, returnClass.FullName);
 				}

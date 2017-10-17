@@ -28,7 +28,7 @@ namespace NHibernate.Driver
 
 			// Explicit scale for DbType.DateTime. Seems required for at least MS SQL Server 2008+.
 			_dbDateTimeScale = PropertiesHelper.GetByte(Environment.OdbcDateTimeScale, settings, null);
-			if (_dbDateTimeScale != null && Log.IsInfoEnabled)
+			if (_dbDateTimeScale != null && Log.IsInfoEnabled())
 			{
 				Log.Info("Will use scale {0} for DbType.DateTime parameters.", _dbDateTimeScale);
 			}

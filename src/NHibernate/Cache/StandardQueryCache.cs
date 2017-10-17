@@ -62,7 +62,7 @@ namespace NHibernate.Cache
 
 			long ts = session.Timestamp;
 
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 				Log.Debug("caching query results in region: '{0}'; {1}", _regionName, key);
 
 			IList cacheable = new List<object>(result.Count + 1) {ts};
@@ -85,7 +85,7 @@ namespace NHibernate.Cache
 
 		public IList Get(QueryKey key, ICacheAssembler[] returnTypes, bool isNaturalKeyLookup, ISet<string> spaces, ISessionImplementor session)
 		{
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 				Log.Debug("checking cached query results in region: '{0}'; {1}", _regionName, key);
 
 			var cacheable = (IList)_queryCache.Get(key);
@@ -97,7 +97,7 @@ namespace NHibernate.Cache
 
 			var timestamp = (long)cacheable[0];
 
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 				Log.Debug("Checking query spaces for up-to-dateness [{0}]", StringHelper.CollectionToString(spaces));
 
 			if (!isNaturalKeyLookup && !IsUpToDate(spaces, timestamp))

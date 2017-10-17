@@ -85,7 +85,7 @@ namespace NHibernate.Event.Default
 				IPersistentCollection persistentCollection = collectionType.Wrap(session, collection);
 				persistenceContext.AddNewCollection(persister, persistentCollection);
 
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 					log.Debug("Wrapped collection in role: {0}", collectionType.Role);
 
 				return persistentCollection; //Force a substitution!

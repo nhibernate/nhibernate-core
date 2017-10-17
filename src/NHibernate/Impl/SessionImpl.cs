@@ -672,7 +672,7 @@ namespace NHibernate.Impl
 
 				CheckAndUpdateSessionStatus();
 
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("delete: {0}", query);
 					if (values.Length != 0)
@@ -855,7 +855,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("flushing to force deletion of re-saved object: {0}",
 					          MessageHelper.InfoString(entityEntry.Persister, entityEntry.Id, Factory));
@@ -1325,7 +1325,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					IEntityPersister persister = Factory.GetEntityPersister(entityName);
 					log.Debug("initializing proxy: {0}", MessageHelper.InfoString(persister, id, Factory));
@@ -2261,7 +2261,7 @@ namespace NHibernate.Impl
 			set
 			{
 				CheckAndUpdateSessionStatus();
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("setting cache mode to: {0}", value);
 				}

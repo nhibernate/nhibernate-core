@@ -40,7 +40,7 @@ namespace NHibernate.Id
 			}
 			object id = await (GetAsync(rs, type, session, cancellationToken)).ConfigureAwait(false);
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Natively generated identity: {0}", id);
 			}

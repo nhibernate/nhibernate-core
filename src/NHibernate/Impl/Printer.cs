@@ -85,7 +85,7 @@ namespace NHibernate.Impl
 
 		public void ToString(object[] entities)
 		{
-			if (!log.IsDebugEnabled || entities.Length == 0)
+			if (!log.IsDebugEnabled() || entities.Length == 0)
 			{
 				return;
 			}

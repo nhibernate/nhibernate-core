@@ -30,7 +30,7 @@ namespace NHibernate.AdoNet.Util
 
 		public bool IsDebugEnabled
 		{
-			get { return Logger.IsDebugEnabled; }
+			get { return Logger.IsDebugEnabled(); }
 		}
 
 		/// <summary> Log a DbCommand. </summary>
@@ -39,7 +39,7 @@ namespace NHibernate.AdoNet.Util
 		/// <param name="style">The requested formatting style. </param>
 		public virtual void LogCommand(string message, DbCommand command, FormatStyle style)
 		{
-			if (!Logger.IsDebugEnabled && !LogToStdout || string.IsNullOrEmpty(command.CommandText))
+			if (!Logger.IsDebugEnabled() && !LogToStdout || string.IsNullOrEmpty(command.CommandText))
 			{
 				return;
 			}

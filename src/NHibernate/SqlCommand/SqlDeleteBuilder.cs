@@ -146,7 +146,7 @@ namespace NHibernate.SqlCommand
 				sqlBuilder.Add(whereStrings[0]);
 			}
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				if (initialCapacity < sqlBuilder.Count)
 				{

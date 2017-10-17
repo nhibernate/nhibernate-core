@@ -52,7 +52,7 @@ namespace NHibernate.Transform
 				}
 			}
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("transformed: {0} rows to: {1} distinct results", list.Count, result.Count);
 			}

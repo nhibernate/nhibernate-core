@@ -337,7 +337,7 @@ namespace NHibernate.Cfg
 
 		private static void LogAndThrow(Exception exception)
 		{
-			if (log.IsErrorEnabled)
+			if (log.IsErrorEnabled())
 			{
 				log.Error(exception, exception.Message);
 			}
@@ -391,7 +391,7 @@ namespace NHibernate.Cfg
 		/// <returns>This configuration object.</returns>
 		public Configuration AddXml(string xml, string name)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Mapping XML:\n{0}", xml);
 			}
@@ -466,7 +466,7 @@ namespace NHibernate.Cfg
 		/// <returns>This configuration object.</returns>
 		public Configuration AddDocument(XmlDocument doc, string name)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Mapping XML:\n{0}", doc.OuterXml);
 			}
@@ -1159,7 +1159,7 @@ namespace NHibernate.Cfg
 							string.Format("An association from the table {0} does not specify the referenced entity", fk.Table.Name));
 					}
 
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						log.Debug("resolving reference to class: {0}", referencedEntityName);
 					}
@@ -1403,7 +1403,7 @@ namespace NHibernate.Cfg
 		{
 			foreach (var kvp in factoryConfiguration.Properties)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("{0}={1}", kvp.Key, kvp.Value);
 				}

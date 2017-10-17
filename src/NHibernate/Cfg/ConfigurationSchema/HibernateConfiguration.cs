@@ -105,7 +105,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 
 		private static void LogWarnIgnoredProperty(string propName)
 		{
-			if (log.IsWarnEnabled)
+			if (log.IsWarnEnabled())
 				log.Warn("{0} property is ignored out of application configuration file.", propName);
 		}
 

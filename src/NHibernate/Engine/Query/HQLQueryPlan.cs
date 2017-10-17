@@ -85,7 +85,7 @@ namespace NHibernate.Engine.Query
 
 		public void PerformList(QueryParameters queryParameters, ISessionImplementor session, IList results)
 		{
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
 				Log.Debug("find: {0}", _sourceQuery);
 				queryParameters.LogParameters(session.Factory);
@@ -152,7 +152,7 @@ namespace NHibernate.Engine.Query
 
 		public IEnumerable PerformIterate(QueryParameters queryParameters, IEventSource session)
 		{
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
 				Log.Debug("enumerable: {0}", _sourceQuery);
 				queryParameters.LogParameters(session.Factory);
@@ -181,7 +181,7 @@ namespace NHibernate.Engine.Query
 
         public int PerformExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session)
         {
-            if (Log.IsDebugEnabled)
+            if (Log.IsDebugEnabled())
             {
                 Log.Debug("executeUpdate: {0}", _sourceQuery);
                 queryParameters.LogParameters(session.Factory);

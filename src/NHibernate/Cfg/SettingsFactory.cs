@@ -141,7 +141,7 @@ namespace NHibernate.Cfg
 
 			IDictionary<string, string> querySubstitutions = PropertiesHelper.ToDictionary(Environment.QuerySubstitutions,
 			                                                                               " ,=;:\n\t\r\f", properties);
-			if (log.IsInfoEnabled)
+			if (log.IsInfoEnabled())
 			{
 				log.Info("Query language substitutions: {0}", CollectionPrinter.ToString((IDictionary) querySubstitutions));
 			}

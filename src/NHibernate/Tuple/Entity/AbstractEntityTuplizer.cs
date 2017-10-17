@@ -59,7 +59,7 @@ namespace NHibernate.Tuple.Entity
 					foundCustomAccessor = true;
 				i++;				
 			}
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("{0} accessors found for entity: {1}", foundCustomAccessor ? "Custom" : "No custom",
 				                mappingInfo.EntityName);

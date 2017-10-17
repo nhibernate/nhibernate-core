@@ -310,7 +310,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			// If the query is already compiled, skip the compilation.
 			if ( _compiled ) 
 			{
-				if ( log.IsDebugEnabled ) 
+				if ( log.IsDebugEnabled() ) 
 				{
 					log.Debug( "compile() : The query is already compiled, skipping..." );
 				}
@@ -364,7 +364,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			{
 				// we do not actually propogate ANTLRExceptions as a cause, so
 				// log it here for diagnostic purposes
-				if ( log.IsInfoEnabled ) 
+				if ( log.IsInfoEnabled() ) 
 				{
 					log.Info(e, "converted antlr.RecognitionException");
 				}
@@ -458,7 +458,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 			var parser = new HqlParser(_tokens) {TreeAdaptor = new ASTTreeAdaptor(), Filter = _filter};
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("parse() - HQL: {0}", _hql);
 			}
@@ -615,7 +615,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 					_sql = gen.GetSQL();
 
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						log.Debug("SQL: {0}", _sql);
 					}

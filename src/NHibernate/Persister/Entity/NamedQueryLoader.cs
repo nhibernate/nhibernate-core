@@ -23,7 +23,7 @@ namespace NHibernate.Persister.Entity
 
 		public object Load(object id, object optionalObject, ISessionImplementor session)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("loading entity: {0} using named query: {1}", persister.EntityName, queryName);
 			}

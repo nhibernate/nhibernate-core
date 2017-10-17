@@ -180,7 +180,7 @@ namespace NHibernate.SqlCommand
 				sqlBuilder.Add(")");
 			}
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				if (initialCapacity < sqlBuilder.Count)
 				{

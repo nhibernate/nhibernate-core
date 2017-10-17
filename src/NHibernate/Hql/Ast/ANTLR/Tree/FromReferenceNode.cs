@@ -35,7 +35,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			set
 			{
 				_resolved = true;
-				if (Log.IsDebugEnabled)
+				if (Log.IsDebugEnabled())
 				{
 					Log.Debug("Resolved :  {0} -> {1}", Path, Text);
 				}

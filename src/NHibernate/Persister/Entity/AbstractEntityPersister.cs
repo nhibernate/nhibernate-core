@@ -1238,7 +1238,7 @@ namespace NHibernate.Persister.Entity
 			if (entry == null)
 				throw new HibernateException("entity is not associated with the session: " + id);
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("initializing lazy properties of: {0}, field access: {1}",
 					MessageHelper.InfoString(this, id, Factory),
@@ -1442,7 +1442,7 @@ namespace NHibernate.Persister.Entity
 
 		public object[] GetDatabaseSnapshot(object id, ISessionImplementor session)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Getting current persistent state for: {0}", MessageHelper.InfoString(this, id, Factory));
 			}
@@ -1638,7 +1638,7 @@ namespace NHibernate.Persister.Entity
 			}
 
 			object nextVersion = VersionType.Next(currentVersion, session);
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Forcing version increment [{0}; {1} -> {2}]",
 				          MessageHelper.InfoString(this, id, Factory),
@@ -1698,7 +1698,7 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		public object GetCurrentVersion(object id, ISessionImplementor session)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Getting version: {0}", MessageHelper.InfoString(this, id, Factory));
 			}
@@ -2430,7 +2430,7 @@ namespace NHibernate.Persister.Entity
 		protected int Dehydrate(object id, object[] fields, object rowId, bool[] includeProperty, bool[][] includeColumns, int table,
 			DbCommand statement, ISessionImplementor session, int index)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Dehydrating entity: {0}", MessageHelper.InfoString(this, id, Factory));
 			}
@@ -2478,7 +2478,7 @@ namespace NHibernate.Persister.Entity
 		public object[] Hydrate(DbDataReader rs, object id, object obj, ILoadable rootLoadable,
 			string[][] suffixedPropertyColumns, bool allProperties, ISessionImplementor session)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Hydrating entity: {0}", MessageHelper.InfoString(this, id, Factory));
 			}
@@ -2602,7 +2602,7 @@ namespace NHibernate.Persister.Entity
 		/// </remarks>
 		protected object Insert(object[] fields, bool[] notNull, SqlCommandInfo sql, object obj, ISessionImplementor session)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Inserting entity: {0} (native id)", EntityName);
 				if (IsVersioned)
@@ -2647,7 +2647,7 @@ namespace NHibernate.Persister.Entity
 				return;
 			}
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Inserting entity: {0}", MessageHelper.InfoString(this, tableId, Factory));
 				if (j == 0 && IsVersioned)
@@ -2765,7 +2765,7 @@ namespace NHibernate.Persister.Entity
 			//bool callable = IsUpdateCallable(j);
 			bool useBatch = j == 0 && expectation.CanBeBatched && IsBatchable; //note: updates to joined tables can't be batched...
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Updating entity: {0}", MessageHelper.InfoString(this, id, Factory));
 				if (useVersion)
@@ -2886,7 +2886,7 @@ namespace NHibernate.Persister.Entity
 			IExpectation expectation = Expectations.AppropriateExpectation(deleteResultCheckStyles[j]);
 			bool useBatch = j == 0 && expectation.CanBeBatched && IsBatchable;
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Deleting entity: {0}", MessageHelper.InfoString(this, tableId, Factory));
 				if (useVersion)
@@ -2897,7 +2897,7 @@ namespace NHibernate.Persister.Entity
 
 			if (IsTableCascadeDeleteEnabled(j))
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("delete handled by foreign key constraint: {0}", GetTableName(j));
 				}
@@ -3197,7 +3197,7 @@ namespace NHibernate.Persister.Entity
 
 		protected void LogStaticSQL()
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Static SQL for entity: {0}", EntityName);
 				if (sqlLazySelectString != null)
@@ -3580,7 +3580,7 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		public object Load(object id, object optionalObject, LockMode lockMode, ISessionImplementor session)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Fetching entity: {0}", MessageHelper.InfoString(this, id, Factory));
 			}
@@ -3705,7 +3705,7 @@ namespace NHibernate.Persister.Entity
 
 		private void LogDirtyProperties(int[] props)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				for (int i = 0; i < props.Length; i++)
 				{
@@ -4175,7 +4175,7 @@ namespace NHibernate.Persister.Entity
 			{
 				throw new MappingException("persistent class did not define a natural-id : " + MessageHelper.InfoString(this));
 			}
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Getting current natural-id snapshot state for: {0}", MessageHelper.InfoString(this, id, Factory));
 			}

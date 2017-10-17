@@ -29,7 +29,7 @@ namespace NHibernate.Engine
 		public static object Increment(object version, IVersionType versionType, ISessionImplementor session)
 		{
 			object next = versionType.Next(version, session);
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Incrementing: {0} to {1}",
 					versionType.ToLoggableString(version, session.Factory),
@@ -47,7 +47,7 @@ namespace NHibernate.Engine
 		public static object Seed(IVersionType versionType, ISessionImplementor session)
 		{
 			object seed = versionType.Seed(session);
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Seeding: {0}", seed);
 			}
@@ -74,7 +74,7 @@ namespace NHibernate.Engine
 			}
 			else
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("using initial version: {0}", initialVersion);
 				}

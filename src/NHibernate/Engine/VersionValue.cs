@@ -36,7 +36,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		public virtual bool? IsUnsaved(object version)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("unsaved-value: {0}", value);
 			}

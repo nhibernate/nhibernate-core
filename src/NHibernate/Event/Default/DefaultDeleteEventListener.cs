@@ -168,7 +168,7 @@ namespace NHibernate.Event.Default
 		/// <param name="transientEntities">A cache of already deleted entities. </param>
 		protected virtual void DeleteEntity(IEventSource session, object entity, EntityEntry entityEntry, bool isCascadeDeleteEnabled, IEntityPersister persister, ISet<object> transientEntities)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("deleting {0}", MessageHelper.InfoString(persister, entityEntry.Id, session.Factory));
 			}

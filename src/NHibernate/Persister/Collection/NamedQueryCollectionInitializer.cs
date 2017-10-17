@@ -20,7 +20,7 @@ namespace NHibernate.Persister.Collection
 
 		public void Initialize(object key, ISessionImplementor session)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("initializing collection: {0} using named query: {1}", persister.Role, queryName);
 			}

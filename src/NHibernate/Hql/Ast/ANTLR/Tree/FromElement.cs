@@ -389,7 +389,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				if (IsDereferencedBySuperclassOrSubclassProperty)
 				{
-					if (!_includeSubclasses && Log.IsInfoEnabled)
+					if (!_includeSubclasses && Log.IsInfoEnabled())
 					{
 						Log.Info(new Exception("stack-trace source"), "attempt to disable subclass-inclusions");
 					}
@@ -530,7 +530,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				{
 					Declarer propertyDeclarer = persister.GetSubclassPropertyDeclarer(propertyName);
 
-					if (Log.IsInfoEnabled)
+					if (Log.IsInfoEnabled())
 					{
 						Log.Info("handling property dereference [{0} ({1}) -> {2} ({3})]", persister.EntityName, ClassAlias, propertyName, propertyDeclarer);
 					}
@@ -595,7 +595,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			if (IsDereferencedBySuperclassOrSubclassProperty)
 			{
-				if (!includeSubclasses && Log.IsInfoEnabled)
+				if (!includeSubclasses && Log.IsInfoEnabled())
 				{
 					Log.Info(new Exception("stack-trace source"), "attempt to disable subclass-inclusions");
 				}
@@ -688,7 +688,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			// Register the FromElement with the FROM clause, now that we have the names and aliases.
 			fromClause.RegisterFromElement(this);
 
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
 				Log.Debug("{0} :  {1} ({2}) -> {3}",
 				          fromClause,

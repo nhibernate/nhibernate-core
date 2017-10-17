@@ -31,7 +31,7 @@ namespace NHibernate.Engine
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object next = await (versionType.NextAsync(version, session, cancellationToken)).ConfigureAwait(false);
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Incrementing: {0} to {1}",
 					versionType.ToLoggableString(version, session.Factory),
@@ -51,7 +51,7 @@ namespace NHibernate.Engine
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object seed = await (versionType.SeedAsync(session, cancellationToken)).ConfigureAwait(false);
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Seeding: {0}", seed);
 			}
@@ -80,7 +80,7 @@ namespace NHibernate.Engine
 			}
 			else
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("using initial version: {0}", initialVersion);
 				}

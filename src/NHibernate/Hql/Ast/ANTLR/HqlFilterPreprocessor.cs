@@ -67,7 +67,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			fromClause.AddChild(alias);
 
 			// Show the modified AST.
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("AddImpliedFormToFromNode() : Filter - Added 'this' as a from element...");
 			}

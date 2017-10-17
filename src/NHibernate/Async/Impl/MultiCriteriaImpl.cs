@@ -40,7 +40,7 @@ namespace NHibernate.Impl
 				CreateCriteriaLoaders();
 				CombineCriteriaQueries();
 
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("Multi criteria with {0} criteria queries.", criteriaQueries.Count);
 					for (int i = 0; i < criteriaQueries.Count; i++)

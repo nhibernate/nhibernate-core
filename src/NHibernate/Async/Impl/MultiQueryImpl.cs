@@ -44,7 +44,7 @@ namespace NHibernate.Impl
 				bool cacheable = session.Factory.Settings.IsQueryCacheEnabled && isCacheable;
 				combinedParameters = CreateCombinedQueryParameters();
 
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("Multi query with {0} queries.", queries.Count);
 					for (int i = 0; i < queries.Count; i++)
@@ -86,7 +86,7 @@ namespace NHibernate.Impl
 			{
 				using (var reader = await (resultSetsCommand.GetReaderAsync(commandTimeout != RowSelection.NoValue ? commandTimeout : (int?)null, cancellationToken)).ConfigureAwait(false))
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						log.Debug("Executing {0} queries", translators.Count);
 					}
@@ -118,7 +118,7 @@ namespace NHibernate.Impl
 						translator.Loader.HandleEmptyCollections(parameter.CollectionKeys, reader, session);
 						EntityKey[] keys = new EntityKey[entitySpan]; // we can reuse it each time
 
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 						{
 							log.Debug("processing result set");
 						}
@@ -127,7 +127,7 @@ namespace NHibernate.Impl
 						int count;
 						for (count = 0; count < maxRows && await (reader.ReadAsync(cancellationToken)).ConfigureAwait(false); count++)
 						{
-							if (log.IsDebugEnabled)
+							if (log.IsDebugEnabled())
 							{
 								log.Debug("result set row: {0}", count);
 							}
@@ -144,14 +144,14 @@ namespace NHibernate.Impl
 							}
 						}
 
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 						{
 							log.Debug("done processing result set ({0} rows)", count);
 						}
 
 						results.Add(tempResults);
 
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 						{
 							log.Debug("Query {0} returned {1} results", i, tempResults.Count);
 						}

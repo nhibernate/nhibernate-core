@@ -10,7 +10,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 	{
 		public static void LogMapped(this Property property, IInternalLogger2 log)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				var msg = "Mapped property: " + property.Name;
 				var columns = string.Join(",", property.Value.ColumnIterator.Select(c => c.Text).ToArray());

@@ -66,7 +66,7 @@ namespace NHibernate.Event.Default
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("evicting {0}", MessageHelper.InfoString(persister));
 			}

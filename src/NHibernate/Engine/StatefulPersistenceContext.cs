@@ -592,7 +592,7 @@ namespace NHibernate.Engine
 			{
 				var proxy = value as INHibernateProxy; 
 				
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("setting proxy identifier: {0}", id);
 				}
@@ -712,7 +712,7 @@ namespace NHibernate.Engine
 
 			if (!alreadyNarrow)
 			{
-				if (ProxyWarnLog.IsWarnEnabled)
+				if (ProxyWarnLog.IsWarnEnabled())
 				{
 					ProxyWarnLog.Warn("Narrowing proxy to {0} - this operation breaks ==", persister.ConcreteProxyClass);
 				}

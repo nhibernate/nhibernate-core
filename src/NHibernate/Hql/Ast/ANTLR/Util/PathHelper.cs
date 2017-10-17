@@ -33,7 +33,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 					lhs = factory.CreateNode(HqlSqlWalker.DOT, ".", lhs, child);
 				}
 			}
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("parsePath() : {0} -> {1}", path, ASTUtil.GetDebugstring(lhs));
 			}

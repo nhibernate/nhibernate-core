@@ -25,7 +25,7 @@ namespace NHibernate.Cache
 		public async Task<object> GetAsync(CacheKey key, long txTimestamp, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Cache lookup: {0}", key);
 			}
@@ -57,13 +57,13 @@ namespace NHibernate.Cache
 
 			if (minimalPut && await (cache.GetAsync(key, cancellationToken)).ConfigureAwait(false) != null)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("item already cached: {0}", key);
 				}
 				return false;
 			}
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Caching: {0}", key);
 			}
@@ -98,7 +98,7 @@ namespace NHibernate.Cache
 			}
 			try
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("Removing: {0}", key);
 				}
@@ -118,7 +118,7 @@ namespace NHibernate.Cache
 			}
 			try
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("Clearing");
 				}
@@ -141,7 +141,7 @@ namespace NHibernate.Cache
 			}
 			try
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("Invalidating: {0}", key);
 				}
@@ -174,7 +174,7 @@ namespace NHibernate.Cache
 			}
 			try
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("Invalidating (again): {0}", key);
 				}

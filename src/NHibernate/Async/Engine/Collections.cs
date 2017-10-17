@@ -62,7 +62,7 @@ namespace NHibernate.Engine
 				CollectionEntry entry = persistenceContext.GetCollectionEntry(coll);
 				ICollectionPersister loadedPersister = entry.LoadedPersister;
 
-				if (log.IsDebugEnabled && loadedPersister != null)
+				if (log.IsDebugEnabled() && loadedPersister != null)
 					log.Debug("Collection dereferenced: {0}", MessageHelper.CollectionInfoString(loadedPersister, coll, entry.LoadedKey, session));
 
 				// do a check
@@ -176,7 +176,7 @@ namespace NHibernate.Engine
 				ce.CurrentPersister = persister;
 				ce.CurrentKey = type.GetKeyOfOwner(entity, session); //TODO: better to pass the id in as an argument?
 
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("Collection found: {0}, was: {1}{2}",
 				          MessageHelper.CollectionInfoString(persister, collection, ce.CurrentKey, session),

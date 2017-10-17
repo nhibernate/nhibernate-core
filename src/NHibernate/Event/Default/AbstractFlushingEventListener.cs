@@ -67,7 +67,7 @@ namespace NHibernate.Event.Default
 			}
 
 			//some statistics
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug(
 					"Flushed: {0} insertions, {1} updates, {2} deletions to {3} objects",
@@ -229,7 +229,7 @@ namespace NHibernate.Event.Default
 		/// <param name="session">The session being flushed</param>
 		protected virtual void PerformExecutions(IEventSource session)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("executing flush");
 			}
@@ -250,7 +250,7 @@ namespace NHibernate.Event.Default
 			}
 			catch (HibernateException he)
 			{
-				if (log.IsErrorEnabled)
+				if (log.IsErrorEnabled())
 				{
 					log.Error(he, "Could not synchronize database state with session");
 				}
@@ -270,7 +270,7 @@ namespace NHibernate.Event.Default
 		/// </summary>
 		protected virtual void PostFlush(ISessionImplementor session)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("post flush");
 			}

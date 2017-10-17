@@ -57,7 +57,7 @@ namespace NHibernate.Engine
 			}
 			await (DirtyAsync(collection, cancellationToken)).ConfigureAwait(false);
 
-			if (log.IsDebugEnabled && collection.IsDirty && loadedPersister != null)
+			if (log.IsDebugEnabled() && collection.IsDirty && loadedPersister != null)
 			{
 				log.Debug("Collection dirty: {0}", MessageHelper.CollectionInfoString(loadedPersister, loadedKey));
 			}

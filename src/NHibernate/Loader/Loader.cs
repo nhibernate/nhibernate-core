@@ -453,7 +453,7 @@ namespace NHibernate.Loader
 					HandleEmptyCollections(queryParameters.CollectionKeys, rs, session);
 					EntityKey[] keys = new EntityKey[entitySpan]; // we can reuse it each time
 
-					if (Log.IsDebugEnabled)
+					if (Log.IsDebugEnabled())
 					{
 						Log.Debug("processing result set");
 					}
@@ -461,7 +461,7 @@ namespace NHibernate.Loader
 					int count;
 					for (count = 0; count < maxRows && rs.Read(); count++)
 					{
-						if (Log.IsDebugEnabled)
+						if (Log.IsDebugEnabled())
 						{
 							Log.Debug("result set row: {0}", count);
 						}
@@ -478,7 +478,7 @@ namespace NHibernate.Loader
 						}
 					}
 
-					if (Log.IsDebugEnabled)
+					if (Log.IsDebugEnabled())
 					{
 						Log.Debug("done processing result set ({0} rows)", count);
 					}
@@ -612,7 +612,7 @@ namespace NHibernate.Loader
 			{
 				int hydratedObjectsSize = hydratedObjects.Count;
 
-				if (Log.IsDebugEnabled)
+				if (Log.IsDebugEnabled())
 				{
 					Log.Debug("total objects hydrated: {0}", hydratedObjectsSize);
 				}
@@ -751,7 +751,7 @@ namespace NHibernate.Loader
 			{
 				// we found a collection element in the result set
 
-				if (Log.IsDebugEnabled)
+				if (Log.IsDebugEnabled())
 				{
 					Log.Debug("found row of collection: {0}", MessageHelper.CollectionInfoString(persister, collectionRowKey));
 				}
@@ -783,7 +783,7 @@ namespace NHibernate.Loader
 				// ensure that a collection is created with the owner's identifier,
 				// since what we have is an empty collection
 
-				if (Log.IsDebugEnabled)
+				if (Log.IsDebugEnabled())
 				{
 					Log.Debug("result set contains (possibly empty) collection: {0}", MessageHelper.CollectionInfoString(persister, optionalKey));
 				}
@@ -813,7 +813,7 @@ namespace NHibernate.Loader
 					for (int i = 0; i < keys.Length; i++)
 					{
 						// handle empty collections
-						if (Log.IsDebugEnabled)
+						if (Log.IsDebugEnabled())
 						{
 							Log.Debug("result set contains (possibly empty) collection: {0}",
 							          MessageHelper.CollectionInfoString(collectionPersisters[j], keys[i]));
@@ -902,7 +902,7 @@ namespace NHibernate.Loader
 			int cols = persisters.Length;
 			IEntityAliases[] descriptors = EntityAliases;
 
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
 				Log.Debug("result row: {0}", StringHelper.ToString(keys));
 			}
@@ -1029,7 +1029,7 @@ namespace NHibernate.Loader
 			// Get the persister for the _subclass_
 			ILoadable persister = (ILoadable)Factory.GetEntityPersister(instanceClass);
 
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
 				Log.Debug("Initializing object from DataReader: {0}", MessageHelper.InfoString(persister, id));
 			}
@@ -1325,7 +1325,7 @@ namespace NHibernate.Loader
 		protected IList LoadEntity(ISessionImplementor session, object id, IType identifierType, object optionalObject,
 								   string optionalEntityName, object optionalIdentifier, IEntityPersister persister)
 		{
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
 				Log.Debug("loading entity: {0}", MessageHelper.InfoString(persister, id, identifierType, Factory));
 			}
@@ -1389,7 +1389,7 @@ namespace NHibernate.Loader
 												 object optionalObject, string optionalEntityName, object optionalId,
 												 IEntityPersister persister)
 		{
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
 				Log.Debug("batch loading entity: {0}", MessageHelper.InfoString(persister, ids, Factory));
 			}
@@ -1425,7 +1425,7 @@ namespace NHibernate.Loader
 		/// </summary>
 		public void LoadCollection(ISessionImplementor session, object id, IType type)
 		{
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
 				Log.Debug("loading collection: {0}", MessageHelper.CollectionInfoString(CollectionPersisters[0], id));
 			}
@@ -1455,7 +1455,7 @@ namespace NHibernate.Loader
 		/// </summary>
 		public void LoadCollectionBatch(ISessionImplementor session, object[] ids, IType type)
 		{
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
 				Log.Debug("batch loading collection: {0}", MessageHelper.CollectionInfoString(CollectionPersisters[0], ids));
 			}

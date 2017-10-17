@@ -373,7 +373,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 						enabledFilters,
 						propertyMapping.ToColumns(tableAlias, path)
 				);
-				if (Log.IsDebugEnabled)
+				if (Log.IsDebugEnabled())
 				{
 					Log.Debug("toColumns({0},{1}) : subquery = {2}", tableAlias, path, subquery);
 				}

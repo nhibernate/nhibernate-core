@@ -19,21 +19,21 @@ namespace NHibernate.Util
 
 		public static void LogExceptions(Exception ex, string message)
 		{
-			if (log.IsErrorEnabled)
+			if (log.IsErrorEnabled())
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					message = StringHelper.IsNotEmpty(message) ? message : DefaultExceptionMsg;
 					log.Debug(ex, message);
 				}
 
 				// Pass full exception on highest call
-				if (log.IsWarnEnabled) log.Warn(ex, ex.ToString());
+				if (log.IsWarnEnabled()) log.Warn(ex, ex.ToString());
 				log.Error(ex, ex.Message);
 				ex = ex.InnerException;
 				while (ex != null)
 				{
-					if (log.IsWarnEnabled) log.Warn(ex.ToString());
+					if (log.IsWarnEnabled()) log.Warn(ex.ToString());
 					log.Error(ex.Message);
 					ex = ex.InnerException;
 				}

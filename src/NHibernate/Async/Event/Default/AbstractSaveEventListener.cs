@@ -91,7 +91,7 @@ namespace NHibernate.Event.Default
 			}
 			else
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("generated identifier: {0}, using strategy: {1}", 
 						persister.IdentifierType.ToLoggableString(generatedId, source.Factory), 
@@ -125,7 +125,7 @@ namespace NHibernate.Event.Default
 		protected virtual async Task<object> PerformSaveAsync(object entity, object id, IEntityPersister persister, bool useIdentityColumn, object anything, IEventSource source, bool requiresImmediateIdAccess, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("saving {0}", MessageHelper.InfoString(persister, id, source.Factory));
 			}
@@ -371,7 +371,7 @@ namespace NHibernate.Event.Default
 				if (entry.Status != Status.Deleted)
 				{
 					// do nothing for persistent instances
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						log.Debug("persistent instance of: {0}", GetLoggableName(entityName, entity));
 					}
@@ -380,7 +380,7 @@ namespace NHibernate.Event.Default
 				else
 				{
 					//ie. e.status==DELETED
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						log.Debug("deleted instance of: {0}", GetLoggableName(entityName, entity));
 					}
@@ -397,7 +397,7 @@ namespace NHibernate.Event.Default
 					? (await (ForeignKeys.IsTransientFastAsync(entityName, entity, source, cancellationToken)).ConfigureAwait(false)).GetValueOrDefault(assumed.Value)
 					: await (ForeignKeys.IsTransientSlowAsync(entityName, entity, source, cancellationToken)).ConfigureAwait(false))
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						log.Debug("transient instance of: {0}", GetLoggableName(entityName, entity));
 					}
@@ -405,7 +405,7 @@ namespace NHibernate.Event.Default
 				}
 				else
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						log.Debug("detached instance of: {0}", GetLoggableName(entityName, entity));
 					}

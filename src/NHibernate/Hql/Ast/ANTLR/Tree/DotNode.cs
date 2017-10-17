@@ -268,7 +268,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 				// If the lhs is a collection, use CollectionPropertyMapping
 				IType propertyType = fromElement.GetPropertyType(_propertyName, _propertyPath);
-				if (Log.IsDebugEnabled)
+				if (Log.IsDebugEnabled())
 				{
 					Log.Debug("getDataType() : {0} -> {1}", _propertyPath, propertyType);
 				}
@@ -334,7 +334,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			);
 			FromElement elem = factory.CreateCollection( queryableCollection, role, _joinType, _fetch, indexed );
 
-			if ( Log.IsDebugEnabled ) 
+			if ( Log.IsDebugEnabled() ) 
 			{
 				Log.Debug("dereferenceCollection() : Created new FROM element for {0} : {1}", propName, elem);
 			}
@@ -426,7 +426,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			// special shortcut for id properties, skip the join!
 			// this must only occur at the _end_ of a path expression
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
 				Log.Debug("dereferenceShortcut() : property {0} in {1} does not require a join.",
 				          propertyName,
@@ -447,7 +447,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private void DereferenceEntityJoin(string classAlias, EntityType propertyType, bool impliedJoin, IASTNode parent)
 		{
 			_dereferenceType = DerefEntity;
-			if ( Log.IsDebugEnabled ) 
+			if ( Log.IsDebugEnabled() ) 
 			{
 				Log.Debug( "dereferenceEntityJoin() : generating join for {0} in {1} {2} parent = {3}",
 				           _propertyName,
@@ -599,7 +599,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			if (IsCorrelatedSubselect)
 			{
-				if (Log.IsDebugEnabled)
+				if (Log.IsDebugEnabled())
 				{
 					Log.Debug("{0}() : correlated subquery", methodName);
 				}
@@ -644,14 +644,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				_propertyName = rhs.Text;
 				_propertyPath = _propertyPath + "." + _propertyName; // Append the new property name onto the unresolved path.
 				dotNode._propertyPath = _propertyPath;
-				if (Log.IsDebugEnabled)
+				if (Log.IsDebugEnabled())
 				{
 					Log.Debug("Unresolved property path is now '{0}'", dotNode._propertyPath);
 				}
 			}
 			else
 			{
-				if (Log.IsDebugEnabled)
+				if (Log.IsDebugEnabled())
 				{
 					Log.Debug("terminal propertyPath = [{0}]", _propertyPath);
 				}

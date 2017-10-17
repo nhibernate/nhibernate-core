@@ -35,7 +35,7 @@ namespace NHibernate.Tuple.Component
 				}
 				i++;
 			}
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("{0} accessors found for component: {1}", foundCustomAccessor ? "Custom" : "No custom",
 								component.ComponentClassName);

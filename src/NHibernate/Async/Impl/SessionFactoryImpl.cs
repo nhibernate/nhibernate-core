@@ -124,7 +124,7 @@ namespace NHibernate.Impl
 				IEntityPersister p = GetEntityPersister(persistentClass.FullName);
 				if (p.HasCache)
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						log.Debug("evicting second-level cache: {0}", MessageHelper.InfoString(p, id));
 					}
@@ -150,7 +150,7 @@ namespace NHibernate.Impl
 				IEntityPersister p = GetEntityPersister(persistentClass.FullName);
 				if (p.HasCache)
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						log.Debug("evicting second-level cache: {0}", p.EntityName);
 					}
@@ -175,7 +175,7 @@ namespace NHibernate.Impl
 				IEntityPersister p = GetEntityPersister(entityName);
 				if (p.HasCache)
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						log.Debug("evicting second-level cache: {0}", p.EntityName);
 					}
@@ -200,7 +200,7 @@ namespace NHibernate.Impl
 				IEntityPersister p = GetEntityPersister(entityName);
 				if (p.HasCache)
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						log.Debug("evicting second-level cache: {0}", MessageHelper.InfoString(p, id, this));
 					}
@@ -226,7 +226,7 @@ namespace NHibernate.Impl
 				ICollectionPersister p = GetCollectionPersister(roleName);
 				if (p.HasCache)
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						log.Debug("evicting second-level cache: {0}", MessageHelper.CollectionInfoString(p, id));
 					}
@@ -252,7 +252,7 @@ namespace NHibernate.Impl
 				ICollectionPersister p = GetCollectionPersister(roleName);
 				if (p.HasCache)
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						log.Debug("evicting second-level cache: {0}", p.Role);
 					}

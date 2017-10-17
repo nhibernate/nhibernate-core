@@ -33,7 +33,7 @@ namespace NHibernate.Event.Default
 
 					if (FlushIsReallyNeeded(@event, source))
 					{
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 							log.Debug("Need to execute flush");
 
 						PerformExecutions(source);
@@ -49,7 +49,7 @@ namespace NHibernate.Event.Default
 					else
 					{
 
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 							log.Debug("Dont need to execute flush");
 						source.ActionQueue.ClearFromFlushNeededCheck(oldSize);
 					}

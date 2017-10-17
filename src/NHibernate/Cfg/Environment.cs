@@ -287,7 +287,7 @@ namespace NHibernate.Cfg
 		static Environment()
 		{
 			// Computing the version string is a bit expensive, so do it only if logging is enabled.
-			if (log.IsInfoEnabled)
+			if (log.IsInfoEnabled())
 			{
 				log.Info("NHibernate {0}", Version);
 			}

@@ -66,7 +66,7 @@ namespace NHibernate.Event.Default
 			}
 
 			//some statistics
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug(
 					"Flushed: {0} insertions, {1} updates, {2} deletions to {3} objects",
@@ -235,7 +235,7 @@ namespace NHibernate.Event.Default
 		protected virtual async Task PerformExecutionsAsync(IEventSource session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("executing flush");
 			}
@@ -256,7 +256,7 @@ namespace NHibernate.Event.Default
 			}
 			catch (HibernateException he)
 			{
-				if (log.IsErrorEnabled)
+				if (log.IsErrorEnabled())
 				{
 					log.Error(he, "Could not synchronize database state with session");
 				}

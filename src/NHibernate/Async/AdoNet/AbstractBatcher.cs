@@ -72,7 +72,7 @@ namespace NHibernate.AdoNet
 			cancellationToken.ThrowIfCancellationRequested();
 			if (sql.Equals(_batchCommandSql) && ArrayHelper.ArrayEquals(parameterTypes, _batchCommandParameterTypes))
 			{
-				if (Log.IsDebugEnabled)
+				if (Log.IsDebugEnabled())
 				{
 					Log.Debug("reusing command {0}", _batchCommand.CommandText);
 				}
@@ -117,7 +117,7 @@ namespace NHibernate.AdoNet
 			LogCommand(cmd);
 			await (PrepareAsync(cmd, cancellationToken)).ConfigureAwait(false);
 			Stopwatch duration = null;
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 				duration = Stopwatch.StartNew();
 			try
 			{
@@ -131,7 +131,7 @@ namespace NHibernate.AdoNet
 			}
 			finally
 			{
-				if (Log.IsDebugEnabled && duration != null)
+				if (Log.IsDebugEnabled() && duration != null)
 					Log.Debug("ExecuteNonQuery took {0} ms", duration.ElapsedMilliseconds);
 			}
 		}
@@ -143,7 +143,7 @@ namespace NHibernate.AdoNet
 			LogCommand(cmd);
 			await (PrepareAsync(cmd, cancellationToken)).ConfigureAwait(false);
 			Stopwatch duration = null;
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 				duration = Stopwatch.StartNew();
 			DbDataReader reader = null;
 			try
@@ -158,7 +158,7 @@ namespace NHibernate.AdoNet
 			}
 			finally
 			{
-				if (Log.IsDebugEnabled && duration != null && reader != null)
+				if (Log.IsDebugEnabled() && duration != null && reader != null)
 				{
 					Log.Debug("ExecuteReader took {0} ms", duration.ElapsedMilliseconds);
 					_readersDuration[reader] = duration;
@@ -219,11 +219,11 @@ namespace NHibernate.AdoNet
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			Stopwatch duration = null;
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 				duration = Stopwatch.StartNew();
 			var countBeforeExecutingBatch = CountOfStatementsInCurrentBatch;
 			await (DoExecuteBatchAsync(ps, cancellationToken)).ConfigureAwait(false);
-			if (Log.IsDebugEnabled && duration != null)
+			if (Log.IsDebugEnabled() && duration != null)
 				Log.Debug("ExecuteBatch for {0} statements took {1} ms",
 					countBeforeExecutingBatch,
 					duration.ElapsedMilliseconds);

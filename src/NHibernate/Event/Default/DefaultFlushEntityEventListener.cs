@@ -209,7 +209,7 @@ namespace NHibernate.Event.Default
 			IEntityPersister persister = entry.Persister;
 			object[] values = @event.PropertyValues;
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				if (status == Status.Deleted)
 				{

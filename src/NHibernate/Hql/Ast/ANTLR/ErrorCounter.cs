@@ -22,7 +22,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			ReportError( e.ToString() );
 			_recognitionExceptions.Add( e );
-			if ( log.IsDebugEnabled ) {
+			if ( log.IsDebugEnabled() ) {
 				log.Debug(e, e.ToString());
 			}
 		}
@@ -76,7 +76,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			else 
 			{
 				// all clear
-				if ( log.IsDebugEnabled ) 
+				if ( log.IsDebugEnabled() ) 
 				{
 					log.Debug( "throwQueryException() : no errors" );
 				}

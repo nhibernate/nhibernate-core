@@ -62,7 +62,7 @@ namespace NHibernate.Persister.Entity
 		public async Task<object[]> GetDatabaseSnapshotAsync(object id, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Getting current persistent state for: {0}", MessageHelper.InfoString(this, id, Factory));
 			}
@@ -135,7 +135,7 @@ namespace NHibernate.Persister.Entity
 			{
 
 				object nextVersion = await (VersionType.NextAsync(currentVersion, session, cancellationToken)).ConfigureAwait(false);
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("Forcing version increment [{0}; {1} -> {2}]",
 				          MessageHelper.InfoString(this, id, Factory),
@@ -183,7 +183,7 @@ namespace NHibernate.Persister.Entity
 		public async Task<object> GetCurrentVersionAsync(object id, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Getting version: {0}", MessageHelper.InfoString(this, id, Factory));
 			}
@@ -271,7 +271,7 @@ namespace NHibernate.Persister.Entity
 			DbCommand statement, ISessionImplementor session, int index, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Dehydrating entity: {0}", MessageHelper.InfoString(this, id, Factory));
 			}
@@ -320,7 +320,7 @@ namespace NHibernate.Persister.Entity
 			string[][] suffixedPropertyColumns, bool allProperties, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Hydrating entity: {0}", MessageHelper.InfoString(this, id, Factory));
 			}
@@ -435,7 +435,7 @@ namespace NHibernate.Persister.Entity
 			}
 			try
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("Inserting entity: {0} (native id)", EntityName);
 					if (IsVersioned)
@@ -478,7 +478,7 @@ namespace NHibernate.Persister.Entity
 				return;
 			}
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Inserting entity: {0}", MessageHelper.InfoString(this, tableId, Factory));
 				if (j == 0 && IsVersioned)
@@ -598,7 +598,7 @@ namespace NHibernate.Persister.Entity
 			//bool callable = IsUpdateCallable(j);
 			bool useBatch = j == 0 && expectation.CanBeBatched && IsBatchable; //note: updates to joined tables can't be batched...
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Updating entity: {0}", MessageHelper.InfoString(this, id, Factory));
 				if (useVersion)
@@ -720,7 +720,7 @@ namespace NHibernate.Persister.Entity
 			IExpectation expectation = Expectations.AppropriateExpectation(deleteResultCheckStyles[j]);
 			bool useBatch = j == 0 && expectation.CanBeBatched && IsBatchable;
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Deleting entity: {0}", MessageHelper.InfoString(this, tableId, Factory));
 				if (useVersion)
@@ -731,7 +731,7 @@ namespace NHibernate.Persister.Entity
 
 			if (IsTableCascadeDeleteEnabled(j))
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("delete handled by foreign key constraint: {0}", GetTableName(j));
 				}
@@ -987,7 +987,7 @@ namespace NHibernate.Persister.Entity
 			}
 			try
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("Fetching entity: {0}", MessageHelper.InfoString(this, id, Factory));
 				}
@@ -1245,7 +1245,7 @@ namespace NHibernate.Persister.Entity
 			return InternalGetNaturalIdentifierSnapshotAsync();
 			async Task<object[]> InternalGetNaturalIdentifierSnapshotAsync()
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("Getting current natural-id snapshot state for: {0}", MessageHelper.InfoString(this, id, Factory));
 				}

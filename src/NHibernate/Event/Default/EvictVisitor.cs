@@ -51,7 +51,7 @@ namespace NHibernate.Event.Default
 		{
 			CollectionEntry ce = (CollectionEntry)Session.PersistenceContext.CollectionEntries[collection];
 			Session.PersistenceContext.CollectionEntries.Remove(collection);
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 				log.Debug("evicting collection: {0}", MessageHelper.CollectionInfoString(ce.LoadedPersister, collection, ce.LoadedKey, Session));
 			if (ce.LoadedPersister != null && ce.LoadedKey != null)
 			{

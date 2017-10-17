@@ -35,7 +35,7 @@ namespace NHibernate.Engine.Query
 		public async Task PerformListAsync(QueryParameters queryParameters, ISessionImplementor session, IList results, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
 				Log.Debug("find: {0}", _sourceQuery);
 				queryParameters.LogParameters(session.Factory);
@@ -103,7 +103,7 @@ namespace NHibernate.Engine.Query
 		public async Task<IEnumerable> PerformIterateAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
 				Log.Debug("enumerable: {0}", _sourceQuery);
 				queryParameters.LogParameters(session.Factory);
@@ -134,7 +134,7 @@ namespace NHibernate.Engine.Query
         public async Task<int> PerformExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken)
         {
                cancellationToken.ThrowIfCancellationRequested();
-            if (Log.IsDebugEnabled)
+            if (Log.IsDebugEnabled())
             {
                 Log.Debug("executeUpdate: {0}", _sourceQuery);
                 queryParameters.LogParameters(session.Factory);

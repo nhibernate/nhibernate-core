@@ -42,7 +42,7 @@ namespace NHibernate.Cache
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await _lockObjectAsync.LockAsync())
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("Cache lookup: {0}", key);
 				}
@@ -58,7 +58,7 @@ namespace NHibernate.Cache
 
 				if (gettable)
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						log.Debug("Cache hit: {0}", key);
 					}
@@ -67,7 +67,7 @@ namespace NHibernate.Cache
 				}
 				else
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						if (lockable == null)
 						{
@@ -100,7 +100,7 @@ namespace NHibernate.Cache
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await _lockObjectAsync.LockAsync())
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("Invalidating: {0}", key);
 				}
@@ -143,7 +143,7 @@ namespace NHibernate.Cache
 
 			using (await _lockObjectAsync.LockAsync())
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("Caching: {0}", key);
 				}
@@ -160,7 +160,7 @@ namespace NHibernate.Cache
 					if (puttable)
 					{
 						await (cache.PutAsync(key, new CachedItem(value, cache.NextTimestamp(), version), cancellationToken)).ConfigureAwait(false);
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 						{
 							log.Debug("Cached: {0}", key);
 						}
@@ -168,7 +168,7 @@ namespace NHibernate.Cache
 					}
 					else
 					{
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 						{
 							if (lockable.IsLock)
 							{
@@ -215,7 +215,7 @@ namespace NHibernate.Cache
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await _lockObjectAsync.LockAsync())
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("Releasing: {0}", key);
 				}
@@ -289,7 +289,7 @@ namespace NHibernate.Cache
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await _lockObjectAsync.LockAsync())
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("Updating: {0}", key);
 				}
@@ -312,7 +312,7 @@ namespace NHibernate.Cache
 						{
 							//recache the updated state
 							await (cache.PutAsync(key, new CachedItem(value, cache.NextTimestamp(), version), cancellationToken)).ConfigureAwait(false);
-							if (log.IsDebugEnabled)
+							if (log.IsDebugEnabled())
 							{
 								log.Debug("Updated: {0}", key);
 							}
@@ -337,7 +337,7 @@ namespace NHibernate.Cache
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await _lockObjectAsync.LockAsync())
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("Inserting: {0}", key);
 				}
@@ -350,7 +350,7 @@ namespace NHibernate.Cache
 					if (lockable == null)
 					{
 						await (cache.PutAsync(key, new CachedItem(value, cache.NextTimestamp(), version), cancellationToken)).ConfigureAwait(false);
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 						{
 							log.Debug("Inserted: {0}", key);
 						}

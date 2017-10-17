@@ -14,7 +14,7 @@ namespace NHibernate.Linq
 		/// </summary>
 		internal static void LogExpression(string msg, Expression expression)
 		{
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
 				// If the expression contains NHibernate proxies, those will be initialized
 				// when we call ToString() on the exception. The string representation is

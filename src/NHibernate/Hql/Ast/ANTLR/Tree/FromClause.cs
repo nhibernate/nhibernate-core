@@ -130,7 +130,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public void AddJoinByPathMap(string path, FromElement destination)
 		{
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
 				Log.Debug("addJoinByPathMap() : {0} -> {1}", path, destination);
 			}
@@ -140,7 +140,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public void AddCollectionJoinFromElementByPath(string path, FromElement destination)
 		{
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
 				Log.Debug("addCollectionJoinFromElementByPath() : {0} -> {1}", path, destination);
 			}

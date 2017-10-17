@@ -60,7 +60,7 @@ namespace NHibernate.Event.Default
 
 			if (oldVersion != null)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("found existing row for {0}", MessageHelper.InfoString(persister, id, source.Factory));
 				}
@@ -89,7 +89,7 @@ namespace NHibernate.Event.Default
 			else
 			{
 				// no existing row - do an insert
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("no existing row, replicating new instance {0}", MessageHelper.InfoString(persister, id, source.Factory));
 				}
@@ -103,7 +103,7 @@ namespace NHibernate.Event.Default
 
 		private void PerformReplication(object entity, object id, object version, IEntityPersister persister, ReplicationMode replicationMode, IEventSource source)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("replicating changes to {0}", MessageHelper.InfoString(persister, id, source.Factory));
 			}

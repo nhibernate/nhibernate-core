@@ -124,7 +124,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			if ( fromElement.UseFromFragment /*&& StringHelper.isNotEmpty( frag )*/ ) 
 			{
 				SqlString fromFragment = ProcessFromFragment( frag, join ).Trim();
-				if ( log.IsDebugEnabled ) 
+				if ( log.IsDebugEnabled() ) 
 				{
 					log.Debug("Using FROM fragment [{0}]", fromFragment);
 				}

@@ -99,7 +99,7 @@ namespace NHibernate.Id
 			}
 			object id = Get(rs, type, session);
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Natively generated identity: {0}", id);
 			}

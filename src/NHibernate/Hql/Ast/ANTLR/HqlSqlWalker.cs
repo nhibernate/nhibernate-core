@@ -175,7 +175,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				_statementType = statementType;
 			}
 			_currentStatementType = statementType;
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("{0} << begin [level={1}, statement={2}]", statementName, _level, _statementTypeName);
 			}
@@ -183,7 +183,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		void BeforeStatementCompletion(string statementName)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("{0} : finishing up [level={1}, statement={2}]", statementName, _level, _statementTypeName);
 			}
@@ -399,7 +399,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		void AfterStatementCompletion(string statementName)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("{0} >> end [level={1}, statement={2}]", statementName, _level, _statementTypeName);
 			}
@@ -456,7 +456,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		void ProcessQuery(IASTNode select, IASTNode query)
 		{
-			if ( log.IsDebugEnabled ) {
+			if ( log.IsDebugEnabled() ) {
 				log.Debug("processQuery() : {0}", query.ToStringTree());
 			}
 
@@ -529,7 +529,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			_selectClause = ( SelectClause ) qn.GetChild(0);
 			_selectClause.InitializeDerivedSelectClause( _currentFromClause );
 
-			if ( log.IsDebugEnabled ) 
+			if ( log.IsDebugEnabled() ) 
 			{
 				log.Debug( "Derived SELECT clause created." );
 			}
@@ -715,7 +715,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				}
 			}
 
-			if ( log.IsDebugEnabled )
+			if ( log.IsDebugEnabled() )
 			{
 				log.Debug("createFromJoinElement() : {0}", _printer.ShowAsString( fromElement, "-- join tree --" ));
 			}
@@ -766,7 +766,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			fromElement.JoinSequence = join;
 			fromElement.Filter = true;
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("createFromFilterElement() : processed filter FROM element.");
 			}
@@ -1067,7 +1067,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				IASTNode hqlSqlWithNode = (IASTNode) withClause().Tree;
 				input = old;
 
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("handleWithFragment() : {0}", _printer.ShowAsString(hqlSqlWithNode, "-- with clause --"));
 				}

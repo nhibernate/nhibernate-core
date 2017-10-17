@@ -146,7 +146,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			var expr = ( SqlNode ) path;
 			IType type = expr.DataType;
 
-			if ( Log.IsDebugEnabled ) 
+			if ( Log.IsDebugEnabled() ) 
 			{
 				Log.Debug("collectionProperty() :  name={0} type={1}", name, type);
 			}

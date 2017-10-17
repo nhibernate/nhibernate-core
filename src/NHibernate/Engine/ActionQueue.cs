@@ -245,7 +245,7 @@ namespace NHibernate.Engine
 				{
 					if(tablespaces.Contains(o))
 					{
-						if(log.IsDebugEnabled)
+						if(log.IsDebugEnabled())
 							log.Debug("changes must be flushed to space: {0}", o);
 
 						return true;

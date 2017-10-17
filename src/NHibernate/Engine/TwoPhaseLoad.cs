@@ -33,7 +33,7 @@ namespace NHibernate.Engine
 			object version = Versioning.GetVersion(values, persister);
 			session.PersistenceContext.AddEntry(obj, Status.Loading, values, rowId, id, version, lockMode, true, persister, false, lazyPropertiesAreUnfetched);
 
-			if (log.IsDebugEnabled && version != null)
+			if (log.IsDebugEnabled() && version != null)
 			{
 				System.String versionStr = persister.IsVersioned ? persister.VersionType.ToLoggableString(version, session.Factory) : "null";
 				log.Debug("Version: {0}", versionStr);
@@ -67,7 +67,7 @@ namespace NHibernate.Engine
 			object id = entityEntry.Id;
 			object[] hydratedState = entityEntry.LoadedState;
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 				log.Debug("resolving associations for {0}", MessageHelper.InfoString(persister, id, session.Factory));
 
 			IType[] types = persister.PropertyTypes;
@@ -100,7 +100,7 @@ namespace NHibernate.Engine
 
 			if (persister.HasCache && session.CacheMode.HasFlag(CacheMode.Put))
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 					log.Debug("adding entity to second-level cache: {0}", MessageHelper.InfoString(persister, id, session.Factory));
 
 				object version = Versioning.GetVersion(hydratedState, persister);
@@ -164,7 +164,7 @@ namespace NHibernate.Engine
 				}
 			}
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 				log.Debug("done materializing entity {0}", MessageHelper.InfoString(persister, id, session.Factory));
 
 			if (statsEnabled)

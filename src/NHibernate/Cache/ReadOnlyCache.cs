@@ -29,7 +29,7 @@ namespace NHibernate.Cache
 		public object Get(CacheKey key, long timestamp)
 		{
 			object result = cache.Get(key);
-			if (result != null && log.IsDebugEnabled)
+			if (result != null && log.IsDebugEnabled())
 			{
 				log.Debug("Cache hit: {0}", key);
 			}
@@ -56,13 +56,13 @@ namespace NHibernate.Cache
 
 			if (minimalPut && cache.Get(key) != null)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("item already cached: {0}", key);
 				}
 				return false;
 			}
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Caching: {0}", key);
 			}

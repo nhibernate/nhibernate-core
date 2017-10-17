@@ -24,12 +24,6 @@ namespace NHibernate.Example.Web.Infrastructure
 			{ InternalLogLevel.None, LogLevel.None },
 		};
 
-		public bool IsDebugEnabled => _msLogger.IsEnabled(LogLevel.Debug);
-		public bool IsInfoEnabled => _msLogger.IsEnabled(LogLevel.Information);
-		public bool IsWarnEnabled => _msLogger.IsEnabled(LogLevel.Warning);
-		public bool IsErrorEnabled => _msLogger.IsEnabled(LogLevel.Error);
-		public bool IsFatalEnabled => _msLogger.IsEnabled(LogLevel.Critical);
-
 		public void Log(InternalLogLevel logLevel, InternalLogValues state, Exception exception)
 		{
 			_msLogger.Log(MapLevels[logLevel], 0, new FormattedLogValues(state.Format, state.Args), exception, MessageFormatter);

@@ -432,7 +432,7 @@ namespace NHibernate.Util
 			}
 			catch (Exception e)
 			{
-				if (log.IsErrorEnabled)
+				if (log.IsErrorEnabled())
 				{
 					log.Error(e, "Could not load type {0}.", name);
 				}

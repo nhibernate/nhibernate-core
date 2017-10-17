@@ -27,7 +27,7 @@ namespace NHibernate.Event.Default
 		/// <returns> An EntityEntry representing the entity within this session. </returns>
 		protected EntityEntry Reassociate(AbstractEvent @event, object entity, object id, IEntityPersister persister)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Reassociating transient instance: {0}", MessageHelper.InfoString(persister, id, @event.Session.Factory));
 			}

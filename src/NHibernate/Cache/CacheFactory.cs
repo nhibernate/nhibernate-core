@@ -38,7 +38,7 @@ namespace NHibernate.Cache
 			string prefix = settings.CacheRegionPrefix;
 			if (prefix != null) name = prefix + '.' + name;
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("cache for: {0} usage strategy: {1}", name, usage);
 			}

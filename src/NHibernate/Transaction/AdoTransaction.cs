@@ -51,7 +51,7 @@ namespace NHibernate.Transaction
 		{
 			if (trans == null)
 			{
-				if (log.IsWarnEnabled)
+				if (log.IsWarnEnabled())
 				{
 					if (command.Transaction != null)
 					{
@@ -64,7 +64,7 @@ namespace NHibernate.Transaction
 			}
 			else
 			{
-				if (log.IsWarnEnabled)
+				if (log.IsWarnEnabled())
 				{
 					// got into here because the command was being initialized and had a null Transaction - probably
 					// don't need to be confused by that - just a normal part of initialization...

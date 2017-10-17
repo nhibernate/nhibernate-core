@@ -167,7 +167,7 @@ namespace NHibernate.Tuple.Entity
 			 * - Check if the logger is enabled
 			 * - Don't need nothing to check if the mapped-class or proxy is an interface
 			 */
-			if (log.IsErrorEnabled && needAccesorCheck)
+			if (log.IsErrorEnabled() && needAccesorCheck)
 			{
 				LogPropertyAccessorsErrors(persistentClass);
 			}

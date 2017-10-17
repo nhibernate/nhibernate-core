@@ -38,7 +38,7 @@ namespace NHibernate.Event.Default
 
 				IEntityPersister persister = entry.Persister;
 
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("locking {0} in mode: {1}", MessageHelper.InfoString(persister, entry.Id, source.Factory), requestedLockMode);
 				}

@@ -44,7 +44,7 @@ namespace NHibernate.Event.Default
 				throw new HibernateException("collection was evicted");
 			if (!collection.WasInitialized)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("initializing collection {0}", MessageHelper.CollectionInfoString(ce.LoadedPersister, collection, ce.LoadedKey, source));
 				}

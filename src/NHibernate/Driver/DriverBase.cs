@@ -25,7 +25,7 @@ namespace NHibernate.Driver
 		{
 			// Command timeout
 			commandTimeout = PropertiesHelper.GetInt32(Environment.CommandTimeout, settings, -1);
-			if (commandTimeout > -1 && log.IsInfoEnabled)
+			if (commandTimeout > -1 && log.IsInfoEnabled())
 			{
 				log.Info(string.Format("setting ADO.NET command timeout to {0} seconds", commandTimeout));
 			}
@@ -148,7 +148,7 @@ namespace NHibernate.Driver
 				}
 				catch (Exception e)
 				{
-					if (log.IsWarnEnabled)
+					if (log.IsWarnEnabled())
 					{
 						log.Warn(e, e.ToString());
 					}

@@ -188,7 +188,7 @@ namespace NHibernate.Persister.Collection
 			cancellationToken.ThrowIfCancellationRequested();
 			if (!isInverse && RowDeleteEnabled)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("Deleting collection: {0}", MessageHelper.CollectionInfoString(this, id, Factory));
 				}
@@ -233,7 +233,7 @@ namespace NHibernate.Persister.Collection
 						}
 					}
 
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						log.Debug("done deleting collection");
 					}
@@ -251,7 +251,7 @@ namespace NHibernate.Persister.Collection
 			cancellationToken.ThrowIfCancellationRequested();
 			if (!isInverse && RowInsertEnabled)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("Inserting collection: {0}", MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
@@ -293,7 +293,7 @@ namespace NHibernate.Persister.Collection
 						i++;
 					}
 
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						if (count > 0)
 							log.Debug("done inserting collection: {0} rows inserted", count);
@@ -314,7 +314,7 @@ namespace NHibernate.Persister.Collection
 			cancellationToken.ThrowIfCancellationRequested();
 			if (!isInverse && RowDeleteEnabled)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("Deleting rows of collection: {0}", MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
@@ -393,7 +393,7 @@ namespace NHibernate.Persister.Collection
 						}
 					}
 
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						if (count > 0)
 							log.Debug("done deleting collection rows: {0} deleted", count);
@@ -414,7 +414,7 @@ namespace NHibernate.Persister.Collection
 			cancellationToken.ThrowIfCancellationRequested();
 			if (!isInverse && RowInsertEnabled)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("Inserting rows of collection: {0}", MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
@@ -450,7 +450,7 @@ namespace NHibernate.Persister.Collection
 						i++;
 					}
 
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						log.Debug("done inserting rows: {0} inserted", count);
 					}
@@ -468,7 +468,7 @@ namespace NHibernate.Persister.Collection
 			cancellationToken.ThrowIfCancellationRequested();
 			if (!isInverse && collection.RowUpdatePossible)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("Updating rows of collection: {0}#{1}", role, id);
 				}
@@ -476,7 +476,7 @@ namespace NHibernate.Persister.Collection
 				// update all the modified entries
 				int count = await (DoUpdateRowsAsync(id, collection, session, cancellationToken)).ConfigureAwait(false);
 
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("done updating rows: {0} updated", count);
 				}

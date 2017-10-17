@@ -37,7 +37,7 @@ namespace NHibernate.Cache
 		/// </summary>
 		public object Get(CacheKey key, long txTimestamp)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Cache lookup: {0}", key);
 			}
@@ -68,13 +68,13 @@ namespace NHibernate.Cache
 
 			if (minimalPut && cache.Get(key) != null)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("item already cached: {0}", key);
 				}
 				return false;
 			}
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Caching: {0}", key);
 			}
@@ -92,7 +92,7 @@ namespace NHibernate.Cache
 
 		public void Remove(CacheKey key)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Removing: {0}", key);
 			}
@@ -101,7 +101,7 @@ namespace NHibernate.Cache
 
 		public void Clear()
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Clearing");
 			}
@@ -125,7 +125,7 @@ namespace NHibernate.Cache
 		/// </summary>
 		public void Evict(CacheKey key)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Invalidating: {0}", key);
 			}
@@ -154,7 +154,7 @@ namespace NHibernate.Cache
 		/// </summary>
 		public void Release(CacheKey key, ISoftLock @lock)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("Invalidating (again): {0}", key);
 			}

@@ -134,7 +134,7 @@ namespace NHibernate.Engine.Loading
 			}
 			if (context == null)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("constructing collection load context for result set [{0}]", resultSet);
 				}
@@ -156,7 +156,7 @@ namespace NHibernate.Engine.Loading
 			LoadingCollectionEntry lce = LocateLoadingCollectionEntry(new CollectionKey(persister, ownerKey));
 			if (lce != null)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("returning loading collection:{0}", MessageHelper.CollectionInfoString(persister, ownerKey, Session.Factory));
 				}
@@ -229,13 +229,13 @@ namespace NHibernate.Engine.Loading
 			{
 				return null;
 			}
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("attempting to locate loading collection entry [{0}] in any result-set context", key);
 			}
 			LoadingCollectionEntry rtn;
 			xrefLoadingCollectionEntries.TryGetValue(key, out rtn);
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("collection [{0}] {1} in load context", key, (rtn == null ? "located" : "not located"));
 			}

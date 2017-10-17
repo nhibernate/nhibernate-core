@@ -482,7 +482,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private static void PreCollectionSecondPass(Mapping.Collection collection)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 				log.Debug("Second pass for collection: {0}", collection.Role);
 		}
 
@@ -490,7 +490,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			collection.CreateAllKeys();
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				string info = "";
 				if (collection.IsIndexed)
@@ -753,7 +753,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					}
 				}
 
-				if (log.IsInfoEnabled)
+				if (log.IsInfoEnabled())
 					log.Info("mapping collection: {0} -> {1}", model.Role, model.CollectionTable.Name);
 			}
 

@@ -56,7 +56,7 @@ namespace NHibernate.Event.Default
 		/// <param name="source">The session from which the request originated. </param>
 		internal void RemoveCollection(ICollectionPersister role, object collectionKey, IEventSource source)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("collection dereferenced while transient {0}", MessageHelper.CollectionInfoString(role, ownerIdentifier, source.Factory));
 			}

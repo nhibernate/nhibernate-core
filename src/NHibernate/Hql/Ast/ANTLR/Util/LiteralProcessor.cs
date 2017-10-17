@@ -247,7 +247,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			{
 				if (replacement != null)
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						log.Debug("processConstant() : Replacing '{0}' with '{1}'", constant.Text, replacement);
 					}
@@ -258,7 +258,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 
 		private static void SetSQLValue(DotNode node, string text, string value)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("setSQLValue() {0} -> {1}", text, value);
 			}
@@ -270,7 +270,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 
 		private void SetConstantValue(DotNode node, string text, object value)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("setConstantValue() {0} -> {1} {2}", text, value, value.GetType().Name);
 			}

@@ -270,7 +270,7 @@ namespace NHibernate.SqlCommand
 				sqlBuilder.Add(Dialect.GetForUpdateString(lockMode));
 			}
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				if (initialCapacity < sqlBuilder.Count)
 				{

@@ -39,12 +39,6 @@ namespace NHibernate
 
 	public interface IInternalLogger2
 	{
-		bool IsDebugEnabled { get; }
-		bool IsInfoEnabled { get; }
-		bool IsWarnEnabled { get; }
-		bool IsErrorEnabled { get; }
-		bool IsFatalEnabled { get; }
-
 		/// <summary>Writes a log entry.</summary>
 		/// <param name="logLevel">Entry will be written on this level.</param>
 		/// <param name="state">The entry to be written.</param>
@@ -202,16 +196,6 @@ namespace NHibernate
 			_internalLogger = internalLogger ?? throw new ArgumentNullException(nameof(internalLogger));
 		}
 
-		public bool IsErrorEnabled => _internalLogger.IsErrorEnabled;
-
-		public bool IsFatalEnabled => _internalLogger.IsFatalEnabled;
-
-		public bool IsDebugEnabled => _internalLogger.IsDebugEnabled;
-
-		public bool IsInfoEnabled => _internalLogger.IsInfoEnabled;
-
-		public bool IsWarnEnabled => _internalLogger.IsWarnEnabled;
-
 		public void Log(InternalLogLevel logLevel, InternalLogValues state, Exception exception)
 		{
 			if (!IsEnabled(logLevel))
@@ -304,16 +288,6 @@ namespace NHibernate
 
 	public class NoLoggingInternalLogger: IInternalLogger2
 	{
-		public bool IsErrorEnabled => false;
-
-		public bool IsFatalEnabled => false;
-
-		public bool IsDebugEnabled => false;
-
-		public bool IsInfoEnabled => false;
-
-		public bool IsWarnEnabled => false;
-
 		public void Log(InternalLogLevel logLevel, InternalLogValues state, Exception exception)
 		{
 		}
@@ -547,6 +521,12 @@ namespace NHibernate
 
 	public static class InternalLogger2Extensions
 	{
+		public static bool IsDebugEnabled(this IInternalLogger2 logger) => logger.IsEnabled(InternalLogLevel.Debug);
+		public static bool IsInfoEnabled(this IInternalLogger2 logger) => logger.IsEnabled(InternalLogLevel.Info);
+		public static bool IsWarnEnabled(this IInternalLogger2 logger) => logger.IsEnabled(InternalLogLevel.Warn);
+		public static bool IsErrorEnabled(this IInternalLogger2 logger) => logger.IsEnabled(InternalLogLevel.Error);
+		public static bool IsFatalEnabled(this IInternalLogger2 logger) => logger.IsEnabled(InternalLogLevel.Fatal);
+
 		public static void Fatal(this IInternalLogger2 logger, Exception exception, string format, params object[] args)
 		{
 			logger.Log(InternalLogLevel.Fatal, new InternalLogValues(format, args), exception);
