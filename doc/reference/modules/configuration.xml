@@ -1079,8 +1079,11 @@ var session = sessions.OpenSession(conn);
                             with MS SQL Server 2008+.
                             <para>
                                 This is intended to work around issues like:
-                                <programlisting>System.Data.Odbc.OdbcException : ERROR [22008] [Microsoft][SQL Server Native Client 11.0]
-Datetime field overflow. Fractional second precision exceeds the scale specified
+                                <programlisting>System.Data.Odbc.OdbcException :
+ERROR [22008]
+[Microsoft][SQL Server Native Client 11.0]
+Datetime field overflow. Fractional second
+precision exceeds the scale specified
 in the parameter binding.</programlisting>
                             </para>
                             <para>
@@ -1108,7 +1111,7 @@ in the parameter binding.</programlisting>
 
             <table frame="topbot" id="sql-dialects" revision="2">
                 <title>NHibernate SQL Dialects (<literal>dialect</literal>)</title>
-                <tgroup cols="2">
+                <tgroup cols="3">
                     <colspec colwidth="1*"/>
                     <colspec colwidth="2.5*"/>
                     <colspec colwidth="2.5*"/>
