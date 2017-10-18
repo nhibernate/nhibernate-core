@@ -44,7 +44,7 @@ namespace NHibernate.Impl
 		public IFutureValue<TResult> GetFutureValue<TResult>()
 		{
 			int currentIndex = index;
-			return new FutureValue<TResult>(() => GetCurrentResult<TResult>(currentIndex), cancellationToken => GetCurrentResultAsync<TResult>(currentIndex, cancellationToken));
+			return new FutureValue<TResult>(() => GetCurrentResult(currentIndex), async cancellationToken => await GetCurrentResultAsync(currentIndex, cancellationToken));
 		}
 
 		public IFutureEnumerable<TResult> GetEnumerator<TResult>()
@@ -69,9 +69,14 @@ namespace NHibernate.Impl
 			return results;
 		}
 
+		private IList GetCurrentResult(int currentIndex)
+		{
+			return ((IList) GetResults()[currentIndex]);
+		}
+
 		private IEnumerable<TResult> GetCurrentResult<TResult>(int currentIndex)
 		{
-			return ((IList) GetResults()[currentIndex]).Cast<TResult>();
+			return GetCurrentResult(currentIndex).Cast<TResult>();
 		}
 
 		protected abstract TMultiApproach CreateMultiApproach(bool isCacheable, string cacheRegion);

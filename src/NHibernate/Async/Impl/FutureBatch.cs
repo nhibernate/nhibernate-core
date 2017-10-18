@@ -36,10 +36,16 @@ namespace NHibernate.Impl
 			return results;
 		}
 
+		private async Task<IList> GetCurrentResultAsync(int currentIndex, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			return ((IList) (await (GetResultsAsync(cancellationToken)).ConfigureAwait(false))[currentIndex]);
+		}
+
 		private async Task<IEnumerable<TResult>> GetCurrentResultAsync<TResult>(int currentIndex, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			return ((IList) (await (GetResultsAsync(cancellationToken)).ConfigureAwait(false))[currentIndex]).Cast<TResult>();
+			return (await (GetCurrentResultAsync(currentIndex, cancellationToken)).ConfigureAwait(false)).Cast<TResult>();
 		}
 		protected abstract Task<IList> GetResultsFromAsync(TMultiApproach multiApproach, CancellationToken cancellationToken);
 	}
