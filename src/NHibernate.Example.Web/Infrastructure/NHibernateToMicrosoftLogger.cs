@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Internal;
 
 namespace NHibernate.Example.Web.Infrastructure
 {
@@ -12,85 +14,35 @@ namespace NHibernate.Example.Web.Infrastructure
 			_msLogger = msLogger ?? throw new ArgumentNullException(nameof(msLogger));
 		}
 
-		public void Fatal(Exception exception, string format, params object[] args)
+		private static readonly Dictionary<InternalLogLevel, LogLevel> MapLevels = new Dictionary<InternalLogLevel, LogLevel>
 		{
-			_msLogger.LogCritical(exception, format, args);
-		}
+			{ InternalLogLevel.Trace, LogLevel.Trace },
+			{ InternalLogLevel.Debug, LogLevel.Debug },
+			{ InternalLogLevel.Warn, LogLevel.Warning },
+			{ InternalLogLevel.Error, LogLevel.Error },
+			{ InternalLogLevel.Fatal, LogLevel.Critical },
+			{ InternalLogLevel.None, LogLevel.None },
+		};
 
-		public void Fatal(string format, params object[] args)
-		{
-			_msLogger.LogCritical(format, args);
-		}
-
-		public void Error(Exception exception, string format, params object[] args)
-		{
-			_msLogger.LogError(exception, format, args);
-		}
-
-		public void Error(string format, params object[] args)
-		{
-			_msLogger.LogError(format, args);
-		}
-
-		public void Warn(Exception exception, string format, params object[] args)
-		{
-			_msLogger.LogWarning(exception, format, args);
-		}
-
-		public void Warn(string format, params object[] args)
-		{
-			_msLogger.LogWarning(format, args);
-		}
-
-		public void Info(Exception exception, string format, params object[] args)
-		{
-			_msLogger.LogInformation(exception, format, args);
-		}
-
-		public void Info(string format, params object[] args)
-		{
-			_msLogger.LogInformation(format, args);
-		}
-
-		public void Debug(Exception exception, string format, params object[] args)
-		{
-			_msLogger.LogDebug(exception, format, args);
-		}
-
-		public void Debug(string format, params object[] args)
-		{
-			_msLogger.LogDebug(format, args);
-		}
-
-		public void Fatal(string message, Exception ex)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void Error(string message, Exception ex)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void Warn(string message, Exception ex)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void Info(string message, Exception ex)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void Debug(string message, Exception ex)
-		{
-			throw new NotImplementedException();
-		}
-
-		public bool IsErrorEnabled => _msLogger.IsEnabled(LogLevel.Error);
-		public bool IsFatalEnabled => _msLogger.IsEnabled(LogLevel.Critical);
 		public bool IsDebugEnabled => _msLogger.IsEnabled(LogLevel.Debug);
 		public bool IsInfoEnabled => _msLogger.IsEnabled(LogLevel.Information);
 		public bool IsWarnEnabled => _msLogger.IsEnabled(LogLevel.Warning);
+		public bool IsErrorEnabled => _msLogger.IsEnabled(LogLevel.Error);
+		public bool IsFatalEnabled => _msLogger.IsEnabled(LogLevel.Critical);
+
+		public void Log(InternalLogLevel logLevel, InternalLogValues state, Exception exception)
+		{
+			_msLogger.Log(MapLevels[logLevel], 0, new FormattedLogValues(state.Format, state.Args), exception, MessageFormatter);
+		}
+
+		public bool IsEnabled(InternalLogLevel logLevel)
+		{
+			return _msLogger.IsEnabled(MapLevels[logLevel]);
+		}
+
+		private static string MessageFormatter(object state, Exception error)
+		{
+			return state.ToString();
+		}
 	}
 }

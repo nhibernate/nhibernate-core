@@ -39,54 +39,24 @@ namespace NHibernate
 
 	public interface IInternalLogger2
 	{
-		bool IsErrorEnabled { get; }
-		bool IsFatalEnabled { get; }
 		bool IsDebugEnabled { get; }
 		bool IsInfoEnabled { get; }
 		bool IsWarnEnabled { get; }
+		bool IsErrorEnabled { get; }
+		bool IsFatalEnabled { get; }
 
-		void Fatal(Exception exception, string format, params object[] args);
-		void Fatal(string format, params object[] args);
-		void Error(Exception exception, string format, params object[] args);
-		void Error(string format, params object[] args);
-		void Warn(Exception exception, string format, params object[] args);
-		void Warn(string format, params object[] args);
-		void Info(Exception exception, string format, params object[] args);
-		void Info(string format, params object[] args);
-		void Debug(Exception exception, string format, params object[] args);
-		void Debug(string format, params object[] args);
-
-		// catch any method calls with an Exception argument second as they would otherwise silently be consumed by `parms object[] args`.
+		/// <summary>Writes a log entry.</summary>
+		/// <param name="logLevel">Entry will be written on this level.</param>
+		/// <param name="state">The entry to be written.</param>
+		/// <param name="exception">The exception related to this entry.</param>
+		void Log(InternalLogLevel logLevel, InternalLogValues state, Exception exception);
 
 		/// <summary>
-		/// Don't use or implement, simply throw new NotImplementedException();
+		/// Checks if the given <paramref name="logLevel" /> is enabled.
 		/// </summary>
-		[Obsolete("Use Fatal(Exception, string, params object[])", true)]
-		void Fatal(string message, Exception ex);
-
-		/// <summary>
-		/// Don't use or implement, simply throw new NotImplementedException();
-		/// </summary>
-		[Obsolete("Use Error(Exception, string, params object[])", true)]
-		void Error(string message, Exception ex);
-
-		/// <summary>
-		/// Don't use or implement, simply throw new NotImplementedException();
-		/// </summary>
-		[Obsolete("Use Warn(Exception, string, params object[])", true)]
-		void Warn(string message, Exception ex);
-
-		/// <summary>
-		/// Don't use or implement, simply throw new NotImplementedException();
-		/// </summary>
-		[Obsolete("Use Info(Exception, string, params object[])", true)]
-		void Info(string message, Exception ex);
-
-		/// <summary>
-		/// Don't use or implement, simply throw new NotImplementedException();
-		/// </summary>
-		[Obsolete("Use Debug(Exception, string, params object[])", true)]
-		void Debug(string message, Exception ex);
+		/// <param name="logLevel">level to be checked.</param>
+		/// <returns><c>true</c> if enabled.</returns>
+		bool IsEnabled(InternalLogLevel logLevel);
 	}
 
 	[Obsolete("Implement INHibernateLoggerFactory instead")]
@@ -242,109 +212,79 @@ namespace NHibernate
 
 		public bool IsWarnEnabled => _internalLogger.IsWarnEnabled;
 
-		public void Fatal(Exception exception, string format, params object[] args)
+		public void Log(InternalLogLevel logLevel, InternalLogValues state, Exception exception)
 		{
-			if (IsFatalEnabled && args?.Length > 0)
-				_internalLogger.Fatal(string.Format(format, args), exception);
-			else
-				_internalLogger.Fatal(format, exception);
+			if (!IsEnabled(logLevel))
+				return;
+
+			switch (logLevel)
+			{
+				case InternalLogLevel.Debug:
+				case InternalLogLevel.Trace:
+					if (exception != null)
+						_internalLogger.Debug(state, exception);
+					else if (state.Args?.Length > 0)
+						_internalLogger.DebugFormat(state.Format, state.Args);
+					else
+						_internalLogger.Debug(state);
+					break;
+				case InternalLogLevel.Info:
+					if (exception != null)
+						_internalLogger.Info(state, exception);
+					else if (state.Args?.Length > 0)
+						_internalLogger.InfoFormat(state.Format, state.Args);
+					else
+						_internalLogger.Info(state);
+					break;
+				case InternalLogLevel.Warn:
+					if (exception != null)
+						_internalLogger.Warn(state, exception);
+					else if (state.Args?.Length > 0)
+						_internalLogger.WarnFormat(state.Format, state.Args);
+					else
+						_internalLogger.Warn(state);
+					break;
+				case InternalLogLevel.Error:
+					if (exception != null)
+						_internalLogger.Error(state, exception);
+					else if (state.Args?.Length > 0)
+						_internalLogger.ErrorFormat(state.Format, state.Args);
+					else
+						_internalLogger.Error(state);
+					break;
+				case InternalLogLevel.Fatal:
+					if (exception != null)
+						_internalLogger.Fatal(state, exception);
+					else
+						_internalLogger.Fatal(state);
+					break;
+				case InternalLogLevel.None:
+					break;
+				default:
+					throw new ArgumentOutOfRangeException(nameof(logLevel), logLevel, null);
+			}
 		}
 
-		public void Fatal(string format, params object[] args)
+		public bool IsEnabled(InternalLogLevel logLevel)
 		{
-			if (IsFatalEnabled && args?.Length > 0)
-				_internalLogger.Fatal(string.Format(format, args));
-			else
-				_internalLogger.Fatal(format);
-		}
-
-		public void Error(Exception exception, string format, params object[] args)
-		{
-			if (IsErrorEnabled && args?.Length > 0)
-				_internalLogger.Error(string.Format(format, args), exception);
-			else
-				_internalLogger.Error(format);
-		}
-
-		public void Error(string format, params object[] args)
-		{
-			if (args?.Length > 0)
-				_internalLogger.ErrorFormat(format, args);
-			else
-				_internalLogger.Error(format);
-		}
-
-		public void Warn(Exception exception, string format, params object[] args)
-		{
-			if (IsWarnEnabled && args?.Length > 0)
-				_internalLogger.Warn(string.Format(format, args), exception);
-			else
-				_internalLogger.Warn(format);
-		}
-
-		public void Warn(string format, params object[] args)
-		{
-			if (args?.Length > 0)
-				_internalLogger.WarnFormat(format, args);
-			else
-				_internalLogger.Warn(format);
-		}
-
-		public void Info(Exception exception, string format, params object[] args)
-		{
-			if (IsInfoEnabled && args?.Length > 0)
-				_internalLogger.Info(string.Format(format, args), exception);
-			else
-				_internalLogger.Info(format, exception);
-		}
-
-		public void Info(string format, params object[] args)
-		{
-			if (args?.Length > 0)
-				_internalLogger.InfoFormat(format, args);
-			else
-				_internalLogger.Info(format);
-		}
-
-		public void Debug(Exception exception, string format, params object[] args)
-		{
-			if (IsDebugEnabled && args?.Length > 0)
-				_internalLogger.Debug(string.Format(format, args), exception);
-			else
-				_internalLogger.Debug(format, exception);
-		}
-
-		public void Debug(string format, params object[] args)
-		{
-			if (args?.Length > 0)
-				_internalLogger.DebugFormat(format, args);
-			else
-				_internalLogger.Debug(format);
-		}
-
-		public void Fatal(string message, Exception ex)
-		{
-			throw new NotImplementedException("Should not have compiled with call to this method");
-		}
-
-		public void Error(string message, Exception ex)
-		{
-			throw new NotImplementedException("Should not have compiled with call to this method");
-		}
-
-		public void Warn(string message, Exception ex)
-		{
-			throw new NotImplementedException("Should not have compiled with call to this method");
-		}
-
-		public void Info(string message, Exception ex)
-		{
-			throw new NotImplementedException("Should not have compiled with call to this method");
-		}
-
-		public void Debug(string message, Exception ex)
-		{
-			throw new NotImplementedException("Should not have compiled with call to this method");
+			switch (logLevel)
+			{
+				case InternalLogLevel.Trace:
+				case InternalLogLevel.Debug:
+					return _internalLogger.IsDebugEnabled;
+				case InternalLogLevel.Info:
+					return _internalLogger.IsInfoEnabled;
+				case InternalLogLevel.Warn:
+					return _internalLogger.IsWarnEnabled;
+				case InternalLogLevel.Error:
+					return _internalLogger.IsErrorEnabled;
+				case InternalLogLevel.Fatal:
+					return _internalLogger.IsFatalEnabled;
+				case InternalLogLevel.None:
+					return !_internalLogger.IsFatalEnabled;
+				default:
+					throw new ArgumentOutOfRangeException(nameof(logLevel), logLevel, null);
+			}
 		}
 	}
 
@@ -374,69 +314,15 @@ namespace NHibernate
 
 		public bool IsWarnEnabled => false;
 
-		public void Fatal(Exception exception, string format, params object[] args)
+		public void Log(InternalLogLevel logLevel, InternalLogValues state, Exception exception)
 		{
 		}
 
-		public void Fatal(string format, params object[] args)
+		public bool IsEnabled(InternalLogLevel logLevel)
 		{
-		}
+			if (logLevel == InternalLogLevel.None) return true;
 
-		public void Error(Exception exception, string format, params object[] args)
-		{
-		}
-
-		public void Error(string format, params object[] args)
-		{
-		}
-
-		public void Warn(Exception exception, string format, params object[] args)
-		{
-		}
-
-		public void Warn(string format, params object[] args)
-		{
-		}
-
-		public void Info(Exception exception, string format, params object[] args)
-		{
-		}
-
-		public void Info(string format, params object[] args)
-		{
-		}
-
-		public void Debug(Exception exception, string format, params object[] args)
-		{
-		}
-
-		public void Debug(string format, params object[] args)
-		{
-		}
-
-		public void Fatal(string message, Exception ex)
-		{
-			throw new NotImplementedException("Should not have compiled with call to this method");
-		}
-
-		public void Error(string message, Exception ex)
-		{
-			throw new NotImplementedException("Should not have compiled with call to this method");
-		}
-
-		public void Warn(string message, Exception ex)
-		{
-			throw new NotImplementedException("Should not have compiled with call to this method");
-		}
-
-		public void Info(string message, Exception ex)
-		{
-			throw new NotImplementedException("Should not have compiled with call to this method");
-		}
-
-		public void Debug(string message, Exception ex)
-		{
-			throw new NotImplementedException("Should not have compiled with call to this method");
+			return false;
 		}
 	}
 
@@ -657,5 +543,128 @@ namespace NHibernate
 			if (IsWarnEnabled)
 				WarnFormatDelegate(logger, format, args);
 		}
+	}
+
+	public static class InternalLogger2Extensions
+	{
+		public static void Fatal(this IInternalLogger2 logger, Exception exception, string format, params object[] args)
+		{
+			logger.Log(InternalLogLevel.Fatal, new InternalLogValues(format, args), exception);
+		}
+
+		public static void Fatal(this IInternalLogger2 logger, string format, params object[] args)
+		{
+			logger.Log(InternalLogLevel.Fatal, new InternalLogValues(format, args), null);
+		}
+
+		public static void Error(this IInternalLogger2 logger, Exception exception, string format, params object[] args)
+		{
+			logger.Log(InternalLogLevel.Error, new InternalLogValues(format, args), exception);
+		}
+
+		public static void Error(this IInternalLogger2 logger, string format, params object[] args)
+		{
+			logger.Log(InternalLogLevel.Error, new InternalLogValues(format, args), null);
+		}
+
+		public static void Warn(this IInternalLogger2 logger, Exception exception, string format, params object[] args)
+		{
+			logger.Log(InternalLogLevel.Warn, new InternalLogValues(format, args), exception);
+		}
+
+		public static void Warn(this IInternalLogger2 logger, string format, params object[] args)
+		{
+			logger.Log(InternalLogLevel.Warn, new InternalLogValues(format, args), null);
+		}
+
+		public static void Info(this IInternalLogger2 logger, Exception exception, string format, params object[] args)
+		{
+			logger.Log(InternalLogLevel.Info, new InternalLogValues(format, args), exception);
+		}
+
+		public static void Info(this IInternalLogger2 logger, string format, params object[] args)
+		{
+			logger.Log(InternalLogLevel.Info, new InternalLogValues(format, args), null);
+		}
+
+		public static void Debug(this IInternalLogger2 logger, Exception exception, string format, params object[] args)
+		{
+			logger.Log(InternalLogLevel.Debug, new InternalLogValues(format, args), exception);
+		}
+
+		public static void Debug(this IInternalLogger2 logger, string format, params object[] args)
+		{
+			logger.Log(InternalLogLevel.Debug, new InternalLogValues(format, args), null);
+		}
+
+
+		// catch any method calls with an Exception argument second as they would otherwise silently be consumed by `parms object[] args`.
+
+		/// <summary>
+		/// Don't use or implement, simply throw new NotImplementedException();
+		/// </summary>
+		[Obsolete("Use Fatal(Exception, string, params object[])", true)]
+		public static void Fatal(this IInternalLogger2 logger, string message, Exception ex) => ThrowNotImplemented();
+
+		/// <summary>
+		/// Don't use or implement, simply throw new NotImplementedException();
+		/// </summary>
+		[Obsolete("Use Error(Exception, string, params object[])", true)]
+		public static void Error(this IInternalLogger2 logger, string message, Exception ex) => ThrowNotImplemented();
+
+		/// <summary>
+		/// Don't use or implement, simply throw new NotImplementedException();
+		/// </summary>
+		[Obsolete("Use Warn(Exception, string, params object[])", true)]
+		public static void Warn(this IInternalLogger2 logger, string message, Exception ex) => ThrowNotImplemented();
+
+		/// <summary>
+		/// Don't use or implement, simply throw new NotImplementedException();
+		/// </summary>
+		[Obsolete("Use Info(Exception, string, params object[])", true)]
+		public static void Info(this IInternalLogger2 logger, string message, Exception ex) => ThrowNotImplemented();
+
+		/// <summary>
+		/// Don't use or implement, simply throw new NotImplementedException();
+		/// </summary>
+		[Obsolete("Use Debug(Exception, string, params object[])", true)]
+		public static void Debug(this IInternalLogger2 logger, string message, Exception ex) => ThrowNotImplemented();
+
+		private static void ThrowNotImplemented()
+		{
+			throw new NotImplementedException("Should not have compiled with call to this method");
+		}
+	}
+
+	public class InternalLogValues
+	{
+		private readonly string _format;
+		private readonly object[] _args;
+
+		public InternalLogValues(string format, object[] args)
+		{
+			_format = format ?? "[Null]";
+			_args = args;
+		}
+
+		public string Format => _format;
+		public object[] Args => _args;
+
+		public override string ToString()
+		{
+			return _args?.Length > 0 ? string.Format(_format, _args) : Format;
+		}
+	}
+
+	/// <summary>Defines logging severity levels.</summary>
+	public enum InternalLogLevel
+	{
+		Trace,
+		Debug,
+		Info,
+		Warn,
+		Error,
+		Fatal,
+		None,
 	}
 }
