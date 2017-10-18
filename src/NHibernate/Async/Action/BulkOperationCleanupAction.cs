@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Metadata;
 using NHibernate.Persister.Entity;
@@ -60,24 +61,18 @@ namespace NHibernate.Action
 		private async Task EvictCollectionRegionsAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (affectedCollectionRoles != null)
+			if (affectedCollectionRoles != null && affectedCollectionRoles.Any())
 			{
-				foreach (string roleName in affectedCollectionRoles)
-				{
-					await (session.Factory.EvictCollectionAsync(roleName, cancellationToken)).ConfigureAwait(false);
-				}
+				await (session.Factory.EvictCollectionAsync(affectedCollectionRoles, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
 		private async Task EvictEntityRegionsAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (affectedEntityNames != null)
+			if (affectedEntityNames != null && affectedEntityNames.Any())
 			{
-				foreach (string entityName in affectedEntityNames)
-				{
-					await (session.Factory.EvictEntityAsync(entityName, cancellationToken)).ConfigureAwait(false);
-				}
+				await (session.Factory.EvictEntityAsync(affectedEntityNames, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 

@@ -43,6 +43,16 @@ namespace NHibernate
 		Task EvictAsync(System.Type persistentClass, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
+		/// Evict all entries from the process-level cache.  This method occurs outside
+		/// of any transaction; it performs an immediate "hard" remove, so does not respect
+		/// any transaction isolation semantics of the usage strategy.  Use with care.
+		/// </summary>
+		/// <param name="persistentClasses"></param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task EvictAsync(IEnumerable<System.Type> persistentClasses, CancellationToken cancellationToken = default(CancellationToken));
+
+
+		/// <summary>
 		/// Evict an entry from the process-level cache.  This method occurs outside
 		/// of any transaction; it performs an immediate "hard" remove, so does not respect
 		/// any transaction isolation semantics of the usage strategy.  Use with care.
@@ -60,6 +70,14 @@ namespace NHibernate
 		Task EvictEntityAsync(string entityName, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary> 
+		/// Evict all entries from the second-level cache. This method occurs outside
+		/// of any transaction; it performs an immediate "hard" remove, so does not respect
+		/// any transaction isolation semantics of the usage strategy. Use with care.
+		/// </summary>
+		Task EvictEntityAsync(IEnumerable<string> entityNames, CancellationToken cancellationToken = default(CancellationToken));
+
+
+		/// <summary> 
 		/// Evict an entry from the second-level  cache. This method occurs outside
 		/// of any transaction; it performs an immediate "hard" remove, so does not respect
 		/// any transaction isolation semantics of the usage strategy. Use with care.
@@ -74,6 +92,16 @@ namespace NHibernate
 		/// <param name="roleName"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		Task EvictCollectionAsync(string roleName, CancellationToken cancellationToken = default(CancellationToken));
+
+
+		/// <summary>
+		/// Evict all entries from the process-level cache.  This method occurs outside
+		/// of any transaction; it performs an immediate "hard" remove, so does not respect
+		/// any transaction isolation semantics of the usage strategy.  Use with care.
+		/// </summary>
+		/// <param name="roleNames"></param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task EvictCollectionAsync(IEnumerable<string> roleNames, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Evict an entry from the process-level cache.  This method occurs outside

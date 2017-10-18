@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Metadata;
 using NHibernate.Persister.Entity;
+using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Action
 {
@@ -10,7 +12,7 @@ namespace NHibernate.Action
 	/// Implementation of BulkOperationCleanupAction.
 	/// </summary>
 	[Serializable]
-	public partial class BulkOperationCleanupAction: IExecutable
+	public partial class BulkOperationCleanupAction : IExecutable
 	{
 		private readonly ISessionImplementor session;
 		private readonly HashSet<string> affectedEntityNames = new HashSet<string>();
@@ -84,14 +86,8 @@ namespace NHibernate.Action
 				return true;
 			}
 
-			for (int i = 0; i < entitySpaces.Length; i++)
-			{
-				if (querySpaces.Contains(entitySpaces[i]))
-				{
-					return true;
-				}
-			}
-			return false;
+
+			return entitySpaces.Any(querySpaces.Contains);
 		}
 
 		#region IExecutable Members
@@ -113,8 +109,8 @@ namespace NHibernate.Action
 
 		public BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess
 		{
-			get 
-			{ 
+			get
+			{
 				return null;
 			}
 		}
@@ -133,23 +129,17 @@ namespace NHibernate.Action
 
 		private void EvictCollectionRegions()
 		{
-			if (affectedCollectionRoles != null)
+			if (affectedCollectionRoles != null && affectedCollectionRoles.Any())
 			{
-				foreach (string roleName in affectedCollectionRoles)
-				{
-					session.Factory.EvictCollection(roleName);
-				}
+				session.Factory.EvictCollection(affectedCollectionRoles);
 			}
 		}
 
 		private void EvictEntityRegions()
 		{
-			if (affectedEntityNames != null)
+			if (affectedEntityNames != null && affectedEntityNames.Any())
 			{
-				foreach (string entityName in affectedEntityNames)
-				{
-					session.Factory.EvictEntity(entityName);
-				}
+				session.Factory.EvictEntity(affectedEntityNames);
 			}
 		}
 

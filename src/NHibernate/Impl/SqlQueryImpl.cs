@@ -28,6 +28,8 @@ namespace NHibernate.Impl
 		private readonly ICollection<string> querySpaces;
 		private readonly bool callable;
 		private bool autoDiscoverTypes;
+		private readonly Lazy<HashSet<string>> addedQuerySpaces = new Lazy<HashSet<string>>(() => new HashSet<string>());
+
 
 		/// <summary> Constructs a SQLQueryImpl given a sql query defined in the mappings. </summary>
 		/// <param name="queryDef">The representation of the defined sql-query. </param>
@@ -170,10 +172,12 @@ namespace NHibernate.Impl
 
 		public NativeSQLQuerySpecification GenerateQuerySpecification(IDictionary<string, TypedValue> parameters)
 		{
+			var allQuerySpaces=new HashSet<string>(querySpaces ?? new List<string>());
+			allQuerySpaces.UnionWith(GetSynchronizedQuerySpaces());
 			return new NativeSQLQuerySpecification(
 				ExpandParameterLists(parameters),
 				GetQueryReturns(),
-				querySpaces);
+				allQuerySpaces);
 		}
 
 		public override QueryParameters GetQueryParameters(IDictionary<string, TypedValue> namedParams)
@@ -320,5 +324,37 @@ namespace NHibernate.Impl
 			var sqlQuery = this as ISQLQuery;
 			yield return new SqlTranslator(sqlQuery, sessionImplementor.Factory);
 		}
+
+		public ISQLQuery AddSynchronizedQuerySpace(string querySpace)
+		{
+			addedQuerySpaces.Value.Add(querySpace);
+			return this;
+		}
+
+		public ISQLQuery AddSynchronizedEntityName(string entityName)
+		{
+			var persister = session.Factory.GetEntityPersister(entityName);
+			foreach (var querySpace in persister.QuerySpaces)
+			{
+				addedQuerySpaces.Value.Add(querySpace);
+			}
+			return this;
+		}
+
+		public ISQLQuery AddSynchronizedEntityClass(System.Type entityType)
+		{
+			var persister = session.Factory.GetEntityPersister(entityType.FullName);
+			foreach (var querySpace in persister.QuerySpaces)
+			{
+				addedQuerySpaces.Value.Add(querySpace);
+			}
+			return this;
+		}
+
+		public IReadOnlyCollection<string> GetSynchronizedQuerySpaces()
+		{
+			return addedQuerySpaces.IsValueCreated ? addedQuerySpaces.Value : new HashSet<string>();
+		}
+		
 	}
 }

@@ -18,7 +18,7 @@ namespace NHibernate.Impl
 	public abstract partial class AbstractQueryImpl : IQuery
 	{
 		private readonly string queryString;
-		private readonly ISessionImplementor session;
+		protected readonly ISessionImplementor session;
 		protected internal ParameterMetadata parameterMetadata;
 
 		private readonly RowSelection selection;
@@ -42,7 +42,7 @@ namespace NHibernate.Impl
 		private CacheMode? cacheMode;
 		private CacheMode? sessionCacheMode;
 		private string comment;
-
+		
 		protected AbstractQueryImpl(string queryString, FlushMode flushMode, ISessionImplementor session,
 			ParameterMetadata parameterMetadata)
 		{

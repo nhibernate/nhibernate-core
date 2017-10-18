@@ -16,6 +16,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
+using NHibernate.Async;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Connection;
@@ -164,6 +165,14 @@ namespace NHibernate.Impl
 			}
 		}
 
+		public Task EvictAsync(IEnumerable<System.Type> persistentClasses, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (persistentClasses == null)
+				throw new ArgumentNullException(nameof(persistentClasses));
+
+			return EvictEntityAsync(persistentClasses.Select(x => x.FullName));
+		}
+
 		public Task EvictEntityAsync(string entityName, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -180,6 +189,40 @@ namespace NHibernate.Impl
 						log.Debug("evicting second-level cache: {0}", p.EntityName);
 					}
 					return p.Cache.ClearAsync(cancellationToken);
+				}
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		public Task EvictEntityAsync(IEnumerable<string> entityNames, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (entityNames == null)
+				throw new ArgumentNullException(nameof(entityNames));
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
+			{
+				var tasks = new List<Task>();
+				foreach (var cacheGroup in entityNames.Select(GetEntityPersister).Where(x => x.HasCache).GroupBy(x => x.Cache))
+				{
+					if (log.IsDebugEnabled)
+					{
+						foreach (var p in cacheGroup)
+						{
+							log.Debug("evicting second-level cache: " + p.EntityName);
+						}
+					}
+					tasks.Add(cacheGroup.Key.ClearAsync(cancellationToken));
+				}
+				if (tasks.Any())
+				{
+					return Task.WhenAny(Task.WhenAll(tasks), cancellationToken.WhenCanceled());
 				}
 				return Task.CompletedTask;
 			}
@@ -257,6 +300,45 @@ namespace NHibernate.Impl
 						log.Debug("evicting second-level cache: {0}", p.Role);
 					}
 					return p.Cache.ClearAsync(cancellationToken);
+				}
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		public Task EvictCollectionAsync(IEnumerable<string> roleNames, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (roleNames == null)
+				throw new ArgumentNullException(nameof(roleNames));
+
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
+			{
+				if (roleNames == null)
+					throw new ArgumentNullException(nameof(roleNames));
+
+				var tasks = new List<Task>();
+				foreach (var cacheGroup in roleNames.Select(GetCollectionPersister).Where(x => x.HasCache).GroupBy(x => x.Cache))
+				{
+
+					if (log.IsDebugEnabled)
+					{
+						foreach (var p in cacheGroup)
+						{
+							log.Debug("evicting second-level cache: " + p.Role);
+						}
+					}
+					tasks.Add(cacheGroup.Key.ClearAsync(cancellationToken));
+				}
+				if (tasks.Any())
+				{
+					return Task.WhenAny(Task.WhenAll(tasks), cancellationToken.WhenCanceled());
 				}
 				return Task.CompletedTask;
 			}

@@ -148,6 +148,14 @@ namespace NHibernate
 		void Evict(System.Type persistentClass);
 
 		/// <summary>
+		/// Evict all entries from the process-level cache.  This method occurs outside
+		/// of any transaction; it performs an immediate "hard" remove, so does not respect
+		/// any transaction isolation semantics of the usage strategy.  Use with care.
+		/// </summary>
+		/// <param name="persistentClasses"></param>
+		void Evict(IEnumerable<System.Type> persistentClasses);
+
+		/// <summary>
 		/// Evict an entry from the process-level cache.  This method occurs outside
 		/// of any transaction; it performs an immediate "hard" remove, so does not respect
 		/// any transaction isolation semantics of the usage strategy.  Use with care.
@@ -164,6 +172,13 @@ namespace NHibernate
 		void EvictEntity(string entityName);
 
 		/// <summary> 
+		/// Evict all entries from the second-level cache. This method occurs outside
+		/// of any transaction; it performs an immediate "hard" remove, so does not respect
+		/// any transaction isolation semantics of the usage strategy. Use with care.
+		/// </summary>
+		void EvictEntity(IEnumerable<string> entityNames);
+
+		/// <summary> 
 		/// Evict an entry from the second-level  cache. This method occurs outside
 		/// of any transaction; it performs an immediate "hard" remove, so does not respect
 		/// any transaction isolation semantics of the usage strategy. Use with care.
@@ -177,6 +192,14 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="roleName"></param>
 		void EvictCollection(string roleName);
+
+		/// <summary>
+		/// Evict all entries from the process-level cache.  This method occurs outside
+		/// of any transaction; it performs an immediate "hard" remove, so does not respect
+		/// any transaction isolation semantics of the usage strategy.  Use with care.
+		/// </summary>
+		/// <param name="roleNames"></param>
+		void EvictCollection(IEnumerable<string> roleNames);
 
 		/// <summary>
 		/// Evict an entry from the process-level cache.  This method occurs outside
