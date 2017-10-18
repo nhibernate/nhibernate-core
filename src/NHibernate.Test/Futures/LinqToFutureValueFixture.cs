@@ -34,6 +34,20 @@ namespace NHibernate.Test.Futures
 			}
 		}
 
+		[Test(Description = "https://github.com/nhibernate/nhibernate-core/issues/1387")]
+		public void ToFutureValueWithSumReturnsResult()
+		{
+			using (var s = OpenSession())
+			{
+				var personsSum = s.Query<Person>()
+					.Select(x => x.Id)
+					.ToFutureValue(x => x.Sum());
+
+				Assert.IsNotNull(personsSum);
+				Assert.NotZero(personsSum.Value);
+			}
+		}
+
 		protected override void OnSetUp()
 		{
 			using (var session = OpenSession())
