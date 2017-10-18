@@ -150,12 +150,84 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 
 		// Failing case till NH-3850 is fixed
 		[Test]
+		public async Task AggregateGBaseAsync()
+		{
+			using (var session = OpenSession())
+			{
+				// This case should work because the aggregate is insensitive to ordering.
+				var query = session.Query<DomainClassGExtendedByH>()
+				                   .OrderBy(dc => dc.Id)
+				                   .Select(dc => dc.Id);
+				var result = query.Aggregate((p, n) => p + n);
+				Assert.That(result, Is.EqualTo(10));
+				var futureQuery = query.ToFutureValue(qdc => qdc.Aggregate((p, n) => p + n));
+				Assert.That(await (futureQuery.GetValueAsync()), Is.EqualTo(10), "Future");
+			}
+		}
+
+		// Failing case due to lack of polymorphic results ordering.
+		[Test, Ignore("Polymorphic results sets are unioned without reordering, whatever the API")]
+		public async Task AggregateGBaseOrderingMismatchAsync()
+		{
+			using (var session = OpenSession())
+			{
+				// This case cannot work because the aggregate is sensitive to ordering, and NHibernate currently always order polymorphic queries by class names,
+				// then only honors query ordering as secondary order criteria.
+				var query = session.Query<DomainClassGExtendedByH>()
+				                   .OrderByDescending(dc => dc.Id)
+				                   .Select(dc => dc.Id.ToString());
+				var result = query.Aggregate((p, n) => p + "," + n);
+				// Currently yields "2,1,4,3" instead.
+				Assert.That(result, Is.EqualTo("4,3,2,1"));
+				var futureQuery = query.ToFutureValue(qdc => qdc.Aggregate((p, n) => p + "," + n));
+				Assert.That(await (futureQuery.GetValueAsync()), Is.EqualTo("4,3,2,1"), "Future");
+			}
+		}
+
+		// Non-reg case
+		[Test]
+		public async Task AggregateMutableSeedGBaseAsync()
+		{
+			using (var session = OpenSession())
+			{
+				// This case works because the ordering accidentally matches with classes ordering.
+				// (And moreover, with current dataset, selected values are same whatever the classes.)
+				var query = session.Query<DomainClassGExtendedByH>()
+				                    .OrderBy(dc => dc.Id);
+				var result = query.Aggregate(new StringBuilder(), (s, dc) => s.Append(dc.Name).Append(","));
+				var expectedResult = _searchName1 + "," + _searchName2 + "," + _searchName1 + "," + _searchName2 + ",";
+				Assert.That(result.ToString(), Is.EqualTo(expectedResult));
+				var futureQuery = query.ToFutureValue(qdc => qdc.Aggregate(new StringBuilder(), (s, dc) => s.Append(dc.Name).Append(",")));
+				Assert.That((await (futureQuery.GetValueAsync())).ToString(), Is.EqualTo(expectedResult), "Future");
+			}
+		}
+
+		// Failing case till NH-3850 is fixed
+		[Test]
+		public async Task AggregateSeedGBaseAsync()
+		{
+			using (var session = OpenSession())
+			{
+				// This case should work because the aggregate is insensitive to ordering.
+				var query = session.Query<DomainClassGExtendedByH>()
+				                   .OrderBy(dc => dc.Id);
+				var result = query.Aggregate(5, (s, dc) => s + dc.Id);
+				Assert.That(result, Is.EqualTo(15));
+				var futureQuery = query.ToFutureValue(qdc => qdc.Aggregate(5, (s, dc) => s + dc.Id));
+				Assert.That(await (futureQuery.GetValueAsync()), Is.EqualTo(15), "Future");
+			}
+		}
+
+		// Failing case till NH-3850 is fixed
+		[Test]
 		public async Task AllBBaseWithNameAsync()
 		{
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassBExtendedByA>().AllAsync(dc => dc.Name == _searchName1));
-				Assert.IsFalse(result);
+				Assert.That(result, Is.False);
+				result = await (session.Query<DomainClassBExtendedByA>().ToFutureValue(qdc => qdc.All(dc => dc.Name == _searchName1)).GetValueAsync());
+				Assert.That(result, Is.False, "Future");
 			}
 		}
 
@@ -166,7 +238,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassCExtendedByD>().AllAsync(dc => dc.Name == _searchName1));
-				Assert.IsFalse(result);
+				Assert.That(result, Is.False);
+				result = await (session.Query<DomainClassCExtendedByD>().ToFutureValue(qdc => qdc.All(dc => dc.Name == _searchName1)).GetValueAsync());
+				Assert.That(result, Is.False, "Future");
 			}
 		}
 
@@ -177,7 +251,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassE>().AllAsync(dc => dc.Name == _searchName1));
-				Assert.IsFalse(result);
+				Assert.That(result, Is.False);
+				result = await (session.Query<DomainClassE>().ToFutureValue(qdc => qdc.All(dc => dc.Name == _searchName1)).GetValueAsync());
+				Assert.That(result, Is.False, "Future");
 			}
 		}
 
@@ -188,7 +264,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassF>().AllAsync(dc => dc.Name == _searchName1));
-				Assert.IsTrue(result);
+				Assert.That(result, Is.True);
+				result = await (session.Query<DomainClassF>().ToFutureValue(qdc => qdc.All(dc => dc.Name == _searchName1)).GetValueAsync());
+				Assert.That(result, Is.True, "Future");
 			}
 		}
 
@@ -199,7 +277,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassGExtendedByH>().AllAsync(dc => dc.Name == _searchName1));
-				Assert.IsFalse(result);
+				Assert.That(result, Is.False);
+				result = await (session.Query<DomainClassGExtendedByH>().ToFutureValue(qdc => qdc.All(dc => dc.Name == _searchName1)).GetValueAsync());
+				Assert.That(result, Is.False, "Future");
 			}
 		}
 
@@ -209,10 +289,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassGExtendedByH>()
-					.Where(dc => dc.Name == _searchName1)
-					.AllAsync(dc => dc.Name == _searchName1));
-				Assert.IsTrue(result);
+				var query = session.Query<DomainClassGExtendedByH>()
+				                   .Where(dc => dc.Name == _searchName1);
+				var result = await (query.AllAsync(dc => dc.Name == _searchName1));
+				Assert.That(result, Is.True);
+				var futureQuery = query.ToFutureValue(qdc => qdc.All(dc => dc.Name == _searchName1));
+				Assert.That(await (futureQuery.GetValueAsync()), Is.True, "Future");
 			}
 		}
 
@@ -223,7 +305,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassBExtendedByA>().AnyAsync());
-				Assert.IsTrue(result);
+				Assert.That(result, Is.True);
+				result = await (session.Query<DomainClassBExtendedByA>().ToFutureValue(qdc => qdc.Any()).GetValueAsync());
+				Assert.That(result, Is.True, "Future");
 			}
 		}
 
@@ -234,7 +318,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassBExtendedByA>().AnyAsync(dc => dc.Name == _searchName1));
-				Assert.IsTrue(result);
+				Assert.That(result, Is.True);
+				result = await (session.Query<DomainClassBExtendedByA>().ToFutureValue(qdc => qdc.Any(dc => dc.Name == _searchName1)).GetValueAsync());
+				Assert.That(result, Is.True, "Future");
 			}
 		}
 
@@ -245,7 +331,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassCExtendedByD>().AnyAsync());
-				Assert.IsTrue(result);
+				Assert.That(result, Is.True);
+				result = await (session.Query<DomainClassCExtendedByD>().ToFutureValue(qdc => qdc.Any()).GetValueAsync());
+				Assert.That(result, Is.True, "Future");
 			}
 		}
 
@@ -256,7 +344,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassCExtendedByD>().AnyAsync(dc => dc.Name == _searchName1));
-				Assert.IsTrue(result);
+				Assert.That(result, Is.True);
+				result = await (session.Query<DomainClassCExtendedByD>().ToFutureValue(qdc => qdc.Any(dc => dc.Name == _searchName1)).GetValueAsync());
+				Assert.That(result, Is.True, "Future");
 			}
 		}
 
@@ -267,7 +357,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassE>().AnyAsync());
-				Assert.IsTrue(result);
+				Assert.That(result, Is.True);
+				result = await (session.Query<DomainClassE>().ToFutureValue(qdc => qdc.Any()).GetValueAsync());
+				Assert.That(result, Is.True, "Future");
 			}
 		}
 
@@ -278,7 +370,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassE>().AnyAsync(dc => dc.Name == _searchName1));
-				Assert.IsTrue(result);
+				Assert.That(result, Is.True);
+				result = await (session.Query<DomainClassE>().ToFutureValue(qdc => qdc.Any(dc => dc.Name == _searchName1)).GetValueAsync());
+				Assert.That(result, Is.True, "Future");
 			}
 		}
 
@@ -289,7 +383,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassF>().AnyAsync());
-				Assert.IsFalse(result);
+				Assert.That(result, Is.False);
+				result = await (session.Query<DomainClassF>().ToFutureValue(qdc => qdc.Any()).GetValueAsync());
+				Assert.That(result, Is.False, "Future");
 			}
 		}
 
@@ -300,7 +396,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassF>().AnyAsync(dc => dc.Name == _searchName1));
-				Assert.IsFalse(result);
+				Assert.That(result, Is.False);
+				result = await (session.Query<DomainClassF>().ToFutureValue(qdc => qdc.Any(dc => dc.Name == _searchName1)).GetValueAsync());
+				Assert.That(result, Is.False, "Future");
 			}
 		}
 
@@ -311,7 +409,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassGExtendedByH>().AnyAsync());
-				Assert.IsTrue(result);
+				Assert.That(result, Is.True);
+				result = await (session.Query<DomainClassGExtendedByH>().ToFutureValue(qdc => qdc.Any()).GetValueAsync());
+				Assert.That(result, Is.True, "Future");
 			}
 		}
 
@@ -322,7 +422,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassGExtendedByH>().AnyAsync(dc => dc.Name == _searchName1));
-				Assert.IsTrue(result);
+				Assert.That(result, Is.True);
+				result = await (session.Query<DomainClassGExtendedByH>().ToFutureValue(qdc => qdc.Any(dc => dc.Name == _searchName1)).GetValueAsync());
+				Assert.That(result, Is.True, "Future");
 			}
 		}
 
@@ -333,18 +435,18 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<object>().AnyAsync());
-				Assert.IsTrue(result);
+				Assert.That(result, Is.True);
+				result = await (session.Query<object>().ToFutureValue(qdc => qdc.Any()).GetValueAsync());
+				Assert.That(result, Is.True, "Future");
 			}
 		}
 
-		// Failing case till NH-3850 is fixed
 		[Test, Ignore("Won't fix: requires reshaping the query")]
 		public Task AverageBBaseAsync()
 		{
 			return AverageAsync<DomainClassBExtendedByA>(1.5m);
 		}
 
-		// Failing case till NH-3850 is fixed
 		[Test, Ignore("Won't fix: requires reshaping the query")]
 		public Task AverageCBaseAsync()
 		{
@@ -365,7 +467,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			return AverageAsync<DomainClassF>(null);
 		}
 
-		// Failing case till NH-3850 is fixed
 		[Test, Ignore("Won't fix: requires reshaping the query")]
 		public Task AverageGBaseAsync()
 		{
@@ -379,39 +480,62 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				var dcQuery = session.Query<DC>();
 				var integ = await (dcQuery.AverageAsync(dc => dc.Integer, cancellationToken));
 				Assert.AreEqual(expectedResult, integ, "Integer average has failed");
+				var futureInteg = dcQuery.ToFutureValue(qdc => qdc.Average(dc => dc.Integer));
+				Assert.That(await (futureInteg.GetValueAsync(cancellationToken)), Is.EqualTo(expectedResult), "Future integer average has failed");
+
 				var longInt = await (dcQuery.AverageAsync(dc => dc.Long, cancellationToken));
 				Assert.AreEqual(expectedResult, longInt, "Long integer average has failed");
+				var futureLongInt = dcQuery.ToFutureValue(qdc => qdc.Average(dc => dc.Long));
+				Assert.That(await (futureLongInt.GetValueAsync(cancellationToken)), Is.EqualTo(expectedResult), "Future long integer average has failed");
+
 				var dec = await (dcQuery.AverageAsync(dc => dc.Decimal, cancellationToken));
 				Assert.AreEqual(expectedResult, dec, "Decimal average has failed");
+				var futureDec = dcQuery.ToFutureValue(qdc => qdc.Average(dc => dc.Decimal));
+				Assert.That(await (futureDec.GetValueAsync(cancellationToken)), Is.EqualTo(expectedResult), "Future decimal average has failed");
+
 				var dbl = await (dcQuery.AverageAsync(dc => dc.Double, cancellationToken));
-				Assert.AreEqual(expectedResult, dbl, "Double average has failed");
+				Assert.That(dbl.HasValue, Is.EqualTo(expectedResult.HasValue),"Double average has failed");
+				if (expectedResult.HasValue)
+					Assert.That(dbl.Value, Is.EqualTo(expectedResult).Within(0.001d), "Double average has failed");
+				var futureDbl = dcQuery.ToFutureValue(qdc => qdc.Average(dc => dc.Double));
+				Assert.That((await (futureDbl.GetValueAsync(cancellationToken))).HasValue, Is.EqualTo(expectedResult.HasValue),"Future double average has failed");
+				if (expectedResult.HasValue)
+					Assert.That((await (futureDbl.GetValueAsync(cancellationToken))).Value, Is.EqualTo(expectedResult).Within(0.001d), "Future double average has failed");
 
 				if (expectedResult.HasValue)
 				{
 					var nonNullableDecimal = -1m;
-					Assert.DoesNotThrowAsync(async () => { nonNullableDecimal = await (dcQuery.AverageAsync(dc => dc.NonNullableDecimal, cancellationToken)); }, "Non nullable decimal average has failed");
-					Assert.AreEqual(expectedResult, nonNullableDecimal, "Non nullable decimal average has failed");
+					Assert.That(async () => nonNullableDecimal = await (dcQuery.AverageAsync(dc => dc.NonNullableDecimal, cancellationToken)), Throws.Nothing, "Non nullable decimal average has failed");
+					Assert.That(nonNullableDecimal, Is.EqualTo(expectedResult), "Non nullable decimal average has failed");
+					var futureNonNullableDec = dcQuery.ToFutureValue(qdc => qdc.Average(dc => dc.NonNullableDecimal));
+					Assert.That(async () => nonNullableDecimal = await (futureNonNullableDec.GetValueAsync(cancellationToken)), Throws.Nothing, "Future non nullable decimal average has failed");
+					Assert.That(nonNullableDecimal, Is.EqualTo(expectedResult), "Future non nullable decimal average has failed");
 				}
 				else
 				{
-					Assert.That(() => { return dcQuery.AverageAsync(dc => dc.NonNullableDecimal, cancellationToken); },
-						// After fix
-						Throws.InstanceOf<InvalidOperationException>()
-						// Before fix
-						.Or.InnerException.InstanceOf<ArgumentNullException>(),
-						"Non nullable decimal average has failed");
+					Assert.That(() => dcQuery.AverageAsync(dc => dc.NonNullableDecimal, cancellationToken),
+					            // After fix
+					            Throws.InstanceOf<InvalidOperationException>()
+					                  // Before fix
+					                  .Or.InnerException.InstanceOf<ArgumentNullException>(),
+					            "Non nullable decimal average has failed");
+					var futureNonNullableDec = dcQuery.ToFutureValue(qdc => qdc.Average(dc => dc.NonNullableDecimal));
+					Assert.That(() => futureNonNullableDec.GetValueAsync(cancellationToken),
+					            Throws.InstanceOf<ArgumentNullException>(),
+					            "Future non nullable decimal average has failed");
 				}
 			}
 		}
 
-		// Failing case till NH-3850 is fixed
 		[Test, Ignore("Won't fix: requires reshaping the query")]
 		public async Task AverageObjectAsync()
 		{
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<object>().AverageAsync(o => (int?)2));
-				Assert.AreEqual(2, result);
+				Assert.That(result, Is.EqualTo(2));
+				result = await (session.Query<object>().ToFutureValue(qdc => qdc.Average(o => (int?)2)).GetValueAsync());
+				Assert.That(result, Is.EqualTo(2), "Future");
 			}
 		}
 
@@ -422,7 +546,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassBExtendedByA>().CountAsync());
-				Assert.AreEqual(2, result);
+				Assert.That(result, Is.EqualTo(2));
+				result = await (session.Query<DomainClassBExtendedByA>().ToFutureValue(qdc => qdc.Count()).GetValueAsync());
+				Assert.That(result, Is.EqualTo(2), "Future");
 			}
 		}
 
@@ -433,7 +559,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassBExtendedByA>().CountAsync(dc => dc.Name == _searchName1));
-				Assert.AreEqual(1, result);
+				Assert.That(result, Is.EqualTo(1));
+				result = await (session.Query<DomainClassBExtendedByA>().ToFutureValue(qdc => qdc.Count(dc => dc.Name == _searchName1)).GetValueAsync());
+				Assert.That(result, Is.EqualTo(1), "Future");
 			}
 		}
 
@@ -444,7 +572,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassCExtendedByD>().CountAsync());
-				Assert.AreEqual(2, result);
+				Assert.That(result, Is.EqualTo(2));
+				result = await (session.Query<DomainClassCExtendedByD>().ToFutureValue(qdc => qdc.Count()).GetValueAsync());
+				Assert.That(result, Is.EqualTo(2), "Future");
 			}
 		}
 
@@ -455,7 +585,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassCExtendedByD>().CountAsync(dc => dc.Name == _searchName1));
-				Assert.AreEqual(1, result);
+				Assert.That(result, Is.EqualTo(1));
+				result = await (session.Query<DomainClassCExtendedByD>().ToFutureValue(qdc => qdc.Count(dc => dc.Name == _searchName1)).GetValueAsync());
+				Assert.That(result, Is.EqualTo(1), "Future");
 			}
 		}
 
@@ -466,7 +598,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassE>().CountAsync());
-				Assert.AreEqual(2, result);
+				Assert.That(result, Is.EqualTo(2));
+				result = await (session.Query<DomainClassE>().ToFutureValue(qdc => qdc.Count()).GetValueAsync());
+				Assert.That(result, Is.EqualTo(2), "Future");
 			}
 		}
 
@@ -477,7 +611,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassE>().CountAsync(dc => dc.Name == _searchName1));
-				Assert.AreEqual(1, result);
+				Assert.That(result, Is.EqualTo(1));
+				result = await (session.Query<DomainClassE>().ToFutureValue(qdc => qdc.Count(dc => dc.Name == _searchName1)).GetValueAsync());
+				Assert.That(result, Is.EqualTo(1), "Future");
 			}
 		}
 
@@ -488,7 +624,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassF>().CountAsync());
-				Assert.AreEqual(0, result);
+				Assert.That(result, Is.EqualTo(0));
+				result = await (session.Query<DomainClassF>().ToFutureValue(qdc => qdc.Count()).GetValueAsync());
+				Assert.That(result, Is.EqualTo(0), "Future");
 			}
 		}
 
@@ -499,7 +637,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassF>().CountAsync(dc => dc.Name == _searchName1));
-				Assert.AreEqual(0, result);
+				Assert.That(result, Is.EqualTo(0));
+				result = await (session.Query<DomainClassF>().ToFutureValue(qdc => qdc.Count(dc => dc.Name == _searchName1)).GetValueAsync());
+				Assert.That(result, Is.EqualTo(0), "Future");
 			}
 		}
 
@@ -510,7 +650,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassGExtendedByH>().CountAsync());
-				Assert.AreEqual(4, result);
+				Assert.That(result, Is.EqualTo(4));
+				result = await (session.Query<DomainClassGExtendedByH>().ToFutureValue(qdc => qdc.Count()).GetValueAsync());
+				Assert.That(result, Is.EqualTo(4), "Future");
 			}
 		}
 
@@ -521,7 +663,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassGExtendedByH>().CountAsync(dc => dc.Name == _searchName1));
-				Assert.AreEqual(2, result);
+				Assert.That(result, Is.EqualTo(2));
+				result = await (session.Query<DomainClassGExtendedByH>().ToFutureValue(qdc => qdc.Count(dc => dc.Name == _searchName1)).GetValueAsync());
+				Assert.That(result, Is.EqualTo(2), "Future");
 			}
 		}
 
@@ -532,7 +676,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<object>().CountAsync());
-				Assert.AreEqual(_totalEntityCount, result);
+				Assert.That(result, Is.EqualTo(_totalEntityCount));
+				result = await (session.Query<object>().ToFutureValue(qdc => qdc.Count()).GetValueAsync());
+				Assert.That(result, Is.EqualTo(_totalEntityCount), "Future");
 			}
 		}
 
@@ -544,9 +690,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassBExtendedByA>();
 				DomainClassBExtendedByA result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync()); });
-				Assert.IsNotNull(result);
-				Assert.IsInstanceOf<DomainClassBExtendedByA>(result);
+				Assert.That(async () => result = await (query.FirstOrDefaultAsync()), Throws.Nothing);
+				Assert.That(result, Is.Not.Null);
+				Assert.That(result, Is.TypeOf<DomainClassBExtendedByA>());
+				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault());
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(result, Is.Not.Null, "Future");
+				Assert.That(result, Is.TypeOf<DomainClassBExtendedByA>(), "Future");
 			}
 		}
 
@@ -558,10 +708,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassBExtendedByA>();
 				DomainClassBExtendedByA result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync(dc => dc.Name == _searchName1)); });
-				Assert.IsNotNull(result);
-				Assert.AreEqual(_searchName1, result.Name);
-				Assert.IsInstanceOf<DomainClassBExtendedByA>(result);
+				Assert.That(async () => result = await (query.FirstOrDefaultAsync(dc => dc.Name == _searchName1)), Throws.Nothing);
+				Assert.That(result, Is.Not.Null);
+				Assert.That(result.Name, Is.EqualTo(_searchName1));
+				Assert.That(result, Is.TypeOf<DomainClassBExtendedByA>());
+				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault(dc => dc.Name == _searchName1));
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(result, Is.Not.Null, "Future");
+				Assert.That(result.Name, Is.EqualTo(_searchName1), "Future");
+				Assert.That(result, Is.TypeOf<DomainClassBExtendedByA>(), "Future");
 			}
 		}
 
@@ -573,9 +728,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassCExtendedByD>();
 				DomainClassCExtendedByD result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync()); });
-				Assert.IsNotNull(result);
-				Assert.IsInstanceOf<DomainClassCExtendedByD>(result);
+				Assert.That(async () => result = await (query.FirstOrDefaultAsync()), Throws.Nothing);
+				Assert.That(result, Is.Not.Null);
+				Assert.That(result, Is.TypeOf<DomainClassCExtendedByD>());
+				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault());
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(result, Is.Not.Null, "Future");
+				Assert.That(result, Is.TypeOf<DomainClassCExtendedByD>(), "Future");
 			}
 		}
 
@@ -587,10 +746,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassCExtendedByD>();
 				DomainClassCExtendedByD result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync(dc => dc.Name == _searchName1)); });
-				Assert.IsNotNull(result);
-				Assert.AreEqual(_searchName1, result.Name);
-				Assert.IsInstanceOf<DomainClassCExtendedByD>(result);
+				Assert.That(async () => result = await (query.FirstOrDefaultAsync(dc => dc.Name == _searchName1)), Throws.Nothing);
+				Assert.That(result, Is.Not.Null);
+				Assert.That(result.Name, Is.EqualTo(_searchName1));
+				Assert.That(result, Is.TypeOf<DomainClassCExtendedByD>());
+				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault(dc => dc.Name == _searchName1));
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(result, Is.Not.Null, "Future");
+				Assert.That(result.Name, Is.EqualTo(_searchName1), "Future");
+				Assert.That(result, Is.TypeOf<DomainClassCExtendedByD>(), "Future");
 			}
 		}
 
@@ -602,9 +766,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassE>();
 				DomainClassE result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync()); });
-				Assert.IsNotNull(result);
-				Assert.IsInstanceOf<DomainClassE>(result);
+				Assert.That(async () => result = await (query.FirstOrDefaultAsync()), Throws.Nothing);
+				Assert.That(result, Is.Not.Null);
+				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault());
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(result, Is.Not.Null, "Future");
 			}
 		}
 
@@ -616,10 +782,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassE>();
 				DomainClassE result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync(dc => dc.Name == _searchName1)); });
-				Assert.IsNotNull(result);
-				Assert.AreEqual(_searchName1, result.Name);
-				Assert.IsInstanceOf<DomainClassE>(result);
+				Assert.That(async () => result = await (query.FirstOrDefaultAsync(dc => dc.Name == _searchName1)), Throws.Nothing);
+				Assert.That(result, Is.Not.Null);
+				Assert.That(result.Name, Is.EqualTo(_searchName1));
+				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault(dc => dc.Name == _searchName1));
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(result, Is.Not.Null, "Future");
+				Assert.That(result.Name, Is.EqualTo(_searchName1), "Future");
 			}
 		}
 
@@ -631,8 +800,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassF>();
 				DomainClassF result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync()); });
-				Assert.IsNull(result);
+				Assert.That(async () => result = await (query.FirstOrDefaultAsync()), Throws.Nothing);
+				Assert.That(result, Is.Null);
+				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault());
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(result, Is.Null, "Future");
 			}
 		}
 
@@ -644,8 +816,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassF>();
 				DomainClassF result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync(dc => dc.Name == _searchName1)); });
-				Assert.IsNull(result);
+				Assert.That(async () => result = await (query.FirstOrDefaultAsync(dc => dc.Name == _searchName1)), Throws.Nothing);
+				Assert.That(result, Is.Null);
+				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault(dc => dc.Name == _searchName1));
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(result, Is.Null, "Future");
 			}
 		}
 
@@ -657,10 +832,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassGExtendedByH>();
 				DomainClassGExtendedByH result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync()); });
-				Assert.IsNotNull(result);
+				Assert.That(async () => result = await (query.FirstOrDefaultAsync()), Throws.Nothing);
+				Assert.That(result, Is.Not.Null);
 				// If class type assert starts failing, maybe just ignore it: order of first on polymorphic queries looks unspecified to me.
-				Assert.IsInstanceOf<DomainClassGExtendedByH>(result);
+				Assert.That(result, Is.TypeOf<DomainClassGExtendedByH>());
+				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault());
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(result, Is.Not.Null, "Future");
+				// If class type assert starts failing, maybe just ignore it: order of first on polymorphic queries looks unspecified to me.
+				Assert.That(result, Is.TypeOf<DomainClassGExtendedByH>(), "Future");
 			}
 		}
 
@@ -672,11 +852,17 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassGExtendedByH>();
 				DomainClassGExtendedByH result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync(dc => dc.Name == _searchName1)); });
-				Assert.IsNotNull(result);
-				Assert.AreEqual(_searchName1, result.Name);
+				Assert.That(async () => result = await (query.FirstOrDefaultAsync(dc => dc.Name == _searchName1)), Throws.Nothing);
+				Assert.That(result, Is.Not.Null);
+				Assert.That(result.Name, Is.EqualTo(_searchName1));
 				// If class type assert starts failing, maybe just ignore it: order of first on polymorphic queries looks unspecified to me.
-				Assert.IsInstanceOf<DomainClassGExtendedByH>(result);
+				Assert.That(result, Is.TypeOf<DomainClassGExtendedByH>());
+				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault(dc => dc.Name == _searchName1));
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(result, Is.Not.Null, "Future");
+				Assert.That(result.Name, Is.EqualTo(_searchName1), "Future");
+				// If class type assert starts failing, maybe just ignore it: order of first on polymorphic queries looks unspecified to me.
+				Assert.That(result, Is.TypeOf<DomainClassGExtendedByH>(), "Future");
 			}
 		}
 
@@ -688,10 +874,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<object>();
 				object result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync()); });
-				Assert.IsNotNull(result);
+				Assert.That(async () => result = await (query.FirstOrDefaultAsync()), Throws.Nothing);
+				Assert.That(result, Is.Not.Null);
 				// If class type assert starts failing, maybe just ignore it: order of first on polymorphic queries looks unspecified to me.
-				Assert.IsInstanceOf<DomainClassBExtendedByA>(result);
+				Assert.That(result, Is.TypeOf<DomainClassBExtendedByA>());
+				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault());
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(result, Is.Not.Null, "Future");
+				// If class type assert starts failing, maybe just ignore it: order of first on polymorphic queries looks unspecified to me.
+				Assert.That(result, Is.TypeOf<DomainClassBExtendedByA>(), "Future");
 			}
 		}
 
@@ -702,7 +893,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassBExtendedByA>().LongCountAsync());
-				Assert.AreEqual(2, result);
+				Assert.That(result, Is.EqualTo(2));
+				result = await (session.Query<DomainClassBExtendedByA>().ToFutureValue(qdc => qdc.LongCount()).GetValueAsync());
+				Assert.That(result, Is.EqualTo(2), "Future");
 			}
 		}
 
@@ -713,7 +906,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassBExtendedByA>().LongCountAsync(dc => dc.Name == _searchName1));
-				Assert.AreEqual(1, result);
+				Assert.That(result, Is.EqualTo(1));
+				result = await (session.Query<DomainClassBExtendedByA>().ToFutureValue(qdc => qdc.LongCount(dc => dc.Name == _searchName1)).GetValueAsync());
+				Assert.That(result, Is.EqualTo(1), "Future");
 			}
 		}
 
@@ -724,7 +919,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassCExtendedByD>().LongCountAsync());
-				Assert.AreEqual(2, result);
+				Assert.That(result, Is.EqualTo(2));
+				result = await (session.Query<DomainClassCExtendedByD>().ToFutureValue(qdc => qdc.LongCount()).GetValueAsync());
+				Assert.That(result, Is.EqualTo(2), "Future");
 			}
 		}
 
@@ -735,7 +932,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassCExtendedByD>().LongCountAsync(dc => dc.Name == _searchName1));
-				Assert.AreEqual(1, result);
+				Assert.That(result, Is.EqualTo(1));
+				result = await (session.Query<DomainClassCExtendedByD>().ToFutureValue(qdc => qdc.LongCount(dc => dc.Name == _searchName1)).GetValueAsync());
+				Assert.That(result, Is.EqualTo(1), "Future");
 			}
 		}
 
@@ -746,7 +945,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassE>().LongCountAsync());
-				Assert.AreEqual(2, result);
+				Assert.That(result, Is.EqualTo(2));
+				result = await (session.Query<DomainClassE>().ToFutureValue(qdc => qdc.LongCount()).GetValueAsync());
+				Assert.That(result, Is.EqualTo(2), "Future");
 			}
 		}
 
@@ -757,7 +958,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassE>().LongCountAsync(dc => dc.Name == _searchName1));
-				Assert.AreEqual(1, result);
+				Assert.That(result, Is.EqualTo(1));
+				result = await (session.Query<DomainClassE>().ToFutureValue(qdc => qdc.LongCount(dc => dc.Name == _searchName1)).GetValueAsync());
+				Assert.That(result, Is.EqualTo(1), "Future");
 			}
 		}
 
@@ -768,7 +971,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassF>().LongCountAsync());
-				Assert.AreEqual(0, result);
+				Assert.That(result, Is.EqualTo(0));
+				result = await (session.Query<DomainClassF>().ToFutureValue(qdc => qdc.LongCount()).GetValueAsync());
+				Assert.That(result, Is.EqualTo(0), "Future");
 			}
 		}
 
@@ -779,7 +984,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassF>().LongCountAsync(dc => dc.Name == _searchName1));
-				Assert.AreEqual(0, result);
+				Assert.That(result, Is.EqualTo(0));
+				result = await (session.Query<DomainClassF>().ToFutureValue(qdc => qdc.LongCount(dc => dc.Name == _searchName1)).GetValueAsync());
+				Assert.That(result, Is.EqualTo(0), "Future");
 			}
 		}
 
@@ -790,7 +997,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassGExtendedByH>().LongCountAsync());
-				Assert.AreEqual(4, result);
+				Assert.That(result, Is.EqualTo(4));
+				result = await (session.Query<DomainClassGExtendedByH>().ToFutureValue(qdc => qdc.LongCount()).GetValueAsync());
+				Assert.That(result, Is.EqualTo(4), "Future");
 			}
 		}
 
@@ -801,7 +1010,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<DomainClassGExtendedByH>().LongCountAsync(dc => dc.Name == _searchName1));
-				Assert.AreEqual(2, result);
+				Assert.That(result, Is.EqualTo(2));
+				result = await (session.Query<DomainClassGExtendedByH>().ToFutureValue(qdc => qdc.LongCount(dc => dc.Name == _searchName1)).GetValueAsync());
+				Assert.That(result, Is.EqualTo(2), "Future");
 			}
 		}
 
@@ -812,7 +1023,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<object>().LongCountAsync());
-				Assert.AreEqual(_totalEntityCount, result);
+				Assert.That(result, Is.EqualTo(_totalEntityCount));
+				result = await (session.Query<object>().ToFutureValue(qdc => qdc.LongCount()).GetValueAsync());
+				Assert.That(result, Is.EqualTo(_totalEntityCount), "Future");
 			}
 		}
 
@@ -857,45 +1070,74 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var dcQuery = session.Query<DC>();
 				var name = await (dcQuery.MaxAsync(dc => dc.Name, cancellationToken));
-				Assert.AreEqual(expectedResult.HasValue ? _searchName2 : null, name, "String max has failed");
+				Assert.That(name, Is.EqualTo(expectedResult.HasValue ? _searchName2 : null), "String max has failed");
+				var futureName = dcQuery.ToFutureValue(qdc => qdc.Max(dc => dc.Name));
+				Assert.That(await (futureName.GetValueAsync(cancellationToken)), Is.EqualTo(expectedResult.HasValue ? _searchName2 : null), "Future string max has failed");
+
 				var integ = await (dcQuery.MaxAsync(dc => dc.Integer, cancellationToken));
-				Assert.AreEqual(expectedResult, integ, "Integer max has failed");
+				Assert.That(integ, Is.EqualTo(expectedResult), "Integer max has failed");
+				var futureInteg = dcQuery.ToFutureValue(qdc => qdc.Max(dc => dc.Integer));
+				Assert.That(await (futureInteg.GetValueAsync(cancellationToken)), Is.EqualTo(expectedResult), "Future integer max has failed");
+
 				var longInt = await (dcQuery.MaxAsync(dc => dc.Long, cancellationToken));
-				Assert.AreEqual(expectedResult, longInt, "Long integer max has failed");
+				Assert.That(longInt, Is.EqualTo(expectedResult), "Long integer max has failed");
+				var futureLongInt = dcQuery.ToFutureValue(qdc => qdc.Max(dc => dc.Long));
+				Assert.That(await (futureLongInt.GetValueAsync(cancellationToken)), Is.EqualTo(expectedResult), "Future long integer max has failed");
+
 				var dec = await (dcQuery.MaxAsync(dc => dc.Decimal, cancellationToken));
-				Assert.AreEqual(expectedResult, dec, "Decimal max has failed");
+				Assert.That(dec, Is.EqualTo(expectedResult), "Decimal max has failed");
+				var futureDec = dcQuery.ToFutureValue(qdc => qdc.Max(dc => dc.Decimal));
+				Assert.That(await (futureDec.GetValueAsync(cancellationToken)), Is.EqualTo(expectedResult), "Future decimal max has failed");
+
 				var dbl = await (dcQuery.MaxAsync(dc => dc.Double, cancellationToken));
-				Assert.AreEqual(expectedResult.HasValue, dbl.HasValue, "Double max has failed");
+				Assert.That(dbl.HasValue, Is.EqualTo(expectedResult.HasValue),"Double max has failed");
 				if (expectedResult.HasValue)
-					Assert.AreEqual(expectedResult.Value, dbl.Value, 0.001d, "Double max has failed");
+					Assert.That(dbl.Value, Is.EqualTo(expectedResult).Within(0.001d), "Double max has failed");
+				var futureDbl = dcQuery.ToFutureValue(qdc => qdc.Max(dc => dc.Double));
+				Assert.That((await (futureDbl.GetValueAsync(cancellationToken))).HasValue, Is.EqualTo(expectedResult.HasValue),"Future double max has failed");
+				if (expectedResult.HasValue)
+					Assert.That((await (futureDbl.GetValueAsync(cancellationToken))).Value, Is.EqualTo(expectedResult).Within(0.001d), "Future double max has failed");
 
 				var date = await (dcQuery.MaxAsync(dc => dc.DateTime, cancellationToken));
 				var dateWithOffset = await (dcQuery.MaxAsync(dc => dc.DateTimeOffset, cancellationToken));
+				var futureDate = dcQuery.ToFutureValue(qdc => qdc.Max(dc => dc.DateTime));
+				var futureDateWithOffset = dcQuery.ToFutureValue(qdc => qdc.Max(dc => dc.DateTimeOffset));
 				if (expectedResult.HasValue)
 				{
-					Assert.Greater(date, _testDate, "DateTime max has failed");
-					Assert.Greater(dateWithOffset, _testDateWithOffset, "DateTimeOffset max has failed");
+					Assert.That(date, Is.GreaterThan(_testDate), "DateTime max has failed");
+					Assert.That(dateWithOffset, Is.GreaterThan(_testDateWithOffset), "DateTimeOffset max has failed");
+					Assert.That(await (futureDate.GetValueAsync(cancellationToken)), Is.GreaterThan(_testDate), "Future DateTime max has failed");
+					Assert.That(await (futureDateWithOffset.GetValueAsync(cancellationToken)), Is.GreaterThan(_testDateWithOffset), "Future DateTimeOffset max has failed");
 				}
 				else
 				{
-					Assert.Null(date, "DateTime max has failed");
-					Assert.Null(dateWithOffset, "DateTimeOffset max has failed");
+					Assert.That(date, Is.Null, "DateTime max has failed");
+					Assert.That(dateWithOffset, Is.Null, "DateTimeOffset max has failed");
+					Assert.That(await (futureDate.GetValueAsync(cancellationToken)), Is.Null, "Future DateTime max has failed");
+					Assert.That(await (futureDateWithOffset.GetValueAsync(cancellationToken)), Is.Null, "Future DateTimeOffset max has failed");
 				}
 
 				if (expectedResult.HasValue)
 				{
 					var nonNullableDecimal = -1m;
-					Assert.DoesNotThrowAsync(async () => { nonNullableDecimal = await (dcQuery.MaxAsync(dc => dc.NonNullableDecimal, cancellationToken)); }, "Non nullable decimal max has failed");
-					Assert.AreEqual(expectedResult, nonNullableDecimal, "Non nullable decimal max has failed");
+					Assert.That(async () => nonNullableDecimal = await (dcQuery.MaxAsync(dc => dc.NonNullableDecimal, cancellationToken)), Throws.Nothing, "Non nullable decimal max has failed");
+					Assert.That(nonNullableDecimal, Is.EqualTo(expectedResult), "Non nullable decimal max has failed");
+					var futureNonNullableDec = dcQuery.ToFutureValue(qdc => qdc.Max(dc => dc.NonNullableDecimal));
+					Assert.That(async () => nonNullableDecimal = await (futureNonNullableDec.GetValueAsync(cancellationToken)), Throws.Nothing, "Future non nullable decimal max has failed");
+					Assert.That(nonNullableDecimal, Is.EqualTo(expectedResult), "Future non nullable decimal max has failed");
 				}
 				else
 				{
-					Assert.That(() => { return dcQuery.MaxAsync(dc => dc.NonNullableDecimal, cancellationToken); },
-						// After fix
-						Throws.InstanceOf<InvalidOperationException>()
-						// Before fix
-						.Or.InnerException.InstanceOf<ArgumentNullException>(),
-						"Non nullable decimal max has failed");
+					Assert.That(() => dcQuery.MaxAsync(dc => dc.NonNullableDecimal, cancellationToken),
+					            // After fix
+					            Throws.InstanceOf<InvalidOperationException>()
+					                  // Before fix
+					                  .Or.InnerException.InstanceOf<ArgumentNullException>(),
+					            "Non nullable decimal max has failed");
+					var futureNonNullableDec = dcQuery.ToFutureValue(qdc => qdc.Max(dc => dc.NonNullableDecimal));
+					Assert.That(() => futureNonNullableDec.GetValueAsync(cancellationToken),
+					            Throws.InstanceOf<ArgumentNullException>(),
+					            "Future non nullable decimal max has failed");
 				}
 			}
 		}
@@ -941,45 +1183,74 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var dcQuery = session.Query<DC>();
 				var name = await (dcQuery.MinAsync(dc => dc.Name, cancellationToken));
-				Assert.AreEqual(expectedResult.HasValue ? _searchName1 : null, name, "String min has failed");
+				Assert.That(name, Is.EqualTo(expectedResult.HasValue ? _searchName1 : null), "String min has failed");
+				var futureName = dcQuery.ToFutureValue(qdc => qdc.Min(dc => dc.Name));
+				Assert.That(await (futureName.GetValueAsync(cancellationToken)), Is.EqualTo(expectedResult.HasValue ? _searchName1 : null), "Future string min has failed");
+
 				var integ = await (dcQuery.MinAsync(dc => dc.Integer, cancellationToken));
-				Assert.AreEqual(expectedResult, integ, "Integer min has failed");
+				Assert.That(integ, Is.EqualTo(expectedResult), "Integer min has failed");
+				var futureInteg = dcQuery.ToFutureValue(qdc => qdc.Min(dc => dc.Integer));
+				Assert.That(await (futureInteg.GetValueAsync(cancellationToken)), Is.EqualTo(expectedResult), "Future integer min has failed");
+
 				var longInt = await (dcQuery.MinAsync(dc => dc.Long, cancellationToken));
-				Assert.AreEqual(expectedResult, longInt, "Long integer min has failed");
+				Assert.That(longInt, Is.EqualTo(expectedResult), "Long integer min has failed");
+				var futureLongInt = dcQuery.ToFutureValue(qdc => qdc.Min(dc => dc.Long));
+				Assert.That(await (futureLongInt.GetValueAsync(cancellationToken)), Is.EqualTo(expectedResult), "Future long integer min has failed");
+
 				var dec = await (dcQuery.MinAsync(dc => dc.Decimal, cancellationToken));
-				Assert.AreEqual(expectedResult, dec, "Decimal min has failed");
+				Assert.That(dec, Is.EqualTo(expectedResult), "Decimal min has failed");
+				var futureDec = dcQuery.ToFutureValue(qdc => qdc.Min(dc => dc.Decimal));
+				Assert.That(await (futureDec.GetValueAsync(cancellationToken)), Is.EqualTo(expectedResult), "Future decimal min has failed");
+
 				var dbl = await (dcQuery.MinAsync(dc => dc.Double, cancellationToken));
-				Assert.AreEqual(expectedResult.HasValue, dbl.HasValue, "Double min has failed");
+				Assert.That(dbl.HasValue, Is.EqualTo(expectedResult.HasValue),"Double min has failed");
 				if (expectedResult.HasValue)
-					Assert.AreEqual(expectedResult.Value, dbl.Value, 0.001d, "Double min has failed");
+					Assert.That(dbl.Value, Is.EqualTo(expectedResult).Within(0.001d), "Double min has failed");
+				var futureDbl = dcQuery.ToFutureValue(qdc => qdc.Min(dc => dc.Double));
+				Assert.That((await (futureDbl.GetValueAsync(cancellationToken))).HasValue, Is.EqualTo(expectedResult.HasValue),"Future double min has failed");
+				if (expectedResult.HasValue)
+					Assert.That((await (futureDbl.GetValueAsync(cancellationToken))).Value, Is.EqualTo(expectedResult).Within(0.001d), "Future double min has failed");
 
 				var date = await (dcQuery.MinAsync(dc => dc.DateTime, cancellationToken));
 				var dateWithOffset = await (dcQuery.MinAsync(dc => dc.DateTimeOffset, cancellationToken));
+				var futureDate = dcQuery.ToFutureValue(qdc => qdc.Min(dc => dc.DateTime));
+				var futureDateWithOffset = dcQuery.ToFutureValue(qdc => qdc.Min(dc => dc.DateTimeOffset));
 				if (expectedResult.HasValue)
 				{
-					Assert.Less(date, _testDate, "DateTime min has failed");
-					Assert.Less(dateWithOffset, _testDateWithOffset, "DateTimeOffset min has failed");
+					Assert.That(date, Is.LessThan(_testDate), "DateTime min has failed");
+					Assert.That(dateWithOffset, Is.LessThan(_testDateWithOffset), "DateTimeOffset min has failed");
+					Assert.That(await (futureDate.GetValueAsync(cancellationToken)), Is.LessThan(_testDate), "Future DateTime min has failed");
+					Assert.That(await (futureDateWithOffset.GetValueAsync(cancellationToken)), Is.LessThan(_testDateWithOffset), "Future DateTimeOffset min has failed");
 				}
 				else
 				{
-					Assert.Null(date, "DateTime min has failed");
-					Assert.Null(dateWithOffset, "DateTimeOffset min has failed");
+					Assert.That(date, Is.Null, "DateTime min has failed");
+					Assert.That(dateWithOffset, Is.Null, "DateTimeOffset min has failed");
+					Assert.That(await (futureDate.GetValueAsync(cancellationToken)), Is.Null, "Future DateTime min has failed");
+					Assert.That(await (futureDateWithOffset.GetValueAsync(cancellationToken)), Is.Null, "Future DateTimeOffset min has failed");
 				}
 
 				if (expectedResult.HasValue)
 				{
 					var nonNullableDecimal = -1m;
-					Assert.DoesNotThrowAsync(async () => { nonNullableDecimal = await (dcQuery.MinAsync(dc => dc.NonNullableDecimal, cancellationToken)); }, "Non nullable decimal min has failed");
-					Assert.AreEqual(expectedResult, nonNullableDecimal, "Non nullable decimal min has failed");
+					Assert.That(async () => nonNullableDecimal = await (dcQuery.MinAsync(dc => dc.NonNullableDecimal, cancellationToken)), Throws.Nothing, "Non nullable decimal min has failed");
+					Assert.That(nonNullableDecimal, Is.EqualTo(expectedResult), "Non nullable decimal min has failed");
+					var futureNonNullableDec = dcQuery.ToFutureValue(qdc => qdc.Min(dc => dc.NonNullableDecimal));
+					Assert.That(async () => nonNullableDecimal = await (futureNonNullableDec.GetValueAsync(cancellationToken)), Throws.Nothing, "Future non nullable decimal min has failed");
+					Assert.That(nonNullableDecimal, Is.EqualTo(expectedResult), "Future non nullable decimal min has failed");
 				}
 				else
 				{
-					Assert.That(() => { return dcQuery.MinAsync(dc => dc.NonNullableDecimal, cancellationToken); },
-						// After fix
-						Throws.InstanceOf<InvalidOperationException>()
-						// Before fix
-						.Or.InnerException.InstanceOf<ArgumentNullException>(),
-						"Non nullable decimal min has failed");
+					Assert.That(() => dcQuery.MinAsync(dc => dc.NonNullableDecimal, cancellationToken),
+					            // After fix
+					            Throws.InstanceOf<InvalidOperationException>()
+					                  // Before fix
+					                  .Or.InnerException.InstanceOf<ArgumentNullException>(),
+					            "Non nullable decimal min has failed");
+					var futureNonNullableDec = dcQuery.ToFutureValue(qdc => qdc.Min(dc => dc.NonNullableDecimal));
+					Assert.That(() => futureNonNullableDec.GetValueAsync(cancellationToken),
+					            Throws.InstanceOf<ArgumentNullException>(),
+					            "Future non nullable decimal min has failed");
 				}
 			}
 		}
@@ -991,8 +1262,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var query = session.Query<DomainClassBExtendedByA>();
-				DomainClassBExtendedByA result = null;
-				Assert.ThrowsAsync<InvalidOperationException>(async () => { result = await (query.SingleOrDefaultAsync()); });
+				Assert.That(() => query.SingleOrDefaultAsync(), Throws.InvalidOperationException);
+				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault());
+				Assert.That(() => futureQuery.GetValueAsync(), Throws.TargetInvocationException.And.InnerException.TypeOf<InvalidOperationException>(), "Future");
 			}
 		}
 
@@ -1004,10 +1276,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassBExtendedByA>();
 				DomainClassBExtendedByA result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.SingleOrDefaultAsync(dc => dc.Name == _searchName1)); });
-				Assert.IsNotNull(result);
-				Assert.AreEqual(_searchName1, result.Name);
-				Assert.IsInstanceOf<DomainClassBExtendedByA>(result);
+				Assert.That(async () => result = await (query.SingleOrDefaultAsync(dc => dc.Name == _searchName1)), Throws.Nothing);
+				Assert.That(result, Is.Not.Null);
+				Assert.That(result.Name, Is.EqualTo(_searchName1));
+				Assert.That(result, Is.TypeOf<DomainClassBExtendedByA>());
+				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault(dc => dc.Name == _searchName1));
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(result, Is.Not.Null, "Future");
+				Assert.That(result.Name, Is.EqualTo(_searchName1), "Future");
+				Assert.That(result, Is.TypeOf<DomainClassBExtendedByA>(), "Future");
 			}
 		}
 
@@ -1018,8 +1295,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var query = session.Query<DomainClassCExtendedByD>();
-				DomainClassCExtendedByD result = null;
-				Assert.ThrowsAsync<InvalidOperationException>(async () => { result = await (query.SingleOrDefaultAsync()); });
+				Assert.That(() => query.SingleOrDefaultAsync(), Throws.InvalidOperationException);
+				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault());
+				Assert.That(() => futureQuery.GetValueAsync(), Throws.TargetInvocationException.And.InnerException.TypeOf<InvalidOperationException>(), "Future");
 			}
 		}
 
@@ -1031,10 +1309,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassCExtendedByD>();
 				DomainClassCExtendedByD result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.SingleOrDefaultAsync(dc => dc.Name == _searchName1)); });
-				Assert.IsNotNull(result);
-				Assert.AreEqual(_searchName1, result.Name);
-				Assert.IsInstanceOf<DomainClassCExtendedByD>(result);
+				Assert.That(async () => result = await (query.SingleOrDefaultAsync(dc => dc.Name == _searchName1)), Throws.Nothing);
+				Assert.That(result, Is.Not.Null);
+				Assert.That(result.Name, Is.EqualTo(_searchName1));
+				Assert.That(result, Is.TypeOf<DomainClassCExtendedByD>());
+				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault(dc => dc.Name == _searchName1));
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(result, Is.Not.Null, "Future");
+				Assert.That(result.Name, Is.EqualTo(_searchName1), "Future");
+				Assert.That(result, Is.TypeOf<DomainClassCExtendedByD>(), "Future");
 			}
 		}
 
@@ -1045,8 +1328,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var query = session.Query<DomainClassE>();
-				DomainClassE result = null;
-				Assert.ThrowsAsync<InvalidOperationException>(async () => { result = await (query.SingleOrDefaultAsync()); });
+				Assert.That(() => query.SingleOrDefaultAsync(), Throws.InvalidOperationException);
+				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault());
+				Assert.That(() => futureQuery.GetValueAsync(), Throws.TargetInvocationException.And.InnerException.TypeOf<InvalidOperationException>(), "Future");
 			}
 		}
 
@@ -1058,10 +1342,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassE>();
 				DomainClassE result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.SingleOrDefaultAsync(dc => dc.Name == _searchName1)); });
-				Assert.IsNotNull(result);
-				Assert.AreEqual(_searchName1, result.Name);
-				Assert.IsInstanceOf<DomainClassE>(result);
+				Assert.That(async () => result = await (query.SingleOrDefaultAsync(dc => dc.Name == _searchName1)), Throws.Nothing);
+				Assert.That(result, Is.Not.Null);
+				Assert.That(result.Name, Is.EqualTo(_searchName1));
+				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault(dc => dc.Name == _searchName1));
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(result, Is.Not.Null, "Future");
+				Assert.That(result.Name, Is.EqualTo(_searchName1), "Future");
 			}
 		}
 
@@ -1073,8 +1360,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassF>();
 				DomainClassF result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.SingleOrDefaultAsync()); });
-				Assert.IsNull(result);
+				Assert.That(async () => result = await (query.SingleOrDefaultAsync()), Throws.Nothing);
+				Assert.That(result, Is.Null);
+				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault());
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(result, Is.Null, "Future");
 			}
 		}
 
@@ -1086,8 +1376,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassF>();
 				DomainClassF result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.SingleOrDefaultAsync(dc => dc.Name == _searchName1)); });
-				Assert.IsNull(result);
+				Assert.That(async () => result = await (query.SingleOrDefaultAsync(dc => dc.Name == _searchName1)), Throws.Nothing);
+				Assert.That(result, Is.Null);
+				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault(dc => dc.Name == _searchName1));
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(result, Is.Null, "Future");
 			}
 		}
 
@@ -1098,8 +1391,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var query = session.Query<DomainClassGExtendedByH>();
-				DomainClassGExtendedByH result = null;
-				Assert.ThrowsAsync<InvalidOperationException>(async () => { result = await (query.SingleOrDefaultAsync()); });
+				Assert.That(() => query.SingleOrDefaultAsync(), Throws.InvalidOperationException);
+				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault());
+				Assert.That(() => futureQuery.GetValueAsync(), Throws.TargetInvocationException.And.InnerException.TypeOf<InvalidOperationException>(), "Future");
 			}
 		}
 
@@ -1110,8 +1404,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var query = session.Query<DomainClassGExtendedByH>();
-				DomainClassGExtendedByH result = null;
-				Assert.ThrowsAsync<InvalidOperationException>(async () => { result = await (query.SingleOrDefaultAsync(dc => dc.Name == _searchName1)); });
+				Assert.That(() => query.SingleOrDefaultAsync(dc => dc.Name == _searchName1), Throws.InvalidOperationException);
+				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault(dc => dc.Name == _searchName1));
+				Assert.That(() => futureQuery.GetValueAsync(), Throws.TargetInvocationException.And.InnerException.TypeOf<InvalidOperationException>(), "Future");
 			}
 		}
 
@@ -1122,8 +1417,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var query = session.Query<object>();
-				object result = null;
-				Assert.ThrowsAsync<InvalidOperationException>(async () => { result = await (query.SingleOrDefaultAsync()); });
+				Assert.That(() => query.SingleOrDefaultAsync(), Throws.InvalidOperationException);
+				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault());
+				Assert.That(() => futureQuery.GetValueAsync(), Throws.TargetInvocationException.And.InnerException.TypeOf<InvalidOperationException>(), "Future");
 			}
 		}
 
@@ -1169,7 +1465,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var result = await (session.Query<object>().SumAsync(o => (int?)2));
-				Assert.AreEqual(_totalEntityCount * 2, result);
+				Assert.That(result, Is.EqualTo(_totalEntityCount * 2));
 			}
 		}
 
@@ -1179,30 +1475,50 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var dcQuery = session.Query<DC>();
 				var integ = await (dcQuery.SumAsync(dc => dc.Integer, cancellationToken));
-				Assert.AreEqual(expectedResult, integ, "Integer sum has failed");
+				Assert.That(integ, Is.EqualTo(expectedResult), "Integer sum has failed");
+				var futureInteg = dcQuery.ToFutureValue(qdc => qdc.Sum(dc => dc.Integer));
+				Assert.That(await (futureInteg.GetValueAsync(cancellationToken)), Is.EqualTo(expectedResult), "Future integer sum has failed");
+
 				var longInt = await (dcQuery.SumAsync(dc => dc.Long, cancellationToken));
-				Assert.AreEqual(expectedResult, longInt, "Long integer sum has failed");
+				Assert.That(longInt, Is.EqualTo(expectedResult), "Long integer sum has failed");
+				var futureLongInt = dcQuery.ToFutureValue(qdc => qdc.Sum(dc => dc.Long));
+				Assert.That(await (futureLongInt.GetValueAsync(cancellationToken)), Is.EqualTo(expectedResult), "Future long integer sum has failed");
+
 				var dec = await (dcQuery.SumAsync(dc => dc.Decimal, cancellationToken));
-				Assert.AreEqual(expectedResult, dec, "Decimal sum has failed");
+				Assert.That(dec, Is.EqualTo(expectedResult), "Decimal sum has failed");
+				var futureDec = dcQuery.ToFutureValue(qdc => qdc.Sum(dc => dc.Decimal));
+				Assert.That(await (futureDec.GetValueAsync(cancellationToken)), Is.EqualTo(expectedResult), "Future decimal sum has failed");
+
 				var dbl = await (dcQuery.SumAsync(dc => dc.Double, cancellationToken));
-				Assert.AreEqual(expectedResult.HasValue, dbl.HasValue, "Double sum has failed");
+				Assert.That(dbl.HasValue, Is.EqualTo(expectedResult.HasValue), "Double sum has failed");
 				if (expectedResult.HasValue)
-					Assert.AreEqual(expectedResult.Value, dbl.Value, 0.001d, "Double sum has failed");
+					Assert.That(dbl.Value, Is.EqualTo(expectedResult).Within(0.001d), "Double sum has failed");
+				var futureDbl = dcQuery.ToFutureValue(qdc => qdc.Sum(dc => dc.Double));
+				Assert.That((await (futureDbl.GetValueAsync(cancellationToken))).HasValue, Is.EqualTo(expectedResult.HasValue), "Future double sum has failed");
+				if (expectedResult.HasValue)
+					Assert.That((await (futureDbl.GetValueAsync(cancellationToken))).Value, Is.EqualTo(expectedResult).Within(0.001d), "Future double sum has failed");
 
 				if (expectedResult.HasValue)
 				{
 					var nonNullableDecimal = -1m;
-					Assert.DoesNotThrowAsync(async () => { nonNullableDecimal = await (dcQuery.SumAsync(dc => dc.NonNullableDecimal, cancellationToken)); }, "Non nullable decimal sum has failed");
-					Assert.AreEqual(expectedResult, nonNullableDecimal, "Non nullable decimal sum has failed");
+					Assert.That(async () => nonNullableDecimal = await (dcQuery.SumAsync(dc => dc.NonNullableDecimal, cancellationToken)), Throws.Nothing, "Non nullable decimal sum has failed");
+					Assert.That(nonNullableDecimal, Is.EqualTo(expectedResult), "Non nullable decimal sum has failed");
+					var futureNonNullableDec = dcQuery.ToFutureValue(qdc => qdc.Sum(dc => dc.NonNullableDecimal));
+					Assert.That(async () => nonNullableDecimal = await (futureNonNullableDec.GetValueAsync(cancellationToken)), Throws.Nothing, "Future non nullable decimal sum has failed");
+					Assert.That(nonNullableDecimal, Is.EqualTo(expectedResult), "Future non nullable decimal sum has failed");
 				}
 				else
 				{
-					Assert.That(() => { return dcQuery.SumAsync(dc => dc.NonNullableDecimal, cancellationToken); },
-						// After fix
-						Throws.InstanceOf<InvalidOperationException>()
-						// Before fix
-						.Or.InnerException.InstanceOf<ArgumentNullException>(),
-						"Non nullable decimal sum has failed");
+					Assert.That(() => dcQuery.SumAsync(dc => dc.NonNullableDecimal, cancellationToken),
+					            // After fix
+					            Throws.InstanceOf<InvalidOperationException>()
+					                  // Before fix
+					                  .Or.InnerException.InstanceOf<ArgumentNullException>(),
+					            "Non nullable decimal sum has failed");
+					var futureNonNullableDec = dcQuery.ToFutureValue(qdc => qdc.Sum(dc => dc.NonNullableDecimal));
+					Assert.That(() => futureNonNullableDec.GetValueAsync(cancellationToken),
+					            Throws.InstanceOf<ArgumentNullException>(),
+					            "Future non nullable decimal sum has failed");
 				}
 			}
 		}
