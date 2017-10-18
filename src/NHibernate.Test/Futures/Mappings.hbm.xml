@@ -8,6 +8,7 @@
 			<generator class="native"/>
 		</id>
     <property name="Name"/>
+    <property name="Age"/>
 		<many-to-one name="Parent" />
 		<list name="Children" cascade="all">
 			<key column="parent_id" />
