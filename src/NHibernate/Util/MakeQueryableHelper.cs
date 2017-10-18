@@ -6,13 +6,13 @@ using System.Reflection;
 namespace NHibernate.Util
 {
 	internal static class MakeQueryableHelper
-    {
-		private static readonly Lazy<MethodInfo> _implMethod = new Lazy<MethodInfo>(() =>
-			typeof(MakeQueryableHelper).GetMethod(nameof(MakeQueryableImpl), BindingFlags.Static | BindingFlags.NonPublic));
+	{
+		private static readonly MethodInfo _implMethodDefinition =
+			ReflectHelper.GetMethodDefinition(() => MakeQueryableImpl<object>(null));
 
 		public static object MakeQueryable(IEnumerable enumerable, System.Type elementType)
 		{
-			return _implMethod.Value.MakeGenericMethod(elementType).Invoke(null, new object[] { enumerable });
+			return _implMethodDefinition.MakeGenericMethod(elementType).Invoke(null, new object[] { enumerable });
 		}
 
 		private static object MakeQueryableImpl<TElement>(IEnumerable enumerable)
