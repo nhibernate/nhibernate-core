@@ -142,8 +142,12 @@ namespace NHibernate.Proxy.DynamicProxy
 
 				IL.Emit(OpCodes.Unbox_Any, unboxedType);
 
-				OpCode stind = GetStindInstruction(param.ParameterType);
-				IL.Emit(stind);
+				if (Nullable.GetUnderlyingType(unboxedType) != null) {
+					IL.Emit(OpCodes.Stobj, unboxedType);
+				} else {
+					OpCode stind = GetStindInstruction(param.ParameterType);
+					IL.Emit(stind);
+				}
 			}
 		}
 
