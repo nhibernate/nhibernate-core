@@ -222,7 +222,7 @@ namespace NHibernate.Impl
 				}
 				if (tasks.Any())
 				{
-					return Task.WhenAny(Task.WhenAll(tasks), cancellationToken.WhenCanceled());
+					return Task.WhenAny(Task.WhenAll(tasks), cancellationToken.WhenCanceled(true));
 				}
 				return Task.CompletedTask;
 			}
@@ -338,7 +338,7 @@ namespace NHibernate.Impl
 				}
 				if (tasks.Any())
 				{
-					return Task.WhenAny(Task.WhenAll(tasks), cancellationToken.WhenCanceled());
+					return Task.WhenAny(Task.WhenAll(tasks), cancellationToken.WhenCanceled(true));
 				}
 				return Task.CompletedTask;
 			}
