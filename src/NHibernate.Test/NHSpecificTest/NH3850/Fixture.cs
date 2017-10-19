@@ -182,10 +182,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				// (And moreover, with current dataset, selected values are same whatever the classes.)
 				var query = session.Query<DomainClassGExtendedByH>()
 				                    .OrderBy(dc => dc.Id);
-				var result = query.Aggregate(new StringBuilder(), (s, dc) => s.Append(dc.Name).Append(","));
+				var seed = new StringBuilder();
+				var result = query.Aggregate(seed, (s, dc) => s.Append(dc.Name).Append(","));
 				var expectedResult = _searchName1 + "," + _searchName2 + "," + _searchName1 + "," + _searchName2 + ",";
 				Assert.That(result.ToString(), Is.EqualTo(expectedResult));
-				var futureQuery = query.ToFutureValue(qdc => qdc.Aggregate(new StringBuilder(), (s, dc) => s.Append(dc.Name).Append(",")));
+				// We are dodging another bug here: the seed is cached in query plan... So giving another seed to Future
+				// keeps re-using the seed used for non future above.
+				seed.Clear();
+				var futureQuery = query.ToFutureValue(qdc => qdc.Aggregate(seed, (s, dc) => s.Append(dc.Name).Append(",")));
 				Assert.That(futureQuery.Value.ToString(), Is.EqualTo(expectedResult), "Future");
 			}
 		}
@@ -1124,7 +1128,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 					            "Non nullable decimal max has failed");
 					var futureNonNullableDec = dcQuery.ToFutureValue(qdc => qdc.Max(dc => dc.NonNullableDecimal));
 					Assert.That(() => futureNonNullableDec.Value,
-					            Throws.InstanceOf<ArgumentNullException>(),
+					            Throws.TargetInvocationException.And.InnerException.InstanceOf<InvalidOperationException>(),
 					            "Future non nullable decimal max has failed");
 				}
 			}
@@ -1237,7 +1241,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 					            "Non nullable decimal min has failed");
 					var futureNonNullableDec = dcQuery.ToFutureValue(qdc => qdc.Min(dc => dc.NonNullableDecimal));
 					Assert.That(() => futureNonNullableDec.Value,
-					            Throws.InstanceOf<ArgumentNullException>(),
+					            Throws.TargetInvocationException.And.InnerException.InstanceOf<InvalidOperationException>(),
 					            "Future non nullable decimal min has failed");
 				}
 			}
@@ -1505,7 +1509,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 					            "Non nullable decimal sum has failed");
 					var futureNonNullableDec = dcQuery.ToFutureValue(qdc => qdc.Sum(dc => dc.NonNullableDecimal));
 					Assert.That(() => futureNonNullableDec.Value,
-					            Throws.InstanceOf<ArgumentNullException>(),
+					            Throws.TargetInvocationException.And.InnerException.InstanceOf<InvalidOperationException>(),
 					            "Future non nullable decimal sum has failed");
 				}
 			}

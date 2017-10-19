@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -22,35 +23,28 @@ namespace NHibernate.Impl
 			_getResultAsync = resultAsync;
 		}
 
-		public T Value
-		{
-			get
-			{
-				var result = _getResult();
-				if (ExecuteOnEval != null)
-					// When not null, ExecuteOnEval is fetched with PostExecuteTransformer from IntermediateHqlTree
-					// through ExpressionToHqlTranslationResults, which requires a IQueryable as input and directly
-					// yields the scalar result when the query is scalar.
-					return (T)ExecuteOnEval.DynamicInvoke(result.AsQueryable());
-
-				return result.FirstOrDefault();
-			}
-		}
+		public T Value => _getResult().FirstOrDefault();
 
 		public async Task<T> GetValueAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var result = await _getResultAsync(cancellationToken).ConfigureAwait(false);
-			if (ExecuteOnEval != null)
-				// When not null, ExecuteOnEval is fetched with PostExecuteTransformer from IntermediateHqlTree
-				// through ExpressionToHqlTranslationResults, which requires a IQueryable as input and directly
-				// yields the scalar result when the query is scalar.
-				return (T)ExecuteOnEval.DynamicInvoke(result.AsQueryable());
 			return result.FirstOrDefault();
 		}
 
-		public Delegate ExecuteOnEval
+		public Delegate ExecuteOnEval { get; set; }
+
+		public IList TransformList(IList collection)
 		{
-			get; set;
+			if (ExecuteOnEval == null)
+				return collection;
+
+
+			// When not null on a future value, ExecuteOnEval is fetched with PostExecuteTransformer from
+			// IntermediateHqlTree through ExpressionToHqlTranslationResults, which requires a IQueryable
+			// as input and directly yields the scalar result when the query is scalar.
+			var resultElement = (T) ExecuteOnEval.DynamicInvoke(collection.AsQueryable());
+
+			return new List<T> {resultElement};
 		}
 	}
 }
