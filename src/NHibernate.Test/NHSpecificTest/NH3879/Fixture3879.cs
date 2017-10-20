@@ -28,9 +28,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3879
             using (var session = OpenSession())
             {
                 string getSequenceSql = Dialect.GetSequenceNextValString("seqhiloEntity_ids");
-                previousSequenceValue = session.CreateSQLQuery(getSequenceSql)
-                    .UniqueResult<long>();
-            }
+				//some adonet providers return an int, others a long
+				var boxedPreviousSequenceValue = session.CreateSQLQuery(getSequenceSql).UniqueResult();
+				previousSequenceValue = (boxedPreviousSequenceValue is long longValue) ? (int)longValue : (int)boxedPreviousSequenceValue;
+			}
 
             long id;
             using (var session = OpenSession())
