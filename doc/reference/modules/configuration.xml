@@ -148,13 +148,6 @@ var session = sessions.OpenSession(conn);
             </listitem>
             <listitem>
                 <para>
-                    Add the properties to a configuration section in the application
-                    configuration file. The section should be named <literal>nhibernate</literal>
-                    and its handler set to <literal>System.Configuration.NameValueSectionHandler</literal>.
-                </para>
-            </listitem>
-            <listitem>
-                <para>
                     Include <literal>&lt;property&gt;</literal> elements in a configuration
                     section in the application configuration file. The section should be named
                     <literal>hibernate-configuration</literal> and its handler set to
@@ -449,13 +442,11 @@ var session = sessions.OpenSession(conn);
         </para>
 
         <para>
-            System-level properties can only be set manually by setting static properties of
+            Some properties are system-level properties. They can only be set manually by setting static properties of
             <literal>NHibernate.Cfg.Environment</literal> class or be defined in the
-            <literal>&lt;nhibernate&gt;</literal> section of the application
-            configuration file. These properties cannot be set using
-            <literal>Configuration.SetProperties</literal> or be defined in the
-            <literal>&lt;hibernate-configuration&gt;</literal> section of the application configuration
-            file.
+            <literal>&lt;hibernate-configuration&gt;</literal> section of the application
+            configuration file. These properties cannot be set using <literal>Configuration.SetProperties</literal> or
+            the <literal>hibernate.cfg.xml</literal> configuration file.
         </para>
 
         <table frame="topbot" id="configuration-optional-properties" revision="3">
@@ -529,7 +520,7 @@ var session = sessions.OpenSession(conn);
                         </entry>
                         <entry>
                             Enables use of a runtime-generated class to set or get properties of an entity
-                            or component instead of using runtime reflection (System-level property).
+                            or component instead of using runtime reflection. This is a system-level property.
                             The use of the reflection optimizer inflicts a certain startup cost on the
                             application but should lead to better performance in the long run.
                             Defaults to <literal>true</literal>.
@@ -552,9 +543,17 @@ var session = sessions.OpenSession(conn);
                         </entry>
                         <entry>
                             Specifies the bytecode provider to use to optimize the use of reflection in NHibernate.
+                            This is a system-level property.
                             Use <literal>null</literal> to disable the optimization completely, <literal>lcg</literal>
                             to use built-in lightweight code generation, or the class name of a custom
                             <literal>IBytecodeProvider</literal> implementation. Defaults to <literal>lcg</literal>.
+                            <para>
+                                You can not set this property in <literal>hibernate.cfg.xml</literal>, but only
+                                in <literal>&lt;hibernate-configuration&gt;</literal> section of the application
+                                configuration file or by code by setting
+                                <literal>NHibernate.Cfg.Environment.BytecodeProvider</literal>
+                                before creating any <literal>NHibernate.Cfg.Configuration</literal> instance.
+                            </para>
                             <para>
                                 <emphasis role="strong">eg.</emphasis>
                                 <literal>null</literal> | <literal>lcg</literal> |
@@ -1483,7 +1482,7 @@ in the parameter binding.</programlisting>
         <para>
             An alternative approach is to specify a full configuration in a file named
             <literal>hibernate.cfg.xml</literal>. This file can be used as a replacement
-            for the <literal>&lt;nhibernate;&gt;</literal> or <literal>&lt;hibernate-configuration&gt;</literal>
+            for the <literal>&lt;hibernate-configuration&gt;</literal>
             sections of the application configuration file.
         </para>
 
