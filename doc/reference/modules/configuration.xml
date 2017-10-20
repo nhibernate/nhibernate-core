@@ -1091,6 +1091,33 @@ in the parameter binding.</programlisting>
                             </para>
                         </entry>
                     </row>
+                    <row>
+                        <entry>
+                            <literal>nhibernate-logger</literal>
+                        </entry>
+                        <entry>
+                            The class name of an <literal>ILoggerFactory</literal> implementation. It allows using another
+                            logger than log4net.
+                            <para>
+                                The default is not defined, which causes NHibernate to search for log4net assembly. If this
+                                search succeeds, NHibernate will log with log4net. Otherwise, its internal logging will
+                                be disabled.
+                            </para>
+                            <para>
+                                This is a very special system-level property. It can only be set through an
+                                <ulink url="https://docs.microsoft.com/en-us/dotnet/framework/configure-apps/file-schema/appsettings/">appSetting</ulink>
+                                named <literal>nhibernate-logger</literal> in the application configuration file. It cannot
+                                be set neither with <literal>NHibernate.Cfg.Environment</literal> class, nor be defined in the
+                                <literal>&lt;hibernate-configuration&gt;</literal> section of the application
+                                configuration file, nor supplied by using <literal>Configuration.SetProperties</literal>, nor
+                                set in the <literal>hibernate.cfg.xml</literal> configuration file.
+                            </para>
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>classname.of.LoggerFactory, assembly</literal>
+                            </para>
+                        </entry>
+                    </row>
                 </tbody>
             </tgroup>
         </table>
