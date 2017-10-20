@@ -10,7 +10,7 @@ using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.StreamedData;
 using Remotion.Linq.EagerFetching.Parsing;
-using Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation;
+using Remotion.Linq.Parsing.ExpressionVisitors.Transformation;
 using Remotion.Linq.Parsing.Structure;
 using Remotion.Linq.Parsing.Structure.ExpressionTreeProcessors;
 using Remotion.Linq.Parsing.Structure.IntermediateModel;
@@ -55,7 +55,7 @@ namespace NHibernate.Linq
 		/// <returns>The transformed expression.</returns>
 		public static Expression PreTransform(Expression expression)
 		{
-			var partiallyEvaluatedExpression = NhPartialEvaluatingExpressionTreeVisitor.EvaluateIndependentSubtrees(expression);
+			var partiallyEvaluatedExpression = NhPartialEvaluatingExpressionVisitor.EvaluateIndependentSubtrees(expression);
 			return PreProcessor.Process(partiallyEvaluatedExpression);
 		}
 
@@ -88,26 +88,13 @@ namespace NHibernate.Linq
 
 			methodInfoRegistry.Register(
 				new[]
-				{
-					ReflectHelper.GetMethodDefinition(() => LinqExtensionMethods.Cacheable<object>(null)),
-					ReflectHelper.GetMethodDefinition(() => LinqExtensionMethods.CacheMode<object>(null, CacheMode.Normal)),
-					ReflectHelper.GetMethodDefinition(() => LinqExtensionMethods.CacheRegion<object>(null, null)),
-				}, typeof(CacheableExpressionNode));
-
-			methodInfoRegistry.Register(
-				new[]
 					{
 						ReflectHelper.GetMethodDefinition(() => Queryable.AsQueryable(null)),
 						ReflectHelper.GetMethodDefinition(() => Queryable.AsQueryable<object>(null)),
 					}, typeof(AsQueryableExpressionNode)
 				);
 
-			methodInfoRegistry.Register(
-				new[]
-					{
-						ReflectHelper.GetMethodDefinition(() => LinqExtensionMethods.Timeout<object>(null, 0)),
-					}, typeof (TimeoutExpressionNode)
-				);
+			methodInfoRegistry.Register(new[] { LinqExtensionMethods.SetOptionsDefinition }, typeof(OptionsExpressionNode));
 
 			var nodeTypeProvider = ExpressionTreeParser.CreateDefaultNodeTypeProvider();
 			nodeTypeProvider.InnerProviders.Add(methodInfoRegistry);
@@ -140,76 +127,21 @@ namespace NHibernate.Linq
 			return Source.Resolve(inputParameter, expressionToBeResolved, clauseGenerationContext);
 		}
 
-		protected override QueryModel ApplyNodeSpecificSemantics(QueryModel queryModel, ClauseGenerationContext clauseGenerationContext)
+		protected override void ApplyNodeSpecificSemantics(QueryModel queryModel, ClauseGenerationContext clauseGenerationContext)
 		{
-			return queryModel;
 		}
 	}
 
-	public class CacheableExpressionNode : ResultOperatorExpressionNodeBase
+	internal class OptionsExpressionNode : ResultOperatorExpressionNodeBase
 	{
 		private readonly MethodCallExpressionParseInfo _parseInfo;
-		private readonly ConstantExpression _data;
+		private readonly ConstantExpression _setOptions;
 
-		public CacheableExpressionNode(MethodCallExpressionParseInfo parseInfo, ConstantExpression data) : base(parseInfo, null, null)
-		{
-			_parseInfo = parseInfo;
-			_data = data;
-		}
-
-		public override Expression Resolve(ParameterExpression inputParameter, Expression expressionToBeResolved, ClauseGenerationContext clauseGenerationContext)
-		{
-			return Source.Resolve(inputParameter, expressionToBeResolved, clauseGenerationContext);
-		}
-
-		protected override ResultOperatorBase CreateResultOperator(ClauseGenerationContext clauseGenerationContext)
-		{
-			return new CacheableResultOperator(_parseInfo, _data);
-		}
-	}
-
-	public class CacheableResultOperator : ResultOperatorBase
-	{
-		public MethodCallExpressionParseInfo ParseInfo { get; private set; }
-		public ConstantExpression Data { get; private set; }
-
-		public CacheableResultOperator(MethodCallExpressionParseInfo parseInfo, ConstantExpression data)
-		{
-			ParseInfo = parseInfo;
-			Data = data;
-		}
-
-		public override IStreamedData ExecuteInMemory(IStreamedData input)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override IStreamedDataInfo GetOutputDataInfo(IStreamedDataInfo inputInfo)
-		{
-			return inputInfo;
-		}
-
-		public override ResultOperatorBase Clone(CloneContext cloneContext)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override void TransformExpressions(Func<Expression, Expression> transformation)
-		{
-		}
-	}
-
-
-	internal class TimeoutExpressionNode : ResultOperatorExpressionNodeBase
-	{
-		private readonly MethodCallExpressionParseInfo _parseInfo;
-		private readonly ConstantExpression _timeout;
-
-		public TimeoutExpressionNode(MethodCallExpressionParseInfo parseInfo, ConstantExpression timeout)
+		public OptionsExpressionNode(MethodCallExpressionParseInfo parseInfo, ConstantExpression setOptions)
 			: base(parseInfo, null, null)
 		{
 			_parseInfo = parseInfo;
-			_timeout = timeout;
+			_setOptions = setOptions;
 		}
 
 		public override Expression Resolve(ParameterExpression inputParameter, Expression expressionToBeResolved, ClauseGenerationContext clauseGenerationContext)
@@ -219,19 +151,19 @@ namespace NHibernate.Linq
 
 		protected override ResultOperatorBase CreateResultOperator(ClauseGenerationContext clauseGenerationContext)
 		{
-			return new TimeoutResultOperator(_parseInfo, _timeout);
+			return new OptionsResultOperator(_parseInfo, _setOptions);
 		}
 	}
 
-	internal class TimeoutResultOperator : ResultOperatorBase
+	internal class OptionsResultOperator : ResultOperatorBase
 	{
-		public MethodCallExpressionParseInfo ParseInfo { get; private set; }
-		public ConstantExpression Timeout { get; private set; }
+		public MethodCallExpressionParseInfo ParseInfo { get; }
+		public ConstantExpression SetOptions { get; }
 
-		public TimeoutResultOperator(MethodCallExpressionParseInfo parseInfo, ConstantExpression timeout)
+		public OptionsResultOperator(MethodCallExpressionParseInfo parseInfo, ConstantExpression setOptions)
 		{
 			ParseInfo = parseInfo;
-			Timeout = timeout;
+			SetOptions = setOptions;
 		}
 
 		public override IStreamedData ExecuteInMemory(IStreamedData input)

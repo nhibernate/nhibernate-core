@@ -17,7 +17,7 @@ namespace NHibernate.DomainModel
 	/// <summary>
 	/// Summary description for CustomPersister.
 	/// </summary>
-	public class CustomPersister : IEntityPersister
+	public partial class CustomPersister : IEntityPersister
 	{
 		private static readonly Hashtable Instances = new Hashtable();
 		private static readonly IIdentifierGenerator Generator = new UUIDHexGenerator();

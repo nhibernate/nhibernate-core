@@ -1,8 +1,8 @@
+using System;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using NHibernate.AdoNet;
-using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -100,7 +100,6 @@ namespace NHibernate.Driver
 			SetVariableLengthParameterSize(dbParam, sqlType);
 		}
 
-		// Used from SqlServerCeDriver as well
 		public static void SetVariableLengthParameterSize(DbParameter dbParam, SqlType sqlType)
 		{
 			SetDefaultParameterSize(dbParam, sqlType);
@@ -114,8 +113,8 @@ namespace NHibernate.Driver
 
 			if (sqlType.PrecisionDefined)
 			{
-				((IDbDataParameter) dbParam).Precision = sqlType.Precision;
-				((IDbDataParameter) dbParam).Scale = sqlType.Scale;
+				dbParam.Precision = sqlType.Precision;
+				dbParam.Scale = sqlType.Scale;
 			}
 		}
 
@@ -131,8 +130,8 @@ namespace NHibernate.Driver
 					dbParam.Size = IsBlob(dbParam, sqlType) ? MaxSizeForBlob : MaxSizeForLengthLimitedBinary;
 					break;
 				case DbType.Decimal:
-					((IDbDataParameter) dbParam).Precision = MaxPrecision;
-					((IDbDataParameter) dbParam).Scale = MaxScale;
+					dbParam.Precision = MaxPrecision;
+					dbParam.Scale = MaxScale;
 					break;
 				case DbType.String:
 				case DbType.StringFixedLength:
@@ -201,5 +200,14 @@ namespace NHibernate.Driver
 		{
 			get { return true; }
 		}
+
+		/// <summary>
+		/// With read committed snapshot or lower, SQL Server may have not actually already committed the transaction
+		/// right after the scope disposal.
+		/// </summary>
+		public override bool HasDelayedDistributedTransactionCompletion => true;
+
+		/// <inheritdoc />
+		public override DateTime MinDate => new DateTime(1753, 1, 1);
 	}
 }

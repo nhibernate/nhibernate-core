@@ -4,7 +4,7 @@ namespace NHibernate.Id.Enhanced
 	/// Contract for providing callback access to an <see cref="IDatabaseStructure"/>,
 	/// typically from the <see cref="IOptimizer"/>.
 	/// </summary>
-	public interface IAccessCallback
+	public partial interface IAccessCallback
 	{
 		/// <summary>
 		/// Retrieve the next value from the underlying source.

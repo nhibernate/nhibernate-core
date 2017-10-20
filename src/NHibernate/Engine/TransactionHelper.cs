@@ -8,9 +8,9 @@ namespace NHibernate.Engine
 	/// Allows work to be done outside the current transaction, by suspending it,
 	/// and performing work in a new transaction
 	/// </summary>
-	public abstract class TransactionHelper
+	public abstract partial class TransactionHelper
 	{
-		public class Work : IIsolatedWork
+		public partial class Work : IIsolatedWork
 		{
 			private readonly ISessionImplementor session;
 			private readonly TransactionHelper owner;

@@ -12,7 +12,7 @@ namespace NHibernate.Cache
 	/// This is an "asynchronous" concurrency strategy.
 	/// <seealso cref="ReadWriteCache"/> for a much stricter algorithm
 	/// </summary>
-	public class NonstrictReadWriteCache : ICacheConcurrencyStrategy
+	public partial class NonstrictReadWriteCache : ICacheConcurrencyStrategy
 	{
 		private ICache cache;
 

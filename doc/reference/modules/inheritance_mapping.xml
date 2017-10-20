@@ -429,7 +429,7 @@
               <entry>Polymorphic one-to-one</entry>
               <entry>Polymorphic one-to-many</entry>
               <entry>Polymorphic many-to-many</entry>
-              <entry>Polymorphic <literal>load()/get()</literal></entry>
+              <entry>Polymorphic <literal>Load()/Get()</literal></entry>
               <entry>Polymorphic queries</entry>
               <entry>Polymorphic joins</entry>
               <entry>Outer join fetching</entry>
@@ -442,7 +442,7 @@
                 <entry><literal>&lt;one-to-one&gt;</literal></entry>
                 <entry><literal>&lt;one-to-many&gt;</literal></entry>
                 <entry><literal>&lt;many-to-many&gt;</literal></entry>
-                <entry><literal>s.Get(typeof(IPayment), id)</literal></entry>
+                <entry><literal>s.Get&lt;IPayment&gt;(id)</literal></entry>
                 <entry><literal>from IPayment p</literal></entry>
                 <entry><literal>from Order o join o.Payment p</literal></entry>
                 <entry><emphasis>supported</emphasis></entry>
@@ -453,7 +453,7 @@
                 <entry><literal>&lt;one-to-one&gt;</literal></entry>
                 <entry><literal>&lt;one-to-many&gt;</literal></entry>
                 <entry><literal>&lt;many-to-many&gt;</literal></entry>
-                <entry><literal>s.Get(typeof(IPayment), id)</literal></entry>
+                <entry><literal>s.Get&lt;IPayment&gt;(id)</literal></entry>
                 <entry><literal>from IPayment p</literal></entry>
                 <entry><literal>from Order o join o.Payment p</literal></entry>
                 <entry><emphasis>supported</emphasis></entry>
@@ -464,7 +464,7 @@
                 <entry><literal>&lt;one-to-one&gt;</literal></entry>
                 <entry><literal>&lt;one-to-many&gt;</literal> (for <literal>inverse="true"</literal> only)</entry>
                 <entry><literal>&lt;many-to-many&gt;</literal></entry>
-                <entry><literal>s.Get(typeof(IPayment), id)</literal></entry>
+                <entry><literal>s.Get&lt;IPayment&gt;(id)</literal></entry>
                 <entry><literal>from IPayment p</literal></entry>
                 <entry><literal>from Order o join o.Payment p</literal></entry>
                 <entry><emphasis>supported</emphasis></entry>

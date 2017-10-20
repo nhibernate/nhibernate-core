@@ -1,13 +1,13 @@
 ﻿<NUnitProject>
   <Settings activeconfig="Debug" processModel="Multiple" />
   <Config name="Debug" binpathtype="Auto" runtimeFramework="net-4.0">
-    <assembly path="src\NHibernate.TestDatabaseSetup\bin\Debug\NHibernate.TestDatabaseSetup.dll" />
-    <assembly path="src\NHibernate.Test\bin\Debug-2.0\NHibernate.Test.dll" />
-    <assembly path="src\NHibernate.Test.VisualBasic\bin\Debug\NHibernate.Test.VisualBasic.dll" />
+    <assembly path="src\NHibernate.TestDatabaseSetup\bin\Debug\net461\NHibernate.TestDatabaseSetup.dll" />
+    <assembly path="src\NHibernate.Test\bin\Debug\net461\NHibernate.Test.dll" />
+    <assembly path="src\NHibernate.Test.VisualBasic\bin\Debug\net461\NHibernate.Test.VisualBasic.dll" />
   </Config>
   <Config name="Release" binpathtype="Auto" runtimeFramework="net-4.0">
-    <assembly path="src\NHibernate.TestDatabaseSetup\bin\Release\NHibernate.TestDatabaseSetup.dll" />
-    <assembly path="src\NHibernate.Test\bin\Release-2.0\NHibernate.Test.dll" />
-    <assembly path="src\NHibernate.Test.VisualBasic\bin\Release\NHibernate.Test.VisualBasic.dll" />
+    <assembly path="src\NHibernate.TestDatabaseSetup\bin\Release\net461\NHibernate.TestDatabaseSetup.dll" />
+    <assembly path="src\NHibernate.Test\bin\Release\net461\NHibernate.Test.dll" />
+    <assembly path="src\NHibernate.Test.VisualBasic\bin\Release\net461\NHibernate.Test.VisualBasic.dll" />
   </Config>
 </NUnitProject>

@@ -15,7 +15,7 @@ namespace NHibernate.Type
 	/// <seealso cref="IUserType"/>
 	/// </summary>
 	[Serializable]
-	public class CustomType : AbstractType, IDiscriminatorType, IVersionType
+	public partial class CustomType : AbstractType, IDiscriminatorType, IVersionType
 	{
 		private readonly IUserType userType;
 		private readonly string name;
@@ -64,11 +64,7 @@ namespace NHibernate.Type
 			sqlTypes = userType.SqlTypes;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="mapping"></param>
-		/// <returns></returns>
+		/// <inheritdoc />
 		public override SqlType[] SqlTypes(IMapping mapping)
 		{
 			return sqlTypes;

@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3932
 {
+	[TestFixture]
 	public abstract class Fixture : BugTestCase
 	{
 		private IParent storedParent;

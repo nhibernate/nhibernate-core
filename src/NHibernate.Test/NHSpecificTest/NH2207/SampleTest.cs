@@ -1,16 +1,23 @@
 using System;
 using System.Data;
 using NHibernate.Dialect;
+using NHibernate.Driver;
+using NHibernate.Engine;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2207
 {
-	[TestFixture, Ignore("Demostration of external issue")]
+	[TestFixture]
 	public class SampleTest : BugTestCase
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return dialect as MsSql2008Dialect != null;
+			return dialect is MsSql2008Dialect;
+		}
+
+		protected override bool AppliesTo(ISessionFactoryImplementor factory)
+		{
+			return factory.ConnectionProvider.Driver is Sql2008ClientDriver;
 		}
 
 		[Test]
@@ -41,6 +48,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2207
 						var dateParam = command.CreateParameter();
 						dateParam.ParameterName = "@p0";
 						dateParam.DbType = DbType.Date;
+						dateParam.SqlDbType = SqlDbType.Date;
 						dateParam.Value = DateTime.MinValue.Date;
 						command.Parameters.Add(dateParam);
 						command.ExecuteNonQuery();
@@ -56,10 +64,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2207
 						command.CommandText = dropTable;
 						command.ExecuteNonQuery();
 						tx.Commit();
-					}					
+					}
 				}
 			}
-
 		}
 
 		[Test]

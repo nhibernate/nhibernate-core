@@ -68,20 +68,12 @@ namespace NHibernate.Test
 					Assert.Ignore(GetType() + " does not apply to " + Dialect);
 				}
 
+				_sessionFactory = BuildSessionFactory();
+				if (!AppliesTo(_sessionFactory))
+				{
+					Assert.Ignore(GetType() + " does not apply with the current session-factory configuration");
+				}
 				CreateSchema();
-				try
-				{
-					_sessionFactory = BuildSessionFactory();
-					if (!AppliesTo(_sessionFactory))
-					{
-						Assert.Ignore(GetType() + " does not apply with the current session-factory configuration");
-					}
-				}
-				catch
-				{
-					DropSchema();
-					throw;
-				}
 			}
 			catch (Exception e)
 			{
@@ -116,7 +108,8 @@ namespace NHibernate.Test
 				if (!AppliesTo(Dialect))
 					return;
 
-				DropSchema();
+				if (AppliesTo(_sessionFactory))
+					DropSchema();
 				Cleanup();
 			}
 		}
@@ -148,30 +141,43 @@ namespace NHibernate.Test
 		{
 			var testResult = TestContext.CurrentContext.Result;
 			var fail = false;
+			var testOwnTearDownDone = false;
 			string badCleanupMessage = null;
 			try
 			{
 				try
 				{
 					OnTearDown();
+					testOwnTearDownDone = true;
 				}
 				finally
 				{
-					var wereClosed = _sessionFactory.CheckSessionsWereClosed();
-					var wasCleaned = CheckDatabaseWasCleaned();
-					var wereConnectionsClosed = CheckConnectionsWereClosed();
-					fail = !wereClosed || !wasCleaned || !wereConnectionsClosed;
-
-					if (fail)
+					try
 					{
-						badCleanupMessage = "Test didn't clean up after itself. session closed: " + wereClosed + "; database cleaned: " +
-											wasCleaned
-											+ "; connection closed: " + wereConnectionsClosed;
-						if (testResult != null && testResult.Outcome.Status == TestStatus.Failed)
+						var wereClosed = _sessionFactory.CheckSessionsWereClosed();
+						var wasCleaned = CheckDatabaseWasCleaned();
+						var wereConnectionsClosed = CheckConnectionsWereClosed();
+						fail = !wereClosed || !wasCleaned || !wereConnectionsClosed;
+
+						if (fail)
 						{
-							// Avoid hiding a test failure (asserts are usually not hidden, but other exception would be).
-							badCleanupMessage = GetCombinedFailureMessage(testResult, badCleanupMessage, null);
+							badCleanupMessage = "Test didn't clean up after itself. session closed: " + wereClosed + "; database cleaned: " +
+												wasCleaned
+												+ "; connection closed: " + wereConnectionsClosed;
+							if (testResult != null && testResult.Outcome.Status == TestStatus.Failed)
+							{
+								// Avoid hiding a test failure (asserts are usually not hidden, but other exception would be).
+								badCleanupMessage = GetCombinedFailureMessage(testResult, badCleanupMessage, null);
+							}
 						}
+					}
+					catch (Exception ex)
+					{
+						if (testOwnTearDownDone)
+							throw;
+
+						// Do not hide the test own teardown failure.
+						log.Error("TearDown cleanup failure, while test own teardown has failed. Logging cleanup failure", ex);
 					}
 				}
 			}
@@ -238,17 +244,20 @@ namespace NHibernate.Test
 
 		private bool CheckConnectionsWereClosed()
 		{
-			if (_sessionFactory?.ConnectionProvider?.HasOpenConnections != true)
+			if (_sessionFactory?.DebugConnectionProvider?.HasOpenConnections != true)
 			{
 				return true;
 			}
 
 			log.Error("Test case didn't close all open connections, closing");
-			_sessionFactory.ConnectionProvider.CloseAllConnections();
+			_sessionFactory.DebugConnectionProvider.CloseAllConnections();
 			return false;
 		}
 
-		private void Configure()
+		/// <summary>
+		/// (Re)Create the configuration.
+		/// </summary>
+		protected void Configure()
 		{
 			cfg = TestConfigurationHelper.GetDefaultConfiguration();
 
@@ -276,7 +285,12 @@ namespace NHibernate.Test
 
 		protected virtual void DropSchema()
 		{
-			if (Sfi.ConnectionProvider.Driver is FirebirdClientDriver fbDriver)
+			DropSchema(OutputDdl, new SchemaExport(cfg), Sfi);
+		}
+
+		public static void DropSchema(bool useStdOut, SchemaExport export, ISessionFactoryImplementor sfi)
+		{
+			if (sfi?.ConnectionProvider.Driver is FirebirdClientDriver fbDriver)
 			{
 				// Firebird will pool each connection created during the test and will marked as used any table
 				// referenced by queries. It will at best delays those tables drop until connections are actually
@@ -287,7 +301,7 @@ namespace NHibernate.Test
 				fbDriver.ClearPool(null);
 			}
 
-			new SchemaExport(cfg).Drop(OutputDdl, true);
+			export.Drop(useStdOut, true);
 		}
 
 		protected virtual DebugSessionFactory BuildSessionFactory()
@@ -411,6 +425,15 @@ namespace NHibernate.Test
 			//get { return null; }
 		}
 
+		#endregion
+
+		#region Utilities
+
+		protected DateTime RoundForDialect(DateTime value)
+		{
+			return AbstractDateTimeType.Round(value, Dialect.TimestampResolutionInTicks);
+		}
+		
 		#endregion
 	}
 }

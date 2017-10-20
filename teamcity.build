@@ -48,8 +48,10 @@
 		<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSql2005Dialect" />
 	<!-- The OdbcDriver inherits SupportsMultipleOpenReaders=true from DriverBase, which requires Mars_Connection=yes for SQL Server. -->
 		<property name="nhibernate.connection.connection_string" value="Driver={SQL Server Native Client 11.0};Server=.\SQLExpress;Database=nhibernateOdbc;Trusted_Connection=yes;Mars_Connection=yes;" />
-		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/sqlServerOdbc/NHibernate.Test.last-results.xml" />
+	</target>
+
+	<target name="setup-teamcity-sqlServer-Sql2008ClientDriver">
+		<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.Sql2008ClientDriver" />
 	</target>
 
 	<target name="setup-teamcity-sqlServer2012">
@@ -61,8 +63,6 @@
 		<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSqlCe40Dialect" />
 		<property name="nhibernate.connection.connection_string" value="Data Source=NHibernate.sdf" />
 		<property name="nhibernate.command_timeout" value="0" />
-		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/sqlServerCe/NHibernate.Test.last-results.xml" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/sqlServerCe/X86">
 				<include name="*.dll"/>
@@ -76,8 +76,6 @@
 		<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSqlCe40Dialect" />
 		<property name="nhibernate.connection.connection_string" value="Data Source=NHibernate.sdf" />
 		<property name="nhibernate.command_timeout" value="0" />
-		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/sqlServerCe/NHibernate.Test.last-results.xml" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/sqlServerCe/AMD64">
 				<include name="*.dll"/>
@@ -110,8 +108,12 @@
 
 	<target name="setup-teamcity-sqlite32">
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.SQLite20Driver" />
+		<!-- DateTimeFormatString allows to prevent storing the fact that written date was having kind UTC,
+		     which dodges the undesirable time conversion to local done on reads by System.Data.SQLite.
+		     See https://system.data.sqlite.org/index.html/tktview/44a0955ea344a777ffdbcc077831e1adc8b77a36
+		     and https://github.com/nhibernate/nhibernate-core/issues/1362 -->
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.SQLiteDialect" />
-		<property name="nhibernate.connection.connection_string"	value="Data Source=NHibernate.db" />
+		<property name="nhibernate.connection.connection_string"	value="Data Source=NHibernate.db;DateTimeFormatString=yyyy-MM-dd HH:mm:ss.FFFFFFF;" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/sqlite/x86">
 				<include name="*.dll"/>
@@ -122,8 +124,12 @@
 	<target name="setup-teamcity-sqlite64">
 		<property name="nunit-x64" value="true" />
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.SQLite20Driver" />
+		<!-- DateTimeFormatString allows to prevent storing the fact that written date was having kind UTC,
+		     which dodges the undesirable time conversion to local done on reads by System.Data.SQLite.
+		     See https://system.data.sqlite.org/index.html/tktview/44a0955ea344a777ffdbcc077831e1adc8b77a36
+		     and https://github.com/nhibernate/nhibernate-core/issues/1362 -->
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.SQLiteDialect" />
-		<property name="nhibernate.connection.connection_string"	value="Data Source=NHibernate.db" />
+		<property name="nhibernate.connection.connection_string"	value="Data Source=NHibernate.db;DateTimeFormatString=yyyy-MM-dd HH:mm:ss.FFFFFFF;" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/sqlite/x64">
 				<include name="*.dll"/>
@@ -154,6 +160,8 @@
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.OracleDataClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.Oracle10gDialect" />
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))" />
+		<!-- Teamcity Oracle test database is configured with a non-Unicode encoding -->
+		<property name="nhibernate.oracle.use_n_prefixed_types_for_unicode" value="true" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/oracle/x86">
 				<include name="*.dll"/>
@@ -168,6 +176,8 @@
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.OracleDataClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.Oracle10gDialect" />
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))" />
+		<!-- Teamcity Oracle test database is configured with a non-Unicode encoding -->
+		<property name="nhibernate.oracle.use_n_prefixed_types_for_unicode" value="true" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/oracle/x64">
 				<include name="*.dll"/>
@@ -181,6 +191,8 @@
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.OracleManagedDataClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.Oracle10gDialect" />
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))" />
+		<!-- Teamcity Oracle test database is configured with a non-Unicode encoding -->
+		<property name="nhibernate.oracle.use_n_prefixed_types_for_unicode" value="true" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/oracle-managed/common">
 				<include name="*.dll"/>
@@ -191,8 +203,6 @@
 				<include name="*.dll"/>
 			</fileset>
 		</copy>
-		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/oracle-managed/NHibernate.Test.last-results.xml" />
 	</target>
 
 	<target name="setup-teamcity-oracle-managed64">
@@ -200,6 +210,8 @@
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.OracleManagedDataClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.Oracle10gDialect" />
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))" />
+		<!-- Teamcity Oracle test database is configured with a non-Unicode encoding -->
+		<property name="nhibernate.oracle.use_n_prefixed_types_for_unicode" value="true" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/oracle-managed/common">
 				<include name="*.dll"/>
@@ -210,8 +222,6 @@
 				<include name="*.dll"/>
 			</fileset>
 		</copy>
-		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/oracle-managed/NHibernate.Test.last-results.xml" />
 	</target>
 
 	<target name="setup-teamcity-mysql">
@@ -223,8 +233,6 @@
 				<include name="*.dll"/>
 			</fileset>
 		</copy>
-		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/mysql/NHibernate.Test.last-results.xml" />
 	</target>
 
 	<script language="C#" prefix="testResult">
@@ -289,9 +297,10 @@
 		public enum ResultStatus
 		{
 			None,
+			Failure,
 			Ignored,
-			Success,
-			Failure
+			Inconclusive,
+			Success
 		}
 
 		public class Result
@@ -305,7 +314,7 @@
 			{
 				get
 				{
-					return Executed && !Success && Status == ResultStatus.Success;
+					return Executed && !Success && (Status == ResultStatus.Success || Status == ResultStatus.Inconclusive);
 				}
 			}
 
@@ -376,7 +385,7 @@
 							// Else ignored
 							.ThenBy(r => r.Executed)
 							// Else inconclusive
-							.ThenBy(r => r.Status == ResultStatus.Success ? 0 : 1)
+							.ThenBy(r => r.Inconclusive ? 0 : 1)
 							.First());
 				var after = Result.ParseFile(currentResult);
 
@@ -427,85 +436,14 @@
 					if (!afterTestNames.Contains(result.Name))
 						missingTests.Add(result);
 
-				report.AppendLine();
-				report.AppendLine("*** Tests broken since last recorded results ***");
-				if (brokenTests.Count > 0)
-				{
-					foreach (var result in brokenTests)
-						report.AppendLine(result.ToString());
-				}
-				else
-					report.AppendLine("None");
-
-				report.AppendLine();
-				report.AppendLine("*** Tests new (failed) since last recorded results ***");
-				if (newFailingTests.Count > 0)
-				{
-					foreach (var result in newFailingTests)
-						report.AppendLine(result.ToString());
-				}
-				else
-					report.AppendLine("None");
-
-				report.AppendLine();
-				report.AppendLine("*** Tests inconclusive since last recorded results ***");
-				if (brokenTests.Count > 0)
-				{
-					foreach (var result in inconclusiveTests)
-						report.AppendLine(result.ToString());
-				}
-				else
-					report.AppendLine("None");
-
-				report.AppendLine();
-				report.AppendLine("*** Tests new (inconclusive) since last recorded results ***");
-				if (newFailingTests.Count > 0)
-				{
-					foreach (var result in newInconclusiveTests)
-						report.AppendLine(result.ToString());
-				}
-				else
-					report.AppendLine("None");
-
-				report.AppendLine();
-				report.AppendLine("*** Tests fixed since last recorded results ***");
-				if (fixedTests.Count > 0)
-				{
-					foreach (Result result in fixedTests)
-						report.AppendLine(result.ToString());
-				}
-				else
-					report.AppendLine("None");
-
-				report.AppendLine();
-				report.AppendLine("*** Tests ignored since last recorded results ***");
-				if (ignoredTests.Count > 0)
-				{
-					foreach (Result result in ignoredTests)
-						report.AppendLine(result.ToString());
-				}
-				else
-					report.AppendLine("None");
-
-				report.AppendLine();
-				report.AppendLine("*** Tests new (not failing) since last recorded results ***");
-				if (newNotFailingTests.Count > 0)
-				{
-					foreach (var result in newNotFailingTests)
-						report.AppendLine(result.ToString());
-				}
-				else
-					report.AppendLine("None");
-
-				report.AppendLine();
-				report.AppendLine("*** Tests missing since last recorded results ***");
-				if (missingTests.Count > 0)
-				{
-					foreach (var result in missingTests)
-						report.AppendLine(result.ToString());
-				}
-				else
-					report.AppendLine("None");
+				ReportResultGroup(report, brokenTests, "Tests broken since last recorded results");
+				ReportResultGroup(report, newFailingTests, "Tests new (failed) since last recorded results");
+				ReportResultGroup(report, inconclusiveTests, "Tests inconclusive since last recorded results");
+				ReportResultGroup(report, newInconclusiveTests, "Tests new (inconclusive) since last recorded results");
+				ReportResultGroup(report, fixedTests, "Tests fixed since last recorded results");
+				ReportResultGroup(report, ignoredTests, "Tests ignored since last recorded results");
+				ReportResultGroup(report, newNotFailingTests, "Tests new (not failing) since last recorded results");
+				ReportResultGroup(report, missingTests, "Tests missing since last recorded results");
 
 				var output = report.ToString();
 				File.WriteAllText(outputFile, output);
@@ -523,6 +461,19 @@
 				Console.WriteLine(e);
 				throw;
 			}
+		}
+
+		public static void ReportResultGroup(StringBuilder report, IList<Result> resultGroup, string groupTitle)
+		{
+			report.AppendLine();
+			report.Append("*** ").Append(groupTitle).AppendLine(" ***");
+			if (resultGroup.Count > 0)
+			{
+				foreach (var result in resultGroup)
+					report.AppendLine(result.ToString());
+			}
+			else
+				report.AppendLine("None");
 		}
 
 			]]>

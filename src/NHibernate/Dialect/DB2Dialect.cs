@@ -39,7 +39,8 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Date, "DATE");
 			RegisterColumnType(DbType.DateTime, "TIMESTAMP");
 			RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
-			RegisterColumnType(DbType.Decimal, 19, "DECIMAL(19, $l)");
+			// DB2 max precision is 31, but .Net is 28-29 anyway.
+			RegisterColumnType(DbType.Decimal, 28, "DECIMAL($p, $s)");
 			RegisterColumnType(DbType.Double, "DOUBLE");
 			RegisterColumnType(DbType.Int16, "SMALLINT");
 			RegisterColumnType(DbType.Int32, "INTEGER");
@@ -99,8 +100,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("dayofyear", new StandardSQLFunction("dayofyear", NHibernateUtil.Int32));
 			RegisterFunction("days", new StandardSQLFunction("days", NHibernateUtil.Int32));
 			RegisterFunction("time", new StandardSQLFunction("time", NHibernateUtil.Time));
-			RegisterFunction("timestamp", new StandardSQLFunction("timestamp", NHibernateUtil.Timestamp));
-			RegisterFunction("timestamp_iso", new StandardSQLFunction("timestamp_iso", NHibernateUtil.Timestamp));
+			RegisterFunction("timestamp", new StandardSQLFunction("timestamp", NHibernateUtil.DateTime));
+			RegisterFunction("timestamp_iso", new StandardSQLFunction("timestamp_iso", NHibernateUtil.DateTime));
 			RegisterFunction("week", new StandardSQLFunction("week", NHibernateUtil.Int32));
 			RegisterFunction("week_iso", new StandardSQLFunction("week_iso", NHibernateUtil.Int32));
 			RegisterFunction("year", new StandardSQLFunction("year", NHibernateUtil.Int32));

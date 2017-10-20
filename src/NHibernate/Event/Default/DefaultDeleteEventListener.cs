@@ -16,7 +16,7 @@ namespace NHibernate.Event.Default
 	/// from the datastore in response to generated delete events. 
 	/// </summary>
 	[Serializable]
-	public class DefaultDeleteEventListener : IDeleteEventListener
+	public partial class DefaultDeleteEventListener : IDeleteEventListener
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultDeleteEventListener));
 
@@ -45,8 +45,8 @@ namespace NHibernate.Event.Default
 				log.Debug("entity was not persistent in delete processing");
 
 				persister = source.GetEntityPersister(@event.EntityName, entity);
-				
-				if (ForeignKeys.IsTransient(persister.EntityName, entity, null, source))
+
+				if (ForeignKeys.IsTransientSlow(persister.EntityName, entity, source))
 				{
 					DeleteTransientEntity(source, entity, @event.CascadeDeleteEnabled, persister, transientEntities);
 					// EARLY EXIT!!!

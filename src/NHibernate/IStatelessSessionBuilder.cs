@@ -29,6 +29,16 @@ namespace NHibernate
 		/// </remarks>
 		IStatelessSessionBuilder Connection(DbConnection connection);
 
+		/// <summary>
+		/// Should the session be automatically enlisted in ambient system transaction?
+		/// Enabled by default. Disabling it does not prevent connections having auto-enlistment
+		/// enabled to get enlisted in current ambient transaction when opened.
+		/// </summary>
+		/// <param name="autoJoinTransaction">Should the session be automatically explicitly
+		/// enlisted in ambient transaction.</param>
+		/// <returns><see langword="this" />, for method chaining.</returns>
+		IStatelessSessionBuilder AutoJoinTransaction(bool autoJoinTransaction);
+
 		// NH remark: seems a bit overkill for now. On Hibernate side, they have at least another option: the tenant.
 	}
 }

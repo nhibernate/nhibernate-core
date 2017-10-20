@@ -699,9 +699,14 @@ namespace NHibernate.Test.Linq
 		public void BitwiseQuery3()
 		{
 			var featureSet = FeatureSet.HasThat;
-			var query = (from o in session.Query<User>()
-						 where ((o.Features | featureSet) & featureSet) == featureSet
-						 select o).ToList();
+			var query = (
+				from o in session.Query<User>()
+				// When converted to SQL, "undue" parenthesis are stripped out. For most DB, binary operators have same precedence,
+				// causing "((o.Features | featureSet) & featureSet)" to be equivalent to "o.Features | featureSet & featureSet"
+				// But for MySql, & take precedence on |, wrecking the test for it. So it is needed to write the test in a way
+				// such as the parenthesis will be preserved.
+				where (featureSet & (o.Features | featureSet)) == featureSet
+				select o).ToList();
 
 			Assert.That(query.Count, Is.EqualTo(3));
 		}
@@ -829,8 +834,8 @@ namespace NHibernate.Test.Linq
 					TestRow(p => p.UnitsInStock.CompareTo(13) < 0, 15, false),
 					TestRow(p => p.UnitsInStock.CompareTo(13) >= 0, 62, false),
 
-					// Over floats.
-					TestRow(p => p.ShippingWeight.CompareTo((float) 4.98) <= 0, 17, false),
+					// Over floats. (Always include a tolerance with them)
+					TestRow(p => p.ShippingWeight.CompareTo(4.980001f) <= 0, 17, false),
 
 					// Over nullable decimals.
 					TestRow(p => p.UnitPrice.Value.CompareTo((decimal) 14.00) <= 0, 24, false),

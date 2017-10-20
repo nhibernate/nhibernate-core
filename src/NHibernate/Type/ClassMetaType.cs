@@ -12,11 +12,11 @@ namespace NHibernate.Type
 	/// It work like a MetaType where the key is the entity-name it self
 	/// </remarks>
 	[Serializable]
-	public class ClassMetaType : AbstractType
+	public partial class ClassMetaType : AbstractType
 	{
 		public override SqlType[] SqlTypes(IMapping mapping)
 		{
-			return new SqlType[] { NHibernateUtil.String.SqlType };
+			return NHibernateUtil.String.SqlTypes(mapping);
 		}
 
 		public override int GetColumnSpan(IMapping mapping)

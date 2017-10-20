@@ -31,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 		[Test]
 		public void WillGetSessionIdFromSessionLogs()
 		{
-			ThreadContext.Properties["sessionId"] = new SessionIdCapturer();
+			GlobalContext.Properties["sessionId"] = new SessionIdCapturer();
 
 			using (var spy = new TextLogSpy("NHibernate.SQL", "%message | SessionId: %property{sessionId}"))
 			using (var s = Sfi.OpenSession())
@@ -40,13 +40,16 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 
 				s.Get<Person>(1);//will execute some sql
 
-				var loggingEvent = spy.Events[0];
+				var loggingEvent = spy.GetWholeLog();
 				Assert.That(loggingEvent.Contains(sessionId.ToString()), Is.True);
 			}
 		}
 
-		public class SessionIdCapturer
+		// IFixingRequired interface ensures the value is evaluated at log time rather than at log buffer flush time.
+		public class SessionIdCapturer : IFixingRequired
 		{
+			public object GetFixedObject() => ToString();
+
 			public override string ToString()
 			{
 				return SessionIdLoggingContext.SessionId.ToString();
@@ -58,6 +61,7 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 			private readonly TextWriterAppender appender;
 			private readonly Logger loggerImpl;
 			private readonly StringBuilder stringBuilder;
+			private readonly Level previousLevel;
 
 			public TextLogSpy(string loggerName, string pattern)
 			{
@@ -70,20 +74,19 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 				};
 				loggerImpl = (Logger)LogManager.GetLogger(typeof(LogsFixture).Assembly, loggerName).Logger;
 				loggerImpl.AddAppender(appender);
+				previousLevel = loggerImpl.Level;
 				loggerImpl.Level = Level.All;
 			}
 
-			public string[] Events
+			public string GetWholeLog()
 			{
-				get
-				{
-					return stringBuilder.ToString().Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
-				}
+				return stringBuilder.ToString();
 			}
 
 			public void Dispose()
 			{
 				loggerImpl.RemoveAppender(appender);
+				loggerImpl.Level = previousLevel;
 			}
 		}
 	}

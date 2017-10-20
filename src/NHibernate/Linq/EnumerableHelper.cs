@@ -6,6 +6,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Linq
 {
+	// Since v5
 	[Obsolete("Please use NHibernate.Util.ReflectHelper instead")]
 	public static class ReflectionHelper
 	{
@@ -66,6 +67,7 @@ namespace NHibernate.Linq
 		}
 	}
 
+	// Since v5
 	[Obsolete("Please use NHibernate.Util.ReflectHelper instead")]
 	public static class EnumerableHelper
 	{

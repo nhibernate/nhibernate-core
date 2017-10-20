@@ -44,7 +44,7 @@ namespace NHibernate.Loader
 	/// </p>
 	/// </remarks>
 	/// <seealso cref="NHibernate.Persister.Entity.ILoadable"/>
-	public abstract class Loader
+	public abstract partial class Loader
 	{
 		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(Loader));
 
@@ -1206,7 +1206,7 @@ namespace NHibernate.Loader
 
 				IDriver driver = _factory.ConnectionProvider.Driver;
 				driver.RemoveUnusedCommandParameters(command, sqlString);
-				driver.ExpandQueryParameters(command, sqlString);
+				driver.ExpandQueryParameters(command, sqlString, sqlCommand.ParameterTypes);
 			}
 			catch (HibernateException)
 			{

@@ -15,7 +15,7 @@ namespace NHibernate.Id
 	///	<code>&lt;generator class="assigned" /&gt;</code>
 	/// </p>
 	/// </remarks>
-	public class Assigned : IIdentifierGenerator, IConfigurable
+	public partial class Assigned : IIdentifierGenerator, IConfigurable
 	{
 		private string entityName;
 

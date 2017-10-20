@@ -1,7 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using NHibernate.Criterion;
 using NHibernate.Dialect;
+using NHibernate.SqlTypes;
+using NHibernate.Type;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Criteria
@@ -86,6 +90,63 @@ namespace NHibernate.Test.Criteria
 					))
 					.UniqueResult<string>();
 				Assert.AreEqual("27 ayende", result);
+			}
+		}
+
+		[Test]
+		public void CastWithLength()
+		{
+			if (Regex.IsMatch(Dialect.GetCastTypeName(SqlTypeFactory.GetString(3)), @"^[^(]*$"))
+			{
+				Assert.Ignore($"Dialect {Dialect} does not seem to handle string length in cast");
+			}
+
+			using (var s = OpenSession())
+			{
+				try
+				{
+					var shortName = s
+						.CreateCriteria<Student>()
+						.SetProjection(
+							Projections.Cast(
+								TypeFactory.GetStringType(3),
+								Projections.Property("Name")))
+						.UniqueResult<string>();
+					Assert.That(shortName, Is.EqualTo("aye"));
+				}
+				catch (Exception e)
+				{
+					if (e.InnerException == null || !e.InnerException.Message.Contains("truncation"))
+						throw;
+				}
+			}
+		}
+
+		[Test]
+		public void CastWithPrecisionScale()
+		{
+			if (TestDialect.HasBrokenDecimalType)
+				Assert.Ignore("Dialect does not correctly handle decimal.");
+
+			using (var s = OpenSession())
+			{
+				var value = s
+					.CreateCriteria<Student>()
+					.SetProjection(
+						Projections.Cast(
+							TypeFactory.Basic("decimal(18,9)"),
+							Projections.Constant(123456789.123456789m, TypeFactory.Basic("decimal(18,9)"))))
+					.UniqueResult<decimal>();
+				Assert.That(value, Is.EqualTo(123456789.123456789m), "Same type cast");
+
+				value = s
+					.CreateCriteria<Student>()
+					.SetProjection(
+						Projections.Cast(
+							TypeFactory.Basic("decimal(18,7)"),
+							Projections.Constant(123456789.987654321m, TypeFactory.Basic("decimal(18,9)"))))
+					.UniqueResult<decimal>();
+				Assert.That(value, Is.EqualTo(123456789.9876543m), "Reduced scale cast");
 			}
 		}
 
@@ -347,6 +408,29 @@ namespace NHibernate.Test.Criteria
 			}
 		}
 
+		[Test]
+		public void UseSumWithNullResultWithProjection()
+		{
+			using (ISession session = Sfi.OpenSession())
+			{
+				long sum = session.CreateCriteria(typeof(Reptile))
+					.SetProjection(Projections.Sum(Projections.Id()))
+					.UniqueResult<long>();
+				Assert.AreEqual(0, sum);
+			}
+		}
 
+		[Test]
+		public void UseSubquerySumWithNullResultWithProjection()
+		{
+			using (ISession session = Sfi.OpenSession())
+			{
+				int sum = session.CreateCriteria(typeof(Enrolment))
+					.CreateCriteria("Student", "s")
+					.SetProjection(Projections.Sum(Projections.SqlFunction("length", NHibernateUtil.Int32, Projections.Property("s.Name"))))
+					.UniqueResult<int>();
+				Assert.AreEqual(0, sum);
+			}
+		}
 	}
 }

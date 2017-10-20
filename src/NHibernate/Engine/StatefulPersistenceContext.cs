@@ -27,7 +27,7 @@ namespace NHibernate.Engine
 	/// PersistentContext to drive their processing.
 	/// </remarks>
 	[Serializable]
-	public class StatefulPersistenceContext : IPersistenceContext, ISerializable, IDeserializationCallback
+	public partial class StatefulPersistenceContext : IPersistenceContext, ISerializable, IDeserializationCallback
 	{
 		private const int InitCollectionSize = 8;
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(StatefulPersistenceContext));

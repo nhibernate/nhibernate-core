@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.DynamicProxyTests
 {
+	[TestFixture]
 	public class InterfaceWithEqualsGethashcodeTests
 	{
 		public interface IMyBaseObject

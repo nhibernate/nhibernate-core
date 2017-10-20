@@ -17,7 +17,7 @@ namespace NHibernate.Test.Futures
 
 				var persons = s.CreateQuery("from Person").Future<Person>();
 
-				Assert.IsTrue(persons.All(p => s.IsReadOnly(p)));
+				Assert.IsTrue(persons.GetEnumerable().All(p => s.IsReadOnly(p)));
 			}
 		}
 
@@ -37,12 +37,12 @@ namespace NHibernate.Test.Futures
 
 				using (var logSpy = new SqlLogSpy())
 				{
-					foreach (var person in persons5)
+					foreach (var person in persons5.GetEnumerable())
 					{
 
 					}
 
-					foreach (var person in persons10)
+					foreach (var person in persons10.GetEnumerable())
 					{
 
 					}
@@ -66,13 +66,13 @@ namespace NHibernate.Test.Futures
 						.SetMaxResults(10)
 						.Future<Person>();
 
-					foreach (var person in persons10) { } // fire first future round-trip
+					foreach (var person in persons10.GetEnumerable()) { } // fire first future round-trip
 
 					var persons5 = s.CreateQuery("from Person")
 						.SetMaxResults(5)
 						.Future<int>();
 
-					foreach (var person in persons5) { } // fire second future round-trip
+					foreach (var person in persons5.GetEnumerable()) { } // fire second future round-trip
 
 					var events = logSpy.Appender.GetEvents();
 					Assert.AreEqual(2, events.Length);
@@ -98,7 +98,7 @@ namespace NHibernate.Test.Futures
 				{
 					long count = personCount.Value;
 
-					foreach (var person in persons)
+					foreach (var person in persons.GetEnumerable())
 					{
 					}
 
@@ -127,7 +127,7 @@ namespace NHibernate.Test.Futures
 				{
 					var me = meContainer.Value;
 			
-					foreach (var person in possiblefriends)
+					foreach (var person in possiblefriends.GetEnumerable())
 					{
 					}
 			

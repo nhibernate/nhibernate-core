@@ -104,11 +104,7 @@ namespace NHibernate.AdoNet.Util
 
 		private static string GetParameterLoggableType(DbParameter dataParameter)
 		{
-			//TODO: Fix me after 4.6.2 update. Size and Precision has been added to DbParameter
-			var p = dataParameter as IDbDataParameter;
-			if (p != null)
-				return p.DbType + " (" + p.Size + ":" + p.Scale + ":" + p.Precision + ")";
-			return dataParameter.DbType.ToString();
+			return dataParameter.DbType + " (" + dataParameter.Size + ":" + dataParameter.Scale + ":" + dataParameter.Precision + ")";
 		}
 
 		public string GetParameterLoggableValue(DbParameter parameter)
@@ -140,14 +136,6 @@ namespace NHibernate.AdoNet.Util
 			return parameter.Value.ToString();
 
 		}
-
-
-		[Obsolete("Use GetParameterLoggableValue(parameter) instead.")]
-		public string GetParameterLogableValue(DbParameter parameter)
-		{
-			return GetParameterLoggableValue(parameter);
-		}
-
 
 		private static string GetBufferAsHexString(byte[] buffer)
 		{

@@ -237,6 +237,20 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		/// <inheritdoc />
+		public IDetachedQuery SetDateTimeNoMs(int position, DateTime val)
+		{
+			SetParameter(position, val, NHibernateUtil.DateTimeNoMs);
+			return this;
+		}
+
+		/// <inheritdoc />
+		public IDetachedQuery SetDateTimeNoMs(string name, DateTime val)
+		{
+			SetParameter(name, val, NHibernateUtil.DateTimeNoMs);
+			return this;
+		}
+
 		public IDetachedQuery SetDecimal(int position, decimal val)
 		{
 			SetParameter(position, val, NHibernateUtil.Decimal);
@@ -357,12 +371,16 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		// Since v5.0
+		[Obsolete("Use SetDateTime instead.")]
 		public IDetachedQuery SetTimestamp(int position, DateTime val)
 		{
 			SetParameter(position, val, NHibernateUtil.Timestamp);
 			return this;
 		}
 
+		// Since v5.0
+		[Obsolete("Use SetDateTime instead.")]
 		public IDetachedQuery SetTimestamp(string name, DateTime val)
 		{
 			SetParameter(name, val, NHibernateUtil.Timestamp);

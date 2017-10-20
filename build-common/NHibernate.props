@@ -1,0 +1,16 @@
+<Project>
+  <PropertyGroup>
+    <VersionMajor Condition="'$(VersionMajor)' == ''">5</VersionMajor>
+    <VersionMinor Condition="'$(VersionMinor)' == ''">0</VersionMinor>
+    <VersionPatch Condition="'$(VersionPatch)' == ''">0</VersionPatch>
+    <VersionSuffix Condition="'$(VersionSuffix)' == ''"></VersionSuffix>
+
+    <VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch)</VersionPrefix>
+    <AssemblyVersion>$(VersionMajor).$(VersionMinor).0.0</AssemblyVersion>
+    <FileVersion>$(VersionPrefix).0</FileVersion>
+
+    <Product>NHibernate</Product>
+    <Company>NHibernate.info</Company>
+    <Copyright>Licensed under LGPL.</Copyright>
+  </PropertyGroup>
+</Project>

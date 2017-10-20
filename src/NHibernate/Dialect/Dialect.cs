@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Text;
+using System.Transactions;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Lock;
 using NHibernate.Dialect.Schema;
@@ -27,7 +28,7 @@ namespace NHibernate.Dialect
 	/// Subclasses should provide a public default constructor that <c>Register()</c>
 	/// a set of type mappings and default Hibernate properties.
 	/// </remarks>
-	public abstract class Dialect
+	public abstract partial class Dialect
 	{
 		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(Dialect));
 
@@ -44,7 +45,6 @@ namespace NHibernate.Dialect
 		private readonly TypeNames _hibernateTypeNames = new TypeNames();
 		private readonly IDictionary<string, string> _properties = new Dictionary<string, string>();
 		private readonly IDictionary<string, ISQLFunction> _sqlFunctions;
-		private readonly HashSet<string> _sqlKeywords = new HashSet<string>();
 
 		private static readonly IDictionary<string, ISQLFunction> StandardAggregateFunctions = CollectionHelper.CreateCaseInsensitiveHashtable<ISQLFunction>();
 
@@ -81,7 +81,9 @@ namespace NHibernate.Dialect
 			Log.Info("Using dialect: " + this);
 
 			_sqlFunctions = CollectionHelper.CreateCaseInsensitiveHashtable(StandardAggregateFunctions);
-			
+
+			Keywords = new HashSet<string>(AnsiSqlKeywords.Sql2003, StringComparer.OrdinalIgnoreCase);
+
 			// standard sql92 functions (can be overridden by subclasses)
 			RegisterFunction("substring", new AnsiSubstringFunction());
 			RegisterFunction("locate", new StandardSQLFunction("locate", NHibernateUtil.Int32));
@@ -133,7 +135,7 @@ namespace NHibernate.Dialect
 			RegisterHibernateType(DbType.Int16, NHibernateUtil.Int16.Name);
 			RegisterHibernateType(DbType.SByte, NHibernateUtil.SByte.Name);
 			RegisterHibernateType(DbType.Time, NHibernateUtil.Time.Name);
-			RegisterHibernateType(DbType.DateTime, NHibernateUtil.Timestamp.Name);
+			RegisterHibernateType(DbType.DateTime, NHibernateUtil.DateTime.Name);
 			RegisterHibernateType(DbType.String, NHibernateUtil.String.Name);
 			RegisterHibernateType(DbType.VarNumeric, NHibernateUtil.Decimal.Name);
 			RegisterHibernateType(DbType.Decimal, NHibernateUtil.Decimal.Name);
@@ -152,7 +154,7 @@ namespace NHibernate.Dialect
 			{
 				throw new HibernateException("The dialect was not set. Set the property 'dialect'.", e);
 			}
-			return InstantiateDialect(dialectName);
+			return InstantiateDialect(dialectName, Environment.Properties);
 		}
 
 		/// <summary>
@@ -165,7 +167,7 @@ namespace NHibernate.Dialect
 		public static Dialect GetDialect(IDictionary<string, string> props)
 		{
 			if (props == null)
-				throw new ArgumentNullException("props");
+				throw new ArgumentNullException(nameof(props));
 			string dialectName;
 			if (props.TryGetValue(Environment.Dialect, out dialectName) == false)
 				throw new InvalidOperationException("Could not find the dialect in the configuration");
@@ -174,19 +176,32 @@ namespace NHibernate.Dialect
 				return GetDialect();
 			}
 
-			return InstantiateDialect(dialectName);
+			return InstantiateDialect(dialectName, props);
 		}
 
-		private static Dialect InstantiateDialect(string dialectName)
+		private static Dialect InstantiateDialect(string dialectName, IDictionary<string, string> props)
 		{
 			try
 			{
-				return (Dialect)Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(dialectName));
+				var dialect = (Dialect)Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(dialectName));
+				dialect.Configure(props);
+				return dialect;
 			}
 			catch (Exception e)
 			{
 				throw new HibernateException("Could not instantiate dialect class " + dialectName, e);
 			}
+		}
+
+		/// <summary>
+		/// Configure the dialect.
+		/// </summary>
+		/// <param name="settings">The configuration settings.</param>
+		public virtual void Configure(IDictionary<string, string> settings)
+		{
+			DefaultCastLength = PropertiesHelper.GetInt32(Environment.QueryDefaultCastLength, settings, 4000);
+			DefaultCastPrecision = PropertiesHelper.GetByte(Environment.QueryDefaultCastPrecision, settings, null) ?? 28;
+			DefaultCastScale = PropertiesHelper.GetByte(Environment.QueryDefaultCastScale, settings, null) ?? 10;
 		}
 
 		#endregion
@@ -201,19 +216,12 @@ namespace NHibernate.Dialect
 		/// <returns>The database type name used by ddl.</returns>
 		public virtual string GetTypeName(SqlType sqlType)
 		{
-			if (sqlType.LengthDefined || sqlType.PrecisionDefined)
+			if (sqlType.LengthDefined || sqlType.PrecisionDefined || sqlType.ScaleDefined)
 			{
-				string resultWithLength = _typeNames.Get(sqlType.DbType, sqlType.Length, sqlType.Precision, sqlType.Scale);
-				if (resultWithLength != null) return resultWithLength;
+				return _typeNames.Get(sqlType.DbType, sqlType.Length, sqlType.Precision, sqlType.Scale);
 			}
 
-			string result = _typeNames.Get(sqlType.DbType);
-			if (result == null)
-			{
-				throw new HibernateException(string.Format("No default type mapping for SqlType {0}", sqlType));
-			}
-
-			return result;
+			return _typeNames.Get(sqlType.DbType);
 		}
 
 		/// <summary>
@@ -227,12 +235,7 @@ namespace NHibernate.Dialect
 		/// <returns>The database type name used by ddl.</returns>
 		public virtual string GetTypeName(SqlType sqlType, int length, int precision, int scale)
 		{
-			string result = _typeNames.Get(sqlType.DbType, length, precision, scale);
-			if (result == null)
-			{
-				throw new HibernateException(string.Format("No type mapping for SqlType {0} of length {1}", sqlType, length));
-			}
-			return result;
+			return _typeNames.Get(sqlType.DbType, length, precision, scale);
 		}
 
 		/// <summary>
@@ -245,15 +248,50 @@ namespace NHibernate.Dialect
 			return _typeNames.GetLongest(dbType);
 		}
 
+		protected int DefaultCastLength { get; set; }
+		protected byte DefaultCastPrecision { get; set; }
+		protected byte DefaultCastScale { get; set; }
+
 		/// <summary> 
 		/// Get the name of the database type appropriate for casting operations
 		/// (via the CAST() SQL function) for the given <see cref="SqlType"/> typecode.
 		/// </summary>
 		/// <param name="sqlType">The <see cref="SqlType"/> typecode </param>
 		/// <returns> The database type name </returns>
-		public virtual string GetCastTypeName(SqlType sqlType)
+		public virtual string GetCastTypeName(SqlType sqlType) =>
+			GetCastTypeName(sqlType, _typeNames);
+
+		/// <summary> 
+		/// Get the name of the database type appropriate for casting operations
+		/// (via the CAST() SQL function) for the given <see cref="SqlType"/> typecode.
+		/// </summary>
+		/// <param name="sqlType">The <see cref="SqlType"/> typecode.</param>
+		/// <param name="castTypeNames">The source for type names.</param>
+		/// <returns>The database type name.</returns>
+		protected virtual string GetCastTypeName(SqlType sqlType, TypeNames castTypeNames)
 		{
-			return GetTypeName(sqlType, Column.DefaultLength, Column.DefaultPrecision, Column.DefaultScale);
+			if (sqlType.LengthDefined || sqlType.PrecisionDefined || sqlType.ScaleDefined)
+				return castTypeNames.Get(sqlType.DbType, sqlType.Length, sqlType.Precision, sqlType.Scale);
+			switch (sqlType.DbType)
+			{
+				case DbType.Decimal:
+				// Oracle dialect defines precision and scale for double, because it uses number instead of binary_double.
+				case DbType.Double:
+					// We cannot know if the user needs its digit after or before the dot, so use a configurable
+					// default.
+					return castTypeNames.Get(sqlType.DbType, 0, DefaultCastPrecision, DefaultCastScale);
+				case DbType.DateTime:
+				case DbType.DateTime2:
+				case DbType.DateTimeOffset:
+				case DbType.Time:
+				case DbType.Currency:
+					// Use default for these, dialects are supposed to map them to max capacity
+					return castTypeNames.Get(sqlType.DbType);
+				default:
+					// Other types are either length bound or not length/precision/scale bound. Otherwise they need to be
+					// handled previously.
+					return castTypeNames.Get(sqlType.DbType, DefaultCastLength, 0, 0);
+			}
 		}
 
 		/// <summary>
@@ -262,7 +300,7 @@ namespace NHibernate.Dialect
 		/// length (if appropriate)
 		/// </summary>
 		/// <param name="code">The typecode</param>
-		/// <param name="capacity">Maximum length of database type</param>
+		/// <param name="capacity">Maximum length or scale of database type</param>
 		/// <param name="name">The database type name</param>
 		protected void RegisterColumnType(DbType code, int capacity, string name)
 		{
@@ -279,6 +317,14 @@ namespace NHibernate.Dialect
 		{
 			_typeNames.Put(code, name);
 		}
+
+		/// <summary>
+		/// Override provided <see cref="SqlType"/>s.
+		/// </summary>
+		/// <param name="type">The original <see cref="SqlType"/>.</param>
+		/// <returns>Refined <see cref="SqlType"/>s.</returns>
+		public virtual SqlType OverrideSqlType(SqlType type) =>
+			type;
 
 		#endregion
 
@@ -1399,6 +1445,16 @@ namespace NHibernate.Dialect
 			}
 		}
 
+		/// <summary>
+		/// Does this dialect support concurrent writing connections?
+		/// </summary>
+		public virtual bool SupportsConcurrentWritingConnections => true;
+
+		/// <summary>
+		/// Does this dialect support concurrent writing connections in the same transaction?
+		/// </summary>
+		public virtual bool SupportsConcurrentWritingConnectionsInSameTransaction => SupportsConcurrentWritingConnections;
+
 		#endregion
 
 		#region Limit/offset support
@@ -1933,6 +1989,17 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+		/// <summary>
+		/// <para>
+		/// Are paged sub-selects supported as the right-hand-side (RHS) of IN-predicates?
+		/// </para>
+		/// <para>
+		/// In other words, is syntax like "... someColumn IN ({paged-sub-query}) ..." supported?
+		/// </para>
+		/// </summary>
+		/// <returns><see langword="true"/> if paged sub-selects can appear as the RHS of an in-predicate; <see langword="false"/> otherwise.</returns>
+		public virtual bool SupportsSubSelectsWithPagingAsInPredicateRhs => true;
+
 		/// <summary> 
 		/// Expected LOB usage pattern is such that I can perform an insert
 		/// via prepared statement with a parameter binding for a LOB value
@@ -2059,9 +2126,41 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
+		/// Does this dialect support scalar sub-selects?
+		/// </summary>
+		/// <remarks>
+		/// Scalar sub-selects are sub-queries returning a scalar value, not a set. See https://stackoverflow.com/a/648049/1178314
+		/// </remarks>
+		public virtual bool SupportsScalarSubSelects => SupportsSubSelects;
+
+		/// <summary>
 		/// Does this dialect support pooling parameter in connection string?
 		/// </summary>
 		public virtual bool SupportsPoolingParameter => true;
+
+		/// <summary>
+		/// <para>
+		/// Does this dialect support having clause on a grouped by computation?
+		/// </para>
+		/// <para>
+		/// In other words, is syntax like "... group by aComputation having aComputation ..." supported?
+		/// </para>
+		/// </summary>
+		public virtual bool SupportsHavingOnGroupedByComputation => true;
+
+		/// <summary>
+		/// Does this dialect support distributed transaction?
+		/// </summary>
+		/// <remarks>
+		/// Distributed transactions usually imply the use of<see cref="TransactionScope"/>, but using
+		/// <c>TransactionScope</c> does not imply the transaction will be distributed.
+		/// </remarks>
+		public virtual bool SupportsDistributedTransactions => true;
+
+		/// <summary>
+		/// Does this dialect handles date and time types scale (fractional seconds precision)?
+		/// </summary>
+		public virtual bool SupportsDateTimeScale => false;
 
 		#endregion
 
@@ -2086,10 +2185,7 @@ namespace NHibernate.Dialect
 			get { return _sqlFunctions; }
 		}
 
-		public HashSet<string> Keywords
-		{
-			get { return _sqlKeywords; }
-		}
+		public HashSet<string> Keywords { get; }
 
 		/// <summary> 
 		/// Get the command used to select a GUID from the underlying database.
@@ -2244,6 +2340,21 @@ namespace NHibernate.Dialect
 		protected void RegisterKeyword(string word)
 		{
 			Keywords.Add(word);
+		}
+
+		protected internal void RegisterKeywords(params string[] keywords)
+		{
+			Keywords.UnionWith(keywords);
+		}
+
+		protected internal void RegisterKeywords(IEnumerable<string> keywords)
+		{
+			Keywords.UnionWith(keywords);
+		}
+
+		public bool IsKeyword(string str)
+		{
+			return Keywords.Contains(str);
 		}
 
 		protected void RegisterFunction(string name, ISQLFunction function)

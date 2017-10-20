@@ -10,17 +10,23 @@ namespace NHibernate.Engine.Query
 	[Serializable]
 	public class FilterQueryPlan : QueryExpressionPlan
 	{
-		private readonly string collectionRole;
-
 		public FilterQueryPlan(IQueryExpression queryExpression, string collectionRole, bool shallow, IDictionary<string, IFilter> enabledFilters, ISessionFactoryImplementor factory)
-			: base(queryExpression.Key, CreateTranslators(queryExpression, collectionRole, shallow, enabledFilters, factory))
+			: base(queryExpression, collectionRole, shallow, enabledFilters, factory)
 		{
-			this.collectionRole = collectionRole;
+			CollectionRole = collectionRole;
 		}
 
-		public string CollectionRole
+		protected FilterQueryPlan(FilterQueryPlan source, IQueryExpression expression)
+			: base (source, expression)
 		{
-			get { return collectionRole; }
+			CollectionRole = source.CollectionRole;
+		}
+
+		public string CollectionRole { get; }
+
+		public override QueryExpressionPlan Copy(IQueryExpression expression)
+		{
+			return new FilterQueryPlan(this, expression);
 		}
 	}
 }

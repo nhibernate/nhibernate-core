@@ -10,7 +10,7 @@ namespace NHibernate.Tool.hbm2ddl
 	/// gets cleaned up, but that the provider itself remains usable since it
 	/// was externally provided to us.
 	/// </summary>
-	public class SuppliedConnectionProviderConnectionHelper : IConnectionHelper
+	public partial class SuppliedConnectionProviderConnectionHelper : IConnectionHelper
 	{
 		private readonly IConnectionProvider provider;
 		private DbConnection connection;

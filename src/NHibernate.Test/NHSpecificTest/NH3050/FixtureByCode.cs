@@ -86,7 +86,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3050
 				GC.Collect();
 
 				//execute future which creates an ExpandedQueryExpression and adds it to the plan cache (generates the same cache plan key as the NhLinqExpression)
-				future.ToList();
+				future.GetEnumerable().ToList();
 
 				//execute original query again which will look for a NhLinqExpression in the plan cache but because it has already been evicted
 				//and because the ExpandedQueryExpression generates the same cache key, the ExpandedQueryExpression is returned and 

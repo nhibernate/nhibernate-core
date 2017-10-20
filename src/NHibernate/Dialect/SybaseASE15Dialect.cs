@@ -25,7 +25,7 @@ namespace NHibernate.Dialect
 	///	</item>
 	/// </list>
 	/// </remarks>
-	public class SybaseASE15Dialect : Dialect
+	public partial class SybaseASE15Dialect : Dialect
 	{
 		public SybaseASE15Dialect()
 		{
@@ -39,9 +39,9 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Decimal, "numeric(18,0)");
 			RegisterColumnType(DbType.Single, "real");
 			RegisterColumnType(DbType.Double, "float");
-			RegisterColumnType(DbType.AnsiStringFixedLength, "char(1)");
+			RegisterColumnType(DbType.AnsiStringFixedLength, "char(255)");
 			RegisterColumnType(DbType.AnsiStringFixedLength, 255, "char($l)");
-			RegisterColumnType(DbType.StringFixedLength, "nchar(1)");
+			RegisterColumnType(DbType.StringFixedLength, "nchar(255)");
 			RegisterColumnType(DbType.StringFixedLength, 255, "nchar($l)");
 			RegisterColumnType(DbType.AnsiString, "varchar(255)");
 			RegisterColumnType(DbType.AnsiString, 16384, "varchar($l)");
@@ -67,15 +67,15 @@ namespace NHibernate.Dialect
 			RegisterFunction("cot", new StandardSQLFunction("cot", NHibernateUtil.Double));
 			RegisterFunction("current_date", new NoArgSQLFunction("getdate", NHibernateUtil.Date));
 			RegisterFunction("current_time", new NoArgSQLFunction("getdate", NHibernateUtil.Time));
-			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.Timestamp));
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.DateTime));
 			RegisterFunction("datename", new StandardSQLFunction("datename", NHibernateUtil.String));
 			RegisterFunction("day", new StandardSQLFunction("day", NHibernateUtil.Int32));
 			RegisterFunction("degrees", new StandardSQLFunction("degrees", NHibernateUtil.Double));
 			RegisterFunction("exp", new StandardSQLFunction("exp", NHibernateUtil.Double));
 			RegisterFunction("extract", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(?1, ?3)"));
 			RegisterFunction("floor", new StandardSQLFunction("floor"));
-			RegisterFunction("getdate", new NoArgSQLFunction("getdate", NHibernateUtil.Timestamp));
-			RegisterFunction("getutcdate", new NoArgSQLFunction("getutcdate", NHibernateUtil.Timestamp));
+			RegisterFunction("getdate", new NoArgSQLFunction("getdate", NHibernateUtil.DateTime));
+			RegisterFunction("getutcdate", new NoArgSQLFunction("getutcdate", NHibernateUtil.DateTime));
 			RegisterFunction("hour", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(hour, ?1)"));
 			RegisterFunction("isnull", new StandardSQLFunction("isnull"));
 			RegisterFunction("len", new StandardSQLFunction("len", NHibernateUtil.Int64));

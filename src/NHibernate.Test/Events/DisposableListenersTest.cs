@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Events
 {
-	public class MyDisposableListener : IPostUpdateEventListener, IDisposable
+	public partial class MyDisposableListener : IPostUpdateEventListener, IDisposable
 	{
 		public void OnPostUpdate(PostUpdateEvent @event)
 		{
@@ -18,6 +18,7 @@ namespace NHibernate.Test.Events
 		}
 	}
 
+	[TestFixture]
 	public class DisposableListenersTest
 	{
 		[Test]

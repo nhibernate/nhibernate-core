@@ -31,6 +31,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1965
 			return mappings;
 		}
 
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInserts;
+		}
+
 		[Test]
 		public void WhenReattachThenNotThrows()
 		{

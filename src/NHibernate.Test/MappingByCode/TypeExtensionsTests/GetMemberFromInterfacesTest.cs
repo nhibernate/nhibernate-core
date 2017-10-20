@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 {
+	[TestFixture]
 	public class GetMemberFromInterfacesTest
 	{
 		private class BaseEntity
@@ -26,7 +27,10 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 
 		private class Person : BaseEntity, IEntity, IHasSomething
 		{
+			// Used by reflection
+#pragma warning disable CS0169 // The field is never used
 			private int someField;
+#pragma warning restore CS0169 // The field is never used
 			public string Name { get; set; }
 			public bool IsValid { get { return false; } }
 			public string Something { get; set; }

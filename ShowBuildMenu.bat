@@ -5,22 +5,22 @@ set NANT="%~dp0Tools\nant\bin\NAnt.exe" -t:net-4.0
 set BUILDTOOL="%~dp0Tools\BuildTool\bin\Release\BuildTool.exe"
 set AVAILABLE_CONFIGURATIONS=%~dp0available-test-configurations
 set CURRENT_CONFIGURATION=%~dp0current-test-configuration
-set NUNIT="%~dp0Tools\NUnit.ConsoleRunner.3.6.0\tools\nunit3-console.exe"
+set NUNIT="%~dp0Tools\NUnit.ConsoleRunner.3.7.0\tools\nunit3-console.exe"
 
 :main-menu
 echo ========================= NHIBERNATE BUILD MENU ==========================
-echo --- SETUP ---
-echo A. Set up for Visual Studio (creates AssemblyInfo.cs files).
-echo.
 echo --- TESTING ---
 echo B. (Step 1) Set up a new test configuration for a particular database.
 echo C. (Step 2) Activate a test configuration.
-echo D. (Step 3) Run tests using active configuration.
+echo D. (Step 3) Run tests using active configuration (Needs built in Visual Studio).
 echo.
 echo --- BUILD ---
 echo E. Build NHibernate (Debug)
 echo F. Build NHibernate (Release)
 echo G. Build Release Package (Also runs tests and creates documentation)
+echo.
+echo --- Code generation ---
+echo H. Generate async code (Generates files in Async sub-folders)
 echo.
 echo --- TeamCity (CI) build options
 echo I. TeamCity build menu
@@ -29,16 +29,16 @@ echo --- Exit ---
 echo X. Make the beautiful build menu go away.
 echo.
 
-%BUILDTOOL% prompt ABCDEFGIX
+%BUILDTOOL% prompt BCDEFGHIX
 if errorlevel 8 goto end
 if errorlevel 7 goto teamcity-menu
-if errorlevel 6 goto build-release-package
-if errorlevel 5 goto build-release
-if errorlevel 4 goto build-debug
-if errorlevel 3 goto test-run
-if errorlevel 2 goto test-activate
-if errorlevel 1 goto test-setup-menu
-if errorlevel 0 goto build-visual-studio
+if errorlevel 6 goto build-async
+if errorlevel 5 goto build-release-package
+if errorlevel 4 goto build-release
+if errorlevel 3 goto build-debug
+if errorlevel 2 goto test-run
+if errorlevel 1 goto test-activate
+if errorlevel 0 goto test-setup-menu
 
 :test-setup-menu
 echo A. Add a test configuration for SQL Server.
@@ -165,15 +165,17 @@ echo Configuration activated.
 goto main-menu
 
 :test-run
-start "nunit3-console" cmd /K %NUNIT% --x86 --agents=1 --process=separate NHibernate.nunit
+SET NUNITPLATFORM=
+IF /I "%PLATFORM%" NEQ "x64" set NUNITPLATFORM=--x86
+start "nunit3-console" cmd /K %NUNIT% %NUNITPLATFORM% --agents=1 --process=separate NHibernate.nunit
 goto main-menu
 
 rem :build-test
 rem %NANT% test
 rem goto main-menu
 
-:build-visual-studio
-%NANT% visual-studio
+:build-async
+%NANT% generate-async
 goto main-menu
 
 :build-debug

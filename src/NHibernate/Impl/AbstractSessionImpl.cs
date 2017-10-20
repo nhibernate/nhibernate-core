@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
@@ -11,6 +12,7 @@ using NHibernate.Engine.Query.Sql;
 using NHibernate.Event;
 using NHibernate.Exceptions;
 using NHibernate.Hql;
+using NHibernate.Linq;
 using NHibernate.Loader.Custom;
 using NHibernate.Loader.Custom.Sql;
 using NHibernate.Persister.Entity;
@@ -21,7 +23,7 @@ namespace NHibernate.Impl
 {
 	/// <summary> Functionality common to stateless and stateful sessions </summary>
 	[Serializable]
-	public abstract class AbstractSessionImpl : ISessionImplementor
+	public abstract partial class AbstractSessionImpl : ISessionImplementor
 	{
 		[NonSerialized]
 		private ISessionFactoryImplementor _factory;
@@ -81,25 +83,7 @@ namespace NHibernate.Impl
 		}
 
 		public abstract IBatcher Batcher { get; }
-		public abstract void CloseSessionFromDistributedTransaction();
-
-		[Obsolete("Use overload with IQueryExpression")]
-		public virtual IList List(string query, QueryParameters parameters)
-		{
-			return List(query.ToQueryExpression(), parameters);
-		}
-
-		[Obsolete("Use overload with IQueryExpression")]
-		public virtual void List(string query, QueryParameters queryParameters, IList results)
-		{
-			List(query.ToQueryExpression(), queryParameters, results);
-		}
-
-		[Obsolete("Use overload with IQueryExpression")]
-		public virtual IList<T> List<T>(string query, QueryParameters queryParameters)
-		{
-			return List<T>(query.ToQueryExpression(), queryParameters);
-		}
+		public abstract void CloseSessionFromSystemTransaction();
 
 		public virtual IList List(IQueryExpression queryExpression, QueryParameters parameters)
 		{
@@ -146,12 +130,24 @@ namespace NHibernate.Impl
 		}
 
 		public abstract IList ListFilter(object collection, string filter, QueryParameters parameters);
+		public IList ListFilter(object collection, IQueryExpression queryExpression, QueryParameters parameters)
+		{
+			var results = (IList)typeof(List<>).MakeGenericType(queryExpression.Type)
+									.GetConstructor(System.Type.EmptyTypes)
+									.Invoke(null);
+
+			ListFilter(collection, queryExpression, parameters, results);
+			return results;
+		}
+		protected abstract void ListFilter(object collection, IQueryExpression queryExpression, QueryParameters parameters, IList results);
+
 		public abstract IList<T> ListFilter<T>(object collection, string filter, QueryParameters parameters);
 		public abstract IEnumerable EnumerableFilter(object collection, string filter, QueryParameters parameters);
 		public abstract IEnumerable<T> EnumerableFilter<T>(object collection, string filter, QueryParameters parameters);
 		public abstract IEntityPersister GetEntityPersister(string entityName, object obj);
 		public abstract void AfterTransactionBegin(ITransaction tx);
 		public abstract void BeforeTransactionCompletion(ITransaction tx);
+		public abstract void FlushBeforeTransactionCompletion();
 		public abstract void AfterTransactionCompletion(bool successful, ITransaction tx);
 		public abstract object GetContextEntityIdentifier(object obj);
 		public abstract object Instantiate(string clazz, object id);
@@ -223,15 +219,8 @@ namespace NHibernate.Impl
 			}
 		}
 
-		[Obsolete("Use overload with IQueryExpression")]
-		public virtual IQueryTranslator[] GetQueries(string query, bool scalar)
-		{
-			return GetQueries(query.ToQueryExpression(), scalar);
-		}
-
 		public abstract IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar);
 		public abstract EventListeners Listeners { get; }
-		public abstract int DontFlushFromFind { get; }
 		public abstract ConnectionManager ConnectionManager { get; }
 		public abstract bool IsEventSource { get; }
 		public abstract object GetEntityUsingInterceptor(EntityKey key);
@@ -295,6 +284,11 @@ namespace NHibernate.Impl
 		protected internal virtual void CheckAndUpdateSessionStatus()
 		{
 			ErrorIfClosed();
+
+			// Ensure the session does not run on a thread supposed to be blocked, waiting
+			// for transaction completion.
+			TransactionContext?.Wait();
+
 			EnlistInAmbientTransactionIfNeeded();
 		}
 
@@ -320,15 +314,6 @@ namespace NHibernate.Impl
 
 		protected internal void SetClosed()
 		{
-			try
-			{
-				if (TransactionContext != null)
-					TransactionContext.Dispose();
-			}
-			catch (Exception)
-			{
-				//ignore
-			}
 			closed = true;
 		}
 
@@ -393,12 +378,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		[Obsolete("Please use overload with IQueryExpression")]
-		protected internal virtual IQueryPlan GetHQLQueryPlan(string query, bool shallow)
-		{
-			return GetHQLQueryPlan(query.ToQueryExpression(), shallow);
-		}
-
 		protected internal virtual IQueryExpressionPlan GetHQLQueryPlan(IQueryExpression queryExpression, bool shallow)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -430,6 +409,7 @@ namespace NHibernate.Impl
 				if (!ConnectionManager.IsInActiveTransaction)
 				{
 					ConnectionManager.AfterNonTransactionalQuery(success);
+					ConnectionManager.AfterTransaction();
 					AfterTransactionCompletion(success, null);
 				}
 			}
@@ -437,8 +417,16 @@ namespace NHibernate.Impl
 
 		protected void EnlistInAmbientTransactionIfNeeded()
 		{
-			_factory.TransactionFactory.EnlistInDistributedTransactionIfNeeded(this);
+			_factory.TransactionFactory.EnlistInSystemTransactionIfNeeded(this);
 		}
+
+		public void JoinTransaction()
+		{
+			CheckAndUpdateSessionStatus();
+			_factory.TransactionFactory.ExplicitJoinSystemTransaction(this);
+		}
+
+		public abstract IQuery CreateFilter(object collection, IQueryExpression queryExpression);
 
 		internal IOuterJoinLoadable GetOuterJoinLoadable(string entityName)
 		{
@@ -455,26 +443,29 @@ namespace NHibernate.Impl
 
 		public abstract IEnumerable Enumerable(IQueryExpression queryExpression, QueryParameters queryParameters);
 
-		[Obsolete("Use overload with IQueryExpression")]
-		public virtual IEnumerable Enumerable(string query, QueryParameters queryParameters)
-		{
-			return Enumerable(query.ToQueryExpression(), queryParameters);
-		}
-
-		[Obsolete("Use overload with IQueryExpression")]
-		public virtual IEnumerable<T> Enumerable<T>(string query, QueryParameters queryParameters)
-		{
-			return Enumerable<T>(query.ToQueryExpression(), queryParameters);
-		}
-
 		public abstract IEnumerable<T> Enumerable<T>(IQueryExpression queryExpression, QueryParameters queryParameters);
 
-		[Obsolete("Use overload with IQueryExpression")]
-		public virtual int ExecuteUpdate(string query, QueryParameters queryParameters)
+		public abstract int ExecuteUpdate(IQueryExpression queryExpression, QueryParameters queryParameters);
+		
+		/// <summary>
+		/// Creates a new Linq <see cref="IQueryable{T}"/> for the entity class.
+		/// </summary>
+		/// <typeparam name="T">The entity class</typeparam>
+		/// <returns>An <see cref="IQueryable{T}"/> instance</returns>
+		public IQueryable<T> Query<T>()
 		{
-			return ExecuteUpdate(query.ToQueryExpression(), queryParameters);
+			return new NhQueryable<T>(this);
 		}
 
-		public abstract int ExecuteUpdate(IQueryExpression queryExpression, QueryParameters queryParameters);
+		/// <summary>
+		/// Creates a new Linq <see cref="IQueryable{T}"/> for the entity class and with given entity name.
+		/// </summary>
+		/// <typeparam name="T">The type of entity to query.</typeparam>
+		/// <param name="entityName">The entity name.</param>
+		/// <returns>An <see cref="IQueryable{T}"/> instance</returns>
+		public IQueryable<T> Query<T>(string entityName)
+		{
+			return new NhQueryable<T>(this, entityName);
+		}
 	}
 }

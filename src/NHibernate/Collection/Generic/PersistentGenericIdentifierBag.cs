@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
 using NHibernate.Id;
+using NHibernate.Linq;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
@@ -30,7 +32,7 @@ namespace NHibernate.Collection.Generic
 	/// </remarks>
 	[Serializable]
 	[DebuggerTypeProxy(typeof (CollectionProxy<>))]
-	public class PersistentIdentifierBag<T> : AbstractPersistentCollection, IList<T>, IList
+	public partial class PersistentIdentifierBag<T> : AbstractPersistentCollection, IList<T>, IList, IQueryable<T>
 	{
 		/* NH considerations:
 		 * For various reason we know that the underlining type will be a List<T> or a 
@@ -42,7 +44,7 @@ namespace NHibernate.Collection.Generic
 		private Dictionary<int, object> _identifiers; //index -> id 
 
 		private IList<T> _values; //element
-		
+
 		public PersistentIdentifierBag() {}
 		
 		public PersistentIdentifierBag(ISessionImplementor session) : base(session) {}
@@ -514,5 +516,20 @@ namespace NHibernate.Collection.Generic
 				return (Id != null ? Id.GetHashCode() : 0);
 			}
 		}
+
+		#region IQueryable<T> Members
+
+		[NonSerialized]
+		IQueryable<T> _queryable;
+
+		Expression IQueryable.Expression => InnerQueryable.Expression;
+
+		System.Type IQueryable.ElementType => InnerQueryable.ElementType;
+
+		IQueryProvider IQueryable.Provider => InnerQueryable.Provider;
+
+		IQueryable<T> InnerQueryable => _queryable ?? (_queryable = new NhQueryable<T>(Session, this));
+
+		#endregion
 	}
 }

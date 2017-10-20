@@ -18,7 +18,7 @@ namespace NHibernate.Collection
 	/// <remarks> Use of Hibernate arrays is not really recommended. </remarks>
 	[Serializable]
 	[DebuggerTypeProxy(typeof (CollectionProxy))]
-	public class PersistentArrayHolder : AbstractPersistentCollection, ICollection
+	public partial class PersistentArrayHolder : AbstractPersistentCollection, ICollection
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (PersistentArrayHolder));
 

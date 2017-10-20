@@ -13,7 +13,7 @@ namespace NHibernate.Event.Default
 	/// to a session ( such as through lock() or update() ).
 	/// </summary>
 	[Serializable]
-	public class AbstractReassociateEventListener
+	public partial class AbstractReassociateEventListener
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(AbstractReassociateEventListener));
 

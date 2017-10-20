@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using NHibernate.Collection.Generic.SetHelpers;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
+using NHibernate.Linq;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
@@ -19,7 +21,7 @@ namespace NHibernate.Collection.Generic
 	/// </summary>
 	[Serializable]
 	[DebuggerTypeProxy(typeof(CollectionProxy<>))]
-	public class PersistentGenericSet<T> : AbstractPersistentCollection, ISet<T>
+	public partial class PersistentGenericSet<T> : AbstractPersistentCollection, ISet<T>, IQueryable<T>
 	{
 		/// <summary>
 		/// The <see cref="ISet{T}"/> that NHibernate is wrapping.
@@ -492,7 +494,6 @@ namespace NHibernate.Collection.Generic
 			get { return false; }
 		}
 
-
 		void ICollection<T>.Add(T item)
 		{
 			Add(item);
@@ -520,6 +521,20 @@ namespace NHibernate.Collection.Generic
 
 		#endregion
 
+		#region IQueryable<T> Members
+
+		[NonSerialized]
+		IQueryable<T> _queryable;
+
+		Expression IQueryable.Expression => InnerQueryable.Expression;
+
+		System.Type IQueryable.ElementType => InnerQueryable.ElementType;
+
+		IQueryProvider IQueryable.Provider => InnerQueryable.Provider;
+
+		IQueryable<T> InnerQueryable => _queryable ?? (_queryable = new NhQueryable<T>(Session, this));
+
+		#endregion
 
 		#region DelayedOperations
 

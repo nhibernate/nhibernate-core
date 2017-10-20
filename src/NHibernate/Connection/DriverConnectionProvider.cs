@@ -6,7 +6,7 @@ namespace NHibernate.Connection
 	/// <summary>
 	/// A ConnectionProvider that uses an IDriver to create connections.
 	/// </summary>
-	public class DriverConnectionProvider : ConnectionProvider
+	public partial class DriverConnectionProvider : ConnectionProvider
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DriverConnectionProvider));
 

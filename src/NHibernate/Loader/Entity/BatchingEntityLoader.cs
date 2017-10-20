@@ -13,7 +13,7 @@ namespace NHibernate.Loader.Entity
 	/// SQL <c>where</c> clause.
 	/// </summary>
 	/// <seealso cref="EntityLoader"/>
-	public class BatchingEntityLoader : IUniqueEntityLoader
+	public partial class BatchingEntityLoader : IUniqueEntityLoader
 	{
 		private readonly Loader[] loaders;
 		private readonly int[] batchSizes;

@@ -12,7 +12,7 @@ namespace NHibernate.Connection
 	/// <remarks>
 	/// This implementation indicates that the user is expected to supply an ADO.NET connection
 	/// </remarks>
-	public class UserSuppliedConnectionProvider : ConnectionProvider
+	public partial class UserSuppliedConnectionProvider : ConnectionProvider
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(UserSuppliedConnectionProvider));
 

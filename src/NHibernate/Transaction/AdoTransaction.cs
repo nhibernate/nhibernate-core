@@ -12,7 +12,7 @@ namespace NHibernate.Transaction
 	/// Wraps an ADO.NET <see cref="DbTransaction"/> to implement
 	/// the <see cref="ITransaction" /> interface.
 	/// </summary>
-	public class AdoTransaction : ITransaction
+	public partial class AdoTransaction : ITransaction
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(AdoTransaction));
 		private ISessionImplementor session;
@@ -154,6 +154,8 @@ namespace NHibernate.Transaction
 				rolledBack = false;
 
 				session.AfterTransactionBegin(this);
+				foreach (var dependentSession in session.ConnectionManager.DependentSessions)
+					dependentSession.AfterTransactionBegin(this);
 			}
 		}
 
@@ -161,8 +163,12 @@ namespace NHibernate.Transaction
 		{
 			using (new SessionIdLoggingContext(sessionId))
 			{
+				session.ConnectionManager.AfterTransaction();
 				session.AfterTransactionCompletion(successful, this);
 				NotifyLocalSynchsAfterTransactionCompletion(successful);
+				foreach (var dependentSession in session.ConnectionManager.DependentSessions)
+					dependentSession.AfterTransactionCompletion(successful, this);
+
 				session = null;
 				begun = false;
 			}
@@ -186,13 +192,10 @@ namespace NHibernate.Transaction
 
 				log.Debug("Start Commit");
 
-				if (session.FlushMode != FlushMode.Manual)
-				{
-					session.Flush();
-				}
-
-				NotifyLocalSynchsBeforeTransactionCompletion();
 				session.BeforeTransactionCompletion(this);
+				NotifyLocalSynchsBeforeTransactionCompletion();
+				foreach (var dependentSession in session.ConnectionManager.DependentSessions)
+					dependentSession.BeforeTransactionCompletion(this);
 
 				try
 				{

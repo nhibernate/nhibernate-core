@@ -26,6 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2587
 		public virtual Foo Foo { get; set; }
 	}
 
+	[TestFixture]
 	public class CachingWithLinq : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
@@ -105,11 +106,18 @@ namespace NHibernate.Test.NHSpecificTest.NH2587
 				using (ISession session = OpenSession())
 				using (ITransaction transaction = session.BeginTransaction())
 				{
-
-					session.Query<Foo>().Cacheable().ToList();
-					session.Query<Bar>().Cacheable().ToList();
-					session.Query<Foo>().Cacheable().Fetch(x => x.Bars).ToList();
-					session.Query<Bar>().Cacheable().Fetch(x => x.Foo).ToList();
+					session.Query<Foo>()
+						.SetOptions(o => o.SetCacheable(true))
+						.ToList();
+					session.Query<Bar>()
+						.SetOptions(o => o.SetCacheable(true))
+						.ToList();
+					session.Query<Foo>()
+						.SetOptions(o => o.SetCacheable(true))
+						.Fetch(x => x.Bars).ToList();
+					session.Query<Bar>()
+						.SetOptions(o => o.SetCacheable(true))
+						.Fetch(x => x.Foo).ToList();
 				}
 			}
 		}

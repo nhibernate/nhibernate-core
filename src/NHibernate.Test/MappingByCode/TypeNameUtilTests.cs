@@ -14,6 +14,7 @@ namespace NHibernate.Test.MappingByCode
 
 	}
 
+	[TestFixture]
 	public class TypeNameUtilTests
 	{
 		[Test]

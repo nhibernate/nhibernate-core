@@ -4,29 +4,32 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
 {
-	/// <summary>
-	/// Summary description for TimestampTypeFixture.
-	/// </summary>
 	[TestFixture]
-	public class TimestampTypeFixture
+	[Obsolete]
+	public class TimestampTypeFixture : AbstractDateTimeTypeFixture
 	{
-		[Test]
-		public void Next()
-		{
-			TimestampType type = (TimestampType) NHibernateUtil.Timestamp;
-			object current = DateTime.Parse("2004-01-01");
-			object next = type.Next(current, null);
-
-			Assert.IsTrue(next is DateTime, "Next should be DateTime");
-			Assert.IsTrue((DateTime) next > (DateTime) current,
-			              "next should be greater than current (could be equal depending on how quickly this occurs)");
-		}
+		protected override string TypeName => "Timestamp";
+		protected override AbstractDateTimeType Type => NHibernateUtil.Timestamp;
 
 		[Test]
-		public void Seed()
+		public void ObsoleteMessage()
 		{
-			TimestampType type = (TimestampType) NHibernateUtil.Timestamp;
-			Assert.IsTrue(type.Seed(null) is DateTime, "seed should be DateTime");
+			using (var spy = new LogSpy(typeof(TypeFactory)))
+			{
+				var config = TestConfigurationHelper.GetDefaultConfiguration();
+				AddMappings(config);
+				Configure(config);
+				using (config.BuildSessionFactory())
+				{
+					var log = spy.GetWholeLog();
+					Assert.That(
+						log,
+						Does.Contain("NHibernate.Type.TimestampType is obsolete. Please use DateTimeType instead.").IgnoreCase);
+					Assert.That(
+						log,
+						Does.Not.Contain($"{NHibernateUtil.Timestamp.Name} is obsolete. Please use DateTimeType instead.").IgnoreCase);
+				}
+			}
 		}
 	}
 }

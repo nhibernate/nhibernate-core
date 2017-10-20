@@ -6,7 +6,7 @@ using NHibernate.Exceptions;
 
 namespace NHibernate.AdoNet
 {
-	public class MySqlClientBatchingBatcher : AbstractBatcher
+	public partial class MySqlClientBatchingBatcher : AbstractBatcher
 	{
 		private int batchSize;
 		private int totalExpectedRowsAffected;

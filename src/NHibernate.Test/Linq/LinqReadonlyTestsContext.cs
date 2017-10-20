@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using NHibernate.Cfg;
 using NHibernate.Connection;
+using NHibernate.Engine;
 using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
 
@@ -96,7 +96,8 @@ namespace NHibernate.Test.Linq
 			}
 			else
 			{
-				new SchemaExport(configuration).Drop(false, true);
+				using (var sf = configuration.BuildSessionFactory())
+					TestCase.DropSchema(false, new SchemaExport(configuration), (ISessionFactoryImplementor)sf);
 			}
 		}
 

@@ -7,7 +7,7 @@ namespace NHibernate.Engine.Transaction
 	/// which isolates it from any current application unit of
 	/// work transaction.
 	/// </summary>
-	public interface IIsolatedWork
+	public partial interface IIsolatedWork
 	{
 		/// <summary>
 		/// Perform the actual work to be done.

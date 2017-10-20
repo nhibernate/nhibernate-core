@@ -9,11 +9,13 @@ namespace NHibernate.Test.NHSpecificTest.NH555
 		[Test]
 		public void Bug()
 		{
+			int custId;
 			using (ISession s = OpenSession())
 			{
 				Customer c = new Customer();
 				c.Name = "TestCustomer";
 				s.Save(c);
+				custId = c.Id;
 
 				Article art = new Article();
 				art.Name = "TheArticle1";
@@ -40,10 +42,10 @@ namespace NHibernate.Test.NHSpecificTest.NH555
 				             "where c.Id = :custId and o.OrderDate >= :orderDate";
 
 				IQuery q = s.CreateQuery(hql);
-				q.SetInt32("custId", 1);
+				q.SetInt32("custId", custId);
 				q.SetDateTime("orderDate", DateTime.Now.AddMonths(-3));
 
-				Assert.AreEqual(52.5m, (decimal) q.UniqueResult());
+				Assert.AreEqual(52.5m, q.UniqueResult<decimal>());
 			}
 
 			using (ISession s = OpenSession())

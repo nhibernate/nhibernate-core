@@ -9,6 +9,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2031
 	{
 		
 	}
+
+	[TestFixture]
 	public class HqlModFuctionForMsSqlTest : BugTestCase
 	{
 		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)

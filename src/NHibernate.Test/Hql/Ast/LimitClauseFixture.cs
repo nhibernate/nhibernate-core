@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using NHibernate.Cfg;
+using NHibernate.Driver;
 using NHibernate.Hql.Ast.ANTLR;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Hql.Ast
@@ -11,7 +13,8 @@ namespace NHibernate.Test.Hql.Ast
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
 			return dialect.SupportsVariableLimit
-				&& !(Dialect is Dialect.MsSql2000Dialect &&  cfg.Properties[Environment.ConnectionDriver] == typeof(Driver.OdbcDriver).FullName); // don't know why, but these tests don't work on SQL Server using ODBC
+				&& !(Dialect is Dialect.MsSql2000Dialect && // don't know why, but these tests don't work on SQL Server using ODBC
+					typeof(OdbcDriver).IsAssignableFrom(ReflectHelper.ClassForName(cfg.GetProperty(Environment.ConnectionDriver)))); 
 		}
 
 		protected override void OnSetUp()

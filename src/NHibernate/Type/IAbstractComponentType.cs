@@ -6,7 +6,7 @@ namespace NHibernate.Type
 	/// <summary>
 	/// Enables other Component-like types to hold collections and have cascades, etc.
 	/// </summary>
-	public interface IAbstractComponentType : IType
+	public partial interface IAbstractComponentType : IType
 	{
 		/// <summary>Get the types of the component properties</summary>
 		IType[] Subtypes { get; }

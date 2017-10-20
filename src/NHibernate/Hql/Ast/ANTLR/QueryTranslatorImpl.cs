@@ -21,7 +21,7 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 namespace NHibernate.Hql.Ast.ANTLR
 {
 	[CLSCompliant(false)]
-	public class QueryTranslatorImpl : IFilterTranslator
+	public partial class QueryTranslatorImpl : IFilterTranslator
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(QueryTranslatorImpl));
 

@@ -14,12 +14,22 @@ namespace NHibernate.Type
 	/// but mapping against a <see cref="DateTime"/>.
 	/// </summary>
 	[Serializable]
-	public class TimeAsTimeSpanType : PrimitiveType, IVersionType
+	public partial class TimeAsTimeSpanType : PrimitiveType, IVersionType
 	{
 		private static readonly DateTime BaseDateValue = new DateTime(1753, 01, 01);
 
-		public TimeAsTimeSpanType()
-			: base(SqlTypeFactory.Time)
+		/// <summary>
+		/// Default constructor.
+		/// </summary>
+		public TimeAsTimeSpanType() : base(SqlTypeFactory.Time)
+		{
+		}
+
+		/// <summary>
+		/// Constructor for specifying a time with a scale. Use <see cref="SqlTypeFactory.GetTime"/>.
+		/// </summary>
+		/// <param name="sqlType">The sql type to use for the type.</param>
+		public TimeAsTimeSpanType(TimeSqlType sqlType) : base(sqlType)
 		{
 		}
 

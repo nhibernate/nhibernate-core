@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1270
 {
+	[TestFixture]
 	public class Fixture
 	{
 		private HbmMapping GetMappings()

@@ -704,6 +704,7 @@ namespace NHibernate.Util
 			return null;
 		}
 
+		// Since v5
 		[Obsolete("Please use GetMethodDefinition then MethodInfo.MakeGenericMethod instead")]
 		public static MethodInfo GetGenericMethodFrom<T>(string methodName, System.Type[] genericArgs, System.Type[] signature)
 		{

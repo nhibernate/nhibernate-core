@@ -48,6 +48,7 @@ namespace NHibernate.Test.Linq
 		}
 	}
 
+	[TestFixture]
 	public class CustomExtensionsExample : LinqTestCase
 	{
 		protected override void Configure(NHibernate.Cfg.Configuration configuration)

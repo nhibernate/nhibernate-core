@@ -7,7 +7,7 @@ namespace NHibernate.Engine
 	/// <summary>
 	/// Utility methods for managing versions and timestamps
 	/// </summary>
-	public class Versioning
+	public partial class Versioning
 	{
 		public enum OptimisticLock
 		{

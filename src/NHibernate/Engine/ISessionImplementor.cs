@@ -20,7 +20,7 @@ namespace NHibernate.Engine
 	/// Defines the internal contract between the <c>Session</c> and other parts of NHibernate
 	/// such as implementors of <c>Type</c> or <c>ClassPersister</c>
 	/// </summary>
-	public interface ISessionImplementor
+	public partial interface ISessionImplementor
 	{
 		/// <summary>
 		/// Initialize the session after its construction was complete
@@ -75,15 +75,6 @@ namespace NHibernate.Engine
 		IBatcher Batcher { get; }
 
 		/// <summary>
-		/// Execute a <c>List()</c> query
-		/// </summary>
-		/// <param name="query"></param>
-		/// <param name="parameters"></param>
-		/// <returns></returns>
-		[Obsolete("Use overload with IQueryExpression")]
-		IList List(string query, QueryParameters parameters);
-
-		/// <summary>
 		/// Execute a <c>List()</c> expression query
 		/// </summary>
 		/// <param name="queryExpression"></param>
@@ -98,16 +89,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		IQuery CreateQuery(IQueryExpression queryExpression);
 
-		[Obsolete("Use overload with IQueryExpression")]
-		void List(string query, QueryParameters parameters, IList results);
-
 		void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results);
-
-		/// <summary>
-		/// Strongly-typed version of <see cref="List(string,QueryParameters)" />
-		/// </summary>
-		[Obsolete("Use overload with IQueryExpression")]
-		IList<T> List<T>(string query, QueryParameters queryParameters);
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="List(IQueryExpression,QueryParameters)" />
@@ -129,22 +111,7 @@ namespace NHibernate.Engine
 		/// <param name="query"></param>
 		/// <param name="parameters"></param>
 		/// <returns></returns>
-		[Obsolete("Use overload with IQueryExpression")]
-		IEnumerable Enumerable(string query, QueryParameters parameters);
-
-		/// <summary>
-		/// Execute an <c>Iterate()</c> query
-		/// </summary>
-		/// <param name="query"></param>
-		/// <param name="parameters"></param>
-		/// <returns></returns>
 		IEnumerable Enumerable(IQueryExpression query, QueryParameters parameters);
-
-		/// <summary>
-		/// Strongly-typed version of <see cref="Enumerable(string, QueryParameters)" />
-		/// </summary>
-		[Obsolete("Use overload with IQueryExpression")]
-		IEnumerable<T> Enumerable<T>(string query, QueryParameters queryParameters);
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="Enumerable(IQueryExpression, QueryParameters)" />
@@ -155,6 +122,11 @@ namespace NHibernate.Engine
 		/// Execute a filter
 		/// </summary>
 		IList ListFilter(object collection, string filter, QueryParameters parameters);
+
+		/// <summary>
+		/// Execute a filter
+		/// </summary>
+		IList ListFilter(object collection, IQueryExpression queryExpression, QueryParameters parameters);
 
 		/// <summary>
 		/// Execute a filter (strongly-typed version).
@@ -185,6 +157,11 @@ namespace NHibernate.Engine
 		/// Notify the session that the transaction is about to complete
 		/// </summary>
 		void BeforeTransactionCompletion(ITransaction tx);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		void FlushBeforeTransactionCompletion();
 
 		/// <summary>
 		/// Notify the session that the transaction completed, so we no longer own the old locks.
@@ -245,9 +222,6 @@ namespace NHibernate.Engine
 		IDictionary<string, IFilter> EnabledFilters { get; }
 
 		IQuery GetNamedSQLQuery(string name);
-
-		[Obsolete("Use overload with IQueryExpression")]
-		IQueryTranslator[] GetQueries(string query, bool scalar); // NH specific for MultiQuery
 		
 		IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar); // NH specific for MultiQuery
 
@@ -255,8 +229,6 @@ namespace NHibernate.Engine
 
 		/// <summary> Retrieves the configured event listeners from this event source. </summary>
 		EventListeners Listeners { get; }
-
-		int DontFlushFromFind { get; }
 
 		ConnectionManager ConnectionManager { get; }
 
@@ -297,29 +269,28 @@ namespace NHibernate.Engine
 
 		IQuery GetNamedQuery(string queryName);
 
-		/// <summary> Determine whether the session is closed.  Provided separately from
-		/// {@link #isOpen()} as this method does not attempt any JTA sync
-		/// registration, where as {@link #isOpen()} does; which makes this one
-		/// nicer to use for most internal purposes. 
+		/// <summary>
+		/// Determine whether the session is closed. Provided separately from
+		/// <c>IsOpen</c> as this method does not attempt any system transaction sync
+		/// registration, whereas <c>IsOpen</c> is allowed to (does not currently, but may do
+		/// in a future version as it is the case in Hibernate); which makes this one
+		/// nicer to use for most internal purposes.
 		/// </summary>
-		/// <returns> True if the session is closed; false otherwise.
+		/// <returns>
+		/// <see langword="true" /> if the session is closed; <see langword="false" /> otherwise.
 		/// </returns>
 		bool IsClosed { get; }
 
 		void Flush();
 
-		/// <summary> 
-		/// Does this <tt>Session</tt> have an active Hibernate transaction
-		/// or is there a JTA transaction in progress?
+		/// <summary>
+		/// Does this <c>ISession</c> have an active NHibernate transaction
+		/// or is there a system transaction in progress in which the session is enlisted?
 		/// </summary>
 		bool TransactionInProgress { get; }
 
 		/// <summary> Execute a native SQL update or delete query</summary>
 		int ExecuteNativeUpdate(NativeSQLQuerySpecification specification, QueryParameters queryParameters);
-
-		/// <summary> Execute a HQL update or delete query</summary>
-		[Obsolete("Use overload with IQueryExpression")]
-		int ExecuteUpdate(string query, QueryParameters queryParameters);
 
 		/// <summary> Execute a HQL update or delete query</summary>
 		int ExecuteUpdate(IQueryExpression query, QueryParameters queryParameters);
@@ -332,7 +303,26 @@ namespace NHibernate.Engine
 
 		ITransactionContext TransactionContext { get; set; }
 
-		void CloseSessionFromDistributedTransaction();
+		/// <summary>
+		/// Join the <see cref="System.Transactions.Transaction.Current"/> system transaction.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// Sessions auto-join current transaction by default on their first usage within a scope.
+		/// This can be disabled with <see cref="ISessionBuilder{T}.AutoJoinTransaction(bool)"/> from
+		/// a session builder obtained with <see cref="ISessionFactory.WithOptions()"/>.
+		/// </para>
+		/// <para>
+		/// This method allows to explicitly join the current transaction. It does nothing if it is already
+		/// joined.
+		/// </para>
+		/// </remarks>
+		/// <exception cref="HibernateException">Thrown if there is no current transaction.</exception>
+		void JoinTransaction();
+
+		void CloseSessionFromSystemTransaction();
+
+		IQuery CreateFilter(object collection, IQueryExpression queryExpression);
 
 		EntityKey GenerateEntityKey(object id, IEntityPersister persister);
 

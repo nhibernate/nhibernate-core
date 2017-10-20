@@ -24,6 +24,7 @@ namespace NHibernate.Test.MappingByCode
 
 	public class I { public int Id { get; set; } }
 
+	[TestFixture]
 	public class GeneratorTests
 	{
 		[Test]

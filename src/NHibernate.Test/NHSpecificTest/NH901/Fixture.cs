@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH901
 {
+	[TestFixture]
 	public abstract class FixtureBase : TestCase
 	{
 		protected override void OnTearDown()

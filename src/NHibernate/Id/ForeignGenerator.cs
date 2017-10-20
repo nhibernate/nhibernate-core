@@ -20,7 +20,7 @@ namespace NHibernate.Id
 	/// </para>
 	/// The mapping parameter <c>property</c> is required.
 	/// </remarks>
-	public class ForeignGenerator : IIdentifierGenerator, IConfigurable
+	public partial class ForeignGenerator : IIdentifierGenerator, IConfigurable
 	{
 		private string propertyName;
 		private string entityName;

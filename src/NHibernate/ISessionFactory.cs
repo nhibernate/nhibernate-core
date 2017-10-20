@@ -23,7 +23,7 @@ namespace NHibernate
 	/// These properties are defined on <c>Environment</c>
 	/// </para>
 	/// </remarks>
-	public interface ISessionFactory : IDisposable
+	public partial interface ISessionFactory : IDisposable
 	{
 		/// <summary>
 		/// Obtain a <see cref="ISession"/> builder.

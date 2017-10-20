@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2188
 {
+	[TestFixture]
 	public class AppDomainWithMultipleSearchPath
 	{
 		public class MyNhConfiguration: Configuration
@@ -24,6 +25,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2188
 			string binPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "bin");
 			var expected = Path.Combine(binPath, Configuration.DefaultHibernateCfgFileName);
 
+			// Test uses an obsolete .Net feature, changing the private path of an ongoing AppDomain.
+			// If that feature is dropped, the tests will likely need to be dropped too. (Or heavily changed
+			// for running in a newly created AppDomain.)
+#pragma warning disable CS0618 // Type or member is obsolete
 			try
 			{
 				AppDomain.CurrentDomain.ClearPrivatePath();
@@ -37,6 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2188
 				AppDomain.CurrentDomain.ClearPrivatePath();
 				if (privatePath != null) AppDomain.CurrentDomain.AppendPrivatePath(privatePath);
 			}
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 	}
 }

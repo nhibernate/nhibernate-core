@@ -12,7 +12,7 @@ using NHibernate.Util;
 namespace NHibernate.Type
 {
 	[Serializable]
-	public class ComponentType : AbstractType, IAbstractComponentType
+	public partial class ComponentType : AbstractType, IAbstractComponentType
 	{
 		private readonly IType[] propertyTypes;
 		private readonly string[] propertyNames;

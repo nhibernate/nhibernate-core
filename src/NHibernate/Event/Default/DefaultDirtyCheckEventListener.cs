@@ -8,7 +8,7 @@ namespace NHibernate.Event.Default
 	/// checking the session for dirtiness in response to generated dirty-check events. 
 	/// </summary>
 	[Serializable]
-	public class DefaultDirtyCheckEventListener : AbstractFlushingEventListener, IDirtyCheckEventListener
+	public partial class DefaultDirtyCheckEventListener : AbstractFlushingEventListener, IDirtyCheckEventListener
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultDirtyCheckEventListener));
 

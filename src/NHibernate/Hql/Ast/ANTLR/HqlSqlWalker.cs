@@ -62,6 +62,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private IASTFactory _nodeFactory;
 		private readonly List<AssignmentSpecification> assignmentSpecifications = new List<AssignmentSpecification>();
 		private int numberOfParametersInSetClause;
+		private Stack<int> clauseStack=new Stack<int>();
 
 		public HqlSqlWalker(QueryTranslatorImpl qti,
 					  ISessionFactoryImplementor sfi,
@@ -85,7 +86,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		/*
 		protected override void Mismatch(IIntStream input, int ttype, BitSet follow)
 		{
-		   throw new MismatchedTokenException(ttype, input);
+			throw new MismatchedTokenException(ttype, input);
 		}
 
 		public override object RecoverFromMismatchedSet(IIntStream input, RecognitionException e, BitSet follow)
@@ -361,7 +362,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			// TODO NH: we should check the "generated" property
 			// currently only the Hibernate-supplied DbTimestampType is supported here
-			return type is TimestampType;
+			return type is DbTimestampType;
 		}
 
 		private static bool IsIntegral(IType type)
@@ -407,7 +408,17 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		void HandleClauseStart(int clauseType)
 		{
+			clauseStack.Push(_currentClauseType);
 			_currentClauseType = clauseType;
+		}
+
+		void HandleClauseEnd(int clauseType)
+		{
+			if (clauseType != _currentClauseType)
+			{
+				throw new SemanticException("Mismatched clause parsing");
+			}
+			_currentClauseType=clauseStack.Pop();
 		}
 
 		IASTNode CreateIntoClause(string path, IASTNode propertySpec)
@@ -719,7 +730,17 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		IASTNode CreateFromFilterElement(IASTNode filterEntity, IASTNode alias)
 		{
-			FromElement fromElement = _currentFromClause.AddFromElement(filterEntity.Text, alias);
+			var fromElementFound = true;
+
+			var fromElement = _currentFromClause.GetFromElement(alias.Text) ??
+							  _currentFromClause.GetFromElementByClassName(filterEntity.Text);
+
+			if (fromElement == null)
+			{
+				fromElementFound = false;
+				fromElement = _currentFromClause.AddFromElement(filterEntity.Text, alias);
+			}
+
 			FromClause fromClause = fromElement.FromClause;
 			IQueryableCollection persister = _sessionFactoryHelper.GetCollectionPersister(_collectionFilterRole);
 
@@ -749,7 +770,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 			{
 				log.Debug("createFromFilterElement() : processed filter FROM element.");
 			}
-	
+
+			if (fromElementFound)
+				return (IASTNode) adaptor.Nil();
+
 			return fromElement;
 		}
 
@@ -956,8 +980,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 				// Note: once we add support for "JOIN ... ON ...",
 				// the ON clause needs to get included here
 				return CurrentClauseType == WHERE ||
-					   CurrentClauseType == WITH ||
-					   IsInCase;
+						CurrentClauseType == WITH ||
+						IsInCase;
 			}
 		}
 

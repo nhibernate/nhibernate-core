@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using NHibernate.Linq.Visitors;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.ResultOperators;
@@ -7,7 +8,7 @@ using Remotion.Linq.EagerFetching;
 
 namespace NHibernate.Linq.ReWriters
 {
-	public class RemoveUnnecessaryBodyOperators : QueryModelVisitorBase
+	public class RemoveUnnecessaryBodyOperators : NhQueryModelVisitorBase
 	{
 		private RemoveUnnecessaryBodyOperators() {}
 

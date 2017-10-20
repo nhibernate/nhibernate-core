@@ -1,9 +1,11 @@
-﻿using NHibernate.Cfg.MappingSchema;
+﻿using System;
+using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3269
 {
+	[TestFixture]
 	public class FixturePublicProperty : TestCaseMappingByCode
 	{
 		[Test]
@@ -15,7 +17,8 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3269
 				var e1 = new Inherited1 { Name = "Bob" };
 				session.Save(e1);
 
-				Assert.That(() => { transaction.Commit(); }, Throws.Exception);
+				// Do not use bare Throws.Exception due to https://github.com/nunit/nunit/issues/1899
+				Assert.That(() => { transaction.Commit(); }, Throws.InstanceOf<Exception>());
 			}
 		}
 

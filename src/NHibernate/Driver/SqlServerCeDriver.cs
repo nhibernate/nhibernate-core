@@ -4,8 +4,6 @@ using System.Data;
 using System.Data.Common;
 using System.Reflection;
 using NHibernate.SqlTypes;
-using NHibernate.Util;
-using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Driver
 {
@@ -25,13 +23,11 @@ namespace NHibernate.Driver
 		{
 		}
 
-		private bool prepareSql;
 		private PropertyInfo dbParamSqlDbTypeProperty;
 
 		public override void Configure(IDictionary<string, string> settings)
 		{
 			base.Configure(settings);
-			prepareSql = PropertiesHelper.GetBoolean(Environment.PrepareSql, settings, false);
 
 			using (var cmd = CreateCommand())
 			{
@@ -102,10 +98,6 @@ namespace NHibernate.Driver
 			base.InitializeParameter(dbParam, name, AdjustSqlType(sqlType));
 
 			AdjustDbParamTypeForLargeObjects(dbParam, sqlType);
-			if (prepareSql)
-			{
-				SqlClientDriver.SetVariableLengthParameterSize(dbParam, sqlType);
-		}
 		}
 
 		private static SqlType AdjustSqlType(SqlType sqlType)
@@ -136,5 +128,17 @@ namespace NHibernate.Driver
 				dbParamSqlDbTypeProperty.SetValue(dbParam, SqlDbType.NText, null);
 			}
 		}
+
+		public override bool SupportsNullEnlistment => false;
+
+		/// <summary>
+		/// <see langword="false"/>. Enlistment is completely disabled when auto-enlistment is disabled.
+		/// <see cref="DbConnection.EnlistTransaction(System.Transactions.Transaction)"/> does nothing in
+		/// this case.
+		/// </summary>
+		public override bool SupportsEnlistmentWhenAutoEnlistmentIsDisabled => false;
+
+		/// <inheritdoc />
+		public override DateTime MinDate => new DateTime(1753, 1, 1);
 	}
 }

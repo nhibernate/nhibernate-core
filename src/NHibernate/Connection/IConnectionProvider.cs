@@ -13,7 +13,7 @@ namespace NHibernate.Connection
 	/// Instead it is used internally by NHibernate to obtain <see cref="DbConnection"/>. 
 	/// Implementors should provide a public default constructor.
 	/// </remarks>
-	public interface IConnectionProvider : IDisposable
+	public partial interface IConnectionProvider : IDisposable
 	{
 		/// <summary>
 		/// Initialize the connection provider from the given properties.

@@ -2,6 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH2208
 {
+	[TestFixture]
 	public class Filter : BugTestCase
 	{
 		[Test, Ignore("Not fixed yet")]

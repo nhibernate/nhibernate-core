@@ -7,7 +7,7 @@ using NHibernate.Util;
 
 namespace NHibernate.AdoNet
 {
-	public class SqlClientBatchingBatcher : AbstractBatcher
+	public partial class SqlClientBatchingBatcher : AbstractBatcher
 	{
 		private int _batchSize;
 		private int _totalExpectedRowsAffected;

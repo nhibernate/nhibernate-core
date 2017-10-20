@@ -1,11 +1,11 @@
 <chapter id="quickstart">
-    <title>Quickstart with IIS and Microsoft SQL Server</title>
+    <title>Quick-start with IIS and Microsoft SQL Server</title>
 
     <sect1 id="quickstart-intro">
         <title>Getting started with NHibernate</title>
 
         <para>
-            This tutorial explains a setup of NHibernate 2.1.0 within a Microsoft
+            This tutorial explains a setup of NHibernate 5.0.0 within a Microsoft
             environment. The tools used in this tutorial are:
         </para>
         
@@ -15,22 +15,21 @@
                 ASP.NET.
             </listitem>
             <listitem>
-                Microsoft SQL Server 2005 - the database server. This tutorial uses
-                the desktop edition (SQL-EXPRESS), a free download from Microsoft. Support
+                Microsoft SQL Server 2012 - the database server. This tutorial uses
+                the desktop edition (SQL Express), a free download from Microsoft. Support
                 for other databases is only a matter of changing the NHibernate SQL
                 dialect and driver configuration.
             </listitem>
             <listitem>
-                Microsoft Visual Studio .NET (at least 2005) - the development environment.
+                Microsoft Visual Studio .NET (at least 2013) - the development environment.
             </listitem>
         </orderedlist>
 
         <para>
-            First, we have to create a new Web project. We use the name <literal>QuickStart</literal>,
-            the project web virtual directory will <literal>http://localhost/QuickStart</literal>.
-            In the project, add a reference to <literal>NHibernate.dll</literal>. Visual Studio
+            First, we have to create a new Web project. We use the name <literal>QuickStart</literal>.
+            In the project, add a NuGet reference to <literal>NHibernate</literal>. Visual Studio
             will automatically copy the library and its dependencies to the project output directory.
-            If you are using a database other than SQL Server, add a reference to the driver assembly
+            If you are using a database other than SQL Server, add a reference to its driver assembly
             to your project.
         </para>
 
@@ -40,33 +39,31 @@
             configuration elements according to the listing below:
         </para>
 
-        <programlisting>
-				<![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+        <programlisting><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
 <configuration>
-    <!-- Add this element -->
-    <configSections>
-        <section
-            name="hibernate-configuration"
-            type="NHibernate.Cfg.ConfigurationSectionHandler, NHibernate"
-        />
-    </configSections>
+  <!-- Add this element -->
+  <configSections>
+    <section
+        name="hibernate-configuration"
+        type="NHibernate.Cfg.ConfigurationSectionHandler, NHibernate" />
+  </configSections>
 
-    <!-- Add this element -->
-    <hibernate-configuration xmlns="urn:nhibernate-configuration-2.2">
-        <session-factory>
-            <property name="dialect">NHibernate.Dialect.MsSql2005Dialect</property>
-            <property name="connection.provider">NHibernate.Connection.DriverConnectionProvider</property>
-            <property name="connection.connection_string">Server=localhost\SQLEXPRESS;initial catalog=quickstart;Integrated Security=True</property>
-            <property name="proxyfactory.factory_class">NHibernate.ByteCode.LinFu.ProxyFactoryFactory, NHibernate.ByteCode.LinFu</property>
+  <!-- Add this element -->
+  <hibernate-configuration xmlns="urn:nhibernate-configuration-2.2">
+    <session-factory>
+      <property name="dialect">NHibernate.Dialect.MsSql2012Dialect</property>
+      <property name="connection.connection_string">
+        Server=localhost\SQLEXPRESS;initial catalog=quickstart;Integrated Security=True
+      </property>
 
-            <mapping assembly="QuickStart" />
-        </session-factory>
-    </hibernate-configuration>
+      <mapping assembly="QuickStart" />
+    </session-factory>
+  </hibernate-configuration>
 
-    <!-- Leave the system.web section unchanged -->
-    <system.web>
-        ...
-    </system.web>
+  <!-- Leave the other sections unchanged -->
+  <system.web>
+    ...
+  </system.web>
 </configuration>]]></programlisting>
 
         <para>
@@ -74,7 +71,7 @@
             sections that follow and handlers to use to process their content. We declare
             the handler for the configuration section here. The <literal>
             &lt;hibernate-configuration&gt;</literal> section contains the configuration
-            itself, telling NHibernate that we will use a Microsoft SQL Server 2000
+            itself, telling NHibernate that we will use a Microsoft SQL Server 2012
             database and connect to it through the specified connection string.
             The dialect is a required setting, databases differ in their interpretation
             of the SQL "standard". NHibernate will take care of the differences and comes
@@ -113,38 +110,13 @@
 {
     public class Cat
     {
-        private string id;
-        private string name;
-        private char   sex;
-        private float  weight;
+        public virtual string Id { get; set; }
 
-        public Cat()
-        {
-        }
+        public virtual string Name { get; set; }
 
-        public virtual string Id
-        {
-            get { return id; }
-            set { id = value; }
-        }
+        public virtual char Sex { get; set; }
 
-        public virtual string Name
-        {
-            get { return name; }
-            set { name = value; }
-        }
-
-        public virtual char Sex
-        {
-            get { return sex; }
-            set { sex = value; }
-        }
-
-        public virtual float Weight
-        {
-            get { return weight; }
-            set { weight = value; }
-        }
+        public virtual float Weight { get; set; }
     }
 }]]></programlisting>
 
@@ -152,7 +124,7 @@
             NHibernate is not restricted in its usage of property types, all .NET
             types and primitives (like <literal>string</literal>, <literal>char</literal>
             and <literal>DateTime</literal>) can be mapped, including classes from the
-            <literal>System.Collections</literal> namespace. You can map them as values,
+            <literal>System.Collections.Generic</literal> namespace. You can map them as values,
             collections of values, or associations to other entities. The <literal>Id</literal>
             is a special property that represents the database identifier (primary key) of
             that class, it is highly recommended for entities like a <literal>Cat</literal>.
@@ -172,7 +144,9 @@
 
         <para>
             For the above mentioned runtime class enhancement to work, NHibernate requires that all
-            public properties of an entity class are declared as <literal>virtual</literal>.
+            public properties of an entity class are declared as <literal>virtual</literal>. It also
+            requires a parameter-less constructor:  if you add a constructor having parameters,
+            make sure to add a parameter-less constructor too.
         </para>
 
     </sect1>
@@ -187,7 +161,7 @@
             foreign key relationships to other entities) to database tables.
         </para>
         <para>
-			Please note that the Cat.hbm.xml should be set to an embedded resource.
+            Please note that the <literal>Cat.hbm.xml</literal> file should be set to an embedded resource.
         </para>
 
         <programlisting><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
@@ -203,7 +177,7 @@
             <generator class="uuid.hex" />
         </id>
 
-        <!-- A cat has to have a name, but it shouldn' be too long. -->
+        <!-- A cat has to have a name, but it shouldn't be too long. -->
         <property name="Name">
             <column name="Name" length="16" not-null="true" />
         </property>
@@ -235,8 +209,9 @@
             schema is automatically generated (as SQL DDL statements) from the mapping
             declaration with NHibernate's <emphasis>SchemaExport</emphasis> tool. All other
             properties are mapped using NHibernate's default settings, which is what you
-            need most of the time. The table <literal>Cat</literal> in the database looks
-            like this:
+            need most of the time. Here the specification of the table name with the attribute
+            <literal>table</literal> is redundant, it default to the class name when not specified.
+            The table <literal>Cat</literal> in the database looks like this:
         </para>
 
         <programlisting><![CDATA[ Column |     Type     | Modifiers
@@ -284,10 +259,10 @@
 
         <para>
             An <literal>ISessionFactory</literal> is usually only built once,
-            e.g. at startup inside <literal>Application_Start</literal> event handler.
+            e.g. at start-up inside <literal>Application_Start</literal> event handler.
             This also means you should not keep it in an instance variable in your
-            ASP.NET pages, but in some other location. Furthermore, we need some kind of
-            <emphasis>Singleton</emphasis>, so we can access the
+            ASP.NET pages or MVC controllers, but in some other location. Furthermore,
+            we need some kind of <emphasis>Singleton</emphasis>, so we can access the
             <literal>ISessionFactory</literal> easily in application code. The approach
             shown next solves both problems: configuration and easy access to a
             <literal>ISessionFactory</literal>.
@@ -307,21 +282,21 @@ namespace QuickStart
     public sealed class NHibernateHelper
     {
         private const string CurrentSessionKey = "nhibernate.current_session";
-        private static readonly ISessionFactory sessionFactory;
+        private static readonly ISessionFactory _sessionFactory;
 
         static NHibernateHelper()
         {
-            sessionFactory = new Configuration().Configure().BuildSessionFactory();
+            _sessionFactory = new Configuration().Configure().BuildSessionFactory();
         }
 
         public static ISession GetCurrentSession()
         {
-            HttpContext context = HttpContext.Current;
-            ISession currentSession = context.Items[CurrentSessionKey] as ISession;
+            var context = HttpContext.Current;
+            var currentSession = context.Items[CurrentSessionKey] as ISession;
 
             if (currentSession == null)
             {
-                currentSession = sessionFactory.OpenSession();
+                currentSession = _sessionFactory.OpenSession();
                 context.Items[CurrentSessionKey] = currentSession;
             }
 
@@ -330,8 +305,8 @@ namespace QuickStart
 
         public static void CloseSession()
         {
-            HttpContext context = HttpContext.Current;
-            ISession currentSession = context.Items[CurrentSessionKey] as ISession;
+            var context = HttpContext.Current;
+            var currentSession = context.Items[CurrentSessionKey] as ISession;
 
             if (currentSession == null)
             {
@@ -345,9 +320,9 @@ namespace QuickStart
 
         public static void CloseSessionFactory()
         {
-            if (sessionFactory != null)
+            if (_sessionFactory != null)
             {
-                sessionFactory.Close();
+                _sessionFactory.Close();
             }
         }
     }
@@ -368,18 +343,25 @@ namespace QuickStart
         </para>
 
         <programlisting><![CDATA[ISession session = NHibernateHelper.GetCurrentSession();
+try
+{
+    using (ITransaction tx = session.BeginTransaction())
+    {
+        var princess = new Cat
+        {
+            Name = "Princess",
+            Sex = 'F',
+            Weight = 7.4f
+        };
 
-ITransaction tx = session.BeginTransaction();
-
-Cat princess = new Cat();
-princess.Name = "Princess";
-princess.Sex = 'F';
-princess.Weight = 7.4f;
-
-session.Save(princess);
-tx.Commit();
-
-NHibernateHelper.CloseSession();]]></programlisting>
+        session.Save(princess);
+        tx.Commit();
+    }
+}
+finally
+{
+    NHibernateHelper.CloseSession();
+}]]></programlisting>
 
         <para>
             In an <literal>ISession</literal>, every database operation occurs inside a
@@ -394,35 +376,52 @@ NHibernateHelper.CloseSession();]]></programlisting>
             as many times as you like, you will always get the current <literal>ISession</literal>
             of this HTTP request. You have to make sure the <literal>ISession</literal> is closed
             after your unit-of-work completes, either in <literal>Application_EndRequest</literal>
-            event handler in your application class or in a <literal>HttpModule</literal> before
-            the HTTP response is sent. The nice side effect of the latter is easy lazy
-            initialization: the <literal>ISession</literal> is still open when the view is
-            rendered, so NHibernate can load unitialized objects while you navigate the graph.
+            event handler in your application class, or with a MVC action filter, or in a
+            <literal>HttpModule</literal> before the HTTP response is sent. The nice side effect
+            of the latter is easy lazy initialization: the <literal>ISession</literal> is still
+            open when the view is rendered, so NHibernate can load uninitialized objects while you
+            navigate the graph.
         </para>
 
         <para>
             NHibernate has various methods that can be used to retrieve objects from the
-            database. The most flexible way is using the Hibernate Query Language (HQL),
-            which is an easy to learn and powerful object-oriented extension to SQL:
+            database. Nowadays the most standard way is using Linq:
         </para>
 
-        <programlisting><![CDATA[ITransaction tx = session.BeginTransaction();
-
-IQuery query = session.CreateQuery("select c from Cat as c where c.Sex = :sex");
-query.SetCharacter("sex", 'F');
-foreach (Cat cat in query.Enumerable())
+        <programlisting><![CDATA[using(var tx = session.BeginTransaction())
 {
-    Console.Out.WriteLine("Female Cat: " + cat.Name);
-}
+    var females = session
+        .Query<Cat>()
+        .Where(c => c.Sex == 'F')
+        .ToList();
+    foreach (var cat in females)
+    {
+        Console.Out.WriteLine("Female Cat: " + cat.Name);
+    }
 
-tx.Commit();]]></programlisting>
+    tx.Commit();
+}]]></programlisting>
+
+        <para>
+            If you use an older NHibernate, you may have to import the
+            <literal>NHibernate.Linq</literal> namespace.
+        </para>
 
         <para>
             NHibernate also offers an object-oriented <emphasis>query by criteria</emphasis> API
-            that can be used to formulate type-safe queries. NHibernate of course uses
-            <literal>IDbCommand</literal>s and parameter binding for all SQL communication
-            with the database. You may also use NHibernate's direct SQL query feature or
-            get a plain ADO.NET connection from an <literal>ISession</literal> in rare cases.
+            that can be used to formulate type-safe queries, the Hibernate Query Language (HQL),
+            which is an easy to learn and powerful object-oriented extension to SQL, as well as a
+            strongly-typed LINQ API which translates internally to HQL.
+            NHibernate of course uses <literal>DbCommand</literal>s and parameter binding for all
+            SQL communication with the database. You may also use NHibernate's direct SQL query
+            feature or get a plain ADO.NET connection from an <literal>ISession</literal> in rare
+            cases.
+        </para>
+
+        <para>
+            Since NHibernate 5.0, the session and its queries IO bound methods have async counterparts.
+            Each call to an async method must be awaited before further interacting with the session or
+            its queries.
         </para>
 
     </sect1>

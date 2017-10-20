@@ -54,7 +54,7 @@
 						<para>
 							Uses <classname>System.Web.Caching.Cache</classname> as the cache provider. This means that you can
 							rely on ASP.NET caching feature to understand how it works. For more information, read (on the MSDN):
-							<ulink url="http://msdn.microsoft.com/library/en-us/cpguide/html/cpconcacheapis.asp">Caching Application Data</ulink>.
+							<ulink url="https://msdn.microsoft.com/en-us/library/6hbbsfk6.aspx">Caching Application Data</ulink>.
 						</para>
 					</listitem>
 				</varlistentry>
@@ -67,7 +67,7 @@
 							expire when the relevant data in the database changes.
 						</para>
 						<para>
-							SysCache2 requires Microsoft SQL Server 2000 or higher and .NET Framework version 2.0 or higher.
+							SysCache2 requires Microsoft SQL Server 2000 or higher.
 						</para>
 					</listitem>
 				</varlistentry>
@@ -75,7 +75,7 @@
 					<term><classname>NHibernate.Caches.MemCache</classname></term>
 					<listitem>
 						<para>
-							Uses <literal>memcached</literal>. See <ulink url="http://www.danga.com/memcached/">memcached homepage</ulink>
+							Uses <literal>memcached</literal>. See <ulink url="https://memcached.org/">memcached homepage</ulink>
 							for more information.
 						</para>
 					</listitem>
@@ -84,10 +84,18 @@
 					<term><classname>NCache provider for NHibernate</classname></term>
 					<listitem>
 						<para>
-							Uses <literal>NCache</literal>,NCache is a commercial distributed caching system with a provider for NHibernate. 
+							Uses <literal>NCache</literal>. NCache is a commercial distributed caching system with a provider for NHibernate. 
 							The NCache Express version is free for use, see 
-							<ulink url="http://www.alachisoft.com/ncache/ncache_express.html">NCache Express homepage</ulink>
+							<ulink url="http://www.alachisoft.com/ncache/">NCache Express homepage</ulink>
 							for more information.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><classname>NHibernate.Caches.RtMemoryCache</classname></term>
+					<listitem>
+						<para>
+							Uses <classname>System.Runtime.Caching.MemoryCache.Default</classname> as the cache provider.
 						</para>
 					</listitem>
 				</varlistentry>
@@ -115,8 +123,8 @@
 						<filename>.cfg.xml</filename> file, in the latter case the syntax will be different from what
 						is shown below):
 						<programlisting>
-&lt;add key="hibernate.cache.provider_class" value="<literal>XXX</literal>" /&gt;<co id="hibernate.cache.provider_class-co" linkends="hibernate.cache.provider_class"/>
-&lt;add key="expiration" value="<literal>120</literal>" /&gt;<co id="nhcaches-expiration-co" linkends="nhcaches-expiration"/>
+&lt;property name="cache.provider_class"&gt;<literal>XXX</literal>&lt;/property&gt;<co id="hibernate.cache.provider_class-co" linkends="hibernate.cache.provider_class"/>
+&lt;property name="cache.default_expiration"&gt;<literal>120</literal>&lt;/property&gt;<co id="nhcaches-expiration-co" linkends="nhcaches-expiration"/>
 						</programlisting>
 						<calloutlist>
 							<callout arearefs="hibernate.cache.provider_class-co" id="hibernate.cache.provider_class">
@@ -153,7 +161,15 @@
 				they are destroyed with the SessionFactory instance; so you must keep them alive as long as you need
 				them.
 			</para>
+			<para>
+				The second level cache requires the use of transactions, be it through transaction scopes or NHibernate
+				transactions. Interacting with the data store without an explicit transaction is discouraged, and will
+				not allow the second level cache to work as intended.
+			</para>
 		</formalpara>
+		<para>
+			See also <xref linkend="performance-cache" />.
+		</para>
 	</section>
 
 	<section id="NHibernate.Caches.Prevalence">
@@ -196,14 +212,15 @@
 		<example>
 			<programlisting><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
 <configuration>
-	<configSections>
-		<section name="syscache" type="NHibernate.Caches.SysCache.SysCacheSectionHandler,NHibernate.Caches.SysCache" />
-	</configSections>
+  <configSections>
+    <section name="syscache"
+      type="NHibernate.Caches.SysCache.SysCacheSectionHandler,NHibernate.Caches.SysCache" />
+  </configSections>
 
-	<syscache>
-		<cache region="foo" expiration="500" priority="4" />
-		<cache region="bar" expiration="300" priority="3" />
-	</syscache>
+  <syscache>
+    <cache region="foo" expiration="500" priority="4" />
+    <cache region="bar" expiration="300" priority="3" />
+  </syscache>
 </configuration>]]></programlisting>
 		</example>
 	</section>
@@ -226,7 +243,8 @@
 		<example>
 			<programlisting><![CDATA[
 <configSections>
-	<section name="syscache2" type="NHibernate.Caches.SysCache2.SysCacheSection, NHibernate.Caches.SysCache2"/>
+  <section name="syscache2"
+    type="NHibernate.Caches.SysCache2.SysCacheSection, NHibernate.Caches.SysCache2"/>
 </configSections>]]></programlisting>
 		</example>
 
@@ -235,7 +253,7 @@
 
 			<para>
 				A table-based dependency will monitor the data in a database table for changes. Table-based
-				dependencies are generally used for a SQL Server 2000 database but will work with SQL Server 2005 as
+				dependencies are generally used for a SQL Server 2000 database but will work with SQL Server 2005 or superior as
 				well. Before you can use SQL Server cache invalidation with table based dependencies, you need to
 				enable notifications for the database. This task is performed with the <command>aspnet_regsql</command>
 				command. With table-based notifications, the application will poll the database for changes at a
@@ -250,15 +268,15 @@
 
 			<example>
 				<programlisting><![CDATA[<syscache2>
-	<cacheRegion name="Product">
-		<dependencies>
-			<tables>
-				<add name="price"
-					databaseEntryName="Default"
-					tableName="VideoTitle" />
-			</tables>
-		</dependencies>
-	</cacheRegion>	
+  <cacheRegion name="Product">
+    <dependencies>
+      <tables>
+        <add name="price"
+          databaseEntryName="Default"
+          tableName="VideoTitle" />
+      </tables>
+    </dependencies>
+  </cacheRegion>
 </syscache2>]]></programlisting>
 			</example>
 
@@ -315,13 +333,13 @@
 				<title>Stored Procedure</title>
 
 				<programlisting><![CDATA[<cacheRegion name="Product" priority="High" >
-	<dependencies>
-		<commands>
-			<add name="price"
-				command="ActiveProductsStoredProcedure" 
-				isStoredProcedure="true"/>
-		</commands>
-	</dependencies>
+  <dependencies>
+    <commands>
+      <add name="price"
+        command="ActiveProductsStoredProcedure" 
+        isStoredProcedure="true"/>
+    </commands>
+  </dependencies>
 </cacheRegion>]]></programlisting>
 			</example>
 
@@ -329,14 +347,14 @@
 				<title>SELECT Statement</title>
 
 				<programlisting><![CDATA[<cacheRegion name="Product" priority="High">
-	<dependencies>
-		<commands>
-			<add name="price"
-				command="Select VideoTitleId from dbo.VideoTitle where Active = 1"
-				connectionName="default"
-				connectionStringProviderType="NHibernate.Caches.SysCache2.ConfigConnectionStringProvider, NHibernate.Caches.SysCache2"/>
-		</commands>
-	</dependencies>
+  <dependencies>
+    <commands>
+      <add name="price"
+        command="Select VideoTitleId from dbo.VideoTitle where Active = 1"
+        connectionName="default"
+        connectionStringProviderType="NHibernate.Caches.SysCache2.ConfigConnectionStringProvider, NHibernate.Caches.SysCache2"/>
+    </commands>
+  </dependencies>
 </cacheRegion>]]></programlisting>
 			</example>
 
@@ -394,36 +412,34 @@
 				<title>Multiple commands</title>
 
 				<programlisting><![CDATA[<cacheRegion name="Product">
-	<dependencies>
-		<commands>
-			<add name="price"
-				command="ActiveProductsStoredProcedure" 
-				isStoredProcedure="true"/>
-			<add name="quantity"
-				command="Select quantityAvailable from dbo.VideoAvailability"/>
-		</commands>
-	</dependencies>
-</cacheRegion>
-]]>
-				</programlisting>
+  <dependencies>
+    <commands>
+      <add name="price"
+        command="ActiveProductsStoredProcedure" 
+        isStoredProcedure="true"/>
+      <add name="quantity"
+        command="Select quantityAvailable from dbo.VideoAvailability"/>
+    </commands>
+  </dependencies>
+</cacheRegion>]]></programlisting>
 			</example>
 
 			<example>
 				<title>Mixed</title>
 				
 				<programlisting><![CDATA[<cacheRegion name="Product">
-	<dependencies>
-		<commands>
-			<add name="price"
-				command="ActiveProductsStoredProcedure" 
-				isStoredProcedure="true"/>
-		</commands>
-		<tables>
-			<add name="quantity"
-				databaseEntryName="Default"
-				tableName=" VideoAvailability" />
-		</tables>
-	</dependencies>
+  <dependencies>
+    <commands>
+      <add name="price"
+        command="ActiveProductsStoredProcedure" 
+        isStoredProcedure="true"/>
+    </commands>
+    <tables>
+      <add name="quantity"
+        databaseEntryName="Default"
+        tableName=" VideoAvailability" />
+    </tables>
+  </dependencies>
 </cacheRegion>]]></programlisting>
 			</example>
 		</section>
@@ -478,17 +494,6 @@
 					</listitem>
 				</varlistentry>
 			</variablelist>
-		</section>
-
-		<section>
-			<title>Patches</title>
-
-			<para>
-				There is a known issue where some SQL Server 2005 notifications might not be received when an
-				application subscribes to query notifications by using ADO.NET 2.0. To fix this problem install
-				<ulink url="http://support.microsoft.com/Default.aspx?kbid=913364">SQL hotfix for kb 913364</ulink>.
-			</para>
-
 		</section>
 
 	</section>

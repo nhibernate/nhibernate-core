@@ -19,7 +19,7 @@ namespace NHibernate.Tool.hbm2ddl
 	/// This Class can be used directly or the command line wrapper NHibernate.Tool.hbm2ddl.exe can be
 	/// used when a dll can not be directly used.
 	/// </remarks>
-	public class SchemaExport
+	public partial class SchemaExport
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (SchemaExport));
 		private bool wasInitialized;
@@ -56,14 +56,16 @@ namespace NHibernate.Tool.hbm2ddl
 			{
 				return;
 			}
+			dialect = Dialect.Dialect.GetDialect(configProperties);
+
 			string autoKeyWordsImport = PropertiesHelper.GetString(Environment.Hbm2ddlKeyWords, configProperties, "not-defined");
 			autoKeyWordsImport = autoKeyWordsImport.ToLowerInvariant();
 			if (autoKeyWordsImport == Hbm2DDLKeyWords.AutoQuote)
 			{
-				SchemaMetadataUpdater.QuoteTableAndColumns(cfg);
+				SchemaMetadataUpdater.Update(cfg, dialect);
+				SchemaMetadataUpdater.QuoteTableAndColumns(cfg, dialect);
 			}
 
-			dialect = Dialect.Dialect.GetDialect(configProperties);
 			dropSQL = cfg.GenerateDropSchemaScript(dialect);
 			createSQL = cfg.GenerateSchemaCreationScript(dialect);
 			formatter = (PropertiesHelper.GetBoolean(Environment.FormatSql, configProperties, true) ? FormatStyle.Ddl : FormatStyle.None).Formatter;

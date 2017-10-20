@@ -1,64 +1,36 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq.Expressions;
-using Remotion.Linq.Clauses.Expressions;
-using Remotion.Linq.Parsing;
+using NHibernate.Linq.Visitors;
 
 namespace NHibernate.Linq.Expressions
 {
-	public class NhNewExpression : ExtensionExpression
+	public class NhNewExpression : NhExpression
 	{
-		private readonly ReadOnlyCollection<string> _members;
-		private readonly ReadOnlyCollection<Expression> _arguments;
-
 		public NhNewExpression(IList<string> members, IList<Expression> arguments)
-			: base(typeof(object), (ExpressionType)NhExpressionType.New)
 		{
-			_members = new ReadOnlyCollection<string>(members);
-			_arguments = new ReadOnlyCollection<Expression>(arguments);
+			Members = new ReadOnlyCollection<string>(members);
+			Arguments = new ReadOnlyCollection<Expression>(arguments);
 		}
 
-		public ReadOnlyCollection<Expression> Arguments
-		{
-			get { return _arguments; }
-		}
+		public override System.Type Type => typeof(object);
 
-		public ReadOnlyCollection<string> Members
-		{
-			get { return _members; }
-		}
+		public ReadOnlyCollection<Expression> Arguments { get; }
 
-		protected override Expression VisitChildren(ExpressionTreeVisitor visitor)
+		public ReadOnlyCollection<string> Members { get; }
+
+		protected override Expression VisitChildren(ExpressionVisitor visitor)
 		{
 			var arguments = visitor.VisitAndConvert(Arguments, "VisitNhNew");
 
 			return arguments != Arguments
-					   ? new NhNewExpression(Members, arguments)
-					   : this;
-		}
-	}
-
-	public class NhStarExpression : ExtensionExpression
-	{
-		public NhStarExpression(Expression expression)
-			: base(expression.Type, (ExpressionType)NhExpressionType.Star)
-		{
-			Expression = expression;
+				? new NhNewExpression(Members, arguments)
+				: this;
 		}
 
-		public Expression Expression
+		protected override Expression Accept(NhExpressionVisitor visitor)
 		{
-			get;
-			private set;
-		}
-
-		protected override Expression VisitChildren(ExpressionTreeVisitor visitor)
-		{
-			var newExpression = visitor.VisitExpression(Expression);
-
-			return newExpression != Expression
-					   ? new NhStarExpression(newExpression)
-					   : this;
+			return visitor.VisitNhNew(this);
 		}
 	}
 }

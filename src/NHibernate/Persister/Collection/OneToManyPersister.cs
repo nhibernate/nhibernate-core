@@ -17,7 +17,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Persister.Collection
 {
-	public class OneToManyPersister : AbstractCollectionPersister
+	public partial class OneToManyPersister : AbstractCollectionPersister
 	{
 		private readonly bool _cascadeDeleteEnabled;
 		private readonly bool _keyIsNullable;

@@ -508,7 +508,7 @@ from Eg.DomesticCat cat where cat.Name not in ( 'Foo', 'Bar', 'Baz' )]]></progra
             configuration:
         </para>
 
-        <programlisting><![CDATA[<property name="hibernate.query.substitutions">true 1, false 0</property>]]></programlisting>
+        <programlisting><![CDATA[<property name="query.substitutions">true 1, false 0</property>]]></programlisting>
 
         <para>
             This will replace the keywords <literal>true</literal> and <literal>false</literal> with the
@@ -888,7 +888,7 @@ order by account.Type.SortOrder, account.AccountNumber, payment.DueDate]]></prog
             You can count the number of query results without actually returning them:
         </para>
 
-        <programlisting><![CDATA[int count = (int) session.CreateQuery("select count(*) from ....").UniqueResult();]]></programlisting>
+        <programlisting><![CDATA[var count = session.CreateQuery("select count(*) from ....").UniqueResult<long>();]]></programlisting>
 
         <para>
             To order a result by the size of a collection, use the following query:
@@ -932,9 +932,10 @@ having count(msg) = 0]]></programlisting>
             Properties of an object can be bound to named query parameters:
         </para>
 
-        <programlisting><![CDATA[IQuery q = s.CreateQuery("from foo in class Foo where foo.Name=:Name and foo.Size=:Size");
+        <programlisting><![CDATA[IQuery q =
+    s.CreateQuery("from foo in class Foo where foo.Name=:Name and foo.Size=:Size");
 q.SetProperties(fooBean); // fooBean has properties Name and Size
-IList foos = q.List();]]></programlisting>
+var foos = q.List<Foo>();]]></programlisting>
 
         <para>
             Collections are pageable by using the <literal>IQuery</literal> interface with a filter:
@@ -943,14 +944,19 @@ IList foos = q.List();]]></programlisting>
         <programlisting><![CDATA[IQuery q = s.CreateFilter( collection, "" ); // the trivial filter
 q.setMaxResults(PageSize);
 q.setFirstResult(PageSize * pageNumber);
-IList page = q.List();]]></programlisting>
+var page = q.List<Cat>();]]></programlisting>
 
         <para>
             Collection elements may be ordered or grouped using a query filter:
         </para>
         
-        <programlisting><![CDATA[ICollection orderedCollection = s.Filter( collection, "order by this.Amount" );
-ICollection counts = s.Filter( collection, "select this.Type, count(this) group by this.Type" );]]></programlisting>
+        <programlisting><![CDATA[var orderedCollection = s
+    .CreateFilter(collection, "order by this.Amount")
+    .List<Cat>();
+var counts = s
+    .CreateFilter(collection,
+        "select this.Type, count(this) group by this.Type")
+    .List<object[]>();]]></programlisting>
 
     </sect1>
 

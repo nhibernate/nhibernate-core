@@ -6,7 +6,7 @@
 	<abstract id="mapping-attributes-abstract">
 		<title>What is NHibernate.Mapping.Attributes?</title>
 		<formalpara>
-			<title>NHibernate.Mapping.Attributes is an add-in for <ulink url="http://www.nhibernate.org">NHibernate</ulink> contributed by Pierre Henri Kuat&eacute; (aka <emphasis>KPixel</emphasis>); the former implementation was made by John Morris.</title>
+			<title>NHibernate.Mapping.Attributes is an add-in for <ulink url="http://nhibernate.info/">NHibernate</ulink> contributed by Pierre Henri Kuat&eacute; (aka <emphasis>KPixel</emphasis>); the former implementation was made by John Morris.</title>
 			<para>NHibernate require mapping streams to bind your domain model to your database. Usually, they are written (and maintained) in separated hbm.xml files.</para>
 		</formalpara>
 		<para>With NHibernate.Mapping.Attributes, you can use .NET attributes to decorate your entities and these attributes will be used to generate these mapping .hbm.xml (as files or streams). So you will no longer have to bother with these <emphasis>nasty</emphasis> xml files ;).</para>
@@ -116,10 +116,10 @@ public class Base {
         public string Name;
     }</programlisting>
 		<para>After this step, you use <classname>NHibernate.Mapping.Attributes.HbmSerializer</classname>: (here, we use <methodname>Default</methodname> which is an instance you can use if you don't need/want to create it yourself).</para>
-		<programlisting>
-    NHibernate.Cfg.Configuration cfg = new NHibernate.Cfg.Configuration();
+		<programlisting>NHibernate.Cfg.Configuration cfg = new NHibernate.Cfg.Configuration();
     cfg.Configure();
-    NHibernate.Mapping.Attributes.HbmSerializer.Default.Validate = true; // Enable validation (optional)
+    // Enable validation (optional)
+    NHibernate.Mapping.Attributes.HbmSerializer.Default.Validate = true;
     // Here, we serialize all decorated classes (but you can also do it class by class)
     cfg.AddInputStream( NHibernate.Mapping.Attributes.HbmSerializer.Default.Serialize(
         System.Reflection.Assembly.GetExecutingAssembly() ); );
@@ -189,12 +189,12 @@ public class Base {
 			</listitem>
 		</orderedlist>
 		<para>Example using some this tips: (0, 1 and 2 are position indexes)
-<programlisting>
-    [NHibernate.Mapping.Attributes.Id(0, TypeType=typeof(int))] // Don't put it after [ManyToOne] !!!
+<programlisting>// Don't put it after [ManyToOne] !!!
+    [NHibernate.Mapping.Attributes.Id(0, TypeType=typeof(int))]
         [NHibernate.Mapping.Attributes.Generator(1, Class="uuid.hex")]
-    [NHibernate.Mapping.Attributes.ManyToOne(2, ClassType=typeof(Foo), OuterJoin=OuterJoinStrategy.True)]
-    private Foo Entity;
-</programlisting>
+    [NHibernate.Mapping.Attributes.ManyToOne(2,
+        ClassType=typeof(Foo), OuterJoin=OuterJoinStrategy.True)]
+    private Foo Entity;</programlisting>
 			Generates:
 <programlisting><![CDATA[
     <id type="Int32">
@@ -212,22 +212,19 @@ public class Base {
 
 		<para>A <methodname>Position</methodname> property has been added to all attributes to order them. But there is still a problem:</para>
 		<para>When a parent element "p" has a child element "x" that is also the child element of another child element "c" of "p" (preceding "x") :D
-Illustration:<programlisting><![CDATA[
-    <p>
-        <c>
-            <x />
-        </c>
+Illustration:<programlisting><![CDATA[<p>
+    <c>
         <x />
-    </p>
-]]></programlisting>
+    </c>
+    <x />
+</p>]]></programlisting>
 		</para>
 		<para>In this case, when writing:
-			<programlisting>
-    [Attributes.P(0)]
-        [Attributes.C(1)]
-            [Attributes.X(2)]
-        [Attributes.X(3)]
-    public MyType MyProperty;</programlisting>
+			<programlisting>[Attributes.P(0)]
+    [Attributes.C(1)]
+        [Attributes.X(2)]
+    [Attributes.X(3)]
+public MyType MyProperty;</programlisting>
 		X(3) will always belong to C(1) ! (as X(2)).
 		</para>
 		<para>It is the case for <literal>&lt;dynamic-component&gt;</literal> and <literal>&lt;nested-composite-element&gt;</literal>.</para>
@@ -251,7 +248,7 @@ Illustration:<programlisting><![CDATA[
 				<para>Updating <filename>/src/NHibernate.Mapping.Attributes/nhibernate-mapping.xsd</filename> (copy/paste) and running the Generator again (even if it wasn't modified)</para>
 			</listitem>
 			<listitem>
-				<para>Running the Test project and make sure that no exception is thrown. A class/property should be modified/added in this project to be sure that any new breaking change will be caught (=> update the reference hbm.xml files and/or the project <filename>NHibernate.Mapping.Attributes-2.0.csproj</filename>)</para>
+				<para>Running the Test project and make sure that no exception is thrown. A class/property should be modified/added in this project to be sure that any new breaking change will be caught (=> update the reference hbm.xml files and/or the project <filename>NHibernate.Mapping.Attributes.csproj</filename>)</para>
 			</listitem>
 		</orderedlist>
 		<para>This implementation is based on NHibernate mapping schema; so there is probably lot of "standard schema features" that are not supported...</para>

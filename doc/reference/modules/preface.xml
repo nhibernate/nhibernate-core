@@ -4,7 +4,7 @@
 	<para>
 		Working with object-oriented software and a relational database can be cumbersome
 		and time consuming in today's enterprise environments. NHibernate is an object/relational
-		mapping tool for .NET environments. The term object/relational mapping (ORM) refers to
+		mapping tool for .NET environments. The term object/relational mapping (<emphasis>ORM</emphasis>) refers to
 		the technique of mapping a data representation from an object model to a relational
 		data model with a SQL-based schema.
 	</para>
@@ -47,22 +47,21 @@
 		<listitem>
 			<para>
 				Use this reference documentation as your primary source of information.
-				Consider reading <emphasis>Hibernate in Action</emphasis>
-				(java <ulink url="http://www.manning.com/bauer/" />)
-				or <emphasis>NHibernate in Action</emphasis>
-				(<ulink url="http://www.manning.com/kuate/" />)
-        or <emphasis>NHibernate 3.0 Cookbook</emphasis>
-        (<ulink url="https://www.packtpub.com/nhibernate-3-0-cookbook/book" />)
-        or <emphasis>NHibernate 2 Beginner's Guide</emphasis>
-        (<ulink url="http://www.packtpub.com/nhibernate-2-x-beginners-guide/book" />)if you need more help
-        with application design or if you prefer a step-by-step tutorial. Also visit
-        <ulink url="http://nhibernate.sourceforge.net/NHibernateEg/" /> for NHibernate
+				Consider reading <emphasis><ulink url="https://www.manning.com/books/hibernate-in-action">Hibernate in Action</ulink></emphasis>
+				(java)
+				or <emphasis><ulink url="https://www.manning.com/books/nhibernate-in-action">NHibernate in Action</ulink></emphasis>
+				or <emphasis><ulink url="https://www.packtpub.com/application-development/nhibernate-40-cookbook">NHibernate
+				4.x Cookbook - Second Edition</ulink></emphasis>
+				or <emphasis><ulink url="https://www.packtpub.com/application-development/nhibernate-2-beginners-guide">NHibernate 2 Beginner's
+				Guide</ulink></emphasis> if you need more help
+				with application design or if you prefer a step-by-step tutorial. Also visit
+				<ulink url="http://nhibernate.sourceforge.net/NHibernateEg/" /> for NHibernate
 				tutorial with examples.
 			</para>
 		</listitem>
     <listitem>
       <para>
-        FAQs are answered on the <ulink url="http://groups.google.com/group/nhusers">NHibernate users group</ulink>.
+        FAQs are answered on the <ulink url="https://groups.google.com/forum/#!forum/nhusers">NHibernate users group</ulink>.
       </para>
     </listitem>
     <listitem>
@@ -75,11 +74,11 @@
 
 	 <para>
 		 If you have questions, use the
-		 <ulink url="http://groups.google.com/group/nhusers">NHibernate user forum</ulink>.
-		 We also provide a <ulink url="https://nhibernate.jira.com/">JIRA issue tracking system</ulink>
+		 <ulink url="https://groups.google.com/forum/#!forum/nhusers">NHibernate user forum</ulink>.
+		 We also provide a <ulink url="https://github.com/nhibernate/nhibernate-core/issues">GitHub issue tracking system</ulink>
 		 for bug reports and feature requests.
 		 If you are interested in the development of NHibernate, join the developer mailing list.
 		 If you are interested in translating this documentation into your language, contact us
-		 on the <ulink url="http://groups.google.com/group/nhibernate-development">developer mailing list</ulink>.
+		 on the <ulink url="https://groups.google.com/forum/#!forum/nhibernate-development">developer mailing list</ulink>.
 	 </para>
 </preface>

@@ -5,6 +5,8 @@ using System.Reflection;
 
 using NHibernate.Bytecode;
 using NHibernate.Cfg.ConfigurationSchema;
+using NHibernate.Engine;
+using NHibernate.Linq;
 using NHibernate.Util;
 
 namespace NHibernate.Cfg
@@ -77,6 +79,7 @@ namespace NHibernate.Cfg
 		public const string ConnectionStringName = "connection.connection_string_name";
 
 		// Unused, Java-specific
+		// But has many code usage though.
 		public const string SessionFactoryName = "session_factory_name";
 
 		public const string Dialect = "dialect";
@@ -87,6 +90,7 @@ namespace NHibernate.Cfg
 		/// <summary> A default database catalog name to use for unqualified tablenames</summary>
 		public const string DefaultCatalog = "default_catalog";
 
+		// Since v5
 		[Obsolete("DefaultEntityMode is deprecated.")]
 		public const string DefaultEntityMode = "default_entity_mode";
 
@@ -107,18 +111,42 @@ namespace NHibernate.Cfg
 		/// <summary> Enable formatting of SQL logged to the console</summary>
 		public const string FormatSql = "format_sql";
 
-		// Unused, Java-specific
+		// Since v5.0.1
+		[Obsolete("This setting has no usages and will be removed in a future version")]
 		public const string UseGetGeneratedKeys = "jdbc.use_get_generated_keys";
 
-		// Unused, not implemented
+		// Since v5.0.1
+		[Obsolete("This setting has no usages and will be removed in a future version")]
 		public const string StatementFetchSize = "jdbc.fetch_size";
 
-		// Unused, not implemented
+		// Since v5.0.1
+		[Obsolete("This setting has no usages and will be removed in a future version")]
 		public const string OutputStylesheet = "xml.output_stylesheet";
 
 		public const string TransactionStrategy = "transaction.factory_class";
+		/// <summary>
+		/// <para>Timeout duration in milliseconds for the system transaction completion lock.</para>
+		/// <para>When a system transaction completes, it may have its completion events running on concurrent threads,
+		/// after scope disposal. This occurs when the transaction is distributed.
+		/// This notably concerns <see cref="ISessionImplementor.AfterTransactionCompletion(bool, ITransaction)"/>.
+		/// NHibernate protects the session from being concurrently used by the code following the scope disposal
+		/// with a lock. To prevent any application freeze, this lock has a default timeout of five seconds. If the
+		/// application appears to require longer (!) running transaction completion events, this setting allows to
+		/// raise this timeout. <c>-1</c> disables the timeout.</para>
+		/// </summary>
+		public const string SystemTransactionCompletionLockTimeout = "transaction.system_completion_lock_timeout";
+		/// <summary>
+		/// When a system transaction is being prepared, is using connection during this process enabled?
+		/// Default is <see langword="true"/>, for supporting <see cref="FlushMode.Commit"/> with transaction factories
+		/// supporting system transactions. But this requires enlisting additional connections, retaining disposed
+		/// sessions and their connections till transaction end, and may trigger undesired transaction promotions to
+		/// distributed. Set to <see langword="false"/> for disabling using connections from system
+		/// transaction preparation, while still benefiting from <see cref="FlushMode.Auto"/> on querying.
+		/// </summary>
+		public const string UseConnectionOnSystemTransactionPrepare = "transaction.use_connection_on_system_prepare";
 
-		// Unused, not implemented (and somewhat Java-specific)
+		// Since v5.0.1
+		[Obsolete("This setting has no usages and will be removed in a future version")]
 		public const string TransactionManagerStrategy = "transaction.manager_lookup_class";
 
 		public const string CacheProvider = "cache.provider_class";
@@ -137,19 +165,25 @@ namespace NHibernate.Cfg
 		/// <summary> Enable statistics collection</summary>
 		public const string GenerateStatistics = "generate_statistics";
 
+		// Its test is ignored with reason "Not supported yet".
 		public const string UseIdentifierRollBack = "use_identifier_rollback";
 
-		// The classname of the HQL query parser factory
+		/// <summary>
+		/// The classname of the HQL query parser factory.
+		/// </summary>
 		public const string QueryTranslator = "query.factory_class";
 
-		// The class name of the LINQ query provider class, implementing from <see cref="INhQueryProvider"/>
+		/// <summary>
+		/// The class name of the LINQ query provider class, implementing <see cref="INhQueryProvider"/>.
+		/// </summary>
 		public const string QueryLinqProvider = "query.linq_provider_class";
 
+		// Since v5.0.1
+		[Obsolete("This setting has no usages and will be removed in a future version")]
 		public const string QueryImports = "query.imports";
 		public const string Hbm2ddlAuto = "hbm2ddl.auto";
 		public const string Hbm2ddlKeyWords = "hbm2ddl.keywords";
 
-		// Unused, not implemented
 		public const string SqlExceptionConverter = "sql_exception_converter";
 
 		public const string BatchVersionedData = "adonet.batch_versioned_data";
@@ -173,18 +207,56 @@ namespace NHibernate.Cfg
 
 		public const string LinqToHqlGeneratorsRegistry = "linqtohql.generatorsregistry";
 
-		/// <summary> Enable ordering of insert statements for the purpose of more effecient batching.</summary>
+		/// <summary> Enable ordering of insert statements for the purpose of more efficient batching.</summary>
 		public const string OrderInserts = "order_inserts";
 
-		/// <summary> Enable ordering of update statements for the purpose of more effecient batching.</summary>
+		/// <summary> Enable ordering of update statements for the purpose of more efficient batching.</summary>
 		public const string OrderUpdates = "order_updates";
 
 		public const string QueryModelRewriterFactory = "query.query_model_rewriter_factory";
 
 		/// <summary>
+		/// Set the default length used in casting when the target type is length bound and
+		/// does not specify it. <c>4000</c> by default, automatically trimmed down according to dialect type registration.
+		/// </summary>
+		public const string QueryDefaultCastLength = "query.default_cast_length";
+
+		/// <summary>
+		/// Set the default precision used in casting when the target type is decimal and
+		/// does not specify it. <c>28</c> by default, automatically trimmed down according to dialect type registration.
+		/// </summary>
+		public const string QueryDefaultCastPrecision = "query.default_cast_precision";
+
+		/// <summary>
+		/// Set the default scale used in casting when the target type is decimal and
+		/// does not specify it. <c>10</c> by default, automatically trimmed down according to dialect type registration.
+		/// </summary>
+		public const string QueryDefaultCastScale = "query.default_cast_scale";
+
+		/// <summary>
 		/// This may need to be set to 3 if you are using the OdbcDriver with MS SQL Server 2008+.
 		/// </summary>
 		public const string OdbcDateTimeScale = "odbc.explicit_datetime_scale";
+
+		/// <summary>
+		/// Disable switching built-in NHibernate date-time types from DbType.DateTime to DbType.DateTime2
+		/// for dialects supporting datetime2.
+		/// </summary>
+		public const string SqlTypesKeepDateTime = "sql_types.keep_datetime";
+
+		/// <summary>
+		/// <para>Oracle has a dual Unicode support model.</para>
+		/// <para>Either the whole database use an Unicode encoding, and then all string types
+		/// will be Unicode. In such case, Unicode strings should be mapped to non <c>N</c> prefixed
+		/// types, such as <c>Varchar2</c>. This is the default.</para>
+		/// <para>Or <c>N</c> prefixed types such as <c>NVarchar2</c> are to be used for Unicode strings.</para>
+		/// </summary>
+		/// <remarks>
+		/// See https://docs.oracle.com/cd/B19306_01/server.102/b14225/ch6unicode.htm#CACHCAHF
+		/// https://docs.oracle.com/database/121/ODPNT/featOraCommand.htm#i1007557
+		/// This setting applies only to Oracle dialects and ODP.Net managed or unmanaged driver.
+		/// </remarks>
+		public const string OracleUseNPrefixedTypesForUnicode = "oracle.use_n_prefixed_types_for_unicode";
 
 		private static readonly Dictionary<string, string> GlobalProperties;
 
@@ -334,8 +406,6 @@ namespace NHibernate.Cfg
 		{
 			switch (providerName)
 			{
-				case "codedom":
-					return new Bytecode.CodeDom.BytecodeProviderImpl();
 				case "lcg":
 					return new Bytecode.Lightweight.BytecodeProviderImpl();
 				case "null":

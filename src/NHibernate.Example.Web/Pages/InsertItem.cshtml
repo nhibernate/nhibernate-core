@@ -1,0 +1,19 @@
+﻿@page
+@model InsertItemModel
+@{
+    ViewData["Title"] = "Insert New Item";
+}
+<form method="POST">
+    <table>
+        <tr>
+            <td>Price:</td><td><input type="number" min="0" step="any" asp-for="NewItem.Price"/></td>
+        </tr>
+        <tr>
+            <td>Description:</td><td><input asp-for="NewItem.Description"/></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><button type="submit">OK</button><button type="submit" asp-page-handler="Cancel">Cancel</button></td>
+        </tr>
+    </table>
+</form>

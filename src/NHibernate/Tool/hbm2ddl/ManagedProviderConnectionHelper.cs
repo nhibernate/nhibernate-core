@@ -8,7 +8,7 @@ namespace NHibernate.Tool.hbm2ddl
 	/// A <seealso cref="IConnectionHelper"/> implementation based on an internally 
 	/// built and managed <seealso cref="ConnectionProvider"/>.
 	/// </summary>
-	public class ManagedProviderConnectionHelper : IConnectionHelper
+	public partial class ManagedProviderConnectionHelper : IConnectionHelper
 	{
 		private readonly IDictionary<string, string> cfgProperties;
 		private IConnectionProvider connectionProvider;

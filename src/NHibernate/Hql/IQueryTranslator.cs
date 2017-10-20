@@ -10,7 +10,7 @@ namespace NHibernate.Hql
 	/// <summary>
 	/// Defines the contract of an HQL->SQL translator.
 	/// </summary>
-	public interface IQueryTranslator
+	public partial interface IQueryTranslator
 	{
 		// Not ported: 
 		// Error message constants moved to the implementation of Classic.QueryTranslator (C# can't have fields in interface)

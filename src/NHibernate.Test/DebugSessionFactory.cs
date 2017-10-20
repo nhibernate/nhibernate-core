@@ -2,7 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Threading;
+using System.Linq;
 using log4net;
 using NHibernate.Cache;
 using NHibernate.Cfg;
@@ -30,9 +30,14 @@ namespace NHibernate.Test
 	/// it is used when testing to check that tests clean up after themselves.
 	/// </summary>
 	/// <remarks>Sessions opened from other sessions are not tracked.</remarks>
-	public class DebugSessionFactory : ISessionFactoryImplementor
+	public partial class DebugSessionFactory : ISessionFactoryImplementor
 	{
-		public DebugConnectionProvider ConnectionProvider { get; }
+		/// <summary>
+		/// The debug connection provider if configured for using it, <see langword="null"/> otherwise.
+		/// Use <c>ActualFactory.ConnectionProvider</c> if needing unconditionally the connection provider, be
+		/// it debug or not.
+		/// </summary>
+		public DebugConnectionProvider DebugConnectionProvider { get; }
 		public ISessionFactoryImplementor ActualFactory { get; }
 
 		public EventListeners EventListeners => ((SessionFactoryImpl)ActualFactory).EventListeners;
@@ -43,7 +48,7 @@ namespace NHibernate.Test
 		public DebugSessionFactory(ISessionFactory actualFactory)
 		{
 			ActualFactory = (ISessionFactoryImplementor)actualFactory;
-			ConnectionProvider = ActualFactory.ConnectionProvider as DebugConnectionProvider;
+			DebugConnectionProvider = ActualFactory.ConnectionProvider as DebugConnectionProvider;
 		}
 
 		#region Session tracking
@@ -53,27 +58,30 @@ namespace NHibernate.Test
 			var allClosed = true;
 			foreach (var session in _openedSessions)
 			{
-				if (session.IsOpen)
+				// Do not inverse, we want to close all of them.
+				allClosed = CheckSessionWasClosed(session) && allClosed;
+				// Catches only session opened from another one while sharing the connection. Those
+				// opened without sharing the connection stay un-monitored.
+				foreach (var dependentSession in session.ConnectionManager.DependentSessions.ToList())
 				{
-					if (session.TransactionContext?.ShouldCloseSessionOnDistributedTransactionCompleted ?? false)
-					{
-						// Delayed transactions not having completed and closed their sessions? Give them a chance to complete.
-						Thread.Sleep(100);
-						if (!session.IsOpen)
-						{
-							_log.Warn($"Test case had a delayed close of session {session.SessionId}.");
-							continue;
-						}
-					}
-
-					_log.Error($"Test case didn't close session {session.SessionId}, closing");
-					allClosed = false;
-					(session as ISession)?.Close();
-					(session as IStatelessSession)?.Close();
+					allClosed = CheckSessionWasClosed(dependentSession) && allClosed;
 				}
 			}
 
 			return allClosed;
+		}
+
+		private bool CheckSessionWasClosed(ISessionImplementor session)
+		{
+			session.TransactionContext?.Wait();
+
+			if (!session.IsOpen)
+				return true;
+
+			_log.Error($"Test case didn't close session {session.SessionId}, closing");
+			(session as ISession)?.Close();
+			(session as IStatelessSession)?.Close();
+			return false;
 		}
 
 		ISessionBuilder ISessionFactory.WithOptions()
@@ -171,6 +179,8 @@ namespace NHibernate.Test
 			return ActualFactory.HasNonIdentifierPropertyNamedId(className);
 		}
 
+		Dialect.Dialect IMapping.Dialect => ActualFactory.Dialect;
+
 		void IDisposable.Dispose()
 		{
 			ActualFactory.Dispose();
@@ -261,8 +271,6 @@ namespace NHibernate.Test
 		bool ISessionFactory.IsClosed => ActualFactory.IsClosed;
 
 		ICollection<string> ISessionFactory.DefinedFilterNames => ActualFactory.DefinedFilterNames;
-
-		Dialect.Dialect ISessionFactoryImplementor.Dialect => ActualFactory.Dialect;
 
 		IInterceptor ISessionFactoryImplementor.Interceptor => ActualFactory.Interceptor;
 
@@ -433,6 +441,12 @@ namespace NHibernate.Test
 				return this;
 			}
 
+			ISessionBuilder ISessionBuilder<ISessionBuilder>.AutoJoinTransaction(bool autoJoinTransaction)
+			{
+				_actualBuilder.AutoJoinTransaction(autoJoinTransaction);
+				return this;
+			}
+
 			ISessionBuilder ISessionBuilder<ISessionBuilder>.FlushMode(FlushMode flushMode)
 			{
 				_actualBuilder.FlushMode(flushMode);
@@ -467,6 +481,12 @@ namespace NHibernate.Test
 			IStatelessSessionBuilder IStatelessSessionBuilder.Connection(DbConnection connection)
 			{
 				_actualBuilder.Connection(connection);
+				return this;
+			}
+
+			IStatelessSessionBuilder IStatelessSessionBuilder.AutoJoinTransaction(bool autoJoinTransaction)
+			{
+				_actualBuilder.AutoJoinTransaction(autoJoinTransaction);
 				return this;
 			}
 

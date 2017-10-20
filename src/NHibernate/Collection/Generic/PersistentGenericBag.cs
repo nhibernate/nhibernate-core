@@ -3,8 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
+using System.Linq;
+using System.Linq.Expressions;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
+using NHibernate.Linq;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
@@ -22,7 +25,7 @@ namespace NHibernate.Collection.Generic
 	/// <remarks>The underlying collection used is an <see cref="List{T}"/></remarks>
 	[Serializable]
 	[DebuggerTypeProxy(typeof (CollectionProxy<>))]
-	public class PersistentGenericBag<T> : AbstractPersistentCollection, IList<T>, IList
+	public partial class PersistentGenericBag<T> : AbstractPersistentCollection, IList<T>, IList, IQueryable<T>
 	{
 		// TODO NH: find a way to writeonce (no duplicated code from PersistentBag)
 
@@ -503,6 +506,21 @@ namespace NHibernate.Collection.Generic
 			Read();
 			return StringHelper.CollectionToString(_gbag);
 		}
+
+		#region IQueryable<T> Members
+
+		[NonSerialized]
+		IQueryable<T> _queryable;
+
+		Expression IQueryable.Expression => InnerQueryable.Expression;
+
+		System.Type IQueryable.ElementType => InnerQueryable.ElementType;
+
+		IQueryProvider IQueryable.Provider => InnerQueryable.Provider;
+
+		IQueryable<T> InnerQueryable => _queryable ?? (_queryable = new NhQueryable<T>(Session, this));
+
+		#endregion
 
 		/// <summary>
 		/// Counts the number of times that the <paramref name="element"/> occurs

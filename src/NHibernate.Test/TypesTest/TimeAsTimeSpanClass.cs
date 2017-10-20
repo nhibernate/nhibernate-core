@@ -6,5 +6,6 @@ namespace NHibernate.Test.TypesTest
 	{
 		public int Id { get; set; }
 		public TimeSpan TimeSpanValue { get; set; }
+		public TimeSpan TimeSpanWithScale { get; set; }
 	}
 }

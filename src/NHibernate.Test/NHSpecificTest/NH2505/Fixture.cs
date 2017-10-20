@@ -15,6 +15,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2505
 		public virtual bool? MayBeAlive { get; set; }
 		public virtual int Something { get; set; }
 	}
+
+	[TestFixture]
 	public class Fixture: TestCaseMappingByCode
 	{
 		private Regex caseClause = new Regex("case",RegexOptions.IgnoreCase);

@@ -1,38 +1,56 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
-	namespace="NHibernate.Test.TypesTest"
-	assembly="NHibernate.Test">
+                   namespace="NHibernate.Test.TypesTest"
+                   assembly="NHibernate.Test">
 
-	<class name="MultiTypeEntity">
-		<id name="Id">
-			<generator class="native" />
-		</id>
-		<property name="StringProp" type="string" >
-			<column name="StringProp" length="100"/>
-		</property>
-		<property name="AnsiStringProp" type="string" >
-			<column name="AnsiStringProp" length="101"/>
-		</property>
-		<property name="Decimal" type="Decimal" >
-			<column name="Decimal" precision="5" scale="2"/>
-		</property>
-		<property name="Currency" type="Currency" >
-			<column name="Currency" precision="10" scale="3"/>
-		</property>
-		<property name="Double" type="Double" >
-			<column name="Double" precision="11" scale="4"/>
-		</property>
-		<property name="Float" type="Single" >
-			<column name="Float" precision="6" scale="3"/>
-		</property>
-		<property name="BinaryBlob" type="BinaryBlob">
-			<column name="BinaryBlob" length="1000"/>
-		</property>
-		<property name="Binary" type="Byte[]">
-			<column name="Binary" length="1001"/>
-		</property>
-		<property name="StringClob" type="StringClob">
-			<column name="StringClob" length="1002"/>
-		</property>
-	</class>
+  <class name="MultiTypeEntity">
+    <id name="Id">
+      <generator class="native"/>
+    </id>
+    <property name="StringProp" type="string">
+      <column name="StringProp" length="100"/>
+    </property>
+    <property name="AnsiStringProp" type="string">
+      <column name="AnsiStringProp" length="101"/>
+    </property>
+    <property name="Decimal" type="Decimal">
+      <column name="Decimal" precision="5" scale="2"/>
+    </property>
+    <property name="Currency" type="Currency">
+      <column name="Currency" precision="10" scale="3"/>
+    </property>
+    <property name="Double" type="Double">
+      <column name="Double" precision="11" scale="4"/>
+    </property>
+    <property name="Float" type="Single">
+      <column name="Float" precision="6" scale="3"/>
+    </property>
+    <property name="BinaryBlob" type="BinaryBlob">
+      <column name="BinaryBlob" length="1000"/>
+    </property>
+    <property name="Binary" type="Byte[]">
+      <column name="Binary" length="1001"/>
+    </property>
+    <property name="StringClob" type="StringClob">
+      <column name="StringClob" length="1002"/>
+    </property>
+    <property name="DateTimeProp" type="datetime" scale="0">
+      <column name="DateTimeProp" scale="0"/>
+    </property>
+    <property name="LocalDateTime" type="localdatetime">
+      <column name="LocalDateTime" scale="1"/>
+    </property>
+    <property name="UtcDateTime" type="utcdatetime">
+      <column name="UtcDateTime" scale="2"/>
+    </property>
+    <property name="TimeProp" type="time" scale="3">
+      <column name="TimeProp" scale="3"/>
+    </property>
+    <property name="TimeAsTimeSpan" type="TimeAsTimeSpan">
+      <column name="TimeAsTimeSpan" scale="4"/>
+    </property>
+    <property name="DateTimeOffsetProp" type="DateTimeOffset">
+      <column name="DateTimeOffsetProp" scale="5"/>
+    </property>
+  </class>
 </hibernate-mapping>

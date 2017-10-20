@@ -4,7 +4,7 @@
     <para>
         The ICriteria API
         is NHibernate's implementation of Query Object.
-        NHibernate 3.0 introduces the QueryOver api, which combines the use of
+        NHibernate 3.0 introduces the QueryOver API, which combines the use of
         Extension Methods
         and
         Lambda Expressions
@@ -251,7 +251,7 @@ IQueryOver<Cat,Cat> catQuery =
             Simple projections of the properties of the root type can be added using the <code>.Select</code> method
             which can take multiple Lambda Expression arguments:
         </para>
-        <programlisting><![CDATA[IList selection =
+        <programlisting><![CDATA[var selection =
     session.QueryOver<Cat>()
         .Select(
             c => c.Name,
@@ -292,7 +292,7 @@ Console.WriteLine(catDetails[0].CatAge);]]></programlisting>
             QueryOver allows arbitrary IProjection to be added (allowing private properties to be projected).  The Projections factory
             class also has overloads to allow Lambda Expressions to be used:
         </para>
-        <programlisting><![CDATA[IList selection =
+        <programlisting><![CDATA[var selection =
     session.QueryOver<Cat>()
         .Select(Projections.ProjectionList()
             .Add(Projections.Property<Cat>(c => c.Name))
@@ -302,7 +302,7 @@ Console.WriteLine(catDetails[0].CatAge);]]></programlisting>
         <para>
             In addition there is an inline syntax for creating projection lists that does not require the explicit class qualification:
         </para>
-        <programlisting><![CDATA[IList selection =
+        <programlisting><![CDATA[var selection =
     session.QueryOver<Cat>()
         .SelectList(list => list
             .Select(c => c.Name)
@@ -337,9 +337,9 @@ IList<CatSummary> catReport =
 
         <para>
             In addition to projecting properties, there are extension methods to allow certain common dialect-registered
-            functions to be applied.  For example you can write the following to extract just the year part of a date:
+            functions to be applied.  For example you can write the following to get 3 letters named people.
         </para>
-        <programlisting><![CDATA[        .Where(p => p.BirthDate.YearPart() == 1971)]]></programlisting>
+        <programlisting><![CDATA[        .Where(p => p.FirstName.StrLength() == 3)]]></programlisting>
         
         <para>
             The functions can also be used inside projections:

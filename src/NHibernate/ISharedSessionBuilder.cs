@@ -9,6 +9,10 @@ namespace NHibernate
 	{
 		/// <summary>
 		/// Signifies that the connection from the original session should be used to create the new session.
+		/// The original session remains responsible for it and its closing will cause sharing sessions to be no
+		/// more usable.
+		/// Causes specified <c>ConnectionReleaseMode</c> and <c>AutoJoinTransaction</c> to be ignored and
+		/// replaced by those of the original session.
 		/// </summary>
 		/// <returns><see langword="this" />, for method chaining.</returns>
 		ISharedSessionBuilder Connection();
@@ -32,9 +36,15 @@ namespace NHibernate
 		ISharedSessionBuilder FlushMode();
 
 		/// <summary>
-		/// Signifies that the autoClose flag from the original session should be used to create the new session.
+		/// Signifies that the AutoClose flag from the original session should be used to create the new session.
 		/// </summary>
 		/// <returns><see langword="this" />, for method chaining.</returns>
 		ISharedSessionBuilder AutoClose();
+
+		/// <summary>
+		/// Signifies that the AutoJoinTransaction flag from the original session should be used to create the new session.
+		/// </summary>
+		/// <returns><see langword="this" />, for method chaining.</returns>
+		ISharedSessionBuilder AutoJoinTransaction();
 	}
 }
