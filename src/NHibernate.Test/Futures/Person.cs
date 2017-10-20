@@ -7,6 +7,7 @@ namespace NHibernate.Test.Futures
 		private IList<Person> children = new List<Person>();
 		private IList<Person> friends = new List<Person>();
 		private int id;
+		private int? age;
 		private Person parent;
 
         public virtual string Name { get; set; }
@@ -33,6 +34,12 @@ namespace NHibernate.Test.Futures
 		{
 			get { return id; }
 			set { id = value; }
+		}
+
+		public virtual int? Age
+		{
+			get { return age; }
+			set { age = value; }
 		}
 	}
 }
