@@ -258,6 +258,17 @@ namespace NHibernate.Cfg
 		/// </remarks>
 		public const string OracleUseNPrefixedTypesForUnicode = "oracle.use_n_prefixed_types_for_unicode";
 
+		/// <summary>
+		/// <para>Set whether tracking the session id or not. When <see langword="true"/>, each session 
+		/// will have an unique <see cref="Guid"/> that can be retrieved by <see cref="ISessionImplementor.SessionId"/>,
+		/// otherwise <see cref="ISessionImplementor.SessionId"/> will always be <see cref="Guid.Empty"/>.</para>
+		/// In addition, when tracking is enabled, the current session id will be stored in 
+		/// <see cref="NHibernate.Impl.SessionIdLoggingContext.SessionId"/>.
+		/// In case the current session id won't be used, is strongly recommended to disable it, in order to increase performance.
+		/// <para>Default is <see langword="true"/>.</para>
+		/// </summary>
+		public const string TrackSessionId = "track_session_id";
+
 		private static readonly Dictionary<string, string> GlobalProperties;
 
 		private static IBytecodeProvider BytecodeProviderInstance;

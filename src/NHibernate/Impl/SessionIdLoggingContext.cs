@@ -8,9 +8,15 @@ namespace NHibernate.Impl
 		private static readonly AsyncLocal<Guid?> _currentSessionId = new AsyncLocal<Guid?>();
 
 		private readonly Guid? _oldSessonId;
+		private static bool _tracking;
 
 		public SessionIdLoggingContext(Guid id)
 		{
+			_tracking = id != Guid.Empty;
+			if (!_tracking)
+			{
+				return;
+			}
 			_oldSessonId = SessionId;
 			SessionId = id;
 		}
@@ -32,6 +38,10 @@ namespace NHibernate.Impl
 
 		public void Dispose()
 		{
+			if (!_tracking)
+			{
+				return;
+			}
 			SessionId = _oldSessonId;
 		}
 

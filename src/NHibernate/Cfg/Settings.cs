@@ -126,6 +126,8 @@ namespace NHibernate.Cfg
 		public IsolationLevel IsolationLevel { get; internal set; }
 
 		public bool IsOuterJoinFetchEnabled { get; internal set; }
+		
+		public bool TrackSessionId { get; internal set; }
 
 		/// <summary>
 		/// Get the registry to provide Hql-Generators for known properties/methods.

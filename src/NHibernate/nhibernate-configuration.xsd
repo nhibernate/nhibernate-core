@@ -193,6 +193,18 @@
 										</xs:documentation>
 									</xs:annotation>
 								</xs:enumeration>
+								<xs:enumeration value="track_session_id">
+									<xs:annotation>
+										<xs:documentation>
+											Set whether tracking the session id or not. When true, each session will have an unique Guid
+											that can be retrieved by ISessionImplementor.SessionId, otherwise ISessionImplementor.SessionId will
+											always be Guid.Empty. In addition, when tracking is enabled, the current session id will be stored in
+											SessionIdLoggingContext.SessionId. In case the current session id won't be used, is strongly recommended
+											to disable it, in order to increase performance.
+											True by default.
+										</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
 							</xs:restriction>
 						</xs:simpleType>
 					</xs:attribute>

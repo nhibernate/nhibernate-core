@@ -83,6 +83,11 @@ namespace NHibernate.Cfg.Loquacious
 		{
 			set { configuration.SetProperty(Environment.OrderInserts, value.ToString().ToLowerInvariant()); }
 		}
+		
+		public bool TrackSessionId
+		{
+			set { configuration.SetProperty(Environment.TrackSessionId, value.ToString().ToLowerInvariant()); }
+		}
 
 		public void TransactionFactory<TFactory>() where TFactory : ITransactionFactory
 		{
