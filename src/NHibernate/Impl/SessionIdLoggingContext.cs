@@ -8,7 +8,7 @@ namespace NHibernate.Impl
 		private static readonly AsyncLocal<Guid?> _currentSessionId = new AsyncLocal<Guid?>();
 
 		private readonly Guid? _oldSessonId;
-		private static bool _tracking;
+		private readonly bool _tracking;
 
 		public SessionIdLoggingContext(Guid id)
 		{
