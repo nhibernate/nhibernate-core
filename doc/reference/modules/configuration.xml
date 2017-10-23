@@ -1029,6 +1029,29 @@ var session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
+                            <literal>track_session_id</literal>
+                        </entry>
+                        <entry>
+                            Set whether the session id should be tracked in logs or not. When <literal>true</literal>, each
+                            session will have an unique <literal>Guid</literal> that can be retrieved with
+                            <literal>ISessionImplementor.SessionId</literal>, otherwise <literal>ISessionImplementor.SessionId</literal>
+                            will be <literal>Guid.Empty</literal>.
+                            <para>
+                                Session id is used for logging purpose and can also be retrieved on the static property
+                                <literal>NHibernate.Impl.SessionIdLoggingContext.SessionId</literal>, when tracking is enabled.
+                            </para>
+                            <para>
+                                Disabling tracking by setting <literal>track_session_id</literal> to <literal>false</literal>
+                                increases performances. Default is <literal>true</literal>.
+                            </para>
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>true</literal> | <literal>false</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
                             <literal>sql_types.keep_datetime</literal>
                         </entry>
                         <entry>
