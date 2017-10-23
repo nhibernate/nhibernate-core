@@ -9,21 +9,22 @@
 
 
 using System.Collections;
+using NHibernate.Transform;
 
 namespace NHibernate.Impl
 {
-    using System.Threading.Tasks;
-    using System.Threading;
-    public partial class FutureQueryBatch : FutureBatch<IQuery, IMultiQuery>
-    {
+	using System.Threading.Tasks;
+	using System.Threading;
+	public partial class FutureQueryBatch : FutureBatch<IQuery, IMultiQuery>
+	{
 
-    	protected override Task<IList> GetResultsFromAsync(IMultiQuery multiApproach, CancellationToken cancellationToken)
-    	{
-    		if (cancellationToken.IsCancellationRequested)
-    		{
-    			return Task.FromCanceled<IList>(cancellationToken);
-    		}
+		protected override Task<IList> GetResultsFromAsync(IMultiQuery multiApproach, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IList>(cancellationToken);
+			}
 			return multiApproach.ListAsync(cancellationToken);
-    	}
-    }
+		}
+	}
 }

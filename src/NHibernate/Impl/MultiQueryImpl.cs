@@ -458,58 +458,54 @@ namespace NHibernate.Impl
 
 		protected virtual IList GetResultList(IList results)
 		{
-			var resultCollections = new List<object>(resultCollectionGenericType.Count);
-			for (int i = 0; i < queries.Count; i++)
+			var rawResultCollections = new List<IList>(resultCollectionGenericType.Count);
+			for (var i = 0; i < queries.Count; i++)
 			{
-				if (resultCollectionGenericType[i] == typeof(object))
-				{
-					resultCollections.Add(new List<object>());
-				}
-				else
-				{
-					resultCollections.Add(Activator.CreateInstance(typeof(List<>).MakeGenericType(resultCollectionGenericType[i])));
-				}
+				var query = queries[i] as ExpressionQueryImpl;
+				// Linq queries may override the query type, finishing the work with a post execute transformer,
+				// which with multi queries are executed through the multi-query result trasformer.
+				var rawElementType = query?.QueryExpression?.Type ?? resultCollectionGenericType[i];
+				var resultList = rawElementType == typeof(object)
+					? new List<object>()
+					: (IList) Activator.CreateInstance(typeof(List<>).MakeGenericType(rawElementType));
+				rawResultCollections.Add(resultList);
 			}
 
-			var multiqueryHolderInstatiator = GetMultiQueryHolderInstatiator();
-			for (int i = 0; i < results.Count; i++)
+			for (var i = 0; i < results.Count; i++)
 			{
 				// First use the transformer of each query transforming each row and then the list
 				// DONE: The behavior when the query has a 'new' instead a transformer is delegated to the Loader
 				var resultList = translators[i].Loader.GetResultList((IList)results[i], Parameters[i].ResultTransformer);
-				// then use the MultiQueryTransformer (if it has some sense...) using, as source, the transformed result.
-				resultList = GetTransformedResults(resultList, multiqueryHolderInstatiator);
 
 				var queryIndex = translatorQueryMap[i];
-				ArrayHelper.AddAll((IList)resultCollections[queryIndex], resultList);
+				ArrayHelper.AddAll(rawResultCollections[queryIndex], resultList);
+			}
+
+			var resultCollections = new List<object>(resultCollectionGenericType.Count);
+			for (var i = 0; i < queries.Count; i++)
+			{
+				// Once polymorpic queries aggregated in one result per query (previous loop), use the
+				// MultiQueryTransformer using, as source, the aggregated result.
+				var resultList = GetTransformedResults(rawResultCollections[i]);
+				resultCollections.Add(resultList);
 			}
 
 			return resultCollections;
 		}
 
-		private IList GetTransformedResults(IList source, HolderInstantiator holderInstantiator)
+		private  IList GetTransformedResults(IList source)
 		{
-			if (!holderInstantiator.IsRequired)
-			{
+			if (resultTransformer == null)
 				return source;
-			}
-			for (int j = 0; j < source.Count; j++)
+
+			//MultiCriteria does not call TransformTuple here
+			for (var j = 0; j < source.Count; j++)
 			{
-				object[] row = source[j] as object[] ?? new[] { source[j] };
-				source[j] = holderInstantiator.Instantiate(row);
+				var row = source[j] as object[] ?? new[] {source[j]};
+				source[j] = resultTransformer.TransformTuple(row, null);
 			}
 
-			return holderInstantiator.ResultTransformer.TransformList(source);
-		}
-
-		private HolderInstantiator GetMultiQueryHolderInstatiator()
-		{
-			return HasMultiQueryResultTransformer() ? new HolderInstantiator(resultTransformer, null) : HolderInstantiator.NoopInstantiator;
-		}
-
-		private bool HasMultiQueryResultTransformer()
-		{
-			return resultTransformer != null;
+			return resultTransformer.TransformList(source);
 		}
 
 		protected List<object> DoList()

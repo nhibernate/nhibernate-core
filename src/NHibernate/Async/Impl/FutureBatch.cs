@@ -8,14 +8,16 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+using NHibernate.Transform;
 
 namespace NHibernate.Impl
 {
+	using System.Threading.Tasks;
+	using System.Threading;
 	public abstract partial class FutureBatch<TQueryApproach, TMultiApproach>
 	{
 
@@ -23,14 +25,22 @@ namespace NHibernate.Impl
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (results != null)
-			{
 				return results;
-			}
+
 			var multiApproach = CreateMultiApproach(isCacheable, cacheRegion);
-			for (int i = 0; i < queries.Count; i++)
+			var needTransformer = false;
+			foreach (var query in queries)
 			{
-				AddTo(multiApproach, queries[i], resultTypes[i]);
+				AddTo(multiApproach, query.Query, query.ResultType);
+				if (query.Future?.ExecuteOnEval != null)
+					needTransformer = true;
 			}
+
+			if (needTransformer)
+				AddResultTransformer(
+					multiApproach, 
+					new FutureResultsTransformer(queries));
+
 			results = await (GetResultsFromAsync(multiApproach, cancellationToken)).ConfigureAwait(false);
 			ClearCurrentFutureBatch();
 			return results;
