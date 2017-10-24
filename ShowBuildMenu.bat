@@ -70,68 +70,70 @@ if errorlevel 0 goto test-setup-sqlserver
 
 :test-setup-sqlserver
 set CONFIG_NAME=MSSQL
-set PLATFORM=AnyCPU
+set TEST_PLATFORM=AnyCPU
 set LIB_FILES=
 set LIB_FILES2=
 goto test-setup-generic
 
 :test-setup-sqlservercex86
 set CONFIG_NAME=SqlServerCe32
-set PLATFORM=AnyCPU
+set TEST_PLATFORM=AnyCPU
 set LIB_FILES=lib\teamcity\SqlServerCe\*.dll
 set LIB_FILES2=lib\teamcity\SqlServerCe\X86\*.dll
 goto test-setup-generic
 
 :test-setup-sqlservercex64
 set CONFIG_NAME=SqlServerCe64
-set PLATFORM=AnyCPU
+set TEST_PLATFORM=AnyCPU
 set LIB_FILES=lib\teamcity\sqlServerCe\*.dll
 set LIB_FILES2=lib\teamcity\sqlServerCe\AMD64\*.dll
 goto test-setup-generic
 
 :test-setup-firebirdx86
 set CONFIG_NAME=FireBird
-set PLATFORM=x86
+set TEST_PLATFORM=x86
 set LIB_FILES=lib\teamcity\firebird\*.dll
+set LIB_FILES2=
 goto test-setup-generic
 
 :test-setup-firebirdx64
 set CONFIG_NAME=FireBird
-set PLATFORM=x64
+set TEST_PLATFORM=x64
 set LIB_FILES=lib\teamcity\firebird\*.dll
+set LIB_FILES2=
 goto test-setup-generic
 
 :test-setup-sqlitex86
 set CONFIG_NAME=SQLite
-set PLATFORM=x86
+set TEST_PLATFORM=x86
 set LIB_FILES=lib\teamcity\sqlite\x86\*
 set LIB_FILES2=
 goto test-setup-generic
 
 :test-setup-sqlitex64
 set CONFIG_NAME=SQLite
-set PLATFORM=x64
+set TEST_PLATFORM=x64
 set LIB_FILES=lib\teamcity\sqlite\x64\*
 set LIB_FILES2=
 goto test-setup-generic
 
 :test-setup-postgresql
 set CONFIG_NAME=PostgreSQL
-set PLATFORM=AnyCPU
+set TEST_PLATFORM=AnyCPU
 set LIB_FILES=lib\teamcity\postgresql\*.dll
 set LIB_FILES2=
 goto test-setup-generic
 
 :test-setup-mysql
 set CONFIG_NAME=MySql
-set PLATFORM=AnyCPU
+set TEST_PLATFORM=AnyCPU
 set LIB_FILES=lib\teamcity\mysql\*.dll
 set LIB_FILES2=
 goto test-setup-generic
 
 :test-setup-oracle
 set CONFIG_NAME=Oracle
-set PLATFORM=x86
+set TEST_PLATFORM=x86
 set LIB_FILES=lib\teamcity\oracle\x86\*.dll
 set LIB_FILES2=
 goto test-setup-generic
@@ -139,7 +141,7 @@ goto test-setup-generic
 :test-setup-generic
 set CFGNAME=
 set /p CFGNAME=Enter a name for your test configuration or press enter to use default name: 
-if /I "%CFGNAME%"=="" set CFGNAME=%CONFIG_NAME%-%PLATFORM%
+if /I "%CFGNAME%"=="" set CFGNAME=%CONFIG_NAME%-%TEST_PLATFORM%
 mkdir "%AVAILABLE_CONFIGURATIONS%\%CFGNAME%"
 if /I "%LIB_FILES%"=="" goto test-setup-generic-skip-copy
 copy %LIB_FILES% "%AVAILABLE_CONFIGURATIONS%\%CFGNAME%"
