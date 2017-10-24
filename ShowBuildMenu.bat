@@ -10,9 +10,10 @@ set NUNIT="%~dp0Tools\NUnit.ConsoleRunner.3.7.0\tools\nunit3-console.exe"
 :main-menu
 echo ========================= NHIBERNATE BUILD MENU ==========================
 echo --- TESTING ---
-echo B. (Step 1) Set up a new test configuration for a particular database.
-echo C. (Step 2) Activate a test configuration.
-echo D. (Step 3) Run tests using active configuration (Needs built in Visual Studio).
+echo A. (Step 1) Set up a new test configuration for a particular database.
+echo B. (Step 2) Activate a test configuration.
+echo C. (Step 3) Run tests using active configuration with 32bits runner (Needs built in Visual Studio).
+echo D.       Or run tests using active configuration with 64bits runner (Needs built in Visual Studio).
 echo.
 echo --- BUILD ---
 echo E. Build NHibernate (Debug)
@@ -29,14 +30,15 @@ echo --- Exit ---
 echo X. Make the beautiful build menu go away.
 echo.
 
-%BUILDTOOL% prompt BCDEFGHIX
-if errorlevel 8 goto end
-if errorlevel 7 goto teamcity-menu
-if errorlevel 6 goto build-async
-if errorlevel 5 goto build-release-package
-if errorlevel 4 goto build-release
-if errorlevel 3 goto build-debug
-if errorlevel 2 goto test-run
+%BUILDTOOL% prompt ABCDEFGHIX
+if errorlevel 9 goto end
+if errorlevel 8 goto teamcity-menu
+if errorlevel 7 goto build-async
+if errorlevel 6 goto build-release-package
+if errorlevel 5 goto build-release
+if errorlevel 4 goto build-debug
+if errorlevel 3 goto test-run-64
+if errorlevel 2 goto test-run-32
 if errorlevel 1 goto test-activate
 if errorlevel 0 goto test-setup-menu
 
@@ -166,9 +168,15 @@ copy "%FOLDER%\*" "%CURRENT_CONFIGURATION%"
 echo Configuration activated.
 goto main-menu
 
-:test-run
+:test-run-32
+SET NUNITPLATFORM=--x86
+goto test-run
+
+:test-run-64
 SET NUNITPLATFORM=
-IF /I "%PLATFORM%" NEQ "x64" set NUNITPLATFORM=--x86
+goto test-run
+
+:test-run
 start "nunit3-console" cmd /K %NUNIT% %NUNITPLATFORM% --agents=1 --process=separate NHibernate.nunit
 goto main-menu
 
