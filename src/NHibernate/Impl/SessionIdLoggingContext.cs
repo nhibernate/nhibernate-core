@@ -5,7 +5,8 @@ namespace NHibernate.Impl
 {
 	public class SessionIdLoggingContext : IDisposable
 	{
-		private static readonly AsyncLocal<Guid?> _currentSessionId = new AsyncLocal<Guid?>();
+		private static readonly Lazy<AsyncLocal<Guid?>> _currentSessionId =
+			new Lazy<AsyncLocal<Guid?>>(() => new AsyncLocal<Guid?>(), true);
 
 		private readonly Guid? _oldSessonId;
 		private readonly bool _tracking;
@@ -30,8 +31,8 @@ namespace NHibernate.Impl
 		/// </summary>
 		public static Guid? SessionId
 		{
-			get => _currentSessionId.Value;
-			set => _currentSessionId.Value = value;
+			get => _currentSessionId.IsValueCreated ? _currentSessionId.Value.Value : null;
+			set => _currentSessionId.Value.Value = value;
 		}
 
 		#region IDisposable Members
