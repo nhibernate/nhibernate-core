@@ -181,9 +181,6 @@
   
   <target name="nuget.set-properties">
     <property name="nuget.nupackages.relative-dir" value="nuget_gallery" />
-    <!-- The nuget.workingdir is the directory from where all *.nuspec files will work. 
-    This is to simplify the compilation of *.nuspec.template files (see section 'files')-->
-    <property name="nuget.workingdir" value="${build.dir}/tmp_nugetdeploy" />
 
     <property name="nuget.nupackages.dir" value="${build.dir}/${nuget.nupackages.relative-dir}" />
     <property name="nuget.nupackages.pushbatfile" value="${nuget.nupackages.dir}/NuGetPush.bat" />

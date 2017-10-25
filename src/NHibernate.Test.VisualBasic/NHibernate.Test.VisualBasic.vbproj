@@ -5,7 +5,7 @@
     <Description>The Visual Basic Unit Tests for NHibernate.</Description>
 
     <TargetFramework>net461</TargetFramework>
-
+    <IsTestProject>true</IsTestProject>
     <NoWarn>$(NoWarn);3001;3002;3003;3005</NoWarn>
     <OptionExplicit>On</OptionExplicit>
     <OptionStrict>On</OptionStrict>
