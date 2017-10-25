@@ -283,7 +283,7 @@ namespace NHibernate.Loader.Custom
 
 		public IList List(ISessionImplementor session, QueryParameters queryParameters)
 		{
-			return List(session, queryParameters, querySpaces, resultTypes);
+			return List(session, queryParameters, querySpaces, ref resultTypes);
 		}
 
 		// Not ported: scroll
