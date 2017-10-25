@@ -62,7 +62,7 @@
 		</exec> 
 	</target>
 
-	<target name="common.compile-all" depends="common.nuget-restore">
+	<target name="common.compile-all" depends="common.nuget-restore nuget.set-properties">
 		<!--property name="msbuild.cmd" value="${cmd.sln} ${cmd.out} ${cmd.platform} ${cmd.debug} ${cmd.optimize} ${cmd.doc} /t:Rebuild /v:q /m" /-->		
 		<exec program="${path::combine(tools.dir, 'msbuild.cmd')}" verbose="true">
 				<arg value="${root.dir}/src/NHibernate.sln" />
@@ -70,6 +70,10 @@
 				<arg value="/p:Platform=&quot;Any CPU&quot;" />
 				<arg value="/p:Configuration=&quot;Debug&quot;" if="${build.debug == 'true'}" />
 				<arg value="/p:Configuration=&quot;Release&quot;" if="${build.release == 'true'}" />
+				<arg value="/p:GeneratePackageOnBuild=&quot;True&quot;" />
+				<arg value="/p:IncludeSymbols=&quot;True&quot;" />
+				<arg value="/p:IncludeSource=&quot;True&quot;" />
+				<arg value="/p:PackageOutputPath=&quot;${path::get-full-path(nuget.nupackages.dir)}&quot;" />
 				<arg value="/t:Restore" />
 				<arg value="/t:Rebuild" />
 				<arg value="/v:q" />

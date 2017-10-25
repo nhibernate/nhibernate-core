@@ -5,6 +5,7 @@
     <Description>The Domain Model used by the Unit Tests.</Description>
 
     <TargetFramework>net461</TargetFramework>
+    <IsTestProject>true</IsTestProject>
     <NoWarn>$(NoWarn);3001;3002;3003;3005</NoWarn>
   </PropertyGroup>
 
