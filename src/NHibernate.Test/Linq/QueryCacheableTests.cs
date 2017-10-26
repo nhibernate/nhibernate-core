@@ -219,5 +219,55 @@ namespace NHibernate.Test.Linq
 			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(1), "Unexpected cache put count");
 			Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(1), "Unexpected cache hit count");
 		}
+
+		[Test]
+		public void CanBeCombinedWithFetch()
+		{
+			//NH-2587
+			//NH-3982 (GH-1372)
+
+			Sfi.Statistics.Clear();
+			Sfi.QueryCache.Clear();
+
+			db.Customers
+				.SetOptions(o => o.SetCacheable(true))
+				.ToList();
+
+			db.Orders
+				.SetOptions(o => o.SetCacheable(true))
+				.ToList();
+
+			db.Customers
+			   .SetOptions(o => o.SetCacheable(true))
+				.Fetch(x => x.Orders)
+				.ToList();
+
+			db.Orders
+				.SetOptions(o => o.SetCacheable(true))
+				.Fetch(x => x.OrderLines)
+				.ToList();
+
+			var customer = db.Customers
+				.SetOptions(o => o.SetCacheable(true))
+				.Fetch(x => x.Address)
+				.Where(x => x.CustomerId == "VINET")
+				.SingleOrDefault();
+
+			
+
+			customer = db.Customers
+			  .SetOptions(o => o.SetCacheable(true))
+			  .Fetch(x => x.Address)
+			  .Where(x => x.CustomerId == "VINET")
+			  .SingleOrDefault();
+
+			
+
+
+			Assert.That(NHibernateUtil.IsInitialized(customer.Address), Is.True, "Expected the fetched Address to be initialized");
+			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(5), "Unexpected execution count");
+			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(5), "Unexpected cache put count");
+			Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(1), "Unexpected cache hit count");
+		}
 	}
 }

@@ -143,16 +143,37 @@ namespace NHibernate.Linq
 			}
 
 			SetParameters(query, nhLinqExpression.ParameterValuesByName);
+			ApplyOptions(query, nhLinqExpression.QueryOptions);
 			SetResultTransformerAndAdditionalCriteria(query, nhLinqExpression, nhLinqExpression.ParameterValuesByName);
 
 			return nhLinqExpression;
+		}
+
+		private void ApplyOptions(IQuery query, NhQueryableOptions options)
+		{
+			if (options.Timeout.HasValue)
+			{
+				query.SetTimeout(options.Timeout.Value);
+			}
+			if (options.Cacheable.HasValue)
+			{
+				query.SetCacheable(options.Cacheable.Value);
+			}
+			if (options.CacheMode.HasValue)
+			{
+				query.SetCacheMode(options.CacheMode.Value);
+			}
+			if (options.CacheRegion != null)
+			{
+				query.SetCacheRegion(options.CacheRegion);
+			}
 		}
 
 		protected virtual object ExecuteQuery(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery)
 		{
 			IList results = query.List();
 
-			if (nhQuery.ExpressionToHqlTranslationResults.PostExecuteTransformer != null)
+			if (nhQuery.ExpressionToHqlTranslationResults?.PostExecuteTransformer != null)
 			{
 				try
 				{
@@ -210,11 +231,14 @@ namespace NHibernate.Linq
 
 		public virtual void SetResultTransformerAndAdditionalCriteria(IQuery query, NhLinqExpression nhExpression, IDictionary<string, Tuple<object, IType>> parameters)
 		{
-			query.SetResultTransformer(nhExpression.ExpressionToHqlTranslationResults.ResultTransformer);
-
-			foreach (var criteria in nhExpression.ExpressionToHqlTranslationResults.AdditionalCriteria)
+			if (nhExpression.ExpressionToHqlTranslationResults != null)
 			{
-				criteria(query, parameters);
+				query.SetResultTransformer(nhExpression.ExpressionToHqlTranslationResults.ResultTransformer);
+
+				foreach (var criteria in nhExpression.ExpressionToHqlTranslationResults.AdditionalCriteria)
+				{
+					criteria(query, parameters);
+				}
 			}
 		}
 
@@ -225,7 +249,7 @@ namespace NHibernate.Linq
 			var query = Session.CreateQuery(nhLinqExpression);
 
 			SetParameters(query, nhLinqExpression.ParameterValuesByName);
-
+			ApplyOptions(query, nhLinqExpression.QueryOptions);
 			return query.ExecuteUpdate();
 		}
 	}

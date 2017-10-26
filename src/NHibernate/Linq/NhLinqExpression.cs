@@ -8,6 +8,8 @@ using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Linq.Visitors;
 using NHibernate.Param;
 using NHibernate.Type;
+using NHibernate.Util;
+using Remotion.Linq;
 
 namespace NHibernate.Linq
 {
@@ -34,6 +36,7 @@ namespace NHibernate.Linq
 
 		private readonly Expression _expression;
 		private readonly IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
+		private QueryModel _queryModel;
 
 		public NhLinqExpression(Expression expression, ISessionFactoryImplementor sessionFactory)
 		{
@@ -62,16 +65,23 @@ namespace NHibernate.Linq
 				Type = Type.GetGenericArguments()[0];
 				ReturnType = NhLinqExpressionReturnType.Sequence;
 			}
+
+			_queryModel = NhRelinqQueryParser.Parse(_expression);
+
+			QueryOptions = new NhQueryableOptions();
+			QueryOptionsExtractor.ExtractOptions(_queryModel).ForEach(x=>x(QueryOptions));
+
 		}
+
+		public NhQueryableOptions QueryOptions { get; }
 
 		public IASTNode Translate(ISessionFactoryImplementor sessionFactory, bool filter)
 		{
 			var requiredHqlParameters = new List<NamedParameterDescriptor>();
-			var queryModel = NhRelinqQueryParser.Parse(_expression);
 			var visitorParameters = new VisitorParameters(sessionFactory, _constantToParameterMap, requiredHqlParameters,
 				new QuerySourceNamer(), TargetType, QueryMode);
 
-			ExpressionToHqlTranslationResults = QueryModelVisitor.GenerateHqlQuery(queryModel, visitorParameters, true, ReturnType);
+			ExpressionToHqlTranslationResults = QueryModelVisitor.GenerateHqlQuery(_queryModel, visitorParameters, true, ReturnType);
 
 			if (ExpressionToHqlTranslationResults.ExecuteResultTypeOverride != null)
 				Type = ExpressionToHqlTranslationResults.ExecuteResultTypeOverride;

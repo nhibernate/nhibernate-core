@@ -16,8 +16,7 @@ namespace NHibernate.Linq.ReWriters
 		internal static readonly System.Type[] FlattenableResultOperators =
 		{
 			typeof(FetchOneRequest),
-			typeof(FetchManyRequest),
-			typeof(OptionsResultOperator)
+			typeof(FetchManyRequest)
 		};
 
 		private QueryReferenceExpressionFlattener(QueryModel model)
@@ -41,7 +40,7 @@ namespace NHibernate.Linq.ReWriters
 			}
 
 			var resultOperators = subQueryModel.ResultOperators;
-			if (resultOperators.Count == 0 || HasJustAllFlattenableOperator(resultOperators))
+			if (resultOperators.Count == 0 || AllResultOperatorsAreFlattenable(resultOperators))
 			{
 				var selectQuerySource = subQueryModel.SelectClause.Selector as QuerySourceReferenceExpression;
 
@@ -59,7 +58,7 @@ namespace NHibernate.Linq.ReWriters
 			return base.VisitSubQuery(subQuery);
 		}
 
-		private static bool HasJustAllFlattenableOperator(IEnumerable<ResultOperatorBase> resultOperators)
+		private static bool AllResultOperatorsAreFlattenable(IEnumerable<ResultOperatorBase> resultOperators)
 		{
 			return resultOperators.All(x => FlattenableResultOperators.Contains(x.GetType()));
 		}

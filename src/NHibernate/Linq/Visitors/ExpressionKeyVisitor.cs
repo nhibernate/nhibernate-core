@@ -176,6 +176,11 @@ namespace NHibernate.Linq.Visitors
 					break;
 			}
 
+			if (expression.Method.IsGenericMethod && expression.Method.GetGenericMethodDefinition()==LinqExtensionMethods.SetOptionsDefinition)
+			{
+				return Visit(expression.Arguments.First());
+			}
+
 			Visit(expression.Object);
 			_string.Append('.');
 			VisitMethod(expression.Method);

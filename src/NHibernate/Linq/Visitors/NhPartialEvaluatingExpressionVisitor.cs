@@ -37,6 +37,8 @@ namespace NHibernate.Linq.Visitors
 
 	internal class NhEvaluatableExpressionFilter : EvaluatableExpressionFilterBase
 	{
+		
+
 		public override bool IsEvaluatableMethodCall(MethodCallExpression node)
 		{
 			if (node == null)

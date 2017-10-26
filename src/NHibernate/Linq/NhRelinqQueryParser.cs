@@ -8,8 +8,10 @@ using NHibernate.Linq.Visitors;
 using NHibernate.Util;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
+using Remotion.Linq.Clauses.ResultOperators;
 using Remotion.Linq.Clauses.StreamedData;
 using Remotion.Linq.EagerFetching.Parsing;
+using Remotion.Linq.Parsing.ExpressionVisitors;
 using Remotion.Linq.Parsing.ExpressionVisitors.Transformation;
 using Remotion.Linq.Parsing.Structure;
 using Remotion.Linq.Parsing.Structure.ExpressionTreeProcessors;
@@ -137,11 +139,22 @@ namespace NHibernate.Linq
 		private readonly MethodCallExpressionParseInfo _parseInfo;
 		private readonly ConstantExpression _setOptions;
 
-		public OptionsExpressionNode(MethodCallExpressionParseInfo parseInfo, ConstantExpression setOptions)
+		public OptionsExpressionNode(MethodCallExpressionParseInfo parseInfo, Expression setOptions)
 			: base(parseInfo, null, null)
 		{
 			_parseInfo = parseInfo;
-			_setOptions = setOptions;
+			if (setOptions.NodeType == ExpressionType.Constant)
+			{
+				_setOptions = (ConstantExpression) setOptions;
+			}
+			else
+			{
+				var lambda = setOptions as Expression<Action<IQueryableOptions>>;
+				if (lambda!=null)
+				{
+					_setOptions = Expression.Constant(lambda.Compile());
+				}
+			}
 		}
 
 		public override Expression Resolve(ParameterExpression inputParameter, Expression expressionToBeResolved, ClauseGenerationContext clauseGenerationContext)
@@ -151,11 +164,15 @@ namespace NHibernate.Linq
 
 		protected override ResultOperatorBase CreateResultOperator(ClauseGenerationContext clauseGenerationContext)
 		{
-			return new OptionsResultOperator(_parseInfo, _setOptions);
+			if (_setOptions != null)
+			{
+				return new OptionsResultOperator(_parseInfo, _setOptions);
+			}
+			return null;
 		}
 	}
 
-	internal class OptionsResultOperator : ResultOperatorBase
+	internal class OptionsResultOperator : SequenceTypePreservingResultOperatorBase
 	{
 		public MethodCallExpressionParseInfo ParseInfo { get; }
 		public ConstantExpression SetOptions { get; }
@@ -166,15 +183,7 @@ namespace NHibernate.Linq
 			SetOptions = setOptions;
 		}
 
-		public override IStreamedData ExecuteInMemory(IStreamedData input)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override IStreamedDataInfo GetOutputDataInfo(IStreamedDataInfo inputInfo)
-		{
-			return inputInfo;
-		}
+		
 
 		public override ResultOperatorBase Clone(CloneContext cloneContext)
 		{
@@ -183,6 +192,11 @@ namespace NHibernate.Linq
 
 		public override void TransformExpressions(Func<Expression, Expression> transformation)
 		{
+		}
+
+		public override StreamedSequence ExecuteInMemory<T>(StreamedSequence input)
+		{
+			return input;
 		}
 	}
 }
