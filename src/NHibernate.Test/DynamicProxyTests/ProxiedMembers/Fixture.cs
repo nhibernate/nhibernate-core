@@ -20,7 +20,7 @@ namespace NHibernate.Test.DynamicProxyTests.ProxiedMembers
 			y = 4;
 		}
 
-		public virtual void Method3(ref int? y)
+		public virtual void Method4(ref int? y)
 		{
 			y++;
 		}
