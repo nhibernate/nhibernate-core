@@ -19,6 +19,11 @@ namespace NHibernate.Test.DynamicProxyTests.ProxiedMembers
 		{
 			y = 4;
 		}
+
+		public virtual void Method3(ref int? y)
+		{
+			y++;
+		}
 	}
 
 	[TestFixture]
@@ -41,6 +46,9 @@ namespace NHibernate.Test.DynamicProxyTests.ProxiedMembers
 			int? y;
 			c.Method3(out y);
 			Assert.AreEqual(4, y);
+			
+			c.Method4(ref y);
+			Assert.AreEqual(5, y);
 		}
 	}
 }
