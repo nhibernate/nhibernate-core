@@ -6,6 +6,7 @@
 
 #endregion
 
+using System;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -55,12 +56,19 @@ namespace NHibernate.Proxy.DynamicProxy
 
 				if (param.ParameterType.IsByRef)
 				{
-					OpCode ldindInstruction;
-					if(!OpCodesMap.TryGetLdindOpCode(param.ParameterType.GetElementType(), out ldindInstruction))
+					var unboxedType = param.ParameterType.GetElementType();
+					if (Nullable.GetUnderlyingType(unboxedType) != null)
 					{
-						ldindInstruction = OpCodes.Ldind_Ref;
+						IL.Emit(OpCodes.Ldobj, unboxedType);
 					}
-					IL.Emit(ldindInstruction);
+					else if (OpCodesMap.TryGetLdindOpCode(unboxedType, out var ldind))
+					{
+						IL.Emit(ldind);
+					}
+					else
+					{
+						IL.Emit(OpCodes.Ldind_Ref);
+					}
 				}
 
 				if (parameterType.IsValueType || param.ParameterType.IsByRef || parameterType.IsGenericParameter)
