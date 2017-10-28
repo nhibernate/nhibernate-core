@@ -76,36 +76,8 @@
 		<nant buildfile="doc/documentation.build" target="api" />
 	</target>
 
-	<target name="build-all-frameworks" depends="init">
-		<!-- Save the current framework -->
-		<property name="current.framework.saved" value="${nant.settings.currentframework}" />
-
-		<!-- Execute build for each framework -->
-		<foreach item="String" delim=" " property="framework" in="${supported.frameworks}">
-			<call target="set-${framework}-framework-configuration" />
-			<call target="build" />
-		</foreach>
-
-		<!-- Reset the current framework to the saved value -->
-		<call target="set-${current.framework.saved}-framework-configuration" />
-	</target>
-
 	<target name="binaries" depends="init">
 		<call target="build" />
-	</target>
-
-	<target name="test-all-frameworks" depends="init">
-		<!-- Save the current framework -->
-		<property name="current.framework.saved" value="${nant.settings.currentframework}" />
-
-		<!-- Execute build for each framework -->
-		<foreach item="String" delim=" " property="framework" in="${supported.frameworks}">
-			<call target="set-${framework}-framework-configuration" />
-			<call target="test" />
-		</foreach>
-
-		<!-- Reset the current framework to the saved value -->
-		<call target="set-${current.framework.saved}-framework-configuration" />
 	</target>
 
 	<target name="reports" depends="init">
