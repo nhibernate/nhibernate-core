@@ -13,6 +13,11 @@ namespace NHibernate.Engine
 	{
 		/// <summary> package-protected constructor</summary>
 		internal CascadeStyle() {}
+
+		protected CascadeStyle(SerializationInfo info, StreamingContext context)
+		{
+		}
+
 		static CascadeStyle()
 		{
 			Styles["all"] = All;
@@ -261,7 +266,7 @@ namespace NHibernate.Engine
 				this.styles = styles;
 			}
 
-			private MultipleCascadeStyle(SerializationInfo info, StreamingContext context)
+			private MultipleCascadeStyle(SerializationInfo info, StreamingContext context) : base(info, context)
 			{
 				styles = (CascadeStyle[])info.GetValue("styles", typeof(CascadeStyle[]));
 			}
