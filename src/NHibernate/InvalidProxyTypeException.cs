@@ -36,7 +36,7 @@ namespace NHibernate
 
 		#region Serialization
 
-		public InvalidProxyTypeException(SerializationInfo info, StreamingContext context)
+		protected InvalidProxyTypeException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
 			Errors = (ICollection<string>)info.GetValue("errors", typeof(ICollection));

@@ -1475,7 +1475,7 @@ namespace NHibernate.Engine
 		#endregion
 
 		#region ISerializable Members
-		internal StatefulPersistenceContext(SerializationInfo info, StreamingContext context)
+		protected StatefulPersistenceContext(SerializationInfo info, StreamingContext context)
 		{
 			loadCounter = 0;
 			flushing = false;

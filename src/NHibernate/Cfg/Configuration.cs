@@ -80,7 +80,7 @@ namespace NHibernate.Cfg
 		protected internal SettingsFactory settingsFactory;
 
 		#region ISerializable Members
-		public Configuration(SerializationInfo info, StreamingContext context)
+		protected Configuration(SerializationInfo info, StreamingContext context)
 		{
 			Reset();
 

@@ -11,7 +11,7 @@ namespace NHibernate.Exceptions
 	public class ConstraintViolationException : ADOException
 	{
 		private readonly string constraintName;
-		public ConstraintViolationException(SerializationInfo info, StreamingContext context)
+		protected ConstraintViolationException(SerializationInfo info, StreamingContext context)
 			: base(info, context) {}
 
 		public ConstraintViolationException(string message, Exception innerException, string sql, string constraintName)

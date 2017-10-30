@@ -355,7 +355,7 @@ namespace NHibernate.AdoNet
 
 		#region Serialization
 
-		private ConnectionManager(SerializationInfo info, StreamingContext context)
+		protected ConnectionManager(SerializationInfo info, StreamingContext context)
 		{
 			_ownConnection = info.GetBoolean("ownConnection");
 			Session = (ISessionImplementor)info.GetValue("session", typeof(ISessionImplementor));

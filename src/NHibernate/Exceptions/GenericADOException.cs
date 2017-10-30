@@ -11,7 +11,7 @@ namespace NHibernate.Exceptions
 	    {
 	        
 	    }
-		public GenericADOException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+		protected GenericADOException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 		public GenericADOException(string message, Exception innerException, string sql) : base(message, innerException, sql) { }
 		public GenericADOException(string message, Exception innerException) : base(message, innerException) { }
 	}
