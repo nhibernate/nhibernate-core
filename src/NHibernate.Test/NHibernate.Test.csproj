@@ -37,6 +37,7 @@
   <ItemGroup>
     <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="5.11.0" />
     <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="NSubstitute" Version="3.0.1" />
     <PackageReference Include="Microsoft.SqlServer.Compact" Version="4.0.8876.1" />
     <PackageReference Include="MySql.Data" Version="6.9.10" />
     <PackageReference Include="Npgsql" Version="3.2.4.1" />

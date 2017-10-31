@@ -28,7 +28,7 @@ namespace NHibernate.Linq
 		Task<int> ExecuteDmlAsync<T>(QueryMode queryMode, Expression expression, CancellationToken cancellationToken);
 	}
 
-	public partial class DefaultQueryProvider : INhQueryProvider
+	public partial class DefaultQueryProvider : INhQueryProvider, IQueryProviderWithOptions
 	{
 
 		protected virtual async Task<object> ExecuteQueryAsync(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery, CancellationToken cancellationToken)
@@ -36,7 +36,7 @@ namespace NHibernate.Linq
 			cancellationToken.ThrowIfCancellationRequested();
 			IList results = await (query.ListAsync(cancellationToken)).ConfigureAwait(false);
 
-			if (nhQuery.ExpressionToHqlTranslationResults.PostExecuteTransformer != null)
+			if (nhQuery.ExpressionToHqlTranslationResults?.PostExecuteTransformer != null)
 			{
 				try
 				{
@@ -69,7 +69,7 @@ namespace NHibernate.Linq
 				var query = Session.CreateQuery(nhLinqExpression);
 
 				SetParameters(query, nhLinqExpression.ParameterValuesByName);
-
+				ApplyOptions(query);
 				return query.ExecuteUpdateAsync(cancellationToken);
 			}
 			catch (Exception ex)
