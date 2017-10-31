@@ -3,7 +3,6 @@ using System;
 namespace NHibernate.Event
 {
 	/// <summary>  Defines an event class for the evicting of an entity. </summary>
-	[Serializable]
 	public class EvictEvent : AbstractEvent
 	{
 		private object entity;

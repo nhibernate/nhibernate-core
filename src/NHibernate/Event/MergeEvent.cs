@@ -4,7 +4,6 @@ namespace NHibernate.Event
 	/// <summary> 
 	/// An event class for merge() and saveOrUpdateCopy()
 	/// </summary>
-	[Serializable]
 	public class MergeEvent : AbstractEvent
 	{
 		private object original;

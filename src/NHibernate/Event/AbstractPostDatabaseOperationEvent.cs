@@ -6,7 +6,6 @@ namespace NHibernate.Event
 	/// <summary> 
 	/// Represents an operation we performed against the database. 
 	/// </summary>
-	[Serializable]
 	public class AbstractPostDatabaseOperationEvent : AbstractEvent, IPostDatabaseOperationEventArgs
 	{
 		/// <summary> Constructs an event containing the pertinent information. </summary>

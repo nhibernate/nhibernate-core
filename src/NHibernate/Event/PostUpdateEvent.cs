@@ -6,7 +6,6 @@ namespace NHibernate.Event
 	/// <summary> 
 	/// Occurs after the datastore is updated
 	/// </summary>
-	[Serializable]
 	public class PostUpdateEvent : AbstractPostDatabaseOperationEvent
 	{
 		public PostUpdateEvent(object entity, object id, object[] state, object[] oldState, IEntityPersister persister, IEventSource source)

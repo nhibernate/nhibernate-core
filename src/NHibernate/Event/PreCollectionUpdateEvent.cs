@@ -5,7 +5,6 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Event
 {
 	/// <summary> An event that occurs before a collection is updated </summary>
-	[Serializable]
 	public class PreCollectionUpdateEvent : AbstractCollectionEvent
 	{
 		public PreCollectionUpdateEvent(ICollectionPersister collectionPersister, IPersistentCollection collection,

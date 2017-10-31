@@ -6,7 +6,6 @@ namespace NHibernate.Event
 	/// <summary> 
 	/// Occurs after an an entity instance is fully loaded.
 	/// </summary>
-	[Serializable]
 	public class PostLoadEvent : AbstractEvent, IPostDatabaseOperationEventArgs
 	{
 		private object entity;

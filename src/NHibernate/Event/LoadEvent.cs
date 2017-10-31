@@ -3,7 +3,6 @@ using System;
 namespace NHibernate.Event
 {
 	/// <summary>Defines an event class for the loading of an entity. </summary>
-	[Serializable]
 	public class LoadEvent : AbstractEvent
 	{
 		public static readonly LockMode DefaultLockMode = LockMode.None;

@@ -5,7 +5,6 @@ namespace NHibernate.Event
 	/// <summary> 
 	/// Defines a base class for Session generated events.
 	/// </summary>
-	[Serializable]
 	public class AbstractEvent : IDatabaseEventArgs
 	{
 		/// <summary> 
