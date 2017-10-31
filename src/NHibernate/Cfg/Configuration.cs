@@ -67,6 +67,8 @@ namespace NHibernate.Cfg
 		protected IList<IAuxiliaryDatabaseObject> auxiliaryDatabaseObjects;
 
 		private INamingStrategy namingStrategy = DefaultNamingStrategy.Instance;
+
+		[NonSerialized]
 		private MappingsQueue mappingsQueue;
 
 		private EventListeners eventListeners;
@@ -1889,6 +1891,7 @@ namespace NHibernate.Cfg
 
 		#endregion
 
+		[NonSerialized]
 		private XmlSchemas schemas;
 
 		private XmlSchemas Schemas

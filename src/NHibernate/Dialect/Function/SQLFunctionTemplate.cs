@@ -23,6 +23,7 @@ namespace NHibernate.Dialect.Function
 		private const int InvalidArgumentIndex = -1;
 		private static readonly Regex SplitRegex = new Regex("(\\?[0-9]+)");
 
+		[Serializable]
 		private struct TemplateChunk
 		{
 			public string Text; // including prefix if parameter

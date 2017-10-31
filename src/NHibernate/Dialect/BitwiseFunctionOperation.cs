@@ -14,7 +14,10 @@ namespace NHibernate.Dialect
 	public class BitwiseFunctionOperation : ISQLFunction
 	{
 		private readonly string _functionName;
+
+		[NonSerialized]
 		private SqlStringBuilder _sqlBuffer;
+
 		private Queue _args;
 
 		/// <summary>
