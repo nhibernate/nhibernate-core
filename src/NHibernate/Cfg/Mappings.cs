@@ -11,7 +11,6 @@ namespace NHibernate.Cfg
 	/// A collection of mappings from classes and collections to relational database tables.
 	/// </summary>
 	/// <remarks>Represents a single <c>&lt;hibernate-mapping&gt;</c> element.</remarks>
-	[Serializable]
 	public class Mappings
 	{
 		#region Utility classes
