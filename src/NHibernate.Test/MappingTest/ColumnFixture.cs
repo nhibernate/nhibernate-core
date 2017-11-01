@@ -56,15 +56,14 @@ namespace NHibernate.Test.MappingTest
 		{
 			var dialect = new GenericDialect();
 
-			// Verify test case assumption.
-			Assert.That(dialect.MaxAliasLength, Is.EqualTo(10));
+			// Test case is meant for a max length of 10, adjusts name if it is more.
+			columnName = AdjustColumnNameToMaxLength(columnName, dialect, 10);
 
 			var column = new Column(columnName);
 			string generatedAlias = column.GetAlias(dialect);
 
 			Assert.That(generatedAlias, Has.Length.LessThanOrEqualTo(dialect.MaxAliasLength - _charactersLeftCount));
 		}
-
 
 		[TestCase("xxxxyyyyz")]
 		[TestCase("xxxxyyyyzz")]
@@ -79,8 +78,8 @@ namespace NHibernate.Test.MappingTest
 		{
 			var dialect = new GenericDialect();
 
-			// Verify test case assumption.
-			Assert.That(dialect.MaxAliasLength, Is.EqualTo(10));
+			// Test case is meant for a max length of 10, adjusts name if it is more.
+			columnName = AdjustColumnNameToMaxLength(columnName, dialect, 10);
 
 			var table = new Table();
 			var column = new Column(columnName);
@@ -88,6 +87,15 @@ namespace NHibernate.Test.MappingTest
 			string generatedAlias = column.GetAlias(dialect, table);
 
 			Assert.That(generatedAlias, Has.Length.LessThanOrEqualTo(dialect.MaxAliasLength - _charactersLeftCount));
+		}
+
+		private static string AdjustColumnNameToMaxLength(string columnName, GenericDialect dialect, int referenceMaxLength)
+		{
+			if (dialect.MaxAliasLength > referenceMaxLength)
+				columnName = new string('w', dialect.MaxAliasLength - referenceMaxLength) + columnName;
+			else if (dialect.MaxAliasLength < referenceMaxLength)
+				Assert.Fail("Dialect max alias length is too short for the test.");
+			return columnName;
 		}
 	}
 }

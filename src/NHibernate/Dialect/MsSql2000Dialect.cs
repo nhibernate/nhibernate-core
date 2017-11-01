@@ -677,6 +677,11 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+		// Was 30 in "earlier version", without telling to which version the document apply.
+		// https://msdn.microsoft.com/en-us/library/ms191240.aspx#Anchor_3
+		/// <inheritdoc />
+		public override int MaxAliasLength => 30;
+
 		#region Overridden informational metadata
 
 		public override bool SupportsEmptyInList => false;

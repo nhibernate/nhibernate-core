@@ -520,6 +520,12 @@ namespace NHibernate.Dialect
 			RegisterFunction("tanh", new StandardSQLFunction("tanh", NHibernateUtil.Double));
 		}
 
+		// As of Firebird 2.5 documentation, limit is 30/31 (not all source are concordant), with some
+		// cases supporting more but considered as bugs and no more tolerated in v3.
+		// It seems it may be extended to 63 for Firebird v4.
+		/// <inheritdoc />
+		public override int MaxAliasLength => 30;
+
 		#region Informational metadata
 
 		/// <summary>

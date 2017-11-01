@@ -457,6 +457,10 @@ namespace NHibernate.Dialect
 
 			return res.ToString();
 		}
+
+		// Informix 7 is said on Internet to be limited to 18. (http://www.justskins.com/forums/length-of-columns-names-143294.html)
+		/// <inheritdoc />
+		public override int MaxAliasLength => 18;
 	}
 
 	public class IfxViolatedConstraintExtracter : TemplatedViolatedConstraintNameExtracter
