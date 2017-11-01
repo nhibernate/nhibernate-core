@@ -2,10 +2,12 @@
   <Import Project="../../build-common/NHibernate.props" />
   <PropertyGroup>
     <Description>The Unit Tests for NHibernate.</Description>
+
     <TargetFramework>net461</TargetFramework>
+    <IsTestProject>true</IsTestProject>
     <NoWarn>$(NoWarn);3001;3002;3003;3005</NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <TreatSpecificWarningsAsErrors />
   </PropertyGroup>

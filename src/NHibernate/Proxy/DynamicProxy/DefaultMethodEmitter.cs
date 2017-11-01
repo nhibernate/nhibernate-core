@@ -142,23 +142,19 @@ namespace NHibernate.Proxy.DynamicProxy
 
 				IL.Emit(OpCodes.Unbox_Any, unboxedType);
 
-				OpCode stind = GetStindInstruction(param.ParameterType);
-				IL.Emit(stind);
-			}
-		}
-
-		private static OpCode GetStindInstruction(System.Type parameterType)
-		{
-			if (parameterType.IsByRef)
-			{
-				OpCode stindOpCode;
-				if(OpCodesMap.TryGetStindOpCode(parameterType.GetElementType(), out stindOpCode))
+				if (Nullable.GetUnderlyingType(unboxedType) != null)
 				{
-					return stindOpCode;
+					IL.Emit(OpCodes.Stobj, unboxedType);
+				}
+				else if (OpCodesMap.TryGetStindOpCode(param.ParameterType.GetElementType(), out var stind))
+				{
+					IL.Emit(stind);
+				}
+				else
+				{
+					IL.Emit(OpCodes.Stind_Ref);
 				}
 			}
-
-			return OpCodes.Stind_Ref;
 		}
 
 		private static void PushTargetMethodInfo(ILGenerator IL, MethodBuilder generatedMethod, MethodInfo method)
