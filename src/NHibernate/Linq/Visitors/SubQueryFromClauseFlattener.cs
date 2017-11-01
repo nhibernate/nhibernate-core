@@ -45,10 +45,10 @@ namespace NHibernate.Linq.Visitors
 			if (subQueryModel.ResultOperators.Count == 0) 
 				return true;
 			
-			return HasJustAllFlattenableOperator(subQueryModel.ResultOperators);
+			return AllResultOperatorsAreFlattenable(subQueryModel.ResultOperators);
 		}
 
-		private static bool HasJustAllFlattenableOperator(IEnumerable<ResultOperatorBase> resultOperators)
+		private static bool AllResultOperatorsAreFlattenable(IEnumerable<ResultOperatorBase> resultOperators)
 		{
 			return resultOperators.All(x => FlattenableResultOperators.Contains(x.GetType()));
 		}

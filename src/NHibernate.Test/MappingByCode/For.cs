@@ -2,6 +2,7 @@ using System;
 using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Mapping.ByCode;
+using TypeExtensions = NHibernate.Mapping.ByCode.TypeExtensions;
 
 namespace NHibernate.Test.MappingByCode
 {

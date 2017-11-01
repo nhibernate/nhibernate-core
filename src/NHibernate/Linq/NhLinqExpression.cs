@@ -8,6 +8,8 @@ using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Linq.Visitors;
 using NHibernate.Param;
 using NHibernate.Type;
+using NHibernate.Util;
+using Remotion.Linq;
 
 namespace NHibernate.Linq
 {
@@ -34,7 +36,8 @@ namespace NHibernate.Linq
 
 		private readonly Expression _expression;
 		private readonly IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
-
+		private Lazy<QueryModelWithExtractedOptions> _queryModelAndOptions;
+		
 		public NhLinqExpression(Expression expression, ISessionFactoryImplementor sessionFactory)
 		{
 			_expression = NhRelinqQueryParser.PreTransform(expression);
@@ -62,16 +65,26 @@ namespace NHibernate.Linq
 				Type = Type.GetGenericArguments()[0];
 				ReturnType = NhLinqExpressionReturnType.Sequence;
 			}
+
+		
+			_queryModelAndOptions=new Lazy<QueryModelWithExtractedOptions>(CreateQueryModelWithExtractedOptions);
+
+			
+		
 		}
+
+		public NhQueryableOptions QueryOptions => _queryModelAndOptions.Value?.QueryableOptions;
 
 		public IASTNode Translate(ISessionFactoryImplementor sessionFactory, bool filter)
 		{
+			var queryModelAndOptions = CreateQueryModelWithExtractedOptions();
+			_queryModelAndOptions = new Lazy<QueryModelWithExtractedOptions>(()=> queryModelAndOptions);
+
 			var requiredHqlParameters = new List<NamedParameterDescriptor>();
-			var queryModel = NhRelinqQueryParser.Parse(_expression);
 			var visitorParameters = new VisitorParameters(sessionFactory, _constantToParameterMap, requiredHqlParameters,
 				new QuerySourceNamer(), TargetType, QueryMode);
 
-			ExpressionToHqlTranslationResults = QueryModelVisitor.GenerateHqlQuery(queryModel, visitorParameters, true, ReturnType);
+			ExpressionToHqlTranslationResults = QueryModelVisitor.GenerateHqlQuery(queryModelAndOptions.QueryModel, visitorParameters, true, ReturnType);
 
 			if (ExpressionToHqlTranslationResults.ExecuteResultTypeOverride != null)
 				Type = ExpressionToHqlTranslationResults.ExecuteResultTypeOverride;
@@ -81,6 +94,18 @@ namespace NHibernate.Linq
 			return ExpressionToHqlTranslationResults.Statement.AstNode;
 		}
 
+		private QueryModelWithExtractedOptions CreateQueryModelWithExtractedOptions()
+		{
+			var queryModel = NhRelinqQueryParser.Parse(_expression);
+			var options = new NhQueryableOptions();
+			QueryOptionsExtractor.ExtractOptions(queryModel).ForEach(x => x(options));
+			return new QueryModelWithExtractedOptions
+			{
+				QueryModel = queryModel,
+				QueryableOptions = options
+			};
+		}
+
 		internal void CopyExpressionTranslation(NhLinqExpression other)
 		{
 			ExpressionToHqlTranslationResults = other.ExpressionToHqlTranslationResults;
@@ -88,5 +113,11 @@ namespace NHibernate.Linq
 			// Type could have been overridden by translation.
 			Type = other.Type;
 		}
+	}
+
+	internal class QueryModelWithExtractedOptions
+	{
+		internal QueryModel QueryModel { get; set; }
+		internal NhQueryableOptions QueryableOptions { get; set; }
 	}
 }
