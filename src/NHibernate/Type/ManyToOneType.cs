@@ -181,34 +181,14 @@ namespace NHibernate.Type
 
 		public override bool IsDirty(object old, object current, ISessionImplementor session)
 		{
-			if (IsSame(old, current))
-			{
-				return false;
-			}
-
-			object oldid = GetIdentifier(old, session);
-			object newid = GetIdentifier(current, session);
-			return GetIdentifierType(session).IsDirty(oldid, newid, session);
+			return IsDirtyManyToOne(old, current, null, session);
 		}
 
 		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
-			if (IsAlwaysDirtyChecked)
-			{
-				return IsDirty(old, current, session);
-			}
-			else
-			{
-				if (IsSame(old, current))
-				{
-					return false;
-				}
-
-				object oldid = GetIdentifier(old, session);
-				object newid = GetIdentifier(current, session);
-				return GetIdentifierType(session).IsDirty(oldid, newid, checkable, session);
-			}
+			return IsDirtyManyToOne(old, current, IsAlwaysDirtyChecked ? null : checkable, session);
 		}
+
 
 		public override bool IsNullable
 		{
@@ -223,6 +203,32 @@ namespace NHibernate.Type
 				ArrayHelper.Fill(result, true);
 			}
 			return result;
+		}
+
+		private bool IsDirtyManyToOne(object old, object current, bool[] checkable, ISessionImplementor session)
+		{
+			if (IsSame(old, current))
+			{
+				return false;
+			}
+
+			if (old == null || current == null)
+			{
+				return true;
+			}
+
+			if (ForeignKeys.IsTransientFast(GetAssociatedEntityName(), current, session) == true)
+			{
+				return true;
+			}
+
+			object oldid = GetIdentifier(old, session);
+			object newid = GetIdentifier(current, session);
+			IType identifierType = GetIdentifierType(session);
+
+			return checkable == null
+				? identifierType.IsDirty(oldid, newid, session)
+				: identifierType.IsDirty(old, current, checkable, session);
 		}
 	}
 }
