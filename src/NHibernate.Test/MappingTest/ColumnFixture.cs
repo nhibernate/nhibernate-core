@@ -40,6 +40,8 @@ namespace NHibernate.Test.MappingTest
 			Assert.AreEqual("NVARCHAR(100)", column.GetSqlType(_dialect, null));
 		}
 
+		// Should be kept synchronized with Column same constant.
+		private const int _charactersLeftCount = 4;
 
 		[TestCase("xxxxyyyyz")]
 		[TestCase("xxxxyyyyzz")]
@@ -60,7 +62,7 @@ namespace NHibernate.Test.MappingTest
 			var column = new Column(columnName);
 			string generatedAlias = column.GetAlias(dialect);
 
-			Assert.That(generatedAlias, Has.Length.LessThanOrEqualTo(dialect.MaxAliasLength));
+			Assert.That(generatedAlias, Has.Length.LessThanOrEqualTo(dialect.MaxAliasLength - _charactersLeftCount));
 		}
 
 
@@ -85,7 +87,7 @@ namespace NHibernate.Test.MappingTest
 
 			string generatedAlias = column.GetAlias(dialect, table);
 
-			Assert.That(generatedAlias, Has.Length.LessThanOrEqualTo(dialect.MaxAliasLength));
+			Assert.That(generatedAlias, Has.Length.LessThanOrEqualTo(dialect.MaxAliasLength - _charactersLeftCount));
 		}
 	}
 }
