@@ -92,6 +92,9 @@ HR  {
     font-weight:bold;
 }
 
-
-
-    
+.book > DIV, .chapter, .preface {
+    max-width: 50em;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: large;
+}
