@@ -344,6 +344,10 @@ namespace NHibernate.Dialect
 			}
 		}
 
+		// SQL Server 3.5 supports 128.
+		/// <inheritdoc />
+		public override int MaxAliasLength => 128;
+
 		#region Informational metadata
 
 		/// <summary>

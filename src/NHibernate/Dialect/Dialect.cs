@@ -2282,10 +2282,11 @@ namespace NHibernate.Dialect
 			get { return "lower"; }
 		}
 
-		public virtual int MaxAliasLength
-		{
-			get { return 10; }
-		}
+		// 18 is the smallest of all dialects we handle.
+		/// <summary>
+		/// The maximum length a SQL alias can have.
+		/// </summary>
+		public virtual int MaxAliasLength => 18;
 
 		/// <summary>
 		/// The syntax used to add a column to a table. Note this is deprecated

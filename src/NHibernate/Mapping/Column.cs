@@ -115,10 +115,14 @@ namespace NHibernate.Mapping
 			return IsQuoted ? d.QuoteForColumnName(_name) : _name;
 		}
 
+		// Accommodate the one character suffix appended in AbstractCollectionPersister and
+		// the SelectFragment suffix up to 99 joins.
+		private const int _charactersLeftCount = 4;
 
 		/// <summary>
 		/// For any column name, generate an alias that is unique to that
 		/// column name, and also take Dialect.MaxAliasLength into account.
+		/// It keeps four characters left for accommodating additional suffixes.
 		/// </summary>
 		public string GetAlias(Dialect.Dialect dialect)
 		{
@@ -127,6 +131,7 @@ namespace NHibernate.Mapping
 
 		private string GetAlias(int maxAliasLength)
 		{
+			var usableLength = maxAliasLength - _charactersLeftCount;
 			var name = CanonicalName;
 			string alias = name;
 			string suffix = UniqueInteger.ToString() + StringHelper.Underscore;
@@ -148,25 +153,27 @@ namespace NHibernate.Mapping
 			// reason, the checks for "_quoted" and "rowid" looks redundant. If you remove
 			// those checks, then the double checks for total length can be reduced to one.
 			//    But I will leave it like this for now to make it look similar. /Oskar 2016-08-20
-			bool useRawName = name.Length + suffix.Length <= maxAliasLength &&
+			bool useRawName = name.Length + suffix.Length <= usableLength &&
 			                  !_quoted &&
 			                  !StringHelper.EqualsCaseInsensitive(name, "rowid");
 			if (!useRawName)
 			{
-				if (suffix.Length >= maxAliasLength)
+				if (suffix.Length >= usableLength)
 				{
 					throw new MappingException(
-						string.Format(
-							"Unique suffix {0} length must be less than maximum {1} characters.",
-							suffix,
-							maxAliasLength));
+						$"Unique suffix {suffix} length must be less than maximum {usableLength} characters.");
 				}
-				if (alias.Length + suffix.Length > maxAliasLength)
-					alias = alias.Substring(0, maxAliasLength - suffix.Length);
+				if (alias.Length + suffix.Length > usableLength)
+					alias = alias.Substring(0, usableLength - suffix.Length);
 			}
 			return alias + suffix;
 		}
 
+		/// <summary>
+		/// For any column name, generate an alias that is unique to that
+		/// column name and table, and also take Dialect.MaxAliasLength into account.
+		/// It keeps four characters left for accommodating additional suffixes.
+		/// </summary>
 		public string GetAlias(Dialect.Dialect dialect, Table table)
 		{
 			string suffix = table.UniqueInteger.ToString() + StringHelper.Underscore;
