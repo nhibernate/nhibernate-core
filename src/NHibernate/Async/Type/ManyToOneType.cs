@@ -165,8 +165,8 @@ namespace NHibernate.Type
 			{
 				return true;
 			}
-			
-			if (await (ForeignKeys.IsTransientFastAsync(GetAssociatedEntityName(), current, session, cancellationToken)).ConfigureAwait(false) == true)
+
+			if ((await (ForeignKeys.IsTransientFastAsync(GetAssociatedEntityName(), current, session, cancellationToken)).ConfigureAwait(false)).GetValueOrDefault())
 			{
 				return true;
 			}
