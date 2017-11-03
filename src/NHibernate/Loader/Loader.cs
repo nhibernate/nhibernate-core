@@ -1857,14 +1857,4 @@ namespace NHibernate.Loader
 		}
 		#endregion
 	}
-
-	public class ResultType
-	{
-		public ResultType()
-		{
-
-		}
-		private IType[] resultTypes;
-		public IType[] ResultTypes { get { return resultTypes; } set { resultTypes = value; } }
-	}
 }
