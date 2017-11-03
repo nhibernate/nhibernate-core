@@ -28,6 +28,8 @@ namespace NHibernate.Loader.Custom
 {
 	using System.Threading.Tasks;
 	using System.Threading;
+	using NHibernate.Cache;
+
 	public partial class CustomLoader : Loader
 	{
 
@@ -50,6 +52,12 @@ namespace NHibernate.Loader.Custom
 				return Task.FromCanceled<object>(cancellationToken);
 			}
 			return rowProcessor.BuildResultRowAsync(row, rs, resultTransformer != null, session, cancellationToken);
+		}
+
+		protected override async Task PutResultInQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters, IType[] resultTypes,
+									   IQueryCache queryCache, QueryKey key, IList result, CancellationToken cancellationToken)
+		{
+			await base.PutResultInQueryCacheAsync(session, queryParameters, resultTypes, queryCache, key, result, cancellationToken);
 		}
 
 		public partial class ResultRowProcessor

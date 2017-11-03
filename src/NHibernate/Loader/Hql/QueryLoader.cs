@@ -286,7 +286,7 @@ namespace NHibernate.Loader.Hql
 		public IList List(ISessionImplementor session, QueryParameters queryParameters)
 		{
 			CheckQuery(queryParameters);
-			return List(session, queryParameters, _queryTranslator.QuerySpaces, ref _queryReturnTypes);
+			return List(session, queryParameters, _queryTranslator.QuerySpaces, _queryReturnTypes);
 		}
 
 		public override IList GetResultList(IList results, IResultTransformer resultTransformer)

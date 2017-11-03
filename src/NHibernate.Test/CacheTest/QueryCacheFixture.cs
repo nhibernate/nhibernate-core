@@ -67,7 +67,7 @@ namespace NHibernate.Test.CacheTest
 			using (ISession s = OpenSession())
 			{
 				int result = s
-					.CreateSQLQuery("SELECT [dbo].[TestQueryCache] ()")
+					.CreateSQLQuery("SELECT 200012")
 					.SetCacheable(true)
 					.UniqueResult<int>();
 
