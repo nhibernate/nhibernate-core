@@ -24,7 +24,7 @@ namespace NHibernate.Loader.Criteria
 	{
 		private readonly CriteriaQueryTranslator translator;
 		private readonly ISet<string> querySpaces;
-		private  IType[] resultTypes;
+		private readonly IType[] resultTypes;
 		//the user visible aliases, which are unknown to the superclass,
 		//these are not the actual "physical" SQL aliases
 		private readonly string[] userAliases;
@@ -93,7 +93,7 @@ namespace NHibernate.Loader.Criteria
 
 		public IList List(ISessionImplementor session)
 		{
-			return List(session, translator.GetQueryParameters(), querySpaces, ref resultTypes);
+			return List(session, translator.GetQueryParameters(), querySpaces, resultTypes);
 		}
 
 		protected override IResultTransformer ResolveResultTransformer(IResultTransformer resultTransformer)
