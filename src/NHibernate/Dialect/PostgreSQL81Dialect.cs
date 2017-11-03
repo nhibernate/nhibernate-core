@@ -116,5 +116,9 @@ namespace NHibernate.Dialect
 
 		/// <inheritdoc />
 		public override bool SupportsDateTimeScale => true;
+
+		// Said to be 63 bytes at least since v8.
+		/// <inheritdoc />
+		public override int MaxAliasLength => 63;
 	}
 }

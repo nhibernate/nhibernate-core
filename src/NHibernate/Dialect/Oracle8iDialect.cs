@@ -533,6 +533,10 @@ namespace NHibernate.Dialect
 			}
 		}
 
+		// 30 before 12.1. https://stackoverflow.com/a/756569/1178314
+		/// <inheritdoc />
+		public override int MaxAliasLength => 30;
+
 		#region Overridden informational metadata
 
 		public override bool SupportsEmptyInList

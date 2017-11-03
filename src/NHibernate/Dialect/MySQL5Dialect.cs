@@ -61,5 +61,10 @@ namespace NHibernate.Dialect
 		{
 			get { return true; }
 		}
+
+		// At least MySQL 5 is said to support 64 characters for columns, but 5.7 supports 256 for aliases.
+		// 64 seems quite good enough, being conservative.
+		/// <inheritdoc />
+		public override int MaxAliasLength => 64;
 	}
 }
