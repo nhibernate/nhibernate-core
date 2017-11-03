@@ -39,8 +39,8 @@ namespace NHibernate.Test.NHSpecificTest.GH1419
 
 		protected override void OnSetUp()
 		{
-			using (ISession session = OpenSession())
-			using (ITransaction transaction = session.BeginTransaction())
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
 			{
 				var child = new EntityChild { Name = "InitialChild" };
 
@@ -64,8 +64,8 @@ namespace NHibernate.Test.NHSpecificTest.GH1419
 
 		protected override void OnTearDown()
 		{
-			using (ISession session = OpenSession())
-			using (ITransaction transaction = session.BeginTransaction())
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
 			{
 				session.Delete("from System.Object");
 
@@ -77,15 +77,15 @@ namespace NHibernate.Test.NHSpecificTest.GH1419
 		[Test]
 		public void SessionIsDirtyShouldNotFailForNewManyToOneObject()
 		{
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				EntityParent parent = GetParent(session);
+				var parent = GetParent(session);
 
 				//parent.Child entity is not cascaded, I want to save it explictilty later
 				parent.Child = new EntityChild { Name = "NewManyToOneChild" };
 
-				bool isDirty = false;
+				var isDirty = false;
 				Assert.That(() => isDirty = session.IsDirty(), Throws.Nothing, "ISession.IsDirty() call should not fail for transient  many-to-one object referenced in session.");
 				Assert.That(isDirty, "ISession.IsDirty() call should return true.");
 			}
@@ -94,15 +94,15 @@ namespace NHibernate.Test.NHSpecificTest.GH1419
 		[Test]
 		public void SessionIsDirtyShouldNotFailForNewManyToOneObjectWithAssignedId()
 		{
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				EntityParent parent = GetParent(session);
+				var parent = GetParent(session);
 
 				//parent.ChildAssigned entity is not cascaded, I want to save it explictilty later
 				parent.ChildAssigned = new EntityChildAssigned { Id = 2, Name = "NewManyToOneChildAssignedId" };
 
-				bool isDirty = false;
+				var isDirty = false;
 				Assert.That(() => isDirty = session.IsDirty(), Throws.Nothing, "ISession.IsDirty() call should not fail for transient  many-to-one object referenced in session.");
 				Assert.That(isDirty, "ISession.IsDirty() call should return true.");
 			}

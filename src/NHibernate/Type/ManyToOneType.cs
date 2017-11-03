@@ -217,7 +217,7 @@ namespace NHibernate.Type
 				return true;
 			}
 
-			if (ForeignKeys.IsTransientFast(GetAssociatedEntityName(), current, session) == true)
+			if (ForeignKeys.IsTransientFast(GetAssociatedEntityName(), current, session).GetValueOrDefault())
 			{
 				return true;
 			}
