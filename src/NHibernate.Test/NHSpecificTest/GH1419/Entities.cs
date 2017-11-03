@@ -14,5 +14,12 @@ namespace NHibernate.Test.NHSpecificTest.GH1419
 		public virtual Guid Id { get; set; }
 		public virtual string Name { get; set; }
 		public virtual EntityChild Child { get; set; }
+		public virtual EntityChildAssigned ChildAssigned { get; set; }
+	}
+
+	public class EntityChildAssigned
+	{
+		public virtual int Id { get; set; }
+		public virtual string Name { get; set; }
 	}
 }

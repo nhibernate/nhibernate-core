@@ -19,11 +19,18 @@ namespace NHibernate.Test.NHSpecificTest.GH1419
 				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
 				rc.Property(x => x.Name);
 				rc.ManyToOne(ep => ep.Child);
+				rc.ManyToOne(ep => ep.ChildAssigned);
 			});
 
 			mapper.Class<EntityChild>(rc =>
 			{
 				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+			});
+
+			mapper.Class<EntityChildAssigned>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.Assigned));
 				rc.Property(x => x.Name);
 			});
 
@@ -36,14 +43,19 @@ namespace NHibernate.Test.NHSpecificTest.GH1419
 			using (ITransaction transaction = session.BeginTransaction())
 			{
 				var child = new EntityChild { Name = "InitialChild" };
+
+				var assigned = new EntityChildAssigned { Id = 1, Name = "InitialChild" };
+
 				var parent = new EntityParent
 				{
 					Name = "InitialParent",
-					Child = child
+					Child = child,
+					ChildAssigned = assigned
 				};
 				session.Save(child);
 				session.Save(parent);
-				
+				session.Save(assigned);
+
 				session.Flush();
 				transaction.Commit();
 				ParentId = parent.Id;
@@ -72,6 +84,23 @@ namespace NHibernate.Test.NHSpecificTest.GH1419
 
 				//parent.Child entity is not cascaded, I want to save it explictilty later
 				parent.Child = new EntityChild { Name = "NewManyToOneChild" };
+
+				bool isDirty = false;
+				Assert.That(() => isDirty = session.IsDirty(), Throws.Nothing, "ISession.IsDirty() call should not fail for transient  many-to-one object referenced in session.");
+				Assert.That(isDirty, "ISession.IsDirty() call should return true.");
+			}
+		}
+
+		[Test]
+		public void SessionIsDirtyShouldNotFailForNewManyToOneObjectWithAssignedId()
+		{
+			using (ISession session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				EntityParent parent = GetParent(session);
+
+				//parent.ChildAssigned entity is not cascaded, I want to save it explictilty later
+				parent.ChildAssigned = new EntityChildAssigned { Id = 2, Name = "NewManyToOneChildAssignedId" };
 
 				bool isDirty = false;
 				Assert.That(() => isDirty = session.IsDirty(), Throws.Nothing, "ISession.IsDirty() call should not fail for transient  many-to-one object referenced in session.");
