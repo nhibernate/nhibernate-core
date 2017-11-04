@@ -209,8 +209,8 @@
 	<section id="NHibernate.Caches.SysCache">
 		<title>SysCache Configuration</title>
 		<para>
-			As SysCache relies on <classname>System.Web.Caching.Cache</classname> for the underlying implementation.
-			Following NHibernate configuration settings are available:
+			SysCache relies on <classname>System.Web.Caching.Cache</classname> for the underlying implementation.
+			The following NHibernate configuration settings are available:
 		</para>
 
 		<variablelist>
@@ -265,13 +265,13 @@
 
 		<para>
 			SysCache2 can use SqlCacheDependencies to invalidate cache regions when data in an underlying SQL Server
-			table or query changes. Query dependencies are only available for SQL Server 2005. To use the cache
+			table or query changes. Query dependencies are only available for SQL Server 2005 or higher. To use the cache
 			provider, the application must be setup and configured to support SQL notifications as described in the
 			MSDN documentation.
 		</para>
 
 		<para>
-			Following NHibernate configuration settings are available:
+			The following NHibernate configuration settings are available:
 		</para>
 
 		<variablelist>
@@ -568,11 +568,11 @@
 	</section>
 
 	<section id="NHibernate.Caches.RtMemoryCache">
-		<title>Runtime Memory Configuration</title>
+		<title>RtMemoryCache Configuration</title>
 		<para>
-			As runtime memory relies on <classname>System.Runtime.Caching.MemoryCache</classname> for the
+			RtMemoryCache relies on <classname>System.Runtime.Caching.MemoryCache</classname> for the
 			underlying implementation.
-			Following NHibernate configuration settings are available:
+			The following NHibernate configuration settings are available:
 		</para>
 
 		<variablelist>
@@ -602,14 +602,14 @@
 			<programlisting><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
 <configuration>
   <configSections>
-    <section name="syscache"
-      type="NHibernate.Caches.SysCache.SysCacheSectionHandler,NHibernate.Caches.SysCache" />
+    <section name="rtmemorycache"
+      type="NHibernate.Caches.RtMemoryCache.RtMemoryCacheSectionHandler,NHibernate.Caches.RtMemoryCache" />
   </configSections>
 
-  <syscache>
+  <rtmemorycache>
     <cache region="foo" expiration="500" />
     <cache region="bar" expiration="300" sliding="true" />
-  </syscache>
+  </rtmemorycache>
 </configuration>]]></programlisting>
 		</example>
 	</section>

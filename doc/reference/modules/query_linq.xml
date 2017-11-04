@@ -331,7 +331,7 @@ using NHibernate.Linq;]]></programlisting>
     <sect2 id="querylinq-supportedmethods-string">
       <title>Strings</title>
       <para>
-        Following properties and methods are supported on strings:
+        The following properties and methods are supported on strings:
       </para>
       <itemizedlist>
         <listitem>
