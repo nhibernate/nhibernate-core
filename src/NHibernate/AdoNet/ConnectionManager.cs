@@ -365,7 +365,7 @@ namespace NHibernate.AdoNet
 		}
 
 		[SecurityCritical]
-		public void GetObjectData(SerializationInfo info, StreamingContext context)
+		public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			info.AddValue("ownConnection", _ownConnection);
 			info.AddValue("session", Session, typeof(ISessionImplementor));

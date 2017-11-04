@@ -123,7 +123,7 @@ namespace NHibernate.Cfg
 		}
 
 		[SecurityCritical]
-		public void GetObjectData(SerializationInfo info, StreamingContext context)
+		public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			ConfigureProxyFactoryFactory();
 			SecondPassCompile();
