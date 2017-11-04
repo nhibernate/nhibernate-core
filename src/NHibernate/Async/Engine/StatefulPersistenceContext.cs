@@ -27,7 +27,7 @@ namespace NHibernate.Engine
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class StatefulPersistenceContext : IPersistenceContext, ISerializable, IDeserializationCallback
+	public sealed partial class StatefulPersistenceContext : IPersistenceContext, ISerializable, IDeserializationCallback
 	{
 
 		#region IPersistenceContext Members
