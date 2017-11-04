@@ -11,9 +11,6 @@ namespace NHibernate.Exceptions
 	public class ConstraintViolationException : ADOException
 	{
 		private readonly string constraintName;
-		protected ConstraintViolationException(SerializationInfo info, StreamingContext context)
-			: base(info, context) {}
-
 		public ConstraintViolationException(string message, Exception innerException, string sql, string constraintName)
 			: base(message, innerException, sql)
 		{
@@ -24,6 +21,18 @@ namespace NHibernate.Exceptions
 			: base(message, innerException)
 		{
 			this.constraintName = constraintName;
+		}
+
+		protected ConstraintViolationException(SerializationInfo info, StreamingContext context)
+			: base(info, context)
+		{
+			this.constraintName = info.GetString("constraintName");
+		}
+
+		public override void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			base.GetObjectData(info, context);
+			info.AddValue("constraintName", this.constraintName);
 		}
 
 		/// <summary> 

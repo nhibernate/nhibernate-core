@@ -13,8 +13,19 @@ namespace NHibernate.Bytecode
 			this.typeName = typeName;
 		}
 
-		protected UnableToLoadProxyFactoryFactoryException(SerializationInfo info,
-		                      StreamingContext context) : base(info, context) {}
+		protected UnableToLoadProxyFactoryFactoryException(
+			SerializationInfo info,
+			StreamingContext context) : base(info, context)
+		{
+			typeName = info.GetString("typeName");
+		}
+
+		public override void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			base.GetObjectData(info, context);
+			info.AddValue("typeName", typeName);
+		}
+
 		public override string Message
 		{
 			get

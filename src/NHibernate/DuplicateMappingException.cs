@@ -62,6 +62,15 @@ namespace NHibernate
 		protected DuplicateMappingException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
+			type = info.GetString("type");
+			name = info.GetString("name");
+		}
+
+		public override void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			base.GetObjectData(info, context);
+			info.AddValue("type", type);
+			info.AddValue("name", name);
 		}
 	}
 }

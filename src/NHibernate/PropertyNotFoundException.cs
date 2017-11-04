@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.Serialization;
+using NHibernate.Util;
 
 namespace NHibernate
 {
@@ -9,9 +10,12 @@ namespace NHibernate
 	[Serializable]
 	public class PropertyNotFoundException : MappingException
 	{
-		private readonly System.Type targetType;
+		private readonly string targetTypeAssemblyQualifiedName;
 		private readonly string propertyName;
 		private readonly string accessorType;
+
+		[NonSerialized]
+		private System.Type targetType;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PropertyNotFoundException" /> class,
@@ -27,6 +31,7 @@ namespace NHibernate
 					))
 		{
 			this.targetType = targetType;
+			this.targetTypeAssemblyQualifiedName = targetType?.AssemblyQualifiedName;
 			this.propertyName = propertyName;
 			this.accessorType = accessorType;
 		}
@@ -42,6 +47,7 @@ namespace NHibernate
 													 propertyName, targetType))
 		{
 			this.targetType = targetType;
+			this.targetTypeAssemblyQualifiedName = targetType?.AssemblyQualifiedName;
 			this.propertyName = propertyName;
 		}
 
@@ -50,6 +56,7 @@ namespace NHibernate
 					))
 		{
 			this.targetType = targetType;
+			this.targetTypeAssemblyQualifiedName = targetType?.AssemblyQualifiedName;
 			this.propertyName = propertyName;
 			accessorType = fieldName;
 		}
@@ -67,11 +74,27 @@ namespace NHibernate
 		/// </param>
 		protected PropertyNotFoundException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
+			this.targetTypeAssemblyQualifiedName = info.GetString("targetTypeAssemblyQualifiedName");
+			this.propertyName = info.GetString("propertyName");
+			this.accessorType = info.GetString("accessorType");
+		}
+
+		public override void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			base.GetObjectData(info, context);
+			info.AddValue("targetTypeAssemblyQualifiedName", targetTypeAssemblyQualifiedName);
+			info.AddValue("propertyName", propertyName);
+			info.AddValue("accessorType", accessorType);
 		}
 
 		public System.Type TargetType
 		{
-			get { return targetType; }
+			get
+			{
+				if (targetType != null || targetTypeAssemblyQualifiedName == null) return targetType;
+
+				return (targetType = ReflectHelper.ClassForFullNameOrNull(targetTypeAssemblyQualifiedName));
+			}
 		}
 
 		public string PropertyName
