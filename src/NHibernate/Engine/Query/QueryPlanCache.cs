@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using NHibernate.Engine.Query.Sql;
 using NHibernate.Hql;
 using NHibernate.Linq;
@@ -184,19 +185,16 @@ namespace NHibernate.Engine.Query
 			private readonly bool shallow;
 			private readonly HashSet<string> filterNames;
 			private readonly int hashCode;
-			private readonly System.Type queryTypeDiscriminator;
-
-			public HQLQueryPlanKey(string query, bool shallow, IDictionary<string, IFilter> enabledFilters)
-				: this(typeof(object), query, shallow, enabledFilters)
-			{
-			}
+			[NonSerialized]
+			private System.Type queryTypeDiscriminator;
+			private SerializableSystemType _serializableQueryTypeDiscriminator;
 
 			public HQLQueryPlanKey(IQueryExpression queryExpression, bool shallow, IDictionary<string, IFilter> enabledFilters)
 				: this(queryExpression.GetType(), queryExpression.Key, shallow, enabledFilters)
 			{
 			}
 
-			protected HQLQueryPlanKey(System.Type queryTypeDiscriminator, string query, bool shallow, IDictionary<string, IFilter> enabledFilters)
+			private HQLQueryPlanKey(System.Type queryTypeDiscriminator, string query, bool shallow, IDictionary<string, IFilter> enabledFilters)
 			{
 				this.queryTypeDiscriminator = queryTypeDiscriminator;
 				this.query = query;
@@ -219,6 +217,18 @@ namespace NHibernate.Engine.Query
 					hash = 29*hash + queryTypeDiscriminator.GetHashCode();
 					hashCode = hash;
 				}
+			}
+
+			[OnSerializing]
+			private void OnSerializing(StreamingContext context)
+			{
+				_serializableQueryTypeDiscriminator = SerializableSystemType.Wrap(queryTypeDiscriminator);
+			}
+
+			[OnDeserialized]
+			private void OnDeserialized(StreamingContext context)
+			{
+				queryTypeDiscriminator = _serializableQueryTypeDiscriminator?.GetSystemType();
 			}
 
 			public override bool Equals(object obj)

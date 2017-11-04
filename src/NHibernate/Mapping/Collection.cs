@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -42,7 +44,9 @@ namespace NHibernate.Mapping
 		private bool orphanDelete;
 		private int batchSize = -1;
 		private FetchMode fetchMode;
+		[NonSerialized]
 		private System.Type collectionPersisterClass;
+		private SerializableSystemType _serializableCollectionPersisterClass;
 		private string referencedPropertyName;
 		private string typeName;
 
@@ -65,7 +69,9 @@ namespace NHibernate.Mapping
 		private ExecuteUpdateResultCheckStyle deleteAllCheckStyle;
 
 		private bool isGeneric;
+		[NonSerialized]
 		private System.Type[] genericArguments;
+		private SerializableSystemType[] _serializableGenericArguments;
 		private readonly Dictionary<string, string> filters = new Dictionary<string, string>();
 		private readonly Dictionary<string, string> manyToManyFilters = new Dictionary<string, string>();
 		private bool subselectLoadable;
@@ -79,6 +85,20 @@ namespace NHibernate.Mapping
 		protected Collection(PersistentClass owner)
 		{
 			this.owner = owner;
+		}
+
+		[OnSerializing]
+		private void OnSerializing(StreamingContext context)
+		{
+			_serializableCollectionPersisterClass = SerializableSystemType.Wrap(collectionPersisterClass);
+			_serializableGenericArguments = genericArguments?.Select(SerializableSystemType.Wrap).ToArray();
+		}
+
+		[OnDeserialized]
+		private void OnDeserialized(StreamingContext context)
+		{
+			collectionPersisterClass = _serializableCollectionPersisterClass?.GetSystemType();
+			genericArguments = _serializableGenericArguments?.Select(sst => sst?.GetSystemType()).ToArray();
 		}
 
 		public int ColumnSpan

@@ -14,7 +14,10 @@ namespace NHibernate.Mapping
 	public class Component : SimpleValue, IMetaAttributable
 	{
 		private readonly List<Property> properties = new List<Property>();
+
+		[NonSerialized]
 		private System.Type componentClass;
+
 		private bool embedded;
 		private Property parentProperty;
 		private PersistentClass owner;

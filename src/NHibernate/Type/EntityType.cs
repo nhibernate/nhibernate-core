@@ -8,6 +8,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Util;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace NHibernate.Type
 {
@@ -22,10 +23,12 @@ namespace NHibernate.Type
 		protected readonly string uniqueKeyPropertyName;
 
 		private readonly string _uniqueKeyPropertyName;
-		private readonly bool eager;
-		private readonly string associatedEntityName;
-		private readonly bool unwrapProxy;
-		private System.Type returnedClass;
+		private readonly bool _eager;
+		private readonly string _associatedEntityName;
+		private readonly bool _unwrapProxy;
+		[NonSerialized]
+		private System.Type _returnedClass;
+		private SerializableSystemType _serializableReturnedClass;
 
 		/// <summary> Constructs the requested entity type mapping. </summary>
 		/// <param name="entityName">The name of the associated entity. </param>
@@ -45,22 +48,31 @@ namespace NHibernate.Type
 			this.uniqueKeyPropertyName = uniqueKeyPropertyName;
 #pragma warning restore 618
 
-			associatedEntityName = entityName;
+			_associatedEntityName = entityName;
 			_uniqueKeyPropertyName = uniqueKeyPropertyName;
-			this.eager = eager;
-			this.unwrapProxy = unwrapProxy;
+			_eager = eager;
+			_unwrapProxy = unwrapProxy;
+		}
+
+		[OnSerializing]
+		private void OnSerializing(StreamingContext context)
+		{
+			_serializableReturnedClass = SerializableSystemType.Wrap(_returnedClass);
+		}
+
+		[OnDeserialized]
+		private void OnDeserialized(StreamingContext context)
+		{
+			_returnedClass = _serializableReturnedClass?.GetSystemType();
 		}
 
 		/// <summary> Explicitly, an entity type is an entity type </summary>
 		/// <value> True. </value>
-		public override sealed bool IsEntityType
-		{
-			get { return true; }
-		}
+		public sealed override bool IsEntityType => true;
 
 		public override bool IsEqual(object x, object y, ISessionFactoryImplementor factory)
 		{
-			IEntityPersister persister = factory.GetEntityPersister(associatedEntityName);
+			IEntityPersister persister = factory.GetEntityPersister(_associatedEntityName);
 			if (!persister.CanExtractIdOutOfEntity)
 			{
 				return base.IsEqual(x, y);
@@ -120,15 +132,15 @@ namespace NHibernate.Type
 		/// entity persister (nor to the session factory, to look it up) which is really
 		/// needed to "do the right thing" here...
 		///  </summary>
-		override public System.Type ReturnedClass
+		public override System.Type ReturnedClass
 		{
 			get
 			{
-				if (returnedClass == null)
+				if (_returnedClass == null)
 				{
-					returnedClass = DetermineAssociatedEntityClass();
+					_returnedClass = DetermineAssociatedEntityClass();
 				}
-				return returnedClass;
+				return _returnedClass;
 			}
 		}
 
@@ -195,8 +207,8 @@ namespace NHibernate.Type
 				return "null";
 			}
 
-			IEntityPersister persister = factory.GetEntityPersister(associatedEntityName);
-			StringBuilder result = new StringBuilder().Append(associatedEntityName);
+			IEntityPersister persister = factory.GetEntityPersister(_associatedEntityName);
+			StringBuilder result = new StringBuilder().Append(_associatedEntityName);
 
 			if (persister.HasIdentifierProperty)
 			{
@@ -208,20 +220,14 @@ namespace NHibernate.Type
 			return result.ToString();
 		}
 
-		public override string Name
-		{
-			get { return associatedEntityName; }
-		}
+		public override string Name => _associatedEntityName;
 
 		public override object DeepCopy(object value, ISessionFactoryImplementor factory)
 		{
 			return value; //special case ... this is the leaf of the containment graph, even though not immutable
 		}
 
-		public override bool IsMutable
-		{
-			get { return false; }
-		}
+		public override bool IsMutable => false;
 
 		public abstract bool IsOneToOne { get; }
 
@@ -247,9 +253,9 @@ namespace NHibernate.Type
 				{
 					return target;
 				}
-				if (session.GetContextEntityIdentifier(original) == null && ForeignKeys.IsTransientFast(associatedEntityName, original, session).GetValueOrDefault())
+				if (session.GetContextEntityIdentifier(original) == null && ForeignKeys.IsTransientFast(_associatedEntityName, original, session).GetValueOrDefault())
 				{
-					object copy = session.Factory.GetEntityPersister(associatedEntityName).Instantiate(null);
+					object copy = session.Factory.GetEntityPersister(_associatedEntityName).Instantiate(null);
 					//TODO: should this be Session.instantiate(Persister, ...)?
 					copyCache.Add(original, copy);
 					return copy;
@@ -267,10 +273,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override bool IsAssociationType
-		{
-			get { return true; }
-		}
+		public override bool IsAssociationType => true;
 
 		/// <summary>
 		/// Converts the id contained in the <see cref="DbDataReader"/> to an object.
@@ -282,7 +285,7 @@ namespace NHibernate.Type
 		/// <returns>
 		/// An instance of the object or <see langword="null" /> if the identifer was null.
 		/// </returns>
-		public override sealed object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public sealed override object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			return ResolveIdentifier(Hydrate(rs, names, session, owner), session, owner);
 		}
@@ -301,7 +304,7 @@ namespace NHibernate.Type
 		/// <returns> The associated joinable </returns>
 		public IJoinable GetAssociatedJoinable(ISessionFactoryImplementor factory)
 		{
-			return (IJoinable) factory.GetEntityPersister(associatedEntityName);
+			return (IJoinable) factory.GetEntityPersister(_associatedEntityName);
 		}
 
 		/// <summary> 
@@ -367,10 +370,10 @@ namespace NHibernate.Type
 		protected object ResolveIdentifier(object id, ISessionImplementor session)
 		{
 			string entityName = GetAssociatedEntityName();
-			bool isProxyUnwrapEnabled = unwrapProxy && session.Factory
+			bool isProxyUnwrapEnabled = _unwrapProxy && session.Factory
 			                                                  .GetEntityPersister(entityName).IsInstrumented;
 
-			object proxyOrEntity = session.InternalLoad(entityName, id, eager, IsNullable && !isProxyUnwrapEnabled);
+			object proxyOrEntity = session.InternalLoad(entityName, id, _eager, IsNullable && !isProxyUnwrapEnabled);
 
 			if (proxyOrEntity.IsProxy())
 			{
@@ -394,21 +397,19 @@ namespace NHibernate.Type
 			{
 				return null;
 			}
+
+			if (IsNull(owner, session))
+			{
+				return null; //EARLY EXIT!
+			}
+
+			if (IsReferenceToPrimaryKey)
+			{
+				return ResolveIdentifier(value, session);
+			}
 			else
 			{
-				if (IsNull(owner, session))
-				{
-					return null; //EARLY EXIT!
-				}
-
-				if (IsReferenceToPrimaryKey)
-				{
-					return ResolveIdentifier(value, session);
-				}
-				else
-				{
-					return LoadByUniqueKey(GetAssociatedEntityName(), _uniqueKeyPropertyName, value, session);
-				}
+				return LoadByUniqueKey(GetAssociatedEntityName(), _uniqueKeyPropertyName, value, session);
 			}
 		}
 
@@ -424,7 +425,7 @@ namespace NHibernate.Type
 		/// <returns> The associated entity name.</returns>
 		public string GetAssociatedEntityName()
 		{
-			return associatedEntityName;
+			return _associatedEntityName;
 		}
 
 		/// <summary>
@@ -439,24 +440,15 @@ namespace NHibernate.Type
 		/// </summary>
 		public abstract bool UseLHSPrimaryKey { get; }
 
-		public string LHSPropertyName
-		{
-			get { return null; }
-		}
+		public string LHSPropertyName => null;
 
-		public string RHSUniqueKeyPropertyName
-		{
-			get { return _uniqueKeyPropertyName; }
-		}
+		public string RHSUniqueKeyPropertyName => _uniqueKeyPropertyName;
 
-		public virtual string PropertyName
-		{
-			get { return null; }
-		}
+		public virtual string PropertyName => null;
 
 		public override int GetHashCode(object x, ISessionFactoryImplementor factory)
 		{
-			IEntityPersister persister = factory.GetEntityPersister(associatedEntityName);
+			IEntityPersister persister = factory.GetEntityPersister(_associatedEntityName);
 			if (!persister.CanExtractIdOutOfEntity)
 			{
 				return base.GetHashCode(x);
@@ -478,10 +470,7 @@ namespace NHibernate.Type
 
 		public abstract bool IsAlwaysDirtyChecked { get; }
 
-		public bool IsReferenceToPrimaryKey
-		{
-			get { return string.IsNullOrEmpty(_uniqueKeyPropertyName); }
-		}
+		public bool IsReferenceToPrimaryKey => string.IsNullOrEmpty(_uniqueKeyPropertyName);
 
 		public string GetOnCondition(string alias, ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 		{
@@ -498,7 +487,7 @@ namespace NHibernate.Type
 
 		public override IType GetSemiResolvedType(ISessionFactoryImplementor factory)
 		{
-			return factory.GetEntityPersister(associatedEntityName).IdentifierType;
+			return factory.GetEntityPersister(_associatedEntityName).IdentifierType;
 		}
 
 		/// <summary> 
