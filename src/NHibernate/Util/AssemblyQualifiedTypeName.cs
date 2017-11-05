@@ -2,35 +2,26 @@ using System;
 
 namespace NHibernate.Util
 {
+	[Serializable]
 	public class AssemblyQualifiedTypeName
 	{
-		private readonly string type;
-		private readonly string assembly;
-		private readonly int hashCode;
+		private readonly string _type;
+		private readonly string _assembly;
+		private readonly int _hashCode;
 
 		public AssemblyQualifiedTypeName(string type, string assembly)
 		{
-			if (type == null)
-			{
-				throw new ArgumentNullException("type");
-			}
-			this.type = type;
-			this.assembly = assembly;
+			_type = type ?? throw new ArgumentNullException(nameof(type));
+			_assembly = assembly;
 			unchecked
 			{
-				hashCode = (type.GetHashCode() * 397) ^ (assembly != null ? assembly.GetHashCode() : 0);
+				_hashCode = (type.GetHashCode() * 397) ^ (assembly?.GetHashCode() ?? 0);
 			}
 		}
 
-		public string Type
-		{
-			get { return type; }
-		}
+		public string Type => _type;
 
-		public string Assembly
-		{
-			get { return assembly; }
-		}
+		public string Assembly => _assembly;
 
 		public override bool Equals(object obj)
 		{
@@ -40,12 +31,12 @@ namespace NHibernate.Util
 
 		public override string ToString()
 		{
-			if (assembly == null)
+			if (_assembly == null)
 			{
-				return type;
+				return _type;
 			}
 
-			return string.Concat(type, ", ", assembly);
+			return string.Concat(_type, ", ", _assembly);
 		}
 
 		public bool Equals(AssemblyQualifiedTypeName obj)
@@ -58,12 +49,12 @@ namespace NHibernate.Util
 			{
 				return true;
 			}
-			return Equals(obj.type, type) && Equals(obj.assembly, assembly);
+			return Equals(obj._type, _type) && Equals(obj._assembly, _assembly);
 		}
 
 		public override int GetHashCode()
 		{
-			return hashCode;
+			return _hashCode;
 		}
 	}
 }
