@@ -617,7 +617,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 		{
 			var initialVersion = _timeVersioned.Version;
 
-			Thread.Sleep(1300);
+			await (Task.Delay(1300));
 
 			using (var s = OpenSession())
 			{

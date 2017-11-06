@@ -503,7 +503,7 @@ namespace NHibernate.Test.Hql.Ast
 
 			DateTime initialVersion = entity.Version;
 
-			Thread.Sleep(1300);
+			await (Task.Delay(1300));
 
 			using (ISession s = OpenSession())
 			{
