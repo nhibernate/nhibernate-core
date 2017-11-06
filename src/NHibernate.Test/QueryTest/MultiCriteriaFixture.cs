@@ -487,5 +487,38 @@ namespace NHibernate.Test.QueryTest
 				Assert.That(results[1], Is.InstanceOf<List<int>>());
 			}
 		}
+
+		[Test]
+		public void UsingManyParametersAndQueries_DoesNotCauseParameterNameCollisions()
+		{
+			//GH-1357
+			using (var s = OpenSession())
+			{
+				var item = new Item {Id = 15};
+				s.Save(item);
+				s.Flush();
+			}
+
+			using (var s = OpenSession())
+			{
+				var multi = s.CreateMultiCriteria();
+
+				for (var i = 0; i < 12; i++)
+				{
+					var criteria = s.CreateCriteria(typeof(Item));
+					for (var j = 0; j < 12; j++)
+					{
+						criteria = criteria.Add(Restrictions.Gt("id", j));
+					}
+					multi.Add(criteria);
+				}
+				//Parameter combining is only used for cacheable queries
+				multi.SetCacheable(true);
+				foreach (IList result in multi.List())
+				{
+					Assert.That(result.Count, Is.EqualTo(1));
+				}
+			}
+		}
 	}
 }

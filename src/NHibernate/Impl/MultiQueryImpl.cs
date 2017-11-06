@@ -752,7 +752,7 @@ namespace NHibernate.Impl
 			{
 				foreach (KeyValuePair<string, TypedValue> dictionaryEntry in queryParameters.NamedParameters)
 				{
-					combinedQueryParameters.NamedParameters.Add(dictionaryEntry.Key + index, dictionaryEntry.Value);
+					combinedQueryParameters.NamedParameters.Add(dictionaryEntry.Key + "_" + index, dictionaryEntry.Value);
 				}
 				index += 1;
 				positionalParameterTypes.AddRange(queryParameters.PositionalParameterTypes);
