@@ -19,6 +19,29 @@ namespace NHibernate.Test.NHSpecificTest.NH1688
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
+		[Test]
+		public Task UsingExpressionAsync()
+		{
+			return TestActionAsync(criteria => criteria.Add(Restrictions.Eq("alias.BooleanData", true)));
+		}
+
+		[Test]
+		public Task UsingExpressionProjectionAsync()
+		{
+			return TestActionAsync(criteria => criteria.Add(Restrictions.Eq(Projections.Property("alias.BooleanData"), true)));
+		}
+
+		[Test]
+		public Task UsingExpressionFunctionProjectionAsync()
+		{
+			return TestActionAsync(criteria => criteria.Add(Restrictions.Eq(
+			                                    	Projections.Conditional(
+			                                    		Restrictions.Eq(Projections.Property("alias.BooleanData"), true),
+			                                    		Projections.Property("alias.BooleanData"),
+			                                    		Projections.Constant(false)), 
+			                                    	false)
+			                       	));
+		}
 
 		protected override void OnSetUp()
 		{

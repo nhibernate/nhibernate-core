@@ -74,6 +74,19 @@ namespace NHibernate.Test.NHSpecificTest.NH1274ExportExclude
 		}
 
 		[Test]
+		public async Task SchemaExport_Update_CreatesUpdateScriptAsync()
+		{
+			Configuration configuration = GetConfiguration();
+			SchemaUpdate update = new SchemaUpdate(configuration);
+			TextWriter tw = new StringWriter();
+			await (update.ExecuteAsync(tw.WriteLine, false));
+
+			string s = tw.ToString();
+			Assert.IsTrue(s.Contains("create table Home_Update"));
+			Assert.IsTrue(s.Contains("create table Home_All"));
+		}
+
+		[Test]
 		public void SchemaExport_Validate_CausesValidateExceptionAsync()
 		{
 			Configuration configuration = GetConfiguration();
