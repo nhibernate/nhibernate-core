@@ -1,122 +1,119 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-// Algorithm from: http://tawani.blogspot.com/2009/02/topological-sorting-and-cyclic.html
 namespace NHibernate.Loader
 {
 	class TopologicalSorter
 	{
-		#region - Private Members -
+		sealed class Node
+		{
+			public int Index { get; private set; }
+			public int SuccessorCount { get; private set; }
+			public bool Eliminated { get; private set; }
+			System.Action _onEliminate;
 
-		private readonly int[] _vertices; // list of vertices
-		private readonly int[,] _matrix; // adjacency matrix
-		private int _numVerts; // current number of vertices
-		private readonly int[] _sortedArray;
+			public Node(int index)
+			{
+				Index = index;
+				SuccessorCount = 0;
+				Eliminated = false;
+				_onEliminate = null;
+			}
 
-		#endregion
+			public void RegisterSuccessor(Node successor)
+			{
+				SuccessorCount++;
+				successor._onEliminate += () => SuccessorCount--;
+			}
 
-		#region - CTors -
+			public void Eliminate()
+			{
+				if (_onEliminate != null)
+				{
+					_onEliminate();
+					_onEliminate = null;
+				}
+				Eliminated = true;
+			}
+		}
+
+		readonly Node[] _nodes;
+		int _nodeCount;
 
 		public TopologicalSorter(int size)
 		{
-			_vertices = new int[size];
-			_matrix = new int[size, size];
-			_numVerts = 0;
-			for (int i = 0; i < size; i++)
-				for (int j = 0; j < size; j++)
-					_matrix[i, j] = 0;
-			_sortedArray = new int[size]; // sorted vert labels
+			_nodes = new Node[size];
+			_nodeCount = 0;
 		}
 
-		#endregion
-
-		#region - Public Methods -
-
-		public int AddVertex(int vertex)
+		/// <summary>
+		/// Adds a new node
+		/// </summary>
+		/// <returns>index of the new node</returns>
+		public int AddVertex()
 		{
-			_vertices[_numVerts++] = vertex;
-			return _numVerts - 1;
+			// note: this method cannot add nodes beyond the initial size defined in the constructor.
+			var node = new Node(_nodeCount++);
+			_nodes[node.Index] = node;
+			return node.Index;
 		}
 
-		public void AddEdge(int start, int end)
+		/// <summary>
+		/// Adds an edge from the node with the given sourceNodeIndex to the node with the given destinationNodeIndex
+		/// </summary>
+		/// <param name="sourceNodeIndex">index of a previously added node that is the source of the edge</param>
+		/// <param name="destinationNodeIndex">index of a previously added node the is the destination of the edge</param>
+		public void AddEdge(int sourceNodeIndex, int destinationNodeIndex)
 		{
-			_matrix[start, end] = 1;
+			// note: invalid values for "sourceNodeIndex" and "destinationNodeIndex" will either lead to an "IndexOutOfRangeException" or a "NullReferenceException"
+			_nodes[sourceNodeIndex].RegisterSuccessor(_nodes[destinationNodeIndex]);
 		}
 
-		public int[] Sort() // toplogical sort
+		void EliminateNode(Node node)
 		{
-			while (_numVerts > 0) // while vertices remain,
+			node.Eliminate();
+
+			// decrease _nodeCount whenever the last nodes are already eliminated.
+			// This should save time for the following checks in "getNodeWithoutSuccessors".
+			while (_nodeCount > 0 && _nodes[_nodeCount - 1].Eliminated)
+				_nodeCount--;
+		}
+
+		Node GetNodeWithoutSuccessors()
+		{
+			// note: Check the nodes in reverse order, since that allows decreases of "_nodeCount" in "eliminateNode"
+			// as often as possible because high indices are preferred over low indices whenever there is a choice.
+			for (int i = _nodeCount - 1; i >= 0; i--)
 			{
-				// get a vertex with no successors, or -1
-				int currentVertex = noSuccessors();
-				if (currentVertex == -1) // must be a cycle                
-					throw new Exception("Graph has cycles");
+				var node = _nodes[i];
+				if (node.Eliminated)
+					continue;
 
-				// insert vertex label in sorted array (start at end)
-				_sortedArray[_numVerts - 1] = _vertices[currentVertex];
+				if (node.SuccessorCount > 0)
+					continue;
 
-				deleteVertex(currentVertex); // delete vertex
+				return node;
 			}
 
-			// vertices all gone; return sortedArray
-			return _sortedArray;
+			throw new Exception("Unable to find node without successors: Graph has cycles");
 		}
 
-		#endregion
-
-		#region - Private Helper Methods -
-
-		// returns vert with no successors (or -1 if no such verts)
-		private int noSuccessors()
+		/// <summary>
+		/// Performs the topological sort and returns an array containing the node keys in a topological order
+		/// </summary>
+		/// <returns>Array of node keys</returns>
+		public int[] Sort()
 		{
-			for (int row = 0; row < _numVerts; row++)
+			var sortedArray = new int[_nodes.Length];
+
+			// fill the array back to front as we select nodes without successors.
+			for (int i = _nodeCount - 1; i >= 0; i--)
 			{
-				bool isEdge = false; // edge from row to column in adjMat
-				for (int col = 0; col < _numVerts; col++)
-				{
-					if (_matrix[row, col] > 0) // if edge to another,
-					{
-						isEdge = true;
-						break; // this vertex has a successor try another
-					}
-				}
-				if (!isEdge) // if no edges, has no successors
-					return row;
+				var node = GetNodeWithoutSuccessors();
+				sortedArray[i] = node.Index;
+				EliminateNode(node);
 			}
-			return -1; // no
+
+			return sortedArray;
 		}
-
-		private void deleteVertex(int delVert)
-		{
-			// if not last vertex, delete from vertexList
-			if (delVert != _numVerts - 1)
-			{
-				for (int j = delVert; j < _numVerts - 1; j++)
-					_vertices[j] = _vertices[j + 1];
-
-				for (int row = delVert; row < _numVerts - 1; row++)
-					moveRowUp(row, _numVerts);
-
-				for (int col = delVert; col < _numVerts - 1; col++)
-					moveColLeft(col, _numVerts - 1);
-			}
-			_numVerts--; // one less vertex
-		}
-
-		private void moveRowUp(int row, int length)
-		{
-			for (int col = 0; col < length; col++)
-				_matrix[row, col] = _matrix[row + 1, col];
-		}
-
-		private void moveColLeft(int col, int length)
-		{
-			for (int row = 0; row < length; row++)
-				_matrix[row, col] = _matrix[row, col + 1];
-		}
-
-		#endregion
 	}
 }
