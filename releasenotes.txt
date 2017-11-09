@@ -1,4 +1,27 @@
-﻿Build 5.0.0
+﻿Build 5.0.1
+=============================
+
+Release notes - NHibernate - Version 5.0.1
+
+** Bug
+    * #1419 ISession.IsDirty() shouldn't throw exception for transient many-to-one object in a session
+    * #1418 Column.GetAlias should account for other suffixes
+    * #1387 Linq Sum() with ToFutureValue fails
+    * #1362 NH-4093 - Running Unit tests against SQLite fails on numerous (22) datetime/UTC related tests.
+    * #1357 NH-3983 - ToFuture throws ArgumentException at CreateCombinedQueryParameters
+    * #1179 NH-3840 - Wrong documentation of "cascade" in 5.1.11 (many-to-one)
+    * #1165 NH-3554 - Docs - bidirectional, indexed collections
+    * #879 NH-4006 - Provide a correct MaxAliasLength for various dialects
+    * #750 Transformers.AliasToBean: Value cannot be null. Parameter name: key
+
+** Improvement
+    * #1386 Lack of custom logging documentation
+    * #824 NH-3208 - Document all possible settings in hibernate.cfg
+    * #823 NH-3179 - Documentation should note that OnDelete should set IsSaved to false in chapter 24.1
+    * #788 NH-1947 - Undocumented attributes on sql-query element
+
+
+Build 5.0.0
 =============================
 
 ** Highlights
