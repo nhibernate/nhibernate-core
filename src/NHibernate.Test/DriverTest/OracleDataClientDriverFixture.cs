@@ -117,7 +117,7 @@ namespace NHibernate.Test.DriverTest
 			try
 			{
 				driver = managed
-					? (OracleDataClientDriverBase)new OracleManagedDataClientDriver()
+					? (OracleDataClientDriverBase)new OracleManagedDriver()
 					: new OracleDataClientDriver();
 			}
 			catch (Exception ex)

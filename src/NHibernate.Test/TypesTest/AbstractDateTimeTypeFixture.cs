@@ -581,7 +581,7 @@ namespace NHibernate.Test.TypesTest
 			// This results in other tests failing when they try to create tables with same name.
 			// By clearing the connection pool the tables will get dropped. This is done by the following code.
 			// Moved from NH1908 test case, contributed by Amro El-Fakharany.
-			_driverImplementation.ClearPoolForFirebirdClientDriver();
+			_driverImplementation.ClearPoolForFirebirdDriver();
 		}
 
 		#endregion

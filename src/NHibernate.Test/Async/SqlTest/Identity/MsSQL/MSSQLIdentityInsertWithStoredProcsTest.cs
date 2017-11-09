@@ -27,7 +27,7 @@ namespace NHibernate.Test.SqlTest.Identity.MsSQL
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)
 		{
 			// Tested resulting SQL depends on driver.
-			return factory.ConnectionProvider.Driver.IsSqlClientDriver();
+			return factory.ConnectionProvider.Driver.IsSqlServerDriver();
 		}
 
 		protected override string GetExpectedInsertOrgLogStatement(string orgName)

@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 
 		// Uses directly SqlConnection.
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)
-			=> factory.ConnectionProvider.Driver.IsSqlClientDriver() && base.AppliesTo(factory);
+			=> factory.ConnectionProvider.Driver.IsSqlServerDriver() && base.AppliesTo(factory);
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 			=> dialect is MsSql2000Dialect && base.AppliesTo(dialect);

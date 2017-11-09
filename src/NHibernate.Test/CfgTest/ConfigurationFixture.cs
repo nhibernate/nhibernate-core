@@ -52,7 +52,7 @@ namespace NHibernate.Test.CfgTest
 
 			props[Environment.ConnectionProvider] = "NHibernate.Connection.DriverConnectionProvider";
 			props[Environment.Dialect] = "NHibernate.Dialect.MsSql2000Dialect";
-			props[Environment.ConnectionDriver] = "NHibernate.Driver.SqlClientDriver";
+			props[Environment.ConnectionDriver] = "NHibernate.Driver.SqlServer2000Driver, NHibernate.Driver.SqlServer";
 			props[Environment.ConnectionString] =
 				"Server=localhost;initial catalog=nhibernate;Integrated Security=SSPI";
 

@@ -147,7 +147,7 @@ namespace NHibernate.Connection
 
 		private static void LogObsoleteDriver(string obsoleteDriverName, string nugetName, string newDriverName)
 		{
-			log.Error(
+			log.Warn(
 				"Using \"{0}\" from main NHibernate package is obsolete." 
 				+ "  Install the NHibernate.Driver.{1} NuGet package and change " + Environment.ConnectionDriver + " setting to \"NHibernate.Driver.{2}, NHibernate.Driver.{1}\".",
 				obsoleteDriverName,

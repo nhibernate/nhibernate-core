@@ -33,7 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3405
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)
 		{
 			// No Xml support with Odbc (and likely OleDb too).
-			return factory.ConnectionProvider.Driver.IsSqlClientDriver();
+			return factory.ConnectionProvider.Driver.IsSqlServerDriver();
 		}
 
 		protected override HbmMapping GetMappings()

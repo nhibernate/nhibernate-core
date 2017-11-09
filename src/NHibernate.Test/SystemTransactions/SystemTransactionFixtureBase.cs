@@ -31,7 +31,7 @@ namespace NHibernate.Test.SystemTransactions
 			var autoEnlistmentKeyword = "Enlist";
 			var autoEnlistmentKeywordPattern = autoEnlistmentKeyword;
 			if (configuration.GetDerivedProperties().TryGetValue(Cfg.Environment.ConnectionDriver, out var driver) &&
-				ReflectHelper.ClassForName(driver).IsMySqlDataDriver())
+				ReflectHelper.ClassForName(driver).IsMySqlDriver())
 			{
 				autoEnlistmentKeyword = "AutoEnlist";
 				autoEnlistmentKeywordPattern = "Auto ?Enlist";

@@ -9,10 +9,10 @@ using NUnit.Framework;
 namespace NHibernate.Test.DriverTest
 {
 	[TestFixture]
-	public class FirebirdClientDriverFixture
+	public class FirebirdDriverFixture
 	{
 		private string _connectionString;
-		private FirebirdClientDriver _driver;
+		private FirebirdDriver _driver;
 
 		[OneTimeSetUp]
 		public void OneTimeSetup()
@@ -23,7 +23,7 @@ namespace NHibernate.Test.DriverTest
 			if (!dlct.Contains("Firebird"))
 				Assert.Ignore("Applies only to Firebird");
 
-			_driver = new FirebirdClientDriver();
+			_driver = new FirebirdDriver();
 			_driver.Configure(cfg.Properties);
 			_connectionString = cfg.GetProperty("connection.connection_string");
 		}

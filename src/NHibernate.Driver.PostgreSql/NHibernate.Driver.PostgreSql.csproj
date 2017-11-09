@@ -30,12 +30,8 @@
     <None Include="..\NHibernate.snk" Link="NHibernate.snk" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
-    <PackageReference Include="Npgsql" Version="3.2.2" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Npgsql" Version="3.2.5" />
+  <ItemGroup>
+    <PackageReference Include="Npgsql" Version="3.2.4.1" />
   </ItemGroup>
 
   <ItemGroup>

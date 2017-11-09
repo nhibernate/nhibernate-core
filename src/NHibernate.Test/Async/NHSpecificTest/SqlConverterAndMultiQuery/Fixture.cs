@@ -31,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 			// tend to (validly) send InvalidOperationException during prepare phase due to the closed
 			// connection, which get not converted. For testing other case, maybe a failure caused by a
 			// schema mismatch (like done in transaction tests) would be better.
-			return factory.ConnectionProvider.Driver.IsSqlClientDriver();
+			return factory.ConnectionProvider.Driver.IsSqlServerDriver();
 		}
 
 		[Test]

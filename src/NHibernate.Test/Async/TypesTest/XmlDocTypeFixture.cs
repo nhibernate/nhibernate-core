@@ -34,7 +34,7 @@ namespace NHibernate.Test.TypesTest
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)
 		{
 			// No Xml support with Odbc (and likely OleDb too).
-			return factory.ConnectionProvider.Driver.IsSqlClientDriver();
+			return factory.ConnectionProvider.Driver.IsSqlServerDriver();
 		}
 
 		[Test]

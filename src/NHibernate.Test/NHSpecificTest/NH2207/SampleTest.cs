@@ -16,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2207
 
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)
 		{
-			return factory.ConnectionProvider.Driver.IsSql2008ClientDriver();
+			return factory.ConnectionProvider.Driver.IsSqlServer2008Driver();
 		}
 
 		[Test]

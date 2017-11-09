@@ -31,35 +31,22 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="5.11.0" />
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="NSubstitute" Version="3.0.1" />
-    <PackageReference Include="Microsoft.SqlServer.Compact" Version="4.0.8876.1" />
-    <PackageReference Include="MySql.Data" Version="6.9.10" />
-    <PackageReference Include="Npgsql" Version="3.2.4.1" />
-    <PackageReference Include="Oracle.ManagedDataAccess" Version="12.1.2400" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.105.2" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.7.6" />
     <PackageReference Include="NUnit" Version="3.9.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.9.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(NuGetPackageRoot)' != '' ">
-    <NativeBinaries Include="$(NuGetPackageRoot)microsoft.sqlserver.compact\4.0.8876.1\NativeBinaries\**\*.*" />
-    <Content Include="@(NativeBinaries)">
-      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup Condition=" '$(NuGetPackageRoot)' != '' ">
-    <NativeBinaries Include="$(NuGetPackageRoot)system.data.sqlite.core\1.0.105.2\build\net46\**\*.*" />
-    <Content Include="@(NativeBinaries)">
-      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate.DomainModel\NHibernate.DomainModel.csproj" />
+    <ProjectReference Include="..\NHibernate.Driver.Firebird\NHibernate.Driver.Firebird.csproj" />
+    <ProjectReference Include="..\NHibernate.Driver.MySql\NHibernate.Driver.MySql.csproj" />
+    <ProjectReference Include="..\NHibernate.Driver.PostgreSql\NHibernate.Driver.PostgreSql.csproj" />
+    <ProjectReference Include="..\NHibernate.Driver.Oracle.Managed\NHibernate.Driver.Oracle.Managed.csproj" />
+    <ProjectReference Include="..\NHibernate.Driver.SqlServer\NHibernate.Driver.SqlServer.csproj" />
+    <ProjectReference Include="..\NHibernate.Driver.SQLite\NHibernate.Driver.SQLite.csproj" />
+    <ProjectReference Include="..\NHibernate.Driver.SqlServer.Compact\NHibernate.Driver.SqlServer.Compact.csproj" />
     <ProjectReference Include="..\NHibernate\NHibernate.csproj" />
   </ItemGroup>
   <ItemGroup>

@@ -37,7 +37,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3518
 
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)
 		{
-			return factory.ConnectionProvider.Driver.IsSqlClientDriver();
+			return factory.ConnectionProvider.Driver.IsSqlServerDriver();
 		}
 
 		protected override void Configure(Configuration configuration)

@@ -69,7 +69,7 @@ namespace NHibernate.Driver
 
 		/// <summary>
 		/// Creates an uninitialized <see cref="DbConnection" /> object for
-		/// the SqlClientDriver.
+		/// the SQL-Server driver.
 		/// </summary>
 		/// <value>An unitialized <see cref="System.Data.SqlClient.SqlConnection"/> object.</value>
 		public override DbConnection CreateConnection()
@@ -79,7 +79,7 @@ namespace NHibernate.Driver
 
 		/// <summary>
 		/// Creates an uninitialized <see cref="DbCommand" /> object for
-		/// the SqlClientDriver.
+		/// the SQL-Server driver.
 		/// </summary>
 		/// <value>An unitialized <see cref="System.Data.SqlClient.SqlCommand"/> object.</value>
 		public override DbCommand CreateCommand()

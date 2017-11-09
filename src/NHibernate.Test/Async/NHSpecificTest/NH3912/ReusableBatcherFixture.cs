@@ -29,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3912
 			var driver = factory.ConnectionProvider.Driver;
 			return driver.IsOracleDataClientDriver() ||
 			       driver.IsOracleLiteDataClientDriver() ||
-			       driver.IsOracleManagedDataClientDriver();
+			       driver.IsOracleManagedDriver();
 		}
 
 		protected override HbmMapping GetMappings()

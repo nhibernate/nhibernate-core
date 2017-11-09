@@ -31,7 +31,7 @@ namespace NHibernate.Test.ExceptionsTest
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)
 		{
 			var driver = factory.ConnectionProvider.Driver;
-			return !(driver.IsOracleDataClientDriver()) && !(driver.IsOracleManagedDataClientDriver()) && !(driver.IsOracleLiteDataClientDriver()) && !(driver.IsOdbcDriver()) && !(driver.IsOleDbDriver());
+			return !(driver.IsOracleDataClientDriver()) && !(driver.IsOracleManagedDriver()) && !(driver.IsOracleLiteDataClientDriver()) && !(driver.IsOdbcDriver()) && !(driver.IsOleDbDriver());
 		}
 
 		protected override void Configure(Cfg.Configuration configuration)
