@@ -4,21 +4,44 @@
 Release notes - NHibernate - Version 5.0.1
 
 ** Bug
+    * #1428 Insert underscore in combined parameter name
+    * #1424 Bad wording and example fixes in cache documentation.
+    * #1420 Fix #1419 - ISession.IsDirty() shouldn't throw exception for transient many-to-one object in a session
     * #1419 ISession.IsDirty() shouldn't throw exception for transient many-to-one object in a session
     * #1418 Column.GetAlias should account for other suffixes
+    * #1415 Correct MaxAliasLength for various dialects
+    * #1393 Fix Linq Future aggregates failures, fixes #1387
+    * #1389 Add support for out/ref Nullable parameters of proxied methods
     * #1387 Linq Sum() with ToFutureValue fails
+    * #1384 Fix a column spec causing missing col in pdf, fix a text overflow
+    * #1380 #750 - AliasToBean failure, test case and fix
+    * #1378 Fix #1362 - Running Unit tests against SQLite fails on datetime/UTC
     * #1362 NH-4093 - Running Unit tests against SQLite fails on numerous (22) datetime/UTC related tests.
     * #1357 NH-3983 - ToFuture throws ArgumentException at CreateCombinedQueryParameters
     * #1179 NH-3840 - Wrong documentation of "cascade" in 5.1.11 (many-to-one)
     * #1165 NH-3554 - Docs - bidirectional, indexed collections
+    * #983 Fix forgotten CDATA closure.
     * #879 NH-4006 - Provide a correct MaxAliasLength for various dialects
     * #750 Transformers.AliasToBean: Value cannot be null. Parameter name: key
+    * #712 NH-4092 - AsyncGenerator creates unused private static event handler in SQLite20Driver
 
 ** Improvement
+    * #1410 Remove unused code in build scripts
+    * #1404 Use MsBuild for packing .nupkg files
+    * #1401 Clean up db tests dependencies
+    * #1395 Documentation fixes
     * #1386 Lack of custom logging documentation
+    * #1382 Jira to GitHub: change issue naming in tests
+    * #1379 Documentation fixes
+    * #982 Back port doc fixes
     * #824 NH-3208 - Document all possible settings in hibernate.cfg
     * #823 NH-3179 - Documentation should note that OnDelete should set IsSaved to false in chapter 24.1
     * #788 NH-1947 - Undocumented attributes on sql-query element
+    * #713 Switch to GitHub issues
+    * #711 Switch doc generation to UTF-8.
+
+** Task
+    * #1405 Remove unused and broken NHibernate.Setup WiX project
 
 
 Build 5.0.0
