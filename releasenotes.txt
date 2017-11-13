@@ -41,6 +41,7 @@ Release notes - NHibernate - Version 5.0.1
     * #711 Switch doc generation to UTF-8.
 
 ** Task
+    * #1431 Release 5.0.1
     * #1405 Remove unused and broken NHibernate.Setup WiX project
 
 
