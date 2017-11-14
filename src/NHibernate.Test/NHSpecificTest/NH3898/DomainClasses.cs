@@ -1,31 +1,13 @@
-﻿
+﻿using System;
 
-using System;
-using System.Collections.Generic;
 namespace NHibernate.Test.NHSpecificTest.NH3898
 {
 	public class Employee
 	{
-		private Int32 id;
-		public virtual Int32 Id
-		{
-			get { return id; }
-			set { id = value; }
-		}
+		public virtual int Id { get; set; }
 
-		private String name;
-		public virtual String Name
-		{
-			get { return name; }
-			set { name = value; }
-		}
+		public virtual string Name { get; set; }
 
-		private Int32 promotionCount;
-
-		public virtual Int32 PromotionCount
-		{
-			get { return promotionCount; }
-			set { promotionCount = value; }
-		}
+		public virtual int PromotionCount { get; set; }
 	}
 }

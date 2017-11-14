@@ -1,101 +1,60 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
-using NHibernate.Dialect;
-using NUnit.Framework;
-using NHibernate.Test.NHSpecificTest;
-using Iesi.Collections.Generic;
-using NHibernate;
-using System.Data;
-using NHibernate.Criterion;
+﻿using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3898
 {
-	/// <summary>
-	/// <para>
-	/// </para>
-	/// </remarks>
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		protected override void Configure(NHibernate.Cfg.Configuration configuration)
+		protected override void Configure(Cfg.Configuration configuration)
 		{
-			#region removing possible second-level-cache configs
-			configuration.Properties.Remove(NHibernate.Cfg.Environment.CacheProvider);
-			configuration.Properties.Remove(NHibernate.Cfg.Environment.UseQueryCache);
-			configuration.Properties.Add(NHibernate.Cfg.Environment.UseQueryCache, "true");
-			configuration.Properties.Remove(NHibernate.Cfg.Environment.UseSecondLevelCache);
-			#endregion
-
-			base.Configure(configuration);
+			configuration.SetProperty(Cfg.Environment.UseQueryCache, "false");
+			configuration.SetProperty(Cfg.Environment.UseSecondLevelCache, "false");
 		}
 
 		protected override void OnTearDown()
 		{
-			base.OnTearDown();
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
 			{
-				int countUpdate = 0;
+				s.CreateQuery("delete from Employee").ExecuteUpdate();
 
-				countUpdate =
-					s
-						.CreateSQLQuery("DELETE FROM T_EMPLOYEE")
-						.ExecuteUpdate();
-				Assert.AreEqual(1, countUpdate);
-
-				s.Flush();
+				tx.Commit();
 			}
 		}
 
-		protected override void OnSetUp()
-		{
-			base.OnSetUp();
-		}
-
-		protected override bool AppliesTo(global::NHibernate.Dialect.Dialect dialect)
-		{
-			//return dialect as MsSql2005Dialect != null;
-			return base.AppliesTo(dialect);
-		}
-
-		/// <summary>
-		/// Test that reproduces the problem.
-		/// </summary>
 		[Test]
 		public void GeneratedInsertUpdateTrue()
 		{
-			using (ISession session = this.OpenSession())
+			object id;
+			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
 			{
-				using (ITransaction tx = session.BeginTransaction())
+				var employee = new Employee
 				{
-					Employee employee = new Employee();
-					employee.Id = 1;
-					employee.Name = "Employee 1";
-					employee.PromotionCount = 9999999;
-					session.Save(employee);
-					Assert.AreEqual(0, employee.PromotionCount);
-					tx.Commit();
-				}
+					Name = "Employee 1",
+					PromotionCount = 9999999
+				};
+				id = session.Save(employee);
+				Assert.That(employee.PromotionCount, Is.EqualTo(0));
+				tx.Commit();
 			}
 
-			using (ISession session = this.OpenSession())
+			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
 			{
-				using (ITransaction tx = session.BeginTransaction())
-				{
-					Employee employee = session.Get<Employee>(1);
-					employee.Name = "Employee 1 changed";
-					employee.PromotionCount++;
-					Assert.AreEqual(1, employee.PromotionCount);
-					tx.Commit();
-				}
+				var employee = session.Get<Employee>(id);
+				employee.Name = "Employee 1 changed";
+				employee.PromotionCount++;
+				Assert.That(employee.PromotionCount, Is.EqualTo(1));
+				tx.Commit();
 			}
 
-			using (ISession session = this.OpenSession())
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
 			{
-				Employee employee = session.Get<Employee>(1);
-				Assert.AreEqual("Employee 1 changed", employee.Name);
-				Assert.AreEqual(1, employee.PromotionCount);
+				var employee = session.Get<Employee>(id);
+				Assert.That(employee.Name, Is.EqualTo("Employee 1 changed"));
+				Assert.That(employee.PromotionCount, Is.EqualTo(1));
 			}
 		}
 	}
