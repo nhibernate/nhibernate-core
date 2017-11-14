@@ -272,6 +272,10 @@ namespace NHibernate.Dialect
 			get { return " for read only with rs"; }
 		}
 
+		// As of DB2 9.5 documentation, limit is 128 bytes which with Unicode names could mean only 32 characters.
+		/// <inheritdoc />
+		public override int MaxAliasLength => 32;
+
 		#region Overridden informational metadata
 
 		public override bool SupportsEmptyInList => false;

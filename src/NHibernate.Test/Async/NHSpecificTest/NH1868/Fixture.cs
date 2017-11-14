@@ -82,5 +82,34 @@ namespace NHibernate.Test.NHSpecificTest.NH1868
 				}
 			}
 		}
+
+		[Test]
+		public void BugAsync()
+		{
+			Assert.DoesNotThrowAsync(() => ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now)));
+		}
+
+		[Test]
+		public void FilterOnOffOnAsync()
+		{
+			Assert.DoesNotThrowAsync(() => ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now)));
+			Assert.DoesNotThrowAsync(() => ExecuteQueryAsync(s => { }));
+			Assert.DoesNotThrowAsync(() => ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now)));
+		}
+
+		[Test]
+		public void FilterQueryTwiceAsync()
+		{
+			Assert.DoesNotThrowAsync(() => ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now)));
+			Assert.DoesNotThrowAsync(() => ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now)));
+		}
+
+		[Test]
+		public void FilterQuery3Async()
+		{
+			Assert.DoesNotThrowAsync(() => ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now)));
+			Assert.DoesNotThrowAsync(() => ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now)));
+			Assert.DoesNotThrowAsync(() => ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now)));
+		}
 	}
 }

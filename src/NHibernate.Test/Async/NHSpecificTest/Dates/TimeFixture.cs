@@ -22,5 +22,26 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 		{
 			get { return new[] {"NHSpecificTest.Dates.Mappings.Time.hbm.xml"}; }
 		}
+
+		[Test]
+		public Task SavingAndRetrievingTestAsync()
+		{
+			try
+			{
+				DateTime now = DateTime.Parse("23:59:59");
+
+				return SavingAndRetrievingActionAsync(new AllDates {Sql_time = now},
+			                          entity =>
+			                          		{
+			                          			Assert.AreEqual(entity.Sql_time.Hour, now.Hour);
+			                          			Assert.AreEqual(entity.Sql_time.Minute, now.Minute);
+			                          			Assert.AreEqual(entity.Sql_time.Second, now.Second);
+			                          		});
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
 	}
 }

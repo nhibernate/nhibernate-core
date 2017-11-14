@@ -103,6 +103,10 @@ namespace NHibernate.Dialect
 			return tableName;
 		}
 
+		// SQL Server 2005 supports 128.
+		/// <inheritdoc />
+		public override int MaxAliasLength => 128;
+
 		#region Overridden informational metadata
 
 		/// <summary>

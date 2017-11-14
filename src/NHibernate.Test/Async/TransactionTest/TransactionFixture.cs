@@ -41,40 +41,24 @@ namespace NHibernate.Test.TransactionTest
 		}
 
 		[Test]
-		public Task CommitAfterDisposeThrowsExceptionAsync()
+		public void CommitAfterDisposeThrowsExceptionAsync()
 		{
-			try
+			using (ISession s = OpenSession())
 			{
-				using (ISession s = OpenSession())
-				{
-					ITransaction t = s.BeginTransaction();
-					t.Dispose();
-					Assert.ThrowsAsync<ObjectDisposedException>(() => t.CommitAsync());
-				}
-				return Task.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
+				ITransaction t = s.BeginTransaction();
+				t.Dispose();
+				Assert.ThrowsAsync<ObjectDisposedException>(() => t.CommitAsync());
 			}
 		}
 
 		[Test]
-		public Task RollbackAfterDisposeThrowsExceptionAsync()
+		public void RollbackAfterDisposeThrowsExceptionAsync()
 		{
-			try
+			using (ISession s = OpenSession())
 			{
-				using (ISession s = OpenSession())
-				{
-					ITransaction t = s.BeginTransaction();
-					t.Dispose();
-					Assert.ThrowsAsync<ObjectDisposedException>(() => t.RollbackAsync());
-				}
-				return Task.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
+				ITransaction t = s.BeginTransaction();
+				t.Dispose();
+				Assert.ThrowsAsync<ObjectDisposedException>(() => t.RollbackAsync());
 			}
 		}
 

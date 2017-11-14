@@ -395,6 +395,10 @@ namespace NHibernate.Dialect
 		/// </remarks>
 		public override bool SupportsConcurrentWritingConnections => false;
 
+		// Said to be unlimited. http://sqlite.1065341.n5.nabble.com/Max-limits-on-the-following-td37859.html
+		/// <inheritdoc />
+		public override int MaxAliasLength => 128;
+
 		[Serializable]
 		protected class SQLiteCastFunction : CastFunction
 		{

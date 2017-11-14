@@ -305,7 +305,7 @@ namespace NHibernate.Test.SystemTransactions
 					var count = await (controlSession.Query<Person>().CountAsync());
 					if (count != i)
 					{
-						Thread.Sleep(100);
+						await (Task.Delay(100));
 						var countSecondTry = await (controlSession.Query<Person>().CountAsync());
 						Assert.Warn($"Unexpected entity count: {count} instead of {i}. " +
 									"This may mean current data provider has a delayed commit, occurring after scope disposal. " +

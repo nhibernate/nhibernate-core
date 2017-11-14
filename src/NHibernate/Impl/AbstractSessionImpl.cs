@@ -40,7 +40,7 @@ namespace NHibernate.Impl
 
 		private static readonly IInternalLogger logger = LoggerProvider.LoggerFor(typeof(AbstractSessionImpl));
 
-		public Guid SessionId { get; } = Guid.NewGuid();
+		public Guid SessionId { get; }
 
 		internal AbstractSessionImpl() { }
 
@@ -50,6 +50,7 @@ namespace NHibernate.Impl
 			Timestamp = factory.Settings.CacheProvider.NextTimestamp();
 			_flushMode = options.InitialSessionFlushMode;
 			Interceptor = options.SessionInterceptor ?? EmptyInterceptor.Instance;
+			SessionId = factory.Settings.TrackSessionId ? Guid.NewGuid() : Guid.Empty;
 		}
 
 		#region ISessionImplementor Members

@@ -125,6 +125,7 @@
 						<programlisting>
 &lt;property name="cache.provider_class"&gt;<literal>XXX</literal>&lt;/property&gt;<co id="hibernate.cache.provider_class-co" linkends="hibernate.cache.provider_class"/>
 &lt;property name="cache.default_expiration"&gt;<literal>120</literal>&lt;/property&gt;<co id="nhcaches-expiration-co" linkends="nhcaches-expiration"/>
+&lt;property name="cache.use_sliding_expiration"&gt;<literal>true</literal>&lt;/property&gt;<co id="nhcaches-sliding-co" linkends="nhcaches-sliding"/>
 						</programlisting>
 						<calloutlist>
 							<callout arearefs="hibernate.cache.provider_class-co" id="hibernate.cache.provider_class">
@@ -138,7 +139,15 @@
 							<callout arearefs="nhcaches-expiration-co" id="nhcaches-expiration">
 								<para>
 									The <literal>expiration</literal> value is the number of seconds you wish
-									to cache each entry (here two minutes). This example applies to SysCache only.
+									to cache each entry (here two minutes). Not all providers support this setting, it may
+									be ignored. Check their respective documentation.
+								</para>
+							</callout>
+							<callout arearefs="nhcaches-sliding-co" id="nhcaches-sliding">
+								<para>
+									The <literal>use_sliding_expiration</literal> value is whether you wish to use a
+									sliding expiration or not. Defaults to <literal>false</literal>.
+									Not all providers support this setting, it may be ignored. Check their respective documentation.
 								</para>
 							</callout>
 						</calloutlist>
@@ -156,15 +165,31 @@
 		<formalpara>
 			<title>Be careful</title>
 			<para>
-				Caches are never aware of changes made to the persistent store by another process (though they may be
-				configured to regularly expire cached data). As the caches are created at the session factory level,
-				they are destroyed with the SessionFactory instance; so you must keep them alive as long as you need
-				them.
-			</para>
-			<para>
-				The second level cache requires the use of transactions, be it through transaction scopes or NHibernate
-				transactions. Interacting with the data store without an explicit transaction is discouraged, and will
-				not allow the second level cache to work as intended.
+				<itemizedlist>
+					<listitem>
+						<para>
+							Most caches are never aware of changes made to the persistent store by another process (though they may be
+							configured to regularly expire cached data). As the caches are created at the session factory level,
+							they are destroyed with the SessionFactory instance; so you must keep them alive as long as you need
+							them.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							The second level cache requires the use of transactions, be it through transaction scopes or NHibernate
+							transactions. Interacting with the data store without an explicit transaction is discouraged, and will
+							not allow the second level cache to work as intended.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							To avoid issues with composite ids and some cache providers, <literal>ToString()</literal> needs to
+							be overridden on composite id classes. It should yield an unique string representing the id. If the
+							composite id is mapped as a component, overriding the component <literal>ToString()</literal>
+							is enough. See <xref linkend="components-compositeid" />.
+						</para>
+					</listitem>
+				</itemizedlist>
 			</para>
 		</formalpara>
 		<para>
@@ -184,8 +209,8 @@
 	<section id="NHibernate.Caches.SysCache">
 		<title>SysCache Configuration</title>
 		<para>
-			As SysCache relies on <classname>System.Web.Caching.Cache</classname> for the underlying implementation,
-			the configuration is based on the available options that make sense for NHibernate to utilize.
+			SysCache relies on <classname>System.Web.Caching.Cache</classname> for the underlying implementation.
+			The following NHibernate configuration settings are available:
 		</para>
 
 		<variablelist>
@@ -193,20 +218,30 @@
 				<term><literal>expiration</literal></term>
 				<listitem>
 					Number of seconds to wait before expiring each item.
+					Takes precedence over <literal>cache.default_expiration</literal>.
+					If none of them are defined, defaults to <literal>300</literal>.
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>cache.use_sliding_expiration</literal></term>
+				<listitem>
+					Should the expiration be sliding? A sliding expiration is reinitialized at each get.
+					Defaults to <literal>false</literal>.
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term><literal>priority</literal></term>
 				<listitem>
 					A numeric cost of expiring each item, where 1 is a low cost, 5 is the highest, and 3 is normal.
-					Only values 1 through 5 are valid.
+					Only values 1 through 5 are valid. 6 is a special value corresponding to
+					<literal>NotRemovable</literal>, it should not be used.
 				</listitem>
 			</varlistentry>
 		</variablelist>
 
 		<para>
 			SysCache has a config file section handler to allow configuring different expirations and priorities for
-			different regions. Here's an example:
+			different regions. Here is an example:
 		</para>
 
 		<example>
@@ -219,7 +254,7 @@
 
   <syscache>
     <cache region="foo" expiration="500" priority="4" />
-    <cache region="bar" expiration="300" priority="3" />
+    <cache region="bar" expiration="300" priority="3" sliding="true" />
   </syscache>
 </configuration>]]></programlisting>
 		</example>
@@ -230,10 +265,32 @@
 
 		<para>
 			SysCache2 can use SqlCacheDependencies to invalidate cache regions when data in an underlying SQL Server
-			table or query changes. Query dependencies are only available for SQL Server 2005. To use the cache
+			table or query changes. Query dependencies are only available for SQL Server 2005 or higher. To use the cache
 			provider, the application must be setup and configured to support SQL notifications as described in the
 			MSDN documentation.
 		</para>
+
+		<para>
+			The following NHibernate configuration settings are available:
+		</para>
+
+		<variablelist>
+			<varlistentry>
+				<term><literal>expiration</literal></term>
+				<listitem>
+					Number of seconds to wait before expiring each item.
+					Takes precedence over <literal>cache.default_expiration</literal>.
+					If none of them are defined, defaults to <literal>300</literal>.
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>cache.use_sliding_expiration</literal></term>
+				<listitem>
+					Should the expiration be sliding? A sliding expiration is reinitialized at each get.
+					Defaults to <literal>false</literal>.
+				</listitem>
+			</varlistentry>
+		</variablelist>
 
 		<para>
 			To configure cache regions with SqlCacheDependencies a <literal>syscache2</literal> config section must be
@@ -456,7 +513,7 @@
 			<example>
 				<title>Relative Expiration</title>
 
-				<programlisting><![CDATA[<cacheRegion name="Product" relativeExpiration="300" priority="High" />]]></programlisting>
+				<programlisting><![CDATA[<cacheRegion name="Product" relativeExpiration="300" priority="High" useSlidingExpiration="true" />]]></programlisting>
 			</example>
 
 			<example>
@@ -472,6 +529,18 @@
 					<listitem>
 						<para>
 							Number of seconds that an individual item will exist in the cache before being removed.
+							Defaults to <literal>300</literal> if neither <literal>relativeExpiration</literal> nor
+							<literal>timeOfDayExpiration</literal> are defined, and if no expiration settings are
+							defined in NHibernate configuration.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><literal>useSlidingExpiration</literal></term>
+					<listitem>
+						<para>
+							Should the expiration be sliding? A sliding expiration is reinitialized at each get.
+							Defaults to <literal>false</literal> if not defined in NHibernate configuration.
 						</para>
 					</listitem>
 				</varlistentry>
@@ -496,6 +565,53 @@
 			</variablelist>
 		</section>
 
+	</section>
+
+	<section id="NHibernate.Caches.RtMemoryCache">
+		<title>RtMemoryCache Configuration</title>
+		<para>
+			RtMemoryCache relies on <classname>System.Runtime.Caching.MemoryCache</classname> for the
+			underlying implementation.
+			The following NHibernate configuration settings are available:
+		</para>
+
+		<variablelist>
+			<varlistentry>
+				<term><literal>expiration</literal></term>
+				<listitem>
+					Number of seconds to wait before expiring each item.
+					Takes precedence over <literal>cache.default_expiration</literal>.
+					If none of them are defined, defaults to <literal>300</literal>.
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>cache.use_sliding_expiration</literal></term>
+				<listitem>
+					Should the expiration be sliding? A sliding expiration is reinitialized at each get.
+					Defaults to <literal>false</literal>.
+				</listitem>
+			</varlistentry>
+		</variablelist>
+
+		<para>
+			RtMemoryCache has a config file section handler to allow configuring different expirations for
+			different regions. Here is an example:
+		</para>
+
+		<example>
+			<programlisting><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <configSections>
+    <section name="rtmemorycache"
+      type="NHibernate.Caches.RtMemoryCache.RtMemoryCacheSectionHandler,NHibernate.Caches.RtMemoryCache" />
+  </configSections>
+
+  <rtmemorycache>
+    <cache region="foo" expiration="500" />
+    <cache region="bar" expiration="300" sliding="true" />
+  </rtmemorycache>
+</configuration>]]></programlisting>
+		</example>
 	</section>
 
 </chapter>

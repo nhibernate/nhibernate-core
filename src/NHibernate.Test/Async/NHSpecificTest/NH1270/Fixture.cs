@@ -58,23 +58,16 @@ namespace NHibernate.Test.NHSpecificTest.NH1270
 		}
 
 		[Test]
-		public Task WhenMapCustomFkNamesThenUseItAsync()
+		public async Task WhenMapCustomFkNamesThenUseItAsync()
 		{
-			try
-			{
-				var conf = TestConfigurationHelper.GetDefaultConfiguration();
-				conf.DataBaseIntegration(i=> i.KeywordsAutoImport = Hbm2DDLKeyWords.AutoQuote);
-				conf.AddMapping(GetMappings());
-				var sb = new StringBuilder();
-				(new SchemaExport(conf)).Create(s => sb.AppendLine(s), true);
+			var conf = TestConfigurationHelper.GetDefaultConfiguration();
+			conf.DataBaseIntegration(i=> i.KeywordsAutoImport = Hbm2DDLKeyWords.AutoQuote);
+			conf.AddMapping(GetMappings());
+			var sb = new StringBuilder();
+			await ((new SchemaExport(conf)).CreateAsync(s => sb.AppendLine(s), true));
 
-				Assert.That(sb.ToString(), Does.Contain("FK_RoleInUser").And.Contains("FK_UserInRole"));
-				return (new SchemaExport(conf)).DropAsync(false, true);
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			Assert.That(sb.ToString(), Does.Contain("FK_RoleInUser").And.Contains("FK_UserInRole"));
+			await ((new SchemaExport(conf)).DropAsync(false, true));
 		}
 	}
 }

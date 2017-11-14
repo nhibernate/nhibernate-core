@@ -248,7 +248,11 @@ namespace NHibernate.Persister.Collection
 				foreach (Column col in collection.Owner.Key.ColumnIterator)
 				{
 					keyColumnNames[k] = col.GetQuotedName(dialect);
-					keyColumnAliases[k] = col.GetAlias(dialect) + "_owner_"; // Force the alias to be unique in case it conflicts with an alias in the entity
+					// Force the alias to be unique in case it conflicts with an alias in the entity
+					// As per Column.GetAlias, we have 3 characters left for SelectFragment suffix and one for here.
+					// Since suffixes are composed of digits and '_', and GetAlias is already suffixed, adding any other
+					// letter will avoid collision.
+					keyColumnAliases[k] = col.GetAlias(dialect) + "o";
 					k++;
 				}
 				joinColumnNames = new string[collection.Key.ColumnSpan];

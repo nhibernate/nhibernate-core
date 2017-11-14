@@ -28,21 +28,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1521
 				Assert.Ignore("Specific test for MsSQL dialects");
 		}
 
-		private static Task AssertThatCheckOnTableExistenceIsCorrectAsync(Configuration configuration, CancellationToken cancellationToken = default(CancellationToken))
+		private static async Task AssertThatCheckOnTableExistenceIsCorrectAsync(Configuration configuration, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			try
-			{
-				var su = new SchemaExport(configuration);
-				var sb = new StringBuilder(500);
-				su.Execute(x => sb.AppendLine(x), false, false);
-				string script = sb.ToString();
-				Assert.That(script, Does.Contain("if exists (select * from dbo.sysobjects where id = object_id(N'nhibernate.dbo.Aclass') and OBJECTPROPERTY(id, N'IsUserTable') = 1)"));
-				return Task.CompletedTask;
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			var su = new SchemaExport(configuration);
+			var sb = new StringBuilder(500);
+			await (su.ExecuteAsync(x => sb.AppendLine(x), false, false, cancellationToken));
+			string script = sb.ToString();
+			Assert.That(script, Does.Contain("if exists (select * from dbo.sysobjects where id = object_id(N'nhibernate.dbo.Aclass') and OBJECTPROPERTY(id, N'IsUserTable') = 1)"));
 		}
 
 		[Test]

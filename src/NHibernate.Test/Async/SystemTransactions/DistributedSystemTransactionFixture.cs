@@ -157,6 +157,46 @@ namespace NHibernate.Test.SystemTransactions
 		}
 
 		[Theory]
+		public void CanRollbackTransaction(bool explicitFlush)
+		{
+			IgnoreIfUnsupported(explicitFlush);
+			var tx = new TransactionScope();
+			var disposeCalled = false;
+			try
+			{
+				using (var s = OpenSession())
+				{
+					ForceEscalationToDistributedTx.Escalate(true); //will rollback tx
+					s.Save(new Person());
+
+					if (explicitFlush)
+						s.Flush();
+
+					tx.Complete();
+				}
+				disposeCalled = true;
+				Assert.Throws<TransactionAbortedException>(tx.Dispose, "Scope disposal has not rollback and throw.");
+			}
+			finally
+			{
+				if (!disposeCalled)
+				{
+					try
+					{
+						tx.Dispose();
+					}
+					catch
+					{
+						// Ignore, if disposed has not been called, another exception has occurred in the try and
+						// we should avoid overriding it by the disposal failure.
+					}
+				}
+			}
+
+			AssertNoPersons();
+		}
+
+		[Theory]
 		public async Task CanRollbackTransactionFromScopeAsync(bool explicitFlush)
 		{
 			IgnoreIfUnsupported(explicitFlush);
@@ -190,6 +230,38 @@ namespace NHibernate.Test.SystemTransactions
 
 						if (explicitFlush)
 							await (s.FlushAsync());
+					}
+					ForceEscalationToDistributedTx.Escalate(true); //will rollback tx
+
+					txscope.Complete();
+				}
+
+				Assert.Fail("Scope disposal has not rollback and throw.");
+			}
+			catch (TransactionAbortedException)
+			{
+				_log.Debug("Transaction aborted.");
+			}
+
+			AssertNoPersons();
+		}
+
+		[Theory]
+		[Description("Another action inside the transaction do the rollBack outside nh-session-scope.")]
+		public void RollbackOutsideNh(bool explicitFlush)
+		{
+			IgnoreIfUnsupported(explicitFlush);
+			try
+			{
+				using (var txscope = new TransactionScope())
+				{
+					using (var s = OpenSession())
+					{
+						var person = new Person();
+						s.Save(person);
+
+						if (explicitFlush)
+							s.Flush();
 					}
 					ForceEscalationToDistributedTx.Escalate(true); //will rollback tx
 
@@ -244,6 +316,37 @@ namespace NHibernate.Test.SystemTransactions
 
 						if (explicitFlush)
 							await (s.FlushAsync());
+					}
+					txscope.Complete();
+				}
+
+				Assert.Fail("Scope disposal has not rollback and throw.");
+			}
+			catch (TransactionAbortedException)
+			{
+				_log.Debug("Transaction aborted.");
+			}
+
+			AssertNoPersons();
+		}
+
+		[Theory]
+		[Description("rollback inside nh-session-scope should not commit save and the transaction should be aborted.")]
+		public void TransactionInsertWithRollBackTask(bool explicitFlush)
+		{
+			IgnoreIfUnsupported(explicitFlush);
+			try
+			{
+				using (var txscope = new TransactionScope())
+				{
+					using (var s = OpenSession())
+					{
+						var person = new Person();
+						s.Save(person);
+						ForceEscalationToDistributedTx.Escalate(true); //will rollback tx
+
+						if (explicitFlush)
+							s.Flush();
 					}
 					txscope.Complete();
 				}
@@ -357,6 +460,60 @@ namespace NHibernate.Test.SystemTransactions
 		}
 
 		[Theory]
+		[Description(@"Two session in two txscope
+ (without an explicit NH transaction)
+ and with a rollback in the second dtc and a ForceRollback outside nh-session-scope.")]
+		public void TransactionInsertLoadWithRollBackTask(bool explicitFlush)
+		{
+			IgnoreIfUnsupported(explicitFlush);
+			object savedId;
+			var createdAt = DateTime.Today;
+			using (var txscope = new TransactionScope())
+			{
+				using (var s = OpenSession())
+				{
+					var person = new Person { CreatedAt = createdAt };
+					savedId = s.Save(person);
+
+					if (explicitFlush)
+						s.Flush();
+				}
+				txscope.Complete();
+			}
+
+			try
+			{
+				using (var txscope = new TransactionScope())
+				{
+					using (var s = OpenSession())
+					{
+						var person = s.Get<Person>(savedId);
+						person.CreatedAt = createdAt.AddMonths(-1);
+
+						if (explicitFlush)
+							s.Flush();
+					}
+					ForceEscalationToDistributedTx.Escalate(true);
+
+					_log.Debug("completing the tx scope");
+					txscope.Complete();
+				}
+				_log.Debug("Transaction fail.");
+				Assert.Fail("Expected tx abort");
+			}
+			catch (TransactionAbortedException)
+			{
+				_log.Debug("Transaction aborted.");
+			}
+
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				Assert.AreEqual(createdAt, s.Get<Person>(savedId).CreatedAt, "Entity update was not rollback-ed.");
+			}
+		}
+
+		[Theory]
 		public async Task CanDeleteItemInDtcAsync(bool explicitFlush)
 		{
 			IgnoreIfUnsupported(explicitFlush);
@@ -376,7 +533,7 @@ namespace NHibernate.Test.SystemTransactions
 				}
 			}
 
-			DodgeTransactionCompletionDelayIfRequired();
+			await (DodgeTransactionCompletionDelayIfRequiredAsync());
 
 			using (var s = OpenSession())
 			using (s.BeginTransaction())
@@ -399,7 +556,7 @@ namespace NHibernate.Test.SystemTransactions
 				}
 			}
 
-			DodgeTransactionCompletionDelayIfRequired();
+			await (DodgeTransactionCompletionDelayIfRequiredAsync());
 
 			AssertNoPersons();
 		}
@@ -459,7 +616,7 @@ namespace NHibernate.Test.SystemTransactions
 					tx.Complete();
 				}
 
-				DodgeTransactionCompletionDelayIfRequired();
+				await (DodgeTransactionCompletionDelayIfRequiredAsync());
 
 				using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
@@ -484,7 +641,7 @@ namespace NHibernate.Test.SystemTransactions
 					// No complete for rollback-ing.
 				}
 
-				DodgeTransactionCompletionDelayIfRequired();
+				await (DodgeTransactionCompletionDelayIfRequiredAsync());
 
 				// Do not reuse the session after a rollback, its state does not allow it.
 				// http://nhibernate.info/doc/nhibernate-reference/manipulatingdata.html#manipulatingdata-endingsession-commit
@@ -578,7 +735,7 @@ namespace NHibernate.Test.SystemTransactions
 						// a global locking mechanism causing any subsequent use to wait for the end of the commit phase,
 						// but this is not the usual case. Some other, as Npgsql < v3.2.5, may crash due to this, because
 						// they re-use the connection for the second phase.
-						Thread.Sleep(100);
+						await (Task.Delay(100));
 						var countSecondTry = await (controlSession.Query<Person>().CountAsync());
 						Assert.Warn($"Unexpected entity count: {count} instead of {i}. " +
 							"This may mean current data provider has a delayed commit, occurring after scope disposal. " +
@@ -610,7 +767,7 @@ namespace NHibernate.Test.SystemTransactions
 				tx.Complete();
 			}
 
-			DodgeTransactionCompletionDelayIfRequired();
+			await (DodgeTransactionCompletionDelayIfRequiredAsync());
 
 			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
@@ -686,6 +843,20 @@ namespace NHibernate.Test.SystemTransactions
 			}
 			// Currently always forbidden, whatever UseConnectionOnSystemTransactionEvents.
 			Assert.That(interceptor.AfterException, Is.TypeOf<HibernateException>());
+		}
+
+		private Task DodgeTransactionCompletionDelayIfRequiredAsync(CancellationToken cancellationToken = default(CancellationToken))
+		{
+			try
+			{
+				if (Sfi.ConnectionProvider.Driver.HasDelayedDistributedTransactionCompletion)
+					return Task.Delay(500, cancellationToken);
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 
 		private void DodgeTransactionCompletionDelayIfRequired()

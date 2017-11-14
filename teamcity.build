@@ -63,11 +63,6 @@
 		<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSqlCe40Dialect" />
 		<property name="nhibernate.connection.connection_string" value="Data Source=NHibernate.sdf" />
 		<property name="nhibernate.command_timeout" value="0" />
-		<copy todir="${bin.dir}">
-			<fileset basedir="${root.dir}/lib/teamcity/sqlServerCe/X86">
-				<include name="*.dll"/>
-			</fileset>
-		</copy>
 	</target>
 
 	<target name="setup-teamcity-sqlServerCe64">
@@ -76,22 +71,12 @@
 		<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSqlCe40Dialect" />
 		<property name="nhibernate.connection.connection_string" value="Data Source=NHibernate.sdf" />
 		<property name="nhibernate.command_timeout" value="0" />
-		<copy todir="${bin.dir}">
-			<fileset basedir="${root.dir}/lib/teamcity/sqlServerCe/AMD64">
-				<include name="*.dll"/>
-			</fileset>
-		</copy>
 	</target>
 
 	<target name="setup-teamcity-firebird32">
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.FirebirdClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.FirebirdDialect" />
 		<property name="nhibernate.connection.connection_string"	value="DataSource=localhost;Database=nhibernate;User ID=SYSDBA;Password=masterkey;MaxPoolSize=200;" />
-		<copy todir="${bin.dir}">
-			<fileset basedir="${root.dir}/lib/teamcity/firebird">
-				<include name="*.dll"/>
-			</fileset>
-		</copy>
 	</target>
 
 	<target name="setup-teamcity-firebird64">
@@ -99,11 +84,6 @@
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.FirebirdClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.FirebirdDialect" />
 		<property name="nhibernate.connection.connection_string"	value="DataSource=localhost;Database=nhibernate;User ID=SYSDBA;Password=masterkey;MaxPoolSize=200;" />
-		<copy todir="${bin.dir}">
-			<fileset basedir="${root.dir}/lib/teamcity/firebird">
-				<include name="*.dll"/>
-			</fileset>
-		</copy>
 	</target>
 
 	<target name="setup-teamcity-sqlite32">
@@ -114,11 +94,6 @@
 		     and https://github.com/nhibernate/nhibernate-core/issues/1362 -->
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.SQLiteDialect" />
 		<property name="nhibernate.connection.connection_string"	value="Data Source=NHibernate.db;DateTimeFormatString=yyyy-MM-dd HH:mm:ss.FFFFFFF;" />
-		<copy todir="${bin.dir}">
-			<fileset basedir="${root.dir}/lib/teamcity/sqlite/x86">
-				<include name="*.dll"/>
-			</fileset>
-		</copy>
 	</target>
 
 	<target name="setup-teamcity-sqlite64">
@@ -130,22 +105,12 @@
 		     and https://github.com/nhibernate/nhibernate-core/issues/1362 -->
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.SQLiteDialect" />
 		<property name="nhibernate.connection.connection_string"	value="Data Source=NHibernate.db;DateTimeFormatString=yyyy-MM-dd HH:mm:ss.FFFFFFF;" />
-		<copy todir="${bin.dir}">
-			<fileset basedir="${root.dir}/lib/teamcity/sqlite/x64">
-				<include name="*.dll"/>
-			</fileset>
-		</copy>
 	</target>
 
 	<target name="setup-teamcity-postgresql">
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.NpgsqlDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.PostgreSQL83Dialect" />
 		<property name="nhibernate.connection.connection_string"	value="Host=localhost;Port=5432;Database=nhibernate;Username=nhibernate;Password=nhibernate;Enlist=true" />
-		<copy todir="${bin.dir}">
-			<fileset basedir="${root.dir}/lib/teamcity/postgresql">
-				<include name="*.dll"/>
-			</fileset>
-		</copy>
 	</target>
 
 	<target name="setup-teamcity-oracle">
@@ -193,16 +158,6 @@
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))" />
 		<!-- Teamcity Oracle test database is configured with a non-Unicode encoding -->
 		<property name="nhibernate.oracle.use_n_prefixed_types_for_unicode" value="true" />
-		<copy todir="${bin.dir}">
-			<fileset basedir="${root.dir}/lib/teamcity/oracle-managed/common">
-				<include name="*.dll"/>
-			</fileset>
-		</copy>
-		<copy todir="${bin.dir}">
-			<fileset basedir="${root.dir}/lib/teamcity/oracle-managed/x86">
-				<include name="*.dll"/>
-			</fileset>
-		</copy>
 	</target>
 
 	<target name="setup-teamcity-oracle-managed64">
@@ -212,27 +167,12 @@
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))" />
 		<!-- Teamcity Oracle test database is configured with a non-Unicode encoding -->
 		<property name="nhibernate.oracle.use_n_prefixed_types_for_unicode" value="true" />
-		<copy todir="${bin.dir}">
-			<fileset basedir="${root.dir}/lib/teamcity/oracle-managed/common">
-				<include name="*.dll"/>
-			</fileset>
-		</copy>
-		<copy todir="${bin.dir}">
-			<fileset basedir="${root.dir}/lib/teamcity/oracle-managed/x64">
-				<include name="*.dll"/>
-			</fileset>
-		</copy>
 	</target>
 
 	<target name="setup-teamcity-mysql">
 		<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.MySqlDataDriver" />
 		<property name="nhibernate.dialect"	value="NHibernate.Dialect.MySQL5Dialect" />
 		<property name="nhibernate.connection.connection_string" value="Data Source=localhost;Database=nhibernate;User ID=nhibernate;Password=nhibernate;Protocol=memory;Old Guids=True;" />
-		<copy todir="${bin.dir}">
-			<fileset basedir="${root.dir}/lib/teamcity/mysql">
-				<include name="*.dll"/>
-			</fileset>
-		</copy>
 	</target>
 
 	<script language="C#" prefix="testResult">

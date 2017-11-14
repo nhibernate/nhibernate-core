@@ -1,5 +1,5 @@
 ﻿projects:
-- filePath: NHibernate\NHibernate.csproj
+- filePath: NHibernate/NHibernate.csproj
   concurrentRun: true
   applyChanges: true
   analyzation:
@@ -152,14 +152,14 @@
     assemblyName: AsyncGenerator.Core
   - type: AsyncGenerator.Core.Plugins.EmptyRegionRemover
     assemblyName: AsyncGenerator.Core
-- filePath: NHibernate.DomainModel\NHibernate.DomainModel.csproj
+- filePath: NHibernate.DomainModel/NHibernate.DomainModel.csproj
   concurrentRun: true
   applyChanges: true
   analyzation:
     scanMethodBody: true
     scanForMissingAsyncMembers:
     - all: true
-- filePath: NHibernate.Test\NHibernate.Test.csproj
+- filePath: NHibernate.Test/NHibernate.Test.csproj
   concurrentRun: true
   applyChanges: true
   analyzation:
@@ -189,6 +189,8 @@
     - conversion: Ignore
       name: LinqReadonlyTestsContext
     - conversion: Ignore
+      name: MultiThreadRunner
+    - conversion: Ignore
       hasAttributeName: IgnoreAttribute
     - conversion: NewType
       hasAttributeName: TestFixtureAttribute
@@ -202,9 +204,9 @@
     - hasAttributeName: TheoryAttribute
     - hasAttributeName: TestAttribute
     ignoreDocuments:
-    - filePathEndsWith: Linq\MathTests.cs
-    - filePathEndsWith: Linq\ExpressionSessionLeakTest.cs
-    - filePathEndsWith: Linq\NorthwindDbCreator.cs
+    - filePathEndsWith: Linq/MathTests.cs
+    - filePathEndsWith: Linq/ExpressionSessionLeakTest.cs
+    - filePathEndsWith: Linq/NorthwindDbCreator.cs
     cancellationTokens:
       withoutCancellationToken:
       - hasAttributeName: TestAttribute
