@@ -8,7 +8,7 @@ namespace NHibernate.Persister.Entity
 	/// <summary> 
 	/// Not really a <tt>Loader</tt>, just a wrapper around a named query.
 	/// </summary>
-	public class NamedQueryLoader : IUniqueEntityLoader
+	public partial class NamedQueryLoader : IUniqueEntityLoader
 	{
 		private readonly string queryName;
 		private readonly IEntityPersister persister;
@@ -40,7 +40,7 @@ namespace NHibernate.Persister.Entity
 			query.SetOptionalId(id);
 			query.SetOptionalEntityName(persister.EntityName);
 			query.SetOptionalObject(optionalObject);
-			query.SetFlushMode(FlushMode.Never);
+			query.SetFlushMode(FlushMode.Manual);
 			query.List();
 
 			// now look up the object we are really interested in!

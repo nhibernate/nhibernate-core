@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1270
 {
+	[TestFixture]
 	public class Fixture
 	{
 		private HbmMapping GetMappings()
@@ -54,7 +55,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1270
 			var sb = new StringBuilder();
 			(new SchemaExport(conf)).Create(s => sb.AppendLine(s), true);
 
-			Assert.That(sb.ToString(), Is.StringContaining("FK_RoleInUser").And.StringContaining("FK_UserInRole"));
+			Assert.That(sb.ToString(), Does.Contain("FK_RoleInUser").And.Contains("FK_UserInRole"));
 			(new SchemaExport(conf)).Drop(false, true);
 		}
 	}

@@ -13,32 +13,39 @@ namespace NHibernate.Linq
 {
 	public class NhLinqExpression : IQueryExpression
 	{
-		public string Key { get; private set; }
+		public string Key { get; protected set; }
 
 		public System.Type Type { get; private set; }
 
+		/// <summary>
+		/// Entity type to insert or update when the expression is a DML.
+		/// </summary>
+		protected virtual System.Type TargetType => Type;
+
 		public IList<NamedParameterDescriptor> ParameterDescriptors { get; private set; }
 
-		public NhLinqExpressionReturnType ReturnType { get; private set; }
+		public NhLinqExpressionReturnType ReturnType { get; }
 
-		public IDictionary<string, Tuple<object, IType>> ParameterValuesByName { get; private set; }
+		public IDictionary<string, Tuple<object, IType>> ParameterValuesByName { get; }
 
 		public ExpressionToHqlTranslationResults ExpressionToHqlTranslationResults { get; private set; }
 
-		internal Expression _expression;
-		internal IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
+		protected virtual QueryMode QueryMode => QueryMode.Select;
+
+		private readonly Expression _expression;
+		private readonly IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
 
 		public NhLinqExpression(Expression expression, ISessionFactoryImplementor sessionFactory)
 		{
-			_expression = NhPartialEvaluatingExpressionTreeVisitor.EvaluateIndependentSubtrees(expression);
+			_expression = NhRelinqQueryParser.PreTransform(expression);
 
 			// We want logging to be as close as possible to the original expression sent from the
-			// application. But if we log before partial evaluation, the log won't include e.g.
-			// subquery expressions if those are defined by the application in a variable referenced
-			// from the main query.
+			// application. But if we log before partial evaluation done in PreTransform, the log won't
+			// include e.g. sub-query expressions if those are defined by the application in a variable
+			// referenced from the main query.
 			LinqLogging.LogExpression("Expression (partially evaluated)", _expression);
 
-			_constantToParameterMap = ExpressionParameterVisitor.Visit(_expression, sessionFactory);
+			_constantToParameterMap = ExpressionParameterVisitor.Visit(ref _expression, sessionFactory);
 
 			ParameterValuesByName = _constantToParameterMap.Values.ToDictionary(p => p.Name,
 																				p => System.Tuple.Create(p.Value, p.Type));
@@ -60,14 +67,17 @@ namespace NHibernate.Linq
 		public IASTNode Translate(ISessionFactoryImplementor sessionFactory, bool filter)
 		{
 			var requiredHqlParameters = new List<NamedParameterDescriptor>();
-			var querySourceNamer = new QuerySourceNamer();
 			var queryModel = NhRelinqQueryParser.Parse(_expression);
-			var visitorParameters = new VisitorParameters(sessionFactory, _constantToParameterMap, requiredHqlParameters, querySourceNamer);
+			var visitorParameters = new VisitorParameters(sessionFactory, _constantToParameterMap, requiredHqlParameters,
+				new QuerySourceNamer(), TargetType, QueryMode);
 
-			ExpressionToHqlTranslationResults = QueryModelVisitor.GenerateHqlQuery(queryModel, visitorParameters, true);
+			ExpressionToHqlTranslationResults = QueryModelVisitor.GenerateHqlQuery(queryModel, visitorParameters, true, ReturnType);
+
+			if (ExpressionToHqlTranslationResults.ExecuteResultTypeOverride != null)
+				Type = ExpressionToHqlTranslationResults.ExecuteResultTypeOverride;
 
 			ParameterDescriptors = requiredHqlParameters.AsReadOnly();
-			
+
 			return ExpressionToHqlTranslationResults.Statement.AstNode;
 		}
 
@@ -75,6 +85,8 @@ namespace NHibernate.Linq
 		{
 			ExpressionToHqlTranslationResults = other.ExpressionToHqlTranslationResults;
 			ParameterDescriptors = other.ParameterDescriptors;
+			// Type could have been overridden by translation.
+			Type = other.Type;
 		}
 	}
 }

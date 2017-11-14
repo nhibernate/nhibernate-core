@@ -5,7 +5,6 @@ using System.Reflection;
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
 	public class ComponentCustomizer<TComponent> : PropertyContainerCustomizer<TComponent>, IComponentMapper<TComponent>, IConformistHoldersProvider
-		where TComponent : class
 	{
 		public ComponentCustomizer(IModelExplicitDeclarationsHolder explicitDeclarationsHolder, ICustomizersHolder customizersHolder)
 			: base(explicitDeclarationsHolder, customizersHolder, null)
@@ -36,6 +35,12 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		public void Parent<TProperty>(Expression<Func<TComponent, TProperty>> parent) where TProperty : class
 		{
 			Parent(parent, x => { });
+		}
+
+		public void Parent(string notVisiblePropertyOrFieldName, Action<IComponentParentMapper> parentMapping)
+		{
+			MemberInfo member = GetPropertyOrFieldMatchingNameOrThrow(notVisiblePropertyOrFieldName);
+			AddCustomizer(m => m.Parent(member, parentMapping));
 		}
 
 		public void Parent<TProperty>(Expression<Func<TComponent, TProperty>> parent, Action<IComponentParentMapper> parentMapping) where TProperty : class

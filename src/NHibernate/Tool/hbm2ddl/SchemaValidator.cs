@@ -7,7 +7,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Tool.hbm2ddl
 {
-	public class SchemaValidator
+	public partial class SchemaValidator
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (SchemaValidator));
 		private readonly Configuration configuration;
@@ -85,10 +85,7 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 		}
 
-		/**
-	 * Perform the validations.
-	 */
-
+		// Perform the validations.
 		public void Validate()
 		{
 			log.Info("Running schema validator");
@@ -99,7 +96,7 @@ namespace NHibernate.Tool.hbm2ddl
 				{
 					log.Info("fetching database metadata");
 					connectionHelper.Prepare();
-					DbConnection connection = connectionHelper.Connection;
+					var connection = connectionHelper.Connection;
 					meta = new DatabaseMetadata(connection, dialect, false);
 				}
 				catch (Exception sqle)

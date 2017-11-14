@@ -1,11 +1,13 @@
 using System;
-using System.Collections;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using NHibernate.Util;
 
 namespace NHibernate.Linq
 {
+	// Since v5
+	[Obsolete("Please use NHibernate.Util.ReflectHelper instead")]
 	public static class ReflectionHelper
 	{
 		/// <summary>
@@ -17,8 +19,7 @@ namespace NHibernate.Linq
 		/// <seealso cref="MethodInfo.GetGenericMethodDefinition"/>
 		public static MethodInfo GetMethodDefinition<TSource>(Expression<Action<TSource>> method)
 		{
-			MethodInfo methodInfo = GetMethod(method);
-			return methodInfo.IsGenericMethod ? methodInfo.GetGenericMethodDefinition() : methodInfo;
+			return ReflectHelper.GetMethodDefinition(method);
 		}
 
 		/// <summary>
@@ -29,10 +30,7 @@ namespace NHibernate.Linq
 		/// <returns>The <see cref="MethodInfo"/> of the method.</returns>
 		public static MethodInfo GetMethod<TSource>(Expression<Action<TSource>> method)
 		{
-			if (method == null)
-				throw new ArgumentNullException("method");
-
-			return ((MethodCallExpression)method.Body).Method;
+			return ReflectHelper.GetMethod(method);
 		}
 
 		/// <summary>
@@ -43,8 +41,7 @@ namespace NHibernate.Linq
 		/// <seealso cref="MethodInfo.GetGenericMethodDefinition"/>
 		public static MethodInfo GetMethodDefinition(Expression<System.Action> method)
 		{
-			MethodInfo methodInfo = GetMethod(method);
-			return methodInfo.IsGenericMethod ? methodInfo.GetGenericMethodDefinition() : methodInfo;
+			return ReflectHelper.GetMethodDefinition(method);
 		}
 
 		/// <summary>
@@ -54,10 +51,7 @@ namespace NHibernate.Linq
 		/// <returns>The <see cref="MethodInfo"/> of the method.</returns>
 		public static MethodInfo GetMethod(Expression<System.Action> method)
 		{
-			if (method == null)
-				throw new ArgumentNullException("method");
-
-			return ((MethodCallExpression) method.Body).Method;
+			return ReflectHelper.GetMethod(method);
 		}
 
 		/// <summary>
@@ -69,39 +63,19 @@ namespace NHibernate.Linq
 		/// <returns>The <see cref="MemberInfo"/> of the property.</returns>
 		public static MemberInfo GetProperty<TSource, TResult>(Expression<Func<TSource, TResult>> property)
 		{
-			if (property == null)
-			{
-				throw new ArgumentNullException("property");
-			}
-			return ((MemberExpression)property.Body).Member;
-		}
-
-		internal static System.Type GetPropertyOrFieldType(this MemberInfo memberInfo)
-		{
-			var propertyInfo = memberInfo as PropertyInfo;
-			if (propertyInfo != null)
-			{
-				return propertyInfo.PropertyType;
-			}
-
-			var fieldInfo = memberInfo as FieldInfo;
-			if (fieldInfo != null)
-			{
-				return fieldInfo.FieldType;
-			}
-
-			return null;
+			return ReflectHelper.GetProperty(property);
 		}
 	}
 
-	// TODO rename / remove - reflection helper above is better
+	// Since v5
+	[Obsolete("Please use NHibernate.Util.ReflectHelper instead")]
 	public static class EnumerableHelper
 	{
 		public static MethodInfo GetMethod(string name, System.Type[] parameterTypes)
 		{
 			return typeof(Enumerable).GetMethods(BindingFlags.Static | BindingFlags.Public)
 				.Where(m => m.Name == name &&
-							ParameterTypesMatch(m.GetParameters(), parameterTypes))
+					ReflectHelper.ParameterTypesMatch(m.GetParameters(), parameterTypes))
 				.Single();
 		}
 
@@ -111,35 +85,9 @@ namespace NHibernate.Linq
 				.Where(m => m.Name == name &&
 							m.ContainsGenericParameters &&
 							m.GetGenericArguments().Count() == genericTypeParameters.Length &&
-							ParameterTypesMatch(m.GetParameters(), parameterTypes))
+							ReflectHelper.ParameterTypesMatch(m.GetParameters(), parameterTypes))
 				.Single()
 				.MakeGenericMethod(genericTypeParameters);
-		}
-
-		private static bool ParameterTypesMatch(ParameterInfo[] parameters, System.Type[] types)
-		{
-			if (parameters.Length != types.Length)
-			{
-				return false;
-			}
-
-			for (int i = 0; i < parameters.Length; i++)
-			{
-				if (parameters[i].ParameterType == types[i])
-				{
-					continue;
-				}
-
-				if (parameters[i].ParameterType.ContainsGenericParameters && types[i].ContainsGenericParameters &&
-					parameters[i].ParameterType.GetGenericArguments().Length == types[i].GetGenericArguments().Length)
-				{
-					continue;
-				}
-
-				return false;
-			}
-
-			return true;
 		}
 	}
 }

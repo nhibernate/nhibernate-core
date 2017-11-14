@@ -1,4 +1,4 @@
-using System.Data;
+using System;
 using System.Data.Common;
 using System.Text;
 using NHibernate.AdoNet.Util;
@@ -6,7 +6,7 @@ using NHibernate.Exceptions;
 
 namespace NHibernate.AdoNet
 {
-	public class MySqlClientBatchingBatcher : AbstractBatcher
+	public partial class MySqlClientBatchingBatcher : AbstractBatcher
 	{
 		private int batchSize;
 		private int totalExpectedRowsAffected;
@@ -40,7 +40,7 @@ namespace NHibernate.AdoNet
 		public override void AddToBatch(IExpectation expectation)
 		{
 			totalExpectedRowsAffected += expectation.ExpectedRowCount;
-			IDbCommand batchUpdate = CurrentCommand;
+			var batchUpdate = CurrentCommand;
 			Prepare(batchUpdate);
 			Driver.AdjustCommand(batchUpdate);
 			string lineWithParameters = null;
@@ -67,36 +67,81 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		protected override void DoExecuteBatch(IDbCommand ps)
+		protected override void DoExecuteBatch(DbCommand ps)
 		{
-			Log.DebugFormat("Executing batch");
-			CheckReaders();
-			if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
-			{
-				Factory.Settings.SqlStatementLogger.LogBatchCommand(currentBatchCommandsLog.ToString());
-				currentBatchCommandsLog = new StringBuilder().AppendLine("Batch commands:");
-			}
-
-			int rowsAffected;
 			try
 			{
-				rowsAffected = currentBatch.ExecuteNonQuery();
+				Log.DebugFormat("Executing batch");
+				CheckReaders();
+				if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
+				{
+					Factory.Settings.SqlStatementLogger.LogBatchCommand(currentBatchCommandsLog.ToString());
+				}
+
+				int rowsAffected;
+				try
+				{
+					rowsAffected = currentBatch.ExecuteNonQuery();
+				}
+				catch (DbException e)
+				{
+					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
+				}
+
+				Expectations.VerifyOutcomeBatched(totalExpectedRowsAffected, rowsAffected);
 			}
-			catch (DbException e)
+			finally
 			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
+				ClearCurrentBatch();
 			}
-
-			Expectations.VerifyOutcomeBatched(totalExpectedRowsAffected, rowsAffected);
-
-			currentBatch.Dispose();
-			totalExpectedRowsAffected = 0;
-			currentBatch = CreateConfiguredBatch();
 		}
 
 		private MySqlClientSqlCommandSet CreateConfiguredBatch()
 		{
 			return new MySqlClientSqlCommandSet(batchSize);
+		}
+
+		private void ClearCurrentBatch()
+		{
+			currentBatch.Dispose();
+			totalExpectedRowsAffected = 0;
+			currentBatch = CreateConfiguredBatch();
+
+			if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
+			{
+				currentBatchCommandsLog = new StringBuilder().AppendLine("Batch commands:");
+			}
+		}
+
+		public override void CloseCommands()
+		{
+			base.CloseCommands();
+
+			try
+			{
+				ClearCurrentBatch();
+			}
+			catch (Exception e)
+			{
+				// Prevent exceptions when clearing the batch from hiding any original exception
+				// (We do not know here if this batch closing occurs after a failure or not.)
+				Log.Warn("Exception clearing batch", e);
+			}
+		}
+
+		protected override void Dispose(bool isDisposing)
+		{
+			base.Dispose(isDisposing);
+			// Prevent exceptions when closing the batch from hiding any original exception
+			// (We do not know here if this batch closing occurs after a failure or not.)
+			try
+			{
+				currentBatch.Dispose();
+			}
+			catch (Exception e)
+			{
+				Log.Warn("Exception closing batcher", e);
+			}
 		}
 	}
 }

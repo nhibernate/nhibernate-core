@@ -1,4 +1,3 @@
-using System;
 using System.Reflection;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
@@ -21,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH283
 
 
 			string script = string.Join("\n",
-			                            cfg.GenerateSchemaCreationScript(new MsSql2000Dialect()));
+			                            cfg.GenerateSchemaCreationScript(new MsSql2008Dialect()));
 
 			Assert.IsTrue(script.IndexOf("add constraint AA") >= 0);
 			Assert.IsTrue(script.IndexOf("add constraint BB") >= 0);

@@ -220,6 +220,9 @@ namespace NHibernate.Test.Linq
 							"a shaped subset of the data about Customers.")]
 		public void DLinq16()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 			var q =
 				from c in db.Customers
 				select new
@@ -1453,6 +1456,9 @@ namespace NHibernate.Test.Linq
 		[Test(Description = "This sample explictly joins two tables and projects results from both tables using a group join.")]
 		public void DLinqJoin5()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 			var q =
 				from c in db.Customers 
 				join o in db.Orders on c.CustomerId equals o.Customer.CustomerId into orders
@@ -1499,9 +1505,24 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Category("JOIN")]
+		[Test(Description = "This sample explictly joins two tables with a composite key and projects results from both tables.")]
+		public void DLinqJoin5d()
+		{
+			var q =
+				from c in db.Customers
+				join o in db.Orders on new {c.CustomerId, HasContractTitle = c.ContactTitle != null} equals new {o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null }
+				select new { c.ContactName, o.OrderId };
+
+			ObjectDumper.Write(q);
+		}
+
+		[Category("JOIN")]
 		[Test(Description = "This sample explictly joins three tables and projects results from each of them.")]
 		public void DLinqJoin6()
 		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
 			var q =
 				from c in db.Customers
 				join o in db.Orders on c.CustomerId equals o.Customer.CustomerId into ords

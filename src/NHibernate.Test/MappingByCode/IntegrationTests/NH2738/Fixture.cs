@@ -21,6 +21,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH2738
 		public virtual MyEmptyEnum MyEmptyEnum { get; set; }
 	}
 
+	[TestFixture]
 	public class Fixture
 	{
 		[Test]

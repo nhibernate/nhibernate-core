@@ -5,7 +5,7 @@ using NHibernate.Cache;
 
 namespace NHibernate.Test.NHSpecificTest.NH2898
 {
-	public class BinaryFormatterCache : ICache
+	public partial class BinaryFormatterCache : ICache
 	{
 		private readonly IDictionary _hashtable = new Hashtable();
 		private readonly string _regionName;

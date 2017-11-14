@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.CompilerServices;
 
 using NHibernate.Util;
 using NUnit.Framework;
@@ -11,9 +10,28 @@ namespace NHibernate.Test.UtilityTest
 	[TestFixture]
 	public class WeakHashtableFixture
 	{
-		protected WeakHashtable Create()
+		private static WeakHashtable Create()
 		{
 			return new WeakHashtable();
+		}
+
+		// NoInlining to keep temporary variables' lifetime from being extended.
+		[MethodImpl(MethodImplOptions.NoInlining)]
+		private static WeakHashtable CreateWithTwoObjects()
+		{
+			var table = Create();
+
+			table[new object()] = new object();
+			table[new object()] = new object();
+
+			return table;
+		}
+
+		[MethodImpl(MethodImplOptions.NoInlining)]
+		private static WeakRefWrapper CreateWeakRefWrapper()
+		{
+			object obj = new object();
+			return new WeakRefWrapper(obj);
 		}
 
 		[Test]
@@ -33,10 +51,8 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void WeakReferenceGetsFreedButHashCodeRemainsConstant()
 		{
-			object obj = new object();
-			WeakRefWrapper wr = new WeakRefWrapper(obj);
+			WeakRefWrapper wr = CreateWeakRefWrapper();
 			int hashCode = wr.GetHashCode();
-			obj = null;
 
 			GC.Collect();
 
@@ -48,10 +64,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void Scavenging()
 		{
-			WeakHashtable table = Create();
-
-			table[new object()] = new object();
-			table[new object()] = new object();
+			WeakHashtable table = CreateWithTwoObjects();
 
 			GC.Collect();
 			table.Scavenge();
@@ -62,10 +75,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void IterationAfterGC()
 		{
-			WeakHashtable table = Create();
-
-			table[new object()] = new object();
-			table[new object()] = new object();
+			WeakHashtable table = CreateWithTwoObjects();
 
 			GC.Collect();
 

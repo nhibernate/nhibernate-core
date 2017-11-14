@@ -1,23 +1,23 @@
-using System;
 using System.Data;
 using System.Data.Common;
 
 namespace NHibernate.Driver
 {
 	/// <summary>
-	/// NHibernate driver for the System.Data.SQLite data provider for .NET 2.0.
+	/// NHibernate driver for the System.Data.SQLite data provider for .NET.
 	/// </summary>
 	/// <remarks>
-	/// <p>
+	/// <para>
 	/// In order to use this driver you must have the System.Data.SQLite.dll assembly available
 	/// for NHibernate to load. This assembly includes the SQLite.dll or SQLite3.dll libraries.
-	/// </p>    
-	/// <p>
-	/// You can get the System.Data.SQLite.dll assembly from http://sourceforge.net/projects/sqlite-dotnet2.
-	/// </p>
-	/// <p>
-	/// Please check <a href="http://www.sqlite.org/">http://www.sqlite.org/</a> for more information regarding SQLite.
-	/// </p>
+	/// </para>
+	/// <para>
+	/// You can get the System.Data.SQLite.dll assembly from
+	/// <a href="https://system.data.sqlite.org/">https://system.data.sqlite.org/</a>
+	/// </para>
+	/// <para>
+	/// Please check <a href="https://www.sqlite.org/">https://www.sqlite.org/</a> for more information regarding SQLite.
+	/// </para>
 	/// </remarks>
 	public class SQLite20Driver : ReflectionBasedDriver
 	{
@@ -35,9 +35,9 @@ namespace NHibernate.Driver
 		{
 		}
 
-        public override IDbConnection CreateConnection()
+        public override DbConnection CreateConnection()
         {
-            DbConnection connection = (DbConnection)base.CreateConnection();
+            var connection = base.CreateConnection();
             connection.StateChange += Connection_StateChange;
             return connection;
         }
@@ -47,8 +47,8 @@ namespace NHibernate.Driver
             if ((e.OriginalState == ConnectionState.Broken || e.OriginalState == ConnectionState.Closed || e.OriginalState == ConnectionState.Connecting) &&
                 e.CurrentState == ConnectionState.Open)
             {
-                DbConnection connection = (DbConnection)sender;
-                using (DbCommand command = connection.CreateCommand())
+                var connection = (DbConnection)sender;
+                using (var command = connection.CreateCommand())
                 {
                     // Activated foreign keys if supported by SQLite.  Unknown pragmas are ignored.
                     command.CommandText = "PRAGMA foreign_keys = ON";
@@ -86,5 +86,9 @@ namespace NHibernate.Driver
 		{
 			get { return true; }
 		}
+		
+		public override bool SupportsNullEnlistment => false;
+
+		public override bool HasDelayedDistributedTransactionCompletion => true;
 	}
 }

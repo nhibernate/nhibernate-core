@@ -8,6 +8,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests
 {
+	[TestFixture]
 	public class CollectionIdMapperTests
 	{
 		[Test]
@@ -26,7 +27,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			new CollectionIdMapper(hbmId).Generator(Generators.HighLow);
 			
 			Assert.That(hbmId.generator.@class, Is.EqualTo("hilo"));
-			Assert.That(hbmId.type.ToLowerInvariant(), Is.StringContaining("int"));
+			Assert.That(hbmId.type.ToLowerInvariant(), Does.Contain("int"));
 		}
 
 		[Test]

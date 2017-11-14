@@ -12,7 +12,7 @@ namespace NHibernate.Id.Enhanced
 	/// <summary>
 	/// Describes a sequence.
 	/// </summary>
-	public class SequenceStructure : IDatabaseStructure
+	public partial class SequenceStructure : IDatabaseStructure
 	{
 		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(SequenceStructure));
 
@@ -80,7 +80,7 @@ namespace NHibernate.Id.Enhanced
 
 		#region Nested type: SequenceAccessCallback
 
-		private class SequenceAccessCallback : IAccessCallback
+		private partial class SequenceAccessCallback : IAccessCallback
 		{
 			private readonly SequenceStructure _owner;
 			private readonly ISessionImplementor _session;
@@ -98,8 +98,8 @@ namespace NHibernate.Id.Enhanced
 				_owner._accessCounter++;
 				try
 				{
-					IDbCommand st = _session.Batcher.PrepareCommand(CommandType.Text, _owner._sql, SqlTypeFactory.NoTypes);
-					IDataReader rs = null;
+					var st = _session.Batcher.PrepareCommand(CommandType.Text, _owner._sql, SqlTypeFactory.NoTypes);
+					DbDataReader rs = null;
 					try
 					{
 						rs = _session.Batcher.ExecuteReader(st);

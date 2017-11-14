@@ -1,0 +1,4 @@
+nuget.exe
+NUnit.*
+vswhere.*
+CSharpAsyncGenerator.CommandLine.*

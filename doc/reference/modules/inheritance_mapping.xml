@@ -56,7 +56,7 @@
         <para>
              It is possible to define <literal>subclass</literal>, <literal>union-subclass</literal>,
              and <literal>joined-subclass</literal> mappings in separate mapping documents, directly beneath
-             <literal>hibernate-mapping</literal>. This allows you to extend a class hierachy just by adding
+             <literal>hibernate-mapping</literal>. This allows you to extend a class hierarchy just by adding
              a new mapping file. You must specify an <literal>extends</literal> attribute in the subclass mapping,
              naming a previously mapped superclass.
          </para>
@@ -266,7 +266,7 @@
             superclass, the column name must be the same on all subclass tables.
             (We might relax this in a future release of NHibernate.) The identity
             generator strategy is not allowed in union subclass inheritance, indeed
-            the primary key seed has to be shared accross all unioned subclasses
+            the primary key seed has to be shared across all unioned subclasses
             of a hierarchy.
         </para>
 
@@ -316,7 +316,7 @@
             mapped in each of the subclasses. If you want to avoid duplication, consider
             using XML entities
             (e.g. <literal>[ &lt;!ENTITY allproperties SYSTEM "allproperties.xml"&gt; ]</literal>
-            in the <literal>DOCTYPE</literal> declartion and 
+            in the <literal>DOCTYPE</literal> declaration and 
             <literal>&amp;allproperties;</literal> in the mapping).
         </para>
         
@@ -429,7 +429,7 @@
               <entry>Polymorphic one-to-one</entry>
               <entry>Polymorphic one-to-many</entry>
               <entry>Polymorphic many-to-many</entry>
-              <entry>Polymorphic <literal>load()/get()</literal></entry>
+              <entry>Polymorphic <literal>Load()/Get()</literal></entry>
               <entry>Polymorphic queries</entry>
               <entry>Polymorphic joins</entry>
               <entry>Outer join fetching</entry>
@@ -442,7 +442,7 @@
                 <entry><literal>&lt;one-to-one&gt;</literal></entry>
                 <entry><literal>&lt;one-to-many&gt;</literal></entry>
                 <entry><literal>&lt;many-to-many&gt;</literal></entry>
-                <entry><literal>s.Get(typeof(IPayment), id)</literal></entry>
+                <entry><literal>s.Get&lt;IPayment&gt;(id)</literal></entry>
                 <entry><literal>from IPayment p</literal></entry>
                 <entry><literal>from Order o join o.Payment p</literal></entry>
                 <entry><emphasis>supported</emphasis></entry>
@@ -453,7 +453,7 @@
                 <entry><literal>&lt;one-to-one&gt;</literal></entry>
                 <entry><literal>&lt;one-to-many&gt;</literal></entry>
                 <entry><literal>&lt;many-to-many&gt;</literal></entry>
-                <entry><literal>s.Get(typeof(IPayment), id)</literal></entry>
+                <entry><literal>s.Get&lt;IPayment&gt;(id)</literal></entry>
                 <entry><literal>from IPayment p</literal></entry>
                 <entry><literal>from Order o join o.Payment p</literal></entry>
                 <entry><emphasis>supported</emphasis></entry>
@@ -464,7 +464,7 @@
                 <entry><literal>&lt;one-to-one&gt;</literal></entry>
                 <entry><literal>&lt;one-to-many&gt;</literal> (for <literal>inverse="true"</literal> only)</entry>
                 <entry><literal>&lt;many-to-many&gt;</literal></entry>
-                <entry><literal>s.Get(typeof(IPayment), id)</literal></entry>
+                <entry><literal>s.Get&lt;IPayment&gt;(id)</literal></entry>
                 <entry><literal>from IPayment p</literal></entry>
                 <entry><literal>from Order o join o.Payment p</literal></entry>
                 <entry><emphasis>supported</emphasis></entry>

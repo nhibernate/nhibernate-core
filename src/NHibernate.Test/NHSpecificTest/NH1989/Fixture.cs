@@ -1,4 +1,4 @@
-using System.Data;
+using System.Data.Common;
 
 using NUnit.Framework;
 
@@ -6,9 +6,6 @@ using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Criterion;
 using NHibernate.Engine;
-
-using System.Collections.Generic;
-using System.Linq;
 
 namespace NHibernate.Test.NHSpecificTest.NH1989
 {
@@ -20,11 +17,17 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 			return factory.ConnectionProvider.Driver.SupportsMultipleQueries;
 		}
 
+		protected override void Configure(Configuration configuration)
+		{
+			base.Configure(configuration);
+			configuration.Properties[Environment.CacheProvider] = typeof(HashtableCacheProvider).AssemblyQualifiedName;
+			configuration.Properties[Environment.UseQueryCache] = "true";
+		}
+
 		protected override void OnSetUp()
 		{
-			cfg.Properties[Environment.CacheProvider] = typeof(HashtableCacheProvider).AssemblyQualifiedName;
-			cfg.Properties[Environment.UseQueryCache] = "true";
-			sessions = (ISessionFactoryImplementor)cfg.BuildSessionFactory();
+			// Clear cache at each test.
+			RebuildSessionFactory();
 		}
 
 		protected override void OnTearDown()
@@ -39,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 
 		private static void DeleteObjectsOutsideCache(ISession s)
 		{
-			using (IDbCommand cmd = s.Connection.CreateCommand())
+			using (var cmd = s.Connection.CreateCommand())
 			{
 				cmd.CommandText = "DELETE FROM UserTable";
 				cmd.ExecuteNonQuery();

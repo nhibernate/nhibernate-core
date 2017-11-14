@@ -11,7 +11,7 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Event.Default
 {
 	[Serializable]
-	public class DefaultInitializeCollectionEventListener : IInitializeCollectionEventListener
+	public partial class DefaultInitializeCollectionEventListener : IInitializeCollectionEventListener
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultInitializeCollectionEventListener));
 
@@ -70,7 +70,7 @@ namespace NHibernate.Event.Default
 				return false;
 			}
 
-			bool useCache = persister.HasCache && ((source.CacheMode & CacheMode.Get) == CacheMode.Get);
+			bool useCache = persister.HasCache && source.CacheMode.HasFlag(CacheMode.Get);
 
 			if (!useCache)
 			{

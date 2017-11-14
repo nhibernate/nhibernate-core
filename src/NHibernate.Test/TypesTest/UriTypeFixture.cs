@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
 {
+	[TestFixture]
 	public class UriTypeFixture : TypeFixtureBase
 	{
 		protected override string TypeName
@@ -40,6 +41,36 @@ namespace NHibernate.Test.TypesTest
 			}
 		}
 
+
+		[Test(Description = "NH-2887")]
+		public void ReadWriteRelativeUri()
+		{
+			using (var s = OpenSession())
+			{
+				var entity = new UriClass { Id = 1 };
+				entity.Url = new Uri("/", UriKind.Relative);
+				s.Save(entity);
+				s.Flush();
+			}
+
+			using (var s = OpenSession())
+			{
+				var entity = s.Get<UriClass>(1);
+				Assert.That(entity.Url, Is.Not.Null);
+				Assert.That(entity.Url.OriginalString, Is.EqualTo("/"));
+				entity.Url = new Uri("/2010/10/nhibernate-30-cookbook.html", UriKind.Relative);
+				s.Save(entity);
+				s.Flush();
+			}
+			using (var s = OpenSession())
+			{
+				var entity = s.Get<UriClass>(1);
+				Assert.That(entity.Url.OriginalString, Is.EqualTo("/2010/10/nhibernate-30-cookbook.html"));
+				s.Delete(entity);
+				s.Flush();
+			}
+		}
+
 		[Test]
 		public void InsertNullValue()
 		{
@@ -64,7 +95,7 @@ namespace NHibernate.Test.TypesTest
 		public void AutoDiscoverFromNetType()
 		{
 			// integration test to be 100% sure
-			var propertyType = sessions.GetEntityPersister(typeof(UriClass).FullName).GetPropertyType("AutoUri");
+			var propertyType = Sfi.GetEntityPersister(typeof(UriClass).FullName).GetPropertyType("AutoUri");
 			Assert.That(propertyType, Is.InstanceOf<UriType>());
 		}
 

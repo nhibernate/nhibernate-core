@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 
 namespace NHibernate.Test.NHSpecificTest.NH1421
 {
+	[TestFixture]
 	public class Fixture: BugTestCase
 	{
 		[Test]
@@ -46,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1421
 			using (var s = OpenSession())
 			{
 				var query = s.CreateQuery("from AnEntity a where a.id in (:myList)");
-				Assert.That(() => query.SetParameterList("myList", null), Throws.Exception.InstanceOf<ArgumentNullException>());
+				Assert.That(() => query.SetParameterList("myList", null), Throws.InstanceOf<ArgumentNullException>());
 			}
 		}
 

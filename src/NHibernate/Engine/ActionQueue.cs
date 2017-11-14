@@ -6,6 +6,7 @@ using System.Text;
 
 using NHibernate.Action;
 using NHibernate.Cache;
+using NHibernate.Type;
 
 namespace NHibernate.Engine
 {
@@ -18,7 +19,7 @@ namespace NHibernate.Engine
 	/// </para>
 	/// </summary>
 	[Serializable]
-	public class ActionQueue
+	public partial class ActionQueue
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ActionQueue));
 		private const int InitQueueListSize = 5;
@@ -120,9 +121,12 @@ namespace NHibernate.Engine
 	
 		private void ExecuteActions(IList list)
 		{
-			int size = list.Count;
-			for (int i = 0; i < size; i++)
-				Execute((IExecutable)list[i]);
+			// Actions may raise events to which user code can react and cause changes to action list.
+			// It will then fail here due to list being modified. (Some previous code was dodging the
+			// trouble with a for loop which was not failing provided the list was not getting smaller.
+			// But then it was clearing it without having executed added actions (if any), ...)
+			foreach (IExecutable executable in list)
+				Execute(executable);
 
 			list.Clear();
 			session.Batcher.ExecuteBatch();
@@ -427,7 +431,7 @@ namespace NHibernate.Engine
 		}
 
 		[Serializable]
-		private class AfterTransactionCompletionProcessQueue 
+		private partial class AfterTransactionCompletionProcessQueue 
 		{
 			private ISessionImplementor session;
 			private HashSet<string> querySpacesToInvalidate = new HashSet<string>();
@@ -505,13 +509,20 @@ namespace NHibernate.Engine
 		{
 			private readonly ActionQueue _actionQueue;
 
-			// the mapping of entity names to their latest batch numbers.
+			// The map of entity names to their latest batch.
 			private readonly Dictionary<string, int> _latestBatches = new Dictionary<string, int>();
+			// The map of entities to their batch.
 			private readonly Dictionary<object, int> _entityBatchNumber;
+			// The map of entities to the latest batch (of another entities) they depend on.
+			private readonly Dictionary<object, int> _entityBatchDependency = new Dictionary<object, int>();
 
 			// the map of batch numbers to EntityInsertAction lists
 			private readonly Dictionary<int, List<EntityInsertAction>> _actionBatches = new Dictionary<int, List<EntityInsertAction>>();
 
+			/// <summary>
+			/// A sorter aiming to group inserts as much as possible for optimizing batching.
+			/// </summary>
+			/// <param name="actionQueue">The list of inserts to optimize, already sorted in order to avoid constraint violations.</param>
 			public InsertActionSorter(ActionQueue actionQueue)
 			{
 				_actionQueue = actionQueue;
@@ -520,12 +531,16 @@ namespace NHibernate.Engine
 				_entityBatchNumber = new Dictionary<object, int>(actionQueue.insertions.Count + 1);
 			}
 
+			// This sorting does not actually optimize some features like mapped inheritance or joined-table,
+			// which causes additional inserts per action, causing the batcher to flush on each. Moreover,
+			// inheritance may causes children entities batches to get split per concrete parent classes.
+			// (See InsertOrderingFixture.WithJoinedTableInheritance by example.)
+			// Trying to merge those children batches cases would probably require to much computing.
 			public void Sort()
 			{
-				// the list of entity names that indicate the batch number
+				// build the map of entity names that indicate the batch number
 				foreach (EntityInsertAction action in _actionQueue.insertions)
 				{
-					// remove the current element from insertions. It will be added back later.
 					var entityName = action.EntityName;
 
 					// the entity associated with the current action.
@@ -534,7 +549,9 @@ namespace NHibernate.Engine
 					var batchNumber = GetBatchNumber(action, entityName);
 					_entityBatchNumber[currentEntity] = batchNumber;
 					AddToBatch(batchNumber, action);
+					UpdateChildrenDependencies(batchNumber, action);
 				}
+
 				_actionQueue.insertions.Clear();
 
 				// now rebuild the insertions list. There is a batch for each entry in the name list.
@@ -555,7 +572,7 @@ namespace NHibernate.Engine
 				{
 					// There is already an existing batch for this type of entity.
 					// Check to see if the latest batch is acceptable.
-					if (IsProcessedAfterAllAssociatedEntities(action, batchNumber))
+					if (!RequireNewBatch(action, batchNumber))
 						return batchNumber;
 				}
 				
@@ -565,36 +582,47 @@ namespace NHibernate.Engine
 				// so specify that this entity is with the latest batch.
 				// doing the batch number before adding the name to the list is
 				// a faster way to get an accurate number.
-
 				batchNumber = _actionBatches.Count;
 				_latestBatches[entityName] = batchNumber;
 				return batchNumber;
 			}
 
-			private bool IsProcessedAfterAllAssociatedEntities(EntityInsertAction action, int latestBatchNumberForType)
+			private bool RequireNewBatch(EntityInsertAction action, int latestBatchNumberForType)
 			{
+				// This method assumes the original action list is already sorted in order to respect dependencies.
 				var propertyValues = action.State;
-				var propertyTypes = action.Persister.ClassMetadata.PropertyTypes;
+				var propertyTypes = action.Persister.EntityMetamodel?.PropertyTypes;
+				if (propertyTypes == null)
+				{
+					log.InfoFormat(
+						"Entity {0} persister does not provide meta-data, giving up batching grouping optimization for this entity.",
+						action.EntityName);
+					// Cancel grouping optimization for this entity.
+					return true;
+				}
+
+				int latestDependency;
+				if (_entityBatchDependency.TryGetValue(action.Instance, out latestDependency) && latestDependency > latestBatchNumberForType)
+					return true;
 
 				for (var i = 0; i < propertyValues.Length; i++)
 				{
 					var value = propertyValues[i];
 					var type = propertyTypes[i];
 
-					if (type.IsEntityType &&
-						value != null)
+					if (type.IsEntityType && value != null)
 					{
 						// find the batch number associated with the current association, if any.
 						int associationBatchNumber;
 						if (_entityBatchNumber.TryGetValue(value, out associationBatchNumber) &&
 							associationBatchNumber > latestBatchNumberForType)
 						{
-							return false;
+							return true;
 						}
 					}
 				}
 
-				return true;
+				return false;
 			}
 
 			private void AddToBatch(int batchNumber, EntityInsertAction action)
@@ -608,6 +636,50 @@ namespace NHibernate.Engine
 				}
 
 				actions.Add(action);
+			}
+
+			private void UpdateChildrenDependencies(int batchNumber, EntityInsertAction action)
+			{
+				var propertyValues = action.State;
+				var propertyTypes = action.Persister.EntityMetamodel?.PropertyTypes;
+				if (propertyTypes == null)
+				{
+					log.WarnFormat(
+						"Entity {0} persister does not provide meta-data: if there is dependent entities providing " +
+						"meta-data, they may get batched before this one and cause a failure.",
+						action.EntityName);
+					return;
+				}
+
+				var sessionFactory = action.Session.Factory;
+				for (var i = 0; i < propertyValues.Length; i++)
+				{
+					var type = propertyTypes[i];
+
+					if (!type.IsCollectionType)
+						continue;
+
+					var collectionType = (CollectionType)type;
+					var collectionPersister = sessionFactory.GetCollectionPersister(collectionType.Role);
+					if (collectionPersister.IsManyToMany || !collectionPersister.ElementType.IsEntityType)
+						continue;
+
+					var children = propertyValues[i] as IEnumerable;
+					if (children == null)
+						continue;
+					
+					foreach(var child in children)
+					{
+						if (child == null)
+							continue;
+
+						int latestDependency;
+						if (_entityBatchDependency.TryGetValue(child, out latestDependency) && latestDependency > batchNumber)
+							continue;
+
+						_entityBatchDependency[child] = batchNumber;
+					}
+				}
 			}
 		}
 	}

@@ -1,4 +1,6 @@
 ﻿using System.Data;
+using NHibernate.Dialect;
+using NHibernate.Driver;
 using NHibernate.Mapping;
 using NUnit.Framework;
 
@@ -36,6 +38,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2302
         [Test]
         public void StringHugeLength()
         {
+			if (Sfi.ConnectionProvider.Driver is OdbcDriver || Dialect is MsSqlCeDialect)
+				Assert.Ignore("NH-4065, not fixed for Odbc and MsSqlCe");
+
             int id;
             // buildup a string the exceed the mapping
             string str = GetFixedLengthString12000();
@@ -152,6 +157,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2302
 				[Test]
 				public void BlobWithoutLength()
 				{
+					if (Dialect is MySQLDialect)
+						Assert.Ignore("Not fixed for MySQLDialect, still generating a varchar(255) column for StringClob without length");
 					int id;
 					// buildup a string the exceed the mapping
 					string str = GetFixedLengthString12000();

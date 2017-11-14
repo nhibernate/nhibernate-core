@@ -5,7 +5,7 @@ namespace NHibernate.Cache
 	/// <summary>
 	/// A simple <see cref="Hashtable" />-based cache
 	/// </summary>
-	public class HashtableCache : ICache
+	public partial class HashtableCache : ICache
 	{
 		private IDictionary hashtable = new Hashtable();
 		private readonly string regionName;

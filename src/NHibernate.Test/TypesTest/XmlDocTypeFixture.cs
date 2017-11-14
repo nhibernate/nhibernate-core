@@ -1,11 +1,14 @@
 using System.Data;
 using System.Xml;
+using NHibernate.Driver;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
 {
+	[TestFixture]
 	public class XmlDocTypeFixture : TypeFixtureBase
 	{
 		protected override string TypeName
@@ -16,6 +19,12 @@ namespace NHibernate.Test.TypesTest
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
 			return TestDialect.SupportsSqlType(new SqlType(DbType.Xml));
+		}
+
+		protected override bool AppliesTo(ISessionFactoryImplementor factory)
+		{
+			// No Xml support with Odbc (and likely OleDb too).
+			return factory.ConnectionProvider.Driver is SqlClientDriver;
 		}
 
 		[Test]
@@ -35,7 +44,7 @@ namespace NHibernate.Test.TypesTest
 				var docEntity = s.Get<XmlDocClass>(1);
 				var document = docEntity.Document;
 				Assert.That(document, Is.Not.Null);
-				Assert.That(document.OuterXml, Is.StringContaining("<MyNode>my Text</MyNode>"));
+				Assert.That(document.OuterXml, Does.Contain("<MyNode>my Text</MyNode>"));
 				var xmlElement = document.CreateElement("Pizza");
 				xmlElement.SetAttribute("temp", "calda");
 				document.FirstChild.AppendChild(xmlElement);
@@ -45,7 +54,7 @@ namespace NHibernate.Test.TypesTest
 			using (var s = OpenSession())
 			{
 				var docEntity = s.Get<XmlDocClass>(1);
-				Assert.That(docEntity.Document.OuterXml, Is.StringContaining("Pizza temp=\"calda\""));
+				Assert.That(docEntity.Document.OuterXml, Does.Contain("Pizza temp=\"calda\""));
 				s.Delete(docEntity);
 				s.Flush();
 			}
@@ -75,7 +84,7 @@ namespace NHibernate.Test.TypesTest
 		public void AutoDiscoverFromNetType()
 		{
 			// integration test to be 100% sure
-			var propertyType = sessions.GetEntityPersister(typeof (XmlDocClass).FullName).GetPropertyType("AutoDocument");
+			var propertyType = Sfi.GetEntityPersister(typeof (XmlDocClass).FullName).GetPropertyType("AutoDocument");
 			Assert.That(propertyType, Is.InstanceOf<XmlDocType>());
 		}
 	}

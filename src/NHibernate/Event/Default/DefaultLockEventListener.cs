@@ -9,7 +9,7 @@ namespace NHibernate.Event.Default
 	/// in response to generated lock events. 
 	/// </summary>
 	[Serializable]
-	public class DefaultLockEventListener : AbstractLockUpgradeEventListener, ILockEventListener
+	public partial class DefaultLockEventListener : AbstractLockUpgradeEventListener, ILockEventListener
 	{
 		/// <summary>Handle the given lock event. </summary>
 		/// <param name="event">The lock event to be handled.</param>
@@ -41,8 +41,8 @@ namespace NHibernate.Event.Default
 			if (entry == null)
 			{
 				IEntityPersister persister = source.GetEntityPersister(@event.EntityName, entity);
-				object id = persister.GetIdentifier(entity, source.EntityMode);
-				if (!ForeignKeys.IsNotTransient(@event.EntityName, entity, false, source))
+				object id = persister.GetIdentifier(entity);
+				if (ForeignKeys.IsTransientFast(@event.EntityName, entity, source).GetValueOrDefault())
 				{
 					throw new TransientObjectException("cannot lock an unsaved transient instance: " + persister.EntityName);
 				}

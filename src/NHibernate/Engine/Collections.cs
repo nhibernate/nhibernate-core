@@ -6,7 +6,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Engine
 {
-	public static class Collections
+	public static partial class Collections
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(Collections));
 
@@ -40,7 +40,7 @@ namespace NHibernate.Engine
 			bool hasOrphanDelete = loadedPersister != null && loadedPersister.HasOrphanDelete;
 			if (hasOrphanDelete)
 			{
-				object ownerId = loadedPersister.OwnerEntityPersister.GetIdentifier(coll.Owner, session.EntityMode);
+				object ownerId = loadedPersister.OwnerEntityPersister.GetIdentifier(coll.Owner);
 				// TODO NH Different behavior
 				//if (ownerId == null)
 				//{
@@ -77,7 +77,7 @@ namespace NHibernate.Engine
 			// do the work
 			entry.CurrentPersister = null;
 			entry.CurrentKey = null;
-			PrepareCollectionForUpdate(coll, entry, session.EntityMode, session.Factory);
+			PrepareCollectionForUpdate(coll, entry, session.Factory);
 		}
 
 		private static void ProcessNeverReferencedCollection(IPersistentCollection coll, ISessionImplementor session)
@@ -89,7 +89,7 @@ namespace NHibernate.Engine
 			entry.CurrentPersister = entry.LoadedPersister;
 			entry.CurrentKey = entry.LoadedKey;
 
-			PrepareCollectionForUpdate(coll, entry, session.EntityMode, session.Factory);
+			PrepareCollectionForUpdate(coll, entry, session.Factory);
 		}
 
 		/// <summary> 
@@ -132,10 +132,10 @@ namespace NHibernate.Engine
 						  (collection.WasInitialized ? " (initialized)" : " (uninitialized)"));
 			}
 
-			PrepareCollectionForUpdate(collection, ce, session.EntityMode, factory);
+			PrepareCollectionForUpdate(collection, ce, factory);
 		}
 
-		private static void PrepareCollectionForUpdate(IPersistentCollection collection, CollectionEntry entry, EntityMode entityMode, ISessionFactoryImplementor factory)
+		private static void PrepareCollectionForUpdate(IPersistentCollection collection, CollectionEntry entry, ISessionFactoryImplementor factory)
 		{
 			//1. record the collection role that this collection is referenced by
 			//2. decide if the collection needs deleting/creating/updating (but don't actually schedule the action yet)
@@ -151,7 +151,7 @@ namespace NHibernate.Engine
 			{
 				// it is or was referenced _somewhere_
 				bool ownerChanged = loadedPersister != currentPersister ||
-					!currentPersister.KeyType.IsEqual(entry.LoadedKey, entry.CurrentKey, entityMode, factory);
+					!currentPersister.KeyType.IsEqual(entry.LoadedKey, entry.CurrentKey, factory);
 
 				if (ownerChanged)
 				{

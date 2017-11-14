@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests.JoinedSubclassMapperTests
 {
+	[TestFixture]
 	public class SetPersisterTests
 	{
 		private class EntitySimple
@@ -22,7 +23,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.JoinedSubclassMapperTests
 			var mapdoc = new HbmMapping();
 			var rc = new JoinedSubclassMapper(typeof(InheritedSimple), mapdoc);
 			rc.Persister<JoinedSubclassEntityPersister>();
-			Assert.That(mapdoc.JoinedSubclasses[0].Persister, Is.StringContaining("JoinedSubclassEntityPersister"));
+			Assert.That(mapdoc.JoinedSubclasses[0].Persister, Does.Contain("JoinedSubclassEntityPersister"));
 		}
 	}
 }

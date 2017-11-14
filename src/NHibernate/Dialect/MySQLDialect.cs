@@ -4,7 +4,6 @@ using System.Data.Common;
 using System.Text;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
-using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
@@ -64,7 +63,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.String, 16777215, "MEDIUMTEXT");
 			//todo: future: add compatibility with decimal???
 			//An unpacked fixed-point number. Behaves like a CHAR column; 
-			//ìunpackedî means the number is stored as a string, using one character for each digit of the value.
+			//‚Äúunpacked‚Äù means the number is stored as a string, using one character for each digit of the value.
 			//M is the total number of digits and D is the number of digits after the decimal point
 			//DECIMAL[(M[,D])] [UNSIGNED] [ZEROFILL]
 
@@ -106,12 +105,138 @@ namespace NHibernate.Dialect
 			//special:
 			RegisterColumnType(DbType.Guid, "VARCHAR(40)");
 
+			RegisterKeywords();
+
 			RegisterCastTypes();
 
 			//functions:
 			RegisterFunctions();
 
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.MySqlDataDriver";
+		}
+
+		#region private static readonly string[] DialectKeywords = { ... }
+
+		private static readonly string[] DialectKeywords =
+		{
+			"accessible",
+			"analyze",
+			"asc",
+			"before",
+			"bit",
+			"cascade",
+			"change",
+			"connection",
+			"contributors",
+			"convert",
+			"database",
+			"databases",
+			"datetime",
+			"day_hour",
+			"day_microsecond",
+			"day_minute",
+			"day_second",
+			"delayed",
+			"desc",
+			"distinctrow",
+			"div",
+			"dual",
+			"elseif",
+			"enclosed",
+			"enum",
+			"escaped",
+			"explain",
+			"float4",
+			"float8",
+			"force",
+			"fulltext",
+			"high_priority",
+			"hour_microsecond",
+			"hour_minute",
+			"hour_second",
+			"ignore",
+			"index",
+			"infile",
+			"int1",
+			"int2",
+			"int3",
+			"int4",
+			"int8",
+			"key",
+			"keys",
+			"kill",
+			"limit",
+			"linear",
+			"lines",
+			"load",
+			"lock",
+			"long",
+			"longblob",
+			"longtext",
+			"low_priority",
+			"mediumblob",
+			"mediumint",
+			"mediumtext",
+			"middleint",
+			"minute_microsecond",
+			"minute_second",
+			"mod",
+			"no_write_to_binlog",
+			"nvarchar",
+			"optimize",
+			"option",
+			"optionally",
+			"outfile",
+			"purge",
+			"read",
+			"read_only",
+			"read_write",
+			"regexp",
+			"rename",
+			"replace",
+			"require",
+			"restrict",
+			"rlike",
+			"schema",
+			"schemas",
+			"second_microsecond",
+			"separator",
+			"show",
+			"spatial",
+			"sql_big_result",
+			"sql_calc_found_rows",
+			"sql_small_result",
+			"ssl",
+			"starting",
+			"straight_join",
+			"terminated",
+			"text",
+			"tiny int",
+			"tinyblob",
+			"tinyint",
+			"tinytext",
+			"unlock",
+			"unsigned",
+			"upgrade",
+			"usage",
+			"use",
+			"utc_date",
+			"utc_time",
+			"utc_timestamp",
+			"varbinary",
+			"varcharacter",
+			"write",
+			"x509",
+			"xor",
+			"year_month",
+			"zerofill",
+		};
+
+		#endregion
+
+		protected virtual void RegisterKeywords()
+		{
+			RegisterKeywords(DialectKeywords);
 		}
 
 		protected virtual void RegisterFunctions()
@@ -368,15 +493,8 @@ namespace NHibernate.Dialect
 		/// </summary>
 		/// <param name="sqlType">The <see cref="SqlType"/> typecode </param>
 		/// <returns> The database type name </returns>
-		public override string GetCastTypeName(SqlType sqlType)
-		{
-			string result = castTypeNames.Get(sqlType.DbType, Column.DefaultLength, Column.DefaultPrecision, Column.DefaultScale);
-			if (result == null)
-			{
-				throw new HibernateException(string.Format("No CAST() type mapping for SqlType {0}", sqlType));
-			}
-			return result;
-		}
+		public override string GetCastTypeName(SqlType sqlType) =>
+			GetCastTypeName(sqlType, castTypeNames);
 
 		public override long TimestampResolutionInTicks
 		{
@@ -386,5 +504,44 @@ namespace NHibernate.Dialect
 				return TimeSpan.TicksPerSecond;
 			}
 		}
+
+		/// <summary>
+		/// Does this dialect support concurrent writing connections in the same transaction?
+		/// </summary>
+		/// <remarks>
+		/// NotSupportedException : Multiple simultaneous connections or connections with different 
+		/// connection strings inside the same transaction are not currently supported.
+		/// </remarks>
+		public override bool SupportsConcurrentWritingConnectionsInSameTransaction => false;
+
+		#region Overridden informational metadata
+
+		public override bool SupportsEmptyInList => false;
+
+		public override bool AreStringComparisonsCaseInsensitive => true;
+
+		// note: at least MySQL 5.1 shows this not working...
+		public override bool SupportsLobValueChangePropogation => false;
+
+		public override bool SupportsSubqueryOnMutatingTable => false;
+
+		// v5.7: MySql.Data.MySqlClient.MySqlException : This version of MySQL doesn't yet support 'LIMIT & IN/ALL/ANY/SOME subquery'
+		/// <inheritdoc/>
+		public override bool SupportsSubSelectsWithPagingAsInPredicateRhs => false;
+
+		// v5.7: 
+		/// <inheritdoc/>
+		public override bool SupportsHavingOnGroupedByComputation => false;
+
+		/// <summary>
+		/// Does this dialect support distributed transaction?
+		/// </summary>
+		/// <remarks>
+		/// Fails enlisting a connection into a distributed transaction, fails promoting a transaction
+		/// to distributed when it has already a connection enlisted.
+		/// </remarks>
+		public override bool SupportsDistributedTransactions => false;
+
+		#endregion
 	}
 }

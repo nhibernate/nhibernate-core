@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Id.Insert;
 using NHibernate.SqlCommand;
@@ -22,7 +23,7 @@ namespace NHibernate.Id
 	/// the entity is inserted.
 	/// </p>
 	/// </remarks>
-	public class IdentityGenerator : AbstractPostInsertGenerator
+	public partial class IdentityGenerator : AbstractPostInsertGenerator
 	{
 		public override IInsertGeneratedIdentifierDelegate GetInsertGeneratedIdentifierDelegate(
 			IPostInsertIdentityPersister persister, ISessionFactoryImplementor factory, bool isGetGeneratedKeysEnabled)
@@ -45,7 +46,7 @@ namespace NHibernate.Id
 		/// Delegate for dealing with IDENTITY columns where the dialect supports returning
 		/// the generated IDENTITY value directly from the insert statement.
 		/// </summary>
-		public class InsertSelectDelegate : AbstractReturningDelegate, IInsertGeneratedIdentifierDelegate
+		public partial class InsertSelectDelegate : AbstractReturningDelegate, IInsertGeneratedIdentifierDelegate
 		{
 			private readonly IPostInsertIdentityPersister persister;
 			private readonly ISessionFactoryImplementor factory;
@@ -64,14 +65,14 @@ namespace NHibernate.Id
 				return insert;
 			}
 
-			protected internal override IDbCommand Prepare(SqlCommandInfo insertSQL, ISessionImplementor session)
+			protected internal override DbCommand Prepare(SqlCommandInfo insertSQL, ISessionImplementor session)
 			{
 				return session.Batcher.PrepareCommand(CommandType.Text, insertSQL.Text, insertSQL.ParameterTypes);
 			}
 
-			public override object ExecuteAndExtract(IDbCommand insert, ISessionImplementor session)
+			public override object ExecuteAndExtract(DbCommand insert, ISessionImplementor session)
 			{
-				IDataReader rs = session.Batcher.ExecuteReader(insert);
+				var rs = session.Batcher.ExecuteReader(insert);
 				try
 				{
 					return IdentifierGeneratorFactory.GetGeneratedIdentity(rs, persister.IdentifierType, session);
@@ -92,7 +93,7 @@ namespace NHibernate.Id
 		/// Delegate for dealing with IDENTITY columns where the dialect requires an
 		/// additional command execution to retrieve the generated IDENTITY value
 		/// </summary>
-		public class BasicDelegate : AbstractSelectingDelegate, IInsertGeneratedIdentifierDelegate
+		public partial class BasicDelegate : AbstractSelectingDelegate, IInsertGeneratedIdentifierDelegate
 		{
 
 			private readonly IPostInsertIdentityPersister persister;
@@ -117,7 +118,7 @@ namespace NHibernate.Id
 				return insert;
 			}
 
-			protected internal override object GetResult(ISessionImplementor session, IDataReader rs, object obj)
+			protected internal override object GetResult(ISessionImplementor session, DbDataReader rs, object obj)
 			{
 				return IdentifierGeneratorFactory.GetGeneratedIdentity(rs, persister.IdentifierType, session);
 			}

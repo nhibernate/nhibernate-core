@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Id.Insert;
 using NHibernate.Persister.Entity;
@@ -14,7 +14,7 @@ namespace NHibernate.Id
 	/// value assigned by the database. The correct row is located using a unique key.
 	/// </summary>
 	/// <remarks>One mapping parameter is required: key (unless a natural-id is defined in the mapping).</remarks>
-	public class SelectGenerator : AbstractPostInsertGenerator, IConfigurable
+	public partial class SelectGenerator : AbstractPostInsertGenerator, IConfigurable
 	{
 		private string uniqueKeyPropertyName;
 
@@ -66,7 +66,7 @@ namespace NHibernate.Id
 		#region Nested type: SelectGeneratorDelegate
 
 		/// <summary> The delegate for the select generation strategy.</summary>
-		public class SelectGeneratorDelegate : AbstractSelectingDelegate
+		public partial class SelectGeneratorDelegate : AbstractSelectingDelegate
 		{
 			private readonly ISessionFactoryImplementor factory;
 			private readonly SqlString idSelectString;
@@ -103,14 +103,13 @@ namespace NHibernate.Id
 				return new IdentifierGeneratingInsert(factory);
 			}
 
-			protected internal override void BindParameters(ISessionImplementor session, IDbCommand ps, object entity)
+			protected internal override void BindParameters(ISessionImplementor session, DbCommand ps, object entity)
 			{
-				object uniqueKeyValue = ((IEntityPersister) persister).GetPropertyValue(entity, uniqueKeyPropertyName,
-				                                                                        session.EntityMode);
+				object uniqueKeyValue = ((IEntityPersister) persister).GetPropertyValue(entity, uniqueKeyPropertyName);
 				uniqueKeyType.NullSafeSet(ps, uniqueKeyValue, 0, session);
 			}
 
-			protected internal override object GetResult(ISessionImplementor session, IDataReader rs, object entity)
+			protected internal override object GetResult(ISessionImplementor session, DbDataReader rs, object entity)
 			{
 				if (!rs.Read())
 				{

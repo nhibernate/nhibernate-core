@@ -43,23 +43,23 @@ namespace NHibernate.Test.NHSpecificTest.NH2856
 			{
 				var query = session.Query<Person>()
 					.Fetch(p => p.Address)
-					.Cacheable();
+					.WithOptions(o => o.SetCacheable(true));
 
-				sessions.Statistics.Clear();
+				Sfi.Statistics.Clear();
 
 				var result = query.ToList(); // Execute the query
 
 				Assert.That(result.Count, Is.EqualTo(1));
-				Assert.That(sessions.Statistics.QueryExecutionCount, Is.EqualTo(1));
-				Assert.That(sessions.Statistics.QueryCacheHitCount, Is.EqualTo(0));
+				Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(1));
+				Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(0));
 
-				sessions.Statistics.Clear();
+				Sfi.Statistics.Clear();
 
 				var cachedResult = query.ToList(); // Re-execute the query
 
 				Assert.That(cachedResult.Count, Is.EqualTo(1));
-				Assert.That(sessions.Statistics.QueryExecutionCount, Is.EqualTo(0));
-				Assert.That(sessions.Statistics.QueryCacheHitCount, Is.EqualTo(1));
+				Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(0));
+				Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(1));
 			}
 		}
 

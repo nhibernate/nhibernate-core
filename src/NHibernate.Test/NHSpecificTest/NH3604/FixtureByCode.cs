@@ -2,6 +2,7 @@
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3604
@@ -9,6 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3604
 	/// <summary>
 	/// Tests ability to map a non-public property by code via expressions to access the hidden properties
 	/// </summary>
+	[TestFixture]
 	public class ByCodeFixture : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
@@ -23,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3604
 
 			mapper.Class<EntityDetail>(rc =>
 			{
-				rc.Id(x => x.Id, m => m.Generator(new ForeignGeneratorDef(ReflectionHelper.GetProperty(EntityDetail.PropertyAccessExpressions.Entity))));
+				rc.Id(x => x.Id, m => m.Generator(new ForeignGeneratorDef(ReflectHelper.GetProperty(EntityDetail.PropertyAccessExpressions.Entity))));
 				rc.OneToOne(EntityDetail.PropertyAccessExpressions.Entity, m => m.Constrained(true));
 				rc.Property(x => x.ExtraInfo);
 			});

@@ -35,13 +35,15 @@ namespace NHibernate.Test.NHSpecificTest.NH392
 			}
 		}
 
-        protected override void OnTearDown()
+		protected override void OnTearDown()
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			{
-				s.Delete("from UnsavedValueMinusOne");
-				s.Flush();
+				// s.Delete("from UnsavedValueMinusOne") loads then delete entities one by one, checking the version.
+				// This fails with ODBC & Sql Server 2008+, see NH-1756 test case for more details.
+				// Use an in-db query instead.
+				s.CreateQuery("delete from UnsavedValueMinusOne").ExecuteUpdate();
 			}
-        }
+		}
 	}
 }

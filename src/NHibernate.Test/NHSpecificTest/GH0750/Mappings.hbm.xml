@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH0750">
+
+  <class name="Order" table="Orders">
+    <id name="OrderId" column="OrderId" type="int" unsaved-value="0"
+        access="field.camelcase-underscore">
+      <generator class="assigned"/>
+    </id>
+    <property name="OrderDate" column="OrderDate" type="DateTime"
+              access="field.camelcase-underscore"/>
+    <set name="OrderLines" lazy="true" access="field.camelcase-underscore"
+         cascade="all-delete-orphan" inverse="true">
+      <key column="OrderId"/>
+      <one-to-many class="OrderLine"/>
+    </set>
+  </class>
+
+  <class name="OrderLine" table="OrderLines">
+    <id name="OrderLineId" column="OrderLineId" type="int" unsaved-value="0"
+        access="field.camelcase-underscore">
+      <generator class="native"/>
+    </id>
+    <many-to-one name="Order" class="Order" column="OrderId" not-null="true"
+                 access="field.camelcase-underscore" fetch="select"/>
+    <many-to-one name="Product" class="Product" column="ProductId" not-null="true"
+                 access="field.camelcase-underscore" fetch="select"/>
+    <property name="UnitPrice" column="UnitPrice" type="Decimal"
+              not-null="true" access="field.camelcase-underscore"/>
+    <property name="Quantity" column="Quantity" type="int"
+              not-null="true" access="field.camelcase-underscore"/>
+  </class>
+
+  <class name="Product" table="Products">
+    <id name="ProductId" column="ProductId" type="int" unsaved-value="0" access="field.camelcase-underscore">
+      <generator class="assigned"/>
+    </id>
+    <property name="Name" column="ProductName" type="string" length="40" not-null="true"
+              access="field.camelcase-underscore"/>
+    <property name="UnitPrice" column="UnitPrice" type="Decimal" access="field.camelcase-underscore"/>
+    <bag name="OrderLines" lazy="true" access="field.camelcase-underscore" cascade="none">
+      <key column="ProductId"/>
+      <one-to-many class="OrderLine"/>
+    </bag>
+  </class>
+
+</hibernate-mapping>

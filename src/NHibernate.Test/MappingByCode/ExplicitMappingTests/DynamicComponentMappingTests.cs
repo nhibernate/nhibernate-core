@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 {
+	[TestFixture]
 	public class DynamicComponentMappingTests
 	{
 		private class Person
@@ -73,7 +74,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(Person) });
 			var hbmClass = hbmMapping.RootClasses[0];
 			var hbmDynamicComponent = hbmClass.Properties.OfType<HbmDynamicComponent>().SingleOrDefault();
-			Assert.That(hbmDynamicComponent.access, Is.StringContaining("field"));
+			Assert.That(hbmDynamicComponent.access, Does.Contain("field"));
 			Assert.That(hbmDynamicComponent.insert, Is.False);
 			Assert.That(hbmDynamicComponent.update, Is.False);
 			Assert.That(hbmDynamicComponent.optimisticlock, Is.False);

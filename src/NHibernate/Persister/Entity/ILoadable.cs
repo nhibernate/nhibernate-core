@@ -1,6 +1,6 @@
 using NHibernate.Type;
 using NHibernate.Engine;
-using System.Data;
+using System.Data.Common;
 
 namespace NHibernate.Persister.Entity
 {
@@ -13,7 +13,7 @@ namespace NHibernate.Persister.Entity
 	/// Implemented by <c>ClassPersister</c> that uses <c>Loader</c>. There are several optional
 	/// operations used only by loaders that inherit <c>OuterJoinLoader</c>
 	/// </summary>
-	public interface ILoadable : IEntityPersister
+	public partial interface ILoadable : IEntityPersister
 	{
 		/// <summary>
 		/// The discriminator type
@@ -68,7 +68,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Retrieve property values from one row of a result set
 		/// </summary>
-		object[] Hydrate(IDataReader rs, object id, object obj, ILoadable rootLoadable, string[][] suffixedPropertyColumns,
+		object[] Hydrate(DbDataReader rs, object id, object obj, ILoadable rootLoadable, string[][] suffixedPropertyColumns,
 						 bool allProperties, ISessionImplementor session);
 	}
 }

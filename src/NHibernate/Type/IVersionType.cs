@@ -6,7 +6,7 @@ namespace NHibernate.Type
 	/// <summary>
 	/// An <see cref="IType"/> that may be used to version data.
 	/// </summary>
-	public interface IVersionType : IType
+	public partial interface IVersionType : IType
 	{
 		/// <summary>
 		/// When implemented by a class, increments the version.
@@ -22,14 +22,6 @@ namespace NHibernate.Type
 		/// <param name="session">The current session, if available.</param>
 		/// <returns>An instance of the type.</returns>
 		object Seed(ISessionImplementor session);
-
-		/// <summary> 
-		/// Are the two version values considered equal? 
-		/// </summary>
-		/// <param name="x">One value to check. </param>
-		/// <param name="y">The other value to check. </param>
-		/// <returns> true if the values are equal, false otherwise. </returns>
-		bool IsEqual(object x, object y);
 
 		/// <summary>
 		/// Get a comparator for the version numbers

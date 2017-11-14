@@ -9,10 +9,10 @@ namespace NHibernate.Test.Operations
 
 		protected NumberedNode() {}
 
-		public NumberedNode(string name)
+		public NumberedNode(string name, DateTime created)
 		{
 			Name = name;
-			Created = DateTime.Now;
+			Created = created;
 		}
 
 		public virtual long Id { get; set; }

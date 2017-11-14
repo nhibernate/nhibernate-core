@@ -29,7 +29,8 @@ namespace NHibernate.Dialect
 		public PostgreSQLDialect()
 		{
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.NpgsqlDriver";
-			
+
+			RegisterDateTimeTypeMappings();
 			RegisterColumnType(DbType.AnsiStringFixedLength, "char(255)");
 			RegisterColumnType(DbType.AnsiStringFixedLength, 8000, "char($l)");
 			RegisterColumnType(DbType.AnsiString, "varchar(255)");
@@ -40,10 +41,9 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Boolean, "boolean");
 			RegisterColumnType(DbType.Byte, "int2");
 			RegisterColumnType(DbType.Currency, "decimal(16,4)");
-			RegisterColumnType(DbType.Date, "date");
-			RegisterColumnType(DbType.DateTime, "timestamp");
 			RegisterColumnType(DbType.Decimal, "decimal(19,5)");
-			RegisterColumnType(DbType.Decimal, 19, "decimal($p, $s)");
+			// PostgreSQL max precision is unlimited, but .Net is limited to 28-29.
+			RegisterColumnType(DbType.Decimal, 28, "decimal($p, $s)");
 			RegisterColumnType(DbType.Double, "float8");
 			RegisterColumnType(DbType.Int16, "int2");
 			RegisterColumnType(DbType.Int32, "int4");
@@ -54,7 +54,6 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.String, "varchar(255)");
 			RegisterColumnType(DbType.String, 4000, "varchar($l)");
 			RegisterColumnType(DbType.String, 1073741823, "text");
-			RegisterColumnType(DbType.Time, "time");
 
 			// Override standard HQL function
 			RegisterFunction("current_timestamp", new NoArgSQLFunction("now", NHibernateUtil.DateTime, true));
@@ -82,6 +81,48 @@ namespace NHibernate.Dialect
 
 			// Register the date function, since when used in LINQ select clauses, NH must know the data type.
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "cast(?1 as date)"));
+
+			RegisterKeywords();
+		}
+
+		#region private static readonly string[] DialectKeywords = { ... }
+
+		private static readonly string[] DialectKeywords =
+		{
+			"analyse",
+			"analyze",
+			"asc",
+			"concurrently",
+			"current_catalog",
+			"current_schema",
+			"deferrable",
+			"desc",
+			"freeze",
+			"ilike",
+			"initially",
+			"isnull",
+			"limit",
+			"notnull",
+			"offset",
+			"placing",
+			"returning",
+			"session_user",
+			"variadic",
+			"verbose",
+		};
+
+		#endregion
+
+		protected virtual void RegisterDateTimeTypeMappings()
+		{
+			RegisterColumnType(DbType.Date, "date");
+			RegisterColumnType(DbType.DateTime, "timestamp");
+			RegisterColumnType(DbType.Time, "time");
+		}
+
+		protected virtual void RegisterKeywords()
+		{
+			RegisterKeywords(DialectKeywords);
 		}
 
 		public override string AddColumnString
@@ -249,5 +290,22 @@ namespace NHibernate.Dialect
 		{
 			get { return "SELECT CURRENT_TIMESTAMP"; }
 		}
+
+		#region Overridden informational metadata
+
+		public override bool SupportsEmptyInList => false;
+
+		/// <summary> 
+		/// Should LOBs (both BLOB and CLOB) be bound using stream operations (i.e.
+		/// {@link java.sql.PreparedStatement#setBinaryStream}). 
+		/// </summary>
+		/// <returns> True if BLOBs and CLOBs should be bound using stream operations. </returns>
+		public override bool UseInputStreamToInsertBlob => false;
+
+		public override bool SupportsLobValueChangePropogation => false;
+
+		public override bool SupportsUnboundedLobLocatorMaterialization => false;
+
+		#endregion
 	}
 }

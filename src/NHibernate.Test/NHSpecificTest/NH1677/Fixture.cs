@@ -15,12 +15,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1677
 		private const string Entity2Property = "Entity2Property";
 		private const string EntityPropertyPrefix = "Record";
 
-		protected override void Configure(Configuration configuration)
-		{
-			base.Configure(configuration);
-			configuration.SetProperty("default_entity_mode", EntityModeHelper.ToString(EntityMode.Map));
-		}
-
 		protected override void OnSetUp()
 		{
 			using (ISession s = OpenSession())

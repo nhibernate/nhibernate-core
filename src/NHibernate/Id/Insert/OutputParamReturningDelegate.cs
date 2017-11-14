@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -9,11 +10,11 @@ namespace NHibernate.Id.Insert
 {
 	/// <summary> 
 	/// <see cref="IInsertGeneratedIdentifierDelegate"/> implementation where the
-	/// underlying strategy causes the generated identitifer to be returned, as an
+	/// underlying strategy causes the generated identifier to be returned, as an
 	/// effect of performing the insert statement, in a Output parameter.
-	/// Thus, there is no need for an additional sql statement to determine the generated identitifer. 
+	/// Thus, there is no need for an additional sql statement to determine the generated identifier. 
 	/// </summary>
-	public class OutputParamReturningDelegate : AbstractReturningDelegate
+	public partial class OutputParamReturningDelegate : AbstractReturningDelegate
 	{
 		private const string ReturnParameterName = "nhIdOutParam";
 		private readonly ISessionFactoryImplementor factory;
@@ -40,11 +41,11 @@ namespace NHibernate.Id.Insert
 			return new ReturningIdentifierInsert(factory, idColumnName, ReturnParameterName);
 		}
 
-		protected internal override IDbCommand Prepare(SqlCommandInfo insertSQL, ISessionImplementor session)
+		protected internal override DbCommand Prepare(SqlCommandInfo insertSQL, ISessionImplementor session)
 		{
-			IDbCommand command = session.Batcher.PrepareCommand(CommandType.Text, insertSQL.Text, insertSQL.ParameterTypes);
+			var command = session.Batcher.PrepareCommand(CommandType.Text, insertSQL.Text, insertSQL.ParameterTypes);
 			//Add the output parameter
-			IDbDataParameter idParameter = factory.ConnectionProvider.Driver.GenerateParameter(command, ReturnParameterName,
+			var idParameter = factory.ConnectionProvider.Driver.GenerateParameter(command, ReturnParameterName,
 			                                                                                         paramType);
 			driveGeneratedParamName = idParameter.ParameterName;
 
@@ -59,10 +60,10 @@ namespace NHibernate.Id.Insert
 			return command;
 		}
 
-		public override object ExecuteAndExtract(IDbCommand insert, ISessionImplementor session)
+		public override object ExecuteAndExtract(DbCommand insert, ISessionImplementor session)
 		{
 			session.Batcher.ExecuteNonQuery(insert);
-			return Convert.ChangeType(((IDbDataParameter) insert.Parameters[driveGeneratedParamName]).Value, Persister.IdentifierType.ReturnedClass);
+			return Convert.ChangeType(insert.Parameters[driveGeneratedParamName].Value, Persister.IdentifierType.ReturnedClass);
 		}
 
 		#endregion

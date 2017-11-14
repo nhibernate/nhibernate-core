@@ -9,6 +9,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Stateless.FetchingLazyCollections
 {
+	[TestFixture]
 	public class LazyCollectionFetchTests : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
@@ -77,7 +78,7 @@ namespace NHibernate.Test.Stateless.FetchingLazyCollections
 			const string crocodileFather = "Crocodile father";
 			const string crocodileMother = "Crocodile mother";
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				var rf = new Reptile { Description = crocodileFather };
@@ -96,7 +97,7 @@ namespace NHibernate.Test.Stateless.FetchingLazyCollections
 
 			const string humanFather = "Fred";
 			const string humanMother = "Wilma";
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				var hf = new Human { Description = "Flinstone", Name = humanFather };
@@ -112,7 +113,7 @@ namespace NHibernate.Test.Stateless.FetchingLazyCollections
 				tx.Commit();
 			}
 
-			using (IStatelessSession s = sessions.OpenStatelessSession())
+			using (IStatelessSession s = Sfi.OpenStatelessSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				IList<Family<Human>> hf = s.CreateQuery("from HumanFamily").List<Family<Human>>();
@@ -130,7 +131,7 @@ namespace NHibernate.Test.Stateless.FetchingLazyCollections
 				tx.Commit();
 			}
 
-			using (IStatelessSession s = sessions.OpenStatelessSession())
+			using (IStatelessSession s = Sfi.OpenStatelessSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				IList<Family<Human>> hf = s.Query<Family<Human>>().FetchMany(f => f.Childs).ToList();
@@ -150,7 +151,7 @@ namespace NHibernate.Test.Stateless.FetchingLazyCollections
 				tx.Commit();
 			}
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				s.Delete("from HumanFamily");

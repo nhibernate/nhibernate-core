@@ -13,7 +13,7 @@ namespace NHibernate.Loader.Collection
 	/// <seealso cref="OneToManyLoader" />
 	/// <seealso cref="BasicCollectionLoader" />
 	/// </summary>
-	public class CollectionLoader : OuterJoinLoader, ICollectionInitializer
+	public partial class CollectionLoader : OuterJoinLoader, ICollectionInitializer
 	{
 		private readonly IQueryableCollection collectionPersister;
 		private IParameterSpecification[] parametersSpecifications;
@@ -92,7 +92,7 @@ namespace NHibernate.Loader.Collection
 					var skipParameter = new NamedParameterSpecification(1, 0, skipParameterName) { ExpectedType = NHibernateUtil.Int32 };
 					skipSqlParameter = Parameter.Placeholder;
 					skipSqlParameter.BackTrack = skipParameter.GetIdsForBackTrack(sessionFactory).First();
-					parameters.Add(skipParameterName, new TypedValue(skipParameter.ExpectedType, skip.Value, EntityMode.Poco));
+					parameters.Add(skipParameterName, new TypedValue(skipParameter.ExpectedType, skip.Value));
 					parameterSpecs.Add(skipParameter);
 				}
 				if (take.HasValue)
@@ -101,7 +101,7 @@ namespace NHibernate.Loader.Collection
 					var takeParameter = new NamedParameterSpecification(1, 0, takeParameterName) { ExpectedType = NHibernateUtil.Int32 };
 					takeSqlParameter = Parameter.Placeholder;
 					takeSqlParameter.BackTrack = takeParameter.GetIdsForBackTrack(sessionFactory).First();
-					parameters.Add(takeParameterName, new TypedValue(takeParameter.ExpectedType, take.Value, EntityMode.Poco));
+					parameters.Add(takeParameterName, new TypedValue(takeParameter.ExpectedType, take.Value));
 					parameterSpecs.Add(takeParameter);
 				}
 

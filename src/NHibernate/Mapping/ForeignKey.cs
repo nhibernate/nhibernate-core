@@ -122,12 +122,24 @@ namespace NHibernate.Mapping
 				sb.Append("])");
 				throw new FKUnmatchingColumnsException(sb.ToString());
 			}
-			IEnumerator<Column> fkCols = ColumnIterator.GetEnumerator();
-			IEnumerator<Column> pkCols = referencedTable.PrimaryKey.ColumnIterator.GetEnumerator();
 
-			while (fkCols.MoveNext() && pkCols.MoveNext())
+			AlignColumns(ColumnIterator, referencedTable.PrimaryKey.ColumnIterator);
+		}
+
+		internal static void AlignColumns(IEnumerable<Column> fk, IEnumerable<Column> pk)
+		{
+			using (var fkCols = fk.GetEnumerator())
+			using (var pkCols = pk.GetEnumerator())
 			{
-				fkCols.Current.Length = pkCols.Current.Length;
+				while (fkCols.MoveNext() && pkCols.MoveNext())
+				{
+					if (pkCols.Current.IsLengthDefined() || fkCols.Current.IsLengthDefined())
+						fkCols.Current.Length = pkCols.Current.Length;
+					if (pkCols.Current.IsPrecisionDefined() || fkCols.Current.IsPrecisionDefined())
+						fkCols.Current.Precision = pkCols.Current.Precision;
+					if (pkCols.Current.IsScaleDefined() || fkCols.Current.IsScaleDefined())
+						fkCols.Current.Scale = pkCols.Current.Scale;
+				}
 			}
 		}
 

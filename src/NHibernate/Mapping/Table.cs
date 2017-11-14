@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
@@ -25,7 +26,9 @@ namespace NHibernate.Mapping
 	[Serializable]
 	public class Table : IRelationalModel
 	{
+		[ThreadStatic]
 		private static int tableCounter;
+
 		private readonly List<string> checkConstraints = new List<string>();
 		private readonly LinkedHashMap<string, Column> columns = new LinkedHashMap<string, Column>();
 		private readonly Dictionary<ForeignKeyKey, ForeignKey> foreignKeys = new Dictionary<ForeignKeyKey, ForeignKey>();
@@ -562,12 +565,7 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public Column GetColumn(int n)
 		{
-			IEnumerator<Column> iter = columns.Values.GetEnumerator();
-			for (int i = 0; i <= n; i++)
-			{
-				iter.MoveNext();
-			}
-			return iter.Current;
+			return columns.Values.Skip(n).First();
 		}
 
 		/// <summary>
@@ -581,11 +579,11 @@ namespace NHibernate.Mapping
 			if (old == null)
 			{
 				columns[column.CanonicalName] = column;
-				column.uniqueInteger = columns.Count;
+				column.UniqueInteger = columns.Count;
 			}
 			else
 			{
-				column.uniqueInteger = old.uniqueInteger;
+				column.UniqueInteger = old.UniqueInteger;
 			}
 		}
 
@@ -974,8 +972,10 @@ namespace NHibernate.Mapping
 			return buf.ToString();
 		}
 
-		public void ValidateColumns(Dialect.Dialect dialect, IMapping mapping, ITableMetadata tableInfo)
+		public IEnumerable<string> ValidateColumns(Dialect.Dialect dialect, IMapping mapping, ITableMetadata tableInfo)
 		{
+			var validationErrors = new List<string>();
+
 			IEnumerable<Column> iter = ColumnIterator;
 			foreach (Column column in iter)
 			{
@@ -983,8 +983,12 @@ namespace NHibernate.Mapping
 
 				if (columnInfo == null)
 				{
-					throw new HibernateException(string.Format("Missing column: {0} in {1}", column.Name,
-															   dialect.Qualify(tableInfo.Catalog, tableInfo.Schema, tableInfo.Name)));
+					validationErrors.Add(
+						string.Format(
+							"Missing column: {0} in {1}",
+							column.Name,
+							dialect.Qualify(tableInfo.Catalog, tableInfo.Schema, tableInfo.Name)));
+					continue;
 				}
 
 				//TODO: Add new method to ColumnMetadata :getTypeCode
@@ -992,12 +996,17 @@ namespace NHibernate.Mapping
 				//|| columnInfo.get() == column.GetSqlTypeCode(mapping);
 				if (!typesMatch)
 				{
-					throw new HibernateException(string.Format("Wrong column type in {0} for column {1}. Found: {2}, Expected {3}",
-															   dialect.Qualify(tableInfo.Catalog, tableInfo.Schema, tableInfo.Name),
-															   column.Name, columnInfo.TypeName.ToLowerInvariant(),
-															   column.GetSqlType(dialect, mapping)));
+					validationErrors.Add(
+						string.Format(
+							"Wrong column type in {0} for column {1}. Found: {2}, Expected {3}",
+							dialect.Qualify(tableInfo.Catalog, tableInfo.Schema, tableInfo.Name),
+							column.Name,
+							columnInfo.TypeName.ToLowerInvariant(),
+							column.GetSqlType(dialect, mapping)));
 				}
 			}
+
+			return validationErrors;
 		}
 
 
@@ -1029,8 +1038,8 @@ namespace NHibernate.Mapping
 			{
 				// NH : Different implementation to prevent NH930 (look test)
 				return //y.referencedClassName.Equals(x.referencedClassName) &&
-					CollectionHelper.CollectionEquals<Column>(y.columns, x.columns)
-					&& CollectionHelper.CollectionEquals<Column>(y.referencedColumns, x.referencedColumns);
+					CollectionHelper.SequenceEquals<Column>(y.columns, x.columns)
+					&& CollectionHelper.SequenceEquals<Column>(y.referencedColumns, x.referencedColumns);
 			}
 
 			public int GetHashCode(ForeignKeyKey obj)

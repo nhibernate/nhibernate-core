@@ -31,12 +31,13 @@ namespace NHibernate.Dialect
 	///		</item>
 	/// </list>
 	/// </remarks>
-	public class InformixDialect : Dialect
+	public partial class InformixDialect : Dialect
 	{
 		/// <summary></summary>
 		public InformixDialect()
 		{
-			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR($l)");
+			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR(255)");
+			RegisterColumnType(DbType.AnsiStringFixedLength, 255, "CHAR($l)");
 			RegisterColumnType(DbType.AnsiString, 255, "VARCHAR($l)");
 			RegisterColumnType(DbType.AnsiString, 32739, "LVARCHAR($l)");
 			RegisterColumnType(DbType.AnsiString, 2147483647, "TEXT");
@@ -49,14 +50,16 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Date, "DATE");
 			RegisterColumnType(DbType.DateTime, "datetime year to fraction(5)");
 			RegisterColumnType(DbType.Decimal, "DECIMAL(19, 5)");
-			RegisterColumnType(DbType.Decimal, 19, "DECIMAL($p, $s)");
+			// Informix max precision is 32, but .Net is limited to 28-29.
+			RegisterColumnType(DbType.Decimal, 28, "DECIMAL($p, $s)");
 			RegisterColumnType(DbType.Double, "DOUBLE");
 			RegisterColumnType(DbType.Int16, "SMALLINT");
 			RegisterColumnType(DbType.Int32, "INTEGER");
 			RegisterColumnType(DbType.Int64, "BIGINT");
 			RegisterColumnType(DbType.Single, "SmallFloat");
 			RegisterColumnType(DbType.Time, "datetime hour to second");
-			RegisterColumnType(DbType.StringFixedLength, "CHAR($l)");
+			RegisterColumnType(DbType.StringFixedLength, "CHAR(255)");
+			RegisterColumnType(DbType.StringFixedLength, 255, "CHAR($l)");
 			RegisterColumnType(DbType.String, 255, "VARCHAR($l)");
 			RegisterColumnType(DbType.String, 32739, "LVARCHAR($l)");
 			RegisterColumnType(DbType.String, 2147483647, "TEXT");
@@ -84,7 +87,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("date", new StandardSQLFunction("date", NHibernateUtil.DateTime));
 			RegisterFunction("mdy", new SQLFunctionTemplate(NHibernateUtil.DateTime, "mdy(?1, ?2, ?3)"));
 			RegisterFunction("to_char", new StandardSQLFunction("to_char", NHibernateUtil.String));
-			RegisterFunction("to_date", new StandardSQLFunction("to_date", NHibernateUtil.Timestamp));
+			RegisterFunction("to_date", new StandardSQLFunction("to_date", NHibernateUtil.DateTime));
 			RegisterFunction("instr", new StandardSQLFunction("instr", NHibernateUtil.String));
 			// actually there is no Instr (or equivalent) in Informix; you have to write your own SPL or UDR
 
@@ -454,6 +457,10 @@ namespace NHibernate.Dialect
 
 			return res.ToString();
 		}
+
+		// Informix 7 is said on Internet to be limited to 18. (http://www.justskins.com/forums/length-of-columns-names-143294.html)
+		/// <inheritdoc />
+		public override int MaxAliasLength => 18;
 	}
 
 	public class IfxViolatedConstraintExtracter : TemplatedViolatedConstraintNameExtracter

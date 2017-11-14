@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests.ClassMapperTests
 {
+	[TestFixture]
 	public class ComponetAsIdTests
 	{
 		private class PersonId
@@ -17,7 +18,10 @@ namespace NHibernate.Test.MappingByCode.MappersTests.ClassMapperTests
 
 		private class Person
 		{
+			// Assigned by reflection
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 			private PersonId id;
+#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
 			public PersonId Id
 			{
 				get { return id; }
@@ -68,7 +72,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.ClassMapperTests
 			Assert.That(hbmClass.Id, Is.Null);
 			var hbmCompositeId = hbmClass.CompositeId;
 			Assert.That(hbmCompositeId.Items, Has.Length.EqualTo(2));
-			Assert.That(hbmCompositeId.access, Is.StringContaining("field"));
+			Assert.That(hbmCompositeId.access, Does.Contain("field"));
 		}
 
 		[Test]

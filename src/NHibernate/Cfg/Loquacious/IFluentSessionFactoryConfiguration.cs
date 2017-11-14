@@ -25,7 +25,6 @@ namespace NHibernate.Cfg.Loquacious
 		ICacheConfiguration Caching { get; }
 
 		IFluentSessionFactoryConfiguration GenerateStatistics();
-		IFluentSessionFactoryConfiguration Using(EntityMode entityMode);
 		IFluentSessionFactoryConfiguration DefaultFlushMode(FlushMode flushMode);
 
 		IFluentSessionFactoryConfiguration ParsingHqlThrough<TQueryTranslator>() where TQueryTranslator : IQueryTranslatorFactory;

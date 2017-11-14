@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2530
 {
+	[TestFixture]
 	public class Fixture: BugTestCase
 	{
 		protected override void Configure(Cfg.Configuration configuration)
@@ -46,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2530
 			using (var tx = session.BeginTransaction())
 			{
 				var customer = new Customer { Name = "Mengano" };
-				Assert.That(() => session.Persist(customer), Throws.Exception.Message.ContainsSubstring("Entity = 'Customer'"));
+				Assert.That(() => session.Persist(customer), Throws.Exception.Message.Contains("Entity = 'Customer'"));
 			}
 		}
 	}

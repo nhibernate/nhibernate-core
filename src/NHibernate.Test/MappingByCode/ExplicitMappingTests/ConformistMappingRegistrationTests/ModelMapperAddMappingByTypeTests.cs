@@ -4,6 +4,7 @@ using NHibernate.Mapping.ByCode;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRegistrationTests
 {
+	[TestFixture]
 	public class ModelMapperAddMappingByTypeTests
 	{
 		public class WithOutPublicParameterLessCtor
@@ -17,7 +18,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRe
 		public void WhenRegisterClassMappingThroughTypeThenCheckIConformistHoldersProvider()
 		{
 			var mapper = new ModelMapper();
-			Assert.That(() => mapper.AddMapping(typeof (object)), Throws.TypeOf<ArgumentOutOfRangeException>().And.Message.ContainsSubstring("IConformistHoldersProvider"));
+			Assert.That(() => mapper.AddMapping(typeof (object)), Throws.TypeOf<ArgumentOutOfRangeException>().And.Message.Contains("IConformistHoldersProvider"));
 		}
 
 		[Test]

@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -14,7 +14,7 @@ namespace NHibernate.Type
 	/// to the database.
 	/// </summary>
 	[Serializable]
-	public class ArrayType : CollectionType
+	public partial class ArrayType : CollectionType
 	{
 		private readonly System.Type elementClass;
 		private readonly System.Type arrayClass;
@@ -28,12 +28,11 @@ namespace NHibernate.Type
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		/// <param name="elementClass">The <see cref="System.Type"/> of the element contained in the array.</param>
-		/// <param name="isEmbeddedInXML"></param>
 		/// <remarks>
 		/// This creates a bag that is non-generic.
 		/// </remarks>
-		public ArrayType(string role, string propertyRef, System.Type elementClass, bool isEmbeddedInXML)
-			: base(role, propertyRef, isEmbeddedInXML)
+		public ArrayType(string role, string propertyRef, System.Type elementClass)
+			: base(role, propertyRef)
 		{
 			this.elementClass = elementClass;
 			arrayClass = Array.CreateInstance(elementClass, 0).GetType();
@@ -59,7 +58,7 @@ namespace NHibernate.Type
 		/// <param name="value"></param>
 		/// <param name="index"></param>
 		/// <param name="session"></param>
-		public override void NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session)
+		public override void NullSafeSet(DbCommand st, object value, int index, ISessionImplementor session)
 		{
 			base.NullSafeSet(st, session.PersistenceContext.GetCollectionHolder(value), index, session);
 		}
@@ -101,7 +100,7 @@ namespace NHibernate.Type
 			throw new NotSupportedException();
 		}
 
-		public override bool HasHolder(EntityMode entityMode)
+		public override bool HasHolder()
 		{
 			return true;
 		}
@@ -119,7 +118,7 @@ namespace NHibernate.Type
 			return null;
 		}
 
-		protected internal override bool InitializeImmediately(EntityMode entityMode)
+		protected internal override bool InitializeImmediately()
 		{
 			return true;
 		}

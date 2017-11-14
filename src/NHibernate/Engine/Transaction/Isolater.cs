@@ -1,5 +1,4 @@
 using System;
-using System.Data;
 using System.Data.Common;
 
 using NHibernate.Dialect;
@@ -26,7 +25,7 @@ namespace NHibernate.Engine.Transaction
 	///  </item>
 	/// </list>
 	/// </remarks>
-	public class Isolater
+	public partial class Isolater
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(Isolater));
 

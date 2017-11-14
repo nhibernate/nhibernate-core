@@ -6,7 +6,6 @@ using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
-using NHibernate.SqlTypes;
 using NHibernate.Type;
 using Environment = NHibernate.Cfg.Environment;
 
@@ -30,12 +29,6 @@ namespace NHibernate.Dialect
 	/// </remarks>
 	public class FirebirdDialect : Dialect
 	{
-		#region Fields
-
-		private const int MAX_DECIMAL_PRECISION = 18;
-
-		#endregion
-
 		public FirebirdDialect()
 		{
 			RegisterKeywords();
@@ -47,23 +40,6 @@ namespace NHibernate.Dialect
 		public override string AddColumnString
 		{
 			get { return "add"; }
-		}
-
-		public override string GetTypeName(SqlType sqlType)
-		{
-			if (IsUnallowedDecimal(sqlType.DbType, sqlType.Precision))
-				return base.GetTypeName(new SqlType(sqlType.DbType, MAX_DECIMAL_PRECISION, sqlType.Scale));
-
-			return base.GetTypeName(sqlType);
-		}
-
-		public override string GetTypeName(SqlType sqlType, int length, int precision, int scale)
-		{
-			var fbDecimalPrecision = precision;
-			if (IsUnallowedDecimal(sqlType.DbType, precision))
-				fbDecimalPrecision = MAX_DECIMAL_PRECISION;
-
-			return base.GetTypeName(sqlType, length, fbDecimalPrecision, scale);
 		}
 
 		public override string GetSelectSequenceNextValString(string sequenceName)
@@ -129,7 +105,7 @@ namespace NHibernate.Dialect
 			return queryString.Insert(insertIndex, limitFragment.ToSqlString());
 		}
 
-		#region Temporaray Table Support
+		#region Temporary Table Support
 
 		public override bool SupportsTemporaryTables
 		{
@@ -209,9 +185,8 @@ namespace NHibernate.Dialect
 
 		public override long TimestampResolutionInTicks
 		{
-			// Lousy documentation. Various mailing lists and articles seem to 
-			// indicate resolution of 0.1 ms, i.e. 1000 ticks.
-			get { return 1000L; }
+			// Resolution of 1 ms, i.e. 10000 ticks.
+			get { return 10000L; }
 		}
 
 		public override bool SupportsCurrentTimestampSelection
@@ -269,9 +244,133 @@ namespace NHibernate.Dialect
 			}
 		}
 
+		#region private static readonly string[] DialectKeywords = { ... }
+
+		private static readonly string[] DialectKeywords =
+		{
+			"action",
+			"active",
+			"admin",
+			"after",
+			"asc",
+			"ascending",
+			"auto",
+			"avg",
+			"base_name",
+			"before",
+			"blob sub_type 1",
+			"break",
+			"cache",
+			"cascade",
+			"check_point_length",
+			"coalesce",
+			"committed",
+			"computed",
+			"conditional",
+			"connection_id",
+			"containing",
+			"count",
+			"cstring",
+			"database",
+			"debug",
+			"desc",
+			"descending",
+			"descriptor",
+			"domain",
+			"double precision",
+			"entry_point",
+			"exception",
+			"extract",
+			"file",
+			"first",
+			"free_it",
+			"gdscode",
+			"gen_id",
+			"generator",
+			"group_commit_wait_time",
+			"inactive",
+			"index",
+			"input_type",
+			"isolation",
+			"key",
+			"last",
+			"length",
+			"level",
+			"lock",
+			"log_buffer_size",
+			"logfile",
+			"long",
+			"manual",
+			"max",
+			"maximum_segment",
+			"message",
+			"min",
+			"module_name",
+			"names",
+			"nullif",
+			"nulls",
+			"num_log_buffers",
+			"option",
+			"output_type",
+			"overflow",
+			"page",
+			"page_size",
+			"pages",
+			"password",
+			"plan",
+			"position",
+			"post_event",
+			"privileges",
+			"protected",
+			"raw_partitions",
+			"rdb$db_key",
+			"read",
+			"record_version",
+			"recreate",
+			"reserv",
+			"reserving",
+			"restrict",
+			"retain",
+			"returning_values",
+			"role",
+			"rows_affected",
+			"schema",
+			"segment",
+			"shadow",
+			"shared",
+			"singular",
+			"size",
+			"skip",
+			"snapshot",
+			"sort",
+			"sqlcode",
+			"stability",
+			"starting",
+			"starts",
+			"statistics",
+			"sub_type",
+			"substring",
+			"sum",
+			"suspend",
+			"transaction",
+			"transaction_id",
+			"type",
+			"uncommitted",
+			"upper",
+			"variable",
+			"view",
+			"wait",
+			"weekday",
+			"work",
+			"write",
+			"yearday",
+		};
+
+		#endregion
+
 		protected virtual void RegisterKeywords()
 		{
-			RegisterKeyword("date");
+			RegisterKeywords(DialectKeywords);
 		}
 
 		protected virtual void RegisterColumnTypes()
@@ -421,9 +520,23 @@ namespace NHibernate.Dialect
 			RegisterFunction("tanh", new StandardSQLFunction("tanh", NHibernateUtil.Double));
 		}
 
-		private static bool IsUnallowedDecimal(DbType dbType, int precision)
-		{
-			return dbType == DbType.Decimal && precision > MAX_DECIMAL_PRECISION;
-		}
+		// As of Firebird 2.5 documentation, limit is 30/31 (not all source are concordant), with some
+		// cases supporting more but considered as bugs and no more tolerated in v3.
+		// It seems it may be extended to 63 for Firebird v4.
+		/// <inheritdoc />
+		public override int MaxAliasLength => 30;
+
+		#region Informational metadata
+
+		/// <summary>
+		/// Does this dialect support distributed transaction?
+		/// </summary>
+		/// <remarks>
+		/// As of v2.5 and 3.0.2, fails rollback-ing changes when distributed: changes are instead persisted in database.
+		/// (With ADO .Net Provider 5.9.1)
+		/// </remarks>
+		public override bool SupportsDistributedTransactions => false;
+
+		#endregion
 	}
 }

@@ -3,6 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Logging
 {
+	[TestFixture]
 	public class LoggerProviderTest
 	{
 		class DummyInternalLogger : IInternalLogger

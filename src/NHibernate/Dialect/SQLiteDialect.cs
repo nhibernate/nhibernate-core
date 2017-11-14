@@ -88,9 +88,90 @@ namespace NHibernate.Dialect
 			RegisterFunction("round", new StandardSQLFunction("round"));
 		}
 
+		#region private static readonly string[] DialectKeywords = { ... }
+
+		private static readonly string[] DialectKeywords =
+		{
+			"abort",
+			"action",
+			"after",
+			"analyze",
+			"asc",
+			"attach",
+			"autoincrement",
+			"before",
+			"bit",
+			"bool",
+			"boolean",
+			"cascade",
+			"conflict",
+			"counter",
+			"currency",
+			"database",
+			"datetime",
+			"deferrable",
+			"deferred",
+			"desc",
+			"detach",
+			"exclusive",
+			"explain",
+			"fail",
+			"general",
+			"glob",
+			"guid",
+			"ignore",
+			"image",
+			"index",
+			"indexed",
+			"initially",
+			"instead",
+			"isnull",
+			"key",
+			"limit",
+			"logical",
+			"long",
+			"longtext",
+			"memo",
+			"money",
+			"note",
+			"notnull",
+			"ntext",
+			"nvarchar",
+			"offset",
+			"oleobject",
+			"plan",
+			"pragma",
+			"query",
+			"raise",
+			"regexp",
+			"reindex",
+			"rename",
+			"replace",
+			"restrict",
+			"single",
+			"smalldate",
+			"smalldatetime",
+			"smallmoney",
+			"sql_variant",
+			"string",
+			"temp",
+			"temporary",
+			"text",
+			"tinyint",
+			"transaction",
+			"uniqueidentifier",
+			"vacuum",
+			"varbinary",
+			"view",
+			"virtual",
+			"yesno",
+		};
+
+		#endregion
+
 		protected virtual void RegisterKeywords()
 		{
-			RegisterKeyword("int"); // Used in our function templates.
+			RegisterKeywords(DialectKeywords);
 		}
 
 		protected virtual void RegisterDefaultProperties()
@@ -305,6 +386,18 @@ namespace NHibernate.Dialect
 		{
 			get { return false; }
 		}
+
+		/// <summary>
+		/// Does this dialect support concurrent writing connections?
+		/// </summary>
+		/// <remarks>
+		/// As documented at https://www.sqlite.org/faq.html#q5
+		/// </remarks>
+		public override bool SupportsConcurrentWritingConnections => false;
+
+		// Said to be unlimited. http://sqlite.1065341.n5.nabble.com/Max-limits-on-the-following-td37859.html
+		/// <inheritdoc />
+		public override int MaxAliasLength => 128;
 
 		[Serializable]
 		protected class SQLiteCastFunction : CastFunction

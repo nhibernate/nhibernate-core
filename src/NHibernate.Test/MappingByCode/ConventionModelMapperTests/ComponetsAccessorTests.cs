@@ -5,12 +5,16 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 {
+	[TestFixture]
 	public class ComponetsAccessorTests
 	{
 		private class MyClass
 		{
 			public int Id { get; set; }
+			// Assigned by reflection
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 			private MyCompo compo;
+#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
 			public MyCompo Compo
 			{
 				get { return compo; }
@@ -44,7 +48,7 @@ namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 			var hbmClass = mapping.RootClasses[0];
 			var hbmMyCompo = hbmClass.Properties.OfType<HbmComponent>().Single();
 
-			Assert.That(hbmMyCompo.Access, Is.StringContaining("camelcase"));
+			Assert.That(hbmMyCompo.Access, Does.Contain("camelcase"));
 		}
 	}
 }

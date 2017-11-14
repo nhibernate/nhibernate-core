@@ -1,5 +1,5 @@
 using System;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlTypes;
@@ -11,7 +11,7 @@ namespace NHibernate.Type
 	/// A many-to-one association to an entity
 	/// </summary>
 	[Serializable]
-	public class ManyToOneType : EntityType
+	public partial class ManyToOneType : EntityType
 	{
 		private readonly bool ignoreNotFound;
 		private readonly bool isLogicalOneToOne;
@@ -22,14 +22,14 @@ namespace NHibernate.Type
 		}
 
 		public ManyToOneType(string className, bool lazy)
-			: base(className, null, !lazy, true, false)
+			: base(className, null, !lazy, false)
 		{
 			ignoreNotFound = false;
 			isLogicalOneToOne = false;
 		}
 
-		public ManyToOneType(string entityName, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool isEmbeddedInXML, bool ignoreNotFound, bool isLogicalOneToOne)
-			: base(entityName, uniqueKeyPropertyName, !lazy, isEmbeddedInXML, unwrapProxy)
+		public ManyToOneType(string entityName, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool ignoreNotFound, bool isLogicalOneToOne)
+			: base(entityName, uniqueKeyPropertyName, !lazy, unwrapProxy)
 		{
 			this.ignoreNotFound = ignoreNotFound;
 			this.isLogicalOneToOne = isLogicalOneToOne;
@@ -46,13 +46,13 @@ namespace NHibernate.Type
 			return GetIdentifierOrUniqueKeyType(mapping).SqlTypes(mapping);
 		}
 
-		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override void NullSafeSet(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			GetIdentifierOrUniqueKeyType(session.Factory)
 				.NullSafeSet(st, GetReferenceValue(value, session), index, settable, session);
 		}
 
-		public override void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session)
+		public override void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			GetIdentifierOrUniqueKeyType(session.Factory)
 				.NullSafeSet(cmd, GetReferenceValue(value, session), index, session);
@@ -74,16 +74,16 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Hydrates the Identifier from <see cref="IDataReader"/>.
+		/// Hydrates the Identifier from <see cref="DbDataReader"/>.
 		/// </summary>
-		/// <param name="rs">The <see cref="IDataReader"/> that contains the query results.</param>
+		/// <param name="rs">The <see cref="DbDataReader"/> that contains the query results.</param>
 		/// <param name="names">A string array of column names to read from.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> this is occurring in.</param>
 		/// <param name="owner">The object that this Entity will be a part of.</param>
 		/// <returns>
 		/// An instantiated object that used as the identifier of the type.
 		/// </returns>
-		public override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override object Hydrate(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			// return the (fully resolved) identifier value, but do not resolve
 			// to the actual referenced entity instance
@@ -129,11 +129,6 @@ namespace NHibernate.Type
 
 		public override object Disassemble(object value, ISessionImplementor session, object owner)
 		{
-			if (IsNotEmbedded(session))
-			{
-				return GetIdentifierType(session).Disassemble(value, session, owner);
-			}
-
 			if (value == null)
 			{
 				return null;
@@ -157,11 +152,6 @@ namespace NHibernate.Type
 			//      change to unique key property of the associated object)
 
 			object id = AssembleId(oid, session);
-
-			if (IsNotEmbedded(session))
-			{
-				return id;
-			}
 
 			if (id == null)
 			{
@@ -191,34 +181,14 @@ namespace NHibernate.Type
 
 		public override bool IsDirty(object old, object current, ISessionImplementor session)
 		{
-			if (IsSame(old, current, session.EntityMode))
-			{
-				return false;
-			}
-
-			object oldid = GetIdentifier(old, session);
-			object newid = GetIdentifier(current, session);
-			return GetIdentifierType(session).IsDirty(oldid, newid, session);
+			return IsDirtyManyToOne(old, current, null, session);
 		}
 
 		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
-			if (IsAlwaysDirtyChecked)
-			{
-				return IsDirty(old, current, session);
-			}
-			else
-			{
-				if (IsSame(old, current, session.EntityMode))
-				{
-					return false;
-				}
-
-				object oldid = GetIdentifier(old, session);
-				object newid = GetIdentifier(current, session);
-				return GetIdentifierType(session).IsDirty(oldid, newid, checkable, session);
-			}
+			return IsDirtyManyToOne(old, current, IsAlwaysDirtyChecked ? null : checkable, session);
 		}
+
 
 		public override bool IsNullable
 		{
@@ -233,6 +203,32 @@ namespace NHibernate.Type
 				ArrayHelper.Fill(result, true);
 			}
 			return result;
+		}
+
+		private bool IsDirtyManyToOne(object old, object current, bool[] checkable, ISessionImplementor session)
+		{
+			if (IsSame(old, current))
+			{
+				return false;
+			}
+
+			if (old == null || current == null)
+			{
+				return true;
+			}
+
+			if (ForeignKeys.IsTransientFast(GetAssociatedEntityName(), current, session).GetValueOrDefault())
+			{
+				return true;
+			}
+
+			object oldid = GetIdentifier(old, session);
+			object newid = GetIdentifier(current, session);
+			IType identifierType = GetIdentifierType(session);
+
+			return checkable == null
+				? identifierType.IsDirty(oldid, newid, session)
+				: identifierType.IsDirty(oldid, newid, checkable, session);
 		}
 	}
 }

@@ -5,6 +5,7 @@ using NHibernate.Cfg.Loquacious;
 
 namespace NHibernate.Test.Hql.Ast
 {
+	[TestFixture]
 	public class QuerySubstitutionTest: BaseFixture
 	{
 		protected override void Configure(NHibernate.Cfg.Configuration configuration)
@@ -18,7 +19,7 @@ namespace NHibernate.Test.Hql.Ast
 		{
 			const string query = "from SimpleClass s where s.IntValue > pizza";
 			var sql = GetSql(query, new Dictionary<string, string>{{"pizza","1"}});
-			Assert.That(sql, Is.Not.StringContaining("pizza"));
+			Assert.That(sql, Does.Not.Contain("pizza"));
 		}
 
 		[Test]
@@ -31,7 +32,7 @@ namespace NHibernate.Test.Hql.Ast
 				{
 					s.CreateQuery(query).List();
 					string sql = sqlLogSpy.Appender.GetEvents()[0].RenderedMessage;
-					Assert.That(sql, Is.Not.StringContaining("pizza"));
+					Assert.That(sql, Does.Not.Contain("pizza"));
 				}
 			}
 		}
@@ -41,7 +42,7 @@ namespace NHibernate.Test.Hql.Ast
 		{
 			const string query = "from SimpleClass s where s.Description > calda";
 			var sql = GetSql(query, new Dictionary<string, string> { { "calda", "'bobrock'" } });
-			Assert.That(sql, Is.Not.StringContaining("pizza").And.Contains("'bobrock'"));
+			Assert.That(sql, Does.Not.Contain("pizza").And.Contains("'bobrock'"));
 		}
 
 		[Test]
@@ -54,7 +55,7 @@ namespace NHibernate.Test.Hql.Ast
 				{
 					s.CreateQuery(query).List();
 					string sql = sqlLogSpy.Appender.GetEvents()[0].RenderedMessage;
-					Assert.That(sql, Is.Not.StringContaining("pizza").And.Contains("'bobrock'"));
+					Assert.That(sql, Does.Not.Contain("pizza").And.Contains("'bobrock'"));
 				}
 			}
 		}

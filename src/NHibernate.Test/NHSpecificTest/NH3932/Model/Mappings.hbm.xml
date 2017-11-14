@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH3932.Model">
+
+	<class name="BagParent">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		<version name="Version" />
+		<bag name="Children" cascade="all-delete-orphan">
+			<key column="bagId" />
+			<one-to-many class="Child"/>
+		</bag>
+	</class>
+
+	<class name="ListParent">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		<version name="Version" />
+		<list name="Children" cascade="all-delete-orphan">
+			<key column="listId" />
+			<index column="idx" type="byte"/>
+			<one-to-many class="Child"/>
+		</list>
+	</class>
+
+	<class name="SetParent">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		<version name="Version" />
+		<set name="Children" cascade="all-delete-orphan">
+			<key column="setId" />
+			<one-to-many class="Child"/>
+		</set>
+	</class>
+
+	<class name="MapParent">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		<version name="Version" />
+		<map name="Children" cascade="all-delete-orphan">
+			<key column="mapId" />
+			<index column="idx" type="int"/>
+			<one-to-many class="Child"/>
+		</map>
+	</class>
+
+	<class name="Child">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		<property name="Name" />
+	</class>
+	
+	<class name="IdBagParent">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		<version name="Version" />
+		<idbag name="Children" cascade="all-delete-orphan">
+			<collection-id column="id" type="Int32">
+				<generator class="native"/>
+			</collection-id>
+			<key column="bagId" />
+			<many-to-many class="Child"/>
+		</idbag>
+	</class>
+</hibernate-mapping>

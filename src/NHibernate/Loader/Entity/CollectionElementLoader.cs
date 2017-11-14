@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Param;
@@ -13,7 +13,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Loader.Entity
 {
-	public class CollectionElementLoader : OuterJoinLoader
+	public partial class CollectionElementLoader : OuterJoinLoader
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (CollectionElementLoader));
 
@@ -94,7 +94,7 @@ namespace NHibernate.Loader.Entity
 			}
 		}
 
-		protected override object GetResultColumnOrRow(object[] row, IResultTransformer transformer, IDataReader rs,
+		protected override object GetResultColumnOrRow(object[] row, IResultTransformer transformer, DbDataReader rs,
 		                                               ISessionImplementor session)
 		{
 			return row[row.Length - 1];

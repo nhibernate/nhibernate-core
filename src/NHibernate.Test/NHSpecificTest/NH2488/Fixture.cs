@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2488
 {
+	[TestFixture]
 	public class Fixture : BugTestCase
 	{
 		#region Scenarios
@@ -126,7 +127,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2488
 						using (var ls = new SqlLogSpy())
 						{
 							items = s.CreateQuery("from Base2").List<Base2>();
-							Assert.That(ls.GetWholeLog(), Is.Not.StringContaining("LongContent"));
+							Assert.That(ls.GetWholeLog(), Does.Not.Contain("LongContent"));
 						}
 						var item = (Derived2) items[0];
 						Assert.That(NHibernateUtil.IsPropertyInitialized(item, "LongContent"), Is.False);
@@ -151,7 +152,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2488
 						using(var ls = new SqlLogSpy())
 						{
 							items = s.CreateQuery("from Base1").List<Base1>();
-							Assert.That(ls.GetWholeLog(), Is.Not.StringContaining("LongContent"));
+							Assert.That(ls.GetWholeLog(), Does.Not.Contain("LongContent"));
 						}
 						var item = (Derived1) items[0];
 						Assert.That(NHibernateUtil.IsPropertyInitialized(item, "LongContent"), Is.False);
@@ -176,7 +177,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2488
 						using (var ls = new SqlLogSpy())
 						{
 							items = s.CreateQuery("from Base3").List<Base3>();
-							Assert.That(ls.GetWholeLog(), Is.Not.StringContaining("LongContent"));
+							Assert.That(ls.GetWholeLog(), Does.Not.Contain("LongContent"));
 						}
 						var item = (Derived3)items[0];
 						Assert.That(NHibernateUtil.IsPropertyInitialized(item, "LongContent"), Is.False);

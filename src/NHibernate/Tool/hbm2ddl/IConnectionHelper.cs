@@ -1,4 +1,3 @@
-using System.Data;
 using System.Data.Common;
 
 namespace NHibernate.Tool.hbm2ddl
@@ -6,7 +5,7 @@ namespace NHibernate.Tool.hbm2ddl
 	/// <summary>
 	/// Contract for delegates responsible for managing connection used by the hbm2ddl tools.
 	/// </summary>
-	public interface IConnectionHelper
+	public partial interface IConnectionHelper
 	{
 		/// <summary>
 		///  Prepare the helper for use.

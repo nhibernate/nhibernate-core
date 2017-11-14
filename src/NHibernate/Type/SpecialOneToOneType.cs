@@ -1,4 +1,5 @@
 using System;
+using System.Data.Common;
 
 namespace NHibernate.Type
 {
@@ -7,10 +8,10 @@ namespace NHibernate.Type
 	/// instead of the primary key column of the owning entity. 
 	/// </summary>
 	[Serializable]
-	public class SpecialOneToOneType : OneToOneType
+	public partial class SpecialOneToOneType : OneToOneType
 	{
 		public SpecialOneToOneType(string referencedEntityName, ForeignKeyDirection foreignKeyType, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, string entityName, string propertyName)
-			: base(referencedEntityName, foreignKeyType, uniqueKeyPropertyName, lazy, unwrapProxy, true, entityName, propertyName)
+			: base(referencedEntityName, foreignKeyType, uniqueKeyPropertyName, lazy, unwrapProxy, entityName, propertyName)
 		{
 		}
 
@@ -29,7 +30,7 @@ namespace NHibernate.Type
 			get { return false; }
 		}
 
-		public override object Hydrate(System.Data.IDataReader rs, string[] names, Engine.ISessionImplementor session, object owner)
+		public override object Hydrate(DbDataReader rs, string[] names, Engine.ISessionImplementor session, object owner)
 		{
 			return GetIdentifierOrUniqueKeyType(session.Factory).NullSafeGet(rs, names, session, owner);
 		}

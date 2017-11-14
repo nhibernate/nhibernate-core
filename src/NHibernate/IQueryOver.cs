@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-
+using System.Threading;
 using NHibernate.Criterion;
 using NHibernate.Criterion.Lambda;
 using NHibernate.SqlCommand;
@@ -36,7 +36,7 @@ namespace NHibernate
 	///		.List();
 	/// </code>
 	/// </remarks>
-	public interface IQueryOver<TRoot> : IQueryOver
+	public partial interface IQueryOver<TRoot> : IQueryOver
 	{
 		/// <summary>
 		/// Get the results of the root type and fill the <see cref="IList&lt;T&gt;"/>
@@ -91,13 +91,13 @@ namespace NHibernate
 		/// Get a enumerable that when enumerated will execute
 		/// a batch of queries in a single database roundtrip
 		/// </summary>
-		IEnumerable<TRoot> Future();
+		IFutureEnumerable<TRoot> Future();
 
 		/// <summary>
 		/// Get a enumerable that when enumerated will execute
 		/// a batch of queries in a single database roundtrip
 		/// </summary>
-		IEnumerable<U> Future<U>();
+		IFutureEnumerable<U> Future<U>();
 
 		/// <summary>
 		/// Get an IFutureValue instance, whose value can be retrieved through
@@ -211,6 +211,11 @@ namespace NHibernate
 		IQueryOver<TRoot,TSubType> AndNot(Expression<Func<bool>> expression);
 
 		/// <summary>
+		/// Add negation of criterion expressed as ICriterion
+		/// </summary>
+		IQueryOver<TRoot, TSubType> AndNot(ICriterion expression);
+
+		/// <summary>
 		/// Add restriction to a property
 		/// </summary>
 		/// <param name="expression">Lambda expression containing path to property</param>
@@ -256,6 +261,11 @@ namespace NHibernate
 		/// <param name="expression">Lambda expression</param>
 		/// <returns>criteria instance</returns>
 		IQueryOver<TRoot,TSubType> WhereNot(Expression<Func<bool>> expression);
+
+		/// <summary>
+		/// Identical semantics to AndNot() to allow more readable queries
+		/// </summary>
+		IQueryOver<TRoot, TSubType> WhereNot(ICriterion expression);
 
 		/// <summary>
 		/// Identical semantics to AndRestrictionOn() to allow more readable queries

@@ -1,47 +1,50 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
-    internal class FutureValue<T> : IFutureValue<T>, IDelayedValue
-    {
-        public delegate IEnumerable<T> GetResult();
+	internal class FutureValue<T> : IFutureValue<T>, IDelayedValue
+	{
+		public delegate IEnumerable<T> GetResult();
 
-        private readonly GetResult getResult;
+		public delegate Task<IEnumerable<T>> GetResultAsync(CancellationToken cancellationToken);
 
-        public FutureValue(GetResult result)
-        {
-            getResult = result;
-        }
+		private readonly GetResult _getResult;
 
-        public T Value
-        {
-            get
-            {
-                var result = getResult();
-				var enumerator = result.GetEnumerator();
+		private readonly GetResultAsync _getResultAsync;
 
-				if (!enumerator.MoveNext())
-				{
-				    var defVal = default(T);
-                    if (ExecuteOnEval != null)
-                        defVal = (T)ExecuteOnEval.DynamicInvoke(defVal);
-				    return defVal;
-				}
+		public FutureValue(GetResult result, GetResultAsync resultAsync)
+		{
+			_getResult = result;
+			_getResultAsync = resultAsync;
+		}
 
-                var val = enumerator.Current;
+		public T Value => _getResult().FirstOrDefault();
 
-                if (ExecuteOnEval != null)
-                    val = (T)ExecuteOnEval.DynamicInvoke(val);
-				    
-                return val;
-            }
-        }
+		public async Task<T> GetValueAsync(CancellationToken cancellationToken = default(CancellationToken))
+		{
+			var result = await _getResultAsync(cancellationToken).ConfigureAwait(false);
+			return result.FirstOrDefault();
+		}
 
-        public Delegate ExecuteOnEval
-        {
-            get; set;
-        }
-    }
+		public Delegate ExecuteOnEval { get; set; }
+
+		public IList TransformList(IList collection)
+		{
+			if (ExecuteOnEval == null)
+				return collection;
+
+
+			// When not null on a future value, ExecuteOnEval is fetched with PostExecuteTransformer from
+			// IntermediateHqlTree through ExpressionToHqlTranslationResults, which requires a IQueryable
+			// as input and directly yields the scalar result when the query is scalar.
+			var resultElement = (T) ExecuteOnEval.DynamicInvoke(collection.AsQueryable());
+
+			return new List<T> {resultElement};
+		}
+	}
 }

@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 {
+	[TestFixture]
 	public class BagOfNestedComponentsWithParentTest
 	{
 		private class Person
@@ -103,7 +104,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var collection = (HbmBag)relation;
 			Assert.That(collection.ElementRelationship, Is.TypeOf<HbmCompositeElement>());
 			var elementRelation = (HbmCompositeElement)collection.ElementRelationship;
-			Assert.That(elementRelation.Class, Is.StringContaining("Address"));
+			Assert.That(elementRelation.Class, Does.Contain("Address"));
 			
 			// This test was modified because when the "owner" is an entity it can be mapped as many-to-one or as parent and without an explicit
 			// definition of the property representing the bidiretional-relation we can't know is the mapping element (many-to-one or parent)
@@ -123,7 +124,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var propertyNestedRelation = elementRelation.Properties.FirstOrDefault(p => p.Name == "Number");
 			Assert.That(propertyNestedRelation, Is.Not.Null.And.TypeOf<HbmNestedCompositeElement>());
 			var nestedRelation = (HbmNestedCompositeElement) propertyNestedRelation;
-			Assert.That(nestedRelation.Class, Is.StringContaining("Number"));
+			Assert.That(nestedRelation.Class, Does.Contain("Number"));
 			Assert.That(nestedRelation.Properties.Count(), Is.EqualTo(1));
 			Assert.That(nestedRelation.Parent, Is.Not.Null);
 			Assert.That(nestedRelation.Parent.name, Is.EqualTo("OwnerAddress"));

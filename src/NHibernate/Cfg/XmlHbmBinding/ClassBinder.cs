@@ -39,7 +39,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			model.EntityName = entityName;
 
 			BindPocoRepresentation(classMapping, model);
-			BindXmlRepresentation(classMapping, model);
 			BindMapRepresentation(classMapping, model);
 
 			BindPersistentClassCommonValues(classMapping, model, inheritedMetas);
@@ -125,18 +124,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				string tupClassName = FullQualifiedClassName(tuplizer.@class, mappings);
 				entity.AddTuplizer(EntityMode.Map, tupClassName);
-			}
-		}
-
-		private void BindXmlRepresentation(IEntityMapping classMapping, PersistentClass entity)
-		{
-			entity.NodeName = string.IsNullOrEmpty(classMapping.Node) ? StringHelper.Unqualify(entity.EntityName): classMapping.Node;
-
-			HbmTuplizer tuplizer = classMapping.Tuplizers.FirstOrDefault(tp => tp.entitymode == HbmTuplizerEntitymode.Xml);
-			if (tuplizer != null)
-			{
-				string tupClassName = FullQualifiedClassName(tuplizer.@class, mappings);
-				entity.AddTuplizer(EntityMode.Xml, tupClassName);
 			}
 		}
 
@@ -327,11 +314,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					model.IsDynamic = true;
 				}
 			}
-
-			string nodeName = !string.IsNullOrEmpty(componentMapping.EmbeddedNode)
-								? componentMapping.EmbeddedNode
-								: !string.IsNullOrEmpty(componentMapping.Name) ? componentMapping.Name : model.Owner.NodeName;
-			model.NodeName = nodeName;
 
 			// Parent
 			if (componentMapping.Parent != null && !string.IsNullOrEmpty(componentMapping.Parent.name))

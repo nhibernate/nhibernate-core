@@ -45,6 +45,9 @@ public statement
 	;
 
 selectStatement
+	@init {
+		PrepareFilterParameter();
+	}
 	: query
 	;
 
@@ -89,6 +92,7 @@ intoClause!
 	}
 	: ^( INTO { HandleClauseStart( INTO ); } (p=path) ps=insertablePropertySpec ) 
 	;
+	finally {HandleClauseEnd( INTO );}
 
 insertablePropertySpec
 	: ^( RANGE (IDENT)+ )
@@ -97,6 +101,7 @@ insertablePropertySpec
 setClause
 	: ^( SET { HandleClauseStart( SET ); } (assignment)* )
 	;
+	finally {HandleClauseEnd( SET );}
 
 assignment
 	@after {
@@ -120,11 +125,16 @@ query
 // The query / subquery rule. Pops the current 'from node' context 
 // (list of aliases).
 unionedQuery!
+	@init{
+		bool oldInSelect = _inSelect;
+		_inSelect = false;
+	}
 	@after {
 		// Antlr note: #x_in refers to the input AST, #x refers to the output AST
 		BeforeStatementCompletion( "select" );
 		ProcessQuery( $s.tree, $unionedQuery.tree );
 		AfterStatementCompletion( "select" );
+		_inSelect = oldInSelect;
 	}
 	: ^( QUERY { BeforeStatement( "select", SELECT ); }
 			// The first phase places the FROM first to make processing the SELECT simpler.
@@ -143,8 +153,9 @@ unionedQuery!
 	;
 
 orderClause
-	: ^(ORDER { HandleClauseStart( ORDER ); } (orderExprs | query (ASCENDING | DESCENDING)? ))
+	: ^(ORDER { HandleClauseStart( ORDER ); } (orderExprs))
 	;
+	finally {HandleClauseEnd( ORDER );}
 
 orderExprs
 	: orderExpr ( ASCENDING | DESCENDING )? (orderExprs)?
@@ -153,6 +164,7 @@ orderExprs
 orderExpr
 	: { IsOrderExpressionResultVariableRef( (IASTNode) input.LT(1) ) }? resultVariableRef
 	| expr
+	| query
 	;
 
 resultVariableRef!
@@ -174,6 +186,7 @@ takeClause
 groupClause
 	: ^(GROUP { HandleClauseStart( GROUP ); } (expr)+ )
 	;
+	finally {HandleClauseEnd( GROUP );}
 
 havingClause
 	: ^(HAVING logicalExpr)
@@ -183,13 +196,13 @@ selectClause!
 	: ^(SELECT { HandleClauseStart( SELECT ); BeforeSelectClause(); } (d=DISTINCT)? x=selectExprList ) 
 	-> ^(SELECT_CLAUSE["{select clause}"] $d? $x)
 	;
+	finally {HandleClauseEnd( SELECT );}
 
 selectExprList @init{
-		bool oldInSelect = _inSelect;
 		_inSelect = true;
 	}
 	: ( selectExpr | aliasedSelectExpr )+ {
-		_inSelect = oldInSelect;
+		_inSelect = false;
 	}
 	;
 
@@ -230,13 +243,9 @@ aggregateExpr
 
 // Establishes the list of aliases being used by this query.
 fromClause 
-@init{
-		// NOTE: This references the INPUT AST! (see http://www.antlr.org/doc/trees.html#Action Translation)
-		// the ouput AST (#fromClause) has not been built yet.
-		PrepareFromClauseInputTree((IASTNode) input.LT(1), input);
-	}
 	: ^(f=FROM { PushFromClause($f.tree); HandleClauseStart( FROM ); } fromElementList )
 	;
+	finally {HandleClauseEnd( FROM );}
 
 fromElementList @init{
 		bool oldInFrom = _inFrom;
@@ -320,11 +329,13 @@ withClause
 	: ^(w=WITH { HandleClauseStart( WITH ); } b=logicalExpr ) 
 	-> ^($w $b)
 	;
+	finally {HandleClauseEnd( WITH );}
 
 whereClause
 	: ^(w=WHERE { HandleClauseStart( WHERE ); } b=logicalExpr ) 
 	-> ^($w $b)
 	;
+	finally {HandleClauseEnd( WHERE );}
 
 logicalExpr
 	: ^(AND logicalExpr logicalExpr)
@@ -368,8 +379,7 @@ comparisonExpr
 	)
 	;
 
-inRhs @init {	int UP = 99999;		// TODO - added this to get compile working.  It's bogus & should be removed
-	}
+inRhs
 	: ^(IN_LIST ( collectionFunctionOrSubselect | expr* ) )
 	;
 

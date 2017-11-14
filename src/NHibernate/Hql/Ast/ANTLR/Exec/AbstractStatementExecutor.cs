@@ -1,5 +1,5 @@
 using System;
-using System.Data;
+using System.Data.Common;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
 using NHibernate.Action;
@@ -13,11 +13,12 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Transaction;
 using NHibernate.Util;
+using System.Data;
 
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
 	[CLSCompliant(false)]
-	public abstract class AbstractStatementExecutor : IStatementExecutor
+	public abstract partial class AbstractStatementExecutor : IStatementExecutor
 	{
 		private readonly IInternalLogger log;
 
@@ -192,7 +193,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			else
 			{
 				// at the very least cleanup the data :)
-				IDbCommand ps = null;
+				DbCommand ps = null;
 				try
 				{
 					var commandText = new SqlString("delete from " + persister.TemporaryIdTableName);
@@ -220,7 +221,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			}
 		}
 
-		private class TmpIdTableCreationIsolatedWork : IIsolatedWork
+		private partial class TmpIdTableCreationIsolatedWork : IIsolatedWork
 		{
 			private readonly IQueryable persister;
 			private readonly IInternalLogger log;
@@ -233,9 +234,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				this.session = session;
 			}
 
-			public void DoWork(IDbConnection connection, IDbTransaction transaction)
+			public void DoWork(DbConnection connection, DbTransaction transaction)
 			{
-				IDbCommand stmnt = null;
+				DbCommand stmnt = null;
 				try
 				{
 					stmnt = connection.CreateCommand();
@@ -265,7 +266,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			}
 		}
 
-		private class TmpIdTableDropIsolatedWork : IIsolatedWork
+		private partial class TmpIdTableDropIsolatedWork : IIsolatedWork
 		{
 			public TmpIdTableDropIsolatedWork(IQueryable persister, IInternalLogger log, ISessionImplementor session)
 			{
@@ -278,9 +279,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			private readonly IInternalLogger log;
 			private readonly ISessionImplementor session;
 
-			public void DoWork(IDbConnection connection, IDbTransaction transaction)
+			public void DoWork(DbConnection connection, DbTransaction transaction)
 			{
-				IDbCommand stmnt = null;
+				DbCommand stmnt = null;
 				try
 				{
 					stmnt = connection.CreateCommand();

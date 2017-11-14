@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
@@ -25,6 +26,144 @@ namespace NHibernate.Util
 
 		private static readonly MethodInfo Exception_InternalPreserveStackTrace =
 			typeof(Exception).GetMethod("InternalPreserveStackTrace", BindingFlags.Instance | BindingFlags.NonPublic);
+
+		/// <summary>
+		/// Extract the <see cref="MethodInfo"/> from a given expression.
+		/// </summary>
+		/// <typeparam name="TSource">The declaring-type of the method.</typeparam>
+		/// <param name="method">The method.</param>
+		/// <returns>The <see cref="MethodInfo"/> of the no-generic method or the generic-definition for a generic-method.</returns>
+		/// <seealso cref="MethodInfo.GetGenericMethodDefinition"/>
+		public static MethodInfo GetMethodDefinition<TSource>(Expression<Action<TSource>> method)
+		{
+			MethodInfo methodInfo = GetMethod(method);
+			return methodInfo.IsGenericMethod ? methodInfo.GetGenericMethodDefinition() : methodInfo;
+		}
+
+		/// <summary>
+		/// Extract the <see cref="MethodInfo"/> from a given expression.
+		/// </summary>
+		/// <typeparam name="TSource">The declaring-type of the method.</typeparam>
+		/// <param name="method">The method.</param>
+		/// <returns>The <see cref="MethodInfo"/> of the method.</returns>
+		public static MethodInfo GetMethod<TSource>(Expression<Action<TSource>> method)
+		{
+			if (method == null)
+				throw new ArgumentNullException(nameof(method));
+
+			return ((MethodCallExpression)method.Body).Method;
+		}
+
+		/// <summary>
+		/// Extract the <see cref="MethodInfo"/> from a given expression.
+		/// </summary>
+		/// <param name="method">The method.</param>
+		/// <returns>The <see cref="MethodInfo"/> of the no-generic method or the generic-definition for a generic-method.</returns>
+		/// <seealso cref="MethodInfo.GetGenericMethodDefinition"/>
+		public static MethodInfo GetMethodDefinition(Expression<System.Action> method)
+		{
+			MethodInfo methodInfo = GetMethod(method);
+			return methodInfo.IsGenericMethod ? methodInfo.GetGenericMethodDefinition() : methodInfo;
+		}
+
+		/// <summary>
+		/// Extract the <see cref="MethodInfo"/> from a given expression.
+		/// </summary>
+		/// <param name="method">The method.</param>
+		/// <returns>The <see cref="MethodInfo"/> of the method.</returns>
+		public static MethodInfo GetMethod(Expression<System.Action> method)
+		{
+			if (method == null)
+				throw new ArgumentNullException(nameof(method));
+
+			return ((MethodCallExpression)method.Body).Method;
+		}
+
+		/// <summary>
+		/// Get the <see cref="MethodInfo"/> for a public overload of a given method if the method does not match
+		/// given parameter types, otherwise directly yield the given method.
+		/// </summary>
+		/// <param name="method">The method for which finding an overload.</param>
+		/// <param name="parameterTypes">The arguments types of the overload to get.</param>
+		/// <returns>The <see cref="MethodInfo"/> of the method.</returns>
+		/// <remarks>Whenever possible, use GetMethod() instead for performance reasons.</remarks>
+		public static MethodInfo GetMethodOverload(MethodInfo method, params System.Type[] parameterTypes)
+		{
+			if (method == null)
+				throw new ArgumentNullException(nameof(method));
+			if (parameterTypes == null)
+				throw new ArgumentNullException(nameof(parameterTypes));
+
+			if (ParameterTypesMatch(method.GetParameters(), parameterTypes))
+				return method;
+
+			var overload = method.DeclaringType.GetMethod(method.Name,
+				(method.IsStatic ? BindingFlags.Static : BindingFlags.Instance) | BindingFlags.Public,
+				null, parameterTypes, null);
+
+			if (overload == null)
+				throw new InvalidOperationException(
+					$"No overload found for method '{method.DeclaringType.Name}.{method.Name}' and parameter types '{string.Join(", ", parameterTypes.Select(t => t.Name))}'");
+
+			return overload;
+		}
+
+		/// <summary>
+		/// Gets the field or property to be accessed.
+		/// </summary>
+		/// <typeparam name="TSource">The declaring-type of the property.</typeparam>
+		/// <typeparam name="TResult">The type of the property.</typeparam>
+		/// <param name="property">The expression representing the property getter.</param>
+		/// <returns>The <see cref="MemberInfo"/> of the property.</returns>
+		public static MemberInfo GetProperty<TSource, TResult>(Expression<Func<TSource, TResult>> property)
+		{
+			if (property == null)
+			{
+				throw new ArgumentNullException(nameof(property));
+			}
+			return ((MemberExpression)property.Body).Member;
+		}
+
+		internal static bool ParameterTypesMatch(ParameterInfo[] parameters, System.Type[] types)
+		{
+			if (parameters.Length != types.Length)
+			{
+				return false;
+			}
+
+			for (int i = 0; i < parameters.Length; i++)
+			{
+				if (parameters[i].ParameterType == types[i])
+				{
+					continue;
+				}
+
+				if (parameters[i].ParameterType.ContainsGenericParameters && types[i].ContainsGenericParameters &&
+					parameters[i].ParameterType.GetGenericArguments().Length == types[i].GetGenericArguments().Length)
+				{
+					continue;
+				}
+
+				return false;
+			}
+
+			return true;
+		}
+
+		internal static System.Type GetPropertyOrFieldType(this MemberInfo memberInfo)
+		{
+			if (memberInfo is PropertyInfo propertyInfo)
+			{
+				return propertyInfo.PropertyType;
+			}
+
+			if (memberInfo is FieldInfo fieldInfo)
+			{
+				return fieldInfo.FieldType;
+			}
+
+			return null;
+		}
 
 		/// <summary>
 		/// Determine if the specified <see cref="System.Type"/> overrides the
@@ -57,7 +196,7 @@ namespace NHibernate.Util
 			}
 			catch (AmbiguousMatchException)
 			{
-				// an ambigious match means that there is an override and it
+				// an ambiguous match means that there is an override and it
 				// can't determine which one to use.
 				return true;
 			}
@@ -565,6 +704,8 @@ namespace NHibernate.Util
 			return null;
 		}
 
+		// Since v5
+		[Obsolete("Please use GetMethodDefinition then MethodInfo.MakeGenericMethod instead")]
 		public static MethodInfo GetGenericMethodFrom<T>(string methodName, System.Type[] genericArgs, System.Type[] signature)
 		{
 			MethodInfo result = null;
@@ -678,7 +819,7 @@ namespace NHibernate.Util
 			/// <returns>true if the property exists; otherwise false.</returns>
 			/// <remarks>
 			/// When the user defines a field.xxxxx access strategy should be because both the property and the field exists.
-			/// NHibernate can work even when the property does not exist but in this case the user should use the appropiate accessor.
+			/// NHibernate can work even when the property does not exist but in this case the user should use the appropriate accessor.
 			/// </remarks>
 			public static bool HasProperty(this System.Type source, string propertyName)
 			{

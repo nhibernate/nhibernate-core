@@ -1,3 +1,4 @@
+using System.Data;
 using NHibernate.AdoNet;
 using NHibernate.Bytecode;
 using NHibernate.Cache;
@@ -8,7 +9,6 @@ using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Linq.Functions;
 using NHibernate.Type;
 using NUnit.Framework;
-using System.Data;
 using NHibernate.Exceptions;
 
 namespace NHibernate.Test.CfgTest.Loquacious

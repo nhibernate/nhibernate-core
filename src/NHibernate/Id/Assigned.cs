@@ -15,7 +15,7 @@ namespace NHibernate.Id
 	///	<code>&lt;generator class="assigned" /&gt;</code>
 	/// </p>
 	/// </remarks>
-	public class Assigned : IIdentifierGenerator, IConfigurable
+	public partial class Assigned : IIdentifierGenerator, IConfigurable
 	{
 		private string entityName;
 
@@ -39,7 +39,7 @@ namespace NHibernate.Id
 				throw new IdentifierGenerationException("Illegal use of assigned id generation for a toplevel collection");
 			}
 
-			object id = session.GetEntityPersister(entityName, obj).GetIdentifier(obj, session.EntityMode);
+			object id = session.GetEntityPersister(entityName, obj).GetIdentifier(obj);
 			if (id == null)
 			{
 				throw new IdentifierGenerationException("ids for this class must be manually assigned before calling save(): "

@@ -38,7 +38,7 @@ namespace NHibernate.Test.QueryTest
 		{
 			base.OnSetUp();
 
-			this.sessions.Statistics.Clear();
+			this.Sfi.Statistics.Clear();
 		}
 
 		protected override void OnTearDown()
@@ -122,7 +122,7 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public void CanUseSecondLevelCacheWithPositionalParameters()
 		{
-			var cacheHashtable = MultipleQueriesFixture.GetHashTableUsedAsQueryCache(sessions);
+			var cacheHashtable = MultipleQueriesFixture.GetHashTableUsedAsQueryCache(Sfi);
 			cacheHashtable.Clear();
 
 			CreateItems();
@@ -139,7 +139,7 @@ namespace NHibernate.Test.QueryTest
 			//set the query in the cache
 			DoMutiQueryAndAssert();
 
-			var cacheHashtable = MultipleQueriesFixture.GetHashTableUsedAsQueryCache(sessions);
+			var cacheHashtable = MultipleQueriesFixture.GetHashTableUsedAsQueryCache(Sfi);
 			var cachedListEntry = (IList)new ArrayList(cacheHashtable.Values)[0];
 			var cachedQuery = (IList)cachedListEntry[1];
 
@@ -151,7 +151,7 @@ namespace NHibernate.Test.QueryTest
 			var secondQueryResults = (IList)cachedQuery[1];
 			secondQueryResults[0] = 2;
 
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				var criteria = s.CreateCriteria(typeof(Item))
 					.Add(Restrictions.Gt("id", 50));
@@ -173,14 +173,14 @@ namespace NHibernate.Test.QueryTest
 			CreateItems();
 
 			DoMutiQueryAndAssert();
-			Assert.AreEqual(0, sessions.Statistics.QueryCacheHitCount);
-			Assert.AreEqual(1, sessions.Statistics.QueryCacheMissCount);
-			Assert.AreEqual(1, sessions.Statistics.QueryCachePutCount);
+			Assert.AreEqual(0, Sfi.Statistics.QueryCacheHitCount);
+			Assert.AreEqual(1, Sfi.Statistics.QueryCacheMissCount);
+			Assert.AreEqual(1, Sfi.Statistics.QueryCachePutCount);
 
 			DoMutiQueryAndAssert();
-			Assert.AreEqual(1, sessions.Statistics.QueryCacheHitCount);
-			Assert.AreEqual(1, sessions.Statistics.QueryCacheMissCount);
-			Assert.AreEqual(1, sessions.Statistics.QueryCachePutCount);
+			Assert.AreEqual(1, Sfi.Statistics.QueryCacheHitCount);
+			Assert.AreEqual(1, Sfi.Statistics.QueryCacheMissCount);
+			Assert.AreEqual(1, Sfi.Statistics.QueryCachePutCount);
 		}
 
 		[Test]
@@ -485,6 +485,39 @@ namespace NHibernate.Test.QueryTest
 
 				Assert.That(results[0], Is.InstanceOf<List<object>>());
 				Assert.That(results[1], Is.InstanceOf<List<int>>());
+			}
+		}
+
+		[Test]
+		public void UsingManyParametersAndQueries_DoesNotCauseParameterNameCollisions()
+		{
+			//GH-1357
+			using (var s = OpenSession())
+			{
+				var item = new Item {Id = 15};
+				s.Save(item);
+				s.Flush();
+			}
+
+			using (var s = OpenSession())
+			{
+				var multi = s.CreateMultiCriteria();
+
+				for (var i = 0; i < 12; i++)
+				{
+					var criteria = s.CreateCriteria(typeof(Item));
+					for (var j = 0; j < 12; j++)
+					{
+						criteria = criteria.Add(Restrictions.Gt("id", j));
+					}
+					multi.Add(criteria);
+				}
+				//Parameter combining is only used for cacheable queries
+				multi.SetCacheable(true);
+				foreach (IList result in multi.List())
+				{
+					Assert.That(result.Count, Is.EqualTo(1));
+				}
 			}
 		}
 	}

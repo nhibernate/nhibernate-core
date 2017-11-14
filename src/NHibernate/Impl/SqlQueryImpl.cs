@@ -22,7 +22,7 @@ namespace NHibernate.Impl
 	/// &lt;/sql-query-name&gt;
 	/// </code>
 	/// </example>
-	public class SqlQueryImpl : AbstractQueryImpl, ISQLQuery
+	public partial class SqlQueryImpl : AbstractQueryImpl, ISQLQuery
 	{
 		private readonly IList<INativeSQLQueryReturn> queryReturns;
 		private readonly ICollection<string> querySpaces;

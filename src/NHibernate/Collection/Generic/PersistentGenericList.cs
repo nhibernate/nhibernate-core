@@ -1,10 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
+using System.Linq;
+using System.Linq.Expressions;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
+using NHibernate.Linq;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
@@ -19,7 +22,7 @@ namespace NHibernate.Collection.Generic
 	/// <remarks>The underlying collection used is a <see cref="List{T}"/></remarks>
 	[Serializable]
 	[DebuggerTypeProxy(typeof (CollectionProxy<>))]
-	public class PersistentGenericList<T> : AbstractPersistentCollection, IList<T>, IList
+	public partial class PersistentGenericList<T> : AbstractPersistentCollection, IList<T>, IList, IQueryable<T>
 	{
 		protected IList<T> WrappedList;
 
@@ -53,12 +56,10 @@ namespace NHibernate.Collection.Generic
 
 		public override object GetSnapshot(ICollectionPersister persister)
 		{
-			EntityMode entityMode = Session.EntityMode;
-
 			var clonedList = new List<T>(WrappedList.Count);
 			foreach (T current in WrappedList)
 			{
-				var deepCopy = (T)persister.ElementType.DeepCopy(current, entityMode, persister.Factory);
+				var deepCopy = (T)persister.ElementType.DeepCopy(current, persister.Factory);
 				clonedList.Add(deepCopy);
 			}
 
@@ -115,7 +116,7 @@ namespace NHibernate.Collection.Generic
 			return StringHelper.CollectionToString(WrappedList);
 		}
 
-		public override object ReadFrom(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
+		public override object ReadFrom(DbDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
 		{
 			var element = (T)role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
 			int index = (int)role.ReadIndex(rs, descriptor.SuffixedIndexAliases, Session);
@@ -232,7 +233,7 @@ namespace NHibernate.Collection.Generic
 				return false;
 			}
 			Read();
-			return CollectionHelper.CollectionEquals(WrappedList, that);
+			return CollectionHelper.SequenceEquals(WrappedList, that);
 		}
 
 		public override int GetHashCode()
@@ -499,7 +500,6 @@ namespace NHibernate.Collection.Generic
 
 		#endregion
 
-
 		#region IEnumerable<T> Members
 
 		IEnumerator<T> IEnumerable<T>.GetEnumerator()
@@ -510,6 +510,20 @@ namespace NHibernate.Collection.Generic
 
 		#endregion
 
+		#region IQueryable<T> Members
+
+		[NonSerialized]
+		IQueryable<T> _queryable;
+
+		Expression IQueryable.Expression => InnerQueryable.Expression;
+
+		System.Type IQueryable.ElementType => InnerQueryable.ElementType;
+
+		IQueryProvider IQueryable.Provider => InnerQueryable.Provider;
+
+		IQueryable<T> InnerQueryable => _queryable ?? (_queryable = new NhQueryable<T>(Session, this));
+
+		#endregion
 
 		#region DelayedOperations
 

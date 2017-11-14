@@ -1,4 +1,3 @@
-using System;
 using System.Data;
 using NHibernate.SqlCommand;
 
@@ -34,6 +33,15 @@ namespace NHibernate.Dialect
 	/// <seealso cref="PostgreSQLDialect" />
 	public class PostgreSQL81Dialect : PostgreSQLDialect
 	{
+		protected override void RegisterDateTimeTypeMappings()
+		{
+			base.RegisterDateTimeTypeMappings();
+			RegisterColumnType(DbType.DateTime, 6, "timestamp($s)");
+			RegisterColumnType(DbType.Time, 6, "time($s)");
+			// Not overriding default scale: Posgres doc writes it means "no explicit limit", so max of what it can support,
+			// which suits our needs.
+		}
+
 		public override string ForUpdateNowaitString
 		{
 			get { return " for update nowait"; }
@@ -105,5 +113,12 @@ namespace NHibernate.Dialect
 		{
 			get { return true; }
 		}
+
+		/// <inheritdoc />
+		public override bool SupportsDateTimeScale => true;
+
+		// Said to be 63 bytes at least since v8.
+		/// <inheritdoc />
+		public override int MaxAliasLength => 63;
 	}
 }

@@ -3,12 +3,13 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Events.Collections.Association
 {
+	[TestFixture]
 	public abstract class AbstractAssociationCollectionEventFixture : AbstractCollectionEventFixture
 	{
 		[Test]
 		public void DeleteParentButNotChild()
 		{
-			CollectionListeners listeners = new CollectionListeners(sessions);
+			CollectionListeners listeners = new CollectionListeners(Sfi);
 			IParentWithCollection parent = CreateParentWithOneChild("parent", "child");
 			ChildEntity child = (ChildEntity) GetFirstChild(parent.Children);
 			listeners.Clear();

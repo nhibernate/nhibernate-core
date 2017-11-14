@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 
 using NHibernate.Engine;
 using NHibernate.Exceptions;
@@ -12,7 +13,7 @@ namespace NHibernate.Id
 	/// <summary>
 	/// Generates Guid values using the server side Guid function.
 	/// </summary>
-	public class NativeGuidGenerator : IIdentifierGenerator
+	public partial class NativeGuidGenerator : IIdentifierGenerator
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(NativeGuidGenerator));
 		private readonly IType identifierType = new GuidType();
@@ -24,8 +25,8 @@ namespace NHibernate.Id
 			var sql = new SqlString(session.Factory.Dialect.SelectGUIDString);
 			try
 			{
-				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, SqlTypeFactory.NoTypes);
-				IDataReader reader = null;
+				var st = session.Batcher.PrepareCommand(CommandType.Text, sql, SqlTypeFactory.NoTypes);
+				DbDataReader reader = null;
 				try
 				{
 					reader = session.Batcher.ExecuteReader(st);

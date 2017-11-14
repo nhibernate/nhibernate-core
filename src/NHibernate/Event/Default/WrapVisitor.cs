@@ -10,7 +10,7 @@ namespace NHibernate.Event.Default
 	/// <summary> 
 	/// Wrap collections in a Hibernate collection wrapper.
 	/// </summary>
-	public class WrapVisitor : ProxyVisitor
+	public partial class WrapVisitor : ProxyVisitor
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(WrapVisitor));
 		private bool substitute = false;
@@ -24,13 +24,12 @@ namespace NHibernate.Event.Default
 
 		internal override void Process(object obj, IEntityPersister persister)
 		{
-			EntityMode entityMode = Session.EntityMode;
-			object[] values = persister.GetPropertyValues(obj, entityMode);
+			object[] values = persister.GetPropertyValues(obj);
 			IType[] types = persister.PropertyTypes;
 			ProcessEntityPropertyValues(values, types);
 			if (SubstitutionRequired)
 			{
-				persister.SetPropertyValues(obj, values, entityMode);
+				persister.SetPropertyValues(obj, values);
 			}
 		}
 
@@ -67,7 +66,7 @@ namespace NHibernate.Event.Default
 			IPersistenceContext persistenceContext = session.PersistenceContext;
 			//TODO: move into collection type, so we can use polymorphism!
 
-			if (collectionType.HasHolder(session.EntityMode))
+			if (collectionType.HasHolder())
 			{
 				if (collection == CollectionType.UnfetchedCollection)
 					return null;
@@ -121,7 +120,7 @@ namespace NHibernate.Event.Default
 				}
 				if (substituteComponent)
 				{
-					componentType.SetPropertyValues(component, values, Session.EntityMode);
+					componentType.SetPropertyValues(component, values);
 				}
 			}
 

@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests.ClassMapperTests
 {
+	[TestFixture]
 	public class SetPersisterTests
 	{
 		private class EntitySimple
@@ -18,7 +19,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.ClassMapperTests
 			var mapdoc = new HbmMapping();
 			var rc = new ClassMapper(typeof(EntitySimple), mapdoc, For<EntitySimple>.Property(x => x.Id));
 			rc.Persister<SingleTableEntityPersister>();
-			Assert.That(mapdoc.RootClasses[0].Persister, Is.StringContaining("SingleTableEntityPersister"));
+			Assert.That(mapdoc.RootClasses[0].Persister, Does.Contain("SingleTableEntityPersister"));
 		}
 	}
 }

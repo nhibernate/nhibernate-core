@@ -8,7 +8,7 @@ namespace NHibernate.Event.Default
 	/// Process collections reachable from an entity. 
 	/// This visitor assumes that wrap was already performed for the entity.
 	/// </summary>
-	public class FlushVisitor : AbstractVisitor
+	public partial class FlushVisitor : AbstractVisitor
 	{
 		private readonly object owner;
 

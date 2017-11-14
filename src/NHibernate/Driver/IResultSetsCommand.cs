@@ -1,13 +1,13 @@
-using System.Data;
+using System.Data.Common;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Driver
 {
-	public interface IResultSetsCommand
+	public partial interface IResultSetsCommand
 	{
 		void Append(ISqlCommand command);
 		bool HasQueries { get; }
 		SqlString Sql { get; }
-		IDataReader GetReader(int? commandTimeout);
+		DbDataReader GetReader(int? commandTimeout);
 	}
 }

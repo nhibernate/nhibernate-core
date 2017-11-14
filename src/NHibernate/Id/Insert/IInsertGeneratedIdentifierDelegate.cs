@@ -11,7 +11,7 @@ namespace NHibernate.Id.Insert
 	/// <li>determination of the generated identifier value</li>
 	/// </ul> 
 	/// </summary>
-	public interface IInsertGeneratedIdentifierDelegate
+	public partial interface IInsertGeneratedIdentifierDelegate
 	{
 		/// <summary> 
 		/// Build a <see cref="NHibernate.SqlCommand.SqlInsertBuilder"/> specific to the delegate's mode

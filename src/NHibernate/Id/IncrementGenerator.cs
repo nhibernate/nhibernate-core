@@ -25,7 +25,7 @@ namespace NHibernate.Id
 	/// Mapping parameters supported, but not usually needed: table, column.
 	/// </para>
 	/// </remarks>
-	public class IncrementGenerator : IIdentifierGenerator, IConfigurable
+	public partial class IncrementGenerator : IIdentifierGenerator, IConfigurable
 	{
 		private static readonly IInternalLogger Logger = LoggerProvider.LoggerFor(typeof(IncrementGenerator));
 
@@ -102,7 +102,7 @@ namespace NHibernate.Id
 			try
 			{
 				var cmd = session.Batcher.PrepareCommand(CommandType.Text, _sql, SqlTypeFactory.NoTypes);
-				IDataReader reader = null;
+				DbDataReader reader = null;
 				try
 				{
 					reader = session.Batcher.ExecuteReader(cmd);

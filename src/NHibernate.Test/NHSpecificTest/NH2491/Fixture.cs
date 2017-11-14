@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2491
 		public virtual SubClass SubClass { get; set; }
 	}
 
-
+	[TestFixture]
 	public class Fixture : BugTestCase
 	{
 		protected override void OnTearDown()

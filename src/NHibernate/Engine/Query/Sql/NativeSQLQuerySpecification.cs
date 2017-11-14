@@ -61,8 +61,12 @@ namespace NHibernate.Engine.Query.Sql
 			if (that == null)
 				return false;
 
-			// NHibernate different impl.: NativeSQLQuerySpecification is immutable and the hash is calculated at Ctor
-			return hashCode == that.hashCode;
+			// NH-3956: hashcode inequality rules out equality, but hashcode equality is not enough.
+			// Code taken back from 8e92af3f and amended according to NH-1931.
+			return hashCode == that.hashCode &&
+				queryString.Equals(that.queryString) &&
+				CollectionHelper.SequenceEquals(querySpaces, that.querySpaces) &&
+				CollectionHelper.SequenceEquals<INativeSQLQueryReturn>(sqlQueryReturns, that.sqlQueryReturns);
 		}
 
 		public override int GetHashCode()

@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests.UnionSubclassMapperTests
 {
+	[TestFixture]
 	public class SetPersisterTests
 	{
 		private class EntitySimple
@@ -22,7 +23,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.UnionSubclassMapperTests
 			var mapdoc = new HbmMapping();
 			var rc = new UnionSubclassMapper(typeof(InheritedSimple), mapdoc);
 			rc.Persister<UnionSubclassEntityPersister>();
-			Assert.That(mapdoc.UnionSubclasses[0].Persister, Is.StringContaining("UnionSubclassEntityPersister"));
+			Assert.That(mapdoc.UnionSubclasses[0].Persister, Does.Contain("UnionSubclassEntityPersister"));
 		}
 	}
 }

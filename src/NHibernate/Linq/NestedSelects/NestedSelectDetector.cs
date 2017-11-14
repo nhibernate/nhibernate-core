@@ -1,15 +1,13 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using NHibernate.Linq.Visitors;
 using NHibernate.Util;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.NestedSelects
 {
-	internal class NestedSelectDetector : ExpressionTreeVisitor
+	internal class NestedSelectDetector : RelinqExpressionVisitor
 	{
 		private readonly ISessionFactory sessionFactory;
 		private readonly ICollection<Expression> _expressions = new List<Expression>();
@@ -29,16 +27,16 @@ namespace NHibernate.Linq.NestedSelects
 			get { return Expressions.Count > 0; }
 		}
 
-		protected override Expression VisitSubQueryExpression(SubQueryExpression expression)
+		protected override Expression VisitSubQuery(SubQueryExpression expression)
 		{
 			if (expression.QueryModel.ResultOperators.Count == 0)
 				Expressions.Add(expression);
-			return base.VisitSubQueryExpression(expression);
+			return base.VisitSubQuery(expression);
 		}
 
-		protected override Expression VisitMemberExpression(MemberExpression expression)
+		protected override Expression VisitMember(MemberExpression expression)
 		{
-			var memberType = expression.Member.GetPropertyOrFieldType();
+			var memberType = ReflectHelper.GetPropertyOrFieldType(expression.Member);
 
 			if (memberType != null && memberType.IsCollectionType()
 			    && IsChainedFromQuerySourceReference(expression)
@@ -47,7 +45,7 @@ namespace NHibernate.Linq.NestedSelects
 				Expressions.Add(expression);
 			}
 
-			return base.VisitMemberExpression(expression);
+			return base.VisitMember(expression);
 		}
 
 		private bool IsMappedCollection(MemberInfo memberInfo)

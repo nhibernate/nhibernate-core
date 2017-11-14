@@ -9,7 +9,7 @@ using NHibernate.Persister.Entity;
 namespace NHibernate.Action
 {
 	[Serializable]
-	public sealed class EntityDeleteAction : EntityAction
+	public sealed partial class EntityDeleteAction : EntityAction
 	{
 		private readonly object[] state;
 		private readonly object version;
@@ -51,7 +51,7 @@ namespace NHibernate.Action
 				// we need to grab the version value from the entity, otherwise
 				// we have issues with generated-version entities that may have
 				// multiple actions queued during the same flush
-				tmpVersion = persister.GetVersion(instance, session.EntityMode);
+				tmpVersion = persister.GetVersion(instance);
 			}
 
 			CacheKey ck;

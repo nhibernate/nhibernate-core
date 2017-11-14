@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -12,7 +13,7 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.UInt64"/> column.
 	/// </summary>
 	[Serializable]
-	public class UInt64Type : PrimitiveType, IDiscriminatorType, IVersionType
+	public partial class UInt64Type : PrimitiveType, IDiscriminatorType, IVersionType
 	{
 		/// <summary></summary>
 		public UInt64Type() : base(SqlTypeFactory.UInt64)
@@ -25,7 +26,7 @@ namespace NHibernate.Type
 		}
 
 		private static readonly UInt32 ZERO = 0;
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			try
 			{
@@ -37,7 +38,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
 			try
 			{
@@ -54,9 +55,9 @@ namespace NHibernate.Type
 			get { return typeof(UInt64); }
 		}
 
-		public override void Set(IDbCommand rs, object value, int index)
+		public override void Set(DbCommand rs, object value, int index, ISessionImplementor session)
 		{
-			((IDataParameter)rs.Parameters[index]).Value = value;
+			rs.Parameters[index].Value = value;
 		}
 
 		public object StringToObject(string xml)

@@ -6,7 +6,7 @@ namespace NHibernate.Event.Default
 {
 	/// <summary> An event handler for update() events</summary>
 	[Serializable]
-	public class DefaultUpdateEventListener : DefaultSaveOrUpdateEventListener
+	public partial class DefaultUpdateEventListener : DefaultSaveOrUpdateEventListener
 	{
 		protected override object PerformSaveOrUpdate(SaveOrUpdateEvent @event)
 		{
@@ -40,15 +40,15 @@ namespace NHibernate.Event.Default
 		/// If the user specified an id, assign it to the instance and use that, 
 		/// otherwise use the id already assigned to the instance
 		/// </summary>
-		protected override object GetUpdateId(object entity, IEntityPersister persister, object requestedId, EntityMode entityMode)
+		protected override object GetUpdateId(object entity, IEntityPersister persister, object requestedId)
 		{
 			if (requestedId == null)
 			{
-				return base.GetUpdateId(entity, persister, requestedId, entityMode);
+				return base.GetUpdateId(entity, persister, requestedId);
 			}
 			else
 			{
-				persister.SetIdentifier(entity, requestedId, entityMode);
+				persister.SetIdentifier(entity, requestedId);
 				return requestedId;
 			}
 		}

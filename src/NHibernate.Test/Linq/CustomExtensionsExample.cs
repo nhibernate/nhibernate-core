@@ -4,12 +4,10 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using NHibernate.Cfg;
-using NHibernate.Cfg.Loquacious;
-using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Hql.Ast;
-using NHibernate.Linq;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -30,7 +28,7 @@ namespace NHibernate.Test.Linq
 	{
 		public MyLinqToHqlGeneratorsRegistry():base()
 		{
-			RegisterGenerator(ReflectionHelper.GetMethodDefinition(() => MyLinqExtensions.IsLike(null, null)),
+			RegisterGenerator(ReflectHelper.GetMethodDefinition(() => MyLinqExtensions.IsLike(null, null)),
 							  new IsLikeGenerator());
 		}
 	}
@@ -39,7 +37,7 @@ namespace NHibernate.Test.Linq
 	{
 		public IsLikeGenerator()
 		{
-			SupportedMethods = new[] {ReflectionHelper.GetMethodDefinition(() => MyLinqExtensions.IsLike(null, null))};
+			SupportedMethods = new[] {ReflectHelper.GetMethodDefinition(() => MyLinqExtensions.IsLike(null, null))};
 		}
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, 
@@ -50,6 +48,7 @@ namespace NHibernate.Test.Linq
 		}
 	}
 
+	[TestFixture]
 	public class CustomExtensionsExample : LinqTestCase
 	{
 		protected override void Configure(NHibernate.Cfg.Configuration configuration)

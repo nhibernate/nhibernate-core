@@ -7,7 +7,7 @@ namespace NHibernate.Loader.Collection
 	/// </summary>
 	/// <seealso cref="BasicCollectionLoader"/>
 	/// <seealso cref="OneToManyLoader"/>
-	public interface ICollectionInitializer
+	public partial interface ICollectionInitializer
 	{
 		/// <summary>
 		/// Initialize the given collection

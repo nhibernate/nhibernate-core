@@ -8,7 +8,7 @@ namespace NHibernate.Test.FilterTest
 		private long id;
 		private String name;
 		private String region;
-		private DateTime hireDate;
+		private DateTime? hireDate;
 		private Department department;
 		private ISet<Order> orders = new HashSet<Order>();
 
@@ -30,7 +30,7 @@ namespace NHibernate.Test.FilterTest
 			set { region = value; }
 		}
 
-		public virtual DateTime HireDate
+		public virtual DateTime? HireDate
 		{
 			get { return hireDate; }
 			set { hireDate = value; }

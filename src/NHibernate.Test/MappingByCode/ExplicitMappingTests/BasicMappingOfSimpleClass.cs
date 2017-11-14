@@ -8,6 +8,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ExplicitMappingTests
 {
+	[TestFixture]
 	public class BasicMappingOfSimpleClass
 	{
 		public class MyClass

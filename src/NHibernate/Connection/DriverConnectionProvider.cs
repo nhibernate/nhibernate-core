@@ -1,40 +1,39 @@
 using System;
-using System.Data;
-
+using System.Data.Common;
 
 namespace NHibernate.Connection
 {
 	/// <summary>
 	/// A ConnectionProvider that uses an IDriver to create connections.
 	/// </summary>
-	public class DriverConnectionProvider : ConnectionProvider
+	public partial class DriverConnectionProvider : ConnectionProvider
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DriverConnectionProvider));
 
 		/// <summary>
-		/// Closes and Disposes of the <see cref="IDbConnection"/>.
+		/// Closes and Disposes of the <see cref="DbConnection"/>.
 		/// </summary>
-		/// <param name="conn">The <see cref="IDbConnection"/> to clean up.</param>
-		public override void CloseConnection(IDbConnection conn)
+		/// <param name="conn">The <see cref="DbConnection"/> to clean up.</param>
+		public override void CloseConnection(DbConnection conn)
 		{
 			base.CloseConnection(conn);
 			conn.Dispose();
 		}
 
 		/// <summary>
-		/// Gets a new open <see cref="IDbConnection"/> through 
+		/// Gets a new open <see cref="DbConnection"/> through 
 		/// the <see cref="NHibernate.Driver.IDriver"/>.
 		/// </summary>
 		/// <returns>
-		/// An Open <see cref="IDbConnection"/>.
+		/// An Open <see cref="DbConnection"/>.
 		/// </returns>
 		/// <exception cref="Exception">
-		/// If there is any problem creating or opening the <see cref="IDbConnection"/>.
+		/// If there is any problem creating or opening the <see cref="DbConnection"/>.
 		/// </exception>
-		public override IDbConnection GetConnection()
+		public override DbConnection GetConnection()
 		{
-			log.Debug("Obtaining IDbConnection from Driver");
-			IDbConnection conn = Driver.CreateConnection();
+			log.Debug("Obtaining DbConnection from Driver");
+			var conn = Driver.CreateConnection();
 			try
 			{
 				conn.ConnectionString = ConnectionString;

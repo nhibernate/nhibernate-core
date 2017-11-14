@@ -1,5 +1,6 @@
 using System;
-using System.Data;
+using System.Data.Common;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 
@@ -29,7 +30,7 @@ namespace NHibernate.Test.SqlTest
 			return x.GetHashCode();
 		}
 
-		public object NullSafeGet(IDataReader rs, string[] names, object owner)
+		public object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			int ordinal = rs.GetOrdinal(names[0]);
 			if (rs.IsDBNull(ordinal))
@@ -42,10 +43,10 @@ namespace NHibernate.Test.SqlTest
 			}
 		}
 
-		public void NullSafeSet(IDbCommand cmd, object value, int index)
+		public void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			object valueToSet = ((DateTime) value == DateTime.MinValue) ? DBNull.Value : value;
-			((IDbDataParameter) cmd.Parameters[index]).Value = valueToSet;
+			cmd.Parameters[index].Value = valueToSet;
 		}
 
 		public object DeepCopy(object value)

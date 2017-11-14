@@ -22,11 +22,9 @@ namespace NHibernate.Engine
 		private ISessionFactoryImplementor factory;
 		private int hashCode;
 
-		private readonly EntityMode entityMode;
-
 		/// <summary> Construct a unique identifier for an entity class instance</summary>
-		public EntityKey(object id, IEntityPersister persister, EntityMode entityMode)
-			: this(id, persister.RootEntityName, persister.EntityName, persister.IdentifierType, persister.IsBatchLoadable, persister.Factory, entityMode) {}
+		public EntityKey(object id, IEntityPersister persister)
+			: this(id, persister.RootEntityName, persister.EntityName, persister.IdentifierType, persister.IsBatchLoadable, persister.Factory) {}
 
 		/// <summary> Used to reconstruct an EntityKey during deserialization. </summary>
 		/// <param name="identifier">The identifier value </param>
@@ -35,8 +33,7 @@ namespace NHibernate.Engine
 		/// <param name="identifierType">The type of the identifier value </param>
 		/// <param name="batchLoadable">Whether represented entity is eligible for batch loading </param>
 		/// <param name="factory">The session factory </param>
-		/// <param name="entityMode">The entity's entity mode </param>
-		private EntityKey(object identifier, string rootEntityName, string entityName, IType identifierType, bool batchLoadable, ISessionFactoryImplementor factory, EntityMode entityMode)
+		private EntityKey(object identifier, string rootEntityName, string entityName, IType identifierType, bool batchLoadable, ISessionFactoryImplementor factory)
 		{
 			if (identifier == null)
 				throw new AssertionFailure("null identifier");
@@ -47,7 +44,6 @@ namespace NHibernate.Engine
 			this.identifierType = identifierType;
 			isBatchLoadable = batchLoadable;
 			this.factory = factory;
-			this.entityMode = entityMode;
 			hashCode = GenerateHashCode();
 		}
 
@@ -73,7 +69,7 @@ namespace NHibernate.Engine
 
 			return
 				otherKey.rootEntityName.Equals(rootEntityName)
-				&& identifierType.IsEqual(otherKey.Identifier, Identifier, entityMode, factory);
+				&& identifierType.IsEqual(otherKey.Identifier, Identifier, factory);
 		}
 
 		private int GenerateHashCode()
@@ -82,7 +78,7 @@ namespace NHibernate.Engine
 			unchecked
 			{
 				result = 37 * result + rootEntityName.GetHashCode();
-				result = 37 * result + identifierType.GetHashCode(identifier, entityMode, factory);
+				result = 37 * result + identifierType.GetHashCode(identifier, factory);
 			}
 			return result;
 		}

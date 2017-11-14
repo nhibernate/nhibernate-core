@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1136
 		public TValue FindValueFor(TKey key)
 		{
 			Read();
-			return ((IMilestoneCollection<TKey, TValue>) WrappedMap).FindValueFor(key);
+			return ((IMilestoneCollection<TKey, TValue>) Entries(null)).FindValueFor(key);
 		}
 
 		#endregion

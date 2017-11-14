@@ -14,12 +14,12 @@ namespace NHibernate.Type
 	/// <seealso cref="IPersistentCollection"/>
 	/// <seealso cref="IUserCollectionType"/>
 	[Serializable]
-	public class CustomCollectionType : CollectionType
+	public partial class CustomCollectionType : CollectionType
 	{
 		private readonly IUserCollectionType userType;
 
-		public CustomCollectionType(System.Type userTypeClass, string role, string foreignKeyPropertyName, bool isEmbeddedInXML)
-			: base(role, foreignKeyPropertyName, isEmbeddedInXML)
+		public CustomCollectionType(System.Type userTypeClass, string role, string foreignKeyPropertyName)
+			: base(role, foreignKeyPropertyName)
 		{
 			if (!typeof(IUserCollectionType).IsAssignableFrom(userTypeClass))
 			{

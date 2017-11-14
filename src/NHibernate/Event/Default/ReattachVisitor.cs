@@ -10,7 +10,7 @@ namespace NHibernate.Event.Default
 	/// <summary>
 	/// Abstract superclass of visitors that reattach collections
 	/// </summary>
-	public abstract class ReattachVisitor : ProxyVisitor
+	public abstract partial class ReattachVisitor : ProxyVisitor
 	{
 		private readonly object ownerIdentifier;
 		private readonly object owner;
@@ -78,7 +78,7 @@ namespace NHibernate.Event.Default
 			}
 			else
 			{
-				return role.OwnerEntityPersister.GetPropertyValue(owner, role.CollectionType.LHSPropertyName, Session.EntityMode);
+				return role.OwnerEntityPersister.GetPropertyValue(owner, role.CollectionType.LHSPropertyName);
 			}
 		}
 	}

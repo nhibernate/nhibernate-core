@@ -3,6 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2324
 {
+	[TestFixture]
 	public class BulkUpdateWithCustomCompositeType: BugTestCase
 	{
 		public class Scenario: IDisposable

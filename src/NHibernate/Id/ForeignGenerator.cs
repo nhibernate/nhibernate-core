@@ -20,7 +20,7 @@ namespace NHibernate.Id
 	/// </para>
 	/// The mapping parameter <c>property</c> is required.
 	/// </remarks>
-	public class ForeignGenerator : IIdentifierGenerator, IConfigurable
+	public partial class ForeignGenerator : IIdentifierGenerator, IConfigurable
 	{
 		private string propertyName;
 		private string entityName;
@@ -42,7 +42,7 @@ namespace NHibernate.Id
 			ISession session = (ISession) sessionImplementor;
 
 			var persister = sessionImplementor.Factory.GetEntityPersister(entityName);
-			object associatedObject = persister.GetPropertyValue(obj, propertyName, sessionImplementor.EntityMode);
+			object associatedObject = persister.GetPropertyValue(obj, propertyName);
 
 			if (associatedObject == null)
 			{

@@ -20,12 +20,14 @@ namespace NHibernate.Linq.Visitors
 
 		public HqlBooleanExpression Visit(Expression innerKeySelector, Expression outerKeySelector)
 		{
-		    return innerKeySelector is NewExpression && outerKeySelector is NewExpression
-		               ? VisitNew((NewExpression) innerKeySelector, (NewExpression) outerKeySelector)
-		               : GenerateEqualityNode(innerKeySelector, outerKeySelector);
+			var innerNewExpression = innerKeySelector as NewExpression;
+			var outerNewExpression = outerKeySelector as NewExpression;
+			return innerNewExpression != null && outerNewExpression != null
+				? VisitNew(innerNewExpression, outerNewExpression)
+				: GenerateEqualityNode(innerKeySelector, outerKeySelector, new HqlGeneratorExpressionVisitor(_parameters));
 		}
 
-	    private HqlBooleanExpression VisitNew(NewExpression innerKeySelector, NewExpression outerKeySelector)
+		private HqlBooleanExpression VisitNew(NewExpression innerKeySelector, NewExpression outerKeySelector)
 		{
 			if (innerKeySelector.Arguments.Count != outerKeySelector.Arguments.Count)
 			{
@@ -44,16 +46,14 @@ namespace NHibernate.Linq.Visitors
 
 		private HqlEquality GenerateEqualityNode(NewExpression innerKeySelector, NewExpression outerKeySelector, int index)
 		{
-			return GenerateEqualityNode(innerKeySelector.Arguments[index], outerKeySelector.Arguments[index]);
+			return GenerateEqualityNode(innerKeySelector.Arguments[index], outerKeySelector.Arguments[index], new HqlGeneratorExpressionVisitor(_parameters));
 		}
 
-		private HqlEquality GenerateEqualityNode(Expression leftExpr, Expression rightExpr)
+		private HqlEquality GenerateEqualityNode(Expression leftExpr, Expression rightExpr, IHqlExpressionVisitor visitor)
 		{
-            // TODO - why two visitors? Can't we just reuse?
-			var left = new HqlGeneratorExpressionTreeVisitor(_parameters);
-			var right = new HqlGeneratorExpressionTreeVisitor(_parameters);
-
-		    return _hqlTreeBuilder.Equality(left.Visit(leftExpr).AsExpression(), right.Visit(rightExpr).AsExpression());
+			return _hqlTreeBuilder.Equality(
+				visitor.Visit(leftExpr).ToArithmeticExpression(),
+				visitor.Visit(rightExpr).ToArithmeticExpression());
 		}
 	}
 }

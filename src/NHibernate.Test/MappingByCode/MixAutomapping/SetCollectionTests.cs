@@ -5,12 +5,16 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MixAutomapping
 {
+	[TestFixture]
 	public class SetCollectionTests
 	{
 		private class EntityWithSets
 		{
+			// Assigned by reflection
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 			private ICollection<string> others;
 			private ISet<string> emails;
+#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
 			public ISet<string> NickNames { get; set; }
 
 			public ICollection<string> Emails

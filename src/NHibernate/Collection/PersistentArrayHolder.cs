@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 
 using NHibernate.DebugHelpers;
@@ -18,7 +18,7 @@ namespace NHibernate.Collection
 	/// <remarks> Use of Hibernate arrays is not really recommended. </remarks>
 	[Serializable]
 	[DebuggerTypeProxy(typeof (CollectionProxy))]
-	public class PersistentArrayHolder : AbstractPersistentCollection, ICollection
+	public partial class PersistentArrayHolder : AbstractPersistentCollection, ICollection
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (PersistentArrayHolder));
 
@@ -69,8 +69,6 @@ namespace NHibernate.Collection
 
 		public override object GetSnapshot(ICollectionPersister persister)
 		{
-			EntityMode entityMode = Session.EntityMode;
-
 			int length = array.Length;
 			Array result = System.Array.CreateInstance(persister.ElementClass, length);
 			for (int i = 0; i < length; i++)
@@ -78,7 +76,7 @@ namespace NHibernate.Collection
 				object elt = array.GetValue(i);
 				try
 				{
-					result.SetValue(persister.ElementType.DeepCopy(elt, entityMode, persister.Factory), i);
+					result.SetValue(persister.ElementType.DeepCopy(elt, persister.Factory), i);
 				}
 				catch (Exception e)
 				{
@@ -142,7 +140,7 @@ namespace NHibernate.Collection
 			get { return false; }
 		}
 
-		public override object ReadFrom(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
+		public override object ReadFrom(DbDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
 		{
 			object element = role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
 			int index = (int) role.ReadIndex(rs, descriptor.SuffixedIndexAliases, Session);

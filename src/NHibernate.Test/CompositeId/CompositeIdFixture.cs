@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.CompositeId
@@ -27,6 +28,12 @@ namespace NHibernate.Test.CompositeId
 		protected override string CacheConcurrencyStrategy
 		{
 			get { return null; }
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			// Order uses a scalar sub-select formula.
+			return Dialect.SupportsScalarSubSelects;
 		}
 
 		[Test]

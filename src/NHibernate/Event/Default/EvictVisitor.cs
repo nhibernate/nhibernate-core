@@ -11,7 +11,7 @@ namespace NHibernate.Event.Default
 	/// This will NOT pick up any collections that were dereferenced, so they
 	/// will be deleted (suboptimal but not exactly incorrect). 
 	/// </summary>
-	public class EvictVisitor : AbstractVisitor
+	public partial class EvictVisitor : AbstractVisitor
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(EvictVisitor));
 
@@ -56,7 +56,7 @@ namespace NHibernate.Event.Default
 			if (ce.LoadedPersister != null && ce.LoadedKey != null)
 			{
 				//TODO: is this 100% correct?
-				Session.PersistenceContext.CollectionsByKey.Remove(new CollectionKey(ce.LoadedPersister, ce.LoadedKey, Session.EntityMode));
+				Session.PersistenceContext.CollectionsByKey.Remove(new CollectionKey(ce.LoadedPersister, ce.LoadedKey));
 			}
 		}
 	}

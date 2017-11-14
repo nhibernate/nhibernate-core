@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Collection;
 using NHibernate.Collection.Generic;
 using NHibernate.Engine;
@@ -23,7 +25,7 @@ namespace NHibernate.Type
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		public GenericSetType(string role, string propertyRef)
-			: base(role, propertyRef, false) { }
+			: base(role, propertyRef) { }
 
 		/// <summary>
 		/// Instantiates a new <see cref="IPersistentCollection"/> for the set.
@@ -75,6 +77,12 @@ namespace NHibernate.Type
 		public override object Instantiate(int anticipatedSize)
 		{
 			return new HashSet<T>();
+		}
+
+		protected override bool AreCollectionElementsEqual(IEnumerable original, IEnumerable target)
+		{
+			var set = original as ISet<T> ?? new HashSet<T>((IEnumerable<T>)original);
+			return set.SetEquals((IEnumerable<T>)target);
 		}
 	}
 }

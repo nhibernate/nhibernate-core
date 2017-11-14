@@ -16,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2189
 		{
 			base.OnSetUp();
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				TeamMember tm1 = new TeamMember() { Name = "Joe" };
@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2189
 
 		protected override void OnTearDown()
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				s.Delete("FROM Task");
@@ -57,18 +57,18 @@ namespace NHibernate.Test.NHSpecificTest.NH2189
 		[Test]
 		public void FutureQueryReturnsExistingProxy()
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				Policy policyProxy = s.Load<Policy>(_policy2Id);
 				Assert.That(NHibernateUtil.IsInitialized(policyProxy), Is.False);
 
-				IEnumerable<Policy> futurePolicy =
+				var futurePolicy =
 					s.CreateQuery("FROM Policy p where p.Id = :id")
 						.SetParameter("id", _policy2Id)
 						.Future<Policy>();
 
-				Policy queriedPolicy = futurePolicy.ElementAt(0);
+				Policy queriedPolicy = futurePolicy.GetEnumerable().ElementAt(0);
 				Assert.That(NHibernateUtil.IsInitialized(queriedPolicy));
 				Assert.That(queriedPolicy, Is.SameAs(policyProxy));
 			}
@@ -77,18 +77,18 @@ namespace NHibernate.Test.NHSpecificTest.NH2189
 		[Test]
 		public void FutureCriteriaReturnsExistingProxy()
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				Policy policyProxy = s.Load<Policy>(_policy2Id);
 				Assert.That(NHibernateUtil.IsInitialized(policyProxy), Is.False);
 
-				IEnumerable<Policy> futurePolicy =
+				var futurePolicy =
 					s.CreateCriteria<Policy>()
 						.Add(Restrictions.Eq("Id", _policy2Id))
 						.Future<Policy>();
 
-				Policy queriedPolicy = futurePolicy.ElementAt(0);
+				Policy queriedPolicy = futurePolicy.GetEnumerable().ElementAt(0);
 				Assert.That(NHibernateUtil.IsInitialized(queriedPolicy));
 				Assert.That(queriedPolicy, Is.SameAs(policyProxy));
 			}
@@ -97,7 +97,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2189
 		[Test]
 		public void FutureQueryEagerLoadUsesAlreadyLoadedEntity()
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				Policy policy2 = s.CreateQuery("SELECT p FROM Policy p " +
@@ -110,22 +110,22 @@ namespace NHibernate.Test.NHSpecificTest.NH2189
 				Assert.That(NHibernateUtil.IsInitialized(policy2.Tasks.ElementAt(0)));
 				Assert.That(NHibernateUtil.IsInitialized(policy2.Tasks.ElementAt(1)));
 
-				IEnumerable<Task> tasks = s.CreateQuery("SELECT t FROM Task t " +
+				var tasks = s.CreateQuery("SELECT t FROM Task t " +
 					"INNER JOIN FETCH t.TeamMember ORDER BY t.TaskName")
 					.Future<Task>();
 
-				Assert.That(tasks.Count(), Is.EqualTo(3));
+				Assert.That(tasks.GetEnumerable().Count(), Is.EqualTo(3));
 
-				Assert.That(NHibernateUtil.IsInitialized(tasks.ElementAt(0).TeamMember), Is.True, "Task1 TeamMember not initialized");
-				Assert.That(NHibernateUtil.IsInitialized(tasks.ElementAt(1).TeamMember), Is.True, "Task2 TeamMember not initialized");
-				Assert.That(NHibernateUtil.IsInitialized(tasks.ElementAt(2).TeamMember), Is.True, "Task3 TeamMember not initialized");
+				Assert.That(NHibernateUtil.IsInitialized(tasks.GetEnumerable().ElementAt(0).TeamMember), Is.True, "Task1 TeamMember not initialized");
+				Assert.That(NHibernateUtil.IsInitialized(tasks.GetEnumerable().ElementAt(1).TeamMember), Is.True, "Task2 TeamMember not initialized");
+				Assert.That(NHibernateUtil.IsInitialized(tasks.GetEnumerable().ElementAt(2).TeamMember), Is.True, "Task3 TeamMember not initialized");
 			}
 		}
 
 		[Test]
 		public void FutureCriteriaEagerLoadUsesAlreadyLoadedEntity()
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				Policy policy2 =
@@ -138,17 +138,17 @@ namespace NHibernate.Test.NHSpecificTest.NH2189
 				Assert.That(NHibernateUtil.IsInitialized(policy2.Tasks.ElementAt(0)));
 				Assert.That(NHibernateUtil.IsInitialized(policy2.Tasks.ElementAt(1)));
 
-				IEnumerable<Task> tasks =
+				var tasks =
 					s.CreateCriteria<Task>()
 						.SetFetchMode("TeamMember", FetchMode.Eager)
 						.AddOrder(Order.Asc("TaskName"))
 						.Future<Task>();
 
-				Assert.That(tasks.Count(), Is.EqualTo(3));
+				Assert.That(tasks.GetEnumerable().Count(), Is.EqualTo(3));
 
-				Assert.That(NHibernateUtil.IsInitialized(tasks.ElementAt(0).TeamMember), Is.True, "Task1 TeamMember not initialized");
-				Assert.That(NHibernateUtil.IsInitialized(tasks.ElementAt(1).TeamMember), Is.True, "Task2 TeamMember not initialized");
-				Assert.That(NHibernateUtil.IsInitialized(tasks.ElementAt(2).TeamMember), Is.True, "Task3 TeamMember not initialized");
+				Assert.That(NHibernateUtil.IsInitialized(tasks.GetEnumerable().ElementAt(0).TeamMember), Is.True, "Task1 TeamMember not initialized");
+				Assert.That(NHibernateUtil.IsInitialized(tasks.GetEnumerable().ElementAt(1).TeamMember), Is.True, "Task2 TeamMember not initialized");
+				Assert.That(NHibernateUtil.IsInitialized(tasks.GetEnumerable().ElementAt(2).TeamMember), Is.True, "Task3 TeamMember not initialized");
 			}
 		}
 	}

@@ -13,7 +13,7 @@ namespace NHibernate.Loader.Entity
 	/// SQL <c>where</c> clause.
 	/// </summary>
 	/// <seealso cref="EntityLoader"/>
-	public class BatchingEntityLoader : IUniqueEntityLoader
+	public partial class BatchingEntityLoader : IUniqueEntityLoader
 	{
 		private readonly Loader[] loaders;
 		private readonly int[] batchSizes;
@@ -33,7 +33,7 @@ namespace NHibernate.Loader.Entity
 			// get the right object from the list ... would it be easier to just call getEntity() ??
 			foreach (object obj in results)
 			{
-				bool equal = idType.IsEqual(id, session.GetContextEntityIdentifier(obj), session.EntityMode, session.Factory);
+				bool equal = idType.IsEqual(id, session.GetContextEntityIdentifier(obj), session.Factory);
 
 				if (equal)
 				{

@@ -10,6 +10,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Tools.hbm2ddl.SchemaExportTests
 {
+	[TestFixture]
 	public class AutoQuoteFixture
 	{
 		[Test]
@@ -28,7 +29,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaExportTests
 
 			var script = new StringBuilder();
 			new SchemaExport(configuration).Execute(s=> script.AppendLine(s), false, false);
-			Assert.That(script.ToString(), Is.StringContaining("[Order]").And.Contains("[Select]").And.Contains("[From]").And.Contains("[And]"));
+			Assert.That(script.ToString(), Does.Contain("[Order]").And.Contains("[Select]").And.Contains("[From]").And.Contains("[And]"));
 		}
 
 		[Test]

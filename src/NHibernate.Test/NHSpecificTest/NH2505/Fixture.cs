@@ -15,6 +15,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2505
 		public virtual bool? MayBeAlive { get; set; }
 		public virtual int Something { get; set; }
 	}
+
+	[TestFixture]
 	public class Fixture: TestCaseMappingByCode
 	{
 		private Regex caseClause = new Regex("case",RegexOptions.IgnoreCase);
@@ -36,6 +38,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2505
 				{
 					session.Save(new MyClass { Alive = true });
 					session.Save(new MyClass { Alive = false, MayBeAlive = true });
+					session.Save(new MyClass { Alive = false, MayBeAlive = false });
 					session.Flush();
 				}
 			}
@@ -51,7 +54,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2505
 		}
 
 		[Test]
-		public void WhenQueryConstantEqualToMemberThenDoesNotUseTheCaseConstructor()
+		public void WhenQueryConstantEqualToMemberThenDoNotUseCaseStatement()
 		{
 			using (new Scenario(Sfi))
 			{
@@ -60,7 +63,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2505
 					using (var sqls = new SqlLogSpy())
 					{
 						var list = session.Query<MyClass>().Where(x => x.Alive == false).ToList();
-						Assert.That(list, Has.Count.EqualTo(1));
+						Assert.That(list, Has.Count.EqualTo(2));
 						Assert.That(caseClause.Matches(sqls.GetWholeLog()).Count, Is.EqualTo(0));
 					}
 					using (var sqls = new SqlLogSpy())
@@ -74,7 +77,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2505
 		}
 
 		[Test]
-		public void WhenQueryConstantNotEqualToMemberThenDoesNotUseTheCaseConstructor()
+		public void WhenQueryConstantNotEqualToMemberThenDoNotUseCaseStatement()
 		{
 			using (new Scenario(Sfi))
 			{
@@ -82,12 +85,14 @@ namespace NHibernate.Test.NHSpecificTest.NH2505
 				{
 					using (var sqls = new SqlLogSpy())
 					{
-						Assert.That(session.Query<MyClass>().Where(x => x.Alive != false).ToList(), Has.Count.EqualTo(1));
+						var list = session.Query<MyClass>().Where(x => x.Alive != false).ToList();
+						Assert.That(list, Has.Count.EqualTo(1));
 						Assert.That(caseClause.Matches(sqls.GetWholeLog()).Count, Is.EqualTo(0));
 					}
 					using (var sqls = new SqlLogSpy())
 					{
-						Assert.That(session.Query<MyClass>().Where(x => true != x.Alive).ToList(), Has.Count.EqualTo(1));
+						var list = session.Query<MyClass>().Where(x => true != x.Alive).ToList();
+						Assert.That(list, Has.Count.EqualTo(2));
 						Assert.That(caseClause.Matches(sqls.GetWholeLog()).Count, Is.EqualTo(0));
 					}
 				}
@@ -95,7 +100,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2505
 		}
 
 		[Test]
-		public void WhenQueryComplexEqualToComplexThentUseTheCaseConstructorForBoth()
+		public void WhenQueryComplexEqualToComplexThentUseTheCaseStatementForBoth()
 		{
 			using (new Scenario(Sfi))
 			{
@@ -111,7 +116,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2505
 		}
 
 		[Test]
-		public void WhenQueryConstantEqualToNullableMemberThenUseTheCaseConstructorForMember()
+		public void WhenQueryConstantEqualToNullableMemberThenDoNotUseCaseStatement()
 		{
 			using (new Scenario(Sfi))
 			{
@@ -119,20 +124,22 @@ namespace NHibernate.Test.NHSpecificTest.NH2505
 				{
 					using (var sqls = new SqlLogSpy())
 					{
-						Assert.That(session.Query<MyClass>().Where(x => x.MayBeAlive == false).ToList(), Has.Count.EqualTo(1));
-						Assert.That(caseClause.Matches(sqls.GetWholeLog()).Count, Is.EqualTo(1));
+						var list = session.Query<MyClass>().Where(x => x.MayBeAlive == false).ToList();
+						Assert.That(list, Has.Count.EqualTo(1));
+						Assert.That(caseClause.Matches(sqls.GetWholeLog()).Count, Is.EqualTo(0));
 					}
 					using (var sqls = new SqlLogSpy())
 					{
-						Assert.That(session.Query<MyClass>().Where(x => true == x.MayBeAlive).ToList(), Has.Count.EqualTo(1));
-						Assert.That(caseClause.Matches(sqls.GetWholeLog()).Count, Is.EqualTo(1));
+						var list = session.Query<MyClass>().Where(x => true == x.MayBeAlive).ToList();
+						Assert.That(list, Has.Count.EqualTo(1));
+						Assert.That(caseClause.Matches(sqls.GetWholeLog()).Count, Is.EqualTo(0));
 					}
 				}
 			}
 		}
 
 		[Test]
-		public void WhenQueryConstantEqualToNullableMemberValueThenDoesNotUseTheCaseConstructorForMember()
+		public void WhenQueryConstantEqualToNullableMemberValueThenDoNotUseCaseStatement()
 		{
 			using (new Scenario(Sfi))
 			{
@@ -140,20 +147,22 @@ namespace NHibernate.Test.NHSpecificTest.NH2505
 				{
 					using (var sqls = new SqlLogSpy())
 					{
-						session.Query<MyClass>().Where(x => x.MayBeAlive.Value == false).ToList();
-						Assert.That(caseClause.Matches(sqls.GetWholeLog()).Count, Is.EqualTo(1));
+						var list = session.Query<MyClass>().Where(x => x.MayBeAlive.Value == false).ToList();
+						Assert.That(list, Has.Count.EqualTo(1));
+						Assert.That(caseClause.Matches(sqls.GetWholeLog()).Count, Is.EqualTo(0));
 					}
 					using (var sqls = new SqlLogSpy())
 					{
-						session.Query<MyClass>().Where(x => true == x.MayBeAlive.Value).ToList();
-						Assert.That(caseClause.Matches(sqls.GetWholeLog()).Count, Is.EqualTo(1));
+						var list = session.Query<MyClass>().Where(x => true == x.MayBeAlive.Value).ToList();
+						Assert.That(list, Has.Count.EqualTo(1));
+						Assert.That(caseClause.Matches(sqls.GetWholeLog()).Count, Is.EqualTo(0));
 					}
 				}
 			}
 		}
 
 		[Test]
-		public void WhenQueryConstantNotEqualToNullableMemberThenUseTheCaseConstructorForMember()
+		public void WhenQueryConstantNotEqualToNullableMemberThenDoNotUseCaseStatement()
 		{
 			using (new Scenario(Sfi))
 			{
@@ -161,13 +170,15 @@ namespace NHibernate.Test.NHSpecificTest.NH2505
 				{
 					using (var sqls = new SqlLogSpy())
 					{
-						Assert.That(session.Query<MyClass>().Where(x => x.MayBeAlive != false).ToList(), Has.Count.EqualTo(1));
-						Assert.That(caseClause.Matches(sqls.GetWholeLog()).Count, Is.EqualTo(1));
+						var list = session.Query<MyClass>().Where(x => x.MayBeAlive != false).ToList();
+						Assert.That(list, Has.Count.EqualTo(2));
+						Assert.That(caseClause.Matches(sqls.GetWholeLog()).Count, Is.EqualTo(0));
 					}
 					using (var sqls = new SqlLogSpy())
 					{
-						Assert.That(session.Query<MyClass>().Where(x => true != x.MayBeAlive).ToList(), Has.Count.EqualTo(1));
-						Assert.That(caseClause.Matches(sqls.GetWholeLog()).Count, Is.EqualTo(1));
+						var list = session.Query<MyClass>().Where(x => true != x.MayBeAlive).ToList();
+						Assert.That(list, Has.Count.EqualTo(2));
+						Assert.That(caseClause.Matches(sqls.GetWholeLog()).Count, Is.EqualTo(0));
 					}
 				}
 			}

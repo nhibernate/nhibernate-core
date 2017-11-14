@@ -57,8 +57,8 @@ namespace NHibernate.Driver
 		}
 
 		/// <summary>
-		/// The MySql.Data driver does NOT support more than 1 open IDataReader
-		/// with only 1 IDbConnection.
+		/// The MySql.Data driver does NOT support more than 1 open DbDataReader
+		/// with only 1 DbConnection.
 		/// </summary>
 		/// <value><see langword="false" /> - it is not supported.</value>
 		public override bool SupportsMultipleOpenReaders
@@ -88,5 +88,12 @@ namespace NHibernate.Driver
 		{
 			get { return true; }
 		}
+
+		public override bool RequiresTimeSpanForTime => true;
+
+		// As of v5.7, lower dates may "work" but without guarantees.
+		// https://dev.mysql.com/doc/refman/5.7/en/datetime.html
+		/// <inheritdoc />
+		public override DateTime MinDate => new DateTime(1000, 1, 1);
 	}
 }

@@ -26,9 +26,10 @@
     </para>
 
     <itemizedlist>
+        <!-- No more maintained
         <listitem><para>
             C# source generation from a mapping file (aka <literal>hbm2net</literal>)
-        </para></listitem>
+        </para></listitem> -->
         <listitem><para>
             mapping file generation from .NET classes marked with attributes
             (<literal>NHibernate.Mapping.Attributes</literal>, or NHMA for short)
@@ -118,7 +119,7 @@
 
             <para>
                 The <literal>sql-type</literal> attribute allows the user to override the default mapping
-                of NHibernate type to SQL datatype.
+                of NHibernate type to SQL data type.
             </para>
             
             <para>
@@ -157,7 +158,7 @@
                         <row>
                             <entry><literal>not-null</literal></entry>
                             <entry><literal>true|false</literal></entry>
-                            <entry>specfies that the column should be non-nullable</entry>
+                            <entry>specifies that the column should be non-nullable</entry>
                         </row>
                         <row>
                             <entry><literal>unique</literal></entry>
@@ -223,6 +224,8 @@ new SchemaExport(cfg).Create(false, true);]]></programlisting>
 
         </sect2>
 
+        <!-- Not ported as a standalone tool or Ant task
+
         <sect2 id="toolsetguide-s1-4">
             <title>Properties</title>
 
@@ -238,7 +241,7 @@ new SchemaExport(cfg).Create(false, true);]]></programlisting>
                     <para>in <literal>hibernate.properties</literal></para>
                 </listitem>
                 <listitem>
-                    <para>in a named properties file with <literal>--properties</literal></para>
+                    <para>in a named properties file with <literal>- -properties</literal></para>
                 </listitem>
             </itemizedlist>
 
@@ -317,8 +320,10 @@ new SchemaExport(cfg).Create(false, true);]]></programlisting>
                 build.properties.
             </para>
 
-        </sect2>
+        </sect2> -->
     </sect1>
+
+    <!-- No more maintained, left on sourceforge with obsolete links to the dead nhforge
 
     <sect1 id="toolsetguide-s2">
         <title>Code Generation</title>
@@ -326,7 +331,7 @@ new SchemaExport(cfg).Create(false, true);]]></programlisting>
         <para>
           The NHibernate code generator may be used to generate skeletal C# implementation classes
           from a NHibernate mapping file. This tool is included in the NHibernate Contrib package
-          (a seperate download in http://sourceforge.net/projects/nhcontrib/).
+          (a separate download in http://sourceforge.net/projects/nhcontrib/).
         </para>
 
         <para>
@@ -369,7 +374,7 @@ new SchemaExport(cfg).Create(false, true);]]></programlisting>
       </para>
 
 
-    </sect1>
+    </sect1> -->
 
 </chapter>
 

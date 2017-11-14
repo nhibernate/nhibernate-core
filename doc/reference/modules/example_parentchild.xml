@@ -128,7 +128,7 @@ session.Flush();]]></programlisting>
             The following code would be used to add a new <literal>Child</literal>.
         </para>
 
-        <programlisting><![CDATA[Parent p = (Parent) session.Load(typeof(Parent), pid);
+        <programlisting><![CDATA[Parent p = session.Load<Parent>(pid);
 Child c = new Child();
 c.Parent = p;
 p.Children.Add(c);
@@ -154,7 +154,7 @@ session.Flush();]]></programlisting>
             Now, the code to add a <literal>Child</literal> looks like
         </para>
 
-        <programlisting><![CDATA[Parent p = (Parent) session.Load(typeof(Parent), pid);
+        <programlisting><![CDATA[Parent p = session.Load<Parent>(pid);
 Child c = new Child();
 p.AddChild(c);
 session.Save(c);
@@ -179,7 +179,7 @@ session.Flush();]]></programlisting>
              This simplifies the code above to
          </para>
 
-        <programlisting><![CDATA[Parent p = (Parent) session.Load(typeof(Parent), pid);
+        <programlisting><![CDATA[Parent p = session.Load<Parent>(pid);
 Child c = new Child();
 p.AddChild(c);
 session.Flush();]]></programlisting>
@@ -189,7 +189,7 @@ session.Flush();]]></programlisting>
              The following removes <literal>p</literal> and all its children from the database.
          </para>
 
-        <programlisting><![CDATA[Parent p = (Parent) session.Load(typeof(Parent), pid);
+        <programlisting><![CDATA[Parent p = session.Load<Parent>(pid);
 session.Delete(p);
 session.Flush();]]></programlisting>
      
@@ -197,7 +197,7 @@ session.Flush();]]></programlisting>
              However, this code
          </para>
 
-        <programlisting><![CDATA[Parent p = (Parent) session.Load(typeof(Parent), pid);
+        <programlisting><![CDATA[Parent p = session.Load<Parent>(pid);
 // Get one child out of the set
 IEnumerator childEnumerator = p.Children.GetEnumerator();
 childEnumerator.MoveNext();
@@ -213,7 +213,7 @@ session.Flush();]]></programlisting>
              <literal>Delete()</literal> the <literal>Child</literal>.
          </para>
 
-        <programlisting><![CDATA[Parent p = (Parent) session.Load(typeof(Parent), pid);
+        <programlisting><![CDATA[Parent p = session.Load<Parent>(pid);
 // Get one child out of the set
 IEnumerator childEnumerator = p.Children.GetEnumerator();
 childEnumerator.MoveNext();
@@ -275,7 +275,7 @@ session.Update(parent);
 session.Flush();]]></programlisting>
      
          <para>
-             Well, thats all very well for the case of a generated identifier, but what about assigned identifiers
+             Well, that is all very well for the case of a generated identifier, but what about assigned identifiers
              and composite identifiers? This is more difficult, since <literal>unsaved-value</literal> can't
              distinguish between a newly instantiated object (with an identifier assigned by the user) and an object
              loaded in a previous session. In these cases, you will probably need to give NHibernate a hint; either
@@ -317,19 +317,24 @@ session.Flush();]]></programlisting>
          <programlisting><![CDATA[public class Persistent
 {
     private bool _saved = false;
-    
+
     public void OnSave()
     {
-        _saved=true;
+        _saved = true;
     }
-    
+
     public void OnLoad()
     {
-        _saved=true;
+        _saved = true;
     }
-    
+
+    public void OnDelete()
+    {
+        _saved = false;
+    }
+
     ......
-    
+
     public bool IsSaved
     {
         get { return _saved; }
@@ -338,12 +343,11 @@ session.Flush();]]></programlisting>
      
          <para>
              (The <literal>saved</literal> property is non-persistent.)
-             Now implement <literal>IsTransient()</literal>, along with <literal>OnLoad()</literal>
-             and <literal>OnSave()</literal> as follows.
+             Now implement <literal>IsTransient()</literal>, along with <literal>OnLoad()</literal>,
+             <literal>OnSave()</literal> and <literal>OnDelete()</literal> as follows.
          </para>
 
-         <programlisting>
-	<![CDATA[public object IsTransient(object entity)
+         <programlisting><![CDATA[public object IsTransient(object entity)
 {
     if (entity is Persistent)
     {
@@ -355,7 +359,7 @@ session.Flush();]]></programlisting>
     }
 }
 
-public bool OnLoad(object entity, 
+public bool OnLoad(object entity,
     object id,
     object[] state,
     string[] propertyNames,
@@ -373,8 +377,17 @@ public boolean OnSave(object entity,
 {
     if (entity is Persistent) ( (Persistent) entity ).OnSave();
     return false;
+}
+
+public virtual void OnDelete(object entity,
+    object id,
+    object[] state,
+    string[] propertyNames,
+    IType[] types)
+{
+    if (entity is Persistent) ( (Persistent) entity ).OnDelete();
 }]]></programlisting>
-     
+
      </sect1>
 
      <sect1 id="example-parentchild-conclusion">

@@ -1,4 +1,6 @@
 using NHibernate.Cfg;
+using NHibernate.Driver;
+using NHibernate.Engine;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
@@ -11,6 +13,15 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 		protected override void Configure(Configuration configuration)
 		{
 			configuration.DataBaseIntegration(x => x.ExceptionConverter<SqlConverter>());
+		}
+
+		protected override bool AppliesTo(ISessionFactoryImplementor factory)
+		{
+			// Test current implementation allows to test mmostly SQL Server. Other databases
+			// tend to (validly) send InvalidOperationException during prepare phase due to the closed
+			// connection, which get not converted. For testing other case, maybe a failure caused by a
+			// schema mismatch (like done in transaction tests) would be better.
+			return factory.ConnectionProvider.Driver is SqlClientDriver;
 		}
 
 		[Test]
@@ -28,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 		[Test]
 		public void MultiHqlShouldThrowUserException()
 		{
-			var driver = sessions.ConnectionProvider.Driver;
+			var driver = Sfi.ConnectionProvider.Driver;
 			if (!driver.SupportsMultipleQueries)
 				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
 
@@ -57,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 		[Test]
 		public void MultiCriteriaShouldThrowUserException()
 		{
-			var driver = sessions.ConnectionProvider.Driver;
+			var driver = Sfi.ConnectionProvider.Driver;
 			if (!driver.SupportsMultipleQueries)
 				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
 

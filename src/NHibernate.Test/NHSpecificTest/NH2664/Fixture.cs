@@ -84,8 +84,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2664
 		{
 			using (var session = OpenSession())
 			{
+				// Gets translated to SQL, which does not care about reference comparison vs value comparison.
+#pragma warning disable CS0252 // Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'string'
 				var product =
 					(from p in session.Query<Product>() where p.Properties["Name"] == "First Product" select p).Single();
+#pragma warning restore CS0252 // Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'string'
 
 				Assert.IsNotNull(product);
 				Assert.AreEqual("First Product", product.Properties["Name"]);
@@ -97,6 +100,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2664
 		{
 			using (var session = OpenSession())
 			{
+				// Gets translated to SQL, which does not care about reference comparison vs value comparison.
+#pragma warning disable CS0252 // Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'string'
 				// Query by name
 				var product1 = (from p in session.Query<Product>()
 								where p.Properties["Name"] == "First Product"
@@ -109,6 +114,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2664
 								where p.Properties["Description"] == "Second Description"
 								select p).Single();
 				Assert.That(product2.ProductId, Is.EqualTo("2"));
+#pragma warning restore CS0252 // Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'string'
 			}
 		}
 
@@ -117,11 +123,14 @@ namespace NHibernate.Test.NHSpecificTest.NH2664
 		{
 			using (var session = OpenSession())
 			{
+				// Gets translated to SQL, which does not care about reference comparison vs value comparison.
+#pragma warning disable CS0252 // Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'string'
 				Expression<Func<IEnumerable>> key1 = () => (from a in session.Query<Product>() where a.Properties["Name"] == "val" select a);
 				Expression<Func<IEnumerable>> key2 = () => (from a in session.Query<Product>() where a.Properties["Description"] == "val" select a);
+#pragma warning restore CS0252 // Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'string'
 
-				var nhKey1 = new NhLinqExpression(key1.Body, sessions);
-				var nhKey2 = new NhLinqExpression(key2.Body, sessions);
+				var nhKey1 = new NhLinqExpression(key1.Body, Sfi);
+				var nhKey2 = new NhLinqExpression(key2.Body, Sfi);
 
 				Assert.AreNotEqual(nhKey1.Key, nhKey2.Key);
 			}

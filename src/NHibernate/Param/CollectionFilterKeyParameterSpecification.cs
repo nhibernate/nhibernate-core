@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Linq;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -8,7 +8,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Param
 {
-	public class CollectionFilterKeyParameterSpecification : IParameterSpecification
+	public partial class CollectionFilterKeyParameterSpecification : IParameterSpecification
 	{
 		private const string CollectionFilterParameterIdTemplate = "<collfilter{0}{1}_{2}>";
 
@@ -31,7 +31,7 @@ namespace NHibernate.Param
 
 		#region IParameterSpecification Members
 
-		public void Bind(IDbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		public void Bind(DbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
 			IType type = keyType;
 			object value = queryParameters.PositionalParameterValues[queryParameterPosition];
@@ -61,7 +61,7 @@ namespace NHibernate.Param
 			}
 		}
 
-		public void Bind(IDbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		public void Bind(DbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
 			Bind(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session);
 		}

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
 using System.Text;
 using NHibernate.AdoNet.Util;
@@ -12,12 +11,12 @@ namespace NHibernate.AdoNet
 	/// Summary description for OracleDataClientBatchingBatcher.
 	/// By Tomer Avissar
 	/// </summary>
-	public class OracleDataClientBatchingBatcher : AbstractBatcher
+	public partial class OracleDataClientBatchingBatcher : AbstractBatcher
 	{
 		private int _batchSize;
 		private int _countOfCommands;
 		private int _totalExpectedRowsAffected;
-		private IDbCommand _currentBatch;
+		private DbCommand _currentBatch;
 		private IDictionary<string, List<object>> _parameterValueListHashTable;
 		private IDictionary<string, bool> _parameterIsAllNullsHashTable;
 		private StringBuilder _currentBatchCommandsLog;
@@ -68,7 +67,7 @@ namespace NHibernate.AdoNet
 				firstOnBatch = false;
 			}
 
-			foreach (IDataParameter currentParameter in CurrentCommand.Parameters)
+			foreach (DbParameter currentParameter in CurrentCommand.Parameters)
 			{
 				List<object> parameterValueList;
 				if (firstOnBatch)
@@ -97,7 +96,7 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		protected override void DoExecuteBatch(IDbCommand ps)
+		protected override void DoExecuteBatch(DbCommand ps)
 		{
 			if (_currentBatch != null)
 			{
@@ -114,7 +113,7 @@ namespace NHibernate.AdoNet
 					_currentBatchCommandsLog = new StringBuilder().AppendLine("Batch commands:");
 				}
 
-				foreach (IDataParameter currentParameter in _currentBatch.Parameters)
+				foreach (DbParameter currentParameter in _currentBatch.Parameters)
 				{
 					List<object> parameterValueArray = _parameterValueListHashTable[currentParameter.ParameterName];
 					currentParameter.Value = parameterValueArray.ToArray();
@@ -125,21 +124,27 @@ namespace NHibernate.AdoNet
 				// this value is not a part of the ADO.NET API.
 				// It's and ODP implementation, so it is being set by reflection
 				SetArrayBindCount(arraySize);
-				int rowsAffected;
 				try
 				{
-					rowsAffected = _currentBatch.ExecuteNonQuery();
+					int rowsAffected;
+					try
+					{
+						rowsAffected = _currentBatch.ExecuteNonQuery();
+					}
+					catch (DbException e)
+					{
+						throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
+					}
+
+					Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, rowsAffected);
 				}
-				catch (DbException e)
+				finally
 				{
-					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
+					// Cleaning up even if batched outcome is invalid
+					_totalExpectedRowsAffected = 0;
+					_currentBatch = null;
+					_parameterValueListHashTable = null;
 				}
-
-				Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, rowsAffected);
-
-				_totalExpectedRowsAffected = 0;
-				_currentBatch = null;
-				_parameterValueListHashTable = null;
 			}
 		}
 

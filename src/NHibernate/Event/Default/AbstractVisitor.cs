@@ -7,7 +7,7 @@ namespace NHibernate.Event.Default
 	/// Abstract superclass of algorithms that walk a tree of property values of an entity, and
 	/// perform specific functionality for collections, components and associated entities. 
 	/// </summary>
-	public abstract class AbstractVisitor
+	public abstract partial class AbstractVisitor
 	{
 		private readonly IEventSource session;
 
@@ -108,7 +108,7 @@ namespace NHibernate.Event.Default
 		/// <param name="persister"></param>
 		internal virtual void Process(object obj, IEntityPersister persister)
 		{
-			ProcessEntityPropertyValues(persister.GetPropertyValues(obj, Session.EntityMode), persister.PropertyTypes);
+			ProcessEntityPropertyValues(persister.GetPropertyValues(obj), persister.PropertyTypes);
 		}
 
 		public void ProcessEntityPropertyValues(object[] values, IType[] types)

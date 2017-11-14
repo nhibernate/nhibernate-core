@@ -5,25 +5,23 @@ set NANT="%~dp0Tools\nant\bin\NAnt.exe" -t:net-4.0
 set BUILDTOOL="%~dp0Tools\BuildTool\bin\Release\BuildTool.exe"
 set AVAILABLE_CONFIGURATIONS=%~dp0available-test-configurations
 set CURRENT_CONFIGURATION=%~dp0current-test-configuration
-set NUNIT="%~dp0Tools\nunit\nunit-x86.exe"
+set NUNIT="%~dp0Tools\NUnit.ConsoleRunner.3.7.0\tools\nunit3-console.exe"
 
 :main-menu
 echo ========================= NHIBERNATE BUILD MENU ==========================
-echo --- SETUP ---
-echo A. Set up for Visual Studio (creates AssemblyInfo.cs files).
-echo.
 echo --- TESTING ---
-echo B. (Step 1) Set up a new test configuration for a particular database.
-echo C. (Step 2) Activate a test configuration.
-echo D. (Step 3) Run tests using active configuration.
+echo A. (Step 1) Set up a new test configuration for a particular database.
+echo B. (Step 2) Activate a test configuration.
+echo C. (Step 3) Run tests using active configuration with 32bits runner (Needs built in Visual Studio).
+echo D.       Or run tests using active configuration with 64bits runner (Needs built in Visual Studio).
 echo.
 echo --- BUILD ---
 echo E. Build NHibernate (Debug)
 echo F. Build NHibernate (Release)
 echo G. Build Release Package (Also runs tests and creates documentation)
 echo.
-echo --- GRAMMAR ---
-echo H. Grammar operations (related to Hql.g and HqlSqlWalker.g)
+echo --- Code generation ---
+echo H. Generate async code (Generates files in Async sub-folders)
 echo.
 echo --- TeamCity (CI) build options
 echo I. TeamCity build menu
@@ -35,107 +33,99 @@ echo.
 %BUILDTOOL% prompt ABCDEFGHIX
 if errorlevel 9 goto end
 if errorlevel 8 goto teamcity-menu
-if errorlevel 7 goto grammar-menu
+if errorlevel 7 goto build-async
 if errorlevel 6 goto build-release-package
 if errorlevel 5 goto build-release
 if errorlevel 4 goto build-debug
-if errorlevel 3 goto test-run
-if errorlevel 2 goto test-activate
-if errorlevel 1 goto test-setup-menu
-if errorlevel 0 goto build-visual-studio
+if errorlevel 3 goto test-run-64
+if errorlevel 2 goto test-run-32
+if errorlevel 1 goto test-activate
+if errorlevel 0 goto test-setup-menu
 
 :test-setup-menu
 echo A. Add a test configuration for SQL Server.
-echo B. Add a test configuration for Firebird (x86).
-echo C. Add a test configuration for Firebird (x64). [not recommended]
-echo D. Add a test configuration for SQLite (x86).
-echo E. Add a test configuration for SQLite (x64). [not recommended]
-echo F. Add a test configuration for PostgreSQL.
-echo G. Add a test configuration for Oracle.
-echo H. Add a test configuration for SQL Server Compact (x86).
-echo I. Add a test configuration for SQL Server Compact (x64).
+echo B. Add a test configuration for Firebird.
+echo C. Add a test configuration for SQLite.
+echo D. Add a test configuration for PostgreSQL.
+echo E. Add a test configuration for Oracle.
+echo F. Add a test configuration for Oracle with managed driver.
+echo G. Add a test configuration for SQL Server Compact.
+echo H. Add a test configuration for MySql.
 echo.
 echo X.  Exit to main menu.
 echo.
 
-%BUILDTOOL% prompt ABCDEFGHIX
-if errorlevel 9 goto main-menu
-if errorlevel 8 goto test-setup-sqlservercex64
-if errorlevel 7 goto test-setup-sqlservercex86
-if errorlevel 6 goto test-setup-oracle
-if errorlevel 5 goto test-setup-postgresql
-if errorlevel 4 goto test-setup-sqlitex64
-if errorlevel 3 goto test-setup-sqlitex86
-if errorlevel 2 goto test-setup-firebirdx64
-if errorlevel 1 goto test-setup-firebirdx86
+%BUILDTOOL% prompt ABCDEFGHX
+if errorlevel 8 goto main-menu
+if errorlevel 7 goto test-setup-mysql
+if errorlevel 6 goto test-setup-sqlserverce
+if errorlevel 5 goto test-setup-oracle-managed
+if errorlevel 4 goto test-setup-oracle
+if errorlevel 3 goto test-setup-postgresql
+if errorlevel 2 goto test-setup-sqlite
+if errorlevel 1 goto test-setup-firebird
 if errorlevel 0 goto test-setup-sqlserver
 
 :test-setup-sqlserver
 set CONFIG_NAME=MSSQL
-set PLATFORM=AnyCPU
+set TEST_PLATFORM=AnyCPU
 set LIB_FILES=
 set LIB_FILES2=
 goto test-setup-generic
 
-:test-setup-sqlservercex86
-set CONFIG_NAME=SqlServerCe32
-set PLATFORM=AnyCPU
-set LIB_FILES=lib\teamcity\SqlServerCe\*.dll
-set LIB_FILES2=lib\teamcity\SqlServerCe\X86\*.dll
-goto test-setup-generic
-
-:test-setup-sqlservercex64
-set CONFIG_NAME=SqlServerCe64
-set PLATFORM=AnyCPU
-set LIB_FILES=lib\teamcity\sqlServerCe\*.dll
-set LIB_FILES2=lib\teamcity\sqlServerCe\AMD64\*.dll
-goto test-setup-generic
-
-:test-setup-firebirdx86
-set CONFIG_NAME=FireBird
-set PLATFORM=x86
-set LIB_FILES=lib\teamcity\firebird\*.dll
-set LIB_FILES2=lib\teamcity\firebird\x86\*
-goto test-setup-generic
-
-:test-setup-firebirdx64
-set CONFIG_NAME=FireBird
-set PLATFORM=x64
-set LIB_FILES=lib\teamcity\firebird\*.dll
-set LIB_FILES2=lib\teamcity\firebird\x64\*
-goto test-setup-generic
-
-:test-setup-sqlitex86
-set CONFIG_NAME=SQLite
-set PLATFORM=x86
-set LIB_FILES=lib\teamcity\sqlite\x86\*
+:test-setup-sqlserverce
+set CONFIG_NAME=SqlServerCe
+set TEST_PLATFORM=AnyCPU
+set LIB_FILES=
 set LIB_FILES2=
 goto test-setup-generic
 
-:test-setup-sqlitex64
+:test-setup-firebird
+set CONFIG_NAME=FireBird
+set TEST_PLATFORM=AnyCPU
+set LIB_FILES=
+set LIB_FILES2=
+goto test-setup-generic
+
+:test-setup-sqlite
 set CONFIG_NAME=SQLite
-set PLATFORM=x64
-set LIB_FILES=lib\teamcity\sqlite\x64\*
+set TEST_PLATFORM=AnyCPU
+set LIB_FILES=
 set LIB_FILES2=
 goto test-setup-generic
 
 :test-setup-postgresql
 set CONFIG_NAME=PostgreSQL
-set PLATFORM=AnyCPU
-set LIB_FILES=lib\teamcity\postgresql\*.dll
+set TEST_PLATFORM=AnyCPU
+set LIB_FILES=
+set LIB_FILES2=
+goto test-setup-generic
+
+:test-setup-mysql
+set CONFIG_NAME=MySql
+set TEST_PLATFORM=AnyCPU
+set LIB_FILES=
 set LIB_FILES2=
 goto test-setup-generic
 
 :test-setup-oracle
 set CONFIG_NAME=Oracle
-set PLATFORM=x86
+set TEST_PLATFORM=x86
 set LIB_FILES=lib\teamcity\oracle\x86\*.dll
 set LIB_FILES2=
 goto test-setup-generic
 
+:test-setup-oracle-managed
+set CONFIG_NAME=Oracle-Managed
+set TEST_PLATFORM=AnyCPU
+set LIB_FILES=
+set LIB_FILES2=
+goto test-setup-generic
+
 :test-setup-generic
+set CFGNAME=
 set /p CFGNAME=Enter a name for your test configuration or press enter to use default name: 
-if /I "%CFGNAME%"=="" set CFGNAME=%CONFIG_NAME%-%PLATFORM%
+if /I "%CFGNAME%"=="" set CFGNAME=%CONFIG_NAME%-%TEST_PLATFORM%
 mkdir "%AVAILABLE_CONFIGURATIONS%\%CFGNAME%"
 if /I "%LIB_FILES%"=="" goto test-setup-generic-skip-copy
 copy %LIB_FILES% "%AVAILABLE_CONFIGURATIONS%\%CFGNAME%"
@@ -160,16 +150,24 @@ copy "%FOLDER%\*" "%CURRENT_CONFIGURATION%"
 echo Configuration activated.
 goto main-menu
 
+:test-run-32
+SET NUNITPLATFORM=--x86
+goto test-run
+
+:test-run-64
+SET NUNITPLATFORM=
+goto test-run
+
 :test-run
-start "" %NUNIT% NHibernate.nunit
+start "nunit3-console" cmd /K %NUNIT% %NUNITPLATFORM% --agents=1 --process=separate NHibernate.nunit
 goto main-menu
 
 rem :build-test
 rem %NANT% test
 rem goto main-menu
 
-:build-visual-studio
-%NANT% visual-studio
+:build-async
+%NANT% generate-async
 goto main-menu
 
 :build-debug
@@ -192,77 +190,6 @@ echo.
 echo Assuming the build succeeded, your results will be in the build folder,
 echo including NuGet packages and tools to push them.
 echo.
-goto main-menu
-
-:grammar-menu
-echo.
-echo --- GRAMMAR ---
-echo A. Regenerate all grammars.
-echo        Hql.g           to  HqlLexer.cs
-echo        Hql.g           to  HqlParser.cs
-echo        HqlSqlWalker.g  to  HqlSqlWalker.cs
-echo        SqlGenerator.g  to  SqlGenerator.cs
-echo B. Regenerate all grammars, with Hql.g in debug mode.
-echo C. Regenerate all grammars, with HqlSqlWalker.g in debug mode.
-echo D. Regenerate all grammars, with SqlGenerator.g in debug mode.
-echo E. Quick instructions on using debug mode.
-echo.
-echo X. Exit to main menu.
-echo.
-
-%BUILDTOOL% prompt ABCDEX
-if errorlevel 5 goto main-menu
-if errorlevel 4 goto antlr-debug
-if errorlevel 3 goto antlr-sqlgenerator-debug
-if errorlevel 2 goto antlr-hqlsqlwalker-debug
-if errorlevel 1 goto antlr-hql-debug
-if errorlevel 0 goto antlr-all
-
-:antlr-all
-echo *** Regenerating from Hql.g
-call src\NHibernate\Hql\Ast\ANTLR\AntlrHql.bat
-echo *** Regenerating from HqlSqlWalker.g
-call src\NHibernate\Hql\Ast\ANTLR\AntlrHqlSqlWalker.bat
-echo *** Regenerating from SqlGenerator.g
-call src\NHibernate\Hql\Ast\ANTLR\AntlrSqlGenerator.bat
-goto main-menu
-
-:antlr-hql-debug
-echo *** Regenerating from Hql.g (Debug Enabled)
-call src\NHibernate\Hql\Ast\ANTLR\AntlrHqlDebug.bat
-echo *** Regenerating from HqlSqlWalker.g
-call src\NHibernate\Hql\Ast\ANTLR\AntlrHqlSqlWalker.bat
-echo *** Regenerating from SqlGenerator.g
-call src\NHibernate\Hql\Ast\ANTLR\AntlrSqlGenerator.bat
-goto main-menu
-
-:antlr-hqlsqlwalker-debug
-echo *** Regenerating from Hql.g
-call src\NHibernate\Hql\Ast\ANTLR\AntlrHql.bat
-echo *** Regenerating from HqlSqlWalker.g (Debug Enabled)
-call src\NHibernate\Hql\Ast\ANTLR\AntlrHqlSqlWalkerDebug.bat
-echo *** Regenerating from SqlGenerator.g
-call src\NHibernate\Hql\Ast\ANTLR\AntlrSqlGenerator.bat
-goto main-menu
-
-:antlr-sqlgenerator-debug
-echo *** Regenerating from Hql.g
-call src\NHibernate\Hql\Ast\ANTLR\AntlrHql.bat
-echo *** Regenerating from HqlSqlWalker.g
-call src\NHibernate\Hql\Ast\ANTLR\AntlrHqlSqlWalker.bat
-echo *** Regenerating from SqlGenerator.g (Debug Enabled)
-call src\NHibernate\Hql\Ast\ANTLR\AntlrSqlGeneratorDebug.bat
-goto main-menu
-
-:antlr-debug
-echo To use the debug grammar:
-echo   1. Create a unit test that runs the hql parser on the input you're interested in.
-echo       The one you want to debug must be the first grammar parsed.
-echo   2. Run the unit test.  It will appear to stall.
-echo   3. Download and run AntlrWorks (java -jar AntlrWorks.jar).
-echo   4. Open the grammar you intend to debug in AntlrWorks.
-echo   5. Choose "Debug Remote" and accept the default port.
-echo   6. You should now be connected and able to step through your grammar.
 goto main-menu
 
 :teamcity-menu

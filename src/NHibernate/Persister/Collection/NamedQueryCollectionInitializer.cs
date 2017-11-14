@@ -5,7 +5,7 @@ using NHibernate.Loader.Collection;
 
 namespace NHibernate.Persister.Collection
 {
-	public class NamedQueryCollectionInitializer : ICollectionInitializer
+	public partial class NamedQueryCollectionInitializer : ICollectionInitializer
 	{
 		private readonly string queryName;
 		private readonly ICollectionPersister persister;
@@ -35,7 +35,7 @@ namespace NHibernate.Persister.Collection
 			{
 				query.SetParameter(0, key, persister.KeyType);
 			}
-			query.SetCollectionKey(key).SetFlushMode(FlushMode.Never).List();
+			query.SetCollectionKey(key).SetFlushMode(FlushMode.Manual).List();
 		}
 	}
 }

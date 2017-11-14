@@ -3,6 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3010
 {
+	[TestFixture]
 	public class FixtureWithBatcher : BugTestCase
 	{
 		protected override void Configure(Configuration configuration)

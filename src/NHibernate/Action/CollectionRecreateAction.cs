@@ -8,7 +8,7 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Action
 {
 	[Serializable]
-	public sealed class CollectionRecreateAction : CollectionAction
+	public sealed partial class CollectionRecreateAction : CollectionAction
 	{
 		public CollectionRecreateAction(IPersistentCollection collection, ICollectionPersister persister, object key, ISessionImplementor session)
 			: base(persister, collection, key, session) { }

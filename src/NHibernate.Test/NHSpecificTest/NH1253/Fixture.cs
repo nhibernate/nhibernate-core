@@ -73,7 +73,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1253
 		[Test]
 		public void MultiQuerySingleInList()
 		{
-			var driver = sessions.ConnectionProvider.Driver;
+			var driver = Sfi.ConnectionProvider.Driver;
 			if (!driver.SupportsMultipleQueries)
 				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
 

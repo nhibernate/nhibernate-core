@@ -102,32 +102,35 @@ namespace NHibernate.TestDatabaseSetup
 
 		private static void SetupFirebird(Cfg.Configuration cfg)
 		{
+			var connStr = cfg.Properties[Cfg.Environment.ConnectionString];
 			try
 			{
-				if (File.Exists("NHibernate.fdb"))
-					File.Delete("NHibernate.fdb");
+				FbConnection.DropDatabase(connStr);
 			}
 			catch (Exception e)
 			{
 				Console.WriteLine(e);
 			}
-
-			FbConnection.CreateDatabase("Database=NHibernate.fdb;ServerType=1");
+			FbConnection.CreateDatabase(connStr, forcedWrites:false);
 		}
 
 		private static void SetupSqlServerCe(Cfg.Configuration cfg)
 		{
+			var connStr = cfg.Properties[Cfg.Environment.ConnectionString];
+
 			try
 			{
-				if (File.Exists("NHibernate.sdf"))
-					File.Delete("NHibernate.sdf");
+				var connStrBuilder = new SqlCeConnectionStringBuilder(connStr);
+				var dataSource = connStrBuilder.DataSource;
+				if (File.Exists(dataSource))
+					File.Delete(dataSource);
 			}
 			catch (Exception e)
 			{
 				Console.WriteLine(e);
 			}
 
-			using (var en = new SqlCeEngine("DataSource=\"NHibernate.sdf\""))
+			using (var en = new SqlCeEngine(connStr))
 			{
 				en.CreateDatabase();
 			}

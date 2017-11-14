@@ -2,6 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Util;
 
 namespace NHibernate.Driver
@@ -12,14 +15,14 @@ namespace NHibernate.Driver
 	/// of Collections.
 	/// </summary>
 	/// <remarks>
-	/// This is a completely off-line DataReader - the underlying IDataReader that was used to create
+	/// This is a completely off-line DataReader - the underlying DbDataReader that was used to create
 	/// this has been closed and no connections to the Db exists.
 	/// </remarks>
-	public class NDataReader : IDataReader
+	public partial class NDataReader : DbDataReader
 	{
 		private NResult[] results;
 
-		private bool isClosed = false;
+		private bool isClosed;
 
 		// a DataReader is positioned before the first valid record
 		private int currentRowIndex = -1;
@@ -31,19 +34,22 @@ namespace NHibernate.Driver
 		private char[] cachedCharArray;
 		private int cachedColIndex = -1;
 
+		protected NDataReader() { }
+
 		/// <summary>
-		/// Creates a NDataReader from a <see cref="IDataReader" />
+		/// Creates a NDataReader from a <see cref="DbDataReader" />
 		/// </summary>
-		/// <param name="reader">The <see cref="IDataReader" /> to get the records from the Database.</param>
-		/// <param name="isMidstream"><see langword="true" /> if we are loading the <see cref="IDataReader" /> in the middle of reading it.</param>
+		/// <param name="reader">The <see cref="DbDataReader" /> to get the records from the Database.</param>
+		/// <param name="isMidstream"><see langword="true" /> if we are loading the <see cref="DbDataReader" /> in the middle of reading it.</param>
 		/// <remarks>
-		/// NHibernate attempts to not have to read the contents of an <see cref="IDataReader"/> into memory until it absolutely
-		/// has to.  What that means is that it might have processed some records from the <see cref="IDataReader"/> and will
-		/// pick up the <see cref="IDataReader"/> midstream so that the underlying <see cref="IDataReader"/> can be closed 
+		/// NHibernate attempts to not have to read the contents of an <see cref="DbDataReader"/> into memory until it absolutely
+		/// has to.  What that means is that it might have processed some records from the <see cref="DbDataReader"/> and will
+		/// pick up the <see cref="DbDataReader"/> midstream so that the underlying <see cref="DbDataReader"/> can be closed 
 		/// so a new one can be opened.
 		/// </remarks>
-		public NDataReader(IDataReader reader, bool isMidstream)
+		public static NDataReader Create(DbDataReader reader, bool isMidstream)
 		{
+			var dataReader = new NDataReader();
 			var resultList = new List<NResult>(2);
 
 			try
@@ -52,28 +58,29 @@ namespace NHibernate.Driver
 				// positioned on the first row (index=0)
 				if (isMidstream)
 				{
-					currentRowIndex = 0;
+					dataReader.currentRowIndex = 0;
 				}
 
 				// there will be atleast one result 
-				resultList.Add(new NResult(reader, isMidstream));
+				resultList.Add(NResult.Create(reader, isMidstream));
 
 				while (reader.NextResult())
 				{
 					// the second, third, nth result is not processed midstream
-					resultList.Add(new NResult(reader, false));
+					resultList.Add(NResult.Create(reader, false));
 				}
 
-				results = resultList.ToArray();
+				dataReader.results = resultList.ToArray();
 			}
 			catch (Exception e)
 			{
-				throw new ADOException("There was a problem converting an IDataReader to NDataReader", e);
+				throw new ADOException("There was a problem converting an DbDataReader to NDataReader", e);
 			}
 			finally
 			{
 				reader.Close();
 			}
+			return dataReader;
 		}
 
 		/// <summary>
@@ -99,22 +106,25 @@ namespace NHibernate.Driver
 			return GetCurrentResult().GetValue(currentRowIndex, name);
 		}
 
-		#region IDataReader Members
-
 		/// <summary></summary>
-		public int RecordsAffected
+		public override int RecordsAffected
 		{
 			get { throw new NotImplementedException("NDataReader should only be used for SELECT statements!"); }
 		}
 
+		public override bool HasRows
+		{
+			get { return results.LongLength > 0; }
+		}
+
 		/// <summary></summary>
-		public bool IsClosed
+		public override bool IsClosed
 		{
 			get { return isClosed; }
 		}
 
 		/// <summary></summary>
-		public bool NextResult()
+		public override bool NextResult()
 		{
 			currentResultIndex++;
 			currentRowIndex = -1;
@@ -131,13 +141,13 @@ namespace NHibernate.Driver
 		}
 
 		/// <summary></summary>
-		public void Close()
+		public override void Close()
 		{
 			isClosed = true;
 		}
 
 		/// <summary></summary>
-		public bool Read()
+		public override bool Read()
 		{
 			currentRowIndex++;
 
@@ -153,60 +163,58 @@ namespace NHibernate.Driver
 			return true;
 		}
 
+		public override Task<bool> ReadAsync(CancellationToken cancellationToken)
+		{
+			return Task.FromResult(Read());
+		}
+
+		public override Task<bool> NextResultAsync(CancellationToken cancellationToken)
+		{
+			return Task.FromResult(NextResult());
+		}
+
+		public override Task<bool> IsDBNullAsync(int ordinal, CancellationToken cancellationToken)
+		{
+			return Task.FromResult(IsDBNull(ordinal));
+		}
+
 		/// <summary></summary>
-		public int Depth
+		public override int Depth
 		{
 			get { return currentResultIndex; }
 		}
 
 		/// <summary></summary>
-		public DataTable GetSchemaTable()
+		public override DataTable GetSchemaTable()
 		{
 			return GetCurrentResult().GetSchemaTable();
 		}
 
-		#endregion
-
-		#region IDisposable Members
-
-		/// <summary>
-		/// Takes care of freeing the managed and unmanaged resources that 
-		/// this class is responsible for.
-		/// </summary>
-		/// <remarks>
-		/// There are not any unmanaged resources or any disposable managed 
-		/// resources that this class is holding onto.  It is in here
-		/// to comply with the <see cref="IDataReader"/> interface.
-		/// </remarks>
-		public void Dispose()
+		protected override void Dispose(bool disposing)
 		{
 			isClosed = true;
 			ClearCache();
 			results = null;
 		}
 
-		#endregion
-
-		#region IDataRecord Members
-
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public int GetInt32(int i)
+		public override int GetInt32(int i)
 		{
 			return Convert.ToInt32(GetValue(i));
 		}
 
 		/// <summary></summary>
-		public object this[string name]
+		public override object this[string name]
 		{
 			get { return GetValue(name); }
 		}
 
 		/// <summary></summary>
-		public object this[int i]
+		public override object this[int i]
 		{
 			get { return GetValue(i); }
 		}
@@ -216,7 +224,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public object GetValue(int i)
+		public override object GetValue(int i)
 		{
 			return GetCurrentResult().GetValue(currentRowIndex, i);
 		}
@@ -226,7 +234,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public bool IsDBNull(int i)
+		public override bool IsDBNull(int i)
 		{
 			return GetValue(i).Equals(DBNull.Value);
 		}
@@ -240,7 +248,7 @@ namespace NHibernate.Driver
 		/// <param name="bufferOffset"></param>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferOffset, int length)
+		public override long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferOffset, int length)
 		{
 			if (cachedByteArray == null || cachedColIndex != i)
 			{
@@ -270,9 +278,14 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public byte GetByte(int i)
+		public override byte GetByte(int i)
 		{
 			return Convert.ToByte(GetValue(i));
+		}
+
+		public override IEnumerator GetEnumerator()
+		{
+			throw new NotImplementedException();
 		}
 
 		/// <summary>
@@ -280,7 +293,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public System.Type GetFieldType(int i)
+		public override System.Type GetFieldType(int i)
 		{
 			return GetCurrentResult().GetFieldType(i);
 		}
@@ -290,7 +303,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public decimal GetDecimal(int i)
+		public override decimal GetDecimal(int i)
 		{
 			return Convert.ToDecimal(GetValue(i));
 		}
@@ -300,7 +313,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="values"></param>
 		/// <returns></returns>
-		public int GetValues(object[] values)
+		public override int GetValues(object[] values)
 		{
 			return GetCurrentResult().GetValues(currentRowIndex, values);
 		}
@@ -310,13 +323,13 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public string GetName(int i)
+		public override string GetName(int i)
 		{
 			return GetCurrentResult().GetName(i);
 		}
 
 		/// <summary></summary>
-		public int FieldCount
+		public override int FieldCount
 		{
 			get { return GetCurrentResult().GetFieldCount(); }
 		}
@@ -326,7 +339,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public long GetInt64(int i)
+		public override long GetInt64(int i)
 		{
 			return Convert.ToInt64(GetValue(i));
 		}
@@ -336,7 +349,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public double GetDouble(int i)
+		public override double GetDouble(int i)
 		{
 			return Convert.ToDouble(GetValue(i));
 		}
@@ -346,7 +359,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public bool GetBoolean(int i)
+		public override bool GetBoolean(int i)
 		{
 			return Convert.ToBoolean(GetValue(i));
 		}
@@ -356,7 +369,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public Guid GetGuid(int i)
+		public override Guid GetGuid(int i)
 		{
 			return (Guid) GetValue(i);
 		}
@@ -366,7 +379,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public DateTime GetDateTime(int i)
+		public override DateTime GetDateTime(int i)
 		{
 			return Convert.ToDateTime(GetValue(i));
 		}
@@ -376,7 +389,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public int GetOrdinal(string name)
+		public override int GetOrdinal(string name)
 		{
 			return GetCurrentResult().GetOrdinal(name);
 		}
@@ -386,7 +399,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public string GetDataTypeName(int i)
+		public override string GetDataTypeName(int i)
 		{
 			return GetCurrentResult().GetDataTypeName(i);
 		}
@@ -396,19 +409,14 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public float GetFloat(int i)
+		public override float GetFloat(int i)
 		{
 			return Convert.ToSingle(GetValue(i));
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="i"></param>
-		/// <returns></returns>
-		public IDataReader GetData(int i)
+		protected override DbDataReader GetDbDataReader(int ordinal)
 		{
-			throw new NotImplementedException("GetData(int) has not been implemented.");
+			throw new NotImplementedException("GetDbDataReader(int) has not been implemented.");
 		}
 
 		/// <summary>
@@ -420,7 +428,7 @@ namespace NHibernate.Driver
 		/// <param name="bufferOffset"></param>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		public long GetChars(int i, long fieldOffset, char[] buffer, int bufferOffset, int length)
+		public override long GetChars(int i, long fieldOffset, char[] buffer, int bufferOffset, int length)
 		{
 			if (cachedCharArray == null || cachedColIndex != i)
 			{
@@ -445,7 +453,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public string GetString(int i)
+		public override string GetString(int i)
 		{
 			return Convert.ToString(GetValue(i));
 		}
@@ -455,7 +463,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public char GetChar(int i)
+		public override char GetChar(int i)
 		{
 			return Convert.ToChar(GetValue(i));
 		}
@@ -465,23 +473,21 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public short GetInt16(int i)
+		public override short GetInt16(int i)
 		{
 			return Convert.ToInt16(GetValue(i));
 		}
 
-		#endregion
-
 		/// <summary>
 		/// Stores a Result from a DataReader in memory.
 		/// </summary>
-		private class NResult
+		private partial class NResult
 		{
 			// [row][column]
-			private readonly object[][] records;
+			private object[][] records;
 			private int colCount = 0;
 
-			private readonly DataTable schemaTable;
+			private DataTable schemaTable;
 
 			// key = field name
 			// index = field index
@@ -490,17 +496,22 @@ namespace NHibernate.Driver
 			private readonly IList<System.Type> fieldTypes = new List<System.Type>();
 			private readonly IList<string> fieldDataTypeNames = new List<string>();
 
+			private NResult() { }
+
 			/// <summary>
 			/// Initializes a new instance of the NResult class.
 			/// </summary>
-			/// <param name="reader">The IDataReader to populate the Result with.</param>
+			/// <param name="reader">The DbDataReader to populate the Result with.</param>
 			/// <param name="isMidstream">
-			/// <see langword="true" /> if the <see cref="IDataReader"/> is already positioned on the record
+			/// <see langword="true" /> if the <see cref="DbDataReader"/> is already positioned on the record
 			/// to start reading from.
 			/// </param>
-			internal NResult(IDataReader reader, bool isMidstream)
+			internal static NResult Create(DbDataReader reader, bool isMidstream)
 			{
-				schemaTable = reader.GetSchemaTable();
+				var result = new NResult
+				{
+					schemaTable = reader.GetSchemaTable()
+				};
 
 				List<object[]> recordsList = new List<object[]>();
 				int rowIndex = 0;
@@ -514,13 +525,13 @@ namespace NHibernate.Driver
 						for (int i = 0; i < reader.FieldCount; i++)
 						{
 							string fieldName = reader.GetName(i);
-							fieldNameToIndex[fieldName] = i;
-							fieldIndexToName.Add(fieldName);
-							fieldTypes.Add(reader.GetFieldType(i));
-							fieldDataTypeNames.Add(reader.GetDataTypeName(i));
+							result.fieldNameToIndex[fieldName] = i;
+							result.fieldIndexToName.Add(fieldName);
+							result.fieldTypes.Add(reader.GetFieldType(i));
+							result.fieldDataTypeNames.Add(reader.GetDataTypeName(i));
 						}
 
-						colCount = reader.FieldCount;
+						result.colCount = reader.FieldCount;
 					}
 
 					rowIndex++;
@@ -534,7 +545,8 @@ namespace NHibernate.Driver
 					isMidstream = false;
 				}
 
-				records = recordsList.ToArray();
+				result.records = recordsList.ToArray();
+				return result;
 			}
 
 			/// <summary>

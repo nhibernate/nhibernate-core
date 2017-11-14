@@ -379,18 +379,21 @@ namespace NHibernate.Test.Linq
 			var nullAsNullableBool = Expression.Constant(null, typeof(bool?));
 			var valueProperty = typeof (bool?).GetProperty("Value");
 
-			var quantityIsNull = ((Expression<Func<Product, bool>>)(x => x.QuantityPerUnit == null));
-			var nameIsNull = ((Expression<Func<Product, bool>>)(x => x.Name == null));
+			Expression<Func<Product, bool>> quantityIsNull = x => x.QuantityPerUnit == null;
+			Expression<Func<Product, bool>> nameIsNull = x => x.Name == null;
 
-			var quantityContains23 = ((Expression<Func<Product, bool?>>)(x => x.QuantityPerUnit.Contains("box")));
-			var nameContains2 = ((Expression<Func<Product, bool?>>)(x => x.Name.Contains("Cha")));
+			Expression<Func<Product, bool?>> quantityContains23 = x => x.QuantityPerUnit.Contains("box");
+			Expression<Func<Product, bool?>> nameContains2 = x => x.Name.Contains("Cha");
 
-			var conjunction = Expression.AndAlso(Expression.Condition(quantityIsNull.Body, nullAsNullableBool, quantityContains23.Body),
-												 Expression.Condition(nameIsNull.Body, nullAsNullableBool, nameContains2.Body));
+			var conjunction = Expression.AndAlso(
+				Expression.Condition(quantityIsNull.Body, nullAsNullableBool, quantityContains23.Body),
+				Expression.Condition(nameIsNull.Body, nullAsNullableBool, nameContains2.Body)
+			);
 
-			var condition = Expression.Condition(Expression.Equal(conjunction, Expression.Constant(null)),
-												 Expression.Constant(false),
-												 Expression.MakeMemberAccess(conjunction, valueProperty));
+			var condition = Expression.Condition(
+				Expression.Equal(conjunction, Expression.Constant(null)),
+				Expression.Constant(false),
+				Expression.MakeMemberAccess(conjunction, valueProperty));
 
 			var expr = Expression.Lambda<Func<Product, bool>>(condition, quantityIsNull.Parameters);
 
@@ -652,6 +655,24 @@ namespace NHibernate.Test.Linq
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
+		[Test(Description = "NH-3946")]
+		public void PolymorphicSearchOnObjectTypeWithIsKeyword()
+		{
+			var query = (from o in session.Query<Animal>()
+						 where o is Mammal
+						 select o).ToList();
+
+			Assert.That(query.Count, Is.EqualTo(3));
+		}
+
+		[Test(Description = "NH-3845")]
+		public void PolymorphicSearchOnObjectTypeWithOfType()
+		{
+			var query = session.Query<Animal>().OfType<Mammal>().ToList();
+
+			Assert.That(query.Count, Is.EqualTo(3));
+		}
+
 		[Test]
 		public void BitwiseQuery()
 		{
@@ -678,9 +699,14 @@ namespace NHibernate.Test.Linq
 		public void BitwiseQuery3()
 		{
 			var featureSet = FeatureSet.HasThat;
-			var query = (from o in session.Query<User>()
-						 where ((o.Features | featureSet) & featureSet) == featureSet
-						 select o).ToList();
+			var query = (
+				from o in session.Query<User>()
+				// When converted to SQL, "undue" parenthesis are stripped out. For most DB, binary operators have same precedence,
+				// causing "((o.Features | featureSet) & featureSet)" to be equivalent to "o.Features | featureSet & featureSet"
+				// But for MySql, & take precedence on |, wrecking the test for it. So it is needed to write the test in a way
+				// such as the parenthesis will be preserved.
+				where (featureSet & (o.Features | featureSet)) == featureSet
+				select o).ToList();
 
 			Assert.That(query.Count, Is.EqualTo(3));
 		}
@@ -753,13 +779,13 @@ namespace NHibernate.Test.Linq
 				// This should generate SQL with some nested case expressions - it should not be
 				// simplified.
 				string wholeLog = ls.GetWholeLog();
-				Assert.That(wholeLog, Is.StringContaining("when lower(product0_.ProductName)="));
+				Assert.That(wholeLog, Does.Contain("when lower(product0_.ProductName)="));
 			}
 		}
 
 
 		[Test(Description = "NH-3366")]
-		[TestCaseSource(typeof(WhereTests), "CanUseCompareInQueryDataSource")]
+		[TestCaseSource(typeof(WhereTests), nameof(CanUseCompareInQueryDataSource))]
 		public void CanUseCompareInQuery(Expression<Func<Product, bool>> expression, int expectedCount, bool expectCase)
 		{
 			using (var ls = new SqlLogSpy())
@@ -769,12 +795,25 @@ namespace NHibernate.Test.Linq
 				Assert.That(result, Has.Count.EqualTo(expectedCount));
 
 				string wholeLog = ls.GetWholeLog();
-				Assert.That(wholeLog, expectCase ? Is.StringContaining("case") : Is.Not.StringContaining("case"));
+				Assert.That(wholeLog, expectCase ? Does.Contain("case") : Does.Not.Contain("case"));
 			}
 		}
 
 
-		private List<object[]> CanUseCompareInQueryDataSource()
+		[Test(Description = "NH-3665")]
+		public void SelectOnCollectionReturnsResult()
+		{
+			var result = db.Animals.Select(x => new
+			{
+				x.Children
+			}).FirstOrDefault();
+
+			Assert.That(result, Is.Not.Null);
+			Assert.That(result.Children, Is.Not.Empty);
+		}
+
+
+		private static List<object[]> CanUseCompareInQueryDataSource()
 		{
 			return new List<object[]>
 				{
@@ -795,9 +834,8 @@ namespace NHibernate.Test.Linq
 					TestRow(p => p.UnitsInStock.CompareTo(13) < 0, 15, false),
 					TestRow(p => p.UnitsInStock.CompareTo(13) >= 0, 62, false),
 
-					// Over floats.
-					TestRow(p => p.ShippingWeight.CompareTo((float) 4.98) <= 0, 17, false),
-					TestRow(p => p.ShippingWeight.CompareTo((float) 4.98) <= 0, 17, false),
+					// Over floats. (Always include a tolerance with them)
+					TestRow(p => p.ShippingWeight.CompareTo(4.980001f) <= 0, 17, false),
 
 					// Over nullable decimals.
 					TestRow(p => p.UnitPrice.Value.CompareTo((decimal) 14.00) <= 0, 24, false),

@@ -131,7 +131,7 @@ namespace NHibernate.Test.Hql
 			args.Add("'a'");
 			args.Add("va2");
 			args.Add("2");
-			Assert.AreEqual("(position('a' in substring(va2, 2))+2-1)", psf.Render(args, factoryImpl).ToString());
+			Assert.AreEqual("(case position('a' in substring(va2, 2)) when 0 then 0 else (position('a' in substring(va2, 2))+2-1) end)", psf.Render(args, factoryImpl).ToString());
 		}
 
 		[Test]

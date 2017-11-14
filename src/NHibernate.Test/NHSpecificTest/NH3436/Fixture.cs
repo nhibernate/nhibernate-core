@@ -9,6 +9,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3436
 {
+	[TestFixture]
 	public class Fixture : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
@@ -98,7 +99,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3436
 
 		private void Run(ICollection<Guid> ids)
 		{
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			using (session.BeginTransaction())
 			{
 				var result = session.Query<TestEntity>()

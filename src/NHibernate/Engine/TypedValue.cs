@@ -17,15 +17,15 @@ namespace NHibernate.Engine
 		private readonly object value;
 		private readonly IEqualityComparer<TypedValue> comparer;
 
-		public TypedValue(IType type, object value, EntityMode entityMode)
+		public TypedValue(IType type, object value)
 		{
 			this.type = type;
 			this.value = value;
 			var values = value as ICollection;
 			if (!type.IsCollectionType && values != null && !type.ReturnedClass.IsArray)
-				comparer = new ParameterListComparer(entityMode);
+				comparer = new ParameterListComparer();
 			else
-				comparer = new DefaultComparer(entityMode);
+				comparer = new DefaultComparer();
 		}
 
 		public object Value
@@ -61,13 +61,6 @@ namespace NHibernate.Engine
 		[Serializable]
 		public class ParameterListComparer : IEqualityComparer<TypedValue>
 		{
-			private readonly EntityMode entityMode;
-
-			public ParameterListComparer(EntityMode entityMode)
-			{
-				this.entityMode = entityMode;
-			}
-
 			public bool Equals(TypedValue x, TypedValue y)
 			{
 				if (y == null) return false;
@@ -91,7 +84,7 @@ namespace NHibernate.Engine
 					int result = 0;
 
 					foreach (object obj in values)
-						result += obj == null ? 0 : type.GetHashCode(obj, entityMode);
+						result += obj == null ? 0 : type.GetHashCode(obj);
 
 					return result;
 				}
@@ -108,14 +101,21 @@ namespace NHibernate.Engine
 				if (x.Count != y.Count)
 					return false;
 
-				IEnumerator xe = x.GetEnumerator();
-				IEnumerator ye = y.GetEnumerator();
-
-				while (xe.MoveNext())
+				var ye = y.GetEnumerator();
+				try
 				{
-					ye.MoveNext();
-					if (!type.IsEqual(xe.Current, ye.Current, entityMode))
-						return false;
+					foreach (var xItem in x)
+					{
+						ye.MoveNext();
+						if (!type.IsEqual(xItem, ye.Current))
+							return false;
+					}
+				}
+				finally
+				{
+					// The old non generic IEnumerator is not disposable, but in most cases the concrete enumerator
+					// will be a generic one, disposable. https://stackoverflow.com/a/11179175/1178314
+					(ye as IDisposable)?.Dispose();
 				}
 
 				return true;
@@ -125,24 +125,17 @@ namespace NHibernate.Engine
 		[Serializable]
 		public class DefaultComparer : IEqualityComparer<TypedValue>
 		{
-			private readonly EntityMode entityMode;
-
-			public DefaultComparer(EntityMode entityMode)
-			{
-				this.entityMode = entityMode;
-			}
-
 			public bool Equals(TypedValue x, TypedValue y)
 			{
 				if (y == null) return false;
 				if (x.type.ReturnedClass != y.type.ReturnedClass)
 					return false;
-				return x.type.IsEqual(y.value, x.value, entityMode);
+				return x.type.IsEqual(y.value, x.value);
 			}
 
 			public int GetHashCode(TypedValue obj)
 			{
-				return obj.value == null ? 0 : obj.type.GetHashCode(obj.value, entityMode);
+				return obj.value == null ? 0 : obj.type.GetHashCode(obj.value);
 			}
 		}
 	}

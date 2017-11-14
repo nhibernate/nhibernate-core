@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Runtime.CompilerServices;
 
 using NHibernate.AdoNet.Util;
@@ -33,7 +34,7 @@ namespace NHibernate.Id
 	/// The mapping parameters <c>table</c> and <c>column</c> are required.
 	/// </p>
 	/// </remarks>
-	public class TableGenerator : TransactionHelper, IPersistentIdentifierGenerator, IConfigurable
+	public partial class TableGenerator : TransactionHelper, IPersistentIdentifierGenerator, IConfigurable
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (TableGenerator));
 
@@ -209,8 +210,8 @@ namespace NHibernate.Id
 
 		#endregion
 
-		public override object DoWorkInCurrentTransaction(ISessionImplementor session, IDbConnection conn,
-														  IDbTransaction transaction)
+		public override object DoWorkInCurrentTransaction(ISessionImplementor session, DbConnection conn,
+														  DbTransaction transaction)
 		{
 			long result;
 			int rows;
@@ -220,8 +221,8 @@ namespace NHibernate.Id
 				//select + uspdate even for no transaction
 				//or read committed isolation level (needed for .net?)
 
-				IDbCommand qps = conn.CreateCommand();
-				IDataReader rs = null;
+				var qps = conn.CreateCommand();
+				DbDataReader rs = null;
 				qps.CommandText = query;
 				qps.CommandType = CommandType.Text;
 				qps.Transaction = transaction;
@@ -243,7 +244,7 @@ namespace NHibernate.Id
 						log.Error(err);
 						throw new IdentifierGenerationException(err);
 					}
-					result = Convert.ToInt64(columnType.Get(rs, 0));
+					result = Convert.ToInt64(columnType.Get(rs, 0, session));
 				}
 				catch (Exception e)
 				{
@@ -259,15 +260,14 @@ namespace NHibernate.Id
 					qps.Dispose();
 				}
 
-				IDbCommand ups = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, updateSql,
-																						   parameterTypes);
+				var ups = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, updateSql, parameterTypes);
 				ups.Connection = conn;
 				ups.Transaction = transaction;
 
 				try
 				{
-					columnType.Set(ups, result + 1, 0);
-					columnType.Set(ups, result, 1);
+					columnType.Set(ups, result + 1, 0, session);
+					columnType.Set(ups, result, 1, session);
 
 					PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand("Updating high value:", ups, FormatStyle.Basic);
 

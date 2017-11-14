@@ -13,7 +13,7 @@ namespace NHibernate.Cache
 	/// recommend that the the underlying cache not be configured for expiry at all.
 	/// Note, in particular, that an LRU cache expiry policy is never appropriate.
 	/// </summary>
-	public class UpdateTimestampsCache
+	public partial class UpdateTimestampsCache
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(UpdateTimestampsCache));
 		private ICache updateTimestamps;

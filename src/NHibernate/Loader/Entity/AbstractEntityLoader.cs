@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Param;
@@ -14,7 +14,7 @@ namespace NHibernate.Loader.Entity
 	/// <summary>
 	/// Abstract superclass for entity loaders that use outer joins
 	/// </summary>
-	public abstract class AbstractEntityLoader : OuterJoinLoader, IUniqueEntityLoader
+	public abstract partial class AbstractEntityLoader : OuterJoinLoader, IUniqueEntityLoader
 	{
 		protected static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (AbstractEntityLoader));
 		protected readonly IOuterJoinLoadable persister;
@@ -66,7 +66,7 @@ namespace NHibernate.Loader.Entity
 			}
 		}
 
-		protected override object GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, IDataReader rs,
+		protected override object GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, DbDataReader rs,
 													   ISessionImplementor session)
 		{
 			return row[row.Length - 1];

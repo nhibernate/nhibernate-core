@@ -1,4 +1,4 @@
-using System.Data;
+using System.Data.Common;
 
 namespace NHibernate.Engine.Transaction
 {
@@ -7,13 +7,13 @@ namespace NHibernate.Engine.Transaction
 	/// which isolates it from any current application unit of
 	/// work transaction.
 	/// </summary>
-	public interface IIsolatedWork
+	public partial interface IIsolatedWork
 	{
 		/// <summary>
 		/// Perform the actual work to be done.
 		/// </summary>
 		/// <param name="connection">The ADP connection to use.</param>
 		/// <param name="transaction">The active transaction of the connection.</param>
-		void DoWork(IDbConnection connection, IDbTransaction transaction);
+		void DoWork(DbConnection connection, DbTransaction transaction);
 	}
 }

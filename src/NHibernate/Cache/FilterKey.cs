@@ -13,13 +13,13 @@ namespace NHibernate.Cache
 		private readonly string _filterName;
 		private readonly Dictionary<string, TypedValue> _filterParameters = new Dictionary<string, TypedValue>();
 
-		public FilterKey(string name, IEnumerable<KeyValuePair<string, object>> @params, IDictionary<string, IType> types, EntityMode entityMode)
+		public FilterKey(string name, IEnumerable<KeyValuePair<string, object>> @params, IDictionary<string, IType> types)
 		{
 			_filterName = name;
 			foreach (KeyValuePair<string, object> me in @params)
 			{
 				IType type = types[me.Key];
-				_filterParameters[me.Key] = new TypedValue(type, me.Value, entityMode);
+				_filterParameters[me.Key] = new TypedValue(type, me.Value);
 			}
 		}
 
@@ -50,7 +50,7 @@ namespace NHibernate.Cache
 			return string.Format("FilterKey[{0}{1}]", _filterName, CollectionPrinter.ToString(_filterParameters));
 		}
 
-		public static ISet<FilterKey> CreateFilterKeys(IDictionary<string, IFilter> enabledFilters, EntityMode entityMode)
+		public static ISet<FilterKey> CreateFilterKeys(IDictionary<string, IFilter> enabledFilters)
 		{
 			if (enabledFilters.Count == 0)
 				return null;
@@ -58,7 +58,7 @@ namespace NHibernate.Cache
 			var result = new HashSet<FilterKey>();
 			foreach (FilterImpl filter in enabledFilters.Values)
 			{
-				FilterKey key = new FilterKey(filter.Name, filter.Parameters, filter.FilterDefinition.ParameterTypes, entityMode);
+				FilterKey key = new FilterKey(filter.Name, filter.Parameters, filter.FilterDefinition.ParameterTypes);
 				result.Add(key);
 			}
 			return result;

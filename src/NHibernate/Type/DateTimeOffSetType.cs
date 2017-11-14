@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -11,11 +12,22 @@ namespace NHibernate.Type
 	/// Maps a <see cref="System.DateTimeOffset" /> Property to a <see cref="DbType.DateTimeOffset"/>
 	/// </summary>
 	[Serializable]
-	public class DateTimeOffsetType : PrimitiveType, IIdentifierType, ILiteralType, IVersionType
+	public partial class DateTimeOffsetType : PrimitiveType, IIdentifierType, ILiteralType, IVersionType
 	{
-		/// <summary></summary>
-		public DateTimeOffsetType()
-			: base(SqlTypeFactory.DateTimeOffSet)
+		static readonly DateTimeOffset BaseDateValue = DateTimeOffset.MinValue;
+
+		/// <summary>
+		/// Default constructor.
+		/// </summary>
+		public DateTimeOffsetType() : base(SqlTypeFactory.DateTimeOffSet)
+		{
+		}
+
+		/// <summary>
+		/// Constructor for specifying a datetimeoffset with a scale. Use <see cref="SqlTypeFactory.GetDateTimeOffset"/>.
+		/// </summary>
+		/// <param name="sqlType">The sql type to use for the type.</param>
+		public DateTimeOffsetType(DateTimeOffsetSqlType sqlType) : base(sqlType)
 		{
 		}
 
@@ -36,7 +48,7 @@ namespace NHibernate.Type
 
 		public override object DefaultValue
 		{
-			get { throw new NotImplementedException(); }
+			get { return BaseDateValue; }
 		}
 
 		public IComparer Comparator
@@ -44,19 +56,18 @@ namespace NHibernate.Type
 			get { return Comparer<DateTimeOffset>.Default; }
 		}
 
-		public override void Set(IDbCommand st, object value, int index)
+		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
 			var dateValue = (DateTimeOffset) value;
-			((IDataParameter) st.Parameters[index]).Value =
+			st.Parameters[index].Value =
 				new DateTimeOffset(dateValue.Ticks, dateValue.Offset);
 		}
 
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			try
 			{
 				var dbValue = (DateTimeOffset) rs[index];
-				;
 				return new DateTimeOffset(dbValue.Ticks, dbValue.Offset);
 			}
 			catch (Exception ex)
@@ -65,9 +76,9 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
-			return Get(rs, rs.GetOrdinal(name));
+			return Get(rs, rs.GetOrdinal(name), session);
 		}
 
 		public object Next(object current, ISessionImplementor session)
@@ -75,10 +86,18 @@ namespace NHibernate.Type
 			return Seed(session);
 		}
 
-		public object Seed(ISessionImplementor session)
-		{
-			return DateTimeOffset.Now;
-		}
+		/// <summary>
+		/// Truncate a <see cref="DateTimeOffset"/> according to specified resolution.
+		/// </summary>
+		/// <param name="value">The value to round.</param>
+		/// <param name="resolution">The resolution in ticks (100ns).</param>
+		/// <returns>A rounded <see cref="DateTimeOffset"/>.</returns>
+		public static DateTimeOffset Round(DateTimeOffset value, long resolution) =>
+			value.AddTicks(-(value.Ticks % resolution));
+
+		/// <inheritdoc />
+		public virtual object Seed(ISessionImplementor session) =>
+			session == null ? DateTimeOffset.Now : Round(DateTimeOffset.Now, session.Factory.Dialect.TimestampResolutionInTicks);
 
 		public override bool IsEqual(object x, object y)
 		{

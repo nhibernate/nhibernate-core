@@ -1,10 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Transactions;
-using NHibernate.Impl;
 using NUnit.Framework;
-using NHibernate.Criterion;
+
 
 namespace NHibernate.Test.NHSpecificTest.NH2065
 {
@@ -40,28 +36,32 @@ namespace NHibernate.Test.NHSpecificTest.NH2065
         }
 
 		[Test]
-        [ExpectedException(
-            ExpectedException=typeof(HibernateException), 
-            ExpectedMessage="reassociated object has dirty collection: NHibernate.Test.NHSpecificTest.NH2065.Person.Children")]
 		public void GetGoodErrorForDirtyReassociatedCollection()
 		{
-            Person person;
-            using (var s = OpenSession())
-            using (s.BeginTransaction())
-            {
-                person = s.Get<Person>(1);
-                NHibernateUtil.Initialize(person.Children);
-                s.Transaction.Commit();
-            }
+			Person person;
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				person = s.Get<Person>(1);
+				NHibernateUtil.Initialize(person.Children);
+				s.Transaction.Commit();
+			}
 
-            person.Children.Clear();
+			person.Children.Clear();
 
-            using (var s = OpenSession())
-            using (s.BeginTransaction())
-            {
-                s.Lock(person, LockMode.None);
-            }
-		} 
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				Assert.That(
+					() =>
+					{
+						s.Lock(person, LockMode.None);
+					},
+					Throws.TypeOf<HibernateException>()
+					      .And.Message.EqualTo(
+						      "reassociated object has dirty collection: NHibernate.Test.NHSpecificTest.NH2065.Person.Children"));
+			}
+		}
 
 	}
 }

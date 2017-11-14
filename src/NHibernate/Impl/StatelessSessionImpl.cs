@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq.Expressions;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
@@ -15,7 +16,6 @@ using NHibernate.Hql;
 using NHibernate.Id;
 using NHibernate.Loader.Criteria;
 using NHibernate.Loader.Custom;
-using NHibernate.Loader.Custom.Sql;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Type;
@@ -24,22 +24,24 @@ using NHibernate.Util;
 namespace NHibernate.Impl
 {
 	[Serializable]
-	public class StatelessSessionImpl : AbstractSessionImpl, IStatelessSession
+	public partial class StatelessSessionImpl : AbstractSessionImpl, IStatelessSession
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(StatelessSessionImpl));
+
 		[NonSerialized]
 		private readonly ConnectionManager connectionManager;
+
 		[NonSerialized]
 		private readonly StatefulPersistenceContext temporaryPersistenceContext;
 
-		internal StatelessSessionImpl(IDbConnection connection, SessionFactoryImpl factory)
-			: base(factory)
+		internal StatelessSessionImpl(SessionFactoryImpl factory, ISessionCreationOptions options)
+			: base(factory, options)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				temporaryPersistenceContext = new StatefulPersistenceContext(this);
-				connectionManager = new ConnectionManager(this, connection, ConnectionReleaseMode.AfterTransaction,
-														  new EmptyInterceptor());
+				connectionManager = new ConnectionManager(this, options.UserSuppliedConnection, ConnectionReleaseMode.AfterTransaction,
+					EmptyInterceptor.Instance, options.ShouldAutoJoinTransaction);
 
 				if (log.IsDebugEnabled)
 				{
@@ -70,7 +72,7 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				IEntityPersister persister = Factory.GetEntityPersister(entityName);
-				object loaded = temporaryPersistenceContext.GetEntity(GenerateEntityKey(id, persister, EntityMode.Poco));
+				object loaded = temporaryPersistenceContext.GetEntity(GenerateEntityKey(id, persister));
 				if (loaded != null)
 				{
 					return loaded;
@@ -103,9 +105,14 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override void CloseSessionFromDistributedTransaction()
+		public override void CloseSessionFromSystemTransaction()
 		{
 			Dispose(true);
+		}
+
+		public override IQuery CreateFilter(object collection, IQueryExpression queryExpression)
+		{
+			throw new NotSupportedException();
 		}
 
 		public override void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results)
@@ -179,7 +186,7 @@ namespace NHibernate.Impl
 				temporaryPersistenceContext.Clear();
 			}
 		}
-		
+
 		public override IEnumerable Enumerable(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
 			throw new NotImplementedException();
@@ -191,6 +198,11 @@ namespace NHibernate.Impl
 		}
 
 		public override IList ListFilter(object collection, string filter, QueryParameters parameters)
+		{
+			throw new NotSupportedException();
+		}
+
+		protected override void ListFilter(object collection, IQueryExpression queryExpression, QueryParameters parameters, IList results)
 		{
 			throw new NotSupportedException();
 		}
@@ -216,14 +228,25 @@ namespace NHibernate.Impl
 
 		public override void BeforeTransactionCompletion(ITransaction tx)
 		{
+			var context = TransactionContext;
+			if (tx == null && context == null)
+				throw new InvalidOperationException("Cannot complete a transaction without neither an explicit transaction nor an ambient one.");
+			// Always allow flushing from explicit transactions, otherwise check if flushing from scope is enabled.
+			if (tx != null || context.CanFlushOnSystemTransactionCompleted)
+				FlushBeforeTransactionCompletion();
+		}
+
+		public override void FlushBeforeTransactionCompletion()
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				if (FlushMode != FlushMode.Manual)
+					Flush();
+			}
 		}
 
 		public override void AfterTransactionCompletion(bool successful, ITransaction tx)
 		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				connectionManager.AfterTransaction();
-			}
 		}
 
 		public override object GetContextEntityIdentifier(object obj)
@@ -237,7 +260,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				return Factory.GetEntityPersister(clazz).Instantiate(id, EntityMode.Poco);
+				return Factory.GetEntityPersister(clazz).Instantiate(id);
 			}
 		}
 
@@ -290,17 +313,12 @@ namespace NHibernate.Impl
 
 		public override IInterceptor Interceptor
 		{
-			get { return new EmptyInterceptor(); }
+			get { return EmptyInterceptor.Instance; }
 		}
 
 		public override EventListeners Listeners
 		{
 			get { throw new NotSupportedException(); }
-		}
-
-		public override int DontFlushFromFind
-		{
-			get { return 0; }
 		}
 
 		public override ConnectionManager ConnectionManager
@@ -365,7 +383,7 @@ namespace NHibernate.Impl
 			return entity.GetType().FullName;
 		}
 
-		public override IDbConnection Connection
+		public override DbConnection Connection
 		{
 			get { return connectionManager.GetConnection(); }
 		}
@@ -410,11 +428,6 @@ namespace NHibernate.Impl
 		{
 			get { return CacheMode.Ignore; }
 			set { throw new NotSupportedException(); }
-		}
-
-		public override EntityMode EntityMode
-		{
-			get { return NHibernate.EntityMode.Poco; }
 		}
 
 		public override string FetchProfile
@@ -483,7 +496,7 @@ namespace NHibernate.Impl
 				CheckAndUpdateSessionStatus();
 				IEntityPersister persister = GetEntityPersister(entityName, entity);
 				object id = persister.IdentifierGenerator.Generate(this, entity);
-				object[] state = persister.GetPropertyValues(entity, EntityMode.Poco);
+				object[] state = persister.GetPropertyValues(entity);
 				if (persister.IsVersioned)
 				{
 					object versionValue = state[persister.VersionProperty];
@@ -491,7 +504,7 @@ namespace NHibernate.Impl
 															 persister.IsUnsavedVersion(versionValue), this);
 					if (substitute)
 					{
-						persister.SetPropertyValues(entity, state, EntityMode.Poco);
+						persister.SetPropertyValues(entity, state);
 					}
 				}
 				if (id == IdentifierGeneratorFactory.PostInsertIndicator)
@@ -502,7 +515,7 @@ namespace NHibernate.Impl
 				{
 					persister.Insert(id, state, entity, this);
 				}
-				persister.SetIdentifier(entity, id, EntityMode.Poco);
+				persister.SetIdentifier(entity, id);
 				return id;
 			}
 		}
@@ -527,15 +540,15 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				IEntityPersister persister = GetEntityPersister(entityName, entity);
-				object id = persister.GetIdentifier(entity, EntityMode.Poco);
-				object[] state = persister.GetPropertyValues(entity, EntityMode.Poco);
+				object id = persister.GetIdentifier(entity);
+				object[] state = persister.GetPropertyValues(entity);
 				object oldVersion;
 				if (persister.IsVersioned)
 				{
-					oldVersion = persister.GetVersion(entity, EntityMode.Poco);
+					oldVersion = persister.GetVersion(entity);
 					object newVersion = Versioning.Increment(oldVersion, persister.VersionType, this);
 					Versioning.SetVersion(state, newVersion, persister);
-					persister.SetPropertyValues(entity, state, EntityMode.Poco);
+					persister.SetPropertyValues(entity, state);
 				}
 				else
 				{
@@ -565,8 +578,8 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				IEntityPersister persister = GetEntityPersister(entityName, entity);
-				object id = persister.GetIdentifier(entity, EntityMode.Poco);
-				object version = persister.GetVersion(entity, EntityMode.Poco);
+				object id = persister.GetIdentifier(entity);
+				object version = persister.GetVersion(entity);
 				persister.Delete(id, version, entity, this);
 			}
 		}
@@ -681,7 +694,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				IEntityPersister persister = GetEntityPersister(entityName, entity);
-				object id = persister.GetIdentifier(entity, EntityMode);
+				object id = persister.GetIdentifier(entity);
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("refreshing transient " + MessageHelper.InfoString(persister, id, Factory));
@@ -843,6 +856,7 @@ namespace NHibernate.Impl
 		#endregion
 
 		#region IDisposable Members
+
 		private bool _isAlreadyDisposed;
 
 		/// <summary>
@@ -862,9 +876,17 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				log.Debug("running IStatelessSession.Dispose()");
-				if (TransactionContext != null)
+				// Ensure we are not disposing concurrently to transaction completion, which would
+				// remove the context. (Do not store it into a local variable before the Wait.)
+				TransactionContext?.Wait();
+				// If the synchronization above is bugged and lets a race condition remaining, we may
+				// blow here with a null ref exception after the null check. We could introduce
+				// a local variable for avoiding it, but that would turn a failure causing an exception
+				// into a failure causing a session and connection leak. So do not do it, better blow away
+				// with a null ref rather than silently leaking a session. And then fix the synchronization.
+				if (TransactionContext != null && TransactionContext.CanFlushOnSystemTransactionCompleted)
 				{
-					TransactionContext.ShouldCloseSessionOnDistributedTransactionCompleted = true;
+					TransactionContext.ShouldCloseSessionOnSystemTransactionCompleted = true;
 					return;
 				}
 				Dispose(true);
@@ -968,7 +990,7 @@ namespace NHibernate.Impl
 				}
 				else
 				{
-					return Factory.GetEntityPersister(entityName).GetSubclassEntityPersister(obj, Factory, EntityMode.Poco);
+					return Factory.GetEntityPersister(entityName).GetSubclassEntityPersister(obj, Factory);
 				}
 			}
 		}

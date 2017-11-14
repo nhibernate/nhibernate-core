@@ -40,7 +40,7 @@ namespace NHibernate.Test.CfgTest
 			string xml =
 			@"<?xml version='1.0' encoding='utf-8' ?>
 <hibernate-configuration xmlns='urn:nhibernate-configuration-2.2'>
-		<bytecode-provider type='codedom'/>
+		<bytecode-provider type='lcg'/>
 		<reflection-optimizer use='false'/>
 		<session-factory name='MyFactoryName'>
 		</session-factory>
@@ -59,7 +59,7 @@ namespace NHibernate.Test.CfgTest
 			string xml =
 			@"<?xml version='1.0' encoding='utf-8' ?>
 <hibernate-configuration xmlns='urn:nhibernate-configuration-2.2'>
-		<bytecode-provider type='codedom'/>
+		<bytecode-provider type='lcg'/>
 </hibernate-configuration>";
 
 			XmlTextReader xtr = new XmlTextReader(xml, XmlNodeType.Document, null);

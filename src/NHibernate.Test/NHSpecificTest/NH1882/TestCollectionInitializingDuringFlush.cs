@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1882
 {
 	[TestFixture]
-	public class TestCollectionInitializingDuringFlush : TestCaseMappingByCode
+	public partial class TestCollectionInitializingDuringFlush : TestCaseMappingByCode
 	{
 		private readonly InitializingPreUpdateEventListener listener = new InitializingPreUpdateEventListener();
 
@@ -51,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1882
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 
-		public class InitializingPreUpdateEventListener : IPreUpdateEventListener
+		public partial class InitializingPreUpdateEventListener : IPreUpdateEventListener
 		{
 			public static InitializingPreUpdateEventListener Instance = new InitializingPreUpdateEventListener();
 
@@ -70,7 +70,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1882
 				{
 					if (oldValues != null && oldValues[i] != null)
 					{
-						if (! NHibernateUtil.IsInitialized(oldValues[i]))
+						if (!NHibernateUtil.IsInitialized(oldValues[i]))
 						{
 							// force any proxies and/or collections to initialize to illustrate HHH-2763
 							FoundAny = true;
@@ -87,31 +87,36 @@ namespace NHibernate.Test.NHSpecificTest.NH1882
 		{
 			Assert.False(listener.Executed);
 			Assert.False(listener.FoundAny);
-			ISession s = OpenSession();
-			s.BeginTransaction();
-			var publisher = new Publisher("acme");
-			var author = new Author("john");
-			author.Publisher = publisher;
-			publisher.Authors.Add(author);
-			author.Books.Add(new Book("Reflections on a Wimpy Kid", author));
-			s.Save(author);
-			s.Transaction.Commit();
-			s.Clear();
 
-			s = OpenSession();
-			s.BeginTransaction();
-			publisher = s.Get<Publisher>(publisher.Id);
-			publisher.Name = "random nally";
-			s.Flush();
-			s.Transaction.Commit();
-			s.Clear();
-
-			s = OpenSession();
-			s.BeginTransaction();
-			s.Delete(author);
-			s.Transaction.Commit();
-			s.Clear();
-			s.Close();
+			using (var s1 = OpenSession())
+			{
+				s1.BeginTransaction();
+				var publisher = new Publisher("acme");
+				var author = new Author("john");
+				author.Publisher = publisher;
+				publisher.Authors.Add(author);
+				author.Books.Add(new Book("Reflections on a Wimpy Kid", author));
+				s1.Save(author);
+				s1.Transaction.Commit();
+				s1.Clear();
+				using (var s2 = OpenSession())
+				{
+					s2.BeginTransaction();
+					publisher = s2.Get<Publisher>(publisher.Id);
+					publisher.Name = "random nally";
+					s2.Flush();
+					s2.Transaction.Commit();
+					s2.Clear();
+					using (var s3 = OpenSession())
+					{
+						s3.BeginTransaction();
+						s3.Delete(author);
+						s3.Transaction.Commit();
+						s3.Clear();
+						s3.Close();
+					}
+				}
+			}
 			Assert.That(listener.Executed, Is.True);
 			Assert.That(listener.FoundAny, Is.True);
 		}

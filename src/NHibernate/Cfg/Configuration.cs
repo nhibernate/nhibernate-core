@@ -6,11 +6,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
 using System.Xml;
 using System.Xml.Schema;
-using System.Xml.Serialization;
 
 using NHibernate.Bytecode;
 using NHibernate.Cfg.ConfigurationSchema;
@@ -29,7 +29,6 @@ using NHibernate.Tool.hbm2ddl;
 using NHibernate.Type;
 using NHibernate.Util;
 using Array = System.Array;
-using System.Runtime.Serialization;
 
 namespace NHibernate.Cfg
 {
@@ -121,9 +120,7 @@ namespace NHibernate.Cfg
 			return (T)info.GetValue(name, typeof(T));
 		}
 
-#if NET_4_0
 		[SecurityCritical]
-#endif
 		public void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			ConfigureLoggerFactory();
@@ -174,7 +171,7 @@ namespace NHibernate.Cfg
 			secondPasses = new List<SecondPassCommand>();
 			propertyReferences = new List<Mappings.PropertyReference>();
 			FilterDefinitions = new Dictionary<string, FilterDefinition>();
-			interceptor = emptyInterceptor;
+			interceptor = EmptyInterceptor.Instance;
 			properties = Environment.Properties;
 			auxiliaryDatabaseObjects = new List<IAuxiliaryDatabaseObject>();
 			SqlFunctions = new Dictionary<string, ISQLFunction>();
@@ -186,6 +183,7 @@ namespace NHibernate.Cfg
 			columnNameBindingPerTable = new Dictionary<Table, Mappings.ColumnNames>();
 			filtersSecondPasses = new Queue<FilterSecondPassArgs>();
 		}
+
 		[Serializable]
 		private class Mapping : IMapping
 		{
@@ -237,6 +235,9 @@ namespace NHibernate.Cfg
 			{
 				return "id".Equals(GetIdentifierPropertyName(className));
 			}
+
+			public Dialect.Dialect Dialect =>
+				NHibernate.Dialect.Dialect.GetDialect(configuration.Properties);
 		}
 
 		private IMapping mapping;
@@ -1218,8 +1219,7 @@ namespace NHibernate.Cfg
 		{
 			get { return eventListeners; }
 		}
-
-		private static readonly IInterceptor emptyInterceptor = new EmptyInterceptor();
+		
 		private string defaultAssembly;
 		private string defaultNamespace;
 
@@ -1239,7 +1239,7 @@ namespace NHibernate.Cfg
 		{
 			#region Way for the user to specify their own ProxyFactory
 
-			//http://jira.nhibernate.org/browse/NH-975
+			//http://nhibernate.jira.com/browse/NH-975
 
 			var ipff = Environment.BytecodeProvider as IInjectableProxyFactoryFactory;
 			string pffClassName;
@@ -2331,7 +2331,7 @@ namespace NHibernate.Cfg
 		/// Generate DDL for altering tables
 		///</summary>
 		/// <seealso cref="NHibernate.Tool.hbm2ddl.SchemaUpdate"/>
-		public string[] GenerateSchemaUpdateScript(Dialect.Dialect dialect, DatabaseMetadata databaseMetadata)
+		public string[] GenerateSchemaUpdateScript(Dialect.Dialect dialect, IDatabaseMetadata databaseMetadata)
 		{
 			SecondPassCompile();
 
@@ -2411,13 +2411,14 @@ namespace NHibernate.Cfg
 			return script.ToArray();
 		}
 
-		public void ValidateSchema(Dialect.Dialect dialect, DatabaseMetadata databaseMetadata)
+		public void ValidateSchema(Dialect.Dialect dialect, IDatabaseMetadata databaseMetadata)
 		{
 			SecondPassCompile();
 
 			string defaultCatalog = PropertiesHelper.GetString(Environment.DefaultCatalog, properties, null);
 			string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
 
+			var validationErrors = new List<string>();
 			var iter = TableMappings;
 			foreach (var table in iter)
 			{
@@ -2435,9 +2436,13 @@ namespace NHibernate.Cfg
 						table.Catalog ?? defaultCatalog,
 						table.IsQuoted);
 					if (tableInfo == null)
-						throw new HibernateException("Missing table: " + table.Name);
+					{
+						validationErrors.Add("Missing table: " + table.Name);
+					}
 					else
-						table.ValidateColumns(dialect, mapping, tableInfo);
+					{
+						validationErrors.AddRange(table.ValidateColumns(dialect, mapping, tableInfo));
+					}
 				}
 			}
 
@@ -2447,8 +2452,13 @@ namespace NHibernate.Cfg
 				string key = generator.GeneratorKey();
 				if (!databaseMetadata.IsSequence(key) && !databaseMetadata.IsTable(key))
 				{
-					throw new HibernateException(string.Format("Missing sequence or table: " + key));
+					validationErrors.Add("Missing sequence or table: " + key);
 				}
+			}
+
+			if (validationErrors.Count > 0)
+			{
+				throw new SchemaValidationException("Schema validation failed: see list of validation errors", validationErrors);
 			}
 		}
 

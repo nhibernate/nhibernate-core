@@ -11,7 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2278
 	{
 		protected override void OnTearDown()
 		{
-			using( ISession s = sessions.OpenSession() )
+			using( ISession s = Sfi.OpenSession() )
 			{
 				s.Delete( "from CustomA" );
 				s.Flush();
@@ -33,15 +33,15 @@ namespace NHibernate.Test.NHSpecificTest.NH2278
 			s.Close();
 
 			Assert.That(a.Id, Is.Not.Null);
-			Assert.That(a.Items[0], Is.StringMatching("first string"));
+			Assert.That(a.Items[0], Is.EqualTo("first string"));
 
 			s = OpenSession();
 			a = s.Load<CustomA>(a.Id);
 
 			Assert.That(a.Items, Is.InstanceOf<CustomPersistentIdentifierBag<string>>());
 
-			Assert.That(a.Items[0], Is.StringMatching("first string"), "first item should be 'first string'");
-			Assert.That(a.Items[1], Is.StringMatching("second string"), "second item should be 'second string'");
+			Assert.That(a.Items[0], Is.EqualTo("first string"), "first item should be 'first string'");
+			Assert.That(a.Items[1], Is.EqualTo("second string"), "second item should be 'second string'");
 
 			// ensuring the correct generic type was constructed
 			a.Items.Add("third string");

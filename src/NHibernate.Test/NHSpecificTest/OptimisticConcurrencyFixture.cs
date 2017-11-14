@@ -55,7 +55,12 @@ namespace NHibernate.Test.NHSpecificTest
 					}
 
 					top.Name = "new name";
-					Assert.Throws<StaleObjectStateException>(() => session.Flush());
+
+					var expectedException = Sfi.Settings.IsBatchVersionedDataEnabled
+						? Throws.InstanceOf<StaleStateException>()
+						: Throws.InstanceOf<StaleObjectStateException>();
+
+					Assert.That(() => session.Flush(), expectedException);
 				}
 			}
 			finally
@@ -89,7 +94,12 @@ namespace NHibernate.Test.NHSpecificTest
 					}
 
 					optimistic.String = "new string";
-					Assert.Throws<StaleObjectStateException>(() => session.Flush());
+
+					var expectedException = Sfi.Settings.IsBatchVersionedDataEnabled
+						? Throws.InstanceOf<StaleStateException>()
+						: Throws.InstanceOf<StaleObjectStateException>();
+
+					Assert.That(() => session.Flush(), expectedException);
 				}
 			}
 			finally

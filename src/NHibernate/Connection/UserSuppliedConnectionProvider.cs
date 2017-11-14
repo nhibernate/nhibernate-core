@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 
 
 namespace NHibernate.Connection
@@ -12,36 +12,36 @@ namespace NHibernate.Connection
 	/// <remarks>
 	/// This implementation indicates that the user is expected to supply an ADO.NET connection
 	/// </remarks>
-	public class UserSuppliedConnectionProvider : ConnectionProvider
+	public partial class UserSuppliedConnectionProvider : ConnectionProvider
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(UserSuppliedConnectionProvider));
 
 		/// <summary>
 		/// Throws an <see cref="InvalidOperationException"/> if this method is called
-		/// because the user is responsible for closing <see cref="IDbConnection"/>s.
+		/// because the user is responsible for closing <see cref="DbConnection"/>s.
 		/// </summary>
-		/// <param name="conn">The <see cref="IDbConnection"/> to clean up.</param>
+		/// <param name="conn">The <see cref="DbConnection"/> to clean up.</param>
 		/// <exception cref="InvalidOperationException">
 		/// Thrown when this method is called.  User is responsible for closing
-		/// <see cref="IDbConnection"/>s.
+		/// <see cref="DbConnection"/>s.
 		/// </exception>
-		public override void CloseConnection(IDbConnection conn)
+		public override void CloseConnection(DbConnection conn)
 		{
 			throw new InvalidOperationException("The User is responsible for closing ADO.NET connection - not NHibernate.");
 		}
 
 		/// <summary>
 		/// Throws an <see cref="InvalidOperationException"/> if this method is called
-		/// because the user is responsible for creating <see cref="IDbConnection"/>s.
+		/// because the user is responsible for creating <see cref="DbConnection"/>s.
 		/// </summary>
 		/// <returns>
 		/// No value is returned because an <see cref="InvalidOperationException"/> is thrown.
 		/// </returns>
 		/// <exception cref="InvalidOperationException">
 		/// Thrown when this method is called.  User is responsible for creating
-		/// <see cref="IDbConnection"/>s.
+		/// <see cref="DbConnection"/>s.
 		/// </exception>
-		public override IDbConnection GetConnection()
+		public override DbConnection GetConnection()
 		{
 			throw new InvalidOperationException("The user must provide an ADO.NET connection - NHibernate is not creating it.");
 		}

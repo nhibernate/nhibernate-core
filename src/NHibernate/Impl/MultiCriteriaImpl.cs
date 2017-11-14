@@ -15,7 +15,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Impl
 {
-	public class MultiCriteriaImpl : IMultiCriteria
+	public partial class MultiCriteriaImpl : IMultiCriteria
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(MultiCriteriaImpl));
 		private readonly IList<ICriteria> criteriaQueries = new List<ICriteria>();
@@ -93,7 +93,7 @@ namespace NHibernate.Impl
 		{
 			IQueryCache queryCache = session.Factory.GetQueryCache(cacheRegion);
 
-			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters, session.EntityMode);
+			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters);
 
 			ISet<string> querySpaces = new HashSet<string>();
 			List<IType[]> resultTypesList = new List<IType[]>();
@@ -137,7 +137,7 @@ namespace NHibernate.Impl
 				log.Debug("Cache miss for multi criteria query");
 				IList list = DoList();
 				result = list;
-				if ((session.CacheMode & CacheMode.Put) == CacheMode.Put)
+				if (session.CacheMode.HasFlag(CacheMode.Put))
 				{
 					bool put = queryCache.Put(key, new ICacheAssembler[] { assembler }, new object[] { list }, combinedParameters.NaturalKeyLookup, session);
 					if (put && factory.Statistics.IsStatisticsEnabled)
@@ -459,7 +459,7 @@ namespace NHibernate.Impl
 			{
 				foreach (KeyValuePair<string, TypedValue> dictionaryEntry in queryParameters.NamedParameters)
 				{
-					combinedQueryParameters.NamedParameters.Add(dictionaryEntry.Key + index, dictionaryEntry.Value);
+					combinedQueryParameters.NamedParameters.Add(dictionaryEntry.Key + "_" + index, dictionaryEntry.Value);
 				}
 				index += 1;
 				positionalParameterTypes.AddRange(queryParameters.PositionalParameterTypes);

@@ -3,6 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2313
 {
+	[TestFixture]
 	public class Fixture
 	{
 		[Test]
@@ -11,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2313
 			Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
 			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH2313.Mappings.hbm.xml", GetType().Assembly);
 			Assert.That(() => cfg.BuildSessionFactory(), Throws.TypeOf<MappingException>()
-															   .And.Message.ContainsSubstring("TheOther"));
+															   .And.Message.Contains("TheOther"));
 		}
 	}
 }

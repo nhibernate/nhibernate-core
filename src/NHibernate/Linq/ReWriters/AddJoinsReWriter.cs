@@ -1,5 +1,7 @@
+using System;
 using System.Linq;
 using NHibernate.Engine;
+using NHibernate.Linq.Clauses;
 using NHibernate.Linq.Visitors;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
@@ -12,45 +14,49 @@ namespace NHibernate.Linq.ReWriters
 		bool IsIdentifier(System.Type type, string propertyName);
 	}
 
-	public class AddJoinsReWriter : QueryModelVisitorBase, IIsEntityDecider
+	public class AddJoinsReWriter : NhQueryModelVisitorBase, IIsEntityDecider
 	{
 		private readonly ISessionFactoryImplementor _sessionFactory;
-		private readonly SelectJoinDetector _selectJoinDetector;
-		private readonly ResultOperatorAndOrderByJoinDetector _resultOperatorAndOrderByJoinDetector;
+		private readonly MemberExpressionJoinDetector _memberExpressionJoinDetector;
 		private readonly WhereJoinDetector _whereJoinDetector;
 
 		private AddJoinsReWriter(ISessionFactoryImplementor sessionFactory, QueryModel queryModel)
 		{
 			_sessionFactory = sessionFactory;
 			var joiner = new Joiner(queryModel);
-			_selectJoinDetector = new SelectJoinDetector(this, joiner);
-			_resultOperatorAndOrderByJoinDetector = new ResultOperatorAndOrderByJoinDetector(this, joiner);
+			_memberExpressionJoinDetector = new MemberExpressionJoinDetector(this, joiner);
 			_whereJoinDetector = new WhereJoinDetector(this, joiner);
 		}
 
-		public static void ReWrite(QueryModel queryModel, ISessionFactoryImplementor sessionFactory)
+		public static void ReWrite(QueryModel queryModel, VisitorParameters parameters)
 		{
-			new AddJoinsReWriter(sessionFactory, queryModel).VisitQueryModel(queryModel);
+			var visitor = new AddJoinsReWriter(parameters.SessionFactory, queryModel);
+			visitor.VisitQueryModel(queryModel);
 		}
 
 		public override void VisitSelectClause(SelectClause selectClause, QueryModel queryModel)
 		{
-			_selectJoinDetector.Transform(selectClause);
+			_memberExpressionJoinDetector.Transform(selectClause);
 		}
 
 		public override void VisitOrdering(Ordering ordering, QueryModel queryModel, OrderByClause orderByClause, int index)
 		{
-			_resultOperatorAndOrderByJoinDetector.Transform(ordering);
+			_memberExpressionJoinDetector.Transform(ordering);
 		}
 
 		public override void VisitResultOperator(ResultOperatorBase resultOperator, QueryModel queryModel, int index)
 		{
-			_resultOperatorAndOrderByJoinDetector.Transform(resultOperator);
+			_memberExpressionJoinDetector.Transform(resultOperator);
 		}
 
 		public override void VisitWhereClause(WhereClause whereClause, QueryModel queryModel, int index)
 		{
 			_whereJoinDetector.Transform(whereClause);
+		}
+
+		public override void VisitNhHavingClause(NhHavingClause havingClause, QueryModel queryModel, int index)
+		{
+			_whereJoinDetector.Transform(havingClause);
 		}
 
 		public bool IsEntity(System.Type type)

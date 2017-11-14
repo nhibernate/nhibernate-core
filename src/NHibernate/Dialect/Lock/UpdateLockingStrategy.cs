@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 
 using NHibernate.Engine;
 using NHibernate.Exceptions;
@@ -13,7 +14,7 @@ namespace NHibernate.Dialect.Lock
 	/// A locking strategy where the locks are obtained through update statements.
 	/// </summary>
 	/// <remarks> This strategy is not valid for read style locks. </remarks>
-	public class UpdateLockingStrategy : ILockingStrategy
+	public partial class UpdateLockingStrategy : ILockingStrategy
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(UpdateLockingStrategy));
 		private readonly ILockable lockable;
@@ -74,7 +75,7 @@ namespace NHibernate.Dialect.Lock
 			ISessionFactoryImplementor factory = session.Factory;
 			try
 			{
-				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, lockable.IdAndVersionSqlTypes);
+				var st = session.Batcher.PrepareCommand(CommandType.Text, sql, lockable.IdAndVersionSqlTypes);
 				try
 				{
 					lockable.VersionType.NullSafeSet(st, version, 1, session);

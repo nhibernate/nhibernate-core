@@ -1,8 +1,9 @@
-﻿using System.Data;
+﻿using System.Data.Common;
 using System.Text.RegularExpressions;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Driver;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3202
@@ -15,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3202
 			if (!(Dialect is MsSql2008Dialect))
 				Assert.Ignore("Test is for MS SQL Server dialect only (custom dialect).");
 
-			if (!Environment.ConnectionDriver.Contains("SqlClientDriver"))
+			if (!typeof(SqlClientDriver).IsAssignableFrom(ReflectHelper.ClassForName(cfg.GetProperty(Environment.ConnectionDriver))))
 				Assert.Ignore("Test is for MS SQL Server driver only (custom driver is used).");
 
 			cfg.SetProperty(Environment.Dialect, typeof(OffsetStartsAtOneTestDialect).AssemblyQualifiedName);
@@ -111,7 +112,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3202
 
 		public int? OffsetParameterValueFromCommand { get; private set; }
 
-		protected override void OnBeforePrepare(IDbCommand command)
+		protected override void OnBeforePrepare(DbCommand command)
 		{
 			base.OnBeforePrepare(command);
 			OffsetParameterValueFromCommand = null;
@@ -120,7 +121,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3202
 			if (!hasLimit)
 				return;
 
-			OffsetParameterValueFromCommand = (int)((IDataParameter)command.Parameters[_offsetParameterIndex]).Value;
+			OffsetParameterValueFromCommand = (int)command.Parameters[_offsetParameterIndex].Value;
 		}
 	}
 }

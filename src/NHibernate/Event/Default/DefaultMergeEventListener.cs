@@ -1,13 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Classic;
 using NHibernate.Engine;
 using NHibernate.Intercept;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Type;
-using NHibernate.Util;
+
 
 namespace NHibernate.Event.Default
 {
@@ -15,7 +16,7 @@ namespace NHibernate.Event.Default
 	/// Defines the default event listener for handling of merge events generated from a session.
 	/// </summary>
 	[Serializable]
-	public class DefaultMergeEventListener : AbstractSaveEventListener, IMergeEventListener
+	public partial class DefaultMergeEventListener : AbstractSaveEventListener, IMergeEventListener
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultMergeEventListener));
 
@@ -39,24 +40,33 @@ namespace NHibernate.Event.Default
 			EventCache copyCache = new EventCache();
 			
 			OnMerge(@event, copyCache);
-			
-			// TODO: iteratively get transient entities and retry merge until one of the following conditions:
+
+			// transientCopyCache may contain parent and child entities in random order.
+			// Child entities occurring ahead of their respective transient parents may fail 
+			// to get merged in one iteration.
+			// Retries are necessary as more and more children may be able to merge on subsequent iterations.
+			// Iteratively get transient entities and retry merge until one of the following conditions is true:
 			//   1) transientCopyCache.size() == 0
-			//   2) transientCopyCache.size() is not decreasing and copyCache.size() is not increasing
+			//   2) transientCopyCache.size() is not decreasing
 			
 			// TODO: find out if retrying can add entities to copyCache (don't think it can...)
 			// For now, just retry once; throw TransientObjectException if there are still any transient entities
 			
 			IDictionary transientCopyCache = this.GetTransientCopyCache(@event, copyCache);
 			
-			if (transientCopyCache.Count > 0)
+			while (transientCopyCache.Count > 0)
 			{
+				var initialTransientCount = transientCopyCache.Count;
+
 				RetryMergeTransientEntities(@event, transientCopyCache, copyCache);
 				
 				// find any entities that are still transient after retry
 				transientCopyCache = this.GetTransientCopyCache(@event, copyCache);
-				
-				if (transientCopyCache.Count > 0)
+
+				// if a retry did nothing, the remaining transient entities 
+				// cannot be merged due to references to other transient entities 
+				// that are not part of the merge
+				if (transientCopyCache.Count == initialTransientCount)
 				{
 					ISet<string> transientEntityNames = new HashSet<string>();
 					
@@ -71,13 +81,12 @@ namespace NHibernate.Event.Default
 							transientEntityName,
 							transientEntity.ToString());
 					}
-					
-					throw new TransientObjectException("one or more objects is an unsaved transient instance - save transient instance(s) before merging: " + transientEntityNames);
+
+					throw new TransientObjectException("one or more objects is an unsaved transient instance - save transient instance(s) before merging: " + String.Join(",",  transientEntityNames.ToArray()));
 				}
 			}
 
 			copyCache.Clear();
-			copyCache = null;
 		}
 		
 		public virtual void OnMerge(MergeEvent @event, IDictionary copiedAlready)
@@ -134,7 +143,7 @@ namespace NHibernate.Event.Default
 					if (entry == null)
 					{
 						IEntityPersister persister = source.GetEntityPersister(@event.EntityName, entity);
-						object id = persister.GetIdentifier(entity, source.EntityMode);
+						object id = persister.GetIdentifier(entity);
 						if (id != null)
 						{
 							EntityKey key = source.GenerateEntityKey(id, persister);
@@ -210,13 +219,13 @@ namespace NHibernate.Event.Default
 		{
 			IEntityPersister persister = source.GetEntityPersister(entityName, entity);
 
-			object id = persister.HasIdentifierProperty ? persister.GetIdentifier(entity, source.EntityMode) : null;
+			object id = persister.HasIdentifierProperty ? persister.GetIdentifier(entity) : null;
 			object copy = null;
 			
 			if (copyCache.Contains(entity))
 			{
 				copy = copyCache[entity];
-				persister.SetIdentifier(copy, id, source.EntityMode);
+				persister.SetIdentifier(copy, id);
 			}
 			else
 			{
@@ -238,8 +247,8 @@ namespace NHibernate.Event.Default
 			catch (PropertyValueException ex)
 			{
 				string propertyName = ex.PropertyName;
-				object propertyFromCopy = persister.GetPropertyValue(copy, propertyName, source.EntityMode);
-				object propertyFromEntity = persister.GetPropertyValue(entity, propertyName, source.EntityMode);
+				object propertyFromCopy = persister.GetPropertyValue(copy, propertyName);
+				object propertyFromEntity = persister.GetPropertyValue(entity, propertyName);
 				IType propertyType = persister.GetPropertyType(propertyName);
 				EntityEntry copyEntry = source.PersistenceContext.GetEntry(copy);
 
@@ -303,13 +312,13 @@ namespace NHibernate.Event.Default
 			object id = @event.RequestedId;
 			if (id == null)
 			{
-				id = persister.GetIdentifier(entity, source.EntityMode);
+				id = persister.GetIdentifier(entity);
 			}
 			else
 			{
 				// check that entity id = requestedId
-				object entityId = persister.GetIdentifier(entity, source.EntityMode);
-				if (!persister.IdentifierType.IsEqual(id, entityId, source.EntityMode, source.Factory))
+				object entityId = persister.GetIdentifier(entity);
+				if (!persister.IdentifierType.IsEqual(id, entityId, source.Factory))
 				{
 					throw new HibernateException("merge requested with id not matching id of passed entity");
 				}
@@ -320,7 +329,7 @@ namespace NHibernate.Event.Default
 
 			//we must clone embedded composite identifiers, or
 			//we will get back the same instance that we pass in
-			object clonedIdentifier = persister.IdentifierType.DeepCopy(id, source.EntityMode, source.Factory);
+			object clonedIdentifier = persister.IdentifierType.DeepCopy(id, source.Factory);
 			object result = source.Get(persister.EntityName, clonedIdentifier);
 
 			source.FetchProfile = previousFetchProfile;
@@ -379,7 +388,7 @@ namespace NHibernate.Event.Default
 
 		protected virtual bool InvokeUpdateLifecycle(object entity, IEntityPersister persister, IEventSource source)
 		{
-			if (persister.ImplementsLifecycle(source.EntityMode))
+			if (persister.ImplementsLifecycle)
 			{
 				log.Debug("calling onUpdate()");
 				if (((ILifecycle)entity).OnUpdate(source) == LifecycleVeto.Veto)
@@ -420,8 +429,8 @@ namespace NHibernate.Event.Default
 			// (though during a separate operation) in which it was
 			// originally persisted/saved
 			bool changed =
-				!persister.VersionType.IsSame(persister.GetVersion(target, source.EntityMode),
-				                              persister.GetVersion(entity, source.EntityMode), source.EntityMode);
+				!persister.VersionType.IsSame(persister.GetVersion(target),
+				                              persister.GetVersion(entity));
 
 			// TODO : perhaps we should additionally require that the incoming entity
 			// version be equivalent to the defined unsaved-value?
@@ -433,7 +442,7 @@ namespace NHibernate.Event.Default
 			EntityEntry entry = source.PersistenceContext.GetEntry(entity);
 			if (entry == null)
 			{
-				object id = persister.GetIdentifier(entity, source.EntityMode);
+				object id = persister.GetIdentifier(entity);
 				if (id != null)
 				{
 					EntityKey key = source.GenerateEntityKey(id, persister);
@@ -457,11 +466,11 @@ namespace NHibernate.Event.Default
 		protected virtual void CopyValues(IEntityPersister persister, object entity, object target, ISessionImplementor source, IDictionary copyCache)
 		{
 			object[] copiedValues =
-				TypeHelper.Replace(persister.GetPropertyValues(entity, source.EntityMode),
-				                    persister.GetPropertyValues(target, source.EntityMode), persister.PropertyTypes, source, target,
+				TypeHelper.Replace(persister.GetPropertyValues(entity),
+				                    persister.GetPropertyValues(target), persister.PropertyTypes, source, target,
 				                    copyCache);
 
-			persister.SetPropertyValues(target, copiedValues, source.EntityMode);
+			persister.SetPropertyValues(target, copiedValues);
 		}
 
 		protected virtual void CopyValues(IEntityPersister persister, object entity, object target, ISessionImplementor source, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection)
@@ -474,19 +483,19 @@ namespace NHibernate.Event.Default
 				// replacement to associations types (value types were already replaced
 				// during the first pass)
 				copiedValues =
-					TypeHelper.ReplaceAssociations(persister.GetPropertyValues(entity, source.EntityMode),
-					                                persister.GetPropertyValues(target, source.EntityMode), persister.PropertyTypes,
+					TypeHelper.ReplaceAssociations(persister.GetPropertyValues(entity),
+					                                persister.GetPropertyValues(target), persister.PropertyTypes,
 					                                source, target, copyCache, foreignKeyDirection);
 			}
 			else
 			{
 				copiedValues =
-					TypeHelper.Replace(persister.GetPropertyValues(entity, source.EntityMode),
-					                    persister.GetPropertyValues(target, source.EntityMode), persister.PropertyTypes, source, target,
+					TypeHelper.Replace(persister.GetPropertyValues(entity),
+					                    persister.GetPropertyValues(target), persister.PropertyTypes, source, target,
 					                    copyCache, foreignKeyDirection);
 			}
 
-			persister.SetPropertyValues(target, copiedValues, source.EntityMode);
+			persister.SetPropertyValues(target, copiedValues);
 		}
 
 		/// <summary>

@@ -33,7 +33,7 @@ namespace NHibernate.Id
 	/// alternative.
 	/// </p>
 	/// </remarks>
-	public class SequenceHiLoGenerator : SequenceGenerator
+	public partial class SequenceHiLoGenerator : SequenceGenerator
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SequenceHiLoGenerator));
 
@@ -90,7 +90,7 @@ namespace NHibernate.Id
 			if (lo > maxLo)
 			{
 				long hival = Convert.ToInt64(base.Generate(session, obj));
-				lo = 1;
+				lo = (hival == 0) ? 1 : 0;
 				hi = hival * (maxLo + 1);
 				if (log.IsDebugEnabled)
 					log.Debug("new hi value: " + hival);

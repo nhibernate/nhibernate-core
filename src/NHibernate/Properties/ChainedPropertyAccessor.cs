@@ -2,6 +2,8 @@ using System;
 
 namespace NHibernate.Properties
 {
+	// Since v5
+	[Obsolete("This class has no more usages in NHibernate and will be removed in a future version.")]
 	[Serializable]
 	public class ChainedPropertyAccessor : IPropertyAccessor
 	{

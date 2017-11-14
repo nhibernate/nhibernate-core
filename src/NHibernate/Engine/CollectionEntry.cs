@@ -12,7 +12,7 @@ namespace NHibernate.Engine
 	/// of a collection with respect to its persistent state
 	/// </summary>
 	[Serializable]
-	public class CollectionEntry
+	public partial class CollectionEntry
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (CollectionEntry));
 

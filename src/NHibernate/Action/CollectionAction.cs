@@ -14,7 +14,7 @@ namespace NHibernate.Action
 	/// Any action relating to insert/update/delete of a collection
 	/// </summary>
 	[Serializable]
-	public abstract class CollectionAction : IExecutable, IComparable<CollectionAction>, IDeserializationCallback
+	public abstract partial class CollectionAction : IExecutable, IComparable<CollectionAction>, IDeserializationCallback
 	{
 		private readonly object key;
 		private object finalKey;
@@ -114,16 +114,19 @@ namespace NHibernate.Action
 
 		public virtual AfterTransactionCompletionProcessDelegate AfterTransactionCompletionProcess
 		{
+
 			get
 			{
-				return new AfterTransactionCompletionProcessDelegate((success) =>
+				// Only make sense to add the delegate if there is a cache.
+				if (persister.HasCache)
 				{
-					if (persister.HasCache)
+					return new AfterTransactionCompletionProcessDelegate((success) =>
 					{
-						CacheKey ck = Session.GenerateCacheKey(key, persister.KeyType, persister.Role);
+						CacheKey ck = new CacheKey(key, persister.KeyType, persister.Role, Session.Factory);
 						persister.Cache.Release(ck, softLock);
-					}
-				});
+					});
+				}
+				return null; 
 			}
 		}
 		
@@ -161,7 +164,7 @@ namespace NHibernate.Action
 				return roleComparison;
 			}
 			//then by fk
-			return persister.KeyType.Compare(key, other.key, session.EntityMode);
+			return persister.KeyType.Compare(key, other.key);
 		}
 
 		#endregion

@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-
+using System.Threading;
 using NHibernate.Criterion.Lambda;
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -59,7 +59,7 @@ namespace NHibernate.Criterion
 	}
 
 	[Serializable]
-	public abstract class QueryOver<TRoot> : QueryOver, IQueryOver<TRoot>
+	public abstract partial class QueryOver<TRoot> : QueryOver, IQueryOver<TRoot>
 	{
 
 		private IList<TRoot> List()
@@ -82,12 +82,12 @@ namespace NHibernate.Criterion
 			return criteria.UniqueResult<U>();
 		}
 
-		private IEnumerable<TRoot> Future()
+		private IFutureEnumerable<TRoot> Future()
 		{
 			return criteria.Future<TRoot>();
 		}
 
-		private IEnumerable<U> Future<U>()
+		private IFutureEnumerable<U> Future<U>()
 		{
 			return criteria.Future<U>();
 		}
@@ -234,10 +234,10 @@ namespace NHibernate.Criterion
 		U IQueryOver<TRoot>.SingleOrDefault<U>()
 		{ return SingleOrDefault<U>(); }
 
-		IEnumerable<TRoot> IQueryOver<TRoot>.Future()
+		IFutureEnumerable<TRoot> IQueryOver<TRoot>.Future()
 		{ return Future(); }
 
-		IEnumerable<U> IQueryOver<TRoot>.Future<U>()
+		IFutureEnumerable<U> IQueryOver<TRoot>.Future<U>()
 		{ return Future<U>(); }
 
 		IFutureValue<TRoot> IQueryOver<TRoot>.FutureValue()
@@ -342,6 +342,11 @@ namespace NHibernate.Criterion
 			return AddNot(expression);
 		}
 
+		public QueryOver<TRoot, TSubType> AndNot(ICriterion expression)
+		{
+			return AddNot(expression);
+		}
+		
 		public QueryOverRestrictionBuilder<TRoot,TSubType> AndRestrictionOn(Expression<Func<TSubType, object>> expression)
 		{
 			return new QueryOverRestrictionBuilder<TRoot,TSubType>(this, ExpressionProcessor.FindMemberProjection(expression.Body));
@@ -373,6 +378,11 @@ namespace NHibernate.Criterion
 		}
 
 		public QueryOver<TRoot,TSubType> WhereNot(Expression<Func<bool>> expression)
+		{
+			return AddNot(expression);
+		}
+
+		public QueryOver<TRoot, TSubType> WhereNot(ICriterion expression)
 		{
 			return AddNot(expression);
 		}
@@ -774,7 +784,12 @@ namespace NHibernate.Criterion
 			return this;
 		}
 
-
+		private QueryOver<TRoot, TSubType> AddNot(ICriterion expression)
+		{
+			criteria.Add(Restrictions.Not(expression));
+			return this;
+		}
+		
 		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.And(Expression<Func<TSubType, bool>> expression)
 		{ return And(expression); }
 
@@ -787,7 +802,10 @@ namespace NHibernate.Criterion
 		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.AndNot(Expression<Func<TSubType, bool>> expression)
 		{ return AndNot(expression); }
 
-		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.AndNot(Expression<Func<bool>> expression)
+		IQueryOver<TRoot, TSubType> IQueryOver<TRoot, TSubType>.AndNot(Expression<Func<bool>> expression)
+		{ return AndNot(expression); }
+
+		IQueryOver<TRoot, TSubType> IQueryOver<TRoot, TSubType>.AndNot(ICriterion expression)
 		{ return AndNot(expression); }
 
 		IQueryOverRestrictionBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.AndRestrictionOn(Expression<Func<TSubType, object>> expression)
@@ -809,6 +827,9 @@ namespace NHibernate.Criterion
 		{ return WhereNot(expression); }
 
 		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.WhereNot(Expression<Func<bool>> expression)
+		{ return WhereNot(expression); }
+
+		IQueryOver<TRoot, TSubType> IQueryOver<TRoot, TSubType>.WhereNot(ICriterion expression)
 		{ return WhereNot(expression); }
 
 		IQueryOverRestrictionBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.WhereRestrictionOn(Expression<Func<TSubType, object>> expression)

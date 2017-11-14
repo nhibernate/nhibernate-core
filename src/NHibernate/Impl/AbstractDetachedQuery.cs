@@ -115,7 +115,7 @@ namespace NHibernate.Impl
 
 		public IDetachedQuery SetParameter(int position, object val, IType type)
 		{
-			posParams[position] = new TypedValue(type, val, EntityMode.Poco);
+			posParams[position] = new TypedValue(type, val);
 			return this;
 		}
 
@@ -123,7 +123,7 @@ namespace NHibernate.Impl
 		{
 			if (string.IsNullOrEmpty(name))
 				throw new ArgumentNullException("name", "Is null or empty.");
-			namedParams[name] = new TypedValue(type, val, EntityMode.Poco);
+			namedParams[name] = new TypedValue(type, val);
 			return this;
 		}
 
@@ -145,7 +145,7 @@ namespace NHibernate.Impl
 		{
 			if (string.IsNullOrEmpty(name))
 				throw new ArgumentNullException("name", "Is null or empty.");
-			namedListParams[name] = new TypedValue(type, vals, EntityMode.Poco);
+			namedListParams[name] = new TypedValue(type, vals);
 			return this;
 		}
 
@@ -234,6 +234,20 @@ namespace NHibernate.Impl
 		public IDetachedQuery SetDateTime(string name, DateTime val)
 		{
 			SetParameter(name, val, NHibernateUtil.DateTime);
+			return this;
+		}
+
+		/// <inheritdoc />
+		public IDetachedQuery SetDateTimeNoMs(int position, DateTime val)
+		{
+			SetParameter(position, val, NHibernateUtil.DateTimeNoMs);
+			return this;
+		}
+
+		/// <inheritdoc />
+		public IDetachedQuery SetDateTimeNoMs(string name, DateTime val)
+		{
+			SetParameter(name, val, NHibernateUtil.DateTimeNoMs);
 			return this;
 		}
 
@@ -357,12 +371,16 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		// Since v5.0
+		[Obsolete("Use SetDateTime instead.")]
 		public IDetachedQuery SetTimestamp(int position, DateTime val)
 		{
 			SetParameter(position, val, NHibernateUtil.Timestamp);
 			return this;
 		}
 
+		// Since v5.0
+		[Obsolete("Use SetDateTime instead.")]
 		public IDetachedQuery SetTimestamp(string name, DateTime val)
 		{
 			SetParameter(name, val, NHibernateUtil.Timestamp);

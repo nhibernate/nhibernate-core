@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
@@ -17,7 +18,7 @@ namespace NHibernate.Dialect.Lock
 	/// For non-read locks, this is achieved through the Dialect's specific
 	/// SELECT ... FOR UPDATE syntax.
 	/// </remarks>
-	public class SelectLockingStrategy : ILockingStrategy
+	public partial class SelectLockingStrategy : ILockingStrategy
 	{
 		private readonly ILockable lockable;
 		private readonly LockMode lockMode;
@@ -56,8 +57,8 @@ namespace NHibernate.Dialect.Lock
 			ISessionFactoryImplementor factory = session.Factory;
 			try
 			{
-				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, lockable.IdAndVersionSqlTypes);
-				IDataReader rs = null;
+				var st = session.Batcher.PrepareCommand(CommandType.Text, sql, lockable.IdAndVersionSqlTypes);
+				DbDataReader rs = null;
 				try
 				{
 					lockable.IdentifierType.NullSafeSet(st, id, 0, session);

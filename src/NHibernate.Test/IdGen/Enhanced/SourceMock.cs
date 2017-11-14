@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.IdGen.Enhanced
 {
-	public class SourceMock : IAccessCallback
+	public partial class SourceMock : IAccessCallback
 	{
 		private long _val;
 		private readonly long _initialValue;

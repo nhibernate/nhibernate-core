@@ -4,53 +4,106 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Type;
+using NHibernate.Util;
+using System.Threading.Tasks;
 
 namespace NHibernate.Linq
 {
-	public interface INhQueryProvider : IQueryProvider
+	public partial interface INhQueryProvider : IQueryProvider
 	{
-		object ExecuteFuture(Expression expression);
+		IFutureEnumerable<TResult> ExecuteFuture<TResult>(Expression expression);
+		IFutureValue<TResult> ExecuteFutureValue<TResult>(Expression expression);
 		void SetResultTransformerAndAdditionalCriteria(IQuery query, NhLinqExpression nhExpression, IDictionary<string, Tuple<object, IType>> parameters);
+		int ExecuteDml<T>(QueryMode queryMode, Expression expression);
+		Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken);
 	}
 
-	public class DefaultQueryProvider : INhQueryProvider
+	/// <summary>
+	/// The extended <see cref="T:System.Linq.IQueryProvider" /> that supports setting options for underlying <see cref="T:NHibernate.IQuery" />.
+	/// </summary>
+	public interface IQueryProviderWithOptions : IQueryProvider
 	{
-		private static readonly MethodInfo CreateQueryMethodDefinition = ReflectionHelper.GetMethodDefinition((INhQueryProvider p) => p.CreateQuery<object>(null));
+		/// <summary>
+		/// Creates a copy of a current provider with set query options.
+		/// </summary>
+		/// <param name="setOptions">An options setter.</param>
+		/// <returns>A new <see cref="IQueryProvider"/> with options.</returns>
+		IQueryProvider WithOptions(Action<NhQueryableOptions> setOptions);
+	}
 
-		private readonly WeakReference _session;
+	public partial class DefaultQueryProvider : INhQueryProvider, IQueryProviderWithOptions
+	{
+		private static readonly MethodInfo CreateQueryMethodDefinition = ReflectHelper.GetMethodDefinition((INhQueryProvider p) => p.CreateQuery<object>(null));
+
+		private readonly WeakReference<ISessionImplementor> _session;
+
+		private readonly NhQueryableOptions _options;
 
 		public DefaultQueryProvider(ISessionImplementor session)
 		{
-			_session = new WeakReference(session, true);
+			// Short reference (no trackResurrection). If the session gets garbage collected, it will be in an unpredictable state:
+			// better throw rather than resurrecting it.
+			// https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/weak-references
+			_session = new WeakReference<ISessionImplementor>(session);
 		}
+
+		public DefaultQueryProvider(ISessionImplementor session, object collection)
+			: this(session)
+		{
+			Collection = collection;
+		}
+
+		private DefaultQueryProvider(ISessionImplementor session, object collection, NhQueryableOptions options)
+			: this(session, collection)
+		{
+			_options = options;
+		}
+
+		public object Collection { get; }
 
 		protected virtual ISessionImplementor Session
 		{
-			get { return _session.Target as ISessionImplementor; }
+			get
+			{
+				if (!_session.TryGetTarget(out var target))
+					throw new InvalidOperationException("Session has already been garbage collected");
+				return target;
+			}
 		}
 
 		public virtual object Execute(Expression expression)
 		{
 			IQuery query;
-			NhLinqExpression nhQuery;
-			NhLinqExpression nhLinqExpression = PrepareQuery(expression, out query, out nhQuery);
+			NhLinqExpression nhLinqExpression = PrepareQuery(expression, out query);
 
-			return ExecuteQuery(nhLinqExpression, query, nhQuery);
+			return ExecuteQuery(nhLinqExpression, query, nhLinqExpression);
 		}
 
 		public TResult Execute<TResult>(Expression expression)
 		{
-			return (TResult) Execute(expression);
+			return (TResult)Execute(expression);
+		}
+
+		public IQueryProvider WithOptions(Action<NhQueryableOptions> setOptions)
+		{
+			if (setOptions == null) throw new ArgumentNullException(nameof(setOptions));
+
+			var options = _options != null
+				? _options.Clone()
+				: new NhQueryableOptions();
+			setOptions(options);
+			return new DefaultQueryProvider(Session, Collection, options);
 		}
 
 		public virtual IQueryable CreateQuery(Expression expression)
 		{
 			MethodInfo m = CreateQueryMethodDefinition.MakeGenericMethod(expression.Type.GetGenericArguments()[0]);
 
-			return (IQueryable) m.Invoke(this, new object[] {expression});
+			return (IQueryable)m.Invoke(this, new object[] { expression });
 		}
 
 		public virtual IQueryable<T> CreateQuery<T>(Expression expression)
@@ -58,54 +111,99 @@ namespace NHibernate.Linq
 			return new NhQueryable<T>(this, expression);
 		}
 
-		public virtual object ExecuteFuture(Expression expression)
+		public virtual IFutureEnumerable<TResult> ExecuteFuture<TResult>(Expression expression)
 		{
-			IQuery query;
-			NhLinqExpression nhQuery;
-			NhLinqExpression nhLinqExpression = PrepareQuery(expression, out query, out nhQuery);
-			return ExecuteFutureQuery(nhLinqExpression, query, nhQuery);
+			var nhExpression = PrepareQuery(expression, out var query);
+
+			var result = query.Future<TResult>();
+			SetupFutureResult(nhExpression, (IDelayedValue)result);
+
+			return result;
 		}
 
-		protected virtual NhLinqExpression PrepareQuery(Expression expression, out IQuery query, out NhLinqExpression nhQuery)
+		public virtual IFutureValue<TResult> ExecuteFutureValue<TResult>(Expression expression)
+		{
+			var nhExpression = PrepareQuery(expression, out var query);
+
+			var result = query.FutureValue<TResult>();
+			SetupFutureResult(nhExpression, (IDelayedValue)result);
+
+			return result;
+		}
+
+		private static void SetupFutureResult(NhLinqExpression nhExpression, IDelayedValue result)
+		{
+			if (nhExpression.ExpressionToHqlTranslationResults.PostExecuteTransformer == null)
+				return;
+
+			result.ExecuteOnEval = nhExpression.ExpressionToHqlTranslationResults.PostExecuteTransformer;
+		}
+
+		public async Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
+		{
+			return (TResult)await ExecuteAsync(expression, cancellationToken).ConfigureAwait(false);
+		}
+
+		public virtual Task<object> ExecuteAsync(Expression expression, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
+			{
+				var nhLinqExpression = PrepareQuery(expression, out var query);
+				return ExecuteQueryAsync(nhLinqExpression, query, nhLinqExpression, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		protected virtual NhLinqExpression PrepareQuery(Expression expression, out IQuery query)
 		{
 			var nhLinqExpression = new NhLinqExpression(expression, Session.Factory);
 
-			query = Session.CreateQuery(nhLinqExpression);
-
-			nhQuery = (NhLinqExpression) ((ExpressionQueryImpl) query).QueryExpression;
-
-			SetParameters(query, nhLinqExpression.ParameterValuesByName);
-			SetResultTransformerAndAdditionalCriteria(query, nhQuery, nhLinqExpression.ParameterValuesByName);
-			return nhLinqExpression;
-		}
-
-		protected virtual object ExecuteFutureQuery(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery)
-		{
-			MethodInfo method;
-			if (nhLinqExpression.ReturnType == NhLinqExpressionReturnType.Sequence)
+			if (Collection == null)
 			{
-				method = typeof (IQuery).GetMethod("Future").MakeGenericMethod(nhQuery.Type);
+				query = Session.CreateQuery(nhLinqExpression);
 			}
 			else
 			{
-				method = typeof (IQuery).GetMethod("FutureValue").MakeGenericMethod(nhQuery.Type);
+				query = Session.CreateFilter(Collection, nhLinqExpression);
 			}
 
-			object result = method.Invoke(query, new object[0]);
+			SetParameters(query, nhLinqExpression.ParameterValuesByName);
+			ApplyOptions(query);
+			SetResultTransformerAndAdditionalCriteria(query, nhLinqExpression, nhLinqExpression.ParameterValuesByName);
 
-			if (nhQuery.ExpressionToHqlTranslationResults.PostExecuteTransformer != null)
-			{
-				((IDelayedValue) result).ExecuteOnEval = nhQuery.ExpressionToHqlTranslationResults.PostExecuteTransformer;
-			}
+			return nhLinqExpression;
+		}
 
-			return result;
+		private void ApplyOptions(IQuery query)
+		{
+			if (_options == null) 
+				return;
+
+			if (_options.Timeout.HasValue)
+				query.SetTimeout(_options.Timeout.Value);
+			
+			if (_options.Cacheable.HasValue)
+				query.SetCacheable(_options.Cacheable.Value);
+			
+			if (_options.CacheMode.HasValue)
+				query.SetCacheMode(_options.CacheMode.Value);
+			
+			if (_options.CacheRegion != null)
+				query.SetCacheRegion(_options.CacheRegion);
 		}
 
 		protected virtual object ExecuteQuery(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery)
 		{
 			IList results = query.List();
 
-			if (nhQuery.ExpressionToHqlTranslationResults.PostExecuteTransformer != null)
+			if (nhQuery.ExpressionToHqlTranslationResults?.PostExecuteTransformer != null)
 			{
 				try
 				{
@@ -163,12 +261,26 @@ namespace NHibernate.Linq
 
 		public virtual void SetResultTransformerAndAdditionalCriteria(IQuery query, NhLinqExpression nhExpression, IDictionary<string, Tuple<object, IType>> parameters)
 		{
-			query.SetResultTransformer(nhExpression.ExpressionToHqlTranslationResults.ResultTransformer);
-
-			foreach (var criteria in nhExpression.ExpressionToHqlTranslationResults.AdditionalCriteria)
+			if (nhExpression.ExpressionToHqlTranslationResults != null)
 			{
-				criteria(query, parameters);
+				query.SetResultTransformer(nhExpression.ExpressionToHqlTranslationResults.ResultTransformer);
+
+				foreach (var criteria in nhExpression.ExpressionToHqlTranslationResults.AdditionalCriteria)
+				{
+					criteria(query, parameters);
+				}
 			}
+		}
+
+		public int ExecuteDml<T>(QueryMode queryMode, Expression expression)
+		{
+			var nhLinqExpression = new NhLinqDmlExpression<T>(queryMode, expression, Session.Factory);
+
+			var query = Session.CreateQuery(nhLinqExpression);
+
+			SetParameters(query, nhLinqExpression.ParameterValuesByName);
+			ApplyOptions(query);
+			return query.ExecuteUpdate();
 		}
 	}
 }

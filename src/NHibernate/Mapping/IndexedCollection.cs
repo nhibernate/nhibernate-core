@@ -14,7 +14,6 @@ namespace NHibernate.Mapping
 		public const string DefaultIndexColumnName = "idx";
 
 		private SimpleValue index;
-		private string indexNodeName;
 
 		protected IndexedCollection(PersistentClass owner) : base(owner)
 		{
@@ -34,12 +33,6 @@ namespace NHibernate.Mapping
 		public virtual bool IsList
 		{
 			get { return false; }
-		}
-
-		public string IndexNodeName
-		{
-			get { return indexNodeName; }
-			set { indexNodeName = value; }
 		}
 
 		public override void CreatePrimaryKey()
@@ -77,10 +70,6 @@ namespace NHibernate.Mapping
 			{
 				throw new MappingException(
 					string.Format("collection index mapping has wrong number of columns: {0} type: {1}", Role, Index.Type.Name));
-			}
-			if (indexNodeName != null && !indexNodeName.StartsWith("@"))
-			{
-				throw new MappingException("index node must be an attribute: " + indexNodeName);
 			}
 		}
 	}

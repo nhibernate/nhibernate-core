@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="false">
+  <class
+    name="NHibernate.Test.TypesTest.DateTimeClass, NHibernate.Test"
+    table="bc_datetime">
+    <id name="Id" column="id">
+      <generator class="assigned"/>
+    </id>
+    <version name="Revision" column="`Revision`" type="timestamp"/>
+    <property name="Value" column="`Value`" type="timestamp"/>
+    <!-- Testing obsolete message -->
+    <property name="NullableValue" type="NHibernate.Type.TimestampType"/>
+  </class>
+</hibernate-mapping>

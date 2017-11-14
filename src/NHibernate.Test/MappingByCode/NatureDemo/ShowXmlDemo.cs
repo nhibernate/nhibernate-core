@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.NatureDemo
 {
+	[TestFixture]
 	public class ShowXmlDemo
 	{
 		[Test, Explicit]

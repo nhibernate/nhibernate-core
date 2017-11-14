@@ -114,13 +114,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				switch (timestampSchema.source)
 				{
 					case HbmTimestampSource.Vm:
-						simpleValue.TypeName = NHibernateUtil.Timestamp.Name; 
+						simpleValue.TypeName = NHibernateUtil.DateTime.Name;
 						break;
 					case HbmTimestampSource.Db:
-						simpleValue.TypeName = NHibernateUtil.DbTimestamp.Name; 
+						simpleValue.TypeName = NHibernateUtil.DbTimestamp.Name;
 						break;
 					default:
-						simpleValue.TypeName = NHibernateUtil.Timestamp.Name;
+						simpleValue.TypeName = NHibernateUtil.DateTime.Name;
 						break;
 				}
 			}

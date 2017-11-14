@@ -155,6 +155,14 @@ namespace NHibernate.Test.DialectTest
 				EXEC    get_person_summary @id");
 		}
 
+		[Test]
+		public void GetDropSequenceString()
+		{
+			var d = new MsSql2012Dialect();
+
+			Assert.That(d.GetDropSequenceString("[foo].[bar_seq]"), Is.EqualTo("IF EXISTS (SELECT * FROM sys.sequences WHERE object_id = OBJECT_ID(N'[foo].[bar_seq]')) DROP SEQUENCE [foo].[bar_seq]"));
+		}
+
 		private static void VerifyLimitStringForStoredProcedureCalls(string sql)
 		{
 			var d = new MsSql2012Dialect();

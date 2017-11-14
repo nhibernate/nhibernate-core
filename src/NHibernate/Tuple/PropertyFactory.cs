@@ -40,7 +40,7 @@ namespace NHibernate.Tuple
 			}
 			else
 			{
-				return new IdentifierProperty(property.Name, property.NodeName, type, mappedEntity.HasEmbeddedIdentifier, unsavedValue, generator);
+				return new IdentifierProperty(property.Name, type, mappedEntity.HasEmbeddedIdentifier, unsavedValue, generator);
 			}
 		}
 
@@ -66,7 +66,6 @@ namespace NHibernate.Tuple
 
 			return new VersionProperty(
 				property.Name,
-				property.NodeName,
 				property.Value.Type,
 				lazy,
 				property.IsInsertable,
@@ -104,7 +103,6 @@ namespace NHibernate.Tuple
 
 			return new StandardProperty(
 				property.Name,
-				property.NodeName,
 				type,
 				lazyAvailable && property.IsLazy,
 				property.IsInsertable,

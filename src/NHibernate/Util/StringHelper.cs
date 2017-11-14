@@ -398,13 +398,16 @@ namespace NHibernate.Util
 		/// <param name="placeholders"></param>
 		/// <param name="replacements"></param>
 		/// <returns></returns>
-		public static string[] Multiply(string str, IEnumerator placeholders, IEnumerator replacements)
+		public static string[] Multiply(string str, IEnumerable<object> placeholders, IEnumerable<object> replacements)
 		{
-			string[] result = new string[] { str };
-			while (placeholders.MoveNext())
+			var result = new [] { str };
+			using (var replacementsIterator = replacements.GetEnumerator())
 			{
-				replacements.MoveNext();
-				result = Multiply(result, placeholders.Current as string, replacements.Current as string[]);
+				foreach (var placeholder in placeholders)
+				{
+					replacementsIterator.MoveNext();
+					result = Multiply(result, placeholder as string, replacementsIterator.Current as string[]);
+				}
 			}
 			return result;
 		}

@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.PolymorphicGetAndLoad
 {
+	[TestFixture]
 	public class PolymorphicGetAndLoadTest: TestCase
 	{
 		protected override string MappingsAssembly
@@ -204,10 +205,10 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 			using (var s = OpenSession())
 			{
 				Assert.That(() => s.Load<IMultiGraphNamed>(1), Throws.TypeOf<HibernateException>()
-																	 .And.Message.ContainsSubstring("Ambiguous")
-																	 .And.Message.ContainsSubstring("GraphA")
-																	 .And.Message.ContainsSubstring("GraphB")
-																	 .And.Message.ContainsSubstring("IMultiGraphNamed"));
+																	 .And.Message.Contains("Ambiguous")
+																	 .And.Message.Contains("GraphA")
+																	 .And.Message.Contains("GraphB")
+																	 .And.Message.Contains("IMultiGraphNamed"));
 			}
 		}
 
@@ -218,10 +219,10 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 			{
 				Assert.That(() => s.Get<IMultiGraphNamed>(1),
 							Throws.TypeOf<HibernateException>()
-								  .And.Message.StringContaining("Ambiguous")
-								  .And.Message.StringContaining("GraphA")
-								  .And.Message.StringContaining("GraphB")
-								  .And.Message.StringContaining("IMultiGraphNamed"));
+								  .And.Message.Contains("Ambiguous")
+								  .And.Message.Contains("GraphA")
+								  .And.Message.Contains("GraphB")
+								  .And.Message.Contains("IMultiGraphNamed"));
 			}
 		}
 

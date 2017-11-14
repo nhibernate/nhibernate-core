@@ -11,6 +11,7 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 	/// <summary>
 	/// Hibernate tests ported from trunk revision 19910 (July 8, 2010)
 	/// </summary>
+	[TestFixture]
 	public abstract class AbstractEntityWithManyToManyTest : TestCase
 	{
 		private bool isPlanContractsInverse;
@@ -33,11 +34,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 		{
 			base.OnSetUp();
 			
-			isPlanContractsInverse = sessions.GetCollectionPersister(typeof(Plan).FullName + ".Contracts").IsInverse;
+			isPlanContractsInverse = Sfi.GetCollectionPersister(typeof(Plan).FullName + ".Contracts").IsInverse;
 
 			try
 			{
-				sessions.GetCollectionPersister(typeof(Contract).FullName + ".Plans");
+				Sfi.GetCollectionPersister(typeof(Contract).FullName + ".Plans");
 				isPlanContractsBidirectional = true;
 			}
 			catch (MappingException)
@@ -45,8 +46,8 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 				isPlanContractsBidirectional = false;
 			}
 
-			isPlanVersioned = sessions.GetEntityPersister(typeof(Plan).FullName).IsVersioned;
-			isContractVersioned = sessions.GetEntityPersister(typeof(Contract).FullName).IsVersioned;
+			isPlanVersioned = Sfi.GetEntityPersister(typeof(Plan).FullName).IsVersioned;
+			isContractVersioned = Sfi.GetEntityPersister(typeof(Contract).FullName).IsVersioned;
 		}
 		
 		[Test]

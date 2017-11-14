@@ -2,9 +2,9 @@
     <title>HQL: The Hibernate Query Language</title>
     
     <para>
-        NHibernate is equiped with an extremely powerful query language that (quite intentionally)
+        NHibernate is equipped with an extremely powerful query language that (quite intentionally)
         looks very much like SQL. But don't be fooled by the syntax; HQL is fully object-oriented,
-        understanding notions like inheritence, polymorphism and association.
+        understanding notions like inheritance, polymorphism and association.
     </para>
 
     <sect1 id="queryhql-casesensitivity">
@@ -197,7 +197,7 @@ from Eg.DomesticCat as mother
     left outer join mother.Kittens as offspr]]></programlisting>
         
         <para>
-            or as an actual typesafe object
+            or as an actual type-safe object
         </para>
         
         <programlisting><![CDATA[select new Family(mother, mate, offspr)
@@ -508,7 +508,7 @@ from Eg.DomesticCat cat where cat.Name not in ( 'Foo', 'Bar', 'Baz' )]]></progra
             configuration:
         </para>
 
-        <programlisting><![CDATA[<property name="hibernate.query.substitutions">true 1, false 0</property>]]></programlisting>
+        <programlisting><![CDATA[<property name="query.substitutions">true 1, false 0</property>]]></programlisting>
 
         <para>
             This will replace the keywords <literal>true</literal> and <literal>false</literal> with the
@@ -546,7 +546,7 @@ from Order order where minelement(order.Items) > 10000]]></programlisting>
         <para>
             The SQL functions <literal>any, some, all, exists, in</literal> are supported when passed the element 
             or index set of a collection (<literal>elements</literal> and <literal>indices</literal> functions)
-            or the result of a subquery (see below).
+            or the result of a sub-query (see below).
         </para>
 
         <programlisting><![CDATA[select mother from Eg.Cat as mother, Eg.Cat as kit
@@ -571,7 +571,7 @@ from Eg.Show show where 'fizard' in indices(show.Acts)]]></programlisting>
         <itemizedlist spacing="compact">
             <listitem>
                 <para>
-                    in a <literal>where</literal> clause: only for databases with subselects
+                    in a <literal>where</literal> clause: only for databases with sub-selects
                 </para>
             </listitem>
             <listitem>
@@ -691,7 +691,7 @@ group by foo.id]]></programlisting>
 
         <para>
             Note: You may use the <literal>elements</literal> and <literal>indices</literal> constructs
-            inside a select clause, even on databases with no subselects.
+            inside a select clause, even on databases with no sub-selects.
         </para>
 
         <para>
@@ -728,12 +728,12 @@ order by count(kitten) asc, sum(kitten.Weight) desc]]></programlisting>
     </sect1>
     
     <sect1 id="queryhql-subqueries">
-        <title>Subqueries</title>
+        <title>Sub-queries</title>
         
         <para>
-            For databases that support subselects, NHibernate supports subqueries within queries. A subquery must
-            be surrounded by parentheses (often by an SQL aggregate function call). Even correlated subqueries
-            (subqueries that refer to an alias in the outer query) are allowed.
+            For databases that support sub-selects, NHibernate supports sub-queries within queries. A sub-query must
+            be surrounded by parentheses (often by an SQL aggregate function call). Even correlated sub-queries
+            (sub-queries that refer to an alias in the outer query) are allowed.
         </para>
 
         <programlisting><![CDATA[from Eg.Cat as fatcat 
@@ -796,7 +796,7 @@ having sum(price.Amount) > :minAmount
 order by sum(price.Amount) desc]]></programlisting>
         
         <para>
-            What a monster! Actually, in real life, I'm not very keen on subqueries, so my query was 
+            What a monster! Actually, in real life, I'm not very keen on sub-queries, so my query was 
             really more like this:
         </para>
         
@@ -888,7 +888,7 @@ order by account.Type.SortOrder, account.AccountNumber, payment.DueDate]]></prog
             You can count the number of query results without actually returning them:
         </para>
 
-        <programlisting><![CDATA[int count = (int) session.CreateQuery("select count(*) from ....").UniqueResult();]]></programlisting>
+        <programlisting><![CDATA[var count = session.CreateQuery("select count(*) from ....").UniqueResult<long>();]]></programlisting>
 
         <para>
             To order a result by the size of a collection, use the following query:
@@ -901,14 +901,14 @@ group by usr.id, usr.Name
 order by count(msg)]]></programlisting>
 
         <para>
-            If your database supports subselects, you can place a condition upon selection
+            If your database supports sub-selects, you can place a condition upon selection
             size in the where clause of your query:
         </para>
 
         <programlisting><![CDATA[from User usr where size(usr.Messages) >= 1]]></programlisting>
 
         <para>
-            If your database doesn't support subselects, use the following query:
+            If your database doesn't support sub-selects, use the following query:
         </para>
 
         <programlisting><![CDATA[select usr.id, usr.Name
@@ -932,9 +932,10 @@ having count(msg) = 0]]></programlisting>
             Properties of an object can be bound to named query parameters:
         </para>
 
-        <programlisting><![CDATA[IQuery q = s.CreateQuery("from foo in class Foo where foo.Name=:Name and foo.Size=:Size");
+        <programlisting><![CDATA[IQuery q =
+    s.CreateQuery("from foo in class Foo where foo.Name=:Name and foo.Size=:Size");
 q.SetProperties(fooBean); // fooBean has properties Name and Size
-IList foos = q.List();]]></programlisting>
+var foos = q.List<Foo>();]]></programlisting>
 
         <para>
             Collections are pageable by using the <literal>IQuery</literal> interface with a filter:
@@ -943,14 +944,19 @@ IList foos = q.List();]]></programlisting>
         <programlisting><![CDATA[IQuery q = s.CreateFilter( collection, "" ); // the trivial filter
 q.setMaxResults(PageSize);
 q.setFirstResult(PageSize * pageNumber);
-IList page = q.List();]]></programlisting>
+var page = q.List<Cat>();]]></programlisting>
 
         <para>
             Collection elements may be ordered or grouped using a query filter:
         </para>
         
-        <programlisting><![CDATA[ICollection orderedCollection = s.Filter( collection, "order by this.Amount" );
-ICollection counts = s.Filter( collection, "select this.Type, count(this) group by this.Type" );]]></programlisting>
+        <programlisting><![CDATA[var orderedCollection = s
+    .CreateFilter(collection, "order by this.Amount")
+    .List<Cat>();
+var counts = s
+    .CreateFilter(collection,
+        "select this.Type, count(this) group by this.Type")
+    .List<object[]>();]]></programlisting>
 
     </sect1>
 

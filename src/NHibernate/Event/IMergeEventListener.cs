@@ -5,7 +5,7 @@ namespace NHibernate.Event
 	/// <summary>
 	/// Defines the contract for handling of merge events generated from a session.
 	/// </summary>
-	public interface IMergeEventListener
+	public partial interface IMergeEventListener
 	{
 		/// <summary> Handle the given merge event. </summary>
 		/// <param name="event">The merge event to be handled. </param>

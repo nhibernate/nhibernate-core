@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.DriverTest
 {
+	[TestFixture]
 	public class ReflectionBasedDriverTest
 	{
 		private class MyDriverWithWrongClassesAndGoodDbProviderFactory : ReflectionBasedDriver

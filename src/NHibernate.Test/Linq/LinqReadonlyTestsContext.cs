@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using NHibernate.Cfg;
 using NHibernate.Connection;
+using NHibernate.Engine;
 using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
 
@@ -48,7 +48,7 @@ namespace NHibernate.Test.Linq
 			}
 		}
 
-		[SetUp]
+		[OneTimeSetUp]
 		public void CreateNorthwindDb()
 		{
 			Configuration configuration = Configure();
@@ -85,7 +85,7 @@ namespace NHibernate.Test.Linq
 			}
 		}
 
-		[TearDown]
+		[OneTimeTearDown]
 		public void DestroyNorthwindDb()
 		{
 			Configuration configuration = Configure();
@@ -96,14 +96,15 @@ namespace NHibernate.Test.Linq
 			}
 			else
 			{
-				new SchemaExport(configuration).Drop(false, true);
+				using (var sf = configuration.BuildSessionFactory())
+					TestCase.DropSchema(false, new SchemaExport(configuration), (ISessionFactoryImplementor)sf);
 			}
 		}
 
 		private string GetScripFileName(Configuration configuration,string postFix)
 		{
 			var dialect = Dialect.Dialect.GetDialect(configuration.Properties);
-			return Path.Combine("DbScripts", dialect.GetType().Name + postFix + ".sql");
+			return Path.Combine(TestContext.CurrentContext.TestDirectory, "DbScripts", dialect.GetType().Name + postFix + ".sql");
 		}
 
 		private Configuration Configure()

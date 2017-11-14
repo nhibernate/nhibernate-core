@@ -3,7 +3,6 @@ using NHibernate.DomainModel;
 using NHibernate.DomainModel.NHSpecific;
 using NHibernate.Criterion;
 using NHibernate.SqlCommand;
-using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.ExpressionTest
@@ -28,7 +27,7 @@ namespace NHibernate.Test.ExpressionTest
 
 			ICriterion andExpression = Expression.Eq("Address", "12 Adress");
 
-			SqlString sqlString = andExpression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
+			SqlString sqlString = andExpression.ToSqlString(criteria, criteriaQuery);
 
 			string expectedSql = "sql_alias.address = ?";
 			CompareSqlStrings(sqlString, expectedSql, 1);
@@ -47,7 +46,7 @@ namespace NHibernate.Test.ExpressionTest
 
 				ICriterion andExpression = Expression.Eq("Date", now);
 
-				SqlString sqlString = andExpression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
+				SqlString sqlString = andExpression.ToSqlString(criteria, criteriaQuery);
 				string quotedColumn = dialect.QuoteForColumnName("d[at]e_");
 				string expectedSql = "sql_alias." + quotedColumn + " = ?";
 
@@ -63,7 +62,7 @@ namespace NHibernate.Test.ExpressionTest
 				CreateObjects(typeof(Simple), session);
 				ICriterion andExpression = Expression.Ge("Date", DateTime.Now);
 
-				SqlString sqlString = andExpression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
+				SqlString sqlString = andExpression.ToSqlString(criteria, criteriaQuery);
 
 				string expectedSql = "sql_alias.date_ >= ?";
 				CompareSqlStrings(sqlString, expectedSql, 1);
@@ -78,7 +77,7 @@ namespace NHibernate.Test.ExpressionTest
 				CreateObjects(typeof(Multi), session);
 
 				ICriterion expression = Expression.Eq("MisspelledProperty", DateTime.Now);
-				Assert.Throws<QueryException>(() =>expression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>()));
+				Assert.Throws<QueryException>(() =>expression.ToSqlString(criteria, criteriaQuery));
 			}
 		}
 	}
