@@ -30,5 +30,16 @@ namespace NHibernate.Linq
 			Timeout = timeout;
 			return this;
 		}
+
+		internal NhQueryableOptions Clone()
+		{
+			return new NhQueryableOptions
+			{
+				Cacheable = Cacheable,
+				CacheMode = CacheMode,
+				CacheRegion = CacheRegion,
+				Timeout = Timeout
+			};
+		}
 	}
 }
