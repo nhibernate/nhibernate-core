@@ -13,6 +13,7 @@ namespace NHibernate.Test.Logging
 		private static int infoLoggedCount = 0;
 		private static int warnLoggedCount = 0;
 
+		[Obsolete("Tests obsolete methods")]
 		private class MockLoggerFactory : ILoggerFactory
 		{
 			public IInternalLogger LoggerFor(string keyName)
@@ -26,6 +27,7 @@ namespace NHibernate.Test.Logging
 			}
 		}
 
+		[Obsolete("Tests obsolete methods")]
 		private class MockLogger : IInternalLogger
 		{
 			public bool IsErrorEnabled { get; } = true;
@@ -105,6 +107,64 @@ namespace NHibernate.Test.Logging
 			}
 		}
 
+		private class MockNHibernateLoggerFactory : INHibernateLoggerFactory
+		{
+			public IInternalLogger2 LoggerFor(string keyName)
+			{
+				return new MockLogger2();
+			}
+
+			public IInternalLogger2 LoggerFor(System.Type type)
+			{
+				return new MockLogger2();
+			}
+		}
+
+		private class MockLogger2 : IInternalLogger2
+		{
+			private bool IsErrorEnabled { get; } = true;
+			private bool IsFatalEnabled { get; } = true;
+			private bool IsDebugEnabled { get; } = false;
+			private bool IsInfoEnabled { get; } = false;
+			private bool IsWarnEnabled { get; } = true;
+
+			public void Log(InternalLogLevel logLevel, InternalLogValues state, Exception exception)
+			{
+				if (!IsEnabled(logLevel)) return;
+
+				if (state.Args?.Length > 0)
+				{
+					errorLoggedCount += string.Format(state.Format, state.Args).Length;
+				}
+				else
+				{
+					errorLoggedCount += state.Format.Length;
+				}
+			}
+
+			public bool IsEnabled(InternalLogLevel logLevel)
+			{
+				switch (logLevel)
+				{
+					case InternalLogLevel.Trace:
+					case InternalLogLevel.Debug:
+						return IsDebugEnabled;
+					case InternalLogLevel.Info:
+						return IsInfoEnabled;
+					case InternalLogLevel.Warn:
+						return IsWarnEnabled;
+					case InternalLogLevel.Error:
+						return IsErrorEnabled;
+					case InternalLogLevel.Fatal:
+						return IsFatalEnabled;
+					case InternalLogLevel.None:
+						return !IsFatalEnabled;
+					default:
+						throw new ArgumentOutOfRangeException(nameof(logLevel), logLevel, null);
+				}
+			}
+		}
+
 		private static void ResetCounts()
 		{
 			errorLoggedCount = 0;
@@ -125,6 +185,7 @@ namespace NHibernate.Test.Logging
 		[TestCase(3)]
 		[TestCase(4)]
 		[TestCase(5)]
+		[Obsolete("Tests obsolete methods")]
 		public void OldLoggerFactoryTimingsForDisabledLogging(int iteration)
 		{
 			ResetCounts();
@@ -153,6 +214,7 @@ namespace NHibernate.Test.Logging
 		[TestCase(3)]
 		[TestCase(4)]
 		[TestCase(5)]
+		[Obsolete("Tests obsolete methods")]
 		public void OldLoggerFactoryTimingsForEnabledLogging(int iteration)
 		{
 			ResetCounts();
@@ -171,6 +233,156 @@ namespace NHibernate.Test.Logging
 			Console.WriteLine(
 				"{0} wrote {1:N0} characters to log in {2} ms",
 				nameof(OldLoggerFactoryTimingsForEnabledLogging),
+				GetCounts(),
+				stopwatch.ElapsedMilliseconds);
+		}
+
+		[Test, Explicit("High-iteration performance test")]
+		[TestCase(1)]
+		[TestCase(2)]
+		[TestCase(3)]
+		[TestCase(4)]
+		[TestCase(5)]
+		[Obsolete("Tests obsolete methods")]
+		public void OldLoggerFactoryThunkedTimingsForDisabledLogging(int iteration)
+		{
+			ResetCounts();
+			ILoggerFactory loggerFactory = new MockLoggerFactory();
+			LoggerProvider.SetLoggersFactory(loggerFactory);
+			IInternalLogger2 logger2 = LoggerProvider.LoggerFor(this.GetType());
+
+			var stopwatch = Stopwatch.StartNew();
+			var iterationCount = 10000000;
+			for (int i = 0; i < iterationCount; i++)
+			{
+				logger2.Debug("message");
+				logger2.Debug("message with parameters {0}, {1}", "string", 5);
+			}
+
+			stopwatch.Stop();
+			Console.WriteLine(
+				"{0} wrote {1:N0} characters to log in {2} ms",
+				nameof(OldLoggerFactoryThunkedTimingsForDisabledLogging),
+				GetCounts(),
+				stopwatch.ElapsedMilliseconds);
+		}
+
+		[Test, Explicit("High-iteration performance test")]
+		[TestCase(1)]
+		[TestCase(2)]
+		[TestCase(3)]
+		[TestCase(4)]
+		[TestCase(5)]
+		[Obsolete("Tests obsolete methods")]
+		public void OldLoggerFactoryThunkedTimingsForEnabledLogging(int iteration)
+		{
+			ResetCounts();
+			ILoggerFactory loggerFactory = new MockLoggerFactory();
+			LoggerProvider.SetLoggersFactory(loggerFactory);
+			IInternalLogger2 logger2 = LoggerProvider.LoggerFor(this.GetType());
+
+			var stopwatch = Stopwatch.StartNew();
+			var iterationCount = 10000000;
+			for (int i = 0; i < iterationCount; i++)
+			{
+				logger2.Warn("message");
+				logger2.Warn("message with parameters {0}, {1}", "string", 5);
+			}
+
+			stopwatch.Stop();
+			Console.WriteLine(
+				"{0} wrote {1:N0} characters to log in {2} ms",
+				nameof(OldLoggerFactoryThunkedTimingsForEnabledLogging),
+				GetCounts(),
+				stopwatch.ElapsedMilliseconds);
+		}
+
+		[Test, Explicit("High-iteration performance test")]
+		[TestCase(1)]
+		[TestCase(2)]
+		[TestCase(3)]
+		[TestCase(4)]
+		[TestCase(5)]
+		[Obsolete("Tests obsolete methods")]
+		public void NewLoggerFactoryTimingsForDisabledLogging(int iteration)
+		{
+			ResetCounts();
+			INHibernateLoggerFactory loggerFactory = new MockNHibernateLoggerFactory();
+			LoggerProvider.SetLoggersFactory(loggerFactory);
+			IInternalLogger2 logger2 = LoggerProvider.LoggerFor(this.GetType());
+
+			var stopwatch = Stopwatch.StartNew();
+			var iterationCount = 10000000;
+			for (int i = 0; i < iterationCount; i++)
+			{
+				logger2.Debug("message");
+				logger2.Debug("message with parameters {0}, {1}", "string", 5);
+			}
+
+			stopwatch.Stop();
+			Console.WriteLine(
+				"{0} wrote {1:N0} characters to log in {2} ms",
+				nameof(NewLoggerFactoryTimingsForDisabledLogging),
+				GetCounts(),
+				stopwatch.ElapsedMilliseconds);
+		}
+
+		[Test, Explicit("High-iteration performance test")]
+		[TestCase(1)]
+		[TestCase(2)]
+		[TestCase(3)]
+		[TestCase(4)]
+		[TestCase(5)]
+		[Obsolete("Tests obsolete methods")]
+		public void NewLoggerFactoryTimingsForEnabledLogging(int iteration)
+		{
+			ResetCounts();
+			INHibernateLoggerFactory loggerFactory = new MockNHibernateLoggerFactory();
+			LoggerProvider.SetLoggersFactory(loggerFactory);
+			IInternalLogger2 logger2 = LoggerProvider.LoggerFor(this.GetType());
+
+			var stopwatch = Stopwatch.StartNew();
+			var iterationCount = 10000000;
+			for (int i = 0; i < iterationCount; i++)
+			{
+				logger2.Warn("message");
+				logger2.Warn("message with parameters {0}, {1}", "string", 5);
+			}
+
+			stopwatch.Stop();
+			Console.WriteLine(
+				"{0} wrote {1:N0} characters to log in {2} ms",
+				nameof(NewLoggerFactoryTimingsForEnabledLogging),
+				GetCounts(),
+				stopwatch.ElapsedMilliseconds);
+		}
+
+		[Test, Explicit("High-iteration performance test")]
+		[TestCase(1)]
+		[TestCase(2)]
+		[TestCase(3)]
+		[TestCase(4)]
+		[TestCase(5)]
+		[Obsolete("Tests obsolete methods")]
+		public void NewLoggerFactoryTimingsForNoLogging(int iteration)
+		{
+			ResetCounts();
+			INHibernateLoggerFactory loggerFactory = new NoLoggingLoggerFactory();
+			LoggerProvider.SetLoggersFactory(loggerFactory);
+			IInternalLogger2 logger2 = LoggerProvider.LoggerFor(this.GetType());
+
+			var stopwatch = Stopwatch.StartNew();
+			var iterationCount = 10000000;
+			for (int i = 0; i < iterationCount; i++)
+			{
+				logger2.Debug("message");
+				logger2.Debug("message with parameters {0}, {1}", "string", 5);
+			}
+
+			stopwatch.Stop();
+			Console.WriteLine(
+				"{0} wrote {1:N0} characters to log in {2} ms",
+				nameof(NewLoggerFactoryTimingsForDisabledLogging),
 				GetCounts(),
 				stopwatch.ElapsedMilliseconds);
 		}
