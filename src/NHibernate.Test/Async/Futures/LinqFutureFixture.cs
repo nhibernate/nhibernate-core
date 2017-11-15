@@ -397,7 +397,7 @@ namespace NHibernate.Test.Futures
 					{
 						query = query.Where(x => x.Age > j);
 					}
-					list.Add(query.SetOptions(x => x.SetCacheable(true)).ToFuture());
+					list.Add(query.WithOptions(x => x.SetCacheable(true)).ToFuture());
 				}
 				foreach (var query in list)
 				{
