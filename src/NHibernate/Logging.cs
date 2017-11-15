@@ -616,7 +616,7 @@ namespace NHibernate
 		}
 	}
 
-	public class InternalLogValues
+	public struct InternalLogValues
 	{
 		private readonly string _format;
 		private readonly object[] _args;
