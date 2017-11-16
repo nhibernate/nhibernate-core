@@ -35,7 +35,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3898
 					PromotionCount = 9999999
 				};
 				id = session.Save(employee);
-				Assert.That(employee.PromotionCount, Is.EqualTo(0));
 				tx.Commit();
 			}
 
@@ -43,6 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3898
 			using (var tx = session.BeginTransaction())
 			{
 				var employee = session.Get<Employee>(id);
+				Assert.That(employee.PromotionCount, Is.EqualTo(0));
 				employee.Name = "Employee 1 changed";
 				employee.PromotionCount++;
 				Assert.That(employee.PromotionCount, Is.EqualTo(1));
