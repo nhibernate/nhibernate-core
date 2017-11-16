@@ -45,7 +45,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3898
 				Assert.That(employee.PromotionCount, Is.EqualTo(0));
 				employee.Name = "Employee 1 changed";
 				employee.PromotionCount++;
-				Assert.That(employee.PromotionCount, Is.EqualTo(1));
 				tx.Commit();
 			}
 
