@@ -46,7 +46,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3898
 					PromotionCount = 9999999
 				};
 				id = await (session.SaveAsync(employee));
-				Assert.That(employee.PromotionCount, Is.EqualTo(0));
 				await (tx.CommitAsync());
 			}
 
@@ -54,9 +53,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3898
 			using (var tx = session.BeginTransaction())
 			{
 				var employee = await (session.GetAsync<Employee>(id));
+				Assert.That(employee.PromotionCount, Is.EqualTo(0));
 				employee.Name = "Employee 1 changed";
 				employee.PromotionCount++;
-				Assert.That(employee.PromotionCount, Is.EqualTo(1));
 				await (tx.CommitAsync());
 			}
 
