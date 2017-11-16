@@ -166,5 +166,27 @@ namespace NHibernate.Test.LazyProperty
 				Assert.That(book.FieldInterceptor, Is.EqualTo("Why not that name?updated"));
 			}
 		}
+
+		[Test]
+		public void CanMergeWithLazyProperty()
+		{
+			using (ISession s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var book = new Book
+				{
+					Name = "some name two",
+					Id = 2,
+					ALotOfText = "a lot of text ..."
+				};
+				s.Merge(book);
+				tx.Commit();
+			}
+			using (ISession s = OpenSession())
+			{
+				var book = s.Get<Book>(2);
+				Assert.That(book, Is.Not.Null);
+			}
+		}
 	}
 }
