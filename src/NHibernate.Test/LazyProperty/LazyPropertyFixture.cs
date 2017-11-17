@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Linq;
 using NHibernate.Intercept;
 using NHibernate.Tuple.Entity;
 using NUnit.Framework;
@@ -57,7 +58,7 @@ namespace NHibernate.Test.LazyProperty
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				Assert.That(s.CreateSQLQuery("delete from Book").ExecuteUpdate(), Is.EqualTo(1));
+				s.CreateQuery("delete from Book").ExecuteUpdate();
 				tx.Commit();
 			}
 		}
@@ -132,14 +133,25 @@ namespace NHibernate.Test.LazyProperty
 		public void CanLoadAndSaveObjectInDifferentSessions()
 		{
 			Book book;
+			int bookCount;
 			using (ISession s = OpenSession())
 			{
+				bookCount = s.Query<Book>().Count();
 				book = s.Get<Book>(1);
 			}
+
+			book.Name += " updated";
 
 			using (ISession s = OpenSession())
 			{
 				s.Merge(book);
+				s.Flush();
+			}
+
+			using (ISession s = OpenSession())
+			{
+				Assert.That(s.Query<Book>().Count(), Is.EqualTo(bookCount));
+				Assert.That(s.Get<Book>(1).Name, Is.EqualTo(book.Name));
 			}
 		}
 
@@ -168,8 +180,14 @@ namespace NHibernate.Test.LazyProperty
 		}
 
 		[Test]
-		public void CanMergeWithLazyProperty()
+		public void CanMergeTransientWithLazyProperty()
 		{
+			using (ISession s = OpenSession())
+			{
+				var book = s.Get<Book>(2);
+				Assert.That(book, Is.Null);
+			}
+
 			using (ISession s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
@@ -177,15 +195,19 @@ namespace NHibernate.Test.LazyProperty
 				{
 					Name = "some name two",
 					Id = 2,
-					ALotOfText = "a lot of text ..."
+					ALotOfText = "a lot of text two..."
 				};
+				// This should insert a new entity.
 				s.Merge(book);
 				tx.Commit();
 			}
+
 			using (ISession s = OpenSession())
 			{
 				var book = s.Get<Book>(2);
 				Assert.That(book, Is.Not.Null);
+				Assert.That(book.Name, Is.EqualTo("some name two"));
+				Assert.That(book.ALotOfText, Is.EqualTo("a lot of text two..."));
 			}
 		}
 	}
