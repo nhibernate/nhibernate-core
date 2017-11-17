@@ -289,23 +289,19 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					throw new MappingException("cannot specify both insert=\"true\" and generated=\"" + generation
 					                           + "\" for property: " + propertyMapping.Name);
 				}
-				else
-				{
-					property.IsInsertable = false;
-				}
-
+				property.IsInsertable = false;
+			}
+			if (generation == PropertyGeneration.Always)
+			{
 				// properties generated on update can never be updateable...
-				if (propertyMapping.updateSpecified && property.IsUpdateable && generation == PropertyGeneration.Always)
+				if (propertyMapping.updateSpecified && property.IsUpdateable)
 				{
 					// the user specifically supplied update="true",
 					// which constitutes an illegal combo
 					throw new MappingException("cannot specify both update=\"true\" and generated=\"" + generation
 					                           + "\" for property: " + propertyMapping.Name);
 				}
-				else
-				{
-					property.IsUpdateable = false;
-				}
+				property.IsUpdateable = false;
 			}
 		}
 
