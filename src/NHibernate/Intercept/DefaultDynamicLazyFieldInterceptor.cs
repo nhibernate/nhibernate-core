@@ -17,7 +17,7 @@ namespace NHibernate.Intercept
 			{
 				if (ReflectHelper.IsPropertyGet(info.TargetMethod))
 				{
-					if("get_FieldInterceptor".Equals(methodName))
+					if (IsGetFieldInterceptorCall(methodName, info.TargetMethod))
 					{
 						return FieldInterceptor;
 					}
@@ -33,7 +33,7 @@ namespace NHibernate.Intercept
 				}
 				else if (ReflectHelper.IsPropertySet(info.TargetMethod))
 				{
-					if ("set_FieldInterceptor".Equals(methodName))
+					if (IsSetFieldInterceptorCall(methodName, info.TargetMethod))
 					{
 						FieldInterceptor = (IFieldInterceptor)info.Arguments[0];
 						return null;
@@ -44,7 +44,7 @@ namespace NHibernate.Intercept
 			}
 			else
 			{
-				if ("set_FieldInterceptor".Equals(methodName))
+				if (IsSetFieldInterceptorCall(methodName, info.TargetMethod))
 				{
 					FieldInterceptor = (IFieldInterceptor)info.Arguments[0];
 					return null;
@@ -61,6 +61,16 @@ namespace NHibernate.Intercept
 				throw ReflectHelper.UnwrapTargetInvocationException(ex);
 			}
 			return returnValue;
+		}
+
+		private static bool IsGetFieldInterceptorCall(string methodName, MethodInfo targetMethod)
+		{
+			return "get_FieldInterceptor".Equals(methodName) && targetMethod.DeclaringType == typeof(IFieldInterceptorAccessor);
+		}
+
+		private static bool IsSetFieldInterceptorCall(string methodName, MethodInfo targetMethod)
+		{
+			return "set_FieldInterceptor".Equals(methodName) && targetMethod.DeclaringType == typeof(IFieldInterceptorAccessor);
 		}
 	}
 }

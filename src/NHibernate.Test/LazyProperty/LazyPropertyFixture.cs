@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using NHibernate.Intercept;
 using NHibernate.Tuple.Entity;
 using NUnit.Framework;
 
@@ -31,6 +32,11 @@ namespace NHibernate.Test.LazyProperty
 
 		protected override void OnSetUp()
 		{
+			Assert.That(
+				nameof(Book.FieldInterceptor),
+				Is.EqualTo(nameof(IFieldInterceptorAccessor.FieldInterceptor)),
+				$"Test pre-condition not met: entity property {nameof(Book.FieldInterceptor)} should have the same " +
+				$"name than {nameof(IFieldInterceptorAccessor)}.{nameof(IFieldInterceptorAccessor.FieldInterceptor)}");
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
@@ -38,7 +44,8 @@ namespace NHibernate.Test.LazyProperty
 				{
 					Name = "some name",
 					Id = 1,
-					ALotOfText = "a lot of text ..."
+					ALotOfText = "a lot of text ...",
+					FieldInterceptor = "Why not that name?"
 				});
 				tx.Commit();
 			}
@@ -65,12 +72,14 @@ namespace NHibernate.Test.LazyProperty
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Id"), Is.False);
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Name"), Is.False);
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False);
+				Assert.That(NHibernateUtil.IsPropertyInitialized(book, nameof(Book.FieldInterceptor)), Is.False);
 
 				NHibernateUtil.Initialize(book);
 
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Id"), Is.True);
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Name"), Is.True);
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False);
+				Assert.That(NHibernateUtil.IsPropertyInitialized(book, nameof(Book.FieldInterceptor)), Is.True);
 			}
 		}
 
@@ -90,6 +99,7 @@ namespace NHibernate.Test.LazyProperty
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Id"), Is.True);
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Name"), Is.True);
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False);
+				Assert.That(NHibernateUtil.IsPropertyInitialized(book, nameof(Book.FieldInterceptor)), Is.True);
 			}
 		}
 
@@ -113,6 +123,7 @@ namespace NHibernate.Test.LazyProperty
 				var book = s.Get<Book>(1);
 
 				Assert.That(book.Name, Is.EqualTo("some name"));
+				Assert.That(book.FieldInterceptor, Is.EqualTo("Why not that name?"));
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False);
 			}
 		}
@@ -132,7 +143,6 @@ namespace NHibernate.Test.LazyProperty
 			}
 		}
 
-
 		[Test]
 		public void CanUpdateNonLazyWithoutLoadingLazyProperty()
 		{
@@ -142,16 +152,18 @@ namespace NHibernate.Test.LazyProperty
 			{
 				book = s.Get<Book>(1);
 				book.Name += "updated";
+				book.FieldInterceptor += "updated";
 
-				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False);
+				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False, "Before flush and commit");
 				trans.Commit();
+				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False, "After flush and commit");
 			}
-
 
 			using (ISession s = OpenSession())
 			{
 				book = s.Get<Book>(1);
 				Assert.That(book.Name, Is.EqualTo("some nameupdated"));
+				Assert.That(book.FieldInterceptor, Is.EqualTo("Why not that name?updated"));
 			}
 		}
 	}
