@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3641
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class TestFixtureAsync : BugTestCase
 	{
@@ -42,12 +41,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3641
 				DeleteAll<Entity>(session);
 				tx.Commit();
 			}
-		}
-
-		private static async Task DeleteAllAsync<T>(ISession session, CancellationToken cancellationToken = default(CancellationToken))
-		{
-			await (session.CreateQuery("delete from " + typeof(T).Name + " where ChildInterface is not null").ExecuteUpdateAsync(cancellationToken));
-			await (session.CreateQuery("delete from " + typeof(T).Name).ExecuteUpdateAsync(cancellationToken));
 		}
 
 		private static void DeleteAll<T>(ISession session)
