@@ -211,7 +211,7 @@ namespace NHibernate.Linq
 				}
 				catch (TargetInvocationException e)
 				{
-					throw e.InnerException;
+					throw ReflectHelper.UnwrapTargetInvocationException(e);
 				}
 			}
 
