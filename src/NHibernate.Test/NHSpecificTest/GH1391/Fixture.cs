@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using NHibernate.Cfg;
@@ -10,6 +9,7 @@ using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.NHSpecificTest.GH1391
 {
+	[TestFixture]
 	public class Fixture
 	{
 		private readonly Random _random = new Random();

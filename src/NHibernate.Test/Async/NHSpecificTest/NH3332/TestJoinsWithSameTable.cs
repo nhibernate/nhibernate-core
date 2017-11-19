@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3332
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class TestJoinsWithSameTableAsync : BugTestCase
 	{
@@ -81,71 +80,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3332
 
 				Assert.That(list, Has.Count.EqualTo(1));
 			}
-		}
-
-
-		private async Task CreateObjectsAsync(ISession session, CancellationToken cancellationToken = default(CancellationToken))
-		{
-			// Create the English culture
-			Culture englishCulture = new Culture();
-
-
-			englishCulture.CountryCode = "CA";
-			englishCulture.LanguageCode = "en";
-
-			await (session.SaveOrUpdateAsync(englishCulture, cancellationToken));
-			await (session.FlushAsync(cancellationToken));
-
-			// Create the Spanish culture
-			Culture spanishCulture = new Culture();
-			spanishCulture.CountryCode = "ES";
-			spanishCulture.LanguageCode = "es";
-
-			await (session.SaveOrUpdateAsync(spanishCulture, cancellationToken));
-			await (session.FlushAsync(cancellationToken));
-
-			// Create a DataType and attach it an English description
-
-			DataType dataType1 = new DataType();
-			dataType1.Name = "int";
-
-			DataTypeDescription dataTypeDescription1 = new DataTypeDescription();
-
-			dataTypeDescription1.Culture = englishCulture;
-			dataTypeDescription1.DataType = dataType1;
-
-			dataType1.DataTypeDescriptions.Add(dataTypeDescription1);
-
-
-
-			// Create a State and attach it an English description and a Spanish description
-
-			State state1 = new State();
-			state1.Name = "Development";
-
-			StateDescription englishStateDescription = new StateDescription();
-			englishStateDescription.Culture = englishCulture;
-			englishStateDescription.State = state1;
-			//      englishStateDescription.Description = "Development - English";
-
-			state1.StateDescriptions.Add(englishStateDescription);
-
-			StateDescription spanishStateDescription = new StateDescription();
-			spanishStateDescription.Culture = spanishCulture;
-			spanishStateDescription.State = state1;
-			//      spanishStateDescription.Description = "Development - Spanish";
-
-			state1.StateDescriptions.Add(spanishStateDescription);
-
-
-			MasterEntity masterEntity = new MasterEntity();
-
-			masterEntity.Name = "MasterEntity 1";
-			masterEntity.State = state1;
-			masterEntity.DataType = dataType1;
-
-			await (session.SaveOrUpdateAsync(masterEntity, cancellationToken));
-			await (session.FlushAsync(cancellationToken));
 		}
 
 

@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2302
 {
     using System.Threading.Tasks;
-    using System.Threading;
     [TestFixture]
     public class FixtureAsync : BugTestCase
     {
@@ -196,16 +195,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2302
 						await (tx.CommitAsync());
 					}
 				}
-
-        private async Task CleanUpAsync(CancellationToken cancellationToken = default(CancellationToken))
-        {
-            using (ISession session = OpenSession())
-            using (ITransaction tx = session.BeginTransaction())
-            {
-                await (session.DeleteAsync("from StringLengthEntity", cancellationToken));
-                await (tx.CommitAsync(cancellationToken));
-            }
-        }
 
         private void CleanUp()
         {
