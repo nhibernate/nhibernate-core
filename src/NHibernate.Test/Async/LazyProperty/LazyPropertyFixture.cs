@@ -9,9 +9,11 @@
 
 
 using System.Collections;
+using System.Linq;
 using NHibernate.Intercept;
 using NHibernate.Tuple.Entity;
 using NUnit.Framework;
+using NHibernate.Linq;
 
 namespace NHibernate.Test.LazyProperty
 {
@@ -68,7 +70,7 @@ namespace NHibernate.Test.LazyProperty
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				Assert.That(s.CreateSQLQuery("delete from Book").ExecuteUpdate(), Is.EqualTo(1));
+				s.CreateQuery("delete from Book").ExecuteUpdate();
 				tx.Commit();
 			}
 		}
@@ -137,14 +139,25 @@ namespace NHibernate.Test.LazyProperty
 		public async Task CanLoadAndSaveObjectInDifferentSessionsAsync()
 		{
 			Book book;
+			int bookCount;
 			using (ISession s = OpenSession())
 			{
+				bookCount = await (s.Query<Book>().CountAsync());
 				book = await (s.GetAsync<Book>(1));
 			}
+
+			book.Name += " updated";
 
 			using (ISession s = OpenSession())
 			{
 				await (s.MergeAsync(book));
+				await (s.FlushAsync());
+			}
+
+			using (ISession s = OpenSession())
+			{
+				Assert.That(await (s.Query<Book>().CountAsync()), Is.EqualTo(bookCount));
+				Assert.That((await (s.GetAsync<Book>(1))).Name, Is.EqualTo(book.Name));
 			}
 		}
 
@@ -169,6 +182,38 @@ namespace NHibernate.Test.LazyProperty
 				book = await (s.GetAsync<Book>(1));
 				Assert.That(book.Name, Is.EqualTo("some nameupdated"));
 				Assert.That(book.FieldInterceptor, Is.EqualTo("Why not that name?updated"));
+			}
+		}
+
+		[Test]
+		public async Task CanMergeTransientWithLazyPropertyAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				var book = await (s.GetAsync<Book>(2));
+				Assert.That(book, Is.Null);
+			}
+
+			using (ISession s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var book = new Book
+				{
+					Name = "some name two",
+					Id = 2,
+					ALotOfText = "a lot of text two..."
+				};
+				// This should insert a new entity.
+				await (s.MergeAsync(book));
+				await (tx.CommitAsync());
+			}
+
+			using (ISession s = OpenSession())
+			{
+				var book = await (s.GetAsync<Book>(2));
+				Assert.That(book, Is.Not.Null);
+				Assert.That(book.Name, Is.EqualTo("some name two"));
+				Assert.That(book.ALotOfText, Is.EqualTo("a lot of text two..."));
 			}
 		}
 	}
