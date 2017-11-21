@@ -168,9 +168,10 @@ namespace NHibernate.Event.Default
 		/// <param name="transientEntities">A cache of already deleted entities. </param>
 		protected virtual void DeleteEntity(IEventSource session, object entity, EntityEntry entityEntry, bool isCascadeDeleteEnabled, IEntityPersister persister, ISet<object> transientEntities)
 		{
+			var factory = session.Factory;
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("deleting " + MessageHelper.InfoString(persister, entityEntry.Id, session.Factory));
+				log.Debug("deleting " + MessageHelper.InfoString(persister, entityEntry.Id, factory));
 			}
 
 			IPersistenceContext persistenceContext = session.PersistenceContext;
@@ -189,7 +190,7 @@ namespace NHibernate.Event.Default
 				currentState = entityEntry.LoadedState;
 			}
 
-			object[] deletedState = CreateDeletedState(persister, currentState, session);
+			object[] deletedState = CreateDeletedState(persister, currentState, factory);
 			entityEntry.DeletedState = deletedState;
 
 			session.Interceptor.OnDelete(entity, entityEntry.Id, deletedState, persister.PropertyNames, propTypes);
@@ -215,14 +216,14 @@ namespace NHibernate.Event.Default
 			//persistenceContext.removeDatabaseSnapshot(key);
 		}
 
-		private object[] CreateDeletedState(IEntityPersister persister, object[] currentState, IEventSource session)
+		private static object[] CreateDeletedState(IEntityPersister persister, object[] currentState, ISessionFactoryImplementor factory)
 		{
 			IType[] propTypes = persister.PropertyTypes;
 			object[] deletedState = new object[propTypes.Length];
 			//		TypeFactory.deepCopy( currentState, propTypes, persister.getPropertyUpdateability(), deletedState, session );
 			bool[] copyability = new bool[propTypes.Length];
 			ArrayHelper.Fill(copyability, true);
-			TypeHelper.DeepCopy(currentState, propTypes, copyability, deletedState, session);
+			TypeHelper.DeepCopy(currentState, propTypes, copyability, deletedState, factory);
 			return deletedState;
 		}
 

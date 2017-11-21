@@ -20,7 +20,20 @@ namespace NHibernate.Type
 		/// <param name="copy">An array indicating which values to include in the copy</param>
 		/// <param name="target">The array into which to copy the values</param>
 		/// <param name="session">The originating session</param>
+		//Since v5.1
+		[Obsolete]
 		public static void DeepCopy(object[] values, IType[] types, bool[] copy, object[] target, ISessionImplementor session)
+		{
+			DeepCopy(values, types, copy, target, session.Factory);
+		}
+
+		/// <summary>Deep copy a series of values from one array to another</summary>
+		/// <param name="values">The values to copy (the source)</param>
+		/// <param name="types">The value types</param>
+		/// <param name="copy">An array indicating which values to include in the copy</param>
+		/// <param name="target">The array into which to copy the values</param>
+		/// <param name="factory">The originating session factory</param>
+		public static void DeepCopy(object[] values, IType[] types, bool[] copy, object[] target, ISessionFactoryImplementor factory)
 		{
 			for (int i = 0; i < types.Length; i++)
 			{
@@ -32,12 +45,12 @@ namespace NHibernate.Type
 					}
 					else
 					{
-						target[i] = types[i].DeepCopy(values[i], session.Factory);
+						target[i] = types[i].DeepCopy(values[i], factory);
 					}
 				}
 			}
 		}
-		
+
 		/// <summary>Apply the <see cref="ICacheAssembler.BeforeAssemble" /> operation across a series of values.</summary>
 		/// <param name="row">The values</param>
 		/// <param name="types">The value types</param>

@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Diagnostics;
 
 using NHibernate.Cache;
@@ -26,7 +27,7 @@ namespace NHibernate.Engine
 	using System.Threading;
 	public static partial class TwoPhaseLoad
 	{
-		
+
 		/// <summary>
 		/// Perform the second step of 2-phase load. Fully initialize the entity instance.
 		/// After processing a JDBC result set, we "resolve" all the associations
@@ -38,7 +39,8 @@ namespace NHibernate.Engine
 			cancellationToken.ThrowIfCancellationRequested();
 			//TODO: Should this be an InitializeEntityEventListener??? (watch out for performance!)
 
-			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
+			var factory = session.Factory;
+			bool statsEnabled = factory.Statistics.IsStatisticsEnabled;
 			var stopWath = new Stopwatch();
 			if (statsEnabled)
 			{
@@ -56,7 +58,7 @@ namespace NHibernate.Engine
 			object[] hydratedState = entityEntry.LoadedState;
 
 			if (log.IsDebugEnabled)
-				log.Debug("resolving associations for " + MessageHelper.InfoString(persister, id, session.Factory));
+				log.Debug("resolving associations for " + MessageHelper.InfoString(persister, id, factory));
 
 			IType[] types = persister.PropertyTypes;
 			for (int i = 0; i < hydratedState.Length; i++)
@@ -84,12 +86,10 @@ namespace NHibernate.Engine
 
 			persister.SetPropertyValues(entity, hydratedState);
 			
-			ISessionFactoryImplementor factory = session.Factory;
-
 			if (persister.HasCache && session.CacheMode.HasFlag(CacheMode.Put))
 			{
 				if (log.IsDebugEnabled)
-					log.Debug("adding entity to second-level cache: " + MessageHelper.InfoString(persister, id, session.Factory));
+					log.Debug("adding entity to second-level cache: " + MessageHelper.InfoString(persister, id, factory));
 
 				object version = Versioning.GetVersion(hydratedState, persister);
 				CacheEntry entry =
@@ -134,7 +134,7 @@ namespace NHibernate.Engine
 			else
 			{
 				//take a snapshot
-				TypeHelper.DeepCopy(hydratedState, persister.PropertyTypes, persister.PropertyUpdateability, hydratedState, session);
+				TypeHelper.DeepCopy(hydratedState, persister.PropertyTypes, persister.PropertyUpdateability, hydratedState, factory);
 				persistenceContext.SetEntryStatus(entityEntry, Status.Loaded);
 			}
 
@@ -153,7 +153,7 @@ namespace NHibernate.Engine
 			}
 
 			if (log.IsDebugEnabled)
-				log.Debug("done materializing entity " + MessageHelper.InfoString(persister, id, session.Factory));
+				log.Debug("done materializing entity " + MessageHelper.InfoString(persister, id, factory));
 
 			if (statsEnabled)
 			{

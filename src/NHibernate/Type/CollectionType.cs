@@ -263,7 +263,7 @@ namespace NHibernate.Type
 
 					if (HasHolder())
 					{
-						session.PersistenceContext.AddCollectionHolder(collection);
+						persistenceContext.AddCollectionHolder(collection);
 					}
 				}
 

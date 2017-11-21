@@ -35,22 +35,24 @@ namespace NHibernate.Event.Default
 		protected async Task<EntityEntry> ReassociateAsync(AbstractEvent @event, object entity, object id, IEntityPersister persister, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			var source = @event.Session;
+			var factory = source.Factory;
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("Reassociating transient instance: " + MessageHelper.InfoString(persister, id, @event.Session.Factory));
+				log.Debug("Reassociating transient instance: " + MessageHelper.InfoString(persister, id, factory));
 			}
 
-			IEventSource source = @event.Session;
 			EntityKey key = source.GenerateEntityKey(id, persister);
 
-			source.PersistenceContext.CheckUniqueness(key, entity);
+			var persistenceContext = source.PersistenceContext;
+			persistenceContext.CheckUniqueness(key, entity);
 
 			//get a snapshot
 			object[] values = persister.GetPropertyValues(entity);
-			TypeHelper.DeepCopy(values, persister.PropertyTypes, persister.PropertyUpdateability, values, source);
+			TypeHelper.DeepCopy(values, persister.PropertyTypes, persister.PropertyUpdateability, values, factory);
 			object version = Versioning.GetVersion(values, persister);
 
-			EntityEntry newEntry = source.PersistenceContext.AddEntity(
+			EntityEntry newEntry = persistenceContext.AddEntity(
 				entity,
 				persister.IsMutable ? Status.Loaded : Status.ReadOnly,
 				values,

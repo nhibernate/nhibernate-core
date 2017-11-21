@@ -89,7 +89,8 @@ namespace NHibernate.Event.Default
 			cancellationToken.ThrowIfCancellationRequested();
 			log.Debug("Processing unreferenced collections");
 
-			ICollection list = IdentityMap.Entries(session.PersistenceContext.CollectionEntries);
+			var persistenceContext = session.PersistenceContext;
+			ICollection list = IdentityMap.Entries(persistenceContext.CollectionEntries);
 			foreach (DictionaryEntry me in list)
 			{
 				CollectionEntry ce = (CollectionEntry) me.Value;
@@ -103,7 +104,7 @@ namespace NHibernate.Event.Default
 
 			log.Debug("Scheduling collection removes/(re)creates/updates");
 
-			list = IdentityMap.Entries(session.PersistenceContext.CollectionEntries);
+			list = IdentityMap.Entries(persistenceContext.CollectionEntries);
 			ActionQueue actionQueue = session.ActionQueue;
 			foreach (DictionaryEntry me in list)
 			{
@@ -206,14 +207,15 @@ namespace NHibernate.Event.Default
 		protected virtual async Task CascadeOnFlushAsync(IEventSource session, IEntityPersister persister, object key, object anything, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			session.PersistenceContext.IncrementCascadeLevel();
+			var persistenceContext = session.PersistenceContext;
+			persistenceContext.IncrementCascadeLevel();
 			try
 			{
 				await (new Cascade(CascadingAction, CascadePoint.BeforeFlush, session).CascadeOnAsync(persister, key, anything, cancellationToken)).ConfigureAwait(false);
 			}
 			finally
 			{
-				session.PersistenceContext.DecrementCascadeLevel();
+				persistenceContext.DecrementCascadeLevel();
 			}
 		}
 

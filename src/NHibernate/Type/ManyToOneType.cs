@@ -101,9 +101,10 @@ namespace NHibernate.Type
 			{
 				IEntityPersister persister = session.Factory.GetEntityPersister(GetAssociatedEntityName());
 				EntityKey entityKey = session.GenerateEntityKey(id, persister);
-				if (!session.PersistenceContext.ContainsEntity(entityKey))
+				var persistence = session.PersistenceContext;
+				if (!persistence.ContainsEntity(entityKey))
 				{
-					session.PersistenceContext.BatchFetchQueue.AddBatchLoadableEntityKey(entityKey);
+					persistence.BatchFetchQueue.AddBatchLoadableEntityKey(entityKey);
 				}
 			}
 		}

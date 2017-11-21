@@ -172,9 +172,10 @@ namespace NHibernate.Event.Default
 		protected virtual async Task DeleteEntityAsync(IEventSource session, object entity, EntityEntry entityEntry, bool isCascadeDeleteEnabled, IEntityPersister persister, ISet<object> transientEntities, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			var factory = session.Factory;
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("deleting " + MessageHelper.InfoString(persister, entityEntry.Id, session.Factory));
+				log.Debug("deleting " + MessageHelper.InfoString(persister, entityEntry.Id, factory));
 			}
 
 			IPersistenceContext persistenceContext = session.PersistenceContext;
@@ -193,7 +194,7 @@ namespace NHibernate.Event.Default
 				currentState = entityEntry.LoadedState;
 			}
 
-			object[] deletedState = CreateDeletedState(persister, currentState, session);
+			object[] deletedState = CreateDeletedState(persister, currentState, factory);
 			entityEntry.DeletedState = deletedState;
 
 			session.Interceptor.OnDelete(entity, entityEntry.Id, deletedState, persister.PropertyNames, propTypes);

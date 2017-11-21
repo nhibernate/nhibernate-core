@@ -2175,13 +2175,7 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary> Get the statistics for this session.</summary>
-		public ISessionStatistics Statistics
-		{
-			get
-			{
-				return new SessionStatisticsImpl(this);
-			}
-		}
+		public ISessionStatistics Statistics => new SessionStatisticsImpl(PersistenceContext);
 
 		public override void AfterTransactionBegin(ITransaction tx)
 		{

@@ -1287,7 +1287,7 @@ namespace NHibernate.Engine
 				
 				// PersistenceContext.proxyFor( entity ) returns entity if there is no proxy for that entity
 				// so need to check the return value to be sure it is really a proxy
-				object maybeProxy = this.Session.PersistenceContext.ProxyFor(entityOrProxy);
+				object maybeProxy = ProxyFor(entityOrProxy);
 				if (maybeProxy is INHibernateProxy )
 				{
 					SetProxyReadOnly((INHibernateProxy)maybeProxy, readOnly);
@@ -1297,7 +1297,7 @@ namespace NHibernate.Engine
 		
 		private void SetProxyReadOnly(INHibernateProxy proxy, bool readOnly)
 		{
-			if (proxy.HibernateLazyInitializer.Session != this.Session)
+			if (proxy.HibernateLazyInitializer.Session != Session)
 			{
 				throw new AssertionFailure("Attempt to set a proxy to read-only that is associated with a different session");
 			}

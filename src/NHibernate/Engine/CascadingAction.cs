@@ -343,7 +343,7 @@ namespace NHibernate.Engine
 				{
 					string childEntityName = ((EntityType)type).GetAssociatedEntityName(session.Factory);
 
-					if (!IsInManagedState(child, session) && !child.IsProxy() && ForeignKeys.IsTransientSlow(childEntityName, child, session))
+					if (!IsInManagedState(child, session.PersistenceContext) && !child.IsProxy() && ForeignKeys.IsTransientSlow(childEntityName, child, session))
 					{
 						string parentEntiytName = persister.EntityName;
 						string propertyName = persister.PropertyNames[propertyIndex];
@@ -359,9 +359,9 @@ namespace NHibernate.Engine
 				get { return false; }
 			}
 
-			private bool IsInManagedState(object child, IEventSource session)
+			private static bool IsInManagedState(object child, IPersistenceContext persistenceContext)
 			{
-				EntityEntry entry = session.PersistenceContext.GetEntry(child);
+				EntityEntry entry = persistenceContext.GetEntry(child);
 				return entry != null && (entry.Status == Status.Loaded || entry.Status == Status.ReadOnly);
 			}
 		}

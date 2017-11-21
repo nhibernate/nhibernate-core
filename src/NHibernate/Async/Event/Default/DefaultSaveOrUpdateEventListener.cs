@@ -247,15 +247,16 @@ namespace NHibernate.Event.Default
 		private async Task CascadeOnUpdateAsync(SaveOrUpdateEvent @event, IEntityPersister persister, object entity, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			IEventSource source = @event.Session;
-			source.PersistenceContext.IncrementCascadeLevel();
+			var source = @event.Session;
+			var persistenceContext = source.PersistenceContext;
+			persistenceContext.IncrementCascadeLevel();
 			try
 			{
 				await (new Cascade(CascadingAction.SaveUpdate, CascadePoint.AfterUpdate, source).CascadeOnAsync(persister, entity, cancellationToken)).ConfigureAwait(false);
 			}
 			finally
 			{
-				source.PersistenceContext.DecrementCascadeLevel();
+				persistenceContext.DecrementCascadeLevel();
 			}
 		}
 	}

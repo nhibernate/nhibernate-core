@@ -459,11 +459,12 @@ namespace NHibernate.Event.Default
 
 			// make it circular-reference safe
 			EntityKey entityKey = session.GenerateEntityKey(id, subclassPersister);
-			TwoPhaseLoad.AddUninitializedCachedEntity(entityKey, result, subclassPersister, LockMode.None, entry.AreLazyPropertiesUnfetched, entry.Version, session);
+			IPersistenceContext persistenceContext = session.PersistenceContext;
+			TwoPhaseLoad.AddUninitializedCachedEntity(entityKey, result, subclassPersister, LockMode.None, entry.AreLazyPropertiesUnfetched, entry.Version, persistenceContext);
 
 			IType[] types = subclassPersister.PropertyTypes;
 			object[] values = await (entry.AssembleAsync(result, id, subclassPersister, session.Interceptor, session, cancellationToken)).ConfigureAwait(false); // intializes result by side-effect
-			TypeHelper.DeepCopy(values, types, subclassPersister.PropertyUpdateability, values, session);
+			TypeHelper.DeepCopy(values, types, subclassPersister.PropertyUpdateability, values, factory);
 
 			object version = Versioning.GetVersion(values, subclassPersister);
 			if (log.IsDebugEnabled)
@@ -471,7 +472,6 @@ namespace NHibernate.Event.Default
 				log.Debug("Cached Version: " + version);
 			}
 
-			IPersistenceContext persistenceContext = session.PersistenceContext;
 			bool isReadOnly = session.DefaultReadOnly;
 
 			if (persister.IsMutable)
