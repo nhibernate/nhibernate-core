@@ -72,14 +72,15 @@ namespace NHibernate.Id
 
 			public override object ExecuteAndExtract(DbCommand insert, ISessionImplementor session)
 			{
-				var rs = session.Batcher.ExecuteReader(insert);
+				var batcher = session.Batcher;
+				var rs = batcher.ExecuteReader(insert);
 				try
 				{
 					return IdentifierGeneratorFactory.GetGeneratedIdentity(rs, persister.IdentifierType, session);
 				}
 				finally
 				{
-					session.Batcher.CloseReader(rs);
+					batcher.CloseReader(rs);
 				}
 			}
 

@@ -25,11 +25,12 @@ namespace NHibernate.Id
 			var sql = new SqlString(session.Factory.Dialect.SelectGUIDString);
 			try
 			{
-				var st = session.Batcher.PrepareCommand(CommandType.Text, sql, SqlTypeFactory.NoTypes);
+				var batcher = session.Batcher;
+				var st = batcher.PrepareCommand(CommandType.Text, sql, SqlTypeFactory.NoTypes);
 				DbDataReader reader = null;
 				try
 				{
-					reader = session.Batcher.ExecuteReader(st);
+					reader = batcher.ExecuteReader(st);
 					object result;
 					try
 					{
@@ -45,7 +46,7 @@ namespace NHibernate.Id
 				}
 				finally
 				{
-					session.Batcher.CloseCommand(st, reader);
+					batcher.CloseCommand(st, reader);
 				}
 			}
 			catch (Exception sqle)

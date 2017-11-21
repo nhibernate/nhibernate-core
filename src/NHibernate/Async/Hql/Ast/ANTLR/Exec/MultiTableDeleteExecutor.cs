@@ -40,6 +40,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				// First, save off the pertinent ids, saving the number of pertinent ids for return
 				DbCommand ps = null;
 				int resultCount;
+				var batcher = session.Batcher;
 				try
 				{
 					try
@@ -48,19 +49,19 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 						var sqlQueryParametersList = idInsertSelect.GetParameters().ToList();
 						SqlType[] parameterTypes = paramsSpec.GetQueryParameterTypes(sqlQueryParametersList, session.Factory);
 
-						ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, idInsertSelect, parameterTypes, cancellationToken)).ConfigureAwait(false);
+						ps = await (batcher.PrepareCommandAsync(CommandType.Text, idInsertSelect, parameterTypes, cancellationToken)).ConfigureAwait(false);
 						foreach (var parameterSpecification in paramsSpec)
 						{
 							await (parameterSpecification.BindAsync(ps, sqlQueryParametersList, parameters, session, cancellationToken)).ConfigureAwait(false);
 						}
 
-						resultCount = await (session.Batcher.ExecuteNonQueryAsync(ps, cancellationToken)).ConfigureAwait(false);
+						resultCount = await (batcher.ExecuteNonQueryAsync(ps, cancellationToken)).ConfigureAwait(false);
 					}
 					finally
 					{
 						if (ps != null)
 						{
-							session.Batcher.CloseCommand(ps, null);
+							batcher.CloseCommand(ps, null);
 						}
 					}
 				}
@@ -76,14 +77,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					{
 						try
 						{
-							ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, deletes[i], new SqlType[0], cancellationToken)).ConfigureAwait(false);
-							await (session.Batcher.ExecuteNonQueryAsync(ps, cancellationToken)).ConfigureAwait(false);
+							ps = await (batcher.PrepareCommandAsync(CommandType.Text, deletes[i], new SqlType[0], cancellationToken)).ConfigureAwait(false);
+							await (batcher.ExecuteNonQueryAsync(ps, cancellationToken)).ConfigureAwait(false);
 						}
 						finally
 						{
 							if (ps != null)
 							{
-								session.Batcher.CloseCommand(ps, null);
+								batcher.CloseCommand(ps, null);
 							}
 						}
 					}

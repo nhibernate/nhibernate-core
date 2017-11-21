@@ -77,6 +77,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				// First, save off the pertinent ids, saving the number of pertinent ids for return
 				DbCommand ps = null;
 				int resultCount;
+				var batcher = session.Batcher;
 				try
 				{
 					try
@@ -85,19 +86,19 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 						var sqlQueryParametersList = idInsertSelect.GetParameters().ToList();
 						SqlType[] parameterTypes = paramsSpec.GetQueryParameterTypes(sqlQueryParametersList, session.Factory);
 
-						ps = session.Batcher.PrepareCommand(CommandType.Text, idInsertSelect, parameterTypes);
+						ps = batcher.PrepareCommand(CommandType.Text, idInsertSelect, parameterTypes);
 						foreach (var parameterSpecification in paramsSpec)
 						{
 							parameterSpecification.Bind(ps, sqlQueryParametersList, parameters, session);
 						}
 
-						resultCount = session.Batcher.ExecuteNonQuery(ps);
+						resultCount = batcher.ExecuteNonQuery(ps);
 					}
 					finally
 					{
 						if (ps != null)
 						{
-							session.Batcher.CloseCommand(ps, null);
+							batcher.CloseCommand(ps, null);
 						}
 					}
 				}
@@ -113,14 +114,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					{
 						try
 						{
-							ps = session.Batcher.PrepareCommand(CommandType.Text, deletes[i], new SqlType[0]);
-							session.Batcher.ExecuteNonQuery(ps);
+							ps = batcher.PrepareCommand(CommandType.Text, deletes[i], new SqlType[0]);
+							batcher.ExecuteNonQuery(ps);
 						}
 						finally
 						{
 							if (ps != null)
 							{
-								session.Batcher.CloseCommand(ps, null);
+								batcher.CloseCommand(ps, null);
 							}
 						}
 					}

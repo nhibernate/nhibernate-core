@@ -70,12 +70,13 @@ namespace NHibernate.Persister.Entity
 			using (new SessionIdLoggingContext(session.SessionId))
 			try
 			{
-				var st = await (session.Batcher.PrepareCommandAsync(CommandType.Text, SQLSnapshotSelectString, IdentifierType.SqlTypes(factory), cancellationToken)).ConfigureAwait(false);
+				var batcher = session.Batcher;
+				var st = await (batcher.PrepareCommandAsync(CommandType.Text, SQLSnapshotSelectString, IdentifierType.SqlTypes(factory), cancellationToken)).ConfigureAwait(false);
 				DbDataReader rs = null;
 				try
 				{
 					await (IdentifierType.NullSafeSetAsync(st, id, 0, session, cancellationToken)).ConfigureAwait(false);
-					rs = await (session.Batcher.ExecuteReaderAsync(st, cancellationToken)).ConfigureAwait(false);
+					rs = await (batcher.ExecuteReaderAsync(st, cancellationToken)).ConfigureAwait(false);
 
 					if (!await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false))
 					{
@@ -98,7 +99,7 @@ namespace NHibernate.Persister.Entity
 				}
 				finally
 				{
-					session.Batcher.CloseCommand(st, rs);
+					batcher.CloseCommand(st, rs);
 				}
 			}
 			catch (DbException sqle)
@@ -148,17 +149,18 @@ namespace NHibernate.Persister.Entity
 				SqlCommandInfo versionIncrementCommand = GenerateVersionIncrementUpdateString();
 				try
 				{
-					var st = await (session.Batcher.PrepareCommandAsync(versionIncrementCommand.CommandType, versionIncrementCommand.Text, versionIncrementCommand.ParameterTypes, cancellationToken)).ConfigureAwait(false);
+					var batcher = session.Batcher;
+					var st = await (batcher.PrepareCommandAsync(versionIncrementCommand.CommandType, versionIncrementCommand.Text, versionIncrementCommand.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 					try
 					{
 						await (VersionType.NullSafeSetAsync(st, nextVersion, 0, session, cancellationToken)).ConfigureAwait(false);
 						await (IdentifierType.NullSafeSetAsync(st, id, 1, session, cancellationToken)).ConfigureAwait(false);
 						await (VersionType.NullSafeSetAsync(st, currentVersion, 1 + IdentifierColumnSpan, session, cancellationToken)).ConfigureAwait(false);
-						Check(await (session.Batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false), id, 0, expectation, st);
+						Check(await (batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false), id, 0, expectation, st);
 					}
 					finally
 					{
-						session.Batcher.CloseCommand(st, null);
+						batcher.CloseCommand(st, null);
 					}
 				}
 				catch (DbException sqle)
@@ -190,12 +192,13 @@ namespace NHibernate.Persister.Entity
 			using(new SessionIdLoggingContext(session.SessionId))
 			try
 			{
-				var st = session.Batcher.PrepareQueryCommand(CommandType.Text, VersionSelectString, IdentifierType.SqlTypes(Factory));
+				var batcher = session.Batcher;
+				var st = batcher.PrepareQueryCommand(CommandType.Text, VersionSelectString, IdentifierType.SqlTypes(Factory));
 				DbDataReader rs = null;
 				try
 				{
 					await (IdentifierType.NullSafeSetAsync(st, id, 0, session, cancellationToken)).ConfigureAwait(false);
-					rs = await (session.Batcher.ExecuteReaderAsync(st, cancellationToken)).ConfigureAwait(false);
+					rs = await (batcher.ExecuteReaderAsync(st, cancellationToken)).ConfigureAwait(false);
 					if (!await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false))
 					{
 						return null;
@@ -208,7 +211,7 @@ namespace NHibernate.Persister.Entity
 				}
 				finally
 				{
-					session.Batcher.CloseCommand(st, rs);
+					batcher.CloseCommand(st, rs);
 				}
 			}
 			catch (DbException sqle)
@@ -331,92 +334,95 @@ namespace NHibernate.Persister.Entity
 			DbCommand sequentialSelect = null;
 			DbDataReader sequentialResultSet = null;
 			bool sequentialSelectEmpty = false;
-			using (new SessionIdLoggingContext(session.SessionId)) 
-			try
+			using (new SessionIdLoggingContext(session.SessionId))
 			{
-				if (hasDeferred)
+				var batcher = session.Batcher;
+				try
 				{
-					SqlString sql = rootPersister.GetSequentialSelect(EntityName);
-					if (sql != null)
+					if (hasDeferred)
 					{
-						//TODO: I am not so sure about the exception handling in this bit!
-						sequentialSelect = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, IdentifierType.SqlTypes(factory), cancellationToken)).ConfigureAwait(false);
-						await (rootPersister.IdentifierType.NullSafeSetAsync(sequentialSelect, id, 0, session, cancellationToken)).ConfigureAwait(false);
-						sequentialResultSet = await (session.Batcher.ExecuteReaderAsync(sequentialSelect, cancellationToken)).ConfigureAwait(false);
-						if (!await (sequentialResultSet.ReadAsync(cancellationToken)).ConfigureAwait(false))
+						SqlString sql = rootPersister.GetSequentialSelect(EntityName);
+						if (sql != null)
 						{
-							// TODO: Deal with the "optional" attribute in the <join> mapping;
-							// this code assumes that optional defaults to "true" because it
-							// doesn't actually seem to work in the fetch="join" code
-							//
-							// Note that actual proper handling of optional-ality here is actually
-							// more involved than this patch assumes.  Remember that we might have
-							// multiple <join/> mappings associated with a single entity.  Really
-							// a couple of things need to happen to properly handle optional here:
-							//  1) First and foremost, when handling multiple <join/>s, we really
-							//      should be using the entity root table as the driving table;
-							//      another option here would be to choose some non-optional joined
-							//      table to use as the driving table.  In all likelihood, just using
-							//      the root table is much simplier
-							//  2) Need to add the FK columns corresponding to each joined table
-							//      to the generated select list; these would then be used when
-							//      iterating the result set to determine whether all non-optional
-							//      data is present
-							// My initial thoughts on the best way to deal with this would be
-							// to introduce a new SequentialSelect abstraction that actually gets
-							// generated in the persisters (ok, SingleTable...) and utilized here.
-							// It would encapsulated all this required optional-ality checking...
-							sequentialSelectEmpty = true;
+							//TODO: I am not so sure about the exception handling in this bit!
+							sequentialSelect = await (batcher.PrepareCommandAsync(CommandType.Text, sql, IdentifierType.SqlTypes(factory), cancellationToken)).ConfigureAwait(false);
+							await (rootPersister.IdentifierType.NullSafeSetAsync(sequentialSelect, id, 0, session, cancellationToken)).ConfigureAwait(false);
+							sequentialResultSet = await (batcher.ExecuteReaderAsync(sequentialSelect, cancellationToken)).ConfigureAwait(false);
+							if (!await (sequentialResultSet.ReadAsync(cancellationToken)).ConfigureAwait(false))
+							{
+								// TODO: Deal with the "optional" attribute in the <join> mapping;
+								// this code assumes that optional defaults to "true" because it
+								// doesn't actually seem to work in the fetch="join" code
+								//
+								// Note that actual proper handling of optional-ality here is actually
+								// more involved than this patch assumes.  Remember that we might have
+								// multiple <join/> mappings associated with a single entity.  Really
+								// a couple of things need to happen to properly handle optional here:
+								//  1) First and foremost, when handling multiple <join/>s, we really
+								//      should be using the entity root table as the driving table;
+								//      another option here would be to choose some non-optional joined
+								//      table to use as the driving table.  In all likelihood, just using
+								//      the root table is much simplier
+								//  2) Need to add the FK columns corresponding to each joined table
+								//      to the generated select list; these would then be used when
+								//      iterating the result set to determine whether all non-optional
+								//      data is present
+								// My initial thoughts on the best way to deal with this would be
+								// to introduce a new SequentialSelect abstraction that actually gets
+								// generated in the persisters (ok, SingleTable...) and utilized here.
+								// It would encapsulated all this required optional-ality checking...
+								sequentialSelectEmpty = true;
+							}
 						}
 					}
-				}
 
-				string[] propNames = PropertyNames;
-				IType[] types = PropertyTypes;
-				object[] values = new object[types.Length];
-				bool[] laziness = PropertyLaziness;
-				string[] propSubclassNames = SubclassPropertySubclassNameClosure;
+					string[] propNames = PropertyNames;
+					IType[] types = PropertyTypes;
+					object[] values = new object[types.Length];
+					bool[] laziness = PropertyLaziness;
+					string[] propSubclassNames = SubclassPropertySubclassNameClosure;
 
-				for (int i = 0; i < types.Length; i++)
-				{
-					if (!propertySelectable[i])
+					for (int i = 0; i < types.Length; i++)
 					{
-						values[i] = BackrefPropertyAccessor.Unknown;
-					}
-					else if (allProperties || !laziness[i])
-					{
-						//decide which ResultSet to get the property value from:
-						bool propertyIsDeferred = hasDeferred
-																			&& rootPersister.IsSubclassPropertyDeferred(propNames[i], propSubclassNames[i]);
-						if (propertyIsDeferred && sequentialSelectEmpty)
+						if (!propertySelectable[i])
 						{
-							values[i] = null;
+							values[i] = BackrefPropertyAccessor.Unknown;
+						}
+						else if (allProperties || !laziness[i])
+						{
+							//decide which ResultSet to get the property value from:
+							bool propertyIsDeferred = hasDeferred
+							                          && rootPersister.IsSubclassPropertyDeferred(propNames[i], propSubclassNames[i]);
+							if (propertyIsDeferred && sequentialSelectEmpty)
+							{
+								values[i] = null;
+							}
+							else
+							{
+								var propertyResultSet = propertyIsDeferred ? sequentialResultSet : rs;
+								string[] cols = propertyIsDeferred ? propertyColumnAliases[i] : suffixedPropertyColumns[i];
+								values[i] = await (types[i].HydrateAsync(propertyResultSet, cols, session, obj, cancellationToken)).ConfigureAwait(false);
+							}
 						}
 						else
 						{
-							var propertyResultSet = propertyIsDeferred ? sequentialResultSet : rs;
-							string[] cols = propertyIsDeferred ? propertyColumnAliases[i] : suffixedPropertyColumns[i];
-							values[i] = await (types[i].HydrateAsync(propertyResultSet, cols, session, obj, cancellationToken)).ConfigureAwait(false);
+							values[i] = LazyPropertyInitializer.UnfetchedProperty;
 						}
 					}
-					else
+
+					if (sequentialResultSet != null)
 					{
-						values[i] = LazyPropertyInitializer.UnfetchedProperty;
+						sequentialResultSet.Close();
 					}
-				}
 
-				if (sequentialResultSet != null)
-				{
-					sequentialResultSet.Close();
+					return values;
 				}
-
-				return values;
-			}
-			finally
-			{
-				if (sequentialSelect != null)
+				finally
 				{
-					session.Batcher.CloseCommand(sequentialSelect, sequentialResultSet);
+					if (sequentialSelect != null)
+					{
+						batcher.CloseCommand(sequentialSelect, sequentialResultSet);
+					}
 				}
 			}
 		}
@@ -496,9 +502,10 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				// Render the SQL query
+				var batcher = session.Batcher;
 				var insertCmd = useBatch
-					? await (session.Batcher.PrepareBatchCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes, cancellationToken)).ConfigureAwait(false)
-					: await (session.Batcher.PrepareCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes, cancellationToken)).ConfigureAwait(false);
+					? await (batcher.PrepareBatchCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes, cancellationToken)).ConfigureAwait(false)
+					: await (batcher.PrepareCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 
 				try
 				{
@@ -513,18 +520,18 @@ namespace NHibernate.Persister.Entity
 
 					if (useBatch)
 					{
-						await (session.Batcher.AddToBatchAsync(expectation, cancellationToken)).ConfigureAwait(false);
+						await (batcher.AddToBatchAsync(expectation, cancellationToken)).ConfigureAwait(false);
 					}
 					else
 					{
-						expectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(insertCmd, cancellationToken)).ConfigureAwait(false), insertCmd);
+						expectation.VerifyOutcomeNonBatched(await (batcher.ExecuteNonQueryAsync(insertCmd, cancellationToken)).ConfigureAwait(false), insertCmd);
 					}
 				}
 				catch (Exception e)
 				{
 					if (useBatch)
 					{
-						session.Batcher.AbortBatch(e);
+						batcher.AbortBatch(e);
 					}
 					throw;
 				}
@@ -532,7 +539,7 @@ namespace NHibernate.Persister.Entity
 				{
 					if (!useBatch)
 					{
-						session.Batcher.CloseCommand(insertCmd, null);
+						batcher.CloseCommand(insertCmd, null);
 					}
 				}
 			}
@@ -610,9 +617,10 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				int index = 0;
+				var batcher = session.Batcher;
 				var statement = useBatch
-					? await (session.Batcher.PrepareBatchCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes, cancellationToken)).ConfigureAwait(false)
-					: await (session.Batcher.PrepareCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes, cancellationToken)).ConfigureAwait(false);
+					? await (batcher.PrepareBatchCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes, cancellationToken)).ConfigureAwait(false)
+					: await (batcher.PrepareCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 				try
 				{
 					//index += expectation.Prepare(statement, factory.ConnectionProvider.Driver);
@@ -650,19 +658,19 @@ namespace NHibernate.Persister.Entity
 
 					if (useBatch)
 					{
-						await (session.Batcher.AddToBatchAsync(expectation, cancellationToken)).ConfigureAwait(false);
+						await (batcher.AddToBatchAsync(expectation, cancellationToken)).ConfigureAwait(false);
 						return true;
 					}
 					else
 					{
-						return Check(await (session.Batcher.ExecuteNonQueryAsync(statement, cancellationToken)).ConfigureAwait(false), id, j, expectation, statement);
+						return Check(await (batcher.ExecuteNonQueryAsync(statement, cancellationToken)).ConfigureAwait(false), id, j, expectation, statement);
 					}
 				}
 				catch (StaleStateException e)
 				{
 					if (useBatch)
 					{
-						session.Batcher.AbortBatch(e);
+						batcher.AbortBatch(e);
 					}
 
 					throw new StaleObjectStateException(EntityName, id);
@@ -671,7 +679,7 @@ namespace NHibernate.Persister.Entity
 				{
 					if (useBatch)
 					{
-						session.Batcher.AbortBatch(e);
+						batcher.AbortBatch(e);
 					}
 
 					throw;
@@ -680,7 +688,7 @@ namespace NHibernate.Persister.Entity
 				{
 					if (!useBatch)
 					{
-						session.Batcher.CloseCommand(statement, null);
+						batcher.CloseCommand(statement, null);
 					}
 				}
 			}
@@ -740,10 +748,11 @@ namespace NHibernate.Persister.Entity
 
 			try
 			{
+				var batcher = session.Batcher;
 				int index = 0;
 				var statement = useBatch 
-					? await (session.Batcher.PrepareBatchCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes, cancellationToken)).ConfigureAwait(false) 
-					: await (session.Batcher.PrepareCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes, cancellationToken)).ConfigureAwait(false);
+					? await (batcher.PrepareBatchCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes, cancellationToken)).ConfigureAwait(false) 
+					: await (batcher.PrepareCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 
 				try
 				{
@@ -780,18 +789,18 @@ namespace NHibernate.Persister.Entity
 
 					if (useBatch)
 					{
-						await (session.Batcher.AddToBatchAsync(expectation, cancellationToken)).ConfigureAwait(false);
+						await (batcher.AddToBatchAsync(expectation, cancellationToken)).ConfigureAwait(false);
 					}
 					else
 					{
-						Check(await (session.Batcher.ExecuteNonQueryAsync(statement, cancellationToken)).ConfigureAwait(false), tableId, j, expectation, statement);
+						Check(await (batcher.ExecuteNonQueryAsync(statement, cancellationToken)).ConfigureAwait(false), tableId, j, expectation, statement);
 					}
 				}
 				catch (Exception e)
 				{
 					if (useBatch)
 					{
-						session.Batcher.AbortBatch(e);
+						batcher.AbortBatch(e);
 					}
 					throw;
 				}
@@ -799,7 +808,7 @@ namespace NHibernate.Persister.Entity
 				{
 					if (!useBatch)
 					{
-						session.Batcher.CloseCommand(statement, null);
+						batcher.CloseCommand(statement, null);
 					}
 				}
 			}
@@ -1164,12 +1173,13 @@ namespace NHibernate.Persister.Entity
 			using (new SessionIdLoggingContext(session.SessionId)) 
 			try
 			{
-				var cmd = session.Batcher.PrepareQueryCommand(CommandType.Text, selectionSQL, IdentifierType.SqlTypes(Factory));
+				var batcher = session.Batcher;
+				var cmd = batcher.PrepareQueryCommand(CommandType.Text, selectionSQL, IdentifierType.SqlTypes(Factory));
 				DbDataReader rs = null;
 				try
 				{
 					await (IdentifierType.NullSafeSetAsync(cmd, id, 0, session, cancellationToken)).ConfigureAwait(false);
-					rs = await (session.Batcher.ExecuteReaderAsync(cmd, cancellationToken)).ConfigureAwait(false);
+					rs = await (batcher.ExecuteReaderAsync(cmd, cancellationToken)).ConfigureAwait(false);
 					if (!await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false))
 					{
 						throw new HibernateException("Unable to locate row for retrieval of generated properties: "
@@ -1187,7 +1197,7 @@ namespace NHibernate.Persister.Entity
 				}
 				finally
 				{
-					session.Batcher.CloseCommand(cmd, rs);
+					batcher.CloseCommand(cmd, rs);
 				}
 			}
 			catch (DbException sqle)
@@ -1284,12 +1294,13 @@ namespace NHibernate.Persister.Entity
 				using (new SessionIdLoggingContext(session.SessionId)) 
 				try
 				{
-					var ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, IdentifierType.SqlTypes(factory), cancellationToken)).ConfigureAwait(false);
+					var batcher = session.Batcher;
+					var ps = await (batcher.PrepareCommandAsync(CommandType.Text, sql, IdentifierType.SqlTypes(factory), cancellationToken)).ConfigureAwait(false);
 					DbDataReader rs = null;
 					try
 					{
 						await (IdentifierType.NullSafeSetAsync(ps, id, 0, session, cancellationToken)).ConfigureAwait(false);
-						rs = await (session.Batcher.ExecuteReaderAsync(ps, cancellationToken)).ConfigureAwait(false);
+						rs = await (batcher.ExecuteReaderAsync(ps, cancellationToken)).ConfigureAwait(false);
 						//if there is no resulting row, return null
 						if (!await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false))
 						{
@@ -1309,7 +1320,7 @@ namespace NHibernate.Persister.Entity
 					}
 					finally
 					{
-						session.Batcher.CloseCommand(ps, rs);
+						batcher.CloseCommand(ps, rs);
 					}
 				}
 				catch (DbException sqle)

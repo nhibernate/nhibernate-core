@@ -113,11 +113,12 @@ namespace NHibernate.Id
 		{
 			try
 			{
-				var cmd = session.Batcher.PrepareCommand(CommandType.Text, sql, SqlTypeFactory.NoTypes);
+				var batcher = session.Batcher;
+				var cmd = batcher.PrepareCommand(CommandType.Text, sql, SqlTypeFactory.NoTypes);
 				DbDataReader reader = null;
 				try
 				{
-					reader = session.Batcher.ExecuteReader(cmd);
+					reader = batcher.ExecuteReader(cmd);
 					try
 					{
 						reader.Read();
@@ -135,7 +136,7 @@ namespace NHibernate.Id
 				}
 				finally
 				{
-					session.Batcher.CloseCommand(cmd, reader);
+					batcher.CloseCommand(cmd, reader);
 				}
 			}
 			catch (DbException sqle)

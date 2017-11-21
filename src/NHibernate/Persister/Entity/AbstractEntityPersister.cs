@@ -1276,6 +1276,7 @@ namespace NHibernate.Persister.Entity
 				object result = null;
 				DbCommand ps = null;
 				DbDataReader rs = null;
+				var batcher = session.Batcher;
 				try
 				{
 					SqlString lazySelect = SQLLazySelectString;
@@ -1284,9 +1285,9 @@ namespace NHibernate.Persister.Entity
 						// null sql means that the only lazy properties
 						// are shared PK one-to-one associations which are
 						// handled differently in the Type#nullSafeGet code...
-						ps = session.Batcher.PrepareCommand(CommandType.Text, lazySelect, IdentifierType.SqlTypes(Factory));
+						ps = batcher.PrepareCommand(CommandType.Text, lazySelect, IdentifierType.SqlTypes(Factory));
 						IdentifierType.NullSafeSet(ps, id, 0, session);
-						rs = session.Batcher.ExecuteReader(ps);
+						rs = batcher.ExecuteReader(ps);
 						rs.Read();
 					}
 					object[] snapshot = entry.LoadedState;
@@ -1301,7 +1302,7 @@ namespace NHibernate.Persister.Entity
 				}
 				finally
 				{
-					session.Batcher.CloseCommand(ps, rs);
+					batcher.CloseCommand(ps, rs);
 				}
 
 				log.Debug("done initializing lazy properties");
@@ -1450,12 +1451,13 @@ namespace NHibernate.Persister.Entity
 			using (new SessionIdLoggingContext(session.SessionId))
 			try
 			{
-				var st = session.Batcher.PrepareCommand(CommandType.Text, SQLSnapshotSelectString, IdentifierType.SqlTypes(factory));
+				var batcher = session.Batcher;
+				var st = batcher.PrepareCommand(CommandType.Text, SQLSnapshotSelectString, IdentifierType.SqlTypes(factory));
 				DbDataReader rs = null;
 				try
 				{
 					IdentifierType.NullSafeSet(st, id, 0, session);
-					rs = session.Batcher.ExecuteReader(st);
+					rs = batcher.ExecuteReader(st);
 
 					if (!rs.Read())
 					{
@@ -1478,7 +1480,7 @@ namespace NHibernate.Persister.Entity
 				}
 				finally
 				{
-					session.Batcher.CloseCommand(st, rs);
+					batcher.CloseCommand(st, rs);
 				}
 			}
 			catch (DbException sqle)
@@ -1651,17 +1653,18 @@ namespace NHibernate.Persister.Entity
 			SqlCommandInfo versionIncrementCommand = GenerateVersionIncrementUpdateString();
 			try
 			{
-				var st = session.Batcher.PrepareCommand(versionIncrementCommand.CommandType, versionIncrementCommand.Text, versionIncrementCommand.ParameterTypes);
+				var batcher = session.Batcher;
+				var st = batcher.PrepareCommand(versionIncrementCommand.CommandType, versionIncrementCommand.Text, versionIncrementCommand.ParameterTypes);
 				try
 				{
 					VersionType.NullSafeSet(st, nextVersion, 0, session);
 					IdentifierType.NullSafeSet(st, id, 1, session);
 					VersionType.NullSafeSet(st, currentVersion, 1 + IdentifierColumnSpan, session);
-					Check(session.Batcher.ExecuteNonQuery(st), id, 0, expectation, st);
+					Check(batcher.ExecuteNonQuery(st), id, 0, expectation, st);
 				}
 				finally
 				{
-					session.Batcher.CloseCommand(st, null);
+					batcher.CloseCommand(st, null);
 				}
 			}
 			catch (DbException sqle)
@@ -1705,12 +1708,13 @@ namespace NHibernate.Persister.Entity
 			using(new SessionIdLoggingContext(session.SessionId))
 			try
 			{
-				var st = session.Batcher.PrepareQueryCommand(CommandType.Text, VersionSelectString, IdentifierType.SqlTypes(Factory));
+				var batcher = session.Batcher;
+				var st = batcher.PrepareQueryCommand(CommandType.Text, VersionSelectString, IdentifierType.SqlTypes(Factory));
 				DbDataReader rs = null;
 				try
 				{
 					IdentifierType.NullSafeSet(st, id, 0, session);
-					rs = session.Batcher.ExecuteReader(st);
+					rs = batcher.ExecuteReader(st);
 					if (!rs.Read())
 					{
 						return null;
@@ -1723,7 +1727,7 @@ namespace NHibernate.Persister.Entity
 				}
 				finally
 				{
-					session.Batcher.CloseCommand(st, rs);
+					batcher.CloseCommand(st, rs);
 				}
 			}
 			catch (DbException sqle)
@@ -2489,92 +2493,95 @@ namespace NHibernate.Persister.Entity
 			DbCommand sequentialSelect = null;
 			DbDataReader sequentialResultSet = null;
 			bool sequentialSelectEmpty = false;
-			using (new SessionIdLoggingContext(session.SessionId)) 
-			try
+			using (new SessionIdLoggingContext(session.SessionId))
 			{
-				if (hasDeferred)
+				var batcher = session.Batcher;
+				try
 				{
-					SqlString sql = rootPersister.GetSequentialSelect(EntityName);
-					if (sql != null)
+					if (hasDeferred)
 					{
-						//TODO: I am not so sure about the exception handling in this bit!
-						sequentialSelect = session.Batcher.PrepareCommand(CommandType.Text, sql, IdentifierType.SqlTypes(factory));
-						rootPersister.IdentifierType.NullSafeSet(sequentialSelect, id, 0, session);
-						sequentialResultSet = session.Batcher.ExecuteReader(sequentialSelect);
-						if (!sequentialResultSet.Read())
+						SqlString sql = rootPersister.GetSequentialSelect(EntityName);
+						if (sql != null)
 						{
-							// TODO: Deal with the "optional" attribute in the <join> mapping;
-							// this code assumes that optional defaults to "true" because it
-							// doesn't actually seem to work in the fetch="join" code
-							//
-							// Note that actual proper handling of optional-ality here is actually
-							// more involved than this patch assumes.  Remember that we might have
-							// multiple <join/> mappings associated with a single entity.  Really
-							// a couple of things need to happen to properly handle optional here:
-							//  1) First and foremost, when handling multiple <join/>s, we really
-							//      should be using the entity root table as the driving table;
-							//      another option here would be to choose some non-optional joined
-							//      table to use as the driving table.  In all likelihood, just using
-							//      the root table is much simplier
-							//  2) Need to add the FK columns corresponding to each joined table
-							//      to the generated select list; these would then be used when
-							//      iterating the result set to determine whether all non-optional
-							//      data is present
-							// My initial thoughts on the best way to deal with this would be
-							// to introduce a new SequentialSelect abstraction that actually gets
-							// generated in the persisters (ok, SingleTable...) and utilized here.
-							// It would encapsulated all this required optional-ality checking...
-							sequentialSelectEmpty = true;
+							//TODO: I am not so sure about the exception handling in this bit!
+							sequentialSelect = batcher.PrepareCommand(CommandType.Text, sql, IdentifierType.SqlTypes(factory));
+							rootPersister.IdentifierType.NullSafeSet(sequentialSelect, id, 0, session);
+							sequentialResultSet = batcher.ExecuteReader(sequentialSelect);
+							if (!sequentialResultSet.Read())
+							{
+								// TODO: Deal with the "optional" attribute in the <join> mapping;
+								// this code assumes that optional defaults to "true" because it
+								// doesn't actually seem to work in the fetch="join" code
+								//
+								// Note that actual proper handling of optional-ality here is actually
+								// more involved than this patch assumes.  Remember that we might have
+								// multiple <join/> mappings associated with a single entity.  Really
+								// a couple of things need to happen to properly handle optional here:
+								//  1) First and foremost, when handling multiple <join/>s, we really
+								//      should be using the entity root table as the driving table;
+								//      another option here would be to choose some non-optional joined
+								//      table to use as the driving table.  In all likelihood, just using
+								//      the root table is much simplier
+								//  2) Need to add the FK columns corresponding to each joined table
+								//      to the generated select list; these would then be used when
+								//      iterating the result set to determine whether all non-optional
+								//      data is present
+								// My initial thoughts on the best way to deal with this would be
+								// to introduce a new SequentialSelect abstraction that actually gets
+								// generated in the persisters (ok, SingleTable...) and utilized here.
+								// It would encapsulated all this required optional-ality checking...
+								sequentialSelectEmpty = true;
+							}
 						}
 					}
-				}
 
-				string[] propNames = PropertyNames;
-				IType[] types = PropertyTypes;
-				object[] values = new object[types.Length];
-				bool[] laziness = PropertyLaziness;
-				string[] propSubclassNames = SubclassPropertySubclassNameClosure;
+					string[] propNames = PropertyNames;
+					IType[] types = PropertyTypes;
+					object[] values = new object[types.Length];
+					bool[] laziness = PropertyLaziness;
+					string[] propSubclassNames = SubclassPropertySubclassNameClosure;
 
-				for (int i = 0; i < types.Length; i++)
-				{
-					if (!propertySelectable[i])
+					for (int i = 0; i < types.Length; i++)
 					{
-						values[i] = BackrefPropertyAccessor.Unknown;
-					}
-					else if (allProperties || !laziness[i])
-					{
-						//decide which ResultSet to get the property value from:
-						bool propertyIsDeferred = hasDeferred
-																			&& rootPersister.IsSubclassPropertyDeferred(propNames[i], propSubclassNames[i]);
-						if (propertyIsDeferred && sequentialSelectEmpty)
+						if (!propertySelectable[i])
 						{
-							values[i] = null;
+							values[i] = BackrefPropertyAccessor.Unknown;
+						}
+						else if (allProperties || !laziness[i])
+						{
+							//decide which ResultSet to get the property value from:
+							bool propertyIsDeferred = hasDeferred
+							                          && rootPersister.IsSubclassPropertyDeferred(propNames[i], propSubclassNames[i]);
+							if (propertyIsDeferred && sequentialSelectEmpty)
+							{
+								values[i] = null;
+							}
+							else
+							{
+								var propertyResultSet = propertyIsDeferred ? sequentialResultSet : rs;
+								string[] cols = propertyIsDeferred ? propertyColumnAliases[i] : suffixedPropertyColumns[i];
+								values[i] = types[i].Hydrate(propertyResultSet, cols, session, obj);
+							}
 						}
 						else
 						{
-							var propertyResultSet = propertyIsDeferred ? sequentialResultSet : rs;
-							string[] cols = propertyIsDeferred ? propertyColumnAliases[i] : suffixedPropertyColumns[i];
-							values[i] = types[i].Hydrate(propertyResultSet, cols, session, obj);
+							values[i] = LazyPropertyInitializer.UnfetchedProperty;
 						}
 					}
-					else
+
+					if (sequentialResultSet != null)
 					{
-						values[i] = LazyPropertyInitializer.UnfetchedProperty;
+						sequentialResultSet.Close();
 					}
-				}
 
-				if (sequentialResultSet != null)
-				{
-					sequentialResultSet.Close();
+					return values;
 				}
-
-				return values;
-			}
-			finally
-			{
-				if (sequentialSelect != null)
+				finally
 				{
-					session.Batcher.CloseCommand(sequentialSelect, sequentialResultSet);
+					if (sequentialSelect != null)
+					{
+						batcher.CloseCommand(sequentialSelect, sequentialResultSet);
+					}
 				}
 			}
 		}
@@ -2665,9 +2672,10 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				// Render the SQL query
+				var batcher = session.Batcher;
 				var insertCmd = useBatch
-					? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes)
-					: session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
+					? batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes)
+					: batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
 
 				try
 				{
@@ -2682,18 +2690,18 @@ namespace NHibernate.Persister.Entity
 
 					if (useBatch)
 					{
-						session.Batcher.AddToBatch(expectation);
+						batcher.AddToBatch(expectation);
 					}
 					else
 					{
-						expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(insertCmd), insertCmd);
+						expectation.VerifyOutcomeNonBatched(batcher.ExecuteNonQuery(insertCmd), insertCmd);
 					}
 				}
 				catch (Exception e)
 				{
 					if (useBatch)
 					{
-						session.Batcher.AbortBatch(e);
+						batcher.AbortBatch(e);
 					}
 					throw;
 				}
@@ -2701,7 +2709,7 @@ namespace NHibernate.Persister.Entity
 				{
 					if (!useBatch)
 					{
-						session.Batcher.CloseCommand(insertCmd, null);
+						batcher.CloseCommand(insertCmd, null);
 					}
 				}
 			}
@@ -2777,9 +2785,10 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				int index = 0;
+				var batcher = session.Batcher;
 				var statement = useBatch
-					? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes)
-					: session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
+					? batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes)
+					: batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
 				try
 				{
 					//index += expectation.Prepare(statement, factory.ConnectionProvider.Driver);
@@ -2817,19 +2826,19 @@ namespace NHibernate.Persister.Entity
 
 					if (useBatch)
 					{
-						session.Batcher.AddToBatch(expectation);
+						batcher.AddToBatch(expectation);
 						return true;
 					}
 					else
 					{
-						return Check(session.Batcher.ExecuteNonQuery(statement), id, j, expectation, statement);
+						return Check(batcher.ExecuteNonQuery(statement), id, j, expectation, statement);
 					}
 				}
 				catch (StaleStateException e)
 				{
 					if (useBatch)
 					{
-						session.Batcher.AbortBatch(e);
+						batcher.AbortBatch(e);
 					}
 
 					throw new StaleObjectStateException(EntityName, id);
@@ -2838,7 +2847,7 @@ namespace NHibernate.Persister.Entity
 				{
 					if (useBatch)
 					{
-						session.Batcher.AbortBatch(e);
+						batcher.AbortBatch(e);
 					}
 
 					throw;
@@ -2847,7 +2856,7 @@ namespace NHibernate.Persister.Entity
 				{
 					if (!useBatch)
 					{
-						session.Batcher.CloseCommand(statement, null);
+						batcher.CloseCommand(statement, null);
 					}
 				}
 			}
@@ -2906,10 +2915,11 @@ namespace NHibernate.Persister.Entity
 
 			try
 			{
+				var batcher = session.Batcher;
 				int index = 0;
 				var statement = useBatch 
-					? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes) 
-					: session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
+					? batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes) 
+					: batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
 
 				try
 				{
@@ -2946,18 +2956,18 @@ namespace NHibernate.Persister.Entity
 
 					if (useBatch)
 					{
-						session.Batcher.AddToBatch(expectation);
+						batcher.AddToBatch(expectation);
 					}
 					else
 					{
-						Check(session.Batcher.ExecuteNonQuery(statement), tableId, j, expectation, statement);
+						Check(batcher.ExecuteNonQuery(statement), tableId, j, expectation, statement);
 					}
 				}
 				catch (Exception e)
 				{
 					if (useBatch)
 					{
-						session.Batcher.AbortBatch(e);
+						batcher.AbortBatch(e);
 					}
 					throw;
 				}
@@ -2965,7 +2975,7 @@ namespace NHibernate.Persister.Entity
 				{
 					if (!useBatch)
 					{
-						session.Batcher.CloseCommand(statement, null);
+						batcher.CloseCommand(statement, null);
 					}
 				}
 			}
@@ -4107,12 +4117,13 @@ namespace NHibernate.Persister.Entity
 			using (new SessionIdLoggingContext(session.SessionId)) 
 			try
 			{
-				var cmd = session.Batcher.PrepareQueryCommand(CommandType.Text, selectionSQL, IdentifierType.SqlTypes(Factory));
+				var batcher = session.Batcher;
+				var cmd = batcher.PrepareQueryCommand(CommandType.Text, selectionSQL, IdentifierType.SqlTypes(Factory));
 				DbDataReader rs = null;
 				try
 				{
 					IdentifierType.NullSafeSet(cmd, id, 0, session);
-					rs = session.Batcher.ExecuteReader(cmd);
+					rs = batcher.ExecuteReader(cmd);
 					if (!rs.Read())
 					{
 						throw new HibernateException("Unable to locate row for retrieval of generated properties: "
@@ -4130,7 +4141,7 @@ namespace NHibernate.Persister.Entity
 				}
 				finally
 				{
-					session.Batcher.CloseCommand(cmd, rs);
+					batcher.CloseCommand(cmd, rs);
 				}
 			}
 			catch (DbException sqle)
@@ -4214,12 +4225,13 @@ namespace NHibernate.Persister.Entity
 			using (new SessionIdLoggingContext(session.SessionId)) 
 			try
 			{
-				var ps = session.Batcher.PrepareCommand(CommandType.Text, sql, IdentifierType.SqlTypes(factory));
+				var batcher = session.Batcher;
+				var ps = batcher.PrepareCommand(CommandType.Text, sql, IdentifierType.SqlTypes(factory));
 				DbDataReader rs = null;
 				try
 				{
 					IdentifierType.NullSafeSet(ps, id, 0, session);
-					rs = session.Batcher.ExecuteReader(ps);
+					rs = batcher.ExecuteReader(ps);
 					//if there is no resulting row, return null
 					if (!rs.Read())
 					{
@@ -4239,7 +4251,7 @@ namespace NHibernate.Persister.Entity
 				}
 				finally
 				{
-					session.Batcher.CloseCommand(ps, rs);
+					batcher.CloseCommand(ps, rs);
 				}
 			}
 			catch (DbException sqle)

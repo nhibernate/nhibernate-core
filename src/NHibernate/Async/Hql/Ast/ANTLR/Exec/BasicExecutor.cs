@@ -41,6 +41,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 
 			try
 			{
+				var batcher = session.Batcher;
 				try
 				{
 					CheckParametersExpectedType(parameters); // NH Different behavior (NH-1898)
@@ -48,7 +49,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					var sqlQueryParametersList = sql.GetParameters().ToList();
 					SqlType[] parameterTypes = Parameters.GetQueryParameterTypes(sqlQueryParametersList, session.Factory);
 
-					st = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, parameterTypes, cancellationToken)).ConfigureAwait(false);
+					st = await (batcher.PrepareCommandAsync(CommandType.Text, sql, parameterTypes, cancellationToken)).ConfigureAwait(false);
 					foreach (var parameterSpecification in Parameters)
 					{
 						await (parameterSpecification.BindAsync(st, sqlQueryParametersList, parameters, session, cancellationToken)).ConfigureAwait(false);
@@ -61,13 +62,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 							st.CommandTimeout = selection.Timeout;
 						}
 					}
-					return await (session.Batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false);
+					return await (batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false);
 				}
 				finally
 				{
 					if (st != null)
 					{
-						session.Batcher.CloseCommand(st, null);
+						batcher.CloseCommand(st, null);
 					}
 				}
 			}

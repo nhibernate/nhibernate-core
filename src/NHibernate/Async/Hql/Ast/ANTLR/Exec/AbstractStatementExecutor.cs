@@ -108,11 +108,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			{
 				// at the very least cleanup the data :)
 				DbCommand ps = null;
+				var batcher = session.Batcher;
 				try
 				{
 					var commandText = new SqlString("delete from " + persister.TemporaryIdTableName);
-					ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, commandText, new SqlType[0], cancellationToken)).ConfigureAwait(false);
-					await (session.Batcher.ExecuteNonQueryAsync(ps, cancellationToken)).ConfigureAwait(false);
+					ps = await (batcher.PrepareCommandAsync(CommandType.Text, commandText, new SqlType[0], cancellationToken)).ConfigureAwait(false);
+					await (batcher.ExecuteNonQueryAsync(ps, cancellationToken)).ConfigureAwait(false);
 				}
 				catch (Exception t)
 				{
@@ -124,7 +125,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					{
 						try
 						{
-							session.Batcher.CloseCommand(ps, null);
+							batcher.CloseCommand(ps, null);
 						}
 						catch (Exception)
 						{

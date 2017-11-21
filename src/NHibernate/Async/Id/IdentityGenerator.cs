@@ -37,14 +37,15 @@ namespace NHibernate.Id
 			public override async Task<object> ExecuteAndExtractAsync(DbCommand insert, ISessionImplementor session, CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				var rs = await (session.Batcher.ExecuteReaderAsync(insert, cancellationToken)).ConfigureAwait(false);
+				var batcher = session.Batcher;
+				var rs = await (batcher.ExecuteReaderAsync(insert, cancellationToken)).ConfigureAwait(false);
 				try
 				{
 					return await (IdentifierGeneratorFactory.GetGeneratedIdentityAsync(rs, persister.IdentifierType, session, cancellationToken)).ConfigureAwait(false);
 				}
 				finally
 				{
-					session.Batcher.CloseReader(rs);
+					batcher.CloseReader(rs);
 				}
 			}
 		}

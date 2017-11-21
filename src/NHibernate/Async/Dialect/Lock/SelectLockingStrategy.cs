@@ -32,7 +32,8 @@ namespace NHibernate.Dialect.Lock
 			ISessionFactoryImplementor factory = session.Factory;
 			try
 			{
-				var st = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, lockable.IdAndVersionSqlTypes, cancellationToken)).ConfigureAwait(false);
+				var batcher = session.Batcher;
+				var st = await (batcher.PrepareCommandAsync(CommandType.Text, sql, lockable.IdAndVersionSqlTypes, cancellationToken)).ConfigureAwait(false);
 				DbDataReader rs = null;
 				try
 				{
@@ -42,7 +43,7 @@ namespace NHibernate.Dialect.Lock
 						await (lockable.VersionType.NullSafeSetAsync(st, version, lockable.IdentifierType.GetColumnSpan(factory), session, cancellationToken)).ConfigureAwait(false);
 					}
 
-					rs = await (session.Batcher.ExecuteReaderAsync(st, cancellationToken)).ConfigureAwait(false);
+					rs = await (batcher.ExecuteReaderAsync(st, cancellationToken)).ConfigureAwait(false);
 					try
 					{
 						if (!await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false))
@@ -61,7 +62,7 @@ namespace NHibernate.Dialect.Lock
 				}
 				finally
 				{
-					session.Batcher.CloseCommand(st, rs);
+					batcher.CloseCommand(st, rs);
 				}
 			}
 			catch (HibernateException)

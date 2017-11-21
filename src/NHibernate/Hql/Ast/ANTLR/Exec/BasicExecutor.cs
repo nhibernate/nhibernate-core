@@ -57,6 +57,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 
 			try
 			{
+				var batcher = session.Batcher;
 				try
 				{
 					CheckParametersExpectedType(parameters); // NH Different behavior (NH-1898)
@@ -64,7 +65,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					var sqlQueryParametersList = sql.GetParameters().ToList();
 					SqlType[] parameterTypes = Parameters.GetQueryParameterTypes(sqlQueryParametersList, session.Factory);
 
-					st = session.Batcher.PrepareCommand(CommandType.Text, sql, parameterTypes);
+					st = batcher.PrepareCommand(CommandType.Text, sql, parameterTypes);
 					foreach (var parameterSpecification in Parameters)
 					{
 						parameterSpecification.Bind(st, sqlQueryParametersList, parameters, session);
@@ -77,13 +78,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 							st.CommandTimeout = selection.Timeout;
 						}
 					}
-					return session.Batcher.ExecuteNonQuery(st);
+					return batcher.ExecuteNonQuery(st);
 				}
 				finally
 				{
 					if (st != null)
 					{
-						session.Batcher.CloseCommand(st, null);
+						batcher.CloseCommand(st, null);
 					}
 				}
 			}

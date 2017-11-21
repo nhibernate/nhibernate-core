@@ -57,7 +57,8 @@ namespace NHibernate.Dialect.Lock
 			ISessionFactoryImplementor factory = session.Factory;
 			try
 			{
-				var st = session.Batcher.PrepareCommand(CommandType.Text, sql, lockable.IdAndVersionSqlTypes);
+				var batcher = session.Batcher;
+				var st = batcher.PrepareCommand(CommandType.Text, sql, lockable.IdAndVersionSqlTypes);
 				DbDataReader rs = null;
 				try
 				{
@@ -67,7 +68,7 @@ namespace NHibernate.Dialect.Lock
 						lockable.VersionType.NullSafeSet(st, version, lockable.IdentifierType.GetColumnSpan(factory), session);
 					}
 
-					rs = session.Batcher.ExecuteReader(st);
+					rs = batcher.ExecuteReader(st);
 					try
 					{
 						if (!rs.Read())
@@ -86,7 +87,7 @@ namespace NHibernate.Dialect.Lock
 				}
 				finally
 				{
-					session.Batcher.CloseCommand(st, rs);
+					batcher.CloseCommand(st, rs);
 				}
 			}
 			catch (HibernateException)

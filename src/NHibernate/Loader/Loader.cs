@@ -1207,7 +1207,8 @@ namespace NHibernate.Loader
 			SqlString sqlString = sqlCommand.Query;
 
 			sqlCommand.ResetParametersIndexesForTheCommand(0);
-			var command = session.Batcher.PrepareQueryCommand(CommandType.Text, sqlString, sqlCommand.ParameterTypes);
+			var batcher = session.Batcher;
+			var command = batcher.PrepareQueryCommand(CommandType.Text, sqlString, sqlCommand.ParameterTypes);
 
 			try
 			{
@@ -1225,12 +1226,12 @@ namespace NHibernate.Loader
 			}
 			catch (HibernateException)
 			{
-				session.Batcher.CloseCommand(command, null);
+				batcher.CloseCommand(command, null);
 				throw;
 			}
 			catch (Exception sqle)
 			{
-				session.Batcher.CloseCommand(command, null);
+				batcher.CloseCommand(command, null);
 				ADOExceptionReporter.LogExceptions(sqle);
 				throw;
 			}
@@ -1269,11 +1270,12 @@ namespace NHibernate.Loader
 		protected DbDataReader GetResultSet(DbCommand st, bool autoDiscoverTypes, bool callable, RowSelection selection, ISessionImplementor session)
 		{
 			DbDataReader rs = null;
+			var batcher = session.Batcher;
 			try
 			{
 				Log.Info(st.CommandText);
 				// TODO NH: Callable
-				rs = session.Batcher.ExecuteReader(st);
+				rs = batcher.ExecuteReader(st);
 
 				//NH: this is checked outside the WrapResultSet because we
 				// want to avoid the syncronization overhead in the vast majority
@@ -1296,7 +1298,7 @@ namespace NHibernate.Loader
 			catch (Exception sqle)
 			{
 				ADOExceptionReporter.LogExceptions(sqle);
-				session.Batcher.CloseCommand(st, rs);
+				batcher.CloseCommand(st, rs);
 				throw;
 			}
 		}

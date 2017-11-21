@@ -98,11 +98,12 @@ namespace NHibernate.Id.Enhanced
 				_owner._accessCounter++;
 				try
 				{
-					var st = _session.Batcher.PrepareCommand(CommandType.Text, _owner._sql, SqlTypeFactory.NoTypes);
+					var batcher = _session.Batcher;
+					var st = batcher.PrepareCommand(CommandType.Text, _owner._sql, SqlTypeFactory.NoTypes);
 					DbDataReader rs = null;
 					try
 					{
-						rs = _session.Batcher.ExecuteReader(st);
+						rs = batcher.ExecuteReader(st);
 						try
 						{
 							rs.Read();
@@ -127,7 +128,7 @@ namespace NHibernate.Id.Enhanced
 					}
 					finally
 					{
-						_session.Batcher.CloseCommand(st, rs);
+						batcher.CloseCommand(st, rs);
 					}
 				}
 				catch (DbException sqle)

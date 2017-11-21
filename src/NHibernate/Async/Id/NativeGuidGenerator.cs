@@ -33,11 +33,12 @@ namespace NHibernate.Id
 			var sql = new SqlString(session.Factory.Dialect.SelectGUIDString);
 			try
 			{
-				var st = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, SqlTypeFactory.NoTypes, cancellationToken)).ConfigureAwait(false);
+				var batcher = session.Batcher;
+				var st = await (batcher.PrepareCommandAsync(CommandType.Text, sql, SqlTypeFactory.NoTypes, cancellationToken)).ConfigureAwait(false);
 				DbDataReader reader = null;
 				try
 				{
-					reader = await (session.Batcher.ExecuteReaderAsync(st, cancellationToken)).ConfigureAwait(false);
+					reader = await (batcher.ExecuteReaderAsync(st, cancellationToken)).ConfigureAwait(false);
 					object result;
 					try
 					{
@@ -53,7 +54,7 @@ namespace NHibernate.Id
 				}
 				finally
 				{
-					session.Batcher.CloseCommand(st, reader);
+					batcher.CloseCommand(st, reader);
 				}
 			}
 			catch (Exception sqle)

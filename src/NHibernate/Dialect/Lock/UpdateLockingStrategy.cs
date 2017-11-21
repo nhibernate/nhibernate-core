@@ -75,7 +75,8 @@ namespace NHibernate.Dialect.Lock
 			ISessionFactoryImplementor factory = session.Factory;
 			try
 			{
-				var st = session.Batcher.PrepareCommand(CommandType.Text, sql, lockable.IdAndVersionSqlTypes);
+				var batcher = session.Batcher;
+				var st = batcher.PrepareCommand(CommandType.Text, sql, lockable.IdAndVersionSqlTypes);
 				try
 				{
 					lockable.VersionType.NullSafeSet(st, version, 1, session);
@@ -89,7 +90,7 @@ namespace NHibernate.Dialect.Lock
 						lockable.VersionType.NullSafeSet(st, version, offset, session);
 					}
 
-					int affected = session.Batcher.ExecuteNonQuery(st);
+					int affected = batcher.ExecuteNonQuery(st);
 					if (affected < 0)
 					{
 						factory.StatisticsImplementor.OptimisticFailure(lockable.EntityName);
@@ -98,7 +99,7 @@ namespace NHibernate.Dialect.Lock
 				}
 				finally
 				{
-					session.Batcher.CloseCommand(st, null);
+					batcher.CloseCommand(st, null);
 				}
 			}
 			catch (HibernateException)

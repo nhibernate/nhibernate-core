@@ -56,11 +56,12 @@ namespace NHibernate.Id
 
 			try
 			{
-				var cmd = await (session.Batcher.PrepareCommandAsync(CommandType.Text, _sql, SqlTypeFactory.NoTypes, cancellationToken)).ConfigureAwait(false);
+				var batcher = session.Batcher;
+				var cmd = await (batcher.PrepareCommandAsync(CommandType.Text, _sql, SqlTypeFactory.NoTypes, cancellationToken)).ConfigureAwait(false);
 				DbDataReader reader = null;
 				try
 				{
-					reader = await (session.Batcher.ExecuteReaderAsync(cmd, cancellationToken)).ConfigureAwait(false);
+					reader = await (batcher.ExecuteReaderAsync(cmd, cancellationToken)).ConfigureAwait(false);
 					try
 					{
 						if (await (reader.ReadAsync(cancellationToken)).ConfigureAwait(false))
@@ -81,7 +82,7 @@ namespace NHibernate.Id
 				}
 				finally
 				{
-					session.Batcher.CloseCommand(cmd, reader);
+					batcher.CloseCommand(cmd, reader);
 				}
 			}
 			catch (DbException sqle)

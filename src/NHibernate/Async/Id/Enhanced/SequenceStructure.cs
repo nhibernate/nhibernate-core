@@ -37,11 +37,12 @@ namespace NHibernate.Id.Enhanced
 				_owner._accessCounter++;
 				try
 				{
-					var st = await (_session.Batcher.PrepareCommandAsync(CommandType.Text, _owner._sql, SqlTypeFactory.NoTypes, cancellationToken)).ConfigureAwait(false);
+					var batcher = _session.Batcher;
+					var st = await (batcher.PrepareCommandAsync(CommandType.Text, _owner._sql, SqlTypeFactory.NoTypes, cancellationToken)).ConfigureAwait(false);
 					DbDataReader rs = null;
 					try
 					{
-						rs = await (_session.Batcher.ExecuteReaderAsync(st, cancellationToken)).ConfigureAwait(false);
+						rs = await (batcher.ExecuteReaderAsync(st, cancellationToken)).ConfigureAwait(false);
 						try
 						{
 							await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false);
@@ -66,7 +67,7 @@ namespace NHibernate.Id.Enhanced
 					}
 					finally
 					{
-						_session.Batcher.CloseCommand(st, rs);
+						batcher.CloseCommand(st, rs);
 					}
 				}
 				catch (DbException sqle)
