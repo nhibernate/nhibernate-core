@@ -1674,7 +1674,7 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Actually execute a query, ignoring the query cache
 		/// </summary>
-		/// <param name="session"></param>
+		/// <param name="persistenceContext"></param>
 		/// <param name="queryParameters"></param>
 		/// <returns></returns>
 		protected IList DoList(IPersistenceContext persistenceContext, QueryParameters queryParameters)

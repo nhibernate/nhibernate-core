@@ -1187,7 +1187,7 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Actually execute a query, ignoring the query cache
 		/// </summary>
-		/// <param name="session"></param>
+		/// <param name="persistenceContext"></param>
 		/// <param name="queryParameters"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
