@@ -78,8 +78,9 @@ namespace NHibernate.Engine.Query
 
 				var sqlParametersList = sql.GetParameters().ToList();
 				SqlType[] sqlTypes = parametersSpecifications.GetQueryParameterTypes(sqlParametersList, session.Factory);
-				
-				var ps = session.Batcher.PrepareCommand(CommandType.Text, sql, sqlTypes);
+
+				var batcher = session.Batcher;
+				var ps = batcher.PrepareCommand(CommandType.Text, sql, sqlTypes);
 
 				try
 				{
@@ -94,13 +95,13 @@ namespace NHibernate.Engine.Query
 						parameterSpecification.Bind(ps, sqlParametersList, queryParameters, session);
 					}
 					
-					result = session.Batcher.ExecuteNonQuery(ps);
+					result = batcher.ExecuteNonQuery(ps);
 				}
 				finally
 				{
 					if (ps != null)
 					{
-						session.Batcher.CloseCommand(ps, null);
+						batcher.CloseCommand(ps, null);
 					}
 				}
 			}

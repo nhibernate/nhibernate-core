@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 
 using NHibernate.Cache;
@@ -28,18 +29,31 @@ namespace NHibernate.Engine
 		/// to resolve any associations yet, because there might be other entities waiting to be
 		/// read from the JDBC result set we are currently processing
 		/// </summary>
+		//Since v5.1
+		[Obsolete]
 		public static void PostHydrate(IEntityPersister persister, object id, object[] values, object rowId, object obj, LockMode lockMode, bool lazyPropertiesAreUnfetched, ISessionImplementor session)
 		{
-			object version = Versioning.GetVersion(values, persister);
-			session.PersistenceContext.AddEntry(obj, Status.Loading, values, rowId, id, version, lockMode, true, persister, false, lazyPropertiesAreUnfetched);
+			PostHydrate(persister, id, values, rowId, obj, lockMode, lazyPropertiesAreUnfetched, session.PersistenceContext);
+		}
 
+		/// <summary>
+		/// Register the "hydrated" state of an entity instance, after the first step of 2-phase loading.
+		///
+		/// Add the "hydrated state" (an array) of an uninitialized entity to the session. We don't try
+		/// to resolve any associations yet, because there might be other entities waiting to be
+		/// read from the JDBC result set we are currently processing
+		/// </summary>
+		public static void PostHydrate(IEntityPersister persister, object id, object[] values, object rowId, object obj, LockMode lockMode, bool lazyPropertiesAreUnfetched, IPersistenceContext persistenceContext)
+		{
+			object version = Versioning.GetVersion(values, persister);
+			persistenceContext.AddEntry(obj, Status.Loading, values, rowId, id, version, lockMode, true, persister, false, lazyPropertiesAreUnfetched);
 			if (log.IsDebugEnabled && version != null)
 			{
-				System.String versionStr = persister.IsVersioned ? persister.VersionType.ToLoggableString(version, session.Factory) : "null";
+				System.String versionStr = persister.IsVersioned ? persister.VersionType.ToLoggableString(version, persister.Factory): "null";
 				log.Debug("Version: " + versionStr);
 			}
 		}
-		
+
 		/// <summary>
 		/// Perform the second step of 2-phase load. Fully initialize the entity instance.
 		/// After processing a JDBC result set, we "resolve" all the associations
@@ -50,7 +64,8 @@ namespace NHibernate.Engine
 		{
 			//TODO: Should this be an InitializeEntityEventListener??? (watch out for performance!)
 
-			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
+			var factory = session.Factory;
+			bool statsEnabled = factory.Statistics.IsStatisticsEnabled;
 			var stopWath = new Stopwatch();
 			if (statsEnabled)
 			{
@@ -68,7 +83,7 @@ namespace NHibernate.Engine
 			object[] hydratedState = entityEntry.LoadedState;
 
 			if (log.IsDebugEnabled)
-				log.Debug("resolving associations for " + MessageHelper.InfoString(persister, id, session.Factory));
+				log.Debug("resolving associations for " + MessageHelper.InfoString(persister, id, factory));
 
 			IType[] types = persister.PropertyTypes;
 			for (int i = 0; i < hydratedState.Length; i++)
@@ -96,12 +111,10 @@ namespace NHibernate.Engine
 
 			persister.SetPropertyValues(entity, hydratedState);
 			
-			ISessionFactoryImplementor factory = session.Factory;
-
 			if (persister.HasCache && session.CacheMode.HasFlag(CacheMode.Put))
 			{
 				if (log.IsDebugEnabled)
-					log.Debug("adding entity to second-level cache: " + MessageHelper.InfoString(persister, id, session.Factory));
+					log.Debug("adding entity to second-level cache: " + MessageHelper.InfoString(persister, id, factory));
 
 				object version = Versioning.GetVersion(hydratedState, persister);
 				CacheEntry entry =
@@ -146,7 +159,7 @@ namespace NHibernate.Engine
 			else
 			{
 				//take a snapshot
-				TypeHelper.DeepCopy(hydratedState, persister.PropertyTypes, persister.PropertyUpdateability, hydratedState, session);
+				TypeHelper.DeepCopy(hydratedState, persister.PropertyTypes, persister.PropertyUpdateability, hydratedState, factory);
 				persistenceContext.SetEntryStatus(entityEntry, Status.Loaded);
 			}
 
@@ -165,7 +178,7 @@ namespace NHibernate.Engine
 			}
 
 			if (log.IsDebugEnabled)
-				log.Debug("done materializing entity " + MessageHelper.InfoString(persister, id, session.Factory));
+				log.Debug("done materializing entity " + MessageHelper.InfoString(persister, id, factory));
 
 			if (statsEnabled)
 			{
@@ -186,14 +199,34 @@ namespace NHibernate.Engine
 		/// Create a "temporary" entry for a newly instantiated entity. The entity is uninitialized,
 		/// but we need the mapping from id to instance in order to guarantee uniqueness.
 		/// </summary>
+		//Since v5.1
+		[Obsolete]
 		public static void AddUninitializedEntity(EntityKey key, object obj, IEntityPersister persister, LockMode lockMode, bool lazyPropertiesAreUnfetched, ISessionImplementor session)
 		{
-			session.PersistenceContext.AddEntity(obj, Status.Loading, null, key, null, lockMode, true, persister, false, lazyPropertiesAreUnfetched);
+			AddUninitializedEntity(key, obj, persister, lockMode, lazyPropertiesAreUnfetched, session.PersistenceContext);
 		}
 
+		/// <summary>
+		/// Add an uninitialized instance of an entity class, as a placeholder to ensure object
+		/// identity. Must be called before <tt>postHydrate()</tt>.
+		/// Create a "temporary" entry for a newly instantiated entity. The entity is uninitialized,
+		/// but we need the mapping from id to instance in order to guarantee uniqueness.
+		/// </summary>
+		public static void AddUninitializedEntity(EntityKey key, object obj, IEntityPersister persister, LockMode lockMode, bool lazyPropertiesAreUnfetched, IPersistenceContext persistenceContext)
+		{
+			persistenceContext.AddEntity(obj, Status.Loading, null, key, null, lockMode, true, persister, false, lazyPropertiesAreUnfetched);
+		}
+
+		//Since v5.1
+		[Obsolete]
 		public static void AddUninitializedCachedEntity(EntityKey key, object obj, IEntityPersister persister, LockMode lockMode, bool lazyPropertiesAreUnfetched, object version, ISessionImplementor session)
 		{
-			session.PersistenceContext.AddEntity(obj, Status.Loading, null, key, version, lockMode, true, persister, false, lazyPropertiesAreUnfetched);
+			AddUninitializedCachedEntity(key, obj, persister, lockMode, lazyPropertiesAreUnfetched, version, session.PersistenceContext);
+		}
+
+		public static void AddUninitializedCachedEntity(EntityKey key, object obj, IEntityPersister persister, LockMode lockMode, bool lazyPropertiesAreUnfetched, object version, IPersistenceContext persistenceContext)
+		{
+			persistenceContext.AddEntity(obj, Status.Loading, null, key, version, lockMode, true, persister, false, lazyPropertiesAreUnfetched);
 		}
 	}
 }

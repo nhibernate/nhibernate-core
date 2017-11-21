@@ -172,19 +172,20 @@ namespace NHibernate.Persister.Collection
 					if (collection.NeedsUpdating(entry, i, ElementType))
 					{
 						int offset = 0;
+						var batcher = session.Batcher;
 						if (useBatch)
 						{
 							if (st == null)
 							{
 								st =
-									session.Batcher.PrepareBatchCommand(SqlUpdateRowString.CommandType, SqlUpdateRowString.Text,
+									batcher.PrepareBatchCommand(SqlUpdateRowString.CommandType, SqlUpdateRowString.Text,
 																		SqlUpdateRowString.ParameterTypes);
 							}
 						}
 						else
 						{
 							st =
-								session.Batcher.PrepareCommand(SqlUpdateRowString.CommandType, SqlUpdateRowString.Text,
+								batcher.PrepareCommand(SqlUpdateRowString.CommandType, SqlUpdateRowString.Text,
 															   SqlUpdateRowString.ParameterTypes);
 						}
 
@@ -212,18 +213,18 @@ namespace NHibernate.Persister.Collection
 
 							if (useBatch)
 							{
-								session.Batcher.AddToBatch(expectation);
+								batcher.AddToBatch(expectation);
 							}
 							else
 							{
-								expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
+								expectation.VerifyOutcomeNonBatched(batcher.ExecuteNonQuery(st), st);
 							}
 						}
 						catch (Exception e)
 						{
 							if (useBatch)
 							{
-								session.Batcher.AbortBatch(e);
+								batcher.AbortBatch(e);
 							}
 							throw;
 						}
@@ -231,7 +232,7 @@ namespace NHibernate.Persister.Collection
 						{
 							if (!useBatch)
 							{
-								session.Batcher.CloseCommand(st, null);
+								batcher.CloseCommand(st, null);
 							}
 						}
 						count++;

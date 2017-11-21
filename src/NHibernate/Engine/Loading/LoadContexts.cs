@@ -49,16 +49,6 @@ namespace NHibernate.Engine.Loading
 			get { return persistenceContext; }
 		}
 
-		private ISessionImplementor Session
-		{
-			get { return PersistenceContext.Session; }
-		}
-
-		internal IDictionary<CollectionKey, LoadingCollectionEntry> LoadingCollectionXRefs
-		{
-			get { return xrefLoadingCollectionEntries; }
-		}
-
 		/// <summary> 
 		/// Release internal state associated with the given result set.
 		///  </summary>
@@ -158,7 +148,7 @@ namespace NHibernate.Engine.Loading
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("returning loading collection:" + MessageHelper.CollectionInfoString(persister, ownerKey, Session.Factory));
+					log.Debug("returning loading collection:" + MessageHelper.CollectionInfoString(persister, ownerKey, persister.Factory));
 				}
 				return lce.Collection;
 			}

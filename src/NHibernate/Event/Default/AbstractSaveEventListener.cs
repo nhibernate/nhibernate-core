@@ -245,7 +245,7 @@ namespace NHibernate.Event.Default
 				persister.SetPropertyValues(entity, values);
 			}
 
-			TypeHelper.DeepCopy(values, types, persister.PropertyUpdateability, values, source);
+			TypeHelper.DeepCopy(values, types, persister.PropertyUpdateability, values, source.Factory);
 
 			new ForeignKeys.Nullifier(entity, false, useIdentityColumn, source).NullifyTransientReferences(values, types);
 			new Nullability(source).CheckNullability(values, persister, false);
@@ -354,14 +354,15 @@ namespace NHibernate.Event.Default
 		protected virtual void CascadeBeforeSave(IEventSource source, IEntityPersister persister, object entity, object anything)
 		{
 			// cascade-save to many-to-one BEFORE the parent is saved
-			source.PersistenceContext.IncrementCascadeLevel();
+			var persistenceContext = source.PersistenceContext;
+			persistenceContext.IncrementCascadeLevel();
 			try
 			{
 				new Cascade(CascadeAction, CascadePoint.BeforeInsertAfterDelete, source).CascadeOn(persister, entity, anything);
 			}
 			finally
 			{
-				source.PersistenceContext.DecrementCascadeLevel();
+				persistenceContext.DecrementCascadeLevel();
 			}
 		}
 
@@ -373,14 +374,15 @@ namespace NHibernate.Event.Default
 		protected virtual void CascadeAfterSave(IEventSource source, IEntityPersister persister, object entity, object anything)
 		{
 			// cascade-save to collections AFTER the collection owner was saved
-			source.PersistenceContext.IncrementCascadeLevel();
+			var persistenceContext = source.PersistenceContext;
+			persistenceContext.IncrementCascadeLevel();
 			try
 			{
 				new Cascade(CascadeAction, CascadePoint.AfterInsertBeforeDelete, source).CascadeOn(persister, entity, anything);
 			}
 			finally
 			{
-				source.PersistenceContext.DecrementCascadeLevel();
+				persistenceContext.DecrementCascadeLevel();
 			}
 		}
 

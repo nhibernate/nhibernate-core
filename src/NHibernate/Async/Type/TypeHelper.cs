@@ -21,7 +21,7 @@ namespace NHibernate.Type
 	using System.Threading;
 	public static partial class TypeHelper
 	{
-		
+
 		/// <summary>Apply the <see cref="ICacheAssembler.BeforeAssembleAsync(object,ISessionImplementor,CancellationToken)" /> operation across a series of values.</summary>
 		/// <param name="row">The values</param>
 		/// <param name="types">The value types</param>

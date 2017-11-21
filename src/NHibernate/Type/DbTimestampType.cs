@@ -55,10 +55,11 @@ namespace NHibernate.Type
 			DbDataReader rs = null;
 			using (new SessionIdLoggingContext(session.SessionId))
 			{
+				var batcher = session.Batcher;
 				try
 				{
-					ps = session.Batcher.PrepareCommand(CommandType.Text, tsSelect, EmptyParams);
-					rs = session.Batcher.ExecuteReader(ps);
+					ps = batcher.PrepareCommand(CommandType.Text, tsSelect, EmptyParams);
+					rs = batcher.ExecuteReader(ps);
 					rs.Read();
 					var ts = rs.GetDateTime(0);
 					log.DebugFormat("current timestamp retreived from db : {0} (ticks={1})", ts, ts.Ticks);
@@ -78,7 +79,7 @@ namespace NHibernate.Type
 					{
 						try
 						{
-							session.Batcher.CloseCommand(ps, rs);
+							batcher.CloseCommand(ps, rs);
 						}
 						catch (DbException sqle)
 						{

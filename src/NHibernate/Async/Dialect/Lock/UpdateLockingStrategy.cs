@@ -44,7 +44,8 @@ namespace NHibernate.Dialect.Lock
 				ISessionFactoryImplementor factory = session.Factory;
 				try
 				{
-					var st = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, lockable.IdAndVersionSqlTypes, cancellationToken)).ConfigureAwait(false);
+					var batcher = session.Batcher;
+					var st = await (batcher.PrepareCommandAsync(CommandType.Text, sql, lockable.IdAndVersionSqlTypes, cancellationToken)).ConfigureAwait(false);
 					try
 					{
 						await (lockable.VersionType.NullSafeSetAsync(st, version, 1, session, cancellationToken)).ConfigureAwait(false);
@@ -58,7 +59,7 @@ namespace NHibernate.Dialect.Lock
 							await (lockable.VersionType.NullSafeSetAsync(st, version, offset, session, cancellationToken)).ConfigureAwait(false);
 						}
 
-						int affected = await (session.Batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false);
+						int affected = await (batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false);
 						if (affected < 0)
 						{
 							factory.StatisticsImplementor.OptimisticFailure(lockable.EntityName);
@@ -67,7 +68,7 @@ namespace NHibernate.Dialect.Lock
 					}
 					finally
 					{
-						session.Batcher.CloseCommand(st, null);
+						batcher.CloseCommand(st, null);
 					}
 				}
 				catch (HibernateException)

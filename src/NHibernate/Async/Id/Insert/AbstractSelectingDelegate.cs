@@ -33,18 +33,19 @@ namespace NHibernate.Id.Insert
 			session.ConnectionManager.FlushBeginning();
 			try
 			{
+				var batcher = session.Batcher;
 				try
 				{
 					// prepare and execute the insert
-					var insert = await (session.Batcher.PrepareCommandAsync(insertSql.CommandType, insertSql.Text, insertSql.ParameterTypes, cancellationToken)).ConfigureAwait(false);
+					var insert = await (batcher.PrepareCommandAsync(insertSql.CommandType, insertSql.Text, insertSql.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 					try
 					{
 						await (binder.BindValuesAsync(insert, cancellationToken)).ConfigureAwait(false);
-						await (session.Batcher.ExecuteNonQueryAsync(insert, cancellationToken)).ConfigureAwait(false);
+						await (batcher.ExecuteNonQueryAsync(insert, cancellationToken)).ConfigureAwait(false);
 					}
 					finally
 					{
-						session.Batcher.CloseCommand(insert, null);
+						batcher.CloseCommand(insert, null);
 					}
 				}
 				catch (DbException sqle)
@@ -59,23 +60,23 @@ namespace NHibernate.Id.Insert
 					try
 					{
 						//fetch the generated id in a separate query
-						var idSelect = await (session.Batcher.PrepareCommandAsync(CommandType.Text, selectSql, ParametersTypes, cancellationToken)).ConfigureAwait(false);
+						var idSelect = await (batcher.PrepareCommandAsync(CommandType.Text, selectSql, ParametersTypes, cancellationToken)).ConfigureAwait(false);
 						try
 						{
 							await (BindParametersAsync(session, idSelect, binder.Entity, cancellationToken)).ConfigureAwait(false);
-							var rs = await (session.Batcher.ExecuteReaderAsync(idSelect, cancellationToken)).ConfigureAwait(false);
+							var rs = await (batcher.ExecuteReaderAsync(idSelect, cancellationToken)).ConfigureAwait(false);
 							try
 							{
 								return await (GetResultAsync(session, rs, binder.Entity, cancellationToken)).ConfigureAwait(false);
 							}
 							finally
 							{
-								session.Batcher.CloseReader(rs);
+								batcher.CloseReader(rs);
 							}
 						}
 						finally
 						{
-							session.Batcher.CloseCommand(idSelect, null);
+							batcher.CloseCommand(idSelect, null);
 						}
 					}
 					catch (DbException sqle)

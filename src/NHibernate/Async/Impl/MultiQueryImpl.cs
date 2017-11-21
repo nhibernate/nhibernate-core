@@ -11,6 +11,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Diagnostics;
 using NHibernate.Cache;
 using NHibernate.Driver;
@@ -90,6 +91,7 @@ namespace NHibernate.Impl
 					{
 						log.DebugFormat("Executing {0} queries", translators.Count);
 					}
+					var persistenceContext = session.PersistenceContext;
 					for (int i = 0; i < translators.Count; i++)
 					{
 						ITranslator translator = Translators[i];
@@ -115,7 +117,7 @@ namespace NHibernate.Impl
 						createSubselects[i] = translator.Loader.IsSubselectLoadingEnabled;
 						subselectResultKeys[i] = createSubselects[i] ? new List<EntityKey[]>() : null;
 
-						translator.Loader.HandleEmptyCollections(parameter.CollectionKeys, reader, session);
+						translator.Loader.HandleEmptyCollections(parameter.CollectionKeys, persistenceContext, persistenceContext.LoadContexts);
 						EntityKey[] keys = new EntityKey[entitySpan]; // we can reuse it each time
 
 						if (log.IsDebugEnabled)
@@ -134,7 +136,8 @@ namespace NHibernate.Impl
 
 							rowCount++;
 							object result = await (translator.Loader.GetRowFromResultSetAsync(
-								reader, session, parameter, lockModeArray, optionalObjectKey, hydratedObjects[i], keys, true, cancellationToken)).ConfigureAwait(false);
+								reader, parameter, lockModeArray, optionalObjectKey, hydratedObjects[i], keys, true,
+								persistenceContext, cancellationToken)).ConfigureAwait(false);
 							tempResults.Add(result);
 
 							if (createSubselects[i])
@@ -164,11 +167,11 @@ namespace NHibernate.Impl
 						ITranslator translator = translators[i];
 						QueryParameters parameter = parameters[i];
 
-						await (translator.Loader.InitializeEntitiesAndCollectionsAsync(hydratedObjects[i], reader, session, false, cancellationToken)).ConfigureAwait(false);
+						await (translator.Loader.InitializeEntitiesAndCollectionsAsync(hydratedObjects[i], false, reader, persistenceContext, cancellationToken)).ConfigureAwait(false);
 
 						if (createSubselects[i])
 						{
-							translator.Loader.CreateSubselects(subselectResultKeys[i], parameter, session);
+							translator.Loader.CreateSubselects(subselectResultKeys[i], parameter, persistenceContext);
 						}
 					}
 				}

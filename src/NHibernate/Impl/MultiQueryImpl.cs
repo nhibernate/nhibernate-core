@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Diagnostics;
 using NHibernate.Cache;
 using NHibernate.Driver;
@@ -532,6 +533,7 @@ namespace NHibernate.Impl
 					{
 						log.DebugFormat("Executing {0} queries", translators.Count);
 					}
+					var persistenceContext = session.PersistenceContext;
 					for (int i = 0; i < translators.Count; i++)
 					{
 						ITranslator translator = Translators[i];
@@ -557,7 +559,7 @@ namespace NHibernate.Impl
 						createSubselects[i] = translator.Loader.IsSubselectLoadingEnabled;
 						subselectResultKeys[i] = createSubselects[i] ? new List<EntityKey[]>() : null;
 
-						translator.Loader.HandleEmptyCollections(parameter.CollectionKeys, reader, session);
+						translator.Loader.HandleEmptyCollections(parameter.CollectionKeys, persistenceContext, persistenceContext.LoadContexts);
 						EntityKey[] keys = new EntityKey[entitySpan]; // we can reuse it each time
 
 						if (log.IsDebugEnabled)
@@ -576,7 +578,8 @@ namespace NHibernate.Impl
 
 							rowCount++;
 							object result = translator.Loader.GetRowFromResultSet(
-								reader, session, parameter, lockModeArray, optionalObjectKey, hydratedObjects[i], keys, true);
+								reader, parameter, lockModeArray, optionalObjectKey, hydratedObjects[i], keys, true,
+								persistenceContext);
 							tempResults.Add(result);
 
 							if (createSubselects[i])
@@ -606,11 +609,11 @@ namespace NHibernate.Impl
 						ITranslator translator = translators[i];
 						QueryParameters parameter = parameters[i];
 
-						translator.Loader.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, false);
+						translator.Loader.InitializeEntitiesAndCollections(hydratedObjects[i], false, reader, persistenceContext);
 
 						if (createSubselects[i])
 						{
-							translator.Loader.CreateSubselects(subselectResultKeys[i], parameter, session);
+							translator.Loader.CreateSubselects(subselectResultKeys[i], parameter, persistenceContext);
 						}
 					}
 				}

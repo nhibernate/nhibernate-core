@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 using NHibernate.Engine;
 
@@ -6,46 +8,27 @@ namespace NHibernate.Stat
 {
 	public class SessionStatisticsImpl : ISessionStatistics
 	{
-		private readonly ISessionImplementor session;
+		private readonly IPersistenceContext _persistenceContext;
 
+		public SessionStatisticsImpl(IPersistenceContext persistenceContext)
+		{
+			_persistenceContext = persistenceContext;
+		}
+
+		//Since v5.1
+		[Obsolete("Please use SessionStatisticsImpl(IPersistenceContext persistenceContext) constructor.")]
 		public SessionStatisticsImpl(ISessionImplementor session)
+			: this(session.PersistenceContext)
 		{
-			this.session = session;
 		}
 
-		#region ISessionStatistics Members
+		public int EntityCount => _persistenceContext.EntityEntries.Count;
 
-		public int EntityCount
-		{
-			get { return session.PersistenceContext.EntityEntries.Count; }
-		}
+		public int CollectionCount => _persistenceContext.CollectionEntries.Count;
 
-		public int CollectionCount
-		{
-			get { return session.PersistenceContext.CollectionEntries.Count; }
-		}
+		public IList<EntityKey> EntityKeys => new List<EntityKey>(_persistenceContext.EntitiesByKey.Keys).AsReadOnly();
 
-		public IList<EntityKey> EntityKeys
-		{
-			get
-			{
-				List<EntityKey> result = new List<EntityKey>();
-				result.AddRange(session.PersistenceContext.EntitiesByKey.Keys);
-				return result.AsReadOnly();
-			}
-		}
-
-		public IList<CollectionKey> CollectionKeys
-		{
-			get 
-			{
-				List<CollectionKey> result = new List<CollectionKey>();
-				result.AddRange(session.PersistenceContext.CollectionsByKey.Keys);
-				return result.AsReadOnly();
-			}
-		}
-
-		#endregion
+		public IList<CollectionKey> CollectionKeys => new List<CollectionKey>(_persistenceContext.CollectionsByKey.Keys).AsReadOnly();
 
 		public override string ToString()
 		{

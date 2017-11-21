@@ -155,12 +155,11 @@ namespace NHibernate.Engine.Loading
 			// internal loadingCollections map for matches and store those matches
 			// in a temp collection.  the temp collection is then used to "drive"
 			// the #endRead processing.
+			var persistenceContext = LoadContext.PersistenceContext;
 			List<CollectionKey> toRemove = new List<CollectionKey>();
 			List<LoadingCollectionEntry> matches =new List<LoadingCollectionEntry>();
 			foreach (CollectionKey collectionKey in localLoadingCollectionKeys)
 			{
-				ISessionImplementor session = LoadContext.PersistenceContext.Session;
-
 				LoadingCollectionEntry lce = loadContexts.LocateLoadingCollectionEntry(collectionKey);
 				if (lce == null)
 				{
@@ -171,7 +170,7 @@ namespace NHibernate.Engine.Loading
 					matches.Add(lce);
 					if (lce.Collection.Owner == null)
 					{
-						session.PersistenceContext.AddUnownedCollection(new CollectionKey(persister, lce.Key),
+						persistenceContext.AddUnownedCollection(new CollectionKey(persister, lce.Key),
 																		lce.Collection);
 					}
 					if (log.IsDebugEnabled)
@@ -229,11 +228,12 @@ namespace NHibernate.Engine.Loading
 
 		private void EndLoadingCollection(LoadingCollectionEntry lce, ICollectionPersister persister)
 		{
+			var persistenceContext = LoadContext.PersistenceContext;
+			var session = persistenceContext.Session;
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("ending loading collection [" + lce + "]");
 			}
-			ISessionImplementor session = LoadContext.PersistenceContext.Session;
 
 			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
 			var stopWath = new Stopwatch();
@@ -246,13 +246,13 @@ namespace NHibernate.Engine.Loading
 
 			if (persister.CollectionType.HasHolder())
 			{
-				LoadContext.PersistenceContext.AddCollectionHolder(lce.Collection);
+				persistenceContext.AddCollectionHolder(lce.Collection);
 			}
 
-			CollectionEntry ce = LoadContext.PersistenceContext.GetCollectionEntry(lce.Collection);
+			CollectionEntry ce = persistenceContext.GetCollectionEntry(lce.Collection);
 			if (ce == null)
 			{
-				ce = LoadContext.PersistenceContext.AddInitializedCollection(persister, lce.Collection, lce.Key);
+				ce = persistenceContext.AddInitializedCollection(persister, lce.Collection, lce.Key);
 			}
 			else
 			{
@@ -284,8 +284,8 @@ namespace NHibernate.Engine.Loading
 		/// <param name="persister">The persister </param>
 		private void AddCollectionToCache(LoadingCollectionEntry lce, ICollectionPersister persister)
 		{
-			ISessionImplementor session = LoadContext.PersistenceContext.Session;
-			ISessionFactoryImplementor factory = session.Factory;
+			var session = LoadContext.PersistenceContext.Session;
+			var factory = session.Factory;
 
 			if (log.IsDebugEnabled)
 			{

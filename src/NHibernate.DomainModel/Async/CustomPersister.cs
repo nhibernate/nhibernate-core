@@ -84,9 +84,9 @@ namespace NHibernate.DomainModel
 			if (obj != null)
 			{
 				clone = (Custom)obj.Clone();
-				TwoPhaseLoad.AddUninitializedEntity(session.GenerateEntityKey(id, this), clone, this, LockMode.None, false,
-				                                    session);
-				TwoPhaseLoad.PostHydrate(this, id, new String[] {obj.Name}, null, clone, LockMode.None, false, session);
+				var persistenceContext = session.PersistenceContext;
+				TwoPhaseLoad.AddUninitializedEntity(session.GenerateEntityKey(id, this), clone, this, LockMode.None, false, persistenceContext);
+				TwoPhaseLoad.PostHydrate(this, id, new String[] {obj.Name}, null, clone, LockMode.None, false, persistenceContext);
 				await (TwoPhaseLoad.InitializeEntityAsync(clone, false, session, new PreLoadEvent((IEventSource) session),
 				                              new PostLoadEvent((IEventSource) session), cancellationToken));
 			}

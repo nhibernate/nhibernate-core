@@ -33,18 +33,19 @@ namespace NHibernate.Id.Insert
 			session.ConnectionManager.FlushBeginning();
 			try
 			{
+				var batcher = session.Batcher;
 				try
 				{
 					// prepare and execute the insert
-					var insert = session.Batcher.PrepareCommand(insertSql.CommandType, insertSql.Text, insertSql.ParameterTypes);
+					var insert = batcher.PrepareCommand(insertSql.CommandType, insertSql.Text, insertSql.ParameterTypes);
 					try
 					{
 						binder.BindValues(insert);
-						session.Batcher.ExecuteNonQuery(insert);
+						batcher.ExecuteNonQuery(insert);
 					}
 					finally
 					{
-						session.Batcher.CloseCommand(insert, null);
+						batcher.CloseCommand(insert, null);
 					}
 				}
 				catch (DbException sqle)
@@ -59,23 +60,23 @@ namespace NHibernate.Id.Insert
 					try
 					{
 						//fetch the generated id in a separate query
-						var idSelect = session.Batcher.PrepareCommand(CommandType.Text, selectSql, ParametersTypes);
+						var idSelect = batcher.PrepareCommand(CommandType.Text, selectSql, ParametersTypes);
 						try
 						{
 							BindParameters(session, idSelect, binder.Entity);
-							var rs = session.Batcher.ExecuteReader(idSelect);
+							var rs = batcher.ExecuteReader(idSelect);
 							try
 							{
 								return GetResult(session, rs, binder.Entity);
 							}
 							finally
 							{
-								session.Batcher.CloseReader(rs);
+								batcher.CloseReader(rs);
 							}
 						}
 						finally
 						{
-							session.Batcher.CloseCommand(idSelect, null);
+							batcher.CloseCommand(idSelect, null);
 						}
 					}
 					catch (DbException sqle)

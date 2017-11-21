@@ -200,9 +200,10 @@ namespace NHibernate.Persister.Collection
 					IExpectation expectation = Expectations.AppropriateExpectation(DeleteAllCheckStyle);
 					//bool callable = DeleteAllCallable;
 					bool useBatch = expectation.CanBeBatched;
+					var batcher = session.Batcher;
 					var st = useBatch
-						? await (session.Batcher.PrepareBatchCommandAsync(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes, cancellationToken)).ConfigureAwait(false)
-						: await (session.Batcher.PrepareCommandAsync(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes, cancellationToken)).ConfigureAwait(false);
+						? await (batcher.PrepareBatchCommandAsync(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes, cancellationToken)).ConfigureAwait(false)
+						: await (batcher.PrepareCommandAsync(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 
 					try
 					{
@@ -210,18 +211,18 @@ namespace NHibernate.Persister.Collection
 						await (WriteKeyAsync(st, id, offset, session, cancellationToken)).ConfigureAwait(false);
 						if (useBatch)
 						{
-							await (session.Batcher.AddToBatchAsync(expectation, cancellationToken)).ConfigureAwait(false);
+							await (batcher.AddToBatchAsync(expectation, cancellationToken)).ConfigureAwait(false);
 						}
 						else
 						{
-							expectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false), st);
+							expectation.VerifyOutcomeNonBatched(await (batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false), st);
 						}
 					}
 					catch (Exception e)
 					{
 						if (useBatch)
 						{
-							session.Batcher.AbortBatch(e);
+							batcher.AbortBatch(e);
 						}
 						throw;
 					}
@@ -229,7 +230,7 @@ namespace NHibernate.Persister.Collection
 					{
 						if (!useBatch)
 						{
-							session.Batcher.CloseCommand(st, null);
+							batcher.CloseCommand(st, null);
 						}
 					}
 
@@ -334,16 +335,17 @@ namespace NHibernate.Persister.Collection
 						//var callable = DeleteCallable;
 
 						var useBatch = expectation.CanBeBatched;
+						var batcher = session.Batcher;
 						if (useBatch)
 						{
 							st =
-								await (session.Batcher.PrepareBatchCommandAsync(SqlDeleteRowString.CommandType, SqlDeleteRowString.Text,
+								await (batcher.PrepareBatchCommandAsync(SqlDeleteRowString.CommandType, SqlDeleteRowString.Text,
 																	SqlDeleteRowString.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 						}
 						else
 						{
 							st =
-								await (session.Batcher.PrepareCommandAsync(SqlDeleteRowString.CommandType, SqlDeleteRowString.Text,
+								await (batcher.PrepareCommandAsync(SqlDeleteRowString.CommandType, SqlDeleteRowString.Text,
 																SqlDeleteRowString.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 						}
 						try
@@ -368,11 +370,11 @@ namespace NHibernate.Persister.Collection
 							}
 							if (useBatch)
 							{
-								await (session.Batcher.AddToBatchAsync(expectation, cancellationToken)).ConfigureAwait(false);
+								await (batcher.AddToBatchAsync(expectation, cancellationToken)).ConfigureAwait(false);
 							}
 							else
 							{
-								expectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false), st);
+								expectation.VerifyOutcomeNonBatched(await (batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false), st);
 							}
 							count++;
 						}
@@ -380,7 +382,7 @@ namespace NHibernate.Persister.Collection
 						{
 							if (useBatch)
 							{
-								session.Batcher.AbortBatch(e);
+								batcher.AbortBatch(e);
 							}
 							throw;
 						}
@@ -388,7 +390,7 @@ namespace NHibernate.Persister.Collection
 						{
 							if (!useBatch)
 							{
-								session.Batcher.CloseCommand(st, null);
+								batcher.CloseCommand(st, null);
 							}
 						}
 					}
@@ -491,9 +493,10 @@ namespace NHibernate.Persister.Collection
 			cancellationToken.ThrowIfCancellationRequested();
 			object entryId = null;
 			int offset = 0;
+			var batcher = session.Batcher;
 			var st = useBatch
-				? await (session.Batcher.PrepareBatchCommandAsync(SqlInsertRowString.CommandType, SqlInsertRowString.Text, SqlInsertRowString.ParameterTypes, cancellationToken)).ConfigureAwait(false)
-				: await (session.Batcher.PrepareCommandAsync(SqlInsertRowString.CommandType, SqlInsertRowString.Text, SqlInsertRowString.ParameterTypes, cancellationToken)).ConfigureAwait(false);
+				? await (batcher.PrepareBatchCommandAsync(SqlInsertRowString.CommandType, SqlInsertRowString.Text, SqlInsertRowString.ParameterTypes, cancellationToken)).ConfigureAwait(false)
+				: await (batcher.PrepareCommandAsync(SqlInsertRowString.CommandType, SqlInsertRowString.Text, SqlInsertRowString.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 			try
 			{
 				//offset += expectation.Prepare(st, factory.ConnectionProvider.Driver);
@@ -510,18 +513,18 @@ namespace NHibernate.Persister.Collection
 				await (WriteElementAsync(st, collection.GetElement(entry), offset, session, cancellationToken)).ConfigureAwait(false);
 				if (useBatch)
 				{
-					await (session.Batcher.AddToBatchAsync(expectation, cancellationToken)).ConfigureAwait(false);
+					await (batcher.AddToBatchAsync(expectation, cancellationToken)).ConfigureAwait(false);
 				}
 				else
 				{
-					expectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false), st);
+					expectation.VerifyOutcomeNonBatched(await (batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false), st);
 				}
 			}
 			catch (Exception e)
 			{
 				if (useBatch)
 				{
-					session.Batcher.AbortBatch(e);
+					batcher.AbortBatch(e);
 				}
 				throw;
 			}
@@ -529,7 +532,7 @@ namespace NHibernate.Persister.Collection
 			{
 				if (!useBatch)
 				{
-					session.Batcher.CloseCommand(st, null);
+					batcher.CloseCommand(st, null);
 				}
 			}
 			return entryId;

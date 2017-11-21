@@ -220,7 +220,7 @@ namespace NHibernate.Event.Default
 				persister.SetPropertyValues(entity, values);
 			}
 
-			TypeHelper.DeepCopy(values, types, persister.PropertyUpdateability, values, source);
+			TypeHelper.DeepCopy(values, types, persister.PropertyUpdateability, values, source.Factory);
 
 			await (new ForeignKeys.Nullifier(entity, false, useIdentityColumn, source).NullifyTransientReferencesAsync(values, types, cancellationToken)).ConfigureAwait(false);
 			new Nullability(source).CheckNullability(values, persister, false);
@@ -320,14 +320,15 @@ namespace NHibernate.Event.Default
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			// cascade-save to many-to-one BEFORE the parent is saved
-			source.PersistenceContext.IncrementCascadeLevel();
+			var persistenceContext = source.PersistenceContext;
+			persistenceContext.IncrementCascadeLevel();
 			try
 			{
 				await (new Cascade(CascadeAction, CascadePoint.BeforeInsertAfterDelete, source).CascadeOnAsync(persister, entity, anything, cancellationToken)).ConfigureAwait(false);
 			}
 			finally
 			{
-				source.PersistenceContext.DecrementCascadeLevel();
+				persistenceContext.DecrementCascadeLevel();
 			}
 		}
 
@@ -341,14 +342,15 @@ namespace NHibernate.Event.Default
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			// cascade-save to collections AFTER the collection owner was saved
-			source.PersistenceContext.IncrementCascadeLevel();
+			var persistenceContext = source.PersistenceContext;
+			persistenceContext.IncrementCascadeLevel();
 			try
 			{
 				await (new Cascade(CascadeAction, CascadePoint.AfterInsertBeforeDelete, source).CascadeOnAsync(persister, entity, anything, cancellationToken)).ConfigureAwait(false);
 			}
 			finally
 			{
-				source.PersistenceContext.DecrementCascadeLevel();
+				persistenceContext.DecrementCascadeLevel();
 			}
 		}
 

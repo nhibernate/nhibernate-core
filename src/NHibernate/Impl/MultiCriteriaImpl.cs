@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Diagnostics;
 using NHibernate.Cache;
 using NHibernate.Criterion;
@@ -223,9 +224,10 @@ namespace NHibernate.Impl
 			{
 				using (var reader = resultSetsCommand.GetReader(null))
 				{
+					var persistenceContext = session.PersistenceContext;
 					var hydratedObjects = new List<object>[loaders.Count];
-					List<EntityKey[]>[] subselectResultKeys = new List<EntityKey[]>[loaders.Count];
-					bool[] createSubselects = new bool[loaders.Count];
+					var subselectResultKeys = new List<EntityKey[]>[loaders.Count];
+					var createSubselects = new bool[loaders.Count];
 					for (int i = 0; i < loaders.Count; i++)
 					{
 						CriteriaLoader loader = loaders[i];
@@ -249,8 +251,9 @@ namespace NHibernate.Impl
 							rowCount++;
 
 							object o =
-								loader.GetRowFromResultSet(reader, session, queryParameters, loader.GetLockModes(queryParameters.LockModes),
-																					 null, hydratedObjects[i], keys, true);
+								loader.GetRowFromResultSet(reader, queryParameters, loader.GetLockModes(queryParameters.LockModes),
+																					 null, hydratedObjects[i], keys, true,
+								                           persistenceContext);
 							if (createSubselects[i])
 							{
 								subselectResultKeys[i].Add(keys);
@@ -266,11 +269,11 @@ namespace NHibernate.Impl
 					for (int i = 0; i < loaders.Count; i++)
 					{
 						CriteriaLoader loader = loaders[i];
-						loader.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, session.DefaultReadOnly);
+						loader.InitializeEntitiesAndCollections(hydratedObjects[i], session.DefaultReadOnly, reader, persistenceContext);
 
 						if (createSubselects[i])
 						{
-							loader.CreateSubselects(subselectResultKeys[i], parameters[i], session);
+							loader.CreateSubselects(subselectResultKeys[i], parameters[i], persistenceContext);
 						}
 					}
 				}

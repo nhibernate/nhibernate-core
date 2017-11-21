@@ -1037,9 +1037,10 @@ namespace NHibernate.Persister.Collection
 					IExpectation expectation = Expectations.AppropriateExpectation(DeleteAllCheckStyle);
 					//bool callable = DeleteAllCallable;
 					bool useBatch = expectation.CanBeBatched;
+					var batcher = session.Batcher;
 					var st = useBatch
-						? session.Batcher.PrepareBatchCommand(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes)
-						: session.Batcher.PrepareCommand(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes);
+						? batcher.PrepareBatchCommand(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes)
+						: batcher.PrepareCommand(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes);
 
 					try
 					{
@@ -1047,18 +1048,18 @@ namespace NHibernate.Persister.Collection
 						WriteKey(st, id, offset, session);
 						if (useBatch)
 						{
-							session.Batcher.AddToBatch(expectation);
+							batcher.AddToBatch(expectation);
 						}
 						else
 						{
-							expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
+							expectation.VerifyOutcomeNonBatched(batcher.ExecuteNonQuery(st), st);
 						}
 					}
 					catch (Exception e)
 					{
 						if (useBatch)
 						{
-							session.Batcher.AbortBatch(e);
+							batcher.AbortBatch(e);
 						}
 						throw;
 					}
@@ -1066,7 +1067,7 @@ namespace NHibernate.Persister.Collection
 					{
 						if (!useBatch)
 						{
-							session.Batcher.CloseCommand(st, null);
+							batcher.CloseCommand(st, null);
 						}
 					}
 
@@ -1169,16 +1170,17 @@ namespace NHibernate.Persister.Collection
 						//var callable = DeleteCallable;
 
 						var useBatch = expectation.CanBeBatched;
+						var batcher = session.Batcher;
 						if (useBatch)
 						{
 							st =
-								session.Batcher.PrepareBatchCommand(SqlDeleteRowString.CommandType, SqlDeleteRowString.Text,
+								batcher.PrepareBatchCommand(SqlDeleteRowString.CommandType, SqlDeleteRowString.Text,
 																	SqlDeleteRowString.ParameterTypes);
 						}
 						else
 						{
 							st =
-								session.Batcher.PrepareCommand(SqlDeleteRowString.CommandType, SqlDeleteRowString.Text,
+								batcher.PrepareCommand(SqlDeleteRowString.CommandType, SqlDeleteRowString.Text,
 																SqlDeleteRowString.ParameterTypes);
 						}
 						try
@@ -1203,11 +1205,11 @@ namespace NHibernate.Persister.Collection
 							}
 							if (useBatch)
 							{
-								session.Batcher.AddToBatch(expectation);
+								batcher.AddToBatch(expectation);
 							}
 							else
 							{
-								expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
+								expectation.VerifyOutcomeNonBatched(batcher.ExecuteNonQuery(st), st);
 							}
 							count++;
 						}
@@ -1215,7 +1217,7 @@ namespace NHibernate.Persister.Collection
 						{
 							if (useBatch)
 							{
-								session.Batcher.AbortBatch(e);
+								batcher.AbortBatch(e);
 							}
 							throw;
 						}
@@ -1223,7 +1225,7 @@ namespace NHibernate.Persister.Collection
 						{
 							if (!useBatch)
 							{
-								session.Batcher.CloseCommand(st, null);
+								batcher.CloseCommand(st, null);
 							}
 						}
 					}
@@ -1520,17 +1522,18 @@ namespace NHibernate.Persister.Collection
 					
 				}
 
-				var st = session.Batcher.PrepareCommand(CommandType.Text, GenerateSelectSizeString(session), KeyType.SqlTypes(factory));
+				var batcher = session.Batcher;
+				var st = batcher.PrepareCommand(CommandType.Text, GenerateSelectSizeString(session), KeyType.SqlTypes(factory));
 				DbDataReader rs = null;
 				try
 				{
 					KeyType.NullSafeSet(st, key, 0, session);
-					rs = session.Batcher.ExecuteReader(st);
+					rs = batcher.ExecuteReader(st);
 					return rs.Read() ? Convert.ToInt32(rs.GetValue(0)) - baseIndex : 0;
 				}
 				finally
 				{
-					session.Batcher.CloseCommand(st, rs);
+					batcher.CloseCommand(st, rs);
 				}
 			}
 			catch (DbException sqle)
@@ -1559,13 +1562,14 @@ namespace NHibernate.Persister.Collection
 			{
 				List<SqlType> sqlTl = new List<SqlType>(KeyType.SqlTypes(factory));
 				sqlTl.AddRange(indexOrElementType.SqlTypes(factory));
-				var st = session.Batcher.PrepareCommand(CommandType.Text, sql, sqlTl.ToArray());
+				var batcher = session.Batcher;
+				var st = batcher.PrepareCommand(CommandType.Text, sql, sqlTl.ToArray());
 				DbDataReader rs = null;
 				try
 				{
 					KeyType.NullSafeSet(st, key, 0, session);
 					indexOrElementType.NullSafeSet(st, indexOrElement, keyColumnNames.Length, session);
-					rs = session.Batcher.ExecuteReader(st);
+					rs = batcher.ExecuteReader(st);
 					try
 					{
 						return rs.Read();
@@ -1581,7 +1585,7 @@ namespace NHibernate.Persister.Collection
 				}
 				finally
 				{
-					session.Batcher.CloseCommand(st, rs);
+					batcher.CloseCommand(st, rs);
 				}
 			}
 			catch (DbException sqle)
@@ -1599,13 +1603,14 @@ namespace NHibernate.Persister.Collection
 			{
 				List<SqlType> sqlTl = new List<SqlType>(KeyType.SqlTypes(factory));
 				sqlTl.AddRange(IndexType.SqlTypes(factory));
-				var st = session.Batcher.PrepareCommand(CommandType.Text, sqlSelectRowByIndexString, sqlTl.ToArray());
+				var batcher = session.Batcher;
+				var st = batcher.PrepareCommand(CommandType.Text, sqlSelectRowByIndexString, sqlTl.ToArray());
 				DbDataReader rs = null;
 				try
 				{
 					KeyType.NullSafeSet(st, key, 0, session);
 					IndexType.NullSafeSet(st, IncrementIndexByBase(index), keyColumnNames.Length, session);
-					rs = session.Batcher.ExecuteReader(st);
+					rs = batcher.ExecuteReader(st);
 					try
 					{
 						if (rs.Read())
@@ -1624,7 +1629,7 @@ namespace NHibernate.Persister.Collection
 				}
 				finally
 				{
-					session.Batcher.CloseCommand(st, rs);
+					batcher.CloseCommand(st, rs);
 				}
 			}
 			catch (DbException sqle)
@@ -1958,9 +1963,10 @@ namespace NHibernate.Persister.Collection
 		{
 			object entryId = null;
 			int offset = 0;
+			var batcher = session.Batcher;
 			var st = useBatch
-				? session.Batcher.PrepareBatchCommand(SqlInsertRowString.CommandType, SqlInsertRowString.Text, SqlInsertRowString.ParameterTypes)
-				: session.Batcher.PrepareCommand(SqlInsertRowString.CommandType, SqlInsertRowString.Text, SqlInsertRowString.ParameterTypes);
+				? batcher.PrepareBatchCommand(SqlInsertRowString.CommandType, SqlInsertRowString.Text, SqlInsertRowString.ParameterTypes)
+				: batcher.PrepareCommand(SqlInsertRowString.CommandType, SqlInsertRowString.Text, SqlInsertRowString.ParameterTypes);
 			try
 			{
 				//offset += expectation.Prepare(st, factory.ConnectionProvider.Driver);
@@ -1977,18 +1983,18 @@ namespace NHibernate.Persister.Collection
 				WriteElement(st, collection.GetElement(entry), offset, session);
 				if (useBatch)
 				{
-					session.Batcher.AddToBatch(expectation);
+					batcher.AddToBatch(expectation);
 				}
 				else
 				{
-					expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
+					expectation.VerifyOutcomeNonBatched(batcher.ExecuteNonQuery(st), st);
 				}
 			}
 			catch (Exception e)
 			{
 				if (useBatch)
 				{
-					session.Batcher.AbortBatch(e);
+					batcher.AbortBatch(e);
 				}
 				throw;
 			}
@@ -1996,7 +2002,7 @@ namespace NHibernate.Persister.Collection
 			{
 				if (!useBatch)
 				{
-					session.Batcher.CloseCommand(st, null);
+					batcher.CloseCommand(st, null);
 				}
 			}
 			return entryId;

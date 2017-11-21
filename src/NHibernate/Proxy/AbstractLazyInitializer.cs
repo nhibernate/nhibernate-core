@@ -69,16 +69,17 @@ namespace NHibernate.Proxy
 				{
 					// s != null
 					_session = s;
+					var persistenceContext = _session.PersistenceContext;
+					var persister = _session.Factory.GetEntityPersister(_entityName);
 					if (readOnlyBeforeAttachedToSession == null)
 					{
 						// use the default read-only/modifiable setting
-						IEntityPersister persister = s.Factory.GetEntityPersister(_entityName);
-						SetReadOnly(s.PersistenceContext.DefaultReadOnly || !persister.IsMutable);
+						SetReadOnly(persistenceContext, persistenceContext.DefaultReadOnly || !persister.IsMutable, persister);
 					}
 					else
 					{
 						// use the read-only/modifiable setting indicated during deserialization
-						SetReadOnly(readOnlyBeforeAttachedToSession.Value);
+						SetReadOnly(persistenceContext, readOnlyBeforeAttachedToSession.Value, persister);
 						readOnlyBeforeAttachedToSession = null;
 					}
 				}
@@ -228,9 +229,9 @@ namespace NHibernate.Proxy
 				ErrorIfReadOnlySettingNotAvailable();
 			
 				// only update if setting is different from current setting
-				if (this.readOnly != value)
+				if (readOnly != value)
 				{
-					this.SetReadOnly(value);
+					SetReadOnly(_session.PersistenceContext, value, _session.Factory.GetEntityPersister(_entityName));
 				}
 			}
 		}
@@ -273,11 +274,9 @@ namespace NHibernate.Proxy
 			return null;
 		}
 		
-		private void SetReadOnly(bool readOnly)
+		private void SetReadOnly(IPersistenceContext persistenceContext, bool readOnly, IEntityPersister entityPersister)
 		{
-			IEntityPersister persister = _session.Factory.GetEntityPersister(_entityName);
-
-			if (!persister.IsMutable && !readOnly)
+			if (!entityPersister.IsMutable && !readOnly)
 			{
 				throw new InvalidOperationException("cannot make proxies for immutable entities modifiable");
 			}
@@ -287,9 +286,12 @@ namespace NHibernate.Proxy
 			if (initialized)
 			{
 				EntityKey key = GenerateEntityKeyOrNull(_id, _session, _entityName);
-				if (key != null && _session.PersistenceContext.ContainsEntity(key))
+				if (key != null)
 				{
-					_session.PersistenceContext.SetReadOnly(_target, readOnly);
+					if (persistenceContext.ContainsEntity(key))
+					{
+						persistenceContext.SetReadOnly(_target, readOnly);
+					}
 				}
 			}
 		}

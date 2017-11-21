@@ -298,15 +298,16 @@ namespace NHibernate.Event.Default
 		/// <param name="entity">The entity being updated. </param>
 		private void CascadeOnUpdate(SaveOrUpdateEvent @event, IEntityPersister persister, object entity)
 		{
-			IEventSource source = @event.Session;
-			source.PersistenceContext.IncrementCascadeLevel();
+			var source = @event.Session;
+			var persistenceContext = source.PersistenceContext;
+			persistenceContext.IncrementCascadeLevel();
 			try
 			{
 				new Cascade(CascadingAction.SaveUpdate, CascadePoint.AfterUpdate, source).CascadeOn(persister, entity);
 			}
 			finally
 			{
-				source.PersistenceContext.DecrementCascadeLevel();
+				persistenceContext.DecrementCascadeLevel();
 			}
 		}
 	}

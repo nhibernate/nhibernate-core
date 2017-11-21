@@ -262,14 +262,15 @@ namespace NHibernate.Engine
 			if (style.ReallyDoCascade(action))
 			{
 				//not really necessary, but good for consistency...
-				eventSource.PersistenceContext.AddChildParent(child, parent);
+				var persistenceContext = eventSource.PersistenceContext;
+				persistenceContext.AddChildParent(child, parent);
 				try
 				{
 					action.Cascade(eventSource, child, entityName, anything, isCascadeDeleteEnabled);
 				}
 				finally
 				{
-					eventSource.PersistenceContext.RemoveChildParent(child);
+					persistenceContext.RemoveChildParent(child);
 				}
 			}
 		}
