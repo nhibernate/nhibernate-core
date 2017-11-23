@@ -9,12 +9,4 @@ namespace NHibernate.Criterion
 		{
 		}
 	}
-
-	[Serializable]
-	public class EntityProjection<T> : EntityProjection
-	{
-		public EntityProjection(String alias) : base(typeof(T), alias)
-		{
-		}
-	}
 }

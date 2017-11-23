@@ -19,10 +19,11 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// Return the root entity.
 		/// </summary>
+		/// <param name="lazy"></param>
 		/// <returns>The root entity.</returns>
-		public static IProjection RootEntity()
+		public static IProjection RootEntity(bool lazy = true)
 		{
-			return (new RootEntityProjection());
+			return new RootEntityProjection().SetLazy(lazy);
 		}
 
 		/// <summary>
@@ -30,15 +31,34 @@ namespace NHibernate.Criterion
 		/// </summary>
 		/// <param name="type">The type of the entity.</param>
 		/// <param name="alias">The alias of the entity.</param>
+		/// <param name="lazy"></param>
 		/// <returns>A projection of the entity.</returns>
-		public static IProjection Entity(System.Type type, string alias)
+		public static IProjection Entity(System.Type type, string alias, bool lazy = true)
 		{
-			return (new EntityProjection(type, alias));
+			return new EntityProjection(type, alias).SetLazy(lazy);
 		}
 
-		public static IProjection Entity<T>(string alias)
+		/// <summary>
+		/// Return an aliased entity.
+		/// </summary>
+		/// /// <typeparam name="T">The type of the entity.</typeparam>
+		/// <param name="alias">The alias of the entity.</param>
+		/// <param name="lazy"></param>
+		/// <returns>A projection of the entity.</returns>
+		public static IProjection Entity<T>(string alias, bool lazy = true)
 		{
-			return (new EntityProjection<T>(alias));
+			return Entity(typeof(T), alias, lazy);
+		}
+		/// <summary>
+		/// Return an aliased entity.
+		/// </summary>
+		/// /// <typeparam name="T">The type of the entity.</typeparam>
+		/// <param name="alias">The alias of the entity.</param>
+		/// <param name="lazy"></param>
+		/// <returns>A projection of the entity.</returns>
+		public static IProjection Entity<T>(Expression<Func<T>> alias, bool lazy = true)
+		{
+			return Entity(typeof(T), ExpressionProcessor.FindMemberExpression(alias.Body), lazy);
 		}
 
 		/// <summary>
