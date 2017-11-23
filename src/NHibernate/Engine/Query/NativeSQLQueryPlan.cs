@@ -48,8 +48,6 @@ namespace NHibernate.Engine.Query
 		{
 			BulkOperationCleanupAction action = new BulkOperationCleanupAction(session, CustomQuery.QuerySpaces);
 
-			action.Init();
-
 			if (session.IsEventSource)
 			{
 				((IEventSource)session).ActionQueue.AddAction(action);

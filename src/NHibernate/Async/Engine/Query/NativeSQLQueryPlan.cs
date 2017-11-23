@@ -43,7 +43,11 @@ namespace NHibernate.Engine.Query
 
 			if (session.IsEventSource)
 			{
-				((IEventSource)session).ActionQueue.AddAction(action);
+				await (((IEventSource) session).ActionQueue.AddActionAsync(action, cancellationToken)).ConfigureAwait(false);
+			}
+			else
+			{
+				action.AfterTransactionCompletionProcess(true);
 			}
 		}
 

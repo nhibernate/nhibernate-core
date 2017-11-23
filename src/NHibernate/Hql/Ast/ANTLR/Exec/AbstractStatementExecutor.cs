@@ -47,11 +47,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 		{
 			var action = new BulkOperationCleanupAction(session, AffectedQueryables);
 
-			action.Init();
-
 			if (session.IsEventSource)
 			{
-				((IEventSource)session).ActionQueue.AddAction(action);
+				((IEventSource) session).ActionQueue.AddAction(action);
+			}
+			else
+			{
+				action.AfterTransactionCompletionProcess(true);
 			}
 		}
 
