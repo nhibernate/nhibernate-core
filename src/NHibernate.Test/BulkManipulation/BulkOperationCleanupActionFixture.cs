@@ -40,13 +40,13 @@ namespace NHibernate.Test.BulkManipulation
 		[TestCase("TestClass", false, 1, 0, 1)]
 		[TestCase("", true, 1, 1, 1)]
 		[Test]
-		public void Init_EvictsFromCache(string querySpaces, bool persisterHasCache, int expectedPropertySpaceLength, int expectedEntityEvictionCount, int expectedCollectionEvictionCount)
+		public void AfterTransactionCompletionProcess_EvictsFromCache(string querySpaces, bool persisterHasCache, int expectedPropertySpaceLength, int expectedEntityEvictionCount, int expectedCollectionEvictionCount)
 		{
 			_persister.HasCache.Returns(persisterHasCache);
 
 			var target = new BulkOperationCleanupAction(_session, new HashSet<string>(querySpaces.Split(new []{','},StringSplitOptions.RemoveEmptyEntries)));
 
-			target.Init();
+			target.AfterTransactionCompletionProcess(true);
 
 			Assert.AreEqual(expectedPropertySpaceLength, target.PropertySpaces.Length);
 

@@ -145,10 +145,6 @@ namespace NHibernate.Action
 
 		#endregion
 
-		public virtual void Init()
-		{
-			EvictEntityRegions();
-			EvictCollectionRegions();
-		}
+		
 	}
 }
