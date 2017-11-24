@@ -5,14 +5,20 @@ namespace NHibernate.Impl
 {
 	public class SessionIdLoggingContext : IDisposable
 	{
-		private static readonly AsyncLocal<Guid?> _currentSessionId = new AsyncLocal<Guid?>();
+		private static readonly Lazy<AsyncLocal<Guid?>> _currentSessionId =
+			new Lazy<AsyncLocal<Guid?>>(() => new AsyncLocal<Guid?>(), true);
 
 		private readonly Guid? _oldSessonId;
-
+		private bool _hasChanged;
+		
 		public SessionIdLoggingContext(Guid id)
 		{
 			_oldSessonId = SessionId;
-			SessionId = id;
+			_hasChanged = _oldSessonId != id;
+			if (_hasChanged)
+			{
+				SessionId = id;
+			}
 		}
 
 		/// <summary>
@@ -24,15 +30,18 @@ namespace NHibernate.Impl
 		/// </summary>
 		public static Guid? SessionId
 		{
-			get => _currentSessionId.Value;
-			set => _currentSessionId.Value = value;
+			get => _currentSessionId.IsValueCreated ? _currentSessionId.Value.Value : null;
+			set => _currentSessionId.Value.Value = value;
 		}
 
 		#region IDisposable Members
 
 		public void Dispose()
 		{
-			SessionId = _oldSessonId;
+			if (_hasChanged)
+			{
+				SessionId = _oldSessonId;
+			}
 		}
 
 		#endregion
