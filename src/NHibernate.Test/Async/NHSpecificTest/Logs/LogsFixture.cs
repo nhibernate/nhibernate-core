@@ -9,7 +9,9 @@
 
 
 using System.Collections;
-
+using System.Collections.Concurrent;
+using System.Linq;
+using System.Threading;
 using NHibernate.Impl;
 
 using NUnit.Framework;
@@ -53,6 +55,62 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 
 				var loggingEvent = spy.GetWholeLog();
 				Assert.That(loggingEvent.Contains(sessionId.ToString()), Is.True);
+			}
+		}
+
+		[Test]
+		public async Task WillGetSessionIdFromSessionLogsConcurrentAsync()
+		{
+			GlobalContext.Properties["sessionId"] = new SessionIdCapturer();
+
+			var semaphore = new ManualResetEventSlim();
+			var failures = new ConcurrentBag<Exception>();
+			var sessionIds = new ConcurrentDictionary<int, Guid>();
+			var array = Enumerable.Range(1, 10).Select(
+				i => new Thread(
+					() =>
+					{
+						try
+						{
+							using (var s = Sfi.OpenSession())
+							{
+								sessionIds.AddOrUpdate(
+									i,
+									s.GetSessionImplementation().SessionId,
+									(ti, old) => throw new InvalidOperationException(
+										$"Thread number {ti} has already session id {old}, while attempting to set it to" +
+										$" {s.GetSessionImplementation().SessionId}"));
+								semaphore.Wait();
+
+								for (int j = 0; j < 10; j++)
+								{
+									s.Get<Person>(i * 10 + j); //will execute some sql
+								}
+							}
+						}
+						catch (Exception e)
+						{
+							failures.Add(e);
+						}
+					})).ToArray();
+
+			using (var spy = new TextLogSpy("NHibernate.SQL", "%message | SessionId: %property{sessionId}"))
+			{
+				Array.ForEach(array, thread => thread.Start());
+				// Give some time to threads for reaching the wait, having all of them ready to do most of their job concurrently.
+				await (Task.Delay(100));
+				semaphore.Set();
+				Array.ForEach(array, thread => thread.Join());
+
+				Assert.That(failures, Is.Empty, $"{failures.Count} thread(s) failed.");
+
+				var loggingEvent = spy.GetWholeLog();
+				for (var i = 1; i < 11; i++)
+				for (var j = 0; j < 10; j++)
+				{
+					var sessionId = sessionIds[i];
+					Assert.That(loggingEvent, Does.Contain($"p0 = {i * 10 + j} [Type: Int32 (0:0:0)] | SessionId: {sessionId}"));
+				}
 			}
 		}
 
