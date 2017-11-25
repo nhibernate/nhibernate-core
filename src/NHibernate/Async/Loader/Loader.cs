@@ -1121,7 +1121,7 @@ namespace NHibernate.Loader
 			return GetResultList(await (DoListAsync(session, queryParameters, cancellationToken)).ConfigureAwait(false), queryParameters.ResultTransformer);
 		}
 
-		private async Task<IList> ListUsingQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces, IType[] resultTypes, CancellationToken cancellationToken)
+		protected async Task<IList> ListUsingQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces, IType[] resultTypes, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IQueryCache queryCache = _factory.GetQueryCache(queryParameters.CacheRegion);
@@ -1172,7 +1172,7 @@ namespace NHibernate.Loader
 
 				try
 				{
-					result = await (queryCache.GetAsync(key, key.ResultTransformer.GetCachedResultTypes(resultTypes), queryParameters.NaturalKeyLookup, querySpaces, session, cancellationToken)).ConfigureAwait(false);
+					result = await (queryCache.GetAsync(key, key.ResultTransformer != null ? key.ResultTransformer.GetCachedResultTypes(resultTypes) : resultTypes, queryParameters.NaturalKeyLookup, querySpaces, session, cancellationToken)).ConfigureAwait(false);
 					if (_factory.Statistics.IsStatisticsEnabled)
 					{
 						if (result == null)
@@ -1200,7 +1200,7 @@ namespace NHibernate.Loader
 			cancellationToken.ThrowIfCancellationRequested();
 			if (session.CacheMode.HasFlag(CacheMode.Put))
 			{
-				bool put = await (queryCache.PutAsync(key, key.ResultTransformer.GetCachedResultTypes(resultTypes), result, queryParameters.NaturalKeyLookup, session, cancellationToken)).ConfigureAwait(false);
+				bool put = await (queryCache.PutAsync(key, key.ResultTransformer != null ? key.ResultTransformer.GetCachedResultTypes(resultTypes) : resultTypes, result, queryParameters.NaturalKeyLookup, session, cancellationToken)).ConfigureAwait(false);
 				if (put && _factory.Statistics.IsStatisticsEnabled)
 				{
 					_factory.StatisticsImplementor.QueryCachePut(QueryIdentifier, queryCache.RegionName);

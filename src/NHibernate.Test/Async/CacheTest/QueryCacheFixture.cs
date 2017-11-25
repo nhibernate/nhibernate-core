@@ -71,5 +71,19 @@ namespace NHibernate.Test.CacheTest
 				await (s.FlushAsync());
 			}
 		}
+
+		[Test]
+		public async Task QueryCacheWithScalarFunctionThatReturnsIntAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				int result = await (s
+					.CreateSQLQuery("SELECT 200012")
+					.SetCacheable(true)
+					.UniqueResultAsync<int>());
+
+				Assert.IsNotNull(result);
+			}
+		}
 	}
 }
