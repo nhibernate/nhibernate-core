@@ -1543,7 +1543,7 @@ namespace NHibernate.Loader
 
 			if (result == null)
 			{
-				result = DoList(session, queryParameters, queryParameters.ResultTransformer);
+				result = DoList(session, queryParameters, key.ResultTransformer);
 				PutResultInQueryCache(session, queryParameters, resultTypes, queryCache, key, result);
 			}
 
@@ -1595,7 +1595,7 @@ namespace NHibernate.Loader
 
 				try
 				{
-					result = queryCache.Get(key, key.ResultTransformer.GetCachedResultTypes(resultTypes), queryParameters.NaturalKeyLookup, querySpaces, session);
+					result = queryCache.Get(key, key.ResultTransformer != null ? key.ResultTransformer.GetCachedResultTypes(resultTypes) : resultTypes, queryParameters.NaturalKeyLookup, querySpaces, session);
 					if (_factory.Statistics.IsStatisticsEnabled)
 					{
 						if (result == null)
@@ -1622,7 +1622,7 @@ namespace NHibernate.Loader
 		{
 			if (session.CacheMode.HasFlag(CacheMode.Put))
 			{
-				bool put = queryCache.Put(key, key.ResultTransformer.GetCachedResultTypes(resultTypes), result, queryParameters.NaturalKeyLookup, session);
+				bool put = queryCache.Put(key, key.ResultTransformer != null ? key.ResultTransformer.GetCachedResultTypes(resultTypes) : resultTypes, result, queryParameters.NaturalKeyLookup, session);
 				if (put && _factory.Statistics.IsStatisticsEnabled)
 				{
 					_factory.StatisticsImplementor.QueryCachePut(QueryIdentifier, queryCache.RegionName);

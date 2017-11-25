@@ -63,7 +63,7 @@ namespace NHibernate.Transform
 		{
 			return transformer is ITupleSubsetResultTransformer
 				       ? Create((ITupleSubsetResultTransformer) transformer, aliases, includeInTuple)
-				       : Create(includeInTuple);
+				       : includeInTuple != null ? Create(includeInTuple) : null;
 		}
 
 

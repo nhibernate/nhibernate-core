@@ -180,7 +180,7 @@ namespace NHibernate.Loader.Custom
 			resultTypes = resulttypes.ToArray();
 			transformerAliases = specifiedAliases.ToArray();
 			rowProcessor = new ResultRowProcessor(hasScalars, resultColumnProcessors.ToArray());
-			includeInResultRow = includeInResultRowList.ToArray();
+			includeInResultRow = null; //includeInResultRowList.ToArray();
 		}
 
 		public ISet<string> QuerySpaces
