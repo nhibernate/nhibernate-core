@@ -32,6 +32,9 @@ namespace NHibernate.Test
 
 		public virtual bool SupportsFullJoin => true;
 
+		/// <summary>
+		/// Does the dialect lack a true handling of decimal?
+		/// </summary>
 		public virtual bool HasBrokenDecimalType => false;
 
 		public virtual bool SupportsNullCharactersInUtfStrings => true;

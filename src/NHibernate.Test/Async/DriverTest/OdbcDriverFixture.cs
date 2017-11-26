@@ -10,20 +10,16 @@
 
 using System;
 using System.Collections;
-using System.Data;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Engine;
-using NHibernate.SqlTypes;
 using NUnit.Framework;
-using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.DriverTest
 {
 	using System.Threading.Tasks;
-
 	[TestFixture]
-	public class SqlClientDriverFixtureAsync : TestCase
+	public class OdbcDriverFixtureAsync : TestCase
 	{
 		protected override string MappingsAssembly => "NHibernate.Test";
 
@@ -31,12 +27,12 @@ namespace NHibernate.Test.DriverTest
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return dialect is MsSql2008Dialect;
+			return dialect is MsSql2000Dialect;
 		}
 
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)
 		{
-			return factory.ConnectionProvider.Driver is SqlClientDriver;
+			return factory.ConnectionProvider.Driver is OdbcDriver;
 		}
 
 		protected override void OnTearDown()
@@ -115,42 +111,6 @@ namespace NHibernate.Test.DriverTest
 				Assert.That(m.DecimalHighScale, Is.EqualTo(9876543210.0123456789m), "DecimalHighScale");
 
 				await (t.CommitAsync());
-			}
-		}
-
-		[Test]
-		public async Task QueryPlansAreReusedAsync()
-		{
-			using (ISession s = OpenSession())
-			using (ITransaction t = s.BeginTransaction())
-			{
-				// clear the existing plan cache
-				await (s.CreateSQLQuery("DBCC FREEPROCCACHE").ExecuteUpdateAsync());
-				await (t.CommitAsync());
-			}
-
-			using (ISession s = OpenSession())
-			using (ITransaction t = s.BeginTransaction())
-			{
-				var countPlansCommand = s.CreateSQLQuery("SELECT COUNT(*) FROM sys.dm_exec_cached_plans");
-
-				var beforeCount = await (countPlansCommand.UniqueResultAsync<int>());
-
-				var insertCount = 10;
-				for (var i = 0; i < insertCount; i++)
-				{
-					await (s.SaveAsync(new MultiTypeEntity() { StringProp = new string('x', i + 1) }));
-					await (s.FlushAsync());
-				}
-
-				var afterCount = await (countPlansCommand.UniqueResultAsync<int>());
-
-				Assert.That(
-					afterCount - beforeCount,
-					Is.LessThan(insertCount - 1),
-					$"Excessive query plans created: before={beforeCount} after={afterCount}");
-
-				await (t.RollbackAsync());
 			}
 		}
 	}
