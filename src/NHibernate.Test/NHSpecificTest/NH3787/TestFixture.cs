@@ -12,6 +12,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3787
 	{
 		private const decimal _testRate = 12345.1234567890123M;
 
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !TestDialect.HasBrokenDecimalType;
+		}
+
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();

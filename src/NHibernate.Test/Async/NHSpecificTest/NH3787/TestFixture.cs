@@ -10,9 +10,10 @@
 
 using System.Linq;
 using NHibernate.Criterion;
-using NHibernate.Transform;
-using NUnit.Framework;
 using NHibernate.Linq;
+using NHibernate.Transform;
+using NHibernate.Type;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3787
 {
@@ -20,7 +21,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3787
 	[TestFixture]
 	public class TestFixtureAsync : BugTestCase
 	{
-		private const decimal _testRate = 12345.123456789M;
+		private const decimal _testRate = 12345.1234567890123M;
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !TestDialect.HasBrokenDecimalType;
+		}
 
 		protected override void OnSetUp()
 		{
@@ -33,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3787
 				{
 					UsePreviousRate = true,
 					PreviousRate = _testRate,
-					Rate = 54321.123456789M
+					Rate = 54321.1234567890123M
 				};
 				s.Save(testEntity);
 				t.Commit();
@@ -76,7 +82,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3787
 				var queryResult = await ((from test in s.Query<TestEntity>()
 				                   select new RateDto { Rate = test.UsePreviousRate ? test.PreviousRate : test.Rate }).ToListAsync());
 
-				// Check it has not been truncated to the default 5 positions of NHibernate.
+				// Check it has not been truncated to the default scale (10) of NHibernate.
 				Assert.That(queryResult[0].Rate, Is.EqualTo(_testRate));
 				await (t.CommitAsync());
 			}
@@ -90,9 +96,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3787
 			{
 				var queryResult = await (s
 					.Query<TestEntity>()
-					.Where(e => (e.UsePreviousRate ? e.PreviousRate : e.Rate) == _testRate)
+					.Where(
+						// Without MappedAs, the test fails for SQL Server because it would restrict its parameter to the dialect's default scale.
+						e => (e.UsePreviousRate ? e.PreviousRate : e.Rate) == _testRate.MappedAs(TypeFactory.Basic("decimal(18,13)")))
 					.ToListAsync());
-		
+
 				Assert.That(queryResult.Count, Is.EqualTo(1));
 				Assert.That(queryResult[0].PreviousRate, Is.EqualTo(_testRate));
 				await (t.CommitAsync());
@@ -113,13 +121,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3787
 				var query = s
 					.QueryOver(() => testEntity)
 					.Select(
-						Projections.Alias(
-							           Projections.Conditional(
-								           Restrictions.Eq(Projections.Property(() => testEntity.UsePreviousRate), true),
-								           Projections.Property(() => testEntity.PreviousRate),
-								           Projections.Property(() => testEntity.Rate)),
-							           "Rate")
-						           .WithAlias(() => rateDto.Rate));
+						Projections
+							.Alias(
+								Projections.Conditional(
+									Restrictions.Eq(Projections.Property(() => testEntity.UsePreviousRate), true),
+									Projections.Property(() => testEntity.PreviousRate),
+									Projections.Property(() => testEntity.Rate)),
+								"Rate")
+							.WithAlias(() => rateDto.Rate));
 
 				var queryResult = await (query.TransformUsing(Transformers.AliasToBean<RateDto>()).ListAsync<RateDto>());
 
