@@ -28,6 +28,7 @@ namespace NHibernate.Engine
 {
 	using System.Threading.Tasks;
 	using System.Threading;
+
 	public partial interface ISessionImplementor
 	{
 

@@ -67,7 +67,7 @@ namespace NHibernate.Persister.Entity
 				log.Debug("Getting current persistent state for: " + MessageHelper.InfoString(this, id, Factory));
 			}
 
-			using (new SessionIdLoggingContext(session.SessionId))
+			using (session.BeginProcess())
 			try
 			{
 				var st = await (session.Batcher.PrepareCommandAsync(CommandType.Text, SQLSnapshotSelectString, IdentifierType.SqlTypes(factory), cancellationToken)).ConfigureAwait(false);
@@ -187,7 +187,7 @@ namespace NHibernate.Persister.Entity
 			{
 				log.Debug("Getting version: " + MessageHelper.InfoString(this, id, Factory));
 			}
-			using(new SessionIdLoggingContext(session.SessionId))
+			using (session.BeginProcess())
 			try
 			{
 				var st = session.Batcher.PrepareQueryCommand(CommandType.Text, VersionSelectString, IdentifierType.SqlTypes(Factory));
@@ -331,7 +331,7 @@ namespace NHibernate.Persister.Entity
 			DbCommand sequentialSelect = null;
 			DbDataReader sequentialResultSet = null;
 			bool sequentialSelectEmpty = false;
-			using (new SessionIdLoggingContext(session.SessionId)) 
+			using (session.BeginProcess())
 			try
 			{
 				if (hasDeferred)
@@ -1160,7 +1160,7 @@ namespace NHibernate.Persister.Entity
 			ISessionImplementor session, SqlString selectionSQL, ValueInclusion[] generationInclusions, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (new SessionIdLoggingContext(session.SessionId)) 
+			using (session.BeginProcess())
 			try
 			{
 				var cmd = session.Batcher.PrepareQueryCommand(CommandType.Text, selectionSQL, IdentifierType.SqlTypes(Factory));
@@ -1280,7 +1280,7 @@ namespace NHibernate.Persister.Entity
 				///////////////////////////////////////////////////////////////////////
 
 				object[] snapshot = new object[naturalIdPropertyCount];
-				using (new SessionIdLoggingContext(session.SessionId)) 
+				using (session.BeginProcess())
 				try
 				{
 					var ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, IdentifierType.SqlTypes(factory), cancellationToken)).ConfigureAwait(false);
