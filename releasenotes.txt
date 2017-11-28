@@ -5,10 +5,8 @@ Release notes - NHibernate - Version 5.0.2
 
 ** Bug
     * #1456 NH-4052 - Add missing serializable implementation
-    * #1453 Eliminate unnecessary AsyncLocal allocation if SessionId isn't changed
-
-** Improvement
     * #1455 Reduces check session and set context id redundant calls
+    * #1453 Eliminate unnecessary AsyncLocal allocation if SessionId isn't changed
 
 ** Task
     * #1457 Release 5.0.2
