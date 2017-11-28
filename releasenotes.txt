@@ -1,4 +1,19 @@
-﻿As part of releasing 5.0.2, a missing 5.0.0 possible breaking change has been added about Dialects requiring now
+﻿Build 5.0.2
+=============================
+
+Release notes - NHibernate - Version 5.0.2
+
+** Bug
+    * #1456 NH-4052 - Add missing serializable implementation
+    * #1453 Eliminate unnecessary AsyncLocal allocation if SessionId isn't changed
+
+** Improvement
+    * #1455 Reduces check session and set context id redundant calls
+
+** Task
+    * #1457 Release 5.0.2
+
+As part of releasing 5.0.2, a missing 5.0.0 possible breaking change has been added about Dialects requiring now
 to be configured. See 5.0.0 possible breaking changes.
 
 Build 5.0.1
