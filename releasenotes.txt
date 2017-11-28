@@ -1,4 +1,7 @@
-﻿Build 5.0.1
+﻿As part of releasing 5.0.2, a missing 5.0.0 possible breaking change has been added about Dialects requiring now
+to be configured. See 5.0.0 possible breaking changes.
+
+Build 5.0.1
 =============================
 
 Release notes - NHibernate - Version 5.0.1
@@ -85,6 +88,9 @@ Build 5.0.0
           the dialect. They resolve to 4000 length string and (28, 10) precision/scale decimals by default, and are
           trimmed down according to dialect. Those defaults can be overridden with query.default_cast_length,
           query.default_cast_precision and query.default_cast_scale settings.
+        * Dialects are now configurable. If you instantiate a dialect directly, make sure you call its Configure
+          method, with as argument the properties of a NHibernate Configuration object. You may use instead
+          Dialect.GetDialect methods, which configure the dialect before returning it.
         * Transaction scopes handling has undergone a major rework. See NH-4011 for full details.
           ** More transaction promotion to distributed may occur if you use the "flush on commit" feature with
              transaction scopes. Explicitly flush your session instead. Ensure it does not occur by disabling
@@ -155,9 +161,6 @@ Release notes - NHibernate - Version 5.0.0
     * [NH-3956] - Native SQL query plan may get wrong plan
     * [NH-3957] - Second level query cache may yields wrong cache entry
     * [NH-4001] - Remove ThreadSafeDictionary
-
-
-
 
 ** Bug
     * [NH-926] - Identity insert fails with SQL Ce dialect and aggressive connection release mode.
