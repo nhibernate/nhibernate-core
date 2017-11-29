@@ -972,6 +972,35 @@ namespace NHibernate.Loader
 					entry.LockMode = lockMode;
 				}
 			}
+
+			//save object to EntityUnique cache
+			//see LoadFromResultSet func
+			IAssociationType[] ownerAssociationTypes = OwnerAssociationTypes;
+			if (ownerAssociationTypes != null && ownerAssociationTypes[i] != null)
+			{
+				string ukName = ownerAssociationTypes[i].RHSUniqueKeyPropertyName;
+				if (ukName != null)
+				{
+					int index = ((IUniqueKeyLoadable) persister).GetPropertyIndex(ukName);
+					IType type = persister.PropertyTypes[index];
+
+					object id = key.Identifier;
+					bool eagerPropertyFetch = IsEagerPropertyFetchEnabled(i);
+					ILoadable entityPersister = (ILoadable) persister;
+					string[][] cols = EntityAliases[i].SuffixedPropertyAliases;
+
+					object[] values = entityPersister.Hydrate(rs, id, obj, entityPersister, cols, eagerPropertyFetch, session);
+
+					// polymorphism not really handled completely correctly,
+					// perhaps...well, actually its ok, assuming that the
+					// entity name used in the lookup is the same as the
+					// the one used here, which it will be
+
+					EntityUniqueKey euk =
+						new EntityUniqueKey(entityPersister.EntityName, ukName, type.SemiResolve(values[index], session, obj), type, session.Factory);
+					session.PersistenceContext.AddEntity(euk, obj);
+				}
+			}
 		}
 
 		/// <summary>

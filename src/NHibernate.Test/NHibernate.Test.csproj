@@ -10,8 +10,11 @@
     <TreatSpecificWarningsAsErrors />
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="NHSpecificTest\GH01226\**" />
+    <EmbeddedResource Remove="NHSpecificTest\GH01226\**" />
     <None Remove="**\*.hbm.xml" />
     <None Remove="**\*.jpg" />
+    <None Remove="NHSpecificTest\GH01226\**" />
     <None Update="DbScripts\*.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -55,5 +58,8 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="NHSpecificTest\GH1226\" />
   </ItemGroup>
 </Project>
