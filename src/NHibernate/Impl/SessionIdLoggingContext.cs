@@ -1,16 +1,23 @@
 using System;
+#if !NETSTANDARD2_0 && !NETCOREAPP2_0 
+using System.Runtime.Remoting.Messaging;
+#else
 using System.Threading;
+#endif
 
 namespace NHibernate.Impl
 {
 	public class SessionIdLoggingContext : IDisposable
 	{
+#if NETSTANDARD2_0 || NETCOREAPP2_0
 		private static readonly Lazy<AsyncLocal<Guid?>> _currentSessionId =
 			new Lazy<AsyncLocal<Guid?>>(() => new AsyncLocal<Guid?>(), true);
-
+#else
+		private const string LogicalCallContextVariableName = "__" + nameof(SessionIdLoggingContext) + "__";
+#endif
 		private readonly Guid? _oldSessonId;
-		private readonly bool _tracking;
-
+		private readonly bool _hasChanged;
+		
 		public SessionIdLoggingContext(Guid id)
 		{
 			_tracking = id != Guid.Empty;
@@ -19,7 +26,11 @@ namespace NHibernate.Impl
 				return;
 			}
 			_oldSessonId = SessionId;
-			SessionId = id;
+			_hasChanged = _oldSessonId != id;
+			if (_hasChanged)
+			{
+				SessionId = id;
+			}
 		}
 
 		/// <summary>
@@ -31,21 +42,30 @@ namespace NHibernate.Impl
 		/// </summary>
 		public static Guid? SessionId
 		{
-			get => _currentSessionId.IsValueCreated ? _currentSessionId.Value.Value : null;
-			set => _currentSessionId.Value.Value = value;
+			get
+			{
+#if NETSTANDARD2_0 || NETCOREAPP2_0
+				return _currentSessionId.IsValueCreated ? _currentSessionId.Value.Value : null;
+#else
+				return (Guid?) CallContext.LogicalGetData(LogicalCallContextVariableName);
+#endif
+			}
+			set
+			{
+#if NETSTANDARD2_0 || NETCOREAPP2_0
+				_currentSessionId.Value.Value = value;
+#else
+				CallContext.LogicalSetData(LogicalCallContextVariableName, value);
+#endif
+			}
 		}
-
-		#region IDisposable Members
 
 		public void Dispose()
 		{
-			if (!_tracking)
+			if (_hasChanged)
 			{
-				return;
+				SessionId = _oldSessonId;
 			}
-			SessionId = _oldSessonId;
 		}
-
-		#endregion
 	}
 }

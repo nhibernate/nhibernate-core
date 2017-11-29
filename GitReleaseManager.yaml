@@ -6,8 +6,13 @@ issue-labels-include:
  - "t: Improvement"
  - "t: Task"
 issue-labels-exclude:
+ - "r: Duplicate"
+ - "r: External Issue"
+ - "r: Not an Issue"
+ - "r: Obsolete"
  - "r: Rejected"
  - "r: Replaced"
+ - "t: Fix"
 issue-labels-alias:
  - name:   "t: Bug"
    header: Bug

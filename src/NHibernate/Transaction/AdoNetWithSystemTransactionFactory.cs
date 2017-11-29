@@ -309,7 +309,7 @@ namespace NHibernate.Transaction
 			/// <param name="preparingEnlistment">The object for notifying the prepare phase outcome.</param>
 			public virtual void Prepare(PreparingEnlistment preparingEnlistment)
 			{
-				using (new SessionIdLoggingContext(_session.SessionId))
+				using (_session.BeginContext())
 				{
 					try
 					{
@@ -378,7 +378,7 @@ namespace NHibernate.Transaction
 			/// callback, <see langword="null"/> if this is an in-doubt callback.</param>
 			protected virtual void ProcessSecondPhase(Enlistment enlistment, bool? success)
 			{
-				using (new SessionIdLoggingContext(_session.SessionId))
+				using (_session.BeginContext())
 				{
 					_logger.Debug(
 						success.HasValue
@@ -414,7 +414,7 @@ namespace NHibernate.Transaction
 				{
 					// Allow transaction completed actions to run while others stay blocked.
 					_bypassLock.Value = true;
-					using (new SessionIdLoggingContext(_session.SessionId))
+					using (_session.BeginContext())
 					{
 						// Flag active as false before running actions, otherwise the session may not cleanup as much
 						// as possible.

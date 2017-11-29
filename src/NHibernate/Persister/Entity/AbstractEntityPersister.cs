@@ -1270,7 +1270,7 @@ namespace NHibernate.Persister.Entity
 
 			log.Debug("initializing lazy properties from datastore");
 
-			using (new SessionIdLoggingContext(session.SessionId)) 
+			using (session.BeginProcess())
 			try
 			{
 				object result = null;
@@ -1447,7 +1447,7 @@ namespace NHibernate.Persister.Entity
 				log.Debug("Getting current persistent state for: " + MessageHelper.InfoString(this, id, Factory));
 			}
 
-			using (new SessionIdLoggingContext(session.SessionId))
+			using (session.BeginProcess())
 			try
 			{
 				var st = session.Batcher.PrepareCommand(CommandType.Text, SQLSnapshotSelectString, IdentifierType.SqlTypes(factory));
@@ -1702,7 +1702,7 @@ namespace NHibernate.Persister.Entity
 			{
 				log.Debug("Getting version: " + MessageHelper.InfoString(this, id, Factory));
 			}
-			using(new SessionIdLoggingContext(session.SessionId))
+			using (session.BeginProcess())
 			try
 			{
 				var st = session.Batcher.PrepareQueryCommand(CommandType.Text, VersionSelectString, IdentifierType.SqlTypes(Factory));
@@ -2489,7 +2489,7 @@ namespace NHibernate.Persister.Entity
 			DbCommand sequentialSelect = null;
 			DbDataReader sequentialResultSet = null;
 			bool sequentialSelectEmpty = false;
-			using (new SessionIdLoggingContext(session.SessionId)) 
+			using (session.BeginProcess())
 			try
 			{
 				if (hasDeferred)
@@ -4103,7 +4103,7 @@ namespace NHibernate.Persister.Entity
 		private void ProcessGeneratedPropertiesWithGeneratedSql(object id, object entity, object[] state,
 			ISessionImplementor session, SqlString selectionSQL, ValueInclusion[] generationInclusions)
 		{
-			using (new SessionIdLoggingContext(session.SessionId)) 
+			using (session.BeginProcess())
 			try
 			{
 				var cmd = session.Batcher.PrepareQueryCommand(CommandType.Text, selectionSQL, IdentifierType.SqlTypes(Factory));
@@ -4210,7 +4210,7 @@ namespace NHibernate.Persister.Entity
 			///////////////////////////////////////////////////////////////////////
 
 			object[] snapshot = new object[naturalIdPropertyCount];
-			using (new SessionIdLoggingContext(session.SessionId)) 
+			using (session.BeginProcess())
 			try
 			{
 				var ps = session.Batcher.PrepareCommand(CommandType.Text, sql, IdentifierType.SqlTypes(factory));
