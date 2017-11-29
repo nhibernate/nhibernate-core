@@ -10,11 +10,8 @@
     <TreatSpecificWarningsAsErrors />
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="NHSpecificTest\GH01226\**" />
-    <EmbeddedResource Remove="NHSpecificTest\GH01226\**" />
     <None Remove="**\*.hbm.xml" />
     <None Remove="**\*.jpg" />
-    <None Remove="NHSpecificTest\GH01226\**" />
     <None Update="DbScripts\*.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
