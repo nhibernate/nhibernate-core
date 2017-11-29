@@ -972,6 +972,34 @@ namespace NHibernate.Loader
 					entry.LockMode = lockMode;
 				}
 			}
+
+			CacheByUniqueKey(i, persister, obj, session);
+		}
+
+		private void CacheByUniqueKey(int i, IEntityPersister persister, object obj, ISessionImplementor session)
+		{
+			// #1226: If it is already loaded and can be loaded from an association with a property ref, make
+			// sure it is also cached by its unique key.
+			var ukName = OwnerAssociationTypes?[i]?.RHSUniqueKeyPropertyName;
+			if (ukName == null)
+				return;
+			var index = ((IUniqueKeyLoadable)persister).GetPropertyIndex(ukName);
+			var ukValue = persister.GetPropertyValue(obj, index);
+			// ukValue can be null for two reasons:
+			//  - Entity currently loading and not yet fully hydrated. In such case, it has already been handled by
+			//    InstanceNotYetLoaded on a previous row, there is nothing more to do. This case could also be
+			//    detected with "session.PersistenceContext.GetEntry(obj).Status == Status.Loading", but since there
+			//    is a second case, just test for ukValue null.
+			//  - Entity association is unset in session but not yet persisted, autoflush disabled: ignore. We are
+			//    already in an error case: querying entities changed in session without flushing them before querying.
+			//    So here it gets loaded as if it were still associated, but we do not have the key anymore in session:
+			//    we cannot cache it, so long for the additionnal round-trip this will cause. (Do not fallback on
+			//    reading the key in rs, this is stale data in regard to the session state.)
+			if (ukValue == null)
+				return;
+			var type = persister.PropertyTypes[index];
+			var euk = new EntityUniqueKey(persister.EntityName, ukName, ukValue, type, session.Factory);
+			session.PersistenceContext.AddEntity(euk, obj);
 		}
 
 		/// <summary>

@@ -650,6 +650,8 @@ namespace NHibernate.Loader
 					entry.LockMode = lockMode;
 				}
 			}
+
+			CacheByUniqueKey(i, persister, obj, session);
 		}
 
 		/// <summary>
