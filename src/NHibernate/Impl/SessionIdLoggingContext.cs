@@ -20,17 +20,11 @@ namespace NHibernate.Impl
 		
 		public SessionIdLoggingContext(Guid id)
 		{
-			_tracking = id != Guid.Empty;
-			if (!_tracking)
-			{
-				return;
-			}
+			if (id == Guid.Empty) return;
 			_oldSessonId = SessionId;
-			_hasChanged = _oldSessonId != id;
-			if (_hasChanged)
-			{
-				SessionId = id;
-			}
+			if (id == _oldSessonId) return;
+			_hasChanged = true;
+			SessionId = id;
 		}
 
 		/// <summary>
