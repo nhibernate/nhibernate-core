@@ -7,7 +7,7 @@ namespace NHibernate.Id.Enhanced
 {
 	public partial class OptimizerFactory
 	{
-		private static readonly INHibernateLogger Log = LoggerProvider.LoggerFor(typeof(OptimizerFactory));
+		private static readonly INHibernateLogger Log = LoggerProvider.For(typeof(OptimizerFactory));
 
 		public const string None = "none";
 		public const string HiLo = "hilo";

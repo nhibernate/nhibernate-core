@@ -17,7 +17,7 @@ namespace NHibernate.Driver
 	/// </remarks>
 	public class OdbcDriver : DriverBase
 	{
-		private static readonly INHibernateLogger Log = LoggerProvider.LoggerFor(typeof(OdbcDriver));
+		private static readonly INHibernateLogger Log = LoggerProvider.For(typeof(OdbcDriver));
 
 		private byte? _dbDateTimeScale;
 

@@ -14,7 +14,7 @@ namespace NHibernate.Transaction
 	/// </summary>
 	public partial class AdoTransaction : ITransaction
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(AdoTransaction));
+		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(AdoTransaction));
 		private ISessionImplementor session;
 		private DbTransaction trans;
 		private bool begun;

@@ -13,7 +13,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public partial class DefaultInitializeCollectionEventListener : IInitializeCollectionEventListener
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(DefaultInitializeCollectionEventListener));
+		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(DefaultInitializeCollectionEventListener));
 
 		/// <summary> called by a collection that wants to initialize itself</summary>
 		public virtual void OnInitializeCollection(InitializeCollectionEvent @event)

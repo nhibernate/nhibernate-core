@@ -12,7 +12,7 @@ namespace NHibernate.Tool.hbm2ddl
 {
 	public class DatabaseMetadata : IDatabaseMetadata
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof (DatabaseMetadata));
+		private static readonly INHibernateLogger log = LoggerProvider.For(typeof (DatabaseMetadata));
 
 		private readonly IDictionary<string, ITableMetadata> tables = new Dictionary<string, ITableMetadata>();
 		private readonly ISet<string> sequences = new HashSet<string>();

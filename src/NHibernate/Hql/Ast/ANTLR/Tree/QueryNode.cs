@@ -9,7 +9,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class QueryNode : AbstractRestrictableStatement, ISelectExpression
 	{
-		private static readonly INHibernateLogger Log = LoggerProvider.LoggerFor(typeof(QueryNode));
+		private static readonly INHibernateLogger Log = LoggerProvider.For(typeof(QueryNode));
 
 		private OrderByClause _orderByClause;
 

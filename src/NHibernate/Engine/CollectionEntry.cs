@@ -14,7 +14,7 @@ namespace NHibernate.Engine
 	[Serializable]
 	public partial class CollectionEntry
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof (CollectionEntry));
+		private static readonly INHibernateLogger log = LoggerProvider.For(typeof (CollectionEntry));
 
 		/// <summary>session-start/post-flush persistent state</summary>
 		private object snapshot;

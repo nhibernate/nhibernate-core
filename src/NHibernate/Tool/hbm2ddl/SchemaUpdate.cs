@@ -10,7 +10,7 @@ namespace NHibernate.Tool.hbm2ddl
 {
 	public partial class SchemaUpdate
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof (SchemaUpdate));
+		private static readonly INHibernateLogger log = LoggerProvider.For(typeof (SchemaUpdate));
 		private bool wasInitialized;
 		private readonly Configuration configuration;
 		private readonly IConnectionHelper connectionHelper;

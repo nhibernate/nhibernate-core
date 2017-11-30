@@ -19,7 +19,7 @@ namespace NHibernate.Engine
 	/// </summary>
 	public static partial class TwoPhaseLoad
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(TwoPhaseLoad));
+		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(TwoPhaseLoad));
 		
 		/// <summary>
 		/// Register the "hydrated" state of an entity instance, after the first step of 2-phase loading.

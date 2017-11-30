@@ -21,7 +21,7 @@ namespace NHibernate.Tool.hbm2ddl
 	/// </remarks>
 	public partial class SchemaExport
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof (SchemaExport));
+		private static readonly INHibernateLogger log = LoggerProvider.For(typeof (SchemaExport));
 		private bool wasInitialized;
 		private readonly Configuration cfg;
 		private readonly IDictionary<string, string> configProperties;

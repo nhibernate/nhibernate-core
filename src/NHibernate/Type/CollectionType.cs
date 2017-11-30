@@ -21,7 +21,7 @@ namespace NHibernate.Type
 	[Serializable]
 	public abstract partial class CollectionType : AbstractType, IAssociationType
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(CollectionType));
+		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(CollectionType));
 
 		private static readonly object NotNullCollection = new object(); // place holder
 		public static readonly object UnfetchedCollection = new object(); // place holder

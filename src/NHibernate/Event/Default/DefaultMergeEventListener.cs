@@ -18,7 +18,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public partial class DefaultMergeEventListener : AbstractSaveEventListener, IMergeEventListener
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(DefaultMergeEventListener));
+		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(DefaultMergeEventListener));
 
 		protected override CascadingAction CascadeAction
 		{

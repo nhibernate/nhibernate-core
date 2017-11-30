@@ -16,7 +16,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public partial class DefaultFlushEntityEventListener : IFlushEntityEventListener
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(DefaultFlushEntityEventListener));
+		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(DefaultFlushEntityEventListener));
 
 		/// <summary>
 		/// Flushes a single entity's state to the database, by scheduling an update action, if necessary

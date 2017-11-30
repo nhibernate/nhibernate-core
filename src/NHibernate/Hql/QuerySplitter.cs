@@ -10,7 +10,7 @@ namespace NHibernate.Hql
 {
 	public class QuerySplitter
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(QuerySplitter));
+		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(QuerySplitter));
 
 		private static readonly HashSet<string> beforeClassTokens = new HashSet<string>();
 		private static readonly HashSet<string> notAfterClassTokens = new HashSet<string>();

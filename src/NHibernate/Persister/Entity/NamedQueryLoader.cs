@@ -13,7 +13,7 @@ namespace NHibernate.Persister.Entity
 		private readonly string queryName;
 		private readonly IEntityPersister persister;
 
-		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(NamedQueryLoader));
+		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(NamedQueryLoader));
 
 		public NamedQueryLoader(string queryName, IEntityPersister persister)
 		{

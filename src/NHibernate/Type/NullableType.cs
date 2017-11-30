@@ -22,12 +22,12 @@ namespace NHibernate.Type
 		static NullableType()
 		{
 			//cache this, because it was a significant performance cost
-			IsDebugEnabled = LoggerProvider.LoggerFor(typeof(IType).Namespace).IsDebugEnabled();
+			IsDebugEnabled = LoggerProvider.For(typeof(IType).Namespace).IsDebugEnabled();
 		}
 
 		private INHibernateLogger Log
 		{
-			get { return LoggerProvider.LoggerFor(GetType()); }
+			get { return LoggerProvider.For(GetType()); }
 		}
 
 		private readonly SqlType _sqlType;

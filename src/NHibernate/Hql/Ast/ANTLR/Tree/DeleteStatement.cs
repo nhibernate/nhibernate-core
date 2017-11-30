@@ -11,7 +11,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class DeleteStatement : AbstractRestrictableStatement
 	{
-		private static readonly INHibernateLogger Log = LoggerProvider.LoggerFor(typeof(DeleteStatement));
+		private static readonly INHibernateLogger Log = LoggerProvider.For(typeof(DeleteStatement));
 
 		public DeleteStatement(IToken token) : base(token) {}
 

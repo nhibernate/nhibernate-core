@@ -87,7 +87,7 @@ namespace NHibernate.Id.Enhanced
 	/// </remarks>
 	public partial class TableGenerator : TransactionHelper, IPersistentIdentifierGenerator, IConfigurable
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(SequenceStyleGenerator));
+		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(SequenceStyleGenerator));
 
 
 		public const string ConfigPreferSegmentPerEntity = "prefer_entity_table_as_segment_value";

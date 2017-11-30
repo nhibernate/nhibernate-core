@@ -17,7 +17,7 @@ namespace NHibernate.Loader.Criteria
 	public class CriteriaQueryTranslator : ICriteriaQuery
 	{
 		public static readonly string RootSqlAlias = CriteriaSpecification.RootAlias + '_';
-		private static readonly INHibernateLogger logger = LoggerProvider.LoggerFor(typeof(CriteriaQueryTranslator));
+		private static readonly INHibernateLogger logger = LoggerProvider.For(typeof(CriteriaQueryTranslator));
 		
 		private const int AliasCount = 0;
 		

@@ -16,7 +16,7 @@ namespace NHibernate.Cache
 	{
 		private ICache cache;
 
-		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(NonstrictReadWriteCache));
+		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(NonstrictReadWriteCache));
 
 		/// <summary>
 		/// Gets the cache region name.

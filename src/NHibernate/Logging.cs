@@ -124,7 +124,7 @@ namespace NHibernate
 	/// </summary>
 	/// <remarks>
 	/// By default, it will use a <see cref="Log4NetLoggerFactory"/> if log4net is available, otherwise it will
-	/// use a <see cref="NoLoggingLoggerFactory"/>.
+	/// use a <see cref="NoLoggingNHibernateLoggerFactory"/>.
 	/// </remarks>
 	public class LoggerProvider
 	{
@@ -132,10 +132,14 @@ namespace NHibernate
 		private readonly INHibernateLoggerFactory _loggerFactory;
 		private static LoggerProvider _instance;
 
+#pragma warning disable 618
+		private readonly ILoggerFactory _legacyLoggerFactory;
+#pragma warning restore 618
+
 		static LoggerProvider()
 		{
 			var nhibernateLoggerClass = GetNhibernateLoggerClass();
-			var loggerFactory = string.IsNullOrEmpty(nhibernateLoggerClass) ? new NoLoggingLoggerFactory() : GetLoggerFactory(nhibernateLoggerClass);
+			var loggerFactory = string.IsNullOrEmpty(nhibernateLoggerClass) ? null : GetLoggerFactory(nhibernateLoggerClass);
 			SetLoggersFactory(loggerFactory);
 		}
 
@@ -202,7 +206,10 @@ namespace NHibernate
 		[Obsolete("Implement INHibernateLoggerFactory instead")]
 		public static void SetLoggersFactory(ILoggerFactory loggerFactory)
 		{
-			_instance = new LoggerProvider(new LegacyLoggerFactoryAdaptor(loggerFactory));
+			var factory = loggerFactory != null
+				? (INHibernateLoggerFactory) new LegacyLoggerFactoryAdaptor(loggerFactory)
+				: new NoLoggingNHibernateLoggerFactory();
+			SetLoggersFactory(factory);
 		}
 
 		/// <summary>
@@ -211,12 +218,18 @@ namespace NHibernate
 		/// <param name="loggerFactory">A logger factory.</param>
 		public static void SetLoggersFactory(INHibernateLoggerFactory loggerFactory)
 		{
-			_instance = new LoggerProvider(loggerFactory);
+			_instance = new LoggerProvider(loggerFactory ?? new NoLoggingNHibernateLoggerFactory());
 		}
 
 		private LoggerProvider(INHibernateLoggerFactory loggerFactory)
 		{
 			_loggerFactory = loggerFactory;
+
+#pragma warning disable 618
+			_legacyLoggerFactory = loggerFactory is LegacyLoggerFactoryAdaptor legacy
+				? legacy.Factory
+				: new ReverseLegacyLoggerFactoryAdaptor(loggerFactory);
+#pragma warning restore 618
 		}
 
 		/// <summary>
@@ -224,7 +237,31 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="keyName">The log key.</param>
 		/// <returns>A NHibernate logger.</returns>
-		public static INHibernateLogger LoggerFor(string keyName)
+		// Since 5.1
+		[Obsolete("Use LoggerProvider.For() instead.")]
+		public static IInternalLogger LoggerFor(string keyName)
+		{
+			return _instance._legacyLoggerFactory.LoggerFor(keyName);
+		}
+
+		/// <summary>
+		/// Get a logger using the given type as log key.
+		/// </summary>
+		/// <param name="type">The type to use as log key.</param>
+		/// <returns>A NHibernate logger.</returns>
+		// Since 5.1
+		[Obsolete("Use LoggerProvider.For() instead.")]
+		public static IInternalLogger LoggerFor(System.Type type)
+		{
+			return _instance._legacyLoggerFactory.LoggerFor(type);
+		}
+
+		/// <summary>
+		/// Get a logger for the given log key.
+		/// </summary>
+		/// <param name="keyName">The log key.</param>
+		/// <returns>A NHibernate logger.</returns>
+		public static INHibernateLogger For(string keyName)
 		{
 			return _instance._loggerFactory.LoggerFor(keyName);
 		}
@@ -234,7 +271,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="type">The type to use as log key.</param>
 		/// <returns>A NHibernate logger.</returns>
-		public static INHibernateLogger LoggerFor(System.Type type)
+		public static INHibernateLogger For(System.Type type)
 		{
 			return _instance._loggerFactory.LoggerFor(type);
 		}
@@ -243,21 +280,43 @@ namespace NHibernate
 		[Obsolete("Used only in Obsolete functions to thunk to INHibernateLoggerFactory")]
 		private class LegacyLoggerFactoryAdaptor : INHibernateLoggerFactory
 		{
-			private readonly ILoggerFactory _factory;
+			public ILoggerFactory Factory { get; }
 
 			public LegacyLoggerFactoryAdaptor(ILoggerFactory factory)
 			{
-				_factory = factory;
+				Factory = factory;
 			}
 
 			public INHibernateLogger LoggerFor(string keyName)
 			{
-				return new NHibernateLoggerThunk(_factory.LoggerFor(keyName));
+				return new NHibernateLoggerThunk(Factory.LoggerFor(keyName));
 			}
 
 			public INHibernateLogger LoggerFor(System.Type type)
 			{
-				return new NHibernateLoggerThunk(_factory.LoggerFor(type));
+				return new NHibernateLoggerThunk(Factory.LoggerFor(type));
+			}
+		}
+
+		// Since 5.1
+		[Obsolete("Used only in Obsolete functions to thunk to INHibernateLoggerFactory")]
+		private class ReverseLegacyLoggerFactoryAdaptor : ILoggerFactory
+		{
+			private readonly INHibernateLoggerFactory _factory;
+
+			public ReverseLegacyLoggerFactoryAdaptor(INHibernateLoggerFactory factory)
+			{
+				_factory = factory;
+			}
+
+			public IInternalLogger LoggerFor(string keyName)
+			{
+				return new InternalLoggerThunk(_factory.LoggerFor(keyName));
+			}
+
+			public IInternalLogger LoggerFor(System.Type type)
+			{
+				return new InternalLoggerThunk(_factory.LoggerFor(type));
 			}
 		}
 	}
@@ -349,9 +408,97 @@ namespace NHibernate
 		}
 	}
 
-	public class NoLoggingLoggerFactory: INHibernateLoggerFactory
+	// Since 5.1
+	[Obsolete("Used only in Obsolete functions to thunk to ILoggerFactory")]
+	internal class InternalLoggerThunk : IInternalLogger
 	{
-		private static readonly INHibernateLogger Nologging = new NoLoggingInternalLogger();
+		private readonly INHibernateLogger _nhibernateLogger;
+
+		public bool IsErrorEnabled => _nhibernateLogger.IsEnabled(InternalLogLevel.Error);
+		public bool IsFatalEnabled => _nhibernateLogger.IsEnabled(InternalLogLevel.Fatal);
+		public bool IsDebugEnabled => _nhibernateLogger.IsEnabled(InternalLogLevel.Debug);
+		public bool IsInfoEnabled => _nhibernateLogger.IsEnabled(InternalLogLevel.Info);
+		public bool IsWarnEnabled => _nhibernateLogger.IsEnabled(InternalLogLevel.Warn);
+
+		public InternalLoggerThunk(INHibernateLogger nhibernateLogger)
+		{
+			_nhibernateLogger = nhibernateLogger;
+		}
+
+		public void Error(object message)
+		{
+			_nhibernateLogger.Error(message?.ToString());
+		}
+
+		public void Error(object message, Exception exception)
+		{
+			_nhibernateLogger.Error(exception, message?.ToString());
+		}
+
+		public void ErrorFormat(string format, params object[] args)
+		{
+			_nhibernateLogger.Error(format, args);
+		}
+
+		public void Fatal(object message)
+		{
+			_nhibernateLogger.Fatal(message?.ToString());
+		}
+
+		public void Fatal(object message, Exception exception)
+		{
+			_nhibernateLogger.Fatal(exception, message?.ToString());
+		}
+
+		public void Debug(object message)
+		{
+			_nhibernateLogger.Debug(message?.ToString());
+		}
+
+		public void Debug(object message, Exception exception)
+		{
+			_nhibernateLogger.Debug(exception, message?.ToString());
+		}
+
+		public void DebugFormat(string format, params object[] args)
+		{
+			_nhibernateLogger.Debug(format, args);
+		}
+
+		public void Info(object message)
+		{
+			_nhibernateLogger.Info(message?.ToString());
+		}
+
+		public void Info(object message, Exception exception)
+		{
+			_nhibernateLogger.Info(exception, message?.ToString());
+		}
+
+		public void InfoFormat(string format, params object[] args)
+		{
+			_nhibernateLogger.Info(format, args);
+		}
+
+		public void Warn(object message)
+		{
+			_nhibernateLogger.Warn(message?.ToString());
+		}
+
+		public void Warn(object message, Exception exception)
+		{
+			_nhibernateLogger.Warn(exception, message?.ToString());
+		}
+
+		public void WarnFormat(string format, params object[] args)
+		{
+			_nhibernateLogger.Warn(format, args);
+		}
+	}
+
+	internal class NoLoggingNHibernateLoggerFactory: INHibernateLoggerFactory
+	{
+		private static readonly INHibernateLogger Nologging = new NoLoggingNHibernateLogger();
 		public INHibernateLogger LoggerFor(string keyName)
 		{
 			return Nologging;
@@ -363,7 +510,7 @@ namespace NHibernate
 		}
 	}
 
-	public class NoLoggingInternalLogger: INHibernateLogger
+	internal class NoLoggingNHibernateLogger: INHibernateLogger
 	{
 		public void Log(InternalLogLevel logLevel, InternalLogValues state, Exception exception)
 		{
@@ -374,6 +521,108 @@ namespace NHibernate
 			if (logLevel == InternalLogLevel.None) return true;
 
 			return false;
+		}
+	}
+
+	// Since 5.1
+	[Obsolete("To set no-logging, use LoggerProvider.SetLoggersFactory(default(INHibernateLoggerFactory))")]
+	public class NoLoggingLoggerFactory: ILoggerFactory
+	{
+		private static readonly IInternalLogger Nologging = new NoLoggingInternalLogger();
+		public IInternalLogger LoggerFor(string keyName)
+		{
+			return Nologging;
+		}
+
+		public IInternalLogger LoggerFor(System.Type type)
+		{
+			return Nologging;
+		}
+	}
+
+	// Since 5.1
+	[Obsolete("To set no-logging, use LoggerProvider.SetLoggersFactory(default(INHibernateLoggerFactory))")]
+	public class NoLoggingInternalLogger: IInternalLogger
+	{
+		public bool IsErrorEnabled
+		{
+			get { return false;}
+		}
+
+		public bool IsFatalEnabled
+		{
+			get { return false; }
+		}
+
+		public bool IsDebugEnabled
+		{
+			get { return false; }
+		}
+
+		public bool IsInfoEnabled
+		{
+			get { return false; }
+		}
+
+		public bool IsWarnEnabled
+		{
+			get { return false; }
+		}
+
+		public void Error(object message)
+		{
+		}
+
+		public void Error(object message, Exception exception)
+		{
+		}
+
+		public void ErrorFormat(string format, params object[] args)
+		{
+		}
+
+		public void Fatal(object message)
+		{
+		}
+
+		public void Fatal(object message, Exception exception)
+		{
+		}
+
+		public void Debug(object message)
+		{
+		}
+
+		public void Debug(object message, Exception exception)
+		{
+		}
+
+		public void DebugFormat(string format, params object[] args)
+		{
+		}
+
+		public void Info(object message)
+		{
+		}
+
+		public void Info(object message, Exception exception)
+		{
+		}
+
+		public void InfoFormat(string format, params object[] args)
+		{
+		}
+
+		public void Warn(object message)
+		{
+		}
+
+		public void Warn(object message, Exception exception)
+		{
+		}
+
+		public void WarnFormat(string format, params object[] args)
+		{
 		}
 	}
 

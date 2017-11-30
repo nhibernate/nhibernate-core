@@ -15,7 +15,7 @@ namespace NHibernate.Loader.Entity
 {
 	public partial class CollectionElementLoader : OuterJoinLoader
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof (CollectionElementLoader));
+		private static readonly INHibernateLogger log = LoggerProvider.For(typeof (CollectionElementLoader));
 
 		private readonly IOuterJoinLoadable persister;
 		private readonly IType keyType;

@@ -10,7 +10,7 @@ namespace NHibernate.Cache
 	public partial class ReadOnlyCache : ICacheConcurrencyStrategy
 	{
 		private ICache cache;
-		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(ReadOnlyCache));
+		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(ReadOnlyCache));
 
 		/// <summary>
 		/// Gets the cache region name.

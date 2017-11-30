@@ -15,7 +15,7 @@ namespace NHibernate.Loader.Custom.Sql
 	///<remarks>This support is built on top of the notion of "custom queries"...</remarks>
 	public class SQLCustomQuery : ICustomQuery
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof (SQLCustomQuery));
+		private static readonly INHibernateLogger log = LoggerProvider.For(typeof (SQLCustomQuery));
 
 		private readonly List<IReturn> customQueryReturns = new List<IReturn>();
 		private readonly ISet<string> querySpaces = new HashSet<string>();
