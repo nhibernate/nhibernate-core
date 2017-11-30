@@ -1,4 +1,12 @@
-﻿Build 5.0.2
+﻿Build 5.0.3
+=============================
+
+Release notes - NHibernate - Version 5.0.3
+
+** Bug
+    * #1462 Fix disposing SessionIdLoggingContext if CheckAndUpdateSessionStatus is failed
+
+Build 5.0.2
 =============================
 
 Release notes - NHibernate - Version 5.0.2
