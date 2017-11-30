@@ -407,8 +407,9 @@ namespace NHibernate.Util
 				if (name.Assembly == null)
 				{
 					// No assembly was specified for the type, so just fail
-					log.Warn("Could not load type {0}. Possible cause: no assembly name specified.", name);
-					if (throwOnError) throw new TypeLoadException("Could not load type " + name + ". Possible cause: no assembly name specified.");
+					const string noAssembly = "Could not load type {0}. Possible cause: no assembly name specified.";
+					log.Warn(noAssembly, name);
+					if (throwOnError) throw new TypeLoadException(string.Format(noAssembly, name));
 					return null;
 				}
 

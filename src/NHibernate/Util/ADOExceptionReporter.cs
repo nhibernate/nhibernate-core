@@ -27,13 +27,9 @@ namespace NHibernate.Util
 					log.Debug(ex, message);
 				}
 
-				// Pass full exception on highest call
-				if (log.IsWarnEnabled()) log.Warn(ex, ex.ToString());
-				log.Error(ex, ex.Message);
-				ex = ex.InnerException;
 				while (ex != null)
 				{
-					if (log.IsWarnEnabled()) log.Warn(ex.ToString());
+					log.Warn(ex, ex.Message);
 					log.Error(ex.Message);
 					ex = ex.InnerException;
 				}

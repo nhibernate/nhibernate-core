@@ -46,6 +46,8 @@ namespace NHibernate.Engine
 			return value;
 		}
 
+		private const string UnsavedStrategyLog = "unsaved-value strategy {0}";
+
 		/// <summary>
 		/// Always assume the transient instance is newly instantiated
 		/// </summary>
@@ -55,7 +57,7 @@ namespace NHibernate.Engine
 		{
 			public override bool? IsUnsaved(object id)
 			{
-				log.Debug("unsaved-value strategy {0}", "ANY");
+				log.Debug(UnsavedStrategyLog, "ANY");
 				return true;
 			}
 
@@ -74,7 +76,7 @@ namespace NHibernate.Engine
 		{
 			public override bool? IsUnsaved(object id)
 			{
-				log.Debug("unsaved-value strategy {0}", "NONE");
+				log.Debug(UnsavedStrategyLog, "NONE");
 				return false;
 			}
 
@@ -94,7 +96,7 @@ namespace NHibernate.Engine
 		{
 			public override bool? IsUnsaved(object id)
 			{
-				log.Debug("unsaved-value strategy {0}", "NULL");
+				log.Debug(UnsavedStrategyLog, "NULL");
 				return id == null;
 			}
 
@@ -111,7 +113,7 @@ namespace NHibernate.Engine
 		{
 			public override bool? IsUnsaved(object id)
 			{
-				log.Debug("id unsaved-value strategy {0}", "UNDEFINED");
+				log.Debug(UnsavedStrategyLog, "UNDEFINED");
 				return null;
 			}
 			public override object GetDefaultValue(object currentValue)

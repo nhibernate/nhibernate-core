@@ -424,7 +424,7 @@ namespace NHibernate.Stat
 		public void LogSummary()
 		{
 			log.Info("Logging statistics....");
-			log.Info("start time: {0}", startTime.ToString("o"));
+			log.Info("start time: {0:o}", startTime);
 			log.Info("sessions opened: {0}", sessionOpenCount);
 			log.Info("sessions closed: {0}", sessionCloseCount);
 			log.Info("transactions: {0}", transactionCount);

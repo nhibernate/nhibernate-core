@@ -48,6 +48,8 @@ namespace NHibernate.Engine
 			return value;
 		}
 
+		private const string UnsavedStrategyLog = "version unsaved-value strategy {0}";
+
 		/// <summary>
 		/// Assume the transient instance is newly instantiated if the version
 		/// is null, otherwise assume it is a detached instance.
@@ -58,7 +60,7 @@ namespace NHibernate.Engine
 		{
 			public override bool? IsUnsaved(object version)
 			{
-				log.Debug("version unsaved-value strategy {0}", "NULL");
+				log.Debug(UnsavedStrategyLog, "NULL");
 				return version == null;
 			}
 
@@ -78,7 +80,7 @@ namespace NHibernate.Engine
 		{
 			public override bool? IsUnsaved(object version)
 			{
-				log.Debug("version unsaved-value strategy {0}", "UNDEFINED");
+				log.Debug(UnsavedStrategyLog, "UNDEFINED");
 				if (version == null)
 					return true;
 				else
@@ -101,7 +103,7 @@ namespace NHibernate.Engine
 		{
 			public override bool? IsUnsaved(object version)
 			{
-				log.Debug("version unsaved-value strategy {0}", "NEGATIVE");
+				log.Debug(UnsavedStrategyLog, "NEGATIVE");
 				if (version is short || version is int || version is long)
 				{
 					return Convert.ToInt64(version) < 0L;

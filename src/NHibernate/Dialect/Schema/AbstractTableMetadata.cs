@@ -25,12 +25,15 @@ namespace NHibernate.Dialect.Schema
 			}
 			string cat = catalog == null ? "" : catalog + '.';
 			string schem = schema == null ? "" : schema + '.';
-			log.Info("table found: {0}{1}{2}", cat, schem, name);
-			log.Info("columns: {0}", StringHelper.CollectionToString(columns.Keys));
-			if (extras)
+			if (log.IsInfoEnabled())
 			{
-				log.Info("foreign keys: {0}", StringHelper.CollectionToString(foreignKeys.Keys));
-				log.Info("indexes: {0}", StringHelper.CollectionToString(indexes.Keys));
+				log.Info("table found: {0}{1}{2}", cat, schem, name);
+				log.Info("columns: {0}", StringHelper.CollectionToString(columns.Keys));
+				if (extras)
+				{
+					log.Info("foreign keys: {0}", StringHelper.CollectionToString(foreignKeys.Keys));
+					log.Info("indexes: {0}", StringHelper.CollectionToString(indexes.Keys));
+				}
 			}
 		}
 
