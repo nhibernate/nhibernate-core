@@ -30,7 +30,7 @@ namespace NHibernate.Dialect
 	/// </remarks>
 	public abstract partial class Dialect
 	{
-		private static readonly IInternalLogger2 Log = LoggerProvider.LoggerFor(typeof(Dialect));
+		private static readonly INHibernateLogger Log = LoggerProvider.LoggerFor(typeof(Dialect));
 
 		protected const string DefaultBatchSize = "15";
 		protected const string NoBatch = "0";

@@ -14,7 +14,7 @@ namespace NHibernate.Connection
 	/// </remarks>
 	public partial class UserSuppliedConnectionProvider : ConnectionProvider
 	{
-		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(UserSuppliedConnectionProvider));
+		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(UserSuppliedConnectionProvider));
 
 		/// <summary>
 		/// Throws an <see cref="InvalidOperationException"/> if this method is called

@@ -18,7 +18,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class FromElement : HqlSqlWalkerNode, IDisplayableNode, IParameterContainer
 	{
-		private static readonly IInternalLogger2 Log = LoggerProvider.LoggerFor(typeof(FromElement));
+		private static readonly INHibernateLogger Log = LoggerProvider.LoggerFor(typeof(FromElement));
 
 		private bool _isAllPropertyFetch;
 		private FromElementType _elementType;

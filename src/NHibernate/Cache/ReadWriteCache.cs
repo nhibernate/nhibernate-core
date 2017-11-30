@@ -30,7 +30,7 @@ namespace NHibernate.Cache
 			bool IsPuttable(long txTimestamp, object newVersion, IComparer comparator);
 		}
 
-		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(ReadWriteCache));
+		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(ReadWriteCache));
 
 		private readonly object _lockObject = new object();
 		private ICache cache;

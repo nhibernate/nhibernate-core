@@ -63,7 +63,7 @@ namespace NHibernate.Id.Enhanced
 	/// </remarks>
 	public partial class SequenceStyleGenerator : IPersistentIdentifierGenerator, IConfigurable
 	{
-		private static readonly IInternalLogger2 Log = LoggerProvider.LoggerFor(typeof(SequenceStyleGenerator));
+		private static readonly INHibernateLogger Log = LoggerProvider.LoggerFor(typeof(SequenceStyleGenerator));
 
 		public const string DefaultSequenceName = "hibernate_sequence";
 		public const int DefaultInitialValue = 1;

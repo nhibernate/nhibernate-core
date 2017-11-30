@@ -32,7 +32,7 @@ namespace NHibernate.Loader.Criteria
 		private readonly IList<IType> resultTypeList = new List<IType>();
 		private readonly IList<bool> includeInResultRowList = new List<bool>();
 
-		private static readonly IInternalLogger2 logger = LoggerProvider.LoggerFor(typeof(CriteriaJoinWalker));
+		private static readonly INHibernateLogger logger = LoggerProvider.LoggerFor(typeof(CriteriaJoinWalker));
 
 		public CriteriaJoinWalker(IOuterJoinLoadable persister, CriteriaQueryTranslator translator,
 		                          ISessionFactoryImplementor factory, ICriteria criteria, string rootEntityName,

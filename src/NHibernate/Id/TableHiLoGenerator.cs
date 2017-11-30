@@ -39,7 +39,7 @@ namespace NHibernate.Id
 	/// </remarks>
 	public partial class TableHiLoGenerator : TableGenerator
 	{
-		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(TableHiLoGenerator));
+		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(TableHiLoGenerator));
 
 		/// <summary>
 		/// The name of the max lo parameter.

@@ -14,7 +14,7 @@ namespace NHibernate.Id.Enhanced
 	/// </summary>
 	public partial class TableStructure : TransactionHelper, IDatabaseStructure
 	{
-		private static readonly IInternalLogger2 Log = LoggerProvider.LoggerFor(typeof(IDatabaseStructure));
+		private static readonly INHibernateLogger Log = LoggerProvider.LoggerFor(typeof(IDatabaseStructure));
 
 		private readonly int _incrementSize;
 		private readonly int _initialValue;

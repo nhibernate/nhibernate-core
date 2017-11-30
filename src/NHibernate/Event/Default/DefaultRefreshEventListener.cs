@@ -17,7 +17,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public partial class DefaultRefreshEventListener : IRefreshEventListener
 	{
-		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(DefaultRefreshEventListener));
+		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(DefaultRefreshEventListener));
 
 		public virtual void OnRefresh(RefreshEvent @event)
 		{

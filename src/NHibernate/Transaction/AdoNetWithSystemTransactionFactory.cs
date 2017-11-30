@@ -17,7 +17,7 @@ namespace NHibernate.Transaction
 	/// </summary>
 	public partial class AdoNetWithSystemTransactionFactory : AdoNetTransactionFactory
 	{
-		private static readonly IInternalLogger2 _logger = LoggerProvider.LoggerFor(typeof(ITransactionFactory));
+		private static readonly INHibernateLogger _logger = LoggerProvider.LoggerFor(typeof(ITransactionFactory));
 
 		/// <summary>
 		/// See <see cref="Cfg.Environment.SystemTransactionCompletionLockTimeout"/>.

@@ -16,7 +16,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public partial class DefaultEvictEventListener : IEvictEventListener
 	{
-		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(DefaultEvictEventListener));
+		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(DefaultEvictEventListener));
 
 		public virtual void OnEvict(EvictEvent @event)
 		{

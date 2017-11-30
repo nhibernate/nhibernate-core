@@ -9,7 +9,7 @@ namespace NHibernate.Transform
 	[Serializable]
 	public class DistinctRootEntityResultTransformer : IResultTransformer, ITupleSubsetResultTransformer
 	{
-		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(DistinctRootEntityResultTransformer));
+		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(DistinctRootEntityResultTransformer));
 		private static readonly object Hasher = new object();
 
 		internal sealed class Identity

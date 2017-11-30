@@ -17,7 +17,7 @@ namespace NHibernate.Cache
 	/// </summary>
 	public partial class StandardQueryCache : IQueryCache
 	{
-		private static readonly IInternalLogger2 Log = LoggerProvider.LoggerFor(typeof (StandardQueryCache));
+		private static readonly INHibernateLogger Log = LoggerProvider.LoggerFor(typeof (StandardQueryCache));
 		private readonly ICache _queryCache;
 		private readonly string _regionName;
 		private readonly UpdateTimestampsCache _updateTimestampsCache;

@@ -14,7 +14,7 @@ namespace NHibernate.Tuple.Entity
 	/// <summary> Support for tuplizers relating to entities. </summary>
 	public abstract class AbstractEntityTuplizer : IEntityTuplizer
 	{
-		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(AbstractEntityTuplizer));
+		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(AbstractEntityTuplizer));
 		private readonly EntityMetamodel entityMetamodel;
 		private readonly IGetter idGetter;
 		private readonly ISetter idSetter;

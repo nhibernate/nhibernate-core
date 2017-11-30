@@ -275,7 +275,7 @@ namespace NHibernate.Cfg
 		private static IBytecodeProvider BytecodeProviderInstance;
 		private static bool EnableReflectionOptimizer;
 
-		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(Environment));
+		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(Environment));
 
 		/// <summary>
 		/// Issue warnings to user when any obsolete property names are used.

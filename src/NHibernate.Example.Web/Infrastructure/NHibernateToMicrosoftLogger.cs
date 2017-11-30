@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging.Internal;
 
 namespace NHibernate.Example.Web.Infrastructure
 {
-	public class NHibernateToMicrosoftLogger : IInternalLogger2
+	public class NHibernateToMicrosoftLogger : INHibernateLogger
 	{
 		private readonly ILogger _msLogger;
 

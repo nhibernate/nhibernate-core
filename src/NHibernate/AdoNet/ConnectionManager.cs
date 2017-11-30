@@ -19,7 +19,7 @@ namespace NHibernate.AdoNet
 	[Serializable]
 	public partial class ConnectionManager : ISerializable, IDeserializationCallback
 	{
-		private static readonly IInternalLogger2 _log = LoggerProvider.LoggerFor(typeof(ConnectionManager));
+		private static readonly INHibernateLogger _log = LoggerProvider.LoggerFor(typeof(ConnectionManager));
 
 		[NonSerialized]
 		private DbConnection _connection;

@@ -15,7 +15,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 		}
 
-		protected abstract IInternalLogger2 GetLog();
+		protected abstract INHibernateLogger GetLog();
 		protected abstract int GetWhereClauseParentTokenType();
 
 		public FromClause FromClause

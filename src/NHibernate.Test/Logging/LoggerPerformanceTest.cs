@@ -109,18 +109,18 @@ namespace NHibernate.Test.Logging
 
 		private class MockNHibernateLoggerFactory : INHibernateLoggerFactory
 		{
-			public IInternalLogger2 LoggerFor(string keyName)
+			public INHibernateLogger LoggerFor(string keyName)
 			{
 				return new MockLogger2();
 			}
 
-			public IInternalLogger2 LoggerFor(System.Type type)
+			public INHibernateLogger LoggerFor(System.Type type)
 			{
 				return new MockLogger2();
 			}
 		}
 
-		private class MockLogger2 : IInternalLogger2
+		private class MockLogger2 : INHibernateLogger
 		{
 			private bool IsErrorEnabled { get; } = true;
 			private bool IsFatalEnabled { get; } = true;
@@ -249,7 +249,7 @@ namespace NHibernate.Test.Logging
 			ResetCounts();
 			ILoggerFactory loggerFactory = new MockLoggerFactory();
 			LoggerProvider.SetLoggersFactory(loggerFactory);
-			IInternalLogger2 logger2 = LoggerProvider.LoggerFor(this.GetType());
+			INHibernateLogger logger2 = LoggerProvider.LoggerFor(this.GetType());
 
 			var stopwatch = Stopwatch.StartNew();
 			var iterationCount = 10000000;
@@ -279,7 +279,7 @@ namespace NHibernate.Test.Logging
 			ResetCounts();
 			ILoggerFactory loggerFactory = new MockLoggerFactory();
 			LoggerProvider.SetLoggersFactory(loggerFactory);
-			IInternalLogger2 logger2 = LoggerProvider.LoggerFor(this.GetType());
+			INHibernateLogger logger2 = LoggerProvider.LoggerFor(this.GetType());
 
 			var stopwatch = Stopwatch.StartNew();
 			var iterationCount = 10000000;
@@ -309,7 +309,7 @@ namespace NHibernate.Test.Logging
 			ResetCounts();
 			INHibernateLoggerFactory loggerFactory = new MockNHibernateLoggerFactory();
 			LoggerProvider.SetLoggersFactory(loggerFactory);
-			IInternalLogger2 logger2 = LoggerProvider.LoggerFor(this.GetType());
+			INHibernateLogger logger2 = LoggerProvider.LoggerFor(this.GetType());
 
 			var stopwatch = Stopwatch.StartNew();
 			var iterationCount = 10000000;
@@ -339,7 +339,7 @@ namespace NHibernate.Test.Logging
 			ResetCounts();
 			INHibernateLoggerFactory loggerFactory = new MockNHibernateLoggerFactory();
 			LoggerProvider.SetLoggersFactory(loggerFactory);
-			IInternalLogger2 logger2 = LoggerProvider.LoggerFor(this.GetType());
+			INHibernateLogger logger2 = LoggerProvider.LoggerFor(this.GetType());
 
 			var stopwatch = Stopwatch.StartNew();
 			var iterationCount = 10000000;
@@ -369,7 +369,7 @@ namespace NHibernate.Test.Logging
 			ResetCounts();
 			INHibernateLoggerFactory loggerFactory = new NoLoggingLoggerFactory();
 			LoggerProvider.SetLoggersFactory(loggerFactory);
-			IInternalLogger2 logger2 = LoggerProvider.LoggerFor(this.GetType());
+			INHibernateLogger logger2 = LoggerProvider.LoggerFor(this.GetType());
 
 			var stopwatch = Stopwatch.StartNew();
 			var iterationCount = 10000000;

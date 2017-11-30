@@ -11,13 +11,13 @@ namespace NHibernate.Example.Web.Infrastructure
 			_loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
 		}
 
-		public IInternalLogger2 LoggerFor(string keyName)
+		public INHibernateLogger LoggerFor(string keyName)
 		{
 			var msLogger = _loggerFactory.CreateLogger(keyName);
 			return new NHibernateToMicrosoftLogger(msLogger);
 		}
 
-		public IInternalLogger2 LoggerFor(System.Type type)
+		public INHibernateLogger LoggerFor(System.Type type)
 		{
 			return LoggerFor(
 				Microsoft.Extensions.Logging.Abstractions.Internal.TypeNameHelper.GetTypeDisplayName(type));

@@ -20,7 +20,7 @@ namespace NHibernate.Impl
 	/// </remarks>
 	public static class SessionFactoryObjectFactory
 	{
-		private static readonly IInternalLogger2 log;
+		private static readonly INHibernateLogger log;
 
 		private static readonly IDictionary<string, ISessionFactory> Instances = new Dictionary<string, ISessionFactory>();
 		private static readonly IDictionary<string, ISessionFactory> NamedInstances = new Dictionary<string, ISessionFactory>();

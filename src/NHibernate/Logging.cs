@@ -8,7 +8,7 @@ using NHibernate.Util;
 
 namespace NHibernate
 {
-	[Obsolete("Implement and use NHibernate.IInternalLogger2")]
+	[Obsolete("Implement and use NHibernate.INHibernateLogger")]
 	public interface IInternalLogger
 	{
 		bool IsErrorEnabled { get; }
@@ -37,7 +37,7 @@ namespace NHibernate
 		void WarnFormat(string format, params object[] args);
 	}
 
-	public interface IInternalLogger2
+	public interface INHibernateLogger
 	{
 		/// <summary>Writes a log entry.</summary>
 		/// <param name="logLevel">Entry will be written on this level.</param>
@@ -62,8 +62,8 @@ namespace NHibernate
 
 	public interface INHibernateLoggerFactory
 	{
-		IInternalLogger2 LoggerFor(string keyName);
-		IInternalLogger2 LoggerFor(System.Type type);
+		INHibernateLogger LoggerFor(string keyName);
+		INHibernateLogger LoggerFor(System.Type type);
 	}
 
 	public class LoggerProvider
@@ -154,12 +154,12 @@ namespace NHibernate
 			this._loggerFactory = loggerFactory;
 		}
 
-		public static IInternalLogger2 LoggerFor(string keyName)
+		public static INHibernateLogger LoggerFor(string keyName)
 		{
 			return _instance._loggerFactory.LoggerFor(keyName);
 		}
 
-		public static IInternalLogger2 LoggerFor(System.Type type)
+		public static INHibernateLogger LoggerFor(System.Type type)
 		{
 			return _instance._loggerFactory.LoggerFor(type);
 		}
@@ -174,24 +174,24 @@ namespace NHibernate
 				_factory = factory;
 			}
 
-			public IInternalLogger2 LoggerFor(string keyName)
+			public INHibernateLogger LoggerFor(string keyName)
 			{
-				return new InternalLogger2Thunk(_factory.LoggerFor(keyName));
+				return new NHibernateLoggerThunk(_factory.LoggerFor(keyName));
 			}
 
-			public IInternalLogger2 LoggerFor(System.Type type)
+			public INHibernateLogger LoggerFor(System.Type type)
 			{
-				return new InternalLogger2Thunk(_factory.LoggerFor(type));
+				return new NHibernateLoggerThunk(_factory.LoggerFor(type));
 			}
 		}
 	}
 
 	[Obsolete("Used only in Obsolete functions to thunk to INHibernateLoggerFactory")]
-	internal class InternalLogger2Thunk : IInternalLogger2
+	internal class NHibernateLoggerThunk : INHibernateLogger
 	{
 		private readonly IInternalLogger _internalLogger;
 
-		public InternalLogger2Thunk(IInternalLogger internalLogger)
+		public NHibernateLoggerThunk(IInternalLogger internalLogger)
 		{
 			_internalLogger = internalLogger ?? throw new ArgumentNullException(nameof(internalLogger));
 		}
@@ -274,19 +274,19 @@ namespace NHibernate
 
 	public class NoLoggingLoggerFactory: INHibernateLoggerFactory
 	{
-		private static readonly IInternalLogger2 Nologging = new NoLoggingInternalLogger();
-		public IInternalLogger2 LoggerFor(string keyName)
+		private static readonly INHibernateLogger Nologging = new NoLoggingInternalLogger();
+		public INHibernateLogger LoggerFor(string keyName)
 		{
 			return Nologging;
 		}
 
-		public IInternalLogger2 LoggerFor(System.Type type)
+		public INHibernateLogger LoggerFor(System.Type type)
 		{
 			return Nologging;
 		}
 	}
 
-	public class NoLoggingInternalLogger: IInternalLogger2
+	public class NoLoggingInternalLogger: INHibernateLogger
 	{
 		public void Log(InternalLogLevel logLevel, InternalLogValues state, Exception exception)
 		{
@@ -521,58 +521,58 @@ namespace NHibernate
 
 	public static class InternalLogger2Extensions
 	{
-		public static bool IsDebugEnabled(this IInternalLogger2 logger) => logger.IsEnabled(InternalLogLevel.Debug);
-		public static bool IsInfoEnabled(this IInternalLogger2 logger) => logger.IsEnabled(InternalLogLevel.Info);
-		public static bool IsWarnEnabled(this IInternalLogger2 logger) => logger.IsEnabled(InternalLogLevel.Warn);
-		public static bool IsErrorEnabled(this IInternalLogger2 logger) => logger.IsEnabled(InternalLogLevel.Error);
-		public static bool IsFatalEnabled(this IInternalLogger2 logger) => logger.IsEnabled(InternalLogLevel.Fatal);
+		public static bool IsDebugEnabled(this INHibernateLogger logger) => logger.IsEnabled(InternalLogLevel.Debug);
+		public static bool IsInfoEnabled(this INHibernateLogger logger) => logger.IsEnabled(InternalLogLevel.Info);
+		public static bool IsWarnEnabled(this INHibernateLogger logger) => logger.IsEnabled(InternalLogLevel.Warn);
+		public static bool IsErrorEnabled(this INHibernateLogger logger) => logger.IsEnabled(InternalLogLevel.Error);
+		public static bool IsFatalEnabled(this INHibernateLogger logger) => logger.IsEnabled(InternalLogLevel.Fatal);
 
-		public static void Fatal(this IInternalLogger2 logger, Exception exception, string format, params object[] args)
+		public static void Fatal(this INHibernateLogger logger, Exception exception, string format, params object[] args)
 		{
 			logger.Log(InternalLogLevel.Fatal, new InternalLogValues(format, args), exception);
 		}
 
-		public static void Fatal(this IInternalLogger2 logger, string format, params object[] args)
+		public static void Fatal(this INHibernateLogger logger, string format, params object[] args)
 		{
 			logger.Log(InternalLogLevel.Fatal, new InternalLogValues(format, args), null);
 		}
 
-		public static void Error(this IInternalLogger2 logger, Exception exception, string format, params object[] args)
+		public static void Error(this INHibernateLogger logger, Exception exception, string format, params object[] args)
 		{
 			logger.Log(InternalLogLevel.Error, new InternalLogValues(format, args), exception);
 		}
 
-		public static void Error(this IInternalLogger2 logger, string format, params object[] args)
+		public static void Error(this INHibernateLogger logger, string format, params object[] args)
 		{
 			logger.Log(InternalLogLevel.Error, new InternalLogValues(format, args), null);
 		}
 
-		public static void Warn(this IInternalLogger2 logger, Exception exception, string format, params object[] args)
+		public static void Warn(this INHibernateLogger logger, Exception exception, string format, params object[] args)
 		{
 			logger.Log(InternalLogLevel.Warn, new InternalLogValues(format, args), exception);
 		}
 
-		public static void Warn(this IInternalLogger2 logger, string format, params object[] args)
+		public static void Warn(this INHibernateLogger logger, string format, params object[] args)
 		{
 			logger.Log(InternalLogLevel.Warn, new InternalLogValues(format, args), null);
 		}
 
-		public static void Info(this IInternalLogger2 logger, Exception exception, string format, params object[] args)
+		public static void Info(this INHibernateLogger logger, Exception exception, string format, params object[] args)
 		{
 			logger.Log(InternalLogLevel.Info, new InternalLogValues(format, args), exception);
 		}
 
-		public static void Info(this IInternalLogger2 logger, string format, params object[] args)
+		public static void Info(this INHibernateLogger logger, string format, params object[] args)
 		{
 			logger.Log(InternalLogLevel.Info, new InternalLogValues(format, args), null);
 		}
 
-		public static void Debug(this IInternalLogger2 logger, Exception exception, string format, params object[] args)
+		public static void Debug(this INHibernateLogger logger, Exception exception, string format, params object[] args)
 		{
 			logger.Log(InternalLogLevel.Debug, new InternalLogValues(format, args), exception);
 		}
 
-		public static void Debug(this IInternalLogger2 logger, string format, params object[] args)
+		public static void Debug(this INHibernateLogger logger, string format, params object[] args)
 		{
 			logger.Log(InternalLogLevel.Debug, new InternalLogValues(format, args), null);
 		}
@@ -584,31 +584,31 @@ namespace NHibernate
 		/// Don't use or implement, simply throw new NotImplementedException();
 		/// </summary>
 		[Obsolete("Use Fatal(Exception, string, params object[])", true)]
-		public static void Fatal(this IInternalLogger2 logger, string message, Exception ex) => ThrowNotImplemented();
+		public static void Fatal(this INHibernateLogger logger, string message, Exception ex) => ThrowNotImplemented();
 
 		/// <summary>
 		/// Don't use or implement, simply throw new NotImplementedException();
 		/// </summary>
 		[Obsolete("Use Error(Exception, string, params object[])", true)]
-		public static void Error(this IInternalLogger2 logger, string message, Exception ex) => ThrowNotImplemented();
+		public static void Error(this INHibernateLogger logger, string message, Exception ex) => ThrowNotImplemented();
 
 		/// <summary>
 		/// Don't use or implement, simply throw new NotImplementedException();
 		/// </summary>
 		[Obsolete("Use Warn(Exception, string, params object[])", true)]
-		public static void Warn(this IInternalLogger2 logger, string message, Exception ex) => ThrowNotImplemented();
+		public static void Warn(this INHibernateLogger logger, string message, Exception ex) => ThrowNotImplemented();
 
 		/// <summary>
 		/// Don't use or implement, simply throw new NotImplementedException();
 		/// </summary>
 		[Obsolete("Use Info(Exception, string, params object[])", true)]
-		public static void Info(this IInternalLogger2 logger, string message, Exception ex) => ThrowNotImplemented();
+		public static void Info(this INHibernateLogger logger, string message, Exception ex) => ThrowNotImplemented();
 
 		/// <summary>
 		/// Don't use or implement, simply throw new NotImplementedException();
 		/// </summary>
 		[Obsolete("Use Debug(Exception, string, params object[])", true)]
-		public static void Debug(this IInternalLogger2 logger, string message, Exception ex) => ThrowNotImplemented();
+		public static void Debug(this INHibernateLogger logger, string message, Exception ex) => ThrowNotImplemented();
 
 		private static void ThrowNotImplemented()
 		{

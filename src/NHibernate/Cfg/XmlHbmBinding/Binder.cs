@@ -10,7 +10,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public abstract class Binder
 	{
-		protected static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof (Binder));
+		protected static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof (Binder));
 
 		protected static readonly IDictionary<string, MetaAttribute> EmptyMeta =
 			new CollectionHelper.EmptyMapClass<string, MetaAttribute>();

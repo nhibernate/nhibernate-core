@@ -17,7 +17,7 @@ namespace NHibernate.Engine
 	[Serializable]
 	public sealed class QueryParameters
 	{
-		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof (QueryParameters));
+		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof (QueryParameters));
 
 		private bool readOnly;
 

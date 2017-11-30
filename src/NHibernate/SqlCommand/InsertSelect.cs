@@ -5,7 +5,7 @@ namespace NHibernate.SqlCommand
 {
 	public class InsertSelect : ISqlStringBuilder
 	{
-		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(InsertSelect));
+		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(InsertSelect));
 
 		private string tableName;
 		private string comment;

@@ -16,7 +16,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class MethodNode : AbstractSelectExpression 
 	{
-		private static readonly IInternalLogger2 Log = LoggerProvider.LoggerFor(typeof(MethodNode));
+		private static readonly INHibernateLogger Log = LoggerProvider.LoggerFor(typeof(MethodNode));
 
 		private string[] _selectColumns;
 		private string _methodName;

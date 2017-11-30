@@ -28,7 +28,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public abstract partial class AbstractSaveEventListener : AbstractReassociateEventListener
 	{
-		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(AbstractSaveEventListener));
+		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(AbstractSaveEventListener));
 
 		protected virtual bool? AssumedUnsaved
 		{

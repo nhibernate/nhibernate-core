@@ -11,7 +11,7 @@ namespace NHibernate.Engine
 	/// </summary>
 	public class VersionValue
 	{
-		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(VersionValue));
+		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(VersionValue));
 
 		private readonly object value;
 

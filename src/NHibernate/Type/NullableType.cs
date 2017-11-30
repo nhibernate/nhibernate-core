@@ -25,7 +25,7 @@ namespace NHibernate.Type
 			IsDebugEnabled = LoggerProvider.LoggerFor(typeof(IType).Namespace).IsDebugEnabled();
 		}
 
-		private IInternalLogger2 Log
+		private INHibernateLogger Log
 		{
 			get { return LoggerProvider.LoggerFor(GetType()); }
 		}

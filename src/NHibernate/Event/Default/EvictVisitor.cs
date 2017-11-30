@@ -13,7 +13,7 @@ namespace NHibernate.Event.Default
 	/// </summary>
 	public partial class EvictVisitor : AbstractVisitor
 	{
-		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(EvictVisitor));
+		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(EvictVisitor));
 
 		public EvictVisitor(IEventSource session) : base(session) { }
 

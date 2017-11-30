@@ -46,7 +46,7 @@ namespace NHibernate.Loader
 	/// <seealso cref="NHibernate.Persister.Entity.ILoadable"/>
 	public abstract partial class Loader
 	{
-		private static readonly IInternalLogger2 Log = LoggerProvider.LoggerFor(typeof(Loader));
+		private static readonly INHibernateLogger Log = LoggerProvider.LoggerFor(typeof(Loader));
 
 		private readonly ISessionFactoryImplementor _factory;
 		private readonly SessionFactoryHelper _helper;

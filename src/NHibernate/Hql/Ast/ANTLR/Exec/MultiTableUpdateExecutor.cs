@@ -18,7 +18,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 	[CLSCompliant(false)]
 	public partial class MultiTableUpdateExecutor : AbstractStatementExecutor
 	{
-		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof (MultiTableDeleteExecutor));
+		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof (MultiTableDeleteExecutor));
 		private readonly IQueryable persister;
 		private readonly SqlString idInsertSelect;
 		private readonly SqlString[] updates;

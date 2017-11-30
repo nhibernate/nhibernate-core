@@ -13,7 +13,7 @@ namespace NHibernate.Tuple
 	[Serializable]
 	public class PocoInstantiator : IInstantiator, IDeserializationCallback
 	{
-		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(PocoInstantiator));
+		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(PocoInstantiator));
 
 		private readonly System.Type mappedClass;
 

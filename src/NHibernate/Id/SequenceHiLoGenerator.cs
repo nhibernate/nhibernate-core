@@ -35,7 +35,7 @@ namespace NHibernate.Id
 	/// </remarks>
 	public partial class SequenceHiLoGenerator : SequenceGenerator
 	{
-		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(SequenceHiLoGenerator));
+		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(SequenceHiLoGenerator));
 
 		/// <summary>
 		/// The name of the maximum low value parameter.

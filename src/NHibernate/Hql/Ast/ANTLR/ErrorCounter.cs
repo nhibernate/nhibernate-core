@@ -11,8 +11,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 	/// </summary>
 	internal class ErrorCounter : IParseErrorHandler 
 	{
-		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(ErrorCounter));
-		private static readonly IInternalLogger2 hqlLog = LoggerProvider.LoggerFor("NHibernate.Hql.Parser");
+		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(ErrorCounter));
+		private static readonly INHibernateLogger hqlLog = LoggerProvider.LoggerFor("NHibernate.Hql.Parser");
 
 		private readonly List<string> _errorList = new List<string>();
 		private readonly List<string> _warningList = new List<string>();

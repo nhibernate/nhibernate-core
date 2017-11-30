@@ -16,7 +16,7 @@ namespace NHibernate.Driver
 	/// </summary>
 	public abstract class DriverBase : IDriver, ISqlParameterFormatter
 	{
-		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(DriverBase));
+		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(DriverBase));
 
 		private int commandTimeout;
 		private bool prepareSql;

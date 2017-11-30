@@ -13,7 +13,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class FromElementFactory
 	{
-		private static readonly IInternalLogger2 Log = LoggerProvider.LoggerFor(typeof(FromElementFactory));
+		private static readonly INHibernateLogger Log = LoggerProvider.LoggerFor(typeof(FromElementFactory));
 
 		private readonly FromClause _fromClause;
 		private readonly FromElement _origin;

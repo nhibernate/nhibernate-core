@@ -21,7 +21,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 	/// </summary>
 	public class HibernateConfiguration : IHibernateConfiguration
 	{
-		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(HibernateConfiguration));
+		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(HibernateConfiguration));
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HibernateConfiguration"/> class.

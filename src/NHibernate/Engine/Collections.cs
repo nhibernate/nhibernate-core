@@ -8,7 +8,7 @@ namespace NHibernate.Engine
 {
 	public static partial class Collections
 	{
-		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(Collections));
+		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(Collections));
 
 		/// <summary> 
 		/// Record the fact that this collection was dereferenced 

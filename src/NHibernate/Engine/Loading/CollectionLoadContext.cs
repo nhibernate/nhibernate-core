@@ -21,7 +21,7 @@ namespace NHibernate.Engine.Loading
 	/// </remarks>
 	public partial class CollectionLoadContext
 	{
-		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(CollectionLoadContext));
+		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(CollectionLoadContext));
 		private readonly LoadContexts loadContexts;
 		private readonly DbDataReader resultSet;
 		private readonly ISet<CollectionKey> localLoadingCollectionKeys = new HashSet<CollectionKey>();

@@ -15,7 +15,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public partial class AbstractReassociateEventListener
 	{
-		private static readonly IInternalLogger2 log = LoggerProvider.LoggerFor(typeof(AbstractReassociateEventListener));
+		private static readonly INHibernateLogger log = LoggerProvider.LoggerFor(typeof(AbstractReassociateEventListener));
 
 		/// <summary>
 		/// Associates a given entity (either transient or associated with another session) to the given session.
