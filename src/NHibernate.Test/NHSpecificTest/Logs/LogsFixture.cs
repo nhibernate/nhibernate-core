@@ -192,6 +192,17 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 			}
 		}
 
+		[Test]
+		public void WillCleanlyFailOnDoubleProcessDispose()
+		{
+			using (var s = OpenSession())
+			{
+				var p = ((AbstractSessionImpl) s).BeginProcess();
+				p.Dispose();
+				Assert.That(() => p.Dispose(), Throws.TypeOf<ObjectDisposedException>());
+			}
+		}
+
 		// IFixingRequired interface ensures the value is evaluated at log time rather than at log buffer flush time.
 		public class SessionIdCapturer : IFixingRequired
 		{

@@ -329,7 +329,7 @@ namespace NHibernate.Impl
 
 			public void Dispose()
 			{
-				_context.Dispose();
+				_context?.Dispose();
 				_context = null;
 				if (_session == null)
 					throw new ObjectDisposedException("The session process helper has been disposed already");
