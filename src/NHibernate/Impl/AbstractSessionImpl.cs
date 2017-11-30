@@ -55,6 +55,8 @@ namespace NHibernate.Impl
 
 		#region ISessionImplementor Members
 
+		// Since v5.1
+		[Obsolete("This method has no more usages in NHibernate and will be removed.")]
 		public void Initialize()
 		{
 			BeginProcess()?.Dispose();
