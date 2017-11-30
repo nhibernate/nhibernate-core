@@ -125,7 +125,7 @@ namespace NHibernate.Engine
 							{
 								EntityType entityType = (EntityType)type;
 								object loadedValue;
-								if (!componentPathStack.Any())
+								if (componentPathStack.Count == 0)
 								{
 									// association defined on entity
 									loadedValue = entry.GetLoadedValue(propertyName);
