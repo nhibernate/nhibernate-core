@@ -313,17 +313,26 @@ namespace NHibernate.Impl
 			{
 				_session = session;
 				_context = new SessionIdLoggingContext(session.SessionId);
-				session.CheckAndUpdateSessionStatus();
-				_session._processing = true;
+				try
+				{
+					_session.CheckAndUpdateSessionStatus();
+					_session._processing = true;
+				}
+				catch
+				{
+					_context.Dispose();
+					_context = null;
+					throw;
+				}
 			}
 
 			public void Dispose()
 			{
+				_context.Dispose();
+				_context = null;
 				if (_session == null)
 					throw new ObjectDisposedException("The session process helper has been disposed already");
 				_session._processing = false;
-				_context.Dispose();
-				_context = null;
 				_session = null;
 			}
 		}
