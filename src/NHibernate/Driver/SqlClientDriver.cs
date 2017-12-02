@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
@@ -21,10 +22,23 @@ namespace NHibernate.Driver
 		public const int MaxSizeForLengthLimitedAnsiString = 8000;
 		public const int MaxSizeForLengthLimitedString = 4000;
 		public const int MaxSizeForLengthLimitedBinary = 8000;
+		// Since v5.1
+		[Obsolete("This member has no more usages and will be removed in a future version")]
 		public const byte MaxPrecision = 28;
+		// Since v5.1
+		[Obsolete("This member has no more usages and will be removed in a future version")]
 		public const byte MaxScale = 5;
 		public const byte MaxDateTime2 = 8;
 		public const byte MaxDateTimeOffset = 10;
+
+		private Dialect.Dialect _dialect;
+
+		public override void Configure(IDictionary<string, string> settings)
+		{
+			base.Configure(settings);
+
+			_dialect = Dialect.Dialect.GetDialect(settings);
+		}
 
 		/// <summary>
 		/// Creates an uninitialized <see cref="DbConnection" /> object for
@@ -97,9 +111,50 @@ namespace NHibernate.Driver
 		protected override void InitializeParameter(DbParameter dbParam, string name, SqlType sqlType)
 		{
 			base.InitializeParameter(dbParam, name, sqlType);
-			SetVariableLengthParameterSize(dbParam, sqlType);
+			
+			// Defaults size/precision/scale
+			switch (dbParam.DbType)
+			{
+				case DbType.AnsiString:
+				case DbType.AnsiStringFixedLength:
+					dbParam.Size = IsAnsiText(dbParam, sqlType) ? MaxSizeForAnsiClob : MaxSizeForLengthLimitedAnsiString;
+					break;
+				case DbType.Binary:
+					dbParam.Size = IsBlob(dbParam, sqlType) ? MaxSizeForBlob : MaxSizeForLengthLimitedBinary;
+					break;
+				case DbType.Decimal:
+					if (_dialect == null)
+						throw new InvalidOperationException("Dialect not available, is this driver used without having been configured?");
+					dbParam.Precision = _dialect.DefaultCastPrecision;
+					dbParam.Scale = _dialect.DefaultCastScale;
+					break;
+				case DbType.String:
+				case DbType.StringFixedLength:
+					dbParam.Size = IsText(dbParam, sqlType) ? MaxSizeForClob : MaxSizeForLengthLimitedString;
+					break;
+				case DbType.DateTime2:
+					dbParam.Size = MaxDateTime2;
+					break;
+				case DbType.DateTimeOffset:
+					dbParam.Size = MaxDateTimeOffset;
+					break;
+				case DbType.Xml:
+					dbParam.Size = MaxSizeForXml;
+					break;
+			}
+
+			// Do not override the default length for string using data from SqlType, since LIKE expressions needs
+			// larger columns. https://nhibernate.jira.com/browse/NH-3036
+
+			if (sqlType.PrecisionDefined)
+			{
+				dbParam.Precision = sqlType.Precision;
+				dbParam.Scale = sqlType.Scale;
+			}
 		}
 
+		// Since v5.1
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public static void SetVariableLengthParameterSize(DbParameter dbParam, SqlType sqlType)
 		{
 			SetDefaultParameterSize(dbParam, sqlType);
@@ -118,13 +173,15 @@ namespace NHibernate.Driver
 			}
 		}
 
+		// Since v5.1
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		protected static void SetDefaultParameterSize(DbParameter dbParam, SqlType sqlType)
 		{
 			switch (dbParam.DbType)
 			{
 				case DbType.AnsiString:
 				case DbType.AnsiStringFixedLength:
-                    dbParam.Size = IsAnsiText(dbParam, sqlType) ? MaxSizeForAnsiClob : MaxSizeForLengthLimitedAnsiString;
+					dbParam.Size = IsAnsiText(dbParam, sqlType) ? MaxSizeForAnsiClob : MaxSizeForLengthLimitedAnsiString;
 					break;
 				case DbType.Binary:
 					dbParam.Size = IsBlob(dbParam, sqlType) ? MaxSizeForBlob : MaxSizeForLengthLimitedBinary;
@@ -149,16 +206,16 @@ namespace NHibernate.Driver
 			}
 		}
 
-        /// <summary>
-        /// Interprets if a parameter is a Clob (for the purposes of setting its default size)
-        /// </summary>
-        /// <param name="dbParam">The parameter</param>
-        /// <param name="sqlType">The <see cref="SqlType" /> of the parameter</param>
-        /// <returns>True, if the parameter should be interpreted as a Clob, otherwise False</returns>
-        protected static bool IsAnsiText(DbParameter dbParam, SqlType sqlType)
-        {
-            return ((DbType.AnsiString == dbParam.DbType || DbType.AnsiStringFixedLength == dbParam.DbType) && sqlType.LengthDefined && (sqlType.Length > MaxSizeForLengthLimitedAnsiString));
-        }
+		/// <summary>
+		/// Interprets if a parameter is a Clob (for the purposes of setting its default size)
+		/// </summary>
+		/// <param name="dbParam">The parameter</param>
+		/// <param name="sqlType">The <see cref="SqlType" /> of the parameter</param>
+		/// <returns>True, if the parameter should be interpreted as a Clob, otherwise False</returns>
+		protected static bool IsAnsiText(DbParameter dbParam, SqlType sqlType)
+		{
+			return ((DbType.AnsiString == dbParam.DbType || DbType.AnsiStringFixedLength == dbParam.DbType) && sqlType.LengthDefined && (sqlType.Length > MaxSizeForLengthLimitedAnsiString));
+		}
 
 		/// <summary>
 		/// Interprets if a parameter is a Clob (for the purposes of setting its default size)

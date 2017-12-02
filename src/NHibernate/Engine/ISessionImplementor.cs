@@ -16,6 +16,27 @@ using NHibernate.Type;
 
 namespace NHibernate.Engine
 {
+	// 6.0 TODO: Convert to interface methods
+	internal static class SessionImplementorExtensions
+	{
+		internal static IDisposable BeginContext(this ISessionImplementor session)
+		{
+			if (session == null)
+				return null;
+			return (session as AbstractSessionImpl)?.BeginContext() ?? new SessionIdLoggingContext(session.SessionId);
+		}
+
+		internal static IDisposable BeginProcess(this ISessionImplementor session)
+		{
+			if (session == null)
+				return null;
+			return (session as AbstractSessionImpl)?.BeginProcess() ??
+				// This method has only replaced bare call to setting the id, so this fallback is enough for avoiding a
+				// breaking change in case in custom session implementation is used.
+				new SessionIdLoggingContext(session.SessionId);
+		}
+	}
+
 	/// <summary>
 	/// Defines the internal contract between the <c>Session</c> and other parts of NHibernate
 	/// such as implementors of <c>Type</c> or <c>ClassPersister</c>
@@ -25,6 +46,8 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Initialize the session after its construction was complete
 		/// </summary>
+		// Since v5.1
+		[Obsolete("This method has no more usages in NHibernate and will be removed.")]
 		void Initialize();
 
 		/// <summary>

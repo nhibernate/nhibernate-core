@@ -1512,12 +1512,12 @@ namespace NHibernate.Persister.Collection
 
 		public int GetSize(object key, ISessionImplementor session)
 		{
-			using(new SessionIdLoggingContext(session.SessionId))
+			using (session.BeginProcess())
 			try
 			{
 				if(session.EnabledFilters.Count > 0)
 				{
-					
+					// The above call validates the filters
 				}
 
 				var st = session.Batcher.PrepareCommand(CommandType.Text, GenerateSelectSizeString(session), KeyType.SqlTypes(factory));
@@ -1554,7 +1554,7 @@ namespace NHibernate.Persister.Collection
 		private bool Exists(object key, object indexOrElement, IType indexOrElementType, SqlString sql,
 							ISessionImplementor session)
 		{
-			using(new SessionIdLoggingContext(session.SessionId))
+			using (session.BeginProcess())
 			try
 			{
 				List<SqlType> sqlTl = new List<SqlType>(KeyType.SqlTypes(factory));
@@ -1594,7 +1594,7 @@ namespace NHibernate.Persister.Collection
 
 		public virtual object GetElementByIndex(object key, object index, ISessionImplementor session, object owner)
 		{
-			using(new SessionIdLoggingContext(session.SessionId))
+			using (session.BeginProcess())
 			try
 			{
 				List<SqlType> sqlTl = new List<SqlType>(KeyType.SqlTypes(factory));

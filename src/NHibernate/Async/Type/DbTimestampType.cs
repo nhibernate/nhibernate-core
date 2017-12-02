@@ -58,7 +58,7 @@ namespace NHibernate.Type
 			var tsSelect = new SqlString(timestampSelectString);
 			DbCommand ps = null;
 			DbDataReader rs = null;
-			using (new SessionIdLoggingContext(session.SessionId))
+			using (session.BeginProcess())
 			{
 				try
 				{

@@ -36,10 +36,11 @@ namespace NHibernate.Event
 
 		/// <summary> Cascade refresh an entity instance</summary>
 		void Refresh(object obj, IDictionary refreshedAlready);
-        
+
 		/// <summary> Cascade delete an entity instance</summary>
 		void Delete(string entityName, object child, bool isCascadeDeleteEnabled, ISet<object> transientEntities);
 
+		// 6.0 TODO: yield null if already suspended.
 		/// <summary>
 		/// Suspend auto-flushing, yielding a disposable to dispose when auto flush should be restored. Supports
 		/// being called multiple times.

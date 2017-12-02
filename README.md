@@ -38,10 +38,11 @@ Bug Reports
 
 If you find any bugs, please report them using the [GitHub issue tracker][C1]. A
 test-case that demonstrates the issue is usually required. Instructions on providing a test-case
-can be found [here][C2].
+can be found in [contributing guidelines][C3] or [here][C2].
 
 [C1]: http://github.com/nhibernate/nhibernate-core/issues
-[C2]: http://nhibernate.info/blog/2008/10/03/the-best-way-to-solve-nhibernate-bugs-submit-good-unit-test.html
+[C2]: http://nhibernate.info/blog/2008/10/04/the-best-way-to-solve-nhibernate-bugs-submit-good-unit-test.html
+[C3]: CONTRIBUTING.md
 
 Licenses
 --------

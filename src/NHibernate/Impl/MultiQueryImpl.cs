@@ -406,7 +406,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		public IList List()
 		{
-			using (new SessionIdLoggingContext(session.SessionId))
+			using (session.BeginProcess())
 			{
 				bool cacheable = session.Factory.Settings.IsQueryCacheEnabled && isCacheable;
 				combinedParameters = CreateCombinedQueryParameters();

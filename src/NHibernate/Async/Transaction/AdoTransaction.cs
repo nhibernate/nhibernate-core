@@ -26,17 +26,14 @@ namespace NHibernate.Transaction
 		private async Task AfterTransactionCompletionAsync(bool successful, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (new SessionIdLoggingContext(sessionId))
-			{
-				session.ConnectionManager.AfterTransaction();
-				await (session.AfterTransactionCompletionAsync(successful, this, cancellationToken)).ConfigureAwait(false);
-				NotifyLocalSynchsAfterTransactionCompletion(successful);
-				foreach (var dependentSession in session.ConnectionManager.DependentSessions)
-					await (dependentSession.AfterTransactionCompletionAsync(successful, this, cancellationToken)).ConfigureAwait(false);
-
-				session = null;
-				begun = false;
-			}
+			session.ConnectionManager.AfterTransaction();
+			await (session.AfterTransactionCompletionAsync(successful, this, cancellationToken)).ConfigureAwait(false);
+			NotifyLocalSynchsAfterTransactionCompletion(successful);
+			foreach (var dependentSession in session.ConnectionManager.DependentSessions)
+				await (dependentSession.AfterTransactionCompletionAsync(successful, this, cancellationToken)).ConfigureAwait(false);
+	
+			session = null;
+			begun = false;
 		}
 
 		/// <summary>
@@ -51,7 +48,7 @@ namespace NHibernate.Transaction
 		public async Task CommitAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (new SessionIdLoggingContext(sessionId))
+			using (session.BeginProcess())
 			{
 				CheckNotDisposed();
 				CheckBegun();

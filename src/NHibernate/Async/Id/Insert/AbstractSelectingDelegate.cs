@@ -54,7 +54,7 @@ namespace NHibernate.Id.Insert
 				}
 
 				var selectSql = SelectSQL;
-				using (new SessionIdLoggingContext(session.SessionId))
+				using (session.BeginProcess())
 				{
 					try
 					{

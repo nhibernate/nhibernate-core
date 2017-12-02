@@ -127,7 +127,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3050
 				var softReferenceCache = (IEnumerable) field.GetValue(cache);
 
 				// Since the cache only contains one item, the first one will be our key
-				var queryPlanCacheKey = ((DictionaryEntry) softReferenceCache.First()).Key;
+				var queryPlanCacheKey = ((DictionaryEntry) softReferenceCache.Cast<object>().First()).Key;
 
 				// Setup an action that will be run on another thread and that will do nothing more than clearing the cache as long
 				// as the value stored behind the cachekey is not of type ExpandedQueryExpression, which triggers the error.

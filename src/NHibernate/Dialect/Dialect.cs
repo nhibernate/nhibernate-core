@@ -248,9 +248,9 @@ namespace NHibernate.Dialect
 			return _typeNames.GetLongest(dbType);
 		}
 
-		protected int DefaultCastLength { get; set; }
-		protected byte DefaultCastPrecision { get; set; }
-		protected byte DefaultCastScale { get; set; }
+		public int DefaultCastLength { get; protected set; }
+		public byte DefaultCastPrecision { get; protected set; }
+		public byte DefaultCastScale { get; protected set; }
 
 		/// <summary> 
 		/// Get the name of the database type appropriate for casting operations

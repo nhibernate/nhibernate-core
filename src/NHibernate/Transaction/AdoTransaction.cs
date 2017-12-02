@@ -108,7 +108,7 @@ namespace NHibernate.Transaction
 		/// </exception>
 		public void Begin(IsolationLevel isolationLevel)
 		{
-			using (new SessionIdLoggingContext(sessionId))
+			using (session.BeginProcess())
 			{
 				if (begun)
 				{
@@ -161,17 +161,14 @@ namespace NHibernate.Transaction
 
 		private void AfterTransactionCompletion(bool successful)
 		{
-			using (new SessionIdLoggingContext(sessionId))
-			{
-				session.ConnectionManager.AfterTransaction();
-				session.AfterTransactionCompletion(successful, this);
-				NotifyLocalSynchsAfterTransactionCompletion(successful);
-				foreach (var dependentSession in session.ConnectionManager.DependentSessions)
-					dependentSession.AfterTransactionCompletion(successful, this);
-
-				session = null;
-				begun = false;
-			}
+			session.ConnectionManager.AfterTransaction();
+			session.AfterTransactionCompletion(successful, this);
+			NotifyLocalSynchsAfterTransactionCompletion(successful);
+			foreach (var dependentSession in session.ConnectionManager.DependentSessions)
+				dependentSession.AfterTransactionCompletion(successful, this);
+	
+			session = null;
+			begun = false;
 		}
 
 		/// <summary>
@@ -184,7 +181,7 @@ namespace NHibernate.Transaction
 		/// </exception>
 		public void Commit()
 		{
-			using (new SessionIdLoggingContext(sessionId))
+			using (session.BeginProcess())
 			{
 				CheckNotDisposed();
 				CheckBegun();

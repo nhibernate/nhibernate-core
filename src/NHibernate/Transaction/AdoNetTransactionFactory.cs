@@ -83,7 +83,7 @@ namespace NHibernate.Transaction
 			}
 			catch (Exception t)
 			{
-				using (new SessionIdLoggingContext(session.SessionId))
+				using (session.BeginContext())
 				{
 					try
 					{

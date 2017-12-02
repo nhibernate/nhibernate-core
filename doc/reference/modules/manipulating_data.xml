@@ -820,7 +820,7 @@ sess.Lock(pk, LockMode.Upgrade);]]></programlisting>
         </orderedlist>
 
         <para>
-            (An exception is that objects using <literal>native</literal> ID generation are 
+            (An exception is that objects using <literal>identity</literal> ID generation are
             inserted when they are saved.)
         </para>
 
@@ -859,6 +859,37 @@ using (ITransaction tx = sess.BeginTransaction())
     tx.Commit(); // flush occurs
 }]]></programlisting>
 
+    </sect1>
+
+    <sect1 id="manipulatingdata-dirtiness">
+        <title>Checking dirtiness</title>
+
+        <para>
+            <literal>ISession.IsDirty()</literal> will return whether the session hold any pending
+            change to flush or not. Be cautious when using this method, its default implementation
+            may have the following effects:
+        </para>
+
+        <itemizedlist spacing="compact">
+            <listitem>
+                <para>
+                    Dirty checks all the loaded entities. NHibernate does not instrument the entities
+                    for being notified of changes done on loaded ones. Instead, it stores their
+                    initial state and compare them to it. If session has loaded a lot of entities,
+                    the dirty checking will have a significant impact.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    Triggers pending cascade operations. This includes any pending <literal>Save</literal>
+                    of, by example, children added to a collection having the <literal>Save</literal>
+                    cascade enabled. Depending on the entities ID generators (see
+                    <xref linkend="mapping-declaration-id-generator"/>), this may trigger calls to the
+                    database, or even entity insertions if they are using the <literal>identity</literal>
+                    generator.
+                </para>
+            </listitem>
+        </itemizedlist>
     </sect1>
 
     <sect1 id="manipulatingdata-endingsession">

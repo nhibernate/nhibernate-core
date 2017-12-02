@@ -719,7 +719,7 @@ namespace NHibernate.Impl
 			{
 				throw new ArgumentNullException("type","Can't determine the type of parameter-list elements.");
 			}
-			if(!vals.Any())
+			if(!vals.Cast<object>().Any())
 			{
 				throw new QueryException(string.Format("An empty parameter-list generates wrong SQL; parameter name '{0}'", name));
 			}
@@ -740,7 +740,7 @@ namespace NHibernate.Impl
 					return this;
 			}
 
-			object firstValue = vals.FirstOrNull();
+			object firstValue = vals.Cast<object>().FirstOrDefault();
 			SetParameterList(name, vals, firstValue == null ? GuessType(vals.GetCollectionElementType()) : DetermineType(name, firstValue));
 
 			return this;

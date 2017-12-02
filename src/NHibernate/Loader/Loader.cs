@@ -423,7 +423,7 @@ namespace NHibernate.Loader
 
 		private IList DoQuery(ISessionImplementor session, QueryParameters queryParameters, bool returnProxies, IResultTransformer forcedResultTransformer)
 		{
-			using (new SessionIdLoggingContext(session.SessionId))
+			using (session.BeginProcess())
 			{
 				RowSelection selection = queryParameters.RowSelection;
 				int maxRows = HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
