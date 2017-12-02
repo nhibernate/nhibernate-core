@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Action;
 using NHibernate.Cache;
 using NHibernate.Type;
@@ -42,6 +43,7 @@ namespace NHibernate.Engine
 
 		private readonly AfterTransactionCompletionProcessQueue afterTransactionProcesses;
 		private readonly BeforeTransactionCompletionProcessQueue beforeTransactionProcesses;
+		private readonly HashSet<string> executedSpaces;
 
 		public ActionQueue(ISessionImplementor session)
 		{
@@ -56,6 +58,8 @@ namespace NHibernate.Engine
 
 			afterTransactionProcesses = new AfterTransactionCompletionProcessQueue(session);
 			beforeTransactionProcesses = new BeforeTransactionCompletionProcessQueue(session);
+
+			executedSpaces = new HashSet<string>();
 		}
 
 		public virtual void Clear()
@@ -108,7 +112,14 @@ namespace NHibernate.Engine
 		{
 			RegisterCleanupActions(cleanupAction);
 		}
-		
+
+		[Obsolete("This method is no longer executed asynchronously")]
+		public Task AddActionAsync(BulkOperationCleanupAction cleanupAction, CancellationToken cancellationToken=default(CancellationToken))
+		{
+			AddAction(cleanupAction);
+			return Task.CompletedTask;
+		}
+
 		public void RegisterProcess(AfterTransactionCompletionProcessDelegate process)
 		{
 			afterTransactionProcesses.Register(process);
@@ -125,15 +136,43 @@ namespace NHibernate.Engine
 			// It will then fail here due to list being modified. (Some previous code was dodging the
 			// trouble with a for loop which was not failing provided the list was not getting smaller.
 			// But then it was clearing it without having executed added actions (if any), ...)
+			
 			foreach (IExecutable executable in list)
-				Execute(executable);
-
+			{
+				InnerExecute(executable);
+			}
 			list.Clear();
 			session.Batcher.ExecuteBatch();
+			
+		}
+
+		private void AfterExecutions()
+		{
+			if (session.Factory.Settings.IsQueryCacheEnabled)
+			{
+				session.Factory.UpdateTimestampsCache.PreInvalidate(executedSpaces.ToArray());
+			}
+			executedSpaces.Clear();
 		}
 
 		public void Execute(IExecutable executable)
 		{
+			try
+			{
+				InnerExecute(executable);
+			}
+			finally
+			{
+				AfterExecutions();
+			}
+		}
+
+		private void InnerExecute(IExecutable executable)
+		{
+			if (executable.PropertySpaces != null)
+			{
+				executedSpaces.UnionWith(executable.PropertySpaces);
+			}
 			try
 			{
 				executable.Execute();
@@ -143,7 +182,7 @@ namespace NHibernate.Engine
 				RegisterCleanupActions(executable);
 			}
 		}
-		
+
 		private void RegisterCleanupActions(IExecutable executable)
 		{
 			beforeTransactionProcesses.Register(executable.BeforeTransactionCompletionProcess);
@@ -151,7 +190,6 @@ namespace NHibernate.Engine
 			{
 				string[] spaces = executable.PropertySpaces;
 				afterTransactionProcesses.AddSpacesToInvalidate(spaces);
-				session.Factory.UpdateTimestampsCache.PreInvalidate(spaces);
 			}
 			afterTransactionProcesses.Register(executable.AfterTransactionCompletionProcess);
 		}
@@ -169,12 +207,19 @@ namespace NHibernate.Engine
 		/// </summary>
 		public void ExecuteActions()
 		{
-			ExecuteActions(insertions);
-			ExecuteActions(updates);
-			ExecuteActions(collectionRemovals);
-			ExecuteActions(collectionUpdates);
-			ExecuteActions(collectionCreations);
-			ExecuteActions(deletions);
+			try
+			{
+				ExecuteActions(insertions);
+				ExecuteActions(updates);
+				ExecuteActions(collectionRemovals);
+				ExecuteActions(collectionUpdates);
+				ExecuteActions(collectionCreations);
+				ExecuteActions(deletions);
+			}
+			finally
+			{
+				AfterExecutions();
+			}
 		}
 
 		private void PrepareActions(IList queue)
@@ -319,7 +364,7 @@ namespace NHibernate.Engine
 		private void SortInsertActions()
 		{
 			new InsertActionSorter(this).Sort();
-				}
+		}
 
 		public IList<EntityDeleteAction> CloneDeletions()
 		{

@@ -13,26 +13,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Action;
 using NHibernate.Cache;
 using NHibernate.Type;
 
 namespace NHibernate.Engine
 {
-	using System.Threading.Tasks;
-	using System.Threading;
 	public partial class ActionQueue
 	{
-
-		public Task AddActionAsync(BulkOperationCleanupAction cleanupAction, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			return RegisterCleanupActionsAsync(cleanupAction, cancellationToken);
-		}
 	
 		private async Task ExecuteActionsAsync(IList list, CancellationToken cancellationToken)
 		{
@@ -41,11 +31,24 @@ namespace NHibernate.Engine
 			// It will then fail here due to list being modified. (Some previous code was dodging the
 			// trouble with a for loop which was not failing provided the list was not getting smaller.
 			// But then it was clearing it without having executed added actions (if any), ...)
+			
 			foreach (IExecutable executable in list)
-				await (ExecuteAsync(executable, cancellationToken)).ConfigureAwait(false);
-
+			{
+				await (InnerExecuteAsync(executable, cancellationToken)).ConfigureAwait(false);
+			}
 			list.Clear();
 			await (session.Batcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);
+			
+		}
+
+		private async Task AfterExecutionsAsync(CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			if (session.Factory.Settings.IsQueryCacheEnabled)
+			{
+				await (session.Factory.UpdateTimestampsCache.PreInvalidateAsync(executedSpaces.ToArray(), cancellationToken)).ConfigureAwait(false);
+			}
+			executedSpaces.Clear();
 		}
 
 		public async Task ExecuteAsync(IExecutable executable, CancellationToken cancellationToken)
@@ -53,25 +56,29 @@ namespace NHibernate.Engine
 			cancellationToken.ThrowIfCancellationRequested();
 			try
 			{
+				await (InnerExecuteAsync(executable, cancellationToken)).ConfigureAwait(false);
+			}
+			finally
+			{
+				await (AfterExecutionsAsync(cancellationToken)).ConfigureAwait(false);
+			}
+		}
+
+		private async Task InnerExecuteAsync(IExecutable executable, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			if (executable.PropertySpaces != null)
+			{
+				executedSpaces.UnionWith(executable.PropertySpaces);
+			}
+			try
+			{
 				await (executable.ExecuteAsync(cancellationToken)).ConfigureAwait(false);
 			}
 			finally
 			{
-				await (RegisterCleanupActionsAsync(executable, cancellationToken)).ConfigureAwait(false);
+				RegisterCleanupActions(executable);
 			}
-		}
-		
-		private async Task RegisterCleanupActionsAsync(IExecutable executable, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			beforeTransactionProcesses.Register(executable.BeforeTransactionCompletionProcess);
-			if (session.Factory.Settings.IsQueryCacheEnabled)
-			{
-				string[] spaces = executable.PropertySpaces;
-				afterTransactionProcesses.AddSpacesToInvalidate(spaces);
-				await (session.Factory.UpdateTimestampsCache.PreInvalidateAsync(spaces, cancellationToken)).ConfigureAwait(false);
-			}
-			afterTransactionProcesses.Register(executable.AfterTransactionCompletionProcess);
 		}
 
 		/// <summary> 
@@ -94,12 +101,19 @@ namespace NHibernate.Engine
 		public async Task ExecuteActionsAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			await (ExecuteActionsAsync(insertions, cancellationToken)).ConfigureAwait(false);
-			await (ExecuteActionsAsync(updates, cancellationToken)).ConfigureAwait(false);
-			await (ExecuteActionsAsync(collectionRemovals, cancellationToken)).ConfigureAwait(false);
-			await (ExecuteActionsAsync(collectionUpdates, cancellationToken)).ConfigureAwait(false);
-			await (ExecuteActionsAsync(collectionCreations, cancellationToken)).ConfigureAwait(false);
-			await (ExecuteActionsAsync(deletions, cancellationToken)).ConfigureAwait(false);
+			try
+			{
+				await (ExecuteActionsAsync(insertions, cancellationToken)).ConfigureAwait(false);
+				await (ExecuteActionsAsync(updates, cancellationToken)).ConfigureAwait(false);
+				await (ExecuteActionsAsync(collectionRemovals, cancellationToken)).ConfigureAwait(false);
+				await (ExecuteActionsAsync(collectionUpdates, cancellationToken)).ConfigureAwait(false);
+				await (ExecuteActionsAsync(collectionCreations, cancellationToken)).ConfigureAwait(false);
+				await (ExecuteActionsAsync(deletions, cancellationToken)).ConfigureAwait(false);
+			}
+			finally
+			{
+				await (AfterExecutionsAsync(cancellationToken)).ConfigureAwait(false);
+			}
 		}
 
 		private async Task PrepareActionsAsync(IList queue, CancellationToken cancellationToken)

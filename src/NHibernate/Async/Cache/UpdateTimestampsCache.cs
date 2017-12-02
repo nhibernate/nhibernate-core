@@ -34,7 +34,7 @@ namespace NHibernate.Cache
 		}
 
 		[MethodImpl()]
-		public async Task PreInvalidateAsync(object[] spaces, CancellationToken cancellationToken)
+		public virtual async Task PreInvalidateAsync(object[] spaces, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await _preInvalidate.LockAsync())
@@ -52,7 +52,7 @@ namespace NHibernate.Cache
 
 		/// <summary></summary>
 		[MethodImpl()]
-		public async Task InvalidateAsync(object[] spaces, CancellationToken cancellationToken)
+		public virtual async Task InvalidateAsync(object[] spaces, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await _invalidate.LockAsync())
@@ -69,7 +69,7 @@ namespace NHibernate.Cache
 		}
 
 		[MethodImpl()]
-		public async Task<bool> IsUpToDateAsync(ISet<string> spaces, long timestamp /* H2.1 has Long here */, CancellationToken cancellationToken)
+		public virtual async Task<bool> IsUpToDateAsync(ISet<string> spaces, long timestamp /* H2.1 has Long here */, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await _isUpToDate.LockAsync())
