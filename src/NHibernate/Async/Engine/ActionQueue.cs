@@ -85,13 +85,17 @@ namespace NHibernate.Engine
 		/// Perform all currently queued entity-insertion actions.
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public Task ExecuteInsertsAsync(CancellationToken cancellationToken)
+		public async Task ExecuteInsertsAsync(CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			try
 			{
-				return Task.FromCanceled<object>(cancellationToken);
+				await ExecuteActionsAsync(insertions, cancellationToken);
 			}
-			return ExecuteActionsAsync(insertions, cancellationToken);
+			finally
+			{
+				await AfterExecutionsAsync(cancellationToken);
+			}
 		}
 
 		/// <summary> 

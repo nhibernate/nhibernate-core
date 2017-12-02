@@ -199,7 +199,14 @@ namespace NHibernate.Engine
 		/// </summary>
 		public void ExecuteInserts()
 		{
-			ExecuteActions(insertions);
+			try
+			{
+				ExecuteActions(insertions);
+			}
+			finally
+			{
+				AfterExecutions();
+			}
 		}
 
 		/// <summary> 
