@@ -28,13 +28,13 @@ namespace NHibernate.Linq.Functions
 
 		public HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
-			return treeBuilder.Coalesce(visitor.Visit(targetObject).AsExpression(), GetRhs(method, arguments, treeBuilder, visitor));
+			return treeBuilder.Coalesce(visitor.Visit(targetObject).ToArithmeticExpression(), GetRhs(method, arguments, treeBuilder, visitor));
 		}
 
 		private static HqlExpression GetRhs(MethodInfo method, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
 			if (arguments.Count > 0)
-				return visitor.Visit(arguments[0]).AsExpression();
+				return visitor.Visit(arguments[0]).ToArithmeticExpression();
 
 			var returnType = method.ReturnType;
 			var instance = returnType.IsValueType ? Activator.CreateInstance(returnType) : null;

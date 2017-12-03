@@ -8,7 +8,6 @@ using NHibernate.Linq.Functions;
 using NHibernate.Param;
 using NHibernate.Util;
 using Remotion.Linq.Clauses.Expressions;
-using Remotion.Linq.Clauses.ResultOperators;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -316,7 +315,7 @@ possible solutions:
 					return _hqlTreeBuilder.GreaterThanOrEqual(lhs, rhs);
 
 				case ExpressionType.Coalesce:
-					return _hqlTreeBuilder.Coalesce(lhs, rhs);
+					return _hqlTreeBuilder.Coalesce(lhs.ToArithmeticExpression(), rhs.ToArithmeticExpression());
 			}
 
 			throw new InvalidOperationException();
