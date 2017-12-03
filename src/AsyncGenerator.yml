@@ -119,6 +119,8 @@
     - name: GetFieldValue
     - name: IsDBNull
     - name: WriteLine
+    - name: AddAction
+      containingTypeName: ActionQueue
     callForwarding: true
     cancellationTokens:
       guards: true

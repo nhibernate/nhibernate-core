@@ -43,7 +43,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 
 			if (session.IsEventSource)
 			{
-				((IEventSource) session).ActionQueue.AddAction(action);
+				((IEventSource)session).ActionQueue.AddAction(action);
 			}
 		}
 

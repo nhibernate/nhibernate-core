@@ -150,7 +150,9 @@ namespace NHibernate.Engine
 		{
 			if (session.Factory.Settings.IsQueryCacheEnabled)
 			{
-				session.Factory.UpdateTimestampsCache.PreInvalidate(executedSpaces.ToArray());
+				var spaces = executedSpaces.ToArray();
+				afterTransactionProcesses.AddSpacesToInvalidate(spaces);
+				session.Factory.UpdateTimestampsCache.PreInvalidate(spaces);
 			}
 			executedSpaces.Clear();
 		}
@@ -169,16 +171,16 @@ namespace NHibernate.Engine
 
 		private void InnerExecute(IExecutable executable)
 		{
-			if (executable.PropertySpaces != null)
-			{
-				executedSpaces.UnionWith(executable.PropertySpaces);
-			}
 			try
 			{
 				executable.Execute();
 			}
 			finally
 			{
+				if (executable.PropertySpaces != null)
+				{
+					executedSpaces.UnionWith(executable.PropertySpaces);
+				}
 				RegisterCleanupActions(executable);
 			}
 		}
@@ -186,11 +188,6 @@ namespace NHibernate.Engine
 		private void RegisterCleanupActions(IExecutable executable)
 		{
 			beforeTransactionProcesses.Register(executable.BeforeTransactionCompletionProcess);
-			if (session.Factory.Settings.IsQueryCacheEnabled)
-			{
-				string[] spaces = executable.PropertySpaces;
-				afterTransactionProcesses.AddSpacesToInvalidate(spaces);
-			}
 			afterTransactionProcesses.Register(executable.AfterTransactionCompletionProcess);
 		}
 

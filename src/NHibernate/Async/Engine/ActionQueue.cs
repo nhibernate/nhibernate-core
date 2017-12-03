@@ -46,7 +46,9 @@ namespace NHibernate.Engine
 			cancellationToken.ThrowIfCancellationRequested();
 			if (session.Factory.Settings.IsQueryCacheEnabled)
 			{
-				await (session.Factory.UpdateTimestampsCache.PreInvalidateAsync(executedSpaces.ToArray(), cancellationToken)).ConfigureAwait(false);
+				var spaces = executedSpaces.ToArray();
+				afterTransactionProcesses.AddSpacesToInvalidate(spaces);
+				await (session.Factory.UpdateTimestampsCache.PreInvalidateAsync(spaces, cancellationToken)).ConfigureAwait(false);
 			}
 			executedSpaces.Clear();
 		}
@@ -90,11 +92,11 @@ namespace NHibernate.Engine
 			cancellationToken.ThrowIfCancellationRequested();
 			try
 			{
-				await ExecuteActionsAsync(insertions, cancellationToken);
+				await (ExecuteActionsAsync(insertions, cancellationToken)).ConfigureAwait(false);
 			}
 			finally
 			{
-				await AfterExecutionsAsync(cancellationToken);
+				await (AfterExecutionsAsync(cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
