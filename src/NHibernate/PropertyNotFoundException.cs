@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.Serialization;
+using System.Security;
 using NHibernate.Util;
 
 namespace NHibernate
@@ -79,6 +80,7 @@ namespace NHibernate
 			this.accessorType = info.GetString("accessorType");
 		}
 
+		[SecurityCritical]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData(info, context);

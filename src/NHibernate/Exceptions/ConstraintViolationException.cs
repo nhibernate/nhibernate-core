@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.Serialization;
+using System.Security;
 
 namespace NHibernate.Exceptions
 {
@@ -29,6 +30,7 @@ namespace NHibernate.Exceptions
 			this.constraintName = info.GetString("constraintName");
 		}
 
+		[SecurityCritical]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData(info, context);
