@@ -16,8 +16,10 @@ namespace NHibernate.Context
 	/// Provides a <see cref="ISessionFactory.GetCurrentSession()">current session</see>
 	/// for current asynchronous flow.
 	/// </summary>
+	[Serializable]
 	public class AsyncLocalSessionContext : CurrentSessionContext
 	{
+		[NonSerialized]
 		private readonly AsyncLocal<ISession> _session = new AsyncLocal<ISession>();
 
 		// Constructor signature required for dynamic invocation code.
