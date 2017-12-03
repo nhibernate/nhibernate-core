@@ -16,8 +16,6 @@ namespace NHibernate.Dialect
 		private readonly string _sqlOpToken;
 		private readonly bool _isNot;
         private Queue _args;
-
-		[NonSerialized]
 		private SqlStringBuilder _sqlBuffer;
 
 		/// <summary>
