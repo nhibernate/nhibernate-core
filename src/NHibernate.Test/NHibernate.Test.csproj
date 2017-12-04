@@ -6,6 +6,8 @@
     <TargetFramework>net461</TargetFramework>
     <IsTestProject>true</IsTestProject>
     <NoWarn>$(NoWarn);3001;3002;3003;3005</NoWarn>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <EnableDefaultItems>false</EnableDefaultItems>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
@@ -19,15 +21,42 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="**\*.hbm.xml" Exclude="bin\**\*.*" />
-    <EmbeddedResource Include="**\*.jpg" />
-    <None Remove="NHSpecificTest\NH3023\db-seed.sql" />
-    <None Remove="NHSpecificTest\NH3023\db-teardown.sql" />
-    <EmbeddedResource Include="NHSpecificTest\NH3023\db-seed.sql" />
-    <EmbeddedResource Include="NHSpecificTest\NH3023\db-teardown.sql" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Async\DebugConnectionProvider.cs" />
+    <Compile Include="Async\DebugSessionFactory.cs" />
+    <Compile Include="Async\SessionCacheTest.cs" />
+    <Compile Include="Async\TestTestCase.cs" />
+    <Compile Include="CrossThreadTestRunner.cs" />
+    <Compile Include="DateTimeOffsetUserType.cs" />
+    <Compile Include="DebugConnectionProvider.cs" />
+    <Compile Include="DebugSessionFactory.cs" />
+    <Compile Include="HbmMappingExtensions.cs" />
+    <Compile Include="Log4netConfiguration.cs" />
+    <Compile Include="LogSpy.cs" />
+    <Compile Include="MultiThreadRunner.cs" />
+    <Compile Include="NHAssert.cs" />
+    <Compile Include="NHibernateUtilTest.cs" />
+    <Compile Include="NHSpecificTest\BugTestCase.cs" />
+    <Compile Include="NHSpecificTest\GH948\Entities.cs" />
+    <Compile Include="NHSpecificTest\GH948\EntityProjection.cs" />
+    <Compile Include="NHSpecificTest\GH948\EntityProjectionType.cs" />
+    <Compile Include="NHSpecificTest\GH948\FixtureByCode.cs" />
+    <Compile Include="NHSpecificTest\GH948\Projections.cs" />
+    <Compile Include="RecordingInterceptor.cs" />
+    <Compile Include="SqlLogSpy.cs" />
+    <Compile Include="TestCase.cs" />
+    <Compile Include="TestCaseMappingByCode.cs" />
+    <Compile Include="TestConfigurationHelper.cs" />
+    <Compile Include="TestDialect.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="TestEmbeddedConfig.cfg.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="NHibernate.Test.nunit" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\NHibernate.DomainModel\ABC.hbm.xml" Link="ABC.hbm.xml">

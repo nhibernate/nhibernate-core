@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using NHibernate.Criterion;
 using NHibernate.Dialect;
+using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NUnit.Framework;
@@ -46,10 +47,49 @@ namespace NHibernate.Test.Criteria
 			}
 		}
 
+		private void  PrepareDataForEntityProjectionTests(out Student gavin, out string courseCode)
+		{
+			courseCode = "HIB";
+			using (ISession session = Sfi.OpenSession())
+			using (ITransaction tx = session.BeginTransaction())
+			{
+				Course course = new Course
+				{
+					CourseCode = "HIB",
+					Description = "Hibernate Training"
+				};
+				session.Save(course);
+
+				gavin = new Student
+				{
+					Name = "Gavin King",
+					StudentNumber = 667,
+					
+				};
+				session.Save(gavin);
+
+				Enrolment enrolment = new Enrolment
+				{
+					Course = course,
+					CourseCode = course.CourseCode,
+					Semester = 1,
+					Year = 1999,
+					Student = gavin,
+					StudentNumber = gavin.StudentNumber
+				};
+				gavin.Enrolments.Add(enrolment);
+				session.Save(enrolment);
+
+				session.Flush();
+				tx.Commit();
+			}
+		}
+
 		protected override void OnTearDown()
 		{
 			using (ISession session = Sfi.OpenSession())
 			{
+				session.Delete($"from {typeof(Enrolment).FullName}");
 				session.Delete("from System.Object");
 				session.Flush();
 			}
@@ -430,6 +470,112 @@ namespace NHibernate.Test.Criteria
 					.SetProjection(Projections.Sum(Projections.SqlFunction("length", NHibernateUtil.Int32, Projections.Property("s.Name"))))
 					.UniqueResult<int>();
 				Assert.AreEqual(0, sum);
+			}
+		}
+
+		[Test]
+		public void UseRootProjection_Eager()
+		{
+			//NH-3435
+			PrepareDataForEntityProjectionTests(out Student gavin, out string _);
+
+			using (ISession session = Sfi.OpenSession())
+			{
+				Student g = session.CreateCriteria(typeof(Student))
+									.Add(Expression.IdEq(gavin.StudentNumber))
+									.SetFetchMode("Enrolments", FetchMode.Join)
+									.SetProjection(Projections.RootEntity(lazy: false))
+									.UniqueResult<Student>();
+
+				Assert.That(NHibernateUtil.IsInitialized(g), Is.True, "object must be initialized");
+				Assert.That(g, Is.EqualTo(gavin).Using((Student x, Student y) => x.StudentNumber == y.StudentNumber && x.Name == y.Name ? 0 : 1));
+			}
+		}
+
+		[Test]
+		public void UseRootProjection_Lazy()
+		{
+			//NH-3435
+			PrepareDataForEntityProjectionTests(out Student gavin, out string _);
+
+			using (ISession session = Sfi.OpenSession())
+			{
+				Student g = session.CreateCriteria(typeof(Student))
+									.Add(Expression.IdEq(gavin.StudentNumber))
+									.SetFetchMode("Enrolments", FetchMode.Join)
+									.SetProjection(Projections.RootEntity(lazy: true))
+									.UniqueResult<Student>();
+
+				Assert.That(NHibernateUtil.IsInitialized(g), Is.False, "object must be lazy and not initialized");
+				Assert.That(g, Is.EqualTo(gavin).Using((Student x, Student y) => x.StudentNumber == y.StudentNumber && x.Name == y.Name ? 0 : 1));
+			}
+		}
+
+		[Test]
+		public void UseEntityProjection_Eager()
+		{
+			//NH-3435
+			PrepareDataForEntityProjectionTests(out Student gavin, out string courseCode);
+
+			using (ISession session = Sfi.OpenSession())
+			{
+				Student g = session.CreateCriteria(typeof(Enrolment))
+									.Add(Expression.And(Expression.Eq("StudentNumber", gavin.StudentNumber), Expression.Eq("CourseCode", courseCode)))
+									.CreateAlias("Student", "s", JoinType.InnerJoin)
+									.SetProjection(Projections.Entity<Student>("s", lazy:false))
+									.UniqueResult<Student>();
+
+				Assert.That(NHibernateUtil.IsInitialized(g), Is.True, "object must be initialized");
+				Assert.That(g, Is.EqualTo(gavin).Using((Student x, Student y) => x.StudentNumber == y.StudentNumber && x.Name == y.Name ? 0 : 1));
+			}
+		}
+
+		[Test]
+		public void UseEntityProjection_Lazy()
+		{
+			//NH-3435
+			PrepareDataForEntityProjectionTests(out Student gavin, out string courseCode);
+
+			using (ISession session = Sfi.OpenSession())
+			using (ITransaction tx = session.BeginTransaction())
+			{
+				Student g = session.CreateCriteria(typeof(Enrolment))
+									.Add(Expression.And(Expression.Eq("StudentNumber", gavin.StudentNumber), Expression.Eq("CourseCode", courseCode)))
+									.CreateAlias("Student", "s", JoinType.InnerJoin)
+									.SetProjection(Projections.Entity<Student>("s", lazy:true))
+									.UniqueResult<Student>();
+
+				Assert.That(NHibernateUtil.IsInitialized(g), Is.False, "object must be lazy and not initialized");
+				Assert.That(g, Is.EqualTo(gavin).Using((Student x, Student y) => x.StudentNumber == y.StudentNumber && x.Name == y.Name ? 0 : 1));
+			}
+		}
+
+		[Test]
+		public void UseMultipleEntityProjections()
+		{
+			//NH-3435
+			PrepareDataForEntityProjectionTests(out Student gavin, out string courseCode);
+
+			using (ISession session = Sfi.OpenSession())
+			{
+				Enrolment en = null;
+				Student s = null;
+				Course c = null;
+
+				var result = session.QueryOver(() => en)
+						.Where(e => e.StudentNumber == gavin.StudentNumber && e.CourseCode == courseCode)
+						.JoinAlias(e => e.Student, () => s)
+						.JoinAlias(e => e.Course, () => c)
+						.Select(Projections.RootEntity(lazy: true), Projections.Entity(() => s, lazy:false), Projections.Entity(() => c, lazy:false))
+						.SingleOrDefault<object[]>();
+
+				en = (Enrolment) result[0];
+				s = (Student) result[1];
+				c = (Course) result[2];
+
+				Assert.That(NHibernateUtil.IsInitialized(en), Is.False, "Object must be lazy and not initialized");
+				Assert.That(NHibernateUtil.IsInitialized(s), Is.True, "Object must be initialized");
+				Assert.That(NHibernateUtil.IsInitialized(c), Is.True, "Object must be initialized");
 			}
 		}
 	}
