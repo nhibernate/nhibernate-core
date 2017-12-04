@@ -300,27 +300,26 @@ namespace NHibernate.Test.NHSpecificTest.GH948
 			using (var sqlLog = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
-				MultipleEntitiesResult result = new MultipleEntitiesResult();
+				MultipleEntitiesResult r = null;
 
-				EntityComplex root = null;
 				EntitySimpleChild child1 = null;
 				EntitySimpleChild child2 = null;
 				EntityComplex sameAsRootChild = null;
 				EntitySimpleChild nullListElem = null;
-				var r = session
+
+				r = session
 						.QueryOver<EntityComplex>()
 						.JoinAlias(ep => ep.Child1, () => child1)
 						.JoinAlias(ep => ep.Child2, () => child2)
 						.JoinAlias(ep => ep.SameTypeChild, () => sameAsRootChild)
 						.JoinAlias(ep => ep.ChildrenList, () => nullListElem, JoinType.LeftOuterJoin)
 						.Select(
-							Projections.Alias(Projections.RootEntity(), nameof(result.Root)),
+							Projections.Alias(Projections.RootEntity(), nameof(r.Root)),
 							Projections.Entity(() => child1),
 							Projections.Entity(() => child2),
 							Projections.Entity(() => sameAsRootChild),
 							Projections.Entity(() => nullListElem)
 						)
-				
 					.TransformUsing(Transformers.AliasToBean<MultipleEntitiesResult>())
 					.Take(1)
 					.SingleOrDefault<MultipleEntitiesResult>();
