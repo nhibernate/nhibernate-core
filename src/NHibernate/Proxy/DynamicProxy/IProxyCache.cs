@@ -12,7 +12,7 @@ using System.Reflection;
 namespace NHibernate.Proxy.DynamicProxy
 {
 	//Since v5.1
-	[Obsolete("This class is not used anymore and will be removed in a next major version")]
+	[Obsolete("This interface is not used anymore and will be removed in a next major version")]
 	public interface IProxyCache
 	{
 		bool Contains(System.Type baseType, params System.Type[] baseInterfaces);
