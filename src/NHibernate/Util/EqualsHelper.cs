@@ -1,10 +1,13 @@
+using System;
+
 namespace NHibernate.Util
 {
 	public static class EqualsHelper
 	{
+		[Obsolete("Please use object.Equals(object, object) instead.")]
 		public new static bool Equals(object x, object y)
 		{
-			return x == y || (x != null && y != null && x.Equals(y));
+			return object.Equals(x, y);
 		}
 	}
 }

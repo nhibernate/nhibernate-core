@@ -315,7 +315,7 @@ possible solutions:
 					return _hqlTreeBuilder.GreaterThanOrEqual(lhs, rhs);
 
 				case ExpressionType.Coalesce:
-					return _hqlTreeBuilder.Coalesce(lhs, rhs);
+					return _hqlTreeBuilder.Coalesce(lhs.ToArithmeticExpression(), rhs.ToArithmeticExpression());
 			}
 
 			throw new InvalidOperationException();

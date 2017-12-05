@@ -1,138 +1,43 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NHibernate.Util
 {
+	//Since v5.1
+	[Obsolete("This class has no more usages and will be removed in next major version.")]
 	public static class EnumerableExtensions
 	{
+		//Since v5.1
+		[Obsolete("Please use Enumerable.Any<T>(IEnumerable<T>) instead.")]
 		public static bool Any(this IEnumerable source)
 		{
-			if (source == null)
-			{
-				throw new ArgumentNullException("source");
-			}
-			using (DisposableEnumerator enumerator = source.GetDisposableEnumerator())
-			{
-				if (enumerator.MoveNext())
-				{
-					return true;
-				}
-			}
-			return false;
+			return Enumerable.Any(source.Cast<object>());
 		}
 
+		//Since v5.1
+		[Obsolete("Please use Enumerable.First<T>(IEnumerable<T>) instead.")]
 		public static object First(this IEnumerable source)
 		{
-			if (source == null)
-			{
-				throw new ArgumentNullException("source");
-			}
-			IList collection = source as IList;
-			if (collection != null)
-			{
-				if (collection.Count > 0)
-				{
-					return collection[0];
-				}
-			}
-			else
-			{
-				using (DisposableEnumerator enumerator = source.GetDisposableEnumerator())
-				{
-					if (enumerator.MoveNext())
-					{
-						return enumerator.Current;
-					}
-				}
-			}
-			throw new InvalidOperationException("Sequence contains no elements");
+			return Enumerable.First(source.Cast<object>());
 		}
 
+		//Since v5.1
+		[Obsolete("Please use Enumerable.FirstOrDefault<T>(IEnumerable<T>) instead.")]
 		public static object FirstOrNull(this IEnumerable source)
 		{
-			if (source == null)
-			{
-				throw new ArgumentNullException("source");
-			}
-			IList collection = source as IList;
-			if (collection != null)
-			{
-				if (collection.Count > 0)
-				{
-					return collection[0];
-				}
-			}
-			else
-			{
-				using (DisposableEnumerator enumerator = source.GetDisposableEnumerator())
-				{
-					if (enumerator.MoveNext())
-					{
-						return enumerator.Current;
-					}
-				}
-			}
-			return null;
+			return Enumerable.FirstOrDefault(source.Cast<object>());
 		}
 
+		//Since v5.1
+		[Obsolete("Please use a loop instead.")]
 		public static void ForEach<T>(this IEnumerable<T> query, Action<T> method)
 		{
-			foreach (T item in query)
+			foreach (var item in query)
 			{
 				method(item);
 			}
 		}
-
-		private static DisposableEnumerator GetDisposableEnumerator(this IEnumerable source)
-		{
-			return new DisposableEnumerator(source);
-		}
-
-		#region Nested type: DisposableEnumerator
-
-		internal class DisposableEnumerator : IDisposable, IEnumerator
-		{
-			private readonly IEnumerator wrapped;
-
-			public DisposableEnumerator(IEnumerable source)
-			{
-				wrapped = source.GetEnumerator();
-			}
-
-			#region IDisposable Members
-
-			public void Dispose()
-			{
-				var disposable = wrapped as IDisposable;
-				if (disposable != null)
-				{
-					disposable.Dispose();
-				}
-			}
-
-			#endregion
-
-			#region IEnumerator Members
-
-			public bool MoveNext()
-			{
-				return wrapped.MoveNext();
-			}
-
-			public void Reset()
-			{
-				wrapped.Reset();
-			}
-
-			public object Current
-			{
-				get { return wrapped.Current; }
-			}
-
-			#endregion
-		}
-
-		#endregion
 	}
 }

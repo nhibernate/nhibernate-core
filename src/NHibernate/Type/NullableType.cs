@@ -332,7 +332,7 @@ namespace NHibernate.Type
 
 		public override bool IsEqual(object x, object y)
 		{
-			return EqualsHelper.Equals(x, y);
+			return Equals(x, y);
 		}
 
 		#region override of System.Object Members
