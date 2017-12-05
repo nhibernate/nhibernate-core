@@ -33,26 +33,46 @@ namespace NHibernate.Cache
 			return updateTimestamps.ClearAsync(cancellationToken);
 		}
 
+		public virtual Task PreInvalidateAsync(object[] spaces, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return PreInvalidateAsync((IReadOnlyList<object>) spaces, cancellationToken);
+		}
+
 		[MethodImpl()]
-		public virtual async Task PreInvalidateAsync(object[] spaces, CancellationToken cancellationToken)
+		public virtual async Task PreInvalidateAsync(IReadOnlyCollection<object> spaces, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await _preInvalidate.LockAsync())
 			{
 				//TODO: to handle concurrent writes correctly, this should return a Lock to the client
 				long ts = updateTimestamps.NextTimestamp() + updateTimestamps.Timeout;
-				for (int i = 0; i < spaces.Length; i++)
+				foreach (var space in spaces)
 				{
-					await (updateTimestamps.PutAsync(spaces[i], ts, cancellationToken)).ConfigureAwait(false);
+					await (updateTimestamps.PutAsync(space, ts, cancellationToken)).ConfigureAwait(false);
 				}
+
 				//TODO: return new Lock(ts);
 			}
+
 			//TODO: return new Lock(ts);
 		}
 
 		/// <summary></summary>
+		public Task InvalidateAsync(object[] spaces, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return InvalidateAsync((IReadOnlyList<object>) spaces, cancellationToken);
+		}
+
 		[MethodImpl()]
-		public virtual async Task InvalidateAsync(object[] spaces, CancellationToken cancellationToken)
+		public virtual async Task InvalidateAsync(IReadOnlyCollection<object> spaces, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await _invalidate.LockAsync())
@@ -60,10 +80,10 @@ namespace NHibernate.Cache
 				//TODO: to handle concurrent writes correctly, the client should pass in a Lock
 				long ts = updateTimestamps.NextTimestamp();
 				//TODO: if lock.getTimestamp().equals(ts)
-				for (int i = 0; i < spaces.Length; i++)
+				foreach (var space in spaces)
 				{
-					log.Debug(string.Format("Invalidating space [{0}]", spaces[i]));
-					await (updateTimestamps.PutAsync(spaces[i], ts, cancellationToken)).ConfigureAwait(false);
+					log.Debug(string.Format("Invalidating space [{0}]", space));
+					await (updateTimestamps.PutAsync(space, ts, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}
