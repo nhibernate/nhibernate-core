@@ -18,9 +18,9 @@ namespace NHibernate
 			logger.Log(NHibernateLogLevel.Fatal, new NHibernateLogValues(format, args), exception);
 		}
 
-		public static void Fatal(this INHibernateLogger logger, Exception exception, string format)
+		public static void Fatal(this INHibernateLogger logger, Exception exception, string message)
 		{
-			logger.Log(NHibernateLogLevel.Fatal, new NHibernateLogValues(format, null), exception);
+			logger.Log(NHibernateLogLevel.Fatal, new NHibernateLogValues(message, null), exception);
 		}
 
 		public static void Fatal(this INHibernateLogger logger, string format, params object[] args)
@@ -28,9 +28,9 @@ namespace NHibernate
 			logger.Log(NHibernateLogLevel.Fatal, new NHibernateLogValues(format, args), null);
 		}
 
-		public static void Fatal(this INHibernateLogger logger, string format)
+		public static void Fatal(this INHibernateLogger logger, string message)
 		{
-			logger.Log(NHibernateLogLevel.Fatal, new NHibernateLogValues(format, null), null);
+			logger.Log(NHibernateLogLevel.Fatal, new NHibernateLogValues(message, null), null);
 		}
 
 		public static void Error(this INHibernateLogger logger, Exception exception, string format, params object[] args)
@@ -38,9 +38,9 @@ namespace NHibernate
 			logger.Log(NHibernateLogLevel.Error, new NHibernateLogValues(format, args), exception);
 		}
 
-		public static void Error(this INHibernateLogger logger, Exception exception, string format)
+		public static void Error(this INHibernateLogger logger, Exception exception, string message)
 		{
-			logger.Log(NHibernateLogLevel.Error, new NHibernateLogValues(format, null), exception);
+			logger.Log(NHibernateLogLevel.Error, new NHibernateLogValues(message, null), exception);
 		}
 
 		public static void Error(this INHibernateLogger logger, string format, params object[] args)
@@ -48,9 +48,9 @@ namespace NHibernate
 			logger.Log(NHibernateLogLevel.Error, new NHibernateLogValues(format, args), null);
 		}
 
-		public static void Error(this INHibernateLogger logger, string format)
+		public static void Error(this INHibernateLogger logger, string message)
 		{
-			logger.Log(NHibernateLogLevel.Error, new NHibernateLogValues(format, null), null);
+			logger.Log(NHibernateLogLevel.Error, new NHibernateLogValues(message, null), null);
 		}
 
 		public static void Warn(this INHibernateLogger logger, Exception exception, string format, params object[] args)
@@ -58,9 +58,9 @@ namespace NHibernate
 			logger.Log(NHibernateLogLevel.Warn, new NHibernateLogValues(format, args), exception);
 		}
 
-		public static void Warn(this INHibernateLogger logger, Exception exception, string format)
+		public static void Warn(this INHibernateLogger logger, Exception exception, string message)
 		{
-			logger.Log(NHibernateLogLevel.Warn, new NHibernateLogValues(format, null), exception);
+			logger.Log(NHibernateLogLevel.Warn, new NHibernateLogValues(message, null), exception);
 		}
 
 		public static void Warn(this INHibernateLogger logger, string format, params object[] args)
@@ -68,9 +68,9 @@ namespace NHibernate
 			logger.Log(NHibernateLogLevel.Warn, new NHibernateLogValues(format, args), null);
 		}
 
-		public static void Warn(this INHibernateLogger logger, string format)
+		public static void Warn(this INHibernateLogger logger, string message)
 		{
-			logger.Log(NHibernateLogLevel.Warn, new NHibernateLogValues(format, null), null);
+			logger.Log(NHibernateLogLevel.Warn, new NHibernateLogValues(message, null), null);
 		}
 
 		public static void Info(this INHibernateLogger logger, Exception exception, string format, params object[] args)
@@ -78,9 +78,9 @@ namespace NHibernate
 			logger.Log(NHibernateLogLevel.Info, new NHibernateLogValues(format, args), exception);
 		}
 
-		public static void Info(this INHibernateLogger logger, Exception exception, string format)
+		public static void Info(this INHibernateLogger logger, Exception exception, string message)
 		{
-			logger.Log(NHibernateLogLevel.Info, new NHibernateLogValues(format, null), exception);
+			logger.Log(NHibernateLogLevel.Info, new NHibernateLogValues(message, null), exception);
 		}
 
 		public static void Info(this INHibernateLogger logger, string format, params object[] args)
@@ -88,9 +88,9 @@ namespace NHibernate
 			logger.Log(NHibernateLogLevel.Info, new NHibernateLogValues(format, args), null);
 		}
 
-		public static void Info(this INHibernateLogger logger, string format)
+		public static void Info(this INHibernateLogger logger, string message)
 		{
-			logger.Log(NHibernateLogLevel.Info, new NHibernateLogValues(format, null), null);
+			logger.Log(NHibernateLogLevel.Info, new NHibernateLogValues(message, null), null);
 		}
 
 		public static void Debug(this INHibernateLogger logger, Exception exception, string format, params object[] args)
@@ -98,9 +98,9 @@ namespace NHibernate
 			logger.Log(NHibernateLogLevel.Debug, new NHibernateLogValues(format, args), exception);
 		}
 
-		public static void Debug(this INHibernateLogger logger, Exception exception, string format)
+		public static void Debug(this INHibernateLogger logger, Exception exception, string message)
 		{
-			logger.Log(NHibernateLogLevel.Debug, new NHibernateLogValues(format, null), exception);
+			logger.Log(NHibernateLogLevel.Debug, new NHibernateLogValues(message, null), exception);
 		}
 
 		public static void Debug(this INHibernateLogger logger, string format, params object[] args)
@@ -108,9 +108,9 @@ namespace NHibernate
 			logger.Log(NHibernateLogLevel.Debug, new NHibernateLogValues(format, args), null);
 		}
 
-		public static void Debug(this INHibernateLogger logger, string format)
+		public static void Debug(this INHibernateLogger logger, string message)
 		{
-			logger.Log(NHibernateLogLevel.Debug, new NHibernateLogValues(format, null), null);
+			logger.Log(NHibernateLogLevel.Debug, new NHibernateLogValues(message, null), null);
 		}
 
 

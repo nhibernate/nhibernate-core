@@ -191,7 +191,7 @@ namespace NHibernate
 		/// <summary>
 		/// Instantiates a new instance of the <see cref="NHibernateLogValues"/> structure.
 		/// </summary>
-		/// <param name="format">a composite format string</param>
+		/// <param name="format">A composite format string</param>
 		/// <param name="args">An object array that contains zero or more objects to format.  Can be <c>null</c> if there are no values to format.</param>
 		public NHibernateLogValues(string format, object[] args)
 		{
