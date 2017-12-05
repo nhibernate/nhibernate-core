@@ -31,7 +31,9 @@ namespace NHibernate.Test.SecondLevelCacheTest
 		public void InvalidatesEntities()
 		{
 			var cache = Substitute.For<UpdateTimestampsCache>(Sfi.Settings, new Dictionary<string, string>());
-			((SessionFactoryImpl) (Sfi as DebugSessionFactory).ActualFactory).SetPropertyUsingReflection(x => x.UpdateTimestampsCache, cache);
+			((SessionFactoryImpl) (Sfi as DebugSessionFactory).ActualFactory).SetPropertyUsingReflection(
+				x => x.UpdateTimestampsCache,
+				cache);
 
 			var items = new List<Item>();
 			using (ISession session = OpenSession())
@@ -40,9 +42,10 @@ namespace NHibernate.Test.SecondLevelCacheTest
 				{
 					foreach (var i in Enumerable.Range(1, 10))
 					{
-						var item = new Item { Id = i };
+						var item = new Item {Id = i};
 						session.Save(item);
 					}
+
 					tx.Commit();
 				}
 
@@ -53,6 +56,7 @@ namespace NHibernate.Test.SecondLevelCacheTest
 						var item = session.Get<Item>(i);
 						item.Name = item.Id.ToString();
 					}
+
 					tx.Commit();
 				}
 
@@ -63,13 +67,14 @@ namespace NHibernate.Test.SecondLevelCacheTest
 						var item = session.Get<Item>(i);
 						session.Delete(item);
 					}
+
 					tx.Commit();
 				}
 			}
-			//Should receive one preinvalidation and one invalidation per commit
-			cache.Received(3).PreInvalidate(Arg.Is<object[]>(x => x.Length==1 && (string)x[0] == "Item"));
-			cache.Received(3).Invalidate(Arg.Is<object[]>(x => x.Length == 1 && (string) x[0] == "Item"));
 
+			//Should receive one preinvalidation and one invalidation per commit
+			cache.Received(3).PreInvalidate(Arg.Is<IReadOnlyCollection<object>>(x => x.Count == 1 && (string) x.First() == "Item"));
+			cache.Received(3).Invalidate(Arg.Is<IReadOnlyCollection<object>>(x => x.Count == 1 && (string) x.First() == "Item"));
 		}
 
 		public void CleanUp()

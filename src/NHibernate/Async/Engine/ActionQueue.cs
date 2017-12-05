@@ -38,19 +38,26 @@ namespace NHibernate.Engine
 			}
 			list.Clear();
 			await (session.Batcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);
-			
 		}
 
-		private async Task AfterExecutionsAsync(CancellationToken cancellationToken)
+		private Task PreInvalidateCachesAsync(CancellationToken cancellationToken)
 		{
-			cancellationToken.ThrowIfCancellationRequested();
-			if (session.Factory.Settings.IsQueryCacheEnabled)
+			if (cancellationToken.IsCancellationRequested)
 			{
-				var spaces = executedSpaces.ToArray();
-				afterTransactionProcesses.AddSpacesToInvalidate(spaces);
-				await (session.Factory.UpdateTimestampsCache.PreInvalidateAsync(spaces, cancellationToken)).ConfigureAwait(false);
+				return Task.FromCanceled<object>(cancellationToken);
 			}
-			executedSpaces.Clear();
+			try
+			{
+				if (session.Factory.Settings.IsQueryCacheEnabled)
+				{
+					return session.Factory.UpdateTimestampsCache.PreInvalidateAsync(executedSpaces, cancellationToken);
+				}
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 
 		public async Task ExecuteAsync(IExecutable executable, CancellationToken cancellationToken)
@@ -62,23 +69,23 @@ namespace NHibernate.Engine
 			}
 			finally
 			{
-				await (AfterExecutionsAsync(cancellationToken)).ConfigureAwait(false);
+				await (PreInvalidateCachesAsync(cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
 		private async Task InnerExecuteAsync(IExecutable executable, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (executable.PropertySpaces != null)
-			{
-				executedSpaces.UnionWith(executable.PropertySpaces);
-			}
 			try
 			{
 				await (executable.ExecuteAsync(cancellationToken)).ConfigureAwait(false);
 			}
 			finally
 			{
+				if (executable.PropertySpaces != null)
+				{
+					executedSpaces.UnionWith(executable.PropertySpaces);
+				}
 				RegisterCleanupActions(executable);
 			}
 		}
@@ -96,7 +103,7 @@ namespace NHibernate.Engine
 			}
 			finally
 			{
-				await (AfterExecutionsAsync(cancellationToken)).ConfigureAwait(false);
+				await (PreInvalidateCachesAsync(cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
@@ -118,11 +125,11 @@ namespace NHibernate.Engine
 			}
 			finally
 			{
-				await (AfterExecutionsAsync(cancellationToken)).ConfigureAwait(false);
+				await (PreInvalidateCachesAsync(cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
-		private async Task PrepareActionsAsync(IList queue, CancellationToken cancellationToken)
+		private static async Task PrepareActionsAsync(IList queue, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			foreach (IExecutable executable in queue)
@@ -140,7 +147,7 @@ namespace NHibernate.Engine
 			await (PrepareActionsAsync(collectionUpdates, cancellationToken)).ConfigureAwait(false);
 			await (PrepareActionsAsync(collectionCreations, cancellationToken)).ConfigureAwait(false);
 		}
-		
+
 		/// <summary> 
 		/// Performs cleanup of any held cache softlocks.
 		/// </summary>
@@ -152,41 +159,27 @@ namespace NHibernate.Engine
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return afterTransactionProcesses.AfterTransactionCompletionAsync(success, cancellationToken);
-		}
-		private partial class AfterTransactionCompletionProcessQueue 
-		{
-	
-			public async Task AfterTransactionCompletionAsync(bool success, CancellationToken cancellationToken) 
+			try
 			{
-				cancellationToken.ThrowIfCancellationRequested();
-				int size = processes.Count;
-				
-				for (int i = 0; i < size; i++)
-				{
-					try
-					{
-						AfterTransactionCompletionProcessDelegate process = processes[i];
-						process(success);
-					}
-					catch (CacheException e)
-					{
-						log.Error( "could not release a cache lock", e);
-						// continue loop
-					}
-					catch (Exception e)
-					{
-						throw new AssertionFailure("Unable to perform AfterTransactionCompletion callback", e);
-					}
-				}
-				processes.Clear();
-	
-				if (session.Factory.Settings.IsQueryCacheEnabled) 
-				{
-					await (session.Factory.UpdateTimestampsCache.InvalidateAsync(querySpacesToInvalidate.ToArray(), cancellationToken)).ConfigureAwait(false);
-				}
-				querySpacesToInvalidate.Clear();
+				afterTransactionProcesses.AfterTransactionCompletion(success);
+
+				return InvalidateCachesAsync(cancellationToken);
 			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		private async Task InvalidateCachesAsync(CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			if (session.Factory.Settings.IsQueryCacheEnabled)
+			{
+				await (session.Factory.UpdateTimestampsCache.InvalidateAsync(executedSpaces, cancellationToken)).ConfigureAwait(false);
+			}
+
+			executedSpaces.Clear();
 		}
 	}
 }

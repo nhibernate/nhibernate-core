@@ -33,29 +33,40 @@ namespace NHibernate.Cache
 			updateTimestamps = settings.CacheProvider.BuildCache(regionName, props);
 		}
 
+		public void PreInvalidate(object[] spaces)
+		{
+			PreInvalidate((IReadOnlyList<object>) spaces);
+		}
+
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		public virtual void PreInvalidate(object[] spaces)
+		public virtual void PreInvalidate(IReadOnlyCollection<object> spaces)
 		{
 			//TODO: to handle concurrent writes correctly, this should return a Lock to the client
 			long ts = updateTimestamps.NextTimestamp() + updateTimestamps.Timeout;
-			for (int i = 0; i < spaces.Length; i++)
+			foreach (var space in spaces)
 			{
-				updateTimestamps.Put(spaces[i], ts);
+				updateTimestamps.Put(space, ts);
 			}
+
 			//TODO: return new Lock(ts);
 		}
 
 		/// <summary></summary>
+		public void Invalidate(object[] spaces)
+		{
+			Invalidate((IReadOnlyList<object>) spaces);
+		}
+
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		public virtual void Invalidate(object[] spaces)
+		public virtual void Invalidate(IReadOnlyCollection<object> spaces)
 		{
 			//TODO: to handle concurrent writes correctly, the client should pass in a Lock
 			long ts = updateTimestamps.NextTimestamp();
 			//TODO: if lock.getTimestamp().equals(ts)
-			for (int i = 0; i < spaces.Length; i++)
+			foreach (var space in spaces)
 			{
-				log.Debug(string.Format("Invalidating space [{0}]", spaces[i]));
-				updateTimestamps.Put(spaces[i], ts);
+				log.Debug(string.Format("Invalidating space [{0}]", space));
+				updateTimestamps.Put(space, ts);
 			}
 		}
 

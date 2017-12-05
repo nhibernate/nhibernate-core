@@ -56,8 +56,8 @@ namespace NHibernate.Engine
 			collectionUpdates = new List<CollectionUpdateAction>(InitQueueListSize);
 			collectionRemovals = new List<CollectionRemoveAction>(InitQueueListSize);
 
-			afterTransactionProcesses = new AfterTransactionCompletionProcessQueue(session);
-			beforeTransactionProcesses = new BeforeTransactionCompletionProcessQueue(session);
+			afterTransactionProcesses = new AfterTransactionCompletionProcessQueue();
+			beforeTransactionProcesses = new BeforeTransactionCompletionProcessQueue();
 
 			executedSpaces = new HashSet<string>();
 		}
@@ -143,18 +143,14 @@ namespace NHibernate.Engine
 			}
 			list.Clear();
 			session.Batcher.ExecuteBatch();
-			
 		}
 
-		private void AfterExecutions()
+		private void PreInvalidateCaches()
 		{
 			if (session.Factory.Settings.IsQueryCacheEnabled)
 			{
-				var spaces = executedSpaces.ToArray();
-				afterTransactionProcesses.AddSpacesToInvalidate(spaces);
-				session.Factory.UpdateTimestampsCache.PreInvalidate(spaces);
+				session.Factory.UpdateTimestampsCache.PreInvalidate(executedSpaces);
 			}
-			executedSpaces.Clear();
 		}
 
 		public void Execute(IExecutable executable)
@@ -165,7 +161,7 @@ namespace NHibernate.Engine
 			}
 			finally
 			{
-				AfterExecutions();
+				PreInvalidateCaches();
 			}
 		}
 
@@ -202,7 +198,7 @@ namespace NHibernate.Engine
 			}
 			finally
 			{
-				AfterExecutions();
+				PreInvalidateCaches();
 			}
 		}
 
@@ -222,11 +218,11 @@ namespace NHibernate.Engine
 			}
 			finally
 			{
-				AfterExecutions();
+				PreInvalidateCaches();
 			}
 		}
 
-		private void PrepareActions(IList queue)
+		private static void PrepareActions(IList queue)
 		{
 			foreach (IExecutable executable in queue)
 				executable.BeforeExecutions();
@@ -249,7 +245,7 @@ namespace NHibernate.Engine
 		{
 			beforeTransactionProcesses.BeforeTransactionCompletion();
 		}
-		
+
 		/// <summary> 
 		/// Performs cleanup of any held cache softlocks.
 		/// </summary>
@@ -257,8 +253,20 @@ namespace NHibernate.Engine
 		public void AfterTransactionCompletion(bool success)
 		{
 			afterTransactionProcesses.AfterTransactionCompletion(success);
+
+			InvalidateCaches();
 		}
-		
+
+		private void InvalidateCaches()
+		{
+			if (session.Factory.Settings.IsQueryCacheEnabled)
+			{
+				session.Factory.UpdateTimestampsCache.Invalidate(executedSpaces);
+			}
+
+			executedSpaces.Clear();
+		}
+
 		/// <summary> 
 		/// Check whether the given tables/query-spaces are to be executed against
 		/// given the currently queued actions. 
@@ -434,19 +442,13 @@ namespace NHibernate.Engine
 		[Serializable]
 		private class BeforeTransactionCompletionProcessQueue 
 		{
-			private ISessionImplementor session;
-			private IList<BeforeTransactionCompletionProcessDelegate> processes = new List<BeforeTransactionCompletionProcessDelegate>();
+			private List<BeforeTransactionCompletionProcessDelegate> processes = new List<BeforeTransactionCompletionProcessDelegate>();
 
 			public bool HasActions
 			{
 				get { return processes.Count > 0; }
 			}
 
-			public BeforeTransactionCompletionProcessQueue(ISessionImplementor session) 
-			{
-				this.session = session;
-			}
-	
 			public void Register(BeforeTransactionCompletionProcessDelegate process) 
 			{
 				if (process == null) 
@@ -466,9 +468,9 @@ namespace NHibernate.Engine
 						BeforeTransactionCompletionProcessDelegate process = processes[i];
 						process();
 					}
-					catch (HibernateException e)
+					catch (HibernateException)
 					{
-						throw e;
+						throw;
 					}
 					catch (Exception e) 
 					{
@@ -480,39 +482,15 @@ namespace NHibernate.Engine
 		}
 
 		[Serializable]
-		private partial class AfterTransactionCompletionProcessQueue 
+		private class AfterTransactionCompletionProcessQueue 
 		{
-			private ISessionImplementor session;
-			private HashSet<string> querySpacesToInvalidate = new HashSet<string>();
-			private IList<AfterTransactionCompletionProcessDelegate> processes = new List<AfterTransactionCompletionProcessDelegate>(InitQueueListSize * 3);
+			private List<AfterTransactionCompletionProcessDelegate> processes = new List<AfterTransactionCompletionProcessDelegate>(InitQueueListSize * 3);
 
 			public bool HasActions
 			{
 				get { return processes.Count > 0; }
 			}
-			
-			public AfterTransactionCompletionProcessQueue(ISessionImplementor session)
-			{
-				this.session = session;
-			}
-	
-			public void AddSpacesToInvalidate(string[] spaces)
-			{
-				if (spaces == null)
-				{
-					return;
-				}
-				for (int i = 0, max = spaces.Length; i < max; i++)
-				{
-					this.AddSpaceToInvalidate(spaces[i]);
-				}
-			}
-	
-			public void AddSpaceToInvalidate(string space) 
-			{
-				querySpacesToInvalidate.Add(space);
-			}
-	
+
 			public void Register(AfterTransactionCompletionProcessDelegate process)
 			{
 				if (process == null) 
@@ -544,12 +522,6 @@ namespace NHibernate.Engine
 					}
 				}
 				processes.Clear();
-	
-				if (session.Factory.Settings.IsQueryCacheEnabled) 
-				{
-					session.Factory.UpdateTimestampsCache.Invalidate(querySpacesToInvalidate.ToArray());
-				}
-				querySpacesToInvalidate.Clear();
 			}
 		}
 
