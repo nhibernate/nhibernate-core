@@ -19,7 +19,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 {
 	public partial class HqlSqlWalker
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(HqlSqlWalker));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(HqlSqlWalker));
 
 		// Fields
 		private readonly string _collectionFilterRole;

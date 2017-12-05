@@ -21,7 +21,7 @@ namespace NHibernate.Engine
 	[Serializable]
 	public partial class ActionQueue
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(ActionQueue));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ActionQueue));
 		private const int InitQueueListSize = 5;
 
 		private ISessionImplementor session;

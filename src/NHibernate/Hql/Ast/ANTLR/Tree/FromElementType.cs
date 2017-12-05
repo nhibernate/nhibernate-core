@@ -19,7 +19,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class FromElementType
 	{
-		private static readonly INHibernateLogger Log = LoggerProvider.For(typeof(FromElementType));
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(FromElementType));
 
 		private readonly FromElement _fromElement;
 		private readonly IEntityPersister _persister;

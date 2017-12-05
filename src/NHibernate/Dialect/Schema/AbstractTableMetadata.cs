@@ -6,7 +6,7 @@ namespace NHibernate.Dialect.Schema
 {
 	public abstract class AbstractTableMetadata : ITableMetadata
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(ITableMetadata));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ITableMetadata));
 		private string catalog;
 		private string schema;
 		private string name;

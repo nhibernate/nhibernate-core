@@ -13,7 +13,7 @@ namespace NHibernate.Type
 	[Serializable]
 	public class DateType : AbstractDateTimeType, IParameterizedType
 	{
-		private static readonly INHibernateLogger _log = LoggerProvider.For(typeof(DateType));
+		private static readonly INHibernateLogger _log = NHibernateLogger.For(typeof(DateType));
 		// Since v5.0
 		[Obsolete("Explicitly affect your values to your entities properties instead.")]
 		public const string BaseValueParameterName = "BaseValue";

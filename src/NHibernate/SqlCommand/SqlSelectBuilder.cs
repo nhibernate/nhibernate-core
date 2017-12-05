@@ -10,7 +10,7 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public class SqlSelectBuilder : SqlBaseBuilder, ISqlStringBuilder
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(SqlSelectBuilder));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(SqlSelectBuilder));
 
 		private SqlString selectClause;
 		private string fromClause;

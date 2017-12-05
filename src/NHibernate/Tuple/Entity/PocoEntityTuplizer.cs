@@ -19,7 +19,7 @@ namespace NHibernate.Tuple.Entity
 	/// <summary> An <see cref="IEntityTuplizer"/> specific to the POCO entity mode. </summary>
 	public class PocoEntityTuplizer : AbstractEntityTuplizer
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(PocoEntityTuplizer));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(PocoEntityTuplizer));
 		private readonly System.Type mappedClass;
 		private readonly System.Type proxyInterface;
 		private readonly bool islifecycleImplementor;

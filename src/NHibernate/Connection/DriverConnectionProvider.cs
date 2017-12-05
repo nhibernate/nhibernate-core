@@ -8,7 +8,7 @@ namespace NHibernate.Connection
 	/// </summary>
 	public partial class DriverConnectionProvider : ConnectionProvider
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(DriverConnectionProvider));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DriverConnectionProvider));
 
 		/// <summary>
 		/// Closes and Disposes of the <see cref="DbConnection"/>.

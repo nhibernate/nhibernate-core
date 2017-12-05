@@ -9,7 +9,7 @@ namespace NHibernate.Tool.hbm2ddl
 {
 	public partial class SchemaValidator
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof (SchemaValidator));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (SchemaValidator));
 		private readonly Configuration configuration;
 		private readonly IConnectionHelper connectionHelper;
 		private readonly Dialect.Dialect dialect;

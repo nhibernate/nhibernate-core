@@ -38,7 +38,7 @@ namespace NHibernate.Impl
 	[Serializable]
 	public sealed partial class SessionImpl : AbstractSessionImpl, IEventSource, ISerializable, IDeserializationCallback
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(SessionImpl));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(SessionImpl));
 
 		private CacheMode cacheMode = CacheMode.Normal;
 

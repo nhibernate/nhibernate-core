@@ -16,7 +16,7 @@ namespace NHibernate.Transaction
 	/// </summary>
 	public partial class AdoNetTransactionFactory : ITransactionFactory
 	{
-		private readonly INHibernateLogger isolaterLog = LoggerProvider.For(typeof(ITransactionFactory));
+		private readonly INHibernateLogger isolaterLog = NHibernateLogger.For(typeof(ITransactionFactory));
 
 		/// <inheritdoc />
 		public virtual ITransaction CreateTransaction(ISessionImplementor session)

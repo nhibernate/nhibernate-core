@@ -9,7 +9,7 @@ namespace NHibernate.Engine
 	/// </summary>
 	public class IdentifierValue
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(IdentifierValue));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(IdentifierValue));
 
 		private readonly object value;
 

@@ -28,7 +28,7 @@ namespace NHibernate.Impl
 		/// <summary></summary>
 		static SessionFactoryObjectFactory()
 		{
-			log = LoggerProvider.For(typeof(SessionFactoryObjectFactory));
+			log = NHibernateLogger.For(typeof(SessionFactoryObjectFactory));
 			log.Debug("initializing class SessionFactoryObjectFactory");
 		}
 

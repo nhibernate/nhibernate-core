@@ -13,7 +13,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 {
 	internal static class HqlFilterPreprocessor
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(HqlFilterPreprocessor));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(HqlFilterPreprocessor));
 
 		/// <summary>
 		/// Handles HQL AST transformation for collection filters (which are created with <see cref="ISession.CreateFilter"/>).

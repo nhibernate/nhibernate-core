@@ -14,7 +14,7 @@ namespace NHibernate.Event.Default
 	{
 		private readonly object ownerIdentifier;
 		private readonly object owner;
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(AbstractFlushingEventListener));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(AbstractFlushingEventListener));
 
 		protected ReattachVisitor(IEventSource session, object ownerIdentifier, object owner)
 			: base(session)

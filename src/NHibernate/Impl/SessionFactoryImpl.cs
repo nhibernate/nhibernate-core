@@ -90,7 +90,7 @@ namespace NHibernate.Impl
 
 		#endregion
 
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(SessionFactoryImpl));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(SessionFactoryImpl));
 		private static readonly IIdentifierGenerator UuidGenerator = new UUIDHexGenerator();
 
 		[NonSerialized]
@@ -1282,7 +1282,7 @@ namespace NHibernate.Impl
 		{
 			// NH specific: implementing return type covariance with interface is a mess in .Net.
 			private T _this;
-			private static readonly INHibernateLogger _log = LoggerProvider.For(typeof(SessionBuilderImpl<T>));
+			private static readonly INHibernateLogger _log = NHibernateLogger.For(typeof(SessionBuilderImpl<T>));
 
 			private readonly SessionFactoryImpl _sessionFactory;
 			private IInterceptor _interceptor;

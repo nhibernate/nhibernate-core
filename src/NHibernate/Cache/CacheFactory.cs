@@ -9,7 +9,7 @@ namespace NHibernate.Cache
 	/// </summary>
 	public static class CacheFactory
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(CacheFactory));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(CacheFactory));
 
 		public const string ReadOnly = "read-only";
 		public const string ReadWrite = "read-write";

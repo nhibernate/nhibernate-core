@@ -8,7 +8,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public abstract class FromReferenceNode : AbstractSelectExpression, IResolvableNode, IDisplayableNode, IPathNode
 	{
-		private static readonly INHibernateLogger Log = LoggerProvider.For(typeof(FromReferenceNode));
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(FromReferenceNode));
 
 		public const int RootLevel = 0;
 		private FromElement _fromElement;

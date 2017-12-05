@@ -110,7 +110,7 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(AbstractEntityPersister));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(AbstractEntityPersister));
 		public const string EntityClass = "class";
 		protected const string Discriminator_Alias = "clazz_";
 

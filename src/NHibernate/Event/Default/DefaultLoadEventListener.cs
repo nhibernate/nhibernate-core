@@ -19,7 +19,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public partial class DefaultLoadEventListener : AbstractLockUpgradeEventListener, ILoadEventListener
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(DefaultLoadEventListener));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DefaultLoadEventListener));
 		public static readonly object RemovedEntityMarker = new object();
 		public static readonly object InconsistentRTNClassMarker= new object();
 		public static readonly LockMode DefaultLockMode = LockMode.None;

@@ -14,7 +14,7 @@ namespace NHibernate.Driver
 {
 	public partial class BasicResultSetsCommand: IResultSetsCommand
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(BasicResultSetsCommand));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(BasicResultSetsCommand));
 		private SqlString sqlString = SqlString.Empty;
 
 		public BasicResultSetsCommand(ISessionImplementor session)

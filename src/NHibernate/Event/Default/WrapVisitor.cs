@@ -12,7 +12,7 @@ namespace NHibernate.Event.Default
 	/// </summary>
 	public partial class WrapVisitor : ProxyVisitor
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(WrapVisitor));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(WrapVisitor));
 		private bool substitute = false;
 
 		public WrapVisitor(IEventSource session) : base(session) { }

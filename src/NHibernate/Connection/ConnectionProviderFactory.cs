@@ -11,7 +11,7 @@ namespace NHibernate.Connection
 	/// </summary>
 	public static class ConnectionProviderFactory
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(ConnectionProviderFactory));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ConnectionProviderFactory));
 
 		// cannot be instantiated
 		public static IConnectionProvider NewConnectionProvider(IDictionary<string, string> settings)

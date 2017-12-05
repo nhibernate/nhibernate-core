@@ -1,4 +1,7 @@
 using System;
+using System.Configuration;
+using System.IO;
+using System.Linq;
 
 namespace NHibernate
 {
@@ -35,6 +38,127 @@ namespace NHibernate
 		/// <param name="type">The type to use as log key.</param>
 		/// <returns>A NHibernate logger.</returns>
 		INHibernateLogger LoggerFor(System.Type type);
+	}
+
+	/// <summary>
+	/// Provide methods for getting NHibernate loggers according to supplied <see cref="INHibernateLoggerFactory"/>.
+	/// </summary>
+	/// <remarks>
+	/// By default, it will use a <see cref="Log4NetLoggerFactory"/> if log4net is available, otherwise it will
+	/// use a <see cref="NoLoggingNHibernateLoggerFactory"/>.
+	/// </remarks>
+	public class NHibernateLogger
+	{
+		private const string nhibernateLoggerConfKey = "nhibernate-logger";
+		private readonly INHibernateLoggerFactory _loggerFactory;
+		private static NHibernateLogger _instance;
+
+		static NHibernateLogger()
+		{
+			var nhibernateLoggerClass = GetNhibernateLoggerClass();
+			var loggerFactory = string.IsNullOrEmpty(nhibernateLoggerClass) ? null : GetLoggerFactory(nhibernateLoggerClass);
+			SetLoggersFactory(loggerFactory);
+		}
+
+		/// <summary>
+		/// Specify the logger factory to use for building loggers.
+		/// </summary>
+		/// <param name="loggerFactory">A logger factory.</param>
+		public static void SetLoggersFactory(INHibernateLoggerFactory loggerFactory)
+		{
+			_instance = new NHibernateLogger(loggerFactory ?? new NoLoggingNHibernateLoggerFactory());
+
+#pragma warning disable 618
+			if (!(loggerFactory is LoggerProvider.LegacyLoggerFactoryAdaptor))
+			{
+				LoggerProvider.SetLoggersFactory(new LoggerProvider.ReverseLegacyLoggerFactoryAdaptor(loggerFactory));
+			}
+#pragma warning restore 618
+		}
+
+		private NHibernateLogger(INHibernateLoggerFactory loggerFactory)
+		{
+			_loggerFactory = loggerFactory;
+		}
+
+		/// <summary>
+		/// Get a logger for the given log key.
+		/// </summary>
+		/// <param name="keyName">The log key.</param>
+		/// <returns>A NHibernate logger.</returns>
+		public static INHibernateLogger For(string keyName)
+		{
+			return _instance._loggerFactory.LoggerFor(keyName);
+		}
+
+		/// <summary>
+		/// Get a logger using the given type as log key.
+		/// </summary>
+		/// <param name="type">The type to use as log key.</param>
+		/// <returns>A NHibernate logger.</returns>
+		public static INHibernateLogger For(System.Type type)
+		{
+			return _instance._loggerFactory.LoggerFor(type);
+		}
+
+		private static string GetNhibernateLoggerClass()
+		{
+			var nhibernateLogger = ConfigurationManager.AppSettings.Keys.Cast<string>().FirstOrDefault(k => nhibernateLoggerConfKey.Equals(k.ToLowerInvariant()));
+			string nhibernateLoggerClass = null;
+			if (string.IsNullOrEmpty(nhibernateLogger))
+			{
+				// look for log4net.dll
+				string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+				string relativeSearchPath = AppDomain.CurrentDomain.RelativeSearchPath;
+				string binPath = relativeSearchPath == null ? baseDir : Path.Combine(baseDir, relativeSearchPath);
+				string log4NetDllPath = binPath == null ? "log4net.dll" : Path.Combine(binPath, "log4net.dll");
+
+				if (File.Exists(log4NetDllPath) || AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name == "log4net"))
+				{
+					nhibernateLoggerClass = typeof(Log4NetLoggerFactory).AssemblyQualifiedName;
+				}
+			}
+			else
+			{
+				nhibernateLoggerClass = ConfigurationManager.AppSettings[nhibernateLogger];
+			}
+			return nhibernateLoggerClass;
+		}
+
+		private static INHibernateLoggerFactory GetLoggerFactory(string nhibernateLoggerClass)
+		{
+			INHibernateLoggerFactory loggerFactory;
+			var loggerFactoryType = System.Type.GetType(nhibernateLoggerClass);
+			try
+			{
+				var loadedLoggerFactory = Activator.CreateInstance(loggerFactoryType);
+#pragma warning disable 618
+				if (loadedLoggerFactory is ILoggerFactory oldStyleFactory)
+				{
+					loggerFactory = new LoggerProvider.LegacyLoggerFactoryAdaptor(oldStyleFactory);
+				}
+#pragma warning restore 618
+				else
+				{
+					loggerFactory = (INHibernateLoggerFactory) loadedLoggerFactory;
+				}
+			}
+			catch (MissingMethodException ex)
+			{
+				throw new InstantiationException("Public constructor was not found for " + loggerFactoryType, ex, loggerFactoryType);
+			}
+			catch (InvalidCastException ex)
+			{
+#pragma warning disable 618
+				throw new InstantiationException(loggerFactoryType + "Type does not implement " + typeof(INHibernateLoggerFactory) + " or " + typeof(ILoggerFactory), ex, loggerFactoryType);
+#pragma warning restore 618
+			}
+			catch (Exception ex)
+			{
+				throw new InstantiationException("Unable to instantiate: " + loggerFactoryType, ex, loggerFactoryType);
+			}
+			return loggerFactory;
+		}
 	}
 
 	internal class NoLoggingNHibernateLoggerFactory: INHibernateLoggerFactory

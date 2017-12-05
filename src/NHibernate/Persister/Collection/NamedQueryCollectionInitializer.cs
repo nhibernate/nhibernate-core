@@ -10,7 +10,7 @@ namespace NHibernate.Persister.Collection
 		private readonly string queryName;
 		private readonly ICollectionPersister persister;
 
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(NamedQueryCollectionInitializer));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(NamedQueryCollectionInitializer));
 
 		public NamedQueryCollectionInitializer(string queryName, ICollectionPersister persister)
 		{

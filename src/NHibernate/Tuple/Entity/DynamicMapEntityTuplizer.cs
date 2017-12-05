@@ -11,7 +11,7 @@ namespace NHibernate.Tuple.Entity
 {
 	public class DynamicMapEntityTuplizer : AbstractEntityTuplizer
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(PocoEntityTuplizer));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(PocoEntityTuplizer));
 
 		internal DynamicMapEntityTuplizer(EntityMetamodel entityMetamodel, PersistentClass mappingInfo)
 			: base(entityMetamodel, mappingInfo)

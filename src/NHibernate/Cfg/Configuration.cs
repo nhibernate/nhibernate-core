@@ -75,7 +75,7 @@ namespace NHibernate.Cfg
 		protected IDictionary<string, Mappings.TableDescription> tableNameBinding;
 		protected IDictionary<Table, Mappings.ColumnNames> columnNameBindingPerTable;
 
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(Configuration));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(Configuration));
 
 		protected internal SettingsFactory settingsFactory;
 

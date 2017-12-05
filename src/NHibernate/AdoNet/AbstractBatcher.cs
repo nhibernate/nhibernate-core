@@ -20,7 +20,7 @@ namespace NHibernate.AdoNet
 	/// </summary>
 	public abstract partial class AbstractBatcher : IBatcher
 	{
-		protected static readonly INHibernateLogger Log = LoggerProvider.For(typeof(AbstractBatcher));
+		protected static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(AbstractBatcher));
 
 		private static int _openCommandCount;
 		private static int _openReaderCount;

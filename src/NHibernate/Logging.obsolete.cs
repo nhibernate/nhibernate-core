@@ -1,7 +1,4 @@
 using System;
-using System.Configuration;
-using System.IO;
-using System.Linq;
 
 namespace NHibernate
 {
@@ -81,188 +78,64 @@ namespace NHibernate
 		IInternalLogger LoggerFor(System.Type type);
 	}
 
-	/// <summary>
-	/// Provide methods for getting NHibernate loggers according to supplied <see cref="INHibernateLoggerFactory"/>.
-	/// </summary>
-	/// <remarks>
-	/// By default, it will use a <see cref="Log4NetLoggerFactory"/> if log4net is available, otherwise it will
-	/// use a <see cref="NoLoggingNHibernateLoggerFactory"/>.
-	/// </remarks>
+
+	[Obsolete("Use NHibernateLogger instead.")]
 	public class LoggerProvider
 	{
-		private const string nhibernateLoggerConfKey = "nhibernate-logger";
-		private readonly INHibernateLoggerFactory _loggerFactory;
-		private static LoggerProvider _instance;
+		private static ILoggerFactory _legacyLoggerFactory;
 
-#pragma warning disable 618
-		private readonly ILoggerFactory _legacyLoggerFactory;
-#pragma warning restore 618
-
-		static LoggerProvider()
-		{
-			var nhibernateLoggerClass = GetNhibernateLoggerClass();
-			var loggerFactory = string.IsNullOrEmpty(nhibernateLoggerClass) ? null : GetLoggerFactory(nhibernateLoggerClass);
-			SetLoggersFactory(loggerFactory);
-		}
-
-		private static INHibernateLoggerFactory GetLoggerFactory(string nhibernateLoggerClass)
-		{
-			INHibernateLoggerFactory loggerFactory;
-			var loggerFactoryType = System.Type.GetType(nhibernateLoggerClass);
-			try
-			{
-				var loadedLoggerFactory = Activator.CreateInstance(loggerFactoryType);
-#pragma warning disable 618
-				if (loadedLoggerFactory is ILoggerFactory oldStyleFactory)
-				{
-					loggerFactory = new LegacyLoggerFactoryAdaptor(oldStyleFactory);
-				}
-#pragma warning restore 618
-				else
-				{
-					loggerFactory = (INHibernateLoggerFactory) loadedLoggerFactory;
-				}
-			}
-			catch (MissingMethodException ex)
-			{
-				throw new InstantiationException("Public constructor was not found for " + loggerFactoryType, ex, loggerFactoryType);
-			}
-			catch (InvalidCastException ex)
-			{
-#pragma warning disable 618
-				throw new InstantiationException(loggerFactoryType + "Type does not implement " + typeof(INHibernateLoggerFactory) + " or " + typeof(ILoggerFactory), ex, loggerFactoryType);
-#pragma warning restore 618
-			}
-			catch (Exception ex)
-			{
-				throw new InstantiationException("Unable to instantiate: " + loggerFactoryType, ex, loggerFactoryType);
-			}
-			return loggerFactory;
-		}
-
-		private static string GetNhibernateLoggerClass()
-		{
-			var nhibernateLogger = ConfigurationManager.AppSettings.Keys.Cast<string>().FirstOrDefault(k => nhibernateLoggerConfKey.Equals(k.ToLowerInvariant()));
-			string nhibernateLoggerClass = null;
-			if (string.IsNullOrEmpty(nhibernateLogger))
-			{
-				// look for log4net.dll
-				string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-				string relativeSearchPath = AppDomain.CurrentDomain.RelativeSearchPath;
-				string binPath = relativeSearchPath == null ? baseDir : Path.Combine(baseDir, relativeSearchPath);
-				string log4NetDllPath = binPath == null ? "log4net.dll" : Path.Combine(binPath, "log4net.dll");
-
-				if (File.Exists(log4NetDllPath) || AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name == "log4net"))
-				{
-					nhibernateLoggerClass = typeof(Log4NetLoggerFactory).AssemblyQualifiedName;
-				}
-			}
-			else
-			{
-				nhibernateLoggerClass = ConfigurationManager.AppSettings[nhibernateLogger];
-			}
-			return nhibernateLoggerClass;
-		}
-
-		// Since 5.1
-		[Obsolete("Implement INHibernateLoggerFactory instead")]
+		[Obsolete("Implement INHibernateLoggerFactory and use NHibernateLogger.SetLoggersFactory() instead")]
 		public static void SetLoggersFactory(ILoggerFactory loggerFactory)
 		{
-			var factory = loggerFactory != null
-				? (INHibernateLoggerFactory) new LegacyLoggerFactoryAdaptor(loggerFactory)
-				: new NoLoggingNHibernateLoggerFactory();
-			SetLoggersFactory(factory);
+			_legacyLoggerFactory = loggerFactory ?? new NoLoggingLoggerFactory();
+
+			if (!(loggerFactory is ReverseLegacyLoggerFactoryAdaptor))
+			{
+				var factory = loggerFactory == null || loggerFactory is NoLoggingLoggerFactory
+					? null
+					: (INHibernateLoggerFactory) new LegacyLoggerFactoryAdaptor(loggerFactory);
+
+				NHibernateLogger.SetLoggersFactory(factory);
+			}
 		}
 
-		/// <summary>
-		/// Specify the logger factory to use for building loggers.
-		/// </summary>
-		/// <param name="loggerFactory">A logger factory.</param>
-		public static void SetLoggersFactory(INHibernateLoggerFactory loggerFactory)
-		{
-			_instance = new LoggerProvider(loggerFactory ?? new NoLoggingNHibernateLoggerFactory());
-		}
-
-		private LoggerProvider(INHibernateLoggerFactory loggerFactory)
-		{
-			_loggerFactory = loggerFactory;
-
-#pragma warning disable 618
-			_legacyLoggerFactory = loggerFactory is LegacyLoggerFactoryAdaptor legacy
-				? legacy.Factory
-				: new ReverseLegacyLoggerFactoryAdaptor(loggerFactory);
-#pragma warning restore 618
-		}
-
-		/// <summary>
-		/// Get a logger for the given log key.
-		/// </summary>
-		/// <param name="keyName">The log key.</param>
-		/// <returns>A NHibernate logger.</returns>
-		// Since 5.1
-		[Obsolete("Use LoggerProvider.For() instead.")]
+		[Obsolete("Use NHibernateLogger.For() instead.")]
 		public static IInternalLogger LoggerFor(string keyName)
 		{
-			return _instance._legacyLoggerFactory.LoggerFor(keyName);
+			return _legacyLoggerFactory.LoggerFor(keyName);
 		}
 
-		/// <summary>
-		/// Get a logger using the given type as log key.
-		/// </summary>
-		/// <param name="type">The type to use as log key.</param>
-		/// <returns>A NHibernate logger.</returns>
-		// Since 5.1
-		[Obsolete("Use LoggerProvider.For() instead.")]
+		[Obsolete("Use NHibernateLogger.For() instead.")]
 		public static IInternalLogger LoggerFor(System.Type type)
 		{
-			return _instance._legacyLoggerFactory.LoggerFor(type);
-		}
-
-		/// <summary>
-		/// Get a logger for the given log key.
-		/// </summary>
-		/// <param name="keyName">The log key.</param>
-		/// <returns>A NHibernate logger.</returns>
-		public static INHibernateLogger For(string keyName)
-		{
-			return _instance._loggerFactory.LoggerFor(keyName);
-		}
-
-		/// <summary>
-		/// Get a logger using the given type as log key.
-		/// </summary>
-		/// <param name="type">The type to use as log key.</param>
-		/// <returns>A NHibernate logger.</returns>
-		public static INHibernateLogger For(System.Type type)
-		{
-			return _instance._loggerFactory.LoggerFor(type);
+			return _legacyLoggerFactory.LoggerFor(type);
 		}
 
 		// Since 5.1
 		[Obsolete("Used only in Obsolete functions to thunk to INHibernateLoggerFactory")]
-		private class LegacyLoggerFactoryAdaptor : INHibernateLoggerFactory
+		internal class LegacyLoggerFactoryAdaptor : INHibernateLoggerFactory
 		{
-			public ILoggerFactory Factory { get; }
+			private readonly ILoggerFactory _factory;
 
 			public LegacyLoggerFactoryAdaptor(ILoggerFactory factory)
 			{
-				Factory = factory;
+				_factory = factory;
 			}
 
 			public INHibernateLogger LoggerFor(string keyName)
 			{
-				return new NHibernateLoggerThunk(Factory.LoggerFor(keyName));
+				return new NHibernateLoggerThunk(_factory.LoggerFor(keyName));
 			}
 
 			public INHibernateLogger LoggerFor(System.Type type)
 			{
-				return new NHibernateLoggerThunk(Factory.LoggerFor(type));
+				return new NHibernateLoggerThunk(_factory.LoggerFor(type));
 			}
 		}
 
 		// Since 5.1
 		[Obsolete("Used only in Obsolete functions to thunk to INHibernateLoggerFactory")]
-		private class ReverseLegacyLoggerFactoryAdaptor : ILoggerFactory
+		internal class ReverseLegacyLoggerFactoryAdaptor : ILoggerFactory
 		{
 			private readonly INHibernateLoggerFactory _factory;
 

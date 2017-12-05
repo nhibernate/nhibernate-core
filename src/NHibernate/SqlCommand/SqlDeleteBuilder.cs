@@ -12,7 +12,7 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public class SqlDeleteBuilder : SqlBaseBuilder, ISqlStringBuilder
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(SqlDeleteBuilder));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(SqlDeleteBuilder));
 		private string tableName;
 
 		private List<SqlString> whereStrings = new List<SqlString>();

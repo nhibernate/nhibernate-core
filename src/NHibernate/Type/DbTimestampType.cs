@@ -16,7 +16,7 @@ namespace NHibernate.Type
 	[Serializable]
 	public partial class DbTimestampType : AbstractDateTimeType
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(DbTimestampType));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DbTimestampType));
 		private static readonly SqlType[] EmptyParams = new SqlType[0];
 
 		/// <inheritdoc />

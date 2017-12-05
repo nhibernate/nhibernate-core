@@ -19,7 +19,7 @@ namespace NHibernate.Impl
 {
 	public partial class MultiQueryImpl : IMultiQuery
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(MultiQueryImpl));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(MultiQueryImpl));
 
 		private readonly List<IQuery> queries = new List<IQuery>();
 		private readonly List<ITranslator> translators = new List<ITranslator>();

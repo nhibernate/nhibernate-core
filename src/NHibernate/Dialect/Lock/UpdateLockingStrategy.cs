@@ -16,7 +16,7 @@ namespace NHibernate.Dialect.Lock
 	/// <remarks> This strategy is not valid for read style locks. </remarks>
 	public partial class UpdateLockingStrategy : ILockingStrategy
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(UpdateLockingStrategy));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(UpdateLockingStrategy));
 		private readonly ILockable lockable;
 		private readonly LockMode lockMode;
 		private readonly SqlString sql;

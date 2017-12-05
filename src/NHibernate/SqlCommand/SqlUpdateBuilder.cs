@@ -12,7 +12,7 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public class SqlUpdateBuilder : SqlBaseBuilder, ISqlStringBuilder
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(SqlUpdateBuilder));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(SqlUpdateBuilder));
 
 		private string tableName;
 		private string comment;

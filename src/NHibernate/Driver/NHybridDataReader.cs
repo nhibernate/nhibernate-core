@@ -25,7 +25,7 @@ namespace NHibernate.Driver
 	/// </remarks>
 	public partial class NHybridDataReader : DbDataReader
 	{
-		private readonly INHibernateLogger log = LoggerProvider.For(typeof(NHybridDataReader));
+		private readonly INHibernateLogger log = NHibernateLogger.For(typeof(NHybridDataReader));
 
 		private DbDataReader _reader;
 		private bool _isMidstream;

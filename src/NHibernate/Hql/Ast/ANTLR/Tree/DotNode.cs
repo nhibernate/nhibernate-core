@@ -20,7 +20,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class DotNode : FromReferenceNode 
 	{
-		private static readonly INHibernateLogger Log = LoggerProvider.For(typeof(DotNode));
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(DotNode));
 
 		private const int DerefUnknown = 0;
 		private const int DerefEntity = 1;

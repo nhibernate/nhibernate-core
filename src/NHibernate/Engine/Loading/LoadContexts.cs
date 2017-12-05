@@ -26,7 +26,7 @@ namespace NHibernate.Engine.Loading
 	/// </remarks>
 	public class LoadContexts
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(LoadContexts));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(LoadContexts));
 
 		[NonSerialized]
 		private readonly IPersistenceContext persistenceContext;

@@ -13,7 +13,7 @@ namespace NHibernate.Example.Web.Infrastructure
 
 		public AppSessionFactory(Microsoft.Extensions.Logging.ILoggerFactory loggerFactory)
 		{
-			NHibernate.LoggerProvider.SetLoggersFactory(new NHibernateToMicrosoftLoggerFactory(loggerFactory));
+			NHibernate.NHibernateLogger.SetLoggersFactory(new NHibernateToMicrosoftLoggerFactory(loggerFactory));
 
 			var mapper = new ModelMapper();
 			mapper.AddMapping<ItemMap>();

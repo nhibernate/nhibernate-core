@@ -7,7 +7,7 @@ namespace NHibernate.Linq
 {
 	internal static class LinqLogging
 	{
-		private static readonly INHibernateLogger Log = LoggerProvider.For("NHibernate.Linq");
+		private static readonly INHibernateLogger Log = NHibernateLogger.For("NHibernate.Linq");
 
 		/// <summary>
 		/// If debug logging is enabled, log a string such as "msg: expression.ToString()".

@@ -23,7 +23,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 	[CLSCompliant(false)]
 	public partial class QueryTranslatorImpl : IFilterTranslator
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(QueryTranslatorImpl));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(QueryTranslatorImpl));
 
 		private readonly string _queryIdentifier;
 		private readonly IASTNode _stageOneAst;
@@ -436,7 +436,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 	public class HqlParseEngine
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(HqlParseEngine));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(HqlParseEngine));
 
 		private readonly string _hql;
 		private CommonTokenStream _tokens;
@@ -580,7 +580,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 	internal class HqlSqlGenerator
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(HqlSqlGenerator));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(HqlSqlGenerator));
 
 		private readonly IASTNode _ast;
 		private readonly ISessionFactoryImplementor _sfi;

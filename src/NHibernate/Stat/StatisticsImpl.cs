@@ -15,7 +15,7 @@ namespace NHibernate.Stat
 	{
 		private object _syncRoot;
 
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(StatisticsImpl));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(StatisticsImpl));
 		private readonly ISessionFactoryImplementor sessionFactory;
 		private long entityDeleteCount;
 		private long entityInsertCount;

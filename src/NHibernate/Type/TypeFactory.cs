@@ -33,7 +33,7 @@ namespace NHibernate.Type
 			PrecisionScale
 		}
 
-		private static readonly INHibernateLogger _log = LoggerProvider.For(typeof(TypeFactory));
+		private static readonly INHibernateLogger _log = NHibernateLogger.For(typeof(TypeFactory));
 		private static readonly string[] EmptyAliases= new string[0];
 		private static readonly char[] PrecisionScaleSplit = new[] { '(', ')', ',' };
 		private static readonly char[] LengthSplit = new[] { '(', ')' };

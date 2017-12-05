@@ -9,7 +9,7 @@ namespace NHibernate.Tuple.Component
 	[Serializable]
 	public abstract class AbstractComponentTuplizer : IComponentTuplizer
 	{
-		private static readonly INHibernateLogger log = LoggerProvider.For(typeof(AbstractComponentTuplizer));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(AbstractComponentTuplizer));
 
 		protected internal int propertySpan;
 		protected internal IGetter[] getters;
