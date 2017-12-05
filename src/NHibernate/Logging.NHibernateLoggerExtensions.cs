@@ -18,9 +18,19 @@ namespace NHibernate
 			logger.Log(InternalLogLevel.Fatal, new InternalLogValues(format, args), exception);
 		}
 
+		public static void Fatal(this INHibernateLogger logger, Exception exception, string format)
+		{
+			logger.Log(InternalLogLevel.Fatal, new InternalLogValues(format, null), exception);
+		}
+
 		public static void Fatal(this INHibernateLogger logger, string format, params object[] args)
 		{
 			logger.Log(InternalLogLevel.Fatal, new InternalLogValues(format, args), null);
+		}
+
+		public static void Fatal(this INHibernateLogger logger, string format)
+		{
+			logger.Log(InternalLogLevel.Fatal, new InternalLogValues(format, null), null);
 		}
 
 		public static void Error(this INHibernateLogger logger, Exception exception, string format, params object[] args)
@@ -28,9 +38,19 @@ namespace NHibernate
 			logger.Log(InternalLogLevel.Error, new InternalLogValues(format, args), exception);
 		}
 
+		public static void Error(this INHibernateLogger logger, Exception exception, string format)
+		{
+			logger.Log(InternalLogLevel.Error, new InternalLogValues(format, null), exception);
+		}
+
 		public static void Error(this INHibernateLogger logger, string format, params object[] args)
 		{
 			logger.Log(InternalLogLevel.Error, new InternalLogValues(format, args), null);
+		}
+
+		public static void Error(this INHibernateLogger logger, string format)
+		{
+			logger.Log(InternalLogLevel.Error, new InternalLogValues(format, null), null);
 		}
 
 		public static void Warn(this INHibernateLogger logger, Exception exception, string format, params object[] args)
@@ -38,9 +58,19 @@ namespace NHibernate
 			logger.Log(InternalLogLevel.Warn, new InternalLogValues(format, args), exception);
 		}
 
+		public static void Warn(this INHibernateLogger logger, Exception exception, string format)
+		{
+			logger.Log(InternalLogLevel.Warn, new InternalLogValues(format, null), exception);
+		}
+
 		public static void Warn(this INHibernateLogger logger, string format, params object[] args)
 		{
 			logger.Log(InternalLogLevel.Warn, new InternalLogValues(format, args), null);
+		}
+
+		public static void Warn(this INHibernateLogger logger, string format)
+		{
+			logger.Log(InternalLogLevel.Warn, new InternalLogValues(format, null), null);
 		}
 
 		public static void Info(this INHibernateLogger logger, Exception exception, string format, params object[] args)
@@ -48,9 +78,19 @@ namespace NHibernate
 			logger.Log(InternalLogLevel.Info, new InternalLogValues(format, args), exception);
 		}
 
+		public static void Info(this INHibernateLogger logger, Exception exception, string format)
+		{
+			logger.Log(InternalLogLevel.Info, new InternalLogValues(format, null), exception);
+		}
+
 		public static void Info(this INHibernateLogger logger, string format, params object[] args)
 		{
 			logger.Log(InternalLogLevel.Info, new InternalLogValues(format, args), null);
+		}
+
+		public static void Info(this INHibernateLogger logger, string format)
+		{
+			logger.Log(InternalLogLevel.Info, new InternalLogValues(format, null), null);
 		}
 
 		public static void Debug(this INHibernateLogger logger, Exception exception, string format, params object[] args)
@@ -58,9 +98,19 @@ namespace NHibernate
 			logger.Log(InternalLogLevel.Debug, new InternalLogValues(format, args), exception);
 		}
 
+		public static void Debug(this INHibernateLogger logger, Exception exception, string format)
+		{
+			logger.Log(InternalLogLevel.Debug, new InternalLogValues(format, null), exception);
+		}
+
 		public static void Debug(this INHibernateLogger logger, string format, params object[] args)
 		{
 			logger.Log(InternalLogLevel.Debug, new InternalLogValues(format, args), null);
+		}
+
+		public static void Debug(this INHibernateLogger logger, string format)
+		{
+			logger.Log(InternalLogLevel.Debug, new InternalLogValues(format, null), null);
 		}
 
 
