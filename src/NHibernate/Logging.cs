@@ -11,14 +11,14 @@ namespace NHibernate
 		/// <param name="logLevel">Entry will be written on this level.</param>
 		/// <param name="state">The entry to be written.</param>
 		/// <param name="exception">The exception related to this entry.</param>
-		void Log(InternalLogLevel logLevel, InternalLogValues state, Exception exception);
+		void Log(NHibernateLogLevel logLevel, NHibernateLogValues state, Exception exception);
 
 		/// <summary>
 		/// Checks if the given <paramref name="logLevel" /> is enabled.
 		/// </summary>
 		/// <param name="logLevel">level to be checked.</param>
 		/// <returns><c>true</c> if enabled.</returns>
-		bool IsEnabled(InternalLogLevel logLevel);
+		bool IsEnabled(NHibernateLogLevel logLevel);
 	}
 
 	/// <summary>
@@ -177,29 +177,29 @@ namespace NHibernate
 
 	internal class NoLoggingNHibernateLogger: INHibernateLogger
 	{
-		public void Log(InternalLogLevel logLevel, InternalLogValues state, Exception exception)
+		public void Log(NHibernateLogLevel logLevel, NHibernateLogValues state, Exception exception)
 		{
 		}
 
-		public bool IsEnabled(InternalLogLevel logLevel)
+		public bool IsEnabled(NHibernateLogLevel logLevel)
 		{
-			if (logLevel == InternalLogLevel.None) return true;
+			if (logLevel == NHibernateLogLevel.None) return true;
 
 			return false;
 		}
 	}
 
-	public struct InternalLogValues
+	public struct NHibernateLogValues
 	{
 		private readonly string _format;
 		private readonly object[] _args;
 
 		/// <summary>
-		/// Instantiates a new instance of the <see cref="InternalLogValues"/> structure.
+		/// Instantiates a new instance of the <see cref="NHibernateLogValues"/> structure.
 		/// </summary>
 		/// <param name="format">a composite format string</param>
 		/// <param name="args">An object array that contains zero or more objects to format.  Can be <c>null</c> if there are no values to format.</param>
-		public InternalLogValues(string format, object[] args)
+		public NHibernateLogValues(string format, object[] args)
 		{
 			_format = format ?? "[Null]";
 			_args = args;
@@ -232,7 +232,7 @@ namespace NHibernate
 	}
 
 	/// <summary>Defines logging severity levels.</summary>
-	public enum InternalLogLevel
+	public enum NHibernateLogLevel
 	{
 		Trace,
 		Debug,

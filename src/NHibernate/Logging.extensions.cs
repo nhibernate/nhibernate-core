@@ -7,110 +7,110 @@ namespace NHibernate
 	/// </summary>
 	public static class NHibernateLoggerExtensions
 	{
-		public static bool IsDebugEnabled(this INHibernateLogger logger) => logger.IsEnabled(InternalLogLevel.Debug);
-		public static bool IsInfoEnabled(this INHibernateLogger logger) => logger.IsEnabled(InternalLogLevel.Info);
-		public static bool IsWarnEnabled(this INHibernateLogger logger) => logger.IsEnabled(InternalLogLevel.Warn);
-		public static bool IsErrorEnabled(this INHibernateLogger logger) => logger.IsEnabled(InternalLogLevel.Error);
-		public static bool IsFatalEnabled(this INHibernateLogger logger) => logger.IsEnabled(InternalLogLevel.Fatal);
+		public static bool IsDebugEnabled(this INHibernateLogger logger) => logger.IsEnabled(NHibernateLogLevel.Debug);
+		public static bool IsInfoEnabled(this INHibernateLogger logger) => logger.IsEnabled(NHibernateLogLevel.Info);
+		public static bool IsWarnEnabled(this INHibernateLogger logger) => logger.IsEnabled(NHibernateLogLevel.Warn);
+		public static bool IsErrorEnabled(this INHibernateLogger logger) => logger.IsEnabled(NHibernateLogLevel.Error);
+		public static bool IsFatalEnabled(this INHibernateLogger logger) => logger.IsEnabled(NHibernateLogLevel.Fatal);
 
 		public static void Fatal(this INHibernateLogger logger, Exception exception, string format, params object[] args)
 		{
-			logger.Log(InternalLogLevel.Fatal, new InternalLogValues(format, args), exception);
+			logger.Log(NHibernateLogLevel.Fatal, new NHibernateLogValues(format, args), exception);
 		}
 
 		public static void Fatal(this INHibernateLogger logger, Exception exception, string format)
 		{
-			logger.Log(InternalLogLevel.Fatal, new InternalLogValues(format, null), exception);
+			logger.Log(NHibernateLogLevel.Fatal, new NHibernateLogValues(format, null), exception);
 		}
 
 		public static void Fatal(this INHibernateLogger logger, string format, params object[] args)
 		{
-			logger.Log(InternalLogLevel.Fatal, new InternalLogValues(format, args), null);
+			logger.Log(NHibernateLogLevel.Fatal, new NHibernateLogValues(format, args), null);
 		}
 
 		public static void Fatal(this INHibernateLogger logger, string format)
 		{
-			logger.Log(InternalLogLevel.Fatal, new InternalLogValues(format, null), null);
+			logger.Log(NHibernateLogLevel.Fatal, new NHibernateLogValues(format, null), null);
 		}
 
 		public static void Error(this INHibernateLogger logger, Exception exception, string format, params object[] args)
 		{
-			logger.Log(InternalLogLevel.Error, new InternalLogValues(format, args), exception);
+			logger.Log(NHibernateLogLevel.Error, new NHibernateLogValues(format, args), exception);
 		}
 
 		public static void Error(this INHibernateLogger logger, Exception exception, string format)
 		{
-			logger.Log(InternalLogLevel.Error, new InternalLogValues(format, null), exception);
+			logger.Log(NHibernateLogLevel.Error, new NHibernateLogValues(format, null), exception);
 		}
 
 		public static void Error(this INHibernateLogger logger, string format, params object[] args)
 		{
-			logger.Log(InternalLogLevel.Error, new InternalLogValues(format, args), null);
+			logger.Log(NHibernateLogLevel.Error, new NHibernateLogValues(format, args), null);
 		}
 
 		public static void Error(this INHibernateLogger logger, string format)
 		{
-			logger.Log(InternalLogLevel.Error, new InternalLogValues(format, null), null);
+			logger.Log(NHibernateLogLevel.Error, new NHibernateLogValues(format, null), null);
 		}
 
 		public static void Warn(this INHibernateLogger logger, Exception exception, string format, params object[] args)
 		{
-			logger.Log(InternalLogLevel.Warn, new InternalLogValues(format, args), exception);
+			logger.Log(NHibernateLogLevel.Warn, new NHibernateLogValues(format, args), exception);
 		}
 
 		public static void Warn(this INHibernateLogger logger, Exception exception, string format)
 		{
-			logger.Log(InternalLogLevel.Warn, new InternalLogValues(format, null), exception);
+			logger.Log(NHibernateLogLevel.Warn, new NHibernateLogValues(format, null), exception);
 		}
 
 		public static void Warn(this INHibernateLogger logger, string format, params object[] args)
 		{
-			logger.Log(InternalLogLevel.Warn, new InternalLogValues(format, args), null);
+			logger.Log(NHibernateLogLevel.Warn, new NHibernateLogValues(format, args), null);
 		}
 
 		public static void Warn(this INHibernateLogger logger, string format)
 		{
-			logger.Log(InternalLogLevel.Warn, new InternalLogValues(format, null), null);
+			logger.Log(NHibernateLogLevel.Warn, new NHibernateLogValues(format, null), null);
 		}
 
 		public static void Info(this INHibernateLogger logger, Exception exception, string format, params object[] args)
 		{
-			logger.Log(InternalLogLevel.Info, new InternalLogValues(format, args), exception);
+			logger.Log(NHibernateLogLevel.Info, new NHibernateLogValues(format, args), exception);
 		}
 
 		public static void Info(this INHibernateLogger logger, Exception exception, string format)
 		{
-			logger.Log(InternalLogLevel.Info, new InternalLogValues(format, null), exception);
+			logger.Log(NHibernateLogLevel.Info, new NHibernateLogValues(format, null), exception);
 		}
 
 		public static void Info(this INHibernateLogger logger, string format, params object[] args)
 		{
-			logger.Log(InternalLogLevel.Info, new InternalLogValues(format, args), null);
+			logger.Log(NHibernateLogLevel.Info, new NHibernateLogValues(format, args), null);
 		}
 
 		public static void Info(this INHibernateLogger logger, string format)
 		{
-			logger.Log(InternalLogLevel.Info, new InternalLogValues(format, null), null);
+			logger.Log(NHibernateLogLevel.Info, new NHibernateLogValues(format, null), null);
 		}
 
 		public static void Debug(this INHibernateLogger logger, Exception exception, string format, params object[] args)
 		{
-			logger.Log(InternalLogLevel.Debug, new InternalLogValues(format, args), exception);
+			logger.Log(NHibernateLogLevel.Debug, new NHibernateLogValues(format, args), exception);
 		}
 
 		public static void Debug(this INHibernateLogger logger, Exception exception, string format)
 		{
-			logger.Log(InternalLogLevel.Debug, new InternalLogValues(format, null), exception);
+			logger.Log(NHibernateLogLevel.Debug, new NHibernateLogValues(format, null), exception);
 		}
 
 		public static void Debug(this INHibernateLogger logger, string format, params object[] args)
 		{
-			logger.Log(InternalLogLevel.Debug, new InternalLogValues(format, args), null);
+			logger.Log(NHibernateLogLevel.Debug, new NHibernateLogValues(format, args), null);
 		}
 
 		public static void Debug(this INHibernateLogger logger, string format)
 		{
-			logger.Log(InternalLogLevel.Debug, new InternalLogValues(format, null), null);
+			logger.Log(NHibernateLogLevel.Debug, new NHibernateLogValues(format, null), null);
 		}
 
 

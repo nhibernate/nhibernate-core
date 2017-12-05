@@ -14,22 +14,22 @@ namespace NHibernate.Example.Web.Infrastructure
 			_msLogger = msLogger ?? throw new ArgumentNullException(nameof(msLogger));
 		}
 
-		private static readonly Dictionary<InternalLogLevel, LogLevel> MapLevels = new Dictionary<InternalLogLevel, LogLevel>
+		private static readonly Dictionary<NHibernateLogLevel, LogLevel> MapLevels = new Dictionary<NHibernateLogLevel, LogLevel>
 		{
-			{ InternalLogLevel.Trace, LogLevel.Trace },
-			{ InternalLogLevel.Debug, LogLevel.Debug },
-			{ InternalLogLevel.Warn, LogLevel.Warning },
-			{ InternalLogLevel.Error, LogLevel.Error },
-			{ InternalLogLevel.Fatal, LogLevel.Critical },
-			{ InternalLogLevel.None, LogLevel.None },
+			{ NHibernateLogLevel.Trace, LogLevel.Trace },
+			{ NHibernateLogLevel.Debug, LogLevel.Debug },
+			{ NHibernateLogLevel.Warn, LogLevel.Warning },
+			{ NHibernateLogLevel.Error, LogLevel.Error },
+			{ NHibernateLogLevel.Fatal, LogLevel.Critical },
+			{ NHibernateLogLevel.None, LogLevel.None },
 		};
 
-		public void Log(InternalLogLevel logLevel, InternalLogValues state, Exception exception)
+		public void Log(NHibernateLogLevel logLevel, NHibernateLogValues state, Exception exception)
 		{
 			_msLogger.Log(MapLevels[logLevel], 0, new FormattedLogValues(state.Format, state.Args), exception, MessageFormatter);
 		}
 
-		public bool IsEnabled(InternalLogLevel logLevel)
+		public bool IsEnabled(NHibernateLogLevel logLevel)
 		{
 			return _msLogger.IsEnabled(MapLevels[logLevel]);
 		}

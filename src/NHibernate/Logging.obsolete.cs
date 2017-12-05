@@ -167,15 +167,15 @@ namespace NHibernate
 			_internalLogger = internalLogger ?? throw new ArgumentNullException(nameof(internalLogger));
 		}
 
-		public void Log(InternalLogLevel logLevel, InternalLogValues state, Exception exception)
+		public void Log(NHibernateLogLevel logLevel, NHibernateLogValues state, Exception exception)
 		{
 			if (!IsEnabled(logLevel))
 				return;
 
 			switch (logLevel)
 			{
-				case InternalLogLevel.Debug:
-				case InternalLogLevel.Trace:
+				case NHibernateLogLevel.Debug:
+				case NHibernateLogLevel.Trace:
 					if (exception != null)
 						_internalLogger.Debug(state, exception);
 					else if (state.Args?.Length > 0)
@@ -183,7 +183,7 @@ namespace NHibernate
 					else
 						_internalLogger.Debug(state);
 					break;
-				case InternalLogLevel.Info:
+				case NHibernateLogLevel.Info:
 					if (exception != null)
 						_internalLogger.Info(state, exception);
 					else if (state.Args?.Length > 0)
@@ -191,7 +191,7 @@ namespace NHibernate
 					else
 						_internalLogger.Info(state);
 					break;
-				case InternalLogLevel.Warn:
+				case NHibernateLogLevel.Warn:
 					if (exception != null)
 						_internalLogger.Warn(state, exception);
 					else if (state.Args?.Length > 0)
@@ -199,7 +199,7 @@ namespace NHibernate
 					else
 						_internalLogger.Warn(state);
 					break;
-				case InternalLogLevel.Error:
+				case NHibernateLogLevel.Error:
 					if (exception != null)
 						_internalLogger.Error(state, exception);
 					else if (state.Args?.Length > 0)
@@ -207,35 +207,35 @@ namespace NHibernate
 					else
 						_internalLogger.Error(state);
 					break;
-				case InternalLogLevel.Fatal:
+				case NHibernateLogLevel.Fatal:
 					if (exception != null)
 						_internalLogger.Fatal(state, exception);
 					else
 						_internalLogger.Fatal(state);
 					break;
-				case InternalLogLevel.None:
+				case NHibernateLogLevel.None:
 					break;
 				default:
 					throw new ArgumentOutOfRangeException(nameof(logLevel), logLevel, null);
 			}
 		}
 
-		public bool IsEnabled(InternalLogLevel logLevel)
+		public bool IsEnabled(NHibernateLogLevel logLevel)
 		{
 			switch (logLevel)
 			{
-				case InternalLogLevel.Trace:
-				case InternalLogLevel.Debug:
+				case NHibernateLogLevel.Trace:
+				case NHibernateLogLevel.Debug:
 					return _internalLogger.IsDebugEnabled;
-				case InternalLogLevel.Info:
+				case NHibernateLogLevel.Info:
 					return _internalLogger.IsInfoEnabled;
-				case InternalLogLevel.Warn:
+				case NHibernateLogLevel.Warn:
 					return _internalLogger.IsWarnEnabled;
-				case InternalLogLevel.Error:
+				case NHibernateLogLevel.Error:
 					return _internalLogger.IsErrorEnabled;
-				case InternalLogLevel.Fatal:
+				case NHibernateLogLevel.Fatal:
 					return _internalLogger.IsFatalEnabled;
-				case InternalLogLevel.None:
+				case NHibernateLogLevel.None:
 					return !_internalLogger.IsFatalEnabled;
 				default:
 					throw new ArgumentOutOfRangeException(nameof(logLevel), logLevel, null);
@@ -249,11 +249,11 @@ namespace NHibernate
 	{
 		private readonly INHibernateLogger _nhibernateLogger;
 
-		public bool IsErrorEnabled => _nhibernateLogger.IsEnabled(InternalLogLevel.Error);
-		public bool IsFatalEnabled => _nhibernateLogger.IsEnabled(InternalLogLevel.Fatal);
-		public bool IsDebugEnabled => _nhibernateLogger.IsEnabled(InternalLogLevel.Debug);
-		public bool IsInfoEnabled => _nhibernateLogger.IsEnabled(InternalLogLevel.Info);
-		public bool IsWarnEnabled => _nhibernateLogger.IsEnabled(InternalLogLevel.Warn);
+		public bool IsErrorEnabled => _nhibernateLogger.IsEnabled(NHibernateLogLevel.Error);
+		public bool IsFatalEnabled => _nhibernateLogger.IsEnabled(NHibernateLogLevel.Fatal);
+		public bool IsDebugEnabled => _nhibernateLogger.IsEnabled(NHibernateLogLevel.Debug);
+		public bool IsInfoEnabled => _nhibernateLogger.IsEnabled(NHibernateLogLevel.Info);
+		public bool IsWarnEnabled => _nhibernateLogger.IsEnabled(NHibernateLogLevel.Warn);
 
 		public InternalLoggerThunk(INHibernateLogger nhibernateLogger)
 		{

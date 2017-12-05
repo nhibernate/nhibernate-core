@@ -128,7 +128,7 @@ namespace NHibernate.Test.Logging
 			private bool IsInfoEnabled { get; } = false;
 			private bool IsWarnEnabled { get; } = true;
 
-			public void Log(InternalLogLevel logLevel, InternalLogValues state, Exception exception)
+			public void Log(NHibernateLogLevel logLevel, NHibernateLogValues state, Exception exception)
 			{
 				if (!IsEnabled(logLevel)) return;
 
@@ -142,22 +142,22 @@ namespace NHibernate.Test.Logging
 				}
 			}
 
-			public bool IsEnabled(InternalLogLevel logLevel)
+			public bool IsEnabled(NHibernateLogLevel logLevel)
 			{
 				switch (logLevel)
 				{
-					case InternalLogLevel.Trace:
-					case InternalLogLevel.Debug:
+					case NHibernateLogLevel.Trace:
+					case NHibernateLogLevel.Debug:
 						return IsDebugEnabled;
-					case InternalLogLevel.Info:
+					case NHibernateLogLevel.Info:
 						return IsInfoEnabled;
-					case InternalLogLevel.Warn:
+					case NHibernateLogLevel.Warn:
 						return IsWarnEnabled;
-					case InternalLogLevel.Error:
+					case NHibernateLogLevel.Error:
 						return IsErrorEnabled;
-					case InternalLogLevel.Fatal:
+					case NHibernateLogLevel.Fatal:
 						return IsFatalEnabled;
-					case InternalLogLevel.None:
+					case NHibernateLogLevel.None:
 						return !IsFatalEnabled;
 					default:
 						throw new ArgumentOutOfRangeException(nameof(logLevel), logLevel, null);
