@@ -47,11 +47,10 @@ namespace NHibernate
 	/// By default, it will use a <see cref="Log4NetLoggerFactory"/> if log4net is available, otherwise it will
 	/// use a <see cref="NoLoggingNHibernateLoggerFactory"/>.
 	/// </remarks>
-	public class NHibernateLogger
+	public static class NHibernateLogger
 	{
 		private const string nhibernateLoggerConfKey = "nhibernate-logger";
-		private readonly INHibernateLoggerFactory _loggerFactory;
-		private static NHibernateLogger _instance;
+		private static INHibernateLoggerFactory _loggerFactory;
 
 		static NHibernateLogger()
 		{
@@ -66,7 +65,7 @@ namespace NHibernate
 		/// <param name="loggerFactory">A logger factory.</param>
 		public static void SetLoggersFactory(INHibernateLoggerFactory loggerFactory)
 		{
-			_instance = new NHibernateLogger(loggerFactory ?? new NoLoggingNHibernateLoggerFactory());
+			_loggerFactory = loggerFactory ?? new NoLoggingNHibernateLoggerFactory();
 
 #pragma warning disable 618
 			if (!(loggerFactory is LoggerProvider.LegacyLoggerFactoryAdaptor))
@@ -76,11 +75,6 @@ namespace NHibernate
 #pragma warning restore 618
 		}
 
-		private NHibernateLogger(INHibernateLoggerFactory loggerFactory)
-		{
-			_loggerFactory = loggerFactory;
-		}
-
 		/// <summary>
 		/// Get a logger for the given log key.
 		/// </summary>
@@ -88,7 +82,7 @@ namespace NHibernate
 		/// <returns>A NHibernate logger.</returns>
 		public static INHibernateLogger For(string keyName)
 		{
-			return _instance._loggerFactory.LoggerFor(keyName);
+			return _loggerFactory.LoggerFor(keyName);
 		}
 
 		/// <summary>
@@ -98,7 +92,7 @@ namespace NHibernate
 		/// <returns>A NHibernate logger.</returns>
 		public static INHibernateLogger For(System.Type type)
 		{
-			return _instance._loggerFactory.LoggerFor(type);
+			return _loggerFactory.LoggerFor(type);
 		}
 
 		private static string GetNhibernateLoggerClass()
