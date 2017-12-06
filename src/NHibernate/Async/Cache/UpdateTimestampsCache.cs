@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 using NHibernate.Cfg;
@@ -33,17 +34,26 @@ namespace NHibernate.Cache
 			return updateTimestamps.ClearAsync(cancellationToken);
 		}
 
-		public virtual Task PreInvalidateAsync(object[] spaces, CancellationToken cancellationToken)
+		//TODO: Make obsolete
+		public Task PreInvalidateAsync(object[] spaces, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return PreInvalidateAsync((IReadOnlyList<object>) spaces, cancellationToken);
+			try
+			{
+				//Only for backwards compatibility.
+				return PreInvalidateAsync(spaces.OfType<string>().ToList(), cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 
 		[MethodImpl()]
-		public virtual async Task PreInvalidateAsync(IReadOnlyCollection<object> spaces, CancellationToken cancellationToken)
+		public virtual async Task PreInvalidateAsync(IReadOnlyCollection<string> spaces, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await _preInvalidate.LockAsync())
@@ -61,18 +71,26 @@ namespace NHibernate.Cache
 			//TODO: return new Lock(ts);
 		}
 
-		/// <summary></summary>
+		//TODO: Make obsolete
 		public Task InvalidateAsync(object[] spaces, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return InvalidateAsync((IReadOnlyList<object>) spaces, cancellationToken);
+			try
+			{
+				//Only for backwards compatibility.
+				return InvalidateAsync(spaces.OfType<string>().ToList(), cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 
 		[MethodImpl()]
-		public virtual async Task InvalidateAsync(IReadOnlyCollection<object> spaces, CancellationToken cancellationToken)
+		public virtual async Task InvalidateAsync(IReadOnlyCollection<string> spaces, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await _invalidate.LockAsync())

@@ -11,18 +11,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Impl;
 using NHibernate.Test.SecondLevelCacheTests;
 using NSubstitute;
 using NUnit.Framework;
-using Environment = System.Environment;
 
 namespace NHibernate.Test.SecondLevelCacheTest
 {
+	using System.Threading.Tasks;
 	using System.Threading;
 	[TestFixture]
 	public class InvalidationTestsAsync : TestCase
@@ -34,26 +32,40 @@ namespace NHibernate.Test.SecondLevelCacheTest
 		protected override void Configure(Configuration configuration)
 		{
 			base.Configure(configuration);
-			configuration.Properties[Cfg.Environment.CacheProvider] = typeof(HashtableCacheProvider).AssemblyQualifiedName;
-			configuration.Properties[Cfg.Environment.UseQueryCache] = "true";
+			configuration.Properties[Environment.CacheProvider] = typeof(HashtableCacheProvider).AssemblyQualifiedName;
+			configuration.Properties[Environment.UseQueryCache] = "true";
 		}
 
 		[Test]
 		public async Task InvalidatesEntitiesAsync()
 		{
 			var cache = Substitute.For<UpdateTimestampsCache>(Sfi.Settings, new Dictionary<string, string>());
-			((SessionFactoryImpl) (Sfi as DebugSessionFactory).ActualFactory).SetPropertyUsingReflection(x => x.UpdateTimestampsCache, cache);
+			((SessionFactoryImpl) (Sfi as DebugSessionFactory).ActualFactory).SetPropertyUsingReflection(
+				x => x.UpdateTimestampsCache,
+				cache);
 
-			var items = new List<Item>();
+			//"Received" assertions can not be used since the collection is reused and cleared between calls.
+			//The received args are cloned and stored
+			var preInvalidations = new List<IReadOnlyCollection<string>>();
+			var invalidations = new List<IReadOnlyCollection<string>>();
+
+			cache
+				.When(x=>x.PreInvalidate(Arg.Any<IReadOnlyCollection<string>>()))
+				.Do(x=>preInvalidations.Add(((IReadOnlyCollection<string>) x[0]).ToList()));
+			cache
+				.When(x => x.Invalidate(Arg.Any<IReadOnlyCollection<string>>()))
+				.Do(x => invalidations.Add(((IReadOnlyCollection<string>) x[0]).ToList()));
+
 			using (ISession session = OpenSession())
 			{
 				using (ITransaction tx = session.BeginTransaction())
 				{
 					foreach (var i in Enumerable.Range(1, 10))
 					{
-						var item = new Item { Id = i };
+						var item = new Item {Id = i};
 						await (session.SaveAsync(item));
 					}
+
 					await (tx.CommitAsync());
 				}
 
@@ -64,6 +76,7 @@ namespace NHibernate.Test.SecondLevelCacheTest
 						var item = await (session.GetAsync<Item>(i));
 						item.Name = item.Id.ToString();
 					}
+
 					await (tx.CommitAsync());
 				}
 
@@ -74,13 +87,23 @@ namespace NHibernate.Test.SecondLevelCacheTest
 						var item = await (session.GetAsync<Item>(i));
 						await (session.DeleteAsync(item));
 					}
+
 					await (tx.CommitAsync());
 				}
 			}
-			//Should receive one preinvalidation and one invalidation per commit
-			await (cache.Received(3).PreInvalidateAsync(Arg.Is<object[]>(x => x.Length==1 && (string)x[0] == "Item"), CancellationToken.None));
-			await (cache.Received(3).InvalidateAsync(Arg.Is<object[]>(x => x.Length == 1 && (string) x[0] == "Item"), CancellationToken.None));
 
+			//Should receive one preinvalidation and one invalidation per commit
+			Assert.That(preInvalidations.Count,Is.EqualTo(3));
+			Assert.That(preInvalidations.All(x => x.Count == 1 && x.First() == "Item"), Is.True);
+
+			Assert.That(invalidations.Count, Is.EqualTo(3));
+			Assert.That(invalidations.All(x => x.Count == 1 && x.First() == "Item"), Is.True);
+
+		}
+
+		private bool IsRight(HashSet<string> x)
+		{
+			return x.Count == 1 && x.First() == "Item";
 		}
 
 		public async Task CleanUpAsync(CancellationToken cancellationToken = default(CancellationToken))
