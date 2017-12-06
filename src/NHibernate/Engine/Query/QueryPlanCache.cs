@@ -11,7 +11,7 @@ namespace NHibernate.Engine.Query
 	[Serializable]
 	public class QueryPlanCache
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(QueryPlanCache));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(QueryPlanCache));
 
 		private readonly ISessionFactoryImplementor factory;
 
@@ -54,18 +54,18 @@ namespace NHibernate.Engine.Query
 
 			if (plan == null)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("unable to locate HQL query plan in cache; generating (" + queryExpression.Key + ")");
+					log.Debug("unable to locate HQL query plan in cache; generating ({0})", queryExpression.Key);
 				}
 				plan = new QueryExpressionPlan(queryExpression, shallow, enabledFilters, factory);
 				planCache.Put(key, plan);
 			}
 			else
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("located HQL query plan in cache (" + queryExpression.Key + ")");
+					log.Debug("located HQL query plan in cache ({0})", queryExpression.Key);
 				}
 				plan = CopyIfRequired(plan, queryExpression);
 			}
@@ -108,13 +108,13 @@ namespace NHibernate.Engine.Query
 
 			if (plan == null)
 			{
-				log.DebugFormat("unable to locate collection-filter query plan in cache; generating ({0} : {1})", collectionRole, queryExpression.Key);
+				log.Debug("unable to locate collection-filter query plan in cache; generating ({0} : {1})", collectionRole, queryExpression.Key);
 				plan = new FilterQueryPlan(queryExpression, collectionRole, shallow, enabledFilters, factory);
 				planCache.Put(key, plan);
 			}
 			else
 			{
-				log.DebugFormat("located collection-filter query plan in cache ({0} : {1})", collectionRole, queryExpression.Key);
+				log.Debug("located collection-filter query plan in cache ({0} : {1})", collectionRole, queryExpression.Key);
 				plan = CopyIfRequired(plan, queryExpression);
 			}
 
@@ -127,18 +127,18 @@ namespace NHibernate.Engine.Query
 
 			if (plan == null)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("unable to locate native-sql query plan in cache; generating (" + spec.QueryString + ")");
+					log.Debug("unable to locate native-sql query plan in cache; generating ({0})", spec.QueryString);
 				}
 				plan = new NativeSQLQueryPlan(spec, factory);
 				planCache.Put(spec, plan);
 			}
 			else
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("located native-sql query plan in cache (" + spec.QueryString + ")");
+					log.Debug("located native-sql query plan in cache ({0})", spec.QueryString);
 				}
 			}
 

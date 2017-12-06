@@ -9,7 +9,7 @@ namespace NHibernate.Transform
 	[Serializable]
 	public class DistinctRootEntityResultTransformer : IResultTransformer, ITupleSubsetResultTransformer
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DistinctRootEntityResultTransformer));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DistinctRootEntityResultTransformer));
 		private static readonly object Hasher = new object();
 
 		internal sealed class Identity
@@ -52,10 +52,9 @@ namespace NHibernate.Transform
 				}
 			}
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug(string.Format("transformed: {0} rows to: {1} distinct results",
-										list.Count, result.Count));
+				log.Debug("transformed: {0} rows to: {1} distinct results", list.Count, result.Count);
 			}
 			return result;
 		}

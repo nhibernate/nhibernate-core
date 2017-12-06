@@ -25,9 +25,9 @@ namespace NHibernate.Cache
 		public async Task<object> GetAsync(CacheKey key, long txTimestamp, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Cache lookup: " + key);
+				log.Debug("Cache lookup: {0}", key);
 			}
 
 			object result = await (cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
@@ -57,15 +57,15 @@ namespace NHibernate.Cache
 
 			if (minimalPut && await (cache.GetAsync(key, cancellationToken)).ConfigureAwait(false) != null)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("item already cached: " + key);
+					log.Debug("item already cached: {0}", key);
 				}
 				return false;
 			}
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Caching: " + key);
+				log.Debug("Caching: {0}", key);
 			}
 			await (cache.PutAsync(key, value, cancellationToken)).ConfigureAwait(false);
 			return true;
@@ -98,9 +98,9 @@ namespace NHibernate.Cache
 			}
 			try
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Removing: " + key);
+					log.Debug("Removing: {0}", key);
 				}
 				return cache.RemoveAsync(key, cancellationToken);
 			}
@@ -118,7 +118,7 @@ namespace NHibernate.Cache
 			}
 			try
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					log.Debug("Clearing");
 				}
@@ -141,9 +141,9 @@ namespace NHibernate.Cache
 			}
 			try
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Invalidating: " + key);
+					log.Debug("Invalidating: {0}", key);
 				}
 				return cache.RemoveAsync(key, cancellationToken);
 			}
@@ -174,9 +174,9 @@ namespace NHibernate.Cache
 			}
 			try
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Invalidating (again): " + key);
+					log.Debug("Invalidating (again): {0}", key);
 				}
 
 				return cache.RemoveAsync(key, cancellationToken);

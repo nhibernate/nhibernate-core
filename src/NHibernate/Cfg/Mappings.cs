@@ -46,7 +46,7 @@ namespace NHibernate.Cfg
 
 		#endregion
 
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(Mappings));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(Mappings));
 
 		private readonly IDictionary<string, PersistentClass> classes;
 		private readonly IDictionary<string, Mapping.Collection> collections;
@@ -247,7 +247,7 @@ namespace NHibernate.Cfg
 			{
 				if (existing.Equals(className))
 				{
-					log.Info("duplicate import: " + className + "->" + rename);
+					log.Info("duplicate import: {0}->{1}", className, rename);
 				}
 				else
 				{
@@ -509,7 +509,7 @@ namespace NHibernate.Cfg
 		{
 			var def = new TypeDef(typeClass, paramMap);
 			typeDefs[typeName] = def;
-			log.Debug("Added " + typeName + " with class " + typeClass);
+			log.Debug("Added {0} with class {1}", typeName, typeClass);
 		}
 
 		public TypeDef GetTypeDef(string typeName)
@@ -673,7 +673,7 @@ namespace NHibernate.Cfg
 			}
 			if (string.IsNullOrEmpty(condition) && fdef == null)
 			{
-				log.Debug(string.Format("Adding filter second pass [{0}]", filterName));
+				log.Debug("Adding filter second pass [{0}]", filterName);
 				filtersSecondPasses.Enqueue(new FilterSecondPassArgs(filterable, filterName));
 			}
 			else if (string.IsNullOrEmpty(condition) && fdef != null)

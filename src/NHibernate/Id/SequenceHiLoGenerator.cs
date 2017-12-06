@@ -35,7 +35,7 @@ namespace NHibernate.Id
 	/// </remarks>
 	public partial class SequenceHiLoGenerator : SequenceGenerator
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SequenceHiLoGenerator));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(SequenceHiLoGenerator));
 
 		/// <summary>
 		/// The name of the maximum low value parameter.
@@ -92,8 +92,8 @@ namespace NHibernate.Id
 				long hival = Convert.ToInt64(base.Generate(session, obj));
 				lo = (hival == 0) ? 1 : 0;
 				hi = hival * (maxLo + 1);
-				if (log.IsDebugEnabled)
-					log.Debug("new hi value: " + hival);
+				if (log.IsDebugEnabled())
+					log.Debug("new hi value: {0}", hival);
 			}
 			return IdentifierGeneratorFactory.CreateNumber(hi + lo++, returnClass);
 		}

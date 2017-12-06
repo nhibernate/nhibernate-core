@@ -17,7 +17,7 @@ namespace NHibernate.Driver
 	/// </remarks>
 	public class OdbcDriver : DriverBase
 	{
-		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(OdbcDriver));
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(OdbcDriver));
 
 		private byte? _dbDateTimeScale;
 
@@ -28,9 +28,9 @@ namespace NHibernate.Driver
 
 			// Explicit scale for DbType.DateTime. Seems required for at least MS SQL Server 2008+.
 			_dbDateTimeScale = PropertiesHelper.GetByte(Environment.OdbcDateTimeScale, settings, null);
-			if (_dbDateTimeScale != null && Log.IsInfoEnabled)
+			if (_dbDateTimeScale != null && Log.IsInfoEnabled())
 			{
-				Log.Info(string.Format("Will use scale {0} for DbType.DateTime parameters.", _dbDateTimeScale));
+				Log.Info("Will use scale {0} for DbType.DateTime parameters.", _dbDateTimeScale);
 			}
 		}
 

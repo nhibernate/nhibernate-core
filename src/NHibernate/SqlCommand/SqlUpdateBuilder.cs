@@ -12,7 +12,7 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public class SqlUpdateBuilder : SqlBaseBuilder, ISqlStringBuilder
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SqlUpdateBuilder));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(SqlUpdateBuilder));
 
 		private string tableName;
 		private string comment;
@@ -321,19 +321,21 @@ namespace NHibernate.SqlCommand
 				sqlBuilder.Add(whereString);
 			}
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				if (initialCapacity < sqlBuilder.Count)
 				{
-					log.Debug(
-						"The initial capacity was set too low at: " + initialCapacity + " for the UpdateSqlBuilder " +
-						"that needed a capacity of: " + sqlBuilder.Count + " for the table " + tableName);
+					log.Debug("The initial capacity was set too low at: {0} for the UpdateSqlBuilder that needed a capacity of: {1} for the table {2}",
+					          initialCapacity,
+					          sqlBuilder.Count,
+					          tableName);
 				}
 				else if (initialCapacity > 16 && ((float) initialCapacity / sqlBuilder.Count) > 1.2)
 				{
-					log.Debug(
-						"The initial capacity was set too high at: " + initialCapacity + " for the UpdateSqlBuilder " +
-						"that needed a capacity of: " + sqlBuilder.Count + " for the table " + tableName);
+					log.Debug("The initial capacity was set too high at: {0} for the UpdateSqlBuilder that needed a capacity of: {1} for the table {2}",
+					          initialCapacity,
+					          sqlBuilder.Count,
+					          tableName);
 				}
 			}
 

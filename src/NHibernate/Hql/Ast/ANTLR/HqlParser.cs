@@ -9,7 +9,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 {
 	public partial class HqlParser
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(HqlParser));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(HqlParser));
 
 		internal static readonly bool[] possibleIds;
 
@@ -125,9 +125,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 					if (input.LA(2) != LITERAL_by)
 					{
 						input.LT(1).Type = IDENT;
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 						{
-							log.Debug("weakKeywords() : new LT(1) token - " + input.LT(1));
+							log.Debug("weakKeywords() : new LT(1) token - {0}", input.LT(1));
 						}
 					}
 					break;
@@ -139,9 +139,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 						if (hqlToken != null && hqlToken.PossibleId)
 						{
 							hqlToken.Type = IDENT;
-							if (log.IsDebugEnabled)
+							if (log.IsDebugEnabled())
 							{
-								log.Debug("weakKeywords() : new LT(1) token - " + input.LT(1));
+								log.Debug("weakKeywords() : new LT(1) token - {0}", input.LT(1));
 							}
 						}
 					}
@@ -170,9 +170,9 @@ namespace NHibernate.Hql.Ast.ANTLR
                     if (input.LA(2) != LITERAL_by)
                     {
                         input.LT(1).Type = IDENT;
-                        if (log.IsDebugEnabled)
+                        if (log.IsDebugEnabled())
                         {
-                            log.Debug("weakKeywords() : new LT(1) token - " + input.LT(1));
+                            log.Debug("weakKeywords() : new LT(1) token - {0}", input.LT(1));
                         }
                     }
                     break;
@@ -184,9 +184,9 @@ namespace NHibernate.Hql.Ast.ANTLR
                         if (hqlToken.PossibleId)
                         {
                             hqlToken.Type = IDENT;
-                            if (log.IsDebugEnabled)
+                            if (log.IsDebugEnabled())
                             {
-                                log.Debug("weakKeywords() : new LT(1) token - " + input.LT(1));
+                                log.Debug("weakKeywords() : new LT(1) token - {0}", input.LT(1));
                             }
                         }
                     }
@@ -329,9 +329,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 				{
 					// Set it!
 					input.LT(2).Type = IDENT;
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
-						log.Debug("handleDotIdent() : new LT(2) token - " + input.LT(1));
+						log.Debug("handleDotIdent() : new LT(2) token - {0}", input.LT(1));
 					}
 				}
 			}

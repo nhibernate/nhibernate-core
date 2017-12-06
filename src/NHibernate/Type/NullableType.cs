@@ -22,12 +22,12 @@ namespace NHibernate.Type
 		static NullableType()
 		{
 			//cache this, because it was a significant performance cost
-			IsDebugEnabled = LoggerProvider.LoggerFor(typeof(IType).Namespace).IsDebugEnabled;
+			IsDebugEnabled = NHibernateLogger.For(typeof(IType).Namespace).IsDebugEnabled();
 		}
 
-		private IInternalLogger Log
+		private INHibernateLogger Log
 		{
-			get { return LoggerProvider.LoggerFor(GetType()); }
+			get { return NHibernateLogger.For(GetType()); }
 		}
 
 		private readonly SqlType _sqlType;
@@ -141,7 +141,7 @@ namespace NHibernate.Type
 			{
 				if (IsDebugEnabled)
 				{
-					Log.Debug("binding null to parameter: " + index);
+					Log.Debug("binding null to parameter: {0}", index);
 				}
 
 				//Do we check IsNullable?
@@ -154,7 +154,7 @@ namespace NHibernate.Type
 			{
 				if (IsDebugEnabled)
 				{
-					Log.Debug("binding '" + ToString(value) + "' to parameter: " + index);
+					Log.Debug("binding '{0}' to parameter: {1}", ToString(value), index);
 				}
 
 				Set(st, value, index, session);
@@ -219,7 +219,7 @@ namespace NHibernate.Type
 			{
 				if (IsDebugEnabled)
 				{
-					Log.Debug("returning null as column: " + name);
+					Log.Debug("returning null as column: {0}", name);
 				}
 				// TODO: add a method to NullableType.GetNullValue - if we want to
 				// use "MAGIC" numbers to indicate null values...
@@ -242,7 +242,7 @@ namespace NHibernate.Type
 
 				if (IsDebugEnabled)
 				{
-					Log.Debug("returning '" + ToString(val) + "' as column: " + name);
+					Log.Debug("returning '{0}' as column: {1}", ToString(val), name);
 				}
 
 				return val;

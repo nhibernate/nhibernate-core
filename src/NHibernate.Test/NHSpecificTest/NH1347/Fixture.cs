@@ -39,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1347
 					.UniqueResult<A>();
 				Assert.AreEqual("1", a.Name);
 				Assert.IsTrue(
-					spy.Appender.GetEvents()[0].MessageObject.ToString().Contains("limit")
+					spy.Appender.GetEvents()[0].RenderedMessage.Contains("limit")
 					);
 			}
 

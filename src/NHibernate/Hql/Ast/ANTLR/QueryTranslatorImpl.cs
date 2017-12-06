@@ -23,7 +23,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 	[CLSCompliant(false)]
 	public partial class QueryTranslatorImpl : IFilterTranslator
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(QueryTranslatorImpl));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(QueryTranslatorImpl));
 
 		private readonly string _queryIdentifier;
 		private readonly IASTNode _stageOneAst;
@@ -310,7 +310,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			// If the query is already compiled, skip the compilation.
 			if ( _compiled ) 
 			{
-				if ( log.IsDebugEnabled ) 
+				if ( log.IsDebugEnabled() ) 
 				{
 					log.Debug( "compile() : The query is already compiled, skipping..." );
 				}
@@ -364,9 +364,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 			{
 				// we do not actually propogate ANTLRExceptions as a cause, so
 				// log it here for diagnostic purposes
-				if ( log.IsInfoEnabled ) 
+				if ( log.IsInfoEnabled() ) 
 				{
-					log.Info( "converted antlr.RecognitionException", e );
+					log.Info(e, "converted antlr.RecognitionException");
 				}
 				throw QuerySyntaxException.Convert(e, _queryIdentifier);
 			}
@@ -436,7 +436,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 	public class HqlParseEngine
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(HqlParseEngine));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(HqlParseEngine));
 
 		private readonly string _hql;
 		private CommonTokenStream _tokens;
@@ -458,9 +458,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 			var parser = new HqlParser(_tokens) {TreeAdaptor = new ASTTreeAdaptor(), Filter = _filter};
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("parse() - HQL: " + _hql);
+				log.Debug("parse() - HQL: {0}", _hql);
 			}
 
 			try
@@ -580,7 +580,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 	internal class HqlSqlGenerator
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(HqlSqlGenerator));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(HqlSqlGenerator));
 
 		private readonly IASTNode _ast;
 		private readonly ISessionFactoryImplementor _sfi;
@@ -615,9 +615,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 					_sql = gen.GetSQL();
 
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
-						log.Debug("SQL: " + _sql);
+						log.Debug("SQL: {0}", _sql);
 					}
 				}
 				finally

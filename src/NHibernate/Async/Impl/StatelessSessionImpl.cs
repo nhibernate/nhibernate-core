@@ -570,9 +570,9 @@ namespace NHibernate.Impl
 			{
 				IEntityPersister persister = GetEntityPersister(entityName, entity);
 				object id = persister.GetIdentifier(entity);
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("refreshing transient " + MessageHelper.InfoString(persister, id, Factory));
+					log.Debug("refreshing transient {0}", MessageHelper.InfoString(persister, id, Factory));
 				}
 				//from H3.2 TODO : can this ever happen???
 				//		EntityKey key = new EntityKey( id, persister, source.getEntityMode() );

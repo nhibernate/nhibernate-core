@@ -10,7 +10,7 @@ namespace NHibernate.Persister.Collection
 		private readonly string queryName;
 		private readonly ICollectionPersister persister;
 
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(NamedQueryCollectionInitializer));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(NamedQueryCollectionInitializer));
 
 		public NamedQueryCollectionInitializer(string queryName, ICollectionPersister persister)
 		{
@@ -20,9 +20,9 @@ namespace NHibernate.Persister.Collection
 
 		public void Initialize(object key, ISessionImplementor session)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug(string.Format("initializing collection: {0} using named query: {1}", persister.Role, queryName));
+				log.Debug("initializing collection: {0} using named query: {1}", persister.Role, queryName);
 			}
 
 			//TODO: is there a more elegant way than downcasting?

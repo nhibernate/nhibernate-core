@@ -13,7 +13,7 @@ namespace NHibernate.Impl
 	public sealed class Printer
 	{
 		private readonly ISessionFactoryImplementor _factory;
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(Printer));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(Printer));
 
 		/// <summary>
 		/// 
@@ -85,7 +85,7 @@ namespace NHibernate.Impl
 
 		public void ToString(object[] entities)
 		{
-			if (!log.IsDebugEnabled || entities.Length == 0)
+			if (!log.IsDebugEnabled() || entities.Length == 0)
 			{
 				return;
 			}

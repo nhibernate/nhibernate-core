@@ -15,7 +15,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public partial class AbstractReassociateEventListener
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(AbstractReassociateEventListener));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(AbstractReassociateEventListener));
 
 		/// <summary>
 		/// Associates a given entity (either transient or associated with another session) to the given session.
@@ -27,9 +27,9 @@ namespace NHibernate.Event.Default
 		/// <returns> An EntityEntry representing the entity within this session. </returns>
 		protected EntityEntry Reassociate(AbstractEvent @event, object entity, object id, IEntityPersister persister)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Reassociating transient instance: " + MessageHelper.InfoString(persister, id, @event.Session.Factory));
+				log.Debug("Reassociating transient instance: {0}", MessageHelper.InfoString(persister, id, @event.Session.Factory));
 			}
 
 			IEventSource source = @event.Session;

@@ -19,8 +19,7 @@ namespace NHibernate
 		public NonUniqueResultException(int resultCount)
 			: base("query did not return a unique result: " + resultCount.ToString())
 		{
-			LoggerProvider.LoggerFor(typeof(NonUniqueResultException)).Error("query did not return a unique result: " +
-																		 resultCount.ToString());
+			NHibernateLogger.For(typeof(NonUniqueResultException)).Error("query did not return a unique result: {0}", resultCount);
 		}
 
 		/// <summary>

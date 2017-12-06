@@ -84,7 +84,7 @@ namespace NHibernate.Id
 	/// </remarks>
 	public static partial class IdentifierGeneratorFactory
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (IdentifierGeneratorFactory));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (IdentifierGeneratorFactory));
 
 		/// <summary> Get the generated identifier when using identity columns</summary>
 		/// <param name="rs">The <see cref="DbDataReader"/> to read the identifier value from.</param>
@@ -99,9 +99,9 @@ namespace NHibernate.Id
 			}
 			object id = Get(rs, type, session);
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Natively generated identity: " + id);
+				log.Debug("Natively generated identity: {0}", id);
 			}
 			return id;
 		}

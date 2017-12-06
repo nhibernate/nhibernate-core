@@ -151,7 +151,7 @@ namespace NHibernate.Engine
 					}
 					catch (CacheException e)
 					{
-						log.Error( "could not release a cache lock", e);
+						log.Error(e, "could not release a cache lock");
 						// continue loop
 					}
 					catch (Exception e)

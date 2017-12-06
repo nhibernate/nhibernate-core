@@ -23,7 +23,7 @@ namespace NHibernate.Engine.Query
 	[Serializable]
 	public partial class NativeSQLQueryPlan
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(NativeSQLQueryPlan));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(NativeSQLQueryPlan));
 
 		private readonly string sourceQuery;
 		private readonly SQLCustomQuery customQuery;
