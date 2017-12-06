@@ -88,12 +88,7 @@ namespace NHibernate.Test.SecondLevelCacheTest
 			Assert.That(invalidations.All(x => x.Count == 1 && x.First() == "Item"), Is.True);
 
 		}
-
-		private bool IsRight(HashSet<string> x)
-		{
-			return x.Count == 1 && x.First() == "Item";
-		}
-
+		
 		public void CleanUp()
 		{
 			using (ISession s = OpenSession())
