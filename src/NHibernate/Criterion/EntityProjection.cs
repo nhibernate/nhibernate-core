@@ -7,8 +7,9 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Criterion
 {
-	using TThis = EntityProjection;
-
+	/// <summary>
+	/// Entity projection
+	/// </summary>
 	[Serializable]
 	public class EntityProjection : IProjection
 	{
@@ -25,14 +26,30 @@ namespace NHibernate.Criterion
 		{
 		}
 
+		/// <summary>
+		/// Entity projection for given type and alias
+		/// </summary>
+		/// <param name="rootEntity">Type of entity</param>
+		/// <param name="entityAlias">Entity alias</param>
 		public EntityProjection(System.Type rootEntity, string entityAlias)
 		{
 			RootEntity = rootEntity;
 			_entityAlias = entityAlias;
 		}
 
+		/// <summary>
+		/// Fetch lazy properties
+		/// </summary>
 		public bool FetchLazyProperties { get; set; }
+
+		/// <summary>
+		/// Read-only entity
+		/// </summary>
 		public bool IsReadOnly { get; set; }
+
+		/// <summary>
+		/// Lazy load entity
+		/// </summary>
 		public bool Lazy { get; set; }
 
 		internal string[] IdentifierColumnAliases { get; private set; }
@@ -42,19 +59,34 @@ namespace NHibernate.Criterion
 
 		#region Configuration methods
 
-		public TThis SetLazy(bool lazy = true)
+		/// <summary>
+		/// Lazy load entity
+		/// </summary>
+		/// <param name="lazy"></param>
+		/// <returns></returns>
+		public EntityProjection SetLazy(bool lazy = true)
 		{
 			Lazy = lazy;
 			return this;
 		}
 
-		public TThis SetAllPropertyFetch(bool fetchLazyProperties = true)
+		/// <summary>
+		/// Fetch lazy properties
+		/// </summary>
+		/// <param name="fetchLazyProperties"></param>
+		/// <returns></returns>
+		public EntityProjection SetFetchLazyProperties(bool fetchLazyProperties = true)
 		{
 			FetchLazyProperties = fetchLazyProperties;
 			return this;
 		}
 
-		public TThis SetReadonly(bool isReadOnly = true)
+		/// <summary>
+		/// Set the read-only mode for entity
+		/// </summary>
+		/// <param name="isReadOnly"></param>
+		/// <returns></returns>
+		public EntityProjection SetReadonly(bool isReadOnly = true)
 		{
 			IsReadOnly = isReadOnly;
 			return this;
@@ -94,14 +126,14 @@ namespace NHibernate.Criterion
 			return _types;
 		}
 
-		public string[] GetColumnAliases(int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
+		string[] IProjection.GetColumnAliases(int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			SetFields(criteria, criteriaQuery);
 
 			return _columnAliases;
 		}
 
-		public string[] GetColumnAliases(string alias, int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
+		string[] IProjection.GetColumnAliases(string alias, int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			SetFields(criteria, criteriaQuery);
 
@@ -149,7 +181,9 @@ namespace NHibernate.Criterion
 				_entityAlias = criteria.Alias;
 			}
 
-			Persister = (IQueryable) criteriaQuery.Factory.GetEntityPersister(RootEntity.FullName);
+			Persister = criteriaQuery.Factory.GetEntityPersister(RootEntity.FullName) as IQueryable;
+			if (Persister == null)
+				throw new HibernateException($"Projecting to entities requires a '{typeof(IQueryable).FullName}' persister, '{RootEntity.FullName}' does not have one.");
 
 			ICriteria subcriteria = criteria.GetCriteriaByAlias(_entityAlias);
 			if (subcriteria == null)

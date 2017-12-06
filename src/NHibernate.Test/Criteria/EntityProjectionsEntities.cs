@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace NHibernate.Test.NHSpecificTest.GH948
+namespace NHibernate.Test.Criteria
 {
 	public class EntitySimpleChild
 	{
@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.GH948
 		public virtual Guid Id { get; set; }
 
 		public virtual int Version { get; set; }
-		
+
 		public virtual string Name { get; set; }
 
 		public virtual string LazyProp { get; set; }
