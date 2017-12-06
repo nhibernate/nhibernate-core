@@ -37,7 +37,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			Table table = mappings.AddTable(schema, catalog, tableName, classSchema.Subselect, rootClass.IsAbstract.GetValueOrDefault(), classSchema.schemaaction);
 			((ITableOwner) rootClass).Table = table;
 
-			log.InfoFormat("Mapping class: {0} -> {1}", rootClass.EntityName, rootClass.Table.Name);
+			log.Info("Mapping class: {0} -> {1}", rootClass.EntityName, rootClass.Table.Name);
 
 			rootClass.IsMutable = classSchema.mutable;
 			rootClass.Where = classSchema.where ?? rootClass.Where;

@@ -11,7 +11,7 @@ namespace NHibernate.Engine
 	/// </summary>
 	public class VersionValue
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(VersionValue));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(VersionValue));
 
 		private readonly object value;
 
@@ -36,9 +36,9 @@ namespace NHibernate.Engine
 		/// </summary>
 		public virtual bool? IsUnsaved(object version)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("unsaved-value: " + value);
+				log.Debug("unsaved-value: {0}", value);
 			}
 			return version == null || version.Equals(value);
 		}
@@ -47,6 +47,8 @@ namespace NHibernate.Engine
 		{
 			return value;
 		}
+
+		private const string UnsavedStrategyLog = "version unsaved-value strategy {0}";
 
 		/// <summary>
 		/// Assume the transient instance is newly instantiated if the version
@@ -58,7 +60,7 @@ namespace NHibernate.Engine
 		{
 			public override bool? IsUnsaved(object version)
 			{
-				log.Debug("version unsaved-value strategy NULL");
+				log.Debug(UnsavedStrategyLog, "NULL");
 				return version == null;
 			}
 
@@ -78,7 +80,7 @@ namespace NHibernate.Engine
 		{
 			public override bool? IsUnsaved(object version)
 			{
-				log.Debug("version unsaved-value strategy UNDEFINED");
+				log.Debug(UnsavedStrategyLog, "UNDEFINED");
 				if (version == null)
 					return true;
 				else
@@ -101,7 +103,7 @@ namespace NHibernate.Engine
 		{
 			public override bool? IsUnsaved(object version)
 			{
-				log.Debug("version unsaved-value strategy NEGATIVE");
+				log.Debug(UnsavedStrategyLog, "NEGATIVE");
 				if (version is short || version is int || version is long)
 				{
 					return Convert.ToInt64(version) < 0L;

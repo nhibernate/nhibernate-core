@@ -44,7 +44,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				                              unionSubclass.IsAbstract.GetValueOrDefault(), unionSubclassMapping.Subselect, denormalizedSuperTable);
 			((ITableOwner)unionSubclass).Table = mytable;
 
-			log.InfoFormat("Mapping union-subclass: {0} -> {1}", unionSubclass.EntityName, unionSubclass.Table.Name);
+			log.Info("Mapping union-subclass: {0} -> {1}", unionSubclass.EntityName, unionSubclass.Table.Name);
 
 			// properties
 			new PropertiesBinder(mappings, unionSubclass, dialect).Bind(unionSubclassMapping.Properties, inheritedMetas);

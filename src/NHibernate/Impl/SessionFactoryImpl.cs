@@ -90,7 +90,7 @@ namespace NHibernate.Impl
 
 		#endregion
 
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SessionFactoryImpl));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(SessionFactoryImpl));
 		private static readonly IIdentifierGenerator UuidGenerator = new UUIDHexGenerator();
 
 		[NonSerialized]
@@ -183,14 +183,14 @@ namespace NHibernate.Impl
 			sqlFunctionRegistry = new SQLFunctionRegistry(settings.Dialect, cfg.SqlFunctions);
 			eventListeners = listeners;
 			filters = new Dictionary<string, FilterDefinition>(cfg.FilterDefinitions);
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Session factory constructed with filter configurations : " + CollectionPrinter.ToString(filters));
+				log.Debug("Session factory constructed with filter configurations : {0}", CollectionPrinter.ToString(filters));
 			}
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("instantiating session factory with properties: " + CollectionPrinter.ToString(properties));
+				log.Debug("instantiating session factory with properties: {0}", CollectionPrinter.ToString(properties));
 			}
 
 			try
@@ -398,7 +398,7 @@ namespace NHibernate.Impl
 					foreach (KeyValuePair<string, HibernateException> pair in errors)
 					{
 						failingQueries.Append('{').Append(pair.Key).Append('}');
-						log.Error("Error in named query: " + pair.Key, pair.Value);
+						log.Error(pair.Value, "Error in named query: {0}", pair.Key);
 					}
 					throw new HibernateException(failingQueries.ToString());
 				}
@@ -877,9 +877,9 @@ namespace NHibernate.Impl
 			IEntityPersister p = GetEntityPersister(persistentClass.FullName);
 			if (p.HasCache)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("evicting second-level cache: " + MessageHelper.InfoString(p, id));
+					log.Debug("evicting second-level cache: {0}", MessageHelper.InfoString(p, id));
 				}
 				CacheKey ck = GenerateCacheKeyForEvict(id, p.IdentifierType, p.RootEntityName);
 				p.Cache.Remove(ck);
@@ -891,9 +891,9 @@ namespace NHibernate.Impl
 			IEntityPersister p = GetEntityPersister(persistentClass.FullName);
 			if (p.HasCache)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("evicting second-level cache: " + p.EntityName);
+					log.Debug("evicting second-level cache: {0}", p.EntityName);
 				}
 				p.Cache.Clear();
 			}
@@ -904,9 +904,9 @@ namespace NHibernate.Impl
 			IEntityPersister p = GetEntityPersister(entityName);
 			if (p.HasCache)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("evicting second-level cache: " + p.EntityName);
+					log.Debug("evicting second-level cache: {0}", p.EntityName);
 				}
 				p.Cache.Clear();
 			}
@@ -917,9 +917,9 @@ namespace NHibernate.Impl
 			IEntityPersister p = GetEntityPersister(entityName);
 			if (p.HasCache)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("evicting second-level cache: " + MessageHelper.InfoString(p, id, this));
+					log.Debug("evicting second-level cache: {0}", MessageHelper.InfoString(p, id, this));
 				}
 				CacheKey cacheKey = GenerateCacheKeyForEvict(id, p.IdentifierType, p.RootEntityName);
 				p.Cache.Remove(cacheKey);
@@ -931,9 +931,9 @@ namespace NHibernate.Impl
 			ICollectionPersister p = GetCollectionPersister(roleName);
 			if (p.HasCache)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("evicting second-level cache: " + MessageHelper.CollectionInfoString(p, id));
+					log.Debug("evicting second-level cache: {0}", MessageHelper.CollectionInfoString(p, id));
 				}
 				CacheKey ck = GenerateCacheKeyForEvict(id, p.KeyType, p.Role);
 				p.Cache.Remove(ck);
@@ -959,9 +959,9 @@ namespace NHibernate.Impl
 			ICollectionPersister p = GetCollectionPersister(roleName);
 			if (p.HasCache)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("evicting second-level cache: " + p.Role);
+					log.Debug("evicting second-level cache: {0}", p.Role);
 				}
 				p.Cache.Clear();
 			}
@@ -1153,7 +1153,7 @@ namespace NHibernate.Impl
 			IDictionary<string, HibernateException> errors = new Dictionary<string, HibernateException>();
 
 			// Check named HQL queries
-			log.Debug("Checking " + namedQueries.Count + " named HQL queries");
+			log.Debug("Checking {0} named HQL queries", namedQueries.Count);
 			foreach (var entry in namedQueries)
 			{
 				string queryName = entry.Key;
@@ -1161,7 +1161,7 @@ namespace NHibernate.Impl
 				// this will throw an error if there's something wrong.
 				try
 				{
-					log.Debug("Checking named query: " + queryName);
+					log.Debug("Checking named query: {0}", queryName);
 					//TODO: BUG! this currently fails for named queries for non-POJO entities
 					queryPlanCache.GetHQLQueryPlan(qd.QueryString.ToQueryExpression(), false, new CollectionHelper.EmptyMapClass<string, IFilter>());
 				}
@@ -1175,7 +1175,7 @@ namespace NHibernate.Impl
 				}
 			}
 
-			log.Debug("Checking " + namedSqlQueries.Count + " named SQL queries");
+			log.Debug("Checking {0} named SQL queries", namedSqlQueries.Count);
 			foreach (KeyValuePair<string, NamedSQLQueryDefinition> entry in namedSqlQueries)
 			{
 				string queryName = entry.Key;
@@ -1183,7 +1183,7 @@ namespace NHibernate.Impl
 				// this will throw an error if there's something wrong.
 				try
 				{
-					log.Debug("Checking named SQL query: " + queryName);
+					log.Debug("Checking named SQL query: {0}", queryName);
 					// TODO : would be really nice to cache the spec on the query-def so as to not have to re-calc the hash;
 					// currently not doable though because of the resultset-ref stuff...
 					NativeSQLQuerySpecification spec;
@@ -1243,7 +1243,7 @@ namespace NHibernate.Impl
 			}
 			catch (Exception e)
 			{
-				log.Error("Unable to construct current session context [" + impl + "]", e);
+				log.Error(e, "Unable to construct current session context [{0}]", impl);
 				return null;
 			}
 		}
@@ -1282,7 +1282,7 @@ namespace NHibernate.Impl
 		{
 			// NH specific: implementing return type covariance with interface is a mess in .Net.
 			private T _this;
-			private static readonly IInternalLogger _log = LoggerProvider.LoggerFor(typeof(SessionBuilderImpl<T>));
+			private static readonly INHibernateLogger _log = NHibernateLogger.For(typeof(SessionBuilderImpl<T>));
 
 			private readonly SessionFactoryImpl _sessionFactory;
 			private IInterceptor _interceptor;

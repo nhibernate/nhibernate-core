@@ -103,7 +103,7 @@ namespace NHibernate.Id.Enhanced
 				}
 				catch (Exception ex)
 				{
-					log.Error("Unable to read or initialize hi value in " + TableName, ex);
+					log.Error(ex, "Unable to read or initialize hi value in {0}", TableName);
 					throw;
 				}
 
@@ -126,7 +126,7 @@ namespace NHibernate.Id.Enhanced
 				}
 				catch (Exception ex)
 				{
-					log.Error("Unable to update hi value in " + TableName, ex);
+					log.Error(ex, "Unable to update hi value in {0}", TableName);
 					throw;
 				}
 			}

@@ -55,8 +55,8 @@ namespace NHibernate.Engine
 			object id = entityEntry.Id;
 			object[] hydratedState = entityEntry.LoadedState;
 
-			if (log.IsDebugEnabled)
-				log.Debug("resolving associations for " + MessageHelper.InfoString(persister, id, session.Factory));
+			if (log.IsDebugEnabled())
+				log.Debug("resolving associations for {0}", MessageHelper.InfoString(persister, id, session.Factory));
 
 			IType[] types = persister.PropertyTypes;
 			for (int i = 0; i < hydratedState.Length; i++)
@@ -88,8 +88,8 @@ namespace NHibernate.Engine
 
 			if (persister.HasCache && session.CacheMode.HasFlag(CacheMode.Put))
 			{
-				if (log.IsDebugEnabled)
-					log.Debug("adding entity to second-level cache: " + MessageHelper.InfoString(persister, id, session.Factory));
+				if (log.IsDebugEnabled())
+					log.Debug("adding entity to second-level cache: {0}", MessageHelper.InfoString(persister, id, session.Factory));
 
 				object version = Versioning.GetVersion(hydratedState, persister);
 				CacheEntry entry =
@@ -152,8 +152,8 @@ namespace NHibernate.Engine
 				}
 			}
 
-			if (log.IsDebugEnabled)
-				log.Debug("done materializing entity " + MessageHelper.InfoString(persister, id, session.Factory));
+			if (log.IsDebugEnabled())
+				log.Debug("done materializing entity {0}", MessageHelper.InfoString(persister, id, session.Factory));
 
 			if (statsEnabled)
 			{

@@ -44,12 +44,12 @@ namespace NHibernate.Impl
 				bool cacheable = session.Factory.Settings.IsQueryCacheEnabled && isCacheable;
 				combinedParameters = CreateCombinedQueryParameters();
 
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.DebugFormat("Multi query with {0} queries.", queries.Count);
+					log.Debug("Multi query with {0} queries.", queries.Count);
 					for (int i = 0; i < queries.Count; i++)
 					{
-						log.DebugFormat("Query #{0}: {1}", i, queries[i]);
+						log.Debug("Query #{0}: {1}", i, queries[i]);
 					}
 				}
 
@@ -86,9 +86,9 @@ namespace NHibernate.Impl
 			{
 				using (var reader = await (resultSetsCommand.GetReaderAsync(commandTimeout != RowSelection.NoValue ? commandTimeout : (int?)null, cancellationToken)).ConfigureAwait(false))
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
-						log.DebugFormat("Executing {0} queries", translators.Count);
+						log.Debug("Executing {0} queries", translators.Count);
 					}
 					for (int i = 0; i < translators.Count; i++)
 					{
@@ -118,7 +118,7 @@ namespace NHibernate.Impl
 						translator.Loader.HandleEmptyCollections(parameter.CollectionKeys, reader, session);
 						EntityKey[] keys = new EntityKey[entitySpan]; // we can reuse it each time
 
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 						{
 							log.Debug("processing result set");
 						}
@@ -127,9 +127,9 @@ namespace NHibernate.Impl
 						int count;
 						for (count = 0; count < maxRows && await (reader.ReadAsync(cancellationToken)).ConfigureAwait(false); count++)
 						{
-							if (log.IsDebugEnabled)
+							if (log.IsDebugEnabled())
 							{
-								log.Debug("result set row: " + count);
+								log.Debug("result set row: {0}", count);
 							}
 
 							rowCount++;
@@ -144,16 +144,16 @@ namespace NHibernate.Impl
 							}
 						}
 
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 						{
-							log.Debug(string.Format("done processing result set ({0} rows)", count));
+							log.Debug("done processing result set ({0} rows)", count);
 						}
 
 						results.Add(tempResults);
 
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 						{
-							log.DebugFormat("Query {0} returned {1} results", i, tempResults.Count);
+							log.Debug("Query {0} returned {1} results", i, tempResults.Count);
 						}
 
 						await (reader.NextResultAsync(cancellationToken)).ConfigureAwait(false);
@@ -175,8 +175,7 @@ namespace NHibernate.Impl
 			}
 			catch (Exception sqle)
 			{
-				var message = string.Format("Failed to execute multi query: [{0}]", resultSetsCommand.Sql);
-				log.Error(message, sqle);
+				log.Error(sqle, "Failed to execute multi query: [{0}]", resultSetsCommand.Sql);
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "Failed to execute multi query", resultSetsCommand.Sql);
 			}
 

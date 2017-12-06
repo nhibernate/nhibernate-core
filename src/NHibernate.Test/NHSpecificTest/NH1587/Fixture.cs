@@ -25,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1587
 				cfg.BuildSessionFactory();
 				foreach (LoggingEvent loggingEvent in ls.Appender.GetEvents())
 				{
-					if (((string)(loggingEvent.MessageObject)).StartsWith("Create Instantiator using optimizer"))
+					if (loggingEvent.RenderedMessage.StartsWith("Create Instantiator using optimizer"))
 					{
 						useOptimizer = true;
 						break;

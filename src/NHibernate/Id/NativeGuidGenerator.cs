@@ -15,7 +15,7 @@ namespace NHibernate.Id
 	/// </summary>
 	public partial class NativeGuidGenerator : IIdentifierGenerator
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(NativeGuidGenerator));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(NativeGuidGenerator));
 		private readonly IType identifierType = new GuidType();
 
 		#region Implementation of IIdentifierGenerator
@@ -40,7 +40,7 @@ namespace NHibernate.Id
 					{
 						reader.Close();
 					}
-					log.Debug("GUID identifier generated: " + result);
+					log.Debug("GUID identifier generated: {0}", result);
 					return result;
 				}
 				finally

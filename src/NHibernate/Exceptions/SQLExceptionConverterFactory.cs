@@ -9,7 +9,7 @@ namespace NHibernate.Exceptions
 	/// <summary> A factory for building SQLExceptionConverter instances. </summary>
 	public static class SQLExceptionConverterFactory
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SQLExceptionConverterFactory));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(SQLExceptionConverterFactory));
 
 		private class MinimalSQLExceptionConverter : ISQLExceptionConverter
 		{
@@ -59,7 +59,7 @@ namespace NHibernate.Exceptions
 				}
 				catch (HibernateException e)
 				{
-					log.Warn("Unable to configure SQLExceptionConverter", e);
+					log.Warn(e, "Unable to configure SQLExceptionConverter");
 					throw;
 				}
 			}
@@ -80,7 +80,7 @@ namespace NHibernate.Exceptions
 		{
 			try
 			{
-				log.Debug("Attempting to construct instance of specified SQLExceptionConverter [" + converterClassName + "]");
+				log.Debug("Attempting to construct instance of specified SQLExceptionConverter [{0}]", converterClassName);
 				System.Type converterClass = ReflectHelper.ClassForName(converterClassName);
 
 				// First, try to find a matching constructor accepting a ViolatedConstraintNameExtracter param...
@@ -109,7 +109,7 @@ namespace NHibernate.Exceptions
 			}
 			catch (Exception t)
 			{
-				log.Warn("Unable to construct instance of specified SQLExceptionConverter", t);
+				log.Warn(t, "Unable to construct instance of specified SQLExceptionConverter");
 			}
 
 			return null;

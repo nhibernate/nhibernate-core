@@ -26,7 +26,7 @@ namespace NHibernate.Impl
 	[Serializable]
 	public partial class StatelessSessionImpl : AbstractSessionImpl, IStatelessSession
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(StatelessSessionImpl));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(StatelessSessionImpl));
 
 		[NonSerialized]
 		private readonly ConnectionManager connectionManager;
@@ -43,9 +43,9 @@ namespace NHibernate.Impl
 				connectionManager = new ConnectionManager(this, options.UserSuppliedConnection, ConnectionReleaseMode.AfterTransaction,
 					EmptyInterceptor.Instance, options.ShouldAutoJoinTransaction);
 
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.DebugFormat("[session-id={0}] opened session for session factory: [{1}/{2}]",
+					log.Debug("[session-id={0}] opened session for session factory: [{1}/{2}]",
 						SessionId, factory.Name, factory.Uuid);
 				}
 
@@ -657,9 +657,9 @@ namespace NHibernate.Impl
 			{
 				IEntityPersister persister = GetEntityPersister(entityName, entity);
 				object id = persister.GetIdentifier(entity);
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("refreshing transient " + MessageHelper.InfoString(persister, id, Factory));
+					log.Debug("refreshing transient {0}", MessageHelper.InfoString(persister, id, Factory));
 				}
 				//from H3.2 TODO : can this ever happen???
 				//		EntityKey key = new EntityKey( id, persister, source.getEntityMode() );

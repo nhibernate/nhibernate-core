@@ -16,7 +16,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public partial class DefaultEvictEventListener : IEvictEventListener
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultEvictEventListener));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DefaultEvictEventListener));
 
 		public virtual void OnEvict(EvictEvent @event)
 		{
@@ -60,9 +60,9 @@ namespace NHibernate.Event.Default
 		protected virtual void DoEvict(object obj, EntityKey key, IEntityPersister persister, IEventSource session)
 		{
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("evicting " + MessageHelper.InfoString(persister));
+				log.Debug("evicting {0}", MessageHelper.InfoString(persister));
 			}
 
 			// remove all collections for the entity from the session-level cache
