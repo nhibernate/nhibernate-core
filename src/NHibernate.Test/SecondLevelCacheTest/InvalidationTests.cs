@@ -1,15 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Impl;
 using NHibernate.Test.SecondLevelCacheTests;
 using NSubstitute;
 using NUnit.Framework;
-using Environment = System.Environment;
 
 namespace NHibernate.Test.SecondLevelCacheTest
 {
@@ -23,8 +20,8 @@ namespace NHibernate.Test.SecondLevelCacheTest
 		protected override void Configure(Configuration configuration)
 		{
 			base.Configure(configuration);
-			configuration.Properties[Cfg.Environment.CacheProvider] = typeof(HashtableCacheProvider).AssemblyQualifiedName;
-			configuration.Properties[Cfg.Environment.UseQueryCache] = "true";
+			configuration.Properties[Environment.CacheProvider] = typeof(HashtableCacheProvider).AssemblyQualifiedName;
+			configuration.Properties[Environment.UseQueryCache] = "true";
 		}
 
 		[Test]
@@ -35,7 +32,18 @@ namespace NHibernate.Test.SecondLevelCacheTest
 				x => x.UpdateTimestampsCache,
 				cache);
 
-			var items = new List<Item>();
+			//"Received" assertions can not be used since the collection is reused and cleared between calls.
+			//The received args are cloned and stored
+			var preInvalidations = new List<IReadOnlyCollection<string>>();
+			var invalidations = new List<IReadOnlyCollection<string>>();
+
+			cache
+				.When(x=>x.PreInvalidate(Arg.Any<IReadOnlyCollection<string>>()))
+				.Do(x=>preInvalidations.Add(((IReadOnlyCollection<string>) x[0]).ToList()));
+			cache
+				.When(x => x.Invalidate(Arg.Any<IReadOnlyCollection<string>>()))
+				.Do(x => invalidations.Add(((IReadOnlyCollection<string>) x[0]).ToList()));
+
 			using (ISession session = OpenSession())
 			{
 				using (ITransaction tx = session.BeginTransaction())
@@ -73,8 +81,17 @@ namespace NHibernate.Test.SecondLevelCacheTest
 			}
 
 			//Should receive one preinvalidation and one invalidation per commit
-			cache.Received(3).PreInvalidate(Arg.Is<IReadOnlyCollection<object>>(x => x.Count == 1 && (string) x.First() == "Item"));
-			cache.Received(3).Invalidate(Arg.Is<IReadOnlyCollection<object>>(x => x.Count == 1 && (string) x.First() == "Item"));
+			Assert.That(preInvalidations.Count,Is.EqualTo(3));
+			Assert.That(preInvalidations.All(x => x.Count == 1 && x.First() == "Item"), Is.True);
+
+			Assert.That(invalidations.Count, Is.EqualTo(3));
+			Assert.That(invalidations.All(x => x.Count == 1 && x.First() == "Item"), Is.True);
+
+		}
+
+		private bool IsRight(HashSet<string> x)
+		{
+			return x.Count == 1 && x.First() == "Item";
 		}
 
 		public void CleanUp()

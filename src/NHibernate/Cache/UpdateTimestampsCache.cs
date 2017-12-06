@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 using NHibernate.Cfg;
@@ -33,13 +34,15 @@ namespace NHibernate.Cache
 			updateTimestamps = settings.CacheProvider.BuildCache(regionName, props);
 		}
 
+		//TODO: Make obsolete
 		public void PreInvalidate(object[] spaces)
 		{
-			PreInvalidate((IReadOnlyList<object>) spaces);
+			//Only for backwards compatibility.
+			PreInvalidate(spaces.OfType<string>().ToList());
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		public virtual void PreInvalidate(IReadOnlyCollection<object> spaces)
+		public virtual void PreInvalidate(IReadOnlyCollection<string> spaces)
 		{
 			//TODO: to handle concurrent writes correctly, this should return a Lock to the client
 			long ts = updateTimestamps.NextTimestamp() + updateTimestamps.Timeout;
@@ -51,14 +54,15 @@ namespace NHibernate.Cache
 			//TODO: return new Lock(ts);
 		}
 
-		/// <summary></summary>
+		//TODO: Make obsolete
 		public void Invalidate(object[] spaces)
 		{
-			Invalidate((IReadOnlyList<object>) spaces);
+			//Only for backwards compatibility.
+			Invalidate(spaces.OfType<string>().ToList());
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		public virtual void Invalidate(IReadOnlyCollection<object> spaces)
+		public virtual void Invalidate(IReadOnlyCollection<string> spaces)
 		{
 			//TODO: to handle concurrent writes correctly, the client should pass in a Lock
 			long ts = updateTimestamps.NextTimestamp();
