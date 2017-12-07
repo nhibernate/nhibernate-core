@@ -38,7 +38,7 @@ namespace NHibernate.Impl
 
 		private bool isAlreadyDisposed;
 
-		private static readonly IInternalLogger logger = LoggerProvider.LoggerFor(typeof(AbstractSessionImpl));
+		private static readonly INHibernateLogger logger = NHibernateLogger.For(typeof(AbstractSessionImpl));
 
 		public Guid SessionId { get; }
 
@@ -55,6 +55,8 @@ namespace NHibernate.Impl
 
 		#region ISessionImplementor Members
 
+		// Since v5.1
+		[Obsolete("This method has no more usages in NHibernate and will be removed.")]
 		public void Initialize()
 		{
 			BeginProcess()?.Dispose();

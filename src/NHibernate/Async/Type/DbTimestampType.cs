@@ -66,7 +66,7 @@ namespace NHibernate.Type
 					rs = await (session.Batcher.ExecuteReaderAsync(ps, cancellationToken)).ConfigureAwait(false);
 					await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false);
 					var ts = rs.GetDateTime(0);
-					log.DebugFormat("current timestamp retreived from db : {0} (ticks={1})", ts, ts.Ticks);
+					log.Debug("current timestamp retreived from db : {0} (ticks={1})", ts, ts.Ticks);
 					return ts;
 				}
 				catch (DbException sqle)
@@ -87,7 +87,7 @@ namespace NHibernate.Type
 						}
 						catch (DbException sqle)
 						{
-							log.Warn("unable to clean up prepared statement", sqle);
+							log.Warn(sqle, "unable to clean up prepared statement");
 						}
 					}
 				}

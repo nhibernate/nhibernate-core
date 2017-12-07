@@ -21,7 +21,7 @@ namespace NHibernate.Type
 	[Serializable]
 	public abstract partial class CollectionType : AbstractType, IAssociationType
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(CollectionType));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(CollectionType));
 
 		private static readonly object NotNullCollection = new object(); // place holder
 		public static readonly object UnfetchedCollection = new object(); // place holder
@@ -267,9 +267,9 @@ namespace NHibernate.Type
 					}
 				}
 
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Created collection wrapper: " + MessageHelper.CollectionInfoString(persister, collection, key, session));
+					log.Debug("Created collection wrapper: {0}", MessageHelper.CollectionInfoString(persister, collection, key, session));
 				}
 			}
 			collection.Owner = owner;

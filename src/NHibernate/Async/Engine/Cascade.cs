@@ -9,7 +9,7 @@
 
 
 using System.Collections;
-
+using System.Collections.Generic;
 using NHibernate.Collection;
 using NHibernate.Event;
 using NHibernate.Persister.Collection;
@@ -55,7 +55,7 @@ namespace NHibernate.Engine
 			cancellationToken.ThrowIfCancellationRequested();
 			if (persister.HasCascades || action.RequiresNoCascadeChecking)
 			{
-				log.Info("processing cascade " + action + " for: " + persister.EntityName);
+				log.Info("processing cascade {0} for: {1}", action, persister.EntityName);
 
 				IType[] types = persister.PropertyTypes;
 				CascadeStyle[] cascadeStyles = persister.PropertyCascadeStyles;
@@ -80,7 +80,7 @@ namespace NHibernate.Engine
 					}
 				}
 
-				log.Info("done processing cascade " + action + " for: " + persister.EntityName);
+				log.Info("done processing cascade {0} for: {1}", action, persister.EntityName);
 			}
 		}
 
@@ -125,7 +125,7 @@ namespace NHibernate.Engine
 							{
 								EntityType entityType = (EntityType)type;
 								object loadedValue;
-								if (!componentPathStack.Any())
+								if (componentPathStack.Count == 0)
 								{
 									// association defined on entity
 									loadedValue = entry.GetLoadedValue(propertyName);
@@ -252,12 +252,12 @@ namespace NHibernate.Engine
 
 			if (reallyDoCascade)
 			{
-				log.Info("cascade " + action + " for collection: " + collectionType.Role);
+				log.Info("cascade {0} for collection: {1}", action, collectionType.Role);
 
 				foreach (object o in action.GetCascadableChildrenIterator(eventSource, collectionType, child))
 					await (CascadePropertyAsync(parent, o, elemType, style, null, anything, isCascadeDeleteEnabled, cancellationToken)).ConfigureAwait(false);
 
-				log.Info("done cascade " + action + " for collection: " + collectionType.Role);
+				log.Info("done cascade {0} for collection: {1}", action, collectionType.Role);
 			}
 
 			var childAsPersColl = child as IPersistentCollection;
@@ -267,7 +267,7 @@ namespace NHibernate.Engine
 			if (deleteOrphans)
 			{
 				// handle orphaned entities!!
-				log.Info("deleting orphans for collection: " + collectionType.Role);
+				log.Info("deleting orphans for collection: {0}", collectionType.Role);
 
 				// we can do the cast since orphan-delete does not apply to:
 				// 1. newly instantiated collections
@@ -275,7 +275,7 @@ namespace NHibernate.Engine
 				string entityName = collectionType.GetAssociatedEntityName(eventSource.Factory);
 				await (DeleteOrphansAsync(entityName, childAsPersColl, cancellationToken)).ConfigureAwait(false);
 
-				log.Info("done deleting orphans for collection: " + collectionType.Role);
+				log.Info("done deleting orphans for collection: {0}", collectionType.Role);
 			}
 		}
 
@@ -299,7 +299,7 @@ namespace NHibernate.Engine
 			{
 				if (orphan != null)
 				{
-					log.Info("deleting orphaned entity instance: " + entityName);
+					log.Info("deleting orphaned entity instance: {0}", entityName);
 
 					await (eventSource.DeleteAsync(entityName, orphan, false, null, cancellationToken)).ConfigureAwait(false);
 				}

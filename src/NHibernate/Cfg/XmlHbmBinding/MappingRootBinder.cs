@@ -125,7 +125,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				string fullClassName = FullQualifiedClassName(importSchema.@class, mappings);
 				string rename = importSchema.rename ?? StringHelper.GetClassname(fullClassName);
 
-				log.DebugFormat("Import: {0} -> {1}", rename, fullClassName);
+				log.Debug("Import: {0} -> {1}", rename, fullClassName);
 				mappings.AddImport(fullClassName, rename);
 			}
 		}

@@ -72,7 +72,7 @@ namespace NHibernate.Transaction
 				}
 				catch (HibernateException e)
 				{
-					log.Error("Commit failed", e);
+					log.Error(e, "Commit failed");
 					await (AfterTransactionCompletionAsync(false, cancellationToken)).ConfigureAwait(false);
 					commitFailed = true;
 					// Don't wrap HibernateExceptions
@@ -80,7 +80,7 @@ namespace NHibernate.Transaction
 				}
 				catch (Exception e)
 				{
-					log.Error("Commit failed", e);
+					log.Error(e, "Commit failed");
 					await (AfterTransactionCompletionAsync(false, cancellationToken)).ConfigureAwait(false);
 					commitFailed = true;
 					throw new TransactionException("Commit failed with SQL exception", e);
@@ -123,13 +123,13 @@ namespace NHibernate.Transaction
 					}
 					catch (HibernateException e)
 					{
-						log.Error("Rollback failed", e);
+						log.Error(e, "Rollback failed");
 						// Don't wrap HibernateExceptions
 						throw;
 					}
 					catch (Exception e)
 					{
-						log.Error("Rollback failed", e);
+						log.Error(e, "Rollback failed");
 						throw new TransactionException("Rollback failed with SQL Exception", e);
 					}
 					finally

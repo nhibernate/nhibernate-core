@@ -14,7 +14,7 @@ namespace NHibernate.Id.Enhanced
 	/// </summary>
 	public partial class TableStructure : TransactionHelper, IDatabaseStructure
 	{
-		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(IDatabaseStructure));
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(IDatabaseStructure));
 
 		private readonly int _incrementSize;
 		private readonly int _initialValue;
@@ -120,15 +120,14 @@ namespace NHibernate.Id.Enhanced
 
 					if (selectedValue ==null)
 					{
-						string err = "could not read a hi value - you need to populate the table: " + _tableName;
-						Log.Error(err);
-						throw new IdentifierGenerationException(err);
+						Log.Error("could not read a hi value - you need to populate the table: {0}", _tableName);
+						throw new IdentifierGenerationException("could not read a hi value - you need to populate the table: " + _tableName);
 					}
 					result = Convert.ToInt64(selectedValue);
 				}
 				catch (Exception sqle)
 				{
-					Log.Error("could not read a hi value", sqle);
+					Log.Error(sqle, "could not read a hi value");
 					throw;
 				}
 
@@ -149,7 +148,7 @@ namespace NHibernate.Id.Enhanced
 				}
 				catch (Exception sqle)
 				{
-					Log.Error("could not update hi value in: " + _tableName, sqle);
+					Log.Error(sqle, "could not update hi value in: {0}", _tableName);
 					throw;
 				}
 			}

@@ -62,8 +62,8 @@ namespace NHibernate.Engine
 				CollectionEntry entry = persistenceContext.GetCollectionEntry(coll);
 				ICollectionPersister loadedPersister = entry.LoadedPersister;
 
-				if (log.IsDebugEnabled && loadedPersister != null)
-					log.Debug("Collection dereferenced: " + MessageHelper.CollectionInfoString(loadedPersister, coll, entry.LoadedKey, session));
+				if (log.IsDebugEnabled() && loadedPersister != null)
+					log.Debug("Collection dereferenced: {0}", MessageHelper.CollectionInfoString(loadedPersister, coll, entry.LoadedKey, session));
 
 				// do a check
 				bool hasOrphanDelete = loadedPersister != null && loadedPersister.HasOrphanDelete;
@@ -124,7 +124,7 @@ namespace NHibernate.Engine
 			{
 				CollectionEntry entry = session.PersistenceContext.GetCollectionEntry(coll);
 
-				log.Debug("Found collection with unloaded owner: " + MessageHelper.CollectionInfoString(entry.LoadedPersister, coll, entry.LoadedKey, session));
+				log.Debug("Found collection with unloaded owner: {0}", MessageHelper.CollectionInfoString(entry.LoadedPersister, coll, entry.LoadedKey, session));
 
 				entry.CurrentPersister = entry.LoadedPersister;
 				entry.CurrentKey = entry.LoadedKey;
@@ -176,12 +176,12 @@ namespace NHibernate.Engine
 				ce.CurrentPersister = persister;
 				ce.CurrentKey = type.GetKeyOfOwner(entity, session); //TODO: better to pass the id in as an argument?
 
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Collection found: " + 
-						  MessageHelper.CollectionInfoString(persister, collection, ce.CurrentKey, session) + ", was: " +
-						  MessageHelper.CollectionInfoString(ce.LoadedPersister, collection, ce.LoadedKey, session) + 
-						  (collection.WasInitialized ? " (initialized)" : " (uninitialized)"));
+					log.Debug("Collection found: {0}, was: {1}{2}",
+				          MessageHelper.CollectionInfoString(persister, collection, ce.CurrentKey, session),
+				          MessageHelper.CollectionInfoString(ce.LoadedPersister, collection, ce.LoadedKey, session),
+				          (collection.WasInitialized ? " (initialized)" : " (uninitialized)"));
 				}
 
 				return PrepareCollectionForUpdateAsync(collection, ce, factory, cancellationToken);

@@ -8,14 +8,28 @@ namespace NHibernate.Test.Logging
 		[Test]
 		public void LoggerProviderCanCreateLoggers()
 		{
-			Assert.That(LoggerProvider.LoggerFor("pizza"), Is.Not.Null);
-			Assert.That(LoggerProvider.LoggerFor(typeof (LoggerProviderTest)), Is.Not.Null);
+			Assert.That(NHibernateLogger.For("pizza"), Is.Not.Null);
+			Assert.That(NHibernateLogger.For(typeof (LoggerProviderTest)), Is.Not.Null);
 		}
 
 		[Test]
 		public void WhenNotConfiguredAndLog4NetExistsThenUseLog4NetFactory()
 		{
-			Assert.That(LoggerProvider.LoggerFor("pizza"), Is.InstanceOf<Log4NetLogger>());
+#pragma warning disable 618
+			Assert.That(NHibernateLogger.For("pizza"), Is.Not.InstanceOf<NoLoggingInternalLogger>());
+#pragma warning restore 618
+
+			// NoLoggingNHibernateLogger is internal
+			Assert.That(NHibernateLogger.For("pizza").GetType().Name, Is.Not.EqualTo("NoLoggingNHibernateLogger"));
+		}
+
+		[Test, Explicit("Changes global state.")]
+		public void WhenConfiguredAsNullThenNoLoggingFactoryIsUsed()
+		{
+			NHibernateLogger.SetLoggersFactory(default(INHibernateLoggerFactory));
+
+			// NoLoggingNHibernateLogger is internal
+			Assert.That(NHibernateLogger.For("pizza").GetType().Name, Is.EqualTo("NoLoggingNHibernateLogger"));
 		}
 	}
 }

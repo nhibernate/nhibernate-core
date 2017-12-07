@@ -100,7 +100,7 @@ namespace NHibernate.Cache
 				//TODO: if lock.getTimestamp().equals(ts)
 				foreach (var space in spaces)
 				{
-					log.Debug(string.Format("Invalidating space [{0}]", space));
+					log.Debug("Invalidating space [{0}]", space);
 					await (updateTimestamps.PutAsync(space, ts, cancellationToken)).ConfigureAwait(false);
 				}
 			}

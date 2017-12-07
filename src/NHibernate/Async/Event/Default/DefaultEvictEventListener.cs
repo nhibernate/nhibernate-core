@@ -66,9 +66,9 @@ namespace NHibernate.Event.Default
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("evicting " + MessageHelper.InfoString(persister));
+				log.Debug("evicting {0}", MessageHelper.InfoString(persister));
 			}
 
 			// remove all collections for the entity from the session-level cache

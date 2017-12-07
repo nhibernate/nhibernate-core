@@ -2,7 +2,7 @@
 
 namespace NHibernate.Example.Web.Infrastructure
 {
-	public class NHibernateToMicrosoftLoggerFactory : NHibernate.ILoggerFactory
+	public class NHibernateToMicrosoftLoggerFactory : INHibernateLoggerFactory
 	{
 		private readonly Microsoft.Extensions.Logging.ILoggerFactory _loggerFactory;
 
@@ -11,13 +11,13 @@ namespace NHibernate.Example.Web.Infrastructure
 			_loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
 		}
 
-		public IInternalLogger LoggerFor(string keyName)
+		public INHibernateLogger LoggerFor(string keyName)
 		{
 			var msLogger = _loggerFactory.CreateLogger(keyName);
 			return new NHibernateToMicrosoftLogger(msLogger);
 		}
 
-		public IInternalLogger LoggerFor(System.Type type)
+		public INHibernateLogger LoggerFor(System.Type type)
 		{
 			return LoggerFor(
 				Microsoft.Extensions.Logging.Abstractions.Internal.TypeNameHelper.GetTypeDisplayName(type));

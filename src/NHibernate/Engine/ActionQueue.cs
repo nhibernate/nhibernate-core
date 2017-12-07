@@ -22,7 +22,7 @@ namespace NHibernate.Engine
 	[Serializable]
 	public partial class ActionQueue
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ActionQueue));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ActionQueue));
 		private const int InitQueueListSize = 5;
 
 		private ISessionImplementor session;
@@ -302,8 +302,8 @@ namespace NHibernate.Engine
 				{
 					if(tablespaces.Contains(o))
 					{
-						if(log.IsDebugEnabled)
-							log.Debug("changes must be flushed to space: " + o);
+						if(log.IsDebugEnabled())
+							log.Debug("changes must be flushed to space: {0}", o);
 
 						return true;
 					}
@@ -513,7 +513,7 @@ namespace NHibernate.Engine
 					}
 					catch (CacheException e)
 					{
-						log.Error( "could not release a cache lock", e);
+						log.Error(e, "could not release a cache lock");
 						// continue loop
 					}
 					catch (Exception e)
@@ -615,7 +615,7 @@ namespace NHibernate.Engine
 				var propertyTypes = action.Persister.EntityMetamodel?.PropertyTypes;
 				if (propertyTypes == null)
 				{
-					log.InfoFormat(
+					log.Info(
 						"Entity {0} persister does not provide meta-data, giving up batching grouping optimization for this entity.",
 						action.EntityName);
 					// Cancel grouping optimization for this entity.
@@ -665,7 +665,7 @@ namespace NHibernate.Engine
 				var propertyTypes = action.Persister.EntityMetamodel?.PropertyTypes;
 				if (propertyTypes == null)
 				{
-					log.WarnFormat(
+					log.Warn(
 						"Entity {0} persister does not provide meta-data: if there is dependent entities providing " +
 						"meta-data, they may get batched before this one and cause a failure.",
 						action.EntityName);

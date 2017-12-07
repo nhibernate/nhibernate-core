@@ -62,9 +62,9 @@ namespace NHibernate.Persister.Entity
 		public async Task<object[]> GetDatabaseSnapshotAsync(object id, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Getting current persistent state for: " + MessageHelper.InfoString(this, id, Factory));
+				log.Debug("Getting current persistent state for: {0}", MessageHelper.InfoString(this, id, Factory));
 			}
 
 			using (session.BeginProcess())
@@ -135,12 +135,12 @@ namespace NHibernate.Persister.Entity
 			{
 
 				object nextVersion = await (VersionType.NextAsync(currentVersion, session, cancellationToken)).ConfigureAwait(false);
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Forcing version increment [" +
-					MessageHelper.InfoString(this, id, Factory) + "; " +
-					VersionType.ToLoggableString(currentVersion, Factory) + " -> " +
-					VersionType.ToLoggableString(nextVersion, Factory) + "]");
+					log.Debug("Forcing version increment [{0}; {1} -> {2}]",
+				          MessageHelper.InfoString(this, id, Factory),
+				          VersionType.ToLoggableString(currentVersion, Factory),
+				          VersionType.ToLoggableString(nextVersion, Factory));
 				}
 
 				IExpectation expectation = Expectations.AppropriateExpectation(updateResultCheckStyles[0]);
@@ -183,9 +183,9 @@ namespace NHibernate.Persister.Entity
 		public async Task<object> GetCurrentVersionAsync(object id, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Getting version: " + MessageHelper.InfoString(this, id, Factory));
+				log.Debug("Getting version: {0}", MessageHelper.InfoString(this, id, Factory));
 			}
 			using (session.BeginProcess())
 			try
@@ -271,9 +271,9 @@ namespace NHibernate.Persister.Entity
 			DbCommand statement, ISessionImplementor session, int index, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Dehydrating entity: " + MessageHelper.InfoString(this, id, Factory));
+				log.Debug("Dehydrating entity: {0}", MessageHelper.InfoString(this, id, Factory));
 			}
 
 			// there's a pretty strong coupling between the order of the SQL parameter 
@@ -320,9 +320,9 @@ namespace NHibernate.Persister.Entity
 			string[][] suffixedPropertyColumns, bool allProperties, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Hydrating entity: " + MessageHelper.InfoString(this, id, Factory));
+				log.Debug("Hydrating entity: {0}", MessageHelper.InfoString(this, id, Factory));
 			}
 
 			AbstractEntityPersister rootPersister = (AbstractEntityPersister)rootLoadable;
@@ -435,12 +435,12 @@ namespace NHibernate.Persister.Entity
 			}
 			try
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Inserting entity: " + EntityName + " (native id)");
+					log.Debug("Inserting entity: {0} (native id)", EntityName);
 					if (IsVersioned)
 					{
-						log.Debug("Version: " + Versioning.GetVersion(fields, this));
+						log.Debug("Version: {0}", Versioning.GetVersion(fields, this));
 					}
 				}
 				IBinder binder = new GeneratedIdentifierBinder(fields, notNull, session, obj, this);
@@ -478,12 +478,12 @@ namespace NHibernate.Persister.Entity
 				return;
 			}
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Inserting entity: " + MessageHelper.InfoString(this, tableId, Factory));
+				log.Debug("Inserting entity: {0}", MessageHelper.InfoString(this, tableId, Factory));
 				if (j == 0 && IsVersioned)
 				{
-					log.Debug("Version: " + Versioning.GetVersion(fields, this));
+					log.Debug("Version: {0}", Versioning.GetVersion(fields, this));
 				}
 			}
 
@@ -598,12 +598,12 @@ namespace NHibernate.Persister.Entity
 			//bool callable = IsUpdateCallable(j);
 			bool useBatch = j == 0 && expectation.CanBeBatched && IsBatchable; //note: updates to joined tables can't be batched...
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Updating entity: " + MessageHelper.InfoString(this, id, Factory));
+				log.Debug("Updating entity: {0}", MessageHelper.InfoString(this, id, Factory));
 				if (useVersion)
 				{
-					log.Debug("Existing version: " + oldVersion + " -> New Version: " + fields[VersionProperty]);
+					log.Debug("Existing version: {0} -> New Version: {1}", oldVersion, fields[VersionProperty]);
 				}
 			}
 
@@ -720,20 +720,20 @@ namespace NHibernate.Persister.Entity
 			IExpectation expectation = Expectations.AppropriateExpectation(deleteResultCheckStyles[j]);
 			bool useBatch = j == 0 && expectation.CanBeBatched && IsBatchable;
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Deleting entity: " + MessageHelper.InfoString(this, tableId, Factory));
+				log.Debug("Deleting entity: {0}", MessageHelper.InfoString(this, tableId, Factory));
 				if (useVersion)
 				{
-					log.Debug("Version: " + version);
+					log.Debug("Version: {0}", version);
 				}
 			}
 
 			if (IsTableCascadeDeleteEnabled(j))
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("delete handled by foreign key constraint: " + GetTableName(j));
+					log.Debug("delete handled by foreign key constraint: {0}", GetTableName(j));
 				}
 				return; //EARLY EXIT!
 			}
@@ -987,9 +987,9 @@ namespace NHibernate.Persister.Entity
 			}
 			try
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Fetching entity: " + MessageHelper.InfoString(this, id, Factory));
+					log.Debug("Fetching entity: {0}", MessageHelper.InfoString(this, id, Factory));
 				}
 
 				IUniqueEntityLoader loader = GetAppropriateLoader(lockMode, session);
@@ -1245,9 +1245,9 @@ namespace NHibernate.Persister.Entity
 			return InternalGetNaturalIdentifierSnapshotAsync();
 			async Task<object[]> InternalGetNaturalIdentifierSnapshotAsync()
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Getting current natural-id snapshot state for: " + MessageHelper.InfoString(this, id, Factory));
+					log.Debug("Getting current natural-id snapshot state for: {0}", MessageHelper.InfoString(this, id, Factory));
 				}
 
 				int[] naturalIdPropertyIndexes = NaturalIdentifierProperties;

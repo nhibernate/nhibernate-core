@@ -40,12 +40,12 @@ namespace NHibernate.Impl
 				CreateCriteriaLoaders();
 				CombineCriteriaQueries();
 
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.DebugFormat("Multi criteria with {0} criteria queries.", criteriaQueries.Count);
+					log.Debug("Multi criteria with {0} criteria queries.", criteriaQueries.Count);
 					for (int i = 0; i < criteriaQueries.Count; i++)
 					{
-						log.DebugFormat("Query #{0}: {1}", i, criteriaQueries[i]);
+						log.Debug("Query #{0}: {1}", i, criteriaQueries[i]);
 					}
 				}
 
@@ -207,8 +207,7 @@ namespace NHibernate.Impl
 			}
 			catch (Exception sqle)
 			{
-				var message = string.Format("Failed to execute multi criteria: [{0}]", resultSetsCommand.Sql);
-				log.Error(message, sqle);
+				log.Error(sqle, "Failed to execute multi criteria: [{0}]", resultSetsCommand.Sql);
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "Failed to execute multi criteria", resultSetsCommand.Sql);
 			}
 			if (statsEnabled)

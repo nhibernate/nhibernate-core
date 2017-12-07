@@ -182,9 +182,9 @@ namespace NHibernate.Event.Default
 				log.Debug("immutable instance passed to PerformUpdate(), locking");
 			}
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("updating " + MessageHelper.InfoString(persister, @event.RequestedId, @event.Session.Factory));
+				log.Debug("updating {0}", MessageHelper.InfoString(persister, @event.RequestedId, @event.Session.Factory));
 			}
 
 			IEventSource source = @event.Session;
@@ -228,9 +228,9 @@ namespace NHibernate.Event.Default
 
 			//persister.AfterReassociate(entity, source); TODO H3.2 not ported
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("updating " + MessageHelper.InfoString(persister, @event.RequestedId, source.Factory));
+				log.Debug("updating {0}", MessageHelper.InfoString(persister, @event.RequestedId, source.Factory));
 			}
 
 			await (CascadeOnUpdateAsync(@event, persister, entity, cancellationToken)).ConfigureAwait(false);

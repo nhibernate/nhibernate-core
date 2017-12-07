@@ -68,7 +68,7 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 			catch (Exception e)
 			{
-				log.Error("Error running schema update", e);
+				log.Error(e, "Error running schema update");
 				Console.WriteLine(e);
 			}
 		}
@@ -90,14 +90,14 @@ namespace NHibernate.Tool.hbm2ddl
 				}
 				catch (Exception sqle)
 				{
-					log.Error("could not get database metadata", sqle);
+					log.Error(sqle, "could not get database metadata");
 					throw;
 				}
 				configuration.ValidateSchema(dialect, meta);
 			}
 			catch (Exception e)
 			{
-				log.Error("could not complete schema validation", e);
+				log.Error(e, "could not complete schema validation");
 				throw;
 			}
 			finally
@@ -108,7 +108,7 @@ namespace NHibernate.Tool.hbm2ddl
 				}
 				catch (Exception e)
 				{
-					log.Error("Error closing connection", e);
+					log.Error(e, "Error closing connection");
 				}
 			}
 		}

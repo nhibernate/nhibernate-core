@@ -179,7 +179,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			join.IsInverse = joinMapping.inverse;
 			join.IsOptional = joinMapping.optional;
 
-			log.InfoFormat("Mapping class join: {0} -> {1}", persistentClass.EntityName, join.Table.Name);
+			log.Info("Mapping class join: {0} -> {1}", persistentClass.EntityName, @join.Table.Name);
 
 			// KEY
 			SimpleValue key;

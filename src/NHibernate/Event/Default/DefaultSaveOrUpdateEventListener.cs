@@ -14,7 +14,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public partial class DefaultSaveOrUpdateEventListener : AbstractSaveEventListener, ISaveOrUpdateEventListener
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultSaveOrUpdateEventListener));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DefaultSaveOrUpdateEventListener));
 
 		protected override CascadingAction CascadeAction
 		{
@@ -111,10 +111,10 @@ namespace NHibernate.Event.Default
 					savedId = requestedId;
 				}
 
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("object already associated with session: " + 
-						MessageHelper.InfoString(entityEntry.Persister, savedId, factory));
+					log.Debug("object already associated with session: {0}",
+					          MessageHelper.InfoString(entityEntry.Persister, savedId, factory));
 				}
 
 				return savedId;
@@ -221,9 +221,9 @@ namespace NHibernate.Event.Default
 				log.Debug("immutable instance passed to PerformUpdate(), locking");
 			}
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("updating " + MessageHelper.InfoString(persister, @event.RequestedId, @event.Session.Factory));
+				log.Debug("updating {0}", MessageHelper.InfoString(persister, @event.RequestedId, @event.Session.Factory));
 			}
 
 			IEventSource source = @event.Session;
@@ -267,9 +267,9 @@ namespace NHibernate.Event.Default
 
 			//persister.AfterReassociate(entity, source); TODO H3.2 not ported
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("updating " + MessageHelper.InfoString(persister, @event.RequestedId, source.Factory));
+				log.Debug("updating {0}", MessageHelper.InfoString(persister, @event.RequestedId, source.Factory));
 			}
 
 			CascadeOnUpdate(@event, persister, entity);

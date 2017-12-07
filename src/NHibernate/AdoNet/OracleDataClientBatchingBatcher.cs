@@ -38,7 +38,7 @@ namespace NHibernate.AdoNet
 			_totalExpectedRowsAffected += expectation.ExpectedRowCount;
 			string lineWithParameters = null;
 			var sqlStatementLogger = Factory.Settings.SqlStatementLogger;
-			if (sqlStatementLogger.IsDebugEnabled || Log.IsDebugEnabled)
+			if (sqlStatementLogger.IsDebugEnabled || Log.IsDebugEnabled())
 			{
 				lineWithParameters = sqlStatementLogger.GetCommandLineWithParameters(CurrentCommand);
 				var formatStyle = sqlStatementLogger.DetermineActualStyle(FormatStyle.Basic);
@@ -48,9 +48,9 @@ namespace NHibernate.AdoNet
 					.Append(":")
 					.AppendLine(lineWithParameters);
 			}
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
-				Log.Debug("Adding to batch:" + lineWithParameters);
+				Log.Debug("Adding to batch:{0}", lineWithParameters);
 			}
 
 			if (_currentBatch == null)

@@ -48,7 +48,7 @@ join fetch c.Children gc
 where p.Parent is null")
 					.UniqueResultAsync<Person>());
 
-				string hqlQuery = spy.Appender.GetEvents()[0].MessageObject.ToString();
+				string hqlQuery = spy.Appender.GetEvents()[0].RenderedMessage;
 				Debug.WriteLine("HQL: " + hqlQuery);
 				Assertions(result);
 			}
@@ -62,7 +62,7 @@ where p.Parent is null")
 					.SetFetchMode("Children", FetchMode.Join)
 					.SetFetchMode("Children.Children", FetchMode.Join)
 					.UniqueResultAsync<Person>());
-				string criteriaQuery = spy.Appender.GetEvents()[0].MessageObject.ToString();
+				string criteriaQuery = spy.Appender.GetEvents()[0].RenderedMessage;
 				Debug.WriteLine("Criteria: " + criteriaQuery);
 				Assertions(result);
 			}

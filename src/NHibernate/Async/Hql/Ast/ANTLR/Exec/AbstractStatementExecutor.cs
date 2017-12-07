@@ -116,7 +116,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				}
 				catch (Exception t)
 				{
-					log.Warn("unable to cleanup temporary id table after use [" + t + "]");
+					log.Warn(t, "unable to cleanup temporary id table after use [{0}]", t);
 				}
 				finally
 				{
@@ -152,7 +152,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				}
 				catch (Exception t)
 				{
-					log.Debug("unable to create temporary id table [" + t.Message + "]");
+					log.Debug(t, "unable to create temporary id table [{0}]", t.Message);
 				}
 				finally
 				{
@@ -188,7 +188,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				}
 				catch (Exception t)
 				{
-					log.Warn("unable to drop temporary id table after use [" + t.Message + "]");
+					log.Warn("unable to drop temporary id table after use [{0}]", t.Message);
 				}
 				finally
 				{

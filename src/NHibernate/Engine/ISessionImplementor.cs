@@ -43,10 +43,11 @@ namespace NHibernate.Engine
 	/// </summary>
 	public partial interface ISessionImplementor
 	{
-		// 5.1 TODO: obsolete Initialize, it has no more usages.
 		/// <summary>
 		/// Initialize the session after its construction was complete
 		/// </summary>
+		// Since v5.1
+		[Obsolete("This method has no more usages in NHibernate and will be removed.")]
 		void Initialize();
 
 		/// <summary>

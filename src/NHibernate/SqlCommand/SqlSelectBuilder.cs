@@ -10,7 +10,7 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public class SqlSelectBuilder : SqlBaseBuilder, ISqlStringBuilder
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SqlSelectBuilder));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(SqlSelectBuilder));
 
 		private SqlString selectClause;
 		private string fromClause;
@@ -270,19 +270,21 @@ namespace NHibernate.SqlCommand
 				sqlBuilder.Add(Dialect.GetForUpdateString(lockMode));
 			}
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				if (initialCapacity < sqlBuilder.Count)
 				{
-					log.Debug(
-						"The initial capacity was set too low at: " + initialCapacity + " for the SelectSqlBuilder " +
-						"that needed a capacity of: " + sqlBuilder.Count + " for the table " + fromClause);
+					log.Debug("The initial capacity was set too low at: {0} for the SelectSqlBuilder that needed a capacity of: {1} for the table {2}",
+					          initialCapacity,
+					          sqlBuilder.Count,
+					          fromClause);
 				}
 				else if (initialCapacity > 16 && ((float) initialCapacity / sqlBuilder.Count) > 1.2)
 				{
-					log.Debug(
-						"The initial capacity was set too high at: " + initialCapacity + " for the SelectSqlBuilder " +
-						"that needed a capacity of: " + sqlBuilder.Count + " for the table " + fromClause);
+					log.Debug("The initial capacity was set too high at: {0} for the SelectSqlBuilder that needed a capacity of: {1} for the table {2}",
+					          initialCapacity,
+					          sqlBuilder.Count,
+					          fromClause);
 				}
 			}
 

@@ -254,7 +254,7 @@ namespace NHibernate.DomainModel
 
 		public int[] FindDirty(object[] currentState, object[] previousState, object entity, ISessionImplementor session)
 		{
-			if (!EqualsHelper.Equals(currentState[0], previousState[0]))
+			if (!Equals(currentState[0], previousState[0]))
 			{
 				return new int[] { 0 };
 			}
@@ -266,7 +266,7 @@ namespace NHibernate.DomainModel
 
 		public int[] FindModified(object[] old, object[] current, object entity, ISessionImplementor session)
 		{
-			if (!EqualsHelper.Equals(old[0], current[0]))
+			if (!Equals(old[0], current[0]))
 			{
 				return new int[] { 0 };
 			}

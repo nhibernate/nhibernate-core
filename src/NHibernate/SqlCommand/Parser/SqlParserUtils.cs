@@ -78,7 +78,7 @@ namespace NHibernate.SqlCommand.Parser
 				prevChar = ch;
 			}
 
-			throw new SqlParseException(string.Format("Cannot find terminating '*/' string for multiline comment."));
+			throw new SqlParseException("Cannot find terminating \'*/\' string for multiline comment.");
 		}
 
 		public static int ReadWhitespace(string text, int maxOffset, int offset)

@@ -52,7 +52,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 							resultSetRef, synchronizedTables, cacheable, region, timeout, fetchSize,
 							flushMode, cacheMode, readOnly, comment, parameterTypes, callable);
 
-					log.DebugFormat("Named SQL query: {0} -> {1}", queryName, namedQuery.QueryString);
+					log.Debug("Named SQL query: {0} -> {1}", queryName, namedQuery.QueryString);
 					mappings.AddSQLQuery(queryName, namedQuery);
 				});
 		}

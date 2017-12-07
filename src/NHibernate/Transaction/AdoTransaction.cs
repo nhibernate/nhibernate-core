@@ -14,7 +14,7 @@ namespace NHibernate.Transaction
 	/// </summary>
 	public partial class AdoTransaction : ITransaction
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(AdoTransaction));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(AdoTransaction));
 		private ISessionImplementor session;
 		private DbTransaction trans;
 		private bool begun;
@@ -51,7 +51,7 @@ namespace NHibernate.Transaction
 		{
 			if (trans == null)
 			{
-				if (log.IsWarnEnabled)
+				if (log.IsWarnEnabled())
 				{
 					if (command.Transaction != null)
 					{
@@ -64,7 +64,7 @@ namespace NHibernate.Transaction
 			}
 			else
 			{
-				if (log.IsWarnEnabled)
+				if (log.IsWarnEnabled())
 				{
 					// got into here because the command was being initialized and had a null Transaction - probably
 					// don't need to be confused by that - just a normal part of initialization...
@@ -125,7 +125,7 @@ namespace NHibernate.Transaction
 					isolationLevel = session.Factory.Settings.IsolationLevel;
 				}
 
-				log.Debug(string.Format("Begin ({0})", isolationLevel));
+				log.Debug("Begin ({0})", isolationLevel);
 
 				try
 				{
@@ -145,7 +145,7 @@ namespace NHibernate.Transaction
 				}
 				catch (Exception e)
 				{
-					log.Error("Begin transaction failed", e);
+					log.Error(e, "Begin transaction failed");
 					throw new TransactionException("Begin failed with SQL exception", e);
 				}
 
@@ -205,7 +205,7 @@ namespace NHibernate.Transaction
 				}
 				catch (HibernateException e)
 				{
-					log.Error("Commit failed", e);
+					log.Error(e, "Commit failed");
 					AfterTransactionCompletion(false);
 					commitFailed = true;
 					// Don't wrap HibernateExceptions
@@ -213,7 +213,7 @@ namespace NHibernate.Transaction
 				}
 				catch (Exception e)
 				{
-					log.Error("Commit failed", e);
+					log.Error(e, "Commit failed");
 					AfterTransactionCompletion(false);
 					commitFailed = true;
 					throw new TransactionException("Commit failed with SQL exception", e);
@@ -254,13 +254,13 @@ namespace NHibernate.Transaction
 					}
 					catch (HibernateException e)
 					{
-						log.Error("Rollback failed", e);
+						log.Error(e, "Rollback failed");
 						// Don't wrap HibernateExceptions
 						throw;
 					}
 					catch (Exception e)
 					{
-						log.Error("Rollback failed", e);
+						log.Error(e, "Rollback failed");
 						throw new TransactionException("Rollback failed with SQL Exception", e);
 					}
 					finally
@@ -425,7 +425,7 @@ namespace NHibernate.Transaction
 					}
 					catch (Exception e)
 					{
-						log.Error("exception calling user Synchronization", e);
+						log.Error(e, "exception calling user Synchronization");
 						throw;
 					}
 				}
@@ -446,7 +446,7 @@ namespace NHibernate.Transaction
 					}
 					catch (Exception e)
 					{
-						log.Error("exception calling user Synchronization", e);
+						log.Error(e, "exception calling user Synchronization");
 					}
 				}
 			}

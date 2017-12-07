@@ -26,7 +26,7 @@ namespace NHibernate.Engine.Loading
 	/// </remarks>
 	public class LoadContexts
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(LoadContexts));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(LoadContexts));
 
 		[NonSerialized]
 		private readonly IPersistenceContext persistenceContext;
@@ -88,7 +88,7 @@ namespace NHibernate.Engine.Loading
 			{
 				foreach (CollectionLoadContext collectionLoadContext in collectionLoadContexts.Values)
 				{
-					log.Warn("fail-safe cleanup (collections) : " + collectionLoadContext);
+					log.Warn("fail-safe cleanup (collections) : {0}", collectionLoadContext);
 					collectionLoadContext.Cleanup();
 				}
 				collectionLoadContexts.Clear();
@@ -134,9 +134,9 @@ namespace NHibernate.Engine.Loading
 			}
 			if (context == null)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("constructing collection load context for result set [" + resultSet + "]");
+					log.Debug("constructing collection load context for result set [{0}]", resultSet);
 				}
 				context = new CollectionLoadContext(this, resultSet);
 				collectionLoadContexts[resultSet] = context;
@@ -156,9 +156,9 @@ namespace NHibernate.Engine.Loading
 			LoadingCollectionEntry lce = LocateLoadingCollectionEntry(new CollectionKey(persister, ownerKey));
 			if (lce != null)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("returning loading collection:" + MessageHelper.CollectionInfoString(persister, ownerKey, Session.Factory));
+					log.Debug("returning loading collection:{0}", MessageHelper.CollectionInfoString(persister, ownerKey, Session.Factory));
 				}
 				return lce.Collection;
 			}
@@ -229,15 +229,15 @@ namespace NHibernate.Engine.Loading
 			{
 				return null;
 			}
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("attempting to locate loading collection entry [" + key + "] in any result-set context");
+				log.Debug("attempting to locate loading collection entry [{0}] in any result-set context", key);
 			}
 			LoadingCollectionEntry rtn;
 			xrefLoadingCollectionEntries.TryGetValue(key, out rtn);
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug(string.Format("collection [{0}] {1} in load context", key, (rtn == null ? "located" : "not located")));
+				log.Debug("collection [{0}] {1} in load context", key, (rtn == null ? "located" : "not located"));
 			}
 			return rtn;
 		}

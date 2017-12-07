@@ -16,7 +16,7 @@ namespace NHibernate.Cache
 	/// </summary>
 	public partial class UpdateTimestampsCache
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(UpdateTimestampsCache));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(UpdateTimestampsCache));
 		private ICache updateTimestamps;
 
 		private readonly string regionName = typeof(UpdateTimestampsCache).Name;
@@ -30,7 +30,7 @@ namespace NHibernate.Cache
 		{
 			string prefix = settings.CacheRegionPrefix;
 			regionName = prefix == null ? regionName : prefix + '.' + regionName;
-			log.Info("starting update timestamps cache at region: " + regionName);
+			log.Info("starting update timestamps cache at region: {0}", regionName);
 			updateTimestamps = settings.CacheProvider.BuildCache(regionName, props);
 		}
 
@@ -69,7 +69,7 @@ namespace NHibernate.Cache
 			//TODO: if lock.getTimestamp().equals(ts)
 			foreach (var space in spaces)
 			{
-				log.Debug(string.Format("Invalidating space [{0}]", space));
+				log.Debug("Invalidating space [{0}]", space);
 				updateTimestamps.Put(space, ts);
 			}
 		}
@@ -118,7 +118,7 @@ namespace NHibernate.Cache
 			}
 			catch (Exception e)
 			{
-				log.Warn("could not destroy UpdateTimestamps cache", e);
+				log.Warn(e, "could not destroy UpdateTimestamps cache");
 			}
 		}
 	}

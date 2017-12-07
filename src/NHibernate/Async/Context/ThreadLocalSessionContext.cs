@@ -40,14 +40,14 @@ namespace NHibernate.Context
 						}
 						catch (Exception ex)
 						{
-							log.Debug("Unable to rollback transaction for orphaned session", ex);
+							log.Debug(ex, "Unable to rollback transaction for orphaned session");
 						}
 					}
 					orphan.Close();
 				}
 				catch (Exception ex)
 				{
-					log.Debug("Unable to close orphaned session", ex);
+					log.Debug(ex, "Unable to close orphaned session");
 				}
 			}
 		}

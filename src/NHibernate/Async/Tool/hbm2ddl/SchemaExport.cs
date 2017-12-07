@@ -174,8 +174,8 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 			catch (Exception e)
 			{
-				log.Warn("Unsuccessful: " + sql);
-				log.Warn(e.Message);
+				log.Warn("Unsuccessful: {0}", sql);
+				log.Warn(e, e.Message);
 				if (throwOnError)
 				{
 					throw;
@@ -193,7 +193,7 @@ namespace NHibernate.Tool.hbm2ddl
 
 				foreach (string stmt in splitter)
 				{
-					log.DebugFormat("SQL Batch: {0}", stmt);
+					log.Debug("SQL Batch: {0}", stmt);
 					cmd.CommandText = stmt;
 					cmd.CommandType = CommandType.Text;
 					await (cmd.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
@@ -290,7 +290,7 @@ namespace NHibernate.Tool.hbm2ddl
 				}
 				catch (Exception e)
 				{
-					log.Error("Could not close connection: " + e.Message, e);
+					log.Error(e, "Could not close connection: {0}", e.Message);
 				}
 				if (exportOutput != null)
 				{
@@ -300,7 +300,7 @@ namespace NHibernate.Tool.hbm2ddl
 					}
 					catch (Exception ioe)
 					{
-						log.Error("Error closing output file " + outputFile + ": " + ioe.Message, ioe);
+						log.Error(ioe, "Error closing output file {0}: {1}", outputFile, ioe.Message);
 					}
 				}
 			}
@@ -394,7 +394,7 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 			catch (Exception e)
 			{
-				log.Error(e.Message, e);
+				log.Error(e, e.Message);
 				throw new HibernateException(e.Message, e);
 			}
 			finally

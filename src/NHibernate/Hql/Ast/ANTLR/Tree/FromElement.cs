@@ -18,7 +18,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class FromElement : HqlSqlWalkerNode, IDisplayableNode, IParameterContainer
 	{
-		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(FromElement));
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(FromElement));
 
 		private bool _isAllPropertyFetch;
 		private FromElementType _elementType;
@@ -389,9 +389,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				if (IsDereferencedBySuperclassOrSubclassProperty)
 				{
-					if (!_includeSubclasses && Log.IsInfoEnabled)
+					if (!_includeSubclasses && Log.IsInfoEnabled())
 					{
-						Log.Info("attempt to disable subclass-inclusions", new Exception("stack-trace source"));
+						Log.Info(new Exception("stack-trace source"), "attempt to disable subclass-inclusions");
 					}
 				}
 				_includeSubclasses = value;
@@ -530,9 +530,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				{
 					Declarer propertyDeclarer = persister.GetSubclassPropertyDeclarer(propertyName);
 
-					if (Log.IsInfoEnabled)
+					if (Log.IsInfoEnabled())
 					{
-						Log.Info("handling property dereference [" + persister.EntityName + " (" + ClassAlias + ") -> " + propertyName + " (" + propertyDeclarer + ")]");
+						Log.Info("handling property dereference [{0} ({1}) -> {2} ({3})]", persister.EntityName, ClassAlias, propertyName, propertyDeclarer);
 					}
 					if (propertyDeclarer == Declarer.SubClass)
 					{
@@ -595,9 +595,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			if (IsDereferencedBySuperclassOrSubclassProperty)
 			{
-				if (!includeSubclasses && Log.IsInfoEnabled)
+				if (!includeSubclasses && Log.IsInfoEnabled())
 				{
-					Log.Info("attempt to disable subclass-inclusions", new Exception("stack-trace source"));
+					Log.Info(new Exception("stack-trace source"), "attempt to disable subclass-inclusions");
 				}
 			}
 			_includeSubclasses = includeSubclasses;
@@ -688,10 +688,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			// Register the FromElement with the FROM clause, now that we have the names and aliases.
 			fromClause.RegisterFromElement(this);
 
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
-				Log.Debug(fromClause + " :  " + className + " ("
-						+ (classAlias ?? "no alias") + ") -> " + tableAlias);
+				Log.Debug("{0} :  {1} ({2}) -> {3}",
+				          fromClause,
+				          className,
+				          (classAlias ?? "no alias"),
+				          tableAlias);
 			}
 		}
 
