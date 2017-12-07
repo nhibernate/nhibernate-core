@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH3787">
+  <class name="TestEntity" table="TestEntity">
+    <id name="Id">
+      <generator class="native"/>
+    </id>
+    <property name="UsePreviousRate" type="boolean" not-null="true"/>
+    <property name="PreviousRate" type="decimal(18,13)" not-null="true"/>
+    <property name="Rate" type="decimal(18,13)" not-null="true"/>
+  </class>
+</hibernate-mapping>
