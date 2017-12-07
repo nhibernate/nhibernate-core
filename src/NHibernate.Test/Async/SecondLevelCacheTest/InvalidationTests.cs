@@ -44,7 +44,10 @@ namespace NHibernate.Test.SecondLevelCacheTest
 
 			var cache = Substitute.For<UpdateTimestampsCache>(Sfi.Settings, new Dictionary<string, string>());
 
-			var updateTimestampsCacheField = typeof(SessionFactoryImpl).GetField("updateTimestampsCache");
+			var updateTimestampsCacheField = typeof(SessionFactoryImpl).GetField(
+				"updateTimestampsCache",
+				BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+
 			updateTimestampsCacheField.SetValue(debugSessionFactory.ActualFactory, cache);
 
 			//"Received" assertions can not be used since the collection is reused and cleared between calls.
