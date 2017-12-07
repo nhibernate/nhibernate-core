@@ -156,7 +156,8 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 			var sessionIds = new ConcurrentDictionary<int, Guid>();
 			using (var spy = new TextLogSpy("NHibernate.SQL", "%message | SessionId: %property{sessionId}"))
 			{
-				await (Task.WhenAll(Enumerable.Range(					1, 12).Select(					async i =>
+				await (Task.WhenAll(
+					Enumerable.Range(1, 12 - 1).Select(async i =>
 					{
 						if (i > 10)
 						{
