@@ -113,11 +113,23 @@ namespace NHibernate.Engine
 			RegisterCleanupActions(cleanupAction);
 		}
 
-		[Obsolete("This method is no longer executed asynchronously")]
+		//Since v5.1
+		[Obsolete("This method is no longer executed asynchronously and will be removed in a next major version.")]
 		public Task AddActionAsync(BulkOperationCleanupAction cleanupAction, CancellationToken cancellationToken=default(CancellationToken))
 		{
-			AddAction(cleanupAction);
-			return Task.CompletedTask;
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled(cancellationToken);
+			}
+			try
+			{
+				AddAction(cleanupAction);
+				return Task.CompletedTask;
+			}
+			catch (Exception e)
+			{
+				return Task.FromException(e);
+			}
 		}
 
 		public void RegisterProcess(AfterTransactionCompletionProcessDelegate process)

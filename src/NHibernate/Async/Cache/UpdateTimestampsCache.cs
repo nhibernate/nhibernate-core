@@ -34,7 +34,8 @@ namespace NHibernate.Cache
 			return updateTimestamps.ClearAsync(cancellationToken);
 		}
 
-		//TODO: Make obsolete
+		//Since v5.1
+		[Obsolete("Please use PreInvalidate(IReadOnlyCollection<string>) instead.")]
 		public Task PreInvalidateAsync(object[] spaces, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -71,7 +72,8 @@ namespace NHibernate.Cache
 			//TODO: return new Lock(ts);
 		}
 
-		//TODO: Make obsolete
+		//Since v5.1
+		[Obsolete("Please use PreInvalidate(IReadOnlyCollection<string>) instead.")]
 		public Task InvalidateAsync(object[] spaces, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)

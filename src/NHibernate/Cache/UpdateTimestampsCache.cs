@@ -34,7 +34,8 @@ namespace NHibernate.Cache
 			updateTimestamps = settings.CacheProvider.BuildCache(regionName, props);
 		}
 
-		//TODO: Make obsolete
+		//Since v5.1
+		[Obsolete("Please use PreInvalidate(IReadOnlyCollection<string>) instead.")]
 		public void PreInvalidate(object[] spaces)
 		{
 			//Only for backwards compatibility.
@@ -54,7 +55,8 @@ namespace NHibernate.Cache
 			//TODO: return new Lock(ts);
 		}
 
-		//TODO: Make obsolete
+		//Since v5.1
+		[Obsolete("Please use PreInvalidate(IReadOnlyCollection<string>) instead.")]
 		public void Invalidate(object[] spaces)
 		{
 			//Only for backwards compatibility.
