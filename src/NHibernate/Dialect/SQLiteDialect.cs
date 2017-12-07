@@ -86,6 +86,9 @@ namespace NHibernate.Dialect
 			RegisterFunction("cast", new SQLiteCastFunction());
 
 			RegisterFunction("round", new StandardSQLFunction("round"));
+
+			// NH-3787: SQLite requires the cast in SQL too for not defaulting to string.
+			RegisterFunction("transparentcast", new CastFunction());
 		}
 
 		#region private static readonly string[] DialectKeywords = { ... }
