@@ -49,12 +49,13 @@ namespace NHibernate.Test.SecondLevelCacheTest
 			var preInvalidations = new List<IReadOnlyCollection<string>>();
 			var invalidations = new List<IReadOnlyCollection<string>>();
 
-			cache
-				.When(x=>x.PreInvalidate(Arg.Any<IReadOnlyCollection<string>>()))
-				.Do(x=>preInvalidations.Add(((IReadOnlyCollection<string>) x[0]).ToList()));
-			cache
-				.When(x => x.Invalidate(Arg.Any<IReadOnlyCollection<string>>()))
-				.Do(x => invalidations.Add(((IReadOnlyCollection<string>) x[0]).ToList()));
+			await cache.PreInvalidateAsync(
+				Arg.Do<IReadOnlyCollection<string>>(x => preInvalidations.Add(x.ToList())),
+				CancellationToken.None);
+
+			await cache.InvalidateAsync(
+				Arg.Do<IReadOnlyCollection<string>>(x => invalidations.Add(x.ToList())),
+				CancellationToken.None);
 
 			using (ISession session = OpenSession())
 			{
