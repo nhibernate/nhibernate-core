@@ -31,35 +31,30 @@ namespace NHibernate.Test.SecondLevelCacheTest
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
-			configuration.Properties[Environment.CacheProvider] = typeof(HashtableCacheProvider).AssemblyQualifiedName;
-			configuration.Properties[Environment.UseQueryCache] = "true";
+			configuration.SetProperty(Environment.CacheProvider, typeof(HashtableCacheProvider).AssemblyQualifiedName);
+			configuration.SetProperty(Environment.UseQueryCache, "true");
 		}
 
 		[Test]
 		public async Task InvalidatesEntitiesAsync()
 		{
+			var debugSessionFactory = (DebugSessionFactory) Sfi;
+			var sessionFactoryImpl = (SessionFactoryImpl) debugSessionFactory.ActualFactory;
+
 			var cache = Substitute.For<UpdateTimestampsCache>(Sfi.Settings, new Dictionary<string, string>());
-			((SessionFactoryImpl) (Sfi as DebugSessionFactory).ActualFactory).SetPropertyUsingReflection(
-				x => x.UpdateTimestampsCache,
-				cache);
+			sessionFactoryImpl.SetPropertyUsingReflection(x => x.UpdateTimestampsCache, cache);
 
 			//"Received" assertions can not be used since the collection is reused and cleared between calls.
 			//The received args are cloned and stored
 			var preInvalidations = new List<IReadOnlyCollection<string>>();
 			var invalidations = new List<IReadOnlyCollection<string>>();
 
-			await cache.PreInvalidateAsync(
-				Arg.Do<IReadOnlyCollection<string>>(x => preInvalidations.Add(x.ToList())),
-				CancellationToken.None);
+			await (cache.PreInvalidateAsync(Arg.Do<IReadOnlyCollection<string>>(x => preInvalidations.Add(x.ToList())), CancellationToken.None));
+			await (cache.InvalidateAsync(Arg.Do<IReadOnlyCollection<string>>(x => invalidations.Add(x.ToList())), CancellationToken.None));
 
-			await cache.InvalidateAsync(
-				Arg.Do<IReadOnlyCollection<string>>(x => invalidations.Add(x.ToList())),
-				CancellationToken.None);
-
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
 			{
-				using (ITransaction tx = session.BeginTransaction())
+				using (var tx = session.BeginTransaction())
 				{
 					foreach (var i in Enumerable.Range(1, 10))
 					{
@@ -70,7 +65,7 @@ namespace NHibernate.Test.SecondLevelCacheTest
 					await (tx.CommitAsync());
 				}
 
-				using (ITransaction tx = session.BeginTransaction())
+				using (var tx = session.BeginTransaction())
 				{
 					foreach (var i in Enumerable.Range(1, 10))
 					{
@@ -81,7 +76,7 @@ namespace NHibernate.Test.SecondLevelCacheTest
 					await (tx.CommitAsync());
 				}
 
-				using (ITransaction tx = session.BeginTransaction())
+				using (var tx = session.BeginTransaction())
 				{
 					foreach (var i in Enumerable.Range(1, 10))
 					{
@@ -94,38 +89,21 @@ namespace NHibernate.Test.SecondLevelCacheTest
 			}
 
 			//Should receive one preinvalidation and one invalidation per commit
-			Assert.That(preInvalidations.Count,Is.EqualTo(3));
-			Assert.That(preInvalidations.All(x => x.Count == 1 && x.First() == "Item"), Is.True);
+			Assert.That(preInvalidations, Has.Count.EqualTo(3));
+			Assert.That(preInvalidations, Has.All.Count.EqualTo(1).And.Contains("Item"));
 
-			Assert.That(invalidations.Count, Is.EqualTo(3));
-			Assert.That(invalidations.All(x => x.Count == 1 && x.First() == "Item"), Is.True);
-
-		}
-		
-		public async Task CleanUpAsync(CancellationToken cancellationToken = default(CancellationToken))
-		{
-			using (ISession s = OpenSession())
-			using (ITransaction tx = s.BeginTransaction())
-			{
-				await (s.DeleteAsync("from Item", cancellationToken));
-				await (tx.CommitAsync(cancellationToken));
-			}
-		}
-		
-		public void CleanUp()
-		{
-			using (ISession s = OpenSession())
-			using (ITransaction tx = s.BeginTransaction())
-			{
-				s.Delete("from Item");
-				tx.Commit();
-			}
+			Assert.That(invalidations, Has.Count.EqualTo(3));
+			Assert.That(invalidations, Has.All.Count.EqualTo(1).And.Contains("Item"));
 		}
 
 		protected override void OnTearDown()
 		{
-			CleanUp();
-			base.OnTearDown();
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				s.Delete("from Item");
+				tx.Commit();
+			}
 		}
 	}
 }
