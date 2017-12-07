@@ -1029,14 +1029,21 @@ namespace NHibernate.Impl
 				return null;
 			}
 
-			return queryCaches.GetOrAdd(
+			var wasAdded = false;
+			// The factory may be run concurrently by threads trying to get the same region.
+			// But the GetOrAdd will yield the same cache for all threads, so in case of add, use
+			// it to update allCacheRegions
+			var cache = queryCaches.GetOrAdd(
 				cacheRegion,
 				cr =>
 				{
-					IQueryCache currentQueryCache = settings.QueryCacheFactory.GetQueryCache(cacheRegion, updateTimestampsCache, settings, properties);
-					allCacheRegions[currentQueryCache.RegionName] = currentQueryCache.Cache;
+					var currentQueryCache = settings.QueryCacheFactory.GetQueryCache(cacheRegion, updateTimestampsCache, settings, properties);
+					wasAdded = true;
 					return currentQueryCache;
 				});
+			if (wasAdded)
+				allCacheRegions[cache.RegionName] = cache.Cache;
+			return cache;
 		}
 
 		public void EvictQueries()
