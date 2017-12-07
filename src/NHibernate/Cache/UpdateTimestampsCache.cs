@@ -21,7 +21,7 @@ namespace NHibernate.Cache
 
 		private readonly string regionName = typeof(UpdateTimestampsCache).Name;
 
-		public void Clear()
+		public virtual void Clear()
 		{
 			updateTimestamps.Clear();
 		}

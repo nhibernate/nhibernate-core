@@ -25,7 +25,7 @@ namespace NHibernate.Cache
 		private readonly NHibernate.Util.AsyncLock _invalidate = new NHibernate.Util.AsyncLock();
 		private readonly NHibernate.Util.AsyncLock _isUpToDate = new NHibernate.Util.AsyncLock();
 
-		public Task ClearAsync(CancellationToken cancellationToken)
+		public virtual Task ClearAsync(CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
