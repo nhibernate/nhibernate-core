@@ -27,10 +27,11 @@ namespace NHibernate.Test.SecondLevelCacheTest
 		public void InvalidatesEntities()
 		{
 			var debugSessionFactory = (DebugSessionFactory) Sfi;
-			var sessionFactoryImpl = (SessionFactoryImpl) debugSessionFactory.ActualFactory;
 
 			var cache = Substitute.For<UpdateTimestampsCache>(Sfi.Settings, new Dictionary<string, string>());
-			sessionFactoryImpl.SetPropertyUsingReflection(x => x.UpdateTimestampsCache, cache);
+
+			var updateTimestampsCacheField = typeof(SessionFactoryImpl).GetField("updateTimestampsCache");
+			updateTimestampsCacheField.SetValue(debugSessionFactory.ActualFactory, cache);
 
 			//"Received" assertions can not be used since the collection is reused and cleared between calls.
 			//The received args are cloned and stored
