@@ -943,11 +943,20 @@ sessionFactory.EvictCollection("Eg.Cat.Kittens");]]></programlisting>
         <para>
             This setting causes the creation of two new cache regions - one holding cached query
             result sets (<literal>NHibernate.Cache.StandardQueryCache</literal>), the other
-            holding timestamps of the most recent updates to queryable tables 
-            (<literal>NHibernate.Cache.UpdateTimestampsCache</literal>). Note that the query
-            cache does not cache the state of any entities in the result set; it caches
-            only identifier values and results of value type. So the query cache should always be
-            used in conjunction with the second-level cache.
+            holding timestamps of the most recent updates to queryable tables
+            (<literal>UpdateTimestampsCache</literal>). Those region names will be prefixed by the
+            cache region prefix if <literal>cache.region_prefix</literal> setting is configured.
+        </para>
+        <para>
+            If you use a cache provider handling an expiration for cached entries, you should set
+            the <literal>UpdateTimestampsCache</literal> region expiration to a value greater than
+            the expiration of query cache regions. (Or disable its expiration.) Otherwise the query
+            cache may yield stale data.
+        </para>
+        <para>
+            Note that the query cache does not cache the state of any entities in the result set;
+            it caches only identifier values and results of value type. So the query cache should
+            always be used in conjunction with the second-level cache.
         </para>
 
         <para>
