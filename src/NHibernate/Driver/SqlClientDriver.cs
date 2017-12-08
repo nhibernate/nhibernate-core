@@ -13,7 +13,13 @@ namespace NHibernate.Driver
 	/// <summary>
 	/// A NHibernate Driver for using the SqlClient DataProvider
 	/// </summary>
+#if DRIVER_PACKAGE
+	public class SqlServer2000Driver : DriverBase, IEmbeddedBatcherFactoryProvider
+#else
+	[Obsolete("Use NHibernate.Driver.SqlServer NuGet package and SqlServer2000Driver."
+		+ "  There are also Loquacious configuration points: .Connection.BySqlServer2000Driver() and .DataBaseIntegration(x => x.SqlServer2000Driver()).")]
 	public class SqlClientDriver : DriverBase, IEmbeddedBatcherFactoryProvider
+#endif
 	{
 		// Since v5.1
 		[Obsolete("Use MsSql2000Dialect.MaxSizeForAnsiClob")]

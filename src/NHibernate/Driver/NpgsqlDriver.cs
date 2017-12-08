@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using System.Data.Common;
 
@@ -24,8 +25,23 @@ namespace NHibernate.Driver
 	/// <a href="http://pgfoundry.org/projects/npgsql">http://pgfoundry.org/projects/npgsql</a>. 
 	/// </p>
 	/// </remarks>
+#if DRIVER_PACKAGE
+	public class PostgreSqlDriver : DriverBase
+#else
+	[Obsolete("Use NHibernate.Driver.PostgreSql NuGet package and PostgreSqlDriver."
+			  + "  There are also Loquacious configuration points: .Connection.ByPostgreSqlDriver() and .DataBaseIntegration(x => x.PostgreSqlDriver()).")]
 	public class NpgsqlDriver : ReflectionBasedDriver
+#endif
 	{
+#if DRIVER_PACKAGE
+		/// <summary>
+		/// Initializes a new instance of the <see cref="PostgreSqlDriver"/> class.
+		/// </summary>
+		public PostgreSqlDriver()
+		{
+			DriverVersion = typeof(Npgsql.NpgsqlCommand).Assembly.GetName().Version;
+		}
+#else
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NpgsqlDriver"/> class.
 		/// </summary>
@@ -39,6 +55,24 @@ namespace NHibernate.Driver
 			"Npgsql.NpgsqlCommand")
 		{
 		}
+#endif
+
+#if DRIVER_PACKAGE
+		/// <summary>
+		/// The driver assembly version.
+		/// </summary>
+		protected Version DriverVersion { get; }
+
+		public override DbConnection CreateConnection()
+		{
+			return new Npgsql.NpgsqlConnection();
+		}
+
+		public override DbCommand CreateCommand()
+		{
+			return new Npgsql.NpgsqlCommand();
+		}
+#endif
 
 		public override bool UseNamedPrefixInSql => true;
 

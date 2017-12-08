@@ -1,4 +1,5 @@
 using System;
+using System.Data.Common;
 
 namespace NHibernate.Driver
 {
@@ -16,8 +17,15 @@ namespace NHibernate.Driver
 	/// for any updates and/or documentation regarding MySQL.
 	/// </para>
 	/// </remarks>
+#if DRIVER_PACKAGE
+	public class MySqlDriver : DriverBase
+#else
+	[Obsolete("Use NHibernate.Driver.MySql NuGet package and MySqlDriver."
+			  + "  There are also Loquacious configuration points: .Connection.ByMySqlDriver() and .DataBaseIntegration(x => x.MySqlDriver()).")]
 	public class MySqlDataDriver : ReflectionBasedDriver
+#endif
 	{
+#if !DRIVER_PACKAGE
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MySqlDataDriver"/> class.
 		/// </summary>
@@ -31,6 +39,19 @@ namespace NHibernate.Driver
 			"MySql.Data.MySqlClient.MySqlCommand")
 		{
 		}
+#endif
+
+#if DRIVER_PACKAGE
+		public override DbConnection CreateConnection()
+		{
+			return new MySql.Data.MySqlClient.MySqlConnection();
+		}
+
+		public override DbCommand CreateCommand()
+		{
+			return new MySql.Data.MySqlClient.MySqlCommand();
+		}
+#endif
 
 		/// <summary>
 		/// MySql.Data uses named parameters in the sql.

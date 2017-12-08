@@ -1,0 +1,67 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../build-common/NHibernate.props" />
+
+  <PropertyGroup>
+    <Description>Driver for SQL Server Compact 4.0 to be used with NHibernate 5.</Description>
+    <PackageTags>NHibernate; Driver; SQL; Compact; ADO.Net</PackageTags>
+
+    <TargetFramework>net461</TargetFramework>
+    <NoWarn>$(NoWarn);3001;3002;3003;3005;1591</NoWarn>
+    <SignAssembly>True</SignAssembly>
+    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+    <AssemblyOriginatorKeyFile>..\NHibernate.snk</AssemblyOriginatorKeyFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <TreatSpecificWarningsAsErrors />
+
+    <DisableImplicitPackageTargetFallback>true</DisableImplicitPackageTargetFallback>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);DRIVER_PACKAGE</DefineConstants>
+    <RootNamespace>NHibernate</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\NHibernate\Driver\SqlServerCeDriver.cs" Link="Driver\SqlServerCeDriver.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\NHibernate.snk" Link="NHibernate.snk" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
+    <PackageReference Include="Microsoft.SqlServer.Compact" Version="4.0.8876.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NHibernate\NHibernate.csproj" />
+  </ItemGroup>
+
+  <!-- 
+    Since Microsoft.SqlServer.Compact was using Install.ps1, and that doesn't work with the new .csproj,
+    need include the binaries ourselves.  We do that through .target files in a build\ directory.
+  -->
+  <ItemGroup>
+    <Content Include="build\**\*.*">
+      <Pack>true</Pack>
+      <PackagePath>build\</PackagePath>
+    </Content>
+  </ItemGroup>
+
+  <!-- This next section is in addition to the .target file for project references. -->
+  <ItemGroup>
+    <Content Include="$(NuGetPackageRoot)microsoft.sqlserver.compact\4.0.8876.1\NativeBinaries\**\*.*">
+      <Pack>false</Pack>
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="../../LICENSE.txt">
+      <PackagePath>NHibernate.license.txt</PackagePath>
+    </Content>
+  </ItemGroup>
+
+</Project>

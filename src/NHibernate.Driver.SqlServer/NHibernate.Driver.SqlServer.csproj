@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../build-common/NHibernate.props" />
+
+  <PropertyGroup>
+    <Description>Driver for Microsoft SQL Server to be used with NHibernate 5.</Description>
+    <PackageTags>NHibernate; Driver; SqlClient; SqlServer; SQL Server; ADO.Net; Core</PackageTags>
+
+    <TargetFramework>net461</TargetFramework>
+    <NoWarn>$(NoWarn);3001;3002;3003;3005;1591</NoWarn>
+    <SignAssembly>True</SignAssembly>
+    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+    <AssemblyOriginatorKeyFile>..\NHibernate.snk</AssemblyOriginatorKeyFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <TreatSpecificWarningsAsErrors />
+
+    <DisableImplicitPackageTargetFallback>true</DisableImplicitPackageTargetFallback>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);DRIVER_PACKAGE</DefineConstants>
+    <RootNamespace>NHibernate</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\NHibernate\Driver\Sql2008ClientDriver.cs" Link="Driver\Sql2008ClientDriver.cs" />
+    <Compile Include="..\NHibernate\Driver\SqlClientDriver.cs" Link="Driver\SqlClientDriver.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\NHibernate.snk" Link="NHibernate.snk" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="System.Data.SqlClient" Version="4.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NHibernate\NHibernate.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="../../LICENSE.txt">
+      <PackagePath>NHibernate.license.txt</PackagePath>
+    </Content>
+  </ItemGroup>
+
+</Project>

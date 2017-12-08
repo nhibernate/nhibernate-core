@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../build-common/NHibernate.props" />
+
+  <PropertyGroup>
+    <Description>Driver for Firebird to be used with NHibernate 5.</Description>
+    <PackageTags>NHibernate; Driver; firebird; firebirsql; firebirdclient; ADO.Net; Core</PackageTags>
+
+    <TargetFramework>net461</TargetFramework>
+    <NoWarn>$(NoWarn);3001;3002;3003;3005;1591</NoWarn>
+    <SignAssembly>True</SignAssembly>
+    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+    <AssemblyOriginatorKeyFile>..\NHibernate.snk</AssemblyOriginatorKeyFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <TreatSpecificWarningsAsErrors />
+
+    <DisableImplicitPackageTargetFallback>true</DisableImplicitPackageTargetFallback>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);DRIVER_PACKAGE</DefineConstants>
+    <RootNamespace>NHibernate</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\NHibernate\Driver\FirebirdClientDriver.cs" Link="Driver\FirebirdClientDriver.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\NHibernate.snk" Link="NHibernate.snk" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="5.9.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NHibernate\NHibernate.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="../../LICENSE.txt">
+      <PackagePath>NHibernate.license.txt</PackagePath>
+    </Content>
+  </ItemGroup>
+
+</Project>

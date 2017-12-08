@@ -138,6 +138,7 @@
 		<property name="bin-pack.tmpdir" value="${build.dir}/tmp-bin" />
 		<property name="bin-pack.conf-template" value="${bin-pack.tmpdir}/Configuration_Templates" />
 		<property name="bin-pack.required" value="${bin-pack.tmpdir}/Required_Bins" />
+		<property name="bin-pack.drivers" value="${bin-pack.tmpdir}/Select_Single_Driver" />
 		<property name="bin-pack.tests" value="${bin-pack.tmpdir}/Tests" />
 		
 		<copy file="releasenotes.txt" todir="${bin-pack.tmpdir}"/>
@@ -169,7 +170,11 @@
 				<include name="Remotion.Linq.EagerFetching.???" />
 			</fileset>
 		</copy>
-		<!--Required Bins for lazy loading NHibernate.ByteCode.Castle.dll-->
+		<copy todir="${bin-pack.drivers}">
+			<fileset basedir="${bin.dir}">
+				<include name="NHibernate.Driver.*.???" />
+			</fileset>
+		</copy>
 		<!-- Tests -->
 		<copy file="${bin.dir}/TestEmbeddedConfig.cfg.xml" todir="${bin-pack.tests}"/>
 		<copy file="${bin.dir}/ABC.hbm.xml" todir="${bin-pack.tests}"/>

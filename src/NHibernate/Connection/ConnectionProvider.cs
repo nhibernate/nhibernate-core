@@ -112,7 +112,47 @@ namespace NHibernate.Connection
 				{
 					throw new HibernateException("Could not create the driver from " + driverClass + ".", e);
 				}
+
+#pragma warning disable 618
+				switch (driver)
+				{
+					case NpgsqlDriver _:
+						LogObsoleteDriver(nameof(NpgsqlDriver), "PostgreSql", "PostgreSqlDriver");
+						break;
+					case MySqlDataDriver _:
+						LogObsoleteDriver(nameof(MySqlDataDriver), "MySql", "MySqlDriver");
+						break;
+					case FirebirdClientDriver _:
+						LogObsoleteDriver(nameof(FirebirdClientDriver), "Firebird", "FirebirdDriver");
+						break;
+					case OracleManagedDataClientDriver _:
+						LogObsoleteDriver(nameof(OracleManagedDataClientDriver), "Oracle.Managed", "OracleManagedDriver");
+						break;
+					case SQLite20Driver _:
+						LogObsoleteDriver(nameof(SQLite20Driver), "SQLite", "SQLiteDriver");
+						break;
+					case Sql2008ClientDriver _:
+						LogObsoleteDriver(nameof(Sql2008ClientDriver), "SqlServer", "SqlServer2008Driver");
+						break;
+					case SqlClientDriver _:
+						LogObsoleteDriver(nameof(SqlClientDriver), "SqlServer", "SqlServer2000Driver");
+						break;
+					case SqlServerCeDriver _:
+						LogObsoleteDriver(nameof(SqlServerCeDriver), "SqlServer.Compact", "SqlServerCompactDriver");
+						break;
+				}
+#pragma warning restore 618
 			}
+		}
+
+		private static void LogObsoleteDriver(string obsoleteDriverName, string nugetName, string newDriverName)
+		{
+			log.Error(
+				"Using \"{0}\" from main NHibernate package is obsolete." 
+				+ "  Install the NHibernate.Driver.{1} NuGet package and change " + Environment.ConnectionDriver + " setting to \"NHibernate.Driver.{2}, NHibernate.Driver.{1}\".",
+				obsoleteDriverName,
+				nugetName,
+				newDriverName);
 		}
 
 		/// <summary>
