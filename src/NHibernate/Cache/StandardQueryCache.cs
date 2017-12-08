@@ -23,22 +23,49 @@ namespace NHibernate.Cache
 		// 6.0 TODO: remove
 		private readonly CacheBase _cache;
 
-		public StandardQueryCache(Settings settings, IDictionary<string, string> props, UpdateTimestampsCache updateTimestampsCache, string regionName)
+		// Since v5.2
+		[Obsolete("Please use overload with an ICache parameter.")]
+		public StandardQueryCache(
+			Settings settings,
+			IDictionary<string, string> props,
+			UpdateTimestampsCache updateTimestampsCache,
+			string regionName)
+			: this(
+				updateTimestampsCache,
+				settings.CacheProvider.BuildCache(
+					(!string.IsNullOrEmpty(settings.CacheRegionPrefix) ? settings.CacheRegionPrefix + '.' : "") +
+					(regionName ?? typeof (StandardQueryCache).FullName),
+					props))
 		{
-			if (regionName == null)
-				regionName = typeof(StandardQueryCache).FullName;
+		}
 
-			var prefix = settings.CacheRegionPrefix;
-			if (!string.IsNullOrEmpty(prefix))
-				regionName = prefix + '.' + regionName;
+		// Since v5.2
+		[Obsolete]
+		private StandardQueryCache(
+			UpdateTimestampsCache updateTimestampsCache,
+			ICache cache)
+			: this(updateTimestampsCache, cache as CacheBase ?? new ObsoleteCacheWrapper(cache))
+		{
+		}
 
-			Log.Info("starting query cache at region: {0}", regionName);
+		/// <summary>
+		/// Build a query cache.
+		/// </summary>
+		/// <param name="updateTimestampsCache">The cache of updates timestamps.</param>
+		/// <param name="regionCache">The <see cref="ICache" /> to use for the region.</param>
+		public StandardQueryCache(
+			UpdateTimestampsCache updateTimestampsCache,
+			CacheBase regionCache)
+		{
+			if (regionCache == null)
+				throw new ArgumentNullException(nameof(regionCache));
 
-			Cache = settings.CacheProvider.BuildCache(regionName, props);
-			_cache = Cache as CacheBase ?? new ObsoleteCacheWrapper(Cache);
+			_regionName = regionCache.RegionName;
+			Log.Info("starting query cache at region: {0}", _regionName);
 
+			Cache = regionCache;
+			_cache = regionCache;
 			_updateTimestampsCache = updateTimestampsCache;
-			_regionName = regionName;
 		}
 
 		#region IQueryCache Members

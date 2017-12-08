@@ -9,12 +9,13 @@
 
 
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using NHibernate.Cache;
 using NHibernate.Cfg;
+using NHibernate.Engine;
+using NHibernate.Util;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
 
@@ -22,9 +23,14 @@ namespace NHibernate.Test.CacheTest
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class GetQueryCacheFixtureAsync : TestCase
+	public class BuildCacheFixtureAsync : TestCase
 	{
-		protected override string[] Mappings => new[] { "Simple.hbm.xml" };
+		protected override string MappingsAssembly => "NHibernate.Test";
+
+		protected override string[] Mappings => new[] { "CacheTest.EntitiesInSameRegion.hbm.xml" };
+
+		// Disable the TestCase cache overrides.
+		protected override string CacheConcurrencyStrategy => null;
 
 		protected override void Configure(Configuration configuration)
 		{

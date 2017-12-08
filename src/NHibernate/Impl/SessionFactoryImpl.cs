@@ -97,8 +97,8 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		// 6.0 TODO: type as CacheBase instead
 #pragma warning disable 618
-		private readonly ConcurrentDictionary<string, ICache> allCacheRegions =
-			new ConcurrentDictionary<string, ICache>();
+		private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, ICache>> allCachePerRegionThenType =
+			new ConcurrentDictionary<string, ConcurrentDictionary<string, ICache>>();
 #pragma warning restore 618
 
 		[NonSerialized]
@@ -150,6 +150,8 @@ namespace NHibernate.Impl
 
 		[NonSerialized]
 		private readonly IQueryCache queryCache;
+
+		private const string QueryCacheType = "QueryCache";
 
 		[NonSerialized]
 		private readonly ConcurrentDictionary<string, Lazy<IQueryCache>> queryCaches;
@@ -235,7 +237,7 @@ namespace NHibernate.Impl
 
 			#region Persisters
 
-			Dictionary<string, ICacheConcurrencyStrategy> caches = new Dictionary<string, ICacheConcurrencyStrategy>();
+			var caches = new Dictionary<Tuple<string, string>, ICacheConcurrencyStrategy>();
 			entityPersisters = new Dictionary<string, IEntityPersister>();
 			implementorToEntityName = new Dictionary<System.Type, string>();
 
@@ -244,22 +246,12 @@ namespace NHibernate.Impl
 			foreach (PersistentClass model in cfg.ClassMappings)
 			{
 				model.PrepareTemporaryTables(mapping, settings.Dialect);
-				string cacheRegion = model.RootClazz.CacheRegionName;
-				ICacheConcurrencyStrategy cache;
-				if (!caches.TryGetValue(cacheRegion, out cache))
-				{
-					cache =
-						CacheFactory.CreateCache(model.CacheConcurrencyStrategy, cacheRegion, model.IsMutable, settings, properties);
-					if (cache != null)
-					{
-						caches.Add(cacheRegion, cache);
-						if (!allCacheRegions.TryAdd(cache.RegionName, cache.Cache))
-						{
-							throw new HibernateException("An item with the same key has already been added to allCacheRegions.");
-						}
-					}
-				}
-				IEntityPersister cp = PersisterFactory.CreateClassPersister(model, cache, this, mapping);
+				var cache = GetCacheConcurrencyStrategy(
+					model.RootClazz.CacheRegionName,
+					model.CacheConcurrencyStrategy,
+					model.IsMutable,
+					caches);
+				var cp = PersisterFactory.CreateClassPersister(model, cache, this, mapping);
 				entityPersisters[model.EntityName] = cp;
 				classMeta[model.EntityName] = cp.ClassMetadata;
 
@@ -274,14 +266,12 @@ namespace NHibernate.Impl
 			collectionPersisters = new Dictionary<string, ICollectionPersister>();
 			foreach (Mapping.Collection model in cfg.CollectionMappings)
 			{
-				ICacheConcurrencyStrategy cache =
-					CacheFactory.CreateCache(model.CacheConcurrencyStrategy, model.CacheRegionName, model.Owner.IsMutable, settings,
-											 properties);
-				if (cache != null)
-				{
-					allCacheRegions[cache.RegionName] = cache.Cache;
-				}
-				ICollectionPersister persister = PersisterFactory.CreateCollectionPersister(model, cache, this);
+				var cache = GetCacheConcurrencyStrategy(
+					model.CacheRegionName,
+					model.CacheConcurrencyStrategy,
+					model.Owner.IsMutable,
+					caches);
+				var persister = PersisterFactory.CreateCollectionPersister(model, cache, this);
 				collectionPersisters[model.Role] = persister;
 				IType indexType = persister.IndexType;
 				if (indexType != null && indexType.IsAssociationType && !indexType.IsAnyType)
@@ -382,9 +372,12 @@ namespace NHibernate.Impl
 
 			if (settings.IsQueryCacheEnabled)
 			{
-				updateTimestampsCache = new UpdateTimestampsCache(settings, properties);
-				queryCache = settings.QueryCacheFactory.GetQueryCache(null, updateTimestampsCache, settings, properties);
+				var updateTimestampsCacheName = typeof(UpdateTimestampsCache).Name;
+				updateTimestampsCache = new UpdateTimestampsCache(BuildCache(updateTimestampsCacheName, updateTimestampsCacheName));
+				var queryCacheName = typeof(StandardQueryCache).FullName;
+				queryCache = BuildQueryCache(queryCacheName);
 				queryCaches = new ConcurrentDictionary<string, Lazy<IQueryCache>>();
+				queryCaches.TryAdd(queryCacheName, new Lazy<IQueryCache>(() => queryCache));
 			}
 			else
 			{
@@ -419,6 +412,47 @@ namespace NHibernate.Impl
 				enfd = new DefaultEntityNotFoundDelegate();
 			}
 			entityNotFoundDelegate = enfd;
+		}
+
+		private IQueryCache BuildQueryCache(string queryCacheName)
+		{
+			return
+				settings.QueryCacheFactory.GetQueryCache(
+					updateTimestampsCache,
+					properties,
+					BuildCache(queryCacheName, QueryCacheType))
+				// 6.0 TODO: remove the coalesce once IQueryCacheFactory todos are done
+#pragma warning disable 618
+				?? settings.QueryCacheFactory.GetQueryCache(
+#pragma warning restore 618
+					queryCacheName,
+					updateTimestampsCache,
+					settings,
+					properties);
+		}
+
+		private ICacheConcurrencyStrategy GetCacheConcurrencyStrategy(
+			string cacheRegion,
+			string strategy,
+			bool isMutable,
+			Dictionary<Tuple<string, string>, ICacheConcurrencyStrategy> caches)
+		{
+			var cacheKey = new Tuple<string, string>(cacheRegion, strategy);
+			if (!caches.TryGetValue(cacheKey, out var cache))
+			{
+				cache = CacheFactory.CreateCache(
+					strategy,
+					cacheRegion,
+					settings,
+					BuildCache);
+				if (cache != null)
+					caches.Add(cacheKey, cache);
+			}
+			
+			if (cache != null && isMutable && strategy == CacheFactory.ReadOnly)
+				log.Warn("read-only cache configured for mutable: {0}", name);
+
+			return cache;
 		}
 
 		public EventListeners EventListeners
@@ -848,8 +882,6 @@ namespace NHibernate.Impl
 
 			if (settings.IsQueryCacheEnabled)
 			{
-				queryCache.Destroy();
-
 				foreach (var cache in queryCaches.Values)
 				{
 					cache.Value.Destroy();
@@ -1041,8 +1073,12 @@ namespace NHibernate.Impl
 		public IDictionary<string, ICache> GetAllSecondLevelCacheRegions()
 #pragma warning restore 618
 		{
-			// ToArray creates a moment in time snapshot
-			return allCacheRegions.ToArray().ToDictionary(kv => kv.Key, kv => kv.Value);
+			return
+				allCachePerRegionThenType
+					// ToArray creates a moment in time snapshot
+					.ToArray()
+					// Caches are not unique per region, take the first one.
+					.ToDictionary(kv => kv.Key, kv => kv.Value.Values.First());
 		}
 
 		// 6.0 TODO: return CacheBase instead
@@ -1050,8 +1086,33 @@ namespace NHibernate.Impl
 		public ICache GetSecondLevelCacheRegion(string regionName)
 #pragma warning restore 618
 		{
-			allCacheRegions.TryGetValue(regionName, out var result);
-			return result;
+			if (!allCachePerRegionThenType.TryGetValue(regionName, out var result))
+				return null;
+			// Caches are not unique per region, take the first one.
+			return result.Values.First();
+		}
+
+		private CacheBase BuildCache(string cacheRegion, string type)
+		{
+			// If run concurrently for the same region and type, this may built many caches for the same region and type.
+			// Currently only GetQueryCache may be run concurrently, and its implementation prevents
+			// concurrent creation call for the same region, so this will not happen.
+			// Otherwise the dictionary will have to be changed for using a lazy, see
+			// https://stackoverflow.com/a/31637510/1178314
+			var prefix = settings.CacheRegionPrefix;
+			if (!string.IsNullOrEmpty(prefix))
+				cacheRegion = prefix + '.' + cacheRegion;
+#pragma warning disable 618
+			var cachesPerType = allCachePerRegionThenType.GetOrAdd(cacheRegion, cr => new ConcurrentDictionary<string, ICache>());
+#pragma warning restore 618
+			var cache = settings.CacheProvider.BuildCache(cacheRegion, properties);
+			if (!cachesPerType.TryAdd(type, cache))
+			{
+				cache.Destroy();
+				throw new InvalidOperationException($"A cache has already been built for region {cacheRegion} and type {type}.");
+			}
+
+			return cache as CacheBase ?? new ObsoleteCacheWrapper(cache);
 		}
 
 		/// <summary> Statistics SPI</summary>
@@ -1079,15 +1140,12 @@ namespace NHibernate.Impl
 			// The factory may be run concurrently by threads trying to get the same region.
 			// But the GetOrAdd will yield the same lazy for all threads, so only one will
 			// initialize. https://stackoverflow.com/a/31637510/1178314
-			return queryCaches.GetOrAdd(
-				cacheRegion,
-				cr => new Lazy<IQueryCache>(
-					() =>
-					{
-						var currentQueryCache = settings.QueryCacheFactory.GetQueryCache(cr, updateTimestampsCache, settings, properties);
-						allCacheRegions[currentQueryCache.RegionName] = currentQueryCache.Cache;
-						return currentQueryCache;
-					})).Value;
+			return
+				queryCaches
+					.GetOrAdd(
+						cacheRegion,
+						cr => new Lazy<IQueryCache>(() => BuildQueryCache(cr)))
+					.Value;
 		}
 
 		public void EvictQueries()

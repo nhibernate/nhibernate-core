@@ -1,24 +1,85 @@
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using NHibernate.Cache;
 using NHibernate.Cfg;
+using NHibernate.Engine;
+using NHibernate.Util;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.CacheTest
 {
 	[TestFixture]
-	public class GetQueryCacheFixture : TestCase
+	public class BuildCacheFixture : TestCase
 	{
-		protected override string[] Mappings => new[] { "Simple.hbm.xml" };
+		protected override string MappingsAssembly => "NHibernate.Test";
+
+		protected override string[] Mappings => new[] { "CacheTest.EntitiesInSameRegion.hbm.xml" };
+
+		// Disable the TestCase cache overrides.
+		protected override string CacheConcurrencyStrategy => null;
 
 		protected override void Configure(Configuration configuration)
 		{
 			configuration.SetProperty(Environment.UseQueryCache, "true");
 			configuration.SetProperty(Environment.CacheProvider, typeof(LockedCacheProvider).AssemblyQualifiedName);
+		}
+
+		[Theory]
+		public void CommonRegionHasExpectedConcurrency(bool withPrefix)
+		{
+			const string prefix = "Prefix";
+			const string region = "Common";
+			var fullRegion = (withPrefix ? prefix + "." : "") + region;
+			ISessionFactoryImplementor sfi = null;
+			if (withPrefix)
+				cfg.SetProperty(Environment.CacheRegionPrefix, prefix);
+			try
+			{
+				sfi = withPrefix ? BuildSessionFactory() : Sfi;
+				var commonRegionCache = sfi.GetSecondLevelCacheRegion(fullRegion);
+				var entityAName = typeof(EntityA).FullName;
+				var entityAConcurrencyCache = sfi.GetEntityPersister(entityAName).Cache;
+				var entityACache = entityAConcurrencyCache.Cache;
+				var entityBName = typeof(EntityB).FullName;
+				var entityBConcurrencyCache = sfi.GetEntityPersister(entityBName).Cache;
+				var entityBCache = entityBConcurrencyCache.Cache;
+				var relatedAConcurrencyCache =
+					sfi.GetCollectionPersister(StringHelper.Qualify(entityAName, nameof(EntityA.Related))).Cache;
+				var relatedACache = relatedAConcurrencyCache.Cache;
+				var relatedBConcurrencyCache =
+					sfi.GetCollectionPersister(StringHelper.Qualify(entityBName, nameof(EntityB.Related))).Cache;
+				var relatedBCache = relatedBConcurrencyCache.Cache;
+				var queryCache = sfi.GetQueryCache(region).Cache;
+				Assert.Multiple(
+					() =>
+					{
+						Assert.That(commonRegionCache.RegionName, Is.EqualTo(fullRegion), "Unexpected region name for common region");
+						Assert.That(entityACache.RegionName, Is.EqualTo(fullRegion), "Unexpected region name for EntityA");
+						Assert.That(entityBCache.RegionName, Is.EqualTo(fullRegion), "Unexpected region name for EntityB");
+						Assert.That(relatedACache.RegionName, Is.EqualTo(fullRegion), "Unexpected region name for RelatedA");
+						Assert.That(relatedBCache.RegionName, Is.EqualTo(fullRegion), "Unexpected region name for RelatedB");
+						Assert.That(queryCache.RegionName, Is.EqualTo(fullRegion), "Unexpected region name for query cache");
+					});
+				Assert.Multiple(
+					() =>
+					{
+						Assert.That(entityAConcurrencyCache, Is.InstanceOf<ReadWriteCache>(), "Unexpected concurrency for EntityA");
+						Assert.That(relatedAConcurrencyCache, Is.InstanceOf<NonstrictReadWriteCache>(), "Unexpected concurrency for RelatedA");
+						Assert.That(entityBConcurrencyCache, Is.InstanceOf<ReadOnlyCache>(), "Unexpected concurrency for EntityB");
+						Assert.That(relatedBConcurrencyCache, Is.InstanceOf<ReadWriteCache>(), "Unexpected concurrency for RelatedB");
+					});
+			}
+			finally
+			{
+				if (withPrefix)
+				{
+					cfg.Properties.Remove(Environment.CacheRegionPrefix);
+					sfi?.Dispose();
+				}
+			}
 		}
 
 		[Test]

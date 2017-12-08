@@ -20,20 +20,35 @@ namespace NHibernate.Cache
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(UpdateTimestampsCache));
 		private readonly CacheBase _updateTimestamps;
 
-		private readonly string regionName = typeof(UpdateTimestampsCache).Name;
-
 		public virtual void Clear()
 		{
 			_updateTimestamps.Clear();
 		}
 
+		// Since v5.2
+		[Obsolete("Please use overload with an ICache parameter.")]
 		public UpdateTimestampsCache(Settings settings, IDictionary<string, string> props)
+			: this(
+				settings.CacheProvider.BuildCache(
+					(settings.CacheRegionPrefix == null ? "" : settings.CacheRegionPrefix + '.') +
+					typeof(UpdateTimestampsCache).Name,
+					props)) {}
+
+		// Since v5.2
+		[Obsolete]
+		private UpdateTimestampsCache(ICache cache)
+			: this(cache as CacheBase ?? new ObsoleteCacheWrapper(cache))
 		{
-			var prefix = settings.CacheRegionPrefix;
-			regionName = prefix == null ? regionName : prefix + '.' + regionName;
-			log.Info("starting update timestamps cache at region: {0}", regionName);
-			var updateTimestamps = settings.CacheProvider.BuildCache(regionName, props);
-			_updateTimestamps = updateTimestamps as CacheBase ?? new ObsoleteCacheWrapper(updateTimestamps);
+		}
+
+		/// <summary>
+		/// Build the update timestamps cache.
+		/// </summary>x
+		/// <param name="cache">The <see cref="ICache" /> to use.</param>
+		public UpdateTimestampsCache(CacheBase cache)
+		{
+			log.Info("starting update timestamps cache at region: {0}", cache.RegionName);
+			_updateTimestamps = cache;
 		}
 
 		//Since v5.1
