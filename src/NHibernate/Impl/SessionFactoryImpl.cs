@@ -616,7 +616,7 @@ namespace NHibernate.Impl
 		public IType[] GetReturnTypes(String queryString)
 		{
 			return
-				queryPlanCache.GetHQLQueryPlan(queryString.ToQueryExpression(), false, new CollectionHelper.EmptyMapClass<string, IFilter>()).
+				queryPlanCache.GetHQLQueryPlan(queryString.ToQueryExpression(), false, CollectionHelper.EmptyDictionary<string, IFilter>()).
 					ReturnMetadata.ReturnTypes;
 		}
 
@@ -624,7 +624,7 @@ namespace NHibernate.Impl
 		public string[] GetReturnAliases(string queryString)
 		{
 			return
-				queryPlanCache.GetHQLQueryPlan(queryString.ToQueryExpression(), false, new CollectionHelper.EmptyMapClass<string, IFilter>()).
+				queryPlanCache.GetHQLQueryPlan(queryString.ToQueryExpression(), false, CollectionHelper.EmptyDictionary<string, IFilter>()).
 					ReturnMetadata.ReturnAliases;
 		}
 
@@ -1163,7 +1163,7 @@ namespace NHibernate.Impl
 				{
 					log.Debug("Checking named query: {0}", queryName);
 					//TODO: BUG! this currently fails for named queries for non-POJO entities
-					queryPlanCache.GetHQLQueryPlan(qd.QueryString.ToQueryExpression(), false, new CollectionHelper.EmptyMapClass<string, IFilter>());
+					queryPlanCache.GetHQLQueryPlan(qd.QueryString.ToQueryExpression(), false, CollectionHelper.EmptyDictionary<string, IFilter>());
 				}
 				catch (QueryException e)
 				{

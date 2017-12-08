@@ -2118,7 +2118,7 @@ namespace NHibernate.Persister.Entity
 					//don't need filters for the static loaders
 					uniqueKeyLoaders[propertyNames[i]] =
 						CreateUniqueKeyLoader(propertyTypes[i], GetPropertyColumnNames(i),
-																	new CollectionHelper.EmptyMapClass<string, IFilter>());
+																	CollectionHelper.EmptyDictionary<string, IFilter>());
 				}
 			}
 		}
@@ -2197,7 +2197,7 @@ namespace NHibernate.Persister.Entity
 
 		protected IUniqueEntityLoader CreateEntityLoader(LockMode lockMode)
 		{
-			return CreateEntityLoader(lockMode, new CollectionHelper.EmptyMapClass<string, IFilter>());
+			return CreateEntityLoader(lockMode, CollectionHelper.EmptyDictionary<string, IFilter>());
 		}
 
 		protected bool Check(int rows, object id, int tableNumber, IExpectation expectation, DbCommand statement)

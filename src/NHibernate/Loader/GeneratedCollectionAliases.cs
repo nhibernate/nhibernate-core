@@ -37,7 +37,7 @@ namespace NHibernate.Loader
 		}
 
 		public GeneratedCollectionAliases(ICollectionPersister persister, string str)
-			: this(new CollectionHelper.EmptyMapClass<string, string[]>(), persister, str) {}
+			: this(CollectionHelper.EmptyDictionary<string, string[]>(), persister, str) {}
 
 		private string[] GetUserProvidedCompositeElementAliases(string[] defaultAliases)
 		{

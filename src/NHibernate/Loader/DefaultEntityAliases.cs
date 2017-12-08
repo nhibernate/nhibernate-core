@@ -19,7 +19,7 @@ namespace NHibernate.Loader
 		private readonly IDictionary<string, string[]> userProvidedAliases;
 
 		public DefaultEntityAliases(ILoadable persister, string suffix)
-			: this(new CollectionHelper.EmptyMapClass<string, string[]>(), persister, suffix) {}
+			: this(CollectionHelper.EmptyDictionary<string, string[]>(), persister, suffix) {}
 
 		/// <summary>
 		/// Calculate and cache select-clause suffixes.

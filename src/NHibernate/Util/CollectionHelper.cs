@@ -214,6 +214,12 @@ namespace NHibernate.Util
 
 		public static readonly IEnumerable EmptyEnumerable = new EmptyEnumerableClass();
 		public static readonly IDictionary EmptyMap = new EmptyMapClass();
+
+		public static IDictionary<TKey, TValue> EmptyDictionary<TKey, TValue>()
+		{
+			return EmptyDictionaryHolder<TKey, TValue>.Instance;
+		}
+
 		public static readonly ICollection EmptyCollection = EmptyMap;
 		// Since v5
 		[Obsolete("It has no more usages in NHibernate and will be removed in a future version.")]
@@ -455,6 +461,11 @@ namespace NHibernate.Util
 			}
 
 			#endregion
+		}
+
+		private static class EmptyDictionaryHolder<TKey, TValue>
+		{
+			public static readonly IDictionary<TKey, TValue> Instance = new EmptyMapClass<TKey, TValue>();
 		}
 
 		/// <summary>

@@ -13,7 +13,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		protected static readonly INHibernateLogger log = NHibernateLogger.For(typeof (Binder));
 
 		protected static readonly IDictionary<string, MetaAttribute> EmptyMeta =
-			new CollectionHelper.EmptyMapClass<string, MetaAttribute>();
+			CollectionHelper.EmptyDictionary<string, MetaAttribute>();
 
 		protected readonly Mappings mappings;
 
