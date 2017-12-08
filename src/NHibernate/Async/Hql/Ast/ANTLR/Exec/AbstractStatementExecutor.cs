@@ -43,7 +43,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 
 			if (session.IsEventSource)
 			{
-				await (((IEventSource)session).ActionQueue.AddActionAsync(action, cancellationToken)).ConfigureAwait(false);
+				((IEventSource)session).ActionQueue.AddAction(action);
 			}
 		}
 

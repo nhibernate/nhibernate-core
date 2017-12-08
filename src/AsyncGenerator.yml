@@ -5,8 +5,6 @@
   analyzation:
     methodConversion:
     - conversion: Ignore
-      hasAttributeName: ObsoleteAttribute
-    - conversion: Ignore
       name: PostProcessInsert
       containingTypeName: HqlSqlWalker
     - conversion: Ignore
@@ -96,6 +94,9 @@
     - conversion: Ignore
       name: Exists
       containingTypeName: AbstractCollectionPersister
+    - conversion: Ignore
+      name: QuoteTableAndColumns
+      containingTypeName: SchemaMetadataUpdater
     - conversion: ToAsync
       name: ExecuteReader
       containingTypeName: IBatcher
@@ -119,6 +120,8 @@
     - name: GetFieldValue
     - name: IsDBNull
     - name: WriteLine
+    ignoreAsyncCounterparts:
+    - rule: Obsolete
     callForwarding: true
     cancellationTokens:
       guards: true
@@ -259,6 +262,9 @@ methodRules:
   - containingType: NHibernate.Tool.hbm2ddl.SchemaValidator
   - containingType: NHibernate.Tool.hbm2ddl.SchemaExport
   name: PubliclyExposedType
+- filters:
+  - hasAttributeName: ObsoleteAttribute
+  name: Obsolete
 typeRules:
 - filters:
   - containingAssemblyName: NHibernate
