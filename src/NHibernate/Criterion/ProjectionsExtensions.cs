@@ -21,6 +21,17 @@ namespace NHibernate.Criterion
 			return Projections.Alias(projection, aliasContainer);
 		}
 
+		/// <summary>
+		/// Create an alias for a projection
+		/// </summary>
+		/// <param name="projection">the projection instance</param>
+		/// <param name="alias">LambdaExpression returning an alias</param>
+		/// <returns>return NHibernate.Criterion.IProjection</returns>
+		public static IProjection WithAlias(this IProjection projection, string alias)
+		{
+			return Projections.Alias(projection, alias);
+		}
+
 		internal static IProjection ProcessYear(System.Linq.Expressions.Expression expression)
 		{
 			IProjection property = ExpressionProcessor.FindMemberProjection(expression).AsProjection();
@@ -322,6 +333,21 @@ namespace NHibernate.Criterion
 			IProjection property = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]).AsProjection();
 			object divisor = ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
 			return Projections.SqlFunction("mod", NHibernateUtil.Int32, property, Projections.Constant(divisor));
+		}
+
+		/// <summary>
+		/// Project Entity
+		/// </summary>
+		public static T AsEntity<T>(this T alias) where T:class
+		{
+			throw new Exception("Not to be used directly - use inside QueryOver expression");
+		}
+
+		internal static IProjection ProcessAsEntity(MethodCallExpression methodCallExpression)
+		{
+			var expression = methodCallExpression.Arguments[0];
+			var aliasName = ExpressionProcessor.FindMemberExpression(expression);
+			return new EntityProjection(expression.Type, aliasName);
 		}
 	}
 }

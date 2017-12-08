@@ -93,10 +93,15 @@ namespace NHibernate.Loader
 
 			for (int i = 0; i < length; i++)
 			{
-				suffixes[i] = (i + seed).ToString() + StringHelper.Underscore;
+				suffixes[i] = GenerateSuffix(i + seed);
 			}
 
 			return suffixes;
+		}
+
+		public static string GenerateSuffix(int index)
+		{
+			return index.ToString() + StringHelper.Underscore;
 		}
 	}
 }

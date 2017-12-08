@@ -181,6 +181,54 @@ namespace NHibernate.Test.Criteria
 		}
 
 		[Test]
+		public void EntityProjectionAsSelectExpression()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntitySimpleChild child1 = null;
+				child1 = session
+					.QueryOver<EntityComplex>()
+					.JoinAlias(ep => ep.Child1, () => child1)
+					.Select(ec => child1.AsEntity())
+					.Take(1).SingleOrDefault<EntitySimpleChild>();
+
+				Assert.That(child1, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsInitialized(child1), Is.True, "Object must be initialized");
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test]
+		public void EntityProjectionLockMode()
+		{
+			var upgradeHint = Dialect.ForUpdateString;
+			if(string.IsNullOrEmpty(upgradeHint))
+				upgradeHint = this.Dialect.AppendLockHint(LockMode.Upgrade, string.Empty);
+			if (string.IsNullOrEmpty(upgradeHint))
+			{
+				Assert.Ignore($"Upgrade hint is not supported by dialect {Dialect.GetType().Name}");
+			}
+
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntitySimpleChild child1 = null;
+				child1 = session
+					.QueryOver<EntityComplex>()
+					.JoinAlias(ep => ep.Child1, () => child1)
+					.Lock(() => child1).Upgrade
+					.Select(Projections.Entity(() => child1))
+					.Take(1).SingleOrDefault<EntitySimpleChild>();
+				
+				Assert.That(child1, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsInitialized(child1), Is.True, "Object must be initialized");
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+				Assert.That(sqlLog.Appender.GetEvents()[0].RenderedMessage, Does.Contain(upgradeHint));
+			}
+		}
+
+		[Test]
 		public void MultipleLazyEntityProjections()
 		{
 			using (var session = OpenSession())
@@ -302,6 +350,7 @@ namespace NHibernate.Test.Criteria
 			public EntitySimpleChild Child2 { get; set; }
 			public EntityComplex SameAsRootChild { get; set; }
 			public EntitySimpleChild NullListElem { get; set; }
+			public string Name { get; set; }
 		}
 
 		[Test]
@@ -324,9 +373,11 @@ namespace NHibernate.Test.Criteria
 					.JoinAlias(ep => ep.SameTypeChild, () => sameAsRootChild)
 					.JoinAlias(ep => ep.ChildrenList, () => nullListElem, JoinType.LeftOuterJoin)
 					.Select(
-						Projections.Alias(Projections.RootEntity(), nameof(r.Root)),
+						Projections.RootEntity().WithAlias(nameof(r.Root)),
 						Projections.Entity(() => child1),
+						Projections.Property(() => child2.Name).As(nameof(r.Name)),
 						Projections.Entity(() => child2),
+						Projections.Property(() => child1.Id),
 						Projections.Entity(() => sameAsRootChild),
 						Projections.Entity(() => nullListElem)
 					)
@@ -351,7 +402,8 @@ namespace NHibernate.Test.Criteria
 			{
 				EntityComplex entityRoot = session
 					.QueryOver<EntityComplex>()
-					.Select(Projections.RootEntity().SetReadonly(true))
+					.Select(Projections.RootEntity())
+					.ReadOnly()
 					.Take(1).SingleOrDefault();
 
 				Assert.That(session.IsReadOnly(entityRoot), Is.True, "Object must be loaded readonly.");

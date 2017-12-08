@@ -198,6 +198,7 @@ namespace NHibernate.Impl
 			RegisterCustomProjection(() => Math.Round(default(decimal)), ProjectionsExtensions.ProcessRound);
 			RegisterCustomProjection(() => Math.Round(default(double), default(int)), ProjectionsExtensions.ProcessRound);
 			RegisterCustomProjection(() => Math.Round(default(decimal), default(int)), ProjectionsExtensions.ProcessRound);
+			RegisterCustomProjection(() => ProjectionsExtensions.AsEntity(default(object)), ProjectionsExtensions.ProcessAsEntity);
 		}
 
 		private static ICriterion Eq(ProjectionInfo property, object value)

@@ -14,7 +14,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Loader.Criteria
 {
-	public class CriteriaQueryTranslator : ICriteriaQuery
+	public class CriteriaQueryTranslator : ICriteriaQuery, ISupportEntityProjectionCriteriaQuery
 	{
 		public static readonly string RootSqlAlias = CriteriaSpecification.RootAlias + '_';
 		private static readonly INHibernateLogger logger = NHibernateLogger.For(typeof(CriteriaQueryTranslator));
@@ -26,6 +26,7 @@ namespace NHibernate.Loader.Criteria
 		private readonly string rootEntityName;
 		private readonly string rootSQLAlias;
 		private int indexForAlias = 0;
+		private IList<EntityProjection> _entityProjections = new List<EntityProjection>();
 
 		private readonly IDictionary<ICriteria, ICriteriaInfoProvider> criteriaInfoMap =
 			new Dictionary<ICriteria, ICriteriaInfoProvider>();
@@ -45,6 +46,7 @@ namespace NHibernate.Loader.Criteria
 		private readonly ICollection<IParameterSpecification> collectedParameterSpecifications;
 		private readonly ICollection<NamedParameter> namedParameters;
 		private readonly ISet<string> subQuerySpaces = new HashSet<string>();
+		public IList<EntityProjection> entityProjections = new List<EntityProjection>();
 
 		
 
@@ -189,6 +191,16 @@ namespace NHibernate.Loader.Criteria
 		public string[] ProjectedAliases
 		{
 			get { return rootCriteria.Projection.Aliases; }
+		}
+
+		public IList<EntityProjection> GetEntityProjections()
+		{
+			return _entityProjections;
+		}
+
+		public void RegisterEntityProjection(EntityProjection projection)
+		{
+			_entityProjections.Add(projection);
 		}
 
 		public SqlString GetWhereCondition()
@@ -866,6 +878,6 @@ namespace NHibernate.Loader.Criteria
 				subQuerySpaces.UnionWith(translator.GetQuerySpaces());
 			}
 
-		}	
+		}
 	}
 }

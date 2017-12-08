@@ -55,6 +55,8 @@ namespace NHibernate.Loader
 			set { aliases = value; }
 		}
 
+		public bool[] EagerPropertyFetches { get; set; }
+
 		public int[] CollectionOwners
 		{
 			get { return collectionOwners; }
