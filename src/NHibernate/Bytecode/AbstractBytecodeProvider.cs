@@ -28,7 +28,8 @@ namespace NHibernate.Bytecode
 						throw new HibernateByteCodeException("Failed to create an instance of '" + proxyFactoryFactory.FullName + "'!", e);
 					}
 				}
-				return new DefaultProxyFactoryFactory();
+
+				return StaticProxyFactoryFactory.Instance;
 			}
 		}
 

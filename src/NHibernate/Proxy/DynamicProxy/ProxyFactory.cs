@@ -21,11 +21,11 @@ namespace NHibernate.Proxy.DynamicProxy
 	{
 		internal static readonly ConcurrentDictionary<ProxyCacheEntry, TypeInfo> _cache = new ConcurrentDictionary<ProxyCacheEntry, TypeInfo>();
 
-		private static readonly ConstructorInfo defaultBaseConstructor = typeof(object).GetConstructor(new System.Type[0]);
+		internal static readonly ConstructorInfo defaultBaseConstructor = typeof(object).GetConstructor(new System.Type[0]);
 
 		private static readonly MethodInfo getValue = ReflectHelper.GetMethod<SerializationInfo>(
 			si => si.GetValue(null, null));
-		private static readonly MethodInfo setType = ReflectHelper.GetMethod<SerializationInfo>(
+		internal static readonly MethodInfo setType = ReflectHelper.GetMethod<SerializationInfo>(
 			si => si.SetType(null));
 		private static readonly MethodInfo addValue = ReflectHelper.GetMethod<SerializationInfo>(
 			si => si.AddValue(null, null));
@@ -129,7 +129,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			return proxyType;
 		}
 
-		private IEnumerable<MethodInfo> GetProxiableMethods(System.Type type, IEnumerable<System.Type> interfaces)
+		internal static IEnumerable<MethodInfo> GetProxiableMethods(System.Type type, IEnumerable<System.Type> interfaces)
 		{
 			const BindingFlags candidateMethodsBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 			return
@@ -139,7 +139,7 @@ namespace NHibernate.Proxy.DynamicProxy
 					.Distinct();
 		}
 
-		private static ConstructorBuilder DefineConstructor(TypeBuilder typeBuilder, System.Type parentType)
+		internal static ConstructorBuilder DefineConstructor(TypeBuilder typeBuilder, System.Type parentType)
 		{
 			const MethodAttributes constructorAttributes = MethodAttributes.Public |
 														   MethodAttributes.HideBySig | MethodAttributes.SpecialName |
@@ -166,7 +166,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			return constructor;
 		}
 
-		private static void ImplementGetObjectData(System.Type baseType, IReadOnlyCollection<System.Type> baseInterfaces, TypeBuilder typeBuilder, FieldInfo interceptorField)
+		internal static void ImplementGetObjectData(System.Type baseType, IReadOnlyCollection<System.Type> baseInterfaces, TypeBuilder typeBuilder, FieldInfo interceptorField)
 		{
 			const MethodAttributes attributes = MethodAttributes.Public | MethodAttributes.HideBySig |
 												MethodAttributes.Virtual;
@@ -217,7 +217,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			IL.Emit(OpCodes.Ret);
 		}
 
-		private static void DefineSerializationConstructor(TypeBuilder typeBuilder, FieldInfo interceptorField, ConstructorBuilder defaultConstructor)
+		internal static void DefineSerializationConstructor(TypeBuilder typeBuilder, FieldInfo interceptorField, ConstructorBuilder defaultConstructor)
 		{
 			const MethodAttributes constructorAttributes = MethodAttributes.Public |
 														   MethodAttributes.HideBySig | MethodAttributes.SpecialName |
@@ -254,7 +254,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			IL.Emit(OpCodes.Ret);
 		}
 
-		private static void AddSerializationSupport(System.Type baseType, IReadOnlyCollection<System.Type> baseInterfaces, TypeBuilder typeBuilder, FieldInfo interceptorField, ConstructorBuilder defaultConstructor)
+		internal static void AddSerializationSupport(System.Type baseType, IReadOnlyCollection<System.Type> baseInterfaces, TypeBuilder typeBuilder, FieldInfo interceptorField, ConstructorBuilder defaultConstructor)
 		{
 			ConstructorInfo serializableConstructor = typeof(SerializableAttribute).GetConstructor(new System.Type[0]);
 			var customAttributeBuilder = new CustomAttributeBuilder(serializableConstructor, new object[0]);

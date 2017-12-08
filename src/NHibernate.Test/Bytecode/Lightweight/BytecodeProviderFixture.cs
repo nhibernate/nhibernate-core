@@ -14,7 +14,7 @@ namespace NHibernate.Test.Bytecode.Lightweight
 		{
 			var bcp = new BytecodeProviderImpl();
 			IProxyFactoryFactory p = bcp.ProxyFactoryFactory;
-			Assert.That(p, Is.InstanceOf<DefaultProxyFactoryFactory>());
+			Assert.That(p, Is.InstanceOf<StaticProxyFactoryFactory>());
 		}
 
 		[Test]
