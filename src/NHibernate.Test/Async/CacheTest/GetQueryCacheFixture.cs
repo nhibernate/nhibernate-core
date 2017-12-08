@@ -37,6 +37,7 @@ namespace NHibernate.Test.CacheTest
 		{
 			var region = "RetrievedQueryCacheMatchesGloballyStoredOne";
 			LockedCache.Semaphore = new SemaphoreSlim(0);
+			LockedCache.CreationCount = 0;
 			try
 			{
 				var failures = new ConcurrentBag<Exception>();
@@ -89,44 +90,7 @@ namespace NHibernate.Test.CacheTest
 			var queryCache = Sfi.GetQueryCache(region).Cache;
 			var globalCache = Sfi.GetSecondLevelCacheRegion(region);
 			Assert.That(globalCache, Is.SameAs(queryCache));
+			Assert.That(LockedCache.CreationCount, Is.EqualTo(1));
 		}
-	}
-
-	public partial class LockedCache : ICache
-	{
-
-		#region Void implementation
-
-		public Task<object> GetAsync(object key, CancellationToken cancellationToken)
-		{
-			return Task.FromResult<object>(null);
-		}
-
-		public Task PutAsync(object key, object value, CancellationToken cancellationToken)
-		{
-			return Task.CompletedTask;
-		}
-
-		public Task RemoveAsync(object key, CancellationToken cancellationToken)
-		{
-			return Task.CompletedTask;
-		}
-
-		public Task ClearAsync(CancellationToken cancellationToken)
-		{
-			return Task.CompletedTask;
-		}
-
-		public Task LockAsync(object key, CancellationToken cancellationToken)
-		{
-			return Task.CompletedTask;
-		}
-
-		public Task UnlockAsync(object key, CancellationToken cancellationToken)
-		{
-			return Task.CompletedTask;
-		}
-
-		#endregion
 	}
 }

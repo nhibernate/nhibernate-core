@@ -26,6 +26,7 @@ namespace NHibernate.Test.CacheTest
 		{
 			var region = "RetrievedQueryCacheMatchesGloballyStoredOne";
 			LockedCache.Semaphore = new SemaphoreSlim(0);
+			LockedCache.CreationCount = 0;
 			try
 			{
 				var failures = new ConcurrentBag<Exception>();
@@ -78,60 +79,27 @@ namespace NHibernate.Test.CacheTest
 			var queryCache = Sfi.GetQueryCache(region).Cache;
 			var globalCache = Sfi.GetSecondLevelCacheRegion(region);
 			Assert.That(globalCache, Is.SameAs(queryCache));
+			Assert.That(LockedCache.CreationCount, Is.EqualTo(1));
 		}
 	}
 
-	public partial class LockedCache : ICache
+	public class LockedCache : HashtableCache
 	{
 		public static SemaphoreSlim Semaphore { get; set; }
 
-		public LockedCache(string regionName)
+		private static int _creationCount;
+
+		public static int CreationCount
 		{
-			RegionName = regionName;
+			get => _creationCount;
+			set => _creationCount = value;
+		}
+
+		public LockedCache(string regionName) : base(regionName)
+		{
 			Semaphore?.Wait();
+			Interlocked.Increment(ref _creationCount);
 		}
-
-		#region Void implementation
-
-		public object Get(object key)
-		{
-			return null;
-		}
-
-		public void Put(object key, object value)
-		{
-		}
-
-		public void Remove(object key)
-		{
-		}
-
-		public void Clear()
-		{
-		}
-
-		public void Destroy()
-		{
-		}
-
-		public void Lock(object key)
-		{
-		}
-
-		public void Unlock(object key)
-		{
-		}
-
-		public long NextTimestamp()
-		{
-			return Timestamper.Next();
-		}
-
-		public int Timeout => Timestamper.OneMs * 60000;
-
-		public string RegionName { get; }
-
-		#endregion
 	}
 
 	public class LockedCacheProvider : ICacheProvider
