@@ -52,6 +52,10 @@ namespace NHibernate
 		private const string nhibernateLoggerConfKey = "nhibernate-logger";
 		private static INHibernateLoggerFactory _loggerFactory;
 
+#pragma warning disable 618
+		internal static ILoggerFactory LegacyLoggerFactory { get; private set; }
+#pragma warning restore 618
+
 		static NHibernateLogger()
 		{
 			var nhibernateLoggerClass = GetNhibernateLoggerClass();
@@ -68,9 +72,21 @@ namespace NHibernate
 			_loggerFactory = loggerFactory ?? new NoLoggingNHibernateLoggerFactory();
 
 #pragma warning disable 618
-			if (!(loggerFactory is LoggerProvider.LegacyLoggerFactoryAdaptor))
+			// Also keep global state for obsolete logger
+			if (loggerFactory == null)
 			{
-				LoggerProvider.SetLoggersFactory(new LoggerProvider.ReverseLegacyLoggerFactoryAdaptor(loggerFactory));
+				LegacyLoggerFactory = new NoLoggingLoggerFactory();
+			}
+			else
+			{
+				if (loggerFactory is LoggerProvider.LegacyLoggerFactoryAdaptor legacyAdaptor)
+				{
+					LegacyLoggerFactory = legacyAdaptor.Factory;
+				}
+				else
+				{
+					LegacyLoggerFactory = new LoggerProvider.ReverseLegacyLoggerFactoryAdaptor(loggerFactory);
+				}
 			}
 #pragma warning restore 618
 		}
