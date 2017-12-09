@@ -217,7 +217,7 @@ namespace NHibernate.Util
 
 		public static IDictionary<TKey, TValue> EmptyDictionary<TKey, TValue>()
 		{
-			return EmptyDictionaryHolder<TKey, TValue>.Instance;
+			return EmptyMapClass<TKey, TValue>.Instance;
 		}
 
 		public static readonly ICollection EmptyCollection = EmptyMap;
@@ -463,18 +463,23 @@ namespace NHibernate.Util
 			#endregion
 		}
 
-		private static class EmptyDictionaryHolder<TKey, TValue>
-		{
-			public static readonly IDictionary<TKey, TValue> Instance = new EmptyMapClass<TKey, TValue>();
-		}
-
 		/// <summary>
 		/// A read-only dictionary that is always empty and permits lookup by <see langword="null" /> key.
 		/// </summary>
 		[Serializable]
 		public class EmptyMapClass<TKey, TValue> : IDictionary<TKey, TValue>
 		{
+#pragma warning disable 618 // Constructor is obsolete, to be switched to non-obsolete but private.
+			internal static readonly IDictionary<TKey, TValue> Instance = new EmptyMapClass<TKey, TValue>();
+#pragma warning restore 618
+
 			private static readonly EmptyEnumerator<TKey, TValue> emptyEnumerator = new EmptyEnumerator<TKey, TValue>();
+
+			// Since v5.1. To be switched to private.
+			[Obsolete("Please use CollectionHelper.EmptyDictionary<TKey, TValue>() instead.")]
+			public EmptyMapClass()
+			{
+			}
 
 			#region IDictionary<TKey,TValue> Members
 
