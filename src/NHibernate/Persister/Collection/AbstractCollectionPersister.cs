@@ -559,7 +559,7 @@ namespace NHibernate.Persister.Collection
 		public void PostInstantiate()
 		{
 			initializer = queryLoaderName == null
-							? CreateCollectionInitializer(new CollectionHelper.EmptyMapClass<string, IFilter>())
+							? CreateCollectionInitializer(CollectionHelper.EmptyDictionary<string, IFilter>())
 							: new NamedQueryCollectionInitializer(queryLoaderName, this);
 		}
 

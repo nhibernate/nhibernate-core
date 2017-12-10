@@ -128,7 +128,7 @@ namespace NHibernate.Engine
 
 		public JoinFragment ToJoinFragment()
 		{
-			return ToJoinFragment(new CollectionHelper.EmptyMapClass<string, IFilter>(), true);
+			return ToJoinFragment(CollectionHelper.EmptyDictionary<string, IFilter>(), true);
 		}
 
 		public JoinFragment ToJoinFragment(IDictionary<string, IFilter> enabledFilters, bool includeExtraJoins)

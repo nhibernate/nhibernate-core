@@ -214,6 +214,12 @@ namespace NHibernate.Util
 
 		public static readonly IEnumerable EmptyEnumerable = new EmptyEnumerableClass();
 		public static readonly IDictionary EmptyMap = new EmptyMapClass();
+
+		public static IDictionary<TKey, TValue> EmptyDictionary<TKey, TValue>()
+		{
+			return EmptyMapClass<TKey, TValue>.Instance;
+		}
+
 		public static readonly ICollection EmptyCollection = EmptyMap;
 		// Since v5
 		[Obsolete("It has no more usages in NHibernate and will be removed in a future version.")]
@@ -463,7 +469,17 @@ namespace NHibernate.Util
 		[Serializable]
 		public class EmptyMapClass<TKey, TValue> : IDictionary<TKey, TValue>
 		{
+#pragma warning disable 618 // Constructor is obsolete, to be switched to non-obsolete but private.
+			internal static readonly IDictionary<TKey, TValue> Instance = new EmptyMapClass<TKey, TValue>();
+#pragma warning restore 618
+
 			private static readonly EmptyEnumerator<TKey, TValue> emptyEnumerator = new EmptyEnumerator<TKey, TValue>();
+
+			// Since v5.1. To be switched to private.
+			[Obsolete("Please use CollectionHelper.EmptyDictionary<TKey, TValue>() instead.")]
+			public EmptyMapClass()
+			{
+			}
 
 			#region IDictionary<TKey,TValue> Members
 

@@ -309,7 +309,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				newPropertyResults[entry.Key] = entry.Value;
 			}
-			return newPropertyResults.Count == 0 ? (IDictionary<string, string[]>)new CollectionHelper.EmptyMapClass<string, string[]>() : newPropertyResults;
+			return newPropertyResults.Count == 0 ? (IDictionary<string, string[]>)CollectionHelper.EmptyDictionary<string, string[]>() : newPropertyResults;
 		}
 
 		private static List<string> GetResultColumns(HbmReturnProperty returnPropertySchema)

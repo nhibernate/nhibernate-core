@@ -393,7 +393,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			if (persister.DiscriminatorType != null)
 			{
 				new SyntheticAndFactory(this)
-					.AddDiscriminatorWhereFragment(statement, persister, new CollectionHelper.EmptyMapClass<string, IFilter>(), fromElement.TableAlias);
+					.AddDiscriminatorWhereFragment(statement, persister, CollectionHelper.EmptyDictionary<string, IFilter>(), fromElement.TableAlias);
 			}
 		}
 

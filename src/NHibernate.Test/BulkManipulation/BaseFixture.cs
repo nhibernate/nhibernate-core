@@ -7,7 +7,7 @@ namespace NHibernate.Test.BulkManipulation
 {
 	public class BaseFixture: TestCase
 	{
-		private readonly IDictionary<string, IFilter> emptyfilters = new CollectionHelper.EmptyMapClass<string, IFilter>();
+		private readonly IDictionary<string, IFilter> emptyfilters = CollectionHelper.EmptyDictionary<string, IFilter>();
 
 		#region Overrides of TestCase
 

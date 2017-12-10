@@ -33,7 +33,7 @@ namespace NHibernate.Loader
 			IList<OuterJoinableAssociation> allAssociations = new List<OuterJoinableAssociation>(associations);
 			allAssociations.Add(
 				new OuterJoinableAssociation(persister.EntityType, null, null, alias, JoinType.LeftOuterJoin, null, Factory,
-											 new CollectionHelper.EmptyMapClass<string, IFilter>()));
+											 CollectionHelper.EmptyDictionary<string, IFilter>()));
 
 			InitPersisters(allAssociations, lockMode);
 			InitStatementString(whereString, orderByString, lockMode);
