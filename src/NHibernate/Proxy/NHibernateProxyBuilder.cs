@@ -263,9 +263,9 @@ namespace NHibernate.Proxy
 			/*
 			 set 
 			 {
-				((INHibernateLazyInitializer)this).LazyInitializer.Initialize();
-				((INHibernateLazyInitializer)this).LazyInitializer.Identifier = value;
-				((INHibernateLazyInitializer)this).LazyInitializer.GetImplementation().<Identifier> = value;
+				((INHibernateProxy)this).LazyInitializer.Initialize();
+				((INHibernateProxy)this).LazyInitializer.Identifier = value;
+				((INHibernateProxy)this).LazyInitializer.GetImplementation().<Identifier> = value;
 			 }
 			 */
 			var propertyType = method.GetParameters()[0].ParameterType;
@@ -359,7 +359,7 @@ namespace NHibernate.Proxy
 
 		static void EmitCallImplementation(MethodInfo method, ILGenerator IL)
 		{
-			//((INHibernateLazyInitializer)this).LazyInitializer.GetImplementation().<Method>(args..);
+			//((INHibernateProxy)this).LazyInitializer.GetImplementation().<Method>(args..);
 			EmitGetLazyInitializer(IL);
 			IL.Emit(OpCodes.Callvirt, LazyInitializerGetImplementationMethod);
 			IL.Emit(OpCodes.Unbox_Any, method.DeclaringType);
