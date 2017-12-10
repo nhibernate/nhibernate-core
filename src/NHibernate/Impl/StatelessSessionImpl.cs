@@ -288,7 +288,7 @@ namespace NHibernate.Impl
 
 		public override IDictionary<string, IFilter> EnabledFilters
 		{
-			get { return new CollectionHelper.EmptyMapClass<string, IFilter>(); }
+			get { return CollectionHelper.EmptyDictionary<string, IFilter>(); }
 		}
 
 		public override IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar)
