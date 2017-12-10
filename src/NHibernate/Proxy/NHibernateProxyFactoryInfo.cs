@@ -29,7 +29,7 @@ namespace NHibernate.Proxy
 
 		public IProxyFactory CreateProxyFactory()
 		{
-			var factory = new DefaultProxyFactory();
+			var factory = new StaticProxyFactory();
 			factory.PostInstantiate(_entityName, _persistentClass, new HashSet<System.Type>(_interfaces), _getIdentifierMethod, _setIdentifierMethod, _componentIdType);
 			return factory;
 		}
