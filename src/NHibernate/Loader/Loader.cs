@@ -973,33 +973,16 @@ namespace NHibernate.Loader
 				}
 			}
 
-			//save object to EntityUnique cache
-			//see LoadFromResultSet func
-			IAssociationType[] ownerAssociationTypes = OwnerAssociationTypes;
-			if (ownerAssociationTypes != null && ownerAssociationTypes[i] != null)
+			// If it can be loaded from an association with a property ref, make
+			// sure it is also cached by its unique key.
+			var ukName = OwnerAssociationTypes?[i]?.RHSUniqueKeyPropertyName;
+			if (ukName != null)
 			{
-				string ukName = ownerAssociationTypes[i].RHSUniqueKeyPropertyName;
-				if (ukName != null)
-				{
-					int index = ((IUniqueKeyLoadable) persister).GetPropertyIndex(ukName);
-					IType type = persister.PropertyTypes[index];
-
-					object id = key.Identifier;
-					bool eagerPropertyFetch = IsEagerPropertyFetchEnabled(i);
-					ILoadable entityPersister = (ILoadable) persister;
-					string[][] cols = EntityAliases[i].SuffixedPropertyAliases;
-
-					object[] values = entityPersister.Hydrate(rs, id, obj, entityPersister, cols, eagerPropertyFetch, session);
-
-					// polymorphism not really handled completely correctly,
-					// perhaps...well, actually its ok, assuming that the
-					// entity name used in the lookup is the same as the
-					// the one used here, which it will be
-
-					EntityUniqueKey euk =
-						new EntityUniqueKey(entityPersister.EntityName, ukName, type.SemiResolve(values[index], session, obj), type, session.Factory);
-					session.PersistenceContext.AddEntity(euk, obj);
-				}
+				var index = ((IUniqueKeyLoadable) persister).GetPropertyIndex(ukName);
+				var ukValue = persister.GetPropertyValue(obj, index);
+				var type = persister.PropertyTypes[index];
+				var euk = new EntityUniqueKey(persister.EntityName, ukName, ukValue, type, session.Factory);
+				session.PersistenceContext.AddEntity(euk, obj);
 			}
 		}
 
