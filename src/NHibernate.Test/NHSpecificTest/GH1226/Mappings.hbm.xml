@@ -4,15 +4,15 @@
                    namespace="NHibernate.Test.NHSpecificTest.GH1226">
   <class name="Account">
     <id name="Id">
-      <generator class="guid" />
+      <generator class="guid"/>
     </id>
-    <many-to-one fetch="join" name="Bank" property-ref="Code" />
+    <many-to-one fetch="join" name="Bank" property-ref="Code"/>
   </class>
 
   <class name="Bank">
     <id name="Id">
-      <generator class="guid" />
+      <generator class="guid"/>
     </id>
-    <property name="Code" unique="true" />
+    <property name="Code" unique="true"/>
   </class>
 </hibernate-mapping>
