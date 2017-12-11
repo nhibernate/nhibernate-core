@@ -16,18 +16,10 @@ namespace NHibernate.Test.NHSpecificTest.GH1226
 			{
 				using (var tx = session.BeginTransaction())
 				{
-					var bank = new Bank
-					{
-						Id = Guid.NewGuid(),
-						Code = "01234"
-					};
+					var bank = new Bank { Code = "01234" };
 					session.Save(bank);
 
-					var account = new Account
-					{
-						Id = Guid.NewGuid(),
-						Bank = bank
-					};
+					var account = new Account { Bank = bank };
 					session.Save(account);
 
 					var account2 = new Account { Bank = bank };
