@@ -1,6 +1,7 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Persister.Entity;
-using NHibernate.Util;
 
 namespace NHibernate.Loader
 {
@@ -15,11 +16,11 @@ namespace NHibernate.Loader
 		private readonly string[][] suffixedPropertyColumns;
 		private readonly string suffixedDiscriminatorColumn;
 		private readonly string suffix;
-		private readonly string rowIdAlias;
+		private string rowIdAlias;
 		private readonly IDictionary<string, string[]> userProvidedAliases;
 
 		public DefaultEntityAliases(ILoadable persister, string suffix)
-			: this(CollectionHelper.EmptyDictionary<string, string[]>(), persister, suffix) {}
+			: this(null, persister, suffix){}
 
 		/// <summary>
 		/// Calculate and cache select-clause suffixes.
@@ -27,31 +28,14 @@ namespace NHibernate.Loader
 		public DefaultEntityAliases(IDictionary<string, string[]> userProvidedAliases, ILoadable persister, string suffix)
 		{
 			this.suffix = suffix;
-			this.userProvidedAliases = userProvidedAliases;
+			this.userProvidedAliases = userProvidedAliases?.Count > 0 ? userProvidedAliases : null;
 
-			string[] keyColumnsCandidates = GetUserProvidedAliases(persister.IdentifierPropertyName, null);
-			if (keyColumnsCandidates == null)
-			{
-				suffixedKeyColumns = GetUserProvidedAliases(EntityPersister.EntityID, GetIdentifierAliases(persister, suffix));
-			}
-			else
-			{
-				suffixedKeyColumns = keyColumnsCandidates;
-			}
-			Intern(suffixedKeyColumns);
+			suffixedKeyColumns = GetSuffixedKeyAliases(persister, suffix);
 
 			suffixedPropertyColumns = GetSuffixedPropertyAliases(persister);
-			suffixedDiscriminatorColumn =
-				GetUserProvidedAlias(AbstractEntityPersister.EntityClass, GetDiscriminatorAlias(persister, suffix));
-			if (persister.IsVersioned)
-			{
-				suffixedVersionColumn = suffixedPropertyColumns[persister.VersionProperty];
-			}
-			else
-			{
-				suffixedVersionColumn = null;
-			}
-			rowIdAlias = Loadable.RowIdAlias + suffix; // TODO: not visible to the user!
+			suffixedDiscriminatorColumn = GetSuffixedDiscriminatorAlias(persister, suffix);
+
+			suffixedVersionColumn = persister.IsVersioned ? suffixedPropertyColumns[persister.VersionProperty] : null;
 		}
 
 		protected virtual string GetDiscriminatorAlias(ILoadable persister, string suffix)
@@ -69,12 +53,20 @@ namespace NHibernate.Loader
 			return persister.GetPropertyAliases(suffix, j);
 		}
 
-		private string[] GetUserProvidedAliases(string propertyPath, string[] defaultAliases)
+		/// <summary>
+		/// Returns default aliases for all the properties
+		/// </summary>
+		protected string[][] GetPropertiesAliases(ILoadable persister)
+		{
+			return Enumerable.Range(0, persister.PropertyNames.Length).Select(i => GetPropertyAliases(persister, i)).ToArray();
+		}
+
+		private string[] GetUserProvidedAliases(string propertyPath, Func<string[]> getDefaultAliases)
 		{
 			string[] result = propertyPath == null ? null : GetUserProvidedAlias(propertyPath);
 			if (result == null)
 			{
-				return defaultAliases;
+				return getDefaultAliases();
 			}
 			else
 			{
@@ -89,12 +81,12 @@ namespace NHibernate.Loader
 			return result;
 		}
 
-		private string GetUserProvidedAlias(string propertyPath, string defaultAlias)
+		private string GetUserProvidedAlias(string propertyPath, Func<string> getDefaultAlias)
 		{
 			string[] columns = propertyPath == null ? null : GetUserProvidedAlias(propertyPath);
 			if (columns == null)
 			{
-				return defaultAlias;
+				return getDefaultAlias();
 			}
 			else
 			{
@@ -102,14 +94,34 @@ namespace NHibernate.Loader
 			}
 		}
 
+		private string GetSuffixedDiscriminatorAlias(ILoadable persister, string suffix)
+		{
+			if (userProvidedAliases == null)
+				return GetDiscriminatorAlias(persister, suffix);
+
+			return GetUserProvidedAlias(AbstractEntityPersister.EntityClass, () => GetDiscriminatorAlias(persister, suffix));
+		}
+
+		private string[] GetSuffixedKeyAliases(ILoadable persister, string suffix)
+		{
+			if (userProvidedAliases == null)
+				return GetIdentifierAliases(persister, suffix);
+
+			return GetUserProvidedAliases(
+				persister.IdentifierPropertyName,
+				() => GetUserProvidedAliases(EntityPersister.EntityID, () => GetIdentifierAliases(persister, suffix)));
+		}
+
 		public string[][] GetSuffixedPropertyAliases(ILoadable persister)
 		{
+			if (userProvidedAliases == null)
+				return GetPropertiesAliases(persister);
+
 			int size = persister.PropertyNames.Length;
 			string[][] suffixedPropertyAliases = new string[size][];
 			for (int j = 0; j < size; j++)
 			{
-				suffixedPropertyAliases[j] = GetUserProvidedAliases(persister.PropertyNames[j], GetPropertyAliases(persister, j));
-				Intern(suffixedPropertyAliases[j]);
+				suffixedPropertyAliases[j] = GetUserProvidedAliases(persister.PropertyNames[j], () => GetPropertyAliases(persister, j));
 			}
 			return suffixedPropertyAliases;
 		}
@@ -136,15 +148,8 @@ namespace NHibernate.Loader
 
 		public string RowIdAlias
 		{
-			get { return rowIdAlias; }
-		}
-
-		private static void Intern(string[] strings)
-		{
-			for (int i = 0; i < strings.Length; i++)
-			{
-				strings[i] = StringHelper.InternedIfPossible(strings[i]);
-			}
+			// TODO: not visible to the user!
+			get { return rowIdAlias ?? (rowIdAlias = Loadable.RowIdAlias + suffix); }
 		}
 	}
 }
