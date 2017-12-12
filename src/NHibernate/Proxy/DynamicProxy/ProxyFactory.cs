@@ -254,7 +254,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			IL.Emit(OpCodes.Ret);
 		}
 
-		internal static void AddSerializationSupport(System.Type baseType, IReadOnlyCollection<System.Type> baseInterfaces, TypeBuilder typeBuilder, FieldInfo interceptorField, ConstructorBuilder defaultConstructor)
+		private static void AddSerializationSupport(System.Type baseType, IReadOnlyCollection<System.Type> baseInterfaces, TypeBuilder typeBuilder, FieldInfo interceptorField, ConstructorBuilder defaultConstructor)
 		{
 			ConstructorInfo serializableConstructor = typeof(SerializableAttribute).GetConstructor(new System.Type[0]);
 			var customAttributeBuilder = new CustomAttributeBuilder(serializableConstructor, new object[0]);
