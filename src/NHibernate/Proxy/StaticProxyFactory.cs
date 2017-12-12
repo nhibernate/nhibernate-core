@@ -9,10 +9,10 @@ namespace NHibernate.Proxy
 {
 	public sealed class StaticProxyFactory : AbstractProxyFactory
 	{
-		static readonly ConcurrentDictionary<ProxyCacheEntry, Func<ILazyInitializer, NHibernateProxyFactoryInfo, INHibernateProxy>> Cache =
-			new ConcurrentDictionary<ProxyCacheEntry, Func<ILazyInitializer, NHibernateProxyFactoryInfo, INHibernateProxy>>();
+		private static readonly ConcurrentDictionary<ProxyCacheEntry, Func<ILazyInitializer, NHibernateProxyFactoryInfo, INHibernateProxy>>
+			Cache = new ConcurrentDictionary<ProxyCacheEntry, Func<ILazyInitializer, NHibernateProxyFactoryInfo, INHibernateProxy>>();
 
-		static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(StaticProxyFactory));
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(StaticProxyFactory));
 
 		public override INHibernateProxy GetProxy(object id, ISessionImplementor session)
 		{
@@ -31,8 +31,8 @@ namespace NHibernate.Proxy
 			}
 		}
 
-		Func<ILazyInitializer, NHibernateProxyFactoryInfo, INHibernateProxy> CreateProxyActivator(ProxyCacheEntry pke)
-		{				
+		private Func<ILazyInitializer, NHibernateProxyFactoryInfo, INHibernateProxy> CreateProxyActivator(ProxyCacheEntry pke)
+		{
 			var proxyBuilder = new NHibernateProxyBuilder(GetIdentifierMethod, SetIdentifierMethod, ComponentIdType, OverridesEquals);
 			var type = proxyBuilder.CreateProxyType(pke.BaseType, pke.Interfaces);
 			var ctor = type.GetConstructor(new[] {typeof(ILazyInitializer), typeof(NHibernateProxyFactoryInfo)});
@@ -45,7 +45,7 @@ namespace NHibernate.Proxy
 		{
 			var factory = new ProxyFactory();
 			var interceptor = new DefaultDynamicLazyFieldInterceptor();
-			return factory.CreateProxy(PersistentClass, interceptor, new[] { typeof(IFieldInterceptorAccessor) });
+			return factory.CreateProxy(PersistentClass, interceptor, typeof(IFieldInterceptorAccessor));
 		}
 	}
 }

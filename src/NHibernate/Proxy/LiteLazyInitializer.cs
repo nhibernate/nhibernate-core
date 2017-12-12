@@ -4,7 +4,7 @@ using NHibernate.Engine;
 namespace NHibernate.Proxy
 {
 	[Serializable]
-	sealed class LiteLazyInitializer : AbstractLazyInitializer
+	internal sealed class LiteLazyInitializer : AbstractLazyInitializer
 	{
 		internal LiteLazyInitializer(string entityName, object id, ISessionImplementor session, System.Type persistentClass) 
 			: base(entityName, id, session)

@@ -21,11 +21,11 @@ namespace NHibernate.Proxy.DynamicProxy
 	{
 		internal static readonly ConcurrentDictionary<ProxyCacheEntry, TypeInfo> _cache = new ConcurrentDictionary<ProxyCacheEntry, TypeInfo>();
 
-		internal static readonly ConstructorInfo defaultBaseConstructor = typeof(object).GetConstructor(new System.Type[0]);
+		private static readonly ConstructorInfo defaultBaseConstructor = typeof(object).GetConstructor(new System.Type[0]);
 
 		private static readonly MethodInfo getValue = ReflectHelper.GetMethod<SerializationInfo>(
 			si => si.GetValue(null, null));
-		internal static readonly MethodInfo setType = ReflectHelper.GetMethod<SerializationInfo>(
+		private static readonly MethodInfo setType = ReflectHelper.GetMethod<SerializationInfo>(
 			si => si.SetType(null));
 		private static readonly MethodInfo addValue = ReflectHelper.GetMethod<SerializationInfo>(
 			si => si.AddValue(null, null));
@@ -139,7 +139,7 @@ namespace NHibernate.Proxy.DynamicProxy
 					.Distinct();
 		}
 
-		internal static ConstructorBuilder DefineConstructor(TypeBuilder typeBuilder, System.Type parentType)
+		private static ConstructorBuilder DefineConstructor(TypeBuilder typeBuilder, System.Type parentType)
 		{
 			const MethodAttributes constructorAttributes = MethodAttributes.Public |
 														   MethodAttributes.HideBySig | MethodAttributes.SpecialName |
@@ -166,7 +166,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			return constructor;
 		}
 
-		internal static void ImplementGetObjectData(System.Type baseType, IReadOnlyCollection<System.Type> baseInterfaces, TypeBuilder typeBuilder, FieldInfo interceptorField)
+		private static void ImplementGetObjectData(System.Type baseType, IReadOnlyCollection<System.Type> baseInterfaces, TypeBuilder typeBuilder, FieldInfo interceptorField)
 		{
 			const MethodAttributes attributes = MethodAttributes.Public | MethodAttributes.HideBySig |
 												MethodAttributes.Virtual;
@@ -217,7 +217,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			IL.Emit(OpCodes.Ret);
 		}
 
-		internal static void DefineSerializationConstructor(TypeBuilder typeBuilder, FieldInfo interceptorField, ConstructorBuilder defaultConstructor)
+		private static void DefineSerializationConstructor(TypeBuilder typeBuilder, FieldInfo interceptorField, ConstructorBuilder defaultConstructor)
 		{
 			const MethodAttributes constructorAttributes = MethodAttributes.Public |
 														   MethodAttributes.HideBySig | MethodAttributes.SpecialName |

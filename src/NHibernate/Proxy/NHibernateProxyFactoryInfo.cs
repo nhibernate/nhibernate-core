@@ -10,12 +10,12 @@ namespace NHibernate.Proxy
 	[Serializable]
 	public sealed class NHibernateProxyFactoryInfo : ISerializable
 	{
-		readonly string _entityName;
-		readonly System.Type _persistentClass;
-		readonly System.Type[] _interfaces;
-		readonly MethodInfo _getIdentifierMethod;
-		readonly MethodInfo _setIdentifierMethod;
-		readonly IAbstractComponentType _componentIdType;
+		private readonly string _entityName;
+		private readonly System.Type _persistentClass;
+		private readonly System.Type[] _interfaces;
+		private readonly MethodInfo _getIdentifierMethod;
+		private readonly MethodInfo _setIdentifierMethod;
+		private readonly IAbstractComponentType _componentIdType;
 
 		internal NHibernateProxyFactoryInfo(string entityName, System.Type persistentClass, System.Type[] interfaces, MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod, IAbstractComponentType componentIdType)
 		{
@@ -34,7 +34,7 @@ namespace NHibernate.Proxy
 			return factory;
 		}
 
-		NHibernateProxyFactoryInfo(SerializationInfo info, StreamingContext context)
+		private NHibernateProxyFactoryInfo(SerializationInfo info, StreamingContext context)
 		{
 			_entityName = (string) info.GetValue(nameof(_entityName), typeof(string));
 			_persistentClass = (System.Type) info.GetValue(nameof(_persistentClass), typeof(System.Type));

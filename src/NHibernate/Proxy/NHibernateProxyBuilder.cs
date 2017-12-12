@@ -11,30 +11,30 @@ using NHibernate.Util;
 
 namespace NHibernate.Proxy
 {
-	class NHibernateProxyBuilder
+	internal class NHibernateProxyBuilder
 	{
-		const MethodAttributes InterceptorMethodsAttributes = MethodAttributes.Private | MethodAttributes.Final | MethodAttributes.HideBySig |
-		                                                      MethodAttributes.SpecialName | MethodAttributes.NewSlot | MethodAttributes.Virtual;
+		private const MethodAttributes constructorAttributes =
+			MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName;
 
-		const MethodAttributes constructorAttributes = MethodAttributes.Public |
-		                                               MethodAttributes.HideBySig | MethodAttributes.SpecialName |
-		                                               MethodAttributes.RTSpecialName;
+		private static readonly ConstructorInfo ObjectConstructor = typeof(object).GetConstructor(System.Type.EmptyTypes);
 
-		static readonly System.Type NHibernateProxyType = typeof(INHibernateProxy);
-		static readonly PropertyInfo NHibernateProxyTypeLazyInitializerProperty = NHibernateProxyType.GetProperty(nameof(INHibernateProxy.HibernateLazyInitializer));
-		static readonly System.Type LazyInitializerType = typeof(ILazyInitializer);
-		static readonly PropertyInfo LazyInitializerIdentifierProperty = LazyInitializerType.GetProperty(nameof(ILazyInitializer.Identifier));
-		static readonly MethodInfo LazyInitializerInitializeMethod = LazyInitializerType.GetMethod(nameof(ILazyInitializer.Initialize));
-		static readonly MethodInfo LazyInitializerGetImplementationMethod = LazyInitializerType.GetMethod(nameof(ILazyInitializer.GetImplementation), System.Type.EmptyTypes);
-		static readonly IProxyAssemblyBuilder ProxyAssemblyBuilder = new DefaultProxyAssemblyBuilder();
+		private static readonly System.Type NHibernateProxyType = typeof(INHibernateProxy);
+		private static readonly PropertyInfo NHibernateProxyTypeLazyInitializerProperty = NHibernateProxyType.GetProperty(nameof(INHibernateProxy.HibernateLazyInitializer));
+		private static readonly System.Type LazyInitializerType = typeof(ILazyInitializer);
+		private static readonly PropertyInfo LazyInitializerIdentifierProperty = LazyInitializerType.GetProperty(nameof(ILazyInitializer.Identifier));
+		private static readonly MethodInfo LazyInitializerInitializeMethod = LazyInitializerType.GetMethod(nameof(ILazyInitializer.Initialize));
+		private static readonly MethodInfo LazyInitializerGetImplementationMethod = LazyInitializerType.GetMethod(nameof(ILazyInitializer.GetImplementation), System.Type.EmptyTypes);
+		private static readonly IProxyAssemblyBuilder ProxyAssemblyBuilder = new DefaultProxyAssemblyBuilder();
 
-		static readonly ConstructorInfo SecurityCriticalAttributeConstructor = typeof(SecurityCriticalAttribute).GetConstructor(System.Type.EmptyTypes);
-		static readonly MethodInfo SerializableGetObjectDataMethod = typeof(ISerializable).GetMethod(nameof(ISerializable.GetObjectData));
-
-		readonly MethodInfo _getIdentifierMethod;
-		readonly MethodInfo _setIdentifierMethod;
-		readonly IAbstractComponentType _componentIdType;
-		readonly bool _overridesEquals;
+		private static readonly ConstructorInfo SecurityCriticalAttributeConstructor = typeof(SecurityCriticalAttribute).GetConstructor(System.Type.EmptyTypes);
+		private static readonly MethodInfo SerializableGetObjectDataMethod = typeof(ISerializable).GetMethod(nameof(ISerializable.GetObjectData));
+		private static readonly MethodInfo SerializationInfoSetTypeMethod = ReflectHelper.GetMethod<SerializationInfo>(si => si.SetType(null));
+		
+		private readonly MethodInfo _getIdentifierMethod;
+		private readonly MethodInfo _setIdentifierMethod;
+		private readonly IAbstractComponentType _componentIdType;
+		private readonly bool _overridesEquals;
+		
 		public NHibernateProxyBuilder(MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod, IAbstractComponentType componentIdType, bool overridesEquals)
 		{
 			_getIdentifierMethod = getIdentifierMethod;
@@ -103,7 +103,7 @@ namespace NHibernate.Proxy
 			return proxyType;
 		}
 
-		void CreateProxiedMethod(TypeBuilder typeBuilder, MethodInfo method, FieldInfo lazyInitializerField)
+		private void CreateProxiedMethod(TypeBuilder typeBuilder, MethodInfo method, FieldInfo lazyInitializerField)
 		{
 			if (method == NHibernateProxyTypeLazyInitializerProperty.GetMethod)
 			{
@@ -134,8 +134,8 @@ namespace NHibernate.Proxy
 				ImplementCallMethodOnImplementation(typeBuilder, method, lazyInitializerField);
 			}
 		}
-		
-		static void ImplementConstructor(TypeBuilder typeBuilder, System.Type parentType, FieldInfo lazyInitializerField, FieldInfo proxyInfoField)
+
+		private static void ImplementConstructor(TypeBuilder typeBuilder, System.Type parentType, FieldInfo lazyInitializerField, FieldInfo proxyInfoField)
 		{
 			var constructor = typeBuilder.DefineConstructor(constructorAttributes, CallingConventions.Standard, new[] {LazyInitializerType, typeof(NHibernateProxyFactoryInfo)});
 
@@ -144,7 +144,7 @@ namespace NHibernate.Proxy
 			// if there is no default constructor, or the default constructor is private/internal, call System.Object constructor
 			// this works, but the generated assembly will fail PeVerify (cannot use in medium trust for example)
 			if (baseConstructor == null || baseConstructor.IsPrivate || baseConstructor.IsAssembly)
-				baseConstructor = ProxyFactory.defaultBaseConstructor;
+				baseConstructor = ObjectConstructor;
 
 			var IL = constructor.GetILGenerator();
 
@@ -153,10 +153,12 @@ namespace NHibernate.Proxy
 			IL.Emit(OpCodes.Ldarg_0);
 			IL.Emit(OpCodes.Call, baseConstructor);
 
+			// __lazyInitializer == lazyInitializer;
 			IL.Emit(OpCodes.Ldarg_0);
 			IL.Emit(OpCodes.Ldarg_1);
 			IL.Emit(OpCodes.Stfld, lazyInitializerField);
 
+			// __proxyInfo == proxyInfo;
 			IL.Emit(OpCodes.Ldarg_0);
 			IL.Emit(OpCodes.Ldarg_2);
 			IL.Emit(OpCodes.Stfld, proxyInfoField);
@@ -164,7 +166,7 @@ namespace NHibernate.Proxy
 			IL.Emit(OpCodes.Ret);
 		}
 
-		static void ImplementDeserializationConstructor(TypeBuilder typeBuilder)
+		private static void ImplementDeserializationConstructor(TypeBuilder typeBuilder)
 		{
 			var parameterTypes = new[] {typeof (SerializationInfo), typeof (StreamingContext)};
 			var constructor = typeBuilder.DefineConstructor(constructorAttributes, CallingConventions.Standard, parameterTypes);
@@ -175,13 +177,15 @@ namespace NHibernate.Proxy
 			IL.Emit(OpCodes.Ret);
 		}
 
-		static void ImplementGetObjectData(TypeBuilder typeBuilder, FieldInfo proxyInfoField, FieldInfo lazyInitializerField)
+		private static void ImplementGetObjectData(TypeBuilder typeBuilder, FieldInfo proxyInfoField, FieldInfo lazyInitializerField)
 		{
-			const MethodAttributes attributes = MethodAttributes.Public | MethodAttributes.HideBySig |
-			                                    MethodAttributes.Virtual;
+			const MethodAttributes attributes =
+				MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.Virtual;
+			
 			var parameterTypes = new[] {typeof (SerializationInfo), typeof (StreamingContext)};
 
 			var methodBuilder = typeBuilder.DefineMethod("GetObjectData", attributes, typeof (void), parameterTypes);
+			methodBuilder.SetImplementationFlags(MethodImplAttributes.IL | MethodImplAttributes.Managed);
 			methodBuilder.SetCustomAttribute(new CustomAttributeBuilder(SecurityCriticalAttributeConstructor, Array.Empty<object>()));
 
 			var IL = methodBuilder.GetILGenerator();
@@ -191,8 +195,9 @@ namespace NHibernate.Proxy
 			IL.Emit(OpCodes.Ldarg_1);
 			IL.Emit(OpCodes.Ldtoken, typeof (NHibernateProxyObjectReference));
 			IL.Emit(OpCodes.Call, ReflectionCache.TypeMethods.GetTypeFromHandle);
-			IL.Emit(OpCodes.Callvirt, ProxyFactory.setType);
+			IL.Emit(OpCodes.Callvirt, SerializationInfoSetTypeMethod);
 
+			// (new NHibernateProxyObjectReference(this.__proxyInfo, this.__lazyInitializer.Identifier)).GetObjectData(info, context);
 			//this.__proxyInfo
 			IL.Emit(OpCodes.Ldarg_0);
 			IL.Emit(OpCodes.Ldfld, proxyInfoField);
@@ -212,7 +217,6 @@ namespace NHibernate.Proxy
 
 			IL.Emit(OpCodes.Ldarg_1);
 			IL.Emit(OpCodes.Ldarg_2);
-
 			IL.Emit(OpCodes.Callvirt, SerializableGetObjectDataMethod);
 
 			IL.Emit(OpCodes.Ret);
@@ -220,16 +224,19 @@ namespace NHibernate.Proxy
 			typeBuilder.DefineMethodOverride(methodBuilder, SerializableGetObjectDataMethod);
 		}
 
-		static void ImplementGetLazyInitializer(TypeBuilder typeBuilder, MethodInfo method, FieldInfo lazyInitializerField)
+		private static void ImplementGetLazyInitializer(TypeBuilder typeBuilder, MethodInfo method, FieldInfo lazyInitializerField)
 		{
-			// Implement the getter
-			var getMethod = typeBuilder.DefineMethod($"{NHibernateProxyType.FullName}.get_{nameof(INHibernateProxy.HibernateLazyInitializer)}", InterceptorMethodsAttributes, CallingConventions.HasThis, LazyInitializerType, System.Type.EmptyTypes);
+			// get { return this.__lazyInitializer; }
+
+			const MethodAttributes attributes =
+				MethodAttributes.Private | MethodAttributes.Final | MethodAttributes.HideBySig |
+				MethodAttributes.SpecialName | MethodAttributes.NewSlot | MethodAttributes.Virtual;
+			
+			var getMethod = typeBuilder.DefineMethod($"{NHibernateProxyType.FullName}.get_{nameof(INHibernateProxy.HibernateLazyInitializer)}", attributes, CallingConventions.HasThis, LazyInitializerType, System.Type.EmptyTypes);
 			getMethod.SetImplementationFlags(MethodImplAttributes.Managed | MethodImplAttributes.IL);
 
 			var IL = getMethod.GetILGenerator();
 
-			// This is equivalent to:
-			// get { return this.__lazyInitializer; }
 			IL.Emit(OpCodes.Ldarg_0);
 			IL.Emit(OpCodes.Ldfld, lazyInitializerField);
 			IL.Emit(OpCodes.Ret);
@@ -237,9 +244,16 @@ namespace NHibernate.Proxy
 			typeBuilder.DefineMethodOverride(getMethod, method);
 		}
 
-		static void ImplementGetIdentifier(TypeBuilder typeBuilder, MethodInfo method, FieldInfo lazyInitializerField)
+		private static void ImplementGetIdentifier(TypeBuilder typeBuilder, MethodInfo method, FieldInfo lazyInitializerField)
 		{
-			// get => return (<ReturnType>)this.__lazyInitializer.Identifier;
+			/*
+			get 
+			{
+				if (this.__lazyInitializer == null)
+					return base.get_<Identifier>();
+				return (<ReturnType>)this.__lazyInitializer.Identifier;
+			}
+			 */
 			var methodOverride = DefaultyProxyMethodBuilder.GenerateMethodSignature(method.Name, method, typeBuilder);
 
 			var IL = methodOverride.GetILGenerator();
@@ -255,11 +269,13 @@ namespace NHibernate.Proxy
 			typeBuilder.DefineMethodOverride(methodOverride, method);
 		}
 
-		static void ImplementSetIdentifier(TypeBuilder typeBuilder, MethodInfo method, FieldInfo lazyInitializerField)
+		private static void ImplementSetIdentifier(TypeBuilder typeBuilder, MethodInfo method, FieldInfo lazyInitializerField)
 		{
 			/*
 			 set 
 			 {
+				if (this.__lazyInitializer == null)
+					return base.set_<Identifier>(value);
 				this.__lazyInitializer.Initialize();
 				this.__lazyInitializer.Identifier = value;
 				this.__lazyInitializer.GetImplementation().<Identifier> = value;
@@ -289,9 +305,13 @@ namespace NHibernate.Proxy
 			typeBuilder.DefineMethodOverride(methodOverride, method);
 		}
 
-		static void ImplementCallMethodOnEmbeddedComponentId(TypeBuilder typeBuilder, MethodInfo method, FieldInfo lazyInitializerField)
+		private static void ImplementCallMethodOnEmbeddedComponentId(TypeBuilder typeBuilder, MethodInfo method, FieldInfo lazyInitializerField)
 		{
-			//this.__lazyInitializer.Identifier.<Method>(args..);
+			/*
+			 	if (this.__lazyInitializer == null)
+					return base.<Method>(args..);
+				this.__lazyInitializer.Identifier.<Method>(args..);
+			*/
 			var methodOverride = DefaultyProxyMethodBuilder.GenerateMethodSignature(method.Name, method, typeBuilder);
 
 			var IL = methodOverride.GetILGenerator();
@@ -308,9 +328,13 @@ namespace NHibernate.Proxy
 			typeBuilder.DefineMethodOverride(methodOverride, method);
 		}
 
-		static void ImplementCallMethodOnImplementation(TypeBuilder typeBuilder, MethodInfo method, FieldInfo lazyInitializerField)
+		private static void ImplementCallMethodOnImplementation(TypeBuilder typeBuilder, MethodInfo method, FieldInfo lazyInitializerField)
 		{
-			//return this.__lazyInitializer.GetImplementation().<Method>(args..);
+			/*
+				if (this.__lazyInitializer == null)
+					return base.<Method>(args..);
+				return this.__lazyInitializer.GetImplementation().<Method>(args..) 
+			 */
 			var methodOverride = DefaultyProxyMethodBuilder.GenerateMethodSignature(method.Name, method, typeBuilder);
 
 			var IL = methodOverride.GetILGenerator();
@@ -323,10 +347,10 @@ namespace NHibernate.Proxy
 			typeBuilder.DefineMethodOverride(methodOverride, method);
 		}
 
-		static void EmitCallBaseIfLazyInitializerIsNull(ILGenerator IL, MethodInfo method, FieldInfo lazyInitializerField)
+		private static void EmitCallBaseIfLazyInitializerIsNull(ILGenerator IL, MethodInfo method, FieldInfo lazyInitializerField)
 		{
 			//if (this.__lazyInitializer == null)
-			//	return base.<Method> (args..)
+			//	return base.<Method>(args..)
 
 			IL.Emit(OpCodes.Ldarg_0);
 			IL.Emit(OpCodes.Ldfld, lazyInitializerField);
@@ -342,16 +366,16 @@ namespace NHibernate.Proxy
 			IL.MarkLabel(skipBaseCall);
 		}
 
-		static void EmitCallMethod(ILGenerator IL, OpCode opCode, MethodInfo method)
+		private static void EmitCallMethod(ILGenerator IL, OpCode opCode, MethodInfo method)
 		{
 			for (var i = 0; i < method.GetParameters().Length; i++)
 				IL.Emit(OpCodes.Ldarg_S, (sbyte) (1 + i));
 			IL.Emit(opCode, method);
 		}
 
-		static void EmitCallImplementation(ILGenerator IL, MethodInfo method, FieldInfo lazyInitializerField)
+		private static void EmitCallImplementation(ILGenerator IL, MethodInfo method, FieldInfo lazyInitializerField)
 		{
-			//this.__lazyInitializer.GetImplementation().<Method>(args..);
+			//((<DeclaringType>)this.__lazyInitializer.GetImplementation()).<Method>(args..);
 			IL.Emit(OpCodes.Ldarg_0);
 			IL.Emit(OpCodes.Ldfld, lazyInitializerField);
 			IL.Emit(OpCodes.Callvirt, LazyInitializerGetImplementationMethod);

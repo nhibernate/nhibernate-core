@@ -7,8 +7,8 @@ namespace NHibernate.Proxy
 	[Serializable]
 	public sealed class NHibernateProxyObjectReference : IObjectReference, ISerializable
 	{
-		readonly NHibernateProxyFactoryInfo _proxyFactoryInfo;
-		readonly object _identifier;
+		private readonly NHibernateProxyFactoryInfo _proxyFactoryInfo;
+		private readonly object _identifier;
 
 		public NHibernateProxyObjectReference(NHibernateProxyFactoryInfo proxyFactoryInfo, object identifier)
 		{
@@ -16,7 +16,7 @@ namespace NHibernate.Proxy
 			_identifier = identifier;
 		}
 
-		NHibernateProxyObjectReference(SerializationInfo info, StreamingContext context)
+		private NHibernateProxyObjectReference(SerializationInfo info, StreamingContext context)
 		{
 			_proxyFactoryInfo = (NHibernateProxyFactoryInfo) info.GetValue(nameof(_proxyFactoryInfo), typeof(NHibernateProxyFactoryInfo));
 			_identifier = info.GetValue(nameof(_identifier), typeof(object));
