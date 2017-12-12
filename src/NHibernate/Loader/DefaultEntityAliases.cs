@@ -8,6 +8,7 @@ namespace NHibernate.Loader
 	/// <summary>
 	/// EntityAliases which handles the logic of selecting user provided aliases (via return-property),
 	/// before using the default aliases.
+	/// Based on https://raw.githubusercontent.com/hibernate/hibernate-orm/master/hibernate-core/src/main/java/org/hibernate/loader/DefaultEntityAliases.java
 	/// </summary>
 	public class DefaultEntityAliases : IEntityAliases
 	{
@@ -20,22 +21,48 @@ namespace NHibernate.Loader
 		private readonly IDictionary<string, string[]> userProvidedAliases;
 
 		public DefaultEntityAliases(ILoadable persister, string suffix)
-			: this(null, persister, suffix){}
+			: this(null, persister, suffix) {}
 
 		/// <summary>
-		/// Calculate and cache select-clause suffixes.
+		/// Calculate and cache select-clause aliases.
 		/// </summary>
 		public DefaultEntityAliases(IDictionary<string, string[]> userProvidedAliases, ILoadable persister, string suffix)
 		{
 			this.suffix = suffix;
 			this.userProvidedAliases = userProvidedAliases?.Count > 0 ? userProvidedAliases : null;
 
-			suffixedKeyColumns = GetSuffixedKeyAliases(persister, suffix);
-
+			suffixedKeyColumns = DetermineKeyAliases(persister, suffix);
 			suffixedPropertyColumns = GetSuffixedPropertyAliases(persister);
-			suffixedDiscriminatorColumn = GetSuffixedDiscriminatorAlias(persister, suffix);
+			suffixedDiscriminatorColumn = DetermineDiscriminatorAlias(persister, suffix);
 
 			suffixedVersionColumn = persister.IsVersioned ? suffixedPropertyColumns[persister.VersionProperty] : null;
+			//rowIdAlias is generated on demand in property
+		}
+
+		private string[] DetermineKeyAliases(ILoadable persister, string suffix)
+		{
+			if (userProvidedAliases == null)
+				return GetIdentifierAliases(persister, suffix);
+
+			return GetUserProvidedAliases(
+				persister.IdentifierPropertyName,
+				() => GetUserProvidedAliases(EntityPersister.EntityID, () => GetIdentifierAliases(persister, suffix)));
+		}
+
+		private string DetermineDiscriminatorAlias(ILoadable persister, string suffix)
+		{
+			if (userProvidedAliases == null)
+				return GetDiscriminatorAlias(persister, suffix);
+
+			return GetUserProvidedAlias(AbstractEntityPersister.EntityClass, () => GetDiscriminatorAlias(persister, suffix));
+		}
+
+		/// <summary>
+		/// Returns default aliases for all the properties
+		/// </summary>
+		protected string[][] GetPropertiesAliases(ILoadable persister)
+		{
+			return Enumerable.Range(0, persister.PropertyNames.Length).Select(i => GetPropertyAliases(persister, i)).ToArray();
 		}
 
 		protected virtual string GetDiscriminatorAlias(ILoadable persister, string suffix)
@@ -51,14 +78,6 @@ namespace NHibernate.Loader
 		protected virtual string[] GetPropertyAliases(ILoadable persister, int j)
 		{
 			return persister.GetPropertyAliases(suffix, j);
-		}
-
-		/// <summary>
-		/// Returns default aliases for all the properties
-		/// </summary>
-		protected string[][] GetPropertiesAliases(ILoadable persister)
-		{
-			return Enumerable.Range(0, persister.PropertyNames.Length).Select(i => GetPropertyAliases(persister, i)).ToArray();
 		}
 
 		private string[] GetUserProvidedAliases(string propertyPath, Func<string[]> getDefaultAliases)
@@ -94,24 +113,9 @@ namespace NHibernate.Loader
 			}
 		}
 
-		private string GetSuffixedDiscriminatorAlias(ILoadable persister, string suffix)
-		{
-			if (userProvidedAliases == null)
-				return GetDiscriminatorAlias(persister, suffix);
-
-			return GetUserProvidedAlias(AbstractEntityPersister.EntityClass, () => GetDiscriminatorAlias(persister, suffix));
-		}
-
-		private string[] GetSuffixedKeyAliases(ILoadable persister, string suffix)
-		{
-			if (userProvidedAliases == null)
-				return GetIdentifierAliases(persister, suffix);
-
-			return GetUserProvidedAliases(
-				persister.IdentifierPropertyName,
-				() => GetUserProvidedAliases(EntityPersister.EntityID, () => GetIdentifierAliases(persister, suffix)));
-		}
-
+		/// <summary>
+		/// Returns aliases for subclass persister
+		/// </summary>
 		public string[][] GetSuffixedPropertyAliases(ILoadable persister)
 		{
 			if (userProvidedAliases == null)
