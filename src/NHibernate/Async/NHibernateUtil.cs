@@ -20,11 +20,8 @@ using NHibernate.Util;
 
 namespace NHibernate
 {
-	using System.Collections.Generic;
-	using System.Reflection;
 	using System.Threading.Tasks;
 	using System.Threading;
-
 	public static partial class NHibernateUtil
 	{
 
@@ -47,13 +44,13 @@ namespace NHibernate
 				{
 					return Task.CompletedTask;
 				}
-				else if (proxy.IsProxy())
+				if (proxy.IsProxy())
 				{
 					return ((INHibernateProxy)proxy).HibernateLazyInitializer.InitializeAsync(cancellationToken);
 				}
-				else if (proxy is IPersistentCollection)
+				else if (proxy is IPersistentCollection coll)
 				{
-					return ((IPersistentCollection)proxy).ForceInitializationAsync(cancellationToken);
+					return coll.ForceInitializationAsync(cancellationToken);
 				}
 				return Task.CompletedTask;
 			}

@@ -613,6 +613,15 @@ namespace NHibernate.Type
 			return GetSerializableType(typeClass);
 		}
 
+		/// <summary>
+		/// Get the current default NHibernate type for a .Net type.
+		/// </summary>
+		/// <param name="type">The .Net type for which to get the corresponding default NHibernate type.</param>
+		/// <returns>The current default NHibernate type for a .Net type if any, otherwise <see langword="null" />.</returns>
+		public static IType GetDefaultTypeFor(System.Type type)
+		{
+			return typeByTypeOfName.TryGetValue(type.FullName, out var nhType) ? nhType : null;
+		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static NullableType GetAnsiStringType(int length)
