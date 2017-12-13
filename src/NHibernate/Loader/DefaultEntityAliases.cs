@@ -5,10 +5,10 @@ using NHibernate.Persister.Entity;
 
 namespace NHibernate.Loader
 {
+	// Based on https://raw.githubusercontent.com/hibernate/hibernate-orm/master/hibernate-core/src/main/java/org/hibernate/loader/DefaultEntityAliases.java
 	/// <summary>
 	/// EntityAliases which handles the logic of selecting user provided aliases (via return-property),
 	/// before using the default aliases.
-	/// Based on https://raw.githubusercontent.com/hibernate/hibernate-orm/master/hibernate-core/src/main/java/org/hibernate/loader/DefaultEntityAliases.java
 	/// </summary>
 	public class DefaultEntityAliases : IEntityAliases
 	{
@@ -44,9 +44,9 @@ namespace NHibernate.Loader
 			if (userProvidedAliases == null)
 				return GetIdentifierAliases(persister, suffix);
 
-			return GetUserProvidedAliases(
-				persister.IdentifierPropertyName,
-				() => GetUserProvidedAliases(EntityPersister.EntityID, () => GetIdentifierAliases(persister, suffix)));
+			return GetUserProvidedAliases(persister.IdentifierPropertyName)
+					?? GetUserProvidedAliases(EntityPersister.EntityID)
+					?? GetIdentifierAliases(persister, suffix);
 		}
 
 		private string DetermineDiscriminatorAlias(ILoadable persister, string suffix)
@@ -54,7 +54,8 @@ namespace NHibernate.Loader
 			if (userProvidedAliases == null)
 				return GetDiscriminatorAlias(persister, suffix);
 
-			return GetUserProvidedAlias(AbstractEntityPersister.EntityClass, () => GetDiscriminatorAlias(persister, suffix));
+			return GetUserProvidedAlias(AbstractEntityPersister.EntityClass)
+					?? GetDiscriminatorAlias(persister, suffix);
 		}
 
 		/// <summary>
@@ -80,37 +81,20 @@ namespace NHibernate.Loader
 			return persister.GetPropertyAliases(suffix, j);
 		}
 
-		private string[] GetUserProvidedAliases(string propertyPath, Func<string[]> getDefaultAliases)
+		private string[] GetUserProvidedAliases(string propertyPath)
 		{
-			string[] result = propertyPath == null ? null : GetUserProvidedAlias(propertyPath);
-			if (result == null)
-			{
-				return getDefaultAliases();
-			}
-			else
-			{
-				return result;
-			}
-		}
+			if (propertyPath == null)
+				return null;
 
-		private string[] GetUserProvidedAlias(string propertyPath)
-		{
 			string[] result;
 			userProvidedAliases.TryGetValue(propertyPath, out result);
 			return result;
 		}
 
-		private string GetUserProvidedAlias(string propertyPath, Func<string> getDefaultAlias)
+		private string GetUserProvidedAlias(string propertyPath)
 		{
-			string[] columns = propertyPath == null ? null : GetUserProvidedAlias(propertyPath);
-			if (columns == null)
-			{
-				return getDefaultAlias();
-			}
-			else
-			{
-				return columns[0];
-			}
+			return GetUserProvidedAliases(propertyPath)?[0];
+
 		}
 
 		/// <summary>
@@ -125,7 +109,7 @@ namespace NHibernate.Loader
 			string[][] suffixedPropertyAliases = new string[size][];
 			for (int j = 0; j < size; j++)
 			{
-				suffixedPropertyAliases[j] = GetUserProvidedAliases(persister.PropertyNames[j], () => GetPropertyAliases(persister, j));
+				suffixedPropertyAliases[j] = GetUserProvidedAliases(persister.PropertyNames[j]) ?? GetPropertyAliases(persister, j);
 			}
 			return suffixedPropertyAliases;
 		}
