@@ -29,7 +29,7 @@ namespace NHibernate.Impl
 		private IList queryResults;
 		private readonly Dictionary<string, int> queryResultPositions = new Dictionary<string, int>();
 		private string cacheRegion;
-		private int commandTimeout = RowSelection.NoValue;
+		private int? _timeout;
 		private bool isCacheable;
 		private readonly ISessionImplementor session;
 		private IResultTransformer resultTransformer;
@@ -64,7 +64,7 @@ namespace NHibernate.Impl
 
 		public IMultiQuery SetTimeout(int timeout)
 		{
-			commandTimeout = timeout;
+			_timeout = timeout == RowSelection.NoValue ? (int?) null : timeout;
 			return this;
 		}
 
@@ -526,7 +526,7 @@ namespace NHibernate.Impl
 
 			try
 			{
-				using (var reader = resultSetsCommand.GetReader(commandTimeout != RowSelection.NoValue ? commandTimeout : (int?)null))
+				using (var reader = resultSetsCommand.GetReader(_timeout))
 				{
 					if (log.IsDebugEnabled())
 					{

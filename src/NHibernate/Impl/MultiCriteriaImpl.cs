@@ -35,6 +35,7 @@ namespace NHibernate.Impl
 		private string cacheRegion;
 		private IResultTransformer resultTransformer;
 		private readonly IResultSetsCommand resultSetsCommand;
+		private int? _timeout;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MultiCriteriaImpl"/> class.
@@ -221,7 +222,7 @@ namespace NHibernate.Impl
 
 			try
 			{
-				using (var reader = resultSetsCommand.GetReader(null))
+				using (var reader = resultSetsCommand.GetReader(_timeout))
 				{
 					var hydratedObjects = new List<object>[loaders.Count];
 					List<EntityKey[]>[] subselectResultKeys = new List<EntityKey[]>[loaders.Count];
@@ -473,6 +474,15 @@ namespace NHibernate.Impl
 		{
 			if (criteriaResultPositions.ContainsKey(key))
 				throw new InvalidOperationException(String.Format("The key '{0}' already exists", key));
+		}
+
+		/// <summary>
+		/// Set a timeout for the underlying ADO.NET query
+		/// </summary>
+		public IMultiCriteria SetTimeout(int timeout)
+		{
+			_timeout = timeout == RowSelection.NoValue ? (int?) null : timeout;
+			return this;
 		}
 	}
 }
