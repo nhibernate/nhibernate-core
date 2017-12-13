@@ -129,7 +129,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			return proxyType;
 		}
 
-		private IEnumerable<MethodInfo> GetProxiableMethods(System.Type type, IEnumerable<System.Type> interfaces)
+		internal static IEnumerable<MethodInfo> GetProxiableMethods(System.Type type, IEnumerable<System.Type> interfaces)
 		{
 			const BindingFlags candidateMethodsBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 			return
