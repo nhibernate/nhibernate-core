@@ -12,13 +12,9 @@ namespace NHibernate.Loader
 	/// </summary>
 	public class DefaultEntityAliases : IEntityAliases
 	{
-		private readonly string[] suffixedKeyColumns;
-		private readonly string[] suffixedVersionColumn;
-		private readonly string[][] suffixedPropertyColumns;
-		private readonly string suffixedDiscriminatorColumn;
-		private readonly string suffix;
-		private string rowIdAlias;
-		private readonly IDictionary<string, string[]> userProvidedAliases;
+		private readonly string _suffix;
+		private string _rowIdAlias;
+		private readonly IDictionary<string, string[]> _userProvidedAliases;
 
 		public DefaultEntityAliases(ILoadable persister, string suffix)
 			: this(null, persister, suffix) {}
@@ -28,20 +24,20 @@ namespace NHibernate.Loader
 		/// </summary>
 		public DefaultEntityAliases(IDictionary<string, string[]> userProvidedAliases, ILoadable persister, string suffix)
 		{
-			this.suffix = suffix;
-			this.userProvidedAliases = userProvidedAliases?.Count > 0 ? userProvidedAliases : null;
+			_suffix = suffix;
+			_userProvidedAliases = userProvidedAliases?.Count > 0 ? userProvidedAliases : null;
 
-			suffixedKeyColumns = DetermineKeyAliases(persister, suffix);
-			suffixedPropertyColumns = GetSuffixedPropertyAliases(persister);
-			suffixedDiscriminatorColumn = DetermineDiscriminatorAlias(persister, suffix);
+			SuffixedKeyAliases = DetermineKeyAliases(persister, suffix);
+			SuffixedPropertyAliases = GetSuffixedPropertyAliases(persister);
+			SuffixedDiscriminatorAlias = DetermineDiscriminatorAlias(persister, suffix);
 
-			suffixedVersionColumn = persister.IsVersioned ? suffixedPropertyColumns[persister.VersionProperty] : null;
+			SuffixedVersionAliases = persister.IsVersioned ? SuffixedPropertyAliases[persister.VersionProperty] : null;
 			//rowIdAlias is generated on demand in property
 		}
 
 		private string[] DetermineKeyAliases(ILoadable persister, string suffix)
 		{
-			if (userProvidedAliases == null)
+			if (_userProvidedAliases == null)
 				return GetIdentifierAliases(persister, suffix);
 
 			return GetUserProvidedAliases(persister.IdentifierPropertyName)
@@ -51,7 +47,7 @@ namespace NHibernate.Loader
 
 		private string DetermineDiscriminatorAlias(ILoadable persister, string suffix)
 		{
-			if (userProvidedAliases == null)
+			if (_userProvidedAliases == null)
 				return GetDiscriminatorAlias(persister, suffix);
 
 			return GetUserProvidedAlias(AbstractEntityPersister.EntityClass)
@@ -78,7 +74,7 @@ namespace NHibernate.Loader
 
 		protected virtual string[] GetPropertyAliases(ILoadable persister, int j)
 		{
-			return persister.GetPropertyAliases(suffix, j);
+			return persister.GetPropertyAliases(_suffix, j);
 		}
 
 		private string[] GetUserProvidedAliases(string propertyPath)
@@ -87,7 +83,7 @@ namespace NHibernate.Loader
 				return null;
 
 			string[] result;
-			userProvidedAliases.TryGetValue(propertyPath, out result);
+			_userProvidedAliases.TryGetValue(propertyPath, out result);
 			return result;
 		}
 
@@ -102,7 +98,7 @@ namespace NHibernate.Loader
 		/// </summary>
 		public string[][] GetSuffixedPropertyAliases(ILoadable persister)
 		{
-			if (userProvidedAliases == null)
+			if (_userProvidedAliases == null)
 				return GetPropertiesAliases(persister);
 
 			int size = persister.PropertyNames.Length;
@@ -114,30 +110,15 @@ namespace NHibernate.Loader
 			return suffixedPropertyAliases;
 		}
 
-		public string[] SuffixedVersionAliases
-		{
-			get { return suffixedVersionColumn; }
-		}
+		public string[] SuffixedVersionAliases { get; }
 
-		public string[][] SuffixedPropertyAliases
-		{
-			get { return suffixedPropertyColumns; }
-		}
+		public string[][] SuffixedPropertyAliases { get; }
 
-		public string SuffixedDiscriminatorAlias
-		{
-			get { return suffixedDiscriminatorColumn; }
-		}
+		public string SuffixedDiscriminatorAlias { get; }
 
-		public string[] SuffixedKeyAliases
-		{
-			get { return suffixedKeyColumns; }
-		}
+		public string[] SuffixedKeyAliases { get; }
 
-		public string RowIdAlias
-		{
-			// TODO: not visible to the user!
-			get { return rowIdAlias ?? (rowIdAlias = Loadable.RowIdAlias + suffix); }
-		}
+		// TODO: not visible to the user!
+		public string RowIdAlias => _rowIdAlias ?? (_rowIdAlias = Loadable.RowIdAlias + _suffix);
 	}
 }
