@@ -1,11 +1,8 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using NHibernate.Persister.Entity;
 
 namespace NHibernate.Loader
 {
-	// Based on https://raw.githubusercontent.com/hibernate/hibernate-orm/master/hibernate-core/src/main/java/org/hibernate/loader/DefaultEntityAliases.java
 	/// <summary>
 	/// EntityAliases which handles the logic of selecting user provided aliases (via return-property),
 	/// before using the default aliases.
@@ -13,11 +10,13 @@ namespace NHibernate.Loader
 	public class DefaultEntityAliases : IEntityAliases
 	{
 		private readonly string _suffix;
-		private string _rowIdAlias;
 		private readonly IDictionary<string, string[]> _userProvidedAliases;
+		private string _rowIdAlias;
 
 		public DefaultEntityAliases(ILoadable persister, string suffix)
-			: this(null, persister, suffix) {}
+			: this(null, persister, suffix)
+		{
+		}
 
 		/// <summary>
 		/// Calculate and cache select-clause aliases.
@@ -28,83 +27,11 @@ namespace NHibernate.Loader
 			_userProvidedAliases = userProvidedAliases?.Count > 0 ? userProvidedAliases : null;
 
 			SuffixedKeyAliases = DetermineKeyAliases(persister);
-			SuffixedPropertyAliases = GetSuffixedPropertyAliases(persister);
+			SuffixedPropertyAliases = DeterminePropertyAliases(persister);
 			SuffixedDiscriminatorAlias = DetermineDiscriminatorAlias(persister);
 
 			SuffixedVersionAliases = persister.IsVersioned ? SuffixedPropertyAliases[persister.VersionProperty] : null;
 			//rowIdAlias is generated on demand in property
-		}
-
-		private string[] DetermineKeyAliases(ILoadable persister)
-		{
-			if (_userProvidedAliases != null)
-			{
-				var result = SafeGetUserProvidedAliases(persister.IdentifierPropertyName) ??
-				             GetUserProvidedAliases(EntityPersister.EntityID);
-
-				if (result != null)
-					return result;
-			}
-
-			return GetIdentifierAliases(persister, _suffix);
-		}
-
-		private string DetermineDiscriminatorAlias(ILoadable persister)
-		{
-			if (_userProvidedAliases != null)
-			{
-				var columns = GetUserProvidedAliases(AbstractEntityPersister.EntityClass);
-				if (columns != null)
-				{
-					return columns[0];
-				}
-			}
-
-			return GetDiscriminatorAlias(persister, _suffix);
-		}
-
-		/// <summary>
-		/// Returns default aliases for all the properties
-		/// </summary>
-		private string[][] GetAllPropertyAliases(ILoadable persister)
-		{
-			var propertyNames = persister.PropertyNames;
-			var suffixedPropertyAliases = new string[propertyNames.Length][];
-			for (var i = 0; i < propertyNames.Length; i++)
-			{
-				suffixedPropertyAliases[i] = GetPropertyAliases(persister, i);
-			}
-
-			return suffixedPropertyAliases;
-		}
-
-		protected virtual string GetDiscriminatorAlias(ILoadable persister, string suffix)
-		{
-			return persister.GetDiscriminatorAlias(suffix);
-		}
-
-		protected virtual string[] GetIdentifierAliases(ILoadable persister, string suffix)
-		{
-			return persister.GetIdentifierAliases(suffix);
-		}
-
-		protected virtual string[] GetPropertyAliases(ILoadable persister, int j)
-		{
-			return persister.GetPropertyAliases(_suffix, j);
-		}
-
-		private string[] SafeGetUserProvidedAliases(string propertyPath)
-		{
-			if (propertyPath == null)
-				return null;
-			
-			return GetUserProvidedAliases(propertyPath);
-		}
-
-		private string[] GetUserProvidedAliases(string propertyPath)
-		{
-			_userProvidedAliases.TryGetValue(propertyPath, out var result);
-			return result;
 		}
 
 		/// <summary>
@@ -137,5 +64,80 @@ namespace NHibernate.Loader
 
 		// TODO: not visible to the user!
 		public string RowIdAlias => _rowIdAlias ?? (_rowIdAlias = Loadable.RowIdAlias + _suffix);
+
+		/// <summary>
+		/// Returns default aliases for all the properties
+		/// </summary>
+		private string[][] GetAllPropertyAliases(ILoadable persister)
+		{
+			var propertyNames = persister.PropertyNames;
+			var suffixedPropertyAliases = new string[propertyNames.Length][];
+			for (var i = 0; i < propertyNames.Length; i++)
+			{
+				suffixedPropertyAliases[i] = GetPropertyAliases(persister, i);
+			}
+
+			return suffixedPropertyAliases;
+		}
+
+		protected virtual string GetDiscriminatorAlias(ILoadable persister, string suffix)
+		{
+			return persister.GetDiscriminatorAlias(suffix);
+		}
+
+		protected virtual string[] GetIdentifierAliases(ILoadable persister, string suffix)
+		{
+			return persister.GetIdentifierAliases(suffix);
+		}
+
+		protected virtual string[] GetPropertyAliases(ILoadable persister, int j)
+		{
+			return persister.GetPropertyAliases(_suffix, j);
+		}
+
+		private string[] DetermineKeyAliases(ILoadable persister)
+		{
+			if (_userProvidedAliases != null)
+			{
+				var result = SafeGetUserProvidedAliases(persister.IdentifierPropertyName) ??
+				             GetUserProvidedAliases(EntityPersister.EntityID);
+
+				if (result != null)
+					return result;
+			}
+
+			return GetIdentifierAliases(persister, _suffix);
+		}
+		
+		private string[][] DeterminePropertyAliases(ILoadable persister)
+		{
+			return GetSuffixedPropertyAliases(persister);
+		}
+		
+		private string DetermineDiscriminatorAlias(ILoadable persister)
+		{
+			if (_userProvidedAliases != null)
+			{
+				var columns = GetUserProvidedAliases(AbstractEntityPersister.EntityClass);
+				if (columns != null) 
+					return columns[0];
+			}
+
+			return GetDiscriminatorAlias(persister, _suffix);
+		}
+		
+		private string[] SafeGetUserProvidedAliases(string propertyPath)
+		{
+			if (propertyPath == null)
+				return null;
+
+			return GetUserProvidedAliases(propertyPath);
+		}
+
+		private string[] GetUserProvidedAliases(string propertyPath)
+		{
+			_userProvidedAliases.TryGetValue(propertyPath, out var result);
+			return result;
+		}
 	}
 }
