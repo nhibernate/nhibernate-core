@@ -27,31 +27,31 @@ namespace NHibernate.Loader
 			_suffix = suffix;
 			_userProvidedAliases = userProvidedAliases?.Count > 0 ? userProvidedAliases : null;
 
-			SuffixedKeyAliases = DetermineKeyAliases(persister, suffix);
+			SuffixedKeyAliases = DetermineKeyAliases(persister);
 			SuffixedPropertyAliases = GetSuffixedPropertyAliases(persister);
-			SuffixedDiscriminatorAlias = DetermineDiscriminatorAlias(persister, suffix);
+			SuffixedDiscriminatorAlias = DetermineDiscriminatorAlias(persister);
 
 			SuffixedVersionAliases = persister.IsVersioned ? SuffixedPropertyAliases[persister.VersionProperty] : null;
 			//rowIdAlias is generated on demand in property
 		}
 
-		private string[] DetermineKeyAliases(ILoadable persister, string suffix)
+		private string[] DetermineKeyAliases(ILoadable persister)
 		{
 			if (_userProvidedAliases == null)
-				return GetIdentifierAliases(persister, suffix);
+				return GetIdentifierAliases(persister, _suffix);
 
 			return GetUserProvidedAliases(persister.IdentifierPropertyName)
 					?? GetUserProvidedAliases(EntityPersister.EntityID)
-					?? GetIdentifierAliases(persister, suffix);
+					?? GetIdentifierAliases(persister, _suffix);
 		}
 
-		private string DetermineDiscriminatorAlias(ILoadable persister, string suffix)
+		private string DetermineDiscriminatorAlias(ILoadable persister)
 		{
 			if (_userProvidedAliases == null)
-				return GetDiscriminatorAlias(persister, suffix);
+				return GetDiscriminatorAlias(persister, _suffix);
 
 			return GetUserProvidedAlias(AbstractEntityPersister.EntityClass)
-					?? GetDiscriminatorAlias(persister, suffix);
+					?? GetDiscriminatorAlias(persister, _suffix);
 		}
 
 		/// <summary>
