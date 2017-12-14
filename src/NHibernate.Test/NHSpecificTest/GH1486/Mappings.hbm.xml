@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.GH1486">
+
+  <class name="Company" >
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <property name="Name" type="String" length="50"/>
+    <component name="Contact" lazy="true">
+      <property name="Phone" type="String" length="50"  />
+      <property name="Email" type="String" length="50" />
+      <property name="IsActive" type="Boolean" />
+    </component>
+  </class>
+
+</hibernate-mapping>

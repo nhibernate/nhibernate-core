@@ -534,7 +534,7 @@ namespace NHibernate.Type
 				return current != null;
 			}
 			object[] currentValues = GetPropertyValues(current, session);
-			object[] oldValues = (Object[]) old;
+			object[] oldValues = old is object[] ? (Object[]) old : GetPropertyValues(old, session);
 			int loc = 0;
 			for (int i = 0; i < currentValues.Length; i++)
 			{
