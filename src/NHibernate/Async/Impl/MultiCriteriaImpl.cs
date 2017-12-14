@@ -151,7 +151,7 @@ namespace NHibernate.Impl
 
 			try
 			{
-				using (var reader = await (resultSetsCommand.GetReaderAsync(null, cancellationToken)).ConfigureAwait(false))
+				using (var reader = await (resultSetsCommand.GetReaderAsync(_timeout, cancellationToken)).ConfigureAwait(false))
 				{
 					var hydratedObjects = new List<object>[loaders.Count];
 					List<EntityKey[]>[] subselectResultKeys = new List<EntityKey[]>[loaders.Count];

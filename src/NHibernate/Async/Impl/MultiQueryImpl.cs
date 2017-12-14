@@ -84,7 +84,7 @@ namespace NHibernate.Impl
 
 			try
 			{
-				using (var reader = await (resultSetsCommand.GetReaderAsync(commandTimeout != RowSelection.NoValue ? commandTimeout : (int?)null, cancellationToken)).ConfigureAwait(false))
+				using (var reader = await (resultSetsCommand.GetReaderAsync(_timeout, cancellationToken)).ConfigureAwait(false))
 				{
 					if (log.IsDebugEnabled())
 					{

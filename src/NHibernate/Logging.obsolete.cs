@@ -82,54 +82,47 @@ namespace NHibernate
 	[Obsolete("Use NHibernateLogger instead.")]
 	public class LoggerProvider
 	{
-		private static ILoggerFactory _legacyLoggerFactory;
-
 		[Obsolete("Implement INHibernateLoggerFactory and use NHibernateLogger.SetLoggersFactory() instead")]
 		public static void SetLoggersFactory(ILoggerFactory loggerFactory)
 		{
-			_legacyLoggerFactory = loggerFactory ?? new NoLoggingLoggerFactory();
+			var factory = (loggerFactory == null || loggerFactory is NoLoggingLoggerFactory)
+				? null
+				: (INHibernateLoggerFactory) new LegacyLoggerFactoryAdaptor(loggerFactory);
 
-			if (!(loggerFactory is ReverseLegacyLoggerFactoryAdaptor))
-			{
-				var factory = loggerFactory == null || loggerFactory is NoLoggingLoggerFactory
-					? null
-					: (INHibernateLoggerFactory) new LegacyLoggerFactoryAdaptor(loggerFactory);
-
-				NHibernateLogger.SetLoggersFactory(factory);
-			}
+			NHibernateLogger.SetLoggersFactory(factory);
 		}
 
 		[Obsolete("Use NHibernateLogger.For() instead.")]
 		public static IInternalLogger LoggerFor(string keyName)
 		{
-			return _legacyLoggerFactory.LoggerFor(keyName);
+			return NHibernateLogger.LegacyLoggerFactory.LoggerFor(keyName);
 		}
 
 		[Obsolete("Use NHibernateLogger.For() instead.")]
 		public static IInternalLogger LoggerFor(System.Type type)
 		{
-			return _legacyLoggerFactory.LoggerFor(type);
+			return NHibernateLogger.LegacyLoggerFactory.LoggerFor(type);
 		}
 
 		// Since 5.1
 		[Obsolete("Used only in Obsolete functions to thunk to INHibernateLoggerFactory")]
 		internal class LegacyLoggerFactoryAdaptor : INHibernateLoggerFactory
 		{
-			private readonly ILoggerFactory _factory;
+			internal ILoggerFactory Factory { get; }
 
 			public LegacyLoggerFactoryAdaptor(ILoggerFactory factory)
 			{
-				_factory = factory;
+				Factory = factory;
 			}
 
 			public INHibernateLogger LoggerFor(string keyName)
 			{
-				return new NHibernateLoggerThunk(_factory.LoggerFor(keyName));
+				return new NHibernateLoggerThunk(Factory.LoggerFor(keyName));
 			}
 
 			public INHibernateLogger LoggerFor(System.Type type)
 			{
-				return new NHibernateLoggerThunk(_factory.LoggerFor(type));
+				return new NHibernateLoggerThunk(Factory.LoggerFor(type));
 			}
 		}
 

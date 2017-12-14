@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using NHibernate.Criterion;
+using NHibernate.Impl;
 using NHibernate.Transform;
 
 namespace NHibernate
@@ -153,5 +155,27 @@ namespace NHibernate
 		/// <param name="key">The key</param>
 		/// <returns></returns>
 		object GetResult(string key);
+	}
+
+	public static class MultiCriteriaExtensions
+	{
+		//6.0 TODO: Convert to interface method
+		/// <summary>
+		/// Set a timeout for the underlying ADO.NET query
+		/// </summary>
+		public static IMultiCriteria SetTimeout(this IMultiCriteria multiCriteria, int timeout)
+		{
+			if (multiCriteria == null)
+			{
+				throw new ArgumentNullException(nameof(multiCriteria));
+			}
+
+			if (multiCriteria is MultiCriteriaImpl impl)
+			{
+				return impl.SetTimeout(timeout);
+			}
+
+			throw new NotSupportedException(multiCriteria.GetType() + " does not support SetTimeout");
+		}
 	}
 }
