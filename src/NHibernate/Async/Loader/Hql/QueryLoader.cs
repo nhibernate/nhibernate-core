@@ -102,7 +102,7 @@ namespace NHibernate.Loader.Hql
 			var cmd = await (PrepareQueryCommandAsync(queryParameters, false, session, cancellationToken)).ConfigureAwait(false);
 
 			// This DbDataReader is disposed of in EnumerableImpl.Dispose
-			var rs = await (GetResultSetAsync(cmd, queryParameters.HasAutoDiscoverScalarTypes, false, queryParameters.RowSelection, session, cancellationToken)).ConfigureAwait(false);
+			var rs = await (GetResultSetAsync(cmd, queryParameters, session, null, cancellationToken)).ConfigureAwait(false);
 
 			HolderInstantiator hi = 
 				HolderInstantiator.GetHolderInstantiator(_selectNewTransformer, queryParameters.ResultTransformer, _queryReturnAliases);

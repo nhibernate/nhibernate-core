@@ -8,8 +8,8 @@
 //------------------------------------------------------------------------------
 
 
-using System.Collections;
 using System.Collections.Generic;
+using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NUnit.Framework;
 
@@ -20,6 +20,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 	[TestFixture]
 	public class NativeSqlCollectionLoaderFixtureAsync : BugTestCase
 	{
+		protected virtual bool WithQueryCache => false;
+
+		protected override void Configure(Configuration configuration)
+		{
+			base.Configure(configuration);
+			configuration.SetProperty(Environment.UseQueryCache, WithQueryCache.ToString());
+		}
+
 		#region Tests - <return-join>
 
 		[Test]
@@ -30,8 +38,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 
 			Assert.That(country, Is.Not.Null);
 			Assert.That(country.Routes, Is.EquivalentTo(routes));
-
-			await (CleanupAsync());
 		}
 
 		[Test]
@@ -41,7 +47,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			Country country = await (LoadCountryWithNativeSQLAsync(CreateCountry(routes), "LoadCountryRoutesWithCustomAliases"));
 			Assert.That(country, Is.Not.Null);
 			Assert.That(country.Routes, Is.EquivalentTo(routes));
-			await (CleanupAsync());
 		}
 
 		[Test]
@@ -53,7 +58,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			Assert.That(country, Is.Not.Null);
 			Assert.That(country.Statistics.Keys, Is.EquivalentTo(stats.Keys), "Keys");
 			Assert.That(country.Statistics.Values, Is.EquivalentTo(stats.Values), "Elements");
-			await (CleanupWithPersonsAsync());
 		}
 
 		[Test]
@@ -65,7 +69,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			Assert.That(country, Is.Not.Null);
 			Assert.That(country.Statistics.Keys, Is.EquivalentTo(stats.Keys), "Keys");
 			Assert.That(country.Statistics.Values, Is.EquivalentTo(stats.Values), "Elements");
-			await (CleanupWithPersonsAsync());
 		}
 
 		[Test]
@@ -77,8 +80,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			Assert.That(country, Is.Not.Null);
 			Assert.That(country.Statistics.Keys, Is.EquivalentTo(stats.Keys), "Keys");
 			Assert.That(country.Statistics.Values, Is.EquivalentTo(stats.Values), "Elements");
-
-			await (CleanupWithPersonsAsync());
 		}
 
 		[Test]
@@ -89,13 +90,16 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			await (SaveAsync(country));
 			using (ISession session = OpenSession())
 			{
-				var c =
-					await (session.GetNamedQuery("LoadCountryCitiesWithSimpleHbmAliasInjection").SetString("country_code", country.Code).
-						UniqueResultAsync<Country>());
+				var query = session.GetNamedQuery("LoadCountryCitiesWithSimpleHbmAliasInjection")
+				                   .SetString("country_code", country.Code)
+				                   .SetCacheable(WithQueryCache);
+				var c = await (query.UniqueResultAsync<Country>());
+				if (WithQueryCache)
+					// Re-get it for obtaining it from cache.
+					c = await (query.UniqueResultAsync<Country>());
 				Assert.That(c, Is.Not.Null);
 				Assert.That(c.Cities, Is.EquivalentTo(cities));
 			}
-			await (CleanupWithCitiesAsync());
 		}
 
 		[Test]
@@ -106,13 +110,16 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			await (SaveAsync(country));
 			using (ISession session = OpenSession())
 			{
-				var c =
-					await (session.GetNamedQuery("LoadCountryCitiesWithComplexHbmAliasInjection").SetString("country_code", country.Code).
-						UniqueResultAsync<Country>());
+				var query = session.GetNamedQuery("LoadCountryCitiesWithComplexHbmAliasInjection")
+				                   .SetString("country_code", country.Code)
+				                   .SetCacheable(WithQueryCache);
+				var c = await (query.UniqueResultAsync<Country>());
+				if (WithQueryCache)
+					// Re-get it for obtaining it from cache.
+					c = await (query.UniqueResultAsync<Country>());
 				Assert.That(c, Is.Not.Null);
 				Assert.That(c.Cities, Is.EquivalentTo(cities));
 			}
-			await (CleanupWithCitiesAsync());
 		}
 
 		[Test]
@@ -123,35 +130,25 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			await (SaveAsync(country));
 			using (ISession session = OpenSession())
 			{
-				var c =
-					await (session.GetNamedQuery("LoadCountryCitiesWithCustomAliases").SetString("country_code", country.Code).
-						UniqueResultAsync<Country>());
+				var query = session.GetNamedQuery("LoadCountryCitiesWithCustomAliases")
+				                   .SetString("country_code", country.Code)
+				                   .SetCacheable(WithQueryCache);
+				var c = await (query.UniqueResultAsync<Country>());
+				if (WithQueryCache)
+					// Re-get it for obtaining it from cache.
+					c = await (query.UniqueResultAsync<Country>());
 				Assert.That(c, Is.Not.Null);
 				Assert.That(c.Cities, Is.EquivalentTo(cities));
 			}
-
-			// cleanup
-			await (CleanupWithCitiesAsync());
 		}
 
 		[Test]
-		public async Task NativeQueryWithUnresolvedHbmAliasInjectionAsync()
+		public void NativeQueryWithUnresolvedHbmAliasInjectionAsync()
 		{
 			IDictionary<int, AreaStatistics> stats = CreateStatistics();
-			try
-			{
-				await (LoadCountryWithNativeSQLAsync(CreateCountry(stats), "LoadAreaStatisticsWithFaultyHbmAliasInjection"));
-				Assert.Fail("Expected exception");
-			}
-			catch(QueryException)
-			{
-				// ok
-			}
-			finally
-			{
-				// cleanup
-				await (CleanupWithPersonsAsync());
-			}
+			Assert.That(
+				() => LoadCountryWithNativeSQLAsync(CreateCountry(stats), "LoadAreaStatisticsWithFaultyHbmAliasInjection"),
+				Throws.InstanceOf<QueryException>());
 		}
 
 		private async Task<Country> LoadCountryWithNativeSQLAsync(Country country, string queryName, CancellationToken cancellationToken = default(CancellationToken))
@@ -168,7 +165,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			}
 			using (ISession session = OpenSession())
 			{
-				return await (session.GetNamedQuery(queryName).SetString("country_code", country.Code).UniqueResultAsync<Country>(cancellationToken));
+				var query = session.GetNamedQuery(queryName).SetString("country_code", country.Code).SetCacheable(WithQueryCache);
+				var result = await (query.UniqueResultAsync<Country>(cancellationToken));
+				if (WithQueryCache)
+					// Get it from cache by re-executing.
+					result = await (query.UniqueResultAsync<Country>(cancellationToken));
+				return result;
 			}
 		}
 
@@ -179,6 +181,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 		[Test]
 		public async Task LoadElementCollectionWithCustomLoaderAsync()
 		{
+			Assume.That(WithQueryCache, Is.False, "This test does not use a cacheable query.");
 			string[] routes = CreateRoutes();
 			Country country = CreateCountry(routes);
 			await (SaveAsync(country));
@@ -188,12 +191,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 				Assert.That(c, Is.Not.Null, "country");
 				Assert.That(c.Routes, Is.EquivalentTo(routes), "country.Routes");
 			}
-			await (CleanupAsync());
 		}
 
 		[Test]
 		public async Task LoadCompositeElementCollectionWithCustomLoaderAsync()
 		{
+			Assume.That(WithQueryCache, Is.False, "This test does not use a cacheable query.");
 			IDictionary<int, AreaStatistics> stats = CreateStatistics();
 			Country country = CreateCountry(stats);
 			await (SaveAsync(country));
@@ -204,12 +207,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 				Assert.That(a.Statistics.Keys, Is.EquivalentTo(stats.Keys), "area.Keys");
 				Assert.That(a.Statistics.Values, Is.EquivalentTo(stats.Values), "area.Elements");
 			}
-			await (CleanupWithPersonsAsync());
 		}
 
 		[Test]
 		public async Task LoadEntityCollectionWithCustomLoaderAsync()
 		{
+			Assume.That(WithQueryCache, Is.False, "This test does not use a cacheable query.");
 			City[] cities = CreateCities();
 			Country country = CreateCountry(cities);
 			await (SaveAsync(country));
@@ -220,7 +223,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 				Assert.That(c, Is.Not.Null, "country");
 				Assert.That(c.Cities, Is.EquivalentTo(cities), "country.Cities");
 			}
-			await (CleanupWithCitiesAsync());
 		}
 
 		private async Task SaveAsync<TArea>(TArea area, CancellationToken cancellationToken = default(CancellationToken)) where TArea : Area
@@ -242,10 +244,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 		[Test]
 		public async Task NativeUpdateQueryWithoutResultsAsync()
 		{
-			if(!(Dialect is MsSql2000Dialect))
-			{
-				Assert.Ignore("This does not apply to {0}", Dialect);
-			}
+			Assume.That(Dialect, Is.InstanceOf<MsSql2000Dialect>(), "This does not apply to {0}", Dialect);
+			Assume.That(WithQueryCache, Is.False, "This test does not use a cacheable query.");
 			using (ISession session = OpenSession())
 			{
 				using (ITransaction tx = session.BeginTransaction())
@@ -259,10 +259,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 		[Test]
 		public async Task NativeScalarQueryWithoutResultsAsync()
 		{
-			if (!(Dialect is MsSql2000Dialect))
-			{
-				Assert.Ignore("This does not apply to {0}", Dialect);
-			}
+			Assume.That(Dialect, Is.InstanceOf<MsSql2000Dialect>(), "This does not apply to {0}", Dialect);
+			Assume.That(WithQueryCache, Is.False, "This test does not use a cacheable query.");
 			using (ISession session = OpenSession())
 			{
 				using (ITransaction tx = session.BeginTransaction())
@@ -288,7 +286,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 				{
 					// Native SQL Query outcome is not validated against <return-*> 
 					// resultset declarations.
-					var result = await (session.GetNamedQuery("ScalarQueryWithUndefinedResultset").UniqueResultAsync<int>());
+					var query = session.GetNamedQuery("ScalarQueryWithUndefinedResultset")
+					                   .SetReadOnly(WithQueryCache);
+					var result = await (query.UniqueResultAsync<int>());
+					if (WithQueryCache)
+						result = await (query.UniqueResultAsync<int>());
 					Assert.That(result, Is.EqualTo(1));
 				}
 			}
@@ -307,7 +309,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 				{
 					// Native SQL Query outcome is not validated against <return-*> 
 					// resultset declarations.
-					var result = await (session.GetNamedQuery("ScalarQueryWithDefinedResultset").UniqueResultAsync<int>());
+					var query = session.GetNamedQuery("ScalarQueryWithDefinedResultset")
+					                   .SetReadOnly(WithQueryCache);
+					var result = await (query.UniqueResultAsync<int>());
+					if (WithQueryCache)
+						result = await (query.UniqueResultAsync<int>());
 					Assert.That(result, Is.EqualTo(2));
 				}
 			}
@@ -317,41 +323,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 
 		#region cleanup
 
-		private async Task CleanupAsync(CancellationToken cancellationToken = default(CancellationToken))
+		protected override void OnTearDown()
 		{
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
+			using (ITransaction tx = session.BeginTransaction())
 			{
-				using (ITransaction tx = session.BeginTransaction())
-				{
-					await (session.DeleteAsync("from Country", cancellationToken));
-					await (tx.CommitAsync(cancellationToken));
-				}
-			}
-		}
-
-		private async Task CleanupWithPersonsAsync(CancellationToken cancellationToken = default(CancellationToken))
-		{
-			using (ISession session = OpenSession())
-			{
-				using (ITransaction tx = session.BeginTransaction())
-				{
-					await (session.DeleteAsync("from Person", cancellationToken));
-					await (session.DeleteAsync("from Country", cancellationToken));
-					await (tx.CommitAsync(cancellationToken));
-				}
-			}
-		}
-
-		private async Task CleanupWithCitiesAsync(CancellationToken cancellationToken = default(CancellationToken))
-		{
-			using (ISession session = OpenSession())
-			{
-				using (ITransaction tx = session.BeginTransaction())
-				{
-					await (session.DeleteAsync("from City", cancellationToken));
-					await (session.DeleteAsync("from Country", cancellationToken));
-					await (tx.CommitAsync(cancellationToken));
-				}
+				session.Delete("from Person");
+				session.Delete("from City");
+				session.Delete("from Country");
+				tx.Commit();
 			}
 		}
 
@@ -427,5 +407,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 		}
 
 		#endregion
+	}
+
+	[TestFixture]
+	public class CachedNativeSqlCollectionLoaderFixtureAsync : NativeSqlCollectionLoaderFixtureAsync
+	{
+		protected override bool WithQueryCache => true;
 	}
 }

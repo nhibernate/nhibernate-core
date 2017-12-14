@@ -1,8 +1,8 @@
-using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
+using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Hql;
 using NHibernate.Param;
@@ -11,7 +11,6 @@ using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
-using NHibernate.Util;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Loader.Custom
@@ -21,7 +20,8 @@ namespace NHibernate.Loader.Custom
 	/// </summary>
 	public partial class CustomLoader : Loader
 	{
-		// Currently *not* cachable if autodiscover types is in effect (e.g. "select * ...")
+		// If cached and autodiscover types is in effect (e.g. "select * ..." or some scalar expression, ...)
+		// the types will also have to be discovered at cache hit, from the cache results.
 
 		private readonly SqlString sql;
 		private readonly ISet<string> querySpaces = new HashSet<string>();
@@ -293,6 +293,12 @@ namespace NHibernate.Loader.Custom
 			return rowProcessor.BuildResultRow(row, rs, resultTransformer != null, session);
 		}
 
+		protected override object[] GetResultRow(object[] row, DbDataReader rs, ISessionImplementor session)
+		{
+			return rowProcessor.BuildResultRow(row, rs, session);
+		}
+
+		protected override string[] ResultRowAliases => transformerAliases;
 
 		protected override IResultTransformer ResolveResultTransformer(IResultTransformer resultTransformer)
 		{
@@ -326,7 +332,8 @@ namespace NHibernate.Loader.Custom
 			}
 		}
 
-		protected internal override void AutoDiscoverTypes(DbDataReader rs)
+		protected internal override void AutoDiscoverTypes(
+			DbDataReader rs, QueryParameters queryParameters, IResultTransformer forcedResultTransformer)
 		{
 			MetaData metadata = new MetaData(rs);
 			List<string> aliases = new List<string>();
@@ -341,6 +348,9 @@ namespace NHibernate.Loader.Custom
 
 			resultTypes = types.ToArray();
 			transformerAliases = aliases.ToArray();
+			if (forcedResultTransformer is CacheableResultTransformer cacheableResultTransformer)
+				cacheableResultTransformer.SupplyAutoDiscoveredParameters(
+					queryParameters.ResultTransformer, transformerAliases);
 		}
 
 		protected override void ResetEffectiveExpectedType(IEnumerable<IParameterSpecification> parameterSpecs, QueryParameters queryParameters)
@@ -351,6 +361,18 @@ namespace NHibernate.Loader.Custom
 		protected override IEnumerable<IParameterSpecification> GetParameterSpecifications()
 		{
 			return parametersSpecifications;
+		}
+
+		protected override void PutResultInQueryCache(
+			ISessionImplementor session,
+			QueryParameters queryParameters,
+			IType[] resultTypes,
+			IQueryCache queryCache,
+			QueryKey key,
+			IList result)
+		{
+			resultTypes = queryParameters.HasAutoDiscoverScalarTypes ? ResultTypes : resultTypes;
+			base.PutResultInQueryCache(session, queryParameters, resultTypes, queryCache, key, result);
 		}
 
 		public IType[] ResultTypes
@@ -406,17 +428,29 @@ namespace NHibernate.Loader.Custom
 				}
 				else
 				{
-					// build an array with indices equal to the total number
-					// of actual returns in the result Hibernate will return
-					// for this query (scalars + non-scalars)
-					resultRow = new object[columnProcessors.Length];
-					for (int i = 0; i < columnProcessors.Length; i++)
-					{
-						resultRow[i] = columnProcessors[i].Extract(data, resultSet, session);
-					}
+					resultRow = ExtractResultRow(data, resultSet, session);
 				}
 
 				return (hasTransformer) ? resultRow : (resultRow.Length == 1) ? resultRow[0] : resultRow;
+			}
+
+			public object[] BuildResultRow(object[] data, DbDataReader resultSet, ISessionImplementor session)
+			{
+				// NH Different behavior (patched in NH-1612 to solve Hibernate issue HHH-2831).
+				return !hasScalars && data.Length == 0 ? data : ExtractResultRow(data, resultSet, session);
+			}
+
+			private object[] ExtractResultRow(object[] data, DbDataReader resultSet, ISessionImplementor session)
+			{
+				// build an array with indices equal to the total number
+				// of actual returns in the result Hibernate will return
+				// for this query (scalars + non-scalars)
+				var resultRow = new object[columnProcessors.Length];
+				for (var i = 0; i < columnProcessors.Length; i++)
+				{
+					resultRow[i] = columnProcessors[i].Extract(data, resultSet, session);
+				}
+				return resultRow;
 			}
 
 			public void PrepareForAutoDiscovery(MetaData metadata)
