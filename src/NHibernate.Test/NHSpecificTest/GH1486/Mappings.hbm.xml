@@ -6,7 +6,7 @@
     <property name="Name" type="string" length="50"/>
     <property name="Version" type="integer" />
     <component name="Address">
-      <property name="PostalCode" type="string" length="20"  />
+      <property name="PostalCode" type="string" length="20" />
       <property name="Street" type="string" length="100" />
       <property name="State" type="string" length="50" />
     </component>

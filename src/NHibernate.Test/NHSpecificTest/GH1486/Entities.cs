@@ -3,84 +3,46 @@
 
 namespace NHibernate.Test.NHSpecificTest.GH1486
 {
-
 	public class Person
 	{
-		private int id;
-		private string name;
-		private Address address;
-		private int version;
+		public virtual int Id { get; set; }
 
-		public virtual int Id
-		{
-			get { return id; }
-			set { id = value; }
-		}
+		public virtual string Name { get; set; }
 
-		public virtual string Name
-		{
-			get { return name; }
-			set { name = value; }
-		}
+		public virtual Address Address { get; set; }
 
-		public virtual Address Address
-		{
-			get { return address; }
-			set { address = value; }
-		}
-
-		public virtual int Version
-		{
-			get { return version; }
-			set { version = value; }
-		}
+		public virtual int Version { get; set; }
 
 		public Person()
 		{
 		}
+
 		public Person(int id, string name, Address address)
 		{
 			Id = id;
 			Name = name;
 			Address = address;
 		}
-
 	}
 
 	public class Address : IEquatable<Address>
 	{
-		private string postalCode;
-		private string state;
-		private string street;
+		public virtual string PostalCode { get; set; }
 
-		public virtual string PostalCode
-		{
-			get { return postalCode; }
-			set { postalCode = value; }
-		}
+		public virtual string State { get; set; }
 
-		public virtual string State
-		{
-			get { return state; }
-			set { state = value; }
-		}
-
-		public virtual string Street
-		{
-			get { return street; }
-			set { street = value; }
-		}
-
+		public virtual string Street { get; set; }
 
 		public Address()
 		{ }
 
 		public Address(string postalCode, string state, string street)
 		{
-			this.postalCode = postalCode;
-			this.state = state;
-			this.street = street;
+			PostalCode = postalCode;
+			State = state;
+			Street = street;
 		}
+		
 		public bool Equals(Address other)
 		{
 			if (ReferenceEquals(null, other)) return false;
@@ -92,7 +54,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1486
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
-			if (obj.GetType() != this.GetType()) return false;
+			if (obj.GetType() != GetType()) return false;
 			return Equals((Address) obj);
 		}
 

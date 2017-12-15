@@ -269,14 +269,6 @@ namespace NHibernate.Type
 
 		public object GetPropertyValue(object component, int i)
 		{
-			if (component == null)
-			{
-				component = new Object[propertySpan];
-			}
-			if (component is Object[])
-			{
-				return ((Object[]) component)[i];
-			}
 			return ComponentTuplizer.GetPropertyValue(component, i);
 		}
 
@@ -531,20 +523,21 @@ namespace NHibernate.Type
 			return ResolveIdentifier(value, session, owner);
 		}
 
-
 		public override bool IsModified(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
 			if (old == current)
 			{
 				return false;
 			}
+			object[] currentValues = GetPropertyValues(current, session);
+			var oldValues = old is object[] objects ? objects : GetPropertyValues(old, session);
 			int loc = 0;
-			for (int i = 0; i < propertySpan; i++)
+			for (int i = 0; i < currentValues.Length; i++)
 			{
 				int len = propertyTypes[i].GetColumnSpan(session.Factory);
 				bool[] subcheckable = new bool[len];
 				Array.Copy(checkable, loc, subcheckable, 0, len);
-				if (propertyTypes[i].IsModified(GetPropertyValue(old, i), GetPropertyValue(current, i), subcheckable, session))
+				if (propertyTypes[i].IsModified(oldValues[i], currentValues[i], subcheckable, session))
 				{
 					return true;
 				}

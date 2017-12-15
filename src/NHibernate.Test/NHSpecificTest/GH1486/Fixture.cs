@@ -1,25 +1,26 @@
-﻿using NUnit.Framework;
+﻿using System.Linq;
+using NUnit.Framework;
 using NHibernate.Cfg;
+using NHibernate.Type;
 
 namespace NHibernate.Test.NHSpecificTest.GH1486
 {
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		private  OnFlushDirtyInterceptor interceptor = new OnFlushDirtyInterceptor();
+		private readonly OnFlushDirtyInterceptor _interceptor = new OnFlushDirtyInterceptor();
 
 		protected override void Configure(Configuration configuration)
 		{
 			base.Configure(configuration);
-			configuration.SetInterceptor(interceptor);
+			configuration.SetInterceptor(_interceptor);
 		}
-
 
 		protected override void OnSetUp()
 		{
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
 			{
-				using (ITransaction transaction = session.BeginTransaction())
+				using (var transaction = session.BeginTransaction())
 				{
 					var john = new Person(1, "John", new Address());
 					session.Save(john);
@@ -27,17 +28,19 @@ namespace NHibernate.Test.NHSpecificTest.GH1486
 					var mary = new Person(2, "Mary", null);
 					session.Save(mary);
 
+					var bob = new Person(3, "Bob", new Address("1", "A", "B"));
+					session.Save(bob);
+
 					session.Flush();
 					transaction.Commit();
 				}
 			}
 		}
 
-
 		protected override void OnTearDown()
 		{
-			using (ISession session = OpenSession())
-			using (ITransaction transaction = session.BeginTransaction())
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
 			{
 				session.Delete("from System.Object");
 				session.Flush();
@@ -51,61 +54,91 @@ namespace NHibernate.Test.NHSpecificTest.GH1486
 		[Test]
 		public void TestSelectBeforeUpdate()
 		{
-
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
 			{
-				using (ITransaction transaction = session.BeginTransaction())
+				using (var transaction = session.BeginTransaction())
 				{
 					var john = session.Get<Person>(1);
-					interceptor.Reset();
+					_interceptor.Reset();
 					john.Address = null;
 					session.Flush();
-					Assert.AreEqual(0, interceptor.CallCount);
+					Assert.That(_interceptor.CallCount, Is.EqualTo(0), "unexpected flush dirty count for John");
 
-					interceptor.Reset();
+					_interceptor.Reset();
 					var mary = session.Get<Person>(2);
 					mary.Address = new Address();
 					session.Flush();
-					Assert.AreEqual(0, interceptor.CallCount);
+					Assert.That(_interceptor.CallCount, Is.EqualTo(0), "unexpected flush dirty count for Mary");
 					transaction.Commit();
 				}
 			}
 
 			Person johnObj;
 			Person maryObj;
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
 			{
-				using (ITransaction transaction = session.BeginTransaction())
+				using (var transaction = session.BeginTransaction())
 				{
 					johnObj = session.Get<Person>(1);
 				}
 			}
 
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
 			{
-				using (ITransaction transaction = session.BeginTransaction())
+				using (var transaction = session.BeginTransaction())
 				{
 					maryObj = session.Get<Person>(2);
 				}
 			}
 
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
 			{
-				using (ITransaction transaction = session.BeginTransaction())
+				using (var transaction = session.BeginTransaction())
 				{
-					interceptor.Reset();				
+					_interceptor.Reset();
 					johnObj.Address = null;
 					session.Update(johnObj);
 					session.Flush();
-					Assert.AreEqual(0, interceptor.CallCount);
+					Assert.That(_interceptor.CallCount, Is.EqualTo(0), "unexpected flush dirty count for John update");
 
-					interceptor.Reset();
+					_interceptor.Reset();
 					maryObj.Address = new Address();
 					session.Update(maryObj);
 					session.Flush();
-					Assert.AreEqual(0, interceptor.CallCount);
+					Assert.That(_interceptor.CallCount, Is.EqualTo(0), "unexpected flush dirty count for Mary update");
 					transaction.Commit();
 				}
+			}
+		}
+
+		[Test]
+		public void TestDirectCallToIsModified()
+		{
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				var person = session.Load<Person>(3);
+				Assert.That(person, Is.Not.Null, "Bob is not found.");
+				Assert.That(person.Address, Is.Not.Null, "Bob's address is missing.");
+				var sessionImplementor = session.GetSessionImplementation();
+
+				var metaData = session.SessionFactory.GetClassMetadata(typeof(Person));
+				foreach (var propertyType in metaData.PropertyTypes)
+				{
+					if (!(propertyType is ComponentType componentType) || componentType.ReturnedClass.Name != "Address")
+						continue;
+
+					var checkable = new [] { true, true, true };
+					Assert.That(
+						() => componentType.IsModified(new object[] { "", "", "" }, person.Address, checkable, sessionImplementor),
+						Throws.Nothing,
+						"Checking component against an array snapshot failed");
+					var isModified = componentType.IsModified(person.Address, person.Address, checkable, sessionImplementor);
+					Assert.That(isModified, Is.False, "Checking same component failed");
+					isModified = componentType.IsModified(new Address("1", "A", "B"), person.Address, checkable, sessionImplementor);
+					Assert.That(isModified, Is.False, "Checking equal component failed");
+				}
+				transaction.Rollback();
 			}
 		}
 	}

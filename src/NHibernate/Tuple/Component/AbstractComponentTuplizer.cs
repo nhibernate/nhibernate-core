@@ -101,7 +101,8 @@ namespace NHibernate.Tuple.Component
 
 		public virtual object GetPropertyValue(object component, int i)
 		{
-			return getters[i].Get(component);
+			// NH Different behavior : for NH-1101
+			return component == null ? null : getters[i].Get(component);
 		}
 
 		/// <summary> This method does not populate the component parent</summary>
