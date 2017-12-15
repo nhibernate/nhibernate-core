@@ -1,47 +1,38 @@
-﻿using System.Linq;
-using NHibernate.Engine;
-using NHibernate.Linq;
-using NHibernate.Type;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using NHibernate.Cfg;
 
 namespace NHibernate.Test.NHSpecificTest.GH1486
 {
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		private  OnFlushDirtyInterceptor interceptor = new OnFlushDirtyInterceptor();
+
+		protected override void Configure(Configuration configuration)
+		{
+			base.Configure(configuration);
+			configuration.SetInterceptor(interceptor);
+		}
+
+
 		protected override void OnSetUp()
 		{
 			using (ISession session = OpenSession())
-			using (ITransaction transaction = session.BeginTransaction())
 			{
-				var e1 = new Company
+				using (ITransaction transaction = session.BeginTransaction())
 				{
-					Name = "Company A",
-					Contact = new Contact
-					{
-						Phone = "1112223333",
-						Email = "email1@mail.com",
-						IsActive = true
-					}
-				};
-				session.Save(e1);
+					var john = new Person(1, "John", new Address());
+					session.Save(john);
 
-				var e2 = new Company
-				{
-					Name = "Company B",
-					Contact = new Contact
-					{
-						Phone = "2223334444",
-						Email = "email2@mail.com",
-						IsActive = false
-					}
-				};
-				session.Save(e2);
+					var mary = new Person(2, "Mary", null);
+					session.Save(mary);
 
-				session.Flush();
-				transaction.Commit();
+					session.Flush();
+					transaction.Commit();
+				}
 			}
 		}
+
 
 		protected override void OnTearDown()
 		{
@@ -49,44 +40,73 @@ namespace NHibernate.Test.NHSpecificTest.GH1486
 			using (ITransaction transaction = session.BeginTransaction())
 			{
 				session.Delete("from System.Object");
-
 				session.Flush();
 				transaction.Commit();
 			}
 		}
 
-
-
+		/// <summary>
+		/// The test case was imported from Hibernate HHH-11237 and adjusted for NHibernate. 
+		/// </summary>
 		[Test]
-		public void TestIsModified()
+		public void TestSelectBeforeUpdate()
 		{
+
 			using (ISession session = OpenSession())
-			using (ITransaction transaction = session.BeginTransaction())
 			{
-				var company = session.Query<Company>().FirstOrDefault();
-				Assert.IsNotNull(company);
-				var sessionImplementor = session as ISessionImplementor;
-
-				var metaData = session.SessionFactory.GetClassMetadata(typeof(Company));
-				foreach (var propertyType in metaData.PropertyTypes)
+				using (ITransaction transaction = session.BeginTransaction())
 				{
-					var componentType = propertyType as ComponentType;
-					if (componentType != null && componentType.ReturnedClass.Name == "Contact")
-					{
-						bool[] checkable = new bool[3] {true,true,true };
+					var john = session.Get<Person>(1);
+					interceptor.Reset();
+					john.Address = null;
+					session.Flush();
+					Assert.AreEqual(0, interceptor.CallCount);
 
-						var isModified = componentType.IsModified(company.Contact, company.Contact, checkable, sessionImplementor);
-						Assert.IsFalse(isModified);
-
-					}
-
+					interceptor.Reset();
+					var mary = session.Get<Person>(2);
+					mary.Address = new Address();
+					session.Flush();
+					Assert.AreEqual(0, interceptor.CallCount);
+					transaction.Commit();
 				}
 			}
 
+			Person johnObj;
+			Person maryObj;
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction transaction = session.BeginTransaction())
+				{
+					johnObj = session.Get<Person>(1);
+				}
+			}
 
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction transaction = session.BeginTransaction())
+				{
+					maryObj = session.Get<Person>(2);
+				}
+			}
+
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction transaction = session.BeginTransaction())
+				{
+					interceptor.Reset();				
+					johnObj.Address = null;
+					session.Update(johnObj);
+					session.Flush();
+					Assert.AreEqual(0, interceptor.CallCount);
+
+					interceptor.Reset();
+					maryObj.Address = new Address();
+					session.Update(maryObj);
+					session.Flush();
+					Assert.AreEqual(0, interceptor.CallCount);
+					transaction.Commit();
+				}
+			}
 		}
-
-		
-
 	}
 }
