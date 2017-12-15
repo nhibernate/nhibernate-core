@@ -30,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3954
 		public void TypeEquality()
 		{
 			var entry1 = new ProxyCacheEntry(typeof(Entity1), null);
-			var entry2 = new ProxyCacheEntry(typeof(Entity1), new System.Type[0]);
+			var entry2 = new ProxyCacheEntry(typeof(Entity1), System.Type.EmptyTypes);
 			Assert.IsTrue(entry1.Equals(entry2));
 			Assert.IsTrue(entry2.Equals(entry1));
 		}

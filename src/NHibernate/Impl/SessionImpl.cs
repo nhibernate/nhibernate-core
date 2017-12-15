@@ -515,8 +515,8 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private static readonly object[] NoArgs = new object[0];
-		private static readonly IType[] NoTypes = new IType[0];
+		private static readonly object[] NoArgs = Array.Empty<object>();
+		private static readonly IType[] NoTypes = Array.Empty<IType>();
 
 		IList Find(string query, object[] values, IType[] types)
 		{

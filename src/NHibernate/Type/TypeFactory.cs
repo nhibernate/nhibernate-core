@@ -34,7 +34,7 @@ namespace NHibernate.Type
 		}
 
 		private static readonly INHibernateLogger _log = NHibernateLogger.For(typeof(TypeFactory));
-		private static readonly string[] EmptyAliases= new string[0];
+		private static readonly string[] EmptyAliases= System.Array.Empty<string>();
 		private static readonly char[] PrecisionScaleSplit = new[] { '(', ')', ',' };
 		private static readonly char[] LengthSplit = new[] { '(', ')' };
 		private static readonly TypeFactory Instance;

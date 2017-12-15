@@ -21,7 +21,7 @@ namespace NHibernate.Proxy.DynamicProxy
 	{
 		internal static readonly ConcurrentDictionary<ProxyCacheEntry, TypeInfo> _cache = new ConcurrentDictionary<ProxyCacheEntry, TypeInfo>();
 
-		private static readonly ConstructorInfo defaultBaseConstructor = typeof(object).GetConstructor(new System.Type[0]);
+		private static readonly ConstructorInfo defaultBaseConstructor = typeof(object).GetConstructor(System.Type.EmptyTypes);
 
 		private static readonly MethodInfo getValue = ReflectHelper.GetMethod<SerializationInfo>(
 			si => si.GetValue(null, null));
@@ -146,9 +146,9 @@ namespace NHibernate.Proxy.DynamicProxy
 														   MethodAttributes.RTSpecialName;
 
 			ConstructorBuilder constructor =
-				typeBuilder.DefineConstructor(constructorAttributes, CallingConventions.Standard, new System.Type[0]);
+				typeBuilder.DefineConstructor(constructorAttributes, CallingConventions.Standard, System.Type.EmptyTypes);
 
-			var baseConstructor = parentType.GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, new System.Type[0], null);
+			var baseConstructor = parentType.GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, System.Type.EmptyTypes, null);
 
 			// if there is no default constructor, or the default constructor is private/internal, call System.Object constructor
 			// this works, but the generated assembly will fail PeVerify (cannot use in medium trust for example)
@@ -256,8 +256,8 @@ namespace NHibernate.Proxy.DynamicProxy
 
 		private static void AddSerializationSupport(System.Type baseType, IReadOnlyCollection<System.Type> baseInterfaces, TypeBuilder typeBuilder, FieldInfo interceptorField, ConstructorBuilder defaultConstructor)
 		{
-			ConstructorInfo serializableConstructor = typeof(SerializableAttribute).GetConstructor(new System.Type[0]);
-			var customAttributeBuilder = new CustomAttributeBuilder(serializableConstructor, new object[0]);
+			ConstructorInfo serializableConstructor = typeof(SerializableAttribute).GetConstructor(System.Type.EmptyTypes);
+			var customAttributeBuilder = new CustomAttributeBuilder(serializableConstructor, Array.Empty<object>());
 			typeBuilder.SetCustomAttribute(customAttributeBuilder);
 
 			DefineSerializationConstructor(typeBuilder, interceptorField, defaultConstructor);

@@ -22,7 +22,7 @@ namespace NHibernate.Criterion
 			_projection = projection;
 		}
 
-		private static readonly TypedValue[] NoValues = new TypedValue[0];
+		private static readonly TypedValue[] NoValues = Array.Empty<TypedValue>();
 
 		/// <summary>
 		/// Initialize a new instance of the <see cref="NotNullExpression" /> class for a named

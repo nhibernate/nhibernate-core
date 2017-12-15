@@ -512,12 +512,12 @@ namespace NHibernate.Util
 
 			public ICollection<TKey> Keys
 			{
-				get { return new List<TKey>(); }
+				get { return Array.Empty<TKey>(); }
 			}
 
 			public ICollection<TValue> Values
 			{
-				get { return new List<TValue>(); }
+				get { return Array.Empty<TValue>(); }
 			}
 
 			#endregion

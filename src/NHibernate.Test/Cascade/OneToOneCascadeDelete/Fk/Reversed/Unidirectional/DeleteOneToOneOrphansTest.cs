@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using NHibernate.Cfg;
 using NHibernate.Mapping.ByCode;
@@ -142,7 +143,7 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Reversed.Unidirection
 	{
 		protected override IList Mappings
 		{
-			get { return new string[0]; }
+			get { return Array.Empty<string>(); }
 		}
 
 		protected override void AddMappings(Configuration configuration)

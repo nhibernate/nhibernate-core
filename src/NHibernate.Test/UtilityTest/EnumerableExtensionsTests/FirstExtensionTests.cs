@@ -25,7 +25,7 @@ namespace NHibernate.Test.UtilityTest.EnumerableExtensionsTests
 		[Test]
 		public void WhenEmptyThenThrowsInvalidOperation()
 		{
-			Assert.That(() => (new object[0]).First(), Throws.TypeOf<InvalidOperationException>());
+			Assert.That(() => (Array.Empty<object>()).First(), Throws.TypeOf<InvalidOperationException>());
 		}
 	}
 }

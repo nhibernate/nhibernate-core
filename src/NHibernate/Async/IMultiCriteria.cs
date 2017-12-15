@@ -8,8 +8,10 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections;
 using NHibernate.Criterion;
+using NHibernate.Impl;
 using NHibernate.Transform;
 
 namespace NHibernate

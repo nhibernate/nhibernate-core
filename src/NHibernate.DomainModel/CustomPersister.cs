@@ -11,6 +11,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.Tuple.Entity;
 using NHibernate.Type;
 using NHibernate.Util;
+using Array = System.Array;
 
 namespace NHibernate.DomainModel
 {
@@ -130,12 +131,12 @@ namespace NHibernate.DomainModel
 
 		public ValueInclusion[] PropertyInsertGenerationInclusions
 		{
-			get { return new ValueInclusion[0]; }
+			get { return Array.Empty<ValueInclusion>(); }
 		}
 
 		public ValueInclusion[] PropertyUpdateGenerationInclusions
 		{
-			get { return new ValueInclusion[0]; }
+			get { return Array.Empty<ValueInclusion>(); }
 		}
 
 		public bool[] PropertyCheckability

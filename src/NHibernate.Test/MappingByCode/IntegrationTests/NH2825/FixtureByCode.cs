@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
@@ -10,7 +11,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH2825
 	{
 		protected override IList Mappings
 		{
-			get { return new string[0]; }
+			get { return Array.Empty<string>(); }
 		}
 
 		protected override string MappingsAssembly

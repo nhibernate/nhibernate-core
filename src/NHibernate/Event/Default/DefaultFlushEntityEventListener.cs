@@ -258,7 +258,7 @@ namespace NHibernate.Event.Default
 				{
 					throw new AssertionFailure("dirty, but no dirty properties");
 				}
-				dirtyProperties = ArrayHelper.EmptyIntArray;
+				dirtyProperties = Array.Empty<int>();
 			}
 
 			// check nullability but do not perform command execute

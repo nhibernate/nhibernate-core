@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	/// </summary>
 	public static partial class TypeHelper
 	{
-		public static readonly IType[] EmptyTypeArray = new IType[0];
+		public static readonly IType[] EmptyTypeArray = Array.Empty<IType>();
 
 		/// <summary>Deep copy a series of values from one array to another</summary>
 		/// <param name="values">The values to copy (the source)</param>

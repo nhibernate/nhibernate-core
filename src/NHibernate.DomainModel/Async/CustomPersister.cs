@@ -21,6 +21,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.Tuple.Entity;
 using NHibernate.Type;
 using NHibernate.Util;
+using Array = System.Array;
 
 namespace NHibernate.DomainModel
 {

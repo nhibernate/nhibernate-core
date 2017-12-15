@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Hql.Ast.ANTLR;
@@ -13,7 +14,7 @@ namespace NHibernate.Test.Hql.Ast
 
 		protected override IList Mappings
 		{
-			get { return new string[0]; }
+			get { return Array.Empty<string>(); }
 		}
 
 		#endregion

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using NHibernate.Hql.Ast.ANTLR;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace NHibernate.Test.BulkManipulation
 
 		protected override IList Mappings
 		{
-			get { return new string[0]; }
+			get { return Array.Empty<string>(); }
 		}
 
 		#endregion

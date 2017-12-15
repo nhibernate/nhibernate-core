@@ -90,7 +90,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				}
 			}
 
-			foreach (object item in idSchema.Items ?? new object[0])
+			foreach (object item in idSchema.Items ?? System.Array.Empty<object>())
 			{
 				var keyManyToOneSchema = item as HbmKeyManyToOne;
 				var keyPropertySchema = item as HbmKeyProperty;

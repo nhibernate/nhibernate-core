@@ -43,7 +43,7 @@ namespace NHibernate.Cfg.MappingSchema
 		{
 			get
 			{
-				return metavalue ?? new HbmMetaValue[0];
+				return metavalue ?? Array.Empty<HbmMetaValue>();
 			}
 		}
 

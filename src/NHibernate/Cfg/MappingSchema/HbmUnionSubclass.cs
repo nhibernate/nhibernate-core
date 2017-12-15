@@ -10,14 +10,14 @@ namespace NHibernate.Cfg.MappingSchema
 		[XmlIgnore]
 		public IEnumerable<HbmUnionSubclass> UnionSubclasses
 		{
-			get { return unionsubclass1 ?? new HbmUnionSubclass[0]; }
+			get { return unionsubclass1 ?? Array.Empty<HbmUnionSubclass>(); }
 		}
 
 		#region Overrides of AbstractDecoratable
 
 		protected override HbmMeta[] Metadatas
 		{
-			get { return meta ?? new HbmMeta[0]; }
+			get { return meta ?? Array.Empty<HbmMeta>(); }
 		}
 
 		#endregion
@@ -51,7 +51,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public HbmTuplizer[] Tuplizers
 		{
-			get { return tuplizer ?? new HbmTuplizer[0]; }
+			get { return tuplizer ?? Array.Empty<HbmTuplizer>(); }
 		}
 
 		public bool DynamicUpdate
@@ -86,7 +86,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public HbmSynchronize[] Synchronize
 		{
-			get { return synchronize ?? new HbmSynchronize[0]; }
+			get { return synchronize ?? Array.Empty<HbmSynchronize>(); }
 		}
 
 		#endregion
@@ -128,7 +128,7 @@ namespace NHibernate.Cfg.MappingSchema
 		[XmlIgnore]
 		public IEnumerable<IEntityPropertyMapping> Properties
 		{
-			get { return Items != null ? Items.Cast<IEntityPropertyMapping>() : new IEntityPropertyMapping[0]; }
+			get { return Items != null ? Items.Cast<IEntityPropertyMapping>() : Array.Empty<IEntityPropertyMapping>(); }
 		}
 
 		#endregion

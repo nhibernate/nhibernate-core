@@ -197,7 +197,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				try
 				{
 					var commandText = new SqlString("delete from " + persister.TemporaryIdTableName);
-					ps = session.Batcher.PrepareCommand(CommandType.Text, commandText, new SqlType[0]);
+					ps = session.Batcher.PrepareCommand(CommandType.Text, commandText, Array.Empty<SqlType>());
 					session.Batcher.ExecuteNonQuery(ps);
 				}
 				catch (Exception t)

@@ -36,7 +36,7 @@ namespace NHibernate.SqlTypes
 		public static readonly SqlType UInt32 = new SqlType(DbType.UInt32);
 		public static readonly SqlType UInt64 = new SqlType(DbType.UInt64);
 
-		public static readonly SqlType[] NoTypes = new SqlType[0];
+		public static readonly SqlType[] NoTypes = Array.Empty<SqlType>();
 
 		private delegate T TypeWithLenOrScaleCreateDelegate<out T, in TDim>(TDim lengthOrScale); // Func<int, T>
 

@@ -537,7 +537,7 @@ namespace NHibernate.Type
 
 		public override bool[] ToColumnNullness(object value, IMapping mapping)
 		{
-			return ArrayHelper.EmptyBoolArray;
+			return Array.Empty<bool>();
 		}
 
 		public override int Compare(object x, object y)

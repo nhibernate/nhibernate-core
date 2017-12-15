@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Event;
@@ -56,7 +57,7 @@ namespace NHibernate.Test.Events.PostEvents
 			}
 
 			await (DbCleanupAsync());
-			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[0];
+			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = Array.Empty<IPostUpdateEventListener>();
 		}
 
 		[Test]
@@ -85,7 +86,7 @@ namespace NHibernate.Test.Events.PostEvents
 			}
 
 			await (DbCleanupAsync());
-			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[0];
+			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = Array.Empty<IPostUpdateEventListener>();
 		}
 
 		[Test]
@@ -123,7 +124,7 @@ namespace NHibernate.Test.Events.PostEvents
 			}
 
 			await (DbCleanupAsync());
-			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[0];
+			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = Array.Empty<IPostUpdateEventListener>();
 		}
 
 		[Test]
@@ -163,7 +164,7 @@ namespace NHibernate.Test.Events.PostEvents
 			}
 
 			await (DbCleanupAsync());
-			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[0];
+			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = Array.Empty<IPostUpdateEventListener>();
 		}
 
 		[Test]
@@ -202,7 +203,7 @@ namespace NHibernate.Test.Events.PostEvents
 			}
 
 			await (DbCleanupAsync());
-			((DebugSessionFactory)Sfi).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[0];
+			((DebugSessionFactory)Sfi).EventListeners.PostUpdateEventListeners = Array.Empty<IPostUpdateEventListener>();
 		}
 		private async Task DbCleanupAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{

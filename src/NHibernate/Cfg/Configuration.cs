@@ -2310,7 +2310,7 @@ namespace NHibernate.Cfg
 
 		private static T[] AppendListeners<T>(T[] existing, T[] listenersToAdd)
 		{
-			var list = new List<T>(existing ?? new T[0]);
+			var list = new List<T>(existing ?? Array.Empty<T>());
 			list.AddRange(listenersToAdd);
 			return list.ToArray();
 		}

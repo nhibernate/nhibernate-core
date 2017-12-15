@@ -14,7 +14,6 @@ using System.Linq;
 using System.Reflection;
 using NHibernate.Cache;
 using NHibernate.Cfg;
-using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Test.SecondLevelCacheTests;
 using NSubstitute;

@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2166
 	{
 		protected override IList Mappings
 		{
-			get { return new string[0]; }
+			get { return Array.Empty<string>(); }
 		}
 
 		[Test]
