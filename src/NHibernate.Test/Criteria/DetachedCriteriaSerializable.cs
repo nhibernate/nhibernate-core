@@ -286,7 +286,7 @@ namespace NHibernate.Test.Criteria
 			IResultTransformer rt = new RootEntityResultTransformer();
 			NHAssert.IsSerializable(rt);
 
-			rt = new AliasToBeanConstructorResultTransformer(typeof(StudentDTO).GetConstructor(new System.Type[] { }));
+			rt = new AliasToBeanConstructorResultTransformer(typeof(StudentDTO).GetConstructor(System.Type.EmptyTypes));
 			NHAssert.IsSerializable(rt);
 
 			rt = new AliasToBeanResultTransformer(typeof(StudentDTO));
