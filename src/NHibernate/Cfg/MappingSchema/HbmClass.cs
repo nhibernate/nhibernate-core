@@ -30,32 +30,32 @@ namespace NHibernate.Cfg.MappingSchema
 		[XmlIgnore]
 		public IEnumerable<HbmJoin> Joins
 		{
-			get { return Items1 != null ? Items1.OfType<HbmJoin>(): new HbmJoin[0]; }
+			get { return Items1 != null ? Items1.OfType<HbmJoin>(): Array.Empty<HbmJoin>(); }
 		}
 
 		[XmlIgnore]
 		public IEnumerable<HbmSubclass> Subclasses
 		{
-			get { return Items1 != null ? Items1.OfType<HbmSubclass>() : new HbmSubclass[0]; }
+			get { return Items1 != null ? Items1.OfType<HbmSubclass>() : Array.Empty<HbmSubclass>(); }
 		}
 
 		[XmlIgnore]
 		public IEnumerable<HbmJoinedSubclass> JoinedSubclasses
 		{
-			get { return Items1 != null ? Items1.OfType<HbmJoinedSubclass>() : new HbmJoinedSubclass[0]; }
+			get { return Items1 != null ? Items1.OfType<HbmJoinedSubclass>() : Array.Empty<HbmJoinedSubclass>(); }
 		}
 
 		[XmlIgnore]
 		public IEnumerable<HbmUnionSubclass> UnionSubclasses
 		{
-			get { return Items1 != null ? Items1.OfType<HbmUnionSubclass>() : new HbmUnionSubclass[0]; }
+			get { return Items1 != null ? Items1.OfType<HbmUnionSubclass>() : Array.Empty<HbmUnionSubclass>(); }
 		}
 
 		#region Implementation of IEntityMapping
 
 		protected override HbmMeta[] Metadatas
 		{
-			get { return meta ?? new HbmMeta[0]; }
+			get { return meta ?? Array.Empty<HbmMeta>(); }
 		}
 
 		public string EntityName
@@ -85,7 +85,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public HbmTuplizer[] Tuplizers
 		{
-			get { return tuplizer ?? new HbmTuplizer[0]; }
+			get { return tuplizer ?? Array.Empty<HbmTuplizer>(); }
 		}
 
 		public bool DynamicUpdate
@@ -120,7 +120,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public HbmSynchronize[] Synchronize
 		{
-			get { return synchronize ?? new HbmSynchronize[0]; }
+			get { return synchronize ?? Array.Empty<HbmSynchronize>(); }
 		}
 
 		#endregion
@@ -171,7 +171,7 @@ namespace NHibernate.Cfg.MappingSchema
 		[XmlIgnore]
 		public IEnumerable<IEntityPropertyMapping> Properties
 		{
-			get { return Items != null ? Items.Cast<IEntityPropertyMapping>(): new IEntityPropertyMapping[0]; }
+			get { return Items != null ? Items.Cast<IEntityPropertyMapping>(): Array.Empty<IEntityPropertyMapping>(); }
 		}
 
 		#endregion

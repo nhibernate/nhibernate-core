@@ -13,7 +13,7 @@ namespace NHibernate.Type
 	[Serializable]
 	public partial class OneToOneType : EntityType, IAssociationType
 	{
-		private static readonly SqlType[] NoSqlTypes = new SqlType[0];
+		private static readonly SqlType[] NoSqlTypes = Array.Empty<SqlType>();
 
 		private readonly ForeignKeyDirection foreignKeyDirection;
 		private readonly string propertyName;
@@ -151,7 +151,7 @@ namespace NHibernate.Type
 
 		public override bool[] ToColumnNullness(object value, IMapping mapping)
 		{
-			return ArrayHelper.EmptyBoolArray;
+			return Array.Empty<bool>();
 		}
 	}
 }

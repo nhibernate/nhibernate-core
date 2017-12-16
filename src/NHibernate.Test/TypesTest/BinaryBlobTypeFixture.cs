@@ -58,7 +58,7 @@ namespace NHibernate.Test.TypesTest
 			using (ISession s = OpenSession())
 			{
 				BinaryBlobClass b = new BinaryBlobClass();
-				b.BinaryBlob = new byte[0];
+				b.BinaryBlob = Array.Empty<byte>();
 				savedId = s.Save(b);
 				s.Flush();
 			}

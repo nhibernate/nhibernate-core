@@ -153,7 +153,7 @@ namespace NHibernate.Impl
 			RegisterCustomMethodCall(() => RestrictionExtensions.IsLike("", "", null, null), RestrictionExtensions.ProcessIsLikeMatchModeEscapeChar);
 			RegisterCustomMethodCall(() => RestrictionExtensions.IsInsensitiveLike("", ""), RestrictionExtensions.ProcessIsInsensitiveLike);
 			RegisterCustomMethodCall(() => RestrictionExtensions.IsInsensitiveLike("", "", null), RestrictionExtensions.ProcessIsInsensitiveLikeMatchMode);
-			RegisterCustomMethodCall(() => RestrictionExtensions.IsIn(null, new object[0]), RestrictionExtensions.ProcessIsInArray);
+			RegisterCustomMethodCall(() => RestrictionExtensions.IsIn(null, Array.Empty<object>()), RestrictionExtensions.ProcessIsInArray);
 			RegisterCustomMethodCall(() => RestrictionExtensions.IsIn(null, new List<object>()), RestrictionExtensions.ProcessIsInCollection);
 			RegisterCustomMethodCall(() => RestrictionExtensions.IsBetween(null, null).And(null), RestrictionExtensions.ProcessIsBetween);
 

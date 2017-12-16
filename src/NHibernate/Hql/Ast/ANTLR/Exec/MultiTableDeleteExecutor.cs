@@ -113,7 +113,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					{
 						try
 						{
-							ps = session.Batcher.PrepareCommand(CommandType.Text, deletes[i], new SqlType[0]);
+							ps = session.Batcher.PrepareCommand(CommandType.Text, deletes[i], Array.Empty<SqlType>());
 							session.Batcher.ExecuteNonQuery(ps);
 						}
 						finally

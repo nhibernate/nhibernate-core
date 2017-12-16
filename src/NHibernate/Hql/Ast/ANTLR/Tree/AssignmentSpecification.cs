@@ -67,7 +67,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			if (rhs == null)
 			{
-				_hqlParameters = new IParameterSpecification[0];
+				_hqlParameters = Array.Empty<IParameterSpecification>();
 			}
 			else if (IsParam(rhs))
 			{

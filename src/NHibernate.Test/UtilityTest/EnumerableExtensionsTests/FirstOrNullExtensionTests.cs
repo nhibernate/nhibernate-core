@@ -25,7 +25,7 @@ namespace NHibernate.Test.UtilityTest.EnumerableExtensionsTests
 		[Test]
 		public void WhenEmptyThenReturnNull()
 		{
-			Assert.That((new object[0]).FirstOrNull(), Is.Null);
+			Assert.That((Array.Empty<object>()).FirstOrNull(), Is.Null);
 		}
 	}
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Loader.Criteria;
@@ -42,7 +43,7 @@ namespace NHibernate.Loader
 		protected void InitProjection(SqlString projectionString, SqlString whereString, SqlString orderByString, SqlString groupByString, SqlString havingString, IDictionary<string, IFilter> enabledFilters, LockMode lockMode)
 		{
 			WalkEntityTree(persister, Alias);
-			Persisters = new ILoadable[0];
+			Persisters = Array.Empty<ILoadable>();
 			InitStatementString(projectionString, whereString, orderByString, groupByString, havingString, lockMode);
 		}
 

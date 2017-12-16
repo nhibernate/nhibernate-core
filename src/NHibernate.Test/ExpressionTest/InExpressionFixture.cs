@@ -34,7 +34,7 @@ namespace NHibernate.Test.ExpressionTest
 		public void InEmptyList()
 		{
 			ISession session = factory.OpenSession();
-			InExpression expression = new InExpression("Count", new object[0]);
+			InExpression expression = new InExpression("Count", Array.Empty<object>());
 			CreateObjects(typeof(Simple), session);
 			SqlString sql = expression.ToSqlString(criteria, criteriaQuery);
 			Assert.AreEqual("1=0", sql.ToString());

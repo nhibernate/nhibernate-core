@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
@@ -61,7 +62,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			IList<string> synchronizedTables = new List<string>();
 
-			foreach (object item in querySchema.Items ?? new object[0])
+			foreach (object item in querySchema.Items ?? Array.Empty<object>())
 			{
 				HbmSynchronize synchronizeSchema = item as HbmSynchronize;
 

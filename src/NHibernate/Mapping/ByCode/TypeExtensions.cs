@@ -103,7 +103,7 @@ namespace NHibernate.Mapping.ByCode
 			var propertyInfo = memberOfDeclaringType as PropertyInfo;
 			if (propertyInfo != null)
 			{
-				return typeof (TEntity).GetProperty(propertyInfo.Name, PropertiesOfClassHierarchy, null, propertyInfo.PropertyType, new System.Type[0], null);
+				return typeof (TEntity).GetProperty(propertyInfo.Name, PropertiesOfClassHierarchy, null, propertyInfo.PropertyType, System.Type.EmptyTypes, null);
 			}
 			if (memberOfDeclaringType is FieldInfo)
 			{

@@ -90,7 +90,7 @@ namespace NHibernate.Proxy
 
 			// Make the proxy serializable
 			var serializableConstructor = typeof(SerializableAttribute).GetConstructor(System.Type.EmptyTypes);
-			var customAttributeBuilder = new CustomAttributeBuilder(serializableConstructor, new object[0]);
+			var customAttributeBuilder = new CustomAttributeBuilder(serializableConstructor, Array.Empty<object>());
 			typeBuilder.SetCustomAttribute(customAttributeBuilder);
 
 			ImplementDeserializationConstructor(typeBuilder);

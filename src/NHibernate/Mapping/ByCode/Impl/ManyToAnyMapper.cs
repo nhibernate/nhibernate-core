@@ -119,7 +119,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			System.Type metavalueType = value.GetType();
 			if (manyToAny.metavalue == null)
 			{
-				manyToAny.metavalue = new HbmMetaValue[0];
+				manyToAny.metavalue = System.Array.Empty<HbmMetaValue>();
 			}
 			Dictionary<string, string> values = manyToAny.metavalue.ToDictionary(mv => mv.value, mv => mv.@class);
 			MetaType(metavalueType);

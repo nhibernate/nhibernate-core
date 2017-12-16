@@ -81,7 +81,7 @@ namespace NHibernate.Criterion
 		/// <returns></returns>
 		public TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new TypedValue[0];
+			return Array.Empty<TypedValue>();
 		}
 
 		public IType[] GetTypes(string alias, ICriteria crit, ICriteriaQuery criteriaQuery)

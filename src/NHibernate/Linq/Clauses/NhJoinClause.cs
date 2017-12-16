@@ -22,7 +22,7 @@ namespace NHibernate.Linq.Clauses
 		System.Type _itemType;
 
 		public NhJoinClause(string itemName, System.Type itemType, Expression fromExpression)
-			: this(itemName, itemType, fromExpression, new NhWithClause[0])
+			: this(itemName, itemType, fromExpression, Array.Empty<NhWithClause>())
 		{
 		}
 

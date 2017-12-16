@@ -13,7 +13,7 @@ namespace NHibernate.Test.UtilityTest.EnumerableExtensionsTests
 		[Test]
 		public void WhenEmptyListThenReturnFalse()
 		{
-			Assert.That((new object[0]).Any(), Is.False);
+			Assert.That((Array.Empty<object>()).Any(), Is.False);
 		}
 
 		[Test]

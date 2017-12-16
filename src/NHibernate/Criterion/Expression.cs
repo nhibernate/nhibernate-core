@@ -1,3 +1,4 @@
+using System;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -59,7 +60,7 @@ namespace NHibernate.Criterion
 		/// <returns></returns>
 		public static AbstractCriterion Sql(SqlString sql)
 		{
-			return Sql(sql, ArrayHelper.EmptyObjectArray, TypeHelper.EmptyTypeArray);
+			return Sql(sql, Array.Empty<object>(), TypeHelper.EmptyTypeArray);
 		}
 
 		/// <summary>
@@ -69,7 +70,7 @@ namespace NHibernate.Criterion
 		/// <returns></returns>
 		public static AbstractCriterion Sql(string sql)
 		{
-			return Sql(sql, ArrayHelper.EmptyObjectArray, TypeHelper.EmptyTypeArray);
+			return Sql(sql, Array.Empty<object>(), TypeHelper.EmptyTypeArray);
 		}
 	}
 }

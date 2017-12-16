@@ -3031,7 +3031,7 @@ namespace NHibernate.Persister.Entity
 				// to be updated; an empty array for the dirty fields needs to be passed to
 				// getPropertiesToUpdate() instead of null.
 				propsToUpdate = this.GetPropertiesToUpdate(
-					(dirtyFields == null ? ArrayHelper.EmptyIntArray : dirtyFields), hasDirtyCollection);
+					(dirtyFields == null ? Array.Empty<int>() : dirtyFields), hasDirtyCollection);
 				
 				// don't need to check laziness (dirty checking algorithm handles that)
 				updateStrings = new SqlCommandInfo[span];

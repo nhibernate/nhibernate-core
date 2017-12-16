@@ -84,8 +84,8 @@ namespace NHibernate.Test.TypesTest
 			BinaryClass bcBinary = new BinaryClass();
 			bcBinary.Id = 1;
 
-			bcBinary.DefaultSize = new byte[0];
-			bcBinary.WithSize = new byte[0];
+			bcBinary.DefaultSize = Array.Empty<byte>();
+			bcBinary.WithSize = Array.Empty<byte>();
 
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();

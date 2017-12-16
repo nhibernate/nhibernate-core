@@ -1,3 +1,5 @@
+using System;
+
 namespace NHibernate.Cfg.MappingSchema
 {
 	partial class HbmFilterDef : HbmBase
@@ -9,7 +11,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public HbmFilterParam[] ListParameters()
 		{
-			return Items ?? new HbmFilterParam[0];
+			return Items ?? Array.Empty<HbmFilterParam>();
 		}
 	}
 }

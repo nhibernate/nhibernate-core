@@ -137,7 +137,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			if ( argumentExpressions == null ) 
 			{
 				// return an empty Type array
-				return new IType[]{};
+				return Array.Empty<IType>();
 			}
 
 			IType[] types = new IType[argumentExpressions.Length];

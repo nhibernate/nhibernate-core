@@ -18,7 +18,7 @@ namespace NHibernate.Proxy.DynamicProxy
 
 		public void PushArguments(ParameterInfo[] methodParameters, ILGenerator IL, bool isStatic)
 		{
-			ParameterInfo[] parameters = methodParameters ?? new ParameterInfo[0];
+			ParameterInfo[] parameters = methodParameters ?? Array.Empty<ParameterInfo>();
 			int parameterCount = parameters.Length;
 
 			// object[] args = new object[size];

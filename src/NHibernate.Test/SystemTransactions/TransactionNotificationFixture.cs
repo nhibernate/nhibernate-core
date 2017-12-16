@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Transactions;
 using NHibernate.Cfg;
@@ -8,14 +9,14 @@ namespace NHibernate.Test.SystemTransactions
 	public class TransactionNotificationFixture : TestCase
 	{
 		protected override IList Mappings
-			=> new string[] { };
+			=> Array.Empty<string>();
 
 		protected virtual bool UseConnectionOnSystemTransactionPrepare => true;
 
 		protected override void Configure(Configuration configuration)
 		{
 			configuration.SetProperty(
-				Environment.UseConnectionOnSystemTransactionPrepare,
+				Cfg.Environment.UseConnectionOnSystemTransactionPrepare,
 				UseConnectionOnSystemTransactionPrepare.ToString());
 		}
 

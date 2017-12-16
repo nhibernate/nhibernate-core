@@ -86,7 +86,7 @@ namespace NHibernate.Test.Legacy
 				Assert.IsTrue(b.MapComponent.Stringmap.Count == 2);
 
 				int none = (await (s.CreateCriteria(typeof(Fum))
-					.Add(Expression.In("FumString", new string[0]))
+					.Add(Expression.In("FumString", Array.Empty<string>()))
 					.ListAsync())).Count;
 				Assert.AreEqual(0, none);
 

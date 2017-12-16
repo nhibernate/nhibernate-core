@@ -160,7 +160,7 @@ namespace NHibernate.Driver
 				return;
 			}
 
-			_clearAllPools.Invoke(null, new object[0]);
+			_clearAllPools.Invoke(null, Array.Empty<object>());
 		}
 
 		/// <summary>

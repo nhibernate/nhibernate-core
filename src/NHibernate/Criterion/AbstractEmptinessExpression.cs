@@ -11,7 +11,7 @@ namespace NHibernate.Criterion
 	[Serializable]
 	public abstract class AbstractEmptinessExpression : AbstractCriterion
 	{
-		private readonly TypedValue[] NO_VALUES = new TypedValue[0];
+		private readonly TypedValue[] NO_VALUES = Array.Empty<TypedValue>();
 		private readonly string propertyName;
 
 		protected abstract bool ExcludeEmpty { get; }

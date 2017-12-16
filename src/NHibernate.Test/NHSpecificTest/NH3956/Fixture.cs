@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using NHibernate.Engine.Query.Sql;
 using NUnit.Framework;
 
@@ -26,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3956
 		{
 			var spec1 = new NativeSQLQuerySpecification("select blah", null, null);
 			// Empty spaces array should be equivalent to null. Maybe results too but current implementation does not handle this.
-			var spec2 = new NativeSQLQuerySpecification("select blah", null, new string[0]);
+			var spec2 = new NativeSQLQuerySpecification("select blah", null, Array.Empty<string>());
 
 			Assert.IsTrue(spec1.Equals(spec2));
 			Assert.IsTrue(spec2.Equals(spec1));
@@ -65,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3956
 					new NativeSQLQueryScalarReturn("alias2", NHibernateUtil.Decimal)
 				},
 				// Empty spaces array should be equivalent to null.
-				new string[0]);
+				Array.Empty<string>());
 
 			Assert.IsTrue(spec1.Equals(spec2));
 			Assert.IsTrue(spec2.Equals(spec1));

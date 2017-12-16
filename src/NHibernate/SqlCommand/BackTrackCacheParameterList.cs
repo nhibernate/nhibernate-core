@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using NHibernate.Util;
 
@@ -98,7 +99,7 @@ namespace NHibernate.SqlCommand
 				if (_indexesByBackTrace.TryGetValue(backTrace, out indexes))
 					return indexes;
 			}
-			return ArrayHelper.EmptyIntArray;
+			return Array.Empty<int>();
 		}
 	}
 }
