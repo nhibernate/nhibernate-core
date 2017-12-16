@@ -40,7 +40,6 @@ namespace NHibernate.Loader.Custom
 
 		private readonly bool[] includeInResultRow;
 
-		private IType[] resultTypes;
 		private string[] transformerAliases;
 
 		public CustomLoader(ICustomQuery customQuery, ISessionFactoryImplementor factory) : base(factory)
@@ -176,7 +175,7 @@ namespace NHibernate.Loader.Custom
 			collectionOwners = collectionowners.ToArray();
 			collectionAliases = collectionaliases.ToArray();
 			lockModes = lockmodes.ToArray();
-			resultTypes = resulttypes.ToArray();
+			ResultTypes = resulttypes.ToArray();
 			transformerAliases = specifiedAliases.ToArray();
 			rowProcessor = new ResultRowProcessor(hasScalars, resultColumnProcessors.ToArray());
 			includeInResultRow = includeInResultRowList.ToArray();
@@ -282,7 +281,7 @@ namespace NHibernate.Loader.Custom
 
 		public IList List(ISessionImplementor session, QueryParameters queryParameters)
 		{
-			return List(session, queryParameters, querySpaces, resultTypes);
+			return List(session, queryParameters, querySpaces);
 		}
 
 		// Not ported: scroll
@@ -346,7 +345,7 @@ namespace NHibernate.Loader.Custom
 				columnProcessor.PerformDiscovery(metadata, types, aliases);
 			}
 
-			resultTypes = types.ToArray();
+			ResultTypes = types.ToArray();
 			transformerAliases = aliases.ToArray();
 			if (forcedResultTransformer is CacheableResultTransformer cacheableResultTransformer)
 				cacheableResultTransformer.SupplyAutoDiscoveredParameters(
@@ -361,23 +360,6 @@ namespace NHibernate.Loader.Custom
 		protected override IEnumerable<IParameterSpecification> GetParameterSpecifications()
 		{
 			return parametersSpecifications;
-		}
-
-		protected override void PutResultInQueryCache(
-			ISessionImplementor session,
-			QueryParameters queryParameters,
-			IType[] resultTypes,
-			IQueryCache queryCache,
-			QueryKey key,
-			IList result)
-		{
-			resultTypes = queryParameters.HasAutoDiscoverScalarTypes ? ResultTypes : resultTypes;
-			base.PutResultInQueryCache(session, queryParameters, resultTypes, queryCache, key, result);
-		}
-
-		public IType[] ResultTypes
-		{
-			get { return resultTypes; }
 		}
 
 		public string[] ReturnAliases

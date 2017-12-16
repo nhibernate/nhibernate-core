@@ -44,7 +44,7 @@ namespace NHibernate.Loader.Hql
 			try
 			{
 				CheckQuery(queryParameters);
-				return ListAsync(session, queryParameters, _queryTranslator.QuerySpaces, _queryReturnTypes, cancellationToken);
+				return ListAsync(session, queryParameters, _queryTranslator.QuerySpaces, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -72,11 +72,11 @@ namespace NHibernate.Loader.Hql
 			if (_hasScalars)
 			{
 				string[][] scalarColumns = _scalarColumnNames;
-				int queryCols = _queryReturnTypes.Length;
+				int queryCols = ResultTypes.Length;
 				resultRow = new object[queryCols];
 				for (int i = 0; i < queryCols; i++)
 				{
-					resultRow[i] = await (_queryReturnTypes[i].NullSafeGetAsync(rs, scalarColumns[i], session, null, cancellationToken)).ConfigureAwait(false);
+					resultRow[i] = await (ResultTypes[i].NullSafeGetAsync(rs, scalarColumns[i], session, null, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 			else

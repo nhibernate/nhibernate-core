@@ -36,7 +36,7 @@ namespace NHibernate.Loader.Custom
 			{
 				return Task.FromCanceled<IList>(cancellationToken);
 			}
-			return ListAsync(session, queryParameters, querySpaces, resultTypes, cancellationToken);
+			return ListAsync(session, queryParameters, querySpaces, cancellationToken);
 		}
 
 		// Not ported: scroll
@@ -58,29 +58,6 @@ namespace NHibernate.Loader.Custom
 				return Task.FromCanceled<object[]>(cancellationToken);
 			}
 			return rowProcessor.BuildResultRowAsync(row, rs, session, cancellationToken);
-		}
-
-		protected override Task PutResultInQueryCacheAsync(
-			ISessionImplementor session,
-			QueryParameters queryParameters,
-			IType[] resultTypes,
-			IQueryCache queryCache,
-			QueryKey key,
-			IList result, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				resultTypes = queryParameters.HasAutoDiscoverScalarTypes ? ResultTypes : resultTypes;
-				return base.PutResultInQueryCacheAsync(session, queryParameters, resultTypes, queryCache, key, result, cancellationToken);
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
 		}
 
 		public partial class ResultRowProcessor
