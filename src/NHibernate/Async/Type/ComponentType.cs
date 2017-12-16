@@ -332,16 +332,12 @@ namespace NHibernate.Type
 		public override async Task<bool> IsModifiedAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (current == null)
+			if (old == current)
 			{
-				return old != null;
-			}
-			if (old == null)
-			{
-				return current != null;
+				return false;
 			}
 			object[] currentValues = await (GetPropertyValuesAsync(current, session, cancellationToken)).ConfigureAwait(false);
-			object[] oldValues = (Object[]) old;
+			var oldValues = old is object[] objects ? objects : await (GetPropertyValuesAsync(old, session, cancellationToken)).ConfigureAwait(false);
 			int loc = 0;
 			for (int i = 0; i < currentValues.Length; i++)
 			{
