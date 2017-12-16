@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.GH1486">
+
+  <class name="Person" select-before-update="true">
+    <id name="Id" type="integer" />
+    <property name="Name" type="string" length="50"/>
+    <property name="Version" type="integer" />
+    <component name="Address">
+      <property name="PostalCode" type="string" length="20" />
+      <property name="Street" type="string" length="100" />
+      <property name="State" type="string" length="50" />
+    </component>
+  </class>
+
+</hibernate-mapping>

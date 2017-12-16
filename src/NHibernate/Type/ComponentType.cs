@@ -525,16 +525,12 @@ namespace NHibernate.Type
 
 		public override bool IsModified(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
-			if (current == null)
+			if (old == current)
 			{
-				return old != null;
-			}
-			if (old == null)
-			{
-				return current != null;
+				return false;
 			}
 			object[] currentValues = GetPropertyValues(current, session);
-			object[] oldValues = (Object[]) old;
+			var oldValues = old is object[] objects ? objects : GetPropertyValues(old, session);
 			int loc = 0;
 			for (int i = 0; i < currentValues.Length; i++)
 			{
