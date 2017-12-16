@@ -1533,7 +1533,7 @@ namespace NHibernate.Loader
 			return GetResultList(DoList(session, queryParameters), queryParameters.ResultTransformer);
 		}
 
-		private IList ListUsingQueryCache(ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces, IType[] resultTypes)
+		protected IList ListUsingQueryCache(ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces, IType[] resultTypes)
 		{
 			IQueryCache queryCache = _factory.GetQueryCache(queryParameters.CacheRegion);
 
@@ -1595,7 +1595,7 @@ namespace NHibernate.Loader
 
 				try
 				{
-					result = queryCache.Get(key, key.ResultTransformer.GetCachedResultTypes(resultTypes), queryParameters.NaturalKeyLookup, querySpaces, session);
+					result = queryCache.Get(key, key.ResultTransformer != null ? key.ResultTransformer.GetCachedResultTypes(resultTypes) : resultTypes, queryParameters.NaturalKeyLookup, querySpaces, session);
 					if (_factory.Statistics.IsStatisticsEnabled)
 					{
 						if (result == null)
@@ -1617,12 +1617,12 @@ namespace NHibernate.Loader
 			return result;
 		}
 
-		private void PutResultInQueryCache(ISessionImplementor session, QueryParameters queryParameters, IType[] resultTypes,
+		protected virtual void PutResultInQueryCache(ISessionImplementor session, QueryParameters queryParameters, IType[] resultTypes,
 										   IQueryCache queryCache, QueryKey key, IList result)
 		{
 			if (session.CacheMode.HasFlag(CacheMode.Put))
 			{
-				bool put = queryCache.Put(key, key.ResultTransformer.GetCachedResultTypes(resultTypes), result, queryParameters.NaturalKeyLookup, session);
+				bool put = queryCache.Put(key, key.ResultTransformer != null ? key.ResultTransformer.GetCachedResultTypes(resultTypes) : resultTypes, result, queryParameters.NaturalKeyLookup, session);
 				if (put && _factory.Statistics.IsStatisticsEnabled)
 				{
 					_factory.StatisticsImplementor.QueryCachePut(QueryIdentifier, queryCache.RegionName);
@@ -1855,7 +1855,6 @@ namespace NHibernate.Loader
 			_canUseLimits = false;
 			return false;
 		}
-
 		#endregion
 	}
 }

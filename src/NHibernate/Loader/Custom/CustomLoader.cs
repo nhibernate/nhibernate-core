@@ -13,6 +13,7 @@ using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
+using NHibernate.Cache;
 
 namespace NHibernate.Loader.Custom
 {
@@ -179,7 +180,7 @@ namespace NHibernate.Loader.Custom
 			resultTypes = resulttypes.ToArray();
 			transformerAliases = specifiedAliases.ToArray();
 			rowProcessor = new ResultRowProcessor(hasScalars, resultColumnProcessors.ToArray());
-			includeInResultRow = includeInResultRowList.ToArray();
+			includeInResultRow = null; //includeInResultRowList.ToArray();
 		}
 
 		public ISet<string> QuerySpaces
@@ -368,6 +369,13 @@ namespace NHibernate.Loader.Custom
 			get { return parametersSpecifications.OfType<NamedParameterSpecification>().Select(np=> np.Name ); }
 		}
 
+		protected override void PutResultInQueryCache(ISessionImplementor session, QueryParameters queryParameters, IType[] resultTypes,
+										   IQueryCache queryCache, QueryKey key, IList result)
+		{
+			resultTypes = this.resultTypes;
+			base.PutResultInQueryCache(session, queryParameters, resultTypes, queryCache, key, result);
+		}
+		
 		public partial class ResultRowProcessor
 		{
 			private readonly bool hasScalars;

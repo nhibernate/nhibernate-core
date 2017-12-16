@@ -23,6 +23,7 @@ using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
+using NHibernate.Cache;
 
 namespace NHibernate.Loader.Custom
 {
@@ -52,6 +53,24 @@ namespace NHibernate.Loader.Custom
 			return rowProcessor.BuildResultRowAsync(row, rs, resultTransformer != null, session, cancellationToken);
 		}
 
+		protected override Task PutResultInQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters, IType[] resultTypes,
+										   IQueryCache queryCache, QueryKey key, IList result, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
+			{
+				resultTypes = this.resultTypes;
+				return base.PutResultInQueryCacheAsync(session, queryParameters, resultTypes, queryCache, key, result, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+		
 		public partial class ResultRowProcessor
 		{
 
