@@ -973,12 +973,17 @@ namespace NHibernate.Loader
 				}
 			}
 
+			CacheByUniqueKey(i, persister, obj, session);
+		}
+
+		private void CacheByUniqueKey(int i, IEntityPersister persister, object obj, ISessionImplementor session)
+		{
 			// #1226: If it is already loaded and can be loaded from an association with a property ref, make
 			// sure it is also cached by its unique key.
 			var ukName = OwnerAssociationTypes?[i]?.RHSUniqueKeyPropertyName;
 			if (ukName == null)
 				return;
-			var index = ((IUniqueKeyLoadable) persister).GetPropertyIndex(ukName);
+			var index = ((IUniqueKeyLoadable)persister).GetPropertyIndex(ukName);
 			var ukValue = persister.GetPropertyValue(obj, index);
 			// ukValue can be null for two reasons:
 			//  - Entity currently loading and not yet fully hydrated. In such case, it has already been handled by
