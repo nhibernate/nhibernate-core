@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup Condition=" '$(NuGetPackageRoot)' != '' ">
     <NativeBinaries Include="$(NuGetPackageRoot)microsoft.sqlserver.compact\4.0.8876.1\NativeBinaries\**\*.*" />
+    <NativeBinaries Include="$(NuGetPackageRoot)Oracle.ManagedDataAccess\12.1.2400\bin\**\*.*" />
     <Content Include="@(NativeBinaries)">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
