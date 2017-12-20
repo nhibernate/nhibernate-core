@@ -1,18 +1,44 @@
 
-Installation steps for Oracle (Express Edition) for NH TeamCity:
-
-1.  Download Oracle Database 10g Express Edition (OracleXE.exe):  http://www.oracle.com/technetwork/database/express-edition/downloads/102xewinsoft-090667.html;
+Installation steps for Oracle for NH TeamCity:
+1.  Download Oracle Database 12c from https://oracle.com/. Please make sure you comply with it's license.
+    12.2 will fail some tests (mainly NH-1171) due to a bug with comments in queries, see
+    https://stackoverflow.com/q/7493028/1178314. So take care of installing 12.1 instead.
         (Note: you'll need to sign-up for a (free) Oracle account to download)
 
-2.  Run the installer ... choose any HTTP port for the listener if asked (it may automatically choose the default 8080 if available);
-3.  Enter 'password' as the password for the SYS and SYSTEM accounts;
-4.  The setup should install Oracle (XE) on the machine;
-5.  Once the installation is complete, leave the option ticked to open the homepage for configuration.
+2.  Run the installer ...
+3.  Choose any HTTP port for the listener if asked (it may automatically choose the default 8080 if available);
+4.  Choose the ASCII character set. You will have to ensure nhibernate.oracle.use_n_prefixed_types_for_unicode
+    parameter is set to true; Choosing instead the Unicode character set will cause some NHibernate tests to fail.
+5.  Enter 'password' as the password for the SYS and SYSTEM accounts;
+6.  The setup should install Oracle on the machine.
 
 Creating the NH Schema:
 
-a.  Login to the homepage using login/password SYSTEM/password;
-b.  Select Administration->Database Users->Create User;
-c.  Enter Username=nhibernate, Password=nhibernate, and select the DBA role;
-d.  Click 'Create' to create the user/schema.
+a.  Run SQL Plus:
+        SQL*Plus: Release XXX Production on YYY
+        Copyright (c) 1982, 2014, Oracle.  All rights reserved.
+        Enter user-name:
+b.  Enter:
+        / as SYSDBA
+    Expected result:
+        Connected to:
+        Oracle Database XXX
+        SQL>
+c.  Enter
+        create user nhibernate identified by nhibernate;
+d.  If it fails with ORA-65096, enter following command then go back to c.
+        alter session set "_ORACLE_SCRIPT"=true;
+e.  Once the user is created, enter:
+        grant dba to nhibernate;
 
+Resolve conflict between Oracle client and with the managed driver NuGet package (12.1 and below):
+
+1.  Within an elevated command line, navigate to {Oracle home}\product\{version}\{dbhome}\ODP.NET\managed\x64
+2.  Run
+    OraProvCfg /action:ungac /providerPath:Oracle.ManagedDataAccess
+This is needed because NHibernate test uses the managed driver NuGet package, but Oracle client installation
+(excepted 12.2 and higher) put in the GAC a conflicting version of the assembly. This conflicting
+version needs to be removed from the GAC. Read more on https://stackoverflow.com/a/35176586/1178314.
+Not doing this may notably cause failures in distributed transaction tests.
+
+Please note that some tests are dependent on the machine locales, and may fail if they are not English.
