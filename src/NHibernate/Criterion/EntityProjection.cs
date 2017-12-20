@@ -83,10 +83,12 @@ namespace NHibernate.Criterion
 
 		IType[] IProjection.GetTypes(string alias, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			SetFields(criteriaQuery);
-			return _entityAlias == alias
-				? _types
-				: null;
+			return null;
+		}
+
+		string[] IProjection.GetColumnAliases(string alias, int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			return null;
 		}
 
 		IType[] IProjection.GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
@@ -97,13 +99,6 @@ namespace NHibernate.Criterion
 		}
 
 		string[] IProjection.GetColumnAliases(int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
-		{
-			SetFields(criteriaQuery);
-
-			return _identifierColumnAliases;
-		}
-
-		string[] IProjection.GetColumnAliases(string alias, int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			SetFields(criteriaQuery);
 
