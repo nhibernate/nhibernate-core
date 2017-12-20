@@ -6,5 +6,7 @@ namespace NHibernate.Loader.Criteria
 	public interface ISupportEntityProjectionCriteriaQuery
 	{
 		void RegisterEntityProjection(EntityProjection projection);
+
+		ICriteria RootCriteria { get; }
 	}
 }

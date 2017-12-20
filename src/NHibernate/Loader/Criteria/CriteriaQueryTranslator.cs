@@ -113,6 +113,8 @@ namespace NHibernate.Loader.Criteria
 			get { return rootCriteria; }
 		}
 
+		ICriteria ISupportEntityProjectionCriteriaQuery.RootCriteria => rootCriteria;
+
 		public QueryParameters GetQueryParameters()
 		{
 			RowSelection selection = new RowSelection();

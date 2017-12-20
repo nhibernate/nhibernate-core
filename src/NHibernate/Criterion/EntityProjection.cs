@@ -83,33 +83,36 @@ namespace NHibernate.Criterion
 
 		IType[] IProjection.GetTypes(string alias, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new[] { criteriaQuery.GetType(criteria, alias) };
+			SetFields(criteriaQuery);
+			return _entityAlias == alias
+				? _types
+				: null;
 		}
 
 		IType[] IProjection.GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			SetFields(criteria, criteriaQuery);
+			SetFields(criteriaQuery);
 
 			return _types;
 		}
 
 		string[] IProjection.GetColumnAliases(int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			SetFields(criteria, criteriaQuery);
+			SetFields(criteriaQuery);
 
 			return _identifierColumnAliases;
 		}
 
 		string[] IProjection.GetColumnAliases(string alias, int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			SetFields(criteria, criteriaQuery);
+			SetFields(criteriaQuery);
 
 			return _identifierColumnAliases;
 		}
 
 		SqlString IProjection.ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
 		{
-			SetFields(criteria, criteriaQuery);
+			SetFields(criteriaQuery);
 
 			string identifierSelectFragment = Persister.IdentifierSelectFragment(TableAlias, ColumnAliasSuffix);
 			return new SqlString(
@@ -132,20 +135,21 @@ namespace NHibernate.Criterion
 
 		#endregion IProjection implementation
 
-		private void SetFields(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		private void SetFields(ICriteriaQuery criteriaQuery)
 		{
 			//Persister is required, so let's use it as "initialized marker"
 			if (Persister != null)
 				return;
 
-			if (Lazy == false)
+			if (!(criteriaQuery is ISupportEntityProjectionCriteriaQuery entityProjectionQuery))
 			{
-				var entityProjectionQuery = criteriaQuery as ISupportEntityProjectionCriteriaQuery;
-				if (entityProjectionQuery == null)
-				{
-					throw new HibernateException($"Projecting to entities requires a '{criteriaQuery.GetType().FullName}' type to implement {nameof(ISupportEntityProjectionCriteriaQuery)} interface.");
-				}
+				throw new HibernateException($"Projecting to entities requires a '{criteriaQuery.GetType().FullName}' type to implement {nameof(ISupportEntityProjectionCriteriaQuery)} interface.");
+			}
 
+			var criteria = entityProjectionQuery.RootCriteria;
+
+			if (!Lazy)
+			{
 				entityProjectionQuery.RegisterEntityProjection(this);
 			}
 
@@ -175,7 +179,7 @@ namespace NHibernate.Criterion
 
 			_identifierColumnAliases = Persister.GetIdentifierAliases(ColumnAliasSuffix);
 
-			_types = new IType[] { TypeFactory.ManyToOne(Persister.EntityName, true), };
+			_types = new IType[] { TypeFactory.ManyToOne(Persister.EntityName, true) };
 		}
 	}
 }
