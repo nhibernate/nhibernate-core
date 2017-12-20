@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
+using NHibernate.Engine;
+using NHibernate.Persister.Entity;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH1226
@@ -28,41 +28,88 @@ namespace NHibernate.Test.NHSpecificTest.GH1226
 					tx.Commit();
 				}
 			}
+			Sfi.Statistics.IsStatisticsEnabled = true;
 		}
 
 		[Test]
 		public void BankShouldBeJoinFetched()
 		{
 			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
 			{
-				var wasStatisticsEnabled = session.SessionFactory.Statistics.IsStatisticsEnabled;
-				session.SessionFactory.Statistics.IsStatisticsEnabled = true;
+				// Bug only occurs if the Banks are already in the session cache.
+				session.CreateQuery("from Bank").List<Bank>();
 
-				long statementCount;
+				var countBeforeQuery = Sfi.Statistics.PrepareStatementCount;
 
-				using (var tx = session.BeginTransaction())
+				var accounts = session.CreateQuery("from Account a left join fetch a.Bank").List<Account>();
+				var associatedBanks = accounts.Select(x => x.Bank).ToList();
+				Assert.That(associatedBanks, Has.All.Matches<object>(NHibernateUtil.IsInitialized),
+				            "One bank or more was lazily loaded.");
+
+				var countAfterQuery = Sfi.Statistics.PrepareStatementCount;
+				var statementCount = countAfterQuery - countBeforeQuery;
+
+				tx.Commit();
+
+				Assert.That(statementCount, Is.EqualTo(1));
+			}
+		}
+
+		[Test]
+		public void AlteredBankShouldBeJoinFetched()
+		{
+			using (var s1 = OpenSession())
+			{
+				using (var tx = s1.BeginTransaction())
 				{
-					// Bug only occurs if the Banks are already in the session cache.
-					var preloadedBanks = session.CreateQuery("from Bank").List<Bank>();
-
-					var countBeforeQuery = session.SessionFactory.Statistics.PrepareStatementCount;
-
-					Console.WriteLine("Query: -------------------------------------------------------");
-
-					var accounts = session.CreateQuery("from Account a left join fetch a.Bank").List<Account>();
-					IList<Bank> associatedBanks = accounts.Select(x => x.Bank).ToList();
-
-					var countAfterQuery = session.SessionFactory.Statistics.PrepareStatementCount;
-					statementCount = countAfterQuery - countBeforeQuery;
-
-					Console.WriteLine("End ----------------------------------------------------------");
-
+					// Put them all in s1 cache.
+					s1.CreateQuery("from Bank").List();
 					tx.Commit();
 				}
 
-				session.SessionFactory.Statistics.IsStatisticsEnabled = wasStatisticsEnabled;
+				string oldCode;
+				const string newCode = "12345";
+				// Alter the bank code with another session.
+				using (var s2 = OpenSession())
+				using (var tx2 = s2.BeginTransaction())
+				{
+					var accounts = s2.Query<Account>().ToList();
+					foreach (var account in accounts)
+						account.Bank = null;
+					s2.Flush();
+					var bank = s2.Query<Bank>().Single();
+					oldCode = bank.Code;
+					bank.Code = newCode;
+					s2.Flush();
+					foreach (var account in accounts)
+						account.Bank = bank;
+					tx2.Commit();
+				}
 
-				Assert.That(statementCount, Is.EqualTo(1));
+				// Check querying them with s1 is still consistent
+				using (var tx = s1.BeginTransaction())
+				{
+					var accounts = s1.CreateQuery("from Account a left join fetch a.Bank").List<Account>();
+					var associatedBanks = accounts.Select(x => x.Bank).ToList();
+					Assert.That(associatedBanks, Has.All.Not.Null,
+					            "One bank or more failed loading.");
+					Assert.That(associatedBanks, Has.All.Matches<object>(NHibernateUtil.IsInitialized),
+					            "One bank or more was lazily loaded.");
+					Assert.That(associatedBanks, Has.All.Property(nameof(Bank.Code)).EqualTo(oldCode),
+					            "One bank or more has no more the old code.");
+
+					tx.Commit();
+					// Do not check statements count: we are in a special case defeating the eager fetching, because
+					// we have stale data in session for the bank code.
+					// But check that the new code, supposed to be unknown for the session, is not cached.
+					var persister = Sfi.GetEntityPersister(typeof(Bank).FullName);
+					var index = ((IUniqueKeyLoadable) persister).GetPropertyIndex(nameof(Bank.Code));
+					var type = persister.PropertyTypes[index];
+					var euk = new EntityUniqueKey(persister.EntityName, nameof(Bank.Code), newCode, type, Sfi);
+					Assert.That(s1.GetSessionImplementation().PersistenceContext.GetEntity(euk),
+						Is.Null, "Found a bank associated to the new code in s1");
+				}
 			}
 		}
 
@@ -71,13 +118,11 @@ namespace NHibernate.Test.NHSpecificTest.GH1226
 			base.OnTearDown();
 
 			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
 			{
-				using (var tx = session.BeginTransaction())
-				{
-					session.Delete("from Account");
-					session.Delete("from Bank");
-					tx.Commit();
-				}
+				session.CreateQuery("delete from Account").ExecuteUpdate();
+				session.CreateQuery("delete from Bank").ExecuteUpdate();
+				tx.Commit();
 			}
 		}
 	}
