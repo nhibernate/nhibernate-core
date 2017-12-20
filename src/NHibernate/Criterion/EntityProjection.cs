@@ -17,6 +17,7 @@ namespace NHibernate.Criterion
 		private string _entityAlias;
 		private System.Type _rootEntity;
 		private IType[] _types;
+		private string[] _identifierColumnAliases;
 
 		/// <summary>
 		/// Root entity projection
@@ -46,20 +47,15 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public bool Lazy { get; set; }
 
-		internal string[] IdentifierColumnAliases { get; set; }
 		internal IQueryable Persister { get; private set; }
-		
-
-		public string ColumnAliasSuffix { get; private set; }
-		public string TableAlias { get; private set; }
+		internal string ColumnAliasSuffix { get; private set; }
+		internal string TableAlias { get; private set; }
 
 		#region Configuration methods
 
 		/// <summary>
 		/// Lazy load entity
 		/// </summary>
-		/// <param name="lazy"></param>
-		/// <returns></returns>
 		public EntityProjection SetLazy(bool lazy = true)
 		{
 			Lazy = lazy;
@@ -69,8 +65,6 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// Fetch lazy properties
 		/// </summary>
-		/// <param name="fetchLazyProperties"></param>
-		/// <returns></returns>
 		public EntityProjection SetFetchLazyProperties(bool fetchLazyProperties = true)
 		{
 			FetchLazyProperties = fetchLazyProperties;
@@ -81,27 +75,15 @@ namespace NHibernate.Criterion
 
 		#region IProjection implementation
 
-		/// <summary>
-		/// Entity alias
-		/// </summary>
-		public string[] Aliases
-		{
-			get { return new[] {_entityAlias}; }
-		}
+		string[] IProjection.Aliases => new[] { _entityAlias };
 
-		bool IProjection.IsAggregate
-		{
-			get { return false; }
-		}
+		bool IProjection.IsAggregate => false;
 
-		bool IProjection.IsGrouped
-		{
-			get { return false; }
-		}
+		bool IProjection.IsGrouped => false;
 
 		IType[] IProjection.GetTypes(string alias, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new[] {criteriaQuery.GetType(criteria, alias)};
+			return new[] { criteriaQuery.GetType(criteria, alias) };
 		}
 
 		IType[] IProjection.GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
@@ -115,19 +97,18 @@ namespace NHibernate.Criterion
 		{
 			SetFields(criteria, criteriaQuery);
 
-			return IdentifierColumnAliases;
+			return _identifierColumnAliases;
 		}
 
 		string[] IProjection.GetColumnAliases(string alias, int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			SetFields(criteria, criteriaQuery);
 
-			return IdentifierColumnAliases;
+			return _identifierColumnAliases;
 		}
 
 		SqlString IProjection.ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
 		{
-			//return new SqlString(string.Empty);
 			SetFields(criteria, criteriaQuery);
 
 			string identifierSelectFragment = Persister.IdentifierSelectFragment(TableAlias, ColumnAliasSuffix);
@@ -141,12 +122,12 @@ namespace NHibernate.Criterion
 
 		SqlString IProjection.ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			throw new NotImplementedException();
+			throw new InvalidOperationException("not a grouping projection");
 		}
 
 		TypedValue[] IProjection.GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			throw new NotImplementedException();
+			return Array.Empty<TypedValue>();
 		}
 
 		#endregion IProjection implementation
@@ -192,9 +173,9 @@ namespace NHibernate.Criterion
 
 			ColumnAliasSuffix = BasicLoader.GenerateSuffix(criteriaQuery.GetIndexForAlias());
 
-			IdentifierColumnAliases = Persister.GetIdentifierAliases(ColumnAliasSuffix);
+			_identifierColumnAliases = Persister.GetIdentifierAliases(ColumnAliasSuffix);
 
-			_types = new IType[] {TypeFactory.ManyToOne(Persister.EntityName, true),};
+			_types = new IType[] { TypeFactory.ManyToOne(Persister.EntityName, true), };
 		}
 	}
 }

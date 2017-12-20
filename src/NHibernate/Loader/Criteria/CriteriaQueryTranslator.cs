@@ -26,7 +26,7 @@ namespace NHibernate.Loader.Criteria
 		private readonly string rootEntityName;
 		private readonly string rootSQLAlias;
 		private int indexForAlias = 0;
-		private IList<EntityProjection> _entityProjections = new List<EntityProjection>();
+		private readonly List<EntityProjection> entityProjections = new List<EntityProjection>();
 
 		private readonly IDictionary<ICriteria, ICriteriaInfoProvider> criteriaInfoMap =
 			new Dictionary<ICriteria, ICriteriaInfoProvider>();
@@ -46,7 +46,6 @@ namespace NHibernate.Loader.Criteria
 		private readonly ICollection<IParameterSpecification> collectedParameterSpecifications;
 		private readonly ICollection<NamedParameter> namedParameters;
 		private readonly ISet<string> subQuerySpaces = new HashSet<string>();
-		public IList<EntityProjection> entityProjections = new List<EntityProjection>();
 
 		
 
@@ -195,12 +194,12 @@ namespace NHibernate.Loader.Criteria
 
 		public IList<EntityProjection> GetEntityProjections()
 		{
-			return _entityProjections;
+			return entityProjections;
 		}
 
 		public void RegisterEntityProjection(EntityProjection projection)
 		{
-			_entityProjections.Add(projection);
+			entityProjections.Add(projection);
 		}
 
 		public SqlString GetWhereCondition()
@@ -878,6 +877,6 @@ namespace NHibernate.Loader.Criteria
 				subQuerySpaces.UnionWith(translator.GetQuerySpaces());
 			}
 
-		}
+		}	
 	}
 }

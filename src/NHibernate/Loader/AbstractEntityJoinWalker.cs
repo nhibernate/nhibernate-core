@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using NHibernate.Criterion;
 using NHibernate.Engine;
 using NHibernate.Loader.Criteria;
@@ -40,26 +39,37 @@ namespace NHibernate.Loader
 			InitStatementString(whereString, orderByString, lockMode);
 		}
 
-		protected void InitProjection(SqlString projectionString, SqlString whereString, SqlString orderByString, SqlString groupByString, SqlString havingString, IDictionary<string, IFilter> enabledFilters, LockMode lockMode, IList<EntityProjection> entityProjections = null)
+		//Since v5.1
+		[Obsolete("Please use InitProjection(SqlString projectionString, SqlString whereString, SqlString orderByString, SqlString groupByString, SqlString havingString, IDictionary<string, IFilter> enabledFilters, LockMode lockMode, IList<EntityProjection> entityProjections) instead")]
+		protected void InitProjection(SqlString projectionString, SqlString whereString, SqlString orderByString, SqlString groupByString, SqlString havingString, IDictionary<string, IFilter> enabledFilters, LockMode lockMode)
+		{
+			InitProjection(projectionString, whereString, orderByString, groupByString, havingString, enabledFilters, lockMode, Array.Empty<EntityProjection>());
+		}
+
+		protected void InitProjection(SqlString projectionString, SqlString whereString, SqlString orderByString, SqlString groupByString, SqlString havingString, IDictionary<string, IFilter> enabledFilters, LockMode lockMode, IList<EntityProjection> entityProjections)
 		{
 			WalkEntityTree(persister, Alias);
-			if (entityProjections?.Count > 0)
+
+			int countEntities = entityProjections.Count;
+			if (countEntities > 0)
 			{
-				var list = new List<OuterJoinableAssociation>();
-				var eagerProps = new bool[entityProjections.Count];
-				for (var i = 0; i < entityProjections.Count; i++)
+				var associations = new OuterJoinableAssociation[countEntities];
+				var eagerProps = new bool[countEntities];
+				var suffixes = new string[countEntities];
+				for (var i = 0; i < countEntities; i++)
 				{
 					var e = entityProjections[i];
-					list.Add(
-						CreateAssociation(e.Persister.EntityMetamodel.EntityType, e.TableAlias));
+					associations[i] = CreateAssociation(e.Persister.EntityMetamodel.EntityType, e.TableAlias);
 					if (e.FetchLazyProperties)
 					{
 						eagerProps[i] = true;
 					}
+					suffixes[i] = e.ColumnAliasSuffix;
 				}
 
-				InitPersisters(list, lockMode);
-				Suffixes = entityProjections.Select(ep => ep.ColumnAliasSuffix).ToArray();
+				InitPersisters(associations, lockMode);
+
+				Suffixes = suffixes;
 				EagerPropertyFetches = eagerProps;
 			}
 			else
@@ -69,7 +79,6 @@ namespace NHibernate.Loader
 			}
 
 			InitStatementString(projectionString, whereString, orderByString, groupByString, havingString, lockMode);
-			
 		}
 
 		private OuterJoinableAssociation CreateAssociation(EntityType entityType, string tableAlias)

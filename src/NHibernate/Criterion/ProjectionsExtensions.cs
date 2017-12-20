@@ -25,7 +25,7 @@ namespace NHibernate.Criterion
 		/// Create an alias for a projection
 		/// </summary>
 		/// <param name="projection">the projection instance</param>
-		/// <param name="alias">LambdaExpression returning an alias</param>
+		/// <param name="alias">alias</param>
 		/// <returns>return NHibernate.Criterion.IProjection</returns>
 		public static IProjection WithAlias(this IProjection projection, string alias)
 		{
