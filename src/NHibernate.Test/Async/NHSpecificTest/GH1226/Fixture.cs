@@ -46,10 +46,33 @@ namespace NHibernate.Test.NHSpecificTest.GH1226
 		[Test]
 		public async Task BankShouldBeJoinFetchedAsync()
 		{
+			// Simple case: nothing already in session.
 			using (var session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
-				// Bug only occurs if the Banks are already in the session cache.
+				var countBeforeQuery = Sfi.Statistics.PrepareStatementCount;
+
+				var accounts = await (session.CreateQuery("from Account a left join fetch a.Bank").ListAsync<Account>());
+				var associatedBanks = accounts.Select(x => x.Bank).ToList();
+				Assert.That(associatedBanks, Has.All.Matches<object>(NHibernateUtil.IsInitialized),
+				            "One bank or more was lazily loaded.");
+
+				var countAfterQuery = Sfi.Statistics.PrepareStatementCount;
+				var statementCount = countAfterQuery - countBeforeQuery;
+
+				await (tx.CommitAsync());
+
+				Assert.That(statementCount, Is.EqualTo(1));
+			}
+		}
+
+		[Test]
+		public async Task InSessionBankShouldBeJoinFetchedAsync()
+		{
+			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
+			{
+				// #1226 bug only occurs if the Banks are already in the session cache.
 				await (session.CreateQuery("from Bank").ListAsync<Bank>());
 
 				var countBeforeQuery = Sfi.Statistics.PrepareStatementCount;
