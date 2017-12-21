@@ -271,14 +271,14 @@ namespace NHibernate.Test.Criteria
 				sameTypeChild = (EntityComplex) result[2];
 				child2 = (EntitySimpleChild) result[3];
 
-				Assert.That(NHibernateUtil.IsInitialized(root), Is.False, "Object must be lazy loaded.");
-				Assert.That(NHibernateUtil.IsInitialized(sameTypeChild), Is.False, "Object must be lazy loaded.");
-				Assert.That(NHibernateUtil.IsInitialized(child1), Is.False, "Object must be lazy loaded.");
-				Assert.That(NHibernateUtil.IsInitialized(child2), Is.False, "Object must be lazy loaded.");
+				Assert.That(NHibernateUtil.IsInitialized(root), Is.False, "root must be lazy loaded.");
+				Assert.That(NHibernateUtil.IsInitialized(sameTypeChild), Is.False, "sameTypeChild must be lazy loaded.");
+				Assert.That(NHibernateUtil.IsInitialized(child1), Is.False, "child1 must be lazy loaded.");
+				Assert.That(NHibernateUtil.IsInitialized(child2), Is.False, "child2 must be lazy loaded.");
 
 				//make sure objects are populated from different aliases for the same types
-				Assert.That(root.Id, Is.Not.EqualTo(sameTypeChild.Id), "Different objects are expected.");
-				Assert.That(child1.Id, Is.Not.EqualTo(child2.Id), "Different objects are expected.");
+				Assert.That(root.Id, Is.Not.EqualTo(sameTypeChild.Id), "Different objects are expected for root and sameTypeChild.");
+				Assert.That(child1.Id, Is.Not.EqualTo(child2.Id), "Different objects are expected for child1 and child2.");
 
 			}
 		}
@@ -349,11 +349,11 @@ namespace NHibernate.Test.Criteria
 				sameAsRootChild = (EntityComplex) objects[3];
 				nullListElem = (EntitySimpleChild) objects[4];
 
-				Assert.That(NHibernateUtil.IsInitialized(root), Is.True, "Object must be initialized");
-				Assert.That(NHibernateUtil.IsInitialized(child1), Is.True, "Object must be initialized");
-				Assert.That(NHibernateUtil.IsInitialized(child2), Is.True, "Object must be initialized");
-				Assert.That(NHibernateUtil.IsInitialized(sameAsRootChild), Is.True, "Object must be initialized");
-				Assert.That(nullListElem, Is.Null, "Object must be initialized");
+				Assert.That(NHibernateUtil.IsInitialized(root), Is.True, "root must be initialized");
+				Assert.That(NHibernateUtil.IsInitialized(child1), Is.True, "child1 must be initialized");
+				Assert.That(NHibernateUtil.IsInitialized(child2), Is.True, "child2 must be initialized");
+				Assert.That(NHibernateUtil.IsInitialized(sameAsRootChild), Is.True, "sameAsRootChild must be initialized");
+				Assert.That(nullListElem, Is.Null, "nullListElem must be null");
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
 			}
 		}
@@ -400,11 +400,11 @@ namespace NHibernate.Test.Criteria
 					.Take(1)
 					.SingleOrDefaultAsync<MultipleEntitiesResult>());
 
-				Assert.That(NHibernateUtil.IsInitialized(r.Root), Is.True, "Object must be initialized");
-				Assert.That(NHibernateUtil.IsInitialized(r.Child1), Is.True, "Object must be initialized");
-				Assert.That(NHibernateUtil.IsInitialized(r.Child2), Is.True, "Object must be initialized");
-				Assert.That(NHibernateUtil.IsInitialized(r.SameAsRootChild), Is.True, "Object must be initialized");
-				Assert.That(r.NullListElem, Is.Null, "Object must be initialized");
+				Assert.That(NHibernateUtil.IsInitialized(r.Root), Is.True, "Root must be initialized");
+				Assert.That(NHibernateUtil.IsInitialized(r.Child1), Is.True, "Child1 must be initialized");
+				Assert.That(NHibernateUtil.IsInitialized(r.Child2), Is.True, "Child2 must be initialized");
+				Assert.That(NHibernateUtil.IsInitialized(r.SameAsRootChild), Is.True, "SameAsRootChild must be initialized");
+				Assert.That(r.NullListElem, Is.Null, "NullListElem must be null");
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
 			}
 		}
