@@ -15,7 +15,7 @@ namespace NHibernate.Criterion
 	public class EntityProjection : IProjection
 	{
 		private string _entityAlias;
-		private System.Type _rootEntity;
+		private System.Type _entityType;
 		private IType[] _types;
 		private string[] _identifierColumnAliases;
 
@@ -29,11 +29,11 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// Entity projection for given type and alias
 		/// </summary>
-		/// <param name="rootEntity">Type of entity</param>
+		/// <param name="entityType">Type of entity</param>
 		/// <param name="entityAlias">Entity alias</param>
-		public EntityProjection(System.Type rootEntity, string entityAlias)
+		public EntityProjection(System.Type entityType, string entityAlias)
 		{
-			_rootEntity = rootEntity;
+			_entityType = entityType;
 			_entityAlias = entityAlias;
 		}
 
@@ -148,9 +148,9 @@ namespace NHibernate.Criterion
 				entityProjectionQuery.RegisterEntityProjection(this);
 			}
 
-			if (_rootEntity == null)
+			if (_entityType == null)
 			{
-				_rootEntity = criteria.GetRootEntityTypeIfAvailable();
+				_entityType = criteria.GetRootEntityTypeIfAvailable();
 			}
 
 			if (_entityAlias == null)
@@ -158,9 +158,9 @@ namespace NHibernate.Criterion
 				_entityAlias = criteria.Alias;
 			}
 
-			Persister = criteriaQuery.Factory.GetEntityPersister(_rootEntity.FullName) as IQueryable;
+			Persister = criteriaQuery.Factory.GetEntityPersister(_entityType.FullName) as IQueryable;
 			if (Persister == null)
-				throw new HibernateException($"Projecting to entities requires a '{typeof(IQueryable).FullName}' persister, '{_rootEntity.FullName}' does not have one.");
+				throw new HibernateException($"Projecting to entities requires a '{typeof(IQueryable).FullName}' persister, '{_entityType.FullName}' does not have one.");
 
 			ICriteria subcriteria = criteria.GetCriteriaByAlias(_entityAlias);
 			if (subcriteria == null)

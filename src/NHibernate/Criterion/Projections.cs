@@ -48,7 +48,7 @@ namespace NHibernate.Criterion
 		}
 
 		/// <summary>
-		/// Returns an aliased entity.
+		/// Projection for entity with given alias.
 		/// </summary>
 		/// /// <typeparam name="T">The type of the entity.</typeparam>
 		/// <param name="alias">The alias of the entity.</param>
