@@ -1,5 +1,6 @@
 ﻿using NHibernate.Cfg.MappingSchema;
 using NHibernate.Criterion;
+using NHibernate.Dialect;
 using NHibernate.Mapping.ByCode;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
@@ -202,6 +203,9 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void EntityProjectionLockMode()
 		{
+			if (Dialect is Oracle8iDialect)
+				Assert.Ignore("Oracle is not supported due to #1352 bug (NH-3902)");
+
 			var upgradeHint = Dialect.ForUpdateString;
 			if(string.IsNullOrEmpty(upgradeHint))
 				upgradeHint = this.Dialect.AppendLockHint(LockMode.Upgrade, string.Empty);
