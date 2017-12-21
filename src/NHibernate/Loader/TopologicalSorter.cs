@@ -51,8 +51,8 @@ namespace NHibernate.Loader
 			{
 				// get a vertex with no successors, or -1
 				int currentVertex = noSuccessors();
-				if (currentVertex == -1) // must be a cycle                
-					throw new Exception("Graph has cycles");
+				if (currentVertex == -1) // must be a cycle
+					throw new InvalidOperationException("Graph has cycles");
 
 				// insert vertex label in sorted array (start at end)
 				_sortedArray[_numVerts - 1] = _vertices[currentVertex];

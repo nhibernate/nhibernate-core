@@ -67,7 +67,7 @@ namespace NHibernate.Mapping.ByCode
 				{
 					return ((MemberExpression) ((UnaryExpression) expression.Body).Operand).Member;
 				}
-				throw new Exception(string.Format("Invalid expression type: Expected ExpressionType.MemberAccess, Found {0}",
+				throw new InvalidOperationException(string.Format("Invalid expression type: Expected ExpressionType.MemberAccess, Found {0}",
 					expression.Body.NodeType));
 			}
 			return ((MemberExpression) expression.Body).Member;
