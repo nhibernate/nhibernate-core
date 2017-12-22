@@ -70,8 +70,10 @@ namespace NHibernate.Type
 			{
 				return true;
 			}
+			var oldIdentifier = IsIdentifier(old, session) ? old : await (GetIdentifierAsync(old, session, cancellationToken)).ConfigureAwait(false);
+			var currentIdentifier = await (GetIdentifierAsync(current, session, cancellationToken)).ConfigureAwait(false);
 			// the ids are fully resolved, so compare them with isDirty(), not isModified()
-			return await (GetIdentifierOrUniqueKeyType(session.Factory).IsDirtyAsync(old, await (GetIdentifierAsync(current, session, cancellationToken)).ConfigureAwait(false), session, cancellationToken)).ConfigureAwait(false);
+			return await (GetIdentifierOrUniqueKeyType(session.Factory).IsDirtyAsync(oldIdentifier, currentIdentifier, session, cancellationToken)).ConfigureAwait(false);
 		}
 
 		public override async Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)

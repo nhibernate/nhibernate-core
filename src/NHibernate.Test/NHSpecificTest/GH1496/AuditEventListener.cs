@@ -22,9 +22,21 @@ namespace NHibernate.Test.NHSpecificTest.GH1496
 			isActive = false;
 		}
 
-		public Task OnPostUpdateAsync(PostUpdateEvent @event, CancellationToken cancellationToken)
+		public async Task OnPostUpdateAsync(PostUpdateEvent @event, CancellationToken cancellationToken)
 		{
-			throw new NotImplementedException();
+			if (isActive == false)
+			{ return; }
+
+			var modifiedItems = await @event.Persister.FindModifiedAsync(@event.OldState, @event.State, @event.Entity, @event.Session, cancellationToken);
+			foreach (int index in modifiedItems)
+			{
+				ModifiedItems.Add(new Item
+				{
+					Index = index,
+					OldState = @event.OldState[index],
+					State = @event.State[index]
+				});
+			}
 		}
 
 		public void OnPostUpdate(PostUpdateEvent @event)

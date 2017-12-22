@@ -36,37 +36,4 @@
     <property name="Phone" type="string" length="20"/>
   </class>
   
-<!--
-  <class name="Contact"
-		table="Contact"
-		entity-name="HomeContact"
-		where="TypeName='HOME'"
-		check="TypeName in ('HOME', 'WORK')"
-		select-before-update="true"
-		dynamic-update="true">
-
-    <composite-id name="ContactId" class="ContactId">
-      <key-property name="Id"/>
-      <key-property name="TypeName"/>
-    </composite-id>
-
-    <property name="Phone" type="string" length="20"/>
-  </class>
-
-  <class name="Contact"
-		table="Contact"
-		entity-name="WorkContact"
-		where="TypeName='WORK'"
-		check="TypeName in ('HOME', 'WORK')"
-		select-before-update="true"
-		dynamic-update="true">
-
-    <composite-id name="ContactId" class="ContactId">
-      <key-property name="Id"/>
-      <key-property name="TypeName"/>
-    </composite-id>
-
-    <property name="Phone" type="string" length="20"/>
-  </class>
--->
 </hibernate-mapping>
