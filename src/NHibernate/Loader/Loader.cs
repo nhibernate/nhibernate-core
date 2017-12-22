@@ -914,7 +914,7 @@ namespace NHibernate.Loader
 				object obj = null;
 				EntityKey key = keys[i];
 
-				if (keys[i] == null)
+				if (key == null)
 				{
 					// do nothing
 					/* TODO NH-1001 : if (persisters[i]...EntityType) is an OneToMany or a ManyToOne and
@@ -926,17 +926,22 @@ namespace NHibernate.Loader
 				{
 					//If the object is already loaded, return the loaded one
 					obj = session.GetEntityUsingInterceptor(key);
-					if (obj != null)
+					var alreadyLoaded = obj != null;
+					var persister = persisters[i];
+					if (alreadyLoaded)
 					{
 						//its already loaded so dont need to hydrate it
-						InstanceAlreadyLoaded(rs, i, persisters[i], key, obj, lockModes[i], session);
+						InstanceAlreadyLoaded(rs, i, persister, key, obj, lockModes[i], session);
 					}
 					else
 					{
 						obj =
-							InstanceNotYetLoaded(rs, i, persisters[i], key, lockModes[i], descriptors[i].RowIdAlias, optionalObjectKey,
+							InstanceNotYetLoaded(rs, i, persister, key, lockModes[i], descriptors[i].RowIdAlias, optionalObjectKey,
 												 optionalObject, hydratedObjects, session);
 					}
+					// #1226: Even if it is already loaded, if it can be loaded from an association with a property ref, make
+					// sure it is also cached by its unique key.
+					CacheByUniqueKey(i, persister, obj, session, alreadyLoaded);
 				}
 
 				rowResults[i] = obj;
@@ -972,6 +977,36 @@ namespace NHibernate.Loader
 					entry.LockMode = lockMode;
 				}
 			}
+		}
+
+		private void CacheByUniqueKey(int i, IEntityPersister persister, object obj, ISessionImplementor session, bool alreadyLoaded)
+		{
+			var ownerAssociationTypes = OwnerAssociationTypes;
+			if (ownerAssociationTypes == null)
+				return;
+			var ukName = ownerAssociationTypes[i]?.RHSUniqueKeyPropertyName;
+			if (ukName == null)
+				return;
+			var index = ((IUniqueKeyLoadable)persister).GetPropertyIndex(ukName);
+			var ukValue = alreadyLoaded
+				? persister.GetPropertyValue(obj, index)
+				: session.PersistenceContext.GetEntry(obj).LoadedState[index];
+			// ukValue can be null for two reasons:
+			//  - Entity thought to be already loaded but indeed currently loading and not yet fully hydrated.
+			//    In such case, it has already been handled by InstanceNotYetLoaded path on a previous row,
+			//    there is nothing more to do. This case could also be detected with
+			//    "session.PersistenceContext.GetEntry(obj).Status == Status.Loading", but since there
+			//    is a second case, just test for ukValue null.
+			//  - Entity association is unset in session but not yet persisted, autoflush disabled: ignore. We are
+			//    already in an error case: querying entities changed in session without flushing them before querying.
+			//    So here it gets loaded as if it were still associated, but we do not have the key anymore in session:
+			//    we cannot cache it, so long for the additionnal round-trip this will cause. (Do not fallback on
+			//    reading the key in rs, this is stale data in regard to the session state.)
+			if (ukValue == null)
+				return;
+			var type = persister.PropertyTypes[index];
+			var euk = new EntityUniqueKey(persister.EntityName, ukName, ukValue, type, session.Factory);
+			session.PersistenceContext.AddEntity(euk, obj);
 		}
 
 		/// <summary>
@@ -1049,26 +1084,6 @@ namespace NHibernate.Loader
 			object[] values = persister.Hydrate(rs, id, obj, rootPersister, cols, eagerPropertyFetch, session);
 
 			object rowId = persister.HasRowId ? rs[rowIdAlias] : null;
-
-			IAssociationType[] ownerAssociationTypes = OwnerAssociationTypes;
-			if (ownerAssociationTypes != null && ownerAssociationTypes[i] != null)
-			{
-				string ukName = ownerAssociationTypes[i].RHSUniqueKeyPropertyName;
-				if (ukName != null)
-				{
-					int index = ((IUniqueKeyLoadable)persister).GetPropertyIndex(ukName);
-					IType type = persister.PropertyTypes[index];
-
-					// polymorphism not really handled completely correctly,
-					// perhaps...well, actually its ok, assuming that the
-					// entity name used in the lookup is the same as the
-					// the one used here, which it will be
-
-					EntityUniqueKey euk =
-						new EntityUniqueKey(rootPersister.EntityName, ukName, type.SemiResolve(values[index], session, obj), type, session.Factory);
-					session.PersistenceContext.AddEntity(euk, obj);
-				}
-			}
 
 			TwoPhaseLoad.PostHydrate(persister, id, values, rowId, obj, lockMode, !eagerPropertyFetch, session);
 		}
