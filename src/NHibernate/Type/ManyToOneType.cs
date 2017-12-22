@@ -123,8 +123,20 @@ namespace NHibernate.Type
 			{
 				return true;
 			}
+			var oldIdentifier = IsIdentifier(old, session) ? old : GetIdentifier(old, session);
+			var currentIdentifier = GetIdentifier(current, session);
 			// the ids are fully resolved, so compare them with isDirty(), not isModified()
-			return GetIdentifierOrUniqueKeyType(session.Factory).IsDirty(old, GetIdentifier(current, session), session);
+			return GetIdentifierOrUniqueKeyType(session.Factory).IsDirty(oldIdentifier, currentIdentifier, session);
+		}
+
+		private bool IsIdentifier(object value, ISessionImplementor session)
+		{
+			var identifierType = GetIdentifierType(session);
+			if (identifierType == null)
+			{
+				return false;
+			}
+			return value.GetType() == identifierType.ReturnedClass;
 		}
 
 		public override object Disassemble(object value, ISessionImplementor session, object owner)
