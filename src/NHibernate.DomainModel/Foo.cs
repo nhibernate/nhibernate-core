@@ -322,7 +322,7 @@ namespace NHibernate.DomainModel
 		public FooComponent NullComponent
 		{
 			get { return null; }
-			set { if (value != null) throw new InvalidOperationException("Null component"); }
+			set { if (value != null) throw new ArgumentException("Null component"); }
 		}
 
 		#endregion

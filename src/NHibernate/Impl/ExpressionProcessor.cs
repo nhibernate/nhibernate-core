@@ -254,7 +254,7 @@ namespace NHibernate.Impl
 			if (unaryExpression != null)
 			{
 				if (!IsConversion(unaryExpression.NodeType))
-					throw new InvalidOperationException("Cannot interpret member from " + expression);
+					throw new ArgumentException("Cannot interpret member from " + expression, nameof(expression));
 
 				return FindMemberProjection(unaryExpression.Operand);
 			}
@@ -342,7 +342,7 @@ namespace NHibernate.Impl
 			if (unaryExpression != null)
 			{
 				if (!IsConversion(unaryExpression.NodeType))
-					throw new InvalidOperationException("Cannot interpret member from " + expression);
+					throw new ArgumentException("Cannot interpret member from " + expression, nameof(expression));
 
 				return FindMemberExpression(unaryExpression.Operand);
 			}
@@ -359,13 +359,13 @@ namespace NHibernate.Impl
 				if (methodCallExpression.Method.Name == "First")
 					return FindMemberExpression(methodCallExpression.Arguments[0]);
 
-				throw new InvalidOperationException("Unrecognised method call in expression " + methodCallExpression);
+				throw new ArgumentException("Unrecognised method call in expression " + methodCallExpression, nameof(expression));
 			}
 
 			if (expression is ParameterExpression)
 				return "";
 
-			throw new InvalidOperationException("Could not determine member from " + expression);
+			throw new ArgumentException("Could not determine member from " + expression, nameof(expression));
 		}
 
 		/// <summary>
@@ -388,7 +388,7 @@ namespace NHibernate.Impl
 		{
 			var methodCallExpression = expression as MethodCallExpression;
 			if (methodCallExpression == null)
-				throw new InvalidOperationException("right operand should be detachedQueryInstance.As<T>() - " + expression);
+				throw new ArgumentException("right operand should be detachedQueryInstance.As<T>() - " + expression, nameof(expression));
 
 			var criteriaExpression = Expression.Lambda(methodCallExpression.Object).Compile();
 			QueryOver detachedQuery = (QueryOver)criteriaExpression.DynamicInvoke();
@@ -414,7 +414,7 @@ namespace NHibernate.Impl
 			if (unaryExpression != null)
 			{
 				if (!IsConversion(unaryExpression.NodeType))
-					throw new InvalidOperationException("Cannot interpret member from " + expression);
+					throw new ArgumentException("Cannot interpret member from " + expression, nameof(expression));
 
 				return FindMemberType(unaryExpression.Operand);
 			}
@@ -425,7 +425,7 @@ namespace NHibernate.Impl
 				return methodCallExpression.Method.ReturnType;
 			}
 
-			throw new InvalidOperationException("Could not determine member type from " + expression);
+			throw new ArgumentException("Could not determine member type from " + expression, nameof(expression));
 		}
 
 		private static bool IsMemberExpression(Expression expression)
@@ -450,7 +450,7 @@ namespace NHibernate.Impl
 			if (unaryExpression != null)
 			{
 				if (!IsConversion(unaryExpression.NodeType))
-					throw new InvalidOperationException("Cannot interpret member from " + expression);
+					throw new ArgumentException("Cannot interpret member from " + expression, nameof(expression));
 
 				return IsMemberExpression(unaryExpression.Operand);
 			}
@@ -504,7 +504,7 @@ namespace NHibernate.Impl
 			if (type.IsPrimitive)
 				return Convert.ChangeType(value, type);
 
-			throw new InvalidOperationException(string.Format("Cannot convert '{0}' to {1}", value, type));
+			throw new ArgumentException(string.Format("Cannot convert '{0}' to {1}", value, type));
 		}
 
 		private static ICriterion ProcessSimpleExpression(BinaryExpression be)
@@ -552,7 +552,7 @@ namespace NHibernate.Impl
 				return Restrictions.Not(
 					property.CreateCriterion(Restrictions.IsNull, Restrictions.IsNull));
 
-			throw new InvalidOperationException("Cannot supply null value to operator " + expressionType);
+			throw new ArgumentException("Cannot supply null value to operator " + expressionType, nameof(expressionType));
 		}
 
 		private static ICriterion ProcessMemberExpression(BinaryExpression be)
@@ -608,7 +608,7 @@ namespace NHibernate.Impl
 						return ProcessSimpleExpression(expression);
 
 				default:
-					throw new InvalidOperationException("Unhandled binary expression: " + expression.NodeType + ", " + expression);
+					throw new NotImplementedException("Unhandled binary expression: " + expression.NodeType + ", " + expression);
 			}
 		}
 
@@ -623,7 +623,7 @@ namespace NHibernate.Impl
 			if (unaryExpression != null)
 			{
 				if (unaryExpression.NodeType != ExpressionType.Not)
-					throw new InvalidOperationException("Cannot interpret member from " + expression);
+					throw new ArgumentException("Cannot interpret member from " + expression, nameof(expression));
 
 				if (IsMemberExpression(unaryExpression.Operand))
 					return Restrictions.Eq(FindMemberExpression(unaryExpression.Operand), false);
@@ -643,7 +643,9 @@ namespace NHibernate.Impl
 				return Restrictions.Eq(ClassMember(typeBinaryExpression.Expression), typeBinaryExpression.TypeOperand.FullName);
 			}
 
-			throw new InvalidOperationException("Could not determine member type from " + expression.NodeType + ", " + expression + ", " + expression.GetType());
+			throw new ArgumentException(
+				"Could not determine member type from " + expression.NodeType + ", " + expression + ", " + expression.GetType(),
+				nameof(expression));
 		}
 
 		private static string ClassMember(Expression expression)

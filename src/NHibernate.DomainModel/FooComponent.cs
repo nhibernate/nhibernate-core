@@ -110,7 +110,7 @@ namespace NHibernate.DomainModel
 			set
 			{
 				if (value != null)
-					throw new InvalidOperationException("null component property");
+					throw new ArgumentException("null component property");
 			}
 		}
 

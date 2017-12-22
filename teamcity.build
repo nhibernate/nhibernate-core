@@ -389,10 +389,10 @@
 				File.WriteAllText(outputFile, output);
 
 				if (brokenTests.Count > 0)
-					throw new InvalidOperationException("Previously passing tests have been broken\n\n" + output);
+					throw new Exception("Previously passing tests have been broken\n\n" + output);
 
 				if (newFailingTests.Count > 0)
-					throw new InvalidOperationException("New tests that fail have been added\n\n" + output);
+					throw new Exception("New tests that fail have been added\n\n" + output);
 
 				return output;
 			}
