@@ -591,7 +591,7 @@ namespace NHibernate.Loader
 				object obj = null;
 				EntityKey key = keys[i];
 
-				if (keys[i] == null)
+				if (key == null)
 				{
 					// do nothing
 					/* TODO NH-1001 : if (persisters[i]...EntityType) is an OneToMany or a ManyToOne and
@@ -603,17 +603,22 @@ namespace NHibernate.Loader
 				{
 					//If the object is already loaded, return the loaded one
 					obj = await (session.GetEntityUsingInterceptorAsync(key, cancellationToken)).ConfigureAwait(false);
-					if (obj != null)
+					var alreadyLoaded = obj != null;
+					var persister = persisters[i];
+					if (alreadyLoaded)
 					{
 						//its already loaded so dont need to hydrate it
-						await (InstanceAlreadyLoadedAsync(rs, i, persisters[i], key, obj, lockModes[i], session, cancellationToken)).ConfigureAwait(false);
+						await (InstanceAlreadyLoadedAsync(rs, i, persister, key, obj, lockModes[i], session, cancellationToken)).ConfigureAwait(false);
 					}
 					else
 					{
 						obj =
-							await (InstanceNotYetLoadedAsync(rs, i, persisters[i], key, lockModes[i], descriptors[i].RowIdAlias, optionalObjectKey,
+							await (InstanceNotYetLoadedAsync(rs, i, persister, key, lockModes[i], descriptors[i].RowIdAlias, optionalObjectKey,
 												 optionalObject, hydratedObjects, session, cancellationToken)).ConfigureAwait(false);
 					}
+					// #1226: Even if it is already loaded, if it can be loaded from an association with a property ref, make
+					// sure it is also cached by its unique key.
+					CacheByUniqueKey(i, persister, obj, session, alreadyLoaded);
 				}
 
 				rowResults[i] = obj;
@@ -723,26 +728,6 @@ namespace NHibernate.Loader
 			object[] values = await (persister.HydrateAsync(rs, id, obj, rootPersister, cols, eagerPropertyFetch, session, cancellationToken)).ConfigureAwait(false);
 
 			object rowId = persister.HasRowId ? rs[rowIdAlias] : null;
-
-			IAssociationType[] ownerAssociationTypes = OwnerAssociationTypes;
-			if (ownerAssociationTypes != null && ownerAssociationTypes[i] != null)
-			{
-				string ukName = ownerAssociationTypes[i].RHSUniqueKeyPropertyName;
-				if (ukName != null)
-				{
-					int index = ((IUniqueKeyLoadable)persister).GetPropertyIndex(ukName);
-					IType type = persister.PropertyTypes[index];
-
-					// polymorphism not really handled completely correctly,
-					// perhaps...well, actually its ok, assuming that the
-					// entity name used in the lookup is the same as the
-					// the one used here, which it will be
-
-					EntityUniqueKey euk =
-						new EntityUniqueKey(rootPersister.EntityName, ukName, await (type.SemiResolveAsync(values[index], session, obj, cancellationToken)).ConfigureAwait(false), type, session.Factory);
-					session.PersistenceContext.AddEntity(euk, obj);
-				}
-			}
 
 			TwoPhaseLoad.PostHydrate(persister, id, values, rowId, obj, lockMode, !eagerPropertyFetch, session);
 		}
