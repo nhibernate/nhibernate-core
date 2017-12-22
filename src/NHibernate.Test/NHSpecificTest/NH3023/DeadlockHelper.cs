@@ -3,6 +3,8 @@ using System.Data.SqlClient;
 using System.Threading;
 using System.Transactions;
 using log4net;
+using NHibernate.Util;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3023
 {
@@ -10,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 	{
 		private static readonly ILog _log = LogManager.GetLogger(typeof(DeadlockHelper));
 
-		public void ForceDeadlockOnConnection(SqlConnection connection)
+		public void ForceDeadlockOnConnection(SqlConnection connection, string connectionString)
 		{
 			using (var victimLock = new SemaphoreSlim(0))
 			using (var winnerLock = new SemaphoreSlim(0))
@@ -27,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 						{
 							using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew))
 							{
-								using (var cxn = new SqlConnection(connection.ConnectionString + ";Pooling=No"))
+								using (var cxn = new SqlConnection(connectionString + ";Pooling=No"))
 								{
 									cxn.Open();
 									DeadlockParticipant(cxn, false, winnerLock, victimLock);
@@ -38,6 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 						catch (Exception ex)
 						{
 							winnerEx = ex;
+							winnerLock.Release();
 						}
 					});
 
@@ -57,6 +60,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 					if (winnerEx != null)
 						_log.Warn("Winner thread failed", winnerEx);
 				}
+				// If getting here, expected victim has not fail. If expected winner has failed instead, fail the test.
+				Assert.That(winnerEx, Is.Null);
 
 				//
 				// Should never get here
