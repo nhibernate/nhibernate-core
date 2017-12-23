@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Odbc;
 using System.Data.SqlClient;
 using System.Data.SqlServerCe;
+using System.Data.SQLite;
 using System.IO;
 using FirebirdSql.Data.FirebirdClient;
 using NHibernate.Test;
@@ -182,8 +183,19 @@ namespace NHibernate.TestDatabaseSetup
 
 		private static void SetupSQLite(Cfg.Configuration cfg)
 		{
-			if (File.Exists("NHibernate.db"))
-				File.Delete("NHibernate.db");
+			var connStr = cfg.Properties[Cfg.Environment.ConnectionString];
+
+			try
+			{
+				var connStrBuilder = new SQLiteConnectionStringBuilder(connStr);
+				var dataSource = connStrBuilder.DataSource;
+				if (File.Exists(dataSource))
+					File.Delete(dataSource);
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+			}
 		}
 
 		private static void SetupOracle(Cfg.Configuration cfg)
