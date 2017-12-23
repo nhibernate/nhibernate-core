@@ -51,8 +51,9 @@ namespace NHibernate.Loader.Criteria
 					translator.GetOrderBy(),
 					translator.GetGroupBy(),
 					translator.GetHavingCondition(),
-					enabledFilters, 
-					LockMode.None);
+					enabledFilters,
+					LockMode.None,
+					translator.GetEntityProjections());
 
 				resultTypes = translator.ProjectedTypes;
 				userAliases = translator.ProjectedAliases;
