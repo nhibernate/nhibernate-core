@@ -25,7 +25,7 @@ namespace NHibernate.Dialect.Schema
 					return row[name];
 			}
 
-			throw new Exception("None of the alternative column names found in the DataTable.");
+			throw new InvalidOperationException("None of the alternative column names found in the DataTable.");
 		}
 
 
