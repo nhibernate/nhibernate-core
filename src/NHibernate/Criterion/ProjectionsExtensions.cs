@@ -340,7 +340,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static T AsEntity<T>(this T alias) where T:class
 		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
+			throw QueryOver.GetDirectUsageException();
 		}
 
 		internal static IProjection ProcessAsEntity(MethodCallExpression methodCallExpression)

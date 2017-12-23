@@ -138,7 +138,10 @@ namespace NHibernate.Criterion
 
 			if (!(criteriaQuery is ISupportEntityProjectionCriteriaQuery entityProjectionQuery))
 			{
-				throw new HibernateException($"Projecting to entities requires a '{criteriaQuery.GetType().FullName}' type to implement {nameof(ISupportEntityProjectionCriteriaQuery)} interface.");
+				throw new ArgumentException(
+					$"Projecting to entities requires a '{criteriaQuery.GetType().FullName}' type to implement " +
+					$"{nameof(ISupportEntityProjectionCriteriaQuery)} interface.",
+					nameof(criteriaQuery));
 			}
 
 			var criteria = entityProjectionQuery.RootCriteria;
