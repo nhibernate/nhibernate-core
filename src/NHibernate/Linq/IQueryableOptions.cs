@@ -1,9 +1,13 @@
+using System;
+
 namespace NHibernate.Linq
 {
 	// Methods signatures taken from IQuery.
 	/// <summary>
 	/// Expose NH queryable options.
 	/// </summary>
+	//Since v5.1
+	[Obsolete("Please use NhQueryableOptions instead.")]
 	public interface IQueryableOptions
 	{
 		/// <summary>
@@ -29,7 +33,7 @@ namespace NHibernate.Linq
 		IQueryableOptions SetCacheMode(CacheMode cacheMode);
 
 		/// <summary>
-		/// The timeout for the underlying ADO query.
+		/// Set the timeout for the underlying ADO query.
 		/// </summary>
 		/// <param name="timeout">The timeout in seconds.</param>
 		/// <returns><see langword="this"/> (for method chaining).</returns>
