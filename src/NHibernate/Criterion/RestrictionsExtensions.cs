@@ -13,7 +13,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static bool IsLike(this string projection, string comparison)
 		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
+			throw QueryOver.GetDirectUsageException();
 		}
 
 		/// <summary>
@@ -22,7 +22,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static bool IsLike(this string projection, string comparison, MatchMode matchMode)
 		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
+			throw QueryOver.GetDirectUsageException();
 		}
 
 		/// <summary>
@@ -31,7 +31,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static bool IsLike(this string projection, string comparison, MatchMode matchMode, char? escapeChar)
 		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
+			throw QueryOver.GetDirectUsageException();
 		}
 
 		/// <summary>
@@ -40,7 +40,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static bool IsInsensitiveLike(this string projection, string comparison)
 		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
+			throw QueryOver.GetDirectUsageException();
 		}
 
 		/// <summary>
@@ -49,7 +49,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static bool IsInsensitiveLike(this string projection, string comparison, MatchMode matchMode)
 		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
+			throw QueryOver.GetDirectUsageException();
 		}
 
 		/// <summary>
@@ -58,7 +58,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static bool IsIn(this object projection, object[] values)
 		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
+			throw QueryOver.GetDirectUsageException();
 		}
 
 		/// <summary>
@@ -67,7 +67,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static bool IsIn(this object projection, ICollection values)
 		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
+			throw QueryOver.GetDirectUsageException();
 		}
 
 		/// <summary>
@@ -76,14 +76,14 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static RestrictionBetweenBuilder IsBetween(this object projection, object lo)
 		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
+			throw QueryOver.GetDirectUsageException();
 		}
 
 		public class RestrictionBetweenBuilder
 		{
 			public bool And(object hi)
 			{
-				throw new Exception("Not to be used directly - use inside QueryOver expression");
+				throw QueryOver.GetDirectUsageException();
 			}
 		}
 

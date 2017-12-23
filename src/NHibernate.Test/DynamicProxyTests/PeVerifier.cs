@@ -26,7 +26,7 @@ namespace NHibernate.Test.DynamicProxyTests
 			while (!Directory.Exists(Path.Combine(dir, "Tools", "PEVerify")))
 			{
 				if (Directory.GetParent(dir) == null)
-					throw new Exception(string.Format("Could not find Tools/PEVerify directory in ancestor of {0}", _assemlyLocation));
+					throw new DirectoryNotFoundException(string.Format("Could not find Tools/PEVerify directory in ancestor of {0}", _assemlyLocation));
 
 				dir = Directory.GetParent(dir).FullName;
 			}
@@ -38,7 +38,7 @@ namespace NHibernate.Test.DynamicProxyTests
 			_peVerifyPath = Path.Combine(dir, "Tools", "PEVerify", versionFolder, "PEVerify.exe");
 
 			if (!File.Exists(_peVerifyPath))
-				throw new Exception(string.Format("Could not find PEVerify.exe at {0}", _peVerifyPath));
+				throw new FileNotFoundException(string.Format("Could not find PEVerify.exe at {0}", _peVerifyPath));
 		}
 
 		public void AssertIsValid()

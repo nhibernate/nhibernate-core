@@ -47,7 +47,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		public static int CompareString(string left, string right, bool textCompare)
 		{
 			// could consider calling Microsoft.VisualBasic.CompilerServices.Operators.CompareString
-			throw new Exception("This is just here to allow us to simulate the VB.Net LINQ expression tree");
+			throw new InvalidOperationException("This is just here to allow us to simulate the VB.Net LINQ expression tree");
 		}
 
 		[Test]

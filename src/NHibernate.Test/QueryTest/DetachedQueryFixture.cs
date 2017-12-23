@@ -544,7 +544,7 @@ namespace NHibernate.Test.QueryTest
 
 			public override IQuery GetExecutableQuery(ISession session)
 			{
-				throw new Exception("The method or operation is not implemented.");
+				throw new NotImplementedException("The method or operation is not implemented.");
 			}
 
 			public new void CopyTo(IDetachedQuery destination)

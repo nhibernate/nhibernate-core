@@ -494,7 +494,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static string Concat(params string[] strings)
 		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
+			throw QueryOver.GetDirectUsageException();
 		}
 
 		internal static IProjection ProcessConcat(MethodCallExpression methodCallExpression)

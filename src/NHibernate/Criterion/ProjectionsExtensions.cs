@@ -81,7 +81,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static double Sqrt(this double numericProperty)
 		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
+			throw QueryOver.GetDirectUsageException();
 		}
 
 		/// <summary>
@@ -90,7 +90,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static double Sqrt(this int numericProperty)
 		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
+			throw QueryOver.GetDirectUsageException();
 		}
 
 		/// <summary>
@@ -99,7 +99,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static double Sqrt(this long numericProperty)
 		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
+			throw QueryOver.GetDirectUsageException();
 		}
 
 		/// <summary>
@@ -108,7 +108,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static double Sqrt(this decimal numericProperty)
 		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
+			throw QueryOver.GetDirectUsageException();
 		}
 
 		/// <summary>
@@ -117,7 +117,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static double Sqrt(this byte numericProperty)
 		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
+			throw QueryOver.GetDirectUsageException();
 		}
 
 		internal static IProjection ProcessSqrt(MethodCallExpression methodCallExpression)
@@ -132,7 +132,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static string Lower(this string stringProperty)
 		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
+			throw QueryOver.GetDirectUsageException();
 		}
 
 		internal static IProjection ProcessLower(MethodCallExpression methodCallExpression)
@@ -147,7 +147,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static string Upper(this string stringProperty)
 		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
+			throw QueryOver.GetDirectUsageException();
 		}
 
 		internal static IProjection ProcessUpper(MethodCallExpression methodCallExpression)
@@ -162,7 +162,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static int Abs(this int numericProperty)
 		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
+			throw QueryOver.GetDirectUsageException();
 		}
 
 		internal static IProjection ProcessIntAbs(MethodCallExpression methodCallExpression)
@@ -177,7 +177,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static Int64 Abs(this Int64 numericProperty)
 		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
+			throw QueryOver.GetDirectUsageException();
 		}
 
 		internal static IProjection ProcessInt64Abs(MethodCallExpression methodCallExpression)
@@ -206,7 +206,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static double Abs(this double numericProperty)
 		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
+			throw QueryOver.GetDirectUsageException();
 		}
 
 		internal static IProjection ProcessDoubleAbs(MethodCallExpression methodCallExpression)
@@ -221,7 +221,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static string TrimStr(this string stringProperty)
 		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
+			throw QueryOver.GetDirectUsageException();
 		}
 
 		internal static IProjection ProcessTrimStr(MethodCallExpression methodCallExpression)
@@ -236,7 +236,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static int StrLength(this string stringProperty)
 		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
+			throw QueryOver.GetDirectUsageException();
 		}
 
 		internal static IProjection ProcessStrLength(MethodCallExpression methodCallExpression)
@@ -251,7 +251,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static int BitLength(this string stringProperty)
 		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
+			throw QueryOver.GetDirectUsageException();
 		}
 
 		internal static IProjection ProcessBitLength(MethodCallExpression methodCallExpression)
@@ -266,7 +266,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static string Substr(this string stringProperty, int startIndex, int length)
 		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
+			throw QueryOver.GetDirectUsageException();
 		}
 
 		internal static IProjection ProcessSubstr(MethodCallExpression methodCallExpression)
@@ -283,7 +283,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static int CharIndex(this string stringProperty, string theChar, int startLocation)
 		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
+			throw QueryOver.GetDirectUsageException();
 		}
 
 		internal static IProjection ProcessCharIndex(MethodCallExpression methodCallExpression)
@@ -300,7 +300,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static T Coalesce<T>(this T objectProperty, T replaceValueIfIsNull)
 		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
+			throw QueryOver.GetDirectUsageException();
 		}
 
 		/// <summary>
@@ -309,7 +309,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static T? Coalesce<T>(this T? objectProperty, T replaceValueIfIsNull) where T : struct
 		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
+			throw QueryOver.GetDirectUsageException();
 		}
 
 		internal static IProjection ProcessCoalesce(MethodCallExpression methodCallExpression)
@@ -325,7 +325,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static int Mod(this int numericProperty, int divisor)
 		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
+			throw QueryOver.GetDirectUsageException();
 		}
 
 		internal static IProjection ProcessMod(MethodCallExpression methodCallExpression)
