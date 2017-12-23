@@ -17,6 +17,48 @@ namespace NHibernate.Criterion
 	public static class Projections
 	{
 		/// <summary>
+		/// Projection for root entity.
+		/// </summary>
+		/// <returns></returns>
+		public static EntityProjection RootEntity()
+		{
+			return new EntityProjection();
+		}
+
+		/// <summary>
+		/// Projection for entity with given alias.
+		/// </summary>
+		/// <param name="type">The type of the entity.</param>
+		/// <param name="alias">The alias of the entity.</param>
+		/// <returns></returns>
+		public static EntityProjection Entity(System.Type type, string alias)
+		{
+			return new EntityProjection(type, alias);
+		}
+
+		/// <summary>
+		/// Projection for entity with given alias.
+		/// </summary>
+		/// /// <typeparam name="T">The type of the entity.</typeparam>
+		/// <param name="alias">The alias of the entity.</param>
+		/// <returns></returns>
+		public static EntityProjection Entity<T>(string alias)
+		{
+			return Entity(typeof(T), alias);
+		}
+
+		/// <summary>
+		/// Projection for entity with given alias.
+		/// </summary>
+		/// /// <typeparam name="T">The type of the entity.</typeparam>
+		/// <param name="alias">The alias of the entity.</param>
+		/// <returns>A projection of the entity.</returns>
+		public static EntityProjection Entity<T>(Expression<Func<T>> alias)
+		{
+			return Entity(typeof(T), ExpressionProcessor.FindMemberExpression(alias.Body));
+		}
+
+		/// <summary>
 		/// Create a distinct projection from a projection
 		/// </summary>
 		/// <param name="proj"></param>

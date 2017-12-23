@@ -29,6 +29,7 @@ namespace NHibernate.Loader
 		private SqlString sql;
 		private string[] suffixes;
 		private string[] collectionSuffixes;
+		private bool[] entityEagerPropertyFetches;
 
 		private readonly IDictionary<string, IFilter> enabledFilters;
 
@@ -98,6 +99,11 @@ namespace NHibernate.Loader
 			get { return collectionPersisters; }
 		}
 
+		protected override bool[] EntityEagerPropertyFetches
+		{
+			get { return entityEagerPropertyFetches; }
+		}
+
 		protected void InitFromWalker(JoinWalker walker)
 		{
 			persisters = walker.Persisters;
@@ -110,6 +116,7 @@ namespace NHibernate.Loader
 			collectionOwners = walker.CollectionOwners;
 			sql = walker.SqlString;
 			aliases = walker.Aliases;
+			entityEagerPropertyFetches = walker.EagerPropertyFetches;
 		}
 	}
 }
