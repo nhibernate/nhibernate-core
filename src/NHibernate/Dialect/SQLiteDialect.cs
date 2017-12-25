@@ -398,6 +398,17 @@ namespace NHibernate.Dialect
 		/// </remarks>
 		public override bool SupportsConcurrentWritingConnections => false;
 
+		/// <summary>
+		/// Does this dialect supports distributed transaction? <c>false</c>.
+		/// </summary>
+		/// <remarks>
+		/// SQLite does not have a two phases commit and as such does not respect distributed transaction semantic.
+		/// But moreover, it fails handling the threading involved with distributed transactions (see
+		/// https://system.data.sqlite.org/index.html/tktview/5cee5409f84da5f62172 ).
+		/// It has moreover some flakyness in tests due to seemingly highly delayed (> 500ms) commits when distributed. 
+		/// </remarks>
+		public override bool SupportsDistributedTransactions => false;
+
 		// Said to be unlimited. http://sqlite.1065341.n5.nabble.com/Max-limits-on-the-following-td37859.html
 		/// <inheritdoc />
 		public override int MaxAliasLength => 128;
