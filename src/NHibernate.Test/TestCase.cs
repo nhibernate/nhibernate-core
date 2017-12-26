@@ -85,6 +85,7 @@ namespace NHibernate.Test
 
 		protected void RebuildSessionFactory()
 		{
+			Sfi?.Close();
 			_sessionFactory = BuildSessionFactory();
 		}
 
