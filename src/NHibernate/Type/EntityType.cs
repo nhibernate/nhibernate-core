@@ -17,7 +17,11 @@ namespace NHibernate.Type
 	[Serializable]
 	public abstract partial class EntityType : AbstractType, IAssociationType
 	{
+		// Since v5.1
+		[Obsolete("This field has no more usages in NHibernate and will be removed.  Use RHSUniqueKeyPropertyName instead.")]
 		protected readonly string uniqueKeyPropertyName;
+
+		private readonly string _uniqueKeyPropertyName;
 		private readonly bool eager;
 		private readonly string associatedEntityName;
 		private readonly bool unwrapProxy;
@@ -37,8 +41,12 @@ namespace NHibernate.Type
 		/// </param>
 		protected internal EntityType(string entityName, string uniqueKeyPropertyName, bool eager, bool unwrapProxy)
 		{
-			associatedEntityName = entityName;
+#pragma warning disable 618
 			this.uniqueKeyPropertyName = uniqueKeyPropertyName;
+#pragma warning restore 618
+
+			associatedEntityName = entityName;
+			_uniqueKeyPropertyName = uniqueKeyPropertyName;
 			this.eager = eager;
 			this.unwrapProxy = unwrapProxy;
 		}
@@ -165,12 +173,12 @@ namespace NHibernate.Type
 			else
 			{
 				IEntityPersister entityPersister = session.Factory.GetEntityPersister(GetAssociatedEntityName());
-				object propertyValue = entityPersister.GetPropertyValue(value, uniqueKeyPropertyName);
+				object propertyValue = entityPersister.GetPropertyValue(value, _uniqueKeyPropertyName);
 
 				// We now have the value of the property-ref we reference.  However,
 				// we need to dig a little deeper, as that property might also be
 				// an entity type, in which case we need to resolve its identitifier
-				IType type = entityPersister.GetPropertyType(uniqueKeyPropertyName);
+				IType type = entityPersister.GetPropertyType(_uniqueKeyPropertyName);
 				if (type.IsEntityType)
 				{
 					propertyValue = ((EntityType) type).GetReferenceValue(propertyValue, session);
@@ -283,7 +291,7 @@ namespace NHibernate.Type
 
 		public bool IsUniqueKeyReference
 		{
-			get { return uniqueKeyPropertyName != null; }
+			get { return _uniqueKeyPropertyName != null; }
 		}
 
 		public abstract bool IsNullable { get; }
@@ -311,7 +319,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				IType type = factory.GetReferencedPropertyType(GetAssociatedEntityName(), uniqueKeyPropertyName);
+				IType type = factory.GetReferencedPropertyType(GetAssociatedEntityName(), _uniqueKeyPropertyName);
 				if (type.IsEntityType)
 				{
 					type = ((EntityType) type).GetIdentifierOrUniqueKeyType(factory);
@@ -333,7 +341,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				return uniqueKeyPropertyName;
+				return _uniqueKeyPropertyName;
 			}
 		}
 
@@ -399,7 +407,7 @@ namespace NHibernate.Type
 				}
 				else
 				{
-					return LoadByUniqueKey(GetAssociatedEntityName(), uniqueKeyPropertyName, value, session);
+					return LoadByUniqueKey(GetAssociatedEntityName(), _uniqueKeyPropertyName, value, session);
 				}
 			}
 		}
@@ -438,7 +446,7 @@ namespace NHibernate.Type
 
 		public string RHSUniqueKeyPropertyName
 		{
-			get { return uniqueKeyPropertyName; }
+			get { return _uniqueKeyPropertyName; }
 		}
 
 		public virtual string PropertyName
@@ -472,7 +480,7 @@ namespace NHibernate.Type
 
 		public bool IsReferenceToPrimaryKey
 		{
-			get { return string.IsNullOrEmpty(uniqueKeyPropertyName); }
+			get { return string.IsNullOrEmpty(_uniqueKeyPropertyName); }
 		}
 
 		public string GetOnCondition(string alias, ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)

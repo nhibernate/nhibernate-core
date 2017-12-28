@@ -65,12 +65,12 @@ namespace NHibernate.Type
 			else
 			{
 				IEntityPersister entityPersister = session.Factory.GetEntityPersister(GetAssociatedEntityName());
-				object propertyValue = entityPersister.GetPropertyValue(value, uniqueKeyPropertyName);
+				object propertyValue = entityPersister.GetPropertyValue(value, _uniqueKeyPropertyName);
 
 				// We now have the value of the property-ref we reference.  However,
 				// we need to dig a little deeper, as that property might also be
 				// an entity type, in which case we need to resolve its identitifier
-				IType type = entityPersister.GetPropertyType(uniqueKeyPropertyName);
+				IType type = entityPersister.GetPropertyType(_uniqueKeyPropertyName);
 				if (type.IsEntityType)
 				{
 					propertyValue = await (((EntityType) type).GetReferenceValueAsync(propertyValue, session, cancellationToken)).ConfigureAwait(false);
@@ -191,7 +191,7 @@ namespace NHibernate.Type
 					}
 					else
 					{
-						return LoadByUniqueKeyAsync(GetAssociatedEntityName(), uniqueKeyPropertyName, value, session, cancellationToken);
+						return LoadByUniqueKeyAsync(GetAssociatedEntityName(), _uniqueKeyPropertyName, value, session, cancellationToken);
 					}
 				}
 			}
