@@ -1,6 +1,5 @@
 ﻿using System;
 
-
 namespace NHibernate.Test.NHSpecificTest.GH1496
 {
 	// Entity with ManyToOne type (Address) with regular (int) Id
@@ -24,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1496
 		}
 	}
 
-	// Entity with ManyToOne type (Contact) with comnposite (ContactId) Id.
+	// Entity with ManyToOne type (Contact) with composite (ContactId) Id.
 	public class Employee
 	{
 		public virtual int Id { get; set; }
@@ -43,7 +42,6 @@ namespace NHibernate.Test.NHSpecificTest.GH1496
 			Name = name;
 		}
 	}
-
 
 	public class Address
 	{
@@ -65,14 +63,11 @@ namespace NHibernate.Test.NHSpecificTest.GH1496
 		}
 	}
 
-
-	[Serializable]
 	public class Contact
 	{
 		public virtual ContactIdentifier ContactIdentifier { get; set; }
 		public virtual string Phone { get; set; }
 	}
-
 
 	public class ContactIdentifier : IEquatable<ContactIdentifier>
 	{
@@ -119,11 +114,5 @@ namespace NHibernate.Test.NHSpecificTest.GH1496
 		{
 			return !Equals(left, right);
 		}
-
-
-
 	}
-
-
-
 }
