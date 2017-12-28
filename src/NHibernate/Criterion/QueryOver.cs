@@ -56,6 +56,10 @@ namespace NHibernate.Criterion
 			get { return new DetachedCriteria(impl, impl); }
 		}
 
+		internal static Exception GetDirectUsageException()
+		{
+			return new InvalidOperationException("Not to be used directly - use inside QueryOver expression");
+		}
 	}
 
 	[Serializable]

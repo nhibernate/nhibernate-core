@@ -69,7 +69,7 @@ namespace NHibernate.Linq
 				var query = Session.CreateQuery(nhLinqExpression);
 
 				SetParameters(query, nhLinqExpression.ParameterValuesByName);
-				ApplyOptions(query);
+				_options?.Apply(query);
 				return query.ExecuteUpdateAsync(cancellationToken);
 			}
 			catch (Exception ex)

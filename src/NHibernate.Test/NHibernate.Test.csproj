@@ -55,6 +55,13 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup Condition=" '$(NuGetPackageRoot)' != '' ">
+    <NativeBinaries Include="$(NuGetPackageRoot)system.data.sqlite.core\1.0.105.2\build\net46\**\*.*" />
+    <Content Include="@(NativeBinaries)">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate.DomainModel\NHibernate.DomainModel.csproj" />
     <ProjectReference Include="..\NHibernate\NHibernate.csproj" />

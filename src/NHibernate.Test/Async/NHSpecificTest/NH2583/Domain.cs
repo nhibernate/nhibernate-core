@@ -78,7 +78,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
                     set(await (bo.GetOrCreateBO1Async(s, cancellationToken)), 1);
                     break;
                 default:
-                    throw new Exception("Value " + value + " not handled in code");
+                    throw new NotImplementedException("Value " + value + " not handled in code");
             }
         }
 
@@ -114,7 +114,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
                     set(await (bo.GetOrCreateBO2Async(s, cancellationToken)), 1);
                     break;
                 default:
-                    throw new Exception("Value " + value + " not handled in code");
+                    throw new NotImplementedException("Value " + value + " not handled in code");
             }
         }
 
@@ -153,7 +153,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
                     set(await ((await (bo.GetOrCreateBO1Async(s, cancellationToken))).GetOrCreateBO2Async(s, cancellationToken)), 1);
                     break;
                 default:
-                    throw new Exception("Value " + value + " not handled in code");
+                    throw new NotImplementedException("Value " + value + " not handled in code");
             }
         }
 
@@ -187,7 +187,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
                     (await ((await (bo.GetOrCreateBO1Async(s, cancellationToken))).GetOrCreateBO3Async(s, cancellationToken))).L1 = 1;
                     break;
                 default:
-                    throw new Exception("Value " + value + " not handled in code");
+                    throw new NotImplementedException("Value " + value + " not handled in code");
             }
         }
     }

@@ -91,7 +91,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 						_log.Debug("Session enlisted");
 						try
 						{
-							new DeadlockHelper().ForceDeadlockOnConnection((SqlConnection)session.Connection);
+							new DeadlockHelper().ForceDeadlockOnConnection(
+								(SqlConnection)session.Connection,
+								GetConnectionString());
 						}
 						catch (SqlException x)
 						{
@@ -264,7 +266,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 
 		private void RunScript(string script)
 		{
-			var cxnString = cfg.Properties["connection.connection_string"] + "; Pooling=No";
+			var cxnString = GetConnectionString() + "; Pooling=No";
 			// Disable connection pooling so this won't be hindered by
 			// problems encountered during the actual test
 
@@ -288,6 +290,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 					}
 				}
 			}
+		}
+
+		private string GetConnectionString()
+		{
+			return cfg.Properties["connection.connection_string"];
 		}
 	}
 

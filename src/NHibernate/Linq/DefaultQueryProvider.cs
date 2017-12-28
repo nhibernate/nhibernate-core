@@ -175,28 +175,10 @@ namespace NHibernate.Linq
 			}
 
 			SetParameters(query, nhLinqExpression.ParameterValuesByName);
-			ApplyOptions(query);
+			_options?.Apply(query);
 			SetResultTransformerAndAdditionalCriteria(query, nhLinqExpression, nhLinqExpression.ParameterValuesByName);
 
 			return nhLinqExpression;
-		}
-
-		private void ApplyOptions(IQuery query)
-		{
-			if (_options == null) 
-				return;
-
-			if (_options.Timeout.HasValue)
-				query.SetTimeout(_options.Timeout.Value);
-			
-			if (_options.Cacheable.HasValue)
-				query.SetCacheable(_options.Cacheable.Value);
-			
-			if (_options.CacheMode.HasValue)
-				query.SetCacheMode(_options.CacheMode.Value);
-			
-			if (_options.CacheRegion != null)
-				query.SetCacheRegion(_options.CacheRegion);
 		}
 
 		protected virtual object ExecuteQuery(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery)
@@ -279,7 +261,7 @@ namespace NHibernate.Linq
 			var query = Session.CreateQuery(nhLinqExpression);
 
 			SetParameters(query, nhLinqExpression.ParameterValuesByName);
-			ApplyOptions(query);
+			_options?.Apply(query);
 			return query.ExecuteUpdate();
 		}
 	}
