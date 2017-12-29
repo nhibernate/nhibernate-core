@@ -72,6 +72,34 @@ namespace NHibernate.Test
 			Assert.That(succeeded, message ?? $"Supplied Type {obj.GetType()} is not serializable", args);
 		}
 
+		public static void IsXmlSerializable(object obj)
+		{
+			IsXmlSerializable(obj, null, null);
+		}
+
+		public static void IsXmlSerializable(object obj, string message, params object[] args)
+		{
+			if (obj == null) throw new ArgumentNullException(nameof(obj));
+
+			bool succeeded = false;
+			var serializer = new System.Xml.Serialization.XmlSerializer(obj.GetType());
+			var stream = new System.IO.MemoryStream();
+			try
+			{
+				serializer.Serialize(stream, obj);
+
+				stream.Seek(0, System.IO.SeekOrigin.Begin);
+
+				succeeded = serializer.Deserialize(stream) != null;
+			}
+			catch (System.Runtime.Serialization.SerializationException)
+			{
+				// Ignore and return failure
+				succeeded = false;
+			}
+			Assert.That(succeeded, message ?? $"Supplied Type {obj.GetType()} is not serializable", args);
+		}
+
 		#endregion
 		private static IEnumerable<System.Type> ClassList(Assembly assembly, System.Type type)
 		{
