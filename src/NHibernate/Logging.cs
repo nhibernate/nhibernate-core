@@ -212,7 +212,7 @@ namespace NHibernate
 		public NHibernateLogValues(string format, object[] args)
 		{
 			_format = format ?? "[Null]";
-			_args = args;
+			_args = args ?? Array.Empty<object>();
 		}
 
 		/// <summary>

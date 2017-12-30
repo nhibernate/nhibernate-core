@@ -18,6 +18,7 @@ namespace NHibernate.Example.Web.Infrastructure
 		{
 			{ NHibernateLogLevel.Trace, LogLevel.Trace },
 			{ NHibernateLogLevel.Debug, LogLevel.Debug },
+			{ NHibernateLogLevel.Info, LogLevel.Information },
 			{ NHibernateLogLevel.Warn, LogLevel.Warning },
 			{ NHibernateLogLevel.Error, LogLevel.Error },
 			{ NHibernateLogLevel.Fatal, LogLevel.Critical },
