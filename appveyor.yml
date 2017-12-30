@@ -1,0 +1,335 @@
+version: 5.1.0.{build}
+image: Visual Studio 2017
+configuration:
+    - Debug
+    - Release
+environment:
+    global:
+        targetFx: net461
+    matrix:
+        - db: Firebird
+        - db: MySQL
+        - db: Odbc
+        - db: PostgreSQL
+        - db: SQLite
+        - db: SqlServerCe
+        - db: SqlServer2008
+        - db: SqlServer2012
+
+matrix:
+    exclude:
+        - configuration: Release
+          db: Firebird
+        - configuration: Release
+          db: MySQL
+        - configuration: Release
+          db: Odbc
+        - configuration: Release
+          db: PostgreSQL
+        - configuration: Release
+          db: SQLite
+        - configuration: Release
+          db: SqlServerCe
+        - configuration: Release
+          db: SqlServer2008
+
+init:
+    # Required for having windows endlines in sources zip
+    - git config --global core.autocrlf true
+
+cache:
+    - C:\firebird\Firebird-3.0.2.32703-0_x64.zip
+
+before_build:
+    - ps: >-
+        Invoke-Command -ScriptBlock {
+            # Package sources if this is a release build.
+            If ($env:CONFIGURATION -ne 'Release') {
+                return
+            }
+
+            $srcPackage = (Join-Path $env:APPVEYOR_BUILD_FOLDER 'NHibernate-5.0.3-src')
+            mkdir $srcPackage
+            cp (Join-Path $env:APPVEYOR_BUILD_FOLDER 'build-common') $srcPackage -recurse
+            cp (Join-Path $env:APPVEYOR_BUILD_FOLDER 'lib') $srcPackage -recurse
+            cp (Join-Path $env:APPVEYOR_BUILD_FOLDER 'src') $srcPackage -recurse
+            cp (Join-Path $env:APPVEYOR_BUILD_FOLDER "*.build") $srcPackage
+            cp (Join-Path $env:APPVEYOR_BUILD_FOLDER 'LICENSE.txt') $srcPackage
+            cp (Join-Path $env:APPVEYOR_BUILD_FOLDER 'releasenotes.txt') $srcPackage
+            cp (Join-Path $env:APPVEYOR_BUILD_FOLDER 'README.md') $srcPackage
+        }
+
+    - which msbuild.exe
+    - nuget restore src/NHibernate.sln
+
+# Disable automated build, use build script instead
+build: off
+build_script:
+    - ps: >-
+        Invoke-Command -ScriptBlock {
+            $nugetPath = (Join-Path $env:APPVEYOR_BUILD_FOLDER 'nuget')
+            mkdir $nugetPath
+            dotnet msbuild (Join-Path $env:APPVEYOR_BUILD_FOLDER 'src\NHibernate.sln') /verbosity:minimal `
+                '/p:Platform="Any CPU"' /p:GeneratePackageOnBuild=True /p:IncludeSymbols=True `
+                /p:IncludeSource=True "/p:PackageOutputPath=$nugetPath"
+        }
+
+before_test:
+    - ps: >-
+        Invoke-Command -ScriptBlock {
+            $configDir = (Join-Path $env:APPVEYOR_BUILD_FOLDER 'current-test-configuration')
+
+            #Configuration matrix
+            $allSettings = @{
+                'Firebird' = @{
+                    'connection.connection_string' = 'DataSource=localhost;Database=nhibernate;User ID=SYSDBA;Password=masterkey;MaxPoolSize=200;';
+                    'connection.driver_class' = 'NHibernate.Driver.FirebirdClientDriver';
+                    'dialect' = 'NHibernate.Dialect.FirebirdDialect'
+                };
+                'MySQL' = @{
+                    'connection.connection_string' = 'Server=127.0.0.1;Uid=root;Pwd=Password12!;Database=nhibernate;Old Guids=True;';
+                    'connection.driver_class' = 'NHibernate.Driver.MySqlDataDriver';
+                    'dialect' = 'NHibernate.Dialect.MySQL5Dialect'
+                };
+                'Odbc' = @{
+                    # The OdbcDriver inherits SupportsMultipleOpenReaders=true from DriverBase, which requires Mars_Connection=yes for SQL Server.
+                    'connection.connection_string' = 'Server=(local)\SQL2017;Uid=sa;Pwd=Password12!;Database=nhibernateOdbc;Driver={SQL Server Native Client 11.0};Mars_Connection=yes;';
+                    'connection.driver_class' = 'NHibernate.Driver.OdbcDriver';
+                    'odbc.explicit_datetime_scale' = '3';
+                    <# We need to use a dialect that avoids mapping DbType.Time to TIME on MSSQL. On modern SQL Server
+                        this becomes TIME(7). Later, such values cannot be read back over ODBC. The
+                        error we get is "System.ArgumentException : Unknown SQL type - SS_TIME_EX.". I don't know for certain
+                        why this occurs, but MS docs do say that for a client "compiled using a version of SQL Server Native
+                        Client prior to SQL Server 2008", TIME(7) cannot be converted back to the client. Assuming that .Net's
+                        OdbcDriver would be considered a "client compiled with a previous version", it would make sense. Anyway,
+                        using the MsSql2005Dialect avoids these test failures. #>
+                    'dialect' = 'NHibernate.Dialect.MsSql2005Dialect'
+                };
+                'PostgreSQL' = @{
+                    'connection.connection_string' = 'Host=localhost;Port=5432;Username=postgres;Password=Password12!;Database=nhibernate;Enlist=true';
+                    'connection.driver_class' = 'NHibernate.Driver.NpgsqlDriver';
+                    'dialect' = 'NHibernate.Dialect.PostgreSQL83Dialect'
+                };
+                'SQLite' = @{
+                    <#
+                        DateTimeFormatString allows to prevent storing the fact that written date was having kind UTC,
+                        which dodges the undesirable time conversion to local done on reads by System.Data.SQLite.
+                        See https://system.data.sqlite.org/index.html/tktview/44a0955ea344a777ffdbcc077831e1adc8b77a36
+                        and https://github.com/nhibernate/nhibernate-core/issues/1362 #>
+                    # Please note the connection string is formated for putting the db file in $configDir.
+                    'connection.connection_string' = "Data Source=$configDir\NHibernate.db;DateTimeFormatString=yyyy-MM-dd HH:mm:ss.FFFFFFF;";
+                    'connection.driver_class' = 'NHibernate.Driver.SQLite20Driver';
+                    'dialect' = 'NHibernate.Dialect.SQLiteDialect'
+                };
+                'SqlServerCe' = @{
+                    # Please note the connection string is formated for putting the db file in $configDir.
+                    'connection.connection_string' = "Data Source=$configDir\NHibernate.sdf;";
+                    'connection.driver_class' = 'NHibernate.Driver.SqlServerCeDriver';
+                    'command_timeout' = '0';
+                    'dialect' = 'NHibernate.Dialect.MsSqlCe40Dialect'
+                };
+                'SqlServer2008' = @{'connection.connection_string' = 'Server=(local)\SQL2017;User ID=sa;Password=Password12!;initial catalog=nhibernate;'};
+                'SqlServer2012' = @{
+                    'connection.connection_string' = 'Server=(local)\SQL2017;User ID=sa;Password=Password12!;initial catalog=nhibernate;';
+                    'dialect' = 'NHibernate.Dialect.MsSql2012Dialect'
+                }
+            }
+
+            #Settings for current build
+            $settings = $allSettings.Get_Item($env:db)
+            if (!$settings) {
+                Write-Host "Unable to find $env:db settings" -foregroundcolor 'white' -backgroundcolor 'red'
+                exit 1
+            }
+
+            #Create settings file
+            $configFile = (Join-Path $configDir 'hibernate.cfg.xml')
+            New-Item $configDir -Type Directory
+            cp (Join-Path $env:APPVEYOR_BUILD_FOLDER 'build-common\teamcity-hibernate.cfg.xml') $configFile
+
+            #Patch settings file
+            $config = [xml] (Get-Content $configFile)
+            $allProps = $config.'hibernate-configuration'.'session-factory'.property
+            foreach($key in $settings.keys)
+            {
+                $value = $settings[$key]
+                $property = $allProps | where {$_.name -eq $key}
+                if (!$property) {
+                    Write-Host "Unable to find $key property" -foregroundcolor 'white' -backgroundcolor 'red'
+                    exit 1
+                }
+                $property.InnerText = $value
+            }
+            $config.Save($configFile)
+        }
+
+    - ps: >-
+        Invoke-Command -ScriptBlock {
+            switch ($env:db) {
+                'Firebird' {
+                    # Install Firebird
+                    # Firebird zip is cached, check if we have it, otherwise download it
+                    If (-Not (Test-Path C:\firebird\Firebird-3.0.2.32703-0_x64.zip)) {
+                        Write-Host "Firebird zip seemingly not cached, fetching it..."
+                        If (-Not (Test-Path C:\firebird)) {
+                            mkdir C:\firebird
+                        }
+                        cd C:\firebird
+                        # Download FireBird zip from Sourceforge. Mirror on free.fr due to my ISP, likely not the best one for AppVeyor VM.
+                        Start-FileDownload 'https://freefr.dl.sourceforge.net/project/firebird/firebird-win64/3.0.2-Release/Firebird-3.0.2.32703-0_x64.zip'
+                    }
+                    Else {
+                        cd C:\firebird
+                    }
+                    7z x Firebird-3.0.2.32703-0_x64.zip
+                    mkdir Data
+                    # Declare nhibernate db
+                    Add-Content -Path '.\databases.conf' -Value "`r`nnhibernate = C:\firebird\Data\nhibernate.fdb"
+                    # Minimal db settings
+                    Add-Content -Path '.\firebird.conf' -Value "`r`nAuthServer = Srp`r`nAuthClient = Srp`r`nUserManager = Srp`r`nWireCrypt = Enabled"
+                    # Create SYSDBA account
+                    New-Item SYSDBA.sql -Type File
+                    Add-Content -Path '.\SYSDBA.sql' -Value "create user SYSDBA password 'masterkey';`r`ncommit;`r`nquit;"
+                    .\isql -user sysdba employee -input SYSDBA.sql
+                    # Start Firebird
+                    .\firebird -a
+                }
+                'MySQL' {
+                    Start-Service 'MySQL57'
+                    # Create nhibernate database (not handled by NHibernate.TestDatabaseSetup.dll)
+                    $env:MYSQL_PWD = 'Password12!'
+                    $cmd = '"C:\Program Files\MySQL\MySQL Server 5.7\bin\mysql" -e "create database nhibernate;" --user=root'
+                    iex "& $cmd"
+                }
+                'Odbc' { Start-Service 'MSSQL$SQL2017' }
+                'PostgreSQL' {
+                    # Enable prepared transactions
+                    Add-Content -Path 'C:\Program Files\PostgreSQL\10\data\postgresql.conf' -Value "`r`nmax_prepared_transactions = 100"
+                    Start-Service 'postgresql-x64-10'
+                }
+                'SqlServer2008' { Start-Service 'MSSQL$SQL2017' }
+                'SqlServer2012' { Start-Service 'MSSQL$SQL2017' }
+            }
+        }
+
+# Disable automatic tests: they do run multiple times the whole series otherwise. (Due to: NHibernate.Test.dll
+# duplication in many folders, since it is a dependency of other projects; NUnit test adapter which seems to cause
+# AppVeyor to also run tests as MsTests after having run them as NUnit tests.)
+# Moreover, it runs NUnit test assemblies in parallel, which NHibernate setup does not support.
+test: off
+
+test_script:
+    - ps: >-
+        nunit3-console (Join-Path $env:APPVEYOR_BUILD_FOLDER "src\NHibernate.TestDatabaseSetup\bin\$env:CONFIGURATION\$env:targetFx\NHibernate.TestDatabaseSetup.dll") '--result=myresults.xml;format=AppVeyor'
+
+    - ps: >-
+        nunit3-console (Join-Path $env:APPVEYOR_BUILD_FOLDER "src\NHibernate.Test.VisualBasic\bin\$env:CONFIGURATION\$env:targetFx\NHibernate.Test.VisualBasic.dll") '--result=myresults.xml;format=AppVeyor'
+
+    - ps: >-
+        nunit3-console (Join-Path $env:APPVEYOR_BUILD_FOLDER "src\NHibernate.Test\bin\$env:CONFIGURATION\$env:targetFx\NHibernate.Test.dll") '--result=myresults.xml;format=AppVeyor'
+
+after_test:
+    - ps: >-
+        Invoke-Command -ScriptBlock {
+            # Package artificats if this is a release build.
+            If ($env:CONFIGURATION -ne 'Release') {
+                return
+            }
+
+            # Binaries package
+            $binPackage = (Join-Path $env:APPVEYOR_BUILD_FOLDER 'NHibernate-5.0.3-bin')
+            mkdir $binPackage
+            cp (Join-Path $env:APPVEYOR_BUILD_FOLDER 'HowInstall.txt') $binPackage
+            cp (Join-Path $env:APPVEYOR_BUILD_FOLDER 'LICENSE.txt') $binPackage
+            cp (Join-Path $env:APPVEYOR_BUILD_FOLDER 'releasenotes.txt') $binPackage
+            cscript (Join-Path $env:APPVEYOR_BUILD_FOLDER 'Tools\showdown\showdown.wsf') (Join-Path $env:APPVEYOR_BUILD_FOLDER 'README.md') (Join-Path $binPackage 'readme.html')
+
+            $cfgTemplates = (Join-Path $binPackage 'Configuration_Templates')
+            mkdir $cfgTemplates
+            cp (Join-Path $env:APPVEYOR_BUILD_FOLDER 'src\NHibernate.Config.Templates\*') $cfgTemplates
+
+            $reqBin = (Join-Path $binPackage 'Required_Bins')
+            mkdir $reqBin
+            cp (Join-Path $env:APPVEYOR_BUILD_FOLDER "src\NHibernate\bin\$env:CONFIGURATION\$env:targetFx\*") $reqBin -recurse
+            cp (Join-Path $env:APPVEYOR_BUILD_FOLDER "src\NHibernate\*.xsd") $reqBin
+
+            $tests = (Join-Path $binPackage 'Tests')
+            mkdir $tests
+            $vbBin = (Join-Path $env:APPVEYOR_BUILD_FOLDER "src\NHibernate.Test.VisualBasic\bin\$env:CONFIGURATION\$env:targetFx")
+            cp (Join-Path $vbBin 'DbScripts') $tests -recurse
+            cp (Join-Path $vbBin "NHibernate.Test.*") $tests
+            cp (Join-Path $vbBin "NHibernate.DomainModel.*") $tests
+            cp (Join-Path $vbBin "nunit*") $tests
+            cp (Join-Path $vbBin "*.xml") $tests -Exclude 'NHibernate.xml'
+            cp (Join-Path $vbBin 'log4net.dll') $tests
+            cp (Join-Path $env:APPVEYOR_BUILD_FOLDER "src\NHibernate.TestDatabaseSetup\bin\$env:CONFIGURATION\$env:targetFx\NHibernate.TestDatabaseSetup.*") $tests
+
+            cd $env:APPVEYOR_BUILD_FOLDER
+            7z a NHibernate-5.0.3-bin.zip NHibernate-5.0.3-bin\
+
+            # Reference package
+            choco install html-help-workshop
+            choco install sandcastle
+            $refPackage = (Join-Path $env:APPVEYOR_BUILD_FOLDER 'NHibernate-5.0.3-reference')
+            mkdir $refPackage
+            cp (Join-Path $env:APPVEYOR_BUILD_FOLDER 'doc\LICENSE.txt') $refPackage
+            #Common variables
+            $refFolder = (Join-Path $env:APPVEYOR_BUILD_FOLDER 'doc\reference')
+            $saxonClassPath = 'support/lib/avalon-framework-cvs-20020806.jar', 'support/lib/batik.jar', 'support/lib/fop-0.20.5-RFC3066-patched.jar', `
+                'support/lib/jai_codec.jar', 'support/lib/jai_core.jar', 'support/lib/rowan-0.1.jar', 'support/lib/saxon.jar', 'support/lib/saxon-dbxsl-extensions.jar'
+            for ($i=0; $i -lt $saxonClassPath.length; $i++) {
+                $saxonClassPath[$i] = (Join-Path $refFolder $saxonClassPath[$i])
+            }
+            $saxonClassPath = $saxonClassPath -Join ';'
+            $masterFile = (Join-Path $refFolder 'master.xml')
+            #Html
+            $html = (Join-Path $refPackage 'html')
+            mkdir $html
+            cd $html
+            java -classpath $saxonClassPath com.icl.saxon.StyleSheet $masterFile (Join-Path $refFolder 'styles/html_chunk.xsl')
+            #Html single page
+            $htmlSingle = (Join-Path $refPackage 'html_single')
+            mkdir $htmlSingle
+            cd $htmlSingle
+            java -classpath $saxonClassPath com.icl.saxon.StyleSheet $masterFile (Join-Path $refFolder 'styles/html.xsl')
+            #Shared files
+            $shared = (Join-Path $refPackage 'shared')
+            mkdir $shared
+            $sharedImages = (Join-Path $shared 'images')
+            mkdir $sharedImages
+            cp (Join-Path $refFolder "images/*") $sharedImages
+            $sharedStyles = (Join-Path $shared 'css')
+            mkdir $sharedStyles
+            cp (Join-Path $refFolder "styles/*.css") $sharedStyles
+            #CHM
+            $tmpChm = (Join-Path $refFolder 'tmpChm')
+            mkdir $tmpChm
+            cd $tmpChm
+            java -classpath $saxonClassPath com.icl.saxon.StyleSheet $masterFile (Join-Path $refFolder 'styles/chm_help.xsl')
+            cp $shared $tmpChm -Recurse
+            C:\Program` Files` `(x86`)\HTML` Help` Workshop\hhc (Join-Path $tmpChm 'htmlhelp.hhp')
+            Rename-Item (Join-Path $tmpChm 'htmlhelp.chm') 'NHibernate.Reference.chm'
+            cp (Join-Path $tmpChm 'NHibernate.Reference.chm') $refPackage
+            #PDF
+            $tmpPdf = (Join-Path $refFolder 'tmpPdf')
+            mkdir $tmpPdf
+            cd $tmpPdf
+            $pdfImages = (Join-Path $tmpPdf 'images')
+            mkdir $pdfImages
+            cp (Join-Path $refFolder "images/*") $pdfImages
+            $tmpPdfFile = (Join-Path $tmpPdf 'docbook_fop.tmp')
+            java -classpath $saxonClassPath com.icl.saxon.StyleSheet -o $tmpPdfFile $masterFile (Join-Path $refFolder 'styles/fopdf.xsl')
+            java -classpath $saxonClassPath org.apache.fop.apps.Fop $tmpPdfFile (Join-Path $refPackage 'nhibernate_reference.pdf')
+
+            cd $env:APPVEYOR_BUILD_FOLDER
+            7z a NHibernate-5.0.3-reference.zip NHibernate-5.0.3-reference\
+
+            # Sources package
+            7z a NHibernate-5.0.3-src.zip NHibernate-5.0.3-src\
+
+            # Push artifacts
+            Get-ChildItem (Join-Path $env:APPVEYOR_BUILD_FOLDER 'nuget\*.nupkg') | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+            Push-AppveyorArtifact NHibernate-5.0.3-bin.zip
+            Push-AppveyorArtifact NHibernate-5.0.3-reference.zip
+            Push-AppveyorArtifact NHibernate-5.0.3-src.zip
+        }
