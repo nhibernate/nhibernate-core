@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="WorkOrderRouting" table="[Production].[WorkOrderRouting]" optimistic-lock="none" >
+		<composite-id>
+    		<key-property name="OperationSequence" column="[OperationSequence]" access="field.camelcase-underscore" />
+    		<key-property name="ProductId" column="[ProductID]" access="field.camelcase-underscore" />
+			<key-many-to-one name="WorkOrder" column="[WorkOrderID]" access="field.camelcase-underscore"  />
+		</composite-id>
+		<property name="ActualCost" column="[ActualCost]" access="field.camelcase-underscore"/>
+		<property name="ActualEndDate" column="[ActualEndDate]" access="field.camelcase-underscore"/>
+		<property name="ActualResourceHrs" column="[ActualResourceHrs]" access="field.camelcase-underscore"/>
+		<property name="ActualStartDate" column="[ActualStartDate]" access="field.camelcase-underscore"/>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="PlannedCost" column="[PlannedCost]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="ScheduledEndDate" column="[ScheduledEndDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="ScheduledStartDate" column="[ScheduledStartDate]" access="field.camelcase-underscore" not-null="true"/>
+		<many-to-one name="Location" access="field.camelcase-underscore" fetch="select" cascade="all">
+			<column name="[LocationID]"/>
+		</many-to-one>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>

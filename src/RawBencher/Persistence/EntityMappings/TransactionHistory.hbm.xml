@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="TransactionHistory" table="[Production].[TransactionHistory]" optimistic-lock="none" >
+		<id name="TransactionId" column="[TransactionID]" access="field.camelcase-underscore" >
+			<generator class="identity"/>
+		</id>
+		<property name="ActualCost" column="[ActualCost]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Quantity" column="[Quantity]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="ReferenceOrderId" column="[ReferenceOrderID]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="ReferenceOrderLineId" column="[ReferenceOrderLineID]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="TransactionDate" column="[TransactionDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="TransactionType" column="[TransactionType]" access="field.camelcase-underscore" not-null="true" length="1"/>
+		<many-to-one name="Product" access="field.camelcase-underscore" fetch="select" cascade="all">
+			<column name="[ProductID]"/>
+		</many-to-one>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>

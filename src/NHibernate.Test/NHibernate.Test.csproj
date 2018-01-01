@@ -65,6 +65,8 @@
   <ItemGroup>
     <ProjectReference Include="..\NHibernate.DomainModel\NHibernate.DomainModel.csproj" />
     <ProjectReference Include="..\NHibernate\NHibernate.csproj" />
+    <ProjectReference Include="..\RawBencher\Model\NH.Bencher.Model.csproj" />
+    <ProjectReference Include="..\RawBencher\Persistence\NH.Bencher.Persistence.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Configuration" />

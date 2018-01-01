@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="SalesTerritoryHistory" table="[Sales].[SalesTerritoryHistory]" optimistic-lock="none" >
+		<composite-id>
+			<key-many-to-one name="SalesPerson" column="[BusinessEntityID]" access="field.camelcase-underscore"  />
+    		<key-property name="StartDate" column="[StartDate]" access="field.camelcase-underscore" />
+			<key-many-to-one name="SalesTerritory" column="[TerritoryID]" access="field.camelcase-underscore"  />
+		</composite-id>
+		<property name="EndDate" column="[EndDate]" access="field.camelcase-underscore"/>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Rowguid" column="[rowguid]" access="field.camelcase-underscore" not-null="true"/>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="ContactType" table="[Person].[ContactType]" optimistic-lock="none" >
+		<id name="ContactTypeId" column="[ContactTypeID]" access="field.camelcase-underscore" >
+			<generator class="identity"/>
+		</id>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Name" column="[Name]" access="field.camelcase-underscore" not-null="true" length="50"/>
+		<set name="BusinessEntityContacts" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[ContactTypeID]"/>
+			</key>
+			<one-to-many class="BusinessEntityContact"/>
+		</set>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>

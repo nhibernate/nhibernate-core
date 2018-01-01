@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="ShoppingCartItem" table="[Sales].[ShoppingCartItem]" optimistic-lock="none" >
+		<id name="ShoppingCartItemId" column="[ShoppingCartItemID]" access="field.camelcase-underscore" >
+			<generator class="identity"/>
+		</id>
+		<property name="DateCreated" column="[DateCreated]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Quantity" column="[Quantity]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="ShoppingCartId" column="[ShoppingCartID]" access="field.camelcase-underscore" not-null="true" length="50"/>
+		<many-to-one name="Product" access="field.camelcase-underscore" fetch="select" cascade="all">
+			<column name="[ProductID]"/>
+		</many-to-one>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>

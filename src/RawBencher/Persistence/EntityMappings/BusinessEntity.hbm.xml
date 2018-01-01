@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="BusinessEntity" table="[Person].[BusinessEntity]" optimistic-lock="none" >
+		<id name="BusinessEntityId" column="[BusinessEntityID]" access="field.camelcase-underscore" >
+			<generator class="identity"/>
+		</id>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Rowguid" column="[rowguid]" access="field.camelcase-underscore" not-null="true"/>
+		<set name="BusinessEntityAddresses" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[BusinessEntityID]"/>
+			</key>
+			<one-to-many class="BusinessEntityAddress"/>
+		</set>
+		<set name="BusinessEntityContacts" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[BusinessEntityID]"/>
+			</key>
+			<one-to-many class="BusinessEntityContact"/>
+		</set>
+		<one-to-one name="Person" access="field.camelcase-underscore" fetch="select" cascade="all"/>
+		<one-to-one name="Store" access="field.camelcase-underscore" fetch="select" cascade="all"/>
+		<one-to-one name="Vendor" access="field.camelcase-underscore" fetch="select" cascade="all"/>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>

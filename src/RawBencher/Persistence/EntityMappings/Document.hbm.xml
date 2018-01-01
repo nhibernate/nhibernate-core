@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="Document" table="[Production].[Document]" optimistic-lock="none" >
+		<id name="DocumentNode" column="[DocumentNode]" access="field.camelcase-underscore" >
+			<generator class="assigned"/>
+		</id>
+		<property name="ChangeNumber" column="[ChangeNumber]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="DocumentData" column="[Document]" access="field.camelcase-underscore" type="BinaryBlob"/>
+		<property name="DocumentLevel" column="[DocumentLevel]" access="field.camelcase-underscore" insert="false" update="false"/>
+		<property name="DocumentSummary" column="[DocumentSummary]" access="field.camelcase-underscore" type="StringClob"/>
+		<property name="FileExtension" column="[FileExtension]" access="field.camelcase-underscore" not-null="true" length="8"/>
+		<property name="FileName" column="[FileName]" access="field.camelcase-underscore" not-null="true" length="400"/>
+		<property name="FolderFlag" column="[FolderFlag]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Revision" column="[Revision]" access="field.camelcase-underscore" not-null="true" length="5"/>
+		<property name="Rowguid" column="[rowguid]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Status" column="[Status]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Title" column="[Title]" access="field.camelcase-underscore" not-null="true" length="50"/>
+		<many-to-one name="Employee" access="field.camelcase-underscore" fetch="select" cascade="all">
+			<column name="[Owner]"/>
+		</many-to-one>
+		<set name="ProductDocuments" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[DocumentNode]"/>
+			</key>
+			<one-to-many class="ProductDocument"/>
+		</set>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>

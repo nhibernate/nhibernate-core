@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="ProductCostHistory" table="[Production].[ProductCostHistory]" optimistic-lock="none" >
+		<composite-id>
+			<key-many-to-one name="Product" column="[ProductID]" access="field.camelcase-underscore"  />
+    		<key-property name="StartDate" column="[StartDate]" access="field.camelcase-underscore" />
+		</composite-id>
+		<property name="EndDate" column="[EndDate]" access="field.camelcase-underscore"/>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="StandardCost" column="[StandardCost]" access="field.camelcase-underscore" not-null="true"/>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>

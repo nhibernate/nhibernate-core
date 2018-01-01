@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="Currency" table="[Sales].[Currency]" optimistic-lock="none" >
+		<id name="CurrencyCode" column="[CurrencyCode]" access="field.camelcase-underscore" >
+			<generator class="assigned"/>
+		</id>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Name" column="[Name]" access="field.camelcase-underscore" not-null="true" length="50"/>
+		<set name="CountryRegionCurrencies" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[CurrencyCode]"/>
+			</key>
+			<one-to-many class="CountryRegionCurrency"/>
+		</set>
+		<set name="CurrencyRates" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[FromCurrencyCode]"/>
+			</key>
+			<one-to-many class="CurrencyRate"/>
+		</set>
+		<set name="CurrencyRates1" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[ToCurrencyCode]"/>
+			</key>
+			<one-to-many class="CurrencyRate"/>
+		</set>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>

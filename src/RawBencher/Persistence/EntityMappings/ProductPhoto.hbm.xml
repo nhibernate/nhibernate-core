@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="ProductPhoto" table="[Production].[ProductPhoto]" optimistic-lock="none" >
+		<id name="ProductPhotoId" column="[ProductPhotoID]" access="field.camelcase-underscore" >
+			<generator class="identity"/>
+		</id>
+		<property name="LargePhoto" column="[LargePhoto]" access="field.camelcase-underscore" type="BinaryBlob"/>
+		<property name="LargePhotoFileName" column="[LargePhotoFileName]" access="field.camelcase-underscore" length="50"/>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="ThumbNailPhoto" column="[ThumbNailPhoto]" access="field.camelcase-underscore" type="BinaryBlob"/>
+		<property name="ThumbnailPhotoFileName" column="[ThumbnailPhotoFileName]" access="field.camelcase-underscore" length="50"/>
+		<set name="ProductProductPhotos" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[ProductPhotoID]"/>
+			</key>
+			<one-to-many class="ProductProductPhoto"/>
+		</set>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="Store" table="[Sales].[Store]" optimistic-lock="none" >
+		<id name="CustomerId" column="[BusinessEntityID]" access="field.camelcase-underscore" >
+			<generator class="foreign">
+				<param name="property">BusinessEntity</param>
+			</generator>
+		</id>
+		<property name="Demographics" column="[Demographics]" access="field.camelcase-underscore" type="StringClob"/>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Name" column="[Name]" access="field.camelcase-underscore" not-null="true" length="50"/>
+		<property name="Rowguid" column="[rowguid]" access="field.camelcase-underscore" not-null="true"/>
+		<one-to-one name="BusinessEntity" access="field.camelcase-underscore" fetch="select" cascade="all" constrained="true"/>
+		<set name="Customers" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[StoreID]"/>
+			</key>
+			<one-to-many class="Customer"/>
+		</set>
+		<many-to-one name="SalesPerson" access="field.camelcase-underscore" fetch="select" cascade="all">
+			<column name="[SalesPersonID]"/>
+		</many-to-one>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>

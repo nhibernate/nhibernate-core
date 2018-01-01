@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="CurrencyRate" table="[Sales].[CurrencyRate]" optimistic-lock="none" >
+		<id name="CurrencyRateId" column="[CurrencyRateID]" access="field.camelcase-underscore" >
+			<generator class="identity"/>
+		</id>
+		<property name="AverageRate" column="[AverageRate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="CurrencyRateDate" column="[CurrencyRateDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="EndOfDayRate" column="[EndOfDayRate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<many-to-one name="Currency" access="field.camelcase-underscore" fetch="select" cascade="all">
+			<column name="[FromCurrencyCode]"/>
+		</many-to-one>
+		<many-to-one name="Currency1" access="field.camelcase-underscore" fetch="select" cascade="all">
+			<column name="[ToCurrencyCode]"/>
+		</many-to-one>
+		<set name="SalesOrderHeaders" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[CurrencyRateID]"/>
+			</key>
+			<one-to-many class="SalesOrderHeader"/>
+		</set>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>

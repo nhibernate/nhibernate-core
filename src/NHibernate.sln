@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+VisualStudioVersion = 15.0.27130.2003
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{593DCEA7-C933-46F3-939F-D8172399AB05}"
 	ProjectSection(SolutionItems) = preProject
@@ -20,6 +20,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.TestDatabaseSetup", "NHibernate.TestDatabaseSetup\NHibernate.TestDatabaseSetup.csproj", "{BEEC1564-6FB6-49F7-BBE5-8EBD2F0F6E8A}"
 EndProject
 Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "NHibernate.Test.VisualBasic", "NHibernate.Test.VisualBasic\NHibernate.Test.VisualBasic.vbproj", "{7C2EF610-BCA0-4D1F-898A-DE9908E4970C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NH.Bencher.Model", "RawBencher\Model\NH.Bencher.Model.csproj", "{45DAEB56-B84D-4D7A-BF22-293F1CE07DBB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NH.Bencher.Persistence", "RawBencher\Persistence\NH.Bencher.Persistence.csproj", "{3E9CA88C-03EC-445A-960A-242511B6EF55}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +51,14 @@ Global
 		{7C2EF610-BCA0-4D1F-898A-DE9908E4970C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C2EF610-BCA0-4D1F-898A-DE9908E4970C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C2EF610-BCA0-4D1F-898A-DE9908E4970C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45DAEB56-B84D-4D7A-BF22-293F1CE07DBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45DAEB56-B84D-4D7A-BF22-293F1CE07DBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45DAEB56-B84D-4D7A-BF22-293F1CE07DBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45DAEB56-B84D-4D7A-BF22-293F1CE07DBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E9CA88C-03EC-445A-960A-242511B6EF55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E9CA88C-03EC-445A-960A-242511B6EF55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E9CA88C-03EC-445A-960A-242511B6EF55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E9CA88C-03EC-445A-960A-242511B6EF55}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

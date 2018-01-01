@@ -1,0 +1,271 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3E9CA88C-03EC-445A-960A-242511B6EF55}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NH.Bencher</RootNamespace>
+    <AssemblyName>NH.Bencher.Persistence</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f">
+      <HintPath>..\..\..\packages\Antlr3.Runtime.3.5.1\lib\net40-client\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </None>
+    <EmbeddedResource Include="EntityMappings\Address.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\AddressType.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\BillOfMaterial.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\BusinessEntity.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\BusinessEntityAddress.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\BusinessEntityContact.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\ContactCreditCard.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\ContactType.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\CountryRegion.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\CountryRegionCurrency.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\CreditCard.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\Culture.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\Currency.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\CurrencyRate.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\Customer.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\Department.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\Document.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\EmailAddress.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\Employee.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\EmployeeDepartmentHistory.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\EmployeePayHistory.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\Illustration.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\JobCandidate.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\Location.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\Password.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\Person.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\PersonPhone.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\PhoneNumberType.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\Product.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\ProductCategory.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\ProductCostHistory.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\ProductDescription.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\ProductDocument.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\ProductInventory.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\ProductListPriceHistory.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\ProductModel.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\ProductModelIllustration.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\ProductModelProductDescriptionCulture.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\ProductPhoto.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\ProductProductPhoto.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\ProductReview.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\ProductSubcategory.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\ProductVendor.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\PurchaseOrderDetail.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\PurchaseOrderHeader.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\SalesOrderDetail.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\SalesOrderHeader.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\SalesOrderHeaderSalesReason.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\SalesPerson.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\SalesPersonQuotaHistory.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\SalesReason.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\SalesTaxRate.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\SalesTerritory.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\SalesTerritoryHistory.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\ScrapReason.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\Shift.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\ShipMethod.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\ShoppingCartItem.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\SpecialOffer.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\SpecialOfferProduct.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\StateProvince.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\Store.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\TransactionHistory.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\TransactionHistoryArchive.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\UnitMeasure.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\Vendor.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\WorkOrder.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntityMappings\WorkOrderRouting.hbm.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </EmbeddedResource>
+    <None Include="hibernate.cfg.xml">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </Compile>
+    <Compile Include="SessionManager.cs">
+      <GeneratedBy>LLBLGen Pro</GeneratedBy>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\NHibernate\NHibernate.csproj">
+      <Project>{5909bfe7-93cf-4e5f-be22-6293368af01d}</Project>
+      <Name>NHibernate</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+</Project>

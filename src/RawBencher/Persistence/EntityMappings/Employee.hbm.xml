@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="Employee" table="[HumanResources].[Employee]" optimistic-lock="none" >
+		<id name="EmployeeId" column="[BusinessEntityID]" access="field.camelcase-underscore" >
+			<generator class="foreign">
+				<param name="property">Person</param>
+			</generator>
+		</id>
+		<property name="BirthDate" column="[BirthDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="CurrentFlag" column="[CurrentFlag]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Gender" column="[Gender]" access="field.camelcase-underscore" not-null="true" length="1"/>
+		<property name="HireDate" column="[HireDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="LoginId" column="[LoginID]" access="field.camelcase-underscore" not-null="true" length="256"/>
+		<property name="MaritalStatus" column="[MaritalStatus]" access="field.camelcase-underscore" not-null="true" length="1"/>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="NationalIdnumber" column="[NationalIDNumber]" access="field.camelcase-underscore" not-null="true" length="15"/>
+		<property name="OrganizationLevel" column="[OrganizationLevel]" access="field.camelcase-underscore" insert="false" update="false"/>
+		<property name="OrganizationNode" column="[OrganizationNode]" access="field.camelcase-underscore" length="892"/>
+		<property name="Rowguid" column="[rowguid]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="SalariedFlag" column="[SalariedFlag]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="SickLeaveHours" column="[SickLeaveHours]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Title" column="[JobTitle]" access="field.camelcase-underscore" not-null="true" length="50"/>
+		<property name="VacationHours" column="[VacationHours]" access="field.camelcase-underscore" not-null="true"/>
+		<set name="Documents" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[Owner]"/>
+			</key>
+			<one-to-many class="Document"/>
+		</set>
+		<set name="EmployeeDepartmentHistories" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[BusinessEntityID]"/>
+			</key>
+			<one-to-many class="EmployeeDepartmentHistory"/>
+		</set>
+		<set name="EmployeePayHistories" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[BusinessEntityID]"/>
+			</key>
+			<one-to-many class="EmployeePayHistory"/>
+		</set>
+		<set name="JobCandidates" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[BusinessEntityID]"/>
+			</key>
+			<one-to-many class="JobCandidate"/>
+		</set>
+		<one-to-one name="Person" access="field.camelcase-underscore" fetch="select" cascade="all" constrained="true"/>
+		<set name="PurchaseOrderHeaders" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[EmployeeID]"/>
+			</key>
+			<one-to-many class="PurchaseOrderHeader"/>
+		</set>
+		<one-to-one name="SalesPerson" access="field.camelcase-underscore" fetch="select" cascade="all"/>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>

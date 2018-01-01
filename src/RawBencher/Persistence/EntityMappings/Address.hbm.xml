@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="Address" table="[Person].[Address]" optimistic-lock="none" >
+		<id name="AddressId" column="[AddressID]" access="field.camelcase-underscore" >
+			<generator class="identity"/>
+		</id>
+		<property name="AddressLine1" column="[AddressLine1]" access="field.camelcase-underscore" not-null="true" length="60"/>
+		<property name="AddressLine2" column="[AddressLine2]" access="field.camelcase-underscore" length="60"/>
+		<property name="City" column="[City]" access="field.camelcase-underscore" not-null="true" length="30"/>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="PostalCode" column="[PostalCode]" access="field.camelcase-underscore" not-null="true" length="15"/>
+		<property name="Rowguid" column="[rowguid]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="SpatialLocation" column="[SpatialLocation]" access="field.camelcase-underscore"/>
+		<set name="BusinessEntityAddresses" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[AddressID]"/>
+			</key>
+			<one-to-many class="BusinessEntityAddress"/>
+		</set>
+		<set name="SalesOrderHeaders" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[BillToAddressID]"/>
+			</key>
+			<one-to-many class="SalesOrderHeader"/>
+		</set>
+		<set name="SalesOrderHeaders1" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[ShipToAddressID]"/>
+			</key>
+			<one-to-many class="SalesOrderHeader"/>
+		</set>
+		<many-to-one name="StateProvince" access="field.camelcase-underscore" fetch="select" cascade="all">
+			<column name="[StateProvinceID]"/>
+		</many-to-one>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>
