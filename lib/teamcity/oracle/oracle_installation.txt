@@ -7,8 +7,9 @@ Installation steps for Oracle for NH TeamCity:
 
 2.  Run the installer ...
 3.  Choose any HTTP port for the listener if asked (it may automatically choose the default 8080 if available);
-4.  Choose the ASCII character set. You will have to ensure nhibernate.oracle.use_n_prefixed_types_for_unicode
-    parameter is set to true; Choosing instead the Unicode character set will cause some NHibernate tests to fail.
+4.  Choose the ASCII character set. You will have to ensure oracle.use_n_prefixed_types_for_unicode
+    parameter is set to true and that query.default_cast_length is set to 2000. Choosing instead the Unicode
+    character set will cause some NHibernate tests to fail.
 5.  Enter 'password' as the password for the SYS and SYSTEM accounts;
 6.  The setup should install Oracle on the machine.
 
