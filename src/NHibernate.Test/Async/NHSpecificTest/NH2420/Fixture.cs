@@ -9,7 +9,9 @@
 
 
 using System.Data.Common;
+#if !NETCOREAPP2_0
 using System.Data.Odbc;
+#endif
 using System.Data.SqlClient;
 using System.Configuration;
 using System.Transactions;
@@ -75,10 +77,16 @@ namespace NHibernate.Test.NHSpecificTest.NH2420
 						new DummyEnlistment(),
 						EnlistmentOptions.None);
 
+#if !NETCOREAPP2_0
 					if (Sfi.ConnectionProvider.Driver.GetType().IsOdbcDriver())
+					{
 						connection = new OdbcConnection(connectionString);
+					}
 					else
+#endif
+					{
 						connection = new SqlConnection(connectionString);
+					}
 
 					await (connection.OpenAsync());
 					using (s = Sfi.WithOptions().Connection(connection).OpenSession())

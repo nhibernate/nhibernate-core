@@ -83,6 +83,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3383
 		[Test]
 		public void DeserializedPropertyMapping_CascadeStyleNotYetInitializedOnDeserialization_RefersToSameCascadeStyle()
 		{
+#if NETCOREAPP2_0
+			Assert.Ignore("Not applicable for NETCOREAPP2_0");
+#else
 			var classMapping = CreateMappingClasses();
 
 			using (MemoryStream configMemoryStream = new MemoryStream())
@@ -109,6 +112,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3383
 					AppDomain.Unload(secondAppDomain);
 				}
 			}
+#endif
 		}
 
 		private static RootClass CreateMappingClasses()

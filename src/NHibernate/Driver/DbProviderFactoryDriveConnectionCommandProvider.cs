@@ -1,3 +1,4 @@
+#if !NETSTANDARD2_0
 using System;
 using System.Data.Common;
 
@@ -27,3 +28,4 @@ namespace NHibernate.Driver
 		}
 	}
 }
+#endif

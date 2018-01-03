@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -195,8 +196,23 @@ namespace NHibernate.Engine
 
 		private void RegisterCleanupActions(IExecutable executable)
 		{
-			beforeTransactionProcesses.Register(executable.BeforeTransactionCompletionProcess);
-			afterTransactionProcesses.Register(executable.AfterTransactionCompletionProcess);
+			BeforeTransactionCompletionProcessDelegate beforeTransactionDelegate = executable.BeforeTransactionCompletionProcess;
+			AfterTransactionCompletionProcessDelegate afterTransactionDelegate = executable.AfterTransactionCompletionProcess;
+
+#if NETSTANDARD2_0
+			if (beforeTransactionDelegate != null)
+			{
+				log.Warn(".NET Core cannot serialize BeforeTransactionCompletionProcess.");
+			}
+
+			if (afterTransactionDelegate != null)
+			{
+				log.Warn(".NET Core cannot serialize AfterTransactionCompletionProcess.");
+			}
+#endif
+
+			beforeTransactionProcesses.Register(beforeTransactionDelegate);
+			afterTransactionProcesses.Register(afterTransactionDelegate);
 		}
 
 		/// <summary> 
@@ -452,13 +468,27 @@ namespace NHibernate.Engine
 		}
 		
 		[Serializable]
-		private class BeforeTransactionCompletionProcessQueue 
+		private sealed class BeforeTransactionCompletionProcessQueue : ISerializable
 		{
-			private List<BeforeTransactionCompletionProcessDelegate> processes = new List<BeforeTransactionCompletionProcessDelegate>();
+			// TODO: Not serializable in .NET Core
+			private readonly List<BeforeTransactionCompletionProcessDelegate> _processes = new List<BeforeTransactionCompletionProcessDelegate>();
 
-			public bool HasActions
+			public bool HasActions => _processes.Count > 0;
+
+			public BeforeTransactionCompletionProcessQueue()
 			{
-				get { return processes.Count > 0; }
+			}
+
+			private BeforeTransactionCompletionProcessQueue(SerializationInfo info, StreamingContext context)
+			{
+			}
+
+			public void GetObjectData(SerializationInfo info, StreamingContext context)
+			{
+#if NETSTANDARD2_0
+				if (HasActions)
+					throw new NotImplementedException("Serializing delegates is not supported on this platform.");
+#endif
 			}
 
 			public void Register(BeforeTransactionCompletionProcessDelegate process) 
@@ -467,17 +497,17 @@ namespace NHibernate.Engine
 				{
 					return;
 				}
-				processes.Add(process);
+				_processes.Add(process);
 			}
 	
 			public void BeforeTransactionCompletion() 
 			{
-				int size = processes.Count;
+				int size = _processes.Count;
 				for (int i = 0; i < size; i++)
 				{
 					try 
 					{
-						BeforeTransactionCompletionProcessDelegate process = processes[i];
+						BeforeTransactionCompletionProcessDelegate process = _processes[i];
 						process();
 					}
 					catch (HibernateException)
@@ -489,18 +519,32 @@ namespace NHibernate.Engine
 						throw new AssertionFailure("Unable to perform BeforeTransactionCompletion callback", e);
 					}
 				}
-				processes.Clear();
+				_processes.Clear();
 			}
 		}
 
 		[Serializable]
-		private class AfterTransactionCompletionProcessQueue 
+		private sealed class AfterTransactionCompletionProcessQueue : ISerializable
 		{
-			private List<AfterTransactionCompletionProcessDelegate> processes = new List<AfterTransactionCompletionProcessDelegate>(InitQueueListSize * 3);
+			// TODO: Not serializable in .NET Core
+			private readonly List<AfterTransactionCompletionProcessDelegate> _processes = new List<AfterTransactionCompletionProcessDelegate>(InitQueueListSize * 3);
 
-			public bool HasActions
+			public bool HasActions => _processes.Count > 0;
+
+			public AfterTransactionCompletionProcessQueue()
 			{
-				get { return processes.Count > 0; }
+			}
+
+			private AfterTransactionCompletionProcessQueue(SerializationInfo info, StreamingContext context)
+			{
+			}
+
+			public void GetObjectData(SerializationInfo info, StreamingContext context)
+			{
+#if NETSTANDARD2_0
+				if (HasActions)
+					throw new NotImplementedException("Serializing delegates is not supported on this platform.");
+#endif
 			}
 
 			public void Register(AfterTransactionCompletionProcessDelegate process)
@@ -509,18 +553,18 @@ namespace NHibernate.Engine
 				{
 					return;
 				}
-				processes.Add(process);
+				_processes.Add(process);
 			}
 	
 			public void AfterTransactionCompletion(bool success) 
 			{
-				int size = processes.Count;
+				int size = _processes.Count;
 				
 				for (int i = 0; i < size; i++)
 				{
 					try
 					{
-						AfterTransactionCompletionProcessDelegate process = processes[i];
+						AfterTransactionCompletionProcessDelegate process = _processes[i];
 						process(success);
 					}
 					catch (CacheException e)
@@ -533,7 +577,7 @@ namespace NHibernate.Engine
 						throw new AssertionFailure("Unable to perform AfterTransactionCompletion callback", e);
 					}
 				}
-				processes.Clear();
+				_processes.Clear();
 			}
 		}
 

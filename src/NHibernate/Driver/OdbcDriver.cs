@@ -1,3 +1,4 @@
+#if !NETSTANDARD2_0
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -111,3 +112,4 @@ namespace NHibernate.Driver
 		public override DateTime MinDate => new DateTime(1753, 1, 1);
 	}
 }
+#endif

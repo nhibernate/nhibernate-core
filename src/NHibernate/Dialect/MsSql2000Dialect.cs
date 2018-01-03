@@ -70,9 +70,13 @@ namespace NHibernate.Dialect
 		protected virtual void RegisterDefaultProperties()
 		{
 			DefaultProperties[Environment.ConnectionDriver] =
+#if !NETSTANDARD2_0
 #pragma warning disable 618
-				GetDriverName<SqlClientDriver>("NHibernate.Driver.SqlServer2000Driver, NHibernate.Driver.SqlServer");
+				GetDriverName<SqlClientDriver>
 #pragma warning restore 618
+#endif
+				("NHibernate.Driver.SqlServer2000Driver, NHibernate.Driver.SqlServer");
+
 			DefaultProperties[Environment.BatchSize] = "20";
 			DefaultProperties[Environment.QuerySubstitutions] = "true 1, false 0, yes 'Y', no 'N'";
 		}

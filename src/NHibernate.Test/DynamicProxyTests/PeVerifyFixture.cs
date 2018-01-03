@@ -16,6 +16,9 @@ namespace NHibernate.Test.DynamicProxyTests
 		private const string assemblyFileName = "peVerifyAssembly.dll";
 
 		[Test]
+#if NETCOREAPP2_0
+		[Ignore("This platform does not support saving dynamic assemblies.")]
+#endif
 		public void VerifyClassWithPublicConstructor()
 		{
 			var factory = new ProxyFactory(new SavingProxyAssemblyBuilder(assemblyName));
@@ -29,6 +32,9 @@ namespace NHibernate.Test.DynamicProxyTests
 		}
 
 		[Test]
+#if NETCOREAPP2_0
+		[Ignore("This platform does not support saving dynamic assemblies.")]
+#endif
 		public void VerifyClassWithProtectedConstructor()
 		{
 			var factory = new ProxyFactory(new SavingProxyAssemblyBuilder(assemblyName));
@@ -42,6 +48,9 @@ namespace NHibernate.Test.DynamicProxyTests
 		}
 
 		[Test]
+#if NETCOREAPP2_0
+		[Ignore("This platform does not support saving dynamic assemblies.")]
+#endif
 		public void VerifyClassWithPrivateConstructor()
 		{
 			var factory = new ProxyFactory(new SavingProxyAssemblyBuilder(assemblyName));
@@ -54,6 +63,9 @@ namespace NHibernate.Test.DynamicProxyTests
 		}
 
 		[Test]
+#if NETCOREAPP2_0
+		[Ignore("This platform does not support saving dynamic assemblies.")]
+#endif
 		public void VerifyClassWithNoDefaultConstructor()
 		{
 			var factory = new ProxyFactory(new SavingProxyAssemblyBuilder(assemblyName));
@@ -66,6 +78,9 @@ namespace NHibernate.Test.DynamicProxyTests
 		}
 
 		[Test]
+#if NETCOREAPP2_0
+		[Ignore("This platform does not support saving dynamic assemblies.")]
+#endif
 		public void VerifyClassWithInternalConstructor()
 		{
 			var factory = new ProxyFactory(new SavingProxyAssemblyBuilder(assemblyName));
@@ -124,18 +139,30 @@ namespace NHibernate.Test.DynamicProxyTests
 
 			public AssemblyBuilder DefineDynamicAssembly(AppDomain appDomain, AssemblyName name)
 			{
+#if NETCOREAPP2_0
+				throw new NotSupportedException("AppDomain.DefineDynamicModule not supported on this platform.");
+#else
 				AssemblyBuilderAccess access = AssemblyBuilderAccess.RunAndSave;
 				return appDomain.DefineDynamicAssembly(new AssemblyName(assemblyName), access, TestContext.CurrentContext.TestDirectory);
+#endif
 			}
 
 			public ModuleBuilder DefineDynamicModule(AssemblyBuilder assemblyBuilder, string moduleName)
 			{
+#if NETCOREAPP2_0
+				throw new NotSupportedException("AssemblyBuilder.DefineDynamicModule not supported on this platform.");
+#else
 				return assemblyBuilder.DefineDynamicModule(moduleName, string.Format("{0}.mod", assemblyName), true);
+#endif
 			}
 
 			public void Save(AssemblyBuilder assemblyBuilder)
 			{
+#if NETCOREAPP2_0
+				throw new NotSupportedException("AssemblyBuilder.Save not supported on this platform.");
+#else
 				assemblyBuilder.Save(assemblyName + ".dll");
+#endif
 			}
 		}
 

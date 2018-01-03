@@ -3,7 +3,8 @@
   <PropertyGroup>
     <Title>NHibernate.TestDatabaseSetup</Title>
     <Description>Test Database Setup for NHibernate.</Description>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
+    <DisableImplicitPackageTargetFallback>true</DisableImplicitPackageTargetFallback>
     <IsTestProject>true</IsTestProject>
     <NoWarn>$(NoWarn);3001;3002;3003;3005</NoWarn>
   </PropertyGroup>

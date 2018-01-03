@@ -56,9 +56,13 @@ namespace NHibernate.Test.ExceptionsTest
 
 			if (Dialect is Oracle8iDialect)
 			{
+#if !NETCOREAPP2_0
 				configuration.SetProperty(
 					Cfg.Environment.SqlExceptionConverter,
 					typeof(OracleClientExceptionConverterExample).AssemblyQualifiedName);
+#else
+				throw new InvalidOperationException("Oracle8iDialect not valid in NETCOREAPP2_0");
+#endif
 			}
 
 			if (Dialect is PostgreSQLDialect)

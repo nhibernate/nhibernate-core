@@ -90,8 +90,12 @@ namespace NHibernate.Test.Ado
 		[Description("SqlClient: The batcher should run all different INSERT queries in only one roundtrip.")]
 		public void SqlClientOneRoundTripForUpdateAndInsert()
 		{
+#if !NETCOREAPP2_0
 			if (Sfi.Settings.BatcherFactory is SqlClientBatchingBatcherFactory == false)
+#endif
+			{
 				Assert.Ignore("This test is for SqlClientBatchingBatcher only");
+			}
 
 			FillDb();
 
@@ -128,8 +132,12 @@ namespace NHibernate.Test.Ado
 		[Description("SqlClient: The batcher log output should be formatted")]
 		public void BatchedoutputShouldBeFormatted()
 		{
+#if !NETCOREAPP2_0
 			if (Sfi.Settings.BatcherFactory is SqlClientBatchingBatcherFactory == false)
+#endif
+			{
 				Assert.Ignore("This test is for SqlClientBatchingBatcher only");
+			}
 
 			using (var sqlLog = new SqlLogSpy())
 			{

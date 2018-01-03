@@ -37,9 +37,12 @@ namespace NHibernate.Dialect
 			RegisterColumnTypes();
 			RegisterFunctions();
 			DefaultProperties[Environment.ConnectionDriver] =
+#if !NETSTANDARD2_0
 #pragma warning disable 618
-				GetDriverName<FirebirdClientDriver>("NHibernate.Driver.FirebirdDriver, NHibernate.Driver.Firebird");
+				GetDriverName<FirebirdClientDriver>
 #pragma warning restore 618
+#endif
+				("NHibernate.Driver.FirebirdDriver, NHibernate.Driver.Firebird");
 		}
 
 		public override string AddColumnString

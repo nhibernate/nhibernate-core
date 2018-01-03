@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NETSTANDARD2_0 || DRIVER_PACKAGE
+using System;
 
 namespace NHibernate.Driver
 {
@@ -36,3 +37,4 @@ namespace NHibernate.Driver
 		public override bool RequiresTimeSpanForTime => true;
 	}
 }
+#endif

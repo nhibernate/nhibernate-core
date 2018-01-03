@@ -8,17 +8,22 @@ namespace NHibernate.Proxy.DynamicProxy
 	{
 		public AssemblyBuilder DefineDynamicAssembly(AppDomain appDomain, AssemblyName name)
 		{
-#if DEBUG
+#if DEBUG && !NETSTANDARD2_0
 			AssemblyBuilderAccess access = AssemblyBuilderAccess.RunAndSave;
 #else
 			AssemblyBuilderAccess access = AssemblyBuilderAccess.Run;
 #endif
+
+#if !NETSTANDARD2_0
 			return appDomain.DefineDynamicAssembly(name, access);
+#else
+			return AssemblyBuilder.DefineDynamicAssembly(name, access);
+#endif
 		}
 
 		public ModuleBuilder DefineDynamicModule(AssemblyBuilder assemblyBuilder, string moduleName)
 		{
-#if DEBUG
+#if DEBUG && !NETSTANDARD2_0
 			ModuleBuilder moduleBuilder =
 				assemblyBuilder.DefineDynamicModule(moduleName, string.Format("{0}.mod", moduleName), true);
 #else

@@ -1,3 +1,4 @@
+#if !NETSTANDARD2_0 || DRIVER_PACKAGE
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -229,3 +230,4 @@ namespace NHibernate.Driver
 		public override bool SupportsEnlistmentWhenAutoEnlistmentIsDisabled => false;
 	}
 }
+#endif

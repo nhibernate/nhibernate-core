@@ -105,6 +105,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2985
 		/// </summary>
 		protected internal virtual Boolean OldImage { get; set; }
 
+#if !NETCOREAPP2_0
 		private Bitmap _bitmap;
 
 		/// <summary>
@@ -118,6 +119,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2985
 				return _bitmap ?? CreateBitmap();
 			}
 		}
+#endif
 
 		/// <summary>
 		/// La url dell'immagine.
@@ -125,6 +127,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2985
 		/// <value>The image URL.</value>
 		public virtual String ImageUrl { get; set; }
 
+#if !NETCOREAPP2_0
 		private Bitmap CreateBitmap()
 		{
 			try
@@ -144,6 +147,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2985
 			}
 
 		}
+#endif
 	}
 
 }

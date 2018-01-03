@@ -2,12 +2,15 @@
   <Import Project="../../build-common/NHibernate.props" />
   <PropertyGroup>
     <Description>The Visual Basic Unit Tests for NHibernate.</Description>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
     <IsTestProject>true</IsTestProject>
     <NoWarn>$(NoWarn);3001;3002;3003;3005</NoWarn>
     <OptionExplicit>On</OptionExplicit>
     <OptionStrict>On</OptionStrict>
   </PropertyGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
+    <Compile Remove="Issues\NH3302\**" />  <!--"Like" not supported in netcoreapp2.0.-->
+  </ItemGroup>
   <ItemGroup>
     <None Remove="**\*.hbm.xml" />
   </ItemGroup>

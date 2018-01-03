@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+#if !NETCOREAPP2_0
 using System.Data.Odbc;
-using System.Data.SqlClient;
 using System.Data.SqlServerCe;
 using System.Data.SQLite;
+#endif
+using System.Data.SqlClient;
 using System.IO;
 using FirebirdSql.Data.FirebirdClient;
 using NHibernate.Test;
@@ -17,17 +19,19 @@ namespace NHibernate.TestDatabaseSetup
 	{
 		private static readonly IDictionary<string, Action<Cfg.Configuration>> SetupMethods = new Dictionary<string, Action<Cfg.Configuration>>
 			{
-				{"NHibernate.Driver.SqlServer2000Driver, NHibernate.Driver.SqlServer", SetupSqlServer},
-				{"NHibernate.Driver.SqlServer2008Driver, NHibernate.Driver.SqlServer", SetupSqlServer},
+#if !NETCOREAPP2_0
 				{"NHibernate.Driver.OdbcDriver", SetupSqlServerOdbc},
-				{"NHibernate.Driver.FirebirdDriver, NHibernate.Driver.Firebird", SetupFirebird},
 				{"NHibernate.Driver.SQLiteDriver, NHibernate.Driver.SQLite", SetupSQLite},
-				{"NHibernate.Driver.PostgreSqlDriver, NHibernate.Driver.PostgreSql", SetupNpgsql},
 				{"NHibernate.Driver.OracleDataClientDriver", SetupOracle},
-				{"NHibernate.Driver.MySqlDriver, NHibernate.Driver.MySql", SetupMySql},
 				{"NHibernate.Driver.OracleClientDriver", SetupOracle},
 				{"NHibernate.Driver.OracleManagedDriver, NHibernate.Driver.Oracle.Managed", SetupOracle},
-				{"NHibernate.Driver.SqlServerCompactDriver, NHibernate.Driver.SqlServer.Compact", SetupSqlServerCe}
+				{"NHibernate.Driver.SqlServerCompactDriver, NHibernate.Driver.SqlServer.Compact", SetupSqlServerCe},
+#endif
+				{"NHibernate.Driver.SqlServer2000Driver, NHibernate.Driver.SqlServer", SetupSqlServer},
+				{"NHibernate.Driver.SqlServer2008Driver, NHibernate.Driver.SqlServer", SetupSqlServer},
+				{"NHibernate.Driver.FirebirdDriver, NHibernate.Driver.Firebird", SetupFirebird},
+				{"NHibernate.Driver.PostgreSqlDriver, NHibernate.Driver.PostgreSql", SetupNpgsql},
+				{"NHibernate.Driver.MySqlDriver, NHibernate.Driver.MySql", SetupMySql},
 			};
 
 		private static void SetupMySql(Cfg.Configuration obj)
@@ -74,6 +78,7 @@ namespace NHibernate.TestDatabaseSetup
 			}
 		}
 
+#if !NETCOREAPP2_0
 		private static void SetupSqlServerOdbc(Cfg.Configuration cfg)
 		{
 			var connStr = cfg.Properties[Cfg.Environment.ConnectionString];
@@ -100,6 +105,7 @@ namespace NHibernate.TestDatabaseSetup
 				}
 			}
 		}
+#endif
 
 		private static void SetupFirebird(Cfg.Configuration cfg)
 		{
@@ -115,6 +121,7 @@ namespace NHibernate.TestDatabaseSetup
 			FbConnection.CreateDatabase(connStr, forcedWrites:false);
 		}
 
+#if !NETCOREAPP2_0
 		private static void SetupSqlServerCe(Cfg.Configuration cfg)
 		{
 			var connStr = cfg.Properties[Cfg.Environment.ConnectionString];
@@ -136,6 +143,7 @@ namespace NHibernate.TestDatabaseSetup
 				en.CreateDatabase();
 			}
 		}
+#endif
 
 		private static void SetupNpgsql(Cfg.Configuration cfg)
 		{
@@ -181,6 +189,7 @@ namespace NHibernate.TestDatabaseSetup
 			}
 		}
 
+#if !NETCOREAPP2_0
 		private static void SetupSQLite(Cfg.Configuration cfg)
 		{
 			var connStr = cfg.Properties[Cfg.Environment.ConnectionString];
@@ -230,7 +239,6 @@ namespace NHibernate.TestDatabaseSetup
 			//    }
 			//}
 		}
+#endif
 	}
 }
-
-

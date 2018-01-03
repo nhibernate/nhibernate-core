@@ -30,9 +30,12 @@ namespace NHibernate.Dialect
 		public PostgreSQLDialect()
 		{
 			DefaultProperties[Environment.ConnectionDriver] =
+#if !NETSTANDARD2_0
 #pragma warning disable 618
-				GetDriverName<NpgsqlDriver>("NHibernate.Driver.PostgreSqlDriver, NHibernate.Driver.PostgreSql");
+				GetDriverName<NpgsqlDriver>
 #pragma warning restore 618
+#endif
+				("NHibernate.Driver.PostgreSqlDriver, NHibernate.Driver.PostgreSql");
 
 			RegisterDateTimeTypeMappings();
 			RegisterColumnType(DbType.AnsiStringFixedLength, "char(255)");

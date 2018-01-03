@@ -3,7 +3,8 @@
   <PropertyGroup>
     <Description>The Unit Tests for NHibernate.</Description>
 
-    <TargetFramework>net461</TargetFramework>
+    <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
+    <DisableImplicitPackageTargetFallback>true</DisableImplicitPackageTargetFallback>
     <IsTestProject>true</IsTestProject>
     <NoWarn>$(NoWarn);3001;3002;3003;3005</NoWarn>
   </PropertyGroup>
@@ -25,6 +26,16 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
+    <Compile Remove="DriverTest\ObsoleteDriverFixture.cs" /> <!--Uses removed driver classes-->
+    <Compile Remove="NHSpecificTest\NH2484\**" /> <!--Uses Image type-->
+    <Compile Remove="NHSpecificTest\NH3121\**" /> <!--Uses Image type-->
+    <Compile Remove="SystemTransactions\**" /> <!--Uses Ambient transactions-->
+    <Compile Remove="Async\DriverTest\ObsoleteDriverFixture.cs" /> <!--Uses removed driver classes-->
+    <Compile Remove="Async\NHSpecificTest\NH2484\**" /> <!--Uses Image type-->
+    <Compile Remove="Async\NHSpecificTest\NH3121\**" /> <!--Uses Image type-->
+    <Compile Remove="Async\SystemTransactions\**" /> <!--Uses Ambient transactions-->
+  </ItemGroup>
   <ItemGroup>
     <Content Include="..\NHibernate.DomainModel\ABC.hbm.xml" Link="ABC.hbm.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -38,18 +49,20 @@
     <PackageReference Include="NUnit3TestAdapter" Version="3.9.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
   </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
+    <ProjectReference Include="..\NHibernate.Driver.Oracle.Managed\NHibernate.Driver.Oracle.Managed.csproj" />
+    <ProjectReference Include="..\NHibernate.Driver.SQLite\NHibernate.Driver.SQLite.csproj" />
+    <ProjectReference Include="..\NHibernate.Driver.SqlServer.Compact\NHibernate.Driver.SqlServer.Compact.csproj" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate.DomainModel\NHibernate.DomainModel.csproj" />
     <ProjectReference Include="..\NHibernate.Driver.Firebird\NHibernate.Driver.Firebird.csproj" />
     <ProjectReference Include="..\NHibernate.Driver.MySql\NHibernate.Driver.MySql.csproj" />
     <ProjectReference Include="..\NHibernate.Driver.PostgreSql\NHibernate.Driver.PostgreSql.csproj" />
-    <ProjectReference Include="..\NHibernate.Driver.Oracle.Managed\NHibernate.Driver.Oracle.Managed.csproj" />
     <ProjectReference Include="..\NHibernate.Driver.SqlServer\NHibernate.Driver.SqlServer.csproj" />
-    <ProjectReference Include="..\NHibernate.Driver.SQLite\NHibernate.Driver.SQLite.csproj" />
-    <ProjectReference Include="..\NHibernate.Driver.SqlServer.Compact\NHibernate.Driver.SqlServer.Compact.csproj" />
     <ProjectReference Include="..\NHibernate\NHibernate.csproj" />
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data.OracleClient" />
     <Reference Include="System.Transactions" />

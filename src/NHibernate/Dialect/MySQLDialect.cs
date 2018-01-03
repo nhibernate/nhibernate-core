@@ -114,9 +114,12 @@ namespace NHibernate.Dialect
 			RegisterFunctions();
 
 			DefaultProperties[Environment.ConnectionDriver] =
+#if !NETSTANDARD2_0
 #pragma warning disable 618
-				GetDriverName<MySqlDataDriver>("NHibernate.Driver.MySqlDriver, NHibernate.Driver.MySql");
+				GetDriverName<MySqlDataDriver>
 #pragma warning restore 618
+#endif
+				("NHibernate.Driver.MySqlDriver, NHibernate.Driver.MySql");
 		}
 
 		#region private static readonly string[] DialectKeywords = { ... }

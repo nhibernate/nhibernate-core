@@ -113,6 +113,7 @@ namespace NHibernate.Connection
 					throw new HibernateException("Could not create the driver from " + driverClass + ".", e);
 				}
 
+#if !NETSTANDARD2_0
 #pragma warning disable 618
 				switch (driver)
 				{
@@ -142,6 +143,7 @@ namespace NHibernate.Connection
 						break;
 				}
 #pragma warning restore 618
+#endif
 			}
 		}
 

@@ -1,3 +1,4 @@
+#if !NETSTANDARD2_0
 using System;
 using System.Data.Common;
 using Environment = NHibernate.Cfg.Environment;
@@ -38,3 +39,4 @@ namespace NHibernate.Driver
 		#endregion
 	}
 }
+#endif

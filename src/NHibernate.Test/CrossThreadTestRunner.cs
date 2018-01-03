@@ -57,7 +57,9 @@ namespace NHibernate.Test
 			}
 		}
 
+#if !NETCOREAPP2_0
 		[ReflectionPermission(SecurityAction.Demand)]
+#endif
 		private static void ThrowExceptionPreservingStack(Exception exception)
 		{
 			if (RemoteStackTraceField != null)

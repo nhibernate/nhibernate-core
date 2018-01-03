@@ -204,9 +204,13 @@ namespace NHibernate.Dialect
 		protected virtual void RegisterDefaultProperties()
 		{
 			DefaultProperties[Environment.ConnectionDriver] =
+#if !NETSTANDARD2_0
 #pragma warning disable 618
-				GetDriverName<SqlServerCeDriver>("NHibernate.Driver.SqlServerCompactDriver, NHibernate.Driver.SqlServer.Compact");
+				GetDriverName<SqlServerCeDriver>
 #pragma warning restore 618
+#endif
+				("NHibernate.Driver.SqlServerCompactDriver, NHibernate.Driver.SqlServer.Compact");
+
 			DefaultProperties[Environment.PrepareSql] = "false";
 		}
 

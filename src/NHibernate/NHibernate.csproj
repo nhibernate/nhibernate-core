@@ -3,8 +3,9 @@
 
   <PropertyGroup>
     <Description>An object persistence library for relational databases.</Description>
-    <TargetFramework>net461</TargetFramework>
-    <NoWarn>$(NoWarn);3001;3002;3003;3005;1591</NoWarn>
+    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+    <DisableImplicitPackageTargetFallback>true</DisableImplicitPackageTargetFallback>
+    <NoWarn>$(NoWarn);0419;3001;3002;3003;3005;1591</NoWarn>
     <SignAssembly>True</SignAssembly>
     <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
     <AssemblyOriginatorKeyFile>..\NHibernate.snk</AssemblyOriginatorKeyFile>
@@ -41,10 +42,17 @@
     <PackageReference Include="Remotion.Linq.EagerFetching" Version="[2.1.0, 3.0)" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Configuration" />
+  </ItemGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.4.0" />
+    <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.3.0" />
+    <PackageReference Include="System.ServiceModel.Primitives" Version="4.4.0" />
   </ItemGroup>
 
   <ItemGroup>

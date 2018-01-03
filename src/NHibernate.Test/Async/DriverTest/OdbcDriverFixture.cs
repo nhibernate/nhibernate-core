@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+#if !NETCOREAPP2_0
 using System;
 using System.Collections;
 using NHibernate.Dialect;
@@ -115,3 +116,4 @@ namespace NHibernate.Test.DriverTest
 		}
 	}
 }
+#endif

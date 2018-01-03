@@ -1227,12 +1227,14 @@ namespace NHibernate.Impl
 					return null;
 				case "async_local":
 					return new AsyncLocalSessionContext(this);
+#if !NETSTANDARD2_0
 				case "call":
 					return new CallSessionContext(this);
-				case "thread_static":
-					return new ThreadStaticSessionContext(this);
 				case "web":
 					return new WebSessionContext(this);
+#endif
+				case "thread_static":
+					return new ThreadStaticSessionContext(this);
 				case "wcf_operation":
 					return new WcfOperationSessionContext(this);
 			}

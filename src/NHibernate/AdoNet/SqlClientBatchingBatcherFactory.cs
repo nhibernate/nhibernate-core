@@ -1,3 +1,4 @@
+#if !NETSTANDARD2_0
 using NHibernate.Engine;
 
 namespace NHibernate.AdoNet
@@ -10,3 +11,4 @@ namespace NHibernate.AdoNet
 		}
 	}
 }
+#endif

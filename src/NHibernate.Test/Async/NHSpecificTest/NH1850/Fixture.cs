@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+#if !NETCOREAPP2_0
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1850
@@ -106,3 +107,4 @@ namespace NHibernate.Test.NHSpecificTest.NH1850
 		}
 	}
 }
+#endif

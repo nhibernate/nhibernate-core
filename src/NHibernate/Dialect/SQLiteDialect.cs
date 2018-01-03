@@ -182,9 +182,13 @@ namespace NHibernate.Dialect
 		protected virtual void RegisterDefaultProperties()
 		{
 			DefaultProperties[Cfg.Environment.ConnectionDriver] =
+#if !NETSTANDARD2_0
 #pragma warning disable 618
-				GetDriverName<SQLite20Driver>("NHibernate.Driver.SQLiteDriver, NHibernate.Driver.SQLite");
+				GetDriverName<SQLite20Driver>
 #pragma warning restore 618
+#endif
+					("NHibernate.Driver.SQLiteDriver, NHibernate.Driver.SQLite");
+
 			DefaultProperties[Cfg.Environment.QuerySubstitutions] = "true 1, false 0, yes 'Y', no 'N'";
 		}
 

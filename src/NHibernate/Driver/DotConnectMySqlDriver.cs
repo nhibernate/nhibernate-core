@@ -1,4 +1,5 @@
-﻿namespace NHibernate.Driver
+﻿#if !NETSTANDARD2_0 || DRIVER_PACKAGE
+namespace NHibernate.Driver
 {
     /// <summary>
     /// Provides a database driver for dotConnect for MySQL by DevArt.
@@ -53,3 +54,4 @@
         }
     }
 }
+#endif

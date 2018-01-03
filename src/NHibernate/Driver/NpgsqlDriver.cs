@@ -1,3 +1,4 @@
+#if !NETSTANDARD2_0 || DRIVER_PACKAGE
 using System;
 using System.Data;
 using System.Data.Common;
@@ -112,3 +113,4 @@ namespace NHibernate.Driver
 		public override bool HasDelayedDistributedTransactionCompletion => true;
 	}
 }
+#endif

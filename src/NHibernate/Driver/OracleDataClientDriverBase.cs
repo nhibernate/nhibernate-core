@@ -1,3 +1,4 @@
+#if !NETSTANDARD2_0 || DRIVER_PACKAGE
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -168,3 +169,4 @@ namespace NHibernate.Driver
 		System.Type IEmbeddedBatcherFactoryProvider.BatcherFactoryClass => typeof(OracleDataClientBatchingBatcherFactory);
 	}
 }
+#endif

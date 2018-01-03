@@ -19,6 +19,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2188
 		[Test]
 		public void WhenSerchInMultiplePathsThenNotThrows()
 		{
+#if NETCOREAPP2_0
+			Assert.Ignore("Not applicable for NETCOREAPP2_0");
+#else
 			// NUnit 3 sets PrivateBinPath when using an NUnit project, so we need to reset back to the correct setting when done.
 			var privatePath = AppDomain.CurrentDomain.SetupInformation.PrivateBinPath;
 
@@ -43,6 +46,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2188
 				if (privatePath != null) AppDomain.CurrentDomain.AppendPrivatePath(privatePath);
 			}
 #pragma warning restore CS0618 // Type or member is obsolete
+#endif
 		}
 	}
 }

@@ -10,7 +10,6 @@
 
 using System;
 using System.Data.Common;
-using System.Data.Odbc;
 using System.Data.SqlClient;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;

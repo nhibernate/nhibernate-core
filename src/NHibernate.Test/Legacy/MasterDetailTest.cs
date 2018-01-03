@@ -637,6 +637,9 @@ namespace NHibernate.Test.Legacy
 		}
 
 		[Test]
+#if NETCOREAPP2_0
+		[Ignore("Serializing delegates (AfterTransactionCompletionProcessDelegate) is not supported on this platform.")]
+#endif
 		public void Serialization()
 		{
 			ISession s = OpenSession();

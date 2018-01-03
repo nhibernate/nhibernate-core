@@ -5,7 +5,8 @@
     <Description>Driver for PostgreSQL to be used with NHibernate 5.</Description>
     <PackageTags>NHibernate; Driver; Npgsql; PostgreSQL; Postgres; ADO.Net; Core</PackageTags>
 
-    <TargetFramework>net461</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+    <DisableImplicitPackageTargetFallback>true</DisableImplicitPackageTargetFallback>
     <NoWarn>$(NoWarn);3001;3002;3003;3005;1591</NoWarn>
     <SignAssembly>True</SignAssembly>
     <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>

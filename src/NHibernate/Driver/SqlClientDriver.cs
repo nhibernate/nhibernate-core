@@ -1,3 +1,4 @@
+#if !NETSTANDARD2_0 || DRIVER_PACKAGE
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -14,11 +15,14 @@ namespace NHibernate.Driver
 	/// A NHibernate Driver for using the SqlClient DataProvider
 	/// </summary>
 #if DRIVER_PACKAGE
-	public class SqlServer2000Driver : DriverBase, IEmbeddedBatcherFactoryProvider
+	public class SqlServer2000Driver : DriverBase
 #else
 	[Obsolete("Use NHibernate.Driver.SqlServer NuGet package and SqlServer2000Driver."
 		+ "  There are also Loquacious configuration points: .Connection.BySqlServer2000Driver() and .DataBaseIntegration(x => x.SqlServer2000Driver()).")]
-	public class SqlClientDriver : DriverBase, IEmbeddedBatcherFactoryProvider
+	public class SqlClientDriver : DriverBase
+#endif
+#if !NETSTANDARD2_0
+		, IEmbeddedBatcherFactoryProvider
 #endif
 	{
 		// Since v5.1
@@ -266,6 +270,7 @@ namespace NHibernate.Driver
 			return (sqlType is BinaryBlobSqlType) || ((DbType.Binary == dbParam.DbType) && sqlType.LengthDefined && (sqlType.Length > MsSql2000Dialect.MaxSizeForLengthLimitedBinary));
 		}
 
+#if !NETSTANDARD2_0
 		#region IEmbeddedBatcherFactoryProvider Members
 
 		System.Type IEmbeddedBatcherFactoryProvider.BatcherFactoryClass
@@ -274,6 +279,7 @@ namespace NHibernate.Driver
 		}
 
 		#endregion
+#endif
 
 		public override IResultSetsCommand GetResultSetsCommand(ISessionImplementor session)
 		{
@@ -295,3 +301,4 @@ namespace NHibernate.Driver
 		public override DateTime MinDate => new DateTime(1753, 1, 1);
 	}
 }
+#endif

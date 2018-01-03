@@ -46,9 +46,11 @@ namespace NHibernate.Test.CfgTest.Loquacious
 					.Using<MsSql2000Dialect>()
 					.AutoQuoteKeywords()
 					.EnableLogFormattedSql()
+#if !NETCOREAPP2_0
 					.BatchingQueries
 						.Through<SqlClientBatchingBatcherFactory>()
 						.Each(15)
+#endif
 					.Connected
 						.Through<DebugConnectionProvider>()
 						.By<SqlServer2000Driver>()
@@ -80,8 +82,10 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			Assert.That(cfg.Properties[Environment.Dialect], Is.EqualTo(typeof(MsSql2000Dialect).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.Hbm2ddlKeyWords], Is.EqualTo("auto-quote"));
 			Assert.That(cfg.Properties[Environment.FormatSql], Is.EqualTo("true"));
+#if !NETCOREAPP2_0
 			Assert.That(cfg.Properties[Environment.BatchStrategy], Is.EqualTo(typeof(SqlClientBatchingBatcherFactory).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.BatchSize], Is.EqualTo("15"));
+#endif
 			Assert.That(cfg.Properties[Environment.ConnectionProvider], Is.EqualTo(typeof(DebugConnectionProvider).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.ConnectionDriver], Is.EqualTo(typeof(SqlServer2000Driver).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.ReleaseConnections], Is.EqualTo(ConnectionReleaseModeParser.ToString(ConnectionReleaseMode.AfterTransaction)));
