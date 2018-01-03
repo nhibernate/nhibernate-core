@@ -162,13 +162,15 @@ namespace NHibernate.Test
 						var wereClosed = _sessionFactory.CheckSessionsWereClosed();
 						var wasCleaned = CheckDatabaseWasCleaned();
 						var wereConnectionsClosed = CheckConnectionsWereClosed();
-						fail = !wereClosed || !wasCleaned || !wereConnectionsClosed;
+						var wereTransactionsDisposed = CheckEnlistedTransactionsWereDisposed();
+						fail = !wereClosed || !wasCleaned || !wereConnectionsClosed || !wereTransactionsDisposed;
 
 						if (fail)
 						{
 							badCleanupMessage = "Test didn't clean up after itself. session closed: " + wereClosed + "; database cleaned: " +
 												wasCleaned
-												+ "; connection closed: " + wereConnectionsClosed;
+												+ "; connection closed: " + wereConnectionsClosed
+												+ "; transactions disposed:" + wereTransactionsDisposed;;
 							if (testResult != null && testResult.Outcome.Status == TestStatus.Failed)
 							{
 								// Avoid hiding a test failure (asserts are usually not hidden, but other exception would be).
@@ -256,6 +258,31 @@ namespace NHibernate.Test
 
 			log.Error("Test case didn't close all open connections, closing");
 			_sessionFactory.DebugConnectionProvider.CloseAllConnections();
+			return false;
+		}
+
+		private bool CheckEnlistedTransactionsWereDisposed()
+		{
+			System.Transactions.Transaction current = System.Transactions.Transaction.Current;
+			bool notAborted = ((System.Transactions.Transaction.Current?.TransactionInformation.Status) ?? System.Transactions.TransactionStatus.Aborted) != System.Transactions.TransactionStatus.Aborted;
+			if (!notAborted) return true;
+
+			do
+			{
+				notAborted = current.TransactionInformation.Status != System.Transactions.TransactionStatus.Aborted;
+
+				try
+				{
+					current.Dispose();
+				}
+				catch (Exception ex)
+				{
+					log.Error("Error disposing enlisted transaction", ex);
+				}
+
+				current = System.Transactions.Transaction.Current;
+			} while (current != null && notAborted);
+
 			return false;
 		}
 
