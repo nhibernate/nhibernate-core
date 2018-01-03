@@ -236,7 +236,7 @@ namespace NHibernate.Test.CfgTest
 			Configuration cfg = new Configuration();
 			try
 			{
-				cfg.Configure();
+				cfg.Configure(TestsContext.GetTestAssemblyHibernateConfiguration());
 				cfg.AddXmlFile("invalid.hbm.xml");
 			}
 			catch (HibernateException)

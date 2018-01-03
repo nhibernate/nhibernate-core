@@ -1430,6 +1430,11 @@ namespace NHibernate.Cfg
 		public Configuration Configure()
 		{
 			var hc = ConfigurationManager.GetSection(CfgXmlHelper.CfgSectionName) as IHibernateConfiguration;
+			return Configure(hc);
+		}
+
+		public Configuration Configure(IHibernateConfiguration hc)
+		{
 			if (hc != null && hc.SessionFactory != null)
 			{
 				return DoConfigure(hc.SessionFactory);

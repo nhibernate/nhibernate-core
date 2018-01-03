@@ -44,7 +44,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3667
 		[Test]
 		public void TestMapEntityEntity()
 		{
-			var cfg = new Configuration().Configure();
+			var cfg = new Configuration().Configure(TestsContext.GetTestAssemblyHibernateConfiguration());
 			var mapper = new ModelMapper();
 
 			mapper.Class<ClassWithMapEntityEntity>(
@@ -123,7 +123,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3667
 		[Test]
 		public void TestMapElementEntity()
 		{
-			var cfg = new Configuration().Configure();
+			var cfg = new Configuration().Configure(TestsContext.GetTestAssemblyHibernateConfiguration());
 			var mapper = new ModelMapper();
 
 			mapper.Class<ClassWithMapElementEntity>(

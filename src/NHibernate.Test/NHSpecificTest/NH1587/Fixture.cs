@@ -17,7 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1587
 			if (TestConfigurationHelper.hibernateConfigFile != null)
 				cfg.Configure(TestConfigurationHelper.hibernateConfigFile);
 			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH1587.Mappings.hbm.xml", GetType().Assembly);
-			cfg.Configure();
+			cfg.Configure(TestsContext.GetTestAssemblyHibernateConfiguration());
 
 			bool useOptimizer= false;
 			using (var ls = new LogSpy("NHibernate.Tuple.Entity.PocoEntityTuplizer"))

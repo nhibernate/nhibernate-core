@@ -12,7 +12,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 		[Test]
 		public void ConfigureCacheOfClass()
 		{
-			Configuration configure = new Configuration().Configure();
+			Configuration configure = new Configuration().Configure(TestsContext.GetTestAssemblyHibernateConfiguration());
 			configure.AddResource("NHibernate.Test.CfgTest.Loquacious.EntityToCache.hbm.xml", GetType().Assembly);
 
 			configure.EntityCache<EntityToCache>(ce =>
@@ -30,7 +30,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 		[Test]
 		public void ConfigureCacheOfCollection()
 		{
-			Configuration configure = new Configuration().Configure();
+			Configuration configure = new Configuration().Configure(TestsContext.GetTestAssemblyHibernateConfiguration());
 			configure.AddResource("NHibernate.Test.CfgTest.Loquacious.EntityToCache.hbm.xml", GetType().Assembly);
 
 			configure.EntityCache<EntityToCache>(ce =>
@@ -54,7 +54,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 		[Test]
 		public void ConfigureCacheOfCollectionWithOutEntity()
 		{
-			Configuration configure = new Configuration().Configure();
+			Configuration configure = new Configuration().Configure(TestsContext.GetTestAssemblyHibernateConfiguration());
 			configure.AddResource("NHibernate.Test.CfgTest.Loquacious.EntityToCache.hbm.xml", GetType().Assembly);
 
 			configure.EntityCache<EntityToCache>(ce => ce.Collection(e => e.Elements, cc =>
@@ -71,7 +71,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 		[Test]
 		public void NotAllowRelatedCollections()
 		{
-			Configuration configure = new Configuration().Configure();
+			Configuration configure = new Configuration().Configure(TestsContext.GetTestAssemblyHibernateConfiguration());
 			configure.AddResource("NHibernate.Test.CfgTest.Loquacious.EntityToCache.hbm.xml", GetType().Assembly);
 
 			var exception =

@@ -42,14 +42,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1867
 		[Test]
 		public void NestedWithinNonGeneric()
 		{
-			var configuration = new Configuration().Configure();
+			var configuration = new Configuration().Configure(TestsContext.GetTestAssemblyHibernateConfiguration());
 			configuration.AddXml(string.Format(mappingTemplate, typeof(A).FullName, typeof(A.B).FullName));
 		}
 
 		[Test]
 		public void NestedWithinGeneric()
 		{
-			var configuration = new Configuration().Configure();
+			var configuration = new Configuration().Configure(TestsContext.GetTestAssemblyHibernateConfiguration());
 			configuration.AddXml(string.Format(mappingTemplate, typeof(A<int>).FullName, typeof(A<int>.B).FullName));
 		}
 	}

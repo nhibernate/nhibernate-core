@@ -33,6 +33,9 @@ namespace NHibernate.Test.ConnectionStringTest
 		}
 
 		[Test]
+#if NETCOREAPP2_0
+		[Ignore("This platform does not support named connection strings from unit tests.")]
+#endif
 		public void CanGetNamedConnectionStringFromConfiguration()
 		{
 			Dictionary<string, string> settings = new Dictionary<string, string>();
