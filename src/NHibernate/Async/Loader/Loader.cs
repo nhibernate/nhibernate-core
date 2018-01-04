@@ -843,7 +843,6 @@ namespace NHibernate.Loader
 			DbDataReader rs = null;
 			try
 			{
-				Log.Info(st.CommandText);
 				// TODO NH: Callable
 				rs = await (session.Batcher.ExecuteReaderAsync(st, cancellationToken)).ConfigureAwait(false);
 
