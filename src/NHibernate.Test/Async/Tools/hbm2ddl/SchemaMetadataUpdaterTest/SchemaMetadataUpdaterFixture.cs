@@ -39,8 +39,8 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 				var metaData = dialect.GetDataBaseSchema(connectionHelper.Connection);
 				var reserved = metaData.GetReservedWords();
 				Assert.That(reserved, Is.Not.Empty);
-				Assert.That(reserved, Has.Member("SELECT").IgnoreCase);
-				Assert.That(reserved, Has.Member("FROM").IgnoreCase);
+				Assert.That(reserved, Has.Some.EqualTo("SELECT").IgnoreCase);
+				Assert.That(reserved, Has.Some.EqualTo("FROM").IgnoreCase);
 			}
 			finally
 			{
