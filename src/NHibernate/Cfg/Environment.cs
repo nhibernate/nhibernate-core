@@ -273,7 +273,7 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public const string TrackSessionId = "track_session_id";
 
-		private static readonly Dictionary<string, string> GlobalProperties;
+		private static readonly Dictionary<string, string> GlobalProperties = new Dictionary<string, string>();
 
 		private static IBytecodeProvider BytecodeProviderInstance;
 		private static bool EnableReflectionOptimizer;
@@ -295,9 +295,30 @@ namespace NHibernate.Cfg
 				log.Info("NHibernate {0}", Version);
 			}
 
-			GlobalProperties = new Dictionary<string, string>();
-			GlobalProperties[PropertyUseReflectionOptimizer] = bool.TrueString;
-			LoadGlobalPropertiesFromAppConfig();
+			InitializeGlobalProperties(GetHibernateConfiguration());
+		}
+
+		public static void InitializeGlobalProperties(IHibernateConfiguration config)
+		{
+			GlobalProperties.Clear();
+			if (config != null)
+			{
+				HibernateConfiguration = config;
+				GlobalProperties[PropertyBytecodeProvider] = config.ByteCodeProviderType;
+				GlobalProperties[PropertyUseReflectionOptimizer] = config.UseReflectionOptimizer.ToString();
+				if (config.SessionFactory != null)
+				{
+					foreach (var kvp in config.SessionFactory.Properties)
+					{
+						GlobalProperties[kvp.Key] = kvp.Value;
+					}
+				}
+			}
+			else
+			{
+				GlobalProperties[PropertyUseReflectionOptimizer] = bool.TrueString;
+			}
+
 			VerifyProperties(GlobalProperties);
 
 			BytecodeProviderInstance = BuildBytecodeProvider(GlobalProperties);
@@ -309,57 +330,26 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		private static void LoadGlobalPropertiesFromAppConfig()
+		internal static IHibernateConfiguration HibernateConfiguration { get; private set; }
+
+		private static IHibernateConfiguration GetHibernateConfiguration()
 		{
 			object config = ConfigurationManager.GetSection(CfgXmlHelper.CfgSectionName);
-
 			if (config == null)
 			{
 				log.Info("{0} section not found in application configuration file", CfgXmlHelper.CfgSectionName);
-				return;
+				return null;
 			}
 
 			var nhConfig = config as IHibernateConfiguration;
 			if (nhConfig == null)
 			{
 				log.Info(
-						"{0} section handler, in application configuration file, is not IHibernateConfiguration, section ignored",
-						CfgXmlHelper.CfgSectionName);
-				return;
+					"{0} section handler, in application configuration file, is not IHibernateConfiguration, section ignored",
+					CfgXmlHelper.CfgSectionName);
 			}
 
-			GlobalProperties[PropertyBytecodeProvider] = nhConfig.ByteCodeProviderType;
-			GlobalProperties[PropertyUseReflectionOptimizer] = nhConfig.UseReflectionOptimizer.ToString();
-			if (nhConfig.SessionFactory != null)
-			{
-				foreach (var kvp in nhConfig.SessionFactory.Properties)
-				{
-					GlobalProperties[kvp.Key] = kvp.Value;
-				}
-			}
-		}
-
-		internal static void ResetSessionFactoryProperties()
-		{
-			string savedBytecodeProvider;
-			GlobalProperties.TryGetValue(PropertyBytecodeProvider, out savedBytecodeProvider);
-			// Save values loaded and used in static constructor
-
-			string savedUseReflectionOptimizer;
-			GlobalProperties.TryGetValue(PropertyUseReflectionOptimizer, out savedUseReflectionOptimizer);
-			// Clean all property loaded from app.config
-			GlobalProperties.Clear();
-
-			// Restore values loaded and used in static constructor
-			if (savedBytecodeProvider != null)
-			{
-				GlobalProperties[PropertyBytecodeProvider] = savedBytecodeProvider;
-			}
-
-			if (savedUseReflectionOptimizer != null)
-			{
-				GlobalProperties[PropertyUseReflectionOptimizer] = savedUseReflectionOptimizer;
-			}
+			return nhConfig;
 		}
 
 		/// <summary>

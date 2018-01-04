@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Transactions;
+using NHibernate.Engine;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2057
@@ -7,6 +8,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2057
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override bool AppliesTo(ISessionFactoryImplementor factory) =>
+			factory.ConnectionProvider.Driver.SupportsSystemTransactions;
+
 		[Test]
 		public void WillCloseWhenUsingDTC()
 		{

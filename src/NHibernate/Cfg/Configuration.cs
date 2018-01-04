@@ -1429,10 +1429,10 @@ namespace NHibernate.Cfg
 		/// </remarks>
 		public Configuration Configure()
 		{
-			var hc = ConfigurationManager.GetSection(CfgXmlHelper.CfgSectionName) as IHibernateConfiguration;
-			if (hc != null && hc.SessionFactory != null)
+			var sessionFactoryConfiguration = Environment.HibernateConfiguration?.SessionFactory;
+			if (sessionFactoryConfiguration != null)
 			{
-				return DoConfigure(hc.SessionFactory);
+				return DoConfigure(sessionFactoryConfiguration);
 			}
 			else
 			{
@@ -1450,29 +1450,9 @@ namespace NHibernate.Cfg
 		/// </remarks>
 		public Configuration Configure(string fileName)
 		{
-			return Configure(fileName, false);
-		}
-
-		private Configuration Configure(string fileName, bool ignoreSessionFactoryConfig)
-		{
-			if (ignoreSessionFactoryConfig)
+			using (var reader = new XmlTextReader(fileName))
 			{
-				Environment.ResetSessionFactoryProperties();
-				properties = Environment.Properties;
-			}
-
-			XmlTextReader reader = null;
-			try
-			{
-				reader = new XmlTextReader(fileName);
 				return Configure(reader);
-			}
-			finally
-			{
-				if (reader != null)
-				{
-					reader.Close();
-				}
 			}
 		}
 
@@ -1488,33 +1468,23 @@ namespace NHibernate.Cfg
 		public Configuration Configure(Assembly assembly, string resourceName)
 		{
 			if (assembly == null)
-			{
-				throw new HibernateException("Could not configure NHibernate.", new ArgumentNullException("assembly"));
-			}
+				throw new HibernateException("Could not configure NHibernate.", new ArgumentNullException(nameof(assembly)));
 
 			if (resourceName == null)
-			{
-				throw new HibernateException("Could not configure NHibernate.", new ArgumentNullException("resourceName"));
-			}
+				throw new HibernateException("Could not configure NHibernate.", new ArgumentNullException(nameof(resourceName)));
 
-			Stream stream = null;
-			try
+			using (var stream = assembly.GetManifestResourceStream(resourceName))
 			{
-				stream = assembly.GetManifestResourceStream(resourceName);
 				if (stream == null)
 				{
 					// resource does not exist - throw appropriate exception 
-					throw new HibernateException("A ManifestResourceStream could not be created for the resource " + resourceName
-												 + " in Assembly " + assembly.FullName);
+					throw new HibernateException(
+						"A ManifestResourceStream could not be created for the resource " + resourceName + " in Assembly " + assembly.FullName);
 				}
 
-				return Configure(new XmlTextReader(stream));
-			}
-			finally
-			{
-				if (stream != null)
+				using (var reader = new XmlTextReader(stream))
 				{
-					stream.Close();
+					return Configure(reader);
 				}
 			}
 		}

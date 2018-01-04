@@ -12,7 +12,12 @@ namespace NHibernate.Driver
 	/// <summary>
 	/// A NHibernate Driver for using the SqlClient DataProvider
 	/// </summary>
-	public class SqlClientDriver : DriverBase, IEmbeddedBatcherFactoryProvider
+	public class SqlClientDriver
+#if NETFX
+		: DriverBase, IEmbeddedBatcherFactoryProvider
+#else
+		: ReflectionBasedDriver
+#endif
 	{
 		public const int MaxSizeForAnsiClob = 2147483647; // int.MaxValue
 		public const int MaxSizeForClob = 1073741823; // int.MaxValue / 2
@@ -40,6 +45,12 @@ namespace NHibernate.Driver
 			_dialect = Dialect.Dialect.GetDialect(settings);
 		}
 
+#if !NETFX
+		public SqlClientDriver()
+			: base("System.Data.SqlClient", "System.Data.SqlClient.SqlConnection", "System.Data.SqlClient.SqlCommand")
+		{
+		}
+#else
 		/// <summary>
 		/// Creates an uninitialized <see cref="DbConnection" /> object for
 		/// the SqlClientDriver.
@@ -59,6 +70,13 @@ namespace NHibernate.Driver
 		{
 			return new System.Data.SqlClient.SqlCommand();
 		}
+
+		System.Type IEmbeddedBatcherFactoryProvider.BatcherFactoryClass
+		{
+			get { return typeof(SqlClientBatchingBatcherFactory); }
+		}
+#endif
+
 
 		/// <summary>
 		/// MsSql requires the use of a Named Prefix in the SQL statement.
@@ -111,7 +129,7 @@ namespace NHibernate.Driver
 		protected override void InitializeParameter(DbParameter dbParam, string name, SqlType sqlType)
 		{
 			base.InitializeParameter(dbParam, name, sqlType);
-			
+
 			// Defaults size/precision/scale
 			switch (dbParam.DbType)
 			{
@@ -239,14 +257,6 @@ namespace NHibernate.Driver
 			return (sqlType is BinaryBlobSqlType) || ((DbType.Binary == dbParam.DbType) && sqlType.LengthDefined && (sqlType.Length > MaxSizeForLengthLimitedBinary));
 		}
 
-		#region IEmbeddedBatcherFactoryProvider Members
-
-		System.Type IEmbeddedBatcherFactoryProvider.BatcherFactoryClass
-		{
-			get { return typeof(SqlClientBatchingBatcherFactory); }
-		}
-
-		#endregion
 
 		public override IResultSetsCommand GetResultSetsCommand(ISessionImplementor session)
 		{

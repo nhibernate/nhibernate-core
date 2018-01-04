@@ -24,10 +24,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH1632"; }
-		}
+		protected override bool AppliesTo(ISessionFactoryImplementor factory) =>
+			factory.ConnectionProvider.Driver.SupportsSystemTransactions;
 
 		protected override void Configure(Configuration configuration)
 		{

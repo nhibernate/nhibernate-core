@@ -3,9 +3,12 @@
   <PropertyGroup>
     <Title>NHibernate.TestDatabaseSetup</Title>
     <Description>Test Database Setup for NHibernate.</Description>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
     <IsTestProject>true</IsTestProject>
     <NoWarn>$(NoWarn);3001;3002;3003;3005</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
+    <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate.Test\NHibernate.Test.csproj" />
