@@ -1271,7 +1271,6 @@ namespace NHibernate.Loader
 			DbDataReader rs = null;
 			try
 			{
-				Log.Info(st.CommandText);
 				// TODO NH: Callable
 				rs = session.Batcher.ExecuteReader(st);
 
