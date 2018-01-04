@@ -14,12 +14,12 @@ using System.Security;
 namespace NHibernate.Proxy.DynamicProxy
 {
 	[Serializable]
-	public class ProxyObjectReference : IObjectReference, ISerializable
+	public sealed class ProxyObjectReference : IObjectReference, ISerializable
 	{
 		private readonly System.Type _baseType;
 		private readonly IProxy _proxy;
 
-		protected ProxyObjectReference(SerializationInfo info, StreamingContext context)
+		private ProxyObjectReference(SerializationInfo info, StreamingContext context)
 		{
 			// Deserialize the base type using its assembly qualified name
 			string qualifiedName = info.GetString("__baseType");

@@ -7,7 +7,6 @@ namespace NHibernate.Event
 	/// <summary>  
 	/// Defines an event class for the replication of an entity.
 	/// </summary>
-	[Serializable]
 	public class ReplicateEvent : AbstractEvent
 	{
 		private string entityName;

@@ -10,7 +10,6 @@ namespace NHibernate.Tuple
 	/// <remarks>
 	/// Author: Steve Ebersole
 	/// </remarks>
-	[Serializable]
 	public class VersionProperty : StandardProperty
 	{
 		private readonly VersionValue unsavedValue;

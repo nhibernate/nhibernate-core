@@ -10,7 +10,7 @@ namespace NHibernate.Exceptions
 	[Serializable]
 	public class ADOConnectionException : ADOException
 	{
-		public ADOConnectionException(SerializationInfo info, StreamingContext context) : base(info, context) {}
+		protected ADOConnectionException(SerializationInfo info, StreamingContext context) : base(info, context) {}
 		public ADOConnectionException(string message, Exception innerException, string sql) : base(message, innerException, sql) {}
 		public ADOConnectionException(string message, Exception innerException) : base(message, innerException) {}
 	}

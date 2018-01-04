@@ -6,7 +6,6 @@ namespace NHibernate.Event
 	/// <summary> 
 	/// Occurs after inserting an item in the datastore 
 	/// </summary>
-	[Serializable]
 	public class PostInsertEvent : AbstractPostDatabaseOperationEvent
 	{
 		public PostInsertEvent(object entity, object id, object[] state, IEntityPersister persister, IEventSource source)

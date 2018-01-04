@@ -19,6 +19,7 @@ namespace NHibernate.Context
 	[Serializable]
 	public class AsyncLocalSessionContext : CurrentSessionContext
 	{
+		[NonSerialized]
 		private readonly AsyncLocal<ISession> _session = new AsyncLocal<ISession>();
 
 		// Constructor signature required for dynamic invocation code.

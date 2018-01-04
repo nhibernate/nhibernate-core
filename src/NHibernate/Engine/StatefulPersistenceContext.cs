@@ -27,7 +27,7 @@ namespace NHibernate.Engine
 	/// PersistentContext to drive their processing.
 	/// </remarks>
 	[Serializable]
-	public partial class StatefulPersistenceContext : IPersistenceContext, ISerializable, IDeserializationCallback
+	public sealed partial class StatefulPersistenceContext : IPersistenceContext, ISerializable, IDeserializationCallback
 	{
 		private const int InitCollectionSize = 8;
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(StatefulPersistenceContext));
@@ -790,7 +790,7 @@ namespace NHibernate.Engine
 		/// The owner, if its entity ID is available from the collection's loaded key
 		/// and the owner entity is in the persistence context; otherwise, returns null
 		/// </returns>
-		public virtual object GetLoadedCollectionOwnerOrNull(IPersistentCollection collection)
+		public object GetLoadedCollectionOwnerOrNull(IPersistentCollection collection)
 		{
 			CollectionEntry ce = GetCollectionEntry(collection);
 			if (ce.LoadedPersister == null)
@@ -811,7 +811,7 @@ namespace NHibernate.Engine
 		/// <summary> Get the ID for the entity that owned this persistent collection when it was loaded </summary>
 		/// <param name="collection">The persistent collection </param>
 		/// <returns> the owner ID if available from the collection's loaded key; otherwise, returns null </returns>
-		public virtual object GetLoadedCollectionOwnerIdOrNull(IPersistentCollection collection)
+		public object GetLoadedCollectionOwnerIdOrNull(IPersistentCollection collection)
 		{
 			return GetLoadedCollectionOwnerIdOrNull(GetCollectionEntry(collection));
 		}
@@ -1475,7 +1475,7 @@ namespace NHibernate.Engine
 		#endregion
 
 		#region ISerializable Members
-		internal StatefulPersistenceContext(SerializationInfo info, StreamingContext context)
+		private StatefulPersistenceContext(SerializationInfo info, StreamingContext context)
 		{
 			loadCounter = 0;
 			flushing = false;

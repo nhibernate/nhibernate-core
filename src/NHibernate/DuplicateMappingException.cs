@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.Serialization;
+using System.Security;
 
 namespace NHibernate
 {
@@ -59,9 +60,19 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		public DuplicateMappingException(SerializationInfo info, StreamingContext context)
+		protected DuplicateMappingException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
+			type = info.GetString("type");
+			name = info.GetString("name");
+		}
+
+		[SecurityCritical]
+		public override void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			base.GetObjectData(info, context);
+			info.AddValue("type", type);
+			info.AddValue("name", name);
 		}
 	}
 }

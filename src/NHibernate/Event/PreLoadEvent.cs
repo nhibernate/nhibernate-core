@@ -6,7 +6,6 @@ namespace NHibernate.Event
 	/// <summary> 
 	/// Called before injecting property values into a newly loaded entity instance.
 	/// </summary>
-	[Serializable]
 	public class PreLoadEvent : AbstractEvent, IPreDatabaseOperationEventArgs
 	{
 		private object entity;

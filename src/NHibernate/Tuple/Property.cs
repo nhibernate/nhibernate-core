@@ -6,7 +6,6 @@ namespace NHibernate.Tuple
 	/// <summary>
 	/// Defines the basic contract of a Property within the runtime metamodel.
 	/// </summary>
-	[Serializable]
 	public abstract class Property
 	{
 		private readonly string name;

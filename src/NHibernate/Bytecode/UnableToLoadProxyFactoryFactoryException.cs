@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.Serialization;
+using System.Security;
 
 namespace NHibernate.Bytecode
 {
@@ -13,8 +14,20 @@ namespace NHibernate.Bytecode
 			this.typeName = typeName;
 		}
 
-		protected UnableToLoadProxyFactoryFactoryException(SerializationInfo info,
-		                      StreamingContext context) : base(info, context) {}
+		protected UnableToLoadProxyFactoryFactoryException(
+			SerializationInfo info,
+			StreamingContext context) : base(info, context)
+		{
+			typeName = info.GetString("typeName");
+		}
+
+		[SecurityCritical]
+		public override void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			base.GetObjectData(info, context);
+			info.AddValue("typeName", typeName);
+		}
+
 		public override string Message
 		{
 			get

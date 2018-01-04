@@ -7,7 +7,6 @@ namespace NHibernate.Event
 	/// <summary>
 	/// Defines an event class for the locking of an entity.
 	/// </summary>
-	[Serializable]
 	public class LockEvent : AbstractEvent
 	{
 		private string entityName;

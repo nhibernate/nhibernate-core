@@ -6,6 +6,7 @@ namespace NHibernate.Criterion
 	/// <summary>
 	/// Represents an strategy for matching strings using "like".
 	/// </summary>
+	[Serializable]
 	public abstract class MatchMode
 	{
 		private int _intCode;
@@ -89,6 +90,7 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// The <see cref="MatchMode"/> that matches the entire string to the pattern.
 		/// </summary>
+		[Serializable]
 		private class ExactMatchMode : MatchMode
 		{
 			/// <summary>
@@ -112,6 +114,7 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// The <see cref="MatchMode"/> that matches the start of the string to the pattern.
 		/// </summary>
+		[Serializable]
 		private class StartMatchMode : MatchMode
 		{
 			/// <summary>
@@ -135,6 +138,7 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// The <see cref="MatchMode"/> that matches the end of the string to the pattern.
 		/// </summary>
+		[Serializable]
 		private class EndMatchMode : MatchMode
 		{
 			/// <summary>
@@ -159,6 +163,7 @@ namespace NHibernate.Criterion
 		/// The <see cref="MatchMode"/> that exactly matches the string
 		/// by appending "<c>%</c>" to the beginning and end.
 		/// </summary>
+		[Serializable]
 		private class AnywhereMatchMode : MatchMode
 		{
 			/// <summary>

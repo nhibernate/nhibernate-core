@@ -6,7 +6,6 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Event
 {
 	/// <summary> Defines a base class for events involving collections. </summary>
-	[Serializable]
 	public abstract class AbstractCollectionEvent : AbstractEvent
 	{
 		private readonly object affectedOwner;

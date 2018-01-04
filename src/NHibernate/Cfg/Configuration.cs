@@ -67,6 +67,8 @@ namespace NHibernate.Cfg
 		protected IList<IAuxiliaryDatabaseObject> auxiliaryDatabaseObjects;
 
 		private INamingStrategy namingStrategy = DefaultNamingStrategy.Instance;
+
+		[NonSerialized]
 		private MappingsQueue mappingsQueue;
 
 		private EventListeners eventListeners;
@@ -80,7 +82,7 @@ namespace NHibernate.Cfg
 		protected internal SettingsFactory settingsFactory;
 
 		#region ISerializable Members
-		public Configuration(SerializationInfo info, StreamingContext context)
+		protected Configuration(SerializationInfo info, StreamingContext context)
 		{
 			Reset();
 
@@ -121,7 +123,7 @@ namespace NHibernate.Cfg
 		}
 
 		[SecurityCritical]
-		public void GetObjectData(SerializationInfo info, StreamingContext context)
+		public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			ConfigureProxyFactoryFactory();
 			SecondPassCompile();
@@ -1889,6 +1891,7 @@ namespace NHibernate.Cfg
 
 		#endregion
 
+		[NonSerialized]
 		private XmlSchemas schemas;
 
 		private XmlSchemas Schemas

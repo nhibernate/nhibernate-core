@@ -20,7 +20,6 @@ using NHibernate.Util;
 namespace NHibernate.Engine.Query
 {
 	/// <summary> Defines a query execution plan for a native-SQL query. </summary>
-	[Serializable]
 	public partial class NativeSQLQueryPlan
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(NativeSQLQueryPlan));
