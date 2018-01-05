@@ -47,7 +47,7 @@ namespace NHibernate.Dialect.Lock
 			{
 				select.SetComment(lockMode + " lock " + lockable.EntityName);
 			}
-			return select.ToSqlString();
+			return select.ToSqlString(true);
 		}
 
 		#region ILockingStrategy Members

@@ -48,5 +48,7 @@ namespace NHibernate.Loader.Entity
 		{
 			get { return !batchLoader; }
 		}
+
+		protected override bool InternStringMetadata => true;
 	}
 }

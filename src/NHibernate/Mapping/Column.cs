@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using NHibernate.Dialect.Function;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
@@ -13,6 +14,8 @@ namespace NHibernate.Mapping
 	[Serializable]
 	public class Column : ISelectable, ICloneable
 	{
+		private const char QuoteChar = '`';
+
 		public const int DefaultLength = 255;
 		public const int DefaultPrecision = 19;
 		public const int DefaultScale = 2;
@@ -82,16 +85,19 @@ namespace NHibernate.Mapping
 			get { return _name; }
 			set
 			{
-				if (value[0] == '`')
-				{
-					_quoted = true;
-					_name = value.Substring(1, value.Length - 2);
-				}
-				else
-				{
-					_name = value;
-				}
+				_name = StringHelper.Intern(GetName(value, out _quoted), InternLevel.ColumnName);
 			}
+		}
+
+		private string GetName(string value, out bool quoted)
+		{
+			quoted = false;
+			if (value[0] == QuoteChar)
+			{
+				quoted = true;
+				return value.Substring(1, value.Length - 2);
+			}
+			return value;
 		}
 
 		public string CanonicalName
@@ -154,8 +160,9 @@ namespace NHibernate.Mapping
 			// those checks, then the double checks for total length can be reduced to one.
 			//    But I will leave it like this for now to make it look similar. /Oskar 2016-08-20
 			bool useRawName = name.Length + suffix.Length <= usableLength &&
-			                  !_quoted &&
-			                  !StringHelper.EqualsCaseInsensitive(name, "rowid");
+							  !_quoted &&
+							  !string.Equals(name, "rowid", StringComparison.OrdinalIgnoreCase);
+			
 			if (!useRawName)
 			{
 				if (suffix.Length >= usableLength)
@@ -428,7 +435,7 @@ namespace NHibernate.Mapping
 			}
 			catch (Exception e)
 			{
-				throw new MappingException(string.Format("Could not determine type for column {0} of type {1}: {2}", 
+				throw new MappingException(string.Format("Could not determine type for column {0} of type {1}: {2}",
 					_name, type.GetType().FullName, e.GetType().FullName), e);
 			}
 		}
@@ -436,7 +443,7 @@ namespace NHibernate.Mapping
 		/// <summary>returns quoted name as it would be in the mapping file. </summary>
 		public string GetQuotedName()
 		{
-			return _quoted ? '`' + _name + '`' : _name;
+			return _quoted ? QuoteChar + _name + QuoteChar : _name;
 		}
 
 		public bool IsCaracteristicsDefined()
@@ -463,24 +470,24 @@ namespace NHibernate.Mapping
 		/// <summary> Shallow copy, the value is not copied</summary>
 		public object Clone()
 		{
-			Column copy = new Column();
-			if (_length.HasValue)
-				copy.Length = Length;
-			if (_precision.HasValue)
-				copy.Precision = Precision;
-			if (_scale.HasValue)
-				copy.Scale = Scale;
-			copy.Value = _value;
-			copy.TypeIndex = _typeIndex;
-			copy.Name = GetQuotedName();
-			copy.IsNullable = _nullable;
-			copy.Unique = _unique;
-			copy.SqlType = _sqlType;
-			copy.SqlTypeCode = _sqlTypeCode;
-			copy.UniqueInteger = UniqueInteger; //usually useless
-			copy.CheckConstraint = _checkConstraint;
-			copy.Comment = _comment;
-			copy.DefaultValue = _defaultValue;
+			Column copy = new Column()
+			{
+				_length = _length,
+				_name = _name,
+				_quoted = _quoted,
+				_checkConstraint = _checkConstraint,
+				_comment = _comment,
+				_defaultValue = _defaultValue,
+				_nullable = _nullable,
+				_unique = _unique,
+				_precision = _precision,
+				_scale = _scale,
+				_sqlType = _sqlType,
+				_sqlTypeCode = _sqlTypeCode,
+				_typeIndex = _typeIndex,
+				_value = _value,
+				UniqueInteger = UniqueInteger,
+			};
 			return copy;
 		}
 

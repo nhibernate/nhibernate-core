@@ -270,12 +270,15 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public const string TrackSessionId = "track_session_id";
 
+		public const string StringMetadataInternLevel = "intern_level";
+
 		private static readonly Dictionary<string, string> GlobalProperties;
 
 		private static IBytecodeProvider BytecodeProviderInstance;
 		private static bool EnableReflectionOptimizer;
-
+		
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(Environment));
+		private static InternLevel _internLevel;
 
 		/// <summary>
 		/// Issue warnings to user when any obsolete property names are used.
@@ -299,11 +302,35 @@ namespace NHibernate.Cfg
 
 			BytecodeProviderInstance = BuildBytecodeProvider(GlobalProperties);
 			EnableReflectionOptimizer = PropertiesHelper.GetBoolean(PropertyUseReflectionOptimizer, GlobalProperties);
+			
+			//TODO: Proper configuration
+			SetInternLevelFromConfig();
 
 			if (EnableReflectionOptimizer)
 			{
 				log.Info("Using reflection optimizer");
 			}
+		}
+
+		//TODO:
+		private static InternLevel SetInternLevelFromConfig()
+		{
+			return InternLevel.Default;
+			//string value = System.Configuration.ConfigurationManager.AppSettings["InternLevel"];
+			//Console.WriteLine("Path to config file: " + ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None).FilePath);
+
+			//if (string.IsNullOrEmpty(value))
+			//{
+			//	return InternLevel.Default;
+			//}
+
+			//if (!Enum.TryParse<InternLevel>(value, true, out var valueParsed))
+			//{
+			//	Console.WriteLine("Intern level setting is invalid: " + value);
+			//}
+			//Console.WriteLine("Intern level " + valueParsed);
+			//Console.WriteLine();
+			//return valueParsed;
 		}
 
 		private static void LoadGlobalPropertiesFromAppConfig()
@@ -386,6 +413,32 @@ namespace NHibernate.Cfg
 		{
 			get { return BytecodeProviderInstance; }
 			set { BytecodeProviderInstance = value; }
+		}
+
+		/// <summary>
+		/// The bytecode provider to use.
+		/// </summary>
+		/// <remarks>
+		/// This property is read from the <c>&lt;nhibernate&gt;</c> section
+		/// of the application configuration file by default. Since it is not
+		/// always convenient to configure NHibernate through the application
+		/// configuration file, it is also possible to set the property value
+		/// manually. This should only be done before a configuration object
+		/// is created, otherwise the change may not take effect.
+		/// </remarks>
+		public static InternLevel InternLevel
+		{
+			get { return _internLevel; }
+			set
+			{
+
+				if (value !=  _internLevel)
+				{
+					Console.WriteLine("Intern level  " + value);
+				}
+				_internLevel = value; 
+				
+			}
 		}
 
 		/// <summary>

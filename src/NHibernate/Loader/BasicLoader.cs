@@ -13,7 +13,7 @@ namespace NHibernate.Loader
 		private IEntityAliases[] descriptors;
 		private ICollectionAliases[] collectionDescriptors;
 
-		public BasicLoader(ISessionFactoryImplementor factory) : base(factory) {}
+		public BasicLoader(ISessionFactoryImplementor factory) : base(factory) { }
 
 		protected override sealed IEntityAliases[] EntityAliases
 		{
@@ -28,6 +28,8 @@ namespace NHibernate.Loader
 		protected abstract string[] Suffixes { get; }
 		protected abstract string[] CollectionSuffixes { get; }
 
+		protected virtual bool InternStringMetadata => false;
+
 		protected override void PostInstantiate()
 		{
 			ILoadable[] persisters = EntityPersisters;
@@ -35,7 +37,7 @@ namespace NHibernate.Loader
 			descriptors = new IEntityAliases[persisters.Length];
 			for (int i = 0; i < descriptors.Length; i++)
 			{
-				descriptors[i] = new DefaultEntityAliases(persisters[i], suffixes[i]);
+				descriptors[i] = new DefaultEntityAliases(persisters[i], suffixes[i], InternStringMetadata);
 			}
 
 			ICollectionPersister[] collectionPersisters = CollectionPersisters;
@@ -69,7 +71,7 @@ namespace NHibernate.Loader
 		private static bool IsBag(ICollectionPersister collectionPersister)
 		{
 			var type = collectionPersister.CollectionType.GetType();
-			return type.IsGenericType && type.GetGenericTypeDefinition() == typeof (GenericBagType<>);
+			return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(GenericBagType<>);
 		}
 
 		/// <summary>

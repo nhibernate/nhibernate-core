@@ -5,6 +5,7 @@ using System.Text;
 using System.Collections;
 using NHibernate.SqlCommand.Parser;
 using System.Text.RegularExpressions;
+using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
 {
@@ -196,10 +197,10 @@ namespace NHibernate.SqlCommand
 		/// values.</param>
 		/// <remarks>The <see cref="SqlString"/> instance is automatically compacted.</remarks>
 		public SqlString(params object[] parts)
-			: this((IEnumerable<object>)parts)
+			: this((IEnumerable<object>)parts, false)
 		{ }
-
-		private SqlString(IEnumerable<object> parts)
+		
+		public SqlString(IEnumerable<object> parts, bool intern)
 		{
 			_parts = new List<Part>();
 			_parameters = new SortedList<int, Parameter>();
@@ -211,10 +212,25 @@ namespace NHibernate.SqlCommand
 				Add(part, pendingContent, ref sqlIndex);
 			}
 			AppendAndResetPendingContent(pendingContent, ref sqlIndex);
+			if (intern)
+			{
+				for (var index = 0; index < _parts.Count; index++)
+				{
+					var part = _parts[index];
+					if (part.IsParameter == false)
+					{
+						_parts[index] = new Part(part.SqlIndex, StringHelper.Intern(part.Content, InternLevel.SqlString));
+					}
+				}
+			}
 
 			_firstPartIndex = _parts.Count > 0 ? 0 : -1;
 			_lastPartIndex = _parts.Count - 1;
 			_length = sqlIndex;
+		}
+
+		private SqlString(IEnumerable<object> parts): this(parts, false)
+		{
 		}
 
 		#endregion
@@ -784,8 +800,9 @@ namespace NHibernate.SqlCommand
 		{
 			if (pendingContent.Length > 0)
 			{
-				_parts.Add(new Part(sqlIndex, pendingContent.ToString()));
-				sqlIndex += pendingContent.Length;
+				var value = pendingContent.ToString();
+				_parts.Add(new Part(sqlIndex, value));
+				sqlIndex += value.Length;
 				pendingContent.Length = 0;
 			}
 		}

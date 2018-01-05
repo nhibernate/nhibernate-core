@@ -176,7 +176,7 @@ namespace NHibernate.Mapping
 		public string Role
 		{
 			get { return role; }
-			set { role = StringHelper.InternedIfPossible(value); }
+			set { role = StringHelper.Intern(value, InternLevel.CollectionRole); }
 		}
 
 		public IEnumerable<ISelectable> ColumnIterator

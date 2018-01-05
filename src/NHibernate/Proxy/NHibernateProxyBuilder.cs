@@ -45,9 +45,10 @@ namespace NHibernate.Proxy
 
 		public TypeInfo CreateProxyType(System.Type baseType, IReadOnlyCollection<System.Type> baseInterfaces)
 		{
-			var typeName = $"{baseType.Name}Proxy";
-			var assemblyName = $"{typeName}Assembly";
-			var moduleName = $"{typeName}Module";
+			var internLevel = InternLevel.ProxyType;
+			var typeName = StringHelper.Intern($"{baseType.Name}Proxy", internLevel);
+			var assemblyName = StringHelper.Intern($"{typeName}Assembly", internLevel);
+			var moduleName = StringHelper.Intern($"{typeName}Module", internLevel);
 
 			var name = new AssemblyName(assemblyName);
 
@@ -117,11 +118,11 @@ namespace NHibernate.Proxy
 			{
 				ImplementSetIdentifier(typeBuilder, method, lazyInitializerField);
 			}
-			else if (!_overridesEquals && method.Name == "Equals" && method.GetBaseDefinition() == typeof(object).GetMethod("Equals", new[] {typeof(object)}))
+			else if (!_overridesEquals && method.Name == nameof(Equals) && method.GetBaseDefinition() == typeof(object).GetMethod(nameof(Equals), new[] {typeof(object)}))
 			{
 				//skip
 			}
-			else if (!_overridesEquals && method.Name == "GetHashCode" && method.GetBaseDefinition() == typeof(object).GetMethod("GetHashCode"))
+			else if (!_overridesEquals && method.Name == nameof(GetHashCode) && method.GetBaseDefinition() == typeof(object).GetMethod(nameof(GetHashCode)))
 			{
 				//skip
 			}

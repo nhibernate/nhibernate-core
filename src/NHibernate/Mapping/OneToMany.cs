@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping
 {
@@ -47,7 +48,7 @@ namespace NHibernate.Mapping
 		public string ReferencedEntityName
 		{
 			get { return referencedEntityName; }
-			set { referencedEntityName = value == null ? null : string.Intern(value); }
+			set { referencedEntityName = StringHelper.Intern(value, InternLevel.ReferencedEntityName); }
 		}
 
 		public Table ReferencingTable

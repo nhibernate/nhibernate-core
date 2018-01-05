@@ -16,5 +16,7 @@ namespace NHibernate.Loader.Entity
 
 			log.Debug("Static select for action {0} on entity {1}: {2}", action, entityName, SqlString);
 		}
+
+		protected override bool InternStringMetadata => true;
 	}
 }

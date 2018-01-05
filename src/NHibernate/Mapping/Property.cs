@@ -66,7 +66,7 @@ namespace NHibernate.Mapping
 		public string Name
 		{
 			get { return name; }
-			set { name = value; }
+			set { name = StringHelper.Intern(value, InternLevel.PropertyName); }
 		}
 
 		public bool IsComposite
