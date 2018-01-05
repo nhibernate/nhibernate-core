@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using System.Security;
 
 namespace NHibernate
 {
+	[Serializable]
 	public class SchemaValidationException : HibernateException
 	{
 		public ReadOnlyCollection<string> ValidationErrors { get; }
