@@ -33,7 +33,7 @@ namespace NHibernate.Mapping
 		private readonly LinkedHashMap<string, Column> columns = new LinkedHashMap<string, Column>();
 		private readonly Dictionary<ForeignKeyKey, ForeignKey> foreignKeys = new Dictionary<ForeignKeyKey, ForeignKey>();
 		private readonly Dictionary<string, Index> indexes = new Dictionary<string, Index>();
-		private readonly int uniqueInteger;
+		private int uniqueInteger;
 		private readonly Dictionary<string, UniqueKey> uniqueKeys = new Dictionary<string, UniqueKey>();
 		private string catalog;
 		private string comment;
@@ -194,6 +194,7 @@ namespace NHibernate.Mapping
 		public int UniqueInteger
 		{
 			get { return uniqueInteger; }
+			internal set { uniqueInteger = value; }
 		}
 
 		/// <summary>
