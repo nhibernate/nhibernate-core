@@ -48,7 +48,7 @@ namespace NHibernate
 				{
 					return ((INHibernateProxy)proxy).HibernateLazyInitializer.InitializeAsync(cancellationToken);
 				}
-				else if (proxy is IPersistentCollection coll)
+				else if (proxy is ILazyInitializedCollection coll)
 				{
 					return coll.ForceInitializationAsync(cancellationToken);
 				}

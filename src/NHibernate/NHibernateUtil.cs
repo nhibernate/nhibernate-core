@@ -382,7 +382,7 @@ namespace NHibernate
 			{
 				((INHibernateProxy)proxy).HibernateLazyInitializer.Initialize();
 			}
-			else if (proxy is IPersistentCollection coll)
+			else if (proxy is ILazyInitializedCollection coll)
 			{
 				coll.ForceInitialization();
 			}
@@ -399,9 +399,9 @@ namespace NHibernate
 			{
 				return !((INHibernateProxy)proxy).HibernateLazyInitializer.IsUninitialized;
 			}
-			else if (proxy is IPersistentCollection)
+			else if (proxy is ILazyInitializedCollection)
 			{
-				return ((IPersistentCollection)proxy).WasInitialized;
+				return ((ILazyInitializedCollection)proxy).WasInitialized;
 			}
 			else
 			{
