@@ -185,12 +185,13 @@ namespace NHibernate.Mapping
 
 		/// <summary>
 		/// Gets the unique number of the Table.
+		/// Used for SQL alias generation
 		/// </summary>
 		/// <value>The unique number of the Table.</value>
 		public int UniqueInteger
 		{
 			get { return uniqueInteger ?? throw new InvalidOperationException(nameof(UniqueInteger) + " has not been supplied"); }
-			internal set { uniqueInteger = value; }
+			set { uniqueInteger = value; }
 		}
 
 		/// <summary>
