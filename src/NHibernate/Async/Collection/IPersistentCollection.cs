@@ -20,7 +20,7 @@ namespace NHibernate.Collection
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial interface IPersistentCollection : ILazyInitializedCollection
+	public partial interface IPersistentCollection
 	{
 
 		/// <summary>
@@ -65,6 +65,16 @@ namespace NHibernate.Collection
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The contents of the persistent collection in a cacheable form.</returns>
 		Task<object> DisassembleAsync(ICollectionPersister persister, CancellationToken cancellationToken);
+
+		/// <summary>
+		/// To be called internally by the session, forcing
+		/// immediate initalization.
+		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <remarks>
+		/// This method is similar to <see cref="AbstractPersistentCollection.Initialize" />, except that different exceptions are thrown.
+		/// </remarks>
+		Task ForceInitializationAsync(CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Do we need to insert this element?

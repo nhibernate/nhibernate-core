@@ -52,12 +52,17 @@ namespace NHibernate
 				{
 					return coll.ForceInitializationAsync(cancellationToken);
 				}
+				else if (proxy is IPersistentCollection persistent)
+				{
+					return persistent.ForceInitializationAsync(cancellationToken);
+				}
 				return Task.CompletedTask;
 			}
 			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
+
 		}
 
 		/// <summary>

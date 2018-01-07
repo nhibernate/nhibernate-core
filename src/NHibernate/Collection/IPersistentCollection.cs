@@ -38,7 +38,7 @@ namespace NHibernate.Collection
 	/// time.
 	/// </para>
 	/// </summary>
-	public partial interface IPersistentCollection : ILazyInitializedCollection
+	public partial interface IPersistentCollection
 	{
 		/// <summary>
 		/// The owning entity.
@@ -253,6 +253,15 @@ namespace NHibernate.Collection
 		object GetSnapshot(ICollectionPersister persister);
 
 		/// <summary>
+		/// To be called internally by the session, forcing
+		/// immediate initalization.
+		/// </summary>
+		/// <remarks>
+		/// This method is similar to <see cref="AbstractPersistentCollection.Initialize" />, except that different exceptions are thrown.
+		/// </remarks>
+		void ForceInitialization();
+
+		/// <summary>
 		/// Does an element exist at this entry in the collection?
 		/// </summary>
 		bool EntryExists(object entry, int i);
@@ -281,6 +290,9 @@ namespace NHibernate.Collection
 		/// <see langword="false" /> otherwise.
 		/// </returns>
 		bool IsWrapper(object collection);
+
+		/// <summary></summary>
+		bool WasInitialized { get; }
 
 		/// <summary></summary>
 		bool HasQueuedOperations { get; }

@@ -24,7 +24,7 @@ namespace NHibernate.Collection
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public abstract partial class AbstractPersistentCollection : IPersistentCollection
+	public abstract partial class AbstractPersistentCollection : IPersistentCollection, ILazyInitializedCollection
 	{
 
 		/// <summary>

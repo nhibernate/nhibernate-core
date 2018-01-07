@@ -386,6 +386,11 @@ namespace NHibernate
 			{
 				coll.ForceInitialization();
 			}
+			else if (proxy is IPersistentCollection persistent)
+			{
+				persistent.ForceInitialization();
+			}
+
 		}
 
 		/// <summary>
@@ -402,6 +407,10 @@ namespace NHibernate
 			else if (proxy is ILazyInitializedCollection)
 			{
 				return ((ILazyInitializedCollection)proxy).WasInitialized;
+			}
+			else if (proxy is IPersistentCollection)
+			{
+				return ((IPersistentCollection)proxy).WasInitialized;
 			}
 			else
 			{
