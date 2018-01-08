@@ -20,9 +20,6 @@ namespace NHibernate.Collection
 		/// immediate initalization.
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		/// <remarks>
-		/// This method is similar to <see cref="AbstractPersistentCollection.Initialize" />, except that different exceptions are thrown.
-		/// </remarks>
 		Task ForceInitializationAsync(CancellationToken cancellationToken);
 
 	}

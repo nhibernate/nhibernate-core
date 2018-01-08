@@ -21,9 +21,6 @@
 		/// To be called internally by the session, forcing
 		/// immediate initalization.
 		/// </summary>
-		/// <remarks>
-		/// This method is similar to <see cref="AbstractPersistentCollection.Initialize" />, except that different exceptions are thrown.
-		/// </remarks>
 		void ForceInitialization();
 
 	}
