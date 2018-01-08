@@ -62,7 +62,6 @@ namespace NHibernate.Type
 			{
 				return Task.FromException<object>(ex);
 			}
-			// NOOP
 		}
 
 		public override Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session, CancellationToken cancellationToken)
