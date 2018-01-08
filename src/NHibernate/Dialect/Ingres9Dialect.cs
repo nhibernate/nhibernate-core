@@ -31,10 +31,14 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-		/// <summary>
-		/// Does this dialect support sequences?
-		/// </summary>
+		/// <inheritdoc />
 		public override bool SupportsSequences => true;
+
+		/// <inheritdoc />
+		public override bool SupportsPooledSequences => true;
+
+		/// <inheritdoc />
+		public override string QuerySequencesString => "select seq_name from iisequences";
 
 		/// <summary>
 		/// Attempts to add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>.
@@ -70,21 +74,25 @@ namespace NHibernate.Dialect
 			return pagingBuilder.ToSqlString();
 		}
 
+		/// <inheritdoc />
 		public override string GetSequenceNextValString(string sequenceName)
 		{
 			return "select " + GetSelectSequenceNextValString(sequenceName) + " as seq";
 		}
 
+		/// <inheritdoc />
 		public override string GetSelectSequenceNextValString(string sequenceName)
 		{
 			return "next value for " + sequenceName;
 		}
 
+		/// <inheritdoc />
 		public override string GetCreateSequenceString(string sequenceName)
 		{
 			return "create sequence " + sequenceName;
 		}
 
+		/// <inheritdoc />
 		public override string GetDropSequenceString(string sequenceName)
 		{
 			return "drop sequence " + sequenceName;
