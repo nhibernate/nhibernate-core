@@ -52,6 +52,7 @@ namespace NHibernate
 				{
 					return coll.ForceInitializationAsync(cancellationToken);
 				}
+				// 6.0 TODO: remove once IPersistentCollection derives from ILazyInitializedCollection
 				else if (proxy is IPersistentCollection persistent)
 				{
 					return persistent.ForceInitializationAsync(cancellationToken);

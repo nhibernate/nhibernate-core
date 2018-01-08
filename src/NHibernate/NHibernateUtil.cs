@@ -386,6 +386,7 @@ namespace NHibernate
 			{
 				coll.ForceInitialization();
 			}
+			// 6.0 TODO: remove once IPersistentCollection derives from ILazyInitializedCollection
 			else if (proxy is IPersistentCollection persistent)
 			{
 				persistent.ForceInitialization();
@@ -404,13 +405,14 @@ namespace NHibernate
 			{
 				return !((INHibernateProxy)proxy).HibernateLazyInitializer.IsUninitialized;
 			}
-			else if (proxy is ILazyInitializedCollection)
+			else if (proxy is ILazyInitializedCollection coll)
 			{
-				return ((ILazyInitializedCollection)proxy).WasInitialized;
+				return coll.WasInitialized;
 			}
-			else if (proxy is IPersistentCollection)
+			// 6.0 TODO: remove once IPersistentCollection derives from ILazyInitializedCollection
+			else if (proxy is IPersistentCollection persistent)
 			{
-				return ((IPersistentCollection)proxy).WasInitialized;
+				return persistent.WasInitialized;
 			}
 			else
 			{

@@ -1,12 +1,9 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using NHibernate.Linq;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH1515
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public class Fixture
 	{
 
 		[Test]

@@ -8,15 +8,13 @@
 //------------------------------------------------------------------------------
 
 
-using System.Linq;
-using NHibernate.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH1515
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class FixtureAsync : BugTestCase
+	public class FixtureAsync
 	{
 
 		[Test]
@@ -36,5 +34,6 @@ namespace NHibernate.Test.NHSpecificTest.GH1515
 			await (NHibernateUtil.InitializeAsync(collection));
 			Assert.That(NHibernateUtil.IsInitialized(collection));
 		}
+
 	}
 }
