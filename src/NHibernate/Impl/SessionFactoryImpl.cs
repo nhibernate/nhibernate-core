@@ -1390,10 +1390,19 @@ namespace NHibernate.Impl
 			}
 		}
 
-		// NH different implementation: will not try to support covariant return type for specializations
-		// until it is needed.
-		internal class StatelessSessionBuilderImpl : IStatelessSessionBuilder, ISessionCreationOptions
+		// NH specific: implementing return type covariance with interface is a mess in .Net.
+		internal class StatelessSessionBuilderImpl : StatelessSessionBuilderImpl<IStatelessSessionBuilder>
 		{
+			public StatelessSessionBuilderImpl(SessionFactoryImpl sessionFactory) : base(sessionFactory)
+			{
+				SetSelf(this);
+			}
+		}
+
+		internal class StatelessSessionBuilderImpl<T> : IStatelessSessionBuilder, ISessionCreationOptions where T : IStatelessSessionBuilder
+		{
+			// NH specific: implementing return type covariance with interface is a mess in .Net.
+			private T _this;
 			private readonly SessionFactoryImpl _sessionFactory;
 
 			public StatelessSessionBuilderImpl(SessionFactoryImpl sessionFactory)
@@ -1401,18 +1410,23 @@ namespace NHibernate.Impl
 				_sessionFactory = sessionFactory;
 			}
 
+			protected void SetSelf(T self)
+			{
+				_this = self;
+			}
+
 			public virtual IStatelessSession OpenStatelessSession() => new StatelessSessionImpl(_sessionFactory, this);
 
-			public IStatelessSessionBuilder Connection(DbConnection connection)
+			public virtual IStatelessSessionBuilder Connection(DbConnection connection)
 			{
 				UserSuppliedConnection = connection;
-				return this;
+				return _this;
 			}
 
 			public IStatelessSessionBuilder AutoJoinTransaction(bool autoJoinTransaction)
 			{
 				ShouldAutoJoinTransaction = autoJoinTransaction;
-				return this;
+				return _this;
 			}
 
 			public FlushMode InitialSessionFlushMode => FlushMode.Always;

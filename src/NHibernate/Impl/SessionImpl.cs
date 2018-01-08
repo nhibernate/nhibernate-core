@@ -1899,6 +1899,11 @@ namespace NHibernate.Impl
 			return new SharedSessionBuilderImpl(this);
 		}
 
+		public ISharedStatelessSessionBuilder StatelessSessionWithOptions()
+		{
+			return new SharedStatelessSessionBuilderImpl(this);
+		}
+
 		public void Clear()
 		{
 			using (BeginProcess())
@@ -2506,6 +2511,70 @@ namespace NHibernate.Impl
 
 			// NH different implementation, avoid an error case.
 			public override ISharedSessionBuilder Connection(DbConnection connection)
+			{
+				_shareTransactionContext = false;
+				return base.Connection(connection);
+			}
+
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// SharedSessionCreationOptions
+
+			public virtual bool IsTransactionCoordinatorShared => _shareTransactionContext;
+
+			// NH different implementation: need to port Hibernate transaction management.
+			public ConnectionManager ConnectionManager => _shareTransactionContext ? _session.ConnectionManager : null;
+		}
+
+		// NH specific: allow to build a stateless session from a normal session.
+		private class SharedStatelessSessionBuilderImpl : SessionFactoryImpl.StatelessSessionBuilderImpl<ISharedStatelessSessionBuilder>,
+			ISharedStatelessSessionBuilder, ISharedSessionCreationOptions
+		{
+			private readonly SessionImpl _session;
+			private bool _shareTransactionContext;
+
+			public SharedStatelessSessionBuilderImpl(SessionImpl session)
+				: base((SessionFactoryImpl)session.Factory)
+			{
+				_session = session;
+				SetSelf(this);
+			}
+
+			#region 6.0 TODO: implement covariance the way used for ISharedSessionBuilder
+
+			ISharedStatelessSessionBuilder ISharedStatelessSessionBuilder.AutoJoinTransaction(bool autoJoinTransaction)
+			{
+				AutoJoinTransaction(autoJoinTransaction);
+				return this;
+			}
+
+			ISharedStatelessSessionBuilder ISharedStatelessSessionBuilder.Connection(DbConnection connection)
+			{
+				Connection(connection);
+				return this;
+			}
+
+			#endregion
+
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// SharedSessionBuilder
+
+			public virtual ISharedStatelessSessionBuilder Connection()
+			{
+				// Ensure any previously user supplied connection is removed.
+				base.Connection(null);
+				// We share the connection manager
+				_shareTransactionContext = true; 
+				return this;
+			}
+
+			public virtual ISharedStatelessSessionBuilder AutoJoinTransaction()
+			{
+				AutoJoinTransaction(_session.ConnectionManager.ShouldAutoJoinTransaction);
+				return this;
+			}
+
+			// NH different implementation, avoid an error case.
+			public override IStatelessSessionBuilder Connection(DbConnection connection)
 			{
 				_shareTransactionContext = false;
 				return base.Connection(connection);

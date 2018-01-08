@@ -386,7 +386,8 @@ namespace NHibernate.Test
 
 		public static ISessionCreationOptions GetCreationOptions(IStatelessSessionBuilder sessionBuilder)
 		{
-			return ((StatelessSessionBuilder)sessionBuilder).CreationOptions;
+			return (sessionBuilder as StatelessSessionBuilder)?.CreationOptions ??
+				(ISessionCreationOptions)sessionBuilder;
 		}
 
 		internal class SessionBuilder : ISessionBuilder
