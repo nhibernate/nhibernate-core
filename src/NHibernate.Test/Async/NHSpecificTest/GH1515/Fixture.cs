@@ -8,32 +8,38 @@
 //------------------------------------------------------------------------------
 
 
+using NHibernate.Collection;
+using NSubstitute;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH1515
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync
 	{
 
 		[Test]
-		public async Task LazyCollectionCanBeInitializedAsync()
+		public async Task IntializeForwaredToLazyCollectionAsync()
 		{
-			var collection = new LayzInitializationTestCollection(false);
-			Assert.That(!NHibernateUtil.IsInitialized(collection));
+			var collection = Substitute.For<ILazyInitializedCollection>();
+
 			await (NHibernateUtil.InitializeAsync(collection));
-			Assert.That(NHibernateUtil.IsInitialized(collection));
+
+			await (collection.Received().ForceInitializationAsync(CancellationToken.None));
 		}
 
 		[Test]
-		public async Task PersistentCollectionCanBeInitializedAsync()
+		public async Task IntializeForwaredToPersistentCollectionAsync()
 		{
-			var collection = new PersistentLayzInitializationTestCollection(false);
-			Assert.That(!NHibernateUtil.IsInitialized(collection));
+			var collection = Substitute.For<IPersistentCollection>();
+
 			await (NHibernateUtil.InitializeAsync(collection));
-			Assert.That(NHibernateUtil.IsInitialized(collection));
+
+			await (collection.Received().ForceInitializationAsync(CancellationToken.None));
 		}
+
 
 	}
 }
