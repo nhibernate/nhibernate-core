@@ -58,12 +58,12 @@ namespace NHibernate
 					return persistent.ForceInitializationAsync(cancellationToken);
 				}
 				return Task.CompletedTask;
+
 			}
 			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
-
 		}
 
 		/// <summary>
