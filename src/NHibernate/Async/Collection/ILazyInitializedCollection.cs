@@ -16,8 +16,7 @@ namespace NHibernate.Collection
 	{
 
 		/// <summary>
-		/// To be called internally by the session, forcing
-		/// immediate initalization.
+		/// Force immediate initialization.
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		Task ForceInitializationAsync(CancellationToken cancellationToken);
