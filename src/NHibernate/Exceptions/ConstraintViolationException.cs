@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.Serialization;
+using System.Security;
 
 namespace NHibernate.Exceptions
 {
@@ -10,29 +11,41 @@ namespace NHibernate.Exceptions
 	[Serializable]
 	public class ConstraintViolationException : ADOException
 	{
-		private readonly string constraintName;
-		public ConstraintViolationException(SerializationInfo info, StreamingContext context)
-			: base(info, context) {}
-
 		public ConstraintViolationException(string message, Exception innerException, string sql, string constraintName)
 			: base(message, innerException, sql)
 		{
-			this.constraintName = constraintName;
+			ConstraintName = constraintName;
 		}
 
 		public ConstraintViolationException(string message, Exception innerException, string constraintName)
 			: base(message, innerException)
 		{
-			this.constraintName = constraintName;
+			ConstraintName = constraintName;
+		}
+
+		public ConstraintViolationException(SerializationInfo info, StreamingContext context)
+			: base(info, context)
+		{
+			foreach (var entry in info)
+			{
+				if (entry.Name == "ConstraintName")
+				{
+					ConstraintName = entry.Value?.ToString();
+				}
+			}
+		}
+
+		[SecurityCritical]
+		public override void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			base.GetObjectData(info, context);
+			info.AddValue("ConstraintName", ConstraintName);
 		}
 
 		/// <summary> 
 		/// Returns the name of the violated constraint, if known. 
 		/// </summary>
 		/// <returns> The name of the violated constraint, or null if not known. </returns>
-		public string ConstraintName
-		{
-			get { return constraintName; }
-		}
+		public string ConstraintName { get; }
 	}
 }

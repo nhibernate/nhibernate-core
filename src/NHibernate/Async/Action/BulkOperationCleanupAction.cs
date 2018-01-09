@@ -38,7 +38,6 @@ namespace NHibernate.Action
 			{
 				return Task.FromException<object>(ex);
 			}
-			// nothing to do
 		}
 
 		public Task ExecuteAsync(CancellationToken cancellationToken)
@@ -56,7 +55,6 @@ namespace NHibernate.Action
 			{
 				return Task.FromException<object>(ex);
 			}
-			// nothing to do
 		}
 
 		private async Task EvictCollectionRegionsAsync(CancellationToken cancellationToken)
