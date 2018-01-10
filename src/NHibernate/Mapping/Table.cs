@@ -26,9 +26,6 @@ namespace NHibernate.Mapping
 	[Serializable]
 	public class Table : IRelationalModel
 	{
-		[ThreadStatic]
-		private static int tableCounter;
-
 		private readonly List<string> checkConstraints = new List<string>();
 		private readonly LinkedHashMap<string, Column> columns = new LinkedHashMap<string, Column>();
 		private readonly Dictionary<ForeignKeyKey, ForeignKey> foreignKeys = new Dictionary<ForeignKeyKey, ForeignKey>();
@@ -52,7 +49,6 @@ namespace NHibernate.Mapping
 		/// </summary>
 		public Table()
 		{
-			uniqueInteger = tableCounter++;
 		}
 
 		public Table(string name) : this()
