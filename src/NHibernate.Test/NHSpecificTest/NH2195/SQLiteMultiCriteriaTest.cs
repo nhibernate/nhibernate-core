@@ -32,11 +32,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2195
 			}
 		}
 
-		private object SchemaExport(NHibernate.Cfg.Configuration cfg)
-		{
-			throw new NotImplementedException();
-		}
-
 		protected override void OnTearDown()
 		{
 			base.OnTearDown();
