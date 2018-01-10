@@ -41,4 +41,10 @@ This is needed because NHibernate test uses the managed driver NuGet package, bu
 version needs to be removed from the GAC. Read more on https://stackoverflow.com/a/35176586/1178314.
 Not doing this may notably cause failures in distributed transaction tests.
 
+Adjust the connection string for the tests:
+The tests involve creating and dropping many tables, sometimes with the same names but different data
+types. This does not play well with Oracle meta data pooling, which needs to be disabled.
+Add into your ODP.NET connection string:
+Metadata Pooling=false;Self Tuning=false;
+
 Please note that some tests are dependent on the machine locales, and may fail if they are not English.
