@@ -15,8 +15,9 @@ namespace NHibernate.Collection
 	/// <summary>
 	/// Base class for implementing <see cref="IPersistentCollection"/>.
 	/// </summary>
+	// 6.0 TODO: remove ILazyInitializedCollection once IPersistentCollection derives from it
 	[Serializable]
-	public abstract partial class AbstractPersistentCollection : IPersistentCollection
+	public abstract partial class AbstractPersistentCollection : IPersistentCollection, ILazyInitializedCollection
 	{
 		protected internal static readonly object Unknown = new object(); //place holder
 		protected internal static readonly object NotFound = new object(); //place holder

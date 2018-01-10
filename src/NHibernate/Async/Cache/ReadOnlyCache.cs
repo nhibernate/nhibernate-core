@@ -169,7 +169,6 @@ namespace NHibernate.Cache
 			{
 				return Task.FromException<object>(ex);
 			}
-			// NOOP
 		}
 
 		/// <summary>

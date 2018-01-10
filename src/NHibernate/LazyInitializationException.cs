@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.Serialization;
+using System.Security;
 
 
 namespace NHibernate
@@ -18,14 +19,14 @@ namespace NHibernate
 		/// <param name="entityId">The id of the entity where the exception was thrown</param>
 		/// <param name="message">The message that describes the error. </param>
 		public LazyInitializationException(string entityName, object entityId, string message)
-			: this(string.Format("Initializing[{0}#{1}]-{2}", entityName, entityId, message))
+			: this($"Initializing[{entityName}#{entityId}]-{message}")
 		{
 			EntityName = entityName;
 			EntityId = entityId;
 		}
 
-		public string EntityName { get; private set; }
-		public object EntityId { get; private set; }
+		public string EntityName { get; }
+		public object EntityId { get; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LazyInitializationException"/> class.
@@ -76,6 +77,25 @@ namespace NHibernate
 		/// </param>
 		protected LazyInitializationException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
+			foreach (var entry in info)
+			{
+				if (entry.Name == "EntityName")
+				{
+					EntityName = entry.Value?.ToString();
+				}
+				else if (entry.Name == "EntityId")
+				{
+					EntityId = entry.Value;
+				}
+			}
+		}
+
+		[SecurityCritical]
+		public override void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			base.GetObjectData(info, context);
+			info.AddValue("EntityName", EntityName);
+			info.AddValue("EntityId", EntityId, typeof(object));
 		}
 	}
 }

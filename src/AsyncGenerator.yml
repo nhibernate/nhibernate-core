@@ -1,5 +1,6 @@
 ﻿projects:
 - filePath: NHibernate/NHibernate.csproj
+  targetFramework: net461
   concurrentRun: true
   applyChanges: true
   analyzation:
@@ -156,6 +157,7 @@
   - type: AsyncGenerator.Core.Plugins.EmptyRegionRemover
     assemblyName: AsyncGenerator.Core
 - filePath: NHibernate.DomainModel/NHibernate.DomainModel.csproj
+  targetFramework: net461
   concurrentRun: true
   applyChanges: true
   analyzation:
@@ -163,6 +165,7 @@
     scanForMissingAsyncMembers:
     - all: true
 - filePath: NHibernate.Test/NHibernate.Test.csproj
+  targetFramework: net461
   concurrentRun: true
   applyChanges: true
   analyzation:
