@@ -22,6 +22,7 @@ namespace NHibernate.Test
 		private const bool OutputDdl = false;
 		protected Configuration cfg;
 		private DebugSessionFactory _sessionFactory;
+		private SchemaExport _schemaExport;
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(TestCase));
 
@@ -47,6 +48,8 @@ namespace NHibernate.Test
 		{
 			get { return "NHibernate.DomainModel"; }
 		}
+
+		protected SchemaExport SchemaExport => _schemaExport ?? (_schemaExport = new SchemaExport(cfg));
 
 		static TestCase()
 		{
@@ -281,12 +284,12 @@ namespace NHibernate.Test
 
 		protected virtual void CreateSchema()
 		{
-			new SchemaExport(cfg).Create(OutputDdl, true);
+			SchemaExport.Create(OutputDdl, true);
 		}
 
 		protected virtual void DropSchema()
 		{
-			DropSchema(OutputDdl, new SchemaExport(cfg), Sfi);
+			DropSchema(OutputDdl, SchemaExport, Sfi);
 		}
 
 		public static void DropSchema(bool useStdOut, SchemaExport export, ISessionFactoryImplementor sfi)
@@ -315,6 +318,7 @@ namespace NHibernate.Test
 			Sfi?.Close();
 			_sessionFactory = null;
 			cfg = null;
+			_schemaExport = null;
 		}
 
 		public int ExecuteStatement(string sql)
