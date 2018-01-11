@@ -554,6 +554,19 @@ namespace NHibernate.Dialect
 			return true;
 		}
 
+		public override string Qualify(string catalog, string schema, string name)
+		{
+			if (!string.IsNullOrEmpty(catalog))
+			{
+				return string.Join(".", catalog, schema, name);
+			}
+			if (!string.IsNullOrEmpty(schema))
+			{
+				return string.Join(".", schema, name);
+			}
+			return name;
+		}
+
 		/// <summary />
 		/// <param name="name"></param>
 		/// <returns></returns>
@@ -621,25 +634,45 @@ namespace NHibernate.Dialect
 			}
 		}
 
-		public override string GetIfExistsDropConstraint(Table table, string name)
+		public override string GetIfExistsDropConstraint(string catalog, string schema, string tableName, string name)
 		{
-			string selectExistingObject = GetSelectExistingObject(name, table);
+			string selectExistingObject = GetSelectExistingObject(catalog, schema, tableName, name);
 			return string.Format(@"if exists ({0})", selectExistingObject);
 		}
 
-		protected virtual string GetSelectExistingObject(string name, Table table)
+		public override string GetIfNotExistsCreateConstraint(string catalog, string schema, string table, string name)
 		{
-			string objName = table.GetQuotedSchemaName(this) + Quote(name);
-			return string.Format("select 1 from sysobjects where id = OBJECT_ID(N'{0}') AND parent_obj = OBJECT_ID('{1}')",
-								 objName, table.GetQuotedName(this));
-		}
-
-		public override string GetIfNotExistsCreateConstraint(Table table, string name)
-		{
-			string selectExistingObject = GetSelectExistingObject(name, table);
+			string selectExistingObject = GetSelectExistingObject(catalog, schema, table, name);
 			return string.Format(@"if not exists ({0})", selectExistingObject);
 		}
-		
+
+		// Since v5.1
+		[Obsolete("Please use overload with catalog and schema parameters")]
+		protected virtual string GetSelectExistingObject(string name, Table table)
+		{
+			var catalog = table.GetQuotedCatalog(this, null);
+			var schema = table.GetQuotedSchema(this, null);
+			return GetSelectExistingObject(catalog, schema, table.GetQuotedName(), name);
+		}
+
+		/// <summary>
+		/// Returns a string containing the query to check if an object exists
+		/// </summary>
+		/// <param name="catalog">The catalong name</param>
+		/// <param name="schema">The schema name</param>
+		/// <param name="table">The table name</param>
+		/// <param name="name">The name of the object</param>
+		/// <returns></returns>
+		protected virtual string GetSelectExistingObject(string catalog, string schema, string table, string name)
+		{
+			return
+				string.Format(
+					"select 1 from {0} where id = OBJECT_ID(N'{1}') and parent_obj = OBJECT_ID(N'{2}')",
+					Qualify(catalog, "dbo", "sysobjects"),
+					Qualify(catalog, schema, Quote(name)),
+					Qualify(catalog, schema, table));
+		}
+
 		[Serializable]
 		protected class CountBigQueryFunction : ClassicAggregateFunction
 		{
@@ -733,7 +766,7 @@ namespace NHibernate.Dialect
 				// in various kinds of "FROM table1 alias1, table2 alias2".
 				_matchRegex = new Regex(" (" + aliasesPattern + ")([, ]|$)");
 				_unionSubclassRegex = new Regex(@"from\s+\(((?:.|\r|\n)*)\)(?:\s+as)?\s+(?<alias>" + aliasesPattern + ")", RegexOptions.IgnoreCase | RegexOptions.Multiline);
-	}
+			}
 
 			public SqlString AppendLockHint(SqlString sql)
 			{
@@ -743,11 +776,11 @@ namespace NHibernate.Dialect
 				{
 					if (part == Parameter.Placeholder)
 					{
-						result.Add((Parameter)part);
+						result.Add((Parameter) part);
 						continue;
-}
+					}
 
-					result.Add(ProcessUnionSubclassCase((string)part) ?? _matchRegex.Replace((string)part, ReplaceMatch));
+					result.Add(ProcessUnionSubclassCase((string) part) ?? _matchRegex.Replace((string) part, ReplaceMatch));
 				}
 
 				return result.ToSqlString();

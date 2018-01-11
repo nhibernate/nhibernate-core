@@ -630,7 +630,7 @@ namespace NHibernate.Cfg
 
 		public string GetLogicalTableName(Table table)
 		{
-			return GetLogicalTableName(table.GetQuotedSchema(), table.Catalog, table.GetQuotedName());
+			return GetLogicalTableName(table.GetQuotedSchema(), table.GetQuotedCatalog(), table.GetQuotedName());
 		}
 
 		public ResultSetMappingDefinition GetResultSetMapping(string name)
