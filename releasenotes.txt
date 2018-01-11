@@ -9,7 +9,8 @@ Release notes - NHibernate - Version 5.1.0
 
 **
 
-
+As part of releasing 5.1.0, a missing 5.0.0 possible breaking change has been added about inequality semantic in LINQ
+queries. See 5.0.0 possible breaking changes.
 
 Build 5.0.3
 =============================
@@ -139,6 +140,9 @@ Build 5.0.0
           already doing CriteriaImpl.UniqueResult<T>.
         * AliasToBeanResultTransformer property/field resolution logic has changed for supporting members
           which names differ only by case. See NH-3693 last comments for details.
+        * Linq inequality implementation has been changed for supporting null, meaning that a "a != b" expression
+          will now be considered matching if one side is null, while previously due to SQL null semantic it was
+          considered non-matching. See NH-3100.
         * Linq extension methods marked with attribute LinqExtensionMethod will no more be evaluated
           in-memory prior to query execution when they do not depend on query results, but will always be
           translated to their corresponding SQL call. This can be changed with a parameter of the attribute.
