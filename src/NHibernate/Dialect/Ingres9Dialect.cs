@@ -1,3 +1,4 @@
+using NHibernate.Id;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
@@ -39,6 +40,16 @@ namespace NHibernate.Dialect
 
 		/// <inheritdoc />
 		public override string QuerySequencesString => "select seq_name from iisequences";
+
+		/// <inheritdoc />
+		// 6.0 TODO: remove override for having default behavior when sequences are supported.
+		//           It has been put for minimizing breaking changes due to supporting sequences in 5.1.
+		public override System.Type IdentityStyleIdentifierGeneratorClass => typeof(TriggerIdentityGenerator);
+
+		/// <inheritdoc />
+		// 6.0 TODO: remove override for having default behavior when sequences are supported.
+		//           It has been put for minimizing breaking changes due to supporting sequences in 5.1.
+		public override System.Type NativeIdentifierGeneratorClass => typeof(TableHiLoGenerator);
 
 		/// <summary>
 		/// Attempts to add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>.
