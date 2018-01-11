@@ -1,4 +1,17 @@
-﻿Build 5.0.3
+﻿Build 5.1.0
+=============================
+
+Release notes - NHibernate - Version 5.1.0
+
+    ##### Possible Breaking Changes #####
+        * Since Ingres9Dialect is now supporting sequences, the enhanced-sequence identifier generator will default to
+          using a sequence instead of a table. Revert to previous behavior by using its force_table_use parameter.
+
+**
+
+
+
+Build 5.0.3
 =============================
 
 Release notes - NHibernate - Version 5.0.3
