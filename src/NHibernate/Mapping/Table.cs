@@ -26,14 +26,11 @@ namespace NHibernate.Mapping
 	[Serializable]
 	public class Table : IRelationalModel
 	{
-		[ThreadStatic]
-		private static int tableCounter;
-
 		private readonly List<string> checkConstraints = new List<string>();
 		private readonly LinkedHashMap<string, Column> columns = new LinkedHashMap<string, Column>();
 		private readonly Dictionary<ForeignKeyKey, ForeignKey> foreignKeys = new Dictionary<ForeignKeyKey, ForeignKey>();
 		private readonly Dictionary<string, Index> indexes = new Dictionary<string, Index>();
-		private readonly int uniqueInteger;
+		private int? uniqueInteger;
 		private readonly Dictionary<string, UniqueKey> uniqueKeys = new Dictionary<string, UniqueKey>();
 		private string catalog;
 		private string comment;
@@ -53,7 +50,6 @@ namespace NHibernate.Mapping
 		/// </summary>
 		public Table()
 		{
-			uniqueInteger = tableCounter++;
 		}
 
 		public Table(string name) : this()
@@ -190,11 +186,13 @@ namespace NHibernate.Mapping
 
 		/// <summary>
 		/// Gets the unique number of the Table.
+		/// Used for SQL alias generation
 		/// </summary>
 		/// <value>The unique number of the Table.</value>
 		public int UniqueInteger
 		{
-			get { return uniqueInteger; }
+			get { return uniqueInteger ?? throw new InvalidOperationException(nameof(UniqueInteger) + " has not been supplied"); }
+			set { uniqueInteger = value; }
 		}
 
 		/// <summary>
