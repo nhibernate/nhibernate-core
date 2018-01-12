@@ -193,6 +193,9 @@ namespace NHibernate.Cfg
 
 		// NHibernate-specific properties
 		public const string PrepareSql = "prepare_sql";
+		/// <summary>
+		/// Set the default timeout in seconds for ADO.NET queries.
+		/// </summary>
 		public const string CommandTimeout = "command_timeout";
 
 		public const string PropertyBytecodeProvider = "bytecode.provider";

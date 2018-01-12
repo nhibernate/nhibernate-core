@@ -161,8 +161,11 @@ namespace NHibernate
 	{
 		//6.0 TODO: Convert to interface method
 		/// <summary>
-		/// Set a timeout for the underlying ADO.NET query
+		/// Set a timeout for the underlying ADO.NET query.
 		/// </summary>
+		/// <param name="timeout">The timeout in seconds.</param>
+		/// <param name="multiCriteria">The <see cref="IMultiCriteria" /> on which to set the timeout.</param>
+		/// <returns><paramref name="multiCriteria" /> (for method chaining).</returns>
 		public static IMultiCriteria SetTimeout(this IMultiCriteria multiCriteria, int timeout)
 		{
 			if (multiCriteria == null)
