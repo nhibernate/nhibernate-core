@@ -107,7 +107,7 @@ namespace NHibernate.Mapping
 				return true;
 			foreach (Column column in ColumnIterator)
 			{
-				if(column.IsNullable)
+				if (column.IsNullable)
 					return false;
 			}
 			return true;

@@ -271,6 +271,7 @@ namespace NHibernate.Cfg
 				table.Catalog = catalog;
 				table.Subselect = subselect;
 				table.SchemaActions = GetSchemaActions(schemaAction);
+				table.UniqueInteger = tables.Count;
 				tables[key] = table;
 			}
 			else
@@ -337,15 +338,17 @@ namespace NHibernate.Cfg
 												Subselect = subselect
 											};
 
-			Table existing;
-			if (tables.TryGetValue(key, out existing))
+			var tableIndex = tables.Count;
+			if (tables.TryGetValue(key, out var existing))
 			{
 				if (existing.IsPhysicalTable)
 				{
 					throw new DuplicateMappingException("table", name);
 				}
+				tableIndex = existing.UniqueInteger;
 			}
 
+			table.UniqueInteger = tableIndex;
 			tables[key] = table;
 			return table;
 		}
@@ -630,7 +633,7 @@ namespace NHibernate.Cfg
 
 		public string GetLogicalTableName(Table table)
 		{
-			return GetLogicalTableName(table.GetQuotedSchema(), table.Catalog, table.GetQuotedName());
+			return GetLogicalTableName(table.GetQuotedSchema(), table.GetQuotedCatalog(), table.GetQuotedName());
 		}
 
 		public ResultSetMappingDefinition GetResultSetMapping(string name)

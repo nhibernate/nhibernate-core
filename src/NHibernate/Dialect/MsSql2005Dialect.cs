@@ -2,6 +2,7 @@ using System.Data;
 using NHibernate.Driver;
 using NHibernate.Mapping;
 using NHibernate.SqlCommand;
+using NHibernate.Util;
 
 namespace NHibernate.Dialect
 {
@@ -43,39 +44,25 @@ namespace NHibernate.Dialect
 		/// functionality.
 		/// </summary>
 		/// <value><c>true</c></value>
-		public override bool SupportsLimit
-		{
-			get { return true; }
-		}
+		public override bool SupportsLimit => true;
 
 		/// <summary>
 		/// Sql Server 2005 supports a query statement that provides <c>LIMIT</c>
 		/// functionality with an offset.
 		/// </summary>
 		/// <value><c>true</c></value>
-		public override bool SupportsLimitOffset
-		{
-			get { return true; }
-		}
+		public override bool SupportsLimitOffset => true;
 
-		public override bool SupportsVariableLimit
-		{
-			get { return true; }
-		}
+		public override bool SupportsVariableLimit => true;
 
-		protected override string GetSelectExistingObject(string name, Table table)
+		protected override string GetSelectExistingObject(string catalog, string schema, string table, string name)
 		{
-			string schema = table.GetQuotedSchemaName(this);
-			if (schema != null)
-			{
-				schema += ".";
-			}
-			string objName = string.Format("{0}{1}", schema, Quote(name));
-			string parentName = string.Format("{0}{1}", schema, table.GetQuotedName(this));
 			return
 				string.Format(
-					"select 1 from sys.objects where object_id = OBJECT_ID(N'{0}') AND parent_object_id = OBJECT_ID('{1}')", objName,
-					parentName);
+					"select 1 from {0} where object_id = OBJECT_ID(N'{1}') and parent_object_id = OBJECT_ID(N'{2}')",
+					Qualify(catalog, "sys", "objects"),
+					Qualify(catalog, schema, Quote(name)),
+					Qualify(catalog, schema, table));
 		}
 
 		/// <summary>
@@ -83,10 +70,7 @@ namespace NHibernate.Dialect
 		/// functionality with an offset.
 		/// </summary>
 		/// <value><c>false</c></value>
-		public override bool UseMaxForLimit
-		{
-			get { return false; }
-		}
+		public override bool UseMaxForLimit => false;
 
 		public override string AppendLockHint(LockMode lockMode, string tableName)
 		{

@@ -86,11 +86,18 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public override string SqlDropString(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema)
 		{
-			string ifExists = dialect.GetIfExistsDropConstraint(Table, Name);
-			string drop = string.Format("alter table {0} {1}", Table.GetQualifiedName(dialect, defaultCatalog, defaultSchema),
-																	dialect.GetDropForeignKeyConstraintString(Name));
-			string end = dialect.GetIfExistsDropConstraintEnd(Table, Name);
-			return ifExists + System.Environment.NewLine + drop + System.Environment.NewLine + end;
+			var catalog = Table.GetQuotedCatalog(dialect, defaultCatalog);
+			var schema = Table.GetQuotedSchema(dialect, defaultSchema);
+			var quotedName = Table.GetQuotedName(dialect);
+
+			return new StringBuilder()
+				.AppendLine(dialect.GetIfExistsDropConstraint(catalog, schema, quotedName, Name))
+				.AppendFormat("alter table ")
+				.Append(Table.GetQualifiedName(dialect, defaultCatalog, defaultSchema))
+				.Append(" ")
+				.AppendLine(dialect.GetDropForeignKeyConstraintString(Name))
+				.Append(dialect.GetIfExistsDropConstraintEnd(catalog, schema, quotedName, Name))
+				.ToString();
 		}
 
 		#endregion
@@ -190,7 +197,7 @@ namespace NHibernate.Mapping
 				result.Append(GetType().FullName)
 					.Append('(')
 					.Append(Table.Name)
-					.Append(StringHelper.Join(", " , Columns))
+					.Append(StringHelper.Join(", ", Columns))
 					.Append(" ref-columns:")
 					.Append('(')
 					.Append(StringHelper.Join(", ", ReferencedColumns))

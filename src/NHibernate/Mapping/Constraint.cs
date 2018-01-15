@@ -71,7 +71,7 @@ namespace NHibernate.Mapping
 
 		public IList<Column> Columns
 		{
-			get{return columns;}
+			get { return columns; }
 		}
 
 		/// <summary>
@@ -99,19 +99,23 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public virtual string SqlDropString(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema)
 		{
-			if (IsGenerated(dialect))
-			{
-				string ifExists = dialect.GetIfExistsDropConstraint(Table, Name);
-				string drop =
-					string.Format("alter table {0} drop constraint {1}", Table.GetQualifiedName(dialect, defaultCatalog, defaultSchema), Name);
-				string end = dialect.GetIfExistsDropConstraintEnd(Table, Name);
-
-				return ifExists + System.Environment.NewLine + drop + System.Environment.NewLine + end;
-			}
-			else
+			if (!IsGenerated(dialect))
 			{
 				return null;
 			}
+
+			var catalog = Table.GetQuotedCatalog(dialect, defaultCatalog);
+			var schema = Table.GetQuotedSchema(dialect, defaultSchema);
+			var tableName = Table.GetQuotedName(dialect);
+
+			return new StringBuilder()
+						.AppendLine(dialect.GetIfExistsDropConstraint(catalog, schema, tableName, Name))
+						.Append("alter table ")
+						.Append(Table.GetQualifiedName(dialect, defaultCatalog, defaultSchema))
+						.Append(" drop constraint ")
+						.AppendLine(Name)
+						.Append(dialect.GetIfExistsDropConstraintEnd(catalog, schema, tableName, Name))
+						.ToString();
 		}
 
 		/// <summary>
@@ -126,18 +130,15 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public virtual string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema)
 		{
-			if (IsGenerated(dialect))
-			{
-				string constraintString = SqlConstraintString(dialect, Name, defaultCatalog, defaultSchema);
-				StringBuilder buf = new StringBuilder("alter table ")
-					.Append(Table.GetQualifiedName(dialect, defaultCatalog, defaultSchema))
-					.Append(constraintString);
-				return buf.ToString();
-			}
-			else
+			if (!IsGenerated(dialect))
 			{
 				return null;
 			}
+
+			StringBuilder buf = new StringBuilder("alter table ")
+				.Append(Table.GetQualifiedName(dialect, defaultCatalog, defaultSchema))
+				.Append(SqlConstraintString(dialect, Name, defaultCatalog, defaultSchema));
+			return buf.ToString();
 		}
 
 		#endregion

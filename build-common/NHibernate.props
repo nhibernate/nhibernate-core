@@ -21,5 +21,8 @@
     <PackageLicenseUrl>https://raw.githubusercontent.com/nhibernate/nhibernate-core/master/LICENSE.txt</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/nhibernate/nhibernate-core.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <TreatSpecificWarningsAsErrors />
   </PropertyGroup>
 </Project>
