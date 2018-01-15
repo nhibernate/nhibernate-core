@@ -136,12 +136,12 @@ namespace NHibernate.Test.NHSpecificTest.GH0831
 			CanHandle(e => decimal.Subtract(2m, e.Value) > 1m);
 		}
 
-		private void CanHandle(Func<Entity, bool> predicate)
+		private void CanHandle(Expression<Func<Entity, bool>> predicate)
 		{
 			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				IEnumerable<Entity> inMemory = entities.Where(predicate).ToList();
+				IEnumerable<Entity> inMemory = entities.Where(predicate.Compile()).ToList();
 				IEnumerable<Entity> inSession = session.Query<Entity>().Where(predicate).ToList();
 
 				Assume.That(inMemory.Any());
