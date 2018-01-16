@@ -151,24 +151,27 @@ namespace NHibernate.Criterion
 				entityProjectionQuery.RegisterEntityProjection(this);
 			}
 
-			if (_entityType == null)
-			{
-				_entityType = criteria.GetRootEntityTypeIfAvailable();
-			}
-
 			if (_entityAlias == null)
 			{
 				_entityAlias = criteria.Alias;
 			}
 
-			ICriteria subcriteria = criteria.GetCriteriaByAlias(_entityAlias)
-									?? throw new HibernateException($"Criteria\\QueryOver alias '{_entityAlias}' for entity projection is not found.");
+			ICriteria subcriteria =
+				criteria.GetCriteriaByAlias(_entityAlias)
+				?? throw new HibernateException($"Criteria\\QueryOver alias '{_entityAlias}' for entity projection is not found.");
 
-			var entityName = criteriaQuery.GetEntityName(subcriteria)
-							?? throw new HibernateException($"Criteria\\QueryOver alias '{_entityAlias}' is not associated with an entity.");
+			var entityName =
+				criteriaQuery.GetEntityName(subcriteria)
+				?? throw new HibernateException($"Criteria\\QueryOver alias '{_entityAlias}' is not associated with an entity.");
 
-			Persister = criteriaQuery.Factory.GetEntityPersister(entityName) as IQueryable
-						?? throw new HibernateException($"Projecting to entities requires a '{typeof(IQueryable).FullName}' persister, '{entityName}' does not have one.");
+			Persister =
+				criteriaQuery.Factory.GetEntityPersister(entityName) as IQueryable
+				?? throw new HibernateException($"Projecting to entities requires a '{typeof(IQueryable).FullName}' persister, '{entityName}' does not have one.");
+
+			if (_entityType == null)
+			{
+				_entityType = Persister.Type.ReturnedClass;
+			}
 
 			TableAlias = criteriaQuery.GetSQLAlias(
 				subcriteria,
