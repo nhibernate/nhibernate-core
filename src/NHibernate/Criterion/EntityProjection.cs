@@ -161,13 +161,14 @@ namespace NHibernate.Criterion
 				_entityAlias = criteria.Alias;
 			}
 
-			Persister = criteriaQuery.Factory.GetEntityPersister(_entityType.FullName) as IQueryable;
-			if (Persister == null)
-				throw new HibernateException($"Projecting to entities requires a '{typeof(IQueryable).FullName}' persister, '{_entityType.FullName}' does not have one.");
+			ICriteria subcriteria = criteria.GetCriteriaByAlias(_entityAlias)
+									?? throw new HibernateException($"Criteria\\QueryOver alias '{_entityAlias}' for entity projection is not found.");
 
-			ICriteria subcriteria = criteria.GetCriteriaByAlias(_entityAlias);
-			if (subcriteria == null)
-				throw new HibernateException($"Criteria\\QueryOver alias '{_entityAlias}' for entity projection is not found.");
+			var entityName = criteriaQuery.GetEntityName(subcriteria)
+							?? throw new HibernateException($"Criteria\\QueryOver alias '{_entityAlias}' is not associated with an entity.");
+
+			Persister = criteriaQuery.Factory.GetEntityPersister(entityName) as IQueryable
+						?? throw new HibernateException($"Projecting to entities requires a '{typeof(IQueryable).FullName}' persister, '{entityName}' does not have one.");
 
 			TableAlias = criteriaQuery.GetSQLAlias(
 				subcriteria,
