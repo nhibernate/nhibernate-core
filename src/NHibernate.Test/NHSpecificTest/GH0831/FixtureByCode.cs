@@ -14,12 +14,12 @@ namespace NHibernate.Test.NHSpecificTest.GH0831
 	{
 		private readonly IList<Entity> entities = new List<Entity>
 		{
-			new Entity { Value = 0.5m },
-			new Entity { Value = 1.0m },
-			new Entity { Value = 1.5m },
-			new Entity { Value = 2.0m },
-			new Entity { Value = 2.5m },
-			new Entity { Value = 3.0m }
+			new Entity { EntityValue = 0.5m },
+			new Entity { EntityValue = 1.0m },
+			new Entity { EntityValue = 1.5m },
+			new Entity { EntityValue = 2.0m },
+			new Entity { EntityValue = 2.5m },
+			new Entity { EntityValue = 3.0m }
 		};
 
 		protected override HbmMapping GetMappings()
@@ -28,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.GH0831
 			mapper.Class<Entity>(rc =>
 			{
 				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
-				rc.Property(x => x.Value);
+				rc.Property(x => x.EntityValue);
 			});
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
@@ -64,77 +64,75 @@ namespace NHibernate.Test.NHSpecificTest.GH0831
 		[Test]
 		public void CanHandleAdd()
 		{
-			CanHandle(e => decimal.Add(e.Value, 2) > 3.0m);
-			CanHandle(e => decimal.Add(2, e.Value) > 3.0m);
+			CanHandle(e => decimal.Add(e.EntityValue, 2) > 3.0m);
+			CanHandle(e => decimal.Add(2, e.EntityValue) > 3.0m);
 		}
 
 		[Test]
 		public void CanHandleCeiling()
 		{
-			CanHandle(e => decimal.Ceiling(e.Value) > 1.0m);
+			CanHandle(e => decimal.Ceiling(e.EntityValue) > 1.0m);
 		}
 
 		[Test]
 		public void CanHandleCompare()
 		{
-			CanHandle(e => decimal.Compare(e.Value, 1.0m) < 1);
-			CanHandle(e => decimal.Compare(1.0m, e.Value) < 1);
+			CanHandle(e => decimal.Compare(e.EntityValue, 1.5m) < 1);
+			CanHandle(e => decimal.Compare(1.0m, e.EntityValue) < 1);
 		}
 
 		[Test]
 		public void CanHandleDivide()
 		{
-			CanHandle(e => decimal.Divide(e.Value, 1.25m) < 1);
-			CanHandle(e => decimal.Divide(1.25m, e.Value) < 1);
+			CanHandle(e => decimal.Divide(e.EntityValue, 1.25m) < 1);
+			CanHandle(e => decimal.Divide(1.25m, e.EntityValue) < 1);
 		}
 
 		[Test]
 		public void CanHandleEquals()
 		{
-			CanHandle(e => decimal.Equals(e.Value, 1.0m));
-			CanHandle(e => decimal.Equals(1.0m, e.Value));
+			CanHandle(e => decimal.Equals(e.EntityValue, 1.0m));
+			CanHandle(e => decimal.Equals(1.0m, e.EntityValue));
 		}
 
 		[Test]
 		public void CanHandleFloor()
 		{
-			CanHandle(e => decimal.Floor(e.Value) > 1.0m);
+			CanHandle(e => decimal.Floor(e.EntityValue) > 1.0m);
 		}
 
 		[Test]
 		public void CanHandleMultiply()
 		{
-			CanHandle(e => decimal.Multiply(e.Value, 10m) > 10m);
-			CanHandle(e => decimal.Multiply(10m, e.Value) > 10m);
+			CanHandle(e => decimal.Multiply(e.EntityValue, 10m) > 10m);
+			CanHandle(e => decimal.Multiply(10m, e.EntityValue) > 10m);
 		}
 
 		[Test]
 		public void CanHandleNegate()
 		{
-			CanHandle(e => decimal.Negate(e.Value) > -1.0m);
+			CanHandle(e => decimal.Negate(e.EntityValue) > -1.0m);
 		}
 
 		[Test]
 		public void CanHandleRemainder()
 		{
-			CanHandle(e => decimal.Remainder(e.Value, 2m) >= 0.5m);
-			CanHandle(e => decimal.Remainder(2m, e.Value) >= 0.5m);
+			CanHandle(e => decimal.Remainder(e.EntityValue, 2) == 0);
+			CanHandle(e => decimal.Remainder(2, e.EntityValue) < 1);
 		}
 
 		[Test]
 		public void CanHandleRound()
 		{
-			CanHandle(e => decimal.Round(e.Value) >= 2.0m);
-			CanHandle(e => decimal.Round(e.Value, 1) >= 1.5m);
-			CanHandle(e => decimal.Round(e.Value, MidpointRounding.AwayFromZero) >= 2.0m);
-			CanHandle(e => decimal.Round(e.Value, 1, MidpointRounding.AwayFromZero) >= 2.0m);
+			CanHandle(e => decimal.Round(e.EntityValue) >= 2.0m);
+			CanHandle(e => decimal.Round(e.EntityValue, 1) >= 1.5m);
 		}
 
 		[Test]
 		public void CanHandleSubtract()
 		{
-			CanHandle(e => decimal.Subtract(e.Value, 1m) > 1m);
-			CanHandle(e => decimal.Subtract(2m, e.Value) > 1m);
+			CanHandle(e => decimal.Subtract(e.EntityValue, 1m) > 1m);
+			CanHandle(e => decimal.Subtract(2m, e.EntityValue) > 1m);
 		}
 
 		private void CanHandle(Expression<Func<Entity, bool>> predicate)

@@ -5,7 +5,7 @@ namespace NHibernate.Test.NHSpecificTest.GH0831
 	class Entity
 	{
 		public virtual Guid Id { get; set; }
-		public virtual decimal Value { get; set; }
+		public virtual decimal EntityValue { get; set; }
 
 		public override int GetHashCode()
 		{
@@ -17,6 +17,11 @@ namespace NHibernate.Test.NHSpecificTest.GH0831
 			var that = obj as Entity;
 
 			return (that != null) && Id.Equals(that.Id);
+		}
+
+		public override string ToString()
+		{
+			return EntityValue.ToString();
 		}
 	}
 }
