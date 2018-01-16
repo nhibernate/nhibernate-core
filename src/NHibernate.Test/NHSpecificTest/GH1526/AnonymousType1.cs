@@ -1,29 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using NHibernate.DomainModel;
+﻿using System.Linq.Expressions;
+using NHibernate.DomainModel.NHSpecific;
 
-// ReSharper disable once CheckNamespace
-// Simulates a compiler-generated, non-namespaced anonymous type
-internal class AnonymousType1<T>
+// Simulates a compiler-generated, non-namespaced anonymous type with one property
+// Exactly the same as the one in NHibernate.DomainModel.NHSpecific
+internal class AnonymousType1<TProp1>
 {
-	public T Name { get; set; }
+	public TProp1 Prop1 { get; set; }
 }
 
 namespace NHibernate.Test.NHSpecificTest.GH1526
 {
 	// Produces an Expression that has the above AnonymousType1 embedded in it
-	public static class AnonymousTypeExpressionProviderFromNHibernateTestAssembly
+	public static class AnonymousTypeQueryExpressionProviderFromNHibernateTestAssembly
 	{
-		public static Expression GetExpression()
+		public static System.Type GetAnonymousType()
 		{
-			Expression<Func<IList<AnonymousType1<string>>>> exp = () =>
-				Enumerable.Empty<Custom>()
-					.Select(c => new AnonymousType1<string> { Name = c.Name })
-					.ToList();
+			return typeof(AnonymousType1<string>);
+		}
 
-			return exp;
+		public static Expression GetQueryExpression()
+		{
+			return TypedSimpleQueryExpressionProvider.GetQueryExpression<AnonymousType1<string>>();
 		}
 	}
 }
