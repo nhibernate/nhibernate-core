@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Data;
-using System.Runtime.CompilerServices;
 
 namespace NHibernate.SqlTypes
 {
@@ -99,7 +98,6 @@ namespace NHibernate.SqlTypes
 			return GetTypeWithLenOrScale(fractionalSecondsPrecision, l => new TimeSqlType(l));
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static SqlType GetSqlType(DbType dbType, byte precision, byte scale)
 		{
 			return GetTypeWithPrecision(dbType, precision, scale);
