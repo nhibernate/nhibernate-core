@@ -29,6 +29,11 @@ namespace NHibernate.DomainModel.NHSpecific
 		{
 			return _provider.GetExpressionOfNew();
 		}
+		
+		public Expression GetExpressionOfTypeBinary()
+		{
+			return _provider.GetExpressionOfTypeBinary();
+		}
 	}
 
 	public class TypedQueryExpressionProvider<T> where T : new ()
@@ -52,6 +57,14 @@ namespace NHibernate.DomainModel.NHSpecific
 			// so that the only variable part is the 'new T()'
 			Expression<Func<object>> exp = () =>
 				Enumerable.Empty<object>().Select(o => new T().GetHashCode()).ToList();
+
+			return exp;
+		}
+
+		public Expression GetExpressionOfTypeBinary()
+		{
+			Expression<Func<object>> exp = () =>
+				Enumerable.Empty<object>().Select(o => o is T).ToList();
 
 			return exp;
 		}
