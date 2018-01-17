@@ -2633,7 +2633,7 @@
                 types, <literal>System.Object</literal> types, and <literal>System.Object</literal> types for large objects.  Just like
                 Columns for System.ValueType types can handle <literal>null</literal> values only if the entity property is properly
                 typed with a <literal>Nullable&lt;T&gt;</literal>. Otherwise <literal>null</literal> will be replaced by the default
-                value for the type when reading, and when be overwritten by it when persisting the entity, potentially leading to
+                value for the type when reading, and then will be overwritten by it when persisting the entity, potentially leading to
                 phantom updates.
             </para>
             <table>
@@ -3023,6 +3023,12 @@
                 NHibernate type, <literal>type="short"</literal> to an <literal>Int16</literal> NHibernateType.
                 To see all of the conversions you can view the source of static constructor of the class
                 <literal>NHibernate.Type.TypeFactory</literal>.
+            </para>
+
+            <para>
+                Default NHibernate types used when no <literal>type</literal> attribute is specified can be overridden by using
+                the <literal>NHibernate.Type.TypeFactory.RegisterType</literal> static method before configuring and building
+                session factories.
             </para>
 
         </sect2>
