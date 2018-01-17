@@ -75,6 +75,7 @@ namespace NHibernate.Test.Hql
 			{
 				s.Delete("from Human");
 				s.Delete("from Animal");
+				s.Delete("from MaterialResource");
 				s.Flush();
 			}
 		}
@@ -532,6 +533,28 @@ namespace NHibernate.Test.Hql
 		}
 
 		[Test]
+		public async Task CeilingAsync()
+		{
+			using (var s = OpenSession())
+			{
+				var a1 = new Animal("a1", 1.3f);
+				await (s.SaveAsync(a1));
+				await (s.FlushAsync());
+			}
+			using (var s = OpenSession())
+			{
+				var ceiling = await (s.CreateQuery("select ceiling(a.BodyWeight) from Animal a").UniqueResultAsync<float>());
+				Assert.That(ceiling, Is.EqualTo(2));
+				var count =
+					await (s
+						.CreateQuery("select count(*) from Animal a where ceiling(a.BodyWeight) = :c")
+						.SetInt32("c", 2)
+						.UniqueResultAsync<long>());
+				Assert.That(count, Is.EqualTo(1));
+			}
+		}
+
+		[Test]
 		public async Task ModAsync()
 		{
 			IgnoreIfNotSupported("mod");
@@ -634,6 +657,28 @@ namespace NHibernate.Test.Hql
 					hql = "select lower(an.Description) from Animal an group by lower(an.Description) having lower(an.Description)='abcdef'";
 					lresult = await (s.CreateQuery(hql).ListAsync());
 				}
+			}
+		}
+
+		[Test]
+		public async Task ChrAsync()
+		{
+			using (var s = OpenSession())
+			{
+				var m = new MaterialResource("Blah", "000", (MaterialResource.MaterialState)32);
+				await (s.SaveAsync(m));
+				await (s.FlushAsync());
+			}
+			using (var s = OpenSession())
+			{
+				var space = await (s.CreateQuery("select chr(m.State) from MaterialResource m").UniqueResultAsync<char>());
+				Assert.That(space, Is.EqualTo(' '));
+				var count =
+					await (s
+						.CreateQuery("select count(*) from MaterialResource m where chr(m.State) = :c")
+						.SetCharacter("c", ' ')
+						.UniqueResultAsync<long>());
+				Assert.That(count, Is.EqualTo(1));
 			}
 		}
 
