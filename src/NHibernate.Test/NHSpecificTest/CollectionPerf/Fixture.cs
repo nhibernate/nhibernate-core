@@ -1,5 +1,6 @@
 ﻿using NHibernate.Cfg;
 using NUnit.Framework;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.NHSpecificTest.CollectionPerf
 {
@@ -62,7 +63,7 @@ namespace NHibernate.Test.NHSpecificTest.CollectionPerf
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					s.Delete(parent);
+					s.Delete(s.Load<Parent>(parent.Id));
 					tx.Commit();
 				}				
 			}
