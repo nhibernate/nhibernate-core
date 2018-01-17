@@ -10,31 +10,44 @@ namespace NHibernate.Test.NHSpecificTest.GH1526
 	[TestFixture]
 	public class Fixture
 	{
-		[Test]
-		public void ShouldCreateDifferentKeyForSameNamedAnonymousTypesFromDifferentAssemblies()
+		private readonly AnonymousTypeQueryExpressionProviderFromNHibernateTestAssembly _providerFromNHTest
+			= new AnonymousTypeQueryExpressionProviderFromNHibernateTestAssembly();
+
+		private readonly AnonymousTypeQueryExpressionProviderFromNHibernateDomainModelAssembly _providerFromNHDoMo
+			= new AnonymousTypeQueryExpressionProviderFromNHibernateDomainModelAssembly();
+
+		[OneTimeSetUp]
+		public void OneTimeSetUp()
 		{
-			// preconditions of the test
-			var type1 = AnonymousTypeQueryExpressionProviderFromNHibernateTestAssembly
-				.GetAnonymousType();
-			var type2 = AnonymousTypeQueryExpressionProviderFromNHibernateDomainModelAssembly
-				.GetAnonymousType();
+			// all the tests in this fixture run under condition, that
+			// the types used from the two providers are different,
+			// but have exactly the same System.Type.FullName when inspected
+
+			var type1 = _providerFromNHTest.GetAnonymousType();
+			var type2 = _providerFromNHDoMo.GetAnonymousType();
 			
 			Assert.That(type1.FullName, Is.EqualTo(type2.FullName),
 				"The two tested types must have the same FullName for demonstrating the bug.");
 
 			Assert.That(type1, Is.Not.EqualTo(type2),
 				"The two tested types must not be the same for demonstrating the bug.");
+		}
 
-			// the test
-			var exp1 = AnonymousTypeQueryExpressionProviderFromNHibernateTestAssembly
-				.GetQueryExpression();
-			var exp2 = AnonymousTypeQueryExpressionProviderFromNHibernateDomainModelAssembly
-				.GetQueryExpression();
+		[Test]
+		public void ShouldCreateDifferentKeys_MethodCallExpression()
+		{
+			var exp1 = _providerFromNHTest.GetExpressionOfMethodCall();
+			var exp2 = _providerFromNHDoMo.GetExpressionOfMethodCall();
 
-			var key1 = ExpressionKeyVisitor.Visit(exp1, new Dictionary<ConstantExpression, NamedParameter>());
-			var key2 = ExpressionKeyVisitor.Visit(exp2, new Dictionary<ConstantExpression, NamedParameter>());
+			var key1 = GetCacheKey(exp1);
+			var key2 = GetCacheKey(exp2);
 
 			Assert.That(key1, Is.Not.EqualTo(key2));
+		}
+
+		private static string GetCacheKey(Expression exp)
+		{
+			return ExpressionKeyVisitor.Visit(exp, new Dictionary<ConstantExpression, NamedParameter>());
 		}
 	}
 }

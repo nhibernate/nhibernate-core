@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -11,26 +10,33 @@ internal class AnonymousType1<TProp1>
 
 namespace NHibernate.DomainModel.NHSpecific
 {
-	// Produces an Expression that has the above AnonymousType1 embedded in it
-	public static class AnonymousTypeQueryExpressionProviderFromNHibernateDomainModelAssembly
+	public class AnonymousTypeQueryExpressionProviderFromNHibernateDomainModelAssembly
 	{
-		public static System.Type GetAnonymousType()
+		private readonly TypedQueryExpressionProvider<AnonymousType1<string>> _provider
+			= new TypedQueryExpressionProvider<AnonymousType1<string>>();
+
+		public System.Type GetAnonymousType()
 		{
-			return typeof(AnonymousType1<string>);
+			return _provider.GetSuppliedType();
 		}
 
-		public static Expression GetQueryExpression()
+		public Expression GetExpressionOfMethodCall()
 		{
-			return TypedSimpleQueryExpressionProvider.GetQueryExpression<AnonymousType1<string>>();
+			return _provider.GetExpressionOfMethodCall();
 		}
 	}
 
-	public static class TypedSimpleQueryExpressionProvider
+	public class TypedQueryExpressionProvider<T> where T : new ()
 	{
-		public static Expression GetQueryExpression<T>() where T : new ()
+		public System.Type GetSuppliedType()
 		{
-			Expression<Func<IList<T>>> exp = () =>
-				Enumerable.Empty<object>().Select(o => new T()).ToList();
+			return typeof(T);
+		}
+
+		public Expression GetExpressionOfMethodCall()
+		{
+			Expression<Func<object>> exp = () =>
+				Enumerable.Empty<object>().Select(o => (T)o).ToList();
 
 			return exp;
 		}

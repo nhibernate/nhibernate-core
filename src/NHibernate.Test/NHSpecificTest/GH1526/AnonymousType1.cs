@@ -11,16 +11,19 @@ internal class AnonymousType1<TProp1>
 namespace NHibernate.Test.NHSpecificTest.GH1526
 {
 	// Produces an Expression that has the above AnonymousType1 embedded in it
-	public static class AnonymousTypeQueryExpressionProviderFromNHibernateTestAssembly
+	public class AnonymousTypeQueryExpressionProviderFromNHibernateTestAssembly
 	{
-		public static System.Type GetAnonymousType()
+		private readonly TypedQueryExpressionProvider<AnonymousType1<string>> _provider
+			= new TypedQueryExpressionProvider<AnonymousType1<string>>();
+
+		public System.Type GetAnonymousType()
 		{
-			return typeof(AnonymousType1<string>);
+			return _provider.GetSuppliedType();
 		}
 
-		public static Expression GetQueryExpression()
+		public Expression GetExpressionOfMethodCall()
 		{
-			return TypedSimpleQueryExpressionProvider.GetQueryExpression<AnonymousType1<string>>();
+			return _provider.GetExpressionOfMethodCall();
 		}
 	}
 }
