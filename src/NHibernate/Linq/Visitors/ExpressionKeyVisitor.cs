@@ -81,6 +81,8 @@ namespace NHibernate.Linq.Visitors
 		{
 			NamedParameter param;
 
+			if (_constantToParameterMap == null)
+				throw new InvalidOperationException("Cannot visit a constant without a constant to parameter map.");
 			if (_constantToParameterMap.TryGetValue(expression, out param) && insideSelectClause == false)
 			{
 				// Nulls generate different query plans.  X = variable generates a different query depending on if variable is null or not.
