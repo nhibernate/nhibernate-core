@@ -246,10 +246,10 @@ namespace NHibernate
 		ICriteria SetFetchSize(int fetchSize);
 
 		/// <summary>
-		/// Set a timeout for the underlying ADO.NET query
+		/// Set a timeout for the underlying ADO.NET query.
 		/// </summary>
-		/// <param name="timeout"></param>
-		/// <returns></returns>
+		/// <param name="timeout">The timeout in seconds.</param>
+		/// <returns><see langword="this" /> (for method chaining).</returns>
 		ICriteria SetTimeout(int timeout);
 
 		/// <summary>

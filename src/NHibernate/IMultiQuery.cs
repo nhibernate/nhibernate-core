@@ -144,9 +144,9 @@ namespace NHibernate
 		IMultiQuery SetForceCacheRefresh(bool forceCacheRefresh);
 
 		/// <summary>
-		/// The timeout for the underlying ADO query
+		/// Set a timeout for the underlying ADO.NET query.
 		/// </summary>
-		/// <param name="timeout"></param>
+		/// <param name="timeout">The timeout in seconds.</param>
 		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetTimeout(int timeout);
 

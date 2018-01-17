@@ -17,6 +17,12 @@ namespace NHibernate.Driver
 	using System.Threading;
 	public partial interface IResultSetsCommand
 	{
+		/// <summary>
+		/// Get a data reader for this multiple result sets command.
+		/// </summary>
+		/// <param name="commandTimeout">The timeout in seconds for the underlying ADO.NET query.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>A data reader.</returns>
 		Task<DbDataReader> GetReaderAsync(int? commandTimeout, CancellationToken cancellationToken);
 	}
 }

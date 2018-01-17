@@ -477,8 +477,10 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// Set a timeout for the underlying ADO.NET query
+		/// Set a timeout for the underlying ADO.NET query.
 		/// </summary>
+		/// <param name="timeout">The timeout in seconds.</param>
+		/// <returns><see langword="this" /> (for method chaining).</returns>
 		public IMultiCriteria SetTimeout(int timeout)
 		{
 			_timeout = timeout == RowSelection.NoValue ? (int?) null : timeout;

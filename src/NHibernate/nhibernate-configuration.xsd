@@ -99,7 +99,13 @@
 								<xs:enumeration value="sql_exception_converter" />
 								<xs:enumeration value="adonet.wrap_result_sets" />
 								<xs:enumeration value="prepare_sql" />
-								<xs:enumeration value="command_timeout" />
+								<xs:enumeration value="command_timeout">
+									<xs:annotation>
+										<xs:documentation>
+											Set the default timeout in seconds for ADO.NET queries.
+										</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
 								<xs:enumeration value="adonet.batch_size" />
 								<xs:enumeration value="use_proxy_validator" />
 								<xs:enumeration value="xml.output_stylesheet" />
