@@ -24,6 +24,11 @@ namespace NHibernate.DomainModel.NHSpecific
 		{
 			return _provider.GetExpressionOfMethodCall();
 		}
+
+		public Expression GetExpressionOfNew()
+		{
+			return _provider.GetExpressionOfNew();
+		}
 	}
 
 	public class TypedQueryExpressionProvider<T> where T : new ()
@@ -37,6 +42,16 @@ namespace NHibernate.DomainModel.NHSpecific
 		{
 			Expression<Func<object>> exp = () =>
 				Enumerable.Empty<object>().Select(o => (T)o).ToList();
+
+			return exp;
+		}
+
+		public Expression GetExpressionOfNew()
+		{
+			// adds .GetHashCode to make sure the .ToList is always of same generic type
+			// so that the only variable part is the 'new T()'
+			Expression<Func<object>> exp = () =>
+				Enumerable.Empty<object>().Select(o => new T().GetHashCode()).ToList();
 
 			return exp;
 		}

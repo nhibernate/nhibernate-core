@@ -45,6 +45,18 @@ namespace NHibernate.Test.NHSpecificTest.GH1526
 			Assert.That(key1, Is.Not.EqualTo(key2));
 		}
 
+		[Test]
+		public void ShouldCreateDifferentKeys_NewExpression()
+		{
+			var exp1 = _providerFromNHTest.GetExpressionOfNew();
+			var exp2 = _providerFromNHDoMo.GetExpressionOfNew();
+
+			var key1 = GetCacheKey(exp1);
+			var key2 = GetCacheKey(exp2);
+
+			Assert.That(key1, Is.Not.EqualTo(key2));
+		}
+
 		private static string GetCacheKey(Expression exp)
 		{
 			return ExpressionKeyVisitor.Visit(exp, new Dictionary<ConstantExpression, NamedParameter>());

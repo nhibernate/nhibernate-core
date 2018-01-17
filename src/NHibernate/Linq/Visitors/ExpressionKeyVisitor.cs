@@ -190,7 +190,7 @@ namespace NHibernate.Linq.Visitors
 		protected override Expression VisitNew(NewExpression expression)
 		{
 			_string.Append("new ");
-			_string.Append(expression.Constructor.DeclaringType.Name);
+			_string.Append(expression.Constructor.DeclaringType.AssemblyQualifiedName);
 			_string.Append('(');
 			Visit(expression.Arguments, AppendCommas);
 			_string.Append(')');

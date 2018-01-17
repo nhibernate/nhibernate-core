@@ -25,5 +25,10 @@ namespace NHibernate.Test.NHSpecificTest.GH1526
 		{
 			return _provider.GetExpressionOfMethodCall();
 		}
+
+		public Expression GetExpressionOfNew()
+		{
+			return _provider.GetExpressionOfNew();
+		}
 	}
 }
