@@ -6,8 +6,8 @@
     <id name="Id" type="guid">
       <generator class="guid.comb" />
     </id>
-		<list name="Children" cascade="all-delete-orphan" inverse="true">
-			<key column="Parent" not-null="true"/>
+		<list name="Children" cascade="all-delete-orphan">
+			<key column="Parent" not-null="true" update="false"/>
       <list-index column="OrderIndex"  />
 			<one-to-many class="Child"/>
 		</list>
@@ -19,8 +19,7 @@
     <id name="Id" type="guid">
       <generator class="guid.comb" />
     </id>
-    <many-to-one name="Parent" class="Parent" />
-    <property name="OrderIndex" access="readonly"/>
+    <many-to-one name="Parent" class="Parent" update="false" insert="false"/>
     <property name="Name" />	
   </class>
 </hibernate-mapping>
