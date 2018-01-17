@@ -535,6 +535,8 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task CeilingAsync()
 		{
+			Assume.That(Dialect.Functions.ContainsKey("ceiling"), Is.True, Dialect + " doesn't support ceiling function.");
+
 			using (var s = OpenSession())
 			{
 				var a1 = new Animal("a1", 1.3f);
@@ -661,8 +663,34 @@ namespace NHibernate.Test.Hql
 		}
 
 		[Test]
+		public async Task AsciiAsync()
+		{
+			Assume.That(Dialect.Functions.ContainsKey("ascii"), Is.True, Dialect + " doesn't support ascii function.");
+
+			using (var s = OpenSession())
+			{
+				var m = new MaterialResource(" ", "000", MaterialResource.MaterialState.Available);
+				await (s.SaveAsync(m));
+				await (s.FlushAsync());
+			}
+			using (var s = OpenSession())
+			{
+				var space = await (s.CreateQuery("select ascii(m.Description) from MaterialResource m").UniqueResultAsync<int>());
+				Assert.That(space, Is.EqualTo(32));
+				var count =
+					await (s
+						.CreateQuery("select count(*) from MaterialResource m where ascii(m.Description) = :c")
+						.SetInt32("c", 32)
+						.UniqueResultAsync<long>());
+				Assert.That(count, Is.EqualTo(1));
+			}
+		}
+
+		[Test]
 		public async Task ChrAsync()
 		{
+			Assume.That(Dialect.Functions.ContainsKey("chr"), Is.True, Dialect + " doesn't support chr function.");
+
 			using (var s = OpenSession())
 			{
 				var m = new MaterialResource("Blah", "000", (MaterialResource.MaterialState)32);
@@ -1037,7 +1065,7 @@ namespace NHibernate.Test.Hql
 		public async Task IifAsync()
 		{
 			if (!Dialect.Functions.ContainsKey("iif"))
-				Assert.Ignore(Dialect + "doesn't support iif function.");
+				Assert.Ignore(Dialect + " doesn't support iif function.");
 			using (ISession s = OpenSession())
 			{
 				await (s.SaveAsync(new MaterialResource("Flash card 512MB", "A001/07", MaterialResource.MaterialState.Available)));

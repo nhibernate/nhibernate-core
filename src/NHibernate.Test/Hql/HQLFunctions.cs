@@ -524,6 +524,8 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void Ceiling()
 		{
+			Assume.That(Dialect.Functions.ContainsKey("ceiling"), Is.True, Dialect + " doesn't support ceiling function.");
+
 			using (var s = OpenSession())
 			{
 				var a1 = new Animal("a1", 1.3f);
@@ -650,8 +652,34 @@ namespace NHibernate.Test.Hql
 		}
 
 		[Test]
+		public void Ascii()
+		{
+			Assume.That(Dialect.Functions.ContainsKey("ascii"), Is.True, Dialect + " doesn't support ascii function.");
+
+			using (var s = OpenSession())
+			{
+				var m = new MaterialResource(" ", "000", MaterialResource.MaterialState.Available);
+				s.Save(m);
+				s.Flush();
+			}
+			using (var s = OpenSession())
+			{
+				var space = s.CreateQuery("select ascii(m.Description) from MaterialResource m").UniqueResult<int>();
+				Assert.That(space, Is.EqualTo(32));
+				var count =
+					s
+						.CreateQuery("select count(*) from MaterialResource m where ascii(m.Description) = :c")
+						.SetInt32("c", 32)
+						.UniqueResult<long>();
+				Assert.That(count, Is.EqualTo(1));
+			}
+		}
+
+		[Test]
 		public void Chr()
 		{
+			Assume.That(Dialect.Functions.ContainsKey("chr"), Is.True, Dialect + " doesn't support chr function.");
+
 			using (var s = OpenSession())
 			{
 				var m = new MaterialResource("Blah", "000", (MaterialResource.MaterialState)32);
@@ -1026,7 +1054,7 @@ namespace NHibernate.Test.Hql
 		public void Iif()
 		{
 			if (!Dialect.Functions.ContainsKey("iif"))
-				Assert.Ignore(Dialect + "doesn't support iif function.");
+				Assert.Ignore(Dialect + " doesn't support iif function.");
 			using (ISession s = OpenSession())
 			{
 				s.Save(new MaterialResource("Flash card 512MB", "A001/07", MaterialResource.MaterialState.Available));

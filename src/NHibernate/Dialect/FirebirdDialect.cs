@@ -454,6 +454,7 @@ namespace NHibernate.Dialect
 		{
 			RegisterFunction("abs", new StandardSQLFunction("abs", NHibernateUtil.Double));
 			RegisterFunction("ceiling", new StandardSQLFunction("ceiling", NHibernateUtil.Double));
+			RegisterFunction("ceil", new StandardSQLFunction("ceil", NHibernateUtil.Double));
 			RegisterFunction("div", new StandardSQLFunction("div", NHibernateUtil.Double));
 			RegisterFunction("dpower", new StandardSQLFunction("dpower", NHibernateUtil.Double));
 			RegisterFunction("ln", new StandardSQLFunction("ln", NHibernateUtil.Double));
@@ -486,7 +487,9 @@ namespace NHibernate.Dialect
 		private void RegisterStringAndCharFunctions()
 		{
 			RegisterFunction("ascii_char", new StandardSQLFunction("ascii_char"));
+			RegisterFunction("chr", new StandardSQLFunction("ascii_char"));
 			RegisterFunction("ascii_val", new StandardSQLFunction("ascii_val", NHibernateUtil.Int16));
+			RegisterFunction("ascii", new StandardSQLFunction("ascii_val", NHibernateUtil.Int16));
 			RegisterFunction("lpad", new StandardSQLFunction("lpad"));
 			RegisterFunction("ltrim", new StandardSQLFunction("ltrim"));
 			RegisterFunction("sright", new StandardSQLFunction("sright"));
