@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Dialect;
 using NUnit.Framework;
 
@@ -23,40 +24,40 @@ namespace NHibernate.Test.Hql
 	[TestFixture]
 	public class HQLFunctionsAsync : TestCase
 	{
-		static readonly Hashtable notSupportedStandardFunction;
+		private static readonly Dictionary<string, HashSet<System.Type>> DialectsNotSupportingStandardFunction;
+
 		static HQLFunctionsAsync()
 		{
-			notSupportedStandardFunction =
-				new Hashtable
+			DialectsNotSupportingStandardFunction =
+				new Dictionary<string, HashSet<System.Type>>
+				{
+					{"locate", new HashSet<System.Type> {typeof (SQLiteDialect)}},
+					{"bit_length", new HashSet<System.Type> {typeof (SQLiteDialect)}},
+					{"extract", new HashSet<System.Type> {typeof (SQLiteDialect)}},
 					{
-						{"locate", new[] {typeof (SQLiteDialect)}},
-						{"bit_length", new[] {typeof (SQLiteDialect)}},
-						{"extract", new[] {typeof (SQLiteDialect)}},
+						"nullif",
+						new HashSet<System.Type>
 						{
-							"nullif",
-							new[]
-							{
-								typeof (Oracle8iDialect),
-								// Actually not supported by the db engine. (Well, could likely still be done with a case when override.)
-								typeof (MsSqlCeDialect),
-								typeof (MsSqlCe40Dialect)
-							}}
-					};
+							// Actually not supported by the db engine. (Well, could likely still be done with a case when override.)
+							typeof (MsSqlCeDialect),
+							typeof (MsSqlCe40Dialect)
+						}}
+				};
 		}
 
-		private bool IsOracleDialect()
+		private void AssumeSupported(string functionName)
 		{
-			return Dialect is Oracle8iDialect;
-		}
+			Assume.That(
+				Sfi.SQLFunctionRegistry.HasFunction(functionName),
+				Is.True,
+				$"{Dialect} doesn't support {functionName} function.");
 
-		private void IgnoreIfNotSupported(string functionName)
-		{
-			if (notSupportedStandardFunction.ContainsKey(functionName))
-			{
-				IList dialects = (IList)notSupportedStandardFunction[functionName];
-				if(dialects.Contains(Dialect.GetType()))
-					Assert.Ignore(Dialect + " doesn't support "+functionName+" function.");
-			}
+			if (!DialectsNotSupportingStandardFunction.TryGetValue(functionName, out var dialects))
+				return;
+			Assume.That(
+				dialects,
+				Does.Not.Contain(Dialect.GetType()),
+				$"{Dialect} doesn't support {functionName} standard function.");
 		}
 
 		protected override string MappingsAssembly
@@ -256,7 +257,7 @@ namespace NHibernate.Test.Hql
 			// the two-parameter overload - emulating it by generating the 
 			// third parameter (length) if the database requires three parameters.
 
-			IgnoreIfNotSupported("substring");
+			AssumeSupported("substring");
 
 			using (ISession s = OpenSession())
 			{
@@ -294,7 +295,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task SubStringAsync()
 		{
-			IgnoreIfNotSupported("substring");
+			AssumeSupported("substring");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 20);
@@ -346,7 +347,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task LocateAsync()
 		{
-			IgnoreIfNotSupported("locate");
+			AssumeSupported("locate");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 20);
@@ -368,7 +369,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task TrimAsync()
 		{
-			IgnoreIfNotSupported("trim");
+			AssumeSupported("trim");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abc   ", 1);
@@ -426,7 +427,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task LengthAsync()
 		{
-			IgnoreIfNotSupported("length");
+			AssumeSupported("length");
 
 			using (ISession s = OpenSession())
 			{
@@ -451,7 +452,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task Bit_lengthAsync()
 		{
-			IgnoreIfNotSupported("bit_length");
+			AssumeSupported("bit_length");
 
 			// test only the parser
 			using (ISession s = OpenSession())
@@ -467,7 +468,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task CoalesceAsync()
 		{
-			IgnoreIfNotSupported("coalesce");
+			AssumeSupported("coalesce");
 			// test only the parser and render
 			using (ISession s = OpenSession())
 			{
@@ -482,9 +483,9 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task NullifAsync()
 		{
-			IgnoreIfNotSupported("nullif");
+			AssumeSupported("nullif");
 			string hql1, hql2;
-			if(!IsOracleDialect())
+			if(!(Dialect is Oracle8iDialect))
 			{
 				hql1 = "select nullif(h.NickName, '1e1') from Human h";
 				hql2 = "from Human h where not(nullif(h.NickName, '1e1') is null)";
@@ -506,7 +507,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task AbsAsync()
 		{
-			IgnoreIfNotSupported("abs");
+			AssumeSupported("abs");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("Dog", 9);
@@ -535,7 +536,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task CeilingAsync()
 		{
-			Assume.That(Dialect.Functions.ContainsKey("ceiling"), Is.True, Dialect + " doesn't support ceiling function.");
+			AssumeSupported("ceiling");
 
 			using (var s = OpenSession())
 			{
@@ -559,7 +560,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task ModAsync()
 		{
-			IgnoreIfNotSupported("mod");
+			AssumeSupported("mod");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 20);
@@ -585,7 +586,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task SqrtAsync()
 		{
-			IgnoreIfNotSupported("sqrt");
+			AssumeSupported("sqrt");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 65536f);
@@ -607,7 +608,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task UpperAsync()
 		{
-			IgnoreIfNotSupported("upper");
+			AssumeSupported("upper");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 1f);
@@ -636,7 +637,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task LowerAsync()
 		{
-			IgnoreIfNotSupported("lower");
+			AssumeSupported("lower");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("ABCDEF", 1f);
@@ -665,7 +666,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task AsciiAsync()
 		{
-			Assume.That(Dialect.Functions.ContainsKey("ascii"), Is.True, Dialect + " doesn't support ascii function.");
+			AssumeSupported("ascii");
 
 			using (var s = OpenSession())
 			{
@@ -689,7 +690,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task ChrAsync()
 		{
-			Assume.That(Dialect.Functions.ContainsKey("chr"), Is.True, Dialect + " doesn't support chr function.");
+			AssumeSupported("chr");
 
 			using (var s = OpenSession())
 			{
@@ -715,7 +716,7 @@ namespace NHibernate.Test.Hql
 		{
 			const double magicResult = 7 + 123 - 5*1.3d;
 
-			IgnoreIfNotSupported("cast");
+			AssumeSupported("cast");
 			// The cast is used to test various cases of a function render
 			// Cast was selected because represent a special case for:
 			// 1) Has more then 1 argument
@@ -893,7 +894,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task CastNH1446Async()
 		{
-			IgnoreIfNotSupported("cast");
+			AssumeSupported("cast");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 1.3f);
@@ -913,7 +914,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task CastNH1979Async()
 		{
-			IgnoreIfNotSupported("cast");
+			AssumeSupported("cast");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 1.3f);
@@ -931,7 +932,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task Current_TimeStampAsync()
 		{
-			IgnoreIfNotSupported("current_timestamp");
+			AssumeSupported("current_timestamp");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 1.3f);
@@ -951,9 +952,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task Current_TimeStamp_OffsetAsync()
 		{
-			if (!Dialect.Functions.ContainsKey("current_timestamp_offset"))
-				Assert.Ignore(Dialect + " doesn't support current_timestamp_offset function");
-			IgnoreIfNotSupported("current_timestamp_offset");
+			AssumeSupported("current_timestamp_offset");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 1.3f);
@@ -970,8 +969,8 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task ExtractAsync()
 		{
-			IgnoreIfNotSupported("extract");
-			IgnoreIfNotSupported("current_timestamp");
+			AssumeSupported("extract");
+			AssumeSupported("current_timestamp");
 
 			// test only the parser and render
 			using (ISession s = OpenSession())
@@ -987,7 +986,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task ConcatAsync()
 		{
-			IgnoreIfNotSupported("concat");
+			AssumeSupported("concat");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 1f);
@@ -1013,10 +1012,10 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task HourMinuteSecondAsync()
 		{
-			IgnoreIfNotSupported("second");
-			IgnoreIfNotSupported("minute");
-			IgnoreIfNotSupported("hour");
-			IgnoreIfNotSupported("current_timestamp");
+			AssumeSupported("second");
+			AssumeSupported("minute");
+			AssumeSupported("hour");
+			AssumeSupported("current_timestamp");
 			// test only the parser and render
 			using (ISession s = OpenSession())
 			{
@@ -1028,9 +1027,9 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task DayMonthYearAsync()
 		{
-			IgnoreIfNotSupported("day");
-			IgnoreIfNotSupported("month");
-			IgnoreIfNotSupported("year");
+			AssumeSupported("day");
+			AssumeSupported("month");
+			AssumeSupported("year");
 			// test only the parser and render
 			using (ISession s = OpenSession())
 			{
@@ -1042,7 +1041,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task StrAsync()
 		{
-			IgnoreIfNotSupported("str");
+			AssumeSupported("str");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 20);
@@ -1064,8 +1063,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task IifAsync()
 		{
-			if (!Dialect.Functions.ContainsKey("iif"))
-				Assert.Ignore(Dialect + " doesn't support iif function.");
+			AssumeSupported("Iif");
 			using (ISession s = OpenSession())
 			{
 				await (s.SaveAsync(new MaterialResource("Flash card 512MB", "A001/07", MaterialResource.MaterialState.Available)));
@@ -1108,7 +1106,7 @@ group by mr.Description";
 		[Test]
 		public async Task NH1725Async()
 		{
-			IgnoreIfNotSupported("iif");
+			AssumeSupported("iif");
 			// Only to test the parser
 			using (ISession s = OpenSession())
 			{
