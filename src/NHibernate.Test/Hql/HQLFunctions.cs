@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using NHibernate.Dialect;
 using NUnit.Framework;
 
@@ -13,42 +12,6 @@ namespace NHibernate.Test.Hql
 	[TestFixture]
 	public class HQLFunctions : TestCase
 	{
-		private static readonly Dictionary<string, HashSet<System.Type>> DialectsNotSupportingStandardFunction;
-
-		static HQLFunctions()
-		{
-			DialectsNotSupportingStandardFunction =
-				new Dictionary<string, HashSet<System.Type>>
-				{
-					{"locate", new HashSet<System.Type> {typeof (SQLiteDialect)}},
-					{"bit_length", new HashSet<System.Type> {typeof (SQLiteDialect)}},
-					{"extract", new HashSet<System.Type> {typeof (SQLiteDialect)}},
-					{
-						"nullif",
-						new HashSet<System.Type>
-						{
-							// Actually not supported by the db engine. (Well, could likely still be done with a case when override.)
-							typeof (MsSqlCeDialect),
-							typeof (MsSqlCe40Dialect)
-						}}
-				};
-		}
-
-		private void AssumeSupported(string functionName)
-		{
-			Assume.That(
-				Sfi.SQLFunctionRegistry.HasFunction(functionName),
-				Is.True,
-				$"{Dialect} doesn't support {functionName} function.");
-
-			if (!DialectsNotSupportingStandardFunction.TryGetValue(functionName, out var dialects))
-				return;
-			Assume.That(
-				dialects,
-				Does.Not.Contain(Dialect.GetType()),
-				$"{Dialect} doesn't support {functionName} standard function.");
-		}
-
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
@@ -246,7 +209,7 @@ namespace NHibernate.Test.Hql
 			// the two-parameter overload - emulating it by generating the 
 			// third parameter (length) if the database requires three parameters.
 
-			AssumeSupported("substring");
+			AssumeFunctionSupported("substring");
 
 			using (ISession s = OpenSession())
 			{
@@ -284,7 +247,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void SubString()
 		{
-			AssumeSupported("substring");
+			AssumeFunctionSupported("substring");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 20);
@@ -336,7 +299,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void Locate()
 		{
-			AssumeSupported("locate");
+			AssumeFunctionSupported("locate");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 20);
@@ -358,7 +321,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void Trim()
 		{
-			AssumeSupported("trim");
+			AssumeFunctionSupported("trim");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abc   ", 1);
@@ -416,7 +379,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void Length()
 		{
-			AssumeSupported("length");
+			AssumeFunctionSupported("length");
 
 			using (ISession s = OpenSession())
 			{
@@ -441,7 +404,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void Bit_length()
 		{
-			AssumeSupported("bit_length");
+			AssumeFunctionSupported("bit_length");
 
 			// test only the parser
 			using (ISession s = OpenSession())
@@ -457,7 +420,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void Coalesce()
 		{
-			AssumeSupported("coalesce");
+			AssumeFunctionSupported("coalesce");
 			// test only the parser and render
 			using (ISession s = OpenSession())
 			{
@@ -472,7 +435,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void Nullif()
 		{
-			AssumeSupported("nullif");
+			AssumeFunctionSupported("nullif");
 			string hql1, hql2;
 			if(!(Dialect is Oracle8iDialect))
 			{
@@ -496,7 +459,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void Abs()
 		{
-			AssumeSupported("abs");
+			AssumeFunctionSupported("abs");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("Dog", 9);
@@ -525,7 +488,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void Ceiling()
 		{
-			AssumeSupported("ceiling");
+			AssumeFunctionSupported("ceiling");
 
 			using (var s = OpenSession())
 			{
@@ -549,7 +512,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void Mod()
 		{
-			AssumeSupported("mod");
+			AssumeFunctionSupported("mod");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 20);
@@ -575,7 +538,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void Sqrt()
 		{
-			AssumeSupported("sqrt");
+			AssumeFunctionSupported("sqrt");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 65536f);
@@ -597,7 +560,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void Upper()
 		{
-			AssumeSupported("upper");
+			AssumeFunctionSupported("upper");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 1f);
@@ -626,7 +589,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void Lower()
 		{
-			AssumeSupported("lower");
+			AssumeFunctionSupported("lower");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("ABCDEF", 1f);
@@ -655,7 +618,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void Ascii()
 		{
-			AssumeSupported("ascii");
+			AssumeFunctionSupported("ascii");
 
 			using (var s = OpenSession())
 			{
@@ -679,7 +642,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void Chr()
 		{
-			AssumeSupported("chr");
+			AssumeFunctionSupported("chr");
 
 			using (var s = OpenSession())
 			{
@@ -705,7 +668,7 @@ namespace NHibernate.Test.Hql
 		{
 			const double magicResult = 7 + 123 - 5*1.3d;
 
-			AssumeSupported("cast");
+			AssumeFunctionSupported("cast");
 			// The cast is used to test various cases of a function render
 			// Cast was selected because represent a special case for:
 			// 1) Has more then 1 argument
@@ -883,7 +846,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void CastNH1446()
 		{
-			AssumeSupported("cast");
+			AssumeFunctionSupported("cast");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 1.3f);
@@ -903,7 +866,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void CastNH1979()
 		{
-			AssumeSupported("cast");
+			AssumeFunctionSupported("cast");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 1.3f);
@@ -921,7 +884,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void Current_TimeStamp()
 		{
-			AssumeSupported("current_timestamp");
+			AssumeFunctionSupported("current_timestamp");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 1.3f);
@@ -941,7 +904,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void Current_TimeStamp_Offset()
 		{
-			AssumeSupported("current_timestamp_offset");
+			AssumeFunctionSupported("current_timestamp_offset");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 1.3f);
@@ -958,8 +921,8 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void Extract()
 		{
-			AssumeSupported("extract");
-			AssumeSupported("current_timestamp");
+			AssumeFunctionSupported("extract");
+			AssumeFunctionSupported("current_timestamp");
 
 			// test only the parser and render
 			using (ISession s = OpenSession())
@@ -975,7 +938,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void Concat()
 		{
-			AssumeSupported("concat");
+			AssumeFunctionSupported("concat");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 1f);
@@ -1001,10 +964,10 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void HourMinuteSecond()
 		{
-			AssumeSupported("second");
-			AssumeSupported("minute");
-			AssumeSupported("hour");
-			AssumeSupported("current_timestamp");
+			AssumeFunctionSupported("second");
+			AssumeFunctionSupported("minute");
+			AssumeFunctionSupported("hour");
+			AssumeFunctionSupported("current_timestamp");
 			// test only the parser and render
 			using (ISession s = OpenSession())
 			{
@@ -1016,9 +979,9 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void DayMonthYear()
 		{
-			AssumeSupported("day");
-			AssumeSupported("month");
-			AssumeSupported("year");
+			AssumeFunctionSupported("day");
+			AssumeFunctionSupported("month");
+			AssumeFunctionSupported("year");
 			// test only the parser and render
 			using (ISession s = OpenSession())
 			{
@@ -1030,7 +993,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void Str()
 		{
-			AssumeSupported("str");
+			AssumeFunctionSupported("str");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 20);
@@ -1052,7 +1015,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void Iif()
 		{
-			AssumeSupported("Iif");
+			AssumeFunctionSupported("Iif");
 			using (ISession s = OpenSession())
 			{
 				s.Save(new MaterialResource("Flash card 512MB", "A001/07", MaterialResource.MaterialState.Available));
@@ -1095,7 +1058,7 @@ group by mr.Description";
 		[Test]
 		public void NH1725()
 		{
-			AssumeSupported("iif");
+			AssumeFunctionSupported("iif");
 			// Only to test the parser
 			using (ISession s = OpenSession())
 			{
