@@ -52,7 +52,7 @@ namespace NHibernate.Linq.Functions
 				case "equals":
 					return treeBuilder.Equality(expressions[0], expressions[1]);
 				case "negate":
-					return treeBuilder.Multiply(expressions[0], treeBuilder.Constant(-1));
+					return treeBuilder.Negate(expressions[0]);
 				case "compare":
 					return treeBuilder.MethodCall("sign", treeBuilder.Subtract(expressions[0], expressions[1]));
 				case "multiply":
