@@ -284,7 +284,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("ucase", new StandardSQLFunction("ucase"));
 			RegisterFunction("lcase", new StandardSQLFunction("lcase"));
 
-			RegisterFunction("chr", new StandardSQLFunction("char", NHibernateUtil.Character));
+			RegisterFunction("chr", new SQLFunctionTemplate(NHibernateUtil.Character, "cast(char(?1) as char)"));
 			RegisterFunction("ascii", new StandardSQLFunction("ascii", NHibernateUtil.Int32));
 			RegisterFunction("instr", new StandardSQLFunction("instr", NHibernateUtil.Int32));
 			RegisterFunction("lpad", new StandardSQLFunction("lpad", NHibernateUtil.String));
