@@ -706,7 +706,7 @@ namespace NHibernate.Loader
 			object id = key.Identifier;
 
 			// Get the persister for the _subclass_
-			ILoadable persister = ReferenceEquals(instanceClass, rootPersister.EntityName)
+			ILoadable persister = instanceClass == rootPersister.EntityName
 				? rootPersister
 				: (ILoadable) Factory.GetEntityPersister(instanceClass);
 
