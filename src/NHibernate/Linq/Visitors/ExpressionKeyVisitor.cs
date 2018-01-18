@@ -163,20 +163,21 @@ namespace NHibernate.Linq.Visitors
 		{
 			var old = insideSelectClause;
 
-			switch (expression.Method.Name)
-			{
-				case "First":
-				case "FirstOrDefault":
-				case "Single":
-				case "SingleOrDefault":
-				case "Select":
-				case "GroupBy":
-					insideSelectClause = true;
-					break;
-				default:
-					insideSelectClause = false;
-					break;
-			}
+			if (expression.Method.DeclaringType?.Namespace == "System.Linq")
+				switch (expression.Method.Name)
+				{
+					case "First":
+					case "FirstOrDefault":
+					case "Single":
+					case "SingleOrDefault":
+					case "Select":
+					case "GroupBy":
+						insideSelectClause = true;
+						break;
+					default:
+						insideSelectClause = false;
+						break;
+				}
 
 			Visit(expression.Object);
 			_string.Append('.');
