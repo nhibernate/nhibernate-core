@@ -1,3 +1,6 @@
+using System;
+using NHibernate.SqlCommand;
+
 namespace NHibernate.Hql
 {
 	public static class ParserHelper
@@ -13,7 +16,22 @@ namespace NHibernate.Hql
 
 		public static bool IsWhitespace(string str)
 		{
-			return Whitespace.IndexOf(str) > - 1;
+			return Whitespace.IndexOf(str, StringComparison.Ordinal) > - 1;
+		}
+
+		internal static bool HasHqlVariable(string value)
+		{
+			return value.IndexOf(HqlVariablePrefix, StringComparison.Ordinal) >= 0;
+		}
+		
+		internal static bool HasHqlVariable(SqlString value)
+		{
+			return value.IndexOfOrdinal(HqlVariablePrefix) >= 0;
+		}
+
+		internal static bool IsHqlVariable(string value)
+		{
+			return value.StartsWith(HqlVariablePrefix, StringComparison.Ordinal);
 		}
 	}
 }
