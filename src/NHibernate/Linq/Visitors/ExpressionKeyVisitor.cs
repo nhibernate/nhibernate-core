@@ -192,7 +192,7 @@ namespace NHibernate.Linq.Visitors
 		protected override Expression VisitNew(NewExpression expression)
 		{
 			_string.Append("new ");
-			_string.Append(expression.Constructor.DeclaringType.Name);
+			_string.Append(expression.Constructor.DeclaringType.AssemblyQualifiedName);
 			_string.Append('(');
 			Visit(expression.Arguments, AppendCommas);
 			_string.Append(')');
@@ -212,7 +212,7 @@ namespace NHibernate.Linq.Visitors
 			_string.Append("IsType(");
 			Visit(expression.Expression);
 			_string.Append(", ");
-			_string.Append(expression.TypeOperand.FullName);
+			_string.Append(expression.TypeOperand.AssemblyQualifiedName);
 			_string.Append(")");
 
 			return expression;
@@ -240,7 +240,7 @@ namespace NHibernate.Linq.Visitors
 			if (methodInfo.IsGenericMethod)
 			{
 				_string.Append('[');
-				_string.Append(string.Join(",", methodInfo.GetGenericArguments().Select(a => a.FullName).ToArray()));
+				_string.Append(string.Join(",", methodInfo.GetGenericArguments().Select(a => a.AssemblyQualifiedName).ToArray()));
 				_string.Append(']');
 			}
 		}
