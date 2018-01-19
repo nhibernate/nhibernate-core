@@ -58,8 +58,19 @@ namespace NHibernate.Engine.Query
 				{
 					log.Debug("unable to locate HQL query plan in cache; generating ({0})", queryExpression.Key);
 				}
+
+				var refinableQuery = queryExpression as IRefinableKeyQueryExpression;
+				var wasAlreadyRefined = refinableQuery?.RefinedKey;
+
 				plan = new QueryExpressionPlan(queryExpression, shallow, enabledFilters, factory);
 				planCache.Put(key, plan);
+
+				if (wasAlreadyRefined == false && refinableQuery.RefinedKey)
+				{
+					// Additionally cache with the refined key. The cached entry with the non refined key is still
+					// needed for allowing cache hit with non-refined key, which then refines the key.
+					planCache.Put(new HQLQueryPlanKey(queryExpression, shallow, enabledFilters), plan);
+				}
 			}
 			else
 			{
@@ -67,6 +78,18 @@ namespace NHibernate.Engine.Query
 				{
 					log.Debug("located HQL query plan in cache ({0})", queryExpression.Key);
 				}
+
+				if (plan.QueryExpression is IRefinableKeyQueryExpression cachedRefinableQuery && cachedRefinableQuery.RefinedKey &&
+					queryExpression is IRefinableKeyQueryExpression refinableQuery && !refinableQuery.RefinedKey)
+				{
+					refinableQuery.RefineKey(cachedRefinableQuery.ParametersRefiningKey);
+					if (refinableQuery.Key != cachedRefinableQuery.Key)
+					{
+						log.Debug("Key was refined and is no more matching, querying cache again.");
+						return GetHQLQueryPlan(queryExpression, shallow, enabledFilters);
+					}
+				}
+
 				plan = CopyIfRequired(plan, queryExpression);
 			}
 
@@ -109,12 +132,35 @@ namespace NHibernate.Engine.Query
 			if (plan == null)
 			{
 				log.Debug("unable to locate collection-filter query plan in cache; generating ({0} : {1})", collectionRole, queryExpression.Key);
+
+				var refinableQuery = queryExpression as IRefinableKeyQueryExpression;
+				var wasAlreadyRefined = refinableQuery?.RefinedKey;
+
 				plan = new FilterQueryPlan(queryExpression, collectionRole, shallow, enabledFilters, factory);
 				planCache.Put(key, plan);
+
+				if (wasAlreadyRefined == false && refinableQuery.RefinedKey)
+				{
+					// Additionally cache with the refined key. The cached entry with the non refined key is still
+					// needed for allowing cache hit with non-refined key, which then refines the key.
+					planCache.Put(new FilterQueryPlanKey(queryExpression.Key, collectionRole, shallow, enabledFilters), plan);
+				}
 			}
 			else
 			{
 				log.Debug("located collection-filter query plan in cache ({0} : {1})", collectionRole, queryExpression.Key);
+
+				if (plan.QueryExpression is IRefinableKeyQueryExpression cachedRefinableQuery && cachedRefinableQuery.RefinedKey &&
+					queryExpression is IRefinableKeyQueryExpression refinableQuery && !refinableQuery.RefinedKey)
+				{
+					refinableQuery.RefineKey(cachedRefinableQuery.ParametersRefiningKey);
+					if (refinableQuery.Key != cachedRefinableQuery.Key)
+					{
+						log.Debug("Key was refined and is no more matching, querying cache again.");
+						return GetFilterQueryPlan(queryExpression, collectionRole, shallow, enabledFilters);
+					}
+				}
+
 				plan = CopyIfRequired(plan, queryExpression);
 			}
 

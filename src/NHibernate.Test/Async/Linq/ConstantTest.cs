@@ -11,6 +11,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Linq.Visitors;
 using NUnit.Framework;
 using NHibernate.Linq;
 
@@ -175,13 +176,19 @@ namespace NHibernate.Test.Linq
 			{
 				return _value;
 			}
+
+			// Workaround for having a different key per different instances.
+			public override string ToString()
+			{
+				return base.ToString() + _value;
+			}
 		}
 
 		// Adapted from NH-2500 first test case by Andrey Titov (file NHTest3.zip)
 		[Test]
-		[Ignore("Not fixed yet")]
 		public async Task ObjectConstantsAsync()
 		{
+			// Fixed with a workaround, see InfoBuilder above.
 			var builder = new InfoBuilder(1);
 			var v1 = await ((from p in db.Products
 			          select builder.GetItemValue(p)).FirstAsync());
@@ -200,7 +207,6 @@ namespace NHibernate.Test.Linq
 
 		// Adapted from NH-3673
 		[Test]
-		[Ignore("Not fixed yet")]
 		public async Task ConstantsInFuncCallAsync()
 		{
 			var closureVariable = 1;

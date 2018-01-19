@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Linq.Visitors;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -163,13 +164,19 @@ namespace NHibernate.Test.Linq
 			{
 				return _value;
 			}
+
+			// Workaround for having a different key per different instances.
+			public override string ToString()
+			{
+				return base.ToString() + _value;
+			}
 		}
 
 		// Adapted from NH-2500 first test case by Andrey Titov (file NHTest3.zip)
 		[Test]
-		[Ignore("Not fixed yet")]
 		public void ObjectConstants()
 		{
+			// Fixed with a workaround, see InfoBuilder above.
 			var builder = new InfoBuilder(1);
 			var v1 = (from p in db.Products
 			          select builder.GetItemValue(p)).First();
@@ -188,7 +195,6 @@ namespace NHibernate.Test.Linq
 
 		// Adapted from NH-3673
 		[Test]
-		[Ignore("Not fixed yet")]
 		public void ConstantsInFuncCall()
 		{
 			var closureVariable = 1;
@@ -200,6 +206,25 @@ namespace NHibernate.Test.Linq
 
 			Assert.That(v1, Is.EqualTo(1), "v1");
 			Assert.That(v2, Is.EqualTo(2), "v2");
+		}
+
+		[Test]
+		public void ConstantInWhereDoesNotCauseManyKeys()
+		{
+			var q1 = (from c in db.Customers
+			          where c.CustomerId == "ALFKI"
+			          select c);
+			var q2 = (from c in db.Customers
+			          where c.CustomerId == "ANATR"
+			          select c);
+			var parameters1 = ExpressionParameterVisitor.Visit(q1.Expression, Sfi);
+			var k1 = ExpressionKeyVisitor.Visit(q1.Expression, parameters1);
+			var parameters2 = ExpressionParameterVisitor.Visit(q2.Expression, Sfi);
+			var k2 = ExpressionKeyVisitor.Visit(q2.Expression, parameters2);
+
+			Assert.That(parameters1, Has.Count.GreaterThan(0), "parameters1");
+			Assert.That(parameters2, Has.Count.GreaterThan(0), "parameters2");
+			Assert.That(k2, Is.EqualTo(k1));
 		}
 	}
 }

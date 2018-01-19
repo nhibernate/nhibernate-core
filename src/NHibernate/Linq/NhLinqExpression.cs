@@ -11,9 +11,11 @@ using NHibernate.Type;
 
 namespace NHibernate.Linq
 {
-	public class NhLinqExpression : IQueryExpression
+	public class NhLinqExpression : IRefinableKeyQueryExpression
 	{
 		public string Key { get; protected set; }
+
+		public bool RefinedKey { get; private set; }
 
 		public System.Type Type { get; private set; }
 
@@ -23,6 +25,7 @@ namespace NHibernate.Linq
 		protected virtual System.Type TargetType => Type;
 
 		public IList<NamedParameterDescriptor> ParameterDescriptors { get; private set; }
+		public ISet<string> ParametersRefiningKey { get; private set; }
 
 		public NhLinqExpressionReturnType ReturnType { get; }
 
@@ -78,6 +81,13 @@ namespace NHibernate.Linq
 
 			ParameterDescriptors = requiredHqlParameters.AsReadOnly();
 
+			var parametersRefiningKey = new HashSet<string>(
+				_constantToParameterMap
+					.Values.Select(p => p.Name)
+					.Except(requiredHqlParameters.Select(p => p.Name)));
+
+			RefineKey(parametersRefiningKey);
+
 			return ExpressionToHqlTranslationResults.Statement.AstNode;
 		}
 
@@ -87,6 +97,20 @@ namespace NHibernate.Linq
 			ParameterDescriptors = other.ParameterDescriptors;
 			// Type could have been overridden by translation.
 			Type = other.Type;
+		}
+
+		public void RefineKey(ISet<string> parametersRefiningKey)
+		{
+			if (RefinedKey)
+				// Already done.
+				return;
+			ParametersRefiningKey = parametersRefiningKey;
+			var refinedKey = ExpressionKeyVisitor.RefineKey(Key, parametersRefiningKey, _constantToParameterMap);
+			if (refinedKey == null)
+				// No changes to key
+				return;
+			Key = refinedKey;
+			RefinedKey = true;
 		}
 	}
 }
