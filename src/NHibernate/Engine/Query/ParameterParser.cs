@@ -42,11 +42,11 @@ namespace NHibernate.Engine.Query
 		public static void Parse(string sqlString, IRecognizer recognizer)
 		{
 			// TODO: WTF? "CALL"... it may work for ORACLE but what about others RDBMS ? (by FM)
-			bool hasMainOutputParameter = sqlString.IndexOf("call") > 0 &&
-										  sqlString.IndexOf("?") > 0 &&
-										  sqlString.IndexOf("=") > 0 &&
-										  sqlString.IndexOf("?") < sqlString.IndexOf("call") &&
-										  sqlString.IndexOf("=") < sqlString.IndexOf("call");
+			bool hasMainOutputParameter = sqlString.IndexOf("call", StringComparison.Ordinal) > 0 &&
+										  sqlString.IndexOf('?') > 0 &&
+										  sqlString.IndexOf('=') > 0 &&
+										  sqlString.IndexOf('?') < sqlString.IndexOf("call", StringComparison.Ordinal) &&
+										  sqlString.IndexOf('=') < sqlString.IndexOf("call", StringComparison.Ordinal);
 			bool foundMainOutputParam = false;
 
 			int stringLength = sqlString.Length;

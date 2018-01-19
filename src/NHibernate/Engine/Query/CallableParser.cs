@@ -21,9 +21,9 @@ namespace NHibernate.Engine.Query
 		{
 			Detail callableDetail = new Detail();
 
-			callableDetail.IsCallable = sqlString.IndexOf("{") == 0 &&
-										sqlString.IndexOf("}") == (sqlString.Length - 1) &&
-										sqlString.IndexOf("call") > 0;
+			callableDetail.IsCallable = sqlString.IndexOf('{') == 0 &&
+										sqlString.IndexOf('}') == (sqlString.Length - 1) &&
+										sqlString.IndexOf("call", StringComparison.Ordinal) > 0;
 
 			if (!callableDetail.IsCallable)
 				return callableDetail;
@@ -35,11 +35,11 @@ namespace NHibernate.Engine.Query
 
 			callableDetail.FunctionName = functionMatch.Groups[1].Value;
 
-			callableDetail.HasReturn = sqlString.IndexOf("call") > 0 &&
-										sqlString.IndexOf("?") > 0 &&
-										sqlString.IndexOf("=") > 0 &&
-										sqlString.IndexOf("?") < sqlString.IndexOf("call") &&
-										sqlString.IndexOf("=") < sqlString.IndexOf("call");
+			callableDetail.HasReturn = sqlString.IndexOf("call", StringComparison.Ordinal) > 0 &&
+										sqlString.IndexOf('?') > 0 &&
+										sqlString.IndexOf('=') > 0 &&
+										sqlString.IndexOf('?') < sqlString.IndexOf("call", StringComparison.Ordinal) &&
+										sqlString.IndexOf('=') < sqlString.IndexOf("call", StringComparison.Ordinal);
 
 			return callableDetail;
 		}
