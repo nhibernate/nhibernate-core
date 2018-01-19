@@ -11,6 +11,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Linq.Visitors;
 using NUnit.Framework;
 using NHibernate.Linq;
 

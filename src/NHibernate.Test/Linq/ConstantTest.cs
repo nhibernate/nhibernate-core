@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Linq.Visitors;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -204,6 +205,25 @@ namespace NHibernate.Test.Linq
 
 			Assert.That(v1, Is.EqualTo(1), "v1");
 			Assert.That(v2, Is.EqualTo(2), "v2");
+		}
+
+		[Test]
+		public void ConstantInWhereDoesNotCauseManyKeys()
+		{
+			var q1 = (from c in db.Customers
+			          where c.CustomerId == "ALFKI"
+			          select c);
+			var q2 = (from c in db.Customers
+			          where c.CustomerId == "ANATR"
+			          select c);
+			var parameters1 = ExpressionParameterVisitor.Visit(q1.Expression, Sfi);
+			var k1 = ExpressionKeyVisitor.Visit(q1.Expression, parameters1);
+			var parameters2 = ExpressionParameterVisitor.Visit(q2.Expression, Sfi);
+			var k2 = ExpressionKeyVisitor.Visit(q2.Expression, parameters2);
+
+			Assert.That(parameters1, Has.Count.GreaterThan(0), "parameters1");
+			Assert.That(parameters2, Has.Count.GreaterThan(0), "parameters2");
+			Assert.That(k2, Is.EqualTo(k1));
 		}
 	}
 }
