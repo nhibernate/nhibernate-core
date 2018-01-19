@@ -203,7 +203,7 @@ namespace NHibernate.Util
 				// for the same generic-entity implementation
 				return GetClassname(qualifiedName);
 			}
-			return Unqualify(qualifiedName, ".");
+			return Unqualify(qualifiedName, '.');
 		}
 
 		/// <summary>
@@ -213,6 +213,11 @@ namespace NHibernate.Util
 		/// <param name="seperator"></param>
 		/// <returns></returns>
 		public static string Unqualify(string qualifiedName, string seperator)
+		{
+			return qualifiedName.Substring(qualifiedName.LastIndexOf(seperator) + 1);
+		}
+		
+		internal static string Unqualify(string qualifiedName, char seperator)
 		{
 			return qualifiedName.Substring(qualifiedName.LastIndexOf(seperator) + 1);
 		}
@@ -257,7 +262,7 @@ namespace NHibernate.Util
 		/// <returns></returns>
 		public static string Qualifier(string qualifiedName)
 		{
-			int loc = qualifiedName.LastIndexOf(".");
+			int loc = qualifiedName.LastIndexOf('.');
 			if (loc < 0)
 			{
 				return String.Empty;
@@ -328,10 +333,26 @@ namespace NHibernate.Util
 		/// <returns></returns>
 		public static string Root(string qualifiedName)
 		{
-			int loc = qualifiedName.IndexOf(".");
+			int loc = qualifiedName.IndexOf('.');
 			return (loc < 0)
 					? qualifiedName
 					: qualifiedName.Substring(0, loc);
+		}
+
+		/// <summary>
+		/// Returns true if given name is not root property name
+		/// </summary>
+		/// <param name="qualifiedName"></param>
+		/// <param name="root">Returns root name</param>
+		internal static bool IsNotRoot(string qualifiedName, out string root)
+		{
+			root = qualifiedName;
+			int loc = qualifiedName.IndexOf('.');
+			if (loc < 0)
+				return false;
+
+			root = qualifiedName.Substring(0, loc);
+			return true;
 		}
 
 		/// <summary>
@@ -628,7 +649,7 @@ namespace NHibernate.Util
 
 		public static string Unroot(string qualifiedName)
 		{
-			int loc = qualifiedName.IndexOf(".");
+			int loc = qualifiedName.IndexOf('.');
 			return (loc < 0) ? qualifiedName : qualifiedName.Substring(loc + 1);
 		}
 
@@ -723,7 +744,7 @@ namespace NHibernate.Util
 
 		public static string[] ParseFilterParameterName(string filterParameterName)
 		{
-			int dot = filterParameterName.IndexOf(".");
+			int dot = filterParameterName.IndexOf('.');
 			if (dot <= 0)
 			{
 				throw new ArgumentException("Invalid filter-parameter name format; the name should be a property path.", "filterParameterName");
