@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -83,7 +82,7 @@ namespace NHibernate.Linq.Visitors
 
 			if (_constantToParameterMap == null)
 				throw new InvalidOperationException("Cannot visit a constant without a constant to parameter map.");
-			if (_constantToParameterMap.TryGetValue(expression, out param) && insideSelectClause == false)
+			if (_constantToParameterMap.TryGetValue(expression, out param))
 			{
 				// Nulls generate different query plans.  X = variable generates a different query depending on if variable is null or not.
 				if (param.Value == null)
@@ -158,26 +157,8 @@ namespace NHibernate.Linq.Visitors
 			return expression;
 		}
 
-		private bool insideSelectClause;
 		protected override Expression VisitMethodCall(MethodCallExpression expression)
 		{
-			var old = insideSelectClause;
-
-			switch (expression.Method.Name)
-			{
-				case "First":
-				case "FirstOrDefault":
-				case "Single":
-				case "SingleOrDefault":
-				case "Select":
-				case "GroupBy":
-					insideSelectClause = true;
-					break;
-				default:
-					insideSelectClause = false;
-					break;
-			}
-
 			Visit(expression.Object);
 			_string.Append('.');
 			VisitMethod(expression.Method);
@@ -185,7 +166,6 @@ namespace NHibernate.Linq.Visitors
 			ExpressionVisitor.Visit(expression.Arguments, AppendCommas);
 			_string.Append(')');
 
-			insideSelectClause = old;
 			return expression;
 		}
 
