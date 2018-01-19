@@ -722,10 +722,9 @@ namespace NHibernate.Loader
 			// advantage of two-phase-load (esp. components)
 			TwoPhaseLoad.AddUninitializedEntity(key, obj, persister, lockMode, !eagerPropertyFetch, session);
 
-			// This is not very nice (and quite slow):
 			string[][] cols = persister == rootPersister
 								? EntityAliases[i].SuffixedPropertyAliases
-								: EntityAliases[i].GetSuffixedPropertyAliases(persister);
+								: GetSubclassEntityAliases(i, persister);
 
 			object[] values = await (persister.HydrateAsync(rs, id, obj, rootPersister, cols, eagerPropertyFetch, session, cancellationToken)).ConfigureAwait(false);
 
