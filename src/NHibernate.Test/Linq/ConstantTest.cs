@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Engine.Query;
 using NHibernate.Linq.Visitors;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -119,10 +122,10 @@ namespace NHibernate.Test.Linq
 		public void ConstantInNewArrayExpression()
 		{
 			var c1 = (from c in db.Categories
-			          select new [] { c.Name, "category1" }).ToList();
+			          select new[] { c.Name, "category1" }).ToList();
 
 			var c2 = (from c in db.Categories
-			          select new [] { c.Name, "category2" }).ToList();
+			          select new[] { c.Name, "category2" }).ToList();
 
 			Assert.That(c1, Has.Count.GreaterThan(0), "c1 Count");
 			Assert.That(c2, Has.Count.GreaterThan(0), "c2 Count");
@@ -225,6 +228,65 @@ namespace NHibernate.Test.Linq
 			Assert.That(parameters1, Has.Count.GreaterThan(0), "parameters1");
 			Assert.That(parameters2, Has.Count.GreaterThan(0), "parameters2");
 			Assert.That(k2, Is.EqualTo(k1));
+		}
+
+		[Test]
+		public void PlansAreCached()
+		{
+			var queryPlanCacheType = typeof(QueryPlanCache);
+
+			var cache = (SoftLimitMRUCache) queryPlanCacheType
+			                                .GetField("planCache", BindingFlags.Instance | BindingFlags.NonPublic)
+			                                .GetValue(Sfi.QueryPlanCache);
+			cache.Clear();
+
+			(from c in db.Customers
+			 where c.CustomerId == "ALFKI"
+			 select new { c.CustomerId, c.ContactName, Constant = 1 }).First();
+			Assert.That(
+				cache,
+				Has.Count.EqualTo(2),
+				"First query plan should be cached with a non-refined key and a refined one.");
+
+			using (var spy = new LogSpy(queryPlanCacheType))
+			{
+				// Should hit non-refined key but miss refined key.
+				(from c in db.Customers
+				 where c.CustomerId == "ANATR"
+				 select new { c.CustomerId, c.ContactName, Constant = 2 }).First();
+				Assert.That(cache, Has.Count.EqualTo(3), "Second query plan should be cached only with its refined key.");
+				Assert.That(
+					spy.GetWholeLog(),
+					Does
+						.Contain("located HQL query plan in cache")
+						.And.Contain("Key was refined and is no more matching")
+						.And.Contain("unable to locate HQL query plan in cache"));
+
+				spy.Appender.Clear();
+				// Should hit non-refined key entry directly.
+				(from c in db.Customers
+				 where c.CustomerId == "ANATR"
+				 select new { c.CustomerId, c.ContactName, Constant = 1 }).First();
+				Assert.That(cache, Has.Count.EqualTo(3), "Third query plan should not be additionnaly cached.");
+				Assert.That(
+					spy.GetWholeLog(),
+					Does
+						.Contain("located HQL query plan in cache")
+						.And.Not.Contain("Key was refined and is no more matching"));
+
+				spy.Appender.Clear();
+				// Should hit non-refined key then hit refined key.
+				(from c in db.Customers
+				 where c.CustomerId == "ALFKI"
+				 select new { c.CustomerId, c.ContactName, Constant = 2 }).First();
+				Assert.That(cache, Has.Count.EqualTo(3), "Fourth query plan should not be additionnaly cached.");
+				Assert.That(
+					spy.GetWholeLog(),
+					Does
+						.Contain("located HQL query plan in cache")
+						.And.Contain("Key was refined and is no more matching")
+						.And.Not.Contain("unable to locate HQL query plan in cache"));
+			}
 		}
 	}
 }
