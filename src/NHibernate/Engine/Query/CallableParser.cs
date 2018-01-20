@@ -21,9 +21,11 @@ namespace NHibernate.Engine.Query
 		{
 			Detail callableDetail = new Detail();
 
-			callableDetail.IsCallable = sqlString.IndexOf('{') == 0 &&
-										sqlString.IndexOf('}') == (sqlString.Length - 1) &&
-										sqlString.IndexOf("call", StringComparison.Ordinal) > 0;
+			int indexOfCall = -1;
+			callableDetail.IsCallable = sqlString.Length > 5 && // to be able to check sqlString[0] we at least need to make sure that string has at least 1 character. The simplest case all other conditions are true is "{call}" which is 6 characters, so check it.
+										sqlString[0] == '{' &&
+										sqlString[sqlString.Length - 1] == '}' &&
+										(indexOfCall = sqlString.IndexOf("call", StringComparison.Ordinal)) > 0;
 
 			if (!callableDetail.IsCallable)
 				return callableDetail;
@@ -35,11 +37,11 @@ namespace NHibernate.Engine.Query
 
 			callableDetail.FunctionName = functionMatch.Groups[1].Value;
 
-			callableDetail.HasReturn = sqlString.IndexOf("call", StringComparison.Ordinal) > 0 &&
+			callableDetail.HasReturn = indexOfCall > 0 &&
 										sqlString.IndexOf('?') > 0 &&
 										sqlString.IndexOf('=') > 0 &&
-										sqlString.IndexOf('?') < sqlString.IndexOf("call", StringComparison.Ordinal) &&
-										sqlString.IndexOf('=') < sqlString.IndexOf("call", StringComparison.Ordinal);
+										sqlString.IndexOf('?') < indexOfCall &&
+										sqlString.IndexOf('=') < indexOfCall;
 
 			return callableDetail;
 		}

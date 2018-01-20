@@ -548,7 +548,12 @@ namespace NHibernate.Util
 
 		public static int FirstIndexOfChar(string sqlString, string str, int startIndex)
 		{
-			return sqlString.IndexOfAny(str.ToCharArray(), startIndex);
+			return FirstIndexOfChar(sqlString, str.ToCharArray(), startIndex);
+		}
+		
+		internal static int FirstIndexOfChar(string sqlString, char[] chars, int startIndex)
+		{
+			return sqlString.IndexOfAny(chars, startIndex);
 		}
 
 		public static string Truncate(string str, int length)

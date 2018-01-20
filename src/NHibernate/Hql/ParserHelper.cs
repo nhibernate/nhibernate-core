@@ -8,6 +8,7 @@ namespace NHibernate.Hql
 		public const string HqlVariablePrefix = ":";
 
 		public const string HqlSeparators = " \n\r\f\t,()=<>&|+-=/*'^![]#~\\;";
+		internal static readonly char[] HqlSeparatorsAsCharArray = HqlSeparators.ToCharArray();
 		//NOTICE: no " or . since they are part of (compound) identifiers
 		
 		public const string Whitespace = " \n\r\f\t";
