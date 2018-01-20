@@ -37,13 +37,20 @@ namespace NHibernate.Engine.Query
 
 			callableDetail.FunctionName = functionMatch.Groups[1].Value;
 
-			callableDetail.HasReturn = indexOfCall > 0 &&
-										sqlString.IndexOf('?') > 0 &&
-										sqlString.IndexOf('=') > 0 &&
-										sqlString.IndexOf('?') < indexOfCall &&
-										sqlString.IndexOf('=') < indexOfCall;
+			callableDetail.HasReturn = HasReturnParameter(sqlString, indexOfCall);
 
 			return callableDetail;
+		}
+
+		internal static bool HasReturnParameter(string sqlString, int indexOfCall)
+		{
+			int indexOfQuestionMark;
+			int indexOfEqual;
+			return indexOfCall > 0 &&
+					(indexOfQuestionMark = sqlString.IndexOf('?')) > 0 &&
+					(indexOfEqual = sqlString.IndexOf('=')) > 0 &&
+					indexOfQuestionMark < indexOfCall &&
+					indexOfEqual < indexOfCall;
 		}
 	}
 }

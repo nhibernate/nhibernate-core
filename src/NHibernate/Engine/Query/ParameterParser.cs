@@ -43,11 +43,7 @@ namespace NHibernate.Engine.Query
 		{
 			// TODO: WTF? "CALL"... it may work for ORACLE but what about others RDBMS ? (by FM)
 			var indexOfCall = sqlString.IndexOf("call", StringComparison.Ordinal);
-			bool hasMainOutputParameter = indexOfCall > 0 &&
-										  sqlString.IndexOf('?') > 0 &&
-										  sqlString.IndexOf('=') > 0 &&
-										  sqlString.IndexOf('?') < indexOfCall &&
-										  sqlString.IndexOf('=') < indexOfCall;
+			bool hasMainOutputParameter = CallableParser.HasReturnParameter(sqlString, indexOfCall);
 			bool foundMainOutputParam = false;
 
 			int stringLength = sqlString.Length;
