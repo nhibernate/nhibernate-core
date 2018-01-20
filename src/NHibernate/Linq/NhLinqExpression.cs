@@ -83,8 +83,8 @@ namespace NHibernate.Linq
 			CanCachePlan = CanCachePlan &&
 				// If some constants do not have matching HQL parameters, their values from first query will
 				// be embedded in the plan and reused for subsequent queries: do not cache the plan.
-				!_constantToParameterMap
-					.Values.Select(p => p.Name)
+				!ParameterValuesByName
+					.Keys
 					.Except(requiredHqlParameters.Select(p => p.Name))
 					.Any();
 
