@@ -61,14 +61,6 @@ namespace NHibernate.Test.NHSpecificTest.GH0831
 			}
 		}
 
-		private void IgnoreIfNotSupported(string function)
-		{
-			if (!Dialect.Functions.ContainsKey(function))
-			{
-				Assert.Ignore("Dialect {0} does not support '{1}' function", Dialect.GetType(), function);
-			}
-		}
-
 		[Test]
 		public void CanHandleAdd()
 		{
@@ -79,7 +71,7 @@ namespace NHibernate.Test.NHSpecificTest.GH0831
 		[Test]
 		public void CanHandleCeiling()
 		{
-			IgnoreIfNotSupported("ceiling");
+			AssumeFunctionSupported("ceiling");
 
 			CanHandle(e => decimal.Ceiling(e.EntityValue) > 1.0m);
 		}
@@ -87,7 +79,7 @@ namespace NHibernate.Test.NHSpecificTest.GH0831
 		[Test]
 		public void CanHandleCompare()
 		{
-			IgnoreIfNotSupported("sign");
+			AssumeFunctionSupported("sign");
 
 			CanHandle(e => decimal.Compare(e.EntityValue, 1.5m) < 1);
 			CanHandle(e => decimal.Compare(1.0m, e.EntityValue) < 1);
@@ -110,7 +102,7 @@ namespace NHibernate.Test.NHSpecificTest.GH0831
 		[Test]
 		public void CanHandleFloor()
 		{
-			IgnoreIfNotSupported("floor");
+			AssumeFunctionSupported("floor");
 
 			CanHandle(e => decimal.Floor(e.EntityValue) > 1.0m);
 		}
@@ -138,7 +130,7 @@ namespace NHibernate.Test.NHSpecificTest.GH0831
 		[Test]
 		public void CanHandleRound()
 		{
-			IgnoreIfNotSupported("round");
+			AssumeFunctionSupported("round");
 
 			CanHandle(e => decimal.Round(e.EntityValue) >= 2.0m);
 			CanHandle(e => decimal.Round(e.EntityValue, 1) >= 1.5m);
