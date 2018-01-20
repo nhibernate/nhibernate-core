@@ -120,7 +120,7 @@ namespace NHibernate.Engine.Query
 		private SqlString ExpandDynamicFilterParameters(SqlString sqlString, ICollection<IParameterSpecification> parameterSpecs, ISessionImplementor session)
 		{
 			var enabledFilters = session.EnabledFilters;
-			if (enabledFilters.Count == 0 || sqlString.ToString().IndexOf(ParserHelper.HqlVariablePrefix) < 0)
+			if (enabledFilters.Count == 0 || !ParserHelper.HasHqlVariable(sqlString))
 			{
 				return sqlString;
 			}
@@ -143,7 +143,7 @@ namespace NHibernate.Engine.Query
 
 				foreach (string token in tokens)
 				{
-					if (token.StartsWith(ParserHelper.HqlVariablePrefix))
+					if (ParserHelper.IsHqlVariable(token))
 					{
 						string filterParameterName = token.Substring(1);
 						string[] parts = StringHelper.ParseFilterParameterName(filterParameterName);
