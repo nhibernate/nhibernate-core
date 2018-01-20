@@ -94,6 +94,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("nullif", new StandardSQLFunction("nullif"));
 			RegisterFunction("abs", new StandardSQLFunction("abs"));
 			RegisterFunction("mod", new StandardSQLFunction("mod", NHibernateUtil.Int32));
+			RegisterFunction("mod_decimal", new SQLFunctionTemplate(NHibernateUtil.Decimal, "?1 % ?2"));
 			RegisterFunction("sqrt", new StandardSQLFunction("sqrt", NHibernateUtil.Double));
 			RegisterFunction("upper", new StandardSQLFunction("upper"));
 			RegisterFunction("lower", new StandardSQLFunction("lower"));

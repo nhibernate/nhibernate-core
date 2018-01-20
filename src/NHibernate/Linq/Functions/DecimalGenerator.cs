@@ -38,7 +38,7 @@ namespace NHibernate.Linq.Functions
 
 			if (function == "remainder")
 			{
-				function = "mod";
+				function = "mod_decimal";
 			}
 
 			switch (function)
