@@ -164,12 +164,6 @@ namespace NHibernate.Test.Linq
 			{
 				return _value;
 			}
-
-			// Workaround for object instance caching. Without this, ObjectConstants test fails.
-			public override string ToString()
-			{
-				return base.ToString() + _value;
-			}
 		}
 
 		// Adapted from NH-2500 first test case by Andrey Titov (file NHTest3.zip)

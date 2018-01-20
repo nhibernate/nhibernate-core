@@ -109,19 +109,23 @@ namespace NHibernate.Linq.Visitors
 				{
 					_string.Append("NULL");
 				}
+				else if (expression.Value is IQueryable)
+				{
+					_string.Append(expression.Value);
+				}
+				else if (expression.Value is IEnumerable enumerable && !(enumerable is string))
+				{
+					_string.Append("{");
+					foreach (var value in enumerable)
+					{
+						_string.Append(value).Append("#").Append(value.GetHashCode()).Append(",");
+					}
+
+					_string.Append("}");
+				}
 				else
 				{
-					var value = expression.Value as IEnumerable;
-					if (value != null  && !(value is string) && !(value is IQueryable))
-					{
-						_string.Append("{");
-						_string.Append(String.Join(",", value.Cast<object>()));
-						_string.Append("}");
-					}
-					else
-					{
-						_string.Append(expression.Value);
-					}
+					_string.Append(expression.Value).Append("#").Append(expression.Value.GetHashCode());
 				}
 			}
 
