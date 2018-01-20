@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Functions;
@@ -75,7 +76,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2658
 					//Query by name
 					(from p in session.Query<Product>() where p.GetProperty<string>("Name") == "Value" select p).ToList();
 
-					Assert.That(spy.GetWholeLog(), Does.Contain("Name=@p0"));
+					var paramName = ((ISqlParameterFormatter) Sfi.ConnectionProvider.Driver).GetParameterName(0);
+					Assert.That(spy.GetWholeLog(), Does.Contain("Name=" + paramName));
 				}
 
 				//FAILS
@@ -86,7 +88,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2658
 					//Query by description
 					(from p in session.Query<Product>() where p.GetProperty<string>("Description") == "Value" select p).ToList();
 
-					Assert.That(spy.GetWholeLog(), Does.Contain("Description=@p0"));
+					var paramName = ((ISqlParameterFormatter) Sfi.ConnectionProvider.Driver).GetParameterName(0);
+					Assert.That(spy.GetWholeLog(), Does.Contain("Description=" + paramName));
 				}
 			}
 		}
