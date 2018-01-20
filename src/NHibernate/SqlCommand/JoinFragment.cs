@@ -62,7 +62,7 @@ namespace NHibernate.SqlCommand
 		{
 			if (SqlStringHelper.IsNotEmpty(on))
 			{
-				if (!on.StartsWithCaseInsensitive(" and"))
+				if (buffer.Count > 0 && !on.StartsWithCaseInsensitive(" and"))
 				{
 					buffer.Add(" and ");
 				}

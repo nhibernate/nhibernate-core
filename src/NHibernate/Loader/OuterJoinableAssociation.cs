@@ -34,7 +34,12 @@ namespace NHibernate.Loader
 			rhsColumns = JoinHelper.GetRHSColumnNames(joinableType, factory);
 			on = new SqlString(joinableType.GetOnCondition(rhsAlias, factory, enabledFilters));
 			if (SqlStringHelper.IsNotEmpty(withClause))
-				on = on.Append(" and ( ").Append(withClause).Append(" )");
+			{
+				on = on.Count == 0
+					? on.Append(withClause)
+					: on.Append(" and ( ").Append(withClause).Append(" )");
+			}
+
 			this.enabledFilters = enabledFilters; // needed later for many-to-many/filter application
 		}
 

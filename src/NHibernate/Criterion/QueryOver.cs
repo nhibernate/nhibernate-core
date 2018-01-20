@@ -65,6 +65,10 @@ namespace NHibernate.Criterion
 	[Serializable]
 	public abstract partial class QueryOver<TRoot> : QueryOver, IQueryOver<TRoot>
 	{
+		protected internal QueryOver<TRoot, U> Create<U>(ICriteria criteria)
+		{
+			return new QueryOver<TRoot, U>(impl, criteria);
+		}
 
 		private IList<TRoot> List()
 		{
@@ -280,7 +284,8 @@ namespace NHibernate.Criterion
 	/// Implementation of the <see cref="IQueryOver&lt;TRoot, TSubType&gt;"/> interface
 	/// </summary>
 	[Serializable]
-	public class QueryOver<TRoot,TSubType> : QueryOver<TRoot>, IQueryOver<TRoot,TSubType>
+	public class QueryOver<TRoot,TSubType> : QueryOver<TRoot>, IQueryOver<TRoot,TSubType>,
+		ISupportEntityJoinQueryOver<TRoot>
 	{
 
 		protected internal QueryOver()
@@ -658,6 +663,11 @@ namespace NHibernate.Criterion
 					joinType));
 		}
 
+		public QueryOver<TRoot,U> JoinEntityQueryOver<U>(Expression<Func<U>> alias, JoinType joinType, ICriterion withClause, string entityName)
+		{
+			return Create<U>(CreateEntityCriteria(alias, joinType, withClause, entityName));
+		}
+
 		public QueryOver<TRoot,TSubType> JoinAlias(Expression<Func<TSubType, object>> path, Expression<Func<object>> alias)
 		{
 			return AddAlias(
@@ -756,6 +766,11 @@ namespace NHibernate.Criterion
 		{
 			criteria.CreateAlias(path, alias, joinType, withClause);
 			return this;
+		}
+
+		private ICriteria CreateEntityCriteria<U>(Expression<Func<U>> alias, JoinType joinType, ICriterion withClause, string entityName)
+		{
+			return criteria.CreateEntityCriteria(ExpressionProcessor.FindMemberExpression(alias.Body), joinType, withClause, entityName ?? typeof(U).FullName);
 		}
 
 		private QueryOver<TRoot,TSubType> Add(Expression<Func<TSubType, bool>> expression)
@@ -973,6 +988,17 @@ namespace NHibernate.Criterion
 
 		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.JoinAlias<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
 		{ return JoinAlias(path, alias, joinType, withClause); }
+
+		IQueryOver<TRoot, U> ISupportEntityJoinQueryOver<TRoot>.JoinEntityQueryOver<U>(Expression<Func<U>> alias, JoinType joinType, ICriterion withClause, string entityName)
+		{
+			return JoinEntityQueryOver(alias, joinType, withClause, entityName);
+		}
+
+		//6.0 TODO: to remove and merge with extension EntityJoinExtensions.JoinEntityAlias
+		void ISupportEntityJoinQueryOver.JoinEntityAlias<U>(Expression<Func<U>> alias, JoinType joinType, ICriterion withClause, string entityName)
+		{
+			CreateEntityCriteria(alias, joinType, withClause, entityName);
+		}
 
 		IQueryOverJoinBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.Inner
 		{ get { return new IQueryOverJoinBuilder<TRoot,TSubType>(this, JoinType.InnerJoin); } }

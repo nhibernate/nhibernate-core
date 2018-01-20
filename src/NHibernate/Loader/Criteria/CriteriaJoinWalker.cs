@@ -76,6 +76,22 @@ namespace NHibernate.Loader.Criteria
 			}
 		}
 
+		protected override void AddAssociations()
+		{
+			base.AddAssociations();
+			foreach (var entityJoinInfo in translator.GetEntityJoins().Values)
+			{
+				var tableAlias = translator.GetSQLAlias(entityJoinInfo.Criteria);
+				var criteriaPath = entityJoinInfo.Criteria.Alias; //path for entity join is equal to alias
+				var persister
+					= entityJoinInfo.Persister as IOuterJoinLoadable;
+				AddExplicitEntityJoinAssociation(persister, tableAlias, translator.GetJoinType(criteriaPath), GetWithClause(criteriaPath));
+				IncludeInResultIfNeeded(persister, entityJoinInfo.Criteria, tableAlias);
+				//collect mapped associations for entity join
+				WalkEntityTree(persister, tableAlias, criteriaPath, 1);
+			}
+		}
+
 		protected override void WalkEntityTree(IOuterJoinLoadable persister, string alias, string path, int currentDepth)
 		{
 			// NH different behavior (NH-1476, NH-1760, NH-1785)
@@ -199,19 +215,7 @@ namespace NHibernate.Loader.Criteria
 				ICriteria subcriteria = translator.GetCriteria(path);
 				sqlAlias = subcriteria == null ? null : translator.GetSQLAlias(subcriteria);
 
-				if (joinable.ConsumesEntityAlias() && !translator.HasProjection)
-				{
-					includeInResultRowList.Add(subcriteria != null && subcriteria.Alias != null);
-
-					if (sqlAlias != null)
-					{
-						if (subcriteria.Alias != null)
-						{
-							userAliasList.Add(subcriteria.Alias); //alias may be null
-							resultTypeList.Add(translator.ResultType(subcriteria));
-						}
-					}
-				}
+				IncludeInResultIfNeeded(joinable, subcriteria, sqlAlias);
 			}
 
 			if (sqlAlias == null)
@@ -220,6 +224,22 @@ namespace NHibernate.Loader.Criteria
 			return sqlAlias;
 		}
 
+		private void IncludeInResultIfNeeded(IJoinable joinable, ICriteria subcriteria, string sqlAlias)
+		{
+			if (joinable.ConsumesEntityAlias() && !translator.HasProjection)
+			{
+				includeInResultRowList.Add(subcriteria != null && subcriteria.Alias != null);
+
+				if (sqlAlias != null)
+				{
+					if (subcriteria.Alias != null)
+					{
+						userAliasList.Add(subcriteria.Alias); //alias may be null
+						resultTypeList.Add(translator.ResultType(subcriteria));
+					}
+				}
+			}
+		}
 
 		protected override string GenerateRootAlias(string tableName)
 		{

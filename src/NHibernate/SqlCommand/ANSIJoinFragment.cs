@@ -1,3 +1,4 @@
+using NHibernate.Linq;
 using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
@@ -38,6 +39,12 @@ namespace NHibernate.SqlCommand
 			}
 
 			_fromFragment.Add(joinString + tableName + ' ' + alias + " on ");
+
+			if (fkColumns.Length == 0)
+			{
+				_fromFragment.Add(on);
+				return;
+			}
 
 			for (int j = 0; j < fkColumns.Length; j++)
 			{
