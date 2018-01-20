@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -35,6 +34,28 @@ namespace NHibernate.Linq.Visitors
 			visitor.Visit(expression);
 
 			return visitor.ToString();
+		}
+
+		/// <summary>
+		/// Refines the provided key according to parameter values which needs to be included in the key.
+		/// </summary>
+		/// <param name="key">The key.</param>
+		/// <param name="parametersRefiningKey">The set of parameter names which need to have their value included in the key.</param>
+		/// <param name="parameters">The map of constants to candidate parameters.</param>
+		/// <returns>A refined key, or <see langword="null" /> if no refining occured.</returns>
+		public static string RefineKey(string key, ISet<string> parametersRefiningKey, IDictionary<ConstantExpression, NamedParameter> parameters)
+		{
+			if (parametersRefiningKey.Count == 0)
+				return null;
+
+			var writer = new StringBuilder(key);
+			foreach (var param in parameters.Where(p => parametersRefiningKey.Contains(p.Value.Name)))
+			{
+				writer.Append(';').Append(param.Value.Name).Append('=');
+				WriteConstantValue(param.Key, writer);
+			}
+
+			return writer.Length == key.Length ? null : writer.ToString();
 		}
 
 		public override string ToString()
@@ -83,7 +104,7 @@ namespace NHibernate.Linq.Visitors
 
 			if (_constantToParameterMap == null)
 				throw new InvalidOperationException("Cannot visit a constant without a constant to parameter map.");
-			if (_constantToParameterMap.TryGetValue(expression, out param) && insideSelectClause == false)
+			if (_constantToParameterMap.TryGetValue(expression, out param))
 			{
 				// Nulls generate different query plans.  X = variable generates a different query depending on if variable is null or not.
 				if (param.Value == null)
@@ -105,27 +126,31 @@ namespace NHibernate.Linq.Visitors
 			}
 			else
 			{
-				if (expression.Value == null)
-				{
-					_string.Append("NULL");
-				}
-				else
-				{
-					var value = expression.Value as IEnumerable;
-					if (value != null  && !(value is string) && !(value is IQueryable))
-					{
-						_string.Append("{");
-						_string.Append(String.Join(",", value.Cast<object>()));
-						_string.Append("}");
-					}
-					else
-					{
-						_string.Append(expression.Value);
-					}
-				}
+				WriteConstantValue(expression, _string);
 			}
 
 			return base.VisitConstant(expression);
+		}
+
+		private static void WriteConstantValue(ConstantExpression expression, StringBuilder writer)
+		{
+			if (expression.Value == null)
+			{
+				writer.Append("NULL");
+			}
+			else
+			{
+				if (expression.Value is IEnumerable value && !(value is string) && !(value is IQueryable))
+				{
+					writer.Append("{");
+					writer.Append(String.Join(",", value.Cast<object>()));
+					writer.Append("}");
+				}
+				else
+				{
+					writer.Append(expression.Value);
+				}
+			}
 		}
 
 		private T AppendCommas<T>(T expression) where T : Expression
@@ -158,26 +183,8 @@ namespace NHibernate.Linq.Visitors
 			return expression;
 		}
 
-		private bool insideSelectClause;
 		protected override Expression VisitMethodCall(MethodCallExpression expression)
 		{
-			var old = insideSelectClause;
-
-			switch (expression.Method.Name)
-			{
-				case "First":
-				case "FirstOrDefault":
-				case "Single":
-				case "SingleOrDefault":
-				case "Select":
-				case "GroupBy":
-					insideSelectClause = true;
-					break;
-				default:
-					insideSelectClause = false;
-					break;
-			}
-
 			Visit(expression.Object);
 			_string.Append('.');
 			VisitMethod(expression.Method);
@@ -185,7 +192,6 @@ namespace NHibernate.Linq.Visitors
 			ExpressionVisitor.Visit(expression.Arguments, AppendCommas);
 			_string.Append(')');
 
-			insideSelectClause = old;
 			return expression;
 		}
 

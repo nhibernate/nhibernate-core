@@ -10,7 +10,11 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Engine.Query;
+using NHibernate.Linq.Visitors;
+using NHibernate.Util;
 using NUnit.Framework;
 using NHibernate.Linq;
 
@@ -130,10 +134,10 @@ namespace NHibernate.Test.Linq
 		public async Task ConstantInNewArrayExpressionAsync()
 		{
 			var c1 = await ((from c in db.Categories
-			          select new [] { c.Name, "category1" }).ToListAsync());
+			          select new[] { c.Name, "category1" }).ToListAsync());
 
 			var c2 = await ((from c in db.Categories
-			          select new [] { c.Name, "category2" }).ToListAsync());
+			          select new[] { c.Name, "category2" }).ToListAsync());
 
 			Assert.That(c1, Has.Count.GreaterThan(0), "c1 Count");
 			Assert.That(c2, Has.Count.GreaterThan(0), "c2 Count");
@@ -175,13 +179,19 @@ namespace NHibernate.Test.Linq
 			{
 				return _value;
 			}
+
+			// Workaround for having a different key per different instances.
+			public override string ToString()
+			{
+				return base.ToString() + _value;
+			}
 		}
 
 		// Adapted from NH-2500 first test case by Andrey Titov (file NHTest3.zip)
 		[Test]
-		[Ignore("Not fixed yet")]
 		public async Task ObjectConstantsAsync()
 		{
+			// Fixed with a workaround, see InfoBuilder above.
 			var builder = new InfoBuilder(1);
 			var v1 = await ((from p in db.Products
 			          select builder.GetItemValue(p)).FirstAsync());
@@ -200,7 +210,6 @@ namespace NHibernate.Test.Linq
 
 		// Adapted from NH-3673
 		[Test]
-		[Ignore("Not fixed yet")]
 		public async Task ConstantsInFuncCallAsync()
 		{
 			var closureVariable = 1;
@@ -212,6 +221,65 @@ namespace NHibernate.Test.Linq
 
 			Assert.That(v1, Is.EqualTo(1), "v1");
 			Assert.That(v2, Is.EqualTo(2), "v2");
+		}
+
+		[Test]
+		public async Task PlansAreCachedAsync()
+		{
+			var queryPlanCacheType = typeof(QueryPlanCache);
+
+			var cache = (SoftLimitMRUCache) queryPlanCacheType
+			                                .GetField("planCache", BindingFlags.Instance | BindingFlags.NonPublic)
+			                                .GetValue(Sfi.QueryPlanCache);
+			cache.Clear();
+
+			await ((from c in db.Customers
+			 where c.CustomerId == "ALFKI"
+			 select new { c.CustomerId, c.ContactName, Constant = 1 }).FirstAsync());
+			Assert.That(
+				cache,
+				Has.Count.EqualTo(2),
+				"First query plan should be cached with a non-refined key and a refined one.");
+
+			using (var spy = new LogSpy(queryPlanCacheType))
+			{
+				// Should hit non-refined key but miss refined key.
+				await ((from c in db.Customers
+				 where c.CustomerId == "ANATR"
+				 select new { c.CustomerId, c.ContactName, Constant = 2 }).FirstAsync());
+				Assert.That(cache, Has.Count.EqualTo(3), "Second query plan should be cached only with its refined key.");
+				Assert.That(
+					spy.GetWholeLog(),
+					Does
+						.Contain("located HQL query plan in cache")
+						.And.Contain("Key was refined and is no more matching")
+						.And.Contain("unable to locate HQL query plan in cache"));
+
+				spy.Appender.Clear();
+				// Should hit non-refined key entry directly.
+				await ((from c in db.Customers
+				 where c.CustomerId == "ANATR"
+				 select new { c.CustomerId, c.ContactName, Constant = 1 }).FirstAsync());
+				Assert.That(cache, Has.Count.EqualTo(3), "Third query plan should not be additionnaly cached.");
+				Assert.That(
+					spy.GetWholeLog(),
+					Does
+						.Contain("located HQL query plan in cache")
+						.And.Not.Contain("Key was refined and is no more matching"));
+
+				spy.Appender.Clear();
+				// Should hit non-refined key then hit refined key.
+				await ((from c in db.Customers
+				 where c.CustomerId == "ALFKI"
+				 select new { c.CustomerId, c.ContactName, Constant = 2 }).FirstAsync());
+				Assert.That(cache, Has.Count.EqualTo(3), "Fourth query plan should not be additionnaly cached.");
+				Assert.That(
+					spy.GetWholeLog(),
+					Does
+						.Contain("located HQL query plan in cache")
+						.And.Contain("Key was refined and is no more matching")
+						.And.Not.Contain("unable to locate HQL query plan in cache"));
+			}
 		}
 	}
 }
