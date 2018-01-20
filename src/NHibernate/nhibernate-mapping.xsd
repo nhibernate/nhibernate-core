@@ -1184,7 +1184,13 @@
 			</xs:attribute>
 			<xs:attribute name="cache-region" type="xs:string" />
 			<xs:attribute name="fetch-size" type="xs:int" />
-			<xs:attribute name="timeout" type="xs:positiveInteger" />
+			<xs:attribute name="timeout" type="xs:positiveInteger">
+				<xs:annotation>
+					<xs:documentation>
+						Set the default timeout in seconds for the underlying ADO.NET query.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 			<xs:attribute name="cache-mode" type="cacheMode">
 			</xs:attribute>
 			<xs:attribute name="read-only" type="xs:boolean">
@@ -1309,7 +1315,13 @@
 			</xs:attribute>
 			<xs:attribute name="cache-region" type="xs:string" />
 			<xs:attribute name="fetch-size" type="xs:int" />
-			<xs:attribute name="timeout" type="xs:positiveInteger" />
+			<xs:attribute name="timeout" type="xs:positiveInteger">
+				<xs:annotation>
+					<xs:documentation>
+						Set the default timeout in seconds for the underlying ADO.NET query.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 			<xs:attribute name="cache-mode" type="cacheMode">
 			</xs:attribute>
 			<xs:attribute name="read-only" type="xs:boolean">

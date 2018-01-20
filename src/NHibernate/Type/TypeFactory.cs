@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Xml;
 using System.Xml.Linq;
 using NHibernate.Bytecode;
+using NHibernate.Cfg;
 using NHibernate.Classic;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
@@ -33,8 +34,9 @@ namespace NHibernate.Type
 			PrecisionScale
 		}
 
+		public static readonly string[] EmptyAliases = System.Array.Empty<string>();
+
 		private static readonly INHibernateLogger _log = NHibernateLogger.For(typeof(TypeFactory));
-		private static readonly string[] EmptyAliases= System.Array.Empty<string>();
 		private static readonly char[] PrecisionScaleSplit = { '(', ')', ',' };
 		private static readonly char[] LengthSplit = { '(', ')' };
 
@@ -95,7 +97,15 @@ namespace NHibernate.Type
 
 		private delegate NullableType NullableTypeCreatorDelegate(SqlType sqlType);
 
-		private static void RegisterType(System.Type systemType, IType nhibernateType, IEnumerable<string> aliases)
+		/// <summary>
+		/// <para>Defines which NHibernate type should be chosen by default for handling a given .Net type.</para>
+		/// <para>This must be done before any operation on NHibernate, including building its
+		/// <see cref="Configuration" /> and building session factory. Otherwise the behavior will be undefined.</para>
+		/// </summary>
+		/// <param name="systemType">The .Net type.</param>
+		/// <param name="nhibernateType">The NHibernate type.</param>
+		/// <param name="aliases">The additional aliases to map to the type. Use <see cref="EmptyAliases"/> if none.</param>
+		public static void RegisterType(System.Type systemType, IType nhibernateType, IEnumerable<string> aliases)
 		{
 			var typeAliases = new List<string>(aliases);
 			typeAliases.AddRange(GetClrTypeAliases(systemType));

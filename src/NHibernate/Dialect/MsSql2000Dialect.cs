@@ -284,7 +284,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("sign", new StandardSQLFunction("sign", NHibernateUtil.Int32));
 
 			RegisterFunction("ceiling", new StandardSQLFunction("ceiling"));
-			RegisterFunction("ceil", new StandardSQLFunction("ceil"));
+			RegisterFunction("ceil", new StandardSQLFunction("ceiling"));
 			RegisterFunction("floor", new StandardSQLFunction("floor"));
 			RegisterFunction("round", new StandardSQLFunction("round"));
 
@@ -326,7 +326,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "dateadd(dd, 0, datediff(dd, 0, ?1))"));
 			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "+", ")"));
 			RegisterFunction("digits", new StandardSQLFunction("digits", NHibernateUtil.String));
-			RegisterFunction("chr", new StandardSQLFunction("chr", NHibernateUtil.Character));
+			RegisterFunction("ascii", new StandardSQLFunction("ascii", NHibernateUtil.Int32));
+			RegisterFunction("chr", new StandardSQLFunction("char", NHibernateUtil.Character));
 			RegisterFunction("upper", new StandardSQLFunction("upper"));
 			RegisterFunction("ucase", new StandardSQLFunction("ucase"));
 			RegisterFunction("lcase", new StandardSQLFunction("lcase"));

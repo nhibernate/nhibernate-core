@@ -33,10 +33,10 @@ namespace NHibernate.Linq
 		IQueryableOptions SetCacheMode(CacheMode cacheMode);
 
 		/// <summary>
-		/// Set the timeout for the underlying ADO query.
+		/// Set a timeout for the underlying ADO.NET query.
 		/// </summary>
 		/// <param name="timeout">The timeout in seconds.</param>
-		/// <returns><see langword="this"/> (for method chaining).</returns>
+		/// <returns><see langword="this" /> (for method chaining).</returns>
 		IQueryableOptions SetTimeout(int timeout);
 	}
 }

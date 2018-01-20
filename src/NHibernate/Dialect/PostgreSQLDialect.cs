@@ -79,6 +79,12 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Double));
 
+			RegisterFunction("floor", new StandardSQLFunction("floor"));
+			RegisterFunction("ceiling", new StandardSQLFunction("ceiling"));
+			RegisterFunction("ceil", new StandardSQLFunction("ceil"));
+			RegisterFunction("chr", new StandardSQLFunction("chr", NHibernateUtil.Character));
+			RegisterFunction("ascii", new StandardSQLFunction("ascii", NHibernateUtil.Int32));
+
 			// Register the date function, since when used in LINQ select clauses, NH must know the data type.
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "cast(?1 as date)"));
 
