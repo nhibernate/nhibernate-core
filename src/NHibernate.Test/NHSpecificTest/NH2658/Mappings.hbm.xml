@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH2658">
+  <class name="Product" table="Products">
+    <id name="ProductId" column="ProductId" type="String">
+      <generator class="assigned"/>
+    </id>
+    <property name="Name" column="Name"/>
+    <property name="Description" column="Description"/>
+  </class>
+</hibernate-mapping>

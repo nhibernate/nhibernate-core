@@ -2034,7 +2034,7 @@ namespace NHibernate.Impl
 
 		private string[] ParseFilterParameterName(string filterParameterName)
 		{
-			int dot = filterParameterName.IndexOf(".");
+			int dot = filterParameterName.IndexOf('.');
 			if (dot <= 0)
 			{
 				throw new ArgumentException("Invalid filter-parameter name format", "filterParameterName");

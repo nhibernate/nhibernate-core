@@ -344,10 +344,9 @@ namespace NHibernate.Loader.Criteria
 			// some messy, complex stuff here, since createCriteria() can take an
 			// aliased path, or a path rooted at the creating criteria instance
 			ICriteria parent = null;
-			if (path.IndexOf('.') > 0)
+			if (StringHelper.IsNotRoot(path, out var testAlias))
 			{
 				// if it is a compound path
-				string testAlias = StringHelper.Root(path);
 				if (!testAlias.Equals(subcriteria.Alias))
 				{
 					// and the qualifier is not the alias of this criteria
@@ -678,9 +677,8 @@ namespace NHibernate.Loader.Criteria
 
 		public string GetEntityName(ICriteria subcriteria, string propertyName)
 		{
-			if (propertyName.IndexOf('.') > 0)
+			if (StringHelper.IsNotRoot(propertyName, out var root))
 			{
-				string root = StringHelper.Root(propertyName);
 				ICriteria crit = GetAliasedCriteria(root);
 				if (crit != null)
 				{
@@ -692,9 +690,8 @@ namespace NHibernate.Loader.Criteria
 
 		public string GetSQLAlias(ICriteria criteria, string propertyName)
 		{
-			if (propertyName.IndexOf('.') > 0)
+			if (StringHelper.IsNotRoot(propertyName, out var root))
 			{
-				string root = StringHelper.Root(propertyName);
 				ICriteria subcriteria = GetAliasedCriteria(root);
 				if (subcriteria != null)
 				{
@@ -706,9 +703,8 @@ namespace NHibernate.Loader.Criteria
 
 		public string GetPropertyName(string propertyName)
 		{
-			if (propertyName.IndexOf('.') > 0)
+			if (StringHelper.IsNotRoot(propertyName, out var root))
 			{
-				string root = StringHelper.Root(propertyName);
 				ICriteria crit = GetAliasedCriteria(root);
 				if (crit != null)
 				{

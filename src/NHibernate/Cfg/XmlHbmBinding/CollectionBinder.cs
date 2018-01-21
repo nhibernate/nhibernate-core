@@ -221,7 +221,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			//ORPHAN DELETE (used for programmer error detection)
 			var cascadeAtt = collectionMapping.Cascade;
-			if (!string.IsNullOrEmpty(cascadeAtt) && cascadeAtt.IndexOf("delete-orphan") >= 0)
+			if (!string.IsNullOrEmpty(cascadeAtt) && cascadeAtt.IndexOf("delete-orphan", StringComparison.Ordinal) >= 0)
 				model.HasOrphanDelete = true;
 
 			// GENERIC

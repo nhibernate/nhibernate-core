@@ -10,7 +10,11 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Engine.Query;
+using NHibernate.Linq.Visitors;
+using NHibernate.Util;
 using NUnit.Framework;
 using NHibernate.Linq;
 
@@ -130,10 +134,10 @@ namespace NHibernate.Test.Linq
 		public async Task ConstantInNewArrayExpressionAsync()
 		{
 			var c1 = await ((from c in db.Categories
-			          select new [] { c.Name, "category1" }).ToListAsync());
+			          select new[] { c.Name, "category1" }).ToListAsync());
 
 			var c2 = await ((from c in db.Categories
-			          select new [] { c.Name, "category2" }).ToListAsync());
+			          select new[] { c.Name, "category2" }).ToListAsync());
 
 			Assert.That(c1, Has.Count.GreaterThan(0), "c1 Count");
 			Assert.That(c2, Has.Count.GreaterThan(0), "c2 Count");
@@ -179,7 +183,6 @@ namespace NHibernate.Test.Linq
 
 		// Adapted from NH-2500 first test case by Andrey Titov (file NHTest3.zip)
 		[Test]
-		[Ignore("Not fixed yet")]
 		public async Task ObjectConstantsAsync()
 		{
 			var builder = new InfoBuilder(1);
@@ -200,7 +203,6 @@ namespace NHibernate.Test.Linq
 
 		// Adapted from NH-3673
 		[Test]
-		[Ignore("Not fixed yet")]
 		public async Task ConstantsInFuncCallAsync()
 		{
 			var closureVariable = 1;
@@ -212,6 +214,60 @@ namespace NHibernate.Test.Linq
 
 			Assert.That(v1, Is.EqualTo(1), "v1");
 			Assert.That(v2, Is.EqualTo(2), "v2");
+		}
+
+		[Test]
+		public async Task PlansAreCachedAsync()
+		{
+			var queryPlanCacheType = typeof(QueryPlanCache);
+
+			var cache = (SoftLimitMRUCache)
+				queryPlanCacheType
+					.GetField("planCache", BindingFlags.Instance | BindingFlags.NonPublic)
+					.GetValue(Sfi.QueryPlanCache);
+			cache.Clear();
+
+			await ((from c in db.Customers
+			 where c.CustomerId == "ALFKI"
+			 select new { c.CustomerId, c.ContactName }).FirstAsync());
+			Assert.That(
+				cache,
+				Has.Count.EqualTo(1),
+				"First query plan should be cached.");
+
+			using (var spy = new LogSpy(queryPlanCacheType))
+			{
+				// Should hit plan cache.
+				await ((from c in db.Customers
+				 where c.CustomerId == "ANATR"
+				 select new { c.CustomerId, c.ContactName }).FirstAsync());
+				Assert.That(cache, Has.Count.EqualTo(1), "Second query should not cause a plan to be cache.");
+				Assert.That(
+					spy.GetWholeLog(),
+					Does
+						.Contain("located HQL query plan in cache")
+						.And.Not.Contain("unable to locate HQL query plan in cache"));
+			}
+		}
+
+		[Test]
+		public async Task PlansWithNonParameterizedConstantsAreNotCachedAsync()
+		{
+			var queryPlanCacheType = typeof(QueryPlanCache);
+
+			var cache = (SoftLimitMRUCache)
+				queryPlanCacheType
+					.GetField("planCache", BindingFlags.Instance | BindingFlags.NonPublic)
+					.GetValue(Sfi.QueryPlanCache);
+			cache.Clear();
+
+			await ((from c in db.Customers
+			 where c.CustomerId == "ALFKI"
+			 select new { c.CustomerId, c.ContactName, Constant = 1 }).FirstAsync());
+			Assert.That(
+				cache,
+				Has.Count.EqualTo(0),
+				"Query plan should not be cached.");
 		}
 	}
 }

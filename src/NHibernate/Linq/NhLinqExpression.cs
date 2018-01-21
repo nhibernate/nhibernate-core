@@ -15,6 +15,8 @@ namespace NHibernate.Linq
 	{
 		public string Key { get; protected set; }
 
+		public bool CanCachePlan { get; private set; } = true;
+
 		public System.Type Type { get; private set; }
 
 		/// <summary>
@@ -77,6 +79,14 @@ namespace NHibernate.Linq
 				Type = ExpressionToHqlTranslationResults.ExecuteResultTypeOverride;
 
 			ParameterDescriptors = requiredHqlParameters.AsReadOnly();
+
+			CanCachePlan = CanCachePlan &&
+				// If some constants do not have matching HQL parameters, their values from first query will
+				// be embedded in the plan and reused for subsequent queries: do not cache the plan.
+				!ParameterValuesByName
+					.Keys
+					.Except(requiredHqlParameters.Select(p => p.Name))
+					.Any();
 
 			return ExpressionToHqlTranslationResults.Statement.AstNode;
 		}

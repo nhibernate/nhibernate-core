@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using NHibernate.Util;
@@ -18,15 +19,15 @@ namespace NHibernate.AdoNet.Util
 		/// </summary>
 		public virtual string Format(string sql)
 		{
-			if (sql.ToLowerInvariant().StartsWith("create table"))
+			if (sql.StartsWith("create table", StringComparison.OrdinalIgnoreCase))
 			{
 				return FormatCreateTable(sql);
 			}
-			else if (sql.ToLowerInvariant().StartsWith("alter table"))
+			else if (sql.StartsWith("alter table", StringComparison.OrdinalIgnoreCase))
 			{
 				return FormatAlterTable(sql);
 			}
-			else if (sql.ToLowerInvariant().StartsWith("comment on"))
+			else if (sql.StartsWith("comment on", StringComparison.OrdinalIgnoreCase))
 			{
 				return FormatCommentOn(sql);
 			}
