@@ -404,6 +404,11 @@ namespace NHibernate.SqlCommand
 			return IndexOf(text, 0, _length, StringComparison.InvariantCultureIgnoreCase);
 		}
 
+		internal int IndexOfOrdinal(string text)
+		{
+			return IndexOf(text, 0, _length, StringComparison.Ordinal);
+		}
+
 		/// <summary>
 		/// Returns the index of the first occurrence of <paramref name="text" />, case-insensitive.
 		/// </summary>

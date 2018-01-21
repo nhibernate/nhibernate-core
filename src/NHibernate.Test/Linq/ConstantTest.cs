@@ -1,6 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Engine.Query;
+using NHibernate.Linq.Visitors;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -118,10 +122,10 @@ namespace NHibernate.Test.Linq
 		public void ConstantInNewArrayExpression()
 		{
 			var c1 = (from c in db.Categories
-			          select new [] { c.Name, "category1" }).ToList();
+			          select new[] { c.Name, "category1" }).ToList();
 
 			var c2 = (from c in db.Categories
-			          select new [] { c.Name, "category2" }).ToList();
+			          select new[] { c.Name, "category2" }).ToList();
 
 			Assert.That(c1, Has.Count.GreaterThan(0), "c1 Count");
 			Assert.That(c2, Has.Count.GreaterThan(0), "c2 Count");
@@ -167,7 +171,6 @@ namespace NHibernate.Test.Linq
 
 		// Adapted from NH-2500 first test case by Andrey Titov (file NHTest3.zip)
 		[Test]
-		[Ignore("Not fixed yet")]
 		public void ObjectConstants()
 		{
 			var builder = new InfoBuilder(1);
@@ -188,7 +191,6 @@ namespace NHibernate.Test.Linq
 
 		// Adapted from NH-3673
 		[Test]
-		[Ignore("Not fixed yet")]
 		public void ConstantsInFuncCall()
 		{
 			var closureVariable = 1;
@@ -200,6 +202,79 @@ namespace NHibernate.Test.Linq
 
 			Assert.That(v1, Is.EqualTo(1), "v1");
 			Assert.That(v2, Is.EqualTo(2), "v2");
+		}
+
+		[Test]
+		public void ConstantInWhereDoesNotCauseManyKeys()
+		{
+			var q1 = (from c in db.Customers
+			          where c.CustomerId == "ALFKI"
+			          select c);
+			var q2 = (from c in db.Customers
+			          where c.CustomerId == "ANATR"
+			          select c);
+			var parameters1 = ExpressionParameterVisitor.Visit(q1.Expression, Sfi);
+			var k1 = ExpressionKeyVisitor.Visit(q1.Expression, parameters1);
+			var parameters2 = ExpressionParameterVisitor.Visit(q2.Expression, Sfi);
+			var k2 = ExpressionKeyVisitor.Visit(q2.Expression, parameters2);
+
+			Assert.That(parameters1, Has.Count.GreaterThan(0), "parameters1");
+			Assert.That(parameters2, Has.Count.GreaterThan(0), "parameters2");
+			Assert.That(k2, Is.EqualTo(k1));
+		}
+
+		[Test]
+		public void PlansAreCached()
+		{
+			var queryPlanCacheType = typeof(QueryPlanCache);
+
+			var cache = (SoftLimitMRUCache)
+				queryPlanCacheType
+					.GetField("planCache", BindingFlags.Instance | BindingFlags.NonPublic)
+					.GetValue(Sfi.QueryPlanCache);
+			cache.Clear();
+
+			(from c in db.Customers
+			 where c.CustomerId == "ALFKI"
+			 select new { c.CustomerId, c.ContactName }).First();
+			Assert.That(
+				cache,
+				Has.Count.EqualTo(1),
+				"First query plan should be cached.");
+
+			using (var spy = new LogSpy(queryPlanCacheType))
+			{
+				// Should hit plan cache.
+				(from c in db.Customers
+				 where c.CustomerId == "ANATR"
+				 select new { c.CustomerId, c.ContactName }).First();
+				Assert.That(cache, Has.Count.EqualTo(1), "Second query should not cause a plan to be cache.");
+				Assert.That(
+					spy.GetWholeLog(),
+					Does
+						.Contain("located HQL query plan in cache")
+						.And.Not.Contain("unable to locate HQL query plan in cache"));
+			}
+		}
+
+		[Test]
+		public void PlansWithNonParameterizedConstantsAreNotCached()
+		{
+			var queryPlanCacheType = typeof(QueryPlanCache);
+
+			var cache = (SoftLimitMRUCache)
+				queryPlanCacheType
+					.GetField("planCache", BindingFlags.Instance | BindingFlags.NonPublic)
+					.GetValue(Sfi.QueryPlanCache);
+			cache.Clear();
+
+			(from c in db.Customers
+			 where c.CustomerId == "ALFKI"
+			 select new { c.CustomerId, c.ContactName, Constant = 1 }).First();
+			Assert.That(
+				cache,
+				Has.Count.EqualTo(0),
+				"Query plan should not be cached.");
 		}
 	}
 }

@@ -60,6 +60,11 @@ namespace NHibernate.Loader
 		/// </summary>
 		private bool? _canUseLimits;
 
+		/// <summary>
+		/// Caches subclass entity aliases for given persister index in <see cref="EntityPersisters"/>  and subclass entity name
+		/// </summary>
+		private readonly Dictionary<Tuple<int, string>, string[][]> _subclassEntityAliasesMap = new Dictionary<Tuple<int, string>, string[][]>();
+			
 		protected Loader(ISessionFactoryImplementor factory)
 		{
 			_factory = factory;
@@ -1078,16 +1083,28 @@ namespace NHibernate.Loader
 			// advantage of two-phase-load (esp. components)
 			TwoPhaseLoad.AddUninitializedEntity(key, obj, persister, lockMode, !eagerPropertyFetch, session);
 
-			// This is not very nice (and quite slow):
 			string[][] cols = persister == rootPersister
 								? EntityAliases[i].SuffixedPropertyAliases
-								: EntityAliases[i].GetSuffixedPropertyAliases(persister);
+								: GetSubclassEntityAliases(i, persister);
 
 			object[] values = persister.Hydrate(rs, id, obj, rootPersister, cols, eagerPropertyFetch, session);
 
 			object rowId = persister.HasRowId ? rs[rowIdAlias] : null;
 
 			TwoPhaseLoad.PostHydrate(persister, id, values, rowId, obj, lockMode, !eagerPropertyFetch, session);
+		}
+
+		private string[][] GetSubclassEntityAliases(int i, ILoadable persister)
+		{
+			var cacheKey = System.Tuple.Create(i, persister.EntityName);
+			if (_subclassEntityAliasesMap.TryGetValue(cacheKey, out string[][] cols))
+			{
+				return cols;
+			}
+
+			cols = EntityAliases[i].GetSuffixedPropertyAliases(persister);
+			_subclassEntityAliasesMap[cacheKey] = cols;
+			return cols;
 		}
 
 		/// <summary>
@@ -1753,7 +1770,7 @@ namespace NHibernate.Loader
 		protected SqlString ExpandDynamicFilterParameters(SqlString sqlString, ICollection<IParameterSpecification> parameterSpecs, ISessionImplementor session)
 		{
 			var enabledFilters = session.EnabledFilters;
-			if (enabledFilters.Count == 0 || sqlString.ToString().IndexOf(ParserHelper.HqlVariablePrefix) < 0)
+			if (enabledFilters.Count == 0 || !ParserHelper.HasHqlVariable(sqlString))
 			{
 				return sqlString;
 			}
@@ -1776,7 +1793,7 @@ namespace NHibernate.Loader
 
 				foreach (string token in tokens)
 				{
-					if (token.StartsWith(ParserHelper.HqlVariablePrefix))
+					if (ParserHelper.IsHqlVariable(token))
 					{
 						string filterParameterName = token.Substring(1);
 						string[] parts = StringHelper.ParseFilterParameterName(filterParameterName);
