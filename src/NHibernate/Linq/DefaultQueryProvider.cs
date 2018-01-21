@@ -77,10 +77,9 @@ namespace NHibernate.Linq
 
 		public virtual object Execute(Expression expression)
 		{
-			IQuery query;
-			NhLinqExpression nhLinqExpression = PrepareQuery(expression, out query);
+			NhLinqExpression nhLinqExpression = PrepareQuery(expression, out var query);
 
-			return ExecuteQuery(nhLinqExpression, query, nhLinqExpression);
+			return ExecuteQuery(nhLinqExpression, query);
 		}
 
 		public TResult Execute<TResult>(Expression expression)
@@ -153,7 +152,7 @@ namespace NHibernate.Linq
 			try
 			{
 				var nhLinqExpression = PrepareQuery(expression, out var query);
-				return ExecuteQueryAsync(nhLinqExpression, query, nhLinqExpression, cancellationToken);
+				return ExecuteQueryAsync(nhLinqExpression, query, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -181,6 +180,8 @@ namespace NHibernate.Linq
 			return nhLinqExpression;
 		}
 
+		// Since v5.1
+		[Obsolete("Use ExecuteQuery(NhLinqExpression nhLinqExpression, IQuery query) instead")]
 		protected virtual object ExecuteQuery(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery)
 		{
 			IList results = query.List();
@@ -203,6 +204,14 @@ namespace NHibernate.Linq
 			}
 
 			return results[0];
+		}
+
+		protected virtual object ExecuteQuery(NhLinqExpression nhLinqExpression, IQuery query)
+		{
+			// For avoiding breaking derived classes, call the obsolete method until it is dropped.
+#pragma warning disable 618
+			return ExecuteQuery(nhLinqExpression, query, nhLinqExpression);
+#pragma warning restore 618
 		}
 
 		private static void SetParameters(IQuery query, IDictionary<string, Tuple<object, IType>> parameters)
