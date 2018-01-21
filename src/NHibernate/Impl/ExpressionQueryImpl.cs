@@ -66,6 +66,13 @@ namespace NHibernate.Impl
 				map.Add(name, aliases);
 			}
 
+			if (map.Count == 0)
+			{
+				// No list parameter needs to be replaced: they are all single valued. They just need
+				// to be retyped, which has been done above.
+				return QueryExpression;
+			}
+
 			//TODO: Do we need to translate expression one more time here?
 			var newTree = ParameterExpander.Expand(QueryExpression.Translate(Session.Factory, false), map);
 			var key = new StringBuilder(QueryExpression.Key);
