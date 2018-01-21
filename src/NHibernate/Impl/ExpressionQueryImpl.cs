@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +20,16 @@ namespace NHibernate.Impl
 			QueryExpression = queryExpression;
 		}
 
+		protected ExpressionQueryImpl(
+			IQueryExpression queryExpression, ISessionImplementor session, ParameterMetadata parameterMetadata, bool isFilter)
+			: this(queryExpression, session, parameterMetadata)
+		{
+			_isFilter = isFilter;
+		}
+
 		public IQueryExpression QueryExpression { get; private set; }
+
+		protected readonly bool _isFilter;
 
 		/// <summary> 
 		/// Warning: adds new parameters to the argument by side-effect, as well as mutating the query expression tree!
@@ -75,10 +83,8 @@ namespace NHibernate.Impl
 
 			//TODO: Do we need to translate expression one more time here?
 			// This is not much an issue anymore: ExpressionQueryImpl are currently created only with NhLinqExpression
-			// which do cache their translation. By the way, the false transmitted below as filter parameter to
-			// Translate is wrong, since this ExpandParameters may also be called from ExpressionFilterImpl.
-			// But that does not matter for NhLinqExpression.
-			var newTree = ParameterExpander.Expand(QueryExpression.Translate(Session.Factory, false), map);
+			// which do cache their translation.
+			var newTree = ParameterExpander.Expand(QueryExpression.Translate(Session.Factory, _isFilter), map);
 			var key = new StringBuilder(QueryExpression.Key);
 
 			foreach (var pair in map)
@@ -94,12 +100,12 @@ namespace NHibernate.Impl
 		}
 	}
 
-	partial class ExpressionFilterImpl : ExpressionQueryImpl
+	internal partial class ExpressionFilterImpl : ExpressionQueryImpl
 	{
 		private readonly object collection;
 
 		public ExpressionFilterImpl(IQueryExpression queryExpression, object collection, ISessionImplementor session, ParameterMetadata parameterMetadata) 
-			: base(queryExpression, session, parameterMetadata)
+			: base(queryExpression, session, parameterMetadata, true)
 		{
 			this.collection = collection;
 		}
