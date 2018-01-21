@@ -36,11 +36,6 @@ namespace NHibernate.Linq.Functions
 
 			HqlExpression[] expressions = arguments.Select(x => visitor.Visit(x).AsExpression()).ToArray();
 
-			if (function == "remainder")
-			{
-				function = "mod_decimal";
-			}
-
 			switch (function)
 			{
 				case "add":
@@ -57,6 +52,9 @@ namespace NHibernate.Linq.Functions
 					return treeBuilder.MethodCall("sign", treeBuilder.Subtract(expressions[0], expressions[1]));
 				case "multiply":
 					return treeBuilder.Multiply(expressions[0], expressions[1]);
+				case "remainder":
+					HqlMethodCall mod = treeBuilder.MethodCall("mod", expressions[0], expressions[1]);
+					return treeBuilder.Cast(mod, typeof(decimal));
 				case "round":
 					HqlExpression numberOfDecimals = (arguments.Count == 2) ? expressions[1] : treeBuilder.Constant(0);
 					return treeBuilder.MethodCall("round", expressions[0], numberOfDecimals);
