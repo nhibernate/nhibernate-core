@@ -74,11 +74,15 @@ namespace NHibernate.Impl
 			}
 
 			//TODO: Do we need to translate expression one more time here?
+			// This is not much an issue anymore: ExpressionQueryImpl are currently created only with NhLinqExpression
+			// which do cache their translation. By the way, the false transmitted below as filter parameter to
+			// Translate is wrong, since this ExpandParameters may also be called from ExpressionFilterImpl.
+			// But that does not matter for NhLinqExpression.
 			var newTree = ParameterExpander.Expand(QueryExpression.Translate(Session.Factory, false), map);
 			var key = new StringBuilder(QueryExpression.Key);
 
 			foreach (var pair in map)
-							   {
+			{
 				key.Append(' ');
 				key.Append(pair.Key);
 				key.Append(':');

@@ -68,6 +68,14 @@ namespace NHibernate.Linq
 
 		public IASTNode Translate(ISessionFactoryImplementor sessionFactory, bool filter)
 		{
+			if (ExpressionToHqlTranslationResults != null)
+			{
+				// Query has already been translated. Arguments do not really matter, because queries are anyway tied
+				// to a single session factory and cannot switch from being a filter query (query on a mapped collection)
+				// or not.
+				return DuplicateTree(ExpressionToHqlTranslationResults.Statement.AstNode);
+			}
+
 			var requiredHqlParameters = new List<NamedParameterDescriptor>();
 			var queryModel = NhRelinqQueryParser.Parse(_expression);
 			var visitorParameters = new VisitorParameters(sessionFactory, _constantToParameterMap, requiredHqlParameters,
@@ -88,7 +96,8 @@ namespace NHibernate.Linq
 					.Except(requiredHqlParameters.Select(p => p.Name))
 					.Any();
 
-			return ExpressionToHqlTranslationResults.Statement.AstNode;
+			// The ast node may be altered by caller, duplicate it for preserving the original one.
+			return DuplicateTree(ExpressionToHqlTranslationResults.Statement.AstNode);
 		}
 
 		internal void CopyExpressionTranslation(NhLinqExpression other)
@@ -97,6 +106,16 @@ namespace NHibernate.Linq
 			ParameterDescriptors = other.ParameterDescriptors;
 			// Type could have been overridden by translation.
 			Type = other.Type;
+		}
+
+		private static IASTNode DuplicateTree(IASTNode ast)
+		{
+			var thisNode = ast.DupNode();
+			foreach (var child in ast)
+			{
+				thisNode.AddChild(DuplicateTree(child));
+			}
+			return thisNode;
 		}
 	}
 }
