@@ -1286,11 +1286,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public ITransaction Transaction
-		{
-			get { return ConnectionManager.Transaction; }
-		}
-
 		/// <summary>
 		///
 		/// </summary>

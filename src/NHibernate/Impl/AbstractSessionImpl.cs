@@ -32,6 +32,9 @@ namespace NHibernate.Impl
 
 		private bool closed;
 
+		/// <summary>Get the current NHibernate transaction.</summary>
+		public ITransaction Transaction => ConnectionManager.Transaction;
+
 		protected bool TransactionCoordinatorShared { get; }
 
 		public ITransactionContext TransactionContext

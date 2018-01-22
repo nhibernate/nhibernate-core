@@ -376,12 +376,6 @@ namespace NHibernate.Impl
 
 		#region IStatelessSession Members
 
-		/// <summary> Get the current Hibernate transaction.</summary>
-		public ITransaction Transaction
-		{
-			get { return ConnectionManager.Transaction; }
-		}
-
 		public override CacheMode CacheMode
 		{
 			get { return CacheMode.Ignore; }
