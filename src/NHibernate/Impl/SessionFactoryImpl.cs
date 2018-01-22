@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data.Common;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -263,7 +264,7 @@ namespace NHibernate.Impl
 					implementorToEntityName[model.MappedClass] = model.EntityName;
 				}
 			}
-			classMetadata = new UnmodifiableDictionary<string, IClassMetadata>(classMeta);
+			classMetadata = new ReadOnlyDictionary<string, IClassMetadata>(classMeta);
 
 			Dictionary<string, ISet<string>> tmpEntityToCollectionRoleMap = new Dictionary<string, ISet<string>>();
 			collectionPersisters = new Dictionary<string, ICollectionPersister>();
@@ -308,8 +309,8 @@ namespace NHibernate.Impl
 			{
 				tmpcollectionMetadata.Add(collectionPersister.Key, collectionPersister.Value.CollectionMetadata);
 			}
-			collectionMetadata = new UnmodifiableDictionary<string, ICollectionMetadata>(tmpcollectionMetadata);
-			collectionRolesByEntityParticipant = new UnmodifiableDictionary<string, ISet<string>>(tmpEntityToCollectionRoleMap);
+			collectionMetadata = new ReadOnlyDictionary<string, ICollectionMetadata>(tmpcollectionMetadata);
+			collectionRolesByEntityParticipant = new ReadOnlyDictionary<string, ISet<string>>(tmpEntityToCollectionRoleMap);
 			#endregion
 
 			#region Named Queries
