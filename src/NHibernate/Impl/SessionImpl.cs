@@ -229,16 +229,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary></summary>
-		public override IBatcher Batcher
-		{
-			get
-			{
-				CheckAndUpdateSessionStatus();
-				return ConnectionManager.Batcher;
-			}
-		}
-
 		public ConnectionReleaseMode ConnectionReleaseMode
 		{
 			get { return connectionReleaseMode; }
@@ -1450,27 +1440,6 @@ namespace NHibernate.Impl
 					listener[i].OnInitializeCollection(new InitializeCollectionEvent(collection, this));
 				}
 			}
-		}
-
-		public override DbConnection Connection
-		{
-			get { return ConnectionManager.GetConnection(); }
-		}
-
-		/// <summary>
-		/// Gets if the ISession is connected.
-		/// </summary>
-		/// <value>
-		/// <see langword="true" /> if the ISession is connected.
-		/// </value>
-		/// <remarks>
-		/// An ISession is considered connected if there is an <see cref="DbConnection"/> (regardless
-		/// of its state) or if it the field <c>connect</c> is true.  Meaning that it will connect
-		/// at the next operation that requires a connection.
-		/// </remarks>
-		public override bool IsConnected
-		{
-			get { return ConnectionManager.IsConnected; }
 		}
 
 		/// <summary></summary>

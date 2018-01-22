@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq.Expressions;
 using NHibernate.Cache;
 using NHibernate.Collection;
@@ -86,15 +85,6 @@ namespace NHibernate.Impl
 		public override long Timestamp
 		{
 			get { throw new NotSupportedException(); }
-		}
-
-		public override IBatcher Batcher
-		{
-			get
-			{
-				CheckAndUpdateSessionStatus();
-				return ConnectionManager.Batcher;
-			}
 		}
 
 		public override void CloseSessionFromSystemTransaction()
@@ -333,11 +323,6 @@ namespace NHibernate.Impl
 			get { return !IsClosed; }
 		}
 
-		public override bool IsConnected
-		{
-			get { return ConnectionManager.IsConnected; }
-		}
-
 		public override FlushMode FlushMode
 		{
 			get { return FlushMode.Commit; }
@@ -363,11 +348,6 @@ namespace NHibernate.Impl
 			{
 				return entity.GetType().FullName;
 			}
-		}
-
-		public override DbConnection Connection
-		{
-			get { return ConnectionManager.GetConnection(); }
 		}
 
 		public IStatelessSession SetBatchSize(int batchSize)

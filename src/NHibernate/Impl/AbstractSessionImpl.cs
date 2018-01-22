@@ -108,7 +108,16 @@ namespace NHibernate.Impl
 			protected set => _factory = value;
 		}
 
-		public abstract IBatcher Batcher { get; }
+		// 6.0 TODO: remove virtual.
+		/// <inheritdoc />
+		public virtual IBatcher Batcher
+		{
+			get
+			{
+				CheckAndUpdateSessionStatus();
+				return ConnectionManager.Batcher;
+			}
+		}
 		public abstract void CloseSessionFromSystemTransaction();
 
 		public virtual IList List(IQueryExpression queryExpression, QueryParameters parameters)
@@ -244,8 +253,13 @@ namespace NHibernate.Impl
 			}
 		}
 
-		// 6.0 TODO: remove virtual.
+		// 6.0 TODO: remove virtual from below properties.
+		/// <inheritdoc />
 		public virtual ConnectionManager ConnectionManager { get; protected set; }
+		/// <inheritdoc />
+		public virtual bool IsConnected => ConnectionManager.IsConnected;
+		/// <inheritdoc />
+		public virtual DbConnection Connection => ConnectionManager.GetConnection();
 
 		public abstract IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar);
 		public abstract EventListeners Listeners { get; }
@@ -254,11 +268,9 @@ namespace NHibernate.Impl
 		public abstract IPersistenceContext PersistenceContext { get; }
 		public abstract CacheMode CacheMode { get; set; }
 		public abstract bool IsOpen { get; }
-		public abstract bool IsConnected { get; }
 		public abstract string FetchProfile { get; set; }
 		public abstract string BestGuessEntityName(object entity);
 		public abstract string GuessEntityName(object entity);
-		public abstract DbConnection Connection { get; }
 		public abstract int ExecuteNativeUpdate(NativeSQLQuerySpecification specification, QueryParameters queryParameters);
 		public abstract FutureCriteriaBatch FutureCriteriaBatch { get; protected internal set; }
 		public abstract FutureQueryBatch FutureQueryBatch { get; protected internal set; }

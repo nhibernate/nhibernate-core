@@ -274,8 +274,16 @@ namespace NHibernate.Engine
 		bool IsOpen { get; }
 
 		/// <summary>
-		/// Is the <c>ISession</c> currently connected?
+		/// Is the session connected?
 		/// </summary>
+		/// <value>
+		/// <see langword="true" /> if the session is connected.
+		/// </value>
+		/// <remarks>
+		/// A session is considered connected if there is a <see cref="DbConnection"/> (regardless
+		/// of its state) or if the field <c>connect</c> is true. Meaning that it will connect
+		/// at the next operation that requires a connection.
+		/// </remarks>
 		bool IsConnected { get; }
 
 		FlushMode FlushMode { get; set; }
