@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
@@ -56,8 +55,6 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private int _suspendAutoFlushCount;
 
-		private readonly ConnectionManager connectionManager;
-
 		[NonSerialized]
 		private readonly IDictionary<string, IFilter> enabledFilters = new Dictionary<string, IFilter>();
 
@@ -71,8 +68,6 @@ namespace NHibernate.Impl
 		private readonly bool autoCloseSessionEnabled;
 		[NonSerialized]
 		private readonly ConnectionReleaseMode connectionReleaseMode;
-		[NonSerialized]
-		private readonly bool _transactionCoordinatorShared;
 
 		#region System.Runtime.Serialization.ISerializable Members
 
@@ -104,7 +99,7 @@ namespace NHibernate.Impl
 			enabledFilters = (IDictionary<string, IFilter>)info.GetValue("enabledFilters", typeof(Dictionary<string, IFilter>));
 			enabledFilterNames = (List<string>)info.GetValue("enabledFilterNames", typeof(List<string>));
 
-			connectionManager = (ConnectionManager)info.GetValue("connectionManager", typeof(ConnectionManager));
+			ConnectionManager = (ConnectionManager)info.GetValue("connectionManager", typeof(ConnectionManager));
 		}
 
 		/// <summary>
@@ -122,11 +117,11 @@ namespace NHibernate.Impl
 		{
 			log.Debug("writting session to serializer");
 
-			if (!connectionManager.IsReadyForSerialization)
+			if (!ConnectionManager.IsReadyForSerialization)
 			{
 				throw new InvalidOperationException("Cannot serialize a Session while connected");
 			}
-			if (_transactionCoordinatorShared)
+			if (TransactionCoordinatorShared)
 			{
 				throw new InvalidOperationException("Cannot serialize a Session sharing its transaction coordinator");
 			}
@@ -143,7 +138,7 @@ namespace NHibernate.Impl
 			info.AddValue("enabledFilters", enabledFilters, typeof(IDictionary<string, IFilter>));
 			info.AddValue("enabledFilterNames", enabledFilterNames, typeof(List<string>));
 
-			info.AddValue("connectionManager", connectionManager, typeof(ConnectionManager));
+			info.AddValue("connectionManager", ConnectionManager, typeof(ConnectionManager));
 		}
 
 		#endregion
@@ -194,21 +189,6 @@ namespace NHibernate.Impl
 				listeners = factory.EventListeners;
 				connectionReleaseMode = options.SessionConnectionReleaseMode;
 
-				if (options is ISharedSessionCreationOptions sharedOptions && sharedOptions.IsTransactionCoordinatorShared)
-				{
-					// NH specific implementation: need to port Hibernate transaction management.
-					_transactionCoordinatorShared = true;
-					if (options.UserSuppliedConnection != null)
-						throw new SessionException("Cannot simultaneously share transaction context and specify connection");
-					connectionManager = sharedOptions.ConnectionManager;
-					connectionManager.AddDependentSession(this);
-				}
-				else
-				{
-					connectionManager = new ConnectionManager(
-						this, options.UserSuppliedConnection, connectionReleaseMode, Interceptor, options.ShouldAutoJoinTransaction);
-				}
-
 				if (factory.Statistics.IsStatisticsEnabled)
 				{
 					factory.StatisticsImplementor.OpenSession();
@@ -255,7 +235,7 @@ namespace NHibernate.Impl
 			get
 			{
 				CheckAndUpdateSessionStatus();
-				return connectionManager.Batcher;
+				return ConnectionManager.Batcher;
 			}
 		}
 
@@ -298,9 +278,9 @@ namespace NHibernate.Impl
 
 				try
 				{
-					if (!_transactionCoordinatorShared)
-						return connectionManager.Close();
-					connectionManager.RemoveDependentSession(this);
+					if (!TransactionCoordinatorShared)
+						return ConnectionManager.Close();
+					ConnectionManager.RemoveDependentSession(this);
 					return null;
 				}
 				finally
@@ -1319,39 +1299,9 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public ITransaction BeginTransaction(IsolationLevel isolationLevel)
-		{
-			using (BeginProcess())
-			{
-				if (_transactionCoordinatorShared)
-				{
-					// Todo : should seriously consider not allowing a txn to begin from a child session
-					//      can always route the request to the root session...
-					log.Warn("Transaction started on non-root session");
-				}
-
-				return connectionManager.BeginTransaction(isolationLevel);
-			}
-		}
-
-		public ITransaction BeginTransaction()
-		{
-			using (BeginProcess())
-			{
-				if (_transactionCoordinatorShared)
-				{
-					// Todo : should seriously consider not allowing a txn to begin from a child session
-					//      can always route the request to the root session...
-					log.Warn("Transaction started on non-root session");
-				}
-
-				return connectionManager.BeginTransaction();
-			}
-		}
-
 		public ITransaction Transaction
 		{
-			get { return connectionManager.Transaction; }
+			get { return ConnectionManager.Transaction; }
 		}
 
 		/// <summary>
@@ -1507,7 +1457,7 @@ namespace NHibernate.Impl
 
 		public override DbConnection Connection
 		{
-			get { return connectionManager.GetConnection(); }
+			get { return ConnectionManager.GetConnection(); }
 		}
 
 		/// <summary>
@@ -1523,7 +1473,7 @@ namespace NHibernate.Impl
 		/// </remarks>
 		public override bool IsConnected
 		{
-			get { return connectionManager.IsConnected; }
+			get { return ConnectionManager.IsConnected; }
 		}
 
 		/// <summary></summary>
@@ -1532,7 +1482,7 @@ namespace NHibernate.Impl
 			using (BeginProcess())
 			{
 				log.Debug("disconnecting session");
-				return connectionManager.Disconnect();
+				return ConnectionManager.Disconnect();
 			}
 		}
 
@@ -1541,7 +1491,7 @@ namespace NHibernate.Impl
 			using (BeginProcess())
 			{
 				log.Debug("reconnecting session");
-				connectionManager.Reconnect();
+				ConnectionManager.Reconnect();
 			}
 		}
 
@@ -1550,7 +1500,7 @@ namespace NHibernate.Impl
 			using (BeginProcess())
 			{
 				log.Debug("reconnecting session");
-				connectionManager.Reconnect(conn);
+				ConnectionManager.Reconnect(conn);
 			}
 		}
 
@@ -2036,11 +1986,6 @@ namespace NHibernate.Impl
 			string filterName = filterParameterName.Substring(0, dot);
 			string parameterName = filterParameterName.Substring(dot + 1);
 			return new[] { filterName, parameterName };
-		}
-
-		public override ConnectionManager ConnectionManager
-		{
-			get { return connectionManager; }
 		}
 
 		public IMultiQuery CreateMultiQuery()

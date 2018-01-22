@@ -1,10 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
 using System.Linq.Expressions;
-using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Criterion;
@@ -29,13 +27,7 @@ namespace NHibernate.Impl
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(StatelessSessionImpl));
 
 		[NonSerialized]
-		private readonly ConnectionManager connectionManager;
-
-		[NonSerialized]
 		private readonly StatefulPersistenceContext temporaryPersistenceContext;
-
-		[NonSerialized]
-		private readonly bool _transactionCoordinatorShared;
 
 		internal StatelessSessionImpl(SessionFactoryImpl factory, ISessionCreationOptions options)
 			: base(factory, options)
@@ -43,22 +35,6 @@ namespace NHibernate.Impl
 			using (BeginContext())
 			{
 				temporaryPersistenceContext = new StatefulPersistenceContext(this);
-				
-				if (options is ISharedSessionCreationOptions sharedOptions && sharedOptions.IsTransactionCoordinatorShared)
-				{
-					// NH specific implementation: need to port Hibernate transaction management.
-					_transactionCoordinatorShared = true;
-					if (options.UserSuppliedConnection != null)
-						throw new SessionException("Cannot simultaneously share transaction context and specify connection");
-					connectionManager = sharedOptions.ConnectionManager;
-					connectionManager.AddDependentSession(this);
-				}
-				else
-				{
-					connectionManager = new ConnectionManager(
-						this, options.UserSuppliedConnection, ConnectionReleaseMode.AfterTransaction,
-						EmptyInterceptor.Instance, options.ShouldAutoJoinTransaction);
-				}
 
 				if (log.IsDebugEnabled())
 				{
@@ -117,7 +93,7 @@ namespace NHibernate.Impl
 			get
 			{
 				CheckAndUpdateSessionStatus();
-				return connectionManager.Batcher;
+				return ConnectionManager.Batcher;
 			}
 		}
 
@@ -328,11 +304,6 @@ namespace NHibernate.Impl
 			get { throw new NotSupportedException(); }
 		}
 
-		public override ConnectionManager ConnectionManager
-		{
-			get { return connectionManager; }
-		}
-
 		public override bool IsEventSource
 		{
 			get { return false; }
@@ -364,7 +335,7 @@ namespace NHibernate.Impl
 
 		public override bool IsConnected
 		{
-			get { return connectionManager.IsConnected; }
+			get { return ConnectionManager.IsConnected; }
 		}
 
 		public override FlushMode FlushMode
@@ -396,7 +367,7 @@ namespace NHibernate.Impl
 
 		public override DbConnection Connection
 		{
-			get { return connectionManager.GetConnection(); }
+			get { return ConnectionManager.GetConnection(); }
 		}
 
 		public IStatelessSession SetBatchSize(int batchSize)
@@ -428,7 +399,7 @@ namespace NHibernate.Impl
 		/// <summary> Get the current Hibernate transaction.</summary>
 		public ITransaction Transaction
 		{
-			get { return connectionManager.Transaction; }
+			get { return ConnectionManager.Transaction; }
 		}
 
 		public override CacheMode CacheMode
@@ -472,10 +443,10 @@ namespace NHibernate.Impl
 				{
 					throw new SessionException("Session was already closed!");
 				}
-				if (_transactionCoordinatorShared)
-					connectionManager.RemoveDependentSession(this);
+				if (TransactionCoordinatorShared)
+					ConnectionManager.RemoveDependentSession(this);
 				else
-					connectionManager.Close();
+					ConnectionManager.Close();
 				SetClosed();
 			}
 		}
@@ -797,45 +768,6 @@ namespace NHibernate.Impl
 			{
 				string aliasPath = ExpressionProcessor.FindMemberExpression(alias.Body);
 				return new QueryOver<T, T>(new CriteriaImpl(typeof(T), aliasPath, this));
-			}
-		}
-
-		/// <summary>
-		/// Begin a NHibernate transaction
-		/// </summary>
-		/// <returns>A NHibernate transaction</returns>
-		public ITransaction BeginTransaction()
-		{
-			using (BeginProcess())
-			{
-				if (_transactionCoordinatorShared)
-				{
-					// Todo : should seriously consider not allowing a txn to begin from a child session
-					//      can always route the request to the root session...
-					log.Warn("Transaction started on non-root session");
-				}
-
-				return connectionManager.BeginTransaction();
-			}
-		}
-
-		/// <summary>
-		/// Begin a NHibernate transaction with the specified isolation level
-		/// </summary>
-		/// <param name="isolationLevel">The isolation level</param>
-		/// <returns>A NHibernate transaction</returns>
-		public ITransaction BeginTransaction(IsolationLevel isolationLevel)
-		{
-			using (BeginProcess())
-			{
-				if (_transactionCoordinatorShared)
-				{
-					// Todo : should seriously consider not allowing a txn to begin from a child session
-					//      can always route the request to the root session...
-					log.Warn("Transaction started on non-root session");
-				}
-
-				return connectionManager.BeginTransaction(isolationLevel);
 			}
 		}
 

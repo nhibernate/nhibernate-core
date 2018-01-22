@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Linq;
 using NHibernate.AdoNet;
@@ -31,6 +32,8 @@ namespace NHibernate.Impl
 
 		private bool closed;
 
+		protected bool TransactionCoordinatorShared { get; }
+
 		public ITransactionContext TransactionContext
 		{
 			get; set;
@@ -38,7 +41,7 @@ namespace NHibernate.Impl
 
 		private bool isAlreadyDisposed;
 
-		private static readonly INHibernateLogger logger = NHibernateLogger.For(typeof(AbstractSessionImpl));
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(AbstractSessionImpl));
 
 		public Guid SessionId { get; }
 
@@ -46,11 +49,34 @@ namespace NHibernate.Impl
 
 		protected internal AbstractSessionImpl(ISessionFactoryImplementor factory, ISessionCreationOptions options)
 		{
-			_factory = factory;
-			Timestamp = factory.Settings.CacheProvider.NextTimestamp();
-			_flushMode = options.InitialSessionFlushMode;
-			Interceptor = options.SessionInterceptor ?? EmptyInterceptor.Instance;
 			SessionId = factory.Settings.TrackSessionId ? Guid.NewGuid() : Guid.Empty;
+			using (BeginContext())
+			{
+				_factory = factory;
+				Timestamp = factory.Settings.CacheProvider.NextTimestamp();
+				_flushMode = options.InitialSessionFlushMode;
+				Interceptor = options.SessionInterceptor ?? EmptyInterceptor.Instance;
+
+				if (options is ISharedSessionCreationOptions sharedOptions && sharedOptions.IsTransactionCoordinatorShared)
+				{
+					// NH specific implementation: need to port Hibernate transaction management.
+					TransactionCoordinatorShared = true;
+					if (options.UserSuppliedConnection != null)
+						throw new SessionException("Cannot simultaneously share transaction context and specify connection");
+					var connectionManager = sharedOptions.ConnectionManager;
+					connectionManager.AddDependentSession(this);
+					ConnectionManager = connectionManager;
+				}
+				else
+				{
+					ConnectionManager = new ConnectionManager(
+						this,
+						options.UserSuppliedConnection,
+						options.SessionConnectionReleaseMode,
+						Interceptor,
+						options.ShouldAutoJoinTransaction);
+				}
+			}
 		}
 
 		#region ISessionImplementor Members
@@ -218,9 +244,11 @@ namespace NHibernate.Impl
 			}
 		}
 
+		// 6.0 TODO: remove virtual.
+		public virtual ConnectionManager ConnectionManager { get; protected set; }
+
 		public abstract IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar);
 		public abstract EventListeners Listeners { get; }
-		public abstract ConnectionManager ConnectionManager { get; }
 		public abstract bool IsEventSource { get; }
 		public abstract object GetEntityUsingInterceptor(EntityKey key);
 		public abstract IPersistenceContext PersistenceContext { get; }
@@ -468,6 +496,45 @@ namespace NHibernate.Impl
 					ConnectionManager.AfterTransaction();
 					AfterTransactionCompletion(success, null);
 				}
+			}
+		}
+
+		/// <summary>
+		/// Begin a NHibernate transaction
+		/// </summary>
+		/// <returns>A NHibernate transaction</returns>
+		public ITransaction BeginTransaction()
+		{
+			using (BeginProcess())
+			{
+				if (TransactionCoordinatorShared)
+				{
+					// Todo : should seriously consider not allowing a txn to begin from a child session
+					//      can always route the request to the root session...
+					Log.Warn("Transaction started on non-root session");
+				}
+
+				return ConnectionManager.BeginTransaction();
+			}
+		}
+
+		/// <summary>
+		/// Begin a NHibernate transaction with the specified isolation level
+		/// </summary>
+		/// <param name="isolationLevel">The isolation level</param>
+		/// <returns>A NHibernate transaction</returns>
+		public ITransaction BeginTransaction(IsolationLevel isolationLevel)
+		{
+			using (BeginProcess())
+			{
+				if (TransactionCoordinatorShared)
+				{
+					// Todo : should seriously consider not allowing a txn to begin from a child session
+					//      can always route the request to the root session...
+					Log.Warn("Transaction started on non-root session");
+				}
+
+				return ConnectionManager.BeginTransaction(isolationLevel);
 			}
 		}
 
