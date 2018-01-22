@@ -413,7 +413,9 @@ namespace NHibernate.Impl
 
 		public abstract void Flush();
 
-		public abstract bool TransactionInProgress { get; }
+		// 6.0 TODO: remove virtual.
+		/// <inheritdoc />
+		public virtual bool TransactionInProgress => ConnectionManager.IsInActiveTransaction;
 
 		#endregion
 

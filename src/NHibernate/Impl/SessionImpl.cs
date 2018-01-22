@@ -1326,11 +1326,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override bool TransactionInProgress
-		{
-			get { return ConnectionManager.IsInActiveTransaction; }
-		}
-
 		public bool IsDirty()
 		{
 			using (BeginProcess())

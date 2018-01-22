@@ -369,11 +369,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override bool TransactionInProgress
-		{
-			get { return Transaction.IsActive; }
-		}
-
 		#region IStatelessSession Members
 
 		public override CacheMode CacheMode
