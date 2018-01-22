@@ -31,6 +31,8 @@ namespace NHibernate.Linq
 	public partial class DefaultQueryProvider : INhQueryProvider, IQueryProviderWithOptions
 	{
 
+		// Since v5.1
+		[Obsolete("Use ExecuteQuery(NhLinqExpression nhLinqExpression, IQuery query) instead")]
 		protected virtual async Task<object> ExecuteQueryAsync(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -54,6 +56,18 @@ namespace NHibernate.Linq
 			}
 
 			return results[0];
+		}
+
+		protected virtual Task<object> ExecuteQueryAsync(NhLinqExpression nhLinqExpression, IQuery query, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			// For avoiding breaking derived classes, call the obsolete method until it is dropped.
+#pragma warning disable 618
+			return ExecuteQueryAsync(nhLinqExpression, query, nhLinqExpression, cancellationToken);
+#pragma warning restore 618
 		}
 
 		public Task<int> ExecuteDmlAsync<T>(QueryMode queryMode, Expression expression, CancellationToken cancellationToken)

@@ -531,17 +531,6 @@ namespace NHibernate.Impl
 			Dispose(true);
 		}
 
-		public override IQuery CreateQuery(IQueryExpression queryExpression)
-		{
-			using (BeginProcess())
-			{
-				var plan = GetHQLQueryPlan(queryExpression, false);
-				var query = new ExpressionQueryImpl(plan.QueryExpression, this, plan.ParameterMetadata);
-				query.SetComment("[expression]");
-				return query;
-			}
-		}
-
 		public override void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results)
 		{
 			List(queryExpression, queryParameters, results, null);
