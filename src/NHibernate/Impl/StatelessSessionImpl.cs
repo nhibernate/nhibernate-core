@@ -443,10 +443,7 @@ namespace NHibernate.Impl
 				{
 					throw new SessionException("Session was already closed!");
 				}
-				if (TransactionCoordinatorShared)
-					ConnectionManager.RemoveDependentSession(this);
-				else
-					ConnectionManager.Close();
+				CloseConnectionManager();
 				SetClosed();
 			}
 		}

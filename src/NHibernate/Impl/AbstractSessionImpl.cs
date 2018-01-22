@@ -407,6 +407,14 @@ namespace NHibernate.Impl
 			closed = true;
 		}
 
+		protected DbConnection CloseConnectionManager()
+		{
+			if (!TransactionCoordinatorShared)
+				return ConnectionManager.Close();
+			ConnectionManager.RemoveDependentSession(this);
+			return null;
+		}
+
 		private void InitQuery(IQuery query, NamedQueryDefinition nqd)
 		{
 			query.SetCacheable(nqd.IsCacheable);

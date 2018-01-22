@@ -278,10 +278,7 @@ namespace NHibernate.Impl
 
 				try
 				{
-					if (!TransactionCoordinatorShared)
-						return ConnectionManager.Close();
-					ConnectionManager.RemoveDependentSession(this);
-					return null;
+					return CloseConnectionManager();
 				}
 				finally
 				{
