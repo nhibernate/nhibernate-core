@@ -205,9 +205,10 @@ namespace NHibernate.Impl
 					SchemaMetadataUpdater.QuoteTableAndColumns(cfg, Dialect);
 				}
 			}
-			catch (NotSupportedException)
+			catch (NotSupportedException ex)
 			{
-				// Ignore if the Dialect does not provide DataBaseSchema 
+				// Ignore if the Dialect does not provide DataBaseSchema
+				log.Warn(ex, "Dialect does not provide DataBaseSchema, but keywords import or auto quoting is enabled.");
 			}
 
 			#region Caches
@@ -339,9 +340,9 @@ namespace NHibernate.Impl
 			{
 				uuid = (string)UuidGenerator.Generate(null, null);
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				throw new AssertionFailure("Could not generate UUID");
+				throw new AssertionFailure("Could not generate UUID", ex);
 			}
 
 			SessionFactoryObjectFactory.AddInstance(uuid, name, this, properties);

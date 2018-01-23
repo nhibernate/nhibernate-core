@@ -1097,7 +1097,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 			catch (Exception e)
 			{
-				throw new SemanticException(e.Message);
+				throw new SemanticException(e.Message, e);
 			}
 		}
 	}

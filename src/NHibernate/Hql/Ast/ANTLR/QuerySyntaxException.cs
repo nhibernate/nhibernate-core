@@ -10,6 +10,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 	{
 		protected QuerySyntaxException() {}
 		public QuerySyntaxException(string message, string hql) : base(message, hql) {}
+		public QuerySyntaxException(string message, string hql, Exception inner) : base(message, hql, inner) {}
 
 		public QuerySyntaxException(string message) : base(message) {}
 		public QuerySyntaxException(string message, Exception inner) : base(message, inner) {}
@@ -24,9 +25,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 		public static QuerySyntaxException Convert(RecognitionException e, string hql)
 		{
 			string positionInfo = e.Line > 0 && e.CharPositionInLine > 0
-			                      	? " near line " + e.Line + ", column " + e.CharPositionInLine
-			                      	: "";
-			return new QuerySyntaxException(e.Message + positionInfo, hql);
+				? " near line " + e.Line + ", column " + e.CharPositionInLine
+				: "";
+			return new QuerySyntaxException(e.Message + positionInfo, hql, e);
 		}
 	}
 }
