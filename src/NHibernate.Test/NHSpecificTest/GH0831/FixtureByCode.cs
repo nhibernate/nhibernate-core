@@ -138,6 +138,8 @@ namespace NHibernate.Test.NHSpecificTest.GH0831
 		[Test]
 		public void CanHandleRemainder()
 		{
+			Assume.That(TestDialect.SupportsModuloOnDecimal, Is.True);
+
 			CanFilter(e => decimal.Remainder(e.EntityValue, 2) == 0);
 			CanFilter(e => decimal.Remainder(2, e.EntityValue) < 1);
 
