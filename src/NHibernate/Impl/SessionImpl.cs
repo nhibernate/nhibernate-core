@@ -121,7 +121,7 @@ namespace NHibernate.Impl
 			{
 				throw new InvalidOperationException("Cannot serialize a Session while connected");
 			}
-			if (TransactionCoordinatorShared)
+			if (IsTransactionCoordinatorShared)
 			{
 				throw new InvalidOperationException("Cannot serialize a Session sharing its transaction coordinator");
 			}

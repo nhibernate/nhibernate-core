@@ -35,7 +35,7 @@ namespace NHibernate.Impl
 		/// <summary>Get the current NHibernate transaction.</summary>
 		public ITransaction Transaction => ConnectionManager.Transaction;
 
-		protected bool TransactionCoordinatorShared { get; }
+		protected bool IsTransactionCoordinatorShared { get; }
 
 		public ITransactionContext TransactionContext
 		{
@@ -63,7 +63,7 @@ namespace NHibernate.Impl
 				if (options is ISharedSessionCreationOptions sharedOptions && sharedOptions.IsTransactionCoordinatorShared)
 				{
 					// NH specific implementation: need to port Hibernate transaction management.
-					TransactionCoordinatorShared = true;
+					IsTransactionCoordinatorShared = true;
 					if (options.UserSuppliedConnection != null)
 						throw new SessionException("Cannot simultaneously share transaction context and specify connection");
 					var connectionManager = sharedOptions.ConnectionManager;
@@ -426,7 +426,7 @@ namespace NHibernate.Impl
 
 		protected DbConnection CloseConnectionManager()
 		{
-			if (!TransactionCoordinatorShared)
+			if (!IsTransactionCoordinatorShared)
 				return ConnectionManager.Close();
 			ConnectionManager.RemoveDependentSession(this);
 			return null;
@@ -532,7 +532,7 @@ namespace NHibernate.Impl
 		{
 			using (BeginProcess())
 			{
-				if (TransactionCoordinatorShared)
+				if (IsTransactionCoordinatorShared)
 				{
 					// Todo : should seriously consider not allowing a txn to begin from a child session
 					//      can always route the request to the root session...
@@ -552,7 +552,7 @@ namespace NHibernate.Impl
 		{
 			using (BeginProcess())
 			{
-				if (TransactionCoordinatorShared)
+				if (IsTransactionCoordinatorShared)
 				{
 					// Todo : should seriously consider not allowing a txn to begin from a child session
 					//      can always route the request to the root session...
