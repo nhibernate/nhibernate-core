@@ -4,6 +4,7 @@ using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace NHibernate.Mapping
@@ -560,7 +561,7 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				return tuplizerImpls == null ? null : new UnmodifiableDictionary<EntityMode, string>(tuplizerImpls);
+				return tuplizerImpls == null ? null : new ReadOnlyDictionary<EntityMode, string>(tuplizerImpls);
 			}
 		}
 
