@@ -1,4 +1,3 @@
-using NHibernate.Linq;
 using NHibernate.Util;
 
 namespace NHibernate.SqlCommand

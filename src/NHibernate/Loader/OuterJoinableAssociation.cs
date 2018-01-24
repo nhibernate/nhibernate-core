@@ -156,7 +156,7 @@ namespace NHibernate.Loader
 			string manyToManyFilter = collection.GetManyToManyFilterFragment(rhsAlias, enabledFilters);
 			SqlString condition = string.Empty.Equals(manyToManyFilter)
 								? on
-								: SqlStringHelper.IsEmpty(on) ? new SqlString(manyToManyFilter) :
+								: SqlStringHelper.IsEmpty(on) ? new SqlString(manyToManyFilter) : 
 									on.Append(" and ").Append(manyToManyFilter);
 
 			outerjoin.AddJoin(joinable.TableName, rhsAlias, lhsColumns, rhsColumns, joinType, condition);

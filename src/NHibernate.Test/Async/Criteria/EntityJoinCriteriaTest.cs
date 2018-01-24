@@ -48,6 +48,25 @@ namespace NHibernate.Test.Criteria
 			}
 		}
 		
+		//check JoinEntityAlias - JoinAlias analog for entity join
+		[Test]
+		public async Task CanJoinNotAssociatedEntity_ExpressionAsync()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntityComplex entityComplex = null;
+				EntityWithNoAssociation root = null;
+				root = await (session.QueryOver(() => root)
+						.JoinEntityAlias(() => entityComplex, () => root.Complex1Id == entityComplex.Id).Take(1)
+						.SingleOrDefaultAsync());
+				entityComplex = await (session.LoadAsync<EntityComplex>(root.Complex1Id));
+
+				Assert.That(NHibernateUtil.IsInitialized(entityComplex), Is.True);
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+		
 		//check JoinEntityQueryOver - JoinQueryOver analog for entity join
 		[Test]
 		public async Task CanJoinEntityQueryOverAsync()
@@ -254,6 +273,61 @@ namespace NHibernate.Test.Criteria
 			}
 		}
 
+		[Test]
+		public async Task EntityJoinFoSubquery_JoinEntityAliasAsync()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntityComplex ej = null;
+				EntityWithNoAssociation root = null;
+
+				EntityComplex ejSub = null;
+				EntityWithNoAssociation rootSub = null;
+
+				var subquery = QueryOver.Of<EntityWithNoAssociation>(() => rootSub)
+										.JoinEntityAlias(() => ejSub, () => rootSub.Complex1Id == ejSub.Id)
+										.Where(r => ejSub.Name == ej.Name)
+										.Select(x => ejSub.Id);
+
+				root = await (session.QueryOver(() => root)
+							.JoinEntityAlias(() => ej, Restrictions.Where(() => root.Complex1Id == ej.Id))
+							.WithSubquery.WhereExists(subquery)
+							.SingleOrDefaultAsync());
+				ej = await (session.LoadAsync<EntityComplex>(root.Complex1Id));
+
+				Assert.That(NHibernateUtil.IsInitialized(ej), Is.True);
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+		
+		[Test]
+		public async Task EntityJoinFoSubquery_JoinQueryOverAsync()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntityComplex ej = null;
+				EntityWithNoAssociation root = null;
+
+				EntityComplex ejSub = null;
+				EntityWithNoAssociation rootSub = null;
+
+				var subquery = QueryOver.Of<EntityWithNoAssociation>(() => rootSub)
+										.JoinEntityQueryOver(() => ejSub, () => rootSub.Complex1Id == ejSub.Id)
+										.Where(x => x.Name == ej.Name)
+										.Select(x => ejSub.Id);
+
+				root = await (session.QueryOver(() => root)
+							.JoinEntityAlias(() => ej, Restrictions.Where(() => root.Complex1Id == ej.Id))
+							.WithSubquery.WhereExists(subquery)
+							.SingleOrDefaultAsync());
+				ej = await (session.LoadAsync<EntityComplex>(root.Complex1Id));
+
+				Assert.That(NHibernateUtil.IsInitialized(ej), Is.True);
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
 		#region Test Setup
 
 		protected override HbmMapping GetMappings()
