@@ -42,7 +42,6 @@ namespace NHibernate.Impl
 
 		private readonly Dictionary<string, ICriteria> subcriteriaByPath = new Dictionary<string, ICriteria>();
 		private readonly Dictionary<string, ICriteria> subcriteriaByAlias = new Dictionary<string, ICriteria>();
-		
 		private readonly string entityOrClassName;
 
 		// Projection Fields
@@ -72,7 +71,7 @@ namespace NHibernate.Impl
 			rootAlias = alias;
 			subcriteriaByAlias[alias] = this;
 		}
-		
+
 		public ISessionImplementor Session
 		{
 			get { return session; }
@@ -676,7 +675,7 @@ namespace NHibernate.Impl
 				: this(root, parent, path, null, joinType) { }
 
 			/// <summary>
-			/// Entity name for "Entity Join" - join for enitity with not mapped association
+			/// Entity name for "Entity Join" - join for entity with not mapped association
 			/// </summary>
 			public string JoinEntityName { get; }
 

@@ -452,7 +452,7 @@ namespace NHibernate.Loader.Criteria
 			{
 				last = entityJoinInfo.Persister;
 				lastEntity = (IPropertyMapping) last;
-				++i;
+				i++;
 			}
 
 			string componentPath = string.Empty;
@@ -500,7 +500,7 @@ namespace NHibernate.Loader.Criteria
 			if (entityJoins.TryGetValue(tokens[0], out var entityJoinInfo))
 			{
 				provider = new EntityCriteriaInfoProvider(entityJoinInfo.Persister);
-				++i;
+				i++;
 			}
 
 			string componentPath = string.Empty;
@@ -528,10 +528,7 @@ namespace NHibernate.Loader.Criteria
 					else
 					{
 						provider = new EntityCriteriaInfoProvider(
-							GetQueryablePersister(
-								atype.GetAssociatedEntityName(
-									sessionFactory)
-							));
+							GetQueryablePersister(atype.GetAssociatedEntityName(sessionFactory)));
 					}
 
 					componentPath = string.Empty;
