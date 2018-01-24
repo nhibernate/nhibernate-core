@@ -549,7 +549,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					// ignore it; the incoming property could not be found so we
 					// cannot be sure what to do here.  At the very least, the
 					// safest is to simply not apply any dereference toggling...
-					Log.Info(ex, "Unable to find property {0}, no dereference will be handled for it.", propertyName);
+					Log.Debug(ex, "Unable to find property {0}, no dereference will be handled for it.", propertyName);
 				}
 			}
 		}
