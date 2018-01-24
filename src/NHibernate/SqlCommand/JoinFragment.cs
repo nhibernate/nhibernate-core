@@ -58,11 +58,25 @@ namespace NHibernate.SqlCommand
 			}
 		}
 
+		/// <summary>
+		/// Adds condition to buffer without adding " and " prefix. Existing " and" prefix is removed
+		/// </summary>
+		protected void AddBareCondition(SqlStringBuilder buffer, SqlString condition)
+		{
+			if (SqlStringHelper.IsEmpty(condition))
+				return;
+			
+			buffer.Add(
+				condition.StartsWithCaseInsensitive(" and ")
+					? condition.Substring(4)
+					: condition);
+		}
+
 		protected bool AddCondition(SqlStringBuilder buffer, SqlString on)
 		{
 			if (SqlStringHelper.IsNotEmpty(on))
 			{
-				if (buffer.Count > 0 && !on.StartsWithCaseInsensitive(" and"))
+				if (!on.StartsWithCaseInsensitive(" and"))
 				{
 					buffer.Add(" and ");
 				}

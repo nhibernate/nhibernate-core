@@ -42,7 +42,7 @@ namespace NHibernate.SqlCommand
 
 			if (fkColumns.Length == 0)
 			{
-				_fromFragment.Add(on);
+				AddBareCondition(_fromFragment, on);
 				return;
 			}
 

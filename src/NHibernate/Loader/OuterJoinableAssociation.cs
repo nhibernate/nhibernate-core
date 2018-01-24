@@ -34,12 +34,7 @@ namespace NHibernate.Loader
 			rhsColumns = JoinHelper.GetRHSColumnNames(joinableType, factory);
 			on = new SqlString(joinableType.GetOnCondition(rhsAlias, factory, enabledFilters));
 			if (SqlStringHelper.IsNotEmpty(withClause))
-			{
-				on = on.Count == 0
-					? on.Append(withClause)
-					: on.Append(" and ( ").Append(withClause).Append(" )");
-			}
-
+				on = on.Append(" and ( ").Append(withClause).Append(" )");
 			this.enabledFilters = enabledFilters; // needed later for many-to-many/filter application
 		}
 
@@ -161,7 +156,7 @@ namespace NHibernate.Loader
 			string manyToManyFilter = collection.GetManyToManyFilterFragment(rhsAlias, enabledFilters);
 			SqlString condition = string.Empty.Equals(manyToManyFilter)
 								? on
-								: SqlStringHelper.IsEmpty(on) ? new SqlString(manyToManyFilter) : 
+								: SqlStringHelper.IsEmpty(on) ? new SqlString(manyToManyFilter) :
 									on.Append(" and ").Append(manyToManyFilter);
 
 			outerjoin.AddJoin(joinable.TableName, rhsAlias, lhsColumns, rhsColumns, joinType, condition);
