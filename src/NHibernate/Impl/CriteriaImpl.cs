@@ -372,7 +372,7 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public ICriteria CreateEntityCriteria(string alias, JoinType joinType, ICriterion withClause, string entityName)
+		public ICriteria CreateEntityCriteria(string alias, ICriterion withClause, JoinType joinType, string entityName)
 		{
 			return new Subcriteria(this, this, alias, alias, joinType, withClause, entityName);
 		}

@@ -39,7 +39,7 @@ namespace NHibernate.Test.Criteria
 				EntityComplex entityComplex = null;
 				EntityWithNoAssociation root = null;
 				root = await (session.QueryOver<EntityWithNoAssociation>(() => root)
-						.JoinEntityAlias(() => entityComplex, JoinType.InnerJoin, Restrictions.Where(() => root.Complex1Id == entityComplex.Id)).Take(1)
+						.JoinEntityAlias(() => entityComplex, Restrictions.Where(() => root.Complex1Id == entityComplex.Id), JoinType.InnerJoin).Take(1)
 						.SingleOrDefaultAsync());
 				entityComplex = await (session.LoadAsync<EntityComplex>(root.Complex1Id));
 
@@ -58,7 +58,7 @@ namespace NHibernate.Test.Criteria
 				EntityComplex ejQueryOver = null;
 				EntityWithNoAssociation root = null;
 				root = await (session.QueryOver<EntityWithNoAssociation>(() => root)
-							.JoinEntityQueryOver( ()=> ejQueryOver, JoinType.InnerJoin, Restrictions.Where(() => root.Complex1Id == ejQueryOver.Id))
+							.JoinEntityQueryOver(() => ejQueryOver, Restrictions.Where(() => root.Complex1Id == ejQueryOver.Id), JoinType.InnerJoin)
 							.Take(1)
 							.SingleOrDefaultAsync());
 				ejQueryOver = await (session.LoadAsync<EntityComplex>(root.Complex1Id));
@@ -78,7 +78,7 @@ namespace NHibernate.Test.Criteria
 				EntityComplex ejComplex = null;
 				EntityWithNoAssociation root = null;
 				root = await (session.QueryOver<EntityWithNoAssociation>(() => root)
-							.JoinEntityQueryOver( ()=> ejComplex, JoinType.InnerJoin, Restrictions.Where(() => root.Complex1Id == ejComplex.Id))
+							.JoinEntityQueryOver(() => ejComplex, Restrictions.Where(() => root.Complex1Id == ejComplex.Id), JoinType.InnerJoin)
 							.JoinQueryOver(ej => ej.Child1)
 							.Take(1)
 							.SingleOrDefaultAsync());
@@ -101,7 +101,7 @@ namespace NHibernate.Test.Criteria
 				EntityComplex ejComplex = null;
 				EntityWithNoAssociation root = null;
 				var name = await (session.QueryOver<EntityWithNoAssociation>(() => root)
-							.JoinEntityQueryOver(() => ejComplex, JoinType.InnerJoin, Restrictions.Where(() => root.Complex1Id == ejComplex.Id))
+							.JoinEntityQueryOver(() => ejComplex, Restrictions.Where(() => root.Complex1Id == ejComplex.Id), JoinType.InnerJoin)
 							.Select((e) => ejComplex.Name)
 							.Take(1)
 							.SingleOrDefaultAsync<string>());
@@ -124,7 +124,7 @@ namespace NHibernate.Test.Criteria
 				var r = await (session
 						.QueryOver<EntityComplex>(() => root)
 						.JoinAlias(c => c.SameTypeChild, () => st)
-						.JoinEntityAlias(() => ejChild1, JoinType.InnerJoin, Restrictions.Where(() => ejChild1.Id == root.Child1.Id))
+						.JoinEntityAlias(() => ejChild1, Restrictions.Where(() => ejChild1.Id == root.Child1.Id), JoinType.InnerJoin)
 						.Select(
 							Projections.RootEntity(),
 							Projections.Entity(() => st),
@@ -159,10 +159,10 @@ namespace NHibernate.Test.Criteria
 				EntitySimpleChild ejLevel2OnEntityComplexForEjLevel1 = null;
 				var obj = await (session
 						.QueryOver<EntityComplex>(() => root)
-						.JoinEntityAlias(() => ejLevel1, JoinType.LeftOuterJoin, Restrictions.Where(() => ejLevel1.Id == root.SameTypeChild.Id && root.Id != null))
+						.JoinEntityAlias(() => ejLevel1, Restrictions.Where(() => ejLevel1.Id == root.SameTypeChild.Id && root.Id != null), JoinType.LeftOuterJoin)
 						.JoinAlias(() => ejLevel1.Child1, () => customChildForEjLevel1, JoinType.InnerJoin)
 						.JoinAlias(() => ejLevel1.SameTypeChild, () => entityComplexForEjLevel1, JoinType.LeftOuterJoin)
-						.JoinEntityAlias(() => ejLevel2OnEntityComplexForEjLevel1, JoinType.InnerJoin, Restrictions.Where(() => entityComplexForEjLevel1.Id == ejLevel2OnEntityComplexForEjLevel1.Id))
+						.JoinEntityAlias(() => ejLevel2OnEntityComplexForEjLevel1, Restrictions.Where(() => entityComplexForEjLevel1.Id == ejLevel2OnEntityComplexForEjLevel1.Id), JoinType.InnerJoin)
 						.Where(() => customChildForEjLevel1.Id != null && ejLevel2OnEntityComplexForEjLevel1.Id != null)
 						.Take(1)
 						.SingleOrDefaultAsync<object>());
@@ -179,7 +179,7 @@ namespace NHibernate.Test.Criteria
 				EntityWithNoAssociation root = null;
 				root = await (session
 								.QueryOver<EntityWithNoAssociation>(() => root)
-								.JoinEntityAlias(() => ejComposite, JoinType.InnerJoin, Restrictions.Where(() => root.Composite1Key1 == ejComposite.Key.Id1 && root.Composite1Key2 == ejComposite.Key.Id2 ))
+								.JoinEntityAlias(() => ejComposite, Restrictions.Where(() => root.Composite1Key1 == ejComposite.Key.Id1 && root.Composite1Key2 == ejComposite.Key.Id2), JoinType.InnerJoin)
 								.Take(1).SingleOrDefaultAsync());
 				var composite = await (session.LoadAsync<EntityWithCompositeId>(_entityWithCompositeId.Key));
 
@@ -199,7 +199,7 @@ namespace NHibernate.Test.Criteria
 				EntityWithNoAssociation root = null;
 				root = await (session.QueryOver<EntityWithNoAssociation>(() => root)
 							//add some non existent
-							.JoinEntityAlias(() => ejLeftNull, JoinType.LeftOuterJoin, Restrictions.Where(() => ejLeftNull.Id == null))
+							.JoinEntityAlias(() => ejLeftNull, Restrictions.Where(() => ejLeftNull.Id == null), JoinType.LeftOuterJoin)
 							.Take(1)
 							.SingleOrDefaultAsync());
 
@@ -219,7 +219,7 @@ namespace NHibernate.Test.Criteria
 				EntityWithNoAssociation root = null;
 				var objs = await (session.QueryOver<EntityWithNoAssociation>(() => root)
 							//add some non existent
-							.JoinEntityAlias(() => ejLeftNull, JoinType.LeftOuterJoin, Restrictions.Where(() => ejLeftNull.Id == null))
+							.JoinEntityAlias(() => ejLeftNull, Restrictions.Where(() => ejLeftNull.Id == null), JoinType.LeftOuterJoin)
 							.Select((e) => root.AsEntity(), e => ejLeftNull.AsEntity())
 							.Take(1)
 							.SingleOrDefaultAsync<object[]>());
@@ -243,7 +243,7 @@ namespace NHibernate.Test.Criteria
 				EntityCustomEntityName ejCustomEntity= null;
 				EntityWithNoAssociation root = null;
 				root = await (session.QueryOver<EntityWithNoAssociation>(() => root)
-							.JoinEntityAlias(() => ejCustomEntity, JoinType.InnerJoin, Restrictions.Where(() => ejCustomEntity.Id == root.CustomEntityNameId), customEntityName)
+							.JoinEntityAlias(() => ejCustomEntity, Restrictions.Where(() => ejCustomEntity.Id == root.CustomEntityNameId), JoinType.InnerJoin, customEntityName)
 							.Take(1)
 							.SingleOrDefaultAsync());
 

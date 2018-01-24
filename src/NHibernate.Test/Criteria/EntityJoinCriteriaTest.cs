@@ -28,7 +28,26 @@ namespace NHibernate.Test.Criteria
 				EntityComplex entityComplex = null;
 				EntityWithNoAssociation root = null;
 				root = session.QueryOver<EntityWithNoAssociation>(() => root)
-						.JoinEntityAlias(() => entityComplex, JoinType.InnerJoin, Restrictions.Where(() => root.Complex1Id == entityComplex.Id)).Take(1)
+						.JoinEntityAlias(() => entityComplex, Restrictions.Where(() => root.Complex1Id == entityComplex.Id), JoinType.InnerJoin).Take(1)
+						.SingleOrDefault();
+				entityComplex = session.Load<EntityComplex>(root.Complex1Id);
+
+				Assert.That(NHibernateUtil.IsInitialized(entityComplex), Is.True);
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+		
+		//check JoinEntityAlias - JoinAlias analog for entity join
+		[Test]
+		public void CanJoinNotAssociatedEntity_Expression()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntityComplex entityComplex = null;
+				EntityWithNoAssociation root = null;
+				root = session.QueryOver(() => root)
+						.JoinEntityAlias(() => entityComplex, () => root.Complex1Id == entityComplex.Id).Take(1)
 						.SingleOrDefault();
 				entityComplex = session.Load<EntityComplex>(root.Complex1Id);
 
@@ -47,7 +66,7 @@ namespace NHibernate.Test.Criteria
 				EntityComplex ejQueryOver = null;
 				EntityWithNoAssociation root = null;
 				root = session.QueryOver<EntityWithNoAssociation>(() => root)
-							.JoinEntityQueryOver( ()=> ejQueryOver, JoinType.InnerJoin, Restrictions.Where(() => root.Complex1Id == ejQueryOver.Id))
+							.JoinEntityQueryOver(() => ejQueryOver, Restrictions.Where(() => root.Complex1Id == ejQueryOver.Id), JoinType.InnerJoin)
 							.Take(1)
 							.SingleOrDefault();
 				ejQueryOver = session.Load<EntityComplex>(root.Complex1Id);
@@ -67,7 +86,7 @@ namespace NHibernate.Test.Criteria
 				EntityComplex ejComplex = null;
 				EntityWithNoAssociation root = null;
 				root = session.QueryOver<EntityWithNoAssociation>(() => root)
-							.JoinEntityQueryOver( ()=> ejComplex, JoinType.InnerJoin, Restrictions.Where(() => root.Complex1Id == ejComplex.Id))
+							.JoinEntityQueryOver(() => ejComplex, Restrictions.Where(() => root.Complex1Id == ejComplex.Id), JoinType.InnerJoin)
 							.JoinQueryOver(ej => ej.Child1)
 							.Take(1)
 							.SingleOrDefault();
@@ -90,7 +109,7 @@ namespace NHibernate.Test.Criteria
 				EntityComplex ejComplex = null;
 				EntityWithNoAssociation root = null;
 				var name = session.QueryOver<EntityWithNoAssociation>(() => root)
-							.JoinEntityQueryOver(() => ejComplex, JoinType.InnerJoin, Restrictions.Where(() => root.Complex1Id == ejComplex.Id))
+							.JoinEntityQueryOver(() => ejComplex, Restrictions.Where(() => root.Complex1Id == ejComplex.Id), JoinType.InnerJoin)
 							.Select((e) => ejComplex.Name)
 							.Take(1)
 							.SingleOrDefault<string>();
@@ -113,7 +132,7 @@ namespace NHibernate.Test.Criteria
 				var r = session
 						.QueryOver<EntityComplex>(() => root)
 						.JoinAlias(c => c.SameTypeChild, () => st)
-						.JoinEntityAlias(() => ejChild1, JoinType.InnerJoin, Restrictions.Where(() => ejChild1.Id == root.Child1.Id))
+						.JoinEntityAlias(() => ejChild1, Restrictions.Where(() => ejChild1.Id == root.Child1.Id), JoinType.InnerJoin)
 						.Select(
 							Projections.RootEntity(),
 							Projections.Entity(() => st),
@@ -148,10 +167,10 @@ namespace NHibernate.Test.Criteria
 				EntitySimpleChild ejLevel2OnEntityComplexForEjLevel1 = null;
 				var obj = session
 						.QueryOver<EntityComplex>(() => root)
-						.JoinEntityAlias(() => ejLevel1, JoinType.LeftOuterJoin, Restrictions.Where(() => ejLevel1.Id == root.SameTypeChild.Id && root.Id != null))
+						.JoinEntityAlias(() => ejLevel1, Restrictions.Where(() => ejLevel1.Id == root.SameTypeChild.Id && root.Id != null), JoinType.LeftOuterJoin)
 						.JoinAlias(() => ejLevel1.Child1, () => customChildForEjLevel1, JoinType.InnerJoin)
 						.JoinAlias(() => ejLevel1.SameTypeChild, () => entityComplexForEjLevel1, JoinType.LeftOuterJoin)
-						.JoinEntityAlias(() => ejLevel2OnEntityComplexForEjLevel1, JoinType.InnerJoin, Restrictions.Where(() => entityComplexForEjLevel1.Id == ejLevel2OnEntityComplexForEjLevel1.Id))
+						.JoinEntityAlias(() => ejLevel2OnEntityComplexForEjLevel1, Restrictions.Where(() => entityComplexForEjLevel1.Id == ejLevel2OnEntityComplexForEjLevel1.Id), JoinType.InnerJoin)
 						.Where(() => customChildForEjLevel1.Id != null && ejLevel2OnEntityComplexForEjLevel1.Id != null)
 						.Take(1)
 						.SingleOrDefault<object>();
@@ -168,7 +187,7 @@ namespace NHibernate.Test.Criteria
 				EntityWithNoAssociation root = null;
 				root = session
 								.QueryOver<EntityWithNoAssociation>(() => root)
-								.JoinEntityAlias(() => ejComposite, JoinType.InnerJoin, Restrictions.Where(() => root.Composite1Key1 == ejComposite.Key.Id1 && root.Composite1Key2 == ejComposite.Key.Id2 ))
+								.JoinEntityAlias(() => ejComposite, Restrictions.Where(() => root.Composite1Key1 == ejComposite.Key.Id1 && root.Composite1Key2 == ejComposite.Key.Id2), JoinType.InnerJoin)
 								.Take(1).SingleOrDefault();
 				var composite = session.Load<EntityWithCompositeId>(_entityWithCompositeId.Key);
 
@@ -188,7 +207,7 @@ namespace NHibernate.Test.Criteria
 				EntityWithNoAssociation root = null;
 				root = session.QueryOver<EntityWithNoAssociation>(() => root)
 							//add some non existent
-							.JoinEntityAlias(() => ejLeftNull, JoinType.LeftOuterJoin, Restrictions.Where(() => ejLeftNull.Id == null))
+							.JoinEntityAlias(() => ejLeftNull, Restrictions.Where(() => ejLeftNull.Id == null), JoinType.LeftOuterJoin)
 							.Take(1)
 							.SingleOrDefault();
 
@@ -208,7 +227,7 @@ namespace NHibernate.Test.Criteria
 				EntityWithNoAssociation root = null;
 				var objs = session.QueryOver<EntityWithNoAssociation>(() => root)
 							//add some non existent
-							.JoinEntityAlias(() => ejLeftNull, JoinType.LeftOuterJoin, Restrictions.Where(() => ejLeftNull.Id == null))
+							.JoinEntityAlias(() => ejLeftNull, Restrictions.Where(() => ejLeftNull.Id == null), JoinType.LeftOuterJoin)
 							.Select((e) => root.AsEntity(), e => ejLeftNull.AsEntity())
 							.Take(1)
 							.SingleOrDefault<object[]>();
@@ -232,7 +251,7 @@ namespace NHibernate.Test.Criteria
 				EntityCustomEntityName ejCustomEntity= null;
 				EntityWithNoAssociation root = null;
 				root = session.QueryOver<EntityWithNoAssociation>(() => root)
-							.JoinEntityAlias(() => ejCustomEntity, JoinType.InnerJoin, Restrictions.Where(() => ejCustomEntity.Id == root.CustomEntityNameId), customEntityName)
+							.JoinEntityAlias(() => ejCustomEntity, Restrictions.Where(() => ejCustomEntity.Id == root.CustomEntityNameId), JoinType.InnerJoin, customEntityName)
 							.Take(1)
 							.SingleOrDefault();
 
@@ -243,6 +262,61 @@ namespace NHibernate.Test.Criteria
 			}
 		}
 
+		[Test]
+		public void EntityJoinFoSubquery_JoinEntityAlias()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntityComplex ej = null;
+				EntityWithNoAssociation root = null;
+
+				EntityComplex ejSub = null;
+				EntityWithNoAssociation rootSub = null;
+
+				var subquery = QueryOver.Of<EntityWithNoAssociation>(() => rootSub)
+										.JoinEntityAlias(() => ejSub, () => rootSub.Complex1Id == ejSub.Id)
+										.Where(r => ejSub.Name == ej.Name)
+										.Select(x => ejSub.Id);
+
+				root = session.QueryOver(() => root)
+							.JoinEntityAlias(() => ej, Restrictions.Where(() => root.Complex1Id == ej.Id))
+							.WithSubquery.WhereExists(subquery)
+							.SingleOrDefault();
+				ej = session.Load<EntityComplex>(root.Complex1Id);
+
+				Assert.That(NHibernateUtil.IsInitialized(ej), Is.True);
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+		
+		[Test]
+		public void EntityJoinFoSubquery_JoinQueryOver()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntityComplex ej = null;
+				EntityWithNoAssociation root = null;
+
+				EntityComplex ejSub = null;
+				EntityWithNoAssociation rootSub = null;
+
+				var subquery = QueryOver.Of<EntityWithNoAssociation>(() => rootSub)
+										.JoinEntityQueryOver(() => ejSub, () => rootSub.Complex1Id == ejSub.Id)
+										.Where(x => x.Name == ej.Name)
+										.Select(x => ejSub.Id);
+
+				root = session.QueryOver(() => root)
+							.JoinEntityAlias(() => ej, Restrictions.Where(() => root.Complex1Id == ej.Id))
+							.WithSubquery.WhereExists(subquery)
+							.SingleOrDefault();
+				ej = session.Load<EntityComplex>(root.Complex1Id);
+
+				Assert.That(NHibernateUtil.IsInitialized(ej), Is.True);
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
 		#region Test Setup
 
 		protected override HbmMapping GetMappings()

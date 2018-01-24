@@ -4,14 +4,15 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Criterion
 {
-	//TODO: Make interface more flexible for changes (maybe it should take only 2 params alias + EntityJoinConfig)
+	// 6.0 TODO: merge into IQueryOver.
 	public interface ISupportEntityJoinQueryOver
 	{
-		void JoinEntityAlias<U>(Expression<Func<U>> alias, JoinType joinType, ICriterion withClause, string entityName);
+		void JoinEntityAlias<U>(Expression<Func<U>> alias, ICriterion withClause, JoinType joinType, string entityName);
 	}
-	
+
+	// 6.0 TODO: merge into IQueryOver<TRoot,TSubType>.
 	public interface ISupportEntityJoinQueryOver<TRoot>: ISupportEntityJoinQueryOver
 	{
-		IQueryOver<TRoot, U> JoinEntityQueryOver<U>(Expression<Func<U>> alias, JoinType joinType, ICriterion withClause, string entityName);
+		IQueryOver<TRoot, U> JoinEntityQueryOver<U>(Expression<Func<U>> alias, ICriterion withClause, JoinType joinType, string entityName);
 	}
 }
