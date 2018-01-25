@@ -1439,7 +1439,7 @@ namespace NHibernate.Engine
 				}
 				catch (HibernateException he)
 				{
-					throw new InvalidOperationException(he.Message);
+					throw new InvalidOperationException(he.Message, he);
 				}
 			}
 
@@ -1467,7 +1467,7 @@ namespace NHibernate.Engine
 				}
 				catch (MappingException me)
 				{
-					throw new InvalidOperationException(me.Message);
+					throw new InvalidOperationException(me.Message, me);
 				}
 			}
 		}

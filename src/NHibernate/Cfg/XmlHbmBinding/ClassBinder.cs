@@ -371,9 +371,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					string entityName = GetClassName(metaValue.@class, mappings);
 					values[value] = entityName;
 				}
-				catch (InvalidCastException)
+				catch (InvalidCastException ice)
 				{
-					throw new MappingException("meta-type was not an IDiscriminatorType: " + metaType.Name);
+					throw new MappingException("meta-type was not an IDiscriminatorType: " + metaType.Name, ice);
 				}
 				catch (HibernateException he)
 				{
