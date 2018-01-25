@@ -69,42 +69,5 @@ namespace NHibernate.Test.BulkManipulation
 			}
 
 		}
-
-		[TestCase("TestClass", true, 1, 1, 1)]
-		[TestCase("AnotherClass", true, 1, 0, 0)]
-		[TestCase("AnotherClass,TestClass", true, 2, 1, 1)]
-		[TestCase("TestClass", false, 1, 0, 1)]
-		[TestCase("", true, 1, 1, 1)]
-		[Test]
-		public async Task InitAsync_EvictsFromCacheAsync(string querySpaces, bool persisterHasCache, int expectedPropertySpaceLength, int expectedEntityEvictionCount, int expectedCollectionEvictionCount)
-		{
-			
-			_persister.HasCache.Returns(persisterHasCache);
-
-			var target = new BulkOperationCleanupAction(_session, new HashSet<string>(querySpaces.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)));
-
-			await target.InitAsync(CancellationToken.None);
-
-			Assert.AreEqual(expectedPropertySpaceLength, target.PropertySpaces.Length);
-
-			if (expectedEntityEvictionCount > 0)
-			{
-				await _factory.Received(1).EvictEntityAsync(Arg.Is<IEnumerable<string>>(x => x.Count() == expectedEntityEvictionCount));
-			}
-			else
-			{
-				await _factory.DidNotReceive().EvictEntityAsync(Arg.Any<IEnumerable<string>>());
-			}
-
-			if (expectedCollectionEvictionCount > 0)
-			{
-				await _factory.Received(1).EvictCollectionAsync(Arg.Is<IEnumerable<string>>(x => x.Count() == expectedCollectionEvictionCount));
-			}
-			else
-			{
-				await _factory.DidNotReceive().EvictCollectionAsync(Arg.Any<IEnumerable<string>>());
-			}
-
-		}
 	}
 }

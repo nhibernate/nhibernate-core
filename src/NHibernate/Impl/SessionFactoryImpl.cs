@@ -926,7 +926,7 @@ namespace NHibernate.Impl
 
 			foreach (var cacheGroup in entityNames.Select(GetEntityPersister).Where(x => x.HasCache).GroupBy(x => x.Cache))
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					foreach (var p in cacheGroup)
 					{
@@ -1000,7 +1000,7 @@ namespace NHibernate.Impl
 			foreach (var cacheGroup in roleNames.Select(GetCollectionPersister).Where(x => x.HasCache).GroupBy(x => x.Cache))
 			{
 			
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
 					foreach (var p in cacheGroup)
 					{

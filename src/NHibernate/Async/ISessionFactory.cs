@@ -51,7 +51,6 @@ namespace NHibernate
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		Task EvictAsync(IEnumerable<System.Type> persistentClasses, CancellationToken cancellationToken = default(CancellationToken));
 
-
 		/// <summary>
 		/// Evict an entry from the process-level cache.  This method occurs outside
 		/// of any transaction; it performs an immediate "hard" remove, so does not respect
@@ -76,7 +75,6 @@ namespace NHibernate
 		/// </summary>
 		Task EvictEntityAsync(IEnumerable<string> entityNames, CancellationToken cancellationToken = default(CancellationToken));
 
-
 		/// <summary> 
 		/// Evict an entry from the second-level  cache. This method occurs outside
 		/// of any transaction; it performs an immediate "hard" remove, so does not respect
@@ -92,7 +90,6 @@ namespace NHibernate
 		/// <param name="roleName"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		Task EvictCollectionAsync(string roleName, CancellationToken cancellationToken = default(CancellationToken));
-
 
 		/// <summary>
 		/// Evict all entries from the process-level cache.  This method occurs outside

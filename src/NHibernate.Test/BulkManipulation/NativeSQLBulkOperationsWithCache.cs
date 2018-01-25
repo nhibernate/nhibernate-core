@@ -45,7 +45,7 @@ namespace NHibernate.Test.BulkManipulation
 					s.CreateSQLQuery(ssql).ExecuteUpdate();
 					t.Commit();
 
-					Assert.AreEqual(2, clearCalls.Count);
+					Assert.AreEqual(1, clearCalls.Count);
 				}
 
 				clearCalls.Clear();

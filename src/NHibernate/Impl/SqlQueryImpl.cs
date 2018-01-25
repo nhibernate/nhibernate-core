@@ -172,8 +172,11 @@ namespace NHibernate.Impl
 
 		public NativeSQLQuerySpecification GenerateQuerySpecification(IDictionary<string, TypedValue> parameters)
 		{
-			var allQuerySpaces=new HashSet<string>(querySpaces ?? new List<string>());
-			allQuerySpaces.UnionWith(GetSynchronizedQuerySpaces());
+			var allQuerySpaces=new List<string>(GetSynchronizedQuerySpaces());
+			if (querySpaces != null)
+			{
+				allQuerySpaces.AddRange(querySpaces);
+			}
 			return new NativeSQLQuerySpecification(
 				ExpandParameterLists(parameters),
 				GetQueryReturns(),

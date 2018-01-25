@@ -171,6 +171,8 @@
   analyzation:
     methodConversion:
     - conversion: Copy
+      name: AfterTransactionCompletionProcess_EvictsFromCache
+    - conversion: Copy
       hasAttributeName: OneTimeSetUpAttribute
     - conversion: Copy
       hasAttributeName: OneTimeTearDownAttribute

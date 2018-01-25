@@ -55,9 +55,9 @@ namespace NHibernate.Test
 			return ActualFactory.EvictAsync(persistentClass, cancellationToken);
 		}
 
-		Task ISessionFactory.EvictAsync(IEnumerable<System.Type> persistentClass, CancellationToken cancellationToken)
+		Task ISessionFactory.EvictAsync(IEnumerable<System.Type> persistentClasses, CancellationToken cancellationToken)
 		{
-			return ActualFactory.EvictAsync(persistentClass, cancellationToken);
+			return ActualFactory.EvictAsync(persistentClasses, cancellationToken);
 		}
 
 		Task ISessionFactory.EvictAsync(System.Type persistentClass, object id, CancellationToken cancellationToken)

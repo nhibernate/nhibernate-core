@@ -34,19 +34,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 
 		public abstract Task<int> ExecuteAsync(QueryParameters parameters, ISessionImplementor session, CancellationToken cancellationToken);
 
-		protected virtual async Task CoordinateSharedCacheCleanupAsync(ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			var action = new BulkOperationCleanupAction(session, AffectedQueryables);
-
-			await (action.InitAsync(cancellationToken)).ConfigureAwait(false);
-
-			if (session.IsEventSource)
-			{
-				((IEventSource)session).ActionQueue.AddAction(action);
-			}
-		}
-
 		protected virtual async Task CreateTemporaryTableIfNecessaryAsync(IQueryable persister, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();

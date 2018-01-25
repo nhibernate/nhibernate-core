@@ -14,12 +14,13 @@ using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Metadata;
 using NHibernate.Persister.Entity;
+using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Action
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class BulkOperationCleanupAction: IExecutable
+	public partial class BulkOperationCleanupAction : IExecutable
 	{
 
 		#region IExecutable Members
@@ -58,31 +59,8 @@ namespace NHibernate.Action
 			}
 		}
 
-		private async Task EvictCollectionRegionsAsync(CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			if (affectedCollectionRoles != null && affectedCollectionRoles.Any())
-			{
-				await (session.Factory.EvictCollectionAsync(affectedCollectionRoles, cancellationToken)).ConfigureAwait(false);
-			}
-		}
-
-		private async Task EvictEntityRegionsAsync(CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			if (affectedEntityNames != null && affectedEntityNames.Any())
-			{
-				await (session.Factory.EvictEntityAsync(affectedEntityNames, cancellationToken)).ConfigureAwait(false);
-			}
-		}
-
 		#endregion
 
-		public virtual async Task InitAsync(CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			await (EvictEntityRegionsAsync(cancellationToken)).ConfigureAwait(false);
-			await (EvictCollectionRegionsAsync(cancellationToken)).ConfigureAwait(false);
-		}
+		
 	}
 }
