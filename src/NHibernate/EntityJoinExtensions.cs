@@ -10,8 +10,7 @@ namespace NHibernate
 	{
 		public static TThis JoinEntityAlias<TThis, TEntity>(this TThis queryOver, Expression<Func<TEntity>> alias, ICriterion withClause, JoinType joinType = JoinType.InnerJoin, string entityName = null) where TThis : IQueryOver
 		{
-			var q = CastOrThrow<ISupportEntityJoinQueryOver>(queryOver);
-			q.JoinEntityAlias(alias, withClause, joinType, entityName);
+			CreateEntityCriteria(queryOver.UnderlyingCriteria, alias, withClause, joinType, entityName);
 			return queryOver;
 		}
 
@@ -37,10 +36,15 @@ namespace NHibernate
 			return criteria;
 		}
 
-		public static ICriteria CreateEntityCriteria(this ICriteria criteria, string alias, ICriterion withClause, JoinType joinType, string entityName)
+		public static ICriteria CreateEntityCriteria(this ICriteria criteria, string alias, ICriterion withClause, JoinType joinType = JoinType.InnerJoin, string entityName = null)
 		{
 			var c = CastOrThrow<ISupportEntityJoinCriteria>(criteria);
 			return c.CreateEntityCriteria(alias, withClause, joinType, entityName);
+		}
+
+		public static ICriteria CreateEntityCriteria<U>(this ICriteria criteria, Expression<Func<U>> alias, ICriterion withClause, JoinType joinType = JoinType.InnerJoin, string entityName = null)
+		{
+			return CreateEntityCriteria(criteria, ExpressionProcessor.FindMemberExpression(alias.Body), withClause, joinType, entityName ?? typeof(U).FullName);
 		}
 
 		private static T CastOrThrow<T>(object obj) where T : class

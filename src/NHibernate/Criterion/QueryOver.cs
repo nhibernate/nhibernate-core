@@ -670,7 +670,7 @@ namespace NHibernate.Criterion
 
 		public QueryOver<TRoot, U> JoinEntityQueryOver<U>(Expression<Func<U>> alias, ICriterion withClause, JoinType joinType = JoinType.InnerJoin, string entityName = null)
 		{
-			return Create<U>(CreateEntityCriteria(alias, joinType, withClause, entityName));
+			return Create<U>(criteria.CreateEntityCriteria(alias, withClause, joinType, entityName));
 		}
 
 		public QueryOver<TRoot,TSubType> JoinAlias(Expression<Func<TSubType, object>> path, Expression<Func<object>> alias)
@@ -771,11 +771,6 @@ namespace NHibernate.Criterion
 		{
 			criteria.CreateAlias(path, alias, joinType, withClause);
 			return this;
-		}
-
-		private ICriteria CreateEntityCriteria<U>(Expression<Func<U>> alias, JoinType joinType, ICriterion withClause, string entityName)
-		{
-			return criteria.CreateEntityCriteria(ExpressionProcessor.FindMemberExpression(alias.Body), withClause, joinType, entityName ?? typeof(U).FullName);
 		}
 
 		private QueryOver<TRoot,TSubType> Add(Expression<Func<TSubType, bool>> expression)
@@ -997,11 +992,6 @@ namespace NHibernate.Criterion
 		IQueryOver<TRoot, U> ISupportEntityJoinQueryOver<TRoot>.JoinEntityQueryOver<U>(Expression<Func<U>> alias, ICriterion withClause, JoinType joinType, string entityName)
 		{
 			return JoinEntityQueryOver(alias, withClause, joinType, entityName);
-		}
-
-		void ISupportEntityJoinQueryOver.JoinEntityAlias<U>(Expression<Func<U>> alias, ICriterion withClause, JoinType joinType, string entityName)
-		{
-			CreateEntityCriteria(alias, joinType, withClause, entityName);
 		}
 
 		IQueryOverJoinBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.Inner
