@@ -10,20 +10,31 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 
+#if DRIVER_PACKAGE
+using FirebirdSql.Data.FirebirdClient;
+#endif
+
 namespace NHibernate.Driver
 {
 	/// <summary>
 	/// A NHibernate Driver for using the Firebird data provider located in
 	/// <c>FirebirdSql.Data.FirebirdClient</c> assembly.
 	/// </summary>
+#if DRIVER_PACKAGE
+	public class FirebirdDriver : DriverBase
+#else
+	[Obsolete("Use NHibernate.Driver.Firebird NuGet package and FirebirdDriver."
+			  + "  There are also Loquacious configuration points: .Connection.ByFirebirdDriver() and .DataBaseIntegration(x => x.FirebirdDriver()).")]
 	public class FirebirdClientDriver : ReflectionBasedDriver
+#endif
 	{
 		private const string SELECT_CLAUSE_EXP = @"(?<=\bselect|\bwhere).*";
 		private const string CAST_PARAMS_EXP = @"(?<![=<>]\s?|first\s?|skip\s?|between\s|between\s@\bp\w+\b\sand\s)@\bp\w+\b(?!\s?[=<>])";
-		private readonly Regex _statementRegEx = new Regex(SELECT_CLAUSE_EXP, RegexOptions.IgnoreCase);
-		private readonly Regex _castCandidateRegEx = new Regex(CAST_PARAMS_EXP, RegexOptions.IgnoreCase);
+		private static readonly Regex _statementRegEx = new Regex(SELECT_CLAUSE_EXP, RegexOptions.IgnoreCase);
+		private static readonly Regex _castCandidateRegEx = new Regex(CAST_PARAMS_EXP, RegexOptions.IgnoreCase);
 		private readonly FirebirdDialect _fbDialect = new FirebirdDialect();
 
+#if !DRIVER_PACKAGE
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FirebirdClientDriver"/> class.
 		/// </summary>
@@ -37,8 +48,20 @@ namespace NHibernate.Driver
 				"FirebirdSql.Data.FirebirdClient.FbConnection",
 				"FirebirdSql.Data.FirebirdClient.FbCommand")
 		{
-
 		}
+#endif
+
+#if DRIVER_PACKAGE
+		public override DbConnection CreateConnection()
+		{
+			return new FbConnection();
+		}
+
+		public override DbCommand CreateCommand()
+		{
+			return new FbCommand();
+		}
+#endif
 
 		public override void Configure(IDictionary<string, string> settings)
 		{
@@ -46,20 +69,11 @@ namespace NHibernate.Driver
 			_fbDialect.Configure(settings);
 		}
 
-		public override bool UseNamedPrefixInSql
-		{
-			get { return true; }
-		}
+		public override bool UseNamedPrefixInSql => true;
 
-		public override bool UseNamedPrefixInParameter
-		{
-			get { return true; }
-		}
+		public override bool UseNamedPrefixInParameter => true;
 
-		public override string NamedPrefix
-		{
-			get { return "@"; }
-		}
+		public override string NamedPrefix => "@";
 
 		protected override void InitializeParameter(DbParameter dbParam, string name, SqlType sqlType)
 		{
@@ -96,7 +110,7 @@ namespace NHibernate.Driver
 			return _statementRegEx.Match(commandText).Value;
 		}
 
-		private HashSet<string> GetCastCandidates(string statement)
+		private static HashSet<string> GetCastCandidates(string statement)
 		{
 			var candidates =
 				_castCandidateRegEx
@@ -128,8 +142,10 @@ namespace NHibernate.Driver
 			return _fbDialect.GetCastTypeName(sqlType);
 		}
 
+#if !DRIVER_PACKAGE
 		private static volatile MethodInfo _clearPool;
 		private static volatile MethodInfo _clearAllPools;
+#endif
 
 		/// <summary>
 		/// Clears the connection pool.
@@ -138,6 +154,19 @@ namespace NHibernate.Driver
 		/// <c>null</c> for clearing them all.</param>
 		public void ClearPool(string connectionString)
 		{
+#if DRIVER_PACKAGE
+			if (connectionString != null)
+			{
+				using (var clearConnection = CreateConnection())
+				{
+					clearConnection.ConnectionString = connectionString;
+					FbConnection.ClearPool((FbConnection)clearConnection);
+				}
+				return;
+			}
+
+			FbConnection.ClearAllPools();
+#else
 			// In case of concurrent threads, may initialize many times. We do not care.
 			// Members are volatile for avoiding it gets used while its constructor is not yet ended.
 			if (_clearPool == null || _clearAllPools == null)
@@ -161,10 +190,11 @@ namespace NHibernate.Driver
 			}
 
 			_clearAllPools.Invoke(null, Array.Empty<object>());
+#endif
 		}
 
 		/// <summary>
-		/// This driver support of <see cref="System.Transactions.Transaction"/> is not compliant and too heavily
+		/// This driver support of <c>System.Transactions.Transaction</c> is not compliant and too heavily
 		/// restricts what can be done for NHibernate tests. See DNET-764, DNET-766 (and bonus, DNET-765).
 		/// </summary>
 		/// <remarks>
@@ -184,7 +214,7 @@ namespace NHibernate.Driver
 		/// <item>
 		/// <term>DNET-766</term>
 		/// <description>When auto-enlistment is disabled (<c>Enlist=false</c> in connection string), the driver ignores
-		/// calls to <see cref="DbConnection.EnlistTransaction(System.Transactions.Transaction)"/>. They silently do
+		/// calls to <c>DbConnection.EnlistTransaction(System.Transactions.Transaction)</c>. They silently do
 		/// nothing, the Firebird connection does not get enlisted. http://tracker.firebirdsql.org/browse/DNET-766
 		/// </description>
 		/// </item>

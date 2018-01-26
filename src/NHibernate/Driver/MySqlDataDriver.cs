@@ -1,4 +1,5 @@
 using System;
+using System.Data.Common;
 
 namespace NHibernate.Driver
 {
@@ -16,8 +17,15 @@ namespace NHibernate.Driver
 	/// for any updates and/or documentation regarding MySQL.
 	/// </para>
 	/// </remarks>
+#if DRIVER_PACKAGE
+	public class MySqlDriver : DriverBase
+#else
+	[Obsolete("Use NHibernate.Driver.MySql NuGet package and MySqlDriver."
+			  + "  There are also Loquacious configuration points: .Connection.ByMySqlDriver() and .DataBaseIntegration(x => x.MySqlDriver()).")]
 	public class MySqlDataDriver : ReflectionBasedDriver
+#endif
 	{
+#if !DRIVER_PACKAGE
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MySqlDataDriver"/> class.
 		/// </summary>
@@ -31,40 +39,41 @@ namespace NHibernate.Driver
 			"MySql.Data.MySqlClient.MySqlCommand")
 		{
 		}
+#endif
+
+#if DRIVER_PACKAGE
+		public override DbConnection CreateConnection()
+		{
+			return new MySql.Data.MySqlClient.MySqlConnection();
+		}
+
+		public override DbCommand CreateCommand()
+		{
+			return new MySql.Data.MySqlClient.MySqlCommand();
+		}
+#endif
 
 		/// <summary>
 		/// MySql.Data uses named parameters in the sql.
 		/// </summary>
 		/// <value><see langword="true" /> - MySql uses <c>?</c> in the sql.</value>
-		public override bool UseNamedPrefixInSql
-		{
-			get { return true; }
-		}
+		public override bool UseNamedPrefixInSql => true;
 
 		/// <summary></summary>
-		public override bool UseNamedPrefixInParameter
-		{
-			get { return true; }
-		}
+		public override bool UseNamedPrefixInParameter => true;
 
 		/// <summary>
 		/// MySql.Data use the <c>?</c> to locate parameters in sql.
 		/// </summary>
 		/// <value><c>?</c> is used to locate parameters in sql.</value>
-		public override string NamedPrefix
-		{
-			get { return "?"; }
-		}
+		public override string NamedPrefix => "?";
 
 		/// <summary>
 		/// The MySql.Data driver does NOT support more than 1 open DbDataReader
 		/// with only 1 DbConnection.
 		/// </summary>
 		/// <value><see langword="false" /> - it is not supported.</value>
-		public override bool SupportsMultipleOpenReaders
-		{
-			get { return false; }
-		}
+		public override bool SupportsMultipleOpenReaders => false;
 
 		/// <summary>
 		/// MySql.Data does not support preparing of commands.
@@ -74,20 +83,14 @@ namespace NHibernate.Driver
 		/// With the Gamma MySql.Data provider it is throwing an exception with the 
 		/// message "Expected End of data packet" when a select command is prepared.
 		/// </remarks>
-		protected override bool SupportsPreparingCommands
-		{
-			get { return false; }
-		}
+		protected override bool SupportsPreparingCommands => false;
 
 		public override IResultSetsCommand GetResultSetsCommand(Engine.ISessionImplementor session)
 		{
 			return new BasicResultSetsCommand(session);
 		}
 
-		public override bool SupportsMultipleQueries
-		{
-			get { return true; }
-		}
+		public override bool SupportsMultipleQueries => true;
 
 		public override bool RequiresTimeSpanForTime => true;
 

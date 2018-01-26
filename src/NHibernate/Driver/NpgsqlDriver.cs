@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using System.Data.Common;
 
@@ -24,8 +25,23 @@ namespace NHibernate.Driver
 	/// <a href="http://pgfoundry.org/projects/npgsql">http://pgfoundry.org/projects/npgsql</a>. 
 	/// </p>
 	/// </remarks>
+#if DRIVER_PACKAGE
+	public class PostgreSqlDriver : DriverBase
+#else
+	[Obsolete("Use NHibernate.Driver.PostgreSql NuGet package and PostgreSqlDriver."
+			  + "  There are also Loquacious configuration points: .Connection.ByPostgreSqlDriver() and .DataBaseIntegration(x => x.PostgreSqlDriver()).")]
 	public class NpgsqlDriver : ReflectionBasedDriver
+#endif
 	{
+#if DRIVER_PACKAGE
+		/// <summary>
+		/// Initializes a new instance of the <see cref="PostgreSqlDriver"/> class.
+		/// </summary>
+		public PostgreSqlDriver()
+		{
+			DriverVersion = typeof(Npgsql.NpgsqlCommand).Assembly.GetName().Version;
+		}
+#else
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NpgsqlDriver"/> class.
 		/// </summary>
@@ -39,32 +55,37 @@ namespace NHibernate.Driver
 			"Npgsql.NpgsqlCommand")
 		{
 		}
+#endif
 
-		public override bool UseNamedPrefixInSql
+#if DRIVER_PACKAGE
+		/// <summary>
+		/// The driver assembly version.
+		/// </summary>
+		protected Version DriverVersion { get; }
+
+		public override DbConnection CreateConnection()
 		{
-			get { return true; }
+			return new Npgsql.NpgsqlConnection();
 		}
 
-		public override bool UseNamedPrefixInParameter
+		public override DbCommand CreateCommand()
 		{
-			get { return true; }
+			return new Npgsql.NpgsqlCommand();
 		}
+#endif
 
-		public override string NamedPrefix
-		{
-			get { return ":"; }
-		}
+		public override bool UseNamedPrefixInSql => true;
 
-		public override bool SupportsMultipleOpenReaders
-		{
-			get { return false; }
-		}
+		public override bool UseNamedPrefixInParameter => true;
 
-		protected override bool SupportsPreparingCommands
-		{
-			// NH-2267 Patrick Earl
-			get { return true; }
-		}
+		public override string NamedPrefix => ":";
+
+		public override bool SupportsMultipleOpenReaders => false;
+
+		/// <remarks>
+		/// NH-2267 Patrick Earl
+		/// </remarks>
+		protected override bool SupportsPreparingCommands => true;
 
 		public override bool SupportsNullEnlistment => false;
 
@@ -73,10 +94,7 @@ namespace NHibernate.Driver
 			return new BasicResultSetsCommand(session);
 		}
 
-		public override bool SupportsMultipleQueries
-		{
-			get { return true; }
-		}
+		public override bool SupportsMultipleQueries => true;
 
 		protected override void InitializeParameter(DbParameter dbParam, string name, SqlTypes.SqlType sqlType)
 		{

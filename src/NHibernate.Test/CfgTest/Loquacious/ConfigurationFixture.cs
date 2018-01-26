@@ -51,7 +51,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 						.Each(15)
 					.Connected
 						.Through<DebugConnectionProvider>()
-						.By<SqlClientDriver>()
+						.By<SqlServer2000Driver>()
 						.Releasing(ConnectionReleaseMode.AfterTransaction)
 						.With(IsolationLevel.ReadCommitted)
 						.Using(connectionString)
@@ -83,7 +83,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			Assert.That(cfg.Properties[Environment.BatchStrategy], Is.EqualTo(typeof(SqlClientBatchingBatcherFactory).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.BatchSize], Is.EqualTo("15"));
 			Assert.That(cfg.Properties[Environment.ConnectionProvider], Is.EqualTo(typeof(DebugConnectionProvider).AssemblyQualifiedName));
-			Assert.That(cfg.Properties[Environment.ConnectionDriver], Is.EqualTo(typeof(SqlClientDriver).AssemblyQualifiedName));
+			Assert.That(cfg.Properties[Environment.ConnectionDriver], Is.EqualTo(typeof(SqlServer2000Driver).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.ReleaseConnections], Is.EqualTo(ConnectionReleaseModeParser.ToString(ConnectionReleaseMode.AfterTransaction)));
 			Assert.That(cfg.Properties[Environment.Isolation], Is.EqualTo("ReadCommitted"));
 			Assert.That(cfg.Properties[Environment.ConnectionString], Is.EqualTo(connectionString));

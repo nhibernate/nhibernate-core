@@ -12,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Dialect;
-using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.Tool.hbm2ddl;
@@ -116,7 +115,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 				}
 			}
 
-			if (sf.ConnectionProvider.Driver is OdbcDriver)
+			if (sf.ConnectionProvider.Driver.IsOdbcDriver())
 			{
 				Assert.Inconclusive("ODBC has excess keywords reserved");
 			}
@@ -252,7 +251,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 			var configuration = TestConfigurationHelper.GetDefaultConfiguration();
 			var driverClass = ReflectHelper.ClassForName(configuration.GetProperty(Environment.ConnectionDriver));
 			// Test uses the default dialect driver, which will not accept Odbc or OleDb connection strings.
-			if (typeof(OdbcDriver).IsAssignableFrom(driverClass) || typeof(OleDbDriver).IsAssignableFrom(driverClass))
+			if (driverClass.IsOdbcDriver() || driverClass.IsOleDbDriver())
 				Assert.Ignore("Test is not compatible with OleDb or ODBC driver connection strings");
 
 			var configuredDialect = Dialect.Dialect.GetDialect();

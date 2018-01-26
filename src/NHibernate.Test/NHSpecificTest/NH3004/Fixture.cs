@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3004
 			/* UseNamedPrefixInSql       is true 
 			 * UseNamedPrefixInParameter is false
 			 * */
-			var driver = new TestSqlClientDriver(true, false);
+			var driver = new TestSqlServerDriver(true, false);
 
 			RunTest(driver);
 		}
@@ -24,12 +24,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3004
 			/* UseNamedPrefixInSql       is true 
 			 * UseNamedPrefixInParameter is true
 			 * */
-			var driver = new TestSqlClientDriver(true, true);
+			var driver = new TestSqlServerDriver(true, true);
 
 			RunTest(driver);
 		}
 
-		private static void RunTest(TestSqlClientDriver driver)
+		private static void RunTest(TestSqlServerDriver driver)
 		{
 			var command = driver.CreateCommand();
 

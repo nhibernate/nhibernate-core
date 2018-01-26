@@ -11,7 +11,6 @@
 using System;
 using System.Data;
 using NHibernate.Dialect;
-using NHibernate.Driver;
 using NHibernate.Engine;
 using NUnit.Framework;
 
@@ -29,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2207
 
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)
 		{
-			return factory.ConnectionProvider.Driver is Sql2008ClientDriver;
+			return factory.ConnectionProvider.Driver.IsSqlServer2008Driver();
 		}
 
 		[Test]

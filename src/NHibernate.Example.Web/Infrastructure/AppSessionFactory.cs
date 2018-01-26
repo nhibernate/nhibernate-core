@@ -24,7 +24,7 @@ namespace NHibernate.Example.Web.Infrastructure
 				{
 					db.ConnectionString = @"Server=(local)\SQLEXPRESS;initial catalog=nhibernate;Integrated Security=true";
 					db.Dialect<MsSql2008Dialect>();
-					db.Driver<Sql2008ClientDriver>();
+					db.SqlServer2008Driver();
 				})
 				.AddMapping(domainMapping);
 			Configuration.SessionFactory().GenerateStatistics();

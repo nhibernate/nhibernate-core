@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Linq;
 using NUnit.Framework;
@@ -12,7 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3252
 	{
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)
 		{
-			return factory.ConnectionProvider.Driver is SqlClientDriver;
+			return factory.ConnectionProvider.Driver.IsSqlServerDriver();
 		}
 
 		[Test]

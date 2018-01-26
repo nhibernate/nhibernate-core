@@ -10,7 +10,6 @@
 
 using NUnit.Framework;
 using NHibernate.Dialect;
-using NHibernate.Driver;
 using NHibernate.Exceptions;
 using NHibernate.Test.ExceptionsTest;
 using NHibernate.Engine;
@@ -37,7 +36,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2020
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)
 		{
 			// Use a SQL Server Client exception converter, cannot work for ODBC or OleDb
-			return factory.ConnectionProvider.Driver is SqlClientDriver;
+			return factory.ConnectionProvider.Driver.IsSqlServerDriver();
 		}
 
 		protected override void OnTearDown()

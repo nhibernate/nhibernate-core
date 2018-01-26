@@ -9,7 +9,6 @@
 
 
 using System;
-using NHibernate.Driver;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NUnit.Framework;
@@ -29,7 +28,7 @@ namespace NHibernate.Test.TypesTest
 
 		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory) =>
 			// Cannot handle DbType.DateTime2 via .Net ODBC.
-			!(factory.ConnectionProvider.Driver is OdbcDriver);
+			!(factory.ConnectionProvider.Driver.IsOdbcDriver());
 
 		protected override string TypeName => "DateTime2";
 		protected override AbstractDateTimeType Type => NHibernateUtil.DateTime2;
@@ -44,7 +43,7 @@ namespace NHibernate.Test.TypesTest
 
 		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory) =>
 			// Cannot handle DbType.DateTime2 via .Net ODBC.
-			!(factory.ConnectionProvider.Driver is OdbcDriver);
+			!(factory.ConnectionProvider.Driver.IsOdbcDriver());
 
 		protected override string TypeName => "DateTime2WithScale";
 		protected override AbstractDateTimeType Type => (AbstractDateTimeType)TypeFactory.GetDateTime2Type(3);

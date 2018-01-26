@@ -15,7 +15,7 @@ namespace NHibernate.Dialect
 	///		</listheader>
 	///		<item>
 	///			<term>connection.driver_class</term>
-	///			<description><see cref="NHibernate.Driver.IngresDriver" /></description>
+	///			<description>NHibernate.Driver.IngresDriver</description>
 	///		</item>
 	/// </list>
 	/// </remarks>

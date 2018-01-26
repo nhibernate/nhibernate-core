@@ -15,7 +15,6 @@ using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using System.Text;
 using NHibernate.Dialect;
-using NHibernate.Driver;
 
 namespace NHibernate.Test
 {
@@ -296,16 +295,13 @@ namespace NHibernate.Test
 
 		public static void DropSchema(bool useStdOut, SchemaExport export, ISessionFactoryImplementor sfi)
 		{
-			if (sfi?.ConnectionProvider.Driver is FirebirdClientDriver fbDriver)
-			{
-				// Firebird will pool each connection created during the test and will marked as used any table
-				// referenced by queries. It will at best delays those tables drop until connections are actually
-				// closed, or immediately fail dropping them.
-				// This results in other tests failing when they try to create tables with same name.
-				// By clearing the connection pool the tables will get dropped. This is done by the following code.
-				// Moved from NH1908 test case, contributed by Amro El-Fakharany.
-				fbDriver.ClearPool(null);
-			}
+			// Firebird will pool each connection created during the test and will marked as used any table
+			// referenced by queries. It will at best delays those tables drop until connections are actually
+			// closed, or immediately fail dropping them.
+			// This results in other tests failing when they try to create tables with same name.
+			// By clearing the connection pool the tables will get dropped. This is done by the following code.
+			// Moved from NH1908 test case, contributed by Amro El-Fakharany.
+			sfi?.ConnectionProvider.Driver.ClearPoolForFirebirdDriver();
 
 			export.Drop(useStdOut, true);
 		}

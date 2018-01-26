@@ -227,6 +227,13 @@ var session = sessions.OpenSession(conn);
                         take care of setting the <literal>IDriver</literal> using a sensible default.  See the API
                         documentation of the specific dialect for the defaults.
                     </para>
+                    <para>
+                        Since NHibernate v5.1, drivers having a NuGet package for their data provider have a
+                        <literal>NHibernate.Driver</literal> dedicated assembly, which have to be referenced by your project.
+                        Those assemblies are also available as NuGet packages.
+                        If an obsolete driver is configured, NHibernate will issue a warning log when building the session
+                        factory.
+                    </para>
                 </entry>
             </row>
             <row>
@@ -1186,9 +1193,13 @@ in the parameter binding.</programlisting>
                             <entry>Firebird</entry>
                             <entry><literal>NHibernate.Dialect.FirebirdDialect</literal></entry>
                             <entry>
-                                Set <literal>driver_class</literal> to
-                                <literal>NHibernate.Driver.FirebirdClientDriver</literal>
-                                for Firebird ADO.NET provider 2.0.
+                                Install NuGet package 
+                                <ulink url="https://www.nuget.org/packages/NHibernate.Driver.Firebird/">NHibernate.Driver.Firebird</ulink>
+                                and set <literal>driver_class</literal> to
+                                <literal>NHibernate.Driver.FirebirdDriver, NHibernate.Driver.Firebird</literal>
+                                with a fallback on the built-in reflection based
+                                <literal>NHibernate.Driver.FirebirdClientDriver</literal>.
+                                Both use Firebird ADO.NET provider.
                             </entry>
                         </row>
                         <row>
@@ -1219,65 +1230,99 @@ in the parameter binding.</programlisting>
                         <row>
                             <entry>Microsoft SQL Server 7</entry>
                             <entry><literal>NHibernate.Dialect.MsSql7Dialect</literal></entry>
-                            <entry></entry>
+                            <entry>Use the same default driver as <literal>NHibernate.Dialect.MsSql2000Dialect</literal>.</entry>
                         </row>
                         <row>
                             <entry>Microsoft SQL Server 2000</entry>
                             <entry><literal>NHibernate.Dialect.MsSql2000Dialect</literal></entry>
-                            <entry></entry>
+                            <entry>
+                                Install NuGet package 
+                                <ulink url="https://www.nuget.org/packages/NHibernate.Driver.SqlServer/">NHibernate.Driver.SqlServer</ulink>
+                                and set <literal>driver_class</literal> to
+                                <literal>NHibernate.Driver.SqlServer2000Driver, NHibernate.Driver.SqlServer</literal>
+                                with a fallback on the built-in reflection based
+                                <literal>NHibernate.Driver.SqlClientDriver</literal>.
+                                Both use <literal>System.Data.SqlClient</literal>.
+                            </entry>
                         </row>
                         <row>
                             <entry>Microsoft SQL Server 2005</entry>
                             <entry><literal>NHibernate.Dialect.MsSql2005Dialect</literal></entry>
-                            <entry></entry>
+                            <entry>Use the same default driver as <literal>NHibernate.Dialect.MsSql2000Dialect</literal>.</entry>
                         </row>
                         <row>
                             <entry>Microsoft SQL Server 2008</entry>
                             <entry><literal>NHibernate.Dialect.MsSql2008Dialect</literal></entry>
-                            <entry></entry>
+                            <entry>
+                                Install NuGet package 
+                                <ulink url="https://www.nuget.org/packages/NHibernate.Driver.SqlServer/">NHibernate.Driver.SqlServer</ulink>
+                                and set <literal>driver_class</literal> to
+                                <literal>NHibernate.Driver.SqlServer2008Driver, NHibernate.Driver.SqlServer</literal>
+                                with a fallback on the built-in reflection based
+                                <literal>NHibernate.Driver.Sql2008ClientDriver</literal>.
+                                Both use <literal>System.Data.SqlClient</literal>.
+                            </entry>
                         </row>
                         <row>
                             <entry>Microsoft SQL Azure Server 2008</entry>
                             <entry><literal>NHibernate.Dialect.MsSqlAzure2008Dialect</literal></entry>
-                            <entry></entry>
+                            <entry>Use the same default driver as <literal>NHibernate.Dialect.MsSql2008Dialect</literal>.</entry>
                         </row>
                         <row>
                             <entry>Microsoft SQL Server 2012</entry>
                             <entry><literal>NHibernate.Dialect.MsSql2012Dialect</literal></entry>
-                            <entry></entry>
+                            <entry>Use the same default driver as <literal>NHibernate.Dialect.MsSql2008Dialect</literal>.</entry>
                         </row>
                         <row>
                             <entry>Microsoft SQL Server Compact Edition</entry>
                             <entry><literal>NHibernate.Dialect.MsSqlCeDialect</literal></entry>
+                            <entry>
+                                Install NuGet package 
+                                <ulink url="https://www.nuget.org/packages/NHibernate.Driver.SqlServer.Compact/">NHibernate.Driver.SqlServer.Compact</ulink>
+                                and set <literal>driver_class</literal> to
+                                <literal>NHibernate.Driver.SqlServerCompactDriver, NHibernate.Driver.SqlServer.Compact</literal>
+                                with a fallback on the built-in reflection based
+                                <literal>NHibernate.Driver.SqlServerCeDriver</literal>.
+                                Both use <literal>System.Data.SqlServerCe</literal>.
+                            </entry>
                         </row>
                         <row>
                             <entry>Microsoft SQL Server Compact Edition 4.0</entry>
                             <entry><literal>NHibernate.Dialect.MsSqlCe40Dialect</literal></entry>
+                            <entry>Use the same default driver as <literal>NHibernate.Dialect.MsSqlCeDialect</literal>.</entry>
                         </row>
                         <row>
-                            <entry>MySQL 3 or 4</entry> 
+                            <entry>MySQL 3 or 4</entry>
                             <entry><literal>NHibernate.Dialect.MySQLDialect</literal></entry>
-                            <entry></entry>
+                            <entry>
+                                Install NuGet package 
+                                <ulink url="https://www.nuget.org/packages/NHibernate.Driver.MySql/">NHibernate.Driver.MySql</ulink>
+                                and set <literal>driver_class</literal> to
+                                <literal>NHibernate.Driver.MySqlDriver, NHibernate.Driver.MySql</literal>
+                                with a fallback on the built-in reflection based
+                                <literal>NHibernate.Driver.MySqlDataDriver</literal>.
+                                Both use <literal>MySql.Data</literal>.
+                            </entry>
                         </row>
                         <row>
                             <entry>MySQL 5</entry>
                             <entry><literal>NHibernate.Dialect.MySQL5Dialect</literal></entry>
-                            <entry></entry>
+                            <entry>Use the same default driver as <literal>NHibernate.Dialect.MySQLDialect</literal>.</entry>
                         </row>
                         <row>
                             <entry>MySQL 5 Inno DB</entry>
                             <entry><literal>NHibernate.Dialect.MySQL5InnoDBDialect</literal></entry>
-                            <entry></entry>
+                            <entry>Use the same default driver as <literal>NHibernate.Dialect.MySQLDialect</literal>.</entry>
                         </row>
                         <row>
                             <entry>MySQL 5.5</entry>
                             <entry><literal>NHibernate.Dialect.MySQL55Dialect</literal></entry>
-                            <entry></entry>
+                            <entry>Use the same default driver as <literal>NHibernate.Dialect.MySQLDialect</literal>.</entry>
                         </row>
                         <row>
                             <entry>MySQL 5.5 Inno DB</entry>
                             <entry><literal>NHibernate.Dialect.MySQL55InnoDBDialect</literal></entry>
-                            <entry></entry>
+                            <entry>Use the same default driver as <literal>NHibernate.Dialect.MySQLDialect</literal>.</entry>
                         </row>
                         <row>
                             <entry>Oracle</entry> 
@@ -1302,12 +1347,14 @@ in the parameter binding.</programlisting>
                         <row>
                             <entry>PostgreSQL</entry>
                             <entry><literal>NHibernate.Dialect.PostgreSQLDialect</literal></entry>
-                            <entry></entry>
-                        </row>
-                        <row>
-                            <entry>PostgreSQL</entry>
-                            <entry><literal>NHibernate.Dialect.PostgreSQLDialect</literal></entry>
                             <entry>
+                                Install NuGet package 
+                                <ulink url="https://www.nuget.org/packages/NHibernate.Driver.PostgreSql/">NHibernate.Driver.PostgreSql</ulink>
+                                and set <literal>driver_class</literal> to
+                                <literal>NHibernate.Driver.PostgreSqlDriver, NHibernate.Driver.PostgreSql</literal>
+                                with a fallback on the built-in reflection based
+                                <literal>NHibernate.Driver.NpgsqlDriver</literal>.
+                                Both use <literal>Npgsql</literal>.
                             </entry>
                         </row>
                         <row>
@@ -1316,6 +1363,7 @@ in the parameter binding.</programlisting>
                             <entry>
                                 This dialect supports <literal>FOR UPDATE NOWAIT</literal>
                                 available in PostgreSQL 8.1.
+                                Use the same default driver as <literal>NHibernate.Dialect.PostgreSQLDialect</literal>.
                             </entry>
                         </row>
                         <row>
@@ -1325,6 +1373,7 @@ in the parameter binding.</programlisting>
                                 This dialect supports <literal>IF EXISTS</literal> keyword in
                                 <literal>DROP TABLE</literal> and <literal>DROP SEQUENCE</literal>
                                 available in PostgreSQL 8.2.
+                                Use the same default driver as <literal>NHibernate.Dialect.PostgreSQLDialect</literal>.
                             </entry>
                         </row>
                         <row>
@@ -1332,15 +1381,20 @@ in the parameter binding.</programlisting>
                             <entry><literal>NHibernate.Dialect.PostgreSQL83Dialect</literal></entry>
                             <entry>
                                 This dialect supports <literal>XML</literal> type.
+                                Use the same default driver as <literal>NHibernate.Dialect.PostgreSQLDialect</literal>.
                             </entry>
                         </row>
                         <row>
                             <entry>SQLite</entry>
                             <entry><literal>NHibernate.Dialect.SQLiteDialect</literal></entry>
                             <entry>
-                                Set <literal>driver_class</literal> to
-                                <literal>NHibernate.Driver.SQLite20Driver</literal>
-                                for System.Data.SQLite provider for .NET 2.0.
+                                Install NuGet package 
+                                <ulink url="https://www.nuget.org/packages/NHibernate.Driver.SQLite/">NHibernate.Driver.SQLite</ulink>
+                                and set <literal>driver_class</literal> to
+                                <literal>NHibernate.Driver.SQLiteDriver, NHibernate.Driver.SQLite</literal>
+                                with a fallback on the built-in reflection based
+                                <literal>NHibernate.Driver.SQLite20Driver</literal>.
+                                Both use <literal>System.Data.SQLite</literal>.
                                 <para>
                                     Due to
                                     <ulink url="https://system.data.sqlite.org/index.html/tktview/44a0955ea344a777ffdbcc077831e1adc8b77a36">the
