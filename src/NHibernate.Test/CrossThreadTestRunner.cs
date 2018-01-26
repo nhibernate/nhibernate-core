@@ -26,7 +26,9 @@ namespace NHibernate.Test
 		{
 			_start = start;
 			_thread = new Thread(Run);
+#if !NETCOREAPP2_0
 			_thread.SetApartmentState(ApartmentState.STA);
+#endif
 		}
 
 		public void Start()
