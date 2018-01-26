@@ -208,44 +208,8 @@
 		<call target="coverage-report" />
 	</target>
 
-	<target name="sources">
-		<property name="source.tmpdir" value="${build.dir}/tmp-src" />
-		<copy todir="${source.tmpdir}">
-			<fileset>
-				<!-- copy dlls used by this build -->
-				<include name="${lib.dir}/**"  />
-
-				<!-- copy all of the NHibernate source -->
-				<include name="src/NHibernate*/**" />
-				<include name="src/*.*" />
-
-				<include name="build-common/**" />
-
-				<include name="*.build" />
-				<include name="LICENSE.txt" />
-				<include name="releasenotes.txt" />
-				<include name="README.md" />
-
-				<!-- exclude ReSharper stuff -->
-				<exclude name="**/_ReSharper*/**" />
-				<exclude name="**/*.resharperoptions" />
-				<exclude name="**/*resharper*" />
-
-				<!-- exclude VS.NET stuff -->
-				<exclude name="**/*.suo" />
-				<exclude name="**/*.user" />
-				<exclude name="**/bin/**" />
-				<exclude name="**/obj/**" />
-			</fileset>
-		</copy>
-	</target>
-
-	<target name="sources-zip" depends="init sources">
-		<zip zipfile="${build.dir}/NHibernate-${project.version}-src.zip">
-			<fileset basedir="${source.tmpdir}">
-				<include name="**/*" />
-			</fileset>
-		</zip>
+	<target name="sources-zip" depends="init">
+		<exec program="git" commandline="archive HEAD --format zip --output &quot;${build.dir}/NHibernate-${project.version}-src.zip&quot;"/>
 	</target>
 
 	<target name="binaries-zip" depends="init bin-pack">
