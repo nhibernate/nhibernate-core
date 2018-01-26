@@ -102,22 +102,22 @@ namespace NHibernate.Action
 
 		public abstract void Execute();
 
-		public virtual BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess
+		public virtual IBeforeTransactionCompletionProcess BeforeTransactionCompletionProcess
 		{
 			get
 			{
 				return NeedsBeforeTransactionCompletion()
-					? new BeforeTransactionCompletionProcessDelegate(BeforeTransactionCompletionProcessImpl)
+					? new BeforeTransactionCompletionProcess(BeforeTransactionCompletionProcessImpl, BeforeTransactionCompletionProcessImplAsync)
 					: null;
 			}
 		}
 		
-		public virtual AfterTransactionCompletionProcessDelegate AfterTransactionCompletionProcess
+		public virtual IAfterTransactionCompletionProcess AfterTransactionCompletionProcess
 		{
 			get
 			{
 				return NeedsAfterTransactionCompletion()
-					? new AfterTransactionCompletionProcessDelegate(AfterTransactionCompletionProcessImpl)
+					? new AfterTransactionCompletionProcess(AfterTransactionCompletionProcessImpl, AfterTransactionCompletionProcessImplAsync)
 					: null;
 			}
 		}

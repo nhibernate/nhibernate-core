@@ -104,7 +104,7 @@ namespace NHibernate.Action
 		/// <summary>Execute this action</summary>
 		public abstract void Execute();
 
-		public virtual BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess
+		public virtual IBeforeTransactionCompletionProcess BeforeTransactionCompletionProcess
 		{
 			get 
 			{ 
@@ -112,7 +112,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		public virtual AfterTransactionCompletionProcessDelegate AfterTransactionCompletionProcess
+		public virtual IAfterTransactionCompletionProcess AfterTransactionCompletionProcess
 		{
 
 			get
@@ -120,11 +120,18 @@ namespace NHibernate.Action
 				// Only make sense to add the delegate if there is a cache.
 				if (persister.HasCache)
 				{
-					return new AfterTransactionCompletionProcessDelegate((success) =>
-					{
-						CacheKey ck = new CacheKey(key, persister.KeyType, persister.Role, Session.Factory);
-						persister.Cache.Release(ck, softLock);
-					});
+					return new AfterTransactionCompletionProcess(
+						(success) =>
+						{
+							var ck = new CacheKey(key, persister.KeyType, persister.Role, Session.Factory);
+							persister.Cache.Release(ck, softLock);
+						},
+						async (success, cancellationToken) =>
+						{
+							var ck = new CacheKey(key, persister.KeyType, persister.Role, Session.Factory);
+							await persister.Cache.ReleaseAsync(ck, softLock, cancellationToken).ConfigureAwait(false);
+						}
+					);
 				}
 				return null; 
 			}

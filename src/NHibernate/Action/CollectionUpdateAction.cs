@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using NHibernate.Cache;
+using NHibernate.Cache.Access;
 using NHibernate.Cache.Entry;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -113,7 +114,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		public override BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess
+		public override IBeforeTransactionCompletionProcess BeforeTransactionCompletionProcess
 		{
 			get 
 			{ 
@@ -121,40 +122,57 @@ namespace NHibernate.Action
 			}
 		}
 
-		public override AfterTransactionCompletionProcessDelegate AfterTransactionCompletionProcess
+		public override IAfterTransactionCompletionProcess AfterTransactionCompletionProcess
 		{
 			get
 			{
 				// Only make sense to add the delegate if there is a cache.
 				if (Persister.HasCache)
 				{
-					// NH Different behavior: to support unlocking collections from the cache.(r3260)
-					return new AfterTransactionCompletionProcessDelegate((success) =>
-					{
-						CacheKey ck = Session.GenerateCacheKey(Key, Persister.KeyType, Persister.Role);
-
-						if (success)
-						{
-							// we can't disassemble a collection if it was uninitialized 
-							// or detached from the session
-							if (Collection.WasInitialized && Session.PersistenceContext.ContainsCollection(Collection))
-							{
-								CollectionCacheEntry entry = CollectionCacheEntry.Create(Collection, Persister);
-								bool put = Persister.Cache.AfterUpdate(ck, entry, null, Lock);
-
-								if (put && Session.Factory.Statistics.IsStatisticsEnabled)
-								{
-									Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
-								}
-							}
-						}
-						else
-						{
-							Persister.Cache.Release(ck, Lock);
-						}
-					});
+					return new CollectionCacheUpdate(this);
 				}
 				return null;
+			}
+		}
+
+		private partial class CollectionCacheUpdate : IAfterTransactionCompletionProcess
+		{
+
+			private CollectionUpdateAction _action;
+
+			internal CollectionCacheUpdate(CollectionUpdateAction action)
+			{
+				_action = action;
+			}
+
+			public void Execute(bool success)
+			{
+				var session = _action.Session;
+				var persister = _action.Persister;
+				var cacheLock = _action.Lock;
+				CacheKey ck = session.GenerateCacheKey(_action.Key, persister.KeyType, persister.Role);
+
+				if (success)
+				{
+					var collection = _action.Collection;
+					
+					// we can't disassemble a collection if it was uninitialized 
+					// or detached from the session
+					if (collection.WasInitialized && session.PersistenceContext.ContainsCollection(collection))
+					{
+						CollectionCacheEntry entry = CollectionCacheEntry.Create(collection, persister);
+						bool put = persister.Cache.AfterUpdate(ck, entry, null, cacheLock);
+
+						if (put && session.Factory.Statistics.IsStatisticsEnabled)
+						{
+							session.Factory.StatisticsImplementor.SecondLevelCachePut(persister.Cache.RegionName);
+						}
+					}
+				}
+				else
+				{
+					persister.Cache.Release(ck, cacheLock);
+				}
 			}
 		}
 	}

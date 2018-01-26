@@ -31,6 +31,23 @@ namespace NHibernate.Action
 		}
 
 		public abstract Task ExecuteAsync(CancellationToken cancellationToken);
+
+		protected virtual Task BeforeTransactionCompletionProcessImplAsync(CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
+			{
+				BeforeTransactionCompletionProcessImpl();
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
 		
 		protected virtual Task AfterTransactionCompletionProcessImplAsync(bool success, CancellationToken cancellationToken)
 		{

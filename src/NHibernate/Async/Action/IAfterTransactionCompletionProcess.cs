@@ -12,15 +12,13 @@ namespace NHibernate.Action
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial interface IExecutable
+	public partial interface IAfterTransactionCompletionProcess
 	{
-
-		/// <summary> Called before executing any actions</summary>
+		/// <summary>
+		/// Perform whatever processing is encapsulated here after completion of the transaction.
+		/// </summary>
+		/// <param name="success">Did the transaction complete successfully?  True means it did.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task BeforeExecutionsAsync(CancellationToken cancellationToken);
-
-		/// <summary> Execute this action</summary>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task ExecuteAsync(CancellationToken cancellationToken);
+		Task ExecuteAsync(bool success, CancellationToken cancellationToken);
 	}
 }

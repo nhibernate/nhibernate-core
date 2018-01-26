@@ -11,6 +11,7 @@
 using System;
 using System.Diagnostics;
 using NHibernate.Cache;
+using NHibernate.Cache.Access;
 using NHibernate.Cache.Entry;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -115,6 +116,41 @@ namespace NHibernate.Action
 				for (int i = 0; i < postListeners.Length; i++)
 				{
 					await (postListeners[i].OnPostUpdateCollectionAsync(postEvent, cancellationToken)).ConfigureAwait(false);
+				}
+			}
+		}
+
+		private partial class CollectionCacheUpdate : IAfterTransactionCompletionProcess
+		{
+
+			public async Task ExecuteAsync(bool success, CancellationToken cancellationToken)
+			{
+				cancellationToken.ThrowIfCancellationRequested();
+				var session = _action.Session;
+				var persister = _action.Persister;
+				var cacheLock = _action.Lock;
+				CacheKey ck = session.GenerateCacheKey(_action.Key, persister.KeyType, persister.Role);
+
+				if (success)
+				{
+					var collection = _action.Collection;
+					
+					// we can't disassemble a collection if it was uninitialized 
+					// or detached from the session
+					if (collection.WasInitialized && session.PersistenceContext.ContainsCollection(collection))
+					{
+						CollectionCacheEntry entry = new CollectionCacheEntry(collection, persister);
+						bool put = await (persister.Cache.AfterUpdateAsync(ck, entry, null, cacheLock, cancellationToken)).ConfigureAwait(false);
+
+						if (put && session.Factory.Statistics.IsStatisticsEnabled)
+						{
+							session.Factory.StatisticsImplementor.SecondLevelCachePut(persister.Cache.RegionName);
+						}
+					}
+				}
+				else
+				{
+					await (persister.Cache.ReleaseAsync(ck, cacheLock, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}

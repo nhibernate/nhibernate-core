@@ -109,7 +109,7 @@ namespace NHibernate.Action
 			// nothing to do
 		}
 
-		public BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess
+		public IBeforeTransactionCompletionProcess BeforeTransactionCompletionProcess
 		{
 			get
 			{
@@ -117,15 +117,22 @@ namespace NHibernate.Action
 			}
 		}
 
-		public AfterTransactionCompletionProcessDelegate AfterTransactionCompletionProcess
+		public IAfterTransactionCompletionProcess AfterTransactionCompletionProcess
 		{
 			get
 			{
-				return new AfterTransactionCompletionProcessDelegate((success) =>
-				{
-					this.EvictEntityRegions();
-					this.EvictCollectionRegions();
-				});
+				return new AfterTransactionCompletionProcess(
+					(success) =>
+					{
+						EvictEntityRegions();
+						EvictCollectionRegions();
+					},
+					async (success, cancellationToken) =>
+					{
+						await EvictEntityRegionsAsync(cancellationToken);
+						await EvictCollectionRegionsAsync(cancellationToken);
+					}
+				);
 			}
 		}
 

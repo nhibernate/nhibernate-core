@@ -132,12 +132,12 @@ namespace NHibernate.Engine
 			}
 		}
 
-		public void RegisterProcess(AfterTransactionCompletionProcessDelegate process)
+		public void RegisterProcess(IAfterTransactionCompletionProcess process)
 		{
 			afterTransactionProcesses.Register(process);
 		}
 	
-		public void RegisterProcess(BeforeTransactionCompletionProcessDelegate process)
+		public void RegisterProcess(IBeforeTransactionCompletionProcess process)
 		{
 			beforeTransactionProcesses.Register(process);
 		}
@@ -251,11 +251,11 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary>
-		/// Execute any registered <see cref="BeforeTransactionCompletionProcessDelegate" />
+		/// Execute any registered <see cref="IBeforeTransactionCompletionProcess" />
 		/// </summary>
 		public void BeforeTransactionCompletion() 
 		{
-			beforeTransactionProcesses.BeforeTransactionCompletion();
+			beforeTransactionProcesses.Execute();
 		}
 
 		/// <summary> 
@@ -264,7 +264,7 @@ namespace NHibernate.Engine
 		/// <param name="success">Was the transaction successful.</param>
 		public void AfterTransactionCompletion(bool success)
 		{
-			afterTransactionProcesses.AfterTransactionCompletion(success);
+			afterTransactionProcesses.Execute(success);
 
 			InvalidateCaches();
 		}
@@ -452,16 +452,16 @@ namespace NHibernate.Engine
 		}
 		
 		[Serializable]
-		private class BeforeTransactionCompletionProcessQueue 
+		private partial class BeforeTransactionCompletionProcessQueue 
 		{
-			private List<BeforeTransactionCompletionProcessDelegate> processes = new List<BeforeTransactionCompletionProcessDelegate>();
+			private List<IBeforeTransactionCompletionProcess> processes = new List<IBeforeTransactionCompletionProcess>();
 
 			public bool HasActions
 			{
 				get { return processes.Count > 0; }
 			}
 
-			public void Register(BeforeTransactionCompletionProcessDelegate process) 
+			public void Register(IBeforeTransactionCompletionProcess process) 
 			{
 				if (process == null) 
 				{
@@ -470,15 +470,15 @@ namespace NHibernate.Engine
 				processes.Add(process);
 			}
 	
-			public void BeforeTransactionCompletion() 
+			public void Execute() 
 			{
 				int size = processes.Count;
 				for (int i = 0; i < size; i++)
 				{
 					try 
 					{
-						BeforeTransactionCompletionProcessDelegate process = processes[i];
-						process();
+						IBeforeTransactionCompletionProcess process = processes[i];
+						process.Execute();
 					}
 					catch (HibernateException)
 					{
@@ -494,16 +494,16 @@ namespace NHibernate.Engine
 		}
 
 		[Serializable]
-		private class AfterTransactionCompletionProcessQueue 
+		private partial class AfterTransactionCompletionProcessQueue 
 		{
-			private List<AfterTransactionCompletionProcessDelegate> processes = new List<AfterTransactionCompletionProcessDelegate>(InitQueueListSize * 3);
+			private List<IAfterTransactionCompletionProcess> processes = new List<IAfterTransactionCompletionProcess>(InitQueueListSize * 3);
 
 			public bool HasActions
 			{
 				get { return processes.Count > 0; }
 			}
 
-			public void Register(AfterTransactionCompletionProcessDelegate process)
+			public void Register(IAfterTransactionCompletionProcess process)
 			{
 				if (process == null) 
 				{
@@ -512,7 +512,7 @@ namespace NHibernate.Engine
 				processes.Add(process);
 			}
 	
-			public void AfterTransactionCompletion(bool success) 
+			public void Execute(bool success) 
 			{
 				int size = processes.Count;
 				
@@ -520,8 +520,8 @@ namespace NHibernate.Engine
 				{
 					try
 					{
-						AfterTransactionCompletionProcessDelegate process = processes[i];
-						process(success);
+						IAfterTransactionCompletionProcess process = processes[i];
+						process.Execute(success);
 					}
 					catch (CacheException e)
 					{
