@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using NHibernate.Criterion;
@@ -17,7 +18,9 @@ namespace NHibernate.Impl
 	[Serializable]
 	public partial class CriteriaImpl : ICriteria
 	{
-		private readonly System.Type persistentClass;
+		[NonSerialized]
+		private System.Type persistentClass;
+		private SerializableSystemType _serializablePersistentClass;
 		private readonly List<CriterionEntry> criteria = new List<CriterionEntry>();
 		private readonly List<OrderEntry> orderEntries = new List<OrderEntry>(10);
 		private readonly Dictionary<string, FetchMode> fetchModes = new Dictionary<string, FetchMode>();
@@ -70,6 +73,18 @@ namespace NHibernate.Impl
 			cacheable = false;
 			rootAlias = alias;
 			subcriteriaByAlias[alias] = this;
+		}
+
+		[OnSerializing]
+		private void OnSerializing(StreamingContext context)
+		{
+			_serializablePersistentClass = SerializableSystemType.Wrap(persistentClass);
+		}
+
+		[OnDeserialized]
+		private void OnDeserialized(StreamingContext context)
+		{
+			persistentClass = _serializablePersistentClass?.GetSystemType();
 		}
 
 		public ISessionImplementor Session

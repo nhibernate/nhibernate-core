@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {
@@ -28,8 +29,10 @@ namespace NHibernate.Type
 	[Serializable]
 	public partial class SerializableType : MutableType
 	{
-		private readonly System.Type serializableClass;
-		private readonly BinaryType binaryType;
+		[NonSerialized]
+		private System.Type _serializableClass;
+		private SerializableSystemType _serializableSerializableClass;
+		private readonly BinaryType _binaryType;
 
 		internal SerializableType() : this(typeof(Object))
 		{
@@ -37,19 +40,31 @@ namespace NHibernate.Type
 
 		internal SerializableType(System.Type serializableClass) : base(new BinarySqlType())
 		{
-			this.serializableClass = serializableClass;
-			binaryType = (BinaryType) NHibernateUtil.Binary;
+			_serializableClass = serializableClass;
+			_binaryType = NHibernateUtil.Binary;
 		}
 
 		internal SerializableType(System.Type serializableClass, BinarySqlType sqlType) : base(sqlType)
 		{
-			this.serializableClass = serializableClass;
-			binaryType = (BinaryType) TypeFactory.GetBinaryType(sqlType.Length);
+			_serializableClass = serializableClass;
+			_binaryType = (BinaryType) TypeFactory.GetBinaryType(sqlType.Length);
+		}
+
+		[OnSerializing]
+		private void OnSerializing(StreamingContext context)
+		{
+			_serializableSerializableClass = SerializableSystemType.Wrap(_serializableClass);
+		}
+
+		[OnDeserialized]
+		private void OnDeserialized(StreamingContext context)
+		{
+			_serializableClass = _serializableSerializableClass?.GetSystemType();
 		}
 
 		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
-			binaryType.Set(st, ToBytes(value), index, session);
+			_binaryType.Set(st, ToBytes(value), index, session);
 		}
 
 		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
@@ -59,7 +74,7 @@ namespace NHibernate.Type
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
-			byte[] bytes = (byte[]) binaryType.Get(rs, index, session);
+			byte[] bytes = (byte[]) _binaryType.Get(rs, index, session);
 			if (bytes == null)
 			{
 				return null;
@@ -70,10 +85,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override System.Type ReturnedClass
-		{
-			get { return serializableClass; }
-		}
+		public override System.Type ReturnedClass => _serializableClass;
 
 		public override bool IsEqual(object x, object y)
 		{
@@ -83,22 +95,22 @@ namespace NHibernate.Type
 			if (x == null || y == null)
 				return false;
 
-			return x.Equals(y) || binaryType.IsEqual(ToBytes(x), ToBytes(y));
+			return x.Equals(y) || _binaryType.IsEqual(ToBytes(x), ToBytes(y));
 		}
 
 		public override int GetHashCode(Object x)
 		{
-			return binaryType.GetHashCode(ToBytes(x));
+			return _binaryType.GetHashCode(ToBytes(x));
 		}
 
 		public override string ToString(object value)
 		{
-			return binaryType.ToString(ToBytes(value));
+			return _binaryType.ToString(ToBytes(value));
 		}
 
 		public override object FromStringValue(string xml)
 		{
-			return FromBytes((byte[])binaryType.FromStringValue(xml));
+			return FromBytes((byte[])_binaryType.FromStringValue(xml));
 		}
 
 		/// <summary></summary>
@@ -106,7 +118,7 @@ namespace NHibernate.Type
 		{
 			get
 			{
-				return serializableClass == typeof(ISerializable) ? "serializable" : serializableClass.FullName;
+				return _serializableClass == typeof(ISerializable) ? "serializable" : _serializableClass.FullName;
 			} 
 		}
 

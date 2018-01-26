@@ -97,7 +97,7 @@ namespace NHibernate.Type
 		private void ScheduleBatchLoadIfNeeded(object id, ISessionImplementor session)
 		{
 			//cannot batch fetch by unique key (property-ref associations)
-			if (uniqueKeyPropertyName == null && id != null)
+			if (RHSUniqueKeyPropertyName == null && id != null)
 			{
 				IEntityPersister persister = session.Factory.GetEntityPersister(GetAssociatedEntityName());
 				EntityKey entityKey = session.GenerateEntityKey(id, persister);
