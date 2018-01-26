@@ -53,6 +53,10 @@ namespace NHibernate.Event.Default
 			Session.PersistenceContext.CollectionEntries.Remove(collection);
 			if (log.IsDebugEnabled())
 				log.Debug("evicting collection: {0}", MessageHelper.CollectionInfoString(ce.LoadedPersister, collection, ce.LoadedKey, Session));
+			if (ce.LoadedPersister?.BatchSize > 1)
+			{
+				Session.PersistenceContext.BatchFetchQueue.RemoveBatchLoadableCollection(ce);
+			}
 			if (ce.LoadedPersister != null && ce.LoadedKey != null)
 			{
 				//TODO: is this 100% correct?

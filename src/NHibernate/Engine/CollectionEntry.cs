@@ -302,6 +302,10 @@ namespace NHibernate.Engine
 		{
 			snapshot = LoadedPersister.IsMutable ? collection.GetSnapshot(LoadedPersister) : null;
 			collection.SetSnapshot(loadedKey, role, snapshot);
+			if (LoadedPersister.BatchSize > 1)
+			{
+				((AbstractPersistentCollection) collection).Session.PersistenceContext.BatchFetchQueue.RemoveBatchLoadableCollection(this);
+			}
 		}
 
 		/// <summary>

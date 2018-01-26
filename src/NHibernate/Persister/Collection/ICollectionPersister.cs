@@ -282,5 +282,7 @@ namespace NHibernate.Persister.Collection
 		/// A place-holder to inform that the data-reader was empty.
 		/// </summary>
 		object NotFoundObject { get; }
+
+		int BatchSize { get; }
 	}
 }

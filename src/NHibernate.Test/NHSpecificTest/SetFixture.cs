@@ -348,6 +348,8 @@ namespace NHibernate.Test.NHSpecificTest
 			get { throw new NotImplementedException(); }
 		}
 
+		public int BatchSize { get; } = 0;
+
 		public ISessionFactoryImplementor Factory
 		{
 			get { return null; }

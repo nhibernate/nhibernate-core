@@ -233,7 +233,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary></summary>
-		protected virtual ISessionImplementor Session
+		public virtual ISessionImplementor Session
 		{
 			get { return session; }
 		}

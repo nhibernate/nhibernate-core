@@ -2043,6 +2043,11 @@ namespace NHibernate.Persister.Collection
 			get { return new string[] {IdentifierColumnName}; }
 		}
 
+		public int BatchSize
+		{
+			get { return batchSize; }
+		}
+
 		public SqlString GetSelectByUniqueKeyString(string propertyName)
 		{
 			return
