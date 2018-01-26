@@ -36,8 +36,7 @@ namespace NHibernate.Linq.ReWriters
 			}
 			if (resultOperator is AnyResultOperator)
 			{
-				Array.ForEach(queryModel.ResultOperators.OfType<FetchOneRequest>().ToArray(), op => queryModel.ResultOperators.Remove(op));
-				Array.ForEach(queryModel.ResultOperators.OfType<FetchManyRequest>().ToArray(), op => queryModel.ResultOperators.Remove(op));
+				ResultOperatorRemover.Remove(queryModel, x=>x is FetchRequestBase);
 			}
 			base.VisitResultOperator(resultOperator, queryModel, index);
 		}
