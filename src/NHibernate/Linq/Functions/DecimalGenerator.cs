@@ -57,7 +57,8 @@ namespace NHibernate.Linq.Functions
 					return treeBuilder.TransparentCast(mod, typeof(decimal));
 				case "round":
 					HqlExpression numberOfDecimals = (arguments.Count == 2) ? expressions[1] : treeBuilder.Constant(0);
-					return treeBuilder.MethodCall("round", expressions[0], numberOfDecimals);
+					HqlMethodCall round = treeBuilder.MethodCall("round", expressions[0], numberOfDecimals);
+					return treeBuilder.TransparentCast(round, typeof(decimal));
 			}
 
 			if (arguments.Count == 2)
