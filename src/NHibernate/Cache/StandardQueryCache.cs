@@ -133,14 +133,14 @@ namespace NHibernate.Cache
 						result.Add(TypeHelper.Assemble((object[])cacheable[i], returnTypes, session, null));
 					}
 				}
-				catch (UnresolvableObjectException)
+				catch (UnresolvableObjectException ex)
 				{
 					if (isNaturalKeyLookup)
 					{
 						//TODO: not really completely correct, since
 						//      the UnresolvableObjectException could occur while resolving
 						//      associations, leaving the PC in an inconsistent state
-						Log.Debug("could not reassemble cached result set");
+						Log.Debug(ex, "could not reassemble cached result set");
 						_queryCache.Remove(key);
 						return null;
 					}

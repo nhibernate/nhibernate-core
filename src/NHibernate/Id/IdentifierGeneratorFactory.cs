@@ -309,9 +309,9 @@ namespace NHibernate.Id
 					clazz = ReflectHelper.ClassForName(strategy);
 				}
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				throw new IdentifierGenerationException("Could not interpret id generator strategy: " + strategy);
+				throw new IdentifierGenerationException("Could not interpret id generator strategy: " + strategy, ex);
 			}
 			return clazz;
 		}

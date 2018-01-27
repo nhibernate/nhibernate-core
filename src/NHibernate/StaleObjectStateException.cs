@@ -23,7 +23,17 @@ namespace NHibernate
 		/// <param name="entityName">The EntityName that NHibernate was trying to update in the database.</param>
 		/// <param name="identifier">The identifier of the object that is stale.</param>
 		public StaleObjectStateException(string entityName, object identifier)
-			: base("Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect)")
+			: this(entityName, identifier, null)
+		{
+		}
+		/// <summary>
+		/// Initializes a new instance of the <see cref="StaleObjectStateException"/> class.
+		/// </summary>
+		/// <param name="entityName">The EntityName that NHibernate was trying to update in the database.</param>
+		/// <param name="identifier">The identifier of the object that is stale.</param>
+		/// <param name="innerException">The original exception having triggered this exception.</param>
+		public StaleObjectStateException(string entityName, object identifier, Exception innerException)
+			: base("Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect)", innerException)
 		{
 			this.entityName = entityName;
 			this.identifier = identifier;

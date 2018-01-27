@@ -890,9 +890,9 @@ namespace NHibernate.Mapping
 					}
 				}
 			}
-			catch (MappingException)
+			catch (MappingException ex)
 			{
-				throw new MappingException("property [" + propertyPath + "] not found on entity [" + EntityName + "]");
+				throw new MappingException("property [" + propertyPath + "] not found on entity [" + EntityName + "]", ex);
 			}
 
 			return property;

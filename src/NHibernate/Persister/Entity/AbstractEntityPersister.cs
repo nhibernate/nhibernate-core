@@ -2206,14 +2206,14 @@ namespace NHibernate.Persister.Entity
 			{
 				expectation.VerifyOutcomeNonBatched(rows, statement);
 			}
-			catch (StaleStateException)
+			catch (StaleStateException sse)
 			{
 				if (!IsNullableTable(tableNumber))
 				{
 					if (Factory.Statistics.IsStatisticsEnabled)
 						Factory.StatisticsImplementor.OptimisticFailure(EntityName);
 
-					throw new StaleObjectStateException(EntityName, id);
+					throw new StaleObjectStateException(EntityName, id, sse);
 				}
 			}
 			catch (TooManyRowsAffectedException ex)

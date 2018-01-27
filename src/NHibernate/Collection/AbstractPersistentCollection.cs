@@ -61,9 +61,11 @@ namespace NHibernate.Collection
 						{
 							return enclosingInstance.operationQueue[position].AddedInstance;
 						}
-						catch (IndexOutOfRangeException)
+						catch (IndexOutOfRangeException ex)
 						{
-							throw new InvalidOperationException();
+							throw new InvalidOperationException(
+								"MoveNext as not been called or its last call has yielded false (meaning the enumerator is beyond the end of the enumeration).",
+								ex);
 						}
 					}
 				}
