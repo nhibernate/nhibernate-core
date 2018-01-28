@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using NHibernate.Cache;
@@ -282,7 +283,22 @@ namespace NHibernate.Persister.Collection
 		/// A place-holder to inform that the data-reader was empty.
 		/// </summary>
 		object NotFoundObject { get; }
+	}
 
-		int BatchSize { get; }
+	public static class CollectionPersisterExtensions
+	{
+		/// <summary>
+		/// Get the batch size of a collection persister.
+		/// </summary>
+		//6.0 TODO: Merge into ICollectionPersister and convert to a property.
+		public static int GetBatchSize(this ICollectionPersister persister)
+		{
+			if (persister is AbstractCollectionPersister acp)
+			{
+				return acp.GetBatchSize();
+			}
+
+			throw new InvalidOperationException("Only persisters of AbstractCollectionPersister are supported.");
+		}
 	}
 }
