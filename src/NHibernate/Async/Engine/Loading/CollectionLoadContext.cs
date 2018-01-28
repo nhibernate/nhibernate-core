@@ -128,7 +128,9 @@ namespace NHibernate.Engine.Loading
 			{
 				log.Debug("ending loading collection [{0}]", lce);
 			}
-			ISessionImplementor session = LoadContext.PersistenceContext.Session;
+
+			var persistenceContext = LoadContext.PersistenceContext;
+			var session = persistenceContext.Session;
 
 			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
 			var stopWath = new Stopwatch();
@@ -141,17 +143,17 @@ namespace NHibernate.Engine.Loading
 
 			if (persister.CollectionType.HasHolder())
 			{
-				LoadContext.PersistenceContext.AddCollectionHolder(lce.Collection);
+				persistenceContext.AddCollectionHolder(lce.Collection);
 			}
 
-			CollectionEntry ce = LoadContext.PersistenceContext.GetCollectionEntry(lce.Collection);
+			CollectionEntry ce = persistenceContext.GetCollectionEntry(lce.Collection);
 			if (ce == null)
 			{
-				ce = LoadContext.PersistenceContext.AddInitializedCollection(persister, lce.Collection, lce.Key);
+				ce = persistenceContext.AddInitializedCollection(persister, lce.Collection, lce.Key);
 			}
 			else
 			{
-				ce.PostInitialize(lce.Collection);
+				ce.PostInitialize(lce.Collection, persistenceContext);
 			}
 
 			bool addToCache = hasNoQueuedAdds && persister.HasCache && 

@@ -302,9 +302,20 @@ namespace NHibernate.Engine
 		{
 			snapshot = LoadedPersister.IsMutable ? collection.GetSnapshot(LoadedPersister) : null;
 			collection.SetSnapshot(loadedKey, role, snapshot);
+		}
+
+		/// <summary>
+		/// Updates the CollectionEntry to reflect that the <see cref="IPersistentCollection"/>
+		/// has been initialized.
+		/// </summary>
+		/// <param name="collection">The initialized <see cref="AbstractPersistentCollection"/> that this Entry is for.</param>
+		/// <param name="persistenceContext"></param>
+		public void PostInitialize(IPersistentCollection collection, IPersistenceContext persistenceContext)
+		{
+			PostInitialize(collection);
 			if (LoadedPersister.GetBatchSize() > 1)
 			{
-				collection.GetCurrentSession().PersistenceContext.BatchFetchQueue.RemoveBatchLoadableCollection(this);
+				persistenceContext.BatchFetchQueue.RemoveBatchLoadableCollection(this);
 			}
 		}
 

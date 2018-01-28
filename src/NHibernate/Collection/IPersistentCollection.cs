@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Data.Common;
 using NHibernate.Collection.Generic;
@@ -337,22 +336,5 @@ namespace NHibernate.Collection
 		/// that have been orphaned.
 		/// </returns>
 		ICollection GetOrphans(object snapshot, string entityName);
-	}
-
-	public static class PersistentCollectionExtensions
-	{
-		/// <summary>
-		/// Get the session associated with the collection.
-		/// </summary>
-		//6.0 TODO: Merge into IPersistentCollection interface. Consider converting to a property.
-		public static ISessionImplementor GetCurrentSession(this IPersistentCollection collection)
-		{
-			if (collection is AbstractPersistentCollection apc)
-			{
-				return apc.GetCurrentSession();
-			}
-
-			throw new InvalidOperationException("Only collections of AbstractPersistentCollection are supported.");
-		}
 	}
 }

@@ -917,7 +917,7 @@ namespace NHibernate.Engine
 																										object id)
 		{
 			CollectionEntry ce = new CollectionEntry(collection, persister, id, flushing);
-			ce.PostInitialize(collection);
+			ce.PostInitialize(collection, this);
 			AddCollection(collection, ce, id);
 			return ce;
 		}

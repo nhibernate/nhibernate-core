@@ -868,13 +868,5 @@ namespace NHibernate.Collection
 		 */
 
 		#endregion
-
-		/// <summary>
-		/// Get the session associated with the collection.
-		/// </summary>
-		public ISessionImplementor GetCurrentSession()
-		{
-			return session;
-		}
 	}
 }
