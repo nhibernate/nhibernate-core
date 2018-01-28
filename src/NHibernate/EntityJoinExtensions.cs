@@ -8,6 +8,8 @@ namespace NHibernate
 {
 	public static class EntityJoinExtensions
 	{
+		#region QueryOver extensions
+
 		public static TThis JoinEntityAlias<TThis, TEntity>(this TThis queryOver, Expression<Func<TEntity>> alias, ICriterion withClause, JoinType joinType = JoinType.InnerJoin, string entityName = null) where TThis : IQueryOver
 		{
 			CreateEntityCriteria(queryOver.UnderlyingCriteria, alias, withClause, joinType, entityName);
@@ -30,13 +32,23 @@ namespace NHibernate
 			return q.JoinEntityQueryOver(alias, withClause, joinType, entityName);
 		}
 
+		#endregion QueryOver extensions
+
+		#region Criteria extensions
+
 		public static ICriteria CreateEntityAlias(this ICriteria criteria, string alias, ICriterion withClause, JoinType joinType, string entityName)
 		{
 			CreateEntityCriteria(criteria, alias, withClause, joinType, entityName);
 			return criteria;
 		}
+		
+		public static ICriteria CreateEntityAlias<U>(this ICriteria criteria, Expression<Func<U>> alias, ICriterion withClause, JoinType joinType = JoinType.InnerJoin, string entityName = null)
+		{
+			CreateEntityCriteria(criteria, alias, withClause, joinType, entityName);
+			return criteria;
+		}
 
-		public static ICriteria CreateEntityCriteria(this ICriteria criteria, string alias, ICriterion withClause, JoinType joinType = JoinType.InnerJoin, string entityName = null)
+		public static ICriteria CreateEntityCriteria(this ICriteria criteria, string alias, ICriterion withClause, JoinType joinType, string entityName)
 		{
 			var c = CastOrThrow<ISupportEntityJoinCriteria>(criteria);
 			return c.CreateEntityCriteria(alias, withClause, joinType, entityName);
@@ -47,10 +59,12 @@ namespace NHibernate
 			return CreateEntityCriteria(criteria, ExpressionProcessor.FindMemberExpression(alias.Body), withClause, joinType, entityName ?? typeof(U).FullName);
 		}
 
+		#endregion Criteria extensions
+
 		private static T CastOrThrow<T>(object obj) where T : class
 		{
 			return obj as T
-					?? throw new ArgumentException($"{obj.GetType().FullName} requires to implement {nameof(T)} interface to support explicit entity joins.");
+					?? throw new ArgumentException($"{obj.GetType().FullName} requires to implement {typeof(T).FullName} interface to support explicit entity joins.");
 		}
 	}
 }
