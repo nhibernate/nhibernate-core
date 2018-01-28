@@ -7,16 +7,11 @@
 
 	<property name="root.dir" value="." />
 
-	<include buildfile="${root.dir}/build-common/common-project.xml" />
+	<include buildfile="${root.dir}/build-common/common.xml" />
 
 	<!-- Pass -D:skip.tests=true to NAnt to skip running tests when building -->
 	<property name="skip.tests" value="false" overwrite="false" />
 	<property name="skip.manual" value="false" overwrite="false" />
-	<!--
-		Supported versions of .NET Framework, separated by spaces.
-		Used by *-all-frameworks targets.
-	-->
-	<property name="supported.frameworks" value="net-4.0" />
 
 	<target name="init" depends="common.init" description="Initializes build properties" />
 
@@ -25,19 +20,60 @@
 		<mkdir dir="${testresults.dir}" />
 	</target>
 
-	<target name="build"
-		depends="check-framework-version init prepare-build-directory common.compile-all"
-		description="Builds NHibernate in the current configuration" />
+	<target name="nuget.set-properties">
+		<property name="nuget.nupackages.relative-dir" value="nuget_gallery" />
+		<property name="nuget.nupackages.dir" value="${build.dir}/${nuget.nupackages.relative-dir}" />
+		<property name="nuget.nupackages.pushbatfile" value="${nuget.nupackages.dir}/NuGetPush.bat" />
+	</target>
 
-	<target name="generate-async" depends="common.nuget-restore common.solution-restore common.find-async-generator-console">
+	<target name="build"
+		depends="init prepare-build-directory nuget.set-properties"
+		description="Builds NHibernate in the current configuration">
+
+		<exec program="dotnet" verbose="true">
+			<arg value="msbuild" />
+			<arg value="${root.dir}/src/NHibernate.sln" />
+			<arg value="/p:OutputPath=&quot;${path::get-full-path(bin.dir)}&quot;" />
+			<arg value="/p:Platform=&quot;Any CPU&quot;" />
+			<arg value="/p:Configuration=&quot;Debug&quot;" if="${project.config == 'debug'}" />
+			<arg value="/p:Configuration=&quot;Release&quot;" if="${project.config == 'release'}" />
+			<arg value="/p:GeneratePackageOnBuild=&quot;True&quot;" />
+			<arg value="/p:IncludeSymbols=&quot;True&quot;" />
+			<arg value="/p:IncludeSource=&quot;True&quot;" />
+			<arg value="/p:PackageOutputPath=&quot;${path::get-full-path(nuget.nupackages.dir)}&quot;" />
+			<arg value="/t:Restore" />
+			<arg value="/t:Rebuild" />
+			<arg value="/v:q" />
+			<arg value="/m" />
+		</exec> 
+	</target>
+
+	<target name="solution-restore" depends="common.nuget-restore">
+		<exec program="dotnet" verbose="true">
+			<arg value="msbuild" />
+			<arg value="/t:Restore" />
+			<arg value="${root.dir}/src/NHibernate.sln" />
+		</exec> 
+	</target>
+
+	<target name="get-nuget-package-path" depends="common.nuget-restore">
+		<xmlpeek 
+			file="${tools.dir}/packages.config" 
+			xpath="/packages/package[@id = '${nuget-package-id}']/@version"
+			property="nuget-package-version" />
+		<property name="nuget-package-path" value="${tools.dir}/${nuget-package-id}.${nuget-package-version}/" />
+	</target>
+
+	<target name="find-async-generator-console">
+		<property name="nuget-package-id" value="CSharpAsyncGenerator.CommandLine" />
+		<call target="get-nuget-package-path" />
+		<property name="async-generator-console"  value="${nuget-package-path}/tools/AsyncGenerator.CommandLine.exe" />
+	</target>
+
+	<target name="generate-async" depends="common.nuget-restore solution-restore find-async-generator-console">
 		<exec
 			workingdir="${root.dir}/src"
 			program="${async-generator-console}" />
-	</target>
-	
-	<target name="check-framework-version">
-			<echo>Running with ${framework::get-target-framework()}</echo>
-			<fail message="ERROR: NHibernate requires .Net 4.0." if="${framework::get-target-framework()!='net-4.0'}"/>
 	</target>
 
 	<target name="test-report" if="${nunit2report.installed}">
@@ -49,10 +85,96 @@
 		</nunit2report>
 	</target>
 
+	<target name="put-connection-settings-into-defined-app-config">
+
+		<!-- make sure the config file is writable -->
+		<attrib file="${app.config}" readonly="false" />
+
+		<!-- 
+			Tell nhibernate how to connect to the test database.
+		-->
+		<xmlpoke file="${app.config}"
+			xpath="//*/hbm:property[@name='dialect']"
+			value="${nhibernate.dialect}">
+			<namespaces>
+				<namespace prefix="hbm" uri="urn:nhibernate-configuration-2.2" />
+			</namespaces>
+		</xmlpoke>
+
+		<xmlpoke file="${app.config}"
+			xpath="//*/hbm:property[@name='command_timeout']"
+			value="${nhibernate.command_timeout}">
+			<namespaces>
+				<namespace prefix="hbm" uri="urn:nhibernate-configuration-2.2" />
+			</namespaces>
+		</xmlpoke>
+
+		<xmlpoke file="${app.config}"
+			xpath="//*/hbm:property[@name='connection.driver_class']"
+			value="${nhibernate.connection.driver_class}">
+			<namespaces>
+				<namespace prefix="hbm" uri="urn:nhibernate-configuration-2.2" />
+			</namespaces>
+		</xmlpoke>
+		<xmlpoke file="${app.config}"
+			xpath="//*/hbm:property[@name='connection.connection_string']"
+			value="${nhibernate.connection.connection_string}">
+			<namespaces>
+				<namespace prefix="hbm" uri="urn:nhibernate-configuration-2.2" />
+			</namespaces>
+		</xmlpoke>
+		
+		<!-- Make sure the property exists - it's only set for some scenarios. -->
+		<property name="nhibernate.odbc.explicit_datetime_scale" value="" unless="${property::exists('nhibernate.odbc.explicit_datetime_scale')}"/>
+		<xmlpoke file="${app.config}"
+			xpath="//*/hbm:property[@name='odbc.explicit_datetime_scale']"
+			value="${nhibernate.odbc.explicit_datetime_scale}">
+			<namespaces>
+				<namespace prefix="hbm" uri="urn:nhibernate-configuration-2.2" />
+			</namespaces>
+		</xmlpoke>
+	</target>
+
+	<target name="put-connection-settings-into-app-config">
+		<property name="app.config" value="${bin.dir}/${test.file}.dll.config" />
+		<call target="put-connection-settings-into-defined-app-config" />
+	</target>
+
+	<target name="find-nunit">
+		<property name="nuget-package-id" value="NUnit.ConsoleRunner" />
+		<call target="get-nuget-package-path" />
+		<property name="nunit-console" value="${nuget-package-path}/tools/nunit3-console.exe" />
+	</target>
+
+	<target name="run-tests" depends="find-nunit"
+		description="Run NUnit tests">
+		<property name="run-tests.failonerror" value="${not property::exists(test.file + '.IgnoreFail')}"/>
+		<property name="run-tests.x86" value="--x86" unless="${property::exists('nunit-x64')}" />
+		<property name="run-tests.x86" value="" if="${property::exists('nunit-x64')}" />
+		<property name="run-tests.teamcity" value="--teamcity" if="${property::exists('config.teamcity')}" />
+		<property name="run-tests.teamcity" value="" unless="${property::exists('run-tests.teamcity')}" />
+		<exec program="${nunit-console}" failonerror="${run-tests.failonerror}">
+			<arg line="${bin.dir}/${test.file}.dll --result=${testresults.dir}/${test.file}.dll-results.xml;format=nunit2 --framework=${framework::get-target-framework()} ${run-tests.teamcity} ${run-tests.x86}" />
+		</exec>
+	</target>
+
+	<target name="remove-connection-settings-from-app-config">
+		<property name="app.config" value="${bin.dir}/${test.file}.dll.config" />
+
+		<xmlpoke
+			file="${app.config}"
+			xpath="/configuration/nhibernate/add[@key='hibernate.connection.connection_string']/@value"
+			value="conn string here" 
+		/>
+	</target>
+
+	<target name="run-database-tests"
+		depends="put-connection-settings-into-app-config run-tests remove-connection-settings-from-app-config" />
+
 	<target name="test" depends="init build" description="Runs all NHibernate tests for the current framework" unless="${skip.tests}">
 		<property name="testfiles.all" value="NHibernate.TestDatabaseSetup NHibernate.Test NHibernate.Test.VisualBasic" />
 		<foreach item="String" in="${testfiles.all}" delim=" " property="test.file">
-			<call target="common.run-database-tests"/>
+			<call target="run-database-tests"/>
 		</foreach>
 	</target>
 	
@@ -86,44 +208,8 @@
 		<call target="coverage-report" />
 	</target>
 
-	<target name="sources">
-		<property name="source.tmpdir" value="${build.dir}/tmp-src" />
-		<copy todir="${source.tmpdir}">
-			<fileset>
-				<!-- copy dlls used by this build -->
-				<include name="${lib.dir}/**"  />
-
-				<!-- copy all of the NHibernate source -->
-				<include name="src/NHibernate*/**" />
-				<include name="src/*.*" />
-
-				<include name="build-common/**" />
-
-				<include name="*.build" />
-				<include name="LICENSE.txt" />
-				<include name="releasenotes.txt" />
-				<include name="README.md" />
-
-				<!-- exclude ReSharper stuff -->
-				<exclude name="**/_ReSharper*/**" />
-				<exclude name="**/*.resharperoptions" />
-				<exclude name="**/*resharper*" />
-
-				<!-- exclude VS.NET stuff -->
-				<exclude name="**/*.suo" />
-				<exclude name="**/*.user" />
-				<exclude name="**/bin/**" />
-				<exclude name="**/obj/**" />
-			</fileset>
-		</copy>
-	</target>
-
-	<target name="sources-zip" depends="init sources">
-		<zip zipfile="${build.dir}/NHibernate-${project.version}-src.zip">
-			<fileset basedir="${source.tmpdir}">
-				<include name="**/*" />
-			</fileset>
-		</zip>
+	<target name="sources-zip" depends="init">
+		<exec program="git" commandline="archive HEAD --format zip --output &quot;${build.dir}/NHibernate-${project.version}-src.zip&quot;"/>
 	</target>
 
 	<target name="binaries-zip" depends="init bin-pack">
