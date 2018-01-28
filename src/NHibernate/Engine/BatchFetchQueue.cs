@@ -22,7 +22,7 @@ namespace NHibernate.Engine
 		/// type at a time.
 		/// </remarks>
 		private readonly IDictionary<string, LinkedHashSet<EntityKey>> batchLoadableEntityKeys = new Dictionary<string, LinkedHashSet<EntityKey>>(8);
-		
+
 		/// <summary>
 		/// A map of <see cref="SubselectFetch">subselect-fetch descriptors</see>
 		/// keyed by the <see cref="EntityKey" /> against which the descriptor is
@@ -30,7 +30,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		private readonly IDictionary<EntityKey, SubselectFetch> subselectsByEntityKey = new Dictionary<EntityKey, SubselectFetch>(8);
 
-		private readonly IDictionary<string, LinkedHashMap <CollectionEntry, IPersistentCollection>> batchLoadableCollections = new Dictionary<string, LinkedHashMap<CollectionEntry, IPersistentCollection>>(8);
+		private readonly IDictionary<string, LinkedHashMap<CollectionEntry, IPersistentCollection>> batchLoadableCollections = new Dictionary<string, LinkedHashMap<CollectionEntry, IPersistentCollection>>(8);
 		/// <summary>
 		/// The owning persistence context.
 		/// </summary>
@@ -155,7 +155,7 @@ namespace NHibernate.Engine
 				map = new LinkedHashMap<CollectionEntry, IPersistentCollection>();
 				batchLoadableCollections.Add(persister.Role, map);
 			}
-			map[ce]=collection;
+			map[ce] = collection;
 		}
 
 		/// <summary>
@@ -189,7 +189,7 @@ namespace NHibernate.Engine
 
 			if (batchLoadableCollections.TryGetValue(collectionPersister.Role, out var map))
 			{
-				foreach (KeyValuePair<CollectionEntry,IPersistentCollection> me in map)
+				foreach (KeyValuePair<CollectionEntry, IPersistentCollection> me in map)
 				{
 					var ce = me.Key;
 					var collection = me.Value;
@@ -205,11 +205,7 @@ namespace NHibernate.Engine
 
 					if (collection.WasInitialized)
 					{
-						// should never happen
-						if (log.IsWarnEnabled())
-						{
-							log.Warn("Encountered initialized collection in BatchFetchQueue, this should not happen.");
-						}
+						log.Warn("Encountered initialized collection in BatchFetchQueue, this should not happen.");
 						continue;
 					}
 
@@ -245,7 +241,7 @@ namespace NHibernate.Engine
 					}
 				}
 			}
-			
+
 			return keys; //we ran out of keys to try
 		}
 
@@ -258,7 +254,7 @@ namespace NHibernate.Engine
 		/// <param name="id">The identifier of the entity currently demanding load.</param>
 		/// <param name="batchSize">The maximum number of keys to return</param>
 		/// <returns>an array of identifiers, of length batchSize (possibly padded with nulls)</returns>
-		public object[] GetEntityBatch(IEntityPersister persister,object id,int batchSize)
+		public object[] GetEntityBatch(IEntityPersister persister, object id, int batchSize)
 		{
 			object[] ids = new object[batchSize];
 			ids[0] = id; //first element of array is reserved for the actual instance we are loading!
@@ -266,7 +262,7 @@ namespace NHibernate.Engine
 			int end = -1;
 			bool checkForEnd = false;
 
-			if (batchLoadableEntityKeys.TryGetValue(persister.EntityName,out var set))//TODO: this needn't exclude subclasses...
+			if (batchLoadableEntityKeys.TryGetValue(persister.EntityName, out var set))
 			{
 				foreach (var key in set)
 				{

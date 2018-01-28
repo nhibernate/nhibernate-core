@@ -43,7 +43,7 @@ namespace NHibernate.Engine
 
 			if (batchLoadableCollections.TryGetValue(collectionPersister.Role, out var map))
 			{
-				foreach (KeyValuePair<CollectionEntry,IPersistentCollection> me in map)
+				foreach (KeyValuePair<CollectionEntry, IPersistentCollection> me in map)
 				{
 					var ce = me.Key;
 					var collection = me.Value;
@@ -59,11 +59,7 @@ namespace NHibernate.Engine
 
 					if (collection.WasInitialized)
 					{
-						// should never happen
-						if (log.IsWarnEnabled())
-						{
-							log.Warn("Encountered initialized collection in BatchFetchQueue, this should not happen.");
-						}
+						log.Warn("Encountered initialized collection in BatchFetchQueue, this should not happen.");
 						continue;
 					}
 
@@ -99,7 +95,7 @@ namespace NHibernate.Engine
 					}
 				}
 			}
-			
+
 			return keys; //we ran out of keys to try
 		}
 
@@ -113,7 +109,7 @@ namespace NHibernate.Engine
 		/// <param name="batchSize">The maximum number of keys to return</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>an array of identifiers, of length batchSize (possibly padded with nulls)</returns>
-		public async Task<object[]> GetEntityBatchAsync(IEntityPersister persister,object id,int batchSize, CancellationToken cancellationToken)
+		public async Task<object[]> GetEntityBatchAsync(IEntityPersister persister, object id, int batchSize, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object[] ids = new object[batchSize];
@@ -122,7 +118,7 @@ namespace NHibernate.Engine
 			int end = -1;
 			bool checkForEnd = false;
 
-			if (batchLoadableEntityKeys.TryGetValue(persister.EntityName,out var set))//TODO: this needn't exclude subclasses...
+			if (batchLoadableEntityKeys.TryGetValue(persister.EntityName, out var set))
 			{
 				foreach (var key in set)
 				{

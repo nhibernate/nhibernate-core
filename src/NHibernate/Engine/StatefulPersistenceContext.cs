@@ -835,7 +835,7 @@ namespace NHibernate.Engine
 		{
 			CollectionEntry ce = new CollectionEntry(collection, persister, id, flushing);
 			AddCollection(collection, ce, id);
-			if (persister.BatchSize > 0)
+			if (persister.BatchSize > 1)
 			{
 				batchFetchQueue.AddBatchLoadableCollection(collection, ce);
 			}
