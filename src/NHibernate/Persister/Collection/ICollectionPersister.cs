@@ -298,7 +298,11 @@ namespace NHibernate.Persister.Collection
 				return acp.GetBatchSize();
 			}
 
-			throw new InvalidOperationException("Only persisters of AbstractCollectionPersister are supported.");
+			NHibernateLogger
+				.For(typeof(CollectionPersisterExtensions))
+				.Warn("Collection persister of {0} type is not supported, returning 1 as a batch size.", persister?.GetType());
+
+			return 1;
 		}
 	}
 }
