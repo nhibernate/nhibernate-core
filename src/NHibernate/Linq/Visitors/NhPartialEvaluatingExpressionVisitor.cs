@@ -3,7 +3,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Parsing;
-using Remotion.Linq.Parsing.ExpressionVisitors;
 using Remotion.Linq.Parsing.ExpressionVisitors.TreeEvaluation;
 
 namespace NHibernate.Linq.Visitors
@@ -23,7 +22,7 @@ namespace NHibernate.Linq.Visitors
 
 		public static Expression EvaluateIndependentSubtrees(Expression expression)
 		{
-			var evaluatedExpression = PartialEvaluatingExpressionVisitor.EvaluateIndependentSubtrees(expression, new NhEvaluatableExpressionFilter());
+			var evaluatedExpression = CustomPartialEvaluatingExpressionVisitor.EvaluateIndependentSubtrees(expression, new NhEvaluatableExpressionFilter());
 			return new NhPartialEvaluatingExpressionVisitor().Visit(evaluatedExpression);
 		}
 
