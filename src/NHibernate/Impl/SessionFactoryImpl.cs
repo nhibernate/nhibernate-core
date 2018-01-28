@@ -402,7 +402,7 @@ namespace NHibernate.Impl
 						failingQueries.Append('{').Append(pair.Key).Append('}');
 						log.Error(pair.Value, "Error in named query: {0}", pair.Key);
 					}
-					throw new HibernateException(failingQueries.ToString());
+					throw new AggregateHibernateException(failingQueries.ToString(), errors.Values);
 				}
 			}
 			#endregion
