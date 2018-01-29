@@ -812,6 +812,18 @@ namespace NHibernate.Test.Linq
 			Assert.That(result.Children, Is.Not.Empty);
 		}
 
+		[Test(Description = "GH-1556")]
+		public void ContainsOnPersistedCollection()
+		{
+			var animal = session.Query<Animal>().Single(a => a.SerialNumber == "123");
+
+			var result = session.Query<Animal>()
+			                    .Where(e => animal.Children.Contains(e.Father))
+			                    .OrderBy(e => e.Id)
+			                    .FirstOrDefault();
+			Assert.That(result, Is.Not.Null);
+			Assert.That(result.SerialNumber, Is.EqualTo("1121"));
+		}
 
 		private static List<object[]> CanUseCompareInQueryDataSource()
 		{
