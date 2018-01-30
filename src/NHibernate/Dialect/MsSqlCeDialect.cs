@@ -194,7 +194,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "+", ")"));
 			RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "((?1) % (?2))"));
 
-			RegisterFunction("round", new StandardSQLFunction("round"));
+			RegisterFunction("round", new RoundEmulatingSingleParameterFunction());
 
 			RegisterFunction("bit_length", new SQLFunctionTemplate(NHibernateUtil.Int32, "datalength(?1) * 8"));
 			RegisterFunction("extract", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(?1, ?3)"));
