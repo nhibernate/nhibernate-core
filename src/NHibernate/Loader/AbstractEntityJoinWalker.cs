@@ -31,7 +31,7 @@ namespace NHibernate.Loader
 
 		protected virtual void InitAll(SqlString whereString, SqlString orderByString, LockMode lockMode)
 		{
-			WalkEntityTree(persister, Alias);
+			AddAssociations();
 			IList<OuterJoinableAssociation> allAssociations = new List<OuterJoinableAssociation>(associations);
 			allAssociations.Add(CreateAssociation(persister.EntityType, alias));
 
@@ -48,7 +48,7 @@ namespace NHibernate.Loader
 
 		protected void InitProjection(SqlString projectionString, SqlString whereString, SqlString orderByString, SqlString groupByString, SqlString havingString, IDictionary<string, IFilter> enabledFilters, LockMode lockMode, IList<EntityProjection> entityProjections)
 		{
-			WalkEntityTree(persister, Alias);
+			AddAssociations();
 
 			int countEntities = entityProjections.Count;
 			if (countEntities > 0)
@@ -79,6 +79,11 @@ namespace NHibernate.Loader
 			}
 
 			InitStatementString(projectionString, whereString, orderByString, groupByString, havingString, lockMode);
+		}
+
+		protected virtual void AddAssociations()
+		{
+			WalkEntityTree(persister, Alias);
 		}
 
 		private OuterJoinableAssociation CreateAssociation(EntityType entityType, string tableAlias)

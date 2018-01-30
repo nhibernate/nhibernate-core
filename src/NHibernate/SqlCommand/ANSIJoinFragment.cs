@@ -39,6 +39,12 @@ namespace NHibernate.SqlCommand
 
 			_fromFragment.Add(joinString + tableName + ' ' + alias + " on ");
 
+			if (fkColumns.Length == 0)
+			{
+				AddBareCondition(_fromFragment, on);
+				return;
+			}
+
 			for (int j = 0; j < fkColumns.Length; j++)
 			{
 				_fromFragment.Add(fkColumns[j] + "=" + alias + StringHelper.Dot + pkColumns[j]);

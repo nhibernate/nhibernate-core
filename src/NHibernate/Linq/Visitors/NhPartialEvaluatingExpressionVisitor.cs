@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using NHibernate.Collection;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Parsing;
 using Remotion.Linq.Parsing.ExpressionVisitors;
@@ -12,13 +13,12 @@ namespace NHibernate.Linq.Visitors
 	{
 		protected override Expression VisitConstant(ConstantExpression expression)
 		{
-			var value = expression.Value as Expression;
-			if (value == null)
+			if (expression.Value is Expression value)
 			{
-				return base.VisitConstant(expression);
+				return EvaluateIndependentSubtrees(value);
 			}
 
-			return EvaluateIndependentSubtrees(value);
+			return base.VisitConstant(expression);
 		}
 
 		public static Expression EvaluateIndependentSubtrees(Expression expression)
@@ -37,6 +37,16 @@ namespace NHibernate.Linq.Visitors
 
 	internal class NhEvaluatableExpressionFilter : EvaluatableExpressionFilterBase
 	{
+		public override bool IsEvaluatableConstant(ConstantExpression node)
+		{
+			if (node.Value is IPersistentCollection && node.Value is IQueryable)
+			{
+				return false;
+			}
+
+			return base.IsEvaluatableConstant(node);
+		}
+
 		public override bool IsEvaluatableMethodCall(MethodCallExpression node)
 		{
 			if (node == null)

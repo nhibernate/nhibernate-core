@@ -295,6 +295,25 @@ namespace NHibernate.Loader
 			}
 		}
 
+		internal void AddExplicitEntityJoinAssociation(
+			IOuterJoinLoadable persister,
+			string tableAlias,
+			JoinType joinType,
+			SqlString withClause)
+		{
+			OuterJoinableAssociation assoc =
+				new OuterJoinableAssociation(
+					persister.EntityType,
+					string.Empty,
+					Array.Empty<string>(),
+					tableAlias,
+					joinType,
+					withClause,
+					Factory,
+					enabledFilters);
+			AddAssociation(tableAlias, assoc);
+		}
+
 		private void WalkEntityAssociationTree(IAssociationType associationType, IOuterJoinLoadable persister,
 											   int propertyNumber, string alias, string path, bool nullable, int currentDepth,
 											   ILhsAssociationTypeSqlInfo associationTypeSQLInfo)

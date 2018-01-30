@@ -54,7 +54,26 @@ namespace NHibernate.Test.Linq.ByMethod
 		public void AnyWithFetch()
 		{
 			//NH-3241
-			var result = db.Orders.Fetch(x => x.Customer).FetchMany(x => x.OrderLines).Any();
+			Assert.DoesNotThrow(() =>
+				{
+				var result = db.Orders.Fetch(x => x.Customer).FetchMany(x => x.OrderLines).Any();
+				}
+			);
+		}
+
+		[Test]
+		public void AnyWithFetchInSubQuery()
+		{
+			Assert.DoesNotThrow(() =>
+				{
+					var result = db.Orders
+					               .Where(x => x.Customer.CustomerId == "Test")
+					               .Fetch(x => x.Customer)
+					               .FetchMany(x => x.OrderLines)
+					               .Where(x => x.Freight > 1)
+					               .Count();
+				}
+			);
 		}
 	}
 }
