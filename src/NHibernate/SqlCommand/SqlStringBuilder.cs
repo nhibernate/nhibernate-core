@@ -316,6 +316,11 @@ namespace NHibernate.SqlCommand
 			return new SqlString(sqlParts.ToArray());
 		}
 
+		public SqlString ToSqlString(bool intern)
+		{
+			return new SqlString(sqlParts, intern);
+		}
+
 		public override string ToString()
 		{
 			return ToSqlString().ToString();

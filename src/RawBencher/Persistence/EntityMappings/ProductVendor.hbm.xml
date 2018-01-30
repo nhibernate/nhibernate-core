@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="ProductVendor" table="[Purchasing].[ProductVendor]" optimistic-lock="none" >
+		<composite-id>
+			<key-many-to-one name="Product" column="[ProductID]" access="field.camelcase-underscore"  />
+			<key-many-to-one name="Vendor" column="[BusinessEntityID]" access="field.camelcase-underscore"  />
+		</composite-id>
+		<property name="AverageLeadTime" column="[AverageLeadTime]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="LastReceiptCost" column="[LastReceiptCost]" access="field.camelcase-underscore"/>
+		<property name="LastReceiptDate" column="[LastReceiptDate]" access="field.camelcase-underscore"/>
+		<property name="MaxOrderQty" column="[MaxOrderQty]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="MinOrderQty" column="[MinOrderQty]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="OnOrderQty" column="[OnOrderQty]" access="field.camelcase-underscore"/>
+		<property name="StandardPrice" column="[StandardPrice]" access="field.camelcase-underscore" not-null="true"/>
+		<many-to-one name="UnitMeasure" access="field.camelcase-underscore" fetch="select" cascade="all">
+			<column name="[UnitMeasureCode]"/>
+		</many-to-one>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>

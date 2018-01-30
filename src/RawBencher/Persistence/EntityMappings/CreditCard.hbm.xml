@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="CreditCard" table="[Sales].[CreditCard]" optimistic-lock="none" >
+		<id name="CreditCardId" column="[CreditCardID]" access="field.camelcase-underscore" >
+			<generator class="identity"/>
+		</id>
+		<property name="CardNumber" column="[CardNumber]" access="field.camelcase-underscore" not-null="true" length="25"/>
+		<property name="CardType" column="[CardType]" access="field.camelcase-underscore" not-null="true" length="50"/>
+		<property name="ExpMonth" column="[ExpMonth]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="ExpYear" column="[ExpYear]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<set name="ContactCreditCards" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[CreditCardID]"/>
+			</key>
+			<one-to-many class="ContactCreditCard"/>
+		</set>
+		<set name="SalesOrderHeaders" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[CreditCardID]"/>
+			</key>
+			<one-to-many class="SalesOrderHeader"/>
+		</set>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>

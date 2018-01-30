@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="Person" table="[Person].[Person]" optimistic-lock="none" >
+		<id name="BusinessEntityId" column="[BusinessEntityID]" access="field.camelcase-underscore" >
+			<generator class="foreign">
+				<param name="property">BusinessEntity</param>
+			</generator>
+		</id>
+		<property name="AdditionalContactInfo" column="[AdditionalContactInfo]" access="field.camelcase-underscore" type="StringClob"/>
+		<property name="Demographics" column="[Demographics]" access="field.camelcase-underscore" type="StringClob"/>
+		<property name="EmailPromotion" column="[EmailPromotion]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="FirstName" column="[FirstName]" access="field.camelcase-underscore" not-null="true" length="50"/>
+		<property name="LastName" column="[LastName]" access="field.camelcase-underscore" not-null="true" length="50"/>
+		<property name="MiddleName" column="[MiddleName]" access="field.camelcase-underscore" length="50"/>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="NameStyle" column="[NameStyle]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="PersonType" column="[PersonType]" access="field.camelcase-underscore" not-null="true" length="2"/>
+		<property name="Rowguid" column="[rowguid]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Suffix" column="[Suffix]" access="field.camelcase-underscore" length="10"/>
+		<property name="Title" column="[Title]" access="field.camelcase-underscore" length="8"/>
+		<one-to-one name="BusinessEntity" access="field.camelcase-underscore" fetch="select" cascade="all" constrained="true"/>
+		<set name="BusinessEntityContacts" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[PersonID]"/>
+			</key>
+			<one-to-many class="BusinessEntityContact"/>
+		</set>
+		<set name="ContactCreditCards" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[BusinessEntityID]"/>
+			</key>
+			<one-to-many class="ContactCreditCard"/>
+		</set>
+		<set name="Customers" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[PersonID]"/>
+			</key>
+			<one-to-many class="Customer"/>
+		</set>
+		<set name="EmailAddresses" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[BusinessEntityID]"/>
+			</key>
+			<one-to-many class="EmailAddress"/>
+		</set>
+		<one-to-one name="Employee" access="field.camelcase-underscore" fetch="select" cascade="all"/>
+		<one-to-one name="Password" access="field.camelcase-underscore" fetch="select" cascade="all"/>
+		<set name="PersonPhones" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[BusinessEntityID]"/>
+			</key>
+			<one-to-many class="PersonPhone"/>
+		</set>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>

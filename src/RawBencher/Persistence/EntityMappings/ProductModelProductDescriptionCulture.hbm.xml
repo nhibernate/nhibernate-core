@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="ProductModelProductDescriptionCulture" table="[Production].[ProductModelProductDescriptionCulture]" optimistic-lock="none" >
+		<composite-id>
+			<key-many-to-one name="Culture" column="[CultureID]" access="field.camelcase-underscore"  />
+			<key-many-to-one name="ProductDescription" column="[ProductDescriptionID]" access="field.camelcase-underscore"  />
+			<key-many-to-one name="ProductModel" column="[ProductModelID]" access="field.camelcase-underscore"  />
+		</composite-id>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>

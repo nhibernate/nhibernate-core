@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="Product" table="[Production].[Product]" optimistic-lock="none" >
+		<id name="ProductId" column="[ProductID]" access="field.camelcase-underscore" >
+			<generator class="identity"/>
+		</id>
+		<property name="Class" column="[Class]" access="field.camelcase-underscore" length="2"/>
+		<property name="Color" column="[Color]" access="field.camelcase-underscore" length="15"/>
+		<property name="DaysToManufacture" column="[DaysToManufacture]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="DiscontinuedDate" column="[DiscontinuedDate]" access="field.camelcase-underscore"/>
+		<property name="FinishedGoodsFlag" column="[FinishedGoodsFlag]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="ListPrice" column="[ListPrice]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="MakeFlag" column="[MakeFlag]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Name" column="[Name]" access="field.camelcase-underscore" not-null="true" length="50"/>
+		<property name="ProductLine" column="[ProductLine]" access="field.camelcase-underscore" length="2"/>
+		<property name="ProductNumber" column="[ProductNumber]" access="field.camelcase-underscore" not-null="true" length="25"/>
+		<property name="ReorderPoint" column="[ReorderPoint]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Rowguid" column="[rowguid]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="SafetyStockLevel" column="[SafetyStockLevel]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="SellEndDate" column="[SellEndDate]" access="field.camelcase-underscore"/>
+		<property name="SellStartDate" column="[SellStartDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Size" column="[Size]" access="field.camelcase-underscore" length="5"/>
+		<property name="StandardCost" column="[StandardCost]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Style" column="[Style]" access="field.camelcase-underscore" length="2"/>
+		<property name="Weight" column="[Weight]" access="field.camelcase-underscore"/>
+		<set name="BillOfMaterials" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[ComponentID]"/>
+			</key>
+			<one-to-many class="BillOfMaterial"/>
+		</set>
+		<set name="BillOfMaterials1" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[ProductAssemblyID]"/>
+			</key>
+			<one-to-many class="BillOfMaterial"/>
+		</set>
+		<set name="ProductCostHistories" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[ProductID]"/>
+			</key>
+			<one-to-many class="ProductCostHistory"/>
+		</set>
+		<set name="ProductDocuments" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[ProductID]"/>
+			</key>
+			<one-to-many class="ProductDocument"/>
+		</set>
+		<set name="ProductInventories" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[ProductID]"/>
+			</key>
+			<one-to-many class="ProductInventory"/>
+		</set>
+		<set name="ProductListPriceHistories" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[ProductID]"/>
+			</key>
+			<one-to-many class="ProductListPriceHistory"/>
+		</set>
+		<many-to-one name="ProductModel" access="field.camelcase-underscore" fetch="select" cascade="all">
+			<column name="[ProductModelID]"/>
+		</many-to-one>
+		<set name="ProductProductPhotos" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[ProductID]"/>
+			</key>
+			<one-to-many class="ProductProductPhoto"/>
+		</set>
+		<set name="ProductReviews" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[ProductID]"/>
+			</key>
+			<one-to-many class="ProductReview"/>
+		</set>
+		<many-to-one name="ProductSubcategory" access="field.camelcase-underscore" fetch="select" cascade="all">
+			<column name="[ProductSubcategoryID]"/>
+		</many-to-one>
+		<set name="ProductVendors" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[ProductID]"/>
+			</key>
+			<one-to-many class="ProductVendor"/>
+		</set>
+		<set name="PurchaseOrderDetails" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[ProductID]"/>
+			</key>
+			<one-to-many class="PurchaseOrderDetail"/>
+		</set>
+		<set name="ShoppingCartItems" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[ProductID]"/>
+			</key>
+			<one-to-many class="ShoppingCartItem"/>
+		</set>
+		<set name="SpecialOfferProducts" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[ProductID]"/>
+			</key>
+			<one-to-many class="SpecialOfferProduct"/>
+		</set>
+		<set name="TransactionHistories" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[ProductID]"/>
+			</key>
+			<one-to-many class="TransactionHistory"/>
+		</set>
+		<many-to-one name="UnitMeasure" access="field.camelcase-underscore" fetch="select" cascade="all">
+			<column name="[SizeUnitMeasureCode]"/>
+		</many-to-one>
+		<many-to-one name="UnitMeasure1" access="field.camelcase-underscore" fetch="select" cascade="all">
+			<column name="[WeightUnitMeasureCode]"/>
+		</many-to-one>
+		<set name="WorkOrders" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[ProductID]"/>
+			</key>
+			<one-to-many class="WorkOrder"/>
+		</set>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>

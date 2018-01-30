@@ -181,6 +181,11 @@ namespace NHibernate.SqlCommand
 		/// <summary></summary>
 		public SqlString ToSqlString()
 		{
+			return ToSqlString(false);
+		}
+
+		public SqlString ToSqlString(bool intern)
+		{
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
@@ -206,7 +211,7 @@ namespace NHibernate.SqlCommand
 				if (alias != null && !alias.Equals(column))
 				{
 					sqlBuilder.Add(" AS ")
-						.Add(alias);
+							.Add(alias);
 				}
 
 				commaNeeded = true;
@@ -214,7 +219,7 @@ namespace NHibernate.SqlCommand
 
 
 			sqlBuilder.Add(" FROM ")
-				.Add(Dialect.AppendLockHint(lockMode, tableName));
+					.Add(Dialect.AppendLockHint(lockMode, tableName));
 
 			sqlBuilder.Add(" WHERE ");
 
@@ -233,9 +238,9 @@ namespace NHibernate.SqlCommand
 				sqlBuilder.Add(Dialect.GetForUpdateString(lockMode));
 			}
 
-			return sqlBuilder.ToSqlString();
+			return sqlBuilder.ToSqlString(intern);
 		}
 
 		#endregion
-	}
+		}
 }

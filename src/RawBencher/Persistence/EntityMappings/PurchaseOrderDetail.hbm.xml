@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="PurchaseOrderDetail" table="[Purchasing].[PurchaseOrderDetail]" optimistic-lock="none" >
+		<id name="PurchaseOrderDetailId" column="[PurchaseOrderDetailID]" access="field.camelcase-underscore" >
+			<generator class="identity"/>
+		</id>
+		<property name="DueDate" column="[DueDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="LineTotal" column="[LineTotal]" access="field.camelcase-underscore" insert="false" update="false" not-null="true"/>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="OrderQty" column="[OrderQty]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="ReceivedQty" column="[ReceivedQty]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="RejectedQty" column="[RejectedQty]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="StockedQty" column="[StockedQty]" access="field.camelcase-underscore" insert="false" update="false" not-null="true"/>
+		<property name="UnitPrice" column="[UnitPrice]" access="field.camelcase-underscore" not-null="true"/>
+		<many-to-one name="Product" access="field.camelcase-underscore" fetch="select" cascade="all">
+			<column name="[ProductID]"/>
+		</many-to-one>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>

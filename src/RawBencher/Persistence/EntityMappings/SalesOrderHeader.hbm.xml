@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="SalesOrderHeader" table="[Sales].[SalesOrderHeader]" optimistic-lock="none" >
+		<id name="SalesOrderId" column="[SalesOrderID]" access="field.camelcase-underscore" >
+			<generator class="identity"/>
+		</id>
+		<property name="AccountNumber" column="[AccountNumber]" access="field.camelcase-underscore" length="15"/>
+		<property name="Comment" column="[Comment]" access="field.camelcase-underscore" length="128"/>
+		<property name="CreditCardApprovalCode" column="[CreditCardApprovalCode]" access="field.camelcase-underscore" length="15"/>
+		<property name="DueDate" column="[DueDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Freight" column="[Freight]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="OnlineOrderFlag" column="[OnlineOrderFlag]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="OrderDate" column="[OrderDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="PurchaseOrderNumber" column="[PurchaseOrderNumber]" access="field.camelcase-underscore" length="25"/>
+		<property name="RevisionNumber" column="[RevisionNumber]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Rowguid" column="[rowguid]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="SalesOrderNumber" column="[SalesOrderNumber]" access="field.camelcase-underscore" insert="false" update="false" not-null="true" length="25"/>
+		<property name="ShipDate" column="[ShipDate]" access="field.camelcase-underscore"/>
+		<property name="Status" column="[Status]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="SubTotal" column="[SubTotal]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="TaxAmt" column="[TaxAmt]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="TotalDue" column="[TotalDue]" access="field.camelcase-underscore" insert="false" update="false" not-null="true"/>
+		<many-to-one name="Address" access="field.camelcase-underscore" fetch="select" cascade="all">
+			<column name="[BillToAddressID]"/>
+		</many-to-one>
+		<many-to-one name="Address1" access="field.camelcase-underscore" fetch="select" cascade="all">
+			<column name="[ShipToAddressID]"/>
+		</many-to-one>
+		<many-to-one name="CreditCard" access="field.camelcase-underscore" fetch="select" cascade="all">
+			<column name="[CreditCardID]"/>
+		</many-to-one>
+		<many-to-one name="CurrencyRate" access="field.camelcase-underscore" fetch="select" cascade="all">
+			<column name="[CurrencyRateID]"/>
+		</many-to-one>
+		<many-to-one name="Customer" access="field.camelcase-underscore" fetch="select" cascade="all">
+			<column name="[CustomerID]"/>
+		</many-to-one>
+		<set name="SalesOrderDetails" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[SalesOrderID]"/>
+			</key>
+			<one-to-many class="SalesOrderDetail"/>
+		</set>
+		<set name="SalesOrderHeaderSalesReasons" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[SalesOrderID]"/>
+			</key>
+			<one-to-many class="SalesOrderHeaderSalesReason"/>
+		</set>
+		<many-to-one name="SalesPerson" access="field.camelcase-underscore" fetch="select" cascade="all">
+			<column name="[SalesPersonID]"/>
+		</many-to-one>
+		<many-to-one name="SalesTerritory" access="field.camelcase-underscore" fetch="select" cascade="all">
+			<column name="[TerritoryID]"/>
+		</many-to-one>
+		<many-to-one name="ShipMethod" access="field.camelcase-underscore" fetch="select" cascade="all">
+			<column name="[ShipMethodID]"/>
+		</many-to-one>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>

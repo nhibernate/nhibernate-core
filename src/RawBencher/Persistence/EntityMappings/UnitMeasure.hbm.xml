@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="UnitMeasure" table="[Production].[UnitMeasure]" optimistic-lock="none" >
+		<id name="UnitMeasureCode" column="[UnitMeasureCode]" access="field.camelcase-underscore" >
+			<generator class="assigned"/>
+		</id>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Name" column="[Name]" access="field.camelcase-underscore" not-null="true" length="50"/>
+		<set name="BillOfMaterials" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[UnitMeasureCode]"/>
+			</key>
+			<one-to-many class="BillOfMaterial"/>
+		</set>
+		<set name="Products" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[SizeUnitMeasureCode]"/>
+			</key>
+			<one-to-many class="Product"/>
+		</set>
+		<set name="Products1" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[WeightUnitMeasureCode]"/>
+			</key>
+			<one-to-many class="Product"/>
+		</set>
+		<set name="ProductVendors" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[UnitMeasureCode]"/>
+			</key>
+			<one-to-many class="ProductVendor"/>
+		</set>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>

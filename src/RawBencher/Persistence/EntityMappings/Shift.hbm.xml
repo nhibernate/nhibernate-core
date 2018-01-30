@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="Shift" table="[HumanResources].[Shift]" optimistic-lock="none" >
+		<id name="ShiftId" column="[ShiftID]" access="field.camelcase-underscore" >
+			<generator class="identity"/>
+		</id>
+		<property name="EndTime" column="[EndTime]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Name" column="[Name]" access="field.camelcase-underscore" not-null="true" length="50"/>
+		<property name="StartTime" column="[StartTime]" access="field.camelcase-underscore" not-null="true"/>
+		<set name="EmployeeDepartmentHistories" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[ShiftID]"/>
+			</key>
+			<one-to-many class="EmployeeDepartmentHistory"/>
+		</set>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>

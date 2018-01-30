@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="SalesTerritory" table="[Sales].[SalesTerritory]" optimistic-lock="none" >
+		<id name="TerritoryId" column="[TerritoryID]" access="field.camelcase-underscore" >
+			<generator class="identity"/>
+		</id>
+		<property name="CostLastYear" column="[CostLastYear]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="CostYtd" column="[CostYTD]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Group" column="[Group]" access="field.camelcase-underscore" not-null="true" length="50"/>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Name" column="[Name]" access="field.camelcase-underscore" not-null="true" length="50"/>
+		<property name="Rowguid" column="[rowguid]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="SalesLastYear" column="[SalesLastYear]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="SalesYtd" column="[SalesYTD]" access="field.camelcase-underscore" not-null="true"/>
+		<many-to-one name="CountryRegion" access="field.camelcase-underscore" fetch="select" cascade="all">
+			<column name="[CountryRegionCode]"/>
+		</many-to-one>
+		<set name="Customers" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[TerritoryID]"/>
+			</key>
+			<one-to-many class="Customer"/>
+		</set>
+		<set name="SalesOrderHeaders" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[TerritoryID]"/>
+			</key>
+			<one-to-many class="SalesOrderHeader"/>
+		</set>
+		<set name="SalesPeople" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[TerritoryID]"/>
+			</key>
+			<one-to-many class="SalesPerson"/>
+		</set>
+		<set name="SalesTerritoryHistories" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[TerritoryID]"/>
+			</key>
+			<one-to-many class="SalesTerritoryHistory"/>
+		</set>
+		<set name="StateProvinces" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[TerritoryID]"/>
+			</key>
+			<one-to-many class="StateProvince"/>
+		</set>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>

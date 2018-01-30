@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="ProductModel" table="[Production].[ProductModel]" optimistic-lock="none" >
+		<id name="ProductModelId" column="[ProductModelID]" access="field.camelcase-underscore" >
+			<generator class="identity"/>
+		</id>
+		<property name="CatalogDescription" column="[CatalogDescription]" access="field.camelcase-underscore" type="StringClob"/>
+		<property name="Instructions" column="[Instructions]" access="field.camelcase-underscore" type="StringClob"/>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Name" column="[Name]" access="field.camelcase-underscore" not-null="true" length="50"/>
+		<property name="Rowguid" column="[rowguid]" access="field.camelcase-underscore" not-null="true"/>
+		<set name="ProductModelIllustrations" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[ProductModelID]"/>
+			</key>
+			<one-to-many class="ProductModelIllustration"/>
+		</set>
+		<set name="ProductModelProductDescriptionCultures" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[ProductModelID]"/>
+			</key>
+			<one-to-many class="ProductModelProductDescriptionCulture"/>
+		</set>
+		<set name="Products" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[ProductModelID]"/>
+			</key>
+			<one-to-many class="Product"/>
+		</set>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>

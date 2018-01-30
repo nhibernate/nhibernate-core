@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="WorkOrder" table="[Production].[WorkOrder]" optimistic-lock="none" >
+		<id name="WorkOrderId" column="[WorkOrderID]" access="field.camelcase-underscore" >
+			<generator class="identity"/>
+		</id>
+		<property name="DueDate" column="[DueDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="EndDate" column="[EndDate]" access="field.camelcase-underscore"/>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="OrderQty" column="[OrderQty]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="ScrappedQty" column="[ScrappedQty]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="StartDate" column="[StartDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="StockedQty" column="[StockedQty]" access="field.camelcase-underscore" insert="false" update="false" not-null="true"/>
+		<many-to-one name="Product" access="field.camelcase-underscore" fetch="select" cascade="all">
+			<column name="[ProductID]"/>
+		</many-to-one>
+		<many-to-one name="ScrapReason" access="field.camelcase-underscore" fetch="select" cascade="all">
+			<column name="[ScrapReasonID]"/>
+		</many-to-one>
+		<set name="WorkOrderRoutings" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[WorkOrderID]"/>
+			</key>
+			<one-to-many class="WorkOrderRouting"/>
+		</set>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>

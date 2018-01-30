@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="Vendor" table="[Purchasing].[Vendor]" optimistic-lock="none" >
+		<id name="VendorId" column="[BusinessEntityID]" access="field.camelcase-underscore" >
+			<generator class="foreign">
+				<param name="property">BusinessEntity</param>
+			</generator>
+		</id>
+		<property name="AccountNumber" column="[AccountNumber]" access="field.camelcase-underscore" not-null="true" length="15"/>
+		<property name="ActiveFlag" column="[ActiveFlag]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="CreditRating" column="[CreditRating]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Name" column="[Name]" access="field.camelcase-underscore" not-null="true" length="50"/>
+		<property name="PreferredVendorStatus" column="[PreferredVendorStatus]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="PurchasingWebServiceUrl" column="[PurchasingWebServiceURL]" access="field.camelcase-underscore" length="1024"/>
+		<one-to-one name="BusinessEntity" access="field.camelcase-underscore" fetch="select" cascade="all" constrained="true"/>
+		<set name="ProductVendors" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[BusinessEntityID]"/>
+			</key>
+			<one-to-many class="ProductVendor"/>
+		</set>
+		<set name="PurchaseOrderHeaders" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[VendorID]"/>
+			</key>
+			<one-to-many class="PurchaseOrderHeader"/>
+		</set>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>

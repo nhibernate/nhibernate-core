@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="ShipMethod" table="[Purchasing].[ShipMethod]" optimistic-lock="none" >
+		<id name="ShipMethodId" column="[ShipMethodID]" access="field.camelcase-underscore" >
+			<generator class="identity"/>
+		</id>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Name" column="[Name]" access="field.camelcase-underscore" not-null="true" length="50"/>
+		<property name="Rowguid" column="[rowguid]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="ShipBase" column="[ShipBase]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="ShipRate" column="[ShipRate]" access="field.camelcase-underscore" not-null="true"/>
+		<set name="PurchaseOrderHeaders" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[ShipMethodID]"/>
+			</key>
+			<one-to-many class="PurchaseOrderHeader"/>
+		</set>
+		<set name="SalesOrderHeaders" access="field.camelcase-underscore" cascade="all-delete-orphan" inverse="true" fetch="select">
+			<key>
+				<column name="[ShipMethodID]"/>
+			</key>
+			<one-to-many class="SalesOrderHeader"/>
+		</set>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>

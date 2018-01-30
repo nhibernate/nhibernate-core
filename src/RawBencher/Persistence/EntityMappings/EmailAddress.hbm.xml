@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="EmailAddress" table="[Person].[EmailAddress]" optimistic-lock="none" >
+		<id name="EmailAddressId" column="[EmailAddressID]" access="field.camelcase-underscore" >
+			<generator class="identity"/>
+		</id>
+		<property name="EmailAddressValue" column="[EmailAddress]" access="field.camelcase-underscore" length="50"/>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Rowguid" column="[rowguid]" access="field.camelcase-underscore" not-null="true"/>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>

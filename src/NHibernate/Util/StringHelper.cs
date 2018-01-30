@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 
@@ -806,5 +807,95 @@ namespace NHibernate.Util
 			newLineLength = 0;
 			return false;
 		}
+
+		public static string[] Intern(string[] names, InternLevel internLevel, bool checkPoolIfInternIsDisabled = false)
+		{
+			if (names == null)
+				return null;
+
+			for (var i = 0; i < names.Length; i++)
+			{
+				names[i] = Intern(names[i], internLevel, checkPoolIfInternIsDisabled);
+			}
+			return names;
+		}
+
+		public static string Intern(string name, InternLevel internLevel, bool checkPoolIfInternIsDisabled = false)
+		{
+			if (name == null)
+				return null;
+
+			if (name.Length == 0)
+				return string.Empty;
+			
+			if ((internLevel & Cfg.Environment.InternLevel) == internLevel)
+			{
+				//var isInterned = !string.IsNullOrEmpty(string.IsInterned(name));
+				//Console.WriteLine($"Intern: {internLevel} {name} ({isInterned})");
+
+				return string.Intern(name);
+			}
+
+
+			return checkPoolIfInternIsDisabled
+				? StringHelper.InternedIfPossible(name)
+				: name;
+		}
+	}
+
+	[Flags]
+	public enum InternLevel
+	{
+		/// <summary>
+		/// No interning
+		/// </summary>
+		Disabled,
+
+		EntityName = 1 << 0,
+		ReferencedEntityName = 1 << 1,
+		ClassName = 1 << 2,
+
+		/// <summary>
+		/// Very close to old behavior (prior to NHibernate 5.1)
+		/// Makes sure that metadata with full type name (like EntityName, ReferencedEntityName) are interned.
+		/// </summary>
+		Minimal = EntityName | ReferencedEntityName | ClassName,
+
+		ColumnName = 1 << 6,
+		PropertyName = 1 << 7,
+
+		/// <summary>
+		/// More aggressive interning (additionally interns column names/ property names - strings that expected to be repeated in the single factory)
+		/// </summary>
+		Default = Minimal | ColumnName | PropertyName,
+
+		/// <summary>
+		/// CAN'T BE USED with upstream code, as table aliases are unique per each session factory
+		/// </summary>
+		EntityAlias = 1 << 11,
+		CollectionRole = 1 << 12,
+		LoaderName = 1 << 13,
+
+		/// <summary>
+		/// CAN'T BE USED with upstream code, as table aliases are unique per each session factory
+		/// </summary>
+		SqlString = 1 << 14,
+
+		/// <summary>
+		/// Additionally interns metadata that's not repeated (or chance to repeat is considered low) inside single factory but can be shared across multiple factories.
+		/// Useful when multiple session factories with the same configuration needs to be created
+		/// </summary>
+		SessionFactories = Default | CollectionRole | LoaderName /*| EntityAlias | SqlString*/,
+
+		//Suffix = 1<<20,
+
+		ProxyType = 1<<21,
+
+		/// <summary>
+		/// Additionally interns static string metadata (like type names for static dynamic proxy and so on...)
+		/// Useful in scenarios when Session Factories are created in multiple app domains
+		/// (for instance multiple web-sites/web-services running on the same App pool)
+		/// </summary>
+		AppDomains = SessionFactories | ProxyType,
 	}
 }

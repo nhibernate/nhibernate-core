@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NH.Bencher.Model"
+                   namespace="NH.Bencher.EntityClasses">
+				   
+	<class name="ProductInventory" table="[Production].[ProductInventory]" optimistic-lock="none" >
+		<composite-id>
+			<key-many-to-one name="Location" column="[LocationID]" access="field.camelcase-underscore"  />
+			<key-many-to-one name="Product" column="[ProductID]" access="field.camelcase-underscore"  />
+		</composite-id>
+		<property name="Bin" column="[Bin]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="ModifiedDate" column="[ModifiedDate]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Quantity" column="[Quantity]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Rowguid" column="[rowguid]" access="field.camelcase-underscore" not-null="true"/>
+		<property name="Shelf" column="[Shelf]" access="field.camelcase-underscore" not-null="true" length="10"/>
+	<!-- __LLBLGENPRO_USER_CODE_REGION_START EntityMappingCustomCode -->
+	<!-- __LLBLGENPRO_USER_CODE_REGION_END -->
+	</class>
+</hibernate-mapping>
