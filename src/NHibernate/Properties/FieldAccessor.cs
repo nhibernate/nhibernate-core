@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.Serialization;
 using NHibernate.Engine;
 using NHibernate.Util;
 
@@ -18,7 +19,7 @@ namespace NHibernate.Properties
 	[Serializable]
 	public class FieldAccessor : IPropertyAccessor
 	{
-		private readonly IFieldNamingStrategy namingStrategy;
+		private readonly IFieldNamingStrategy _namingStrategy;
 
 		/// <summary>
 		/// Initializes a new instance of <see cref="FieldAccessor"/>.
@@ -33,7 +34,7 @@ namespace NHibernate.Properties
 		/// <param name="namingStrategy">The <see cref="IFieldNamingStrategy"/> to use.</param>
 		public FieldAccessor(IFieldNamingStrategy namingStrategy)
 		{
-			this.namingStrategy = namingStrategy;
+			_namingStrategy = namingStrategy;
 		}
 
 		/// <summary>
@@ -41,10 +42,7 @@ namespace NHibernate.Properties
 		/// mapped Property in the hbm.xml file to the name of the field in the class.
 		/// </summary>
 		/// <value>The <see cref="IFieldNamingStrategy"/> or <see langword="null" />.</value>
-		public IFieldNamingStrategy NamingStrategy
-		{
-			get { return namingStrategy; }
-		}
+		public IFieldNamingStrategy NamingStrategy => _namingStrategy;
 
 		#region IPropertyAccessor Members
 
@@ -92,10 +90,7 @@ namespace NHibernate.Properties
 			return new FieldSetter(GetField(theClass, fieldName), theClass, fieldName);
 		}
 
-		public bool CanAccessThroughReflectionOptimizer
-		{
-			get { return true; }
-		}
+		public bool CanAccessThroughReflectionOptimizer => true;
 
 		#endregion
 
@@ -144,13 +139,13 @@ namespace NHibernate.Properties
 		/// <returns>The name of the Field.</returns>
 		private string GetFieldName(string propertyName)
 		{
-			if (namingStrategy == null)
+			if (_namingStrategy == null)
 			{
 				return propertyName;
 			}
 			else
 			{
-				return namingStrategy.GetFieldName(propertyName);
+				return _namingStrategy.GetFieldName(propertyName);
 			}
 		}
 
@@ -160,9 +155,11 @@ namespace NHibernate.Properties
 		[Serializable]
 		public sealed class FieldGetter : IGetter, IOptimizableGetter
 		{
-			private readonly FieldInfo field;
-			private readonly System.Type clazz;
-			private readonly string name;
+			private FieldInfo _field;
+			private SerializableFieldInfo _serializableField;
+			private System.Type _clazz;
+			private SerializableSystemType _serializableClazz;
+			private readonly string _name;
 
 			/// <summary>
 			/// Initializes a new instance of <see cref="FieldGetter"/>.
@@ -172,9 +169,23 @@ namespace NHibernate.Properties
 			/// <param name="name">The name of the Field.</param>
 			public FieldGetter(FieldInfo field, System.Type clazz, string name)
 			{
-				this.field = field;
-				this.clazz = clazz;
-				this.name = name;
+				_field = field ?? throw new ArgumentNullException(nameof(field));
+				_clazz = clazz ?? throw new ArgumentNullException(nameof(clazz));
+				_name = name;
+			}
+
+			[OnSerializing]
+			private void OnSerializing(StreamingContext context)
+			{
+				_serializableClazz = SerializableSystemType.Wrap(_clazz);
+				_serializableField = SerializableFieldInfo.Wrap(_field);
+			}
+
+			[OnDeserialized]
+			private void OnDeserialized(StreamingContext context)
+			{
+				_clazz = _serializableClazz?.GetSystemType();
+				_field = _serializableField?.Value;
 			}
 
 			#region IGetter Members
@@ -190,11 +201,11 @@ namespace NHibernate.Properties
 			{
 				try
 				{
-					return field.GetValue(target);
+					return _field.GetValue(target);
 				}
 				catch (Exception e)
 				{
-					throw new PropertyAccessException(e, "could not get a field value by reflection", false, clazz, name);
+					throw new PropertyAccessException(e, "could not get a field value by reflection", false, _clazz, _name);
 				}
 			}
 
@@ -202,28 +213,19 @@ namespace NHibernate.Properties
 			/// Gets the <see cref="System.Type"/> that the Field returns.
 			/// </summary>
 			/// <value>The <see cref="System.Type"/> that the Field returns.</value>
-			public System.Type ReturnType
-			{
-				get { return field.FieldType; }
-			}
+			public System.Type ReturnType => _field.FieldType;
 
 			/// <summary>
 			/// Gets the name of the Property.
 			/// </summary>
 			/// <value><see langword="null" /> since this is a Field - not a Property.</value>
-			public string PropertyName
-			{
-				get { return null; }
-			}
+			public string PropertyName => null;
 
 			/// <summary>
 			/// Gets the <see cref="PropertyInfo"/> for the Property.
 			/// </summary>
 			/// <value><see langword="null" /> since this is a Field - not a Property.</value>
-			public MethodInfo Method
-			{
-				get { return null; }
-			}
+			public MethodInfo Method => null;
 
 			public object GetForInsert(object owner, IDictionary mergeMap, ISessionImplementor session)
 			{
@@ -234,7 +236,7 @@ namespace NHibernate.Properties
 
 			public void Emit(ILGenerator il)
 			{
-				il.Emit(OpCodes.Ldfld, field);
+				il.Emit(OpCodes.Ldfld, _field);
 			}
 		}
 
@@ -244,9 +246,11 @@ namespace NHibernate.Properties
 		[Serializable]
 		public sealed class FieldSetter : ISetter, IOptimizableSetter
 		{
-			private readonly FieldInfo field;
-			private readonly System.Type clazz;
-			private readonly string name;
+			private FieldInfo _field;
+			private SerializableFieldInfo _serializableField;
+			private System.Type _clazz;
+			private SerializableSystemType _serializableClazz;
+			private readonly string _name;
 
 			/// <summary>
 			/// Initializes a new instance of <see cref="FieldSetter"/>.
@@ -256,9 +260,23 @@ namespace NHibernate.Properties
 			/// <param name="name">The name of the Field.</param>
 			public FieldSetter(FieldInfo field, System.Type clazz, string name)
 			{
-				this.field = field;
-				this.clazz = clazz;
-				this.name = name;
+				_field = field ?? throw new ArgumentNullException(nameof(field));
+				_clazz = clazz ?? throw new ArgumentNullException(nameof(clazz));
+				_name = name;
+			}
+
+			[OnSerializing]
+			private void OnSerializing(StreamingContext context)
+			{
+				_serializableClazz = SerializableSystemType.Wrap(_clazz);
+				_serializableField = SerializableFieldInfo.Wrap(_field);
+			}
+
+			[OnDeserialized]
+			private void OnDeserialized(StreamingContext context)
+			{
+				_clazz = _serializableClazz?.GetSystemType();
+				_field = _serializableField?.Value;
 			}
 
 			#region ISetter Members
@@ -275,30 +293,30 @@ namespace NHibernate.Properties
 			{
 				try
 				{
-					field.SetValue(target, value);
+					_field.SetValue(target, value);
 				}
 				catch (ArgumentException ae)
 				{
 					// if I'm reading the msdn docs correctly this is the only reason the ArgumentException
 					// would be thrown, but it doesn't hurt to make sure.
-					if (field.FieldType.IsInstanceOfType(value) == false)
+					if (_field.FieldType.IsInstanceOfType(value) == false)
 					{
 						// add some details to the error message - there have been a few forum posts an they are 
 						// all related to an ISet and IDictionary mixups.
-						string msg =
-							String.Format("The type {0} can not be assigned to a field of type {1}", value.GetType().ToString(),
-														field.FieldType.ToString());
-						throw new PropertyAccessException(ae, msg, true, clazz, name);
+						var msg = string.Format(
+							"The type {0} can not be assigned to a field of type {1}", value.GetType(),
+							_field.FieldType);
+						throw new PropertyAccessException(ae, msg, true, _clazz, _name);
 					}
 					else
 					{
-						throw new PropertyAccessException(ae, "ArgumentException while setting the field value by reflection", true, clazz,
-																							name);
+						throw new PropertyAccessException(
+							ae, "ArgumentException while setting the field value by reflection", true, _clazz, _name);
 					}
 				}
 				catch (Exception e)
 				{
-					throw new PropertyAccessException(e, "could not set a field value by reflection", true, clazz, name);
+					throw new PropertyAccessException(e, "could not set a field value by reflection", true, _clazz, _name);
 				}
 			}
 
@@ -306,30 +324,21 @@ namespace NHibernate.Properties
 			/// Gets the name of the Property.
 			/// </summary>
 			/// <value><see langword="null" /> since this is a Field - not a Property.</value>
-			public string PropertyName
-			{
-				get { return null; }
-			}
+			public string PropertyName => null;
 
 			/// <summary>
 			/// Gets the <see cref="PropertyInfo"/> for the Property.
 			/// </summary>
 			/// <value><see langword="null" /> since this is a Field - not a Property.</value>
-			public MethodInfo Method
-			{
-				get { return null; }
-			}
+			public MethodInfo Method => null;
 
-			public System.Type Type
-			{
-				get { return field.FieldType; }
-			}
+			public System.Type Type => _field.FieldType;
 
 			#endregion
 
 			public void Emit(ILGenerator il)
 			{
-				il.Emit(OpCodes.Stfld, field);
+				il.Emit(OpCodes.Stfld, _field);
 			}
 		}
 	}

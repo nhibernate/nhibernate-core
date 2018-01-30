@@ -25,6 +25,9 @@ namespace NHibernate.Test.CfgTest
 		}
 
 		[Test]
+#if NETCOREAPP2_0
+		[Ignore("This platform does not support automatically locating app.config from unit tests.")]
+#endif
 		public void FromAppConfigTest()
 		{
 			IHibernateConfiguration hc = ConfigurationManager.GetSection("hibernate-configuration") as IHibernateConfiguration;
@@ -34,9 +37,18 @@ namespace NHibernate.Test.CfgTest
 		}
 
 		[Test]
+		public void FromConfigForExePathTest()
+		{
+			IHibernateConfiguration hc = TestsContext.GetTestAssemblyHibernateConfiguration();
+			Assert.That(hc.ByteCodeProviderType, Is.EqualTo("lcg"));
+			Assert.IsTrue(hc.UseReflectionOptimizer);
+			Assert.AreEqual("NHibernate.Test", hc.SessionFactory.Name);
+		}
+
+		[Test]
 		public void IgnoreSystemOutOfAppConfig()
 		{
-			IHibernateConfiguration hc = ConfigurationManager.GetSection("hibernate-configuration") as IHibernateConfiguration;
+			IHibernateConfiguration hc = TestsContext.GetTestAssemblyHibernateConfiguration();
 			string xml =
 			@"<?xml version='1.0' encoding='utf-8' ?>
 <hibernate-configuration xmlns='urn:nhibernate-configuration-2.2'>

@@ -101,9 +101,13 @@ namespace NHibernate.Bytecode.Lightweight
 		protected DynamicMethod CreateDynamicMethod(System.Type returnType, System.Type[] argumentTypes)
 		{
 			System.Type owner = mappedType.IsInterface ? typeof (object) : mappedType;
+#if !NETSTANDARD2_0
 #pragma warning disable 618
 			bool canSkipChecks = SecurityManager.IsGranted(new ReflectionPermission(ReflectionPermissionFlag.MemberAccess));
 #pragma warning restore 618
+#else
+			bool canSkipChecks = false;
+#endif
 			return new DynamicMethod(string.Empty, returnType, argumentTypes, owner, canSkipChecks);
 		}
 

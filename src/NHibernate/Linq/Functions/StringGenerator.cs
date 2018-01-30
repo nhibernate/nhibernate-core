@@ -6,6 +6,7 @@ using System.Reflection;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Visitors;
 using NHibernate.Util;
+using System.Linq;
 
 namespace NHibernate.Linq.Functions
 {
@@ -241,13 +242,7 @@ namespace NHibernate.Linq.Functions
 	{
 		public TrimGenerator()
 		{
-			SupportedMethods = new[]
-									{
-										ReflectHelper.GetMethodDefinition<string>(s => s.Trim()),
-										ReflectHelper.GetMethodDefinition<string>(s => s.Trim('a')),
-										ReflectHelper.GetMethodDefinition<string>(s => s.TrimStart('a')),
-										ReflectHelper.GetMethodDefinition<string>(s => s.TrimEnd('a'))
-									};
+			SupportedMethods = typeof(string).GetMethods().Where(x => new[] { "Trim", "TrimStart", "TrimEnd" }.Contains(x.Name)).ToArray();
 		}
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
@@ -262,8 +257,20 @@ namespace NHibernate.Linq.Functions
 
 			string trimChars = "";
 			if (method.GetParameters().Length > 0)
-				foreach (char c in (char[])((ConstantExpression)arguments[0]).Value)
-					trimChars += c;
+			{
+				object argumentValue = ((ConstantExpression)arguments[0]).Value;
+				if (argumentValue is char)
+				{
+					trimChars += (char)argumentValue;
+				}
+				else
+				{
+					foreach (char c in (char[])argumentValue)
+					{
+						trimChars += c;
+					}
+				}
+			}
 
 
 			if (trimChars == "")

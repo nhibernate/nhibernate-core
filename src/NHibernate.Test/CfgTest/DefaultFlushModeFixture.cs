@@ -34,7 +34,7 @@ namespace NHibernate.Test.CfgTest
 		[Test]
 		public void CanSetDefaultFlushModeThroughStandardConfiguration()
 		{
-			var cfg = new Configuration().Configure();
+			var cfg = new Configuration().Configure(TestsContext.GetTestAssemblyHibernateConfiguration());
 			cfg.Properties[Environment.DefaultFlushMode] = FlushMode.Always.ToString();
 
 			using (var sessionFactory = cfg.BuildSessionFactory())
@@ -60,7 +60,7 @@ namespace NHibernate.Test.CfgTest
 		public void CanSetDefaultFlushModeThroughLoquaciousConfiguration()
 		{
 			var cfg = new Configuration()
-				.Configure();
+				.Configure(TestsContext.GetTestAssemblyHibernateConfiguration());
 
 			cfg
 				.SessionFactory()
@@ -74,7 +74,7 @@ namespace NHibernate.Test.CfgTest
 				}
 			}
 
-			cfg.Configure()
+			cfg.Configure(TestsContext.GetTestAssemblyHibernateConfiguration())
 				.SessionFactory()
 				.DefaultFlushMode(FlushMode.Commit);
 

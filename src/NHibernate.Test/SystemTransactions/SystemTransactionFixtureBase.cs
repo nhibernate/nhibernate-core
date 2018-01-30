@@ -1,7 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
 using NHibernate.Cfg;
-using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Test.TransactionTest;
 using NHibernate.Util;
@@ -32,7 +31,7 @@ namespace NHibernate.Test.SystemTransactions
 			var autoEnlistmentKeyword = "Enlist";
 			var autoEnlistmentKeywordPattern = autoEnlistmentKeyword;
 			if (configuration.GetDerivedProperties().TryGetValue(Cfg.Environment.ConnectionDriver, out var driver) &&
-				typeof(MySqlDataDriver).IsAssignableFrom(ReflectHelper.ClassForName(driver)))
+				ReflectHelper.ClassForName(driver).IsMySqlDriver())
 			{
 				autoEnlistmentKeyword = "AutoEnlist";
 				autoEnlistmentKeywordPattern = "Auto ?Enlist";

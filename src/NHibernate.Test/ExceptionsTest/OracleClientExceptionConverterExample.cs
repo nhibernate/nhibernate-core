@@ -1,3 +1,4 @@
+#if !NETCOREAPP2_0
 using System;
 using System.Data.OracleClient;
 using NHibernate.Exceptions;
@@ -28,3 +29,4 @@ namespace NHibernate.Test.ExceptionsTest
 		#endregion
 	}
 }
+#endif

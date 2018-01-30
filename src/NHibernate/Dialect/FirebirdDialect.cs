@@ -4,9 +4,11 @@ using System.Data;
 using System.Data.Common;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
+using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
+using NHibernate.Util;
 using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
@@ -23,7 +25,7 @@ namespace NHibernate.Dialect
 	///		</listheader>
 	///		<item>
 	///			<term>connection.driver_class</term>
-	///			<description><see cref="NHibernate.Driver.FirebirdClientDriver" /></description>
+	///			<description>NHibernate.Driver.FirebirdDriver, NHibernate.Driver.Firebird</description>
 	///		</item>
 	/// </list>
 	/// </remarks>
@@ -34,7 +36,13 @@ namespace NHibernate.Dialect
 			RegisterKeywords();
 			RegisterColumnTypes();
 			RegisterFunctions();
-			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.FirebirdClientDriver";
+			DefaultProperties[Environment.ConnectionDriver] =
+#if !NETSTANDARD2_0
+#pragma warning disable 618
+				GetDriverName<FirebirdClientDriver>
+#pragma warning restore 618
+#endif
+				("NHibernate.Driver.FirebirdDriver, NHibernate.Driver.Firebird");
 		}
 
 		public override string AddColumnString

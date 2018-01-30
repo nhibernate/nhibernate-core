@@ -20,7 +20,6 @@ using log4net;
 using log4net.Repository.Hierarchy;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
-using NHibernate.Driver;
 using NHibernate.Engine;
 using NUnit.Framework;
 
@@ -43,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 
 		// Uses directly SqlConnection.
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)
-			=> factory.ConnectionProvider.Driver is SqlClientDriver && base.AppliesTo(factory);
+			=> factory.ConnectionProvider.Driver.IsSqlServerDriver() && base.AppliesTo(factory);
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 			=> dialect is MsSql2000Dialect && base.AppliesTo(dialect);
@@ -76,6 +75,19 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 		[Theory]
 		public async Task ConnectionPoolCorruptionAfterDeadlockAsync(bool distributed, bool disposeSessionBeforeScope)
 		{
+			if (distributed)
+			{
+#if NETCOREAPP2_0
+				Assert.Ignore("This platform does not support distributed transactions.");
+#endif
+			}
+			else
+			{
+#if NETCOREAPP2_0
+				Assert.Ignore("Enlisting in Ambient transactions is not supported by System.Data.SqlClient.");
+#endif
+			}
+
 			var tryCount = 0;
 			var id = 1;
 			do

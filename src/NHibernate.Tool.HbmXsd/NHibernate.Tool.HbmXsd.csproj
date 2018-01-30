@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <Description>Tool to Generate Hbm classes for use by NHibernate.</Description>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFrameworks>net461</TargetFrameworks>
     <AssemblyName>HbmXsd</AssemblyName>
     <AssemblyTitle>NHibernate.Tool.HbmXsd</AssemblyTitle>
     <OutputType>Exe</OutputType>
@@ -11,6 +11,11 @@
 
   <ItemGroup>
     <EmbeddedResource Include="..\NHibernate\nhibernate-mapping.xsd" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
+    <PackageReference Include="System.CodeDom" Version="4.4.0" />
+    <!--Still missing XmlCodeExporter-->
   </ItemGroup>
 
 </Project>

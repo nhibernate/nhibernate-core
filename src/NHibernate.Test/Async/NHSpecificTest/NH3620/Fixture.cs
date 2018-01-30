@@ -9,7 +9,6 @@
 
 
 using System;
-using NHibernate.Driver;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3620 {
@@ -17,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3620 {
     [TestFixture]
     public class FixtureAsync : BugTestCase {
         protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory) {
-            return (factory.ConnectionProvider.Driver is OracleManagedDataClientDriver);
+            return (factory.ConnectionProvider.Driver.IsOracleManagedDriver());
         }
 
         protected override void OnTearDown() {

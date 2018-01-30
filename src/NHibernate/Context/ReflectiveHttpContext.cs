@@ -1,3 +1,4 @@
+#if !NETSTANDARD2_0
 using System;
 using System.Collections;
 using System.Linq.Expressions;
@@ -55,3 +56,4 @@ namespace NHibernate.Context
 		}
 	}
 }
+#endif

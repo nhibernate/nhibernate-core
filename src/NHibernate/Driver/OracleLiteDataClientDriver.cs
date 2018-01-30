@@ -1,3 +1,4 @@
+#if !NETSTANDARD2_0 || DRIVER_PACKAGE
 using System.Data;
 using System.Data.Common;
 using NHibernate.AdoNet;
@@ -64,3 +65,4 @@ namespace NHibernate.Driver
 		#endregion
 	}
 }
+#endif

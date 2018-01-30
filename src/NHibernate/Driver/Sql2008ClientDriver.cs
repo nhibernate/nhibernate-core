@@ -1,3 +1,4 @@
+#if !NETSTANDARD2_0 || DRIVER_PACKAGE
 using System;
 using System.Data;
 using System.Data.Common;
@@ -5,7 +6,13 @@ using System.Data.SqlClient;
 
 namespace NHibernate.Driver
 {
+#if DRIVER_PACKAGE
+	public class SqlServer2008Driver : SqlServer2000Driver
+#else
+	[Obsolete("Use NHibernate.Driver.SqlServer NuGet package and SqlServer2008Driver."
+		+ "  There are also Loquacious configuration points: .Connection.BySqlServer2008Driver() and .DataBaseIntegration(x => x.SqlServer2008Driver()).")]
 	public class Sql2008ClientDriver : SqlClientDriver
+#endif
 	{
 		const byte MaxTime = 5;
 
@@ -30,3 +37,4 @@ namespace NHibernate.Driver
 		public override DateTime MinDate => DateTime.MinValue;
 	}
 }
+#endif

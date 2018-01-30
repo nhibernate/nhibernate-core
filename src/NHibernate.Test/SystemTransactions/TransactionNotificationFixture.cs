@@ -164,9 +164,11 @@ namespace NHibernate.Test.SystemTransactions
 			Assert.That(interceptor.afterTransactionCompletionCalled, Is.EqualTo(2));
 		}
 
-
 		[Description("NH2128")]
 		[Theory]
+#if NETCOREAPP2_0
+		[Ignore("This platform does not support distributed transactions.")]
+#endif
 		public void ShouldNotifyAfterDistributedTransactionWithOwnConnection(bool doCommit)
 		{
 			// Note: For system transaction, calling Close() on the session isn't

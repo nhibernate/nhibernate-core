@@ -1,10 +1,11 @@
 ﻿using System.Data.Common;
+#if !NETCOREAPP2_0
 using System.Data.Odbc;
+#endif
 using System.Data.SqlClient;
 using System.Configuration;
 using System.Transactions;
 using NHibernate.Dialect;
-using NHibernate.Driver;
 using NUnit.Framework;
 
 using Environment = NHibernate.Cfg.Environment;
@@ -49,6 +50,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2420
 		}
 
 		[Test]
+#if NETCOREAPP2_0
+		[Ignore("This platform does not support distributed transactions.")]
+#endif
 		public void ShouldBeAbleToReleaseSuppliedConnectionAfterDistributedTransaction()
 		{
 			string connectionString = FetchConnectionStringFromConfiguration();
@@ -65,10 +69,16 @@ namespace NHibernate.Test.NHSpecificTest.NH2420
 						new DummyEnlistment(),
 						EnlistmentOptions.None);
 
-					if (Sfi.ConnectionProvider.Driver.GetType() == typeof(OdbcDriver))
+#if !NETCOREAPP2_0
+					if (Sfi.ConnectionProvider.Driver.GetType().IsOdbcDriver())
+					{
 						connection = new OdbcConnection(connectionString);
+					}
 					else
+#endif
+					{
 						connection = new SqlConnection(connectionString);
+					}
 
 					connection.Open();
 					using (s = Sfi.WithOptions().Connection(connection).OpenSession())

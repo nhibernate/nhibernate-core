@@ -1,3 +1,4 @@
+#if !NETSTANDARD2_0 || DRIVER_PACKAGE
 using System;
 
 namespace NHibernate.Driver
@@ -8,7 +9,7 @@ namespace NHibernate.Driver
 	public class DB2400Driver : ReflectionBasedDriver
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DB2Driver"/> class.
+		/// Initializes a new instance of the <see cref="DB2400Driver"/> class.
 		/// </summary>
 		/// <exception cref="HibernateException">
 		/// Thrown when the <c>IBM.Data.DB2.iSeries</c> assembly can not be loaded.
@@ -41,3 +42,4 @@ namespace NHibernate.Driver
 		}
 	}
 }
+#endif

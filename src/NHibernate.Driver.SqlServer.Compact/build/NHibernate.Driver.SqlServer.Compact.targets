@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+  Since Microsoft.SqlServer.Compact was using Install.ps1, and that doesn't work with the new .csproj,
+  this will help copy the binaries. 
+  Pre VS 2017 style projects will also run the Microsoft.SqlServer.Compact Install.ps1 and add that .target file.
+  This file will still end up being imported, but will be a no-opp since $(NuGetPackageRoot) won't be set.
+ -->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="InjectReference_eb5aa2e4-6c92-4a75-85b8-1348b65397d1" BeforeTargets="ResolveAssemblyReferences">
+    <ItemGroup Condition=" '$(OS)' == 'Windows_NT' And '$(NuGetPackageRoot)' != '' ">
+      <NativeBinaries Include="$(NuGetPackageRoot)microsoft.sqlserver.compact\4.0.8876.1\NativeBinaries\**\*.*" />
+      <Content Include="@(NativeBinaries)">
+        <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Pack>false</Pack>
+      </Content>
+    </ItemGroup>
+  </Target>
+  <PropertyGroup>
+    <ResolveAssemblyReferencesDependsOn>$(ResolveAssemblyReferencesDependsOn);InjectReference_eb5aa2e4-6c92-4a75-85b8-1348b65397d1</ResolveAssemblyReferencesDependsOn>
+  </PropertyGroup>
+</Project>

@@ -14,22 +14,75 @@ namespace NHibernate.Proxy.Poco
 	{
 		private static readonly IEqualityComparer IdentityEqualityComparer = new IdentityEqualityComparer();
 
-		internal System.Type persistentClass;
+		// Since 5.1
+		[Obsolete("This field has no inherited usages in NHibernate and will be removed.")]
+		[NonSerialized]
 		protected internal MethodInfo getIdentifierMethod;
+		// Since 5.1
+		[Obsolete("This field has no inherited usages in NHibernate and will be removed.")]
+		[NonSerialized]
 		protected internal MethodInfo setIdentifierMethod;
+		// Since 5.1
+		[Obsolete("This field has no inherited usages in NHibernate and will be removed.")]
+		[NonSerialized]
 		protected internal bool overridesEquals;
+		// Since 5.1
+		[Obsolete("This field has no inherited usages in NHibernate and will be removed.")]
+		[NonSerialized]
 		protected internal IAbstractComponentType componentIdType;
+
+		[NonSerialized]
+		private System.Type _persistentClass;
+		private SerializableSystemType _serializablePersistentClass;
+		[NonSerialized]
+		private MethodInfo _getIdentifierMethod;
+		private SerializableMethodInfo _serializableGetIdentifierMethod;
+		[NonSerialized]
+		private MethodInfo _setIdentifierMethod;
+		private SerializableMethodInfo _serializableSetIdentifierMethod;
+		private readonly bool _overridesEquals;
+		private readonly IAbstractComponentType _componentIdType;
 
 		protected internal BasicLazyInitializer(string entityName, System.Type persistentClass, object id, 
 			MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod, 
 			IAbstractComponentType componentIdType, ISessionImplementor session, bool overridesEquals)
 			: base(entityName, id, session)
 		{
-			this.persistentClass = persistentClass;
+			_persistentClass = persistentClass;
+			_getIdentifierMethod = getIdentifierMethod;
+			_setIdentifierMethod = setIdentifierMethod;
+			_componentIdType = componentIdType;
+			_overridesEquals = overridesEquals;
+
+#pragma warning disable 618
 			this.getIdentifierMethod = getIdentifierMethod;
 			this.setIdentifierMethod = setIdentifierMethod;
 			this.componentIdType = componentIdType;
 			this.overridesEquals = overridesEquals;
+#pragma warning restore 618
+		}
+
+		[OnSerializing]
+		private void OnSerializing(StreamingContext context)
+		{
+			_serializablePersistentClass = SerializableSystemType.Wrap(_persistentClass);
+			_serializableGetIdentifierMethod = SerializableMethodInfo.Wrap(_getIdentifierMethod);
+			_serializableSetIdentifierMethod = SerializableMethodInfo.Wrap(_setIdentifierMethod);
+		}
+
+		[OnDeserialized]
+		private void OnDeserialized(StreamingContext context)
+		{
+			_persistentClass = _serializablePersistentClass?.GetSystemType();
+			_getIdentifierMethod = _serializableGetIdentifierMethod?.Value;
+			_setIdentifierMethod = _serializableSetIdentifierMethod?.Value;
+
+#pragma warning disable 618
+			getIdentifierMethod = _getIdentifierMethod;
+			setIdentifierMethod = _setIdentifierMethod;
+			componentIdType = _componentIdType;
+			overridesEquals = _overridesEquals;
+#pragma warning restore 618
 		}
 
 		/// <summary>
@@ -47,7 +100,7 @@ namespace NHibernate.Proxy.Poco
 
 		public override System.Type PersistentClass
 		{
-			get { return persistentClass; }
+			get { return _persistentClass; }
 		}
 
 		/// <summary>
@@ -69,7 +122,7 @@ namespace NHibernate.Proxy.Poco
 
 			if (paramCount == 0)
 			{
-				if (!overridesEquals && methodName == "GetHashCode")
+				if (!_overridesEquals && methodName == "GetHashCode")
 				{
 					return IdentityEqualityComparer.GetHashCode(proxy);
 				}
@@ -88,11 +141,11 @@ namespace NHibernate.Proxy.Poco
 			}
 			else if (paramCount == 1)
 			{
-				if (!overridesEquals && methodName == "Equals")
+				if (!_overridesEquals && methodName == "Equals")
 				{
 					return IdentityEqualityComparer.Equals(args[0], proxy);
 				}
-				else if (setIdentifierMethod!=null&&method.Equals(setIdentifierMethod))
+				else if (_setIdentifierMethod != null && method.Equals(_setIdentifierMethod))
 				{
 					Initialize();
 					Identifier = args[0];
@@ -127,7 +180,7 @@ namespace NHibernate.Proxy.Poco
 			}
 
 			//if it is a property of an embedded component, invoke on the "identifier"
-			if (componentIdType != null && componentIdType.IsMethodOf(method))
+			if (_componentIdType != null && _componentIdType.IsMethodOf(method))
 			{
 				return method.Invoke(Identifier, args);
 			}
@@ -137,13 +190,14 @@ namespace NHibernate.Proxy.Poco
 
 		private bool IsEqualToIdentifierMethod(MethodInfo method)
 		{
-			if (getIdentifierMethod != null)
+			if (_getIdentifierMethod != null)
 			{
 				// in the case of inherited identifier methods (from a base class or an iterface) the
 				// passed in MethodBase object is not equal to the getIdentifierMethod instance that we
 				// have... but if their names and return types are identical, then it is the correct 
 				// identifier method
-				return method.Name.Equals(getIdentifierMethod.Name) && method.ReturnType.Equals(getIdentifierMethod.ReturnType);
+				return method.Name.Equals(_getIdentifierMethod.Name)
+					&& method.ReturnType.Equals(_getIdentifierMethod.ReturnType);
 			}
 
 			return false;

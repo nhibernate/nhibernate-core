@@ -2830,6 +2830,13 @@ namespace NHibernate.Test.Legacy
 			// serialize and then deserialize the session.
 			Stream stream = new MemoryStream();
 			IFormatter formatter = new BinaryFormatter();
+
+#if NETCOREAPP2_0
+			var ss = new SurrogateSelector();
+			CultureInfoSerializationSurrogate.Add(ss);
+			formatter.SurrogateSelector = ss;
+#endif
+
 			formatter.Serialize(stream, s);
 
 			s.Close();
@@ -4640,6 +4647,9 @@ namespace NHibernate.Test.Legacy
 		}
 
 		[Test]
+#if NETCOREAPP2_0
+		[Ignore("Serializing delegates (AfterTransactionCompletionProcessDelegate) is not supported on this platform.")]
+#endif
 		public void ProxyArray()
 		{
 			ISession s = OpenSession();

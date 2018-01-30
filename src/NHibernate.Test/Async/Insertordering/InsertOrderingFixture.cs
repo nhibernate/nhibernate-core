@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+#if !NETCOREAPP2_0
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,7 +19,6 @@ using System.Threading;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
-using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
@@ -52,7 +52,7 @@ namespace NHibernate.Test.Insertordering
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)
 		{
 			// Custom batcher does not support oledb driver.
-			return factory.ConnectionProvider.Driver is SqlClientDriver;
+			return factory.ConnectionProvider.Driver.IsSqlServerDriver();
 		}
 
 		protected override void Configure(Configuration configuration)
@@ -733,3 +733,4 @@ namespace NHibernate.Test.Insertordering
 
 			}
 }
+#endif

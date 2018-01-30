@@ -3,7 +3,6 @@ using System.Linq;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
-using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
@@ -17,9 +16,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3912
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)
 		{
 			var driver = factory.ConnectionProvider.Driver;
-			return driver is OracleDataClientDriver ||
-			       driver is OracleLiteDataClientDriver ||
-			       driver is OracleManagedDataClientDriver;
+			return driver.IsOracleDataClientDriver() ||
+			       driver.IsOracleLiteDataClientDriver() ||
+			       driver.IsOracleManagedDriver();
 		}
 
 		protected override HbmMapping GetMappings()

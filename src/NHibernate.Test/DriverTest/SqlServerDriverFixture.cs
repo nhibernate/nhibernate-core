@@ -27,7 +27,7 @@ namespace NHibernate.Test.DriverTest
 	}
 
 	[TestFixture]
-	public class SqlClientDriverFixture : TestCase
+	public class SqlServerDriverFixture : TestCase
 	{
 		protected override string MappingsAssembly => "NHibernate.Test";
 
@@ -40,7 +40,7 @@ namespace NHibernate.Test.DriverTest
 
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)
 		{
-			return factory.ConnectionProvider.Driver is SqlClientDriver;
+			return factory.ConnectionProvider.Driver.IsSqlServerDriver();
 		}
 
 		protected override void OnTearDown()

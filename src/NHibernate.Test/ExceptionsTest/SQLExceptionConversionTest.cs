@@ -3,7 +3,6 @@ using System.Collections;
 using System.Data;
 using System.Data.Common;
 using NHibernate.Dialect;
-using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Util;
@@ -32,7 +31,7 @@ namespace NHibernate.Test.ExceptionsTest
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)
 		{
 			var driver = factory.ConnectionProvider.Driver;
-			return !(driver is OracleDataClientDriver) && !(driver is OracleManagedDataClientDriver) && !(driver is OracleLiteDataClientDriver) && !(driver is OdbcDriver) && !(driver is OleDbDriver);
+			return !(driver.IsOracleDataClientDriver()) && !(driver.IsOracleManagedDriver()) && !(driver.IsOracleLiteDataClientDriver()) && !(driver.IsOdbcDriver()) && !(driver.IsOleDbDriver());
 		}
 
 		protected override void Configure(Cfg.Configuration configuration)
@@ -46,9 +45,13 @@ namespace NHibernate.Test.ExceptionsTest
 
 			if (Dialect is Oracle8iDialect)
 			{
+#if !NETCOREAPP2_0
 				configuration.SetProperty(
 					Cfg.Environment.SqlExceptionConverter,
 					typeof(OracleClientExceptionConverterExample).AssemblyQualifiedName);
+#else
+				throw new InvalidOperationException("Oracle8iDialect not valid in NETCOREAPP2_0");
+#endif
 			}
 
 			if (Dialect is PostgreSQLDialect)

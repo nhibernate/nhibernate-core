@@ -63,7 +63,10 @@ namespace NHibernate.Mapping
 
 		private Versioning.OptimisticLock optimisticLockMode;
 
+		[NonSerialized]
 		private System.Type mappedClass;
+
+		[NonSerialized]
 		private System.Type proxyInterface;
 
 		public string ClassName
@@ -98,18 +101,17 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				if (mappedClass == null)
+				if (mappedClass != null) return mappedClass;
+
+				if (className == null)
+					return null;
+				try
 				{
-					if (className == null)
-						return null;
-					try
-					{
-						mappedClass = ReflectHelper.ClassForName(className);
-					}
-					catch (Exception cnfe)
-					{
-						throw new MappingException("entity class not found: " + className, cnfe);
-					}
+					mappedClass = ReflectHelper.ClassForName(className);
+				}
+				catch (Exception cnfe)
+				{
+					throw new MappingException("entity class not found: " + className, cnfe);
 				}
 				return mappedClass;
 			}
@@ -126,18 +128,17 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				if (proxyInterface == null)
+				if (proxyInterface != null) return proxyInterface;
+
+				if (proxyInterfaceName == null)
+					return null;
+				try
 				{
-					if (proxyInterfaceName == null)
-						return null;
-					try
-					{
-						proxyInterface = ReflectHelper.ClassForName(proxyInterfaceName);
-					}
-					catch (Exception cnfe)
-					{
-						throw new MappingException("proxy class not found: " + proxyInterfaceName, cnfe);
-					}
+					proxyInterface = ReflectHelper.ClassForName(proxyInterfaceName);
+				}
+				catch (Exception cnfe)
+				{
+					throw new MappingException("proxy class not found: " + proxyInterfaceName, cnfe);
 				}
 				return proxyInterface;
 			}

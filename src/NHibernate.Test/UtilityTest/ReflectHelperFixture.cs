@@ -83,6 +83,9 @@ namespace NHibernate.Test.UtilityTest
 		}
 
 		[Test]
+#if NETCOREAPP2_0
+		[Ignore("System.Web assembly on this platform.")]
+#endif
 		public void TypeFoundInNotLoadedAssembly()
 		{
 			System.Type httpRequest = ReflectHelper.TypeFromAssembly("System.Web.HttpRequest", "System.Web", false);

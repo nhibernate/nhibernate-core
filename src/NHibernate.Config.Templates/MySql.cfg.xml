@@ -6,7 +6,7 @@ for your own use before compile tests in VisualStudio.
 -->
 <hibernate-configuration  xmlns="urn:nhibernate-configuration-2.2" >
 	<session-factory name="NHibernate.Test">
-		<property name="connection.driver_class">NHibernate.Driver.MySqlDataDriver</property>
+		<property name="connection.driver_class">NHibernate.Driver.MySqlDriver, NHibernate.Driver.MySql</property>
 		<property name="connection.connection_string">
 			Database=nhibernate;Data Source=localhost;User Id=nhibernate;Password=;
 			Protocol=memory;Old Guids=True;

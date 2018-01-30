@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+#if !NETSTANDARD2_0
 using System;
 using System.Data.Common;
 using System.Text;
@@ -94,3 +95,4 @@ namespace NHibernate.AdoNet
 		}
 	}
 }
+#endif

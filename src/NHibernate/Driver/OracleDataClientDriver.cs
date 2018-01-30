@@ -1,3 +1,4 @@
+#if !NETSTANDARD2_0 || DRIVER_PACKAGE
 namespace NHibernate.Driver
 {
 	/// <summary>
@@ -17,3 +18,4 @@ namespace NHibernate.Driver
 		}
 	}
 }
+#endif

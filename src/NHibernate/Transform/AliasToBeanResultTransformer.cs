@@ -1,8 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
+using NHibernate.Util;
 
 namespace NHibernate.Transform
 {
@@ -33,32 +36,56 @@ namespace NHibernate.Transform
 	[Serializable]
 	public class AliasToBeanResultTransformer : AliasedTupleSubsetResultTransformer, IEquatable<AliasToBeanResultTransformer>
 	{
-		private readonly System.Type _resultClass;
-		private readonly ConstructorInfo _beanConstructor;
-		private readonly Dictionary<string, NamedMember<FieldInfo>> _fieldsByNameCaseSensitive;
-		private readonly Dictionary<string, NamedMember<FieldInfo>> _fieldsByNameCaseInsensitive;
-		private readonly Dictionary<string, NamedMember<PropertyInfo>> _propertiesByNameCaseSensitive;
-		private readonly Dictionary<string, NamedMember<PropertyInfo>> _propertiesByNameCaseInsensitive;
+		[NonSerialized]
+		private System.Type _resultClass;
+		private SerializableSystemType _serializableResultClass;
+		[NonSerialized]
+		private ConstructorInfo _beanConstructor;
+		[NonSerialized]
+		private Dictionary<string, NamedMember<FieldInfo>> _fieldsByNameCaseSensitive;
+		[NonSerialized]
+		private Dictionary<string, NamedMember<FieldInfo>> _fieldsByNameCaseInsensitive;
+		[NonSerialized]
+		private Dictionary<string, NamedMember<PropertyInfo>> _propertiesByNameCaseSensitive;
+		[NonSerialized]
+		private Dictionary<string, NamedMember<PropertyInfo>> _propertiesByNameCaseInsensitive;
 
 		public AliasToBeanResultTransformer(System.Type resultClass)
 		{
-			_resultClass = resultClass ?? throw new ArgumentNullException("resultClass");
+			_resultClass = resultClass ?? throw new ArgumentNullException(nameof(resultClass));
 
+			InitializeTransformer();
+		}
+
+		[OnSerializing]
+		private void OnSerializing(StreamingContext context)
+		{
+			_serializableResultClass = SerializableSystemType.Wrap(_resultClass);
+		}
+
+		[OnDeserialized]
+		private void OnDeserialized(StreamingContext context)
+		{
+			_resultClass = _serializableResultClass?.GetSystemType();
+			InitializeTransformer();
+		}
+
+		private void InitializeTransformer()
+		{
 			const BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-			_beanConstructor = resultClass.GetConstructor(bindingFlags, null, System.Type.EmptyTypes, null);
+			_beanConstructor = _resultClass.GetConstructor(bindingFlags, null, System.Type.EmptyTypes, null);
 
 			// if resultClass is a ValueType (struct), GetConstructor will return null... 
 			// in that case, we'll use Activator.CreateInstance instead of the ConstructorInfo to create instances
-			if (_beanConstructor == null && resultClass.IsClass)
+			if (_beanConstructor == null && _resultClass.IsClass)
 			{
-				throw new ArgumentException(
-					"The target class of a AliasToBeanResultTransformer need a parameter-less constructor",
-					nameof(resultClass));
+				throw new InvalidOperationException(
+					"The target class of a AliasToBeanResultTransformer need a parameter-less constructor");
 			}
 
 			var fields = new List<RankedMember<FieldInfo>>();
 			var properties = new List<RankedMember<PropertyInfo>>();
-			FetchFieldsAndProperties(fields, properties);
+			FetchFieldsAndProperties(_resultClass, fields, properties);
 
 			_fieldsByNameCaseSensitive = GetMapByName(fields, StringComparer.Ordinal);
 			_fieldsByNameCaseInsensitive = GetMapByName(fields, StringComparer.OrdinalIgnoreCase);
@@ -75,7 +102,7 @@ namespace NHibernate.Transform
 		{
 			if (aliases == null)
 			{
-				throw new ArgumentNullException("aliases");
+				throw new ArgumentNullException(nameof(aliases));
 			}
 			object result;
 
@@ -137,7 +164,7 @@ namespace NHibernate.Transform
 			throw new PropertyNotFoundException(resultObj.GetType(), alias, "setter");
 		}
 
-		private bool TrySet(string alias, object value, object resultObj, Dictionary<string, NamedMember<FieldInfo>> fieldsMap)
+		private static bool TrySet(string alias, object value, object resultObj, Dictionary<string, NamedMember<FieldInfo>> fieldsMap)
 		{
 			if (fieldsMap.TryGetValue(alias, out var field))
 			{
@@ -148,7 +175,7 @@ namespace NHibernate.Transform
 			return false;
 		}
 
-		private bool TrySet(string alias, object value, object resultObj, Dictionary<string, NamedMember<PropertyInfo>> propertiesMap)
+		private static bool TrySet(string alias, object value, object resultObj, Dictionary<string, NamedMember<PropertyInfo>> propertiesMap)
 		{
 			if (propertiesMap.TryGetValue(alias, out var property))
 			{
@@ -159,7 +186,7 @@ namespace NHibernate.Transform
 			return false;
 		}
 
-		private void CheckMember<T>(NamedMember<T> member, string alias) where T : MemberInfo
+		private static void CheckMember<T>(NamedMember<T> member, string alias) where T : MemberInfo
 		{
 			if (member.Member != null)
 				return;
@@ -177,10 +204,9 @@ namespace NHibernate.Transform
 					$"{string.Join(", ", member.AmbiguousMembers.Select(m => m.Name))}");
 		}
 
-		private void FetchFieldsAndProperties(List<RankedMember<FieldInfo>> fields, List<RankedMember<PropertyInfo>> properties)
+		private static void FetchFieldsAndProperties(System.Type currentType, List<RankedMember<FieldInfo>> fields, List<RankedMember<PropertyInfo>> properties)
 		{
 			const BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
-			var currentType = _resultClass;
 			var rank = 1;
 			// For grasping private members, we need to manually walk the hierarchy.
 			while (currentType != null && currentType != typeof(object))
@@ -199,7 +225,7 @@ namespace NHibernate.Transform
 			}
 		}
 
-		private int GetFieldVisibilityRank(FieldInfo field)
+		private static int GetFieldVisibilityRank(FieldInfo field)
 		{
 			if (field.IsPublic)
 				return 1;
@@ -212,7 +238,7 @@ namespace NHibernate.Transform
 			return 5;
 		}
 
-		private int GetPropertyVisibilityRank(PropertyInfo property)
+		private static int GetPropertyVisibilityRank(PropertyInfo property)
 		{
 			var setter = property.SetMethod;
 			if (setter.IsPublic)
@@ -226,7 +252,7 @@ namespace NHibernate.Transform
 			return 5;
 		}
 
-		private Dictionary<string, NamedMember<T>> GetMapByName<T>(IEnumerable<RankedMember<T>> members, StringComparer comparer) where T : MemberInfo
+		private static Dictionary<string, NamedMember<T>> GetMapByName<T>(IEnumerable<RankedMember<T>> members, StringComparer comparer) where T : MemberInfo
 		{
 			return members
 				.GroupBy(m => m.Member.Name,
@@ -249,7 +275,6 @@ namespace NHibernate.Transform
 			public int VisibilityRank;
 		}
 
-		[Serializable]
 		private struct NamedMember<T> where T : MemberInfo
 		{
 			public NamedMember(string name, T[] members)

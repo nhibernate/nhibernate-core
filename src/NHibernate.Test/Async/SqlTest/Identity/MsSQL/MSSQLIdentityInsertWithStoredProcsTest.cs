@@ -10,7 +10,6 @@
 
 using System.Collections;
 using NHibernate.Dialect;
-using NHibernate.Driver;
 using NHibernate.Engine;
 using NUnit.Framework;
 
@@ -28,7 +27,7 @@ namespace NHibernate.Test.SqlTest.Identity.MsSQL
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)
 		{
 			// Tested resulting SQL depends on driver.
-			return factory.ConnectionProvider.Driver is SqlClientDriver;
+			return factory.ConnectionProvider.Driver.IsSqlServerDriver();
 		}
 
 		protected override string GetExpectedInsertOrgLogStatement(string orgName)

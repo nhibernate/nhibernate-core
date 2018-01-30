@@ -1,4 +1,5 @@
-﻿namespace NHibernate.Driver
+﻿#if !NETSTANDARD2_0 || DRIVER_PACKAGE
+namespace NHibernate.Driver
 {
 	/// <summary>
 	/// SQL Dialect for SQL Anywhere 12 - for the NHibernate 3.2.0 distribution
@@ -59,3 +60,4 @@
 		public override bool RequiresTimeSpanForTime => true;
 	}
 }
+#endif

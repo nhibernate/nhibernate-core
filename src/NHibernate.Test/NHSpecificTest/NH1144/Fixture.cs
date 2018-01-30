@@ -1,7 +1,6 @@
 using log4net.Core;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
-using NHibernate.Driver;
 using NHibernate.Util;
 using NUnit.Framework;
 
@@ -26,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1144
 		[Test]
 		public void CanSaveInSingleBatch()
 		{
-			if (!typeof(OracleDataClientDriver).IsAssignableFrom(ReflectHelper.ClassForName(cfg.GetProperty(Environment.ConnectionDriver))))
+			if (!ReflectHelper.ClassForName(cfg.GetProperty(Environment.ConnectionDriver)).IsOracleDataClientDriver())
 			{
 				Assert.Ignore("Only applicable for Oracle Data Client driver");
 			}

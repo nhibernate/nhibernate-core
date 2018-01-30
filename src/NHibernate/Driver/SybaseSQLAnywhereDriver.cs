@@ -1,4 +1,5 @@
-﻿namespace NHibernate.Driver
+﻿#if !NETSTANDARD2_0 || DRIVER_PACKAGE
+namespace NHibernate.Driver
 {
 	/// <summary>
 	/// The SybaseSQLAnywhereDriver Driver provides a database driver for Sybase SQL Anywhere 10 and above
@@ -34,3 +35,4 @@
 		public override bool RequiresTimeSpanForTime => true;
 	}
 }
+#endif

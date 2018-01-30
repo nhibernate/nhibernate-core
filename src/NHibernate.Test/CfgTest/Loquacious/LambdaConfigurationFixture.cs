@@ -46,10 +46,12 @@ namespace NHibernate.Test.CfgTest.Loquacious
 											{
 												db.Dialect<MsSql2000Dialect>();
 												db.KeywordsAutoImport = Hbm2DDLKeyWords.AutoQuote;
+#if !NETCOREAPP2_0
 												db.Batcher<SqlClientBatchingBatcherFactory>();
+#endif
 												db.BatchSize = 15;
 												db.ConnectionProvider<DebugConnectionProvider>();
-												db.Driver<SqlClientDriver>();
+												db.Driver<SqlServer2000Driver>();
 												db.ConnectionReleaseMode = ConnectionReleaseMode.AfterTransaction;
 												db.IsolationLevel = IsolationLevel.ReadCommitted;
 												db.ConnectionString = "The connection string";
@@ -82,13 +84,15 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			Assert.That(configure.Properties[Environment.Dialect],
 						Is.EqualTo(typeof(MsSql2000Dialect).AssemblyQualifiedName));
 			Assert.That(configure.Properties[Environment.Hbm2ddlKeyWords], Is.EqualTo("auto-quote"));
+#if !NETCOREAPP2_0
 			Assert.That(configure.Properties[Environment.BatchStrategy],
 						Is.EqualTo(typeof(SqlClientBatchingBatcherFactory).AssemblyQualifiedName));
+#endif
 			Assert.That(configure.Properties[Environment.BatchSize], Is.EqualTo("15"));
 			Assert.That(configure.Properties[Environment.ConnectionProvider],
 						Is.EqualTo(typeof(DebugConnectionProvider).AssemblyQualifiedName));
 			Assert.That(configure.Properties[Environment.ConnectionDriver],
-						Is.EqualTo(typeof(SqlClientDriver).AssemblyQualifiedName));
+						Is.EqualTo(typeof(SqlServer2000Driver).AssemblyQualifiedName));
 			Assert.That(configure.Properties[Environment.ReleaseConnections],
 									Is.EqualTo(ConnectionReleaseModeParser.ToString(ConnectionReleaseMode.AfterTransaction)));
 			Assert.That(configure.Properties[Environment.Isolation], Is.EqualTo("ReadCommitted"));

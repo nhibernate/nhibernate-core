@@ -3,10 +3,16 @@
   <PropertyGroup>
     <Title>NHibernate.TestDatabaseSetup</Title>
     <Description>Test Database Setup for NHibernate.</Description>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
+    <DisableImplicitPackageTargetFallback>true</DisableImplicitPackageTargetFallback>
     <IsTestProject>true</IsTestProject>
     <NoWarn>$(NoWarn);3001;3002;3003;3005</NoWarn>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="NUnit" Version="3.9.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.9.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate.Test\NHibernate.Test.csproj" />
   </ItemGroup>

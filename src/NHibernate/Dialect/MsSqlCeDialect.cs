@@ -4,6 +4,7 @@ using System.Data.Common;
 using System.Text;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
+using NHibernate.Driver;
 using NHibernate.Id;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
@@ -202,7 +203,14 @@ namespace NHibernate.Dialect
 
 		protected virtual void RegisterDefaultProperties()
 		{
-			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SqlServerCeDriver";
+			DefaultProperties[Environment.ConnectionDriver] =
+#if !NETSTANDARD2_0
+#pragma warning disable 618
+				GetDriverName<SqlServerCeDriver>
+#pragma warning restore 618
+#endif
+				("NHibernate.Driver.SqlServerCompactDriver, NHibernate.Driver.SqlServer.Compact");
+
 			DefaultProperties[Environment.PrepareSql] = "false";
 		}
 

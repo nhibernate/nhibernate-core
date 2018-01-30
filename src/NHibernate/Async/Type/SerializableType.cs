@@ -16,6 +16,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {

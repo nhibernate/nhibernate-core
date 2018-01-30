@@ -15,7 +15,6 @@ using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using System.Text;
 using NHibernate.Dialect;
-using NHibernate.Driver;
 
 namespace NHibernate.Test
 {
@@ -163,13 +162,15 @@ namespace NHibernate.Test
 						var wereClosed = _sessionFactory.CheckSessionsWereClosed();
 						var wasCleaned = CheckDatabaseWasCleaned();
 						var wereConnectionsClosed = CheckConnectionsWereClosed();
-						fail = !wereClosed || !wasCleaned || !wereConnectionsClosed;
+						var wereTransactionsDisposed = CheckEnlistedTransactionsWereDisposed();
+						fail = !wereClosed || !wasCleaned || !wereConnectionsClosed || !wereTransactionsDisposed;
 
 						if (fail)
 						{
 							badCleanupMessage = "Test didn't clean up after itself. session closed: " + wereClosed + "; database cleaned: " +
 												wasCleaned
-												+ "; connection closed: " + wereConnectionsClosed;
+												+ "; connection closed: " + wereConnectionsClosed
+												+ "; transactions disposed:" + wereTransactionsDisposed;;
 							if (testResult != null && testResult.Outcome.Status == TestStatus.Failed)
 							{
 								// Avoid hiding a test failure (asserts are usually not hidden, but other exception would be).
@@ -260,6 +261,31 @@ namespace NHibernate.Test
 			return false;
 		}
 
+		private bool CheckEnlistedTransactionsWereDisposed()
+		{
+			System.Transactions.Transaction current = System.Transactions.Transaction.Current;
+			bool notAborted = ((System.Transactions.Transaction.Current?.TransactionInformation.Status) ?? System.Transactions.TransactionStatus.Aborted) != System.Transactions.TransactionStatus.Aborted;
+			if (!notAborted) return true;
+
+			do
+			{
+				notAborted = current.TransactionInformation.Status != System.Transactions.TransactionStatus.Aborted;
+
+				try
+				{
+					current.Dispose();
+				}
+				catch (Exception ex)
+				{
+					log.Error("Error disposing enlisted transaction", ex);
+				}
+
+				current = System.Transactions.Transaction.Current;
+			} while (current != null && notAborted);
+
+			return false;
+		}
+
 		/// <summary>
 		/// (Re)Create the configuration.
 		/// </summary>
@@ -296,16 +322,13 @@ namespace NHibernate.Test
 
 		public static void DropSchema(bool useStdOut, SchemaExport export, ISessionFactoryImplementor sfi)
 		{
-			if (sfi?.ConnectionProvider.Driver is FirebirdClientDriver fbDriver)
-			{
-				// Firebird will pool each connection created during the test and will marked as used any table
-				// referenced by queries. It will at best delays those tables drop until connections are actually
-				// closed, or immediately fail dropping them.
-				// This results in other tests failing when they try to create tables with same name.
-				// By clearing the connection pool the tables will get dropped. This is done by the following code.
-				// Moved from NH1908 test case, contributed by Amro El-Fakharany.
-				fbDriver.ClearPool(null);
-			}
+			// Firebird will pool each connection created during the test and will marked as used any table
+			// referenced by queries. It will at best delays those tables drop until connections are actually
+			// closed, or immediately fail dropping them.
+			// This results in other tests failing when they try to create tables with same name.
+			// By clearing the connection pool the tables will get dropped. This is done by the following code.
+			// Moved from NH1908 test case, contributed by Amro El-Fakharany.
+			sfi?.ConnectionProvider.Driver.ClearPoolForFirebirdDriver();
 
 			export.Drop(useStdOut, true);
 		}

@@ -69,7 +69,13 @@ namespace NHibernate.Dialect
 		protected override void RegisterDefaultProperties()
 		{
 			base.RegisterDefaultProperties();
-			DefaultProperties[Environment.ConnectionDriver] = typeof(Sql2008ClientDriver).AssemblyQualifiedName;
+			DefaultProperties[Environment.ConnectionDriver] =
+#if !NETSTANDARD2_0
+#pragma warning disable 618
+				GetDriverName<Sql2008ClientDriver>
+#pragma warning restore 618
+#endif
+					("NHibernate.Driver.SqlServer2008Driver, NHibernate.Driver.SqlServer");
 		}
 
 		public override string CurrentTimestampSQLFunctionName =>

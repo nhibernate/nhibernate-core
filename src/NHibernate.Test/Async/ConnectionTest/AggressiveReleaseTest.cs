@@ -56,6 +56,9 @@ namespace NHibernate.Test.ConnectionTest
 		// Some additional tests specifically for the aggressive-Release functionality...
 
 		[Test]
+#if NETCOREAPP2_0
+		[Ignore("Serializing delegates (AfterTransactionCompletionProcessDelegate) is not supported on this platform.")]
+#endif
 		public async Task SerializationOnAfterStatementAggressiveReleaseAsync()
 		{
 			Prepare();
@@ -77,6 +80,9 @@ namespace NHibernate.Test.ConnectionTest
 		}
 
 		[Test]
+#if NETCOREAPP2_0
+		[Ignore("Serializing delegates (AfterTransactionCompletionProcessDelegate) is not supported on this platform.")]
+#endif
 		public async Task SerializationFailsOnAfterStatementAggressiveReleaseWithOpenResourcesAsync()
 		{
 			Prepare();

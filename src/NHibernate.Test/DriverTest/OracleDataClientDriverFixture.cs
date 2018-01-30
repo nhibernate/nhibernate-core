@@ -1,3 +1,4 @@
+#if !NETCOREAPP2_0
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -117,7 +118,7 @@ namespace NHibernate.Test.DriverTest
 			try
 			{
 				driver = managed
-					? (OracleDataClientDriverBase)new OracleManagedDataClientDriver()
+					? (OracleDataClientDriverBase)new OracleManagedDriver()
 					: new OracleDataClientDriver();
 			}
 			catch (Exception ex)
@@ -152,3 +153,4 @@ namespace NHibernate.Test.DriverTest
 		}
 	}
 }
+#endif

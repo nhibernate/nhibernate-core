@@ -4,7 +4,6 @@ using System.Data;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Xml.Serialization;
-using NHibernate.Driver;
 using NHibernate.Type;
 using NUnit.Framework;
 
@@ -21,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
 		{
 			// Cannot handle DbType.DateTimeOffset via ODBC.
-			if (factory.ConnectionProvider.Driver is OdbcDriver)
+			if (factory.ConnectionProvider.Driver.IsOdbcDriver())
 				return false;
 
 			return base.AppliesTo(factory);

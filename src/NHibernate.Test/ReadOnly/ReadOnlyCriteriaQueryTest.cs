@@ -1054,6 +1054,9 @@ namespace NHibernate.Test.ReadOnly
 		}
 		
 		[Test]
+#if NETCOREAPP2_0
+		[Ignore("This platform does not support distributed transactions.")]
+#endif
 		public void DetachedCriteria()
 		{
 			DetachedCriteria dc = NHibernate.Criterion.DetachedCriteria.For<Student>()

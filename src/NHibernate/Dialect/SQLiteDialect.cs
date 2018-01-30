@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.Common;
 using System.Text;
 using NHibernate.Dialect.Function;
+using NHibernate.Driver;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 
@@ -180,7 +181,14 @@ namespace NHibernate.Dialect
 
 		protected virtual void RegisterDefaultProperties()
 		{
-			DefaultProperties[Cfg.Environment.ConnectionDriver] = "NHibernate.Driver.SQLite20Driver";
+			DefaultProperties[Cfg.Environment.ConnectionDriver] =
+#if !NETSTANDARD2_0
+#pragma warning disable 618
+				GetDriverName<SQLite20Driver>
+#pragma warning restore 618
+#endif
+					("NHibernate.Driver.SQLiteDriver, NHibernate.Driver.SQLite");
+
 			DefaultProperties[Cfg.Environment.QuerySubstitutions] = "true 1, false 0, yes 'Y', no 'N'";
 		}
 
