@@ -23,9 +23,10 @@ UserManager = Srp
 WireCrypt = Enabled
 11. Restart Firebird service.
 
-For manual testing, take care of not creating it with inadequate acl on the file. This may happen
-if you use ISQL with a connection string causing it to create it in embedded mode, without actually
-using the server. Prefixing your path with "localhost:" should avoid that.
+For manual testing, take care of not creating the NHibernate database with inadequate acl on the file.
+This may happen if you use ISQL with a connection string causing it to create it in embedded mode,
+without actually using the server. Prefixing your path with "localhost:" should avoid that.
+Due to test constraints, make sure you create the database with a 16384 page size.
 
 For tests performances, and since it is just an expandable test database, better disable forced writes.
 Since those tests drop/create schema constantly, they are quite heavy on writes and this single setting
@@ -35,4 +36,6 @@ b.  From Firebird installation folder, run:
 gfix -w async nhibernate -user SYSDBA
     (Change "nhibernate" to your own alias or path as appropriate for your setup) 
 c.  Restart Firebird service.
-Note that the TestDatabaseSetup will drop and recreate the database when run, with forced writes disabled.
+Note that the TestDatabaseSetup will drop and recreate the database when run, with forced writes disabled
+and with a 16384 page size. So you may consider running the TestDatabaseSetup test instead for creating the
+NHibernate database.

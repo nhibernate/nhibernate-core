@@ -133,6 +133,26 @@
 				<namespace prefix="hbm" uri="urn:nhibernate-configuration-2.2" />
 			</namespaces>
 		</xmlpoke>
+
+		<!-- Make sure the property exists - it's only set for some scenarios. -->
+		<property name="nhibernate.oracle.use_n_prefixed_types_for_unicode" value="" unless="${property::exists('nhibernate.oracle.use_n_prefixed_types_for_unicode')}"/>
+		<xmlpoke file="${app.config}"
+			xpath="//*/hbm:property[@name='oracle.use_n_prefixed_types_for_unicode']"
+			value="${nhibernate.oracle.use_n_prefixed_types_for_unicode}">
+			<namespaces>
+				<namespace prefix="hbm" uri="urn:nhibernate-configuration-2.2" />
+			</namespaces>
+		</xmlpoke>
+
+		<!-- Make sure the property exists - it's only set for some scenarios. -->
+		<property name="nhibernate.query.default_cast_length" value="" unless="${property::exists('nhibernate.query.default_cast_length')}"/>
+		<xmlpoke file="${app.config}"
+			xpath="//*/hbm:property[@name='query.default_cast_length']"
+			value="${nhibernate.query.default_cast_length}">
+			<namespaces>
+				<namespace prefix="hbm" uri="urn:nhibernate-configuration-2.2" />
+			</namespaces>
+		</xmlpoke>
 	</target>
 
 	<target name="put-connection-settings-into-app-config">

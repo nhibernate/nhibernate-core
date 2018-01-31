@@ -8,21 +8,27 @@
 //------------------------------------------------------------------------------
 
 
-using System;
+using System.Linq;
 using NUnit.Framework;
+using NHibernate.Linq;
 
 namespace NHibernate.Test.TypesTest
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Summary description for StringTypeFixture.
-	/// </summary>
 	[TestFixture]
 	public class StringTypeFixtureAsync : TypeFixtureBase
 	{
 		protected override string TypeName
 		{
 			get { return "String"; }
+		}
+
+		protected override void OnTearDown()
+		{
+			using (var s = OpenSession())
+			{
+				s.CreateQuery("delete from StringClass").ExecuteUpdate();
+			}
 		}
 
 		[Test]
@@ -38,11 +44,26 @@ namespace NHibernate.Test.TypesTest
 
 			using (ISession s = OpenSession())
 			{
-				StringClass b = (StringClass) await (s.CreateCriteria(
-				                              	typeof(StringClass)).UniqueResultAsync());
-				Assert.IsNull(b.StringValue);
-				await (s.DeleteAsync(b));
+				StringClass b = (StringClass) await (s.CreateCriteria(typeof(StringClass)).UniqueResultAsync());
+				Assert.That(b.StringValue, Is.Null);
+			}
+		}
+
+		[Test]
+		public async Task InsertUnicodeValueAsync()
+		{
+			const string unicode = "길동 최고 新闻 地图 ます プル éèêëîïôöõàâäåãçùûü бджзй αβ ខគឃ ضذخ";
+			using (var s = OpenSession())
+			{
+				var b = new StringClass { StringValue = unicode };
+				await (s.SaveAsync(b));
 				await (s.FlushAsync());
+			}
+
+			using (var s = OpenSession())
+			{
+				var b = await (s.Query<StringClass>().SingleAsync());
+				Assert.That(b.StringValue, Is.EqualTo(unicode));
 			}
 		}
 	}
