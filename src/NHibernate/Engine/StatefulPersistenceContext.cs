@@ -835,6 +835,10 @@ namespace NHibernate.Engine
 		{
 			CollectionEntry ce = new CollectionEntry(collection, persister, id, flushing);
 			AddCollection(collection, ce, id);
+			if (persister.GetBatchSize() > 1)
+			{
+				batchFetchQueue.AddBatchLoadableCollection(collection, ce);
+			}
 		}
 
 		/// <summary> add a detached uninitialized collection</summary>
@@ -913,7 +917,7 @@ namespace NHibernate.Engine
 																										object id)
 		{
 			CollectionEntry ce = new CollectionEntry(collection, persister, id, flushing);
-			ce.PostInitialize(collection);
+			ce.PostInitialize(collection, this);
 			AddCollection(collection, ce, id);
 			return ce;
 		}

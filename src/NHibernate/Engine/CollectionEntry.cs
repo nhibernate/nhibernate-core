@@ -298,10 +298,30 @@ namespace NHibernate.Engine
 		/// has been initialized.
 		/// </summary>
 		/// <param name="collection">The initialized <see cref="AbstractPersistentCollection"/> that this Entry is for.</param>
+		//Since v5.1
+		[Obsolete("Please use PostInitialize(collection, persistenceContext) instead.")]
 		public void PostInitialize(IPersistentCollection collection)
 		{
 			snapshot = LoadedPersister.IsMutable ? collection.GetSnapshot(LoadedPersister) : null;
 			collection.SetSnapshot(loadedKey, role, snapshot);
+		}
+
+		/// <summary>
+		/// Updates the CollectionEntry to reflect that the <see cref="IPersistentCollection"/>
+		/// has been initialized.
+		/// </summary>
+		/// <param name="collection">The initialized <see cref="AbstractPersistentCollection"/> that this Entry is for.</param>
+		/// <param name="persistenceContext"></param>
+		public void PostInitialize(IPersistentCollection collection, IPersistenceContext persistenceContext)
+		{
+#pragma warning disable 618
+			//6.0 TODO: Inline PostInitialize here.
+			PostInitialize(collection);
+#pragma warning restore 618
+			if (LoadedPersister.GetBatchSize() > 1)
+			{
+				persistenceContext.BatchFetchQueue.RemoveBatchLoadableCollection(this);
+			}
 		}
 
 		/// <summary>

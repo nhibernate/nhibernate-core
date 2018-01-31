@@ -2043,6 +2043,14 @@ namespace NHibernate.Persister.Collection
 			get { return new string[] {IdentifierColumnName}; }
 		}
 
+		/// <summary>
+		/// Get the batch size of a collection persister.
+		/// </summary>
+		public int GetBatchSize()
+		{
+			return batchSize;
+		}
+
 		public SqlString GetSelectByUniqueKeyString(string propertyName)
 		{
 			return

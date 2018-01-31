@@ -127,7 +127,7 @@ namespace NHibernate.Event.Default
 					CollectionCacheEntry cacheEntry = (CollectionCacheEntry)persister.CacheEntryStructure.Destructure(ce, factory);
 					await (cacheEntry.AssembleAsync(collection, persister, persistenceContext.GetCollectionOwner(id, persister), cancellationToken)).ConfigureAwait(false);
 
-					persistenceContext.GetCollectionEntry(collection).PostInitialize(collection);
+					persistenceContext.GetCollectionEntry(collection).PostInitialize(collection, persistenceContext);
 					return true;
 				}
 			}
