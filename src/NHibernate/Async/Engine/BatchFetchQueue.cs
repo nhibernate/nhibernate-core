@@ -68,11 +68,7 @@ namespace NHibernate.Engine
 						return keys; //the first key found after the given key
 					}
 
-					var isEqual = collectionPersister.KeyType.IsEqual(
-						id,
-						ce.LoadedKey,
-						collectionPersister.Factory
-					);
+					bool isEqual = collectionPersister.KeyType.IsEqual(id, ce.LoadedKey, collectionPersister.Factory);
 
 					if (isEqual)
 					{
