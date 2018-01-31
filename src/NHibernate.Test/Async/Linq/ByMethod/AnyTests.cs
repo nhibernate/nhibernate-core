@@ -62,10 +62,29 @@ namespace NHibernate.Test.Linq.ByMethod
 		}
 
 		[Test]
-		public async Task AnyWithFetchAsync()
+		public void AnyWithFetchAsync()
 		{
 			//NH-3241
-			var result = await (db.Orders.Fetch(x => x.Customer).FetchMany(x => x.OrderLines).AnyAsync());
+			Assert.DoesNotThrowAsync(async () =>
+				{
+				var result = await (db.Orders.Fetch(x => x.Customer).FetchMany(x => x.OrderLines).AnyAsync());
+				}
+			);
+		}
+
+		[Test]
+		public void AnyWithFetchInSubQueryAsync()
+		{
+			Assert.DoesNotThrowAsync(async () =>
+				{
+					var result = await (db.Orders
+					               .Where(x => x.Customer.CustomerId == "Test")
+					               .Fetch(x => x.Customer)
+					               .FetchMany(x => x.OrderLines)
+					               .Where(x => x.Freight > 1)
+					               .CountAsync());
+				}
+			);
 		}
 	}
 }
