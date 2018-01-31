@@ -159,7 +159,7 @@ namespace NHibernate.Util
 		}
 
 		/// <summary>
-		/// Just a façade for calling string.Split()
+		/// Just a facade for calling string.Split()
 		/// We don't use our StringTokenizer because string.Split() is
 		/// more efficient (but it only works when we don't want to retrieve the delimiters)
 		/// </summary>
