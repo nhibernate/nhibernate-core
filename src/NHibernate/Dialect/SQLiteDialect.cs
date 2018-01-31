@@ -420,7 +420,7 @@ namespace NHibernate.Dialect
 			protected override bool CastingIsRequired(string sqlType)
 			{
 				// SQLite doesn't support casting to datetime types.  It assumes you want an integer and destroys the date string.
-				if (sqlType.ToLowerInvariant().Contains("date") || sqlType.ToLowerInvariant().Contains("time"))
+				if (StringHelper.ContainsCaseInsensitive(sqlType, "date") || StringHelper.ContainsCaseInsensitive(sqlType, "time"))
 					return false;
 				return true;
 			}

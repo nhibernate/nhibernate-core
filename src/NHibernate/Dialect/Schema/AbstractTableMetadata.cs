@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using NHibernate.Util;
@@ -10,9 +11,9 @@ namespace NHibernate.Dialect.Schema
 		private string catalog;
 		private string schema;
 		private string name;
-		private readonly Dictionary<string, IColumnMetadata> columns = new Dictionary<string, IColumnMetadata>();
-		private readonly Dictionary<string, IForeignKeyMetadata> foreignKeys = new Dictionary<string, IForeignKeyMetadata>();
-		private readonly Dictionary<string, IIndexMetadata> indexes = new Dictionary<string, IIndexMetadata>();
+		private readonly Dictionary<string, IColumnMetadata> columns = new Dictionary<string, IColumnMetadata>(StringComparer.OrdinalIgnoreCase);
+		private readonly Dictionary<string, IForeignKeyMetadata> foreignKeys = new Dictionary<string, IForeignKeyMetadata>(StringComparer.OrdinalIgnoreCase);
+		private readonly Dictionary<string, IIndexMetadata> indexes = new Dictionary<string, IIndexMetadata>(StringComparer.OrdinalIgnoreCase);
 
 		public AbstractTableMetadata(DataRow rs, IDataBaseSchema meta, bool extras)
 		{
@@ -71,21 +72,21 @@ namespace NHibernate.Dialect.Schema
 		public IColumnMetadata GetColumnMetadata(string columnName)
 		{
 			IColumnMetadata result;
-			columns.TryGetValue(columnName.ToLowerInvariant(), out result);
+			columns.TryGetValue(columnName, out result);
 			return result;
 		}
 
 		public IForeignKeyMetadata GetForeignKeyMetadata(string keyName)
 		{
 			IForeignKeyMetadata result;
-			foreignKeys.TryGetValue(keyName.ToLowerInvariant(), out result);
+			foreignKeys.TryGetValue(keyName, out result);
 			return result;
 		}
 
 		public IIndexMetadata GetIndexMetadata(string indexName)
 		{
 			IIndexMetadata result;
-			indexes.TryGetValue(indexName.ToLowerInvariant(), out result);
+			indexes.TryGetValue(indexName, out result);
 			return result;
 		}
 
@@ -105,7 +106,7 @@ namespace NHibernate.Dialect.Schema
 			if (info == null)
 			{
 				info = GetForeignKeyMetadata(rs);
-				foreignKeys[info.Name.ToLowerInvariant()] = info;
+				foreignKeys[info.Name] = info;
 			}
 
 			foreach (DataRow row in meta.GetIndexColumns(catalog, schema, name, fk).Rows)
@@ -124,7 +125,7 @@ namespace NHibernate.Dialect.Schema
 			if (info == null)
 			{
 				info = GetIndexMetadata(rs);
-				indexes[info.Name.ToLowerInvariant()] = info;
+				indexes[info.Name] = info;
 			}
 
 			foreach (DataRow row in meta.GetIndexColumns(catalog, schema, name, index).Rows)
@@ -142,7 +143,7 @@ namespace NHibernate.Dialect.Schema
 			if (GetColumnMetadata(column) == null)
 			{
 				IColumnMetadata info = GetColumnMetadata(rs);
-				columns[info.Name.ToLowerInvariant()] = info;
+				columns[info.Name] = info;
 			}
 		}
 

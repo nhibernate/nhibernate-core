@@ -365,8 +365,8 @@ namespace NHibernate.Util
 		/// </returns>
 		public static bool BooleanValue(string value)
 		{
-			string trimmed = value.Trim().ToLowerInvariant();
-			return trimmed.Equals("true") || trimmed.Equals("t");
+			string trimmed = value.Trim();
+			return trimmed.Equals("true", StringComparison.OrdinalIgnoreCase) || trimmed.Equals("t", StringComparison.OrdinalIgnoreCase);
 		}
 
 		private static string NullSafeToString(object obj)
@@ -686,6 +686,11 @@ namespace NHibernate.Util
 		public static bool StartsWithCaseInsensitive(string source, string prefix)
 		{
 			return source.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase);
+		}
+
+		internal static bool ContainsCaseInsensitive(string source, string value)
+		{
+			return source.IndexOf(value, StringComparison.OrdinalIgnoreCase) >= 0;
 		}
 
 		internal static bool StartsWith(this string source, char value)

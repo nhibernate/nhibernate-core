@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NHibernate.Persister.Collection;
 
 namespace NHibernate.Hql.Ast.ANTLR
@@ -11,34 +12,39 @@ namespace NHibernate.Hql.Ast.ANTLR
 	internal static class CollectionProperties
 	{
 
-		public static Dictionary<string, string> HQL_COLLECTION_PROPERTIES;
-
-		private static readonly string COLLECTION_INDEX_LOWER = CollectionPropertyNames.Index.ToLowerInvariant();
+		public static readonly Dictionary<string, string> HQL_COLLECTION_PROPERTIES = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 		static CollectionProperties()
 		{
-			HQL_COLLECTION_PROPERTIES = new Dictionary<string, string>();
-			HQL_COLLECTION_PROPERTIES.Add(CollectionPropertyNames.Elements.ToLowerInvariant(), CollectionPropertyNames.Elements);
-			HQL_COLLECTION_PROPERTIES.Add(CollectionPropertyNames.Indices.ToLowerInvariant(), CollectionPropertyNames.Indices);
-			HQL_COLLECTION_PROPERTIES.Add(CollectionPropertyNames.Size.ToLowerInvariant(), CollectionPropertyNames.Size);
-			HQL_COLLECTION_PROPERTIES.Add(CollectionPropertyNames.MaxIndex.ToLowerInvariant(), CollectionPropertyNames.MaxIndex);
-			HQL_COLLECTION_PROPERTIES.Add(CollectionPropertyNames.MinIndex.ToLowerInvariant(), CollectionPropertyNames.MinIndex);
-			HQL_COLLECTION_PROPERTIES.Add(CollectionPropertyNames.MaxElement.ToLowerInvariant(), CollectionPropertyNames.MaxElement);
-			HQL_COLLECTION_PROPERTIES.Add(CollectionPropertyNames.MinElement.ToLowerInvariant(), CollectionPropertyNames.MinElement);
-			HQL_COLLECTION_PROPERTIES.Add(COLLECTION_INDEX_LOWER, CollectionPropertyNames.Index);
+			Init(
+				CollectionPropertyNames.Elements,
+				CollectionPropertyNames.Indices,
+				CollectionPropertyNames.Size,
+				CollectionPropertyNames.MaxIndex,
+				CollectionPropertyNames.MinIndex,
+				CollectionPropertyNames.MaxElement,
+				CollectionPropertyNames.MinElement,
+				CollectionPropertyNames.Index);
+		}
+
+		private static void Init(params string[] names)
+		{
+			foreach (var name in names)
+			{
+				HQL_COLLECTION_PROPERTIES[name] = name;
+			}
 		}
 
 		public static bool IsCollectionProperty(string name)
 		{
-			string key = name.ToLowerInvariant();
 			// CollectionPropertyMapping processes everything except 'index'.
-			if (COLLECTION_INDEX_LOWER == key)
+			if (string.Equals(CollectionPropertyNames.Index, name, StringComparison.OrdinalIgnoreCase))
 			{
 				return false;
 			}
 			else
 			{
-				return HQL_COLLECTION_PROPERTIES.ContainsKey(key);
+				return HQL_COLLECTION_PROPERTIES.ContainsKey(name);
 			}
 		}
 
@@ -49,8 +55,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		public static bool IsAnyCollectionProperty(string name)
 		{
-			string key = name.ToLowerInvariant();
-			return HQL_COLLECTION_PROPERTIES.ContainsKey(key);
+			return HQL_COLLECTION_PROPERTIES.ContainsKey(name);
 		}
 	}
 }
