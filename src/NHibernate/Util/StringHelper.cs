@@ -641,7 +641,7 @@ namespace NHibernate.Util
 
 		public static string MoveAndToBeginning(string filter)
 		{
-			if (filter.Trim().Length > 0)
+			if (!string.IsNullOrWhiteSpace(filter))
 			{
 				filter += " and ";
 				if (filter.StartsWith(" and "))

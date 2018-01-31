@@ -53,7 +53,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 					switch (listenerElement.Name)
 					{
 						case "class":
-							if (listenerElement.Value.Trim().Length == 0)
+							if (string.IsNullOrWhiteSpace(listenerElement.Value))
 								throw new HibernateConfigException("Invalid listener element; the attribute <class> must be assigned with no empty value");
 							clazz = listenerElement.Value;
 							break;

@@ -214,7 +214,7 @@ namespace NHibernate.DomainModel.NHSpecific
 
 		public static NullableInt32 Parse(string s)
 		{
-			if ((s == null) || (s.Trim().Length == 0))
+			if (string.IsNullOrWhiteSpace(s))
 			{
 				return new NullableInt32();
 			}
