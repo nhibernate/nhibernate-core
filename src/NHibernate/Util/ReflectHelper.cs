@@ -767,12 +767,12 @@ namespace NHibernate.Util
 
 		public static bool IsPropertyGet(MethodInfo method)
 		{
-			return method.IsSpecialName && method.Name.StartsWith("get_");
+			return method.IsSpecialName && method.Name.StartsWith("get_", StringComparison.Ordinal);
 		}
 
 		public static bool IsPropertySet(MethodInfo method)
 		{
-			return method.IsSpecialName && method.Name.StartsWith("set_");
+			return method.IsSpecialName && method.Name.StartsWith("set_", StringComparison.Ordinal);
 		}
 
 		public static string GetPropertyName(MethodInfo method)

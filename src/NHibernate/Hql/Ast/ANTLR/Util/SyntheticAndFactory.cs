@@ -152,7 +152,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			{
 				return;
 			}
-			if (whereFragment.StartsWith("and"))
+			if (whereFragment.StartsWith("and", StringComparison.Ordinal))
 			{
 				whereFragment = whereFragment.Substring(4);
 			}

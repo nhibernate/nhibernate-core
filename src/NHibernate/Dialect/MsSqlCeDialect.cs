@@ -287,12 +287,12 @@ namespace NHibernate.Dialect
 			var tableName = new StringBuilder();
 			if (!string.IsNullOrEmpty(schema))
 			{
-				if (schema.StartsWith(OpenQuote.ToString()))
+				if (schema.StartsWith(OpenQuote))
 				{
 					schema = schema.Substring(1, schema.Length - 1);
 					quoted = true;
 				}
-				if (schema.EndsWith(CloseQuote.ToString()))
+				if (schema.EndsWith(CloseQuote))
 				{
 					schema = schema.Substring(0, schema.Length - 1);
 					quoted = true;
@@ -300,12 +300,12 @@ namespace NHibernate.Dialect
 				tableName.Append(schema).Append(StringHelper.Underscore);
 			}
 
-			if (table.StartsWith(OpenQuote.ToString()))
+			if (table.StartsWith(OpenQuote))
 			{
 				table = table.Substring(1, table.Length - 1);
 				quoted = true;
 			}
-			if (table.EndsWith(CloseQuote.ToString()))
+			if (table.EndsWith(CloseQuote))
 			{
 				table = table.Substring(0, table.Length - 1);
 				quoted = true;

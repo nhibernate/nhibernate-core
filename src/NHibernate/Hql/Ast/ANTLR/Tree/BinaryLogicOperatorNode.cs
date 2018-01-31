@@ -219,11 +219,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				string nodeText = operand.Text;
 
-				if (nodeText.StartsWith("("))
+				if (nodeText.StartsWith('('))
 				{
 					nodeText = nodeText.Substring(1);
 				}
-				if (nodeText.EndsWith(")"))
+				if (nodeText.EndsWith(')'))
 				{
 					nodeText = nodeText.Substring(0, nodeText.Length - 1);
 				}

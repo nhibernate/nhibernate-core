@@ -644,7 +644,7 @@ namespace NHibernate.Util
 			if (!string.IsNullOrWhiteSpace(filter))
 			{
 				filter += " and ";
-				if (filter.StartsWith(" and "))
+				if (filter.StartsWith(" and ", StringComparison.Ordinal))
 				{
 					filter = filter.Substring(4);
 				}
@@ -686,6 +686,16 @@ namespace NHibernate.Util
 		public static bool StartsWithCaseInsensitive(string source, string prefix)
 		{
 			return source.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase);
+		}
+
+		internal static bool StartsWith(this string source, char value)
+		{
+			return source.Length > 0 && source[0] == value;
+		}
+
+		internal static bool EndsWith(this string source, char value)
+		{
+			return source.Length > 0 && source[source.Length - 1] == value;
 		}
 
 		/// <summary>
@@ -735,7 +745,7 @@ namespace NHibernate.Util
 
 		public static bool IsBackticksEnclosed(string identifier)
 		{
-			return !string.IsNullOrEmpty(identifier) && identifier.StartsWith("`") && identifier.EndsWith("`");
+			return !string.IsNullOrEmpty(identifier) && identifier.StartsWith('`') && identifier.EndsWith('`');
 		}
 
 		public static string PurgeBackticksEnclosing(string identifier)

@@ -299,7 +299,7 @@ namespace NHibernate.SqlCommand
 
 		private static bool IsNamedParameter(string token)
 		{
-			return token.StartsWith(":");
+			return token.StartsWith(':');
 		}
 
 		private static bool IsFunctionOrKeyword(string lcToken, string nextToken, Dialect.Dialect dialect,
