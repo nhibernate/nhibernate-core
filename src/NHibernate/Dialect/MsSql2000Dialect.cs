@@ -286,7 +286,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("ceiling", new StandardSQLFunction("ceiling"));
 			RegisterFunction("ceil", new StandardSQLFunction("ceiling"));
 			RegisterFunction("floor", new StandardSQLFunction("floor"));
-			RegisterFunction("round", new StandardSQLFunction("round"));
+			RegisterFunction("round", new RoundEmulatingSingleParameterFunction());
 
 			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Double));
 

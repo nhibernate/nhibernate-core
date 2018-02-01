@@ -844,6 +844,18 @@ namespace NHibernate.Test.Linq
 			Assert.That(result.Children, Is.Not.Empty);
 		}
 
+		[Test(Description = "GH-1556")]
+		public async Task ContainsOnPersistedCollectionAsync()
+		{
+			var animal = await (session.Query<Animal>().SingleAsync(a => a.SerialNumber == "123"));
+
+			var result = await (session.Query<Animal>()
+			                    .Where(e => animal.Children.Contains(e.Father))
+			                    .OrderBy(e => e.Id)
+			                    .FirstOrDefaultAsync());
+			Assert.That(result, Is.Not.Null);
+			Assert.That(result.SerialNumber, Is.EqualTo("1121"));
+		}
 
 		private static List<object[]> CanUseCompareInQueryDataSource()
 		{

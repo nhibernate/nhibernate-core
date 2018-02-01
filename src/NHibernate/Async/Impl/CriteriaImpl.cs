@@ -22,7 +22,7 @@ using NHibernate.Util;
 namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
-	public partial class CriteriaImpl : ICriteria
+	public partial class CriteriaImpl : ICriteria, ISupportEntityJoinCriteria
 	{
 
 		public async Task<IList> ListAsync(CancellationToken cancellationToken = default(CancellationToken))

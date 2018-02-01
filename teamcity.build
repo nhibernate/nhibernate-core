@@ -76,14 +76,14 @@
 	<target name="setup-teamcity-firebird32">
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.FirebirdClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.FirebirdDialect" />
-		<property name="nhibernate.connection.connection_string"	value="DataSource=localhost;Database=nhibernate;User ID=SYSDBA;Password=masterkey;MaxPoolSize=200;" />
+		<property name="nhibernate.connection.connection_string"	value="DataSource=localhost;Database=nhibernate;User ID=SYSDBA;Password=masterkey;MaxPoolSize=200;charset=utf8;" />
 	</target>
 
 	<target name="setup-teamcity-firebird64">
 		<property name="nunit-x64" value="true" />
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.FirebirdClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.FirebirdDialect" />
-		<property name="nhibernate.connection.connection_string"	value="DataSource=localhost;Database=nhibernate;User ID=SYSDBA;Password=masterkey;MaxPoolSize=200;" />
+		<property name="nhibernate.connection.connection_string"	value="DataSource=localhost;Database=nhibernate;User ID=SYSDBA;Password=masterkey;MaxPoolSize=200;charset=utf8;" />
 	</target>
 
 	<target name="setup-teamcity-sqlite32">
@@ -127,6 +127,9 @@
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Metadata Pooling=false;Self Tuning=false;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))" />
 		<!-- Teamcity Oracle test database is configured with a non-Unicode encoding -->
 		<property name="nhibernate.oracle.use_n_prefixed_types_for_unicode" value="true" />
+		<!-- The default value of 4000 is too big for nvarchar2 with default database settings.
+		     nvarchar2 may be used due to use_n_prefixed_types_for_unicode -->
+		<property name="nhibernate.query.default_cast_length" value="2000" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/oracle/x86">
 				<include name="*.dll"/>
@@ -143,6 +146,9 @@
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Metadata Pooling=false;Self Tuning=false;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))" />
 		<!-- Teamcity Oracle test database is configured with a non-Unicode encoding -->
 		<property name="nhibernate.oracle.use_n_prefixed_types_for_unicode" value="true" />
+		<!-- The default value of 4000 is too big for nvarchar2 with default database settings.
+		     nvarchar2 may be used due to use_n_prefixed_types_for_unicode -->
+		<property name="nhibernate.query.default_cast_length" value="2000" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/oracle/x64">
 				<include name="*.dll"/>
@@ -158,6 +164,9 @@
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Metadata Pooling=false;Self Tuning=false;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))" />
 		<!-- Teamcity Oracle test database is configured with a non-Unicode encoding -->
 		<property name="nhibernate.oracle.use_n_prefixed_types_for_unicode" value="true" />
+		<!-- The default value of 4000 is too big for nvarchar2 with default database settings.
+		     nvarchar2 may be used due to use_n_prefixed_types_for_unicode -->
+		<property name="nhibernate.query.default_cast_length" value="2000" />
 	</target>
 
 	<target name="setup-teamcity-oracle-managed64">
@@ -167,6 +176,9 @@
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Metadata Pooling=false;Self Tuning=false;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))" />
 		<!-- Teamcity Oracle test database is configured with a non-Unicode encoding -->
 		<property name="nhibernate.oracle.use_n_prefixed_types_for_unicode" value="true" />
+		<!-- The default value of 4000 is too big for nvarchar2 with default database settings.
+		     nvarchar2 may be used due to use_n_prefixed_types_for_unicode -->
+		<property name="nhibernate.query.default_cast_length" value="2000" />
 	</target>
 
 	<target name="setup-teamcity-mysql">

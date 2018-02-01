@@ -15,6 +15,7 @@ using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Util;
 using System.Collections.Generic;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Engine
 {
@@ -40,21 +41,32 @@ namespace NHibernate.Engine
 			int end = -1;
 			bool checkForEnd = false;
 
-			// this only works because collection entries are kept in a sequenced
-			// map by persistence context (maybe we should do like entities and
-			// keep a separate sequences set...)
-			foreach (DictionaryEntry me in context.CollectionEntries)
+			if (batchLoadableCollections.TryGetValue(collectionPersister.Role, out var map))
 			{
-				CollectionEntry ce = (CollectionEntry) me.Value;
-				IPersistentCollection collection = (IPersistentCollection) me.Key;
-				if (!collection.WasInitialized && ce.LoadedPersister == collectionPersister)
+				foreach (KeyValuePair<CollectionEntry, IPersistentCollection> me in map)
 				{
+					var ce = me.Key;
+					var collection = me.Value;
+					if (ce.LoadedKey == null)
+					{
+						// the LoadedKey of the CollectionEntry might be null as it might have been reset to null
+						// (see for example Collections.ProcessDereferencedCollection()
+						// and CollectionEntry.AfterAction())
+						// though we clear the queue on flush, it seems like a good idea to guard
+						// against potentially null LoadedKey:s
+						continue;
+					}
+
+					if (collection.WasInitialized)
+					{
+						log.Warn("Encountered initialized collection in BatchFetchQueue, this should not happen.");
+						continue;
+					}
+
 					if (checkForEnd && i == end)
 					{
 						return keys; //the first key found after the given key
 					}
-
-					//if ( end == -1 && count > batchSize*10 ) return keys; //try out ten batches, max
 
 					bool isEqual = collectionPersister.KeyType.IsEqual(id, ce.LoadedKey, collectionPersister.Factory);
 
@@ -79,6 +91,7 @@ namespace NHibernate.Engine
 					}
 				}
 			}
+
 			return keys; //we ran out of keys to try
 		}
 
@@ -92,7 +105,7 @@ namespace NHibernate.Engine
 		/// <param name="batchSize">The maximum number of keys to return</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>an array of identifiers, of length batchSize (possibly padded with nulls)</returns>
-		public async Task<object[]> GetEntityBatchAsync(IEntityPersister persister,object id,int batchSize, CancellationToken cancellationToken)
+		public async Task<object[]> GetEntityBatchAsync(IEntityPersister persister, object id, int batchSize, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object[] ids = new object[batchSize];
@@ -101,9 +114,9 @@ namespace NHibernate.Engine
 			int end = -1;
 			bool checkForEnd = false;
 
-			foreach (EntityKey key in batchLoadableEntityKeys.Keys)
+			if (batchLoadableEntityKeys.TryGetValue(persister.EntityName, out var set))
 			{
-				if (key.EntityName.Equals(persister.EntityName))
+				foreach (var key in set)
 				{
 					//TODO: this needn't exclude subclasses...
 					if (checkForEnd && i == end)

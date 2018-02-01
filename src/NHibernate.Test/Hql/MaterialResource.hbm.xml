@@ -12,5 +12,6 @@
 		<property name="Description"/>
 		<property name="SerialNumber" length="20"/>
 		<property name="State" type="int"/>
+		<property name="Cost" access="property"/>
 	</class>
 </hibernate-mapping>

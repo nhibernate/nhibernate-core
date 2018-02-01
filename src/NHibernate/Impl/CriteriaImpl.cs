@@ -15,7 +15,7 @@ namespace NHibernate.Impl
 	/// Implementation of the <see cref="ICriteria"/> interface
 	/// </summary>
 	[Serializable]
-	public partial class CriteriaImpl : ICriteria
+	public partial class CriteriaImpl : ICriteria, ISupportEntityJoinCriteria
 	{
 		private readonly System.Type persistentClass;
 		private readonly List<CriterionEntry> criteria = new List<CriterionEntry>();
@@ -371,6 +371,11 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		public ICriteria CreateEntityCriteria(string alias, ICriterion withClause, JoinType joinType, string entityName)
+		{
+			return new Subcriteria(this, this, alias, alias, joinType, withClause, entityName);
+		}
+
 		public ICriteria Add(ICriteria criteriaInst, ICriterion expression)
 		{
 			criteria.Add(new CriterionEntry(expression, criteriaInst));
@@ -647,7 +652,7 @@ namespace NHibernate.Impl
 			private readonly JoinType joinType;
 			private ICriterion withClause;
 
-			internal Subcriteria(CriteriaImpl root, ICriteria parent, string path, string alias, JoinType joinType, ICriterion withClause)
+			internal Subcriteria(CriteriaImpl root, ICriteria parent, string path, string alias, JoinType joinType, ICriterion withClause, string joinEntityName = null)
 			{
 				this.root = root;
 				this.parent = parent;
@@ -655,6 +660,7 @@ namespace NHibernate.Impl
 				this.path = path;
 				this.joinType = joinType;
 				this.withClause = withClause;
+				JoinEntityName = joinEntityName;
 
 				root.subcriteriaList.Add(this);
 
@@ -667,6 +673,16 @@ namespace NHibernate.Impl
 
 			internal Subcriteria(CriteriaImpl root, ICriteria parent, string path, JoinType joinType)
 				: this(root, parent, path, null, joinType) { }
+
+			/// <summary>
+			/// Entity name for "Entity Join" - join for entity with not mapped association
+			/// </summary>
+			public string JoinEntityName { get; }
+
+			/// <summary>
+			/// Is this an Entity join for not mapped association
+			/// </summary>
+			public bool IsEntityJoin => JoinEntityName != null;
 
 			public ICriterion WithClause
 			{
