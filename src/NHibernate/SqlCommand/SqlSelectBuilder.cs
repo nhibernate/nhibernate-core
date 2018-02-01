@@ -21,7 +21,9 @@ namespace NHibernate.SqlCommand
 		private SqlString groupByClause;
 		private SqlString havingClause;
 		private LockMode lockMode;
+		private string aliasToLock;
 		private string comment;
+		private bool hasOuterJoin = false;
 
 		public SqlSelectBuilder(ISessionFactoryImplementor factory)
 			: base(factory.Dialect, factory) {}
@@ -40,6 +42,7 @@ namespace NHibernate.SqlCommand
 		public SqlSelectBuilder SetFromClause(string fromClause)
 		{
 			this.fromClause = fromClause;
+			hasOuterJoin = hasOuterJoin || fromClause.ToLowerInvariant().Contains("left outer join");
 			return this;
 		}
 
@@ -110,6 +113,9 @@ namespace NHibernate.SqlCommand
 			}
 
 			this.outerJoinsAfterWhere = tmpOuterJoinsAfterWhere;
+
+			hasOuterJoin = hasOuterJoin || 
+			               outerJoinsAfterFrom != null && outerJoinsAfterFrom.ToString().ToLowerInvariant().Contains("outer join");
 			return this;
 		}
 
@@ -181,9 +187,10 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
-		public SqlSelectBuilder SetLockMode(LockMode lockMode)
+		public SqlSelectBuilder SetLockMode(LockMode lockMode, string alias)
 		{
 			this.lockMode = lockMode;
+			aliasToLock = alias;
 			return this;
 		}
 
@@ -267,7 +274,7 @@ namespace NHibernate.SqlCommand
 
 			if (lockMode != null)
 			{
-				sqlBuilder.Add(Dialect.GetForUpdateString(lockMode));
+				sqlBuilder.Add(GetForUpdateString());
 			}
 
 			if (log.IsDebugEnabled())
@@ -289,6 +296,19 @@ namespace NHibernate.SqlCommand
 			}
 
 			return sqlBuilder.ToSqlString();
+		}
+
+		private string GetForUpdateString()
+		{
+			if (!Dialect.SupportsOuterJoinForUpdate && hasOuterJoin)
+			{
+				if (Equals(lockMode, LockMode.Upgrade))
+					return Dialect.GetForUpdateString(aliasToLock);
+				if (Equals(lockMode, LockMode.UpgradeNoWait))
+					return Dialect.GetForUpdateNowaitString(aliasToLock);
+			}
+
+			return Dialect.GetForUpdateString(lockMode);
 		}
 
 		#endregion

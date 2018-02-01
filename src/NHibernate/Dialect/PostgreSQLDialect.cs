@@ -316,6 +316,7 @@ namespace NHibernate.Dialect
 
 		public override bool SupportsUnboundedLobLocatorMaterialization => false;
 
+		public override bool SupportsOuterJoinForUpdate => false;
 		#endregion
 
 		[Serializable]
