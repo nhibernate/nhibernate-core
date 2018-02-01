@@ -218,7 +218,7 @@ namespace NHibernate.Util
 
 		private static bool NeedDefaultNamespaceOrDefaultAssembly(string typeFullName)
 		{
-			return !typeFullName.StartsWith("System."); // ugly
+			return !typeFullName.StartsWith("System.", StringComparison.Ordinal); // ugly
 		}
 
 		private static bool NeedDefaultNamespace(string typeFullName)

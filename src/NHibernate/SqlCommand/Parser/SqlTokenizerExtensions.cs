@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using NHibernate.Util;
 
 namespace NHibernate.SqlCommand.Parser
 {
@@ -49,18 +50,18 @@ namespace NHibernate.SqlCommand.Parser
 				if (!tokenEnum.MoveNext()) return false;
 
 				// [ DISTINCT | ALL ]
-				if (tokenEnum.Current.Equals("distinct", StringComparison.InvariantCultureIgnoreCase))
+				if (tokenEnum.Current.Equals("distinct", StringComparison.OrdinalIgnoreCase))
 				{
 					isDistinct = true;
 					if (!tokenEnum.MoveNext()) return false;
 				}
-				else if	(tokenEnum.Current.Equals("all", StringComparison.InvariantCultureIgnoreCase))
+				else if	(tokenEnum.Current.Equals("all", StringComparison.OrdinalIgnoreCase))
 				{
 					if (!tokenEnum.MoveNext()) return false;
 				}
 
 				// [ TOP { integer | ( expression ) } [PERCENT] [ WITH TIES ] ] 
-				if (tokenEnum.Current.Equals("top", StringComparison.InvariantCultureIgnoreCase))
+				if (tokenEnum.Current.Equals("top", StringComparison.OrdinalIgnoreCase))
 				{
 					if (!tokenEnum.MoveNext()) return false;
 					if (tokenEnum.Current.TokenType == SqlTokenType.BracketOpen)
@@ -72,21 +73,21 @@ namespace NHibernate.SqlCommand.Parser
 					}
 					if (!tokenEnum.MoveNext()) return false;
 
-					if (tokenEnum.Current.Equals("percent", StringComparison.InvariantCultureIgnoreCase))
+					if (tokenEnum.Current.Equals("percent", StringComparison.OrdinalIgnoreCase))
 					{
 						if (!tokenEnum.MoveNext()) return false;
 					}
-					if (tokenEnum.Current.Equals("with", StringComparison.InvariantCultureIgnoreCase))
+					if (tokenEnum.Current.Equals("with", StringComparison.OrdinalIgnoreCase))
 					{
 						if (!tokenEnum.MoveNext()) return false;
-						if (tokenEnum.Current.Equals("ties", StringComparison.InvariantCultureIgnoreCase))
+						if (tokenEnum.Current.Equals("ties", StringComparison.OrdinalIgnoreCase))
 						{
 							if (!tokenEnum.MoveNext()) return false;
 						}
 					}
 				}
 
-				if (!tokenEnum.Current.Value.StartsWith("@")) return true;
+				if (!tokenEnum.Current.Value.StartsWith('@')) return true;
 			}
 
 			return false;

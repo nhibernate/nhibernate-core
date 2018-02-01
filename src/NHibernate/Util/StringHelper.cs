@@ -159,7 +159,7 @@ namespace NHibernate.Util
 		}
 
 		/// <summary>
-		/// Just a façade for calling string.Split()
+		/// Just a facade for calling string.Split()
 		/// We don't use our StringTokenizer because string.Split() is
 		/// more efficient (but it only works when we don't want to retrieve the delimiters)
 		/// </summary>
@@ -365,8 +365,8 @@ namespace NHibernate.Util
 		/// </returns>
 		public static bool BooleanValue(string value)
 		{
-			string trimmed = value.Trim().ToLowerInvariant();
-			return trimmed.Equals("true") || trimmed.Equals("t");
+			string trimmed = value.Trim();
+			return trimmed.Equals("true", StringComparison.OrdinalIgnoreCase) || trimmed.Equals("t", StringComparison.OrdinalIgnoreCase);
 		}
 
 		private static string NullSafeToString(object obj)
@@ -641,10 +641,10 @@ namespace NHibernate.Util
 
 		public static string MoveAndToBeginning(string filter)
 		{
-			if (filter.Trim().Length > 0)
+			if (!string.IsNullOrWhiteSpace(filter))
 			{
 				filter += " and ";
-				if (filter.StartsWith(" and "))
+				if (filter.StartsWith(" and ", StringComparison.Ordinal))
 				{
 					filter = filter.Substring(4);
 				}
@@ -686,6 +686,21 @@ namespace NHibernate.Util
 		public static bool StartsWithCaseInsensitive(string source, string prefix)
 		{
 			return source.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase);
+		}
+
+		internal static bool ContainsCaseInsensitive(string source, string value)
+		{
+			return source.IndexOf(value, StringComparison.OrdinalIgnoreCase) >= 0;
+		}
+
+		internal static bool StartsWith(this string source, char value)
+		{
+			return source.Length > 0 && source[0] == value;
+		}
+
+		internal static bool EndsWith(this string source, char value)
+		{
+			return source.Length > 0 && source[source.Length - 1] == value;
 		}
 
 		/// <summary>
@@ -735,7 +750,7 @@ namespace NHibernate.Util
 
 		public static bool IsBackticksEnclosed(string identifier)
 		{
-			return !string.IsNullOrEmpty(identifier) && identifier.StartsWith("`") && identifier.EndsWith("`");
+			return !string.IsNullOrEmpty(identifier) && identifier.StartsWith('`') && identifier.EndsWith('`');
 		}
 
 		public static string PurgeBackticksEnclosing(string identifier)

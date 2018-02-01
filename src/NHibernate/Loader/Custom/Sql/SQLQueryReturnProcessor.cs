@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -228,7 +229,7 @@ namespace NHibernate.Loader.Custom.Sql
 			foreach (KeyValuePair<string, string[]> element in propertyResults)
 			{
 				string path = element.Key;
-				if (path.StartsWith(keyPrefix))
+				if (path.StartsWith(keyPrefix, StringComparison.Ordinal))
 				{
 					result[path.Substring(keyPrefix.Length)] = element.Value;
 				}

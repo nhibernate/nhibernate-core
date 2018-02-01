@@ -86,11 +86,11 @@ namespace NHibernate.SqlCommand
 		{
 			//TODO: this seems hackish
 			var trimCondition = condition.Trim();
-			if (
-				afterFrom.ToSqlString().ToString().IndexOf(trimCondition) < 0 &&
-				afterWhere.ToSqlString().ToString().IndexOf(trimCondition) < 0)
+			if (trimCondition.Length > 0 &&
+				afterFrom.ToSqlString().IndexOfOrdinal(trimCondition) < 0 &&
+				afterWhere.ToSqlString().IndexOfOrdinal(trimCondition) < 0)
 			{
-				if (!condition.StartsWith(" and "))
+				if (!condition.StartsWith(" and ", StringComparison.Ordinal))
 				{
 					afterWhere.Add(" and ");
 				}
@@ -106,9 +106,9 @@ namespace NHibernate.SqlCommand
 		{
 			//TODO: this seems hackish
 			var trimCondition = condition.Trim().ToString();
-			if (
-				afterFrom.ToString().IndexOf(trimCondition) < 0 &&
-				afterWhere.ToString().IndexOf(trimCondition) < 0)
+			if (trimCondition.Length > 0 &&
+				afterFrom.ToString().IndexOf(trimCondition, StringComparison.Ordinal) < 0 &&
+				afterWhere.ToString().IndexOf(trimCondition, StringComparison.Ordinal) < 0)
 			{
 				if (!condition.StartsWithCaseInsensitive(" and "))
 				{

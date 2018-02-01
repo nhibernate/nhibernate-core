@@ -913,7 +913,7 @@ namespace NHibernate.Loader
 						joinable.SelectFragment(next == null ? null : next.Joinable, next == null ? null : next.RHSAlias, join.RHSAlias,
 																		entitySuffix, collectionSuffix, join.JoinType == JoinType.LeftOuterJoin);
 
-					if (selectFragment.Trim().Length > 0)
+					if (!string.IsNullOrWhiteSpace(selectFragment))
 					{
 						buf.Add(StringHelper.CommaSpace)
 							.Add(selectFragment);

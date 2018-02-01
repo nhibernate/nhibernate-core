@@ -167,7 +167,6 @@ namespace NHibernate.Cfg
 			}
 
 			string autoKeyWordsImport = PropertiesHelper.GetString(Environment.Hbm2ddlKeyWords, properties, "not-defined");
-			autoKeyWordsImport = autoKeyWordsImport.ToLowerInvariant();
 			if (autoKeyWordsImport == Hbm2DDLKeyWords.None)
 			{
 				settings.IsKeywordsImportEnabled = false;

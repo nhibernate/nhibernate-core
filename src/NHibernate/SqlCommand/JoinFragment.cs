@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
@@ -45,7 +46,7 @@ namespace NHibernate.SqlCommand
 		{
 			if (StringHelper.IsNotEmpty(on))
 			{
-				if (!on.StartsWith(" and"))
+				if (!on.StartsWith(" and", StringComparison.Ordinal))
 				{
 					buffer.Add(" and ");
 				}

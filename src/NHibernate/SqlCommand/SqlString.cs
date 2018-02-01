@@ -653,6 +653,18 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary>
+		/// Returns true if content is empty or white space characters only
+		/// </summary>
+		public bool IsEmptyOrWhitespace()
+		{
+			if (Length <= 0)
+				return true;
+
+			GetTrimmedIndexes(out _, out var newLength);
+			return newLength <= 0;
+		}
+
+		/// <summary>
 		/// Removes all occurrences of white space characters from the beginning and end of this instance.
 		/// </summary>
 		/// <returns>
@@ -663,6 +675,14 @@ namespace NHibernate.SqlCommand
 		{
 			if (_firstPartIndex < 0) return this;
 
+			GetTrimmedIndexes(out var sqlStartIndex, out var length);
+			return length > 0
+				? new SqlString(this, sqlStartIndex, length)
+				: Empty;
+		}
+
+		private void GetTrimmedIndexes(out int sqlStartIndex, out int length)
+		{
 			var firstPart = _parts[_firstPartIndex];
 			var firstPartOffset = _sqlStartIndex - firstPart.SqlIndex;
 			var firstPartLength = Math.Min(firstPart.Length - firstPartOffset, _length);
@@ -681,11 +701,8 @@ namespace NHibernate.SqlCommand
 				lastPartLength--;
 			}
 
-			var sqlStartIndex = firstPart.SqlIndex + firstPartOffset;
-			var length = lastPart.SqlIndex + lastPartOffset + 1 - sqlStartIndex;
-			return length > 0
-				? new SqlString(this, sqlStartIndex, length)
-				: Empty;
+			sqlStartIndex = firstPart.SqlIndex + firstPartOffset;
+			length = lastPart.SqlIndex + lastPartOffset + 1 - sqlStartIndex;
 		}
 
 		public void Visit(ISqlStringVisitor visitor)
