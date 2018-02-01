@@ -51,12 +51,6 @@ namespace NHibernate.Test.NHSpecificTest.GH1565
         {
             return dialect is PostgreSQLDialect;
         }
-
-	    protected override void Configure(Configuration configuration)
-	    {
-		    configuration.SetProperty(Cfg.Environment.Dialect, typeof(PostgreSQL83Dialect).FullName);
-		    configuration.SetProperty(Cfg.Environment.ConnectionDriver, typeof(Driver.NpgsqlDriver).FullName);
-	    }
     }
 
     public class MainEntity
