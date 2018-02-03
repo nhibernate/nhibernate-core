@@ -1,4 +1,5 @@
 
+using System;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -21,10 +22,9 @@ namespace NHibernate.SqlCommand
 		private SqlString groupByClause;
 		private SqlString havingClause;
 		private LockMode lockMode;
-		private string aliasToLock;
+		private string mainTableAlias;
 		private string comment;
-		private bool hasOuterJoin = false;
-
+		
 		public SqlSelectBuilder(ISessionFactoryImplementor factory)
 			: base(factory.Dialect, factory) {}
 
@@ -42,7 +42,6 @@ namespace NHibernate.SqlCommand
 		public SqlSelectBuilder SetFromClause(string fromClause)
 		{
 			this.fromClause = fromClause;
-			hasOuterJoin = hasOuterJoin || fromClause.ToLowerInvariant().Contains("left outer join");
 			return this;
 		}
 
@@ -65,8 +64,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlSelectBuilder</returns>
 		public SqlSelectBuilder SetFromClause(SqlString fromClause)
 		{
-			// it is safe to do this because a fromClause will have no
-			// parameters
+			// it is safe to do this because a fromClause will have no parameters
 			return SetFromClause(fromClause.ToString());
 		}
 
@@ -113,9 +111,6 @@ namespace NHibernate.SqlCommand
 			}
 
 			this.outerJoinsAfterWhere = tmpOuterJoinsAfterWhere;
-
-			hasOuterJoin = hasOuterJoin || 
-			               outerJoinsAfterFrom != null && outerJoinsAfterFrom.ToString().ToLowerInvariant().Contains("outer join");
 			return this;
 		}
 
@@ -187,10 +182,18 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
-		public SqlSelectBuilder SetLockMode(LockMode lockMode, string alias)
+		[Obsolete("For some DBMS's such as PostgreSQL, a lock on query with OUTER JOIN is not possible without specifying the not-null side. " +
+				  "Use the new method SetLockMode(LockMode, mainTableAlias) instead.")]
+		public SqlSelectBuilder SetLockMode(LockMode lockMode)
 		{
 			this.lockMode = lockMode;
-			aliasToLock = alias;
+			return this;
+		}
+
+		public SqlSelectBuilder SetLockMode(LockMode lockMode, string mainTableAlias)
+		{
+			this.lockMode = lockMode;
+			this.mainTableAlias = mainTableAlias;
 			return this;
 		}
 
@@ -300,17 +303,23 @@ namespace NHibernate.SqlCommand
 
 		private string GetForUpdateString()
 		{
-			if (!Dialect.SupportsOuterJoinForUpdate && hasOuterJoin)
-			{
-				if (Equals(lockMode, LockMode.Upgrade))
-					return Dialect.GetForUpdateString(aliasToLock);
-				if (Equals(lockMode, LockMode.UpgradeNoWait))
-					return Dialect.GetForUpdateNowaitString(aliasToLock);
-			}
+			if (Dialect.SupportsOuterJoinForUpdate || !HasOuterJoin())
+				return Dialect.GetForUpdateString(lockMode);
+
+			if (Equals(lockMode, LockMode.Upgrade))
+				return Dialect.GetForUpdateString(mainTableAlias);
+			if (Equals(lockMode, LockMode.UpgradeNoWait))
+				return Dialect.GetForUpdateNowaitString(mainTableAlias);
 
 			return Dialect.GetForUpdateString(lockMode);
-		}
 
+			bool HasOuterJoin()
+			{
+				return
+					StringHelper.ContainsCaseInsensitive(fromClause, "outer join") ||
+					!string.IsNullOrWhiteSpace(outerJoinsAfterFrom?.ToString());
+			}
+		}
 		#endregion
 	}
 }

@@ -1,11 +1,9 @@
-﻿using NHibernate.Cfg;
-using NHibernate.Dialect;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH1565
 {
 	[TestFixture]
-	public class PostgresOuterJoinLockTest : BugTestCase
+	public class LockEntityWithOuterJoinTest : BugTestCase
 	{
 		[Test]
 		public void LockWithOuterJoin_ShouldBePossible()
@@ -16,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1565
 				{
 					var entity = session.Get<MainEntity>(id, LockMode.Upgrade);
 					Assert.That(entity.Id, Is.EqualTo(id));
-					transaction.Rollback();
+					transaction.Commit();
 				}
 			}
 		}
@@ -45,11 +43,6 @@ namespace NHibernate.Test.NHSpecificTest.GH1565
 			{
 				session.CreateSQLQuery("delete from MainEntity").ExecuteUpdate();
 			}
-		}
-
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			return dialect is PostgreSQLDialect;
 		}
 	}
 
