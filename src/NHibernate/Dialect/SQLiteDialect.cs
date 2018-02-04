@@ -277,12 +277,12 @@ namespace NHibernate.Dialect
 			
 			if (!string.IsNullOrEmpty(catalog))
 			{
-				if (catalog.StartsWith(OpenQuote.ToString()))
+				if (catalog.StartsWith(OpenQuote))
 				{
 					catalog = catalog.Substring(1, catalog.Length - 1);
 					quoted = true;
 				} 
-				if (catalog.EndsWith(CloseQuote.ToString()))
+				if (catalog.EndsWith(CloseQuote))
 				{
 					catalog = catalog.Substring(0, catalog.Length - 1);
 					quoted = true;
@@ -291,12 +291,12 @@ namespace NHibernate.Dialect
 			}
 			if (!string.IsNullOrEmpty(schema))
 			{
-				if (schema.StartsWith(OpenQuote.ToString()))
+				if (schema.StartsWith(OpenQuote))
 				{
 					schema = schema.Substring(1, schema.Length - 1);
 					quoted = true;
 				}
-				if (schema.EndsWith(CloseQuote.ToString()))
+				if (schema.EndsWith(CloseQuote))
 				{
 					schema = schema.Substring(0, schema.Length - 1);
 					quoted = true;
@@ -304,12 +304,12 @@ namespace NHibernate.Dialect
 				qualifiedName.Append(schema).Append(StringHelper.Underscore);
 			}
 
-			if (table.StartsWith(OpenQuote.ToString()))
+			if (table.StartsWith(OpenQuote))
 			{
 				table = table.Substring(1, table.Length - 1);
 				quoted = true;
 			}
-			if (table.EndsWith(CloseQuote.ToString()))
+			if (table.EndsWith(CloseQuote))
 			{
 				table = table.Substring(0, table.Length - 1);
 				quoted = true;
@@ -420,7 +420,7 @@ namespace NHibernate.Dialect
 			protected override bool CastingIsRequired(string sqlType)
 			{
 				// SQLite doesn't support casting to datetime types.  It assumes you want an integer and destroys the date string.
-				if (sqlType.ToLowerInvariant().Contains("date") || sqlType.ToLowerInvariant().Contains("time"))
+				if (StringHelper.ContainsCaseInsensitive(sqlType, "date") || StringHelper.ContainsCaseInsensitive(sqlType, "time"))
 					return false;
 				return true;
 			}

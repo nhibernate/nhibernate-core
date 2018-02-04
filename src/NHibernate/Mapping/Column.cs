@@ -280,7 +280,7 @@ namespace NHibernate.Mapping
 			if (ReferenceEquals(this, column))
 				return true;
 
-			return IsQuoted ? _name.Equals(column._name) : _name.ToLowerInvariant().Equals(column._name.ToLowerInvariant());
+			return IsQuoted ? _name.Equals(column._name) : _name.Equals(column._name, StringComparison.OrdinalIgnoreCase);
 		}
 
 		/// <summary>

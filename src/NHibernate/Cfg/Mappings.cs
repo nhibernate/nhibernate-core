@@ -19,7 +19,7 @@ namespace NHibernate.Cfg
 		[Serializable]
 		public class ColumnNames
 		{
-			public readonly IDictionary<string, string> logicalToPhysical = new Dictionary<string, string>();
+			public readonly IDictionary<string, string> logicalToPhysical = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			public readonly IDictionary<string, string> physicalToLogical = new Dictionary<string, string>();
 		}
 
@@ -536,8 +536,8 @@ namespace NHibernate.Cfg
 			}
 
 			string oldFinalName;
-			binding.logicalToPhysical.TryGetValue(logicalName.ToLowerInvariant(), out oldFinalName);
-			binding.logicalToPhysical[logicalName.ToLowerInvariant()] = finalColumn.GetQuotedName();
+			binding.logicalToPhysical.TryGetValue(logicalName, out oldFinalName);
+			binding.logicalToPhysical[logicalName] = finalColumn.GetQuotedName();
 			if (oldFinalName != null &&
 					!(finalColumn.IsQuoted
 							? oldFinalName.Equals(finalColumn.GetQuotedName())
@@ -584,7 +584,6 @@ namespace NHibernate.Cfg
 
 		public string GetPhysicalColumnName(string logicalName, Table table)
 		{
-			logicalName = logicalName.ToLowerInvariant();
 			string finalName = null;
 			Table currentTable = table;
 			do

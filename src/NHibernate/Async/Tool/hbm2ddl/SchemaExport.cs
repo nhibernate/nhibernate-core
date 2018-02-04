@@ -37,7 +37,6 @@ namespace NHibernate.Tool.hbm2ddl
 			dialect = Dialect.Dialect.GetDialect(configProperties);
 
 			string autoKeyWordsImport = PropertiesHelper.GetString(Environment.Hbm2ddlKeyWords, configProperties, "not-defined");
-			autoKeyWordsImport = autoKeyWordsImport.ToLowerInvariant();
 			if (autoKeyWordsImport == Hbm2DDLKeyWords.AutoQuote)
 			{
 				await (SchemaMetadataUpdater.UpdateAsync(cfg, dialect, cancellationToken)).ConfigureAwait(false);

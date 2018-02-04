@@ -588,7 +588,7 @@ namespace NHibernate.Mapping
 				return null;
 			}
 
-			if (schema.StartsWith("`"))
+			if (schema.StartsWith('`'))
 			{
 				return dialect.QuoteForSchemaName(schema.Substring(1, schema.Length - 2));
 			}

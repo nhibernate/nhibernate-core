@@ -248,7 +248,7 @@ namespace NHibernate.Engine
 
 		public JoinSequence AddCondition(SqlString condition)
 		{
-			if (condition.Trim().Length != 0)
+			if (!condition.IsEmptyOrWhitespace())
 			{
 				if (!condition.StartsWithCaseInsensitive(" and "))
 					conditions.Add(" and ");
