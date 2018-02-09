@@ -34,7 +34,10 @@ namespace NHibernate.Linq.Functions
 		{
 			string function = method.Name.ToLowerInvariant();
 
-			HqlExpression[] expressions = arguments.Select(x => visitor.Visit(x).AsExpression()).ToArray();
+			HqlExpression[] expressions = 
+				arguments
+					.Select(x => treeBuilder.TransparentCast(visitor.Visit(x).AsExpression(), typeof(decimal)))
+					.ToArray();
 
 			switch (function)
 			{
@@ -58,14 +61,9 @@ namespace NHibernate.Linq.Functions
 				case "round":
 					HqlExpression numberOfDecimals = (arguments.Count == 2) ? expressions[1] : treeBuilder.Constant(0);
 					HqlMethodCall round = treeBuilder.MethodCall("round", expressions[0], numberOfDecimals);
-					return treeBuilder.TransparentCast(round, typeof(decimal));
+					return round;
 			}
-
-			if (arguments.Count == 2)
-			{
-				return treeBuilder.MethodCall(function, expressions[0], expressions[1]);
-			}
-
+			
 			return treeBuilder.MethodCall(function, expressions[0]);
 		}
 	}
