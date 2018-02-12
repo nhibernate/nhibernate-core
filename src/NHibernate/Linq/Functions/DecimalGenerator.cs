@@ -32,39 +32,50 @@ namespace NHibernate.Linq.Functions
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
+			HqlExpression result;
+
 			string function = method.Name.ToLowerInvariant();
 
 			HqlExpression[] expressions = 
 				arguments
-					.Select(x => treeBuilder.TransparentCast(visitor.Visit(x).AsExpression(), typeof(decimal)))
+					.Select(x => visitor.Visit(x).AsExpression())
 					.ToArray();
 
 			switch (function)
 			{
 				case "add":
-					return treeBuilder.Add(expressions[0], expressions[1]);
+					result = treeBuilder.Add(expressions[0], expressions[1]);
+					break;
 				case "subtract":
-					return treeBuilder.Subtract(expressions[0], expressions[1]);
+					result = treeBuilder.Subtract(expressions[0], expressions[1]);
+					break;
 				case "divide":
-					return treeBuilder.Divide(expressions[0], expressions[1]);
+					result = treeBuilder.Divide(expressions[0], expressions[1]);
+					break;
 				case "equals":
 					return treeBuilder.Equality(expressions[0], expressions[1]);
 				case "negate":
-					return treeBuilder.Negate(expressions[0]);
+					result = treeBuilder.Negate(expressions[0]);
+					break;
 				case "compare":
-					return treeBuilder.MethodCall("sign", treeBuilder.Subtract(expressions[0], expressions[1]));
+					result = treeBuilder.MethodCall("sign", treeBuilder.Subtract(expressions[0], expressions[1]));
+					break;
 				case "multiply":
-					return treeBuilder.Multiply(expressions[0], expressions[1]);
+					result = treeBuilder.Multiply(expressions[0], expressions[1]);
+					break;
 				case "remainder":
-					HqlMethodCall mod = treeBuilder.MethodCall("mod", expressions[0], expressions[1]);
-					return treeBuilder.TransparentCast(mod, typeof(decimal));
+					result = treeBuilder.MethodCall("mod", expressions[0], expressions[1]);
+					break;
 				case "round":
 					HqlExpression numberOfDecimals = (arguments.Count == 2) ? expressions[1] : treeBuilder.Constant(0);
-					HqlMethodCall round = treeBuilder.MethodCall("round", expressions[0], numberOfDecimals);
-					return round;
+					result = treeBuilder.MethodCall("round", expressions[0], numberOfDecimals);
+					break;
+				default:
+					result = treeBuilder.MethodCall(function, expressions[0]);
+					break;
 			}
-			
-			return treeBuilder.MethodCall(function, expressions[0]);
+
+			return treeBuilder.TransparentCast(result, typeof(decimal));
 		}
 	}
 }
