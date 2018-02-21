@@ -64,11 +64,14 @@ namespace NHibernate.Test.NHSpecificTest.GH0831
 		[Test]
 		public void CanHandleAdd()
 		{
-			CanFilter(e => decimal.Add(e.EntityValue, 2) > 3.0m);
-			CanFilter(e => decimal.Add(2, e.EntityValue) > 3.0m);
+			Assert.Multiple(() =>
+			{
+				CanFilter(e => decimal.Add(e.EntityValue, 2) > 3.0m);
+				CanFilter(e => decimal.Add(2, e.EntityValue) > 3.0m);
 
-			CanSelect(e => decimal.Add(e.EntityValue, 2));
-			CanSelect(e => decimal.Add(2, e.EntityValue));
+				CanSelect(e => decimal.Add(e.EntityValue, 2));
+				CanSelect(e => decimal.Add(2, e.EntityValue));
+			});
 		}
 
 		[Test]
@@ -76,8 +79,11 @@ namespace NHibernate.Test.NHSpecificTest.GH0831
 		{
 			AssumeFunctionSupported("ceiling");
 
-			CanFilter(e => decimal.Ceiling(e.EntityValue) > 1.0m);
-			CanSelect(e => decimal.Ceiling(e.EntityValue));
+			Assert.Multiple(() =>
+			{
+				CanFilter(e => decimal.Ceiling(e.EntityValue) > 1.0m);
+				CanSelect(e => decimal.Ceiling(e.EntityValue));
+			});
 		}
 
 		[Test]
@@ -85,28 +91,37 @@ namespace NHibernate.Test.NHSpecificTest.GH0831
 		{
 			AssumeFunctionSupported("sign");
 
-			CanFilter(e => decimal.Compare(e.EntityValue, 1.5m) < 1);
-			CanFilter(e => decimal.Compare(1.0m, e.EntityValue) < 1);
+			Assert.Multiple(() =>
+			{
+				CanFilter(e => decimal.Compare(e.EntityValue, 1.5m) < 1);
+				CanFilter(e => decimal.Compare(1.0m, e.EntityValue) < 1);
 
-			CanSelect(e => decimal.Compare(e.EntityValue, 1.5m));
-			CanSelect(e => decimal.Compare(1.0m, e.EntityValue));
+				CanSelect(e => decimal.Compare(e.EntityValue, 1.5m));
+				CanSelect(e => decimal.Compare(1.0m, e.EntityValue));
+			});
 		}
 
 		[Test]
 		public void CanHandleDivide()
 		{
-			CanFilter(e => decimal.Divide(e.EntityValue, 1.25m) < 1);
-			CanFilter(e => decimal.Divide(1.25m, e.EntityValue) < 1);
+			Assert.Multiple(() =>
+			{
+				CanFilter(e => decimal.Divide(e.EntityValue, 1.25m) < 1);
+				CanFilter(e => decimal.Divide(1.25m, e.EntityValue) < 1);
 
-			CanSelect(e => decimal.Divide(e.EntityValue, 1.25m));
-			CanSelect(e => decimal.Divide(1.25m, e.EntityValue));
+				CanSelect(e => decimal.Divide(e.EntityValue, 1.25m));
+				CanSelect(e => decimal.Divide(1.25m, e.EntityValue));
+			});
 		}
 
 		[Test]
 		public void CanHandleEquals()
 		{
-			CanFilter(e => decimal.Equals(e.EntityValue, 1.0m));
-			CanFilter(e => decimal.Equals(1.0m, e.EntityValue));
+			Assert.Multiple(() =>
+			{
+				CanFilter(e => decimal.Equals(e.EntityValue, 1.0m));
+				CanFilter(e => decimal.Equals(1.0m, e.EntityValue));
+			});
 		}
 
 		[Test]
@@ -114,25 +129,34 @@ namespace NHibernate.Test.NHSpecificTest.GH0831
 		{
 			AssumeFunctionSupported("floor");
 
-			CanFilter(e => decimal.Floor(e.EntityValue) > 1.0m);
-			CanSelect(e => decimal.Floor(e.EntityValue));
+			Assert.Multiple(() =>
+			{
+				CanFilter(e => decimal.Floor(e.EntityValue) > 1.0m);
+				CanSelect(e => decimal.Floor(e.EntityValue));
+			});
 		}
 
 		[Test]
 		public void CanHandleMultiply()
 		{
-			CanFilter(e => decimal.Multiply(e.EntityValue, 10m) > 10m);
-			CanFilter(e => decimal.Multiply(10m, e.EntityValue) > 10m);
+			Assert.Multiple(() =>
+			{
+				CanFilter(e => decimal.Multiply(e.EntityValue, 10m) > 10m);
+				CanFilter(e => decimal.Multiply(10m, e.EntityValue) > 10m);
 
-			CanSelect(e => decimal.Multiply(e.EntityValue, 10m));
-			CanSelect(e => decimal.Multiply(10m, e.EntityValue));
+				CanSelect(e => decimal.Multiply(e.EntityValue, 10m));
+				CanSelect(e => decimal.Multiply(10m, e.EntityValue));
+			});
 		}
 
 		[Test]
 		public void CanHandleNegate()
 		{
-			CanFilter(e => decimal.Negate(e.EntityValue) > -1.0m);
-			CanSelect(e => decimal.Negate(e.EntityValue));
+			Assert.Multiple(() =>
+			{
+				CanFilter(e => decimal.Negate(e.EntityValue) > -1.0m);
+				CanSelect(e => decimal.Negate(e.EntityValue));
+			});
 		}
 
 		[Test]
@@ -140,11 +164,14 @@ namespace NHibernate.Test.NHSpecificTest.GH0831
 		{
 			Assume.That(TestDialect.SupportsModuloOnDecimal, Is.True);
 
-			CanFilter(e => decimal.Remainder(e.EntityValue, 2) == 0);
-			CanFilter(e => decimal.Remainder(2, e.EntityValue) < 1);
+			Assert.Multiple(() =>
+			{
+				CanFilter(e => decimal.Remainder(e.EntityValue, 2m) == 0);
+				CanFilter(e => decimal.Remainder(2m, e.EntityValue) < 1);
 
-			CanSelect(e => decimal.Remainder(e.EntityValue, 2));
-			CanSelect(e => decimal.Remainder(2, e.EntityValue));
+				CanSelect(e => decimal.Remainder(e.EntityValue, 2m));
+				CanSelect(e => decimal.Remainder(2m, e.EntityValue));
+			});
 		}
 
 		[Test]
@@ -152,22 +179,28 @@ namespace NHibernate.Test.NHSpecificTest.GH0831
 		{
 			AssumeFunctionSupported("round");
 
-			CanFilter(e => decimal.Round(e.EntityValue) >= 2.0m);
-			CanFilter(e => decimal.Round(e.EntityValue, 1) >= 1.5m);
+			Assert.Multiple(() =>
+			{
+				CanFilter(e => decimal.Round(e.EntityValue) >= 2.0m);
+				CanFilter(e => decimal.Round(e.EntityValue, 1) >= 1.5m);
 
-			// SQL round() always rounds up. 
-			CanSelect(e => decimal.Round(e.EntityValue), entities.Select(e => decimal.Round(e.EntityValue, MidpointRounding.AwayFromZero)));
-			CanSelect(e => decimal.Round(e.EntityValue, 1), entities.Select(e => decimal.Round(e.EntityValue, 1, MidpointRounding.AwayFromZero)));
+				// SQL round() always rounds up. 
+				CanSelect(e => decimal.Round(e.EntityValue), entities.Select(e => decimal.Round(e.EntityValue, MidpointRounding.AwayFromZero)));
+				CanSelect(e => decimal.Round(e.EntityValue, 1), entities.Select(e => decimal.Round(e.EntityValue, 1, MidpointRounding.AwayFromZero)));
+			});
 		}
 
 		[Test]
 		public void CanHandleSubtract()
 		{
-			CanFilter(e => decimal.Subtract(e.EntityValue, 1m) > 1m);
-			CanFilter(e => decimal.Subtract(2m, e.EntityValue) > 1m);
+			Assert.Multiple(() =>
+			{
+				CanFilter(e => decimal.Subtract(e.EntityValue, 1m) > 1m);
+				CanFilter(e => decimal.Subtract(2m, e.EntityValue) > 1m);
 
-			CanSelect(e => decimal.Subtract(e.EntityValue, 1m));
-			CanSelect(e => decimal.Subtract(2m, e.EntityValue));
+				CanSelect(e => decimal.Subtract(e.EntityValue, 1m));
+				CanSelect(e => decimal.Subtract(2m, e.EntityValue));
+			});
 		}
 
 		private void CanFilter(Expression<Func<Entity, bool>> predicate)
