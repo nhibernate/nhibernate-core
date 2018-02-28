@@ -86,6 +86,7 @@ namespace NHibernate.Test.Ado
 			Cleanup();
 		}
 
+#if NETFX
 		[Test, Ignore("Not fixed yet.")]
 		[Description("SqlClient: The batcher should run all different INSERT queries in only one roundtrip.")]
 		public void SqlClientOneRoundTripForUpdateAndInsert()
@@ -95,7 +96,7 @@ namespace NHibernate.Test.Ado
 
 			FillDb();
 
-			using(var sqlLog = new SqlLogSpy())
+			using (var sqlLog = new SqlLogSpy())
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
@@ -140,7 +141,7 @@ namespace NHibernate.Test.Ado
 
 			Cleanup();
 		}
-
+#endif
 
 		[Test]
 		[Description("The batcher should run all DELETE queries in only one roundtrip.")]

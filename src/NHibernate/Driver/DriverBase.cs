@@ -313,9 +313,15 @@ namespace NHibernate.Driver
 
 		public virtual bool RequiresTimeSpanForTime => false;
 
+#if NETCOREAPP2_0
+		public virtual bool SupportsSystemTransactions => false;
+
+		public virtual bool SupportsNullEnlistment => false;
+#else
 		public virtual bool SupportsSystemTransactions => true;
 
 		public virtual bool SupportsNullEnlistment => true;
+#endif
 
 		/// <inheritdoc />
 		public virtual bool SupportsEnlistmentWhenAutoEnlistmentIsDisabled => true;

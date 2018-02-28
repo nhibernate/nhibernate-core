@@ -2644,6 +2644,8 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task PersistCollectionsAsync()
 		{
+			TestsContext.AssumeSystemTypeIsSerializable();
+
 			ISession s = OpenSession();
 			ITransaction txn = s.BeginTransaction();
 			IEnumerator enumer = (await (s.CreateQuery("select count(*) from b in class Bar").EnumerableAsync())).GetEnumerator();
@@ -4654,6 +4656,8 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task ProxyArrayAsync()
 		{
+			TestsContext.AssumeSystemTypeIsSerializable();
+
 			ISession s = OpenSession();
 			GlarchProxy g = new Glarch();
 			Glarch g1 = new Glarch();

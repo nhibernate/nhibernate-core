@@ -16,7 +16,6 @@
 	<target name="init" depends="common.init" description="Initializes build properties" />
 
 	<target name="prepare-build-directory" depends="init">
-		<mkdir dir="${bin.dir}" />
 		<mkdir dir="${testresults.dir}" />
 	</target>
 
@@ -33,10 +32,8 @@
 		<exec program="dotnet" verbose="true">
 			<arg value="msbuild" />
 			<arg value="${root.dir}/src/NHibernate.sln" />
-			<arg value="/p:OutputPath=&quot;${path::get-full-path(bin.dir)}&quot;" />
 			<arg value="/p:Platform=&quot;Any CPU&quot;" />
-			<arg value="/p:Configuration=&quot;Debug&quot;" if="${project.config == 'debug'}" />
-			<arg value="/p:Configuration=&quot;Release&quot;" if="${project.config == 'release'}" />
+			<arg value="/p:Configuration=&quot;${build.config}&quot;"/>
 			<arg value="/p:GeneratePackageOnBuild=&quot;True&quot;" />
 			<arg value="/p:IncludeSymbols=&quot;True&quot;" />
 			<arg value="/p:IncludeSource=&quot;True&quot;" />
@@ -74,15 +71,6 @@
 		<exec
 			workingdir="${root.dir}/src"
 			program="${async-generator-console}" />
-	</target>
-
-	<target name="test-report" if="${nunit2report.installed}">
-		<mkdir dir="${build.dir}/testresults" />
-		<nunit2report out="${build.dir}/testresults/index.html" format="Frames" todir="${build.dir}/testresults">
-			<fileset>
-				<include name="${bin.dir}/*results.xml" />
-			</fileset>
-		</nunit2report>
 	</target>
 
 	<target name="put-connection-settings-into-defined-app-config">
@@ -156,7 +144,7 @@
 	</target>
 
 	<target name="put-connection-settings-into-app-config">
-		<property name="app.config" value="${bin.dir}/${test.file}.dll.config" />
+		<property name="app.config" value="src/${test.file}/bin/${build.config}/net461/${test.file}.dll.config" />
 		<call target="put-connection-settings-into-defined-app-config" />
 	</target>
 
@@ -166,20 +154,17 @@
 		<property name="nunit-console" value="${nuget-package-path}/tools/nunit3-console.exe" />
 	</target>
 
-	<target name="run-tests" depends="find-nunit"
-		description="Run NUnit tests">
-		<property name="run-tests.failonerror" value="${not property::exists(test.file + '.IgnoreFail')}"/>
-		<property name="run-tests.x86" value="--x86" unless="${property::exists('nunit-x64')}" />
-		<property name="run-tests.x86" value="" if="${property::exists('nunit-x64')}" />
-		<property name="run-tests.teamcity" value="--teamcity" if="${property::exists('config.teamcity')}" />
-		<property name="run-tests.teamcity" value="" unless="${property::exists('run-tests.teamcity')}" />
-		<exec program="${nunit-console}" failonerror="${run-tests.failonerror}">
-			<arg line="${bin.dir}/${test.file}.dll --result=${testresults.dir}/${test.file}.dll-results.xml;format=nunit2 --framework=${framework::get-target-framework()} ${run-tests.teamcity} ${run-tests.x86}" />
+	<target name="run-tests" depends="find-nunit" description="Run NUnit tests">
+		<exec program="${nunit-console}" failonerror="${not property::exists(test.file + '.IgnoreFail')}">
+			<arg value="${root.dir}/src/${test.file}/bin/${build.config}/net461/${test.file}.dll" />
+			<arg value="--result=${testresults.dir}/${test.file}.dll-results.xml;format=nunit2" />
+			<arg value="--teamcity" if="${property::exists('config.teamcity')}" />
+			<arg value="--x86" unless="${property::exists('nunit-x64')}" />
 		</exec>
 	</target>
 
 	<target name="remove-connection-settings-from-app-config">
-		<property name="app.config" value="${bin.dir}/${test.file}.dll.config" />
+		<property name="app.config" value="${root.dir}/src/${test.file}/bin/${build.config}/net461/${test.file}.dll.config" />
 
 		<xmlpoke
 			file="${app.config}"
@@ -222,12 +207,6 @@
 		<call target="build" />
 	</target>
 
-	<target name="reports" depends="init">
-		<call target="test-all-frameworks" />
-		<call target="test-report" />
-		<call target="coverage-report" />
-	</target>
-
 	<target name="sources-zip" depends="init">
 		<exec program="git" commandline="archive HEAD --format zip --output &quot;${build.dir}/NHibernate-${project.version}-src.zip&quot;"/>
 	</target>
@@ -255,19 +234,19 @@
 
 		<!--Configuration templates-->
 		<copy todir="${bin-pack.conf-template}">
-			<fileset basedir="src/NHibernate.Config.Templates">
+			<fileset basedir="${root.dir}/src/NHibernate.Config.Templates">
 				<include name="*"/>
 			</fileset>
 		</copy>
 
 		<!--Minimal Required Bins-->
 		<copy todir="${bin-pack.required}">
-			<fileset basedir="src/NHibernate">
+			<fileset basedir="${root.dir}/src/NHibernate">
 				<include name="*.xsd" />
 			</fileset>
 		</copy>
 		<copy todir="${bin-pack.required}">
-			<fileset basedir="${bin.dir}">
+			<fileset basedir="${root.dir}/src/NHibernate/bin/${build.config}/net461/">
 				<include name="Antlr3.Runtime.???" />
 				<include name="Iesi.Collections.???" />
 				<include name="NHibernate.???" />
@@ -275,22 +254,30 @@
 				<include name="Remotion.Linq.EagerFetching.???" />
 			</fileset>
 		</copy>
-		<!--Required Bins for lazy loading NHibernate.ByteCode.Castle.dll-->
 		<!-- Tests -->
-		<copy file="${bin.dir}/TestEmbeddedConfig.cfg.xml" todir="${bin-pack.tests}"/>
-		<copy file="${bin.dir}/ABC.hbm.xml" todir="${bin-pack.tests}"/>
+		<copy file="${root.dir}/src/NHibernate.Test/TestEmbeddedConfig.cfg.xml" todir="${bin-pack.tests}"/>
+		<copy file="${root.dir}/src/NHibernate.DomainModel/ABC.hbm.xml" todir="${bin-pack.tests}"/>
 		<copy todir="${bin-pack.tests}/DbScripts">
 			<fileset basedir="${root.dir}/src/NHibernate.Test/DbScripts">
 				<include name="*.sql" />
 			</fileset>
 		</copy>
 		<copy todir="${bin-pack.tests}">
-			<fileset basedir="${bin.dir}">
-				<include name="nunit*" />
-				<include name="SharpTestsEx*" />
-				<include name="NHibernate.Domain*" />
-				<include name="NHibernate.Test*" />
+			<fileset basedir="${root.dir}/src/NHibernate.Test/bin/${build.config}/net461">
 				<include name="log4net*" />
+				<include name="NHibernate.DomainModel.*" />
+				<include name="NHibernate.Test.*" />
+				<include name="nunit*" />
+			</fileset>
+		</copy>
+		<copy todir="${bin-pack.tests}">
+			<fileset basedir="${root.dir}/src/NHibernate.Test.VisualBasic/bin/${build.config}/net461">
+				<include name="NHibernate.Test.VisualBasic.*" />
+			</fileset>
+		</copy>
+		<copy todir="${bin-pack.tests}">
+			<fileset basedir="${root.dir}/src/NHibernate.TestDatabaseSetup/bin/${build.config}/net461">
+				<include name="NHibernate.TestDatabaseSetup.*" />
 			</fileset>
 		</copy>
 	</target>

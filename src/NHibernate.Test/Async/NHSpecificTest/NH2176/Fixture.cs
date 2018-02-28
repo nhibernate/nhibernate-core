@@ -10,6 +10,7 @@
 
 using System;
 using System.Transactions;
+using NHibernate.Engine;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2176
@@ -18,6 +19,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2176
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
+		protected override bool AppliesTo(ISessionFactoryImplementor factory) =>
+			factory.ConnectionProvider.Driver.SupportsSystemTransactions;
+
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();

@@ -560,6 +560,20 @@ namespace NHibernate.Test.Linq
 		static IEnumerable<Order> CreateOrders(IStatelessSession session, IDictionary<string, Customer> customersByCompanyName, IDictionary<string, Employee> employeesByLastName, IDictionary<string, Shipper> shippersByCompanyName) 
 		{
 			var orders = new List<Order>();
+			CreateOrders1(session, customersByCompanyName, employeesByLastName, shippersByCompanyName, orders);
+			CreateOrders2(session, customersByCompanyName, employeesByLastName, shippersByCompanyName, orders);
+			CreateOrders3(session, customersByCompanyName, employeesByLastName, shippersByCompanyName, orders);
+			CreateOrders4(session, customersByCompanyName, employeesByLastName, shippersByCompanyName, orders);
+			CreateOrders5(session, customersByCompanyName, employeesByLastName, shippersByCompanyName, orders);
+			CreateOrders6(session, customersByCompanyName, employeesByLastName, shippersByCompanyName, orders);
+			CreateOrders7(session, customersByCompanyName, employeesByLastName, shippersByCompanyName, orders);
+			CreateOrders8(session, customersByCompanyName, employeesByLastName, shippersByCompanyName, orders);
+			CreateOrders9(session, customersByCompanyName, employeesByLastName, shippersByCompanyName, orders);
+			return orders;
+		}
+
+		static void CreateOrders1(IStatelessSession session, IDictionary<string, Customer> customersByCompanyName, IDictionary<string, Employee> employeesByLastName, IDictionary<string, Shipper> shippersByCompanyName, List<Order> orders) 
+		{
 			var order = new Order { OrderId = 10248, Customer = customersByCompanyName["Vins et alcools Chevalier"], Employee = employeesByLastName["Buchanan"], OrderDate = DateTime.Parse("Jul  4 1996 12:00AM"), RequiredDate = DateTime.Parse("Aug  1 1996 12:00AM"), ShippingDate = DateTime.Parse("Jul 16 1996 12:00AM"), Shipper = shippersByCompanyName["Federal Shipping"], Freight = 32.38M, ShippedTo = "Vins et alcools Chevalier", ShippingAddress = new Address("59 rue de l'Abbaye", "Reims", "null", "51100", "France", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10249, Customer = customersByCompanyName["Toms Spezialitäten"], Employee = employeesByLastName["Suyama"], OrderDate = DateTime.Parse("Jul  5 1996 12:00AM"), RequiredDate = DateTime.Parse("Aug 16 1996 12:00AM"), ShippingDate = DateTime.Parse("Jul 10 1996 12:00AM"), Shipper = shippersByCompanyName["Speedy Express"], Freight = 11.61M, ShippedTo = "Toms Spezialitäten", ShippingAddress = new Address("Luisenstr. 48", "Münster", "null", "44087", "Germany", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10250, Customer = customersByCompanyName["Hanari Carnes"], Employee = employeesByLastName["Peacock"], OrderDate = DateTime.Parse("Jul  8 1996 12:00AM"), RequiredDate = DateTime.Parse("Aug  5 1996 12:00AM"), ShippingDate = DateTime.Parse("Jul 12 1996 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 65.83M, ShippedTo = "Hanari Carnes", ShippingAddress = new Address("Rua do Paço, 67", "Rio de Janeiro", "RJ", "05454-876", "Brazil", null, null) }; session.Insert(order); orders.Add(order);
@@ -661,7 +675,11 @@ namespace NHibernate.Test.Linq
 			order = new Order { OrderId = 10346, Customer = customersByCompanyName["Rattlesnake Canyon Grocery"], Employee = employeesByLastName["Leverling"], OrderDate = DateTime.Parse("Nov  5 1996 12:00AM"), RequiredDate = DateTime.Parse("Dec 17 1996 12:00AM"), ShippingDate = DateTime.Parse("Nov  8 1996 12:00AM"), Shipper = shippersByCompanyName["Federal Shipping"], Freight = 142.08M, ShippedTo = "Rattlesnake Canyon Grocery", ShippingAddress = new Address("2817 Milton Dr.", "Albuquerque", "NM", "87110", "USA", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10347, Customer = customersByCompanyName["Familia Arquibaldo"], Employee = employeesByLastName["Peacock"], OrderDate = DateTime.Parse("Nov  6 1996 12:00AM"), RequiredDate = DateTime.Parse("Dec  4 1996 12:00AM"), ShippingDate = DateTime.Parse("Nov  8 1996 12:00AM"), Shipper = shippersByCompanyName["Federal Shipping"], Freight = 3.10M, ShippedTo = "Familia Arquibaldo", ShippingAddress = new Address("Rua Orós, 92", "Sao Paulo", "SP", "05442-030", "Brazil", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10348, Customer = customersByCompanyName["Die Wandernde Kuh"], Employee = employeesByLastName["Peacock"], OrderDate = DateTime.Parse("Nov  7 1996 12:00AM"), RequiredDate = DateTime.Parse("Dec  5 1996 12:00AM"), ShippingDate = DateTime.Parse("Nov 15 1996 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 0.78M, ShippedTo = "Die Wandernde Kuh", ShippingAddress = new Address("Adenauerallee 900", "Stuttgart", "null", "70563", "Germany", null, null) }; session.Insert(order); orders.Add(order);
-			order = new Order { OrderId = 10349, Customer = customersByCompanyName["Split Rail Beer & Ale"], Employee = employeesByLastName["King"], OrderDate = DateTime.Parse("Nov  8 1996 12:00AM"), RequiredDate = DateTime.Parse("Dec  6 1996 12:00AM"), ShippingDate = DateTime.Parse("Nov 15 1996 12:00AM"), Shipper = shippersByCompanyName["Speedy Express"], Freight = 8.63M, ShippedTo = "Split Rail Beer & Ale", ShippingAddress = new Address("P.O. Box 555", "Lander", "WY", "82520", "USA", null, null) }; session.Insert(order); orders.Add(order);
+		}
+
+		static void CreateOrders2(IStatelessSession session, IDictionary<string, Customer> customersByCompanyName, IDictionary<string, Employee> employeesByLastName, IDictionary<string, Shipper> shippersByCompanyName, List<Order> orders) 
+		{
+			var order = new Order { OrderId = 10349, Customer = customersByCompanyName["Split Rail Beer & Ale"], Employee = employeesByLastName["King"], OrderDate = DateTime.Parse("Nov  8 1996 12:00AM"), RequiredDate = DateTime.Parse("Dec  6 1996 12:00AM"), ShippingDate = DateTime.Parse("Nov 15 1996 12:00AM"), Shipper = shippersByCompanyName["Speedy Express"], Freight = 8.63M, ShippedTo = "Split Rail Beer & Ale", ShippingAddress = new Address("P.O. Box 555", "Lander", "WY", "82520", "USA", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10350, Customer = customersByCompanyName["La maison d'Asie"], Employee = employeesByLastName["Suyama"], OrderDate = DateTime.Parse("Nov 11 1996 12:00AM"), RequiredDate = DateTime.Parse("Dec  9 1996 12:00AM"), ShippingDate = DateTime.Parse("Dec  3 1996 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 64.19M, ShippedTo = "La maison d'Asie", ShippingAddress = new Address("1 rue Alsace-Lorraine", "Toulouse", "null", "31000", "France", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10351, Customer = customersByCompanyName["Ernst Handel"], Employee = employeesByLastName["Davolio"], OrderDate = DateTime.Parse("Nov 11 1996 12:00AM"), RequiredDate = DateTime.Parse("Dec  9 1996 12:00AM"), ShippingDate = DateTime.Parse("Nov 20 1996 12:00AM"), Shipper = shippersByCompanyName["Speedy Express"], Freight = 162.33M, ShippedTo = "Ernst Handel", ShippingAddress = new Address("Kirchgasse 6", "Graz", "null", "8010", "Austria", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10352, Customer = customersByCompanyName["Furia Bacalhau e Frutos do Mar"], Employee = employeesByLastName["Leverling"], OrderDate = DateTime.Parse("Nov 12 1996 12:00AM"), RequiredDate = DateTime.Parse("Nov 26 1996 12:00AM"), ShippingDate = DateTime.Parse("Nov 18 1996 12:00AM"), Shipper = shippersByCompanyName["Federal Shipping"], Freight = 1.30M, ShippedTo = "Furia Bacalhau e Frutos do Mar", ShippingAddress = new Address("Jardim das rosas n. 32", "Lisboa", "null", "1675", "Portugal", null, null) }; session.Insert(order); orders.Add(order);
@@ -762,7 +780,11 @@ namespace NHibernate.Test.Linq
 			order = new Order { OrderId = 10447, Customer = customersByCompanyName["Ricardo Adocicados"], Employee = employeesByLastName["Peacock"], OrderDate = DateTime.Parse("Feb 14 1997 12:00AM"), RequiredDate = DateTime.Parse("Mar 14 1997 12:00AM"), ShippingDate = DateTime.Parse("Mar  7 1997 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 68.66M, ShippedTo = "Ricardo Adocicados", ShippingAddress = new Address("Av. Copacabana, 267", "Rio de Janeiro", "RJ", "02389-890", "Brazil", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10448, Customer = customersByCompanyName["Rancho grande"], Employee = employeesByLastName["Peacock"], OrderDate = DateTime.Parse("Feb 17 1997 12:00AM"), RequiredDate = DateTime.Parse("Mar 17 1997 12:00AM"), ShippingDate = DateTime.Parse("Feb 24 1997 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 38.82M, ShippedTo = "Rancho grande", ShippingAddress = new Address("Av. del Libertador 900", "Buenos Aires", "null", "1010", "Argentina", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10449, Customer = customersByCompanyName["Blondesddsl père et fils"], Employee = employeesByLastName["Leverling"], OrderDate = DateTime.Parse("Feb 18 1997 12:00AM"), RequiredDate = DateTime.Parse("Mar 18 1997 12:00AM"), ShippingDate = DateTime.Parse("Feb 27 1997 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 53.30M, ShippedTo = "Blondel père et fils", ShippingAddress = new Address("24, place Kléber", "Strasbourg", "null", "67000", "France", null, null) }; session.Insert(order); orders.Add(order);
-			order = new Order { OrderId = 10450, Customer = customersByCompanyName["Victuailles en stock"], Employee = employeesByLastName["Callahan"], OrderDate = DateTime.Parse("Feb 19 1997 12:00AM"), RequiredDate = DateTime.Parse("Mar 19 1997 12:00AM"), ShippingDate = DateTime.Parse("Mar 11 1997 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 7.23M, ShippedTo = "Victuailles en stock", ShippingAddress = new Address("2, rue du Commerce", "Lyon", "null", "69004", "France", null, null) }; session.Insert(order); orders.Add(order);
+		}
+
+		static void CreateOrders3(IStatelessSession session, IDictionary<string, Customer> customersByCompanyName, IDictionary<string, Employee> employeesByLastName, IDictionary<string, Shipper> shippersByCompanyName, List<Order> orders) 
+		{
+			var order = new Order { OrderId = 10450, Customer = customersByCompanyName["Victuailles en stock"], Employee = employeesByLastName["Callahan"], OrderDate = DateTime.Parse("Feb 19 1997 12:00AM"), RequiredDate = DateTime.Parse("Mar 19 1997 12:00AM"), ShippingDate = DateTime.Parse("Mar 11 1997 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 7.23M, ShippedTo = "Victuailles en stock", ShippingAddress = new Address("2, rue du Commerce", "Lyon", "null", "69004", "France", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10451, Customer = customersByCompanyName["QUICK-Stop"], Employee = employeesByLastName["Peacock"], OrderDate = DateTime.Parse("Feb 19 1997 12:00AM"), RequiredDate = DateTime.Parse("Mar  5 1997 12:00AM"), ShippingDate = DateTime.Parse("Mar 12 1997 12:00AM"), Shipper = shippersByCompanyName["Federal Shipping"], Freight = 189.09M, ShippedTo = "QUICK-Stop", ShippingAddress = new Address("Taucherstraße 10", "Cunewalde", "null", "01307", "Germany", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10452, Customer = customersByCompanyName["Save-a-lot Markets"], Employee = employeesByLastName["Callahan"], OrderDate = DateTime.Parse("Feb 20 1997 12:00AM"), RequiredDate = DateTime.Parse("Mar 20 1997 12:00AM"), ShippingDate = DateTime.Parse("Feb 26 1997 12:00AM"), Shipper = shippersByCompanyName["Speedy Express"], Freight = 140.26M, ShippedTo = "Save-a-lot Markets", ShippingAddress = new Address("187 Suffolk Ln.", "Boise", "ID", "83720", "USA", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10453, Customer = customersByCompanyName["Around the Horn"], Employee = employeesByLastName["Davolio"], OrderDate = DateTime.Parse("Feb 21 1997 12:00AM"), RequiredDate = DateTime.Parse("Mar 21 1997 12:00AM"), ShippingDate = DateTime.Parse("Feb 26 1997 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 25.36M, ShippedTo = "Around the Horn", ShippingAddress = new Address("Brook Farm Stratford St. Mary", "Colchester", "Essex", "CO7 6JX", "UK", null, null) }; session.Insert(order); orders.Add(order);
@@ -864,7 +886,11 @@ namespace NHibernate.Test.Linq
 			order = new Order { OrderId = 10549, Customer = customersByCompanyName["QUICK-Stop"], Employee = employeesByLastName["Buchanan"], OrderDate = DateTime.Parse("May 27 1997 12:00AM"), RequiredDate = DateTime.Parse("Jun 10 1997 12:00AM"), ShippingDate = DateTime.Parse("May 30 1997 12:00AM"), Shipper = shippersByCompanyName["Speedy Express"], Freight = 171.24M, ShippedTo = "QUICK-Stop", ShippingAddress = new Address("Taucherstraße 10", "Cunewalde", "null", "01307", "Germany", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10550, Customer = customersByCompanyName["Godos Cocina Típica"], Employee = employeesByLastName["King"], OrderDate = DateTime.Parse("May 28 1997 12:00AM"), RequiredDate = DateTime.Parse("Jun 25 1997 12:00AM"), ShippingDate = DateTime.Parse("Jun  6 1997 12:00AM"), Shipper = shippersByCompanyName["Federal Shipping"], Freight = 4.32M, ShippedTo = "Godos Cocina Típica", ShippingAddress = new Address("C/ Romero, 33", "Sevilla", "null", "41101", "Spain", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10551, Customer = customersByCompanyName["Furia Bacalhau e Frutos do Mar"], Employee = employeesByLastName["Peacock"], OrderDate = DateTime.Parse("May 28 1997 12:00AM"), RequiredDate = DateTime.Parse("Jul  9 1997 12:00AM"), ShippingDate = DateTime.Parse("Jun  6 1997 12:00AM"), Shipper = shippersByCompanyName["Federal Shipping"], Freight = 72.95M, ShippedTo = "Furia Bacalhau e Frutos do Mar", ShippingAddress = new Address("Jardim das rosas n. 32", "Lisboa", "null", "1675", "Portugal", null, null) }; session.Insert(order); orders.Add(order);
-			order = new Order { OrderId = 10552, Customer = customersByCompanyName["HILARION-Abastos"], Employee = employeesByLastName["Fuller"], OrderDate = DateTime.Parse("May 29 1997 12:00AM"), RequiredDate = DateTime.Parse("Jun 26 1997 12:00AM"), ShippingDate = DateTime.Parse("Jun  5 1997 12:00AM"), Shipper = shippersByCompanyName["Speedy Express"], Freight = 83.22M, ShippedTo = "HILARION-Abastos", ShippingAddress = new Address("Carrera 22 con Ave. Carlos Soublette #8-35", "San Cristóbal", "Táchira", "5022", "Venezuela", null, null) }; session.Insert(order); orders.Add(order);
+		}
+
+		static void CreateOrders4(IStatelessSession session, IDictionary<string, Customer> customersByCompanyName, IDictionary<string, Employee> employeesByLastName, IDictionary<string, Shipper> shippersByCompanyName, List<Order> orders) 
+		{
+			var order = new Order { OrderId = 10552, Customer = customersByCompanyName["HILARION-Abastos"], Employee = employeesByLastName["Fuller"], OrderDate = DateTime.Parse("May 29 1997 12:00AM"), RequiredDate = DateTime.Parse("Jun 26 1997 12:00AM"), ShippingDate = DateTime.Parse("Jun  5 1997 12:00AM"), Shipper = shippersByCompanyName["Speedy Express"], Freight = 83.22M, ShippedTo = "HILARION-Abastos", ShippingAddress = new Address("Carrera 22 con Ave. Carlos Soublette #8-35", "San Cristóbal", "Táchira", "5022", "Venezuela", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10553, Customer = customersByCompanyName["Wartian Herkku"], Employee = employeesByLastName["Fuller"], OrderDate = DateTime.Parse("May 30 1997 12:00AM"), RequiredDate = DateTime.Parse("Jun 27 1997 12:00AM"), ShippingDate = DateTime.Parse("Jun  3 1997 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 149.49M, ShippedTo = "Wartian Herkku", ShippingAddress = new Address("Torikatu 38", "Oulu", "null", "90110", "Finland", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10554, Customer = customersByCompanyName["Ottilies Käseladen"], Employee = employeesByLastName["Peacock"], OrderDate = DateTime.Parse("May 30 1997 12:00AM"), RequiredDate = DateTime.Parse("Jun 27 1997 12:00AM"), ShippingDate = DateTime.Parse("Jun  5 1997 12:00AM"), Shipper = shippersByCompanyName["Federal Shipping"], Freight = 120.97M, ShippedTo = "Ottilies Käseladen", ShippingAddress = new Address("Mehrheimerstr. 369", "Köln", "null", "50739", "Germany", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10555, Customer = customersByCompanyName["Save-a-lot Markets"], Employee = employeesByLastName["Suyama"], OrderDate = DateTime.Parse("Jun  2 1997 12:00AM"), RequiredDate = DateTime.Parse("Jun 30 1997 12:00AM"), ShippingDate = DateTime.Parse("Jun  4 1997 12:00AM"), Shipper = shippersByCompanyName["Federal Shipping"], Freight = 252.49M, ShippedTo = "Save-a-lot Markets", ShippingAddress = new Address("187 Suffolk Ln.", "Boise", "ID", "83720", "USA", null, null) }; session.Insert(order); orders.Add(order);
@@ -965,7 +991,11 @@ namespace NHibernate.Test.Linq
 			order = new Order { OrderId = 10650, Customer = customersByCompanyName["Familia Arquibaldo"], Employee = employeesByLastName["Buchanan"], OrderDate = DateTime.Parse("Aug 29 1997 12:00AM"), RequiredDate = DateTime.Parse("Sep 26 1997 12:00AM"), ShippingDate = DateTime.Parse("Sep  3 1997 12:00AM"), Shipper = shippersByCompanyName["Federal Shipping"], Freight = 176.81M, ShippedTo = "Familia Arquibaldo", ShippingAddress = new Address("Rua Orós, 92", "Sao Paulo", "SP", "05442-030", "Brazil", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10651, Customer = customersByCompanyName["Die Wandernde Kuh"], Employee = employeesByLastName["Callahan"], OrderDate = DateTime.Parse("Sep  1 1997 12:00AM"), RequiredDate = DateTime.Parse("Sep 29 1997 12:00AM"), ShippingDate = DateTime.Parse("Sep 11 1997 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 20.60M, ShippedTo = "Die Wandernde Kuh", ShippingAddress = new Address("Adenauerallee 900", "Stuttgart", "null", "70563", "Germany", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10652, Customer = customersByCompanyName["Gourmet Lanchonetes"], Employee = employeesByLastName["Peacock"], OrderDate = DateTime.Parse("Sep  1 1997 12:00AM"), RequiredDate = DateTime.Parse("Sep 29 1997 12:00AM"), ShippingDate = DateTime.Parse("Sep  8 1997 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 7.14M, ShippedTo = "Gourmet Lanchonetes", ShippingAddress = new Address("Av. Brasil, 442", "Campinas", "SP", "04876-786", "Brazil", null, null) }; session.Insert(order); orders.Add(order);
-			order = new Order { OrderId = 10653, Customer = customersByCompanyName["Frankenversand"], Employee = employeesByLastName["Davolio"], OrderDate = DateTime.Parse("Sep  2 1997 12:00AM"), RequiredDate = DateTime.Parse("Sep 30 1997 12:00AM"), ShippingDate = DateTime.Parse("Sep 19 1997 12:00AM"), Shipper = shippersByCompanyName["Speedy Express"], Freight = 93.25M, ShippedTo = "Frankenversand", ShippingAddress = new Address("Berliner Platz 43", "München", "null", "80805", "Germany", null, null) }; session.Insert(order); orders.Add(order);
+		}
+
+		static void CreateOrders5(IStatelessSession session, IDictionary<string, Customer> customersByCompanyName, IDictionary<string, Employee> employeesByLastName, IDictionary<string, Shipper> shippersByCompanyName, List<Order> orders) 
+		{
+			var order = new Order { OrderId = 10653, Customer = customersByCompanyName["Frankenversand"], Employee = employeesByLastName["Davolio"], OrderDate = DateTime.Parse("Sep  2 1997 12:00AM"), RequiredDate = DateTime.Parse("Sep 30 1997 12:00AM"), ShippingDate = DateTime.Parse("Sep 19 1997 12:00AM"), Shipper = shippersByCompanyName["Speedy Express"], Freight = 93.25M, ShippedTo = "Frankenversand", ShippingAddress = new Address("Berliner Platz 43", "München", "null", "80805", "Germany", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10654, Customer = customersByCompanyName["Berglunds snabbköp"], Employee = employeesByLastName["Buchanan"], OrderDate = DateTime.Parse("Sep  2 1997 12:00AM"), RequiredDate = DateTime.Parse("Sep 30 1997 12:00AM"), ShippingDate = DateTime.Parse("Sep 11 1997 12:00AM"), Shipper = shippersByCompanyName["Speedy Express"], Freight = 55.26M, ShippedTo = "Berglunds snabbköp", ShippingAddress = new Address("Berguvsvägen  8", "Luleå", "null", "S-958 22", "Sweden", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10655, Customer = customersByCompanyName["Reggiani Caseifici"], Employee = employeesByLastName["Davolio"], OrderDate = DateTime.Parse("Sep  3 1997 12:00AM"), RequiredDate = DateTime.Parse("Oct  1 1997 12:00AM"), ShippingDate = DateTime.Parse("Sep 11 1997 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 4.41M, ShippedTo = "Reggiani Caseifici", ShippingAddress = new Address("Strada Provinciale 124", "Reggio Emilia", "null", "42100", "Italy", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10656, Customer = customersByCompanyName["Great Lakes Food Market"], Employee = employeesByLastName["Suyama"], OrderDate = DateTime.Parse("Sep  4 1997 12:00AM"), RequiredDate = DateTime.Parse("Oct  2 1997 12:00AM"), ShippingDate = DateTime.Parse("Sep 10 1997 12:00AM"), Shipper = shippersByCompanyName["Speedy Express"], Freight = 57.15M, ShippedTo = "Great Lakes Food Market", ShippingAddress = new Address("2732 Baker Blvd.", "Eugene", "OR", "97403", "USA", null, null) }; session.Insert(order); orders.Add(order);
@@ -1066,7 +1096,11 @@ namespace NHibernate.Test.Linq
 			order = new Order { OrderId = 10751, Customer = customersByCompanyName["Richter Supermarkt"], Employee = employeesByLastName["Leverling"], OrderDate = DateTime.Parse("Nov 24 1997 12:00AM"), RequiredDate = DateTime.Parse("Dec 22 1997 12:00AM"), ShippingDate = DateTime.Parse("Dec  3 1997 12:00AM"), Shipper = shippersByCompanyName["Federal Shipping"], Freight = 130.79M, ShippedTo = "Richter Supermarkt", ShippingAddress = new Address("Starenweg 5", "Genève", "null", "1204", "Switzerland", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10752, Customer = customersByCompanyName["North/South"], Employee = employeesByLastName["Fuller"], OrderDate = DateTime.Parse("Nov 24 1997 12:00AM"), RequiredDate = DateTime.Parse("Dec 22 1997 12:00AM"), ShippingDate = DateTime.Parse("Nov 28 1997 12:00AM"), Shipper = shippersByCompanyName["Federal Shipping"], Freight = 1.39M, ShippedTo = "North/South", ShippingAddress = new Address("South House 300 Queensbridge", "London", "null", "SW7 1RZ", "UK", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10753, Customer = customersByCompanyName["Franchi S.p.A."], Employee = employeesByLastName["Leverling"], OrderDate = DateTime.Parse("Nov 25 1997 12:00AM"), RequiredDate = DateTime.Parse("Dec 23 1997 12:00AM"), ShippingDate = DateTime.Parse("Nov 27 1997 12:00AM"), Shipper = shippersByCompanyName["Speedy Express"], Freight = 7.70M, ShippedTo = "Franchi S.p.A.", ShippingAddress = new Address("Via Monte Bianco 34", "Torino", "null", "10100", "Italy", null, null) }; session.Insert(order); orders.Add(order);
-			order = new Order { OrderId = 10754, Customer = customersByCompanyName["Magazzini Alimentari Riuniti"], Employee = employeesByLastName["Suyama"], OrderDate = DateTime.Parse("Nov 25 1997 12:00AM"), RequiredDate = DateTime.Parse("Dec 23 1997 12:00AM"), ShippingDate = DateTime.Parse("Nov 27 1997 12:00AM"), Shipper = shippersByCompanyName["Federal Shipping"], Freight = 2.38M, ShippedTo = "Magazzini Alimentari Riuniti", ShippingAddress = new Address("Via Ludovico il Moro 22", "Bergamo", "null", "24100", "Italy", null, null) }; session.Insert(order); orders.Add(order);
+		}
+
+		static void CreateOrders6(IStatelessSession session, IDictionary<string, Customer> customersByCompanyName, IDictionary<string, Employee> employeesByLastName, IDictionary<string, Shipper> shippersByCompanyName, List<Order> orders) 
+		{
+			var order = new Order { OrderId = 10754, Customer = customersByCompanyName["Magazzini Alimentari Riuniti"], Employee = employeesByLastName["Suyama"], OrderDate = DateTime.Parse("Nov 25 1997 12:00AM"), RequiredDate = DateTime.Parse("Dec 23 1997 12:00AM"), ShippingDate = DateTime.Parse("Nov 27 1997 12:00AM"), Shipper = shippersByCompanyName["Federal Shipping"], Freight = 2.38M, ShippedTo = "Magazzini Alimentari Riuniti", ShippingAddress = new Address("Via Ludovico il Moro 22", "Bergamo", "null", "24100", "Italy", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10755, Customer = customersByCompanyName["Bon app'"], Employee = employeesByLastName["Peacock"], OrderDate = DateTime.Parse("Nov 26 1997 12:00AM"), RequiredDate = DateTime.Parse("Dec 24 1997 12:00AM"), ShippingDate = DateTime.Parse("Nov 28 1997 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 16.71M, ShippedTo = "Bon app'", ShippingAddress = new Address("12, rue des Bouchers", "Marseille", "null", "13008", "France", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10756, Customer = customersByCompanyName["Split Rail Beer & Ale"], Employee = employeesByLastName["Callahan"], OrderDate = DateTime.Parse("Nov 27 1997 12:00AM"), RequiredDate = DateTime.Parse("Dec 25 1997 12:00AM"), ShippingDate = DateTime.Parse("Dec  2 1997 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 73.21M, ShippedTo = "Split Rail Beer & Ale", ShippingAddress = new Address("P.O. Box 555", "Lander", "WY", "82520", "USA", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10757, Customer = customersByCompanyName["Save-a-lot Markets"], Employee = employeesByLastName["Suyama"], OrderDate = DateTime.Parse("Nov 27 1997 12:00AM"), RequiredDate = DateTime.Parse("Dec 25 1997 12:00AM"), ShippingDate = DateTime.Parse("Dec 15 1997 12:00AM"), Shipper = shippersByCompanyName["Speedy Express"], Freight = 8.19M, ShippedTo = "Save-a-lot Markets", ShippingAddress = new Address("187 Suffolk Ln.", "Boise", "ID", "83720", "USA", null, null) }; session.Insert(order); orders.Add(order);
@@ -1166,7 +1200,11 @@ namespace NHibernate.Test.Linq
 			order = new Order { OrderId = 10851, Customer = customersByCompanyName["Ricardo Adocicados"], Employee = employeesByLastName["Buchanan"], OrderDate = DateTime.Parse("Jan 26 1998 12:00AM"), RequiredDate = DateTime.Parse("Feb 23 1998 12:00AM"), ShippingDate = DateTime.Parse("Feb  2 1998 12:00AM"), Shipper = shippersByCompanyName["Speedy Express"], Freight = 160.55M, ShippedTo = "Ricardo Adocicados", ShippingAddress = new Address("Av. Copacabana, 267", "Rio de Janeiro", "RJ", "02389-890", "Brazil", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10852, Customer = customersByCompanyName["Rattlesnake Canyon Grocery"], Employee = employeesByLastName["Callahan"], OrderDate = DateTime.Parse("Jan 26 1998 12:00AM"), RequiredDate = DateTime.Parse("Feb  9 1998 12:00AM"), ShippingDate = DateTime.Parse("Jan 30 1998 12:00AM"), Shipper = shippersByCompanyName["Speedy Express"], Freight = 174.05M, ShippedTo = "Rattlesnake Canyon Grocery", ShippingAddress = new Address("2817 Milton Dr.", "Albuquerque", "NM", "87110", "USA", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10853, Customer = customersByCompanyName["Blauer See Delikatessen"], Employee = employeesByLastName["Dodsworth"], OrderDate = DateTime.Parse("Jan 27 1998 12:00AM"), RequiredDate = DateTime.Parse("Feb 24 1998 12:00AM"), ShippingDate = DateTime.Parse("Feb  3 1998 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 53.83M, ShippedTo = "Blauer See Delikatessen", ShippingAddress = new Address("Forsterstr. 57", "Mannheim", "null", "68306", "Germany", null, null) }; session.Insert(order); orders.Add(order);
-			order = new Order { OrderId = 10854, Customer = customersByCompanyName["Ernst Handel"], Employee = employeesByLastName["Leverling"], OrderDate = DateTime.Parse("Jan 27 1998 12:00AM"), RequiredDate = DateTime.Parse("Feb 24 1998 12:00AM"), ShippingDate = DateTime.Parse("Feb  5 1998 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 100.22M, ShippedTo = "Ernst Handel", ShippingAddress = new Address("Kirchgasse 6", "Graz", "null", "8010", "Austria", null, null) }; session.Insert(order); orders.Add(order);
+		}
+
+		static void CreateOrders7(IStatelessSession session, IDictionary<string, Customer> customersByCompanyName, IDictionary<string, Employee> employeesByLastName, IDictionary<string, Shipper> shippersByCompanyName, List<Order> orders) 
+		{
+			var order = new Order { OrderId = 10854, Customer = customersByCompanyName["Ernst Handel"], Employee = employeesByLastName["Leverling"], OrderDate = DateTime.Parse("Jan 27 1998 12:00AM"), RequiredDate = DateTime.Parse("Feb 24 1998 12:00AM"), ShippingDate = DateTime.Parse("Feb  5 1998 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 100.22M, ShippedTo = "Ernst Handel", ShippingAddress = new Address("Kirchgasse 6", "Graz", "null", "8010", "Austria", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10855, Customer = customersByCompanyName["Old World Delicatessen"], Employee = employeesByLastName["Leverling"], OrderDate = DateTime.Parse("Jan 27 1998 12:00AM"), RequiredDate = DateTime.Parse("Feb 24 1998 12:00AM"), ShippingDate = DateTime.Parse("Feb  4 1998 12:00AM"), Shipper = shippersByCompanyName["Speedy Express"], Freight = 170.97M, ShippedTo = "Old World Delicatessen", ShippingAddress = new Address("2743 Bering St.", "Anchorage", "AK", "99508", "USA", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10856, Customer = customersByCompanyName["Antonio Moreno Taquería"], Employee = employeesByLastName["Leverling"], OrderDate = DateTime.Parse("Jan 28 1998 12:00AM"), RequiredDate = DateTime.Parse("Feb 25 1998 12:00AM"), ShippingDate = DateTime.Parse("Feb 10 1998 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 58.43M, ShippedTo = "Antonio Moreno Taquería", ShippingAddress = new Address("Mataderos  2312", "México D.F.", "null", "05023", "Mexico", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10857, Customer = customersByCompanyName["Berglunds snabbköp"], Employee = employeesByLastName["Callahan"], OrderDate = DateTime.Parse("Jan 28 1998 12:00AM"), RequiredDate = DateTime.Parse("Feb 25 1998 12:00AM"), ShippingDate = DateTime.Parse("Feb  6 1998 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 188.85M, ShippedTo = "Berglunds snabbköp", ShippingAddress = new Address("Berguvsvägen  8", "Luleå", "null", "S-958 22", "Sweden", null, null) }; session.Insert(order); orders.Add(order);
@@ -1267,7 +1305,11 @@ namespace NHibernate.Test.Linq
 			order = new Order { OrderId = 10952, Customer = customersByCompanyName["Alfreds Futterkiste"], Employee = employeesByLastName["Davolio"], OrderDate = DateTime.Parse("Mar 16 1998 12:00AM"), RequiredDate = DateTime.Parse("Apr 27 1998 12:00AM"), ShippingDate = DateTime.Parse("Mar 24 1998 12:00AM"), Shipper = shippersByCompanyName["Speedy Express"], Freight = 40.42M, ShippedTo = "Alfred's Futterkiste", ShippingAddress = new Address("Obere Str. 57", "Berlin", "null", "12209", "Germany", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10953, Customer = customersByCompanyName["Around the Horn"], Employee = employeesByLastName["Dodsworth"], OrderDate = DateTime.Parse("Mar 16 1998 12:00AM"), RequiredDate = DateTime.Parse("Mar 30 1998 12:00AM"), ShippingDate = DateTime.Parse("Mar 25 1998 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 23.72M, ShippedTo = "Around the Horn", ShippingAddress = new Address("Brook Farm Stratford St. Mary", "Colchester", "Essex", "CO7 6JX", "UK", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10954, Customer = customersByCompanyName["LINO-Delicateses"], Employee = employeesByLastName["Buchanan"], OrderDate = DateTime.Parse("Mar 17 1998 12:00AM"), RequiredDate = DateTime.Parse("Apr 28 1998 12:00AM"), ShippingDate = DateTime.Parse("Mar 20 1998 12:00AM"), Shipper = shippersByCompanyName["Speedy Express"], Freight = 27.91M, ShippedTo = "LINO-Delicateses", ShippingAddress = new Address("Ave. 5 de Mayo Porlamar", "I. de Margarita", "Nueva Esparta", "4980", "Venezuela", null, null) }; session.Insert(order); orders.Add(order);
-			order = new Order { OrderId = 10955, Customer = customersByCompanyName["Folk och fä HB"], Employee = employeesByLastName["Callahan"], OrderDate = DateTime.Parse("Mar 17 1998 12:00AM"), RequiredDate = DateTime.Parse("Apr 14 1998 12:00AM"), ShippingDate = DateTime.Parse("Mar 20 1998 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 3.26M, ShippedTo = "Folk och fä HB", ShippingAddress = new Address("Åkergatan 24", "Bräcke", "null", "S-844 67", "Sweden", null, null) }; session.Insert(order); orders.Add(order);
+		}
+
+		static void CreateOrders8(IStatelessSession session, IDictionary<string, Customer> customersByCompanyName, IDictionary<string, Employee> employeesByLastName, IDictionary<string, Shipper> shippersByCompanyName, List<Order> orders) 
+		{
+			var order = new Order { OrderId = 10955, Customer = customersByCompanyName["Folk och fä HB"], Employee = employeesByLastName["Callahan"], OrderDate = DateTime.Parse("Mar 17 1998 12:00AM"), RequiredDate = DateTime.Parse("Apr 14 1998 12:00AM"), ShippingDate = DateTime.Parse("Mar 20 1998 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 3.26M, ShippedTo = "Folk och fä HB", ShippingAddress = new Address("Åkergatan 24", "Bräcke", "null", "S-844 67", "Sweden", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10956, Customer = customersByCompanyName["Blauer See Delikatessen"], Employee = employeesByLastName["Suyama"], OrderDate = DateTime.Parse("Mar 17 1998 12:00AM"), RequiredDate = DateTime.Parse("Apr 28 1998 12:00AM"), ShippingDate = DateTime.Parse("Mar 20 1998 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 44.65M, ShippedTo = "Blauer See Delikatessen", ShippingAddress = new Address("Forsterstr. 57", "Mannheim", "null", "68306", "Germany", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10957, Customer = customersByCompanyName["HILARION-Abastos"], Employee = employeesByLastName["Callahan"], OrderDate = DateTime.Parse("Mar 18 1998 12:00AM"), RequiredDate = DateTime.Parse("Apr 15 1998 12:00AM"), ShippingDate = DateTime.Parse("Mar 27 1998 12:00AM"), Shipper = shippersByCompanyName["Federal Shipping"], Freight = 105.36M, ShippedTo = "HILARION-Abastos", ShippingAddress = new Address("Carrera 22 con Ave. Carlos Soublette #8-35", "San Cristóbal", "Táchira", "5022", "Venezuela", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 10958, Customer = customersByCompanyName["Océano Atlántico Ltda."], Employee = employeesByLastName["King"], OrderDate = DateTime.Parse("Mar 18 1998 12:00AM"), RequiredDate = DateTime.Parse("Apr 15 1998 12:00AM"), ShippingDate = DateTime.Parse("Mar 27 1998 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 49.56M, ShippedTo = "Océano Atlántico Ltda.", ShippingAddress = new Address("Ing. Gustavo Moncada 8585 Piso 20-A", "Buenos Aires", "null", "1010", "Argentina", null, null) }; session.Insert(order); orders.Add(order);
@@ -1368,7 +1410,11 @@ namespace NHibernate.Test.Linq
 			order = new Order { OrderId = 11053, Customer = customersByCompanyName["Piccolo und mehr"], Employee = employeesByLastName["Fuller"], OrderDate = DateTime.Parse("Apr 27 1998 12:00AM"), RequiredDate = DateTime.Parse("May 25 1998 12:00AM"), ShippingDate = DateTime.Parse("Apr 29 1998 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 53.05M, ShippedTo = "Piccolo und mehr", ShippingAddress = new Address("Geislweg 14", "Salzburg", "null", "5020", "Austria", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 11054, Customer = customersByCompanyName["Cactus Comidas para llevar"], Employee = employeesByLastName["Callahan"], OrderDate = DateTime.Parse("Apr 28 1998 12:00AM"), RequiredDate = DateTime.Parse("May 26 1998 12:00AM"), ShippingDate = null, Shipper = shippersByCompanyName["Speedy Express"], Freight = 0.33M, ShippedTo = "Cactus Comidas para llevar", ShippingAddress = new Address("Cerrito 333", "Buenos Aires", "null", "1010", "Argentina", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 11055, Customer = customersByCompanyName["HILARION-Abastos"], Employee = employeesByLastName["King"], OrderDate = DateTime.Parse("Apr 28 1998 12:00AM"), RequiredDate = DateTime.Parse("May 26 1998 12:00AM"), ShippingDate = DateTime.Parse("May  5 1998 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 120.92M, ShippedTo = "HILARION-Abastos", ShippingAddress = new Address("Carrera 22 con Ave. Carlos Soublette #8-35", "San Cristóbal", "Táchira", "5022", "Venezuela", null, null) }; session.Insert(order); orders.Add(order);
-			order = new Order { OrderId = 11056, Customer = customersByCompanyName["Eastern Connection"], Employee = employeesByLastName["Callahan"], OrderDate = DateTime.Parse("Apr 28 1998 12:00AM"), RequiredDate = DateTime.Parse("May 12 1998 12:00AM"), ShippingDate = DateTime.Parse("May  1 1998 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 278.96M, ShippedTo = "Eastern Connection", ShippingAddress = new Address("35 King George", "London", "null", "WX3 6FW", "UK", null, null) }; session.Insert(order); orders.Add(order);
+		}
+
+		static void CreateOrders9(IStatelessSession session, IDictionary<string, Customer> customersByCompanyName, IDictionary<string, Employee> employeesByLastName, IDictionary<string, Shipper> shippersByCompanyName, List<Order> orders) 
+		{
+			var order = new Order { OrderId = 11056, Customer = customersByCompanyName["Eastern Connection"], Employee = employeesByLastName["Callahan"], OrderDate = DateTime.Parse("Apr 28 1998 12:00AM"), RequiredDate = DateTime.Parse("May 12 1998 12:00AM"), ShippingDate = DateTime.Parse("May  1 1998 12:00AM"), Shipper = shippersByCompanyName["United Package"], Freight = 278.96M, ShippedTo = "Eastern Connection", ShippingAddress = new Address("35 King George", "London", "null", "WX3 6FW", "UK", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 11057, Customer = customersByCompanyName["North/South"], Employee = employeesByLastName["Leverling"], OrderDate = DateTime.Parse("Apr 29 1998 12:00AM"), RequiredDate = DateTime.Parse("May 27 1998 12:00AM"), ShippingDate = DateTime.Parse("May  1 1998 12:00AM"), Shipper = shippersByCompanyName["Federal Shipping"], Freight = 4.13M, ShippedTo = "North/South", ShippingAddress = new Address("South House 300 Queensbridge", "London", "null", "SW7 1RZ", "UK", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 11058, Customer = customersByCompanyName["Blauer See Delikatessen"], Employee = employeesByLastName["Dodsworth"], OrderDate = DateTime.Parse("Apr 29 1998 12:00AM"), RequiredDate = DateTime.Parse("May 27 1998 12:00AM"), ShippingDate = null, Shipper = shippersByCompanyName["Federal Shipping"], Freight = 31.14M, ShippedTo = "Blauer See Delikatessen", ShippingAddress = new Address("Forsterstr. 57", "Mannheim", "null", "68306", "Germany", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 11059, Customer = customersByCompanyName["Ricardo Adocicados"], Employee = employeesByLastName["Fuller"], OrderDate = DateTime.Parse("Apr 29 1998 12:00AM"), RequiredDate = DateTime.Parse("Jun 10 1998 12:00AM"), ShippingDate = null, Shipper = shippersByCompanyName["United Package"], Freight = 85.80M, ShippedTo = "Ricardo Adocicados", ShippingAddress = new Address("Av. Copacabana, 267", "Rio de Janeiro", "RJ", "02389-890", "Brazil", null, null) }; session.Insert(order); orders.Add(order);
@@ -1390,12 +1436,36 @@ namespace NHibernate.Test.Linq
 			order = new Order { OrderId = 11075, Customer = customersByCompanyName["Richter Supermarkt"], Employee = employeesByLastName["Callahan"], OrderDate = DateTime.Parse("May  6 1998 12:00AM"), RequiredDate = DateTime.Parse("Jun  3 1998 12:00AM"), ShippingDate = null, Shipper = shippersByCompanyName["United Package"], Freight = 6.19M, ShippedTo = "Richter Supermarkt", ShippingAddress = new Address("Starenweg 5", "Genève", "null", "1204", "Switzerland", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 11076, Customer = customersByCompanyName["Bon app'"], Employee = employeesByLastName["Peacock"], OrderDate = DateTime.Parse("May  6 1998 12:00AM"), RequiredDate = DateTime.Parse("Jun  3 1998 12:00AM"), ShippingDate = null, Shipper = shippersByCompanyName["United Package"], Freight = 38.28M, ShippedTo = "Bon app'", ShippingAddress = new Address("12, rue des Bouchers", "Marseille", "null", "13008", "France", null, null) }; session.Insert(order); orders.Add(order);
 			order = new Order { OrderId = 11077, Customer = customersByCompanyName["Rattlesnake Canyon Grocery"], Employee = employeesByLastName["Davolio"], OrderDate = DateTime.Parse("May  6 1998 12:00AM"), RequiredDate = DateTime.Parse("Jun  3 1998 12:00AM"), ShippingDate = null, Shipper = shippersByCompanyName["United Package"], Freight = 8.53M, ShippedTo = "Rattlesnake Canyon Grocery", ShippingAddress = new Address("2817 Milton Dr.", "Albuquerque", "NM", "87110", "USA", null, null) }; session.Insert(order); orders.Add(order);
-			
-			return orders;
 		}
 
 		static void CreateOrderLines(IStatelessSession session, IDictionary<int, Order> ordersById, IDictionary<string, Product> productsByName)
-		{		
+		{
+			CreateOrderLines1(session, ordersById, productsByName);
+			CreateOrderLines2(session, ordersById, productsByName);
+			CreateOrderLines3(session, ordersById, productsByName);
+			CreateOrderLines4(session, ordersById, productsByName);
+			CreateOrderLines5(session, ordersById, productsByName);
+			CreateOrderLines6(session, ordersById, productsByName);
+			CreateOrderLines7(session, ordersById, productsByName);
+			CreateOrderLines8(session, ordersById, productsByName);
+			CreateOrderLines9(session, ordersById, productsByName);
+			CreateOrderLines10(session, ordersById, productsByName);
+			CreateOrderLines11(session, ordersById, productsByName);
+			CreateOrderLines12(session, ordersById, productsByName);
+			CreateOrderLines13(session, ordersById, productsByName);
+			CreateOrderLines14(session, ordersById, productsByName);
+			CreateOrderLines15(session, ordersById, productsByName);
+			CreateOrderLines16(session, ordersById, productsByName);
+			CreateOrderLines17(session, ordersById, productsByName);
+			CreateOrderLines18(session, ordersById, productsByName);
+			CreateOrderLines19(session, ordersById, productsByName);
+			CreateOrderLines20(session, ordersById, productsByName);
+			CreateOrderLines21(session, ordersById, productsByName);
+			CreateOrderLines22(session, ordersById, productsByName);
+		}
+
+		static void CreateOrderLines1(IStatelessSession session, IDictionary<int, Order> ordersById, IDictionary<string, Product> productsByName)
+		{
 			var orderLine = new OrderLine { Order = ordersById[10248], Product = productsByName["Queso Cabrales"], UnitPrice = 14.00M, Quantity = 12, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10248], Product = productsByName["Singaporean Hokkien Fried Mee"], UnitPrice = 9.80M, Quantity = 10, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10248], Product = productsByName["Mozzarella di Giovanni"], UnitPrice = 34.80M, Quantity = 5, Discount = 0M }; session.Insert(orderLine);
@@ -1496,7 +1566,11 @@ namespace NHibernate.Test.Linq
 			orderLine = new OrderLine { Order = ordersById[10284], Product = productsByName["Camembert Pierrot"], UnitPrice = 27.20M, Quantity = 20, Discount = 0.25M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10284], Product = productsByName["Laughing Lumberjack Lager"], UnitPrice = 11.20M, Quantity = 5, Discount = 0.25M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10285], Product = productsByName["Chai"], UnitPrice = 14.40M, Quantity = 45, Discount = 0.2M }; session.Insert(orderLine);
-			orderLine = new OrderLine { Order = ordersById[10285], Product = productsByName["Boston Crab Meat"], UnitPrice = 14.70M, Quantity = 40, Discount = 0.2M }; session.Insert(orderLine);
+		}
+
+		static void CreateOrderLines2(IStatelessSession session, IDictionary<int, Order> ordersById, IDictionary<string, Product> productsByName)
+		{
+			var orderLine = new OrderLine { Order = ordersById[10285], Product = productsByName["Boston Crab Meat"], UnitPrice = 14.70M, Quantity = 40, Discount = 0.2M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10285], Product = productsByName["Perth Pasties"], UnitPrice = 26.20M, Quantity = 36, Discount = 0.2M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10286], Product = productsByName["Steeleye Stout"], UnitPrice = 14.40M, Quantity = 100, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10286], Product = productsByName["Tarte au sucre"], UnitPrice = 39.40M, Quantity = 40, Discount = 0M }; session.Insert(orderLine);
@@ -1596,7 +1670,11 @@ namespace NHibernate.Test.Linq
 			orderLine = new OrderLine { Order = ordersById[10324], Product = productsByName["Steeleye Stout"], UnitPrice = 14.40M, Quantity = 70, Discount = 0.15M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10324], Product = productsByName["Spegesild"], UnitPrice = 9.60M, Quantity = 30, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10324], Product = productsByName["Raclette Courdavault"], UnitPrice = 44.00M, Quantity = 40, Discount = 0.15M }; session.Insert(orderLine);
-			orderLine = new OrderLine { Order = ordersById[10324], Product = productsByName["Vegie-spread"], UnitPrice = 35.10M, Quantity = 80, Discount = 0.15M }; session.Insert(orderLine);
+		}
+
+		static void CreateOrderLines3(IStatelessSession session, IDictionary<int, Order> ordersById, IDictionary<string, Product> productsByName)
+		{
+			var orderLine = new OrderLine { Order = ordersById[10324], Product = productsByName["Vegie-spread"], UnitPrice = 35.10M, Quantity = 80, Discount = 0.15M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10325], Product = productsByName["Grandma's Boysenberry Spread"], UnitPrice = 20.00M, Quantity = 6, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10325], Product = productsByName["Konbu"], UnitPrice = 4.80M, Quantity = 12, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10325], Product = productsByName["Tofu"], UnitPrice = 18.60M, Quantity = 9, Discount = 0M }; session.Insert(orderLine);
@@ -1697,7 +1775,11 @@ namespace NHibernate.Test.Linq
 			orderLine = new OrderLine { Order = ordersById[10360], Product = productsByName["Rössle Sauerkraut"], UnitPrice = 36.40M, Quantity = 30, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10360], Product = productsByName["Thüringer Rostbratwurst"], UnitPrice = 99.00M, Quantity = 35, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10360], Product = productsByName["Côte de Blaye"], UnitPrice = 210.80M, Quantity = 10, Discount = 0M }; session.Insert(orderLine);
-			orderLine = new OrderLine { Order = ordersById[10360], Product = productsByName["Maxilaku"], UnitPrice = 16.00M, Quantity = 35, Discount = 0M }; session.Insert(orderLine);
+		}
+
+		static void CreateOrderLines4(IStatelessSession session, IDictionary<int, Order> ordersById, IDictionary<string, Product> productsByName)
+		{
+			var orderLine = new OrderLine { Order = ordersById[10360], Product = productsByName["Maxilaku"], UnitPrice = 16.00M, Quantity = 35, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10360], Product = productsByName["Tourtière"], UnitPrice = 5.90M, Quantity = 28, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10361], Product = productsByName["Chartreuse verte"], UnitPrice = 14.40M, Quantity = 54, Discount = 0.1M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10361], Product = productsByName["Camembert Pierrot"], UnitPrice = 27.20M, Quantity = 55, Discount = 0.1M }; session.Insert(orderLine);
@@ -1798,7 +1880,11 @@ namespace NHibernate.Test.Linq
 			orderLine = new OrderLine { Order = ordersById[10398], Product = productsByName["Steeleye Stout"], UnitPrice = 14.40M, Quantity = 30, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10398], Product = productsByName["Pâté chinois"], UnitPrice = 19.20M, Quantity = 120, Discount = 0.1M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10399], Product = productsByName["Scottish Longbreads"], UnitPrice = 10.00M, Quantity = 60, Discount = 0M }; session.Insert(orderLine);
-			orderLine = new OrderLine { Order = ordersById[10399], Product = productsByName["Flotemysost"], UnitPrice = 17.20M, Quantity = 30, Discount = 0M }; session.Insert(orderLine);
+		}
+
+		static void CreateOrderLines5(IStatelessSession session, IDictionary<int, Order> ordersById, IDictionary<string, Product> productsByName)
+		{
+			var orderLine = new OrderLine { Order = ordersById[10399], Product = productsByName["Flotemysost"], UnitPrice = 17.20M, Quantity = 30, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10399], Product = productsByName["Lakkalikööri"], UnitPrice = 14.40M, Quantity = 35, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10399], Product = productsByName["Original Frankfurter grüne Soße"], UnitPrice = 10.40M, Quantity = 14, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10400], Product = productsByName["Thüringer Rostbratwurst"], UnitPrice = 99.00M, Quantity = 21, Discount = 0M }; session.Insert(orderLine);
@@ -1898,7 +1984,11 @@ namespace NHibernate.Test.Linq
 			orderLine = new OrderLine { Order = ordersById[10436], Product = productsByName["Rhönbräu Klosterbier"], UnitPrice = 6.20M, Quantity = 24, Discount = 0.1M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10437], Product = productsByName["Perth Pasties"], UnitPrice = 26.20M, Quantity = 15, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10438], Product = productsByName["Teatime Chocolate Biscuits"], UnitPrice = 7.30M, Quantity = 15, Discount = 0.2M }; session.Insert(orderLine);
-			orderLine = new OrderLine { Order = ordersById[10438], Product = productsByName["Sasquatch Ale"], UnitPrice = 11.20M, Quantity = 20, Discount = 0.2M }; session.Insert(orderLine);
+			}
+
+		static void CreateOrderLines6(IStatelessSession session, IDictionary<int, Order> ordersById, IDictionary<string, Product> productsByName)
+		{
+			var orderLine = new OrderLine { Order = ordersById[10438], Product = productsByName["Sasquatch Ale"], UnitPrice = 11.20M, Quantity = 20, Discount = 0.2M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10438], Product = productsByName["Ravioli Angelo"], UnitPrice = 15.60M, Quantity = 15, Discount = 0.2M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10439], Product = productsByName["Queso Manchego La Pastora"], UnitPrice = 30.40M, Quantity = 15, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10439], Product = productsByName["Pavlova"], UnitPrice = 13.90M, Quantity = 16, Discount = 0M }; session.Insert(orderLine);
@@ -1998,7 +2088,11 @@ namespace NHibernate.Test.Linq
 			orderLine = new OrderLine { Order = ordersById[10473], Product = productsByName["Flotemysost"], UnitPrice = 17.20M, Quantity = 12, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10474], Product = productsByName["Tofu"], UnitPrice = 18.60M, Quantity = 12, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10474], Product = productsByName["Rössle Sauerkraut"], UnitPrice = 36.40M, Quantity = 18, Discount = 0M }; session.Insert(orderLine);
-			orderLine = new OrderLine { Order = ordersById[10474], Product = productsByName["Boston Crab Meat"], UnitPrice = 14.70M, Quantity = 21, Discount = 0M }; session.Insert(orderLine);
+		}
+
+		static void CreateOrderLines7(IStatelessSession session, IDictionary<int, Order> ordersById, IDictionary<string, Product> productsByName)
+		{
+			var orderLine = new OrderLine { Order = ordersById[10474], Product = productsByName["Boston Crab Meat"], UnitPrice = 14.70M, Quantity = 21, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10474], Product = productsByName["Rhönbräu Klosterbier"], UnitPrice = 6.20M, Quantity = 10, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10475], Product = productsByName["Gorgonzola Telino"], UnitPrice = 10.00M, Quantity = 35, Discount = 0.15M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10475], Product = productsByName["Louisiana Hot Spiced Okra"], UnitPrice = 13.60M, Quantity = 60, Discount = 0.15M }; session.Insert(orderLine);
@@ -2099,7 +2193,11 @@ namespace NHibernate.Test.Linq
 			orderLine = new OrderLine { Order = ordersById[10514], Product = productsByName["Rhönbräu Klosterbier"], UnitPrice = 7.75M, Quantity = 50, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10515], Product = productsByName["Mishi Kobe Niku"], UnitPrice = 97.00M, Quantity = 16, Discount = 0.15M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10515], Product = productsByName["Pavlova"], UnitPrice = 17.45M, Quantity = 50, Discount = 0M }; session.Insert(orderLine);
-			orderLine = new OrderLine { Order = ordersById[10515], Product = productsByName["Schoggi Schokolade"], UnitPrice = 43.90M, Quantity = 120, Discount = 0M }; session.Insert(orderLine);
+		}
+
+		static void CreateOrderLines8(IStatelessSession session, IDictionary<int, Order> ordersById, IDictionary<string, Product> productsByName)
+		{
+			var orderLine = new OrderLine { Order = ordersById[10515], Product = productsByName["Schoggi Schokolade"], UnitPrice = 43.90M, Quantity = 120, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10515], Product = productsByName["Geitost"], UnitPrice = 2.50M, Quantity = 16, Discount = 0.15M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10515], Product = productsByName["Camembert Pierrot"], UnitPrice = 34.00M, Quantity = 84, Discount = 0.15M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10516], Product = productsByName["Carnarvon Tigers"], UnitPrice = 62.50M, Quantity = 25, Discount = 0.1M }; session.Insert(orderLine);
@@ -2200,7 +2298,11 @@ namespace NHibernate.Test.Linq
 			orderLine = new OrderLine { Order = ordersById[10548], Product = productsByName["Jack's New England Clam Chowder"], UnitPrice = 9.65M, Quantity = 14, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10549], Product = productsByName["Gorgonzola Telino"], UnitPrice = 12.50M, Quantity = 55, Discount = 0.15M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10549], Product = productsByName["Rogede sild"], UnitPrice = 9.50M, Quantity = 100, Discount = 0.15M }; session.Insert(orderLine);
-			orderLine = new OrderLine { Order = ordersById[10549], Product = productsByName["Manjimup Dried Apples"], UnitPrice = 53.00M, Quantity = 48, Discount = 0.15M }; session.Insert(orderLine);
+		}
+
+		static void CreateOrderLines9(IStatelessSession session, IDictionary<int, Order> ordersById, IDictionary<string, Product> productsByName)
+		{
+			var orderLine = new OrderLine { Order = ordersById[10549], Product = productsByName["Manjimup Dried Apples"], UnitPrice = 53.00M, Quantity = 48, Discount = 0.15M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10550], Product = productsByName["Alice Mutton"], UnitPrice = 39.00M, Quantity = 8, Discount = 0.1M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10550], Product = productsByName["Teatime Chocolate Biscuits"], UnitPrice = 9.20M, Quantity = 10, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10550], Product = productsByName["Sir Rodney's Scones"], UnitPrice = 10.00M, Quantity = 6, Discount = 0.1M }; session.Insert(orderLine);
@@ -2301,7 +2403,11 @@ namespace NHibernate.Test.Linq
 			orderLine = new OrderLine { Order = ordersById[10587], Product = productsByName["Steeleye Stout"], UnitPrice = 18.00M, Quantity = 20, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10587], Product = productsByName["Original Frankfurter grüne Soße"], UnitPrice = 13.00M, Quantity = 20, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10588], Product = productsByName["Carnarvon Tigers"], UnitPrice = 62.50M, Quantity = 40, Discount = 0.2M }; session.Insert(orderLine);
-			orderLine = new OrderLine { Order = ordersById[10588], Product = productsByName["Singaporean Hokkien Fried Mee"], UnitPrice = 14.00M, Quantity = 100, Discount = 0.2M }; session.Insert(orderLine);
+		}
+
+		static void CreateOrderLines10(IStatelessSession session, IDictionary<int, Order> ordersById, IDictionary<string, Product> productsByName)
+		{
+			var orderLine = new OrderLine { Order = ordersById[10588], Product = productsByName["Singaporean Hokkien Fried Mee"], UnitPrice = 14.00M, Quantity = 100, Discount = 0.2M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10589], Product = productsByName["Steeleye Stout"], UnitPrice = 18.00M, Quantity = 4, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10590], Product = productsByName["Chai"], UnitPrice = 18.00M, Quantity = 20, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10590], Product = productsByName["Original Frankfurter grüne Soße"], UnitPrice = 13.00M, Quantity = 60, Discount = 0.05M }; session.Insert(orderLine);
@@ -2402,7 +2508,11 @@ namespace NHibernate.Test.Linq
 			orderLine = new OrderLine { Order = ordersById[10627], Product = productsByName["Tarte au sucre"], UnitPrice = 49.30M, Quantity = 15, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10627], Product = productsByName["Röd Kaviar"], UnitPrice = 15.00M, Quantity = 35, Discount = 0.15M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10628], Product = productsByName["Chai"], UnitPrice = 18.00M, Quantity = 25, Discount = 0M }; session.Insert(orderLine);
-			orderLine = new OrderLine { Order = ordersById[10629], Product = productsByName["Thüringer Rostbratwurst"], UnitPrice = 123.79M, Quantity = 20, Discount = 0M }; session.Insert(orderLine);
+		}
+
+		static void CreateOrderLines11(IStatelessSession session, IDictionary<int, Order> ordersById, IDictionary<string, Product> productsByName)
+		{
+			var orderLine = new OrderLine { Order = ordersById[10629], Product = productsByName["Thüringer Rostbratwurst"], UnitPrice = 123.79M, Quantity = 20, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10629], Product = productsByName["Wimmers gute Semmelknödel"], UnitPrice = 33.25M, Quantity = 9, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10630], Product = productsByName["Pâté chinois"], UnitPrice = 24.00M, Quantity = 12, Discount = 0.05M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10630], Product = productsByName["Lakkalikööri"], UnitPrice = 18.00M, Quantity = 35, Discount = 0M }; session.Insert(orderLine);
@@ -2503,7 +2613,11 @@ namespace NHibernate.Test.Linq
 			orderLine = new OrderLine { Order = ordersById[10668], Product = productsByName["Pâté chinois"], UnitPrice = 24.00M, Quantity = 4, Discount = 0.1M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10668], Product = productsByName["Wimmers gute Semmelknödel"], UnitPrice = 33.25M, Quantity = 15, Discount = 0.1M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10669], Product = productsByName["Inlagd Sill"], UnitPrice = 19.00M, Quantity = 30, Discount = 0M }; session.Insert(orderLine);
-			orderLine = new OrderLine { Order = ordersById[10670], Product = productsByName["Tunnbröd"], UnitPrice = 9.00M, Quantity = 32, Discount = 0M }; session.Insert(orderLine);
+		}
+
+		static void CreateOrderLines12(IStatelessSession session, IDictionary<int, Order> ordersById, IDictionary<string, Product> productsByName)
+		{
+			var orderLine = new OrderLine { Order = ordersById[10670], Product = productsByName["Tunnbröd"], UnitPrice = 9.00M, Quantity = 32, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10670], Product = productsByName["Spegesild"], UnitPrice = 12.00M, Quantity = 60, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10670], Product = productsByName["Laughing Lumberjack Lager"], UnitPrice = 14.00M, Quantity = 25, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10670], Product = productsByName["Röd Kaviar"], UnitPrice = 15.00M, Quantity = 50, Discount = 0M }; session.Insert(orderLine);
@@ -2604,7 +2718,11 @@ namespace NHibernate.Test.Linq
 			orderLine = new OrderLine { Order = ordersById[10705], Product = productsByName["Mascarpone Fabioli"], UnitPrice = 32.00M, Quantity = 4, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10706], Product = productsByName["Pavlova"], UnitPrice = 17.45M, Quantity = 20, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10706], Product = productsByName["Ipoh Coffee"], UnitPrice = 46.00M, Quantity = 24, Discount = 0M }; session.Insert(orderLine);
-			orderLine = new OrderLine { Order = ordersById[10706], Product = productsByName["Raclette Courdavault"], UnitPrice = 55.00M, Quantity = 8, Discount = 0M }; session.Insert(orderLine);
+		}
+
+		static void CreateOrderLines13(IStatelessSession session, IDictionary<int, Order> ordersById, IDictionary<string, Product> productsByName)
+		{
+			var orderLine = new OrderLine { Order = ordersById[10706], Product = productsByName["Raclette Courdavault"], UnitPrice = 55.00M, Quantity = 8, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10707], Product = productsByName["Pâté chinois"], UnitPrice = 24.00M, Quantity = 21, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10707], Product = productsByName["Ravioli Angelo"], UnitPrice = 19.50M, Quantity = 40, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10707], Product = productsByName["Outback Lager"], UnitPrice = 15.00M, Quantity = 28, Discount = 0.15M }; session.Insert(orderLine);
@@ -2705,7 +2823,11 @@ namespace NHibernate.Test.Linq
 			orderLine = new OrderLine { Order = ordersById[10745], Product = productsByName["Raclette Courdavault"], UnitPrice = 55.00M, Quantity = 45, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10745], Product = productsByName["Mozzarella di Giovanni"], UnitPrice = 34.80M, Quantity = 7, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10746], Product = productsByName["Konbu"], UnitPrice = 6.00M, Quantity = 6, Discount = 0M }; session.Insert(orderLine);
-			orderLine = new OrderLine { Order = ordersById[10746], Product = productsByName["Singaporean Hokkien Fried Mee"], UnitPrice = 14.00M, Quantity = 28, Discount = 0M }; session.Insert(orderLine);
+		}
+
+		static void CreateOrderLines14(IStatelessSession session, IDictionary<int, Order> ordersById, IDictionary<string, Product> productsByName)
+		{
+			var orderLine = new OrderLine { Order = ordersById[10746], Product = productsByName["Singaporean Hokkien Fried Mee"], UnitPrice = 14.00M, Quantity = 28, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10746], Product = productsByName["Tarte au sucre"], UnitPrice = 49.30M, Quantity = 9, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10746], Product = productsByName["Gudbrandsdalsost"], UnitPrice = 36.00M, Quantity = 40, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10747], Product = productsByName["Gorgonzola Telino"], UnitPrice = 12.50M, Quantity = 8, Discount = 0M }; session.Insert(orderLine);
@@ -2806,7 +2928,11 @@ namespace NHibernate.Test.Linq
 			orderLine = new OrderLine { Order = ordersById[10785], Product = productsByName["Ikura"], UnitPrice = 31.00M, Quantity = 10, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10785], Product = productsByName["Rhönbräu Klosterbier"], UnitPrice = 7.75M, Quantity = 10, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10786], Product = productsByName["Northwoods Cranberry Sauce"], UnitPrice = 40.00M, Quantity = 30, Discount = 0.2M }; session.Insert(orderLine);
-			orderLine = new OrderLine { Order = ordersById[10786], Product = productsByName["Nord-Ost Matjeshering"], UnitPrice = 25.89M, Quantity = 15, Discount = 0.2M }; session.Insert(orderLine);
+		}
+
+		static void CreateOrderLines15(IStatelessSession session, IDictionary<int, Order> ordersById, IDictionary<string, Product> productsByName)
+		{
+			var orderLine = new OrderLine { Order = ordersById[10786], Product = productsByName["Nord-Ost Matjeshering"], UnitPrice = 25.89M, Quantity = 15, Discount = 0.2M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10786], Product = productsByName["Rhönbräu Klosterbier"], UnitPrice = 7.75M, Quantity = 42, Discount = 0.2M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10787], Product = productsByName["Chang"], UnitPrice = 19.00M, Quantity = 15, Discount = 0.05M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10787], Product = productsByName["Thüringer Rostbratwurst"], UnitPrice = 123.79M, Quantity = 20, Discount = 0.05M }; session.Insert(orderLine);
@@ -2907,7 +3033,11 @@ namespace NHibernate.Test.Linq
 			orderLine = new OrderLine { Order = ordersById[10827], Product = productsByName["Ikura"], UnitPrice = 31.00M, Quantity = 15, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10827], Product = productsByName["Chartreuse verte"], UnitPrice = 18.00M, Quantity = 21, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10828], Product = productsByName["Sir Rodney's Marmalade"], UnitPrice = 81.00M, Quantity = 5, Discount = 0M }; session.Insert(orderLine);
-			orderLine = new OrderLine { Order = ordersById[10828], Product = productsByName["Côte de Blaye"], UnitPrice = 263.50M, Quantity = 2, Discount = 0M }; session.Insert(orderLine);
+		}
+
+		static void CreateOrderLines16(IStatelessSession session, IDictionary<int, Order> ordersById, IDictionary<string, Product> productsByName)
+		{
+			var orderLine = new OrderLine { Order = ordersById[10828], Product = productsByName["Côte de Blaye"], UnitPrice = 263.50M, Quantity = 2, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10829], Product = productsByName["Chang"], UnitPrice = 19.00M, Quantity = 10, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10829], Product = productsByName["Northwoods Cranberry Sauce"], UnitPrice = 40.00M, Quantity = 20, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10829], Product = productsByName["Konbu"], UnitPrice = 6.00M, Quantity = 10, Discount = 0M }; session.Insert(orderLine);
@@ -3008,7 +3138,11 @@ namespace NHibernate.Test.Linq
 			orderLine = new OrderLine { Order = ordersById[10861], Product = productsByName["Alice Mutton"], UnitPrice = 39.00M, Quantity = 42, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10861], Product = productsByName["Carnarvon Tigers"], UnitPrice = 62.50M, Quantity = 20, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10861], Product = productsByName["Sir Rodney's Scones"], UnitPrice = 10.00M, Quantity = 40, Discount = 0M }; session.Insert(orderLine);
-			orderLine = new OrderLine { Order = ordersById[10861], Product = productsByName["Geitost"], UnitPrice = 2.50M, Quantity = 35, Discount = 0M }; session.Insert(orderLine);
+		}
+
+		static void CreateOrderLines17(IStatelessSession session, IDictionary<int, Order> ordersById, IDictionary<string, Product> productsByName)
+		{
+			var orderLine = new OrderLine { Order = ordersById[10861], Product = productsByName["Geitost"], UnitPrice = 2.50M, Quantity = 35, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10861], Product = productsByName["Tarte au sucre"], UnitPrice = 49.30M, Quantity = 3, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10862], Product = productsByName["Queso Cabrales"], UnitPrice = 21.00M, Quantity = 25, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10862], Product = productsByName["Filo Mix"], UnitPrice = 7.00M, Quantity = 8, Discount = 0M }; session.Insert(orderLine);
@@ -3109,7 +3243,11 @@ namespace NHibernate.Test.Linq
 			orderLine = new OrderLine { Order = ordersById[10904], Product = productsByName["Escargots de Bourgogne"], UnitPrice = 13.25M, Quantity = 15, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10904], Product = productsByName["Tarte au sucre"], UnitPrice = 49.30M, Quantity = 35, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10905], Product = productsByName["Chai"], UnitPrice = 18.00M, Quantity = 20, Discount = 0.05M }; session.Insert(orderLine);
-			orderLine = new OrderLine { Order = ordersById[10906], Product = productsByName["Sirop d'érable"], UnitPrice = 28.50M, Quantity = 15, Discount = 0M }; session.Insert(orderLine);
+		}
+
+		static void CreateOrderLines18(IStatelessSession session, IDictionary<int, Order> ordersById, IDictionary<string, Product> productsByName)
+		{
+			var orderLine = new OrderLine { Order = ordersById[10906], Product = productsByName["Sirop d'érable"], UnitPrice = 28.50M, Quantity = 15, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10907], Product = productsByName["Rhönbräu Klosterbier"], UnitPrice = 7.75M, Quantity = 14, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10908], Product = productsByName["Uncle Bob's Organic Dried Pears"], UnitPrice = 30.00M, Quantity = 20, Discount = 0.05M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10908], Product = productsByName["Filo Mix"], UnitPrice = 7.00M, Quantity = 14, Discount = 0.05M }; session.Insert(orderLine);
@@ -3210,7 +3348,11 @@ namespace NHibernate.Test.Linq
 			orderLine = new OrderLine { Order = ordersById[10946], Product = productsByName["Guaraná Fantástica"], UnitPrice = 4.50M, Quantity = 25, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10946], Product = productsByName["Original Frankfurter grüne Soße"], UnitPrice = 13.00M, Quantity = 40, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10947], Product = productsByName["Raclette Courdavault"], UnitPrice = 55.00M, Quantity = 4, Discount = 0M }; session.Insert(orderLine);
-			orderLine = new OrderLine { Order = ordersById[10948], Product = productsByName["Valkoinen suklaa"], UnitPrice = 16.25M, Quantity = 9, Discount = 0M }; session.Insert(orderLine);
+		}
+
+		static void CreateOrderLines19(IStatelessSession session, IDictionary<int, Order> ordersById, IDictionary<string, Product> productsByName)
+		{
+			var orderLine = new OrderLine { Order = ordersById[10948], Product = productsByName["Valkoinen suklaa"], UnitPrice = 16.25M, Quantity = 9, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10948], Product = productsByName["Manjimup Dried Apples"], UnitPrice = 53.00M, Quantity = 40, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10948], Product = productsByName["Pâté chinois"], UnitPrice = 24.00M, Quantity = 4, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10949], Product = productsByName["Grandma's Boysenberry Spread"], UnitPrice = 25.00M, Quantity = 12, Discount = 0M }; session.Insert(orderLine);
@@ -3311,7 +3453,11 @@ namespace NHibernate.Test.Linq
 			orderLine = new OrderLine { Order = ordersById[10988], Product = productsByName["Tarte au sucre"], UnitPrice = 49.30M, Quantity = 40, Discount = 0.1M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10989], Product = productsByName["Grandma's Boysenberry Spread"], UnitPrice = 25.00M, Quantity = 40, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10989], Product = productsByName["Queso Cabrales"], UnitPrice = 21.00M, Quantity = 15, Discount = 0M }; session.Insert(orderLine);
-			orderLine = new OrderLine { Order = ordersById[10989], Product = productsByName["Jack's New England Clam Chowder"], UnitPrice = 9.65M, Quantity = 4, Discount = 0M }; session.Insert(orderLine);
+		}
+
+		static void CreateOrderLines20(IStatelessSession session, IDictionary<int, Order> ordersById, IDictionary<string, Product> productsByName)
+		{
+			var orderLine = new OrderLine { Order = ordersById[10989], Product = productsByName["Jack's New England Clam Chowder"], UnitPrice = 9.65M, Quantity = 4, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10990], Product = productsByName["Sir Rodney's Scones"], UnitPrice = 10.00M, Quantity = 65, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10990], Product = productsByName["Sasquatch Ale"], UnitPrice = 14.00M, Quantity = 60, Discount = 0.15M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[10990], Product = productsByName["Pâté chinois"], UnitPrice = 24.00M, Quantity = 65, Discount = 0.15M }; session.Insert(orderLine);
@@ -3412,7 +3558,11 @@ namespace NHibernate.Test.Linq
 			orderLine = new OrderLine { Order = ordersById[11028], Product = productsByName["Pâté chinois"], UnitPrice = 24.00M, Quantity = 35, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[11028], Product = productsByName["Raclette Courdavault"], UnitPrice = 55.00M, Quantity = 24, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[11029], Product = productsByName["Gnocchi di nonna Alice"], UnitPrice = 38.00M, Quantity = 20, Discount = 0M }; session.Insert(orderLine);
-			orderLine = new OrderLine { Order = ordersById[11029], Product = productsByName["Vegie-spread"], UnitPrice = 43.90M, Quantity = 12, Discount = 0M }; session.Insert(orderLine);
+		}
+
+		static void CreateOrderLines21(IStatelessSession session, IDictionary<int, Order> ordersById, IDictionary<string, Product> productsByName)
+		{
+			var orderLine = new OrderLine { Order = ordersById[11029], Product = productsByName["Vegie-spread"], UnitPrice = 43.90M, Quantity = 12, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[11030], Product = productsByName["Chang"], UnitPrice = 19.00M, Quantity = 100, Discount = 0.25M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[11030], Product = productsByName["Chef Anton's Gumbo Mix"], UnitPrice = 21.35M, Quantity = 70, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[11030], Product = productsByName["Thüringer Rostbratwurst"], UnitPrice = 123.79M, Quantity = 60, Discount = 0.25M }; session.Insert(orderLine);
@@ -3513,7 +3663,11 @@ namespace NHibernate.Test.Linq
 			orderLine = new OrderLine { Order = ordersById[11070], Product = productsByName["Gorgonzola Telino"], UnitPrice = 12.50M, Quantity = 20, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[11071], Product = productsByName["Uncle Bob's Organic Dried Pears"], UnitPrice = 30.00M, Quantity = 15, Discount = 0.05M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[11071], Product = productsByName["Konbu"], UnitPrice = 6.00M, Quantity = 10, Discount = 0.05M }; session.Insert(orderLine);
-			orderLine = new OrderLine { Order = ordersById[11072], Product = productsByName["Chang"], UnitPrice = 19.00M, Quantity = 8, Discount = 0M }; session.Insert(orderLine);
+		}
+
+		static void CreateOrderLines22(IStatelessSession session, IDictionary<int, Order> ordersById, IDictionary<string, Product> productsByName)
+		{
+			var orderLine = new OrderLine { Order = ordersById[11072], Product = productsByName["Chang"], UnitPrice = 19.00M, Quantity = 8, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[11072], Product = productsByName["Jack's New England Clam Chowder"], UnitPrice = 9.65M, Quantity = 40, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[11072], Product = productsByName["Valkoinen suklaa"], UnitPrice = 16.25M, Quantity = 22, Discount = 0M }; session.Insert(orderLine);
 			orderLine = new OrderLine { Order = ordersById[11072], Product = productsByName["Wimmers gute Semmelknödel"], UnitPrice = 33.25M, Quantity = 130, Discount = 0M }; session.Insert(orderLine);
