@@ -3,6 +3,16 @@
 
 Release notes - NHibernate - Version 5.1.0
 
+** Highlights
+    * NHibernate has gained two new target frameworks: .Net Core 2.0 and .Net Standard 2.0. NHibernate NuGet package
+      provides them, along with the .Net framework 4.6.1 build.
+      For these new frameworks, some additional specificities or limitations apply:
+      * Binary serialization is not supported - the user shall implement serialization surrogates for System.Type,
+        FieldInfo, PropertyInfo, MethodInfo, ConstructorInfo, Delegate, etc.
+      * SqlClient, Odbc, Oledb drivers are converted to ReflectionBasedDriver to avoid the extra dependencies.
+      * CallSessionContext uses a static AsyncLocal field to mimic the CallContext behavior.
+      * System transactions (transaction scopes) are untested, due to the lack of data providers supporting them.
+
     ##### Possible Breaking Changes #####
         * Since Ingres9Dialect is now supporting sequences, the enhanced-sequence identifier generator will default to
           using a sequence instead of a table. Revert to previous behavior by using its force_table_use parameter.
