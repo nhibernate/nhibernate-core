@@ -52,7 +52,7 @@ namespace NHibernate.Linq.Functions
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
-			return treeBuilder.TransparentCast(treeBuilder.Divide(visitor.Visit(arguments[0]).AsExpression(), visitor.Visit(arguments[1]).AsExpression()), typeof(decimal));
+			return treeBuilder.Cast(treeBuilder.Divide(visitor.Visit(arguments[0]).AsExpression(), visitor.Visit(arguments[1]).AsExpression()), typeof(decimal));
 		}
 	}
 
