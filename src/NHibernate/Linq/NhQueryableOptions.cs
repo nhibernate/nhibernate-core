@@ -13,6 +13,7 @@ namespace NHibernate.Linq
 		protected string CacheRegion { get; private set; }
 		protected int? Timeout { get; private set; }
 		protected bool? ReadOnly { get; private set; }
+		protected string Comment { get; private set; }
 
 #pragma warning disable 618
 		/// <inheritdoc />
@@ -100,6 +101,17 @@ namespace NHibernate.Linq
 			ReadOnly = readOnly;
 			return this;
 		}
+		
+		/// <summary> 
+		/// Set a comment that will be prepended before the generated SQL.
+		/// </summary>
+		/// <param name="comment">The comment to prepend.</param>
+		/// <returns><see langword="this"/> (for method chaining).</returns>
+		public NhQueryableOptions SetComment(string comment)
+		{
+			Comment = comment;
+			return this;
+		}
 
 		protected internal NhQueryableOptions Clone()
 		{
@@ -109,7 +121,8 @@ namespace NHibernate.Linq
 				CacheMode = CacheMode,
 				CacheRegion = CacheRegion,
 				Timeout = Timeout,
-				ReadOnly = ReadOnly
+				ReadOnly = ReadOnly,
+				Comment = Comment
 			};
 		}
 
@@ -129,6 +142,9 @@ namespace NHibernate.Linq
 
 			if (ReadOnly.HasValue)
 				query.SetReadOnly(ReadOnly.Value);
+			
+			if (!string.IsNullOrEmpty(Comment))
+				query.SetComment(Comment);
 		}
 	}
 }
