@@ -1,3 +1,4 @@
+#if NETFX
 using System;
 using System.Data.SqlClient;
 using System.Diagnostics;
@@ -135,3 +136,4 @@ namespace NHibernate.AdoNet
 		}
 	}
 }
+#endif

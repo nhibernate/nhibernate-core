@@ -15,6 +15,7 @@ using System.Configuration;
 using System.Transactions;
 using NHibernate.Dialect;
 using NHibernate.Driver;
+using NHibernate.Engine;
 using NUnit.Framework;
 
 using Environment = NHibernate.Cfg.Environment;
@@ -25,15 +26,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2420
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH2420"; }
-		}
+		protected override bool AppliesTo(ISessionFactoryImplementor factory) =>
+			factory.ConnectionProvider.Driver.SupportsSystemTransactions;
 
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			return (dialect is MsSql2005Dialect);
-		}
+		protected override bool AppliesTo(Dialect.Dialect dialect) =>
+			dialect is MsSql2005Dialect;
 
 		private string FetchConnectionStringFromConfiguration()
 		{

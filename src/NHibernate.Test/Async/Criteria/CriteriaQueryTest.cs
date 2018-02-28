@@ -475,6 +475,8 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public async Task DetachedCriteriaTestAsync()
 		{
+			TestsContext.AssumeSystemTypeIsSerializable();
+
 			DetachedCriteria dc = DetachedCriteria.For(typeof(Student))
 				.Add(Property.ForName("Name").Eq("Gavin King"))
 				.AddOrder(Order.Asc("StudentNumber"))

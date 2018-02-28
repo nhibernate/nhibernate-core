@@ -3,6 +3,7 @@
 
 	<property name="root.dir" value="." />
 	<property name="config.teamcity" value="default"/>
+	<property name="current-test-configuration.dir" value="${root.dir}/current-test-configuration" /> 
 
 	<include buildfile="${root.dir}/default.build" />
 
@@ -15,9 +16,9 @@
 	<target name="clean-configure-test" depends="cleanall init copy-teamcity-configuration binaries test verify-test-results binaries-zip" />
 
 	<target name="copy-teamcity-configuration">
-		<copy file="build-common/teamcity-hibernate.cfg.xml" tofile="${bin.dir}/hibernate.cfg.xml" />
+		<copy file="build-common/teamcity-hibernate.cfg.xml" tofile="${current-test-configuration.dir}/hibernate.cfg.xml" />
 		<call target="setup-teamcity-${config.teamcity}"/>
-		<property name="app.config" value="${bin.dir}/hibernate.cfg.xml" />
+		<property name="app.config" value="${current-test-configuration.dir}/hibernate.cfg.xml" />
 		<call target="put-connection-settings-into-defined-app-config" />
 	</target>
 
@@ -130,7 +131,7 @@
 		<!-- The default value of 4000 is too big for nvarchar2 with default database settings.
 		     nvarchar2 may be used due to use_n_prefixed_types_for_unicode -->
 		<property name="nhibernate.query.default_cast_length" value="2000" />
-		<copy todir="${bin.dir}">
+		<copy todir="${current-test-configuration.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/oracle/x86">
 				<include name="*.dll"/>
 			</fileset>
@@ -149,7 +150,7 @@
 		<!-- The default value of 4000 is too big for nvarchar2 with default database settings.
 		     nvarchar2 may be used due to use_n_prefixed_types_for_unicode -->
 		<property name="nhibernate.query.default_cast_length" value="2000" />
-		<copy todir="${bin.dir}">
+		<copy todir="${current-test-configuration.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/oracle/x64">
 				<include name="*.dll"/>
 			</fileset>
