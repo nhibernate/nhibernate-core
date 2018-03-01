@@ -133,7 +133,7 @@ namespace NHibernate.Driver
 
 			SetCommandTimeout(cmd);
 			SetCommandText(cmd, sqlString);
-			SetCommandParameters(cmd, parameterTypes);
+			SetCommandParameters(cmd, parameterTypes, sqlString.GetParameters().ToArray());
 
 			return cmd;
 		}
@@ -156,9 +156,9 @@ namespace NHibernate.Driver
 			}
 		}
 
-		private static string ToParameterName(int index)
+		private static string ToParameterName(int index, string prefix = null)
 		{
-			return "p" + index;
+			return string.IsNullOrEmpty(prefix) ?  "p" + index : prefix + index;
 		}
 
 		string ISqlParameterFormatter.GetParameterName(int index)
@@ -178,13 +178,23 @@ namespace NHibernate.Driver
 			return new SqlStringFormatter(this, ";");
 		}
 
-		private void SetCommandParameters(DbCommand cmd, SqlType[] sqlTypes)
+		private void SetCommandParameters(DbCommand cmd, SqlType[] sqlTypes, Parameter[] parameters)
 		{
-			for (int i = 0; i < sqlTypes.Length; i++)
+			var usedParameters = new HashSet<int>();
+			for (var i = 0; i < sqlTypes.Length; i++)
 			{
-				string paramName = ToParameterName(i);
+				var parameter = parameters.Length > i ? parameters[i] : null;
+				var position = parameter?.ParameterPosition ?? i;
+				// Use a different prefix when two or more parameters have the same position in
+				// order to prevert a name collision. When this happens, only one parameter will
+				// be used while the others are added to prevent an ArgumentOutOfRangeException
+				// being thrown when NamedParameterSpecification.Bind method is called.
+				var paramName = usedParameters.Contains(position)
+					? ToParameterName(i, "fp")
+					: ToParameterName(position);
 				var dbParam = GenerateParameter(cmd, paramName, sqlTypes[i]);
 				cmd.Parameters.Add(dbParam);
+				usedParameters.Add(position);
 			}
 		}
 
