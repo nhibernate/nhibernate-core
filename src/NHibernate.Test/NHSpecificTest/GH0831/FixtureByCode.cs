@@ -227,9 +227,10 @@ namespace NHibernate.Test.NHSpecificTest.GH0831
 			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				IEnumerable<decimal> inSession = session.Query<Entity>().Select(predicate).ToList();
+				IEnumerable<decimal> inSession = null;
+				Assert.That(() => inSession = session.Query<Entity>().OrderBy(e => e.EntityValue).Select(predicate).ToList(), Throws.Nothing);
 
-				Assert.That(inSession.OrderBy(x => x), Is.EqualTo(expected.OrderBy(x => x)).Within(0.001M));
+				Assert.That(inSession, Is.EqualTo(expected.OrderBy(x => x)).Within(0.001M));
 			}
 		}
 	}
