@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using NHibernate.Cfg;
 using NHibernate.Connection;
@@ -10,6 +11,7 @@ using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.Futures
 {
+	[Obsolete("Uses old driver")]
 	public class TestDriverThatDoesntSupportQueryBatching : SqlClientDriver
 	{
 		public override bool SupportsMultipleQueries => false;
@@ -23,6 +25,7 @@ namespace NHibernate.Test.Futures
 	/// but this way it's just much easier to test this
 	/// </summary>
 	[TestFixture]
+	[Obsolete("Uses old driver")]
 	public class FallbackFixture : FutureFixture
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)

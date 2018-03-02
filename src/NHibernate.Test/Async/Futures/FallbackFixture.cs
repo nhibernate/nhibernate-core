@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Linq;
 using NHibernate.Cfg;
 using NHibernate.Connection;
@@ -31,6 +32,7 @@ namespace NHibernate.Test.Futures
 	/// but this way it's just much easier to test this
 	/// </summary>
 	[TestFixture]
+	[Obsolete("Uses old driver")]
 	public class FallbackFixtureAsync : FutureFixture
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)

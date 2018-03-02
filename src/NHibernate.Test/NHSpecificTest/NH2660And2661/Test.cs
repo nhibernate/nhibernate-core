@@ -7,6 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2660And2661
 {
 	[TestFixture]
+	[Obsolete("Uses old driver")]
 	public class Test : BugTestCase
 	{
 		protected override void OnSetUp()

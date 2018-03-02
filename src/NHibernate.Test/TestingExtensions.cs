@@ -33,7 +33,9 @@ namespace NHibernate.Test
 		/// </summary>
 		public static bool IsSqlClientDriver(this IDriver driver)
 		{
+#pragma warning disable 618
 			if (driver is SqlClientDriver) return true;
+#pragma warning restore 618
 			return false;
 		}
 
@@ -42,26 +44,34 @@ namespace NHibernate.Test
 		/// </summary>
 		public static bool IsSqlClientDriver(this System.Type driverClass)
 		{
+#pragma warning disable 618
 			if (typeof(SqlClientDriver).IsAssignableFrom(driverClass)) return true;
+#pragma warning restore 618
 			return false;
 		}
 
 		public static bool IsSql2008ClientDriver(this IDriver driver)
 		{
+#pragma warning disable 618
 			if (driver is Sql2008ClientDriver) return true;
+#pragma warning restore 618
 			return false;
 		}
 
 		public static bool IsMySqlDataDriver(this System.Type driverClass)
 		{
+#pragma warning disable 618
 			if (typeof(MySqlDataDriver).IsAssignableFrom(driverClass)) return true;
+#pragma warning restore 618
 			return false;
 		}
 
 
 		public static bool IsFirebirdClientDriver(this IDriver driver)
 		{
+#pragma warning disable 618
 			if (driver is FirebirdClientDriver) return true;
+#pragma warning restore 618
 			return false;
 		}
 
@@ -78,9 +88,11 @@ namespace NHibernate.Test
 		{
 			switch (driver)
 			{
+#pragma warning disable 618
 				case FirebirdClientDriver fbDriver:
 					fbDriver.ClearPool(null);
 					break;
+#pragma warning restore 618
 			}
 		}
 
@@ -104,7 +116,9 @@ namespace NHibernate.Test
 
 		public static bool IsOracleManagedDataClientDriver(this IDriver driver)
 		{
+#pragma warning disable 618
 			if (driver is OracleManagedDataClientDriver) return true;
+#pragma warning restore 618
 			return false;
 		}
 	}

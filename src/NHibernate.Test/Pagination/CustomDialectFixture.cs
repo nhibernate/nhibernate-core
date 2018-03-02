@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Cfg;
@@ -10,6 +11,7 @@ using Environment = NHibernate.Cfg.Environment;
 namespace NHibernate.Test.Pagination
 {
 	[TestFixture]
+	[Obsolete("Uses old driver")]
 	public class CustomDialectFixture : TestCase
 	{
 		protected override string MappingsAssembly

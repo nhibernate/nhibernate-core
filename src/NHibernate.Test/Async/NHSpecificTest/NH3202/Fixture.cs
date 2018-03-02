@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Data.Common;
 using System.Text.RegularExpressions;
 using NHibernate.Cfg;
@@ -15,11 +16,13 @@ using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Util;
 using NUnit.Framework;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.NHSpecificTest.NH3202
 {
 	using System.Threading.Tasks;
 	[TestFixture]
+	[Obsolete("Uses old driver")]
 	public class FixtureAsync : BugTestCase
 	{
 		protected override void Configure(Configuration configuration)

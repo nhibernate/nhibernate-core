@@ -21,6 +21,7 @@ namespace NHibernate.Test.DriverTest
 	using System.Threading.Tasks;
 	using System.Threading;
 	[TestFixture]
+	[Obsolete("Uses old driver")]
 	public class FirebirdClientDriverFixtureAsync
 	{
 		private string _connectionString;

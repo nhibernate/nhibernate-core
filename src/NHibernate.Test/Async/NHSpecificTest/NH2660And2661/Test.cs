@@ -18,6 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2660And2661
 {
 	using System.Threading.Tasks;
 	[TestFixture]
+	[Obsolete("Uses old driver")]
 	public class TestAsync : BugTestCase
 	{
 		protected override void OnSetUp()

@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using NHibernate.AdoNet;
 using NHibernate.Bytecode;
@@ -10,6 +11,7 @@ using NHibernate.Linq.Functions;
 using NHibernate.Type;
 using NUnit.Framework;
 using NHibernate.Exceptions;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.CfgTest.Loquacious
 {
@@ -17,6 +19,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 	public class LambdaConfigurationFixture
 	{
 		[Test]
+		[Obsolete("Uses old driver")]
 		public void FullConfiguration()
 		{
 			var configure = new Configuration();

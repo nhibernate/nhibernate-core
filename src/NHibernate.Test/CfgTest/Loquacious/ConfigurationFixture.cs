@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
@@ -12,6 +13,7 @@ using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Linq;
 using NHibernate.Type;
 using NUnit.Framework;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.CfgTest.Loquacious
 {
@@ -19,6 +21,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 	public class ConfigurationFixture
 	{
 		[Test]
+		[Obsolete("Uses old driver")]
 		public void CompleteConfiguration()
 		{
 			const string connectionString = "The connection string";

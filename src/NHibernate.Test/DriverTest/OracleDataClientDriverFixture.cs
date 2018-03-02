@@ -13,6 +13,7 @@ using Environment = NHibernate.Cfg.Environment;
 namespace NHibernate.Test.DriverTest
 {
 	[TestFixture]
+	[Obsolete("Uses old driver")]
 	public class OracleDataClientDriverFixture
 	{
 		/// <summary>

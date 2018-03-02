@@ -1,10 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using NHibernate.SqlCommand;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3004
 {
 	[TestFixture]
+	[Obsolete("Uses old driver")]
 	public class Fixture
 	{
 		[Test]
