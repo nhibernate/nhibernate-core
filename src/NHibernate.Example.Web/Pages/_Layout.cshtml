@@ -32,6 +32,10 @@
 <body>
     @RenderBody()
 
-    @RenderSection("Scripts", required: false)
+<p>
+    @Microsoft.Extensions.PlatformAbstractions.PlatformServices.Default.Application.RuntimeFramework
+</p>
+
+@RenderSection("Scripts", required: false)
 </body>
 </html>
