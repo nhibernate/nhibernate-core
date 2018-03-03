@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
-using log4net;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
@@ -22,6 +21,13 @@ namespace NHibernate.Test.Ado
 			configuration.SetProperty(Environment.BatchStrategy, typeof(GenericBatchingBatcherFactory).AssemblyQualifiedName);
 			configuration.SetProperty(Environment.GenerateStatistics, "true");
 			configuration.SetProperty(Environment.BatchSize, "1000");
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is FirebirdDialect) &&
+			       !(dialect is Oracle8iDialect) &&
+			       !(dialect is MsSqlCeDialect);
 		}
 
 		[Test]

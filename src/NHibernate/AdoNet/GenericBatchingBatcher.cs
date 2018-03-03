@@ -10,7 +10,12 @@ namespace NHibernate.AdoNet
 {
 	/// <summary>
 	/// A generic batcher that will batch UPDATE/INSERT/DELETE commands by concatenating them with a semicolon.
-	/// Use this batcher only if there are no dedicated batchers in the given environment.
+	/// Use this batcher only if there are no dedicated batchers in the given environment. Unfortunately some
+	/// database clients do not support concatenating commands with a semicolon. Here are the known clients
+	/// that do not work with this batcher:
+	/// - FirebirdSql.Data.FirebirdClient
+	/// - Oracle.ManagedDataAccess
+	/// - System.Data.SqlServerCe
 	/// </summary>
 	public partial class GenericBatchingBatcher : AbstractBatcher
 	{
@@ -184,9 +189,6 @@ namespace NHibernate.AdoNet
 				{
 					return 0;
 				}
-				// Npgsql will correctly prepare a multi SQL statement even if the parameter names are different
-				// for each statement. Npgsql internally parses the query and omits parameter names when comparing two queries
-				// in order to prevent having multiple prepared statements for the same query.
 				_batcher.Prepare(_batchCommand);
 				return _batchCommand.ExecuteNonQuery();
 			}

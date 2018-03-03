@@ -103,9 +103,6 @@ namespace NHibernate.AdoNet
 				{
 					return 0;
 				}
-				// Npgsql will correctly prepare a multi SQL statement even if the parameter names are different
-				// for each statement. Npgsql internally parses the query and omits parameter names when comparing two queries
-				// in order to prevent having multiple prepared statements for the same query.
 				await (_batcher.PrepareAsync(_batchCommand, cancellationToken)).ConfigureAwait(false);
 				return await (_batchCommand.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 			}
