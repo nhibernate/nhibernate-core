@@ -55,7 +55,6 @@ namespace NHibernate.Linq.Functions
 			this.Merge(new DecimalAddGenerator());
 			this.Merge(new DecimalCompareGenerator());
 			this.Merge(new DecimalDivideGenerator());
-			this.Merge(new DecimalEqualsGenerator());
 			this.Merge(new DecimalMultiplyGenerator());
 			this.Merge(new DecimalSubtractGenerator());
 			this.Merge(new DecimalRemainderGenerator());
