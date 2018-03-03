@@ -103,22 +103,4 @@ namespace NHibernate.Linq.Functions
 			return treeBuilder.TransparentCast(treeBuilder.Negate(visitor.Visit(arguments[0]).AsExpression()), typeof(decimal));
 		}
 	}
-
-	public class DecimalRoundGenerator : BaseHqlGeneratorForMethod
-	{
-		public DecimalRoundGenerator()
-		{
-			SupportedMethods = new[]
-			{
-				ReflectHelper.GetMethodDefinition(() => decimal.Round(default(decimal))),
-				ReflectHelper.GetMethodDefinition(() => decimal.Round(default(decimal), default(int))),
-			};
-		}
-
-		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
-		{
-			HqlExpression numberOfDecimals = (arguments.Count == 2) ? visitor.Visit(arguments[1]).AsExpression() : treeBuilder.Constant(0);
-			return treeBuilder.TransparentCast(treeBuilder.MethodCall("round", visitor.Visit(arguments[0]).AsExpression(), numberOfDecimals), typeof(decimal));
-		}
-	}
 }

@@ -58,7 +58,7 @@ namespace NHibernate.Linq.Functions
 			this.Merge(new DecimalSubtractGenerator());
 			this.Merge(new DecimalRemainderGenerator());
 			this.Merge(new DecimalNegateGenerator());
-			this.Merge(new DecimalRoundGenerator());
+			this.Merge(new RoundGenerator());
 		}
 
 		protected bool GetRuntimeMethodGenerator(MethodInfo method, out IHqlGeneratorForMethod methodGenerator)
