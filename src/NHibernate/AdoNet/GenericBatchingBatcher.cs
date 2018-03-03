@@ -1,42 +1,44 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
-using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 using NHibernate.AdoNet.Util;
-using NHibernate.Driver;
+using NHibernate.Dialect;
 using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
-using NHibernate.SqlTypes;
-using NHibernate.Util;
 
 namespace NHibernate.AdoNet
 {
 	/// <summary>
-	/// Batcher for PostgreSQL that will batch UPDATE/INSERT/DELETE commands.
+	/// A generic batcher that will batch UPDATE/INSERT/DELETE commands by concatenating them with a semicolon.
+	/// Use this batcher only if there are no dedicated batchers in the given environment.
 	/// </summary>
-	public partial class PostgreSQLClientBatchingBatcher : AbstractBatcher
+	public partial class GenericBatchingBatcher : AbstractBatcher
 	{
+		private readonly int _maxNumberOfParameters = int.MaxValue;
+		private readonly BatchingCommandSet _currentBatch;
 		private int _totalExpectedRowsAffected;
-		private PostgreSQLCommandSet _currentBatch;
 		private StringBuilder _currentBatchCommandsLog;
 
-		public PostgreSQLClientBatchingBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
+		public GenericBatchingBatcher(ConnectionManager connectionManager, IInterceptor interceptor, char statementTerminator)
 			: base(connectionManager, interceptor)
 		{
 			BatchSize = Factory.Settings.AdoBatchSize;
-			_currentBatch = CreateConfiguredBatch();
-
-			//we always create this, because we need to deal with a scenario in which
-			//the user change the logging configuration at runtime. Trying to put this
-			//behind an if(log.IsDebugEnabled) will cause a null reference exception 
-			//at that point.
+			StatementTerminator = statementTerminator;
+			_currentBatch = new BatchingCommandSet(this);
+			// On Sql Server there is a limit of 2100 parameters, but 2 are reserved for sp_executesql, so
+			// we are able to use up to 2098 parameters. The same applies for sp_prepexec.
+			if (Factory.Dialect is MsSql2000Dialect)
+			{
+				_maxNumberOfParameters = 2098;
+			}
+			// We always create this, because we need to deal with a scenario in which
+			// the user change the logging configuration at runtime. Trying to put this
+			// behind an if(log.IsDebugEnabled) will cause a null reference exception 
+			// at that point.
 			_currentBatchCommandsLog = new StringBuilder().AppendLine("Batch commands:");
 		}
+
+		public char StatementTerminator { get; }
 
 		public sealed override int BatchSize { get; set; }
 
@@ -44,8 +46,12 @@ namespace NHibernate.AdoNet
 
 		public override void AddToBatch(IExpectation expectation)
 		{
-			_totalExpectedRowsAffected += expectation.ExpectedRowCount;
 			var batchUpdate = CurrentCommand;
+			if (_currentBatch.CountOfParameters + CurrentCommand.Parameters.Count > _maxNumberOfParameters)
+			{
+				ExecuteBatchWithTiming(batchUpdate);
+			}
+			_totalExpectedRowsAffected += expectation.ExpectedRowCount;
 			Driver.AdjustCommand(batchUpdate);
 			string lineWithParameters = null;
 			var sqlStatementLogger = Factory.Settings.SqlStatementLogger;
@@ -63,6 +69,7 @@ namespace NHibernate.AdoNet
 			{
 				Log.Debug("Adding to batch:{0}", lineWithParameters);
 			}
+			
 			_currentBatch.Append(CurrentCommand.Parameters);
 
 			if (_currentBatch.CountOfCommands >= BatchSize)
@@ -73,6 +80,11 @@ namespace NHibernate.AdoNet
 
 		protected override void DoExecuteBatch(DbCommand ps)
 		{
+			if (_currentBatch.CountOfCommands == 0)
+			{
+				Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, 0);
+				return;
+			}
 			try
 			{
 				Log.Debug("Executing batch");
@@ -100,16 +112,10 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		private PostgreSQLCommandSet CreateConfiguredBatch()
-		{
-			return new PostgreSQLCommandSet(this);
-		}
-
 		private void ClearCurrentBatch()
 		{
-			_currentBatch.Dispose();
+			_currentBatch.Clear();
 			_totalExpectedRowsAffected = 0;
-			_currentBatch = CreateConfiguredBatch();
 
 			if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
 			{
@@ -120,46 +126,28 @@ namespace NHibernate.AdoNet
 		public override void CloseCommands()
 		{
 			base.CloseCommands();
-
-			try
-			{
-				ClearCurrentBatch();
-			}
-			catch (Exception e)
-			{
-				// Prevent exceptions when clearing the batch from hiding any original exception
-				// (We do not know here if this batch closing occurs after a failure or not.)
-				Log.Warn(e, "Exception clearing batch");
-			}
+			ClearCurrentBatch();
 		}
 
 		protected override void Dispose(bool isDisposing)
 		{
 			base.Dispose(isDisposing);
-			// Prevent exceptions when closing the batch from hiding any original exception
-			// (We do not know here if this batch closing occurs after a failure or not.)
-			try
-			{
-				_currentBatch.Dispose();
-			}
-			catch (Exception e)
-			{
-				Log.Warn(e, "Exception closing batcher");
-			}
+			_currentBatch.Dispose();
 		}
 
-		private partial class PostgreSQLCommandSet : IDisposable
+		private partial class BatchingCommandSet : IDisposable
 		{
-			private int _currentParameterIndex;
 			private DbCommand _batchCommand;
-			private readonly PostgreSQLClientBatchingBatcher _batcher;
+			private readonly GenericBatchingBatcher _batcher;
 
-			public PostgreSQLCommandSet(PostgreSQLClientBatchingBatcher batcher)
+			public BatchingCommandSet(GenericBatchingBatcher batcher)
 			{
 				_batcher = batcher;
 			}
 			
 			public int CountOfCommands { get; private set; }
+
+			public int CountOfParameters { get; private set; }
 
 			public void Append(DbParameterCollection parameters)
 			{
@@ -170,7 +158,7 @@ namespace NHibernate.AdoNet
 						_batcher.CurrentCommandSql,
 						_batcher.CurrentCommandParameterTypes);
 					UpdateCommandParameters(_batchCommand, parameters);
-					_currentParameterIndex = parameters.Count;
+					CountOfParameters = parameters.Count;
 				}
 				else
 				{
@@ -180,7 +168,7 @@ namespace NHibernate.AdoNet
 						PrepareSqlString(_batcher.CurrentCommandSql),
 						_batcher.CurrentCommandParameterTypes);
 					UpdateCommandParameters(command, parameters);
-					_batchCommand.CommandText += ";" + command.CommandText;
+					_batchCommand.CommandText += $"{_batcher.StatementTerminator}{command.CommandText}";
 					foreach (DbParameter parameter in command.Parameters)
 					{
 						_batchCommand.Parameters.Add(CopyParameter(_batchCommand, parameter));
@@ -203,12 +191,17 @@ namespace NHibernate.AdoNet
 				return _batchCommand.ExecuteNonQuery();
 			}
 
-			public void Dispose()
+			public void Clear()
 			{
 				_batchCommand?.Dispose();
 				_batchCommand = null;
-				_currentParameterIndex = 0;
+				CountOfParameters = 0;
 				CountOfCommands = 0;
+			}
+
+			public void Dispose()
+			{
+				Clear();
 			}
 
 			private void UpdateCommandParameters(DbCommand command, DbParameterCollection parameters)
@@ -253,7 +246,7 @@ namespace NHibernate.AdoNet
 				{
 					if (part is Parameter param)
 					{
-						param.ParameterPosition = _currentParameterIndex++;
+						param.ParameterPosition = CountOfParameters++;
 					}
 				}
 				return sql;

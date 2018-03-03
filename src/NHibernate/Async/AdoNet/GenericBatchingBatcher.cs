@@ -9,70 +9,63 @@
 
 
 using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
-using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 using NHibernate.AdoNet.Util;
-using NHibernate.Driver;
+using NHibernate.Dialect;
 using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
-using NHibernate.SqlTypes;
-using NHibernate.Util;
 
 namespace NHibernate.AdoNet
 {
-	public partial class PostgreSQLClientBatchingBatcher : AbstractBatcher
+	using System.Threading.Tasks;
+	using System.Threading;
+	public partial class GenericBatchingBatcher : AbstractBatcher
 	{
 
-		public override Task AddToBatchAsync(IExpectation expectation, CancellationToken cancellationToken)
+		public override async Task AddToBatchAsync(IExpectation expectation, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			var batchUpdate = CurrentCommand;
+			if (_currentBatch.CountOfParameters + CurrentCommand.Parameters.Count > _maxNumberOfParameters)
 			{
-				return Task.FromCanceled<object>(cancellationToken);
+				await (ExecuteBatchWithTimingAsync(batchUpdate, cancellationToken)).ConfigureAwait(false);
 			}
-			try
+			_totalExpectedRowsAffected += expectation.ExpectedRowCount;
+			Driver.AdjustCommand(batchUpdate);
+			string lineWithParameters = null;
+			var sqlStatementLogger = Factory.Settings.SqlStatementLogger;
+			if (sqlStatementLogger.IsDebugEnabled || Log.IsDebugEnabled())
 			{
-				_totalExpectedRowsAffected += expectation.ExpectedRowCount;
-				var batchUpdate = CurrentCommand;
-				Driver.AdjustCommand(batchUpdate);
-				string lineWithParameters = null;
-				var sqlStatementLogger = Factory.Settings.SqlStatementLogger;
-				if (sqlStatementLogger.IsDebugEnabled || Log.IsDebugEnabled())
-				{
-					lineWithParameters = sqlStatementLogger.GetCommandLineWithParameters(batchUpdate);
-					var formatStyle = sqlStatementLogger.DetermineActualStyle(FormatStyle.Basic);
-					lineWithParameters = formatStyle.Formatter.Format(lineWithParameters);
-					_currentBatchCommandsLog.Append("command ")
+				lineWithParameters = sqlStatementLogger.GetCommandLineWithParameters(batchUpdate);
+				var formatStyle = sqlStatementLogger.DetermineActualStyle(FormatStyle.Basic);
+				lineWithParameters = formatStyle.Formatter.Format(lineWithParameters);
+				_currentBatchCommandsLog.Append("command ")
 				                        .Append(_currentBatch.CountOfCommands)
 				                        .Append(":")
 				                        .AppendLine(lineWithParameters);
-				}
-				if (Log.IsDebugEnabled())
-				{
-					Log.Debug("Adding to batch:{0}", lineWithParameters);
-				}
-				_currentBatch.Append(CurrentCommand.Parameters);
-
-				if (_currentBatch.CountOfCommands >= BatchSize)
-				{
-					return ExecuteBatchWithTimingAsync(batchUpdate, cancellationToken);
-				}
-				return Task.CompletedTask;
 			}
-			catch (Exception ex)
+			if (Log.IsDebugEnabled())
 			{
-				return Task.FromException<object>(ex);
+				Log.Debug("Adding to batch:{0}", lineWithParameters);
+			}
+			
+			_currentBatch.Append(CurrentCommand.Parameters);
+
+			if (_currentBatch.CountOfCommands >= BatchSize)
+			{
+				await (ExecuteBatchWithTimingAsync(batchUpdate, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
 		protected override async Task DoExecuteBatchAsync(DbCommand ps, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			if (_currentBatch.CountOfCommands == 0)
+			{
+				Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, 0);
+				return;
+			}
 			try
 			{
 				Log.Debug("Executing batch");
@@ -100,7 +93,7 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		private partial class PostgreSQLCommandSet : IDisposable
+		private partial class BatchingCommandSet : IDisposable
 		{
 
 			public async Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken)

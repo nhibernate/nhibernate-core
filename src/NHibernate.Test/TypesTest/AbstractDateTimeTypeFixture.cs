@@ -279,10 +279,10 @@ namespace NHibernate.Test.TypesTest
 			}
 
 			var expected = 3;
-			// PostgreSQL batcher uses IDriver.GenerateCommand method to create the batching command,
+			// GenericBatchingBatcher uses IDriver.GenerateCommand method to create the batching command,
 			// so the expected result will be doubled as GenerateCommand calls IDriver.GenerateParameter
 			// for each parameter.
-			if (Sfi.Settings.BatcherFactory is PostgreSQLClientBatchingBatcherFactory)
+			if (Sfi.Settings.BatcherFactory is GenericBatchingBatcherFactory)
 			{
 				expected *= 2;
 			}
