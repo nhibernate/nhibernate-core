@@ -24,22 +24,6 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public class DecimalCompareGenerator : BaseHqlGeneratorForMethod
-	{
-		public DecimalCompareGenerator()
-		{
-			SupportedMethods = new[]
-			{
-				ReflectHelper.GetMethodDefinition(() => decimal.Compare(default(decimal), default(decimal)))
-			};
-		}
-
-		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
-		{
-			return treeBuilder.MethodCall("sign", treeBuilder.Subtract(visitor.Visit(arguments[0]).AsExpression(), visitor.Visit(arguments[1]).AsExpression()));
-		}
-	}
-
 	public class DecimalDivideGenerator : BaseHqlGeneratorForMethod
 	{
 		public DecimalDivideGenerator()
