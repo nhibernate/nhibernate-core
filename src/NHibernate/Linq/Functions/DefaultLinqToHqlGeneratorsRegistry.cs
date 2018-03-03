@@ -58,8 +58,6 @@ namespace NHibernate.Linq.Functions
 			this.Merge(new DecimalSubtractGenerator());
 			this.Merge(new DecimalRemainderGenerator());
 			this.Merge(new DecimalNegateGenerator());
-			this.Merge(new DecimalFloorGenerator());
-			this.Merge(new DecimalCeilingGenerator());
 			this.Merge(new DecimalRoundGenerator());
 		}
 

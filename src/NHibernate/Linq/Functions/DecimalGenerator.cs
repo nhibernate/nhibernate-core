@@ -104,38 +104,6 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public class DecimalFloorGenerator : BaseHqlGeneratorForMethod
-	{
-		public DecimalFloorGenerator()
-		{
-			SupportedMethods = new[]
-			{
-				ReflectHelper.GetMethodDefinition(() => decimal.Floor(default(decimal)))
-			};
-		}
-
-		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
-		{
-			return treeBuilder.MethodCall("floor", visitor.Visit(arguments[0]).AsExpression());
-		}
-	}
-
-	public class DecimalCeilingGenerator : BaseHqlGeneratorForMethod
-	{
-		public DecimalCeilingGenerator()
-		{
-			SupportedMethods = new[]
-			{
-				ReflectHelper.GetMethodDefinition(() => decimal.Ceiling(default(decimal)))
-			};
-		}
-
-		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
-		{
-			return treeBuilder.MethodCall("ceiling", visitor.Visit(arguments[0]).AsExpression());
-		}
-	}
-
 	public class DecimalRoundGenerator : BaseHqlGeneratorForMethod
 	{
 		public DecimalRoundGenerator()
