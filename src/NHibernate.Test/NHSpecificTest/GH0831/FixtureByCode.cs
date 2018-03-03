@@ -135,18 +135,6 @@ namespace NHibernate.Test.NHSpecificTest.GH0831
 				CanSelect(e => decimal.Floor(e.EntityValue));
 			});
 		}
-	
-		[Test]
-		public void CanHandleTruncate()
-		{
-			AssumeFunctionSupported("truncate");
-
-			Assert.Multiple(() =>
-			{
-				CanFilter(e => decimal.Truncate(e.EntityValue) > 1.0m);
-				CanSelect(e => decimal.Truncate(e.EntityValue));
-			});
-		}
 
 		[Test]
 		public void CanHandleMultiply()
