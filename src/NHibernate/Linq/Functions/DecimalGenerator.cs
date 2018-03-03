@@ -8,7 +8,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Linq.Functions
 {
-	public class DecimalAddGenerator : BaseHqlGeneratorForMethod
+	internal class DecimalAddGenerator : BaseHqlGeneratorForMethod
 	{
 		public DecimalAddGenerator()
 		{
@@ -24,7 +24,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public class DecimalDivideGenerator : BaseHqlGeneratorForMethod
+	internal class DecimalDivideGenerator : BaseHqlGeneratorForMethod
 	{
 		public DecimalDivideGenerator()
 		{
@@ -40,7 +40,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public class DecimalMultiplyGenerator : BaseHqlGeneratorForMethod
+	internal class DecimalMultiplyGenerator : BaseHqlGeneratorForMethod
 	{
 		public DecimalMultiplyGenerator()
 		{
@@ -56,7 +56,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public class DecimalSubtractGenerator : BaseHqlGeneratorForMethod
+	internal class DecimalSubtractGenerator : BaseHqlGeneratorForMethod
 	{
 		public DecimalSubtractGenerator()
 		{
@@ -72,7 +72,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public class DecimalRemainderGenerator : BaseHqlGeneratorForMethod
+	internal class DecimalRemainderGenerator : BaseHqlGeneratorForMethod
 	{
 		public DecimalRemainderGenerator()
 		{
@@ -88,7 +88,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public class DecimalNegateGenerator : BaseHqlGeneratorForMethod
+	internal class DecimalNegateGenerator : BaseHqlGeneratorForMethod
 	{
 		public DecimalNegateGenerator()
 		{
