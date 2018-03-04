@@ -31,10 +31,12 @@ namespace NHibernate.AdoNet
 			StatementTerminator = statementTerminator;
 			_currentBatch = new BatchingCommandSet(this);
 			// On Sql Server there is a limit of 2100 parameters, but 2 are reserved for sp_executesql, so
-			// we are able to use up to 2098 parameters. The same applies for sp_prepexec.
+			// we are able to use up to 2098 parameters. When sp_prepexec is used for preparing and executing
+			// statements then one more parameter is used. Set the max number of parameters to 2097 in order
+			// to ensure that we will never exceed the limit.
 			if (Factory.Dialect is MsSql2000Dialect)
 			{
-				_maxNumberOfParameters = 2098;
+				_maxNumberOfParameters = 2097;
 			}
 			// We always create this, because we need to deal with a scenario in which
 			// the user change the logging configuration at runtime. Trying to put this
