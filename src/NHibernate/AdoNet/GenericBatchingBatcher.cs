@@ -176,9 +176,11 @@ namespace NHibernate.AdoNet
 						_batcher.CurrentCommandParameterTypes);
 					UpdateCommandParameters(command, parameters);
 					_batchCommand.CommandText += $"{_batcher.StatementTerminator}{command.CommandText}";
-					foreach (DbParameter parameter in command.Parameters)
+					while (command.Parameters.Count > 0)
 					{
-						_batchCommand.Parameters.Add(CopyParameter(_batchCommand, parameter));
+						var pram = command.Parameters[0];
+						command.Parameters.RemoveAt(0);
+						_batchCommand.Parameters.Add(pram);
 					}
 					command.Dispose();
 				}
@@ -220,23 +222,6 @@ namespace NHibernate.AdoNet
 					cmdParam.Scale = parameter.Scale;
 					cmdParam.Size = parameter.Size;
 				}
-			}
-
-			private DbParameter CopyParameter(DbCommand command, DbParameter parameter)
-			{
-				var copy = command.CreateParameter();
-				copy.DbType = parameter.DbType;
-				copy.IsNullable = parameter.IsNullable;
-				copy.ParameterName = parameter.ParameterName;
-				copy.Value = parameter.Value;
-				copy.Direction = parameter.Direction;
-				copy.Precision = parameter.Precision;
-				copy.Scale = parameter.Scale;
-				copy.Size = parameter.Size;
-				copy.SourceVersion = parameter.SourceVersion;
-				copy.SourceColumn = parameter.SourceColumn;
-				copy.SourceColumnNullMapping = parameter.SourceColumnNullMapping;
-				return copy;
 			}
 
 			private SqlString PrepareSqlString(SqlString sql)
