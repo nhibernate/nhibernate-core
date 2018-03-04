@@ -53,9 +53,6 @@ namespace NHibernate.Linq.Functions
 				ReflectHelper.GetMethodDefinition(() => Math.Ceiling(default(double))),
 				ReflectHelper.GetMethodDefinition(() => decimal.Ceiling(default(decimal))),
 				
-				ReflectHelper.GetMethodDefinition(() => Math.Truncate(default(decimal))),
-				ReflectHelper.GetMethodDefinition(() => Math.Truncate(default(double))),
-
 				ReflectHelper.GetMethodDefinition(() => Math.Pow(default(double), default(double))),
 			};
 		}
