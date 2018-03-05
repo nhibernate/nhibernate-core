@@ -343,6 +343,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("transactsql", new StandardSQLFunction("transactsql", NHibernateUtil.String));
 			RegisterFunction("varexists", new StandardSQLFunction("varexists", NHibernateUtil.Int32));
 			RegisterFunction("watcomsql", new StandardSQLFunction("watcomsql", NHibernateUtil.String));
+			RegisterFunction("truncnum", new StandardSafeSQLFunction("truncnum", 2));
+			RegisterFunction("truncate", new StandardSafeSQLFunction("truncnum", 2));
 		}
 
 		#region private static readonly string[] DialectKeywords = { ... }
