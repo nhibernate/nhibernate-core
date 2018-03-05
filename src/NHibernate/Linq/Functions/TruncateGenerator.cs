@@ -22,7 +22,7 @@ namespace NHibernate.Linq.Functions
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression expression, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
-			return treeBuilder.MethodCall("truncate", visitor.Visit(arguments[0]).AsExpression());
+			return treeBuilder.MethodCall("truncate", visitor.Visit(arguments[0]).AsExpression(), treeBuilder.Constant(0));
 		}
 	}
 }
