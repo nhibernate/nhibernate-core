@@ -464,6 +464,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("rand", new NoArgSQLFunction("rand", NHibernateUtil.Double));
 			RegisterFunction("sign", new StandardSQLFunction("sign", NHibernateUtil.Int32));
 			RegisterFunction("sqtr", new StandardSQLFunction("sqtr", NHibernateUtil.Double));
+			RegisterFunction("trunc", new StandardSQLFunction("trunc"));
 			RegisterFunction("truncate", new StandardSQLFunction("trunc"));
 			RegisterFunction("floor", new StandardSQLFunction("floor"));
 			RegisterFunction("round", new StandardSQLFunction("round"));
