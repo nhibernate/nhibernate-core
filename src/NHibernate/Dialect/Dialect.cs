@@ -2447,6 +2447,11 @@ namespace NHibernate.Dialect
 		public virtual int MaxAliasLength => 18;
 
 		/// <summary>
+		/// The maximum number of parameters allowed in a query.
+		/// </summary>
+		public virtual int? MaxNumberOfParameters { get; } = null;
+
+		/// <summary>
 		/// The syntax used to add a column to a table. Note this is deprecated
 		/// </summary>
 		public virtual string AddColumnString

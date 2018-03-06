@@ -19,7 +19,7 @@ namespace NHibernate.AdoNet
 	/// </summary>
 	public partial class GenericBatchingBatcher : AbstractBatcher
 	{
-		private readonly int _maxNumberOfParameters = int.MaxValue;
+		private readonly int? _maxNumberOfParameters;
 		private readonly BatchingCommandSet _currentBatch;
 		private int _totalExpectedRowsAffected;
 		private StringBuilder _currentBatchCommandsLog;
@@ -30,14 +30,8 @@ namespace NHibernate.AdoNet
 			BatchSize = Factory.Settings.AdoBatchSize;
 			StatementTerminator = statementTerminator;
 			_currentBatch = new BatchingCommandSet(this);
-			// On Sql Server there is a limit of 2100 parameters, but 2 are reserved for sp_executesql, so
-			// we are able to use up to 2098 parameters. When sp_prepexec is used for preparing and executing
-			// statements then one more parameter is used. Set the max number of parameters to 2097 in order
-			// to ensure that we will never exceed the limit.
-			if (Factory.Dialect is MsSql2000Dialect)
-			{
-				_maxNumberOfParameters = 2097;
-			}
+			_maxNumberOfParameters = Factory.Dialect.MaxNumberOfParameters;
+
 			// We always create this, because we need to deal with a scenario in which
 			// the user change the logging configuration at runtime. Trying to put this
 			// behind an if(log.IsDebugEnabled) will cause a null reference exception 
@@ -54,7 +48,8 @@ namespace NHibernate.AdoNet
 		public override void AddToBatch(IExpectation expectation)
 		{
 			var batchUpdate = CurrentCommand;
-			if (_currentBatch.CountOfParameters + CurrentCommand.Parameters.Count > _maxNumberOfParameters)
+			if (_maxNumberOfParameters.HasValue && 
+				_currentBatch.CountOfParameters + CurrentCommand.Parameters.Count > _maxNumberOfParameters)
 			{
 				ExecuteBatchWithTiming(batchUpdate);
 			}
