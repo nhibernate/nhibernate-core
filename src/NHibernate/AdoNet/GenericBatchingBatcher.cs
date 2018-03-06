@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Text;
 using NHibernate.AdoNet.Util;
-using NHibernate.Dialect;
 using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
 
@@ -139,92 +140,88 @@ namespace NHibernate.AdoNet
 
 		private partial class BatchingCommandSet : IDisposable
 		{
-			private DbCommand _batchCommand;
 			private readonly GenericBatchingBatcher _batcher;
+			private readonly SqlStringBuilder _sql = new SqlStringBuilder();
+			private readonly List<SqlTypes.SqlType> _sqlTypes = new List<SqlTypes.SqlType>();
+			private readonly List<BatchParameter> _parameters = new List<BatchParameter>();
+			private CommandType _commandType;
+
+			private class BatchParameter
+			{
+				public ParameterDirection Direction { get; set; }
+
+				public byte Precision { get; set; }
+
+				public byte Scale { get; set; }
+
+				public int Size { get; set; }
+
+				public object Value { get; set; }
+			}
 
 			public BatchingCommandSet(GenericBatchingBatcher batcher)
 			{
 				_batcher = batcher;
 			}
-			
+
 			public int CountOfCommands { get; private set; }
 
 			public int CountOfParameters { get; private set; }
 
 			public void Append(DbParameterCollection parameters)
 			{
-				if (_batchCommand == null)
+				if (CountOfCommands > 0)
 				{
-					_batchCommand = _batcher.Driver.GenerateCommand(
-						_batcher.CurrentCommand.CommandType,
-						_batcher.CurrentCommandSql,
-						_batcher.CurrentCommandParameterTypes);
-					UpdateCommandParameters(_batchCommand, parameters);
-					CountOfParameters = parameters.Count;
+					_sql.Add(_batcher.StatementTerminator.ToString());
 				}
 				else
 				{
-					// We need to create a new command with different parameter names to avoid duplicates
-					var command = _batcher.Driver.GenerateCommand(
-						_batcher.CurrentCommand.CommandType,
-						PrepareSqlString(_batcher.CurrentCommandSql),
-						_batcher.CurrentCommandParameterTypes);
-					UpdateCommandParameters(command, parameters);
-					_batchCommand.CommandText += $"{_batcher.StatementTerminator}{command.CommandText}";
-					while (command.Parameters.Count > 0)
+					_commandType = _batcher.CurrentCommand.CommandType;
+				}
+				_sql.Add(PrepareSqlString(_batcher.CurrentCommandSql));
+				_sqlTypes.AddRange(_batcher.CurrentCommandParameterTypes);
+
+				foreach (DbParameter parameter in parameters)
+				{
+					_parameters.Add(new BatchParameter
 					{
-						var pram = command.Parameters[0];
-						command.Parameters.RemoveAt(0);
-						_batchCommand.Parameters.Add(pram);
-					}
-					command.Dispose();
+						Direction = parameter.Direction,
+						Precision = parameter.Precision,
+						Scale = parameter.Scale,
+						Size = parameter.Size,
+						Value = parameter.Value
+					});
 				}
 				CountOfCommands++;
 			}
 
 			public int ExecuteNonQuery()
 			{
-				if (_batchCommand == null)
+				if (CountOfCommands == 0)
 				{
 					return 0;
 				}
-				_batcher.Prepare(_batchCommand);
-				return _batchCommand.ExecuteNonQuery();
-			}
-
-			public void Clear()
-			{
-				_batchCommand?.Dispose();
-				_batchCommand = null;
-				CountOfParameters = 0;
-				CountOfCommands = 0;
-			}
-
-			public void Dispose()
-			{
-				Clear();
-			}
-
-			private void UpdateCommandParameters(DbCommand command, DbParameterCollection parameters)
-			{
-				for (var i = 0; i < parameters.Count; i++)
+				var batcherCommand = _batcher.Driver.GenerateCommand(
+					_commandType,
+					_sql.ToSqlString(),
+					_sqlTypes.ToArray()
+				);
+				for (var i = 0; i < _parameters.Count; i++)
 				{
-					var parameter = parameters[i];
-					var cmdParam = command.Parameters[i];
+					var parameter = _parameters[i];
+					var cmdParam = batcherCommand.Parameters[i];
 					cmdParam.Value = parameter.Value;
 					cmdParam.Direction = parameter.Direction;
 					cmdParam.Precision = parameter.Precision;
 					cmdParam.Scale = parameter.Scale;
 					cmdParam.Size = parameter.Size;
 				}
+				_batcher.Prepare(batcherCommand);
+				return batcherCommand.ExecuteNonQuery();
 			}
 
 			private SqlString PrepareSqlString(SqlString sql)
 			{
-				if (_batchCommand == null)
-				{
-					return sql;
-				}
 				sql = sql.Copy();
 				foreach (var part in sql)
 				{
@@ -234,6 +231,20 @@ namespace NHibernate.AdoNet
 					}
 				}
 				return sql;
+			}
+
+			public void Clear()
+			{
+				CountOfParameters = 0;
+				CountOfCommands = 0;
+				_sql.Clear();
+				_sqlTypes.Clear();
+				_parameters.Clear();
+			}
+
+			public void Dispose()
+			{
+				Clear();
 			}
 		}
 	}
