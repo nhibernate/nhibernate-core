@@ -182,7 +182,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.UInt32, "NUMBER(10,0)");
 			RegisterColumnType(DbType.UInt64, "NUMBER(20,0)");
 
-			RegisterColumnType(DbType.Currency, "NUMBER(20,2)");
+			RegisterColumnType(DbType.Currency, "NUMBER(22,4)");
 			RegisterColumnType(DbType.Single, "FLOAT(24)");
 			RegisterColumnType(DbType.Double, "DOUBLE PRECISION");
 			// Oracle max precision is 39-40, but .Net is limited to 28-29.
