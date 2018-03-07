@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -286,8 +287,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("ceiling", new StandardSQLFunction("ceiling"));
 			RegisterFunction("ceil", new StandardSQLFunction("ceiling"));
 			RegisterFunction("floor", new StandardSQLFunction("floor"));
-			RegisterFunction("round", new RoundEmulatingSingleParameterFunction());
-			RegisterFunction("truncate", new SQLFunctionTemplate(null, "round(?1, ?2, 1)"));
+			RegisterFunction("round", new RoundEmulatingSingleParameterFunction("round"));
+			RegisterFunction("truncate", new TruncateFunction());
 
 			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Double));
 
@@ -810,6 +811,27 @@ namespace NHibernate.Dialect
 				string lockHint = _dialect.AppendLockHint(_aliasedLockModes[alias], alias);
 				return string.Concat(" ", lockHint, match.Groups[2].Value); // TODO: seems like this line is redundant
 			}
+		}
+
+		[Serializable]
+		internal class TruncateFunction : ISQLFunction
+		{
+			private static readonly ISQLFunction Truncate = new SQLFunctionTemplate(null, "round(?1, 0, 1)");
+
+			private static readonly ISQLFunction TruncateWith2Params = new SQLFunctionTemplate(null, "round(?1, ?2, 1)");
+
+			public IType ReturnType(IType columnType, IMapping mapping) => columnType;
+
+			public bool HasArguments => true;
+
+			public bool HasParenthesesIfNoArguments => true;
+
+			public SqlString Render(IList args, ISessionFactoryImplementor factory)
+			{
+				return args.Count == 1 ? Truncate.Render(args, factory) : TruncateWith2Params.Render(args, factory);
+			}
+
+			public override string ToString() => "truncate";
 		}
 	}
 }

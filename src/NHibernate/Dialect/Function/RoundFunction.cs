@@ -12,9 +12,20 @@ namespace NHibernate.Dialect.Function
 	[Serializable]
 	public class RoundEmulatingSingleParameterFunction : ISQLFunction
 	{
-		private static readonly ISQLFunction SingleParamRound = new SQLFunctionTemplate(null, "round(?1, 0)");
+		private readonly ISQLFunction _singleParamRound;
+		private readonly ISQLFunction _round;
+		private readonly string _name;
 
-		private static readonly ISQLFunction Round = new StandardSQLFunction("round");
+		/// <summary>
+		/// Constructs a <c>RoundEmulatingSingleParameterFunction</c>.
+		/// </summary>
+		/// <param name="name">The SQL name of the round function to call.</param>
+		public RoundEmulatingSingleParameterFunction(string name)
+		{
+			_singleParamRound = new SQLFunctionTemplate(null, $"{name}(?1, 0)");
+			_round = new StandardSQLFunction(name);
+			_name = name;
+		}
 
 		public IType ReturnType(IType columnType, IMapping mapping) => columnType;
 
@@ -24,9 +35,9 @@ namespace NHibernate.Dialect.Function
 
 		public SqlString Render(IList args, ISessionFactoryImplementor factory)
 		{
-			return args.Count == 1 ? SingleParamRound.Render(args, factory) : Round.Render(args, factory);
+			return args.Count == 1 ? _singleParamRound.Render(args, factory) : _round.Render(args, factory);
 		}
 
-		public override string ToString() => "round";
+		public override string ToString() => _name;
 	}
 }
