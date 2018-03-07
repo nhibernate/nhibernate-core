@@ -95,7 +95,7 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		private partial class BatchingCommandSet : IDisposable
+		private partial class BatchingCommandSet
 		{
 
 			public async Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken)

@@ -135,10 +135,10 @@ namespace NHibernate.AdoNet
 		protected override void Dispose(bool isDisposing)
 		{
 			base.Dispose(isDisposing);
-			_currentBatch.Dispose();
+			_currentBatch.Clear();
 		}
 
-		private partial class BatchingCommandSet : IDisposable
+		private partial class BatchingCommandSet
 		{
 			private readonly GenericBatchingBatcher _batcher;
 			private readonly SqlStringBuilder _sql = new SqlStringBuilder();
@@ -178,7 +178,8 @@ namespace NHibernate.AdoNet
 				{
 					_commandType = _batcher.CurrentCommand.CommandType;
 				}
-				_sql.Add(PrepareSqlString(_batcher.CurrentCommandSql));
+				
+				_sql.Add(_batcher.CurrentCommandSql.Copy());
 				_sqlTypes.AddRange(_batcher.CurrentCommandParameterTypes);
 
 				foreach (DbParameter parameter in parameters)
@@ -193,6 +194,7 @@ namespace NHibernate.AdoNet
 					});
 				}
 				CountOfCommands++;
+				CountOfParameters += parameters.Count;
 			}
 
 			public int ExecuteNonQuery()
@@ -220,19 +222,6 @@ namespace NHibernate.AdoNet
 				return batcherCommand.ExecuteNonQuery();
 			}
 
-			private SqlString PrepareSqlString(SqlString sql)
-			{
-				sql = sql.Copy();
-				foreach (var part in sql)
-				{
-					if (part is Parameter param)
-					{
-						param.ParameterPosition = CountOfParameters++;
-					}
-				}
-				return sql;
-			}
-
 			public void Clear()
 			{
 				CountOfParameters = 0;
@@ -240,11 +229,6 @@ namespace NHibernate.AdoNet
 				_sql.Clear();
 				_sqlTypes.Clear();
 				_parameters.Clear();
-			}
-
-			public void Dispose()
-			{
-				Clear();
 			}
 		}
 	}
