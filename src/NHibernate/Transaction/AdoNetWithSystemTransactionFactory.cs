@@ -208,7 +208,6 @@ namespace NHibernate.Transaction
 				EnlistedTransaction = transaction.Clone();
 				_systemTransactionCompletionLockTimeout = systemTransactionCompletionLockTimeout;
 				_useConnectionOnSystemTransactionPrepare = useConnectionOnSystemTransactionPrepare;
-				_bypassLock.Value = false;
 			}
 
 			/// <inheritdoc />
@@ -270,6 +269,7 @@ namespace NHibernate.Transaction
 			protected virtual void Unlock()
 			{
 				_lock.Set();
+				_bypassLock.Value = false;
 			}
 
 			/// <summary>
