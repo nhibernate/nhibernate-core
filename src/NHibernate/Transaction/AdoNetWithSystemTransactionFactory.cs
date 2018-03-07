@@ -187,7 +187,7 @@ namespace NHibernate.Transaction
 			private readonly ManualResetEventSlim _lock = new ManualResetEventSlim(true);
 			private volatile bool _needCompletionLocking = true;
 			// Required for not locking the completion phase itself when locking session usages from concurrent threads.
-			private readonly AsyncLocal<bool> _bypassLock = new AsyncLocal<bool>();
+			private static readonly AsyncLocal<bool> _bypassLock = new AsyncLocal<bool>();
 			private readonly int _systemTransactionCompletionLockTimeout;
 
 			/// <summary>
@@ -208,6 +208,7 @@ namespace NHibernate.Transaction
 				EnlistedTransaction = transaction.Clone();
 				_systemTransactionCompletionLockTimeout = systemTransactionCompletionLockTimeout;
 				_useConnectionOnSystemTransactionPrepare = useConnectionOnSystemTransactionPrepare;
+				_bypassLock.Value = false;
 			}
 
 			/// <inheritdoc />
