@@ -1,6 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../../build-common/NHibernate.props" />
-
   <PropertyGroup>
     <Description>An object persistence library for relational databases.</Description>
     <TargetFrameworks>netstandard2.0;net461;netcoreapp2.0</TargetFrameworks>
@@ -9,54 +8,44 @@
     <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
     <AssemblyOriginatorKeyFile>..\NHibernate.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-
     <PackageDescription>NHibernate is a mature, open source object-relational mapper for the .NET framework. It is actively developed, fully featured and used in thousands of successful projects.</PackageDescription>
     <PackageTags>ORM; O/RM; DataBase; DAL; ObjectRelationalMapping; NHibernate; ADO.Net; Core</PackageTags>
   </PropertyGroup>
-  
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
     <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
-
   <ItemGroup>
     <None Remove="**\*.g" />
     <None Remove="**\*.xsd" />
   </ItemGroup>
-
   <ItemGroup>
     <Antlr3 Include="**\*.g" />
   </ItemGroup>
-
   <ItemGroup>
     <EmbeddedResource Include="**\*.xsd" />
   </ItemGroup>
-
   <ItemGroup>
     <None Include="..\NHibernate.snk" Link="NHibernate.snk" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Antlr3.CodeGenerator" Version="3.5.2-beta1">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Antlr3.Runtime" Version="[3.5.1, 4.0)" />
-    <PackageReference Include="Iesi.Collections" Version="[4.0.3, 5.0)" />
+    <PackageReference Include="Iesi.Collections" Version="4.0.4" />
     <PackageReference Include="Remotion.Linq" Version="[2.1.2, 3.0)" />
     <PackageReference Include="Remotion.Linq.EagerFetching" Version="[2.1.0, 3.0)" />
   </ItemGroup>
-
   <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Configuration" />
   </ItemGroup>
-
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
     <PackageReference Include="System.ServiceModel.Primitives" Version="4.4.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.4.1" />
     <PackageReference Include="System.Security.Permissions" Version="4.4.1" />
   </ItemGroup>
-
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="System.ServiceModel.Primitives" Version="4.4.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.4.1" />
@@ -64,7 +53,6 @@
     <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
     <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.3.0" />
   </ItemGroup>
-
   <ItemGroup>
     <Content Include="*.xsd">
       <PackagePath>./</PackagePath>
