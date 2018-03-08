@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Diagnostics;
 using System.Linq;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
@@ -59,6 +60,41 @@ namespace NHibernate.Test.Ado
 				Assert.That(FindAllOccurrences(log, "Batch commands:"), Is.EqualTo(4));
 			}
 			Cleanup();
+		}
+
+		// Demonstrates a 50% performance gain with SQL-Server, around 40% for PostgreSQL,
+		// around 15% for MySql, but around 200% performance loss for SQLite.
+		// (Tested with databases on same machine for all cases.)
+		[Theory, Explicit("This is a performance test, to be checked manually.")]
+		public void MassivePerformanceTest(bool batched)
+		{
+			if (batched)
+			{
+				// Bring down batch size to a reasonnable value, otherwise performances are worsen.
+				cfg.SetProperty(Environment.BatchSize, "50");
+			}
+			else
+			{
+				cfg.SetProperty(Environment.BatchStrategy, typeof(NonBatchingBatcherFactory).AssemblyQualifiedName);
+				cfg.Properties.Remove(Environment.BatchSize);
+			}
+			RebuildSessionFactory();
+
+			try
+			{
+				// Warm up
+				MassiveInsertUpdateDeleteTest();
+
+				var chrono = new Stopwatch();
+				chrono.Start();
+				MassiveInsertUpdateDeleteTest();
+				Console.WriteLine($"Elapsed time: {chrono.Elapsed}");
+			}
+			finally
+			{
+				Configure(cfg);
+				RebuildSessionFactory();
+			}
 		}
 
 		private void BatchInsert(int totalRecords)
