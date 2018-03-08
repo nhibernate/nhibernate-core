@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+#if NETFX
 using System.Data.SqlClient;
+#endif
 using NHibernate.AdoNet;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
@@ -16,7 +18,7 @@ namespace NHibernate.Driver
 #if NETFX
 		: DriverBase, IEmbeddedBatcherFactoryProvider
 #else
-		: ReflectionBasedDriver
+		: ReflectionBasedDriver, IEmbeddedBatcherFactoryProvider
 #endif
 	{
 		public const int MaxSizeForAnsiClob = 2147483647; // int.MaxValue
@@ -50,6 +52,8 @@ namespace NHibernate.Driver
 			: base("System.Data.SqlClient", "System.Data.SqlClient.SqlConnection", "System.Data.SqlClient.SqlCommand")
 		{
 		}
+
+		System.Type IEmbeddedBatcherFactoryProvider.BatcherFactoryClass => typeof(GenericBatchingBatcherFactory);
 #else
 		/// <summary>
 		/// Creates an uninitialized <see cref="DbConnection" /> object for
