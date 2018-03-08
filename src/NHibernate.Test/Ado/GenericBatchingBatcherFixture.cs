@@ -56,7 +56,7 @@ namespace NHibernate.Test.Ado
 				tx.Commit();
 
 				var log = sqlLog.GetWholeLog();
-				Assert.That(4, Is.EqualTo(FindAllOccurrences(log, "Batch commands:")));
+				Assert.That(FindAllOccurrences(log, "Batch commands:"), Is.EqualTo(4));
 			}
 			Cleanup();
 		}
