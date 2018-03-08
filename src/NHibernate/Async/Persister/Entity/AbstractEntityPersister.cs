@@ -43,7 +43,7 @@ namespace NHibernate.Persister.Entity
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public abstract partial class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata, IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer, IPostInsertIdentityPersister, ILockable
+	public abstract partial class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata, IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer, IPostInsertIdentityPersister, ILockable, ISupportSelectModeJoinable
 	{
 
 		private partial class GeneratedIdentifierBinder : IBinder

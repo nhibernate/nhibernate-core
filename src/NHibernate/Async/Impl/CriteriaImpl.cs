@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading;
 using NHibernate.Criterion;
 using NHibernate.Engine;
+using NHibernate.Loader;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Util;
@@ -22,7 +23,7 @@ using NHibernate.Util;
 namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
-	public partial class CriteriaImpl : ICriteria, ISupportEntityJoinCriteria
+	public partial class CriteriaImpl : ICriteria, ISupportEntityJoinCriteria, ISupportSelectModeCriteria
 	{
 
 		public async Task<IList> ListAsync(CancellationToken cancellationToken = default(CancellationToken))
@@ -74,7 +75,7 @@ namespace NHibernate.Impl
 			cancellationToken.ThrowIfCancellationRequested();
 			return AbstractQueryImpl.UniqueElement(await (ListAsync(cancellationToken)).ConfigureAwait(false));
 		}
-		public sealed partial class Subcriteria : ICriteria
+		public sealed partial class Subcriteria : ICriteria, ISupportSelectModeCriteria
 		{
 
 			public Task<IList> ListAsync(CancellationToken cancellationToken = default(CancellationToken))

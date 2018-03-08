@@ -937,6 +937,11 @@ namespace NHibernate.Loader
 					obj = session.GetEntityUsingInterceptor(key);
 					var alreadyLoaded = obj != null;
 					var persister = persisters[i];
+					if (!alreadyLoaded && IsChildFetchEntity(i))
+					{
+						continue;
+					}
+
 					if (alreadyLoaded)
 					{
 						//its already loaded so dont need to hydrate it
@@ -1053,6 +1058,11 @@ namespace NHibernate.Loader
 			hydratedObjects.Add(obj);
 
 			return obj;
+		}
+
+		protected virtual bool IsChildFetchEntity(int i)
+		{
+			return false;
 		}
 
 		private bool IsEagerPropertyFetchEnabled(int i)

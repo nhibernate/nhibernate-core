@@ -56,6 +56,7 @@ namespace NHibernate.Loader
 		}
 
 		public bool[] EagerPropertyFetches { get; set; }
+		public bool[] ChildFetchEntities { get; set; }
 
 		public int[] CollectionOwners
 		{
@@ -158,7 +159,7 @@ namespace NHibernate.Loader
 			string subalias = GenerateTableAlias(associations.Count + 1, path, joinable);
 
 			OuterJoinableAssociation assoc =
-				new OuterJoinableAssociation(type, alias, aliasedLhsColumns, subalias, joinType, GetWithClause(path), Factory, enabledFilters);
+				new OuterJoinableAssociation(type, alias, aliasedLhsColumns, subalias, joinType, GetWithClause(path), Factory, enabledFilters, GetSelectMode(path));
 			assoc.ValidateJoin(path);
 			AddAssociation(subalias, assoc);
 
@@ -176,6 +177,11 @@ namespace NHibernate.Loader
 				if (qc != null)
 					WalkCollectionTree(qc, subalias, path, nextDepth);
 			}
+		}
+
+		protected  virtual SelectMode GetSelectMode(string path)
+		{
+			return SelectMode.Default;
 		}
 
 		private static int[] GetTopologicalSortOrder(List<DependentAlias> fields)
@@ -299,7 +305,7 @@ namespace NHibernate.Loader
 			IOuterJoinLoadable persister,
 			string tableAlias,
 			JoinType joinType,
-			SqlString withClause)
+			string path)
 		{
 			OuterJoinableAssociation assoc =
 				new OuterJoinableAssociation(
@@ -308,9 +314,10 @@ namespace NHibernate.Loader
 					Array.Empty<string>(),
 					tableAlias,
 					joinType,
-					withClause,
+					GetWithClause(path),
 					Factory,
-					enabledFilters);
+					enabledFilters,
+					GetSelectMode(path));
 			AddAssociation(tableAlias, assoc);
 		}
 
@@ -699,7 +706,7 @@ namespace NHibernate.Loader
 			int result = 0;
 			foreach (OuterJoinableAssociation oj in associations)
 			{
-				if (oj.Joinable.ConsumesEntityAlias())
+				if (oj.Joinable.ConsumesEntityAlias() && oj.SelectMode != SelectMode.Skip)
 					result++;
 			}
 
@@ -717,7 +724,7 @@ namespace NHibernate.Loader
 
 			foreach (OuterJoinableAssociation oj in associations)
 			{
-				if (oj.JoinType == JoinType.LeftOuterJoin && oj.Joinable.IsCollection)
+				if (oj.ShouldFetchCollectionPersister())
 					result++;
 			}
 			return result;
@@ -835,6 +842,8 @@ namespace NHibernate.Loader
 			collectionSuffixes = BasicLoader.GenerateSuffixes(joins + 1, collections);
 
 			persisters = new ILoadable[joins];
+			EagerPropertyFetches = new bool[joins];
+			ChildFetchEntities = new bool[joins];
 			aliases = new String[joins];
 			owners = new int[joins];
 			ownerAssociationTypes = new EntityType[joins];
@@ -845,19 +854,21 @@ namespace NHibernate.Loader
 
 			foreach (OuterJoinableAssociation oj in associations)
 			{
+				if (oj.SelectMode == SelectMode.Skip)
+					continue;
+
 				if (!oj.IsCollection)
 				{
-					persisters[i] = (ILoadable)oj.Joinable;
-					aliases[i] = oj.RHSAlias;
 					owners[i] = oj.GetOwner(associations);
-					ownerAssociationTypes[i] = (EntityType)oj.JoinableType;
+					ownerAssociationTypes[i] = (EntityType) oj.JoinableType;
+
+					FillEntityPersisterProperties(i, oj, (ILoadable) oj.Joinable);
 					i++;
 				}
 				else
 				{
 					IQueryableCollection collPersister = (IQueryableCollection)oj.Joinable;
-
-					if (oj.JoinType == JoinType.LeftOuterJoin)
+					if (oj.ShouldFetchCollectionPersister())
 					{
 						//it must be a collection fetch
 						collectionPersisters[j] = collPersister;
@@ -867,8 +878,7 @@ namespace NHibernate.Loader
 
 					if (collPersister.IsOneToMany)
 					{
-						persisters[i] = (ILoadable)collPersister.ElementPersister;
-						aliases[i] = oj.RHSAlias;
+						FillEntityPersisterProperties(i,oj, (ILoadable) collPersister.ElementPersister);
 						i++;
 					}
 				}
@@ -879,6 +889,14 @@ namespace NHibernate.Loader
 
 			if (collectionOwners != null && ArrayHelper.IsAllNegative(collectionOwners))
 				collectionOwners = null;
+		}
+
+		private void FillEntityPersisterProperties(int i, OuterJoinableAssociation oj, ILoadable persister)
+		{
+			persisters[i] = persister;
+			aliases[i] = oj.RHSAlias;
+			EagerPropertyFetches[i] = oj.SelectMode == SelectMode.FetchLazyProperties;
+			ChildFetchEntities[i] = oj.SelectMode == SelectMode.ChildFetch;
 		}
 
 		/// <summary>
@@ -909,23 +927,57 @@ namespace NHibernate.Loader
 																			? null
 																			: collectionSuffixes[collectionAliasCount];
 
-					string selectFragment =
-						joinable.SelectFragment(next == null ? null : next.Joinable, next == null ? null : next.RHSAlias, join.RHSAlias,
-																		entitySuffix, collectionSuffix, join.JoinType == JoinType.LeftOuterJoin);
+					string selectFragment = 
+						GetSelectFragment(join, entitySuffix, collectionSuffix, next);
 
 					if (!string.IsNullOrWhiteSpace(selectFragment))
 					{
 						buf.Add(StringHelper.CommaSpace)
 							.Add(selectFragment);
 					}
-					if (joinable.ConsumesEntityAlias())
+					if (joinable.ConsumesEntityAlias() && join.SelectMode != SelectMode.Skip)
 						entityAliasCount++;
 
-					if (joinable.ConsumesCollectionAlias() && join.JoinType == JoinType.LeftOuterJoin)
+					if (joinable.ConsumesCollectionAlias() && join.ShouldFetchCollectionPersister())
 						collectionAliasCount++;
 				}
 
 				return buf.ToSqlString().ToString();
+			}
+		}
+
+		protected static string GetSelectFragment(OuterJoinableAssociation join, string entitySuffix, string collectionSuffix, OuterJoinableAssociation next = null)
+		{
+			switch (join.SelectMode)
+			{
+				case SelectMode.Default:
+				case SelectMode.Fetch:
+					return join.Joinable.SelectFragment(
+						next?.Joinable,
+						next?.RHSAlias,
+						join.RHSAlias,
+						entitySuffix,
+						collectionSuffix,
+						join.ShouldFetchCollectionPersister());
+
+				case SelectMode.FetchLazyProperties:
+					return TypeHelper.CastOrThrow<ISupportSelectModeJoinable>(join.Joinable, "fetch lazy propertie")
+						.SelectFragment(
+							next?.Joinable,
+							next?.RHSAlias,
+							join.RHSAlias,
+							entitySuffix,
+							collectionSuffix,
+							join.ShouldFetchCollectionPersister(),
+							true);
+				
+				case SelectMode.ChildFetch:
+					return TypeHelper.CastOrThrow<ISupportSelectModeJoinable>(join.Joinable, "child fetch select mode").IdentifierSelectFragment(join.RHSAlias, entitySuffix);
+
+				case SelectMode.Skip:
+					return string.Empty;
+				default:
+					throw new ArgumentOutOfRangeException();
 			}
 		}
 	}

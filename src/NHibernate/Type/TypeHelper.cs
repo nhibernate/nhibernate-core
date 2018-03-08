@@ -14,6 +14,12 @@ namespace NHibernate.Type
 	{
 		public static readonly IType[] EmptyTypeArray = Array.Empty<IType>();
 
+		internal static T CastOrThrow<T>(object obj, string supportMessage) where T : class
+		{
+			return obj as T
+					?? throw new ArgumentException($"{obj?.GetType().FullName} requires to implement {typeof(T).FullName} interface to support {supportMessage}.");
+		}
+
 		/// <summary>Deep copy a series of values from one array to another</summary>
 		/// <param name="values">The values to copy (the source)</param>
 		/// <param name="types">The value types</param>

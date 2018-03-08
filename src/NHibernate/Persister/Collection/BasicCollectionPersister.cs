@@ -248,8 +248,7 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
-		public override string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias,
-			string entitySuffix, string collectionSuffix, bool includeCollectionColumns)
+		public override string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string entitySuffix, string collectionSuffix, bool includeCollectionColumns, bool includeLazyProperties)
 		{
 			// we need to determine the best way to know that two joinables
 			// represent a single many-to-many...
@@ -262,6 +261,12 @@ namespace NHibernate.Persister.Collection
 				}
 			}
 			return includeCollectionColumns ? SelectFragment(lhsAlias, collectionSuffix) : string.Empty;
+		}
+
+		public override string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias,
+			string entitySuffix, string collectionSuffix, bool includeCollectionColumns)
+		{
+			return SelectFragment(rhs, rhsAlias, lhsAlias, entitySuffix, collectionSuffix, includeCollectionColumns, false);
 		}
 
 		private string ManyToManySelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string collectionSuffix)

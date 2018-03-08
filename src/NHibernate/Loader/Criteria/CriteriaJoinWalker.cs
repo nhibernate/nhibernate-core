@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -64,8 +64,6 @@ namespace NHibernate.Loader.Criteria
 			{
 				InitAll(translator.GetWhereCondition(), translator.GetOrderBy(), LockMode.None);
 
-				resultTypes = new IType[] { TypeFactory.ManyToOne(persister.EntityName) };
-
 				// root entity comes last
 				userAliasList.Add(criteria.Alias); //root entity comes *last*
 				resultTypeList.Add(translator.ResultType(criteria));
@@ -84,8 +82,8 @@ namespace NHibernate.Loader.Criteria
 				var tableAlias = translator.GetSQLAlias(entityJoinInfo.Criteria);
 				var criteriaPath = entityJoinInfo.Criteria.Alias; //path for entity join is equal to alias
 				var persister = entityJoinInfo.Persister as IOuterJoinLoadable;
-				AddExplicitEntityJoinAssociation(persister, tableAlias, translator.GetJoinType(criteriaPath), GetWithClause(criteriaPath));
-				IncludeInResultIfNeeded(persister, entityJoinInfo.Criteria, tableAlias);
+				AddExplicitEntityJoinAssociation(persister, tableAlias, translator.GetJoinType(criteriaPath), criteriaPath);
+				IncludeInResultIfNeeded(persister, entityJoinInfo.Criteria, tableAlias, criteriaPath);
 				//collect mapped associations for entity join
 				WalkEntityTree(persister, tableAlias, criteriaPath, 1);
 			}
@@ -98,6 +96,31 @@ namespace NHibernate.Loader.Criteria
 			WalkCompositeComponentIdTree(persister, alias, path);
 		}
 
+		protected override OuterJoinableAssociation CreateRootAssociation()
+		{
+			var selectMode = GetSelectMode(string.Empty);
+			if (selectMode == SelectMode.Skip)
+			{
+				throw new NotSupportedException($"Skipping root entity is not implemented. Use {nameof(SelectMode)}.{nameof(SelectMode.ChildFetch)} instead.");
+			}
+
+			return new OuterJoinableAssociation(
+				Persister.EntityType,
+				null,
+				null,
+				Alias,
+				JoinType.LeftOuterJoin,
+				null,
+				Factory,
+				CollectionHelper.EmptyDictionary<string, IFilter>(),
+				selectMode);
+		}
+
+		protected override SelectMode GetSelectMode(string path)
+		{
+			return translator.RootCriteria.GetSelectMode(path);
+		}
+
 		private void WalkCompositeComponentIdTree(IOuterJoinLoadable persister, string alias, string path)
 		{
 			IType type = persister.IdentifierType;
@@ -105,7 +128,7 @@ namespace NHibernate.Loader.Criteria
 			if (type != null && type.IsComponentType)
 			{
 				ILhsAssociationTypeSqlInfo associationTypeSQLInfo = JoinHelper.GetIdLhsSqlInfo(alias, persister, Factory);
-				WalkComponentTree((IAbstractComponentType)type, 0, alias, SubPath(path, propertyName), 0, associationTypeSQLInfo);
+				WalkComponentTree((IAbstractComponentType) type, 0, alias, SubPath(path, propertyName), 0, associationTypeSQLInfo);
 			}
 		}
 
@@ -214,7 +237,7 @@ namespace NHibernate.Loader.Criteria
 				ICriteria subcriteria = translator.GetCriteria(path);
 				sqlAlias = subcriteria == null ? null : translator.GetSQLAlias(subcriteria);
 
-				IncludeInResultIfNeeded(joinable, subcriteria, sqlAlias);
+				IncludeInResultIfNeeded(joinable, subcriteria, sqlAlias, path);
 			}
 
 			if (sqlAlias == null)
@@ -223,13 +246,14 @@ namespace NHibernate.Loader.Criteria
 			return sqlAlias;
 		}
 
-		private void IncludeInResultIfNeeded(IJoinable joinable, ICriteria subcriteria, string sqlAlias)
+		private void IncludeInResultIfNeeded(IJoinable joinable, ICriteria subcriteria, string sqlAlias, string path)
 		{
 			if (joinable.ConsumesEntityAlias() && !translator.HasProjection)
 			{
-				includeInResultRowList.Add(subcriteria != null && subcriteria.Alias != null);
+				var includedInSelect = translator.RootCriteria.GetSelectMode(path) != SelectMode.Skip;
+				includeInResultRowList.Add(subcriteria != null && subcriteria.Alias != null && includedInSelect);
 
-				if (sqlAlias != null)
+				if (sqlAlias != null && includedInSelect)
 				{
 					if (subcriteria.Alias != null)
 					{

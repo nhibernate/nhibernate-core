@@ -606,6 +606,11 @@ namespace NHibernate.Loader
 					obj = await (session.GetEntityUsingInterceptorAsync(key, cancellationToken)).ConfigureAwait(false);
 					var alreadyLoaded = obj != null;
 					var persister = persisters[i];
+					if (!alreadyLoaded && IsChildFetchEntity(i))
+					{
+						continue;
+					}
+
 					if (alreadyLoaded)
 					{
 						//its already loaded so dont need to hydrate it

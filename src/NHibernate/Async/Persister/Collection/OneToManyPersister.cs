@@ -23,13 +23,14 @@ using NHibernate.Loader.Collection;
 using NHibernate.Loader.Entity;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
+using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Persister.Collection
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class OneToManyPersister : AbstractCollectionPersister
+	public partial class OneToManyPersister : AbstractCollectionPersister, ISupportSelectModeJoinable
 	{
 
 		protected override async Task<int> DoUpdateRowsAsync(object id, IPersistentCollection collection, ISessionImplementor session, CancellationToken cancellationToken)

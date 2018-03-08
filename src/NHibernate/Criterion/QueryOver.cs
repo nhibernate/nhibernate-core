@@ -1,11 +1,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using NHibernate.Criterion.Lambda;
 using NHibernate.Engine;
 using NHibernate.Impl;
+using NHibernate.Loader;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 
@@ -285,7 +287,7 @@ namespace NHibernate.Criterion
 	/// </summary>
 	[Serializable]
 	public class QueryOver<TRoot,TSubType> : QueryOver<TRoot>, IQueryOver<TRoot,TSubType>,
-		ISupportEntityJoinQueryOver<TRoot>
+		ISupportEntityJoinQueryOver<TRoot>, ISupportSelectModeQueryOver<TRoot, TSubType>
 	{
 
 		protected internal QueryOver()
@@ -1006,6 +1008,11 @@ namespace NHibernate.Criterion
 		IQueryOverJoinBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.Full
 		{ get { return new IQueryOverJoinBuilder<TRoot,TSubType>(this, JoinType.FullJoin); } }
 
+		public IQueryOver<TRoot, TSubType> SetSelectMode(SelectMode mode, Expression<Func<TSubType, object>> path)
+		{
+			UnderlyingCriteria.With(mode, ExpressionProcessor.FindMemberExpression(path.Body), null);
+			return this;
+		}
 	}
 
 }
