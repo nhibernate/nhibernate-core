@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Transactions;
+using NHibernate.Engine;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH1594
@@ -8,6 +9,9 @@ namespace NHibernate.Test.NHSpecificTest.GH1594
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override bool AppliesTo(ISessionFactoryImplementor factory) =>
+			factory.ConnectionProvider.Driver.SupportsSystemTransactions;
+
 		protected override void OnSetUp()
 		{
 			using (var session = OpenSession())
