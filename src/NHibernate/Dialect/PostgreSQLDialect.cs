@@ -69,7 +69,9 @@ namespace NHibernate.Dialect
 			RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "((?1) % (?2))"));
 
 			RegisterFunction("sign", new StandardSQLFunction("sign", NHibernateUtil.Int32));
-			RegisterFunction("round", new RoundFunction());
+			RegisterFunction("round", new RoundFunction(false));
+			RegisterFunction("truncate", new RoundFunction(true));
+			RegisterFunction("trunc", new RoundFunction(true));
 
 			// Trigonometric functions.
 			RegisterFunction("acos", new StandardSQLFunction("acos", NHibernateUtil.Double));
@@ -322,12 +324,34 @@ namespace NHibernate.Dialect
 		private class RoundFunction : ISQLFunction
 		{
 			private static readonly ISQLFunction Round = new StandardSQLFunction("round");
+			private static readonly ISQLFunction Truncate = new StandardSQLFunction("trunc");
 
-			// PostgreSQL round with two arguments only accepts decimal as input, thus the cast.
+			// PostgreSQL round/trunc with two arguments only accepts decimal as input, thus the cast.
 			// It also yields only decimal, but for emulating similar behavior to other databases, we need
 			// to have it converted to the original input type, which will be done by NHibernate thanks to
 			// not specifying the function type.
 			private static readonly ISQLFunction RoundWith2Params = new SQLFunctionTemplate(null, "round(cast(?1 as numeric), ?2)");
+			private static readonly ISQLFunction TruncateWith2Params = new SQLFunctionTemplate(null, "trunc(cast(?1 as numeric), ?2)");
+
+			private readonly ISQLFunction _singleParamFunction;
+			private readonly ISQLFunction _twoParamFunction;
+			private readonly string _name;
+
+			public RoundFunction(bool truncate)
+			{
+				if (truncate)
+				{
+					_singleParamFunction = Truncate;
+					_twoParamFunction = TruncateWith2Params;
+					_name = "truncate";
+				}
+				else
+				{
+					_singleParamFunction = Round;
+					_twoParamFunction = RoundWith2Params;
+					_name = "round";
+				}
+			}
 
 			public IType ReturnType(IType columnType, IMapping mapping) => columnType;
 
@@ -337,10 +361,10 @@ namespace NHibernate.Dialect
 
 			public SqlString Render(IList args, ISessionFactoryImplementor factory)
 			{
-				return args.Count == 2 ? RoundWith2Params.Render(args, factory) : Round.Render(args, factory);
+				return args.Count == 2 ? _twoParamFunction.Render(args, factory) : _singleParamFunction.Render(args, factory);
 			}
 
-			public override string ToString() => "round";
+			public override string ToString() => _name;
 		}
 	}
 }
