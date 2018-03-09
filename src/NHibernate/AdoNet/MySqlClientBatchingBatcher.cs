@@ -39,6 +39,10 @@ namespace NHibernate.AdoNet
 
 		public override void AddToBatch(IExpectation expectation)
 		{
+			// MySql batcher cannot be initiated if a data reader is still open: check them.
+			if (CountOfStatementsInCurrentBatch == 0)
+				CheckReaders();
+
 			totalExpectedRowsAffected += expectation.ExpectedRowCount;
 			var batchUpdate = CurrentCommand;
 			Prepare(batchUpdate);
