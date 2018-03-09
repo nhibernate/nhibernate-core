@@ -25,12 +25,11 @@ namespace NHibernate.AdoNet
 		private int _totalExpectedRowsAffected;
 		private StringBuilder _currentBatchCommandsLog;
 
-		public GenericBatchingBatcher(ConnectionManager connectionManager, IInterceptor interceptor, char statementTerminator)
+		public GenericBatchingBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
 			: base(connectionManager, interceptor)
 		{
 			BatchSize = Factory.Settings.AdoBatchSize;
-			StatementTerminator = statementTerminator;
-			_currentBatch = new BatchingCommandSet(this);
+			_currentBatch = new BatchingCommandSet(this, Factory.Dialect.StatementTerminator);
 			_maxNumberOfParameters = Factory.Dialect.MaxNumberOfParameters;
 
 			// We always create this, because we need to deal with a scenario in which
@@ -40,44 +39,26 @@ namespace NHibernate.AdoNet
 			_currentBatchCommandsLog = new StringBuilder().AppendLine("Batch commands:");
 		}
 
-		public char StatementTerminator { get; }
-
 		public sealed override int BatchSize { get; set; }
 
 		protected override int CountOfStatementsInCurrentBatch => _currentBatch.CountOfCommands;
 
 		public override void AddToBatch(IExpectation expectation)
 		{
-			var batchUpdate = CurrentCommand;
+			var batchCommand = CurrentCommand;
 			if (_maxNumberOfParameters.HasValue && 
-				_currentBatch.CountOfParameters + CurrentCommand.Parameters.Count > _maxNumberOfParameters)
+				_currentBatch.CountOfParameters + batchCommand.Parameters.Count > _maxNumberOfParameters)
 			{
-				ExecuteBatchWithTiming(batchUpdate);
+				ExecuteBatchWithTiming(batchCommand);
 			}
 			_totalExpectedRowsAffected += expectation.ExpectedRowCount;
-			Driver.AdjustCommand(batchUpdate);
-			string lineWithParameters = null;
-			var sqlStatementLogger = Factory.Settings.SqlStatementLogger;
-			if (sqlStatementLogger.IsDebugEnabled || Log.IsDebugEnabled())
-			{
-				lineWithParameters = sqlStatementLogger.GetCommandLineWithParameters(batchUpdate);
-				var formatStyle = sqlStatementLogger.DetermineActualStyle(FormatStyle.Basic);
-				lineWithParameters = formatStyle.Formatter.Format(lineWithParameters);
-				_currentBatchCommandsLog.Append("command ")
-				                        .Append(_currentBatch.CountOfCommands)
-				                        .Append(":")
-				                        .AppendLine(lineWithParameters);
-			}
-			if (Log.IsDebugEnabled())
-			{
-				Log.Debug("Adding to batch:{0}", lineWithParameters);
-			}
-			
-			_currentBatch.Append(CurrentCommand.Parameters);
+			Driver.AdjustCommand(batchCommand);
+			LogBatchCommand(batchCommand);
+			_currentBatch.Append(batchCommand.Parameters);
 
 			if (_currentBatch.CountOfCommands >= BatchSize)
 			{
-				ExecuteBatchWithTiming(batchUpdate);
+				ExecuteBatchWithTiming(batchCommand);
 			}
 		}
 
@@ -115,6 +96,26 @@ namespace NHibernate.AdoNet
 			}
 		}
 
+		private void LogBatchCommand(DbCommand batchCommand)
+		{
+			string lineWithParameters = null;
+			var sqlStatementLogger = Factory.Settings.SqlStatementLogger;
+			if (sqlStatementLogger.IsDebugEnabled || Log.IsDebugEnabled())
+			{
+				lineWithParameters = sqlStatementLogger.GetCommandLineWithParameters(batchCommand);
+				var formatStyle = sqlStatementLogger.DetermineActualStyle(FormatStyle.Basic);
+				lineWithParameters = formatStyle.Formatter.Format(lineWithParameters);
+				_currentBatchCommandsLog.Append("command ")
+				                        .Append(_currentBatch.CountOfCommands)
+				                        .Append(":")
+				                        .AppendLine(lineWithParameters);
+			}
+			if (Log.IsDebugEnabled())
+			{
+				Log.Debug("Adding to batch:{0}", lineWithParameters);
+			}
+		}
+
 		private void ClearCurrentBatch()
 		{
 			_currentBatch.Clear();
@@ -140,6 +141,7 @@ namespace NHibernate.AdoNet
 
 		private partial class BatchingCommandSet
 		{
+			private readonly string _statementTerminator;
 			private readonly GenericBatchingBatcher _batcher;
 			private readonly SqlStringBuilder _sql = new SqlStringBuilder();
 			private readonly List<SqlTypes.SqlType> _sqlTypes = new List<SqlTypes.SqlType>();
@@ -159,9 +161,10 @@ namespace NHibernate.AdoNet
 				public object Value { get; set; }
 			}
 
-			public BatchingCommandSet(GenericBatchingBatcher batcher)
+			public BatchingCommandSet(GenericBatchingBatcher batcher, char statementTerminator)
 			{
 				_batcher = batcher;
+				_statementTerminator = statementTerminator.ToString();
 			}
 
 			public int CountOfCommands { get; private set; }
@@ -172,7 +175,7 @@ namespace NHibernate.AdoNet
 			{
 				if (CountOfCommands > 0)
 				{
-					_sql.Add(_batcher.StatementTerminator.ToString());
+					_sql.Add(_statementTerminator);
 				}
 				else
 				{
