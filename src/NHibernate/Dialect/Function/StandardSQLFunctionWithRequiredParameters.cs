@@ -8,7 +8,7 @@ using NHibernate.Type;
 namespace NHibernate.Dialect.Function
 {
 	/// <summary>
-	/// A SQL function which substitutes required missing parametes with defaults. 
+	/// A SQL function which substitutes required missing parameters with defaults.
 	/// </summary>
 	[Serializable]
 	internal class StandardSQLFunctionWithRequiredParameters : StandardSQLFunction
