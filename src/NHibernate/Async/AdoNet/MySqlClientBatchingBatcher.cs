@@ -24,6 +24,10 @@ namespace NHibernate.AdoNet
 		public override async Task AddToBatchAsync(IExpectation expectation, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			// MySql batcher cannot be initiated if a data reader is still open: check them.
+			if (CountOfStatementsInCurrentBatch == 0)
+				await (CheckReadersAsync(cancellationToken)).ConfigureAwait(false);
+
 			totalExpectedRowsAffected += expectation.ExpectedRowCount;
 			var batchUpdate = CurrentCommand;
 			await (PrepareAsync(batchUpdate, cancellationToken)).ConfigureAwait(false);
