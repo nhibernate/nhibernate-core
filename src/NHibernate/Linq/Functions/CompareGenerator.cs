@@ -32,6 +32,8 @@ namespace NHibernate.Linq.Functions
 
 				ReflectHelper.GetMethodDefinition<float>(x => x.CompareTo(x)),
 				ReflectHelper.GetMethodDefinition<double>(x => x.CompareTo(x)),
+				
+				ReflectHelper.GetMethodDefinition(() => decimal.Compare(default(decimal), default(decimal))),
 				ReflectHelper.GetMethodDefinition<decimal>(x => x.CompareTo(x)),
 
 				ReflectHelper.GetMethodDefinition<DateTime>(x => x.CompareTo(x)),
