@@ -32,6 +32,8 @@ namespace NHibernate.Linq.Functions
 
 					ReflectHelper.GetMethodDefinition<float>(x => x.Equals(x)),
 					ReflectHelper.GetMethodDefinition<double>(x => x.Equals(x)),
+					
+					ReflectHelper.GetMethodDefinition(() => decimal.Equals(default(decimal), default(decimal))),
 					ReflectHelper.GetMethodDefinition<decimal>(x => x.Equals(x)),
 
 					ReflectHelper.GetMethodDefinition<Guid>(x => x.Equals(x)),

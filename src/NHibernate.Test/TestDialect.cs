@@ -75,5 +75,10 @@ namespace NHibernate.Test
 				return false;
 			}
 		}
+
+		/// <summary>
+		/// Supports the modulo operator on decimal types
+		/// </summary>
+		public virtual bool SupportsModuloOnDecimal => true;
 	}
 }

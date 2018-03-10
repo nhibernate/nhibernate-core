@@ -51,19 +51,12 @@ namespace NHibernate.AdoNet
 
 		public int ExecuteNonQuery()
 		{
-			try
+			if (CountOfCommands == 0)
 			{
-				if (CountOfCommands == 0)
-				{
-					return 0;
-				}
+				return 0;
+			}
 
-				return doExecuteNonQuery(instance);
-			}
-			catch (Exception exception)
-			{
-				throw new HibernateException("An exception occured when executing batch queries", exception);
-			}
+			return doExecuteNonQuery(instance);
 		}
 
 		public int CountOfCommands
