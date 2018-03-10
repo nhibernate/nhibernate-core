@@ -717,6 +717,13 @@ namespace NHibernate.Dialect
 		/// <inheritdoc />
 		public override int MaxAliasLength => 30;
 
+		/// <summary>
+		/// On SQL Server there is a limit of 2100 parameters, but two are reserved for sp_executesql
+		/// and three for sp_prepexec (used when preparing is enabled). Set the number to 2097
+		/// as the worst case scenario.
+		/// </summary>
+		public override int? MaxNumberOfParameters => 2097;
+
 		#region Overridden informational metadata
 
 		public override bool SupportsEmptyInList => false;

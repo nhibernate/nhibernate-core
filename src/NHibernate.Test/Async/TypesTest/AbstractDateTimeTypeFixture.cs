@@ -14,6 +14,7 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Reflection;
+using NHibernate.AdoNet;
 using NHibernate.Cfg;
 using NHibernate.Driver;
 using NHibernate.Engine;
@@ -246,8 +247,16 @@ namespace NHibernate.Test.TypesTest
 				await (t.CommitAsync());
 			}
 
+			var expected = 3;
+			// GenericBatchingBatcher uses IDriver.GenerateCommand method to create the batching command,
+			// so the expected result will be doubled as GenerateCommand calls IDriver.GenerateParameter
+			// for each parameter.
+			if (Sfi.Settings.BatcherFactory is GenericBatchingBatcherFactory)
+			{
+				expected *= 2;
+			}
 			// 2 properties + revision
-			AssertSqlType(driver, 3, true);
+			AssertSqlType(driver, expected, true);
 		}
 
 		[Test]
