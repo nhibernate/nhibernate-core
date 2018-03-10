@@ -1,5 +1,6 @@
 using System.Data;
 using System.Data.Common;
+using NHibernate.AdoNet;
 
 namespace NHibernate.Driver
 {
@@ -24,7 +25,7 @@ namespace NHibernate.Driver
 	/// <a href="http://pgfoundry.org/projects/npgsql">http://pgfoundry.org/projects/npgsql</a>. 
 	/// </p>
 	/// </remarks>
-	public class NpgsqlDriver : ReflectionBasedDriver
+	public class NpgsqlDriver : ReflectionBasedDriver, IEmbeddedBatcherFactoryProvider
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NpgsqlDriver"/> class.
@@ -92,5 +93,7 @@ namespace NHibernate.Driver
 		public override bool RequiresTimeSpanForTime => (DriverVersion?.Major ?? 3) >= 3;
 
 		public override bool HasDelayedDistributedTransactionCompletion => true;
+
+		System.Type IEmbeddedBatcherFactoryProvider.BatcherFactoryClass => typeof(GenericBatchingBatcherFactory);
 	}
 }

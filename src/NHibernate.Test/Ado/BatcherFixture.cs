@@ -59,6 +59,7 @@ namespace NHibernate.Test.Ado
 			{
 				s.Save(new VerySimple {Id = 1, Name = "Fabio", Weight = 119.5});
 				s.Save(new VerySimple {Id = 2, Name = "Fiamma", Weight = 9.8});
+				s.Save(new VerySimple {Id = 3, Name = "Roberto", Weight = 98.8 });
 				tx.Commit();
 			}
 		}
@@ -74,11 +75,14 @@ namespace NHibernate.Test.Ado
 			{
 				var vs1 = s.Get<VerySimple>(1);
 				var vs2 = s.Get<VerySimple>(2);
+				var vs3 = s.Get<VerySimple>(3);
 				vs1.Weight -= 10;
 				vs2.Weight -= 1;
+				vs3.Weight -= 5;
 				Sfi.Statistics.Clear();
 				s.Update(vs1);
 				s.Update(vs2);
+				s.Update(vs3);
 				tx.Commit();
 			}
 
@@ -154,9 +158,11 @@ namespace NHibernate.Test.Ado
 			{
 				var vs1 = s.Get<VerySimple>(1);
 				var vs2 = s.Get<VerySimple>(2);
+				var vs3 = s.Get<VerySimple>(3);
 				Sfi.Statistics.Clear();
 				s.Delete(vs1);
 				s.Delete(vs2);
+				s.Delete(vs3);
 				tx.Commit();
 			}
 

@@ -129,6 +129,9 @@ namespace NHibernate.Driver
 					else
 						base.InitializeParameter(dbParam, name, sqlType);
 					break;
+				case DbType.Currency:
+					base.InitializeParameter(dbParam, name, SqlTypeFactory.Decimal);
+					break;
 				default:
 					base.InitializeParameter(dbParam, name, sqlType);
 					break;

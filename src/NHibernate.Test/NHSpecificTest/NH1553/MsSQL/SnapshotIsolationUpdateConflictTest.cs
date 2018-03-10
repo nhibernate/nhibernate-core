@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
@@ -5,6 +6,7 @@ using NHibernate.Driver;
 using NHibernate.Engine;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 {
@@ -28,27 +30,23 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 
 		private Person LoadPerson()
 		{
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
+			using (var tr = BeginTransaction(session))
 			{
-				using (ITransaction tr = BeginTransaction(session))
-				{
-					var p = session.Get<Person>(person.Id);
-					tr.Commit();
-					return p;
-				}
+				var p = session.Get<Person>(person.Id);
+				tr.Commit();
+				return p;
 			}
 		}
 
 		private void SavePerson(Person p)
 		{
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
+			using (var tr = BeginTransaction(session))
 			{
-				using (ITransaction tr = BeginTransaction(session))
-				{
-					session.SaveOrUpdate(p);
-					session.Flush();
-					tr.Commit();
-				}
+				session.SaveOrUpdate(p);
+				session.Flush();
+				tr.Commit();
 			}
 		}
 
@@ -134,13 +132,27 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 			return factory.ConnectionProvider.Driver is SqlClientDriver;
 		}
 
+		private bool _isSnapshotIsolationAlreadyAllowed;
+
+		private void CheckAllowSnapshotIsolation()
+		{
+			using (var session = OpenSession())
+			using (var command = session.Connection.CreateCommand())
+			{
+				command.CommandText = $@"select snapshot_isolation_state_desc from sys.databases 
+	where name = '{session.Connection.Database}'";
+				_isSnapshotIsolationAlreadyAllowed =
+					StringComparer.OrdinalIgnoreCase.Equals(command.ExecuteScalar() as string, "on");
+			}
+		}
+
 		private void SetAllowSnapshotIsolation(bool on)
 		{
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
+			using (var command = session.Connection.CreateCommand())
 			{
-				var command = session.Connection.CreateCommand();
 				command.CommandText = "ALTER DATABASE " + session.Connection.Database + " set allow_snapshot_isolation "
-				                      + (on ? "on" : "off");
+					+ (on ? "on" : "off");
 				command.ExecuteNonQuery();
 			}
 		}
@@ -149,7 +161,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 		{
 			base.OnSetUp();
 
-			SetAllowSnapshotIsolation(true);
+			CheckAllowSnapshotIsolation();
+			if (!_isSnapshotIsolationAlreadyAllowed)
+				SetAllowSnapshotIsolation(true);
 
 			person = new Person();
 			person.IdentificationNumber = 123;
@@ -158,18 +172,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 
 		protected override void OnTearDown()
 		{
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
+			using (var tr = session.BeginTransaction(IsolationLevel.Serializable))
 			{
-				using (ITransaction tr = session.BeginTransaction(IsolationLevel.Serializable))
-				{
-					string hql = "from Person";
-					session.Delete(hql);
-					session.Flush();
-					tr.Commit();
-				}
+				session.Delete("from Person");
+				tr.Commit();
 			}
 
-			SetAllowSnapshotIsolation(false);
+			if (!_isSnapshotIsolationAlreadyAllowed)
+				SetAllowSnapshotIsolation(false);
 
 			base.OnTearDown();
 		}
