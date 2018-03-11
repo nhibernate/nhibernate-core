@@ -170,6 +170,35 @@ namespace NHibernate.Test.TransactionTest
 			}
 		}
 
+		[Test]
+		public async Task FlushFromTransactionAppliesToSharingStatelessSessionAsync()
+		{
+			using (var s = OpenSession())
+			{
+				var builder = s.StatelessSessionWithOptions().Connection();
+
+				using (var s1 = builder.OpenStatelessSession())
+				using (var s2 = builder.OpenStatelessSession())
+				using (var t = s.BeginTransaction())
+				{
+					var p1 = new Person();
+					var p2 = new Person();
+					var p3 = new Person();
+					await (s1.InsertAsync(p1));
+					await (s2.InsertAsync(p2));
+					await (s.SaveAsync(p3));
+					await (t.CommitAsync());
+				}
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				Assert.That(await (s.Query<Person>().CountAsync()), Is.EqualTo(3));
+				await (t.CommitAsync());
+			}
+		}
+
 		// Taken and adjusted from NH1632 When_commiting_items_in_DTC_transaction_will_add_items_to_2nd_level_cache
 		[Test]
 		public async Task WhenCommittingItemsWillAddThemTo2ndLevelCacheAsync()

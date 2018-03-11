@@ -7,6 +7,7 @@ namespace NHibernate.Impl
 	/// some part of the "transaction context" of another Session.
 	/// </summary>
 	/// <seealso cref="ISharedSessionBuilder"/>
+	/// <seealso cref="ISharedStatelessSessionBuilder"/>
 	public interface ISharedSessionCreationOptions : ISessionCreationOptions
 	{
 		// NH note: naming "adjusted" for converting Java methods to properties while avoiding conflicts with
