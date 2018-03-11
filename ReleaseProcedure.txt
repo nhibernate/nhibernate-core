@@ -1,44 +1,52 @@
 These are the tasks typically needed to create an official NHibernate release.
 
-
   * In GitHub, make sure no open issues have milestone set to the release
-    that is about to happen (as these will show in the release notes).
-  
-  * Update releasenotes.txt with list of issues. See if any additions to the 
-    list of "known breaking changes" are necessary.
-	
-  * Check/update version number in build-common/common.xml.
-  
+    that is about to happen (as these will show in the milestone).
+
+  * Create a draft release in Github with GitReleaseManager. If you have used
+    the NHibernate build menu, it should be available in Tools\gitreleasemanage.x.x.x\
+    (change x.x.x by its current version in tools).
+    By example:
+
+Tools\gitreleasemanager.0.7.0\tools\GitReleaseManager.exe create -o nhibernate -r nhibernate-core -m 5.1 -u username -p password
+
+    (Adjust the -m milestone parameter above, and add "-c branchname" if
+    releasing another branch than master)
+
+  * Update releasenotes.txt with the list of issues generated in the GitHub
+    draft release.
+    See if any additions to the list of "known breaking changes" are necessary.
+
+  * Update the GitHub draft release for matching other release formalism: update
+    its title, change its description for listing only highlights and breaking
+    changes, include links to the milestone and the releasenotes of the release
+    tag, include links to binaries on SourceForge and NuGet.
+
+  * Check/update version number in common.xml and NHibernate.props under
+    build-common folder, and in master.xml under doc\reference folder.
+
   * Don't forget to commit the above.
-  
-  * Perform the release build including running all tests (GaRelease.bat or
-    ShowBuildMenu.bat).
-	
-	NOTE: If you prefer to keep your source code in a path like e.g.:
-	  C:\Users\Something\Long\Projects\nhibernate-core
-	you may want to issue a command like:
-	  subst P: C:\Users\Something\Long\Projects
-	And then change to P:\nhibernate-core before building. This will avoid
-	displaying a long user-specific path in public symbol files.
-	
-  * If no error or other issue requiring further changes occurred, tag the
-    current git HEAD with a tag according to version number. Don't forget to
-	  push the tag to github.
-	
+
+  * Check the CI release build.
+    If no error or other issue requiring further changes occurred, merge
+    the release PR and wait for the resulting commit CI release build.
+
+  * Retrieve the artifacts of the CI release build.
+
   * Upload binary and source zip files to SourceForge. Update the "latest
     release".
 
   * Update download link on nhibernate.info.
-  
-  * Push nuget packages including the symbol packages. The nuget packages
-    should already be available in the build directory, together with a batch
-    file to push them.
-  
-  * In GitHub, mark the milestone as released.
-  
+
+  * Push nuget packages including the symbol packages.
+
+  * In GitHub, mark the milestone as released and publish the release draft,
+    creating the release tag by the way. (It should match the tag in the
+    releasenots link of the release description.)
+
   * Post release announcement to nhusers, nhibernate-development and as
     project news on SourceForge.
-		
+
   * If this was a stable branch, merge it forward to master. Perhaps some
     changes need to be edited out in the merge, but this will reduce the
-	  risk of some issue being left unfixed on master.
+    risk of some issue being left unfixed on master.
