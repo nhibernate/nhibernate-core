@@ -149,7 +149,7 @@ namespace NHibernate.Impl
 		private readonly IQueryCache queryCache;
 
 		[NonSerialized]
-		private readonly ConcurrentDictionary<string, IQueryCache> queryCaches;
+		private readonly ConcurrentDictionary<string, Lazy<IQueryCache>> queryCaches;
 		[NonSerialized]
 		private readonly SchemaExport schemaExport;
 		[NonSerialized]
@@ -381,7 +381,7 @@ namespace NHibernate.Impl
 			{
 				updateTimestampsCache = new UpdateTimestampsCache(settings, properties);
 				queryCache = settings.QueryCacheFactory.GetQueryCache(null, updateTimestampsCache, settings, properties);
-				queryCaches = new ConcurrentDictionary<string, IQueryCache>();
+				queryCaches = new ConcurrentDictionary<string, Lazy<IQueryCache>>();
 			}
 			else
 			{
@@ -847,9 +847,9 @@ namespace NHibernate.Impl
 			{
 				queryCache.Destroy();
 
-				foreach (IQueryCache cache in queryCaches.Values)
+				foreach (var cache in queryCaches.Values)
 				{
-					cache.Destroy();
+					cache.Value.Destroy();
 				}
 
 				updateTimestampsCache.Destroy();
@@ -1029,14 +1029,18 @@ namespace NHibernate.Impl
 				return null;
 			}
 
+			// The factory may be run concurrently by threads trying to get the same region.
+			// But the GetOrAdd will yield the same lazy for all threads, so only one will
+			// initialize. https://stackoverflow.com/a/31637510/1178314
 			return queryCaches.GetOrAdd(
 				cacheRegion,
-				cr =>
-				{
-					IQueryCache currentQueryCache = settings.QueryCacheFactory.GetQueryCache(cacheRegion, updateTimestampsCache, settings, properties);
-					allCacheRegions[currentQueryCache.RegionName] = currentQueryCache.Cache;
-					return currentQueryCache;
-				});
+				cr => new Lazy<IQueryCache>(
+					() =>
+					{
+						var currentQueryCache = settings.QueryCacheFactory.GetQueryCache(cr, updateTimestampsCache, settings, properties);
+						allCacheRegions[currentQueryCache.RegionName] = currentQueryCache.Cache;
+						return currentQueryCache;
+					})).Value;
 		}
 
 		public void EvictQueries()
@@ -1062,10 +1066,9 @@ namespace NHibernate.Impl
 			{
 				if (settings.IsQueryCacheEnabled)
 				{
-					IQueryCache currentQueryCache;
-					if (queryCaches.TryGetValue(cacheRegion, out currentQueryCache))
+					if (queryCaches.TryGetValue(cacheRegion, out var currentQueryCache))
 					{
-						currentQueryCache.Clear();
+						currentQueryCache.Value.Clear();
 					}
 				}
 			}
