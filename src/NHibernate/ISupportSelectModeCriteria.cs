@@ -11,6 +11,6 @@ namespace NHibernate
 		/// <param name="selectMode"></param>
 		/// <param name="associationPath">Criteria association path. If empty root entity for given criteria is used.</param>
 		/// <param name="alias">Criteria alias. If empty current <see cref="ICriteria"/> criteria is used.</param>
-		void SetSelectMode(SelectMode selectMode, string associationPath, string alias);
+		ICriteria SetSelectMode(SelectMode selectMode, string associationPath, string alias);
 	}
 }

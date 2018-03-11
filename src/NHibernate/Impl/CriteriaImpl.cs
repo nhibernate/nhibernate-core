@@ -358,16 +358,17 @@ namespace NHibernate.Impl
 			return builder.ToString();
 		}
 
-		public void SetSelectMode(SelectMode selectMode, string associationPath, string alias)
+		public ICriteria SetSelectMode(SelectMode selectMode, string associationPath, string alias)
 		{
 			if (!string.IsNullOrEmpty(alias))
 			{
 				var criteriaByAlias = GetCriteriaByAlias(alias);
 				criteriaByAlias.With(selectMode, associationPath, (string) null);
-				return;
+				return this;
 			}
 
 			selectModes[associationPath] = selectMode;
+			return this;
 		}
 
 		public ICriteria AddOrder(Order ordering)
@@ -863,15 +864,16 @@ namespace NHibernate.Impl
 				return this;
 			}
 
-			public void SetSelectMode(SelectMode selectMode, string associationPath, string alias)
+			public ICriteria SetSelectMode(SelectMode selectMode, string associationPath, string alias)
 			{
 				if (!string.IsNullOrEmpty(alias))
 				{
 					root.SetSelectMode(selectMode, associationPath, alias);
-					return;
+					return this;
 				}
 
 				root.SetSelectMode(selectMode, string.IsNullOrEmpty(associationPath) ? path : StringHelper.Qualify(path, associationPath), null);
+				return this;
 			}
 
 			public ICriteria SetFlushMode(FlushMode flushMode)
