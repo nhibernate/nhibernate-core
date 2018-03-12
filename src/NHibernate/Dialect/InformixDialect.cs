@@ -45,13 +45,13 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Binary, 2147483647, "BYTE");
 			RegisterColumnType(DbType.Binary, "BYTE");
 			RegisterColumnType(DbType.Boolean, "BOOLEAN");
-			RegisterColumnType(DbType.Currency, "DECIMAL(16,4)");
+			RegisterColumnType(DbType.Currency, "DECIMAL(18,4)");
 			RegisterColumnType(DbType.Byte, "SMALLINT");
 			RegisterColumnType(DbType.Date, "DATE");
 			RegisterColumnType(DbType.DateTime, "datetime year to fraction(5)");
 			RegisterColumnType(DbType.Decimal, "DECIMAL(19, 5)");
 			// Informix max precision is 32, but .Net is limited to 28-29.
-			RegisterColumnType(DbType.Decimal, 28, "DECIMAL($p, $s)");
+			RegisterColumnType(DbType.Decimal, 29, "DECIMAL($p, $s)");
 			RegisterColumnType(DbType.Double, "DOUBLE");
 			RegisterColumnType(DbType.Int16, "SMALLINT");
 			RegisterColumnType(DbType.Int32, "INTEGER");

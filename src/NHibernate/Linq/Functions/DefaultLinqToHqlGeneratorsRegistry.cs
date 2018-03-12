@@ -51,6 +51,15 @@ namespace NHibernate.Linq.Functions
 			this.Merge(new CollectionContainsGenerator());
 
 			this.Merge(new DateTimePropertiesHqlGenerator());
+
+			this.Merge(new DecimalAddGenerator());
+			this.Merge(new DecimalDivideGenerator());
+			this.Merge(new DecimalMultiplyGenerator());
+			this.Merge(new DecimalSubtractGenerator());
+			this.Merge(new DecimalRemainderGenerator());
+			this.Merge(new DecimalNegateGenerator());
+			this.Merge(new RoundGenerator());
+			this.Merge(new TruncateGenerator());
 		}
 
 		protected bool GetRuntimeMethodGenerator(MethodInfo method, out IHqlGeneratorForMethod methodGenerator)

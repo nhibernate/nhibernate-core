@@ -36,7 +36,10 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Int16, 255, "tinyint");
 			RegisterColumnType(DbType.Int32, "int");
 			RegisterColumnType(DbType.Int64, "bigint");
-			RegisterColumnType(DbType.Decimal, "numeric(18,0)");
+			// 6.0 TODO: bring down to 19,5 for consistency with other dialects.
+			RegisterColumnType(DbType.Decimal, "numeric(23,5)");
+			// Maximal precision is said to be 38, but .Net is limited to 28-29.
+			RegisterColumnType(DbType.Decimal, 29, "numeric($p,$s)");
 			RegisterColumnType(DbType.Single, "real");
 			RegisterColumnType(DbType.Double, "float");
 			RegisterColumnType(DbType.AnsiStringFixedLength, "char(255)");

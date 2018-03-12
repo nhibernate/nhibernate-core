@@ -639,6 +639,8 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public void Serialization()
 		{
+			TestsContext.AssumeSystemTypeIsSerializable();
+
 			ISession s = OpenSession();
 			Master m = new Master();
 			Detail d1 = new Detail();

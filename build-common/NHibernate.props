@@ -24,5 +24,7 @@
 
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <TreatSpecificWarningsAsErrors />
+    
+    <DisableImplicitPackageTargetFallback>True</DisableImplicitPackageTargetFallback>
   </PropertyGroup>
 </Project>

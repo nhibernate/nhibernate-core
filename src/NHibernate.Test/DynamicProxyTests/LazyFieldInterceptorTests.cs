@@ -29,15 +29,16 @@ namespace NHibernate.Test.DynamicProxyTests
 		[Test]
 		public void LazyFieldInterceptorIsBinarySerializable()
 		{
+			TestsContext.AssumeSystemTypeIsSerializable();
+			
 			var pf = new DefaultProxyFactory();
 			var propertyInfo = typeof(MyClass).GetProperty("Id");
 			pf.PostInstantiate("MyClass", typeof(MyClass), new HashSet<System.Type>(), propertyInfo.GetGetMethod(), propertyInfo.GetSetMethod(), null);
 			var fieldInterceptionProxy = (IFieldInterceptorAccessor)pf.GetFieldInterceptionProxy(new MyClass());
 			fieldInterceptionProxy.FieldInterceptor = new DefaultFieldInterceptor(null, null, null, "MyClass", typeof(MyClass));
 
-			Assert.That(fieldInterceptionProxy, Is.BinarySerializable);
+			NHAssert.IsSerializable(fieldInterceptionProxy);
 		}
-
 
 		[Test]
 		public void DefaultDynamicLazyFieldInterceptorUnWrapsTIEExceptions()

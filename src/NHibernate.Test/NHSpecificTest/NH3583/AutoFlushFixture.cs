@@ -50,9 +50,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3583
 				Assert.That(result.Count, Is.EqualTo(1));
 			}
 		}
+
 		[Test]
 		public void ShouldAutoFlushWhenInDistributedTransaction()
 		{
+			Assume.That(Sfi.ConnectionProvider.Driver.SupportsSystemTransactions, Is.True);
+			
 			using (new TransactionScope())
 			using (var session = OpenSession())
 			{

@@ -286,7 +286,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("ceiling", new StandardSQLFunction("ceiling"));
 			RegisterFunction("ceil", new StandardSQLFunction("ceiling"));
 			RegisterFunction("floor", new StandardSQLFunction("floor"));
-			RegisterFunction("round", new RoundEmulatingSingleParameterFunction());
+			RegisterFunction("round", new StandardSQLFunctionWithRequiredParameters("round", new object[] {null, "0"}));
+			RegisterFunction("truncate", new StandardSQLFunctionWithRequiredParameters("round", new object[] {null, "0", "1"}));
 
 			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Double));
 
@@ -375,7 +376,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Currency, "MONEY");
 			RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
 			// SQL Server max precision is 38, but .Net is limited to 28-29.
-			RegisterColumnType(DbType.Decimal, 28, "DECIMAL($p, $s)");
+			RegisterColumnType(DbType.Decimal, 29, "DECIMAL($p, $s)");
 			RegisterColumnType(DbType.Double, "FLOAT(53)");
 			RegisterColumnType(DbType.Int16, "SMALLINT");
 			RegisterColumnType(DbType.Int32, "INT");
@@ -715,6 +716,13 @@ namespace NHibernate.Dialect
 		// https://msdn.microsoft.com/en-us/library/ms191240.aspx#Anchor_3
 		/// <inheritdoc />
 		public override int MaxAliasLength => 30;
+
+		/// <summary>
+		/// On SQL Server there is a limit of 2100 parameters, but two are reserved for sp_executesql
+		/// and three for sp_prepexec (used when preparing is enabled). Set the number to 2097
+		/// as the worst case scenario.
+		/// </summary>
+		public override int? MaxNumberOfParameters => 2097;
 
 		#region Overridden informational metadata
 

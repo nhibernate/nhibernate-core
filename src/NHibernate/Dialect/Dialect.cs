@@ -201,7 +201,7 @@ namespace NHibernate.Dialect
 		public virtual void Configure(IDictionary<string, string> settings)
 		{
 			DefaultCastLength = PropertiesHelper.GetInt32(Environment.QueryDefaultCastLength, settings, 4000);
-			DefaultCastPrecision = PropertiesHelper.GetByte(Environment.QueryDefaultCastPrecision, settings, null) ?? 28;
+			DefaultCastPrecision = PropertiesHelper.GetByte(Environment.QueryDefaultCastPrecision, settings, null) ?? 29;
 			DefaultCastScale = PropertiesHelper.GetByte(Environment.QueryDefaultCastScale, settings, null) ?? 10;
 		}
 
@@ -2445,6 +2445,16 @@ namespace NHibernate.Dialect
 		/// The maximum length a SQL alias can have.
 		/// </summary>
 		public virtual int MaxAliasLength => 18;
+
+		/// <summary>
+		/// The maximum number of parameters allowed in a query.
+		/// </summary>
+		public virtual int? MaxNumberOfParameters => null;
+
+		/// <summary>
+		/// The character used to terminate a SQL statement.
+		/// </summary>
+		public virtual char StatementTerminator => ';';
 
 		/// <summary>
 		/// The syntax used to add a column to a table. Note this is deprecated

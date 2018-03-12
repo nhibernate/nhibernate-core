@@ -55,10 +55,17 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			Parse(nav, fromAppSetting);
 		}
 
-		internal static HibernateConfiguration FromAppConfig(XmlNode node)
+		public static HibernateConfiguration FromAppConfig(XmlNode node)
 		{
-			XmlTextReader reader = new XmlTextReader(node.OuterXml, XmlNodeType.Document, null);
-			return new HibernateConfiguration(reader, true);
+			return FromAppConfig(node.OuterXml);
+		}
+
+		public static HibernateConfiguration FromAppConfig(string xml)
+		{
+			using (var reader = new XmlTextReader(xml, XmlNodeType.Document, null))
+			{
+				return new HibernateConfiguration(reader, true);
+			}
 		}
 
 		private XmlReaderSettings GetSettings()

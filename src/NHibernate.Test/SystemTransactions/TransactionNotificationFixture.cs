@@ -164,11 +164,13 @@ namespace NHibernate.Test.SystemTransactions
 			Assert.That(interceptor.afterTransactionCompletionCalled, Is.EqualTo(2));
 		}
 
-
 		[Description("NH2128")]
 		[Theory]
 		public void ShouldNotifyAfterDistributedTransactionWithOwnConnection(bool doCommit)
 		{
+			if (!Sfi.ConnectionProvider.Driver.SupportsSystemTransactions)
+				Assert.Ignore("Driver does not support System.Transactions. Ignoring test.");
+			
 			// Note: For system transaction, calling Close() on the session isn't
 			// supported, so we don't need to test that scenario.
 

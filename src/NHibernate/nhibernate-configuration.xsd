@@ -187,7 +187,7 @@
 									<xs:annotation>
 										<xs:documentation>
 											Set the default precision used in casting when the target type is decimal and
-											does not specify it. 28 by default, automatically trimmed down according to dialect type registration.
+											does not specify it. 29 by default, automatically trimmed down according to dialect type registration.
 										</xs:documentation>
 									</xs:annotation>
 								</xs:enumeration>

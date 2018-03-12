@@ -92,7 +92,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Double, "DOUBLE");
 			RegisterColumnType(DbType.Decimal, "NUMERIC(19,5)"); // Precision ranges from 0-127
 			// Anywhere max precision is 127, but .Net is limited to 28-29.
-			RegisterColumnType(DbType.Decimal, 28, "NUMERIC($p, $s)"); // Precision ranges from 0-127
+			RegisterColumnType(DbType.Decimal, 29, "NUMERIC($p, $s)"); // Precision ranges from 0-127
 		}
 
 		protected virtual void RegisterDateTimeTypeMappings()
@@ -140,12 +140,13 @@ namespace NHibernate.Dialect
 			RegisterFunction("radians", new StandardSQLFunction("radians", NHibernateUtil.Double));
 			RegisterFunction("rand", new StandardSQLFunction("rand", NHibernateUtil.Double));
 			RegisterFunction("remainder", new StandardSQLFunction("remainder"));
-			RegisterFunction("round", new StandardSQLFunction("round"));
+			RegisterFunction("round", new StandardSQLFunctionWithRequiredParameters("round", new object[] {null, "0"}));
 			RegisterFunction("sign", new StandardSQLFunction("sign", NHibernateUtil.Int32));
 			RegisterFunction("sin", new StandardSQLFunction("sin", NHibernateUtil.Double));
 			RegisterFunction("sqrt", new StandardSQLFunction("sqrt", NHibernateUtil.Double));
 			RegisterFunction("tan", new StandardSQLFunction("tan", NHibernateUtil.Double));
-			RegisterFunction("truncate", new StandardSQLFunction("truncate"));
+			RegisterFunction("truncnum", new StandardSQLFunctionWithRequiredParameters("truncnum", new object[] {null, "0"}));
+			RegisterFunction("truncate", new StandardSQLFunctionWithRequiredParameters("truncnum", new object[] {null, "0"}));
 		}
 
 		protected virtual void RegisterXmlFunctions()
