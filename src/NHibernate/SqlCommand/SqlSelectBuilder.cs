@@ -303,22 +303,20 @@ namespace NHibernate.SqlCommand
 
 		private string GetForUpdateString()
 		{
-			if (Dialect.SupportsOuterJoinForUpdate || !HasOuterJoin())
-				return Dialect.GetForUpdateString(lockMode);
-
-			if (Equals(lockMode, LockMode.Upgrade))
-				return Dialect.GetForUpdateString(mainTableAlias);
-			if (Equals(lockMode, LockMode.UpgradeNoWait))
-				return Dialect.GetForUpdateNowaitString(mainTableAlias);
+			if (!Dialect.SupportsOuterJoinForUpdate && HasOuterJoin())
+			{
+				if (Equals(lockMode, LockMode.Upgrade))
+					return Dialect.GetForUpdateString(mainTableAlias);
+				
+				if (Equals(lockMode, LockMode.UpgradeNoWait))
+					return Dialect.GetForUpdateNowaitString(mainTableAlias);
+			}
 
 			return Dialect.GetForUpdateString(lockMode);
 
-			bool HasOuterJoin()
-			{
-				return
-					StringHelper.ContainsCaseInsensitive(fromClause, "outer join") ||
-					!string.IsNullOrWhiteSpace(outerJoinsAfterFrom?.ToString());
-			}
+			bool HasOuterJoin() =>
+				StringHelper.ContainsCaseInsensitive(fromClause, "outer join") ||
+				outerJoinsAfterFrom?.IsEmptyOrWhitespace() == false;
 		}
 		#endregion
 	}
