@@ -44,10 +44,10 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Binary, 2147483647, "bytea");
 			RegisterColumnType(DbType.Boolean, "boolean");
 			RegisterColumnType(DbType.Byte, "int2");
-			RegisterColumnType(DbType.Currency, "decimal(16,4)");
+			RegisterColumnType(DbType.Currency, "decimal(18,4)");
 			RegisterColumnType(DbType.Decimal, "decimal(19,5)");
 			// PostgreSQL max precision is unlimited, but .Net is limited to 28-29.
-			RegisterColumnType(DbType.Decimal, 28, "decimal($p, $s)");
+			RegisterColumnType(DbType.Decimal, 29, "decimal($p, $s)");
 			RegisterColumnType(DbType.Double, "float8");
 			RegisterColumnType(DbType.Int16, "int2");
 			RegisterColumnType(DbType.Int32, "int4");

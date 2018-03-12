@@ -201,7 +201,7 @@ namespace NHibernate.Dialect
 		public virtual void Configure(IDictionary<string, string> settings)
 		{
 			DefaultCastLength = PropertiesHelper.GetInt32(Environment.QueryDefaultCastLength, settings, 4000);
-			DefaultCastPrecision = PropertiesHelper.GetByte(Environment.QueryDefaultCastPrecision, settings, null) ?? 28;
+			DefaultCastPrecision = PropertiesHelper.GetByte(Environment.QueryDefaultCastPrecision, settings, null) ?? 29;
 			DefaultCastScale = PropertiesHelper.GetByte(Environment.QueryDefaultCastScale, settings, null) ?? 10;
 		}
 

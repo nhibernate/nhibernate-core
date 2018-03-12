@@ -151,7 +151,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.DateTime, "DATETIME");
 			RegisterColumnType(DbType.Decimal, "NUMERIC(19,5)");
 			// SQL Server CE max precision is 38, but .Net is limited to 28-29.
-			RegisterColumnType(DbType.Decimal, 28, "NUMERIC($p, $s)");
+			RegisterColumnType(DbType.Decimal, 29, "NUMERIC($p, $s)");
 			RegisterColumnType(DbType.Double, "FLOAT");
 			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
 			RegisterColumnType(DbType.Int16, "SMALLINT");
