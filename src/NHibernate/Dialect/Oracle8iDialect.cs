@@ -182,13 +182,14 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.UInt32, "NUMBER(10,0)");
 			RegisterColumnType(DbType.UInt64, "NUMBER(20,0)");
 
+			// 6.0 TODO: bring down to 18,4 for consistency with other dialects.
 			RegisterColumnType(DbType.Currency, "NUMBER(22,4)");
 			RegisterColumnType(DbType.Single, "FLOAT(24)");
 			RegisterColumnType(DbType.Double, "DOUBLE PRECISION");
-			// Oracle max precision is 39-40, but .Net is limited to 28-29.
-			RegisterColumnType(DbType.Double, 28, "NUMBER($p,$s)");
+			RegisterColumnType(DbType.Double, 40, "NUMBER($p,$s)");
 			RegisterColumnType(DbType.Decimal, "NUMBER(19,5)");
-			RegisterColumnType(DbType.Decimal, 28, "NUMBER($p,$s)");
+			// Oracle max precision is 39-40, but .Net is limited to 28-29.
+			RegisterColumnType(DbType.Decimal, 29, "NUMBER($p,$s)");
 		}
 
 		protected virtual void RegisterDateTimeTypeMappings()

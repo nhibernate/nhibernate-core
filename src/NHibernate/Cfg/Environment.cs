@@ -226,7 +226,7 @@ namespace NHibernate.Cfg
 
 		/// <summary>
 		/// Set the default precision used in casting when the target type is decimal and
-		/// does not specify it. <c>28</c> by default, automatically trimmed down according to dialect type registration.
+		/// does not specify it. <c>29</c> by default, automatically trimmed down according to dialect type registration.
 		/// </summary>
 		public const string QueryDefaultCastPrecision = "query.default_cast_precision";
 

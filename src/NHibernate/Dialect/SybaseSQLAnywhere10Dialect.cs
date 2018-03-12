@@ -92,7 +92,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Double, "DOUBLE");
 			RegisterColumnType(DbType.Decimal, "NUMERIC(19,5)"); // Precision ranges from 0-127
 			// Anywhere max precision is 127, but .Net is limited to 28-29.
-			RegisterColumnType(DbType.Decimal, 28, "NUMERIC($p, $s)"); // Precision ranges from 0-127
+			RegisterColumnType(DbType.Decimal, 29, "NUMERIC($p, $s)"); // Precision ranges from 0-127
 		}
 
 		protected virtual void RegisterDateTimeTypeMappings()
