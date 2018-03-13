@@ -241,7 +241,7 @@ namespace NHibernate.Impl
 			var type = typedList.Type;
 
 			var typedValues = (from object value in vals
-							   select new TypedValue(type, value))
+							   select new TypedValue(type, value, false))
 				.ToList();
 
 			if (typedValues.Count == 1)
@@ -300,7 +300,7 @@ namespace NHibernate.Impl
 			}
 			else
 			{
-				namedParameters[name] = new TypedValue(type, val);
+				namedParameters[name] = new TypedValue(type, val, false);
 				return this;
 			}
 		}

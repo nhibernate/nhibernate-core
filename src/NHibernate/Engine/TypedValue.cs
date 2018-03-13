@@ -17,20 +17,30 @@ namespace NHibernate.Engine
 		private readonly object value;
 		private readonly IEqualityComparer<TypedValue> comparer;
 
-		// "value is ICollection": minimal logic, may not catch all cases, like HashSet<T>. Prefer
-		// directly calling "TypedValue(IType type, object value, bool isList)" when knowing what is value.
-		public TypedValue(IType type, object value) : this (type, value, value is ICollection)
+		/// <summary>
+		/// Constructor for typed value that may represent a simple value or a list value (for a parameter list).
+		/// If knowing what is value, use <see cref="TypedValue(IType, object, bool)"/> instead.
+		/// </summary>
+		/// <param name="type">The type of the value (or of its elements if it is a list value)</param>
+		/// <param name="value">The value.</param>
+		/// <remarks>The logic for infering if the value should be considered as a list value is minimal and will not
+		/// catch all cases, like hashset.</remarks>
+		public TypedValue(IType type, object value) : this (type, value, !type.IsCollectionType && value is ICollection && !type.ReturnedClass.IsArray)
 		{
 		}
 
+		/// <summary>
+		/// Construct a typed value.
+		/// </summary>
+		/// <param name="type">The type of the value (or of its elements if it is a list value)</param>
+		/// <param name="value">The value.</param>
+		/// <param name="isList"><see langword="true" /> if the value is a list value (for a parameter list),
+		/// <see langword="false" /> otherwise.</param>
 		public TypedValue(IType type, object value, bool isList)
 		{
 			this.type = type;
 			this.value = value;
-			if (isList && !type.IsCollectionType && !type.ReturnedClass.IsArray)
-				comparer = new ParameterListComparer();
-			else
-				comparer = new DefaultComparer();
+			comparer = isList ? (IEqualityComparer<TypedValue>) new ParameterListComparer() : new DefaultComparer();
 		}
 
 		public object Value

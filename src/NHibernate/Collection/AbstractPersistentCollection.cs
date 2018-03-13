@@ -720,7 +720,7 @@ namespace NHibernate.Collection
 				if (current != null && ForeignKeys.IsNotTransientSlow(entityName, current, session))
 				{
 					object currentId = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, current, session);
-					currentIds.Add(new TypedValue(idType, currentId));
+					currentIds.Add(new TypedValue(idType, currentId, false));
 				}
 			}
 
@@ -728,7 +728,7 @@ namespace NHibernate.Collection
 			foreach (object old in oldElements)
 			{
 				object oldId = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, old, session);
-				if (!currentIds.Contains(new TypedValue(idType, oldId)))
+				if (!currentIds.Contains(new TypedValue(idType, oldId, false)))
 				{
 					res.Add(old);
 				}
