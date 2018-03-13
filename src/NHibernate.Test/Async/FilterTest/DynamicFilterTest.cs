@@ -367,6 +367,35 @@ namespace NHibernate.Test.FilterTest
 		}
 
 		[Test]
+		public void InStyleFilterParameterWithHashSetAsync()
+		{
+			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// one-to-many loading tests
+			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			log.Info("Starting one-to-many collection loader filter tests with HashSet.");
+			using (var session = OpenSession())
+			{
+				Assert.Multiple(
+					async () =>
+					{
+						session.EnableFilter("regionlist")
+						       .SetParameterList("regions", new HashSet<string> { "LA", "APAC" });
+
+						log.Debug("Performing query of Salespersons");
+						var salespersons = await (session.CreateQuery("from Salesperson").ListAsync());
+						Assert.That(salespersons.Count, Is.EqualTo(1), "Incorrect salesperson count");
+
+						session.EnableFilter("guidlist")
+						       .SetParameterList("guids", new HashSet<Guid> { testData.Product1Guid, testData.Product2Guid });
+
+						log.Debug("Performing query of Products");
+						var products = await (session.CreateQuery("from Product").ListAsync());
+						Assert.That(products.Count, Is.EqualTo(2), "Incorrect product count");
+					});
+			}
+		}
+
+		[Test]
 		public async Task ManyToManyFilterOnCriteriaAsync()
 		{
 			using (var session = OpenSession())
@@ -572,6 +601,8 @@ namespace NHibernate.Test.FilterTest
 			public DateTime nextMonth;
 			public DateTime sixMonthsAgo;
 			public DateTime fourMonthsAgo;
+			public Guid Product1Guid;
+			public Guid Product2Guid;
 
 			private DynamicFilterTestAsync outer;
 
@@ -631,6 +662,8 @@ namespace NHibernate.Test.FilterTest
 					product1.StockNumber = (123);
 					product1.EffectiveStartDate = (lastMonth);
 					product1.EffectiveEndDate = (nextMonth);
+					product1.ProductGuid = Guid.NewGuid();
+					Product1Guid = product1.ProductGuid;
 
 					product1.AddCategory(cat1);
 					product1.AddCategory(cat2);
@@ -655,6 +688,8 @@ namespace NHibernate.Test.FilterTest
 					product2.StockNumber = (124);
 					product2.EffectiveStartDate = (sixMonthsAgo);
 					product2.EffectiveEndDate = (DateTime.Today);
+					product2.ProductGuid = Guid.NewGuid();
+					Product2Guid = product2.ProductGuid;
 
 					Category cat3 = new Category("test cat 2", sixMonthsAgo, DateTime.Today);
 					product2.AddCategory(cat3);
@@ -731,6 +766,8 @@ namespace NHibernate.Test.FilterTest
 					product1.StockNumber = (123);
 					product1.EffectiveStartDate = (lastMonth);
 					product1.EffectiveEndDate = (nextMonth);
+					product1.ProductGuid = Guid.NewGuid();
+					Product1Guid = product1.ProductGuid;
 
 					product1.AddCategory(cat1);
 					product1.AddCategory(cat2);
@@ -755,6 +792,8 @@ namespace NHibernate.Test.FilterTest
 					product2.StockNumber = (124);
 					product2.EffectiveStartDate = (sixMonthsAgo);
 					product2.EffectiveEndDate = (DateTime.Today);
+					product2.ProductGuid = Guid.NewGuid();
+					Product2Guid = product2.ProductGuid;
 
 					Category cat3 = new Category("test cat 2", sixMonthsAgo, DateTime.Today);
 					product2.AddCategory(cat3);
