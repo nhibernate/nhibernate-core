@@ -22,7 +22,7 @@ namespace NHibernate.Test.DriverTest
 	using System.Threading.Tasks;
 
 	[TestFixture]
-	public class SqlClientDriverFixtureAsync : TestCase
+	public class SqlServerDriverFixtureAsync : TestCase
 	{
 		protected override string MappingsAssembly => "NHibernate.Test";
 

@@ -1,4 +1,3 @@
-using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
@@ -13,7 +12,6 @@ using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Linq;
 using NHibernate.Type;
 using NUnit.Framework;
-using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.CfgTest.Loquacious
 {
@@ -21,7 +19,6 @@ namespace NHibernate.Test.CfgTest.Loquacious
 	public class ConfigurationFixture
 	{
 		[Test]
-		[Obsolete("Uses old driver")]
 		public void CompleteConfiguration()
 		{
 			const string connectionString = "The connection string";
@@ -56,7 +53,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 #endif
 					.Connected
 						.Through<DebugConnectionProvider>()
-						.By<SqlClientDriver>()
+						.By<SqlServer2000Driver>()
 						.Releasing(ConnectionReleaseMode.AfterTransaction)
 						.With(IsolationLevel.ReadCommitted)
 						.Using(connectionString)
@@ -90,7 +87,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			Assert.That(cfg.Properties[Environment.BatchSize], Is.EqualTo("15"));
 #endif
 			Assert.That(cfg.Properties[Environment.ConnectionProvider], Is.EqualTo(typeof(DebugConnectionProvider).AssemblyQualifiedName));
-			Assert.That(cfg.Properties[Environment.ConnectionDriver], Is.EqualTo(typeof(SqlClientDriver).AssemblyQualifiedName));
+			Assert.That(cfg.Properties[Environment.ConnectionDriver], Is.EqualTo(typeof(SqlServer2000Driver).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.ReleaseConnections], Is.EqualTo(ConnectionReleaseModeParser.ToString(ConnectionReleaseMode.AfterTransaction)));
 			Assert.That(cfg.Properties[Environment.Isolation], Is.EqualTo("ReadCommitted"));
 			Assert.That(cfg.Properties[Environment.ConnectionString], Is.EqualTo(connectionString));

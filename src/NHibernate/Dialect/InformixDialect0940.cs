@@ -26,7 +26,7 @@ namespace NHibernate.Dialect
     ///		</listheader>
     ///		<item>
     ///			<term>connection.driver_class</term>
-    ///			<description><see cref="NHibernate.Driver.OdbcDriver" /></description>
+    ///			<description>NHibernate.Driver.OdbcDriver</description>
     ///		</item>
     /// </list>
     /// </remarks>

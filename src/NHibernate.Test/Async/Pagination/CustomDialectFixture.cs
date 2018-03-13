@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Cfg;
@@ -22,7 +21,6 @@ namespace NHibernate.Test.Pagination
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	[Obsolete("Uses old driver")]
 	public class CustomDialectFixtureAsync : TestCase
 	{
 		protected override string MappingsAssembly

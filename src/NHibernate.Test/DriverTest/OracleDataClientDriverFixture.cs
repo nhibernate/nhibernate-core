@@ -13,7 +13,6 @@ using Environment = NHibernate.Cfg.Environment;
 namespace NHibernate.Test.DriverTest
 {
 	[TestFixture]
-	[Obsolete("Uses old driver")]
 	public class OracleDataClientDriverFixture
 	{
 		/// <summary>
@@ -118,7 +117,12 @@ namespace NHibernate.Test.DriverTest
 			try
 			{
 				driver = managed
-					? (OracleDataClientDriverBase)new OracleManagedDataClientDriver()
+					? 
+#if NETFX
+					(OracleDataClientDriverBase)new OracleManagedDriver()
+#else
+					throw new NotImplementedException("OracleManagedDriver")
+#endif
 					: new OracleDataClientDriver();
 			}
 			catch (Exception ex)

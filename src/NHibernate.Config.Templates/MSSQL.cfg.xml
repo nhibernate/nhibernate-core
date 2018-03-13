@@ -7,7 +7,7 @@ for your own use before compile tests in VisualStudio.
 <!-- This is the System.Data.dll provider for SQL Server -->
 <hibernate-configuration  xmlns="urn:nhibernate-configuration-2.2" >
 	<session-factory name="NHibernate.Test">
-		<property name="connection.driver_class">NHibernate.Driver.Sql2008ClientDriver</property>
+		<property name="connection.driver_class">NHibernate.Driver.SqlServer2008Driver, NHibernate.Driver.SqlServer</property>
 		<property name="connection.connection_string">
 			Server=(local);initial catalog=nhibernate;Integrated Security=SSPI
 		</property>

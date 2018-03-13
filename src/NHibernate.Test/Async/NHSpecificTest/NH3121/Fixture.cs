@@ -35,7 +35,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3121
 		[Test]
 		public void ShouldThrowWhenByteArrayTooLongAsync()
 		{
-			// For SQL Server only the SqlClientDriver sets parameter lengths
+			// For SQL Server only the SqlServer2000Driver sets parameter lengths
 			// even when there is no length specified in the mapping. The ODBC
 			// driver won't cause the truncation issue and hence not the exception.
 			if (!(Sfi.ConnectionProvider.Driver.IsSqlClientDriver()))

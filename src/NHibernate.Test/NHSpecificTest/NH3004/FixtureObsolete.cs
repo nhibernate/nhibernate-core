@@ -1,11 +1,13 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using NHibernate.SqlCommand;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3004
 {
 	[TestFixture]
-	public class Fixture
+	[Obsolete("Uses old driver")]
+	public class FixtureObsolete
 	{
 		[Test]
 		public void RemoveUnusedCommandParametersBug_1()
@@ -13,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3004
 			/* UseNamedPrefixInSql       is true 
 			 * UseNamedPrefixInParameter is false
 			 * */
-			var driver = new TestSqlServerDriver(true, false);
+			var driver = new TestSqlClientDriver(true, false);
 
 			RunTest(driver);
 		}
@@ -24,12 +26,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3004
 			/* UseNamedPrefixInSql       is true 
 			 * UseNamedPrefixInParameter is true
 			 * */
-			var driver = new TestSqlServerDriver(true, true);
+			var driver = new TestSqlClientDriver(true, true);
 
 			RunTest(driver);
 		}
 
-		private static void RunTest(TestSqlServerDriver driver)
+		private static void RunTest(TestSqlClientDriver driver)
 		{
 			var command = driver.CreateCommand();
 

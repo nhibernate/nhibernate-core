@@ -8,7 +8,7 @@ for your own use before compile tests in VisualStudio.
 <hibernate-configuration  xmlns="urn:nhibernate-configuration-2.2" >
 	<session-factory name="NHibernate.Test">
 		<property name="command_timeout">0</property>
-		<property name="connection.driver_class">NHibernate.Driver.SqlServerCeDriver</property>
+		<property name="connection.driver_class">NHibernate.Driver.SqlServerCompactDriver, NHibernate.Driver.SqlServer.Compact</property>
 		<property name="connection.connection_string">
 			Data Source=NHibernate.sdf
 		</property>

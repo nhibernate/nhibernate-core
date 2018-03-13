@@ -53,43 +53,30 @@
     <PackageReference Include="NUnit" Version="3.9.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.9.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
-    <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="5.12.1" />
-    <PackageReference Include="Npgsql" Version="3.2.4.1" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='net461'">
     <Reference Include="System.Configuration" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Data.OracleClient" />
-    <PackageReference Include="Microsoft.SqlServer.Compact" Version="4.0.8876.1" />
-    <PackageReference Include="Oracle.ManagedDataAccess" Version="12.1.2400" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.106" />
-    <PackageReference Include="MySql.Data" Version="6.9.11" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.0'">
-    <PackageReference Include="System.Data.SqlClient" Version="4.4.2" />
     <PackageReference Include="System.Data.OracleClient" Version="1.0.8" />
     <PackageReference Include="System.Data.Odbc" Version="4.5.0-preview1-25914-04" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
     <PackageReference Include="NUnitLite" Version="3.9.0" />
-    <PackageReference Include="MySql.Data" Version="6.10.6" />
-  </ItemGroup>
-  <ItemGroup Condition=" '$(NuGetPackageRoot)' != '' ">
-    <NativeBinaries Include="$(NuGetPackageRoot)microsoft.sqlserver.compact\4.0.8876.1\NativeBinaries\**\*.*" />
-    <Content Include="@(NativeBinaries)">
-      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup Condition=" '$(NuGetPackageRoot)' != '' ">
-    <NativeBinaries Include="$(NuGetPackageRoot)system.data.sqlite.core\1.0.105.2\build\net46\**\*.*" />
-    <Content Include="@(NativeBinaries)">
-      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate.DomainModel\NHibernate.DomainModel.csproj" />
+    <ProjectReference Include="..\NHibernate.Driver.Firebird\NHibernate.Driver.Firebird.csproj" />
+    <ProjectReference Include="..\NHibernate.Driver.MySql\NHibernate.Driver.MySql.csproj" />
+    <ProjectReference Include="..\NHibernate.Driver.PostgreSql\NHibernate.Driver.PostgreSql.csproj" />
+    <ProjectReference Include="..\NHibernate.Driver.SqlServer\NHibernate.Driver.SqlServer.csproj" />
     <ProjectReference Include="..\NHibernate\NHibernate.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)'=='net461'">
+    <ProjectReference Include="..\NHibernate.Driver.Oracle.Managed\NHibernate.Driver.Oracle.Managed.csproj" />
+    <ProjectReference Include="..\NHibernate.Driver.SQLite\NHibernate.Driver.SQLite.csproj" />
+    <ProjectReference Include="..\NHibernate.Driver.SqlServer.Compact\NHibernate.Driver.SqlServer.Compact.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />

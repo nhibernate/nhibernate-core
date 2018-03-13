@@ -1,15 +1,18 @@
-﻿using System.Data.Common;
+﻿using System;
+using System.Data.Common;
 using System.Text.RegularExpressions;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Util;
 using NUnit.Framework;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.NHSpecificTest.NH3202
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	[Obsolete("Uses old driver")]
+	public class FixtureObsolete : BugTestCase
 	{
 		protected override void Configure(Configuration configuration)
 		{
@@ -20,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3202
 				Assert.Ignore("Test is for MS SQL Server driver only (custom driver is used).");
 
 			cfg.SetProperty(Environment.Dialect, typeof(OffsetStartsAtOneTestDialect).AssemblyQualifiedName);
-			cfg.SetProperty(Environment.ConnectionDriver, typeof(OffsetTestDriver).AssemblyQualifiedName);
+			cfg.SetProperty(Environment.ConnectionDriver, typeof(OffsetTestObsoleteDriver).AssemblyQualifiedName);
 		}
 
 		private OffsetStartsAtOneTestDialect OffsetStartsAtOneTestDialect
@@ -28,9 +31,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3202
 			get { return (OffsetStartsAtOneTestDialect)Sfi.Dialect; }
 		}
 
-		private OffsetTestDriver CustomDriver
+		private OffsetTestObsoleteDriver CustomDriver
 		{
-			get { return (OffsetTestDriver)Sfi.ConnectionProvider.Driver; }
+			get { return (OffsetTestObsoleteDriver)Sfi.ConnectionProvider.Driver; }
 		}
 
 		protected override void OnSetUp()
@@ -99,7 +102,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3202
 	}
 
 
-	public class OffsetTestDriver : SqlServer2000Driver
+	[Obsolete("Uses old driver")]
+	public class OffsetTestObsoleteDriver : SqlClientDriver
 	{
 		public OffsetStartsAtOneTestDialect OffsetStartsAtOneTestDialect;
 		private int _offsetParameterIndex = 1;

@@ -26,7 +26,7 @@ namespace NHibernate.Test.DriverTest
 	}
 
 	[TestFixture]
-	public class SqlClientDriverFixture : TestCase
+	public class SqlServerDriverFixture : TestCase
 	{
 		protected override string MappingsAssembly => "NHibernate.Test";
 

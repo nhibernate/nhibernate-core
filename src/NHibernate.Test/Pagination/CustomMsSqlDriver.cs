@@ -1,8 +1,5 @@
-using System;
 using System.Data.Common;
-using System.Text.RegularExpressions;
 using NHibernate.Driver;
-using NUnit.Framework;
 
 namespace NHibernate.Test.Pagination
 {
@@ -10,8 +7,7 @@ namespace NHibernate.Test.Pagination
 	/// Class to work with CustomMsSqlDialect to allow
 	/// verification of simulated limit parameters
 	/// </summary>
-	[Obsolete("Uses old driver")]
-	public class CustomMsSqlDriver : SqlClientDriver
+	public class CustomMsSqlDriver : SqlServer2000Driver
 	{
 		public CustomMsSqlDialect CustomMsSqlDialect;
 

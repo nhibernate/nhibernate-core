@@ -6,7 +6,7 @@ for your own use before compile tests in VisualStudio.
 -->
 <hibernate-configuration  xmlns="urn:nhibernate-configuration-2.2" >
 	<session-factory name="NHibernate.Test">
-		<property name="connection.driver_class">NHibernate.Driver.SQLite20Driver</property>
+		<property name="connection.driver_class">NHibernate.Driver.SQLiteDriver, NHibernate.Driver.SQLite</property>
 		<!-- DateTimeFormatString allows to prevent storing the fact that written date was having kind UTC,
 		     which dodges the undesirable time conversion to local done on reads by System.Data.SQLite.
 		     See https://system.data.sqlite.org/index.html/tktview/44a0955ea344a777ffdbcc077831e1adc8b77a36

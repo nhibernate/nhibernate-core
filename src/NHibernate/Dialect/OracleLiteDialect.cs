@@ -17,7 +17,7 @@ namespace NHibernate.Dialect
 	///		</listheader>
 	///		<item>
 	///			<term>connection.driver_class</term>
-	///			<description><see cref="NHibernate.Driver.OracleLiteDataClientDriver" /></description>
+	///			<description>NHibernate.Driver.OracleLiteDataClientDriver</description>
 	///		</item>
 	/// </list>
 	/// </remarks>

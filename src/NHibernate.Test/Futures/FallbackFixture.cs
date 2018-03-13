@@ -11,21 +11,19 @@ using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.Futures
 {
-	[Obsolete("Uses old driver")]
-	public class TestDriverThatDoesntSupportQueryBatching : SqlClientDriver
+	public class TestDriverThatDoesntSupportQueryBatching : SqlServer2000Driver
 	{
 		public override bool SupportsMultipleQueries => false;
 	}
 
 	/// <summary>
-	/// I'm using a Driver which derives from SqlClientDriver to
+	/// I'm using a Driver which derives from SqlServer2000Driver to
 	/// return false for the SupportsMultipleQueries property. This is purely to test the way NHibernate
 	/// will behave when the driver that's being used does not support multiple queries... so even though
 	/// the test is using MsSql, it's only relevant for databases that don't support multiple queries
 	/// but this way it's just much easier to test this
 	/// </summary>
 	[TestFixture]
-	[Obsolete("Uses old driver")]
 	public class FallbackFixture : FutureFixture
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
