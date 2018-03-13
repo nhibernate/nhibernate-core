@@ -575,11 +575,11 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary> 
-		/// Get the <tt>FOR UPDATE OF column_list NOWAIT</tt> fragment appropriate
-		/// for this dialect given the aliases of the columns to be write locked.
+		/// Get the <c>FOR UPDATE OF column_list NOWAIT</c> fragment appropriate
+		/// for this dialect given the aliases of the columns or tables to be write locked.
 		/// </summary>
-		/// <param name="aliases">The columns to be write locked. </param>
-		/// <returns> The appropriate <tt>FOR UPDATE colunm_list NOWAIT</tt> clause string. </returns>
+		/// <param name="aliases">The columns or tables to be write locked.</param>
+		/// <returns>The appropriate <c>FOR UPDATE colunm_or_table_list NOWAIT</c> clause string.</returns>
 		public virtual string GetForUpdateNowaitString(string aliases)
 		{
 			return GetForUpdateString(aliases);
