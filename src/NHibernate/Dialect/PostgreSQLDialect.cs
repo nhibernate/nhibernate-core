@@ -227,6 +227,12 @@ namespace NHibernate.Dialect
 			return pagingBuilder.ToSqlString();
 		}
 
+		/// <inheritdoc />
+		public override bool ForUpdateOf => true;
+
+		/// <inheritdoc />
+		public override bool SupportsOuterJoinForUpdate => false;
+
 		public override string GetForUpdateString(string aliases)
 		{
 			return ForUpdateString + " of " + aliases;
@@ -318,7 +324,6 @@ namespace NHibernate.Dialect
 
 		public override bool SupportsUnboundedLobLocatorMaterialization => false;
 
-		public override bool SupportsOuterJoinForUpdate => false;
 		#endregion
 
 		[Serializable]

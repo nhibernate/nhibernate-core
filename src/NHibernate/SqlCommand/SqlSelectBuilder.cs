@@ -305,11 +305,31 @@ namespace NHibernate.SqlCommand
 		{
 			if (!Dialect.SupportsOuterJoinForUpdate && HasOuterJoin())
 			{
-				if (Equals(lockMode, LockMode.Upgrade))
-					return Dialect.GetForUpdateString(mainTableAlias);
-				
-				if (Equals(lockMode, LockMode.UpgradeNoWait))
-					return Dialect.GetForUpdateNowaitString(mainTableAlias);
+				var isUpgrade = Equals(lockMode, LockMode.Upgrade);
+				var isUpgradeNoWait = !isUpgrade && (
+					Equals(lockMode, LockMode.UpgradeNoWait) || Equals(lockMode, LockMode.Force));
+				if (!isUpgrade && !isUpgradeNoWait)
+					return string.Empty;
+
+				if (!Dialect.ForUpdateOf)
+				{
+					log.Warn(
+						"Unsupported 'for update' case: 'for update' query with an outer join using a dialect not" +
+						"supporting it and not supporting 'for update of' clause. Discarding 'for" +
+						"update' clause.");
+					return string.Empty;
+				}
+
+				if (Dialect.ForUpdateOfColumns)
+				{
+					log.Warn(
+						"Unimplemented 'for update' case: 'for update' query with an outer join using a dialect not" +
+						"supporting it and requiring columns for its 'for update of' syntax. Discarding 'for" +
+						"update' clause.");
+					return string.Empty;
+				}
+
+				return isUpgrade ? Dialect.GetForUpdateString(mainTableAlias) : Dialect.GetForUpdateNowaitString(mainTableAlias);
 			}
 
 			return Dialect.GetForUpdateString(lockMode);

@@ -526,8 +526,16 @@ namespace NHibernate.Dialect
 			get { return " for update"; }
 		}
 
-		/// <summary> Is <tt>FOR UPDATE OF</tt> syntax supported? </summary>
-		/// <value> True if the database supports <tt>FOR UPDATE OF</tt> syntax; false otherwise. </value>
+		/// <summary>Is <c>FOR UPDATE OF</c> syntax supported?</summary>
+		/// <value><see langword="true"/> if the database supports <c>FOR UPDATE OF</c> syntax; <see langword="false"/> otherwise. </value>
+		public virtual bool ForUpdateOf
+			// By default, just check ForUpdateOfColumns. ForUpdateOf needs to be overriden only for dialect suppoting
+			// "For Update Of" on table aliases.
+			=> ForUpdateOfColumns;
+
+		/// <summary>Is <c>FOR UPDATE OF</c> syntax expecting columns?</summary>
+		/// <value><see langword="true"/> if the database expects a column list with <c>FOR UPDATE OF</c> syntax,
+		/// <see langword="false"/> if it expects table alias instead or do not support <c>FOR UPDATE OF</c> syntax.</value>
 		public virtual bool ForUpdateOfColumns
 		{
 			// by default we report no support

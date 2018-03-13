@@ -175,8 +175,7 @@ namespace NHibernate.Dialect
 		//    throw new NotSupportedException();
 		//}
 
-		/// <summary> Is <tt>FOR UPDATE OF</tt> syntax supported? </summary>
-		/// <value> True if the database supports <tt>FOR UPDATE OF</tt> syntax; false otherwise. </value>
+		/// <inheritdoc />
 		public override bool ForUpdateOfColumns
 		{
 			get { return true; }
