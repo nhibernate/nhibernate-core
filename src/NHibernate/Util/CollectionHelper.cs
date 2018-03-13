@@ -602,6 +602,38 @@ namespace NHibernate.Util
 			}
 		}
 
+		// KeyValuePair<TK, TV>.GetHashCode default implementation is inadequate, see https://stackoverflow.com/a/5927853/1178314
+		// If one of its type is a reference type, it may ignore it for computing the hashcode, leading to potentially
+		// a lot of hashcode collisions. It is not a bug from GetHashCode semantic viewpoint, but it causes them
+		// to be potentially inefficients for usages in dictionnaries or hashset.
+		/// <summary>
+		/// Computes a hash code for <paramref name="coll"/>.
+		/// </summary>
+		/// <remarks>The hash code is computed as the sum of hash codes of
+		/// individual elements key xored with their value if any, so that the value is independent of the
+		/// collection iteration order.
+		/// </remarks>
+		public static int GetHashCode<TK, TV>(IEnumerable<KeyValuePair<TK, TV>> coll)
+		{
+			unchecked
+			{
+				var result = 0;
+
+				foreach (var obj in coll)
+				{
+					if (obj.Equals(default(KeyValuePair<TK, TV>)))
+						continue;
+
+					var itemHash = obj.Key.GetHashCode() * 397;
+					if (obj.Value != null)
+						itemHash = itemHash ^ (obj.Value.GetHashCode() * 17);
+					result += itemHash;
+				}
+
+				return result;
+			}
+		}
+
 		/// <summary>
 		/// Determines if two sets have equal elements. Supports <c>null</c> arguments.
 		/// </summary>

@@ -122,6 +122,41 @@ namespace NHibernate.Test.UtilityTest
 			Assert.That(CollectionHelper.DictionaryEquals<string, string>(d2, d1), Is.False);
 		}
 
+		[Test]
+		public void MapsWithSameContentShouldHaveSameHashCode()
+		{
+			var d1 = new Dictionary<string, string> { { "1", "2" }, { "3", "4" } };
+			var d2 = new Dictionary<string, string> { { "1", "2" }, { "3", "4" } };
+			Assert.That(CollectionHelper.GetHashCode(d1), Is.EqualTo(CollectionHelper.GetHashCode(d2)));
+		}
+
+		// Failure of following tests is not an error from GetHashCode semantic viewpoint, but it causes it
+		// to be potentially inefficients for usages in dictionnaries or hashset.
+
+		[Test]
+		public void MapsWithSameCountButDistinctKeysShouldNotHaveSameHashCode()
+		{
+			var d1 = new Dictionary<string, string> { { "1", "2" }, { "3", "4" } };
+			var d2 = new Dictionary<string, string> { { "1", "2" }, { "4", "3" } };
+			Assert.That(CollectionHelper.GetHashCode(d1), Is.Not.EqualTo(CollectionHelper.GetHashCode(d2)));
+		}
+
+		[Test]
+		public void MapsWithSameCountButDistinctValuesShouldNotHaveSameHashCode()
+		{
+			var d1 = new Dictionary<string, string> { { "1", "2" }, { "3", "4" } };
+			var d2 = new Dictionary<string, string> { { "1", "2" }, { "3", "3" } };
+			Assert.That(CollectionHelper.GetHashCode(d1), Is.Not.EqualTo(CollectionHelper.GetHashCode(d2)));
+		}
+
+		[Test]
+		public void MapsWithoutSameCountShouldNotHaveSameHashCode()
+		{
+			var d1 = new Dictionary<string, string> { { "1", "2" }, { "3", "4" } };
+			var d2 = new Dictionary<string, string> { { "1", "2" } };
+			Assert.That(CollectionHelper.GetHashCode(d1), Is.Not.EqualTo(CollectionHelper.GetHashCode(d2)));
+		}
+
 		#endregion
 
 		#region Set
