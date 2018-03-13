@@ -18,6 +18,7 @@ using System.Transactions;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Lock;
 using NHibernate.Dialect.Schema;
+using NHibernate.Driver;
 using NHibernate.Exceptions;
 using NHibernate.Id;
 using NHibernate.Mapping;
