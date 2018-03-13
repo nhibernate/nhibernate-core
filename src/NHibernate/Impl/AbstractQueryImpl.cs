@@ -723,7 +723,7 @@ namespace NHibernate.Impl
 			{
 				throw new QueryException(string.Format("An empty parameter-list generates wrong SQL; parameter name '{0}'", name));
 			}
-			namedParameterLists[name] = new TypedValue(type, vals);
+			namedParameterLists[name] = new TypedValue(type, vals, true);
 			return this;
 		}
 
