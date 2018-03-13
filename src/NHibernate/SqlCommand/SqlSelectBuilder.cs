@@ -24,7 +24,7 @@ namespace NHibernate.SqlCommand
 		private LockMode lockMode;
 		private string mainTableAlias;
 		private string comment;
-		
+
 		public SqlSelectBuilder(ISessionFactoryImplementor factory)
 			: base(factory.Dialect, factory) {}
 
@@ -315,8 +315,8 @@ namespace NHibernate.SqlCommand
 			return Dialect.GetForUpdateString(lockMode);
 
 			bool HasOuterJoin() =>
-				StringHelper.ContainsCaseInsensitive(fromClause, "outer join") ||
-				outerJoinsAfterFrom?.IsEmptyOrWhitespace() == false;
+				outerJoinsAfterFrom?.IsEmptyOrWhitespace() == false ||
+				StringHelper.ContainsCaseInsensitive(fromClause, "outer join");
 		}
 		#endregion
 	}
