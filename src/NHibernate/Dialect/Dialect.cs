@@ -501,15 +501,15 @@ namespace NHibernate.Dialect
 		/// <returns> The appropriate for update fragment. </returns>
 		public virtual string GetForUpdateString(LockMode lockMode)
 		{
-			if (lockMode == LockMode.Upgrade)
+			if (Equals(lockMode, LockMode.Upgrade))
 			{
 				return ForUpdateString;
 			}
-			if (lockMode == LockMode.UpgradeNoWait)
+			if (Equals(lockMode, LockMode.UpgradeNoWait))
 			{
 				return ForUpdateNowaitString;
 			}
-			if (lockMode == LockMode.Force)
+			if (Equals(lockMode, LockMode.Force))
 			{
 				return ForUpdateNowaitString;
 			}
