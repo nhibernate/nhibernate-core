@@ -11,12 +11,12 @@ Task Set-Configuration {
     $allSettings = @{
         'Firebird' = @{
             'connection.connection_string' = 'DataSource=localhost;Database=nhibernate;User ID=SYSDBA;Password=masterkey;MaxPoolSize=200;';
-            'connection.driver_class' = 'NHibernate.Driver.FirebirdClientDriver';
+            'connection.driver_class' = 'NHibernate.Driver.FirebirdDriver, NHibernate.Driver.Firebird';
             'dialect' = 'NHibernate.Dialect.FirebirdDialect'
         };
         'MySQL' = @{
             'connection.connection_string' = 'Server=127.0.0.1;Uid=root;Pwd=Password12!;Database=nhibernate;Old Guids=True;';
-            'connection.driver_class' = 'NHibernate.Driver.MySqlDataDriver';
+            'connection.driver_class' = 'NHibernate.Driver.MySqlDriver, NHibernate.Driver.MySql';
             'dialect' = 'NHibernate.Dialect.MySQL5Dialect'
         };
         'Odbc' = @{
@@ -35,7 +35,7 @@ Task Set-Configuration {
         };
         'PostgreSQL' = @{
             'connection.connection_string' = 'Host=localhost;Port=5432;Username=postgres;Password=Password12!;Database=nhibernate;Enlist=true';
-            'connection.driver_class' = 'NHibernate.Driver.NpgsqlDriver';
+            'connection.driver_class' = 'NHibernate.Driver.PostgreSqlDriver, NHibernate.Driver.PostgreSql';
             'dialect' = 'NHibernate.Dialect.PostgreSQL83Dialect'
         };
         'SQLite' = @{
@@ -46,13 +46,13 @@ Task Set-Configuration {
                 and https://github.com/nhibernate/nhibernate-core/issues/1362 #>
             # Please note the connection string is formated for putting the db file in $configDir.
             'connection.connection_string' = "Data Source=$configDir/NHibernate.db;DateTimeFormatString=yyyy-MM-dd HH:mm:ss.FFFFFFF;";
-            'connection.driver_class' = 'NHibernate.Driver.SQLite20Driver';
+            'connection.driver_class' = 'NHibernate.Driver.SQLiteDriver, NHibernate.Driver.SQLite';
             'dialect' = 'NHibernate.Dialect.SQLiteDialect'
         };
         'SqlServerCe' = @{
             # Please note the connection string is formated for putting the db file in $configDir.
             'connection.connection_string' = "Data Source=$configDir/NHibernate.sdf;";
-            'connection.driver_class' = 'NHibernate.Driver.SqlServerCeDriver';
+            'connection.driver_class' = 'NHibernate.Driver.SqlServerCompactDriver, NHibernate.Driver.SqlServer.Compact';
             'command_timeout' = '0';
             'dialect' = 'NHibernate.Dialect.MsSqlCe40Dialect'
         };
