@@ -8,10 +8,8 @@
 //------------------------------------------------------------------------------
 
 
-using System;
 using System.Collections;
 using NHibernate.Dialect;
-using NHibernate.Driver;
 using NHibernate.Engine;
 using NUnit.Framework;
 
@@ -32,7 +30,7 @@ namespace NHibernate.Test.DriverTest
 
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)
 		{
-			return factory.ConnectionProvider.Driver is OdbcDriver;
+			return factory.ConnectionProvider.Driver.IsOdbcDriver();
 		}
 
 		protected override void OnTearDown()

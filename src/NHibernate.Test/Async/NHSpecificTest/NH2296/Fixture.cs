@@ -9,7 +9,6 @@
 
 
 using System.Linq;
-using NHibernate.Driver;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2296
@@ -20,7 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2296
 	{
 		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
 		{
-			return !(factory.ConnectionProvider.Driver is OracleManagedDataClientDriver);
+			return !(factory.ConnectionProvider.Driver.IsOracleManagedDataClientDriver());
 		}
 
 		protected override void OnSetUp()

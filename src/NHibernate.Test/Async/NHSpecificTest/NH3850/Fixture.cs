@@ -15,7 +15,6 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using NHibernate.Driver;
 using NHibernate.Linq;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
@@ -42,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
 		{
 			// Cannot handle DbType.DateTimeOffset via ODBC.
-			return !(factory.ConnectionProvider.Driver is OdbcDriver);
+			return !(factory.ConnectionProvider.Driver.IsOdbcDriver());
 		}
 
 		protected override void OnSetUp()

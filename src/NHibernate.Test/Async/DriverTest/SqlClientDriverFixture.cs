@@ -12,7 +12,6 @@ using System;
 using System.Collections;
 using System.Data;
 using NHibernate.Dialect;
-using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NUnit.Framework;
@@ -36,7 +35,7 @@ namespace NHibernate.Test.DriverTest
 
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)
 		{
-			return factory.ConnectionProvider.Driver is SqlClientDriver;
+			return factory.ConnectionProvider.Driver.IsSqlClientDriver();
 		}
 
 		protected override void OnTearDown()
