@@ -5,7 +5,6 @@ using System.Data.Common;
 using System.Text.RegularExpressions;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
-using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.SqlCommand;
@@ -42,6 +41,16 @@ namespace NHibernate.Dialect
 	/// </remarks>
 	public class MsSql2000Dialect : Dialect
 	{
+		public const int MaxSizeForAnsiClob = 2147483647; // int.MaxValue
+		public const int MaxSizeForClob = 1073741823; // int.MaxValue / 2
+		public const int MaxSizeForBlob = 2147483647; // int.MaxValue
+
+		public const int MaxSizeForLengthLimitedAnsiString = 8000;
+		public const int MaxSizeForLengthLimitedString = 4000;
+		public const int MaxSizeForLengthLimitedBinary = 8000;
+		public const byte MaxDateTime2 = 8;
+		public const byte MaxDateTimeOffset = 10;
+
 		public MsSql2000Dialect()
 		{
 			RegisterCharacterTypeMappings();
@@ -358,8 +367,8 @@ namespace NHibernate.Dialect
 		protected virtual void RegisterLargeObjectTypeMappings()
 		{
 			RegisterColumnType(DbType.Binary, "VARBINARY(8000)");
-			RegisterColumnType(DbType.Binary, SqlClientDriver.MaxSizeForLengthLimitedBinary, "VARBINARY($l)");
-			RegisterColumnType(DbType.Binary, SqlClientDriver.MaxSizeForBlob, "IMAGE");
+			RegisterColumnType(DbType.Binary, MaxSizeForLengthLimitedBinary, "VARBINARY($l)");
+			RegisterColumnType(DbType.Binary, MaxSizeForBlob, "IMAGE");
 		}
 
 		protected virtual void RegisterDateTimeTypeMappings()
@@ -389,13 +398,13 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR(255)");
 			RegisterColumnType(DbType.AnsiStringFixedLength, 8000, "CHAR($l)");
 			RegisterColumnType(DbType.AnsiString, "VARCHAR(255)");
-			RegisterColumnType(DbType.AnsiString, SqlClientDriver.MaxSizeForLengthLimitedAnsiString, "VARCHAR($l)");
-			RegisterColumnType(DbType.AnsiString, SqlClientDriver.MaxSizeForAnsiClob, "TEXT");
+			RegisterColumnType(DbType.AnsiString, MaxSizeForLengthLimitedAnsiString, "VARCHAR($l)");
+			RegisterColumnType(DbType.AnsiString, MaxSizeForAnsiClob, "TEXT");
 			RegisterColumnType(DbType.StringFixedLength, "NCHAR(255)");
-			RegisterColumnType(DbType.StringFixedLength, SqlClientDriver.MaxSizeForLengthLimitedString, "NCHAR($l)");
+			RegisterColumnType(DbType.StringFixedLength, MaxSizeForLengthLimitedString, "NCHAR($l)");
 			RegisterColumnType(DbType.String, "NVARCHAR(255)");
-			RegisterColumnType(DbType.String, SqlClientDriver.MaxSizeForLengthLimitedString, "NVARCHAR($l)");
-			RegisterColumnType(DbType.String, SqlClientDriver.MaxSizeForClob, "NTEXT");
+			RegisterColumnType(DbType.String, MaxSizeForLengthLimitedString, "NVARCHAR($l)");
+			RegisterColumnType(DbType.String, MaxSizeForClob, "NTEXT");
 		}
 
 		public override string AddColumnString
@@ -447,7 +456,7 @@ namespace NHibernate.Dialect
 				"if exists (select * from dbo.sysobjects where id = object_id(N'{0}') and OBJECTPROPERTY(id, N'IsUserTable') = 1)" +
 				" drop table {0}";
 
-			return String.Format(dropTable, tableName);
+			return string.Format(dropTable, tableName);
 		}
 
 		public override string ForUpdateString
