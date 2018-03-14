@@ -228,7 +228,7 @@ namespace NHibernate.Dialect
 		}
 
 		/// <inheritdoc />
-		public override bool ForUpdateOf => true;
+		public override bool SupportsForUpdateOf => true;
 
 		/// <inheritdoc />
 		public override bool SupportsOuterJoinForUpdate => false;

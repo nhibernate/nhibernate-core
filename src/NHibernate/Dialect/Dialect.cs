@@ -528,7 +528,7 @@ namespace NHibernate.Dialect
 
 		/// <summary>Is <c>FOR UPDATE OF</c> syntax supported?</summary>
 		/// <value><see langword="true"/> if the database supports <c>FOR UPDATE OF</c> syntax; <see langword="false"/> otherwise. </value>
-		public virtual bool ForUpdateOf
+		public virtual bool SupportsForUpdateOf
 			// By default, just check ForUpdateOfColumns. ForUpdateOf needs to be overriden only for dialect suppoting
 			// "For Update Of" on table aliases.
 			=> ForUpdateOfColumns;

@@ -311,7 +311,7 @@ namespace NHibernate.SqlCommand
 				if (!isUpgrade && !isUpgradeNoWait)
 					return string.Empty;
 
-				if (!Dialect.ForUpdateOf)
+				if (!Dialect.SupportsForUpdateOf)
 				{
 					log.Warn(
 						"Unsupported 'for update' case: 'for update' query with an outer join using a dialect not" +
