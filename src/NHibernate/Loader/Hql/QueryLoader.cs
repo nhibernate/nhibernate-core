@@ -70,7 +70,7 @@ namespace NHibernate.Loader.Hql
 			// we are given a map of user-alias -> lock mode
 			// create a new map of sql-alias -> lock mode
 			var aliasedLockModes = new Dictionary<string, LockMode>();
-			Dictionary<string, string[]> keyColumnNames = dialect.ForUpdateOfColumns ? new Dictionary<string, string[]>() : null;
+			Dictionary<string, string[]> keyColumnNames = dialect.UsesColumnsWithForUpdateOf ? new Dictionary<string, string[]>() : null;
 
 			foreach (var entry in lockModes)
 			{

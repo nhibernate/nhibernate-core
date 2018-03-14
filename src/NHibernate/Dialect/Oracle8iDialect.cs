@@ -485,10 +485,17 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+		// Since v5.1
+		[Obsolete("Use UsesColumnsWithForUpdateOf instead")]
 		public override bool ForUpdateOfColumns
 		{
 			get { return true; }
 		}
+
+		/* 6.0 TODO: uncomment once ForUpdateOfColumns is removed.
+		/// <inheritdoc />
+		public override bool UsesColumnsWithForUpdateOf => true;
+		*/
 
 		public override bool SupportsUnionAll
 		{
