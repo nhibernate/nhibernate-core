@@ -529,18 +529,26 @@ namespace NHibernate.Dialect
 		/// <summary>Is <c>FOR UPDATE OF</c> syntax supported?</summary>
 		/// <value><see langword="true"/> if the database supports <c>FOR UPDATE OF</c> syntax; <see langword="false"/> otherwise. </value>
 		public virtual bool SupportsForUpdateOf
-			// By default, just check ForUpdateOfColumns. ForUpdateOf needs to be overriden only for dialect suppoting
+			// By default, just check UsesColumnsWithForUpdateOf. ForUpdateOf needs to be overriden only for dialects supporting
 			// "For Update Of" on table aliases.
-			=> ForUpdateOfColumns;
+			=> UsesColumnsWithForUpdateOf;
 
 		/// <summary>Is <c>FOR UPDATE OF</c> syntax expecting columns?</summary>
 		/// <value><see langword="true"/> if the database expects a column list with <c>FOR UPDATE OF</c> syntax,
 		/// <see langword="false"/> if it expects table alias instead or do not support <c>FOR UPDATE OF</c> syntax.</value>
+		// Since v5.1
+		[Obsolete("Use UsesColumnsWithForUpdateOf instead")]
 		public virtual bool ForUpdateOfColumns
 		{
 			// by default we report no support
 			get { return false; }
 		}
+
+		public virtual bool UsesColumnsWithForUpdateOf
+#pragma warning disable 618
+			// For avoiding a breaking change, we need to call the old name by default.
+			=> ForUpdateOfColumns;
+#pragma warning restore 618
 
 		/// <summary> 
 		/// Does this dialect support <tt>FOR UPDATE</tt> in conjunction with outer joined rows?

@@ -320,7 +320,7 @@ namespace NHibernate.SqlCommand
 					return string.Empty;
 				}
 
-				if (Dialect.ForUpdateOfColumns)
+				if (Dialect.UsesColumnsWithForUpdateOf)
 				{
 					log.Warn(
 						"Unimplemented 'for update' case: 'for update' query with an outer join using a dialect not" +

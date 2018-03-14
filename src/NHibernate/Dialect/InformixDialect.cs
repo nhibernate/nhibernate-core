@@ -1,11 +1,12 @@
+using System;
 using System.Data;
 using System.Data.Common;
 using System.Text;
-using NHibernate.Cfg;
 using NHibernate.Dialect.Function;
 using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
+using Environment = NHibernate.Cfg.Environment;
 
 //using NHibernate.Dialect.Schema;
 
@@ -176,10 +177,17 @@ namespace NHibernate.Dialect
 		//}
 
 		/// <inheritdoc />
+		// Since v5.1
+		[Obsolete("Use UsesColumnsWithForUpdateOf instead")]
 		public override bool ForUpdateOfColumns
 		{
 			get { return true; }
 		}
+
+		/* 6.0 TODO: uncomment once ForUpdateOfColumns is removed.
+		/// <inheritdoc />
+		public override bool UsesColumnsWithForUpdateOf => true;
+		*/
 
 		/// <summary> 
 		/// Does this dialect support <tt>FOR UPDATE</tt> in conjunction with outer joined rows?
