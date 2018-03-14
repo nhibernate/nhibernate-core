@@ -24,7 +24,6 @@ namespace NHibernate.Loader.Criteria
 	{
 		private readonly CriteriaQueryTranslator translator;
 		private readonly ISet<string> querySpaces;
-		private readonly IType[] resultTypes;
 		//the user visible aliases, which are unknown to the superclass,
 		//these are not the actual "physical" SQL aliases
 		private readonly string[] userAliases;
@@ -47,7 +46,7 @@ namespace NHibernate.Loader.Criteria
 			InitFromWalker(walker);
 
 			userAliases = walker.UserAliases;
-			resultTypes = walker.ResultTypes;
+			ResultTypes = walker.ResultTypes;
 			includeInResultRow = walker.IncludeInResultRow;
 			resultRowLength = ArrayHelper.CountTrue(IncludeInResultRow);
 			// fill caching objects only if there is a projection
@@ -76,11 +75,6 @@ namespace NHibernate.Loader.Criteria
 			get { return translator; }
 		}
 
-		public IType[] ResultTypes
-		{
-			get { return resultTypes; }
-		}
-
 		protected override string[] ResultRowAliases
 		{
 			get { return userAliases; }
@@ -93,7 +87,7 @@ namespace NHibernate.Loader.Criteria
 
 		public IList List(ISessionImplementor session)
 		{
-			return List(session, translator.GetQueryParameters(), querySpaces, resultTypes);
+			return List(session, translator.GetQueryParameters(), querySpaces);
 		}
 
 		protected override IResultTransformer ResolveResultTransformer(IResultTransformer resultTransformer)

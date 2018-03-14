@@ -250,8 +250,7 @@ namespace NHibernate.Loader
 
 				var st = await (PrepareQueryCommandAsync(queryParameters, false, session, cancellationToken)).ConfigureAwait(false);
 
-				var rs = await (GetResultSetAsync(st, queryParameters.HasAutoDiscoverScalarTypes, queryParameters.Callable, selection, session, cancellationToken)).ConfigureAwait(false);
-
+				var rs = await (GetResultSetAsync(st, queryParameters, session, forcedResultTransformer, cancellationToken)).ConfigureAwait(false);
 				// would be great to move all this below here into another method that could also be used
 				// from the new scrolling stuff.
 				//
@@ -838,7 +837,36 @@ namespace NHibernate.Loader
 		/// <param name="callable"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>An DbDataReader advanced to the first record in RowSelection.</returns>
-		protected async Task<DbDataReader> GetResultSetAsync(DbCommand st, bool autoDiscoverTypes, bool callable, RowSelection selection, ISessionImplementor session, CancellationToken cancellationToken)
+		// Since v5.1
+		[Obsolete("Please use overload with a QueryParameter parameter.")]
+		protected Task<DbDataReader> GetResultSetAsync(DbCommand st, bool autoDiscoverTypes, bool callable, RowSelection selection, ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<DbDataReader>(cancellationToken);
+			}
+			return GetResultSetAsync(
+				st,
+				new QueryParameters
+				{
+					HasAutoDiscoverScalarTypes = autoDiscoverTypes, Callable = callable, RowSelection = selection
+				},
+				session,
+				null, cancellationToken);
+		}
+
+		/// <summary>
+		/// Fetch a <c>DbCommand</c>, call <c>SetMaxRows</c> and then execute it,
+		/// advance to the first result and return an SQL <c>DbDataReader</c>
+		/// </summary>
+		/// <param name="st">The <see cref="DbCommand" /> to execute.</param>
+		/// <param name="queryParameters">The <see cref="QueryParameters"/>.</param>
+		/// <param name="session">The <see cref="ISession" /> to load in.</param>
+		/// <param name="forcedResultTransformer">The forced result transformer for the query.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>A DbDataReader advanced to the first record in RowSelection.</returns>
+		protected async Task<DbDataReader> GetResultSetAsync(
+			DbCommand st, QueryParameters queryParameters, ISessionImplementor session, IResultTransformer forcedResultTransformer, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			DbDataReader rs = null;
@@ -854,14 +882,14 @@ namespace NHibernate.Loader
 					rs = WrapResultSet(rs);
 
 				Dialect.Dialect dialect = session.Factory.Dialect;
-				if (!dialect.SupportsLimitOffset || !UseLimit(selection, dialect))
+				if (!dialect.SupportsLimitOffset || !UseLimit(queryParameters.RowSelection, dialect))
 				{
-					await (AdvanceAsync(rs, selection, cancellationToken)).ConfigureAwait(false);
+					await (AdvanceAsync(rs, queryParameters.RowSelection, cancellationToken)).ConfigureAwait(false);
 				}
 
-				if (autoDiscoverTypes)
+				if (queryParameters.HasAutoDiscoverScalarTypes)
 				{
-					AutoDiscoverTypes(rs);
+					AutoDiscoverTypes(rs, queryParameters, forcedResultTransformer);
 				}
 				return rs;
 			}
@@ -1078,7 +1106,35 @@ namespace NHibernate.Loader
 		/// <param name="resultTypes"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
+		// Since v5.1
+		[Obsolete("Please use overload without resultTypes")]
 		protected Task<IList> ListAsync(ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces, IType[] resultTypes, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IList>(cancellationToken);
+			}
+			try
+			{
+				ResultTypes = resultTypes;
+				return ListAsync(session, queryParameters, querySpaces, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<IList>(ex);
+			}
+		}
+
+		/// <summary>
+		/// Return the query results, using the query cache, called
+		/// by subclasses that implement cacheable queries
+		/// </summary>
+		/// <param name="session"></param>
+		/// <param name="queryParameters"></param>
+		/// <param name="querySpaces"></param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns></returns>
+		protected Task<IList> ListAsync(ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -1090,7 +1146,7 @@ namespace NHibernate.Loader
 
 				if (cacheable)
 				{
-					return ListUsingQueryCacheAsync(session, queryParameters, querySpaces, resultTypes, cancellationToken);
+					return ListUsingQueryCacheAsync(session, queryParameters, querySpaces, cancellationToken);
 				}
 				return ListIgnoreQueryCacheAsync(session, queryParameters, cancellationToken);
 			}
@@ -1106,19 +1162,19 @@ namespace NHibernate.Loader
 			return GetResultList(await (DoListAsync(session, queryParameters, cancellationToken)).ConfigureAwait(false), queryParameters.ResultTransformer);
 		}
 
-		private async Task<IList> ListUsingQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces, IType[] resultTypes, CancellationToken cancellationToken)
+		private async Task<IList> ListUsingQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IQueryCache queryCache = _factory.GetQueryCache(queryParameters.CacheRegion);
 
 			QueryKey key = GenerateQueryKey(session, queryParameters);
 
-			IList result = await (GetResultFromQueryCacheAsync(session, queryParameters, querySpaces, resultTypes, queryCache, key, cancellationToken)).ConfigureAwait(false);
+			IList result = await (GetResultFromQueryCacheAsync(session, queryParameters, querySpaces, queryCache, key, cancellationToken)).ConfigureAwait(false);
 
 			if (result == null)
 			{
 				result = await (DoListAsync(session, queryParameters, key.ResultTransformer, cancellationToken)).ConfigureAwait(false);
-				await (PutResultInQueryCacheAsync(session, queryParameters, resultTypes, queryCache, key, result, cancellationToken)).ConfigureAwait(false);
+				await (PutResultInQueryCacheAsync(session, queryParameters, queryCache, key, result, cancellationToken)).ConfigureAwait(false);
 			}
 
 			IResultTransformer resolvedTransformer = ResolveResultTransformer(queryParameters.ResultTransformer);
@@ -1138,7 +1194,7 @@ namespace NHibernate.Loader
 		}
 
 		private async Task<IList> GetResultFromQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters,
-											  ISet<string> querySpaces, IType[] resultTypes, IQueryCache queryCache,
+											  ISet<string> querySpaces, IQueryCache queryCache,
 											  QueryKey key, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -1157,7 +1213,10 @@ namespace NHibernate.Loader
 
 				try
 				{
-					result = await (queryCache.GetAsync(key, key.ResultTransformer.GetCachedResultTypes(resultTypes), queryParameters.NaturalKeyLookup, querySpaces, session, cancellationToken)).ConfigureAwait(false);
+					result = await (queryCache.GetAsync(
+						key,
+						queryParameters.HasAutoDiscoverScalarTypes ? null : key.ResultTransformer.GetCachedResultTypes(ResultTypes),
+						queryParameters.NaturalKeyLookup, querySpaces, session, cancellationToken)).ConfigureAwait(false);
 					if (_factory.Statistics.IsStatisticsEnabled)
 					{
 						if (result == null)
@@ -1179,13 +1238,13 @@ namespace NHibernate.Loader
 			return result;
 		}
 
-		private async Task PutResultInQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters, IType[] resultTypes,
+		private async Task PutResultInQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters,
 										   IQueryCache queryCache, QueryKey key, IList result, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (session.CacheMode.HasFlag(CacheMode.Put))
 			{
-				bool put = await (queryCache.PutAsync(key, key.ResultTransformer.GetCachedResultTypes(resultTypes), result, queryParameters.NaturalKeyLookup, session, cancellationToken)).ConfigureAwait(false);
+				bool put = await (queryCache.PutAsync(key, key.ResultTransformer.GetCachedResultTypes(ResultTypes), result, queryParameters.NaturalKeyLookup, session, cancellationToken)).ConfigureAwait(false);
 				if (put && _factory.Statistics.IsStatisticsEnabled)
 				{
 					_factory.StatisticsImplementor.QueryCachePut(QueryIdentifier, queryCache.RegionName);
