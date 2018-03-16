@@ -118,7 +118,7 @@ namespace NHibernate.Loader
 			JoinFragment ojf = MergeOuterJoins(associations);
 
 			SqlSelectBuilder select = new SqlSelectBuilder(Factory)
-				.SetLockMode(lockMode)
+				.SetLockMode(lockMode, alias)
 				.SetSelectClause(selectClause)
 				.SetFromClause(Dialect.AppendLockHint(lockMode, persister.FromTableFragment(alias)) +persister.FromJoinFragment(alias, true, true))
 				.SetWhereClause(condition)

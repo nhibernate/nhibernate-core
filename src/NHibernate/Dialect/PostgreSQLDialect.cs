@@ -231,6 +231,12 @@ namespace NHibernate.Dialect
 			return pagingBuilder.ToSqlString();
 		}
 
+		/// <inheritdoc />
+		public override bool SupportsForUpdateOf => true;
+
+		/// <inheritdoc />
+		public override bool SupportsOuterJoinForUpdate => false;
+
 		public override string GetForUpdateString(string aliases)
 		{
 			return ForUpdateString + " of " + aliases;

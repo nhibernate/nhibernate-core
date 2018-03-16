@@ -165,7 +165,7 @@ namespace NHibernate.Loader.Criteria
 			}
 
 			Dictionary<string, LockMode> aliasedLockModes = new Dictionary<string, LockMode>();
-			Dictionary<string, string[]> keyColumnNames = dialect.ForUpdateOfColumns ? new Dictionary<string, string[]>() : null;
+			Dictionary<string, string[]> keyColumnNames = dialect.UsesColumnsWithForUpdateOf ? new Dictionary<string, string[]>() : null;
 			string[] drivingSqlAliases = Aliases;
 
 			//NH-3710: if we are issuing an aggregation function, Aliases will be null
