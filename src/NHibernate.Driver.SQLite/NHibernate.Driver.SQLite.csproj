@@ -43,7 +43,7 @@
   </ItemGroup>
 
   <!-- This next section is in addition to the .target file for project references. -->
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
     <Content Include="$(NuGetPackageRoot)system.data.sqlite.core\1.0.106\build\net46\**\*.*">
       <Pack>false</Pack>
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
