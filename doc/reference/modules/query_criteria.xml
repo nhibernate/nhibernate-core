@@ -145,7 +145,7 @@ foreach ( IDictionary map in cats )
     Cat kitten = (Cat) map["kt"];
 }]]></programlisting>
       <para>
-        Note that for retrieving just kittens you can also use entity projection.
+        Note that for retrieving just kittens you can also use an entity projection.
         See <xref linkend="querycriteria-projection"/> for more information.
       </para>
 
@@ -154,8 +154,8 @@ foreach ( IDictionary map in cats )
     <sect1 id="querycriteria_entityjoin">
       <title>Join entities without association (Entity joins or ad hoc joins)</title>
       <para>
-        In criteria you have the ability to define a join to any entity, not just a mapped association.
-        To achieve it use <literal>CreateEntityAlias</literal> and <literal>CreateEntityCriteria</literal>. By example:
+        In criteria you have the ability to define a join to any entity, not just through a mapped association.
+        To achieve it, use <literal>CreateEntityAlias</literal> and <literal>CreateEntityCriteria</literal>. By example:
       </para>
 
       <programlisting><![CDATA[IList<Cat> uniquelyNamedCats = sess.CreateCriteria<Cat>("c")
@@ -310,7 +310,7 @@ var results = session.CreateCriteria<Cat>()
     .List<object[]>();]]></programlisting>
 
       <para>
-        You can also add entity projection to criteria:
+        You can also add an entity projection to a criteria query:
       </para>
 
       <programlisting><![CDATA[var kittens = sess.CreateCriteria<Cat>()

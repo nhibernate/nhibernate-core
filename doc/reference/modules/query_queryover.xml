@@ -216,8 +216,8 @@ IList<Cat> cats =
     <sect1 id="queryqueryover_entityjoin">
       <title>Join entities without association (Entity joins or ad hoc joins)</title>
       <para>
-        In QueryOver you have the ability to define a join to any entity, not just a mapped association.
-        To achieve it use <literal>JoinEntityAlias</literal> and <literal>JoinEntityQueryOver</literal>. By example:
+        In QueryOver you have the ability to define a join to any entity, not just through a mapped association.
+        To achieve it, use <literal>JoinEntityAlias</literal> and <literal>JoinEntityQueryOver</literal>. By example:
       </para>
 
       <programlisting><![CDATA[Cat cat = null;
@@ -373,7 +373,7 @@ IList<CatSummary> catReport =
       <title>Entities Projection</title>
 
       <para>
-        You can add entity projections via <literal>AsEntity()</literal> extension.
+        You can add entity projections via the <literal>AsEntity()</literal> extension.
       </para>
 
       <programlisting><![CDATA[Cat mate = null;
@@ -384,8 +384,8 @@ var catAndMateNameList = sess.QueryOver<Cat>()
     .List<object[]>();]]></programlisting>
 
       <para>
-        Or it can be done via <literal>Projections.RootEntity</literal> and <literal>Projections.Entity</literal> methods
-        if more control over loaded entities is required. For instance entity projections can be lazy loaded 
+        Or it can be done via the <literal>Projections.RootEntity</literal> and <literal>Projections.Entity</literal> methods
+        if more control over loaded entities is required. For instance, entity projections can be lazy loaded
         or fetched with lazy properties:
       </para>
       <programlisting><![CDATA[.Select(
