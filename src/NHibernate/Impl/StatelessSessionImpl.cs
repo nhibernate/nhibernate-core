@@ -228,7 +228,20 @@ namespace NHibernate.Impl
 
 		public override object GetContextEntityIdentifier(object obj)
 		{
-			return null;
+			using (BeginProcess())
+			{
+				if (obj.IsProxy())
+				{
+					INHibernateProxy proxy = obj as INHibernateProxy;
+
+					return proxy.HibernateLazyInitializer.Identifier;
+				}
+				else
+				{
+					EntityEntry entry = temporaryPersistenceContext.GetEntry(obj);
+					return (entry != null) ? entry.Id : null;
+				}
+			}
 		}
 
 		public override object Instantiate(string clazz, object id)

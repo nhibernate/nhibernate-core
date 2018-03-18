@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+										namespace="NHibernate.Test.NHSpecificTest.GH1149"
+										assembly="NHibernate.Test">
+	<class name="Company" >
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="Name" />
+
+		<one-to-one name="Address" class="Address" property-ref="Company" cascade="all-delete-orphan"/>
+
+	</class>
+
+	<class name="Address" >
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="AddressLine1" />
+
+		<many-to-one name="Company" class="Company" column="CompanyId" unique="true" />
+
+	</class>
+
+</hibernate-mapping>
