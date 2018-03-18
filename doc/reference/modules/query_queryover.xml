@@ -213,6 +213,25 @@ IList<Cat> cats =
     
     </sect1>
 
+    <sect1 id="queryqueryover_entityjoin">
+      <title>Join entities without association (Entity joins or ad hoc joins)</title>
+      <para>
+        In QueryOver you have the ability to define a join to any entity, not just a mapped association.
+        To achieve it use <literal>JoinEntityAlias</literal> and <literal>JoinEntityQueryOver</literal>. By example:
+      </para>
+
+      <programlisting><![CDATA[Cat cat = null;
+Cat joinedCat = null;
+
+var uniquelyNamedCats = sess.QueryOver<Cat>(() => cat)
+    .JoinEntityAlias(
+        () => joinedCat,
+        () => cat.Name == joinedCat.Name && cat.Id != joinedCat.Id,
+        JoinType.LeftOuterJoin)
+    .Where(() => joinedCat.Id == null)
+    .List();]]></programlisting>
+    </sect1>
+
     <sect1 id="queryqueryover-aliases">
         <title>Aliases</title>
 
@@ -348,6 +367,32 @@ IList<CatSummary> catReport =
             p => Projections.Concat(p.LastName, ", ", p.FirstName),
             p => p.Height.Abs())]]></programlisting>
 
+    </sect1>
+
+    <sect1 id="queryqueryover-projectionentities">
+      <title>Entities Projection</title>
+
+      <para>
+        You can add entity projections via <literal>AsEntity()</literal> extension.
+      </para>
+
+      <programlisting><![CDATA[Cat mate = null;
+
+var catAndMateNameList = sess.QueryOver<Cat>()
+    .JoinAlias(c => c.Mate, () => mate)
+    .Select(c => c.AsEntity(), c => mate.Name)
+    .List<object[]>();]]></programlisting>
+
+      <para>
+        Or it can be done via <literal>Projections.RootEntity</literal> and <literal>Projections.Entity</literal> methods
+        if more control over loaded entities is required. For instance entity projections can be lazy loaded 
+        or fetched with lazy properties:
+      </para>
+      <programlisting><![CDATA[.Select(
+    Projections.Entity(() => alias1).SetLazy(true),
+    Projections.Entity(() => alias2).SetFetchLazyProperties(true),
+    Projections.RootEntity()
+        )]]></programlisting>
     </sect1>
 
     <sect1 id="queryqueryover-subqueries">
