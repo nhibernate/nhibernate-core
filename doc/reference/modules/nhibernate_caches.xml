@@ -204,6 +204,10 @@
 			file system where the Prevalence engine will save data. It can be relative to the current directory or a
 			full path. If the directory doesn't exist, it will be created.
 		</para>
+		<para>
+			The <literal>prevalenceBase</literal> setting can only be set programmatically through on the NHibernate
+			configuration object, by example with <literal>Configuration.SetProperty</literal>.
+		</para>
 	</section>
 
 	<section id="NHibernate.Caches.SysCache">
@@ -215,11 +219,12 @@
 
 		<variablelist>
 			<varlistentry>
-				<term><literal>expiration</literal></term>
+				<term><literal>cache.default_expiration</literal></term>
 				<listitem>
 					Number of seconds to wait before expiring each item.
-					Takes precedence over <literal>cache.default_expiration</literal>.
-					If none of them are defined, defaults to <literal>300</literal>.
+					Defaults to <literal>300</literal>. It can also be set programmatically on the NHibernate
+					configuration object under the name <literal>expiration</literal>, which then takes precedence
+					over <literal>cache.default_expiration</literal>.
 				</listitem>
 			</varlistentry>
 			<varlistentry>
@@ -233,8 +238,9 @@
 				<term><literal>priority</literal></term>
 				<listitem>
 					A numeric cost of expiring each item, where 1 is a low cost, 5 is the highest, and 3 is normal.
-					Only values 1 through 5 are valid. 6 is a special value corresponding to
-					<literal>NotRemovable</literal>, it should not be used.
+					Only values 1 through 6 are valid. 6 is a special value corresponding to
+					<literal>NotRemovable</literal>. This setting can only be set programmatically through on the
+					NHibernate configuration object, by example with <literal>Configuration.SetProperty</literal>.
 				</listitem>
 			</varlistentry>
 		</variablelist>
@@ -276,11 +282,12 @@
 
 		<variablelist>
 			<varlistentry>
-				<term><literal>expiration</literal></term>
+				<term><literal>cache.default_expiration</literal></term>
 				<listitem>
 					Number of seconds to wait before expiring each item.
-					Takes precedence over <literal>cache.default_expiration</literal>.
-					If none of them are defined, defaults to <literal>300</literal>.
+					Defaults to <literal>300</literal>. It can also be set programmatically on the NHibernate
+					configuration object under the name <literal>expiration</literal>, which then takes precedence
+					over <literal>cache.default_expiration</literal>.
 				</listitem>
 			</varlistentry>
 			<varlistentry>
@@ -577,11 +584,12 @@
 
 		<variablelist>
 			<varlistentry>
-				<term><literal>expiration</literal></term>
+				<term><literal>cache.default_expiration</literal></term>
 				<listitem>
 					Number of seconds to wait before expiring each item.
-					Takes precedence over <literal>cache.default_expiration</literal>.
-					If none of them are defined, defaults to <literal>300</literal>.
+					Defaults to <literal>300</literal>. It can also be set programmatically on the NHibernate
+					configuration object under the name <literal>expiration</literal>, which then takes precedence
+					over <literal>cache.default_expiration</literal>.
 				</listitem>
 			</varlistentry>
 			<varlistentry>
