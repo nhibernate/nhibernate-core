@@ -230,17 +230,8 @@ namespace NHibernate.Impl
 		{
 			using (BeginProcess())
 			{
-				if (obj.IsProxy())
-				{
-					INHibernateProxy proxy = obj as INHibernateProxy;
-
-					return proxy.HibernateLazyInitializer.Identifier;
-				}
-				else
-				{
-					EntityEntry entry = temporaryPersistenceContext.GetEntry(obj);
-					return (entry != null) ? entry.Id : null;
-				}
+				EntityEntry entry = temporaryPersistenceContext.GetEntry(obj);
+				return (entry != null) ? entry.Id : null;
 			}
 		}
 
