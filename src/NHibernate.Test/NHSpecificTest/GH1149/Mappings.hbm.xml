@@ -19,7 +19,28 @@
 		<property name="AddressLine1" />
 
 		<many-to-one name="Company" class="Company" column="CompanyId" unique="true" />
+	</class>
 
+	<class name="CompanyO2O" >
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="Name" />
+
+		<one-to-one name="Address"/>
+
+	</class>
+
+	<class name="AddressO2O">
+		<id name="Id" type="int">
+			<generator class="foreign">
+				<param name="property">Company</param>
+			</generator>
+		</id>
+
+		<property name="AddressLine1" />
+
+		<one-to-one name="Company" cascade="save-update" constrained="true"/>
 	</class>
 
 </hibernate-mapping>

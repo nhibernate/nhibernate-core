@@ -25,4 +25,27 @@
 		public virtual string AddressLine1 { get; set; }
 
 	}
+
+	public class CompanyO2O
+	{
+		public virtual int Id { get; set; }
+		public virtual string Name { get; set; }
+		public virtual AddressO2O Address { get; set; }
+	}
+
+	public class AddressO2O
+	{
+		public virtual int Id { get; set; }
+
+		public virtual CompanyO2O Company { get; set; }
+
+		public virtual string AddressLine1 { get; set; }
+
+		public virtual void SetCompany(CompanyO2O company)
+		{
+			Company = company;
+			company.Address = this;
+		}
+
+	}
 }
