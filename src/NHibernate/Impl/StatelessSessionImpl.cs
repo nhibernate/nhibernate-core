@@ -228,7 +228,11 @@ namespace NHibernate.Impl
 
 		public override object GetContextEntityIdentifier(object obj)
 		{
-			return null;
+			using (BeginProcess())
+			{
+				EntityEntry entry = temporaryPersistenceContext.GetEntry(obj);
+				return (entry != null) ? entry.Id : null;
+			}
 		}
 
 		public override object Instantiate(string clazz, object id)
