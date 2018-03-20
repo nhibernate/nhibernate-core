@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH1149
@@ -23,21 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1149
 		public void StatelessSessionLoadsOneToOneRelatedObject_PropertyRef()
 		{
 			// Create and save company and address
-			var companyId = 0;
-
-			using (ISession session = OpenSession())
-			{
-				using (ITransaction tx = session.BeginTransaction())
-				{
-					var company = new Company { Name = "Test Company" };
-
-					company.Address = new Address(company) { AddressLine1 = "Company Address" };
-
-					companyId = (int) session.Save(company);
-
-					tx.Commit();
-				}
-			}
+			var companyId = SaveCompanyAndAddress();
 
 			using (var stateless = Sfi.OpenStatelessSession())
 			{
@@ -53,7 +40,76 @@ namespace NHibernate.Test.NHSpecificTest.GH1149
 		[Test]
 		public void StatelessSessionLoadsOneToOneRelatedObject_WithoutPropertyRef()
 		{
+			var companyId = SaveCompanyAndAddressO2O();
+
+			using (var stateless = Sfi.OpenStatelessSession())
+			{
+				var loadedCompany = stateless.Get<CompanyO2O>(companyId);
+
+				Assert.That(loadedCompany, Is.Not.Null);
+				Assert.That(loadedCompany.Name, Is.Not.Null);
+				Assert.That(loadedCompany.Address, Is.Not.Null);
+				Assert.That(loadedCompany.Address.AddressLine1, Is.Not.Null);
+			}
+		}
+
+		[Test]
+		public async Task StatelessSessionLoadsOneToOneRelatedObject_WithProperyRef_Async()
+		{
+			// Create and save company and address
+			var companyId = SaveCompanyAndAddress();
+
+			using (var stateless = Sfi.OpenStatelessSession())
+			{
+				var loadedCompany = await stateless.GetAsync<Company>(companyId);
+
+				Assert.That(loadedCompany, Is.Not.Null);
+				Assert.That(loadedCompany.Name, Is.Not.Null);
+				Assert.That(loadedCompany.Address, Is.Not.Null);
+				Assert.That(loadedCompany.Address.AddressLine1, Is.Not.Null);
+			}
+		}
+
+		[Test]
+		public async Task StatelessSessionLoadsOneToOneRelatedObject_WithoutPropertyRef_Async()
+		{
+			var companyId = SaveCompanyAndAddressO2O();
+
+			using (var stateless = Sfi.OpenStatelessSession())
+			{
+				var loadedCompany = await stateless.GetAsync<CompanyO2O>(companyId);
+
+				Assert.That(loadedCompany, Is.Not.Null);
+				Assert.That(loadedCompany.Name, Is.Not.Null);
+				Assert.That(loadedCompany.Address, Is.Not.Null);
+				Assert.That(loadedCompany.Address.AddressLine1, Is.Not.Null);
+			}
+		}
+
+		private int SaveCompanyAndAddress()
+		{
 			var companyId = 0;
+
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction tx = session.BeginTransaction())
+				{
+					var company = new Company { Name = "Test Company" };
+
+					company.Address = new Address(company) { AddressLine1 = "Company Address" };
+
+					companyId = (int) session.Save(company);
+
+					tx.Commit();
+				}
+
+				return companyId;
+			}
+		}
+
+		private int SaveCompanyAndAddressO2O()
+		{
+			var addressId = 0;
 
 			using (ISession session = OpenSession())
 			{
@@ -66,22 +122,13 @@ namespace NHibernate.Test.NHSpecificTest.GH1149
 
 					// Have to save the address to get the company to be saved as well
 					// Saving company doesn't save the address.
-					companyId = (int) session.Save(address);
+					addressId = (int) session.Save(address);
 
 					tx.Commit();
 				}
 			}
 
-			
-			using (var stateless = Sfi.OpenStatelessSession())
-			{
-				var loadedCompany = stateless.Get<CompanyO2O>(companyId);
-
-				Assert.That(loadedCompany, Is.Not.Null);
-				Assert.That(loadedCompany.Name, Is.Not.Null);
-				Assert.That(loadedCompany.Address, Is.Not.Null);
-				Assert.That(loadedCompany.Address.AddressLine1, Is.Not.Null);
-			}
+			return addressId;
 		}
 	}
 }
