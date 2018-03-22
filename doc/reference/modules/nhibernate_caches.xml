@@ -50,8 +50,8 @@
 						<para>
 							Uses <classname>Bamboo.Prevalence</classname> as the cache provider. Open the
 							file <filename>Bamboo.Prevalence.license.txt</filename> for more information about its license;
-							you can also visit its <ulink url="http://bbooprevalence.sourceforge.net/">website</ulink>.
-							Also see <xref linkend="NHibernate.Caches.Prevalence" />.
+							you can also visit its <ulink url="http://bbooprevalence.sourceforge.net/">website</ulink>. This
+							provider is available for the .Net Framework only. Also see <xref linkend="NHibernate.Caches.Prevalence" />.
 						</para>
 					</listitem>
 				</varlistentry>
@@ -62,7 +62,7 @@
 							Uses <classname>System.Web.Caching.Cache</classname> as the cache provider. This means that you can
 							rely on ASP.NET caching feature to understand how it works. For more information, read (on the MSDN):
 							<ulink url="https://msdn.microsoft.com/en-us/library/6hbbsfk6.aspx">Caching Application Data</ulink>.
-							Also see <xref linkend="NHibernate.Caches.SysCache" />.
+							This provider is available for the .Net Framework only. Also see <xref linkend="NHibernate.Caches.SysCache" />.
 						</para>
 					</listitem>
 				</varlistentry>
@@ -75,7 +75,7 @@
 							expire when the relevant data in the database changes.
 						</para>
 						<para>
-							SysCache2 requires Microsoft SQL Server 2000 or higher.
+							SysCache2 requires Microsoft SQL Server 2000 or higher. This provider is available for the .Net Framework only.
 						</para>
 						<para>
 							See <xref linkend="NHibernate.Caches.SysCache2" />.
@@ -87,7 +87,8 @@
 					<listitem>
 						<para>
 							Uses <literal>Memcached</literal>. See <ulink url="https://memcached.org/">memcached homepage</ulink>
-							for more information on Memcached. Also see <xref linkend="NHibernate.Caches.EnyimMemcached" />.
+							for more information on Memcached. This provider is available for the .Net Framework only. Also see
+							<xref linkend="NHibernate.Caches.EnyimMemcached" />.
 						</para>
 					</listitem>
 				</varlistentry>
@@ -106,8 +107,17 @@
 					<term><classname>NHibernate.Caches.RtMemoryCache</classname></term>
 					<listitem>
 						<para>
-							Uses <classname>System.Runtime.Caching.MemoryCache.Default</classname> as the cache provider.
-							See <xref linkend="NHibernate.Caches.RtMemoryCache" />.
+							Uses <classname>System.Runtime.Caching.MemoryCache.Default</classname> as the cache provider. This provider
+							is available for the .Net Framework only. See <xref linkend="NHibernate.Caches.RtMemoryCache" />.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><classname>NHibernate.Caches.CoreMemoryCache</classname></term>
+					<listitem>
+						<para>
+							Uses <classname>Microsoft.Extensions.Caching.Memory.MemoryCache</classname> as the cache provider. This provider
+							is available as a .Net Standard NuGet package. See <xref linkend="NHibernate.Caches.CoreMemoryCache" />.
 						</para>
 					</listitem>
 				</varlistentry>
@@ -637,6 +647,56 @@
     <cache region="foo" expiration="500" />
     <cache region="bar" expiration="300" sliding="true" />
   </rtmemorycache>
+</configuration>]]></programlisting>
+		</example>
+	</section>
+
+	<section id="NHibernate.Caches.CoreMemoryCache">
+		<title>CoreMemoryCache Configuration</title>
+		<para>
+			CoreMemoryCache relies on <classname>Microsoft.Extensions.Caching.Memory.MemoryCache</classname> for the
+			underlying implementation.
+			The following NHibernate configuration settings are available:
+		</para>
+
+		<variablelist>
+			<varlistentry>
+				<term><literal>cache.default_expiration</literal></term>
+				<listitem>
+					Number of seconds to wait before expiring each item.
+					Defaults to <literal>300</literal>. It can also be set programmatically on the NHibernate
+					configuration object under the name <literal>expiration</literal>, which then takes precedence
+					over <literal>cache.default_expiration</literal>.
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>cache.use_sliding_expiration</literal></term>
+				<listitem>
+					Should the expiration be sliding? A sliding expiration is reinitialized at each get.
+					Defaults to <literal>false</literal>.
+				</listitem>
+			</varlistentry>
+		</variablelist>
+
+		<para>
+			CoreMemoryCache has a config file section handler to allow configuring different expirations for
+			different regions, and configuring the <literal>MemoryCache</literal> expiration scan frequency.
+			Here is an example:
+		</para>
+
+		<example>
+			<programlisting><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <configSections>
+    <section name="corememorycache"
+      type="NHibernate.Caches.CoreMemoryCache.CoreMemoryCacheSectionHandler,NHibernate.Caches.CoreMemoryCache"
+    />
+  </configSections>
+
+  <corememorycache expiration-scan-frequency="00:05:00">
+    <cache region="foo" expiration="500" />
+    <cache region="bar" expiration="300" sliding="true" />
+  </corememorycache>
 </configuration>]]></programlisting>
 		</example>
 	</section>
