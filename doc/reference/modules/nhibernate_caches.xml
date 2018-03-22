@@ -121,6 +121,20 @@
 						</para>
 					</listitem>
 				</varlistentry>
+				<varlistentry>
+					<term><classname>NHibernate.Caches.CoreDistributedCache</classname></term>
+					<listitem>
+						<para>
+							Uses <classname>Microsoft.Extensions.Caching.Abstractions.IDistributedCache</classname> implementations as the cache
+							provider. The implementation has to be provided through an <literal>IDistributedCacheFactory</literal>.
+							Distributed cache factories for <literal>Redis</literal>, <literal>SqlServer</literal> and <literal>Memory</literal>
+							caches are available through their own package, prefixed by <literal>NHibernate.Caches.CoreDistributedCache.</literal>.
+						</para>
+						<para>
+							This provider is available as a .Net Standard NuGet package. See <xref linkend="NHibernate.Caches.CoreDistributedCache" />.
+						</para>
+					</listitem>
+				</varlistentry>
 			</variablelist>
 		</para>
 	</abstract>
@@ -699,6 +713,193 @@
   </corememorycache>
 </configuration>]]></programlisting>
 		</example>
+	</section>
+
+	<section id="NHibernate.Caches.CoreDistributedCache">
+		<title>CoreDistributedCache Configuration</title>
+		<para>
+			CoreDistributedCache relies on <classname>Microsoft.Extensions.Caching.Abstractions.IDistributedCache</classname>
+			implementations. The implementation has to be provided through an <literal>IDistributedCacheFactory</literal>, either
+			supplied through configuration or programmatically by affecting
+			<literal>CoreDistributedCacheProvider.CacheFactory</literal> before building a session factory.
+			The following NHibernate configuration settings are available:
+		</para>
+
+		<variablelist>
+			<varlistentry>
+				<term><literal>cache.default_expiration</literal></term>
+				<listitem>
+					Number of seconds to wait before expiring each item.
+					Defaults to <literal>300</literal>. It can also be set programmatically on the NHibernate
+					configuration object under the name <literal>expiration</literal>, which then takes precedence
+					over <literal>cache.default_expiration</literal>.
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>cache.use_sliding_expiration</literal></term>
+				<listitem>
+					Should the expiration be sliding? A sliding expiration is reinitialized at each get.
+					Defaults to <literal>false</literal>.
+				</listitem>
+			</varlistentry>
+		</variablelist>
+
+		<para>
+			CoreDistributedCache has a config file section handler to allow configuring different expirations for
+			different regions, configuring the <literal>IDistributedCacheFactory</literal> to use, and configuring
+			additional properties specific to the chosen <literal>IDistributedCache</literal> implementation.
+			Here is an example:
+		</para>
+
+		<example>
+			<programlisting><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <configSections>
+    <section name="coredistributedcache"
+      type="NHibernate.Caches.CoreDistributedCache.CoreDistributedCacheSectionHandler,
+            NHibernate.Caches.CoreDistributedCache" />
+  </configSections>
+
+  <coredistributedcache
+    factory-class="NHibernate.Caches.CoreDistributedCache.Memory.MemoryFactory,
+                   NHibernate.Caches.CoreDistributedCache.Memory">
+    <properties>
+      <property name="expiration-scan-frequency">00:10:00</property>
+      <property name="size-limit">1048576</property>
+    </properties>
+    <cache region="foo" expiration="500" sliding="true" />
+    <cache region="noExplicitExpiration" sliding="true" />
+  </coredistributedcache>
+</configuration>]]></programlisting>
+		</example>
+
+		<para>
+			CoreDistributedCache does not support <literal>NHibernate.Cache.ICache.Clear</literal>. Clearing the NHibernate
+			cache has no effects with CoreDistributedCache.
+		</para>
+
+		<section id="NHibernate.Caches.CoreDistributedCache.Redis">
+			<title>Redis distributed cache factory</title>
+
+			<para>
+				<literal>NHibernate.Caches.CoreDistributedCache.Redis</literal> provides a Redis distributed cache factory.
+				This factory yields a <literal>Microsoft.Extensions.Caching.Redis.RedisCache</literal>. For using it,
+				reference the cache factory package and set the <literal>factory-class</literal> attribute of the
+				<literal>coredistributedcache</literal> configuration section to
+				<literal>NHibernate.Caches.CoreDistributedCache.Redis.RedisFactory, NHibernate.Caches.CoreDistributedCache.Redis</literal>.
+			</para>
+			<para>
+				The following additional properties can be configured:
+			</para>
+
+			<variablelist>
+				<varlistentry>
+					<term><literal>configuration</literal></term>
+					<listitem>
+						Its value will be used to set the <literal>Configuration</literal> property of the
+						<literal>RedisCache</literal> options (<literal>RedisCacheOptions</literal>).
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><literal>instance-name</literal></term>
+					<listitem>
+						Its value will be used to set the <literal>InstanceName</literal> property of the
+						<literal>RedisCache</literal> options (<literal>RedisCacheOptions</literal>).
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</section>
+
+		<section id="NHibernate.Caches.CoreDistributedCache.SqlServer">
+			<title>SQL Server distributed cache factory</title>
+
+			<para>
+				<literal>NHibernate.Caches.CoreDistributedCache.SqlServer</literal> provides a SQL Server distributed cache factory.
+				This factory yields a <literal>Microsoft.Extensions.Caching.SqlServer.SqlServerCache</literal>. For using it,
+				reference the cache factory package and set the <literal>factory-class</literal> attribute of the
+				<literal>coredistributedcache</literal> configuration section to
+				<literal>NHibernate.Caches.CoreDistributedCache.SqlServer.SqlServerFactory, NHibernate.Caches.CoreDistributedCache.SqlServer</literal>.
+			</para>
+			<para>
+				The following additional properties can be configured:
+			</para>
+
+			<variablelist>
+				<varlistentry>
+					<term><literal>connection-string</literal></term>
+					<listitem>
+						Its value will be used to set the <literal>ConnectionString</literal> property of the
+						<literal>SqlServerCache</literal> options (<literal>SqlServerCacheOptions</literal>).
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><literal>schema-name</literal></term>
+					<listitem>
+						Its value will be used to set the <literal>SchemaName</literal> property of the
+						<literal>SqlServerCache</literal> options (<literal>SqlServerCacheOptions</literal>).
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><literal>table-name</literal></term>
+					<listitem>
+						Its value will be used to set the <literal>TableName</literal> property of the
+						<literal>SqlServerCache</literal> options (<literal>SqlServerCacheOptions</literal>).
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><literal>expired-items-deletion-interval</literal></term>
+					<listitem>
+						Its value will be used to set the <literal>ExpiredItemsDeletionInterval</literal> property of the
+						<literal>SqlServerCache</literal> options (<literal>SqlServerCacheOptions</literal>). It can be
+						provided either as an integer being a number of minutes or as a <literal>TimeSpan</literal> string
+						representation.
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</section>
+
+		<section id="NHibernate.Caches.CoreDistributedCache.Memory">
+			<title>Memory distributed cache factory</title>
+
+			<para>
+				<literal>NHibernate.Caches.CoreDistributedCache.Memory</literal> provides a memory "distributed" cache factory.
+				This factory yields a <literal>Microsoft.Extensions.Caching.Memory.MemoryDistributedCache</literal>. For using it,
+				reference the cache factory package and set the <literal>factory-class</literal> attribute of the
+				<literal>coredistributedcache</literal> configuration section to
+				<literal>NHibernate.Caches.CoreDistributedCache.Memory.MemoryFactory, NHibernate.Caches.CoreDistributedCache.Memory</literal>.
+			</para>
+			<para>
+				As implied by its name, this cache is not actually distributed. It is meant for testing purpose. For other usages, consider
+				using another memory cache provider, like <literal>CoreMemoryCache</literal>. Due to the distributed cache implementation, using
+				the <literal>MemoryDistributedCache</literal> has some drawbacks compared to most other memory cache providers: it will
+				serialize cached objects, incurring some overhead; it does not support clearing the cache. But due to the serialization of
+				cached objects, it is able of computing its consumed memory size, thus the availability of the <literal>SizeLimit</literal>
+				option.
+			</para>
+			<para>
+				The following additional properties can be configured:
+			</para>
+
+			<variablelist>
+				<varlistentry>
+					<term><literal>expiration-scan-frequency</literal></term>
+					<listitem>
+						Its value will be used to set the <literal>ExpirationScanFrequency</literal> property of the
+						<literal>MemoryDistributedCache</literal> options (<literal>MemoryDistributedCacheOptions</literal>). It can be
+						provided either as an integer being a number of minutes or as a <literal>TimeSpan</literal> string
+						representation.
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><literal>size-limit</literal></term>
+					<listitem>
+						Its value will be used to set the <literal>SizeLimit</literal> property of the
+						<literal>MemoryDistributedCache</literal> options (<literal>MemoryDistributedCacheOptions</literal>).
+						Its value is an integer, representing the maximal bytes count to be stored in the cache.
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</section>
 	</section>
 
 </chapter>
