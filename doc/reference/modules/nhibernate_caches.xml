@@ -9,7 +9,7 @@
 			<title>NHibernate.Caches namespace contains several second-level cache providers for NHibernate.</title>
 			
 			<para>
-				A cache is place where entities are kept after being loaded from the database; once cached, they can be
+				A cache is a place where entities are kept after being loaded from the database; once cached, they can be
 				retrieved without going to the database. This means that they are faster to (re)load.
 			</para>
 		
@@ -36,6 +36,12 @@
 		</para>
 
 		<para>
+			Depending on the chosen cache provider, the second level cache may be actually shared between different session
+			factories. If you need to avoid this for some session factories, configure each of them with a different
+			<literal>cache.region_prefix</literal>. See <xref linkend="configuration-optional" />.
+		</para>
+
+		<para>
 			Several cache providers have been contributed by NHibernate users:
 			<variablelist>
 				<varlistentry>
@@ -45,6 +51,7 @@
 							Uses <classname>Bamboo.Prevalence</classname> as the cache provider. Open the
 							file <filename>Bamboo.Prevalence.license.txt</filename> for more information about its license;
 							you can also visit its <ulink url="http://bbooprevalence.sourceforge.net/">website</ulink>.
+							Also see <xref linkend="NHibernate.Caches.Prevalence" />.
 						</para>
 					</listitem>
 				</varlistentry>
@@ -55,6 +62,7 @@
 							Uses <classname>System.Web.Caching.Cache</classname> as the cache provider. This means that you can
 							rely on ASP.NET caching feature to understand how it works. For more information, read (on the MSDN):
 							<ulink url="https://msdn.microsoft.com/en-us/library/6hbbsfk6.aspx">Caching Application Data</ulink>.
+							Also see <xref linkend="NHibernate.Caches.SysCache" />.
 						</para>
 					</listitem>
 				</varlistentry>
@@ -69,14 +77,17 @@
 						<para>
 							SysCache2 requires Microsoft SQL Server 2000 or higher.
 						</para>
+						<para>
+							See <xref linkend="NHibernate.Caches.SysCache2" />.
+						</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
-					<term><classname>NHibernate.Caches.MemCache</classname></term>
+					<term><classname>NHibernate.Caches.EnyimMemcached</classname></term>
 					<listitem>
 						<para>
-							Uses <literal>memcached</literal>. See <ulink url="https://memcached.org/">memcached homepage</ulink>
-							for more information.
+							Uses <literal>Memcached</literal>. See <ulink url="https://memcached.org/">memcached homepage</ulink>
+							for more information on Memcached. Also see <xref linkend="NHibernate.Caches.EnyimMemcached" />.
 						</para>
 					</listitem>
 				</varlistentry>
@@ -96,6 +107,7 @@
 					<listitem>
 						<para>
 							Uses <classname>System.Runtime.Caching.MemoryCache.Default</classname> as the cache provider.
+							See <xref linkend="NHibernate.Caches.RtMemoryCache" />.
 						</para>
 					</listitem>
 				</varlistentry>
@@ -111,17 +123,16 @@
 			<itemizedlist>
 				<listitem>
 					<para>
-						Choose the cache provider you want to use and copy its assembly in your assemblies directory
-						(<filename>NHibernate.Caches.Prevalence.dll</filename> or
-						<filename>NHibernate.Caches.SysCache.dll</filename>).
+						Choose the cache provider you want to use and copy its assembly in your assemblies directory.
+						(For example, <filename>NHibernate.Caches.Prevalence.dll</filename> or
+						<filename>NHibernate.Caches.SysCache.dll</filename>.)
 					</para>
 				</listitem>
 				<listitem>
 					<para>
 						To tell NHibernate which cache provider to use, add in your NHibernate configuration file
 						(can be <filename>YourAssembly.exe.config</filename> or <filename>web.config</filename> or a
-						<filename>.cfg.xml</filename> file, in the latter case the syntax will be different from what
-						is shown below):
+						<filename>.cfg.xml</filename> file):
 						<programlisting>
 &lt;property name="cache.provider_class"&gt;<literal>XXX</literal>&lt;/property&gt;<co id="hibernate.cache.provider_class-co" linkends="hibernate.cache.provider_class"/>
 &lt;property name="cache.default_expiration"&gt;<literal>120</literal>&lt;/property&gt;<co id="nhcaches-expiration-co" linkends="nhcaches-expiration"/>
@@ -312,7 +323,7 @@
 </configSections>]]></programlisting>
 		</example>
 
-		<section>
+		<section id="NHibernate.Caches.SysCache2-Table">
 			<title>Table-based Dependency</title>
 
 			<para>
@@ -369,7 +380,7 @@
 			</varlistentry>
 		</variablelist>
 
-		<section>
+		<section id="NHibernate.Caches.SysCache2-Command">
 			<title>Command-Based Dependencies</title>
 
 			<para>
@@ -464,7 +475,7 @@
 			</variablelist>
 		</section>
 
-		<section>
+		<section id="NHibernate.Caches.SysCache2-Aggregate">
 			<title>Aggregate Dependencies</title>
 
 			<para>
@@ -508,7 +519,7 @@
 			</example>
 		</section>
 
-		<section>
+		<section id="NHibernate.Caches.SysCache2-AdditionalSettings">
 			<title>Additional Settings</title>
 			<para>
 				In addition to data dependencies for the cache regions, time based expiration policies can be specified
@@ -571,7 +582,15 @@
 				</varlistentry>
 			</variablelist>
 		</section>
+	</section>
 
+	<section id="NHibernate.Caches.EnyimMemcached">
+		<title>EnyimMemcached Configuration</title>
+		<para>
+			Its configuration relies on the EnyimMemcached library own configuration, through its
+			<literal>enyim.com/memcached</literal> configuration section. See
+			<ulink url="https://github.com/enyim/EnyimMemcached">project site</ulink>.
+		</para>
 	</section>
 
 	<section id="NHibernate.Caches.RtMemoryCache">
