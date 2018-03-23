@@ -84,14 +84,6 @@ namespace NHibernate.Linq
 				new[] { ReflectHelper.GetMethodDefinition(() => EagerFetchingExtensionMethods.ThenFetchMany<object, object, object>(null, null)) },
 				typeof(ThenFetchManyExpressionNode));
 
-			methodInfoRegistry.Register(
-				new[]
-					{
-						ReflectHelper.GetMethodDefinition(() => Queryable.AsQueryable(null)),
-						ReflectHelper.GetMethodDefinition(() => Queryable.AsQueryable<object>(null)),
-					}, typeof(AsQueryableExpressionNode)
-				);
-
 			var nodeTypeProvider = ExpressionTreeParser.CreateDefaultNodeTypeProvider();
 			nodeTypeProvider.InnerProviders.Add(methodInfoRegistry);
 			defaultNodeTypeProvider = nodeTypeProvider;
@@ -109,22 +101,6 @@ namespace NHibernate.Linq
 		public System.Type GetNodeType(MethodInfo method)
 		{
 			return defaultNodeTypeProvider.GetNodeType(method);
-		}
-	}
-
-	public class AsQueryableExpressionNode : MethodCallExpressionNodeBase
-	{
-		public AsQueryableExpressionNode(MethodCallExpressionParseInfo parseInfo) : base(parseInfo)
-		{
-		}
-
-		public override Expression Resolve(ParameterExpression inputParameter, Expression expressionToBeResolved, ClauseGenerationContext clauseGenerationContext)
-		{
-			return Source.Resolve(inputParameter, expressionToBeResolved, clauseGenerationContext);
-		}
-
-		protected override void ApplyNodeSpecificSemantics(QueryModel queryModel, ClauseGenerationContext clauseGenerationContext)
-		{
 		}
 	}
 }
