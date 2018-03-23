@@ -52,10 +52,11 @@ namespace NHibernate.Hql.Ast.ANTLR
 					return querySource.Text;
 				case HqlSqlWalker.DOT:
 					return BuildPath(querySource);
+				default:
+					// TODO
+					throw new NotSupportedException($"{querySource.ToString()} {querySource.ToStringTree()}");
 			}
 
-			// TODO
-			throw new NotSupportedException();
 		}
 
 		private static IASTNode MakeIdent(IASTNode source, string text)
