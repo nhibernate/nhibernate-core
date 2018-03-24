@@ -98,20 +98,19 @@ Task Build {
     Exec { 
         dotnet `
             build ./src/NHibernate.sln `
-            -f netcoreapp2.0 `
             -c Release
     }
 }
 
-Task Test -depends Build {
+Task Test {
     @(
         'NHibernate.TestDatabaseSetup',
         'NHibernate.Test',
         'NHibernate.Test.VisualBasic'
     ) | ForEach-Object { 
-        $assembly = [IO.Path]::Combine("src", $_, "bin", "Release", "netcoreapp2.0", "$_.dll")
+        $project = [IO.Path]::Combine("src", $_)
         Exec {
-            dotnet $assembly --labels=before --nocolor "--result=$_-TestResult.xml"
+            dotnet run -f netcoreapp2.0 -c Release -p $project -- --labels=before --nocolor "--result=$_-TestResult.xml"
         }
     }
 }
