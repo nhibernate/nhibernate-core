@@ -55,6 +55,9 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
     <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="5.12.1" />
     <PackageReference Include="Npgsql" Version="3.2.4.1" />
+    <PackageReference Include="TeamCity.VSTest.TestAdapter" Version="1.0.7" />
+    <PackageReference Include="NunitXml.TestLogger" version="1.1.0" />
+    <PackageReference Include="Appveyor.TestLogger" version="2.0.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='net461'">
     <Reference Include="System.Configuration" />

@@ -1,6 +1,8 @@
 properties {
     $Database = "SqlServer2012";
     $ConnectionString = $null;
+    $TestBitness = $null;
+    $TargetFramework = "netcoreapp2.0";
 }
 
 Task Default -depends Build, Test
@@ -102,15 +104,30 @@ Task Build {
     }
 }
 
-Task Test -depends Build {
+Task Test {
+    $params = @{
+        "f"=$TargetFramework;
+        "c"="Release"
+    }
+
+    if (Test-Path env:APPVEYOR) {
+        $params["l"] = "AppVeyor"
+    }
+
+    if ($TestBitness -ne $null) {
+        $settingsPath = (Join-Path '.' "src/NHibernate.Test/test-$TestBitness.runsettings" -Resolve)
+        $params["s"] = $settingsPath
+    }
+
     @(
         'NHibernate.TestDatabaseSetup',
         'NHibernate.Test',
         'NHibernate.Test.VisualBasic'
     ) | ForEach-Object { 
-        $assembly = [IO.Path]::Combine("src", $_, "bin", "Release", "netcoreapp2.0", "$_.dll")
+        $project = [IO.Path]::Combine("src", $_)
+
         Exec {
-            dotnet $assembly --labels=before --nocolor "--result=$_-TestResult.xml"
+            dotnet test $project @params
         }
     }
 }

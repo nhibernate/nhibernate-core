@@ -5,40 +5,43 @@ set NANT="%~dp0Tools\nant\bin\NAnt.exe" -t:net-4.0
 set BUILDTOOL="%~dp0Tools\BuildTool\bin\Release\BuildTool.exe"
 set AVAILABLE_CONFIGURATIONS=%~dp0available-test-configurations
 set CURRENT_CONFIGURATION=%~dp0current-test-configuration
-set NUNIT="%~dp0Tools\NUnit.ConsoleRunner.3.7.0\tools\nunit3-console.exe"
 
 :main-menu
 echo ========================= NHIBERNATE BUILD MENU ==========================
 echo --- TESTING ---
 echo A. (Step 1) Set up a new test configuration for a particular database.
 echo B. (Step 2) Activate a test configuration.
-echo C. (Step 3) Run tests using active configuration with 32bits runner (Needs built in Visual Studio).
-echo D.       Or run tests using active configuration with 64bits runner (Needs built in Visual Studio).
+echo C. (Step 3) Build and run tests using active configuration and .NET Framework with 32-bit runner.
+echo D.       Or build and run tests using active configuration and .NET Framework with 64-bit runner.
+echo E.       Or build and run tests using active configuration and .NET Core with 32-bit runner.
+echo F.       Or build and run tests using active configuration and .NET Core with 64-bit runner.
 echo.
 echo --- BUILD ---
-echo E. Build NHibernate (Debug)
-echo F. Build NHibernate (Release)
-echo G. Build Release Package (Also runs tests and creates documentation)
+echo G. Build NHibernate (Debug)
+echo H. Build NHibernate (Release)
+echo I. Build Release Package (Also runs tests and creates documentation)
 echo.
 echo --- Code generation ---
-echo H. Generate async code (Generates files in Async sub-folders)
+echo J. Generate async code (Generates files in Async sub-folders)
 echo.
 echo --- TeamCity (CI) build options
-echo I. TeamCity build menu
+echo K. TeamCity build menu
 echo.
 echo --- Exit ---
 echo X. Make the beautiful build menu go away.
 echo.
 
-%BUILDTOOL% prompt ABCDEFGHIX
-if errorlevel 9 goto end
-if errorlevel 8 goto teamcity-menu
-if errorlevel 7 goto build-async
-if errorlevel 6 goto build-release-package
-if errorlevel 5 goto build-release
-if errorlevel 4 goto build-debug
-if errorlevel 3 goto test-run-64
-if errorlevel 2 goto test-run-32
+%BUILDTOOL% prompt ABCDEFGHIJKX
+if errorlevel 11 goto end
+if errorlevel 10 goto teamcity-menu
+if errorlevel 9 goto build-async
+if errorlevel 8 goto build-release-package
+if errorlevel 7 goto build-release
+if errorlevel 6 goto build-debug
+if errorlevel 5 goto test-run-core-64
+if errorlevel 4 goto test-run-core-32
+if errorlevel 3 goto test-run-framework-64
+if errorlevel 2 goto test-run-framework-32
 if errorlevel 1 goto test-activate
 if errorlevel 0 goto test-setup-menu
 
@@ -150,16 +153,28 @@ copy "%FOLDER%\*" "%CURRENT_CONFIGURATION%"
 echo Configuration activated.
 goto main-menu
 
-:test-run-32
-SET NUNITPLATFORM=--x86
+:test-run-framework-32
+SET TEST_BITNESS=x86
+SET TEST_TARGET_PLATFORM=net461
 goto test-run
 
-:test-run-64
-SET NUNITPLATFORM=
+:test-run-framework-64
+SET TEST_BITNESS=x64
+SET TEST_TARGET_PLATFORM=net461
+goto test-run
+
+:test-run-core-32
+SET TEST_BITNESS=x86
+SET TEST_TARGET_PLATFORM=netcoreapp2.0
+goto test-run
+
+:test-run-core-64
+SET TEST_BITNESS=x64
+SET TEST_TARGET_PLATFORM=netcoreapp2.0
 goto test-run
 
 :test-run
-start "nunit3-console" cmd /K %NUNIT% %NUNITPLATFORM% --agents=1 --process=separate NHibernate.nunit
+start powershell -noprofile -NoExit -ExecutionPolicy Bypass -command "& ./build.ps1 -TaskList Test -properties @{"""TestBitness"""="""%TEST_BITNESS%""";"""TargetFramework"""="""%TEST_TARGET_PLATFORM%"""}"
 goto main-menu
 
 rem :build-test

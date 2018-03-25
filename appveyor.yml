@@ -58,9 +58,3 @@ before_test:
 test_script:
 - cmd: powershell -noprofile -command "& ./build.ps1 -TaskList Set-Configuration,Test -properties @{\"Database\" = \"%DB%\";\"ConnectionString\"=\"%CONNECTION_STRING%\"}"
 deploy: off
-on_finish:
-- ps: |-
-    $wc = New-Object 'System.Net.WebClient'
-    Get-Item '*-TestResult.xml' | ForEach-Object { 
-        $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit3/$($env:APPVEYOR_JOB_ID)", $_)
-    }
