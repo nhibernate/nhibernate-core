@@ -152,7 +152,7 @@
 		<exec program="dotnet" failonerror="true" verbose="true">
 			<arg value="vstest" />
 			<arg value="${root.dir}/src/${test.file}/bin/${build.config}/net461/${test.file}.dll" />
-			<arg line="--Logger:&quot;nunit;LogFilePath=${testresults.dir}/${test.file}.dll-results.xml&quot;" />
+			<arg line="--Logger:teamcity" if="${environment::variable-exists('TEAMCITY_PROJECT_NAME') or environment::variable-exists('TEAMCITY_VERSION')}" />
 			<arg line="--Settings:&quot;${root.dir}/src/NHibernate.Test/test-x86.runsettings&quot;" unless="${property::exists('nunit-x64')}" />
 			<arg line="--Settings:&quot;${root.dir}/src/NHibernate.Test/test-x64.runsettings&quot;" if="${property::exists('nunit-x64')}" />
 		</exec>
