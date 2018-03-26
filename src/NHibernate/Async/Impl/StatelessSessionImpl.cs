@@ -122,9 +122,10 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override async Task ListAsync(CriteriaImpl criteria, IList results, CancellationToken cancellationToken)
+		public override async Task<IList<T>> ListAsync<T>(CriteriaImpl criteria, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			var results = new List<T>();
 			using (BeginProcess())
 			{
 				string[] implementors = Factory.GetImplementors(criteria.EntityOrClassName);
@@ -162,6 +163,14 @@ namespace NHibernate.Impl
 				}
 				temporaryPersistenceContext.Clear();
 			}
+			return results;
+		}
+
+		//TODO 6.0: Remove (use base class implementation)
+		public override async Task ListAsync(CriteriaImpl criteria, IList results, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			ArrayHelper.AddAll(results, await (ListAsync(criteria, cancellationToken)).ConfigureAwait(false));
 		}
 
 		public override Task<IEnumerable> EnumerableAsync(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken)
