@@ -98,8 +98,8 @@ namespace NHibernate.Proxy.DynamicProxy
 			{
 				parentType = typeof (ProxyDummy);
 				interfaces.Add(baseType);
+				interfaces.UnionWith(baseType.GetInterfaces());
 			}
-			interfaces.UnionWith(baseType.GetInterfaces());
 
 			// Add the ISerializable interface so that it can be implemented
 			interfaces.Add(typeof (ISerializable));
