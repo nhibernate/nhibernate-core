@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections;
 using NHibernate.Cache.Access;
 using NHibernate.Cache.Entry;
@@ -120,5 +121,40 @@ namespace NHibernate.Cache
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <exception cref="CacheException"></exception>
 		Task ClearAsync(CancellationToken cancellationToken);
+	}
+
+	internal static partial class CacheConcurrencyStrategyExtensions
+	{
+		/// <summary>
+		/// Attempt to retrieve multiple objects from the Cache
+		/// </summary>
+		/// <param name="cache">The cache concurrency strategy.</param>
+		/// <param name="keys">The keys (id) of the objects to get out of the Cache.</param>
+		/// <param name="txTimestamp">A timestamp prior to the transaction start time</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>An array of cached objects or <see langword="null" /></returns>
+		/// <exception cref="CacheException"></exception>
+		//6.0 TODO: Merge into ICacheConcurrencyStrategy.
+		public static async Task<object[]> GetMultipleAsync(this ICacheConcurrencyStrategy cache, CacheKey[] keys, long txTimestamp, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			switch (cache)
+			{
+				case ReadOnlyCache readOnly:
+					return await (readOnly.GetMultipleAsync(keys, txTimestamp, cancellationToken)).ConfigureAwait(false);
+				case ReadWriteCache readWrite:
+					return await (readWrite.GetMultipleAsync(keys, txTimestamp, cancellationToken)).ConfigureAwait(false);
+				case NonstrictReadWriteCache nonstrictReadWrite:
+					return await (nonstrictReadWrite.GetMultipleAsync(keys, txTimestamp, cancellationToken)).ConfigureAwait(false);
+			}
+
+			// Fallback to Get
+			var objects = new object[keys.Length];
+			for (var i = 0; i < keys.Length; i++)
+			{
+				objects[i] = await (cache.GetAsync(keys[i], txTimestamp, cancellationToken)).ConfigureAwait(false);
+			}
+			return objects;
+		}
 	}
 }

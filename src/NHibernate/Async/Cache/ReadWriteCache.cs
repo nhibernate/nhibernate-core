@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections;
+using System.Linq;
 using NHibernate.Cache.Access;
 
 namespace NHibernate.Cache
@@ -85,6 +86,53 @@ namespace NHibernate.Cache
 				{
 					cache.Unlock( key );
 				}*/
+			}
+		}
+
+		public Task<object[]> GetMultipleAsync(CacheKey[] keys, long txTimestamp, CancellationToken cancellationToken)
+		{
+			if (_batchableReadCache == null)
+			{
+				throw new InvalidOperationException($"Cache {cache.GetType()} does not support batching get operation");
+			}
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object[]>(cancellationToken);
+			}
+			return InternalGetMultipleAsync();
+			async Task<object[]> InternalGetMultipleAsync()
+			{
+				if (log.IsDebugEnabled())
+				{
+					log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
+				}
+				var result = new object[keys.Length];
+				using (await _lockObjectAsync.LockAsync())
+				{
+					var lockables = await (_batchableReadCache.GetMultipleAsync(keys.Select(o => (object) o).ToArray(), cancellationToken)).ConfigureAwait(false);
+					for (var i = 0; i < lockables.Length; i++)
+					{
+						var lockable = (ILockable) lockables[i];
+						var gettable = lockable != null && lockable.IsGettable(txTimestamp);
+
+						if (gettable)
+						{
+							if (log.IsDebugEnabled())
+							{
+								log.Debug("Cache hit: {0}", keys[i]);
+							}
+							result[i] = ((CachedItem) lockable).Value;
+						}
+
+						if (log.IsDebugEnabled())
+						{
+							log.Debug(lockable == null ? "Cache miss: {0}" : "Cached item was locked: {0}", keys[i]);
+						}
+
+						result[i] = null;
+					}
+				}
+				return result;
 			}
 		}
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq;
 using NHibernate.Cache.Access;
 
 namespace NHibernate.Cache
@@ -15,6 +16,7 @@ namespace NHibernate.Cache
 	public partial class NonstrictReadWriteCache : ICacheConcurrencyStrategy
 	{
 		private ICache cache;
+		private IBatchableReadCache _batchableReadCache;
 
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(NonstrictReadWriteCache));
 
@@ -29,7 +31,12 @@ namespace NHibernate.Cache
 		public ICache Cache
 		{
 			get { return cache; }
-			set { cache = value; }
+			set
+			{
+				cache = value;
+				// ReSharper disable once SuspiciousTypeConversion.Global
+				_batchableReadCache = value as IBatchableReadCache;
+			}
 		}
 
 		/// <summary>
@@ -52,6 +59,28 @@ namespace NHibernate.Cache
 				log.Debug("Cache miss");
 			}
 			return result;
+		}
+
+		public object[] GetMultiple(CacheKey[] keys, long txTimestamp)
+		{
+			if (_batchableReadCache == null)
+			{
+				throw new InvalidOperationException($"Cache {cache.GetType()} does not support batching get operation");
+			}
+			if (log.IsDebugEnabled())
+			{
+				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
+			}
+			var results = _batchableReadCache.GetMultiple(keys.Select(o => (object) o).ToArray());
+			if (!log.IsDebugEnabled())
+			{
+				return results;
+			}
+			for (var i = 0; i < keys.Length; i++)
+			{
+				log.Debug(results[i] != null ? $"Cache hit: {keys[i]}" : $"Cache miss: {keys[i]}");
+			}
+			return results;
 		}
 
 		/// <summary>

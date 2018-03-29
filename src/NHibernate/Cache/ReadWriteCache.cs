@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq;
 using NHibernate.Cache.Access;
 
 namespace NHibernate.Cache
@@ -34,6 +35,7 @@ namespace NHibernate.Cache
 
 		private readonly object _lockObject = new object();
 		private ICache cache;
+		private IBatchableReadCache _batchableReadCache;
 		private int _nextLockId;
 
 		public ReadWriteCache()
@@ -51,7 +53,12 @@ namespace NHibernate.Cache
 		public ICache Cache
 		{
 			get { return cache; }
-			set { cache = value; }
+			set
+			{
+				cache = value;
+				// ReSharper disable once SuspiciousTypeConversion.Global
+				_batchableReadCache = value as IBatchableReadCache;
+			}
 		}
 
 		/// <summary>
@@ -134,6 +141,45 @@ namespace NHibernate.Cache
 					cache.Unlock( key );
 				}*/
 			}
+		}
+
+		public object[] GetMultiple(CacheKey[] keys, long txTimestamp)
+		{
+			if (_batchableReadCache == null)
+			{
+				throw new InvalidOperationException($"Cache {cache.GetType()} does not support batching get operation");
+			}
+			if (log.IsDebugEnabled())
+			{
+				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
+			}
+			var result = new object[keys.Length];
+			lock (_lockObject)
+			{
+				var lockables = _batchableReadCache.GetMultiple(keys.Select(o => (object) o).ToArray());
+				for (var i = 0; i < lockables.Length; i++)
+				{
+					var lockable = (ILockable) lockables[i];
+					var gettable = lockable != null && lockable.IsGettable(txTimestamp);
+
+					if (gettable)
+					{
+						if (log.IsDebugEnabled())
+						{
+							log.Debug("Cache hit: {0}", keys[i]);
+						}
+						result[i] = ((CachedItem) lockable).Value;
+					}
+
+					if (log.IsDebugEnabled())
+					{
+						log.Debug(lockable == null ? "Cache miss: {0}" : "Cached item was locked: {0}", keys[i]);
+					}
+
+					result[i] = null;
+				}
+			}
+			return result;
 		}
 
 		/// <summary>

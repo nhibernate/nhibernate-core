@@ -114,35 +114,33 @@ namespace NHibernate.Cache
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await _isUpToDate.LockAsync())
 			{
-				foreach (string space in spaces)
+				if (_batchUpdateTimestamps != null)
 				{
-					object lastUpdate = await (updateTimestamps.GetAsync(space, cancellationToken)).ConfigureAwait(false);
-					if (lastUpdate == null)
+					var keys = new object[spaces.Count];
+					var index = 0;
+					foreach (var space in spaces)
 					{
-						//the last update timestamp was lost from the cache
-						//(or there were no updates since startup!)
-
-						//NOTE: commented out, since users found the "safe" behavior
-						//      counter-intuitive when testing, and we couldn't deal
-						//      with all the forum posts :-(
-						//updateTimestamps.put( space, new Long( updateTimestamps.nextTimestamp() ) );
-						//result = false; // safer
-
-						//OR: put a timestamp there, to avoid subsequent expensive
-						//    lookups to a distributed cache - this is no good, since
-						//    it is non-threadsafe (could hammer effect of an actual
-						//    invalidation), and because this is not the way our
-						//    preferred distributed caches work (they work by
-						//    replication)
-						//updateTimestamps.put( space, new Long(Long.MIN_VALUE) );
+						keys[index++] = space;
 					}
-					else
+					var lastUpdates = await (_batchUpdateTimestamps.GetMultipleAsync(keys, cancellationToken)).ConfigureAwait(false);
+					foreach (var lastUpdate in lastUpdates)
 					{
-						if ((long) lastUpdate >= timestamp)
+						if (IsOutdated(lastUpdate, timestamp))
 						{
 							return false;
 						}
 					}
+					return true;
+				}
+
+				foreach (string space in spaces)
+				{
+					object lastUpdate = await (updateTimestamps.GetAsync(space, cancellationToken)).ConfigureAwait(false);
+					if (IsOutdated(lastUpdate, timestamp))
+					{
+						return false;
+					}
+					
 				}
 				return true;
 			}

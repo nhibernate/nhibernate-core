@@ -635,6 +635,8 @@ namespace NHibernate.Persister.Entity
 			get { return batchSize > 1; }
 		}
 
+		public int BatchSize => batchSize;
+
 		public virtual string[] IdentifierColumnNames
 		{
 			get { return rootTableKeyColumnNames; }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using NHibernate.Cache.Access;
 using NHibernate.Cache.Entry;
@@ -138,5 +139,44 @@ namespace NHibernate.Cache
 		/// </summary>
 		/// <value>The <see cref="ICache"/> for this strategy to use.</value>
 		ICache Cache { get; set; }
+	}
+
+	internal static partial class CacheConcurrencyStrategyExtensions
+	{
+		/// <summary>
+		/// Attempt to retrieve multiple objects from the Cache
+		/// </summary>
+		/// <param name="cache">The cache concurrency strategy.</param>
+		/// <param name="keys">The keys (id) of the objects to get out of the Cache.</param>
+		/// <param name="txTimestamp">A timestamp prior to the transaction start time</param>
+		/// <returns>An array of cached objects or <see langword="null" /></returns>
+		/// <exception cref="CacheException"></exception>
+		//6.0 TODO: Merge into ICacheConcurrencyStrategy.
+		public static object[] GetMultiple(this ICacheConcurrencyStrategy cache, CacheKey[] keys, long txTimestamp)
+		{
+			switch (cache)
+			{
+				case ReadOnlyCache readOnly:
+					return readOnly.GetMultiple(keys, txTimestamp);
+				case ReadWriteCache readWrite:
+					return readWrite.GetMultiple(keys, txTimestamp);
+				case NonstrictReadWriteCache nonstrictReadWrite:
+					return nonstrictReadWrite.GetMultiple(keys, txTimestamp);
+			}
+
+			// Fallback to Get
+			var objects = new object[keys.Length];
+			for (var i = 0; i < keys.Length; i++)
+			{
+				objects[i] = cache.Get(keys[i], txTimestamp);
+			}
+			return objects;
+		}
+
+		public static bool IsBatchingGetSupported(this ICacheConcurrencyStrategy cache)
+		{
+			// ReSharper disable once SuspiciousTypeConversion.Global
+			return cache.Cache is IBatchableReadCache;
+		}
 	}
 }

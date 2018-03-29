@@ -107,7 +107,7 @@
     - conversion: ToAsync
       rule: EventListener
     - conversion: ToAsync
-      rule: ICache
+      rule: Cache
     typeConversion:
     - conversion: Ignore
       name: EnumerableImpl
@@ -134,7 +134,7 @@
       - parameter: Required
       requiresCancellationToken:
       - rule: EventListener
-      - rule: ICache
+      - rule: Cache
     scanMethodBody: true
     scanForMissingAsyncMembers:
     - all: true
@@ -258,7 +258,8 @@ methodRules:
     name: Lock
   - containingType: NHibernate.Cache.ICache
     name: Unlock
-  name: ICache
+  - containingType: NHibernate.Cache.IBatchableReadCache
+  name: Cache
 - filters:
   - containingNamespace: NHibernate
   - containingType: NHibernate.Tool.hbm2ddl.SchemaUpdate
