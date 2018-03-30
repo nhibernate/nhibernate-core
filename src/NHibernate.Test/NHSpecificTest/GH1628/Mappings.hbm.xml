@@ -3,7 +3,7 @@
                    namespace="NHibernate.Test.NHSpecificTest.GH1628">
 
   <class name="Entity">
-    <id name="Id" generator="native"/>
+    <id name="Id" generator="assigned"/>
     <property name="Name"/>
     <property name="ALongText" lazy="true"/>
   </class>

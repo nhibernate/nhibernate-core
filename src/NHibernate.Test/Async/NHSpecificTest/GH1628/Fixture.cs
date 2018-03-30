@@ -64,8 +64,8 @@ namespace NHibernate.Test.NHSpecificTest.GH1628
 			using (session.BeginTransaction())
 			{
 				IEntity result = await (session.GetAsync<Entity>(2));
-
-				Assert.That(result.Thing, Is.EqualTo(null));
+				Assert.That(result, Is.Not.Null);
+				Assert.That(result.Thing, Is.Null);
 			}
 		}
 	}
