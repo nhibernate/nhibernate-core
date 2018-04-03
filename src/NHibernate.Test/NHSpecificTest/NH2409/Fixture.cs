@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using NHibernate.Criterion;
+using NHibernate.Dialect;
 using NHibernate.SqlCommand;
 using NUnit.Framework;
 
@@ -9,6 +10,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2409
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is AbstractHanaDialect); // HANA does not support inserting a row without specifying any column values
+		}
+
 		[Test]
 		public void Bug()
 		{

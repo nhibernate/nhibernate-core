@@ -11,6 +11,7 @@
 using System.Collections;
 using System.Linq;
 using NHibernate.Criterion;
+using NHibernate.Dialect;
 using NHibernate.Transform;
 using NUnit.Framework;
 
@@ -20,6 +21,11 @@ namespace NHibernate.Test.Criteria.Lambda
 	[TestFixture]
 	public class ProjectIntegrationFixtureAsync : TestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is AbstractHanaDialect); // HANA does not support inserting a row without specifying any column values
+		}
+
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }

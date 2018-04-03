@@ -14,6 +14,7 @@ using System.Text;
 using log4net.Appender;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.ListsWithHoles
@@ -24,8 +25,12 @@ namespace NHibernate.Test.NHSpecificTest.ListsWithHoles
     [TestFixture]
     public class FixtureAsync : TestCase
     {
+	    protected override bool AppliesTo(Dialect.Dialect dialect)
+	    {
+		    return !(dialect is AbstractHanaDialect); // HANA does not support inserting a row without specifying any column values
+	    }
 
-        protected override IList Mappings
+		protected override IList Mappings
         {
             get { return new string[] { "NHSpecificTest.ListsWithHoles.Mappings.hbm.xml" }; }
         }

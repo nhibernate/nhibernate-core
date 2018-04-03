@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1301
@@ -19,6 +20,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1301
 		public override string BugNumber
 		{
 			get { return "NH1301"; }
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is AbstractHanaDialect); // HANA does not support inserting a row without specifying any column values
 		}
 
 		[Test]

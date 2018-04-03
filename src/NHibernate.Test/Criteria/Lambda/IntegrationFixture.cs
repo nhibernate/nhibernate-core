@@ -6,12 +6,18 @@ using System.Linq;
 using NUnit.Framework;
 
 using NHibernate.Criterion;
+using NHibernate.Dialect;
 
 namespace NHibernate.Test.Criteria.Lambda
 {
 	[TestFixture]
 	public class IntegrationFixture : TestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is AbstractHanaDialect); // HANA does not support inserting a row without specifying any column values
+		}
+
 		protected override string MappingsAssembly { get { return "NHibernate.Test"; } }
 
 		protected override IList Mappings

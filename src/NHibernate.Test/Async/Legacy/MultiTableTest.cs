@@ -148,7 +148,7 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			long id = 1L;
 
-			if (Dialect is MsSql2000Dialect)
+			if (Dialect is MsSql2000Dialect || Dialect is AbstractHanaDialect)
 			{
 				id = (long) await (s.SaveAsync(new TrivialClass()));
 			}
@@ -184,7 +184,7 @@ namespace NHibernate.Test.Legacy
 			ITransaction t = s.BeginTransaction();
 			SubMulti sm = new SubMulti();
 			sm.Amount = 66.5f;
-			if (Dialect is MsSql2000Dialect)
+			if (Dialect is MsSql2000Dialect || Dialect is AbstractHanaDialect)
 			{
 				await (s.SaveAsync(sm));
 			}
@@ -205,6 +205,11 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task MultiTableAsync()
 		{
+			if (Dialect is AbstractHanaDialect)
+			{
+				Assert.Ignore("feature not supported: Currently specify table name by 'FOR UPDATE of t1.c1' if there are more than one tables/views/subqueries in the FROM clause");
+			}
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Multi multi = new Multi();
@@ -215,7 +220,7 @@ namespace NHibernate.Test.Legacy
 			simp.Name = "simp";
 			object mid;
 			object sid;
-			if (Dialect is MsSql2000Dialect)
+			if (Dialect is MsSql2000Dialect || Dialect is AbstractHanaDialect)
 			{
 				mid = await (s.SaveAsync(multi));
 				sid = await (s.SaveAsync(simp));
@@ -230,7 +235,7 @@ namespace NHibernate.Test.Legacy
 			SubMulti sm = new SubMulti();
 			sm.Amount = 66.5f;
 			object smid;
-			if (Dialect is MsSql2000Dialect)
+			if (Dialect is MsSql2000Dialect || Dialect is AbstractHanaDialect)
 			{
 				smid = await (s.SaveAsync(sm));
 			}
@@ -340,6 +345,11 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task MultiTableGeneratedIdAsync()
 		{
+			if (Dialect is AbstractHanaDialect)
+			{
+				Assert.Ignore("feature not supported: Currently specify table name by 'FOR UPDATE of t1.c1' if there are more than one tables/views/subqueries in the FROM clause");
+			}
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Multi multi = new Multi();
@@ -464,7 +474,7 @@ namespace NHibernate.Test.Legacy
 			simp.Name = "simp";
 			object mid;
 			object sid;
-			if (Dialect is MsSql2000Dialect)
+			if (Dialect is MsSql2000Dialect || Dialect is AbstractHanaDialect)
 			{
 				mid = await (s.SaveAsync(multi));
 				sid = await (s.SaveAsync(simp));
@@ -484,7 +494,7 @@ namespace NHibernate.Test.Legacy
 			ls.Set = new HashSet<Top> { multi, simp };
 
 			object id;
-			if (Dialect is MsSql2000Dialect)
+			if (Dialect is MsSql2000Dialect || Dialect is AbstractHanaDialect)
 			{
 				id = await (s.SaveAsync(ls));
 			}
@@ -541,7 +551,7 @@ namespace NHibernate.Test.Legacy
 			simp.Name = "simp";
 			object mid;
 
-			if (Dialect is MsSql2000Dialect)
+			if (Dialect is MsSql2000Dialect || Dialect is AbstractHanaDialect)
 			{
 				mid = await (s.SaveAsync(multi));
 			}
@@ -556,7 +566,7 @@ namespace NHibernate.Test.Legacy
 			ls.YetAnother = ls;
 			ls.Name = "Less Simple";
 			object id;
-			if (Dialect is MsSql2000Dialect)
+			if (Dialect is MsSql2000Dialect || Dialect is AbstractHanaDialect)
 			{
 				id = await (s.SaveAsync(ls));
 			}
@@ -602,6 +612,11 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task CollectionAsync()
 		{
+			if (Dialect is AbstractHanaDialect)
+			{
+				Assert.Ignore("HANA does not support inserting a row without specifying any column values");
+			}
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Multi multi1 = new Multi();

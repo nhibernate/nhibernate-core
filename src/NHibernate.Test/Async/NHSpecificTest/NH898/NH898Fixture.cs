@@ -10,7 +10,7 @@
 
 using System;
 using System.Collections;
-
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH898
@@ -31,6 +31,11 @@ namespace NHibernate.Test.NHSpecificTest.NH898
 						"NHSpecificTest.NH898.ClassC.hbm.xml",
 					};
 			}
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is AbstractHanaDialect); // HANA does not support inserting a row without specifying any column values
 		}
 
 		[Test]

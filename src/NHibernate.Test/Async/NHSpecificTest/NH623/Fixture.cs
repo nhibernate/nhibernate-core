@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH623
@@ -21,6 +22,11 @@ namespace NHibernate.Test.NHSpecificTest.NH623
 		public override string BugNumber
 		{
 			get { return "NH623"; }
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is AbstractHanaDialect); // The WHERE clause "isactive = '1'" doesn't work on HANA because idactive is a boolean
 		}
 
 		private ISession session;

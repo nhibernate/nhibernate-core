@@ -2480,6 +2480,14 @@ namespace NHibernate.Dialect
 			get { throw new NotSupportedException("No add column syntax supported by Dialect"); }
 		}
 
+		/// <summary>
+		/// The syntax for the suffix used to add a column to a table. Note this is deprecated
+		/// </summary>
+		public virtual string AddColumnSuffixString
+		{
+			get { return String.Empty; }
+		}
+
 		public virtual string DropForeignKeyString
 		{
 			get { return " drop constraint "; }

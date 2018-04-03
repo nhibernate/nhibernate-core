@@ -1,3 +1,5 @@
+using NHibernate.Dialect;
+
 namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
 {
 	using System.Collections;
@@ -20,6 +22,11 @@ namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
         {
             get { return "NHibernate.Test"; }
         }
+
+	    protected override bool AppliesTo(Dialect.Dialect dialect)
+	    {
+		    return !(dialect is AbstractHanaDialect); // HANA does not support inserting a row without specifying any column values
+	    }
 
 		protected override DebugSessionFactory BuildSessionFactory()
 		{

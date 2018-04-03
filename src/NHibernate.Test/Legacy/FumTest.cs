@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.DomainModel;
 using NHibernate.Criterion;
+using NHibernate.Dialect;
 using NHibernate.Type;
 using NUnit.Framework;
 
@@ -17,6 +18,11 @@ namespace NHibernate.Test.Legacy
 	public class FumTest : TestCase
 	{
 		protected static short fumKeyShort = 1;
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is AbstractHanaDialect); // HANA does not support inserting a row without specifying any column values
+		}
 
 		protected override IList Mappings
 		{

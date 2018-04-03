@@ -10,6 +10,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.Properties
@@ -18,6 +19,11 @@ namespace NHibernate.Test.NHSpecificTest.Properties
 	[TestFixture]
 	public class DynamicEntityTestAsync : BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is AbstractHanaDialect); // HANA doesn't support foreign key constraints over unique key columns
+		}
+
 		protected override void OnSetUp()
 		{
 			using (var s = OpenSession())

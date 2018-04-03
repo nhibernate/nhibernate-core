@@ -10,7 +10,8 @@ namespace NHibernate.Test.Operations
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return !(dialect is Dialect.FirebirdDialect); // Firebird has no CommandTimeout, and locks up during the tear-down of this fixture
+			return !(dialect is Dialect.FirebirdDialect) && // Firebird has no CommandTimeout, and locks up during the tear-down of this fixture
+					!(dialect is Dialect.AbstractHanaDialect); // HANA does not support inserting a row without specifying any column values
 		}
 
 		protected override void OnTearDown()

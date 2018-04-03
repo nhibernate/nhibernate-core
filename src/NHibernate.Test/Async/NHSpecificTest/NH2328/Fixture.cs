@@ -9,6 +9,7 @@
 
 
 using System.Linq;
+using NHibernate.Dialect;
 using NHibernate.Linq;
 using NUnit.Framework;
 
@@ -18,6 +19,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2328
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is AbstractHanaDialect); // HANA does not support inserting a row without specifying any column values
+		}
+
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();

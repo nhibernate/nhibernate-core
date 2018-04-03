@@ -9,6 +9,7 @@
 
 
 using NHibernate.Cfg;
+using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Engine;
 using NUnit.Framework;
@@ -33,6 +34,11 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 			// connection, which get not converted. For testing other case, maybe a failure caused by a
 			// schema mismatch (like done in transaction tests) would be better.
 			return factory.ConnectionProvider.Driver is SqlClientDriver;
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is AbstractHanaDialect); // HANA does not support inserting a row without specifying any column values
 		}
 
 		[Test]

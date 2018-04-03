@@ -9,6 +9,7 @@
 
 
 using System.Collections.Generic;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1601
@@ -18,22 +19,27 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
     [TestFixture]
     public class Fixture2Async : BugTestCase
     {
-        /// <summary>
-        /// Loads the project and when Scenario2 and Scenario3 are set calls Count on the list assigned.
-        /// </summary>
-        [Test]
+	    protected override bool AppliesTo(Dialect.Dialect dialect)
+	    {
+		    return !(dialect is AbstractHanaDialect); // HANA does not support inserting a row without specifying any column values
+	    }
+
+		/// <summary>
+		/// Loads the project and when Scenario2 and Scenario3 are set calls Count on the list assigned.
+		/// </summary>
+		[Test]
         public Task TestSaveAndLoadWithTwoCountsAsync()
-        {
-            try
-            {
-                Project.TestAccessToList = false;
-                return SaveAndLoadProjectAsync();
-            }
-            catch (System.Exception ex)
-            {
-                return Task.FromException<object>(ex);
-            }
-        }
+    {
+		try
+		{
+        Project.TestAccessToList = false;
+        return SaveAndLoadProjectAsync();
+    }
+		catch (System.Exception ex)
+		{
+		return Task.FromException<object>(ex);
+		}
+		}
 
         /// <summary>
         /// Refreshes the project and when Scenario2 and Scenario3 are set calls Count on the list assigned.

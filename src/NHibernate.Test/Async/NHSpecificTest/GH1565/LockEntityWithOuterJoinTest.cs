@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH1565
@@ -54,6 +55,11 @@ namespace NHibernate.Test.NHSpecificTest.GH1565
 			{
 				session.CreateSQLQuery("delete from MainEntity").ExecuteUpdate();
 			}
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is AbstractHanaDialect); // HANA does not support inserting a row without specifying any column values
 		}
 	}
 }

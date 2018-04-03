@@ -9,6 +9,7 @@
 
 
 using System.Collections.Generic;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1601
@@ -18,22 +19,27 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
     [TestFixture]
     public class Fixture1Async : BugTestCase
     {
-        /// <summary>
-        /// Loads the project do not call Count on the list assigned.
-        /// </summary>
-        [Test]
+	    protected override bool AppliesTo(Dialect.Dialect dialect)
+	    {
+		    return !(dialect is AbstractHanaDialect); // HANA does not support inserting a row without specifying any column values
+	    }
+
+		/// <summary>
+		/// Loads the project do not call Count on the list assigned.
+		/// </summary>
+		[Test]
         public Task TestSaveAndLoadWithoutCountAsync()
-        {
-            try
-            {
-                ProjectWithOneList.TestAccessToList = false;
-                return SaveAndLoadProjectWithOneListAsync();
-            }
-            catch (System.Exception ex)
-            {
-                return Task.FromException<object>(ex);
-            }
-        }
+    {
+		try
+		{
+        ProjectWithOneList.TestAccessToList = false;
+        return SaveAndLoadProjectWithOneListAsync();
+    }
+		catch (System.Exception ex)
+		{
+		return Task.FromException<object>(ex);
+		}
+		}
 
         /// <summary>
         /// Refreshes the project do not call Count on the list assigned.

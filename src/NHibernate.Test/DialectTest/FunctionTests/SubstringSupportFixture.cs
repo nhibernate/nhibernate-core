@@ -44,6 +44,8 @@ namespace NHibernate.Test.DialectTest.FunctionTests
 				Assert.That(substringFunction, Is.TypeOf<StandardSQLFunction>());
 			else if (dialect is SQLiteDialect)
 				Assert.That(substringFunction, Is.TypeOf<StandardSQLFunction>());
+			else if (dialect is AbstractHanaDialect)
+				Assert.That(substringFunction, Is.TypeOf<StandardSQLFunction>());
 			else
 				Assert.That(substringFunction, Is.TypeOf<AnsiSubstringFunction>());
 

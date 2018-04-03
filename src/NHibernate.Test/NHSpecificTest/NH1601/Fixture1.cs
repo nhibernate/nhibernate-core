@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1601
@@ -6,10 +7,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
     [TestFixture]
     public class Fixture1 : BugTestCase
     {
-        /// <summary>
-        /// Loads the project do not call Count on the list assigned.
-        /// </summary>
-        [Test]
+	    protected override bool AppliesTo(Dialect.Dialect dialect)
+	    {
+		    return !(dialect is AbstractHanaDialect); // HANA does not support inserting a row without specifying any column values
+	    }
+
+		/// <summary>
+		/// Loads the project do not call Count on the list assigned.
+		/// </summary>
+		[Test]
         public void TestSaveAndLoadWithoutCount()
         {
             ProjectWithOneList.TestAccessToList = false;

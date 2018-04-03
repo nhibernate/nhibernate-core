@@ -10,6 +10,7 @@
 
 using System.Collections;
 using NHibernate.Cfg;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Stateless
@@ -33,6 +34,11 @@ namespace NHibernate.Test.Stateless
 		{
 			base.Configure(configuration);
 			cfg.SetProperty(Environment.MaxFetchDepth, 1.ToString());
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is AbstractHanaDialect); // HANA does not support inserting a row without specifying any column values
 		}
 
 		private class TestData

@@ -11,7 +11,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.GenericTest.Overall
@@ -20,6 +20,11 @@ namespace NHibernate.Test.GenericTest.Overall
 	[TestFixture]
 	public class FixtureAsync : TestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is AbstractHanaDialect); // HANA does not support inserting a row without specifying any column values
+		}
+
 		protected override IList Mappings
 		{
 			get { return new[] { "GenericTest.Overall.Mappings.hbm.xml" }; }

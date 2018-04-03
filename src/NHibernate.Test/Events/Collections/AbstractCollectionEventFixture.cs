@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NHibernate.Collection;
 using NHibernate.Collection.Generic;
 using NHibernate.Event;
+using NHibernate.Dialect;
 using NHibernate.Test.Events.Collections.Association.Bidirectional.ManyToMany;
 using NUnit.Framework;
 
@@ -11,6 +12,11 @@ namespace NHibernate.Test.Events.Collections
 	[TestFixture]
 	public abstract class AbstractCollectionEventFixture : TestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is AbstractHanaDialect); // HANA does not support inserting a row without specifying any column values
+		}
+
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.Docs.Associations.BiM21
@@ -15,6 +16,11 @@ namespace NHibernate.Test.NHSpecificTest.Docs.Associations.BiM21
 		protected override IList Mappings
 		{
 			get { return new string[] {"NHSpecificTest.Docs.Associations.BiM21.Mappings.hbm.xml"}; }
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is AbstractHanaDialect); // HANA does not support inserting a row without specifying any column values
 		}
 
 		[Test]

@@ -101,7 +101,7 @@ namespace NHibernate.Dialect.Function
 		/// <param name="args">args function arguments</param>
 		/// <param name="factory">generated SQL function call</param>
 		/// <returns></returns>
-		public SqlString Render(IList args, ISessionFactoryImplementor factory)
+		public virtual SqlString Render(IList args, ISessionFactoryImplementor factory)
 		{
 			SqlStringBuilder buf = new SqlStringBuilder();
 			foreach (TemplateChunk tc in chunks)

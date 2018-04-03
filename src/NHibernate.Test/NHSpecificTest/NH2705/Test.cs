@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using NHibernate.Dialect;
 using NHibernate.Linq;
 using NUnit.Framework;
 
@@ -17,6 +18,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2705
 			return session.Query<T>()
 				.Fetch(p => p.SubItem).ThenFetch(p => p.Details) // should be able to fetch .Details when used with components (NH2615)
 				.Where(p => p.SubItem.Name == name).ToList();
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is AbstractHanaDialect); // HANA does not support inserting a row without specifying any column values
 		}
 
 		[Test]

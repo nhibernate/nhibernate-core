@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using NHibernate.Dialect;
 using NHibernate.DomainModel.NHSpecific;
 using NUnit.Framework;
 
@@ -11,6 +12,11 @@ namespace NHibernate.Test.NHSpecificTest
 		protected override IList Mappings
 		{
 			get { return new string[] {"NHSpecific.LazyLoadBug.hbm.xml"}; }
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is AbstractHanaDialect); // HANA does not support inserting a row without specifying any column values
 		}
 
 		[Test]

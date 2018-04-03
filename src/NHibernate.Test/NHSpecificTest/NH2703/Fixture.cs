@@ -1,3 +1,4 @@
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2703
@@ -6,6 +7,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2703
 	public class Fixture : BugTestCase
 	{
 		Parent RootElement = null;
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is AbstractHanaDialect); // HANA does not support inserting a row without specifying any column values
+		}
 
 		protected override void OnSetUp()
 		{

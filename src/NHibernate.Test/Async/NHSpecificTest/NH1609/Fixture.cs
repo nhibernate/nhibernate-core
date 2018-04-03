@@ -10,6 +10,7 @@
 
 using System.Collections;
 using NHibernate.Criterion;
+using NHibernate.Dialect;
 using NHibernate.Driver;
 using NUnit.Framework;
 
@@ -23,6 +24,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1609
 		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
 		{
 			return factory.ConnectionProvider.Driver.SupportsMultipleQueries;
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is AbstractHanaDialect); // HANA does not support inserting a row without specifying any column values
 		}
 
 		[Test]

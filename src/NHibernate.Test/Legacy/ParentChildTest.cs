@@ -13,6 +13,11 @@ namespace NHibernate.Test.Legacy
 	[TestFixture]
 	public class ParentChildTest : TestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is AbstractHanaDialect); // HANA does not support inserting a row without specifying any column values
+		}
+
 		protected override IList Mappings
 		{
 			get

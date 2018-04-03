@@ -11,12 +11,18 @@ using NHibernate.Util;
 
 using NUnit.Framework;
 using System.Linq;
+using NHibernate.Dialect;
 
 namespace NHibernate.Test.NHSpecificTest.NH3050
 {
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is AbstractHanaDialect); // HANA does not support inserting a row without specifying any column values
+		}
+
 		[Test]
 		public void Test()
 		{

@@ -1,5 +1,6 @@
 using System.Collections;
 using NHibernate.Criterion;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH830
@@ -7,6 +8,11 @@ namespace NHibernate.Test.NHSpecificTest.NH830
 	[TestFixture]
 	public class AutoFlushTestFixture : BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is AbstractHanaDialect); // HANA does not support inserting a row without specifying any column values
+		}
+
 		[Test]
 		public void AutoFlushTest()
 		{

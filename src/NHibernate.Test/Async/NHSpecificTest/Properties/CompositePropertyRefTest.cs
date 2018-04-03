@@ -10,6 +10,7 @@
 
 using System;
 using System.Linq;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.Properties
@@ -20,6 +21,11 @@ namespace NHibernate.Test.NHSpecificTest.Properties
 	{
 		private long p_id;
 		private long p2_id;
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is AbstractHanaDialect); // HANA doesn't support foreign key constraints over unique key columns
+		}
 
 		protected override void OnSetUp()
 		{
