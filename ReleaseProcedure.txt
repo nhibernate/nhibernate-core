@@ -36,13 +36,14 @@ Tools\gitreleasemanager.0.7.0\tools\GitReleaseManager.exe create -o nhibernate -
   * Upload binary and source zip files to SourceForge. Update the "latest
     release".
 
-  * Update download link on nhibernate.info.
+  * Update download link on nhibernate.info. Update the reference documentation
+    if needed.
 
   * Push nuget packages including the symbol packages.
 
   * In GitHub, mark the milestone as released and publish the release draft,
     creating the release tag by the way. (It should match the tag in the
-    releasenots link of the release description.)
+    releasenotes link of the release description.)
 
   * Post release announcement to nhusers, nhibernate-development and as
     project news on SourceForge.

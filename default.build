@@ -319,10 +319,21 @@
 			<in>
 				<items>
 					<include name="${nuget.nupackages.dir}/*.nupkg"/>
+					<exclude name="${nuget.nupackages.dir}/*.symbols.nupkg"/>
 				</items>
 			</in>
 			<do>
-				<echo message="nuget push ${filename} ${environment::newline()}" file="${nuget.nupackages.pushbatfile}" append="true"/>
+				<echo message="nuget push -source https://nuget.org/ ${path::get-file-name(filename)} ${environment::newline()}" file="${nuget.nupackages.pushbatfile}" append="true"/>
+			</do>
+		</foreach>
+		<foreach item="File" property="filename">
+			<in>
+				<items>
+					<include name="${nuget.nupackages.dir}/*.symbols.nupkg"/>
+				</items>
+			</in>
+			<do>
+				<echo message="nuget push -source https://nuget.smbsrc.net/ ${path::get-file-name(filename)} ${environment::newline()}" file="${nuget.nupackages.pushbatfile}" append="true"/>
 			</do>
 		</foreach>
 	</target>
