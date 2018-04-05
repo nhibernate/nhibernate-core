@@ -13,23 +13,13 @@
 
 	<property name="build.number" value="${CCNetLabel}" if="${property::exists('CCNetLabel')}" />
 
-	<target name="clean-configure-test" depends="cleanall init copy-teamcity-configuration binaries test verify-test-results binaries-zip" />
+	<target name="clean-configure-test" depends="cleanall init copy-teamcity-configuration binaries test binaries-zip" />
 
 	<target name="copy-teamcity-configuration">
 		<copy file="build-common/teamcity-hibernate.cfg.xml" tofile="${current-test-configuration.dir}/hibernate.cfg.xml" />
 		<call target="setup-teamcity-${config.teamcity}"/>
 		<property name="app.config" value="${current-test-configuration.dir}/hibernate.cfg.xml" />
 		<call target="put-connection-settings-into-defined-app-config" />
-	</target>
-
-	<target name="verify-test-results">
-		<if test="${property::exists('NHibernate.Test.IgnoreFail')}">
-			<!-- Process the current results first, so that these will be available in build artifacts even
-				 if the last-result files is missing. -->
-			<property name="teamcity.current.result" value="${testResult::StripTimings(testresults.dir + '/NHibernate.Test.dll-results.xml', 'NHibernate.Test.current-results.xml')}" />
-			<copy file="${teamcity.last.result}" todir="${testresults.dir}"  />
-			<property name="teamcity.report" value="${testResult::CompareResults(teamcity.current.result, teamcity.last.result)}" />
-		</if>
 	</target>
 
 	<target name="setup-teamcity-default">
@@ -118,8 +108,6 @@
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.OracleClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.Oracle10gDialect" />
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Data Source=XE" />
-		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/oracle/NHibernate.Test.last-results.xml" />
 	</target>
 
 	<target name="setup-teamcity-oracle32">
@@ -136,8 +124,6 @@
 				<include name="*.dll"/>
 			</fileset>
 		</copy>
-		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/oracle/NHibernate.Test.last-results.xml" />
 	</target>
 
 	<target name="setup-teamcity-oracle64">
@@ -155,8 +141,6 @@
 				<include name="*.dll"/>
 			</fileset>
 		</copy>
-		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/oracle/NHibernate.Test.last-results.xml" />
 	</target>
 
 	<target name="setup-teamcity-oracle-managed32">
@@ -187,250 +171,5 @@
 		<property name="nhibernate.dialect"	value="NHibernate.Dialect.MySQL5Dialect" />
 		<property name="nhibernate.connection.connection_string" value="Data Source=localhost;Database=nhibernate;User ID=nhibernate;Password=nhibernate;Protocol=memory;Old Guids=True;" />
 	</target>
-
-	<script language="C#" prefix="testResult">
-		<references>
-			<include name="System.dll" />
-			<include name="System.Core.dll" />
-			<include name="System.Data.dll" />
-			<include name="System.Xml.dll" />
-		</references>
-		<imports>
-			<import namespace="System.Collections.Generic"/>
-			<import namespace="System.Data"/>
-			<import namespace="System.Data.Common"/>
-			<import namespace="System.Data.SqlClient"/>
-			<import namespace="System.IO"/>
-			<import namespace="System.Linq"/>
-			<import namespace="System.Xml"/>
-		</imports>
-		<code>
-			<![CDATA[
-
-		public static void StripAttributes(XmlDocument source, string xpath)
-		{
-			foreach (XmlAttribute att in source.SelectNodes(xpath))
-				att.OwnerElement.RemoveAttribute(att.Name);
-		}
-
-		public static void StripElements(XmlDocument source, string xpath)
-		{
-			foreach (XmlElement el in source.SelectNodes(xpath))
-				el.ParentNode.RemoveChild(el);
-		}
-
-		[Function("StripTimings")]
-		public static string StripTimings(string testResultFile, string outputFile)
-		{
-			try
-			{
-				XmlDocument testResults = new XmlDocument();
-				testResults.Load(testResultFile);
-
-				StripElements(testResults, "//stack-trace");
-				StripAttributes(testResults, "//@cwd");
-				StripAttributes(testResults, "//@total");
-				StripAttributes(testResults, "//@date");
-				StripAttributes(testResults, "//@time");
-				StripAttributes(testResults, "//@machine-name");
-				StripAttributes(testResults, "//@user");
-				StripAttributes(testResults, "//@user-domain");
-
-				outputFile = Path.GetDirectoryName(testResultFile) + "/" + outputFile;
-				testResults.Save(outputFile);
-				return outputFile;
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine(e);
-				throw;
-			}
-		}
-
-		public enum ResultStatus
-		{
-			None,
-			Failure,
-			Ignored,
-			Inconclusive,
-			Success
-		}
-
-		public class Result
-		{
-			public string Name;
-			public ResultStatus Status;
-			public bool Executed;
-			public bool Success;
-
-			public bool Inconclusive
-			{
-				get
-				{
-					return Executed && !Success && (Status == ResultStatus.Success || Status == ResultStatus.Inconclusive);
-				}
-			}
-
-			private static Result Parse(XmlNode testCase)
-			{
-				var result = new Result
-				{
-					Name = testCase.Attributes["name"].Value,
-					Executed = bool.Parse(testCase.Attributes["executed"].Value)
-				};
-
-				ResultStatus status;
-				Enum.TryParse<ResultStatus>(testCase.Attributes["result"].Value, out status);
-				result.Status = status;
-
-				if (result.Executed)
-					result.Success = bool.Parse(testCase.Attributes["success"].Value);
-
-				return result;
-			}
-
-			public override string ToString()
-			{
-				var prefix = "IGNORED - ";
-				if (Executed)
-					prefix = Success ? "PASS    - " :
-						Inconclusive ? "INCONCL - " : "FAIL    - ";
-				return prefix + Name;
-			}
-
-			public static IList<Result> ParseFile(string file)
-			{
-				var run1 = new XmlDocument();
-				run1.Load(file);
-
-				var results = new List<Result>();
-				foreach (XmlNode testCase in run1.SelectNodes("//test-case"))
-				{
-					var result = Parse(testCase);
-					results.Add(result);
-				}
-				return results;
-			}
-		}
-
-		[Function("CompareResults")]
-		public static string CompareResults(string currentResult, string lastResult)
-		{
-			try
-			{
-				var outputFile = Path.Combine(Path.GetDirectoryName(currentResult), "Comparison.txt");
-				var report = new StringBuilder();
-
-				report.AppendLine("Comparison Results");
-				report.AppendLine("==================");
-
-				var before = Result.ParseFile(lastResult);
-				var beforeByName = before
-					// Some multi-value tests may be duplicated
-					.GroupBy(b => b.Name)
-					.ToDictionary(
-						g => g.Key,
-						// Take one, preferably not failing first, thus ensuring an after failing test
-						// will be match as broken in case one of the dup was not failing.
-						g => g
-							// Succeeded
-							.OrderByDescending(r => r.Success)
-							// Else ignored
-							.ThenBy(r => r.Executed)
-							// Else inconclusive
-							.ThenBy(r => r.Inconclusive ? 0 : 1)
-							.First());
-				var after = Result.ParseFile(currentResult);
-
-				var newFailingTests = new List<Result>();
-				var newInconclusiveTests = new List<Result>();
-				var newNotFailingTests = new List<Result>();
-				var fixedTests = new List<Result>();
-				var ignoredTests = new List<Result>();
-				var brokenTests = new List<Result>();
-				var inconclusiveTests = new List<Result>();
-				var afterTestNames = new HashSet<string>();
-				foreach (var afterResult in after)
-				{
-					afterTestNames.Add(afterResult.Name);
-					Result beforeResult;
-					if (beforeByName.TryGetValue(afterResult.Name, out beforeResult))
-					{
-						if (!beforeResult.Success && afterResult.Success)
-							fixedTests.Add(afterResult);
-						if (beforeResult.Executed && !afterResult.Executed)
-							ignoredTests.Add(afterResult);
-						if (beforeResult.Success && afterResult.Executed && !afterResult.Success)
-						{
-							if (afterResult.Inconclusive)
-								inconclusiveTests.Add(afterResult);
-							else
-								brokenTests.Add(afterResult);
-						}
-						if (beforeResult.Inconclusive && afterResult.Executed && !afterResult.Success && !afterResult.Inconclusive)
-							brokenTests.Add(afterResult);
-					}
-					else
-					{
-						if (afterResult.Executed && !afterResult.Success)
-						{
-							if (afterResult.Inconclusive)
-								newInconclusiveTests.Add(afterResult);
-							else
-								newFailingTests.Add(afterResult);
-						}
-						else
-							newNotFailingTests.Add(afterResult);
-					}
-				}
-
-				var missingTests = new List<Result>();
-				foreach (var result in before)
-					if (!afterTestNames.Contains(result.Name))
-						missingTests.Add(result);
-
-				ReportResultGroup(report, brokenTests, "Tests broken since last recorded results");
-				ReportResultGroup(report, newFailingTests, "Tests new (failed) since last recorded results");
-				ReportResultGroup(report, inconclusiveTests, "Tests inconclusive since last recorded results");
-				ReportResultGroup(report, newInconclusiveTests, "Tests new (inconclusive) since last recorded results");
-				ReportResultGroup(report, fixedTests, "Tests fixed since last recorded results");
-				ReportResultGroup(report, ignoredTests, "Tests ignored since last recorded results");
-				ReportResultGroup(report, newNotFailingTests, "Tests new (not failing) since last recorded results");
-				ReportResultGroup(report, missingTests, "Tests missing since last recorded results");
-
-				var output = report.ToString();
-				File.WriteAllText(outputFile, output);
-
-				if (brokenTests.Count > 0)
-					throw new Exception("Previously passing tests have been broken\n\n" + output);
-
-				if (newFailingTests.Count > 0)
-					throw new Exception("New tests that fail have been added\n\n" + output);
-
-				return output;
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine(e);
-				throw;
-			}
-		}
-
-		public static void ReportResultGroup(StringBuilder report, IList<Result> resultGroup, string groupTitle)
-		{
-			report.AppendLine();
-			report.Append("*** ").Append(groupTitle).AppendLine(" ***");
-			if (resultGroup.Count > 0)
-			{
-				foreach (var result in resultGroup)
-					report.AppendLine(result.ToString());
-			}
-			else
-				report.AppendLine("None");
-		}
-
-			]]>
-		</code>
-	</script>
 
 </project>
