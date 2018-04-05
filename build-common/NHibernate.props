@@ -1,4 +1,5 @@
 <Project>
+  <Import Project="DotNetSdkMono.props" />
   <PropertyGroup>
     <VersionMajor Condition="'$(VersionMajor)' == ''">5</VersionMajor>
     <VersionMinor Condition="'$(VersionMinor)' == ''">1</VersionMinor>
