@@ -1,31 +1,26 @@
-﻿using NUnit.Framework;
-
-#if NETCOREAPP2_0
-using System.Configuration;
+﻿using System.Configuration;
 using System.IO;
 using log4net.Repository.Hierarchy;
 using NHibernate.Cfg;
 using NHibernate.Cfg.ConfigurationSchema;
-#endif
+using NUnit.Framework;
 
 namespace NHibernate.Test
 {
-#if NETCOREAPP2_0
 	[SetUpFixture]
-#endif
 	public class TestsContext
 	{
 		public static bool ExecutingWithVsTest { get; } =
-			System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name == "testhost";
+			System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name.StartsWith("testhost") ?? false;
 
 		public static void AssumeSystemTypeIsSerializable() =>
 			Assume.That(typeof(System.Type).IsSerializable, Is.True);
 
-#if NETCOREAPP2_0
 		[OneTimeSetUp]
 		public void RunBeforeAnyTests()
 		{
 			//When .NET Core App 2.0 tests run from VS/VSTest the entry assembly is "testhost.dll"
+			//Dotnet test can run from "testhost.exe" or "testhost.x86.exe"
 			//so we need to explicitly load the configuration
 			if (ExecutingWithVsTest)
 			{
@@ -61,6 +56,5 @@ namespace NHibernate.Test
 			hierarchy.Root.AddAppender(consoleAppender);
 			hierarchy.Configured = true;
 		}
-#endif
 	}
 }
