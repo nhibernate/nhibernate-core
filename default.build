@@ -148,18 +148,13 @@
 		<call target="put-connection-settings-into-defined-app-config" />
 	</target>
 
-	<target name="find-nunit">
-		<property name="nuget-package-id" value="NUnit.ConsoleRunner" />
-		<call target="get-nuget-package-path" />
-		<property name="nunit-console" value="${nuget-package-path}/tools/nunit3-console.exe" />
-	</target>
-
-	<target name="run-tests" depends="find-nunit" description="Run NUnit tests">
-		<exec program="${nunit-console}" failonerror="${not property::exists(test.file + '.IgnoreFail')}">
+	<target name="run-tests" description="Run tests">
+		<exec program="dotnet" failonerror="true" verbose="true">
+			<arg value="vstest" />
 			<arg value="${root.dir}/src/${test.file}/bin/${build.config}/net461/${test.file}.dll" />
-			<arg value="--result=${testresults.dir}/${test.file}.dll-results.xml;format=nunit2" />
-			<arg value="--teamcity" if="${property::exists('config.teamcity')}" />
-			<arg value="--x86" unless="${property::exists('nunit-x64')}" />
+			<arg line="--Logger:&quot;nunit;LogFilePath=${testresults.dir}/${test.file}.dll-results.xml&quot;" />
+			<arg line="--Settings:&quot;${root.dir}/src/NHibernate.Test/test-x86.runsettings&quot;" unless="${property::exists('nunit-x64')}" />
+			<arg line="--Settings:&quot;${root.dir}/src/NHibernate.Test/test-x64.runsettings&quot;" if="${property::exists('nunit-x64')}" />
 		</exec>
 	</target>
 
