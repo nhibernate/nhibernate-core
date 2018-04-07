@@ -19,8 +19,51 @@ using NHibernate.Cache;
 
 namespace NHibernate.Test.CacheTest.Caches
 {
-	public partial class BatchableCache : ICache, IBatchableReadCache
+	public partial class BatchableCache : ICache, IBatchableReadWriteCache
 	{
+
+		public Task PutMultipleAsync(object[] keys, object[] values, CancellationToken cancellationToken)
+		{
+			try
+			{
+				PutMultipleCalls.Add(keys);
+				for (int i = 0; i < keys.Length; i++)
+				{
+					_hashtable[keys[i]] = values[i];
+				}
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		public Task LockMultipleAsync(object[] keys, CancellationToken cancellationToken)
+		{
+			try
+			{
+				LockMultipleCalls.Add(keys);
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		public Task UnlockMultipleAsync(object[] keys, CancellationToken cancellationToken)
+		{
+			try
+			{
+				UnlockMultipleCalls.Add(keys);
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
 
 		#region ICache Members
 
@@ -61,6 +104,7 @@ namespace NHibernate.Test.CacheTest.Caches
 		{
 			try
 			{
+				PutCalls.Add(key);
 				_hashtable[key] = value;
 				return Task.CompletedTask;
 			}

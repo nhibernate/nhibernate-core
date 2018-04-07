@@ -5,7 +5,7 @@ using System.Text;
 namespace NHibernate.Cache
 {
 	/// <summary>
-	/// Defines a method for retrieving multiple keys from the cache at once. The implementor
+	/// Defines a method for retrieving multiple objects from the cache at once. The implementor
 	/// should use this interface along with <see cref="ICache"/> when the cache supports
 	/// a multiple get operation.
 	/// </summary>

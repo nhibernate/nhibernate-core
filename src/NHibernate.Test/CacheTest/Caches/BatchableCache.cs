@@ -9,14 +9,41 @@ using NHibernate.Cache;
 
 namespace NHibernate.Test.CacheTest.Caches
 {
-	public partial class BatchableCache : ICache, IBatchableReadCache
+	public partial class BatchableCache : ICache, IBatchableReadWriteCache
 	{
 		private readonly IDictionary _hashtable = new Hashtable();
 		private readonly string _regionName;
 
 		public List<object[]> GetMultipleCalls { get; } = new List<object[]>();
 
+		public List<object[]> PutMultipleCalls { get; } = new List<object[]>();
+
+		public List<object[]> LockMultipleCalls { get; } = new List<object[]>();
+
+		public List<object[]> UnlockMultipleCalls { get; } = new List<object[]>();
+
 		public List<object> GetCalls { get; } = new List<object>();
+
+		public List<object> PutCalls { get; } = new List<object>();
+
+		public void PutMultiple(object[] keys, object[] values)
+		{
+			PutMultipleCalls.Add(keys);
+			for (int i = 0; i < keys.Length; i++)
+			{
+				_hashtable[keys[i]] = values[i];
+			}
+		}
+
+		public void LockMultiple(object[] keys)
+		{
+			LockMultipleCalls.Add(keys);
+		}
+
+		public void UnlockMultiple(object[] keys)
+		{
+			UnlockMultipleCalls.Add(keys);
+		}
 
 		#region ICache Members
 
@@ -46,6 +73,7 @@ namespace NHibernate.Test.CacheTest.Caches
 		/// <summary></summary>
 		public void Put(object key, object value)
 		{
+			PutCalls.Add(key);
 			_hashtable[key] = value;
 		}
 
@@ -59,6 +87,16 @@ namespace NHibernate.Test.CacheTest.Caches
 		public void Clear()
 		{
 			_hashtable.Clear();
+		}
+
+		public void ClearStatistics()
+		{
+			GetCalls.Clear();
+			GetMultipleCalls.Clear();
+			PutMultipleCalls.Clear();
+			PutCalls.Clear();
+			UnlockMultipleCalls.Clear();
+			LockMultipleCalls.Clear();
 		}
 
 		/// <summary></summary>

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cache.Access;
 
@@ -36,6 +37,7 @@ namespace NHibernate.Cache
 		private readonly object _lockObject = new object();
 		private ICache cache;
 		private IBatchableReadCache _batchableReadCache;
+		private IBatchableReadWriteCache _batchableReadWriteCache;
 		private int _nextLockId;
 
 		public ReadWriteCache()
@@ -58,6 +60,7 @@ namespace NHibernate.Cache
 				cache = value;
 				// ReSharper disable once SuspiciousTypeConversion.Global
 				_batchableReadCache = value as IBatchableReadCache;
+				_batchableReadWriteCache = value as IBatchableReadWriteCache;
 			}
 		}
 
@@ -215,6 +218,86 @@ namespace NHibernate.Cache
 					cache.Unlock(key);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Do not add an item to the cache unless the current transaction
+		/// timestamp is later than the timestamp at which the item was
+		/// invalidated. (Otherwise, a stale item might be re-added if the
+		/// database is operating in repeatable read isolation mode.)
+		/// </summary>
+		/// <returns>Whether the items were actually put into the cache</returns>
+		public bool[] PutMultiple(CacheKey[] keys, object[] values, long timestamp, object[] versions, IComparer[] versionComparers,
+		                bool[] minimalPuts)
+		{
+			if (_batchableReadWriteCache == null)
+			{
+				throw new InvalidOperationException($"Cache {cache.GetType()} does not support batching operations");
+			}
+
+			var result = new bool[keys.Length];
+			if (timestamp == long.MinValue)
+			{
+				// MinValue means cache is disabled
+				return result;
+			}
+
+			lock (_lockObject)
+			{
+				if (log.IsDebugEnabled())
+				{
+					log.Debug("Caching: {0}", string.Join(",", keys.AsEnumerable()));
+				}
+				var keysArr = keys.Cast<object>().ToArray();
+				try
+				{
+					_batchableReadWriteCache.LockMultiple(keysArr);
+					var putBatch = new Dictionary<object, object>();
+					var lockables = _batchableReadWriteCache.GetMultiple(keys);
+					for (var i = 0; i < keys.Length; i++)
+					{
+						var key = keys[i];
+						var version = versions[i];
+						var lockable = (ILockable) lockables[i];
+						bool puttable = lockable == null ||
+						                lockable.IsPuttable(timestamp, version, versionComparers[i]);
+						if (puttable)
+						{
+							putBatch.Add(key, new CachedItem(values[i], cache.NextTimestamp(), version));
+							if (log.IsDebugEnabled())
+							{
+								log.Debug("Cached: {0}", key);
+							}
+							result[i] = true;
+						}
+						else
+						{
+							if (log.IsDebugEnabled())
+							{
+								if (lockable.IsLock)
+								{
+									log.Debug("Item was locked: {0}", key);
+								}
+								else
+								{
+									log.Debug("Item was already cached: {0}", key);
+								}
+							}
+							result[i] = false;
+						}
+					}
+
+					if (putBatch.Count > 0)
+					{
+						_batchableReadWriteCache.PutMultiple(putBatch.Keys.ToArray(), putBatch.Values.ToArray());
+					}
+				}
+				finally
+				{
+					_batchableReadWriteCache.UnlockMultiple(keysArr);
+				}
+			}
+			return result;
 		}
 
 		/// <summary>

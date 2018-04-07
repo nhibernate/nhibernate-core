@@ -9,6 +9,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Properties;
+using System;
 
 namespace NHibernate.Engine
 {
@@ -47,6 +48,18 @@ namespace NHibernate.Engine
 		/// "hydrated" into an array
 		/// </summary>
 		public static void InitializeEntity(object entity, bool readOnly, ISessionImplementor session, PreLoadEvent preLoadEvent, PostLoadEvent postLoadEvent)
+		{
+			InitializeEntity(entity, readOnly, session, preLoadEvent, postLoadEvent, null);
+		}
+		
+		/// <summary>
+		/// Perform the second step of 2-phase load. Fully initialize the entity instance.
+		/// After processing a JDBC result set, we "resolve" all the associations
+		/// between the entities which were instantiated and had their state
+		/// "hydrated" into an array
+		/// </summary>
+		internal static void InitializeEntity(object entity, bool readOnly, ISessionImplementor session, PreLoadEvent preLoadEvent, PostLoadEvent postLoadEvent,
+		                                      Action<IEntityPersister, CachePutData> cacheBatchingHandler)
 		{
 			//TODO: Should this be an InitializeEntityEventListener??? (watch out for performance!)
 
@@ -107,14 +120,29 @@ namespace NHibernate.Engine
 				CacheEntry entry =
 					new CacheEntry(hydratedState, persister, entityEntry.LoadedWithLazyPropertiesUnfetched, version, session, entity);
 				CacheKey cacheKey = session.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
-				bool put =
-					persister.Cache.Put(cacheKey, persister.CacheEntryStructure.Structure(entry), session.Timestamp, version,
-										persister.IsVersioned ? persister.VersionType.Comparator : null,
-										UseMinimalPuts(session, entityEntry));
 
-				if (put && factory.Statistics.IsStatisticsEnabled)
+				if (cacheBatchingHandler != null && persister.IsBatchLoadable && persister.Cache.IsBatchingPutSupported())
 				{
-					factory.StatisticsImplementor.SecondLevelCachePut(persister.Cache.RegionName);
+					cacheBatchingHandler(
+						persister,
+						new CachePutData(
+							cacheKey,
+							persister.CacheEntryStructure.Structure(entry),
+							version,
+							persister.IsVersioned ? persister.VersionType.Comparator : null,
+							UseMinimalPuts(session, entityEntry)));
+				}
+				else
+				{
+					bool put =
+						persister.Cache.Put(cacheKey, persister.CacheEntryStructure.Structure(entry), session.Timestamp, version,
+						                    persister.IsVersioned ? persister.VersionType.Comparator : null,
+						                    UseMinimalPuts(session, entityEntry));
+
+					if (put && factory.Statistics.IsStatisticsEnabled)
+					{
+						factory.StatisticsImplementor.SecondLevelCachePut(persister.Cache.RegionName);
+					}
 				}
 			}
 			

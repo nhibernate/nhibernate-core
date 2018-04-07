@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cache.Access;
 
@@ -77,6 +78,77 @@ namespace NHibernate.Cache
 			catch (Exception ex)
 			{
 				return Task.FromException<ISoftLock>(ex);
+			}
+		}
+
+		public Task<bool[]> PutMultipleAsync(CacheKey[] keys, object[] values, long timestamp, object[] versions, IComparer[] versionComparers,
+		                          bool[] minimalPuts, CancellationToken cancellationToken)
+		{
+			if (_batchableReadWriteCache == null)
+			{
+				throw new InvalidOperationException($"Cache {cache.GetType()} does not support batching operations");
+			}
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<bool[]>(cancellationToken);
+			}
+			return InternalPutMultipleAsync();
+			async Task<bool[]> InternalPutMultipleAsync()
+			{
+				var result = new bool[keys.Length];
+				if (timestamp == long.MinValue)
+				{
+					// MinValue means cache is disabled
+					return result;
+				}
+
+				var checkKeys = new List<CacheKey>();
+				var checkKeyIndexes = new List<int>();
+				for (var i = 0; i < minimalPuts.Length; i++)
+				{
+					if (minimalPuts[i])
+					{
+						checkKeys.Add(keys[i]);
+						checkKeyIndexes.Add(i);
+					}
+				}
+				var skipKeyIndexes = new HashSet<int>();
+				if (checkKeys.Any())
+				{
+					var objects = await (_batchableReadWriteCache.GetMultipleAsync(checkKeys.ToArray(), cancellationToken)).ConfigureAwait(false);
+					for (var i = 0; i < objects.Length; i++)
+					{
+						if (objects[i] != null)
+						{
+							if (log.IsDebugEnabled())
+							{
+								log.Debug("item already cached: {0}", checkKeys[i]);
+							}
+							skipKeyIndexes.Add(checkKeyIndexes[i]);
+						}
+					}
+				}
+
+				if (skipKeyIndexes.Count == keys.Length)
+				{
+					return result;
+				}
+
+				var putKeys = new object[keys.Length - skipKeyIndexes.Count];
+				var putValues = new object[putKeys.Length];
+				var j = 0;
+				for (var i = 0; i < keys.Length; i++)
+				{
+					if (skipKeyIndexes.Contains(i))
+					{
+						continue;
+					}
+					putKeys[j] = keys[i];
+					putValues[j++] = values[i];
+					result[i] = true;
+				}
+				await (_batchableReadWriteCache.PutMultipleAsync(putKeys, putValues, cancellationToken)).ConfigureAwait(false);
+				return result;
 			}
 		}
 

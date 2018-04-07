@@ -173,10 +173,51 @@ namespace NHibernate.Cache
 			return objects;
 		}
 
+		/// <summary>
+		/// Attempt to cache objects, after loading them from the database.
+		/// </summary>
+		/// <param name="cache">The cache concurrency strategy.</param>
+		/// <param name="keys">The keys (id) of the objects to put in the Cache.</param>
+		/// <param name="values">The objects to put in the cache.</param>
+		/// <param name="timestamp">A timestamp prior to the transaction start time.</param>
+		/// <param name="versions">The version numbers of the objects we are putting.</param>
+		/// <param name="versionComparers">The comparers to be used to compare version numbers</param>
+		/// <param name="minimalPuts">Indicates that the cache should avoid a put if the item is already cached.</param>
+		/// <returns><see langword="true" /> if the objects were successfully cached.</returns>
+		/// <exception cref="CacheException"></exception>
+		//6.0 TODO: Merge into ICacheConcurrencyStrategy.
+		public static bool[] PutMultiple(this ICacheConcurrencyStrategy cache, CacheKey[] keys, object[] values, long timestamp,
+		                          object[] versions, IComparer[] versionComparers, bool[] minimalPuts)
+		{
+			switch (cache)
+			{
+				case ReadOnlyCache readOnly:
+					return readOnly.PutMultiple(keys, values, timestamp, versions, versionComparers, minimalPuts);
+				case ReadWriteCache readWrite:
+					return readWrite.PutMultiple(keys, values, timestamp, versions, versionComparers, minimalPuts);
+				case NonstrictReadWriteCache nonstrictReadWrite:
+					return nonstrictReadWrite.PutMultiple(keys, values, timestamp, versions, versionComparers, minimalPuts);
+			}
+
+			// Fallback to Put
+			var result = new bool[keys.Length];
+			for (var i = 0; i < keys.Length; i++)
+			{
+				result[i] = cache.Put(keys[i], values[i], timestamp, versions[i], versionComparers[i], minimalPuts[i]);
+			}
+			return result;
+		}
+
 		public static bool IsBatchingGetSupported(this ICacheConcurrencyStrategy cache)
 		{
 			// ReSharper disable once SuspiciousTypeConversion.Global
 			return cache.Cache is IBatchableReadCache;
+		}
+
+		public static bool IsBatchingPutSupported(this ICacheConcurrencyStrategy cache)
+		{
+			// ReSharper disable once SuspiciousTypeConversion.Global
+			return cache.Cache is IBatchableReadWriteCache;
 		}
 	}
 }

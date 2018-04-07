@@ -362,10 +362,13 @@ namespace NHibernate.Loader
 					Log.Debug("total objects hydrated: {0}", hydratedObjectsSize);
 				}
 
+				var cacheBatcher = new CacheBatcher(session);
 				for (int i = 0; i < hydratedObjectsSize; i++)
 				{
-					await (TwoPhaseLoad.InitializeEntityAsync(hydratedObjects[i], readOnly, session, pre, post, cancellationToken)).ConfigureAwait(false);
+					await (TwoPhaseLoad.InitializeEntityAsync(hydratedObjects[i], readOnly, session, pre, post,
+					                              (persister, data) => cacheBatcher.AddToBatch(persister, data), cancellationToken)).ConfigureAwait(false);
 				}
+				await (cacheBatcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);
 			}
 
 			if (collectionPersisters != null)

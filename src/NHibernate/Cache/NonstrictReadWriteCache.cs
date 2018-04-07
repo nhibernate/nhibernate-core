@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cache.Access;
 
@@ -17,6 +18,7 @@ namespace NHibernate.Cache
 	{
 		private ICache cache;
 		private IBatchableReadCache _batchableReadCache;
+		private IBatchableReadWriteCache _batchableReadWriteCache;
 
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(NonstrictReadWriteCache));
 
@@ -36,6 +38,7 @@ namespace NHibernate.Cache
 				cache = value;
 				// ReSharper disable once SuspiciousTypeConversion.Global
 				_batchableReadCache = value as IBatchableReadCache;
+				_batchableReadWriteCache = value as IBatchableReadWriteCache;
 			}
 		}
 
@@ -81,6 +84,72 @@ namespace NHibernate.Cache
 				log.Debug(results[i] != null ? $"Cache hit: {keys[i]}" : $"Cache miss: {keys[i]}");
 			}
 			return results;
+		}
+
+		/// <summary>
+		/// Add multiple items to the cache
+		/// </summary>
+		public bool[] PutMultiple(CacheKey[] keys, object[] values, long timestamp, object[] versions, IComparer[] versionComparers,
+		                          bool[] minimalPuts)
+		{
+			if (_batchableReadWriteCache == null)
+			{
+				throw new InvalidOperationException($"Cache {cache.GetType()} does not support batching operations");
+			}
+			var result = new bool[keys.Length];
+			if (timestamp == long.MinValue)
+			{
+				// MinValue means cache is disabled
+				return result;
+			}
+
+			var checkKeys = new List<CacheKey>();
+			var checkKeyIndexes = new List<int>();
+			for (var i = 0; i < minimalPuts.Length; i++)
+			{
+				if (minimalPuts[i])
+				{
+					checkKeys.Add(keys[i]);
+					checkKeyIndexes.Add(i);
+				}
+			}
+			var skipKeyIndexes = new HashSet<int>();
+			if (checkKeys.Any())
+			{
+				var objects = _batchableReadWriteCache.GetMultiple(checkKeys.ToArray());
+				for (var i = 0; i < objects.Length; i++)
+				{
+					if (objects[i] != null)
+					{
+						if (log.IsDebugEnabled())
+						{
+							log.Debug("item already cached: {0}", checkKeys[i]);
+						}
+						skipKeyIndexes.Add(checkKeyIndexes[i]);
+					}
+				}
+			}
+
+			if (skipKeyIndexes.Count == keys.Length)
+			{
+				return result;
+			}
+
+			var putKeys = new object[keys.Length - skipKeyIndexes.Count];
+			var putValues = new object[putKeys.Length];
+			var j = 0;
+			for (var i = 0; i < keys.Length; i++)
+			{
+				if (skipKeyIndexes.Contains(i))
+				{
+					continue;
+				}
+				putKeys[j] = keys[i];
+				putValues[j++] = values[i];
+				result[i] = true;
+			}
+			_batchableReadWriteCache.PutMultiple(putKeys, putValues);
+			return result;
 		}
 
 		/// <summary>

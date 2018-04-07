@@ -156,5 +156,42 @@ namespace NHibernate.Cache
 			}
 			return objects;
 		}
+
+		/// <summary>
+		/// Attempt to cache objects, after loading them from the database.
+		/// </summary>
+		/// <param name="cache">The cache concurrency strategy.</param>
+		/// <param name="keys">The keys (id) of the objects to put in the Cache.</param>
+		/// <param name="values">The objects to put in the cache.</param>
+		/// <param name="timestamp">A timestamp prior to the transaction start time.</param>
+		/// <param name="versions">The version numbers of the objects we are putting.</param>
+		/// <param name="versionComparers">The comparers to be used to compare version numbers</param>
+		/// <param name="minimalPuts">Indicates that the cache should avoid a put if the item is already cached.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns><see langword="true" /> if the objects were successfully cached.</returns>
+		/// <exception cref="CacheException"></exception>
+		//6.0 TODO: Merge into ICacheConcurrencyStrategy.
+		public static async Task<bool[]> PutMultipleAsync(this ICacheConcurrencyStrategy cache, CacheKey[] keys, object[] values, long timestamp,
+		                          object[] versions, IComparer[] versionComparers, bool[] minimalPuts, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			switch (cache)
+			{
+				case ReadOnlyCache readOnly:
+					return await (readOnly.PutMultipleAsync(keys, values, timestamp, versions, versionComparers, minimalPuts, cancellationToken)).ConfigureAwait(false);
+				case ReadWriteCache readWrite:
+					return await (readWrite.PutMultipleAsync(keys, values, timestamp, versions, versionComparers, minimalPuts, cancellationToken)).ConfigureAwait(false);
+				case NonstrictReadWriteCache nonstrictReadWrite:
+					return await (nonstrictReadWrite.PutMultipleAsync(keys, values, timestamp, versions, versionComparers, minimalPuts, cancellationToken)).ConfigureAwait(false);
+			}
+
+			// Fallback to Put
+			var result = new bool[keys.Length];
+			for (var i = 0; i < keys.Length; i++)
+			{
+				result[i] = await (cache.PutAsync(keys[i], values[i], timestamp, versions[i], versionComparers[i], minimalPuts[i], cancellationToken)).ConfigureAwait(false);
+			}
+			return result;
+		}
 	}
 }
