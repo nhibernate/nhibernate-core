@@ -508,12 +508,19 @@ namespace NHibernate.Type
 
 			//TODO: implement caching?! proxies?!
 
+			var keyType = GetIdentifierOrUniqueKeyType(factory)
+				// EntityUniqueKey was doing this on the type. I suspect this was needed only for its usage in Loader,
+				// which can work with entities as keys not yet instanciated and just represented by their identifiers.
+				// But since removing this call from EntityUniqueKey is done for a patch and that the code path here has
+				// no known bugs with this GetSemiResolvedType, moving its call here for avoiding altering this code
+				// path. See GH1645.
+				.GetSemiResolvedType(factory);
 			EntityUniqueKey euk =
 				new EntityUniqueKey(
 					entityName,
 					uniqueKeyPropertyName,
 					key,
-					GetIdentifierOrUniqueKeyType(factory),
+					keyType,
 					session.Factory);
 
 			IPersistenceContext persistenceContext = session.PersistenceContext;

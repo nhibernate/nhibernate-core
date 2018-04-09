@@ -20,12 +20,14 @@ namespace NHibernate.Engine
 		private readonly IType keyType;
 		private readonly int hashCode;
 
+		// 6.0 TODO: rename semiResolvedKey as simply key. That is not the responsibility of this class to make any
+		// assumption on the key being semi-resolved or not, that is the responsibility of its callers.
 		public EntityUniqueKey(string entityName, string uniqueKeyName, object semiResolvedKey, IType keyType, ISessionFactoryImplementor factory)
 		{
 			if (string.IsNullOrEmpty(entityName))
 				throw new ArgumentNullException("entityName");
 			if (string.IsNullOrEmpty(uniqueKeyName))
-				throw new ArgumentNullException("entityName");
+				throw new ArgumentNullException("uniqueKeyName");
 			if (semiResolvedKey == null)
 				throw new ArgumentNullException("semiResolvedKey");
 			if (keyType == null)
