@@ -34,7 +34,7 @@ namespace NHibernate.Engine
 			this.entityName = entityName;
 			this.uniqueKeyName = uniqueKeyName;
 			key = semiResolvedKey;
-			this.keyType = keyType.GetSemiResolvedType(factory);
+			this.keyType = keyType;
 			hashCode = GenerateHashCode(factory);
 		}
 
