@@ -140,6 +140,17 @@ namespace NHibernate.Engine
 					set.Remove(key);
 				}
 			}
+			// A subclass will be added to the batch by the root entity name, when querying by the root entity.
+			// When removing a subclass key, we need to consider that the subclass may not be batchable but
+			// its root class may be. In order to prevent having in batch entity keys that are already loaded,
+			// we have to try to remove the key by the root entity, even if the subclass is not batchable.
+			if (key.RootEntityName != key.EntityName)
+			{
+				if (batchLoadableEntityKeys.TryGetValue(key.RootEntityName, out var set))
+				{
+					set.Remove(key);
+				}
+			}
 		}
 
 		/// <summary>

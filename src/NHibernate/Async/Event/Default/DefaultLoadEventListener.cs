@@ -412,8 +412,7 @@ namespace NHibernate.Event.Default
 			}
 			ISessionFactoryImplementor factory = source.Factory;
 			var batchSize = persister.GetBatchSize();
-			// TODO: check for subclass support
-			if (batchSize > 1 && persister.Cache.IsBatchingGetSupported() && !persister.EntityMetamodel.HasSubclasses)
+			if (batchSize > 1 && persister.Cache.IsBatchingGetSupported())
 			{
 				// The first item in the array is the item that we want to load
 				var entityBatch =
