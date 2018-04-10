@@ -14,16 +14,20 @@ Tools\gitreleasemanager.0.7.0\tools\GitReleaseManager.exe create -o nhibernate -
     releasing another branch than master)
 
   * Update releasenotes.txt with the list of issues generated in the GitHub
-    draft release.
+    draft release. Add to the list the release task.
     See if any additions to the list of "known breaking changes" are necessary.
 
-  * Update the GitHub draft release for matching other release formalism: update
+  * Update the GitHub draft release for matching other release formalism: ensure
+    its tag matches the released version (three parts: major.minor.release), update
     its title, change its description for listing only highlights and breaking
     changes, include links to the milestone and the releasenotes of the release
     tag, include links to binaries on SourceForge and NuGet.
+    If the release tag does not match the released version with major.minor.release
+    formalism, the NuGet package will have an invalid link to release notes.
 
   * Check/update version number in common.xml and NHibernate.props under
-    build-common folder, and in master.xml under doc\reference folder.
+    build-common folder, in master.xml under doc\reference folder, and in
+    appveyor.yml in the NHibernate root.
 
   * Don't forget to commit the above.
 
