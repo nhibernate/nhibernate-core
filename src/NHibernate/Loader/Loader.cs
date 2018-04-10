@@ -1014,6 +1014,8 @@ namespace NHibernate.Loader
 			if (ukValue == null)
 				return;
 			var type = persister.PropertyTypes[index];
+			if (!alreadyLoaded)
+				type = type.GetSemiResolvedType(session.Factory);
 			var euk = new EntityUniqueKey(persister.EntityName, ukName, ukValue, type, session.Factory);
 			session.PersistenceContext.AddEntity(euk, obj);
 		}
