@@ -131,7 +131,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1391
 		[Test]
 		public void XmlConfiguration()
 		{
-			const string xml = @"<?xml version='1.0' encoding='utf-8' ?>
+			const string falseConfig = @"<?xml version='1.0' encoding='utf-8' ?>
 <hibernate-configuration xmlns='urn:nhibernate-configuration-2.2'>
 	<session-factory name='NHibernate.Test'>
 		<property name='track_session_id'>
@@ -139,15 +139,27 @@ namespace NHibernate.Test.NHSpecificTest.GH1391
 		</property>
 	</session-factory>
 </hibernate-configuration>";
-
-			var cfgXml = new XmlDocument();
-			cfgXml.LoadXml(xml);
+			const string trueConfig = @"<?xml version='1.0' encoding='utf-8' ?>
+<hibernate-configuration xmlns='urn:nhibernate-configuration-2.2'>
+	<session-factory name='NHibernate.Test'>
+		<property name='track_session_id'>
+		true
+		</property>
+	</session-factory>
+</hibernate-configuration>";
 
 			var cfg = new Configuration();
-			using (var xtr = new XmlTextReader(xml, XmlNodeType.Document, null))
+			using (var xtr = new XmlTextReader(falseConfig, XmlNodeType.Document, null))
 			{
 				cfg.Configure(xtr);
 				Assert.That(PropertiesHelper.GetBoolean(Environment.TrackSessionId, cfg.Properties, true), Is.False);
+			}
+
+			cfg = new Configuration();
+			using (var xtr = new XmlTextReader(trueConfig, XmlNodeType.Document, null))
+			{
+				cfg.Configure(xtr);
+				Assert.That(PropertiesHelper.GetBoolean(Environment.TrackSessionId, cfg.Properties, false), Is.True);
 			}
 		}
 	}

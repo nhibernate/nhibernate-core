@@ -303,7 +303,7 @@ namespace NHibernate.Cfg
 			// NHibernate-specific:
 			settings.IsolationLevel = isolation;
 			
-			bool trackSessionId = PropertiesHelper.GetBoolean(Environment.TrackSessionId, properties, true);
+			bool trackSessionId = PropertiesHelper.GetBoolean(Environment.TrackSessionId, properties, false);
 			log.Debug("Track session id: " + EnabledDisabled(trackSessionId));
 			settings.TrackSessionId = trackSessionId;
 

@@ -262,14 +262,14 @@ namespace NHibernate.Cfg
 		public const string OracleUseNPrefixedTypesForUnicode = "oracle.use_n_prefixed_types_for_unicode";
 
 		/// <summary>
-		/// <para>Set whether tracking the session id or not. When <see langword="true"/>, each session 
-		/// will have an unique <see cref="Guid"/> that can be retrieved by <see cref="ISessionImplementor.SessionId"/>,
-		/// otherwise <see cref="ISessionImplementor.SessionId"/> will always be <see cref="Guid.Empty"/>. Session id 
-		/// is used for logging purpose that can be also retrieved in a static context by 
-		/// <see cref="NHibernate.Impl.SessionIdLoggingContext.SessionId"/>, where the current session id is stored,
-		/// when tracking is enabled.</para>
-		/// In case the current session id won't be used, it is recommended to disable it, in order to increase performance.
-		/// <para>Default is <see langword="true"/>.</para>
+		/// <para>Set whether the session id should be track-able in logs or not. When <see langword="true"/>, each session
+		/// will have an unique <see cref="Guid"/> that can be retrieved with <see cref="ISessionImplementor.SessionId"/>,
+		/// otherwise <see cref="ISessionImplementor.SessionId"/> will be <see cref="Guid.Empty"/>.</para>
+		/// <para>Session id is used for logging purpose and can also be retrieved on the static property
+		/// <see cref="NHibernate.Impl.SessionIdLoggingContext.SessionId"/>, when tracking is enabled.
+		/// Some third party tools depend on it, like NHibernate Profiler.</para>
+		/// <para>Disabling tracking by setting <c>track_session_id</c> to <see langword="false"/> increases performances.</para>
+		/// <para>Default is <see langword="false"/>.</para>
 		/// </summary>
 		public const string TrackSessionId = "track_session_id";
 

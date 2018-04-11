@@ -202,13 +202,15 @@
 								<xs:enumeration value="track_session_id">
 									<xs:annotation>
 										<xs:documentation>
-											Set whether tracking the session id or not. When true, each session will have an unique Guid
-											that can be retrieved by ISessionImplementor.SessionId, otherwise ISessionImplementor.SessionId will
-											always be Guid.Empty. Session id is used for logging purpose that can be also retrieved in a static 
-											context by SessionIdLoggingContext.SessionId, where the current session id is stored, when tracking 
-											is enabled. In case the current session id won't be used, it is recommended to disable it, in order 
-											to increase performance.
-											True by default.
+											Set whether the session id should be track-able in logs or not. When true, each
+											session will have an unique Guid that can be retrieved with
+											ISessionImplementor.SessionId, otherwise ISessionImplementor.SessionId
+											will be Guid.Empty.
+											Session id is used for logging purpose and can also be retrieved on the static property
+											NHibernate.Impl.SessionIdLoggingContext.SessionId, when tracking is enabled.
+											Some third party tools depend on it, like NHibernate Profiler.
+											Disabling tracking by setting track_session_id to false increases performances.
+											Default is false.
 										</xs:documentation>
 									</xs:annotation>
 								</xs:enumeration>

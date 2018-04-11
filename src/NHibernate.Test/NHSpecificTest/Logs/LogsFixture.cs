@@ -37,6 +37,7 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 		{
 			base.Configure(configuration);
 			configuration.SetProperty(Cfg.Environment.UseSecondLevelCache, "false");
+			configuration.SetProperty(Cfg.Environment.TrackSessionId, "true");
 		}
 
 		protected override void OnSetUp()
