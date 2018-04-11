@@ -102,7 +102,7 @@ Task Build {
     }
 }
 
-Task Test {
+Task Test -depends Build  {
     @(
         'NHibernate.TestDatabaseSetup',
         'NHibernate.Test',
@@ -110,7 +110,7 @@ Task Test {
     ) | ForEach-Object { 
         $project = [IO.Path]::Combine("src", $_)
         Exec {
-            dotnet run -f netcoreapp2.0 -c Release -p $project -- --labels=before --nocolor "--result=$_-TestResult.xml"
+            dotnet run --no-build -f netcoreapp2.0 -c Release -p $project -- --labels=before --nocolor "--result=$_-TestResult.xml"
         }
     }
 }
