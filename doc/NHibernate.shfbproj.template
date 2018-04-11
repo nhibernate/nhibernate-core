@@ -25,8 +25,8 @@
     <IndentHtml>False</IndentHtml>
     <HelpFileVersion>${project.version.numeric}</HelpFileVersion>
     <DocumentationSources>
-      <DocumentationSource sourceFile="${root.dir}/src/NHibernate/bin/${build.config}/NHibernate.dll" />
-      <DocumentationSource sourceFile="${root.dir}/src/NHibernate/bin/${build.config}/Nhibernate.xml" />
+      <DocumentationSource sourceFile="${root.dir}/src/NHibernate/bin/${build.config}/net461/NHibernate.dll" />
+      <DocumentationSource sourceFile="${root.dir}/src/NHibernate/bin/${build.config}/net461/Nhibernate.xml" />
     </DocumentationSources>
   </PropertyGroup>
   <!-- There are no properties for these two groups but they need to appear in

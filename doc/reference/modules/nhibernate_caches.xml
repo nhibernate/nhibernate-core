@@ -9,7 +9,7 @@
 			<title>NHibernate.Caches namespace contains several second-level cache providers for NHibernate.</title>
 			
 			<para>
-				A cache is place where entities are kept after being loaded from the database; once cached, they can be
+				A cache is a place where entities are kept after being loaded from the database; once cached, they can be
 				retrieved without going to the database. This means that they are faster to (re)load.
 			</para>
 		
@@ -36,6 +36,12 @@
 		</para>
 
 		<para>
+			Depending on the chosen cache provider, the second level cache may be actually shared between different session
+			factories. If you need to avoid this for some session factories, configure each of them with a different
+			<literal>cache.region_prefix</literal>. See <xref linkend="configuration-optional" />.
+		</para>
+
+		<para>
 			Several cache providers have been contributed by NHibernate users:
 			<variablelist>
 				<varlistentry>
@@ -44,7 +50,8 @@
 						<para>
 							Uses <classname>Bamboo.Prevalence</classname> as the cache provider. Open the
 							file <filename>Bamboo.Prevalence.license.txt</filename> for more information about its license;
-							you can also visit its <ulink url="http://bbooprevalence.sourceforge.net/">website</ulink>.
+							you can also visit its <ulink url="http://bbooprevalence.sourceforge.net/">website</ulink>. This
+							provider is available for the .Net Framework only. Also see <xref linkend="NHibernate.Caches.Prevalence" />.
 						</para>
 					</listitem>
 				</varlistentry>
@@ -55,6 +62,7 @@
 							Uses <classname>System.Web.Caching.Cache</classname> as the cache provider. This means that you can
 							rely on ASP.NET caching feature to understand how it works. For more information, read (on the MSDN):
 							<ulink url="https://msdn.microsoft.com/en-us/library/6hbbsfk6.aspx">Caching Application Data</ulink>.
+							This provider is available for the .Net Framework only. Also see <xref linkend="NHibernate.Caches.SysCache" />.
 						</para>
 					</listitem>
 				</varlistentry>
@@ -67,16 +75,20 @@
 							expire when the relevant data in the database changes.
 						</para>
 						<para>
-							SysCache2 requires Microsoft SQL Server 2000 or higher.
+							SysCache2 requires Microsoft SQL Server 2000 or higher. This provider is available for the .Net Framework only.
+						</para>
+						<para>
+							See <xref linkend="NHibernate.Caches.SysCache2" />.
 						</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
-					<term><classname>NHibernate.Caches.MemCache</classname></term>
+					<term><classname>NHibernate.Caches.EnyimMemcached</classname></term>
 					<listitem>
 						<para>
-							Uses <literal>memcached</literal>. See <ulink url="https://memcached.org/">memcached homepage</ulink>
-							for more information.
+							Uses <literal>Memcached</literal>. See <ulink url="https://memcached.org/">memcached homepage</ulink>
+							for more information on Memcached. This provider is available for the .Net Framework only. Also see
+							<xref linkend="NHibernate.Caches.EnyimMemcached" />.
 						</para>
 					</listitem>
 				</varlistentry>
@@ -95,7 +107,32 @@
 					<term><classname>NHibernate.Caches.RtMemoryCache</classname></term>
 					<listitem>
 						<para>
-							Uses <classname>System.Runtime.Caching.MemoryCache.Default</classname> as the cache provider.
+							Uses <classname>System.Runtime.Caching.MemoryCache.Default</classname> as the cache provider. This provider
+							is available for the .Net Framework only. See <xref linkend="NHibernate.Caches.RtMemoryCache" />.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><classname>NHibernate.Caches.CoreMemoryCache</classname></term>
+					<listitem>
+						<para>
+							Uses <classname>Microsoft.Extensions.Caching.Memory.MemoryCache</classname> as the cache provider. This provider
+							is available as a .Net Standard NuGet package. See <xref linkend="NHibernate.Caches.CoreMemoryCache" />.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><classname>NHibernate.Caches.CoreDistributedCache</classname></term>
+					<listitem>
+						<para>
+							Uses <classname>Microsoft.Extensions.Caching.Abstractions.IDistributedCache</classname> implementations as the cache
+							provider. The implementation has to be provided through an <literal>IDistributedCacheFactory</literal>.
+							Distributed cache factories for <literal>Memcached</literal>, <literal>Redis</literal>, <literal>SqlServer</literal>
+							and <literal>Memory</literal> caches are available through their own package, prefixed by
+							<literal>NHibernate.Caches.CoreDistributedCache.</literal>.
+						</para>
+						<para>
+							This provider is available as a .Net Standard NuGet package. See <xref linkend="NHibernate.Caches.CoreDistributedCache" />.
 						</para>
 					</listitem>
 				</varlistentry>
@@ -111,17 +148,16 @@
 			<itemizedlist>
 				<listitem>
 					<para>
-						Choose the cache provider you want to use and copy its assembly in your assemblies directory
-						(<filename>NHibernate.Caches.Prevalence.dll</filename> or
-						<filename>NHibernate.Caches.SysCache.dll</filename>).
+						Choose the cache provider you want to use and copy its assembly in your assemblies directory.
+						(For example, <filename>NHibernate.Caches.Prevalence.dll</filename> or
+						<filename>NHibernate.Caches.SysCache.dll</filename>.)
 					</para>
 				</listitem>
 				<listitem>
 					<para>
 						To tell NHibernate which cache provider to use, add in your NHibernate configuration file
 						(can be <filename>YourAssembly.exe.config</filename> or <filename>web.config</filename> or a
-						<filename>.cfg.xml</filename> file, in the latter case the syntax will be different from what
-						is shown below):
+						<filename>.cfg.xml</filename> file):
 						<programlisting>
 &lt;property name="cache.provider_class"&gt;<literal>XXX</literal>&lt;/property&gt;<co id="hibernate.cache.provider_class-co" linkends="hibernate.cache.provider_class"/>
 &lt;property name="cache.default_expiration"&gt;<literal>120</literal>&lt;/property&gt;<co id="nhcaches-expiration-co" linkends="nhcaches-expiration"/>
@@ -204,6 +240,10 @@
 			file system where the Prevalence engine will save data. It can be relative to the current directory or a
 			full path. If the directory doesn't exist, it will be created.
 		</para>
+		<para>
+			The <literal>prevalenceBase</literal> setting can only be set programmatically through on the NHibernate
+			configuration object, by example with <literal>Configuration.SetProperty</literal>.
+		</para>
 	</section>
 
 	<section id="NHibernate.Caches.SysCache">
@@ -215,11 +255,12 @@
 
 		<variablelist>
 			<varlistentry>
-				<term><literal>expiration</literal></term>
+				<term><literal>cache.default_expiration</literal></term>
 				<listitem>
 					Number of seconds to wait before expiring each item.
-					Takes precedence over <literal>cache.default_expiration</literal>.
-					If none of them are defined, defaults to <literal>300</literal>.
+					Defaults to <literal>300</literal>. It can also be set programmatically on the NHibernate
+					configuration object under the name <literal>expiration</literal>, which then takes precedence
+					over <literal>cache.default_expiration</literal>.
 				</listitem>
 			</varlistentry>
 			<varlistentry>
@@ -233,8 +274,9 @@
 				<term><literal>priority</literal></term>
 				<listitem>
 					A numeric cost of expiring each item, where 1 is a low cost, 5 is the highest, and 3 is normal.
-					Only values 1 through 5 are valid. 6 is a special value corresponding to
-					<literal>NotRemovable</literal>, it should not be used.
+					Only values 1 through 6 are valid. 6 is a special value corresponding to
+					<literal>NotRemovable</literal>. This setting can only be set programmatically through on the
+					NHibernate configuration object, by example with <literal>Configuration.SetProperty</literal>.
 				</listitem>
 			</varlistentry>
 		</variablelist>
@@ -276,11 +318,12 @@
 
 		<variablelist>
 			<varlistentry>
-				<term><literal>expiration</literal></term>
+				<term><literal>cache.default_expiration</literal></term>
 				<listitem>
 					Number of seconds to wait before expiring each item.
-					Takes precedence over <literal>cache.default_expiration</literal>.
-					If none of them are defined, defaults to <literal>300</literal>.
+					Defaults to <literal>300</literal>. It can also be set programmatically on the NHibernate
+					configuration object under the name <literal>expiration</literal>, which then takes precedence
+					over <literal>cache.default_expiration</literal>.
 				</listitem>
 			</varlistentry>
 			<varlistentry>
@@ -305,7 +348,7 @@
 </configSections>]]></programlisting>
 		</example>
 
-		<section>
+		<section id="NHibernate.Caches.SysCache2-Table">
 			<title>Table-based Dependency</title>
 
 			<para>
@@ -362,7 +405,7 @@
 			</varlistentry>
 		</variablelist>
 
-		<section>
+		<section id="NHibernate.Caches.SysCache2-Command">
 			<title>Command-Based Dependencies</title>
 
 			<para>
@@ -457,7 +500,7 @@
 			</variablelist>
 		</section>
 
-		<section>
+		<section id="NHibernate.Caches.SysCache2-Aggregate">
 			<title>Aggregate Dependencies</title>
 
 			<para>
@@ -501,7 +544,7 @@
 			</example>
 		</section>
 
-		<section>
+		<section id="NHibernate.Caches.SysCache2-AdditionalSettings">
 			<title>Additional Settings</title>
 			<para>
 				In addition to data dependencies for the cache regions, time based expiration policies can be specified
@@ -564,7 +607,15 @@
 				</varlistentry>
 			</variablelist>
 		</section>
+	</section>
 
+	<section id="NHibernate.Caches.EnyimMemcached">
+		<title>EnyimMemcached Configuration</title>
+		<para>
+			Its configuration relies on the EnyimMemcached library own configuration, through its
+			<literal>enyim.com/memcached</literal> configuration section. See
+			<ulink url="https://github.com/enyim/EnyimMemcached">project site</ulink>.
+		</para>
 	</section>
 
 	<section id="NHibernate.Caches.RtMemoryCache">
@@ -577,11 +628,12 @@
 
 		<variablelist>
 			<varlistentry>
-				<term><literal>expiration</literal></term>
+				<term><literal>cache.default_expiration</literal></term>
 				<listitem>
 					Number of seconds to wait before expiring each item.
-					Takes precedence over <literal>cache.default_expiration</literal>.
-					If none of them are defined, defaults to <literal>300</literal>.
+					Defaults to <literal>300</literal>. It can also be set programmatically on the NHibernate
+					configuration object under the name <literal>expiration</literal>, which then takes precedence
+					over <literal>cache.default_expiration</literal>.
 				</listitem>
 			</varlistentry>
 			<varlistentry>
@@ -612,6 +664,286 @@
   </rtmemorycache>
 </configuration>]]></programlisting>
 		</example>
+	</section>
+
+	<section id="NHibernate.Caches.CoreMemoryCache">
+		<title>CoreMemoryCache Configuration</title>
+		<para>
+			CoreMemoryCache relies on <classname>Microsoft.Extensions.Caching.Memory.MemoryCache</classname> for the
+			underlying implementation.
+			The following NHibernate configuration settings are available:
+		</para>
+
+		<variablelist>
+			<varlistentry>
+				<term><literal>cache.default_expiration</literal></term>
+				<listitem>
+					Number of seconds to wait before expiring each item.
+					Defaults to <literal>300</literal>. It can also be set programmatically on the NHibernate
+					configuration object under the name <literal>expiration</literal>, which then takes precedence
+					over <literal>cache.default_expiration</literal>.
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>cache.use_sliding_expiration</literal></term>
+				<listitem>
+					Should the expiration be sliding? A sliding expiration is reinitialized at each get.
+					Defaults to <literal>false</literal>.
+				</listitem>
+			</varlistentry>
+		</variablelist>
+
+		<para>
+			CoreMemoryCache has a config file section handler to allow configuring different expirations for
+			different regions, and configuring the <literal>MemoryCache</literal> expiration scan frequency.
+			Here is an example:
+		</para>
+
+		<example>
+			<programlisting><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <configSections>
+    <section name="corememorycache"
+      type="NHibernate.Caches.CoreMemoryCache.CoreMemoryCacheSectionHandler,NHibernate.Caches.CoreMemoryCache"
+    />
+  </configSections>
+
+  <corememorycache expiration-scan-frequency="00:05:00">
+    <cache region="foo" expiration="500" />
+    <cache region="bar" expiration="300" sliding="true" />
+  </corememorycache>
+</configuration>]]></programlisting>
+		</example>
+	</section>
+
+	<section id="NHibernate.Caches.CoreDistributedCache">
+		<title>CoreDistributedCache Configuration</title>
+		<para>
+			CoreDistributedCache relies on <classname>Microsoft.Extensions.Caching.Abstractions.IDistributedCache</classname>
+			implementations. The implementation has to be provided through an <literal>IDistributedCacheFactory</literal>, either
+			supplied through configuration or programmatically by affecting
+			<literal>CoreDistributedCacheProvider.CacheFactory</literal> before building a session factory.
+			The following NHibernate configuration settings are available:
+		</para>
+
+		<variablelist>
+			<varlistentry>
+				<term><literal>cache.default_expiration</literal></term>
+				<listitem>
+					Number of seconds to wait before expiring each item.
+					Defaults to <literal>300</literal>. It can also be set programmatically on the NHibernate
+					configuration object under the name <literal>expiration</literal>, which then takes precedence
+					over <literal>cache.default_expiration</literal>.
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>cache.use_sliding_expiration</literal></term>
+				<listitem>
+					Should the expiration be sliding? A sliding expiration is reinitialized at each get.
+					Defaults to <literal>false</literal>.
+				</listitem>
+			</varlistentry>
+		</variablelist>
+
+		<para>
+			CoreDistributedCache has a config file section handler to allow configuring different expirations for
+			different regions, configuring the <literal>IDistributedCacheFactory</literal> to use, and configuring
+			additional properties specific to the chosen <literal>IDistributedCache</literal> implementation.
+			Here is an example:
+		</para>
+
+		<example>
+			<programlisting><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <configSections>
+    <section name="coredistributedcache"
+      type="NHibernate.Caches.CoreDistributedCache.CoreDistributedCacheSectionHandler,
+            NHibernate.Caches.CoreDistributedCache" />
+  </configSections>
+
+  <coredistributedcache
+    factory-class="NHibernate.Caches.CoreDistributedCache.Memory.MemoryFactory,
+                   NHibernate.Caches.CoreDistributedCache.Memory">
+    <properties>
+      <property name="expiration-scan-frequency">00:10:00</property>
+      <property name="size-limit">1048576</property>
+    </properties>
+    <cache region="foo" expiration="500" sliding="true" />
+    <cache region="noExplicitExpiration" sliding="true" />
+  </coredistributedcache>
+</configuration>]]></programlisting>
+		</example>
+
+		<para>
+			CoreDistributedCache does not support <literal>NHibernate.Cache.ICache.Clear</literal>. Clearing the NHibernate
+			cache has no effects with CoreDistributedCache.
+		</para>
+
+		<section id="NHibernate.Caches.CoreDistributedCache.Memcached">
+			<title>Memcached distributed cache factory</title>
+
+			<para>
+				<literal>NHibernate.Caches.CoreDistributedCache.Memcached</literal> provides a Redis distributed cache factory.
+				This factory yields a <literal>Enyim.Caching.MemcachedClient</literal> from <literal>EnyimMemcachedCore</literal>.
+				For using it, reference the cache factory package and set the <literal>factory-class</literal> attribute of the
+				<literal>coredistributedcache</literal> configuration section to
+				<literal>NHibernate.Caches.CoreDistributedCache.Memcached.MemcachedFactory, NHibernate.Caches.CoreDistributedCache.Memcached</literal>.
+			</para>
+
+			<para>
+				Memcached does not support sliding expirations. <literal>cache.use_sliding_expiration</literal> setting or
+				<literal>sliding</literal> region setting do not have any effect with Memcached.
+			</para>
+
+			<para>
+				The following additional properties can be configured:
+			</para>
+
+			<variablelist>
+				<varlistentry>
+					<term><literal>configuration</literal></term>
+					<listitem>
+						The JSON configuration of <literal>EnyimMemcachedCore</literal>, see its
+						<ulink url="https://github.com/cnblogs/EnyimMemcachedCore">project website</ulink>. It has to be structured
+						like the value part of the <literal>"enyimMemcached"</literal> property in an
+						<literal>appsettings.json</literal> file.
+						<example>
+							<programlisting><![CDATA[{
+  "Servers": [
+    {
+      "Address": "localhost",
+      "Port": 11211
+    }
+  ]
+}]]></programlisting>
+						</example>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</section>
+
+		<section id="NHibernate.Caches.CoreDistributedCache.Redis">
+			<title>Redis distributed cache factory</title>
+
+			<para>
+				<literal>NHibernate.Caches.CoreDistributedCache.Redis</literal> provides a Redis distributed cache factory.
+				This factory yields a <literal>Microsoft.Extensions.Caching.Redis.RedisCache</literal>. For using it,
+				reference the cache factory package and set the <literal>factory-class</literal> attribute of the
+				<literal>coredistributedcache</literal> configuration section to
+				<literal>NHibernate.Caches.CoreDistributedCache.Redis.RedisFactory, NHibernate.Caches.CoreDistributedCache.Redis</literal>.
+			</para>
+			<para>
+				The following additional properties can be configured:
+			</para>
+
+			<variablelist>
+				<varlistentry>
+					<term><literal>configuration</literal></term>
+					<listitem>
+						Its value will be used to set the <literal>Configuration</literal> property of the
+						<literal>RedisCache</literal> options (<literal>RedisCacheOptions</literal>).
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><literal>instance-name</literal></term>
+					<listitem>
+						Its value will be used to set the <literal>InstanceName</literal> property of the
+						<literal>RedisCache</literal> options (<literal>RedisCacheOptions</literal>).
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</section>
+
+		<section id="NHibernate.Caches.CoreDistributedCache.SqlServer">
+			<title>SQL Server distributed cache factory</title>
+
+			<para>
+				<literal>NHibernate.Caches.CoreDistributedCache.SqlServer</literal> provides a SQL Server distributed cache factory.
+				This factory yields a <literal>Microsoft.Extensions.Caching.SqlServer.SqlServerCache</literal>. For using it,
+				reference the cache factory package and set the <literal>factory-class</literal> attribute of the
+				<literal>coredistributedcache</literal> configuration section to
+				<literal>NHibernate.Caches.CoreDistributedCache.SqlServer.SqlServerFactory, NHibernate.Caches.CoreDistributedCache.SqlServer</literal>.
+			</para>
+			<para>
+				The following additional properties can be configured:
+			</para>
+
+			<variablelist>
+				<varlistentry>
+					<term><literal>connection-string</literal></term>
+					<listitem>
+						Its value will be used to set the <literal>ConnectionString</literal> property of the
+						<literal>SqlServerCache</literal> options (<literal>SqlServerCacheOptions</literal>).
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><literal>schema-name</literal></term>
+					<listitem>
+						Its value will be used to set the <literal>SchemaName</literal> property of the
+						<literal>SqlServerCache</literal> options (<literal>SqlServerCacheOptions</literal>).
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><literal>table-name</literal></term>
+					<listitem>
+						Its value will be used to set the <literal>TableName</literal> property of the
+						<literal>SqlServerCache</literal> options (<literal>SqlServerCacheOptions</literal>).
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><literal>expired-items-deletion-interval</literal></term>
+					<listitem>
+						Its value will be used to set the <literal>ExpiredItemsDeletionInterval</literal> property of the
+						<literal>SqlServerCache</literal> options (<literal>SqlServerCacheOptions</literal>). It can be
+						provided either as an integer being a number of minutes or as a <literal>TimeSpan</literal> string
+						representation.
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</section>
+
+		<section id="NHibernate.Caches.CoreDistributedCache.Memory">
+			<title>Memory distributed cache factory</title>
+
+			<para>
+				<literal>NHibernate.Caches.CoreDistributedCache.Memory</literal> provides a memory "distributed" cache factory.
+				This factory yields a <literal>Microsoft.Extensions.Caching.Memory.MemoryDistributedCache</literal>. For using it,
+				reference the cache factory package and set the <literal>factory-class</literal> attribute of the
+				<literal>coredistributedcache</literal> configuration section to
+				<literal>NHibernate.Caches.CoreDistributedCache.Memory.MemoryFactory, NHibernate.Caches.CoreDistributedCache.Memory</literal>.
+			</para>
+			<para>
+				As implied by its name, this cache is not actually distributed. It is meant for testing purpose. For other usages, consider
+				using another memory cache provider, like <literal>CoreMemoryCache</literal>. Due to the distributed cache implementation, using
+				the <literal>MemoryDistributedCache</literal> has some drawbacks compared to most other memory cache providers: it will
+				serialize cached objects, incurring some overhead; it does not support clearing the cache. But due to the serialization of
+				cached objects, it is able of computing its consumed memory size, thus the availability of the <literal>SizeLimit</literal>
+				option.
+			</para>
+			<para>
+				The following additional properties can be configured:
+			</para>
+
+			<variablelist>
+				<varlistentry>
+					<term><literal>expiration-scan-frequency</literal></term>
+					<listitem>
+						Its value will be used to set the <literal>ExpirationScanFrequency</literal> property of the
+						<literal>MemoryDistributedCache</literal> options (<literal>MemoryDistributedCacheOptions</literal>). It can be
+						provided either as an integer being a number of minutes or as a <literal>TimeSpan</literal> string
+						representation.
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><literal>size-limit</literal></term>
+					<listitem>
+						Its value will be used to set the <literal>SizeLimit</literal> property of the
+						<literal>MemoryDistributedCache</literal> options (<literal>MemoryDistributedCacheOptions</literal>).
+						Its value is an integer, representing the maximal bytes count to be stored in the cache.
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</section>
 	</section>
 
 </chapter>
