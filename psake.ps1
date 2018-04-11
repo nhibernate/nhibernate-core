@@ -102,7 +102,7 @@ Task Build {
     }
 }
 
-Task Test -depends Build  {
+Task Test -depends Build {
     @(
         'NHibernate.TestDatabaseSetup',
         'NHibernate.Test',
