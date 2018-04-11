@@ -52,6 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.CompositeElement
 		}
 
 		[Test]
+		[KnownBug("GH-1583")]
 		public void QueryForPropertyOfParentInComponent()
 		{
 			using (var session = OpenSession())
