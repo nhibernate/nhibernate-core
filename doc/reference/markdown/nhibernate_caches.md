@@ -111,7 +111,7 @@ NHibernate:
     NHibernate configuration file (can be `YourAssembly.exe.config` or
     `web.config` or a `.cfg.xml` file):
     
-    ``` 
+    ```xml
     <property name="cache.provider_class">XXX</property>
     <property name="cache.default_expiration">120</property>
     <property name="cache.use_sliding_expiration">true</property>
@@ -119,9 +119,7 @@ NHibernate:
     ```
     
       - "`XXX`" is the assembly-qualified class name of a class
-        implementing `ICacheProvider`, eg.
-        "`NHibernate.Caches.SysCache.SysCacheProvider,
-                                                                                                                                                                                                                                                                                                        NHibernate.Caches.SysCache`".
+        implementing `ICacheProvider`, eg. "`NHibernate.Caches.SysCache.SysCacheProvider, NHibernate.Caches.SysCache`".
     
       - The `expiration` value is the number of seconds you wish to
         cache each entry (here two minutes). Not all providers support
@@ -176,33 +174,26 @@ implementation. The following NHibernate configuration settings are
 available:
 
   - `cache.default_expiration`  
-    Number of seconds to wait before expiring each item. Defaults to
-    300
-    . It can also be set programmatically on the NHibernate
-    configuration object under the name
-    expiration
-    , which then takes precedence over
-    cache.default\_expiration
+    Number of seconds to wait before expiring each item. Defaults to `300`.
+    It can also be set programmatically on the NHibernate configuration object under 
+    the name expiration, which then takes precedence over cache.default\_expiration
     .
   - `cache.use_sliding_expiration`  
-    Should the expiration be sliding? A sliding expiration is
-    reinitialized at each get. Defaults to
-    false
+    Should the expiration be sliding? A sliding expiration is reinitialized at each 
+    get. Defaults to `false`
     .
   - `priority`  
-    A numeric cost of expiring each item, where 1 is a low cost, 5 is
-    the highest, and 3 is normal. Only values 1 through 6 are valid. 6
-    is a special value corresponding to
-    NotRemovable
-    . This setting can only be set programmatically through on the
-    NHibernate configuration object, by example with
-    Configuration.SetProperty
-    .
+    A numeric cost of expiring each item, where `1` is a low cost, `5` is
+    the highest, and `3` is normal. Only values `1` through `6` are valid. `6`
+    is a special value corresponding to `NotRemovable`. This setting can only 
+    be set programmatically through on the NHibernate configuration object, by 
+    example with Configuration.SetProperty.
 
 SysCache has a config file section handler to allow configuring
 different expirations and priorities for different regions. Here is an
 example:
 
+```xml
     <?xml version="1.0" encoding="utf-8" ?>
     <configuration>
       <configSections>
@@ -215,6 +206,7 @@ example:
         <cache region="bar" expiration="300" priority="3" sliding="true" />
       </syscache>
     </configuration>
+```
 
 # SysCache2 Configuration
 
@@ -245,10 +237,12 @@ To configure cache regions with SqlCacheDependencies a `syscache2`
 config section must be defined in the application's configuration file.
 See the sample below.
 
+```xml
     <configSections>
       <section name="syscache2"
         type="NHibernate.Caches.SysCache2.SysCacheSection, NHibernate.Caches.SysCache2"/>
     </configSections>
+```
 
 ## Table-based Dependency
 
@@ -267,6 +261,7 @@ To configure the data in a cache region to be invalidated when data in
 an underlying table is changed, a cache region must be configured in the
 application's configuration file. See the sample below.
 
+```xml
     <syscache2>
       <cacheRegion name="Product">
         <dependencies>
@@ -278,6 +273,7 @@ application's configuration file. See the sample below.
         </dependencies>
       </cacheRegion>
     </syscache2>
+```
 
   - `name`  
     Unique name for the dependency
@@ -317,6 +313,7 @@ To configure the data in a cache region to be invalidated based on a SQL
 command, a cache region must be configured in the application's
 configuration file. See the samples below.
 
+```xml
     <cacheRegion name="Product" priority="High" >
       <dependencies>
         <commands>
@@ -337,7 +334,7 @@ configuration file. See the samples below.
         </commands>
       </dependencies>
     </cacheRegion>
-
+```
   - `name`  
     Unique name for the dependency
   - `command` (required)  
@@ -370,6 +367,7 @@ Multiple cache dependencies can be specified. If any of the dependencies
 triggers a change notification, the data in the cache region will be
 invalidated. See the samples below.
 
+```xml
     <cacheRegion name="Product">
       <dependencies>
         <commands>
@@ -396,7 +394,7 @@ invalidated. See the samples below.
         </tables>
       </dependencies>
     </cacheRegion>
-
+```
 ## Additional Settings
 
 In addition to data dependencies for the cache regions, time based
@@ -464,6 +462,7 @@ settings are available:
 RtMemoryCache has a config file section handler to allow configuring
 different expirations for different regions. Here is an example:
 
+```xml
     <?xml version="1.0" encoding="utf-8" ?>
     <configuration>
       <configSections>
@@ -476,6 +475,7 @@ different expirations for different regions. Here is an example:
         <cache region="bar" expiration="300" sliding="true" />
       </rtmemorycache>
     </configuration>
+```
 
 # CoreMemoryCache Configuration
 
@@ -503,6 +503,7 @@ CoreMemoryCache has a config file section handler to allow configuring
 different expirations for different regions, and configuring the
 `MemoryCache` expiration scan frequency. Here is an example:
 
+```xml
     <?xml version="1.0" encoding="utf-8" ?>
     <configuration>
       <configSections>
@@ -516,6 +517,7 @@ different expirations for different regions, and configuring the
         <cache region="bar" expiration="300" sliding="true" />
       </corememorycache>
     </configuration>
+```
 
 # CoreDistributedCache Configuration
 
@@ -548,6 +550,7 @@ configuring different expirations for different regions, configuring the
 specific to the chosen `IDistributedCache` implementation. Here is an
 example:
 
+```xml
     <?xml version="1.0" encoding="utf-8" ?>
     <configuration>
       <configSections>
@@ -567,6 +570,7 @@ example:
         <cache region="noExplicitExpiration" sliding="true" />
       </coredistributedcache>
     </configuration>
+```
 
 CoreDistributedCache does not support `NHibernate.Cache.ICache.Clear`.
 Clearing the NHibernate cache has no effects with CoreDistributedCache.
@@ -588,15 +592,10 @@ not have any effect with Memcached.
 The following additional properties can be configured:
 
   - `configuration`  
-    The JSON configuration of
-    EnyimMemcachedCore
-    , see its
-    project website
-    . It has to be structured like the value part of the
-    "enyimMemcached"
-    property in an
-    appsettings.json
-    file.
+    The JSON configuration of EnyimMemcachedCore, see its project website.
+    It has to be structured like the value part of the "enyimMemcached"
+    property in an appsettings.json file.
+    ```json
         {
           "Servers": [
             {
@@ -605,6 +604,7 @@ The following additional properties can be configured:
             }
           ]
         }
+    ```
 
 ## Redis distributed cache factory
 
@@ -619,21 +619,9 @@ NHibernate.Caches.CoreDistributedCache.Redis`.
 The following additional properties can be configured:
 
   - `configuration`  
-    Its value will be used to set the
-    Configuration
-    property of the
-    RedisCache
-    options (
-    RedisCacheOptions
-    ).
+    Its value will be used to set the Configuration property of the RedisCache options (RedisCacheOptions).
   - `instance-name`  
-    Its value will be used to set the
-    InstanceName
-    property of the
-    RedisCache
-    options (
-    RedisCacheOptions
-    ).
+    Its value will be used to set the InstanceName property of the RedisCache options (RedisCacheOptions).
 
 ## SQL Server distributed cache factory
 

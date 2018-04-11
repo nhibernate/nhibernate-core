@@ -7,6 +7,7 @@ respect to a particular `ISession`. Newly instantiated objects are, of
 course, transient. The session offers services for saving (ie.
 persisting) transient instances:
 
+```csharp
     DomesticCat fritz = new DomesticCat();
     fritz.Color = Color.Ginger;
     fritz.Sex = 'M';
@@ -20,6 +21,7 @@ persisting) transient instances:
     pk.Kittens = new HashSet<Cat>();
     pk.AddKitten(fritz);
     sess.Save( pk, 1234L );
+```
 
 The single-argument `Save()` generates and assigns a unique identifier
 to `fritz`. The two-argument form attempts to persist `pk` using the
@@ -41,6 +43,7 @@ object. The second version allows you to supply an instance into which
 the state will be loaded. The form which takes an instance is only
 useful in special circumstances (DIY instance pooling etc.)
 
+```csharp
     Cat fritz = sess.Load<Cat>(generatedId);
 
     long pkId = 1234;
@@ -50,6 +53,7 @@ useful in special circumstances (DIY instance pooling etc.)
     // load pk's state into cat
     sess.Load( cat, pkId );
     var kittens = cat.Kittens;
+```
 
 Note that `Load()` will throw an unrecoverable exception if there is no
 matching database row. If the class is mapped with a proxy, `Load()`
@@ -62,17 +66,21 @@ If you are not certain that a matching row exists, you should use the
 `Get()` method, which hits the database immediately and returns null if
 there is no matching row.
 
+```csharp
     Cat cat = sess.Get<Cat>(id);
     if (cat==null) {
         cat = new Cat();
         sess.Save(cat, id);
     }
     return cat;
+```
 
 You may also load an objects using an SQL `SELECT ... FOR UPDATE`. See
 the next section for a discussion of NHibernate `LockMode`s.
 
+```csharp
     Cat cat = sess.Get<Cat>(id, LockMode.Upgrade);
+```
 
 Note that any associated instances or contained collections are *not*
 selected `FOR UPDATE`.
@@ -81,9 +89,11 @@ It is possible to re-load an object and all its collections at any time,
 using the `Refresh()` method. This is useful when database triggers are
 used to initialize some of the properties of the object.
 
+```csharp
     sess.Save(cat);
     sess.Flush(); //force the SQL INSERT
     sess.Refresh(cat); //re-read the state (after the trigger executes)
+```
 
 An important question usually appears at this point: How much does
 NHibernate load from the database and how many SQL `SELECT`s will it
@@ -96,6 +106,7 @@ If you don't know the identifier(s) of the object(s) you are looking
 for, use the `CreateQuery()` method of `ISession`. NHibernate supports a
 simple but powerful object oriented query language.
 
+```csharp
     IList<Cat> cats = sess
         .CreateQuery("from Cat as cat where cat.Birthdate = ?")
         .SetDateTime(0, date)
@@ -128,6 +139,7 @@ simple but powerful object oriented query language.
         .CreateQuery("from GoldFish as fish " +
             "where fish.Birthday > fish.Deceased or fish.Birthday is null")
         .List<GoldFish>();
+```
 
 These given `Set` parameters are used to bind the given values to the
 `?` query placeholders (which map to input parameters of an ADO.NET
@@ -144,6 +156,7 @@ the `Enumerable()` method, which return a `IEnumerable`. The iterator
 will load objects on demand, using the identifiers returned by an
 initial SQL query (n+1 selects total).
 
+```csharp
     // fetch ids
     IEnumerable<Qux> en = sess
         .CreateQuery("from eg.Qux q order by q.Likeliness")
@@ -156,6 +169,7 @@ initial SQL query (n+1 selects total).
             break;
         }
     }
+```
 
 The `Enumerable()` method also performs better if you expect that many
 of the objects are already loaded and cached by the session, or if the
@@ -163,6 +177,7 @@ query results contain the same objects many times. (When no data is
 cached or repeated, `CreateQuery()` is almost always faster.) Here is an
 example of a query that should be called using `Enumerable()`:
 
+```csharp
     var en = sess
         .CreateQuery(
             "select customer, product " +
@@ -171,6 +186,7 @@ example of a query that should be called using `Enumerable()`:
             "join customer.Purchases purchase " +
             "where product = purchase.Product")
         .Enumerable<object[]>();
+```
 
 Calling the previous query using `CreateQuery()` would return a very
 large ADO.NET result set containing the same data many times.
@@ -178,6 +194,7 @@ large ADO.NET result set containing the same data many times.
 NHibernate queries sometimes return tuples of objects, in which case
 each tuple is returned as an array:
 
+```csharp
     var foosAndBars = sess
         .CreateQuery(
             "select foo, bar from Foo foo, Bar bar " +
@@ -188,6 +205,7 @@ each tuple is returned as an array:
         Foo foo = tuple[0]; Bar bar = tuple[1];
         ....
     }
+```
 
 ## Scalar queries
 
@@ -195,6 +213,7 @@ Queries may specify a property of a class in the `select` clause. They
 may even call SQL aggregate functions. Properties or aggregates are
 considered "scalar" results.
 
+```csharp
     var results = sess
         .CreateQuery(
             "select cat.Color, min(cat.Birthdate), count(cat) from Cat cat " +
@@ -216,6 +235,7 @@ considered "scalar" results.
     IList<object[]> list = sess
         .CreateQuery("select cat, cat.Mate.Name from DomesticCat cat")
         .List<object[]>();
+```
 
 ## The IQuery interface
 
@@ -223,25 +243,30 @@ If you need to specify bounds upon your result set (the maximum number
 of rows you want to retrieve and / or the first row you want to
 retrieve) you should obtain an instance of `NHibernate.IQuery`:
 
+```csharp
     IQuery q = sess.CreateQuery("from DomesticCat cat");
     q.SetFirstResult(20);
     q.SetMaxResults(10);
     var cats = q.List<Cat>();
+```
 
 You may even define a named query in the mapping document. (Remember to
 use a `CDATA` section if your query contains characters that could be
 interpreted as markup.)
 
+```xml
     <query name="Eg.DomesticCat.by.name.and.minimum.weight"><![CDATA[
         from Eg.DomesticCat as cat
             where cat.Name = ?
             and cat.Weight > ?
     ] ]></query>
-
+```
+```csharp
     IQuery q = sess.GetNamedQuery("Eg.DomesticCat.by.name.and.minimum.weight");
     q.SetString(0, name);
     q.SetInt32(1, minWeight);
     var cats = q.List<Cat>();
+```
 
 Named queries are by default validated at startup time, allowing to
 catch errors more easily than having to test all the application
@@ -282,8 +307,7 @@ named parameters are:
 
   - they are self-documenting
 
-<!-- end list -->
-
+```csharp
     //named parameter (preferred)
     IQuery q = sess.CreateQuery("from DomesticCat cat where cat.Name = :name");
     q.SetString("name", "Fritz");
@@ -301,6 +325,7 @@ named parameters are:
     IQuery q = sess.CreateQuery("from DomesticCat cat where cat.Name in (:namesList)");
     q.SetParameterList("namesList", names);
     var cats = q.List<DomesticCat>();
+```
 
 ## Filtering collections
 
@@ -308,10 +333,12 @@ A collection *filter* is a special type of query that may be applied to
 a persistent collection or array. The query string may refer to `this`,
 meaning the current collection element.
 
+```csharp
     var blackKittens = session
         .CreateFilter(pk.Kittens, "where this.Color = ?")
         .SetEnum(0, Color.Black)
         .List<Cat>();
+```
 
 The returned collection is considered a bag.
 
@@ -319,10 +346,12 @@ Observe that filters do not require a `from` clause (though they may
 have one if required). Filters are not limited to returning the
 collection elements themselves.
 
+```csharp
     var blackKittenMates = session
         .CreateFilter(pk.Kittens,
             "select this.Mate where this.Color = Eg.Color.Black")
         .List<Cat>();
+```
 
 ## Criteria queries
 
@@ -331,10 +360,12 @@ dynamically, using an object oriented API, rather than embedding strings
 in their .NET code. For these people, NHibernate provides an intuitive
 `ICriteria` query API.
 
+```csharp
     ICriteria crit = session.CreateCriteria<Cat>();
     crit.Add(Expression.Eq("color", Eg.Color.Black));
     crit.SetMaxResults(10);
     var cats = crit.List<Cat>();
+```
 
 If you are uncomfortable with SQL-like syntax, this is perhaps the
 easiest way to get started with NHibernate. This API is also more
@@ -346,6 +377,7 @@ implementations of the `ICriterion` interface.
 You may express a query in SQL, using `CreateSQLQuery()`. You must
 enclose SQL aliases in braces.
 
+```csharp
     var cats = session
         .CreateSQLQuery("SELECT {cat.*} FROM CAT {cat} WHERE ROWNUM<10")
         .AddEntity("cat", typeof(Cat))
@@ -358,6 +390,7 @@ enclose SQL aliases in braces.
             "FROM CAT {cat} WHERE ROWNUM<10")
         .AddEntity("cat", typeof(Cat))
         .List<Cat>()
+```
 
 SQL queries may contain named and positional parameters, just like
 NHibernate queries.
@@ -373,9 +406,11 @@ any changes to persistent state will be persisted when the `ISession` is
 way to update the state of an object is to `Load()` it, and then
 manipulate it directly, while the `ISession` is open:
 
+```csharp
     DomesticCat cat = sess.Load<DomesticCat>(69L);
     cat.Name = "PK";
     sess.Flush();  // changes to cat are automatically detected and persisted
+```
 
 Sometimes this programming model is inefficient since it would require
 both an SQL `SELECT` (to load an object) and an SQL `UPDATE` (to persist
@@ -392,6 +427,7 @@ transaction isolation.) This approach requires a slightly different
 programming model to the one described in the last section. NHibernate
 supports this model by providing the method `ISession.Update()`.
 
+```csharp
     // in the first session
     Cat cat = firstSession.Load<Cat>(catId);
     Cat potentialMate = new Cat();
@@ -403,6 +439,7 @@ supports this model by providing the method `ISession.Update()`.
     // later, in a new session
     secondSession.Update(cat);  // update cat
     secondSession.Update(mate); // update mate
+```
 
 If the `Cat` with identifier `catId` had already been loaded by
 `secondSession` when the application tried to update it, an exception
@@ -425,9 +462,11 @@ attribute of the `<id>` (or `<version>`, or `<timestamp>`) mapping
 specifies which values should be interpreted as representing a "new"
 instance.
 
+```xml
     <id name="Id" type="Int64" column="uid" unsaved-value="0">
         <generator class="hilo"/>
     </id>
+```
 
 The allowed values of `unsaved-value` are:
 
@@ -447,6 +486,7 @@ If `unsaved-value` is not specified for a class, NHibernate will attempt
 to guess it by creating an instance of the class using the no-argument
 constructor and reading the property value from the instance.
 
+```csharp
     // in the first session
     Cat cat = firstSession.Load<Cat>(catID);
     
@@ -457,6 +497,7 @@ constructor and reading the property value from the instance.
     // later, in a new session
     secondSession.SaveOrUpdate(cat);   // update existing state (cat has a non-null id)
     secondSession.SaveOrUpdate(mate);  // save the new instance (mate has a null id)
+```
 
 The usage and semantics of `SaveOrUpdate()` seems to be confusing for
 new users. Firstly, so long as you are not trying to use instances from
@@ -509,12 +550,14 @@ methods, `SaveOrUpdate()` and `Merge()`.
 The `Lock()` method allows the application to re-associate an unmodified
 object with a new session.
 
+```csharp
     //just reassociate:
     sess.Lock(fritz, LockMode.None);
     //do a version check, then reassociate:
     sess.Lock(izi, LockMode.Read);
     //do a version check, using SELECT ... FOR UPDATE, then reassociate:
     sess.Lock(pk, LockMode.Upgrade);
+```
 
 # Deleting persistent objects
 
@@ -522,12 +565,16 @@ object with a new session.
 course, your application might still hold a reference to it. So it's
 best to think of `Delete()` as making a persistent instance transient.
 
+```csharp
     sess.Delete(cat);
+```
 
 You may also delete many objects at once by passing a NHibernate query
 string to `Delete()`.
 
+```csharp
     sess.Delete("from Cat");
+```
 
 You may now delete objects in any order you like, without risk of
 foreign key constraint violations. Of course, it is still possible to
@@ -584,6 +631,7 @@ explained routine (will only work inside an explicit NHibernate
 units of work, where an ISession is kept open and disconnected for a
 long time (see [???](#transactions-optimistic)).
 
+```csharp
     sess = sf.OpenSession();
     using (ITransaction tx = sess.BeginTransaction())
     {
@@ -598,6 +646,7 @@ long time (see [???](#transactions-optimistic)).
         ...
         tx.Commit(); // flush occurs
     }
+```
 
 # Checking dirtiness
 
@@ -641,21 +690,29 @@ to ensure that all changes are synchronized with the database.
 
 If you are using the NHibernate `ITransaction` API, this looks like:
 
+```csharp
     tx.Commit(); // flush the session and commit the transaction
+```
 
 If you are managing ADO.NET transactions yourself you should manually
 `Commit()` the ADO.NET transaction.
 
+```csharp
     sess.Flush();
     currentTransaction.Commit();
+```
 
 If you decide *not* to commit your changes:
 
+```csharp
     tx.Rollback();  // rollback the transaction
+```
 
 or:
 
+```csharp
     currentTransaction.Rollback();
+```
 
 If you rollback the transaction you should immediately close and discard
 the current session to ensure that NHibernate's internal state is
@@ -667,12 +724,14 @@ A call to `ISession.Close()` marks the end of a session. The main
 implication of `Close()` is that the ADO.NET connection will be
 relinquished by the session.
 
+```csharp
     tx.Commit();
     sess.Close();
 
     sess.Flush();
     currentTransaction.Commit();
     sess.Close();
+```
 
 If you provided your own connection, `Close()` returns a reference to
 it, so you can manually close it or return it to the pool. Otherwise
@@ -702,6 +761,7 @@ for the `ISQLExceptionConverter` class for details).
 The following exception handling idiom shows the typical case in
 NHibernate applications:
 
+```csharp
     using (ISession sess = factory.OpenSession())
     using (ITransaction tx = sess.BeginTransaction())
     {
@@ -710,8 +770,10 @@ NHibernate applications:
         tx.Commit();
     }
 
+```
 Or, when manually managing ADO.NET transactions:
 
+```csharp
     ISession sess = factory.openSession();
     try
     {
@@ -729,6 +791,7 @@ Or, when manually managing ADO.NET transactions:
     {
         sess.Close();
     }
+```
 
 # Lifecycles and object graphs
 
@@ -802,6 +865,7 @@ For example, the following `IInterceptor` automatically sets the
 `CreateTimestamp` when an `IAuditable` is created and updates the
 `LastUpdateTimestamp` property when an `IAuditable` is updated.
 
+```csharp
     using System;
     using NHibernate.Type;
     
@@ -889,15 +953,20 @@ For example, the following `IInterceptor` automatically sets the
             ......
         }
     }
+```
 
 The interceptor would be specified when a session is created.
 
+```csharp
     ISession session = sf.OpenSession( new AuditInterceptor() );
+```
 
 You may also set an interceptor on a global level, using the
 `Configuration`:
 
+```csharp
     new Configuration().SetInterceptor( new AuditInterceptor() );
+```
 
 # Metadata API
 
@@ -912,6 +981,7 @@ NHibernate exposes metadata via the `IClassMetadata` and
 `ICollectionMetadata` interfaces and the `IType` hierarchy. Instances of
 the metadata interfaces may be obtained from the `ISessionFactory`.
 
+```csharp
     Cat fritz = ......;
     IClassMetadata catMeta = sessionfactory.GetClassMetadata(typeof(Cat));
     long id = (long) catMeta.GetIdentifier(fritz);
@@ -930,3 +1000,4 @@ the metadata interfaces may be obtained from the `ISessionFactory`.
             namedValues[propertyNames[i]] = propertyValues[i];
         }
     }
+```

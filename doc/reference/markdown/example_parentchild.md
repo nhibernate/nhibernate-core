@@ -47,18 +47,22 @@ the parent.
 Suppose we start with a simple `<one-to-many>` association from `Parent`
 to `Child`.
 
+```xml
     <set name="Children">
         <key column="parent_id" />
         <one-to-many class="Child" />
     </set>
+```
 
 If we were to execute the following code
 
+```csharp
     Parent p = .....;
     Child c = new Child();
     p.Children.Add(c);
     session.Save(c);
     session.Flush();
+```
 
 NHibernate would issue two SQL statements:
 
@@ -74,73 +78,90 @@ The underlying cause is that the link (the foreign key `parent_id`) from
 is therefore not created in the `INSERT`. So the solution is to make the
 link part of the `Child` mapping.
 
+```xml
     <many-to-one name="Parent" column="parent_id" not-null="true"/>
+```
 
 (We also need to add the `Parent` property to the `Child` class.)
 
 Now that the `Child` entity is managing the state of the link, we tell
 the collection not to update the link. We use the `inverse` attribute.
 
+```xml
     <set name="Children" inverse="true">
         <key column="parent_id"/>
         <one-to-many class="Child"/>
     </set>
+```
 
 The following code would be used to add a new `Child`.
 
+```csharp
     Parent p = session.Load<Parent>(pid);
     Child c = new Child();
     c.Parent = p;
     p.Children.Add(c);
     session.Save(c);
     session.Flush();
+```
 
 And now, only one SQL `INSERT` would be issued\!
 
 To tighten things up a bit, we could create an `AddChild()` method of
 `Parent`.
 
+```csharp
     public void AddChild(Child c)
     {
         c.Parent = this;
         children.Add(c);
     }
+```
 
 Now, the code to add a `Child` looks like
 
+```csharp
     Parent p = session.Load<Parent>(pid);
     Child c = new Child();
     p.AddChild(c);
     session.Save(c);
     session.Flush();
+```
 
 # Cascading lifecycle
 
 The explicit call to `Save()` is still annoying. We will address this by
 using cascades.
 
+```xml
     <set name="Children" inverse="true" cascade="all">
         <key column="parent_id"/>
         <one-to-many class="Child"/>
     </set>
+```
 
 This simplifies the code above to
 
+```csharp
     Parent p = session.Load<Parent>(pid);
     Child c = new Child();
     p.AddChild(c);
     session.Flush();
+```
 
 Similarly, we don't need to iterate over the children when saving or
 deleting a `Parent`. The following removes `p` and all its children from
 the database.
 
+```csharp
     Parent p = session.Load<Parent>(pid);
     session.Delete(p);
     session.Flush();
+```
 
 However, this code
 
+```csharp
     Parent p = session.Load<Parent>(pid);
     // Get one child out of the set
     IEnumerator childEnumerator = p.Children.GetEnumerator();
@@ -150,11 +171,13 @@ However, this code
     p.Children.Remove(c);
     c.Parent = null;
     session.Flush();
+```
 
 will not remove `c` from the database; it will only remove the link to
 `p` (and cause a `NOT NULL` constraint violation, in this case). You
 need to explicitly `Delete()` the `Child`.
 
+```csharp
     Parent p = session.Load<Parent>(pid);
     // Get one child out of the set
     IEnumerator childEnumerator = p.Children.GetEnumerator();
@@ -164,15 +187,18 @@ need to explicitly `Delete()` the `Child`.
     p.Children.Remove(c);
     session.Delete(c);
     session.Flush();
+```
 
 Now, in our case, a `Child` can't really exist without its parent. So if
 we remove a `Child` from the collection, we really do want it to be
 deleted. For this, we must use `cascade="all-delete-orphan"`.
 
+```xml
     <set name="Children" inverse="true" cascade="all-delete-orphan">
         <key column="parent_id"/>
         <one-to-many class="Child"/>
     </set>
+```
 
 Note: even though the collection mapping specifies `inverse="true"`,
 cascades are still processed by iterating the collection elements. So if
@@ -200,12 +226,14 @@ specify `unsaved-value` explicitly.*
 The following code will update `parent` and `child` and insert
 `newChild`.
 
+```csharp
     //parent and child were both loaded in a previous session
     parent.AddChild(child);
     Child newChild = new Child();
     parent.AddChild(newChild);
     session.Update(parent);
     session.Flush();
+```
 
 Well, that is all very well for the case of a generated identifier, but
 what about assigned identifiers and composite identifiers? This is more
@@ -231,6 +259,7 @@ named `IsTransient()` which lets the application implement its own
 strategy for distinguishing newly instantiated objects. For example, you
 could define a base class for your persistent classes.
 
+```csharp
     public class Persistent
     {
         private bool _saved = false;
@@ -257,10 +286,12 @@ could define a base class for your persistent classes.
             get { return _saved; }
         }
     }
+```
 
 (The `saved` property is non-persistent.) Now implement `IsTransient()`,
 along with `OnLoad()`, `OnSave()` and `OnDelete()` as follows.
 
+```csharp
     public object IsTransient(object entity)
     {
         if (entity is Persistent)
@@ -301,6 +332,7 @@ along with `OnLoad()`, `OnSave()` and `OnDelete()` as follows.
     {
         if (entity is Persistent) ( (Persistent) entity ).OnDelete();
     }
+```
 
 # Conclusion
 

@@ -62,6 +62,7 @@ However, lazy fetching poses one problem that you must be aware of.
 Access to a lazy association outside of the context of an open
 NHibernate session will result in an exception. For example:
 
+```csharp
     IDictionary<string, int> permissions;
     using (var s = sessions.OpenSession())
     using (Transaction tx = s.BeginTransaction())
@@ -74,6 +75,7 @@ NHibernate session will result in an exception. For example:
     }
     
     int accessLevel = permissions["accounts"];  // Error!
+```
 
 Since the `permissions` collection was not initialized when the
 `ISession` was closed, the collection will not be able to load its
@@ -100,6 +102,7 @@ Select fetching (the default) is extremely vulnerable to N+1 selects
 problems, so we might want to enable join fetching in the mapping
 document:
 
+```xml
     <set name="Permissions" 
                 fetch="join">
         <key column="userId"/>
@@ -107,6 +110,7 @@ document:
     </set
 
     <many-to-one name="Mother" class="Cat" fetch="join"/>
+```
 
 The `fetch` strategy defined in the mapping document affects:
 
@@ -133,10 +137,12 @@ If you ever feel like you wish you could change the fetching strategy
 used by `Get()` or `Load()`, simply use a `ICriteria` query, for
 example:
 
+```csharp
     User user = session.CreateCriteria(typeof(User))
         .SetFetchMode("Permissions", FetchMode.Join)
         .Add( Expression.Eq("Id", userId) )
         .UniqueResult<User>();
+```
 
 (This is NHibernate's equivalent of what some *ORM* solutions call a
 "fetch plan".)
@@ -167,16 +173,19 @@ persistent classes\!*
 There are some gotchas to be aware of when extending this approach to
 polymorphic classes, eg.
 
+```xml
     <class name="Cat" proxy="Cat">
         ......
         <subclass name="DomesticCat">
             .....
         </subclass>
     </class>
+```
 
 Firstly, instances of `Cat` will never be castable to `DomesticCat`,
 even if the underlying instance is an instance of `DomesticCat`:
 
+```csharp
     // instantiate a proxy (does not hit the db)
     Cat cat = session.Load<Cat>(id);
     // hit the db to initialize the proxy
@@ -184,22 +193,27 @@ even if the underlying instance is an instance of `DomesticCat`:
         DomesticCat dc = (DomesticCat) cat; // Error!
         ....
     }
+```
 
 Secondly, it is possible to break proxy `==`.
 
+```csharp
     // instantiate a Cat proxy
     Cat cat = session.Load<Cat>(id);
-    DomesticCat dc =
-            // acquire new DomesticCat proxy!
-            session.Load<DomesticCat>(id);
+
+    // acquire new DomesticCat proxy!
+    DomesticCat dc = session.Load<DomesticCat>(id);
     Console.WriteLine(cat == dc); // false
+```
 
 However, the situation is not quite as bad as it looks. Even though we
 now have two references to different proxy objects, the underlying
 instance will still be the same object:
 
+```csharp
     cat.Weight = 11.0;  // hit the db to initialize the proxy
     Console.WriteLine( dc.Weight );  // 11.0
+```
 
 Third, you may not use a proxy for a `sealed` class or a class with any
 non-overridable public members.
@@ -214,18 +228,21 @@ inheritance model. If you wish to avoid these problems your persistent
 classes must each implement an interface that declares its business
 methods. You should specify these interfaces in the mapping file. eg.
 
+```xml
     <class name="CatImpl" proxy="ICat">
         ......
         <subclass name="DomesticCatImpl" proxy="IDomesticCat">
             .....
         </subclass>
     </class>
+```
 
 where `CatImpl` implements the interface `ICat` and `DomesticCatImpl`
 implements the interface `IDomesticCat`. Then proxies for instances of
 `ICat` and `IDomesticCat` may be returned by `Load()` or `Enumerable()`.
 (Note that `List()` does not usually return proxies.)
 
+```csharp
     ICat cat = session.Load<CatImpl>(catid);
     using(var iter = session
         .CreateQuery("from CatImpl as cat where cat.Name='fritz'")
@@ -235,6 +252,7 @@ implements the interface `IDomesticCat`. Then proxies for instances of
         iter.MoveNext();
         ICat fritz = iter.Current;
     }
+```
 
 Relationships are also lazily initialized. This means you must declare
 any properties to be of type `ICat`, not `CatImpl`.
@@ -314,13 +332,17 @@ need some information about it (like its size) or a subset of the data.
 You can use a collection filter to get the size of a collection without
 initializing it:
 
+```csharp
     s.CreateFilter(collection, "select count(*)").UniqueResult<long>()
+```
 
 The `CreateFilter()` method is also used to efficiently retrieve subsets
 of a collection without needing to initialize the whole
     collection:
 
+```csharp
     s.CreateFilter(lazyCollection, "").SetFirstResult(0).SetMaxResults(10).List<Entity>();
+```
 
 ## Using batch fetching
 
@@ -339,7 +361,9 @@ NHibernate will by default execute 25 `SELECT` statements, to retrieve
 the proxied owners. You can tune this behavior by specifying a
 `batch-size` in the mapping of `Person`:
 
+```xml
     <class name="Person" batch-size="10">...</class>
+```
 
 NHibernate will now execute only three queries, the pattern is 10, 10,
 5.
@@ -351,11 +375,13 @@ loaded in the `ISesssion`, iterating through all persons will generate
 fetching for the `Cats` collection in the mapping of `Person`,
 NHibernate can pre-fetch collections:
 
+```xml
     <class name="Person">
         <set name="Cats" batch-size="3">
             ...
         </set>
     </class>
+```
 
 With a `batch-size` of 3, NHibernate will load 3, 3, 3, 1 collections in
 four `SELECT`s. Again, the value of the attribute depends on the
@@ -396,11 +422,10 @@ the second level cache to work as intended.
 By default, NHibernate uses HashtableCache for process-level caching.
 You may choose a different implementation by specifying the name of a
 class that implements `NHibernate.Cache.ICacheProvider` using the
-property
-`cache.provider_class`.
+property `cache.provider_class`.
 
 | Cache                                       | Provider class                                                                       | Type         | Cluster Safe | Query Cache Supported |
-| ------------------------------------------- | ------------------------------------------------------------------------------------ | ------------ | ------------ | --------------------- |
+|---------------------------------------------|--------------------------------------------------------------------------------------|--------------|--------------|-----------------------|
 | Hashtable (not intended for production use) | `NHibernate.Cache.HashtableCacheProvider`                                            | memory       |              | yes                   |
 | ASP.NET Cache (System.Web.Cache)            | `NHibernate.Caches.SysCache.SysCacheProvider, NHibernate.Caches.SysCache`            | memory       |              | yes                   |
 | Prevalence Cache                            | `NHibernate.Caches.Prevalence.PrevalenceCacheProvider, NHibernate.Caches.Prevalence` | memory, disk |              | yes                   |
@@ -412,10 +437,12 @@ Cache Providers
 The `<cache>` element of a class or collection mapping has the following
 form:
 
+```xml
     <cache 
         usage="read-write|nonstrict-read-write|read-only"
         region="RegionName"
     />
+```
 
   - `usage` specifies the caching strategy: `read-write`,
     `nonstrict-read-write` or `read-only`
@@ -435,10 +462,12 @@ persistent class, a `read-only` cache may be used. This is the simplest
 and best performing strategy. Its even perfectly safe for use in a
 cluster.
 
+```xml
     <class name="Eg.Immutable" mutable="false">
         <cache usage="read-only"/>
         ....
     </class>
+```
 
 ## Strategy: read/write
 
@@ -450,6 +479,7 @@ transaction is completed when `ISession.Close()` or
 cluster, you should ensure that the underlying cache implementation
 supports locking. The built-in cache providers do *not*.
 
+```xml
     <class name="eg.Cat" .... >
         <cache usage="read-write"/>
         ....
@@ -458,6 +488,7 @@ supports locking. The built-in cache providers do *not*.
             ....
         </set>
     </class>
+```
 
 ## Strategy: nonstrict read/write
 
@@ -473,7 +504,7 @@ concurrency
 strategies.
 
 | Cache                                       | read-only | nonstrict-read-write | read-write |
-| ------------------------------------------- | --------- | -------------------- | ---------- |
+|---------------------------------------------|-----------|----------------------|------------|
 | Hashtable (not intended for production use) | yes       | yes                  | yes        |
 | SysCache                                    | yes       | yes                  | yes        |
 | PrevalenceCache                             | yes       | yes                  | yes        |
@@ -495,6 +526,7 @@ to occur or if you are processing a huge number of objects and need to
 manage memory efficiently, the `Evict()` method may be used to remove
 the object and its collections from the first-level cache.
 
+```csharp
     IEnumerable<Cat> cats = sess
         .CreateQuery("from Eg.Cat as cat")
         .List<Cat>(); //a huge result set
@@ -503,6 +535,7 @@ the object and its collections from the first-level cache.
         DoSomethingWithACat(cat);
         sess.Evict(cat);
     }
+```
 
 NHibernate will evict associated entities automatically if the
 association is mapped with `cascade="all"` or
@@ -518,6 +551,7 @@ For the second-level cache, there are methods defined on
 `ISessionFactory` for evicting the cached state of an instance, entire
 class, collection instance or entire collection role.
 
+```csharp
     //evict a particular Cat
     sessionFactory.Evict(typeof(Cat), catId);
     //evict all Cats
@@ -526,6 +560,7 @@ class, collection instance or entire collection role.
     sessionFactory.EvictCollection("Eg.Cat.Kittens", catId);
     //evict all kitten collections
     sessionFactory.EvictCollection("Eg.Cat.Kittens");
+```
 
 # The Query Cache
 
@@ -533,7 +568,9 @@ Query result sets may also be cached. This is only useful for queries
 that are run frequently with the same parameters. To use the query cache
 you must first enable it:
 
+```xml
     <property name="cache.use_query_cache">true</property>>
+```
 
 This setting causes the creation of two new cache regions - one holding
 cached query result sets (`NHibernate.Cache.StandardQueryCache`), the
@@ -558,15 +595,16 @@ to the cache when it is executed.
 
 If you require fine-grained control over query cache expiration
 policies, you may specify a named cache region for a particular query by
-calling
-    `IQuery.SetCacheRegion()`.
+calling `IQuery.SetCacheRegion()`.
 
+```csharp
     var blogs = sess.CreateQuery("from Blog blog where blog.Blogger = :blogger")
         .SetEntity("blogger", blogger)
         .SetMaxResults(15)
         .SetCacheable(true)
         .SetCacheRegion("frontpages")
         .List<Blog>();
+```
 
 If the query should force a refresh of its query cache region, you may
 call `IQuery.SetForceCacheRefresh()` to `true`. This is particularly
@@ -672,11 +710,13 @@ without needing to initialize (fetch) the bag elements\! This is because
 `IList.Add()` must always succeed for a bag or `IList` (unlike an
 `ISet`). This can make the following common code much faster.
 
+```csharp
     Parent p = sess.Load<Parent>(id);
         Child c = new Child();
         c.Parent = p;
         p.Children.Add(c);  //no need to fetch the collection!
         sess.Flush();
+```
 
 ## One shot delete
 
@@ -739,6 +779,7 @@ round-trip against the database server. A simple use case is executing a
 paged query while also getting the total count of results, in a single
 round-trip. Here is a simple example:
 
+```csharp
     IMultiQuery multiQuery = s.CreateMultiQuery()
         .Add(s.CreateQuery("from Item i where i.Id > ?")
               .SetInt32(0, 50).SetFirstResult(10))
@@ -747,12 +788,14 @@ round-trip. Here is a simple example:
     IList results = multiQuery.List();
     IList items = (IList)results[0];
     long count = (long)((IList)results[1])[0];
+```
 
 The result is a list of query results, ordered according to the order of
 queries added to the multi query. Named parameters can be set on the
 multi query, and are shared among all the queries contained in the multi
 query, like this:
 
+```csharp
     IList results = s.CreateMultiQuery()
         .Add(s.CreateQuery("from Item i where i.Id > :id")
               .SetFirstResult(10))
@@ -761,6 +804,7 @@ query, like this:
         .List();
     IList items = (IList)results[0];
     long count = (long)((IList)results[1])[0];
+```
 
 Positional parameters are not supported on the multi query, only on the
 individual queries.
@@ -781,6 +825,7 @@ arguments passed as parameters may easily exceed this limit. For
 example, SQL Server has a limit of 2,100 parameters per round-trip, and
 will throw an exception executing this query:
 
+```csharp
     IList allEmployeesId  = ...; //1,500 items
     IMultiQuery multiQuery = s.CreateMultiQuery()
         .Add(s.CreateQuery("from Employee e where e.Id in :empIds")
@@ -788,16 +833,19 @@ will throw an exception executing this query:
         .Add(s.CreateQuery("select count(*) from Employee e where e.Id in :empIds")
               .SetParameter("empIds", allEmployeesId));
     IList results = multiQuery.List(); // will throw an exception from SQL Server
+```
 
 An interesting usage of this feature is to load several collections of
 an object in one round-trip, without an expensive cartesian product
 (blog \* users \* posts).
 
+```csharp
     Blog blog = s.CreateMultiQuery()
         .Add("select b from Blog b left join fetch b.Users where b.Id = :id")
         .Add("select b from Blog b left join fetch b.Posts where b.Id = :id")
         .SetInt32("id", 123)
         .UniqueResult<Blog>();
+```
 
 # Multi Criteria
 
@@ -806,6 +854,7 @@ several criteria queries in a single round trip. A simple use case is
 executing a paged query while also getting the total count of results,
 in a single round-trip. Here is a simple example:
 
+```csharp
     IMultiCriteria multiCrit = s.CreateMultiCriteria()
         .Add(s.CreateCriteria(typeof(Item))
               .Add(Expression.Gt("Id", 50))
@@ -816,6 +865,7 @@ in a single round-trip. Here is a simple example:
     IList results = multiCrit.List();
     IList items = (IList)results[0];
     long count = (long)((IList)results[1])[0];
+```
 
 The result is a list of query results, ordered according to the order of
 queries added to the multi criteria.
@@ -825,6 +875,7 @@ query. In fact, using DetachedCriteria in this fashion has some
 interesting
     implications.
 
+```csharp
     DetachedCriteria customersCriteria = AuthorizationService.GetAssociatedCustomersQuery();
     IList results = session.CreateMultiCriteria()
         .Add(customersCriteria)
@@ -837,6 +888,7 @@ interesting
     
     ICollection<Customer> customers = CollectionHelper.ToArray<Customer>(results[0]);
     ICollection<Policy> policies = CollectionHelper.ToArray<Policy>(results[1]);
+```
 
 As you see, we get a query that represents the customers we can access,
 and then we can utilize this query further in order to perform

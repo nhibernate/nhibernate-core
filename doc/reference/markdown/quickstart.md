@@ -24,6 +24,7 @@ We now set up the database connection information for NHibernate. To do
 this, open the file `Web.config` automatically generated for your
 project and add configuration elements according to the listing below:
 
+```xml
     <?xml version="1.0" encoding="utf-8" ?>
     <configuration>
       <!-- Add this element -->
@@ -50,6 +51,7 @@ project and add configuration elements according to the listing below:
         ...
       </system.web>
     </configuration>
+```
 
 The `<configSections>` element contains definitions of sections that
 follow and handlers to use to process their content. We declare the
@@ -82,6 +84,7 @@ classes. A POCO has its data accessible through the standard .NET
 property mechanisms, shielding the internal representation from the
 publicly visible interface:
 
+```csharp
     namespace QuickStart
     {
         public class Cat
@@ -95,6 +98,7 @@ publicly visible interface:
             public virtual float Weight { get; set; }
         }
     }
+```
 
 NHibernate is not restricted in its usage of property types, all .NET
 types and primitives (like `string`, `char` and `DateTime`) can be
@@ -130,6 +134,7 @@ key relationships to other entities) to database tables.
 Please note that the `Cat.hbm.xml` file should be set to an embedded
 resource.
 
+```xml
     <?xml version="1.0" encoding="utf-8" ?>
     <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
         namespace="QuickStart" assembly="QuickStart">
@@ -152,6 +157,7 @@ resource.
         </class>
     
     </hibernate-mapping>
+```
 
 Every persistent class should have an identifier attribute (actually,
 only classes representing entities, not dependent value objects, which
@@ -176,14 +182,12 @@ most of the time. Here the specification of the table name with the
 attribute `table` is redundant, it default to the class name when not
 specified. The table `Cat` in the database looks like this:
 
-``` 
- Column |     Type     | Modifiers
---------+--------------+----------------------
- CatId  | char(32)     | not null, primary key
- Name   | nvarchar(16) | not null
- Sex    | nchar(1)     |
- Weight | real         |
-```
+| Column | Type         | Modifiers             |
+|--------|--------------|-----------------------|
+| CatId  | char(32)     | not null, primary key |
+| Name   | nvarchar(16) | not null              |
+| Sex    | nchar(1)     |                       |
+| Weight | real         |                       |
 
 You should now create the database and this table manually, and later
 read [???](#toolsetguide) if you want to automate this step with the
@@ -199,8 +203,10 @@ manager* interface, we use it to store and retrieve `Cat`s to and from
 the database. But first, we've to get an `ISession` (NHibernate's
 unit-of-work) from the `ISessionFactory`:
 
+```csharp
     ISessionFactory sessionFactory =
                 new Configuration().Configure().BuildSessionFactory();
+```
 
 An `ISessionFactory` is responsible for one database and may only use
 one XML configuration file (`Web.config` or `hibernate.cfg.xml`). You
@@ -219,6 +225,7 @@ to a `ISessionFactory`.
 
 We implement a `NHibernateHelper` helper class:
 
+```csharp
     using System;
     using System.Web;
     using NHibernate;
@@ -274,6 +281,7 @@ We implement a `NHibernateHelper` helper class:
             }
         }
     }
+```
 
 This class does not only take care of the `ISessionFactory` with its
 static attribute, but also has code to remember the `ISession` for the
@@ -285,6 +293,7 @@ object that represents a single unit-of-work with the database.
 `ISession`s are opened by an `ISessionFactory` and are closed when all
 work is completed:
 
+```csharp
     ISession session = NHibernateHelper.GetCurrentSession();
     try
     {
@@ -305,6 +314,7 @@ work is completed:
     {
         NHibernateHelper.CloseSession();
     }
+```
 
 In an `ISession`, every database operation occurs inside a transaction
 that isolates the database operations (even read-only operations). We
@@ -325,6 +335,7 @@ while you navigate the graph.
 NHibernate has various methods that can be used to retrieve objects from
 the database. Nowadays the most standard way is using Linq:
 
+```csharp
     using(var tx = session.BeginTransaction())
     {
         var females = session
@@ -338,6 +349,7 @@ the database. Nowadays the most standard way is using Linq:
     
         tx.Commit();
     }
+```
 
 If you use an older NHibernate, you may have to import the
 `NHibernate.Linq` namespace.

@@ -326,7 +326,9 @@ values.
 Booleans may be easily used in expressions by declaring HQL query
 substitutions in NHibernate configuration:
 
+```xml
     <property name="query.substitutions">true 1, false 0</property>
+```
 
 This will replace the keywords `true` and `false` with the literals `1`
 and `0` in the translated SQL from this HQL:
@@ -423,6 +425,7 @@ readable the following query would be in SQL:
 *Hint:* something
     like
 
+```sql
     SELECT cust.name, cust.address, cust.phone, cust.id, cust.current_order
     FROM customers cust,
         stores store,
@@ -440,6 +443,7 @@ readable the following query would be in SQL:
             WHERE item.order_id = o.id
                 AND cust.current_order = o.id
         )
+```
 
 # The order by clause
 
@@ -666,20 +670,25 @@ inner join, the following form is also useful:
 
 Properties of an object can be bound to named query parameters:
 
+```csharp
     IQuery q =
         s.CreateQuery("from foo in class Foo where foo.Name=:Name and foo.Size=:Size");
     q.SetProperties(fooBean); // fooBean has properties Name and Size
     var foos = q.List<Foo>();
+```
 
 Collections are pageable by using the `IQuery` interface with a filter:
 
+```csharp
     IQuery q = s.CreateFilter( collection, "" ); // the trivial filter
     q.setMaxResults(PageSize);
     q.setFirstResult(PageSize * pageNumber);
     var page = q.List<Cat>();
+```
 
 Collection elements may be ordered or grouped using a query filter:
 
+```csharp
     var orderedCollection = s
         .CreateFilter(collection, "order by this.Amount")
         .List<Cat>();
@@ -687,3 +696,4 @@ Collection elements may be ordered or grouped using a query filter:
         .CreateFilter(collection,
             "select this.Type, count(this) group by this.Type")
         .List<object[]>();
+```

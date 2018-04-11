@@ -16,6 +16,7 @@ use `NHibernate.Mapping.ByCode` available since NHibernate 3.2, or
 
 Let's kick off with an example mapping:
 
+```xml
     <?xml version="1.0"?>
     <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="Eg"
         namespace="Eg">
@@ -44,6 +45,7 @@ Let's kick off with an example mapping:
             </class>
     
     </hibernate-mapping>
+```
 
 We will now discuss the content of the mapping document. We will only
 describe the document elements and attributes that are used by
@@ -79,6 +81,7 @@ language, by default. The `assembly` and `namespace` attributes specify
 the assembly where persistent classes are located and the namespace they
 are declared in.
 
+```xml
     <hibernate-mapping
              schema="schemaName"
              default-cascade="none|save-update"
@@ -88,6 +91,7 @@ are declared in.
              default-access="field|property|field.camecase..."
              default-lazy="true|false"
      />
+```
 
   - `schema` (optional): The name of a database schema.
 
@@ -119,6 +123,7 @@ you attempt to assign two classes to the same "imported" name.
 
 You may declare a persistent class using the `class` element:
 
+```xml
     <class
             name="ClassName"
             table="tableName"
@@ -137,6 +142,7 @@ You may declare a persistent class using the `class` element:
             lazy="true|false"
             abstract="true|false"
     />
+```
 
   - `name`: The fully qualified .NET class name of the persistent class
     (or interface), including its assembly name.
@@ -271,11 +277,13 @@ An alternative to mapping a class to table or view columns is to map a
 exclusive with `<subclass>`, `<joined-subclass>` and `<union-subclass>`.
 The content of the `subselect` element is a SQL query:
 
+```xml
     <subselect>
         <![CDATA[
         SELECT cat.ID, cat.NAME, cat.SEX, cat.MATE FROM cat
         ]]>
     </subselect>
+```
 
 Usually, when mapping a query using `subselect` you will want to mark
 the class as not mutable (`mutable="false"`), unless you specify custom
@@ -284,12 +292,14 @@ SQL for performing the UPDATE, DELETE and INSERT operations.
 Also, it makes sense to force synchronization of the tables affected by
 the query, using one or more `<synchronize>` entries:
 
+```xml
     <subselect>
         <![CDATA[
         SELECT cat.ID, cat.NAME, cat.SEX, cat.MATE FROM cat
         ]]>
     </subselect>
     <syncronize table="cat"/>
+```
 
 You then still have to declare the class id and properties.
 
@@ -300,6 +310,7 @@ table. Most classes will also have a property holding the unique
 identifier of an instance. The `<id>` element defines the mapping from
 that property to the primary key column.
 
+```xml
     <id
             name="PropertyName"
             type="typename"
@@ -309,6 +320,7 @@ that property to the primary key column.
     
             <generator class="generatorClass"/>
     </id>
+```
 
   - `name` (optional): The name of the identifier property.
 
@@ -343,18 +355,22 @@ The generator can be declared using the `<generator>` child element. If
 any parameters are required to configure or initialize the generator
 instance, they are passed using `<param>` elements.
 
+```xml
     <id name="Id" type="Int64" column="uid" unsaved-value="0">
             <generator class="NHibernate.Id.TableHiLoGenerator">
                     <param name="table">uid_table</param>
                     <param name="column">next_hi_value_column</param>
             </generator>
     </id>
+```
 
 If no parameters are required, the generator can be declared using a
 `generator` attribute directly on the `<id>` element, as
     follows:
 
+```xml
     <id name="Id" type="Int64" column="uid" unsaved-value="0" generator="native" />
+```
 
 All generators implement the interface
 `NHibernate.Id.IIdentifierGenerator`. This is a very simple interface;
@@ -370,8 +386,7 @@ implementations. There are shortcut names for the built-in generators:
   - `identity`  
     supports identity columns in DB2, MySQL, MS SQL Server and Sybase.
     The identifier returned by the database is converted to the property
-    type using `
-                                                                                                                                    Convert.ChangeType`. Any integral property type is thus supported.
+    type using `Convert.ChangeType`. Any integral property type is thus supported.
 
   - `sequence`  
     uses a sequence in DB2, PostgreSQL, Oracle or a generator in
@@ -409,8 +424,7 @@ implementations. There are shortcut names for the built-in generators:
 
   - `guid.comb`  
     uses the algorithm to generate a new `System.Guid` described by
-    Jimmy Nilsson in [this
-    article](https://www.informit.com/articles/article.aspx?p=25862).
+    Jimmy Nilsson in [this article](https://www.informit.com/articles/article.aspx?p=25862).
 
   - `native`  
     picks `identity`, `sequence` or `hilo` depending upon the
@@ -432,6 +446,7 @@ identifier generation. The first implementation requires a "special"
 database table to hold the next available "hi" value. The second uses an
 Oracle-style sequence (where supported).
 
+```xml
     <id name="Id" type="Int64" column="cat_id">
             <generator class="hilo">
                     <param name="table">hi_value</param>
@@ -446,6 +461,7 @@ Oracle-style sequence (where supported).
                     <param name="max_lo">100</param>
             </generator>
     </id>
+```
 
 Unfortunately, you can't use `hilo` when supplying your own
 `DbConnection` to NHibernate. NHibernate must be able to fetch the "hi"
@@ -453,12 +469,14 @@ value in a new transaction.
 
 ### UUID Hex Algorithm
 
+```xml
     <id name="Id" type="String" column="cat_id">
             <generator class="uuid.hex">
                 <param name="format">format_value</param>
                 <param name="separator">separator_value</param>
             </generator>
     </id>
+```
 
 The UUID is generated by calling `Guid.NewGuid().ToString(format)`. The
 valid values for `format` are described in the MSDN documentation. The
@@ -488,6 +506,7 @@ sequences (DB2, Oracle, PostgreSQL, Interbase, McKoi, SAP DB) you may
 use `sequence` style key generation. Both these strategies require two
 SQL queries to insert a new object.
 
+```xml
     <id name="Id" type="Int64" column="uid">
             <generator class="sequence">
                     <param name="sequence">uid_sequence</param>
@@ -497,6 +516,7 @@ SQL queries to insert a new object.
     <id name="Id" type="Int64" column="uid" unsaved-value="0">
             <generator class="identity"/>
     </id>
+```
 
 For cross-platform development, the `native` strategy will choose from
 the `identity`, `sequence` and `hilo` strategies, dependent upon the
@@ -650,6 +670,7 @@ generators](#mapping-declaration-id-enhanced) support this operation.
 
 ## composite-id
 
+```xml
     <composite-id
             name="PropertyName"
             class="ClassName"
@@ -660,16 +681,19 @@ generators](#mapping-declaration-id-enhanced) support this operation.
             <key-many-to-one name="PropertyName class="ClassName" column="column_name"/>
             ......
     </composite-id>
+```
 
 For a table with a composite key, you may map multiple properties of the
 class as identifier properties. The `<composite-id>` element accepts
 `<key-property>` property mappings and `<key-many-to-one>` mappings as
 child elements.
 
+```xml
     <composite-id>
             <key-property name="MedicareNumber"/>
             <key-property name="Dependent"/>
     </composite-id>
+```
 
 Your persistent class *must* override `Equals()` and `GetHashCode()` to
 implement composite identifier equality. It must also be marked with the
@@ -706,6 +730,7 @@ instantiate for a particular row. A restricted set of types may be used:
 `String`, `Char`, `Int32`, `Byte`, `Short`, `Boolean`, `YesNo`,
 `TrueFalse`.
 
+```xml
     <discriminator
             column="discriminator_column"
             type="discriminator_type"
@@ -713,6 +738,7 @@ instantiate for a particular row. A restricted set of types may be used:
             insert="true|false"
             formula="arbitrary SQL expression"
     />
+```
 
   - `column` (optional - defaults to `class`) the name of the
     discriminator column.
@@ -742,9 +768,11 @@ This will not usually be the case.
 Using the `formula` attribute you can declare an arbitrary SQL
 expression that will be used to evaluate the type of a row:
 
+```xml
     <discriminator
         formula="case when CLASS_TYPE in ('a', 'b', 'c') then 0 else 1 end"
         type="Int32"/>
+```
 
 ## version (optional)
 
@@ -752,6 +780,7 @@ The `<version>` element is optional and indicates that the table
 contains versioned data. This is particularly useful if you plan to use
 *long transactions* (see below).
 
+```xml
     <version
             column="version_column"
             name="PropertyName"
@@ -760,6 +789,7 @@ contains versioned data. This is particularly useful if you plan to use
             unsaved-value="null|negative|undefined|value"
             generated="never|always"
     />
+```
 
   - `column` (optional - defaults to the property name): The name of the
     column holding the version number.
@@ -794,6 +824,7 @@ Timestamps are by nature a less safe implementation of optimistic
 locking. However, sometimes the application might use the timestamps in
 other ways.
 
+```xml
     <timestamp
             column="timestamp_column"
             name="PropertyName"
@@ -801,6 +832,7 @@ other ways.
             unsaved-value="null|undefined|value"
             generated="never|always"
     />
+```
 
   - `column` (optional - defaults to the property name): The name of a
     column holding the timestamp.
@@ -827,6 +859,7 @@ Note that `<timestamp>` is equivalent to `<version type="timestamp">`.
 
 The `<property>` element declares a persistent property of the class.
 
+```xml
     <property
             name="propertyName"
             column="column_name"
@@ -839,6 +872,7 @@ The `<property>` element declares a persistent property of the class.
             generated="never|insert|always"
             lazy="true|false"
     />
+```
 
   - `name`: the name of the property of your class.
 
@@ -877,12 +911,10 @@ The `<property>` element declares a persistent property of the class.
 
 *typename* could be:
 
-1.  The name of a NHibernate basic type (eg. `Int32, String, Char,
-                                                                                                    DateTime, Timestamp, Single, Byte[], Object, ...`).
+1.  The name of a NHibernate basic type (eg. `Int32, String, Char, DateTime, Timestamp, Single, Byte[], Object, ...`).
 
 2.  The name of a .NET type with a default basic type (eg.
-    `System.Int16, System.Single,
-                                                                                                    System.Char, System.String, System.DateTime, System.Byte[], ...`).
+    `System.Int16, System.Single, System.Char, System.String, System.DateTime, System.Byte[], ...`).
 
 3.  The name of an enumeration type (eg. `Eg.Color, Eg`).
 
@@ -923,8 +955,7 @@ required.
 | `nosetter`           | NHibernate will access the field directly when setting the value and will use the Property when getting the value. This can be used when a property only exposes a get accessor because the consumers of your API can't change the value directly. A naming strategy is required because NHibernate uses the value of the `name` attribute as the property name and needs to be told what the name of the field is.             |
 | `ClassName`          | If NHibernate's built in access strategies are not what is needed for your situation then you can build your own by implementing the interface `NHibernate.Property.IPropertyAccessor`. The value of the `access` attribute should be an assembly-qualified name that can be loaded with `Activator.CreateInstance(string assemblyQualifiedName)`.                                                                              |
 
-Access
-Strategies
+Access Strategies
 
 | Naming Strategy Name      | Description                                                                                                                                                                         |
 | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -945,6 +976,7 @@ An ordinary association to another persistent class is declared using a
 `many-to-one` element. The relational model is a many-to-one
 association. (It's really just an object reference.)
 
+```xml
     <many-to-one
             name="PropertyName"
             column="column_name"
@@ -959,6 +991,7 @@ association. (It's really just an object reference.)
             optimistic-lock="true|false"
             not-found="ignore|exception"
     />
+```
 
   - `name`: The name of the property.
 
@@ -1036,6 +1069,7 @@ This is certainly not encouraged, however.
 A one-to-one association to another persistent class is declared using a
 `one-to-one` element.
 
+```xml
     <one-to-one
             name="PropertyName"
             class="ClassName"
@@ -1045,6 +1079,7 @@ A one-to-one association to another persistent class is declared using a
             property-ref="PropertyNameFromAssociatedClass"
             access="field|property|nosetter|ClassName"
     />
+```
 
   - `name`: The name of the property.
 
@@ -1085,14 +1120,17 @@ identifier value\!
 For a primary key association, add the following mappings to `Employee`
 and `Person`, respectively.
 
+```xml
     <one-to-one name="Person" class="Person"/>
 
     <one-to-one name="Employee" class="Employee" constrained="true"/>
+```
 
 Now we must ensure that the primary keys of related rows in the PERSON
 and EMPLOYEE tables are equal. We use a special NHibernate identifier
 generation strategy called `foreign`:
 
+```xml
     <class name="Person" table="PERSON">
         <id name="Id" column="PERSON_ID">
             <generator class="foreign">
@@ -1104,6 +1142,7 @@ generation strategy called `foreign`:
             class="Employee"
             constrained="true"/>
     </class>
+```
 
 A newly saved instance of `Person` is then assigned the same primary key
 value as the `Employee` instance referred with the `Employee` property
@@ -1113,20 +1152,26 @@ Alternatively, a foreign key with a unique constraint, from `Employee`
 to `Person`, may be expressed
     as:
 
+```xml
     <many-to-one name="Person" class="Person" column="PERSON_ID" unique="true"/>
+```
 
 And this association may be made bidirectional by adding the following
 to the `Person` mapping:
 
+```xml
     <one-to-one name="Employee" class="Employee" property-ref="Person"/>
+```
 
 ## natural-id
 
+```xml
     <natural-id mutable="true|false"/>
             <property ... />
             <many-to-one ... />
             ......
     </natural-id>
+```
 
 Even though we recommend the use of surrogate keys as primary keys, you
 should still try to identify natural keys for all entities. A natural
@@ -1151,6 +1196,7 @@ The `<component>` element maps properties of a child object to columns
 of the table of a parent class. Components may, in turn, declare their
 own properties, components or collections. See "Components" below.
 
+```xml
     <component 
             name="PropertyName" 
             class="ClassName"
@@ -1163,6 +1209,7 @@ own properties, components or collections. See "Components" below.
             <many-to-one .... />
             ........
     </component>
+```
 
   - `name`: The name of the property.
 
@@ -1200,6 +1247,7 @@ construct is that it allows a combination of properties to be the target
 of a `property-ref`. It is also a convenient way to define a
 multi-column unique constraint. For example:
 
+```xml
     <properties
           name="logicalName"
           insert="true|false"
@@ -1211,6 +1259,7 @@ multi-column unique constraint. For example:
           <many-to-one .../>
           ........
     </properties>
+```
 
   - `name`: the logical name of the grouping. It is *not* an actual
     property name.
@@ -1229,6 +1278,7 @@ multi-column unique constraint. For example:
 
 For example, if we have the following `<properties>` mapping:
 
+```xml
     <class name="Person">
           <id name="personNumber" />
           <properties name="name" unique="true" update="false">
@@ -1237,15 +1287,18 @@ For example, if we have the following `<properties>` mapping:
               <property name="initial" />
           </properties>
     </class>
+```
 
 You might have some legacy data association that refers to this unique
 key of the `Person` table, instead of to the primary key:
 
+```xml
     <many-to-one name="owner" class="Person" property-ref="name">
             <column name="firstName" />
             <column name="lastName" />
             <column name="initial" />
     </many-to-one>
+```
 
 The use of this outside the context of mapping legacy data is not
 recommended.
@@ -1257,6 +1310,7 @@ subclass of the root persistent class. For the (recommended)
 table-per-class-hierarchy mapping strategy, the `<subclass>` declaration
 is used.
 
+```xml
     <subclass
             name="ClassName"
             discriminator-value="discriminator_value"
@@ -1269,6 +1323,7 @@ is used.
             <properties .... />
             .....
     </subclass>
+```
 
   - `name`: The fully qualified .NET class name of the subclass,
     including its assembly name.
@@ -1296,6 +1351,7 @@ Alternatively, a subclass that is persisted to its own table
 (table-per-subclass mapping strategy) is declared using a
 `<joined-subclass>` element.
 
+```xml
     <joined-subclass
             name="ClassName"
             proxy="ProxyInterface"
@@ -1309,6 +1365,7 @@ Alternatively, a subclass that is persisted to its own table
             <properties .... />
             .....
     </joined-subclass>
+```
 
   - `name`: The fully qualified class name of the subclass.
 
@@ -1323,6 +1380,7 @@ subclass must, however, declare a table column holding the object
 identifier using the `<key>` element. The mapping at the start of the
 chapter would be re-written as:
 
+```xml
     <?xml version="1.0"?>
     <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="Eg"
         namespace="Eg">
@@ -1351,6 +1409,7 @@ chapter would be re-written as:
             </class>
     
     </hibernate-mapping>
+```
 
 For information about inheritance mappings, see [???](#inheritance).
 
@@ -1365,6 +1424,7 @@ separate `<class>` declaration. However, if you wish use polymorphic
 associations (e.g. an association to the superclass of your hierarchy),
 you need to use the `<union-subclass>` mapping.
 
+```xml
     <union-subclass
             name="ClassName"
             table="tablename"
@@ -1385,6 +1445,7 @@ you need to use the `<union-subclass>` mapping.
             <properties .... />
             .....
     </union-subclass>
+```
 
   - `name`: The fully qualified class name of the subclass.
 
@@ -1407,6 +1468,7 @@ Using the `<join>` element, it is possible to map properties of one
 class to several tables, when there's a 1-to-1 relationship between the
 tables.
 
+```xml
     <join
             table="tablename"
             schema="owner"
@@ -1419,6 +1481,7 @@ tables.
             <property ... />
             ...
     </join>
+```
 
   - `table`: The name of the joined table.
 
@@ -1447,6 +1510,7 @@ For example, the address information for a person can be mapped to a
 separate table (while preserving value type semantics for all
 properties):
 
+```xml
     <class name="Person"
         table="PERSON">
     
@@ -1459,6 +1523,7 @@ properties):
             <property name="country"/>
         </join>
         ...
+```
 
 This feature is often only useful for legacy data models, we recommend
 fewer tables than classes and a fine-grained domain model. However, it
@@ -1477,12 +1542,14 @@ queries. Classes may be "imported" explicitly, rather than relying upon
 `auto-import="true"`. You may even import classes and interfaces that
 are not explicitly mapped.
 
+```xml
     <import class="System.Object" rename="Universe"/>
 
     <import
             class="ClassName"
             rename="ShortName"
     />
+```
 
   - `class`: The fully qualified class name of any .NET class, including
     its assembly name.
@@ -1631,11 +1698,13 @@ the fully qualified name of the type. Check out
 `NHibernate.DomainModel.DoubleStringType` to see the kind of things that
 are possible.
 
+```xml
     <property name="TwoStrings"
         type="NHibernate.DomainModel.DoubleStringType, NHibernate.DomainModel">
       <column name="first_string"/>
       <column name="second_string"/>
     </property>
+```
 
 Notice the use of `<column>` tags to map a property to multiple columns.
 
@@ -1649,11 +1718,13 @@ do this, your `IUserType` must implement the
 parameters to your custom type, you can use the `<type>` element in your
 mapping files.
 
+```xml
     <property name="priority">
         <type name="MyCompany.UserTypes.DefaultValueIntegerType">
             <param name="default">0</param>
         </type>
     </property>
+```
 
 The `IUserType` can now retrieve the value for the parameter named
 `default` from the `IDictionary` object passed to it.
@@ -1664,11 +1735,13 @@ Typedefs assign a name to a custom type, and may also contain a list of
 default parameter values if the type is
     parameterized.
 
+```xml
     <typedef class="MyCompany.UserTypes.DefaultValueIntegerType" name="default_zero">
         <param name="default">0</param>
     </typedef>
 
     <property name="priority" type="default_zero"/>
+```
 
 It is also possible to override the parameters supplied in a typedef on
 a case-by-case basis by using type parameters on the property mapping.
@@ -1695,10 +1768,12 @@ meant as the usual way of mapping (polymorphic) associations. You should
 use this only in very special cases (eg. audit logs, user session data,
 etc).
 
+```xml
     <any name="AnyEntity" id-type="Int64" meta-type="Eg.Custom.Class2TablenameType">
         <column name="table_name"/>
         <column name="id"/>
     </any>
+```
 
 The `meta-type` attribute lets the application specify a custom type
 that maps database column values to persistent classes which have
@@ -1707,6 +1782,7 @@ meta-type returns instances of `System.Type`, nothing else is required.
 On the other hand, if it is a basic type like `String` or `Char`, you
 must specify the mapping from values to classes.
 
+```xml
     <any name="AnyEntity" id-type="Int64" meta-type="String">
         <meta-value value="TBL_ANIMAL" class="Animal"/>
         <meta-value value="TBL_HUMAN" class="Human"/>
@@ -1730,6 +1806,7 @@ must specify the mapping from values to classes.
             <column .... />
             .....
     </any>
+```
 
   - `name`: the property name.
 
@@ -1757,11 +1834,13 @@ document. NHibernate will use the correct quotation style for the SQL
 `Dialect` (usually double quotes, but brackets for SQL Server and
 back-ticks for MySQL).
 
+```xml
     <class name="LineItem" table="`Line Item`">
         <id name="Id" column="`Item Id`"/><generator class="assigned"/></id>
         <property name="ItemNumber" column="`Item #`"/>
         ...
     </class>
+```
 
 Quoting column identifiers is required if a table contains two columns
 differing only by case. Ensure you use consistent casing when quoting
@@ -1776,12 +1855,14 @@ file. You must specify an `extends` attribute in the subclass mapping,
 naming a previously mapped superclass. Use of this feature makes the
 ordering of the mapping documents important\!
 
+```xml
     <hibernate-mapping>
             <subclass name="Eg.Subclass.DomesticCat, Eg"
                 extends="Eg.Cat, Eg" discriminator-value="D">
                  <property name="name" type="string"/>
             </subclass>
     </hibernate-mapping>
+```
 
 # Generated Properties
 
@@ -1826,6 +1907,7 @@ objects.
 The first mode is to explicitly list the CREATE and DROP commands out in
 the mapping file:
 
+```xml
     <nhibernate-mapping>
         ...
         <database-object>
@@ -1833,20 +1915,24 @@ the mapping file:
             <drop>DROP TRIGGER my_trigger</drop>
         </database-object>
     </nhibernate-mapping>
+```
 
 The second mode is to supply a custom class which knows how to construct
 the CREATE and DROP commands. This custom class must implement the
 `NHibernate.Mapping.IAuxiliaryDatabaseObject` interface.
 
+```xml
     <hibernate-mapping>
         ...
         <database-object>
             <definition class="MyTriggerDefinition, MyAssembly"/>
         </database-object>
     </hibernate-mapping>
+```
 
 You may also specify parameters to be passed to the database object:
 
+```xml
     <hibernate-mapping>
         ...
         <database-object>
@@ -1855,6 +1941,7 @@ You may also specify parameters to be passed to the database object:
             </definition>
         </database-object>
     </hibernate-mapping>
+```
 
 NHibernate will call `IAuxiliaryDatabaseObject.SetParameterValues`
 passing it a dictionary of parameter names and values.
@@ -1862,6 +1949,7 @@ passing it a dictionary of parameter names and values.
 Additionally, these database objects can be optionally scoped such that
 they only apply when certain dialects are used.
 
+```xml
     <hibernate-mapping>
         ...
         <database-object>
@@ -1870,3 +1958,4 @@ they only apply when certain dialects are used.
             <dialect-scope name="NHibernate.Dialect.Oracle8iDialect"/>
         </database-object>
     </hibernate-mapping>
+```

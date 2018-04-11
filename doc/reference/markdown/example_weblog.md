@@ -6,6 +6,7 @@ The persistent classes represent a weblog, and an item posted in a
 weblog. They are to be modelled as a standard parent/child relationship,
 but we will use an ordered bag, instead of a set.
 
+```csharp
     using System;
     using System.Collections.Generic;
     
@@ -38,11 +39,13 @@ but we will use an ordered bag, instead of a set.
             public virtual string Title { get; set;}
         }
     }
+```
 
 # NHibernate Mappings
 
 The XML mappings should now be quite straightforward.
 
+```xml
     <?xml version="1.0" encoding="utf-8"?>
     <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
         assembly="Eg" namespace="Eg">
@@ -122,12 +125,14 @@ The XML mappings should now be quite straightforward.
         </class>
         
     </hibernate-mapping>
+```
 
 # NHibernate Code
 
 The following class demonstrates some of the kinds of things we can do
 with these classes, using NHibernate.
 
+```csharp
     using System;
     using System.Collections.Generic;
     using NHibernate;
@@ -301,9 +306,11 @@ with these classes, using NHibernate.
             }
         }
     }
+```
 
 It requires some configuration settings in `web.config`, such as:
 
+```xml
     <?xml version="1.0" encoding="utf-8" ?>
     <configuration>
       <!-- Add this element -->
@@ -330,3 +337,4 @@ It requires some configuration settings in `web.config`, such as:
         ...
       </system.web>
     </configuration>
+```

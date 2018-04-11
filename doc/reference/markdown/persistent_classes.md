@@ -12,6 +12,7 @@ known as the Plain Old CLR Object (POCO) programming model.
 
 Most .NET applications require a persistent class representing felines.
 
+```csharp
     using System;
     using System.Collections.Generic;
     
@@ -43,6 +44,7 @@ Most .NET applications require a persistent class representing felines.
             }
         }
     }
+```
 
 There are four main rules to follow here:
 
@@ -105,6 +107,7 @@ proxies - which will limit your options for performance tuning.
 A subclass must also observe the first and second rules. It inherits its
 identifier property from `Cat`.
 
+```csharp
     using System;
     namespace Eg
     {
@@ -113,6 +116,7 @@ identifier property from `Cat`.
             public virtual string Name { get; set; }
         }
     }
+```
 
 # Implementing `Equals()` and `GetHashCode()`
 
@@ -141,6 +145,7 @@ Business key equality means that the `Equals()` method compares only the
 properties that form the business key, a key that would identify our
 instance in the real world (a *natural* candidate key):
 
+```csharp
     public class Cat
     {
     
@@ -170,6 +175,7 @@ instance in the real world (a *natural* candidate key):
         }
     
     }
+```
 
 Keep in mind that our candidate key (in this case a composite of name
 and birthday) has to be only valid for a particular comparison operation
@@ -190,6 +196,7 @@ The following examples demonstrates the representation using `Map`s
 (Dictionary). First, in the mapping file, an `entity-name` has to be
 declared instead of a class name:
 
+```xml
     <hibernate-mapping>
     
         <class entity-name="Customer">
@@ -223,6 +230,7 @@ declared instead of a class name:
         </class>
         
     </hibernate-mapping>
+```
 
 Note that even though associations are declared using target class
 names, the target type of an associations may also be a dynamic entity
@@ -230,6 +238,7 @@ instead of a POCO.
 
 At runtime we can work with `Dictionaries` of `Dictionaries`:
 
+```csharp
     using(ISession s = OpenSession())
     using(ITransaction tx = s.BeginTransaction())
     {
@@ -250,6 +259,7 @@ At runtime we can work with `Dictionaries` of `Dictionaries`:
     
         tx.Commit();
     }
+```
 
 The advantages of a dynamic mapping are quick turnaround time for
 prototyping without the need for entity class implementation. However,
@@ -284,6 +294,7 @@ defining a custom tuplizer implementation. Tuplizers definitions are
 attached to the entity or component mapping they are meant to manage.
 Going back to the example of our customer entity:
 
+```csharp
     <hibernate-mapping>
         <class entity-name="Customer">
             <!--
@@ -321,6 +332,7 @@ Going back to the example of our customer entity:
             }
         }
     }
+```
 
 # Lifecycle Callbacks
 
@@ -332,6 +344,7 @@ and before deletion or update.
 The NHibernate [`IInterceptor`](#objectstate-interceptors) offers a less
 intrusive alternative, however.
 
+```csharp
     public interface ILifecycle
     {
             LifecycleVeto OnSave(ISession s);
@@ -339,6 +352,7 @@ intrusive alternative, however.
             LifecycleVeto OnDelete(ISession s);
             void OnLoad(ISession s, object id);
     }
+```
 
   - `OnSave` - called just before the object is saved or inserted
 
@@ -375,10 +389,12 @@ object, except when native key generation is used.
 If the persistent class needs to check invariants before its state is
 persisted, it may implement the following interface:
 
+```csharp
     public interface IValidatable
     {
-            void Validate();
+        void Validate();
     }
+```
 
 The object should throw a `ValidationFailure` if an invariant was
 violated. An instance of `Validatable` should not change its state from

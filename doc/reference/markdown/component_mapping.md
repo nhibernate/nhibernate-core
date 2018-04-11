@@ -10,6 +10,7 @@ an entity. The term "component" refers to the object-oriented notion of
 composition (not to architecture-level components). For example, you
 might model a person like this:
 
+```csharp
     public class Person
     {
         public string Key { get; set; }
@@ -30,6 +31,7 @@ might model a person like this:
     
         public char Initial { get; set; }
     }
+```
 
 Now `Name` may be persisted as a component of `Person`. Notice that
 `Name` defines getter and setter methods for its persistent properties,
@@ -37,6 +39,7 @@ but doesn't need to declare any interfaces or identifier properties.
 
 Our NHibernate mapping would look like:
 
+```xml
     <class name="Eg.Person, Eg" table="person">
         <id name="Key" column="pid" type="string">
             <generator class="uuid.hex"/>
@@ -48,6 +51,7 @@ Our NHibernate mapping would look like:
             <property name="Last"/>
         </component>
     </class>
+```
 
 The person table would have the columns `pid`, `Birthday`, `Initial`,
 `First` and `Last`.
@@ -67,6 +71,7 @@ The `<component>` element allows a `<parent>` sub-element that maps a
 property of the component class as a reference back to the containing
 entity.
 
+```xml
     <class name="Eg.Person, Eg" table="person">
         <id name="Key" column="pid" type="string">
             <generator class="uuid.hex"/>
@@ -79,6 +84,7 @@ entity.
             <property name="Last"/>
         </component>
     </class>
+```
 
 # Collections of dependent objects
 
@@ -86,6 +92,7 @@ Collections of components are supported (eg. an array of type `Name`).
 Declare your component collection by replacing the `<element>` tag with
 a `<composite-element>` tag.
 
+```xml
     <set name="SomeNames" table="some_names" lazy="true">
         <key column="id"/>
         <composite-element class="Eg.Name, Eg"> <!-- class attribute required -->
@@ -94,6 +101,7 @@ a `<composite-element>` tag.
             <property name="Last"/>
         </composite-element>
     </set>
+```
 
 Note: if you define an `ISet` of composite elements, it is very
 important to implement `Equals()` and `GetHashCode()` correctly.
@@ -122,6 +130,7 @@ element class. The following is a many-to-many association from `Order`
 to `Item` where `PurchaseDate`, `Price` and `Quantity` are properties of
 the association:
 
+```xml
     <class name="Order" .... >
         ....
         <set name="PurchasedItems" table="purchase_items" lazy="true">
@@ -134,9 +143,11 @@ the association:
             </composite-element>
         </set>
     </class>
+```
 
 Even ternary (or quaternary, etc) associations are possible:
 
+```xml
     <class name="Order" .... >
         ....
         <set name="PurchasedItems" table="purchase_items" lazy="true">
@@ -147,6 +158,7 @@ Even ternary (or quaternary, etc) associations are possible:
             </composite-element>
         </set>
     </class>
+```
 
 Composite elements may appear in queries using the same syntax as
 associations to other entities.
@@ -190,6 +202,7 @@ Use the `<composite-id>` tag (same attributes and elements as
 `<component>`) in place of `<id>` for the declaration of a composite
 identifier class:
 
+```xml
     <class name="Foo" table="FOOS">
         <composite-id name="CompId" class="FooCompositeID">
             <key-property name="String"/>
@@ -199,22 +212,26 @@ identifier class:
         <property name="Name"/>
         ....
     </class>
+```
 
 Now, any foreign keys into the table `FOOS` are also composite. You must
 declare this in your mappings for other classes. An association to `Foo`
 would be declared like this:
 
+```xml
     <many-to-one name="Foo" class="Foo">
-    <!-- the "class" attribute is optional, as usual -->
+        <!-- the "class" attribute is optional, as usual -->
         <column name="foo_string"/>
         <column name="foo_short"/>
         <column name="foo_date"/>
     </many-to-one>
+```
 
 This new `<column>` tag is also used by multi-column custom types.
 Actually it is an alternative to the `column` attribute everywhere. A
 collection with elements of type `Foo` would use:
 
+```xml
     <set name="Foos">
         <key column="owner_id"/>
         <many-to-many class="Foo">
@@ -223,12 +240,14 @@ collection with elements of type `Foo` would use:
             <column name="foo_date"/>
         </many-to-many>
     </set>
+```
 
 On the other hand, `<one-to-many>`, as usual, declares no columns.
 
 If `Foo` itself contains collections, they will also need a composite
 foreign key.
 
+```xml
     <class name="Foo">
         ....
         ....
@@ -241,16 +260,19 @@ foreign key.
             <element column="foo_date" type="Date"/>
         </set>
     </class>
+```
 
 # Dynamic components
 
 You may even map a property of type `IDictionary`:
 
+```xml
     <dynamic-component name="UserAttributes">
         <property name="Foo" column="FOO"/>
         <property name="Bar" column="BAR"/>
         <many-to-one name="Baz" class="Baz" column="BAZ"/>
     </dynamic-component>
+```
 
 The semantics of a `<dynamic-component>` mapping are identical to
 `<component>`. The advantage of this kind of mapping is the ability to

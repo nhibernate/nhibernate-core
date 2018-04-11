@@ -17,6 +17,7 @@ For example, the following `IInterceptor` automatically sets the
 You may either implement `IInterceptor` directly or (better) extend
 `EmptyInterceptor`.
 
+```csharp
     using System;
         
     using NHibernate;
@@ -100,6 +101,7 @@ You may either implement `IInterceptor` directly or (better) extend
         }
     
     }
+```
 
 Interceptors come in two flavors: `ISession`-scoped and
 `ISessionFactory`-scoped.
@@ -108,7 +110,9 @@ An `ISession`-scoped interceptor is specified when a session is opened
 using one of the overloaded ISessionFactory.OpenSession() methods
 accepting an `IInterceptor`.
 
+```csharp
     ISession session = sf.OpenSession( new AuditInterceptor() );
+```
 
 An `ISessionFactory`-scoped interceptor is registered with the
 `Configuration` object prior to building the `ISessionFactory`. In this
@@ -119,7 +123,9 @@ interceptors must be thread safe, taking care to not store
 session-specific state since multiple sessions will use this interceptor
 (potentially) concurrently.
 
+```csharp
     new Configuration().SetInterceptor( new AuditInterceptor() );
+```
 
 # Event system
 
@@ -152,6 +158,7 @@ Custom listeners can either be registered programmatically through the
 `Configuration` object, or specified in the NHibernate configuration
 XML. Here's an example of a custom load event listener:
 
+```csharp
     public class MyLoadListener : ILoadEventListener 
     {
         // this is the single method defined by the LoadEventListener interface
@@ -162,10 +169,12 @@ XML. Here's an example of a custom load event listener:
             }
         }
     }
+```
 
 You also need a configuration entry telling NHibernate to use the
 listener in addition to the default listener:
 
+```xml
     <hibernate-configuration>
         <session-factory>
             ...
@@ -175,13 +184,16 @@ listener in addition to the default listener:
             </event>
         </session-factory>
     </hibernate-configuration>
+```
 
 Instead, you may register it programmatically:
 
+```csharp
     Configuration cfg = new Configuration();
     ILoadEventListener[] stack =
         new ILoadEventListener[] { new MyLoadListener(), new DefaultLoadEventListener() };
     cfg.EventListeners.LoadEventListeners = stack;
+```
 
 Listeners registered declaratively cannot share instances. If the same
 class name is used in multiple `<listener/>` elements, each reference

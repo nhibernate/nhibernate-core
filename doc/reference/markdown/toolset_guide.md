@@ -57,15 +57,18 @@ to group the columns in the mapping file.
 
 Examples:
 
+```xml
     <property name="Foo" type="String" length="64" not-null="true"/>
     
     <many-to-one name="Bar" foreign-key="fk_foo_bar" not-null="true"/>
     
     <element column="serial_number" type="Int64" not-null="true" unique="true"/>
+```
 
 Alternatively, these elements also accept a child `<column>` element.
 This is particularly useful for multi-column types:
 
+```xml
     <property name="Foo" type="String">
         <column name="foo" length="64" not-null="true" sql-type="text"/>
     </property>
@@ -75,12 +78,14 @@ This is particularly useful for multi-column types:
         <column name="fi" not-null="true" index="bar_idx"/>
         <column name="fo" not-null="true" index="bar_idx"/>
     </property>
+```
 
 The `sql-type` attribute allows the user to override the default mapping
 of NHibernate type to SQL data type.
 
 The `check` attribute allows you to specify a check constraint.
 
+```xml
     <property name="Foo" type="Int32">
         <column name="foo" check="foo > 10"/>
     </property>
@@ -89,17 +94,18 @@ The `check` attribute allows you to specify a check constraint.
         ...
         <property name="Bar" type="Single"/>
     </class>
+```
 
-| Attribute     | Values             | Interpretation                                                                                                                                                                                                                                       |
-| ------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `length`      | number             | column length/decimal precision                                                                                                                                                                                                                      |
-| `not-null`    | `true\|false`      | specifies that the column should be non-nullable                                                                                                                                                                                                     |
-| `unique`      | `true\|false`      | specifies that the column should have a unique constraint                                                                                                                                                                                            |
-| `index`       | `index_name`       | specifies the name of a (multi-column) index                                                                                                                                                                                                         |
-| `unique-key`  | `unique_key_name`  | specifies the name of a multi-column unique constraint                                                                                                                                                                                               |
-| `foreign-key` | `foreign_key_name` | specifies the name of the foreign key constraint generated for an association, use it on \<one-to-one\>, \<many-to-one\>, \<key\>, and \<many-to-many\> mapping elements. Note that `inverse="true"` sides will not be considered by `SchemaExport`. |
-| `sql-type`    | `column_type`      | overrides the default column type (attribute of `<column>` element only)                                                                                                                                                                             |
-| `check`       | SQL expression     | create an SQL check constraint on either column or table                                                                                                                                                                                             |
+| Attribute     | Values             | Interpretation                                                                                                                                                                                                                                       |                                                           |
+|---------------|--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------|
+| `length`      | number             | column length/decimal precision                                                                                                                                                                                                                      |                                                           |
+| `not-null`    | `true\             | false`                                                                                                                                                                                                                                               | specifies that the column should be non-nullable          |
+| `unique`      | `true\             | false`                                                                                                                                                                                                                                               | specifies that the column should have a unique constraint |
+| `index`       | `index_name`       | specifies the name of a (multi-column) index                                                                                                                                                                                                         |                                                           |
+| `unique-key`  | `unique_key_name`  | specifies the name of a multi-column unique constraint                                                                                                                                                                                               |                                                           |
+| `foreign-key` | `foreign_key_name` | specifies the name of the foreign key constraint generated for an association, use it on \<one-to-one\>, \<many-to-one\>, \<key\>, and \<many-to-many\> mapping elements. Note that `inverse="true"` sides will not be considered by `SchemaExport`. |                                                           |
+| `sql-type`    | `column_type`      | overrides the default column type (attribute of `<column>` element only)                                                                                                                                                                             |                                                           |
+| `check`       | SQL expression     | create an SQL check constraint on either column or table                                                                                                                                                                                             |                                                           |
 
 Summary
 
@@ -110,5 +116,7 @@ executes the DDL statements.
 
 You may embed `SchemaExport` in your application:
 
+```csharp
     Configuration cfg = ....;
     new SchemaExport(cfg).Create(false, true);
+```

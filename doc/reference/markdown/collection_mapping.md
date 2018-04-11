@@ -5,16 +5,17 @@
 NHibernate requires that persistent collection-valued fields be declared
 as a generic interface type, for example:
 
+```csharp
     public class Product
     {
         public ISet<Part> Parts { get; set; } = new HashSet<Part>();
     
         public string SerialNumber { get; set; }
     }
+```
 
-The actual interface might be
-`System.Collections.Generic.ICollection<T>`,
-`System.Collections.Generic.IList<T>`,
+The actual interface might be `System.Collections.Generic.ICollection<T>`,
+`System.Collections.Generic.IList<T>`, 
 `System.Collections.Generic.IDictionary<K, V>`,
 `System.Collections.Generic.ISet<T>` or ... anything you like\! (Where
 "anything you like" means you will have to write an implementation of
@@ -28,6 +29,7 @@ NHibernate will actually replace the `HashSet<T>` with an instance of
 NHibernate's own implementation of `ISet<T>`. Watch out for errors like
 this:
 
+```csharp
     Cat cat = new DomesticCat();
     Cat kitten = new DomesticCat();
     ....
@@ -37,6 +39,7 @@ this:
     session.Save(cat);
     kittens = cat.Kittens; //Okay, kittens collection is an ISet
     HashSet<Cat> hs = (HashSet<Cat>) cat.Kittens; //Error!
+```
 
 Collection instances have the usual behavior of value types. They are
 automatically persisted when referenced by a persistent object and
@@ -87,6 +90,7 @@ various mapping declarations translate to database tables.
 Collections are declared by the `<set>`, `<list>`, `<map>`, `<bag>`,
 `<array>` and `<primitive-array>` elements. `<map>` is representative:
 
+```xml
     <map
         name="propertyName"
         table="table_name"
@@ -108,6 +112,7 @@ Collections are declared by the `<set>`, `<list>`, `<map>`, `<bag>`,
         <index .... />
         <element .... />
     </map>
+```
 
   - `name` the collection property name
 
@@ -193,7 +198,9 @@ column(s).
 The foreign key from the collection table to the table of the owning
 class is declared using a `<key>` element.
 
+```xml
     <key column="column_name"/>
+```
 
   - `column` (required): The name of the foreign key column.
 
@@ -203,10 +210,12 @@ from zero. Make sure that your index really starts from zero if you have
 to deal with legacy data. For maps, the column may contain any values of
 any NHibernate type.
 
+```xml
     <index
             column="column_name"
             type="typename"
     />
+```
 
   - `column` (required): The name of the column holding the collection
     index values.
@@ -217,10 +226,12 @@ any NHibernate type.
 Alternatively, a map may be indexed by objects of entity type. We use
 the `<index-many-to-many>` element.
 
+```xml
     <index-many-to-many
             column="column_name"
             class="ClassName"
     />
+```
 
   - `column` (required): The name of the foreign key column for the
     collection index values.
@@ -229,10 +240,12 @@ the `<index-many-to-many>` element.
 
 For a collection of values, we use the `<element>` tag.
 
+```xml
     <element
             column="column_name"
             type="typename"
     />
+```
 
   - `column` (required): The name of the column holding the collection
     element values.
@@ -244,12 +257,14 @@ relational notion of *many-to-many association*. A many to many
 association is the most natural mapping of a .NET collection but is not
 usually the best relational model.
 
+```xml
     <many-to-many
             column="column_name"
             class="ClassName"
             fetch="join|select"
             not-found="ignore|exception"
         />
+```
 
   - `column` (required): The name of the element foreign key column.
 
@@ -260,8 +275,7 @@ usually the best relational model.
     case; for full eager fetching (in a single SELECT) of an entity and
     its many-to-many relationships to other entities, you would enable
     join fetching not only of the collection itself, but also with this
-    attribute on the `
-                                                                                                    <many-to-many>` nested element.
+    attribute on the `<many-to-many>` nested element.
 
   - `not-found` (optional - defaults to `exception`): Specifies how
     foreign keys that reference missing rows will be handled: `ignore`
@@ -269,39 +283,48 @@ usually the best relational model.
 
 Some examples, first, a set of strings:
 
+```xml
     <set name="Names" table="NAMES">
         <key column="GROUPID"/>
         <element column="NAME" type="String"/>
     </set>
+```
 
 A bag containing integers (with an iteration order determined by the
 `order-by` attribute):
 
+```xml
     <bag name="Sizes" table="SIZES" order-by="SIZE ASC">
         <key column="OWNER"/>
         <element column="SIZE" type="Int32"/>
     </bag>
+```
 
 An array of entities - in this case, a many to many association (note
 that the entities are lifecycle objects, `cascade="all"`):
 
+```xml
     <array name="Foos" table="BAR_FOOS" cascade="all">
         <key column="BAR_ID"/>
         <index column="I"/>
         <many-to-many column="FOO_ID" class="Eg.Foo, Eg"/>
     </array>
+```
 
 A map from string indices to
     dates:
 
+```xml
     <map name="Holidays" table="holidays" schema="dbo" order-by="hol_name asc">
         <key column="id"/>
         <index column="hol_name" type="String"/>
         <element column="hol_date" type="Date"/>
     </map>
+```
 
 A list of components (discussed in the next chapter):
 
+```xml
     <list name="CarComponents" table="car_components">
         <key column="car_id"/>
         <index column="posn"/>
@@ -311,6 +334,7 @@ A list of components (discussed in the next chapter):
                 <property name="SerialNumber" column="serial_no" type="String"/>
         </composite-element>
     </list>
+```
 
 # One-To-Many Associations
 
@@ -334,10 +358,12 @@ described above.
 
 The `<one-to-many>` tag indicates a one to many association.
 
+```xml
     <one-to-many
             class="ClassName"
             not-found="ignore|exception"
-        />
+    />
+```
 
   - `class` (required): The name of the associated class.
 
@@ -347,10 +373,12 @@ The `<one-to-many>` tag indicates a one to many association.
 
 Example:
 
+```xml
     <set name="Bars">
         <key column="foo_id"/>
         <one-to-many class="Eg.Bar, Eg"/>
     </set>
+```
 
 Notice that the `<one-to-many>` element does not need to declare any
 columns. Nor is it necessary to specify the `table` name anywhere.
@@ -372,6 +400,7 @@ transparent lazy initialization is the main reason why NHibernate needs
 its own collection implementations). However, if the application tries
 something like this:
 
+```csharp
     IDictionary<string, int> permissions;
     using (s = sessions.OpenSession())
     using (ITransaction tx = sessions.BeginTransaction())
@@ -382,6 +411,7 @@ something like this:
     }
     
     int accessLevel = permissions["accounts"];  // Error!
+```
 
 It could be in for a nasty surprise. Since the permissions collection
 was not initialized when the `ISession` was committed, the collection
@@ -399,10 +429,12 @@ in a `LazyInitializationException`.
 
 Declare a lazy collection using the optional `lazy` attribute:
 
+```xml
     <set name="Names" table="NAMES" lazy="true">
         <key column="group_id"/>
         <element column="NAME" type="String"/>
     </set>
+```
 
 In some application architectures, particularly where the code that
 accesses data using NHibernate, and the code that uses it are in
@@ -440,9 +472,11 @@ ways to deal with this issue:
 You can use the `CreateFilter()` method of the NHibernate ISession API
 to get the size of a collection without initializing it:
 
+```csharp
     var count = s
         .CreateFilter(collection, "select count(*)")
         .UniqueResult<long>();
+```
 
 `CreateFilter()` is also used to efficiently retrieve subsets of a
 collection without needing to initialize the whole collection.
@@ -454,6 +488,7 @@ NHibernate supports collections implemented by
 `System.Collections.Generic.SortedSet<T>`. You must specify a comparer
 in the mapping file:
 
+```xml
     <set name="Aliases" table="person_aliases" sort="natural">
         <key column="person"/>
         <element column="name" type="String"/>
@@ -464,6 +499,7 @@ in the mapping file:
         <index column="hol_name" type="String"/>
         <element column="hol_date" type="Date"/>
     </map>
+```
 
 Allowed values of the `sort` attribute are `unsorted`, `natural` and the
 name of a class implementing `System.Collections.Generic.IComparer<T>`.
@@ -476,6 +512,7 @@ Setting the `order-by` attribute tells NHibernate to use
 `Iesi.Collections.Generic.LinkedHashSet` class internally for sets,
 maintaining the order of the elements. It is not supported on maps.
 
+```xml
     <set name="Aliases" table="person_aliases" order-by="name asc">
         <key column="person"/>
         <element column="name" type="String"/>
@@ -486,6 +523,7 @@ maintaining the order of the elements. It is not supported on maps.
         <index column="hol_name" type="String"/>
         <element column="hol_date type="Date"/>
     </map>
+```
 
 Note that the value of the `order-by` attribute is an SQL ordering, not
 a HQL ordering\!
@@ -493,9 +531,11 @@ a HQL ordering\!
 Associations may even be sorted by some arbitrary criteria at runtime
 using a `CreateFilter()`.
 
+```csharp
     sortedUsers = s
         .CreateFilter(group.Users, "order by this.Name")
         .List<User>();
+```
 
 # Using an `<idbag>`
 
@@ -512,6 +552,7 @@ collections of values to a table with a surrogate key.
 The `<idbag>` element lets you map a `List` (or `Collection`) with bag
 semantics.
 
+```xml
     <idbag name="Lovers" table="LOVERS" lazy="true">
         <collection-id column="ID" type="Int64">
             <generator class="hilo"/>
@@ -519,6 +560,7 @@ semantics.
         <key column="PERSON1"/>
         <many-to-many column="PERSON2" class="Eg.Person" fetch="join"/>
     </idbag>
+```
 
 As you can see, an `<idbag>` has a synthetic id generator, just like an
 entity class\! A different surrogate key is assigned to each collection
@@ -550,6 +592,7 @@ example of a bidirectional many-to-many association from a class back to
 *itself* (each category can have many items and each item can be in many
 categories):
 
+```xml
     <class name="NHibernate.Auction.Category, NHibernate.Auction">
       <id name="Id" column="ID"/>
       ...
@@ -570,6 +613,7 @@ categories):
             column="CATEGORY_ID"/>
       </bag>
     </class>
+```
 
 Changes made only to the inverse end of the association are *not*
 persisted. This means that NHibernate has two representations in memory
@@ -578,11 +622,13 @@ link from B to A. This is easier to understand if you think about the
 .NET object model and how we create a many-to-many relationship in
     C\#:
 
+```csharp
     category.Items.Add(item);          // The category now "knows" about the relationship
     item.Categories.Add(category);     // The item now "knows" about the relationship
     
-    session.Update(item);                     // No effect, nothing will be saved!
-    session.Update(category);                 // The relationship will be saved
+    session.Update(item);              // No effect, nothing will be saved!
+    session.Update(category);          // The relationship will be saved
+```
 
 The non-inverse side is used to save the in-memory representation to the
 database. We would get an unnecessary INSERT/UPDATE and probably even a
@@ -593,6 +639,7 @@ You may map a bidirectional one-to-many association by mapping a
 one-to-many association to the same table column(s) as a many-to-one
 association and declaring the many-valued end `inverse="true"`.
 
+```xml
     <class name="Eg.Parent, Eg">
         <id name="Id" column="id"/>
         ....
@@ -607,6 +654,7 @@ association and declaring the many-valued end `inverse="true"`.
         ....
         <many-to-one name="Parent" class="Eg.Parent, Eg" column="parent_id"/>
     </class>
+```
 
 Mapping one end of an association with `inverse="true"` doesn't affect
 the operation of cascades, both are different concepts\!
@@ -619,6 +667,7 @@ indexed collections (where one end is represented as a `<list>` or
 the child class that maps to the index column you can use
 `inverse="true"` on the collection mapping:
 
+```xml
     <class name="Parent">
         <id name="Id" column="parent_id"/>
         ....
@@ -640,6 +689,7 @@ the child class that maps to the index column you can use
             column="parent_id"
             not-null="true"/>
     </class>
+```
 
 If there is no such property on the child class, the association cannot
 be considered truly bidirectional. That is, there is information
@@ -647,6 +697,7 @@ available at one end of the association that is not available at the
 other end. In this case, you cannot map the collection `inverse="true"`.
 Instead, you could use the following mapping:
 
+```xml
     <class name="Parent">
         <id name="Id" column="parent_id"/>
         ....
@@ -669,6 +720,7 @@ Instead, you could use the following mapping:
             update="false"
             not-null="true"/>
     </class>
+```
 
 Note that in this mapping, the collection-valued end of the association
 is responsible for updates to the foreign key.
@@ -679,6 +731,7 @@ There are two possible approaches to mapping a ternary association. One
 approach is to use composite elements (discussed below). Another is to
 use an `IDictionary` with an association as its index:
 
+```xml
     <map name="Contracts" lazy="true">
         <key column="employer_id"/>
         <index-many-to-many column="employee_id" class="Employee"/>
@@ -690,6 +743,7 @@ use an `IDictionary` with an association as its index:
         <index-many-to-many column="node2_id" class="Node"/>
         <many-to-many column="connection_id" class="Connection"/>
     </map>
+```
 
 # Heterogeneous Associations
 
@@ -702,6 +756,7 @@ as the `<any>` element - and should also be used rarely, if ever.
 The previous sections are pretty confusing. So lets look at an example.
 This class:
 
+```csharp
     using System;
     using System.Collections.Generic;
     
@@ -717,10 +772,12 @@ This class:
             ....
         }
     }
+```
 
 has a collection of `Eg.Child` instances. If each child has at most one
 parent, the most natural mapping is a one-to-many association:
 
+```xml
     <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
         assembly="Eg" namespace="Eg">
     
@@ -742,16 +799,20 @@ parent, the most natural mapping is a one-to-many association:
         </class>
     
     </hibernate-mapping>
+```
 
 This maps to the following table definitions:
 
+```sql
     create table parent (Id bigint not null primary key)
     create table child (Id bigint not null primary key, Name varchar(255), parent_id bigint)
     alter table child add constraint childfk0 (parent_id) references parent
+```
 
 If the parent is *required*, use a bidirectional one-to-many
 association:
 
+```xml
     <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
         assembly="Eg" namespace="Eg">
     
@@ -774,19 +835,23 @@ association:
         </class>
     
     </hibernate-mapping>
+```
 
 Notice the `NOT NULL` constraint:
 
+```sql
     create table parent ( Id bigint not null primary key )
     create table child ( Id bigint not null
                          primary key,
                          Name varchar(255),
                          parent_id bigint not null )
     alter table child add constraint childfk0 (parent_id) references parent
+```
 
 On the other hand, if a child might have multiple parents, a
 many-to-many association is appropriate:
 
+```xml
     <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
         assembly="Eg" namespace="Eg">
     
@@ -808,9 +873,11 @@ many-to-many association is appropriate:
         </class>
     
     </hibernate-mapping>
+```
 
 Table definitions:
 
+```sql
     create table parent ( Id bigint not null primary key )
     create table child ( Id bigint not null primary key, name varchar(255) )
     create table childset ( parent_id bigint not null,
@@ -818,5 +885,6 @@ Table definitions:
                             primary key ( parent_id, child_id ) )
     alter table childset add constraint childsetfk0 (parent_id) references parent
     alter table childset add constraint childsetfk1 (child_id) references child
+```
 
 See also [???](#example-parentchild).

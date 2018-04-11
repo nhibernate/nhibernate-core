@@ -19,10 +19,12 @@ following describes how to use this API for querying.
 
 The most basic SQL query is to get a list of scalars (values).
 
+```csharp
     sess.CreateSQLQuery("SELECT * FROM CATS")
      .AddScalar("ID", NHibernateUtil.Int64)
      .AddScalar("NAME", NHibernateUtil.String)
      .AddScalar("BIRTHDATE", NHibernateUtil.Date)
+```
 
 This query specified:
 
@@ -41,8 +43,10 @@ The above query was about returning scalar values, basically returning
 the "raw" values from the result set. The following shows how to get
 entity objects from a native SQL query via `AddEntity()`.
 
+```csharp
     sess.CreateSQLQuery("SELECT * FROM CATS").AddEntity(typeof(Cat));
     sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE FROM CATS").AddEntity(typeof(Cat));
+```
 
 This query specified:
 
@@ -61,8 +65,10 @@ additional columns will automatically be returned when using the \*
 notation, but we prefer to be explicit as in the following example for a
 `many-to-one` to a `Dog`:
 
+```csharp
     sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE, DOG_ID FROM CATS")
         .AddEntity(typeof(Cat));
+```
 
 This will allow cat.Dog property access to function properly.
 
@@ -72,12 +78,14 @@ It is possible to eagerly join in the `Dog` to avoid the possible extra
 round-trip for initializing the proxy. This is done via the `AddJoin()`
 method, which allows you to join in an association or collection.
 
+```csharp
     sess
         .CreateSQLQuery(
             "SELECT cat.ID, NAME, BIRTHDATE, DOG_ID, D_ID, D_NAME " +
             "FROM CATS cat, DOGS d WHERE cat.DOG_ID = d.D_ID")
         .AddEntity("cat", typeof(Cat))
         .AddJoin("cat.Dog");
+```
 
 In this example the returned `Cat`'s will have their `Dog` property
 fully initialized without any extra round-trip to the database. Notice
@@ -85,12 +93,14 @@ that we added a alias name ("cat") to be able to specify the target
 property path of the join. It is possible to do the same eager joining
 for collections, e.g. if the `Cat` had a one-to-many to `Dog` instead.
 
+```csharp
     sess
         .CreateSQLQuery(
             "SELECT ID, NAME, BIRTHDATE, D_ID, D_NAME, CAT_ID " +
             "FROM CATS cat, DOGS d WHERE cat.ID = d.CAT_ID")
         .AddEntity("cat", typeof(Cat))
         .AddJoin("cat.Dogs");
+```
 
 At this stage we are reaching the limits of what is possible with native
 queries without starting to enhance the SQL queries to make them usable
@@ -108,12 +118,14 @@ may appear in more than one table.
 Column alias injection is needed in the following query (which most
 likely will fail):
 
+```csharp
     sess
         .CreateSQLQuery(
             "SELECT cat.*, mother.* " +
             "FROM CATS cat, CATS mother WHERE cat.MOTHER_ID = mother.ID")
         .AddEntity("cat", typeof(Cat))
         .AddEntity("mother", typeof(Cat))
+```
 
 The intention for this query is to return two Cat instances per row, a
 cat and its mother. This will fail since there is a conflict of names
@@ -124,12 +136,14 @@ mappings ("ID" and "NAME").
 
 The following form is not vulnerable to column name duplication:
 
+```csharp
     sess
         .CreateSQLQuery(
             "SELECT {cat.*}, {mother.*} " +
             "FROM CATS cat, CATS mother WHERE cat.MOTHER_ID = mother.ID")
         .AddEntity("cat", typeof(Cat))
         .AddEntity("mother", typeof(Cat))
+```
 
 This query specified:
 
@@ -147,6 +161,7 @@ Cats and their mothers from a different table (cat\_log) to the one
 declared in the mapping metadata. Notice that we may even use the
 property aliases in the where clause if we like.
 
+```csharp
     String sql = "SELECT c.ID as {c.Id}, c.NAME as {c.Name}, " + 
              "c.BIRTHDATE as {c.BirthDate}, c.MOTHER_ID as {c.Mother}, {mother.*} " +
              "FROM CAT_LOG c, CAT_LOG m WHERE {c.Mother} = m.ID";
@@ -154,6 +169,7 @@ property aliases in the where clause if we like.
     var loggedCats = sess.CreateSQLQuery(sql)
         .AddEntity("c", typeof(Cat))
         .AddEntity("m", typeof(Cat)).List<object[]>();
+```
 
 ### Alias and property references
 
@@ -167,19 +183,19 @@ injection. Note: the alias names in the result are examples, each alias
 will have a unique and probably different name when
 used.
 
-| Description                                     | Syntax                                         | Example                                                                            |
-| ----------------------------------------------- | ---------------------------------------------- | ---------------------------------------------------------------------------------- |
-| A simple property                               | `{[aliasname].[propertyname]}`                 | `A_NAME as {item.Name}`                                                            |
-| A composite property                            | `{[aliasname].[componentname].[propertyname]}` | `CURRENCY as {item.Amount.Currency}, VALUE as
-                {item.Amount.Value}` |
-| Discriminator of an entity                      | `{[aliasname].class}`                          | `DISC as {item.class}`                                                             |
-| All properties of an entity                     | `{[aliasname].*}`                              | `{item.*}`                                                                         |
-| A collection key                                | `{[aliasname].key}`                            | `ORGID as {coll.key}`                                                              |
-| The id of an collection                         | `{[aliasname].id}`                             | `EMPID as {coll.id}`                                                               |
-| The element of an collection                    | `{[aliasname].element}`                        | `XID as {coll.element}`                                                            |
-| property of the element in the collection       | `{[aliasname].element.[propertyname]}`         | `NAME as {coll.element.Name}`                                                      |
-| All properties of the element in the collection | `{[aliasname].element.*}`                      | `{coll.element.*}`                                                                 |
-| All properties of the collection                | `{[aliasname].*}`                              | `{coll.*}`                                                                         |
+| Description                                     | Syntax                                         | Example                                       |
+|-------------------------------------------------|------------------------------------------------|-----------------------------------------------|
+| A simple property                               | `{[aliasname].[propertyname]}`                 | `A_NAME as {item.Name}`                       |
+| A composite property                            | `{[aliasname].[componentname].[propertyname]}` | `CURRENCY as {item.Amount.Currency}, VALUE as |
+| {item.Amount.Value}`                            |                                                |                                               |
+| Discriminator of an entity                      | `{[aliasname].class}`                          | `DISC as {item.class}`                        |
+| All properties of an entity                     | `{[aliasname].*}`                              | `{item.*}`                                    |
+| A collection key                                | `{[aliasname].key}`                            | `ORGID as {coll.key}`                         |
+| The id of an collection                         | `{[aliasname].id}`                             | `EMPID as {coll.id}`                          |
+| The element of an collection                    | `{[aliasname].element}`                        | `XID as {coll.element}`                       |
+| property of the element in the collection       | `{[aliasname].element.[propertyname]}`         | `NAME as {coll.element.Name}`                 |
+| All properties of the element in the collection | `{[aliasname].element.*}`                      | `{coll.element.*}`                            |
+| All properties of the collection                | `{[aliasname].*}`                              | `{coll.*}`                                    |
 
 Alias injection names
 
@@ -188,8 +204,10 @@ Alias injection names
 It is possible to apply an `IResultTransformer` to native sql queries.
 Allowing it to e.g. return non-managed entities.
 
+```csharp
     sess.CreateSQLQuery("SELECT NAME, BIRTHDATE FROM CATS")
             .SetResultTransformer(Transformers.AliasToBean(typeof(CatDTO)))
+```
 
 This query specified:
 
@@ -215,6 +233,7 @@ and all its subclasses.
 
 Native SQL queries support positional as well as named parameters:
 
+```csharp
     var query = sess
         .CreateSQLQuery("SELECT * FROM CATS WHERE NAME like ?")
         .AddEntity(typeof(Cat));
@@ -224,6 +243,7 @@ Native SQL queries support positional as well as named parameters:
         .createSQLQuery("SELECT * FROM CATS WHERE NAME like :name")
         .AddEntity(typeof(Cat));
     var pusList = query.SetString("name", "Pus%").List<Cat>();
+```
 
 # Named SQL queries
 
@@ -231,6 +251,7 @@ Named SQL queries may be defined in the mapping document and called in
 exactly the same way as a named HQL query. In this case, we do *not*
 need to call `AddEntity()`.
 
+```xml
     <sql-query name="persons">
         <return alias="person" class="eg.Person"/>
         SELECT person.NAME AS {person.Name},
@@ -239,16 +260,20 @@ need to call `AddEntity()`.
         FROM PERSON person
         WHERE person.NAME LIKE :namePattern
     </sql-query>
+```
 
+```csharp
     var people = sess.GetNamedQuery("persons")
         .SetString("namePattern", namePattern)
         .SetMaxResults(50)
         .List<Person>();
+```
 
 The `<return-join>` and `<load-collection>` elements are used to join
 associations and define queries which initialize collections,
 respectively.
 
+```xml
     <sql-query name="personsWith">
         <return alias="person" class="eg.Person"/>
         <return-join alias="address" property="person.MailingAddress"/>
@@ -264,10 +289,12 @@ respectively.
             ON person.ID = address.PERSON_ID AND address.TYPE='MAILING'
         WHERE person.NAME LIKE :namePattern
     </sql-query>
+```
 
 A named SQL query may return a scalar value. You must declare the column
 alias and NHibernate type using the `<return-scalar>` element:
 
+```xml
     <sql-query name="mySqlQuery">
         <return-scalar column="name" type="String"/>
         <return-scalar column="age" type="Int64"/>
@@ -275,11 +302,13 @@ alias and NHibernate type using the `<return-scalar>` element:
                p.AGE AS age,
         FROM PERSON p WHERE p.NAME LIKE 'Hiber%'
     </sql-query>
+```
 
 You can externalize the resultset mapping information in a `<resultset>`
 element to either reuse them across several named queries or through the
 `SetResultSetMapping()` API.
 
+```xml
     <resultset name="personAddress">
         <return alias="person" class="eg.Person"/>
         <return-join alias="address" property="person.MailingAddress"/>
@@ -298,16 +327,19 @@ element to either reuse them across several named queries or through the
             ON person.ID = address.PERSON_ID AND address.TYPE='MAILING'
         WHERE person.NAME LIKE :namePattern
     </sql-query>
+```
 
 You can alternatively use the resultset mapping information in your
 .hbm.xml files directly in code.
 
+```csharp
     var cats = sess.CreateSQLQuery(
             "select {cat.*}, {kitten.*} " +
             "from cats cat, cats kitten " +
             "where kitten.mother = cat.id")
         .SetResultSetMapping("catAndKitten")
         .List<Cat>();
+```
 
 Like HQL named queries, SQL named queries accepts a number of attributes
 matching settings available on the `ISQLQuery` interface.
@@ -336,6 +368,7 @@ With `<return-property>` you can explicitly tell NHibernate what column
 aliases to use, instead of using the `{}`-syntax to let NHibernate
 inject its own aliases.
 
+```xml
     <sql-query name="mySqlQuery">
         <return alias="person" class="eg.Person">
             <return-property name="Name" column="myName"/>
@@ -347,11 +380,13 @@ inject its own aliases.
                person.SEX AS mySex,
         FROM PERSON person WHERE person.NAME LIKE :name
     </sql-query>
+```
 
 `<return-property>` also works with multiple columns. This solves a
 limitation with the `{}`-syntax which can not allow fine grained control
 of multi-column properties.
 
+```xml
     <sql-query name="organizationCurrentEmployments">
         <return alias="emp" class="Employment">
             <return-property name="Salary">
@@ -367,6 +402,7 @@ of multi-column properties.
             WHERE EMPLOYER = :id AND ENDDATE IS NULL
             ORDER BY STARTDATE ASC
     </sql-query>
+```
 
 Notice that in this example we used `<return-property>` in combination
 with the `{}`-syntax for injection, allowing users to choose how they
@@ -383,13 +419,16 @@ The stored procedure/function must return a resultset to be able to work
 with NHibernate. An example of such a stored function in MS SQL Server
 2000 and higher is as follows:
 
+```sql
     CREATE PROCEDURE selectAllEmployments AS
         SELECT EMPLOYEE, EMPLOYER, STARTDATE, ENDDATE,
         REGIONCODE, EMPID, VALUE, CURRENCY
         FROM EMPLOYMENT
+```
 
 To use this query in NHibernate you need to map it via a named query.
 
+```xml
     <sql-query name="selectAllEmployments_SP">
         <return alias="emp" class="Employment">
             <return-property name="employee" column="EMPLOYEE"/>
@@ -405,6 +444,7 @@ To use this query in NHibernate you need to map it via a named query.
         </return>
         exec selectAllEmployments
     </sql-query>
+```
 
 Notice that stored procedures currently only return scalars and
 entities. `<return-join>` and `<load-collection>` are not supported.
@@ -447,6 +487,7 @@ contain a set of configuration time generated strings (insertsql,
 deletesql, updatesql etc.). The mapping tags `<sql-insert>`,
 `<sql-delete>`, and `<sql-update>` override these strings:
 
+```xml
     <class name="Person">
         <id name="id">
             <generator class="increment"/>
@@ -456,6 +497,7 @@ deletesql, updatesql etc.). The mapping tags `<sql-insert>`,
         <sql-update>UPDATE PERSON SET NAME=UPPER(?) WHERE ID=?</sql-update>
         <sql-delete>DELETE FROM PERSON WHERE ID=?</sql-delete>
     </class>
+```
 
 Note that the custom `sql-insert` will not be used if you use `identity`
 to generate identifier values for the class.
@@ -466,6 +508,7 @@ mapping if you use database specific SQL.
 
 Stored procedures are supported if the database-native syntax is used:
 
+```xml
     <class name="Person">
         <id name="id">
             <generator class="increment"/>
@@ -475,6 +518,7 @@ Stored procedures are supported if the database-native syntax is used:
         <sql-delete>exec deletePerson ?</sql-delete>
         <sql-update>exec updatePerson ?, ?</sql-update>
     </class>
+```
 
 The order of the positional parameters is currently vital, as they must
 be in the same sequence as NHibernate expects them.
@@ -496,6 +540,7 @@ This check can be disabled by using `check="none"` attribute in
 
 You may also declare your own SQL (or HQL) queries for entity loading:
 
+```xml
     <sql-query name="person">
         <return alias="pers" class="Person" lock-mode="upgrade"/>
         SELECT NAME AS {pers.Name}, ID AS {pers.Id}
@@ -503,10 +548,12 @@ You may also declare your own SQL (or HQL) queries for entity loading:
         WHERE ID=?
         FOR UPDATE
     </sql-query>
+```
 
 This is just a named query declaration, as discussed earlier. You may
 reference this named query in a class mapping:
 
+```xml
     <class name="Person">
         <id name="Id">
             <generator class="increment"/>
@@ -514,11 +561,13 @@ reference this named query in a class mapping:
         <property name="Name" not-null="true"/>
         <loader query-ref="person"/>
     </class>
+```
 
 This even works with stored procedures.
 
 You may even define a query for collection loading:
 
+```xml
     <set name="Employments" inverse="true">
         <key/>
         <one-to-many class="Employment"/>
@@ -532,10 +581,12 @@ You may even define a query for collection loading:
         WHERE EMPLOYER = :id
         ORDER BY STARTDATE ASC, EMPLOYEE ASC
     </sql-query>
+```
 
 You could even define an entity loader that loads a collection by join
 fetching:
 
+```xml
     <sql-query name="person">
         <return alias="pers" class="Person"/>
         <return-join alias="emp" property="pers.Employments"/>
@@ -545,3 +596,4 @@ fetching:
             ON pers.ID = emp.PERSON_ID
         WHERE ID=?
     </sql-query>
+```

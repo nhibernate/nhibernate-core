@@ -10,8 +10,10 @@ number of NHibernate Linq extensions giving access to NHibernate
 specific features are defined in the `NHibernate.Linq` namespace. Of
 course, the Linq namespace is still needed too.
 
+```csharp
     using System.Linq;
     using NHibernate.Linq;
+```
 
 Note: NHibernate has another querying API which uses lambda,
 [QueryOver](#queryqueryover). It should not be confused with a Linq
@@ -21,57 +23,64 @@ provider.
 
 Queries are created from an ISession using the syntax:
 
+```csharp
     IList<Cat> cats =
         session.Query<Cat>()
             .Where(c => c.Color == "white")
             .ToList();
+```
 
 The `Query<TEntity>` function yields an `IQueryable<TEntity>`, with
 which Linq extension methods or Linq syntax can be used. When executed,
 the `IQueryable<TEntity>` will be translated to a SQL query on the
 database.
 
- 
-
 It is possible to query a specific sub-class while still using a
 queryable of the base class.
 
+```csharp
     IList<Cat> cats =
         session.Query<Cat>("Eg.DomesticCat, Eg")
             .Where(c => c.Name == "Max")
             .ToList();
+```
 
 Starting with NHibernate 5.0, queries can also be created from an entity
 collection, with the standard Linq extension `AsQueryable` available
 from `System.Linq` namespace.
 
+```csharp
     IList<Cat> whiteKittens =
         cat.Kittens.AsQueryable()
             .Where(k => k.Color == "white")
             .ToList();
+```
 
 This will be executed as a query on that `cat`'s kittens without loading
 the entire collection.
 
 If the collection is a map, call `AsQueryable` on its `Values` property.
 
+```csharp
     IList<Cat> whiteKittens =
         cat.Kittens.Values.AsQueryable()
             .Where(k => k.Color == "white")
             .ToList();
-
+```
  
 
 A client timeout for the query can be defined. As most others NHibernate
 specific features for Linq, this is available through an extension
 defined in `NHibernate.Linq` namespace.
 
+```csharp
     IList<Cat> cats =
         session.Query<Cat>()
             .Where(c => c.Color == "black")
             // Allows 10 seconds only.
             .SetOptions(o => o.SetTimeout(10))
             .ToList();
+```
 
 # Parameter types
 
@@ -81,6 +90,7 @@ selected according to [NHibernate types](#mapping-types) default for
 
 The `MappedAs` extension method allows to override the default type.
 
+```csharp
     IList<Cat> cats =
         session.Query<Cat>()
             .Where(c => c.BirthDate == DateTime.Today.MappedAs(NHibernateUtil.Date))
@@ -90,6 +100,7 @@ The `MappedAs` extension method allows to override the default type.
         session.Query<Cat>()
             .Where(c => c.Name == "Max".MappedAs(TypeFactory.Basic("AnsiString(200)")))
             .ToList();
+```
 
 # Supported methods and members
 
@@ -105,8 +116,6 @@ before query execution.)
 The .Net 4 `CompareTo` method of strings and numerical types is
 translated to a `case` statement yielding `-1|0|1` according to the
 result of the comparison.
-
- 
 
 Many type conversions are available. For all of them, .Net overloads
 with more than one argument are not supported.
@@ -133,12 +142,12 @@ Strings can be converted to `Boolean` and `DateTime` with
 On all types supporting string conversion, `ToString` method can be
 called.
 
+```csharp
     IList<string> catBirthDates =
         session.Query<Cat>()
             .Select(c => c.BirthDate.ToString())
             .ToList();
-
- 
+```
 
 `Equals` methods taking a single argument with the same type can be
 used. Of course, `==` is supported too.
@@ -166,10 +175,12 @@ Date and time parts properties can be called on `DateTime` and
 
 Collections `Contains` methods are supported.
 
+```csharp
     IList<Cat> catsWithWrongKitten =
         session.Query<Cat>()
             .Where(c => c.Kittens.Contains(c))
             .ToList();
+```
 
 ## `IDictionary`, non generic and generic
 
@@ -186,10 +197,12 @@ example is generic,
 
 it could be written with Linq:
 
+```csharp
     IList<Show> shows =
         session.Query<Show>()
             .Where(s => s.Acts.ContainsKey("fizard"))
             .ToList();
+```
 
 ## Mathematical functions
 
@@ -256,10 +269,12 @@ The following properties and methods are supported on strings:
 Furthermore, a string `Like` extension methods allows expressing SQL
 `like` conditions.
 
+```csharp
     IList<DomesticCat> cats =
         session.Query<DomesticCat>()
             .Where(c => c.Name.Like("L%l%l"))
             .ToList();
+```
 
 This `Like` extension method is a Linq to NHibernate method only. Trying
 to call it in another context is not supported.
@@ -274,6 +289,7 @@ Future results are supported by the Linq provider. They are not
 evaluated till one gets executed. At that point, all defined future
 results are evaluated in one single round-trip to database.
 
+```csharp
     // Define queries
     IFutureEnumerable<Cat> cats =
         session.Query<Cat>()
@@ -291,6 +307,7 @@ results are evaluated in one single round-trip to database.
     {
         // Do something
     }
+```
 
 In above example, accessing `catCount.Value` does not trigger a
 round-trip to database: it has been evaluated with
@@ -305,17 +322,20 @@ Once the query is defined, using `Fetch` allows fetching a related
 entity, and `FetchMany` allows fetching a collection. These methods are
 defined as extensions in `NHibernate.Linq` namespace.
 
+```csharp
     IList<Cat> oldCats =
         session.Query<Cat>()
             .Where(c => c.BirthDate.Year < 2010)
             .Fetch(c => c.Mate)
             .FetchMany(c => c.Kittens)
             .ToList();
+```
 
 Issuing many `FetchMany` on the same query may cause a cartesian product
 over the fetched collections. This can be avoided by splitting the
 fetches among [future queries](#querylinq-futureresults).
 
+```csharp
     IQueryable<Cat> oldCatsQuery =
         session.Query<Cat>()
             .Where(c => c.BirthDate.Year < 2010);
@@ -329,12 +349,12 @@ fetches among [future queries](#querylinq-futureresults).
             .ToFuture()
             .GetEnumerable()
             .ToList();
-
- 
+```
 
 Use `ThenFetch` and `ThenFetchMany` for fetching associations of the
 previously fetched association.
 
+```csharp
     IList<Cat> oldCats =
         session.Query<Cat>()
             .Where(c => c.BirthDate.Year < 2010)
@@ -342,6 +362,7 @@ previously fetched association.
             .FetchMany(c => c.Kittens)
             .ThenFetch(k => k.Mate)
             .ToList();
+```
 
 # Modifying entities inside the database
 
@@ -366,20 +387,25 @@ Three forms of target specification exist.
 
 Using projection to target entity:
 
+```csharp
     session.Query<Cat>()
         .Where(c => c.BodyWeight > 20)
         .InsertInto(c => new Dog { Name = c.Name + "dog", BodyWeight = c.BodyWeight });
+```
 
 Projections can be done with an anonymous object too, but it requires
 supplying explicitly the target type, which in turn requires
 re-specifying the source type:
 
+```csharp
     session.Query<Cat>()
         .Where(c => c.BodyWeight > 20)
         .InsertInto<Cat, Dog>(c => new { Name = c.Name + "dog", BodyWeight = c.BodyWeight });
+```
 
 Or using assignments:
 
+```csharp
     session.Query<Cat>()
         .Where(c => c.BodyWeight > 20)
         .InsertBuilder()
@@ -387,6 +413,7 @@ Or using assignments:
         .Value(d => d.Name, c => c.Name + "dog")
         .Value(d => d.BodyWeight, c => c.BodyWeight)
         .Insert();
+```
 
 In all cases, unspecified properties are not included in the resulting
 SQL insert. [`version`](#mapping-declaration-version) and
@@ -405,23 +432,29 @@ three forms of target specification exist.
 
 Using projection to updated entity:
 
+```csharp
     session.Query<Cat>()
         .Where(c => c.BodyWeight > 20)
         .Update(c => new Cat { BodyWeight = c.BodyWeight / 2 });
+```
 
 Projections can be done with an anonymous object too:
 
+```csharp
     session.Query<Cat>()
         .Where(c => c.BodyWeight > 20)
         .Update(c => new { BodyWeight = c.BodyWeight / 2 });
+```
 
 Or using assignments:
 
+```csharp
     session.Query<Cat>()
         .Where(c => c.BodyWeight > 20)
         .UpdateBuilder()
         .Set(c => c.BodyWeight, c => c.BodyWeight / 2)
         .Update();
+```
 
 In all cases, unspecified properties are not included in the resulting
 SQL update. This could be changed for
@@ -441,29 +474,32 @@ queryable source type. Attempting to project to any other class
 `Delete` method extension expects a queryable defining the entities to
 delete. It immediately deletes them.
 
+```csharp
     session.Query<Cat>()
         .Where(c => c.BodyWeight > 20)
         .Delete();
+```
 
 # Query cache
 
 The Linq provider can use the query cache if it is setup. Refer to
 [???](#performance-querycache) for more details on how to set it up.
 
- 
 
 `SetOptions` extension method allows to enable the cache for the query.
 
+```csharp
     IList<Cat> oldCats =
         session.Query<Cat>()
             .Where(c => c.BirthDate.Year < 2010)
             .SetOptions(o => o.SetCacheable(true))
             .ToList();
+```
 
- 
 
 The cache mode and cache region can be specified too.
 
+```csharp
     IList<Cat> cats =
         session.Query<Cat>()
             .Where(c => c.Name == "Max")
@@ -472,6 +508,7 @@ The cache mode and cache region can be specified too.
                 .SetCacheRegion("catNames")
                 .SetCacheMode(CacheMode.Put))
             .ToList();
+```
 
 # Extending the Linq to NHibernate provider
 
@@ -486,6 +523,7 @@ allows using an arbitrary, built-in or user defined, SQL function. It
 should be applied on a method having the same arguments than the SQL
 function.
 
+```csharp
     public static class CustomLinqExtensions
     {
         [LinqExtensionMethod()]
@@ -497,19 +535,23 @@ function.
                 "to SQL and run db side, but it has been run with .Net runtime");
         }
     }
+```
 
 Then it can be used in a Linq to NHibernate query.
 
+```csharp
     var rnd = (new Random()).NextDouble();
     IList<Cat> cats =
         session.Query<Cat>()
             // Pseudo random order
             .OrderBy(c => (c.Id * rnd).Checksum())
             .ToList();
+```
 
 The function name is inferred from the method name. If needed, another
 name can be provided.
 
+```csharp
     public static class CustomLinqExtensions
     {
         [LinqExtensionMethod("dbo.aCustomFunction")]
@@ -518,6 +560,7 @@ name can be provided.
             throw new NotImplementedException();
         }
     }
+```
 
 Since NHibernate v5.0, the Linq provider will no more evaluate in-memory
 the method call even when it does not depend on the queried data. If you
@@ -525,6 +568,7 @@ wish to have the method call evaluated before querying whenever
 possible, and then replaced in the query by its resulting value, specify
 `LinqExtensionPreEvaluation.AllowPreEvaluation` on the attribute.
 
+```csharp
     public static class CustomLinqExtensions
     {
         [LinqExtensionMethod("dbo.aCustomFunction",
@@ -535,6 +579,7 @@ possible, and then replaced in the query by its resulting value, specify
             return input.Replace(otherInput, "blah");
         }
     }
+```
 
 ## Adding a custom generator
 
@@ -548,11 +593,11 @@ using [Adding SQL functions](#querylinq-extending-sqlfunctions) will be
 easier.
 
  
-
 As an example, here is how to add support for an `AsNullable` method
 which would allow to call aggregates which may yield `null` without to
 explicitly cast to the nullable type of the aggregate.
 
+```csharp
     public static class NullableExtensions
     {
         public static T? AsNullable<T>(this T value) where T : struct
@@ -563,11 +608,13 @@ explicitly cast to the nullable type of the aggregate.
             return value;
         }
     }
+```
 
 Adding support in Linq to NHibernate for a custom method requires a
 generator. For this `AsNullable` method, we need a method generator,
 declaring statically its supported method.
 
+```csharp
     public class AsNullableGenerator : BaseHqlGeneratorForMethod
     {
         public AsNullableGenerator()
@@ -589,6 +636,7 @@ declaring statically its supported method.
             return visitor.Visit(arguments[0]).AsExpression();
         }
     }
+```
 
 There are property generators too, and the supported methods or
 properties can be dynamically declared. Check NHibernate
@@ -600,8 +648,8 @@ For adding `AsNullableGenerator` in Linq to NHibernate provider, a new
 generators registry should be used. Derive from the default one and
 merge it. (Here we have a static declaration of method support case.)
 
-    public class ExtendedLinqToHqlGeneratorsRegistry :
-    DefaultLinqToHqlGeneratorsRegistry
+```csharp
+    public class ExtendedLinqToHqlGeneratorsRegistry :     DefaultLinqToHqlGeneratorsRegistry
     {
         public ExtendedLinqToHqlGeneratorsRegistry()
             : base()
@@ -609,6 +657,7 @@ merge it. (Here we have a static declaration of method support case.)
             this.Merge(new AsNullableGenerator());
         }
     }
+```
 
 In the case of dynamic declaration of method support, another call is
 required instead of the merge: `RegisterGenerator`. `CompareGenerator`
@@ -619,25 +668,31 @@ It can be achieved through [xml configuration](#configuration-xmlconfig)
 under `session-factory` node, or by [code](#configuration-programmatic)
 before building the session factory. Use one of them.
 
+```xml
     <property name="linqtohql.generatorsregistry">
         YourNameSpace.ExtendedLinqToHqlGeneratorsRegistry, YourAssemblyName
     </property>
+```
 
+```csharp
     using NHibernate.Cfg;
     // ...
     
     var cfg = new Configuration();
     cfg.LinqToHqlGeneratorsRegistry<ExtendedLinqToHqlGeneratorsRegistry>();
     // And build the session factory with this configuration.
+```
 
 Now the following query could be executed, without failing if no `Max`
 cat exists.
 
+```csharp
     var oldestMaxBirthDate =
         session.Query<Cat>()
             .Where(c => c.Name == "Max")
             .Select(c => c.BirthDate.AsNullable())
             .Min();
+```
 
 (Of course, the same result could be obtained with
 `(DateTime?)(c.BirthDate)`.)

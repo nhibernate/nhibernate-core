@@ -16,7 +16,9 @@ single business process, and then discarded. For example, when using
 NHibernate in an ASP.NET application, pages could obtain an
 `ISessionFactory` using:
 
+```csharp
     ISessionFactory sf = Global.SessionFactory;
+```
 
 Each call to a service method could create a new `ISession`, `Flush()`
 it, `Commit()` its transaction, `Close()` it and finally discard it.
@@ -126,6 +128,7 @@ approach is the most efficient in terms of database access. The
 application need not concern itself with version checking or with
 reattaching detached instances.
 
+```csharp
     // foo is an instance loaded earlier by the Session
     session.Reconnect();
     using (var transaction = session.BeginTransaction())
@@ -135,6 +138,7 @@ reattaching detached instances.
         transaction.Commit();
     }
     session.Disconnect();
+```
 
 The `foo` object still knows which `ISession` it was loaded it. As soon
 as the `ISession` has an ADO.NET connection, we commit the changes to
@@ -156,6 +160,7 @@ instances originally loaded in another `ISession` and then
 "re-associates" them using `ISession.Update()` or
 `ISession.SaveOrUpdate()`.
 
+```csharp
     // foo is an instance loaded by a previous Session
     foo.Property = "bar";
     using (var session = factory.OpenSession())
@@ -165,6 +170,7 @@ instances originally loaded in another `ISession` and then
         session.Flush();
         transaction.Commit();
     }
+```
 
 You may also call `Lock()` instead of `Update()` and use `LockMode.Read`
 (performing a version check, bypassing all caches) if you are sure that
@@ -214,6 +220,7 @@ checking to ensure application transaction isolation. (Of course,
 NHibernate will still *update* version numbers for you.) This approach
 is the least efficient in terms of database access.
 
+```csharp
     // foo is an instance loaded by a previous Session
     using (var session = factory.OpenSession())
     using (var transaction = session.BeginTransaction())
@@ -225,6 +232,7 @@ is the least efficient in terms of database access.
         session.Flush();
         transaction.Commit();
     }
+```
 
 Of course, if you are operating in a low-data-concurrency environment
 and don't require version checking, you may use this approach and just
@@ -253,6 +261,7 @@ need to lock any data that you *are* updating.
 
 Here is an example:
 
+```csharp
     ISessionFactory sessions;
     IList<Foo> fooList;
     Bar bar;
@@ -282,9 +291,11 @@ Here is an example:
         throw;
     }
     s.Disconnect();
+```
 
 Later on:
 
+```csharp
     s.Reconnect();
     
     try
@@ -309,6 +320,7 @@ Later on:
     {
         s.Close();
     }
+```
 
 You can see from this how the relationship between `ITransaction`s and
 `ISession`s is many-to-one, An `ISession` represents a conversation

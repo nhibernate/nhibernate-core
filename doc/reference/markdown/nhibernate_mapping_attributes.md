@@ -67,6 +67,7 @@ introduces many new features, improvements and changes:
 3.  `[AttributeIdentifierAttribute]` is a new attribute allowing to
     provide the value of a defined "place holder". Eg:
     
+```csharp
         public class Base {
             [Id(..., Column="{{Id.Column}}")]
             [AttributeIdentifier(Name="Id.Column", Value="ID")] // Default value
@@ -74,7 +75,8 @@ introduces many new features, improvements and changes:
         }
         [AttributeIdentifier(Name="Id.Column", Value="SUB_ID")]
         [Class] public class MappedSubClass : Base { }
-    
+```
+
     The idea is that, when you have a mapping which is shared by many
     subclasses but which has minor differences (like different column
     names), you can put the mapping in the base class with place holders
@@ -136,7 +138,7 @@ use: `[Class]`, `[Subclass]`, `[JoinedSubclass]` or `[Component]`. Then,
 you decorate your members (fields/properties); they can take as many
 attributes as required by your mapping. Eg:
 
-``` 
+```csharp
     [NHibernate.Mapping.Attributes.Class]
     public class Example
     {
@@ -147,9 +149,9 @@ attributes as required by your mapping. Eg:
 
 After this step, you use `NHibernate.Mapping.Attributes.HbmSerializer`:
 (here, we use Default which is an instance you can use if you don't
-need/want to create it
-    yourself).
+need/want to create it yourself).
 
+```csharp
     NHibernate.Cfg.Configuration cfg = new NHibernate.Cfg.Configuration();
         cfg.Configure();
         // Enable validation (optional)
@@ -158,6 +160,7 @@ need/want to create it
         cfg.AddInputStream( NHibernate.Mapping.Attributes.HbmSerializer.Default.Serialize(
             System.Reflection.Assembly.GetExecutingAssembly() ); );
         // Now you can use this configuration to build your SessionFactory...
+```
 
 > **Note**
 > 
@@ -268,16 +271,17 @@ need/want to create it
 
 Example using some this tips: (0, 1 and 2 are position indexes)
 
+```csharp
     // Don't put it after [ManyToOne] !!!
-        [NHibernate.Mapping.Attributes.Id(0, TypeType=typeof(int))]
-            [NHibernate.Mapping.Attributes.Generator(1, Class="uuid.hex")]
-        [NHibernate.Mapping.Attributes.ManyToOne(2,
-            ClassType=typeof(Foo), OuterJoin=OuterJoinStrategy.True)]
-        private Foo Entity;
+    [NHibernate.Mapping.Attributes.Id(0, TypeType=typeof(int))]
+    [NHibernate.Mapping.Attributes.Generator(1, Class="uuid.hex")]
+    [NHibernate.Mapping.Attributes.ManyToOne(2, ClassType=typeof(Foo),  OuterJoin=OuterJoinStrategy.True)]
+    private Foo Entity;
+```
 
 Generates:
 
-``` 
+```xml
     <id type="Int32">
         <generator class="uuid.hex" />
     </id>
@@ -295,20 +299,24 @@ When a parent element "p" has a child element "x" that is also the child
 element of another child element "c" of "p" (preceding "x") :D
 Illustration:
 
+```xml
     <p>
         <c>
             <x />
         </c>
         <x />
     </p>
+```
 
 In this case, when writing:
 
+```csharp
     [Attributes.P(0)]
-        [Attributes.C(1)]
-            [Attributes.X(2)]
-        [Attributes.X(3)]
+    [Attributes.C(1)]
+    [Attributes.X(2)]
+    [Attributes.X(3)]
     public MyType MyProperty;
+```
 
 X(3) will always belong to C(1) \! (as X(2)).
 

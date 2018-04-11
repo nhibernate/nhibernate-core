@@ -20,22 +20,28 @@ In order to use filters, they must first be defined and then attached to
 the appropriate mapping elements. To define a filter, use the
 `<filter-def/>` element within a `<hibernate-mapping/>` element:
 
+```xml
     <filter-def name="myFilter">
         <filter-param name="myFilterParam" type="String"/>
     </filter-def>
+```
 
 Then, this filter can be attached to a class:
 
+```xml
     <class name="MyClass" ...>
         ...
         <filter name="myFilter" condition=":myFilterParam = MY_FILTERED_COLUMN"/>
     </class>
+```
 
 or, to a collection:
 
+```xml
     <set ...>
         <filter name="myFilter" condition=":myFilterParam = MY_FILTERED_COLUMN"/>
     </set>
+```
 
 or, even to both (or multiples of each) at the same time.
 
@@ -48,7 +54,9 @@ they must be explicitly enabled through use of the
 look
     like:
 
+```csharp
     session.EnableFilter("myFilter").SetParameter("myFilterParam", "some-value");
+```
 
 Note that methods on the `NHibernate.IFilter` interface do allow the
 method-chaining common to much of NHibernate.
@@ -56,6 +64,7 @@ method-chaining common to much of NHibernate.
 A full example, using temporal data with an effective record date
 pattern:
 
+```xml
     <filter-def name="effectiveDate">
         <filter-param name="asOfDate" type="date"/>
     </filter-def>
@@ -83,16 +92,19 @@ pattern:
                     condition=":asOfDate BETWEEN eff_start_dt and eff_end_dt"/>
         </set>
     </class>
+```
 
 Then, in order to ensure that you always get back currently effective
 records, simply enable the filter on the session prior to retrieving
 employee data:
 
+```csharp
     ISession session = ...;
     session.EnableFilter("effectiveDate").SetParameter("asOfDate", DateTime.Today);
     var results = session.CreateQuery("from Employee as e where e.Salary > :targetSalary")
              .SetInt64("targetSalary", 1000000L)
              .List<Employee>();
+```
 
 In the HQL above, even though we only explicitly mentioned a salary
 constraint on the results, because of the enabled filter the query will
@@ -109,4 +121,6 @@ Default all filter definitions are applied to `<many-to-one/>` and
 `<one-to-one/>` elements. You can turn off this behaviour by using
 `use-many-to-one` attribute on `<filter-def/>` element.
 
+```xml
     <filter-def name="effectiveDate" use-many-to-one="false"/>
+```

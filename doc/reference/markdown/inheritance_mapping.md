@@ -32,7 +32,7 @@ just by adding a new mapping file. You must specify an `extends`
 attribute in the subclass mapping, naming a previously mapped
 superclass.
 
-``` 
+```xml
  <hibernate-mapping>
      <subclass name="DomesticCat" extends="Cat" discriminator-value="D">
           <property name="name" type="string"/>
@@ -46,6 +46,7 @@ Suppose we have an interface `IPayment`, with implementors
 `CreditCardPayment`, `CashPayment`, `ChequePayment`. The
 table-per-hierarchy mapping would look like:
 
+```xml
     <class name="IPayment" table="PAYMENT">
         <id name="Id" type="Int64" column="PAYMENT_ID">
             <generator class="native"/>
@@ -63,6 +64,7 @@ table-per-hierarchy mapping would look like:
             ...
         </subclass>
     </class>
+```
 
 Exactly one table is required. There is one big limitation of this
 mapping strategy: columns declared by the subclasses may not have `NOT
@@ -72,6 +74,7 @@ NULL` constraints.
 
 A table-per-subclass mapping would look like:
 
+```xml
     <class name="IPayment" table="PAYMENT">
         <id name="Id" type="Int64" column="PAYMENT_ID">
             <generator class="native"/>
@@ -91,6 +94,7 @@ A table-per-subclass mapping would look like:
             ...
         </joined-subclass>
     </class>
+```
 
 Four tables are required. The three subclass tables have primary key
 associations to the superclass table (so the relational model is
@@ -107,6 +111,7 @@ point of view. If you would like to use a discriminator column with the
 table per subclass strategy, you may combine the use of `<subclass>` and
 `<join>`, as follow:
 
+```xml
     <class name="Payment" table="PAYMENT">
         <id name="Id" type="Int64" column="PAYMENT_ID">
             <generator class="native"/>
@@ -134,6 +139,7 @@ table per subclass strategy, you may combine the use of `<subclass>` and
             </join>
         </subclass>
     </class>
+```
 
 The optional `fetch="select"` declaration tells NHibernate not to fetch
 the `ChequePayment` subclass data using an outer join when querying the
@@ -144,6 +150,7 @@ superclass.
 You may even mix the table per hierarchy and table per subclass
 strategies using this approach:
 
+```xml
     <class name="Payment" table="PAYMENT">
         <id name="Id" type="Int64" column="PAYMENT_ID">
             <generator class="native"/>
@@ -164,17 +171,21 @@ strategies using this approach:
             ...
         </subclass>
     </class>
+```
 
 For any of these mapping strategies, a polymorphic association to
 `IPayment` is mapped using `<many-to-one>`.
 
+```xml
     <many-to-one name="Payment" column="PAYMENT" class="IPayment"/>
+```
 
 ## Table per concrete class
 
 There are two ways we could go about mapping the table per concrete
 class strategy. The first is to use `<union-subclass>`.
 
+```xml
     <class name="Payment">
         <id name="Id" type="Int64" column="PAYMENT_ID">
             <generator class="sequence"/>
@@ -192,6 +203,7 @@ class strategy. The first is to use `<union-subclass>`.
             ...
         </union-subclass>
     </class>
+```
 
 Three tables are involved for the subclasses. Each table defines columns
 for all properties of the class, including inherited properties.
@@ -212,6 +224,7 @@ superclass.
 
 An alternative approach is to make use of implicit polymorphism:
 
+```xml
     <class name="CreditCardPayment" table="CREDIT_PAYMENT">
         <id name="Id" type="Int64" column="CREDIT_PAYMENT_ID">
             <generator class="native"/>
@@ -235,6 +248,7 @@ An alternative approach is to make use of implicit polymorphism:
         <property name="Amount" column="CHEQUE_AMOUNT"/>
         ...
     </class>
+```
 
 Notice that nowhere do we mention the `IPayment` interface explicitly.
 Also notice that properties of `IPayment` are mapped in each of the
@@ -248,6 +262,7 @@ SQL `UNION`s when performing polymorphic queries.
 For this mapping strategy, a polymorphic association to `IPayment` is
 usually mapped using `<any>`.
 
+```xml
     <any name="Payment" meta-type="string" id-type="Int64">
         <meta-value value="CREDIT" class="CreditCardPayment"/>
         <meta-value value="CASH" class="CashPayment"/>
@@ -255,6 +270,7 @@ usually mapped using `<any>`.
         <column name="PAYMENT_CLASS"/>
         <column name="PAYMENT_ID"/>
     </any>
+```
 
 ## Mixing implicit polymorphism with other inheritance mappings
 
@@ -265,6 +281,7 @@ part of another table-per-class or table-per-subclass inheritance
 hierarchy\! (And you can still use polymorphic queries against the
 `IPayment` interface.)
 
+```xml
     <class name="CreditCardPayment" table="CREDIT_PAYMENT">
         <id name="Id" type="Int64" column="CREDIT_PAYMENT_ID">
             <generator class="native"/>
@@ -292,6 +309,7 @@ hierarchy\! (And you can still use polymorphic queries against the
             ...
         </joined-subclass>
     </class>
+```
 
 Once again, we don't mention `IPayment` explicitly. If we execute a
 query against the `IPayment` interface - for example, `from IPayment` -
@@ -310,7 +328,7 @@ mappings, and of implicit polymorphism, in
 NHibernate.
 
 | Inheritance strategy                             | Polymorphic many-to-one | Polymorphic one-to-one | Polymorphic one-to-many                     | Polymorphic many-to-many | Polymorphic `Load()/Get()` | Polymorphic queries | Polymorphic joins               |
-| ------------------------------------------------ | ----------------------- | ---------------------- | ------------------------------------------- | ------------------------ | -------------------------- | ------------------- | ------------------------------- |
+|--------------------------------------------------|-------------------------|------------------------|---------------------------------------------|--------------------------|----------------------------|---------------------|---------------------------------|
 | table per class-hierarchy                        | `<many-to-one>`         | `<one-to-one>`         | `<one-to-many>`                             | `<many-to-many>`         | `s.Get<IPayment>(id)`      | `from IPayment p`   | `from Order o join o.Payment p` |
 | table per subclass                               | `<many-to-one>`         | `<one-to-one>`         | `<one-to-many>`                             | `<many-to-many>`         | `s.Get<IPayment>(id)`      | `from IPayment p`   | `from Order o join o.Payment p` |
 | table per concrete-class (union-subclass)        | `<many-to-one>`         | `<one-to-one>`         | `<one-to-many>` (for `inverse="true"` only) | `<many-to-many>`         | `s.Get<IPayment>(id)`      | `from IPayment p`   | `from Order o join o.Payment p` |

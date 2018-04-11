@@ -3,6 +3,7 @@
 A naive approach to inserting 100 000 rows in the database using
 NHibernate might look like this:
 
+```csharp
     using (ISession session = sessionFactory.OpenSession())
     using (ITransaction tx = session.BeginTransaction())
     {
@@ -13,6 +14,7 @@ NHibernate might look like this:
         }
         tx.Commit();
     }
+```
 
 This would fall over with an `OutOfMemoryException` somewhere around the
 50 000th row. That's because NHibernate caches all the newly inserted
@@ -43,6 +45,7 @@ When making new objects persistent, you must `Flush()` and then
 `Clear()` the session regularly, to control the size of the first-level
 cache.
 
+```csharp
     using (ISession session = sessionFactory.openSession())
     using (ITransaction tx = session.BeginTransaction())
     {
@@ -61,6 +64,7 @@ cache.
     
         tx.Commit();
     }
+```
 
 # The StatelessSession interface
 
@@ -77,10 +81,10 @@ session. Operations performed via a stateless session bypass
 NHibernate's event model and interceptors. Stateless sessions are
 vulnerable to data aliasing effects, due to the lack of a first-level
 cache. A stateless session is a lower-level abstraction, much closer to
-the underlying
-    ADO.
+the underlying ADO.
 
-    using (IStatelessSession session = sessionFactory.OpenStatelessSession())
+ ```csharp
+   using (IStatelessSession session = sessionFactory.OpenStatelessSession())
     using (ITransaction tx = session.BeginTransaction())
     {
         var customers = session.GetNamedQuery("GetCustomers")
@@ -94,6 +98,7 @@ the underlying
     
         tx.Commit();
     }
+```
 
 Note that in this code example, the `Customer` instances returned by the
 query are immediately detached. They are never associated with any
@@ -139,6 +144,7 @@ note:
 As an example, to execute an HQL `UPDATE`, use the
 `IQuery.ExecuteUpdate()` method:
 
+```csharp
     using (ISession session = sessionFactory.OpenSession())
     using (ITransaction tx = session.BeginTransaction())
     {
@@ -150,6 +156,7 @@ As an example, to execute an HQL `UPDATE`, use the
             .ExecuteUpdate();
         tx.Commit();
     }
+```
 
 HQL `UPDATE` statements, by default do not effect the
 [version](#mapping-declaration-version) or the
@@ -159,6 +166,7 @@ the `version` or `timestamp` property values through the use of a
 `versioned update`. This is achieved by adding the `VERSIONED` keyword
 after the `UPDATE` keyword.
 
+```csharp
     using (ISession session = sessionFactory.OpenSession())
     using (ITransaction tx = session.BeginTransaction())
     {
@@ -170,6 +178,7 @@ after the `UPDATE` keyword.
             .ExecuteUpdate();
         tx.Commit();
     }
+```
 
 Note that custom version types (`NHibernate.Usertype.IUserVersionType`)
 are not allowed in conjunction with a `update versioned` statement.
@@ -249,6 +258,7 @@ properties_list select_statement`. Some points to note:
 
 An example HQL `INSERT` statement execution:
 
+```csharp
     using (ISession session = sessionFactory.OpenSession())
     using (ITransaction tx = session.BeginTransaction())
     {
@@ -259,3 +269,4 @@ An example HQL `INSERT` statement execution:
             .ExecuteUpdate();
         tx.Commit();
     }
+```
