@@ -98,7 +98,6 @@ Task Build {
     Exec { 
         dotnet `
             build ./src/NHibernate.sln `
-            -f netcoreapp2.0 `
             -c Release
     }
 }

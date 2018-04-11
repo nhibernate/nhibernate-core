@@ -5,6 +5,7 @@ issue-labels-include:
  - "t: New Feature"
  - "t: Improvement"
  - "t: Task"
+ - "t: Tests"
 issue-labels-exclude:
  - "r: Duplicate"
  - "r: External Issue"
@@ -26,3 +27,6 @@ issue-labels-alias:
  - name:   "t: Task"
    header: Task
    plural: Task
+ - name:   "t: Tests"
+   header: Tests
+   plural: Tests

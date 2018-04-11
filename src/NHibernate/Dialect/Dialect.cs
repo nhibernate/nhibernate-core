@@ -993,14 +993,14 @@ namespace NHibernate.Dialect
 			return insertString;
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Get the select command to use to retrieve the last generated IDENTITY
-		/// value for a particular table 
+		/// value for a particular table.
 		/// </summary>
-		/// <param name="tableName">The table into which the insert was done </param>
-		/// <param name="identityColumn">The PK column. </param>
-		/// <param name="type">The <see cref="DbType"/> type code. </param>
-		/// <returns> The appropriate select command </returns>
+		/// <param name="identityColumn">The PK column.</param>
+		/// <param name="tableName">The table into which the insert was done.</param>
+		/// <param name="type">The <see cref="DbType"/> type code.</param>
+		/// <returns>The appropriate select command.</returns>
 		public virtual string GetIdentitySelectString(string identityColumn, string tableName, DbType type)
 		{
 			return IdentitySelectString;
