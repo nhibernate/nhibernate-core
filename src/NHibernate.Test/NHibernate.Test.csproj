@@ -58,7 +58,9 @@
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='net461'">
     <Reference Include="System.Configuration" />
+    <Reference Include="System.Runtime" />
     <Reference Include="System.Transactions" />
+    <Reference Include="System.Threading.Tasks" />
     <Reference Include="System.Data.OracleClient" />
     <PackageReference Include="Microsoft.SqlServer.Compact" Version="4.0.8876.1" />
     <PackageReference Include="Oracle.ManagedDataAccess" Version="12.1.2400" />

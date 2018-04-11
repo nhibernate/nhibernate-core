@@ -41,8 +41,8 @@
     </PackageReference>
     <PackageReference Include="Antlr3.Runtime" Version="[3.5.1, 4.0)" />
     <PackageReference Include="Iesi.Collections" Version="[4.0.4, 5.0)" />
-    <PackageReference Include="Remotion.Linq" Version="[2.1.2, 3.0)" />
-    <PackageReference Include="Remotion.Linq.EagerFetching" Version="[2.1.0, 3.0)" />
+    <PackageReference Include="Remotion.Linq" Version="[2.2.0, 3.0)" />
+    <PackageReference Include="Remotion.Linq.EagerFetching" Version="[2.2.0, 3.0)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net461'">

@@ -1,5 +1,5 @@
 language: csharp
-mono: none
+mono: latest
 dotnet: 2.1.2
 sudo: required
 services:

@@ -275,14 +275,7 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-		/// <summary> 
-		/// Get the select command to use to retrieve the last generated IDENTITY
-		/// value for a particular table 
-		/// </summary>
-		/// <param name="tableName">The table into which the insert was done </param>
-		/// <param name="identityColumn">The PK column. </param>
-		/// <param name="type">The <see cref="DbType"/> type code. </param>
-		/// <returns> The appropriate select command </returns>
+		/// <inheritdoc />
 		public override string GetIdentitySelectString(string identityColumn, string tableName, DbType type)
 		{
 			return type == DbType.Int64

@@ -66,7 +66,8 @@ namespace NHibernate.Linq.ReWriters
 				{
 					typeof(FetchRequestBase),
 					typeof(OfTypeResultOperator),
-					typeof(CastResultOperator)
+					typeof(CastResultOperator),
+					typeof(AsQueryableResultOperator),
 				};
 
 			private readonly List<ResultOperatorBase> resultOperators = new List<ResultOperatorBase>();
