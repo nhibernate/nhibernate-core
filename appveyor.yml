@@ -56,5 +56,5 @@ before_test:
       'SqlServer2012' { Start-Service 'MSSQL$SQL2017' }
     }
 test_script:
-- cmd: powershell -noprofile -command "& ./build.ps1 -TaskList Set-Configuration,Test -properties @{\"Database\" = \"%DB%\";\"ConnectionString\"=\"%CONNECTION_STRING%\"}"
+- cmd: powershell -noprofile -command "& ./build.ps1 -TaskList Set-Configuration,Build,Test -properties @{\"Database\" = \"%DB%\";\"ConnectionString\"=\"%CONNECTION_STRING%\"}"
 deploy: off

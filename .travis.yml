@@ -46,4 +46,4 @@ before_script:
   - if [[ "$DB" == "PostgreSQL" ]]; then psql -c "CREATE DATABASE nhibernate;" -U postgres; fi
   - if [[ "$DB" == "MySQL" ]]; then mysql -e "CREATE DATABASE IF NOT EXISTS nhibernate;"; fi
 script:
-  - pwsh -noprofile -command "& ./build.ps1 -TaskList Set-Configuration,Test -properties @{\"Database\" = \"$DB\";\"ConnectionString\"=\"$CONNECTION_STRING\"}"
+  - pwsh -noprofile -command "& ./build.ps1 -TaskList Set-Configuration,Build,Test -properties @{\"Database\" = \"$DB\";\"ConnectionString\"=\"$CONNECTION_STRING\"}"
