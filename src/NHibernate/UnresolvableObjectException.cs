@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 using System.Security;
 using System.Security.Permissions;
 using NHibernate.Impl;
+using NHibernate.Util;
 
 namespace NHibernate
 {
@@ -13,9 +14,10 @@ namespace NHibernate
 	[Serializable]
 	public class UnresolvableObjectException : HibernateException
 	{
-		private readonly object identifier;
-		private readonly System.Type clazz;
-		private readonly string entityName;
+		private readonly object _identifier;
+		[NonSerialized]
+		private readonly System.Type _clazz;
+		private readonly string _entityName;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UnresolvableObjectException"/> class.
@@ -39,40 +41,24 @@ namespace NHibernate
 		public UnresolvableObjectException(string message, object identifier, System.Type clazz)
 			: base(message)
 		{
-			this.identifier = identifier;
-			this.clazz = clazz;
+			_identifier = identifier;
+			_clazz = clazz;
 		}
 
 		public UnresolvableObjectException(string message, object identifier, string entityName)
 			: base(message)
 		{
-			this.identifier = identifier;
-			this.entityName = entityName;
+			_identifier = identifier;
+			_entityName = entityName;
 		}
 
-		public object Identifier
-		{
-			get { return identifier; }
-		}
+		public object Identifier => _identifier;
 
-		public override string Message
-		{
-			get { return base.Message + MessageHelper.InfoString(EntityName, identifier); }
-		}
+		public override string Message => base.Message + MessageHelper.InfoString(EntityName, _identifier);
 
-		public System.Type PersistentClass
-		{
-			get { return clazz; }
-		}
+		public System.Type PersistentClass => _clazz;
 
-		public string EntityName
-		{
-			get 
-			{
-				if (clazz != null) return clazz.FullName;
-				return entityName; 
-			}
-		}
+		public string EntityName => _clazz != null ? _clazz.FullName : _entityName;
 
 		public static void ThrowIfNull(object o, object id, System.Type clazz)
 		{
@@ -96,17 +82,17 @@ namespace NHibernate
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData(info, context);
-			info.AddValue("identifier", identifier);
-			info.AddValue("clazz", clazz);
-			info.AddValue("entityName", entityName);
+			info.AddValue("identifier", _identifier);
+			info.AddValue("clazz", ObjectReferenceSystemType.Wrap(_clazz, true));
+			info.AddValue("entityName", _entityName);
 		}
 
 		protected UnresolvableObjectException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
-			identifier = info.GetValue("identifier", typeof(object));
-			clazz = info.GetValue("clazz", typeof(System.Type)) as System.Type;
-			entityName = info.GetString("entityName");
+			_identifier = info.GetValue("identifier", typeof(object));
+			_entityName = info.GetString("entityName");
+			_clazz = info.GetValue<System.Type>("clazz");
 		}
 
 		#endregion

@@ -15,21 +15,26 @@ namespace NHibernate.Tuple
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(PocoInstantiator));
 
-		private readonly System.Type mappedClass;
+		[NonSerialized]
+		private System.Type _mappedClass;
+		private SerializableSystemType _serializableMappedClass;
 
 		[NonSerialized]
-		private IInstantiationOptimizer optimizer;
-
-		private readonly IProxyFactory proxyFactory;
-
-		private readonly bool generateFieldInterceptionProxy;
-
-		private readonly bool embeddedIdentifier;
+		private IInstantiationOptimizer _optimizer;
 
 		[NonSerialized]
-		private ConstructorInfo constructor;
+		private readonly IProxyFactory _proxyFactory;
 
-		private readonly System.Type proxyInterface;
+		private readonly bool _generateFieldInterceptionProxy;
+
+		private readonly bool _embeddedIdentifier;
+
+		[NonSerialized]
+		private ConstructorInfo _constructor;
+
+		[NonSerialized]
+		private System.Type _proxyInterface;
+		private SerializableSystemType _serializableProxyInterface;
 
 		public PocoInstantiator()
 		{
@@ -37,40 +42,40 @@ namespace NHibernate.Tuple
 
 		public PocoInstantiator(Mapping.Component component, IInstantiationOptimizer optimizer)
 		{
-			mappedClass = component.ComponentClass;
-			this.optimizer = optimizer;
+			_mappedClass = component.ComponentClass;
+			_optimizer = optimizer;
 
-			proxyInterface = null;
-			embeddedIdentifier = false;
+			_proxyInterface = null;
+			_embeddedIdentifier = false;
 
 			try
 			{
-				constructor = ReflectHelper.GetDefaultConstructor(mappedClass);
+				_constructor = ReflectHelper.GetDefaultConstructor(_mappedClass);
 			}
 			catch (PropertyNotFoundException)
 			{
-				log.Info("no default (no-argument) constructor for class: {0} (class must be instantiated by Interceptor)", mappedClass.FullName);
-				constructor = null;
+				log.Info("no default (no-argument) constructor for class: {0} (class must be instantiated by Interceptor)", _mappedClass.FullName);
+				_constructor = null;
 			}
 		}
 
 		public PocoInstantiator(PersistentClass persistentClass, IInstantiationOptimizer optimizer, IProxyFactory proxyFactory, bool generateFieldInterceptionProxy)
 		{
-			mappedClass = persistentClass.MappedClass;
-			proxyInterface = persistentClass.ProxyInterface;
-			embeddedIdentifier = persistentClass.HasEmbeddedIdentifier;
-			this.optimizer = optimizer;
-			this.proxyFactory = proxyFactory;
-			this.generateFieldInterceptionProxy = generateFieldInterceptionProxy;
+			_mappedClass = persistentClass.MappedClass;
+			_proxyInterface = persistentClass.ProxyInterface;
+			_embeddedIdentifier = persistentClass.HasEmbeddedIdentifier;
+			_optimizer = optimizer;
+			_proxyFactory = proxyFactory;
+			_generateFieldInterceptionProxy = generateFieldInterceptionProxy;
 
 			try
 			{
-				constructor = ReflectHelper.GetDefaultConstructor(mappedClass);
+				_constructor = ReflectHelper.GetDefaultConstructor(_mappedClass);
 			}
 			catch (PropertyNotFoundException)
 			{
-				log.Info("no default (no-argument) constructor for class: {0} (class must be instantiated by Interceptor)", mappedClass.FullName);
-				constructor = null;
+				log.Info("no default (no-argument) constructor for class: {0} (class must be instantiated by Interceptor)", _mappedClass.FullName);
+				_constructor = null;
 			}
 		}
 
@@ -78,66 +83,80 @@ namespace NHibernate.Tuple
 
 		public object Instantiate(object id)
 		{
-			bool useEmbeddedIdentifierInstanceAsEntity = embeddedIdentifier && id != null && id.GetType().Equals(mappedClass);
+			bool useEmbeddedIdentifierInstanceAsEntity = _embeddedIdentifier && id != null && id.GetType().Equals(_mappedClass);
 			return useEmbeddedIdentifierInstanceAsEntity ? id : Instantiate();
 		}
 
 		public object Instantiate()
 		{
-			if (ReflectHelper.IsAbstractClass(mappedClass))
+			if (ReflectHelper.IsAbstractClass(_mappedClass))
 			{
-				throw new InstantiationException("Cannot instantiate abstract class or interface: ", mappedClass);
+				throw new InstantiationException("Cannot instantiate abstract class or interface: ", _mappedClass);
 			}
-			if (generateFieldInterceptionProxy)
+			if (_generateFieldInterceptionProxy)
 			{
-				return proxyFactory.GetFieldInterceptionProxy(GetInstance());
+				return _proxyFactory.GetFieldInterceptionProxy(GetInstance());
 			}
 			return GetInstance();
 		}
 
 		private object GetInstance()
 		{
-			if (optimizer != null)
+			if (_optimizer != null)
 			{
-				return optimizer.CreateInstance();
+				return _optimizer.CreateInstance();
 			}
-			if (mappedClass.IsValueType)
+			if (_mappedClass.IsValueType)
 			{
-				return Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(mappedClass, true);
+				return Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(_mappedClass, true);
 			}
-			if (constructor == null)
+			if (_constructor == null)
 			{
-				throw new InstantiationException("No default constructor for entity: ", mappedClass);
+				throw new InstantiationException("No default constructor for entity: ", _mappedClass);
 			}
 			try
 			{
-				return constructor.Invoke(null);
+				return _constructor.Invoke(null);
 			}
 			catch (Exception e)
 			{
-				throw new InstantiationException("Could not instantiate entity: ", e, mappedClass);
+				throw new InstantiationException("Could not instantiate entity: ", e, _mappedClass);
 			}
 		}
 
 		public bool IsInstance(object obj)
 		{
-			return mappedClass.IsInstanceOfType(obj) || (proxyInterface != null && proxyInterface.IsInstanceOfType(obj)); //this one needed only for guessEntityMode()
+			return _mappedClass.IsInstanceOfType(obj) || (_proxyInterface != null && _proxyInterface.IsInstanceOfType(obj)); //this one needed only for guessEntityMode()
 		}
 
 		#endregion
+
+		[OnSerializing]
+		private void OnSerializing(StreamingContext context)
+		{
+			_serializableMappedClass = SerializableSystemType.Wrap(_mappedClass);
+			_serializableProxyInterface = SerializableSystemType.Wrap(_proxyInterface);
+		}
 
 		#region IDeserializationCallback Members
 
 		public void OnDeserialization(object sender)
 		{
-			constructor = ReflectHelper.GetDefaultConstructor(mappedClass);
+			if (_generateFieldInterceptionProxy)
+			{
+				throw new InvalidOperationException("IProxyFactory implementors are currently not serializable.");
+			}
+
+			_mappedClass = _serializableMappedClass?.GetSystemType();
+			_proxyInterface = _serializableProxyInterface?.GetSystemType();
+			_constructor = ReflectHelper.GetDefaultConstructor(_mappedClass);
 		}
 
 		#endregion
 
 		public void SetOptimizer(IInstantiationOptimizer optimizer)
 		{
-			this.optimizer = optimizer;
+			_optimizer = optimizer;
 		}
 	}
 }

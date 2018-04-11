@@ -16,7 +16,10 @@ namespace NHibernate.Proxy.DynamicProxy
 	[Serializable]
 	public class ProxyObjectReference : IObjectReference, ISerializable
 	{
+		[NonSerialized]
 		private readonly System.Type _baseType;
+
+		[NonSerialized]
 		private readonly IProxy _proxy;
 
 		protected ProxyObjectReference(SerializationInfo info, StreamingContext context)

@@ -392,7 +392,7 @@ namespace NHibernate.Util
 		/// type cannot be found then the assembly is loaded using
 		/// <see cref="Assembly.Load(string)" />.
 		/// </remarks>
-		public static System.Type TypeFromAssembly(AssemblyQualifiedTypeName name, bool throwOnError)
+		public static System.Type TypeFromAssembly(this AssemblyQualifiedTypeName name, bool throwOnError)
 		{
 			try
 			{

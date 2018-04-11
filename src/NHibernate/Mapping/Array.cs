@@ -10,7 +10,9 @@ namespace NHibernate.Mapping
 	[Serializable]
 	public class Array : List
 	{
+		[NonSerialized]
 		private System.Type elementClass;
+
 		private string elementClassName;
 
 		public Array(PersistentClass owner) : base(owner)
@@ -21,23 +23,22 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				if (elementClass == null)
+				if (elementClass != null) return elementClass;
+
+				if (elementClassName == null)
 				{
-					if (elementClassName == null)
+					IType elementType = Element.Type;
+					elementClass = IsPrimitiveArray ? ((PrimitiveType) elementType).PrimitiveClass : elementType.ReturnedClass;
+				}
+				else
+				{
+					try
 					{
-						IType elementType = Element.Type;
-						elementClass = IsPrimitiveArray ? ((PrimitiveType) elementType).PrimitiveClass : elementType.ReturnedClass;
+						elementClass = ReflectHelper.ClassForName(elementClassName);
 					}
-					else
+					catch (Exception cnfe)
 					{
-						try
-						{
-							elementClass = ReflectHelper.ClassForName(elementClassName);
-						}
-						catch (Exception cnfe)
-						{
-							throw new MappingException(cnfe);
-						}
+						throw new MappingException(cnfe);
 					}
 				}
 				return elementClass;

@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 using System.Security;
-using System.Security.Permissions;
+using NHibernate.Util;
 
 namespace NHibernate
 {
@@ -11,15 +11,13 @@ namespace NHibernate
 	[Serializable]
 	public class InstantiationException : HibernateException
 	{
-		private readonly System.Type type;
+		[NonSerialized]
+		private readonly System.Type _type;
 
 		public InstantiationException(string message, System.Type type)
 			: base(message)
 		{
-			if (type == null)
-				throw new ArgumentNullException("type");
-
-			this.type = type;
+			_type = type ?? throw new ArgumentNullException(nameof(type));
 		}
 
 		/// <summary>
@@ -35,19 +33,13 @@ namespace NHibernate
 		public InstantiationException(string message, Exception innerException, System.Type type)
 			: base(message, innerException)
 		{
-			if (type == null)
-				throw new ArgumentNullException("type");
-
-			this.type = type;
+			_type = type ?? throw new ArgumentNullException(nameof(type));
 		}
 
 		/// <summary>
 		/// Gets the <see cref="System.Type"/> that NHibernate was trying to instantiate.
 		/// </summary>
-		public System.Type PersistentType
-		{
-			get { return type; }
-		}
+		public System.Type PersistentType => _type;
 
 		/// <summary>
 		/// Gets a message that describes the current <see cref="InstantiationException"/>.
@@ -56,10 +48,7 @@ namespace NHibernate
 		/// The error message that explains the reason for this exception and the Type that
 		/// was trying to be instantiated.
 		/// </value>
-		public override string Message
-		{
-			get { return base.Message + (type == null ? "" : type.FullName); }
-		}
+		public override string Message => base.Message + (_type == null ? "" : _type.FullName);
 
 		#region ISerializable Members
 
@@ -76,7 +65,7 @@ namespace NHibernate
 		/// </param>
 		protected InstantiationException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
-			this.type = info.GetValue("type", typeof(System.Type)) as System.Type;
+			_type = info.GetValue<System.Type>("type");
 		}
 
 		/// <summary>
@@ -94,7 +83,7 @@ namespace NHibernate
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData(info, context);
-			info.AddValue("type", type, typeof(System.Type));
+			info.AddValue("type", ObjectReferenceSystemType.Wrap(_type, true));
 		}
 
 		#endregion
