@@ -1,4 +1,33 @@
-﻿Build 5.1.0
+﻿Build 5.1.1
+=============================
+
+Release notes - NHibernate - Version 5.1.1
+
+** Bug
+
+   * #1645 One-to-one with property-ref triggers StackOverflow Exception
+   * #1643 TypeLoadException in StaticProxyFactory after upgrading to 5.1.0
+   * #1640 Handle all overloads of String.Trim*()
+   * #1636 Fix api documentation assets path
+   * #1628 StackOverflowException for lazy proxied entities with explicit interface properties
+   * #1618 Fix NuGet push script
+   * #1149 NH-3391 - StatelessSession: one-to-one detail-object is always null
+
+** Improvement
+
+   * #1646 Add a link to release notes in NuGet package
+   * #1639 Speedup access to SQL Server on Linux
+   * #1624 Add missing ids on documentation sections
+   * #1619 Document "entity join" and "entity projection"
+
+** Task
+
+   * #1649 Release 5.1.1
+   * #1622 Update cache documentation
+   * #1621 Upgrade Async Generator to a version compatible with VS 15.6.3
+
+
+Build 5.1.0
 =============================
 
 Release notes - NHibernate - Version 5.1.0

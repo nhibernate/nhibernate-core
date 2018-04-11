@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Hql.Ast;
@@ -241,18 +242,7 @@ namespace NHibernate.Linq.Functions
 	{
 		public TrimGenerator()
 		{
-			SupportedMethods = new HashSet<MethodInfo>
-			{
-				ReflectHelper.GetMethodDefinition<string>(s => s.Trim()),
-				ReflectHelper.GetMethodDefinition<string>(s => s.Trim('a')),
-				ReflectHelper.GetMethodDefinition<string>(s => s.Trim('a', 'a')),
-				ReflectHelper.GetMethodDefinition<string>(s => s.TrimStart()),
-				ReflectHelper.GetMethodDefinition<string>(s => s.TrimStart('a')),
-				ReflectHelper.GetMethodDefinition<string>(s => s.TrimStart('a', 'a')),
-				ReflectHelper.GetMethodDefinition<string>(s => s.TrimEnd()),
-				ReflectHelper.GetMethodDefinition<string>(s => s.TrimEnd('a')),
-				ReflectHelper.GetMethodDefinition<string>(s => s.TrimEnd('a', 'a'))
-			};
+			SupportedMethods = typeof(string).GetMethods().Where(x => new[] { "Trim", "TrimStart", "TrimEnd" }.Contains(x.Name)).ToArray();
 		}
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)

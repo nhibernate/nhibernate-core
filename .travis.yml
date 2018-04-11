@@ -1,5 +1,5 @@
 language: csharp
-mono: none
+mono: latest
 dotnet: 2.1.2
 sudo: required
 services:
@@ -7,7 +7,7 @@ services:
   - postgresql
   - docker
 env:
-  - DB=SqlServer2008 CONNECTION_STRING="Server=localhost;initial catalog=nhibernate;User Id=sa;Password=P@ssw0rd;"
+  - DB=SqlServer2008 CONNECTION_STRING="Server=localhost;initial catalog=nhibernate;User Id=sa;Password=P@ssw0rd;packet size=4096;"
   - DB=PostgreSQL CONNECTION_STRING="Host=localhost;Port=5432;Username=postgres;Database=nhibernate;Enlist=true;"
   - DB=Firebird 
   - DB=MySQL CONNECTION_STRING="Server=127.0.0.1;Uid=root;Database=nhibernate;Old Guids=True;"   

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH1645">
+
+  <class name="SuperParent">
+    <id name="Id" generator="guid.comb"/>
+    <many-to-one name="Parent"/>
+  </class>
+
+  <class name="Parent">
+    <id name="Id" generator="guid.comb"/>
+    <one-to-one name="SuperParent" property-ref="Parent"/>
+  </class>
+
+</hibernate-mapping>
