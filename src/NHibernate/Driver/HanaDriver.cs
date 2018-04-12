@@ -1,3 +1,4 @@
+using System;
 using NHibernate.AdoNet;
 
 namespace NHibernate.Driver
@@ -61,21 +62,25 @@ namespace NHibernate.Driver
 		/// <remarks>
 		/// Sql Server uses <c>"@"</c> and Oracle uses <c>":"</c>.
 		/// </remarks>
-		public override string NamedPrefix => null;
+		public override string NamedPrefix => String.Empty;
 
-		public override bool SupportsMultipleOpenReaders => true;
+		public override bool SupportsMultipleOpenReaders => false;
 
 		public override IResultSetsCommand GetResultSetsCommand(Engine.ISessionImplementor session)
 		{
 			return new BasicResultSetsCommand(session);
 		}
 
-		public override bool SupportsSystemTransactions => false;
+		public override bool SupportsSystemTransactions => true;
 
 		public override bool SupportsNullEnlistment => false;
 
 		public override bool RequiresTimeSpanForTime => true;
 
-		System.Type IEmbeddedBatcherFactoryProvider.BatcherFactoryClass => typeof(NonBatchingBatcherFactory);
+		public override bool HasDelayedDistributedTransactionCompletion => false;
+
+		public override bool SupportsEnlistmentWhenAutoEnlistmentIsDisabled => false;
+
+		System.Type IEmbeddedBatcherFactoryProvider.BatcherFactoryClass => typeof(HanaBatchingBatcherFactory);
 	}
 }
