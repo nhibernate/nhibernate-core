@@ -58,6 +58,8 @@ namespace NHibernate.Test.ConnectionTest
 		[Test]
 		public async Task SerializationOnAfterStatementAggressiveReleaseAsync()
 		{
+			TestsContext.AssumeSystemTypeIsSerializable();
+
 			Prepare();
 			ISession s = GetSessionUnderTest();
 			Silly silly = new Silly("silly");
@@ -79,6 +81,8 @@ namespace NHibernate.Test.ConnectionTest
 		[Test]
 		public async Task SerializationFailsOnAfterStatementAggressiveReleaseWithOpenResourcesAsync()
 		{
+			TestsContext.AssumeSystemTypeIsSerializable();
+
 			Prepare();
 			ISession s = GetSessionUnderTest();
 

@@ -8,19 +8,13 @@
 	<property name="vshik.installed" value="false" overwrite="false" />
 	<property name="vshik.path" value="${environment::get-folder-path('ProgramFiles')}/Microsoft Help 2.0 SDK" />
 
-	<!-- 
-		if nunit2report tasks from http://nunit2report.sourceforge.net/ has been installed
-		then change this to true.  It generates a nice looking html report for the test files
-	-->
-	<property name="nunit2report.installed" value="false" overwrite="false" />
-
 	<!-- Path to the folder that contain the external assemblies -->
 	<property name="lib.dir" value="lib" dynamic="true" />
 
 	<!-- This is used only for build folder -->
 	<!-- TODO: Either remove or refactor to use NHibernate.props -->
-	<property name="project.version" value="5.0.3" overwrite="false" />
-	<property name="project.version.numeric" value="5.0.3" overwrite="false" />
+	<property name="project.version" value="5.1.1" overwrite="false" />
+	<property name="project.version.numeric" value="5.1.1" overwrite="false" />
 
 	<!-- properties used to connect to database for testing -->
 	<include buildfile="nhibernate-properties.xml" />
@@ -29,10 +23,11 @@
 		<property name="project.config" value="debug" overwrite="false" />
 		<property name="build.name" value="NHibernate-${project.version}" if="${project.config == 'release'}"/>
 		<property name="build.name" value="NHibernate-${project.version}-${project.config}" unless="${project.config == 'release'}" />
+		<property name="build.config" value="Release" if="${project.config == 'release'}"/>
+		<property name="build.config" value="Debug" unless="${project.config == 'release'}" />
 		<property name="build.root.dir" value="${root.dir}/build/${build.name}" />
 		<property name="build.dir" value="${build.root.dir}" />
-		<property name="bin.dir" value="${build.dir}/bin" />
-		<property name="testresults.dir" 	value="${bin.dir}/test-results" />
+		<property name="testresults.dir" 	value="${build.dir}/bin/test-results" />
 		<property name="tools.dir" value="${root.dir}/Tools"/>
 	</target>
 

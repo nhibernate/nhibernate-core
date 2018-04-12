@@ -41,6 +41,10 @@ namespace NHibernate.Test.Linq.ByMethod
 			query.Received(1).SetCacheMode(CacheMode.Normal);
 			query.Received(1).SetCacheRegion("testregion");
 			query.Received(1).SetTimeout(10);
+
+			// Prevent garbage collection of session substitute before end of test, since the Linq query provider
+			// only has a weak reference on it.
+			Assert.That(session, Is.Not.Null);
 		}
 		
 		[Test]
@@ -72,6 +76,10 @@ namespace NHibernate.Test.Linq.ByMethod
 			query.Received(1).SetCacheMode(CacheMode.Normal);
 			query.Received(1).SetCacheRegion("testregion");
 			query.Received(1).SetTimeout(10);
+
+			// Prevent garbage collection of session substitute before end of test, since the Linq query provider
+			// only has a weak reference on it.
+			Assert.That(session, Is.Not.Null);
 		}
 
 		[Test]
@@ -101,6 +109,10 @@ namespace NHibernate.Test.Linq.ByMethod
 			query.Received(1).SetCacheMode(CacheMode.Normal);
 			query.Received(1).SetCacheRegion("testregion");
 			query.Received(1).SetTimeout(10);
+
+			// Prevent garbage collection of session substitute before end of test, since the Linq query provider
+			// only has a weak reference on it.
+			Assert.That(session, Is.Not.Null);
 		}
 		
 		[Test]
@@ -133,6 +145,10 @@ namespace NHibernate.Test.Linq.ByMethod
 			query.Received(1).SetCacheMode(CacheMode.Normal);
 			query.Received(1).SetCacheRegion("testregion");
 			query.Received(1).SetTimeout(10);
+
+			// Prevent garbage collection of session substitute before end of test, since the Linq query provider
+			// only has a weak reference on it.
+			Assert.That(session, Is.Not.Null);
 		}
 	}
 }

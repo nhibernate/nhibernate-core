@@ -177,7 +177,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		public virtual IType[] ActualReturnTypes
 		{
-			get { return _queryLoader.ReturnTypes; }
+			get { return _queryLoader.ResultTypes; }
 		}
 
 		public ParameterMetadata BuildParameterMetadata()

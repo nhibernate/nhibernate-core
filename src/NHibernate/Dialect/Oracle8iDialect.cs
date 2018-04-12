@@ -182,13 +182,14 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.UInt32, "NUMBER(10,0)");
 			RegisterColumnType(DbType.UInt64, "NUMBER(20,0)");
 
-			RegisterColumnType(DbType.Currency, "NUMBER(20,2)");
+			// 6.0 TODO: bring down to 18,4 for consistency with other dialects.
+			RegisterColumnType(DbType.Currency, "NUMBER(22,4)");
 			RegisterColumnType(DbType.Single, "FLOAT(24)");
 			RegisterColumnType(DbType.Double, "DOUBLE PRECISION");
-			// Oracle max precision is 39-40, but .Net is limited to 28-29.
-			RegisterColumnType(DbType.Double, 28, "NUMBER($p,$s)");
+			RegisterColumnType(DbType.Double, 40, "NUMBER($p,$s)");
 			RegisterColumnType(DbType.Decimal, "NUMBER(19,5)");
-			RegisterColumnType(DbType.Decimal, 28, "NUMBER($p,$s)");
+			// Oracle max precision is 39-40, but .Net is limited to 28-29.
+			RegisterColumnType(DbType.Decimal, 29, "NUMBER($p,$s)");
 		}
 
 		protected virtual void RegisterDateTimeTypeMappings()
@@ -229,6 +230,7 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("round", new StandardSQLFunction("round"));
 			RegisterFunction("trunc", new StandardSQLFunction("trunc"));
+			RegisterFunction("truncate", new StandardSQLFunction("trunc"));
 			RegisterFunction("ceil", new StandardSQLFunction("ceil"));
 			RegisterFunction("ceiling", new StandardSQLFunction("ceil"));
 			RegisterFunction("floor", new StandardSQLFunction("floor"));
@@ -483,10 +485,17 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+		// Since v5.1
+		[Obsolete("Use UsesColumnsWithForUpdateOf instead")]
 		public override bool ForUpdateOfColumns
 		{
 			get { return true; }
 		}
+
+		/* 6.0 TODO: uncomment once ForUpdateOfColumns is removed.
+		/// <inheritdoc />
+		public override bool UsesColumnsWithForUpdateOf => true;
+		*/
 
 		public override bool SupportsUnionAll
 		{

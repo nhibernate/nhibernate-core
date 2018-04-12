@@ -548,7 +548,7 @@ namespace NHibernate.Impl
 
 						if (parameter.HasAutoDiscoverScalarTypes)
 						{
-							translator.Loader.AutoDiscoverTypes(reader);
+							translator.Loader.AutoDiscoverTypes(reader, parameter, null);
 						}
 
 						LockMode[] lockModeArray = translator.Loader.GetLockModes(parameter.LockModes);

@@ -34,6 +34,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2880
 		[Test]
 		public void ProxiesFromDeserializedSessionsCanBeLoaded()
 		{
+			TestsContext.AssumeSystemTypeIsSerializable();
+
 			MemoryStream sessionMemoryStream;
 
 			using (ISession s = Sfi.OpenSession())

@@ -106,6 +106,8 @@ namespace NHibernate.Test.DynamicProxyTests.InterfaceProxySerializationTests
 		[Test]
 		public async Task ProxySerializeAsync()
 		{
+			TestsContext.AssumeSystemTypeIsSerializable();
+
 			ISession s = OpenSession();
 			IMyProxy ap = new MyProxyImpl {Id = 1, Name = "first proxy"};
 			await (s.SaveAsync(ap));
@@ -137,6 +139,8 @@ namespace NHibernate.Test.DynamicProxyTests.InterfaceProxySerializationTests
 		[Test]
 		public async Task SerializeNotFoundProxyAsync()
 		{
+			TestsContext.AssumeSystemTypeIsSerializable();
+
 			ISession s = OpenSession();
 			// this does not actually exists in db
 			var notThere = (IMyProxy) await (s.LoadAsync(typeof (MyProxyImpl), 5));

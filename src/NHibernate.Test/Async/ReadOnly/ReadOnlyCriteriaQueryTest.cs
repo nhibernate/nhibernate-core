@@ -1068,6 +1068,8 @@ namespace NHibernate.Test.ReadOnly
 		[Test]
 		public async Task DetachedCriteriaAsync()
 		{
+			TestsContext.AssumeSystemTypeIsSerializable();
+
 			DetachedCriteria dc = NHibernate.Criterion.DetachedCriteria.For<Student>()
 				.Add(Property.ForName("Name").Eq("Gavin King"))
 				.AddOrder(Order.Asc("StudentNumber"));

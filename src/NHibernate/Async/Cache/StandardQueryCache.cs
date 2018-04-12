@@ -89,11 +89,20 @@ namespace NHibernate.Cache
 			}
 
 			Log.Debug("returning cached query results for: {0}", key);
+			if (key.ResultTransformer?.AutoDiscoverTypes == true && cacheable.Count > 0)
+			{
+				returnTypes = GuessTypes(cacheable);
+			}
+
 			for (int i = 1; i < cacheable.Count; i++)
 			{
 				if (returnTypes.Length == 1)
 				{
-					await (returnTypes[0].BeforeAssembleAsync(cacheable[i], session, cancellationToken)).ConfigureAwait(false);
+					var beforeAssembleTask = returnTypes[0]?.BeforeAssembleAsync(cacheable[i], session, cancellationToken);
+					if (beforeAssembleTask != null)
+					{
+						await (beforeAssembleTask).ConfigureAwait(false);
+					}
 				}
 				else
 				{

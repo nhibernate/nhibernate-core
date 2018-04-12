@@ -64,6 +64,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3487
 		[Test]
 		public async Task CanDeserializeSessionWithEntityHashCollisionAsync()
 		{
+			TestsContext.AssumeSystemTypeIsSerializable();
+
 			IFormatter formatter = new BinaryFormatter();
 			byte[] serializedSessionArray;
 

@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +25,7 @@ namespace NHibernate.Impl
 	using System.Threading.Tasks;
 	using System.Threading;
 
-	partial class ExpressionFilterImpl : ExpressionQueryImpl
+	internal partial class ExpressionFilterImpl : ExpressionQueryImpl
 	{
 
 		public override async Task<IList> ListAsync(CancellationToken cancellationToken = default(CancellationToken))

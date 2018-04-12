@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using NHibernate.Type;
 using NUnit.Framework;
@@ -17,11 +19,27 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void EachEmbeddedBasicTypeIsSerializable()
 		{
-			FieldInfo[] builtInCustomTypes = typeof(NHibernateUtil).GetFields(BindingFlags.Public | BindingFlags.Static);
-			foreach (FieldInfo fieldInfo in builtInCustomTypes)
+			var testExplicit = new HashSet<string>
 			{
-				IType ntp = (IType) fieldInfo.GetValue(null);
+				"Serializable",
+				"Object"
+			};
+			
+			var builtInCustomTypes =
+				typeof(NHibernateUtil)
+					.GetFields(BindingFlags.Public | BindingFlags.Static)
+					.Where(f => !testExplicit.Contains(f.Name));
+			
+			foreach (var fieldInfo in builtInCustomTypes)
+			{
+				var ntp = (IType) fieldInfo.GetValue(null);
 				NHAssert.IsSerializable(ntp, fieldInfo.Name + " is not serializable");
+			}
+
+			if (typeof(System.Type).IsSerializable)
+			{
+				NHAssert.IsSerializable(NHibernateUtil.Serializable);
+				NHAssert.IsSerializable(NHibernateUtil.Object);
 			}
 		}
 	}

@@ -305,6 +305,12 @@ namespace NHibernate.Test.Linq
 				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.TrimStart('h') == "eh"));
 				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.TrimEnd('h') == "he"));
 
+				// Check when passed as array
+				// (the single character parameter is a new overload in .netcoreapp2.0, but not net461 or .netstandard2.0).
+				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.Trim(new [] { 'h' }) == "e"));
+				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.TrimStart(new[] { 'h' }) == "eh"));
+				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.TrimEnd(new[] { 'h' }) == "he"));
+
 				// Let it rollback to get rid of temporary changes.
 			}
 		}

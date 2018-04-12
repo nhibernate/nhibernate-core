@@ -20,8 +20,8 @@ namespace NHibernate.Driver
 	{
 		private const string SELECT_CLAUSE_EXP = @"(?<=\bselect|\bwhere).*";
 		private const string CAST_PARAMS_EXP = @"(?<![=<>]\s?|first\s?|skip\s?|between\s|between\s@\bp\w+\b\sand\s)@\bp\w+\b(?!\s?[=<>])";
-		private readonly Regex _statementRegEx = new Regex(SELECT_CLAUSE_EXP, RegexOptions.IgnoreCase);
-		private readonly Regex _castCandidateRegEx = new Regex(CAST_PARAMS_EXP, RegexOptions.IgnoreCase);
+		private static readonly Regex _statementRegEx = new Regex(SELECT_CLAUSE_EXP, RegexOptions.IgnoreCase);
+		private static readonly Regex _castCandidateRegEx = new Regex(CAST_PARAMS_EXP, RegexOptions.IgnoreCase);
 		private readonly FirebirdDialect _fbDialect = new FirebirdDialect();
 
 		/// <summary>
@@ -37,7 +37,6 @@ namespace NHibernate.Driver
 				"FirebirdSql.Data.FirebirdClient.FbConnection",
 				"FirebirdSql.Data.FirebirdClient.FbCommand")
 		{
-
 		}
 
 		public override void Configure(IDictionary<string, string> settings)
@@ -46,20 +45,11 @@ namespace NHibernate.Driver
 			_fbDialect.Configure(settings);
 		}
 
-		public override bool UseNamedPrefixInSql
-		{
-			get { return true; }
-		}
+		public override bool UseNamedPrefixInSql => true;
 
-		public override bool UseNamedPrefixInParameter
-		{
-			get { return true; }
-		}
+		public override bool UseNamedPrefixInParameter => true;
 
-		public override string NamedPrefix
-		{
-			get { return "@"; }
-		}
+		public override string NamedPrefix => "@";
 
 		protected override void InitializeParameter(DbParameter dbParam, string name, SqlType sqlType)
 		{
@@ -96,7 +86,7 @@ namespace NHibernate.Driver
 			return _statementRegEx.Match(commandText).Value;
 		}
 
-		private HashSet<string> GetCastCandidates(string statement)
+		private static HashSet<string> GetCastCandidates(string statement)
 		{
 			var candidates =
 				_castCandidateRegEx
