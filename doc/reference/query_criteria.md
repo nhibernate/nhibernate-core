@@ -158,7 +158,7 @@ You may specify association fetching semantics at runtime using
         .SetFetchMode("Mate", FetchMode.Eager)
         .SetFetchMode("Kittens", FetchMode.Eager)
         .List<Cat>();
-```\
+```
 
 This query will fetch both `Mate` and `Kittens` by outer join. See
 [???](#performance-fetching) for more information.
