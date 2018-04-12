@@ -1,99 +1,101 @@
 # NHibernate.Caches
 
-> **NHibernate.Caches namespace contains several second-level cache
-> providers for NHibernate.**
-> 
-> A cache is a place where entities are kept after being loaded from the
-> database; once cached, they can be retrieved without going to the
-> database. This means that they are faster to (re)load.
-> 
-> An NHibernate session has an internal (first-level) cache where it
-> keeps its entities. There is no sharing between these caches - a
-> first-level cache belongs to a given session and is destroyed with it.
-> NHibernate provides a *second-level cache* system; it works at the
-> session factory level. A second-level cache is shared by all sessions
-> created by the same session factory.
-> 
-> An important point is that the second-level cache *does not* cache
-> instances of the object type being cached; instead it caches the
-> individual values of the properties of that object. This provides two
-> benefits. One, NHibernate doesn't have to worry that your client code
-> will manipulate the objects in a way that will disrupt the cache. Two,
-> the relationships and associations do not become stale, and are easy
-> to keep up-to-date because they are simply identifiers. The cache is
-> not a tree of objects but rather a map of arrays.
-> 
-> With the *session-per-request* model, a high number of sessions can
-> concurrently access the same entity without hitting the database each
-> time; hence the performance gain.
-> 
-> Depending on the chosen cache provider, the second level cache may be
-> actually shared between different session factories. If you need to
-> avoid this for some session factories, configure each of them with a
-> different `cache.region_prefix`. See [Optional configuration properties](configuration.md#optional-configuration-properties).
-> 
-> Several cache providers have been contributed by NHibernate users:
-> 
->   - `NHibernate.Caches.Prevalence`  
->     Uses `Bamboo.Prevalence` as the cache provider. Open the file
->     `Bamboo.Prevalence.license.txt` for more information about its
->     license; you can also visit its
->     [website](http://bbooprevalence.sourceforge.net/). This provider
->     is available for the .Net Framework only. Also see
->     [Prevalence Cache Configuration](#prevalence-cache-onfiguration).
-> 
->   - `NHibernate.Caches.SysCache`  
->     Uses `System.Web.Caching.Cache` as the cache provider. This means
->     that you can rely on ASP.NET caching feature to understand how it
->     works. For more information, read (on the MSDN): [Caching Application Data](https://msdn.microsoft.com/en-us/library/6hbbsfk6.aspx).
->     This provider is available for the .Net Framework only. Also see
->     [SysCache Configuration](#syscache-configuration).
-> 
->   - `NHibernate.Caches.SysCache2`  
->     Similar to `NHibernate.Caches.SysCache`, uses ASP.NET cache. This
->     provider also supports SQL dependency-based expiration, meaning
->     that it is possible to configure certain cache regions to
->     automatically expire when the relevant data in the database
->     changes.
->     
->     SysCache2 requires Microsoft SQL Server 2000 or higher. This
->     provider is available for the .Net Framework only.
->     
->     See [SysCache2 Configuration](#syscache2-configuration).
-> 
->   - `NHibernate.Caches.EnyimMemcached`  
->     Uses `Memcached`. See [memcached homepage](https://memcached.org/)
->     for more information on Memcached. This provider is available for
->     the .Net Framework only. Also see
->     [EnyimMemcached Configuration](#enyimmemcached-configuration).
-> 
->   - `NCache provider for NHibernate`  
->     Uses `NCache`. NCache is a commercial distributed caching system
->     with a provider for NHibernate. The NCache Express version is free
->     for use, see [NCache Express
->     homepage](http://www.alachisoft.com/ncache/) for more information.
-> 
->   - `NHibernate.Caches.RtMemoryCache`  
->     Uses `System.Runtime.Caching.MemoryCache.Default` as the cache
->     provider. This provider is available for the .Net Framework only.
->     See [RtMemoryCache Configuration](#rtmemorycache-configuration).
-> 
->   - `NHibernate.Caches.CoreMemoryCache`  
->     Uses `Microsoft.Extensions.Caching.Memory.MemoryCache` as the
->     cache provider. This provider is available as a .Net Standard
->     NuGet package. See
->     [CoreMemoryCache Configuration](#corememorycache-configuration).
-> 
->   - `NHibernate.Caches.CoreDistributedCache`  
->     Uses `Microsoft.Extensions.Caching.Abstractions.IDistributedCache`
->     implementations as the cache provider. The implementation has to
->     be provided through an `IDistributedCacheFactory`. Distributed
->     cache factories for `Memcached`, `Redis`, `SqlServer` and `Memory`
->     caches are available through their own package, prefixed by
->     `NHibernate.Caches.CoreDistributedCache.`.
->     
->     This provider is available as a .Net Standard NuGet package. See
->     [CoreDistributedCache Configuration.](#coredistributedcache-configuration”.).
+## What is NHibernate.Caches?
+
+**NHibernate.Caches namespace contains several second-level cache
+providers for NHibernate.**
+
+A cache is a place where entities are kept after being loaded from the
+database; once cached, they can be retrieved without going to the
+database. This means that they are faster to (re)load.
+
+An NHibernate session has an internal (first-level) cache where it
+keeps its entities. There is no sharing between these caches - a
+first-level cache belongs to a given session and is destroyed with it.
+NHibernate provides a *second-level cache* system; it works at the
+session factory level. A second-level cache is shared by all sessions
+created by the same session factory.
+
+An important point is that the second-level cache *does not* cache
+instances of the object type being cached; instead it caches the
+individual values of the properties of that object. This provides two
+benefits. One, NHibernate doesn't have to worry that your client code
+will manipulate the objects in a way that will disrupt the cache. Two,
+the relationships and associations do not become stale, and are easy
+to keep up-to-date because they are simply identifiers. The cache is
+not a tree of objects but rather a map of arrays.
+
+With the *session-per-request* model, a high number of sessions can
+concurrently access the same entity without hitting the database each
+time; hence the performance gain.
+
+Depending on the chosen cache provider, the second level cache may be
+actually shared between different session factories. If you need to
+avoid this for some session factories, configure each of them with a
+different `cache.region_prefix`. See [Optional configuration properties](configuration.md#optional-configuration-properties).
+
+Several cache providers have been contributed by NHibernate users:
+
+  - `NHibernate.Caches.Prevalence`  
+    Uses `Bamboo.Prevalence` as the cache provider. Open the file
+    `Bamboo.Prevalence.license.txt` for more information about its
+    license; you can also visit its
+    [website](http://bbooprevalence.sourceforge.net/). This provider
+    is available for the .Net Framework only. Also see
+    [Prevalence Cache Configuration](#prevalence-cache-onfiguration).
+
+  - `NHibernate.Caches.SysCache`  
+    Uses `System.Web.Caching.Cache` as the cache provider. This means
+    that you can rely on ASP.NET caching feature to understand how it
+    works. For more information, read (on the MSDN): [Caching Application Data](https://msdn.microsoft.com/en-us/library/6hbbsfk6.aspx).
+    This provider is available for the .Net Framework only. Also see
+    [SysCache Configuration](#syscache-configuration).
+
+  - `NHibernate.Caches.SysCache2`  
+    Similar to `NHibernate.Caches.SysCache`, uses ASP.NET cache. This
+    provider also supports SQL dependency-based expiration, meaning
+    that it is possible to configure certain cache regions to
+    automatically expire when the relevant data in the database
+    changes.
+    
+    SysCache2 requires Microsoft SQL Server 2000 or higher. This
+    provider is available for the .Net Framework only.
+    
+    See [SysCache2 Configuration](#syscache2-configuration).
+
+  - `NHibernate.Caches.EnyimMemcached`  
+    Uses `Memcached`. See [memcached homepage](https://memcached.org/)
+    for more information on Memcached. This provider is available for
+    the .Net Framework only. Also see
+    [EnyimMemcached Configuration](#enyimmemcached-configuration).
+
+  - `NCache provider for NHibernate`  
+    Uses `NCache`. NCache is a commercial distributed caching system
+    with a provider for NHibernate. The NCache Express version is free
+    for use, see [NCache Express
+    homepage](http://www.alachisoft.com/ncache/) for more information.
+
+  - `NHibernate.Caches.RtMemoryCache`  
+    Uses `System.Runtime.Caching.MemoryCache.Default` as the cache
+    provider. This provider is available for the .Net Framework only.
+    See [RtMemoryCache Configuration](#rtmemorycache-configuration).
+
+  - `NHibernate.Caches.CoreMemoryCache`  
+    Uses `Microsoft.Extensions.Caching.Memory.MemoryCache` as the
+    cache provider. This provider is available as a .Net Standard
+    NuGet package. See
+    [CoreMemoryCache Configuration](#corememorycache-configuration).
+
+  - `NHibernate.Caches.CoreDistributedCache`  
+    Uses `Microsoft.Extensions.Caching.Abstractions.IDistributedCache`
+    implementations as the cache provider. The implementation has to
+    be provided through an `IDistributedCacheFactory`. Distributed
+    cache factories for `Memcached`, `Redis`, `SqlServer` and `Memory`
+    caches are available through their own package, prefixed by
+    `NHibernate.Caches.CoreDistributedCache.`.
+    
+    This provider is available as a .Net Standard NuGet package. See
+    [CoreDistributedCache Configuration.](#coredistributedcache-configuration”.).
 
 # How to use a cache?
 
