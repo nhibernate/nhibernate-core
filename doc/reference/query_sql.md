@@ -3,7 +3,7 @@
 You may also express queries in the native SQL dialect of your database.
 This is useful if you want to utilize database specific features such as
 query hints or the `CONNECT` keyword in Oracle. It also provides a clean
-migration path from a direct SQL/ADO.NET based application to
+migration path from a direct SQL/`ADO.NET` based application to
 NHibernate.
 
 NHibernate allows you to specify handwritten SQL (including stored
@@ -130,8 +130,8 @@ likely will fail):
 The intention for this query is to return two Cat instances per row, a
 cat and its mother. This will fail since there is a conflict of names
 since they are mapped to the same column names and on some databases the
-returned column aliases will most likely be on the form "c.ID",
-"c.NAME", etc. which are not equal to the columns specified in the
+returned column aliases will most likely be on the form `"c.ID"`,
+`"c.NAME"`, etc. which are not equal to the columns specified in the
 mappings ("ID" and "NAME").
 
 The following form is not vulnerable to column name duplication:
@@ -347,7 +347,7 @@ matching settings available on the `ISQLQuery` interface.
   - `flush-mode` - override the session flush mode just for this query.
 
   - `cacheable` - allow the query results to be cached by the second
-    level cache. See [???](#caches).
+    level cache. See [NHibernate.Caches](nhibernate-caches.md).
 
   - `cache-region` - specify the cache region of the query.
 
@@ -358,7 +358,7 @@ matching settings available on the `ISQLQuery` interface.
   - `timeout` - set the query timeout in seconds.
 
   - `read-only` - `true` switches yielded entities to read-only. See
-    [???](#readonly).
+    [Read-only entities](readonly.md).
 
   - `comment` - add a custom comment to the SQL.
 

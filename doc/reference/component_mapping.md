@@ -180,7 +180,7 @@ component class must satisfy certain requirements:
     with the database's notion of composite key equality.
 
   - It should re-implement `ToString()` if you consider using the second
-    level cache. See [???](#NHibernate.Caches-howto).
+    level cache. See [How to use a cache?](nhibernate_caches.md#how-to-use-a-cache).
 
 You can't use an `IIdentifierGenerator` to generate composite keys.
 Instead the application must assign its own identifiers.

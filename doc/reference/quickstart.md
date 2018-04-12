@@ -319,7 +319,7 @@ work is completed:
 In an `ISession`, every database operation occurs inside a transaction
 that isolates the database operations (even read-only operations). We
 use NHibernate's `ITransaction` API to abstract from the underlying
-transaction strategy (in our case, ADO.NET transactions). Please note
+transaction strategy (in our case, `ADO.NET` transactions). Please note
 that the example above does not handle any exceptions.
 
 Also note that you may call `NHibernateHelper.GetCurrentSession();` as
@@ -360,7 +360,7 @@ can be used to formulate type-safe queries, the Hibernate Query Language
 to SQL, as well as a strongly-typed LINQ API which translates internally
 to HQL. NHibernate of course uses `DbCommand`s and parameter binding for
 all SQL communication with the database. You may also use NHibernate's
-direct SQL query feature or get a plain ADO.NET connection from an
+direct SQL query feature or get a plain `ADO.NET` connection from an
 `ISession` in rare cases.
 
 Since NHibernate 5.0, the session and its queries IO bound methods have

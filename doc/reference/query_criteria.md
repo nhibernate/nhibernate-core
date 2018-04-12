@@ -125,8 +125,7 @@ use `SetResultTransformer(Transformers.AliasToEntityMap)`.
 ```
 
 Note that for retrieving just kittens you can also use an entity
-projection. See [Projections, aggregation and
-grouping](#querycriteria-projection) for more information.
+projection. See [Projections, aggregation and grouping](#projections-aggregation-and-grouping) for more information.
 
 # Join entities without association (Entity joins or ad hoc joins)
 
@@ -161,7 +160,7 @@ You may specify association fetching semantics at runtime using
 ```
 
 This query will fetch both `Mate` and `Kittens` by outer join. See
-[???](#performance-fetching) for more information.
+[Fetching strategies](performance.md#fetching-strategies) for more information.
 
 # Example queries
 
@@ -297,7 +296,7 @@ You can also add an entity projection to a criteria query:
     }
 ```
 
-See [???](#queryqueryover-projectionentities) for more information.
+See [Entities Projection](query_queryover.md#entities-projection) for more information.
 
 # Detached queries and sub-queries
 

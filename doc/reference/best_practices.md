@@ -26,12 +26,12 @@
     make the application more portable.
 
   - Use parameters.  
-    As in ADO.NET, always replace non-constant values by "?". Never use
+    As in `ADO.NET` , always replace non-constant values by "?". Never use
     string manipulation to bind a non-constant value in a query\! Even
     better, consider using named parameters in queries.
 
-  - Don't manage your own ADO.NET connections.  
-    NHibernate lets the application manage ADO.NET connections. This
+  - Don't manage your own `ADO.NET` connections.  
+    NHibernate lets the application manage `ADO.NET` connections. This
     approach should be considered a last-resort. If you can't use the
     built-in connections providers, consider providing your own
     implementation of `NHibernate.Connection.IConnectionProvider`.
@@ -44,12 +44,12 @@
     application code from implementing transformations to / from an
     NHibernate type.
 
-  - Use hand-coded ADO.NET in bottlenecks.  
+  - Use hand-coded `ADO.NET` in bottlenecks.  
     In performance-critical areas of the system, some kinds of
     operations (eg. mass update / delete) might benefit from direct
-    ADO.NET. But please, wait until you *know* something is a
-    bottleneck. And don't assume that direct ADO.NET is necessarily
-    faster. If need to use direct ADO.NET, it might be worth opening a
+    `ADO.NET` . But please, wait until you *know* something is a
+    bottleneck. And don't assume that direct `ADO.NET` is necessarily
+    faster. If need to use direct `ADO.NET` , it might be worth opening a
     NHibernate `ISession` and using that SQL connection. That way you
     can still use the same transaction strategy and underlying
     connection provider.
@@ -76,7 +76,7 @@
     point of view of a user. This Application Transaction might span
     several client requests and response cycles. Either use Detached
     Objects or, in two tiered architectures, simply disconnect the
-    NHibernate Session from the ADO.NET connection and reconnect it for
+    NHibernate Session from the `ADO.NET` connection and reconnect it for
     each subsequent request. Never use a single Session for more than
     one Application Transaction use-case, otherwise, you will run into
     stale data.
@@ -102,7 +102,7 @@
   - Consider abstracting your business logic from NHibernate.  
     Hide (NHibernate) data-access code behind an interface. Combine the
     *DAO* and *Thread Local Session* patterns. You can even have some
-    classes persisted by hand-coded ADO.NET, associated to NHibernate
+    classes persisted by hand-coded `ADO.NET` , associated to NHibernate
     via an `IUserType`. (This advice is intended for "sufficiently
     large" applications; it is not appropriate for an application with
     five tables\!)

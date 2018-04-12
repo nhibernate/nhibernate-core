@@ -368,5 +368,5 @@ library).
 
 In the design of this project, performance is a (*very*) minor goal :)
 Easier implementation and maintenance are far more important because you
-can (and should) avoid to use this library in production (Cf. the first
-tip in [section\_title](#mapping-attributes-tips)).
+can (and should) avoid to use this library in production (see the first
+tip in [Tips](#tips)).

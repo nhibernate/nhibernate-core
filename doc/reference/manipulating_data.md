@@ -98,7 +98,7 @@ used to initialize some of the properties of the object.
 An important question usually appears at this point: How much does
 NHibernate load from the database and how many SQL `SELECT`s will it
 use? This depends on the *fetching strategy* and is explained in
-[???](#performance-fetching).
+[Fetching strategies](performance.md#fetching-strategies).
 
 # Querying
 
@@ -142,8 +142,8 @@ simple but powerful object oriented query language.
 ```
 
 These given `Set` parameters are used to bind the given values to the
-`?` query placeholders (which map to input parameters of an ADO.NET
-`DbCommand`). Just as in ADO.NET, you should use this binding mechanism
+`?` query placeholders (which map to input parameters of an `ADO.NET` 
+`DbCommand`). Just as in `ADO.NET` , you should use this binding mechanism
 in preference to string manipulation.
 
 The `NHibernateUtil` class defines a number of static methods and
@@ -189,7 +189,7 @@ example of a query that should be called using `Enumerable()`:
 ```
 
 Calling the previous query using `CreateQuery()` would return a very
-large ADO.NET result set containing the same data many times.
+large `ADO.NET` result set containing the same data many times.
 
 NHibernate queries sometimes return tuples of objects, in which case
 each tuple is returned as an array:
@@ -279,7 +279,7 @@ on the `IQuery` interface.
   - `flush-mode` - override the session flush mode just for this query.
 
   - `cacheable` - allow the query results to be cached by the second
-    level cache. See [???](#caches).
+    level cache. See [NHibernate.Caches](nhibernate-caches.md).
 
   - `cache-region` - specify the cache region of the query.
 
@@ -290,7 +290,7 @@ on the `IQuery` interface.
   - `timeout` - set the query timeout in seconds.
 
   - `read-only` - `true` switches yielded entities to read-only. See
-    [???](#readonly).
+    [Read-only entities](readonly.md).
 
   - `comment` - add a custom comment to the generated SQL.
 
@@ -585,7 +585,7 @@ wrong order.
 # Flush
 
 From time to time the `ISession` will execute the SQL statements needed
-to synchronize the ADO.NET connection's state with the state of objects
+to synchronize the `ADO.NET` connection's state with the state of objects
 held in memory. This process, *flush*, occurs by default at the
 following points
 
@@ -616,7 +616,7 @@ The SQL statements are issued in the following order
 inserted when they are saved.)
 
 Except when you explicitly `Flush()`, there are absolutely no guarantees
-about *when* the `Session` executes the ADO.NET calls, only the *order*
+about *when* the `Session` executes the `ADO.NET` calls, only the *order*
 in which they are executed. However, NHibernate does guarantee that the
 queries methods will never return stale data; nor will they return the
 wrong data.
@@ -629,7 +629,7 @@ explained routine (will only work inside an explicit NHibernate
 `ITransaction` or inside a transaction scope), or never flush unless
 `Flush()` is called explicitly. The last mode is useful for long running
 units of work, where an ISession is kept open and disconnected for a
-long time (see [???](#transactions-optimistic)).
+long time (see [Optimistic concurrency control](transactions.md#optimistic-concurrency-control)).
 
 ```csharp
     sess = sf.OpenSession();
@@ -663,7 +663,7 @@ implementation may have the following effects:
   - Triggers pending cascade operations. This includes any pending
     `Save` of, by example, children added to a collection having the
     `Save` cascade enabled. Depending on the entities ID generators (see
-    [???](#mapping-declaration-id-generator)), this may trigger calls to
+    [generator](basic_mapping.md#generator)), this may trigger calls to
     the database, or even entity insertions if they are using the
     `identity` generator.
 
@@ -694,8 +694,8 @@ If you are using the NHibernate `ITransaction` API, this looks like:
     tx.Commit(); // flush the session and commit the transaction
 ```
 
-If you are managing ADO.NET transactions yourself you should manually
-`Commit()` the ADO.NET transaction.
+If you are managing `ADO.NET` transactions yourself you should manually
+`Commit()` the `ADO.NET` transaction.
 
 ```csharp
     sess.Flush();
@@ -721,7 +721,7 @@ consistent.
 ## Closing the ISession
 
 A call to `ISession.Close()` marks the end of a session. The main
-implication of `Close()` is that the ADO.NET connection will be
+implication of `Close()` is that the `ADO.NET` connection will be
 relinquished by the session.
 
 ```csharp
@@ -771,7 +771,7 @@ NHibernate applications:
     }
 
 ```
-Or, when manually managing ADO.NET transactions:
+Or, when manually managing `ADO.NET` transactions:
 
 ```csharp
     ISession sess = factory.openSession();

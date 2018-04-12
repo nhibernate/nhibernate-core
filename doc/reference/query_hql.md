@@ -80,7 +80,7 @@ to be initialized along with their parent objects, using a single
 select. This is particularly useful in the case of a collection. It
 effectively overrides the outer join and lazy declarations of the
 mapping file for associations and collections. See
-[???](#performance-fetching) for more information.
+[Fetching strategies](performance.md#fetching-strategies) for more information.
 
     from Eg.Cat as cat 
         inner join fetch cat.Mate
@@ -193,7 +193,7 @@ Note that these last two queries will require more than one SQL
 the whole result set.
 
 In order to use non-mapped base classes or interfaces in HQL queries,
-they have to be imported. See [???](#mapping-declaration-import) for
+they have to be imported. See [import](basic_mapping.md#import) for
 more information.
 
 # The where clause

@@ -5,7 +5,7 @@ object-relational mapping tool. Transaction management is delegated to
 the underlying database connection. If the connection is enlisted with a
 distributed transaction, operations performed by the `ISession` are
 atomically part of the wider distributed transaction. NHibernate can be
-seen as a thin adapter to ADO.NET, adding object-oriented semantics.
+seen as a thin adapter to `ADO.NET` , adding object-oriented semantics.
 
 # Configurations, Sessions and Factories
 
@@ -29,7 +29,7 @@ We use the NHibernate `ITransaction` API as discussed previously, a
 single `Commit()` of a NHibernate `ITransaction` flushes the state and
 commits any underlying database connection. Transaction scopes can be
 used instead, which allows the transaction to be distributed. See
-[Transaction scopes (System.Transactions)](#transactions-scopes).
+[Transaction scopes (System.Transactions)](#transaction-scopes-systemtransactions).
 
 NHibernate may be used without managing transactions neither with the
 `ITransaction` API nor with transaction scopes. We advise against such a
@@ -43,7 +43,7 @@ SQL Server) or shortening your transactions rather than removing them.
 
 Ensure you understand the semantics of `Flush()`. Flushing synchronizes
 the persistent store with in-memory changes but *not* vice-versa. Note
-that for all NHibernate ADO.NET connections/transactions, the
+that for all NHibernate `ADO.NET` connections/transactions, the
 transaction isolation level for that connection applies to all
 operations executed by NHibernate\!
 
@@ -123,7 +123,7 @@ the whole application transaction.
 The `ISession` uses optimistic locking with versioning to ensure that
 many database transactions appear to the application as a single logical
 application transaction. The `ISession` is disconnected from any
-underlying ADO.NET connection when waiting for user interaction. This
+underlying `ADO.NET` connection when waiting for user interaction. This
 approach is the most efficient in terms of database access. The
 application need not concern itself with version checking or with
 reattaching detached instances.
@@ -141,7 +141,7 @@ reattaching detached instances.
 ```
 
 The `foo` object still knows which `ISession` it was loaded it. As soon
-as the `ISession` has an ADO.NET connection, we commit the changes to
+as the `ISession` has an `ADO.NET` connection, we commit the changes to
 the object.
 
 This pattern is problematic if our `ISession` is too big to be stored
@@ -247,10 +247,10 @@ performance reasons you should
 
 1.  commit the `ITransaction` and then
 
-2.  disconnect the `ISession` from the ADO.NET connection
+2.  disconnect the `ISession` from the `ADO.NET` connection
 
 before waiting for user activity. The method `ISession.Disconnect()`
-will disconnect the session from the ADO.NET connection and return the
+will disconnect the session from the `ADO.NET` connection and return the
 connection to the pool (unless you provided the connection).
 
 `ISession.Reconnect()` obtains a new connection (or you may supply one)
@@ -331,7 +331,7 @@ conversation up into atomic units of work at the database level.
 
 It is not intended that users spend much time worrying about locking
 strategies. It's usually enough to specify an isolation level for the
-ADO.NET connections and then simply let the database do all the work.
+`ADO.NET` connections and then simply let the database do all the work.
 However, advanced users may sometimes wish to obtain exclusive
 pessimistic locks, or re-obtain locks at the start of a new transaction.
 
@@ -383,11 +383,11 @@ exception). This ensures that applications will be portable.
 
 # Connection Release Modes
 
-The legacy (1.0.x) behavior of NHibernate in regards to ADO.NET
+The legacy (1.0.x) behavior of NHibernate in regards to `ADO.NET` 
 connection management was that a `ISession` would obtain a connection
 when it was first needed and then hold unto that connection until the
 session was closed. NHibernate introduced the notion of connection
-release modes to tell a session how to handle its ADO.NET connections.
+release modes to tell a session how to handle its `ADO.NET` connections.
 Note that the following discussion is pertinent only to connections
 provided through a configured `IConnectionProvider`; user-supplied
 connections are outside the breadth of this discussion. The different
@@ -423,7 +423,7 @@ which release mode to use. The possible values:
 If your application manages transactions through .NET APIs such as
 `System.Transactions` library while not using a compatible transaction
 factory (see `transaction.factory_class` in
-[???](#configuration-optional)),
+[Optional configuration properties](configuration.md#optional-configuration-properties)),
 `ConnectionReleaseMode.AfterTransaction` may cause NHibernate to open
 and close several connections during one transaction, leading to
 unnecessary overhead and transaction promotion from local to
@@ -435,7 +435,7 @@ the legacy behavior and prevent this problem from occurring.
 Instead of using NHibernate `ITransaction`, `TransactionScope` can be
 used. Please do not use both simultaneously. Using `TransactionScope`
 requires using a compatible transaction factory (see
-`transaction.factory_class` in [???](#configuration-optional)). The
+`transaction.factory_class` in [Optional configuration properties](configuration.md#optional-configuration-properties)). The
 default transaction factory supports scopes.
 
 When using `TransactionScope` with NHibernate, you need to be aware of

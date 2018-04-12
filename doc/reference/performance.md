@@ -148,8 +148,7 @@ example:
 "fetch plan".)
 
 A completely different way to avoid problems with N+1 selects is to use
-the [second-level cache](#performance-cache), or to enable [batch
-fetching](#performance-fetching-batch).
+the [second-level cache](#the-second-level-cache), or to enable [batch fetching](#using-batch-fetching).
 
 ## Single-ended association proxies
 
@@ -511,7 +510,7 @@ strategies.
 
 Cache Concurrency Strategy Support
 
-Refer to [???](#caches) for more details.
+Refer to [NHibernate.Caches](nhibernate-caches.md) for more details.
 
 # Managing the caches
 
@@ -765,7 +764,7 @@ NHibernate supports batching SQL update commands (`INSERT`, `UPDATE`,
     function in environments where necessary permissions are not
     granted,
 
-  - optimistic concurrency checking may be impaired since ADO.NET 2.0
+  - optimistic concurrency checking may be impaired since `ADO.NET` 2.0
     does not return the number of rows affected by each statement in the
     batch, only the total number of rows affected by the batch.
 

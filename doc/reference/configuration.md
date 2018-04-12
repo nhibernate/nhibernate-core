@@ -82,10 +82,10 @@ However, NHibernate does allow your application to instantiate more than
 one `ISessionFactory`. This is useful if you are using more than one
 database.
 
-# User provided ADO.NET connection
+# User provided `ADO.NET` connection
 
-An `ISessionFactory` may open an `ISession` on a user-provided ADO.NET
-connection. This design choice frees the application to obtain ADO.NET
+An `ISessionFactory` may open an `ISession` on a user-provided `ADO.NET` 
+connection. This design choice frees the application to obtain `ADO.NET` 
 connections wherever it pleases:
 
 ```csharp
@@ -96,12 +96,12 @@ connections wherever it pleases:
 ```
 
 The application must be careful not to open two concurrent `ISession`s
-on the same ADO.NET connection\!
+on the same `ADO.NET` connection\!
 
-# NHibernate provided ADO.NET connection
+# NHibernate provided `ADO.NET` connection
 
 Alternatively, you can have the `ISessionFactory` open connections for
-you. The `ISessionFactory` must be provided with ADO.NET connection
+you. The `ISessionFactory` must be provided with `ADO.NET` connection
 properties in one of the following ways:
 
 1.  Pass an instance of `IDictionary` mapping property names to property
@@ -118,14 +118,16 @@ properties in one of the following ways:
 
 If you take this approach, opening an `ISession` is as simple as:
 
+```csharp
     ISession session = sessions.OpenSession(); // open a new Session
     // do some data access work, an ADO.NET connection will be used on demand
+```
 
 All NHibernate property names and semantics are defined on the class
 `NHibernate.Cfg.Environment`. We will now describe the most important
-settings for ADO.NET connection configuration.
+settings for `ADO.NET` connection configuration.
 
-NHibernate will obtain (and pool) connections using an ADO.NET data
+NHibernate will obtain (and pool) connections using an `ADO.NET` data
 provider if you set the following properties:
 
 | Property name                     | Purpose                                                                                                                                                                                                                                                                                                                                                                                                                                                |         |
@@ -134,8 +136,8 @@ provider if you set the following properties:
 | connection.driver_class           | The type of a custom `IDriver`, if using `DriverConnectionProvider`, eg.` full.classname.of.Driver` if the Driver is built into NHibernate, or `full.classname.of.Driver`, assembly if using an implementation of `IDriver` not included in NHibernate. This is usually not needed, most of the time the dialect will take care of setting the `IDriver` using a sensible default. See the API documentation of the specific dialect for the defaults. |         |
 | connection.connection_string      | Connection string to use to obtain the connection.                                                                                                                                                                                                                                                                                                                                                                                                     |         |
 | connection.connection_string_name | The name of the connection string (defined in `<connectionStrings>` configuration file element) to use to obtain the connection.                                                                                                                                                                                                                                                                                                                       |         |
-| connection.isolation              | Set the ADO.NET transaction isolation level. Check `System.Data.IsolationLevel` for meaningful values and the database's documentation to ensure that level is supported. eg. `Chaos`, `ReadCommitted`,` ReadUncommitted`, `RepeatableRead`, `Serializable`, `Unspecified`                                                                                                                                                                             |         |
-| connection.release_mode           | Specify when NHibernate should release ADO.NET connections. See ???. eg. `auto` (default), `on_close`, `after_transaction`. Note that for `ISession`s obtained through `ISessionFactory.GetCurrentSession`, the `ICurrentSessionContext` implementation configured for use may control the connection release mode for those `ISession`s. See ???.                                                                                                     |         |
+| connection.isolation              | Set the `ADO.NET` transaction isolation level. Check `System.Data.IsolationLevel` for meaningful values and the database's documentation to ensure that level is supported. eg. `Chaos`, `ReadCommitted`,` ReadUncommitted`, `RepeatableRead`, `Serializable`, `Unspecified`                                                                                                                                                                           |         |
+| connection.release_mode           | Specify when NHibernate should release `ADO.NET` connections. See ???. eg. `auto` (default), `on_close`, `after_transaction`. Note that for `ISession`s obtained through `ISessionFactory.GetCurrentSession`, the `ICurrentSessionContext` implementation configured for use may control the connection release mode for those `ISession`s. See ???.                                                                                                   |         |
 | prepare_sql                       | Specify to prepare `DbCommand`s generated by NHibernate. Defaults to `false`. eg. `true`, `false`                                                                                                                                                                                                                                                                                                                                                      |         |
 | command_timeout                   | Specify the default timeout in seconds of `DbCommand`s generated by NHibernate. Negative values disable it. eg. `30`                                                                                                                                                                                                                                                                                                                                   |         |
 | adonet.batch_size                 | Specify the batch size to use when batching update statements. Setting this to `0` (the default) disables the functionality. See ???. eg. `20`                                                                                                                                                                                                                                                                                                         |         |
@@ -170,10 +172,10 @@ inside a `web.config`:
     </configuration>
 ```
 
-NHibernate relies on the ADO.NET data provider implementation of
+NHibernate relies on the `ADO.NET` data provider implementation of
 connection pooling.
 
-You may define your own plug-in strategy for obtaining ADO.NET
+You may define your own plug-in strategy for obtaining `ADO.NET` 
 connections by implementing the interface
 `NHibernate.Connection.IConnectionProvider`. You may select a custom
 implementation by setting `connection.provider`.
@@ -252,7 +254,7 @@ above, saving you the effort of specifying them manually.
 |------------------------------------------|-------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | DB2                                      | `NHibernate.Dialect.DB2Dialect`                 |                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | DB2 for iSeries (OS/400)                 | `NHibernate.Dialect.DB2400Dialect`              |                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| Firebird                                 | `NHibernate.Dialect.FirebirdDialect`            | Set `driver_class` to `NHibernate.Driver.FirebirdClientDriver` for Firebird ADO.NET provider 2.0.                                                                                                                                                                                                                                                                                                                                       |
+| Firebird                                 | `NHibernate.Dialect.FirebirdDialect`            | Set `driver_class` to `NHibernate.Driver.FirebirdClientDriver` for Firebird `ADO.NET` provider 2.0.                                                                                                                                                                                                                                                                                                                                     |
 | Informix                                 | `NHibernate.Dialect.InformixDialect`            |                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | Informix 9.40                            | `NHibernate.Dialect.InformixDialect0940`        |                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | Informix 10.00                           | `NHibernate.Dialect.InformixDialect1000`        |                                                                                                                                                                                                                                                                                                                                                                                                                                         |
@@ -313,7 +315,7 @@ Outer join fetching may be disabled *globally* by setting the property
 fetching for one-to-one and many-to-one associations which have been
 mapped with `fetch="join"`.
 
-See [???](#performance-fetching) for more information.
+See [Fetching strategies](performance.md#fetching-strategies) for more information.
 
 In NHibernate 1.0, `outer-join` attribute could be used to achieve a
 similar effect. This attribute is now deprecated in favor of `fetch`.
@@ -323,7 +325,7 @@ similar effect. This attribute is now deprecated in favor of `fetch`.
 You may integrate a process-level (or clustered) second-level cache
 system by implementing the interface `NHibernate.Cache.ICacheProvider`.
 You may select the custom implementation by setting
-`cache.provider_class`. See the [???](#performance-cache) for more
+`cache.provider_class`. See the [The Second Level Cache](performance.md#the-second-level-cache) for more
 details.
 
 ## Query Language Substitution

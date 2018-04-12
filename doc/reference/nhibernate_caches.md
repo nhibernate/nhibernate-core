@@ -30,7 +30,7 @@
 > Depending on the chosen cache provider, the second level cache may be
 > actually shared between different session factories. If you need to
 > avoid this for some session factories, configure each of them with a
-> different `cache.region_prefix`. See [???](#configuration-optional).
+> different `cache.region_prefix`. See [Optional configuration properties](configuration.md#optional-configuration-properties).
 > 
 > Several cache providers have been contributed by NHibernate users:
 > 
@@ -45,9 +45,7 @@
 >   - `NHibernate.Caches.SysCache`  
 >     Uses `System.Web.Caching.Cache` as the cache provider. This means
 >     that you can rely on ASP.NET caching feature to understand how it
->     works. For more information, read (on the MSDN): [Caching
->     Application
->     Data](https://msdn.microsoft.com/en-us/library/6hbbsfk6.aspx).
+>     works. For more information, read (on the MSDN): [Caching Application Data](https://msdn.microsoft.com/en-us/library/6hbbsfk6.aspx).
 >     This provider is available for the .Net Framework only. Also see
 >     [section\_title](#NHibernate.Caches.SysCache).
 > 
@@ -152,9 +150,9 @@ NHibernate:
     `ToString()` needs to be overridden on composite id classes. It
     should yield an unique string representing the id. If the composite
     id is mapped as a component, overriding the component `ToString()`
-    is enough. See [???](#components-compositeid).
+    is enough. See [Components as composite identifiers](component_mapping.md#components-as-composite-identifiers).
 
-See also [???](#performance-cache).
+See also [The Second Level Cache](performance.md#the-second-level-cache).
 
 # Prevalence Cache Configuration
 
@@ -284,12 +282,9 @@ application's configuration file. See the sample below.
     .
   - `databaseEntryName`  
     The name of a database defined in the
-    databases
-    element for
-    sqlCacheDependency
-    for caching (ASP.NET Settings Schema) element of the application's
-    Web.config
-    file.
+    databases element for sqlCacheDependency
+    for caching [ASP.NET Settings Schema](https://msdn.microsoft.com/en-us/library/b5ysx397(v=vs.71).aspx) element of the application's
+    Web.config file.
 
 ## Command-Based Dependencies
 

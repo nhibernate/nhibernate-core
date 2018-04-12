@@ -16,7 +16,7 @@ course, the Linq namespace is still needed too.
 ```
 
 Note: NHibernate has another querying API which uses lambda,
-[QueryOver](#queryqueryover). It should not be confused with a Linq
+[QueryOver](query_queryover.md). It should not be confused with a Linq
 provider.
 
 # Structure of a Query
@@ -85,7 +85,7 @@ defined in `NHibernate.Linq` namespace.
 # Parameter types
 
 Query parameters get extracted from the Linq expression. Their types are
-selected according to [NHibernate types](#mapping-types) default for
+selected according to [NHibernate types](basic_mapping.md#nhibernate-types) default for
 .Net types.
 
 The `MappedAs` extension method allows to override the default type.
@@ -189,8 +189,7 @@ dictionary item value in a `where` condition, as it can be done with
 [HQL expressions](#queryhql-expressions).
 
 Non generic dictionary method `Contains` and generic dictionary method
-`ContainsKey` are translated to corresponding `indices` [HQL
-expressions](#queryhql-expressions). Supposing `Acts` in following HQL
+`ContainsKey` are translated to corresponding [`indices`](#queryhql-expressions). Supposing `Acts` in following HQL
 example is generic,
 
     from Eg.Show show where 'fizard' in indices(show.Acts)
@@ -333,7 +332,7 @@ defined as extensions in `NHibernate.Linq` namespace.
 
 Issuing many `FetchMany` on the same query may cause a cartesian product
 over the fetched collections. This can be avoided by splitting the
-fetches among [future queries](#querylinq-futureresults).
+fetches among [future queries](#future-results).
 
 ```csharp
     IQueryable<Cat> oldCatsQuery =
@@ -374,8 +373,7 @@ delete it, or instruct in which way it should be updated or inserted.
 Those queries happen entirely inside the database, without extracting
 corresponding entities out of the database.
 
-These operations are a Linq implementation of [???](#batch-direct), with
-the same abilities and limitations.
+These operations are a Linq implementation of [DML-style operations](batch.md#dml-style-operations), with the same abilities and limitations.
 
 ## Inserting new entities
 
@@ -421,7 +419,7 @@ SQL insert. [`version`](#mapping-declaration-version) and
 If not specified, they are inserted with their `seed` value.
 
 For more information on `Insert` limitations, please refer to
-[???](#batch-direct).
+[DML-style operations](batch.md#dml-style-operations).
 
 ## Updating entities
 
@@ -483,7 +481,7 @@ delete. It immediately deletes them.
 # Query cache
 
 The Linq provider can use the query cache if it is setup. Refer to
-[???](#performance-querycache) for more details on how to set it up.
+[The Query Cache](performance.md#the-query-cache) for more details on how to set it up.
 
 
 `SetOptions` extension method allows to enable the cache for the query.
@@ -589,7 +587,7 @@ call can be achieved by registering an additional generator in the Linq
 to NHibernate provider.
 
 If the purpose of the added method is to simply call some SQL function,
-using [Adding SQL functions](#querylinq-extending-sqlfunctions) will be
+using [Adding SQL functions](#adding-sql-functions) will be
 easier.
 
  
@@ -649,7 +647,7 @@ generators registry should be used. Derive from the default one and
 merge it. (Here we have a static declaration of method support case.)
 
 ```csharp
-    public class ExtendedLinqToHqlGeneratorsRegistry :     DefaultLinqToHqlGeneratorsRegistry
+    public class ExtendedLinqToHqlGeneratorsRegistry :  DefaultLinqToHqlGeneratorsRegistry
     {
         public ExtendedLinqToHqlGeneratorsRegistry()
             : base()
@@ -664,8 +662,8 @@ required instead of the merge: `RegisterGenerator`. `CompareGenerator`
 illustrates this.
 
 The last step is to instruct NHibernate to use this extended registry.
-It can be achieved through [xml configuration](#configuration-xmlconfig)
-under `session-factory` node, or by [code](#configuration-programmatic)
+It can be achieved through [xml configuration](configuration.md#xml-configuration-file)
+under `session-factory` node, or by [code](configuration.md#programmatic-configuration)
 before building the session factory. Use one of them.
 
 ```xml

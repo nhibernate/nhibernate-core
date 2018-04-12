@@ -125,7 +125,7 @@ Collections are declared by the `<set>`, `<list>`, `<map>`, `<bag>`,
   - `lazy` (optional - defaults to `true`) may be used to disable lazy
     fetching and specify that the association is always eagerly fetched.
     Using `extra` fetches only the elements that are needed - see
-    [???](#performance-fetching) for more information.
+    [Fetching strategies](performance.md#Fetching-strategies) for more information.
 
   - `inverse` (optional - defaults to `false`) mark this collection as
     the "inverse" end of a bidirectional association
@@ -452,7 +452,7 @@ ways to deal with this issue:
     view. The event handler has to be able to access the `ISession` for
     this approach. We recommend that the current `ISession` is stored in
     the `HttpContext.Items` collection (see chapter 1,
-    [???](#quickstart-playingwithcats), for an example implementation).
+    [Playing with cats](quickstart.md#playing-with-cats), for an example implementation).
 
   - In an application with a separate business tier, the business logic
     must "prepare" all collections that will be needed by the web tier
@@ -887,4 +887,4 @@ Table definitions:
     alter table childset add constraint childsetfk1 (child_id) references child
 ```
 
-See also [???](#example-parentchild).
+See also [Example: Parent/Child](example-parentchild.md).

@@ -11,7 +11,7 @@ NHibernate not only takes care of the mapping from .NET classes to
 database tables (and from .NET data types to SQL data types), but also
 provides data query and retrieval facilities and can significantly
 reduce development time otherwise spent with manual data handling in SQL
-and ADO.NET.
+and `ADO.NET`.
 
 NHibernate's goal is to relieve the developer from 95 percent of common
 data persistence related programming tasks. NHibernate may not be the
@@ -26,10 +26,10 @@ graph of objects.
 If you are new to NHibernate and Object/Relational Mapping or even .NET
 Framework, please follow these steps:
 
-1.  Read [???](#quickstart) for a 30 minute tutorial, using Internet
+1.  Read [Quick-start with IIS and Microsoft SQL Server](quickstart.md) for a 30 minute tutorial, using Internet
     Information Services (IIS) web server.
 
-2.  Read [???](#architecture) to understand the environments where
+2.  Read [Architecture](architecture.md) to understand the environments where
     NHibernate can be used.
 
 3.  Use this reference documentation as your primary source of

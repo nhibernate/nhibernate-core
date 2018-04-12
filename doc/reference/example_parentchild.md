@@ -217,7 +217,7 @@ database. Let's assume that both `Parent` and `Child` have (synthetic)
 identifier properties of type `long`. NHibernate will use the identifier
 property value to determine which of the children are new. (You may also
 use the version or timestamp property, see
-[???](#manipulatingdata-updating-detached).)
+[Updating detached objects](manipulating_data.md#Updating-detached-objects).)
 
 The `unsaved-value` attribute is used to specify the identifier value of
 a newly instantiated instance. *In NHibernate it is not necessary to

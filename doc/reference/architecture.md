@@ -13,13 +13,13 @@ application.
 We would like to show a more detailed view of the runtime architecture.
 Unfortunately, NHibernate is flexible and supports several approaches.
 We will show the two extremes. The "lite" architecture has the
-application provide its own ADO.NET connections and manage its own
+application provide its own `ADO.NET` connections and manage its own
 transactions. This approach uses a minimal subset of NHibernate's APIs:
 
 ![](images/lite.png)
 
 The "full cream" architecture abstracts the application away from the
-underlying ADO.NET APIs and lets NHibernate take care of the details.
+underlying `ADO.NET` APIs and lets NHibernate take care of the details.
 
 ![](images/fullcream.png)
 
@@ -34,7 +34,7 @@ Here are some definitions of the objects in the diagrams:
 
   - ISession (`NHibernate.ISession`)  
     A single-threaded, short-lived object representing a conversation
-    between the application and the persistent store. Wraps an ADO.NET
+    between the application and the persistent store. Wraps an `ADO.NET` 
     connection. Factory for `ITransaction`. Holds a mandatory
     (first-level) cache of persistent objects, used when navigating the
     object graph or looking up objects by identifier.
@@ -56,20 +56,20 @@ Here are some definitions of the objects in the diagrams:
   - ITransaction (`NHibernate.ITransaction`)  
     (Optional) A single-threaded, short-lived object used by the
     application to specify atomic units of work. Abstracts application
-    from underlying ADO.NET transaction. An `ISession` might span
+    from underlying `ADO.NET` transaction. An `ISession` might span
     several `ITransaction`s in some cases. Transaction scopes may be
     used instead.
 
   - IConnectionProvider (`NHibernate.Connection.IConnectionProvider`)  
-    (Optional) A factory for ADO.NET connections and commands. Abstracts
+    (Optional) A factory for `ADO.NET` connections and commands. Abstracts
     application from the concrete vendor-specific implementations of
     `DbConnection` and `DbCommand`. Not exposed to application, but can
     be extended/implemented by the developer.
 
   - IDriver (`NHibernate.Driver.IDriver`)  
-    (Optional) An interface encapsulating differences between ADO.NET
+    (Optional) An interface encapsulating differences between `ADO.NET` 
     providers, such as parameter naming conventions and supported
-    ADO.NET features.
+    `ADO.NET` features.
 
   - ITransactionFactory (`NHibernate.Transaction.ITransactionFactory`)  
     (Optional) A factory for `ITransaction` instances. Not exposed to
@@ -77,7 +77,7 @@ Here are some definitions of the objects in the diagrams:
 
 Given a "lite" architecture, the application bypasses the
 `ITransaction`/`ITransactionFactory` and/or `IConnectionProvider` APIs
-to talk to ADO.NET directly.
+to talk to `ADO.NET` directly.
 
 # Instance states
 

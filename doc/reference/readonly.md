@@ -33,10 +33,10 @@ Even if an entity is not read-only, its collection association can be
 affected if it contains a read-only entity.
 
 For details about the affect of read-only entities on different property
-and association types, see [section\_title](#readonly-proptypes).
+and association types, see [Read-only affect on property type](#read-only-affect-on-property-type).
 
 For details about how to make entities read-only, see
-[section\_title](#readonly-api)
+[Making persistent entities read-only](#making-persistent-entities-read-only)
 
 NHibernate does some optimizing for read-only entities:
 
@@ -56,20 +56,20 @@ read-only:
 
   - you can map an entity class as *immutable*; when an entity of an
     immutable class is made persistent, NHibernate automatically makes
-    it read-only. see [section\_title](#readonly-api-immutable) for
+    it read-only. see [Entities of immutable classes](#entities-of-immutable-classes) for
     details
 
   - you can change a default so that entities loaded into the session by
     NHibernate are automatically made read-only; see
-    [section\_title](#readonly-api-loaddefault) for details
+    [Loading persistent entities as read-only](#loading-persistent-entities-as-read-only) for details
 
   - you can make an HQL query or criteria read-only so that entities
     loaded when the query or criteria executes, or iterates, are
     automatically made read-only; see
-    [section\_title](#readonly-api-querycriteria) for details
+    [Loading read-only entities from an HQL query/criteria](#loading-read-only-entities-from-an-hql-querycriteria) for details
 
   - you can make a persistent entity that is already in the in the
-    session read-only; see [section\_title](#readonly-api-entity) for
+    session read-only; see [Making a persistent entity read-only](#making-a-persistent-entity-read-only) for
     details
 
 ## Entities of immutable classes
@@ -123,7 +123,7 @@ the following are automatically made read-only:
 
   - executing, or iterating HQL queries and criteria; to override this
     setting for a particular HQL query or criteria see
-    [section\_title](#readonly-api-querycriteria)
+    [Loading read-only entities from an HQL query/criteria](#loading-read-only-entities-from-an-hql-querycriteria)
 
 Changing this default has no effect on:
 
@@ -264,15 +264,14 @@ persistent entity:
 The following table summarizes how different property types are affected
 by making an entity read-only.
 
-| Property/Association Type                                                                                    | Changes flushed to DB?                              |
-|--------------------------------------------------------------------------------------------------------------|-----------------------------------------------------|
-| Simple<br>[??](section_title)                                                                                | no*                                                 |
-| Unidirectional one-to-one<br>Unidirectional many-to-one<br>[??](section_title)                               | no*                                                 |
-| Unidirectional one-to-many<br>Unidirectional many-to-many<br>[??](section_title)                             | yes                                                 |
-| Bidirectional one-to-one<br>[??](section_title)                                                              | only if the owning entity is not read-only*         |
-| Bidirectional one-to-many/many-to-one<br>inverse collection<br>non-inverse collection<br>[??](section_title) | only added/removed entities that are not read-only* |
-| yes                                                                                                          |                                                     |
-| Bidirectional many-to-many<br>[??](section_title)                                                            | yes                                                 |
+| Property/Association Type                                                                                                                                              | Changes flushed to DB?                                       |
+|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------|
+| Simple<br>[Simple properties](#simple-properties)                                                                                                                      | no*                                                          |
+| Unidirectional one-to-one<br>Unidirectional many-to-one<br>[Unidirectional one-to-one and many-to-one](#unidirectional-one-to-one-and-many-to-one)                     | no*                                                          |
+| Unidirectional one-to-many<br>Unidirectional many-to-many<br>[Unidirectional one-to-many and many-to-many](#unidirectional-one-to-many-and-many-to-many)               | yes                                                          |
+| Bidirectional one-to-one<br>[Bidirectional one-to-one](#bidirectional-one-to-one)                                                                                      | only if the owning entity is not read-only*                  |
+| Bidirectional one-to-many/many-to-one<br>inverse collection<br>non-inverse collection<br>[Bidirectional one-to-many/many-to-one](bidirectional-one-to-manymany-to-one) | only added/removed entities that are not read-only* <br> yes |
+| Bidirectional many-to-many<br>[Bidirectional many-to-many](#Bidirectional-many-to-many)                                                                                | yes                                                          |
 
 
 \* Behavior is different when the entity having the property/association
