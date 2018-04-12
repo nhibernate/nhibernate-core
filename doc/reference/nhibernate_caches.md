@@ -135,7 +135,7 @@ NHibernate:
     (just after `<class>`) in the mapping of the entities you want to
     cache. It also works for collections (bag, list, map, set, ...).
 
-**Be careful.**
+**Be careful**
 
   - Most caches are never aware of changes made to the persistent store
     by another process (though they may be configured to regularly

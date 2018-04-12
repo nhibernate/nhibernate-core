@@ -3,7 +3,7 @@
 > **NHibernate.Mapping.Attributes is an add-in for
 > [NHibernate](http://nhibernate.info/) contributed by Pierre Henri
 > Kuaté (aka *KPixel*); the former implementation was made by John
-> Morris..**
+> Morris.**
 > 
 > NHibernate require mapping streams to bind your domain model to your
 > database. Usually, they are written (and maintained) in separated
