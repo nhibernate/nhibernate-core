@@ -294,7 +294,7 @@ defining a custom tuplizer implementation. Tuplizers definitions are
 attached to the entity or component mapping they are meant to manage.
 Going back to the example of our customer entity:
 
-```csharp
+```xml
     <hibernate-mapping>
         <class entity-name="Customer">
             <!--
@@ -312,8 +312,9 @@ Going back to the example of our customer entity:
             ...
         </class>
     </hibernate-mapping>
-    
-    
+```
+
+```csharp    
     public class CustomMapTuplizerImpl : NHibernate.Tuple.Entity.DynamicMapEntityTuplizer
     {
         // override the BuildInstantiator() method to plug in our custom map...
@@ -341,7 +342,7 @@ Optionally, a persistent class might implement the interface
 object to perform necessary initialization/cleanup after save or load
 and before deletion or update.
 
-The NHibernate [`IInterceptor`](#objectstate-interceptors) offers a less
+The NHibernate [`IInterceptor`](events.md#interceptors) offers a less
 intrusive alternative, however.
 
 ```csharp

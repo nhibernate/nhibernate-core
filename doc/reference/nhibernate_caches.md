@@ -1,7 +1,7 @@
 # NHibernate.Caches
 
 > **NHibernate.Caches namespace contains several second-level cache
-> providers for NHibernate..**
+> providers for NHibernate.**
 > 
 > A cache is a place where entities are kept after being loaded from the
 > database; once cached, they can be retrieved without going to the
@@ -40,14 +40,14 @@
 >     license; you can also visit its
 >     [website](http://bbooprevalence.sourceforge.net/). This provider
 >     is available for the .Net Framework only. Also see
->     [section\_title](#NHibernate.Caches.Prevalence).
+>     [Prevalence Cache Configuration](#prevalence-cache-onfiguration).
 > 
 >   - `NHibernate.Caches.SysCache`  
 >     Uses `System.Web.Caching.Cache` as the cache provider. This means
 >     that you can rely on ASP.NET caching feature to understand how it
 >     works. For more information, read (on the MSDN): [Caching Application Data](https://msdn.microsoft.com/en-us/library/6hbbsfk6.aspx).
 >     This provider is available for the .Net Framework only. Also see
->     [section\_title](#NHibernate.Caches.SysCache).
+>     [SysCache Configuration](#syscache-configuration).
 > 
 >   - `NHibernate.Caches.SysCache2`  
 >     Similar to `NHibernate.Caches.SysCache`, uses ASP.NET cache. This
@@ -59,13 +59,13 @@
 >     SysCache2 requires Microsoft SQL Server 2000 or higher. This
 >     provider is available for the .Net Framework only.
 >     
->     See [section\_title](#NHibernate.Caches.SysCache2).
+>     See [SysCache2 Configuration](#syscache2-configuration).
 > 
 >   - `NHibernate.Caches.EnyimMemcached`  
 >     Uses `Memcached`. See [memcached homepage](https://memcached.org/)
 >     for more information on Memcached. This provider is available for
 >     the .Net Framework only. Also see
->     [section\_title](#NHibernate.Caches.EnyimMemcached).
+>     [EnyimMemcached Configuration](#enyimmemcached-configuration).
 > 
 >   - `NCache provider for NHibernate`  
 >     Uses `NCache`. NCache is a commercial distributed caching system
@@ -76,13 +76,13 @@
 >   - `NHibernate.Caches.RtMemoryCache`  
 >     Uses `System.Runtime.Caching.MemoryCache.Default` as the cache
 >     provider. This provider is available for the .Net Framework only.
->     See [section\_title](#NHibernate.Caches.RtMemoryCache).
+>     See [RtMemoryCache Configuration](#rtmemorycache-configuration).
 > 
 >   - `NHibernate.Caches.CoreMemoryCache`  
 >     Uses `Microsoft.Extensions.Caching.Memory.MemoryCache` as the
 >     cache provider. This provider is available as a .Net Standard
 >     NuGet package. See
->     [section\_title](#NHibernate.Caches.CoreMemoryCache).
+>     [CoreMemoryCache Configuration](#corememorycache-configuration).
 > 
 >   - `NHibernate.Caches.CoreDistributedCache`  
 >     Uses `Microsoft.Extensions.Caching.Abstractions.IDistributedCache`
@@ -93,7 +93,7 @@
 >     `NHibernate.Caches.CoreDistributedCache.`.
 >     
 >     This provider is available as a .Net Standard NuGet package. See
->     [section\_title](#NHibernate.Caches.CoreDistributedCache).
+>     [CoreDistributedCache Configuration.](#coredistributedcache-configuration”.).
 
 # How to use a cache?
 
@@ -171,21 +171,19 @@ SysCache relies on `System.Web.Caching.Cache` for the underlying
 implementation. The following NHibernate configuration settings are
 available:
 
-  - `cache.default_expiration`  
+  - `cache.default_expiration`
     Number of seconds to wait before expiring each item. Defaults to `300`.
     It can also be set programmatically on the NHibernate configuration object under 
-    the name expiration, which then takes precedence over cache.default\_expiration
-    .
-  - `cache.use_sliding_expiration`  
+    the name expiration, which then takes precedence over `cache.default_expiration`.
+  - `cache.use_sliding_expiration`
     Should the expiration be sliding? A sliding expiration is reinitialized at each 
-    get. Defaults to `false`
-    .
+    get. Defaults to `false`.
   - `priority`  
     A numeric cost of expiring each item, where `1` is a low cost, `5` is
     the highest, and `3` is normal. Only values `1` through `6` are valid. `6`
     is a special value corresponding to `NotRemovable`. This setting can only 
     be set programmatically through on the NHibernate configuration object, by 
-    example with Configuration.SetProperty.
+    example with `Configuration.SetProperty`.
 
 SysCache has a config file section handler to allow configuring
 different expirations and priorities for different regions. Here is an
@@ -217,19 +215,10 @@ support SQL notifications as described in the MSDN documentation.
 The following NHibernate configuration settings are available:
 
   - `cache.default_expiration`  
-    Number of seconds to wait before expiring each item. Defaults to
-    300
-    . It can also be set programmatically on the NHibernate
-    configuration object under the name
-    expiration
-    , which then takes precedence over
-    cache.default\_expiration
-    .
+    Number of seconds to wait before expiring each item. Defaults to `300`. It can also be set programmatically on the NHibernate
+    configuration object under the name `expiration`, which then takes precedence over `cache.default_expiration`.
   - `cache.use_sliding_expiration`  
-    Should the expiration be sliding? A sliding expiration is
-    reinitialized at each get. Defaults to
-    false
-    .
+    Should the expiration be sliding? A sliding expiration is reinitialized at each get. Defaults to `false`.
 
 To configure cache regions with SqlCacheDependencies a `syscache2`
 config section must be defined in the application's configuration file.
@@ -278,8 +267,7 @@ application's configuration file. See the sample below.
   - `tableName`  
     The name of the database table that the dependency is associated
     with. The table must be enabled for notification support with the
-    AspNet\_SqlCacheRegisterTableStoredProcedure
-    .
+    `AspNet_SqlCacheRegisterTableStoredProcedure`.
   - `databaseEntryName`  
     The name of a database defined in the
     databases element for sqlCacheDependency
@@ -333,28 +321,19 @@ configuration file. See the samples below.
   - `name`  
     Unique name for the dependency
   - `command` (required)  
-    SQL command that returns results which should be monitored for data
+    SQL command that returns results which should be monitored for data 
     changes
   - `isStoredProcedure` (optional)  
-    Indicates if command is a stored procedure. The default is
-    false
-    .
+    Indicates if command is a stored procedure. The default is `false`
   - `connectionName` (optional)  
     The name of the connection in the applications configuration file to
     use for registering the cache dependency for change notifications.
-    If no value is supplied for
-    connectionName
-    or
-    connectionStringProviderType
-    , the connection properties from the NHibernate configuration will
-    be used.
+    If no value is supplied for `connectionName` or `connectionStringProviderType`,
+    the connection properties from the NHibernate configuration will be used.
   - `connectionStringProviderType` (optional)  
-    IConnectionStringProvider
-    to use for retrieving the connection string to use for registering
-    the cache dependency for change notifications. If no value is
-    supplied for
-    connectionName
-    , the unnamed connection supplied by the provider will be used.
+    `IConnectionStringProvider` to use for retrieving the connection string to use for registering
+    the cache dependency for change notifications. If no value is supplied for `connectionName`,
+    the unnamed connection supplied by the provider will be used.
 
 ## Aggregate Dependencies
 
@@ -400,9 +379,11 @@ cache after they have been in the cache for a specified amount of time.
 See the samples
     below.
 
+```xml
     <cacheRegion name="Product" relativeExpiration="300" priority="High" useSlidingExpiration="true" />
 
     <cacheRegion name="Product" timeOfDayExpiration="2:00:00" priority="High" />
+```
 
   - `relativeExpiration`  
     Number of seconds that an individual item will exist in the cache
@@ -423,9 +404,7 @@ See the samples
     from the cache after a daily process completes.
 
   - `priority`  
-    System.Web.Caching.CacheItemPriority
-    
-    that identifies the relative priority of items stored in the cache.
+    `System.Web.Caching.CacheItemPriority` that identifies the relative priority of items stored in the cache.
 
 # EnyimMemcached Configuration
 
@@ -440,19 +419,11 @@ underlying implementation. The following NHibernate configuration
 settings are available:
 
   - `cache.default_expiration`  
-    Number of seconds to wait before expiring each item. Defaults to
-    300
-    . It can also be set programmatically on the NHibernate
-    configuration object under the name
-    expiration
-    , which then takes precedence over
-    cache.default\_expiration
-    .
-  - `cache.use_sliding_expiration`  
-    Should the expiration be sliding? A sliding expiration is
-    reinitialized at each get. Defaults to
-    false
-    .
+    Number of seconds to wait before expiring each item. Defaults to `300`.
+    It can also be set programmatically on the NHibernate configuration object under the name `expiration`,
+    which then takes precedence over `cache.default_expiration`.
+  - `cache.use_sliding_expiration`
+    Should the expiration be sliding? A sliding expiration is reinitialized at each get. Defaults to `false`.
 
 RtMemoryCache has a config file section handler to allow configuring
 different expirations for different regions. Here is an example:
@@ -480,19 +451,11 @@ implementation. The following NHibernate configuration settings are
 available:
 
   - `cache.default_expiration`  
-    Number of seconds to wait before expiring each item. Defaults to
-    300
-    . It can also be set programmatically on the NHibernate
-    configuration object under the name
-    expiration
-    , which then takes precedence over
-    cache.default\_expiration
-    .
+    Number of seconds to wait before expiring each item. Defaults to `300`.
+    It can also be set programmatically on the NHibernate configuration object under the name `expiration`,
+    which then takes precedence over `cache.default_expiration`.
   - `cache.use_sliding_expiration`  
-    Should the expiration be sliding? A sliding expiration is
-    reinitialized at each get. Defaults to
-    false
-    .
+    Should the expiration be sliding? A sliding expiration is reinitialized at each get. Defaults to `false`.
 
 CoreMemoryCache has a config file section handler to allow configuring
 different expirations for different regions, and configuring the
@@ -525,19 +488,11 @@ programmatically by affecting
 factory. The following NHibernate configuration settings are available:
 
   - `cache.default_expiration`  
-    Number of seconds to wait before expiring each item. Defaults to
-    300
-    . It can also be set programmatically on the NHibernate
-    configuration object under the name
-    expiration
-    , which then takes precedence over
-    cache.default\_expiration
-    .
+    Number of seconds to wait before expiring each item. Defaults to `300`.
+    It can also be set programmatically on the NHibernate configuration object under the name `expiration`,
+    which then takes precedence over `cache.default_expiration`.
   - `cache.use_sliding_expiration`  
-    Should the expiration be sliding? A sliding expiration is
-    reinitialized at each get. Defaults to
-    false
-    .
+    Should the expiration be sliding? A sliding expiration is reinitialized at each get. Defaults to `false`.
 
 CoreDistributedCache has a config file section handler to allow
 configuring different expirations for different regions, configuring the
@@ -608,15 +563,14 @@ distributed cache factory. This factory yields a
 `Microsoft.Extensions.Caching.Redis.RedisCache`. For using it, reference
 the cache factory package and set the `factory-class` attribute of the
 `coredistributedcache` configuration section to
-`NHibernate.Caches.CoreDistributedCache.Redis.RedisFactory,
-NHibernate.Caches.CoreDistributedCache.Redis`.
+`NHibernate.Caches.CoreDistributedCache.Redis.RedisFactory, NHibernate.Caches.CoreDistributedCache.Redis`.
 
 The following additional properties can be configured:
 
   - `configuration`  
-    Its value will be used to set the Configuration property of the RedisCache options (RedisCacheOptions).
+    Its value will be used to set the Configuration property of the RedisCache options (`RedisCacheOptions`).
   - `instance-name`  
-    Its value will be used to set the InstanceName property of the RedisCache options (RedisCacheOptions).
+    Its value will be used to set the InstanceName property of the RedisCache options (`RedisCacheOptions`).
 
 ## SQL Server distributed cache factory
 
@@ -630,41 +584,15 @@ NHibernate.Caches.CoreDistributedCache.SqlServer`.
 
 The following additional properties can be configured:
 
-  - `connection-string`  
-    Its value will be used to set the
-    ConnectionString
-    property of the
-    SqlServerCache
-    options (
-    SqlServerCacheOptions
-    ).
-  - `schema-name`  
-    Its value will be used to set the
-    SchemaName
-    property of the
-    SqlServerCache
-    options (
-    SqlServerCacheOptions
-    ).
-  - `table-name`  
-    Its value will be used to set the
-    TableName
-    property of the
-    SqlServerCache
-    options (
-    SqlServerCacheOptions
-    ).
+  - `connection-string`
+    Its value will be used to set the `ConnectionString` property of the `SqlServerCache` options (`SqlServerCacheOptions`).
+  - `schema-name`
+    Its value will be used to set the `SchemaName` property of the `SqlServerCache` options (`SqlServerCacheOptions`).
+  - `table-name`
+    Its value will be used to set the `TableName` property of the `SqlServerCache` options (`SqlServerCacheOptions`).
   - `expired-items-deletion-interval`  
-    Its value will be used to set the
-    ExpiredItemsDeletionInterval
-    property of the
-    SqlServerCache
-    options (
-    SqlServerCacheOptions
-    ). It can be provided either as an integer being a number of minutes
-    or as a
-    TimeSpan
-    string representation.
+    Its value will be used to set the `ExpiredItemsDeletionInterval` property of the `SqlServerCache` options (`SqlServerCacheOptions`).
+    It can be provided either as an integer being a number of minutes or as a `TimeSpan` string representation.
 
 ## Memory distributed cache factory
 
@@ -673,8 +601,7 @@ The following additional properties can be configured:
 `Microsoft.Extensions.Caching.Memory.MemoryDistributedCache`. For using
 it, reference the cache factory package and set the `factory-class`
 attribute of the `coredistributedcache` configuration section to
-`NHibernate.Caches.CoreDistributedCache.Memory.MemoryFactory,
-NHibernate.Caches.CoreDistributedCache.Memory`.
+`NHibernate.Caches.CoreDistributedCache.Memory.MemoryFactory, NHibernate.Caches.CoreDistributedCache.Memory`.
 
 As implied by its name, this cache is not actually distributed. It is
 meant for testing purpose. For other usages, consider using another
@@ -689,22 +616,10 @@ the `SizeLimit` option.
 The following additional properties can be configured:
 
   - `expiration-scan-frequency`  
-    Its value will be used to set the
-    ExpirationScanFrequency
-    property of the
-    MemoryDistributedCache
-    options (
-    MemoryDistributedCacheOptions
-    ). It can be provided either as an integer being a number of minutes
-    or as a
-    TimeSpan
-    string representation.
+    Its value will be used to set the `ExpirationScanFrequency` property of the `MemoryDistributedCache`
+    options (`MemoryDistributedCacheOptions`). It can be provided either as an integer being a number of minutes
+    or as a `TimeSpan` string representation.
   - `size-limit`  
-    Its value will be used to set the
-    SizeLimit
-    property of the
-    MemoryDistributedCache
-    options (
-    MemoryDistributedCacheOptions
-    ). Its value is an integer, representing the maximal bytes count to
+    Its value will be used to set the `SizeLimit` property of the `MemoryDistributedCache`
+    options (`MemoryDistributedCacheOptions`). Its value is an integer, representing the maximal bytes count to
     be stored in the cache.

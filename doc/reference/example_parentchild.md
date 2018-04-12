@@ -107,8 +107,7 @@ The following code would be used to add a new `Child`.
 
 And now, only one SQL `INSERT` would be issued\!
 
-To tighten things up a bit, we could create an `AddChild()` method of
-`Parent`.
+To tighten things up a bit, we could create an `AddChild()` method of `Parent`.
 
 ```csharp
     public void AddChild(Child c)

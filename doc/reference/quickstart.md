@@ -55,8 +55,7 @@ project and add configuration elements according to the listing below:
 
 The `<configSections>` element contains definitions of sections that
 follow and handlers to use to process their content. We declare the
-handler for the configuration section here. The `
-<hibernate-configuration>` section contains the configuration itself,
+handler for the configuration section here. The `<hibernate-configuration>` section contains the configuration itself,
 telling NHibernate that we will use a Microsoft SQL Server 2012 database
 and connect to it through the specified connection string. The dialect
 is a required setting, databases differ in their interpretation of the
@@ -190,7 +189,7 @@ specified. The table `Cat` in the database looks like this:
 | Weight | real         |                       |
 
 You should now create the database and this table manually, and later
-read [???](#toolsetguide) if you want to automate this step with the
+read [Toolset Guide](toolset_guide.md) if you want to automate this step with the
 SchemaExport tool. This tool can create a full SQL DDL, including table
 definition, custom column type constraints, unique constraints and
 indexes. If you are using SQL Server, you should also make sure the

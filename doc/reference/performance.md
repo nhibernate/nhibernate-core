@@ -429,8 +429,6 @@ property `cache.provider_class`.
 | ASP.NET Cache (System.Web.Cache)            | `NHibernate.Caches.SysCache.SysCacheProvider, NHibernate.Caches.SysCache`            | memory       |              | yes                   |
 | Prevalence Cache                            | `NHibernate.Caches.Prevalence.PrevalenceCacheProvider, NHibernate.Caches.Prevalence` | memory, disk |              | yes                   |
 
-Cache Providers
-
 ## Cache mappings
 
 The `<cache>` element of a class or collection mapping has the following

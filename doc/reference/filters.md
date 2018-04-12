@@ -70,11 +70,11 @@ pattern:
     </filter-def>
     
     <class name="Employee" ...>
-    ...
+        ...
         <many-to-one name="Department" column="dept_id" class="Department"/>
         <property name="EffectiveStartDate" type="date" column="eff_start_dt"/>
         <property name="EffectiveEndDate" type="date" column="eff_end_dt"/>
-    ...
+        ...
         <!--
             Note that this assumes non-terminal records have an eff_end_dt set to
             a max db date for simplicity-sake
@@ -84,7 +84,7 @@ pattern:
     </class>
     
     <class name="Department" ...>
-    ...
+        ...
         <set name="Employees" lazy="true">
             <key column="dept_id"/>
             <one-to-many class="Employee"/>

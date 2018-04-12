@@ -192,7 +192,10 @@ Non generic dictionary method `Contains` and generic dictionary method
 `ContainsKey` are translated to corresponding [`indices`](#queryhql-expressions). Supposing `Acts` in following HQL
 example is generic,
 
+```sql
     from Eg.Show show where 'fizard' in indices(show.Acts)
+
+```
 
 it could be written with Linq:
 

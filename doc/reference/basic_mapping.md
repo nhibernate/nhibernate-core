@@ -1043,7 +1043,9 @@ The `fetch` attribute accepts two different values:
 
 A typical `many-to-one` declaration looks as simple as
 
+```xml
     <many-to-one name="product" class="Product" column="PRODUCT_ID"/>
+```
 
 The `property-ref` attribute should only be used for mapping legacy data
 where a foreign key refers to a unique key of the associated table other
@@ -1053,12 +1055,16 @@ primary key. (The `unique` attribute controls NHibernate's DDL
 generation with the SchemaExport
     tool.)
 
+```xml
     <property name="serialNumber" unique="true" type="string" column="SERIAL_NUMBER"/>
+```
 
 Then the mapping for `OrderItem` might
     use:
 
+```xml
     <many-to-one name="product" property-ref="serialNumber" column="PRODUCT_SERIAL_NUMBER"/>
+```
 
 This is certainly not encouraged, however.
 
@@ -1642,8 +1648,7 @@ System.ValueType Mapping Types
 
   - Since NHibernate v5.0 and if the dialect supports it,
     `DbType.DateTime2` is used instead of `DbType.DateTime`. This may be
-    disabled by setting `sql_types.keep_datetime` to
-`true`.
+    disabled by setting `sql_types.keep_datetime` to `true`.
 
 | NHibernate Type | .NET Type                          | Database Type                                    | Remarks                                     |
 | --------------- | ---------------------------------- | ------------------------------------------------ | ------------------------------------------- |

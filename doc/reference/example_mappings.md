@@ -15,8 +15,7 @@ monetary values and employee names.
 Here's a possible mapping document:
 
 ```xml
-    <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
-        assembly="..." namespace="...">
+    <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="..." namespace="...">
     
         <class name="Employer" table="employers">
             <id name="Id">
@@ -117,8 +116,7 @@ Another possibility would be to have `Author` extend `Person`.
 The following mapping document correctly represents these relationships:
 
 ```xml
-    <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
-        assembly="..." namespace="...">
+    <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="..." namespace="...">
     
         <class name="Work" table="works" discriminator-value="W">
     
@@ -230,8 +228,7 @@ In NHibernate, this is called a composite element.
 The mapping document:
 
 ```xml
-    <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
-        assembly="..." namespace="...">
+    <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="..." namespace="...">
     
         <class name="Customer" table="customers">
             <id name="Id" column="id" generator="native" />

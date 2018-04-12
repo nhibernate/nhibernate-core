@@ -619,8 +619,7 @@ Changes made only to the inverse end of the association are *not*
 persisted. This means that NHibernate has two representations in memory
 for every bidirectional association, one link from A to B and another
 link from B to A. This is easier to understand if you think about the
-.NET object model and how we create a many-to-many relationship in
-    C\#:
+.NET object model and how we create a many-to-many relationship in C\#:
 
 ```csharp
     category.Items.Add(item);          // The category now "knows" about the relationship

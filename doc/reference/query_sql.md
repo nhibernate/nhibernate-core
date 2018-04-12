@@ -183,19 +183,18 @@ injection. Note: the alias names in the result are examples, each alias
 will have a unique and probably different name when
 used.
 
-| Description                                     | Syntax                                         | Example                                       |
-|-------------------------------------------------|------------------------------------------------|-----------------------------------------------|
-| A simple property                               | `{[aliasname].[propertyname]}`                 | `A_NAME as {item.Name}`                       |
-| A composite property                            | `{[aliasname].[componentname].[propertyname]}` | `CURRENCY as {item.Amount.Currency}, VALUE as |
-| {item.Amount.Value}`                            |                                                |                                               |
-| Discriminator of an entity                      | `{[aliasname].class}`                          | `DISC as {item.class}`                        |
-| All properties of an entity                     | `{[aliasname].*}`                              | `{item.*}`                                    |
-| A collection key                                | `{[aliasname].key}`                            | `ORGID as {coll.key}`                         |
-| The id of an collection                         | `{[aliasname].id}`                             | `EMPID as {coll.id}`                          |
-| The element of an collection                    | `{[aliasname].element}`                        | `XID as {coll.element}`                       |
-| property of the element in the collection       | `{[aliasname].element.[propertyname]}`         | `NAME as {coll.element.Name}`                 |
-| All properties of the element in the collection | `{[aliasname].element.*}`                      | `{coll.element.*}`                            |
-| All properties of the collection                | `{[aliasname].*}`                              | `{coll.*}`                                    |
+| Description                                     | Syntax                                         | Example                                                            |
+|-------------------------------------------------|------------------------------------------------|--------------------------------------------------------------------|
+| A simple property                               | `{[aliasname].[propertyname]}`                 | `A_NAME as {item.Name}`                                            |
+| A composite property                            | `{[aliasname].[componentname].[propertyname]}` | `CURRENCY as {item.Amount.Currency}, VALUE as {item.Amount.Value}` |
+| Discriminator of an entity                      | `{[aliasname].class}`                          | `DISC as {item.class}`                                             |
+| All properties of an entity                     | `{[aliasname].*}`                              | `{item.*}`                                                         |
+| A collection key                                | `{[aliasname].key}`                            | `ORGID as {coll.key}`                                              |
+| The id of an collection                         | `{[aliasname].id}`                             | `EMPID as {coll.id}`                                               |
+| The element of an collection                    | `{[aliasname].element}`                        | `XID as {coll.element}`                                            |
+| property of the element in the collection       | `{[aliasname].element.[propertyname]}`         | `NAME as {coll.element.Name}`                                      |
+| All properties of the element in the collection | `{[aliasname].element.*}`                      | `{coll.element.*}`                                                 |
+| All properties of the collection                | `{[aliasname].*}`                              | `{coll.*}`                                                         |
 
 Alias injection names
 

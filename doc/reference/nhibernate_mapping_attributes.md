@@ -93,17 +93,15 @@ introduces many new features, improvements and changes:
 4.  It is possible to register patterns (using Regular Expressions) to
     automatically transform fully qualified names of properties types
     into something else. Eg:
-    `HbmSerializer.Default.HbmWriter.Patterns.Add(@"Namespace.(\S+),
-    Assembly", "$1");` will map all properties with a not-qualified type
-    name.
+    `HbmSerializer.Default.HbmWriter.Patterns.Add(@"Namespace.(\S+), Assembly", "$1");`
+    will map all properties with a not-qualified type name.
 
-5.  Two methods have been added to allow writing: `cfg.AddInputStream(
-    HbmSerializer.Default.Serialize(typeof(XXX)) )` and
-    `cfg.AddInputStream(
-    HbmSerializer.Default.Serialize(typeof(XXX).Assembly) )`. So it is
+5.  Two methods have been added to allow writing:
+    `cfg.AddInputStream(HbmSerializer.Default.Serialize(typeof(XXX)) )` and
+    `cfg.AddInputStream(HbmSerializer.Default.Serialize(typeof(XXX).Assembly) )`. So it is
     no longer required to create a MemoryStream for these simple cases.
 
-6.  Two WriteUserDefinedContent() methods have been added to
+6.  Two `WriteUserDefinedContent()` methods have been added to
     `HbmWriter`. They improve the extensibility of this library; it is
     now very easy to create a .NET attribute and integrate it in the
     mapping.
@@ -126,8 +124,7 @@ introduces many new features, improvements and changes:
 
 # How to use it?
 
-**The *end-user class* is
-`NHibernate.Mapping.Attributes.HbmSerializer`.**
+**The *end-user class* is `NHibernate.Mapping.Attributes.HbmSerializer`.**
 
 This class *serialize* your domain model to mapping streams. You can
 either serialize classes one by one or an assembly. Look at
@@ -174,8 +171,7 @@ need/want to create it yourself).
 1.  In production, it is recommended to generate a XML mapping file from
     NHibernate.Mapping.Attributes and use this file each time the
     SessionFactory need to be built. Use:
-    `HbmSerializer.Default.Serialize(typeof(XXX).Assembly,
-    "DomainModel.hbm.xml");` It is slightly faster.
+    `HbmSerializer.Default.Serialize(typeof(XXX).Assembly, "DomainModel.hbm.xml");` It is slightly faster.
 
 2.  Use HbmSerializer.Validate to enable/disable the validation of
     generated xml streams (against NHibernate mapping schema); this is
@@ -218,7 +214,9 @@ need/want to create it yourself).
     `[Subclass]`), you can use any object you want.
         Example:
     
+    ```csharp
         [Subclass(DiscriminatorValueEnumFormat="d", DiscriminatorValueObject=DiscEnum.Val1)]
+    ```
     
     Here, the object is an Enum, and you can set the format you want
     (the default value is "g"). Note that you must put it **before**\!
@@ -249,7 +247,9 @@ need/want to create it yourself).
     
     Basically, it is done by adding
     
+    ```csharp
         [Component(Name = "MyComp")] private class SubComp : Comp {}
+    ```
     
     in each class. One of the advantages is that you can override
     Access, Update or Insert for each member. But you have to add the
@@ -320,8 +320,7 @@ In this case, when writing:
 
 X(3) will always belong to C(1) \! (as X(2)).
 
-It is the case for `<dynamic-component>` and
-`<nested-composite-element>`.
+It is the case for `<dynamic-component>` and `<nested-composite-element>`.
 
 Another bad news is that, currently, XML elements coming after this
 elements can not be included in them. Eg: There is no way put a

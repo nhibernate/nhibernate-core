@@ -47,8 +47,7 @@ The XML mappings should now be quite straightforward.
 
 ```xml
     <?xml version="1.0" encoding="utf-8"?>
-    <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
-        assembly="Eg" namespace="Eg">
+    <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="Eg" namespace="Eg">
     
         <class 
             name="Blog" 
@@ -86,8 +85,7 @@ The XML mappings should now be quite straightforward.
     </hibernate-mapping>
 
     <?xml version="1.0" encoding="utf-8"?>
-    <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
-        assembly="Eg" namespace="Eg">
+    <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="Eg" namespace="Eg">
         
         <class 
             name="BlogItem" 

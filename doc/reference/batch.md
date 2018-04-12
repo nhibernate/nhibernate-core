@@ -185,6 +185,7 @@ are not allowed in conjunction with a `update versioned` statement.
 To execute an HQL `DELETE`, use the same `IQuery.ExecuteUpdate()`
 method:
 
+```csharp
     using (ISession session = sessionFactory.OpenSession())
     using (ITransaction tx = session.BeginTransaction())
     {
@@ -195,6 +196,7 @@ method:
             .ExecuteUpdate();
         tx.Commit();
     }
+```
 
 The `int` value returned by the `IQuery.ExecuteUpdate()` method indicate
 the number of entities effected by the operation. Consider this may or
@@ -210,10 +212,10 @@ joined-subclass tables further down the inheritance hierarchy.
 The pseudo-syntax for `INSERT` statements is: `INSERT INTO EntityName
 properties_list select_statement`. Some points to note:
 
-  - Only the INSERT INTO ... SELECT ... form is supported; not the
-    INSERT INTO ... VALUES ... form.
+  - Only the `INSERT INTO ... SELECT ...` form is supported; not the
+    `INSERT INTO ... VALUES ...` form.
     
-    The properties\_list is analogous to the `column specification` in
+    The `properties_list` is analogous to the `column specification` in
     the SQL `INSERT` statement. For entities involved in mapped
     inheritance, only properties directly defined on that given
     class-level can be used in the properties\_list. Superclass
@@ -221,7 +223,7 @@ properties_list select_statement`. Some points to note:
     sense. In other words, `INSERT` statements are inherently
     non-polymorphic.
 
-  - select\_statement can be any valid HQL select query, with the caveat
+  - `select_statement` can be any valid HQL select query, with the caveat
     that the return types must match the types expected by the insert.
     Currently, this is checked during query compilation rather than
     allowing the check to relegate to the database. Note however that
@@ -234,9 +236,9 @@ properties_list select_statement`. Some points to note:
 
   - For the id property, the insert statement gives you two options. You
     can either explicitly specify the id property in the
-    properties\_list (in which case its value is taken from the
+    `properties_list` (in which case its value is taken from the
     corresponding select expression) or omit it from the
-    properties\_list (in which case a generated value is used). This
+    `properties_list` (in which case a generated value is used). This
     later option is only available when using id generators that operate
     in the database; attempting to use this option with any "in memory"
     type generators will cause an exception during parsing. Note that
@@ -250,9 +252,9 @@ properties_list select_statement`. Some points to note:
 
   - For properties mapped as either `version` or `timestamp`, the insert
     statement gives you two options. You can either specify the property
-    in the properties\_list (in which case its value is taken from the
+    in the `properties_list` (in which case its value is taken from the
     corresponding select expressions) or omit it from the
-    properties\_list (in which case the `seed value` defined by the
+    `properties_list` (in which case the `seed value` defined by the
     `NHibernate.Type.IVersionType` is used).
 
 An example HQL `INSERT` statement execution:
