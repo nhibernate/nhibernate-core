@@ -4,7 +4,7 @@ using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
-namespace NHibernate.Test.NHSpecificTest.CompositeElement
+namespace NHibernate.Test.NHSpecificTest.GH1583
 {
 	public class Parent
 	{
@@ -31,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.CompositeElement
 					listMap =>
 					{
 						listMap.Table("Children");
-						listMap.Index(index => index.Column("Position"));
+						listMap.Index(index => index.Column("SortIndex"));
 
 						listMap.Key(keyMap =>
 						{
