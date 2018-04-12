@@ -192,6 +192,14 @@ Release notes - NHibernate - Version 5.1.0
 As part of releasing 5.1.0, a missing 5.0.0 possible breaking change has been added about inequality semantic in LINQ
 queries. See 5.0.0 possible breaking changes.
 
+Build 5.0.4
+=============================
+
+Release notes - NHibernate - Version 5.0.4
+
+** Bug
+    * #1658 Add missing cache setting
+
 Build 5.0.3
 =============================
 
