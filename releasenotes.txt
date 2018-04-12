@@ -1,4 +1,12 @@
-﻿Build 5.0.3
+﻿Build 5.0.4
+=============================
+
+Release notes - NHibernate - Version 5.0.4
+
+** Bug
+    * #1658 Add missing cache setting
+
+Build 5.0.3
 =============================
 
 Release notes - NHibernate - Version 5.0.3
