@@ -75,6 +75,8 @@ namespace NHibernate.Test.FilterTest
 			set { categories = value; }
 		}
 
+		public virtual Guid ProductGuid { get; set; }
+
 		public override int GetHashCode()
 		{
 			return stockNumber;
