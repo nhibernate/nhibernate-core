@@ -125,7 +125,7 @@ Collections are declared by the `<set>`, `<list>`, `<map>`, `<bag>`,
   - `lazy` (optional - defaults to `true`) may be used to disable lazy
     fetching and specify that the association is always eagerly fetched.
     Using `extra` fetches only the elements that are needed - see
-    [Fetching strategies](performance.md#Fetching-strategies) for more information.
+    [Fetching strategies](performance.md#fetching-strategies) for more information.
 
   - `inverse` (optional - defaults to `false`) mark this collection as
     the "inverse" end of a bidirectional association

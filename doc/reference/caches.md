@@ -42,7 +42,7 @@ Several cache providers have been contributed by NHibernate users:
     license; you can also visit its
     [website](http://bbooprevalence.sourceforge.net/). This provider
     is available for the .Net Framework only. Also see
-    [Prevalence Cache Configuration](#prevalence-cache-onfiguration).
+    [Prevalence Cache Configuration](#prevalence-cache-configuration).
 
   - `NHibernate.Caches.SysCache`  
     Uses `System.Web.Caching.Cache` as the cache provider. This means
@@ -95,7 +95,7 @@ Several cache providers have been contributed by NHibernate users:
     `NHibernate.Caches.CoreDistributedCache.`.
     
     This provider is available as a .Net Standard NuGet package. See
-    [CoreDistributedCache Configuration.](#coredistributedcache-configuration”.).
+    [CoreDistributedCache Configuration.](#coredistributedcache-configuration).
 
 # How to use a cache?
 

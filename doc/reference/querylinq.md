@@ -186,10 +186,10 @@ Collections `Contains` methods are supported.
 
 Dictionaries `Item` getter are supported. This enables referencing a
 dictionary item value in a `where` condition, as it can be done with
-[HQL expressions](#queryhql-expressions).
+[HQL expressions](queryhql.md#expressions).
 
 Non generic dictionary method `Contains` and generic dictionary method
-`ContainsKey` are translated to corresponding [`indices`](#queryhql-expressions). Supposing `Acts` in following HQL
+`ContainsKey` are translated to corresponding [`indices`](queryhql.md#expressions). Supposing `Acts` in following HQL
 example is generic,
 
 ```sql

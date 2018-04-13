@@ -1,43 +1,43 @@
 # NHibernate.Mapping.Attributes
 
-> **NHibernate.Mapping.Attributes is an add-in for
-> [NHibernate](http://nhibernate.info/) contributed by Pierre Henri
-> Kuaté (aka *KPixel*); the former implementation was made by John
-> Morris.**
+**NHibernate.Mapping.Attributes is an add-in for
+[NHibernate](http://nhibernate.info/) contributed by Pierre Henri
+Kuaté (aka *KPixel*); the former implementation was made by John
+Morris.**
+
+NHibernate require mapping streams to bind your domain model to your
+database. Usually, they are written (and maintained) in separated
+hbm.xml files.
+
+With NHibernate.Mapping.Attributes, you can use .NET attributes to
+decorate your entities and these attributes will be used to generate
+these mapping .hbm.xml (as files or streams). So you will no longer
+have to bother with these *nasty* xml files ;).
+
+**Content of this library.**
+
+1.  **NHibernate.Mapping.Attributes**: That the only project you need
+    (as end-user)
+
+2.  **Test**: a working sample using attributes and HbmSerializer as
+    NUnit TestFixture
+
+3.  **Generator**: The program used to generate attributes and
+    HbmWriter
+
+4.  [**Refly**](http://mbunit.tigris.org/): Thanks to [Jonathan de
+    Halleux](http://www.dotnetwiki.org/) for this library which make
+    it so easy to generate code
+
+> **Important**
 > 
-> NHibernate require mapping streams to bind your domain model to your
-> database. Usually, they are written (and maintained) in separated
-> hbm.xml files.
-> 
-> With NHibernate.Mapping.Attributes, you can use .NET attributes to
-> decorate your entities and these attributes will be used to generate
-> these mapping .hbm.xml (as files or streams). So you will no longer
-> have to bother with these *nasty* xml files ;).
-> 
-> **Content of this library.**
-> 
-> 1.  **NHibernate.Mapping.Attributes**: That the only project you need
->     (as end-user)
-> 
-> 2.  **Test**: a working sample using attributes and HbmSerializer as
->     NUnit TestFixture
-> 
-> 3.  **Generator**: The program used to generate attributes and
->     HbmWriter
-> 
-> 4.  [**Refly**](http://mbunit.tigris.org/): Thanks to [Jonathan de
->     Halleux](http://www.dotnetwiki.org/) for this library which make
->     it so easy to generate code
-> 
-> > **Important**
-> > 
-> > This library is generated using the file
-> > `/src/NHibernate.Mapping.Attributes/nhibernate-mapping.xsd` (which
-> > is embedded in the assembly to be able to validate generated XML
-> > streams). As this file can change at each new release of NHibernate,
-> > you should regenerate it before using it with a different version
-> > (open the Generator solution, compile and run the Generator
-> > project). But, no test has been done with versions prior to 0.8.
+> This library is generated using the file
+> `/src/NHibernate.Mapping.Attributes/nhibernate-mapping.xsd` (which
+> is embedded in the assembly to be able to validate generated XML
+> streams). As this file can change at each new release of NHibernate,
+> you should regenerate it before using it with a different version
+> (open the Generator solution, compile and run the Generator
+> project). But, no test has been done with versions prior to 0.8.
 
 # What's new?
 

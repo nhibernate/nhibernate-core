@@ -120,7 +120,7 @@ the SQL `Data Manipulation Language` (DML) statements: `INSERT`,
 `UPDATE`, `DELETE`) data directly in the database will not affect
 in-memory state. However, NHibernate provides methods for bulk SQL-style
 DML statement execution which are performed through the Hibernate Query
-Language ([HQL](queryhql.md)). A [Linq implementation](querysql.md#modifying-entities-inside-the-database) is available too.
+Language ([HQL](queryhql.md)). A [Linq implementation](querylinq.md#modifying-entities-inside-the-database) is available too.
 
 The pseudo-syntax for `UPDATE` and `DELETE` statements is: `( UPDATE |
 DELETE ) FROM? EntityName (WHERE where_conditions)?`. Some points to
@@ -134,7 +134,7 @@ note:
     entity name is not aliased, then it is illegal for any property
     references to be qualified.
 
-  - No [joins](queryhql#associations-and-joins) (either implicit or explicit) can be
+  - No [joins](queryhql.md#associations-and-joins) (either implicit or explicit) can be
     specified in a bulk HQL query. Sub-queries may be used in the
     where-clause; the sub-queries, themselves, may contain joins.
 

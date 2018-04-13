@@ -953,8 +953,6 @@ required.
 | `nosetter`           | NHibernate will access the field directly when setting the value and will use the Property when getting the value. This can be used when a property only exposes a get accessor because the consumers of your API can't change the value directly. A naming strategy is required because NHibernate uses the value of the `name` attribute as the property name and needs to be told what the name of the field is.             |
 | `ClassName`          | If NHibernate's built in access strategies are not what is needed for your situation then you can build your own by implementing the interface `NHibernate.Property.IPropertyAccessor`. The value of the `access` attribute should be an assembly-qualified name that can be loaded with `Activator.CreateInstance(string assemblyQualifiedName)`.                                                                              |
 
-Access Strategies
-
 | Naming Strategy Name      | Description                                                                                                                                                                         |
 | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `camelcase`               | The `name` attribute is converted to camel case to find the field. `<property name="FooBar" ... >` uses the field `fooBar`.                                                         |
@@ -965,8 +963,6 @@ Access Strategies
 | `pascalcase-underscore`   | The `name` attribute is prefixed with an underscore to find the field. `<property name="FooBar" ... >` uses the field `_FooBar`.                                                    |
 | `pascalcase-m`            | The `name` attribute is prefixed with the character `m` to find the field. `<property name="FooBar" ... >` uses the field `mFooBar`.                                                |
 | `pascalcase-m-underscore` | The `name` attribute is prefixed with the character `m` and an underscore to find the field. `<property name="FooBar" ... >` uses the field `m_FooBar`.                             |
-
-Naming Strategies
 
 ## many-to-one
 
@@ -1644,8 +1640,6 @@ updates.
 | `UtcDateTimeNoMs`   | `System.DateTime`       | `DbType.DateTime` / `DbType.DateTime2`                    | `type="UtcDateTimeNoMs"` must be specified. Similar to `UtcDateTime` but ignores fractional seconds. Available since NHibernate v5.0.                                                                                                          |
 | `YesNo`             | `System.Boolean`        | `DbType.AnsiStringFixedLength` - 1 char either 'Y' or 'N' | `type="YesNo"` must be specified.                                                                                                                                                                                                              |
 
-System.ValueType Mapping Types
-
   - Since NHibernate v5.0 and if the dialect supports it,
     `DbType.DateTime2` is used instead of `DbType.DateTime`. This may be
     disabled by setting `sql_types.keep_datetime` to `true`.
@@ -1659,9 +1653,6 @@ System.ValueType Mapping Types
 | `String`        | `System.String`                    | `DbType.String`                                  | Default when no `type` attribute specified. |
 | `Uri`           | `System.Uri`                       | `DbType.String`                                  | Default when no `type` attribute specified. |
 
-System.Object Mapping
-Types
-
 | NHibernate Type | .NET Type                                                      | Database Type   | Remarks                                                                                                                   |
 | --------------- | -------------------------------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | `StringClob`    | `System.String`                                                | `DbType.String` | `type="StringClob"` must be specified. Entire field is read into memory.                                                  |
@@ -1669,8 +1660,6 @@ Types
 | `Serializable`  | Any `System.Object` that is marked with SerializableAttribute. | `DbType.Binary` | `type="Serializable"` should be specified. This is the fallback type if no NHibernate Type can be found for the Property. |
 | `XDoc`          | `System.Xml.Linq.XDocument`                                    | `DbType.Xml`    | Default when no `type` attribute specified. Entire field is read into memory.                                             |
 | `XmlDoc`        | `System.Xml.XmlDocument`                                       | `DbType.Xml`    | Default when no `type` attribute specified. Entire field is read into memory.                                             |
-
-Large Object Mapping Types
 
 NHibernate supports some additional type names for compatibility with
 Java's Hibernate (useful for those coming over from Hibernate or using

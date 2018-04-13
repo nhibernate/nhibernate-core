@@ -264,14 +264,14 @@ persistent entity:
 The following table summarizes how different property types are affected
 by making an entity read-only.
 
-| Property/Association Type                                                                                                                                              | Changes flushed to DB?                                       |
-|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------|
-| Simple<br>[Simple properties](#simple-properties)                                                                                                                      | no*                                                          |
-| Unidirectional one-to-one<br>Unidirectional many-to-one<br>[Unidirectional one-to-one and many-to-one](#unidirectional-one-to-one-and-many-to-one)                     | no*                                                          |
-| Unidirectional one-to-many<br>Unidirectional many-to-many<br>[Unidirectional one-to-many and many-to-many](#unidirectional-one-to-many-and-many-to-many)               | yes                                                          |
-| Bidirectional one-to-one<br>[Bidirectional one-to-one](#bidirectional-one-to-one)                                                                                      | only if the owning entity is not read-only*                  |
-| Bidirectional one-to-many/many-to-one<br>inverse collection<br>non-inverse collection<br>[Bidirectional one-to-many/many-to-one](bidirectional-one-to-manymany-to-one) | only added/removed entities that are not read-only* <br> yes |
-| Bidirectional many-to-many<br>[Bidirectional many-to-many](#Bidirectional-many-to-many)                                                                                | yes                                                          |
+| Property/Association Type                                                                                                                                               | Changes flushed to DB?                                       |
+|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------|
+| Simple<br>[Simple properties](#simple-properties)                                                                                                                       | no*                                                          |
+| Unidirectional one-to-one<br>Unidirectional many-to-one<br>[Unidirectional one-to-one and many-to-one](#unidirectional-one-to-one-and-many-to-one)                      | no*                                                          |
+| Unidirectional one-to-many<br>Unidirectional many-to-many<br>[Unidirectional one-to-many and many-to-many](#unidirectional-one-to-many-and-many-to-many)                | yes                                                          |
+| Bidirectional one-to-one<br>[Bidirectional one-to-one](#bidirectional-one-to-one)                                                                                       | only if the owning entity is not read-only*                  |
+| Bidirectional one-to-many/many-to-one<br>inverse collection<br>non-inverse collection<br>[Bidirectional one-to-many/many-to-one](#bidirectional-one-to-manymany-to-one) | only added/removed entities that are not read-only* <br> yes |
+| Bidirectional many-to-many<br>[Bidirectional many-to-many](#bidirectional-many-to-many)                                                                                 | yes                                                          |
 
 
 \* Behavior is different when the entity having the property/association

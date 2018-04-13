@@ -279,7 +279,7 @@ on the `IQuery` interface.
   - `flush-mode` - override the session flush mode just for this query.
 
   - `cacheable` - allow the query results to be cached by the second
-    level cache. See [NHibernate.Caches](nhibernate-caches.md).
+    level cache. See [NHibernate.Caches](caches.md).
 
   - `cache-region` - specify the cache region of the query.
 

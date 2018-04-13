@@ -26,7 +26,7 @@ perfectly.
 
 Note: QueryOver is intended to remove the references to 'magic strings'
 from the ICriteria API while maintaining it's opaqueness. It is *not* a
-LINQ provider; NHibernate has a built-in [Linq provider](querysql.md) for
+LINQ provider; NHibernate has a built-in [Linq provider](querylinq.md) for
 this.
 
 # Structure of a Query
@@ -446,7 +446,7 @@ to express sub-query restrictions. For example:
         session.QueryOver<Cat>()
             .Where(Subqueries.WhereProperty<Cat>(c => c.Age).Eq(maximumAge))
             .List();
-``` 
+```
 
 The inline syntax allows you to use sub-queries without re-qualifying
 the type:

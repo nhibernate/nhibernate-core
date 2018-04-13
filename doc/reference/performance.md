@@ -508,7 +508,7 @@ strategies.
 
 Cache Concurrency Strategy Support
 
-Refer to [NHibernate.Caches](nhibernate-caches.md) for more details.
+Refer to [NHibernate.Caches](caches.md) for more details.
 
 # Managing the caches
 
