@@ -390,11 +390,17 @@ namespace NHibernate.Collection.Generic
 			get { return ReadSize() ? CachedSize : _values.Count; }
 		}
 
-		void ICollection.CopyTo(Array array, int index)
+		void ICollection.CopyTo(Array array, int arrayIndex)
 		{
-			for (int i = index; i < Count; i++)
+			Read();
+			if (_values is ICollection collection)
 			{
-				array.SetValue(this[i], i);
+				collection.CopyTo(array, arrayIndex);
+			}
+			else
+			{
+				foreach (var item in _values)
+					array.SetValue(item, arrayIndex++);
 			}
 		}
 
@@ -449,10 +455,8 @@ namespace NHibernate.Collection.Generic
 
 		public void CopyTo(T[] array, int arrayIndex)
 		{
-			for (int i = arrayIndex; i < Count; i++)
-			{
-				array.SetValue(this[i], i);
-			}
+			Read();
+			_values.CopyTo(array, arrayIndex);
 		}
 
 		public bool Remove(T item)
