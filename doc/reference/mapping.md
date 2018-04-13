@@ -704,7 +704,7 @@ persistent class itself and populate its identifier properties before
 you can `Load()` the persistent state associated with a composite key.
 We will describe a much more convenient approach where the composite
 identifier is implemented as a separate class in
-[Components as composite identifiers](component_mapping.md#components-as-composite-identifiers). The attributes described below apply
+[Components as composite identifiers](components.md#components-as-composite-identifiers). The attributes described below apply
 only to this alternative approach:
 
   - `name` (optional, required for this approach): A property of
@@ -1347,7 +1347,7 @@ inherited from the root class. Each subclass in a hierarchy must define
 a unique `discriminator-value`. If none is specified, the fully
 qualified .NET class name is used.
 
-For information about inheritance mappings, see [Inheritance Mapping](inheritance_mapping.md).
+For information about inheritance mappings, see [Inheritance Mapping](inheritance.md).
 
 ## joined-subclass
 
@@ -1415,7 +1415,7 @@ chapter would be re-written as:
     </hibernate-mapping>
 ```
 
-For information about inheritance mappings, see [Inheritance Mapping](inheritance_mapping.md).
+For information about inheritance mappings, see [Inheritance Mapping](inheritance.md).
 
 ## union-subclass
 
@@ -1464,7 +1464,7 @@ you need to use the `<union-subclass>` mapping.
 No discriminator column or key column is required for this mapping
 strategy.
 
-For information about inheritance mappings, see [Inheritance Mapping](inheritance_mapping.md).
+For information about inheritance mappings, see [Inheritance Mapping](inheritance.md).
 
 ## join
 

@@ -32,7 +32,7 @@ time; hence the performance gain.
 Depending on the chosen cache provider, the second level cache may be
 actually shared between different session factories. If you need to
 avoid this for some session factories, configure each of them with a
-different `cache.region_prefix`. See [Optional configuration properties](configuration.md#optional-configuration-properties).
+different `cache.region_prefix`. See [Optional configuration properties](session-configuration.md#optional-configuration-properties).
 
 Several cache providers have been contributed by NHibernate users:
 
@@ -152,7 +152,7 @@ NHibernate:
     `ToString()` needs to be overridden on composite id classes. It
     should yield an unique string representing the id. If the composite
     id is mapped as a component, overriding the component `ToString()`
-    is enough. See [Components as composite identifiers](component_mapping.md#components-as-composite-identifiers).
+    is enough. See [Components as composite identifiers](components.md#components-as-composite-identifiers).
 
 See also [The Second Level Cache](performance.md#the-second-level-cache).
 

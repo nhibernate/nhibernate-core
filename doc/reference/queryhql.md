@@ -231,7 +231,7 @@ Note that these last two queries will require more than one SQL
 the whole result set.
 
 In order to use non-mapped base classes or interfaces in HQL queries,
-they have to be imported. See [import](basic_mapping.md#import) for
+they have to be imported. See [import](mapping.md#import) for
 more information.
 
 # The where clause

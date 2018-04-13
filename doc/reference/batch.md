@@ -120,7 +120,7 @@ the SQL `Data Manipulation Language` (DML) statements: `INSERT`,
 `UPDATE`, `DELETE`) data directly in the database will not affect
 in-memory state. However, NHibernate provides methods for bulk SQL-style
 DML statement execution which are performed through the Hibernate Query
-Language ([HQL](query_hql.md)). A [Linq implementation](query_linq.md#modifying-entities-inside-the-database) is available too.
+Language ([HQL](queryhql.md)). A [Linq implementation](querysql.md#modifying-entities-inside-the-database) is available too.
 
 The pseudo-syntax for `UPDATE` and `DELETE` statements is: `( UPDATE |
 DELETE ) FROM? EntityName (WHERE where_conditions)?`. Some points to
@@ -158,8 +158,8 @@ As an example, to execute an HQL `UPDATE`, use the
 ```
 
 HQL `UPDATE` statements, by default do not effect the
-[version](basic_mapping.md#version-optional) or the
-[timestamp](basic_mapping.md#timestamp-optional) property values for the
+[version](mapping.md#version-optional) or the
+[timestamp](mapping.md#timestamp-optional) property values for the
 affected entities. However, you can force NHibernate to properly reset
 the `version` or `timestamp` property values through the use of a
 `versioned update`. This is achieved by adding the `VERSIONED` keyword

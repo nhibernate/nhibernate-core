@@ -189,7 +189,7 @@ specified. The table `Cat` in the database looks like this:
 | Weight | real         |                       |
 
 You should now create the database and this table manually, and later
-read [Toolset Guide](toolset_guide.md) if you want to automate this step with the
+read [Toolset Guide](toolsetguide.md) if you want to automate this step with the
 SchemaExport tool. This tool can create a full SQL DDL, including table
 definition, custom column type constraints, unique constraints and
 indexes. If you are using SQL Server, you should also make sure the

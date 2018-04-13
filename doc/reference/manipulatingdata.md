@@ -663,7 +663,7 @@ implementation may have the following effects:
   - Triggers pending cascade operations. This includes any pending
     `Save` of, by example, children added to a collection having the
     `Save` cascade enabled. Depending on the entities ID generators (see
-    [generator](basic_mapping.md#generator)), this may trigger calls to
+    [generator](mapping.md#generator)), this may trigger calls to
     the database, or even entity insertions if they are using the
     `identity` generator.
 

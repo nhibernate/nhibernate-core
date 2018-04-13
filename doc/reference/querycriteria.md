@@ -296,7 +296,7 @@ You can also add an entity projection to a criteria query:
     }
 ```
 
-See [Entities Projection](query_queryover.md#entities-projection) for more information.
+See [Entities Projection](queryqueryover.md#entities-projection) for more information.
 
 # Detached queries and sub-queries
 

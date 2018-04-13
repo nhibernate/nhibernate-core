@@ -16,7 +16,7 @@ course, the Linq namespace is still needed too.
 ```
 
 Note: NHibernate has another querying API which uses lambda,
-[QueryOver](query_queryover.md). It should not be confused with a Linq
+[QueryOver](queryqueryover.md). It should not be confused with a Linq
 provider.
 
 # Structure of a Query
@@ -85,7 +85,7 @@ defined in `NHibernate.Linq` namespace.
 # Parameter types
 
 Query parameters get extracted from the Linq expression. Their types are
-selected according to [NHibernate types](basic_mapping.md#nhibernate-types) default for
+selected according to [NHibernate types](mapping.md#nhibernate-types) default for
 .Net types.
 
 The `MappedAs` extension method allows to override the default type.
@@ -665,8 +665,8 @@ required instead of the merge: `RegisterGenerator`. `CompareGenerator`
 illustrates this.
 
 The last step is to instruct NHibernate to use this extended registry.
-It can be achieved through [xml configuration](configuration.md#xml-configuration-file)
-under `session-factory` node, or by [code](configuration.md#programmatic-configuration)
+It can be achieved through [xml configuration](session-configuration.md#xml-configuration-file)
+under `session-factory` node, or by [code](session-configuration.md#programmatic-configuration)
 before building the session factory. Use one of them.
 
 ```xml

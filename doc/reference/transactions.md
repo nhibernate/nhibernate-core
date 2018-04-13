@@ -423,7 +423,7 @@ which release mode to use. The possible values:
 If your application manages transactions through .NET APIs such as
 `System.Transactions` library while not using a compatible transaction
 factory (see `transaction.factory_class` in
-[Optional configuration properties](configuration.md#optional-configuration-properties)),
+[Optional configuration properties](session-configuration.md#optional-configuration-properties)),
 `ConnectionReleaseMode.AfterTransaction` may cause NHibernate to open
 and close several connections during one transaction, leading to
 unnecessary overhead and transaction promotion from local to
@@ -435,7 +435,7 @@ the legacy behavior and prevent this problem from occurring.
 Instead of using NHibernate `ITransaction`, `TransactionScope` can be
 used. Please do not use both simultaneously. Using `TransactionScope`
 requires using a compatible transaction factory (see
-`transaction.factory_class` in [Optional configuration properties](configuration.md#optional-configuration-properties)). The
+`transaction.factory_class` in [Optional configuration properties](session-configuration.md#optional-configuration-properties)). The
 default transaction factory supports scopes.
 
 When using `TransactionScope` with NHibernate, you need to be aware of
