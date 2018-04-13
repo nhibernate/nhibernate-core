@@ -74,6 +74,8 @@ namespace NHibernate.Proxy
 				interfaces.Add(baseType);
 			}
 
+			interfaces.RemoveWhere(i => !i.IsVisible);
+
 			var typeBuilder = moduleBuilder.DefineType(typeName, typeAttributes, parentType, interfaces.ToArray());
 
 			var lazyInitializerField = typeBuilder.DefineField("__lazyInitializer", LazyInitializerType, FieldAttributes.Private);

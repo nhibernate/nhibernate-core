@@ -757,8 +757,8 @@ namespace NHibernate.Persister.Entity
 			{
 				if (identitySelectString == null)
 					identitySelectString =
-						Factory.Dialect.GetIdentitySelectString(GetTableName(0), GetKeyColumns(0)[0],
-																										IdentifierType.SqlTypes(Factory)[0].DbType);
+						Factory.Dialect.GetIdentitySelectString(GetKeyColumns(0)[0], GetTableName(0),
+						                                        IdentifierType.SqlTypes(Factory)[0].DbType);
 				return identitySelectString;
 			}
 		}

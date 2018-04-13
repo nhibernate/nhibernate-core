@@ -30,7 +30,7 @@ DocBook Quick Start
 ================================================================================
 Read this article on Code Project (by Jim Crafton)
 	"Documention with DocBook on Win32"
-	http://www.codeproject.com/winhelp/docbook_howto.asp
+	https://www.codeproject.com/Articles/4481/Documention-with-DocBook-on-Win
 
 
 ================================================================================
