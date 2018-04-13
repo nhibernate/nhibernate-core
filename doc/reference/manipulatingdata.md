@@ -1,6 +1,6 @@
 # Manipulating Persistent Data
 
-# Creating a persistent object
+# Creating a persistent object <a name="manipulatingdata-creating"></a>
 
 An object (entity instance) is either *transient* or *persistent* with
 respect to a particular `ISession`. Newly instantiated objects are, of
@@ -34,7 +34,7 @@ never a risk of violating foreign key constraints. However, you might
 violate a `NOT NULL` constraint if you `Save()` the objects in the wrong
 order.
 
-# Loading an object
+# Loading an object <a name="manipulatingdata-loading"></a>
 
 The `Load()` methods of `ISession` give you a way to retrieve a
 persistent instance if you already know its identifier. One version
@@ -100,7 +100,7 @@ NHibernate load from the database and how many SQL `SELECT`s will it
 use? This depends on the *fetching strategy* and is explained in
 [Fetching strategies](performance.md#fetching-strategies).
 
-# Querying
+# Querying <a name="manipulatingdata-querying"></a>
 
 If you don't know the identifier(s) of the object(s) you are looking
 for, use the `CreateQuery()` method of `ISession`. NHibernate supports a
@@ -207,7 +207,7 @@ each tuple is returned as an array:
     }
 ```
 
-## Scalar queries
+## Scalar queries <a name="manipulatingdata-scalarqueries"></a>
 
 Queries may specify a property of a class in the `select` clause. They
 may even call SQL aggregate functions. Properties or aggregates are
@@ -237,7 +237,7 @@ considered "scalar" results.
         .List<object[]>();
 ```
 
-## The IQuery interface
+## The IQuery interface <a name="manipulatingdata-queryinterface"></a>
 
 If you need to specify bounds upon your result set (the maximum number
 of rows you want to retrieve and / or the first row you want to
@@ -327,7 +327,7 @@ named parameters are:
     var cats = q.List<DomesticCat>();
 ```
 
-## Filtering collections
+## Filtering collections <a name="manipulatingdata-filtering"></a>
 
 A collection *filter* is a special type of query that may be applied to
 a persistent collection or array. The query string may refer to `this`,
@@ -353,7 +353,7 @@ collection elements themselves.
         .List<Cat>();
 ```
 
-## Criteria queries
+## Criteria queries <a name="manipulatingdata-criteria"></a>
 
 HQL is extremely powerful but some people prefer to build queries
 dynamically, using an object oriented API, rather than embedding strings
@@ -372,7 +372,7 @@ easiest way to get started with NHibernate. This API is also more
 extensible than HQL. Applications might provide their own
 implementations of the `ICriterion` interface.
 
-## Queries in native SQL
+## Queries in native SQL <a name="manipulatingdata-nativesql"></a>
 
 You may express a query in SQL, using `CreateSQLQuery()`. You must
 enclose SQL aliases in braces.
@@ -395,9 +395,9 @@ enclose SQL aliases in braces.
 SQL queries may contain named and positional parameters, just like
 NHibernate queries.
 
-# Updating objects
+# Updating objects <a name="manipulatingdata-updating"></a>
 
-## Updating in the same ISession
+## Updating in the same ISession <a name="manipulatingdata-updating-insession"></a>
 
 *Transactional persistent instances* (ie. objects loaded, saved, created
 or queried by the `ISession`) may be manipulated by the application and
@@ -417,7 +417,7 @@ both an SQL `SELECT` (to load an object) and an SQL `UPDATE` (to persist
 its updated state) in the same session. Therefore NHibernate offers an
 alternate approach.
 
-## Updating detached objects
+## Updating detached objects <a name="manipulatingdata-updating-detached"></a>
 
 Many applications need to retrieve an object in one transaction, send it
 to the UI layer for manipulation, then save the changes in a new
@@ -545,7 +545,7 @@ instance. Otherwise, the given instance does not become associated with
 the session. In most applications with detached objects, you need both
 methods, `SaveOrUpdate()` and `Merge()`.
 
-## Reattaching detached objects
+## Reattaching detached objects <a name="manipulatingdata-update-lock"></a>
 
 The `Lock()` method allows the application to re-associate an unmodified
 object with a new session.
@@ -559,7 +559,7 @@ object with a new session.
     sess.Lock(pk, LockMode.Upgrade);
 ```
 
-# Deleting persistent objects
+# Deleting persistent objects <a name="manipulatingdata-deleting"></a>
 
 `ISession.Delete()` will remove an object's state from the database. Of
 course, your application might still hold a reference to it. So it's
@@ -582,7 +582,7 @@ violate a `NOT
 NULL` constraint on a foreign key column by deleting objects in the
 wrong order.
 
-# Flush
+# Flush <a name="manipulatingdata-flushing"></a>
 
 From time to time the `ISession` will execute the SQL statements needed
 to synchronize the `ADO.NET` connection's state with the state of objects
@@ -648,7 +648,7 @@ long time (see [Optimistic concurrency control](transactions.md#optimistic-concu
     }
 ```
 
-# Checking dirtiness
+# Checking dirtiness <a name="manipulatingdata-dirtiness"></a>
 
 `ISession.IsDirty()` will return whether the session hold any pending
 change to flush or not. Be cautious when using this method, its default
@@ -667,7 +667,7 @@ implementation may have the following effects:
     the database, or even entity insertions if they are using the
     `identity` generator.
 
-# Ending a Session
+# Ending a Session <a name="manipulatingdata-endingsession"></a>
 
 Ending a session involves four distinct phases:
 
@@ -679,14 +679,14 @@ Ending a session involves four distinct phases:
 
   - handle exceptions
 
-## Flushing the Session
+## Flushing the Session <a name="manipulatingdata-endingsession-flushing"></a>
 
 If you happen to be using the `ITransaction` API, you don't need to
 worry about this step. It will be performed implicitly when the
 transaction is committed. Otherwise you should call `ISession.Flush()`
 to ensure that all changes are synchronized with the database.
 
-## Committing the database transaction
+## Committing the database transaction <a name="manipulatingdata-endingsession-commit"></a>
 
 If you are using the NHibernate `ITransaction` API, this looks like:
 
@@ -718,7 +718,7 @@ If you rollback the transaction you should immediately close and discard
 the current session to ensure that NHibernate's internal state is
 consistent.
 
-## Closing the ISession
+## Closing the ISession <a name="manipulatingdata-endingsession-close"></a>
 
 A call to `ISession.Close()` marks the end of a session. The main
 implication of `Close()` is that the `ADO.NET` connection will be
@@ -737,7 +737,7 @@ If you provided your own connection, `Close()` returns a reference to
 it, so you can manually close it or return it to the pool. Otherwise
 `Close()` returns it to the pool.
 
-# Exception handling
+# Exception handling <a name="manipulatingdata-exceptions"></a>
 
 NHibernate use might lead to exceptions, usually `HibernateException`.
 This exception can have a nested inner exception (the root cause), use
@@ -793,7 +793,7 @@ Or, when manually managing `ADO.NET` transactions:
     }
 ```
 
-# Lifecycles and object graphs
+# Lifecycles and object graphs <a name="manipulatingdata-graphs"></a>
 
 To save or update all objects in a graph of associated objects, you must
 either
@@ -855,7 +855,7 @@ marked `cascade="save-update"` behave in this way. If you wish to use
 this approach throughout your application, it's easier to specify the
 `default-cascade` attribute of the `<hibernate-mapping>` element.
 
-# Interceptors
+# Interceptors <a name="manipulatingdata-interceptors"></a>
 
 The `IInterceptor` interface provides callbacks from the session to the
 application allowing the application to inspect and / or manipulate
@@ -968,7 +968,7 @@ You may also set an interceptor on a global level, using the
     new Configuration().SetInterceptor( new AuditInterceptor() );
 ```
 
-# Metadata API
+# Metadata API <a name="manipulatingdata-metadata"></a>
 
 NHibernate requires a very rich meta-level model of all entity and value
 types. From time to time, this model is very useful to the application

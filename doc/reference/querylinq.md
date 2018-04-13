@@ -19,7 +19,7 @@ Note: NHibernate has another querying API which uses lambda,
 [QueryOver](queryqueryover.md). It should not be confused with a Linq
 provider.
 
-# Structure of a Query
+# Structure of a Query <a name="querylinq-querystructure"></a>
 
 Queries are created from an ISession using the syntax:
 
@@ -82,7 +82,7 @@ defined in `NHibernate.Linq` namespace.
             .ToList();
 ```
 
-# Parameter types
+# Parameter types <a name="querylinq-parametertypes"></a>
 
 Query parameters get extracted from the Linq expression. Their types are
 selected according to [NHibernate types](mapping.md#nhibernate-types) default for
@@ -102,7 +102,7 @@ The `MappedAs` extension method allows to override the default type.
             .ToList();
 ```
 
-# Supported methods and members
+# Supported methods and members <a name="querylinq-supportedmethods"></a>
 
 Many methods and members of common .Net types are supported by the Linq
 to NHibernate provider. They will be translated to the appropriate SQL,
@@ -111,7 +111,7 @@ from) or at least one of their arguments references an entity property.
 (Otherwise, their return values will be evaluated with .Net runtime
 before query execution.)
 
-## Common methods
+## Common methods <a name="querylinq-supportedmethods-common"></a>
 
 The .Net 4 `CompareTo` method of strings and numerical types is
 translated to a `case` statement yielding `-1|0|1` according to the
@@ -152,7 +152,7 @@ called.
 `Equals` methods taking a single argument with the same type can be
 used. Of course, `==` is supported too.
 
-## `DateTime` and `DateTimeOffset`
+## `DateTime` and `DateTimeOffset` <a name="querylinq-supportedmethods-datetime"></a>
 
 Date and time parts properties can be called on `DateTime` and
 `DateTimeOffset`. Those properties are:
@@ -171,7 +171,7 @@ Date and time parts properties can be called on `DateTime` and
 
   - `Year`
 
-## `ICollection`, non generic and generic
+## `ICollection`, non generic and generic <a name="querylinq-supportedmethods-icollection"></a>
 
 Collections `Contains` methods are supported.
 
@@ -182,7 +182,7 @@ Collections `Contains` methods are supported.
             .ToList();
 ```
 
-## `IDictionary`, non generic and generic
+## `IDictionary`, non generic and generic <a name="querylinq-supportedmethods-idictionary"></a>
 
 Dictionaries `Item` getter are supported. This enables referencing a
 dictionary item value in a `where` condition, as it can be done with
@@ -206,7 +206,7 @@ it could be written with Linq:
             .ToList();
 ```
 
-## Mathematical functions
+## Mathematical functions <a name="querylinq-supportedmethods-math"></a>
 
 The following list of mathematical functions from `System.Math` is
 handled:
@@ -230,12 +230,12 @@ handled:
 
   - `Truncate` (both overloads)
 
-## Nullables
+## Nullables <a name="querylinq-supportedmethods-nullables"></a>
 
 On `Nullable<>` types, `GetValueOrDefault` methods, with or without a
 provided default value, are supported.
 
-## Strings
+## Strings <a name="querylinq-supportedmethods-string"></a>
 
 The following properties and methods are supported on strings:
 
@@ -285,7 +285,7 @@ If you want to avoid depending on the `NHibernate.Linq` namespace, you
 can define your own replica of the `Like` methods. Any 2 or 3 arguments
 method named `Like` in a class named `SqlMethods` will be translated.
 
-# Future results
+# Future results <a name="querylinq-futureresults"></a>
 
 Future results are supported by the Linq provider. They are not
 evaluated till one gets executed. At that point, all defined future
@@ -317,7 +317,7 @@ round-trip to database: it has been evaluated with
 first, it would have executed both future and `cats.GetEnumerable()`
 would have not trigger a round-trip to database.
 
-# Fetching associations
+# Fetching associations <a name="querylinq-fetching"></a>
 
 A Linq query may load associated entities or collection of entities.
 Once the query is defined, using `Fetch` allows fetching a related
@@ -366,7 +366,7 @@ previously fetched association.
             .ToList();
 ```
 
-# Modifying entities inside the database
+# Modifying entities inside the database <a name="querylinq-modifying"></a>
 
 Beginning with NHibernate 5.0, Linq queries can be used for inserting,
 updating or deleting entities. The query defines the data to delete,
@@ -378,7 +378,7 @@ corresponding entities out of the database.
 
 These operations are a Linq implementation of [DML-style operations](batch.md#dml-style-operations), with the same abilities and limitations.
 
-## Inserting new entities
+## Inserting new entities <a name="querylinq-modifying-insert"></a>
 
 `InsertInto` and `InsertBuilder` method extensions expect a NHibernate
 queryable defining the data source of the insert. This data can be
@@ -424,7 +424,7 @@ If not specified, they are inserted with their `seed` value.
 For more information on `Insert` limitations, please refer to
 [DML-style operations](batch.md#dml-style-operations).
 
-## Updating entities
+## Updating entities <a name="querylinq-modifying-update"></a>
 
 `Update` and `UpdateBuilder` method extensions expect a NHibernate
 queryable defining the entities to update. Then they allow specifying
@@ -470,7 +470,7 @@ constructed entity must have the exact same type than the underlying
 queryable source type. Attempting to project to any other class
 (anonymous projections excepted) will fail.
 
-## Deleting entities
+## Deleting entities <a name="querylinq-modifying-delete"></a>
 
 `Delete` method extension expects a queryable defining the entities to
 delete. It immediately deletes them.
@@ -481,7 +481,7 @@ delete. It immediately deletes them.
         .Delete();
 ```
 
-# Query cache
+# Query cache <a name="querylinq-querycache"></a>
 
 The Linq provider can use the query cache if it is setup. Refer to
 [The Query Cache](performance.md#the-query-cache) for more details on how to set it up.
@@ -511,13 +511,13 @@ The cache mode and cache region can be specified too.
             .ToList();
 ```
 
-# Extending the Linq to NHibernate provider
+# Extending the Linq to NHibernate provider <a name="querylinq-extending"></a>
 
 The Linq to NHibernate provider can be extended for supporting
 additional SQL functions or translating additional methods or properties
 to a SQL query.
 
-## Adding SQL functions
+## Adding SQL functions <a name="querylinq-extending-sqlfunctions"></a>
 
 NHibernate Linq provider feature a `LinqExtensionMethod` attribute. It
 allows using an arbitrary, built-in or user defined, SQL function. It
@@ -582,7 +582,7 @@ possible, and then replaced in the query by its resulting value, specify
     }
 ```
 
-## Adding a custom generator
+## Adding a custom generator <a name="querylinq-extending-generator"></a>
 
 Generators are responsible for translating .Net method calls found in
 lambdas to the proper HQL constructs. Adding support for a new method

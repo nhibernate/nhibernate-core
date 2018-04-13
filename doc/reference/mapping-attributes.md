@@ -1,5 +1,7 @@
 # NHibernate.Mapping.Attributes
 
+# What is NHibernate.Mapping.Attributes? <a name="mapping-attributes-new"></a>
+
 **NHibernate.Mapping.Attributes is an add-in for
 [NHibernate](http://nhibernate.info/) contributed by Pierre Henri
 Kuaté (aka *KPixel*); the former implementation was made by John
@@ -39,7 +41,7 @@ have to bother with these *nasty* xml files ;).
 > (open the Generator solution, compile and run the Generator
 > project). But, no test has been done with versions prior to 0.8.
 
-# What's new?
+# What's new? <a name="mapping-attributes-new"></a>
 
 **NHibernate.**
 
@@ -122,7 +124,7 @@ introduces many new features, improvements and changes:
 10. There are also many other little changes; refer to the release notes
     for more details.
 
-# How to use it?
+# How to use it? <a name="mapping-attributes-howto"></a>
 
 **The *end-user class* is `NHibernate.Mapping.Attributes.HbmSerializer`.**
 
@@ -166,7 +168,7 @@ need/want to create it yourself).
 > them with NHibernate and doesn't break any constraint on your
 > architecture. Attributes are purely informative (like documentation)\!
 
-# Tips
+# Tips <a name="mapping-attributes-tips"></a>
 
 1.  In production, it is recommended to generate a XML mapping file from
     NHibernate.Mapping.Attributes and use this file each time the
@@ -288,7 +290,7 @@ Generates:
     <many-to-one name="Entity" class="Namespaces.Foo, SampleAssembly" outer-join="true" />
 ```
 
-# Known issues and TODOs
+# Known issues and TODOs <a name="mapping-attributes-todo"></a>
 
 First, read TODOs in the source code ;)
 

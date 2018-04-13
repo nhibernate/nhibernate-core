@@ -1,6 +1,6 @@
 # Improving performance
 
-# Fetching strategies
+# Fetching strategies <a name="performance-fetching"></a>
 
 A *fetching strategy* is the strategy NHibernate will use for retrieving
 associated objects if the application needs to navigate the association.
@@ -52,7 +52,7 @@ and *how* is it fetched (what SQL is used). Don't confuse them\! We use
 what data is always available in any detached instance of a particular
 class.
 
-## Working with lazy associations
+## Working with lazy associations <a name="performance-fetching-lazy"></a>
 
 By default, NHibernate uses lazy select fetching for collections and
 lazy proxy fetching for single-valued associations. These defaults make
@@ -96,7 +96,7 @@ transaction. We'll now see how to customize the fetching strategy. In
 NHibernate, the mechanisms for choosing a fetch strategy are identical
 for single-valued associations and collections.
 
-## Tuning fetch strategies
+## Tuning fetch strategies <a name="performance-fetching-custom"></a>
 
 Select fetching (the default) is extremely vulnerable to N+1 selects
 problems, so we might want to enable join fetching in the mapping
@@ -150,7 +150,7 @@ example:
 A completely different way to avoid problems with N+1 selects is to use
 the [second-level cache](#the-second-level-cache), or to enable [batch fetching](#using-batch-fetching).
 
-## Single-ended association proxies
+## Single-ended association proxies <a name="performance-fetching-proxies"></a>
 
 Lazy fetching for collections is implemented using NHibernate's own
 implementation of persistent collections. However, a different mechanism
@@ -268,7 +268,7 @@ Certain operations do *not* require proxy initialization
 NHibernate will detect persistent classes that override `Equals()` or
 `GetHashCode()`.
 
-## Initializing collections and proxies
+## Initializing collections and proxies <a name="performance-fetching-initialization"></a>
 
 A `LazyInitializationException` will be thrown by NHibernate if an
 uninitialized collection or proxy is accessed outside of the scope of
@@ -343,7 +343,7 @@ of a collection without needing to initialize the whole
     s.CreateFilter(lazyCollection, "").SetFirstResult(0).SetMaxResults(10).List<Entity>();
 ```
 
-## Using batch fetching
+## Using batch fetching <a name="performance-fetching-batch"></a>
 
 NHibernate can make efficient use of batch fetching, that is, NHibernate
 can load several uninitialized proxies if one proxy is accessed (or
@@ -395,14 +395,14 @@ option for read-mostly trees.)
 NHibernate will configure the batch fetch optimization for lazy fetching
 globally. Batch sizes specified at more granular level take precedence.
 
-## Using subselect fetching
+## Using subselect fetching <a name="performance-fetching-subselect"></a>
 
 If one lazy collection or single-valued proxy has to be fetched,
 NHibernate loads all of them, re-running the original query in a
 subselect. This works in the same way as batch-fetching, without the
 piecemeal loading.
 
-# The Second Level Cache
+# The Second Level Cache <a name="performance-cache"></a>
 
 A NHibernate `ISession` is a transaction-level cache of persistent data.
 It is possible to configure a cluster or process-level
@@ -429,7 +429,7 @@ property `cache.provider_class`.
 | ASP.NET Cache (System.Web.Cache)            | `NHibernate.Caches.SysCache.SysCacheProvider, NHibernate.Caches.SysCache`            | memory       |              | yes                   |
 | Prevalence Cache                            | `NHibernate.Caches.Prevalence.PrevalenceCacheProvider, NHibernate.Caches.Prevalence` | memory, disk |              | yes                   |
 
-## Cache mappings
+## Cache mappings <a name="performance-cache-mapping"></a>
 
 The `<cache>` element of a class or collection mapping has the following
 form:
@@ -452,7 +452,7 @@ Alternatively (preferably?), you may specify `<class-cache>` and
 
 The `usage` attribute specifies a *cache concurrency strategy*.
 
-## Strategy: read only
+## Strategy: read only <a name="performance-cache-readonly"></a>
 
 If your application needs to read but never modify instances of a
 persistent class, a `read-only` cache may be used. This is the simplest
@@ -466,7 +466,7 @@ cluster.
     </class>
 ```
 
-## Strategy: read/write
+## Strategy: read/write <a name="performance-cache-readwrite"></a>
 
 If the application needs to update data, a `read-write` cache might be
 appropriate. This cache strategy should never be used if serializable
@@ -487,7 +487,7 @@ supports locking. The built-in cache providers do *not*.
     </class>
 ```
 
-## Strategy: nonstrict read/write
+## Strategy: nonstrict read/write <a name="performance-cache-nonstrict"></a>
 
 If the application only occasionally needs to update data (ie. if it is
 extremely unlikely that two transactions would try to update the same
@@ -510,7 +510,7 @@ Cache Concurrency Strategy Support
 
 Refer to [NHibernate.Caches](caches.md) for more details.
 
-# Managing the caches
+# Managing the caches <a name="performance-sessioncache"></a>
 
 Whenever you pass an object to `Save()`, `Update()` or `SaveOrUpdate()`
 and whenever you retrieve an object using `Load()`, `Get()`, `List()`,
@@ -559,7 +559,7 @@ class, collection instance or entire collection role.
     sessionFactory.EvictCollection("Eg.Cat.Kittens");
 ```
 
-# The Query Cache
+# The Query Cache <a name="performance-querycache"></a>
 
 Query result sets may also be cached. This is only useful for queries
 that are run frequently with the same parameters. To use the query cache
@@ -611,13 +611,13 @@ application to selectively refresh the query cache regions based on its
 knowledge of those events. This is a more efficient alternative to
 eviction of a query cache region via `ISessionFactory.EvictQueries()`.
 
-# Understanding Collection performance
+# Understanding Collection performance <a name="performance-collections"></a>
 
 We've already spent quite some time talking about collections. In this
 section we will highlight a couple more issues about how collections
 behave at runtime.
 
-## Taxonomy
+## Taxonomy <a name="performance-collections-taxonomy"></a>
 
 NHibernate defines three basic kinds of collections:
 
@@ -672,7 +672,7 @@ the above classification is still useful. (It still reflects how
 NHibernate "locates" individual rows of the
 collection.)
 
-## Lists, maps, idbags and sets are the most efficient collections to update
+## Lists, maps, idbags and sets are the most efficient collections to update <a name="performance-collections-mostefficientupdate"></a>
 
 From the discussion above, it should be clear that indexed collections
 and (usually) sets allow the most efficient operation in terms of
@@ -697,7 +697,7 @@ most collections are in fact one-to-many associations with
 many-to-one end of the association, and so considerations of collection
 update performance simply do not apply.
 
-## Bags and lists are the most efficient inverse collections
+## Bags and lists are the most efficient inverse collections <a name="performance-collections-mostefficentinverse"></a>
 
 Just before you ditch bags forever, there is a particular case in which
 bags (and also lists) are much more performant than sets. For a
@@ -715,7 +715,7 @@ without needing to initialize (fetch) the bag elements\! This is because
         sess.Flush();
 ```
 
-## One shot delete
+## One shot delete <a name="performance-collections-oneshotdelete"></a>
 
 Occasionally, deleting collection elements one by one can be extremely
 inefficient. NHibernate isn't completely stupid, so it knows not to do
@@ -749,7 +749,7 @@ This can be very useful and powerful from time to time.
 Of course, one-shot-delete does not apply to collections mapped
 `inverse="true"`.
 
-# Batch updates
+# Batch updates <a name="performance-batch-updates"></a>
 
 NHibernate supports batching SQL update commands (`INSERT`, `UPDATE`,
 `DELETE`) with the following limitations:
@@ -769,7 +769,7 @@ NHibernate supports batching SQL update commands (`INSERT`, `UPDATE`,
 Update batching is enabled by setting `adonet.batch_size` to a non-zero
 value.
 
-# Multi Query
+# Multi Query <a name="performance-multi-query"></a>
 
 This functionality allows you to execute several HQL queries in one
 round-trip against the database server. A simple use case is executing a
@@ -844,7 +844,7 @@ an object in one round-trip, without an expensive cartesian product
         .UniqueResult<Blog>();
 ```
 
-# Multi Criteria
+# Multi Criteria <a name="performance-multi-criteria"></a>
 
 This is the counter-part to Multi Query, and allows you to perform
 several criteria queries in a single round trip. A simple use case is

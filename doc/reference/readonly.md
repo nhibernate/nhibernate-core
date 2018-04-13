@@ -45,7 +45,7 @@ NHibernate does some optimizing for read-only entities:
 
   - It saves memory by deleting database snapshots.
 
-# Making persistent entities read-only
+# Making persistent entities read-only <a name="readonly-api"></a>
 
 Only persistent entities can be made read-only. Transient and detached
 entities must be put in persistent state before they can be made
@@ -72,7 +72,7 @@ read-only:
     session read-only; see [Making a persistent entity read-only](#making-a-persistent-entity-read-only) for
     details
 
-## Entities of immutable classes
+## Entities of immutable classes <a name="readonly-api-immutable"></a>
 
 When an entity instance of an immutable class is made persistent,
 NHibernate automatically makes it read-only.
@@ -85,7 +85,7 @@ as a read-only persistent entity of a mutable class. The only exception
 is that NHibernate will not allow an entity of an immutable class to be
 changed so it is not read-only.
 
-## Loading persistent entities as read-only
+## Loading persistent entities as read-only <a name="readonly-api-loaddefault"></a>
 
 > **Note**
 > 
@@ -138,7 +138,7 @@ Changing this default has no effect on:
     `Session.Persist()`, `Session.Save()`, `Session.Update()` and
     `Session.SaveOrUpdate()`
 
-## Loading read-only entities from an HQL query/criteria
+## Loading read-only entities from an HQL query/criteria <a name="readonly-api-querycriteria"></a>
 
 > **Note**
 > 
@@ -209,7 +209,7 @@ If `Session.DefaultReadOnly` returns true, then you can use
 Query.SetReadOnly(false) and Criteria.SetReadOnly(false) to override
 this session setting and load entities that are not read-only.
 
-## Making a persistent entity read-only
+## Making a persistent entity read-only <a name="readonly-api-entity"></a>
 
 > **Note**
 > 
@@ -259,7 +259,7 @@ persistent entity:
     s.Flush();
 ```
 
-# Read-only affect on property type
+# Read-only affect on property type <a name="readonly-proptypes"></a>
 
 The following table summarizes how different property types are affected
 by making an entity read-only.
@@ -277,7 +277,7 @@ by making an entity read-only.
 \* Behavior is different when the entity having the property/association
 is read-only, compared to when it is not read-only.
 
-## Simple properties
+## Simple properties <a name="readonly-proptypes-simple"></a>
 
 When a persistent object is read-only, NHibernate does not dirty-check
 simple properties.
@@ -307,9 +307,9 @@ increment the version if any simple properties change.
     }
 ```
 
-## Unidirectional associations
+## Unidirectional associations <a name="readonly-prop-types-unidir"></a>
 
-### Unidirectional one-to-one and many-to-one
+### Unidirectional one-to-one and many-to-one <a name="readonly-proptypes-singleended-unidir"></a>
 
 NHibernate treats unidirectional one-to-one and many-to-one associations
 in the same way when the owning entity is read-only.
@@ -401,7 +401,7 @@ locally changed association.
     session.Close();
 ```
 
-### Unidirectional one-to-many and many-to-many
+### Unidirectional one-to-many and many-to-many <a name="readonly-proptypes-manyended-unidir"></a>
 
 NHibernate treats unidirectional one-to-many and many-to-many
 associations owned by a read-only entity the same as when owned by an
@@ -419,9 +419,9 @@ flushed to the database.
 If automatic versioning is used, NHibernate will update the version due
 to changes in the collection if they dirty the owning entity.
 
-## Bidirectional associations
+## Bidirectional associations <a name="readonly-proptypes-bidir"></a>
 
-### Bidirectional one-to-one
+### Bidirectional one-to-one <a name="readonly-proptypes-onetoone-bidir"></a>
 
 If a read-only entity owns a bidirectional one-to-one association:
 
@@ -444,7 +444,7 @@ When the owner is not read-only, NHibernate treats an association with a
 read-only entity the same as when the association is with an entity that
 is not read-only.
 
-### Bidirectional one-to-many/many-to-one
+### Bidirectional one-to-many/many-to-one <a name="readonly-proptypes-onetomany-manytoone"></a>
 
 A read-only entity has no impact on a bidirectional
 one-to-many/many-to-one association if:
@@ -466,7 +466,7 @@ When the one-to-many side uses an inverse collection:
   - a read-only entity can only be removed from the collection by an
     orphan delete or by explicitly deleting the entity.
 
-### Bidirectional many-to-many
+### Bidirectional many-to-many <a name="readonly-proptypes-manytomany-bidir"></a>
 
 NHibernate treats bidirectional many-to-many associations owned by a
 read-only entity the same as when owned by an entity that is not

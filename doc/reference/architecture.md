@@ -1,6 +1,6 @@
 # Architecture
 
-# Overview
+# Overview <a name="architecture-overview"></a>
 
 A (very) high-level view of the NHibernate architecture:
 
@@ -79,7 +79,7 @@ Given a "lite" architecture, the application bypasses the
 `ITransaction`/`ITransactionFactory` and/or `IConnectionProvider` APIs
 to talk to `ADO.NET` directly.
 
-# Instance states
+# Instance states <a name="architecture-states"></a>
 
 An instance of a persistent classes may be in one of three different
 states, which are defined with respect to a *persistence context*. The
@@ -105,7 +105,7 @@ NHibernate `ISession` object is the persistence context:
     guarantees about the relationship between persistent identity and
     CLR identity.
 
-# Contextual Sessions
+# Contextual Sessions <a name="architecture-current-session"></a>
 
 Most applications using NHibernate need some form of "contextual"
 sessions, where a given session is in effect throughout the scope of a

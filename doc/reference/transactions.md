@@ -7,7 +7,7 @@ distributed transaction, operations performed by the `ISession` are
 atomically part of the wider distributed transaction. NHibernate can be
 seen as a thin adapter to `ADO.NET` , adding object-oriented semantics.
 
-# Configurations, Sessions and Factories
+# Configurations, Sessions and Factories <a name="transactions-basics"></a>
 
 An `ISessionFactory` is an expensive-to-create, threadsafe object
 intended to be shared by all application threads. An `ISession` is an
@@ -51,7 +51,7 @@ The next few sections will discuss alternative approaches that utilize
 versioning to ensure transaction atomicity. These are considered
 "advanced" approaches to be used with care.
 
-# Threads and connections
+# Threads and connections <a name="transactions-threads"></a>
 
 You should observe the following practices when creating NHibernate
 Sessions:
@@ -72,7 +72,7 @@ Sessions:
     have async counterparts. Each call to an async method must be
     awaited before further interacting with the session or its queries.
 
-# Considering object identity
+# Considering object identity <a name="transactions-identity"></a>
 
 The application may concurrently access the same persistent state in two
 different units-of-work. However, an instance of a persistent class is
@@ -96,7 +96,7 @@ object, as long as it sticks to a single thread per `ISession` or object
 identity (within an `ISession` the application may safely use `==` to
 compare objects).
 
-# Optimistic concurrency control
+# Optimistic concurrency control <a name="transactions-optimistic"></a>
 
 Many business processes require a whole series of interactions with the
 user interleaved with database accesses. In web and enterprise
@@ -115,7 +115,7 @@ scalability is optimistic concurrency control with versioning.
 NHibernate provides for three possible approaches to writing application
 code that uses optimistic concurrency.
 
-## Long session with automatic versioning
+## Long session with automatic versioning <a name="transactions-optimistic-longsession"></a>
 
 A single `ISession` instance and its persistent instances are used for
 the whole application transaction.
@@ -151,7 +151,7 @@ and contains all loaded objects, we can probably use this strategy only
 for a few request/response cycles. This is indeed recommended, as the
 `ISession` will soon also have stale data.
 
-## Many sessions with automatic versioning
+## Many sessions with automatic versioning <a name="transactions-optimistic-detached"></a>
 
 Each interaction with the persistent store occurs in a new `ISession`.
 However, the same persistent instances are reused for each interaction
@@ -176,7 +176,7 @@ You may also call `Lock()` instead of `Update()` and use `LockMode.Read`
 (performing a version check, bypassing all caches) if you are sure that
 the object has not been modified.
 
-## Customizing automatic versioning
+## Customizing automatic versioning <a name="transactions-optimistic-customizing"></a>
 
 You may disable NHibernate's automatic version increment for particular
 properties and collections by setting the `optimistic-lock` mapping
@@ -211,7 +211,7 @@ setting `select-before-update="true"` in the `<class>` mapping, forcing
 NHibernate to `SELECT` the instance to ensure that changes did actually
 occur, before updating the row.
 
-## Application version checking
+## Application version checking <a name="transactions-optimistic-manual"></a>
 
 Each interaction with the database occurs in a new `ISession` that
 reloads all persistent instances from the database before manipulating
@@ -238,7 +238,7 @@ Of course, if you are operating in a low-data-concurrency environment
 and don't require version checking, you may use this approach and just
 skip the version check.
 
-# Session disconnection
+# Session disconnection <a name="transactions-disconnection"></a>
 
 The first approach described above is to maintain a single `ISession`
 for a whole business process that spans user think time. (For example, a
@@ -327,7 +327,7 @@ You can see from this how the relationship between `ITransaction`s and
 between the application and the database. The `ITransaction` breaks that
 conversation up into atomic units of work at the database level.
 
-# Pessimistic Locking
+# Pessimistic Locking <a name="transactions-locking"></a>
 
 It is not intended that users spend much time worrying about locking
 strategies. It's usually enough to specify an isolation level for the
@@ -381,7 +381,7 @@ If the database does not support the requested lock mode, NHibernate
 will use an appropriate alternate mode (instead of throwing an
 exception). This ensures that applications will be portable.
 
-# Connection Release Modes
+# Connection Release Modes <a name="transactions-connection-release"></a>
 
 The legacy (1.0.x) behavior of NHibernate in regards to `ADO.NET` 
 connection management was that a `ISession` would obtain a connection
@@ -430,7 +430,7 @@ unnecessary overhead and transaction promotion from local to
 distributed. Specifying `ConnectionReleaseMode.OnClose` will revert to
 the legacy behavior and prevent this problem from occurring.
 
-# Transaction scopes (System.Transactions)
+# Transaction scopes (System.Transactions) <a name="transactions-scopes"></a>
 
 Instead of using NHibernate `ITransaction`, `TransactionScope` can be
 used. Please do not use both simultaneously. Using `TransactionScope`

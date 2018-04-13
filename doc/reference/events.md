@@ -4,7 +4,7 @@ It is often useful for the application to react to certain events that
 occur inside NHibernate. This allows implementation of certain kinds of
 generic functionality, and extension of NHibernate functionality.
 
-# Interceptors
+# Interceptors <a name="objectstate-interceptors"></a>
 
 The `IInterceptor` interface provides callbacks from the session to the
 application allowing the application to inspect and/or manipulate
@@ -127,7 +127,7 @@ session-specific state since multiple sessions will use this interceptor
     new Configuration().SetInterceptor( new AuditInterceptor() );
 ```
 
-# Event system
+# Event system <a name="objectstate-events"></a>
 
 If you have to react to particular events in your persistence layer, you
 may also use the NHibernate2 *event* architecture. The event system can

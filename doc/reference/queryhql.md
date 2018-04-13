@@ -5,7 +5,7 @@ NHibernate is equipped with an extremely powerful query language that
 the syntax; HQL is fully object-oriented, understanding notions like
 inheritance, polymorphism and association.
 
-# Case Sensitivity
+# Case Sensitivity <a name="queryhql-casesensitivity"></a>
 
 Queries are case-insensitive, except for names of .NET classes and
 properties. So `SeLeCT` is the same as `sELEct` is the same as `SELECT`
@@ -15,7 +15,7 @@ This manual uses lowercase HQL keywords. Some users find queries with
 uppercase keywords more readable, but we find this convention ugly when
 embedded in C\# code.
 
-# The from clause
+# The from clause <a name="queryhql-from"></a>
 
 The simplest possible NHibernate query is of the form:
 
@@ -53,7 +53,7 @@ It is considered good practice to name query aliases using an initial
 lowercase, consistent with naming standards for local variables (eg.
 `domesticCat`).
 
-# Associations and joins
+# Associations and joins <a name="queryhql-joins"></a>
 
 We may also assign aliases to associated entities, or even to elements
 of a collection of values, using a `join`.
@@ -110,7 +110,7 @@ that the `fetch` construct may not be used in queries called using
 `Enumerable()`. Finally, note that `full join fetch` and `right join
 fetch` are not meaningful.
 
-# The select clause
+# The select clause <a name="queryhql-select"></a>
 
 The `select` clause picks which objects and properties to return in the
 query result set. Consider:
@@ -166,7 +166,7 @@ or as an actual type-safe object
 
 assuming that the class `Family` has an appropriate constructor.
 
-# Aggregate functions
+# Aggregate functions <a name="queryhql-aggregation"></a>
 
 HQL queries may even return the results of aggregate functions on
 properties:
@@ -201,7 +201,7 @@ semantics as in SQL.
     select count(distinct cat.Name), count(cat) from Eg.Cat cat
 ```
 
-# Polymorphic queries
+# Polymorphic queries <a name="queryhql-polymorphism"></a>
 
 A query like:
 
@@ -234,7 +234,7 @@ In order to use non-mapped base classes or interfaces in HQL queries,
 they have to be imported. See [import](mapping.md#import) for
 more information.
 
-# The where clause
+# The where clause <a name="queryhql-where"></a>
 
 The `where` clause allows you to narrow the list of instances returned.
 
@@ -339,7 +339,7 @@ property mapped with `<any>`).
 Notice that `log.Item.class` and `payment.class` would refer to the
 values of completely different database columns in the above query.
 
-# Expressions
+# Expressions <a name="queryhql-expressions"></a>
 
 Expressions allowed in the `where` clause include most of the kind of
 things you could write in SQL:
@@ -527,7 +527,7 @@ readable the following query would be in SQL:
         )
 ```
 
-# The order by clause
+# The order by clause <a name="queryhql-ordering"></a>
 
 The list returned by a query may be ordered by any property of a
 returned class or components:
@@ -540,7 +540,7 @@ returned class or components:
 The optional `asc` or `desc` indicate ascending or descending order
 respectively.
 
-# The group by clause
+# The group by clause <a name="queryhql-grouping"></a>
 
 A query that returns aggregate values may be grouped by any property of
 a returned class or components:
@@ -586,7 +586,7 @@ not expand a grouped entity, so you can't write `group by cat` if all
 properties of `cat` are non-aggregated. You have to list all
 non-aggregated properties explicitly.
 
-# Sub-queries
+# Sub-queries <a name="queryhql-subqueries"></a>
 
 For databases that support sub-selects, NHibernate supports sub-queries
 within queries. A sub-query must be surrounded by parentheses (often by
@@ -615,7 +615,7 @@ an SQL aggregate function call). Even correlated sub-queries
     )
 ```
 
-# HQL examples
+# HQL examples <a name="queryhql-examples"></a>
 
 NHibernate queries can be quite powerful and complex. In fact, the power
 of the query language is one of NHibernate's main selling points. Here
@@ -735,7 +735,7 @@ subselect.
     order by account.Type.SortOrder, account.AccountNumber, payment.DueDate
 ```
 
-# Tips & Tricks
+# Tips & Tricks <a name="queryhql-tipstricks"></a>
 
 You can count the number of query results without actually returning
 them:

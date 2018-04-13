@@ -3,7 +3,7 @@
 The notion of a *component* is re-used in several different contexts,
 for different purposes, throughout NHibernate.
 
-# Dependent objects
+# Dependent objects <a name="components-dependentobjects"></a>
 
 A component is a contained object that is persisted as a value type, not
 an entity. The term "component" refers to the object-oriented notion of
@@ -86,7 +86,7 @@ entity.
     </class>
 ```
 
-# Collections of dependent objects
+# Collections of dependent objects <a name="components-incollections"></a>
 
 Collections of components are supported (eg. an array of type `Name`).
 Declare your component collection by replacing the `<element>` tag with
@@ -163,13 +163,13 @@ Even ternary (or quaternary, etc) associations are possible:
 Composite elements may appear in queries using the same syntax as
 associations to other entities.
 
-# Components as IDictionary indices
+# Components as IDictionary indices <a name="components-asmapindex"></a>
 
 The `<composite-index>` element lets you map a component class as the
 key of an `IDictionary`. Make sure you override `GetHashCode()` and
 `Equals()` correctly on the component class.
 
-# Components as composite identifiers
+# Components as composite identifiers <a name="components-compositeid"></a>
 
 You may use a component as an identifier of an entity class. Your
 component class must satisfy certain requirements:
@@ -262,7 +262,7 @@ foreign key.
     </class>
 ```
 
-# Dynamic components
+# Dynamic components <a name="components-dynamic"></a>
 
 You may even map a property of type `IDictionary`:
 

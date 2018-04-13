@@ -1,6 +1,6 @@
 # Example: Weblog Application
 
-# Persistent Classes
+# Persistent Classes <a name="example-weblog-classes"></a>
 
 The persistent classes represent a weblog, and an item posted in a
 weblog. They are to be modelled as a standard parent/child relationship,
@@ -41,7 +41,7 @@ but we will use an ordered bag, instead of a set.
     }
 ```
 
-# NHibernate Mappings
+# NHibernate Mappings <a name="example-weblog-mappings"></a>
 
 The XML mappings should now be quite straightforward.
 
@@ -125,7 +125,7 @@ The XML mappings should now be quite straightforward.
     </hibernate-mapping>
 ```
 
-# NHibernate Code
+# NHibernate Code <a name="example-weblog-code"></a>
 
 The following class demonstrates some of the kinds of things we can do
 with these classes, using NHibernate.

@@ -5,7 +5,7 @@ NHibernate provides an innovative new approach to handling data with
 parameterized filter that may be enabled or disabled for a particular
 NHibernate session.
 
-# NHibernate filters
+# NHibernate filters <a name="objectstate-filters"></a>
 
 NHibernate adds the ability to pre-define filter criteria and attach
 those filters at both a class and a collection level. A filter criteria

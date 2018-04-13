@@ -13,7 +13,7 @@ element mapping. We will explain how to use a *bidirectional one to many
 association with cascades* to model a parent / child relationship
 efficiently and elegantly. It's not at all difficult\!
 
-# A note about collections
+# A note about collections <a name="example-parentchild-collections"></a>
 
 NHibernate collections are considered to be a logical part of their
 owning entity; never of the contained entities. This is a crucial
@@ -42,7 +42,7 @@ it is not appropriate at all is the case of a parent / child
 relationship, where the life of the child is bound to the lifecycle of
 the parent.
 
-# Bidirectional one-to-many
+# Bidirectional one-to-many <a name="example-parentchild-bidir"></a>
 
 Suppose we start with a simple `<one-to-many>` association from `Parent`
 to `Child`.
@@ -127,7 +127,7 @@ Now, the code to add a `Child` looks like
     session.Flush();
 ```
 
-# Cascading lifecycle
+# Cascading lifecycle <a name="example-parentchild-cascades"></a>
 
 The explicit call to `Save()` is still annoying. We will address this by
 using cascades.
@@ -205,7 +205,7 @@ you require that an object be saved, deleted or updated by cascade, you
 must add it to the collection. It is not enough to simply set its
 parent.
 
-# Using cascading `Update()`
+# Using cascading `Update()` <a name="example-parentchild-update"></a>
 
 Suppose we loaded up a `Parent` in one `ISession`, made some changes in
 a UI action and wish to persist these changes in a new ISession (by
@@ -333,7 +333,7 @@ along with `OnLoad()`, `OnSave()` and `OnDelete()` as follows.
     }
 ```
 
-# Conclusion
+# Conclusion <a name="example-parentchild-conclusion"></a>
 
 There is quite a bit to digest here and it might look confusing first
 time around. However, in practice, it all works out quite nicely. Most

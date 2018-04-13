@@ -29,7 +29,7 @@ from the ICriteria API while maintaining it's opaqueness. It is *not* a
 LINQ provider; NHibernate has a built-in [Linq provider](querylinq.md) for
 this.
 
-# Structure of a Query
+# Structure of a Query <a name="queryqueryover-querystructure"></a>
 
 Queries are created from an ISession using the syntax:
 
@@ -65,7 +65,7 @@ using a fluent inline syntax:
             .List<string>();
 ```
 
-# Simple Expressions
+# Simple Expressions <a name="queryqueryover-simpleexpressions"></a>
 
 The Restrictions class (used by ICriteria) has been extended to include
 overloads that allow Lambda Expression syntax. The Where() method works
@@ -143,7 +143,7 @@ ICriterion. The actual Lambda Expression is not stored in the query.
         .Where(c => c.Name == "Max")
 ```
 
-# Additional Restrictions
+# Additional Restrictions <a name="queryqueryover-additionalrestrictions"></a>
 
 Some SQL operators/functions do not have a direct equivalent in C\#.
 (e.g., the SQL `where name like '%anna%'`). These operators have
@@ -191,7 +191,7 @@ May also be written as:
         .Where(c => c..Name.IsLike("%anna%"))
 ```
 
-# Associations
+# Associations <a name="queryqueryover-associations"></a>
 
 QueryOver can navigate association paths using JoinQueryOver()
 (analogous to ICriteria.CreateCriteria() to create sub-criteria).
@@ -240,7 +240,7 @@ example, to left outer-join on Kittens use:
                 .Where(k => k.Name == "Tiddles");
 ```
 
-# Join entities without association (Entity joins or ad hoc joins)
+# Join entities without association (Entity joins or ad hoc joins) <a name="queryqueryover_entityjoin"></a>
 
 In QueryOver you have the ability to define a join to any entity, not
 just through a mapped association. To achieve it, use `JoinEntityAlias`
@@ -259,7 +259,7 @@ and `JoinEntityQueryOver`. By example:
         .List();
 ```
 
-# Aliases
+# Aliases <a name="queryqueryover-aliases"></a>
 
 In the traditional ICriteria interface aliases are assigned using 'magic
 strings', however their value does not correspond to a name in the
@@ -288,7 +288,7 @@ associations using aliases without creating a sub-QueryOver.
             .And(() => kittenAlias.Name == "Tiddles");
 ```
 
-# Projections
+# Projections <a name="queryqueryover-projections"></a>
 
 Simple projections of the properties of the root type can be added using
 the `.Select` method which can take multiple Lambda Expression
@@ -388,7 +388,7 @@ transformer:
             .List<CatSummary>();
 ```
 
-# Projection Functions
+# Projection Functions <a name="queryqueryover-projectionfunctions"></a>
 
 In addition to projecting properties, there are extension methods to
 allow certain common dialect-registered functions to be applied. For
@@ -406,7 +406,7 @@ The functions can also be used inside projections:
             p => p.Height.Abs())
 ```
 
-# Entities Projection
+# Entities Projection <a name="queryqueryover-projectionentities"></a>
 
 You can add entity projections via the `AsEntity()` extension.
 
@@ -432,7 +432,7 @@ with lazy properties:
     )
 ```
 
-# Sub-queries
+# Sub-queries <a name="queryqueryover-querystructure"></a>
 
 The Sub-queries factory class has overloads to allow Lambda Expressions
 to express sub-query restrictions. For example:

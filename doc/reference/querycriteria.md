@@ -2,7 +2,7 @@
 
 NHibernate features an intuitive, extensible criteria query API.
 
-# Creating an `ICriteria` instance
+# Creating an `ICriteria` instance <a name="querycriteria-creating"></a>
 
 The interface `NHibernate.ICriteria` represents a query against a
 particular persistent class. The `ISession` is a factory for `ICriteria`
@@ -14,7 +14,7 @@ instances.
     var cats = crit.List<Cat>();
 ```
 
-# Narrowing the result set
+# Narrowing the result set <a name="querycriteria-narrowing"></a>
 
 An individual query criterion is an instance of the interface
 `NHibernate.Expression.ICriterion`. The class
@@ -65,7 +65,7 @@ directly.
 The `{alias}` placeholder with be replaced by the row alias of the
 queried entity.
 
-# Ordering the results
+# Ordering the results <a name="querycriteria-ordering"></a>
 
 You may order the results using `NHibernate.Expression.Order`.
 
@@ -78,7 +78,7 @@ You may order the results using `NHibernate.Expression.Order`.
         .List<Cat>();
 ```
 
-# Associations
+# Associations <a name="querycriteria-associations"></a>
 
 You may easily specify constraints upon related entities by navigating
 associations using `CreateCriteria()`.
@@ -124,10 +124,10 @@ use `SetResultTransformer(Transformers.AliasToEntityMap)`.
     }
 ```
 
-Note that for retrieving just kittens you can also use an entity
 projection. See [Projections, aggregation and grouping](#projections-aggregation-and-grouping) for more information.
+Note that for retrieving just kittens you can also use an entity
 
-# Join entities without association (Entity joins or ad hoc joins)
+# Join entities without association (Entity joins or ad hoc joins) <a name="querycriteria-querycriteria_entityjoin"></a>
 
 In criteria you have the ability to define a join to any entity, not
 just through a mapped association. To achieve it, use
@@ -146,7 +146,7 @@ just through a mapped association. To achieve it, use
         .List();
 ```
 
-# Dynamic association fetching
+# Dynamic association fetching <a name="querycriteria-dynamicfetching"></a>
 
 You may specify association fetching semantics at runtime using
 `SetFetchMode()`.
@@ -162,7 +162,7 @@ You may specify association fetching semantics at runtime using
 This query will fetch both `Mate` and `Kittens` by outer join. See
 [Fetching strategies](performance.md#fetching-strategies) for more information.
 
-# Example queries
+# Example queries <a name="querycriteria-examples"></a>
 
 The class `NHibernate.Expression.Example` allows you to construct a
 query criterion from a given instance.
@@ -203,7 +203,7 @@ You can even use examples to place criteria upon associated objects.
         .List<Cat>();
 ```
 
-# Projections, aggregation and grouping
+# Projections, aggregation and grouping <a name="querycriteria-projection"></a>
 
 The class `NHibernate.Expression.Projections` is a factory for
 `IProjection` instances. We apply a projection to a query by calling
@@ -298,7 +298,7 @@ You can also add an entity projection to a criteria query:
 
 See [Entities Projection](queryqueryover.md#entities-projection) for more information.
 
-# Detached queries and sub-queries
+# Detached queries and sub-queries <a name="querycriteria-detachedqueries"></a>
 
 The `DetachedCriteria` class lets you create a query outside the scope
 of a session, and then later execute it using some arbitrary `ISession`.

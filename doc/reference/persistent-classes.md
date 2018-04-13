@@ -8,7 +8,7 @@ transient and also persistent instance stored in the database.
 NHibernate works best if these classes follow some simple rules, also
 known as the Plain Old CLR Object (POCO) programming model.
 
-# A simple POCO example
+# A simple POCO example <a name="persistent-classes-poco"></a>
 
 Most .NET applications require a persistent class representing felines.
 
@@ -48,7 +48,7 @@ Most .NET applications require a persistent class representing felines.
 
 There are four main rules to follow here:
 
-## Declare properties for persistent fields
+## Declare properties for persistent fields <a name="persistent-classes-poco-accessors"></a>
 
 `Cat` declares properties for all the persistent fields. Many other *ORM
 tools* directly persist instance variables. We believe it is far better
@@ -62,13 +62,13 @@ property with an `internal`, `protected`, `protected internal` or
 As shown in the example, both automatic properties and properties with a
 backing field are supported.
 
-## Implement a default constructor
+## Implement a default constructor <a name="persistent-classes-poco-constructor"></a>
 
 `Cat` has an implicit default (no-argument) constructor. All persistent
 classes must have a default constructor (which may be non-public) so
 NHibernate can instantiate them using `Activator.CreateInstance()`.
 
-## Provide an identifier property (optional)
+## Provide an identifier property (optional) <a name="persistent-classes-poco-identifier"></a>
 
 `Cat` has a property called `Id`. This property holds the primary key
 column of a database table. The property might have been called
@@ -91,7 +91,7 @@ declare an identifier property:
 We recommend you declare consistently-named identifier properties on
 persistent classes.
 
-## Prefer non-sealed classes and virtual methods (optional)
+## Prefer non-sealed classes and virtual methods (optional) <a name="persistent-classes-poco-sealed"></a>
 
 A central feature of NHibernate, *proxies*, depends upon the persistent
 class being non-sealed and all its public methods, properties and events
@@ -102,7 +102,7 @@ You can persist `sealed` classes that do not implement an interface and
 don't have virtual members with NHibernate, but you won't be able to use
 proxies - which will limit your options for performance tuning.
 
-# Implementing inheritance
+# Implementing inheritance <a name="persistent-classes-inheritance"></a>
 
 A subclass must also observe the first and second rules. It inherits its
 identifier property from `Cat`.
@@ -118,7 +118,7 @@ identifier property from `Cat`.
     }
 ```
 
-# Implementing `Equals()` and `GetHashCode()`
+# Implementing `Equals()` and `GetHashCode()` <a name="persistent-classes-equalshashcode"></a>
 
 You have to override the `Equals()` and `GetHashCode()` methods if you
 intend to mix objects of persistent classes (e.g. in an `ISet`).
@@ -182,7 +182,7 @@ and birthday) has to be only valid for a particular comparison operation
 (maybe even only in a single use case). We don't need the stability
 criteria we usually apply to a real primary key\!
 
-# Dynamic models
+# Dynamic models <a name="persistent-classes-dynamicmodels"></a>
 
 *Note that the following features are currently considered experimental
 and may change in the near future.*
@@ -268,7 +268,7 @@ exceptions at runtime. Thanks to the NHibernate mapping, the database
 schema can easily be normalized and sound, allowing to add a proper
 domain model implementation on top later on.
 
-# Tuplizers
+# Tuplizers <a name="persistent-classes-tuplizers"></a>
 
 `NHibernate.Tuple.Tuplizer`, and its sub-interfaces, are responsible for
 managing a particular representation of a piece of data, given that
@@ -335,7 +335,7 @@ Going back to the example of our customer entity:
     }
 ```
 
-# Lifecycle Callbacks
+# Lifecycle Callbacks <a name="persistent-classes-lifecycle"></a>
 
 Optionally, a persistent class might implement the interface
 `ILifecycle` which provides some callbacks that allow the persistent
@@ -385,7 +385,7 @@ application.
 Note that `OnSave()` is called after an identifier is assigned to the
 object, except when native key generation is used.
 
-# IValidatable callback
+# IValidatable callback <a name="persistent-classes-validatable"></a>
 
 If the persistent class needs to check invariants before its state is
 persisted, it may implement the following interface:

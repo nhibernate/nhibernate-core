@@ -39,7 +39,7 @@ interaction with the second-level cache is completely disabled:
 However, this is not absolutely necessary, since we can explicitly set
 the `CacheMode` to disable interaction with the second-level cache.
 
-# Batch inserts
+# Batch inserts <a name="batch-inserts"></a>
 
 When making new objects persistent, you must `Flush()` and then
 `Clear()` the session regularly, to control the size of the first-level
@@ -66,7 +66,7 @@ cache.
     }
 ```
 
-# The StatelessSession interface
+# The StatelessSession interface <a name="batch-statelesssession"></a>
 
 Alternatively, NHibernate provides a command-oriented API that may be
 used for streaming data to and from the database in the form of detached
@@ -111,7 +111,7 @@ row-level operations, which result in immediate execution of a SQL
 different semantics to the `Save(), SaveOrUpdate()` and `Delete()`
 operations defined by the `ISession` interface.
 
-# DML-style operations
+# DML-style operations <a name="batch-direct"></a>
 
 As already discussed, automatic and transparent object/relational
 mapping is concerned with the management of object state. This implies

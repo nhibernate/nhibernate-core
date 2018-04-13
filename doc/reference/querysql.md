@@ -9,13 +9,13 @@ NHibernate.
 NHibernate allows you to specify handwritten SQL (including stored
 procedures) for all create, update, delete, and load operations.
 
-# Using an `ISQLQuery`
+# Using an `ISQLQuery` <a name="querysql-creating"></a>
 
 Execution of native SQL queries is controlled via the `ISQLQuery`
 interface, which is obtained by calling `ISession.CreateSQLQuery()`. The
 following describes how to use this API for querying.
 
-## Scalar queries
+## Scalar queries <a name="querysql-scalar"></a>
 
 The most basic SQL query is to get a list of scalars (values).
 
@@ -37,7 +37,7 @@ values for each column in the CATS table. Only these three columns will
 be returned, even though the query is using `*` and could return more
 than the three listed columns.
 
-## Entity queries
+## Entity queries <a name="querysql-entity"></a>
 
 The above query was about returning scalar values, basically returning
 the "raw" values from the result set. The following shows how to get
@@ -72,7 +72,7 @@ notation, but we prefer to be explicit as in the following example for a
 
 This will allow cat.Dog property access to function properly.
 
-## Handling associations and collections
+## Handling associations and collections <a name="querysql-associations-collections"></a>
 
 It is possible to eagerly join in the `Dog` to avoid the possible extra
 round-trip for initializing the proxy. This is done via the `AddJoin()`
@@ -108,7 +108,7 @@ in NHibernate; the problems start to arise when returning multiple
 entities of the same type or when the default alias/column names are not
 enough.
 
-## Returning multiple entities
+## Returning multiple entities <a name="querysql-multiple-entities"></a>
 
 Until now the result set column names are assumed to be the same as the
 column names specified in the mapping document. This can be problematic
@@ -171,7 +171,7 @@ property aliases in the where clause if we like.
         .AddEntity("m", typeof(Cat)).List<object[]>();
 ```
 
-### Alias and property references
+### Alias and property references <a name="querysql-aliasreferences"></a>
 
 For most cases the above alias injection is needed, but for queries
 relating to more complex mappings like composite properties, inheritance
@@ -198,7 +198,7 @@ used.
 
 Alias injection names
 
-## Returning non-managed entities
+## Returning non-managed entities <a name="querysql-non-managed-entities"></a>
 
 It is possible to apply an `IResultTransformer` to native sql queries.
 Allowing it to e.g. return non-managed entities.
@@ -222,13 +222,13 @@ IMPORTANT: The custom `IResultTransformer` should override `Equals` and
 `GetHashCode`, otherwise the query translation won't be cached. This
 also will result in memory leak.
 
-## Handling inheritance
+## Handling inheritance <a name="querysql-inheritance"></a>
 
 Native SQL queries which query for entities that are mapped as part of
 an inheritance hierarchy must include all properties for the base class
 and all its subclasses.
 
-## Parameters
+## Parameters <a name="querysql-parameters"></a>
 
 Native SQL queries support positional as well as named parameters:
 
@@ -244,7 +244,7 @@ Native SQL queries support positional as well as named parameters:
     var pusList = query.SetString("name", "Pus%").List<Cat>();
 ```
 
-# Named SQL queries
+# Named SQL queries <a name="querysql-namedqueries"></a>
 
 Named SQL queries may be defined in the mapping document and called in
 exactly the same way as a named HQL query. In this case, we do *not*
@@ -361,7 +361,7 @@ matching settings available on the `ISQLQuery` interface.
 
   - `comment` - add a custom comment to the SQL.
 
-## Using return-property to explicitly specify column/alias names
+## Using return-property to explicitly specify column/alias names <a name="propertyresults"></a>
 
 With `<return-property>` you can explicitly tell NHibernate what column
 aliases to use, instead of using the `{}`-syntax to let NHibernate
@@ -410,7 +410,7 @@ want to refer column and properties.
 If your mapping has a discriminator you must use
 `<return-discriminator>` to specify the discriminator column.
 
-## Using stored procedures for querying
+## Using stored procedures for querying <a name="sp_query"></a>
 
 NHibernate introduces support for queries via stored procedures and
 functions. Most of the following documentation is equivalent for both.
@@ -448,7 +448,7 @@ To use this query in NHibernate you need to map it via a named query.
 Notice that stored procedures currently only return scalars and
 entities. `<return-join>` and `<load-collection>` are not supported.
 
-### Rules/limitations for using stored procedures
+### Rules/limitations for using stored procedures <a name="querysql-limits-storedprocedures"></a>
 
 To use stored procedures with NHibernate the procedures/functions have
 to follow some rules. If they do not follow those rules they are not
@@ -478,7 +478,7 @@ For MS SQL server the following rules apply:
   - If you can enable `SET NOCOUNT ON` in your procedure it will
     probably be more efficient, but this is not a requirement.
 
-# Custom SQL for create, update and delete
+# Custom SQL for create, update and delete <a name="querysql-cud"></a>
 
 NHibernate can use custom SQL statements for create, update, and delete
 operations. The class and collection persisters in NHibernate already
@@ -535,7 +535,7 @@ of rows as NHibernate-generated SQL would. NHibernate uses
 This check can be disabled by using `check="none"` attribute in
 `sql-insert` element.
 
-# Custom SQL for loading
+# Custom SQL for loading <a name="querysql-load"></a>
 
 You may also declare your own SQL (or HQL) queries for entity loading:
 

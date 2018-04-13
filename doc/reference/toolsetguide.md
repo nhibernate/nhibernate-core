@@ -30,7 +30,7 @@ Third party tools with NHibernate support are:
 These 3rd party tools are not documented in this reference. Please refer
 to the NHibernate website for up-to-date information.
 
-# Schema Generation
+# Schema Generation <a name="toolsetguide-s1"></a>
 
 The generated schema includes referential integrity constraints (primary
 and foreign keys) for entity and collection tables. Tables and sequences
@@ -39,7 +39,7 @@ are also created for mapped identifier generators.
 You *must* specify a SQL `Dialect` via the `hibernate.dialect` property
 when using this tool.
 
-## Customizing the schema
+## Customizing the schema <a name="toolsetguide-s-21"></a>
 
 Many NHibernate mapping elements define an optional attribute named
 `length`. You may set the length of a column with this attribute. (Or,
@@ -107,7 +107,7 @@ The `check` attribute allows you to specify a check constraint.
 | `sql-type`    | `column_type`      | overrides the default column type (attribute of `<column>` element only)                                                                                                                                                                             |
 | `check`       | SQL expression     | create an SQL check constraint on either column or table                                                                                                                                                                                             |
 
-## Running the tool
+## Running the tool <a name="toolsetguide-s1-3"></a>
 
 The `SchemaExport` tool writes a DDL script to standard out and/or
 executes the DDL statements.

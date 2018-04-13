@@ -1,6 +1,6 @@
 # NHibernate.Caches
 
-## What is NHibernate.Caches?
+## What is NHibernate.Caches? <a name="NHibernate.Caches-abstract"></a>
 
 **NHibernate.Caches namespace contains several second-level cache
 providers for NHibernate.**
@@ -97,7 +97,7 @@ Several cache providers have been contributed by NHibernate users:
     This provider is available as a .Net Standard NuGet package. See
     [CoreDistributedCache Configuration.](#coredistributedcache-configuration).
 
-# How to use a cache?
+# How to use a cache? <a name="NHibernate.Caches-howto"></a>
 
 Here are the steps to follow to enable the second-level cache in
 NHibernate:
@@ -156,7 +156,7 @@ NHibernate:
 
 See also [The Second Level Cache](performance.md#the-second-level-cache).
 
-# Prevalence Cache Configuration
+# Prevalence Cache Configuration <a name="NHibernate.Caches.Prevalence"></a>
 
 There is only one configurable parameter: `prevalenceBase`. This is the
 directory on the file system where the Prevalence engine will save data.
@@ -167,7 +167,7 @@ The `prevalenceBase` setting can only be set programmatically through on
 the NHibernate configuration object, by example with
 `Configuration.SetProperty`.
 
-# SysCache Configuration
+# SysCache Configuration <a name="NHibernate.Caches.SysCache"></a>
 
 SysCache relies on `System.Web.Caching.Cache` for the underlying
 implementation. The following NHibernate configuration settings are
@@ -206,7 +206,7 @@ example:
     </configuration>
 ```
 
-# SysCache2 Configuration
+# SysCache2 Configuration <a name="NHibernate.Caches.SysCache2"></a>
 
 SysCache2 can use SqlCacheDependencies to invalidate cache regions when
 data in an underlying SQL Server table or query changes. Query
@@ -233,7 +233,7 @@ See the sample below.
     </configSections>
 ```
 
-## Table-based Dependency
+## Table-based Dependency <a name="NHibernate.Caches.SysCache2-Table"></a>
 
 A table-based dependency will monitor the data in a database table for
 changes. Table-based dependencies are generally used for a SQL Server
@@ -276,7 +276,7 @@ application's configuration file. See the sample below.
     for caching [ASP.NET Settings Schema](https://msdn.microsoft.com/en-us/library/b5ysx397(v=vs.71).aspx) element of the application's
     Web.config file.
 
-## Command-Based Dependencies
+## Command-Based Dependencies <a name="NHibernate.Caches.SysCache2-Command"></a>
 
 A command-based dependency will use a SQL command to identify records to
 monitor for data changes. Command-based dependencies work only with SQL
@@ -337,7 +337,7 @@ configuration file. See the samples below.
     the cache dependency for change notifications. If no value is supplied for `connectionName`,
     the unnamed connection supplied by the provider will be used.
 
-## Aggregate Dependencies
+## Aggregate Dependencies <a name="NHibernate.Caches.SysCache2-Aggregate"></a>
 
 Multiple cache dependencies can be specified. If any of the dependencies
 triggers a change notification, the data in the cache region will be
@@ -371,7 +371,7 @@ invalidated. See the samples below.
       </dependencies>
     </cacheRegion>
 ```
-## Additional Settings
+## Additional Settings <a name="NHibernate.Caches.SysCache2-AdditionalSettings"></a>
 
 In addition to data dependencies for the cache regions, time based
 expiration policies can be specified for each item added to the cache.
@@ -408,13 +408,13 @@ See the samples
   - `priority`  
     `System.Web.Caching.CacheItemPriority` that identifies the relative priority of items stored in the cache.
 
-# EnyimMemcached Configuration
+# EnyimMemcached Configuration <a name="NHibernate.Caches.EnyimMemcached"></a>
 
 Its configuration relies on the EnyimMemcached library own
 configuration, through its `enyim.com/memcached` configuration section.
 See [project site](https://github.com/enyim/EnyimMemcached).
 
-# RtMemoryCache Configuration
+# RtMemoryCache Configuration <a name="NHibernate.Caches.RtMemoryCache"></a>
 
 RtMemoryCache relies on `System.Runtime.Caching.MemoryCache` for the
 underlying implementation. The following NHibernate configuration
@@ -445,7 +445,7 @@ different expirations for different regions. Here is an example:
     </configuration>
 ```
 
-# CoreMemoryCache Configuration
+# CoreMemoryCache Configuration <a name="NHibernate.Caches.CoreMemoryCache"></a>
 
 CoreMemoryCache relies on
 `Microsoft.Extensions.Caching.Memory.MemoryCache` for the underlying
@@ -479,7 +479,7 @@ different expirations for different regions, and configuring the
     </configuration>
 ```
 
-# CoreDistributedCache Configuration
+# CoreDistributedCache Configuration <a name="NHibernate.Caches.CoreDistributedCache"></a>
 
 CoreDistributedCache relies on
 `Microsoft.Extensions.Caching.Abstractions.IDistributedCache`
@@ -527,7 +527,7 @@ example:
 CoreDistributedCache does not support `NHibernate.Cache.ICache.Clear`.
 Clearing the NHibernate cache has no effects with CoreDistributedCache.
 
-## Memcached distributed cache factory
+## Memcached distributed cache factory <a name="NHibernate.Caches.CoreDistributedCache.Memcached"></a>
 
 `NHibernate.Caches.CoreDistributedCache.Memcached` provides a Redis
 distributed cache factory. This factory yields a
@@ -558,7 +558,7 @@ The following additional properties can be configured:
         }
     ```
 
-## Redis distributed cache factory
+## Redis distributed cache factory <a name="NHibernate.Caches.CoreDistributedCache.Redis"></a>
 
 `NHibernate.Caches.CoreDistributedCache.Redis` provides a Redis
 distributed cache factory. This factory yields a
@@ -574,7 +574,7 @@ The following additional properties can be configured:
   - `instance-name`  
     Its value will be used to set the InstanceName property of the RedisCache options (`RedisCacheOptions`).
 
-## SQL Server distributed cache factory
+## SQL Server distributed cache factory <a name="NHibernate.Caches.CoreDistributedCache.SqlServer"></a>
 
 `NHibernate.Caches.CoreDistributedCache.SqlServer` provides a SQL Server
 distributed cache factory. This factory yields a
@@ -596,7 +596,7 @@ The following additional properties can be configured:
     Its value will be used to set the `ExpiredItemsDeletionInterval` property of the `SqlServerCache` options (`SqlServerCacheOptions`).
     It can be provided either as an integer being a number of minutes or as a `TimeSpan` string representation.
 
-## Memory distributed cache factory
+## Memory distributed cache factory <a name="NHibernate.Caches.CoreDistributedCache.Memory"></a>
 
 `NHibernate.Caches.CoreDistributedCache.Memory` provides a memory
 "distributed" cache factory. This factory yields a

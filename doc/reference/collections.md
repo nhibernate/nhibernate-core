@@ -1,6 +1,6 @@
 # Collection Mapping
 
-# Persistent Collections
+# Persistent Collections <a name="collections-persistent"></a>
 
 NHibernate requires that persistent collection-valued fields be declared
 as a generic interface type, for example:
@@ -85,7 +85,7 @@ collections, covering many common relational models. We suggest you
 experiment with the schema generation tool to get a feeling for how
 various mapping declarations translate to database tables.
 
-# Mapping a Collection
+# Mapping a Collection <a name="collections-mapping"></a>
 
 Collections are declared by the `<set>`, `<list>`, `<map>`, `<bag>`,
 `<array>` and `<primitive-array>` elements. `<map>` is representative:
@@ -187,7 +187,7 @@ inefficient and should be avoided; NHibernate can't create, delete or
 update rows individually, because there is no key that may be used to
 identify an individual row.
 
-# Collections of Values and Many-To-Many Associations
+# Collections of Values and Many-To-Many Associations <a name="collections-ofvalues"></a>
 
 A collection table is required for any collection of values and any
 collection of references to other entities mapped as a many-to-many
@@ -336,7 +336,7 @@ A list of components (discussed in the next chapter):
     </list>
 ```
 
-# One-To-Many Associations
+# One-To-Many Associations <a name="collections-onetomany"></a>
 
 A *one to many association* links the tables of two classes *directly*,
 with no intervening collection table. (This implements a *one-to-many*
@@ -390,7 +390,7 @@ problem, *you must use a bidirectional association* with the many valued
 end (the set or bag) marked as `inverse="true"`. See the discussion of
 bidirectional associations later in this chapter.
 
-# Lazy Initialization
+# Lazy Initialization <a name="collections-lazy"></a>
 
 Collections (other than arrays) may be lazily initialized, meaning they
 load their state from the database only when the application needs to
@@ -481,7 +481,7 @@ to get the size of a collection without initializing it:
 `CreateFilter()` is also used to efficiently retrieve subsets of a
 collection without needing to initialize the whole collection.
 
-# Sorted Collections
+# Sorted Collections <a name="collections-sorted"></a>
 
 NHibernate supports collections implemented by
 `System.Collections.Generic.SortedList<T>` and
@@ -537,7 +537,7 @@ using a `CreateFilter()`.
         .List<User>();
 ```
 
-# Using an `<idbag>`
+# Using an `<idbag>` <a name="collections-idbag"></a>
 
 If you've fully embraced our view that composite keys are a bad thing
 and that entities should have synthetic identifiers (surrogate keys),
@@ -574,7 +574,7 @@ update or delete them individually, just like a list, map or set.
 As of version 2.0, the `native` identifier generation strategy is
 supported for `<idbag>` collection identifiers.
 
-# Bidirectional Associations
+# Bidirectional Associations <a name="collections-bidirectional"></a>
 
 A *bidirectional association* allows navigation from both "ends" of the
 association. Two kinds of bidirectional association are supported:
@@ -658,7 +658,7 @@ association and declaring the many-valued end `inverse="true"`.
 Mapping one end of an association with `inverse="true"` doesn't affect
 the operation of cascades, both are different concepts\!
 
-# Bidirectional associations with indexed collections
+# Bidirectional associations with indexed collections <a name="collections-indexedbidirectional"></a>
 
 There are some additional considerations for bidirectional mappings with
 indexed collections (where one end is represented as a `<list>` or
@@ -724,7 +724,7 @@ Instead, you could use the following mapping:
 Note that in this mapping, the collection-valued end of the association
 is responsible for updates to the foreign key.
 
-# Ternary Associations
+# Ternary Associations <a name="collections-ternary"></a>
 
 There are two possible approaches to mapping a ternary association. One
 approach is to use composite elements (discussed below). Another is to
@@ -744,13 +744,13 @@ use an `IDictionary` with an association as its index:
     </map>
 ```
 
-# Heterogeneous Associations
+# Heterogeneous Associations <a name="collections-heterogeneous"></a>
 
 The `<many-to-any>` and `<index-many-to-any>` elements provide for true
 heterogeneous associations. These mapping elements work in the same way
 as the `<any>` element - and should also be used rarely, if ever.
 
-# Collection examples
+# Collection examples <a name="collections-example"></a>
 
 The previous sections are pretty confusing. So lets look at an example.
 This class:

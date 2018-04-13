@@ -1,6 +1,6 @@
 # Inheritance Mapping
 
-# The Three Strategies
+# The Three Strategies <a name="inheritance-strategies"></a>
 
 NHibernate supports the three basic inheritance mapping strategies.
 
@@ -40,7 +40,7 @@ superclass.
  </hibernate-mapping>
 ```
 
-## Table per class hierarchy
+## Table per class hierarchy <a name="inheritance-tableperclass"></a>
 
 Suppose we have an interface `IPayment`, with implementors
 `CreditCardPayment`, `CashPayment`, `ChequePayment`. The
@@ -70,7 +70,7 @@ Exactly one table is required. There is one big limitation of this
 mapping strategy: columns declared by the subclasses may not have `NOT
 NULL` constraints.
 
-## Table per subclass
+## Table per subclass <a name="inheritance-tablepersubclass"></a>
 
 A table-per-subclass mapping would look like:
 
@@ -100,7 +100,7 @@ Four tables are required. The three subclass tables have primary key
 associations to the superclass table (so the relational model is
 actually a one-to-one association).
 
-## Table per subclass, using a discriminator
+## Table per subclass, using a discriminator <a name="inheritance-tablepersubclass-discriminator"></a>
 
 Note that NHibernate's implementation of table-per-subclass requires no
 discriminator column. Other object/relational mappers use a different
@@ -145,7 +145,7 @@ The optional `fetch="select"` declaration tells NHibernate not to fetch
 the `ChequePayment` subclass data using an outer join when querying the
 superclass.
 
-## Mixing table per class hierarchy with table per subclass
+## Mixing table per class hierarchy with table per subclass <a name="inheritance-tableperclass-tablepersubclass"></a>
 
 You may even mix the table per hierarchy and table per subclass
 strategies using this approach:
@@ -180,7 +180,7 @@ For any of these mapping strategies, a polymorphic association to
     <many-to-one name="Payment" column="PAYMENT" class="IPayment"/>
 ```
 
-## Table per concrete class
+## Table per concrete class <a name="inheritance-tableperconcrete"></a>
 
 There are two ways we could go about mapping the table per concrete
 class strategy. The first is to use `<union-subclass>`.
@@ -220,7 +220,7 @@ course, if it is not abstract, an additional table (defaults to
 `PAYMENT` in the example above) is needed to hold instances of the
 superclass.
 
-## Table per concrete class, using implicit polymorphism
+## Table per concrete class, using implicit polymorphism <a name="inheritance-polymorphism"></a>
 
 An alternative approach is to make use of implicit polymorphism:
 
@@ -272,7 +272,7 @@ usually mapped using `<any>`.
     </any>
 ```
 
-## Mixing implicit polymorphism with other inheritance mappings
+## Mixing implicit polymorphism with other inheritance mappings <a name="inheritance-mixingpolymorphism"></a>
 
 There is one further thing to notice about this mapping. Since the
 subclasses are each mapped in their own `<class>` element (and since
@@ -317,7 +317,7 @@ NHibernate automatically returns instances of `CreditCardPayment` (and
 its subclasses, since they also implement `IPayment`), `CashPayment` and
 `ChequePayment` but not instances of `NonelectronicTransaction`.
 
-# Limitations
+# Limitations <a name="inheritance-limitations"></a>
 
 There are certain limitations to the "implicit polymorphism" approach to
 the table per concrete-class mapping strategy. There are somewhat less

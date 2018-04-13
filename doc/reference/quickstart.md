@@ -1,6 +1,6 @@
 # Quick-start with IIS and Microsoft SQL Server
 
-# Getting started with NHibernate
+# Getting started with NHibernate <a name="quickstart-intro"></a>
 
 This tutorial explains a setup of NHibernate 5.0.0 within a Microsoft
 environment. The tools used in this tutorial are:
@@ -75,7 +75,7 @@ mapping of the POCO class to a database table (or multiple tables).
 We'll come back to mapping files soon. Let's write the POCO class first
 and then declare the mapping metadata for it.
 
-# First persistent class
+# First persistent class <a name="quickstart-persistentclass"></a>
 
 NHibernate works best with the Plain Old CLR Objects (POCOs, sometimes
 called Plain Ordinary CLR Objects) programming model for persistent
@@ -123,7 +123,7 @@ requires that all public properties of an entity class are declared as
 constructor having parameters, make sure to add a parameter-less
 constructor too.
 
-# Mapping the cat
+# Mapping the cat <a name="quickstart-mapping"></a>
 
 The `Cat.hbm.xml` mapping file contains the metadata required for the
 object/relational mapping. The metadata includes declaration of
@@ -195,7 +195,7 @@ definition, custom column type constraints, unique constraints and
 indexes. If you are using SQL Server, you should also make sure the
 `ASPNET` user has permissions to use the database.
 
-# Playing with cats
+# Playing with cats <a name="quickstart-playingwithcats"></a>
 
 We're now ready to start NHibernate's `ISession`. It is the *persistence
 manager* interface, we use it to store and retrieve `Cat`s to and from
@@ -366,7 +366,7 @@ Since NHibernate 5.0, the session and its queries IO bound methods have
 async counterparts. Each call to an async method must be awaited before
 further interacting with the session or its queries.
 
-# Finally
+# Finally <a name="quickstart-summary"></a>
 
 We only scratched the surface of NHibernate in this small tutorial.
 Please note that we don't include any ASP.NET specific code in our
