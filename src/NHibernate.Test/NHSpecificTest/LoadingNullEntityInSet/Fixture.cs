@@ -1,5 +1,3 @@
-using NHibernate.Dialect;
-
 namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
 {
 	using System.Collections;
@@ -25,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
 
 	    protected override bool AppliesTo(Dialect.Dialect dialect)
 	    {
-		    return TestDialect.SupportsEmptyInserts;
+		    return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		protected override DebugSessionFactory BuildSessionFactory()

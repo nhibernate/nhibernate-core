@@ -6,12 +6,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using NHibernate.Engine.Query;
-using NHibernate.Linq;
 using NHibernate.Util;
 
 using NUnit.Framework;
 using System.Linq;
-using NHibernate.Dialect;
 
 namespace NHibernate.Test.NHSpecificTest.NH3050
 {
@@ -20,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3050
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return TestDialect.SupportsEmptyInserts;
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		[Test]

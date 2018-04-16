@@ -1,7 +1,5 @@
-using System;
 using System.Linq;
 using NHibernate.Criterion;
-using NHibernate.Dialect;
 using NHibernate.SqlCommand;
 using NUnit.Framework;
 
@@ -12,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2409
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return TestDialect.SupportsEmptyInserts;
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		[Test]

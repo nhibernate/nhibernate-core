@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.GenericTest.Overall
@@ -11,7 +10,7 @@ namespace NHibernate.Test.GenericTest.Overall
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return TestDialect.SupportsEmptyInserts;
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		protected override IList Mappings

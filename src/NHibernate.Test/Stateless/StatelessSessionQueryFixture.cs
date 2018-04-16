@@ -1,6 +1,5 @@
 using System.Collections;
 using NHibernate.Cfg;
-using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Stateless
@@ -26,7 +25,7 @@ namespace NHibernate.Test.Stateless
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return TestDialect.SupportsEmptyInserts;
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		private class TestData

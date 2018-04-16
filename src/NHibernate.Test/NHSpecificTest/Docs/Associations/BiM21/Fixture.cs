@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.Docs.Associations.BiM21
@@ -20,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.Docs.Associations.BiM21
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return TestDialect.SupportsEmptyInserts;
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		[Test]

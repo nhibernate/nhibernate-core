@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Collection;
 using NHibernate.Collection.Generic;
-using NHibernate.Event;
-using NHibernate.Dialect;
 using NHibernate.Test.Events.Collections.Association.Bidirectional.ManyToMany;
 using NUnit.Framework;
 
@@ -14,7 +12,7 @@ namespace NHibernate.Test.Events.Collections
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return TestDialect.SupportsEmptyInserts;
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		protected override string MappingsAssembly

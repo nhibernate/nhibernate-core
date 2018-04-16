@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1691
@@ -9,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1691
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return TestDialect.SupportsEmptyInserts;
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		private static Component GetInitializedComponent()

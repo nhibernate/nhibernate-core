@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Linq;
 using NHibernate.Criterion;
-using NHibernate.Dialect;
 using NHibernate.Transform;
 using NUnit.Framework;
 
@@ -12,7 +11,7 @@ namespace NHibernate.Test.Criteria.Lambda
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return TestDialect.SupportsEmptyInserts;
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		protected override string MappingsAssembly

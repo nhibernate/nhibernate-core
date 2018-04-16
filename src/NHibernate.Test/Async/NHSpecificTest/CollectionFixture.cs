@@ -8,9 +8,7 @@
 //------------------------------------------------------------------------------
 
 
-using System;
 using System.Collections;
-using NHibernate.Dialect;
 using NHibernate.DomainModel.NHSpecific;
 using NUnit.Framework;
 
@@ -39,7 +37,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return TestDialect.SupportsEmptyInserts;
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		[Test]

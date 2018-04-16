@@ -1,4 +1,5 @@
 ﻿using System;
+using NHibernate.Id;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Test
@@ -57,6 +58,16 @@ namespace NHibernate.Test
 		/// Supports inserting in a table without any column specified in the insert.
 		/// </summary>
 		public virtual bool SupportsEmptyInserts => true;
+
+		/// <summary>
+		/// Either supports inserting in a table without any column specified in the insert, or has a native
+		/// generator strategy resolving to something else than identity.
+		/// </summary>
+		/// <remarks>This property is useful for cases where empty inserts happens only when the entities
+		/// generator is <c>native</c> while the dialect uses <c>identity</c> for this generator.</remarks>
+		public bool SupportsEmptyInsertsOrHasNonIdentityNativeGenerator
+			=> SupportsEmptyInserts || _dialect.NativeIdentifierGeneratorClass != typeof(IdentityGenerator);
+
 
 		/// <summary>
 		/// Supports condition not bound to any data, like "where @p1 = @p2".

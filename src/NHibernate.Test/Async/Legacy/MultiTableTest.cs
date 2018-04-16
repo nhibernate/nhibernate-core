@@ -13,6 +13,7 @@ using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Dialect;
 using NHibernate.DomainModel;
+using NHibernate.Id;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Legacy
@@ -612,7 +613,7 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task CollectionAsync()
 		{
-			if (!TestDialect.SupportsEmptyInserts)
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
 			{
 				Assert.Ignore("Empty inserts are not supported by the current dialect.");
 			}

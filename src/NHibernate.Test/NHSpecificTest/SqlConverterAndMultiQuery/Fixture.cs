@@ -1,5 +1,4 @@
 using NHibernate.Cfg;
-using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Engine;
 using NUnit.Framework;
@@ -27,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return TestDialect.SupportsEmptyInserts;
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		[Test]

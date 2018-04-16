@@ -5,7 +5,6 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.DomainModel;
 using NHibernate.Criterion;
-using NHibernate.Dialect;
 using NHibernate.Type;
 using NUnit.Framework;
 
@@ -21,7 +20,7 @@ namespace NHibernate.Test.Legacy
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return TestDialect.SupportsEmptyInserts;
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		protected override IList Mappings

@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using log4net.Appender;
-using log4net.Core;
-using log4net.Repository.Hierarchy;
-using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.ListsWithHoles
@@ -16,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.ListsWithHoles
     {
 	    protected override bool AppliesTo(Dialect.Dialect dialect)
 	    {
-		    return TestDialect.SupportsEmptyInserts;
+		    return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		protected override IList Mappings

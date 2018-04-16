@@ -11,7 +11,7 @@ namespace NHibernate.Test.Operations
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
 			return !(dialect is Dialect.FirebirdDialect) && // Firebird has no CommandTimeout, and locks up during the tear-down of this fixture
-			       TestDialect.SupportsEmptyInserts;
+			       (TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator);
 		}
 
 		protected override void OnTearDown()

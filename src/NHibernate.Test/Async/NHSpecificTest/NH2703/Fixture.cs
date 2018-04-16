@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2703
@@ -21,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2703
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return TestDialect.SupportsEmptyInserts;
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		protected override void OnSetUp()

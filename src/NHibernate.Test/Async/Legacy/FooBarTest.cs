@@ -24,6 +24,7 @@ using NHibernate.Connection;
 using NHibernate.Dialect;
 using NHibernate.DomainModel;
 using NHibernate.Criterion;
+using NHibernate.Id;
 using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -44,7 +45,7 @@ namespace NHibernate.Test.Legacy
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return TestDialect.SupportsEmptyInserts;
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
 
 		protected override IList Mappings
