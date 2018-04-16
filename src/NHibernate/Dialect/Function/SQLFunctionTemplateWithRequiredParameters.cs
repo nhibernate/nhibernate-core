@@ -11,12 +11,7 @@ using System;
 namespace NHibernate.Dialect.Function
 {
 	/// <summary>
-	/// Represents HQL functions that can have different representations in different SQL dialects.
-	/// E.g. in HQL we can define function <code>concat(?1, ?2)</code> to concatenate two strings 
-	/// p1 and p2. Target SQL function will be dialect-specific, e.g. <code>(?1 || ?2)</code> for 
-	/// Oracle, <code>concat(?1, ?2)</code> for MySql, <code>(?1 + ?2)</code> for MS SQL.
-	/// Each dialect will define a template as a string (exactly like above) marking function 
-	/// parameters with '?' followed by parameter's index (first index is 1).
+	/// A template-based SQL function which substitutes required missing parameters with defaults.
 	/// </summary>
 	[Serializable]
 	public class SQLFunctionTemplateWithRequiredParameters : SQLFunctionTemplate
@@ -24,6 +19,11 @@ namespace NHibernate.Dialect.Function
 		private readonly object[] _requiredArgs;
 
 		public SQLFunctionTemplateWithRequiredParameters(IType type, string template, object[] requiredArgs) : base(type, template)
+		{
+			_requiredArgs = requiredArgs;
+		}
+
+		public SQLFunctionTemplateWithRequiredParameters(IType type, string template, object[] requiredArgs, bool hasParenthesesIfNoArgs) : base(type, template, hasParenthesesIfNoArgs)
 		{
 			_requiredArgs = requiredArgs;
 		}

@@ -33,13 +33,13 @@ namespace NHibernate.Dialect
 		{
 		}
 
-		/// <summary> Command used to create a table. </summary>
+		/// <inheritdoc />
 		public override string CreateTableString
 		{
 			get { return "create column table"; }
 		}
 
-		/// <summary> Command used to create a temporary table. </summary>
+		/// <inheritdoc />
 		public override string CreateTemporaryTableString
 		{
 			get { return "create local temporary column table"; }

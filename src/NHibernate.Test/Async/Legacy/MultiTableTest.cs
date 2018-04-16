@@ -612,9 +612,9 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task CollectionAsync()
 		{
-			if (Dialect is AbstractHanaDialect)
+			if (!TestDialect.SupportsEmptyInserts)
 			{
-				Assert.Ignore("HANA does not support inserting a row without specifying any column values");
+				Assert.Ignore("Empty inserts are not supported by the current dialect.");
 			}
 
 			ISession s = OpenSession();

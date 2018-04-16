@@ -2473,7 +2473,7 @@ namespace NHibernate.Dialect
 		public virtual char StatementTerminator => ';';
 
 		/// <summary>
-		/// The syntax used to add a column to a table. Note this is deprecated
+		/// The syntax used to add a column to a table.
 		/// </summary>
 		public virtual string AddColumnString
 		{
@@ -2481,7 +2481,7 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// The syntax for the suffix used to add a column to a table. Note this is deprecated
+		/// The syntax for the suffix used to add a column to a table.
 		/// </summary>
 		public virtual string AddColumnSuffixString
 		{

@@ -615,14 +615,10 @@ namespace NHibernate.Dialect
 
 		#region DDL support
 
-		/// <summary>
-		/// Do we need to drop constraints before dropping tables in the dialect?
-		/// </summary>
+		/// <inheritdoc />
 		public override bool DropConstraints => false;
 
-		/// <summary>
-		/// Do we need to qualify index names with the schema name?
-		/// </summary>
+		/// <inheritdoc />
 		public override bool QualifyIndexName => false;
 
 		public override bool SupportsCommentOn => true;
@@ -637,12 +633,10 @@ namespace NHibernate.Dialect
 			return "comment '" + comment + "'";
 		}
 
-		/// <summary> Does this dialect support column-level check constraints? </summary>
-		/// <returns> True if column-level CHECK constraints are supported; false otherwise. </returns>
+		/// <inheritdoc />
 		public override bool SupportsColumnCheck => false;
 
-		/// <summary> Does this dialect support table-level check constraints? </summary>
-		/// <returns> True if table-level CHECK constraints are supported; false otherwise. </returns>
+		/// <inheritdoc />
 		public override bool SupportsTableCheck => true;
 
 		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
@@ -654,39 +648,23 @@ namespace NHibernate.Dialect
 
 		#region Lock acquisition support
 
-		/// <summary>Is <c>FOR UPDATE OF</c> syntax expecting columns?</summary>
-		/// <value><see langword="true"/> if the database expects a column list with <c>FOR UPDATE OF</c> syntax,
-		/// <see langword="false"/> if it expects table alias instead or do not support <c>FOR UPDATE OF</c> syntax.</value>
-		// Since v5.1
+		/// <inheritdoc />
 		[Obsolete("Use UsesColumnsWithForUpdateOf instead")]
 		public override bool ForUpdateOfColumns => true;
 
-		/// <summary> 
-		/// Get the <tt>FOR UPDATE OF column_list</tt> fragment appropriate for this
-		/// dialect given the aliases of the columns to be write locked.
-		///  </summary>
-		/// <param name="aliases">The columns to be write locked. </param>
-		/// <returns> The appropriate <tt>FOR UPDATE OF column_list</tt> clause string. </returns>
+		/// <inheritdoc />
 		public override string GetForUpdateString(string aliases)
 		{
 			return ForUpdateString + " of " + aliases;
 		}
 
-		/// <summary>
-		/// Retrieves the <c>FOR UPDATE NOWAIT</c> syntax specific to this dialect
-		/// </summary>
-		/// <value>The appropriate <c>FOR UPDATE NOWAIT</c> clause string.</value>
+		/// <inheritdoc />
 		public override string ForUpdateNowaitString
 		{
 			get { return ForUpdateString + " nowait"; }
 		}
 
-		/// <summary> 
-		/// Get the <c>FOR UPDATE OF column_list NOWAIT</c> fragment appropriate
-		/// for this dialect given the aliases of the columns or tables to be write locked.
-		/// </summary>
-		/// <param name="aliases">The columns or tables to be write locked.</param>
-		/// <returns>The appropriate <c>FOR UPDATE colunm_or_table_list NOWAIT</c> clause string.</returns>
+		/// <inheritdoc />
 		public override string GetForUpdateNowaitString(string aliases)
 		{
 			return GetForUpdateString(aliases) + " nowait";
@@ -698,43 +676,22 @@ namespace NHibernate.Dialect
 
 		#region Temporary table support
 
-		/// <summary> Does this dialect support temporary tables? </summary>
+		/// <inheritdoc />
 		public override bool SupportsTemporaryTables => true;
 
-		/// <summary> Generate a temporary table name given the bas table. </summary>
-		/// <param name="baseTableName">The table name from which to base the temp table name. </param>
-		/// <returns> The generated temp table name. </returns>
+		/// <inheritdoc />
 		public override string GenerateTemporaryTableName(string baseTableName)
 		{
 			return "#HT_" + baseTableName;
 		}
 
-		/// <summary> 
-		/// Does the dialect require that temporary table DDL statements occur in
-		/// isolation from other statements?  This would be the case if the creation
-		/// would cause any current transaction to get committed implicitly.
-		///  </summary>
-		/// <returns> see the result matrix above. </returns>
-		/// <remarks>
-		/// JDBC defines a standard way to query for this information via the
-		/// {@link java.sql.DatabaseMetaData#dataDefinitionCausesTransactionCommit()}
-		/// method.  However, that does not distinguish between temporary table
-		/// DDL and other forms of DDL; MySQL, for example, reports DDL causing a
-		/// transaction commit via its driver, even though that is not the case for
-		/// temporary table DDL.
-		/// <p/>
-		/// Possible return values and their meanings:<ul>
-		/// <li>{@link Boolean#TRUE} - Unequivocally, perform the temporary table DDL in isolation.</li>
-		/// <li>{@link Boolean#FALSE} - Unequivocally, do <b>not</b> perform the temporary table DDL in isolation.</li>
-		/// <li><i>null</i> - defer to the JDBC driver response in regards to {@link java.sql.DatabaseMetaData#dataDefinitionCausesTransactionCommit()}</li>
-		/// </ul>
-		/// </remarks>
+		/// <inheritdoc />
 		public override bool? PerformTemporaryTableDDLInIsolation()
 		{
 			return false;
 		}
 
-		/// <summary> Do we need to drop the temporary table after use? </summary>
+		/// <inheritdoc />
 		public override bool DropTemporaryTableAfterUse()
 		{
 			return true;
@@ -746,14 +703,7 @@ namespace NHibernate.Dialect
 
 		#region Callable statement support
 
-		/// <summary> 
-		/// Registers an OUT parameter which will be returning a
-		/// <see cref="DbDataReader"/>.  How this is accomplished varies greatly
-		/// from DB to DB, hence its inclusion (along with {@link #getResultSet}) here.
-		///  </summary>
-		/// <param name="statement">The callable statement. </param>
-		/// <param name="position">The bind position at which to register the OUT param. </param>
-		/// <returns> The number of (contiguous) bind positions used. </returns>
+		/// <inheritdoc />
 		public override int RegisterResultSetOutParameter(DbCommand statement, int position)
 		{
 			// Result set (TABLE) OUT parameters don't need to be registered
@@ -764,24 +714,10 @@ namespace NHibernate.Dialect
 
 		#region Current timestamp support
 
-		/// <summary> Does this dialect support a way to retrieve the database's current timestamp value? </summary>
+		/// <inheritdoc />
 		public override bool SupportsCurrentTimestampSelection => true;
 
-		/// <summary>
-		/// Gives the best resolution that the database can use for storing
-		/// date/time values, in ticks.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// For example, if the database can store values with 100-nanosecond
-		/// precision, this property is equal to 1L. If the database can only
-		/// store values with 1-millisecond precision, this property is equal
-		/// to 10000L (number of ticks in a millisecond).
-		/// </para>
-		/// <para>
-		/// Used in TimestampType.
-		/// </para>
-		/// </remarks>
+		/// <inheritdoc />
 		public override long TimestampResolutionInTicks
 		{
 			get { return 10L; } // Maximum precision (one tick)
@@ -792,9 +728,7 @@ namespace NHibernate.Dialect
 		#region Constraint support
 
 
-		/// <summary>
-		/// Completely optional cascading drop clause
-		/// </summary>
+		/// <inheritdoc />
 		public override string CascadeConstraintsString
 		{
 			get { return " cascade"; }
@@ -806,36 +740,22 @@ namespace NHibernate.Dialect
 
 		#region IDENTITY support
 
-		/// <summary>
-		/// Does this dialect support identity column key generation?
-		/// </summary>
+		/// <inheritdoc />
 		public override bool SupportsIdentityColumns => true;
 
-		/// <summary> 
-		/// Get the select command to use to retrieve the last generated IDENTITY
-		/// value for a particular table 
-		/// </summary>
-		/// <param name="tableName">The table into which the insert was done </param>
-		/// <param name="identityColumn">The PK column. </param>
-		/// <param name="type">The <see cref="DbType"/> type code. </param>
-		/// <returns> The appropriate select command </returns>
+		/// <inheritdoc />
 		public override string GetIdentitySelectString(string identityColumn, string tableName, DbType type)
 		{
 			return IdentitySelectString + tableName;
 		}
 
-		/// <summary> 
-		/// Get the select command to use to retrieve the last generated IDENTITY value.
-		/// </summary>
-		/// <returns> The appropriate select command </returns>
+		/// <inheritdoc />
 		public override string IdentitySelectString
 		{
 			get { return "select current_identity_value() from "; }
 		}
 
-		/// <summary>
-		/// The keyword used to specify an identity column, if native key generation is supported
-		/// </summary>
+		/// <inheritdoc />
 		public override string IdentityColumnString
 		{
 			get { return "generated by default as identity"; }
@@ -845,106 +765,37 @@ namespace NHibernate.Dialect
 
 		#region SEQUENCE support
 
-		/// <summary>
-		/// Does this dialect support sequences?
-		/// </summary>
+		/// <inheritdoc />
 		public override bool SupportsSequences => true;
 
-		/// <summary> 
-		/// Does this dialect support "pooled" sequences?
-		/// </summary>
-		/// <returns> True if such "pooled" sequences are supported; false otherwise. </returns>
-		/// <remarks>
-		/// A pooled sequence is one that has a configurable initial size and increment 
-		/// size. It enables NHibernate to be allocated a pool/block/range of IDs,
-		/// which can reduce the frequency of round trips to the database during ID
-		/// generation.
-		/// </remarks>
-		/// <seealso cref="Dialect.GetCreateSequenceStrings(string, int, int)"> </seealso>
-		/// <seealso cref="GetCreateSequenceString(string, int, int)"> </seealso>
+		/// <inheritdoc />
 		public override bool SupportsPooledSequences => true;
 
-		/// <summary> 
-		/// Generate the appropriate select statement to to retreive the next value
-		/// of a sequence.
-		/// </summary>
-		/// <param name="sequenceName">the name of the sequence </param>
-		/// <returns> String The "nextval" select string. </returns>
-		/// <remarks>This should be a "stand alone" select statement.</remarks>
+		/// <inheritdoc />
 		public override string GetSequenceNextValString(string sequenceName)
 		{
 			return "select " + GetSelectSequenceNextValString(sequenceName) + " from dummy";
 		}
 
-		/// <summary> 
-		/// Typically dialects which support sequences can drop a sequence
-		/// with a single command.  
-		/// </summary>
-		/// <param name="sequenceName">The name of the sequence </param>
-		/// <returns> The sequence drop commands </returns>
-		/// <remarks>
-		/// This is convenience form of <see cref="Dialect.GetDropSequenceStrings"/>
-		/// to help facilitate that.
-		/// 
-		/// Dialects which support sequences and can drop a sequence in a
-		/// single command need *only* override this method.  Dialects
-		/// which support sequences but require multiple commands to drop
-		/// a sequence should instead override <see cref="Dialect.GetDropSequenceStrings"/>. 
-		/// </remarks>
+		/// <inheritdoc />
 		public override string GetDropSequenceString(string sequenceName)
 		{
 			return "drop sequence " + sequenceName;
 		}
 
-		/// <summary> 
-		/// Generate the select expression fragment that will retrieve the next
-		/// value of a sequence as part of another (typically DML) statement.
-		/// </summary>
-		/// <param name="sequenceName">the name of the sequence </param>
-		/// <returns> The "nextval" fragment. </returns>
-		/// <remarks>
-		/// This differs from <see cref="GetSequenceNextValString"/> in that this
-		/// should return an expression usable within another statement.
-		/// </remarks>
+		/// <inheritdoc />
 		public override string GetSelectSequenceNextValString(string sequenceName)
 		{
 			return sequenceName + ".nextval";
 		}
 
-		/// <summary> 
-		/// Typically dialects which support sequences can create a sequence
-		/// with a single command.
-		/// </summary>
-		/// <param name="sequenceName">The name of the sequence </param>
-		/// <returns> The sequence creation command </returns>
-		/// <remarks>
-		/// This is convenience form of <see cref="Dialect.GetCreateSequenceStrings(string,int,int)"/> to help facilitate that.
-		/// Dialects which support sequences and can create a sequence in a
-		/// single command need *only* override this method.  Dialects
-		/// which support sequences but require multiple commands to create
-		/// a sequence should instead override <see cref="Dialect.GetCreateSequenceStrings(string,int,int)"/>.
-		/// </remarks>
+		/// <inheritdoc />
 		public override string GetCreateSequenceString(string sequenceName)
 		{
 			return "create sequence " + sequenceName;
 		}
 
-		/// <summary> 
-		/// Overloaded form of <see cref="GetCreateSequenceString(string)"/>, additionally
-		/// taking the initial value and increment size to be applied to the sequence
-		/// definition.
-		///  </summary>
-		/// <param name="sequenceName">The name of the sequence </param>
-		/// <param name="initialValue">The initial value to apply to 'create sequence' statement </param>
-		/// <param name="incrementSize">The increment value to apply to 'create sequence' statement </param>
-		/// <returns> The sequence creation command </returns>
-		/// <remarks>
-		/// The default definition is to suffix <see cref="GetCreateSequenceString(string,int,int)"/>
-		/// with the string: " start with {initialValue} increment by {incrementSize}" where
-		/// {initialValue} and {incrementSize} are replacement placeholders.  Generally
-		/// dialects should only need to override this method if different key phrases
-		/// are used to apply the allocation information.
-		/// </remarks>
+		/// <inheritdoc />
 		protected override string GetCreateSequenceString(string sequenceName, int initialValue, int incrementSize)
 		{
 			if (incrementSize == 0)
@@ -972,8 +823,7 @@ namespace NHibernate.Dialect
 			return createSequenceString;
 		}
 
-		/// <summary> Get the select command used retrieve the names of all sequences.</summary>
-		/// <returns> The select command; or null if sequences are not supported. </returns>
+		/// <inheritdoc />
 		public override string QuerySequencesString
 		{
 			get { return "select sequence_name from sys.sequences"; }
@@ -985,39 +835,23 @@ namespace NHibernate.Dialect
 
 		#region Miscellaneous support
 
-		/// <summary> The SQL literal value to which this database maps boolean values. </summary>
-		/// <param name="value">The boolean value </param>
-		/// <returns> The appropriate SQL literal. </returns>
+		/// <inheritdoc />
 		public override string ToBooleanValueString(bool value)
 		{
 			return value ? "true" : "false";
 		}
 
-		/// <summary>
-		/// Does this dialect support concurrent writing connections in the same transaction?
-		/// </summary>
+		/// <inheritdoc />
 		public override bool SupportsConcurrentWritingConnectionsInSameTransaction => false;
 
 		#endregion
 
 		#region Limit/offset support
 
-		/// <summary>
-		/// Does this Dialect have some kind of <c>LIMIT</c> syntax?
-		/// </summary>
-		/// <value>False, unless overridden.</value>
+		/// <inheritdoc />
 		public override bool SupportsLimit => true;
 
-		/// <summary>
-		/// Attempts to add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>.
-		/// Expects any database-specific offset and limit adjustments to have already been performed (ex. UseMaxForLimit, OffsetStartsAtOne).
-		/// </summary>
-		/// <param name="queryString">The <see cref="SqlString"/> to base the limit query off.</param>
-		/// <param name="offset">Offset of the first row to be returned by the query.  This may be represented as a parameter, a string literal, or a null value if no limit is requested.  This should have already been adjusted to account for OffsetStartsAtOne.</param>
-		/// <param name="limit">Maximum number of rows to be returned by the query.  This may be represented as a parameter, a string literal, or a null value if no offset is requested.  This should have already been adjusted to account for UseMaxForLimit.</param>
-		/// <returns>A new <see cref="SqlString"/> that contains the <c>LIMIT</c> clause. Returns <c>null</c> 
-		/// if <paramref name="queryString"/> represents a SQL statement to which a limit clause cannot be added, 
-		/// for example when the query string is custom SQL invoking a stored procedure.</returns>
+		/// <inheritdoc />
 		public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
 		{
 			if (offset == null && limit == null)
@@ -1054,17 +888,7 @@ namespace NHibernate.Dialect
 
 		#region Union subclass support
 
-		/// <summary> 
-		/// Given a <see cref="DbType"/> type code, determine an appropriate
-		/// null value to use in a select clause.
-		/// </summary>
-		/// <param name="sqlType">The <see cref="DbType"/> type code. </param>
-		/// <returns> The appropriate select clause value fragment. </returns>
-		/// <remarks>
-		/// One thing to consider here is that certain databases might
-		/// require proper casting for the nulls here since the select here
-		/// will be part of a UNION/UNION ALL.
-		/// </remarks>
+		/// <inheritdoc />
 		public override string GetSelectClauseNullString(SqlType sqlType)
 		{
 			switch (sqlType.DbType)
@@ -1106,149 +930,71 @@ namespace NHibernate.Dialect
 			return "null";
 		}
 
-		/// <summary> 
-		/// Does this dialect support UNION ALL, which is generally a faster variant of UNION? 
-		/// True if UNION ALL is supported; false otherwise.
-		/// </summary>
+		/// <inheritdoc />
 		public override bool SupportsUnionAll => true;
 
 		#endregion
 
 		#region Informational metadata
 
-		/// <summary> 
-		/// Does this dialect support empty IN lists?
-		/// For example, is [where XYZ in ()] a supported construct?
-		/// </summary>
-		/// <returns> True if empty in lists are supported; false otherwise. </returns>
+		/// <inheritdoc />
 		public override bool SupportsEmptyInList => false;
 
-		/// <summary> 
-		/// Is this dialect known to support what ANSI-SQL terms "row value
-		/// constructor" syntax; sometimes called tuple syntax.
-		/// <p/>
-		/// Basically, does it support syntax like
-		/// "... where (FIRST_NAME, LAST_NAME) = ('Steve', 'Ebersole') ...". 
-		/// </summary>
-		/// <returns> 
-		/// True if this SQL dialect is known to support "row value
-		/// constructor" syntax; false otherwise.
-		/// </returns>
+		/// <inheritdoc />
 		public override bool SupportsRowValueConstructorSyntax => true;
 
-		/// <summary> 
-		/// If the dialect supports {@link #supportsRowValueConstructorSyntax() row values},
-		/// does it offer such support in IN lists as well?
-		/// <p/>
-		/// For example, "... where (FIRST_NAME, LAST_NAME) IN ( (?, ?), (?, ?) ) ..." 
-		/// </summary>
-		/// <returns> 
-		/// True if this SQL dialect is known to support "row value
-		/// constructor" syntax in the IN list; false otherwise.
-		/// </returns>
+		/// <inheritdoc />
 		public override bool SupportsRowValueConstructorSyntaxInInList => true;
 
-		/// <summary> 
-		/// Does this dialect support definition of cascade delete constraints
-		/// which can cause circular chains? 
-		/// </summary>
-		/// <returns> True if circular cascade delete constraints are supported; false otherwise. </returns>
+		/// <inheritdoc />
 		public override bool SupportsCircularCascadeDeleteConstraints => false;
 
-		/// <summary> 
-		/// Expected LOB usage pattern is such that I can perform an insert
-		/// via prepared statement with a parameter binding for a LOB value
-		/// without crazy casting to JDBC driver implementation-specific classes...
-		/// <p/>
-		/// Part of the trickiness here is the fact that this is largely
-		/// driver dependent.  For example, Oracle (which is notoriously bad with
-		/// LOB support in their drivers historically) actually does a pretty good
-		/// job with LOB support as of the 10.2.x versions of their drivers... 
-		/// </summary>
-		/// <returns> 
-		/// True if normal LOB usage patterns can be used with this driver;
-		/// false if driver-specific hookiness needs to be applied.
-		/// </returns>
+		/// <inheritdoc />
 		public override bool SupportsExpectedLobUsagePattern => false;
 
-		/// <summary> 
-		/// Is it supported to materialize a LOB locator outside the transaction in
-		/// which it was created?
-		/// <p/>
-		/// Again, part of the trickiness here is the fact that this is largely
-		/// driver dependent.
-		/// <p/>
-		/// NOTE: all database I have tested which {@link #supportsExpectedLobUsagePattern()}
-		/// also support the ability to materialize a LOB outside the owning transaction... 
-		/// </summary>
-		/// <returns> True if unbounded materialization is supported; false otherwise. </returns>
+		/// <inheritdoc />
 		public override bool SupportsUnboundedLobLocatorMaterialization => false;
 
-		/// <summary> Does the dialect support an exists statement in the select clause? </summary>
-		/// <returns> True if exists checks are allowed in the select clause; false otherwise. </returns>
+		/// <inheritdoc />
 		public override bool SupportsExistsInSelect => false;
 
-		/// <summary>
-		/// Does this dialect support scalar sub-selects?
-		/// </summary>
-		/// <remarks>
-		/// Scalar sub-selects are sub-queries returning a scalar value, not a set. See https://stackoverflow.com/a/648049/1178314
-		/// </remarks>
+		/// <inheritdoc />
 		public override bool SupportsScalarSubSelects => false;
 
 		#endregion
 
 
-		/// <summary> 
-		/// Get the command used to select a GUID from the underlying database.
-		/// (Optional operation.)
-		///  </summary>
-		/// <returns> The appropriate command. </returns>
+		/// <inheritdoc />
 		public override string SelectGUIDString
 		{
 			get { return "select sysuuid from dummy"; }
 		}
 
-		/// <summary> 
-		/// Should the value returned by <see cref="CurrentTimestampSelectString"/>
-		/// be treated as callable.  Typically this indicates that JDBC escape
-		/// syntax is being used...
-		/// </summary>
+		/// <inheritdoc />
 		public override bool IsCurrentTimestampSelectStringCallable => false;
 
-		/// <summary> 
-		/// Retrieve the command used to retrieve the current timestammp from the database. 
-		/// </summary>
+		/// <inheritdoc />
 		public override string CurrentTimestampSelectString
 		{
 			get { return "select current_timestamp from dummy"; }
 		}
 
-		/// <summary>
-		/// The keyword used to insert a row without specifying any column values
-		/// </summary>
+		/// <inheritdoc />
 		public override string NoColumnsInsertString
 		{
 			get { throw new MappingException("HANA does not support inserting a row without specifying any column values"); }
 		}
 
-		// 18 is the smallest of all dialects we handle.
-		/// <summary>
-		/// The maximum length a SQL alias can have.
-		/// </summary>
+		/// <inheritdoc />
 		public override int MaxAliasLength => 128;
 
-		/// <summary>
-		/// The syntax used to add a column to a table. Note this is deprecated
-		/// </summary>
+		/// <inheritdoc />
 		public override string AddColumnString
 		{
 			get { return "add ("; }
 		}
 
-		/// <summary>
-		/// The syntax for the suffix used to add a column to a table. Note this is deprecated
-		/// </summary>
+		/// <inheritdoc />
 		public override string AddColumnSuffixString
 		{
 			get { return ")"; }

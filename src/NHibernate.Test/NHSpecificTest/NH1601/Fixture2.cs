@@ -9,8 +9,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
     {
 	    protected override bool AppliesTo(Dialect.Dialect dialect)
 	    {
-		    return !(dialect is AbstractHanaDialect); // HANA does not support inserting a row without specifying any column values
-	    }
+		    return TestDialect.SupportsEmptyInserts;
+		}
 
 		/// <summary>
 		/// Loads the project and when Scenario2 and Scenario3 are set calls Count on the list assigned.

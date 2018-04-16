@@ -17,7 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1869
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return !(dialect is AbstractHanaDialect); // HANA does not support inserting a row without specifying any column values
+			return TestDialect.SupportsEmptyInserts;
 		}
 
 		protected override void OnTearDown()
