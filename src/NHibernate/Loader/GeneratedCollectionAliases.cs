@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NHibernate.Persister.Collection;
 using NHibernate.Util;
@@ -44,7 +45,7 @@ namespace NHibernate.Loader
 			var aliases = new List<string>();
 			foreach (KeyValuePair<string, string[]> userProvidedAlias in userProvidedAliases)
 			{
-				if (userProvidedAlias.Key.StartsWith("element."))
+				if (userProvidedAlias.Key.StartsWith("element.", StringComparison.Ordinal))
 				{
 					aliases.AddRange(userProvidedAlias.Value);
 				}

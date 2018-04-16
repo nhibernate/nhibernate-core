@@ -11,6 +11,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data.Common;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -86,9 +87,9 @@ namespace NHibernate.Impl
 			{
 				queryCache.Destroy();
 
-				foreach (IQueryCache cache in queryCaches.Values)
+				foreach (var cache in queryCaches.Values)
 				{
-					cache.Destroy();
+					cache.Value.Destroy();
 				}
 
 				updateTimestampsCache.Destroy();
@@ -367,10 +368,9 @@ namespace NHibernate.Impl
 				{
 					if (settings.IsQueryCacheEnabled)
 					{
-						IQueryCache currentQueryCache;
-						if (queryCaches.TryGetValue(cacheRegion, out currentQueryCache))
+						if (queryCaches.TryGetValue(cacheRegion, out var currentQueryCache))
 						{
-							return currentQueryCache.ClearAsync(cancellationToken);
+							return currentQueryCache.Value.ClearAsync(cancellationToken);
 						}
 					}
 				}

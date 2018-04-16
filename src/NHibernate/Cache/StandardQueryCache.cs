@@ -107,11 +107,16 @@ namespace NHibernate.Cache
 			}
 
 			Log.Debug("returning cached query results for: {0}", key);
+			if (key.ResultTransformer?.AutoDiscoverTypes == true && cacheable.Count > 0)
+			{
+				returnTypes = GuessTypes(cacheable);
+			}
+
 			for (int i = 1; i < cacheable.Count; i++)
 			{
 				if (returnTypes.Length == 1)
 				{
-					returnTypes[0].BeforeAssemble(cacheable[i], session);
+					returnTypes[0]?.BeforeAssemble(cacheable[i], session);
 				}
 				else
 				{
@@ -133,14 +138,14 @@ namespace NHibernate.Cache
 						result.Add(TypeHelper.Assemble((object[])cacheable[i], returnTypes, session, null));
 					}
 				}
-				catch (UnresolvableObjectException)
+				catch (UnresolvableObjectException ex)
 				{
 					if (isNaturalKeyLookup)
 					{
 						//TODO: not really completely correct, since
 						//      the UnresolvableObjectException could occur while resolving
 						//      associations, leaving the PC in an inconsistent state
-						Log.Debug("could not reassemble cached result set");
+						Log.Debug(ex, "could not reassemble cached result set");
 						_queryCache.Remove(key);
 						return null;
 					}
@@ -150,6 +155,48 @@ namespace NHibernate.Cache
 			}
 
 			return result;
+		}
+
+		private static ICacheAssembler[] GuessTypes(IList cacheable)
+		{
+			var firstRow = cacheable[0];
+			var colCount = (cacheable[0] as object[])?.Length ?? 1;
+			var returnTypes = new ICacheAssembler[colCount];
+			if (colCount == 1)
+			{
+				foreach (var obj in cacheable)
+				{
+					if (obj == null)
+						continue;
+					returnTypes[0] = NHibernateUtil.GuessType(obj);
+					break;
+				}
+			}
+			else
+			{
+				var foundTypes = 0;
+				foreach (object[] row in cacheable)
+				{
+					for (var i = 0; i < colCount; i++)
+					{
+						if (row[i] != null && returnTypes[i] == null)
+						{
+							returnTypes[i] = NHibernateUtil.GuessType(row[i]);
+							foundTypes++;
+						}
+					}
+					if (foundTypes == colCount)
+						break;
+				}
+			}
+			// If a column value was null for all rows, its type is still null: put a type which will just yield null
+			// on null value.
+			for (var i = 0; i < colCount; i++)
+			{
+				if (returnTypes[i] == null)
+					returnTypes[i] = NHibernateUtil.String;
+			}
+			return returnTypes;
 		}
 
 		public void Destroy()

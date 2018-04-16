@@ -18,7 +18,7 @@
     <literal>ISession.CreateSQLQuery()</literal>. The following describes how
     to use this API for querying.</para>
 
-    <sect2>
+    <sect2 id="querysql-scalar">
       <title>Scalar queries</title>
 
       <para>The most basic SQL query is to get a list of scalars
@@ -50,7 +50,7 @@
       columns.</para>
     </sect2>
 
-    <sect2>
+    <sect2 id="querysql-entity">
       <title>Entity queries</title>
 
       <para>The above query was about returning scalar values,
@@ -92,7 +92,7 @@ sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE FROM CATS").AddEntity(typeof(Cat
       <para>This will allow cat.Dog property access to function properly.</para>
     </sect2>
 
-    <sect2>
+    <sect2 id="querysql-associations-collections">
       <title>Handling associations and collections</title>
 
       <para>It is possible to eagerly join in the <literal>Dog</literal> to
@@ -129,7 +129,7 @@ sess.CreateSQLQuery("SELECT ID, NAME, BIRTHDATE FROM CATS").AddEntity(typeof(Cat
       names are not enough.</para>
     </sect2>
 
-    <sect2>
+    <sect2 id="querysql-multiple-entities">
       <title>Returning multiple entities</title>
 
       <para>Until now the result set column names are assumed to be the same
@@ -315,7 +315,7 @@ var loggedCats = sess.CreateSQLQuery(sql)
       </sect3>
     </sect2>
 
-    <sect2>
+    <sect2 id="querysql-non-managed-entities">
       <title>Returning non-managed entities</title>
 
       <para>It is possible to apply an <literal>IResultTransformer</literal> to native sql queries. Allowing it to e.g. return non-managed entities.</para>
@@ -345,7 +345,7 @@ var loggedCats = sess.CreateSQLQuery(sql)
 		</para>
 	</sect2>
 
-    <sect2>
+    <sect2 id="querysql-inheritance">
       <title>Handling inheritance</title>
 
       <para>Native SQL queries which query for entities that are mapped as part
@@ -353,7 +353,7 @@ var loggedCats = sess.CreateSQLQuery(sql)
       its subclasses.</para>
     </sect2>
 
-    <sect2>
+    <sect2 id="querysql-parameters">
       <title>Parameters</title>
 
       <para>Native SQL queries support positional as well as named

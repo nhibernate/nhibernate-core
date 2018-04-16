@@ -106,8 +106,8 @@ namespace NHibernate.Dialect.Function
 
 		bool IFunctionGrammar.IsKnownArgument(string token)
 		{
-			return "distinct".Equals(token.ToLowerInvariant()) ||
-				"all".Equals(token.ToLowerInvariant());
+			return "distinct".Equals(token, StringComparison.OrdinalIgnoreCase) ||
+				"all".Equals(token, StringComparison.OrdinalIgnoreCase);
 		}
 
 		#endregion

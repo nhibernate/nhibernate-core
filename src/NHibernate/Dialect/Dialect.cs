@@ -201,7 +201,7 @@ namespace NHibernate.Dialect
 		public virtual void Configure(IDictionary<string, string> settings)
 		{
 			DefaultCastLength = PropertiesHelper.GetInt32(Environment.QueryDefaultCastLength, settings, 4000);
-			DefaultCastPrecision = PropertiesHelper.GetByte(Environment.QueryDefaultCastPrecision, settings, null) ?? 28;
+			DefaultCastPrecision = PropertiesHelper.GetByte(Environment.QueryDefaultCastPrecision, settings, null) ?? 29;
 			DefaultCastScale = PropertiesHelper.GetByte(Environment.QueryDefaultCastScale, settings, null) ?? 10;
 		}
 
@@ -501,15 +501,15 @@ namespace NHibernate.Dialect
 		/// <returns> The appropriate for update fragment. </returns>
 		public virtual string GetForUpdateString(LockMode lockMode)
 		{
-			if (lockMode == LockMode.Upgrade)
+			if (Equals(lockMode, LockMode.Upgrade))
 			{
 				return ForUpdateString;
 			}
-			if (lockMode == LockMode.UpgradeNoWait)
+			if (Equals(lockMode, LockMode.UpgradeNoWait))
 			{
 				return ForUpdateNowaitString;
 			}
-			if (lockMode == LockMode.Force)
+			if (Equals(lockMode, LockMode.Force))
 			{
 				return ForUpdateNowaitString;
 			}
@@ -526,13 +526,29 @@ namespace NHibernate.Dialect
 			get { return " for update"; }
 		}
 
-		/// <summary> Is <tt>FOR UPDATE OF</tt> syntax supported? </summary>
-		/// <value> True if the database supports <tt>FOR UPDATE OF</tt> syntax; false otherwise. </value>
+		/// <summary>Is <c>FOR UPDATE OF</c> syntax supported?</summary>
+		/// <value><see langword="true"/> if the database supports <c>FOR UPDATE OF</c> syntax; <see langword="false"/> otherwise. </value>
+		public virtual bool SupportsForUpdateOf
+			// By default, just check UsesColumnsWithForUpdateOf. ForUpdateOf needs to be overriden only for dialects supporting
+			// "For Update Of" on table aliases.
+			=> UsesColumnsWithForUpdateOf;
+
+		/// <summary>Is <c>FOR UPDATE OF</c> syntax expecting columns?</summary>
+		/// <value><see langword="true"/> if the database expects a column list with <c>FOR UPDATE OF</c> syntax,
+		/// <see langword="false"/> if it expects table alias instead or do not support <c>FOR UPDATE OF</c> syntax.</value>
+		// Since v5.1
+		[Obsolete("Use UsesColumnsWithForUpdateOf instead")]
 		public virtual bool ForUpdateOfColumns
 		{
 			// by default we report no support
 			get { return false; }
 		}
+
+		public virtual bool UsesColumnsWithForUpdateOf
+#pragma warning disable 618
+			// For avoiding a breaking change, we need to call the old name by default.
+			=> ForUpdateOfColumns;
+#pragma warning restore 618
 
 		/// <summary> 
 		/// Does this dialect support <tt>FOR UPDATE</tt> in conjunction with outer joined rows?
@@ -567,11 +583,11 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary> 
-		/// Get the <tt>FOR UPDATE OF column_list NOWAIT</tt> fragment appropriate
-		/// for this dialect given the aliases of the columns to be write locked.
+		/// Get the <c>FOR UPDATE OF column_list NOWAIT</c> fragment appropriate
+		/// for this dialect given the aliases of the columns or tables to be write locked.
 		/// </summary>
-		/// <param name="aliases">The columns to be write locked. </param>
-		/// <returns> The appropriate <tt>FOR UPDATE colunm_list NOWAIT</tt> clause string. </returns>
+		/// <param name="aliases">The columns or tables to be write locked.</param>
+		/// <returns>The appropriate <c>FOR UPDATE colunm_or_table_list NOWAIT</c> clause string.</returns>
 		public virtual string GetForUpdateNowaitString(string aliases)
 		{
 			return GetForUpdateString(aliases);
@@ -974,14 +990,14 @@ namespace NHibernate.Dialect
 			return insertString;
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Get the select command to use to retrieve the last generated IDENTITY
-		/// value for a particular table 
+		/// value for a particular table.
 		/// </summary>
-		/// <param name="tableName">The table into which the insert was done </param>
-		/// <param name="identityColumn">The PK column. </param>
-		/// <param name="type">The <see cref="DbType"/> type code. </param>
-		/// <returns> The appropriate select command </returns>
+		/// <param name="identityColumn">The PK column.</param>
+		/// <param name="tableName">The table into which the insert was done.</param>
+		/// <param name="type">The <see cref="DbType"/> type code.</param>
+		/// <returns>The appropriate select command.</returns>
 		public virtual string GetIdentitySelectString(string identityColumn, string tableName, DbType type)
 		{
 			return IdentitySelectString;
@@ -2445,6 +2461,16 @@ namespace NHibernate.Dialect
 		/// The maximum length a SQL alias can have.
 		/// </summary>
 		public virtual int MaxAliasLength => 18;
+
+		/// <summary>
+		/// The maximum number of parameters allowed in a query.
+		/// </summary>
+		public virtual int? MaxNumberOfParameters => null;
+
+		/// <summary>
+		/// The character used to terminate a SQL statement.
+		/// </summary>
+		public virtual char StatementTerminator => ';';
 
 		/// <summary>
 		/// The syntax used to add a column to a table. Note this is deprecated

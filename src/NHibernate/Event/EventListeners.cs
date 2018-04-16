@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using NHibernate.Cfg;
 using NHibernate.Event.Default;
 using NHibernate.Util;
@@ -53,7 +54,7 @@ namespace NHibernate.Event
 			eventInterfaceFromType[ListenerType.PostCollectionRecreate] = typeof (IPostCollectionRecreateEventListener);
 			eventInterfaceFromType[ListenerType.PostCollectionRemove] = typeof (IPostCollectionRemoveEventListener);
 			eventInterfaceFromType[ListenerType.PostCollectionUpdate] = typeof (IPostCollectionUpdateEventListener);
-			eventInterfaceFromType = new UnmodifiableDictionary<ListenerType, System.Type>(eventInterfaceFromType);
+			eventInterfaceFromType = new ReadOnlyDictionary<ListenerType, System.Type>(eventInterfaceFromType);
 		}
 
 		private ILoadEventListener[] loadEventListeners = new ILoadEventListener[] {new DefaultLoadEventListener()};

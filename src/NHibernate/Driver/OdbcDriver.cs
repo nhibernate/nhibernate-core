@@ -15,7 +15,12 @@ namespace NHibernate.Driver
 	/// <remarks>
 	/// Always look for a native .NET DataProvider before using the Odbc DataProvider.
 	/// </remarks>
-	public class OdbcDriver : DriverBase
+	public class OdbcDriver 
+#if NETFX
+		: DriverBase
+#else
+		: ReflectionBasedDriver
+#endif
 	{
 		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(OdbcDriver));
 
@@ -34,6 +39,12 @@ namespace NHibernate.Driver
 			}
 		}
 
+#if !NETFX
+		public OdbcDriver() 
+			: base("System.Data.Odbc", "System.Data.Odbc.OdbcConnection", "System.Data.Odbc.OdbcCommand")
+		{
+		}
+#else
 		public override DbConnection CreateConnection()
 		{
 			return new OdbcConnection();
@@ -43,6 +54,7 @@ namespace NHibernate.Driver
 		{
 			return new OdbcCommand();
 		}
+#endif
 
 		public override bool UseNamedPrefixInSql
 		{

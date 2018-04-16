@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Reflection;
 using NHibernate.AdoNet;
 using NHibernate.Engine.Query;
 using NHibernate.SqlTypes;
@@ -128,6 +127,9 @@ namespace NHibernate.Driver
 						InitializeParameter(dbParam, name, _oracleDbTypeNChar);
 					else
 						base.InitializeParameter(dbParam, name, sqlType);
+					break;
+				case DbType.Currency:
+					base.InitializeParameter(dbParam, name, SqlTypeFactory.Decimal);
 					break;
 				default:
 					base.InitializeParameter(dbParam, name, sqlType);

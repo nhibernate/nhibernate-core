@@ -1,4 +1,5 @@
 
+using System;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -21,6 +22,7 @@ namespace NHibernate.SqlCommand
 		private SqlString groupByClause;
 		private SqlString havingClause;
 		private LockMode lockMode;
+		private string mainTableAlias;
 		private string comment;
 
 		public SqlSelectBuilder(ISessionFactoryImplementor factory)
@@ -62,8 +64,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlSelectBuilder</returns>
 		public SqlSelectBuilder SetFromClause(SqlString fromClause)
 		{
-			// it is safe to do this because a fromClause will have no
-			// parameters
+			// it is safe to do this because a fromClause will have no parameters
 			return SetFromClause(fromClause.ToString());
 		}
 
@@ -181,9 +182,18 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
+		[Obsolete("For some DBMS's such as PostgreSQL, a lock on query with OUTER JOIN is not possible without specifying the not-null side. " +
+				  "Use the new method SetLockMode(LockMode, mainTableAlias) instead.")]
 		public SqlSelectBuilder SetLockMode(LockMode lockMode)
 		{
 			this.lockMode = lockMode;
+			return this;
+		}
+
+		public SqlSelectBuilder SetLockMode(LockMode lockMode, string mainTableAlias)
+		{
+			this.lockMode = lockMode;
+			this.mainTableAlias = mainTableAlias;
 			return this;
 		}
 
@@ -267,7 +277,7 @@ namespace NHibernate.SqlCommand
 
 			if (lockMode != null)
 			{
-				sqlBuilder.Add(Dialect.GetForUpdateString(lockMode));
+				sqlBuilder.Add(GetForUpdateString());
 			}
 
 			if (log.IsDebugEnabled())
@@ -291,6 +301,43 @@ namespace NHibernate.SqlCommand
 			return sqlBuilder.ToSqlString();
 		}
 
+		private string GetForUpdateString()
+		{
+			if (!Dialect.SupportsOuterJoinForUpdate && HasOuterJoin())
+			{
+				var isUpgrade = Equals(lockMode, LockMode.Upgrade);
+				var isUpgradeNoWait = !isUpgrade && (
+					Equals(lockMode, LockMode.UpgradeNoWait) || Equals(lockMode, LockMode.Force));
+				if (!isUpgrade && !isUpgradeNoWait)
+					return string.Empty;
+
+				if (!Dialect.SupportsForUpdateOf)
+				{
+					log.Warn(
+						"Unsupported 'for update' case: 'for update' query with an outer join using a dialect not" +
+						"supporting it and not supporting 'for update of' clause. Discarding 'for" +
+						"update' clause.");
+					return string.Empty;
+				}
+
+				if (Dialect.UsesColumnsWithForUpdateOf)
+				{
+					log.Warn(
+						"Unimplemented 'for update' case: 'for update' query with an outer join using a dialect not" +
+						"supporting it and requiring columns for its 'for update of' syntax. Discarding 'for" +
+						"update' clause.");
+					return string.Empty;
+				}
+
+				return isUpgrade ? Dialect.GetForUpdateString(mainTableAlias) : Dialect.GetForUpdateNowaitString(mainTableAlias);
+			}
+
+			return Dialect.GetForUpdateString(lockMode);
+
+			bool HasOuterJoin() =>
+				outerJoinsAfterFrom?.IsEmptyOrWhitespace() == false ||
+				StringHelper.ContainsCaseInsensitive(fromClause, "outer join");
+		}
 		#endregion
 	}
 }

@@ -603,6 +603,18 @@ namespace NHibernate.Util
 		}
 
 		/// <summary>
+		/// Ensures an exception current stack-trace will be preserved if the exception is explicitly rethrown.
+		/// </summary>
+		/// <param name="ex">
+		/// The <see cref="Exception"/> which current stack-trace is to be preserved in case of explicit rethrow.
+		/// </param>
+		/// <returns>The unwrapped exception.</returns>
+		internal static void PreserveStackTrace(Exception ex)
+		{
+			Exception_InternalPreserveStackTrace.Invoke(ex, Array.Empty<object>());
+		}
+
+		/// <summary>
 		/// Try to find a method in a given type.
 		/// </summary>
 		/// <param name="type">The given type.</param>
@@ -645,33 +657,26 @@ namespace NHibernate.Util
 			List<System.Type> typesToSearch = new List<System.Type>();
 			MethodInfo foundMethod = null;
 			
-			try
-			{            
-				typesToSearch.Add(type);
-			
-				if (type.IsInterface)
-				{
-					// Methods on parent interfaces are not actually inherited
-					// by child interfaces, so we have to use GetInterfaces to
-					// identify any parent interfaces that may contain the
-					// method implementation
-					System.Type[] inheritedInterfaces = type.GetInterfaces();
-					typesToSearch.AddRange(inheritedInterfaces);
-				}
-
-				foreach (System.Type typeToSearch in typesToSearch)
-				{
-					MethodInfo result = typeToSearch.GetMethod(method.Name, bindingFlags, null, tps, null);
-					if (result != null)
-					{
-						foundMethod = result;
-						break;
-					}
-				}
-			}
-			catch (Exception)
+			typesToSearch.Add(type);
+		
+			if (type.IsInterface)
 			{
-			   throw;
+				// Methods on parent interfaces are not actually inherited
+				// by child interfaces, so we have to use GetInterfaces to
+				// identify any parent interfaces that may contain the
+				// method implementation
+				System.Type[] inheritedInterfaces = type.GetInterfaces();
+				typesToSearch.AddRange(inheritedInterfaces);
+			}
+
+			foreach (System.Type typeToSearch in typesToSearch)
+			{
+				MethodInfo result = typeToSearch.GetMethod(method.Name, bindingFlags, null, tps, null);
+				if (result != null)
+				{
+					foundMethod = result;
+					break;
+				}
 			}
 			
 			return foundMethod;
@@ -762,12 +767,12 @@ namespace NHibernate.Util
 
 		public static bool IsPropertyGet(MethodInfo method)
 		{
-			return method.IsSpecialName && method.Name.StartsWith("get_");
+			return method.IsSpecialName && method.Name.StartsWith("get_", StringComparison.Ordinal);
 		}
 
 		public static bool IsPropertySet(MethodInfo method)
 		{
-			return method.IsSpecialName && method.Name.StartsWith("set_");
+			return method.IsSpecialName && method.Name.StartsWith("set_", StringComparison.Ordinal);
 		}
 
 		public static string GetPropertyName(MethodInfo method)

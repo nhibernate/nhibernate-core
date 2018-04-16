@@ -28,6 +28,8 @@ namespace NHibernate.Test.CfgTest
 		[Test]
 		public async Task Basic_CRUD_should_workAsync()
 		{
+			TestsContext.AssumeSystemTypeIsSerializable();
+
 			Assembly assembly = Assembly.Load("NHibernate.DomainModel");
 			var cfg = new Configuration();
 			if (TestConfigurationHelper.hibernateConfigFile != null)

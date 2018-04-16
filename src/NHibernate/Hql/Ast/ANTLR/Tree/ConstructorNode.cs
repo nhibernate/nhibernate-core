@@ -116,11 +116,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			_constructorArgumentTypes = ResolveConstructorArgumentTypes();
 			string path = ( ( IPathNode ) GetChild(0) ).Path;
 
-			if (path.ToLowerInvariant() == "map")
+			if (string.Equals(path, "map", StringComparison.OrdinalIgnoreCase))
 			{
 				_isMap = true;
 			}
-			else if (path.ToLowerInvariant() == "list") 
+			else if (string.Equals(path, "list", StringComparison.OrdinalIgnoreCase)) 
 			{
 				_isList = true;
 			}

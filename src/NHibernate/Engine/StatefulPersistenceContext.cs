@@ -835,6 +835,10 @@ namespace NHibernate.Engine
 		{
 			CollectionEntry ce = new CollectionEntry(collection, persister, id, flushing);
 			AddCollection(collection, ce, id);
+			if (persister.GetBatchSize() > 1)
+			{
+				batchFetchQueue.AddBatchLoadableCollection(collection, ce);
+			}
 		}
 
 		/// <summary> add a detached uninitialized collection</summary>
@@ -913,7 +917,7 @@ namespace NHibernate.Engine
 																										object id)
 		{
 			CollectionEntry ce = new CollectionEntry(collection, persister, id, flushing);
-			ce.PostInitialize(collection);
+			ce.PostInitialize(collection, this);
 			AddCollection(collection, ce, id);
 			return ce;
 		}
@@ -1439,7 +1443,7 @@ namespace NHibernate.Engine
 				}
 				catch (HibernateException he)
 				{
-					throw new InvalidOperationException(he.Message);
+					throw new InvalidOperationException(he.Message, he);
 				}
 			}
 
@@ -1467,7 +1471,7 @@ namespace NHibernate.Engine
 				}
 				catch (MappingException me)
 				{
-					throw new InvalidOperationException(me.Message);
+					throw new InvalidOperationException(me.Message, me);
 				}
 			}
 		}

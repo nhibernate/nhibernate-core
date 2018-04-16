@@ -137,6 +137,11 @@ namespace NHibernate.Loader
 
 		protected abstract ICollectionAliases[] CollectionAliases { get; }
 
+		/// <summary>
+		/// The result types of the result set, for query loaders.
+		/// </summary>
+		public IType[] ResultTypes { get; protected set; }
+
 		public ISessionFactoryImplementor Factory
 		{
 			get { return _factory; }
@@ -439,8 +444,7 @@ namespace NHibernate.Loader
 
 				var st = PrepareQueryCommand(queryParameters, false, session);
 
-				var rs = GetResultSet(st, queryParameters.HasAutoDiscoverScalarTypes, queryParameters.Callable, selection, session);
-
+				var rs = GetResultSet(st, queryParameters, session, forcedResultTransformer);
 				// would be great to move all this below here into another method that could also be used
 				// from the new scrolling stuff.
 				//
@@ -1010,6 +1014,8 @@ namespace NHibernate.Loader
 			if (ukValue == null)
 				return;
 			var type = persister.PropertyTypes[index];
+			if (!alreadyLoaded)
+				type = type.GetSemiResolvedType(session.Factory);
 			var euk = new EntityUniqueKey(persister.EntityName, ukName, ukValue, type, session.Factory);
 			session.PersistenceContext.AddEntity(euk, obj);
 		}
@@ -1285,7 +1291,31 @@ namespace NHibernate.Loader
 		/// <param name="session">The <see cref="ISession" /> to load in.</param>
 		/// <param name="callable"></param>
 		/// <returns>An DbDataReader advanced to the first record in RowSelection.</returns>
+		// Since v5.1
+		[Obsolete("Please use overload with a QueryParameter parameter.")]
 		protected DbDataReader GetResultSet(DbCommand st, bool autoDiscoverTypes, bool callable, RowSelection selection, ISessionImplementor session)
+		{
+			return GetResultSet(
+				st,
+				new QueryParameters
+				{
+					HasAutoDiscoverScalarTypes = autoDiscoverTypes, Callable = callable, RowSelection = selection
+				},
+				session,
+				null);
+		}
+
+		/// <summary>
+		/// Fetch a <c>DbCommand</c>, call <c>SetMaxRows</c> and then execute it,
+		/// advance to the first result and return an SQL <c>DbDataReader</c>
+		/// </summary>
+		/// <param name="st">The <see cref="DbCommand" /> to execute.</param>
+		/// <param name="queryParameters">The <see cref="QueryParameters"/>.</param>
+		/// <param name="session">The <see cref="ISession" /> to load in.</param>
+		/// <param name="forcedResultTransformer">The forced result transformer for the query.</param>
+		/// <returns>A DbDataReader advanced to the first record in RowSelection.</returns>
+		protected DbDataReader GetResultSet(
+			DbCommand st, QueryParameters queryParameters, ISessionImplementor session, IResultTransformer forcedResultTransformer)
 		{
 			DbDataReader rs = null;
 			try
@@ -1300,14 +1330,14 @@ namespace NHibernate.Loader
 					rs = WrapResultSet(rs);
 
 				Dialect.Dialect dialect = session.Factory.Dialect;
-				if (!dialect.SupportsLimitOffset || !UseLimit(selection, dialect))
+				if (!dialect.SupportsLimitOffset || !UseLimit(queryParameters.RowSelection, dialect))
 				{
-					Advance(rs, selection);
+					Advance(rs, queryParameters.RowSelection);
 				}
 
-				if (autoDiscoverTypes)
+				if (queryParameters.HasAutoDiscoverScalarTypes)
 				{
-					AutoDiscoverTypes(rs);
+					AutoDiscoverTypes(rs, queryParameters, forcedResultTransformer);
 				}
 				return rs;
 			}
@@ -1319,7 +1349,15 @@ namespace NHibernate.Loader
 			}
 		}
 
+		// Since v5.1
+		[Obsolete("Please use overload with a QueryParameters parameter.")]
 		protected internal virtual void AutoDiscoverTypes(DbDataReader rs)
+		{
+			AutoDiscoverTypes(rs, new QueryParameters(), null);
+		}
+
+		protected internal virtual void AutoDiscoverTypes(
+			DbDataReader rs, QueryParameters queryParameters, IResultTransformer forcedResultTransformer)
 		{
 			throw new AssertionFailure("Auto discover types not supported in this loader");
 		}
@@ -1550,13 +1588,29 @@ namespace NHibernate.Loader
 		/// <param name="querySpaces"></param>
 		/// <param name="resultTypes"></param>
 		/// <returns></returns>
+		// Since v5.1
+		[Obsolete("Please use overload without resultTypes")]
 		protected IList List(ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces, IType[] resultTypes)
+		{
+			ResultTypes = resultTypes;
+			return List(session, queryParameters, querySpaces);
+		}
+
+		/// <summary>
+		/// Return the query results, using the query cache, called
+		/// by subclasses that implement cacheable queries
+		/// </summary>
+		/// <param name="session"></param>
+		/// <param name="queryParameters"></param>
+		/// <param name="querySpaces"></param>
+		/// <returns></returns>
+		protected IList List(ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces)
 		{
 			bool cacheable = _factory.Settings.IsQueryCacheEnabled && queryParameters.Cacheable;
 
 			if (cacheable)
 			{
-				return ListUsingQueryCache(session, queryParameters, querySpaces, resultTypes);
+				return ListUsingQueryCache(session, queryParameters, querySpaces);
 			}
 			return ListIgnoreQueryCache(session, queryParameters);
 		}
@@ -1566,18 +1620,18 @@ namespace NHibernate.Loader
 			return GetResultList(DoList(session, queryParameters), queryParameters.ResultTransformer);
 		}
 
-		private IList ListUsingQueryCache(ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces, IType[] resultTypes)
+		private IList ListUsingQueryCache(ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces)
 		{
 			IQueryCache queryCache = _factory.GetQueryCache(queryParameters.CacheRegion);
 
 			QueryKey key = GenerateQueryKey(session, queryParameters);
 
-			IList result = GetResultFromQueryCache(session, queryParameters, querySpaces, resultTypes, queryCache, key);
+			IList result = GetResultFromQueryCache(session, queryParameters, querySpaces, queryCache, key);
 
 			if (result == null)
 			{
 				result = DoList(session, queryParameters, key.ResultTransformer);
-				PutResultInQueryCache(session, queryParameters, resultTypes, queryCache, key, result);
+				PutResultInQueryCache(session, queryParameters, queryCache, key, result);
 			}
 
 			IResultTransformer resolvedTransformer = ResolveResultTransformer(queryParameters.ResultTransformer);
@@ -1606,11 +1660,12 @@ namespace NHibernate.Loader
 		private CacheableResultTransformer CreateCacheableResultTransformer(QueryParameters queryParameters)
 		{
 			return CacheableResultTransformer.Create(
-				queryParameters.ResultTransformer, ResultRowAliases, IncludeInResultRow);
+				queryParameters.ResultTransformer, ResultRowAliases, IncludeInResultRow,
+				queryParameters.HasAutoDiscoverScalarTypes, SqlString);
 		}
 
 		private IList GetResultFromQueryCache(ISessionImplementor session, QueryParameters queryParameters,
-											  ISet<string> querySpaces, IType[] resultTypes, IQueryCache queryCache,
+											  ISet<string> querySpaces, IQueryCache queryCache,
 											  QueryKey key)
 		{
 			IList result = null;
@@ -1628,7 +1683,10 @@ namespace NHibernate.Loader
 
 				try
 				{
-					result = queryCache.Get(key, key.ResultTransformer.GetCachedResultTypes(resultTypes), queryParameters.NaturalKeyLookup, querySpaces, session);
+					result = queryCache.Get(
+						key,
+						queryParameters.HasAutoDiscoverScalarTypes ? null : key.ResultTransformer.GetCachedResultTypes(ResultTypes),
+						queryParameters.NaturalKeyLookup, querySpaces, session);
 					if (_factory.Statistics.IsStatisticsEnabled)
 					{
 						if (result == null)
@@ -1650,12 +1708,12 @@ namespace NHibernate.Loader
 			return result;
 		}
 
-		private void PutResultInQueryCache(ISessionImplementor session, QueryParameters queryParameters, IType[] resultTypes,
+		private void PutResultInQueryCache(ISessionImplementor session, QueryParameters queryParameters,
 										   IQueryCache queryCache, QueryKey key, IList result)
 		{
 			if (session.CacheMode.HasFlag(CacheMode.Put))
 			{
-				bool put = queryCache.Put(key, key.ResultTransformer.GetCachedResultTypes(resultTypes), result, queryParameters.NaturalKeyLookup, session);
+				bool put = queryCache.Put(key, key.ResultTransformer.GetCachedResultTypes(ResultTypes), result, queryParameters.NaturalKeyLookup, session);
 				if (put && _factory.Statistics.IsStatisticsEnabled)
 				{
 					_factory.StatisticsImplementor.QueryCachePut(QueryIdentifier, queryCache.RegionName);

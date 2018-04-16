@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+#if NETFX
 using System;
 using System.Data.Common;
 using System.Text;
@@ -94,3 +95,4 @@ namespace NHibernate.AdoNet
 		}
 	}
 }
+#endif

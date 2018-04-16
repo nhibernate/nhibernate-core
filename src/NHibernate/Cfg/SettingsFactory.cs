@@ -62,9 +62,9 @@ namespace NHibernate.Cfg
 			{
 				sqlExceptionConverter = SQLExceptionConverterFactory.BuildSQLExceptionConverter(dialect, properties);
 			}
-			catch (HibernateException)
+			catch (HibernateException he)
 			{
-				log.Warn("Error building SQLExceptionConverter; using minimal converter");
+				log.Warn(he, "Error building SQLExceptionConverter; using minimal converter");
 				sqlExceptionConverter = SQLExceptionConverterFactory.BuildMinimalSQLExceptionConverter();
 			}
 			settings.SqlExceptionConverter = sqlExceptionConverter;
@@ -167,7 +167,6 @@ namespace NHibernate.Cfg
 			}
 
 			string autoKeyWordsImport = PropertiesHelper.GetString(Environment.Hbm2ddlKeyWords, properties, "not-defined");
-			autoKeyWordsImport = autoKeyWordsImport.ToLowerInvariant();
 			if (autoKeyWordsImport == Hbm2DDLKeyWords.None)
 			{
 				settings.IsKeywordsImportEnabled = false;

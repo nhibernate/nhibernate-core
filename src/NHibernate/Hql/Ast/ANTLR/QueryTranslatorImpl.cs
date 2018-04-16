@@ -177,7 +177,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		public virtual IType[] ActualReturnTypes
 		{
-			get { return _queryLoader.ReturnTypes; }
+			get { return _queryLoader.ResultTypes; }
 		}
 
 		public ParameterMetadata BuildParameterMetadata()
@@ -362,8 +362,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 			catch ( RecognitionException e ) 
 			{
-				// we do not actually propogate ANTLRExceptions as a cause, so
-				// log it here for diagnostic purposes
 				if ( log.IsInfoEnabled() ) 
 				{
 					log.Info(e, "converted antlr.RecognitionException");

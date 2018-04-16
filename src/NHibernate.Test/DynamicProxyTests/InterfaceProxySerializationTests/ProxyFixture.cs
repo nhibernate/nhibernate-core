@@ -95,6 +95,8 @@ namespace NHibernate.Test.DynamicProxyTests.InterfaceProxySerializationTests
 		[Test]
 		public void ProxySerialize()
 		{
+			TestsContext.AssumeSystemTypeIsSerializable();
+
 			ISession s = OpenSession();
 			IMyProxy ap = new MyProxyImpl {Id = 1, Name = "first proxy"};
 			s.Save(ap);
@@ -126,6 +128,8 @@ namespace NHibernate.Test.DynamicProxyTests.InterfaceProxySerializationTests
 		[Test]
 		public void SerializeNotFoundProxy()
 		{
+			TestsContext.AssumeSystemTypeIsSerializable();
+
 			ISession s = OpenSession();
 			// this does not actually exists in db
 			var notThere = (IMyProxy) s.Load(typeof (MyProxyImpl), 5);

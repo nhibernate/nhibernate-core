@@ -521,6 +521,124 @@ namespace NHibernate.Test.Hql
 		}
 
 		[Test]
+		public async Task RoundAsync()
+		{
+			AssumeFunctionSupported("round");
+
+			using (var s = OpenSession())
+			{
+				var a1 = new Animal("a1", 1.87f);
+				await (s.SaveAsync(a1));
+				var m1 = new MaterialResource("m1", "18", MaterialResource.MaterialState.Available) { Cost = 51.76m };
+				await (s.SaveAsync(m1));
+				await (s.FlushAsync());
+			}
+			using (var s = OpenSession())
+			{
+				var roundF = await (s.CreateQuery("select round(a.BodyWeight) from Animal a").UniqueResultAsync<float>());
+				Assert.That(roundF, Is.EqualTo(2), "Selecting round(double) failed.");
+				var countF =
+					await (s
+						.CreateQuery("select count(*) from Animal a where round(a.BodyWeight) = :c")
+						.SetInt32("c", 2)
+						.UniqueResultAsync<long>());
+				Assert.That(countF, Is.EqualTo(1), "Filtering round(double) failed.");
+				
+				roundF = await (s.CreateQuery("select round(a.BodyWeight, 1) from Animal a").UniqueResultAsync<float>());
+				Assert.That(roundF, Is.EqualTo(1.9f).Within(0.01f), "Selecting round(double, 1) failed.");
+				countF =
+					await (s
+						.CreateQuery("select count(*) from Animal a where round(a.BodyWeight, 1) between :c1 and :c2")
+						.SetDouble("c1", 1.89)
+						.SetDouble("c2", 1.91)
+						.UniqueResultAsync<long>());
+				Assert.That(countF, Is.EqualTo(1), "Filtering round(double, 1) failed.");
+
+				var roundD = await (s.CreateQuery("select round(m.Cost) from MaterialResource m").UniqueResultAsync<decimal?>());
+				Assert.That(roundD, Is.EqualTo(52), "Selecting round(decimal) failed.");
+				var count =
+					await (s
+						.CreateQuery("select count(*) from MaterialResource m where round(m.Cost) = :c")
+						.SetInt32("c", 52)
+						.UniqueResultAsync<long>());
+				Assert.That(count, Is.EqualTo(1), "Filtering round(decimal) failed.");
+
+				roundD = await (s.CreateQuery("select round(m.Cost, 1) from MaterialResource m").UniqueResultAsync<decimal?>());
+				Assert.That(roundD, Is.EqualTo(51.8m), "Selecting round(decimal, 1) failed.");
+
+				if (TestDialect.HasBrokenDecimalType)
+					// SQLite fails the equality test due to using double instead, wich requires a tolerance.
+					return;
+
+				count =
+					await (s
+						.CreateQuery("select count(*) from MaterialResource m where round(m.Cost, 1) = :c")
+						.SetDecimal("c", 51.8m)
+						.UniqueResultAsync<long>());
+				Assert.That(count, Is.EqualTo(1), "Filtering round(decimal, 1) failed.");
+			}
+		}
+
+		[Test]
+		public async Task TruncateAsync()
+		{
+			AssumeFunctionSupported("truncate");
+
+			using (var s = OpenSession())
+			{
+				var a1 = new Animal("a1", 1.87f);
+				await (s.SaveAsync(a1));
+				var m1 = new MaterialResource("m1", "18", MaterialResource.MaterialState.Available) { Cost = 51.76m };
+				await (s.SaveAsync(m1));
+				await (s.FlushAsync());
+			}
+			using (var s = OpenSession())
+			{
+				var roundF = await (s.CreateQuery("select truncate(a.BodyWeight) from Animal a").UniqueResultAsync<float>());
+				Assert.That(roundF, Is.EqualTo(1), "Selecting truncate(double) failed.");
+				var countF =
+					await (s
+						.CreateQuery("select count(*) from Animal a where truncate(a.BodyWeight) = :c")
+						.SetInt32("c", 1)
+						.UniqueResultAsync<long>());
+				Assert.That(countF, Is.EqualTo(1), "Filtering truncate(double) failed.");
+				
+				roundF = await (s.CreateQuery("select truncate(a.BodyWeight, 1) from Animal a").UniqueResultAsync<float>());
+				Assert.That(roundF, Is.EqualTo(1.8f).Within(0.01f), "Selecting truncate(double, 1) failed.");
+				countF =
+					await (s
+						.CreateQuery("select count(*) from Animal a where truncate(a.BodyWeight, 1) between :c1 and :c2")
+						.SetDouble("c1", 1.79)
+						.SetDouble("c2", 1.81)
+						.UniqueResultAsync<long>());
+				Assert.That(countF, Is.EqualTo(1), "Filtering truncate(double, 1) failed.");
+
+				var roundD = await (s.CreateQuery("select truncate(m.Cost) from MaterialResource m").UniqueResultAsync<decimal?>());
+				Assert.That(roundD, Is.EqualTo(51), "Selecting truncate(decimal) failed.");
+				var count =
+					await (s
+						.CreateQuery("select count(*) from MaterialResource m where truncate(m.Cost) = :c")
+						.SetInt32("c", 51)
+						.UniqueResultAsync<long>());
+				Assert.That(count, Is.EqualTo(1), "Filtering truncate(decimal) failed.");
+
+				roundD = await (s.CreateQuery("select truncate(m.Cost, 1) from MaterialResource m").UniqueResultAsync<decimal?>());
+				Assert.That(roundD, Is.EqualTo(51.7m), "Selecting truncate(decimal, 1) failed.");
+
+				if (TestDialect.HasBrokenDecimalType)
+					// SQLite fails the equality test due to using double instead, wich requires a tolerance.
+					return;
+
+				count =
+					await (s
+						.CreateQuery("select count(*) from MaterialResource m where truncate(m.Cost, 1) = :c")
+						.SetDecimal("c", 51.7m)
+						.UniqueResultAsync<long>());
+				Assert.That(count, Is.EqualTo(1), "Filtering truncate(decimal, 1) failed.");
+			}
+		}
+
+		[Test]
 		public async Task ModAsync()
 		{
 			AssumeFunctionSupported("mod");

@@ -8,11 +8,11 @@
 //------------------------------------------------------------------------------
 
 
-using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
+using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Hql;
 using NHibernate.Param;
@@ -21,7 +21,6 @@ using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
-using NHibernate.Util;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Loader.Custom
@@ -37,7 +36,7 @@ namespace NHibernate.Loader.Custom
 			{
 				return Task.FromCanceled<IList>(cancellationToken);
 			}
-			return ListAsync(session, queryParameters, querySpaces, resultTypes, cancellationToken);
+			return ListAsync(session, queryParameters, querySpaces, cancellationToken);
 		}
 
 		// Not ported: scroll
@@ -50,6 +49,15 @@ namespace NHibernate.Loader.Custom
 				return Task.FromCanceled<object>(cancellationToken);
 			}
 			return rowProcessor.BuildResultRowAsync(row, rs, resultTransformer != null, session, cancellationToken);
+		}
+
+		protected override Task<object[]> GetResultRowAsync(object[] row, DbDataReader rs, ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object[]>(cancellationToken);
+			}
+			return rowProcessor.BuildResultRowAsync(row, rs, session, cancellationToken);
 		}
 
 		public partial class ResultRowProcessor
@@ -79,17 +87,34 @@ namespace NHibernate.Loader.Custom
 				}
 				else
 				{
-					// build an array with indices equal to the total number
-					// of actual returns in the result Hibernate will return
-					// for this query (scalars + non-scalars)
-					resultRow = new object[columnProcessors.Length];
-					for (int i = 0; i < columnProcessors.Length; i++)
-					{
-						resultRow[i] = await (columnProcessors[i].ExtractAsync(data, resultSet, session, cancellationToken)).ConfigureAwait(false);
-					}
+					resultRow = await (ExtractResultRowAsync(data, resultSet, session, cancellationToken)).ConfigureAwait(false);
 				}
 
 				return (hasTransformer) ? resultRow : (resultRow.Length == 1) ? resultRow[0] : resultRow;
+			}
+
+			public Task<object[]> BuildResultRowAsync(object[] data, DbDataReader resultSet, ISessionImplementor session, CancellationToken cancellationToken)
+			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object[]>(cancellationToken);
+				}
+				// NH Different behavior (patched in NH-1612 to solve Hibernate issue HHH-2831).
+				return !hasScalars && data.Length == 0 ? Task.FromResult<object[]>(data ): ExtractResultRowAsync(data, resultSet, session, cancellationToken);
+			}
+
+			private async Task<object[]> ExtractResultRowAsync(object[] data, DbDataReader resultSet, ISessionImplementor session, CancellationToken cancellationToken)
+			{
+				cancellationToken.ThrowIfCancellationRequested();
+				// build an array with indices equal to the total number
+				// of actual returns in the result Hibernate will return
+				// for this query (scalars + non-scalars)
+				var resultRow = new object[columnProcessors.Length];
+				for (var i = 0; i < columnProcessors.Length; i++)
+				{
+					resultRow[i] = await (columnProcessors[i].ExtractAsync(data, resultSet, session, cancellationToken)).ConfigureAwait(false);
+				}
+				return resultRow;
 			}
 		}
 
@@ -111,7 +136,7 @@ namespace NHibernate.Loader.Custom
 				{
 					return Task.FromResult<object>(Extract(data, resultSet, session));
 				}
-				catch (Exception ex)
+				catch (System.Exception ex)
 				{
 					return Task.FromException<object>(ex);
 				}

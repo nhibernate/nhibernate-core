@@ -78,7 +78,7 @@ namespace NHibernate.Engine
 
 		#region  Static helper methods
 
-		private static readonly Dictionary<string, CascadeStyle> Styles = new Dictionary<string, CascadeStyle>();
+		private static readonly Dictionary<string, CascadeStyle> Styles = new Dictionary<string, CascadeStyle>(StringComparer.OrdinalIgnoreCase);
 		private static readonly Dictionary<CascadeStyle, string> AliasByStyle = new Dictionary<CascadeStyle, string>();
 
 		/// <summary> Factory method for obtaining named cascade styles </summary>

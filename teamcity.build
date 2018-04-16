@@ -3,6 +3,7 @@
 
 	<property name="root.dir" value="." />
 	<property name="config.teamcity" value="default"/>
+	<property name="current-test-configuration.dir" value="${root.dir}/current-test-configuration" /> 
 
 	<include buildfile="${root.dir}/default.build" />
 
@@ -15,10 +16,10 @@
 	<target name="clean-configure-test" depends="cleanall init copy-teamcity-configuration binaries test verify-test-results binaries-zip" />
 
 	<target name="copy-teamcity-configuration">
-		<copy file="build-common/teamcity-hibernate.cfg.xml" tofile="${bin.dir}/hibernate.cfg.xml" />
+		<copy file="build-common/teamcity-hibernate.cfg.xml" tofile="${current-test-configuration.dir}/hibernate.cfg.xml" />
 		<call target="setup-teamcity-${config.teamcity}"/>
-		<property name="app.config" value="../${bin.dir}/hibernate.cfg.xml" />
-		<nant buildfile="${root.dir}/build-common/common-project.xml" target="common.put-connection-settings-into-defined-app-config" />
+		<property name="app.config" value="${current-test-configuration.dir}/hibernate.cfg.xml" />
+		<call target="put-connection-settings-into-defined-app-config" />
 	</target>
 
 	<target name="verify-test-results">
@@ -76,14 +77,14 @@
 	<target name="setup-teamcity-firebird32">
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.FirebirdClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.FirebirdDialect" />
-		<property name="nhibernate.connection.connection_string"	value="DataSource=localhost;Database=nhibernate;User ID=SYSDBA;Password=masterkey;MaxPoolSize=200;" />
+		<property name="nhibernate.connection.connection_string"	value="DataSource=localhost;Database=nhibernate;User ID=SYSDBA;Password=masterkey;MaxPoolSize=200;charset=utf8;" />
 	</target>
 
 	<target name="setup-teamcity-firebird64">
 		<property name="nunit-x64" value="true" />
 		<property name="nhibernate.connection.driver_class"			value="NHibernate.Driver.FirebirdClientDriver" />
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.FirebirdDialect" />
-		<property name="nhibernate.connection.connection_string"	value="DataSource=localhost;Database=nhibernate;User ID=SYSDBA;Password=masterkey;MaxPoolSize=200;" />
+		<property name="nhibernate.connection.connection_string"	value="DataSource=localhost;Database=nhibernate;User ID=SYSDBA;Password=masterkey;MaxPoolSize=200;charset=utf8;" />
 	</target>
 
 	<target name="setup-teamcity-sqlite32">
@@ -127,7 +128,10 @@
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Metadata Pooling=false;Self Tuning=false;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))" />
 		<!-- Teamcity Oracle test database is configured with a non-Unicode encoding -->
 		<property name="nhibernate.oracle.use_n_prefixed_types_for_unicode" value="true" />
-		<copy todir="${bin.dir}">
+		<!-- The default value of 4000 is too big for nvarchar2 with default database settings.
+		     nvarchar2 may be used due to use_n_prefixed_types_for_unicode -->
+		<property name="nhibernate.query.default_cast_length" value="2000" />
+		<copy todir="${current-test-configuration.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/oracle/x86">
 				<include name="*.dll"/>
 			</fileset>
@@ -143,7 +147,10 @@
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Metadata Pooling=false;Self Tuning=false;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))" />
 		<!-- Teamcity Oracle test database is configured with a non-Unicode encoding -->
 		<property name="nhibernate.oracle.use_n_prefixed_types_for_unicode" value="true" />
-		<copy todir="${bin.dir}">
+		<!-- The default value of 4000 is too big for nvarchar2 with default database settings.
+		     nvarchar2 may be used due to use_n_prefixed_types_for_unicode -->
+		<property name="nhibernate.query.default_cast_length" value="2000" />
+		<copy todir="${current-test-configuration.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/oracle/x64">
 				<include name="*.dll"/>
 			</fileset>
@@ -158,6 +165,9 @@
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Metadata Pooling=false;Self Tuning=false;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))" />
 		<!-- Teamcity Oracle test database is configured with a non-Unicode encoding -->
 		<property name="nhibernate.oracle.use_n_prefixed_types_for_unicode" value="true" />
+		<!-- The default value of 4000 is too big for nvarchar2 with default database settings.
+		     nvarchar2 may be used due to use_n_prefixed_types_for_unicode -->
+		<property name="nhibernate.query.default_cast_length" value="2000" />
 	</target>
 
 	<target name="setup-teamcity-oracle-managed64">
@@ -167,6 +177,9 @@
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Metadata Pooling=false;Self Tuning=false;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))" />
 		<!-- Teamcity Oracle test database is configured with a non-Unicode encoding -->
 		<property name="nhibernate.oracle.use_n_prefixed_types_for_unicode" value="true" />
+		<!-- The default value of 4000 is too big for nvarchar2 with default database settings.
+		     nvarchar2 may be used due to use_n_prefixed_types_for_unicode -->
+		<property name="nhibernate.query.default_cast_length" value="2000" />
 	</target>
 
 	<target name="setup-teamcity-mysql">

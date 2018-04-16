@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data.Common;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -148,7 +149,7 @@ namespace NHibernate.Impl
 		private readonly IQueryCache queryCache;
 
 		[NonSerialized]
-		private readonly ConcurrentDictionary<string, IQueryCache> queryCaches;
+		private readonly ConcurrentDictionary<string, Lazy<IQueryCache>> queryCaches;
 		[NonSerialized]
 		private readonly SchemaExport schemaExport;
 		[NonSerialized]
@@ -204,9 +205,10 @@ namespace NHibernate.Impl
 					SchemaMetadataUpdater.QuoteTableAndColumns(cfg, Dialect);
 				}
 			}
-			catch (NotSupportedException)
+			catch (NotSupportedException ex)
 			{
-				// Ignore if the Dialect does not provide DataBaseSchema 
+				// Ignore if the Dialect does not provide DataBaseSchema
+				log.Warn(ex, "Dialect does not provide DataBaseSchema, but keywords import or auto quoting is enabled.");
 			}
 
 			#region Caches
@@ -263,7 +265,7 @@ namespace NHibernate.Impl
 					implementorToEntityName[model.MappedClass] = model.EntityName;
 				}
 			}
-			classMetadata = new UnmodifiableDictionary<string, IClassMetadata>(classMeta);
+			classMetadata = new ReadOnlyDictionary<string, IClassMetadata>(classMeta);
 
 			Dictionary<string, ISet<string>> tmpEntityToCollectionRoleMap = new Dictionary<string, ISet<string>>();
 			collectionPersisters = new Dictionary<string, ICollectionPersister>();
@@ -308,8 +310,8 @@ namespace NHibernate.Impl
 			{
 				tmpcollectionMetadata.Add(collectionPersister.Key, collectionPersister.Value.CollectionMetadata);
 			}
-			collectionMetadata = new UnmodifiableDictionary<string, ICollectionMetadata>(tmpcollectionMetadata);
-			collectionRolesByEntityParticipant = new UnmodifiableDictionary<string, ISet<string>>(tmpEntityToCollectionRoleMap);
+			collectionMetadata = new ReadOnlyDictionary<string, ICollectionMetadata>(tmpcollectionMetadata);
+			collectionRolesByEntityParticipant = new ReadOnlyDictionary<string, ISet<string>>(tmpEntityToCollectionRoleMap);
 			#endregion
 
 			#region Named Queries
@@ -338,9 +340,9 @@ namespace NHibernate.Impl
 			{
 				uuid = (string)UuidGenerator.Generate(null, null);
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				throw new AssertionFailure("Could not generate UUID");
+				throw new AssertionFailure("Could not generate UUID", ex);
 			}
 
 			SessionFactoryObjectFactory.AddInstance(uuid, name, this, properties);
@@ -379,7 +381,7 @@ namespace NHibernate.Impl
 			{
 				updateTimestampsCache = new UpdateTimestampsCache(settings, properties);
 				queryCache = settings.QueryCacheFactory.GetQueryCache(null, updateTimestampsCache, settings, properties);
-				queryCaches = new ConcurrentDictionary<string, IQueryCache>();
+				queryCaches = new ConcurrentDictionary<string, Lazy<IQueryCache>>();
 			}
 			else
 			{
@@ -400,7 +402,7 @@ namespace NHibernate.Impl
 						failingQueries.Append('{').Append(pair.Key).Append('}');
 						log.Error(pair.Value, "Error in named query: {0}", pair.Key);
 					}
-					throw new HibernateException(failingQueries.ToString());
+					throw new AggregateHibernateException(failingQueries.ToString(), errors.Values);
 				}
 			}
 			#endregion
@@ -845,9 +847,9 @@ namespace NHibernate.Impl
 			{
 				queryCache.Destroy();
 
-				foreach (IQueryCache cache in queryCaches.Values)
+				foreach (var cache in queryCaches.Values)
 				{
-					cache.Destroy();
+					cache.Value.Destroy();
 				}
 
 				updateTimestampsCache.Destroy();
@@ -1071,14 +1073,18 @@ namespace NHibernate.Impl
 				return null;
 			}
 
+			// The factory may be run concurrently by threads trying to get the same region.
+			// But the GetOrAdd will yield the same lazy for all threads, so only one will
+			// initialize. https://stackoverflow.com/a/31637510/1178314
 			return queryCaches.GetOrAdd(
 				cacheRegion,
-				cr =>
-				{
-					IQueryCache currentQueryCache = settings.QueryCacheFactory.GetQueryCache(cacheRegion, updateTimestampsCache, settings, properties);
-					allCacheRegions[currentQueryCache.RegionName] = currentQueryCache.Cache;
-					return currentQueryCache;
-				});
+				cr => new Lazy<IQueryCache>(
+					() =>
+					{
+						var currentQueryCache = settings.QueryCacheFactory.GetQueryCache(cr, updateTimestampsCache, settings, properties);
+						allCacheRegions[currentQueryCache.RegionName] = currentQueryCache.Cache;
+						return currentQueryCache;
+					})).Value;
 		}
 
 		public void EvictQueries()
@@ -1104,10 +1110,9 @@ namespace NHibernate.Impl
 			{
 				if (settings.IsQueryCacheEnabled)
 				{
-					IQueryCache currentQueryCache;
-					if (queryCaches.TryGetValue(cacheRegion, out currentQueryCache))
+					if (queryCaches.TryGetValue(cacheRegion, out var currentQueryCache))
 					{
-						currentQueryCache.Clear();
+						currentQueryCache.Value.Clear();
 					}
 				}
 			}
@@ -1432,10 +1437,19 @@ namespace NHibernate.Impl
 			}
 		}
 
-		// NH different implementation: will not try to support covariant return type for specializations
-		// until it is needed.
-		internal class StatelessSessionBuilderImpl : IStatelessSessionBuilder, ISessionCreationOptions
+		// NH specific: implementing return type covariance with interface is a mess in .Net.
+		internal class StatelessSessionBuilderImpl : StatelessSessionBuilderImpl<IStatelessSessionBuilder>
 		{
+			public StatelessSessionBuilderImpl(SessionFactoryImpl sessionFactory) : base(sessionFactory)
+			{
+				SetSelf(this);
+			}
+		}
+
+		internal class StatelessSessionBuilderImpl<T> : IStatelessSessionBuilder, ISessionCreationOptions where T : IStatelessSessionBuilder
+		{
+			// NH specific: implementing return type covariance with interface is a mess in .Net.
+			private T _this;
 			private readonly SessionFactoryImpl _sessionFactory;
 
 			public StatelessSessionBuilderImpl(SessionFactoryImpl sessionFactory)
@@ -1443,18 +1457,23 @@ namespace NHibernate.Impl
 				_sessionFactory = sessionFactory;
 			}
 
+			protected void SetSelf(T self)
+			{
+				_this = self;
+			}
+
 			public virtual IStatelessSession OpenStatelessSession() => new StatelessSessionImpl(_sessionFactory, this);
 
-			public IStatelessSessionBuilder Connection(DbConnection connection)
+			public virtual IStatelessSessionBuilder Connection(DbConnection connection)
 			{
 				UserSuppliedConnection = connection;
-				return this;
+				return _this;
 			}
 
 			public IStatelessSessionBuilder AutoJoinTransaction(bool autoJoinTransaction)
 			{
 				ShouldAutoJoinTransaction = autoJoinTransaction;
-				return this;
+				return _this;
 			}
 
 			public FlushMode InitialSessionFlushMode => FlushMode.Always;

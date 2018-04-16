@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH1565">
+  
+  <class name="MainEntity">
+    <id name="Id" unsaved-value="0">
+      <generator class="native" />
+    </id>
+
+    <join table="EntityData" inverse="true">
+      <key column="EntityId"/>
+      <property name="Data" />
+    </join>
+  </class>
+</hibernate-mapping>

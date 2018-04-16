@@ -89,11 +89,20 @@ namespace NHibernate.Cache
 			}
 
 			Log.Debug("returning cached query results for: {0}", key);
+			if (key.ResultTransformer?.AutoDiscoverTypes == true && cacheable.Count > 0)
+			{
+				returnTypes = GuessTypes(cacheable);
+			}
+
 			for (int i = 1; i < cacheable.Count; i++)
 			{
 				if (returnTypes.Length == 1)
 				{
-					await (returnTypes[0].BeforeAssembleAsync(cacheable[i], session, cancellationToken)).ConfigureAwait(false);
+					var beforeAssembleTask = returnTypes[0]?.BeforeAssembleAsync(cacheable[i], session, cancellationToken);
+					if (beforeAssembleTask != null)
+					{
+						await (beforeAssembleTask).ConfigureAwait(false);
+					}
 				}
 				else
 				{
@@ -115,14 +124,14 @@ namespace NHibernate.Cache
 						result.Add(await (TypeHelper.AssembleAsync((object[])cacheable[i], returnTypes, session, null, cancellationToken)).ConfigureAwait(false));
 					}
 				}
-				catch (UnresolvableObjectException)
+				catch (UnresolvableObjectException ex)
 				{
 					if (isNaturalKeyLookup)
 					{
 						//TODO: not really completely correct, since
 						//      the UnresolvableObjectException could occur while resolving
 						//      associations, leaving the PC in an inconsistent state
-						Log.Debug("could not reassemble cached result set");
+						Log.Debug(ex, "could not reassemble cached result set");
 						await (_queryCache.RemoveAsync(key, cancellationToken)).ConfigureAwait(false);
 						return null;
 					}

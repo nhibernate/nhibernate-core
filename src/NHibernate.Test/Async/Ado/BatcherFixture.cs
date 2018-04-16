@@ -71,6 +71,7 @@ namespace NHibernate.Test.Ado
 			{
 				await (s.SaveAsync(new VerySimple {Id = 1, Name = "Fabio", Weight = 119.5}, cancellationToken));
 				await (s.SaveAsync(new VerySimple {Id = 2, Name = "Fiamma", Weight = 9.8}, cancellationToken));
+				await (s.SaveAsync(new VerySimple {Id = 3, Name = "Roberto", Weight = 98.8 }, cancellationToken));
 				await (tx.CommitAsync(cancellationToken));
 			}
 		}
@@ -86,11 +87,14 @@ namespace NHibernate.Test.Ado
 			{
 				var vs1 = await (s.GetAsync<VerySimple>(1));
 				var vs2 = await (s.GetAsync<VerySimple>(2));
+				var vs3 = await (s.GetAsync<VerySimple>(3));
 				vs1.Weight -= 10;
 				vs2.Weight -= 1;
+				vs3.Weight -= 5;
 				Sfi.Statistics.Clear();
 				await (s.UpdateAsync(vs1));
 				await (s.UpdateAsync(vs2));
+				await (s.UpdateAsync(vs3));
 				await (tx.CommitAsync());
 			}
 
@@ -98,6 +102,7 @@ namespace NHibernate.Test.Ado
 			await (CleanupAsync());
 		}
 
+#if NETFX
 		[Test, Ignore("Not fixed yet.")]
 		[Description("SqlClient: The batcher should run all different INSERT queries in only one roundtrip.")]
 		public async Task SqlClientOneRoundTripForUpdateAndInsertAsync()
@@ -107,7 +112,7 @@ namespace NHibernate.Test.Ado
 
 			await (FillDbAsync());
 
-			using(var sqlLog = new SqlLogSpy())
+			using (var sqlLog = new SqlLogSpy())
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
@@ -152,7 +157,7 @@ namespace NHibernate.Test.Ado
 
 			await (CleanupAsync());
 		}
-
+#endif
 
 		[Test]
 		[Description("The batcher should run all DELETE queries in only one roundtrip.")]
@@ -165,9 +170,11 @@ namespace NHibernate.Test.Ado
 			{
 				var vs1 = await (s.GetAsync<VerySimple>(1));
 				var vs2 = await (s.GetAsync<VerySimple>(2));
+				var vs3 = await (s.GetAsync<VerySimple>(3));
 				Sfi.Statistics.Clear();
 				await (s.DeleteAsync(vs1));
 				await (s.DeleteAsync(vs2));
+				await (s.DeleteAsync(vs3));
 				await (tx.CommitAsync());
 			}
 

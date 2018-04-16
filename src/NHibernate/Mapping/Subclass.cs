@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Util;
@@ -189,7 +190,7 @@ namespace NHibernate.Mapping
 					{
 						ArrayHelper.AddAll(combined, specificTuplizerDefs);
 					}
-					return new UnmodifiableDictionary<EntityMode, string>(combined);
+					return new ReadOnlyDictionary<EntityMode, string>(combined);
 				}
 			}
 		}

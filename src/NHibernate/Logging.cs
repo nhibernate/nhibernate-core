@@ -113,7 +113,7 @@ namespace NHibernate
 
 		private static string GetNhibernateLoggerClass()
 		{
-			var nhibernateLogger = ConfigurationManager.AppSettings.Keys.Cast<string>().FirstOrDefault(k => nhibernateLoggerConfKey.Equals(k.ToLowerInvariant()));
+			var nhibernateLogger = ConfigurationManager.AppSettings.Keys.Cast<string>().FirstOrDefault(k => nhibernateLoggerConfKey.Equals(k, StringComparison.OrdinalIgnoreCase));
 			string nhibernateLoggerClass = null;
 			if (string.IsNullOrEmpty(nhibernateLogger))
 			{

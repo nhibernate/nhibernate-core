@@ -295,6 +295,25 @@ namespace NHibernate.Loader
 			}
 		}
 
+		internal void AddExplicitEntityJoinAssociation(
+			IOuterJoinLoadable persister,
+			string tableAlias,
+			JoinType joinType,
+			SqlString withClause)
+		{
+			OuterJoinableAssociation assoc =
+				new OuterJoinableAssociation(
+					persister.EntityType,
+					string.Empty,
+					Array.Empty<string>(),
+					tableAlias,
+					joinType,
+					withClause,
+					Factory,
+					enabledFilters);
+			AddAssociation(tableAlias, assoc);
+		}
+
 		private void WalkEntityAssociationTree(IAssociationType associationType, IOuterJoinLoadable persister,
 											   int propertyNumber, string alias, string path, bool nullable, int currentDepth,
 											   ILhsAssociationTypeSqlInfo associationTypeSQLInfo)
@@ -894,7 +913,7 @@ namespace NHibernate.Loader
 						joinable.SelectFragment(next == null ? null : next.Joinable, next == null ? null : next.RHSAlias, join.RHSAlias,
 																		entitySuffix, collectionSuffix, join.JoinType == JoinType.LeftOuterJoin);
 
-					if (selectFragment.Trim().Length > 0)
+					if (!string.IsNullOrWhiteSpace(selectFragment))
 					{
 						buf.Add(StringHelper.CommaSpace)
 							.Add(selectFragment);

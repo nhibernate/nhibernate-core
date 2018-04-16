@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Data.Odbc;
 using System.Data.SqlClient;
+#if NETFX
 using System.Data.SqlServerCe;
 using System.Data.SQLite;
+#endif
 using System.IO;
 using FirebirdSql.Data.FirebirdClient;
 using NHibernate.Test;
@@ -19,15 +21,17 @@ namespace NHibernate.TestDatabaseSetup
 			{
 				{"NHibernate.Driver.SqlClientDriver", SetupSqlServer},
 				{"NHibernate.Driver.Sql2008ClientDriver", SetupSqlServer},
-				{"NHibernate.Driver.OdbcDriver", SetupSqlServerOdbc},
 				{"NHibernate.Driver.FirebirdClientDriver", SetupFirebird},
-				{"NHibernate.Driver.SQLite20Driver", SetupSQLite},
 				{"NHibernate.Driver.NpgsqlDriver", SetupNpgsql},
 				{"NHibernate.Driver.OracleDataClientDriver", SetupOracle},
 				{"NHibernate.Driver.MySqlDataDriver", SetupMySql},
 				{"NHibernate.Driver.OracleClientDriver", SetupOracle},
 				{"NHibernate.Driver.OracleManagedDataClientDriver", SetupOracle},
+				{"NHibernate.Driver.OdbcDriver", SetupSqlServerOdbc},
+#if NETFX
+				{"NHibernate.Driver.SQLite20Driver", SetupSQLite},
 				{"NHibernate.Driver.SqlServerCeDriver", SetupSqlServerCe}
+#endif
 			};
 
 		private static void SetupMySql(Cfg.Configuration obj)
@@ -112,9 +116,13 @@ namespace NHibernate.TestDatabaseSetup
 			{
 				Console.WriteLine(e);
 			}
-			FbConnection.CreateDatabase(connStr, forcedWrites:false);
+			// With UTF8 charset, string takes up to four times as many space, causing the
+			// default page-size of 4096 to no more be enough for index key sizes. (Index key
+			// size is limited to a quarter of the page size.)
+			FbConnection.CreateDatabase(connStr, pageSize:16384, forcedWrites:false);
 		}
 
+#if NETFX
 		private static void SetupSqlServerCe(Cfg.Configuration cfg)
 		{
 			var connStr = cfg.Properties[Cfg.Environment.ConnectionString];
@@ -136,6 +144,7 @@ namespace NHibernate.TestDatabaseSetup
 				en.CreateDatabase();
 			}
 		}
+#endif
 
 		private static void SetupNpgsql(Cfg.Configuration cfg)
 		{
@@ -181,6 +190,7 @@ namespace NHibernate.TestDatabaseSetup
 			}
 		}
 
+#if NETFX
 		private static void SetupSQLite(Cfg.Configuration cfg)
 		{
 			var connStr = cfg.Properties[Cfg.Environment.ConnectionString];
@@ -197,6 +207,7 @@ namespace NHibernate.TestDatabaseSetup
 				Console.WriteLine(e);
 			}
 		}
+#endif
 
 		private static void SetupOracle(Cfg.Configuration cfg)
 		{
