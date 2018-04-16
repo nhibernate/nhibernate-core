@@ -157,11 +157,16 @@ namespace NHibernate.Proxy.DynamicProxy
 				// arguments from the generated method. Using the open method definition
 				// directly works on .Net 2.0, which might be FW bug, but fails on 4.0.
 				//
+				// Also, on mono, we should use open generics type defimition too, as 
+				// stated by NH-3965.
+				//
 				// Equivalent pseudo-code:
 				// MethodInfo mi = methodof(TheClass.TheMethod<>)
 				// versus
 				// MethodInfo mi = methodof(TheClass.TheMethod<T0>)
-				var instantiatedMethod = method.MakeGenericMethod(generatedMethod.GetGenericArguments());
+				var instantiatedMethod = System.Type.GetType("Mono.Runtime") != null ?
+					method.GetGenericMethodDefinition()
+					: method.MakeGenericMethod(generatedMethod.GetGenericArguments());
 				IL.Emit(OpCodes.Ldtoken, instantiatedMethod);
 			}
 			else
